@@ -33,6 +33,7 @@ mkdir datafiles 2>/dev/null
 
 for the_file in `echo ascii.sm ascii.med ascii.lg ascii.jmb`
 do
+  rm -f datafiles/$the_file 2>/dev/null
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> datafiles/$the_file
@@ -47,6 +48,10 @@ do
 done
 
 
+rm -f datafiles/bin.sm 2> /dev/null
+rm -f datafiles/bin.med 2> /dev/null
+rm -f datafiles/bin.lg 2> /dev/null
+rm -f datafiles/bin.jmb 2> /dev/null
 
 gzip -3 -c datafiles/ascii.lg > datafiles/bin.sm
 COUNT=0
