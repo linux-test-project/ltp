@@ -23,6 +23,9 @@
  * HISTORY:
  *   03/21/2001 Paul Larson (plars@us.ibm.com)
  *     -Ported
+ *   11/01/2001 Mnaoj Iyer (manjo@austin.ibm.com)
+ *     - Modified. 
+ *	 added #inclide <unistd.h>
  *
  */
 
@@ -30,6 +33,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 
 #define MAXFILES        32768
