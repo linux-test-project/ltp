@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.7 2003/09/25 15:45:17 robbiew Exp $ */
+/* $Id: tst_sig.c,v 1.8 2003/11/25 16:04:28 robbiew Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -71,10 +71,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-
-/* Needed for NPTL */
-#define SIGCANCEL 32
-#define SIGTIMER 33
 
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
@@ -130,16 +126,46 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	        case SIGKILL:
 	        case SIGSTOP:
 	        case SIGCONT:
-/* Needed for NPTL */ 
-		case SIGCANCEL:
-		case SIGTIMER:
+	     /* Ignore all real-time signals */
+		case __SIGRTMIN:
+		case __SIGRTMIN+1:
+		case __SIGRTMIN+2:
+		case __SIGRTMIN+3:
+		case __SIGRTMIN+4:
+		case __SIGRTMIN+5:
+		case __SIGRTMIN+6:
+		case __SIGRTMIN+7:
+		case __SIGRTMIN+8:
+		case __SIGRTMIN+9:
+		case __SIGRTMIN+10:
+		case __SIGRTMIN+11:
+		case __SIGRTMIN+12:
+		case __SIGRTMIN+13:
+		case __SIGRTMIN+14:
+		case __SIGRTMIN+15:
+		case __SIGRTMAX-15:
+		case __SIGRTMAX-14:
+		case __SIGRTMAX-13:
+		case __SIGRTMAX-12:
+		case __SIGRTMAX-11:
+		case __SIGRTMAX-10:
+		case __SIGRTMAX-9:
+		case __SIGRTMAX-8:
+		case __SIGRTMAX-7:
+		case __SIGRTMAX-6:
+		case __SIGRTMAX-5:
+		case __SIGRTMAX-4:
+		case __SIGRTMAX-3:
+		case __SIGRTMAX-2:
+		case __SIGRTMAX-1:
+		case __SIGRTMAX:
 #ifdef CRAY
 	        case SIGINFO:
 	        case SIGRECOVERY:	/* allow chkpnt/restart */
 #endif  /* CRAY */
 
 #ifdef SIGSWAP
-  case SIGSWAP:
+		case SIGSWAP:
 #endif /* SIGSWAP */
 
 #ifdef SIGCKPT
