@@ -53,7 +53,7 @@ do_test()
    $trace_logic
    echo "Getting ALL enabled interfaces which are configured !"
 
-   IFNAME=${IFNAME:-$(netstat -in | grep "^[b-z]\{2,4\}[0-9][^*]"|\
+   IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]"|\
       awk '{print $1}')} 
    INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
