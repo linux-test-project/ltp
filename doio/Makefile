@@ -1,23 +1,21 @@
 
-CFLAGS+=
-LDFLAGS+=
-TARGETS=doio iogen rwtest growfiles
+CFLAGS+= -I../include
+LDFLAGS+= -L../lib -lltp
 
+TARGETS=doio growfiles rwtest iogen
 SRCS=$(wildcard *.c)
 OBJS=$(patsubst %.c,%.o,$(SRCS))
 
 all: $(TARGETS)
 
-doio: doio.o random_range.o string_to_tokens.o pattern.o write_log.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+doio: doio.o
+	$(CC) -o $@ $^ -I. $(CFLAGS) $(LDFLAGS)
 
-growfiles: growfiles.o dataascii.o open_flags.o tlibio.o random_range.o \
-           file_lock.o datapid.o databin.o forker.o string_to_tokens.o 
-	$(CC) -o $@ $^ $(LDFLAGS)
+growfiles: growfiles.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-iogen: iogen.o str_to_bytes.o string_to_tokens.o random_range.o \
-       open_flags.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+iogen: iogen.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 rwtest: rwtest.ks doio iogen
 	cp rwtest.ks rwtest

@@ -81,11 +81,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <fcntl.h>
-#ifdef CRAY
-#include <sys/unistd.h>
-#else
 #include <unistd.h>
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>          

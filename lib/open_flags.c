@@ -31,7 +31,7 @@
  */
 /**************************************************************
  *
- *    OS Testing - Cray Research, Inc.
+ *    OS Testing - Silicon Graphics, Inc.
  *
  *    FUNCTION NAME     : parse_open_flags
  *			  openflags2symbols

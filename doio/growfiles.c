@@ -81,6 +81,7 @@
 #include <string.h>
 #include "dataascii.h"
 #include "random_range.h"
+#include "databin.h"
 
 #ifdef CRAY
 #include <sys/panic.h>

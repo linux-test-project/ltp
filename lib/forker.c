@@ -31,7 +31,7 @@
  */
 /**************************************************************
  *
- *    OS Testing - Cray Research, Inc.
+ *    OS Testing - Silicon Graphics, Inc.
  *
  *    FUNCTION NAME     : forker
  *			  background
@@ -114,19 +114,18 @@
 #include <errno.h>
 #include <unistd.h> /* fork, getpid, sleep */
 #include <string.h>
+#include "forker.h"
 
 extern int errno;
 
-#define MAX_PIDS	4098
-
-int Forker_pids[MAX_PIDS];	/* holds pids of forked processes */
-int Forker_npids=0;	/* number of entries in Forker_pids */
+int Forker_pids[MAX_PIDS];      /* holds pids of forked processes */
+int Forker_npids=0;             /* number of entries in Forker_pids */
 
 /***********************************************************************
  *
  * This function will fork and the parent will exit zero and
  * the child will return.  This will orphan the returning process
- * putting you in the background.
+ * putting it in the background.
  *
  * Return Value
  *   0 : if fork did not fail

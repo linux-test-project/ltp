@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <sys/sysmacros.h>
 #include <string.h> /* memset, strerror */
+#include "file_lock.h"
 
 extern int errno;
 

@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.2 2000/05/08 20:31:30 alaffin Exp $
+$Id: INSTALL,v 1.3 2000/07/27 17:13:18 alaffin Exp $
 
 Building and Installation of Test Tools.
 
@@ -8,9 +8,6 @@ put into engineering complicated and convoluted build processes that
 were not necessary.  Instead, a minimal approach was taken and the
 build process reflects that.  Simply:
 
-cd <tool>
 make
 
-At the time of release, <tool> is doio.  The build process builds the
-tools in question and leaves them among the sources.  There are no
-install routines, yet.
+This does two things, builds the test libraries and then the tests.

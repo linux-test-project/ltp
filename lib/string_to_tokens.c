@@ -31,7 +31,7 @@
  */
 /**********************************************************
  * 
- *    UNICOS Testing - Cray Research, Inc.
+ *    OS Testing - Silicon Graphics, Inc.
  * 
  *    FUNCTION NAME     : string_to_tokens
  * 
