@@ -68,8 +68,16 @@ void noprintf(char* string, ...){
 #endif
 
 #define MAXT 100
-#define PIDS PTHREAD_THREADS_MAX /* maximum thread allowed.                   */
-#define UP   1                   /* assume UP if no SMP value is specified.   */
+
+#ifdef PTHREAD_THREADS_MAX
+#define PIDS PTHREAD_THREADS_MAX /* maximum thread allowed.                     */
+#elif defined(PID_MAX_DEFAULT)
+#define PIDS PID_MAX_DEFAULT     /* maximum pids allowed.                       */
+#elif defined(PID_MAX)
+#define PIDS PID_MAX		 /* alternative way maximum pids may be defined */
+#endif
+
+#define UP   1                   /* assume UP if no SMP value is specified.     */
 
 #define OPT_MISSING(prog, opt)   do{\
                                fprintf(stderr, "%s: option -%c ", prog, opt); \
