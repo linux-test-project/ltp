@@ -64,11 +64,12 @@
 #define	FAILED		1
 #define	VAL_SEC		100
 #define	VAL_MSEC	100
+#define ACCEPTABLE_DELTA	500	/* in milli-seconds */
 
 char *TCID = "settimeofday01";
 int TST_TOTAL = 1;
 time_t save_tv_sec, save_tv_usec;
-struct timeval tp, tp1;
+struct timeval tp, tp1, tp2;
 int exp_enos[]={EFAULT, 0};
 extern int Tst_count;
 
@@ -79,6 +80,7 @@ int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	suseconds_t delta;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -106,12 +108,18 @@ int main(int argc, char **argv)
 				 TEST_ERRNO);
 		}
 
-		if ((gettimeofday(&tp, (struct timezone *)&tp1)) == -1) {
+		if ((gettimeofday(&tp2, (struct timezone *)&tp1)) == -1) {
 			tst_resm(TBROK, "Error Getting Time, errno=%d",
 				 errno);
 		}
 
-		if (tp.tv_sec == VAL_SEC) {
+		if (tp2.tv_sec > tp.tv_sec) {
+			delta=(suseconds_t)(tp2.tv_sec-tp.tv_sec)*1000+(tp2.tv_usec-tp.tv_usec)/1000;
+		} else {
+			delta=(suseconds_t)(tp.tv_sec-tp2.tv_sec)*1000+(tp.tv_usec-tp2.tv_usec)/1000;
+		}
+			
+		if(delta>-ACCEPTABLE_DELTA && delta < ACCEPTABLE_DELTA) {
 			tst_resm(TPASS, "Test condition %d successful",
 				 condition_number++);
 		} else {
