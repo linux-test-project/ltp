@@ -54,7 +54,7 @@ cat <<EOF > $TCtmp/errmsg.exp
 /usr/bin/ld: cannot open x.o: No such file or directory
 EOF
 
-diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -78,7 +78,7 @@ cc: y.o: No such file or directory
 cc: No input files
 EOF
 
-diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -100,7 +100,7 @@ cat <<EOF > $TCtmp/errmsg.exp
 /usr/bin/ld: cannot open bad/x.o: No such file or directory
 EOF
 
-diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -123,7 +123,7 @@ cc: bad/x.o: No such file or directory
 cc: No input files
 EOF
 
-diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -179,7 +179,7 @@ cat <<EOF > $TCtmp/errmsg.exp
 $TCtmp/lola: could not read symbols: Invalid operation
 EOF
 
-diff -w $TCtmp/errmsg.out $TCtmp/errmsg.exp
+diff -iw $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo "-)"
