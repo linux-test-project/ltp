@@ -7,10 +7,10 @@ TESTS = pthcli pthserv
 all: $(TESTS)
 
 pthcli: pthcli.o readline.o writen.o
-       $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
 
 pthserv: pthserv.o readline.o writen.o 
-       $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
 
 install:
 	@set -e; for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
