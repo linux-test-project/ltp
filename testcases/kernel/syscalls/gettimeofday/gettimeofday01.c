@@ -57,8 +57,8 @@ extern int Tst_count;
 
 int exp_enos[] = {EFAULT, 0};
 
-void setup(void);
 void cleanup(void);
+void setup(void);
 
 main(int ac, char **av)
 {
