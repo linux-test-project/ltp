@@ -20,14 +20,13 @@
 # name of file	: Makefile						#
 # description	: make(1) description file for ipc(2) test directory.	#
 #########################################################################
-LTP_CFLAGS+=-I../../../../../include -g
+LTP_CFLAGS+=-I../../../../../include -g -Wall
 LTP_LDFLAGS+=-L../../../../../lib -lltp
 IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
 
 all: $& $(IPCTESTS)
 	for i in lib $(IPCTESTS); do \
-		(cd $$i; $(MAKE) all LTP_CFLAGS="$(LTP_CFLAGS)" \
-                LTP_LDFLAGS="$(LTP_LDFLAGS)") \
+		(cd $$i; $(MAKE) all) \
 	done
 
 clean:
@@ -37,8 +36,7 @@ clean:
 
 install:
 	for i in lib $(IPCTESTS); do \
-		(cd $$i; $(MAKE) install LTP_CFLAGS="$(LTP_CFLAGS)" \
-                LTP_LDFLAGS="$(LTP_LDFLAGS)") \
+		(cd $$i; $(MAKE) install) \
 	done
 
 strip_bin:
