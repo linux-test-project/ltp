@@ -54,7 +54,7 @@ trap "interrupt_test" 2
 
 do_setup() {
   mkdir -p $TCtmp
-  OCTET=`ps -ef | grep [m]c_commo | wc -l | awk '{print $1}'`
+  OCTET=`ps -ewf | grep [m]c_commo | wc -l | awk '{print $1}'`
   GROUP_ADDR=224.0.0.$OCTET
 }
 
