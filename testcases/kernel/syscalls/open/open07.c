@@ -55,11 +55,12 @@
  * RESTRICTIONS
  * 	None
  */
+#define _GNU_SOURCE		/* for O_NOFOLLOW */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <asm/fcntl.h>			/* for O_NOFOLLOW definition */
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 

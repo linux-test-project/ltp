@@ -46,10 +46,11 @@
  * RESTRICTIONS
  * 	None
  */
+#define _GNU_SOURCE		/* for O_DIRECTORY */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <asm/fcntl.h>			/* for O_DIRECTORY definition */
+#include <fcntl.h>
 #include <signal.h>
 #include <pwd.h>
 #include "test.h"
