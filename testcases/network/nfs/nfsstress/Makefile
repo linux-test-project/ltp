@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install: all
-	ln -f make_tree ../../../bin
+        ln -f nfsstress ../../../bin
 
 clean:
 	rm -f $(TARGETS)
