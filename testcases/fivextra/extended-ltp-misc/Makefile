@@ -25,11 +25,11 @@
 TARGETS=`find . -maxdepth 1 -perm +111 -type f`
 
 all:
-	date > mcp-misc-build-date
+	date > extendedltp-misc-build-date
 
 install:
 	for i in $(TARGETS) ; do ln -f $$i ../../bin/$$i || break ; done
-	ln -f mcp-misc-build-date ../../bin/
+	ln -f extendedltp-build-date ../../bin/
 
 uninstall:
 	for j in $(TARGETS) ; do rm -f ../../bin/$$j ; done

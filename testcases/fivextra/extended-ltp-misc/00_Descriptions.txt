@@ -1,0 +1,4 @@
+extendedltp-misc
+
+	Miscelaneous extendltp-specifiv testcases, including verification of bug
+	fixes.

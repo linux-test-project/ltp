@@ -1,4 +1,0 @@
-mcp-misc
-
-	Miscelaneous mcp-specifiv testcases, including verification of bug
-	fixes.

@@ -98,18 +98,6 @@ function bug1782()
 #
 # distroid     Test for existence of distro id.
 #
-function distroid()
-{
-	tc_register "/proc/distroid"
-	[ -r /proc/distro_id ]
-	tc_fail_if_bad $? "Could not find /proc/distro_id" || return
-	tc_exec_or_break cat || return
-	cat /proc/distro_id > $stdout
-	tc_exec_or_break grep || return
-	grep -q mcp $stdout 2>$stderr
-	tc_pass_or_fail $? "does not contain correct info." \
-		"Actual contents are in stdout. Expected to see \"mcp\""
-}
 
 #
 # disp-info	Display interesting info
@@ -121,7 +109,7 @@ function disp_info()
 	tc_info "$(cat /etc/jlbd.manifest | grep _MANIFEST_MAGIC_TAG)"
 	tc_executes rpm &&
 		tc_info "LTP version:    $(rpm -qa | grep ltp)"
-	tc_info "LTP build date: $(cat mcp-misc-build-date)"
+	tc_info "LTP build date: $(cat extendedltp-misc-build-date)"
 	tc_pass_or_fail 0	# always passes
 }
 
@@ -134,7 +122,6 @@ tc_setup
 
 disp_info
 manifest
-distroid
 tmp01
 tmp02
 bug1782

@@ -61,7 +61,7 @@ bash_test.sh
 
     NOTE:
 
-       1. Command "gcc" is needed by this testsuite as this is a MCP DevKit package. 
+       1. Command "gcc" is needed by this testsuite as this is a DevKit package. 
 
        2. Command "as" is tested in every function, 
 	  command "ld" is used by command "gcc",
@@ -95,7 +95,7 @@ dhcpd01
 	start DHCP server using dhcp.conf file, and stop service if that succedes.
 distro_id
 
-	Test the distro_id command. Unique to MCP 3.0 (and up?)
+	Test the distro_id command. Unique to Extended ltp (and up?)
 -------------------------------------
 IBM CSDL testsuite for dmidecode
 ------------------------------------
@@ -171,11 +171,11 @@ gawk.sh:
 IBM CSDL testsuite for gcc
 ------------------------------------
 Fall back to seperated *.x files in March 18, 2004
-And I add "gcc-test/mcp-gcc-exclude.x"  
+And I add "gcc-test/gcc-exclude.x"  
 istestcase "gcc.c-torture/compile/920521-1.c" && istaget "i[3-6]86" &&
 continue
 
-This file is created and sourced for various gcc/mcp version. 
+This file is created and sourced for various gcc/'extended ltp'  version. 
 
 ******************************************** Newly Changelog: Mar. 17, 2004
 Based on Bob's suggestion, I add a file in gcc-test/gcc.c-torture/gcc.permfail
@@ -258,7 +258,7 @@ gettext.sh
 
 
 	NOTE:
-		This is a DevKit package that cannot be run on MCP base   
+		This is a DevKit package that cannot be run on extended ltp base   
 
 		Command "gcc" and "gprof" is needed by this testsuite. 
          
@@ -379,9 +379,9 @@ mail05
 	Test that mail -b user@domain option will blind carbon copy that user.
 ps.sh
 	Tested the functionality of the ps command and other commands in the ps.rpm
-mcp-misc
+'extended ltp'-misc
 
-	Miscelaneous mcp-specifiv testcases, including verification of bug
+	Miscelaneous 'extended ltp'-specifiv testcases, including verification of bug
 	fixes.
 minicom
 	Test the functionality of minicom.
@@ -506,9 +506,9 @@ busybox
    directory. "Make all" in the testcase directory will modify the
    executable to only test the supported utilities.
 
-mcp-misc
+extendedltp-misc
 
-   Miscelaneous mcp-specifiv testcases, including verification of bug fixes.
+   Miscelaneous extendedltp-specifiv testcases, including verification of bug fixes.
 
 mod_php
 
