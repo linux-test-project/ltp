@@ -51,6 +51,7 @@
  * RESTRICTIONS
  *	none
  */
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -60,6 +61,9 @@
 char *TCID = "msgctl04";
 int TST_TOTAL = 6;
 extern int Tst_count;
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 int exp_enos[] = {EACCES, EFAULT, EINVAL, 0};
 
@@ -160,6 +164,19 @@ setup(void)
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/*
 	 * Create a temporary directory and cd into it.

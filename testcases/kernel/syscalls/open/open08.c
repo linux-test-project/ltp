@@ -8,8 +8,8 @@
  * 	2.	EISDIR
  * 	3.	ENOTDIR
  *	4.	ENAMETOOLONG
- *	5.	EFAULT
- *	6.	ETXTBSY
+ *	5.	EACCES
+ *	6.	EFAULT
  * 	
  * ALGORITHM
  * 	1. Open a file with O_CREAT and O_EXCL, when the file already
@@ -25,7 +25,7 @@
  *	   check for errno to be ENAMETOOLONG.
  *
  *	5. Attempt to open this test executable in WRONLY mode,
- *	   open(2) should fail with ETXTBSY.
+ *	   open(2) should fail with EACCES.
  *
  *	6. Attempt to pass an invalid pathname with an address pointing outside
  *	   the address space of the process, as the argument to open(), and
@@ -51,6 +51,7 @@
 #include <sys/types.h>
 #include <asm/fcntl.h>			/* for O_DIRECTORY definition */
 #include <signal.h>
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -61,7 +62,10 @@ char *TCID = "open03";
 int TST_TOTAL = 6;
 extern int Tst_count;
 
-int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, ETXTBSY, EFAULT, 0};
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
+int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0};
 
 char filename[40] = "";
 char fname[40];
@@ -76,7 +80,7 @@ struct test_case_t {
 	{"/tmp", O_RDWR, EISDIR},
 	{filename, O_DIRECTORY, ENOTDIR},
 	{bad_file, O_RDWR, ENAMETOOLONG},
-	{fname, O_WRONLY, ETXTBSY},
+	{fname, O_WRONLY, EACCES},
 	{(char *)-1, O_CREAT, EFAULT}
 };
 
@@ -146,6 +150,19 @@ setup(void)
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	if ((testdir = getcwd(testdir, 0)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Could not get current directory");

@@ -63,6 +63,7 @@
  * RESTRICTIONS:
  *  This test should be executed by 'non-super-user' only.
  */
+#include <pwd.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -72,6 +73,10 @@
 char *TCID="nice04";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 int exp_enos[]={EPERM, 0};
 
@@ -151,10 +156,18 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Make sure the calling process is non-super-user only */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, tst_exit, "Must be non-ROOT to run this test.");
-	}
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
