@@ -1,4 +1,4 @@
-SUBDIRS = ar objdump size ld ldd nm
+SUBDIRS = ar objdump size ld ldd nm file
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
