@@ -19,11 +19,16 @@
 #include <signal.h>
 #include <errno.h>
 #include <stdint.h>
+#include <setjmp.h>
 #include "posixtest.h"
+
+jmp_buf sig11_recover;
+void sig11_handler(int sig);
 
 int main(int argc, char *argv[])
 {
 	int signo;
+	struct sigaction sa, osa;
 
 	if (argc < 2) {
         	printf("Usage:  %s [1|2|3|4]\n", argv[0]);
@@ -51,7 +56,23 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 	}
 
-	if (sighold(signo) == -1) {
+        /* special sig11 case */
+        sa.sa_handler = &sig11_handler;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = 0;
+
+        sigaction(SIGSEGV, NULL, &osa);
+        sigaction(SIGSEGV, &sa, NULL);
+
+        if (setjmp(sig11_recover)) {
+              errno = EINVAL;
+	      TEST_RETURN=-1;
+        } else {
+              TEST_RETURN=sighold(signo);
+        }
+        sigaction(SIGSEGV, &osa, NULL);
+
+        if (TEST_RETURN == -1) {
 		if (EINVAL == errno) {
 			printf ("errno set to EINVAL\n");
 			return PTS_PASS;
@@ -64,3 +85,13 @@ int main(int argc, char *argv[])
 	printf("sighold did not return -1\n");
 	return PTS_FAIL;
 }
+
+/******************************************************************
+ * sig11_handler() - our segfault recover hack
+ ******************************************************************/
+void
+sig11_handler(int sig)
+{
+    longjmp(sig11_recover, 1);
+}
+
