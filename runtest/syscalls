@@ -287,6 +287,7 @@ mknod05 mknod05
 mknod06 mknod06
 mknod07 mknod07
 mknod08 mknod08
+mknod09 mknod09
 
 qmm01 mmap001 -m 1
 mmap01 mmap01
