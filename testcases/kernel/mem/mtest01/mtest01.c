@@ -187,15 +187,15 @@ int main(int argc, char* argv[]) {
     if (dowrite) 
     {
       /* Total Free Post-Test RAM */
-      post_mem = sstats.mem_unit*sstats.freeram;
-      post_mem = post_mem+(sstats.mem_unit*sstats.freeswap);
+      post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
+      post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
     
-      while ( (pre_mem - post_mem) < original_maxbytes )
+      while ( ((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes )
       {
        sleep(1);
        sysinfo(&sstats);
-       post_mem = sstats.mem_unit*sstats.freeram;
-       post_mem = post_mem+(sstats.mem_unit*sstats.freeswap);
+       post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
+       post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
       }
     }
     sleep(10);  
