@@ -74,9 +74,9 @@
 #include "test.h"
 #include "usctest.h"
 
-char TESTFILE[] = "/testfile \0";		/* name of file to create */
+char TESTFILE[] = "testfile \0";		/* name of file to create */
 char SYMFILE[] = "/slink_file\0";	/* name of symbolic link to create */
-char creat_slink[] = "creat_slink\0";	/* name of executable to execv() */
+char creat_slink[] = "creat_slink\0";	/* name of executable to execvp() */
 
 char nobody[] = "nobody";
 char bin[] = "bin";
@@ -170,7 +170,7 @@ main(int ac, char **av)
  *
  *  Create a temporary directory and change directory to it.
  *
- *  execv() the creat_slink program as bin to creat a file and symlink.
+ *  execvp() the creat_slink program as bin to creat a file and symlink.
  */
 void 
 setup()
@@ -216,14 +216,12 @@ setup()
 		tst_brkm(TBROK, cleanup, "chmod() failed");
 	}
 
-	/* create the full pathname of the executable to be execv'ed */
+	/* create the full pathname of the executable to be execvp'ed */
 	strcat((char *)path_buffer, (char *)bin_dir);
-
-	strcat((char *)path_buffer, (const char *)"/creat_slink");
 
 	symfile_path = "slink_file\0";
 
-	/* set up the argument vector to pass into the execv call */
+	/* set up the argument vector to pass into the execvp call */
 	cargv[0] = tmp_dir;
 	cargv[1] = TESTFILE;
 	cargv[2] = symfile_path;
@@ -235,14 +233,14 @@ setup()
 
 	if (pid == 0) {			/* child */
 		/*
-		 * execv the process/program that will create the test file
+		 * execvp the process/program that will create the test file
 		 * and set up the symlink
 		 */
-		execvp(path_buffer, cargv);
+		execvp(creat_slink, cargv);
 
-		/* on success, execv will not return */
-		perror("execv");
-		tst_brkm(TBROK, NULL, "execv() failed");
+		/* on success, execvp will not return */
+		perror("execvp");
+		tst_brkm(TBROK, NULL, "execvp() failed");
 
 		/*
 		 * In reality, the contents/functionality of the creat_slink
@@ -253,7 +251,7 @@ setup()
 
 	/* parent */
 
-	/* sleep briefly to let the execv'ed process do its work */
+	/* sleep briefly to let the execvp'ed process do its work */
 
 	usleep(25000);
 
