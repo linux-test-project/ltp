@@ -1791,17 +1791,17 @@ static void parse_args (char **args)
 		  fscanf(datafile, " TotalMem:%dk\tUsedMem:%dk\tFreeMem:%dk\t\tBuffers:%dk",
 			 &Mem1, &Mem2, &Mem3, &Mem4); 
                   fgets(buff, BUFF_SIZE, datafile);
-		  AvgMem1=Mem1; //this data should not change
-		  AvgMem2+=Mem2;
-		  AvgMem3+=Mem3;
-		  AvgMem4+=Mem4;
+		  AvgMem1=Mem1/1024; //this data should not change
+		  AvgMem2+=Mem2/1024;
+		  AvgMem3+=Mem3/1024;
+		  AvgMem4+=Mem4/1024;
 		  fscanf(datafile, " TotalSwap:%dk\tUsedSwap:%dk\tFreeSwap:%dk\tCached:%dk",
 			 &Mem1, &Mem2, &Mem3, &Mem4); 
                   fgets(buff, BUFF_SIZE, datafile);
-		  AvgSwap1=Mem1; //this data should not change
-		  AvgSwap2+=Mem2;
-		  AvgSwap3+=Mem3;
-		  AvgSwap4+=Mem4;
+		  AvgSwap1=Mem1/1024; //this data should not change
+		  AvgSwap2+=Mem2/1024;
+		  AvgSwap3+=Mem3/1024;
+		  AvgSwap4+=Mem4/1024;
                   fgets(buff, BUFF_SIZE, datafile);
 	          retcode = fscanf(datafile, " MaxTasks:%d RunningTasks:%d SleepingTasks:%d StoppedTasks:%d ZombieTasks:%d", 
 		                   &Task1, &Task2, &Task3, &Task4, &Task5);
@@ -1834,11 +1834,11 @@ static void parse_args (char **args)
    		        AvgMaxTasks,AvgRunningTasks,AvgSleepingTasks,AvgStoppedTasks,AvgZombieTasks);
 	       printf(" Cpu(s) : User:%.2f\%\tSystem:%.2f\%\t\tNice:%.2f\%\t\tIdle:%.2f\%\t\tIO-wait:%.2f\%\n\n",
    			AvgCPUuser,AvgCPUsys,AvgCPUnice,AvgCPUidle,AvgCPUiowait);
-	       printf(" TotalMem:%dk\tUsedMem:%.0Lfk\t\tFreeMem:%.0Lfk\t\tBuffers:%.0Lfk\n",
+	       printf(" TotalMem:%dMb\t\tUsedMem:%.0LfMb\t\tFreeMem:%.0LfMb\t\tBuffers:%.0LfMb\n",
    			AvgMem1,AvgMem2,AvgMem3,AvgMem4);
-	       printf(" TotalSwap:%dk\tUsedSwap:%.0Lfk\t\tFreeSwap:%.0Lfk\tCached:%.0Lfk\n",
+	       printf(" TotalSwap:%dMb\tUsedSwap:%.0LfMb\t\tFreeSwap:%.0LfMb\t\tCached:%.0LfMb\n",
    		        AvgSwap1,AvgSwap2,AvgSwap3,AvgSwap4);
-	       printf(" UsedMem Percentage:%.2Lf\%\tUsedSwap Percentage:%.2Lf\%\n\n",UsedMemPercentage,UsedSwapPercentage);
+	       printf("\n UsedMem Percentage:%.2Lf\%\tUsedSwap Percentage:%.2Lf\%\n\n",UsedMemPercentage,UsedSwapPercentage);
 	       printf("A total of [%d] entries processed from %s.\n\n",loopcntr,cp);
                exit(0);               
 	       break;
