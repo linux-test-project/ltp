@@ -31,7 +31,7 @@ all: ../libsctp_test.a
 	$(AR) -rv $@ $(OBJS)
 
 $(OBJS):
-	$(CC) -c $(SRCS) $(LTP_CFLAGS)
+	$(CC) -c $(SRCS) $(CFLAGS)
 
 install:
 

@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS += -Wall
 LOADLIBES = -lm
 
 BIN = gensqrt genpow genceil genfabs genfloor genfmod genpower

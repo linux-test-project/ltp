@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS += -Wall
 LOADLIBES = -lm 
 BIN = genj0 genj1 geny0 geny1 genlgamma genbessel
 REF = gamma_inp.ref  gamma_out.ref  gamma_sign.ref  j0_inp.ref  j1_inp.ref  y0_inp.ref  y1_inp.ref

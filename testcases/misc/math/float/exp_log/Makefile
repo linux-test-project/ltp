@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS += -Wall
 LOADLIBES = -lm
 
 BIN = genexp genlog genlog10 genfrexp genldexp genhypot genmodf genexp_log

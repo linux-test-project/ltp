@@ -1,4 +1,4 @@
-CFLAGS := -Wall -I ../../../../../include -I ../include
+CFLAGS += -Wall -I ../../../../../include -I ../include
 LDLIBS := -L ../../../../../lib -lpthread -lltp
 
 SRCS=$(wildcard *.c)

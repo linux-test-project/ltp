@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS += -Wall
 LOADLIBES = -lm
 
 BIN = gensinh gencosh gentanh geniperb

@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS += -Wall
 LOADLIBES = -lm
 
 BIN = gensin gencos gentan genatan genatan2 genacos genasin gentrigo

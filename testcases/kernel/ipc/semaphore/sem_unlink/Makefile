@@ -1,4 +1,4 @@
-CFLAGS := -Wall -I ../../../../../include -I ../include -D_GNU_SOURCE
+CFLAGS += -Wall -I ../../../../../include -I ../include -D_GNU_SOURCE
 LDLIBS := -L ../../../../../lib -lltp -lpthread
 
 SRCS=$(wildcard *.c)
