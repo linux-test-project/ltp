@@ -364,7 +364,10 @@ void
 setup6(void)
 {
 	setup4();
+/*
 	controllen = control->cmsg_len = sizeof(struct cmsghdr) - 4;
+*/
+	controllen = control->cmsg_len = 0;
 }
 
 void
