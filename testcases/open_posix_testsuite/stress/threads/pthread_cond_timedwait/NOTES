@@ -1,0 +1,52 @@
+This file contains various information.
+
+Please refer to http://nptl.bullopensource.org/phpBB/ for general information
+and questions. Feel free to post your questions there.
+
+----------------------------------- COMPILATION -----------------------------------
+We are doing our best to ensure the test case will be very portable.
+Please report any problems on the forum (see on top of this file)
+
+
+ * Flags
+You may want to add -DVERBOSE=2 to have verbose tests,
+or -DVERBOSE=0 to have silent tests (for batchs for example).
+
+You may add -DWITHOUT_XOPEN to disable the XSI features
+from the tests. Some of the tests won't work with this option.
+
+You may want to add -DSCALABILITY_FACTOR=X, where X is an integer,
+to change the stress programs load (default is 1).
+
+You may want to add -DPLOT_OUTPUT if you want data for plotting.
+
+ * Commands
+Compilation under linux:
+gcc -o <bin> -lpthread -lm -lrt <source>
+   where <bin> is the executable you want to build and <source> is the source file.
+
+ * Execution
+This case will possiblly run for half an hour.
+If you want diagrams showing the result:
+a. Add -DPLOT_OUTPUT flags when compiling
+b. ./s-c > data
+c. ./do-plot data
+This script will use gnuplot to create a png file named scalable.png.
+
+(If your gnuplot does not support png terminal, just remove 
+set term png
+set output "scalable.png"
+from the do-plot script).
+
+Stress tests will run until they are killed with SIGUSR1 (or they
+fail). Currently, I do 
+$> ./stress &
+and then after a while
+$> kill -USR1 <pid> 
+or
+$> for PR in `ps o pid --no-headers -Cstress`; \
+   do echo Sending SIGUSR1 to pid $PR...; \
+       kill -USR1 $PR; \
+   done;
+Some cases will keep on executing ~ 1 minute after they receive the
+signal; it is normal (time for stopping all threads).

@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" files="pthread_mutex_init/stress.c" tag="pt:THR">
+Mutex initialization and destruction duration does not depend on the number of mutex in use in the system -- for any type of mutex. 
+  </assertion>
+  <assertion id="2" files="pthread_mutex_init/s-c.c" tag="pt:THR">
+Mutex initialization then destruction does not consume any system resource (memory leak, ...) -- for any type of mutex. 
+  </assertion>
+  <assertion id="3" files="pthread_mutex_lock/stress.c" tag="pt:THR">
+With a large amount of threads contending for some mutexes (of several types) with pthread_mutex_lock, pthread_mutex_trylock and pthread_mutex_timedlock, there is never more than one thread owning the same mutex at the same time. 
+  </assertion>
+  <assertion id="4" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
+There is no limit on the number of threads waiting to own the same mutex. 
+  </assertion>
+  <assertion id="5" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
+There is no limit on the number of different mutex having threads contending, at the same time. 
+  </assertion>
+  <assertion id="6" files="pthread_cond_init/s-c.c" tag="pt:THR">
+Condvar initialization then destruction does not consume any system resource -- for any kind of condvar. 
+  </assertion>
+  <assertion id="7" files="pthread_cond_init/stress.c" tag="pt:THR">
+Condvar Initialization and destruction duration does not depend on the number of condvars in use in the system -- for any kind of condvar. 
+  </assertion>
+  <assertion id="8" files="pthread_cond_timedwait/s-c.c" tag="pt:THR">
+Latency between pthread_cond_timedwait timeout parameter and function actual return does not depend on the number of threads waiting on the condvar -- whatever kind of condvar.
+  </assertion>
+</assertions>
