@@ -1,5 +1,8 @@
 all: bal
 
+install:
+	./do_nothing.sh
+
 create:
 	./create.sh
 
