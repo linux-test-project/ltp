@@ -4,6 +4,7 @@ all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
+	mkdir -p bin
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
