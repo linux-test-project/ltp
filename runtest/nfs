@@ -10,6 +10,6 @@ nfslock01 export VERSION; export TCbin=$LTPROOT/testcases/network/nfs/nfslock01;
 nfsstress export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
 
 nfsstat01 export VERSION; export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
-fsx-linux export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/fsx-linux; fsx.sh
+nfsx-linux export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/fsx-linux; fsx.sh
 
 
