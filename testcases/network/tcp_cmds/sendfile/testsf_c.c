@@ -64,7 +64,7 @@ char *argv[];
   sp = strcat(sp, "=");
   sp = strcat(sp, argv[4]); /* requested file */
 
-  tst_resm(TBROK, "sp=%s\n",sp);
+  tst_resm(TINFO, "sp=%s\n",sp);
   /* initialize server info to make the connection */
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = inet_addr(argv[1]);
@@ -84,7 +84,8 @@ char *argv[];
 	exit(1);
   }
 
-tst_resm(TBROK, "client write %d bytes to server with contents %s\n", nbyte, rbuf);
+  tst_resm(TINFO, "client write %d bytes to server with contents %s\n",
+	   nbyte, rbuf);
 
   nlen = 0; /* init size of info received */
   rbuf[0] = '\0';

@@ -142,7 +142,7 @@ char *argv[];
 	/* the file name */
 	lp++;
 
-        tst_resm(TBROK, "The file to send is %s\n", lp);
+        tst_resm(TINFO, "The file to send is %s\n", lp);
   	/* open requested file to send */
 	if ((fd = open(lp, O_RDONLY)) < 0) {
 	  tst_resm(TBROK, "file open error = %d\n", errno);
