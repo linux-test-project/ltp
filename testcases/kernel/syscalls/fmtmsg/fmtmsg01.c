@@ -68,12 +68,12 @@ void setup();
 
 char ch;
 char buf[80];
-char * str1 = "SPIE:fmtmsg: INFO: SPIE fmtmsg() test1 message, NOT an error";
-char * str2 = "TO FIX: This is correct output, no action needed  SPIE:msg:001";
-char * str3 = "SPIE:fmtmsg: SPIE_TEST: SPIE fmtmsg() test2 message, NOT an error";
-char * str4 = "TO FIX: This is correct output, no action needed  SPIE:msg:002";
+char * str1 = "LTP:fmtmsg: INFO: LTP fmtmsg() test1 message, NOT an error";
+char * str2 = "TO FIX: This is correct output, no action needed  LTP:msg:001";
+char * str3 = "LTP:fmtmsg: LTP_TEST: LTP fmtmsg() test2 message, NOT an error";
+char * str4 = "TO FIX: This is correct output, no action needed  LTP:msg:002";
 
-clearbuf()
+void clearbuf()
 {
 	int i;
 	for (i=0; i<80; i++)
@@ -81,22 +81,22 @@ clearbuf()
 }
 
 /*--------------------------------------------------------------*/
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int fd, ret_val;
 	FILE *fp;
 
 	setup();		/* temp file is now open */
 /*--------------------------------------------------------------*/
-block0: blenter();
+ blenter();
 
 	/* Check that system SEV_LEVEL output is correct */
 
 	close(2);			/* redirect stderr to file */
 	fd = creat( "fmtfile", 0644);
-	ret_val = fmtmsg(MM_PRINT|MM_SOFT,"SPIE:fmtmsg", MM_INFO,
-			"SPIE fmtmsg() test1 message, NOT an error",
-			"This is correct output, no action needed","SPIE:msg:001");
+	ret_val = fmtmsg(MM_PRINT|MM_SOFT,"LTP:fmtmsg", MM_INFO,
+			"LTP fmtmsg() test1 message, NOT an error",
+			"This is correct output, no action needed","LTP:msg:001");
 	close(fd);
 
 	if (ret_val != 0) {
@@ -132,7 +132,7 @@ block0: blenter();
 
 	blexit();
 /*--------------------------------------------------------------*/
-block1: blenter();
+ blenter();
 
 	/* Check that a system defined SEV_LEVEL cannot get redefined */
 
@@ -145,12 +145,12 @@ block1: blenter();
 
 	blexit();
 /*--------------------------------------------------------------*/
-block2: blenter();
+ blenter();
 
 	/* Check that we can define our own */
 	/* SEV_LEVEL and output is correct  */
 
-	ret_val = addseverity(5, "SPIE_TEST");
+	ret_val = addseverity(5, "LTP_TEST");
 	if (ret_val != MM_OK) {
 		fprintf(temp, "addseverity returned %d, expected MM_OK\n",
 		               ret_val);
@@ -159,9 +159,9 @@ block2: blenter();
 
 	close(2);		/* redirect stderr to file */
 	fd = creat( "fmtfile", 0644);
-	ret_val = fmtmsg(MM_PRINT|MM_HARD|MM_OPSYS,"SPIE:fmtmsg", 5,
-			"SPIE fmtmsg() test2 message, NOT an error",
-			"This is correct output, no action needed","SPIE:msg:002");
+	ret_val = fmtmsg(MM_PRINT|MM_HARD|MM_OPSYS,"LTP:fmtmsg", 5,
+			"LTP fmtmsg() test2 message, NOT an error",
+			"This is correct output, no action needed","LTP:msg:002");
 	close(fd);
 
 	if (ret_val != 0) {
@@ -199,13 +199,13 @@ block2: blenter();
 
 	blexit();
 /*--------------------------------------------------------------*/
-block3: blenter();
+ blenter();
 
 	 /* Test result of writing to /dev/console */
 
-	ret_val = fmtmsg(MM_CONSOLE|MM_HARD|MM_OPSYS,"SPIE:fmtmsg", 5,
-			"SPIE fmtmsg() test3 message, NOT an error",
-			"This is correct output, no action needed","SPIE:msg:003");
+	ret_val = fmtmsg(MM_CONSOLE|MM_HARD|MM_OPSYS,"LTP:fmtmsg", 5,
+			"LTP fmtmsg() test3 message, NOT an error",
+			"This is correct output, no action needed","LTP:msg:003");
 	if (ret_val != MM_OK) {
 		fprintf(temp, "fmtmsg returned %d, expected MM_OK\n", ret_val);
 		fprintf(temp, "failed to write to console\n\n");
@@ -217,6 +217,7 @@ block3: blenter();
 /* Clean up any files created by test before call to anyfail.   */
 
 	anyfail();      /* THIS CALL DOES NOT RETURN - EXITS!!  */
+	return(0);
 }
 /*--------------------------------------------------------------*/
 
@@ -228,6 +229,7 @@ int anyfail()
   (local_flag == FAILED)? tst_resm(TFAIL, "Test failed\n"): tst_resm(TPASS, "Test passed\n");
   tst_rmdir();
   tst_exit();
+  return(0);
 }
 
 
