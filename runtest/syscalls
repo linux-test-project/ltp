@@ -505,7 +505,7 @@ setregid04 setregid04
 
 setresuid01 setresuid01
 setresuid02 setresuid02
-#setresuid03 setresuid03
+setresuid03 setresuid03
 
 setreuid01 setreuid01
 setreuid02 setreuid02
