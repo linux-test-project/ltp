@@ -277,8 +277,9 @@ getuid01 getuid01
 getuid02 getuid02
 getuid03 getuid03
 
-ioctl01 ioctl01 -D /dev/ttyS0
-ioctl02 ioctl02 -D /dev/ttyS0
+#Needs tty device.
+#ioctl01 ioctl01 -D /dev/tty0
+#ioctl02 ioctl02 -D /dev/tty0
 
 ioperm01 ioperm01
 ioperm02 ioperm02
