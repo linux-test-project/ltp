@@ -60,6 +60,8 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	05/2004 Changed USEC_PRECISION from 100 to 2000 to get around glibc failure	
+ *		that's years old.
  *
  * RESTRICTIONS:
  *  None.
@@ -98,7 +100,7 @@ void sig_handler();		/* signal catching function */
  * the "rem" field would never change without the increased
  * usec precision in the -aa tree.
  */
- #define USEC_PRECISION 100 
+ #define USEC_PRECISION 2000  /* Originally set at 100 max but this compiler bug has been around for years. */
 
 int
 main(int ac, char **av)
