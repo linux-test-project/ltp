@@ -1,0 +1,29 @@
+This case tests digsig, available from http://www.sf.net/projects/disec.
+You may install digsig by hand, or automatically install the latest
+version using builddigsig.sh.
+
+Currently there are two tests:
+	1. Test for exclusive mmap(execute)+open(write) access.
+	2. Test for which bytes can be modified in a signed executable.
+
+These tests require
+	1. /usr/local/bin/bsign
+	2. A 2.6 kernel
+		a. With LSM enabled
+			(CONFIG_SECURITY)
+		b. With no other security modules loaded
+			boot with append="selinux=0 capability.disable=1"
+
+Steps to run tests:
+
+	1. Download and build digsig:
+		sh ./builddigsig.sh
+	2. Compile tests:
+		make all
+	3. Run the tests
+		sh ./test.sh
+
+The results will be in:
+	twiddlebit/digsigoutput
+	twiddlebit/bsignoutput
+	writeexec/weoutput
