@@ -54,6 +54,9 @@
  * Dec 16 2002 - Modified - Code to get the test number, gets environment
  *               variable TST_COUNT and initializes Tst_count.
  * Dec 16 2002 - Documentation and comment changes.
+ * Feb 11 2003 - Tst_count was set to -1 during init or setup in the script.
+ *               this was causing tst_resm to issue a warning message. 
+ *               This bug is now fixed.
  * 
  */
 
@@ -168,7 +171,8 @@ main( int argc,
     else
     {
         TST_TOTAL = atoi(tst_total);
-        Tst_count = atoi(tst_count) - 1;
+        if ((Tst_count = atoi(tst_count)) > 0) 
+			Tst_count--;
 
         if (strcmp(TCID, " ") == 0)
         {
