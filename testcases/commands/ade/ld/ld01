@@ -34,14 +34,14 @@ $trace_logic
 
 do_cleanup()
 {
- rm -rf $TCtmp/errmsg.out
- rm -rf $TCtmp/errmsg.exp
- rm -rf $TCtmp/test.lib
+ rm -rf $TCtmp
+ rm -rf $TCtmp
+ rm -rf $TCtmp
 }
 
 res=0
 TCdat=${TCdat:-`pwd`}
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/ld-$$}
 
 #ASSERTION 1 
 #Test for graceful failure when ld can't find a fileTest calling ld directly
