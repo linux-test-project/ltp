@@ -19,12 +19,12 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-INCLUDES = -I../../../../include -I../include -I../testlib
-LIBS = -L../../../../lib -L../lib -L../testlib
+INCLUDES += -I../../../../include -I../include -I../testlib
+LIBS += -L../../../../lib -L../lib -L../testlib
 
-CFLAGS = -g $(INCLUDES) -DLTP
+CFLAGS += -g $(INCLUDES) -DLTP
 
-LOADLIBES = $(LIBS) -lltp -lsctp -lsctputil -lpthread
+LOADLIBES += $(LIBS) -lltp -lsctp -lsctputil -lpthread
 
 V6FLAGS = -DTEST_V6=1 $(CFLAGS)
 

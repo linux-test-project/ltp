@@ -21,11 +21,11 @@
 # description	: make(1) description file to build a library for the 	#
 #		  common routines in the sctp tests.			#
 #########################################################################
-INCLUDES=-I../../../../include -I../include -I.
-LIBS=-L../../../../lib -L../lib
+INCLUDES+=-I../../../../include -I../include -I.
+LIBS+=-L../../../../lib -L../lib
 
-CFLAGS = -g $(INCLUDES) -DLTP
-LOADLIBES = $(LIBS) -lltp -lsctp
+CFLAGS += -g $(INCLUDES) -DLTP
+LOADLIBES += $(LIBS) -lltp -lsctp
 SRCS=sctputil.c
 OBJS=$(SRCS:.c=.o)
 MAINS=libsctputil.a

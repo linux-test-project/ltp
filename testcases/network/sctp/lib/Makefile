@@ -21,9 +21,9 @@
 # description	: make(1) description file to build SCTP library        #
 #		                                                        # 
 #########################################################################
-INCLUDES=-I../include
+INCLUDES+=-I../include
 
-CFLAGS = -g $(INCLUDES)
+CFLAGS += -g $(INCLUDES)
 SRCS=addrs.c bindx.c opt_info.c peeloff.c recvmsg.c sendmsg.c
 OBJS=$(SRCS:.c=.o)
 MAINS=libsctp.a
