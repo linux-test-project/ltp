@@ -140,9 +140,11 @@ void do_timedwait(pthread_cond_t* cond, pthread_mutex_t* mutex,
 
     call_mutex_lock(mutex, buf, buf_len);
     if ((ret = pthread_cond_timedwait(cond, mutex, &ts)) != ETIMEDOUT) {
+#if DEBUG
 	tst_resm(TINFO, "Loop %d of 1000000: pthread_cond_timedwait() didn't timeout",i);
 	tst_resm(TINFO, "You may want to try reducing the value of NSECS_TO_WAIT (currently=%d)",
 		NSECS_TO_WAIT);
+#endif
     }
     call_mutex_unlock(mutex, buf, buf_len);
 
