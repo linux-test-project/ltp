@@ -41,6 +41,10 @@
 /*              Apr  - 16 - 2003 Modified - replaced tempnam() use with       */
 /*                               mkstemp(). -Robbie Williamson                */
 /*                               email:robbiew@us.ibm.com                     */
+/*                                                                            */
+/*              May  - 12 - 2003 Modified - remove the really large files     */
+/*                               when we are done with the test - Paul Larson */
+/*                               email:plars@linuxtestproject.org             */
 /* File:	mmap3.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -114,6 +118,7 @@ mkfile(int  *size) 		/* size of the file to be generated in GB     */
         perror("mkfile(): mkstemp()");
 	return -1;
     }
+    unlink(template);
 
     srand(time(NULL)%100);
     *size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4069;

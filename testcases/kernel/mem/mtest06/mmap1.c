@@ -58,6 +58,10 @@
 /*              Apr  - 16 - 2003 Modified - replaced tempnam() use with       */
 /*                               mkstemp(). -Robbie Williamson                */
 /*                               email:robbiew@us.ibm.com                     */
+/*                                                                            */
+/*              May  - 12 - 2003 Modified - removed the huge files when       */
+/*                               we are done with the test - Paul Larson      */
+/*                               email:plars@linuxtestproject.org             */
 /*								              */
 /* File: 	mmap1.c							      */
 /*									      */
