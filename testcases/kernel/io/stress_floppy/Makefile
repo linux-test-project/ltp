@@ -2,6 +2,9 @@ all:
 
 install: generate
 	ln -f stress_floppy ../../../bin
+	ln -f *_file ../../../bin
+	ln -s ../kernel/io/stress_floppy/dumpdir ../../../bin/dumpdir
+
 
 generate:
 	./generate.sh
