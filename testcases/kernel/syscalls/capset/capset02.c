@@ -77,7 +77,7 @@
 #include <pwd.h>
 #include "test.h"
 #include "usctest.h"
-#include <linux/capability.h> 
+#include <sys/capability.h> 
 
 #define INVALID_VERSION 0
 

@@ -75,7 +75,7 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
-#include <linux/capability.h> 
+#include <sys/capability.h> 
 
 #define INVALID_PID 999999
 
