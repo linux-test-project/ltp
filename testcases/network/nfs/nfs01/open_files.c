@@ -35,8 +35,7 @@ char *argv[];
     fork_number = 0;
     for (n=0;  n < n_files; n++) {
 	strcpy(filename, TEMPLATE);
-	mktemp(filename);
-	filedes[n] = open(filename, O_EXCL|O_RDWR|O_CREAT);
+	filedes[n] = mkstemp(filename);
 	if (filedes[n] == -1) {
 	    if (errno != EMFILE)
 		abortx("open() error: file = \"%s\", errno = %d",
