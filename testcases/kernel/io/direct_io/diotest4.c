@@ -78,7 +78,7 @@ char    *valloc();
  *	running read or write with the expected error value (errnum).
 */
 int
-runtest_f(int fd, char *buf, int offset, int count, int errnum, int testnum, char *msg)
+runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, char *msg)
 {
 	int ret;
 	int l_fail = 0;
@@ -120,7 +120,7 @@ runtest_f(int fd, char *buf, int offset, int count, int errnum, int testnum, cha
  * runtest_s: Do read, writes. Verify the they run successfully.
 */
 int
-runtest_s(int fd, char *buf, int offset, int count, int testnum, char *msg)
+runtest_s(int fd, char *buf, int   offset, int count, int testnum, char *msg)
 {
 	int ret;
 	int l_fail = 0;
@@ -167,7 +167,8 @@ main(int argc, char *argv[])
 {
 	int	fblocks = 1;		/* Iterations. Default 1 */
         int     bufsize = BUFSIZE;
-        int     count, ret, offset;
+        int     count, ret; 
+	int     offset;
         int     fd, newfd;
         int     i, l_fail = 0, fail_count = 0, total = 0;
 	int	failed = 0;
@@ -341,7 +342,7 @@ main(int argc, char *argv[])
 
 
 	/* Test-10: read, write to a mmaped file */
-	shm_base = (char *)(((int)sbrk(0) + (pgsz-1)) & ~(pgsz-1));
+  	shm_base = (char *)(((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1));
         if (shm_base == NULL) {
 		fprintf(stderr, "[10] sbrk failed:%s\n", strerror(errno));
                 unlink(filename);
@@ -367,7 +368,7 @@ main(int argc, char *argv[])
 		failed = TRUE;
 		fail_count++;
 	}
-	total++;
+	total++;  
 
 
 	/* Test-11: read, write to an unmaped file with munmap */
@@ -494,7 +495,7 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-		ret = read(fd, (char*)((uint)main & pagemask), count);
+		ret = read(fd, (char*)((ulong)main & pagemask), count);
 		if (ret >= 0 || errno != EFAULT) {   
 			fprintf(stderr,"[15] read to read-only space. returns %d:%s\n",
 				ret, strerror(errno));
@@ -507,7 +508,7 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-		ret = write(fd, (char *)((uint)main & pagemask), count);
+		ret = write(fd, (char *)((ulong)main & pagemask), count);
 		if (ret < 0 ) {
 			fprintf(stderr,"[15] write to read-only space. returns %d:%s\n",
 				ret, strerror(errno));
@@ -524,7 +525,7 @@ main(int argc, char *argv[])
 	/* Test-16: read, write in non-existant space */
 	offset = 4096;
 	count = bufsize;
-	if ((buf1 = (char *) (((int)sbrk(0) + (pgsz-1)) & ~(pgsz-1))) == NULL) {
+	if ((buf1 = (char *) (((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1))) == NULL) {
                 fprintf(stderr,"[20] sbrk:%s\n", strerror(errno));
                 unlink(filename);
                 exit(1);
