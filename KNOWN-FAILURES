@@ -21,13 +21,16 @@ or email your questions to:
   fork07 - ONLY on Himem machines, i.e. >=4GB
   personality02   
   shmdt02 
+  mprotect01
+  msync05
 
  -------------------
-| x86 - 2.4.19-pre2 |
+| x86 - 2.4.19-pre5 |
  -------------------
 
   personality01
-
+  mprotect01
+  msync05
 
  
  ---------------------------
