@@ -1,0 +1,17 @@
+$ORIGIN .
+$TTL 300	; 5 minutes
+example			IN SOA	mname1. . (
+				2          ; serial
+				20         ; refresh (20 seconds)
+				20         ; retry (20 seconds)
+				1814400    ; expire (3 weeks)
+				3600       ; minimum (1 hour)
+				)
+			NS	ns2.example.
+			NS	ns3.example.
+$ORIGIN example.
+a			A	10.1.0.1
+			MX	10 intmail
+intmail			A	10.1.0.2
+ns2			A	10.53.0.2
+ns3			A	10.53.0.3

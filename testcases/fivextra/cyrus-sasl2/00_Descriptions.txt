@@ -1,0 +1,7 @@
+cyrus-sasl2
+
+	Check that cyrus-sasl2 can manage users, domains, passwords, saslauthd.
+     test04: deleting user without specifying domain should not delete user,
+	it does not delete the user , but the return value is 0, we do not
+know whether it is bug . SO WE SKIP original test04.
+

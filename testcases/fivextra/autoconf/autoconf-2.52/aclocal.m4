@@ -1,0 +1,5 @@
+m4_include([m4/init.m4])
+m4_include([m4/missing.m4])
+m4_include([m4/sanity.m4])
+m4_include([m4/atconfig.m4])
+m4_include([m4/m4.m4])

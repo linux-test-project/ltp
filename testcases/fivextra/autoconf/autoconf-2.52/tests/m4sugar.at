@@ -1,0 +1,139 @@
+#							-*- Autoconf -*-
+
+AT_BANNER([M4sugar.])
+
+
+# Order of the tests:
+# - m4_warn
+#
+# - m4_require
+# uses warn/error code.
+#
+# - m4_text_wrap
+
+## --------- ##
+## m4_warn.  ##
+## --------- ##
+
+AT_SETUP([[m4_warn]])
+
+# m4_text_wrap is used to display the help strings.  Also, check that
+# commas are not swallowed.  This can easily happen because of
+# m4-listification.
+
+AT_DATA(configure.ac,
+[[m4_warn([foo],  [foo])
+m4_warn([bar],    [bar])
+m4_warn([syntax], [syntax])
+]])
+
+AT_CHECK([autoconf --autoconf-dir .. -l $at_srcdir -o-],
+         0, [],
+[configure.ac:3: warning: syntax
+])
+
+AT_CHECK([autoconf --autoconf-dir .. -l $at_srcdir -o- -Wall],
+         0, [],
+[configure.ac:1: warning: foo
+configure.ac:2: warning: bar
+configure.ac:3: warning: syntax
+])
+
+AT_CHECK([autoconf --autoconf-dir .. -l $at_srcdir -o- -Wnone,bar],
+         0, [],
+[configure.ac:2: warning: bar
+])
+
+AT_CHECK([autoconf --autoconf-dir .. -l $at_srcdir -o- -Wnone,bar,error],
+         1, [],
+[configure.ac:2: error: bar
+configure.ac:2: the top level
+])
+
+AT_CLEANUP
+
+
+## ----------------------------------- ##
+## m4_require: circular dependencies.  ##
+## ----------------------------------- ##
+
+AT_SETUP([[m4_require: circular dependencies]])
+
+# m4_text_wrap is used to display the help strings.  Also, check that
+# commas are not swallowed.  This can easily happen because of
+# m4-listification.
+
+AT_DATA([configure.ac],
+[[m4_defun([foo],
+[m4_require([bar])])
+
+m4_defun([bar],
+[m4_require([foo])])
+
+m4_defun([baz],
+[m4_require([foo])])
+
+m4_init
+baz
+]])
+
+AT_CHECK_AUTOCONF([], 1, [],
+[[configure.ac:11: error: m4_require: circular dependency of foo
+configure.ac:11: foo is required by...
+configure.ac:5: bar is expanded from...
+configure.ac:11: bar is required by...
+configure.ac:2: foo is expanded from...
+configure.ac:11: foo is required by...
+configure.ac:8: baz is expanded from...
+configure.ac:11: the top level
+]])
+
+AT_CLEANUP
+
+
+## -------------- ##
+## m4_text_wrap.  ##
+## -------------- ##
+
+AT_SETUP([[m4_text_wrap]])
+
+# m4_text_wrap is used to display the help strings.  Also, check that
+# commas are not swallowed.  This can easily happen because of
+# m4-listification.
+
+AT_DATA([configure.ac],
+[[AC_PLAIN_SCRIPT()dnl
+m4_text_wrap([Short string */], [   ], [/* ], 20)
+
+m4_text_wrap([Much longer string */], [   ], [/* ], 20)
+
+m4_text_wrap([Short doc.], [          ], [  --short ], 30)
+
+m4_text_wrap([Short doc.], [          ], [  --too-wide], 30)
+
+m4_text_wrap([Super long documentation.], [          ], [  --too-wide], 30)
+
+m4_text_wrap([First, second  , third, [,quoted]])
+]])
+
+AT_DATA(expout,
+[[/* Short string */
+
+/* Much longer
+   string */
+
+  --short Short doc.
+
+  --too-wide
+          Short doc.
+
+  --too-wide
+          Super long
+          documentation.
+
+First, second , third, [,quoted]
+]])
+
+AT_CHECK_AUTOCONF([-o-], 0, [expout])
+
+AT_CLEANUP

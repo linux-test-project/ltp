@@ -1,0 +1,15 @@
+
+
+$TTL 300
+. 			IN SOA	gson.nominum.com. a.root.servers.nil. (
+				2000042100   	; serial
+				600         	; refresh
+				600         	; retry
+				1200    	; expire
+				600       	; minimum
+				)
+.			NS	a.root-servers.nil.
+a.root-servers.nil.	A	10.53.0.1
+
+example.		NS	ns2.example.
+ns2.example.		A	10.53.0.2

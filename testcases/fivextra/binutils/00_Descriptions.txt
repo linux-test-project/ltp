@@ -1,0 +1,21 @@
+  
+   
+   CSDL binutils testsuite by fengmt@cn.ibm.com
+
+   
+    How to use this case 
+
+    1.   run "./binutils.sh"    
+
+
+
+    NOTE:
+
+       1. Command "gcc" is needed by this testsuite as this is a MCP DevKit package. 
+
+       2. Command "as" is tested in every function, 
+	  command "ld" is used by command "gcc",
+	  and command "gprof" is tested when run glibc_profile's testcase.
+         
+
+        

@@ -1,0 +1,57 @@
+							-*- outline -*-
+
+This directory holds the M4sugar, M4sh and Autoconf test suites.
+
+
+Here are a few rules on how to write tests.
+
+* Order of the tests
+
+It is extremely important to pay attention to the order of the tests.
+There are basically two philosophies: (i) test earlier the most
+critical features (hence hurried users will at least check those), or
+(ii) test earlier the primitives.
+
+For having tried both, I definitely recommend (ii).  In practice users
+will run the whole test suite even if it's long.  And if they don't,
+there will be enough other users who will do the job.
+
+But also in practice some problems in the core of project can be
+responsible for an incredible number of failures.  Then the problems
+at the origin will be hidden by the consequences.  If dependencies are
+properly ordered in the test suite (test features which depend upon
+other features *after* having checked the latter), basically you'll
+just have to pay attention to the first failures.  BTW, it also makes
+`./testsuite -e' much more useful.
+
+
+* Write tests!
+
+Don't let you be bitten three times by the same dog!  When you spent a
+significant amount of time tracking the failure of feature in some
+more primitive problem, immediately write a test for the latter.
+
+If you track down several bugs down to the same origin, write a test
+especially for it.
+
+Of course in both cases, more primitive tests will be run beforehand.
+Write your test and have it failed before your fixing, and succeeding
+after.  This usually means having at hand two copies of the source
+tree, one running the test suite to have it fail, and the other to
+have the same testsuite succeed.
+
+
+* Autoconf
+
+** Use of `exit'
+Don't directly `exit 1' or `exit 77', rather use `AC_MSG_ERROR'.
+First of all because when we have to read the test suite logs we are
+happy to know why `configure' exited thanks to the error
+message. Secondly, because `configure' traps the `exit' and pretty
+many shells fail to set $? to 77 when trapping `exit 77'.  This
+results in the test suite not being able to check the exit status.
+
+** AC_MSG_ERROR
+Of course, since macro names are forbidden in `configure', if you
+really want to mention the macro name, you'll have to do without
+including `A?_' in the output.

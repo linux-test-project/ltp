@@ -1,0 +1,3 @@
+cyrus-sasl
+
+	Check that cyrus-sasl can manage users, domains, passwords.

@@ -1,0 +1,55 @@
+# Validation suite for Autoconf                           -*- Autoconf -*-
+# Copyright 2000 Free Software Foundation, Inc.
+
+# Still many parts of `autoconf' are not exercised by the test suite.  A few
+# FIXME's, below, are used to list tests that we would need.  Do you feel
+# like contributing new tests?  If you do, you may tell your intent to
+# `autoconf@gnu.org', so no two people work at the same thing.
+
+AT_INIT([autoconf])
+
+AT_BANNER(
+[Some tests might be skipped if you don't have the software which the
+macros check (e.g., a Fortran compiler).])
+
+# Run the tests from the lowest level to the highest level, and from
+# the most selective to the easiest.
+
+# The executables.
+# Even the tests on M4sugar and M4sh use `autoconf', so check it first.
+m4_include([tools.at])
+
+# M4sugar.
+m4_include([m4sugar.at])
+
+# M4sh.m4.
+m4_include([m4sh.at])
+
+# Autoconf base macros.
+m4_include([base.at])
+
+# Testing config.status
+# ---------------------
+# Actually should be named config.status.at but I fear problems with
+# the name.  Does no `checking...' at all, but exercises only code
+# which following section use too.  Hence, run it first.
+m4_include([torture.at])
+
+# Checking AC_PROG_CC, AC_COMPILE_IFELSE etc.
+m4_include([compile.at])
+
+# Checking that AC_CHECK_FOO macros work properly.
+m4_include([semantics.at])
+
+# Blind testing the macros.
+# Include them as is suggested for a `configure.ac', as looking for
+# for types requires looking for headers etc.
+m4_include([acgeneral.at])
+m4_include([acspecific.at])
+m4_include([aclang.at])
+m4_include([acheaders.at])
+m4_include([actypes.at])
+m4_include([acfunctions.at])
+
+# Compatibility with foreign tools.
+m4_include([foreign.at])

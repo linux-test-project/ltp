@@ -1,0 +1,3 @@
+ash
+
+   See that the ash shell can execute.
