@@ -229,6 +229,7 @@ then
 	echo " "
 	echo "###############################################################"
 	echo " "
+	echo " Done executing testcases."
 	echo " result log is in the $LTPROOT/results directory"
 	echo " "
 	echo "###############################################################"
