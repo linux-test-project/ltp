@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: fork05.c,v 1.2 2002/06/10 15:02:59 robbiew Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -88,12 +88,23 @@
  *
  *********************************************************/
 #include <stdio.h>
-
-#if defined(linux) && defined(__i386__)
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include "test.h"
+#include "usctest.h"
+
+char *TCID="fork05";
+extern int Tst_count;
+
+/* list of environment variables to test */
+char *environ_list[] = {"TERM","NoTSetzWq","TESTPROG"};
+#define NUMBER_OF_ENVIRON sizeof(environ_list)/sizeof(char*)
+int TST_TOTAL=NUMBER_OF_ENVIRON;                /* Total number of test cases. */
+
+
+#if defined(linux) && defined(__i386__)
 
 struct modify_ldt_ldt_s
 {
@@ -147,10 +158,10 @@ main ()
   asm ("movw %w0, %%gs" : : "q" (7));
 
   asm ("movl %%gs:0, %0" : "=r" (lo));
-  printf ("a = %d\n", lo);
+  tst_resm(TINFO,"a = %d", lo);
 
   asm ("pushl %%gs; popl %0" : "=q" (lo));
-  printf ("%%gs = %#06hx\n", lo);
+  tst_resm(TINFO,"%%gs = %#06hx", lo);
 
   asm ("movl %0, %%gs:0" : : "r" (99));
 
@@ -158,11 +169,14 @@ main ()
 
   if (pid == 0) {
       asm ("pushl %%gs; popl %0" : "=q" (lo));
-      printf ("%%gs = %#06hx\n", lo);
+      tst_resm(TINFO,"%%gs = %#06hx", lo);
 
       asm ("movl %%gs:0, %0" : "=r" (lo));
-      printf ("a = %d\n", lo);
+      tst_resm(TINFO,"a = %d", lo);
 
+      if (lo != 99)
+         tst_resm(TFAIL, "Test failed");
+	 else tst_resm(TPASS, "Test passed");
       exit (lo != 99);
   } else {
       waitpid (pid, &res, 0);
@@ -176,7 +190,7 @@ main ()
 int
 main()
 {
-  printf("%%gs test only for ix86\n");
+  tst_resm(TINFO, "%%gs test only for ix86");
 
   /*
    * should be successful on all non-ix86 platforms.
