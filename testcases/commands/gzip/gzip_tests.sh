@@ -63,7 +63,7 @@ init()
 	RC2=0
 	which gunzip &> $LTPTMP/tst_gzip.err || RC1=$?
 	which gunzip 2>&1 1>$LTPTMP/tst_gzip.err || RC2=$?
-	if [[ $RC1 -ne 0 || $RC2 -ne 0 ]]
+	if [ $RC1 -ne 0 || $RC2 -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
 			"Test #1: gzip/gunzip command does not exist. Reason:"

@@ -79,7 +79,7 @@ then
         &>$LTPTMP/tst_eject.out || RC1=$?
     grep "cdrom" $LTPTMP/tst_eject.res \
         2>&1 1>>$LTPTMP/tst_eject.out  || RC2=$?
-    if [[ $RC1 -eq 0 && $RC2 -eq 0 ]]
+    if [ $RC1 -eq 0 ] && [ $RC2 -eq 0 ]
     then 
         $LTPBIN/tst_resm TPASS  "Test #1: eject -d lists the default device"
     else

@@ -168,7 +168,7 @@ else
         "Test #2: No new mail for root. Reason:"
         TFAILCNT=$((TFAILCNT+1))
     else
-        if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+        if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
         then
             $LTPBIN/tst_resm TPASS \
                 "Test #2: Mailer-Deamon reported delivery failure"
@@ -221,7 +221,7 @@ else
         "Test #2: No new mail for root. Reason:"
         TFAILCNT=$((TFAILCNT+1))
     else
-        if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+        if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
         then
             $LTPBIN/tst_resm TPASS \
                 "Test #3: Mailer-Deamon reported delivery failure"
@@ -259,7 +259,7 @@ else
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
     RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
-    if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+    if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
     then
         $LTPBIN/tst_resm TPASS \
             "Test #4: Mail was carbon copied to user mail_test"
@@ -297,7 +297,7 @@ else
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
     RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
-    if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+    if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
     then
         $LTPBIN/tst_resm TPASS \
             "Test #5: Mail was carbon copied to user mail_test"
