@@ -1,5 +1,4 @@
-SUBDIRS = ade cpio cron eject fileutils gzip logrotate mail tar
-#SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v at | grep -v unzip`
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
