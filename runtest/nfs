@@ -4,5 +4,8 @@
 nfs01 export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
 nfs02 export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
 nfslock01 export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
-nfsstress export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress
+
+# This will run 8 threads on 50 directories with 40 files in each.
+nfsstress export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 50 40 8
+
 nfsstat01 export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
