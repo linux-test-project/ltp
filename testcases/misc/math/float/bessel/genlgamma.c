@@ -78,6 +78,7 @@ int create_Result_file()
 		close(fpsi);
 		return 0;
 	}
+	return(0);
 }
 
 
@@ -113,6 +114,7 @@ int create_Data_file()
 		close(fp);
 		return 0;
 	}
+	return(0);
 }
 
 
@@ -149,4 +151,5 @@ int main(int argc, char  *argv[])
 		if (create_Result_file() != 0)
 			printf("problem during %s result file creation\n", argv[0]);
 	}
+	return(0);
 }

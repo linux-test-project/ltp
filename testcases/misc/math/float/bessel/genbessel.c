@@ -61,6 +61,7 @@ int create_file(char *func_name, int NbVal)
 	     	fprintf(stderr, "ERROR %s\n", strerror(errno));
 	     	abort();
 	}
+	return(0);
 } 
 
 

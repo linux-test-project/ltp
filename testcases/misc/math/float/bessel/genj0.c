@@ -71,6 +71,7 @@ int create_Result_file()
 		close(fp);
 		return 0;
 	}
+	return 0;
 }
 
 
@@ -106,40 +107,41 @@ int create_Data_file()
 		close(fp);
 		return 0;
 	}
+	return 0;
 }
 
 
 int main(int argc, char  *argv[])
 {
+  if (argc > 1) 
+  {
+    switch ( atoi(argv[1]) )
+    {
+      case 1:
+      	     if (create_Data_file() == 0)
+	       printf("Data file created\n");
+	     else
+	       printf("problem during %s data file creation\n", argv[0]);
+	     break;
 
-	if (argc > 1) 
-	{
-		switch ( atoi(argv[1]) )
-		{
-		case 1:
-			if (create_Data_file() == 0)
-				printf("Data file created\n");
-			else
-				printf("problem during %s data file creation\n", argv[0]);
-			break;
-
-		case 2:
-			if (create_Result_file() == 0)
-				printf("Result file created\n");
-			else
-				printf("problem during %s result file creation\n", argv[0]);
-			break;
-		default:
-			printf("Bad arglist code for: '%s'\n", argv[0]);
-			return -1;
-			break;
-		}
-	}
-	else
-	{
-		if (create_Data_file() != 0)
-			printf("problem during %s data file creation\n", argv[0]);
-		if (create_Result_file() != 0)
-			printf("problem during %s result file creation\n", argv[0]);
-	}
+      case 2:
+             if (create_Result_file() == 0)
+	       printf("Result file created\n");
+	     else
+	       printf("problem during %s result file creation\n", argv[0]);
+	     break;
+      default:
+             printf("Bad arglist code for: '%s'\n", argv[0]);
+	     return -1;
+	     break;
+    }
+  }
+  else
+  {
+    if (create_Data_file() != 0)
+      printf("problem during %s data file creation\n", argv[0]);
+    if (create_Result_file() != 0)
+      printf("problem during %s result file creation\n", argv[0]);
+  }
+  return(0);
 }
