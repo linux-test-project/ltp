@@ -212,8 +212,8 @@ set_shmat()
 	 * print a message to that effect.
 	 */
 	if (rval == (void *)-1) {
-		tst_resm(TINFO, "shmat() failed - %s", strerror(errno));
-		tst_exit();
+		tst_resm(TBROK, "shmat() failed - %s", strerror(errno));
+		cleanup();
 	}
 
 	return rval;
@@ -266,10 +266,9 @@ stat_setup()
 
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1) {
-				tst_resm(TINFO, "shmdt() failed - %d", errno);
+				tst_resm(TBROK, "shmdt() failed - %d", errno);
 			}
-
-			tst_exit();
+			cleanup();
 
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
