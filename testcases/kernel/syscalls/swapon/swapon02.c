@@ -86,7 +86,6 @@
 #include <sys/stat.h>
 #include <sys/swap.h>
 #include <asm/page.h>
-#include <asm/atomic.h>
 #ifdef OLDER_DISTRO_RELEASE
 #include <linux/swap.h>
 #endif
