@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the ipc(2) semget tests.	  #
 ###########################################################################
-MAINS=semctl01 semctl02 semctl03 semctl05
+MAINS=semctl01 semctl02 semctl03 semctl04 semctl05
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
