@@ -87,9 +87,10 @@ void cleanup();			/* cleanup function for the test */
 int
 main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc,i;			/* loop counters */
 	char *msg;			/* message returned from parse_opts */
 	int gidsetsize = NGROUPS;	/* total groups */
+	int PASS_FLAG = 0;		/* used for checking group array */
 	
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
@@ -135,13 +136,17 @@ main(int ac, char **av)
 				tst_brkm(TFAIL, cleanup, "getgroups() Fails, "
 					 "error=%d", errno);
 			}
-			if (groups_list[0] != user_info->pw_gid) {
-				tst_resm(TFAIL, "Supplimentary gid %d not set "
-					 "for the process", user_info->pw_gid);
-			} else {
+			for (i=0;i<NGROUPS;i++) {
+			  if (groups_list[i] == user_info->pw_gid) {
 				tst_resm(TPASS, "Functionality of setgroups"
 					 "(%d, groups_list) successful",
 					 gidsetsize);
+				PASS_FLAG=1;
+			  } 
+			}
+			if (PASS_FLAG == 0) {
+				tst_resm(TFAIL, "Supplimentary gid %d not set "
+					 "for the process", user_info->pw_gid);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
