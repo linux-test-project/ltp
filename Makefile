@@ -7,6 +7,8 @@ all: libltp.a
 	@$(MAKE) -C tests $@
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
+	@$(MAKE) -C ltctests $@
+	@$(MAKE) -C ltctests install
 
 libltp.a:
 	@$(MAKE) -C lib $@
@@ -17,3 +19,4 @@ clean:
 	@$(MAKE) -C tests $@
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
+	@$(MAKE) -C ltctests $@
