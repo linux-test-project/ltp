@@ -23,9 +23,9 @@
 
 NEEDSPECIAL:=$(shell cat /usr/include/asm/ldt.h | grep user_desc; echo $?)
 ifeq ($(strip $(NEEDSPECIAL)),)
-export CFLAGS+=-I../../../../include -g -Wall
+CFLAGS+=-I../../../../include -g -Wall
 else
-export CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
+CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
 endif
 
 LOADLIBES+=	-L../../../../lib -lltp
