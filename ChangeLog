@@ -1,3 +1,29 @@
+LTP-20040707
+- Added a new test for bind() written by Dan Jones.
+- Jacky Malcles added support for ext3 and some cleanup code.
+- Fixes to fix DMAPI defect
+- Changes for eliminating dmapi.h
+- Applied patch from Gary Williams to change malloc() to calloc() b/c some
+  archs don't like the use of uninitialized memory.
+- Fix typo and change i to a 1 in the bufcmp function in diotest_routines.c
+- Applied patch from Gary Williams that added an optional forth arguement to
+ semctl as a union, not a pointer to pointer, b/c pointer to pointer causes ppc
+ to explode.  Union will automagically interpret the union as a pointer as
+ necessary....now works on multiple archs.
+- Made sure that the shm segment is cleaned up if the shmat() fails.
+- Applied patch from Wu Zhou to correctly cleanup in case of a failure.
+- Added definition for SHM_HUGETLB for cases where this is not defined.
+- Applied patch from Steve Hill and Gary Williams for MIPS.
+- Applied a timing fix to allow the test to run on more architectures.
+- Applied results cleanup patch from Gary Williams.
+- Corrected the logic in the test to use -lepoll or not.
+- Applied PASS message cleanup patch from Gary Williams
+- Fix invalid syntax "if undefined" in modify_ldt tests
+- Applied patch from Gary Williams for personality() tests to initialize
+  PER_LINUX so we can clearly see if the desired changes occur.
+- Updated to Posixtestsuite-1.4.3
+
+
 LTP-20040603
 - Minor corrections to the NUM_PROCS patch
 - Added the ability to pass NUM_PROCS to the -c option for runalltests.sh
