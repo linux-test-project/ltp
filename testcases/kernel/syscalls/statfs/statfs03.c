@@ -50,6 +50,7 @@
 #include <sys/statfs.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
 #include "test.h"
@@ -72,7 +73,7 @@ struct statfs buf;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

@@ -48,8 +48,6 @@
 #include "test.h"
 #include "usctest.h"
 
-static int fd, numb_pipes, numb_fds;
-
 char *TCID = "pipe06";
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -60,7 +58,7 @@ int pipe_ret, pipes[2];
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

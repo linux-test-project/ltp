@@ -81,6 +81,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <pwd.h>
+#include <time.h>
 
 #include "test.h"
 #include "usctest.h"

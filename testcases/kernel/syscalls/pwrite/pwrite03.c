@@ -63,6 +63,9 @@
  * RESTRICTIONS:
  *  None.
  */
+
+#define _XOPEN_SOURCE 500
+
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -92,7 +95,6 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int i;			/* counter to test different test conditions */
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */

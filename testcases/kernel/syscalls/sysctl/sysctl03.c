@@ -47,9 +47,13 @@
  * RESTRICTIONS
  *	Test must be run as root.
  */
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
-#include <linux/sysctl.h>
+#include <unistd.h>
+#include <linux/unistd.h>
+#include <sys/sysctl.h>
 #include <pwd.h>
 #include "test.h"
 #include "usctest.h"
@@ -66,13 +70,13 @@ void cleanup(void);
 
 int exp_enos[] = {EPERM, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
 	char osname[OSNAMESZ];
-	int osnamelth, ret, status;
+	int osnamelth, status;
 	int name[] = { CTL_KERN, KERN_OSTYPE };
 	pid_t pid;
 	struct passwd *ltpuser;
@@ -95,8 +99,7 @@ main(int ac, char **av)
 		strcpy(osname, "Linux"); 
 		osnamelth = SIZE(osname);
 
-test1:
-		TEST(sysctl(name, SIZE(name), 0, 0, osname, &osnamelth));
+		TEST(sysctl(name, SIZE(name), 0, 0, osname, osnamelth));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "sysctl(2) succeeded unexpectedly");
@@ -111,7 +114,6 @@ test1:
 			}
 		}
 
-test2:
 		osnamelth = SIZE(osname);
 		if ((ltpuser = getpwnam("nobody")) == NULL) {
 			tst_brkm(TBROK, cleanup, "getpwnam() failed");
@@ -119,8 +121,8 @@ test2:
 
 		/* set process ID to "ltpuser1" */
 		if (seteuid(ltpuser->pw_uid) == -1) {
-			tst_brkm(TBROK, cleanup, "seteuid() failed,
-				 errno %d", errno);
+			tst_brkm(TBROK, cleanup,
+				 "seteuid() failed, errno %d", errno);
 		}
 
 		if ((pid = fork()) == -1) {
@@ -129,7 +131,7 @@ test2:
 
 		if (pid == 0) {			/* child */
 			TEST(sysctl(name, SIZE(name), 0, 0, osname,
-				   &osnamelth));
+				   osnamelth));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");

@@ -67,6 +67,9 @@
  * RESTRICTIONS:
  *  None.
  */
+
+#define _XOPEN_SOURCE 500
+
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -304,15 +307,17 @@ check_file_contents()
 		/* Seek to specified offset position from beginning */
 		offloc = lseek(fildes, count * K1, SEEK_SET);
 		if (offloc != (count * K1)) {
-			tst_brkm(TBROK, cleanup, "lseek() failed: offloc=%d,
-				 errno=%d", offloc, errno);
+			tst_brkm(TBROK, cleanup,
+				 "lseek() failed: offloc=%d, errno=%d",
+				 offloc, errno);
 		}
 
 		/* Read the data from file into a buffer */
 		nread = read(fildes, read_buf, K1);
 		if (nread != K1) {
-			tst_brkm(TBROK, cleanup, "read() failed: nread=%d,
-				 errno=%d", nread, errno);
+			tst_brkm(TBROK, cleanup,
+				 "read() failed: nread=%d, errno=%d",
+				 nread, errno);
 		}
 
 		/* Compare the read data with the data written using pwrite */

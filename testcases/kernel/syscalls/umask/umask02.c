@@ -46,6 +46,9 @@
  *	None
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include "test.h"
 #include "usctest.h"
@@ -57,7 +60,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

@@ -64,8 +64,10 @@
  */
 
 #include <errno.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -126,7 +128,7 @@ main(int ac, char **av)
 {
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
-	int i, ret;
+	int i;
 
 	/*
 	 * parse standard options

@@ -61,14 +61,10 @@ int exp_enos[] = {ENOENT, 0};
 void cleanup(void);
 void setup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-
-	struct stat statbuf;
-	int fildes;
-	unsigned short filmode;
 
 	/*
 	 * parse standard command line options

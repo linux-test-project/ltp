@@ -99,7 +99,6 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter variable */
 	
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);

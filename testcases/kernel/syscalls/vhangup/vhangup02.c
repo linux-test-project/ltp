@@ -57,13 +57,13 @@ extern int Tst_count;
 
 int fail;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
 	pid_t pid, pid1;
-	int retval, status;
+	int status;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=

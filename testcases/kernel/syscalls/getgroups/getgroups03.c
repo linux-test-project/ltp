@@ -209,7 +209,7 @@ gid_t *groups;
 
 	setgrent();
 
-	while (grp = getgrent()) {
+	while ((grp = getgrent()) != 0) {
 		for (i = 0; grp->gr_mem[i]; i++) {
 			if (strcmp(grp->gr_mem[i], TESTUSER) == 0) {
 				groups[ngrps++] = grp->gr_gid;

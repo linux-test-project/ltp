@@ -69,6 +69,10 @@ char *TCID= "signal03()";
 int TST_TOTAL;
 extern int Tst_count;
 
+typedef void (*sighandler_t)(int);
+
+sighandler_t	Tret;
+
 int fail = 0;
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
@@ -85,7 +89,7 @@ int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
 #endif
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -111,9 +115,9 @@ main(int ac, char **av)
 		 */
 		for (i=0; i<TST_TOTAL; i++) {
 
-			TEST(signal(siglist[i], SIG_IGN));
+			errno = 0; Tret = signal(siglist[i], SIG_IGN); TEST_ERRNO = errno;
 
-			if (TEST_RETURN == -1) {
+			if (Tret  == SIG_ERR) {
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID,
 					 TEST_ERRNO, strerror(TEST_ERRNO));

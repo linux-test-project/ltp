@@ -62,20 +62,21 @@ extern int Tst_count;
 int intintr;
 int flag;
 void inthandlr();
+void do_exit();
 
 #define	FAILED	1
 #define MAXKIDS	8
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	int kid_count, fork_kid_pid[MAXKIDS];
 	int wait_kid_pid[MAXKIDS], ret_val;
-	int status, nkids, i, j, k, found;
+	int status, i, j, k, found;
 	int fail = 0;
-	int iterations, group1, group2;
+	int group1, group2;
 	int pid;
 
 	/* parse standard options */
@@ -103,7 +104,7 @@ main(int argc, char **argv)
 			 * Set up to catch SIGINT.  The kids will wait till a
 			 * SIGINT has been received before they proceed.
 			 */
-			if ((int)signal(SIGINT, inthandlr) < 0) {
+			if (signal(SIGINT, inthandlr) == SIG_ERR) {
 				tst_resm(TFAIL, "signal SIGINT failed, "
 					"errno = %d", errno);
 				tst_exit();
@@ -277,7 +278,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -287,7 +288,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

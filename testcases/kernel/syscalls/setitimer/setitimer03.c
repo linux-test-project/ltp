@@ -67,7 +67,7 @@ extern int Tst_count;
 
 int exp_enos[] = {EINVAL, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

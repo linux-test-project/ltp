@@ -28,6 +28,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define FILE_MODE        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 

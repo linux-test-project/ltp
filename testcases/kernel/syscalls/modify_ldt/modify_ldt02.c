@@ -165,9 +165,9 @@ create_segment(void *seg, size_t size)
 int read_segment(unsigned int index)
 {
 	int res;
-	__asm__ __volatile__("
-			push    $0x0007;
-			pop     %%fs;
+	__asm__ __volatile__("\n\
+			push    $0x0007;\n\
+			pop     %%fs;\n\
 			movl    %%fs:(%1), %0"
 			: "=r" (res)
 			: "r" (index*sizeof(int)));

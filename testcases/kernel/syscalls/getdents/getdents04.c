@@ -75,7 +75,7 @@ extern int Tst_count;
 
 int exp_enos[] = {ENOTDIR, 0};	/* 0 terminated list of expected errnos */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -84,7 +84,6 @@ main(int ac, char **av)
 	size_t size = 0;
 	char *dir_name = NULL;
 	struct dirent *dirp;
-	pid_t pid;
 	struct stat *sbuf;
 	char *newfile;
 
@@ -217,8 +216,6 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	int rval;
-
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

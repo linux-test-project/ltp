@@ -81,7 +81,7 @@ struct passwd *ltpuser1;
 
 extern struct passwd *my_getpwnam(char *);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

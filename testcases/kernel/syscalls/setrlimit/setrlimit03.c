@@ -56,7 +56,7 @@ void cleanup();
 
 int exp_enos[]={EPERM, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

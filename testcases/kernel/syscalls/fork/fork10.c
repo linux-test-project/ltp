@@ -39,7 +39,10 @@
  * RESTRICTIONS
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
@@ -55,7 +58,7 @@ void cleanup(void);
 char pidbuf[10];
 char fnamebuf[40];
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int status, pid, fildes;
 	char parchar[2];

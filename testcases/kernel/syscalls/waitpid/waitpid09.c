@@ -76,6 +76,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 void inthandlr();
+void do_exit();
 
 
 int main(int argc, char **argv)
@@ -291,7 +292,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -300,7 +301,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

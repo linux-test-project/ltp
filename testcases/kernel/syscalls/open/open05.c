@@ -45,6 +45,8 @@
 #include <pwd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -66,7 +68,7 @@ void cleanup(void);
 void setup(void);
 
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

@@ -76,7 +76,7 @@ const char *TEST_DIR = "alpha";
 
 #define MODES	S_IRWXU
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

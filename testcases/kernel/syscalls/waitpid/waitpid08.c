@@ -54,6 +54,7 @@
 #include <usctest.h>
 
 void inthandlr();
+void do_exit();
 void setup(void);
 void cleanup(void);
 
@@ -71,8 +72,8 @@ int main(int argc, char **argv)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
-	int kid_count, ret_val, status, nkids;
-	int i, j, k, found, iterations;
+	int kid_count, ret_val, status;
+	int i, j, k, found;
 	int group1, group2;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int pid;
@@ -180,8 +181,7 @@ int main(int argc, char **argv)
 								ret_val);
 							tst_resm(TFAIL,
 								"Expected "
-								"SIGSTOP got
-								%d",
+								"SIGSTOP got %d",
 								 WSTOPSIG(status
 									));
 							fail = 1;
@@ -306,7 +306,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -316,7 +316,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

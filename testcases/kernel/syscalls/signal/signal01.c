@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.2 2002/05/14 16:50:07 nstraz Exp $ */
+/* $Id: signal01.c,v 1.3 2002/11/14 16:16:17 plars Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -158,7 +158,6 @@
  *	timings on this system call will be reported.
  * 
 ***********************************************************************************/
-
 #include <signal.h>
 #include <errno.h>  
 #include <unistd.h>
@@ -215,7 +214,9 @@ extern int Tst_count;           /* count of test items completed */
 
 int Pid;		/* Return value from fork.			 */
 
-long Tret;
+typedef void (*sighandler_t)(int);
+
+sighandler_t	Tret;
 
 /***********************************************************************
  *   M A I N
@@ -451,26 +452,26 @@ int tst_count;
 	    exit_val = SIG_IGNORED;
 	    strcpy(string, "signal(SIGKILL, SIG_IGN)");
 
-	    Tret=(long)signal(SIGKILL, SIG_IGN);
+	    Tret=signal(SIGKILL, SIG_IGN);
 	    TEST_ERRNO=errno;
 	}
 	else {
 	    exit_val = SIG_NOT_CAUGHT;
 	    strcpy(string, "signal(SIGKILL, catchsig)");
-	    Tret=(long)signal(SIGKILL, catchsig);
+	    Tret=signal(SIGKILL, catchsig);
 	    TEST_ERRNO=errno;
 	}
 	Ipc_info.timings=tblock;	
 
-	if ( (SIG_PF)Tret == SIG_ERR  ) {
+	if ( Tret == SIG_ERR  ) {
 	    if ( TEST_ERRNO == EINVAL ) {
-	        sprintf(Ipc_info.mesg, "%s ret:%ld SIG_ERR (%ld) as expected",
+	        sprintf(Ipc_info.mesg, "%s ret:%p SIG_ERR (%ld) as expected",
 		    string, Tret, (long)SIG_ERR);
 		Ipc_info.status = PASS_FLAG;
 	    }
 	    else {
 	        sprintf(Ipc_info.mesg,
-		    "%s ret:%ld, errno:%d expected ret:%ld, errno:%d",
+		    "%s ret:%p, errno:%d expected ret:%ld, errno:%d",
 		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 		Ipc_info.status = FAIL_FLAG;
 	    }
@@ -483,7 +484,7 @@ int tst_count;
 	     * be ignored and errno was correct.
 	     */
 	    sprintf(Ipc_info.mesg,
-		"%s ret:%ld, errno:%d expected ret:%ld, errno:%d",
+		"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
 		string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 	    Ipc_info.status = FAIL_FLAG;
 	    write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
@@ -538,23 +539,22 @@ sigdfl_test()
    */
    errno=-4;
 
-   Tret=(long)signal(SIGKILL,SIG_DFL);
-   TEST_RETURN=Tret;
+   Tret=signal(SIGKILL,SIG_DFL);
    TEST_ERRNO=errno;
 
 
-    if ( (SIG_PF)TEST_RETURN == SIG_ERR  ) {
+    if ( Tret == SIG_ERR  ) {
 	if ( STD_FUNCTIONAL_TEST ) {
 	    if ( TEST_ERRNO != EINVAL ) {
 	        sprintf(mesg,
-	            "signal(SIGKILL,SIG_DFL) ret:%d, errno:%d expected ret:-1, errno:%d",
-	            TEST_RETURN, TEST_ERRNO, EINVAL);
+	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
+	            Tret, TEST_ERRNO, EINVAL);
 	        tst_resm(TFAIL, mesg);
 	    }
 	    else {
 	        sprintf(mesg,
-	            "signal(SIGKILL,SIG_DFL) ret:%d, errno:%d as expected.",
-	            TEST_RETURN, TEST_ERRNO);
+	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d as expected.",
+	            Tret, TEST_ERRNO);
 	        tst_resm(TPASS, mesg);
 	    }
 	}
@@ -563,8 +563,8 @@ sigdfl_test()
     }
     else {
 	sprintf(mesg,
-	    "signal(SIGKILL,SIG_DFL) ret:%d, errno:%d expected ret:-1, errno:%d",
-	    TEST_RETURN, TEST_ERRNO, EINVAL);
+	    "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
+	    Tret, TEST_ERRNO, EINVAL);
 	tst_resm(TFAIL, mesg);
     }
 

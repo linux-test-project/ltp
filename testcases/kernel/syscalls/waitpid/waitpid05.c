@@ -72,11 +72,10 @@ extern int Tst_count;
 int flag;
 #define	FAILED	1
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
-	int ret_val = 0;
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 

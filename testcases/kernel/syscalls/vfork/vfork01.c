@@ -76,6 +76,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 

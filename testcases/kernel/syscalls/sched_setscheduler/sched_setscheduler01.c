@@ -85,12 +85,11 @@ struct test_case_t {
 	{1, SCHED_OTHER, (struct sched_param *)-1, EFAULT}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
-	pid_t pid;
 	int i;
 	
 	/* parse standard options */

@@ -102,7 +102,7 @@ struct test_case_t {
         {&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	int i;

@@ -86,7 +86,7 @@ void cleanup();			/* cleanup function for the test */
 int
 main(int ac, char **av)
 {
-	int lc,i;			/* loop counters */
+	int lc;				/* loop counters */
 	int length;			/* length of character string */
 	char *msg;			/* message returned from parse_opts */
 	pid_t cpid;			/* child process id */

@@ -59,6 +59,7 @@ char *TCID = "waitpid06";
 int TST_TOTAL = 1;
 int intintr;
 void inthandlr();
+void do_exit();
 int flag;
 
 extern int Tst_count;
@@ -72,9 +73,9 @@ int main(int argc, char **argv)
 	char *msg;			/* message returned from parse_opts */
 	int kid_count, fork_kid_pid[MAXKIDS];
 	int wait_kid_pid[MAXKIDS], ret_val, status;
-	int nkids, i, j, k, found;
+	int i, j, k, found;
 	int fail = 0;
-	int iterations, group1, group2;
+	int group1, group2;
 	int pid;
 
 	/* parse standard options */
@@ -265,7 +266,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -275,7 +276,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

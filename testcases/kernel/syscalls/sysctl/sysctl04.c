@@ -47,7 +47,9 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <linux/sysctl.h>
+#include <unistd.h>
+#include <linux/unistd.h>
+#include <sys/sysctl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -74,13 +76,14 @@ struct test_case_t {
 	{CTL_MAXNAME + 1, ENOTDIR}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
 	char osname[OSNAMESZ];
-	int i, osnamelth;
+	int i;
+	size_t osnamelth;
 	int name[] = { CTL_KERN, KERN_OSREV };
 
 	/* parse standard options */

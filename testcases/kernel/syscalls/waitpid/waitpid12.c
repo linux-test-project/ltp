@@ -59,18 +59,18 @@ int intintr;
 void setup(void);
 void cleanup(void);
 void inthandlr();
-int wait_for_parent();
-int do_exit();
+void wait_for_parent();
+void do_exit();
 
 int fail;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	int kid_count, ret_val, status;
-	int i, j, k, found, iterations;
+	int i, j, k, found;
 	int group1, group2;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int pid;
@@ -95,7 +95,7 @@ main(int argc, char **argv)
 		 * test to be a session leader and setpgrp fails.
 		 */
 
-		if (pid = fork()) {
+		if ((pid = fork()) != 0) {
 			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
@@ -118,7 +118,7 @@ main(int argc, char **argv)
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
 		 * has been received before they proceed.
 		 */
-		if ((int)signal(SIGINT, inthandlr) == (int)SIG_ERR) {
+		if (signal(SIGINT, inthandlr) == SIG_ERR) {
 			tst_resm(TFAIL, "signal SIGINT failed, errno = %d",
 				 errno);
 			tst_exit();
@@ -343,7 +343,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -353,7 +353,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

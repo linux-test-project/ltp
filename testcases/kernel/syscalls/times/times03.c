@@ -49,6 +49,7 @@
 #include <sys/times.h>
 #include <errno.h>
 #include <wait.h>
+#include <time.h>
 #include <test.h>
 #include <usctest.h>
 
@@ -60,13 +61,13 @@ int exp_enos[]={0};
 void setup(void);
 void cleanup(void);
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	char *msg;			/* message returned from parse_opts */
 
 	struct tms buf1, buf2;
 	time_t start_time, end_time;
-	int i, pid1, pid2, status, fail=0;
+	int i, pid2, status, fail=0;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=

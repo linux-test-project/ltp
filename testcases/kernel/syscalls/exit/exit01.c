@@ -37,7 +37,9 @@
  * RESTRICTIONS
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
@@ -51,7 +53,7 @@ char *TCID = "exit01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid, npid, sig, nsig, exno, nexno, status;
 	int rval = 0;

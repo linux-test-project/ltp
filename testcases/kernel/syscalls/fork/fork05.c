@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.2 2002/06/10 15:02:59 robbiew Exp $ */
+/* $Id: fork05.c,v 1.3 2002/11/14 16:16:15 plars Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -121,15 +121,15 @@ struct modify_ldt_ldt_s
 };
 
 void modify_ldt(int, struct modify_ldt_ldt_s *, int);
-asm("	.type modify_ldt,@function
-modify_ldt:
-	push   %ebx
-	mov    0x10(%esp,1),%edx
-	mov    0xc(%esp,1),%ecx
-	mov    0x8(%esp,1),%ebx
-	mov    $0x7b,%eax
-	int    $0x80
-	pop    %ebx
+asm("	.type modify_ldt,@function \n\
+modify_ldt: \n\
+	push   %ebx \n\
+	mov    0x10(%esp,1),%edx \n\
+	mov    0xc(%esp,1),%ecx \n\
+	mov    0x8(%esp,1),%ebx \n\
+	mov    $0x7b,%eax \n\
+	int    $0x80 \n\
+	pop    %ebx \n\
 	ret");
 
 int a = 42;

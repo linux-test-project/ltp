@@ -54,6 +54,10 @@
  * 	None
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
@@ -72,19 +76,19 @@ void setup(void);
 void cleanup(void);
 void inthandlr();
 void alrmhandlr();
-int wait_for_parent();
-int do_exit();
-int do_compute();
-int do_fork();
-int do_sleep();
-int do_mkdir();
+void wait_for_parent();
+void do_exit();
+void do_compute();
+void do_fork();
+void do_sleep();
+void do_mkdir();
 
 int fail;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int kid_count, ret_val, status, nkids;
-	int i, j, k, found, iterations;
+	int i, j, k, found;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int runtime;			/* time(sec) to run this process */
 	
@@ -401,7 +405,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -411,14 +415,14 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();
 	exit(3);
 }
 
-int
+void
 do_compute()
 {
 	int i;
@@ -437,10 +441,10 @@ do_compute()
 	for (i = 0; i < 100000; i++);
 }
 
-int
+void
 do_fork()
 {
-	int ret_val, fork_pid, wait_pid;
+	int fork_pid, wait_pid;
 	int status, i;
 
 	wait_for_parent();
@@ -480,7 +484,7 @@ do_fork()
 	}
 }
 
-int
+void
 do_sleep()
 {
 	wait_for_parent();
@@ -488,7 +492,7 @@ do_sleep()
 	sleep(1);
 }
 
-int
+void
 do_mkdir()
 {
 	int ret_val;

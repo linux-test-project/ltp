@@ -216,7 +216,6 @@ main(int ac, char **av)
 void
 setup()
 {
-	char DIR_A[PATH_MAX];
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

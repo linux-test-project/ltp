@@ -73,13 +73,11 @@ char *TCID = "fsync03";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int i;
 	char *msg;			/* message returned from parse_opts */
-
-	int retval;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){

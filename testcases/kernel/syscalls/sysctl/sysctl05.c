@@ -47,7 +47,9 @@
  */
 
 #include <stdio.h>
-#include <linux/sysctl.h>
+#include <unistd.h>
+#include <linux/unistd.h>
+#include <sys/sysctl.h>
 #include <linux/version.h>
 #include <errno.h>
 #include "test.h"
@@ -60,7 +62,7 @@ extern int Tst_count;
 #define SIZE(x) sizeof(x)/sizeof(x[0])
 
 char osname[BUFSIZ];
-int osnamelth;
+size_t osnamelth;
 
 int exp_enos[] = {EFAULT, 0};
 
@@ -72,20 +74,20 @@ struct testcases {
 	int name[2];
 	int size;
 	void *oldval;
-	int *oldlen;
+	size_t *oldlen;
 	void *newval;
 	int newlen;
 	int (*cleanup)();
 	int exp_retval;
 	int exp_errno;
 } testcases[] = {
-	{ "Test for EFAULT: invalid oldlen", CTL_KERN, KERN_OSRELEASE,
+	{ "Test for EFAULT: invalid oldlen", { CTL_KERN, KERN_OSRELEASE },
 		2, osname, (void *)-1, NULL, 0, NULL, -1, EFAULT },
-	{ "Test for EFAULT: invalid oldval", CTL_KERN, KERN_VERSION,
+	{ "Test for EFAULT: invalid oldval", { CTL_KERN, KERN_VERSION },
 		2, (void *)-1, &osnamelth, NULL, 0, NULL, -1, EFAULT }
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;

@@ -59,7 +59,7 @@ char *TCID = "waitpid01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

@@ -63,7 +63,7 @@ char user1name[] = "nobody";
 extern struct passwd * my_getpwnam(char *);
 extern int Tst_count;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;

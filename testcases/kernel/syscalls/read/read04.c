@@ -45,6 +45,8 @@
  * RESTRICTIONS
  *	None
  */
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -63,12 +65,11 @@ char    fname[255];
 char    palfa[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
 int fild;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	int n;
 	int rfild;
 	char prbuf[BUFSIZ];
 

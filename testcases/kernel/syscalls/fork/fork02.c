@@ -39,7 +39,8 @@
  * RESTRICTIONS
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "test.h"
@@ -55,7 +56,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid1, pid2, status;
 

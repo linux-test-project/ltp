@@ -100,7 +100,7 @@ struct test_case_t {
 
 char * bad_addr = 0;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i;
 	int lc;				/* loop counter */

@@ -65,12 +65,12 @@ void alarm_handler();
 void setup();
 void cleanup();
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	int cnt, c;
+	int c;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){

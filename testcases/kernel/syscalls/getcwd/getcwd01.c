@@ -81,7 +81,7 @@ struct test_case_t {
 
 int exp_enos[] = {EFAULT, ENOMEM, EINVAL, ERANGE, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i;
 	int lc;				/* loop counter */

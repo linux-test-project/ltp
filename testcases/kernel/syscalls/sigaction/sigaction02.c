@@ -70,10 +70,8 @@ volatile sig_atomic_t testcase_no;
 int
 main(int ac, char **av)
 {
-	int lc;				/* loop counter */
 	char *msg;			/* message got from parse_opts */
 
-	int fail;
 	int ret;
 
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){

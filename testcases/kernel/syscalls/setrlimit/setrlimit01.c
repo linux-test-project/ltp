@@ -46,6 +46,8 @@
  */
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -74,7 +76,7 @@ char *buf = "abcdefghijklmnopqrstuvwxyz";
 char *testbuf;
 pid_t pid;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

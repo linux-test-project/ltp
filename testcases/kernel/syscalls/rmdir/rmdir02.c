@@ -89,6 +89,7 @@ void cleanup();
 int create_longpath();
 void remove_longpath();
 void set_condition();
+void do_file_setup(char *);
 
 #define PERMS		0777
 
@@ -137,7 +138,6 @@ main(int ac, char **av)
 {
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
-	struct stat statbuf;
 	int i;
 
 	/*
@@ -263,8 +263,6 @@ set_condition(int num)
 int
 create_longpath()
 {
-	int len;
-
 	sprintf(longname,"abcdefghivwxyzabcdefgmopqrsqrsrsthmopqrsqrsrstijklmnopjklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdabcdefghijklmopqrsqrsrstmnopqrqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz_%d/",getpid());
 	
 	chdir(cwd);

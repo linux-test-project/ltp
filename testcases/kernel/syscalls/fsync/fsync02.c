@@ -73,14 +73,13 @@ off_t max_blks = MAXBLKS;
 
 struct statvfs stat_buf;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	off_t offsetret, offset;
 	char pbuf[BUFSIZ];
-	long rlp;
 	int ret, max_block;
 	int i;
 	time_t time_start, time_end;

@@ -67,7 +67,7 @@ extern int Tst_count;
 int flag;
 #define	FAILED	1
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

@@ -38,7 +38,10 @@
  * RESTRICTIONS
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 #include <linux/limits.h>	/* for OPEN_MAX */
@@ -57,9 +60,9 @@ int first;
 FILE **fildeses;			/* file streams */
 int mypid, nfiles;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int pid, status, dtable, nf;
+	int pid, status, nf;
 	
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -211,8 +214,6 @@ setup()
 void
 cleanup()
 {
-	int nf;
-
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

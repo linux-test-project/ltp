@@ -255,7 +255,7 @@ void *
 alloc_mem(void * threadnum)
 {
     /* thread N will use growth scheme N mod 4 */
-    int err = allocate_free(num_loop, ((int)threadnum) % 4);
+    int err = allocate_free(num_loop, ((intptr_t)threadnum) % 4);
     fprintf(stdout, 
 	"pid[%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
 	getpid(), err,
@@ -360,7 +360,7 @@ main(int	argc,		/* number of input parameters		      */
         }
         else
         {
-            if ((int)th_status != 0)
+            if ((intptr_t)th_status != 0)
             {
                 fprintf(stderr,
                         "main(): thread [%d] - process exited with errors\n",

@@ -63,7 +63,7 @@ extern int Tst_count;
 
 int flag, condition_number;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid, status, ret;
 

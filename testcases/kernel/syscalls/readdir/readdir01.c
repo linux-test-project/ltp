@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readdir01.c,v 1.3 2002/10/31 18:59:54 plars Exp $ */
+/* $Id: readdir01.c,v 1.4 2002/11/14 16:16:16 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -182,7 +182,7 @@ main(int ac, char **av)
      * that understands many common options to control looping.  If you are not
      * adding any new options, pass NULL in place of options and &help.
      */
-    if ( msg=parse_opts(ac, av, options, &help) ) {
+    if ( (msg=parse_opts(ac, av, options, &help)) != 0 ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
@@ -245,7 +245,7 @@ main(int ac, char **av)
 	    /* count the entries we find to see if any are missing */
 	    cnt = 0;
 	    errno = 0;
-	    while (dptr = readdir(test_dir)) {
+	    while ((dptr = readdir(test_dir)) != 0) {
 		if (strcmp(dptr->d_name, ".") && strcmp(dptr->d_name, ".."))
 		    cnt++;
 	    }
@@ -306,8 +306,6 @@ help()
 void 
 setup()
 {
-    int fd;
-
     /* You will want to enable some signal handling so you can capture
      * unexpected signals like SIGSEGV. 
      */

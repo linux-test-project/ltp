@@ -109,7 +109,7 @@ int main (int argc, char **argv)
 +---------------------------------------------------------------------*/
 void *thread (void *parm)
 {
-	int num = (int) parm;
+	intptr_t num = (intptr_t) parm;
 	pthread_t	th;
 	pthread_attr_t	attr;
 	size_t		stacksize = 1046528;

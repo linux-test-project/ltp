@@ -37,6 +37,8 @@
  * 	None
  */
 
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
@@ -51,7 +53,7 @@ void cleanup(void);
 
 #define NUMFORKS 100
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i, pid, cpid, status;
 

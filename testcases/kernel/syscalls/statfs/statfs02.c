@@ -54,6 +54,7 @@
 #include <sys/types.h>
 #include <sys/statfs.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/vfs.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -98,11 +99,10 @@ struct test_case_t {
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	struct stat statbuf;
 	int i;
 
 	/* parse standard options */

@@ -68,6 +68,7 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <sys/wait.h>
 #include <errno.h>

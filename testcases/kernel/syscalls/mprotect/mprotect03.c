@@ -75,13 +75,13 @@ char file1[BUFSIZ];
 
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
 
 	char *addr;
-	int fd, retval, pid;
+	int fd, pid;
 	char *buf = "abcdefghijklmnopqrstuvwxyz";
 
         /* parse standard options */

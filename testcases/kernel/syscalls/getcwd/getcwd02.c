@@ -84,7 +84,7 @@ char cwd[BUFSIZ];     //used as our valid buffer
 char *buffer = NULL;  //catches the return value from getcwd when passing NULL
 char *cwd_ptr = NULL; //catches the return value from getcwd() when passing cwd[]
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
    FILE *fin;
    char *cp, *cp_cur;    

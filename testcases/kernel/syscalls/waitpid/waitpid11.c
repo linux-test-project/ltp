@@ -58,8 +58,8 @@ int intintr;
 void setup(void);
 void cleanup(void);
 void inthandlr();
-int wait_for_parent();
-int do_exit();
+void wait_for_parent();
+void do_exit();
 
 int fail;
 
@@ -69,7 +69,7 @@ int main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 	
 	int kid_count, ret_val, status;
-	int i, j, k, found, iterations;
+	int i, j, k, found;
 	int group1, group2;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int pid;
@@ -95,7 +95,7 @@ int main(int ac, char **av)
 		 * test to be a session leader and setpgrp fails.
 		 */
 
-		if (pid = fork()) {
+		if ((pid = fork()) != 0) {
 			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
@@ -331,7 +331,7 @@ inthandlr()
 	intintr++;
 }
 
-int
+void
 wait_for_parent()
 {
 	int testvar;
@@ -341,7 +341,7 @@ wait_for_parent()
 	}
 }
 
-int
+void
 do_exit()
 {
 	wait_for_parent();

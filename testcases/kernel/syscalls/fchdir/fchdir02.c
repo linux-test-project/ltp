@@ -69,7 +69,7 @@ extern int Tst_count;
 
 int exp_enos[] = {9, 0};	/* 0 terminated list of expected errnos */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	const int bad_fd = -5;
 	int lc;				/* loop counter */

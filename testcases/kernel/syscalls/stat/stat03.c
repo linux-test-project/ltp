@@ -186,15 +186,15 @@ main(int ac, char **av)
 						 "stat() fails, %s, errno:%d",
 						 test_desc, TEST_ERRNO);
 				} else {
-					tst_resm(TFAIL, "stat() fails, %s,
-						errno:%d, expected errno:%d",
+					tst_resm(TFAIL,
+						"stat() fails, %s, errno:%d, expected errno:%d",
 						test_desc, TEST_ERRNO,
 						Test_cases[ind].exp_errno);
 				}
 			} else {
-				tst_resm(TFAIL, "stat(2) returned %d,
-					expected -1, errno:%d", TEST_RETURN,
-					 Test_cases[ind].exp_errno);
+				tst_resm(TFAIL,
+					 "stat(2) returned %d, expected -1, errno:%d",
+					 TEST_RETURN, Test_cases[ind].exp_errno);
 			}
 		}	/* End of TEST CASE LOOPING. */
 		Tst_count++;			/* incr TEST_LOOP counter */

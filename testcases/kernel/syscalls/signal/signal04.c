@@ -80,11 +80,12 @@ int TST_TOTAL = sizeof(siglist)/sizeof(int);
 
 typedef void (*sighandler_t)(int);
 
-main(int ac, char **av)
+sighandler_t  Tret;
+
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	pid_t pid;
 	int i;
 	sighandler_t rval, first;
 
@@ -123,9 +124,9 @@ main(int ac, char **av)
 			first = rval;
 
 			/* restore the default signal action */
-			TEST(signal(siglist[i], SIG_DFL));
+			errno = 0; Tret = signal(siglist[i], SIG_DFL); TEST_ERRNO = errno;
 
-			if (TEST_RETURN == -1) {
+			if (Tret == SIG_ERR) {
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));

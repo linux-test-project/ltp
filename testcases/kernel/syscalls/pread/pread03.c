@@ -66,6 +66,11 @@
  * RESTRICTIONS:
  *  None.
  */
+
+#define _XOPEN_SOURCE 500
+
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -204,8 +209,6 @@ setup()
 void 
 cleanup()
 {
-	int count;		/* index for the loop */
-
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

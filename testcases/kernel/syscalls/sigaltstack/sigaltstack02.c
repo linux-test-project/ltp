@@ -103,7 +103,7 @@ struct test_case_t {		/* test case struct. to hold diff. test.conds */
 	{ 0, 0, NULL, 0 }
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -190,7 +190,7 @@ setup()
 	TEST_PAUSE;
 
 	/* Allocate memory for the alternate stack */
-	if ((sigstk.ss_sp = (int *)malloc(SIGSTKSZ)) == NULL) {
+	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
 		/*NOTREACHED*/

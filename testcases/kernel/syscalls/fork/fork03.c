@@ -38,7 +38,8 @@
  * RESTRICTIONS
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include "test.h"
 #include "usctest.h"
@@ -53,7 +54,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	float fl1, fl2;
 	int i;

@@ -54,11 +54,11 @@ extern int Tst_count;
 
 int exp_enos[] = {EFAULT, 0};
 
-int pipe_ret, pipes;
+intptr_t pipes;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

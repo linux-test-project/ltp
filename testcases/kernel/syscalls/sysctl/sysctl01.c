@@ -43,7 +43,9 @@
  *	None
  */
 #include <stdio.h>
-#include <linux/sysctl.h>
+#include <unistd.h>
+#include <linux/unistd.h>
+#include <sys/sysctl.h>
 #include <linux/version.h>
 #include <sys/utsname.h>
 #include <errno.h>
@@ -58,7 +60,7 @@ extern int Tst_count;
 
 struct utsname buf;
 char osname[BUFSIZ];
-int osnamelth;
+size_t osnamelth;
 
 void setup(void);
 void cleanup(void);
@@ -68,26 +70,25 @@ struct test_case_t {
 	int name[2];
 	int size;
 	void *oldval;
-	int *oldlen;
+	size_t *oldlen;
 	void *newval;
 	int newlen;
 	int (*cleanup)();
 	int exp_retval;
 } TC[] = {
-	{ "Test for KERN_OSTYPE", CTL_KERN, KERN_OSTYPE, 2, osname,
+	{ "Test for KERN_OSTYPE", { CTL_KERN, KERN_OSTYPE } , 2, osname,
 		&osnamelth, NULL, 0, NULL, 0 },
-	{ "Test for KERN_OSRELEASE", CTL_KERN, KERN_OSRELEASE, 2,
+	{ "Test for KERN_OSRELEASE", { CTL_KERN, KERN_OSRELEASE }, 2,
 		osname, &osnamelth, NULL, 0, NULL, 0 },
-	{ "Test for KERN_VERSION", CTL_KERN, KERN_VERSION, 2,
+	{ "Test for KERN_VERSION", { CTL_KERN, KERN_VERSION }, 2,
 		osname, &osnamelth, NULL, 0, NULL, 0 }
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	int i;
-	int ret;
 	char *comp_string;
 
 	/* parse standard options */

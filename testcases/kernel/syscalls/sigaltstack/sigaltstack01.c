@@ -82,7 +82,7 @@ char *TCID="sigaltstack01";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};
-int addr, main_stk;		/* address of main stack for signal */
+void  *addr, *main_stk;		/* address of main stack for signal */
 int got_signal = 0;
 pid_t my_pid;			/* test process id */
 
@@ -93,11 +93,11 @@ void setup();                   /* Main setup function of test */
 void cleanup();                 /* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int alt_stk;		/* address of alternate stack for signal */
+	void *alt_stk;		/* address of alternate stack for signal */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -163,15 +163,15 @@ main(int ac, char **av)
 				 * Check that main_stk is outside the
 				 * alternate stk boundaries.
 				 */	
-				if ((alt_stk < (int)sigstk.ss_sp) && \
+				if ((alt_stk < sigstk.ss_sp) && \
 				    (alt_stk > \
-				     ((int)sigstk.ss_sp + SIGSTKSZ))) {
+				     (sigstk.ss_sp + SIGSTKSZ))) {
 					tst_resm(TFAIL, \
 						"alt. stack is not within the "
 						"alternate stk boundaries"); 
-				} else if ((main_stk >= (int)sigstk.ss_sp) && \
+				} else if ((main_stk >= sigstk.ss_sp) && \
 					   (main_stk <= \
-					    ((int)sigstk.ss_sp + SIGSTKSZ))) {
+					    (sigstk.ss_sp + SIGSTKSZ))) {
 					tst_resm(TFAIL, \
 						"main stk. not outside the "
 						"alt. stack boundaries");
@@ -232,7 +232,7 @@ setup()
 	main_stk = addr;
 
 	/* Allocate memory for the alternate stack */
-	if ((sigstk.ss_sp = (int *)malloc(SIGSTKSZ)) == NULL) {
+	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
 		/*NOTREACHED*/
@@ -251,7 +251,7 @@ void
 sig_handler() {
 	int i;
 
-	addr = (int)&i;
+	addr = &i;
 	got_signal = 1;
 }
 
