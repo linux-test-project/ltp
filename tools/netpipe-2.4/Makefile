@@ -39,37 +39,37 @@ TCP:	NPtcp
 	@echo 'NPtcp has been built.'
 
 NPtcp:	NPtcp.o TCP.o
-	$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp $(EXTRA_LIBS)
+	@set -e;$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp $(EXTRA_LIBS)
 
 NPtcp.o:	$(DRIV_SRC) $(INCLUDES)
-	$(CC) $(CFLAGS) -DTCP -c -o NPtcp.o $(DRIV_SRC)
+	@set -e;$(CC) $(CFLAGS) -DTCP -c -o NPtcp.o $(DRIV_SRC)
 
 TCP.o:	TCP.c TCP.h $(INCLUDES)
-	$(CC) $(CFLAGS) -DTCP -c TCP.c
+	@set -e;$(CC) $(CFLAGS) -DTCP -c TCP.c
 
 MPI:	NPmpi
 	@echo 'NPmpi has been built.'
 
 NPmpi:	NPmpi.o MPI.o
-	$(CC) $(CFLAGS) NPmpi.o MPI.o -o NPmpi  -L $(MPI_HOME)/lib/$(MPI_ARCH)/$(MPI_DEVICE) -lmpi $(EXTRA_LIBS)
+	@set -e;$(CC) $(CFLAGS) NPmpi.o MPI.o -o NPmpi  -L $(MPI_HOME)/lib/$(MPI_ARCH)/$(MPI_DEVICE) -lmpi $(EXTRA_LIBS)
 
 NPmpi.o:	$(DRIV_SRC) $(INCLUDES) 
-	$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c -o NPmpi.o $(DRIV_SRC)
+	@set -e;$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c -o NPmpi.o $(DRIV_SRC)
 
 MPI.o:	MPI.c MPI.h $(INCLUDES)
-	$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c MPI.c
+	@set -e;$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c MPI.c
 
 PVM:	NPpvm
 	@echo 'NPpvm has been built.'
 
 NPpvm:	NPpvm.o PVM.o
-	$(CC) $(CFLAGS) NPpvm.o PVM.o -o NPpvm  -L$(PVM_HOME)/lib/$(PVM_ARCH)/ -lpvm3 $(EXTRA_LIBS)
+	@set -e;$(CC) $(CFLAGS) NPpvm.o PVM.o -o NPpvm  -L$(PVM_HOME)/lib/$(PVM_ARCH)/ -lpvm3 $(EXTRA_LIBS)
 
 NPpvm.o:	$(DRIV_SRC) $(INCLUDES)
-	$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c -o NPpvm.o $(DRIV_SRC)
+	@set -e;$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c -o NPpvm.o $(DRIV_SRC)
 
 PVM.o:	PVM.c PVM.h $(INCLUDES)
-	$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c PVM.c
+	@set -e;$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c PVM.c
 
 clean:
 	rm -f $(TARGETS) *.o core a.out

@@ -38,11 +38,11 @@ install:
 ############ prog.c --> prog.o
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c -o $@ $^
+	@set -e;$(CC) $(CFLAGS) -c -o $@ $^
 
 ############ prog.o --> prog
 
 top:   % : %.o $(LIBPROC)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CURSES)
+	@set -e;$(CC) $(LDFLAGS) -o $@ $^ $(CURSES)
 
 
