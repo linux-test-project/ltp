@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.5 2001/03/08 19:13:21 nstraz Exp $ */
+/* $Id: pan.c,v 1.6 2001/03/15 21:23:27 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -97,8 +97,8 @@ static void write_test_end(struct tag_pgrp *running,
 			   int term_id, struct tms *tms1, struct tms *tms2);
 
 static char *panname = NULL;
-static char *test_out_dir = NULL;
-FILE *zoofile;
+static char *test_out_dir = NULL;	/* dir to buffer output to */
+zoo_t zoofile;
 static char *reporttype = NULL;
 
 /* Debug Bits */
@@ -118,8 +118,8 @@ main(int argc, char **argv)
     extern char *optarg;
     extern int optind;
     int c;
-    char *zooname = NULL;
-    char *filename = "/dev/null";
+    char *zooname = NULL;	/* name of the zoo file to use */
+    char *filename = "/dev/null";	/* filename to read test tags from */
     char *logfilename = NULL;
     FILE *logfile = NULL;
     char *outputfilename = NULL;
@@ -133,59 +133,59 @@ main(int argc, char **argv)
     int starts = -1;
     int stop;
     int go_idle;
-    int has_brakes = 0;
-    int sequential = 0;
+    int has_brakes = 0;		/* stop everything if a test case fails */
+    int sequential = 0;		/* run tests sequentially */
     int fork_in_road = 0;
     int exit_stat;
-    int track_exit_stats = 0;
+    int track_exit_stats = 0;	/* exit non-zero if any test exits non-zero */
 
     while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:r:s:x:y")) != -1) {
 	switch (c) {
-	case 'A':
+	case 'A':	/* all-stop flag */
 	    has_brakes = 1;
 	    track_exit_stats = 1;
 	    break;
-	case 'O':
+	case 'O':	/* output buffering directory */
 	    test_out_dir = strdup(optarg);
 	    break;
-	case 'S':
+	case 'S':	/* run tests sequentially */
 	    sequential = 1;
 	    break;
-	case 'a':
+	case 'a':	/* name of the zoo file to use */
 	    zooname = strdup(optarg);
 	    break;
-	case 'd':
+	case 'd':	/* debug options */
 	    sscanf(optarg, "%i", &Debug);
 	    break;
-	case 'e':
+	case 'e':	/* exit non-zero if any test exists non-zero */
 	    track_exit_stats = 1;
 	    break;
-	case 'f':
+	case 'f':	/* filename to read test tags from */
 	    filename = strdup(optarg);
 	    break;
-	case 'h':
+	case 'h':	/* help */
 	    printf
 		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ]\n\t[-o output-file] [-O output-buffer-directory] [cmd]\n");
 	    exit(0);
-	case 'l':
+	case 'l':	/* log file */
 	    logfilename = strdup(optarg);
 	    break;
-	case 'n':
+	case 'n':	/* tag given to pan */
 	    panname = strdup(optarg);
 	    break;
-	case 'o':
+	case 'o':	/* send test output here */
 	    outputfilename = strdup(optarg);
 	    break;
-	case 'r':
+	case 'r':	/* reporting type: none, rts */
 	    reporttype = strdup(optarg);
 	    break;
-	case 's':
+	case 's':	/* number of tags to run */
 	    starts = atoi(optarg);
 	    break;
-	case 'x':
+	case 'x':	/* number of tags to keep running */
 	    keep_active = atoi(optarg);
 	    break;
-	case 'y':
+	case 'y':	/* restart on failure or signal */
 	    fork_in_road = 1;
 	    break;
 	}
