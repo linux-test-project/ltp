@@ -1,7 +1,7 @@
 #
 # PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
 #
-nfs01 export TCbin=$LTPROOT/ltctests/nfs/nfs01; nfs01
-nfs02 export TCbin=$LTPROOT/ltctests/nfs/nfs02; nfs02
-nfslock01 export TCbin=$LTPROOT/ltctests/nfs/nfslock01; nfslock01
-nfsstat01 export TCbin=$LTPROOT/ltctests/nfs/nfsstat01; nfsstat01
+nfs01 export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
+nfs02 export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
+nfslock01 export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
+nfsstat01 export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
