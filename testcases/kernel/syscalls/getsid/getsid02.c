@@ -68,6 +68,14 @@
 #include <linux/tasks.h>		/* for PID_MAX - old */
 #endif
 
+/*
+ * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
+ */
+#ifdef __ppc64__
+#define PID_MAX 0x8000
+#endif
+
+
 void cleanup(void);
 void setup(void);
 
