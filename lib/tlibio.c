@@ -277,7 +277,7 @@ lio_set_debug(level)
 int
 lio_parse_io_arg1(char *string)
 {
-    int ind;
+    unsigned int ind;
     int found=0;
     int mask=0;
 
@@ -309,7 +309,7 @@ lio_parse_io_arg1(char *string)
 void
 lio_help1(char *prefix)
 {
-    int ind;
+    unsigned int ind;
 
     for(ind=0; ind<sizeof(Lio_info1)/sizeof(struct lio_info_type); ind++) {
         printf("%s %s : %s\n", prefix,
@@ -338,7 +338,7 @@ lio_parse_io_arg2(char *string, char **badtoken)
    int mask=0;
 
    int tmp;
-   int ind;
+   unsigned int ind;
    char chr;
 
    if ( token == NULL )
@@ -401,7 +401,7 @@ lio_parse_io_arg2(char *string, char **badtoken)
 void
 lio_help2(char *prefix)
 {
-    int ind;
+    unsigned int ind;
 
     for(ind=0; ind<sizeof(Lio_info2)/sizeof(struct lio_info_type); ind++) {
 	printf("%s %s : %s\n", prefix,
