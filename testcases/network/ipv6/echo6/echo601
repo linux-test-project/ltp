@@ -49,6 +49,7 @@ EXECUTABLES=${EXECUTABLES:-"$CREATFILE $ECHOES"}
 ECHOFILE=${ECHOFILE:-echofile}
 NUMLOOPS=${NUMLOOPS:-2}
 NUMPROCESSES=${NUMPROCESSES:-15}
+ECHOSIZE=${ECHOSIZE:-8192}
 
 #-----------------------------------------------------------------------
 #
@@ -65,7 +66,7 @@ do_test()
    $trace_logic
 
    echo  "Creating echo file $ECHOFILE"
-   $TCtmp/$CREATFILE 6144 $TCtmp/$ECHOFILE
+   $TCtmp/$CREATFILE $ECHOSIZE $TCtmp/$ECHOFILE
    [[ $? = 0 ]] || end_testcase "$ECHOFILE not created"
 
    echo "Compute the checksum of this file"
