@@ -41,6 +41,7 @@ RHOST=${RHOST:-`hostname`}
 USER_LIST=${USER_LIST:-'root'}
 TCbin=${TCbin:-`pwd`}
 TCdat=${TCdat:-$TCbin}
+TCtmp=${TCtmp:-$TCbin/rdist$$}
 FILES=${FILES:-'bin.sm bin.med bin.lg bin.jmb file.dir/bin.sm file.dir/bin.med file.dir/bin.jmb'}
 SLEEPTIME=${SLEEPTIME:-10}
 CLEANUP=${CLEANUP:-ON}
@@ -55,7 +56,8 @@ do_setup()
 {
    $trace_logic
 
-   cd $HOME
+   mkdir -p $TCtmp
+   cd $TCtmp
 
    # start with a clean LHOST
    for i in $FILES
@@ -85,7 +87,7 @@ do_setup()
 #-----------------------------------------------------------------------
 #
 # FUNCTION:  create_distfile
-# create file $HOME/distfile
+# create file $TCtmp/distfile
 #
 #-----------------------------------------------------------------------
 
@@ -115,9 +117,9 @@ create_distfile()
    done
 
    T_HOST=$T_HOST")"
-   echo "$T_HOST" > $HOME/distfile
-   echo "$T_FILES" >> $HOME/distfile
-   echo '${FILES} -> ${HOSTS}' >> $HOME/distfile
+   echo "$T_HOST" > $TCtmp/distfile
+   echo "$T_FILES" >> $TCtmp/distfile
+   echo '${FILES} -> ${HOSTS}' >> $TCtmp/distfile
 }
 
 #-----------------------------------------------------------------------
@@ -132,7 +134,7 @@ check_result()
 {
    $trace_logic
 
-   cd $HOME
+   cd $TCtmp
    for c_rhost in $HOSTS
    do
       for c_ruser in $RUSERS
@@ -176,8 +178,8 @@ do_test()
       do
          RUSERS=$RUSERS" $cur_user"
          create_distfile
-         rdist -f $HOME/distfile
-         [[ $? -eq 0 ]] || end_testcase "error doing rdist -f $HOME/distfile"
+         rdist -f $TCtmp/distfile
+         [[ $? -eq 0 ]] || end_testcase "error doing rdist -f $TCtmp/distfile"
          check_result
          sleep $SLEEPTIME
       done
@@ -198,12 +200,7 @@ do_cleanup()
 {
    $trace_logic
 
-   cd $HOME
-
-   for i in $FILES
-   do
-     rm -rf $i
-   done
+   rm -rf $TCtmp
 }
 
 #=============================================================================
