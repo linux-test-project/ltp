@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "posixtest.h"
+#include "timer_create01.h"
+
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 2

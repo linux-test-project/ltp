@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "timer_create01.h"
 
 #define INVALIDCLOCKID 99999
 

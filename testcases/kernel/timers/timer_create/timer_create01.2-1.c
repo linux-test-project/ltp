@@ -19,6 +19,8 @@
 #include <search.h>
 #include <limits.h>
 #include "posixtest.h"
+#include "timer_create01.h"
+
 
 int compare(const void *key, const void *amemb)
 {
