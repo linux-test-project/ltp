@@ -25,7 +25,7 @@
  *  mapped.
  *
  * Expected Result:
- *  msync() should fail with a return value of -1, and set errno EFAULT.
+ *  msync() should fail with a return value of -1, and set errno ENOMEM.
  *
  * Algorithm:
  *  Setup:
@@ -57,6 +57,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	03/2002 Paul Larson: expected error should be ENOMEM not EFAULT
  *
  * RESTRICTIONS:
  *  None.
@@ -75,7 +76,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 char *addr;			/* addr of memory mapped region */
 size_t page_sz;			/* system page size */
 
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = {ENOMEM, 0};
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -120,14 +121,14 @@ main(int ac, char **av)
 
 		/*
 		 * Verify whether expected errno is
-		 * set (EFAULT).
+		 * set (ENOMEM).
 		 */
-		if (errno == EFAULT) {
+		if (errno == ENOMEM) {
 			tst_resm(TPASS, "memory region not mapped, errno:%d",
 				 TEST_ERRNO);
 		} else {
 			tst_resm(TFAIL, "msync() fails, unexpected errno:%d, "
-				 "expected: EFAULT", TEST_ERRNO);
+				 "expected: ENOMEM", TEST_ERRNO);
 		}
 	}	/* End for TEST_LOOPING */
 
