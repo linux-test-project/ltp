@@ -21,7 +21,7 @@
 ###########################################################################
 
 NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),1)
+ifeq ($(NPTL),)
 export CFLAGS+= -I../../../../include -D_GNU_SOURCE
 else
 export CFLAGS+= -I../../../../include -D_GNU_SOURCE -DUSE_NPTL

@@ -26,7 +26,7 @@
 # CFLAGS
 
 NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),1)
+ifeq ($(NPTL),)
 export CFLAGS+= -Wall $(CROSS_CFLAGS)
 else
 export CFLAGS+= -Wall $(CROSS_CFLAGS) -DUSE_NPTL
