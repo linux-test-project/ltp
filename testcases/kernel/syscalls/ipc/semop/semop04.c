@@ -80,6 +80,8 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int val = 1;			/* value for SETVAL */
+	
 	int i;
 
 	/* parse standard options */
@@ -103,7 +105,7 @@ main(int ac, char **av)
 			s_buf.sem_num = TC[i].num;
 
 			/* initialize all the primitive semaphores */
-			TC[i].get_arr.val = i;
+			TC[i].get_arr.val = val--;
 			if (semctl(sem_id_1, TC[i].num, SETVAL, TC[i].get_arr)
 			    == -1) {
 				tst_brkm(TBROK, cleanup, "semctl() failed");
