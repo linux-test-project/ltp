@@ -95,10 +95,10 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 	int	port;
 	char	wr_buffer[BUFSIZ];
 	char	rd_buffer[BUFSIZ];
-	struct	in_addr	hostaddr;
-	struct sockaddr_in sa;
+	struct	in6_addr hostaddr;
+	struct sockaddr_in6 sa;
 #ifdef DEBUG
-	struct	sockaddr_in address;
+	struct	sockaddr_in6 address;
 	u_short	addrlen;
 	u_short	portnum;
 #endif
@@ -112,18 +112,18 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 	printf("Create socket .....\n");
 #endif
 	pid=getpid();
-	if ((s=socket(AF_INET,SOCK_STREAM,0)) < 0 ) {
+	if ((s=socket(PF_INET6,SOCK_STREAM,0)) < 0 ) {
 		printf("ERROR occured during socket operation(%d)\n",pid);
 		perror("echo:socket");
 		cleanup(s);
 		exit(1);
 	}
 	port=sp->s_port;
-	bcopy(hp->h_addr_list[0],&hostaddr,sizeof(struct in_addr));
+	printf("hostaddr is %x\n",hostaddr);
+	memcpy(hp->h_addr_list[0],&hostaddr,sizeof(struct in6_addr));
 	bzero((char *)&sa,sizeof (sa));
-	sa.sin_port=port;
-	sa.sin_family=AF_INET;
-	sa.sin_addr=hostaddr;
+	sa.sin6_port=port;
+	sa.sin6_addr=hostaddr;
 
 #ifdef 	DEBUG
 	printf("port=%d hostaddr=%x", ntohs(port), hostaddr);
@@ -143,7 +143,7 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 		cleanup(s);
 		exit(1);
 	}
-	portnum=ntohs(address.sin_port);
+	portnum=ntohs(address.sin6_port);
 	printf ("local port is: %d\n",portnum);
 	if (getpeername(s,&address,&addrlen) == -1) {
 		printf ("ERROR occured during getpeername(%d)\n",pid);
@@ -151,7 +151,7 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 		cleanup(s);
 		exit(1);
 	}
-	portnum=ntohs(address.sin_port);
+	portnum=ntohs(address.sin6_port);
 	/*	printf ("remote address is: %d\n",portnum);
 */
 #endif

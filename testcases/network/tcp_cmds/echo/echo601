@@ -19,7 +19,7 @@ unset LIBPATH
 #
 #
 #
-#  FILE   : echo
+#  FILE   : echo601
 #
 #  PURPOSE: Stresses the inetd/xinetd daemon using the `echo` service.
 #           
@@ -33,7 +33,7 @@ unset LIBPATH
 #
 #***********************************************************************
 #Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
+trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
 TC=sine
@@ -43,7 +43,8 @@ TCsrc=${TCsrc:-$TCbin}
 TCtmp=${TCtmp:-$TCsrc}
 CLEANUP=${CLEANUP:-ON}
 CREATFILE=createfile
-ECHOES=echoes
+ECHOES=echoes6
+
 
 EXECUTABLES=${EXECUTABLES:-"$CREATFILE $ECHOES"}
 ECHOFILE=${ECHOFILE:-echofile}

@@ -1,4 +1,4 @@
-CFLAGS += -w -O
+CFLAGS += -w -O 
 LDFLAGS += 
 
 SRCS=$(wildcard *.c)
@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install: all
-	ln -f echo01 ../../../bin
+	ln -f echo601 ../../../bin
 
 clean:
 	rm -f $(TARGETS)
