@@ -160,7 +160,7 @@ done
 
 if [ $run_netest -eq 1 ]
 then
-	if [ -z $RHOST || -z $PASSWD ]
+	if [ -z $RHOST ] || [ -z $PASSWD ]
 	then
 		if [ -z $RHOST ]
 		then
