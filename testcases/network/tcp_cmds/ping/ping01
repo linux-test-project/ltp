@@ -26,6 +26,8 @@
 #  SETUP: If "RHOST" is not exported, then the local hostname is used.
 #
 #  HISTORY:
+#    06/06/03 Manoj Iyer manjo@mail.utexas.edu
+#    - Modified testcase to use test APIs and also fixed minor bugs
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -35,12 +37,33 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
+
 TC=ping
 
 RHOST=${RHOST:-`hostname`}
 COUNT=${COUNT:-5}
 SLEEPTIME=${SLEEPTIME:-1}
 PACKETSIZES=${PACKETSIZES:-"8 16 32 64 128 256 512 1024 2048 4064"}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
 
 #-----------------------------------------------------------------------
 #
@@ -52,10 +75,11 @@ PACKETSIZES=${PACKETSIZES:-"8 16 32 64 128 256 512 1024 2048 4064"}
 do_test() 
 {
    $trace_logic
-
+   tst_resm TINFO "ping with 8 16 32 64 128 256 512 1024 2048 4064 ICMP packets"
    for packetsize in $PACKETSIZES
    do
-      ping  -R -c $COUNT -s $packetsize $RHOST 
+	  tst_resm TINFO "calling ping with packet size = $packetsize"
+      ping  -R -c $COUNT -s $packetsize $RHOST  2>&1 1>/dev/null
       [ $? -eq 0 ] || end_testcase "failed: ping -c $COUNT -s $packetsize $RHOST"
       sleep $SLEEPTIME
    done
@@ -75,8 +99,8 @@ end_testcase()
 {
    $trace_logic
 
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
@@ -85,5 +109,9 @@ end_testcase()
 # FUNCTION:  MAIN
 #
 #*******************************************************************************
+export TCID="ping01"
+export TST_TOTAL=1
+export TST_COUNT=1
+exists "ping"
 do_test
 end_testcase
