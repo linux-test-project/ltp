@@ -78,7 +78,7 @@ extern void rm_shm(int);
 void cleanup(void);
 void setup(void);
 
-char *TCID= "kill05()";
+char *TCID= "kill05";
 int TST_TOTAL = 1;
 int shmid1 = -1;
 key_t semkey;

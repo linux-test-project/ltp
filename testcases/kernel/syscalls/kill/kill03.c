@@ -65,7 +65,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "kill03()";
+char *TCID= "kill03";
 int TST_TOTAL = 1;
 
 extern int Tst_count;

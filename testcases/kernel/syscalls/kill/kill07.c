@@ -72,7 +72,7 @@ void cleanup(void);
 void setup(void);
 void sighandler(int sig);
 
-char *TCID= "kill07()";
+char *TCID= "kill07";
 int TST_TOTAL = 1;
 int shmid1;
 key_t semkey;
