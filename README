@@ -41,12 +41,12 @@ runalltests.sh
 	report the over all result.  
 
 diskio.sh
-	A simple script to run all the diskio tests that pertain to the CD-ROM and
-	floppy disk file systems.
+	A simple script to run all the diskio tests that pertain to the CD-ROM
+	and floppy disk file systems.
 
 networktests.sh
-	A simple script to run all the network related tests that require another 
-	remote machine.
+	A simple script to run all the network related tests that require
+	another remote machine.
 
 doc/*
 	Documentation for the project including man pages for some of the
@@ -60,8 +60,8 @@ lib/*
 	minimum.  
 
 testcases/*
-	Contains all tests that run under the LTP as well as the "bin" directory,
-	which has hardlinks to all the test executables. 
+	Contains all tests that run under the LTP as well as the "bin"
+	directory, which has hardlinks to all the test executables. 
 
 runtest/*
 	It houses command lists that are used by pan for automated testing.
@@ -71,6 +71,10 @@ pan/*
 	has the ability to run tests randomly and in parallel.  See pan's man
 	page for more information.
 
+scratch/*
+	The scratch directory is a dumping ground for snippets and test cases
+	that we found but haven't integrated into LTP yet.  Feel free to suggest
+	new snippets to be added, or take one of these and finish it off.
 
 Warning!
 --------
@@ -86,5 +90,6 @@ Contact Information and Updates
 
 URL: http://ltp.sf.net
 
-Questions and comments should be sent to the LTP mailing list located on the project page. 
+Questions and comments should be sent to the LTP mailing list located on the
+project page. 
 
