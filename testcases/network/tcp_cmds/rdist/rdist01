@@ -28,6 +28,8 @@
 #         where the test is executed. 
 #
 #  HISTORY:
+#    06/06/03 Manoj Iyer manjo@mail.utexas.edu
+#    - Modified testcases to use test harness APIs and fixed defects
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -46,6 +48,27 @@ FILES=${FILES:-'bin.sm bin.med bin.lg bin.jmb file.dir/bin.sm file.dir/bin.med f
 SLEEPTIME=${SLEEPTIME:-10}
 CLEANUP=${CLEANUP:-ON}
 
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
+
 #-----------------------------------------------------------------------
 #
 # FUNCTION:  do_setup
@@ -55,6 +78,13 @@ CLEANUP=${CLEANUP:-ON}
 do_setup()
 {
    $trace_logic
+
+   export TCID=rdist01
+   export TST_TOTAL=1
+   export TST_COUNT=1
+
+
+   exists "dirname basenamei rdist"
 
    mkdir -p $TCtmp
    cd $TCtmp
@@ -133,7 +163,6 @@ create_distfile()
 check_result()
 {
    $trace_logic
-
    cd $TCtmp
    for c_rhost in $HOSTS
    do
@@ -147,7 +176,7 @@ check_result()
             done
             echo \$x`
          if [ $TOTAL_SUM = $LSUM ]; then 
-            echo "Success rdist in $c_ruser@$c_rhost "
+            tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
   	    rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
          else
             end_testcase "Wrong sum doing  rdist in $curr_ruser@$curr_rhost"
@@ -220,8 +249,8 @@ end_testcase()
    # Call other cleanup functions
    [ $CLEANUP = "ON" ] && do_cleanup
 
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
