@@ -1,3 +1,48 @@
+LTP-20031204
+- Allowed the test driver to ignore all		( Robbie Williamson )
+  real-time signals.
+- Removed the obsolete time() and stime() tests ( Robbie Williamson ) 
+  from the default runalltests.sh and 
+  ltpstress.sh scripts.
+- Updated "file_test.sh" with fixes to improve  ( Glen Foster )
+  execution and portability.
+- Updated "cpio_tests.sh" with fixes to improve ( Glen Foster )
+  execution and portability.
+- Updated "cron_tests.sh" with fixes to improve ( Glen Foster )
+  execution and portability.
+- Updated "mail_tests.sh" with fixes to improve ( Glen Foster )
+  execution and portability.
+- Added Asynchronous I/O (aio) testcases.	( Marty Ridgeway )
+- Added file & directory ACL control and 	( Marty Ridgeway )
+  management testcases.
+- Added testcases for low-level SCSI & virtual  ( Marty Ridgeway )
+  SCSI devices.	
+- Updated direct IO tests to return TCONF if	( Robbie Williamson )
+  the tested filesystem does not support dio.
+- Updated acct01 & sockioctl01 to handle 	( Robbie Williamson )
+  situations where /dev/tty0 does not exist.
+- Updated fsync02 to ensure max_block is always ( Robbie Williamson )
+  greater than data_blocks.
+- Updated getgroups03 to allow for better 	( Susanne Wintenberger )
+  stability and platform portabilty.
+- Updated the modify_ldt testcases to allow the ( Robbie Williamson )
+  tests the ability to build on installations
+  that use type "user_desc" instead of 
+  "modify_ldt_s_s".
+- Applied IA64 specific fixes to sigaltstack()  ( Jacky Malcles )
+  tests.
+- Updated some of the utime() tests to sleep 	( Glen Foster )
+  longer than one second (2) to ensure proper 
+  execution on IA64.
+- Updated some of the write() tests to make the	( Susanne Wintenberger )
+  invalid address test 64bit portable.
+- Added new NFS stress test: nfs_fsstress.	( Robbie Williamson )
+- Updated OpenHPI testsuite.			( Kevin Gao )
+- Updated ltpstress.sh to change the maximum	( Robbie Williamson )
+  number of user processes to "unlimited"
+  before testing begins (ulimit -u).
+ 
+
 LTP-20031106
 - Fixed bugs in runalltests.sh with creating	( Manoj Iyer ) 
   the results directory and locating 'pan'.
