@@ -22,6 +22,7 @@
  *	dummy program which is used by execve03.c testcase
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 
 int main()
