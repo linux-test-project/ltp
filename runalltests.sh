@@ -10,10 +10,17 @@ set +x
 #
 #  01/26/03 - Manoj Iyer  - manjo@mail.utexas.edu: Added -f option; Execute
 #                           user defined set of testcases.
+#
 #  01/27/03 - Manoj Iyer  - manjo@mail.utexas.edu: Enabled formatted printing
 #                           of logfiles.
+#
 #  01/28/03 - Manoj Iyer  - manjo@mail.utexas.edu: added option to enable 
 #                           formatted printing of logfiles.
+#   
+#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: merged networktests.sh with
+#                           this script, added the -n option to run these
+#                           tests. Also, added -h option to print help messages.
+#                          
 #
 
 cd `dirname $0`
@@ -22,19 +29,26 @@ export TMPBASE="/tmp"
 cmdfile=""
 pretty_prt=" "
 alt_dir=0
+RHOST=""
+PASSWD=""
+run_netest=0
 
 usage() 
 {
 	cat <<-END >&2
     usage: ${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
-                  -m [ -r ltproot ] [ -t duration ] [ -x instances ] 
+                  -m -n [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under CPU load.
     -d tmpdir       Directory where temporary files will be created.
     -f cmdfile      Execute user defined list of testcases.
+    -h              Help. Prints all available options.
     -i              Run LTP under heavy IO load.
     -l logfile      Log results of test in a logfile.
     -m              Run LTP under heavy memory load.
+    -n              Run all the networking tests. 
+                    (export RHOST = remote hostname)
+                    (export PASSWD = passwd of remote host)
     -p              Human readable format logfiles. 
     -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
@@ -46,8 +60,7 @@ exit
 }
 
 
-# while getopts :t:x:l:r:d:mic arg
-while getopts cd:f:il:mpr:t:x arg
+while getopts cd:f:hil:mnpr:t:x arg
 do  case $arg in
     c)
             $LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
@@ -57,6 +70,8 @@ do  case $arg in
             TMPBASE=$OPTARG;;
     f)        # Execute user defined set of testcases.
             cmdfile=$OPTARG;;
+
+	h)		usage;;
     
     i)        
             $LTPROOT/testcases/bin/genload --io 10 2>&1 1>/dev/null &
@@ -66,7 +81,18 @@ do  case $arg in
     l)      
             if [ ${OPTARG:0:1} != "/" ]
 			then
-				logfile="-l $LTPROOT/results/$OPTARG"
+				if [ -d $LTPROOT/results ]
+				then
+					logfile="-l $LTPROOT/results/$OPTARG"
+				else
+					mkdir -p $LTPROOT/results
+					if [ $? -eq 0 ]
+					then
+						echo "ERROR: failed to create $LTPROOT/results"
+						exit 1
+					fi
+					logfile="-l $LTPROOT/results/$OPTARG"
+				fi
 				alt_dir=1
             else
 				logfile="-l $OPTARG"
@@ -75,6 +101,8 @@ do  case $arg in
     m)        
             $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
             2>&1 1>/dev/null & ;;
+
+	n)		run_netest=1;;
 
     p)      pretty_prt=" -p ";;
 
@@ -92,6 +120,23 @@ do  case $arg in
     esac
 done
 
+if [ $run_netest -eq 1 ]
+then
+	if [[ -z $RHOST || -z $PASSWD ]]
+	then
+		echo " "
+		echo " "
+		echo "ERROR: Initializing networking tests."
+		echo "INFO: Please export RHOST = 'name of the remote host machine'"
+		echo "INFO: Please export PASSWD = 'passwd of the remote host machine'"
+		echo "INFO: before running the networking tests."
+		echo " "
+		echo " "
+		echo " "
+		usage	
+	fi
+fi
+	
 export TMP="${TMPBASE}/runalltests-$$"
 mkdir -p ${TMP}
 
@@ -116,6 +161,14 @@ else
     cat $cmdfile > ${TMP}/alltests
 fi
 
+if [ $run_netest -eq 1 ]
+then
+	cat ${LTPROOT}/runtest/tcp_cmds >> ${TMP}/alltests
+	cat ${LTPROOT}/runtest/multicast >> ${TMP}/alltests
+	cat ${LTPROOT}/runtest/rpc >> ${TMP}/alltests
+	cat ${LTPROOT}/runtest/nfs >> ${TMP}/alltests
+fi
+
 # The fsx-linux tests use the SCRATCHDEV environment variable as a location
 # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
 # these tests.  As a safeguard, this is disabled.
@@ -138,8 +191,12 @@ fi
 
 if [ $alt_dir -eq 1 ]
 then
+	echo " "
 	echo "###############################################################"
+	echo " "
 	echo " result log is in the $LTPROOT/results directory"
+	echo " "
 	echo "###############################################################"
+	echo " "
 fi
 #rm -rf ${TMP}
