@@ -67,6 +67,14 @@ void noprintf(char* string, ...){
 #define dprt    noprintf
 #endif
 
+/*
+ * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
+ */
+#ifdef __ppc64__
+#define PID_MAX 0x8000
+#endif
+
+
 #define MAXT 100
 
 #ifdef PTHREAD_THREADS_MAX
