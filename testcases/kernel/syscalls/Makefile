@@ -31,26 +31,7 @@ EXCLUDE_DIR=epoll
 #
 # Commented this out since there are directories here we don't want built by default
 #
-#SUBDIR = `ls */Makefile | sed "s/Makefile//g"` 
-
-SUBDIR = abort accept access acct adjtimex alarm asyncio bind brk capget capset chdir chmod chown \
-chroot clone close confstr connect creat dup dup2 execl execle execlp execv  execve execvp exit \
-fchdir fchmod fchown fcntl fdatasync flock fmtmsg fork fpathconf fstat fstatfs  fsync ftruncate \
-getcwd getdents getdomainname getegid geteuid getgid getgroups gethostid gethostname getitimer \
-getpeername getpgid getpgrp getpid getppid getpriority  getresgid getresuid getrlimit getrusage \
-getsid  getsockname getsockopt  gettimeofday getuid ioctl ioperm  iopl ipc kill lchown lib \
-link listen llseek lseek lstat mallopt  memcmp memcpy  memset mkdir mknod mlock mlockall mmap \
-modify_ldt mount mprotect mremap msync munlock munlockall munmap nanosleep nftw nice open pathconf \
-pause  personality pipe poll prctl pread profil ptrace pwrite read readdir readlink readv reboot \
-recv recvfrom recvmsg rename rmdir sbrk sched_get_priority_max sched_get_priority_min sched_getparam \
-sched_getscheduler sched_rr_get_interval sched_setparam sched_setscheduler sched_yield select send \
-sendfile sendmsg sendto setdomainname setegid setfsgid setfsuid  setgid setgroups sethostname setitimer \
-setpgid setpgrp setpriority setregid setresgid setresuid setreuid  setrlimit setsid setsockopt settimeofday \
-setuid sigaction sigaltstack sighold signal sigpending sigprocmask sigrelse sigsuspend socket socketcall \
-socketpair sockioctl stat statfs stime string swapoff swapon symlink sync syscall sysconf sysctl sysfs \
-sysinfo syslog time times truncate ulimit umask umount uname unlink ustat utime vfork vhangup wait \
-wait4 waitpid write writev
-
+SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -v epoll` 
 
 all:  
 	@set -e; for i in lib $(SUBDIR); do \
