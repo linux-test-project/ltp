@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.2 2002/08/09 19:07:59 robbiew Exp $ */
+/* $Id: getgroups01.c,v 1.3 2003/03/26 19:38:09 robbiew Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -79,6 +79,7 @@ BUGS:
 #include <signal.h>
 #include <string.h>
 #include <errno.h>
+#include <grp.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include "test.h"

@@ -77,7 +77,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define TESTUSER	"nobody"
+#define TESTUSER	"root"
 #define PRESENT		1
 #define NOT_PRESENT	0
 
@@ -88,9 +88,6 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 gid_t groups[NGROUPS];		/* Array to hold gids read fr. /etc/group */
 int fflag;			/* functionality flag variable */
-
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
 
 int verify_groups(int);		/* function to verify groups returned */
 int readgroups(gid_t *);	/* function to read gids of testuser */
@@ -122,7 +119,7 @@ main(int ac, char **av)
 
 		/*
 		 * Call getgroups() to get supplimentary group IDs of
-		 * TESTUSER ("nobody").
+		 * TESTUSER ("root").
 		 */
 		TEST(getgroups(gidsetsize, groups_list));
 	
@@ -137,7 +134,7 @@ main(int ac, char **av)
 		 * Perform functional verification if test
 		 * executed without (-f) option.
 		 */
-		if (!STD_FUNCTIONAL_TEST) {
+		if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * Call verify_groups() to verify the groups
 			 * returned by getgroups(2) match with the
@@ -158,11 +155,12 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *	     Get the supplimentary gid(s) of nobody from /etc/group.
+ *	     Get the supplimentary gid(s) of root from /etc/group.
  */
 void 
 setup()
@@ -170,38 +168,24 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
-
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* 
-	 * Get the IDs of all the groups of "nobody"
+	 * Get the IDs of all the groups of "root"
 	 * from /etc/group file
 	 */
-	ngroups == readgroups(groups);
+	ngroups=readgroups(groups);
 }	/* End setup() */
 
 /*
- * readgroups(gid_t *)  - Read supplimentary group ids of "nobody" user
+ * readgroups(gid_t *)  - Read supplimentary group ids of "root" user
  * Scans the /etc/group file to get IDs of all the groups to which TESTUSER
  * belongs and puts them into the array passed.
  * Returns the no of gids read.
  */
 int
-readgroups(groups)
-gid_t *groups;
+readgroups(gid_t groups[NGROUPS])
 {
 	struct group *grp;              /* To hold the group entry */
 	int ngrps = 0;			/* No of groups */
