@@ -230,7 +230,7 @@ getuid01 getuid01
 getuid02 getuid02
 getuid03 getuid03
 
-ioctl01 ioctl01 -D /dev/tty
+ioctl01 ioctl01 -D /dev/ttyS0
 ioctl02 ioctl02 -D /dev/ttyS0
 
 kill01 kill01
