@@ -1,5 +1,5 @@
 #!/bin/sh
-set -x
+
 #    Copyright (c) International Business Machines  Corp., 2003
 #
 #    This program is free software;  you can redistribute it and/or modify
@@ -35,7 +35,7 @@ if [ $? -eq 0 ]; then
 fi
 export TMPBASE="/tmp"
 export TMP="${TMPBASE}/ltpstress-$$"
-export PATH=$PATH:$LTPROOT/testcases/bin
+export PATH=$LTPROOT/testcases/bin:$PATH
 memsize=0
 PROC_NUM=0
 leftover_memsize=0
@@ -43,21 +43,23 @@ duration=86400
 datafile="/tmp/ltpstress.data"
 interval=10
 Sar=0
+Top=0
 
 usage()
 {
 
 	cat <<-END >&2
-	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [-S] 
+	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [ [-S]|[-T] ]
 
     -d datafile     Data file for 'sar' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' should take snapshots. Default is 10 seconds.
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is 64Mb.
     -S              Use 'sar' to measure data. 
+    -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
 
-	example: ${0##*/} -d /tmp/topdata -l /tmp/ltplog.$$ -m 128 -t 24 -S
+	example: ${0##*/} -d /tmp/sardata -l /tmp/ltplog.$$ -m 128 -t 24 -S
 	END
 exit
 }
@@ -81,7 +83,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-while getopts d:hi:l:St:m:\? arg
+while getopts d:hi:l:STt:m:n\? arg
 do  case $arg in
 
 	d)	datafile="$OPTARG";;
@@ -96,7 +98,19 @@ do  case $arg in
         m)	memsize=$(($OPTARG * 1024))
 		check_memsize;;	
 
-        S)      Sar=1;;
+        S)      if [ $Top -eq 0 ]; then
+                  Sar=1
+                else
+                  echo "Cannot specify -S and -T...exiting"
+                  exit
+                fi;;
+
+	T)	if [ $Sar -eq 0 ]; then
+                  Top=1
+                else
+                  echo "Cannot specify -S and -T...exiting"
+                  exit
+                fi;;
 
         t)      hours=$OPTARG
 		duration=$(($hours * 60 * 60));;
@@ -187,6 +201,11 @@ if [ $Sar -eq 1 ]; then
   sar -o $datafile $interval 0 &
 fi
 
+if [ $Top -eq 1 ]; then
+  screen -d -m top -o $datafile -d $interval &
+  SCREEN_PID=$!
+fi
+
 sleep 2
 
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${TMP}/stress.part1 >/dev/null 2>&1 & 
@@ -201,6 +220,9 @@ sleep $(($duration + 10))
 
 if [ $Sar -eq 1 ]; then
   killall -9 sadc >/dev/null 2>&1
+fi
+if [ $Top -eq 1]; then
+  kill -9 $SCREEN_PID >/dev/null 2>&1
 fi
 killall -9 pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
