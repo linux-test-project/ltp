@@ -214,12 +214,23 @@ fi
 
 sleep 2
 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${TMP}/stress.part1 >/dev/null 2>&1 & 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 >/dev/null 2>&1 &
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 >/dev/null 2>&1 &
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress4 -n stress4 $logfile -f ${TMP}/stress.part4 >/dev/null 2>&1 &
+output1=${TMPBASE}/ltpstress.$$.output1
+output2=${TMPBASE}/ltpstress.$$.output2
+output3=${TMPBASE}/ltpstress.$$.output3
+output4=${TMPBASE}/ltpstress.$$.output4
+
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${TMP}/stress.part1 -o $output1 & 
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 -o $output2 &
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 -o $output3 &
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress4 -n stress4 $logfile -f ${TMP}/stress.part4 -o $output4 &
 
 echo "Running LTP Stress for $hours hour(s)"
+echo ""
+echo "Test output recorded in:"
+echo "        $output1"
+echo "        $output2"
+echo "        $output3"
+echo "        $output4"
 
 # Sleep a little longer than duration to let pan "try" to gracefully end itself.
 sleep $(($duration + 10))  
