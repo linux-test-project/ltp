@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fcntl05.c
+ * 	fcntl17.c
  *
  * DESCRIPTION
  * 	Check deadlock detection for file locking
@@ -30,10 +30,12 @@
  * 	second and third child.
  *
  * USAGE
- * 	fcntl05
+ * 	fcntl17
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *      04/2002 Minor fixes by William Jay Huie (testcase name 
+		fcntl05 => fcntl17, check signal return for SIG_ERR)
  *
  * RESTRICTIONS
  *	None
@@ -45,7 +47,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "fcntl05";
+char *TCID = "fcntl17";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -279,13 +281,13 @@ setup()
 		return(1);
 	}
 
-	if ((int)(signal(SIGALRM, catch_alarm)) < 0) {
+	if ((int)(signal(SIGALRM, catch_alarm)) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed, errno: %d",
 			 errno);
 		return(1);
 	}
 
-	if ((int)(signal(SIGCLD, catch_child)) < 0) {
+	if ((int)(signal(SIGCLD, catch_child)) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
 			 errno);
 		return(1);
