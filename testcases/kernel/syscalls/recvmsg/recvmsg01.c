@@ -225,8 +225,8 @@ setup(void)
 	sin1.sin_family = AF_INET;
 	sin1.sin_port = htons((getpid() % 32768) +11000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
-
-	(void) strcpy(tmpsunpath, "/tmp/udsockXXXXXX");
+	tst_tmpdir();
+	(void) strcpy(tmpsunpath, "udsockXXXXXX");
 	tfd = mkstemp(tmpsunpath);
 	close(tfd);
 	unlink(tmpsunpath);
@@ -245,6 +245,7 @@ cleanup(void)
 	if (tmpsunpath[0] != '\0')
 		(void) unlink(tmpsunpath);
 	TEST_CLEANUP;
+	tst_rmdir();
 	tst_exit();
 }
 
@@ -467,7 +468,7 @@ sender(int fd)
 	char	tmpfn[1024], snd_cbuf[1024];
 	int	tfd;
 
-	(void) strcpy(tmpfn, "/tmp/smtXXXXXX");
+	(void) strcpy(tmpfn, "smtXXXXXX");
 	tfd = mkstemp(tmpfn);
 	if (tfd < 0)
 		return;
