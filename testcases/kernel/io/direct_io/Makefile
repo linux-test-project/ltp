@@ -50,5 +50,5 @@ clean:
 	rm -f $(BINS) diotest_routines.o
 
 install:
-	ln -f $(BINS) ../../../../bin
+	ln -f $(BINS) ../../../bin
 
