@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.18 2003/01/30 06:22:31 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.19 2003/01/30 06:28:39 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -464,15 +464,19 @@ main(int argc, char **argv)
 	} /* while( (num_active < keep_active) && (starts != 0) ) */
 
 	if (starts == 0)
-	{ printf("incrementing stop\n"); ++stop; }
-        else if (starts == -1) //wjh
-        {
-           FILE *f = (FILE*)-1;
-           if ((f = fopen(PAN_STOP_FILE, "r")) != 0)
-           {  printf("Got %s Stopping!\n", PAN_STOP_FILE);
-              fclose(f); unlink(PAN_STOP_FILE); stop++; 
-           }
-        }
+	{ 
+		if (!quiet_mode)
+			printf("incrementing stop\n"); 
+		++stop; 
+	}
+	else if (starts == -1) //wjh
+	{
+	   FILE *f = (FILE*)-1;
+	   if ((f = fopen(PAN_STOP_FILE, "r")) != 0)
+	   {  printf("Got %s Stopping!\n", PAN_STOP_FILE);
+		  fclose(f); unlink(PAN_STOP_FILE); stop++; 
+	   }
+	}
 
 	if (rec_signal) {
 	    /* propagate everything except sigusr2 */
