@@ -1,16 +1,12 @@
-CFLAGS := -Wall
-LDFLAGS := -lpthread
+CFLAGS := -O -g -D_LINUX_ -lpthread
 
 SRCS=$(wildcard *.c)
+
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all:
-	make -f Makefile.linux
+all: $(TARGETS)
 
-linux: 
-	make -f Makefile.linux
-
-notlinux: $(TARGETS)
-
+install: all
+	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 clean:
 	rm -f $(TARGETS)
