@@ -63,7 +63,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be run by 'non-super-user' only.
  *
  */
 #include <stdio.h>
@@ -73,6 +72,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -89,6 +89,10 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t User_id;			/* user id/group id of test process */
 gid_t Group_id;
 int fildes;			/* File descriptor of testfile */
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup();			/* Setup function for the test */
 void cleanup();			/* Cleanup function for the test */
@@ -177,11 +181,18 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
     
-	/* Check that the test process id is not super/root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-super/root for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
