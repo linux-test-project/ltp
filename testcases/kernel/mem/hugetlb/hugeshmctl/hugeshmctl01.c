@@ -54,6 +54,7 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *	04/2004 - Updated by Robbie Williamson
  *
  * RESTRICTIONS
  *	none
