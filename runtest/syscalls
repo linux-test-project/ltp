@@ -490,6 +490,9 @@ readv01 readv01
 readv02 readv02
 readv03 readv03
 
+reboot01 reboot01
+reboot02 reboot02
+
 recv01 recv01
 
 recvfrom01 recvfrom01
