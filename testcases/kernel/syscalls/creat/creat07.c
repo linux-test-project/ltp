@@ -125,7 +125,7 @@ main(int ac, char **av)
 		}
 
 		if (pid2 == 0) {		/* second child */
-			sleep(1);		/* let first child start */
+			sleep(10);		/* let first child start */
 
 			TEST(creat(fname, O_WRONLY));
 
