@@ -8,6 +8,8 @@ all: $(TARGETS)
 
 install:
 	ln -f rpc01 ../../../bin
+	ln -f rpc1 ../../../bin
+	ln -f rpc_server ../../../bin
 
 clean:
 	rm -f $(TARGETS)
