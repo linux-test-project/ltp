@@ -270,23 +270,41 @@ Pan
 \family typewriter 
 pan
 \family default 
- is a simple test driver.
-  It will take a list of test tags and command lines and run them.
-  
-\family typewriter 
-pan
-\family default 
- has the ability to run the test sequentially or randomly and in parallel
- while capturing test output and cleaning up orphaned processes.
-  
-\family typewriter 
-pan
-\family default 
- can also be nested to create very complex test environments.
-   
+ is a simple test driver with the ability to keep track of orphaned processes
+ and capture test output.
+ It works by reading a list of test tags and command lines and runs them.
+ By default pan will select a command randomly from the list of test tags,
+ wait for it to finish.
+ Through command line options you can run through the entire list sequentially,
+ run n tests, keep n test running at all times, and buffer test output.
+ Pan can be nested to create very complex test environments.
 \layout Standard
 
-A pan file contains a list of tests to run.
+Pan uses an 
+\emph on 
+active file
+\emph default 
+, also called a 
+\emph on 
+zoo file
+\emph default 
+ to keep track of which tests are currently running.
+ This file holds the pid, tag, and a portion of the command line.
+ When you start pan it becomes a test tag in itself, thus it requires a
+ name for itself.
+ Pan updates the active file to show which test tags are currently running.
+ When a test tag exits, pan will overwrite the first character with a '#'.
+ The active file can be shared between multiple instances of pan so you
+ know which tests were running when the system crashes by looking at one
+ file.
+ 
+\layout Standard
+
+A 
+\emph on 
+pan file
+\emph default 
+ contains a list of test tags for pan to run.
  The format of a pan file is as follows:
 \layout Code
 
@@ -304,10 +322,7 @@ testtag testprogram -o one -p two other command line options
 # behaviors depending on the command line options so it is 
 \layout Code
 
-# helpful to describe what each test tag is meant to verify or 
-\layout Code
-
-# provoke.
+# helpful to describe what each test tag is meant to verify or # provoke.
 \layout Code
 
 # Some more test cases
@@ -350,6 +365,19 @@ fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
 \layout Code
 
 # run the entire set of file system tests
+\layout Standard
+
+The test tags are simple identifiers, no spaces are allowed.
+ The test of the line is the program to run, which is done using execvp(3).
+ Lines starting with '#' are comments and ignored by pan.
+ It is a good practice to include descriptions with your test tags so you
+ can have a reminder what a certain obscure test tag tries to do.
+\layout Subsubsection
+
+Examples
+\layout Standard
+
+Test true
 \layout Standard
 
 For more information on pan see the man page 
