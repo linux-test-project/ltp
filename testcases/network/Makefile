@@ -1,4 +1,4 @@
-SUBDIRS = multicast nfs rpc tcp_cmds ipv6
+SUBDIRS = multicast nfs rpc tcp_cmds ipv6 sctp
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
