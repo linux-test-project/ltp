@@ -60,7 +60,7 @@ else
    chomp(@hosts = <STDIN>);
 }
 
-$t = new Net::Telnet (Timeout => 30, Prompt => '/.* $/'
+$t = new Net::Telnet (Timeout => 30, Prompt => '/.+[\$#] $/'
 #                     ,Dump_Log => "ltp_control.log"
 #Remove the # on the line above and a copy of the
 #       data exchange will be saved to the file 'ms.log'

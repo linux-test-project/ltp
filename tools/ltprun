@@ -42,7 +42,6 @@ download_ltp()
    ftp -n $LTP_HOST << END_GET
    	user $LTP_USER $LTP_PASS
 	bin
-        pass
 	get $LTP_TARFILE
 	bye
 END_GET
@@ -103,7 +102,7 @@ collect_results()
    echo "Collecting LTP output"
    cd ~/ltp
    cp ~/$LTP_RUN_OUTPUT .
-   tar -czf ~/$LTP_OUTPUT_TAR $LTP_RUNALL_OUT $LTP_LOGFILE $LTP_RUN_OUTPUT $SAR_OUTFILE
+   tar --ignore-failed-read -czf ~/$LTP_OUTPUT_TAR $LTP_RUNALL_OUT $LTP_LOGFILE $LTP_RUN_OUTPUT $SAR_OUTFILE
 
    if [ -s ~/$LTP_OUTPUT_TAR ]; then 
       echo "LTP output tarfile created sucessfully";

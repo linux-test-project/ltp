@@ -131,6 +131,14 @@ sub gather_results()
       print "\nResults for: $res_dirs[$i]\n";
       chdir "$res_dirs[$i]" or die "Can't change to $res_dirs[$i]\n";
 
+      if ( !( -f $LTP_RUNALL_OUT && -f $LTP_LOGFILE ) )
+      {
+           print "$LTP_RUNALL_OUT or $LTP_LOGFILE seems to be missing\n";
+           print "     check the tarfile and perhaps $LTP_RUN_OUTPUT\n";
+           print "Skipping\n";
+           next;
+      }
+
       chomp($stat = `tail -n1 $LTP_RUNALL_OUT`);
       print "\t\t$stat\n";
 

@@ -34,7 +34,7 @@
  *	Added timer options: William Jay Huie, IBM
  *
  */
-/* $Id: pan.c,v 1.12 2002/09/04 13:15:55 plars Exp $ */
+/* $Id: pan.c,v 1.13 2002/09/05 20:48:35 robbiew Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -379,7 +379,7 @@ main(int argc, char **argv)
     }
 
     rec_signal = send_signal = 0;
-    alarm(run_time);
+    if (run_time != -1) { alarm(run_time); }
     signal(SIGALRM, wait_handler);
     signal(SIGINT, wait_handler);
     signal(SIGTERM, wait_handler);
