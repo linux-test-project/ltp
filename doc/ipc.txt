@@ -10,3 +10,8 @@ sem01
         random amount of time, and semup, so they will almost
         always be fighting for control of the semaphore.
 
+sem02
+	The application creates several threads using pthread_create().
+	One thread performs a semop() with the SEM_UNDO flag set. The
+	change in sempaphore value performed by that semop should be
+	"undone" only when the last pthread exits.
