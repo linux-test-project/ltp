@@ -106,10 +106,15 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ 0, NULL, 0, no_setup }
 };
 
+char *test_home;		/* variable to hold TESTHOME env */
 char *TCID="fchown04";           /* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EPERM, EBADF, 0};
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
@@ -214,11 +219,19 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	test_home = get_current_dir_name();
+
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -244,23 +257,9 @@ setup()
 int
 setup1()
 {
-	char *test_home;		/* variable to hold TESTHOME env */
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
 	
-	/* Get the TESTHOME env */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, cleanup, "Fail to get TESTHOME env. variable!");
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "fchown"))) {
-		strcat(test_home, "/fchown");
-	}
 
 	/* Create a testfile under temporary directory */
 	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
