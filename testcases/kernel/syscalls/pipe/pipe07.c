@@ -45,6 +45,7 @@
  * RESTRICTIONS
  *	None
  */
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -59,6 +60,8 @@ extern int Tst_count;
 int exp_enos[] = {EMFILE, 0};
 
 int pipe_ret, pipes[2];
+char currdir[PATH_MAX];
+char* tempdir=NULL;
 void setup(void);
 void cleanup(void);
 
@@ -70,7 +73,7 @@ int main(int ac, char **av)
 	int usedfds;			/* number of currently used file descriptors */
 	int npipes;			/* number of pipes opened */
 	pid_t mypid;			/* process of id of test */
-	char* cmdstring;		/* hold command string to execute using system() */
+	char* cmdstring=NULL;		/* hold command string to execute using system() */
 	FILE* f;			/* used for retrieving the used fds */
 
 	/* parse standard options */
@@ -78,19 +81,17 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
-
 	setup();
-
         /* Get the currently used number of file descriptors */
 	mypid=getpid();
 	cmdstring=malloc(sizeof(cmdstring));
-	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'}> current_fd_count",mypid);
+	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'}> pipe07.tmp",mypid);
 	if (system(cmdstring) == 0)
 	{
-		f = fopen("./current_fd_count", "r");	
+		f = fopen("pipe07.tmp", "r");	
 		fscanf(f,"%d",&usedfds);	
 		fclose(f);
-		unlink("current_fd_count");
+		unlink("pipe07.tmp");
 	}else
 		usedfds=3;   /* Could not get processes used fds, so assume 3 */
 
@@ -101,7 +102,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		min = getdtablesize();
+		min = getdtablesize(); 
+		
 		/* subtract used fds */
 		min -= usedfds;
 
@@ -134,8 +136,18 @@ int main(int ac, char **av)
 void
 setup()
 {
-	/* Create temporary directory and cd to it */
-	tst_tmpdir();
+	char template[PATH_MAX];
+
+	/* I had to do this, instead of tst_tmpdir() b/c I was receiving      *
+	 * a SIGSEGV for some reason when I tried to use tst_tmpdir/tst_rmdir */
+
+	/* Save current working directory */
+	getcwd(currdir,PATH_MAX);
+
+	/* Create temp directory and cd to it */
+ 	snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
+	tempdir=mkdtemp(template);
+	chdir(tempdir);
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -152,14 +164,21 @@ setup()
 void
 cleanup()
 {
-	/* Remove temporary directory */
-	tst_rmdir();
 
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* I had to do this, instead of tst_tmpdir() b/c I was receiving      *
+	 * a SIGSEGV for some reason when I tried to use tst_tmpdir/tst_rmdir */
+
+	/* Chdir back to original working directory */
+	chdir(currdir);
+
+	/* Remove temporary test directory */
+	rmdir(tempdir);
 
 	/* exit with return code appropriate for results */
 	tst_exit();
