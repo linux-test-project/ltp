@@ -50,7 +50,12 @@
  *	       -t   : Turn on syscall timing.
  *
  * HISTORY
- *	03/2001 - Written by Wayne Boyer
+ *	03/2001  - Written by Wayne Boyer
+ *	17/01/02 - Modified. Manoj Iyer, IBM Austin. TX. manjo@austin.ibm.com
+ *	           4th argument to semctl() system call was modified according
+ *	           to man pages. 
+ *	           In my opinion The test should not even have compiled but
+ *	           it was working due to some mysterious reason.
  *
  * RESTRICTIONS
  *	none
@@ -66,16 +71,19 @@ extern int Tst_count;
 
 int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
 
-unsigned short get_arr[PSEMS];
+
 struct sembuf sops[PSEMS];	/* an array of sembuf structures */
+
 
 main(int ac, char **av)
 {
+        union semun get_arr;
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int i;
 	int fail = 0;
 
+        get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -104,14 +112,14 @@ main(int ac, char **av)
 
 				/* get the values and make sure they */
 				/* are the same as what was set      */
-				if (semctl(sem_id_1, 0, GETALL, &get_arr) ==
+				if (semctl(sem_id_1, 0, GETALL, get_arr) ==
 				    -1) {
 					tst_brkm(TBROK, cleanup, "semctl() "
 						 "failed in functional test");
 				}
 
 				for (i=0; i<NSEMS; i++) {
-					if (get_arr[i] != i*i) {
+					if (get_arr.array[i] != i*i) {
 						fail = 1;
 					}
 				}
@@ -132,8 +140,9 @@ main(int ac, char **av)
 		/*
 		 * clean up things in case we are looping
 		 */
+		get_arr.val = 0;
 		for (i=0; i<NSEMS; i++) {
-			if(semctl(sem_id_1, i, SETVAL, 0) == -1) {
+			if(semctl(sem_id_1, i, SETVAL, get_arr) == -1) {
 				tst_brkm(TBROK, cleanup, "semctl failed");
 			}
 		}
