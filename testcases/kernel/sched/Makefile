@@ -1,4 +1,4 @@
-SUBDIRS = clisrv pthreads
+SUBDIRS = clisrv pthreads process_stress sched_stress
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
