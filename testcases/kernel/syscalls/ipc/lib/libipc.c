@@ -36,6 +36,7 @@
  */
 
 #include "ipcmsg.h"
+#include "ipcsem.h"
 
 #include <pwd.h>
 #include <sys/timeb.h>
@@ -129,11 +130,13 @@ init_buf(MSGBUF *m_buf, int type, int size)
 void
 rm_sema(int sem_id)
 {
+	union semun arr;
+
 	if (sem_id == -1) {		/* no semaphore to remove */
 		return;
 	}
 
-	if (semctl(sem_id, 0, IPC_RMID, NULL) == -1) {
+	if (semctl(sem_id, 0, IPC_RMID, arr) == -1) {
 		tst_resm(TINFO, "WARNING: semaphore deletion failed.");
 		tst_resm(TINFO, "This could lead to IPC resource problems.");
 		tst_resm(TINFO, "id = %d", sem_id);
