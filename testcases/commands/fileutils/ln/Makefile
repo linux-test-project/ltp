@@ -1,7 +1,7 @@
 all:
 
 install:
-	@ln -f ln_test.sh ../../../bin/
+	@ln -f ln_tests.sh ../../../bin/
 
 clean:
 

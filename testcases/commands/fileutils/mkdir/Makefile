@@ -1,7 +1,7 @@
 all:
 
 install:
-	@ln -f mkdir_test.sh ../../../bin/
+	@ln -f mkdir_tests.sh ../../../bin/
 
 clean:
 

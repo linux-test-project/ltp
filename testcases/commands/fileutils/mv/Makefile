@@ -1,7 +1,7 @@
 all:
 
 install:
-	@ln -f mv_test.sh ../../../bin/
+	@ln -f mv_tests.sh ../../../bin/
 
 clean:
 
