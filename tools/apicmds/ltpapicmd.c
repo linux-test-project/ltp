@@ -48,6 +48,10 @@
  *
  * History
  * Dec 10 2002 - Created - Manoj Iyer manjo@mail.utexas.edu
+ * Dec 12 2002 - Modified - Code that checked if the environment variables
+ *               TCID and TST_TOTAL were set did not print usage message. 
+ *               Modified code to print usage message in each case.
+ * 
  */
 
 
@@ -144,30 +148,28 @@ main( int argc,
     cmd_name = malloc(1024);
     testdir = malloc(1024);
 
-    if ((TCID = getenv("TCID")) == NULL)
+    if (((TCID = getenv("TCID")) == NULL) || 
+			((tst_total = getenv("TST_TOTAL")) == NULL))
     {
-        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-        exit(-1);
+        fprintf(stderr, "\nSet variables TCID and TST_TOTAL\n"
+				"export TCID=<test name>\n"
+				"export TST_TOTAL=<Total Number of Tests >\n\n");
     }
-        
-    if ((tst_total = getenv("TST_TOTAL")) == NULL)
-    {
-         fprintf(stderr, "Variable TST_TOTAL not set, TST_TOTAL=<num tests>\n");
-         exit(-1);
-    }
+	else
+	{
+		TST_TOTAL = atoi(tst_total);
 
-    TST_TOTAL = atoi(tst_total);
-
-    if (strcmp(TCID, " ") == 0)
-    {
-        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-        exit(-1);
-    }
-    if (TST_TOTAL == 0)
-    {
-        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-        exit(-1);
-    }
+		if (strcmp(TCID, " ") == 0)
+		{
+			fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+			exit(-1);
+		}
+		if (TST_TOTAL == 0)
+		{
+			fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+			exit(-1);
+		}
+	}
 
     strcpy(cmd_name, (char *)basename(argv++[0]));
 
