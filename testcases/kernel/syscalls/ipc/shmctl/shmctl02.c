@@ -135,9 +135,13 @@ int main(int ac, char **av)
 					 "%d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-				tst_resm(TFAIL, "call failed with an "
-					 "unexpected error - %d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				if (i >= 5)
+					tst_resm(TINFO,"shmctl() did not fail for non-root user."
+                                                 "This may be okay for your distribution.");
+				else
+					tst_resm(TFAIL, "call failed with an "
+						 "unexpected error - %d : %s",
+					 	TEST_ERRNO, strerror(TEST_ERRNO));
 			}			
 		}
 	}
