@@ -31,6 +31,8 @@
 #                             dhcp server using rules in dhcp.conf file.
 #               Feb 13 2003 - Added - Manoj Iyer. added check to see if command
 #                             is installed.
+#               Feb 28 2002 - Fixed testcase from incorrectly exiting test with
+#                             a PASS result when dhcpd is not running.
 #
 #! /bin/sh
 
@@ -54,13 +56,21 @@ init()
 
 	if [ -z $TMP ]
 	then
-		LTPTMP=/tmp
+		LTPTMP=/tmp/tst_dhcpd.$$/
 	else
-		LTPTMP=$TMP
+		LTPTMP=$TMP/tst_dhcpd.$$/
 	fi
 
 	# Initialize cleanup function.
 	trap "cleanup" 0
+
+	# create the temporary directory used by this testcase
+	mkdir -p $LTPTMP/ &>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_brkm TBROK "INIT: Unable to create temporary directory"
+		return $RC
+	fi
 
 	which tst_resm  &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -ne 0 ]
@@ -80,6 +90,10 @@ init()
 
 	tst_resm TINFO "INIT: Inititalizing tests."
 
+	# setting RC to non-zero value. The return value expected from 
+	# grep command is zero, setting RC to non-zero will avoid false 
+	# alarms.
+	RC=1
 	ps -ef | grep "dhcpd" &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -eq 0 ]
 	then
