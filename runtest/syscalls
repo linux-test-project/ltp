@@ -543,11 +543,11 @@ shmdt02 shmdt02
 shmget01 shmget01
 shmget02 shmget02
 shmget03 shmget03
-#shmget04 shmget04
+shmget04 shmget04
 shmget05 shmget05
 
 sigaction01 sigaction01
-#sigaction02 sigaction02
+sigaction02 sigaction02
 
 sigaltstack01 sigaltstack01
 sigaltstack02 sigaltstack02
