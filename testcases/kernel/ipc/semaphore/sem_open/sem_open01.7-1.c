@@ -43,9 +43,11 @@ int main()
 	if (( mysemp  == SEM_FAILED ) && (errno == ENAMETOOLONG )) 
 	{
 		puts("TEST PASS");
+		sem_unlink(semname);
 		return PTS_PASS;
 	} else {
 		puts("TEST FAILED: sem_open should have not been created because of the ENAMETOOLONG");
+		sem_unlink(semname);
 		return PTS_FAIL;
 	}
 

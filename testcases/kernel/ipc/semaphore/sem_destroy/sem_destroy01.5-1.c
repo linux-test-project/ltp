@@ -1,12 +1,12 @@
 /*
-    Copyright (c) 2002, Intel Corporation. All rights reserved.
+    Copyright (c) 2003, Intel Corporation. All rights reserved.
     Created by:  majid.awad REMOVE-THIS AT intel DOT com
     This file is licensed under the GPL license.  For the full content 
     of this license, see the COPYING file at the top level of this 
     source tree.
  */
 /*
-   sem_open test case attempts to create a named SEM that doesn't exist.
+ * sem_destory test case that attempts to destroy a semaphore that doesn't exist.
  */
 
 #include <sys/types.h>
@@ -18,23 +18,18 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-#define TEST "6-1"
-#define FUNCTION "sem_open"
+#define TEST "5-1"
+#define FUNCTION "sem_destroy"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 
 int main()
 {
-	sem_t   *mysemp;
-	char semname[50];
+	sem_t   mysemp;
 
 
-	sprintf(semname, "/tmp/" FUNCTION "_" TEST "_%d", getpid());
-
-	mysemp = sem_open(semname, O_EXCL);
-	if ((mysemp  == SEM_FAILED ) && ( errno == ENOENT ))  {
+	if ((sem_destroy(&mysemp)  == -1) && ( errno == EINVAL)) {
 		puts("TEST PASSED");
-		sem_unlink(semname);
 		return PTS_PASS;
 	} else {
 		puts("TEST FAILED");

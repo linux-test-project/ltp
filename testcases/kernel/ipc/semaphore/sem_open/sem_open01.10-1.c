@@ -58,6 +58,7 @@ int main()
 
 	if (val != 4 ) {
 		puts("TEST FAILED: second call of sem_open took place");
+		sem_unlink(semname);
 		return PTS_FAIL;
 	} else {
 		puts("TEST PASSED");

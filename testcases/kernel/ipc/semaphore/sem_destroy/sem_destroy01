@@ -23,8 +23,8 @@
 ####################################################
 
 #Set variables NAME and TST_TOTAL
-NAME=sem_open01
-export TST_TOTAL=12
+NAME=sem_destroy01
+export TST_TOTAL=6
 
 check_return_code()
 {
@@ -53,9 +53,8 @@ check_return_code()
   fi
 
   if [ $RC -gt 5 ];then
-      $LTPBIN/tst_resm TBROK "$TEST: Test did not execute."
+      $LTPBIN/tst_resm TBROK "$NAME: test did not execute"
   fi
-
 }
 
 if [ -z "$LTPROOT" ]

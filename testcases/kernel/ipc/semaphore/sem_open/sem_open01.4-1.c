@@ -40,19 +40,14 @@ int main()
 	/* Opening the same existance SEM */
 	mysemp = sem_open(semname, O_CREAT|O_EXCL, 0444, 1);
 
-	if ( mysemp  == SEM_FAILED || mysemp == NULL)
-	{
-  		perror(ERROR_PREFIX "sem_open");
-		return PTS_UNRESOLVED;
+	if ((mysemp  == SEM_FAILED ) && ( errno == EEXIST)) {
+                puts("TEST PASSED");
+                sem_unlink(semname);
+                return PTS_PASS;
+        } else {
+                puts("TEST FAILED");
+                return PTS_FAIL;
+	
 	}
 
-		if (errno == EEXIST )  {
-			puts("TEST PASSED");
-			sem_unlink(semname);
-			return PTS_PASS;
-			}
-		else {
-			puts("TEST FAILED");
-			return PTS_FAIL;
-		}
 }
