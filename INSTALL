@@ -1,0 +1,14 @@
+Building and Installation of Test Tools.
+
+At the time of release, simplicity of the released code was considered
+paramount to understanding and adoption.  For this reason no effort was
+put into engineering complicated and convoluted build processes that
+were not necessary.  Instead, a minimal approach was taken and the
+build process reflects that.  Simply:
+
+cd <tool>
+make
+
+At the time of release, <tool> is one of doio or pan.  The build process
+builds the tools in question and leaves them among the sources.  There
+are no install routines, yet.

@@ -1,0 +1,220 @@
+/*
+ * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ * 
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * Further, this software is distributed without any warranty that it is
+ * free of the rightful claim of any third person regarding infringement
+ * or the like.  Any license provided herein, whether implied or
+ * otherwise, applies only to this software file.  Patent licenses, if
+ * any, provided herein do not apply to combinations of this program with
+ * other software, or any other product whatsoever.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ * 
+ * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+ * Mountain View, CA  94043, or:
+ * 
+ * http://www.sgi.com 
+ * 
+ * For further information regarding this notice, see: 
+ * 
+ * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+ */
+/*
+ * The routines in this module are used to fill/check a data buffer
+ * with/against a known pattern.
+ */
+
+/*
+ * pattern_check(buf, buflen, pat, patlen, patshift)
+ *
+ * Check a buffer of length buflen against repeated occurrances of
+ * a pattern whose length is patlen.  Patshift can be used to rotate
+ * the pattern by patshift bytes to the left.
+ *
+ * Patshift may be greater than patlen, the pattern will be rotated by
+ * (patshift % patshift) bytes.
+ *
+ * pattern_check returns -1 if the buffer does not contain repeated
+ * occurrances of the indicated pattern (shifted by patshift).
+ *
+ * The algorithm used to check the buffer relies on the fact that buf is 
+ * supposed to be repeated copies of pattern.  The basic algorithm is
+ * to validate the first patlen bytes of buf against the pat argument
+ * passed in - then validate the next patlen bytes against the 1st patlen
+ * bytes - the next (2*patlen) bytes against the 1st (2*pathen) bytes, and
+ * so on.  This algorithm only works when the assumption of a buffer full
+ * of repeated copies of a pattern holds, and gives MUCH better results
+ * then walking the buffer byte by byte.
+ *
+ * Performance wise, It appears to be about 5% slower than doing a straight
+ * memcmp of 2 buffers, but the big win is that it does not require a
+ * 2nd comparison buffer, only the pattern.
+ */
+
+#include <string.h>
+
+int
+pattern_check(buf, buflen, pat, patlen, patshift)
+char	*buf;
+int	buflen;
+char	*pat;
+int	patlen;
+int	patshift;
+{
+    int		nb, ncmp, nleft;
+    char	*cp;
+
+    if (patlen)
+	patshift = patshift % patlen;
+
+    cp = buf;
+    nleft = buflen;
+
+    /*
+     * The following 2 blocks of code are to compare the first patlen
+     * bytes of buf.  We need 2 checks if patshift is > 0 since we
+     * must check the last (patlen - patshift) bytes, and then the
+     * first (patshift) bytes.
+     */
+
+    nb = patlen - patshift;
+    if (nleft < nb) {
+	return (memcmp(cp, pat + patshift, nleft) ? -1 : 0);
+    } else {
+        if (memcmp(cp, pat + patshift, nb))
+	    return -1;
+
+	nleft -= nb;
+	cp += nb;
+    }
+
+    if (patshift > 0) {
+	nb = patshift;
+	if (nleft < nb) {
+	    return (memcmp(cp, pat, nleft) ? -1 : 0);
+	} else {
+	    if (memcmp(cp, pat, nb))
+		return -1;
+
+	    nleft -= nb;
+	    cp += nb;
+	}
+    }
+
+    /*
+     * Now, verify the rest of the buffer using the algorithm described
+     * in the function header.
+     */
+
+    ncmp = cp - buf;
+    while (ncmp < buflen) {
+	nb = (ncmp < nleft) ? ncmp : nleft;
+	if (memcmp(buf, cp, nb))
+	    return -1;
+
+	cp += nb;
+	ncmp += nb;
+	nleft -= nb;
+    }
+
+    return 0;
+}
+
+/*
+ * pattern_fill(buf, buflen, pat, patlen, patshift)
+ *
+ * Fill a buffer of length buflen with repeated occurrances of
+ * a pattern whose length is patlen.  Patshift can be used to rotate
+ * the pattern by patshift bytes to the left.
+ *
+ * Patshift may be greater than patlen, the pattern will be rotated by
+ * (patshift % patlen) bytes.
+ *
+ * If buflen is not a multiple of patlen, a partial pattern will be written
+ * in the last part of the buffer.  This implies that a buffer which is
+ * shorter than the pattern length will receive only a partial pattern ...
+ *
+ * pattern_fill always returns 0 - no validation of arguments is done.
+ *
+ * The algorithm used to fill the buffer relies on the fact that buf is 
+ * supposed to be repeated copies of pattern.  The basic algorithm is
+ * to fill the first patlen bytes of buf with the pat argument
+ * passed in - then copy the next patlen bytes with the 1st patlen
+ * bytes - the next (2*patlen) bytes with the 1st (2*pathen) bytes, and
+ * so on.  This algorithm only works when the assumption of a buffer full
+ * of repeated copies of a pattern holds, and gives MUCH better results
+ * then filling the buffer 1 byte at a time.
+ */
+
+int
+pattern_fill(buf, buflen, pat, patlen, patshift)
+char	*buf;
+int	buflen;
+char	*pat;
+int	patlen;
+int	patshift;
+{
+    int		trans, ncopied, nleft;
+    char	*cp;
+
+    if (patlen)
+	patshift = patshift % patlen;
+
+    cp = buf;
+    nleft = buflen;
+
+    /*
+     * The following 2 blocks of code are to fill the first patlen
+     * bytes of buf.  We need 2 sections if patshift is > 0 since we
+     * must first copy the last (patlen - patshift) bytes into buf[0]...,
+     * and then the first (patshift) bytes of pattern following them.
+     */
+
+    trans = patlen - patshift;
+    if (nleft < trans) {
+	memcpy(cp, pat + patshift, nleft);
+	return 0;
+    } else {
+	memcpy(cp, pat + patshift, trans);
+	nleft -= trans;
+	cp += trans;
+    }
+
+    if (patshift > 0) {
+        trans = patshift;
+	if (nleft < trans) {
+	    memcpy(cp, pat, nleft);
+	    return 0;
+	} else {
+	    memcpy(cp, pat, trans);
+	    nleft -= trans;
+	    cp += trans;
+	}
+    }
+
+    /*
+     * Now, fill the rest of the buffer using the algorithm described
+     * in the function header comment.
+     */
+
+    ncopied = cp - buf;
+    while (ncopied < buflen) {
+	trans = (ncopied < nleft) ? ncopied : nleft;
+	memcpy(cp, buf, trans);
+	cp += trans;
+	ncopied += trans;
+	nleft -= trans;
+    }
+
+    return(0);
+}
