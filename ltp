@@ -28,9 +28,23 @@
 
 kernel()
 {
-
-  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
-  read LOOPS
+  echo -n "Do you want to run by number of LOOPS or TIME (L/T)? >> "
+  read DURATION
+  case $DURATION in
+    l|L)
+	LOOPS=1
+  	echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
+  	read LOOPS
+	TIME=""
+	;;
+    *)
+	TIME=30m
+	echo "How long do you want to run? (Default 30m)" 
+	echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
+        read TIME
+	TIME="-t $TIME"
+	;;
+  esac
   echo""
   echo -n "Do you want to keep a summary logfile (Y/N)? Default is no. >> " 
   read kernel_log
@@ -134,17 +148,17 @@ kernel()
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
     else # Strip out the passes.
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
     fi  
   else
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
       PID=$!
     else #Strip out the passes.
       echo "      Tests running....Failures will display to the screen at the end of the run."
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
       PID=$!
     fi
   
@@ -251,8 +265,23 @@ networking()
   echo ""
   sleep 1
 
-  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
-  read LOOPS
+  echo -n "Do you want to run by number of LOOPS or TIME (L/T)? >> "
+  read DURATION
+  case $DURATION in
+    l|L)
+        LOOPS=1
+        echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
+        read LOOPS
+        TIME=""
+        ;;
+    *)
+        TIME=30m
+        echo "How long do you want to run? (Default 30m)"
+        echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
+        read TIME
+        TIME="-t $TIME"
+        ;;
+  esac
   echo""
   echo -n "Do you want to keep a summary logfile (Y/N)? Default is no. >> "
   read network_log
@@ -360,17 +389,17 @@ networking()
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
     else # Strip out the passes.
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
     fi
   else
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
       PID=$!
     else # Strip out the passes.
       echo "      Tests running....Failures will display to the screen"
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
       PID=$!
     fi
 
@@ -419,8 +448,23 @@ diskio()
   echo "Please make sure a data CD and an unprotected floppy disk are in"
   echo "there respectable drives."
   echo ""
-  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
-  read LOOPS
+  echo -n "Do you want to run by number of LOOPS or TIME (L/T)? >> "
+  read DURATION
+  case $DURATION in
+    l|L)
+        LOOPS=1
+        echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
+        read LOOPS
+        TIME=""
+        ;;
+    *)
+        TIME=30m
+        echo "How long do you want to run? (Default 30m)"
+        echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
+        read TIME
+        TIME="-t $TIME"
+        ;;
+  esac
   echo""
   echo -n "Do you want to keep a logfile (Y/N)? Default is no. >> " 
   read diskio_log
@@ -472,17 +516,17 @@ diskio()
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
     else # Strip out the passes.
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
     fi
   else
     if [ $FAILURES_ONLY -eq 0 ]; then
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
       PID=$!
     else # Strip out the passes.
       echo "      Tests running....Failures will display to the screen"
-      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      ${LTPROOT}/pan/pan -e $TIME -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
       PID=$!
     fi
 
