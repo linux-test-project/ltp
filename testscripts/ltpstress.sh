@@ -106,7 +106,8 @@ do  case $arg in
                 fi;;
 
 	T)	if [ $Sar -eq 0 ]; then
-                  top -h 2>&1 | grep "\-f filename"; then
+                  top -h 2>&1 | grep "\-f filename"
+		  if [ $? -eq 0 ]; then
                     Top=1
                   else
 		    echo "ERROR: Please build and install the version of top in the /tools dir"
