@@ -276,7 +276,7 @@ long			data;
 		 * remaining to fill buf, adjust bufstart.
 		 */
 
-		if (offset + leftover < sizeof(buf)) {
+		if ((unsigned int)offset + leftover < sizeof(buf)) {
 			bufstart = bufend - (offset + leftover);
 			offset = 0;
 		} else {

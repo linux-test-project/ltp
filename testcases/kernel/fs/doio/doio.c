@@ -3548,7 +3548,7 @@ int	patshift;
 		while (cp < bufend) {
 			if (*cp != pattern[pattern_index]) {
 				nb = bufend - cp;
-				if (nb > sizeof(expected)-1) {
+				if ((unsigned int)nb > sizeof(expected)-1) {
 					nb = sizeof(expected)-1;
 				}
 			    
@@ -4489,7 +4489,7 @@ void
 aio_handler(sig)
 int	sig;
 {
-	int		i;
+	unsigned int	i;
 	struct aio_info	*aiop;
 
 	for (i = 0; i < sizeof(Aio_Info) / sizeof(Aio_Info[0]); i++) {
@@ -4511,7 +4511,7 @@ int	sig;
 void
 dump_aio()
 {
-	int		i, count;
+	unsigned int	i, count;
 
 	count=0;
 	for (i = 0; i < sizeof(Aio_Info) / sizeof(Aio_Info[0]); i++) {
@@ -4562,7 +4562,7 @@ struct aio_info *
 aio_slot(aio_id)
 int	aio_id;
 {
-	int		i;
+	unsigned int	i;
 	static int	id = 1;
 	struct aio_info	*aiop;
 

@@ -665,7 +665,7 @@ random_bit(long mask)
 #ifndef CRAY
 
         bit=1L;
-        for ( nshift=0; nshift<sizeof(long)*8; nshift++) {
+        for ( nshift=0; (unsigned int)nshift<sizeof(long)*8; nshift++) {
                 if ( mask & bit )
                         nbits++;
                 bit=bit<<1;
