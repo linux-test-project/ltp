@@ -233,7 +233,7 @@ echo "************ Running aio-stress tests "
 echo "current working dir = ${PWD}"
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
 
-${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
+${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -o ltpaiostress.outfile -p -f ${TMPBASE}/ltp-aio-stress.part1 &
 
 wait $!
 
@@ -241,7 +241,7 @@ if [ "$runExtendedStress" -eq 1 ];then
 echo "************ Running EXTENDED aio-stress tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part2 > ${TMPBASE}/ltp-aio-stress.part2
 
-${LTPROOT}/pan/pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part2 &
+${LTPROOT}/pan/pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostress.logfile -o ltpaiostress.outfile -p -f ${TMPBASE}/ltp-aio-stress.part2 &
 
 wait $!
 fi
@@ -255,7 +255,7 @@ dd if=$file1 of=/test/aiodio/ff3      bs=4096 conv=block,sync
 echo "************ Running aiocp tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
 
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio.logfile -f ${TMPBASE}/ltp-aiodio.part1 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio.logfile -o ltpaiodio.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
 
 wait $!
 sync
@@ -263,7 +263,7 @@ sync
 echo "************ Running aiodio_sparse tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part2 > ${TMPBASE}/ltp-aiodio.part2
 
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio2.logfile -f ${TMPBASE}/ltp-aiodio.part2 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio2.logfile -o ltpaiodio2.outfile -p -f ${TMPBASE}/ltp-aiodio.part2 &
 
 wait $!
 
@@ -271,7 +271,7 @@ wait $!
 echo "************ Running aiodio_sparse tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part3 > ${TMPBASE}/ltp-aiodio.part3
 
-${LTPROOT}/pan/pan -x 5 -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l ltpaiodio3.logfile -f ${TMPBASE}/ltp-aiodio.part3 &
+${LTPROOT}/pan/pan -x 5 -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l ltpaiodio3.logfile -o ltpaiodio3.outfile -p -f ${TMPBASE}/ltp-aiodio.part3 &
 
 wait $!
 
