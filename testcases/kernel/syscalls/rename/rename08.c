@@ -66,6 +66,7 @@
  */
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -81,6 +82,8 @@ int TST_TOTAL=3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={EFAULT, 0};     /* List must end with 0 */
+
+char * bad_addr = 0;
 
 int fd;
 char fname[255];
@@ -179,6 +182,13 @@ setup()
 	sprintf(fname,"./tfile_%d",getpid());
 
 	do_file_setup(fname);
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[0].fd2 = bad_addr;
+	TC[1].fd = bad_addr;
 }
 
 /*

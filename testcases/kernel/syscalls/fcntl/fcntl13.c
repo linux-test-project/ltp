@@ -161,7 +161,7 @@ block4:
 		tst_resm(TINFO, "Test for errno EBADF");
 		fail = 0;
 
-		if (fcntl(-1, F_GETLK, 1) != -1) {
+		if (fcntl(-1, F_GETLK, &flock) != -1) {
 			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
 			fail = 1;
 		} else if (errno != EBADF) {

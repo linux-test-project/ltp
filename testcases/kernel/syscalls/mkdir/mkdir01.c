@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mkdir01.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: mkdir01.c,v 1.2 2002/07/23 13:11:18 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -107,6 +107,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
@@ -123,6 +124,8 @@ int TST_TOTAL=2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={EFAULT, 0};	/* List must end with 0 */
+
+char * bad_addr = 0;
 
 int
 main(int ac, char **av)
@@ -159,7 +162,7 @@ main(int ac, char **av)
 	 */
 
 	/* Call mkdir(2) */
-	TEST(mkdir((char *)-1,0777));
+	TEST(mkdir(bad_addr,0777));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -240,6 +243,11 @@ setup()
 
     /* Create a temporary directory and make it current. */
     tst_tmpdir();
+
+    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    if (bad_addr <= 0) {
+	tst_brkm(TBROK, cleanup, "mmap failed");
+    }
 }	/* End setup() */
 
 

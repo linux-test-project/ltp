@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: access03.c,v 1.2 2002/07/23 13:11:18 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -103,6 +103,7 @@
 
  
 #include <unistd.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -118,6 +119,8 @@ int TST_TOTAL=8;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={EFAULT, 0};  /* List must end with 0 */
+
+char * bad_addr = 0;
 
 int main(int ac, char **av)
 {
@@ -156,7 +159,7 @@ int main(int ac, char **av)
 	 
 
 	/* Call access(2) */
-	TEST(access( (char *)-1,R_OK));
+	TEST(access( bad_addr,R_OK));
 	
 
 	/* check return code */
@@ -195,7 +198,7 @@ int main(int ac, char **av)
 	 
 
 	/* Call access(2) */
-	TEST(access( (char *)-1,W_OK));
+	TEST(access( bad_addr,W_OK));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -233,7 +236,7 @@ int main(int ac, char **av)
 	 
 
 	/* Call access(2) */
-	TEST(access( (char *)-1,X_OK));
+	TEST(access( bad_addr,X_OK));
 	
 
 	/* check return code */
@@ -272,7 +275,7 @@ int main(int ac, char **av)
 	 
 
 	/* Call access(2) */
-	TEST(access( (char *)-1,F_OK));
+	TEST(access( bad_addr,F_OK));
 	
 
 	/* check return code */
@@ -484,6 +487,11 @@ setup()
 
     /* make and change to a temporary directory */
     tst_tmpdir();
+
+    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    if (bad_addr <= 0) {
+        tst_brkm(TBROK, cleanup, "mmap failed");
+    }
 }	/* End setup() */
 
 

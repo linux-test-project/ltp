@@ -82,6 +82,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/fcntl.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -109,6 +110,8 @@ char *TCID="truncate03";	/* Test program identifier.    */
 int TST_TOTAL=5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0};
+
+char * bad_addr = 0;
 
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
@@ -279,6 +282,12 @@ setup()
 			 TEST_FILE1, errno, strerror(errno));
 		/*NOTREACHED*/
 	}
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	Test_cases[3].pathname = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

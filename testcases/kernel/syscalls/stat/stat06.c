@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: stat06.c,v 1.2 2002/07/23 13:11:21 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -114,6 +114,7 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -130,6 +131,8 @@ int TST_TOTAL=8;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0, 0};
+
+char * bad_addr = 0;
 
 int high_address_setup();
 int longpath_setup();
@@ -276,6 +279,13 @@ setup()
 
     /* make a temp directory and cd to it */
     tst_tmpdir();
+
+    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    if (bad_addr <= 0) {
+	tst_brkm(TBROK, cleanup, "mmap failed");
+    }
+    Test_cases[6].pathname = bad_addr;
+    
 
     for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
 	Test_cases[ind].setupfunc();

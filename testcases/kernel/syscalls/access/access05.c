@@ -84,6 +84,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <pwd.h>
 
 #include "test.h"
@@ -138,6 +139,8 @@ struct passwd *ltpuser;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
+
+char * bad_addr = 0;  
 
 int
 main(int ac, char **av)
@@ -244,6 +247,12 @@ setup()
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	Test_cases[5].pathname = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

@@ -65,6 +65,7 @@
 
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -92,6 +93,8 @@ char tstdir5[NAMELEN];
 char long_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 int exp_enos[]={EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, 0};
+
+char * bad_addr = 0;
 
 struct test_case_t {
         char *dir;
@@ -263,6 +266,12 @@ setup()
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[0].dir = bad_addr;
 }
 
 

@@ -105,6 +105,7 @@ main(int ac, char **av)
 		if (fork() == 0) {
 			exit(0);
 		}
+		pid = 1;
 		ret = waitpid(pid, &status, WUNTRACED);
 		flag = 0;
 		if( ret != -1) {

@@ -129,6 +129,10 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
+			if(Test_cases[i].setupfunc != NULL) {
+				Test_cases[i].setupfunc();
+			}
+
 			gidsetsize = Test_cases[i].gsize;
 			test_desc = Test_cases[i].desc;
 			
@@ -179,18 +183,9 @@ setup()
 {
 	int i;
 
-/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setreuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setreuid");
-         }
-
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -198,12 +193,6 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* call individual setup functions */
-	for (i = 0; i < TST_TOTAL; i++) {
-		if(Test_cases[i].setupfunc != NULL) {
-			Test_cases[i].setupfunc();
-		}
-	}
 }
 
 /*
@@ -217,6 +206,15 @@ int
 setup1()
 {
 	struct passwd *user_info;	/* struct. to hold test user info */
+
+/* Switch to nobody user for correct error code collection */
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setreuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setreuid");
+         }
 
 	if ((user_info = getpwnam(TESTUSER)) == NULL) {
 		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);

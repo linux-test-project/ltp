@@ -61,6 +61,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -96,6 +97,8 @@ struct test_case_t {
 	/* the buffer is invalid - EFAULT */
 	{&fd3, (void *)-1, EFAULT}
 };
+
+char * bad_addr = 0;
 
 main(int ac, char **av)
 {
@@ -169,6 +172,12 @@ setup(void)
 	if ((fd3 = open(fname, O_RDWR | O_CREAT)) == -1) {
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[2].buf = bad_addr;
 }
 
 /*

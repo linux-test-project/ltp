@@ -67,7 +67,7 @@ struct passwd *ltpuser;
 
 char fname[30] = "testfile";
 char path[50];
-struct statfs *buf;
+struct statfs buf;
 
 void setup(void);
 void cleanup(void);
@@ -94,7 +94,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		TEST(statfs(path, buf));
+		TEST(statfs(path, &buf));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");

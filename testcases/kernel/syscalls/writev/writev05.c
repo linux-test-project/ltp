@@ -171,7 +171,7 @@ block1:
 		fail = 0;
 
 		l_seek(fd[0], 0, 0);
-		TEST(writev(fd[0], wr_iovec, 3));
+		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EFAULT) {

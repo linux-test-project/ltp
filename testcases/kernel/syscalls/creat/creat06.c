@@ -64,6 +64,7 @@
 #include <errno.h>
 #include <string.h>
 #include <pwd.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -114,6 +115,8 @@ struct test_case_t {
 	/* The directory lacks execute permission - EACCES */
 	{test6_file, MODE1, EACCES}
 };
+
+char * bad_addr = 0;
 
 main(int ac, char **av)
 {
@@ -208,6 +211,12 @@ setup()
 	if (creat("file1", MODE1) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create a test file");
 	}
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[4].fname = bad_addr;
 
 	/* create a directory that will be used in test #6 */
 	if (mkdir("dir6", MODE2) == -1) {

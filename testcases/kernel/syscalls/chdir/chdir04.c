@@ -57,6 +57,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <test.h>
 #include <usctest.h>
 
@@ -98,6 +99,8 @@ int flag;
 
 void setup(void);
 void cleanup(void);
+
+char * bad_addr = 0;
 
 main(int ac, char **av)
 {
@@ -163,6 +166,12 @@ setup()
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[2].dname = bad_addr;
 }
 
 

@@ -87,6 +87,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -131,6 +132,8 @@ char *TCID="chmod06";           /* Test program identifier.    */
 int TST_TOTAL = 7;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+
+char * bad_addr = 0;
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
@@ -257,6 +260,12 @@ setup()
 
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	Test_cases[3].pathname = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

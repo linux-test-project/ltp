@@ -70,6 +70,7 @@
 #include <test.h>
 #include <usctest.h>
 #include <pwd.h>
+#include <sys/mman.h>
 
 char *TCID = "execve03";
 int TST_TOTAL = 6;
@@ -77,6 +78,8 @@ extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
+
+char * bad_addr = 0;
 
 void setup(void);
 void cleanup(void);
@@ -221,6 +224,12 @@ setup()
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup, "close() failed");
 	}
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[3].tname = bad_addr;
 }
 
 

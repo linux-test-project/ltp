@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: rmdir05.c,v 1.2 2002/07/23 13:11:19 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -96,6 +96,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
 #include "test.h"
@@ -114,6 +115,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines. */
 struct stat stat_buf;   	/* Stat buffer used for verification. */
 char dir_name[256];		/* Array to hold directory name. */
 
+char * bad_addr = 0;
 
 int
 main(int argc, char **argv)
@@ -280,7 +282,7 @@ main(int argc, char **argv)
 
 
 	/* Call rmdir(2) */
-	TEST(rmdir((char *)-1));
+	TEST(rmdir(bad_addr));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -411,6 +413,11 @@ void setup()
 
     /* Create a unique directory name. */
     sprintf(dir_name,"./dir_%d",getpid());
+
+    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    if (bad_addr <= 0) {
+	tst_brkm(TBROK, cleanup, "mmap failed");
+    }
 
 }	/* End setup() */
 

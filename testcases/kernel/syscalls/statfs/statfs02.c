@@ -55,6 +55,7 @@
 #include <sys/statfs.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
@@ -64,6 +65,8 @@ int TST_TOTAL = 5;
 extern int Tst_count;
 
 int exp_enos[]={ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT, 0};
+
+char * bad_addr = 0;
 
 char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 	char good_dir[100] = "testdir";
@@ -170,6 +173,12 @@ setup()
 	sprintf(fname1, "%s/%s", fname, fname);
 
 	sprintf(good_dir, "%s.statfs.%d", good_dir, getpid());
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[3].path = bad_addr;
 }
 
 

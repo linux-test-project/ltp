@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <pwd.h>
@@ -67,6 +68,8 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0};
+
+char * bad_addr = 0;
 
 char filename[40] = "";
 char fname[] = "/usr/bin/test";		/* test executable to open */
@@ -179,6 +182,12 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "Can't creat %s", filename);
 	}
 	close(fildes);
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	TC[5].fname = bad_addr;
 }
 
 /*

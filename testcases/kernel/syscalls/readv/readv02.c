@@ -42,6 +42,7 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/fcntl.h>
+#include <sys/mman.h>
 #include <memory.h>
 #include <errno.h>
 
@@ -89,6 +90,8 @@ char *buf_list[NBUFS];
 char *TCID = "readv02";
 int TST_TOTAL = 1;
 extern int Tst_count;
+
+char * bad_addr = 0;
 
 int init_buffs(char **);
 int fill_mem(char *, int, int);
@@ -227,6 +230,12 @@ setup()
 	}
 
 	fd[1] = -1;		/* Invalid file descriptor */
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	rd_iovec[6].iov_base = bad_addr;
 }
 
 /*

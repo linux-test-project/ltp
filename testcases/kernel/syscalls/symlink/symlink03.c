@@ -79,6 +79,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#include <sys/mman.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -103,6 +104,8 @@ char *TCID="symlink03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT,  EEXIST, EACCES, 0};
+
+char * bad_addr = 0;
 
 int no_setup();
 int setup1();                   /* setup function to test symlink for EACCES */
@@ -251,6 +254,12 @@ setup()
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
+
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	Test_cases[3].link = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
