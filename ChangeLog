@@ -6,7 +6,7 @@ LTP-20030206
   "runalltests.sh" script.     	          	    Robbie Williamson )
 - Corrected runalltests.sh -l option to require   ( Paul Larson )
   an absolute path.
-- Added additional runtime and ouput options      ( Manoj Iyer )
+- Added additional runtime and output options     ( Manoj Iyer )
   to `pan`.
 - Added hyperthreading tests.  			  ( Sonic Zhang )
 - Added ftruncate04 tests.			  ( Robbie Williamson )
