@@ -334,9 +334,9 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     if (verbose_print)
         fprintf(stdout, "map_write_unmap() arguments are:\n"
 		    "\t fd - arg[0]: %d\n"
-		    "\t size of file - arg[1]: %d\n"
+		    "\t size of file - arg[1]: %ld\n"
 		    "\t num of map/write/unmap - arg[2]: %d\n", 
-		    (int)mwuargs[0], (size_t)mwuargs[1], (int)mwuargs[2]);
+		    (int)mwuargs[0], (long unsigned)mwuargs[1], (int)mwuargs[2]);
 
     while (mwu_ndx++ < (int)mwuargs[2])
     {
