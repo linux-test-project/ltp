@@ -1,0 +1,303 @@
+/*
+ * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ *
+ */
+/**********************************************************
+ * 
+ *    TEST IDENTIFIER   : create_module02
+ * 
+ *    EXECUTED BY       : root / superuser
+ * 
+ *    TEST TITLE        : Checking error conditions for create_module(2)
+ * 
+ *    TEST CASE TOTAL   : 7
+ * 
+ *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
+ * 
+ *    SIGNALS
+ *      Uses SIGUSR1 to pause before test if option set.
+ *      (See the parse_opts(3) man page).
+ *
+ *    DESCRIPTION
+ *      Verify that,
+ *      1. create_module(2) returns -1 and sets errno to EPERM, if effective
+ *         user id of the caller is not superuser.
+ *      2. create_module(2) returns -1 and sets errno to EFAULT, if module 
+ *         name parameter is NULL.
+ *      3. create_module(2) returns -1 and sets errno to EINVAL, if module
+ *         name parameter is null terminated (zero length) string.
+ *      4. create_module(2) returns -1 and sets errno to EEXIST, if module 
+ *         entry with the same name already exists.
+ *      5. create_module(2) returns -1 and sets errno to EINVAL, if module 
+ *         size parameter is too small.
+ *      6. create_module(2) returns -1 and sets errno to ENAMETOOLONG, if 
+ *         module name parameter is too long.
+ *      7. create_module(2) returns -1 and sets errno to ENOMEM, if module 
+ *         size parameter is too large.
+ * 
+ *      Setup:
+ *        Setup signal handling.
+ *        Test caller is super user
+ *        Check existances of "nobody" user id.
+ *        Initialize  long module name
+ *        Set expected errnos for logging
+ *        Pause for SIGUSR1 if option specified.
+ *	  Initialize modname for each child process
+ * 
+ *      Test:
+ *       Loop if the proper options are given.
+ *        Execute system call
+ *        Check return code and error number, if matching,
+ *                   Issue PASS message
+ *        Otherwise,
+ *                   Issue FAIL message
+ * 
+ *      Cleanup:
+ *        Print errno log and/or timing stats if options given
+ * 
+ * USAGE:  <for command-line>
+ *  create_module02 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
+ *		where,  -c n : Run n copies concurrently.
+ *			-e   : Turn on errno logging.
+ *			-f   : Turn off functional testing
+ *			-h   : Show help screen
+ *			-i n : Execute test n times.
+ *			-I x : Execute test for x seconds.
+ *			-p   : Pause for SIGUSR1 before starting
+ *			-P x : Pause for x seconds between iterations.
+ *			-t   : Turn on syscall timing.
+ * 
+ ****************************************************************/
+
+#include <errno.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include <asm/page.h>
+#include <linux/module.h>
+#include "test.h"
+#include "usctest.h"
+
+extern int Tst_count;
+
+#define MODSIZE 10000			/* Arbitrarily selected MODSIZE */
+#define NULLMODNAME ""
+#define MAXMODSIZE  0xffffffff		/* Max size of size_t */
+#define SMALLMODSIZE  1			/* Arbitrarily selected SMALLMODSIZE */
+#define BASEMODNAME "dummy"
+#define LONGMODNAMECHAR 'm'		/* Arbitrarily selected the alphabet */
+#define MODNAMEMAX (PAGE_SIZE + 1)
+
+struct test_case_t {			/* test case structure */
+	char 	*modname;
+	size_t  size;
+	caddr_t retval;			/* syscall return value */
+	int	experrno;		/* expected errno */
+	char *desc;
+	int	(*setup)(void);		/* Individual setup routine */
+	void	(*cleanup)(void);	/* Individual cleanup routine */
+};
+
+char *TCID = "create_module02";
+static int exp_enos[]={EFAULT, EPERM, EEXIST, EINVAL, ENOMEM, ENAMETOOLONG, 0};
+static char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+static char longmodname[MODNAMEMAX];
+static int testno;
+static char modname[20];		/* Name of the module */
+
+static void setup(void);
+static void cleanup(void);
+static int setup1(void);
+static void cleanup1(void);
+static int setup2(void);
+static void cleanup2(void);
+
+static struct test_case_t  tdat[] = {
+	{ modname, MODSIZE, (caddr_t)-1, EPERM,
+		"Expected failure for non-superuser", setup1, cleanup1},
+	{ NULL, MODSIZE, (caddr_t)-1, EFAULT,
+		"Expected failure for NULL module name", NULL, NULL},
+	{ NULLMODNAME, MODSIZE, (caddr_t)-1, EINVAL,
+		"Expected failure for null terminated module name", NULL, NULL},
+	{ modname, MODSIZE, (caddr_t)-1, EEXIST,
+		"Expected failure for already existing module",
+		setup2, cleanup2},
+	{ modname, SMALLMODSIZE, (caddr_t)-1, EINVAL,
+		"Expected failure for insufficient module size", NULL, NULL},
+	{ longmodname, MODSIZE, (caddr_t)-1, ENAMETOOLONG,
+		"Expected failure for long module name", NULL, NULL},
+
+	/*
+	 *This test case is giving segmentation fault on
+	 * 2.4.* series, but works as expected with 2.5.* series of kernel.
+	 */
+	{ modname, MAXMODSIZE, (caddr_t)-1, ENOMEM,
+		"Expected failure for large module size", NULL, NULL},
+};
+
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
+
+int
+main(int argc, char **argv)
+{
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	    (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	setup();
+
+	/* check looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			if( (tdat[testno].setup) && (tdat[testno].setup()) ) {
+				/* setup() failed, skip this test */
+				continue;
+			}
+
+			TEST(create_module(tdat[testno].modname,
+				tdat[testno].size));
+			TEST_ERROR_LOG(TEST_ERRNO);
+			if ( (TEST_RETURN == (int) tdat[testno].retval) &&
+				(TEST_ERRNO == tdat[testno].experrno) ) {
+				tst_resm(TPASS, "%s, errno: %d",
+					tdat[testno].desc, TEST_ERRNO);
+			} else {
+				tst_resm(TFAIL, "%s ; returned"
+					" %d (expected %d), errno %d (expected"
+					" %d)", tdat[testno].desc,
+					TEST_RETURN, tdat[testno].retval,
+					TEST_ERRNO, tdat[testno].experrno);
+			}
+			if(tdat[testno].cleanup) {
+				tdat[testno].cleanup();
+			}
+		}
+	}
+	cleanup();
+
+	/*NOTREACHED*/
+	return 0;
+}
+
+int
+setup1(void)
+{
+	/* Change effective user id to nodody */
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TBROK, "seteuid failed to set the effective"
+				" uid to %d", ltpuser->pw_uid);
+		return 1;
+	}
+	return 0;
+}
+
+void
+cleanup1(void)
+{
+	 /* Change effective user id to root */
+         if (seteuid(0) == -1) {
+		tst_brkm(TBROK, tst_exit, "seteuid failed to set the effective"
+			" uid to root");
+         }
+}
+
+int
+setup2(void)
+{
+	/* Create a loadable module entry */
+	if(create_module(modname, MODSIZE) == -1) {
+		tst_resm(TBROK, "Failed to create module entry"
+			" for %s", modname); 
+		return 1;
+	}
+	return 0;
+}
+
+void
+cleanup2(void)
+{
+	 /* Remove loadable module entry */
+	if(delete_module(modname) == -1) {
+		tst_brkm(TBROK, tst_exit, "Failed to delete module entry"
+			" for %s", modname); 
+	}
+}
+
+/*
+ * setup()
+ *	performs all ONE TIME setup for this test
+ */
+void
+setup(void)
+{
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	/* Check whether it is root  */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
+		/*NOTREACHED*/
+	}
+
+        /* Check for nobody_uid user id */
+	 if( (ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_brkm(TBROK, tst_exit, "Required user %s doesn't exists",
+				nobody_uid);
+		/*NOTREACHED*/
+	 }
+
+	/* Initialize longmodname to LONGMODNAMECHAR character */
+	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
+
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
+
+	/* Pause if that option was specified
+	 * TEST_PAUSE contains the code to fork the test with the -c option.
+	 */
+	TEST_PAUSE;
+
+	/* Get unique module name for each child process */
+	if( sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
+		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
+	}
+}
+
+/*
+ * cleanup()
+ *	performs all ONE TIME cleanup for this test at
+ *	completion or premature exit
+ */
+void
+cleanup(void)
+{
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+	/*NOTREACHED*/
+}
