@@ -33,6 +33,7 @@ mkdir datafiles 2>/dev/null
 
 for the_file in `echo ascii.sm ascii.med ascii.lg ascii.jmb`
 do
+  rm -f datafiles/$the_file 2>/dev/null
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> datafiles/$the_file
