@@ -1,0 +1,11 @@
+#DESCRIPTION:Posix Timer Tests
+clock_getcpuclockid01 cd $LTPROOT/testcases/bin;clock_getcpuclockid01
+clock_getres01 cd $LTPROOT/testcases/bin;clock_getres01
+clock_gettime01 cd $LTPROOT/testcases/bin;clock_gettime01
+clock_nanosleep01 cd $LTPROOT/testcases/bin;clock_nanosleep01
+clock_settime01 cd $LTPROOT/testcases/bin;clock_settime01
+timer_create01 cd $LTPROOT/testcases/bin;timer_create01
+timer_delete01 cd $LTPROOT/testcases/bin;timer_delete01
+timer_getoverrun01 cd $LTPROOT/testcases/bin;timer_getoverrun01
+timer_gettime01 cd $LTPROOT/testcases/bin;timer_gettime01
+timer_settime01 cd $LTPROOT/testcases/bin;timer_settime01
