@@ -3,7 +3,7 @@
 #
 
 # Default C compiler: must be an ANSI C compiler
-CC         = cc
+#CC         = cc
 # File names for the main source files
 DRIV_SRC   = netpipe.c
 DRIV_OBJ   = netpipe.o

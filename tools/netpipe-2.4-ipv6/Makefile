@@ -1,10 +1,10 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.2 2003/03/28 20:28:35 robbiew Exp $
+# $Id: Makefile,v 1.3 2003/05/07 17:55:14 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler
-CC         = cc
+#CC         = cc
 # File names for the main source files
 DRIV_SRC   = netpipe.c
 DRIV_OBJ   = netpipe.o
