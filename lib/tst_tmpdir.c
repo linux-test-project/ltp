@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.2 2001/03/13 16:33:54 nstraz Exp $ */
+/* $Id: tst_tmpdir.c,v 1.3 2001/03/13 21:54:05 nstraz Exp $ */
 
 /**********************************************************
  *
@@ -119,7 +119,7 @@ extern char *TESTDIR;         /* the directory created; defined in */
 void
 tst_tmpdir()
 {
- 	char template[PATH_MAX];      /* template for mkstemp, mkdtemp */
+ 	char template[PATH_MAX];      /* template for mktemp, mkdtemp */
   	int  no_cleanup = 0;          /* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;            /* temporary storage for TMPDIR env var */
 
@@ -148,6 +148,18 @@ tst_tmpdir()
 			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
 		}
 		
+/* This is an AWEFUL hack to figure out if mkdtemp() is available */
+#if defined(__GLIBC_PREREQ)
+# if __GLIBC_PREREQ(2,2)
+#  define HAVE_MKDTEMP 1
+# else
+#  define HAVE_MKDTEMP 0
+# endif
+#else 
+# define HAVE_MKDTEMP 0
+#endif
+
+#if HAVE_MKDTEMP
 		/*
 		 * Make the temporary directory in one shot using mkdtemp()
 		 */
@@ -155,6 +167,23 @@ tst_tmpdir()
 			tst_brkm(TBROK, tmpdir_cleanup, 
 							"%s: mkdtemp(%s) failed; errno = %d: %s",
 						   	FN_NAME, template, errno, strerror(errno));
+#else 
+		/*
+		 * Make the template name, then the directory
+		 */
+		if ((TESTDIR = mktemp(template)) == NULL)
+			tst_brkm(TBROK, tmpdir_cleanup,
+							"%s: mktemp(%s) failed; errno = %d: %s",
+							FN_NAME, template, errno, strerror(errno));
+		if (mkdir(TESTDIR, DIR_MODE)) {
+			/* If we start failing with EEXIST, wrap this section in 
+			 * a loop so we can try again.
+			 */
+			tst_brkm(TBROK, tmpdir_cleanup,
+							"%s: mkdir(%s, %#o) failed; errno = %d: %s",
+							FN_NAME, TESTDIR, DIR_MODE, errno, strerror(errno));
+		}
+#endif
 
 		/*
 		 * Change the group on this temporary directory to be that of the
