@@ -190,7 +190,7 @@ int synchronize_children( c_info *parent )
 	info_p->sum = (long) my_index;
 
 	if ( debug ) {
-	    printf( "thread %d info_p=%x\n", my_index, info_p );
+	    printf( "thread %d info_p=%x\n", my_index, (unsigned int)info_p );
 	    fflush( stdout );
 	}
 
@@ -198,7 +198,7 @@ int synchronize_children( c_info *parent )
 	 * Make sure we have exclusive access to that variable before we
 	 * do the increment.  */
 	if ( debug ) {
-	    printf( "thread %d locking child_mutex %x\n", my_index, &parent->child_mutex );
+	    printf( "thread %d locking child_mutex %x\n", my_index, (unsigned int)&parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_lock( &parent->child_mutex );
@@ -210,7 +210,7 @@ int synchronize_children( c_info *parent )
 	parent->child_ptrs[parent->child_count++] = info_p;
 	if ( debug ) {
 	    printf( "thread %d unlocking child_mutex %x\n", my_index,
-	      &parent->child_mutex );
+	      (unsigned int)&parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_unlock( &parent->child_mutex );
@@ -258,8 +258,8 @@ int synchronize_children( c_info *parent )
 	    time( &timer.tv_sec );
 	    timer.tv_sec += (unsigned long)timeout * 60;
             timer.tv_nsec = (unsigned long)0;
-	    if ( rc = pthread_cond_timedwait(&node_condvar, &node_mutex,
-	      &timer) ) {
+	    if ((rc = pthread_cond_timedwait(&node_condvar, &node_mutex,
+	      &timer))) {
 		fprintf( stderr, "pthread_cond_timedwait (sync) %d: %s\n",
 		    my_index, sys_errlist[rc] );
 		exit( 2 );
@@ -306,7 +306,7 @@ void *doit( void *param )
 	struct timespec	timer;
 
 	if ( debug ) {
-	    printf( "parent=%#010x\n", parent );
+	    printf( "parent=%#010x\n", (unsigned int)parent );
 	    fflush( stdout );
 	}
 
@@ -341,7 +341,7 @@ void *doit( void *param )
 
 	if ( debug ) {
 	    printf( "thread %d getting to heart of doit.\n", my_index );
-	    printf( "info_p=%x, cdepth=%d, depth=%d\n", info_p, cdepth, depth );
+	    printf( "info_p=%x, cdepth=%d, depth=%d\n", (unsigned int)info_p, cdepth, depth );
 	    fflush( stdout );
 	}
 
@@ -357,17 +357,17 @@ void *doit( void *param )
 	    for ( child = 0; child < breadth; child++ ) {
 		if ( debug ) {
 		    printf( "thread %d making child %d, ptr=%x\n", my_index,
-		      child, &(info_p->threads[child]) );
+		      child, (unsigned int)&(info_p->threads[child]) );
 		    fflush( stdout );
 		}
-		if ( rc = pthread_create(&(info_p->threads[child]), &attr, doit, (void *) info_p) ) {
+		if ((rc = pthread_create(&(info_p->threads[child]), &attr, doit, (void *) info_p))) {
 		    fprintf( stderr, "pthread_create (doit): %s\n",
 		      sys_errlist[rc] );
 		    exit( 3 );
 		} else {
 		    if ( debug ) {
 			printf( "pthread_create made thread %x\n",
-			  &(info_p->threads[child]) );
+			  (unsigned int)&(info_p->threads[child]) );
 			fflush( stdout );
 		    }
 		}
@@ -383,14 +383,14 @@ void *doit( void *param )
 	    for ( child = 0; child < breadth; child++ ) {
 		if ( debug ) {
 		    printf( "attempting join on thread %x\n",
-		      &(info_p->threads[child]) );
+		      (unsigned int)&(info_p->threads[child]) );
 		    fflush( stdout );
 		}
-		if ( rc = pthread_join((info_p->threads[child]), &status) ) {
+		if ((rc = pthread_join((info_p->threads[child]), &status))) {
 		    if ( debug ) {
 			fprintf( stderr,
 			  "join failed on thread %d, status addr=%x: %s\n",
-			  my_index, status, sys_errlist[rc] );
+			  my_index, (unsigned int)status, sys_errlist[rc] );
 			fflush( stderr );
 		    }
 		    exit( 4 );
@@ -402,8 +402,8 @@ void *doit( void *param )
 
 		    /* Add all childrens indexes to your index value */
 		    info_p->sum += info_p->child_ptrs[child]->sum;
-		    printf("thread %d adding child thread %ld to sum = %ld\n",
-			   my_index, info_p->child_ptrs[child]->index, info_p->sum); 
+		    printf("thread %d adding child thread %d to sum = %ld\n",
+			   my_index, info_p->child_ptrs[child]->index, (long int)info_p->sum); 
 		}
 	    }
 
@@ -432,8 +432,8 @@ void *doit( void *param )
 				printf( "thread %d talk siblings\n", my_index );
 				fflush( stdout );
 			    }
-			    if ( rc = pthread_cond_broadcast(
-			      &parent->child_ptrs[child]->talk_condvar) ) {
+			    if ((rc = pthread_cond_broadcast(
+			      &parent->child_ptrs[child]->talk_condvar))) {
 				fprintf( stderr, "pthread_cond_broadcast: %s\n",
 				  sys_errlist[rc] );
 				exit( 5 );
@@ -460,8 +460,8 @@ void *doit( void *param )
 		    time( &timer.tv_sec );
 		    timer.tv_sec += (unsigned long)timeout * 60;
 		    timer.tv_nsec = (unsigned long)0;
-		    if ( rc = pthread_cond_timedwait(&info_p->talk_condvar,
-		      &info_p->talk_mutex, &timer) ) {
+		    if ((rc = pthread_cond_timedwait(&info_p->talk_condvar,
+		      &info_p->talk_mutex, &timer))) {
 			fprintf( stderr,
 			  "pthread_cond_timedwait (leaf) %d: %s\n",
 			  my_index, sys_errlist[rc] );
@@ -476,7 +476,7 @@ void *doit( void *param )
 
 	/* Our work is done.  We're outta here. */
 	printf( "thread %d exiting, depth=%d, status=%d, addr=%x\n", my_index,
-	  cdepth, info_p->status, info_p);
+	  cdepth, info_p->status, (unsigned int)info_p);
 	fflush( stdout );
 
 	pthread_exit( 0 );
@@ -495,14 +495,14 @@ int main( int argc, char *argv[] )
 	parse_args( argc, argv );
 
 	/* Initialize node mutex.  */
-	if ( rc = pthread_mutex_init(&node_mutex, NULL) ) {
+	if ((rc = pthread_mutex_init(&node_mutex, NULL))) {
 		fprintf( stderr, "pthread_mutex_init(node_mutex): %s\n",
 		    sys_errlist[rc] );
 		exit( 7 );
 	}
 
 	/* Initialize node condition variable.  */
-	if ( rc = pthread_cond_init(&node_condvar, NULL) ) {
+	if ((rc = pthread_cond_init(&node_condvar, NULL))) {
 		fprintf( stderr, "pthread_cond_init(node_condvar): %s\n",
 		    sys_errlist[rc] );
 		exit( 8 );
@@ -545,26 +545,26 @@ int main( int argc, char *argv[] )
 		bzero( child_info[index].child_ptrs,
 		    breadth * sizeof(c_info *) );
 		
-		if ( rc = pthread_mutex_init(&child_info[index].child_mutex, NULL) ) {
+		if ((rc = pthread_mutex_init(&child_info[index].child_mutex, NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
 			    sys_errlist[rc] );
 			exit( 13 );
 		}
 
-		if ( rc = pthread_mutex_init(&child_info[index].talk_mutex, NULL) ) {
+		if ((rc = pthread_mutex_init(&child_info[index].talk_mutex, NULL))) {
 			fprintf( stderr, "pthread_mutex_init talk_mutex: %s\n",
 			    sys_errlist[rc] );
 			exit( 14 );
 		}
 		
-		if ( rc = pthread_cond_init(&child_info[index].child_condvar, NULL) ) {
+		if ((rc = pthread_cond_init(&child_info[index].child_condvar, NULL))) {
 			fprintf( stderr,
 			    "pthread_cond_init child_condvar: %s\n",
 			    sys_errlist[rc] );
 			exit( 15 );
 		}
 
-		if ( rc = pthread_cond_init(&child_info[index].talk_condvar, NULL) ) {
+		if ((rc = pthread_cond_init(&child_info[index].talk_condvar, NULL))) {
 			fprintf( stderr, "pthread_cond_init talk_condvar: %s\n",
 			    sys_errlist[rc] );
 			exit( 16 );
@@ -580,7 +580,7 @@ int main( int argc, char *argv[] )
 	printf( "Creating root thread attributes via pthread_attr_init.\n" );
 	fflush( stdout );
 
-	if ( rc = pthread_attr_init(&attr) ) {
+	if ((rc = pthread_attr_init(&attr))) {
 		fprintf( stderr, "pthread_attr_init: %s\n", sys_errlist[rc] );
 		exit( 17 );
 	}
@@ -588,7 +588,7 @@ int main( int argc, char *argv[] )
 	/* Make sure that all the thread children we create have the
 	 * PTHREAD_CREATE_JOINABLE attribute.  If they don't, then the
 	 * pthread_join call will sometimes fail and cause mass confusion.  */
-	if ( rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE)) {
+	if ((rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))) {
 		fprintf( stderr, "pthread_attr_setdetachstate: %s\n",
 		    sys_errlist[rc] );
 		exit( 18 );
@@ -597,7 +597,7 @@ int main( int argc, char *argv[] )
 	printf( "Creating root thread via pthread_create.\n" );
 	fflush( stdout );
 
-	if ( rc = pthread_create(&root_thread, &attr, doit, NULL) ) {
+	if ((rc = pthread_create(&root_thread, &attr, doit, NULL))) {
 		fprintf( stderr, "pthread_create: %s\n", sys_errlist[rc] );
 		exit( 19 );
 	}
@@ -608,7 +608,7 @@ int main( int argc, char *argv[] )
 	}
 
 	/* Wait for the root child to exit.  */
-	if ( rc = pthread_join(root_thread, NULL) ) {
+	if ((rc = pthread_join(root_thread, NULL))) {
 		fprintf( stderr, "pthread_join: %s\n", sys_errlist[rc] );
 		exit( 20 );
 	}
