@@ -9,6 +9,7 @@ all: $(TARGETS)
 
 install:
 	ln -f perf_lan ../../../bin
+	ln -f pingpong ../../../bin
 
 clean:
 	rm -f $(TARGETS)
