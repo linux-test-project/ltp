@@ -143,7 +143,7 @@ main(int ac, char **av)
 						CHILD_STACK_SIZE, SIGCHLD, NULL,
 						NULL, NULL, NULL));
 #else
-			TEST(clone(test_cases[ind].child_fn, test_stack + CHILD_STACK_SIZE,
+			TEST(clone(test_cases[ind].child_fn, test_stack,
 				   (int)NULL, NULL));
 #endif
 	
