@@ -108,7 +108,7 @@ do_test()
    do
       ping -c1 $RHOST 2>&1 1>/dev/null
       [ $? = 0 ] || end_testcase "ping $RHOST failed"
-      arp -a | grep $RHOST 2>&1 1>/dev/null
+      arp -a | grep "$RHOST\>" 2>&1 1>/dev/null
       [ $? = 0 ] || end_testcase "arp -a failed"
       arp -d $RHOST 2>&1 1>/dev/null
       [ $? = 0 ] || end_testcase "arp -d $RHOST failed"

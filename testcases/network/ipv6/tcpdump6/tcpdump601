@@ -58,7 +58,7 @@ do_test()
    ping6 -f $RHOST > /dev/null 2>&1 &
    /usr/sbin/tcpdump -c $NUMLOOPS > $OUTFILE
    [ $? -eq 0 ] || end_testcase "Problems trying to launch tcpdump"
-   grep $RHOST $OUTFILE 
+   grep "$RHOST\>" $OUTFILE 
    [ $? -eq 0 ] || end_testcase "$RHOST was not listed in network traffic"
    PID=`ps -ef | grep "ping6 -f $RHOST" | grep -v grep | awk '{print $2}'`
    kill -9 $PID

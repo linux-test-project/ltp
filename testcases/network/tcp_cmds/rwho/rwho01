@@ -139,15 +139,15 @@ do_test()
    while [ $COUNT -le $NUMLOOPS ]
    do
       rwho -a > $OUTFILE
-      HOST=`awk '{print $2}' $OUTFILE|grep $LHOST|cut -f1 -d:|sort -u`
+      HOST=`awk '{print $2}' $OUTFILE|grep "$LHOST\>"|cut -f1 -d:|sort -u`
       [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in rwho outfile"
-      HOST=`awk '{print $2}' $OUTFILE|grep $RHOSTNAME|cut -f1 -d:|sort -u`
+      HOST=`awk '{print $2}' $OUTFILE|grep "$RHOSTNAME\>"|cut -f1 -d:|sort -u`
       [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in rwho outfile"
 
       ruptime -a > $OUTFILE
-      HOST=`awk '{print $1}' $OUTFILE|grep $LHOST|sort -u`
+      HOST=`awk '{print $1}' $OUTFILE|grep "$LHOST\>"|sort -u`
       [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in ruptime outfile"
-      HOST=`awk '{print $1}' $OUTFILE|grep $RHOSTNAME|sort -u`
+      HOST=`awk '{print $1}' $OUTFILE|grep "$RHOSTNAME\>"|sort -u`
       [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
       tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
