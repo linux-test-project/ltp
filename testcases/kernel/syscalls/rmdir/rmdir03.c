@@ -99,6 +99,7 @@ main(int ac, char **av)
 	pid_t pid;
 	struct passwd *nobody;
 	struct stat buf1;
+	int retval=0, e_code, status, status2;
 
 	/*
 	 * parse standard options
@@ -170,6 +171,7 @@ test1:
 		if (pid == 0) {		/* first child */
 			/* set to nobody */
 			if (seteuid(nobody->pw_uid) == -1) {
+				retval=1;
 				tst_brkm(TBROK, cleanup, "setreuid failed to "
 					 "set effective uid to %d",
 					 nobody->pw_uid);
@@ -184,8 +186,10 @@ test1:
 			}
 
 			if (TEST_RETURN != -1) {
-				 tst_resm(TFAIL, "call succeeded unexpectedly");
+				retval=1;
+				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else if (TEST_ERRNO != EPERM) {
+				retval=1;
 				tst_resm(TFAIL, "Expected EPERM got %d",
 					 TEST_ERRNO);
 			} else {
@@ -193,12 +197,13 @@ test1:
 			}
 
 			if (seteuid(0) == -1) {
+				retval=1;
 				tst_brkm(TBROK, cleanup, "seteuid(0) failed");
 			}
-		} else {		/* parent */
-			/* let the child carry on */
-			exit(0);
+			exit(retval);
+			/* END of child 1 (test1) */
 		}
+		/* Parent */
 
 test2:		
 		/* create the a directory with 0700 permits */
@@ -222,6 +227,7 @@ test2:
 		if (pid == 0) {		/* child */
 			/* set to nobody */
 			if (seteuid(nobody->pw_uid) == -1) {
+				retval = 1;
 				tst_brkm(TBROK, cleanup, "setreuid failed to "
 					 "set effective uid to %d",
 					 nobody->pw_uid);
@@ -236,8 +242,10 @@ test2:
 			}
 
 			if (TEST_RETURN != -1) {
-				 tst_resm(TFAIL, "call succeeded unexpectedly");
+				retval = 1;
+				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else if (TEST_ERRNO != EACCES) {
+				retval = 1;
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
 			} else {
@@ -245,11 +253,25 @@ test2:
 			}
 			
 			if (seteuid(0) == -1) {
+				retval = 1;
 				tst_brkm(TBROK, cleanup, "seteuid(0) failed");
 			}
+			exit(retval);
 		} else {		/* parent */
-			/* let the child carry on */
-			exit(0);
+                        /* wait for the child to finish */
+                        wait(&status);
+                        wait(&status2);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if (e_code != 0) {
+                                tst_resm(TFAIL, "Failures reported above");
+                        } else {
+				/* No error in the 1st one, check the 2nd */
+                        	e_code = status2 >> 8;
+                        	if (e_code != 0) {
+                               	   tst_resm(TFAIL, "Failures reported above");
+				}
+			}
 		}
 
 		/* clean up things in case we are looping */
