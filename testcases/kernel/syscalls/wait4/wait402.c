@@ -86,8 +86,8 @@ main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid;
-#ifdef PID_MAX_LIMIT
-	pid_t epid = PID_MAX_LIMIT + 1;
+#ifdef PID_MAX_DEFAULT
+	pid_t epid = PID_MAX_DEFAULT + 1;
 #elif defined(PID_MAX)
 	pid_t epid = PID_MAX + 1;
 #endif

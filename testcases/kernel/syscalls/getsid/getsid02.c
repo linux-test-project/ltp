@@ -98,8 +98,8 @@ main(int ac, char **av)
 		 * call the system call with the TEST() macro
 		 * with an illegal PID value
 		 */
-#ifdef PID_MAX_LIMIT	
-		TEST(getsid(PID_MAX_LIMIT + 1));
+#ifdef PID_MAX_DEFAULT	
+		TEST(getsid(PID_MAX_DEFAULT + 1));
 #elif defined(PID_MAX)	
 		TEST(getsid(PID_MAX + 1));
 #endif

@@ -101,8 +101,8 @@ int main(int ac, char **av)
 		 */
 
 		/* call the system call with the TEST() macro */
-#ifdef PID_MAX_LIMIT
-		TEST(setpriority(PRIO_PROCESS, PID_MAX_LIMIT + 1, new_val));
+#ifdef PID_MAX_DEFAULT
+		TEST(setpriority(PRIO_PROCESS, PID_MAX_DEFAULT + 1, new_val));
 #elif defined(PID_MAX)
 		TEST(setpriority(PRIO_PROCESS, PID_MAX + 1, new_val));
 #endif
