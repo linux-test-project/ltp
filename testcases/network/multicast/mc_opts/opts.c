@@ -48,7 +48,7 @@ char *argv[];
            } else
                simr.imr_interface.s_addr = 
                                    htonl((i1<<24) | (i2<<16) | (i3<<8) | i4);
-           strcpy(sintf, inet_ntoa(simr.imr_interface.s_addr));
+           strcpy(sintf, inet_ntoa(simr.imr_interface));
 
         /* verify socket options */
 	if ( setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF, 
@@ -67,7 +67,7 @@ char *argv[];
            errors++;
         }
         else {
-           strcpy(gintf, inet_ntoa(gimr.s_addr));
+           strcpy(gintf, inet_ntoa(gimr));
            printf("Got multicasting socket interface: %s\n",gintf);
         }
 
