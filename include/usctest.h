@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: usctest.h,v 1.3 2000/08/31 19:20:35 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -109,49 +109,6 @@
 #endif
 #endif
 
-/*
- * Define standard options.
- * These value should match the values in USC_common.h.
- */
-
-#define NOFUNC		"f"		/* no func check flag */
-#define ITERATIONS	"i:"		/* # iterations */
-#define DURATION	"I:"		/* walltime floating point */
-#define DELAY		"P:"		/* delay each iteration */
-#define TIMING		"t"		/* sys call timing flag */
-#define ERRNO_LOGGING	"e"		/* errno logging flag */
-#define SETUP_PAUSE	"p"		/* wait sigusr1 signal in setup */
-#define COPIES          "c:"		/* number copies */
-#define USC_HELP	"h"		/* basic help */
-
-#define  ITERATIONS_HELP  \
-"  -iterations cnt : Execute test \"cnt\" times (Default is 1).\n\
-                    A value of 0 will cause the test to run indefinitely.\n"
-
-#define DELAY_HELP  \
-"  -delay secs     : Delay for \"secs\" seconds each iteration (def 0.0)\n"
-
-#define DURATION_HELP \
-"  -duration secs  : Iterate for elapsed time of \"secs\" (def 0.0)\n"
-
-#define NOFUNC_HELP  \
-"  -nofunc         : Turn OFF Functional testing.  Just exercise the system call.\n"
-
-#define SETUP_PAUSE_HELP \
-"  -pause_for_sigusr1    : Pause for SIGUSR1 before entering testing loop.\n"
-
-#define TIMING_HELP \
-"  -timing         : Turn ON timing statistics (min, max and avg time in system call).\n"
-
-#define ERRNO_LOGGING_HELP  \
-"  -errno_logging  : Turn ON errno logging.\n"
-
-#define COPIES_HELP  \
-"  -copies num     : fork so there num copies (def 1)\n"
-
-#define USC_HELP_HELP \
-"  -Help           : parse_opts standard help and exit.\n"
-
 /***********************************************************************
  * Define option_t structure type.
  * Entries in this struct are used by the parse_opts routine
@@ -185,8 +142,8 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 /**********************************************************************
  * Prototype for parse_opts routine
  **********************************************************************/
-extern char *parse_opts();
-extern void STD_set_user_help(void (*uhf)());
+extern char *parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)());
+
 
 /*
  * define a structure 
