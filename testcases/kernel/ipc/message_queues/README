@@ -1,9 +1,0 @@
-POSIX message queues are part of IPC used to exchange messages between processes. 
-A package that includes a patch for linux kernel and C library is available at:
-
-http://www.mat.uni.torun.pl/~wrona/posix_ipc/index.htm
-
-The message queues are implemented as a filesystem called mqueue. The library adds appropriate interface to a mqueue filesystem which is compliant with POSIX standard (IEEE Std 1003.1-2001). 
-All of the functions run independent to System V style IPC which is already implemented. 
-
-
