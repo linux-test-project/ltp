@@ -1,0 +1,6 @@
+ip01
+	ip link set DEVICE mtu MTU changes the device mtu size.
+ip02
+	ip link show lists device attributes.
+ip03
+	ip addr add <ip address> dev <device> will add new ip addr del <ip address> dev <device> will del new  ip addr show dev <device> will how interface attributes.
