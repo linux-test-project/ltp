@@ -28,7 +28,11 @@
 # 
 set -x
 TCbin=${TCbin:=`pwd`}
-mkfs -t $2 $1
+if [[ $2 -eq "jfs" ]]; then
+  mkfs -q -t $2 $1
+else
+  mkfs -t $2 $1
+fi
 mkdir /testmount
 mount -t $2 $1 /testmount
 touch /testmount/testfile
