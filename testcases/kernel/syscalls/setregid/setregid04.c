@@ -73,11 +73,11 @@
 extern int Tst_count;
 
 char *TCID = "setregid04";
-gid_t users_gr_gid, root_gr_gid, adm_gr_gid, bin_gr_gid;
+gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={0};
 
-struct group users, adm, root, bin;
+struct group users, daemongr, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -97,9 +97,9 @@ struct test_data_t {
 	{ &neg_one, &neg_one, &root, &root, "After setregid(-1, -1)," },
 	{ &neg_one, &root_gr_gid, &root, &root, "After setregid(-1, root)" },
 	{ &root_gr_gid, &neg_one,  &root, &root, "After setregid(root, -1)," },
-	{ &adm_gr_gid, &users_gr_gid, &adm, &users, "After setregid(adm, users)" },
-	{ &neg_one, &neg_one, &adm, &users, "After setregid(-1, -1)" },
-	{ &neg_one, &users_gr_gid, &adm, &users, "After setregid(-1, users)" },
+	{ &daemon_gr_gid, &users_gr_gid, &daemongr, &users, "After setregid(daemongr, users)" },
+	{ &neg_one, &neg_one, &daemongr, &users, "After setregid(-1, -1)" },
+	{ &neg_one, &users_gr_gid, &daemongr, &users, "After setregid(-1, users)" },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
@@ -185,8 +185,8 @@ setup(void)
 	users = *( getgrnam("users"));
 	users_gr_gid = users.gr_gid;
 
-	adm = *(getgrnam("adm"));
-	adm_gr_gid = adm.gr_gid;
+	daemongr = *(getgrnam("daemon"));
+	daemon_gr_gid = daemongr.gr_gid;
 
 	bin = *(getgrnam("bin"));
 	bin_gr_gid = bin.gr_gid;
