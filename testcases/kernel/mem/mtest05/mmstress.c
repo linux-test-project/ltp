@@ -592,7 +592,7 @@ test6()
     int    fork_ndx = 0;/* index to the number of processes forked            */
     pid_t  pid;         /* process id, returned by fork system call.          */
     int    wait_status; /* if status is not NULL store status information     */
-    char  *argv_init[2] =  /* parameter required for dummy fiunction to execv */
+    char  *argv_init[2] =  /* parameter required for dummy fiunction to execvp*/
                       {"arg1", NULL};
 
     printf("\ttest6: Test case tests the race condition between\n"
@@ -614,9 +614,9 @@ test6()
     {
         if (!(pid = fork()))
 	{
-            if (execv("dummy", argv_init) == -1)
+            if (execvp("dummy", argv_init) == -1)
             {
-	        perror("test6(): execv()");
+	        perror("test6(): execvp()");
 		fflush(NULL);
 		return FAILED;
 	    }
