@@ -62,10 +62,8 @@
 #define modify_ldt_ldt_s user_desc
 #endif
 
-int create_segment(void *, size_t);
 void cleanup(void);
 void setup(void);
-
 char *TCID= "modify_ldt01";
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -75,6 +73,9 @@ int flag;
 #define FAILED 1
 
 #if defined(__i386__)
+
+int create_segment(void *, size_t);
+
 extern int modify_ldt(int, void*, unsigned long);
 int main(int ac, char **av)
 {
