@@ -93,9 +93,6 @@ char *TCID="fchmod05"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-
 void setup();			/* Main setup function for test */
 void cleanup();			/* Main cleanup function for test */
 
@@ -126,6 +123,7 @@ main(int ac, char **av)
 	 	 * Call fchmod(2) with mode argument 
 		 * to set setgid bit on TESTDIR.
 	 	 */
+
 		TEST(fchmod(fd, PERMS));
 	
 		/* check return code of fchmod(2) */
@@ -202,14 +200,6 @@ setup()
 	TEST_PAUSE;
 
 	/* make a temp directory and cd to it */
-	ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
-
 	tst_tmpdir();
 
 	/*
