@@ -485,6 +485,10 @@ sendmsg01 sendmsg01
 
 sendto01 sendto01
 
+setdomainname01	setdomainname01
+setdomainname02	setdomainname02
+setdomainname03	setdomainname03
+
 setfsgid01 setfsgid01
 
 setfsuid01 setfsuid01

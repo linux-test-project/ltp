@@ -46,7 +46,7 @@ SUBDIR= \
 	pread pwrite read readdir \
 	readlink readv recv recvfrom recvmsg rename \
 	rmdir sbrk sched_getscheduler sched_setscheduler sched_yield select \
-	send sendfile sendmsg sendto setfsgid setfsuid \
+	send sendfile sendmsg sendto setdomainname setfsgid setfsuid \
 	setgid setgroups sethostname setitimer setpgid setpgrp setpriority \
 	setregid setresuid setreuid setrlimit setsid setsockopt \
 	settimeofday setuid sigaction sigaltstack sighold signal \
