@@ -332,6 +332,7 @@ lstat02 lstat02
 lstat03 lstat03
 
 memset01 memset01
+memcpy01 memcpy01
 
 mlockall01 mlockall01
 mlockall02 mlockall02
