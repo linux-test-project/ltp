@@ -1,6 +1,6 @@
-ar ar01
-ld ld01
-ldd ldd01
-nm nm01 
-objdump objdump01
+ar export TCdat=$LTPROOT/testcases/bin; ar01
+ld export TCdat=$LTPROOT/testcases/bin; ld01
+ldd export TCdat=$LTPROOT/testcases/bin; ldd01
+nm export TCdat=$LTPROOT/testcases/bin; nm01 
+objdump export TCdat=$LTPROOT/testcases/bin; objdump01
 
