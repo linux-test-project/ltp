@@ -11,7 +11,7 @@
  * hereby transferred.
  */
 
-#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.1 2001/08/27 22:15:13 plars Exp $"
+#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.2 2003/03/26 19:40:14 robbiew Exp $"
 
 /*
  * NAME
@@ -69,7 +69,7 @@ extern int Tst_count;
 
 int exp_enos[] = {EINVAL, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -134,6 +134,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -64,7 +64,7 @@ char *TCID= "getitimer01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -120,6 +120,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
