@@ -1,3 +1,43 @@
+LTP-20030108
+- Fixed broken -l option in runalltests.sh.	( Paul Larson )
+- Fixed netpipe typo in runalltests.sh.		( Paul Larson )
+- Fixed memory leak in parse_opts.c library.	( Randy Hron )
+- Removed personality() system call tests from  ( Robbie Williamson )
+  the runalltests.sh and ltpstress.sh scripts.
+- Cleaned up file_test.sh for improved 		( Glen Foster )
+  execution.
+- Cleaned up mail_tests.sh for improved		( Glen Foster )
+  execution.
+- Fixed the direct I/O tests to correctly	( Robbie Williamson )
+  check if direct I/O is supported on the tested 
+  filesystem.
+- Fixed a typo and correct return value in	( Jay Turner )
+  clone07.c.
+- Fixed coding error in getcwd03.c.		( Erik Andersen )
+- Fixed problem of incorrect use of fclose(),   ( Erik Andersen )
+  instead of pclose() in msgctl08.c and 
+  msgctl09.c.
+- Removed usmblks test from mallopt01.c.	( Erik Andersen )
+- Updated the modify_ldt() tests to build	( Robbie Williamson )
+  according to what struct is defined in
+  asm/ldt.h: user_desc or modify_ldt_ldt_s
+- Updated pipe07.c to check the number of used	( Robbie Williamson )
+  file descriptors and adjust itself accordingly
+  before executing.
+- Updated sendfile03 to allow for situations	( Robbie Williamson )
+  where the execution environment has more than
+  STDIN, STDOUT, and STDERR in use.
+- Removed assumptions about the width of a uid_t( Erik Andersen )
+  and gid_t in the setregid02.c, setresuid03.c,
+  and setreuid06.c.
+- Fixed string01.c to not expect implementation	( Erik Andersen )
+  specific results.
+- Updated swapon02.c to build in environments 	( Robbie Williamson )
+  where MAX_SWAPFILES must be specified.
+- Updated mc_cmds and tcpdump01 to handle 	( Ming Gao )
+  multiple interfaces better.
+
+
 LTP-20031204
 - Allowed the test driver to ignore all		( Robbie Williamson )
   real-time signals.
