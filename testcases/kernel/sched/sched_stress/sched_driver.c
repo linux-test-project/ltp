@@ -84,6 +84,7 @@
 
 #include <stdlib.h>
 #include <signal.h>
+#include <pwd.h>
 #include "sched.h"
 
 /*
@@ -276,8 +277,7 @@ void startup (long start_time)
 	gethostname (tempbuffer, 40);
 	printf ("host name     = %s\n", tempbuffer);
 
-	cuserid (tempbuffer);
-	printf ("user name     = %s\n", tempbuffer);
+	printf ("user name     = %s\n", getpwuid(geteuid())->pw_name);
 
 	printf ("test duration = %4.2f (hours)\n", execution_time);
 
