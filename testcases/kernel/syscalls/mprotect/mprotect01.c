@@ -58,6 +58,7 @@
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <limits.h>		/* for PAGESIZE */
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -67,6 +68,7 @@
 
 void cleanup(void);
 void setup(void);
+void setup1(void);
 void setup2(void);
 void setup3(void);
 
@@ -86,8 +88,13 @@ struct test_case_t {
         int error;
         void (*setupfunc)();
 } TC[] = {
+#ifdef __ia64__
+	/* Check for ENOMEM passing memory that cannot be accessed. */
+        {&addr1, 1024, PROT_READ, ENOMEM, setup1},
+#else
 	/* Check for ENOMEM passing memory that cannot be accessed. */
         {&addr1, 1024, PROT_READ, ENOMEM, NULL},
+#endif
 
 	/*
 	 * Check for EINVAL by passing a pointer which is not a
@@ -159,6 +166,15 @@ int main(int ac, char **av)
 }
 
 /*
+ * setup1() - sets up conditions for the first test
+ */
+void
+setup1()
+{
+	TC[0].len = getpagesize() + 1;
+}
+
+/*
  * setup2() - sets up conditions for the second test
  */
 void
@@ -222,3 +238,4 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
