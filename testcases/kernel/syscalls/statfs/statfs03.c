@@ -60,6 +60,7 @@
 
 char *TCID = "statfs03";
 int TST_TOTAL = 1;
+int fileHandle = 0;
 extern int Tst_count;
 
 int exp_enos[]={EACCES, 0};
@@ -139,7 +140,7 @@ setup()
 	
 	/* create a test file */
         sprintf(fname, "%s.%d", fname, getpid());
-        if ((creat(fname, 0444)) == -1) {
+        if ((fileHandle = creat(fname, 0444)) == -1) {
                 tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
         }
         sprintf(path, "%s/%s", fname, fname);
@@ -177,6 +178,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fileHandle);
+
 	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
