@@ -73,14 +73,14 @@ int main()
 /*-----------------------------------------------------------*/
 
 
-	if ((int)sbrk(16384) < 0 ) {
+       if ((unsigned long)sbrk(16384) >=(-4095UL) ) {
 		perror("sbrk");
 		tst_resm(TFAIL, 
 		"Error: sbrk failed, errno = %d\n", errno) ;
 		tst_exit() ;
 	}
 
-	if ((int)sbrk(-4097) < 0 ) {
+       if ((unsigned long)sbrk(-4097) >=(-4095UL) ) {
 		perror("sbrk");
 		tst_resm(TFAIL, 
 		"Error: sbrk failed, errno = %d\n", errno) ;
@@ -110,7 +110,7 @@ int main()
 /*--------------------------------------------------------*/
 
 
-	if ((int)sbrk(32*K_1) < 0) {
+       if ((unsigned long)sbrk(32*K_1) >=(-4095UL)) {
 		perror("sbrk");
 		tst_resm(TFAIL, 
 		"Error: sbrk failed, errno = %d\n", errno) ;
@@ -133,7 +133,7 @@ int main()
 /*---------------------------------------------------------*/
 
 
-	if ((int)sbrk(-16000) < 0) {
+       if ((unsigned long)sbrk(-16000) >=(-4095UL)) {
 		perror("sbrk");
 		tst_resm(TFAIL, 
 		"Error: sbrk failed, errno = %d\n", errno) ;
