@@ -495,6 +495,12 @@ PASSWD=" "
 RUNALL_FLAGS=" "
 RESULTS_FILE=" "
 
+# test for dialog program exist
+if [ ! -x /usr/bin/dialog ]; then
+       echo "Sorry, ltpmenu GUI not available, can't find dialog. Exiting...";
+       exit 1;
+fi
+
 # call cleanup function on program exit.
 trap "cleanup" 0
 
