@@ -280,7 +280,7 @@ int main(int ac, char **av)
 		if (kid_count != (MAXKIDS / 2)) {
 			tst_resm(TFAIL, "Wrong number of children waited on "
 				 "for pid = 0");
-			tst_resm(TFAIL, "Expected 4 got %d");
+			tst_resm(TFAIL, "Expected 4 got %d", kid_count);
 			fail = 1;
 		}
 
