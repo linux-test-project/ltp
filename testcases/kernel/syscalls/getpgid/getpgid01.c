@@ -44,7 +44,7 @@
 
 #include <sys/types.h>
 #include <errno.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <sys/wait.h>
 #include <test.h>
 #include <usctest.h>
