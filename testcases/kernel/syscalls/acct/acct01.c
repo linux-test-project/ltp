@@ -71,7 +71,6 @@ int main (argc, argv)
 	register int i;
 	char tmpbuf[100], tmpbuf2[ 100 ];
 
-	tst_tmpdir();
 
 /*--------------------------------------------------------------*/
 
@@ -89,6 +88,7 @@ int main (argc, argv)
 		}
 	}
 	
+	tst_tmpdir();
 
 	/* now try to use the tty device, and it should fail
 	*/

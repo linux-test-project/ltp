@@ -75,8 +75,6 @@ int main (argc, argv)
 	/* Switch to "nobody" */
 	setuid(ltpuser->pw_uid);
 
-	/* make a temp directory and cd to it */
-   	tst_tmpdir();
 
 /*--------------------------------------------------------------*/
 
@@ -113,8 +111,6 @@ int main (argc, argv)
 
 //-------------------------------------------------
 
-/* Clean up any files created by test before call to tst_exit.	*/
-	tst_rmdir();
 	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
 /*--------------------------------------------------------------*/
 	return(0);
