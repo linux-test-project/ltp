@@ -97,13 +97,11 @@ int do_direct_reads(char *filename)
 		 		 		 		 fprintf(stderr,
 		 		 		 		 		 "Found data (%08x) at offset %d+%d\n",
 		 		 		 		 		 *p, offset, i);
-								 close(fd);
 		 		 		 		 return 1;
 		 		 		 }
 		 		 		 p++;
 		 		 }
 		 }
-		 close(fd);
 		 return 0;
 }
 
