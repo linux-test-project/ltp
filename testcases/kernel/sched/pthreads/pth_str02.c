@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 	/* 
 	 * Program completed successfully...
 	 */
-	printf ("\ndone...\n\n");
+	printf ("pth_str02:  Test Passed\n");
 	fflush (stdout);
 	exit (0);
 }
@@ -113,6 +113,7 @@ void *thread (void *parm)
 	pthread_t	th;
 	pthread_attr_t	attr;
 	size_t		stacksize = 1046528;
+        int             pcrterr;
 
 
 	/*
@@ -126,12 +127,19 @@ void *thread (void *parm)
 			sys_error ("pthread_attr_setstacksize failed", __LINE__);
 		if (pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE))
 			sys_error ("pthread_attr_setdetachstate failed", __LINE__);
-		if (pthread_create (&th, &attr, thread, (void *)(num + 1))) {
+                /************************************************/
+                /*   pthread_create does not touch errno.  It RETURNS the error
+                 *   if it fails.  errno has no bearing on this test, so it was
+                 *   removed and replaced with return value check(see man page
+                 *   for pthread_create();
+                 */
+		pcrterr = pthread_create (&th, &attr, thread, (void *)(num + 1));
+		if (pcrterr != 0) {
 			if (test_limit) {
 			   printf ("Testing pthread limit, %d pthreads created.\n", (int)num);
 			   pthread_exit(0);
 			}
-			if (errno == EAGAIN) {
+			if (pcrterr == EAGAIN) {
 			    fprintf (stderr, "Thread [%d]: unable to create more threads!\n", (int)num);
 			    return NULL;
 			}
@@ -141,7 +149,10 @@ void *thread (void *parm)
 		pthread_join (th, (void *) NULL);
 	}
 
+	return(0);
+	/*
 	pthread_exit(0);
+	*/
 }
 
 
@@ -210,5 +221,6 @@ static void sys_error (const char *msg, int line)
 static void error (const char *msg, int line)
 {
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
+	printf("pth_str02:  Test Failed\n");
 	exit (-1);
 }
