@@ -261,6 +261,8 @@ void dm_LogPrintf(u_int level, char *format, ...) {
 		vfprintf(dm_fpLogFile, format, args);
 		dm_FileNewlineNeeded = 1;
 	}
+	va_end(args);
+	va_start(args, format);
 	if (level <= dm_TerminalLoggingLevel) {
 		printf("[%s %d %d] ", dm_TestCaseName, getpid(), level);
 		vprintf(format, args);
