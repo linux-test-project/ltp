@@ -62,7 +62,7 @@ int child_pipe1[2];
 int child_pipe2[2];
 int child_pipe3[2];
 int file_fd;
-short parent_pid, child_pid1, child_pid2, child_pid3;
+pid_t parent_pid, child_pid1, child_pid2, child_pid3;
 int child_stat;
 char *file;
 struct flock lock1 = { (short)F_WRLCK, (short)0,  2,  5, (short)0 };
