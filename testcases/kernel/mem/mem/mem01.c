@@ -189,7 +189,7 @@ void help()
 
 
 /*
- * return MemFree+SwapFree+(Buffers+Cached), from /proc/meminfo
+ * return MemFree+SwapFree, from /proc/meminfo
  * returned value is in bytes.
  */
 #define BUFF_SIZE 384
