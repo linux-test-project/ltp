@@ -89,6 +89,7 @@ int main()
                         return PTS_FAIL;
                 }
 		puts("TEST PASSED");
+		sem_unlink(semname);
                 return PTS_PASS;
         }
 
