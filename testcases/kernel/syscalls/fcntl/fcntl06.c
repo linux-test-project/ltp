@@ -68,7 +68,6 @@ void cleanup();
 #define	STRING		"abcdefghijklmnopqrstuvwxyz\n"
 
 int fd;
-char *file;
 void unlock_file();
 int do_lock(int, short, short, int, int);
 
@@ -97,8 +96,8 @@ int main(int ac, char **av)
 			cleanup();
 			/*NOTREACHED*/
 		} else {
-			tst_resm(TPASS, "fcntl on file %s failed: Test "
-				 "PASSED", file);
+			tst_resm(TPASS, "fcntl on file failed: Test "
+				 "PASSED");
 		}
 	}
 
@@ -125,7 +124,6 @@ int main(int ac, char **av)
 		tst_resm(TPASS, "Block 1 PASSED");
 	}
 	close(fd);
-	unlink(file);
 
 	tst_resm(TINFO, "Exit block 1");
 	cleanup();
@@ -140,7 +138,8 @@ void
 setup()
 {
 	char *buf = STRING;
-	
+	char template[PATH_MAX];
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -152,14 +151,14 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	file = tempnam(".", NULL);
+	snprintf(template, PATH_MAX, "fcntl06XXXXXX");
 	
-	if ((fd = open(file, O_RDWR|O_CREAT, 0777)) < 0) {
-		tst_resm(TFAIL, "Couldn't open %s! errno = %d", file, errno);
+	if ((fd = mkstemp(template)) < 0) {
+		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
 	}
 
 	if (write(fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write %s! errno = %d", file, errno);
+		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
 	}
 }
 
@@ -180,7 +179,7 @@ unlock_file()
 {
 	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
 		perror("");
-		tst_resm(TINFO, "fcntl on file %s failed: Test PASSED", file);
+		tst_resm(TINFO, "fcntl on file failed: Test PASSED");
 	}
 }
 
@@ -199,7 +198,6 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files in it */
-	unlink(file);
 	tst_rmdir();
 
 	/* exit with return code appropriate for results */
