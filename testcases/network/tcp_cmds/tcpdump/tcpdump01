@@ -40,6 +40,9 @@ TCtmp=${TCtmp:-/tmp/$TC$$}
 RHOST=${RHOST:-`hostname`}
 NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out
+LTPROOT=${LTPROOT:-"../../../../"}
+INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname`| grep address |awk '{ print $2 }')}
+
 
 #******************************************************************************
 #
@@ -56,7 +59,7 @@ do_test()
    mkdir -p $TCtmp
    [[ $? -eq 0 ]] || end_testcase "mkdir -p $TCtmp failed"
    ping -f $RHOST > /dev/null 2>&1 &
-   /usr/sbin/tcpdump -c $NUMLOOPS > $OUTFILE
+   /usr/sbin/tcpdump -c $NUMLOOPS -i $INTERFACE > $OUTFILE
    [[ $? -eq 0 ]] || end_testcase "Problems trying to launch tcpdump"
    grep $RHOST $OUTFILE 
    [[ $? -eq 0 ]] || end_testcase "$RHOST was not listed in network traffic"
