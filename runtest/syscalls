@@ -289,6 +289,9 @@ mknod07 mknod07
 mknod08 mknod08
 mknod09 mknod09
 
+mlock01 mlock01
+mlock02 mlock02
+
 qmm01 mmap001 -m 1
 mmap01 mmap01
 mmap02 mmap02
