@@ -25,6 +25,7 @@
 /******************************************************************************/
 #include 	<float.h>
 #include 	<stdio.h>
+#include 	<stdlib.h>
 #include 	<string.h>
 #include 	<errno.h>
 #include        <limits.h>
@@ -50,7 +51,7 @@ int create_Result_file()
 {
 
 	int i, nbVal, tabInpi[20000];
-	double	tabR[20000], tabInpd[20000], Inc;
+	double	tabR[20000], tabInpd[20000];
 	char *F_name;
 	char *F_namini;
 	char *F_namind;
@@ -109,7 +110,7 @@ int create_Result_file()
 
 int create_Data_file()
 {
-	int i, nbVal, y;
+	int i, nbVal;
 	double	tabDD[20000], tabDI[20000], Inc;
 	char *F_named, *F_namei;
 	int fp, fpi;

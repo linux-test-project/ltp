@@ -23,8 +23,11 @@
 /*              These tests are adapted from AIX float PVT tests.             */
 /*                                                                            */
 /******************************************************************************/
+#include	<sys/types.h>
+#include	<sys/wait.h>
 #include 	<float.h>
 #include 	<stdio.h>
+#include 	<stdlib.h>
 #include 	<string.h>
 #include 	<errno.h>
 #include        <limits.h>
@@ -48,8 +51,6 @@
 int create_file(char *func_name, int NbVal)
 {
 	pid_t myproc;
-	char *file_name;
-	char arg_code;
 	           
         if (( myproc = fork() )!=0)
                 return myproc;

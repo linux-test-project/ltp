@@ -24,6 +24,7 @@
 /******************************************************************************/
 #include 	<float.h>
 #include 	<stdio.h>
+#include 	<stdlib.h>
 #include 	<string.h>
 #include 	<errno.h>
 #include        <limits.h>
@@ -38,7 +39,7 @@
 int create_Result_file()
 {
 	
-	int signgam;
+	int signgam = 0;
 	int i, nbVal, tabSign[20000];
 	double	tabR[20000], Inc;
 	char *F_name, *F_namesign;

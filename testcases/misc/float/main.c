@@ -28,7 +28,9 @@
 TH_DATA *pcom;
 TH_DATA **tabcom;
 TH_DATA **tabcour;
+#ifndef	PATH_MAX
 #define  PATH_MAX        	1024
+#endif
 char datadir[PATH_MAX];     		/* DATA directory */
 
 #define DEFAULT_NUM_THREADS             20
