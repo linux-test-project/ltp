@@ -1,0 +1,123 @@
+#!/usr/bin/perl 
+
+# 05/22/02 martinjn@us.ibm.com wrote this script for ltp automation using ssh instead of telnet
+# 06/18/02 martinjn@us.ibm.com hacked this script up to try to make it work better with ltp_check
+#
+# If you create a config file to use the -f option, the host line format is:
+# host,userid,password,number of instances,time
+#
+# time option should include m/h/d units(example: 72h = 72 hour run)
+#
+
+use Net::SSH::Perl ();
+use Net::SFTP ();
+
+$|=1;
+$LTPRESULTS=$ENV{"HOME"} . "/ltpresults";
+$LTPSOURCE="/tmp/ltp.tgz";
+$LTPTARGET="/tmp/ltp.tgz";
+$ETIME=time();
+
+if (!-d $LTPRESULTS) 
+{
+   print "Creating $LTPRESULTS \n";
+   print `mkdir $LTPRESULTS`;
+}
+
+if ( $ARGV[0] eq "-f" )
+{
+   if ( -f $ARGV[1] )
+   {
+      open(FILE, $ARGV[1]) or die "Can't open $ARGV[1]";
+      for ($i = 0; chomp($hosts[$i] = <FILE>); $i++) { ; }
+      $#hosts--;
+      close(FILE);
+   }
+   else { die "Please specify host list file with option -f\n"; }
+}
+elsif (@ARGV)
+{  @hosts = @ARGV; }
+else
+{
+   print "HOSTS separate with [ENTER] finish with [^D]\n";
+   print "format: host,userid,password,instances,time\n";
+   chomp(@hosts = <STDIN>);
+}
+
+# had to fork off the remote transactions because Net::SSH waits for return code
+
+for($i=0; $i <= $#hosts; $i++) {
+   if (!fork) {
+      ($HOST,$USER,$PASS,$INSTANCES,$DURATION)=split(/,/,@hosts[$i]);
+      ($SHORTHOST,$TRASH)=split(/\./,$HOST);
+      $LTP_LOGS="$SHORTHOST-$ETIME-ltpoutput.tgz";
+      $RUN_LOG="/root/runall.output"; 
+
+      #push tar.tgz
+      %args = {};
+      $args{user}=$USER;
+      $args{password}=$PASS;
+      my $sftp = Net::SFTP->new($HOST,%args);
+      $sftp->put($LTPSOURCE,$LTPTARGET);
+      print("$LTPSOURCE copied to $LTPTARGET on $HOST\n");
+
+      #untar, build, and run
+      my $ssh = Net::SSH::Perl->new($HOST);
+      $ssh->login($USER,$PASS);
+
+      print("Untar and build testcases on $HOST\n");
+      if($ssh->cmd("tar -xzf $LTPTARGET > /dev/null && rm $LTPTARGET && cd ltp && make clean install > /dev/null")) {
+          print("Error untarring or building on $HOST. Giving up on this machine.\n");
+          exit();
+      }
+      else {
+          print("Untar and build complete on $HOST\n");
+      }
+
+      print("Starting sar on $HOST\n");
+      $ssh->cmd("nohup sar -o sar.data 60 0 >/dev/null 2>&1 &");
+
+      print("Cranking up tests on " . $HOST . "\n");
+      if($ssh->cmd("cd ltp* && nohup ./runalltests.sh $INSTANCES $DURATION >$RUN_LOG &")) {
+          print("Error starting tests on $HOST. Giving up on this machine.\n");
+          exit();
+      }
+      else {
+          print("Tests completed on $HOST\n");
+      }
+
+      #this looks lame, but ltp_check needs ltprun.out to grab the ltp version      
+      $ssh->cmd('echo version: $(head -n1 ltp/ChangeLog) > ltprun.out');
+
+      #stop sar on client(s)
+      if($ssh->cmd("killall sar && killall sadc")) {
+          print("hmmm...couldn't stop sar automatically.\n");
+      }
+      else {
+          print("Stopped sar on $HOST\n");
+      }
+
+      #tar up and remove the results files
+      if($tmp=$ssh->cmd("cd /root && tar --remove-files -czf $LTP_LOGS sar.data ltp-logfile runall.output ltprun.out")) {
+          print("Error returned $tmp tarring up results on $HOST. Some of the logs may be missing.\n");
+      }
+      else {
+          print("Results tarred up on $HOST\n");
+      }
+
+      #upload the results back to the machine you ran from
+      print("Uploading results, $LTP_LOGS, to $LTPRESULTS for $HOST\n");
+      if($sftp->get($LTP_LOGS,$LTPRESULTS."/$LTP_LOGS")) {
+          print("Error uploading results from " . $HOST . ". Giving up on this machine.\n");
+          exit();
+      }
+      else {
+          print("Results uploaded for $HOST\n");
+      }
+      exit;
+   }
+}
+
+for ($j=0; $j <= $#hosts; $j++) {
+   wait;
+}
