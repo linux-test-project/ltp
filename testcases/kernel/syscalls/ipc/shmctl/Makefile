@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for ipc(2) shmctl tests.	  #
 ###########################################################################
-MAINS=shmctl01 shmctl02 shmctl03
+MAINS=shmctl01 shmctl02 shmctl03 shmctl04
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
