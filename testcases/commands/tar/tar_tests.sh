@@ -33,14 +33,14 @@
 
 export TST_TOTAL=1
 
-if [ -z $LTPTMP && -z $TMPBASE ]
+if [ -z $LTPTMP -a -z $TMPBASE ]
 then
     LTPTMP=/tmp
 else
 	LTPTMP=$TMPBASE
 fi
 
-if [ -z "$LTPBIN" ] && [ -z "$LTPROOT" ]
+if [ -z "$LTPBIN" -a -z "$LTPROOT" ]
 then
     LTPBIN=./bin
 else
@@ -132,7 +132,7 @@ then
 	grep  "tar_tstf2" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC2=$?
 	grep  "tar_tstf3" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC3=$?
 
-	if [ $RC1 -eq 0 && $RC2 -eq 0 && $RC3 -eq 0 ]
+	if [ $RC1 -eq 0 -a $RC2 -eq 0 -a $RC3 -eq 0 ]
 	then
 		$LTPBIN/tst_resm TPASS 	"tar: tvf option listed all its contents"
 	else
@@ -224,7 +224,7 @@ tar xvf $LTPTMP/tar_tstf.tar &>$LTPTMP/tar_tst.out || RC=$?
 
 if [ $? -eq 0 ]
 then
-   if [ -d $LOCTMP && -f $LOCTMP/tar_tstf1 && -f $LOCTMP/tar_tstf2 && -f $LOCTMP/tar_tstf3 ]
+   if [ -d $LOCTMP -a -f $LOCTMP/tar_tstf1 -a -f $LOCTMP/tar_tstf2 -a -f $LOCTMP/tar_tstf3 ]
 	then
 		$LTPBIN/tst_resm TPASS "tar: xvf option extracted the archive file."
 	else
@@ -291,7 +291,7 @@ tar zxvf $LTPTMP/tar_tstf.tgz &>$LTPTMP/tar_tst.out || RC=$?
 
 if [ $? -eq 0 ]
 then
-   if [ -d $LOCTMP && -f $LOCTMP/tar_tstf1 && -f $LOCTMP/tar_tstf2 && -f $LOCTMP/tar_tstf3 ]
+   if [ -d $LOCTMP -a -f $LOCTMP/tar_tstf1 -a -f $LOCTMP/tar_tstf2 -a -f $LOCTMP/tar_tstf3 ]
 	then
 		$LTPBIN/tst_resm TPASS \
 			"tar: zxvf option extracted the compressed archive file."
