@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.8 2001/03/13 16:38:16 nstraz Exp $
+$Id: INSTALL,v 1.9 2001/09/18 20:44:30 robbiew Exp $
 
 Quick Start
 -----------
@@ -17,27 +17,22 @@ that should be done.  The Linux Test Project build process uses a
 minimalist approach.  There is a lot of room for improvement and
 contributions are welcome.
 
-1. Untar the ltp tarball into a spare directory.  There is not a
+1. Log in as root.
+
+2. Untar the ltp tarball into a spare directory.  There is not a
    standard location for it yet.  We put it in out home directory
    while we're working on it.  
 
-2. Run "make" to build everything.  
+3. Run "make" to build everything.  
 
-3. Some tests need to run as "root" and will fail if they are not run as
-   root.  There are several programs that will do this for you.  We have
-   supplied sample config files for sudo[1] and super[2] in
-   doc/examples.  Please see the related sudoers(5) and super.tab(5) man
-   pages for more information on setting up these programs.
-
-   The tests that require these programs have been split into separate
-   pan files.  Add these to your working pan file once you have your
-   system configured properly.
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.
    See pan(1) for more information on the test driver we have provided.
-   It is simple, but it can do a lot of stuff.  
+   It is simple, but it can do a lot of stuff. 
+
+NOTE: The diskio and network tests will NOT be run by the runalltests.sh 
+script.  We chose to seperate these tests because of there required setup
+overhead. 
 
 
-[1] http://www.courtesan.com/sudo/
-[2] http://freshmeat.net/projects/super/
