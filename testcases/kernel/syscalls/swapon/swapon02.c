@@ -71,6 +71,8 @@
  * -c option can't be used.
  *
  *CHANGES:
+ * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
+ *             -Ricky Ng-Adam (rngadam@yahoo.com)
  * 01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM
  * error for hitting MAX_SWAPFILES is hit. 
  * -Robbie Williamson <robbiew@us.ibm.com>
@@ -363,7 +365,7 @@ setup03()
             /* turn on the swap file*/
             if (swapon(filename, 0) != 0) {
                 tst_resm(TWARN, "Failed swapon for file %s"
-                         "returned %d", filename);
+                         " returned %d", filename);
                 /* must cleanup already swapon files */
                 cleanup03();
                 exit(1);
@@ -439,6 +441,11 @@ setup()
 
   /* make a temp directory and cd to it */
   tst_tmpdir();
+
+
+  if(tst_is_cwd_tmpfs()) {
+    tst_brkm(TBROK, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+  }
 
   /*create file*/
   if ((strncmp(kmachine, "ia64", 4)) == 0) {

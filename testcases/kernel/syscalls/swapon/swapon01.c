@@ -65,6 +65,12 @@
  *
  *RESTRICTIONS:
  * Not compatible with kernel versions below 2.1.35
+ *
+ *CHANGES:
+ * 2005/01/01  Add extra check to stop test if insufficient disk space in dir
+ *             -Ricky Ng-Adam (rngadam@yahoo.com)
+ * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
+ *             -Ricky Ng-Adam (rngadam@yahoo.com)
  *****************************************************************************/
 
 #include <unistd.h>
@@ -136,6 +142,7 @@ main(int ac, char **av)
 void
 setup()
 {
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -150,11 +157,20 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
+	if(tst_is_cwd_tmpfs()) {
+		tst_brkm(TBROK, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+	}
+
+	if(!tst_cwd_has_free(65536)) {
+		tst_brkm(TBROK, cleanup, "Insufficient disk space to create swap file");
+	}
+
 	/*create file*/
 	if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 >"
 				" tmpfile 2>&1") != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
 	}
+
 
 	/* make above file a swap file*/
 	if( system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
