@@ -99,7 +99,11 @@ struct test_case_t {		/* test case struct. to hold diff. test.conds */
 	int exp_errno;
 } Test_cases[] = {
 	{ INVAL_FLAGS, SIGSTKSZ, "Invalid Flag value", EINVAL },
+#ifdef __ia64__
+	{ 0, (131027 - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM },
+#else
 	{ 0, (MINSIGSTKSZ - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM },
+#endif
 	{ 0, 0, NULL, 0 }
 };
 
@@ -220,3 +224,4 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
+
