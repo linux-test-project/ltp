@@ -62,7 +62,7 @@ int main()
 	ret=pthread_detach(new_th);
 
 	/* Check return value of pthread_detach() */
-	if((ret != ESRCH) && (ret != 0))
+	if(ret != ESRCH) 
 	{
 		printf("Test FAILED: Incorrect return code: %d instead of ESRCH\n", ret);
 		return PTS_FAIL;
