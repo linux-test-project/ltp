@@ -1049,10 +1049,11 @@ create_file(path, nbytes)
 char	*path;
 int 	nbytes;
 {
-    int	    	fd, rval, nb;
+    int	    	fd, rval;
     char    	c;
     struct stat	sbuf;
 #ifdef sgi
+    int		nb;
     struct flock f;
     struct fsxattr xattr;
     struct dioattr finfo;
@@ -1359,7 +1360,7 @@ char	**argv;
 char	*opts;
 {
     int	    	    	o, len, nb, format_error;
-    struct strmap	*flgs, *sc, *type;
+    struct strmap	*flgs, *sc;
     char    	    	*file, *cp, ch;
     extern int	    	opterr;
     extern int	    	optind;
@@ -1368,9 +1369,13 @@ char	*opts;
     struct file_info	*fptr;
     int			nopenargs;
     char		*openargs[5];	/* Flags, cbits, cblks */
-    char		*ranges, *errmsg;
+    char		*errmsg;
     int			str_to_int();
     opterr = 0;
+#ifndef linux
+    char		*ranges;
+    struct strmap	*type;
+#endif
 
     while ((o = getopt(argc, argv, opts)) != EOF) {
         switch ((char)o) {

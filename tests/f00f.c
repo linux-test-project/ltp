@@ -30,13 +30,15 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: f00f.c,v 1.1 2000/09/08 15:04:19 alaffin Exp $ */
+/* $Id: f00f.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /*
  * This is a simple test for handling of the pentium f00f bug.
  * It is an example of a catistrophic test case.  If the system
  * doesn't correctly handle this test, it will likely lockup.
  */
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 #ifdef __i386__
 
 /*

@@ -102,9 +102,7 @@
 #ifdef sgi
 #include <aio.h>
 #endif
-#if UNIT_TEST
-#include <stdlib.h> /* atoi */
-#endif
+#include <stdlib.h> /* atoi, abs */
 
 #include "tlibio.h"		/* defines LIO* marcos */
 

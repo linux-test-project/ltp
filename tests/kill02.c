@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: kill02.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -133,6 +133,8 @@
 #include <signal.h>
 #include <errno.h>   
 #include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
 #include "test.h"    
 #include "usctest.h"
 
@@ -455,7 +457,6 @@ void parent_rout()
 void child1_rout()
 {
 	char mesg[MAXMESG];	/*Used to buffer messages for tst_resm.	*/
-	int i;
    who_am_i = '1';
 
   /*
@@ -656,7 +657,6 @@ void childB_rout()
 void
 setup()
 {
-	int i;			/*Used as an index.					*/
 	int errno_buf;		/*indicates the errno if pipe set up fails.		*/
 	int err_flag = FALSE;	/*Indicates if an error has occurred in pipe set up.	*/
 	char mesg[MAXMESG];	/*Used to buffer messages for tst_res.			*/

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: rmdir05.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -97,6 +97,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 

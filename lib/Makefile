@@ -1,5 +1,5 @@
 
-CFLAGS+= -I../include
+CFLAGS+= -Wall -I../include
 LDFLAGS+=
 TARGET=libltp.a
 SRCS=$(wildcard *.c)

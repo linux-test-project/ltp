@@ -1,5 +1,5 @@
 
-CFLAGS+= -I../include
+CFLAGS+= -Wall -I../include
 LDFLAGS+= -L../lib -lltp
 
 TARGETS=doio growfiles rwtest iogen

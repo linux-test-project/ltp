@@ -1,5 +1,5 @@
 
-CFLAGS+= -I../include
+CFLAGS+= -Wall -I../include
 LOADLIBES+= -L../lib -lltp
 
 SRCS=$(wildcard *.c)

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek03.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: lseek03.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -140,7 +140,6 @@ main(int ac, char **av)
 
     int ind;
     int whence;
-    int offset;
 
     TST_TOTAL=sizeof(Whences)/sizeof(int);
     

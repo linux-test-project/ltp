@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.3 2000/09/08 15:56:25 alaffin Exp $ */
+/* $Id: select01.c,v 1.4 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -113,6 +113,7 @@
 #include <signal.h>
 #include <fcntl.h>              /* For open system call parameters.  */
 #include <signal.h>
+#include <string.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/time.h>

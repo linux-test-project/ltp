@@ -85,6 +85,7 @@
 #include "doio.h"
 #include "write_log.h"
 #include "random_range.h"
+#include "string_to_tokens.h"
 
 #ifndef O_SSD
 #define O_SSD 0	    	/* so code compiles on a CRAY2 */
@@ -1147,7 +1148,7 @@ format_rw(
 	switch (ioreq->r_type) {
 	case READ:
 		cp += sprintf(cp, "syscall:  read(%d, %#lo, %d)\n",
-			      fd, buffer, readp->r_nbytes);
+			      fd, (unsigned long) buffer, readp->r_nbytes);
 		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
 			      fd, readp->r_file, readp->r_oflags);
 		cp += sprintf(cp, "          read done at file offset %d\n",
@@ -1156,7 +1157,7 @@ format_rw(
 
 	case WRITE:
 		cp += sprintf(cp, "syscall:  write(%d, %#lo, %d)\n",
-			      fd, buffer, writep->r_nbytes);
+			      fd, (unsigned long) buffer, writep->r_nbytes);
 		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
 			      fd, writep->r_file, writep->r_oflags);
 		cp += sprintf(cp, "          write done at file offset %d - pattern is %s\n",
@@ -1167,7 +1168,8 @@ format_rw(
 		aio_strat = format_strat(readap->r_aio_strat);
 
 		cp += sprintf(cp, "syscall:  reada(%d, %#lo, %d, %#lo, %d)\n",
-			      fd, buffer, readap->r_nbytes, iosw, signo);
+			      fd, (unsigned long) buffer, readap->r_nbytes,
+			      (unsigned long) iosw, signo);
 		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
 			      fd, readap->r_file, readp->r_oflags);
 		cp += sprintf(cp, "          reada done at file offset %d\n",
@@ -1180,7 +1182,8 @@ format_rw(
 		aio_strat = format_strat(writeap->r_aio_strat);
 
 		cp += sprintf(cp, "syscall:  writea(%d, %#lo, %d, %#lo, %d)\n",
-			      fd, buffer, writeap->r_nbytes, iosw, signo);
+			      fd, (unsigned long) buffer, writeap->r_nbytes,
+			      (unsigned long) iosw, signo);
 		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
 			      fd, writeap->r_file, writeap->r_oflags);
 		cp += sprintf(cp, "          writea done at file offset %d - pattern is %s\n",
@@ -1436,12 +1439,13 @@ struct io_req	*req;
 	static int		pid = -1;
 	int	    	    	fd, nbytes, oflags, signo;
 	int	    	    	logged_write, rval, got_lock;
-	int			aio_strat, aio_id;
 	long    	    	offset, woffset;
 	char    	    	*addr, pattern, *file, *msg;
 	struct wlog_rec		wrec;
-	struct flock    	flk;
+#ifdef CRAY
+	int			aio_strat, aio_id;
 	struct aio_info		*aiop;
+#endif
 #ifdef sgi
 	struct fd_cache		*fdc;
 #endif
@@ -2261,7 +2265,9 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 	char			*cp;
 	struct rw_req		*io;
 	struct smap		*aname;
+#ifdef CRAY
 	struct stat		sbuf;
+#endif
 #ifdef sgi
 	struct dioattr		finfo;
 #endif
@@ -2840,12 +2846,13 @@ fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 		      fd);
 
 	cp += sprintf(cp, "\tfile is mmaped to: 0x%lx\n",
-		      fdc->c_memaddr);
+		      (unsigned long) fdc->c_memaddr);
 
 	memaddr = (void *)((char *)fdc->c_memaddr + req->r_data.io.r_offset);
 
 	cp += sprintf(cp, "\tfile-mem=0x%lx, length=%d, buffer=0x%lx\n",
-		      memaddr, req->r_data.io.r_nbytes, addr);
+		      (unsigned long) memaddr, req->r_data.io.r_nbytes,
+		      (unsigned long) addr);
 		      
 	return(errbuf);
 }
@@ -2960,8 +2967,8 @@ do_rw(req)
 	struct status		*s;
 	struct wlog_rec		wrec;
 	struct syscall_info	*sy;
+#if defined(CRAY) || defined(sgi)
 	struct aio_info		*aiop;
-#ifdef CRAY
 	struct iosw		*iosw;
 #endif
 #ifdef sgi

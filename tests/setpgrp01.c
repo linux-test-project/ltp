@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setpgrp01.c,v 1.2 2000/11/15 19:32:19 nstraz Exp $ */
+/* $Id: setpgrp01.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -113,6 +113,8 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <string.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
 

@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: alarm03.c,v 1.4 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -95,6 +95,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
 

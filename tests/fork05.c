@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.3 2001/02/11 17:11:24 alaffin Exp $ */
+/* $Id: fork05.c,v 1.4 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -92,6 +92,7 @@
 #if defined(linux) && defined(__i386__)
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
 struct modify_ldt_ldt_s
@@ -108,6 +109,7 @@ struct modify_ldt_ldt_s
   unsigned int empty:25;
 };
 
+void modify_ldt(int, struct modify_ldt_ldt_s *, int);
 asm("	.type modify_ldt,@function
 modify_ldt:
 	push   %ebx

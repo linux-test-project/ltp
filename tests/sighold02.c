@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.2 2001/02/19 15:13:42 nstraz Exp $ */
+/* $Id: sighold02.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -79,7 +79,11 @@
 
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -93,6 +97,11 @@
 #define SGI 1
 #else
 #define SGI 0
+#endif
+
+#ifdef __linux__
+/* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
+extern int sighold (int __sig);
 #endif
 
 /* ensure NUMSIGS is defined */
@@ -153,7 +162,6 @@ main(int ac, char **av)
     int term_stat;	/* child return status */
     int rv;		/* function return value */
     int sig;		/* current signal */
-    char *str;		/* string returned by read_pipe() */
     int lc;             /* loop counter */
     char *msg;          /* message returned from parse_opts */
     int cnt;

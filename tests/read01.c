@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: read01.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -114,6 +114,7 @@
 #include <sys/param.h>
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 

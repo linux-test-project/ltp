@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rand_lines.c,v 1.1 2001/01/22 17:50:31 nstraz Exp $ */
+/* $Id: rand_lines.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /**************************************************************
  *
  *    OS Testing - Silicon Graphics, Inc.
@@ -96,8 +96,10 @@
  *
  **************************************************************/
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <time.h>
 
@@ -119,6 +121,9 @@ extern int errno;
 
 extern int random_range();
 extern int random_range_seed();
+int get_numlines(FILE *infile);
+int rnd_file(FILE *infile, int numlines, long seed);
+int rnd_insert(struct offset_t offsets[], int offset, int size);
 
 #ifndef SEEK_SET
 #define SEEK_SET	0
@@ -129,6 +134,7 @@ char *Progname;
 /***********************************************************************
  *  MAIN
  ***********************************************************************/
+int
 main(argc, argv)
 int argc;
 char **argv;
@@ -238,6 +244,7 @@ help()
  * counts the number of lines in already open file.
  * Note: File must be seekable (not stdin or a pipe).
  ***********************************************************************/
+int
 get_numlines(infile)
 FILE *infile;
 {
@@ -262,6 +269,7 @@ FILE *infile;
  * It will then print each line in the array stored order.
  *
  ***********************************************************************/
+int
 rnd_file(infile, numlines, seed)
 FILE *infile;
 int numlines;		/* can be more or less than num lines in file */
@@ -277,7 +285,6 @@ long seed;
     int loffset;		/* last line offset */
 
     struct offset_t *offsets;
-    struct offset_t *offsets_;
     int memsize;
 
     if ( numlines <= 0 ) {	/*use default */
@@ -349,6 +356,7 @@ long seed;
  * open array element.
  *
  ***********************************************************************/
+int
 rnd_insert(offsets, offset, size)
 struct offset_t offsets[];
 int offset;
@@ -357,8 +365,6 @@ int size;
     int rand_num;
     int quick = 0;
     int ind;
-    double randnum;
-    struct offset_t *offptr;
 
     /*
      * Loop looking for random unused index.

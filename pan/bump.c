@@ -30,11 +30,12 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: bump.c,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
+/* $Id: bump.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/signal.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "zoolib.h"
 
@@ -43,11 +44,11 @@ read_active( FILE *fp, char *name );
 
 static char *errmsg;
 
+int 
 main( int argc, char **argv ){
 	extern char *optarg;
 	extern int optind;
 	int c;
-	int x;
 	char *active = NULL;
 	pid_t nanny;
 	FILE *fp;

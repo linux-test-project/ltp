@@ -1,5 +1,5 @@
 
-CFLAGS+=
+CFLAGS+= -Wall
 LDFLAGS+=
 
 all: libltp.a

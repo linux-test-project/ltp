@@ -70,6 +70,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <time.h>
 #include <sys/file.h>
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -2390,7 +2391,7 @@ int mode;       /* write mode */
 	    if ( Debug > 2 )
 	        printf("%s%s: %d DEBUG3 %s/%d: fd:%d, offset:%d, fsize:%d, openflags:%#o\n",
 	            Progname, TagName, Pid, __FILE__, __LINE__, fd,
-		    lseek(fd,SEEK_CUR,0),
+		    (int)lseek(fd,SEEK_CUR,0),	/* FIXME: 64bit/LFS ? */
 		    (int)stbuf.st_size,
 		    Fileinfo.openflags);
         }

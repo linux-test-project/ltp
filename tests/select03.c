@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: select03.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -114,6 +114,8 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <sys/stat.h>
+
 
 #include "test.h"
 #include "usctest.h"

@@ -201,4 +201,5 @@ int main(int argc, char * argv[])
     unlink(filename);
   }
   cleanup();
+  return 0;
 }

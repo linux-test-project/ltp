@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: symbol.c,v 1.1 2000/09/21 21:35:06 alaffin Exp $ */
+/* $Id: symbol.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /*
  *			Generic Symbol Table
  *
@@ -61,6 +61,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "symbol.h"
 #include "splitstr.h"

@@ -30,10 +30,16 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
+/* $Id: zoolib.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
 #include <stdlib.h> /* for getenv */
 #include <string.h>
 #include "zoolib.h"
+
+#ifdef __linux__
+/* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
+extern int sighold (int __sig);
+extern int sigrelse (int __sig);
+#endif
 
 #define A_BUF_SZ 100
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: sigrelse01.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -100,13 +100,21 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
 #include "test.h"
 #include "usctest.h"
+
+#ifdef __linux__
+/* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
+extern int sighold (int __sig);
+extern int sigrelse (int __sig);
+#endif
 
 void setup();
 void cleanup();
@@ -121,6 +129,7 @@ static int write_pipe();
 static int set_timeout();
 static void clear_timeout();
 static void getout();
+int choose_sig(int sig);
 
 #define TRUE  1
 #define FALSE 0
@@ -176,8 +185,11 @@ main(int argc, char **argv)
 {
     int lc;             /* loop counter */
     char *msg;          /* message returned from parse_opts */
-    extern int pipe_fd[];
     void parent(), child();
+
+    /* gcc -Wall complains about sig_caught not being ref'd because of the
+       external declarations. */
+    sig_caught = FALSE;
 
     /*
      * parse standard options
@@ -243,7 +255,6 @@ parent()
     char *read_pipe();
     void getout();
     int caught_sigs;
-    int status;
 
     /* wait for "ready" message from child */
     if ((str = read_pipe(pipe_fd[0])) == NULL) {

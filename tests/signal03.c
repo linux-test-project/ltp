@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal03.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: signal03.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -163,6 +163,8 @@
 #include <errno.h>  
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
 #include "test.h"
@@ -463,13 +465,13 @@ int tst_count;
 	if ( (SIG_PF)Tret == SIG_ERR  ) {
 	    if ( TEST_ERRNO == EINVAL ) {
 	        sprintf(Ipc_info.mesg, "%s ret:%ld SIG_ERR (%ld) as expected",
-		    string, Tret, SIG_ERR);
+		    string, Tret, (long)SIG_ERR);
 		Ipc_info.status = PASS_FLAG;
 	    }
 	    else {
 	        sprintf(Ipc_info.mesg,
 		    "%s ret:%ld, errno:%d expected ret:%ld, errno:%d",
-		    string, Tret, TEST_ERRNO, SIG_ERR, EINVAL);
+		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 		Ipc_info.status = FAIL_FLAG;
 	    }
 		
@@ -482,7 +484,7 @@ int tst_count;
 	     */
 	    sprintf(Ipc_info.mesg,
 		"%s ret:%ld, errno:%d expected ret:%ld, errno:%d",
-		string, Tret, TEST_ERRNO, SIG_ERR, EINVAL);
+		string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 	    Ipc_info.status = FAIL_FLAG;
 	    write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
 	}
