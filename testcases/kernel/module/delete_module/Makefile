@@ -14,36 +14,37 @@
 # Temple Place - Suite 330, Boston MA 02111-1307, USA.
 #
 ###########################################################################
-# name of file	: Makefile						  #
-# description	: make file for the delete_module(2) testcases		  #
+# name of file		 : Makefile		 		 		 		 		 		   #
+# description		 : make file for the delete_module(2) testcases		 		   #
 ###########################################################################
 
-CFLAGS+=	-I../../../../include -Wall
-MODCFLAGS+=	-I/lib/modules/$(shell uname -r)/build/include -Wall
-LOADLIBES+=	-L../../../../lib -lltp
+CFLAGS+=		 -I../../../../include -Wall
+MODCFLAGS+=		 /lib/modules/`uname -r`/build
+LOADLIBES+=		 -L../../../../lib -lltp
 
-SRC1=dummy_del_mod.c dummy_del_mod_dep.c
-OBJS=$(SRC1:.c=.o)
-TARGETS=delete_module01 delete_module02 delete_module03 $(OBJS)
+obj-m := dummy_del_mod.o dummy_del_mod_dep.o
+TARGETS=delete_module01 delete_module02 delete_module03
 
 all: $(TARGETS)
-	chmod 755 $(OBJS)
-
-$(OBJS): $(SRC1)
-	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall 
+		 make -C $(MODCFLAGS) SUBDIRS=`pwd` modules
+#		 chmod 755 $(OBJS)
 
 delete_module01: delete_module01.c
-	$(CC) $(CFLAGS) delete_module01.c $(LOADLIBES) -o $@
+		 $(CC) $(CFLAGS) delete_module01.c $(LOADLIBES) -o $@
 
 delete_module02: delete_module02.c
-	$(CC) $(CFLAGS) delete_module02.c $(LOADLIBES) -o $@
+		 $(CC) $(CFLAGS) delete_module02.c $(LOADLIBES) -o $@
 
 delete_module03: delete_module03.c
-	$(CC) $(CFLAGS) delete_module03.c $(LOADLIBES) -o $@
+		 $(CC) $(CFLAGS) delete_module03.c $(LOADLIBES) -o $@
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+		 @set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
-
+		 rm -f $(TARGETS)
+		 rm -rf .tmp_versions
+		 rm -f .dummy*
+		 rm -f *.o
+		 rm -f *.ko
+		 rm -f *.mod.c
