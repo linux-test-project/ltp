@@ -23,6 +23,7 @@
 
 #ifndef __GETDENTS_H
 #define __GETDENTS_H	1
+#include <sys/syscall.h>
 
 #ifdef __i386__
 	#define GETDENTS_ASM() ({ int __rval;				\
