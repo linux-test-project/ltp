@@ -154,7 +154,7 @@ fsync03 fsync03
 
 ftruncate01 ftruncate01
 ftruncate02 ftruncate02
-#ftruncate03 ftruncate03
+ftruncate03 ftruncate03
 
 getcwd01 getcwd01
 getcwd02 getcwd02
@@ -164,7 +164,6 @@ getdents01 getdents01
 getdents02 getdents02
 getdents03 getdents03
 getdents04 getdents04
-#getdents05 getdents05
 
 getegid01 getegid01
 
