@@ -1,0 +1,88 @@
+<assertions>
+  <assertion id="1" tag="pt:CS" files="">
+   The clock time can be set to 0, a large number, Y2K critical dates,
+   and times around daylight savings.
+  </assertion>
+  <assertion id="2" tag="pt:CS" files="">
+   clock_gettime() with CLOCK_REALTIME is monotonically increasing in both
+   seconds and nanoseconds.
+  </assertion>
+  <assertion id="3" tag="pt:CS" files="">
+   Clock time for clocks:
+     CLOCK_REALTIME
+     CLOCK_MONOTONIC
+   is equivalent to some known good clock over time, even if the time
+   is reset.
+  </assertion>
+  <assertion id="4" tag="pt:CS" files="">
+   Having a call to clock_settime() interrupted with a signal does not
+   affect the setting of the clock.
+  </assertion>
+  <assertion id="5" tag="pt:CS" files="">
+   Killing a process setting the clock does not affect the clock time in
+   an unpredictable fashion.
+  </assertion>
+  <assertion id="6" tag="pt:CS" files="">
+   If clocktime is set as a timer expires, the time is still set correctly.
+  </assertion>
+  <assertion id="7" tag="pt:CS" files="clocks/twopsetclock.c">
+   Two processes can attempt to set the clock at (nearly) the same time and
+   both sets will succeed, with the later one taking effect.
+  </assertion>
+  <assertion id="8" tag="pt:TMR" files="">
+   The a timer can be set to expire at 0, a large number, Y2K critical dates,
+   and times around daylight savings with no unpredictable results.
+  </assertion>
+  <assertion id="9" tag="pt:TMR" files="">
+   Timers (relative and absolute) expire at the POSIX-defined times when the
+   clock changes.
+  </assertion>
+  <assertion id="10" tag="pt:TMR" files="">
+   Multiple relative timers set up in a particular order (possibly with a small
+   delay between each) expire in the order set up.  [Not required by POSIX,
+   though, so this should not fail if it does not work.]
+  </assertion>
+  <assertion id="11" tag="pt:TMR" files="">
+   All possible events can be sent on timer expirations.
+  </assertion>
+  <assertion id="12" tag="pt:TMR" files="timers/twoevtimers.c">
+   Two timers in one process can expire at the same time, but with 
+   different events.
+  </assertion>
+  <assertion id="13" tag="pt:TMR" files="timers/twoptimers.c">
+   Timers in two different processes which are set to expire at the same time
+   are able to expire at the same time.
+  </assertion>
+  <assertion id="14" tag="pt:TMR" files="">
+   A repeating timer set to expire at time X and a non-repeating set to
+   expire at 2X will both expire at the same time at 2X.
+  </assertion>
+  <assertion id="15" tag="pt:TMR" files="">
+   A repeating timer will expire at the correct time for at least ten
+   expirations.
+  </assertion>
+  <assertion id="16" tag="pt:TMR" files="">
+   For multiple repeating timers with different intervals blocked, the
+   overrun count for each is correct.
+  </assertion>
+  <assertion id="17" tag="pt:TMR" files="">
+   Overrun count and timer_gettime() return correct values when
+   SIGEV_NONE is used in ev.sigev_notify.
+  </assertion>
+  <assertion id="18" tag="pt:TMR" files="">
+   Calling timer_getoverrun() as an overrun is happening returns the
+   correct value.
+  </assertion>
+  <assertion id="19" tag="pt:TMR" files="">
+   A process can sleep until 0, a large number, Y2K critical dates,
+   and times around daylight savings with no unpredictable results.
+  </assertion>
+  <assertion id="20" tag="pt:TMR" files="">
+   Sleeps (relative and absolute) expire at the POSIX-defined times when the
+   clock changes.
+  </assertion>
+  <assertion id="21" tag="pt:TMR" files="">
+   Sleeps in two different processes which are set to end at the same time
+   are able to end at the same time.
+  </assertion>
+</assertions>
