@@ -26,6 +26,7 @@
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Jan 30 2003 - Created - Manoj Iyer.
+#               Feb 03 2003 - Fixed expected output.
 #
 #! /bin/sh
 
@@ -154,16 +155,19 @@ creat_expout()
 	while [ $dircnt -lt $numdirs ]
 	do
 		dirname=$dirname/d.$dircnt
-        echo "$dirname:"  1>>$LTPTMP/tst_cp.exp
+		dircnt=$(($dircnt+1))
+		echo "$dirname:"  1>>$LTPTMP/tst_cp.exp
+		if [ $dircnt -lt $numdirs ]
+		then
+			echo "d.$dircnt"  1>>$LTPTMP/tst_cp.exp
+		fi
 		fcnt=0
         while [ $fcnt -lt $numfiles ]
         do
-			echo -n  "f.$fcnt " 1>>$LTPTMP/tst_cp.exp
+			echo "f.$fcnt " 1>>$LTPTMP/tst_cp.exp
 			fcnt=$(($fcnt+1))
 		done
 		echo -e "\n" 1>>$LTPTMP/tst_cp.exp
-
-		dircnt=$(($dircnt+1))
 	done
 }
 
@@ -208,14 +212,14 @@ test01()
 	fi
 
 	$LTPBIN/tst_resm TINFO "Test #1: creating output file"
-	ls -lR $LTPTMP/tst_cp.tmp1 &>$LTPTMP/tst_cp.out
+	ls -R $LTPTMP/tst_cp.tmp1 &>$LTPTMP/tst_cp.out
 
 	$LTPBIN/tst_resm TINFO "Test #1: creating expected output file"
 	creat_expout $numdirs $numfiles $LTPTMP/tst_cp.tmp1
 
 	$LTPBIN/tst_resm TINFO \
 	    "Test #1: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_cp.tmp1 $LTPTMP/tst_cp.tmp &>$LTPTMP/tst_cp.err \
+	diff -w -B -q $LTPTMP/tst_cp.out $LTPTMP/tst_cp.exp &>$LTPTMP/tst_cp.err \
 		|| RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -249,6 +253,6 @@ then
 fi
 
 
-rm -fr $LTPTMP/tst_cp.*
+#rm -fr $LTPTMP/tst_cp.*
 
 exit $((TFAILCNT))
