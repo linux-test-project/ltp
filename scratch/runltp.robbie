@@ -34,8 +34,8 @@
 #	       March 28 2003 - Removed gauges and put make commands in foreground.
 #	                     Robbie Williamson - robbiew@us.ibm.com
 #
-#	       March 31 2003 - Made scenario menu creation dynamic and added 
-#                              additional menu selection for test descriptions.
+#	       March 31 2003 - Made scenario menu creation dynamic and code 
+#                              to pull the test descriptions from the scenario files.
 #                            Robbie Williamson - robbiew@us.ibm.com
 #
 #! /bin/bash
@@ -244,10 +244,10 @@ execute_ltp()
 	return
     fi 
 
-    LIST=$(for i in `ls -1 -A -I "CVS" runtest`; do echo -n "$i "; echo -n "<- ""off "; done) 
+    LIST=$(for i in `ls -1 -A -I "CVS" runtest`; do echo -n "$i "; j=$(head -n1 runtest/$i | cut -d: -f2|sed s/" "/_/g); echo -n "$j off "; done) 
     dialog --backtitle "Linux Test Project Control Centre"\
            --title "Execute LTP" --clear\
-           --checklist "Select [SPACEBAR] tests to run" 20 61 5 \
+           --checklist "Select [SPACEBAR] tests to run" 20 80 5 \
     	    $LIST \
             2>/tmp/runltp.choice.$$ || RC=$?
     size=`wc -m /tmp/runltp.choice.$$|awk '{print $1}'` 
@@ -346,25 +346,6 @@ about_ltpcc()
     return
 }
                  
-# Function:    about_ltptests
-#
-# Description: This function displays a window containing a brief message
-#              describing the test scenarios in /runtest.
-# 
-# Input:       NONE 
-#
-# Output:      Message window, description of LTP Test Scenarios.
-about_ltptests()
-{
-   for i in `ls -1 -A -I "CVS" runtest`; do echo -en "\t$i = ";head -n1 runtest/$i | cut -d: -f2; echo "";done > /tmp/runltp.tests_descriptions
-   dialog --backtitle "Linux Test Project Control Centre" \
-           --title "LTP Test Descriptions. Scroll [UP] [DOWN]/[PGUP] [PGDN]" \
-           --textbox  /tmp/runltp.tests_descriptions 17 80
-
-    return
-}
-                 
-    
 # Function:    main
 #
 # Description: Displays the main menu to the LTP Control Centre. The menu
@@ -372,7 +353,6 @@ about_ltptests()
 #              results.
 #
 # Calls:       about_ltpcc()      
-#              about_ltptests()
 #              compile_ltp()
 #              execute_ltp()
 #              disp_ltpres()
@@ -398,10 +378,9 @@ do
     dialog --clear
     dialog --backtitle "Linux Test Project Control Centre" \
            --title "Main Menu" \
-           --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 5 \
+           --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 4 \
                   About        "About LTP Control Centre" \
                   Compile      "Compile LTP testsuite" \
-                  Descriptions "Display a description of test scenarios" \
                   Execute      "Execute LTP testsuite" \
                   Results      "Display a summary of test results" \
                   2>/tmp/runltp.mainmenu.$$ || RC=$?
@@ -413,7 +392,6 @@ do
            case $mmenu_item in
                 About)        about_ltpcc    ;;
                 Compile)      compile_ltp    ;;
-		Descriptions) about_ltptests ;;
                 Execute)      execute_ltp    ;;
                 Results)      disp_ltpres    ;;
            esac ;;
