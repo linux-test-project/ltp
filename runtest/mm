@@ -7,3 +7,6 @@ mm02 mmap001
 #mm03 mmap001 -i 0 -I 1 -m 100
 # repetitive mmapping test.
 # Creates a one page map repetitively for one minute.
+
+mtest01 mtest01 -p80
+mtest01w mtest01 -p80 -w

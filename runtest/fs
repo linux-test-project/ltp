@@ -37,4 +37,6 @@ rwtest05 rwtest -q -c -i 50 -T 64b 500b:/tmp/rwtest01%f
 #must be run as root
 iogen01 iogen -i 120s -s read,write 500b:doio.f1.$$ 1000b:doio.f2.$$ | doio -akv -n 2
 
-
+fs_inod01 fs_inod $TCtmp 10 10 1
+linker01 linktest.pl
+openfile01 openfile -f10 -t10
