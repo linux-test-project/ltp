@@ -25,7 +25,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 	val = saHpiEventLogTimeGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID, 
 			&time);
 	if (val != SA_OK) {
-		printf("  Does not conform the expected behaviors!\n");
+		printf("  Does not conform the expected behaviors!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 	}
@@ -43,7 +43,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 	if (rpt_entry.ResourceCapabilities & SAHPI_CAPABILITY_SEL) {
 		val = saHpiEventLogTimeGet(session_id, resource_id, &time);
 		if (val != SA_OK) {
-			printf("  Does not conform the expected behaviors!\n");
+			printf("  Does not conform the expected behaviors!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 		}

@@ -35,7 +35,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 				&prev_entry_id, &next_entry_id, &eventlog_entry, 				&rdr, &rpt_entry1);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Retrieve the next event log entry failed!\n");
+			printf("  Retrieve the next event log entry failed!(Domain)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 			goto out;
@@ -68,7 +68,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 					&rdr, &rpt_entry1);
 			if (val != SA_OK) {
 				printf("  Does not conform the expected behaviors!\n");
-				printf("  Retrieve the next event log entry failed!\n");
+				printf("  Retrieve the next event log entry failed!(Domain)\n");
 				printf("  Return value: %s\n", get_error_string(val));
 				ret = HPI_TEST_FAIL;
 				goto out;

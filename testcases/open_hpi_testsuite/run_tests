@@ -62,77 +62,144 @@ fi
 case $CMD in
 init)
 	echo "Executing init tests"
-	runtests "$BASEDIR/init" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+	        runtests "$BASEDIR/init" > $CURLOG
+        else
+                runtests "$BASEDIR/init" | tee $CURLOG
+        fi
+
 	;;
 
 session)
 	echo "Executing session management tests"
-	runtests "$BASEDIR/session_open" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/session_open" > $CURLOG
+        else
+                runtests "$BASEDIR/session_open" | tee $CURLOG
+        fi
+
 	;;
 
 resource)
 	echo "Executing resource management tests"
-	runtests "$BASEDIR/resource_discover" > $CURLOG
-	runtests "$BASEDIR/rpt_entry_process" >> $CURLOG
-	runtests "$BASEDIR/self_resourceID_get" >> $CURLOG
-	runtests "$BASEDIR/entity_schema_get" >> $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/resource_discover" > $CURLOG
+                runtests "$BASEDIR/rpt_entry_process" >> $CURLOG
+                runtests "$BASEDIR/self_resourceID_get" >> $CURLOG
+                runtests "$BASEDIR/entity_schema_get" >> $CURLOG
+        else
+                runtests "$BASEDIR/resource_discover" | tee $CURLOG
+                runtests "$BASEDIR/rpt_entry_process" | tee -a $CURLOG
+                runtests "$BASEDIR/self_resourceID_get" | tee -a $CURLOG
+                runtests "$BASEDIR/entity_schema_get" | tee -a $CURLOG
+        fi
+
 	;;
 
 eventlog)
 	echo "Excuting event log management tests"
-	runtests "$BASEDIR/event_log*" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/event_log*" > $CURLOG
+        else
+                runtests "$BASEDIR/event_log*" | tee $CURLOG
+        fi
 	;;
 
 event)
 	echo "Excuting events tests"
-	runtests "$BASEDIR/events" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/events" > $CURLOG
+        else
+                runtests "$BASEDIR/events" | tee $CURLOG
+        fi
 	;;
 
 rdr)
 	echo "Excuting resource data record(RDR) repository management tests"
-	runtests "$BASEDIR/rdr_get" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/rdr_get" > $CURLOG
+        else
+                runtests "$BASEDIR/rdr_get" | tee $CURLOG
+        fi
 	;;
 
 sensor)
 	echo "Excuting sensor function tests"
-	runtests "$BASEDIR/sensor*" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/sensor*" > $CURLOG
+        else
+                runtests "$BASEDIR/sensor*" | tee $CURLOG
+        fi
 	;;
 
 control)
 	echo "Excuting controls tests"
-	runtests "$BASEDIR/control*" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/control*" > $CURLOG
+        else
+                runtests "$BASEDIR/control*" | tee $CURLOG
+        fi
 	;;
 
 inventory)
 	echo "Excuting entity inventory data tests"
-	runtests "$BASEDIR/entity_inventory_data" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/entity_inventory_data" > $CURLOG
+        else
+                runtests "$BASEDIR/entity_inventory_data" | tee $CURLOG
+        fi
 	;;
 
 watchdogtimer)
 	echo "Excuting watch timer tests" 
-	runtests "$BASEDIR/watchdog_timer" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/watchdog_timer" > $CURLOG
+        else
+                runtests "$BASEDIR/watchdog_timer" | tee $CURLOG
+        fi
 	;;
 
 hotswap)
 	echo "Excuting managed hot swap tests"
-	runtests "$BASEDIR/hotswap*" > $CURLOG
-	runtests "$BASEDIR/resource_active" >> $CURLOG
-	runtests "$BASEDIR/auto*" >> $CURLOG
-	runtests "$BASEDIR/resource_power_state_process" >> $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/hotswap*" > $CURLOG
+                runtests "$BASEDIR/resource_active" >> $CURLOG
+                runtests "$BASEDIR/auto*" >> $CURLOG
+                runtests "$BASEDIR/resource_power_state_process" >> $CURLOG
+        else
+                runtests "$BASEDIR/hotswap*" | tee $CURLOG
+                runtests "$BASEDIR/resource_active" | tee -a $CURLOG
+                runtests "$BASEDIR/auto*" | tee -a $CURLOG
+                runtests "$BASEDIR/resource_power_state_process" | tee -a $CURLOG
+        fi	
 	;;
 
 config)
 	echo "Excuting configuration tests"
-	runtests "$BASEDIR/parm_control" > $CURLOG
+        if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/parm_control" > $CURLOG
+        else
+                runtests "$BASEDIR/parm_control" | tee $CURLOG
+        fi
 	;;
 
 reset)
 	echo "Excuting reset tests"
-	runtests "$BASEDIR/resource_reset_state_process" > $CURLOG
+	if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR/resource_reset_state_process" > $CURLOG
+        else
+                runtests "$BASEDIR/resource_reset_state_process" | tee $CURLOG
+        fi
+
 	;;
 
 all)	echo "Executing all tests"
-	runtests "$BASEDIR" > $CURLOG
+ 
+        if [ $DIFF -eq 1 ]; then
+                runtests "$BASEDIR" > $CURLOG
+        else
+                runtests "$BASEDIR" | tee $CURLOG
+        fi
 	;;
 
 *)	usage
@@ -147,6 +214,5 @@ if [ $DIFF -eq 1 ]; then
 	exit 0
 fi
 
-cat $CURLOG
 echo "****Tests Complete****" 
 echo "****************Finish testing****************" >> $LOGFILE

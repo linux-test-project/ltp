@@ -26,7 +26,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 			&enable_old);
 	if (val != SA_OK) {
 		printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
-		printf("  Cannot get the event log state info!\n");
+		printf("  Cannot get the event log state info!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 		goto out;
@@ -36,7 +36,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 			SAHPI_FALSE);
 	if (val != SA_OK) {
 		printf("  Does not conform the expected behaviors!\n");
-		printf("  Set event log state to TRUE failed!\n");
+		printf("  Set event log state to TRUE failed!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 		goto out;
@@ -46,7 +46,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 			&enable_new);
 	if (val != SA_OK) {
 		printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
-		printf("  Cannot get the event log state info!\n");
+		printf("  Cannot get the event log state info!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 		goto out1;
@@ -54,7 +54,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 
 	if (enable_new != SAHPI_FALSE) {
 		printf("  Does not conform the expected behaviors!\n");
-		printf("  Set event log state function is invalid!\n");
+		printf("  Set event log state function is invalid!(Domain)\n");
 		ret = HPI_TEST_FAIL;
 	}
 
@@ -63,7 +63,7 @@ out1:
 			enable_old);
 	if (val != SA_OK) {
 		printf("  Does not conform the expected behaviors!\n");
-		printf("  Set old event log state value failed!\n");
+		printf("  Set old event log state value failed!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 	}
@@ -84,7 +84,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 				&enable_old);
 		if (val != SA_OK) {
 			printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
-			printf("  Cannot get the event log state info!\n");
+			printf("  Cannot get the event log state info!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 			goto out;
@@ -94,7 +94,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 				SAHPI_FALSE);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Set event log state to TRUE failed!\n");
+			printf("  Set event log state to TRUE failed!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 			goto out;
@@ -104,7 +104,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 				&enable_new);
 		if (val != SA_OK) {
 			printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
-			printf("  Cannot get the event log state info!\n");
+			printf("  Cannot get the event log state info!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 			goto out1;
@@ -112,7 +112,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 
 		if (enable_new != SAHPI_FALSE) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Set event log state function is invalid!\n");
+			printf("  Set event log state function is invalid!(Resource)\n");
 			ret = HPI_TEST_FAIL;
 		}
 
@@ -121,7 +121,7 @@ out1:
 				enable_old);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Set old event log state value failed!\n");
+			printf("  Set old event log state value failed!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 		}	

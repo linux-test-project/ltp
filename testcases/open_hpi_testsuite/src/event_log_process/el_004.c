@@ -18,71 +18,86 @@
 #include <hpitest.h>
 
 #define	TEST_STR	"Event log test str"
-#define TEST_ENTRY_ID	2
 
 int process_domain_eventlog(SaHpiSessionIdT session_id)
 {
-#if 0
 	SaHpiSelEntryIdT	prev_entry_id;
 	SaHpiSelEntryIdT	next_entry_id;
 	SaHpiSelEntryT		entry_get, entry_add;
 	SaHpiRdrT		rdr;
-	SaHpiRptEntryT 		rpt_entry1;
-#endif
-	SaHpiSelEntryT	entry_add;
-	SaErrorT	val;
+	SaHpiRptEntryT 		rpt_entry;
+	SaHpiBoolT              enable_old;
+	SaErrorT		val;
 	int 			ret = HPI_TEST_PASS;
 
-#if 0
-	val = saHpiEventLogEntryGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
-			SAHPI_NEWEST_ENTRY, &prev_entry_id, &next_entry_id,
-			&entry_add, &rdr, &rpt_entry1);
+	/* In order to make sure that the entry we add is the
+	 * newest entry in eventlog, we should disable the
+	 * event log state				      */
+	val = saHpiEventLogStateGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
+			&enable_old);
 	if (val != SA_OK) {
-		printf("  Function \"saHpiEventLogEntryGet\" works abnormally\n");
-		printf("  Cannot retrieve the newest event log entry!\n");
+		printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
+		printf("  Cannot get the event log state info!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
 		goto out;
 	}
-#endif
-	/* We need to wait until the function saHpiEventLogEntryAdd has clear 
-	 * sytax.*/
-	memset(&entry_add, 0, sizeof(entry_add));
-	entry_add.EntryId = TEST_ENTRY_ID;
-	entry_add.Timestamp = SAHPI_TIME_UNSPECIFIED;
+
+	val = saHpiEventLogStateSet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
+			SAHPI_FALSE);
+	if (val != SA_OK) {
+		printf("  Funcition \"saHpiEventLogStateSet\" works abnormally!\n");
+		printf("  Set event log state to TRUE failed!(Domain)\n");
+		printf("  Return value: %s\n", get_error_string(val));
+		ret = HPI_TEST_FAIL;
+		goto out1;
+	}
+
 	entry_add.Event.Source = SAHPI_UNSPECIFIED_RESOURCE_ID;
 	entry_add.Event.EventType = SAHPI_ET_USER;
 	entry_add.Event.Timestamp = SAHPI_TIME_UNSPECIFIED;
 	entry_add.Event.Severity = SAHPI_OK;
 	memcpy(entry_add.Event.EventDataUnion.UserEvent.UserEventData,
-		       	TEST_STR, sizeof(TEST_STR));
-	val = saHpiEventLogEntryAdd(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
-			&entry_add);
+			TEST_STR, sizeof(TEST_STR));
+
+	val = saHpiEventLogEntryAdd(session_id, 
+			SAHPI_DOMAIN_CONTROLLER_ID, &entry_add);
 	if (val != SA_OK) {
 		printf("  Does not conform the expected behaviors!\n");
-		printf("  Add entry the the system event log failed!\n");
+		printf("  Add entry the the system event log failed!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
-		goto out;
+		goto out1;
 	}
-#if 0
-	val = saHpiEventLogEntryGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
-			entry_add.EntryId, &prev_entry_id, &next_entry_id,
-			&entry_get, &rdr, &rpt_entry1);
+
+	val = saHpiEventLogEntryGet(session_id, 
+			SAHPI_DOMAIN_CONTROLLER_ID,
+			SAHPI_NEWEST_ENTRY, &prev_entry_id, 
+			&next_entry_id,	&entry_get, &rdr, &rpt_entry);
 	if (val != SA_OK) {
 		printf("  Function \"saHpiEventLogEntryGet\" works abnormally\n");
-		printf("  Cannot retrieve the specified event log entry!\n");
+		printf("  Cannot retrieve the specified event log entry!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
-		goto out;
+		goto out1;
 	}
 	
-	if (memcmp(&entry_add, &entry_get, sizeof(entry_add))) {
+	if (memcmp(&entry_add.Event, &entry_get.Event, 
+				sizeof(entry_add.Event))) {
 		printf("  Does not conform the expected behaviors!\n");
-		printf("  Add event log entry function is invalid!\n");
+		printf("  Add event log entry function is invalid!(Domain)\n");
 		ret = HPI_TEST_FAIL;
 	}
-#endif
+out1:
+	val = saHpiEventLogStateSet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
+			enable_old);
+	if (val != SA_OK) {
+		printf("  Does not conform the expected behaviors!\n");
+		printf("  Set old event log state value failed!(Domain)\n");
+		printf("  Return value: %s\n", get_error_string(val));
+		ret = HPI_TEST_FAIL;
+	}
+
 out:
 	return ret;
 }
@@ -95,24 +110,35 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 	SaHpiSelEntryT		entry_get, entry_add;
 	SaHpiRdrT		rdr;
 	SaHpiRptEntryT 		rpt_entry1;
+	SaHpiBoolT		enable_old;
 	SaErrorT		val;
 	int 			ret = HPI_TEST_PASS;
 
-/* I suppose that the function saHpiEventLogEntryAdd() will set rpt_entry_add
- * to then event log entry specified by its EntryId. If there is a entry used
- * the same ID, the function will override it with new entry we set.	*/
 	if (rpt_entry.ResourceCapabilities & SAHPI_CAPABILITY_SEL) {
-		val = saHpiEventLogEntryGet(session_id, resource_id,
-				SAHPI_NEWEST_ENTRY, &prev_entry_id, 
-				&next_entry_id,	&entry_add, &rdr, &rpt_entry1);
+		/* In order to make sure that the entry we add is the
+		 * newest entry in eventlog, we should disable the
+		 * event log state				      */
+		val = saHpiEventLogStateGet(session_id, resource_id, 
+				&enable_old);
 		if (val != SA_OK) {
-			printf("  Function \"saHpiEventLogEntryGet\" works abnormally\n");
-			printf("  Cannot retrieve the newest event log entry!\n");
+			printf("  Funcition \"saHpiEventLogStateGet\" works abnormally!\n");
+			printf("  Cannot get the event log state info!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
 			goto out;
 		}
 
+		val = saHpiEventLogStateSet(session_id, resource_id, 
+				SAHPI_FALSE);
+		if (val != SA_OK) {
+			printf("  Does not conform the expected behaviors!\n");
+			printf("  Set event log state to TRUE failed!(Resource)\n");
+			printf("  Return value: %s\n", get_error_string(val));
+			ret = HPI_TEST_FAIL;
+			goto out1;
+		}
+
+		
 		entry_add.Timestamp = SAHPI_TIME_UNSPECIFIED;
 		entry_add.Event.Source = SAHPI_UNSPECIFIED_RESOURCE_ID;
 		entry_add.Event.EventType = SAHPI_ET_USER;
@@ -120,32 +146,44 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 		entry_add.Event.Severity = SAHPI_OK;
 		memcpy(entry_add.Event.EventDataUnion.UserEvent.UserEventData,
 				TEST_STR, sizeof(TEST_STR));
+
 		val = saHpiEventLogEntryAdd(session_id, resource_id, 
 				&entry_add);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Add entry the the system event log failed!\n");
+			printf("  Add entry the the system event log failed!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
-			goto out;
+			goto out1;
 		}
 
 		val = saHpiEventLogEntryGet(session_id, resource_id,
-				entry_add.EntryId, &prev_entry_id, 
+				SAHPI_NEWEST_ENTRY, &prev_entry_id, 
 				&next_entry_id,	&entry_get, &rdr, &rpt_entry1);
 		if (val != SA_OK) {
 			printf("  Function \"saHpiEventLogEntryGet\" works abnormally\n");
-			printf("  Cannot retrieve the specified event log entry!\n");
+			printf("  Cannot retrieve the specified event log entry!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));
 			ret = HPI_TEST_FAIL;
-			goto out;
+			goto out1;
 		}
-	
-		if (memcmp(&entry_add, &entry_get, sizeof(entry_add))) {
+
+		if (memcmp(&entry_add.Event, &entry_get.Event, 
+					sizeof(entry_add.Event))) {
 			printf("  Does not conform the expected behaviors!\n");
-			printf("  Add event log entry function is invalid!\n");
+			printf("  Add event log entry function is invalid!(Resource)\n");
 			ret = HPI_TEST_FAIL;
 		}
+
+out1:
+		val = saHpiEventLogStateSet(session_id, resource_id,
+				enable_old);
+		if (val != SA_OK) {
+			printf("  Does not conform the expected behaviors!\n");
+			printf("  Set old event log state value failed!(Resource)\n");
+			printf("  Return value: %s\n", get_error_string(val));
+			ret = HPI_TEST_FAIL;
+		}	
 	}
 
 out:
