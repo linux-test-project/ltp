@@ -60,7 +60,7 @@
  *		-Ported
  *
  * Restrictions
- * 	This test must be ran as adm.
+ * 	This test must be ran as root.
  *	nobody must be a valid group.
  */
 
@@ -80,6 +80,9 @@ gid_t nobody_gr_gid, root_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={EPERM, 0};
 int inval_user = 999999;
+char adm_uid[] = "adm";
+struct passwd *ltpuser;
+
 
 struct group nobody, root, bin;
 struct passwd adm;
@@ -197,10 +200,25 @@ setup(void)
 	adm = *getpwnam("adm");
 
  	/* Check that the test process id is adm */
-	if (geteuid() != adm.pw_uid) {
-		tst_brkm(TBROK, NULL, "Must be adm for this test!");
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
 	}
+
+	 ltpuser = getpwnam(adm_uid);
+         if (setgid(ltpuser->pw_gid) == -1) {
+                tst_resm(TINFO, "setgid failed to "
+                         "to set the effective gid to %d",
+                         ltpuser->pw_gid);
+                perror("setgid");
+         }
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);

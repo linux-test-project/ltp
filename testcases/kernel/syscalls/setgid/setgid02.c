@@ -53,6 +53,10 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 char root[] = "root";
+char nobody_uid[] = "nobody";
+char nobody_gid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup(void);
 void cleanup(void);
@@ -116,10 +120,25 @@ main(int ac, char **av)
 void
 setup()
 {
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, tst_exit, "must not run this as root");
-		/*NOTREACHED*/
-	}
+/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+	 if (setgid(ltpuser->pw_gid) == -1) {
+                tst_resm(TINFO, "setgid failed to "
+                         "to set the effective gid to %d",
+                         ltpuser->pw_gid);
+                perror("setgid");
+         }
+
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

@@ -75,6 +75,10 @@
 
 #define TESTUSER	"nobody"
 
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
+
 char *TCID="setgroups02";	/* Test program identifier.    */
 int TST_TOTAL=2;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -174,6 +178,19 @@ void
 setup()
 {
 	int i;
+
+/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setreuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setreuid");
+         }
+
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

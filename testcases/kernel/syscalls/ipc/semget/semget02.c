@@ -49,6 +49,7 @@
  * RESTRICTIONS
  *	none
  */
+#include <pwd.h>
 
 #include "../lib/ipcsem.h"
 
@@ -57,6 +58,10 @@ int TST_TOTAL = 2;
 extern int Tst_count;
 
 int exp_enos[] = {EACCES, EEXIST, 0};
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 int sem_id_1 = -1;
 
@@ -126,6 +131,20 @@ main(int ac, char **av)
 void
 setup(void)
 {
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+	 ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+	 	tst_resm(TINFO, "setreuid failed to "
+	                 "to set the effective uid to %d",
+	                 ltpuser->pw_uid);
+	        perror("setreuid");
+	 }
+			
+	
+	
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

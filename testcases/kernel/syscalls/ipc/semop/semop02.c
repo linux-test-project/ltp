@@ -50,6 +50,7 @@
  * RESTRICTIONS
  *	none
  */
+#include <pwd.h>
 
 #include "../lib/ipcsem.h"
 
@@ -62,6 +63,8 @@ int exp_enos[] = {E2BIG, EACCES, EFAULT, EINVAL, 0};
 int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
 int sem_id_2 = -1;	/* a semaphore set without read & alter permissions */
 int bad_id = -1;
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 struct sembuf s_buf;
 int badbuf = -1;
@@ -148,6 +151,19 @@ main(int ac, char **av)
 void
 setup(void)
 {
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setreuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setreuid");
+         }
+
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

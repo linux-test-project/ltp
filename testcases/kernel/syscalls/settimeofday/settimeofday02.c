@@ -61,6 +61,7 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <pwd.h>
 
 #define	VAL_SEC		100
 #define	VAL_MSEC	100
@@ -70,6 +71,9 @@ int TST_TOTAL = 1;
 int exp_enos[]={EFAULT, EPERM, 0};
 struct timeval tp;
 time_t save_tv_sec, save_tv_usec;
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 extern int Tst_count;
 
@@ -140,11 +144,21 @@ setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must not be root for this test!");
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
 		/*NOTREACHED*/
 	}
+
+        /* Switch to nobody user for correct error code collection */
+	 ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
