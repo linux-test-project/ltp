@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: rmobj.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: rmobj.c,v 1.3 2003/07/25 16:16:47 robbiew Exp $ */
 
 /**********************************************************
  *
@@ -99,6 +99,7 @@ rmobj(char *obj, char **errmsg)
    char          dirobj[PATH_MAX];  /* object inside directory to modify */
    struct stat   statbuf;           /* used to hold stat information */
    static char   err_msg[1024];     /* error message */
+   char		 foo[120];	    /* used to hold command line for system() call */
 
    /* Determine the file type */
    if ( lstat(obj, &statbuf) < 0 ) {
@@ -182,8 +183,10 @@ rmobj(char *obj, char **errmsg)
             return -1;
          }
       } else {
-         /* The directory is not linked; rmdir() can be used */
-         if ( rmdir(obj) < 0 ) {
+         /* The directory is not linked*/
+	 sprintf(foo,"rm -rf %s",obj);
+	 strcat(foo,"");
+         if ( system(foo) < 0 ) {
             if ( errmsg != NULL ) {
                sprintf(err_msg, "rmdir(%s) failed; errno=%d: %s",
                        obj, errno, SYSERR);
