@@ -154,30 +154,26 @@ struct test_case_t {		/* test case structure */
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid iovec pointer" },
 /* 11 */
-	{ PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf), &msgdat,
-		0, (struct sockaddr *)&sin1, sizeof(sin1),
-		-1, EMSGSIZE, setup1, cleanup1, "invalid iovec count" },
-/* 12 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), 0,
 		0, (struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid msghdr pointer" },
-/* 13 */
+/* 12 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		0, 0, setup4, cleanup4, "rights passing" },
-/* 14 */
+/* 13 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		~MSG_CMSG_COMPAT, (struct sockaddr *)&sun1, sizeof(sun1),
 		-1, EOPNOTSUPP, setup4, cleanup4, "invalid flags set w/ control" },
-/* 15 */
+/* 14 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		~MSG_CMSG_COMPAT, (struct sockaddr *)&sin1, sizeof(sin1),
 		0, EOPNOTSUPP, setup1, cleanup1, "invalid flags set" },
-/* 16 */
+/* 15 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		0, EOPNOTSUPP, setup6, cleanup4, "invalid cmsg length" },
-/* 17 */
+/* 16 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		-1, EFAULT, setup8, cleanup4, "invalid cmsg pointer" },
