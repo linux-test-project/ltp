@@ -136,6 +136,9 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 
 /*

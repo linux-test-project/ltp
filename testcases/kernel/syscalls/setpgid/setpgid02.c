@@ -84,7 +84,7 @@ struct test_case_t {
 	{&zero_pid, &inval_pid, EPERM}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
@@ -133,6 +133,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

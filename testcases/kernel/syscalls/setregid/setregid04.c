@@ -108,7 +108,7 @@ void setup(void);			/* Setup function for the test */
 void cleanup(void);			/* Cleanup function for the test */
 void gid_verify(struct group *ru, struct group *eu, char *when);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -158,6 +158,9 @@ main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 
 /*

@@ -30,11 +30,13 @@
  * RESTRICTIONS
  * 	This test is not completely written in the LTP format - PLEASE FIX!
  */
-#include <sys/wait.h>
+#include <wait.h>
 #include <limits.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
@@ -46,7 +48,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid;
 	int rval, fail = 0;
@@ -73,7 +75,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-test1:
+//test1:
 		/* sid of the calling process is not same */
 		if ((pid = fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
@@ -116,7 +118,7 @@ test1:
 			tst_resm(TINFO, "Test test 1: PASSED");
 		}
 
-test2:
+//test2:
 		/*
 		 * Value of pid matches the pid of the child process and
 		 * the child process has exec successfully. Error
@@ -151,6 +153,7 @@ test2:
 		}
 	}
 	cleanup();
+	return(0);
 }
 
 /*

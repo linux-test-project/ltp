@@ -45,6 +45,7 @@
  * 	None
  */
 #include <errno.h>
+#include <wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -55,12 +56,12 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned by parse_opts */
 
-	int pid, pgrp, oldpgrp;
+	int pid, oldpgrp;
 	int e_code, status, retval=0;
 
 
@@ -120,6 +121,7 @@ main(int ac, char **av)
 	}
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
