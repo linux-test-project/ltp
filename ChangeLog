@@ -1,3 +1,16 @@
+LTP-20050107
+- Porting changes from John Kohl to help support compatablility LTP on Solaris, HP-UX and AIX.
+- Add scsi virtual devices testsuite using scsi_debug
+- Changes to fix defect 13205 - testcase (seg fault) fails when MALLOC_CHECK_=3 environment varible is turned on .
+  Removed test for ppc64 as special exception, now passes child_stack+CHILD_STACK_SIZE as parameter to clone on ppc64
+- Applied patch from Prashant Yendigeri that fixes execution path problem.
+- Fix for defect 11968 - test seg faults on a SMP system (8-way)
+- Removed a prior applied patch from getdents01, that broke the testcases.
+- Applied patch from Ricky Ng-Adam to fix ioperm01 testcase.
+- Applied patch from Jacky Malcles for madvise02.
+- Applied fixes to error messages from Adam Lackorzynski.waitpidXX
+- Applied cleanup patch from Prashant Yendigeri for writexx testcases.
+
 LTP-20041203
 - Change to fix file creation error on certain filesystems.
 - gf15 and gf18 failed on both 32-bits and 64-bits, 
@@ -6,6 +19,7 @@ LTP-20041203
 - Added fs-bench by Hironobu SUZUKI and additional JFFS
   testscript by G.BANU PRAKASH.
 - Added mongo filesystem test by namesys and additional testscript from G.BANU PRAKASH.
+        /etc/init.d/cron restart
 - Applied patch from Jacky Malcles to allow test to run on IA64.
 - settimeofday01 fails on some platforms(ia64,41611	x86-64) occasionally.
   The testcase did not consider the situation when CONFIG_TIME_INTERPOLATION is enabled.
