@@ -110,6 +110,8 @@ main(int ac, char **av)
 			if (sig == SIGUSR1 || sig == SIGUSR2 || sig == SIGBUS) {
 				continue;
 			}
+                        /*Initialize signal to its default action*/
+                        signal(sig,SIG_DFL);
 			pid = fork();
 
 			if (pid == 0) {
