@@ -7,7 +7,7 @@
 cd `dirname $0`
 export LTPROOT=${PWD}
 export TMP="/tmp/runalltests-$$"
-export PAN_LOG="/root/ltp-logfile"
+export PAN_LOG="/root/ltp/ltp-logfile"
 
 mkdir ${TMP}
 cd ${TMP}
@@ -41,7 +41,7 @@ fi
 
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests
+${LTPROOT}/pan/pan -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests -l /tmp/sniff
 # Use the following pan runline for use with ltp automation scripts instead of the one above.
 # ${LTPROOT}/pan/pan -l $PAN_LOG -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests
 
