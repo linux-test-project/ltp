@@ -29,6 +29,7 @@ void *a_thread_func()
 {
 	new_th2=pthread_self();
 	pthread_exit(0);
+	return NULL;
 }
 
 int main()
@@ -38,14 +39,14 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th1, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to return */
 	if(pthread_join(new_th1, NULL) != 0)
 	{
-		perror("Error in pthread_join()");
+		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 	

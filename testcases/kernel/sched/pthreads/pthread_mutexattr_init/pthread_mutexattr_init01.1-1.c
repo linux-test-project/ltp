@@ -25,7 +25,7 @@ int main()
 	pthread_mutexattr_t mta;
 	int rc;
 
-#ifdef _POSIX_THREAD_PROCESS_SHARED
+#ifdef PTHREAD_PROCESS_SHARED
 	int pshared;
 #endif
 	/* Initialize a mutex attributes object */
@@ -36,8 +36,8 @@ int main()
 		return PTS_FAIL;
 	}
 	
-#ifdef _POSIX_THREAD_PROCESS_SHARED
-	/* If the symbol {_POSIX_THREAD_PROCESS_SHARED} is defined, the attribute
+#ifdef PTHREAD_PROCESS_SHARED
+	/* If the symbol {PTHREAD_PROCESS_SHARED} is defined, the attribute
 	 * process-shared should be provided and its default value should be 
 	 * PTHREAD_PROCESS_PRIVATE  */
 	if(pthread_mutexattr_getpshared(&mta, &pshared) != 0)

@@ -42,7 +42,7 @@ void *an_init_func()
 	sleep(10);
 
 	/* The thread could not be canceled, timeout after 10 secs */
-	perror("Init function timed out (10 secs), thread could not be canceled");
+	perror("Init function timed out (10 secs), thread could not be canceled\n");
 	init_flag=-1;
 	return NULL;
 }
@@ -74,7 +74,7 @@ int main()
 	/* Create a thread that will execute the first call to pthread_once() */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
@@ -85,7 +85,7 @@ int main()
 	/* Send cancel request to the thread*/
 	if(pthread_cancel(new_th) != 0) 
 	{
-		perror("Could send cancel request to thread");
+		perror("Could send cancel request to thread\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -96,7 +96,7 @@ int main()
 	 * an error */ 	
 	if (init_flag == -1)
 	{
-		perror("Error: could not cancel thread");
+		perror("Error: could not cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
 	

@@ -6,7 +6,7 @@
  * source tree.
 
  * Test pthread_cancel
- * Upon failure, it shall return an error number:
+ * It may return an error number of:
  * -[ESRCH] No thread could be found corresponding to that thread ID  
 
  * It shall not return an error code of [EINTR]
@@ -27,6 +27,7 @@
 void *a_thread_func()
 {
 	pthread_exit(0);
+	return NULL;
 }
 
 int main()
@@ -37,7 +38,7 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
@@ -60,8 +61,8 @@ int main()
 		return PTS_FAIL;		
 	}
 
-	printf("Test FAILED: Returned 0 on error or thread hasn't ended execution yet and timed out.\n");
-	return PTS_FAIL;
+	printf("Test PASSED: *NOTE: Returned 0 on error, though standard states 'may' fail.\n");
+	return PTS_PASS;
 
 }
 

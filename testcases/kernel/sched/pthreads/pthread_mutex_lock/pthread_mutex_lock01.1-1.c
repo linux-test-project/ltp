@@ -44,9 +44,7 @@ int main()
   	pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_JOINABLE);
   
   	/* Create threads */
-#ifdef DEBUG
   	fprintf(stderr,"Creating %d threads\n", THREAD_NUM);
-#endif
   	for (i=0; i<THREAD_NUM; ++i)
     		rc = pthread_create(&threads[i], &pta, f1, NULL);
 
@@ -72,9 +70,7 @@ void *f1(void *parm)
 {
   	int   i, tmp;
   	int   rc = 0;
-#ifdef DEBUG
   	pthread_t  self = pthread_self();
-#endif
 
 	/* Loopd M times to acquire the mutex, increase the value, 
 	   and then release the mutex. */
@@ -88,9 +84,7 @@ void *f1(void *parm)
 
     		tmp = value;
     		tmp = tmp+1;
-#ifdef DEBUG
     		fprintf(stderr,"Thread(0x%p) holds the mutex\n",(void*)self);
-#endif
     		usleep(1000);	  /* delay the increasement operation */
     		value = tmp;
 

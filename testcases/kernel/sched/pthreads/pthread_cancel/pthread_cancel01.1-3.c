@@ -13,17 +13,21 @@
  * Test when a thread is PTHREAD_CANCEL_ENABLE and PTHREAD_CANCEL_DEFERRED
  *  
  * STEPS:
- * 1. Create a thread
- * 2. In the thread function, set the state and type to
- *    PTHREAD_CANCEL_ENABLE and PTHREAD_CANCEL_DEFERRED
- * 3. Send out a cancel request
- * 4. It should not be honored until a cancelation point is reached (which is
- *    test_cancel()).
- * 5. If it does cancel immediately, the cleanup handler will be called, and the
- *    test will fail.
- * 6. If it does not cancel at the cancelation point, then the operation will
- *    time out after 10 seconds and the test will fail.
- * 7. Otherwise, the test will pass.     
+ * 1. Setup a mutex and lock it in main()
+ * 2. Create a thread.
+ * 3. In the thread function, set the type to PTHREAD_CANCEL_DEFERRED and state to 
+ *    PTHREAD_CANCEL_ENABLE.
+ * 4. Setup a cleanup handler for the thread.
+ * 5. Make the thread block on the locked mutex
+ * 6. Send out a thread cancel request to the new thread, and unlock the mutex allowing the
+ *    thread to continue execution.
+ * 7. If the cancel request was honored immediately, the
+ *    cleanup handler would have been executed, setting the cleanup_flag to -1, making the
+ *    test fail. 
+ * 8. If not, the thread will continue execution, pop the cleanup handler, set the cleanup
+ *    flag to 1, and call the cancelation point pthread_testcancel(). The test will pass.
+ * 9. If the thread did not cancel at the cancelation point like it was supposed to, the thread
+ *    will continue execution and set the cleanup_flag to -2, failing the test.    
  */
 
 #include <pthread.h>
@@ -35,103 +39,117 @@
 # define INTHREAD 0 	/* Control going to or is already for Thread */
 # define INMAIN 1	/* Control going to or is already for Main */
 
-int sem;		/* Manual semaphore */
-int cleanup_flag;
+int sem1;		/* Manual semaphore */
+int cleanup_flag;	/* Flag to indicate the thread's cleanup handler was called */
+pthread_mutex_t	mutex = PTHREAD_MUTEX_INITIALIZER;	/* Mutex */
 
 
+/* Cleanup function that the thread executes when it is canceled.  So if
+ * cleanup_flag is 1, it means that the thread was canceled. */
 void a_cleanup_func()	
 {
-	cleanup_flag=1;
+	cleanup_flag=-1;
 	return;
 }
 
+/* Function that the thread executes upon its creation */
 void *a_thread_func()
 {
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 	
 	pthread_cleanup_push(a_cleanup_func,NULL);
+	
+	/* Indicate to main() that the thread has been created. */	
+	sem1=INMAIN;
 
-	/* Tell main that the thread was created */
-	sem=INMAIN;
+	/* Lock the mutex. It should have already been locked in main, so the thread
+	 * should block. */
+	if(pthread_mutex_lock(&mutex) != 0)
+        {
+		perror("Error in pthread_mutex_lock()\n");
+		pthread_exit((void*)PTS_UNRESOLVED);
+		return (void*)PTS_UNRESOLVED;
+	}
 
-	/* Wait for main to try and cancel thread, meaning until it
-	 * sets sem=INTHREAD. Sleeping for 3 secs. to give time for the
-	 * cancel request to be sent and processed. */
-	while(sem==INMAIN)
-		sleep(3);
-
-	/* Should reach here if the thread correctly deffers the cancel
-	 * request until a cancelation point has been reached (in this
-	 * case, test_cancel()). */
+	/* Should get here if the cancel request was deffered. */
 	pthread_cleanup_pop(0);
+	cleanup_flag=1;
 
-	/* Cancelation point.  The thread should be canceled now. */
+	/* Cancelation point.  Cancel request should not be honored here. */
 	pthread_testcancel();
 
-	sleep(10);
-	
-	/* If we reach here, operation timed out */
-	perror("Operation timed out, thread could not cancel itself");
-	cleanup_flag=1;
-	pthread_exit(PTHREAD_CANCELED);
+	/* Should not get here if the cancel request was honored at the cancelation point
+	 * pthread_testcancel(). */
+	cleanup_flag=-2;
+	pthread_exit(0);
+	return NULL;
 }
 
 int main()
 {
 	pthread_t new_th;
-	int ret;
-		
+
 	/* Initializing values */
-	sem=INTHREAD;
+	sem1=INTHREAD;
 	cleanup_flag=0;
+	
+	/* Lock the mutex */
+	if(pthread_mutex_lock(&mutex) != 0)
+	{
+		perror("Error in pthread_mutex_lock()\n");
+		return PTS_UNRESOLVED;
+	}
 	
 	/* Create a new thread. */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	/* Make sure thread is created before we cancel it. */
-	while(sem==INTHREAD)
+	/* Make sure thread is created before we cancel it. (wait for 
+	 * a_thread_func() to set sem1=INMAIN.) */
+	while(sem1==INTHREAD)
 		sleep(1);
 
-	/* Try and cancel thread.  It shouldn't cancel it. */
+	/* Send cancel request to the thread.  */
 	if(pthread_cancel(new_th) != 0) 
 	{
-		printf("Test FAILED\n");
+		printf("Test FAILED: Couldn't cancel thread\n");
 		return PTS_FAIL;
 	}
 
-	/* Indicate to the thread function that the thread cancel request
-	 * has been sent to it. */
-	sem=INTHREAD;
-
-	/* Wait for thread to cancel itself with test_cancel */
-	ret=pthread_join(new_th, NULL);
-
-	if(ret != 0)
+	/* Cancel request has been sent, unlock the mutex */
+	if(pthread_mutex_unlock(&mutex) != 0)
 	{
-		if(ret == ESRCH)
-		{
-			printf("Test FAILED\n");
-			return PTS_FAIL;
-		}
-		
-		perror("Error in pthread_join");
-		return PTS_UNRESOLVED;		
+		perror("Error in pthread_mutex_unlock()\n");
+		return PTS_UNRESOLVED;
 	}
 
-	if(cleanup_flag==1)
+	/* Wait 'till the thread has been canceled or has ended execution. */
+	if(pthread_join(new_th, NULL) != 0)
 	{
-		printf("Test FAILED\n");
-		return PTS_FAIL;
+		perror("Error in pthread_join()\n");
+		return PTS_UNRESOLVED;
 	}
 	
+	/* This means that the cleanup function wasn't called, so the cancel
+	 * request was not honord immediately like it should have been. */
+	if(cleanup_flag == -1)
+	{
+		printf("Test FAILED: Cancel request was not deferred.\n");
+		return PTS_FAIL;
+	}	
+	
+	if(cleanup_flag == -2)
+	{
+		printf("Test FAILED: (1) Cancel request not honored at cancelation point pthread_testcancel() OR (2) pthread_testcancel() not treated as a cancelation point.\n");
+		return PTS_FAIL;
+	}	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;	
-
 }
 
 

@@ -34,7 +34,7 @@ int main()
 	/* There's insufficient memory, can't run test */
 	else if(ret == ENOMEM)
 	{
-		perror("Error in pthread_attr_init()");
+		perror("Error in pthread_attr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 

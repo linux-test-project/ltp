@@ -26,6 +26,7 @@ void *a_thread_func()
 {
 	
 	pthread_exit(0);
+	return NULL;
 }
 
 int main()
@@ -35,7 +36,7 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 

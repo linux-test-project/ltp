@@ -34,7 +34,7 @@ int main()
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
-	/*Main: hold the mutex for a while*/
+	fprintf(stderr,"Main: hold the mutex for a while\n");
 	sleep(1);
 
 	/* Release the mutex object using pthread_mutex_unlock */

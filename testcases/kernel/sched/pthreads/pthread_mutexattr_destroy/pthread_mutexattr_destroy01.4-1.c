@@ -35,9 +35,8 @@ int main()
 	}
 	else
 	{
-		fprintf(stderr,"Expect %d(EINVAL), but return %d\n",EINVAL,rc);
-		printf("Test FAILED\n");
-		return PTS_FAIL;
+		printf("Test PASSED: *NOTE: Expect %d(EINVAL), but return %d, though standard states 'may' fail\n", EINVAL, rc);
+		return PTS_PASS;
 	}
 }
 

@@ -14,9 +14,9 @@
  * 2.  Pass the newly created attribute object to pthread_create()
  * 3.  Test that thread is joinable, since using pthread_attr_init() will
  *     set the default detachstate to PTHREAD_CREATE_JOINABLE.
- * 4.  Use pthread_join and pthread_detach() to test this.  They should both
- *     not return errors since the thread should be joinable.  If they do 
- *     return an error, that means that the thread is not joinable, but rather
+ * 4.  Pthread_detach() to test this.  It should
+ *     not return errors since the thread should be joinable (non-detached).  If it
+ *     returns an error, that means that the thread is not joinable, but rather
  *     in a detached state, and the test fails.              
  * 
  */
@@ -24,13 +24,29 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 #include "posixtest.h"
 
+# define TIMEOUT 10	/* Timeout value of 10 seconds. */
+# define INTHREAD 0 	/* Control going to or is already for Thread */
+# define INMAIN 1	/* Control going to or is already for Main */
+
+int sem1;		/* Manual semaphore */
 
 void *a_thread_func()
 {
 	
-	pthread_exit(0);
+	/* Indicate to main() that the thread was created. */
+	sem1=INTHREAD;
+
+	/* Wait for main to detach change the attribute object and try and detach this thread.
+	 * Wait for a timeout value of 10 seconds before timing out if the thread was not able
+	 * to be detached. */
+	sleep(TIMEOUT);
+
+	printf("Test FAILED: Could not detach the thread.\n");
+	pthread_exit((void*)PTS_FAIL);
+	return NULL;
 }
 
 int main()
@@ -39,40 +55,26 @@ int main()
 	pthread_attr_t new_attr;
 	int ret_val;
 
-	/* Initialize attribute */
+	/* Initializing */
+	sem1 = INMAIN;	
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object");
+		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create a new thread passing it the new attribute object */
 	if(pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* If pthread_join() or pthread_detach fail, that means that the
-	 * test fails as well. */
-	ret_val=pthread_join(new_th, NULL);
-
-	if(ret_val != 0)
-	{
-		/* Thread is detached and can't be joined */
-		if(ret_val == EINVAL)
-		{
-			printf("Test FAILED\n");
-			return PTS_FAIL;
-		}
-		/* pthread_join() failed for another reason */
-		else
-		{
-			perror("Error in pthread_join()");
-			return PTS_UNRESOLVED;
-		}
-	}
-
+	/* Wait for thread to indicate that the start routine for the thread has started. */
+	while(sem1==INMAIN)
+		sleep(1);
+	
+	/* If pthread_detach fails, that means that the test fails as well. */
 	ret_val=pthread_detach(new_th);
 
 	if(ret_val != 0)
@@ -86,7 +88,7 @@ int main()
 		/* pthread_detach() failed for another reason. */
 		else
 		{
-			perror("Error in pthread_detach()");
+			perror("Error in pthread_detach()\n");
 			return PTS_UNRESOLVED;
 		}
 	}

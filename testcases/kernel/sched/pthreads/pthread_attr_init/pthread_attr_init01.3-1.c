@@ -26,6 +26,7 @@
 void *a_thread_func(void *attr)
 {
 	pthread_exit(NULL);
+	return NULL;
 }
 
 int main()
@@ -37,7 +38,7 @@ int main()
 	/* Initialize attribute */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object");
+		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -53,7 +54,7 @@ int main()
 		}
 		else if(ret !=0)
 		{	
-			perror("Error creating thread");
+			perror("Error creating thread\n");
 			return PTS_UNRESOLVED;
 		}
 	}
