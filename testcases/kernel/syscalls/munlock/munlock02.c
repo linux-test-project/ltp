@@ -21,7 +21,7 @@
  *    EXECUTED BY	: root / superuser
  * 
  *    TEST TITLE	: Test for checking basic error conditions for
- *    			  munlock(2)
+ * 	   		  munlock(2)
  * 
  *    TEST CASE TOTAL	: 2
  * 
@@ -113,9 +113,10 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-
 		for (i = 0; i < TST_TOTAL; i++) {
-
+#ifdef __ia64__
+	                TC[0].len = getpagesize() + 1;
+#endif
 			TEST(munlock(*(TC[i].addr), TC[i].len));
 
 			/* check return code */
@@ -123,22 +124,22 @@ int main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO != TC[i].error)
 					tst_brkm(TFAIL, cleanup,
-						 "munlock() Failed with wrong "
-						 "errno, expected errno=%s, "
-						 "got errno=%d : %s",
-						 TC[i].edesc, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					"munlock() Failed with wrong "
+					"errno, expected errno=%s, "
+					"got errno=%d : %s",
+					TC[i].edesc, TEST_ERRNO,
+					strerror(TEST_ERRNO));
 				else
 					tst_resm(TPASS,
-						 "expected failure - errno "
-						 "= %d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					"expected failure - errno "
+					"= %d : %s",
+					TEST_ERRNO,
+					strerror(TEST_ERRNO));
 			} else {
 				tst_brkm(TFAIL, cleanup,
-					 "munlock() Failed, expected "
-					 "return value=-1, got %d",
-					 TEST_RETURN);
+				"munlock() Failed, expected "
+				"return value=-1, got %d",
+				TEST_RETURN);
 			}
 		}
 	}			/* End for TEST_LOOPING */
