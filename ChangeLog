@@ -13,6 +13,7 @@ LTP-20020813
   signal04, getgroups01
 - Fix sockioctl01 to work even if fd0 isn't	( Paul Larson        )
   open
+- Fix mmstress path problems, now uses execvp	( Paul Larson        )
 
 LTP-20020807
 ------------
