@@ -59,7 +59,7 @@
  *
  * Restrictions
  * 	This test must be run by root.
- *	nobody and adm must be a valid users.
+ *	nobody and bin must be a valid users.
  */
 
 #include <pwd.h>
@@ -79,12 +79,12 @@ int inval_user = 999999;
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
 
-uid_t root_pw_uid, nobody_pw_uid, adm_pw_uid;
+uid_t root_pw_uid, nobody_pw_uid, bin_pw_uid;
 char user1name[] = "nobody";
-char user2name[] = "adm";
+char user2name[] = "bin";
 char rootname[] = "root";
 
-struct passwd nobody, adm, root;
+struct passwd nobody, bin, root;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -101,11 +101,11 @@ struct test_data_t {
 	struct passwd* exp_sav_usr;
 	char*	test_msg;
 } test_data[] = {
-	{ &nobody_pw_uid, &neg_one, &neg_one, EPERM, &root, &adm, &adm, "After setresuid(root, -1, -1)," },
-	{ &neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &adm, &adm, "After setresuid(-1, -1, adm)," },
-	{ &neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &adm, &adm, "After setresuid(-1, -1, adm)," },
-	{ &neg_one, &neg_one, &inval_user, EINVAL, &root, &adm, &adm, "After setresuid(-1, -1, adm)," },
-	{ &neg_one, &inval_user, &neg_one, EINVAL, &root, &adm, &adm, "After setresuid(-1, -1, adm)," },
+	{ &nobody_pw_uid, &neg_one, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(root, -1, -1)," },
+	{ &neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &neg_one, &inval_user, EINVAL, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &inval_user, &neg_one, EINVAL, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]); 
@@ -141,7 +141,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/* set the appropriate ownership values */
-		if (setresuid(root_pw_uid, adm_pw_uid, adm_pw_uid)
+		if (setresuid(root_pw_uid, bin_pw_uid, bin_pw_uid)
 					== -1) {
 			tst_brkm(TFAIL, cleanup, "Initial setresuid failed");
 			/*NOTREACHED*/
@@ -217,8 +217,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("bin") == NULL) {
+		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -236,8 +236,8 @@ setup(void)
 	nobody = *( getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *( getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	bin = *( getpwnam("bin"));
+	bin_pw_uid = bin.pw_uid;
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.

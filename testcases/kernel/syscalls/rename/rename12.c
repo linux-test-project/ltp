@@ -35,7 +35,7 @@
  *              create a directory fdir and set the sticky bit
  *              create file fname under fdir
  *              fork a child
- *                      set to ltpuser1
+ *                      set to nobody
  *                      try to rename fname to mname
  *                      check the return value, if succeeded (return=0)
  *			       Log the errno and Issue a FAIL message.
@@ -80,8 +80,8 @@ extern struct passwd * my_getpwnam(char *);
 
 #define PERMS		0777
 
-char user1name[] = "ltpuser1";
-char user2name[] = "ltpuser2";
+char user1name[] = "nobody";
+char user2name[] = "bin";
 
 char *TCID="rename12";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -90,7 +90,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fd;
 char fdir[255];
 char fname[255], mname[255];
-struct passwd *ltpuser1;
+struct passwd *nobody;
 struct stat buf1;
 
 int exp_enos[]={EPERM, 0};     /* List must end with 0 */
@@ -137,8 +137,8 @@ main(int ac, char **av)
 		}
 
 		if (pid == 0) {		/* child */
-			/* set to ltpuser1 */
-			if (seteuid(ltpuser1->pw_uid) == -1) {
+			/* set to nobody */
+			if (seteuid(nobody->pw_uid) == -1) {
 				tst_resm(TWARN, "setreuid failed");
 				perror("setreuid");
 				exit(1);
@@ -233,8 +233,8 @@ setup()
 	/* create a file under fdir */
 	do_file_setup(fname);
 
-	/* get ltpuser1 password file info */
-	ltpuser1 = my_getpwnam(user1name);
+	/* get nobody password file info */
+	nobody = my_getpwnam(user1name);
 }
 
 /*

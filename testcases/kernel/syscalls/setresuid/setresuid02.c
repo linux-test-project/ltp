@@ -55,7 +55,7 @@
  *
  * Restrictions
  * 	This test must be run by root.
- *	nobody and adm must be a valid users.
+ *	nobody and bin must be a valid users.
  */
 
 #include <pwd.h>
@@ -74,11 +74,11 @@ int neg_one = -1;
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
 
-uid_t nobody_pw_uid, adm_pw_uid;
+uid_t nobody_pw_uid, bin_pw_uid;
 char user1name[] = "nobody";
-char user2name[] = "adm";
+char user2name[] = "bin";
 
-struct passwd nobody, adm;
+struct passwd nobody, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -94,9 +94,9 @@ struct test_data_t {
 	struct passwd* exp_sav_usr;
 	char*	test_msg;
 } test_data[] = {
-	{ &neg_one, &neg_one, &adm_pw_uid, &nobody, &adm, &adm, "After setresuid(-1, -1, adm)," },
-	{ &neg_one, &nobody_pw_uid, &neg_one, &nobody, &nobody, &adm, "After setresuid(-1, nobody -1)," },
-	{ &adm_pw_uid, &neg_one, &neg_one, &adm, &nobody, &adm, "After setresuid(adm, -1 -1)," },
+	{ &neg_one, &neg_one, &bin_pw_uid, &nobody, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &nobody_pw_uid, &neg_one, &nobody, &nobody, &bin, "After setresuid(-1, nobody -1)," },
+	{ &bin_pw_uid, &neg_one, &neg_one, &bin, &nobody, &bin, "After setresuid(bin, -1 -1)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]); 
@@ -132,7 +132,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/* set the appropriate ownership values */
-		if (setresuid(nobody_pw_uid, adm_pw_uid, nobody_pw_uid) == -1) {
+		if (setresuid(nobody_pw_uid, bin_pw_uid, nobody_pw_uid) == -1) {
 			tst_brkm(TFAIL, cleanup, "Initial setresuid failed");
 			/*NOTREACHED*/
 		}
@@ -206,8 +206,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("bin") == NULL) {
+		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -221,8 +221,8 @@ setup(void)
 	nobody = *( getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *( getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	bin = *( getpwnam("bin"));
+	bin_pw_uid = bin.pw_uid;
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.

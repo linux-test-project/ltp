@@ -80,12 +80,12 @@ gid_t users_gr_gid, root_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={EPERM, 0};
 int inval_user = 999999;
-char adm_uid[] = "adm";
+char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 
 struct group users, root, bin;
-struct passwd adm;
+struct passwd nobody;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -191,21 +191,21 @@ setup(void)
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("nobody") == NULL) {
+		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
 
-	adm = *getpwnam("adm");
+	nobody = *getpwnam("nobody");
 
- 	/* Check that the test process id is adm */
+ 	/* Check that the test process id is nobody */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
 	}
 
-	 ltpuser = getpwnam(adm_uid);
+	 ltpuser = getpwnam(nobody_uid);
          if (setgid(ltpuser->pw_gid) == -1) {
                 tst_resm(TINFO, "setgid failed to "
                          "to set the effective gid to %d",

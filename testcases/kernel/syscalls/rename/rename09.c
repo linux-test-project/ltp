@@ -33,11 +33,11 @@
  *	Test:
  *		Loop if the proper options are given.
  *              fork the first child
- *                      set to be ltpuser1
+ *                      set to be nobody
  *                      create old dir with mode 0700
  *                      creat a file under it
  *              fork the second child
- *                      set to ltpuser2
+ *                      set to bin
  *                      create new dir with mode 0700
  *                      create a "new" file under it
  *                      try to rename file under old dir to file under new dir
@@ -87,8 +87,8 @@ extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0700
 
-char user1name[] = "ltpuser1";
-char user2name[] = "ltpuser2";
+char user1name[] = "nobody";
+char user2name[] = "bin";
 
 char *TCID="rename09";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -96,7 +96,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fdir[255], mdir[255];
 char fname[255], mname[255];
-struct passwd *ltpuser1, *ltpuser2;
+struct passwd *nobody, *bin;
 
 int exp_enos[]={EACCES, 0};     /* List must end with 0 */
 
@@ -138,13 +138,13 @@ main(int ac, char **av)
 		}
 
 		if (pid == 0) {		/* first child */
-			/* set to ltpuser1 */
-			rval = setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid);
+			/* set to nobody */
+			rval = setreuid(nobody->pw_uid, nobody->pw_uid);
 			if (rval < 0) {
 				tst_resm(TWARN, "setreuid failed to "
 					 "to set the real uid to %d and "
 					 "effective uid to %d",
-					 ltpuser1->pw_uid, ltpuser1->pw_uid);
+					 nobody->pw_uid, nobody->pw_uid);
 				perror("setreuid");
 				exit(1);
 				/*NOTREACHED*/
@@ -177,8 +177,8 @@ main(int ac, char **av)
 		}
 
 		if (pid1 == 0) {		/* second child */
-			/* set to ltpuser2 */
-			if ((rval = seteuid(ltpuser2->pw_uid)) == -1) {
+			/* set to bin */
+			if ((rval = seteuid(bin->pw_uid)) == -1) {
 				tst_resm(TWARN, "seteuid() failed");
 				perror("setreuid");
 				exit(1);
@@ -277,8 +277,8 @@ setup()
 	sprintf(fname,"%s/tfile_%d",fdir,getpid());
 	sprintf(mname,"%s/rnfile_%d",mdir,getpid());
 
-	ltpuser1 = my_getpwnam(user1name);
-	ltpuser2 = my_getpwnam(user2name);
+	nobody = my_getpwnam(user1name);
+	bin = my_getpwnam(user2name);
 }
 
 /*

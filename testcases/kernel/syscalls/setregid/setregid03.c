@@ -80,13 +80,13 @@ int pass = 0;
 int neg_one = -1;
 int exp_enos[]={0};
 gid_t users_gr_gid, root_gr_gid, sys_gr_gid, bin_gr_gid;
-uid_t adm_pw_uid;
+uid_t nobody_pw_uid;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
 
 struct group users, sys, root, bin;
-struct passwd adm;
+struct passwd nobody;
 /*
  * The following structure contains all test data.  Each structure in the array
  * is used for a separate test.  The tests are executed in the for loop below.
@@ -148,7 +148,7 @@ main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		if (seteuid(adm_pw_uid) == -1) {
+		if (seteuid(nobody_pw_uid) == -1) {
 			tst_brkm(TBROK, cleanup, "Initial seteuid failed");
 			/*NOTREACHED*/
 		}
@@ -232,8 +232,8 @@ setup(void)
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("nobody") == NULL) {
+		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -247,8 +247,8 @@ setup(void)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	adm = *(getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	nobody = *(getpwnam("nobody"));
+	nobody_pw_uid = nobody.pw_uid;
 
 	root = *(getgrnam("root"));
 	root_gr_gid = root.gr_gid;

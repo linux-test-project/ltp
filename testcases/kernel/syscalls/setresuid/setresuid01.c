@@ -59,7 +59,7 @@
  *
  * Restrictions
  * 	This test must be ran as root.
- *	nobody and adm must be valid users.
+ *	nobody and bin must be valid users.
  */
 
 
@@ -73,11 +73,11 @@
 extern int Tst_count;
 
 char *TCID = "setresuid01";
-uid_t nobody_pw_uid, root_pw_uid, adm_pw_uid;
+uid_t nobody_pw_uid, root_pw_uid, bin_pw_uid;
 int neg_one = -1;
 int exp_enos[]={0};
 
-struct passwd nobody, adm, root;
+struct passwd nobody, bin, root;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -95,12 +95,12 @@ struct test_data_t {
 } test_data[] = {
 	{ &neg_one, &neg_one, &neg_one, &root, &root, &root, "After setresuid(-1, -1, -1)," },
 	{ &neg_one, &neg_one, &nobody_pw_uid, &root, &root, &nobody, "After setresuid(-1, -1, nobody)," },
-	{ &neg_one, &adm_pw_uid, &neg_one, &root, &adm, &nobody, "After setresuid(-1, adm, -1)," },
-	{ &neg_one, &neg_one, &root_pw_uid, &root, &adm, &root, "After setresuid(-1, -1, root)," },
-	{ &neg_one, &neg_one, &adm_pw_uid, &root, &adm, &adm, "After setresuid(-1, -1, adm)," },
-	{ &neg_one, &root_pw_uid, &neg_one, &root, &root, &adm, "After setresuid(-1, root, -1)," },
-	{ &nobody_pw_uid, &neg_one, &neg_one, &nobody, &root, &adm, "After setresuid(nobody, -1, -1)" },
-	{ &neg_one, &root_pw_uid, &neg_one, &nobody, &root, &adm, "After setresuid(-1, root, -1)," },
+	{ &neg_one, &bin_pw_uid, &neg_one, &root, &bin, &nobody, "After setresuid(-1, bin, -1)," },
+	{ &neg_one, &neg_one, &root_pw_uid, &root, &bin, &root, "After setresuid(-1, -1, root)," },
+	{ &neg_one, &neg_one, &bin_pw_uid, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &root_pw_uid, &neg_one, &root, &root, &bin, "After setresuid(-1, root, -1)," },
+	{ &nobody_pw_uid, &neg_one, &neg_one, &nobody, &root, &bin, "After setresuid(nobody, -1, -1)" },
+	{ &neg_one, &root_pw_uid, &neg_one, &nobody, &root, &bin, "After setresuid(-1, root, -1)," },
 	{ &root_pw_uid, &neg_one, &root_pw_uid, &root, &root, &root, "After setresuid(root, -1, -1)," },
 };
 
@@ -191,8 +191,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("bin") == NULL) {
+		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -206,8 +206,8 @@ setup(void)
 	nobody = *(getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *(getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	bin = *(getpwnam("bin"));
+	bin_pw_uid = bin.pw_uid;
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
