@@ -26,3 +26,5 @@ pthread_mutexattr_init01 cd $LTPROOT/testcases/bin;pthread_mutexattr_init01
 pthread_once01 cd $LTPROOT/testcases/bin;pthread_once01 
 pthread_self01 cd $LTPROOT/testcases/bin;pthread_self01 
 pthread_setcancelstate01 cd $LTPROOT/testcases/bin;pthread_setcancelstate01 
+pthread_setcanceltype01 cd $LTPROOT/testcases/bin;pthread_setcanceltype01
+
