@@ -67,142 +67,144 @@ char *TCID = "msgsnd06";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EIDRM, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 MSGBUF msg_buf;
 
 main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	pid_t c_pid, p_pid;
+    int lc;			/* loop counter */
+    char *msg;			/* message returned from parse_opts */
+    pid_t c_pid, p_pid;
+    int retval = 0, status, e_code;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+    /* parse standard options */
+    if ((msg =
+	 parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
+	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+    }
+
+    setup();			/* global setup */
+
+    /* The following loop checks looping state if -i option given */
+
+    for (lc = 0; TEST_LOOPING(lc); lc++) {
+	/* reset Tst_count in case we are looping */
+	Tst_count = 0;
+
+	msgkey = getipckey();
+
+	/* create a message queue with read/write permission */
+	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW))
+	    == -1) {
+	    tst_brkm(TBROK, cleanup, "Can't create message queue");
 	}
 
-	setup();			/* global setup */
+	/* initialize the message buffer */
+	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
 
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-		msgkey = getipckey();
-
-		/* create a message queue with read/write permission */
-		if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW))
-		     == -1) {
-			tst_brkm(TBROK, cleanup, "Can't create message queue");
-		}
-
-		/* initialize the message buffer */
-		init_buf(&msg_buf, MSGTYPE, MSGSIZE);
-
-		/* write messages to the queue until it is full */
-		while (msgsnd(msg_q_1, &msg_buf, MSGSIZE, IPC_NOWAIT) != -1) {
-			msg_buf.mtype += 1;
-		}
-
-		/*
-		 * fork a child that will attempt to write a message
-		 * to the queue without IPC_NOWAIT
-		 */
-		if ((c_pid = fork()) == -1) {
-			tst_brkm(TBROK, cleanup, "could not fork");
-		}
-
-		if (c_pid == 0) {		/* child */
-			/*
-			 * Attempt to write another message to the full queue.
-			 * Without the IPC_NOWAIT flag, the child sleeps
-			 */
-			TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
-		} else {		/* parent */
-			sleep(1);
-
-			/* remove the queue */
-			rm_queue(msg_q_1);
-
-			/* let the child carry on */
-			exit(0);
-		}
-			
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
-			continue;
-		}
-	
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		switch(TEST_ERRNO) {
-		case EIDRM:
-			tst_resm(TPASS, "expected failure - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-
-			/* mark the queue as invalid as it was removed */
-			msg_q_1 = -1;
-			break;
-		default:
-			tst_resm(TFAIL, "call failed with an "
-				 "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		}
+	/* write messages to the queue until it is full */
+	while (msgsnd(msg_q_1, &msg_buf, MSGSIZE, IPC_NOWAIT) != -1) {
+	    msg_buf.mtype += 1;
 	}
 
-	cleanup();
+	/*
+	 * fork a child that will attempt to write a message
+	 * to the queue without IPC_NOWAIT
+	 */
+	if ((c_pid = fork()) == -1) {
+	    tst_brkm(TBROK, cleanup, "could not fork");
+	}
 
-	/*NOTREACHED*/
-}
+	if (c_pid == 0) {	/* child */
+	    /*
+	     * Attempt to write another message to the full queue.
+	     * Without the IPC_NOWAIT flag, the child sleeps
+	     */
+	    TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
+
+	    if (TEST_RETURN != -1) {
+		retval = 1;
+		tst_resm(TFAIL, "call succeeded when error expected");
+		continue;
+	    }
+
+	    TEST_ERROR_LOG(TEST_ERRNO);
+
+	    switch (TEST_ERRNO) {
+	    case EIDRM:
+		tst_resm(TPASS, "expected failure - errno = %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+
+		/* mark the queue as invalid as it was removed */
+		msg_q_1 = -1;
+		break;
+	    default:
+		retval = 1;
+		tst_resm(TFAIL, "call failed with an "
+			 "unexpected error - %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+		break;
+	    }
+	    exit(retval);
+	} else {		/* parent */
+	    sleep(1);
+	    /* remove the queue */
+	    rm_queue(msg_q_1);
+
+	    /* wait for the child to finish */
+	    wait(&status);
+	    /* make sure the child returned a good exit status */
+	    e_code = status >> 8;
+	    if (e_code != 0) {
+		tst_resm(TFAIL, "Failures reported above");
+	    }
+	}
+    }
+
+    cleanup();
+
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
-	/* capture signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+    /* capture signals */
+    tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
+    /* Set up the expected error numbers for -e option */
+    TEST_EXP_ENOS(exp_enos);
 
-	/* Pause if that option was specified */
-	TEST_PAUSE;
+    /* Pause if that option was specified */
+    TEST_PAUSE;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
-	tst_tmpdir();
+    /*
+     * Create a temporary directory and cd into it.
+     * This helps to ensure that a unique msgkey is created.
+     * See ../lib/libipc.c for more information.
+     */
+    tst_tmpdir();
 }
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
-	/* if it exists, remove the message queue that was created */
-	rm_queue(msg_q_1);
 
-	/* Remove the temporary directory */
-	tst_rmdir();
+    /* Remove the temporary directory */
+    tst_rmdir();
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+    /*
+     * print timing stats if that option was specified.
+     * print errno log if that option was specified.
+     */
+    TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
+    /* exit with return code appropriate for results */
+    tst_exit();
 }
-
