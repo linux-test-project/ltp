@@ -75,7 +75,6 @@ void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
 	cleanup2(void);
 
 void sender(int);
-char *mktemp(char *);
 
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
@@ -198,6 +197,7 @@ char tmpsunpath[1024];
 void
 setup(void)
 {
+	int tfd;
 	TEST_PAUSE;	/* if -P option specified */
 
 	/* initialize sockaddr's */
@@ -206,7 +206,9 @@ setup(void)
 	sin1.sin_addr.s_addr = INADDR_ANY;
 
 	(void) strcpy(tmpsunpath, "/tmp/udsockXXXXXX");
-	(void) mktemp(tmpsunpath);
+	tfd = mkstemp(tmpsunpath);
+	close(tfd);
+	unlink(tmpsunpath);
 	sun1.sun_family = AF_UNIX;
 	(void) strcpy(sun1.sun_path, tmpsunpath);
 
@@ -435,11 +437,10 @@ sender(int fd)
 	int	tfd;
 
 	(void) strcpy(tmpfn, "/tmp/smtXXXXXX");
-	p = mktemp(tmpfn);
-	tfd = open(p, O_CREAT|O_RDWR|O_TRUNC, 0600);
+	tfd = mkstemp(tmpfn);
 	if (tfd < 0)
 		return;
-	(void) unlink(p);
+	(void) unlink(tmpfn);
 
 	bzero(&mh, sizeof(mh));
 
