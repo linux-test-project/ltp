@@ -70,10 +70,13 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "test.h"
 #include "usctest.h"
 
+#define _XOPEN_SOURCE 500
 #define TEMPFILE	"pwrite_file"
 #define K1              1024
 #define K2              (K1 * 2)
