@@ -274,56 +274,35 @@ setup03()
     int  bs, count;
     char cmd_buffer[100];       /* array to hold command line*/
     char filename[15];      /* array to store new filename*/
-    char decimal[3];        /* array for digits at end of filename*/
-#if 0
-    char temp[7];               /* to store wc -l output*/
-#endif
+#define BUFSZ		 1023
+    char buf[BUFSZ + 1];    /* temp buffer for reading /proc/swaps */
+
     /*Find out how many swapfiles (1 line per entry) already exist*/
     /*This includes the first (header) line*/
-    if (system("cat /proc/swaps | wc -l > ./linecount") != 0) {
+    if ((fd = open("/proc/swaps", O_RDONLY)) == -1) {
         tst_resm(TWARN, "Failed to find out existing number of swap"
                  " files");
         exit(1);
     }
-    /*open linecount file to know the number of entries*/
-    if ((fd = open("./linecount", O_RDONLY)) == -1) {
-        tst_resm(TWARN, "Failed to find out existing number of swap"
-                 " files");
-        exit(1);
-    }
-
-    /* 1st and 2nd character in the file contains output of wc -l*/
-    if ( (res = read(fd, decimal, 3)) < 0) {
-        tst_resm(TWARN, "Failed to find out existing number of swap"
-                 " files");
-        exit(1);
+    while (1) {
+        char *p = buf;
+        res = read(fd, buf, BUFSZ);
+        if (res < 0) {
+            tst_resm(TWARN, "Failed to find out existing number of swap"
+                     " files");
+            exit(1);
+		 }
+        buf[res] = '\0';
+        while ((p = strchr(p, '\n'))) {
+            p++;
+            swapfiles++;
+        }
+        if (res < BUFSZ)
+            break;
     }
     close(fd);
-
-#if 0
-    // Added by CSDL - for ppc64 SLES, temp[0-6]="XX....."
-    if ((strncmp(kmachine, "ppc64", 5)) == 0) {
-        int nSwapNO, i;
-        for (i=res; i<7; i++) {
-            temp[i]=0;
-        }
-        nSwapNO = atoi(temp);
-        sprintf(temp,"%7d",nSwapNO);
-    }
-    // Adde end
-    /*check if number of lines are less than 10 in /proc/swaps*/
-    if (temp[5] == ' ') {
-        decimal[0] = '0';
-    } else {
-        decimal[0] = temp[5];
-    }
-
-    decimal[1] = temp[6];       /*temp[6] unit digit of wc -l result*/
-
-#endif
-
-    swapfiles = atoi(decimal);
-    swapfiles--; /* don't count the /proc/swaps header */
+    if (swapfiles)
+        swapfiles--; /* don't count the /proc/swaps header */
 
     if (swapfiles < 0) {
         tst_resm(TWARN, "Failed to find existing number of swapfiles");
@@ -335,7 +314,6 @@ setup03()
     if (swapfiles > MAX_SWAPFILES) {
         swapfiles = MAX_SWAPFILES;
     }
-
 
     /* args for dd */
     if ((strncmp(kmachine, "ia64", 4)) == 0) {
