@@ -11,6 +11,10 @@
 #include <unistd.h>
 #include <errno.h>
 
+#ifdef __ia64__
+#define SA_NOCLDWAIT    0x00000002  
+#endif
+
 void handler(int signo)
 {
 	printf("Caught SIGCHLD\n");
