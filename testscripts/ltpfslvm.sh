@@ -144,9 +144,9 @@ vgextend -v /dev/ltp_test_vg1 /dev/$part2
 vgck -v
 
 echo "************ Running tests " 
-${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/lvm.part1 > ${TMPBASE}/lvm.part1
 
-${LTPROOT}/../pan/pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
+${LTPROOT}/pan/pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
 
 wait $!
 
@@ -176,9 +176,9 @@ mount -v -t ext3   /dev/$part4         /test/growfiles/ext3
 mount -v -t jfs    /dev/hdc1           /test/growfiles/jfs
 
 echo "************ Running EXT3 & JFS tests...  " 
-${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part2 > ${TMPBASE}/lvm.part2
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/lvm.part2 > ${TMPBASE}/lvm.part2
 
-${LTPROOT}/../pan/pan -e -S -a lvmpart2 -n lvmpart2 -l lvmlogfile -f ${TMPBASE}/lvm.part2 &
+${LTPROOT}/pan/pan -e -S -a lvmpart2 -n lvmpart2 -l lvmlogfile -f ${TMPBASE}/lvm.part2 &
 
 wait $!
 
