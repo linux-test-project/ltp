@@ -182,6 +182,11 @@ nfs03 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/network/
 nfs03 export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/network/nfs/nfs03; nfs03
 nfs03 export VERSION=3 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/network/nfs/nfs03; nfs03
 
+nfs04 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/network/nfs/nfs04; nfs04
+nfs03 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/network/nfs/nfs04; nfs04
+nfs03 export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/network/nfs/nfs04; nfs04
+nfs03 export VERSION=3 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/network/nfs/nfs04; nfs04
+
 nfsstress export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
 nfsstress export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
 nfsstress export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
