@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.6 2001/03/15 21:23:27 nstraz Exp $ */
+/* $Id: pan.c,v 1.7 2001/09/28 21:56:46 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -691,16 +691,20 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
     if (pipe(errpipe) < 0) {
 	fprintf(stderr, "pan(%s): pipe() failed. errno:%d %s\n",
 			panname, errno, strerror(errno));
-	if (capturing)
+	if (capturing) {
 	    close(c_stdout);
+            unlink(active->output);
+        }
 	return -1;
     }
 
     if ((cpid = fork()) < 0) {
 	fprintf(stderr, "pan(%s): fork failed (tag %s).  errno:%d  %s\n",
 		panname, colle->name, errno, strerror(errno));
-	if (capturing)
+	if (capturing) {
+            unlink(active->output);
 	    close(c_stdout);
+        }
 	close(errpipe[0]);
 	close(errpipe[1]);
 	return -1;
@@ -811,12 +815,15 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 	write_test_start(active, errbuf);
 	write_test_end(active, end_time, termtype, status, 
 			termid, &notime, &notime);
+        if (capturing) {
+            close(c_stdout);
+            unlink(active->output);
+        }
 	return -1;
     }
 
     close(errpipe[0]);
-    if (capturing)
-	close(c_stdout);
+    if (capturing) close(c_stdout);
 	
     if (!test_out_dir) 
 	write_test_start(active, "ok");
