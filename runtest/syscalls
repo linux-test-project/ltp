@@ -203,6 +203,7 @@ fsync03 fsync03
 ftruncate01 ftruncate01
 ftruncate02 ftruncate02
 ftruncate03 ftruncate03
+ftruncate04 ftruncate04
 
 getcwd01 getcwd01
 getcwd02 getcwd02
