@@ -80,13 +80,13 @@ int pass = 0;
 int neg_one = -1;
 int exp_enos[]={EPERM,0};
 
-uid_t root_pw_uid, nobody_pw_uid, adm_pw_uid, bin_pw_uid;
+uid_t root_pw_uid, nobody_pw_uid, daemon_pw_uid, bin_pw_uid;
 char user1name[] = "nobody";
-char user2name[] = "adm";
+char user2name[] = "daemon";
 char rootname[] = "root";
 char binname[] = "bin";
 
-struct passwd nobody, adm, root, bin;
+struct passwd nobody, daemonpw, root, bin;
 
 struct test_data_t {
 	uid_t*  real_uid;
@@ -99,17 +99,17 @@ struct test_data_t {
 	{&nobody_pw_uid, &root_pw_uid, &pass, &nobody, &root, "Initially"},
 	{&neg_one, &nobody_pw_uid, &pass, &nobody, &nobody, "After setreuid(-1, nobody),"},
 	{&neg_one, &root_pw_uid, &pass, &nobody, &root, "After setreuid(-1, root),"},
-	{&adm_pw_uid, &neg_one, &pass, &adm, &root, "After setreuid(adm, -1),"},
-	{&neg_one, &bin_pw_uid, &pass, &adm, &bin, "After setreuid(-1, bin),"},
-	{&neg_one, &root_pw_uid, &fail, &adm, &bin, "After setreuid(-1, root),"},
-	{&neg_one, &nobody_pw_uid, &fail, &adm, &bin, "After setreuid(-1, nobody),"},
-	{&neg_one, &adm_pw_uid, &pass, &adm, &adm, "After setreuid(-1, adm),"},
-	{&neg_one, &bin_pw_uid, &pass, &adm, &bin, "After setreuid(-1, bin),"},
-	{&bin_pw_uid, &adm_pw_uid, &pass, &bin, &adm, "After setreuid(bin, adm),"},
+	{&daemon_pw_uid, &neg_one, &pass, &daemonpw, &root, "After setreuid(daemon, -1),"},
+	{&neg_one, &bin_pw_uid, &pass, &daemonpw, &bin, "After setreuid(-1, bin),"},
+	{&neg_one, &root_pw_uid, &fail, &daemonpw, &bin, "After setreuid(-1, root),"},
+	{&neg_one, &nobody_pw_uid, &fail, &daemonpw, &bin, "After setreuid(-1, nobody),"},
+	{&neg_one, &daemon_pw_uid, &pass, &daemonpw, &daemonpw, "After setreuid(-1, daemon),"},
+	{&neg_one, &bin_pw_uid, &pass, &daemonpw, &bin, "After setreuid(-1, bin),"},
+	{&bin_pw_uid, &daemon_pw_uid, &pass, &bin, &daemonpw, "After setreuid(bin, daemon),"},
 	{&neg_one, &bin_pw_uid, &pass, &bin, &bin, "After setreuid(-1, bin),"},
-	{&neg_one, &adm_pw_uid, &pass, &bin, &adm, "After setreuid(-1, adm),"},
-	{&adm_pw_uid, &neg_one, &pass, &adm, &adm, "After setreuid(adm, -1),"},
-	{&neg_one, &bin_pw_uid, &fail, &adm, &adm, "After setreuid(-1, bin),"},
+	{&neg_one, &daemon_pw_uid, &pass, &bin, &daemonpw, "After setreuid(-1, daemon),"},
+	{&daemon_pw_uid, &neg_one, &pass, &daemonpw, &daemonpw, "After setreuid(daemon, -1),"},
+	{&neg_one, &bin_pw_uid, &fail, &daemonpw, &daemonpw, "After setreuid(-1, bin),"},
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
@@ -223,8 +223,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("daemon") == NULL) {
+		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -241,8 +241,8 @@ setup(void)
 	nobody = *( getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *(getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	daemonpw = *(getpwnam("daemon"));
+	daemon_pw_uid = daemonpw.pw_uid;
 
 	root = *(getpwnam("root"));
 	root_pw_uid = root.pw_uid;
