@@ -1,5 +1,5 @@
 
-LOADLIBES += -lm
+LOADLIBES = -lm
 BIN = gensin gencos gentan genatan genatan2 genacos genasin gentrigo
 DATA = dtan rtan datan ratan dsin rsin datan2 ratan2 dcos rcos dasin rasin dacos racos
 
