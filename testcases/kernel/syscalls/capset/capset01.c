@@ -66,7 +66,14 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
-#include <sys/capability.h> 
+/**************************************************************************/
+#include <sys/capability.h>
+/*                                                                        */
+/*   Some archs do not have the manpage documented sys/capability.h file, */
+/*   and will require the use of the line below                           */
+//#include <linux/capability.h>
+/**************************************************************************/
+
 
 extern int capget(cap_user_header_t, cap_user_data_t);
 extern int capset(cap_user_header_t, const cap_user_data_t);

@@ -75,7 +75,14 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
-#include <sys/capability.h> 
+
+/**************************************************************************/
+#include <sys/capability.h>
+/*                                                                        */
+/*   Some archs do not have the manpage documented sys/capability.h file, */
+/*   and will require the use of the line below                           */
+//#include <linux/capability.h>
+/**************************************************************************/
 
 #define INVALID_PID 999999
 
