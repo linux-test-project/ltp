@@ -34,6 +34,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *      02/2002 Adapted for SCTP by Robbie Williamson
  *
  * RESTRICTIONS:
  *  None.

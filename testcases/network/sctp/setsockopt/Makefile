@@ -32,5 +32,5 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
+	rm -f ../../../bin/$(TARGETS)
 

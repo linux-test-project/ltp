@@ -35,6 +35,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      02/2002 Adapted for SCTP by Robbie Williamson
  *
  * Restrictions:
  *  None.

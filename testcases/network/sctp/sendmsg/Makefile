@@ -18,7 +18,6 @@
 
 ###########################################################################
 # name of file	: Makefile						  #
-# description	: make(1) description file for the sendmsg(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include
 LOADLIBES+=	-L../../../../lib -lltp
@@ -33,5 +32,5 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
+	rm -f ../../../bin/$(TARGETS)
 
