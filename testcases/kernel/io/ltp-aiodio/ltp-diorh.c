@@ -31,6 +31,7 @@
 
 #define _XOPEN_SOURCE 600
 #define _GNU_SOURCE
+#define MAX_ITERATIONS 250
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -97,11 +98,13 @@ int do_direct_reads(char *filename)
 		 		 		 		 fprintf(stderr,
 		 		 		 		 		 "Found data (%08x) at offset %d+%d\n",
 		 		 		 		 		 *p, offset, i);
+                                 close(fd);
 		 		 		 		 return 1;
 		 		 		 }
 		 		 		 p++;
 		 		 }
 		 }
+		 close(fd);
 		 return 0;
 }
 
@@ -113,6 +116,7 @@ int main(int argc, char *argv[])
 		 int err;
 		 int pass = 0;
 		 int bufsize;
+		 int i = 0;
 		 
 		 if (argc != 2) {
 		 		 fprintf(stderr, "Needs a filename as an argument.\n");
@@ -162,7 +166,7 @@ int main(int argc, char *argv[])
 
 		 		 assert("ftruncate", ftruncate(fd, 0) == 0);
 		 		 fsync(fd);
-		 } while (1);
+		 } while (i++ < MAX_ITERATIONS);
 		 
 		 return err;
 }
