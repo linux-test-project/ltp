@@ -252,10 +252,12 @@ stat_setup()
 
 			if (stat_time == FIRST) {
 				test = set_shmat();
+			} else {
+				test = set_shared;
 			}
 
 			/* do an assignement for fun */
-			(int *)test = i;
+			*(int *)test = i;
 
 			/* pause until we get a signal from stat_cleanup() */
 			rval = pause();
@@ -273,7 +275,7 @@ stat_setup()
 		}
 	}
 	/* sleep briefly to ensure correct execution order */
-	usleep(25000);
+	usleep(250000);
 }
 
 /*
