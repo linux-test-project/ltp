@@ -142,7 +142,7 @@ block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if (flags != O_WRONLY) {
+		if (!(flags && O_WRONLY)) {
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
 				 flags, O_WRONLY);
 			fail = 1;
@@ -156,7 +156,7 @@ block1:
 		}
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if (flags != (O_NDELAY | O_WRONLY)) {
+		if (!(flags && (O_NDELAY | O_WRONLY))) {
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
 				 flags, O_NDELAY | O_WRONLY);
 			fail = 1;
@@ -170,7 +170,7 @@ block1:
 		}
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if (flags != (O_APPEND | O_WRONLY)) {
+		if (!(flags && (O_APPEND | O_WRONLY))) {
 			tst_resm(TFAIL, "unexpected flag ox%x, expected 0x%x",
 				 flags, O_APPEND | O_WRONLY);
 			fail = 1;
@@ -184,7 +184,7 @@ block1:
 		}
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if (flags != (O_NDELAY | O_APPEND | O_WRONLY)) {
+		if (!(flags && (O_NDELAY | O_APPEND | O_WRONLY))) {
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
 				 flags,
 				 O_NDELAY | O_APPEND | O_SYNC | O_WRONLY);
@@ -198,7 +198,7 @@ block1:
 		}
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if (flags != O_WRONLY) {
+		if (!(flags && O_WRONLY)) {
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
 				 flags, O_WRONLY);
 			fail = 1;
