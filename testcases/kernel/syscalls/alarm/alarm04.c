@@ -82,7 +82,6 @@ void cleanup();			/* Cleanup function for the test */
 int
 main(int ac, char **av)
 {
-	int lc;                 /* loop counter */
 	char *msg;              /* message returned from parse_opts */
 	int time_sec = 3;	/* time for which alarm is set */ 
 
@@ -114,6 +113,8 @@ main(int ac, char **av)
 
 	/* Call cleanup function for the test */
 	cleanup();
+
+	return 0;
 }
 
 /*

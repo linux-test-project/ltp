@@ -52,6 +52,8 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
+#include<sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -63,13 +65,14 @@ int exp_enos[] = {ENOTDIR, 0};
 
 void setup(void);
 void cleanup(void);
+static void checkname(char*, DIR*);
 
 char testdir[40] = "";
 
+int
 main(int ac, char **av)
 {
 	DIR *ddir, *opendir();
-	struct dirent *dir;
 	int fd, ret;
 	char *filname = "chdirtest";
 
@@ -136,6 +139,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 
@@ -183,6 +187,7 @@ cleanup(void)
 	tst_exit();
 }
 
+void
 checkname(pfilname, ddir)
 char *pfilname;
 DIR *ddir;

@@ -148,6 +148,7 @@ main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }	/* End main */
 

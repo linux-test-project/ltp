@@ -47,6 +47,8 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <linux/limits.h>
 #include <unistd.h>
 #include <test.h>
@@ -67,6 +69,7 @@ int exp_enos[] = {EMFILE, 0};
 int fd, ifile, mypid, first;
 char fname[40];
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -109,6 +112,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 
@@ -118,7 +122,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	int i, max_open;
+	int max_open;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

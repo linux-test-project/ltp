@@ -65,6 +65,7 @@
 #include <sys/mman.h>
 #include <test.h>
 #include <usctest.h>
+#include <fcntl.h>
 
 char *TCID = "chroot03";
 int TST_TOTAL = 4;
@@ -111,6 +112,7 @@ char * bad_addr = 0;
 void setup(void);
 void cleanup(void);
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -157,6 +159,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

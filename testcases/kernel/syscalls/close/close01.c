@@ -58,6 +58,8 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -83,6 +85,7 @@ struct test_case_t {
         {&pipefildes[0], "pipe"}
 };
 
+int
 main(int ac, char **av)
 {
 
@@ -144,6 +147,8 @@ main(int ac, char **av)
 
 	}
 	cleanup();
+	
+	return 0;
 	/*NOTREACHED*/
 }
 

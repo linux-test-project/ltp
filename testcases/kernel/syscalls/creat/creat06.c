@@ -65,6 +65,8 @@
 #include <string.h>
 #include <pwd.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -118,6 +120,7 @@ struct test_case_t {
 
 char * bad_addr = 0;
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -165,6 +168,8 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
+	return 0;
 	/*NOTREACHED*/
 }
 

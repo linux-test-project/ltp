@@ -102,12 +102,12 @@ void cleanup(void);
 
 char * bad_addr = 0;
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int i;
 	char *msg;			/* message returned from parse_opts */
-	struct stat statbuf;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -149,6 +149,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

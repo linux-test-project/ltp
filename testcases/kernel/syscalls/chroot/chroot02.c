@@ -45,6 +45,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
@@ -61,6 +62,7 @@ struct stat buf;
 void setup(void);
 void cleanup(void);
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -119,6 +121,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

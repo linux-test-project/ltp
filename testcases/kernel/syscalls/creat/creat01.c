@@ -51,6 +51,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <pwd.h>
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -82,6 +83,7 @@ struct test_case_t {
 	{filename, MODE2, functest2}
 };
 
+int
 main(int ac, char **av)
 {
 	int i;
@@ -121,6 +123,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

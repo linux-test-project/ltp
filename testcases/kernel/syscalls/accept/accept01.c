@@ -148,6 +148,7 @@ main(int ac, char *av[])
 		}
 	}
 	cleanup();
+	return 0;
 }	/* End main */
 
 void

@@ -73,12 +73,12 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int retval=0, status, e_code, fd;
-	struct stat statbuf;
+	int retval=0, status, e_code;
 	pid_t pid, pid2;
 
 	/* parse standard options */
@@ -164,6 +164,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -60,6 +61,7 @@ char pfilname[40] = "";
 void setup(void);
 void cleanup(void);
 
+int
 main(int ac, char **av)
 {
 	struct stat statbuf;
@@ -111,6 +113,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

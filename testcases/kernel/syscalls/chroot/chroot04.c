@@ -46,6 +46,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 #include <pwd.h>
@@ -62,6 +63,7 @@ struct passwd *ltpuser;
 void setup(void);
 void cleanup(void);
 
+int
 main(int ac, char **av)
 {
 		 int lc;
@@ -100,6 +102,7 @@ main(int ac, char **av)
 		 }
 		 cleanup();
 
+		 return 0;
 		 /*NOTREACHED*/
 }
 

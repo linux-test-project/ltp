@@ -64,6 +64,8 @@ struct sockaddr_in sin1, sin2, sin3, sin4;
 void setup(void), setup0(void), setup1(void), setup2(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
 
+static pid_t start_server(struct sockaddr_in*);
+
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
 	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
@@ -149,6 +151,8 @@ main(int argc, char *argv[])
 		}
 	}
 	cleanup();
+
+	return 0;
 	/*NOTREACHED*/
 }	/* End main */
 
@@ -299,7 +303,7 @@ start_server(struct sockaddr_in *sin0)
 		}
 		for (fd=0; fd<nfds; ++fd)
 			if (fd != sfd && FD_ISSET(fd, &rfds)) {
-				if (cc=read(fd, &c, 1) == 0) {
+				if ((cc=read(fd, &c, 1)) == 0) {
 					(void) close(fd);
 					FD_CLR(fd, &afds);
 				}

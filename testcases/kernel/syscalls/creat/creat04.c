@@ -52,11 +52,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
-/*
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-*/
+
 #include "test.h"
 #include "usctest.h"
 
@@ -88,6 +88,7 @@ struct test_case_t {
 	{fname1}
 };
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -198,6 +199,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }
 

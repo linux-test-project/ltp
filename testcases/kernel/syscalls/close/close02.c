@@ -55,6 +55,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -67,6 +68,7 @@ char *TCID = "close02()";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -106,6 +108,8 @@ main(int ac, char **av)
 		}
 	}
 	cleanup();
+
+	return 0;
 	/*NOTREACHED*/
 }
 

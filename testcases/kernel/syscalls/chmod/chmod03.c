@@ -105,7 +105,6 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat struct.*/
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter for TEST_CASE looping */
 	mode_t file_mode;	/* mode permissions set on testfile */
     
 	/* Parse standard options given to run the test. */
@@ -170,6 +169,7 @@ main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
+	return 0;
 	/*NOTREACHED*/
 }	/* End main */
 
