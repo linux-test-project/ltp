@@ -8,6 +8,7 @@ all: $(TARGETS)
 
 install:
 	ln -f fsxtest ../../../bin
+	ln -f fsx-linux ../../../bin
 
 clean:
 	rm -f $(TARGETS)

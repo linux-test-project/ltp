@@ -27,16 +27,11 @@
 # $3 number of operations to perform 
 # 
 set -x
-TCbin=${TCbin:=`pwd`}
-if [[ $2 -eq "jfs" ]]; then
-  mkfs -q -t $2 $1
-else
-  mkfs -t $2 $1
-fi
+mkfs -t $2 $1
 mkdir /testmount
 mount -t $2 $1 /testmount
 touch /testmount/testfile
-$TCbin/fsx-linux -N $3 /testmount/testfile
+fsx-linux -N $3 /testmount/testfile
 # report the results
 if [[ $? -eq "0" ]]; then
   echo "PASS: fsxtest $1 $2 $3"
