@@ -135,9 +135,9 @@ vgextend -v /dev/ltp_test_vg1 /dev/$part2
 vgck -v
 
 echo "************ Running tests " 
-${LTPROOT}../tools/rand_lines -g ${LTPROOT}../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
+${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
 
-${LTPROOT}../pan/pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
+${LTPROOT}/../pan/pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
 
 wait $!
 
