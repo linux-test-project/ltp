@@ -5,12 +5,12 @@ all:
 
 install:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
-	ln -s ../tcp_cmds/ftp ftp6
-	ln -s ../tcp_cmds/rcp rcp6
-	ln -s ../tcp_cmds/rlogin rlogin6
-	ln -s ../tcp_cmds/rsh rsh6
-	ln -s ../tcp_cmds/rwho rwho6
-	ln -s ../tcp_cmds/telnet telnet6
+	ln -fs ../tcp_cmds/ftp ftp6
+	ln -fs ../tcp_cmds/rcp rcp6
+	ln -fs ../tcp_cmds/rlogin rlogin6
+	ln -fs ../tcp_cmds/rsh rsh6
+	ln -fs ../tcp_cmds/rwho rwho6
+	ln -fs ../tcp_cmds/telnet telnet6
 
 clean:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
