@@ -22,7 +22,7 @@
 #               written
 ####################################################
 
-#Set variables TCID and TST_TOTAL
+#Set variables NAME and TST_TOTAL
 NAME=pthread_attr_destroy01
 export TST_TOTAL=3
 
