@@ -35,7 +35,8 @@
  *              1. create a directory tstdir1 and set the sticky bit, then 
  *                 create directory tstdir2 under tstdir1. Fork a 
  *                 child , set to be user nobody. Pass tstdir2 to rmdir(2).
- *                 Verify the return value is not 0 and the errno is EPERM.
+ *                 Verify the return value is not 0 and the errno is EPERM
+ *                 or EACCES.
  *              2. Fork a child, set to be user nobody. Create a directory 
  *                 tstdir1 and only give write permission to nobody.
  *                 Create directory tstdir2 under tstdir1. Fork the second 
@@ -189,12 +190,12 @@ main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				retval=1;
 				tst_resm(TFAIL, "call succeeded unexpectedly");
-			} else if (TEST_ERRNO != EPERM) {
+			} else if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
 				retval=1;
-				tst_resm(TFAIL, "Expected EPERM got %d",
+				tst_resm(TFAIL, "Expected EPERM or EACCES, got %d",
 					 TEST_ERRNO);
 			} else {
-				tst_resm(TPASS, "rmdir() produced EPERM");
+				tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
 			}
 
 			if (seteuid(0) == -1) {

@@ -22,7 +22,7 @@
  *	rename12
  *
  * DESCRIPTION
- *      check rename() fails with EPERM
+ *      check rename() fails with EPERM or EACCES
  *
  * ALGORITHM
  *	Setup:
@@ -41,7 +41,7 @@
  *			       Log the errno and Issue a FAIL message.
  *		        Otherwise,
  *			       Verify the errno
- *			       if equals to EPERMS or EACCESS,
+ *			       if equals to EPERMS or EACCES,
  *				       Issue Pass message.
  *			       Otherwise,
  *				       Issue Fail message.
@@ -158,13 +158,13 @@ main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_ERRNO != EPERM) {
-				tst_resm(TFAIL, "Expected EPERM, got %d",
+			if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
+				tst_resm(TFAIL, "Expected EPERM or EACCES, got %d",
 					 TEST_ERRNO);
 				exit(1);
 				/*NOTREACHED*/
 			} else {
-				tst_resm(TPASS, "rename returned EPERM");
+				tst_resm(TPASS, "rename returned EPERM or EACCES");
 			}
 
 			/* set the id back to root */
