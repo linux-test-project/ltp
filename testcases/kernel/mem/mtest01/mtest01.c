@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <limits.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -126,6 +127,8 @@ int main(int argc, char* argv[]) {
   i=0;
   pid=fork();
   pid_list[i]=pid;
+
+#if __WORDSIZE==32
   while( (pid!=0) && (maxbytes > 1024*1024*1024) )
   {
     i++;
@@ -138,6 +141,20 @@ int main(int argc, char* argv[]) {
     alloc_bytes=1024*1024*1024;
   else
     alloc_bytes=(unsigned long)maxbytes;
+#elif __WORDSIZE==64
+  while( (pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024) )
+  {
+    i++;
+    maxbytes=maxbytes-(unsigned long long)(3*1024*1024*1024);
+    pid=fork();
+    if (pid != 0)
+      pid_list[i]=pid;
+  }
+  if( maxbytes > (unsigned long long)3*1024*1024*1024 )
+    alloc_bytes=(unsigned long long)3*1024*1024*1024;
+  else
+    alloc_bytes=(unsigned long)maxbytes;
+#endif
   
   if ( pid == 0)			/** CHILD **/
   { 
