@@ -24,7 +24,7 @@ MAINS=semop01 semop02 semop03 semop04 semop05
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
 LTP_LDFLAGS=-L../../../../../lib -lltp
 
 all: $& $(MAINS)

@@ -61,7 +61,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 #define NSEMS	4	/* the number of primitive semaphores to test */
 
@@ -75,7 +75,7 @@ int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
 struct sembuf sops[PSEMS];	/* an array of sembuf structures */
 
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
         union semun get_arr;
 	int lc;				/* loop counter */
@@ -151,6 +151,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

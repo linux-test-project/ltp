@@ -41,7 +41,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmctl04";
 int TST_TOTAL = 1;
@@ -55,7 +55,7 @@ int max_ids;
  * that we are checking.
  */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -89,6 +89,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

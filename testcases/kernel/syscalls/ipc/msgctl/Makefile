@@ -24,7 +24,8 @@ MAINS=msgctl01 msgctl02 msgctl03 msgctl04 msgctl05
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
+LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
 
 all: $& $(MAINS)
 

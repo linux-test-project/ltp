@@ -53,13 +53,15 @@
  *	There must be a nobody ID installed on the system.
  */
 
+#include <string.h>
+#include <pwd.h>
+#include <sys/wait.h>
+
 #include "test.h"
 #include "usctest.h"
 
-#include <string.h>
-#include <pwd.h>
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 char *TCID = "msgctl05";
 int TST_TOTAL = 1;
@@ -73,7 +75,7 @@ char *ltp_user = "nobody";	/* A non root user */
 
 struct msqid_ds q_buf;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid;
@@ -113,7 +115,8 @@ main(int ac, char **av)
 	}
 
 	cleanup ();
-
+        /**NOT REACHED**/
+	return(0);
 }
 
 /*

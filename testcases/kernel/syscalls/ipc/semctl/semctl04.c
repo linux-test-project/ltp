@@ -57,9 +57,10 @@
  *	test must be run as root
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 #include <pwd.h>
+#include <sys/wait.h>
 
 char *TCID = "semctl04";
 int TST_TOTAL = 2;
@@ -74,7 +75,7 @@ char *ltp_user = "nobody";
 
 int TC[] = {IPC_SET, IPC_RMID};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid;
@@ -115,6 +116,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return(0);
 }
 
 /*

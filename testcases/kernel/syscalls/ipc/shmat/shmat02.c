@@ -49,7 +49,7 @@
  *	Must be ran as non-root
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 #include <pwd.h>
 
 char *TCID = "shmat02";
@@ -78,13 +78,13 @@ struct test_case_t {
 	{&shm_id_1, 0, EINVAL},
 
 	/* EINVAL - the address is not page aligned and SHM_RND is not given */
-	{&shm_id_2, NADDR, EINVAL},
+	{&shm_id_2, (void *)NADDR, EINVAL},
 
 	/* EACCES - the shared memory resource has no read/write permission */
 	{&shm_id_3, 0, EACCES}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -136,6 +136,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -24,7 +24,7 @@
 SRCS=libipc.c
 OBJS=$(SRCS:.c=.o)
 MAINS=../libipc.a
-LTP_CFLAGS=-I../../../../../include -g
+LTP_CFLAGS=-I../../../../../include -g -Wall
 
 all: ../libipc.a
 

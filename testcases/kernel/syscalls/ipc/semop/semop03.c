@@ -50,7 +50,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 char *TCID = "semop03";
 int TST_TOTAL = 2;
@@ -64,7 +64,7 @@ struct sembuf s_buf;
 
 int TC[] = {-1, PSEMS + 1};	/* negative and too many "primitive" semas */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -124,6 +124,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

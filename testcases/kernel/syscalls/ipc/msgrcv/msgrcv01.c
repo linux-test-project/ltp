@@ -58,11 +58,12 @@
  */
 
 #include <string.h>
+#include <sys/wait.h>
 
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 void cleanup(void);
 void setup(void);
@@ -76,7 +77,7 @@ MSGBUF snd_buf, rcv_buf, cmp_buf;
 
 pid_t c_pid;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
     int lc;			/* loop counter */
     char *msg;			/* message returned from parse_opts */
@@ -150,6 +151,9 @@ main(int ac, char **av)
     }
 
     cleanup();
+
+    /** NOT REACHED **/
+    return(0);
 
 }
 

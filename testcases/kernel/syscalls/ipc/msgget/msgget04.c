@@ -56,7 +56,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 char *TCID = "msgget04";
 int TST_TOTAL = 3;
@@ -72,7 +72,7 @@ int msg_q_1 = -1;		/* to hold the message queue id */
 
 int test_flags[] = {MSG_RD, MSG_WR, MSG_RD | MSG_WR};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -127,6 +127,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

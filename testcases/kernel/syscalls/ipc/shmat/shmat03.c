@@ -56,7 +56,7 @@
  *	test must be run at root
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmat03";
 int TST_TOTAL = 1;
@@ -71,7 +71,7 @@ void	*addr;			/* for result of shmat-call */
 uid_t ltp_uid;
 char *ltp_user = "nobody";
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 	int pid;
@@ -111,6 +111,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
+	return(0);
 }
 
 /*

@@ -56,7 +56,9 @@
  *	test must be run at root
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
+#include <sys/types.h>
+#include <sys/wait.h>
 
 char *TCID = "shmget05";
 int TST_TOTAL = 1;
@@ -69,7 +71,7 @@ int shm_id_1 = -1;
 uid_t ltp_uid;
 char *ltp_user = "nobody";
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 	int pid;
@@ -110,6 +112,7 @@ main(int ac, char **av)
 		/* Remove the temporary directory */
 		tst_rmdir();
 	}
+	return(0);
 }
 
 /*

@@ -24,6 +24,8 @@ MAINS=semctl01 semctl02 semctl03 semctl04 semctl05
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
+LTP_CFLAGS=-I../lib -I../../../../../include -Wall -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
 
 all: $& $(MAINS)
 

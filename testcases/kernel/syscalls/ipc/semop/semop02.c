@@ -52,7 +52,7 @@
  */
 #include <pwd.h>
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 char *TCID = "semop02";
 int TST_TOTAL = 5;
@@ -67,6 +67,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 struct sembuf s_buf[PSEMS];
+
 int badbuf = -1;
 
 #define NSOPS	5		/* a resonable number of operations */
@@ -80,22 +81,22 @@ struct test_case_t {
 	int error;		/* the expected error number */
 } TC[] = {
 	/* E2BIG - the number of operations is too big */
-	{&sem_id_1, &s_buf, BIGOPS, E2BIG},
+	{&sem_id_1, (struct sembuf *)&s_buf, BIGOPS, E2BIG},
 
 	/* EACCES - the semaphore set has no access permission */
-	{&sem_id_2, &s_buf, NSOPS, EACCES},
+	{&sem_id_2, (struct sembuf *)&s_buf, NSOPS, EACCES},
 
 	/* EFAULT - the address for the s_buf value is not accessible */
 	{&sem_id_1, (struct sembuf *)-1, NSOPS, EFAULT},
 
 	/* EINVAL - the number of elments (t_ops) is 0 */
-	{&sem_id_1, &s_buf, 0, EINVAL},
+	{&sem_id_1, (struct sembuf *)&s_buf, 0, EINVAL},
 
 	/* EINVAL - the semaphore set doesn't exist */
-	{&bad_id, &s_buf, NSOPS, EINVAL}
+	{&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -143,6 +144,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -58,7 +58,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 char *TCID = "msgctl03";
 int TST_TOTAL = 1;
@@ -68,7 +68,7 @@ int msg_q_1 = -1;                      /* to hold the message queue id */
 
 struct msqid_ds qs_buf;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 
@@ -113,6 +113,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -24,7 +24,8 @@ MAINS=msgrcv01 msgrcv02 msgrcv03 msgrcv04 msgrcv05 msgrcv06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
+LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
 
 all: $& $(MAINS)
 

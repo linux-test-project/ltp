@@ -59,7 +59,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 char *TCID = "msgctl02";
 int TST_TOTAL = 1;
@@ -71,7 +71,7 @@ struct msqid_ds qs_buf;
 
 unsigned short new_bytes;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -134,6 +134,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

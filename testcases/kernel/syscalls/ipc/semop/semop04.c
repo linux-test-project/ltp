@@ -50,7 +50,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 char *TCID = "semop04";
 int TST_TOTAL = 2;
@@ -70,13 +70,13 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EAGAIN sem_op = 0 */
-	{1, 0, IPC_NOWAIT, 2, EAGAIN},
+	{{1}, 0, IPC_NOWAIT, 2, EAGAIN},
 
 	/* EAGAIN sem_op = -1 */
-	{0, -1, IPC_NOWAIT, 2, EAGAIN}
+	{{0}, -1, IPC_NOWAIT, 2, EAGAIN}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -138,6 +138,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

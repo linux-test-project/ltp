@@ -56,7 +56,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmget01";
 int TST_TOTAL = 1;
@@ -64,7 +64,7 @@ extern int Tst_count;
 
 int shm_id_1 = -1;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -87,7 +87,7 @@ main(int ac, char **av)
 		 * Use TEST macro to make the call
 		 */
 	
-		TEST(shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW));
+		TEST(shmget(shmkey, SHM_SIZE, (IPC_CREAT | IPC_EXCL | SHM_RW)));
 	
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
@@ -118,7 +118,7 @@ main(int ac, char **av)
 				 * mask out all but the lower 9 bits
 				 */
 				if ((buf.shm_perm.mode & MODE_MASK) !=
-				    (SHM_RW & MODE_MASK)) {
+				    ((SHM_RW) & MODE_MASK)) {
 					tst_resm(TFAIL, "segment mode is not "
 						 "correct");
 					continue;
@@ -143,6 +143,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+        return(0);
 }
 
 /*

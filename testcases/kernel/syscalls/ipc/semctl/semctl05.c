@@ -50,7 +50,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 char *TCID = "semctl05";
 int TST_TOTAL = 3;
@@ -81,7 +81,7 @@ struct test_case_t {
 	{5, SETVAL, (union semun)BIGV}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -130,6 +130,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -23,8 +23,8 @@
 MAINS=shmat01 shmat02 shmat03
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+IPC_LDFLAGS=-L.. -lipc  -L../../../../../lib -lltp
+LTP_CFLAGS=-I../lib -I../../../../../include -g
 
 all: $& $(MAINS)
 

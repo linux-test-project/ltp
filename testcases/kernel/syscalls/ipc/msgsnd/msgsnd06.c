@@ -55,10 +55,11 @@
  *	none
  */
 
+#include <sys/wait.h> 
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 void cleanup(void);
 void setup(void);
@@ -72,11 +73,11 @@ int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
 int msg_q_1 = -1;		/* The message queue id created in setup */
 MSGBUF msg_buf;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
     int lc;			/* loop counter */
     char *msg;			/* message returned from parse_opts */
-    pid_t c_pid, p_pid;
+    pid_t c_pid;
     int retval = 0, status, e_code;
 
     /* parse standard options */
@@ -165,7 +166,9 @@ main(int ac, char **av)
 
     cleanup();
 
- /*NOTREACHED*/}
+ /*NOTREACHED*/
+ return(0);
+}
 
 /*
  * setup() - performs all the ONE TIME setup for this test.

@@ -56,7 +56,9 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
+#include <sys/types.h>
+#include <sys/wait.h>
 
 void sighandler(int);
 
@@ -78,19 +80,19 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EIRDM sem_op = 0 */
-	{1, 0, 0, 2, EIDRM},
+	{{1}, 0, 0, 2, EIDRM},
 
 	/* EIRDM sem_op = -1 */
-	{0, -1, 0, 3, EIDRM},
+	{{0}, -1, 0, 3, EIDRM},
 
 	/* EINTR sem_op = 0 */
-	{1, 0, 0, 4, EINTR},
+	{{1}, 0, 0, 4, EINTR},
 
 	/* EINTR sem_op = -1 */
-	{0, -1, 0, 5, EINTR}
+	{{0}, -1, 0, 5, EINTR}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -172,6 +174,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

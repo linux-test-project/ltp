@@ -49,7 +49,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmdt02";
 int TST_TOTAL = 1;
@@ -57,7 +57,7 @@ extern int Tst_count;
 
 int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of expected errnos */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -104,6 +104,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -56,7 +56,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 char *TCID = "msgctl04";
 int TST_TOTAL = 6;
@@ -98,11 +98,11 @@ struct test_case_t {      	/* This allows testing of many negative */
         {&bad_q, IPC_SET, &q_buf, EINVAL}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i, rval;
+	int i;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -148,6 +148,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -57,7 +57,9 @@
  *	test must be run as root
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
+#include <sys/types.h>
+#include <sys/wait.h>
 
 char *TCID = "shmctl03";
 int TST_TOTAL = 3;
@@ -88,7 +90,7 @@ struct test_case_t {
 	{&shm_id_1, IPC_RMID, &buf, EPERM},
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
 	int pid;
@@ -127,6 +129,7 @@ main(int ac, char **av)
 	}
 	
 	cleanup ();
+	return(0);
 }
 
 /*

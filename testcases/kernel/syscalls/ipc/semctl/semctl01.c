@@ -57,7 +57,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 
 char *TCID = "semctl01";
 int TST_TOTAL = 10;
@@ -120,7 +120,7 @@ struct test_case_t {
 	{0, IPC_RMID, func_rmid, (union semun)&buf, NULL}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -229,6 +229,8 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+        return(0);
+
 }
 
 /*
@@ -238,7 +240,7 @@ void
 func_stat()
 {
 	/* check the number of semaphores and the ipc_perm.mode value */
-	if (buf.sem_nsems == PSEMS && buf.sem_perm.mode == SEM_RA) {
+	if (buf.sem_nsems == PSEMS && buf.sem_perm.mode == (SEM_RA)) {
 		tst_resm(TPASS, "buf.sem_nsems and buf.sem_perm.mode"
 				" are correct");
 	} else {
@@ -269,7 +271,7 @@ func_set()
 	}
 
 	/* check that the new mode is what we set */
-	if (buf.sem_perm.mode == SEM_RA | NEWMODE) {
+	if (buf.sem_perm.mode == (SEM_RA | NEWMODE)) {
 		tst_resm(TPASS, "buf.sem_perm.mode is correct");
 	} else {
 		tst_resm(TFAIL, "semaphore mode info is incorrect");
@@ -353,7 +355,6 @@ cnt_setup(int opval)
 void
 func_cnt(int rval)
 {
-	int i;
 
 	if (rval == NCHILD) {
 		tst_resm(TPASS, "number of sleeping processes is correct");

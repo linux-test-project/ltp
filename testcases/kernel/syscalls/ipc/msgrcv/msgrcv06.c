@@ -54,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 void cleanup(void);
 void setup(void);
@@ -71,11 +71,10 @@ int msg_q_1 = -1;		/* The message queue id created in setup */
 MSGBUF rcv_buf;
 pid_t c_pid;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -154,6 +153,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -54,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 void cleanup(void);
 void setup(void);
@@ -84,7 +84,7 @@ struct test_case_t {
 	{&msg_q_1, NULL, EFAULT},
 };
 	
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -131,6 +131,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

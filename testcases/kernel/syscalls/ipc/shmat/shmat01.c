@@ -55,7 +55,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmat01";
 int TST_TOTAL = 3;
@@ -80,13 +80,13 @@ struct test_case_t {
 	{&shm_id_1, 0, 0},
 
 	/* an attach using non alligned memory */
-	{&shm_id_1, UNALIGNED, SHM_RND},
+	{&shm_id_1, (void *)UNALIGNED, SHM_RND},
 
 	/* a read only attach */
 	{&shm_id_1, 0, SHM_RDONLY}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -143,6 +143,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

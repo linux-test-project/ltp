@@ -50,7 +50,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmget02";
 int TST_TOTAL = 5;
@@ -86,7 +86,7 @@ struct test_case_t {
 	{&shm_id_2, SHM_SIZE, SHM_RW, ENOENT}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -135,6 +135,8 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+
+	return(0);
 }
 
 /*

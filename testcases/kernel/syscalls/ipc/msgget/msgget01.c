@@ -55,7 +55,7 @@
  *	none
  */
 
-#include "../lib/ipcmsg.h"
+#include "ipcmsg.h"
 
 #include <string.h>
 
@@ -65,7 +65,7 @@ extern int Tst_count;
 
 int msg_q_1 = -1;		/* to hold the message queue ID */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -120,6 +120,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

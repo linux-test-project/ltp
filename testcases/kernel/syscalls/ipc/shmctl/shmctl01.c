@@ -59,7 +59,7 @@
  *	none
  */
 
-#include "../lib/ipcshm.h"
+#include "ipcshm.h"
 
 char *TCID = "shmctl01";
 int TST_TOTAL = 4;
@@ -113,7 +113,7 @@ struct test_case_t {
 
 #define NEWMODE	0066
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -191,6 +191,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -316,7 +317,7 @@ func_stat()
 	}
 
 	/* use MODE_MASK to make sure we are comparing the last 9 bits */
-	if (!fail && (buf.shm_perm.mode & MODE_MASK) != (SHM_RW & MODE_MASK)) {
+	if (!fail && (buf.shm_perm.mode & MODE_MASK) != ((SHM_RW) & MODE_MASK)) {
 		tst_resm(TFAIL, "segment mode is incorrect");
 		fail = 1;
 	}

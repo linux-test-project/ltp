@@ -40,6 +40,9 @@
 
 #include <pwd.h>
 #include <sys/timeb.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
 
 /*
  * getipckey() - generates and returns a message key used by the "get"
@@ -191,7 +194,7 @@ rm_shm(int shm_id)
 	 * check for # of attaches ? 
 	 */
 
-	if (shmctl(shm_id, 0, IPC_RMID, NULL) == -1) {
+	if (shmctl(shm_id, IPC_RMID, NULL) == -1) {
 		tst_resm(TINFO, "WARNING: shared memory deletion failed.");
 		tst_resm(TINFO, "This could lead to IPC resource problems.");
 		tst_resm(TINFO, "id = %d\n", shm_id);

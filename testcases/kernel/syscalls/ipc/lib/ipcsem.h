@@ -28,6 +28,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
+
 #include "test.h"
 #include "usctest.h"
 
@@ -49,5 +50,11 @@ union semun {
 	unsigned short *array;		/* array for GETALL & SETALL */
 	struct seminfo *ipc_buf;	/* buffer for IPC_INFO */
 };
+
+void rm_sema(int sem_id);
+void check_root();
+
+int getipckey();
+int getuserid(char *);
 
 #endif /* ipcsem.h */

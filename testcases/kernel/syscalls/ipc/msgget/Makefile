@@ -24,7 +24,8 @@ MAINS=msgget01 msgget02 msgget03 msgget04
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
+LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
 
 all: $& $(MAINS)
 

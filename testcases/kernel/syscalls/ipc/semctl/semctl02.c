@@ -50,7 +50,7 @@
  *	none
  */
 
-#include "../lib/ipcsem.h"
+#include "ipcsem.h"
 #include <pwd.h>
 
 char *TCID = "semctl02";
@@ -64,13 +64,12 @@ struct passwd *ltpuser;
 
 int sem_id_1 = -1;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	struct semid_ds sem_ds;
-	struct ipc_perm *ipcp = &sem_ds.sem_perm;
 	union semun un_arg;
 
 	/* parse standard options */
@@ -116,6 +115,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+        return(0);
 }
 
 /*
