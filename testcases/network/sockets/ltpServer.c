@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 
     if (argc!=2) {
         printf("Server arguments : %s <multiCast I.P.address/hostname>\n", argv[0]);
-        exit(0;
+        exit(0);
     }
 
     strncpy(hostname, argv[1], 255);
