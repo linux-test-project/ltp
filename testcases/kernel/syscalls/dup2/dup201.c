@@ -149,7 +149,7 @@ main(int ac, char **av)
 				TEST_RETURN, (TEST_ERRNO == 0)?"no error":
 				(TEST_ERRNO == EBADF)? "EBADF":
 				(TEST_ERRNO == EMFILE)? "EMFILE": "unknown error");
-                        if (TEST_RETURN != -1 && TEST_ERRNO != EBADF) {
+                        if (TEST_RETURN != -1 && TEST_ERRNO != EMFILE) {
                                 tst_resm(TFAIL, "call succeeded unexpectedly");
                                 continue;
                         }
