@@ -10,7 +10,6 @@ all: $(TARGETS)
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i; done
 
 clean: 

@@ -13,4 +13,4 @@ clean:
 	@set -e; for i in $(DATA); do rm -f ../../../../bin/$$i ; done
 
 install:
-	@set -e; for i in $(DATA); do ln -f $$i ../../../../bin/$$i ; done ;
+
