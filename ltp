@@ -11,6 +11,7 @@ kernel()
   case $kernel_log in
     y|Y)
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+	echo""
   	echo "   The logfile will be /tmp/kernel_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/kernel_tests.log-$TIMESTAMP"
 	;;
@@ -24,6 +25,7 @@ kernel()
   case $kernel_out in
     y|Y)
         OUTFILE="-o /tmp/kernel_tests.output-$TIMESTAMP"
+	echo""
   	echo "   The output file will be /tmp/kernel_tests.output-$TIMESTAMP"
 	;;
     *)
@@ -31,11 +33,8 @@ kernel()
 	;;
   esac
   echo""
-  echo -n "How many simultaneous runs do you want? Default is 1. >> "
+  echo -n "How many simultaneous runs do you want? >> "
   read COPIES
-  if [ $COPIES -eq ""]; then
-    COPIES=1
-  fi 
 
   cd `dirname $0`
   export LTPROOT=${PWD}
@@ -125,6 +124,7 @@ networking()
   case $network_log in
     y|Y)
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+	echo""
   	echo "   The logfile will be /tmp/network_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/network_tests.log-$TIMESTAMP"
 	;;
@@ -138,6 +138,7 @@ networking()
   case $network_out in
     y|Y)
         OUTFILE="-o /tmp/network_tests.output-$TIMESTAMP"
+	echo""
   	echo "   The output file will be /tmp/network_tests.output-$TIMESTAMP"
 	;;
     *)
@@ -187,6 +188,7 @@ diskio()
   case $diskio_log in
     y|Y)
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+	echo""
   	echo "   The logfile will be /tmp/diskio_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/diskio_tests.log-$TIMESTAMP"
 	;;
@@ -200,6 +202,7 @@ diskio()
   case $diskio_out in
     y|Y)
         OUTFILE="-o /tmp/diskio_tests.output-$TIMESTAMP"
+	echo""
   	echo "   The output file will be /tmp/diskio_tests.output-$TIMESTAMP"
 	;;
     *)
