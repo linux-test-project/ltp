@@ -45,6 +45,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *      05/2002 changed over to use tst_sig instead of sigaction
  *
  * RESTRICTIONS
  *	None
@@ -163,28 +164,21 @@ main(int ac, char **av)
         cleanup();
 }
 
-void
-sigsegv_handler(int sig)
-{
-	tst_resm(TINFO, "received signal: %d", sig);
-	exit(0);
+void sighandler(int sig) {
+	if(sig == SIGSEGV) {
+		tst_resm(TINFO, "received signal: SIGSEGV");
+	} else {
+		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
+	}
+	tst_exit();
 }
-
 /*
  * setup() - performs all ONE TIME setup for this test
  */
 void
 setup()
 {
-	struct sigaction act;
-
-	/*
-	 * capture signals: default signal handler for all signals other
-	 * than SIGSEGV, for SIGSEGV use sigsegv_handler()
-	 */
-	tst_sig(FORK, DEF_HANDLER, NULL);
-	act.sa_handler = sigsegv_handler;
-	(void)sigaction(SIGSEGV, &act, NULL);
+	tst_sig(FORK, sighandler, NULL);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
