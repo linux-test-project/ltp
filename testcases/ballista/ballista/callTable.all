@@ -163,10 +163,6 @@ signal.h	function	int	sigpending	b_ptr_sigset_t
 signal.h	function	int	sigprocmask	b_sig_how	b_ptr_sigset_t	b_ptr_sigset_t
 #signal	int	sigqueue	b_pid	b_signal	b_ptr_char	# same reason as kill()
 signal.h	int	sigsuspend	b_ptr_sigset_t	#inflated restarts
-#sigwaitinfo and sigtimedwait comment out as correct operation would be counted as Restarts
-#uncomment to check for Catastrophics
-signal.h	function	int	sigtimedwait	b_ptr_sigset_t	b_ptr_siginfo_t	b_ptr_timespec
-signal.h	function	int	sigwaitinfo	b_ptr_sigset_t	b_ptr_siginfo_t
 
 #termio: 
 termios.h	function	speed_t	cfgetispeed	b_ptr_termios
