@@ -103,8 +103,12 @@ int main(int argc, char **argv)
      * remain unchanged by setgid.  See
      * http://www.opengroup.org/onlinepubs/007904975/functions/setegid.html
      */
-    if (orig_sgid != cur_sgid) {
-        tst_resm(TFAIL, "setegid() Failed functional test: it changed the saved set-gid");
+    /*
+     * The above is no longer true, Linux man page setegid() should set both the effective and saved user ID if the effective user
+     * gets changed successfully. 
+    */
+    if (cur_egid != cur_sgid) {
+        tst_resm(TFAIL, "setegid() Failed functional test: it failed to change the saved set-gid");
         tst_exit();
     }
     if (orig_rgid != cur_rgid) {
