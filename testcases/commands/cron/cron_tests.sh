@@ -32,6 +32,10 @@
 #
 # History:
 # 	Dec - 19 - 2002 - Created.
+#	Dec - 20 - 2002 - Correted Test #3, grep for the filename of cronjob 
+#                         after executing crontab -l.
+#                       - Fixed bug in #3, test was not installing the cronjob.
+#                       - Added more informational messages TINFO.
 
 export TST_TOTAL=3
 
@@ -63,7 +67,8 @@ RC=0
 export TCID=cron01
 export TST_COUNT=1
 
-$LTPBIN/tst_resm TINFO "Test #1: crontab <filename> installs the crontab file and cron schedules the job correctly." 
+$LTPBIN/tst_resm TINFO "Test #1: crontab <filename> installs the crontab file"
+$LTPBIN/tst_resm TINFO "Test #1: cron schedules the job listed in crontab file."
 
 # create the cron job. The job is to run the program tst1_cronprg.sh
 # every minute, every hour, every day, every month, any weekday. 
@@ -89,7 +94,7 @@ chmod +x $LTPTMP/tst1_cronprg.sh
 # check the /var/log/messages to see if there is a record of any crontab
 # activity.
 
-$LTPBIN/tst_resm TINFO "Test #1: Installing cron job"
+$LTPBIN/tst_resm TINFO "Test #1: Installing cron job ... " 
 crontab $LTPTMP/tst1_cronjob.cron &>$LTPTMP/cron_tst2n1.out || RC=$?
 
 if [ $RC -ne 0 ]
@@ -97,6 +102,8 @@ then
 	$LTPBIN/tst_brk TBROK $LTPTMP/cron_tst2n1.out NULL 
 		"Test #1: crontab Broke while installing cronjob. Reason:"
 	TFAILCNT=$((TFAILCN+1))
+else
+	$LTPBIN/tst_resm TINFO "Test #1: Cronjob installed successfully"
 fi
 
 sleep 10s
@@ -108,6 +115,9 @@ then
 	$LTPBIN/tst_resm TFAIL \
 		"Test #1: crontab activity not recorded in var/log/messages."
 	TFAILCNT=$((TFAILCNT+1))
+else
+	$LTPBIN/tst_resm TINFO \
+		"Test #1: cron activity logged in /var/log/messages"
 fi
 
 # just wait a random time for the cron to kickoff the cronjob.
@@ -137,8 +147,8 @@ do
 	# wait for the cronjob to update the tst1_cron.out file.
 	sleep 1m 2s
 
-	# check the time recorded in the tst1_cron.out file, this should be 1 minute
-	# ahead of what was recored earlier.
+	# check the time recorded in the tst1_cron.out file, 
+        # this should be 1 minute ahead of what was recored earlier.
 
 	TS_MIN2=`cat /tmp/tst1_cron.out | cut -f 8 -d " " | cut -f2 -d:`
 
@@ -147,9 +157,17 @@ do
 		# if the value of the minute field did not advance by 1
 		# flag as failure.
 		FAILCNT=$((FAILCNT+1))
-		echo "Expected $TS_MIN2 \n Received $TS_MIN1" > $LTPTMP/tst1_cron.out 
+		echo "\n\t\tExpected $TS_MIN2 \n Received $TS_MIN1" \
+			> $LTPTMP/tst1_cron.out 
+		$LTPBIN/tst_res TFAIL $LTPTMP/tst1_cron.out \
+			"Test #1: Failed to update every minute. Reason:
 		crontab -r &>/dev/null
 		break
+	else
+		echo "\n\t\t Expected $TS_MIN2 \n Received $TS_MIN1" \
+			> $LTPTMP/tst1_cron.out 
+		$LTPBIN/tst_res TINFO $LTPTMP/tst1_cron.out \
+			"Test #1: Values are good: "
 	fi
 	LOOP_CNTR=$((LOOP_CNTR-1))
 done
@@ -264,13 +282,26 @@ EOF
 
 chmod +x  $LTPTMP/tst2_cronprg.sh &>/dev/null
 
-$LTPBIN/tst_resm TINFO "Test #3: installing crontab file."
+$LTPBIN/tst_resm TINFO "Test #3: installing crontab file ..."
+crontab $LTPTMP/tst2_cronjob.cron &>$LTPTMP/cron_tst2n1.out || RC=$?
+if [ $? -ne 0 ]
+then
+    $LTPBIN/tst_brkm TBROK NULL \
+		"Test #3: crontab failed while installing cronjob"
+    TFAILCNT=$((TFAILCNT+1))
+else
+    $LTPBIN/tst_resm TINFO "Test #3: Cron job installed."
+fi
 
-crontab -l | grep "Hello Hell" &>$LTPTMP/cron_tst2n1.out || RC=$?
+crontab -l | grep "$LTPTMP/tst2_cronprg.sh" &>$LTPTMP/cron_tst2n1.out || RC=$?
 if [ $RC -ne 0 ]
 then	
-	$LTPBIN/tst_brkm TBROK "Test #3: crontab -l lists the cronjobs installed"
+	$LTPBIN/tst_brkm TBROK NULL \
+		"Test #3: crontab failed while listing cronjobs installed"
 	TFAILCNT=$((TFAILCNT+1))
+else
+	$LTPBIN/tst_resm TINFO \
+		"Test #3: crontab -l listed cronjob tst2_cronprg.sh"
 fi
 
 $LTPBIN/tst_resm TINFO "Test #3: uninstalling crontab file."
@@ -278,17 +309,23 @@ crontab -r &>/dev/null || RC=$?
 
 if [ $RC -ne 0 ]
 then	
-	$LTPBIN/tst_brkm TBROK "Test #3: crontab failed while removing cronjob"
+	$LTPBIN/tst_brkm TBROK NULL "Test #3: crontab failed while removing cronjob"
 	TFAILCNT=$((TFAILCNT+1))
 fi
 
-cronjob -l | grep "no crontab for" &>$LTPTMP/cron_tst2n1.out || RC=$?
+crontab -l &>$LTPTMP/cron_tst2n1.out || RC=$?
 if [ $RC -ne 0 ]
 then	
-	$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
-		"Test #3: crontab failed while removing cronjob"
-	TFAILCNT=$((TFAILCNT+1))
+	grep "no crontab for" $LTPTMP/cron_tst2.out &>$LTPTMP/cron_tst2n1.out \
+		|| RC=$?
+	if [ $RC -ne 0 ]
+	then
+		$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
+			"Test #3: crontab failed removing cronjob. Reason:"
+		TFAILCNT=$((TFAILCNT+1))
+	fi
 else
+	$LTPBIN/tst_resm TINFO "crontab uninstalled all jobs for user"
 	$LTPBIN/tst_resm TPASS "crontab did not list any cronjobs"
 fi
 
