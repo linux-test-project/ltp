@@ -88,7 +88,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-while getopts cd:f:hi:l:m:Nnpqr:t:x arg
+while getopts cd:f:hi:l:m:Nnpqr:t:x: arg
 do  case $arg in
     c)	   
             $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null &
@@ -152,7 +152,7 @@ do  case $arg in
             duration="-t $OPTARG" ;;
 
     x)      # number of ltp's to run
-            instances="-x $OPTARG";;
+            instances="-x $OPTARG -O ${TMP}";;
 
     \?)     usage;;
     esac
@@ -175,10 +175,6 @@ then
 	fi
 fi
 	
-if [ -n "$instances" ]; then
-  instances="$instances -O ${TMP}"
-fi
-
 
 # If user does not provide a command file select a default set of testcases
 # to execute.
