@@ -8,3 +8,4 @@ generate:
 
 clean:
 	rm -rf dat
+	rm -f ../../../bin/nfs02
