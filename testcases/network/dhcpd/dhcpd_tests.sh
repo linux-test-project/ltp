@@ -29,6 +29,8 @@
 # History:      Feb 11 2003 - Created - Manoj Iyer.
 #               Feb 12 2003 - Added - Manoj Iyer. Added test to start and stop
 #                             dhcp server using rules in dhcp.conf file.
+#               Feb 13 2003 - Added - Manoj Iyer. added check to see if command
+#                             is installed.
 #
 #! /bin/sh
 
@@ -64,7 +66,15 @@ init()
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
-			"Test INIT: USCTEST commands not found, set PATH correctly."
+			"INIT: USCTEST commands not found, set PATH correctly."
+		return $RC
+	fi
+
+	which awk  &>$LTPTMP/tst_dhcpd.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_brkm TBROK NULL \
+			"INIT: command awk not found. Exiting test."
 		return $RC
 	fi
 
