@@ -1,0 +1,13 @@
+eject01
+	Test that eject -d lists the default device.
+
+eject02
+	Test that eject will eject the defaut cdrom device
+
+eject03
+	Test the eject command will eject the default cdrom device and also unmount
+device if it is currently mounted.
+
+eject04
+	Test if eject -a on|1|off|0 will enable/disable auto-eject mode the drive
+automatically ejects when the device is closed.
