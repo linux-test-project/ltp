@@ -26,7 +26,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
@@ -70,6 +72,8 @@ parent(int masterfd, int childpid)
 
 	pollfds[0].fd = masterfd;
 	pollfds[0].events = POLLIN;
+
+        sleep(1);
 
 	while ((i = poll(pollfds, 1, -1)) == 1) {
 		if (read(masterfd, buf, len) == -1) {
@@ -141,6 +145,7 @@ child(int masterfd)
 {
 	int slavefd;
 	char *slavename;
+
 
 	if ((slavename = ptsname(masterfd)) == (char *)0) {
 		tst_resm(TBROK,"ptsname");
