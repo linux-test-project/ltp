@@ -311,11 +311,11 @@ main(int argc, char *argv[])
             memtmp1 = args.buff1;
             if (bufalign != 0)
                 args.buff +=(bufalign - 
-                        ((int)args.buff % bufalign) + bufoffset) % bufalign;
+                        ((int)(*args.buff) % bufalign) + bufoffset) % bufalign;
 
             if (bufalign != 0)
                 args.buff1 +=(bufalign - 
-                        ((int)args.buff1 % bufalign) + bufoffset) % bufalign;
+                        ((int)(*args.buff1) % bufalign) + bufoffset) % bufalign;
 
 
             if (args.tr && printopt)
