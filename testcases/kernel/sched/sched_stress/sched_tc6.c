@@ -137,6 +137,7 @@ char 	*priority_type = DEFAULT_PRIORITY_TYPE;
 struct flock flock_struct;
 struct flock *flock_ptr = &flock_struct;
 
+int open_file (char*, int);
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -147,11 +148,10 @@ struct flock *flock_ptr = &flock_struct;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename;
+	char	*filename=NULL;
 	FILE	*statfile;
 	pid_t	pid=0;
 	int	fd;
-	int	i;
 	int	rc;
 	clock_t	start_time;		/* start & stop times */
 	clock_t	stop_time;

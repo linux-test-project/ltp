@@ -34,6 +34,7 @@
  * RESTRICTIONS
  *	considered a long time - estimate this one
  */
+#define _GNU_SOURCE 1
 
 #include <stdio.h>		/* needed by testhead.h		*/
 #include <stdlib.h>
@@ -90,7 +91,7 @@ int main (argc, argv)
 
 	i = llabs(0);
 	if (i != 0) {
-		fprintf(temp, "abs(0) failed, returned 0x%x\n", i);
+		fprintf(temp, "abs(0) failed, returned %lld\n", i);
 		local_flag = FAILED;
 	}
 

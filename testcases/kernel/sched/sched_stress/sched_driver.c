@@ -81,7 +81,10 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-
+#include <sys/types.h>
+#include <unistd.h>
+#include <wait.h>
+#include <string.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <pwd.h>
@@ -514,8 +517,6 @@ float *t2;       /* if sched_tc6:  second time returned from testcase */
 void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 {
 	static  int display_header = 0;
-	char	tempbuffer[80],   /* holds temporary string constructions */
-		out[256];
 	float	pc;               /* holds percent change */
 
 

@@ -61,9 +61,12 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
-#include   <stdlib.h>
 #include   <sys/times.h>
 #include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include   <stdlib.h>
 #include   "sched.h"
 
 
@@ -126,9 +129,8 @@ char 	*priority_type = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename;
+	char	*filename=NULL;
 	FILE	*statfile;
-	int	i;
 	clock_t	start_time;		/* start & stop times */
 	clock_t	stop_time;
 	float	elapsed_time;
@@ -172,11 +174,11 @@ int main (int argc, char **argv)
 	/* 
 	 * Read from raw I/O device and record elapsed time...
 	 */
-	start_time = time (&timer_info);
+	start_time = time ((time_t *)&timer_info);
 
 	read_raw_device ();
 
-	stop_time = time (&timer_info);
+	stop_time = time ((time_t *)&timer_info);
 	elapsed_time = (float) (stop_time - start_time) / 100.0;
 
 	if ((statfile = fopen (logfile, "w")) == NULL)
@@ -211,7 +213,7 @@ void read_raw_device()
 	char	readbuf[BLOCK_SIZE + 1];   /* buffer to store bytes read */
 	int	fd;                        /* file descriptor */
 	int	i;                         /* loop counter */
-	int	blocks;                    /* number of blocks read */
+	int	blocks=0;                    /* number of blocks read */
 #ifndef _LINUX
 	static char   raw_dev[16] = "/dev/hd2";  /* name of raw device file */
 #else

@@ -56,6 +56,14 @@
 #ifndef _H_COMMON
 #define _H_COMMON
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <wait.h>
+#include <string.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <pwd.h>
+#include <time.h>
 #include <errno.h>
 #include <stdio.h>
 

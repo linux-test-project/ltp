@@ -125,7 +125,7 @@ char 	*priority = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename;
+	char	*filename=NULL;
 	long	start_time;      /* time at start of testcase */
 	int	i;
 
@@ -270,7 +270,7 @@ void signal_handler (int signal)
 void parse_args (int argc, char **argv)
 {
 	int	opt;
-	int 	pflg = 0, tflg = 0;
+	int 	pflg = 0;
 	int	errflag = 0;
 	char	*program_name = *argv;
 	extern char 	*optarg;	/* Command line option */

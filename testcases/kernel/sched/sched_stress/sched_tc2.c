@@ -124,7 +124,7 @@ char 	*priority      = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename;
+	char	*filename=NULL;
 	long	start_time;      /* time at start of testcase */
 	int	i;
 

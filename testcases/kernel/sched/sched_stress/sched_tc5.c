@@ -125,7 +125,7 @@ char 	*priority_type = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename;
+	char	*filename=NULL;
 	FILE	*statfile;
 	int	i;
 	clock_t	start_time;		/* start & stop times */
@@ -171,12 +171,12 @@ int main (int argc, char **argv)
 	/* 
 	 * Read from raw I/O device and record elapsed time...
 	 */
-	start_time = time (&timer_info);
+	start_time = time ((time_t*)&timer_info);
 
 	for (i=0; i < TIMES; i++)
 		invert_matrix ();
 
-	stop_time = time (&timer_info);
+	stop_time = time ((time_t*)&timer_info);
 	elapsed_time = (float) (stop_time - start_time) / 100.0;
 
 	if ((statfile = fopen (logfile, "w")) == NULL)
@@ -207,7 +207,7 @@ int main (int argc, char **argv)
 void invert_matrix ()
 {
 	int     i, j, k;
-	float   t1, t2;
+	float   t1;
 	float	matrix_1 [MATRIX_SIZE][MATRIX_SIZE];
 	float	matrix_2 [MATRIX_SIZE][MATRIX_SIZE];
 
