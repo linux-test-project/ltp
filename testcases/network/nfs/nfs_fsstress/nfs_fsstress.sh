@@ -55,15 +55,31 @@ DURATION=$(( $DURATION * 60 * 60 ))
 
 echo "Setting up local mount points"
 mkdir -p /mnt/udp/2/${HOSTNAME}1
-mkdir -p /mnt/udp/3/${HOSTNAME}2
-mkdir -p /mnt/tcp/2/${HOSTNAME}3
+mkdir -p /mnt/tcp/2/${HOSTNAME}2
+mkdir -p /mnt/udp/3/${HOSTNAME}3
 mkdir -p /mnt/tcp/3/${HOSTNAME}4
 
 echo "Mounting NFS filesystem"
-mount -o "proto=udp,vers=2" $RHOST:$FILESYSTEM /mnt/udp/2/${HOSTNAME}1
-mount -o "proto=tcp,vers=2" $RHOST:$FILESYSTEM /mnt/tcp/2/${HOSTNAME}2
-mount -o "proto=udp,vers=3" $RHOST:$FILESYSTEM /mnt/udp/3/${HOSTNAME}3
-mount -o "proto=tcp,vers=3" $RHOST:$FILESYSTEM /mnt/tcp/3/${HOSTNAME}4
+mount -o "intr,soft,proto=udp,vers=2" $RHOST:$FILESYSTEM /mnt/udp/2/${HOSTNAME}1 >/dev/null 2>&1
+if [ $? -ne 0 ];then
+  echo "Error: mount using UDP & version 2 failed"
+  exit 1 
+fi
+mount -o "intr,soft,proto=tcp,vers=2" $RHOST:$FILESYSTEM /mnt/tcp/2/${HOSTNAME}2 >/dev/null 2>&1
+if [ $? -ne 0 ];then
+  echo "Error: mount using TCP & version 2 failed"
+  exit 1 
+fi
+mount -o "intr,soft,proto=udp,vers=3" $RHOST:$FILESYSTEM /mnt/udp/3/${HOSTNAME}3 >/dev/null 2>&1
+if [ $? -ne 0 ];then
+  echo "Error: mount using UDP & version 3 failed"
+  exit 1 
+fi
+mount -o "intr,soft,proto=tcp,vers=3" $RHOST:$FILESYSTEM /mnt/tcp/3/${HOSTNAME}4 >/dev/null 2>&1
+if [ $? -ne 0 ];then
+  echo "Error: mount using TCP & version 3 failed"
+  exit 1 
+fi
 
 echo "Test set for $DURATION seconds. Starting test processes now."
 ./fsstress -l 0 -d /mnt/udp/2/${HOSTNAME}1 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.2.log 2>&1 &
@@ -76,25 +92,25 @@ sar -o /tmp/nfs_fsstress.sardata 30 0 &
 
 echo "Testing in progress"
 sleep $DURATION
-echo -n "Testing done. Killing processes"
-killall -9 sadc
-killall -9 fsstress
+echo "Testing done. Killing processes."
+killall -9 sadc 
+killall -9 fsstress 
 ps -ef | grep -v grep | grep fsstress > /dev/null 2>&1
 TESTING=$?
 while [ $TESTING -eq 0 ]
 do
-  killall -9 fsstress
+  killall -9 fsstress 
   echo -n "."
   sleep 5
-  ps -ef | grep -v grep | grep fsstress > /dev/null 2>&1
+  ps -ef | grep -v grep | grep -v nfs_fsstress | grep fsstress > /dev/null 2>&1
   TESTING=$?
 done 
 echo " "
 echo "All processes killed."
 echo "Unmounting NFS filesystem"
 umount /mnt/udp/2/${HOSTNAME}1
-umount /mnt/udp/3/${HOSTNAME}2
-umount /mnt/tcp/2/${HOSTNAME}3
+umount /mnt/tcp/2/${HOSTNAME}2
+umount /mnt/udp/3/${HOSTNAME}3
 umount /mnt/tcp/3/${HOSTNAME}4
 echo " Testing Complete: PASS"
 
