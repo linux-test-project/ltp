@@ -57,15 +57,16 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ioctl.h>
-#include <stropts.h>
-#include <sys/termios.h>
 #include <termio.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
+#include <stropts.h>
+#include <wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/termios.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -86,6 +87,7 @@ int closed = 1;
 int do_child_setup();
 int do_parent_setup();
 int run_ptest();
+int run_ctest();
 int chk_tty_parms();
 void setup(void);
 void cleanup(void);
@@ -100,7 +102,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int rval;
@@ -198,6 +200,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -258,8 +261,6 @@ run_ptest()
 int
 run_ctest()
 {
-	int ret_val;
-	register int success;
 
 	/*
 	 * Wait till the parent has finished testing.
@@ -275,6 +276,7 @@ run_ctest()
 	if (close(childfd) == -1) {
 		tst_resm(TINFO, "close() in run_ctest() failed");
 	}
+	return(0);
 }
 
 int
@@ -392,17 +394,17 @@ do_child_setup()
 /*
  * Define the signals handlers here.
  */
-sigterm_handler()
+void sigterm_handler()
 {
 	sigterm = 1;
 }
 
-sigusr1_handler()
+void sigusr1_handler()
 {
 	sigusr1 = 1;
 }
 
-sigusr2_handler()
+void sigusr2_handler()
 {
 	sigusr2 = 1;
 }

@@ -106,7 +106,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int i;
@@ -164,6 +164,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
