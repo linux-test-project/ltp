@@ -18,22 +18,20 @@
 
 ###########################################################################
 # name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../include 
 LOADLIBES+=	-L../../../lib -lltp
 LDFLAGS=
 
-OBJ=syslogtst.o
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS)
+all: $(TARGETS) syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
 
 install:
-	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
+	@for i in $(TARGETS) syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10 ; do ln -f $$i ../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) 
 
 
