@@ -19,10 +19,20 @@
 
 /*
  *  FILE        : sem02.c
+ *
  *  DESCRIPTION : The application creates several threads using pthread_create().
  *  One thread performs a semop() with the SEM_UNDO flag set. The change in
  *  sempaphore value performed by that semop should be "undone" only when the 
  *  last pthread exits.
+ *
+ *  EXPECTED OUTPUT:
+ *  Waiter, pid = <pid#>
+ *  Poster, pid = <pid#>, posting
+ *  Poster posted
+ *  Poster exiting
+ *  Waiter waiting, pid = <pid#>
+ *  Waiter done waiting
+ *
  *  HISTORY:
  *    03/06/2002 Robbie Williamson (robbiew@us.ibm.com)
  *      -ported
