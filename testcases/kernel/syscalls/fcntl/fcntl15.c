@@ -45,6 +45,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ * MODIFIED: - mridge@us.ibm.com -- changed getpid to syscall(get thread ID) for unique ID on NPTL threading
  *
  * RESTRICTIONS
  * 	None
@@ -55,6 +56,9 @@
 #include <test.h>
 #include <usctest.h>
 #include <wait.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <linux/unistd.h>
 
 #define	DATA	"ABCDEFGHIJ"
 #define	DUP	0
@@ -91,7 +95,7 @@ void
 alarm_sig()
 {
 	signal(SIGALRM, (void (*)())alarm_sig);
-	if ((getpid()) == parent) {
+	if ((syscall(__NR_gettid)) == parent) {
 		tst_resm(TINFO, "Alarm caught by parent");
 	} else {
 		tst_resm(TINFO, "Alarm caught by child");
@@ -312,7 +316,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		perror("Signal setup for SIGUSR1 failed");
 	}
 
-	parent = getpid();
+	parent = syscall(__NR_gettid);
 
 	tst_tmpdir();
 	/* setup temporary file name */
