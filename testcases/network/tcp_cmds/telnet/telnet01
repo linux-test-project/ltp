@@ -99,7 +99,8 @@ while {$count < $LOOPCOUNT} {
 
       send_user "CHECKING TELNET STATUS\n"
       send "cat $TESTLOG/$RUSER.$HOST\n"
-      if 1==[catch {exec grep -c "9" $TESTLOG/$RUSER.$HOST}] {
+      set nummatch [exec grep -c "9" $TESTLOG/$RUSER.$HOST]
+      if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
          exec rm -rf $TESTLOG/$RUSER.$HOST
       } else {
