@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	execve01.c
+ * 	execve06.c
  *
  * DESCRIPTION
  * 	This testcase tests the basic functionality of the execve(2) system
@@ -32,7 +32,7 @@
  *	finally the parent ensures that they terminated correctly.
  *
  * USAGE
- *	execve01 20 test1 test2 4
+ *	execve06 20 test1 test2 4
  * 
  * RESTRICTIONS
  * 	This program does not follow the LTP format - *PLEASE FIX*
@@ -48,7 +48,7 @@
 void setup(void);
 void cleanup(void);
 
-char *TCID = "execve01";
+char *TCID = "execve06";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
