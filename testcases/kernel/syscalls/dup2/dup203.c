@@ -187,9 +187,9 @@ block2:
 				break;
 				/*NOTREACHED*/
 			}
-			if ((rval = fcntl(fd0, F_GETFL, 0)) != 1) {
+			if (!((rval = fcntl(fd0, F_GETFL, 0)) && O_WRONLY)) {
 				tst_resm(TFAIL, "fctnl F_GETFL bad rval on fd0 "
-					 "Expected 1 got %d", rval);
+					 "Expected 1 got %#x", rval);
 				/*NOTREACHED*/
 			}
 			tst_resm(TPASS, "dup2 test 2 functionality is correct");
