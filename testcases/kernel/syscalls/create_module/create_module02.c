@@ -264,6 +264,10 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
+	if (tst_kvercmp(2,5,48) >= 0)
+		tst_brkm(TCONF, tst_exit, "This test will not work on "
+				"kernels after 2.5.48");
+
         /* Check for nobody_uid user id */
 	 if( (ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Required user %s doesn't exists",

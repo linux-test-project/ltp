@@ -143,6 +143,10 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
+	if (tst_kvercmp(2,5,48) >= 0)
+		tst_brkm(TCONF, tst_exit, "This test will not work on "
+				"kernels after 2.5.48");
+
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
