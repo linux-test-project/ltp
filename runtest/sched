@@ -9,6 +9,8 @@ pthread_attr_setdetachstate01 cd $LTPROOT/testcases/bin;pthread_attr_setdetachst
 pthread_attr_setschedpolicy01 cd $LTPROOT/testcases/bin;pthread_attr_setschedpolicy01 
 pthread_cancel01 cd $LTPROOT/testcases/bin;pthread_cancel01 
 pthread_create01 cd $LTPROOT/testcases/bin;pthread_create01 
+# This test hangs for Linux Threads.
+# pthread_create02 cd $LTPROOT/testcases/bin;pthread_create02 
 pthread_detach01 cd $LTPROOT/testcases/bin;pthread_detach01 
 pthread_equal01 cd $LTPROOT/testcases/bin;pthread_equal01 
 pthread_mutex_destroy01 cd $LTPROOT/testcases/bin;pthread_mutex_destroy01 
