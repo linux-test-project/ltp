@@ -136,7 +136,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			} else {
 				if (i >= 5)
-					tst_resm(TINFO,"shmctl() did not fail for non-root user."
+					tst_resm(TCONF,"shmctl() did not fail for non-root user."
                                                  "This may be okay for your distribution.");
 				else
 					tst_resm(TFAIL, "call failed with an "
