@@ -1,12 +1,16 @@
 nfs01
 
-	 Stresses NFS by opening a large number of files on a nfs
-         mounted filesystem.
+	Stresses NFS by opening a large number of files on a nfs
+        mounted filesystem.
 
 nfs02
 
 	Tests NFS copy of various filesizes, file consistency between copies
         and preservation of write/nowrite permissions.
+
+nfs03
+	Runs the LTP filesystem test: fs_inod, on an NFS mountpoint.	
+
 
 nfslock01
 
