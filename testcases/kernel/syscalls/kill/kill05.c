@@ -73,6 +73,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+extern void rm_shm(int);
+
 void cleanup(void);
 void setup(void);
 
@@ -89,12 +91,12 @@ extern int getipckey();
 
 #define TEST_SIG SIGKILL
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
-	pid_t pid1, pid2, my_pid;
-	int status, i;
+	pid_t pid1, my_pid;
+	int status;
 
 	char user1name[] = "nobody";
 	char user2name[] = "bin";
@@ -187,6 +189,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 

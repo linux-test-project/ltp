@@ -74,12 +74,12 @@ int exp_enos[] = {EINVAL, 0};
 
 #define TEST_SIG 2000
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
 	pid_t pid;			
-	int exno, status, nsig;
+	int exno, status;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -138,6 +138,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 

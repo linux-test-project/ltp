@@ -67,15 +67,15 @@
  */
 
 #include <unistd.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <utime.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
-#include <signal.h>
+#include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -186,6 +186,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*

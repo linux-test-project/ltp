@@ -84,7 +84,7 @@ extern void rm_shm(int);
 
 #define TEST_SIG SIGKILL
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -156,10 +156,10 @@ main(int ac, char **av)
 			 */
 			nsig = WTERMSIG(status);
 			asig = WIFSIGNALED(status);
-			if (asig == 0 & *flag == 1) {
+			if ((asig == 0) & (*flag == 1)) {
 				tst_resm(TFAIL, "SIGKILL was unexpectedly"
 							" caught");
-			} else if (asig == 1 & nsig == TEST_SIG) {
+			} else if ((asig == 1) & (nsig == TEST_SIG)) {
 				tst_resm(TINFO, "received expected signal %d",
 					nsig);
 				tst_resm(TPASS,
@@ -180,6 +180,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

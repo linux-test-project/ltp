@@ -93,7 +93,6 @@ main(int argc, char *argv[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	pid_t pid;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
@@ -133,6 +132,7 @@ main(int argc, char *argv[])
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 void

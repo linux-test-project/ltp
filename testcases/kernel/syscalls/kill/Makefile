@@ -19,7 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -Wall -D_GNU_SOURCE
+CFLAGS+=	-I../../../../include -Wall -D_GNU_SOURCE 
 LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite -L../ipc -lipc
 
 SRCS=$(wildcard *.c)

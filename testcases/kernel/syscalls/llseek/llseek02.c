@@ -121,7 +121,6 @@ main(int ac, char **av)
 	int fildes;		/* file handle for testfile */
 	int whence;		/* position of file handle in the file */
 	char *test_desc;	/* test specific error message */
-	loff_t offset;		/* return value after llseek  */
 	int ind;		/* counter to test different test conditions */
     
 	/* Parse standard options given to run the test. */
@@ -184,6 +183,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
