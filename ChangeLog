@@ -1,3 +1,9 @@
+
+2001-09-25 Robbie Williamson <robbiew@us.ibm.com>
+
+  Reorganized all tests into the /testcases structure.  Each test
+  has been categorized and it's description documented.
+
 2000-09-18 Juan J. Quintela <quintela@fi.udc.es>
            Aaron Laffin <alaffin@sgi.com>
 
