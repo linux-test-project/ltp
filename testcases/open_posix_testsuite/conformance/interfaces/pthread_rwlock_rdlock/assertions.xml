@@ -1,0 +1,42 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34765:34767">
+	pthread_rwlock_rdlock( ) function shall apply a read lock to the 
+	read-write lock referenced by rwlock. The calling thread acquires 
+	the read lock if a writer does not hold the lock and there are
+	no writers blocked on the lock.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:34768:34771">
+ 	If the Thread Execution Scheduling option is supported, 
+	and the threads involved in the lock are executing with the 
+	scheduling policies SCHED_FIFO or SCHED_RR, the calling thread shall not
+	acquire the lock if a writer holds the lock or if writers of 
+	higher or equal priority are blocked on the lock; 
+	otherwise, the calling thread shall acquire the lock.
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:34772:34775">
+   	If the Threads Execution Scheduling option is supported, and the threads 
+	involved in the lock are executing with the SCHED_SPORADIC scheduling policy, 
+	the calling thread shall not acquire the lock if a writer holds the lock or 
+	if writers of higher or equal priority are blocked on
+	the lock; otherwise, the calling thread shall acquire the lock.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:34792:34794">
+  	If a signal is delivered to a thread waiting for a read-write lock for reading, 
+	upon return from the signal handler the thread resumes waiting for the read-write 
+	lock for reading as if it was not interrupted.
+  </assertion>
+  
+<assertion id="5" tag="ref:XSH6:34781:34783">
+	A thread may hold multiple concurrent read locks on 'rwlock' and the application shall
+	ensure that the thread will perform matching unlocks for each read lock.
+</assertion>
+
+  <assertion id="6" tag="ref:XSH6:34796:34797">
+  	If successful, the pthread_rwlock_rdlock( ) function shall return zero; 
+	otherwise, an error number shall be returned to indicate the error.
+	These functions shall not return an error code of [EINTR].
+  </assertion>
+</assertions>

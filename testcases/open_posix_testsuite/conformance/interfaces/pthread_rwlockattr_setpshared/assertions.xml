@@ -1,0 +1,18 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35149:35150">
+	pthread_rwlockattr_setpshared( )
+	function shall set the process-shared attribute in an initialized 
+	attributes object referenced by attr.
+  </assertion>
+	
+  <assertion id="2" tag="ref:XSH6:35165:35166">
+	If successful, the pthread_rwlockattr_setpshared( ) function shall 
+	return zero; otherwise, an error number shall be returned to indicate 
+	the error.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:35170:35173">
+  	It MAY fail if:
+  	[EINVAL] - 'attr' is invalid.
+	Shall not return an error code of [EINTR]
+  </assertion>
+</assertions>

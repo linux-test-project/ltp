@@ -1,0 +1,21 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34688:34689">
+  	pthread_rwlock_destroy( ) function shall destroy the read-write lock object 
+  	referenced by rwlock and release any resources used by the lock. 
+  </assertion> 
+
+  <assertion id="2" tag="ref:XSH6:34708:34709">
+	If successful, the pthread_rwlock_destroy( ) return zero;
+	otherwise, an error number shall be returned to indicate the error.
+  </assertion> 
+  
+  <assertion id="3" tag="ref:XSH6:34714:34717">
+	If not successful, pthread_rwlock_destroy( ) function may fail if:
+	[EBUSY] The implementation has detected an attempt to destroy the object referenced
+	by rwlock while it is locked.
+	[EINVAL] The value specified by rwlock is invalid. 
+
+	Shall not return an error code of [EINTR]
+  </assertion> 
+
+</assertions>

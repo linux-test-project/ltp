@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31769:31772">
+  The pthread_barrier_init( ) function shall allocate any resources required to use the barrier
+  referenced by barrier and shall initialize the barrier with attributes referenced by attr. If 
+  attr is NULL, the default barrier attributes shall be used; the effect is the same as passing 
+  the address of a default barrier attributes object.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31786:31787">
+  Upon successful completion, these functions shall return zero; otherwise, an error number shall
+  be returned to indicate the error.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:31794:31797">
+   The pthread_barrier_init( ) function shall fail if:
+   [EAGAIN] The system lacks the necessary resources to initialize another barrier.
+   [EINVAL] The value specified by count is equal to zero.
+   [ENOMEM] Insufficient memory exists to initialize the barrier.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:31803:31803">
+    The pthread_barrier_init( ) function may fail if:
+    [EBUSY] The implementation has detected an attempt to reinitialize a barrier while it is
+    in use (for example, while being used in a pthread_barrier_wait( ) call) by
+    another thread.
+   [EINVAL] The value specified by attr is invalid.
+ 
+   These functions shall not return an error code of [EINTR].
+  </assertion>
+</assertions>
+

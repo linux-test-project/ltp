@@ -1,0 +1,27 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35102:35103">
+ 	pthread_rwlockattr_init( ) function shall initialize a read-write lock attributes 
+	object attr with the default value for all of the attributes defined by the 
+	implementation.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35106:35108">
+	After a read-write lock attributes object has been used to initialize 
+	one or more read-write locks, any function affecting the attributes object 
+	(including destruction) shall not affect any previously 
+	initialized read-write locks.
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:35110:35111">
+	If successful, the pthread_rwlockattr_init( ) functions shall return zero; 
+	otherwise, an error number shall be returned to indicate the error.
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:35115:35117">
+	pthread_rwlockattr_init( ) function shall fail if:
+		[ENOMEM] Insufficient memory exists to initialize the read-write 
+		lock attributes object.
+	This function shall not return an error code of [EINTR].
+  </assertion> 
+
+</assertions>

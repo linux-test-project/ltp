@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35536:355575">
+  pthread_spin_trylock( ) function shall lock the spin lock referenced by lock if it is not 
+  held by any thread. Otherwise, the function shall fail.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35540:35541">
+  Upon successful completion, these functions shall return zero; otherwise, an error number shall
+  be returned to indicate the error.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35547:35548">
+  The pthread_spin_trylock( ) function shall fail if:
+  [EBUSY] A thread currently holds the lock.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:35543:35544">  
+  These functions may fail if:
+  [EINVAL] The value specified by lock does not refer to an initialized spin lock object.
+  
+  These functions shall not return an error code of EINTR.
+  </assertion>
+</assertions>
+

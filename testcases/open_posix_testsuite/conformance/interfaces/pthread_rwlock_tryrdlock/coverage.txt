@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_rwlock_tryrdlock() function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+
+NOTE:

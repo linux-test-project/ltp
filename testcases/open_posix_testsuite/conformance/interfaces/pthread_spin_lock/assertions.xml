@@ -1,0 +1,23 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35532:355534">
+ The function shall lock the spin lock referenced by lock. The calling thread
+ shall acquire the lock if it is not held by another thread. Otherwise, the
+ thread shall spin (that is, shall not return from the pthread_spin_lock())
+ until the lock becomes available.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35540:35541">
+   Upon successful completion, these functions shall return zero; otherwise, an error number 
+   shall be returned to indicate the error.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35545:35549">
+  The pthread_spin_lock( ) function may fail if:
+
+  [EDEADLK] The calling thread already holds the lock.
+  [EINVAL] The value specified by lock does not refer to an initialized spin lock object.
+
+  These functions shall not return an error code of EINTR.
+  </assertion>
+</assertions>
+

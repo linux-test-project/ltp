@@ -1,0 +1,46 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31824:31826"> 
+  The pthread_barrier_wait( ) function shall synchronize participating threads at the barrier
+  referenced by barrier. The calling thread shall block until the required number of threads have
+  called pthread_barrier_wait( ) specifying the barrier.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31827:31831">
+  When the required number of threads have called pthread_barrier_wait( ) specifying the barrier,
+  the constant PTHREAD_BARRIER_SERIAL_THREAD shall be returned to one unspecified
+  thread and zero shall be returned to each of the remaining threads. At this point, the 
+  barrier shall be reset to the state it had as a result of the most recent 
+  pthread_barrier_init( ) function that referenced it.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35496:35497">
+  If a signal is delivered to a thread blocked on a barrier, upon return from the signal 
+  handler the thread shall resume waiting at the barrier if the barrier wait has not completed 
+  (that is, if the required number of threads have not arrived at the barrier during the 
+  execution of the signal handler); otherwise, the thread shall continue as normal from the 
+  completed barrier wait. Until the thread in the signal handler returns from it, it is 
+  unspecified whether other threads may proceed past the barrier once they have all reached it.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:31841:31843">  
+  A thread that has blocked on a barrier shall not prevent any unblocked thread that is eligible
+  to use the same processing resources from eventually making forward progress in its execution.
+  Eligibility for processing resources shall be determined by the scheduling policy.
+  </assertion>
+  
+  <assertion id="5" tag="ref:XSH6:31845:31848"> 
+  Upon successful completion, the pthread_barrier_wait( ) function shall return
+  PTHREAD_BARRIER_SERIAL_THREAD for a single (arbitrary) thread synchronized at the
+  barrier and zero for each of the other threads. Otherwise, an error number shall be returned to
+  indicate the error.
+  </assertion>
+  
+  <assertion id="6" tag="ref:XSH6:31850:31852">  
+  The pthread_barrier_wait( ) function may fail if:
+  [EINVAL] The value specified by barrier does not refer to an initialized barrier object.
+
+  These functions shall not return an error code of EINTR.
+ </assertion>
+
+</assertions>
+

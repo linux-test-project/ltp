@@ -1,0 +1,11 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:8201:8202 pt:CX">
+	The difftime ( ) function shall compute the difference between two calendar times 
+        (as returned by
+	time( )): time1. time0.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:8204:8204 pt:CX">
+  The difftime ( ) function shall return the difference expressed in seconds as a type double.
+  </assertion>
+</assertions>
+

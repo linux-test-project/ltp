@@ -1,0 +1,49 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   The munlock() function shall unlock those whole pages containing any part of
+   the address space of the process starting at address addr and continuing for
+   len bytes, regardless of how many times mlock() has been called by the
+   process for any of the pages in the specified range
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   The implementation may require that addr be a multiple of {PAGESIZE}
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   If any of the pages in the range specified to a call to munlock() are also
+   mapped into the address spaces of other processes, any locks established on
+   those pages by another process are unaffected by the call of this process to   munlock()
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   If any of the pages in the range specified by a call to munlock() are also
+   mapped into other portions of the address space of the calling process
+   outside the range specified, any locks established on those pages via the
+   other mappings are also unaffected by this call
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   Upon successful return from munlock(), pages in the specified range shall be
+   unlocked with respect to the address space of the process
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:munlock:DESCRIPTION}">
+   Memory residency of unlocked pages is unspecified
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:munlock:RETURN VALUE}">
+   Upon successful completion, the munlock() function shall return a value of
+   zero
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:munlock:RETURN VALUE}">
+   Upon unsuccessful completion, no change is made to any locks in the address
+   space of the process
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:munlock:RETURN VALUE}">
+   Upon unsuccessful completion, the function shall return a value of -1
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:munlock:ERRORS}">
+   The munlock() function shall set errno = ENOMEM if some or all of the
+   address range specified by the addr and len arguments does not correspond
+   to valid mapped pages in the address space of the process
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:munlock:ERRORS}">
+   The munlock() function may set errno = EINVAL if the addr argument is not a
+   multiple of {PAGESIZE}
+  </assertion>
+</assertions>

@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34977:34979">
+	pthread_rwlock_wrlock( ) function shall apply a write lock to the read-write 
+	lock referenced by rwlock. The calling thread acquires the write lock 
+	if no other thread (reader or writer) holds the read-write lock rwlock. 
+	Otherwise, the thread shall block until it can acquire the lock
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:34984:34986">
+	If a signal is delivered to a thread waiting for a read-write lock for writing, 
+	upon return from the signal handler the thread resumes waiting for the 
+	read-write lock for writing as if it was not interrupted.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:34991:34992">
+	If successful, the pthread_rwlock_wrlock( ) function shall return zero; 
+	otherwise, an error number shall be returned to indicate the error.
+	It may fail if:
+
+	[EDEADLK] The current thread already owns the rwlock for writing or reading.
+
+	Shall not return an error code of [EINTR].
+  </assertion>
+</assertions>

@@ -1,0 +1,10 @@
+This document defines the coverage for the pthread_rwlockattr_init function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		NO  *Looking for a way to use up the memory without screwing
+ 		     up the machine.
+
+Note: 

@@ -1,0 +1,71 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   The mlockall() function shall cause all of the pages mapped by the address
+   space of a process to be memory-resident until unlocked or until the process
+   exits or execs another process image
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   The flags argument is constructed from the bitwise-inclusive OR of one or
+   more of the folowing symbolic constants, defined in sys/mman.h:
+	MCL_CURRENT
+	MCL_FUTURE
+   </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   When the MCL_CURRENT flag is set, mlockall lock all of the pages currently
+   mapped into the address space of the process
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   When the MCL_FUTURE flag is set, mlockall lock all of the pages that become
+   mapped into the address space of the process in the future, when those
+   mappings are established
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   If MCL_FUTURE is specified, and the automatic locking of future mappings
+   eventually causes the amount of locked memory to exceed the amount of
+   available physical memory or any other implementation-defined limit, the
+   behavior is implementation-defined. The manner in which the implementation
+   informs the application of these situations is also implementation-defined
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   Upon successful return from the mlockall() function that specifies
+   MCL_CURRENT, all currently mapped pages of the process' address space shall
+   be memory-resident and locked
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:mlockall:DESCRIPTION}">
+   The appropriate privilege is required to lock process memory with mlockall()
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:mlockall:RETURN VALUE}">
+   Upon successful completion, the mlockall() function shall return a value of
+   zero
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:mlockall:RETURN VALUE}">
+   Upon unsuccessful completion, the mlockall() function shall return a value
+   of -1
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:mlockall:RETURN VALUE}">
+   Upon unsuccessful completion, no additional memory shall be locked
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:mlockall:RETURN VALUE}">
+   The effect of failure of mlockall() on previously existing locks in the
+   address space is unspecified
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:{System Interfaces:mlockall:ERRORS}">
+   The mlockall() function shall set errno = EAGAIN if some or all of the
+   memory identified by the operation could not be locked when the call was
+   made
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:{System Interfaces:mlockall:ERRORS}">
+   The mlockall() function shall set errno = EINVAL if the flags argument is
+   zero, or includes unimplemented flags
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:{System Interfaces:mlockall:ERRORS}">
+   The mlockall() function may set errno = ENOMEM if locking all of the pages
+   currently mapped into the address space of the process would exceed an
+   implementation-defined limit on the amount of memory that the process may
+   lock
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:{System Interfaces:mlockall:ERRORS}">
+   The mlockall() function may set errno = EPERM if the calling process does
+   not have the appropriate privilege to perform the requested operation
+  </assertion>
+</assertions>
