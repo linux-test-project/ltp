@@ -222,11 +222,11 @@ nextTest=$(($nextTest+1))
 runTest=$(($runTest+1))
 
 mkdir /test/aiodio/junkdir
-dd if=$file1 of=/test/aiodio/junkfile bs=4096 conv=block,sync
+dd if=$file1 of=/test/aiodio/junkfile bs=8192 conv=block,sync
 dd if=$file1 of=/test/aiodio/fff      bs=4096 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff1      bs=4096 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff2      bs=4096 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff3      bs=4096 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff1      bs=2048 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff2      bs=1024 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff3      bs=512  conv=block,sync 
 
 date
 echo "************ Running aio-stress tests " 
@@ -246,11 +246,11 @@ ${LTPROOT}/pan/pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostr
 wait $!
 fi
 
-dd if=$file1 of=/test/aiodio/junkfile bs=4096 conv=block,sync
+dd if=$file1 of=/test/aiodio/junkfile bs=8192 conv=block,sync
 dd if=$file1 of=/test/aiodio/fff      bs=4096 conv=block,sync
-dd if=$file1 of=/test/aiodio/ff1      bs=4096 conv=block,sync
-dd if=$file1 of=/test/aiodio/ff2      bs=4096 conv=block,sync
-dd if=$file1 of=/test/aiodio/ff3      bs=4096 conv=block,sync
+dd if=$file1 of=/test/aiodio/ff1      bs=2048 conv=block,sync
+dd if=$file1 of=/test/aiodio/ff2      bs=1024 conv=block,sync
+dd if=$file1 of=/test/aiodio/ff3      bs=512  conv=block,sync
 
 echo "************ Running aiocp tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
