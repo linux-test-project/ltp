@@ -132,6 +132,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
+				retval=1;
 				tst_resm(TFAIL, "expected ETXTBSY, received "
 					 "%d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
