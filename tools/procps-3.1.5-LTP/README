@@ -1,0 +1,22 @@
+COMPATIBILITY
+
+    This code is intended for use with Linux 2.0.xx and above.
+    Both libc 5 and libc 6 should work.
+
+INSTALLATION
+
+    make
+    make install
+
+    If you wish to test before installing, use the scripts
+    named t, v, and p to ensure the correct libproc
+    is used during your testing.
+
+    If you need to add a compiler option, use CC to do it:
+    make CC='gcc -foo'
+
+BUG REPORTS
+
+    Debian users should use the Debian bug tracking system.
+    Email to albert@users.sf.net or csmall@debian.org or
+    procps-feedback@lists.sf.net will also work.

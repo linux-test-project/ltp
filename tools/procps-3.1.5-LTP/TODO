@@ -1,0 +1,157 @@
+-------------------------- general ------------------------
+
+Implement /usr/proc/bin tools like Solaris has.
+The prstat command is interesting, like top in batch mode.
+
+Don't these really belong in the procps package?
+         killall   pstree   fuser   lsof   who
+(they are maintained elsewhere, which causes version problems)
+
+Cache results of dev_to_tty.
+
+---------------------- kernel -------------------------
+
+Add an "adopted child" flag to mark processes that are not
+natural children of init. This can make --forest work better.
+
+Add a thread group ID, to be shared by all tasks that are related by
+the clone() system call. This ID might be made unique from boot to
+shutdown, perhaps being a 16-bit CPU number and 48-bit per-CPU
+serial number.
+
+Make the kernel group /proc listing output by thread group.
+Without this, a thread-aware ps must always sort processes.
+
+Supply the task ID (the "PID"/"TID") of the thread group leader.
+I define "leader" as the first process of a thread group.
+
+Don't reuse the task ID of a thread group leader until all threads
+are dead. Better yet, don't let the leader exit.
+
+Supply better data for top's CPU state display. Currently top has
+to subtract old numbers from new numbers and divide that result by
+the number of processors. The kernel won't even supply the number
+of processors in a portable way.
+
+Mark threads, and supply a list of other threads.
+
+Supply data for the ADDR and JOBC fields.
+
+Support & supply data for SL and RE.
+
+Add a /proc/*/tty symlink to eliminate guessing when /proc/*/fd is
+not accessable.
+
+Put unique ID at the top of System.map and in /proc, to make sure
+there is never a mismatch.
+
+Add /proc/*/.bindata files to avoid string parsing. It should be an array
+of 64-bit values on all machines. New entries go on the end and obsolete
+ones get filled in with something logical -- entries must never be deleted!
+
+Add all the stuff Solaris has. This would also replace ptrace.
+
+---------------------- w --------------------------
+
+The LOGIN@ column sometimes has a space in it. This makes correct
+scripting difficult.
+
+Verify that DNS control does not give a user the power to specify
+arbitrary data for the FROM column. (could set root's VGA color map!)
+
+---------------------- vmstat --------------------------
+
+Extract /proc/stat parsing from vmstat into libproc somewhere.
+
+Let the user choose: 1000, 1024, PAGE_SIZE, 1000000, 0x100000
+
+--------------------- libproc ----------------------
+
+Stop storing fields with duplicate info (often different
+units: kB and pages, seconds and jiffies) in the proc_t struct.
+
+---------------------- top -------------------------
+
+Share more stuff with ps.
+
+---------------- ps for now, maybe move to libproc ------------------
+
+With forest output and a tty named /dev/this_is_my_tty, the position
+of the command name gets messed up. (we print too many spaces) (fixed?)
+
+Fix missing stuff for these formats: FB_j FB_l FB_v HP_f HP_l HP_fl JFMT OL_m
+(jobc,cpu,sl,re,cpu,prmgrp,m_swap,m_share,vm_lib,m_dt)
+Note that "cpu" has two meanings.
+
+Add Beowulf support. This is ugly, since the current patches use a
+daemon to collect info and add a HOST field after the PID field.
+
+Query optimizer, put cheap/required process selection first.
+
+Avoid reading both /proc/*/status and /proc/*/stat.
+
+Maybe ps should put a 'C' in front of fields when they are affected
+by cumulative mode. Debian ps did that. (move flag to common.h...)
+
+Support printing the client hostname (the FROM that w(1) uses) in place
+of a pty. Maybe do this when PS_PERSONALITY=linux.
+
+Disambiguate narrow tty info. (/dev/tty7 == /dev/pts/7 now)
+1------8     1--4
+ttyS2        S2
+ttyI31       I31
+pts/7        7        Short form could be /999.
+pts/9999     9999     Short form could just be trunctuated to /999.
+tty7         7        Short form could be vc-7.
+tty63        63       Short form could be vc63.
+
+Internationalization, as specified by XPG3, Volume 1, Commands and Utilities.
+(and suggested by Unix98) LC_TIME affects date format.
+
+----------------------- ps -----------------------
+
+Add an option to select all processes that a user can kill.
+(related to RUID, EUID, tty, etc. -- but maybe ignore root power)
+
+Add a nice display option for killing things.
+ruser,euser,ppid,pid,pmem,stime,args isn't too bad
+
+Make the column alignment algorithm support this:
+    FOO BAR
+    8 44444
+    453  45
+    45 2989
+    63666 0
+    34  333
+(useful for the UNIX tty and time values, since the time might look
+like 100-10:40:32 for old processes and the tty might have extra room)
+
+Improve long sort/format specifiers documentation and fill in the missing
+code as much as the kernel can support. Make sure that memory amounts are in
+pages when they should be and in kB when they should be, not backwards.
+
+output encoding: UTF8 --nul --null
+
+Make BSD formats use non-standard BSD time format, at least when it
+doesn't violate the "no whitespace" rule.
+
+Try to make -jl fit in 80 columns. Do we need more than 1000 pty devices,
+9 flag bits, etc.? (hmmm, Linux supports 2048 pty devices now, and we
+might also want to steal whitespace there when the time column overflows)
+
+When not in strict Unix98 mode, let foo=8 specify that foo is 8
+characters wide. Debian did that. Then foo=8=bar and foo=bar=8
+could change both header and width.
+
+Better unmangling of '?' as a tty. The shell destroys '?' when there
+is a filename that matches. If the argument seems like garbage,
+check for a file that might have screwed up the '?'.
+
+If the 'O' option is given something already implied by 'O',
+assume the user wanted a sorting option.
+
+Conflict:
+Digital THREAD is user,pcpu,pri,scnt,wchan,usertime,systime
+AIX     THREAD is uname,pid,ppid,tid,S,C,PRI,scount,WCHAN,F,tty,bnd,comm
+AIX looks like this:
+         USER   PID  PPID  TID S  C PRI SC   WCHAN   FLAG   TTY BND  CMD
