@@ -40,10 +40,13 @@
  *
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/sem.h>
 #include <errno.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 
 #define KEY IPC_PRIVATE
 
@@ -56,12 +59,21 @@ void * poster(void *);
 struct sembuf Psembuf = {0, -1, SEM_UNDO};
 struct sembuf Vsembuf = {0, 1, SEM_UNDO};
 
+union semun {
+        int val;                        /* value for SETVAL */
+        struct semid_ds *buf;           /* buffer for IPC_STAT & IPC_SET */
+        unsigned short *array;          /* array for GETALL & SETALL */
+        struct seminfo *ipc_buf;        /* buffer for IPC_INFO */
+};
+
+
 int sem_id;
 int err_ret;  /* This is used to determine PASS/FAIL status */
 int main()
 {
     int i, rc;
-
+    union semun semunion;
+    
     pthread_t pt[NUMTHREADS];
     pthread_attr_t attr;
 
@@ -91,6 +103,8 @@ int main()
 
     /* Sleep long enough to see that the other threads do what they are supposed to do */
     sleep(20);
+    semunion.val = 1;
+    semctl(sem_id, 0, IPC_RMID, semunion);
     if ( err_ret == 1 )
 	printf("sem02: FAIL\n");
     else
