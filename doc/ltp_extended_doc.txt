@@ -1,0 +1,768 @@
+amtu_test.sh
+	FIV testcase for amtu(Abstract Machine Test Utility)
+
+apache
+
+	Check to see that the apache web server can serve up a web page.
+apache-contrib
+--------------
+	it is composed of three shell programs: mod-bandwidth, mod-put, and mod-throttle.
+apmd
+	Test the functionality of apmd.
+ash
+
+   See that the ash shell can execute.
+autofs
+	Test the functionality of autofs.
+base
+
+	Several utility programs. Checks them out.
+bash_test.sh
+	Testcase to check for required files in bash.rpm.
+
+ 
+     Bind9
+
+         Test the functionality of bind9.
+
+        
+    You can run this testcase by ./bind9.sh . 
+
+   
+
+    test_dns_forward         Forwarding tests
+    test_dns_xfer            Zone transfer tests
+    test_dns_views           Tests of the "views" statement and using rndc command 
+    test_dns_security        DNSSEC tests
+    test_dns_upforwd         Update forwarding tests and using nsupdate command 
+
+
+    NOTE :
+
+    Some shell scripts in this testcase come from the source code of bind-9.1.3, 
+
+    and I changed its original format into our structure. You can find the original
+
+    one by path bind-9.1.3/bin/tests/system/ in the source code .
+
+
+    Lwresd and DNSSEC is not tested by this test suite.
+    
+  
+   
+   CSDL binutils testsuite by fengmt@cn.ibm.com
+
+   
+    How to use this case 
+
+    1.   run "./binutils.sh"    
+
+
+
+    NOTE:
+
+       1. Command "gcc" is needed by this testsuite as this is a MCP DevKit package. 
+
+       2. Command "as" is tested in every function, 
+	  command "ld" is used by command "gcc",
+	  and command "gprof" is tested when run glibc_profile's testcase.
+         
+
+        
+cdrecord
+	Test the functionality of cdrecord package.
+cron01
+	Test that crontab <filename> installs the cron-job-file and cron will
+	schedule the job correctly.
+
+cyrus-sasl
+
+	Check that cyrus-sasl can manage users, domains, passwords.
+cyrus-sasl2
+
+	Check that cyrus-sasl2 can manage users, domains, passwords, saslauthd.
+     test04: deleting user without specifying domain should not delete user,
+	it does not delete the user , but the return value is 0, we do not
+know whether it is bug . SO WE SKIP original test04.
+
+db
+
+	The Berkeley database. This tests access to the database system.
+dhcp-server
+
+	Tests that the dhcpd server can start and is listening.
+dhcpd01
+	start DHCP server using dhcp.conf file, and stop service if that succedes.
+distro_id
+
+	Test the distro_id command. Unique to MCP 3.0 (and up?)
+-------------------------------------
+IBM CSDL testsuite for dmidecode
+------------------------------------
+Refer to the README file of the sourcecode, CSDL add this dmidecode_test.sh to
+test the dmidecode biosdecode vpddecode.
+"ownership" seems to be no result in common machine, so we just skipped it.
+
+Before run the dmidecode_test.sh:
+1. Be root user
+2. already install the dmidecode package on x86/ia64, testcase will bypass on
+other architecture.
+dos2unix
+	Test the functionality of dos2unix.
+e2fsprogs.sh
+	This testcase is depricated. See instead e2fsprogs2
+e2fsprogs.sh
+	Test suite to exercise e2fsprogs
+	Robb Romans <robb@austin.ibm.com>
+
+d_loaddump : debugfs load/dump test
+f_bad_local_jnl : test for corrupt local journal
+f_baddir : test fixing corrupted directory entries
+f_baddotdir : test fixing bad '.' and '..' entries
+f_badprimary : test fixing bad blocks in the primary superblock and group descriptors
+f_bitmaps : test fixing corrupted inode and block bitmaps
+f_dirlink : test fixing directory hard links
+f_end-bitmap : test fixing corruption at end of block bitmap
+f_ext_journal : test fixing extended journal
+f_holedir : test fixing directory with holes and illegal blocks
+f_journal : test recovering journal
+f_okgroup : test fixing 8193 block long filesystem
+f_orphan : test clearing orphan inodes
+f_preen : test that preen shouldn't destroy backup superblocks
+f_reconnect : test fixing simple disconnected file inode
+f_swapfs : checking the e2fsck swapfs functionality
+f_zero_group : test fallback for damaged group descriptors
+f_zero_super : test fallback for damaged superblock
+
+eject01
+	Test that eject -d lists the default device.
+
+eject02
+	Test that eject will eject the defaut cdrom device
+
+eject03
+	Test the eject command will eject the default cdrom device and also unmount
+device if it is currently mounted.
+
+eject04
+	Test if eject -a on|1|off|0 will enable/disable auto-eject mode the drive
+automatically ejects when the device is closed.
+ethtool
+	Test the functionality of ethtool.
+expect.sh  
+	Test the basic functionality of expect program.
+fetchmail.sh:
+	Test suite to test the fetchmail package.
+	Robb Romans <robb@austin.ibm.com>
+
+fivget
+
+	A simple utility to read a web page. Used by apache.sh and
+	mod_php4.sh.
+fortune.sh:
+	Test suite to test the fortume-mod package.
+	Robb Romans <robb@austin.ibm.com>
+
+gawk.sh:
+	Test suite to exercise gawk "make test" tests.
+	Robb Romans <robb@austin.ibm.com>
+
+-------------------------------------
+IBM CSDL testsuite for gcc
+------------------------------------
+Fall back to seperated *.x files in March 18, 2004
+And I add "gcc-test/mcp-gcc-exclude.x"  
+istestcase "gcc.c-torture/compile/920521-1.c" && istaget "i[3-6]86" &&
+continue
+
+This file is created and sourced for various gcc/mcp version. 
+
+******************************************** Newly Changelog: Mar. 17, 2004
+Based on Bob's suggestion, I add a file in gcc-test/gcc.c-torture/gcc.permfail
+to replace original *.x --- It means we gather all of xfail information in
+gcc.permfail!
+
+Another modification: we use "gcc -dumpversion" to get gcc version,
+and use "gcc -dumpmachine" to determine the gcc target machine.
+We use "$gccversion" in $PERMFAIL file.
+
+******************************************** Mar. 10, 2004
+In this version I add some feature, 
+Firstly the gcc.sh can add a parameter to test alternative gcc, like this
+	gcc.sh /opt/cross/bin/powerpc64-linux-gcc 
+Secondly, I set up a framework to determine the XFAIL mode(expected fail) and additional compiler options.
+	A testcase named testfile.c , the additional options or XFAIL mode is set in testfile.x.
+Example to add compiler option :
+==> 20010518-2.x <==
+additional_flags="-S"
+
+Example to XFAIL 
+==> 981022-1.x <==
+torture_compile_xfail="*"
+
+
+Example to conditionally XFAIL on powerpc :
+==> 20021123-3.x <==
+ istarget "powerpc"  &&  torture_compile_xfail="O1 O2 O3 Os"
+
+
+The testfile.x will be "source" in the gcc.sh to make the properly actions.
+I add two functions in gcc.sh istarget() and isXFAIL()
+
+In 20021123-3.x , it means that the 20021123-3.c will expected FAIL when we use -O1 or -O2 or -O3 or -Os on powerpc's gcc.
+
+Execution test 
+
+	Add "torture_execute_xfail" in the ****.x files to determine the XFAIL status of execution fail. 
+	We can use:
+	istarget "powerpc" && torture_execute_xfail="O1 Os" 
+The line means expected fail on powerpc when compiler CFLAGS matches "O1" "Os".
+
+
+
+
+====================================
+CSDL: testsuite for the gdb package
+====================================
+*Apr/14,2004  Xie Jue <xiejue@cn.ibm.com>
+- Consider of cross compiler, we add Makefile to compile the tests while build 
+- add some control point to avoid failure.
+
+*Apr/9,2004  Xie Jue <xiejue@cn.ibm.com>
+- Now we have 12 tests in gdb.base
+- Add Makefile 
+
+*Apr/6, 2004 Xie Jue <xiejue@cn.ibm.com>
+-Rewrite int-type.exp to add what-is test
+-Add bitops break 
+-Li Zhigang(CSDL) attend our TC development and add "call-ar-st call-strs "
+ 
+*Apr. 2,2004 Xie Jue
+ Add bitfields.c, now we have 5 testcases for gdb
+ Rewrite the gdb test with  simple way
+
+* Mar.  15, 2004 	
+-Rewrite the gdb test using FIV format
+-Now we have 4 tests in gdb.base yet
+
+gettext.sh
+	Testcase to check the gettext package.
+  
+   
+   CSDL glibc-profile testsuite (by Feng Miao Tao)
+
+
+	How to use this case 
+
+		1.   run "./glibc-profile.sh"
+
+
+	NOTE:
+		This is a DevKit package that cannot be run on MCP base   
+
+		Command "gcc" and "gprof" is needed by this testsuite. 
+         
+
+        
+goahead-webserver
+
+	Check to see that the goahead web server can serve up a web page.
+
+
+        GoAhead WebServer is a embedded Web server, and it has no config file , so you should change the sourcecode if you want
+        change the default setting.
+
+        NOTE:
+
+        You should be in the directory which contains the command "webs" in order to run webserver. The reason is that
+        the web server find the default doc directory by path "../web".
+   
+
+gpg.sh
+	Testcase to the gpg package.
+grep
+
+	Test grep with self-tests ported from grep distribution.
+gzip01  
+	Test that gzip -r will travel directories and compress all the files available.
+
+gunzip01
+	Test that gunzip -r will travel directories and uncompress all the files available.
+  
+hdparm.sh:
+	Test suite to test the hdparm package.
+	Robb Romans <robb@austin.ibm.com>
+
+hotplug
+
+	Passes "hotplug" events to "agents" which are simply executables,
+	typically shell scripts, in /etc/hotplug/*.agent. This testcase
+	simulates a hotplug event programmatically and sees that the correct
+	agent is invoked.
+ipchains01
+	ipchains -L will list all rules in the selected
+ipchains02
+	Test ipchains deny packets from perticular IP.
+iproute2.sh
+	Test basic functionality of ip command in iproute2 package
+itcl  
+	Test the functionality of itcl.
+
+jpeg
+
+	Test the jpeg package
+krb5-server
+
+	Test a few KDC service things, include create service database,
+	start/stop kdc and kadmin service.
+
+Invoke ./krb5-server.sh to start the test, for detail message read
+	detail description README
+
+TODO:
+krb5-workstation
+
+	Test a few kerberos applications, include telnet, ftp, rcp and so on.
+
+Invoke ./krb5-workstation.sh kdc_server
+	to start the test, for detail message read detail description README
+
+TODO:
+	ksu failed, need to be solved!
+ksymoops
+
+	test the ksymoops utility
+libungif
+	Test the functionality of libungif.
+logrotate01
+	test basic functionality of logrotate. use logrotate -f <config> to force rotation. 1. rotate /var/log/tst_logfile file. 2. compresses it.
+losetup.sh
+
+	Test losetup command as used to mount encrypted filesystem from a
+	file.
+lprng
+
+	Test the lprng print system by printing to a file.
+	lpc holdall and release are also tested.
+lsof.sh
+	Testcase to check the lsof (list open files) command.
+ltrace 
+
+How to test ltrace package.
+        1. enter ltrace directory and run "./ltrace.sh"
+
+Changlog:
+	17 May 2004
+	1. Change ltrace.sh 
+lukemftp.sh:
+	Test suite to test the lukemftp package.
+	Robb Romans <robb@austin.ibm.com>
+
+m4
+	Tested the functionality of the m4 command
+	./m4test.sh for the execution.
+
+change log:
+	Add some testcases with the source m4 input file.
+mail01
+	Test that mail user@domain will send a mail to that user at that domain.
+mail02
+	Test that mail user@bad-domain will result in a warning from the mailer deamon that the domain does not exist.
+
+mail03
+	Test that mail non_existant_user@localhost will result in delivery failure.  Mailer-Deamon will report this failure.
+
+mail04
+	Test that mail -c user@domain option will carbon copy that user.
+
+mail05
+	Test that mail -b user@domain option will blind carbon copy that user.
+ps.sh
+	Tested the functionality of the ps command and other commands in the ps.rpm
+mcp-misc
+
+	Miscelaneous mcp-specifiv testcases, including verification of bug
+	fixes.
+minicom
+	Test the functionality of minicom.
+mkisofs
+	Test the functionality of mkisofs.
+mod_perl
+
+	See that the perl module (mod_perl) for Apache can serve up a web
+	page.  This is checked both for "registry" and "handler" perl
+	scripts.  Works on Apache 1.x by default (or by "./mod_perl 1") and
+	works on Apache 2.x as "./mod_perl 2".
+mod_php
+
+	See that the php module for apache can serve up a php web page
+apache.sh
+	Check to see that the apache web server can serve up a https web page.
+mtd-utils.sh:
+	Test suite to test the mtd-utils
+	Gong Jie <gongjie@cn.ibm.com> 
+mtools
+
+	Test the mtools package
+ncftp.sh:
+	Test suite to test the nftp package.
+	There is also a manual test in the manual directory.
+	Robb Romans <robb@austin.ibm.com>
+
+template_sh
+
+	Tests for the nfs-utils package
+ngpt
+	A simple utility to test NGPT THreading library
+openhpi-clients_test.sh: FIV testcase for openhpi-clients
+
+	This is not HPI implementation API compliance test, it's a basic test for client tools, 
+	e.g. hpifan, hpievent ..
+	currently only dummy plugin is tested. 
+
+   make sure you have the following settings in your /etc/openhpi/openhpi.conf: (enabled by default)
+	plugin libdummy
+	handler libdummy {
+		entity_root = "{SYSTEM_CHASSIS,1}"
+		name = "test"
+		addr =  0
+	}   
+      
+
+Note: you can enable watchdog plugin as well:
+
+1. add the following in openhpi.conf    
+	plugin libwatchdog0
+	handler        libwatchdog {
+		name = "0"
+		addr = "/dev/watchdog"
+		entity_root = "{ROOT,0}{SYSTEM_CHASSIS,0}"
+	}
+
+2.	Load softdog module by:
+		insmod watchdog soft_noboot=1 # for test purpose
+
+3.	the test script is the same as for dummy plugin.
+
+
+Note:  ipmi and directipmi plugin fails due to the lack of device support for /dev/ipmi0 
+openldap2.sh
+	testcase for the openldap2 package.
+pax.sh
+
+	test the pax program
+pciutils
+	Test the functionality of pciutils.
+test_pcre.sh:
+	Test suite to test the PCRE package.
+	Robb Romans <robb@austin.ibm.com>
+
+pdksh.sh
+	testcase for the pdksh package.
+pegasus
+	Author: CSDL James He, hejianj@cn.ibm.com
+
+	Tested the functionality of the pegasus
+	./pegasus_test.sh for the execution.
+
+
+
+Chglog
+	1. 1/July/2004 Add cimconfig, cimserver test cases.
+	2. 2/July/2004 Add cimuser, cimprovider test cases.
+
+
+perltest.sh
+	Testcase to exercise the Perl builtin tests.
+pidentd
+
+	test the functionaly of in.identd.
+pkgcheck
+
+	This is used to check that a package (named on the command line) is
+	installed properly. It uses rpm -V to do this. Since some packages
+	have files that might legitimately be changed after installation,
+	pkgcheck.sh honors "skip lists" which are lists of files to be
+	ignored. These are placed in files named after the package and given
+	a ".skip" extension. For exampls the package aaa_base includes the
+	file /etc/ld.so.conf which might get changed. To account for this
+	there is a file called aaa_base.skip which contains the name of the
+	file. There is also a file named pkgcheck.skip wich is honored for
+	all packages. In any of these files, any regular expression
+	recognixed by grep can be used to identify files.
+apache
+
+   Check to see that the apache web server can seve up a web page.
+
+ash
+
+   See that the ash shell can execute.
+
+busybox
+
+   Tests busybox. The test can be configured to test the specific busybox
+   utilities supported by the build. This is done by copying the file
+   "busybox.links" from the busybox source directory to the busybox testcase
+   directory. "Make all" in the testcase directory will modify the
+   executable to only test the supported utilities.
+
+mcp-misc
+
+   Miscelaneous mcp-specifiv testcases, including verification of bug fixes.
+
+mod_php
+
+   See that the php module for apache can serve up a php web page
+
+popt
+
+  A command line parser library. Test is derived from self-test in the
+  source tree.
+
+portmap
+
+   A program which manages RPC connections. See that it is working.
+
+sash
+
+   A stand-alone shell with built-in commands.  Check them out.
+
+sh-utils
+
+   Several shell utility programs. Check them out.
+
+template_c
+
+   A simple template showing how to structure a testcase written in C.
+
+template_sh
+
+   A simple template showing how to structure a testcase written as a shell
+   script.
+
+template_py
+
+   A simple template showing how to structure a testcase written in Python.
+
+others
+
+   This is where we will add FIV testcases that have not yet been integrated
+   into the version of LTP we are using.
+
+ppp.sh
+	Testcase to check the ppp package.
+procinfo
+
+	Tests that procinfo returns reasonbable data.	
+procmail
+
+   Test procmail's ability to be invoked by $HOME/.forward and to 
+   file mail based on sender's ID and on subject line.
+ps.sh
+	Tested the functionality of the ps command and other commands in the ps.rpm
+testpycrypt.sh
+	testcase for the pycrypt package.
+pythontest.sh
+	Testcase to exercise the Python builtin tests.
+quota
+
+	Test the filesystem quota support.
+raidtools
+	Test the functionality of raidtools.
+rdate.sh
+	testcase for the rdate package.
+rpm.sh
+	Tested functionality of the rpm command and other commands in the rpm.rpm
+rsync
+	Test the functionality of rsync.
+samba.sh:
+	Test suite to test samba, samba client.
+	Robb Romans <robb@austin.ibm.com>
+
+sed
+
+	test the stream editor (sed).
+serial-port
+
+	Test data xfer on serial port. THIS IS JUST A PROOF OF CONCEPT SO
+	FAR! NEEDS TO BE TURNED INTO A REAL TESTCASE.
+
+	To run this, set up a serial link between two serial ports. These
+	may be on the same system. The cable needs to be a "null modem"
+	cable. Start serial-sever.sh and then serial-client.sh. Once
+	serial-server.sh is running it will keep ruining until canceled.
+	This can be done with Ctrl-C. serial-client runs once than quites.
+	It can be started over again.
+
+	TODO: Need to detemine the serial port settings used by the end
+	customer and try to work with those.
+etserial
+
+	Test setserial's ability to display serial info for/dev/ttyyS0
+-------------------------------------
+IBM CSDL testsuite for sg3_utils.sh
+------------------------------------
+Refer to the README file of the sourcecode, CSDL add this sg3_utils.sh to
+test the commands  
+
+Before run the sg3_utils.sh
+1. Be root user
+2. already install the sg3_utils package 
+3. installed sg device on test host 
+4. testcase need "line" "cut"  commands
+sh-utils
+
+	Several shell utility programs. Checks them out.
+shadow
+
+	Checks that the shadpow password package is working.
+sharutils.sh:
+	Test suite to test the sharutils package.
+	Robb Romans <robb@austin.ibm.com>
+
+snort.sh:
+	Test suite to test the snort package.
+	Requires expect.
+	Requires godzilla.ltc.austin.ibm.com.
+	Robb Romans <robb@austin.ibm.com>
+
+softdog.sh  
+	Test the software watchdog driver for the Linux System.
+-------------------------------------
+IBM CSDL testsuite for sudo
+------------------------------------
+Before run the sudo_test.sh:
+1. Be root user
+2. already install the sudo package 
+3. run "make" to compile the sudotest.c
+----------------------------------------------------------------------
+IBM CSDL testsuite for susefirewall2
+----------------------------------------------------------------------
+
+Before run the susefirewall2_test.sh:
+1. Make sure the runner is root
+2. Make sure the SuSEfirewall2 package  was installed.
+
+
+P.S.    This test case only test some basic functions of susefirewall2.
+        For the SuSEfirewall2 is a complex firewall product, it can work
+        both in a single computer and in large companies.
+
+        If you want to test more, please read the document under the
+        /usr/share/doc/packages/SuSEfirewall2/EXAMPLE directory and revise
+	susefirewall2.conf.
+
+        You may run SuSEfirewall2 in a server ,then use telnet utilt to test 
+	your strategy in a client.
+sysconfig
+
+	test the ifuser utility from the sysconfig package
+tar
+
+	test the tape archive (tar) utility.
+tclx  
+	Test the functionality of tclx.
+
+Note:
+1. In fcntl.test and compact/server.test, there is socket tests that need the aid of echo server. To run these tests, you need to modify inetd/xinetd's configuratation and set echo server to work, otherwise these tests will simply be skipped.
+2. Because lack of file "/usr/lib/tclx8.4/buildidx.tcl", tcllib.test and compact/server.test will show some error. It seems to be a bug of Tclx source package's Makefile.  
+tcpd_test01
+	check basic functionality of tcpd (tcp wrappers) check if adding entry or deleting entry from hosts.deny file will actuall deny or grant access to ssh
+tcpdump	
+	Test the functionality of tcpdump and libpcap.
+tcsh
+
+	Checks that the tcsh shell starts and executes a simple command.
+telnet
+	Test the functionality of telnet.
+template_sh
+
+	A simple template showing how to structure a testcase written as a
+	shell script.
+textutils.sh
+	Tested the functionality of the commands in the textutils.rpm
+tftp  
+	Test the functionality of tftp and tftpd.
+
+usage:
+        ./tftp_test.sh [-r host] [-h]
+
+        ./tftp_test.sh  -r : Set the remote tftp server. If not set, will use localhost.
+        ./tftp_test.sh  -h : Print this help text.
+
+Note:
+	This test can use tftp server on localhost or on a remote machine.
+	When use tftp server on localhost, there are four tests : ascii/binary mode of put and ascii/binary mode of get.
+	When use a remote tftp server, there is only two tests : ascii/binary mode of get. And you should do some preparations:
+	1) Copy the two data file test.bin and test.txt in tftp-data directory to the tftp server's root directory on remote host.
+	2)Correctly start the tftp server, standalone mode or from inetd/xinetd. 
+tiff
+	Test the functionality of tiff
+time
+
+	test the time command
+timeconfig.sh
+
+	A test of the timeconfig program. 
+tinylogin.sh
+
+	Tests tinylogin. The test can be configured to test the specific
+	tinylogin utilities supported by the build. This is done by copying
+	the file "tinylogin.links" from the  source directory to the
+	tinylogin testcase directory (here). "tinylogin.links is generated 
+	with make in tinylogin source directory, i.e. .../tinylogin-*.**/make.  
+	
+	"Make all" in the testcase directory will modify the executable to 
+	only test the supported utilities.
+tk  
+	Test the functionality of tk,
+	You must run this test under X.
+
+	We have found some tests in question, sometimes it fails for different X server, e.g. XFree86 or Xfbdev,
+	and different window manager, e.g. fluxbox, mwm. We have listed those test cases in "notes.txt"
+
+traceroute01
+	execute traceroute on hostname, expected number of hops is 1.
+  
+   
+   CSDL uclibc testsuite
+
+   
+    How to use this case 
+
+
+     1.   After typing command "make" ,you can use command "make install" to install it, or type "./uclibc.sh" to run it 
+
+          directly.
+
+
+     NOTE:
+
+          1. This case didn't compile the c sourcecode when you type "make install". You must type "make" and "make install"
+
+             when you want compile the code and install it.
+
+          2. The Makefile under the top-level directory of this test case is inactive ,pls remove the "#" in front of 
+
+             every command line before using it. 
+         
+          3. This testcase is for xf86, it should change Makefile under "uClibctest" directory in order to be used for other 
+
+             platform. 
+        
+unix2dos
+	Test the functionality of unix2dos.
+util-linux.sh
+	Tested functionality of commands in the util-linux rpm.
+uucp
+	Test the functionality of uucp.
+vsftpd
+	Test the functionality of vsftpd.
+wireless.sh:
+	Test suite to test the wireless-tools package.
+	Robb Romans <robb@austin.ibm.com>
+
+wu-ftpd.sh:
+	Test suite to test the wu-ftpd package.
+	Robb Romans <robb@austin.ibm.com>
+
