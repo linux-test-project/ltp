@@ -144,7 +144,7 @@ struct test_case_t {		/* test case structure */
 /* 7 */
 	{ PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf), &msgdat,0,
 		(struct sockaddr *)&from, sizeof(from),
-		-1, EINVAL, setup1, cleanup1, "invalid iovec count" },
+		-1, EMSGSIZE, setup1, cleanup1, "invalid iovec count" },
 /* 8 */
 	{ PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,0,
 		(struct sockaddr *)&from, sizeof(from),
