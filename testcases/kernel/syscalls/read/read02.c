@@ -173,6 +173,15 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
 
+	if (write(fd3, "A", 1) != 1) {
+		tst_brkm(TBROK, cleanup, "can't write to fd3");
+		/*NOTREACHED*/
+	}
+	close(fd3);
+	if ((fd3 = open(fname, O_RDWR | O_CREAT)) == -1) {
+		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
+	}
+
 	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
