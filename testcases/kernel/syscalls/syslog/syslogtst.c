@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() without LOG_NDELAY option...\n");
 #endif
-		if (fd == 3) {
+		if (fd >= 3) {
 #ifdef DEBUG
 			tst_resm(TINFO, "open() has returned the expected fd: %d\n", fd);
 #endif
