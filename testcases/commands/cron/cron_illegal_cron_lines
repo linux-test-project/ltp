@@ -1,0 +1,39 @@
+# Collection of illegal cron lines
+# Comment lines must habe its '#' as first character.
+# The cron conf line and its description is seperated by '|'.
+# cron job command 'true' is appended automatically
+
+# Illegal Minutes
+61 * * * * | Minute 61
+-1 * * * * | Minute -1 (might be interpreted as range)
+0.5 * * * * | Minute 0.5
+-1-10 * * * *| Minute Range -1-10
+0-61 * * * * | Minute Range 0-61
+
+# Illegal hours
+0 25 * * * | Hour 25
+0 -2 * * * | Hour -2
+0 3.5 * * *| Hour 3.5
+0 -4-10 * * *| Hour Range -4-10
+0 0-25 * * * | Hour Range 0-25
+
+# Illegal day of month
+0 0 32 * * | Day 32
+0 0 -1 * * | Day -1
+0 0 3.5 * *| Day 3.5
+0 0 -3-3 * *| Day Range -3-3
+0 0 0-32 * *| Day Range 0-32
+
+# Illegal month
+0 0 1 13 * | Month 13
+0 0 1 -1 * | Month -1
+0 0 1 2.5 * | Month 2.5
+0 0 1 -2-3 * | Month Range -2-3
+0 0 1 0-13 * | Month Range 0-13
+
+# Illegal day of week
+0 0 * * 8 | Day of Week 8
+0 0 * * -2 | Day of Week -2
+0 0 * * 2.5 | Day of Week 2.5
+0 0 * * -7-7 | Day of Week Range -7-7
+0 0 * * 0-8 | Day of Week Range 0-8

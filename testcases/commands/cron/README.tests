@@ -1,0 +1,25 @@
+This directory contains two scripts and one data file to test cron. Both
+shouldn't be run as root but they warn for themselves. If a username is
+given as parameter they run as this user.
+
+Both scripts save the current crontab and restore it after finishing.
+
+* Positive tests
+
+	cron_pos_tests.sh [username]
+
+	- add new job
+	- check correct execution of job
+	- delete job
+
+* Negative tests
+
+	cron_neg_tests.sh [username]
+
+	- try to edit the crontab of root
+	- try to set illegal or nondefined execution times
+	  Here the script uses file illegal_cron_lines which contains two
+	  fields per line: the cron line to be tested (without script name),
+	  and the description of this test. The description is written to
+	  stdout during execution of the test.
+	- try to do things you aren't allowed as non-root (cron runs as root)
