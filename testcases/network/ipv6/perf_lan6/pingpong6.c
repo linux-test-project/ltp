@@ -102,9 +102,9 @@ char *argv[];
         hints.ai_family = PF_INET6;
 
         if ((gai=getaddrinfo(av[1], NULL, &hints, &hp))!=0)
-                errx(2, "Unknown subject address %s: %s\n",av[1], gai_strerror(gai));
+                fprintf(stderr, "Unknown subject address %s: %s\n",av[1], gai_strerror(gai));
         if (!hp->ai_addr || hp->ai_addr->sa_family != AF_INET6)
-                errx(2, "getaddrinfo failed");
+                fprintf(stderr, "getaddrinfo failed");
 	strcpy(hnamebuf, av[1]);
         hostname = hnamebuf;
 	bzero( (char *)&whereto, sizeof(struct sockaddr) );

@@ -42,9 +42,9 @@ main (int argc,char *argv[],char *env[])
 	hints.ai_family = PF_INET6;
 
 	if ((gai=getaddrinfo(argv[1], NULL, &hints, &hp))!=0) 
-                errx(2, "Unknown subject address %s: %s\n",argv[1], gai_strerror(gai));	
+                fprintf(stderr, "Unknown subject address %s: %s\n", argv[1], gai_strerror(gai));		 
 	if (!hp->ai_addr || hp->ai_addr->sa_family != AF_INET6)
-                errx(2, "getaddrinfo failed");
+                fprintf(stderr, "getaddrinfo failed");
 	if ((sp=getservbyname("echo","tcp"))==NULL) {
 		printf("ERROR service is not available\n");
 		perror("echo");

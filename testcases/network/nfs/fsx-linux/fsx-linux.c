@@ -267,7 +267,7 @@ save_buffer(char *buffer, off_t bufferlength, int fd)
 		if (size_by_seek == (off_t)-1)
 			prterr("save_buffer: lseek eof");
 		else if (bufferlength > size_by_seek) {
-			warn("save_buffer: .fsxgood file too short... will save 0x%qx bytes instead of 0x%qx\n", (unsigned long long)size_by_seek,
+		 		 		 fprintf(stderr, "save_buffer: .fsxgood file too short... will save 0x%qx bytes instead of 0x%qx\n", (unsigned long long)size_by_seek,
 			     (unsigned long long)bufferlength);
 			bufferlength = size_by_seek;
 		}
@@ -282,7 +282,7 @@ save_buffer(char *buffer, off_t bufferlength, int fd)
 		if (byteswritten == -1)
 			prterr("save_buffer write");
 		else
-			warn("save_buffer: short write, 0x%x bytes instead of 0x%qx\n",
+		 		 		 fprintf(stderr, "save_buffer: short write, 0x%x bytes instead of 0x%qx\n",
 			     (unsigned)byteswritten,
 			     (unsigned long long)bufferlength);
 	}
@@ -526,7 +526,7 @@ dowrite(unsigned offset, unsigned size)
 			bzero(good_buf + file_size, offset - file_size);
 		file_size = offset + size;
 		if (lite) {
-			warn("Lite file size bug in fsx!");
+		 		 		 fprintf(stderr, "Lite file size bug in fsx!");
 			report_failure(149);
 		}
 	}
@@ -583,7 +583,7 @@ domapwrite(unsigned offset, unsigned size)
 			bzero(good_buf + file_size, offset - file_size);
 		file_size = offset + size;
 		if (lite) {
-			warn("Lite file size bug in fsx!");
+		 		 		 fprintf(stderr, "Lite file size bug in fsx!");
 			report_failure(200);
 		}
 	}
@@ -1031,13 +1031,13 @@ main(int argc, char **argv)
 		file_size = maxfilelen = lseek(fd, (off_t)0, L_XTND);
 		if (file_size == (off_t)-1) {
 			prterr(fname);
-			warn("main: lseek eof");
+		 		 		 fprintf(stderr, "main: lseek eof");
 			exit(94);
 		}
 		ret = lseek(fd, (off_t)0, SEEK_SET);
 		if (ret == (off_t)-1) {
 			prterr(fname);
-			warn("main: lseek 0");
+		 		 		 fprintf(stderr, "main: lseek 0");
 			exit(95);
 		}
 	}
@@ -1055,9 +1055,9 @@ main(int argc, char **argv)
 		if (written != maxfilelen) {
 			if (written == -1) {
 				prterr(fname);
-				warn("main: error on write");
+		 		 		 		 fprintf(stderr, "main: error on write");
 			} else
-				warn("main: short write, 0x%x bytes instead of 0x%x\n",
+		 		 		 		 fprintf(stderr, "main: short write, 0x%x bytes instead of 0x%x\n",
 				     (unsigned)written, maxfilelen);
 			exit(98);
 		}
