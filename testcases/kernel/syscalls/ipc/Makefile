@@ -20,8 +20,8 @@
 # name of file	: Makefile						#
 # description	: make(1) description file for ipc(2) test directory.	#
 #########################################################################
-LTP_CFLAGS=-I../../../../../include -g
-LTP_LDFLAGS=-L../../../../../lib -lltp
+LTP_CFLAGS+=-I../../../../../include -g
+LTP_LDFLAGS+=-L../../../../../lib -lltp
 IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
 
 all: $& $(IPCTESTS)

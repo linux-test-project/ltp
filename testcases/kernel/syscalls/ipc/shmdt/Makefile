@@ -23,8 +23,8 @@
 MAINS=shmdt01 shmdt02
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../../../../../include -g
+IPC_LDFLAGS+=-L.. -lipc
+LTP_CFLAGS+=-I../../../../../include -g
 
 all: $& $(MAINS)
 
