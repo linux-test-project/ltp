@@ -39,6 +39,7 @@
  *	premature exit of this test.
  */
 
+#define DEBUG 0
 
 #include <sys/types.h>		/* needed for test		*/
 #include <sys/ipc.h>		/* needed for test		*/
@@ -127,7 +128,7 @@ main(int argc, char **argv)
 	}
 
 	if ((signal(SIGTERM, term)) == SIG_ERR) {
-                tst_resm(TFAIL, "\tsignal failed. errno = %d\n", errno);
+                tst_resm(TFAIL, "\tsignal failed. errno = %d", errno);
 		tst_exit();
 	}
 
@@ -152,7 +153,7 @@ main(int argc, char **argv)
 	count = 0;
 	while((child = wait(&status)) > 0) {
 		if (status) {
-	                tst_resm(TFAIL, "%s[%d] Test failed.  exit=0x%x\n", prog, child, status);
+	                tst_resm(TFAIL, "%s[%d] Test failed.  exit=0x%x", prog, child, status);
 			local_flag = FAILED;
 		}
 		++count;
@@ -163,7 +164,7 @@ main(int argc, char **argv)
 	 */
 
 	if (count != nwait) {
-                tst_resm(TFAIL, "\tWrong # children waited on, count = %d\n", count);
+                tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
 		local_flag = FAILED;
 	}
 
@@ -192,7 +193,7 @@ dotest(key_t key)
 	nwait = 0;
 	srand(getpid());
 	if ((id = semget(key, NSEMS, IPC_CREAT)) < 0) {
-		tst_resm(TFAIL, "\tsemget() failed errno %d\n", errno);
+		tst_resm(TFAIL, "\tsemget() failed errno %d", errno);
 		exit(1);
 	}
 	tid = id;
@@ -205,13 +206,13 @@ dotest(key_t key)
 		semops[i].sem_flg = SEM_UNDO;
 	}
 	if (semop(id, semops, NSEMS) < 0) {
-		tst_resm(TFAIL, "\tfirst semop() failed errno %d\n", errno);
+		tst_resm(TFAIL, "\tfirst semop() failed errno %d", errno);
 		exit(1);
 	}
 			
 	for (i = 0; i < NKIDS; i++) {
 		if ((pid = fork()) < 0) {
-		tst_resm(TFAIL, "\tfork failed\n");
+		tst_resm(TFAIL, "\tfork failed");
 		}
 		if (pid == 0) {
 			dosemas(id);
@@ -231,7 +232,7 @@ dotest(key_t key)
 	count = 0;
 	while((child = wait(&status)) > 0) {
 		if (status) {
-	                tst_resm(TFAIL, "\t%s:dotest[%d] exited status = 0x%x\n", prog, child, status);
+	                tst_resm(TFAIL, "\t%s:dotest[%d] exited status = 0x%x", prog, child, status);
 			local_flag = FAILED;
 		}
 		++count;
@@ -242,32 +243,34 @@ dotest(key_t key)
 	 */
 
 	if (count != nwait) {
-                tst_resm(TFAIL, "\tWrong # children waited on, count = %d\n", count);
+                tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
 		local_flag = FAILED;
 	}
 
 		 get_arr.array = semvals;
 		 if (semctl(id, 0, GETALL, get_arr) < 0) {
-                tst_resm(TFAIL, "\terror on GETALL\n");
-		tst_resm(TFAIL, "\tsemctl() failed errno %d\n", errno);
+                tst_resm(TFAIL, "\terror on GETALL");
+		tst_resm(TFAIL, "\tsemctl() failed errno %d", errno);
 	}
 
-	tst_resm(TINFO, "\tchecking maxvals\n");
+	if (DEBUG)
+		tst_resm(TINFO, "\tchecking maxvals");
 	for (i = 0; i < NSEMS; i++) {
 		if (semvals[i] !=  maxsemvals[i]) {
-			tst_resm(TFAIL, "\terror on i %d orig %d final %d\n", i, semvals[i],
+			tst_resm(TFAIL, "\terror on i %d orig %d final %d", i, semvals[i],
 					maxsemvals[i]);
 			local_flag = FAILED;
 		}
 	}
-	tst_resm(TINFO, "\tmaxvals checked\n");
+	if (DEBUG)
+		tst_resm(TINFO, "\tmaxvals checked");
 
 	/* 4th arg must either be missing, or must be of type 'union semun'.
 	 * CANNOT just be an int, else it crashes on ppc.
 	 */
 	get_arr.val = 0;
 	if (semctl(id, 0, IPC_RMID, get_arr) < 0) {
-		tst_resm(TFAIL, "\tsemctl(IPC_RMID) failed errno %d\n", errno);
+		tst_resm(TFAIL, "\tsemctl(IPC_RMID) failed errno %d", errno);
 		local_flag = FAILED;
 	}
 	if (local_flag == FAILED)
@@ -289,14 +292,14 @@ dosemas(int id)
 			} while (semops[j].sem_op == 0);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
-			tst_resm(TFAIL, "\tsemop1 failed errno %d\n", errno);
+			tst_resm(TFAIL, "\tsemop1 failed errno %d", errno);
 			exit(1); 
 		}
 		for (j = 0; j < NSEMS; j++) {
 			semops[j].sem_op = ( - semops[j].sem_op);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
-			tst_resm(TFAIL, "\tsemop2 failed errno %d\n", errno);
+			tst_resm(TFAIL, "\tsemop2 failed errno %d", errno);
 			exit(1); 
 		}
 	}
@@ -311,17 +314,19 @@ term(int sig)
 	int i;
 
 	if ((signal(SIGTERM, term)) == SIG_ERR) {
-		tst_resm(TFAIL, "\tsignal failed. errno %d\n", errno);
+		tst_resm(TFAIL, "\tsignal failed. errno %d", errno);
 		exit(1);
 	}
 	if (procstat == 0) {
-		tst_resm(TINFO, "\ttest killing kids\n");
+		if (DEBUG)
+			tst_resm(TINFO, "\ttest killing kids");
 		for (i = 0; i < NPROCS; i++) {
 			if (kill(pidarray[i], SIGTERM) != 0) {
 				tst_resm(TFAIL, "Kill error pid = %d :",pidarray[1]);
 			}
 		}
-		tst_resm(TINFO, "\ttest kids killed\n");
+		if (DEBUG)
+			tst_resm(TINFO, "\ttest kids killed");
 		return;
 	}
 
