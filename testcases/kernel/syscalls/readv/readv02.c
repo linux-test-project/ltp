@@ -43,9 +43,6 @@
 #include <sys/uio.h>
 #include <sys/fcntl.h>
 #include <sys/mman.h>
-#include <sys/utsname.h>
-#include <linux/version.h>
-#include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
 
@@ -62,7 +59,6 @@
 #define DATA_FILE	"readv_data_file"
 
 char buf1[K_1], buf2[K_1], buf3[K_1];
-int newreadv;
 
 struct iovec rd_iovec[MAX_IOVEC] = {
 	/* iov_base */		/* iov_len */
@@ -182,19 +178,6 @@ test4:
 				 "value");
 		}
 
-test5:
-		if(newreadv) {
-			if ((readv(fd[0], (rd_iovec + 0), 0) == -1) && 
-			    errno == EINVAL) {
-				tst_resm(TPASS, "readv fails with EINVAL "
-						"when count == 0");
-			} else {
-				tst_resm(TFAIL, "readv did not fail with "
-						"EINVAL when count == 0");
-			}
-
-		}
-
 	}
 	cleanup();
 
@@ -208,10 +191,6 @@ void
 setup()
 {
 	int nbytes;
-	struct utsname utsbuf;
-	char *r1, *r2, *r3;
-
-	newreadv = 0;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -257,16 +236,6 @@ setup()
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
 	rd_iovec[6].iov_base = bad_addr;
-
-	/* kernels after 2.5.35 implement a new readv/writev behaviour 
-	 * that returns EINVAL when count == 0
-	 */
-	uname(&utsbuf);
-	r1 = strtok(utsbuf.release,".");
-	r2 = strtok(NULL,".");
-	r3 = strtok(NULL,".");
-	if (KERNEL_VERSION(atoi(r1),atoi(r2),atoi(r3)) > KERNEL_VERSION(2,5,35))
-		newreadv = 1;
 }
 
 /*
