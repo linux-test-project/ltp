@@ -167,14 +167,15 @@ do { \
 
    return only integer results.
  */
-#define PROTECT_FUNC(fn, errval, ...) ({ \
+#define PROTECT_FUNC(fn, errval, epoll_fd) ( \
+{ \
   pid_t kid_pid; \
   int kid_status; \
   \
   tst_flush(); \
   kid_pid = fork(); \
   if (kid_pid == 0){ /* Run the function */ \
-	return fn(##__VA_ARGS__); \
+	return fn(epoll_fd); \
   } else { \
 	 waitpid(kid_pid, &kid_status, 0); \
 	 if (WIFEXITED(kid_status)){ \
