@@ -153,8 +153,16 @@ main(int ac, char **av)
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
 	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "fcntl(%s, F_SETLEASE,F_RDLCK) returned %d", fname, TEST_RETURN);
+		TEST(fcntl(fd, F_GETLEASE));
+		if ( TEST_RETURN != F_RDLCK )
+		  tst_resm(TFAIL, "fcntl(%s, F_GETLEASE) did not return F_RDLCK, returned %d",fname, TEST_RETURN);
+		else{
+		  TEST(fcntl(fd, F_SETLEASE, F_UNLCK));
+		  if ( TEST_RETURN != 0 )
+		    tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_UNLCK) did not return 0, returned %d",fname, TEST_RETURN);
+		  else
+		    tst_resm(TPASS, "fcntl(%s, F_SETLEASE,F_RDLCK)", fname);
+		}  
 	    } 
 	    if (close(TEST_RETURN) == -1) {
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
