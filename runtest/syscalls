@@ -821,7 +821,8 @@ syslog07 syslog07
 syslog08 syslog08
 syslog09 syslog09
 syslog10 syslog10
-syslog11 syslog11
+#syslog11 will cause a clear of the ring buffer, uncomment if you don't care
+#syslog11 syslog11
 syslog12 syslog12
 
 time01 time01
