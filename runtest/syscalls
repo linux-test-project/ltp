@@ -238,7 +238,7 @@ kill09 kill09
 kill10 kill10
 
 lchown01 lchown01
-#lchown02 lchown02
+lchown02 lchown02
 
 link01 symlink01 -T link01
 link02 link02
