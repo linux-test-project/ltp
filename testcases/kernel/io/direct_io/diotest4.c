@@ -502,7 +502,7 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-#if defined(__powerpc64__) || defined(__ia64__)
+#if defined(__powerpc64__)
 		ret = read(fd, (char*)(((ulong *)main)[0] & pagemask), count);
 #else
 		ret = read(fd, (char*)((ulong)main & pagemask), count);
@@ -519,7 +519,7 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-#if defined(__powerpc64__) || defined(__ia64__)
+#if defined(__powerpc64__)
 		ret = write(fd, (char *)(((ulong *)main)[0] & pagemask), count);
 #else
 		ret = write(fd, (char *)((ulong)main & pagemask), count);
