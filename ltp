@@ -43,6 +43,7 @@ kernel()
 	echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
         read TIME
 	TIME="-t $TIME"
+	LOOPS=0
 	;;
   esac
   echo""
@@ -136,9 +137,24 @@ kernel()
    cat ${LTPROOT}/runtest/float >> ${TMP}/alltests
   fi
 
+  echo -n "Do you want to run the SCTP tests (Y/N)? >> "
+  read sctp
+  if [ $sctp == "Y" ] || [ $sctp == "y" ]; then
+   echo -n "Do you want UDP style SCTP tests (Y/N)? >> "
+   read udp_style
+   if [ $udp_style == "Y" ] || [ $udp_style == "y" ]; then
+     cat ${LTPROOT}/runtest/sctp_udp >> ${TMP}/alltests
+   fi
+   echo -n "Do you want TCP style SCTP tests (Y/N)? >> "
+   read tcp_style
+   if [ $tcp_style == "Y" ] || [ $tcp_style == "y" ]; then
+     cat ${LTPROOT}/runtest/sctp_tcp >> ${TMP}/alltests
+   fi
+  fi
+  
   echo "Test will begin after pressing [ENTER]."
   read GO
-
+       
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
   LOOPS=$(( $LOOPS * $TESTS ))
 
@@ -341,6 +357,7 @@ networking()
   if [ $tcp_cmds == "Y" ] || [ $tcp_cmds == "y" ]; then
    cat ${LTPROOT}/runtest/$TCP >> ${TMP}/alltests
   fi
+
 
   echo -n "Do you want to run the IPv6 tests (Y/N)? >> "
   read ipv6
