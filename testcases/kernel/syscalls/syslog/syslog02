@@ -1,0 +1,100 @@
+#! /bin/sh
+
+#  Copyright (c) International Business Machines  Corp., 2002
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+# 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
+
+##################################################################
+# case2: Test if messages of all levels are logged.              #
+#        For each level, a seperate configuration file is        #
+#        created and that will be used as syslog.conf file.      #
+##################################################################
+
+syslog_case2()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the messages of all levels..."
+
+	level_no=0
+	level="emerg alert crit err warning notice info debug"
+	for current in $level
+	do
+                echo
+                echo "Doing level: $current..."
+
+                # Create the configuration file specific to this level
+                echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
+
+		#Restart syslog
+		kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+
+                # Grepping pattern is as follows:
+                # syslogtst: mail $current test.
+                oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
+
+                # syslogtst has to be called with additional level argument(0-7)
+                ./syslogtst 2 $level_no 2>/dev/null
+                if [[ $? -ne 0 ]]; then
+                        status_flag=1
+                        return
+                fi
+                sleep 2
+                newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
+                (( diff=$newvalue - $oldvalue ))
+                if [[ $diff -ne 1 ]]; then
+                        status_flag=1
+                        echo "*****--- Level $current failed ---*****"
+                elif [[ $diff -eq 1 ]]; then
+                        echo "*****--- Level $current passed ---*****"
+                fi
+                # Increment the level_no for next level...
+                level_no=$(($level_no+1))
+
+	done
+}
+
+echo start $0
+echo "----------------------------------------------------------------"
+status_flag=0
+
+#Back up /etc/syslog.conf
+cp /etc/syslog.conf /etc/syslog.conf.bak02
+
+syslog_case2
+if [ $status_flag -eq 0 ]
+then
+	echo
+	echo $0 "PASSED"
+else
+	echo
+	echo $0 "FAILED"
+fi
+echo "----------------------------------------------------------------"
+
+#Restore syslog.conf
+mv /etc/syslog.conf.bak02 /etc/syslog.conf
+
+#Restart syslog
+kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+
+exit $status_flag

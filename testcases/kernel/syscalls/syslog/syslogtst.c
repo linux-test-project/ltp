@@ -1,0 +1,279 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2002
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
+/* 11/22/2002	Port to Linux	dbarrera@us.ibm.com */
+
+#include <stdio.h>
+#include <syslog.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "test.h"
+#include "usctest.h"
+/*
+ *These globals must be defined in the test.
+ */
+
+
+char *TCID="syslogtst";           /* Test program identifier.    */
+int TST_TOTAL=1;                /* Total number of test cases. */
+extern int Tst_count;           /* Test Case counter for tst_* routines */
+
+int exp_enos[]={0};     /* List must end with 0 */
+
+
+void sig_handler(int signal); 
+
+main(int argc, char *argv[])
+{
+	int status, flag3, uid, fd;
+	int exit_flag = 0;	/* used for syslog test case 6. */
+	int flag1 = 0;
+	int flag2 = 0;
+
+	signal(SIGINT, sig_handler);
+	signal(SIGTERM, sig_handler);
+	signal(SIGHUP, sig_handler);
+	signal(SIGABRT, sig_handler);
+	signal(SIGSEGV, sig_handler);
+	signal(SIGQUIT, sig_handler);
+
+
+	/*
+	 * Send syslog messages according to the case number, which
+	 * we will know from command line.
+	 */
+	switch(atoi(argv[1])) {
+	case 1:
+		syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
+		break;
+	case 2:
+		switch(atoi(argv[2])) {
+		case 0:
+			syslog(LOG_MAIL | LOG_EMERG, "syslogtst: mail emerg test.");
+			break;
+		case 1:
+			syslog(LOG_MAIL | LOG_ALERT, "syslogtst: mail alert test.");
+			break;
+		case 2:
+			syslog(LOG_MAIL | LOG_CRIT, "syslogtst: mail crit test.");
+			break;
+		case 3:
+			syslog(LOG_MAIL | LOG_ERR, "syslogtst: mail err test.");
+			break;
+		case 4:
+			syslog(LOG_MAIL | LOG_WARNING, "syslogtst: mail warning test.");
+			break;
+		case 5:
+			syslog(LOG_MAIL | LOG_NOTICE, "syslogtst: mail notice test.");
+			break;
+		case 6:
+			syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
+			break;
+		case 7:
+			syslog(LOG_MAIL | LOG_DEBUG, "syslogtst: mail debug test.");
+			break;
+			
+		}
+		break;
+	case 3:
+		openlog("SYSLOG_CASE3", LOG_PID, LOG_DAEMON);
+		syslog(LOG_DAEMON | LOG_INFO, "syslogtst: daemon info test.");
+		closelog();
+		break;
+	case 4:
+		openlog("log_pid_test", LOG_PID, LOG_USER);
+		syslog(LOG_USER | LOG_INFO, "syslogtst: user info test.");
+		closelog();
+		break;
+	case 5:
+		openlog("log_cons_test", LOG_CONS, LOG_USER);
+
+		/*
+		 * Move the /dev/syslog to /dev/syslog.tmp
+		 * This way we are forcing syslog to write messages to
+		 * console.
+		 */
+		status = system("/bin/mv -f /var/log/messages /var/log/messages.tmp");
+		if (status == 0) {
+#ifdef DEBUG
+			tst_resm(TINFO,"/var/log/messages is moved to /var/log/messages.tmp...\n");
+#endif
+			flag3 = 1;
+		}
+		else {
+			tst_resm(TFAIL, "Cannot move /var/log/messages. Setup failed...exiting...\n");
+			tst_exit();
+		}
+		sleep(10);
+
+		syslog(LOG_USER | LOG_INFO, "syslogtst: info to console test.");
+
+		sleep(10);
+		/*
+		 * Restore /dev/syslog file.
+		 */
+		if (flag3 == 1) {
+			status = system("/bin/mv -f /var/log/messages.tmp /var/log/messages");
+			if (status != 0) {
+				tst_resm(TFAIL, "Restoring /var/log/messages failed...\n");
+				tst_exit();
+			}
+#ifdef DEBUG
+			else
+				tst_resm(TINFO, "/var/log/messages restored..\n");
+#endif
+		}
+		closelog();
+		break;
+	case 6:
+		openlog("without log_ndelay", LOG_PID, LOG_USER);
+		fd = open("Makefile", O_RDONLY);
+#ifdef DEBUG
+		tst_resm(TINFO, "openlog() without LOG_NDELAY option...\n");
+#endif
+		if (fd == 3) {
+#ifdef DEBUG
+			tst_resm(TINFO, "open() has returned the expected fd: %d\n", fd);
+#endif
+		}
+		else {
+			tst_resm(TFAIL, "open() has returned unexpected fd: %d\n", fd);
+			exit_flag = 1;
+			close(fd);
+			closelog();
+			break;
+		}
+		close(fd);
+		closelog();
+
+		openlog("with log_ndelay", LOG_NDELAY, LOG_USER);
+		fd = open("Makefile", O_RDONLY);
+#ifdef DEBUG
+		tst_resm(TINFO, "openlog() with LOG_NDELAY option...\n");
+#endif
+		if (fd <= 3) {
+			tst_resm(TFAIL, "open() returned unexpected fd: %d\n", fd);
+			exit_flag = 1;
+			close(fd);
+			closelog();
+			break;
+		}
+#ifdef DEBUG
+		else tst_resm(TINFO, "open() has returned expected fd: %d\n", fd);
+#endif
+		close(fd);
+		closelog();
+		break;
+	case 7:
+		syslog(LOG_USER | LOG_EMERG, "syslogtst: emergency log");
+		syslog(LOG_USER | LOG_ALERT, "syslogtst: alert log");
+		syslog(LOG_USER | LOG_CRIT, "syslogtst: critical log");
+		syslog(LOG_USER | LOG_ERR, "syslogtst: error log");
+		syslog(LOG_USER | LOG_WARNING, "syslogtst: warning log");
+		syslog(LOG_USER | LOG_NOTICE, "syslogtst: notice log");
+		syslog(LOG_USER | LOG_INFO, "syslogtst: info log");
+		syslog(LOG_USER | LOG_DEBUG, "syslogtst: debug log");
+		break;
+	case 8:
+		switch(atoi(argv[2])) {
+		/*
+		 * Kernel messages cannot be send by user, so skipping the
+		 * LOG_KERN facility.
+		 */
+		case 1:
+			syslog(LOG_USER | LOG_INFO, "syslogtst: user info test.");
+			break;       
+		case 2:
+			syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
+			break;       
+		case 3:
+			syslog(LOG_DAEMON | LOG_INFO, "syslogtst: daemon info test.");
+			break;       
+		case 4:
+			syslog(LOG_AUTH | LOG_INFO, "syslogtst: auth info test.");
+			break;       
+		case 5:
+			syslog(LOG_LPR | LOG_INFO, "syslogtst: lpr info test.");
+			break;       
+		}
+		break;
+	case 9:
+		setlogmask(LOG_UPTO(LOG_ERR));
+		syslog(LOG_USER | LOG_ERR, "syslogtst: error level is logged");
+		syslog(LOG_USER | LOG_WARNING, "syslogtst: warning level not to be logged");
+		break;
+	case 10:
+		setlogmask(LOG_MASK(LOG_ERR));
+		syslog(LOG_USER | LOG_ERR, "syslogtst:10 error level is logged");
+		syslog(LOG_USER | LOG_WARNING, "syslogtst:10 warning level not to be logged");
+		break;
+	}
+	
+	/*
+	 * Check the exit_flag and if it is set,
+	 * exit with status 1, indicating failure.
+	 */
+	if (exit_flag == 1) exit(1);
+	else exit(0);
+	
+}
+
+
+void sig_handler(int signal)
+{
+	int status;
+	
+	switch(signal) {
+	case SIGINT:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGINT is received.\n");
+#endif
+		break;
+	case SIGTERM:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGTERM is received.\n");
+#endif
+		break;
+	case SIGHUP:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGHUP is received.\n");
+#endif
+		break;
+	case SIGABRT:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGABRT is received.\n");
+#endif
+		break;
+	case SIGSEGV:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGSEGV is received.\n");
+#endif
+		break;
+	case SIGQUIT:
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGQUIT is received.\n");
+#endif
+		break;
+	}
+	
+	exit(signal);
+}
