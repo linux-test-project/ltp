@@ -766,6 +766,8 @@ sigprocmask02 cd $LTPROOT/testcases/bin;sigprocmask02
 sigprocmask03 cd $LTPROOT/testcases/bin;sigprocmask03
 
 sigrelse01 sigrelse01
+sigrelse02 cd $LTPROOT/testcases/bin;sigrelse02
+sigrelse03 cd $LTPROOT/testcases/bin;sigrelse03
 
 sigsuspend01 sigsuspend01
 
