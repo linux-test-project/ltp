@@ -56,7 +56,7 @@ if [ $? != "0" ]; then
  DAEMON_ID=1
 fi
 
-id -gn nobody | grep "nobody" > /dev/null
+id -g nobody > /dev/null
 if [ $? != "0" ]; then
  NOBODY_GRP=1
 fi
@@ -124,7 +124,7 @@ if [ $? -eq "0" ]; then
   if [ $? -eq "0" ]; then
     id daemon > /dev/null
     if [ $? -eq "0" ]; then
-      id -gn nobody | grep "nobody" > /dev/null
+      id -g nobody > /dev/null
       if [ $? -eq "0" ]; then
         id -g bin > /dev/null
         if [ $? -eq "0" ]; then
