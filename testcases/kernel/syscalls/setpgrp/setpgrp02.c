@@ -87,6 +87,7 @@ main(int ac, char **av)
 			TEST(setpgrp());
 
 			if (TEST_RETURN != 0) {
+				retval=1;
 				tst_resm(TFAIL, "setpgrp() FAILED, errno:%d",
 					 errno);
 				continue;
@@ -98,6 +99,7 @@ main(int ac, char **av)
 			}
 
 			if (getpgrp() == oldpgrp) {
+				retval=1;
 				tst_resm(TFAIL, "setpgrp() FAILED to set "
 					 "new group id");
 				continue;
