@@ -141,8 +141,8 @@ main(int ac, char **av)
 			/* reset the file permissions */
 			if (chmod(fname, 0755) == -1) {
 				tst_brkm(TBROK, cleanup, "chmod() #2 failed");
-			exit(retval);
 			}
+			exit(retval);
 		} else {
 			/* wait for the child to finish */
                         wait(&status);
