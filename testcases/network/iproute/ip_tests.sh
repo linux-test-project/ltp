@@ -246,7 +246,6 @@ test02()
 	else
 		tst_resm TPASS \
 			"Test #2: Listed eth0:1 and returned correct attributes"
-		fi
 	fi
 	return $RC
 }
@@ -286,7 +285,7 @@ test03()
 	else
 		tst_resm TINFO \
 		 "Test #3: ip addr show dev <device> - shows protocol address."
-		ip addr show dev lo | grep 127.6.6.6 &>/LTPTMP/tst_ip.err || RC=$?
+		ip addr show dev lo | grep 127.6.6.6 &>$LTPTMP/tst_ip.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -303,17 +302,97 @@ test03()
 				"Test #3: ip addr del command failed. Reason: "
 			return $RC
 		else
-			ip addr show dev lo | grep 127.6.6.6 &>/LTPTMP/tst_ip.err || RC=$?
+			ip addr show dev lo | grep 127.6.6.6 &>$LTPTMP/tst_ip.err || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #3: ip addr del command failed. Reason: "
-				return (($RC+1))
+				return $(($RC+1))
 		fi
 		
 		tst_resm TPASS \
 			"Test #3: ip addr command tests successful"
 		fi
+	fi
+	return $RC
+}
+
+
+# Function:		test04
+#
+# Description	- Test basic functionality of ip command
+#               - Test #4: ip neigh add - add new neighbour entry to arp table
+#               - Test #4: ip neigh show - show neighbour entry to arp table
+#               - Test #4: ip neigh delete - delete new neighbour entry to arp 
+#               		   table
+#               - execute the command and create output.
+#               - create expected output
+#               - compare expected output with actual output.
+#
+# Return		- zero on success
+#               - non zero on failure. return value from commands ($RC)
+
+test04()
+{
+	RC=0			# Return value from commands.
+	TCID=ip04	    # Name of the test case.
+	TST_COUNT=4		# Test number.
+
+	tst_resm TINFO \
+	 "Test #4: ip neigh add - adds a new neighbour to arp tables."
+	
+	ip neigh add 127.0.0.1 dev lo nud reachable &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_res TFAIL $LTPTMP/tst_ip.err \
+			"Test #4: ip neigh add command failed. Reason:"
+		return $RC
+	else
+		tst_resm TINFO \
+		 "Test #4: ip neigh show - shows all neighbour entries in arp tables."
+
+		cat > $LTPTMP/tst_ip.exp <<-EOF
+		127.0.0.1 dev lo lladdr 00:00:00:00:00:00 nud reachable
+		EOF
+
+		ip neigh show | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #4: ip addr show dev: command failed. Reason:"
+			return $RC
+		else
+			diff -iwB  $LTPTMP/tst_ip.out $LTPTMP/tst_ip.exp \
+				&>$LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -ne 0 ]
+			then
+				tst_res FAIL $LTPTMP/tst_ip.err \
+					"Test #4: expected out differs from actual output. Reason:"
+				return $RC
+			fi
+		fi
+
+		tst_resm TINFO \
+		 "Test #4: ip neigh del - deletes neighbour from the arp table."
+
+		ip neigh del 127.0.0.1 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #4: ip neigh del command failed return = $RC. Reason: "
+			return $RC
+		else
+			ip neigh show | grep 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -eq 0 ]
+			then
+				tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #4: 127.0.0.1 still listed in arp. ip cmd Error Message:"
+				return $(($RC+1))
+			fi
+		fi
+		
+		tst_resm TPASS \
+			"Test #4: ip neigh command tests successful"
 	fi
 	return $RC
 }
@@ -327,16 +406,11 @@ test03()
 TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from test.
 
-init || RC=$?
-if [ $RC -eq 660
-else
-	if [ $RC -ne 0 ]
-	then
-		exit $RC
-	fi
-fi
+init || exit $RC
 
 test01 || RC=$?
 test02 || RC=$?
+test03 || RC=$?
+test04 || RC=$?
 
 exit $RC
