@@ -10,6 +10,15 @@
 # Authors:
 #     Kevin Gao <kevin.gao@intel.com>
 
+SERVER=shell1.sourceforge.net
+LDIR=test_specification/
+DIR=/home/groups/o/op/openhpi/htdocs/test_spec
+
+RSYNC=rsync -rlvC --exclude '.emacs*' --rsh=ssh ./$(LDIR) $(SERVER):$(DIR)
+	CHMOD=ssh $(SERVER) "find $(DIR) -user `whoami` -exec chmod g+w {} \;"
+	CHMODD=ssh $(SERVER) "find $(DIR) -user `whoami` -type d -exec chmod g+s {} \;"
+	
+
 DOCS = test_specification.sgml \
        bookinfo.sgml           \
        features.sgml           \
@@ -23,6 +32,13 @@ all: $(DOCS)
 
 pdf: $(DOCS)
 	db2pdf test_specification.sgml
+
+publish: all
+	$(RSYNC)
+	$(CHMOD)
+	$(CHMODD)
+
+
 clean:
 	rm -f *~ 
 	rm -fR test_specification

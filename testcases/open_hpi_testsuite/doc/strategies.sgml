@@ -89,7 +89,8 @@ hpitest/
             |   |-- ev_005.c
             |   |-- ev_006.c
             |   |-- ev_007.c
-            |   `-- ev_008.c
+            |   |-- ev_008.c
+            |   `-- ev_009.c
             |-- hotswap_action_request
             |   |-- hs_401.c
             |   `-- hs_402.c
@@ -580,8 +581,8 @@ saHpiSessionOpen() returns SA_ERR_HPI_INVALID_DOMAIN
             </thead>
             <tbody>
               <row>
-                <entry morerows='7'>events</entry>
-                <entry morerows='7'>
+                <entry morerows='8'>events</entry>
+                <entry morerows='8'>
                   saHpiSubscribe()
 		  saHpiUnsubscribe()
 		  saHpiEventGet()
@@ -652,6 +653,14 @@ saHpiSessionOpen() returns SA_ERR_HPI_INVALID_DOMAIN
               <row>
                 <entry>ev_008</entry>
                 <entry>Get an event. Timeout = SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiEventGet returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>ev_009</entry>
+                <entry>Get an event. rpt_entry != NULL && rdr != NULL;
+			    rpt_entry = NULL && rdr != NULL;
+			    rpt_entry != NULL && rdr = NULL;
+			    rpt_entry = NULL && rdr = NULL </entry>
                 <entry>saHpiEventGet returns SA_OK.</entry>
               </row>
             </tbody>
