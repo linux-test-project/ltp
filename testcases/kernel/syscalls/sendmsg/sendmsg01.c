@@ -45,7 +45,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/signal.h>
@@ -315,7 +315,6 @@ char tmpsunpath[1024];
 void
 setup(void)
 {
-	char *mktemp();
 
 	TEST_PAUSE;	/* if -P option specified */
 
@@ -324,14 +323,14 @@ setup(void)
 	sin1.sin_port = htons((getpid() % 32768) +11000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 
-	(void) strcpy(tmpsunpath, "/tmp/udsockXXXXXX");
-	(void) mktemp(tmpsunpath);
+	tst_tmpdir();
+        snprintf(tmpsunpath, 1024, "udsock%ld",(long)time(NULL));
 	sun1.sun_family = AF_UNIX;
-	(void) strcpy(sun1.sun_path, tmpsunpath);
+	strcpy(sun1.sun_path, tmpsunpath);
 
 	pid = start_server(&sin1, &sun1);
 
-	(void) signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 }
 
 void
@@ -340,6 +339,7 @@ cleanup(void)
 	(void) kill(pid, SIGKILL);	/* kill server */
 	unlink(tmpsunpath);
 	TEST_CLEANUP;
+        tst_rmdir();
 	tst_exit();
 }
 
@@ -408,13 +408,11 @@ int tfd;
 void
 setup4(void)
 {
-	char *p, *mktemp();
 
 	setup1();	/* get a socket in s */
 
-	(void) strcpy(tmpfilename, "/tmp/sockXXXXXX");
-	p = mktemp(tmpfilename);
-	tfd = open(p, O_CREAT|O_RDWR|O_TRUNC, 0600);
+	(void) strcpy(tmpfilename, "sockXXXXXX");
+	tfd = mkstemp(tmpfilename);
 	if (tfd < 0) {
 		tst_brkm(TBROK, cleanup4, "socket setup failed: %s",
 			strerror(errno));
@@ -434,7 +432,6 @@ cleanup4(void)
 	cleanup1();
 	(void) close(tfd);
 	tfd = -1;
-	(void) unlink(tmpfilename);
 	control = 0;
 	controllen = 0;
 }
