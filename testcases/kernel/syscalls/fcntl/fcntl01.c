@@ -22,9 +22,11 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	09/2002 added fd2 array to remove statid fds
  *
  * RESTRICTIONS
  * 	None
+ *
  */
 
 #include <fcntl.h>
@@ -44,7 +46,7 @@ main(int ac, char **av)
 	int flags;
 	int res, fail;
 	char fname[40];
-	int fd[10];
+	int fd[10], fd2[10];
 	int mypid, i;
 	int lc;
 	char *msg;
@@ -71,7 +73,7 @@ block0:
 		mypid = getpid();
 		for (i = 0; i < 8; i++) {
 			sprintf(fname, "./fcntl%d.%d", i, mypid);
-			if ((fd[i] = open(fname, O_WRONLY | O_CREAT,
+			if ((fd2[i] = fd[i] = open(fname, O_WRONLY | O_CREAT,
 					  0666)) < 0) {
                         	fprintf(stderr, "\tcannot open '%s', errno "
 					"= %d\n", fname, errno);
@@ -96,7 +98,7 @@ block0:
 			fail = 1;
 		}
 
-		if (fd[2] < 5) {
+		if (fd[2] < fd2[2]) {
 			tst_resm(TFAIL, "new fd has unexpected value: "
 				 "got %d, expected greater than %d", fd[2], 5);
 			fail = 1;
@@ -106,14 +108,14 @@ block0:
 		 * Check that fcntl returns proper fd when arg equal to next
 		 * available descriptor
 		 */
-		if ((fd[4] = fcntl(fd[1], F_DUPFD, 6)) < 0) {
+		if ((fd[4] = fcntl(fd[1], F_DUPFD, fd2[3])) < 0) {
 			tst_resm(TFAIL, "fcntl failed, errno = %d", errno);
 			fail = 1;
 		}
 
-		if (fd[4] < 6) {
+		if (fd[4] < fd2[3]) {
 			tst_resm(TFAIL, "new fd has unexpected value, got %d, "
-				 "expect greater than %d", fd[4], 6);
+				 "expect greater than %d", fd[4], fd2[3]);
 			fail = 1;
 		}
 
@@ -121,14 +123,14 @@ block0:
 		 * Check fcntl returns proper fd when arg greater than next
 		 * available fd but less than end of descriptor table
 		 */
-		if ((fd[8] = fcntl(fd[1], F_DUPFD, 8)) < 0) {
+		if ((fd[8] = fcntl(fd[1], F_DUPFD, fd2[5])) < 0) {
 			tst_resm(TFAIL, "fcntl failed, errno = %d", errno);
 			fail = 1;
 		}
 
-		if (fd[8] != 8) {
+		if (fd[8] != fd2[5]) {
 			tst_resm(TFAIL, "new fd has unexpected value: "
-				 "got %d, expected %d", fd[8], 8);
+				 "got %d, expected %d", fd[8], fd2[5]);
 			fail = 1;
 		}
 		if (fail) {
