@@ -1,5 +1,5 @@
 .\"
-.\" $Id: pan.1,v 1.2 2000/09/21 20:42:31 nstraz Exp $
+.\" $Id: pan.1,v 1.3 2002/02/19 18:59:05 robbiew Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -30,11 +30,11 @@
 .\" For further information regarding this notice, see: 
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
-.TH PAN 1 "14 Sep 2000" "LTP" "Linux Test Project"
+.TH PAN 1 "19 Feb 2002" "LTP" "Linux Test Project"
 .SH NAME
 pan \- A light-weight driver to run tests and clean up their pgrps
 .SH SYNOPSIS
-\fBpan -n tagname [-SyAeh] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
+\fBpan -n tagname [-SyAeh] [-t #s|m|h|d \fItime\fB] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
 .SH DESCRIPTION
 
 Pan will run a command, as specified on the commandline, or collection of
@@ -131,6 +131,12 @@ Set this to zero to run forever.  By default this is set to 1 (but see
 specified for \fI-x\fP then it is bumped up to be equal to the value of
 \fI-x\fP (in other words, \fI-x\fP is always satisfied).
 .TP 1i
+\fB-t #s|m|h|d \fItime\fB
+Indicates the length that pan should run tests. By default this is not set.  If specified, 
+the \fI-s\fP flag is automatically set to 0 (infinite).  Presumably, you want as many 
+tests ran during this timeframe. Duration is measured in \fIs\fPeconds, \fIm\fPinutes, 
+\fIh\Pours,OR \fId\Pays.
+.TP 1i
 \fB-x \fInactive\fB
 Indicates the number of commands (tags) that should be kept active at any one
 time.  If this is greater than 1 then it is possible to have multiple
@@ -225,6 +231,12 @@ This is ignored if \fI-a\fP is specified.
 active
 Default name of active file if \fI-a\fP is not specified.  This is prefixed
 by the directory name found in the ZOO environment variable.
+.TP
+PAN_STOP_FILE
+The creation of this file in the defined \fITMP\fP directory will cause pan to
+execute one more loop and stop.  This is useful when testing needs to be stopped
+before its scheduled stop time (\fI-t\fP).  By doing a 'touch' on this file, testing
+is ended, i.e. touch /tmp/runalltests-2345/PAN_STOP_FILE
 
 .SH "SEE ALSO"
 Zoo tools - bump(1)
