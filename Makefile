@@ -7,7 +7,7 @@
 #AR=$(CROSS_COMPILER)ar
 CFLAGS+= -Wall
 #LDFLAGS+= -static
-#LOADLIBES+= -lpthread -lc -lnss_dns -lnss_files -lresolv -lnss_dns -lnss_files -lm -lc
+#LOADLIBES+= -lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc
 export CC AR LDFLAGS LOADLIBES
 
 
