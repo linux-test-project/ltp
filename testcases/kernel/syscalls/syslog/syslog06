@@ -31,7 +31,6 @@
 #           It should be greater than 3.                         #
 ##################################################################
 
-<<<<<<< syslog06
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -51,31 +50,7 @@ sleep 2
 
 exit $status_flag
 }
-=======
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "file descriptor is greater than 3"
-else
-	tst_resm TFAIL "file descriptor is not greater than 3"
-fi
 
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-
-exit $status_flag
-}
->>>>>>> 1.8
 syslog_case6()
 {
 	#set the trap to handle signals.
@@ -111,18 +86,9 @@ syslog_case6()
 
 	#Restart syslog
 	tst_resm TINFO "Restart syslog deamon"
-<<<<<<< syslog06
+
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
 	sleep 2
-=======
-	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		tst_resm TBROK "failed to restart syslog deamon"
-		status_flag=1
-		cleanup
-	fi
->>>>>>> 1.8
 	# Just call syslogtst. It will do everything.
 	# It will return 0 to indicate that test has passed.
 

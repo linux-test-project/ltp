@@ -26,7 +26,6 @@
 #        created and that will be used as syslog.conf file.      #
 ##################################################################
 
-<<<<<<< syslog02
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -46,31 +45,6 @@ sleep 2
 exit $status_flag
 }
 
-=======
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "messages of all levels are logged"
-else
-	tst_resm TFAIL "failed to log messages of all levels."
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
-}
-
->>>>>>> 1.8
 syslog_case2()
 {
 	#set the trap to handle signals.
@@ -114,19 +88,8 @@ syslog_case2()
 
 		#Restart syslog
 		tst_resm TINFO "restarting syslog deamon"
-<<<<<<< syslog02
 		/etc/init.d/syslog restart 2>&1 1>/dev/null 
 		sleep 2
-=======
-		/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-		if [ $RC -ne 0 ]
-		then
-			tst_resm TBROK "failed to restart syslog deamon"
-			status_flag=1
-	                cleanup
-
-		fi
->>>>>>> 1.8
 
 		# Grepping pattern is as follows:
 		# syslogtst: mail $current test.

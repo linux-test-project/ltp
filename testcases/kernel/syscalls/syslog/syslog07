@@ -28,7 +28,7 @@
 #         o Send syslog messages at all levels and see whether   #
 #           higher level messages are logged.                    #
 ##################################################################
-<<<<<<< syslog07
+
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -47,30 +47,6 @@ tst_resm TINFO "Restart syslog"
 sleep 2
 exit $status_flag
 }
-=======
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "higher level messages are logged."
-else
-	tst_resm TFAIL "higher level messages are not logged."
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
-}
->>>>>>> 1.8
 
 syslog_case7()
 {
@@ -108,18 +84,8 @@ syslog_case7()
 
 	#Restart syslog
 	tst_resm TINFO "Restart syslog"
-<<<<<<< syslog07
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
 	sleep 2
-=======
-	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		tst_resm TBROK "failed to restart syslog deamon"
-		status_flag=1
-		cleanup
-	fi
->>>>>>> 1.8
 
 	# Grep for the following patterns in the log file...
 	# check if /var/log/maillog script exists

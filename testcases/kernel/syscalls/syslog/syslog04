@@ -27,7 +27,6 @@
 #        is logged with message.                                 #
 ##################################################################
 
-<<<<<<< syslog04
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -46,30 +45,6 @@ tst_resm TINFO "Restart syslog"
 sleep 2
 exit $status_flag
 }
-=======
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "pid is logged with message."
-else
-	tst_resm TFAIL "pid is not logged with message."
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
-}
->>>>>>> 1.7
 syslog_case4()
 {
 	#set the trap to handle signals.
@@ -103,18 +78,8 @@ syslog_case4()
 
 	#Restart syslog
 	tst_resm TINFO "Restart syslog deamon"
-<<<<<<< syslog04
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
 	sleep 2
-=======
-	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		tst_resm TBROK "failed to restart syslog deamon"
-			status_flag=1
-			cleanup
-	fi
->>>>>>> 1.7
 
 	# Run syslogtst in the background and get the process id.
 	syslogtst 4 2>/dev/null &

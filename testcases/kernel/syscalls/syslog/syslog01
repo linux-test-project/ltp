@@ -31,7 +31,7 @@
 #         mail.info        /usr/spool/adm/syslog                 #
 ##################################################################
 
-<<<<<<< syslog01
+
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -50,31 +50,6 @@ tst_resm TINFO "restart syslog"
 sleep 2
 }
 
-=======
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "success in generating messages"
-else
-	tst_resm TFAIL "failed to generate messages"
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
-}
-
->>>>>>> 1.7
 syslog_case1()
 {
 	
@@ -110,19 +85,8 @@ syslog_case1()
 	echo "mail.info	/var/log/maillog" >> /etc/syslog.conf
 
 	#Restart syslog
-<<<<<<< syslog01
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
 	sleep 2
-=======
-	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		tst_resm TBROK "failed to restart syslog deamon"
-		status_flag=1
-                cleanup
-
-	fi
->>>>>>> 1.7
 	
 	# check if /var/log/maillog script exists
 	find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
