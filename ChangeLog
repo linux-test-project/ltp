@@ -1,3 +1,17 @@
+LTP-20041203
+- Change to fix file creation error on certain filesystems.
+- gf15 and gf18 failed on both 32-bits and 64-bits, 
+  Growfile used lseek and fstat to operate file. When file grows
+  beyond 4G,lseek and fstat would fail on 32-bits machine.
+- Added fs-bench by Hironobu SUZUKI and additional JFFS
+  testscript by G.BANU PRAKASH.
+- Added mongo filesystem test by namesys and additional testscript from G.BANU PRAKASH.
+- Applied patch from Jacky Malcles to allow test to run on IA64.
+- settimeofday01 fails on some platforms(ia64,41611	x86-64) occasionally.
+  The testcase did not consider the situation when CONFIG_TIME_INTERPOLATION is enabled.
+- Remove case from password query since the distros use both upper and lower case P/p.
+
+
 LTP-20041105
 - Added extensive syscall testsuite (Ballista)
 - Added new tests to EPoll testsuite
