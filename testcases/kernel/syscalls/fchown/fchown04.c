@@ -290,7 +290,10 @@ setup1()
 	strcat(Path_name, "/"TEST_FILE1);
 
 	/* Get the command name to be executed as setuid to root */
-	change_owner_path = getenv("change_owner");
+	if ((change_owner_path = getenv("change_owner")) == NULL) {
+   	    tst_brkm(TBROK, cleanup, 
+	    "getenv() failed to get the cmd to be execd as setuid to root");
+	}
 	strcpy((char *)Cmd_buffer, (const char *)change_owner_path);
 	strcat((char *)Cmd_buffer, " ");
 	strcat((char *)Cmd_buffer, TCID);
