@@ -40,6 +40,11 @@
 /*								              */
 /*		Aug  - 01 - 2001 Modified - Added header files pthread.h      */
 /*				 contains definitions for pthread_t etc.      */
+/*						                              */
+/*              Oct  - 24 - 2001 Modified - Fixed broken code in main()       */
+/*			         pthread_join() part of the code was fixed to */
+/*			         check for the correct return status from the */
+/*			         thread function.                             */
 /*								              */
 /* File: 	mmap1.c							      */
 /*									      */
@@ -437,6 +442,7 @@ main(int  argc,		/* number of input parameters.			      */
 {
     char 	 *filename;	/* name of temp file created.     	      */
     int 	 c;		/* command line options			      */
+    int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
     int		 file_size;	/* size of the file to be created.	      */
     int		 num_iter;	/* number of iteration to perform             */
     int		 exec_time;	/* period for which the test is executed      */
@@ -548,27 +554,24 @@ main(int  argc,		/* number of input parameters.			      */
             exit(-1);
         }
         sched_yield();
-        if (pthread_join(thid[0], &status[0]))
+        
+        for (thrd_ndx = 0; thrd_ndx < 2; thrd_ndx++)
         {
-            perror("main(): pthread_create()");
-            if (!status[0])
+            if (pthread_join(thid[thrd_ndx], &status[thrd_ndx]))
             {
-                fprintf(stderr, 
-			"thread [%d] - process X exited with errors %d\n",
-			    WEXITSTATUS(status[0]));
-	        exit (-1);
+                perror("main(): pthread_create()");
+                exit(-1);
             }
-        }
-        if (pthread_join(thid[1], &status[1]))
-        {
-            perror("main(): pthread_create()");
-            if (!status[0])
+            else
             {
-                fprintf(stderr, 
-			"thread [%d] - process X exited with errors %d\n",
-			    WEXITSTATUS(status[1]));
-	        exit (-1);
-	    }
+                if (!status[thrd_ndx])
+                {
+                    fprintf(stderr, 
+			    "thread [%d] - process exited with errors %d\n",
+			        thid[thrd_ndx]);
+	            exit (-1);
+	        }
+            }
         }
         close(fd);
     }
