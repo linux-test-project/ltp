@@ -28,3 +28,4 @@ pipeio_8 pipeio -c 5 -s 5000 -i 10 -u -f x80
 # using non-blocking I/O
 
 sem01 sem01
+sem02 sem02
