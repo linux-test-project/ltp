@@ -1,0 +1,3 @@
+apache
+
+	Check to see that the apache web server can serve up a web page.
