@@ -123,6 +123,7 @@ char **av;
 	if (system("mount | grep `df . | grep -v Filesystem | awk {'print $1'}` | grep mand >/dev/null") != 0){
 		tst_resm(TCONF,"The filesystem where /tmp is mounted does"
 			       " not support mandatory locks. Cannot run this test.");
+		tst_rmdir();
 		tst_exit();
 		/*NOTREACHED*/
 	}
