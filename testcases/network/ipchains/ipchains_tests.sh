@@ -267,4 +267,4 @@ then
 fi
 
 
-exit $((TFAILCNT))
+exit $TFAILCNT

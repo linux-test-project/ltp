@@ -115,7 +115,7 @@ do_test()
       [ $HOST = $RHOSTNAME ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
       echo "Test $COUNT of $NUMLOOPS complete"
-      (( COUNT = COUNT + 1 ))
+      COUNT=$(( $COUNT + 1 ))
    done
 }
 
@@ -153,7 +153,7 @@ end_testcase()
 {
    $trace_logic
    
-   if [ $CLEANUP -eq "ON" ]; then
+   if [ $CLEANUP == "ON" ]; then
      do_cleanup
    fi
    [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }

@@ -58,7 +58,7 @@ do_test() {
          [ $? -eq 0 ] || end_testcase "$COMMAND failed" 
       done
 
-      ((COUNT=$COUNT+1))
+      COUNT=$(( $COUNT + 1 ))
       sleep $SLEEPTIME
    done
 }

@@ -251,7 +251,7 @@ function step1
 #=============================================================================
     USAGE="Usage: ./fs_inod [volumename] [numsubdirectories] [numfiles] [numloops]"
 
-    if (($# != 4))
+    if [ $# -ne 4 ]
     then
        echo $USAGE
        exit 2

@@ -62,7 +62,7 @@ $trace_logic
    echo "This test runs LOCALLY."
 
    IAM=${IAM:=`whoami`}
-   [ $IAM -eq "root" ] || end_testcase "Must be root user"
+   [ $IAM == "root" ] || end_testcase "Must be root user"
 
    #Check for mountd.
    rpcinfo -p | grep mountd

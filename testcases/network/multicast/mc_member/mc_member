@@ -142,7 +142,7 @@ do_test()
 
       [ $count -gt 3 ] && end_testcase "Could not join members!"
 
-      (( COUNT = COUNT + 1 ))
+      COUNT=$(( $COUNT + 1 ))
 
    done   # end of while numloop
 }

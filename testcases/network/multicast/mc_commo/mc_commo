@@ -120,7 +120,7 @@ do_test ()
 
       echo "Waiting for 100 sec.! Do not interrupt."
       sleep 100  #wait until datagrams are received in $STATUS
-      (( COUNT = $COUNT + 1 )) 
+      COUNT=$(( $COUNT + 1 )) 
    done 
   
    #test if datagrams has been sent

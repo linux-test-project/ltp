@@ -80,7 +80,7 @@ do_setup()
    SUM=`sum -s $FILES|awk '{ print $1 }'`
    for i in $SUM
    do
-      (( LSUM = LSUM + i ))
+      LSUM=$(( $LSUM + $i ))
    done
 }
 
@@ -143,7 +143,7 @@ check_result()
             x=0;SUM=\$(sum -s $FILES|awk '{ print \$1 }')
             for i in \$SUM
             do
-               ((x = \$x + \$i ))
+               x=\$(( \$x + \$i ))
             done
             echo \$x`
          if [ $TOTAL_SUM = $LSUM ]; then 

@@ -94,7 +94,7 @@ do_test()
       ping -I 3.3.3.3 224.0.0.1 > /dev/null 2>&1
       [ $? = 0 ] && end_testcase "ping on bogus interface should fail"
 
-      (( COUNT = COUNT + 1 ))
+      COUNT=$(( $COUNT + 1 ))
    done
 }
 

@@ -84,8 +84,8 @@ do_test()
          10)end_testcase "Error - wrong Protocol" ;;
          *) end_testcase "Return code from $EXECUTABLES is $RETVALUE" ;;
       esac
-      [ $NUMLOOPS -gt 0 ] && (( TLOOP = TLOOP + 1 ))
-      (( COUNT = COUNT + 1 ))
+      if [ $NUMLOOPS -gt 0 ] ; then TLOOP=$(( $TLOOP + 1 )); fi
+      COUNT=$(( $COUNT + 1 ))
    done
 }
 

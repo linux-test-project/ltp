@@ -52,7 +52,7 @@ do_test()
    $trace_logic
 
    COUNT=1
-   while (( $COUNT <= $NUMLOOPS ))
+   while [ $COUNT -le $NUMLOOPS ]
    do
       CHECK=$(rsh -n -l root $RHOST "ls -l /etc/hosts | wc -w")
 
@@ -62,7 +62,7 @@ do_test()
          end_testcase "FAILED: rsh failed"
       fi
       sleep $SLEEPTIME
-      (( COUNT = COUNT + 1 ))
+      COUNT=$(( $COUNT + 1 ))
    done
 }
 

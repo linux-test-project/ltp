@@ -50,7 +50,7 @@ do_test()
    echo "$this_file: doing $0."
 
    count=0
-   while (( $count < $NUMLOOPS ))
+   while [ $count -lt $NUMLOOPS ]
    do
       host $RHOST
       if [ $? -eq 0 ]; then
@@ -60,7 +60,7 @@ do_test()
       else 
          end_testcase "host $RHOST on local machine failed"
       fi
-      (( count = count + 1 ))
+      count=$(( $count + 1 ))
       sleep $SLEEPTIME
    done
 }
