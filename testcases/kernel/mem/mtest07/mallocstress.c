@@ -41,6 +41,10 @@
 /*				- changed comments.                           */
 /*				- Added test to LTP.                          */
 /*                                                                            */
+/*		Nov - 09 - 2001 Modified - Manoj Iyer,IBM Austin TX.	      */
+/*				- Removed compile errors.                     */
+/*				- too many missing arguments.                 */
+/*                                                                            */
 /* File:	mallocstress.c						      */
 /*									      */
 /* Description:	This program is designed to stress the VMM by doing repeated  */
@@ -233,15 +237,18 @@ alloc_mem(void * args)
     if (!(random % 2))
     {
         fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = fibnonnaci number\n");
+                 "pid[%d]: allocating memory of size = fibnonnaci number\n", 
+		        getpid());
         if (allocate_free((int)locargptr[0], 0))
         {
-            fprintf(stdout, "pid[%d]: alloc_mem(): fib_alloc() failed\n");
+            fprintf(stdout, "pid[%d]: alloc_mem(): fib_alloc() failed\n", 
+		getpid());
             PTHREAD_EXIT(-1);
         }
         else
         {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
+		getpid());
             PTHREAD_EXIT(0);
         }
     }
@@ -250,15 +257,18 @@ alloc_mem(void * args)
     if (!(random % 3))
     {
         fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = the power of 2\n");
+                 "pid[%d]: allocating memory of size = the power of 2\n",
+			getpid());
         if (allocate_free((int)locargptr[0], 2))
         {
-            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n",
+			getpid());
             PTHREAD_EXIT(-1);
         }
         else
         {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
+		getpid());
             PTHREAD_EXIT(0);
         }
     }
@@ -266,15 +276,18 @@ alloc_mem(void * args)
     if (!(random % 5))
     {
         fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = the power of 3\n");
+                 "pid[%d]: allocating memory of size = the power of 3\n",
+			getpid());
         if (allocate_free((int)locargptr[0], 3))
         {
-            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n",
+		getpid());
             PTHREAD_EXIT(-1);
         }
         else
         {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
+		getpid());
             PTHREAD_EXIT(0);
         }
     }
@@ -282,15 +295,16 @@ alloc_mem(void * args)
 
     /* default  power of "seven"*/
     fprintf(stdout, 
-             "pid[%d]: allocating memory of size = the power of 7\n");
+             "pid[%d]: allocating memory of size = the power of 7\n", getpid());
     if (allocate_free((int)locargptr[0], 7))
     {
-        fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+        fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n", 
+		getpid());
         PTHREAD_EXIT(-1);
     }
     else
     {
-        fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+        fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", getpid());
         PTHREAD_EXIT(0);
     }
 }
@@ -312,6 +326,7 @@ alloc_mem(void * args)
 /*		 0 on success						      */
 /*									      */
 /******************************************************************************/
+int
 main(int	argc,		/* number of input parameters		      */
      char	**argv)		/* pointer to the command line arguments.     */
 {
@@ -322,7 +337,6 @@ main(int	argc,		/* number of input parameters		      */
     int		*th_status;	/* exit status of LWP's	                      */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[3];   /* arguments to the thread function           */
-    extern char* optargs;	/* pointer to arguments for each option flag  */
     extern int	 optopt;	/* options to the program		      */
 
     while ((c =  getopt(argc, argv, "hl:t:")) != -1)
