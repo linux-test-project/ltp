@@ -8,9 +8,9 @@ all:	$(BIN)
 
 clean:
 	rm -f $(BIN)
-	@for i in $(BIN); do rm -f ../../../bin/$$i ; done
+	@for i in $(BIN); do rm -f ../../../../bin/$$i ; done
 	rm -f *.ref
-	@for i in $(REF); do rm -f ../../../bin/$$i ; done
+	@for i in $(REF); do rm -f ../../../../bin/$$i ; done
 
 install:
-	@for i in $(REF) ; do ln -f $$i ../../../bin/$$i ; done ;
+	@for i in $(REF) ; do ln -f $$i ../../../../bin/$$i ; done ;
