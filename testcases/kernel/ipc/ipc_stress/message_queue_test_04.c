@@ -57,6 +57,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ipc.h>
 #ifdef _LINUX_
@@ -117,7 +118,6 @@ int main (int argc, char **argv)
 	struct msgbuf buf;	/* Message queue buffer */
 	int	mode = 0777;	/* Default mode bits */
 	int	msqid;		/* Message queue identifier */
-	int	fd;		/* Temp file descriptor */
 	size_t 	max_bytes;	/* Num bytes sent to message queue */
 	size_t 	msg_size;	/* Num bytes sent to message queue */
 	unsigned long	bytes_sent;	/* Num bytes sent to message queue */

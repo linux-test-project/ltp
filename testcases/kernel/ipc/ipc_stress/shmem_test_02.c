@@ -74,6 +74,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/file.h>
 #include <sys/mman.h>
@@ -150,10 +152,9 @@ pid_t	pid [MAX_CHILDREN];
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	int	shmid;		/* (Unique) Shared memory identifier */
 	char	*shmptr,	/* Shared memory segment address */
 		value = 0;	/* Value written into shared memory segment */
-	int	i, fd;
+	int	i;
 	char 	*ptr;
 	int	status;
 	int	shmem_size;
@@ -206,7 +207,7 @@ int main (int argc, char **argv)
 		cksum += *ptr;
 	}
 	unlock_file (lockfd);
-	printf ("\t        shared memory checksum %08x\n", cksum);
+	printf ("\t        shared memory checksum %08lx\n", cksum);
 
 	printf ("\n\tSpawning %d child processes ... \n", num_children);
 	for (i=0; i<num_children; i++) {
@@ -228,7 +229,7 @@ int main (int argc, char **argv)
 			sys_error ("child process terminated abnormally", 
 				__LINE__);
 		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
-			printf ("checksum [%d] = %08x\n", i, checksum [i]);
+			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
 			error ("checksums do not match", __LINE__); 
 		}
 	}
@@ -253,7 +254,7 @@ static void child (int num, char *shmptr)
 
 	checksum [num] = cksum;
 	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08x\n", num, 
+	printf ("\t\tchild (%02d): checksum %08lx\n", num, 
 		*(checksum + (sizeof (unsigned long) * num)));
 }
 

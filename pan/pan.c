@@ -34,7 +34,7 @@
  *	Added timer options: William Jay Huie, IBM
  *
  */
-/* $Id: pan.c,v 1.10 2002/04/10 16:10:40 robbiew Exp $ */
+/* $Id: pan.c,v 1.11 2002/05/28 16:26:16 robbiew Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -700,7 +700,7 @@ static pid_t
 run_child(struct coll_entry *colle, struct tag_pgrp *active)
 {
     int cpid;
-    int c_stdout;		/* child's stdout, stderr */
+    int c_stdout = -1;		/* child's stdout, stderr */
     int capturing = 0;		/* output is going to a file instead of stdout */
     char *c_cmdline;
     static long cmdno = 0;

@@ -248,7 +248,6 @@ static void test_commands (pid_t proc_pid)
 	uid_t	uid = getuid ();	/* Misc user id */
 	mode_t	mode = 0666;		/* Misc mode bits */
 	// ushort	array [MAX_SEMAPHORES];	/* Misc array of semaphore values */
-	struct semid_ds	*buf;		/* Misc buff for semaphore info */
 	struct sembuf semoparray [MAX_SEMAPHORES];
 
 	/*

@@ -66,6 +66,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/mman.h>
@@ -267,7 +268,7 @@ int main (int argc, char **argv)
 					word/WPERMB);
 		}
                 if (*wptr != word) {
-                        addr = ((int)wptr & 0x0fffffff)/4096;
+                        addr = ((intptr_t)wptr & 0x0fffffff)/4096;
                         if (addr != last) {
                                 last = addr;
 				if (Vflg) {
@@ -311,6 +312,7 @@ int main (int argc, char **argv)
 
 	printf ("\nsuccessful!\n");
 	cleanup(0);
+	/*NOTREACHED*/
 }
 
 static void cleanup (int rc)
@@ -563,7 +565,7 @@ static void setup_signal_handlers ()
 static void parse_args (int argc, char **argv)
 {
 	int	opt;
-	int 	bytes, megabytes;
+	int 	bytes = 0, megabytes = 0;
 	int	errflag = 0;
 	char	*program_name = *argv;
 	extern char 	*optarg;	/* Command line option */

@@ -137,32 +137,32 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     {
         case 10:
             fprintf(stderr, 
-	        "Exception - invalid TSS, exception #[%d]\n", except);
+	        "Exception - invalid TSS, exception #[%ld]\n", except);
 	    break;
 	case 11:
 	    fprintf(stderr,
-	        "Exception - segment not present, exception #[%d]\n",
+	        "Exception - segment not present, exception #[%ld]\n",
 		    except);
 	    break;
 	case 12:
 	    fprintf(stderr,
-		"Exception - stack segment not present, exception #[%d]\n",
+		"Exception - stack segment not present, exception #[%ld]\n",
 		    except);
 	    break;
         case 13:
 	    fprintf(stderr,
-		"Exception - general protection, exception #[%d]\n",
+		"Exception - general protection, exception #[%ld]\n",
 		    except);
 	    break;
 	case 14:
 	    fprintf(stderr,
-		"Exception - page fault, exception #[%d]\n",
+		"Exception - page fault, exception #[%ld]\n",
 		    except);
             ret = 1;
 	    break;
         default:
 	    fprintf(stderr,
-		"Exception type not handled... unknown exception #[%d]\n",
+		"Exception type not handled... unknown exception #[%ld]\n",
 		    except);
 	    break;
     }
@@ -172,13 +172,13 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
         if (scp->edi == (int)map_address)
 	{
 	    fprintf(stdout, 
-			"page fault at [%#x] - ignore\n", scp->edi);
+			"page fault at [%#lx] - ignore\n", scp->edi);
 	    siglongjmp(jmpbuf, 1);
         }
 	else
         { 
-            fprintf(stderr, "address at which sigfault occured: [%#x]\n"
-                            "address at which memory was shmat: [%#x]\n",
+            fprintf(stderr, "address at which sigfault occured: [%#lx]\n"
+                            "address at which memory was shmat: [%p]\n",
 		        scp->edi, map_address);
 	    fprintf(stderr, "bad page fault exit test\n");
 	    exit (-1);
@@ -265,7 +265,8 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
     key_t   shmkey   = 0;	/* shared memory id                           */
     long    *locargs =          /* local pointer to arguments		      */
 		       (long *)args;
-    struct  shmid_ds *shmbuf;   /* info about the segment pointed to by shmkey*/
+    struct  shmid_ds *shmbuf    /* info about the segment pointed to by shmkey*/
+	    		= NULL;
     volatile int exit_val = 0;  /* exit value of the pthread		      */
 
     while (shm_ndx++ < (int)locargs[0])
@@ -463,16 +464,16 @@ main(int  argc,		/* number of input parameters.			      */
     {
         int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
                    {
-                        SIGHUP,"SIGHUP",
-                        SIGINT,"SIGINT",
-                        SIGQUIT,"SIGQUIT",
-                        SIGABRT,"SIGABRT",
-                        SIGBUS,"SIGBUS",
-                        SIGSEGV,"SIGSEGV",
-                        SIGALRM, "SIGALRM",
-                        SIGUSR1,"SIGUSR1",
-                        SIGUSR2,"SIGUSR2",
-                        -1,     "ENDSIG"
+			   {SIGHUP,"SIGHUP"},
+			   {SIGINT,"SIGINT"},
+			   {SIGQUIT,"SIGQUIT"},
+			   {SIGABRT,"SIGABRT"},
+			   {SIGBUS,"SIGBUS"},
+			   {SIGSEGV,"SIGSEGV"},
+			   {SIGALRM, "SIGALRM"},
+			   {SIGUSR1,"SIGUSR1"},
+			   {SIGUSR2,"SIGUSR2"},
+			   {-1,     "ENDSIG"}
                    };
 
     /* set up the default values */
@@ -535,7 +536,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%d], execs fn shmat_shmdt()\n",
+	    fprintf(stdout, "created thread id[%ld], execs fn shmat_shmdt()\n",
 		thid[0]);
         }
         sched_yield();
@@ -547,7 +548,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%d], execs fn write_to_mem()\n",
+	    fprintf(stdout, "created thread id[%ld], execs fn write_to_mem()\n",
 		thid[1]);
         }
         sched_yield();
@@ -559,7 +560,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%d], execs fn read_from_mem()\n",
+	    fprintf(stdout, "created thread id[%ld], execs fn read_from_mem()\n",
 		thid[2]);
         }
         sched_yield();
@@ -575,7 +576,7 @@ main(int  argc,		/* number of input parameters.			      */
             if (*status == -1)
             {
                 fprintf(stderr, 
-	              "thread [%d] - process exited with errors %d\n",
+	              "thread [%ld] - process exited with errors %d\n",
 		         thid[thrd_ndx], *status);
 	        exit (-1);
             }

@@ -76,7 +76,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+#include <unistd.h>
 #include <sys/shm.h>
 
 #include <sys/types.h>
@@ -205,12 +207,12 @@ int main (int argc, char **argv)
 
       if ((long)(shmptr[i] = (char *) shmat (shmid[i], (const void*)offset, 0)) == -1)
 	{
-	  sprintf(tmpstr, "shmat failed - return: %d", shmptr[i]);
+	  sprintf(tmpstr, "shmat failed - return: %p", shmptr[i]);
 	  sys_error (tmpstr, __LINE__);
 	}
 
       
-      printf ("\n\tShared memory segment address : 0x%x \n",shmptr[i]);
+      printf ("\n\tShared memory segment address : 0x%p \n",shmptr[i]);
       
       printf ("\n\tIndex through shared memory segment ...\n");
       

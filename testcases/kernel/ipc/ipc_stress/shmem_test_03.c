@@ -74,6 +74,8 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/ipc.h>
@@ -110,7 +112,7 @@
  * error (): Error message function
  * cleanup (): Releases semaphores & kills child processes
  */
-static int create_semaphores ();
+static void create_semaphores ();
 static void delete_semaphores ();
 static void lock_resource (int);
 static void unlock_resource (int);
@@ -273,7 +275,7 @@ int main (int argc, char **argv)
 		*ptr = data++;
 		cksum += *ptr;
 	}
-	printf ("\t        shared memory checksum %08x\n", cksum);
+	printf ("\t        shared memory checksum %08lx\n", cksum);
 	unlock_resource (WRITE);
 
 	/*
@@ -289,7 +291,7 @@ int main (int argc, char **argv)
 			sys_error ("child process terminated abnormally", 
 				__LINE__);
 		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
-			printf ("checksum [%d] = %08x\n", i, checksum [i]);
+			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
 			error ("checksums do not match", __LINE__); 
 		}
 	}
@@ -346,7 +348,7 @@ static void child (int num, char *shmptr)
 	 */
 	checksum [num] = cksum;
 	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08x\n", num, 
+	printf ("\t\tchild (%02d): checksum %08lx\n", num, 
 		*(checksum + (sizeof (unsigned long) * num)));
 }
 
@@ -363,7 +365,7 @@ static void child (int num, char *shmptr)
 | Updates:   semid - system wide semaphore identifier                  |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static int create_semaphores ()
+static void create_semaphores ()
 {
 	int	nsems = 2;	/* Number of semaphores to create */
 

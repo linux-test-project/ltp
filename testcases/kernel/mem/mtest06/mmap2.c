@@ -231,7 +231,7 @@ usage(char *progname)           /* name of this program                       */
 /*		exits with a 0 o success.				      */
 /*                                                                            */
 /******************************************************************************/
-main(int argc,		    /* number of input parameters.		      */
+int main(int argc,	    /* number of input parameters.		      */
      char **argv)	    /* pointer to the command line arguments.         */
 {
     int  fd;		    /* descriptor of temp file.		              */
@@ -254,16 +254,16 @@ main(int argc,		    /* number of input parameters.		      */
 	char *signame;  /* name of the signal to be handled.		      */
     } sig_info[] = 
                    {
-                        SIGHUP,"SIGHUP",
-			SIGINT,"SIGINT",
-			SIGQUIT,"SIGQUIT",
-			SIGABRT,"SIGABRT",
-			SIGBUS,"SIGBUS",
-			SIGSEGV,"SIGSEGV",
-			SIGALRM, "SIGALRM",
-			SIGUSR1,"SIGUSR1",
-			SIGUSR2,"SIGUSR2",
-			-1,     "ENDSIG"
+			   {SIGHUP,"SIGHUP"},
+			   {SIGINT,"SIGINT"},
+			   {SIGQUIT,"SIGQUIT"},
+			   {SIGABRT,"SIGABRT"},
+			   {SIGBUS,"SIGBUS"},
+			   {SIGSEGV,"SIGSEGV"},
+			   {SIGALRM, "SIGALRM"},
+			   {SIGUSR1,"SIGUSR1"},
+			   {SIGUSR2,"SIGUSR2"},
+			   {-1,     "ENDSIG"}
 		   };
 
     while ((c =  getopt(argc, argv, "ahps:x:")) != -1)
@@ -347,7 +347,7 @@ main(int argc,		    /* number of input parameters.		      */
             exit (-1);
         }
         else
-	    fprintf(stdout, "file mapped at %#x\n"
+	    fprintf(stdout, "file mapped at %p\n"
 			    "changing file content to 'A'\n", memptr);
    
         /* Change the content of the file with A's, and commit changes */
@@ -366,7 +366,7 @@ main(int argc,		    /* number of input parameters.		      */
             exit (-1);
         }
 	else
-	    fprintf(stdout, "unmapped file at %#x\n", memptr);
+	    fprintf(stdout, "unmapped file at %p\n", memptr);
 
 	close(fd);
         sync();

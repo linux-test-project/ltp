@@ -60,6 +60,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ipc.h>
 #ifdef _LINUX_
@@ -118,7 +119,6 @@ int main (int argc, char **argv)
 {
 	key_t	key;			/* Unique key */
 	int	msqid;			/* Message queue identifier */
-	int	size;			/* Size of message buffer */
 	struct msqid_ds buf;		/* Message queue info */
 
 	/*
@@ -148,9 +148,9 @@ int main (int argc, char **argv)
 		printf ("seq	%d\n",  buf.msg_perm.seq);
 		printf ("key	%\n",  buf.msg_perm.key);
 #endif
-		printf ("cbytes	%d\n",  buf.msg_cbytes);
-		printf ("qnum	%d\n",  buf.msg_qnum);
-		printf ("qbytes	%d\n",  buf.msg_qbytes);
+		printf ("cbytes	%ld\n",  buf.msg_cbytes);
+		printf ("qnum	%ld\n",  buf.msg_qnum);
+		printf ("qbytes	%ld\n",  buf.msg_qbytes);
 		printf ("lspid	%d\n",  buf.msg_lspid);
 		printf ("lrpid	%d\n",  buf.msg_lrpid);
 		printf ("stime	%ld\n", buf.msg_stime);

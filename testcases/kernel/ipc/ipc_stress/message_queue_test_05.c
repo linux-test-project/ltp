@@ -63,6 +63,8 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ipc.h>
 #ifdef _LINUX_
@@ -105,7 +107,6 @@
 static void parse_args (int, char **);
 static void sys_error (const char *, int);
 static void error (const char *, int);
-static void child (int []);
 
 /*
  * Global variables

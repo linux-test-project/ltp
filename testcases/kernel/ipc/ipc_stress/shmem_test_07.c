@@ -136,6 +136,8 @@
 #include <pthread.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -246,12 +248,8 @@ int main (int argc, char **argv)
 	int	k; 		/* Misc loop index */
 	size_t Size;		/* Size (in bytes) of shared memory segment*/
 
-	int	status;		/* Thread  exit status */
 	unsigned long *ulptr;	/* Misc pointer */
 				/* Index into shared memory segment */
-	char	data = 0;	/* Value written into shared memory segment */
-
-
 
 
 	/*
@@ -503,9 +501,9 @@ void *writer (void *parm)
 
 
 	cksum[num_w] = cksum_w;
-        printf ("\t\twriter (%03d): shared memory checksum %08x\n", num_w, cksum_w);
+        printf ("\t\twriter (%03d): shared memory checksum %08lx\n", num_w, cksum_w);
 
-
+	return NULL;
 }
 /*---------------------------------------------------------------------+
 |                               reader ()                              |
@@ -576,7 +574,8 @@ void *reader (void *parm)
 	 */
 	
 	*ulptr_r = cksum_r;
-	printf ("\t\treader (%03d) of writer (%03d): checksum %08x\n", num_r, num_w, cksum_r); 
+	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r); 
+	return NULL;
 }
 
 

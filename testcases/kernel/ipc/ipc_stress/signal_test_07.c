@@ -63,6 +63,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
@@ -94,7 +95,6 @@ int signals_received = 0;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	sigset_t	setsig; 	/* Initial signal mask */
 	int	timeout = MAXTIME*60;	/* Timeout value */
 	int	i;			/* Loop index */
 	char 	msg [256];		/* Buffer for error message */
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
 		sleep (1);
 
 	if (timeout == 0) {
-		sprintf (msg, "failed to received %s signals in %d minutes\n",
+		sprintf (msg, "failed to received %d signals in %d minutes\n",
 			MAXSIG, MAXTIME);
 		error (msg, __LINE__);
 	}

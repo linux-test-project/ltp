@@ -77,6 +77,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 
@@ -336,7 +337,7 @@ void handler (int sig)//, int code, struct sigcontext *scp)
 		valid_sig [sig] = 0;
 		printf ("\treceived signal: (%s)\n", signames[sig]);
 	} else {
-		sprintf (msg, "unexpected signal (%d,%s)", (sig<32)?signames[sig]:"unknown signal");
+		sprintf (msg, "unexpected signal (%d,%s)", sig, (sig<32)?signames[sig]:"unknown signal");
 		error (msg, __LINE__);
 	}
 }

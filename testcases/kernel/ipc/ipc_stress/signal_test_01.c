@@ -72,6 +72,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #ifdef _LINUX_
 #  define __USE_XOPEN
@@ -367,7 +368,7 @@ void handler (int sig)
 		valid_sig [sig] = 0;
 		printf ("\treceived signal: (%s)\n", signames[sig]);
 	} else {
-		sprintf (errmsg, "unexpected signal (%d,%s)", (sig<32)?signames[sig]:"unknown signal");
+		sprintf (errmsg, "unexpected signal (%d,%s)", sig, (sig<32)?signames[sig]:"unknown signal");
 		error (errmsg, __LINE__);
 	}
 }

@@ -82,6 +82,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 #ifdef _LINUX_
 #  define __USE_XOPEN
 #endif

@@ -531,7 +531,7 @@ int sig;	/* signal to use if async io */
 char **errmsg;	/* char pointer that will be updated to point to err message */
 long wrd;	/* to allow future features, use zero for now */
 {
-    int ret;	/* syscall return or used to get random method */
+    int ret = 0;	/* syscall return or used to get random method */
     char *io_type;		/* Holds string of type of io */
 #ifndef linux
     int omethod = method;
@@ -1050,7 +1050,7 @@ int sig;	/* signal to use if async io */
 char **errmsg;	/* char pointer that will be updated to point to err message */
 long wrd;	/* to allow future features, use zero for now */
 {
-    int ret;	/* syscall return or used to get random method */
+    int ret = 0;	/* syscall return or used to get random method */
     char *io_type;		/* Holds string of type of io */
 #ifndef linux
     int listio_cmd;		/* Holds the listio/lio_listio cmd */

@@ -38,9 +38,9 @@
 int main(int argc, char* argv[]) {
   char* mem;
   unsigned int maxpercent=0, dowrite=0, verbose=0, j, c;
-  unsigned long int bytecount, maxbytes;
+  unsigned long int bytecount, maxbytes = 0;
   extern char* optarg;
-  size_t chunksize = 1024*1024; /* one meg at a time by default */
+  int chunksize = 1024*1024; /* one meg at a time by default */
   struct sysinfo sstats;
 
   while((c=getopt(argc, argv, "c:b:p:wvh")) != EOF) {
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
     if(dowrite)
       for(j=0; j<chunksize; j++)
         *(mem+j)='a';
-    if(verbose) printf("allocated %lu bytes chunksize is %ld\n",bytecount,chunksize);
+    if(verbose) printf("allocated %lu bytes chunksize is %d\n",bytecount,chunksize);
     bytecount+=chunksize;
     if(maxbytes && (bytecount >= maxbytes))
       break;

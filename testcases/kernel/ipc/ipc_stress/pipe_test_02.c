@@ -67,6 +67,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -185,7 +186,6 @@ int main (int argc, char **argv)
 	int	status;		/* Child's exit status */
 	long	packets_sent;
 	unsigned char 	data;
-	unsigned long 	cksum_child = 0;
 	unsigned long 	cksum_parent = 0;
 	data_packet	packet;
 
@@ -272,7 +272,7 @@ int main (int argc, char **argv)
 	 * Might have to make several attempts with the NON-BLOCKING writes 
 	 * if the resource is not immediately available.
 	 */
-	printf ("\n\tParent: sending %d packets (%d bytes) to child processes ...\n", 
+	printf ("\n\tParent: sending %ld packets (%ld bytes) to child processes ...\n", 
 		num_packets, num_packets * sizeof (struct data_packet));
 
 	packet.last = 0;
@@ -285,13 +285,14 @@ int main (int argc, char **argv)
 		packet.pid = pid [i];
 		packet.checksum = cksum_parent += packet.data;
 
-		for (i=0; i<num_children; i++)
+		for (i=0; i<num_children; i++) {
 			try_write_ETXN_again:
-			if (n = write (p2child [i][WRITE], &packet, sizeof (packet)) < 0)
+			if ((n = write (p2child [i][WRITE], &packet, sizeof (packet))) < 0)
 				if (non_blocking_flag && errno == EAGAIN)
 					goto try_write_ETXN_again;
 				else
 					sys_error ("write failed", __LINE__);
+		}
 	}
 
 	/*
@@ -337,8 +338,8 @@ int main (int argc, char **argv)
 			sprintf (err_msg, "checksum of data sent by parent " \
 				"does not match checksum of data received by " \
 				"child [pid %d]\n"	\
-				"\tchild's checksum: %08x\n" \
-				"\tparent's checksum: %08x\n", 
+				"\tchild's checksum: %08lx\n" \
+				"\tparent's checksum: %08lx\n", 
 				packet.pid, packet.checksum, cksum_parent);
 			error (err_msg, __LINE__);
 		}
@@ -435,7 +436,7 @@ void child (int p2child [], int p2parent [])
 			if (packet.valid != VALID_PACKET) {
 				sprintf (err_msg, 
 					"child received invalid packet " \
-					"from parent:\n\tpacket #: %d\n",
+					"from parent:\n\tpacket #: %ld\n",
 					packets_received);
 				error (err_msg, __LINE__);
 			} 
@@ -449,8 +450,8 @@ void child (int p2child [], int p2parent [])
 				if (packets_received != packet.seq_number) {
 					sprintf (err_msg,
 						"child received packet out of sequence\n" \
-						"\texpecting packet: %d\n" \
-						"\treceived packet:  %d\n",
+						"\texpecting packet: %ld\n" \
+						"\treceived packet:  %ld\n",
 						packets_received, packet.seq_number);
 					error (err_msg, __LINE__);
 				}
@@ -460,9 +461,9 @@ void child (int p2child [], int p2parent [])
 				if (cksum_child != packet.checksum) {
 					sprintf (err_msg,
 						"child & parent checksums do not match\n" \
-						"\tchild checksum:  %08x\n" \
-						"\tparent checksum: %08x\n" \
-						"\tpacket number:   %d\n",
+						"\tchild checksum:  %08lx\n" \
+						"\tparent checksum: %08lx\n" \
+						"\tpacket number:   %ld\n",
 						cksum_child, packet.checksum, packets_received);
 					error (err_msg, __LINE__);
 				}
@@ -482,7 +483,7 @@ void child (int p2child [], int p2parent [])
 	 * Then close the WRITE p2parent pipe as we have finished sending packets
 	 * to the parent.
 	 */
-	printf ("\t\tChild:  pid [%d] received %d packets from parent\n", 
+	printf ("\t\tChild:  pid [%d] received %ld packets from parent\n", 
 		pid, packets_received);
 
 	packet.pid = pid;
@@ -517,7 +518,7 @@ void setup (int argc, char **argv)
 {
 	int	i;
 	int	errflag = 0;
-	int 	bytes, megabytes;
+	int 	bytes = 0, megabytes = 0;
 	char	*program_name = *argv;
 	extern char 	*optarg;	/* Command line option */
 

@@ -115,7 +115,6 @@ enum { READ, WRITE };
 int main (int argc, char **argv)
 {
 	key_tt	msqid;			/* message queue id */
-	size_t	nbytes;
 	struct msgbuf	*buf;
 	pid_t	pid;
 	int	mode = 0666;
@@ -187,7 +186,6 @@ static void child (int fd[])
 	key_tt	msqid;			/* message queue id */
 	size_t	nbytes;
 	struct msgbuf	*buf;
-	int	mode = 0666;
 
 	/*
 	 * Read the message queue identifier from the parent through

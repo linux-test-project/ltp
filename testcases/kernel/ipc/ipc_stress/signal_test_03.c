@@ -68,6 +68,8 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
+#include <unistd.h>
 #include <errno.h>
 
 #define MASK(sig)  (1 << ((sig) - 1))

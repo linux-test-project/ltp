@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.4 2001/03/08 19:13:21 nstraz Exp $ */
+/* $Id: zoolib.c,v 1.5 2002/05/28 16:26:16 robbiew Exp $ */
 /* 
  * ZooLib
  *
@@ -272,7 +272,7 @@ zoo_getpid(zoo_t z, char *tag)
 {
     FILE *fp = (FILE *)z;
     char buf[BUFLEN], *s;
-    pid_t this_pid;
+    pid_t this_pid = -1;
 
 
     if (fp == NULL)

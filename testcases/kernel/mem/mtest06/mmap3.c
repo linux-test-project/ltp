@@ -276,7 +276,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         memset(map_address, 'A', fsize);
 
         fprintf(stdout, 
-		"Map address = %#x\nNum iter: [%d]\nTotal Num Iter: [%d]",
+		"Map address = %p\nNum iter: [%d]\nTotal Num Iter: [%d]",
 		map_address, mwu_ndx, (int)mwuargs[0]);
 	usleep(1);
         if (munmap(map_address, (size_t)fsize) == -1)
@@ -328,16 +328,16 @@ main(int  argc,		/* number of input parameters.			      */
     {
         int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
                    {
-                        SIGHUP,"SIGHUP",
-                        SIGINT,"SIGINT",
-                        SIGQUIT,"SIGQUIT",
-                        SIGABRT,"SIGABRT",
-                        SIGBUS,"SIGBUS",
-                        SIGSEGV,"SIGSEGV",
-                        SIGALRM, "SIGALRM",
-                        SIGUSR1,"SIGUSR1",
-                        SIGUSR2,"SIGUSR2",
-                        -1,     "ENDSIG"
+			   {SIGHUP,"SIGHUP"},
+			   {SIGINT,"SIGINT"},
+			   {SIGQUIT,"SIGQUIT"},
+			   {SIGABRT,"SIGABRT"},
+			   {SIGBUS,"SIGBUS"},
+			   {SIGSEGV,"SIGSEGV"},
+			   {SIGALRM, "SIGALRM"},
+			   {SIGUSR1,"SIGUSR1"},
+			   {SIGUSR2,"SIGUSR2"},
+			   {-1,     "ENDSIG"}
                    };
 
     /* set up the default values */

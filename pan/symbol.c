@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: symbol.c,v 1.3 2002/04/10 16:10:40 robbiew Exp $ */
+/* $Id: symbol.c,v 1.4 2002/05/28 16:26:16 robbiew Exp $ */
 /*
  *			Generic Symbol Table
  *
@@ -101,7 +101,6 @@ static struct sym *
 mknode(struct sym *next, char *key, void *data)
 {
     struct sym *n;
-    char *strdup();
 
     if((n=(struct sym *)malloc(sizeof(struct sym))) == NULL) {
       sym_error="sym node malloc failed!";
@@ -203,9 +202,9 @@ sym_put(SYM sym, char *key, void *data, int flags)
 {
     const char **keys;		/* key split into a 2d string array */
     char **kk;
-    char *nkey, *strdup();	/* copy of 'key' -- before split */
+    char *nkey;			/* copy of 'key' -- before split */
     SYM csym, ncsym;		/* search: current symbol table */
-    struct sym *nsym;		/* search: found symbol entry */
+    struct sym *nsym = NULL;	/* search: found symbol entry */
 
     if(sym == NULL)
       return(EINVAL);
@@ -270,11 +269,11 @@ sym_put(SYM sym, char *key, void *data, int flags)
  */
 void * sym_get(SYM sym, char *key)
 {
-    char *nkey, *strdup();
+    char *nkey;
     const char **keys;		/* key split into a 2d string array */
     char **kk;
     SYM csym;			/* search: current symbol table */
-    struct sym *nsym;		/* search: found symbol entry */
+    struct sym *nsym = NULL;	/* search: found symbol entry */
 
     if(sym == NULL)
 	return(NULL);

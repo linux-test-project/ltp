@@ -225,7 +225,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 			         : (*start_addr = write_to_addr[0]);
          start_addr += local_args[2]; 
          if (verbose_print)
-             fprintf(stdout, "thread_fault(): generating fault type %d" 
+             fprintf(stdout, "thread_fault(): generating fault type %ld" 
 		    " @page adress %p\n", local_args[3], 
 		      start_addr);
 	 fflush(NULL);
@@ -293,12 +293,12 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
     int  map_type;	        /* specifies the type of the mapped object    */
     int  *th_status;            /* status of the thread when it is finished   */
     long th_args[NUMTHREAD];    /* argument list passed to  thread_fault()    */
-    char *empty_buf;		/* empty buffer used to fill temp file	      */
+    char *empty_buf = NULL;	/* empty buffer used to fill temp file	      */
     long pagesize 		/* contains page size at runtime	      */
 	 = sysconf(_SC_PAGESIZE);		
     static pthread_t pthread_ids[NUMTHREAD];
 				/* contains ids of the threads created        */
-    caddr_t map_addr;		/* address where the file is mapped	      */
+    caddr_t map_addr = NULL;	/* address where the file is mapped	      */
 				
     /* Create a file with permissions 0666, and open it with RDRW perms	*/
     /* if the name is not a NULL         			        */
@@ -682,16 +682,16 @@ main(int   argc,    /* number of command line parameters		      */
         int  signum;    /* signal number that hasto be handled                */        
 	char *signame;  /* name of the signal to be handled.                  */    
     } 
-    sig_info[] =  {     SIGHUP,"SIGHUP",
-                        SIGINT,"SIGINT",
-                        SIGQUIT,"SIGQUIT",
-                        SIGABRT,"SIGABRT",
-                        SIGBUS,"SIGBUS",
-                        SIGSEGV,"SIGSEGV",
-                        SIGALRM, "SIGALRM",
-                        SIGUSR1,"SIGUSR1",
-                        SIGUSR2,"SIGUSR2",
-                        -1,     "ENDSIG"
+    sig_info[] =  {     {SIGHUP,"SIGHUP"},
+                        {SIGINT,"SIGINT"},
+                        {SIGQUIT,"SIGQUIT"},
+                        {SIGABRT,"SIGABRT"},
+                        {SIGBUS,"SIGBUS"},
+                        {SIGSEGV,"SIGSEGV"},
+                        {SIGALRM, "SIGALRM"},
+                        {SIGUSR1,"SIGUSR1"},
+                        {SIGUSR2,"SIGUSR2"},
+                        {-1,     "ENDSIG"}
                    };
     
     optarg = NULL;

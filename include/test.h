@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.3 2002/05/21 13:01:00 plars Exp $ */
+/* $Id: test.h,v 1.4 2002/05/28 16:26:16 robbiew Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -214,5 +214,8 @@ extern void t_breakum(char *tcid, int total, int typ, char *msg, void (*fnc)());
 extern void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
 extern void tst_tmpdir();
 extern void tst_rmdir();
+
+extern char * get_high_address(void);
+extern void do_file_setup(char *);
 
 #endif	/* end of __TEST_H__ */
