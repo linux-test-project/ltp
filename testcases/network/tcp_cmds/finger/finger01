@@ -18,9 +18,9 @@
 #
 #
 #
-#  FILE   : finger6
+#  FILE   : finger
 #
-#  PURPOSE: To test the basic functionality of the `finger6` command.
+#  PURPOSE: To test the basic functionality of the `finger` command.
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -58,14 +58,14 @@ do_setup ()
 
    [ "$LUSER" = "root" ] || end_testcase "MUST BE root to run the test!"
 
-   FINGER=`netstat -an | grep "::79" |awk '{print $6}'`
+   FINGER=`netstat -a | grep "*:finger" |awk '{print $6}'`
    if [[ $FINGER -ne "LISTEN" ]]; then
-      end_testcase "Please start fingerd for IPv6 locally."
+      end_testcase "Please start fingerd locally."
    fi
 
-   FINGER=`rsh -n $RHOST netstat -a |grep "::79"|awk '{print $6}'`
+   FINGER=`rsh -n $RHOST netstat -a |grep "*:finger"|awk '{print $6}'`
    if [[ $FINGER -ne "LISTEN" ]]; then
-      end_testcase "Please start fingerd for IPv6 on remote host."
+      end_testcase "Please start fingerd on remote host."
    fi
 }
 

@@ -1,7 +1,7 @@
 all:
 
 install: all
-	ln -f finger601 ../../../bin
+	ln -f finger01 ../../../bin
 
 clean:
 
