@@ -114,11 +114,11 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 		}
 		iovp->iov_len = bufsize;
 	}
-
+	
 	/* Test */
 	for (i = 0; i < iter; i++) {
-		vfillbuf(iov1, nvector, i);
-		vfillbuf(iov2, nvector, i+1);
+		vfillbuf(iov1, nvector, iter);
+		vfillbuf(iov2, nvector, iter - i);
 		if (lseek(fd_w, offset, SEEK_SET) < 0) {
 			fprintf(stderr, "lseek before writev failed: %s\n",
 				strerror(errno));
@@ -141,6 +141,8 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 			fprintf(stderr, "readv/writev comparision failed\n");
 			return(-1);
 		}
+		vfillbuf(iov1, nvector, '\0');
+		vfillbuf(iov2, nvector, '\0');
 	}
 
 	/* Cleanup */

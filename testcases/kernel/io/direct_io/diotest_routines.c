@@ -59,7 +59,11 @@
 void
 fillbuf(char *buf, int count, char value)
 {
-	while (count-- > 0) *buf++ = value;
+	while (count > 0) {
+		strncpy(buf,&value,1);
+		buf++;
+		count = count - 1;
+	}
 }
 
 void
@@ -82,14 +86,14 @@ bufcmp(char *b1, char *b2, int bsize)
 {
 	int i;
 
-	for (i = 0; i < bsize; i++) {
-		if (b1[i] != b2[i]) {
+	for (i = 0; i < bsize; i++){
+		if (strncmp(&b1[i], &b2[i], i)){
 			fprintf(stderr, "bufcmp: offset %d: Expected: 0x%x, got 0x%x\n",
 				i, b1[i], b2[i]);
 			return(-1);
 		}
 	}
-	return(0);
+	return (0);
 }
 
 int
@@ -145,7 +149,7 @@ filecmp(char *f1, char *f2)
 			return(-1);
 		}
 		for (i = 0; i < ret1; i++) {
-			if ( buf1[i] != buf2[i] ) {
+			if ( strncmp(&buf1[i], &buf2[i], 1)) {
 				fprintf(stderr, "compare_file: char mismatch:");
 				fprintf(stderr, " %s offset %d: 0x%02x %c  ", f1, i, buf1[i], isprint(buf1[i]) ? buf1[1] : '.');
 				fprintf(stderr, " %s offset %d: 0x%02x %c\n", f2, i, buf2[i], isprint(buf2[i]) ? buf2[i] : '.');
