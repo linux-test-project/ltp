@@ -119,7 +119,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static int swapfile;		/* Number of swapfiles turned on*/
 
-static char *path[] = {"./abcd", "/dev/mouse",
+static char *path[] = {"./abcd", "/dev/tty",
 			"./swapfilenext", "./swapfile01"};
 
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
@@ -274,7 +274,7 @@ setup03()
 	int j, fd;		/*j is loop counter, fd is file descriptor*/
 	int pid;	   	/* used for fork */
 	int *status=NULL;	/* used for fork */
-	char cmd_buffer[65];	/* array to hold command line*/
+	char cmd_buffer[100];	/* array to hold command line*/
 	char filename[15];	/* array to store new filename*/
 	char decimal[3];	/* array for digits at end of filename*/
 	char temp[7];		/* to store wc -l output*/
