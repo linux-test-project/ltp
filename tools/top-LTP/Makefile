@@ -32,7 +32,7 @@ clean:
 ###### install
 
 install: 
-	ln -f top ../../testcases/bin
+	@set -e; ln -f top ../../testcases/bin
 
 ############ prog.c --> prog.o
 
