@@ -1,0 +1,55 @@
+  accept01  
+  
+   Verify that accept() returns the proper errno for various failure cases
+
+  
+  bind01  
+  
+   Verify that bind() returns the proper errno for various failure cases
+ 
+
+  listen01  
+  
+   Verify that listen() returns the proper errno for various failure cases
+ 
+
+  recv01  
+  
+   Verify that recv() returns the proper errno for various failure cases
+
+ 
+  recvfrom01  
+  
+   Verify that recvfrom() returns the proper errno for various failure cases
+
+ 
+  recvmsg01  
+  
+   Verify that recvmsg() returns the proper errno for various failure cases
+
+ 
+  send01  
+  
+   Verify that send() returns the proper errno for various failure cases
+ 
+
+  sendmsg01  
+  
+   Verify that sendmsg() returns the proper errno for various failure cases
+
+ 
+  sendto01  
+  
+   Verify that sendto() returns the proper errno for various failure cases
+
+ 
+  setsockopt01  
+  
+   Verify that setsockopt() returns the proper errno for various failure cases
+ 
+
+  socket01  
+  
+   Verify that socket() returns the proper errno for various failure cases
+
+ 
