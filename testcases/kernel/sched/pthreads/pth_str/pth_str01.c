@@ -303,11 +303,6 @@ int	doit( c_info *parent ) {
 	c_info 		*info_p;
 	struct timespec	timer;
 
-	if ( debug ) {
-	    printf( "parent=%#010x\n", (intptr_t)parent );
-	    fflush( stdout );
-	}
-
 	if ( parent != NULL ) {
 	    /*
 	     * Synchronize with our siblings so that all the children at

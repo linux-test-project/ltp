@@ -310,11 +310,6 @@ void *doit( void *param )
 	c_info 		*info_p;
 	struct timespec	timer;
 
-	if ( debug ) {
-	    printf( "parent=%#010x\n", (intptr_t)parent );
-	    fflush( stdout );
-	}
-
 	if ( parent != NULL ) {
 	    /* Synchronize with our siblings so that all the children at
 	     * a given level have been created before we allow those children
@@ -360,11 +355,6 @@ void *doit( void *param )
 
 	    /* Create breadth children.  */
 	    for ( child = 0; child < breadth; child++ ) {
-		if ( debug ) {
-		    printf( "thread %d making child %d, ptr=%x\n", my_index,
-		      child, (unsigned int)&(info_p->threads[child]) );
-		    fflush( stdout );
-		}
 		if ((rc = pthread_create(&(info_p->threads[child]), &attr, doit, (void *) info_p))) {
 		    fprintf( stderr, "pthread_create (doit): %s\n",
 		      strerror(rc) );

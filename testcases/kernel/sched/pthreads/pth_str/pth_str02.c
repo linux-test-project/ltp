@@ -114,10 +114,6 @@ void *thread (void *parm)
 	pthread_attr_t	attr;
 	size_t		stacksize = 1046528;
 
-	if (debug) {
-		printf ("\tThread [%d]: new\n", num);
-		fflush (stdout);
-	}
 
 	/*
 	 * Create threads while num < num_threads...
@@ -132,21 +128,17 @@ void *thread (void *parm)
 			sys_error ("pthread_attr_setdetachstate failed", __LINE__);
 		if (pthread_create (&th, &attr, thread, (void *)(num + 1))) {
 			if (test_limit) {
-			   printf ("Testing pthread limit, %d pthreads created.\n", num);
+			   printf ("Testing pthread limit, %d pthreads created.\n", (int)num);
 			   pthread_exit(0);
 			}
 			if (errno == EAGAIN) {
-			    fprintf (stderr, "Thread [%d]: unable to create more threads!\n", num);
+			    fprintf (stderr, "Thread [%d]: unable to create more threads!\n", (int)num);
 			    return NULL;
 			}
 			else 
 			    sys_error ("pthread_create failed", __LINE__);
 		}
 		pthread_join (th, (void *) NULL);
-	}
-	if (debug) {
-		printf ("\tThread [%d]: done\n", num);
-		fflush (stdout);
 	}
 
 	pthread_exit(0);
