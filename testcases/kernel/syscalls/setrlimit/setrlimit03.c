@@ -44,6 +44,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
+#include <linux/fs.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -79,7 +80,10 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		rlim.rlim_max = getdtablesize() + 1;
+		if (getrlimit(RLIMIT_NOFILE, &rlim) != 0)
+			tst_brkm(TFAIL, cleanup, "getrlimit failed, "
+					"errno = %d", errno);
+		rlim.rlim_max = NR_OPEN + 1;
 
 		TEST(setrlimit(RLIMIT_NOFILE, &rlim));
 
@@ -90,14 +94,15 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		if (errno != EPERM) {
-			tst_resm(TFAIL, "Expected EPERM, got %d", errno);
+		if (TEST_ERRNO != EPERM) {
+			tst_resm(TFAIL, "Expected EPERM, got %d", TEST_ERRNO);
 		} else {
 			tst_resm(TPASS, "got expected EPERM error");
 		}
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return 0;
 }
 
 /*
