@@ -193,7 +193,7 @@ setup1(void)
 		tst_brkm(TBROK, cleanup, "socket setup failed for accept "
 			"test %d: %s", testno, strerror(errno));
 	}
-	if (bind(s, &sin0, sizeof(sin0)) < 0) {
+	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket bind failed for accept "
 			"test %d: %s", testno, strerror(errno));
 	}
