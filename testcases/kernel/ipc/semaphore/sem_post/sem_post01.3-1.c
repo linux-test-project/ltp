@@ -52,7 +52,7 @@ int main() {
 	}
 
 	/* Try to increment mysemp */
-	if( sem_post(mysemp) == -1 && errno == EINVAL) {
+	if( (sem_post(mysemp) == -1) && (errno == EINVAL)) {
 	        puts("TEST PASSED");
 	        return PTS_PASS;
 	} else {
