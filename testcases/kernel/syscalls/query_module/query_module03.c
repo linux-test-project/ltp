@@ -81,12 +81,14 @@
  *
  ****************************************************************/
 
+#include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <asm/page.h>
 #include <asm/atomic.h>
 #include <linux/module.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -113,6 +115,8 @@ static int exp_enos[]={ENOSPC, EFAULT, 0};
 static int testno;
 static char out_buf[PAGE_SIZE];
 static size_t ret_size;
+
+char * bad_addr = 0;
 
 static void setup(void);
 static void cleanup(void);
@@ -157,6 +161,7 @@ main(int argc, char **argv)
 			"at a time"); 
 		STD_COPIES = 1;
 	}
+        
 	tst_tmpdir();
 	setup();
 
@@ -210,7 +215,7 @@ setup1(void)
                 tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
                 return 1;
         }
-
+	
 	/* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
         /* if( sprintf(cmd, "insmod %s.o", DUMMY_MOD) == -1) {         */
@@ -260,6 +265,14 @@ setup(void)
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
 	TEST_PAUSE;
+
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+                tst_brkm(TBROK, cleanup, "mmap failed");
+        }
+	tdat[0].modname = bad_addr;
+	tdat[2].buf = (void *) bad_addr;
+
 }
 
 /*

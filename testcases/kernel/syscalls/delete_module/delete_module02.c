@@ -85,6 +85,7 @@
 #include <asm/page.h>
 #include <asm/atomic.h>
 #include <linux/module.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -111,6 +112,8 @@ struct passwd *ltpuser;
 static char longmodname[MODNAMEMAX];
 static int testno;
 static char modname[20];		/* Name of the module */
+
+char * bad_addr = 0;
 
 static void setup(void);
 static void cleanup(void);
@@ -244,6 +247,12 @@ setup(void)
 	if( sprintf(modname, "%s_%d",BASEMODNAME, getpid()) <= 0) {
 		tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
 	}
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+                tst_brkm(TBROK, cleanup, "mmap failed");
+    	}
+	tdat[2].modname = bad_addr;
+
 }
 
 /*
