@@ -1,0 +1,86 @@
+<!
+# os_results.html: Contains html version of the Ballista OS Robustness Test Suite results
+# Copyright (C) 1998-2001  Carnegie Mellon University
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. >
+
+<HTML>
+<HEAD>
+<TITLE>Functions tested with Ballista OS Test</TITLE>
+</HEAD>
+
+<BODY TEXT="#FFFFDC" BGCOLOR="#666666" LINK="#FFFF00" VLINK="#0000FF"
+ ALINK="#FF0000">
+<CENTER>
+<P><B><FONT FACE="verdana, arial, helvetica"><FONT SIZE="+1"> Functions tested
+with Ballista OS Test </FONT></FONT></B></P>
+</CENTER>
+
+<P><FONT FACE="verdana, arial, helvetica"> Listed below are the functions
+tested the last time Ballista OS Test was run. In addition to the basic result
+information, a link is provided for each function to a csh script. When
+executed, the csh script will generate C++ code that reproduces the robustness
+errors encountered for the selected function. One c++ file is created for each
+robustness error encountered.  </FONT></P>
+
+<P>There are two basic ways to use the script information</P>
+
+<OL>
+<LI> Find the test case you are interested in within the script and copy that
+single command to the command line </LI>
+
+<UL>
+<LI> The command should be performed after you are in the /outfiles directory. 
+</LI>
+<LI> The output will be placed in the directory and file specified at the end
+of the command. </LI>
+<LI> For example for the access function with parameters set to
+b_ptr_buf=BUF_LARGE and b_short_int_common=ZERO: (all on one line)
+<BLOCKQUOTE><FONT COLOR="AAD5D5"><FONT SIZE="-1"> .../ballista/outfiles&gt;
+<B><STRONG>./create_code_standAlone.pl access Abort 2 b_ptr_buf BUF_LARGE
+b_short_int_common ZERO &gt;
+access_bug_report/access.b_ptr_bufBUF_LARGE.b_short_int_commonZERO.cpp
+</STRONG></B></FONT></FONT></BLOCKQUOTE>
+</LI>
+</UL>
+
+
+<LI> The other option will be to run the entire script and create all the
+programs with a single command </LI>
+
+<UL>
+<LI> The script is already saved as a file. The file is stored as
+/outfiles/<I>functionName</I>_bug_report/genCode.</LI>
+<LI> Executing this script may create thousands of c++ files depending on the
+number of robustness errors detected. </LI>
+<LI> For example for the access function <BLOCKQUOTE><FONT COLOR="AAD5D5"><FONT
+SIZE="-1"> .../ballista/outfiles/access_bug_report&gt; <B>genCode</B>
+</FONT></FONT></BLOCKQUOTE>
+</LI>
+</UL>
+</OL>
+
+<HR>
+<TABLE WIDTH="90%" BORDER="1">
+<TR>
+<TH ALIGN="CENTER">FUNCTION</TH>
+<TH ALIGN="CENTER">PASS/FAIL STATS</TH>
+<TH ALIGN="CENTER">CONTAINS FAILURE(S)</TH>
+<TH ALIGN="CENTER"># TESTS</TH>
+<TH ALIGN="CENTER"># RESTARTS</TH>
+<TH ALIGN="CENTER"># ABORTS</TH>
+<TH ALIGN="CENTER"># SETUP FAILS</TH>
+</TR>
+
