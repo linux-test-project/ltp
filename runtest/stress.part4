@@ -1,0 +1,16 @@
+mc_cmds mc_cmds
+mc_commo export TCsrc=$LTPROOT/testcases/network/multicast/mc_commo; mc_commo
+mc_member export TCsrc=$LTPROOT/testcases/network/multicast/mc_member; mc_member
+mc_opts export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts
+
+rpc01 export TCbin=$LTPROOT/testcases/network/rpc/rpc01; rpc01
+perf_lan export TCbin=$LTPROOT/testcases/network/tcp_cmds/perf_lan; perf_lan
+sendfile export TCbin=$LTPROOT/testcases/network/tcp_cmds/sendfile; sendfile01
+
+nfslock01 export VERSION=2; export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
+nfslock01 export VERSION=3; export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
+
+nfsstat01 export VERSION=2; export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
+nfsstat01 export VERSION=3; export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
+
+
