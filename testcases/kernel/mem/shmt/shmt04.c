@@ -17,15 +17,16 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+/* 03/21/2003   enable ia64     Jacky.Malcles */
 /* 12/20/2002   Port to LTP     robbiew@us.ibm.com */
 /* 06/30/2001   Port to Linux   nsharoff@us.ibm.com */
 
 /*
  * NAME
- *	shmt04
+ *		 shmt04
  *
  * CALLS
- *	shmctl(2) shmget(2) shmat(2)
+ *		 shmctl(2) shmget(2) shmat(2)
  *
  * ALGORITHM
  * Parent process forks a child. Child pauses until parent has created
@@ -42,6 +43,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
+#include <sys/utsname.h>
 #include <signal.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -57,11 +59,15 @@ int TST_TOTAL=2;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-key_t	key;
+struct utsname uval;
+char *kmachine;
+
+key_t key;
 sigset_t sigset;
 
-#define		ADDR		(void *)0x80000
-#define		SIZE		16*1024
+#define  ADDR1  (void *)0x40000000
+#define  ADDR  (void *)0x80000
+#define  SIZE  16*1024
 
 
 int child();
@@ -69,133 +75,145 @@ int rm_shm(int);
 
 int main()
 {
-	char	*cp=NULL;
-	int	pid, pid1, shmid;
-	int	status;
+ char *cp=NULL;
+ int pid, pid1, shmid;
+ int status;
 
-	key = (key_t) getpid() ;
+ /* are we doing with ia64 arch */
+ uname(&uval);
+ kmachine = uval.machine;
 
-	sigemptyset(&sigset);
-	sigaddset(&sigset,SIGUSR1);
-	sigprocmask(SIG_BLOCK,&sigset,NULL);
-	
-	pid = fork();
-	switch (pid) {
-	case -1:
-		tst_resm(TBROK,"fork failed");
-		tst_exit() ;
-	case 0:
-		child();
-	}
+ key = (key_t) getpid() ;
 
-/*----------------------------------------------------------*/
-
-
-	if ((shmid = shmget(key, SIZE, IPC_CREAT|0666)) < 0 ) {
-		perror("shmget");
-		tst_resm(TFAIL,"Error: shmget: shmid = %d, errno = %d\n",
-		shmid, errno) ;
-		/*
-		 * kill the child if parent failed to do the attach
-		 */
-		(void)kill(pid, SIGINT);
-	}
-	else {
-		cp = (char *) shmat(shmid, ADDR, 0);
-		if (cp == (char *)-1) {
-			perror("shmat");
-			tst_resm(TFAIL,
-			"Error: shmat: shmid = %d, errno = %d\n",
-			shmid, errno) ;
-
-		/* kill the child if parent failed to do the attch */
-
-			kill(pid, SIGINT) ;   
-
-		/* remove shared memory segment */
-
-			rm_shm(shmid) ;  
-
-			tst_exit() ;
-		} 
-		*cp     = 'A';
-		*(cp+1) = 'B';
-		*(cp+2) = 'C';
-
-		kill(pid, SIGUSR1);
-		while ( (pid1 = wait(&status)) < 0 && 
-			(errno == EINTR) ) ;
-		if (pid1 != pid) {
-			tst_resm(TFAIL,"Waited on the wrong child") ;
-			tst_resm(TFAIL,
-			"Error: wait_status = %d, pid1= %d\n", status, pid1) ;
-		}
-	}
-
-	tst_resm(TPASS,"shmget,shmat");
+ sigemptyset(&sigset);
+ sigaddset(&sigset,SIGUSR1);
+ sigprocmask(SIG_BLOCK,&sigset,NULL);
+ 
+ pid = fork();
+ switch (pid) {
+ case -1:
+  tst_resm(TBROK,"fork failed");
+  tst_exit() ;
+ case 0:
+  child();
+ }
 
 /*----------------------------------------------------------*/
 
 
-	if (shmdt(cp) < 0 ) {
-		tst_resm(TFAIL,"shmdt");
-	}
+if ((shmid = shmget(key, SIZE, IPC_CREAT|0666)) < 0 ) {
+ perror("shmget");
+ tst_resm(TFAIL,"Error: shmget: shmid = %d, errno = %d\n",
+ shmid, errno) ;
+ /*
+  * kill the child if parent failed to do the attach
+  */
+ (void)kill(pid, SIGINT);
+}
+else {
+ if ((strncmp(kmachine, "ia64", 4)) == 0) {
+  cp = (char *) shmat(shmid, ADDR1, 0);
+ } else {
+  cp = (char *) shmat(shmid, ADDR, 0);
+ }
+ if (cp == (char *)-1) {
+  perror("shmat");
+  tst_resm(TFAIL,
+           "Error: shmat: shmid = %d, errno = %d\n",
+           shmid, errno) ;
 
-	tst_resm(TPASS,"shmdt");
+/* kill the child if parent failed to do the attch */
+
+ kill(pid, SIGINT) ;   
+
+/* remove shared memory segment */
+
+ rm_shm(shmid) ;  
+
+ tst_exit() ;
+} 
+*cp     = 'A';
+*(cp+1) = 'B';
+*(cp+2) = 'C';
+
+kill(pid, SIGUSR1);
+while ( (pid1 = wait(&status)) < 0 && 
+ (errno == EINTR) ) ;
+ if (pid1 != pid) {
+  tst_resm(TFAIL,"Waited on the wrong child") ;
+  tst_resm(TFAIL,
+           "Error: wait_status = %d, pid1= %d\n", status, pid1) ;
+ }
+}
+
+tst_resm(TPASS,"shmget,shmat");
 
 /*----------------------------------------------------------*/
 
-	rm_shm(shmid) ;
-	tst_exit() ;
+
+if (shmdt(cp) < 0 ) {
+ tst_resm(TFAIL,"shmdt");
+}
+
+tst_resm(TPASS,"shmdt");
 
 /*----------------------------------------------------------*/
-	return(0);
+
+rm_shm(shmid) ;
+tst_exit() ;
+
+/*----------------------------------------------------------*/
+return(0);
 }
 
 int child()
 {
-	int 	shmid, 
-		chld_pid ;
-	char 	*cp;
-	int sig;
+int  shmid, 
+     chld_pid ;
+char *cp;
+int sig;
 
-	sigwait(&sigset, &sig);
-	chld_pid = getpid() ;
+sigwait(&sigset, &sig);
+chld_pid = getpid() ;
 /*--------------------------------------------------------*/
 
 
-	if ((shmid = shmget(key, SIZE, 0)) < 0) {
-		perror("shmget:child process");
-		tst_resm(TFAIL,
-		"Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
-		errno, shmid, chld_pid);
-	}
-	else 
-	{
-		cp = (char *) shmat(shmid, ADDR, 0);
-		if (cp == (char *)-1) {
-			perror("shmat:child process");
-			tst_resm(TFAIL,
-			"Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
-			errno, shmid, chld_pid);
-		} else {
-			if (*cp != 'A') {
-				tst_resm(TFAIL,"child: not A\n");
-			}
-			if (*(cp+1) != 'B') {
-				tst_resm(TFAIL,"child: not B\n");
-			}
-			if (*(cp+2) != 'C') {
-				tst_resm(TFAIL,"child: not C\n");
-			}
-			if (*(cp+8192) != 0) {
-				tst_resm(TFAIL,"child: not 0\n");
-			}
-		}
+if ((shmid = shmget(key, SIZE, 0)) < 0) {
+ perror("shmget:child process");
+ tst_resm(TFAIL,
+          "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
+           errno, shmid, chld_pid);
+}
+else 
+{
+ if ((strncmp(kmachine, "ia64", 4)) == 0) {
+  cp = (char *) shmat(shmid, ADDR1, 0);
+ } else {
+  cp = (char *) shmat(shmid, ADDR, 0);
+ }
+ if (cp == (char *)-1) {
+  perror("shmat:child process");
+  tst_resm(TFAIL,
+           "Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
+           errno, shmid, chld_pid);
+} else {
+  if (*cp != 'A') {
+   tst_resm(TFAIL,"child: not A\n");
+  }
+  if (*(cp+1) != 'B') {
+   tst_resm(TFAIL,"child: not B\n");
+  }
+  if (*(cp+2) != 'C') {
+   tst_resm(TFAIL,"child: not C\n");
+  }
+  if (*(cp+8192) != 0) {
+   tst_resm(TFAIL,"child: not 0\n");
+  }
+}
 
-	}
-	tst_exit() ;
-	return(0);
+}
+tst_exit() ;
+return(0);
 }
 
 int rm_shm(shmid)
@@ -210,4 +228,3 @@ int shmid ;
         }
         return(0);
 }
-

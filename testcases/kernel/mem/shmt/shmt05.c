@@ -22,10 +22,10 @@
 
 /*
  * NAME
- *	shmt05
+ *		 shmt05
  *
  * CALLS
- *	shmctl(2) shmget(2) shmat(2)
+ *		 shmctl(2) shmget(2) shmat(2)
  *
  * ALGORITHM
  * Create two shared memory segments and attach them to the same process
@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/utsname.h>
 #include <errno.h>
 #include <time.h>
 
@@ -52,85 +53,99 @@ int TST_TOTAL=2;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-key_t	key[2];
+key_t		 key[2];
+struct utsname uval;
+char *kmachine;
 
-#define	ADDR	(void *)0x80000
-#define	ADDR1	(void *)0x80010
+#define		 ADDR		 (void *)0x80000
+#define		 ADDR1		 (void *)0x80010
+#define ADDR_IA    (void *)0x40000000
+#define ADDR1_IA    (void *)0x40000010
 
-#define	SIZE	16*1024
+#define		 SIZE		 16*1024
 
 int rm_shm(int);
 
 int main()
 {
-	int	shmid, shmid1;
-	char	*cp, *cp1;
+ int		 shmid, shmid1;
+ char		 *cp, *cp1;
 
+ /* are we doing with ia64 arch */
+ uname(&uval);
+ kmachine = uval.machine;
 
-	srand48((getpid() << 16) + (unsigned)time((time_t *)NULL));
+ srand48((getpid() << 16) + (unsigned)time((time_t *)NULL));
 
-	key[0] = (key_t) lrand48();
-	key[1] = (key_t) lrand48();
-
-/*--------------------------------------------------------*/
-
-
-	if ((shmid = shmget(key[0], SIZE, IPC_CREAT|0666)) < 0) {
-		perror("shmget");
-		tst_resm(TFAIL,
-		"Error: shmget: shmid = %d, errno = %d\n",
-		shmid, errno) ;
-	} else {
-		cp = (char *) shmat(shmid, ADDR, 0);
-		if (cp == (char *)-1) {
-			tst_resm(TFAIL,"shmat");
-			rm_shm(shmid) ;
-		}
-	}
-
-	tst_resm(TPASS,"shmget & shmat");	
+ key[0] = (key_t) lrand48();
+ key[1] = (key_t) lrand48();
 
 /*--------------------------------------------------------*/
 
 
-	if ((shmid1 = shmget(key[1], SIZE, IPC_CREAT|0666)) < 0) {
-		perror("shmget2");
-		tst_resm(TFAIL,
-		"Error: shmget: shmid1 = %d, errno = %d\n",
-		shmid1, errno) ;
-	} else {
-		cp1 = (char *) shmat(shmid1, ADDR1, 0);
-		if (cp1 != (char *)-1) {
-			perror("shmat");
-			tst_resm(TFAIL,
-			  "Error: shmat: shmid1 = %d, addr= %#x, errno = %d\n",
-			  shmid1, cp1, errno);
-		}
-	}
+ if ((shmid = shmget(key[0], SIZE, IPC_CREAT|0666)) < 0) {
+  perror("shmget");
+  tst_resm(TFAIL,
+  "Error: shmget: shmid = %d, errno = %d\n",
+  shmid, errno) ;
+ } else {
+  if ((strncmp(kmachine, "ia64", 4)) == 0) {
+  cp = (char *) shmat(shmid, ADDR_IA, 0);
+  } else {
+  cp = (char *) shmat(shmid, ADDR, 0);
+  }
+  if (cp == (char *)-1) {
+   tst_resm(TFAIL,"shmat");
+   rm_shm(shmid) ;
+  }
+ }
 
-	tst_resm(TPASS,"2nd shmget & shmat");	
+ tst_resm(TPASS,"shmget & shmat");		 
+
+/*--------------------------------------------------------*/
+
+
+ if ((shmid1 = shmget(key[1], SIZE, IPC_CREAT|0666)) < 0) {
+  perror("shmget2");
+  tst_resm(TFAIL,
+  "Error: shmget: shmid1 = %d, errno = %d\n",
+  shmid1, errno) ;
+ } else {
+  if ((strncmp(kmachine, "ia64", 4)) == 0) {
+   cp1 = (char *) shmat(shmid1, ADDR1_IA, 0);
+  } else {
+   cp1 = (char *) shmat(shmid1, ADDR1, 0);
+  }
+  if (cp1 != (char *)-1) {
+   perror("shmat");
+   tst_resm(TFAIL,
+     "Error: shmat: shmid1 = %d, addr= %#x, errno = %d\n",
+     shmid1, cp1, errno);
+  }
+ }
+
+ tst_resm(TPASS,"2nd shmget & shmat"); 
 
 /*------------------------------------------------------*/
 
-	rm_shm(shmid) ;
-	rm_shm(shmid1) ;
+ rm_shm(shmid) ;
+ rm_shm(shmid1) ;
 
-	tst_exit() ;
+ tst_exit() ;
 
 /*-------------------------------------------------------*/
-	return(0);
+ return(0);
 }
 
 int rm_shm(shmid)
 int shmid ;
 {
-        if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-                perror("shmctl");
-                tst_resm(TFAIL,
-                "shmctl Failed to remove: shmid = %d, errno = %d\n",
-                shmid, errno) ;
-                tst_exit();
-        }
-        return(0);
+  if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+   perror("shmctl");
+   tst_resm(TFAIL,
+            "shmctl Failed to remove: shmid = %d, errno = %d\n",
+            shmid, errno) ;
+   tst_exit();
+  }
+  return(0);
 }
-

@@ -41,11 +41,13 @@
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/utsname.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #define		ADDR	(void *)0x80000
+#define		ADDR_IA (void *)0x40000000
 #define		SIZE	16*1024
 
 /** LTP Port **/
@@ -58,6 +60,9 @@ int TST_TOTAL=2;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
+struct utsname uval;
+char *kmachine;
+
 int child();
 int rm_shm(int);
 
@@ -67,6 +72,9 @@ int main()
 	int	shmid, pid, status;
 	key_t 	key;
 
+	/* are we doing with ia64 arch */
+	uname(&uval);
+	kmachine = uval.machine;
 
 	key = (key_t) getpid() ;
 
@@ -81,7 +89,11 @@ int main()
 		tst_exit() ;
 	}
 
-	cp = (char *) shmat(shmid, ADDR, 0);
+	if ((strncmp(kmachine, "ia64", 4)) == 0) {
+	  cp = (char *) shmat(shmid, ADDR_IA, 0);
+	} else {
+	  cp = (char *) shmat(shmid, ADDR, 0);
+	}
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,

@@ -41,6 +41,7 @@
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/utsname.h>
 #include <signal.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -48,6 +49,8 @@
 
 #define		ADDR		(void *)0x80000
 #define		ADDR1		(void *)0xA0000
+#define 	ADDR_IA    	(void *)0x40000000
+#define 	ADDR1_IA    	(void *)0x50000000
 #define		SIZE		16*1024
 
 /** LTP Port **/
@@ -62,6 +65,8 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 key_t	key;
 sigset_t sigset;
+struct utsname uval;
+char *kmachine;
 
 int child();
 int rm_shm(int);
@@ -71,6 +76,10 @@ int main()
 	char	*cp=NULL;
 	int	pid, pid1, shmid;
 	int	status;
+	
+	/* are we doing with ia64 arch */
+	uname(&uval);
+	kmachine = uval.machine;
 
 	key = (key_t)getpid() ;
 
@@ -100,7 +109,11 @@ int main()
 		(void)kill(pid, SIGINT);
 	}
 	else {
-		cp = (char *) shmat(shmid, ADDR, 0);
+		if ((strncmp(kmachine, "ia64", 4)) == 0) {
+		  cp = (char *) shmat(shmid, ADDR_IA, 0);
+		} else {
+		  cp = (char *) shmat(shmid, ADDR, 0);
+		}
 		if (cp == (char *)-1) {
 			perror("shmat") ;
 			tst_resm(TFAIL,
@@ -168,7 +181,11 @@ int child()
 		errno, shmid, chld_pid);
 	}
 	else {
-		cp = (char *) shmat(shmid, ADDR1, 0);
+		if ((strncmp(kmachine, "ia64", 4)) == 0) {
+		  cp = (char *) shmat(shmid, ADDR1_IA, 0);
+		} else {
+		  cp = (char *) shmat(shmid, ADDR1, 0);
+		}
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,
