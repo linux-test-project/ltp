@@ -74,7 +74,7 @@
 #include "write_log.h"
 
 #ifndef BSIZE
-#ifdef linux
+#ifdef DEV_BSIZE
 #define BSIZE DEV_BSIZE
 #else
 #define BSIZE BBSIZE

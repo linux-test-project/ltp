@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.9 2004/05/19 20:44:50 robbiew Exp $ */
+/* $Id: tst_sig.c,v 1.10 2005/01/04 21:00:35 mridge Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -70,6 +70,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 #include "test.h"
 
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
@@ -99,6 +100,9 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 {
 	char mesg[MAXMESG];		/* message buffer for tst_res */
 	int sig;
+#ifdef _SC_SIGRT_MIN
+        long sigrtmin, sigrtmax;
+#endif
 
 	/*
 	 * save T_cleanup and handler function pointers
@@ -110,6 +114,11 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 		handler = def_handler;
 	}
   
+#ifdef _SC_SIGRT_MIN
+        sigrtmin = sysconf(_SC_SIGRT_MIN);
+        sigrtmax = sysconf(_SC_SIGRT_MAX);
+#endif
+
 	/*
 	 * now loop through all signals and set the handlers
 	 */
@@ -122,10 +131,16 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	     * SIGINFO is used for file quotas and should be expected
 	     */
 
+#ifdef _SC_SIGRT_MIN
+            if (sig >= sigrtmin && sig <= sigrtmax)
+                continue;
+#endif
+
 	    switch (sig) {
 	        case SIGKILL:
 	        case SIGSTOP:
 	        case SIGCONT:
+#if !defined(_SC_SIGRT_MIN) && defined(__SIGRTMIN) && defined(__SIGRTMAX)
 	     /* Ignore all real-time signals */
 		case __SIGRTMIN:
 		case __SIGRTMIN+1:
@@ -163,6 +178,7 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 		case __SIGRTMAX-2:
 		case __SIGRTMAX-1:
 		case __SIGRTMAX:
+#endif
 #ifdef CRAY
 	        case SIGINFO:
 	        case SIGRECOVERY:	/* allow chkpnt/restart */
@@ -189,7 +205,18 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 #ifdef SIGPTRESCHED
                 case SIGPTRESCHED:
 #endif /* SIGPTRESCHED */
-
+#ifdef _SIGRESERVE
+              case _SIGRESERVE:
+#endif
+#ifdef _SIGDIL
+              case _SIGDIL:
+#endif
+#ifdef _SIGCANCEL
+              case _SIGCANCEL:
+#endif
+#ifdef _SIGGFAULT
+              case _SIGGFAULT:
+#endif
 	            break;
 
 	        case SIGCLD:

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.6 2004/01/05 21:12:51 robbiew Exp $ */
+/* $Id: parse_opts.c,v 1.7 2005/01/04 21:00:29 mridge Exp $ */
 
 /**********************************************************
  * 
@@ -680,7 +680,7 @@ int counter;
     static int first_time = 1;
     static int stop_time = 0;	/* stop time in rtc or usecs */
     static int delay;		/* delay in clocks or usecs  */
-    int hz=0;			/* clocks per second or usecs per second */
+    int hertz=0;			/* clocks per second or usecs per second */
     int ct, end;		/* current time, end delay time */
     int keepgoing=0;		/* used to determine return value */
 
@@ -693,7 +693,7 @@ int counter;
 
 	first_time=0;
 	if ( STD_LOOP_DELAY || STD_LOOP_DURATION ) {
-	    hz = get_timepersec();
+	    hertz = get_timepersec();
 	}
 
 	/*
@@ -703,7 +703,7 @@ int counter;
 	
 	if ( STD_LOOP_DURATION) {
 	    ct=get_current_time();
-	    stop_time=(int)((float)hz * STD_LOOP_DURATION) + ct;
+	    stop_time=(int)((float)hertz * STD_LOOP_DURATION) + ct;
 	}
 
 	/*
@@ -711,7 +711,7 @@ int counter;
 	 * of clocks for each delay.
 	 */
 	if ( STD_LOOP_DELAY ) {
-	    delay=(int)((float)hz * STD_LOOP_DELAY);
+	    delay=(int)((float)hertz * STD_LOOP_DELAY);
 	}
 
     }

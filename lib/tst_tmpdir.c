@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.9 2004/08/25 05:07:02 robbiew Exp $ */
+/* $Id: tst_tmpdir.c,v 1.10 2005/01/04 21:00:35 mridge Exp $ */
 
 /**********************************************************
  *
@@ -173,7 +173,7 @@ tst_tmpdir()
 		/*
 		 * Make the template name, then the directory
 		 */
-		if (tfd = mkstemp(template) == -1)
+		if ((tfd = mkstemp(template)) == -1)
 			tst_brkm(TBROK, tmpdir_cleanup, 
 				"%s: mkstemp(%s) failed; errno = %d: %s", 
 				FN_NAME, template, errno, strerror(errno));

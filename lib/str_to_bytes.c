@@ -61,8 +61,10 @@
 #define B_MULT	BSIZE		/* block size */
 #elif sgi
 #define B_MULT	BBSIZE		/* block size */
-#elif linux
+#elif defined(linux) || defined(__sun) || defined(__hpux)
 #define B_MULT	DEV_BSIZE	/* block size */
+#elif defined(_AIX)
+#define B_MULT UBSIZE
 #endif
 
 

@@ -41,7 +41,8 @@ void get_kver(int *k1, int *k2, int *k3)
 	struct utsname uval;
 	char *kver;
 	char *r1, *r2, *r3;
-	
+	extern char *strsep();          /* shut up some compilers */
+
 	uname(&uval);
 	kver = uval.release;
 	r1 = strsep(&kver, ".");

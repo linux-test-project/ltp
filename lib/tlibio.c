@@ -99,7 +99,7 @@
 #include <sys/uio.h> /* readv(2)/writev(2) */
 #include <string.h>  /* bzero */
 #endif
-#ifdef sgi
+#if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
 #include <aio.h>
 #endif
 #include <stdlib.h> /* atoi, abs */
@@ -1518,7 +1518,7 @@ long wrd;	/* to allow future features, use zero for now */
 }	/* end of lio_read_buffer */
 
 
-#ifndef linux
+#if !defined(linux) && !defined(__sun) && !defined(__hpux) && !defined(_AIX)
 /***********************************************************************
  * This function will check that async io was successful.
  * It can also be used to check sync listio since it uses the
@@ -1584,7 +1584,10 @@ lio_check_asyncio(char *io_type, int size, aiocb_t *aiocbp, int method)
 		__FILE__, __LINE__, io_type, cnt, method,
 		(aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL ? "signal" :
 		 aiocbp->aio_sigevent.sigev_notify == SIGEV_NONE ? "none" :
+#ifdef SIGEV_CALLBACK
 		 aiocbp->aio_sigevent.sigev_notify == SIGEV_CALLBACK ? "callback" :
+#endif
+		 aiocbp->aio_sigevent.sigev_notify == SIGEV_THREAD ? "thread" :
 		 "unknown") );
 	return -ret;
     }
@@ -1683,7 +1686,10 @@ lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp)
             printf("DEBUG %s/%d: wait method : aio_suspend, sigev_notify=%s\n", __FILE__, __LINE__,
     		(aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL ? "signal" :
 		 aiocbp->aio_sigevent.sigev_notify == SIGEV_NONE ? "none" :
+#ifdef SIGEV_CALLBACK
 		 aiocbp->aio_sigevent.sigev_notify == SIGEV_CALLBACK ? "callback" :
+#endif
+		 aiocbp->aio_sigevent.sigev_notify == SIGEV_THREAD ? "thread" :
 		 "unknown") );
 
 	aioary[0] = aiocbp;
@@ -1700,7 +1706,10 @@ lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp)
 				__FILE__, __LINE__,
 				(aiocbp->aio_sigevent.sigev_notify == SIGEV_SIGNAL ? "signal" :
 				 aiocbp->aio_sigevent.sigev_notify == SIGEV_NONE ? "none" :
-				 aiocbp->aio_sigevent.sigev_notify == SIGEV_CALLBACK ? "callback" :
+#ifdef SIGEV_CALLBACK
+                                 aiocbp->aio_sigevent.sigev_notify == SIGEV_CALLBACK ? "callback" :
+#endif
+                                 aiocbp->aio_sigevent.sigev_notify == SIGEV_THREAD ? "thread" :
 				 "unknown") );
 			return -errno;
 		}
