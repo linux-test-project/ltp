@@ -198,7 +198,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
 	}
 
-	sprintf(good_dir, "%s.%d", cur_dir, getpid());
+	sprintf(good_dir, "%s/%d", cur_dir, getpid());
 
 	ltpuser1 = my_getpwnam(user1name);
 	ltpuser2 = my_getpwnam(user2name);
