@@ -74,6 +74,7 @@ parent(int masterfd, int childpid)
 	pollfds[0].events = POLLIN;
 	usrstr.maxlen = BUFSZ;
 	usrstr.buf = buf;
+	usrstr.len = strlen(buf);
 
 	while ((i = poll(pollfds, 1, -1)) == 1) {
 		flag = 0;
