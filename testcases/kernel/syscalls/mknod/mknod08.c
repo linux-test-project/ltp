@@ -229,6 +229,11 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
+        /* fix permissions on the tmpdir */
+        if (chmod(".", 0711) != 0) {
+                tst_brkm(TBROK, cleanup, "chmod() failed");
+        }
+
 	/* Save the real user id of the test process */
         save_myuid = getuid();
 

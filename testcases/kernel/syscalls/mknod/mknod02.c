@@ -215,8 +215,6 @@ main(int ac, char **av)
 void
 setup()
 {
-	char DIR_A[PATH_MAX];
-
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -231,6 +229,11 @@ setup()
 
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
+
+	/* fix permissions on the tmpdir */
+        if (chmod(".", 0711) != 0) {
+                tst_brkm(TBROK, cleanup, "chmod() failed");
+        }
 
 	/* Save the real user id of the current test process */
         save_myuid = getuid();
