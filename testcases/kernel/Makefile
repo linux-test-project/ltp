@@ -1,4 +1,4 @@
-SUBDIRS = fs io ipc mem sched syscalls
+SUBDIRS = fs io ipc mem sched syscalls float
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
