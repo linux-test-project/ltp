@@ -20,16 +20,18 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
+CFLAGS+=	-I../../../../include -D_GNU_SOURCE
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TEST=nanosleep05
 
 all: $(TARGETS)
+	@chmod 755 $(TEST)
 
 install:
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
