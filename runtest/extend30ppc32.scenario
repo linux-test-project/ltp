@@ -1,0 +1,478 @@
+## LTP scenario file for _EXTEND_30_base_ppc32
+## Generated on 28 July 2004.
+##
+## This file should be saved in the ltp directory as
+##	runtest/extend30baseppc32.scenario
+##
+## If there are specific tests you do NOT want to run, 
+## create a file called
+##	runtest/extend30baseppc32.exclude
+##
+## and list those tests there. (In this way you will not
+## need to edit this file every time you re-cerate it.)
+##
+## Run the following to execute the LTP in the standard FIV manner
+##	./runfiv.sh extend30baseppc32
+##
+
+##
+## rpm verify these packages
+##
+## NOTE! THIS IS AN EXPERIMENTAL SECTION OF THE SCENARIO FILE.
+##       MANY ERRORS MAY BE GENERATED. LET'S GIVE IT A TRY.
+##
+pkgchk_aaa_base             	pkgcheck.sh aaa_base
+pkgchk_aaa_skel             	pkgcheck.sh aaa_skel
+pkgchk_apache               	pkgcheck.sh apache
+pkgchk_apache-example-pages 	pkgcheck.sh apache-example-pages
+pkgchk_ash                  	pkgcheck.sh ash
+pkgchk_at                   	pkgcheck.sh at
+pkgchk_autofs               	pkgcheck.sh autofs
+pkgchk_bash                 	pkgcheck.sh bash
+pkgchk_bc                   	pkgcheck.sh bc
+pkgchk_bind9                	pkgcheck.sh bind9
+pkgchk_bind9-utils          	pkgcheck.sh bind9-utils
+pkgchk_binutils             	pkgcheck.sh binutils
+pkgchk_bzip2                	pkgcheck.sh bzip2
+pkgchk_cdda2wav             	pkgcheck.sh cdda2wav
+pkgchk_cdrecord             	pkgcheck.sh cdrecord
+pkgchk_cpio                 	pkgcheck.sh cpio
+pkgchk_cracklib             	pkgcheck.sh cracklib
+pkgchk_curl                 	pkgcheck.sh curl
+pkgchk_db                   	pkgcheck.sh db
+pkgchk_db-utils             	pkgcheck.sh db-utils
+pkgchk_devs                 	pkgcheck.sh devs
+pkgchk_dhcp-base            	pkgcheck.sh dhcp-base
+pkgchk_dhcp-server          	pkgcheck.sh dhcp-server
+pkgchk_dhcp-tools           	pkgcheck.sh dhcp-tools
+pkgchk_diffutils            	pkgcheck.sh diffutils
+pkgchk_dos2unix             	pkgcheck.sh dos2unix
+pkgchk_dosfstools           	pkgcheck.sh dosfstools
+pkgchk_e2fsprogs            	pkgcheck.sh e2fsprogs
+pkgchk_expat                	pkgcheck.sh expat
+pkgchk_expect               	pkgcheck.sh expect
+pkgchk_fbset                	pkgcheck.sh fbset
+pkgchk_file                 	pkgcheck.sh file
+pkgchk_filesystem           	pkgcheck.sh filesystem
+pkgchk_fillup               	pkgcheck.sh fillup
+pkgchk_findutils            	pkgcheck.sh findutils
+pkgchk_gdbm                 	pkgcheck.sh gdbm
+pkgchk_gettext              	pkgcheck.sh gettext
+pkgchk_glib                 	pkgcheck.sh glib
+pkgchk_glibc                	pkgcheck.sh glibc
+pkgchk_glibc-html           	pkgcheck.sh glibc-html
+pkgchk_glibc-i18ndata       	pkgcheck.sh glibc-i18ndata
+pkgchk_glibc-info           	pkgcheck.sh glibc-info
+pkgchk_gmp                  	pkgcheck.sh gmp
+pkgchk_gpg                  	pkgcheck.sh gpg
+pkgchk_gpm                  	pkgcheck.sh gpm
+pkgchk_grep                 	pkgcheck.sh grep
+pkgchk_groff                	pkgcheck.sh groff
+pkgchk_gzip                 	pkgcheck.sh gzip
+pkgchk_hdparm               	pkgcheck.sh hdparm
+pkgchk_hotplug              	pkgcheck.sh hotplug
+pkgchk_hwinfo               	pkgcheck.sh hwinfo
+pkgchk_imlib                	pkgcheck.sh imlib
+pkgchk_iproute2             	pkgcheck.sh iproute2
+pkgchk_iptables             	pkgcheck.sh iptables
+pkgchk_iptraf               	pkgcheck.sh iptraf
+pkgchk_iputils              	pkgcheck.sh iputils
+pkgchk_itcl                 	pkgcheck.sh itcl
+pkgchk_kbd                  	pkgcheck.sh kbd
+pkgchk_ksymoops             	pkgcheck.sh ksymoops
+pkgchk_less                 	pkgcheck.sh less
+pkgchk_libelf               	pkgcheck.sh libelf
+pkgchk_libjpeg              	pkgcheck.sh libjpeg
+pkgchk_libmng               	pkgcheck.sh libmng
+pkgchk_libpcap              	pkgcheck.sh libpcap
+pkgchk_libpng               	pkgcheck.sh libpng
+pkgchk_libraw1394           	pkgcheck.sh libraw1394
+pkgchk_libtiff              	pkgcheck.sh libtiff
+pkgchk_libtool              	pkgcheck.sh libtool
+pkgchk_libungif             	pkgcheck.sh libungif
+pkgchk_libxml               	pkgcheck.sh libxml
+pkgchk_libxml2              	pkgcheck.sh libxml2
+pkgchk_logrotate            	pkgcheck.sh logrotate
+pkgchk_lsof                 	pkgcheck.sh lsof
+pkgchk_lukemftp             	pkgcheck.sh lukemftp
+pkgchk_m4                   	pkgcheck.sh m4
+pkgchk_mailx                	pkgcheck.sh mailx
+pkgchk_makedev              	pkgcheck.sh makedev
+pkgchk_man                  	pkgcheck.sh man
+pkgchk_mfont_suppl          	pkgcheck.sh mfont_suppl
+pkgchk_mfont_tt_wt-mtsans_j 	pkgcheck.sh mfont_tt_wt-mtsans_j
+pkgchk_mfont_tt_wt-mtsans_k 	pkgcheck.sh mfont_tt_wt-mtsans_k
+pkgchk_mfont_tt_wt-mtsans_s 	pkgcheck.sh mfont_tt_wt-mtsans_s
+pkgchk_mfont_tt_wt-mtsans_t 	pkgcheck.sh mfont_tt_wt-mtsans_t
+pkgchk_mfont_tt_wt-tnrwt_j  	pkgcheck.sh mfont_tt_wt-tnrwt_j
+pkgchk_mfont_tt_wt-tnrwt_k  	pkgcheck.sh mfont_tt_wt-tnrwt_k
+pkgchk_mfont_tt_wt-tnrwt_s  	pkgcheck.sh mfont_tt_wt-tnrwt_s
+pkgchk_mfont_tt_wt-tnrwt_t  	pkgcheck.sh mfont_tt_wt-tnrwt_t
+pkgchk_minicom              	pkgcheck.sh minicom
+pkgchk_mkisofs              	pkgcheck.sh mkisofs
+pkgchk_mktemp               	pkgcheck.sh mktemp
+pkgchk_mm                   	pkgcheck.sh mm
+pkgchk_modutils             	pkgcheck.sh modutils
+pkgchk_mod_php4             	pkgcheck.sh mod_php4
+pkgchk_mod_php4-core        	pkgcheck.sh mod_php4-core
+pkgchk_mod_ssl              	pkgcheck.sh mod_ssl
+pkgchk_mtools               	pkgcheck.sh mtools
+pkgchk_mutt                 	pkgcheck.sh mutt
+pkgchk_ncurses              	pkgcheck.sh ncurses
+pkgchk_net-tools            	pkgcheck.sh net-tools
+pkgchk_netcfg               	pkgcheck.sh netcfg
+pkgchk_nfs-utils            	pkgcheck.sh nfs-utils
+pkgchk_NVIDIA_GLX           	pkgcheck.sh NVIDIA_GLX
+pkgchk_NVIDIA_kernel        	pkgcheck.sh NVIDIA_kernel
+pkgchk_openldap2            	pkgcheck.sh openldap2
+pkgchk_openldap2-client     	pkgcheck.sh openldap2-client
+pkgchk_openslp              	pkgcheck.sh openslp
+pkgchk_openssh-askpass      	pkgcheck.sh openssh-askpass
+pkgchk_openssl              	pkgcheck.sh openssl
+pkgchk_pam                  	pkgcheck.sh pam
+pkgchk_patch                	pkgcheck.sh patch
+pkgchk_pciutils             	pkgcheck.sh pciutils
+pkgchk_pcre                 	pkgcheck.sh pcre
+pkgchk_perl                 	pkgcheck.sh perl
+pkgchk_permissions          	pkgcheck.sh permissions
+pkgchk_popt                 	pkgcheck.sh popt
+pkgchk_portmap              	pkgcheck.sh portmap
+pkgchk_procmail             	pkgcheck.sh procmail
+pkgchk_python               	pkgcheck.sh python
+pkgchk_python-tk            	pkgcheck.sh python-tk
+pkgchk_quota                	pkgcheck.sh quota
+pkgchk_raidtools            	pkgcheck.sh raidtools
+pkgchk_readline             	pkgcheck.sh readline
+pkgchk_rpm                  	pkgcheck.sh rpm
+pkgchk_rsync                	pkgcheck.sh rsync
+pkgchk_samba                	pkgcheck.sh samba
+pkgchk_samba-client         	pkgcheck.sh samba-client
+pkgchk_samba-vscan          	pkgcheck.sh samba-vscan
+pkgchk_sash                 	pkgcheck.sh sash
+pkgchk_sed                  	pkgcheck.sh sed
+#pkgchk_sendmail             	pkgcheck.sh sendmail
+pkgchk_setserial            	pkgcheck.sh setserial
+pkgchk_ssmtp                	pkgcheck.sh ssmtp
+pkgchk_strace               	pkgcheck.sh strace
+pkgchk_sudo                 	pkgcheck.sh sudo
+pkgchk_susefirewall2        	pkgcheck.sh SuSEfirewall2
+pkgchk_sysconfig            	pkgcheck.sh sysconfig
+pkgchk_sysvinit             	pkgcheck.sh sysvinit
+pkgchk_tar                  	pkgcheck.sh tar
+pkgchk_tcl                  	pkgcheck.sh tcl
+pkgchk_tclx                 	pkgcheck.sh tclx
+pkgchk_tcpd                 	pkgcheck.sh tcpd
+pkgchk_tcpdump              	pkgcheck.sh tcpdump
+pkgchk_tcsh                 	pkgcheck.sh tcsh
+pkgchk_telnet               	pkgcheck.sh telnet
+pkgchk_terminfo             	pkgcheck.sh terminfo
+pkgchk_tftp                 	pkgcheck.sh tftp
+pkgchk_timezone             	pkgcheck.sh timezone
+pkgchk_tk                   	pkgcheck.sh tk
+pkgchk_unzip                	pkgcheck.sh unzip
+pkgchk_utempter             	pkgcheck.sh utempter
+pkgchk_util-linux           	pkgcheck.sh util-linux
+pkgchk_words                	pkgcheck.sh words
+pkgchk_xf86tools            	pkgcheck.sh xf86tools
+pkgchk_xinetd               	pkgcheck.sh xinetd
+pkgchk_xlock                	pkgcheck.sh xlock
+pkgchk_xntp                 	pkgcheck.sh xntp
+pkgchk_zip                  	pkgcheck.sh zip
+pkgchk_zlib                 	pkgcheck.sh zlib
+
+##
+## test suite tbd or n/a ...
+##
+# mcore                   	china	Working NeedHdw
+# OpenIPMI                	china	Working NeedHdw
+# python-curses           	-n/a-	OutPlan
+# python-gdbm             	-n/a-	OutPlan
+# python-korean           	-n/a-	OutPlan
+# python-mpz              	-n/a-	OutPlan
+# python-nothreads        	-n/a-	OutPlan
+# python-tk               	-n/a-	OutPlan
+# python-tkinter          	-n/a-	OutPlan
+# python-xml              	-n/a-	OutPlan
+# ssmtp                   	-n/a-	OutPlan
+# uClibc                  	china	Working
+# xf86-xvesa              	-n/a-	OutPlan
+# xf86driver-options      	-n/a-	OutPlan
+# xf86_glx                	china	OutPlan
+# XFree86-compat-libs     	china	OutPlan
+# xxprt                   	china	OutPlan
+
+##
+## LTP tests follow ...
+##
+ash                     	ash.sh
+at                      	at.sh
+autofs                  	autofs.sh
+bash                    	bash.sh
+bc                      	bc_tests.sh
+bind9                   	bind9.sh
+bind9-utils             	bind9-utils.sh
+binutils                	binutils.sh
+busybox                 	busybox.sh
+bzip2                   	bzip2.sh
+cdrecord-1              	cdrecord.sh # also has manual test for systems with CD burner
+cdrecord-2              	mkisofs.sh
+cdrecord-3              	notice cdda2wav not tested
+cpio                    	cpio_tests.sh
+cracklib                	cracklib_tests.sh
+cron                    	cron_tests.sh
+db                      	db.sh
+db-utils                	db-utils.sh
+dhcp-base               	omshell_tests.sh
+dhcp-tools              	dhcping_tests.sh
+diffutils               	diffutils.sh
+dos2unix                	dos2unix.sh
+dosfstools              	dosfstools.sh
+e2fsprogs               	e2fsprogs2.sh
+eject                   	eject.sh
+expat                   	expat.sh
+expect                  	expect.sh
+file                    	file.sh
+fileutils-1             	mv.sh
+fileutils-2             	mkdir.sh
+fileutils-3             	ln.sh
+fileutils-4             	cp.sh
+findutils-1             	find.sh
+findutils-2             	xargs.sh
+gawk                    	gawk.sh
+gdb-6.1                     	gdb.sh
+gdbm                    	gdbm.sh
+gettext                 	gettext.sh
+glib                    	glib.sh
+glibc                   	glibc.sh
+glibc-profile           	glibc-profile.sh
+gmp                     	gmp.sh
+gpg                     	gpg.sh
+grep                    	grep.sh
+hdparm                  	hdparm.sh
+hwinfo                  	hwinfo_tests.sh
+iptables                	iptables.sh
+iputils-2               	ping01
+iputils-3               	traceroute.sh # traceroute not part of this package in 
+kbd-1                   	kbd.sh
+kbd-2                   	notice see also kbd.tst manual test
+libelf                  	elftest.sh
+libmng                  	mngtest.sh
+libpcap                 	notice covered by tcpdump testcase
+libpng                  	testpng.sh
+libtiff                 	notice tested by tiff testcase
+libtool                 	libtool.sh
+libupnp                 	libupnp.sh
+libxml                  	libxml.sh
+libxml2                 	libxml2.sh
+libxml2-python          	notice tested by pythontest.sh
+logrotate               	logrotate.sh
+lsof                    	lsof.sh
+m4                      	m4test.sh
+mailx                   	mail.sh
+minicom-1               	minicom.sh
+minicom-2               	notice there is also a manual test that should be run
+mkisofs-1               	mkisofs.sh
+mkisofs-2               	notice there is also a manual test that should be run
+mktemp                  	mktemp.sh
+modutils-4              	notice rmmod is tested by modprobe.sh and insmod.sh
+mod_ssl                 	notice mod_ssl.sh is invoked from apache testcase
+mtd-utils               	mtd-utils.sh
+mtools                  	mtools.sh
+net-tools               	netools_tests.sh
+nfs-utils               	nfs-utils.sh
+#ngpt-2                  	ngpt-posix.sh
+openldap2               	openldap2.sh
+openldap2-client        	notice this is tested with the openldap2 testcase.
+openslp                 	openslp.sh
+openssh-1               	keygen.sh
+openssh-2               	ssh.sh
+openssh-3               	scp.sh
+openssh-askpass         	ssh.sh  #CSDL: run openssh/ssh/ssh.sh 
+openssl                 	openssl.sh
+pam                     	pam_tests.sh
+pciutils                	pciutils.sh
+pcre                    	test_pcre.sh
+perl                    	perltest.sh
+popt                    	popt.sh
+portmap                 	portmap.sh
+procmail                	procmail.sh
+ps                      	ps.sh
+PyXML                   	testpyxml.sh
+raidtools               	raidtools.sh
+readline                	readline.sh
+rp-pppoe                	notice tested by ppp.sh
+rpm-1                   	rpm.sh
+rpm-2                   	popt.sh
+rsync                   	rsync.sh
+samba                   	samba.sh
+samba-client            	notice tested by samba.sh
+sash                    	sash.sh
+sed                     	sed.sh
+sh-utils                	sh-utils.sh
+shadow                  	shadow.sh
+strace                  	strace_tests.sh
+sudo                    	sudo_test.sh
+sysconfig               	ifuser.sh
+sysvinit                	sysvinitcmds_tests.sh
+tar                     	tar.sh
+tcpd                    	tcpd_tests.sh
+tcsh                    	tcsh.sh
+textutils               	textutils.sh
+tftp                    	tftp_test.sh
+utempter                	utempter_tests.sh
+xf86tools               	xf86tools.sh
+xntpd                    	xntpd_tests.sh
+zlib                    	zlib.sh
+
+
+
+## CSDL:
+## Need to start X server when testing the following test.
+
+#fbset                   	fbset_tests.sh
+#libungif                	libungif.sh
+#tk                      	tk_test.sh
+#mfonts-1                	fontcheck.sh -estf wt-mtsans_j -d /usr/share/fonts/truetype -l "^ja.*"
+#mfonts-2                	fontcheck.sh -estf wt-tnrwt_j -d /usr/share/fonts/truetype -l "^ja.*"
+#mfonts-3                	notice there is also a manual test that should be run
+#mfont_aix_ja            	fontcheck.sh -estf  aix_ja -d  "/usr/share/fonts/aix" -l "^ja.*"
+#mfont_aix_sc            	fontcheck.sh -eastf  aix_sc -d  "/usr/share/fonts/aix" -c "8859-1"
+#mfont_aix_tc            	fontcheck.sh -estf  aix_tc -d  "/usr/share/fonts/aix" -l "^zh_TW.*"
+#mfont_suppl-1           	fontcheck.sh -stvf  suppl -d  "/usr/share/fonts"  -c "gbk"
+#mfont_suppl-2           	fontcheck.sh -stvf  suppl -d  "/usr/share/fonts"  -c "big5"
+#mfont_tt_wt-mtsans_j    	fontcheck.sh -estf wt-mtsans_j -d /usr/share/fonts/truetype -l "^ja.*"
+#mfont_tt_wt-mtsans_k    	fontcheck.sh -estf wt-mtsans_k -d "/usr/share/fonts/truetype" -l "^ko.*"
+#mfont_tt_wt-mtsans_s    	fontcheck.sh -estf wt-mtsans_s -d "/usr/share/fonts/truetype" -l "^zh_CN."
+#mfont_tt_wt-mtsans_t    	fontcheck.sh -estf wt-mtsans_t -d "/usr/share/fonts/truetype" -l "^zh_TW."
+#mfont_tt_wt-tnrwt_j     	fontcheck.sh -estf wt-tnrwt_j -d /usr/share/fonts/truetype -l "^ja.*"
+#mfont_tt_wt-tnrwt_k     	fontcheck.sh -estf wt-tnrwt_k -d "/usr/share/fonts/truetype" -l "^ko.*"
+#mfont_tt_wt-tnrwt_s     	fontcheck.sh -estf wt-tnrwt_s -d "/usr/share/fonts/truetype" -l "^zh_CN.*"
+#mfont_tt_wt-tnrwt_t     	fontcheck.sh -estf wt-tnrwt_t -d "/usr/share/fonts/truetype" -l "^zh_TW.*"
+
+#xfnt100                 	fontcheck.sh -eastf 100dpi
+#xfntcyr                 	fontcheck.sh -eastf cyrillic -l "^ru.*"
+#xfntjp                  	fontcheck.sh -eastf japanese -l "^ja.*"
+#xfntscl-1               	fontcheck.sh -estf Speedo
+#xfntscl-2               	fontcheck.sh -estf Type1
+#xfntscl-3               	fontcheck.sh -estf truetype
+#xfntscl2                	fontcheck.sh -eastf Type1 -d /usr/X11R6/lib/X11/fonts/latin2 -c 8859-2
+
+##
+##
+
+
+
+##
+## LTPpkgcheck tests follow ...
+##
+# apache-example-pages    	-n/a-	Done
+# busybox-links           	-n/a-	Done
+# ftpdir                  	-n/a-	Done
+# glibc-html              	-n/a-	Done
+# glibc-info              	-n/a-	Done
+# kernel-sources          	-n/a-	Done
+# netcfg                  	-n/a-	Done
+# permissions             	-n/a-	Done
+# python-demo             	-n/a-	Done
+# release                 	-n/a-	Done
+# samba-vscan             	china	Done
+# tinylogin-links         	-n/a-	Done
+# words                   	-n/a-	Done
+
+##
+## LTPbase tests follow ...
+##
+# kernel                  	-n/a-	Done
+# mm                      	-n/a-	Done
+# syslogd                 	-n/a-	Done
+# termcap                 	-n/a-	Done
+
+##
+## LSB tests follow ...
+##
+# glibc-i18ndata          	-n/a-	Done
+# glibc-locale            	-n/a-	Done
+# terminfo                	-n/a-	Done
+# timezone                	-n/a-	Done
+
+##
+## Manual tests follow ...
+##
+# bluez-sdp               	china	Done
+# cdda2wav                	china	Done
+# cyrus-sasl2-gssapi      	china	Done
+# fbdesk                  	hpang	Done
+# fetchmailconf           	china	Done
+# fluxbox                 	rcp	Done
+# gpm                     	rcp	Done
+# gxdview                 	china	Done
+# imlib                   	rcp	Done
+# iprutils                	china	Done
+# iptraf                  	manjo	Done
+# iterm                   	shoji	Done
+# kinput2                 	shoji	Done
+# ksymoops                	china	Done
+# less                    	hpang	Done
+# libtabe                 	shoji	Done
+# linux-iscsi             	china	Done
+# loadlin                 	china	Done
+# motif                   	manjo	Done
+# motif-mwm               	manjo	Done
+# mutt                    	hpang	Done
+# ncurses                 	robb	Done
+# tc                      	paulw	Done
+# x3270                   	paulw	Done
+# xcin                    	shoji	Done
+# xextra                  	china	Done
+# xf86                    	robb	Done
+# xf86-xfbdev             	rcp	Done
+# xloadimage              	rcp	Done
+# xlock                   	manjo	Done
+# xman                    	china	Done
+# xshared                 	china	Done
+# openswan
+
+##
+## Other tests follow ...
+##
+# certification-sles-eal3 	rcp	Working
+# java-jre                	paulw	Done
+# java-sdk                	paulw	Done
+# laus                    	rcp	Done
+
+##
+## Implicit tests follow ...
+##
+# aaa_base                	-n/a-	Implicit
+# aaa_skel                	-n/a-	Implicit
+# bluez-libs              	china	Implicit
+# canna-libs              	-n/a-	Implicit
+# devs                    	-n/a-	Implicit
+# filesystem              	-n/a-	Implicit
+# fillup                  	-n/a-	Implicit
+# groff                   	-n/a-	Implicit
+# kbd-shared              	-n/a-	Implicit
+# km_drm                  	china	Implicit
+# krb5-libs               	-n/a-	Implicit
+# libjpeg                 	-n/a-	Implicit
+# libnlink                	china	Implicit
+# makedev                 	-n/a-	Implicit
+# nvi                     	-n/a-	Implicit
+# NVIDIA_GLX              	-n/a-	Implicit
+# NVIDIA_kernel           	-n/a-	Implicit
+# openhpi                 	-n/a-	Implicit
+# openswan-dd             	hpang	Implicit
+# uboot                   	china	Implicit
+# xf86-freetype2          	-n/a-	Implicit
+# xloader                 	-n/a-	Implicit
+# xmodules                	-n/a-	Implicit
+
+##
+## Developer tests follow ...
+##
+# decus-cpp               	-n/a-	DevTest
+# libinet6                	-n/a-	DevTest
+# libnet                  	-n/a-	DevTest
+# patch                   	-n/a-	DevTest
+# xdevel                  	-n/a-	DevTest
+
