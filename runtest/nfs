@@ -1,5 +1,5 @@
 #
-# PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
+# PLEASE READ THE README FILE IN /nfs BEFORE RUNNING THESE.
 #
 nfs01 export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
 nfs02 export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
