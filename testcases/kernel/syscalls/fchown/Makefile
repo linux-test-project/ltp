@@ -18,17 +18,16 @@
 
 ###########################################################################
 # name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include
 LDFLAGS+=	-L../../../../lib -lltp
 
-SRCS=$(wildcard fchown*.c)
+SRCS=$(wildcard fchown*.c) change_owner.c
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: change_owner.mode $(TARGETS)
+all: $(TARGETS)
 
-change_owner.mode: change_owner
+change_owner.mode: 
 	chown root change_owner
 	chmod 04755 change_owner 
 
@@ -36,7 +35,7 @@ $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
 
-install:
+install: change_owner.mode
 	@for i in $(TARGETS) change_owner; do ln -f $$i ../../../bin/$$i ; done
 
 clean:
