@@ -1,3 +1,30 @@
+LTP-20050307
+- Added -v option to LTP, fixed -s option
+- Removed fcntl16 until testcase can be fixed/changed.
+- Fix for defect 14136, growfiles expanding a file past the 2G limit on ext2
+- Applied patch from Marcus Meissner for SF bug #1114114
+- Applied patch from David Miller for sigaction problems
+- Applied a patch from Suzuki Kp to resolve some race/signal handling conditions
+- In adapting specific LTP tests to uClinux running on Analog Devices'
+  Blackfin processor, we found a problem in mount01 where malloc was not
+  reserving space for the trailing null byte and strncpy was being called
+  without enough bytes to account for the trailing null byte.  The
+  following patch fixes the problem
+- Increased USER_PRECISION to 2200 to take into account the processes switching time nanosleep02
+- The attached patch fixes a swapon cross compile build error I ran into
+  recently. I verified that RH9 self hosted and cross compile builds now
+- Removed the include of <asm/atomic.h> back out.  Most distros and kernels
+  can build and execute the test without it now.
+- Change for defect 13778, when the /var/log/messages file is first moved, the first write fails
+- The SIGINT sighandler will set the "intinitr" flag to 1 for the children. But if the
+  "runtime" is small( a command line argument passed, the testcases were running
+  for 5 secs here), it may happen that the SIGINT may be recieved before the
+  child initialize the flag to 0, and which may lead to a hang
+- Change to exclude lib6 directory from default build since it breaks earlier Distros
+- Added code to handle cases where certain distros don't define AI_V4MAPPED in /usr/include/netdb.h
+
+
+
 LTP-20050207
 - runltp now exports $TMPDIR as a copy of $TMP, certain exceptions caused these to be different.
 - extra functions for LTP libs are to make these tests fail with a more
