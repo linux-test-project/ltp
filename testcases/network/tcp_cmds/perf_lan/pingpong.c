@@ -47,6 +47,9 @@
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <netdb.h>
+#include "test.h"
+#include "usctest.h"
+
 
 #define	MAXPACKET	4096	/* max packet size */
 #ifndef MAXHOSTNAMELEN
@@ -80,6 +83,13 @@ int nreceived = 0;		/* # of packets we got back */
 int timing = 0;
 void finish(int); 
 int nwrite;
+char *TCID = "perf_lan";
+int TST_TOTAL = 1;
+extern int Tst_count;
+
+
+
+
 /*
  * 			M A I N
  */
@@ -94,10 +104,10 @@ char *argv[];
 	int rc = 0;
 	struct protoent *proto;
 
-	printf ("Starting pingpong - to send / receive packets from host \n");
+	tst_resm (TINFO, "Starting pingpong - to send / receive packets from host \n");
 
         /* Get Host net address */
-        printf ("Get host net address for sending packets \n");
+        tst_resm (TINFO, "Get host net address for sending packets \n");
 	bzero( (char *)&whereto, sizeof(struct sockaddr) );
 	to->sin_family = AF_INET;
 	to->sin_addr.s_addr = inet_addr(av[1]);
@@ -111,21 +121,21 @@ char *argv[];
 			bcopy(hp->h_addr, (caddr_t)&to->sin_addr, hp->h_length);
 			hostname = hp->h_name;
 		} else {
-                        printf ("%s: unknown host, couldn't get address\n",argv[0]);
+            tst_resm (TINFO, "%s: unknown host, couldn't get address\n",argv[0]);
 			exit(1);
 		}
 	}
 
 
 
-        /*  Determine Packet Size - either use what was passed in or default */
-        printf ("Determine packet size \n");
+    /*  Determine Packet Size - either use what was passed in or default */
+        tst_resm (TINFO, "Determine packet size \n");
 	if( argc >= 3 )
 		datalen = atoi( av[2] );
 	else
 		datalen = 64-8;
 	if (datalen > MAXPACKET) {
-		printf("Pingpong: packet size too large\n");
+		tst_resm (TINFO, "Pingpong: packet size too large\n");
 		exit(1);
 	}
 	if (datalen >= sizeof(struct timeval))
@@ -133,7 +143,7 @@ char *argv[];
 
 
         /* Set number of packets to be sent */
-        printf ("Determine number of packets to send \n");
+        tst_resm (TINFO, "Determine number of packets to send \n");
 	if (argc >= 4)
 		npackets = atoi(av[3]);
 
@@ -144,18 +154,18 @@ char *argv[];
 
         /* Get network protocol to use (check /etc/protocol) */
 	if ((proto = getprotobyname("icmp")) == NULL) {
-		printf("ICMP: unknown protocol\n");
+		tst_resm (TINFO, "ICMP: unknown protocol\n");
 		exit(10);
 	}
 
  
         /* Create a socket endpoint for communications - returns a descriptor */
 	if ((s = socket(AF_INET, SOCK_RAW, proto->p_proto)) < 0) {
-		printf("Pingpong: socket - could not create link \n");
+		tst_resm (TINFO, "Pingpong: socket - could not create link \n");
 		exit(5);
 	}
 
-	printf("echoing %s: %d data bytes\n", hostname, datalen );
+	tst_resm (TINFO, "echoing %s: %d data bytes\n", hostname, datalen );
 
 	setlinebuf( stdout );
 
@@ -165,19 +175,19 @@ char *argv[];
 
      
         /* Fork a child process to continue sending packets */
-        printf ("Create a child process to continue to send packets \n");
+        tst_resm (TINFO, "Create a child process to continue to send packets \n");
 	switch (fork()) {
 	case -1:
-		printf("ERROR when forking a new process\n");
+		tst_resm (TINFO, "ERROR when forking a new process\n");
 		exit(1);
 	case 0:
                 /* Child's work */
 		ntransmitted=echopkt(datalen,npackets);
-		printf("%d packets transmitted, ",ntransmitted);
+		tst_resm (TINFO, "%d packets transmitted, ",ntransmitted);
 		sleep(10);
 		break;
 	default:
-                printf ("Parent started - to  receive packets \n");
+                tst_resm (TINFO, "Parent started - to  receive packets \n");
                 /* Parent's work - receive packets back from child */
 		for (;;) {
 			int len = sizeof (packet);
@@ -189,14 +199,14 @@ char *argv[];
 #endif
 
 			/* Receive packet from socket */
-			printf("Receiving packet \n");
+			tst_resm (TINFO, "Receiving packet \n");
 			fromlen = sizeof (from);
 			if ( (cc=recvfrom(s, packet, len, 0, (struct sockaddr *)&from, &fromlen)) < 0) {
-				printf("ERROR in recvfrom\n");
+				tst_resm (TINFO, "ERROR in recvfrom\n");
 			}
                         /* Verify contents of packet */
                         if ((rc = ck_packet (packet, cc, &from)) != 0) {
-                                printf("ERROR - network garbled packet\n");
+                                tst_resm (TINFO, "ERROR - network garbled packet\n");
 			}
                         else {
 				nreceived++;
@@ -224,7 +234,7 @@ int npackets;
 
 
         /* Setup the packet structure */
-        printf ("Setup ICMP packet structure to send to host \n");
+        tst_resm (TINFO, "Setup ICMP packet structure to send to host \n");
 	icp->icmp_type = ICMP_ECHO;
 	icp->icmp_code = 0;
 	icp->icmp_cksum = 0;
@@ -234,7 +244,7 @@ int npackets;
 
 
         /* Add time stamp and user data */
-        printf ("Add time stamp, user data, and check sum to packet. \n");
+        tst_resm (TINFO, "Add time stamp, user data, and check sum to packet. \n");
 	if (timing)
 		gettimeofday( tp, &tz );
 
@@ -250,12 +260,12 @@ int npackets;
 	while (count < npackets) {
 		count++;
                 /* Send packet through socket created */
-                printf ("Sending packet through created socket \n");
+                tst_resm (TINFO, "Sending packet through created socket \n");
 		i = sendto( s, outpack, cc, 0, &whereto, sizeof(struct sockaddr) );
 
 		if( i < 0 || i != cc )  {
 			if( i<0 )  perror("sendto");
-			printf("pingpong: wrote %s %d chars, ret=%d\n",hostname,cc,i);
+			tst_resm (TINFO, "pingpong: wrote %s %d chars, ret=%d\n",hostname,cc,i);
 			fflush(stdout);
 			}
 		}
@@ -325,7 +335,7 @@ in_cksum(u_short *addr, int len)
  */
 void finish(int n)
 {
-	printf("%d packets received, \n", nreceived );
+	tst_resm (TINFO, "%d packets received, \n", nreceived );
 	exit(0);
 }
 
@@ -362,14 +372,14 @@ struct sockaddr_in *from; 	/* address of sender */
 	}	
 
         /* Verify data in packet */
-        printf ("Verify data in packet after returned from sender \n");
+        tst_resm (TINFO, "Verify data in packet after returned from sender \n");
 	if ( datalen > 118 ) {
 		datalen=118;
 	}
-	printf ("Checking Data.\n");
+	tst_resm (TINFO, "Checking Data.\n");
         for( i=8; i<datalen; i++) {             /* skip 8 for time */
                 if ( i !=  (*datap)) {               
-                        printf ("Data cannot be validated. \n");
+                        tst_resm (TINFO, "Data cannot be validated. \n");
                 }
                 datap++; 
         }

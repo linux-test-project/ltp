@@ -21,7 +21,7 @@ unset LIBPATH
 #
 #  FILE   : perf_lan
 #
-#  PURPOSE: Generates LAN traffic using ICMP echo packets.
+#  PURPOSE: Generates LAN traffic using ICMP tst_resm TINFO packets.
 #           
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
@@ -29,6 +29,8 @@ unset LIBPATH
 #         machine, where the test is executed. 
 #
 #  HISTORY:
+#    06/06/03 Manoj Iyer manjo@mail.utexas.edu
+#      - Modified testcase to use Test API and fixed bugs.
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -54,6 +56,9 @@ trap "interrupt_testcase" 2 15 16 30
 
 do_setup()
 {
+  export TCID="perf_lan"
+  export TST_TOTAL=1
+  export TST_COUNT=1
   mkdir -p $TCtmp
 }
 
@@ -68,7 +73,7 @@ do_setup()
 do_test() 
 {
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
 
    TLOOP=1
    COUNT=1
@@ -79,7 +84,7 @@ do_test()
       RETVALUE=$?
 
       case "$RETVALUE" in
-         0) echo "Successful execution for loop $COUNT" ;;
+         0) tst_resm TINFO "Successful execution for loop $COUNT" ;;
          1) end_testcase "Error trying to send to host" ;;
          2) end_testcase "Error - Data length is too long";;
          3) end_testcase "Usage error ";;
@@ -107,7 +112,7 @@ do_test()
 do_cleanup()
 {
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
 
    cd /
    if [ $TCtmp != $TCsrc ]; then
@@ -128,13 +133,13 @@ do_cleanup()
 end_testcase()
 {  
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
    
    # Call other cleanup functions
    [ $CLEANUP = "ON" ] && do_cleanup
    
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
@@ -150,10 +155,10 @@ end_testcase()
 interrupt_testcase()
 {
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
 
-   echo "Testcase interrupted - cleaning up"
-   echo "Killing background process if it is still running"
+   tst_resm TINFO "Testcase interrupted - cleaning up"
+   tst_resm TINFO "Killing background process if it is still running"
    kill -9 $CHILDPID
    end_testcase
 }

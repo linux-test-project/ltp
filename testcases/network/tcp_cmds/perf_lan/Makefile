@@ -1,4 +1,5 @@
-CFLAGS += -w -O
+CFLAGS+=    -I../../../../include -Wall -w -O
+LOADLIBES+= -L../../../../lib -lltp
 LDLIBS += 
 
 SRCS=$(wildcard *.c)
