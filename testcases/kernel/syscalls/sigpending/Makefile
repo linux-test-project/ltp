@@ -19,19 +19,21 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-Wall -I../../../../include
+CFLAGS+=	-Wall -I../../../../include -D _GNU_SOURCE
 LDFLAGS+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TEST=sigpending01
 
 all: $(TARGETS)
+	@chmod 755 $(TEST)
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
 install: all
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
