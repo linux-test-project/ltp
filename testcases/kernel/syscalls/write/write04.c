@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	struct stat buf;
 	int fail;
 	int cnt;
-	char wbuf[8 * PIPE_BUF];
+	char wbuf[17 * PIPE_BUF];
 	struct sigaction sigptr; /* set up signal handler */
 
 	/* parse standard options */
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "Enter block 1: test for EAGAIN in write()");
 		fail = 0;
 
-		(void)memset((void *)wbuf, 'A', 8*PIPE_BUF);
+		(void)memset((void *)wbuf, 'A', 17*PIPE_BUF);
 
 		/*
 		 * open the read end of the pipe
@@ -171,9 +171,9 @@ int main(int argc, char **argv)
 			fail = 1;
 		}
 		(void)alarm(10);
-		cnt = write(wfd, wbuf, 8*PIPE_BUF);
+		cnt = write(wfd, wbuf, 17*PIPE_BUF);
 		(void)alarm(0);
-		if (cnt == 8 * PIPE_BUF) {
+		if (cnt == 17 * PIPE_BUF) {
 			tst_resm(TBROK, "Error reading fifo, nozero read");
 			fail = 1;
 		}
