@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup03.c,v 1.4 2000/11/14 22:47:34 nstraz Exp $ */
+/* $Id: dup03.c,v 1.5 2001/03/02 21:17:39 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -107,20 +107,12 @@
 
 #include <sys/types.h>
 #include <sys/fcntl.h>
-#if defined(linux)
-#include <linux/limits.h>
-#endif
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-
-#if defined(linux)
-#define MAX_FDS OPEN_MAX
-#else
-# define MAX_FDS 16384
-#endif
 
 void setup();
 void cleanup();
@@ -131,7 +123,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 
 char Fname[255];
-int Fd[MAX_FDS];
+int *Fd = NULL;
 int Nfds=0;
 
 /***********************************************************************
@@ -208,10 +200,19 @@ main(int ac, char **av)
 void 
 setup()
 {
+    long maxfds;
 
     /*
      * Initialize Fd in case we get a quick signal
      */
+    maxfds = sysconf(_SC_OPEN_MAX);
+    if (maxfds < 1) {
+	tst_brkm(TBROK, cleanup,
+	    		"sysconf(_SC_OPEN_MAX) Failed, errno=%d : %s",
+	    		errno, strerror(errno));
+    }
+    
+    Fd = (int *)malloc(maxfds*sizeof(int));
     Fd[0]=-1;
 
     /* capture signals */
@@ -227,7 +228,7 @@ setup()
      * open the file as many times as it takes to use up all fds
      */
     sprintf(Fname, "dupfile");
-    for (Nfds=1; Nfds<=MAX_FDS; Nfds++) {
+    for (Nfds=1; Nfds<=maxfds; Nfds++) {
         if ((Fd[Nfds-1] = open(Fname,O_RDWR|O_CREAT,0700)) == -1) {
 
 	    Nfds--;	/* on a open failure, decrement the counter */
@@ -248,10 +249,10 @@ setup()
     if ( Nfds == 0 ) {
 	tst_brkm(TBROK, cleanup, "Unable to open at least one file");
     }
-    if ( Nfds > MAX_FDS ) {
+    if ( Nfds > maxfds ) {
 	tst_brkm(TBROK, cleanup,
 	    "Unable to open enough files to use all file descriptors, tried %d",
-	    MAX_FDS);
+	    maxfds);
     }
 }	/* End setup() */
 
@@ -270,12 +271,15 @@ cleanup()
     TEST_CLEANUP;
 
     /* close the open file we've been dup'ing */
-    for (; Nfds >0 ; Nfds--) {
-	if (close(Fd[Nfds-1]) == -1) {
+    if (Fd) {
+    	for (; Nfds >0 ; Nfds--) {
+    	    if (close(Fd[Nfds-1]) == -1) {
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			Fname, errno, strerror(errno));
-    	}
-	Fd[Nfds]=-1;
+				Fname, errno, strerror(errno));
+	    }
+	    Fd[Nfds]=-1;
+	}
+	free(Fd);
     }
 
     /* Remove tmp dir and all files in it */
