@@ -82,6 +82,7 @@ $trace_logic
     echo " RHOST: $RHOST"
     echo " FILESIZE: $FILESIZE"
     echo " SOCKET_TYPE: $SOCKET_TYPE"
+    echo " LOOPS: $LOOPS"
     sleep 5
 
     OPTS=${OPTS:=",vers=$VERSION "}
@@ -118,13 +119,13 @@ do_test()
 {
 $trace_logic
   loopcount=0
+  create_file $FILESIZE /tmp/nfs04$PID.testfile >/dev/null
+  if [ $? != 0 ]; then
+	end_testcase "Could not create testfile"
+  fi
   tst_resm TINFO "Test Started"
   while [ $loopcount -lt $LOOPS ]
     do
-	create_file $FILESIZE /tmp/nfs04$PID.testfile >/dev/null
-	if [ $? != 0 ]; then
-		end_testcase "Could not create testfile"
-	fi
 	cp /tmp/nfs04$PID.testfile $TCtmp	
 	diff /tmp/nfs04$PID.testfile $TCtmp
 	retval=$?
@@ -132,6 +133,7 @@ $trace_logic
 		end_testcase "Error in loop $loopcount: Diff FAILED"
 	fi
 	loopcount=$(( $loopcount + 1 ))
+	tst_resm TINFO "Completed Loop $loopcount"
     done
 }
 
