@@ -60,8 +60,9 @@
 /* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
 #ifdef MODIFY_LDT_SPECIALCASE
 #define modify_ldt_ldt_s user_desc
-#else
-#ifndef modify_ldt_ldt_s
+#endif
+
+#if !defined(modify_ldt_ldt_s) || !defined(user_desc)
  typedef struct modify_ldt_ldt_t
  {
    unsigned int entry_number;
@@ -75,9 +76,6 @@
    unsigned int useable:1;
    unsigned int empty:25;
  }modify_ldt_s;
-#else
-#define modify_ldt_s modify_ldt_ldt_s
-#endif
 #endif
 
 void cleanup(void);
