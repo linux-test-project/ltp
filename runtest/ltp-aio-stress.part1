@@ -26,123 +26,55 @@
 #       -x turn off thread stonewalling
 #       -h this message
 #
-ADS000 testcases/kernel/io/ltp-aiodio/aio-stress
-ADS001 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -O -l -t1 -v /test/aiodio/file1 /test/aiodio/file2
-ADS002 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -O -l -t1 -v -x /test/aiodio/file1 /test/aiodio/file2
-ADS003 testcases/kernel/io/ltp-aiodio/aio-stress -a 2k -b 2 -c 2 -O -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2
-ADS004 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -O -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2 
-ADS005 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -O -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2 
-ADS006 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -O -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2 
-ADS007 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -O -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS008 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -O -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS009 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -O -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS010 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -O -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS011 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -O -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS012 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -O -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS013 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -O -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2
-ADS014 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -s -l -t1 -v file1 /test/aiodio/file2            
-ADS015 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -S -l -t1 -v -x file1 /test/aiodio/file2         
-ADS016 testcases/kernel/io/ltp-aiodio/aio-stress -a 2k -b 2 -c 2 -S -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2         
-ADS017 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2         
-ADS018 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2         
-ADS019 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS020 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS021 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS022 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS023 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS024 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2   
-ADS025 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2
-ADS026 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v /test/aiodio/junkfile /test/aiodio/file2      
-ADS027 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -s -l -t1 -v -C 1MB file1 /test/aiodio/file2            
-ADS028 testcases/kernel/io/ltp-aiodio/aio-stress -a 1k -b 2 -c 2 -S -l -t1 -v -x  -C 1MB file1 /test/aiodio/file2         
-ADS029 testcases/kernel/io/ltp-aiodio/aio-stress -a 2k -b 2 -c 2 -S -l -t2 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2         
-ADS030 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2         
-ADS031 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2         
-ADS032 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2      
-ADS033 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2      
-ADS034 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2      
-ADS035 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2   
-ADS036 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2   
-ADS037 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2   
-ADS038 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2
-ADS039 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB /test/aiodio/junkfile /test/aiodio/file2      
-ADS040 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 /test/aiodio/junkfile /test/aiodio/file2         
-ADS041 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2         
-ADS042 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2      
-ADS043 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2      
-ADS044 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2      
-ADS045 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2   
-ADS046 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2   
-ADS047 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2   
-ADS048 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2
-ADS049 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048  /test/aiodio/junkfile /test/aiodio/file2      
-ADS050 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k /test/aiodio/junkfile /test/aiodio/file2         
-ADS051 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k   /test/aiodio/junkfile /test/aiodio/file2         
-ADS052 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k   /test/aiodio/junkfile /test/aiodio/file2      
-ADS053 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k   /test/aiodio/junkfile /test/aiodio/file2      
-ADS054 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k   /test/aiodio/junkfile /test/aiodio/file2      
-ADS055 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k   /test/aiodio/junkfile /test/aiodio/file2   
-ADS056 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k   /test/aiodio/junkfile /test/aiodio/file2   
-ADS057 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k   /test/aiodio/junkfile /test/aiodio/file2   
-ADS058 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k   /test/aiodio/junkfile /test/aiodio/file2
-ADS059 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k   /test/aiodio/junkfile /test/aiodio/file2      
-ADS060 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k /test/aiodio/junkfile /test/aiodio/file2         
-ADS061 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k    /test/aiodio/junkfile /test/aiodio/file2         
-ADS062 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k    /test/aiodio/junkfile /test/aiodio/file2      
-ADS063 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k    /test/aiodio/junkfile /test/aiodio/file2      
-ADS064 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k    /test/aiodio/junkfile /test/aiodio/file2      
-ADS065 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k    /test/aiodio/junkfile /test/aiodio/file2   
-ADS066 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k    /test/aiodio/junkfile /test/aiodio/file2   
-ADS067 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k    /test/aiodio/junkfile /test/aiodio/file2   
-ADS068 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k    /test/aiodio/junkfile /test/aiodio/file2
-ADS069 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k   /test/aiodio/junkfile /test/aiodio/file2      
-ADS070 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k -i1 /test/aiodio/junkfile /test/aiodio/file2         
-ADS071 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k  -i2  /test/aiodio/junkfile /test/aiodio/file2         
-ADS072 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k  -i3   /test/aiodio/junkfile /test/aiodio/file2      
-ADS073 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k -i4    /test/aiodio/junkfile /test/aiodio/file2      
-ADS074 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k  -i5 /test/aiodio/junkfile /test/aiodio/file2      
-ADS075 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k  -i10  /test/aiodio/junkfile /test/aiodio/file2   
-ADS076 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k -i20   /test/aiodio/junkfile /test/aiodio/file2   
-ADS077 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k  -i50  /test/aiodio/junkfile /test/aiodio/file2   
-ADS078 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k  -i100  /test/aiodio/junkfile /test/aiodio/file2
-ADS079 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k  -i1024 /test/aiodio/junkfile /test/aiodio/file2      
-ADS080 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k -i1 -o0 /test/aiodio/junkfile /test/aiodio/file2         
-ADS081 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k  -i2 -o0 -o1  /test/aiodio/junkfile /test/aiodio/file2         
-ADS082 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k  -i3 -o0 -o1   /test/aiodio/junkfile /test/aiodio/file2      
-ADS083 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k -i4 -o0 -o2    /test/aiodio/junkfile /test/aiodio/file2      
-ADS084 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k  -i5 -o0 -o3 /test/aiodio/junkfile /test/aiodio/file2      
-ADS085 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k  -i10 -o0 -o2 -o3   /test/aiodio/junkfile /test/aiodio/file2   
-ADS086 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k -i20 -o0 -o1   /test/aiodio/junkfile /test/aiodio/file2   
-ADS087 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k  -i50 -o0 -o2 -o1  /test/aiodio/junkfile /test/aiodio/file2   
-ADS088 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k  -i100 -o0 -o2 -o3 -o1  /test/aiodio/junkfile /test/aiodio/file2
-ADS089 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k  -i1024 -o0 -o1 -o2 -o3 /test/aiodio/junkfile /test/aiodio/file2      
-ADS090 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k -i1 -o0 -n /test/aiodio/junkfile /test/aiodio/file2         
-ADS091 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k  -i2 -o0 -o1 -n /test/aiodio/junkfile /test/aiodio/file2         
-ADS092 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k  -i3 -o0 -o1 -n  /test/aiodio/junkfile /test/aiodio/file2      
-ADS093 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k -i4 -o0 -o2  -n  /test/aiodio/junkfile /test/aiodio/file2      
-ADS094 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k  -i5 -o0 -o3 -n /test/aiodio/junkfile /test/aiodio/file2      
-ADS095 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k  -i10 -o0 -o2 -o3 -n  /test/aiodio/junkfile /test/aiodio/file2   
-ADS096 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k -i20 -o0 -o1 -n  /test/aiodio/junkfile /test/aiodio/file2   
-ADS097 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k  -i50 -o0 -o2 -o1 -n /test/aiodio/junkfile /test/aiodio/file2   
-ADS098 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k  -i100 -o0 -o2 -o3 -o1 -n /test/aiodio/junkfile /test/aiodio/file2
-ADS099 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k  -i1024 -o0 -o1 -o2 -o3 -n /test/aiodio/junkfile /test/aiodio/file2      
-ADS100 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k -i1 -o0 -n -m shm /test/aiodio/junkfile /test/aiodio/file2         
-ADS101 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k  -i2 -o0 -o1 -n  -m shm  /test/aiodio/junkfile /test/aiodio/file2         
-ADS102 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k  -i3 -o0 -o1 -n  -m shm  /test/aiodio/junkfile /test/aiodio/file2      
-ADS103 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k -i4 -o0 -o2  -n  -m shm  /test/aiodio/junkfile /test/aiodio/file2      
-ADS104 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k  -i5 -o0 -o3  -m shm  /test/aiodio/junkfile /test/aiodio/file2      
-ADS105 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k  -i10 -o0 -o2 -o3  -m shm   /test/aiodio/junkfile /test/aiodio/file2   
-ADS106 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k -i20 -o0 -o1 -n  -m shm  /test/aiodio/junkfile /test/aiodio/file2   
-ADS107 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k  -i50 -o0 -o2 -o1 -n  -m shm /test/aiodio/junkfile /test/aiodio/file2   
-ADS108 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k  -i100 -o0 -o2 -o3 -o1  -m shm  /test/aiodio/junkfile /test/aiodio/file2
-ADS109 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k  -i1024 -o0 -o1 -o2 -o3  -m shm  /test/aiodio/junkfile /test/aiodio/file2      
-ADS110 testcases/kernel/io/ltp-aiodio/aio-stress -a 4k -b 4 -c 4 -S -l -t2 -v  -C 1MB -s 2048 -r 2k -d 2k -i1 -o0 -n -m shm /test/aiodio/junkfile /test/aiodio/file2         
-ADS111 testcases/kernel/io/ltp-aiodio/aio-stress -a 8k -b 8 -c 8 -S -l -t2 -v  -C 1MB -s 2048 -r 4k -d 4k  -i2 -o0 -o1 -n  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2         
-ADS112 testcases/kernel/io/ltp-aiodio/aio-stress -a 16k -b 16 -c 16 -S -l -t2 -v  -C 1MB -s 2048 -r 8k -d 8k  -i3 -o0 -o1 -n  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2      
-ADS113 testcases/kernel/io/ltp-aiodio/aio-stress -a 32k -b 32 -c 32 -S -l -t2 -v  -C 1MB -s 2048 -r 16k -d 16k -i4 -o0 -o2  -n  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2      
-ADS114 testcases/kernel/io/ltp-aiodio/aio-stress -a 64k -b 64 -c 64 -S -l -t4 -v  -C 1MB -s 2048 -r 32k -d 32k  -i5 -o0 -o3  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2      
-ADS115 testcases/kernel/io/ltp-aiodio/aio-stress -a 128k -b 128 -c 128 -S -l -t4 -v  -C 1MB -s 2048 -r 64k -d 64k  -i10 -o0 -o2 -o3  -m shmfs   /test/aiodio/junkfile /test/aiodio/file2   
-ADS116 testcases/kernel/io/ltp-aiodio/aio-stress -a 256k -b 256 -c 256 -S -l -t4 -v  -C 1MB -s 2048 -r 128k -d 128k -i20 -o0 -o1 -n  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2   
-ADS117 testcases/kernel/io/ltp-aiodio/aio-stress -a 512k -b 512 -c 512 -S -l -t8 -v  -C 1MB -s 2048 -r 512k -d 256k  -i50 -o0 -o2 -o1 -n  -m shmfs /test/aiodio/junkfile /test/aiodio/file2   
-ADS118 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1024 -c 1024 -S -l -t8 -v  -C 1MB -s 2048 -r 1024k -d 512k  -i100 -o0 -o2 -o3 -o1  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2
-ADS119 testcases/kernel/io/ltp-aiodio/aio-stress -a 1024k -b 1 -c 1 -S -l -t8 -v  -C 1MB -s 2048 -r 2048k  -d 1024k  -i1024 -o0 -o1 -o2 -o3  -m shmfs  /test/aiodio/junkfile /test/aiodio/file2      
+ADS000 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -S -r4   /test/aiodio/file1 
+ADS001 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -S -r8   /test/aiodio/file1
+ADS002 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -S -r16  /test/aiodio/file1 
+ADS003 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -S -r32  -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS004 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -S -r64   /test/aiodio/junkfile /test/aiodio/file2 
+ADS005 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r4    /test/aiodio/junkfile /test/aiodio/file2 
+ADS006 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r8   -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS007 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r16  -t2  /test/aiodio/junkfile /test/aiodio/file2      
+ADS008 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r32  -t4  /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file3  /test/aiodio/file4       
+ADS009 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r64  -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4        
+ADS010 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r128 -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4    
+ADS011 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r256 -t8  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
+ADS012 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r512 -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
+ADS013 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
+ADS014 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r8     file1 /test/aiodio/file2            
+ADS015 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r16     file1 /test/aiodio/file2         
+ADS016 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r32   -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS017 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r64   -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS018 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r4    -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS019 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r8    -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS020 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r16   -t2  /test/aiodio/junkfile /test/aiodio/file2 
+ADS021 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r32   -t4  /test/aiodio/junkfile /test/aiodio/file2       /test/aiodio/file7  /test/aiodio/file8     
+ADS022 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r64   -t4  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8   
+ADS023 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r128  -t4  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8  
+ADS024 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6 
+ADS025 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r512  -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6 
+ADS026 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o0 -S -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2       /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6    
+ADS027 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o0 -S -r8           /test/aiodio/file2            
+ADS028 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o0 -S -r16          /test/aiodio/file2         
+ADS029 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o0 -S -r32   -t2    /test/aiodio/junkfile /test/aiodio/file2         
+ADS030 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o0 -S -r64   -t2    /test/aiodio/junkfile /test/aiodio/file2         
+ADS031 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r4    -t2    /test/aiodio/junkfile /test/aiodio/file2         
+ADS032 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r8    -t2    /test/aiodio/junkfile /test/aiodio/file2      
+ADS033 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r16   -t2    /test/aiodio/junkfile /test/aiodio/file2      
+ADS034 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r32   -t4    /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS035 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r64   -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS036 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r128  -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS037 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
+ADS038 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -S -r512  -t8  -x /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS039 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r4    -t8  -x  /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS040 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r8    -t2  -x /test/aiodio/junkfile /test/aiodio/file2         
+ADS041 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r16   -t2  -x  /test/aiodio/junkfile /test/aiodio/file2         
+ADS042 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r32   -t2   /test/aiodio/junkfile /test/aiodio/file2      
+ADS043 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r64   -t2   /test/aiodio/junkfile /test/aiodio/file2      
+ADS044 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r4    -t4   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS045 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r8    -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS046 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r16   -t4   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS047 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r32   -t8   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
+ADS048 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r64   -t8   /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS049 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r128  -t8   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS050 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o1 -O -r256  -t2   /test/aiodio/junkfile /test/aiodio/file2         
+                                                        
