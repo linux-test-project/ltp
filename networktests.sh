@@ -9,6 +9,12 @@ export RHOST=
 export PASSWD=
 # ---***************************************************---
 
+# ---***** NFS OPTIONAL SETTINGS *****---
+# DEFAULTS
+# export VERSION=2 
+# export SOCKET_TYPE=udp
+# ---*********************************---
+
 
 export TMPDIR=/tmp
 
