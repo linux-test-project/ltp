@@ -38,6 +38,9 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	04/2003 Modified by Manoj Iyer - manjo@mail.utexas.edu
+ *	Change testcase to chroot into a temporary directory
+ *	and stat() a known file.
  *
  * RESTRICTIONS
  *	NONE
@@ -49,13 +52,13 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <fcntl.h>
 
 char *TCID = "chroot02";
 int TST_TOTAL = 1;
 extern int Tst_count;
+extern char *TESTDIR;
 
-char path[] = "/usr/bin";
-char file[] = "/test";
 char tmpbuf[50];
 struct stat buf;
 
@@ -87,7 +90,7 @@ main(int ac, char **av)
 
 		if (pid == 0) {		/* child */
 
-			TEST(chroot(path));
+			TEST(chroot(TESTDIR));
 
 			if (TEST_RETURN == -1) {
 				retval=1;
@@ -97,7 +100,7 @@ main(int ac, char **av)
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				if (stat(file, &buf) == -1) {
+				if (stat("/chroot02_testfile", &buf) == -1) {
 					retval=1;
 					tst_resm(TFAIL, "stat(2) failed errno "
 						 "= %d", errno);
@@ -138,7 +141,11 @@ setup()
 	/*
 	 * Now ensure that the testfile exists
 	 */
-	sprintf(tmpbuf, "%s%s", path, file);
+	tst_tmpdir();
+	sprintf(tmpbuf, "%s%s", TESTDIR, "/chroot02_testfile");
+	if (creat(tmpbuf, 0777) == -1)
+		 tst_brkm(TBROK, cleanup, "failed to create tmporary file %s", 
+				 tmpbuf);
 	if (stat(tmpbuf, &buf) != 0) {
 		tst_brkm(TBROK, cleanup, "%s does not exist", tmpbuf);
 	}
@@ -163,6 +170,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
