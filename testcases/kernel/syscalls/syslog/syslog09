@@ -122,12 +122,16 @@ tst_resm TINFO "   level."
 tst_resm TINFO " o Send message which is lower priority than the one"
 tst_resm TINFO "   set above, which should not be logged"
 
-#Back up syslog.conf
+#Back up /etc/syslog.conf
 if ! [ -a /etc/syslog.conf ]
 then
-    tst_resm TBROK "/etc/syslog.conf not found!"
+        tst_resm TBROK "/etc/syslog.conf not found!"
 else
-	cp /etc/syslog.conf /etc/syslog.conf.bak09
+    while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
+    do
+      sleep 5
+    done
+    cp /etc/syslog.conf /etc/syslog.conf.ltpbak
 fi
 
 syslog_case9
@@ -140,7 +144,7 @@ else
 fi
 
 #Restore syslog.conf
-mv /etc/syslog.conf.bak09 /etc/syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
 
 
 #Restart syslog

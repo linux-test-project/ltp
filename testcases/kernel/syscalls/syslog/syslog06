@@ -96,9 +96,13 @@ tst_resm TINFO "   It should be greater than 3."
 #Back up /etc/syslog.conf
 if ! [ -a /etc/syslog.conf ]
 then
-    tst_resm TBROK "/etc/syslog.conf not found!"
+        tst_resm TBROK "/etc/syslog.conf not found!"
 else
-	cp /etc/syslog.conf /etc/syslog.conf.bak06
+    while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
+    do
+      sleep 5
+    done
+    cp /etc/syslog.conf /etc/syslog.conf.ltpbak
 fi
 
 syslog_case6
@@ -111,7 +115,7 @@ else
 fi
 
 #Restore syslog.conf
-mv /etc/syslog.conf.bak06 /etc/syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
 
 #Restart syslog
 tst_resm TINFO "Restart syslog"
