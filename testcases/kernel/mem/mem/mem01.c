@@ -264,7 +264,7 @@ main(int argc, char *argv[])
 
   if ( m_opt )
   {
-    memsize = atoi( m_copt )*1024*1024;
+    memsize = (size_t)atoi( m_copt )*1024*1024;
 
     if (memsize < 1)
     {
