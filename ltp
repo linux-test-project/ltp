@@ -82,6 +82,13 @@ kernel()
   read fs
   if [ $fs == "Y" ] || [ $fs == "y" ]; then
    cat ${LTPROOT}/runtest/fs >> ${TMP}/alltests
+   echo -n "Do you want to run the fsx-linux tests (Y/N)? >> "
+   read fsx
+   if [ $fsx == "Y" ] || [ $fsx == "y" ]; then
+    echo -n "  Please define the scratch dev (ex. /dev/hda) >> "
+    read SCRATCHDEV
+    export SCRATCHDEV
+    cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests
   fi
 
   echo -n "Do you want to run the memory managment tests (Y/N)? >> "
