@@ -1,15 +1,31 @@
+# To cross compile, override one or more of CC, AR, CROSS_CFLAGS,
+# LOADLIBES and LDFLAGS, and be sure to always build from the top level.
+#
+# To override them from the make commandline, do something like this:
+# $ CROSS_COMPILER=/opt/cegl-1.4/hardhat/devkit/ppc/405/bin/powerpc-linux-
+# $ make \
+#     CROSS_CFLAGS="-mcpu=403 -D__PPC405__" \
+#     CC=${CROSS_COMPILER}gcc \
+#     AR=${CROSS_COMPILER}ar \
+#     LDFLAGS=-static \
+#     LOADLIBES="-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc"
+#
+# Alternately, to override them by editing this file, uncomment the 
+# following lines:
+#   CROSS_COMPILER=/opt/ppc64/powerpc64-linux/bin/
+#   CROSS_CFLAGS= -mcpu=403 -D__PPC405__
+#   CC=$(CROSS_COMPILER)gcc
+#   AR=$(CROSS_COMPILER)ar 
+#   LDFLAGS=-static 
+#   LOADLIBES=-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc
+#   export CC AR LDFLAGS LOADLIBES
+#
+# Note: If you override a variable from the commandline all
+# assignments to it in the Makefiles will be ignored. To set it both 
+# in the commandline and in the Makefiles use a dummy variable like in
+# CFLAGS
 
-# To cross compile set vars like this and be sure to always build
-# from the top level...
-
-#CROSS_COMPILER=/opt/ppc64/powerpc64-linux/bin/
-#CC=$(CROSS_COMPILER)gcc
-#AR=$(CROSS_COMPILER)ar
-CFLAGS+= -Wall
-#LDFLAGS+= -static
-#LOADLIBES+= -lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc
-export CC AR LDFLAGS LOADLIBES
-
+CFLAGS = -Wall $(CROSS_CFLAGS)
 
 all: libltp.a 
 	@$(MAKE) -C pan $@
