@@ -1,4 +1,5 @@
-SUBDIRS = ade tar cron logrotate mail cpio fileutils
+#SUBDIRS = ade tar cron logrotate mail cpio fileutils 
+SUBDIRS = `ls -d * | grep -v Makefile`
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
