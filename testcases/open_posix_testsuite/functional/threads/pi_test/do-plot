@@ -1,0 +1,71 @@
+#! /bin/sh
+
+FILE=$1
+TMP=$(mktemp -d /tmp/tmp.XXXXXX)
+function error
+{
+    cat 1>&2
+    exit 1
+    rm -rf $TMP
+}
+
+if ! cols=$(grep "#[ ]*COLUMNS" $FILE)
+then
+    error <<EOF
+E: $FILE: Cannot locate the COLUMNS descriptor
+EOF
+fi
+cols=$(echo $cols | sed 's/#//')
+columns=$(echo $cols | awk '{print $2;}')
+count=1
+while [ $count -le $columns ]
+do
+  column[$count]=$(echo $cols | awk -vcount=$count '{print $(2 + count);}')
+  if [ -z "${column[$count]}" ]
+      then
+      column[$count]=$count;
+  fi
+  count=$(($count + 1))
+done
+
+# Set up the plot area
+count=2
+with="with dots"
+cat > $TMP/gnuplot.script <<EOF
+set xlabel "${column[1]} (s)"
+set ylabel "Progress"
+EOF
+
+# Plot the events
+height=15
+grep "#[ ]*EVENT" $FILE | sed 's/#//' > $TMP/events
+cat $TMP/events | while read event x text
+do
+  if ! [ $event = "EVENT" ]
+      then
+      cat 1>&2 <<EOF
+E: Unknown event type "$event", ignoring
+EOF
+      continue;
+  fi
+  height_text=$(($height + 2))
+  echo "set arrow from $x, graph 0 to $x, graph 0.$height" >> $TMP/gnuplot.script
+  echo "set label \"$text\" at $x, graph 0.$height_text center" >> $TMP/gnuplot.script
+  height=$(($height + 8))
+done
+
+# Set Key
+echo "set key left top box lt 0" >> $TMP/gnuplot.script
+# Plot the data
+echo "plot '$FILE' using 1:2 title \"${column[$count]}\" $with" >> $TMP/gnuplot.script
+count=3
+while [ $count -le $columns ]
+do
+  echo "replot '$FILE' using 1:$count title \"${column[$count]}\" $with" \
+      >> $TMP/gnuplot.script
+  count=$(($count + 1))
+done
+
+
+( cat $TMP/gnuplot.script; cat ) | gnuplot
+rm -rf $TMP
