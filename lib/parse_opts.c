@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.4 2000/09/06 14:33:29 nstraz Exp $ */
+/* $Id: parse_opts.c,v 1.5 2004/01/05 20:07:12 robbiew Exp $ */
 
 /**********************************************************
  * 
@@ -324,6 +324,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
                 return(Mesg2);
             }
 	}
+	free(optionstr);
 
     }    /* end of while */
 
