@@ -55,7 +55,7 @@
 #include "usctest.h"
 
 char *TCID = "sysctl03";
-int TST_TOTAL = 1;
+int TST_TOTAL = 2;
 extern int Tst_count;
 
 #define SIZE(x) sizeof(x)/sizeof(x[0])
@@ -113,7 +113,7 @@ test1:
 
 test2:
 		osnamelth = SIZE(osname);
-		if ((ltpuser = getpwnam("ltpuser1")) == NULL) {
+		if ((ltpuser = getpwnam("nobody")) == NULL) {
 			tst_brkm(TBROK, cleanup, "getpwnam() failed");
 		}
 
