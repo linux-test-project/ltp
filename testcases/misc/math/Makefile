@@ -1,4 +1,4 @@
-SUBDIRS = abs float fptests nextafter
+SUBDIRS = abs atof float fptests nextafter
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
