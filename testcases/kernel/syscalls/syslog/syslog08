@@ -34,68 +34,110 @@
 
 syslog_case8()
 {
-        #set the trap to handle signals.
-        trap '
-                tst_resm TBROK "Testing is terminating due to a signal"
-                exit 1
-        ' 1 2 3 6 11 15
+	#set the trap to handle signals.
+	trap '
+		tst_resm TBROK "Testing is terminating due to a signal"
+		exit 1
+	' 1 2 3 6 11 15
 
-        echo
-        tst_resm  TINFO "syslog: Testing all the facilities"
+	echo
+	tst_resm  TINFO "syslog: Testing all the facilities"
 
-        facility_no=1
-        facility="user mail daemon auth lpr"
-        for current in $facility
-        do
-                tst_resm TINFO "Doing facility: $current..."
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
 
-                # Create the configuration file specific to this facility
-                # Level is fixed at info.
-                echo "$current.info    /var/log/messages" > /etc/syslog.conf
-                echo "$current.info    /var/log/maillog" >> /etc/syslog.conf
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
+
+	facility_no=1
+	facility="user mail daemon auth lpr"
+	for current in $facility
+	do
+		tst_resm TINFO "Doing facility: $current..."
+
+		# Create the configuration file specific to this facility
+		# Level is fixed at info.
+		echo "$current.info    /var/log/messages" > /etc/syslog.conf
+		echo "$current.info    /var/log/maillog" >> /etc/syslog.conf
 
 		#Restart syslog
-		kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+		tst_resm TINFO "Restart syslog"
+		/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_resm TBROK "failed to restart syslog deamon"
+			exit 1
+		fi
 
-                # Grepping pattern is as follows:
-                # syslogtst: $current info test.
-                oldvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
-                old_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
+		# Grepping pattern is as follows:
+		# syslogtst: $current info test.
+		# check if /var/log/maillog script exists
+		for logf in messages maillog
+		do
+			find /var/log/ -name $logf 2>&1 1>/dev/null || RC=$?
+			if [ $RC -ne 0 ]
+			then
+				tst_resm TBROK "/var/log/$logf no such log file"
+				exit 1
+			fi
+		done
+		oldvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
+		old_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
 
-                # syslogtst has to be called with one more additional facility argument(1-6)
-                syslogtst 8 $facility_no 2>/dev/null
-                if [ $? -ne 0 ]; then
-                        status_flag=1
-                        return
-                fi
-                sleep 2
-                new_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
-                newvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
+		# syslogtst has to be called with one more additional facility argument(1-6)
+		syslogtst 8 $facility_no 2>/dev/null
+		if [ $? -ne 0 ]; then
+				status_flag=1
+				return
+		fi
+		sleep 2
+		# check if /var/log/maillog script exists
+		for logf in messages maillog
+		do
+			find /var/log/ -name $logf 2>&1 1>/dev/null || RC=$?
+			if [ $RC -ne 0 ]
+			then
+				tst_resm TBROK "/var/log/$logf no such log file"
+				exit 1
+			fi
+		done
+		new_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
+		newvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
 
-                diff=$(( $newvalue - $oldvalue ))
-                mail_check=$(( $new_mail_check - $old_mail_check ))
-                if [ $current = "mail" ]; then
-                        if [ $mail_check -ne 1 ]; then
-                                status_flag=1
-                                tst_resm TINFO  " Facility $current failed"
-                        elif [ $mail_check -eq 1 ]; then
-                                tst_resm TINFO  " Facility $current passed"
-                        fi
-                elif [ $diff -ne 1 ]; then
-                                status_flag=1
-                                tst_resm TINFO  " Facility $current failed"
-                        else
-                                tst_resm TINFO  " Facility $current passed"
-                fi
-                # Increment the facility_no for next...
-                facility_no=$(($facility_no+1))
-        done
+		diff=$(( $newvalue - $oldvalue ))
+		mail_check=$(( $new_mail_check - $old_mail_check ))
+		if [ $current = "mail" ]; then
+				if [ $mail_check -ne 1 ]; then
+						status_flag=1
+						tst_resm TINFO  " Facility $current failed"
+				elif [ $mail_check -eq 1 ]; then
+						tst_resm TINFO  " Facility $current passed"
+				fi
+		elif [ $diff -ne 1 ]; then
+						status_flag=1
+						tst_resm TINFO  " Facility $current failed"
+				else
+						tst_resm TINFO  " Facility $current passed"
+		fi
+		# Increment the facility_no for next...
+		facility_no=$(($facility_no+1))
+	done
 }
 
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
 
+RC=0
 status_flag=0
 
 tst_resm TINFO " Test all the facilities at a particular level."
@@ -125,7 +167,13 @@ fi
 #Restore syslog.conf
 mv /etc/syslog.conf.bak08 /etc/syslog.conf
 
-#Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
 
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 exit $status_flag

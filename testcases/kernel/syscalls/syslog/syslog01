@@ -42,13 +42,39 @@ syslog_case1()
 
 	tst_resm TINFO  "syslog: Testing whether messages are logged into log file"
 	echo
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
+
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
 	# Create the configuration file specific to this test case.
 	echo "*.crit		/var/log/messages" > /etc/syslog.conf
 	echo "mail.info	/var/log/maillog" >> /etc/syslog.conf
 
 	#Restart syslog
-	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "failed to restart syslog deamon"
+		exit 1
+	fi
 	
+	# check if /var/log/maillog script exists
+	find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/var/log/maillog no such log file"
+		exit 1
+	fi
 	# Grepping pattern has to be changed whenever the executable name
 	# changes, ex: syslogtst executable.
 	oldvalue1=`grep -c "syslogtst: mail info test" /var/log/maillog`
@@ -95,6 +121,11 @@ fi
 mv /etc/syslog.conf.bak01 /etc/syslog.conf
 
 #Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
-
+tst_resm TINFO "restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 exit $status_flag

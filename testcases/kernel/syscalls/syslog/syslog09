@@ -31,52 +31,89 @@
 
 syslog_case9()
 {
-        #set the trap to handle signals.
-        trap '
-                tst_resm TBROK "Testing is terminating due to a signal"
-                exit 1
-        ' 1 2 3 6 11 15
+	#set the trap to handle signals.
+	trap '
+			tst_resm TBROK "Testing is terminating due to a signal"
+			exit 1
+	' 1 2 3 6 11 15
 
-        tst_resm  TINFO "syslog: Testing setlogmask() with LOG_UPTO macro"
-        echo
+	tst_resm  TINFO "syslog: Testing setlogmask() with LOG_UPTO macro"
+	echo
 
-        # Create the configuration file specific to this test case.
-        echo "user.debug       /var/log/messages" > /etc/syslog.conf
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
+
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
+
+	# Create the configuration file specific to this test case.
+	echo "user.debug       /var/log/messages" > /etc/syslog.conf
+
 
 	#Restart syslog
-	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+	tst_resm TINFO "Restart syslog"
+	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "failed to restart syslog deamon"
+		exit 1
+	fi
 
-        allow1=`grep -c "syslogtst: error level is logged" /var/log/messages`
-        donot_allow1=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
+	# check if /var/log/messages script exists
+	find /var/log/ -name messages 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/var/log/messages no such log file"
+		exit 1
+	fi
+	allow1=`grep -c "syslogtst: error level is logged" /var/log/messages`
+	donot_allow1=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
 
-        syslogtst 9 2>/dev/null
-        if [ $? -ne 0 ]; then
-                status_flag=1
-                return
-        fi
-        sleep 2
+	syslogtst 9 2>/dev/null
+	if [ $? -ne 0 ]; then
+			status_flag=1
+			return
+	fi
+	sleep 2
 
-        allow2=`grep -c "syslogtst: error level is logged" /var/log/messages`
-        donot_allow2=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
+	# check if /var/log/messages script exists
+	find /var/log/ -name messages 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/var/log/messages no such log file"
+		exit 1
+	fi
+	allow2=`grep -c "syslogtst: error level is logged" /var/log/messages`
+	donot_allow2=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
 
-        diff1=$(( $allow2 - $allow1 ))
-        if [ $diff1 -ne 1 ]; then
-                tst_resm TBROK "Expected message is not logged...."
-                status_flag=1
-                return
-        fi
+	diff1=$(( $allow2 - $allow1 ))
+	if [ $diff1 -ne 1 ]; then
+			tst_resm TBROK "Expected message is not logged...."
+			status_flag=1
+			return
+	fi
 
-        diff2=$(( $donot_allow2 - $donot_allow1 ))
-        if [ $diff2 -ne 0 ]; then
-                tst_resm TBROK "Unexpected message is logged..."
-                status_flag=1
-        fi
+	diff2=$(( $donot_allow2 - $donot_allow1 ))
+	if [ $diff2 -ne 0 ]; then
+			tst_resm TBROK "Unexpected message is logged..."
+			status_flag=1
+	fi
 }
 
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
 
+RC=0
 status_flag=0
 
 tst_resm TINFO " Test setlogmask() with LOG_UPTO macro."
@@ -105,7 +142,13 @@ fi
 #Restore syslog.conf
 mv /etc/syslog.conf.bak09 /etc/syslog.conf
 
-#Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
 
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 exit $status_flag

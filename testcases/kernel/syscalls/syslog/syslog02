@@ -39,38 +39,77 @@ syslog_case2()
 
 	level_no=0
 	level="emerg alert crit err warning notice info debug"
+
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
+
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
+	
 	for current in $level
 	do
-                tst_resm TINFO "Doing level: $current..."
+		tst_resm TINFO "Doing level: $current..."
 
-                # Create the configuration file specific to this level
-                echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
+		# Create the configuration file specific to this level
+		echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
 
 		#Restart syslog
-		kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+		tst_resm TINFO "restarting syslog deamon"
+		/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_resm TBROK "failed to restart syslog deamon"
+			exit 1
+		fi
 
-                # Grepping pattern is as follows:
-                # syslogtst: mail $current test.
-                oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
+		# Grepping pattern is as follows:
+		# syslogtst: mail $current test.
 
-                # syslogtst has to be called with additional level argument(0-7)
-                syslogtst 2 $level_no 2>/dev/null
-                if [ $? -ne 0 ]; then
-                        status_flag=1
-                        return
-                fi
-                sleep 2
-                newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
-                diff=$(( $newvalue - $oldvalue ))
-                if [ $diff -eq 0 ]; then
-                        status_flag=1
-                        tst_resm TINFO "***** Level $current failed *****"
-                elif [ $diff -ge 1 ]; then
-                        tst_resm TINFO "***** Level $current passed *****"
-                fi
-                # Increment the level_no for next level...
-                level_no=$(($level_no+1))
+		# check if /var/log/maillog script exists
+		find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_resm TBROK "/var/log/maillog no such log file"
+			exit 1
+		fi
 
+		oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
+
+		# syslogtst has to be called with additional level argument(0-7)
+		syslogtst 2 $level_no 2>/dev/null
+		if [ $? -ne 0 ]; then
+				status_flag=1
+				return
+		fi
+		sleep 2
+
+		# check if /var/log/maillog script exists
+		find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_resm TBROK "/var/log/maillog no such log file"
+			exit 1
+		fi
+
+		newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
+		diff=$(( $newvalue - $oldvalue ))
+		if [ $diff -eq 0 ]; then
+				status_flag=1
+				tst_resm TINFO "***** Level $current failed *****"
+		elif [ $diff -ge 1 ]; then
+				tst_resm TINFO "***** Level $current passed *****"
+		fi
+		# Increment the level_no for next level...
+		level_no=$(($level_no+1))
 	done
 }
 
@@ -78,6 +117,7 @@ export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
 
+RC=0
 status_flag=0
 tst_resm TINFO "Test if messages of all levels are logged."
 tst_resm TINFO "For each level, a separate configuration file is"
@@ -103,6 +143,11 @@ fi
 mv /etc/syslog.conf.bak02 /etc/syslog.conf
 
 #Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
-
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 exit $status_flag

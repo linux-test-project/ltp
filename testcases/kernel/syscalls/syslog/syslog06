@@ -33,34 +33,56 @@
 
 syslog_case6()
 {
-        #set the trap to handle signals.
-        trap '
-                tst_resm TBROK "Testing is terminating due to a signal"
-                exit 1
-        ' 1 2 3 6 11 15
+	#set the trap to handle signals.
+	trap '
+			tst_resm TBROK "Testing is terminating due to a signal"
+			exit 1
+	' 1 2 3 6 11 15
 
-        tst_resm TINFO "syslog: Testing the log option: LOG_NDELAY..."
+	tst_resm TINFO "syslog: Testing the log option: LOG_NDELAY..."
 
-        # Create the configuration file specific to this test case.
-        # For this case, it's a dummy one. No use of it.
-        echo "user.info        /var/log/messages" > /etc/syslog.conf
+
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
+
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
+
+	# Create the configuration file specific to this test case.
+	# For this case, it's a dummy one. No use of it.
+	echo "user.info        /var/log/messages" > /etc/syslog.conf
 
 	#Restart syslog
-	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+	tst_resm TINFO "Restart syslog deamon"
+	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "failed to restart syslog deamon"
+		exit 1
+	fi
+	# Just call syslogtst. It will do everything.
+	# It will return 0 to indicate that test has passed.
 
-        # Just call syslogtst. It will do everything.
-        # It will return 0 to indicate that test has passed.
-
-        syslogtst 6 2>/dev/null
-        if [ $? -ne 0 ]; then
-                status_flag=1
-        fi
+	syslogtst 6 2>/dev/null
+	if [ $? -ne 0 ]; then
+			status_flag=1
+	fi
 }
 
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
 
+RC=0
 status_flag=0
 
 tst_resm TINFO " Test the logging option: LOG_NDELAY"
@@ -92,6 +114,12 @@ fi
 mv /etc/syslog.conf.bak06 /etc/syslog.conf
 
 #Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 
 exit $status_flag

@@ -31,67 +31,104 @@
 
 syslog_case7()
 {
-        #set the trap to handle signals.
-        trap '
-                tst_resm TBROK "Testing is terminating due to a signal"
-                exit 1
-        ' 1 2 3 6 11 15
+	#set the trap to handle signals.
+	trap '
+		tst_resm TBROK "Testing is terminating due to a signal"
+		exit 1
+	' 1 2 3 6 11 15
 
-        echo
-        tst_resm TINFO "syslog: Testing the priorities ..."
-        echo
+	echo
+	tst_resm TINFO "syslog: Testing the priorities ..."
+	echo
 
-        # Create the configuration file specific to this test case.
-        echo "user.debug        /var/log/messages" > /etc/syslog.conf
+	# check if syslogd command exits.
+	if [ -z $(which syslogd) ]
+	then
+		tst_resm TBROK "syslogd no such command"
+		exit 1
+	fi
+
+	# check if /etc/init/syslog script exists
+	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/etc/init.d/syslog no such script"
+		exit 1
+	fi
+
+
+	# Create the configuration file specific to this test case.
+	echo "user.debug        /var/log/messages" > /etc/syslog.conf
 
 	#Restart syslog
-	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
+	tst_resm TINFO "Restart syslog"
+	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "failed to restart syslog deamon"
+		exit 1
+	fi
 
-        # Grep for the following patterns in the log file...
-        emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
-        alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
-        crit_old=`grep -c "syslogtst: critical log" /var/log/messages`
-        err_old=`grep -c "syslogtst: error log" /var/log/messages`
-        warning_old=`grep -c "syslogtst: warning log" /var/log/messages`
-        notice_old=`grep -c "syslogtst: notice log" /var/log/messages`
-        info_old=`grep -c "syslogtst: info log" /var/log/messages`
-        debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
+	# Grep for the following patterns in the log file...
+	# check if /var/log/maillog script exists
+	find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/var/log/maillog no such log file"
+		exit 1
+	fi
+	emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
+	alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
+	crit_old=`grep -c "syslogtst: critical log" /var/log/messages`
+	err_old=`grep -c "syslogtst: error log" /var/log/messages`
+	warning_old=`grep -c "syslogtst: warning log" /var/log/messages`
+	notice_old=`grep -c "syslogtst: notice log" /var/log/messages`
+	info_old=`grep -c "syslogtst: info log" /var/log/messages`
+	debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
 
-        # Call syslogtst. It will send the messages of all levels.
-        syslogtst 7 2>/dev/null
-        if [ $? -ne 0 ]; then
-                status_flag=1
-                return
-        fi
-        sleep 2
+	# Call syslogtst. It will send the messages of all levels.
+	syslogtst 7 2>/dev/null
+	if [ $? -ne 0 ]; then
+		status_flag=1
+		return
+	fi
+	sleep 2
 
-        emerg_new=`grep -c "syslogtst: emergency log" /var/log/messages`
-        alert_new=`grep -c "syslogtst: alert log" /var/log/messages`
-        crit_new=`grep -c "syslogtst: critical log" /var/log/messages`
-        err_new=`grep -c "syslogtst: error log" /var/log/messages`
-        warning_new=`grep -c "syslogtst: warning log" /var/log/messages`
-        notice_new=`grep -c "syslogtst: notice log" /var/log/messages`
-        info_new=`grep -c "syslogtst: info log" /var/log/messages`
-        debug_new=`grep -c "syslogtst: debug log" /var/log/messages`
+	# check if /var/log/maillog script exists
+	find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_resm TBROK "/var/log/maillog no such log file"
+		exit 1
+	fi
+	emerg_new=`grep -c "syslogtst: emergency log" /var/log/messages`
+	alert_new=`grep -c "syslogtst: alert log" /var/log/messages`
+	crit_new=`grep -c "syslogtst: critical log" /var/log/messages`
+	err_new=`grep -c "syslogtst: error log" /var/log/messages`
+	warning_new=`grep -c "syslogtst: warning log" /var/log/messages`
+	notice_new=`grep -c "syslogtst: notice log" /var/log/messages`
+	info_new=`grep -c "syslogtst: info log" /var/log/messages`
+	debug_new=`grep -c "syslogtst: debug log" /var/log/messages`
 
-        emerg=$(( $emerg_new - $emerg_old ))
-        alert=$(( $alert_new - $alert_old ))
-        crit=$(( $crit_new - $crit_old ))
-        err=$(( $err_new - $err_old ))
-        warning=$(( $warning_new - $warning_old ))
-        notice=$(( $notice_new - $notice_old ))
-        info=$(( $info_new - $info_old ))
+	emerg=$(( $emerg_new - $emerg_old ))
+	alert=$(( $alert_new - $alert_old ))
+	crit=$(( $crit_new - $crit_old ))
+	err=$(( $err_new - $err_old ))
+	warning=$(( $warning_new - $warning_old ))
+	notice=$(( $notice_new - $notice_old ))
+	info=$(( $info_new - $info_old ))
 
-        if [ $emerg   -ne 1 ] || [ $alert  -ne 1 ] || [ $crit -ne 1 ] || [ $err  -ne 1 ] || \
-           [ $warning -ne 1 ] || [ $notice -ne 1 ] || [ $info -ne 1 ] || [ $info -ne 1 ]; then
-                status_flag=1
-        fi
+	if [ $emerg   -ne 1 ] || [ $alert  -ne 1 ] || [ $crit -ne 1 ] || [ $err  -ne 1 ] || \
+	[ $warning -ne 1 ] || [ $notice -ne 1 ] || [ $info -ne 1 ] || [ $info -ne 1 ]; then
+		status_flag=1
+	fi
 }
 
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
 
+RC=0
 status_flag=0
 
 tst_resm TINFO " Test the priorities"
@@ -120,6 +157,11 @@ fi
 mv /etc/syslog.conf.bak07 /etc/syslog.conf
 
 #Restart syslog
-kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
-
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
 exit $status_flag
