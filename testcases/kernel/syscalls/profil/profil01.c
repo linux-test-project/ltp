@@ -95,17 +95,22 @@ int main (argc, argv)
         char *argv[];
 {
 	register int i;
-	int count, loc, bsize;
+	int count, loc;
+	long int bsize;
 	void alrm();
 #ifdef __mips__
 	extern int __start;
 	int lotext = (int)&__start;
+#elif defined __powerpc64__
+	extern long int _start;
+	long int *lotextptr = (long*)&_start;
+	long int lotext = *lotextptr;
 #else
 	extern int _start;
 	int lotext = (int)&_start;
 #endif
 
-	bsize = (int) &etext;
+	bsize = (long int) &etext;
 	bsize -= lotext & ~ 4096;
 
 	count = loc = 0;
