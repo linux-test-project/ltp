@@ -26,9 +26,9 @@
 ####################################################
 
 
-export NAME=$(echo $0 | cut -d/ -f2)
+export NAME=clock_getres01
 
-export TST_TOTAL=$(ls -1 $NAME.*.c|wc -l|awk {'print $1'})
+export TST_TOTAL=5
 
 check_return_code()
 {
