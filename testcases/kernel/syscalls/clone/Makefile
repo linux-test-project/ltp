@@ -19,8 +19,8 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -g -Wall
-LOADLIBES+=	-L../../../../lib -lltp
+CFLAGS+=	-I../../../../include -g -Wall -m64
+LOADLIBES+=	-L../../../../lib -lltp -m64
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

@@ -95,12 +95,12 @@
 #include "usctest.h"
 
 #ifdef __powerpc64__
-#define CHILD_STACK_SIZE 8192
+#define CHILD_STACK_SIZE 16384
 #else
 #define CHILD_STACK_SIZE 1024
 #endif
 
-#define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD
+#define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD 
 #define FLAG_NONE SIGCHLD
 #define PARENT_VALUE 1
 #define CHILD_VALUE 2
@@ -186,7 +186,7 @@ main(int ac, char **av)
 			}
 			
 			/* Test the system call */
-#ifdef __hppa__
+#if defined(__hppa__) || defined(__powerpc64__)
 			TEST(clone(child_fn, child_stack,
 				   test_cases[i].flags, NULL));
 #elif defined(__ia64__)
@@ -235,7 +235,7 @@ main(int ac, char **av)
 	}	/* End for TEST_LOOPING */
 
 	free(child_stack);
-
+	
 	/* cleanup and exit */
 	cleanup();
 
@@ -284,8 +284,9 @@ cleanup()
 	if ((unlink(file_name)) == -1 ) {
 		tst_resm(TWARN, "Couldn't delete file, %s", file_name);
 	}
-	tst_rmdir();	
-
+	chdir("/tmp");
+	remove(cwd_parent);
+	
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
@@ -365,9 +366,9 @@ child_fn()
 	child_pid = getpid();
 
 	if (test_VM() && test_FILES() && test_FS() && test_SIG()) {
-		return 1;
+		exit(1);
 	}
-	return 0;
+	exit(0);
 }
 
 /*

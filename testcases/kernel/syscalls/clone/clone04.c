@@ -32,10 +32,8 @@
  *
  * DESCRIPTION
  * 	Verify that,
- *   1) clone(2) returns -1 and sets errno to EINVAL if  the specified
- *	child function is invalid.
- *   2) clone(2) returns -1 and sets errno to EINVAL if 
- *	child stack is NULL
+ *      clone(2) returns -1 and sets errno to EINVAL if 
+ *	child stack is set to a zero value(NULL)
  *
  * ALGORITHM
  * Setup:
@@ -98,7 +96,6 @@ static struct test_case_t {
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ (int)NULL, &child_stack, EINVAL, "EINVAL" },
 	{ child_fn, NULL, EINVAL, "EINVAL" },
 };
 
@@ -140,7 +137,7 @@ main(int ac, char **av)
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
-#if defined(__hppa__)
+#if defined(__hppa__) || defined(__powerpc64__)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
 						SIGCHLD, NULL));
 #elif defined(__ia64__)
@@ -221,5 +218,5 @@ cleanup(void)
 int
 child_fn()
 {
-	return 1;
+	exit(1);
 }

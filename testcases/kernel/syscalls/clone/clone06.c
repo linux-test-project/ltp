@@ -134,7 +134,7 @@ main(int ac, char **av)
 		/* 
 		 * Call clone(2)
 		 */
-#ifdef __hppa__
+#if defined(__hppa__) || defined(__powerpc64__)
 		TEST(clone(child_environ, child_stack, (int)NULL, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(child_environ, child_stack,
@@ -243,6 +243,6 @@ child_environ(void)
 		tst_resm(TWARN, "close(pfd[1]) failed");
 	}
 	
-	return 0;
+	exit(0);
 }
 

@@ -123,7 +123,7 @@ main(int ac, char **av)
 		/* 
 		 * Call clone(2)
 		 */
-#ifdef __hppa__
+#if defined(__hppa__) || defined(__powerpc64__)
 		TEST(clone(do_child, child_stack, SIGCHLD, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(do_child, child_stack,
@@ -197,6 +197,6 @@ cleanup()
 int
 do_child(void)
 {
-	return 0;
+	exit(0);
 }
 
