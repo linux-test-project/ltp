@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define TIMEOUT 10	/* Timeout period for cancel request is 10 seconds. */
 int cleanup_flag;	/* Flag to indicate the thread's cleanup handler was called */
 
 /* Cleanup function that the thread executes when it is canceled.  So if
@@ -40,6 +39,7 @@ void a_cleanup_func()
 /* Thread's function. */
 void *a_thread_func()
 {
+	int i;
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 	
@@ -48,7 +48,10 @@ void *a_thread_func()
 	
 	/* Wait for a timeout period for the cancel request to be sent. */
 	/* Cancelation point.  Should call cleanup handler now. . */
-	sleep(TIMEOUT);
+	for(i=0;i<10;i++) {
+		pthread_testcancel();
+		sleep(1);
+	}
 
 	/* Should not get here, but just in case pthread_testcancel() didn't work. */
 	/* Cancel request timed out. */
