@@ -317,6 +317,9 @@ setup03()
 
 		 		  /* Determine how many more files are to be created*/
 		 		  swapfile = MAX_SWAPFILES - swapfile + 1;
+				  if (swapfile > MAX_SWAPFILES) {
+					  swapfile = MAX_SWAPFILES;
+				  }	
 
 		 		  pid=fork();
         if (pid == 0){
