@@ -101,85 +101,124 @@ void value_init(SaHpiSensorThresholdsT *thresholds, SaHpiSensorThresholdsT
 				&thresholds_old->NegThdHysteresis);
 }
 
-int thrd_cmp(SaHpiSensorThresholdsT thresholds, SaHpiSensorThresholdsT thresholds_new, SaHpiSensorThdDefnT defn)
+int reading_cmp(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id,
+		SaHpiSensorNumT num, SaHpiSensorReadingT *reading,
+		SaHpiSensorReadingT *reading_new)
+{
+	SaHpiSensorReadingT	raw_reading;
+	SaErrorT		val;
+	int			ret = -1;
+	
+	if (reading_new->ValuesPresent & SAHPI_SRF_INTERPRETED) {
+		if (!memcmp(&reading->Interpreted, &reading_new->Interpreted,
+			    sizeof(reading->Interpreted)))
+			ret = 0;
+	}
+
+	if (reading_new->ValuesPresent & SAHPI_SRF_RAW) {
+		val = saHpiSensorReadingConvert(session_id, resource_id, num,
+						reading, &raw_reading);
+		if (val != SA_OK) {
+			ret = -1;
+			goto out;
+		}
+
+		if (raw_reading.Raw == reading_new->Raw)
+			ret = 0;
+		else
+			ret = -1;
+	}
+
+out:
+	return ret;
+}
+
+int thrd_cmp(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id,
+	     SaHpiSensorNumT num, SaHpiSensorThresholdsT thresholds,
+	     SaHpiSensorThresholdsT thresholds_new, SaHpiSensorThdDefnT defn)
 {
 	SaHpiSensorThdMaskT read_thold = defn.ReadThold;
 	SaHpiSensorThdMaskT write_thold = defn.WriteThold;
 
+	int ret = 1;
+
 	if (read_thold & SAHPI_STM_LOW_CRIT && 
 			write_thold & SAHPI_STM_LOW_CRIT) {
-		if (memcmp(&thresholds.LowCritical, &thresholds_new.LowCritical,
-					sizeof(thresholds.LowCritical)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.LowCritical, 
+				&thresholds_new.LowCritical))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 
 	if (read_thold & SAHPI_STM_LOW_MAJOR &&
 			write_thold & SAHPI_STM_LOW_MAJOR) {
-		if (memcmp(&thresholds.LowMajor, &thresholds_new.LowMajor,
-					sizeof(thresholds.LowMajor)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.LowMajor, &thresholds_new.LowMajor))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 
 	if (read_thold & SAHPI_STM_LOW_MINOR && 
 			write_thold & SAHPI_STM_LOW_MINOR) {
-		if (memcmp(&thresholds.LowMinor, &thresholds_new.LowMinor,
-					sizeof(thresholds.LowMinor)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.LowMinor, &thresholds_new.LowMinor))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 
 	if (read_thold & SAHPI_STM_UP_CRIT &&
 			write_thold & SAHPI_STM_UP_CRIT) {
-		if (memcmp(&thresholds.UpCritical, &thresholds_new.UpCritical,
-					sizeof(thresholds.UpCritical)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.UpCritical,
+				&thresholds_new.UpCritical))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 	
 	if (read_thold & SAHPI_STM_UP_MAJOR &&
 			write_thold & SAHPI_STM_UP_MAJOR) {
-		if (memcmp(&thresholds.UpMajor, &thresholds_new.UpMajor,
-					sizeof(thresholds.UpMajor)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.UpMajor, &thresholds_new.UpMajor))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 	
 	if (read_thold & SAHPI_STM_UP_MINOR &&
 			write_thold & SAHPI_STM_UP_MINOR) {
-		if (memcmp(&thresholds.UpMinor, &thresholds_new.UpMinor,
-					sizeof(thresholds.UpMinor)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.UpMinor, &thresholds_new.UpMinor))
 			return -1;
 		else 
-			return 0;
+			ret = 0;
 	}
 	
 	if (read_thold & SAHPI_STM_UP_HYSTERESIS &&
 			write_thold & SAHPI_STM_UP_HYSTERESIS) {
-		if (memcmp(&thresholds.PosThdHysteresis, 
-					&thresholds_new.PosThdHysteresis,
-					sizeof(thresholds.PosThdHysteresis)))
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.PosThdHysteresis,
+				&thresholds_new.PosThdHysteresis))
+			return -1;
+		else 
+			ret = 0;
+	}
+
+	if (read_thold & SAHPI_STM_LOW_HYSTERESIS &&
+			write_thold & SAHPI_STM_LOW_HYSTERESIS) {
+		if (reading_cmp(session_id, resource_id, num,
+				&thresholds.NegThdHysteresis,
+				&thresholds_new.NegThdHysteresis))
 			return -1;
 		else 
 			return 0;
 	}
 
-	if (read_thold & SAHPI_STM_LOW_HYSTERESIS &&
-			write_thold & SAHPI_STM_LOW_HYSTERESIS) {
-		if (memcmp(&thresholds.NegThdHysteresis, 
-					&thresholds_new.NegThdHysteresis,
-					sizeof(thresholds.NegThdHysteresis)))
-			return -1;
-		else 
-			return 0;
-	}
-	return 1;
+	return ret;
 }
 
 int do_sensor(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdrT rdr)
@@ -232,7 +271,8 @@ int do_sensor(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdr
 			goto out1;
 		}
 
-		if (thrd_cmp(thresholds, thresholds_new, defn)) {
+		if (thrd_cmp(session_id, resource_id, num, thresholds,
+			     thresholds_new, defn)) {
 			printf("  Does not conform the expected behaviors!\n");
 			printf("  The new thresholds is invalid!\n");
 			ret = HPI_TEST_FAIL;

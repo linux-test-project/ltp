@@ -23,16 +23,16 @@
 
 #define INVENTORY_TEST_DATA	2
 
-int invent_data_cmp(SaHpiInventoryDataT data_write, 
+int invent_data_cmp(SaHpiInventoryDataT *data_write, 
 			const SaHpiInventoryDataT *data_read) 
 {
 	int i = -1;
 
 	while (data_read->DataRecords[++i] != NULL) {
-		if (data_write.DataRecords[0]->RecordType ==
+		if (data_write->DataRecords[0]->RecordType ==
 				data_read->DataRecords[i]->RecordType) {
-			if (data_write.DataRecords[0]->DataLength == data_read->DataRecords[i]->DataLength 
-			&&  data_write.DataRecords[0]->RecordData.InternalUse.Data[0] == data_read->DataRecords[i]->RecordData.InternalUse.Data[0])
+			if (data_write->DataRecords[0]->DataLength == data_read->DataRecords[i]->DataLength 
+			&&  data_write->DataRecords[0]->RecordData.InternalUse.Data[0] == data_read->DataRecords[i]->RecordData.InternalUse.Data[0])
 				return 0;
 		}
 	}	
@@ -43,7 +43,7 @@ int invent_data_cmp(SaHpiInventoryDataT data_write,
 int do_inventory(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdrT rdr)
 {
 	SaHpiUint32T		buffer_size;
-	SaHpiInventoryDataT	data_write;
+	SaHpiInventoryDataT	*data_write = NULL;
 	SaHpiInventoryDataT     *data_read;
 	SaHpiInventDataRecordT	record_write;
 	SaHpiUint32T		actual_size;	
@@ -54,8 +54,9 @@ int do_inventory(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpi
 	if (rdr.RdrType == SAHPI_INVENTORY_RDR) {
 		ret = HPI_TEST_PASS;
 		num = rdr.RdrTypeUnion.SensorRec.Num;
-
-		memset(&data_write, 0, sizeof(data_write) + 
+		data_write = malloc(sizeof(SaHpiInventoryDataT) +
+				sizeof(SaHpiInventDataRecordT *));
+		memset(data_write, 0, sizeof(SaHpiInventoryDataT) + 
 				sizeof(SaHpiInventDataRecordT *));
 			
 		/* Write a new invent data, cannot remove, if you 
@@ -68,12 +69,12 @@ int do_inventory(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpi
 			INVENTORY_TEST_DATA;
 		record_write.DataLength = 
 			sizeof(record_write.RecordData.InternalUse.Data[0]);
-		data_write.Validity = SAHPI_INVENT_DATA_VALID;
-		data_write.DataRecords[0] = &record_write;
-		data_write.DataRecords[1] = NULL;
+		data_write->Validity = SAHPI_INVENT_DATA_VALID;
+		data_write->DataRecords[0] = &record_write;
+		data_write->DataRecords[1] = NULL;
 			
 		val = saHpiEntityInventoryDataWrite(session_id, 
-				resource_id, num, &data_write);
+				resource_id, num, data_write);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
 			printf("  Cannot write the specified inventory data!\n");
@@ -126,6 +127,7 @@ out1:
 	}
 
 out:
+	free(data_write);
 	return ret;
 }
 

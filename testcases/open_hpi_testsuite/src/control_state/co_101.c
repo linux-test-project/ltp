@@ -64,6 +64,56 @@ void value_init(SaHpiCtrlStateT *state, SaHpiCtrlTypeT type)
 	}
 }
 
+int cs_cmp(SaHpiCtrlStateT *ctrl_state, SaHpiCtrlStateT *ctrl_state_new)
+{
+	SaHpiCtrlStateUnionT *s_union = &ctrl_state->StateUnion;
+	SaHpiCtrlStateUnionT *s_union_new = &ctrl_state_new->StateUnion;
+	
+	if (ctrl_state->Type != ctrl_state_new->Type)
+		return -1;
+
+	switch (ctrl_state->Type) {
+	case SAHPI_CTRL_TYPE_STREAM:
+		if (s_union->Stream.Repeat == s_union_new->Stream.Repeat &&
+				
+		    s_union->Stream.StreamLength == 
+		    s_union_new->Stream.StreamLength &&
+		    !memcmp(s_union->Stream.Stream, s_union_new->Stream.Stream,
+			    s_union->Stream.StreamLength))
+			return 0;
+		else
+			return -1;
+
+	case SAHPI_CTRL_TYPE_TEXT:
+		if (s_union->Text.Line == s_union_new->Text.Line &&
+		    s_union->Text.Text.DataType ==
+		    s_union_new->Text.Text.DataType &&
+		    s_union->Text.Text.Language ==
+		    s_union_new->Text.Text.Language &&
+		    s_union->Text.Text.DataLength ==
+		    s_union_new->Text.Text.DataLength &&
+		    memcmp(s_union->Text.Text.Data, s_union_new->Text.Text.Data,
+			   s_union->Text.Text.DataLength))
+			return 0;
+		else
+			return -1;
+
+	case SAHPI_CTRL_TYPE_OEM:
+		if (s_union->Oem.MId == s_union_new->Oem.MId &&
+		    s_union->Oem.BodyLength == s_union_new->Oem.BodyLength &&
+		    memcmp(s_union->Oem.Body, s_union_new->Oem.Body,
+			   s_union->Oem.BodyLength))
+			return 0;
+		else
+			return -1;
+
+	default:
+		memcmp(ctrl_state, ctrl_state_new, sizeof(*ctrl_state));
+	}
+	
+	return 0;
+}
+
 int do_ctrl(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdrT rdr)
 {
 	SaHpiCtrlStateT	ctrl_state, ctrl_state_new, ctrl_state_old;
@@ -108,7 +158,7 @@ int do_ctrl(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdrT 
 			goto out1;
 		}
 
-		if (memcmp(&ctrl_state, &ctrl_state_new, sizeof(ctrl_state))) {
+		if (cs_cmp(&ctrl_state, &ctrl_state_new)) {
 			printf("  Does not conform the expected behaviors!\n");
 			printf("  The new control state is invalid!\n");
 			ret = HPI_TEST_FAIL;

@@ -20,6 +20,17 @@
 #define TEST_STR	"Test Tag Components"
 #define STR_LEN		20
 
+int tag_cmp(SaHpiTextBufferT *tag, SaHpiTextBufferT *tag_new)
+{
+	if (tag->DataType == tag_new->DataType &&
+	    tag->Language == tag_new->Language &&
+	    tag->DataLength == tag_new->DataLength &&
+	    !memcmp(tag->Data, tag_new->Data, tag->DataLength))
+		return 0;
+	else
+		return -1;
+}
+
 int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callback2_t funcm)
 {
 	SaHpiResourceIdT	resource_id;
@@ -54,7 +65,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 		goto out1;
 	}
 
-	if (memcmp(&rpt_entry.ResourceTag, &tag, sizeof(tag))) {
+	if (tag_cmp(&rpt_entry.ResourceTag, &tag)) {
 		printf("  Does not conform the expected behaviors!\n");
 		printf("  Set tag of RPT function is invalid!\n");
 		ret = HPI_TEST_FAIL;

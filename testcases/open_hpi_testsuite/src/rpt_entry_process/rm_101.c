@@ -78,7 +78,7 @@ int domain_process(SaHpiDomainIdT domain_id)
 		printf("  Cannot get the information of RPT!\n");
 		printf("  Return value: %s\n", get_error_string(val));
 		ret = HPI_TEST_FAIL;
-		goto out;
+		goto out1;
 	}
 	
 	if (rpt_info1.UpdateCount == rpt_info2.UpdateCount) 
