@@ -56,7 +56,7 @@ char *  filename="FILETOOPEN";
 
 
 /* Procedures */
-void *  threads(int thread_id);
+void *threads(int thread_id);
 
 
 
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
 	/* Create threads */
 	for (i=0; i<numthreads; i++)
-		if (pthread_create(&th_id, NULL, (void*(*)(void*))threads, (void *)i)) {
+		if (pthread_create(&th_id, (pthread_attr_t *)NULL, (void*(*)(void *))threads, (void *)&i)) {
 			perror("FAIL - failed creating a pthread; increase limits");
 			fclose(fd);
 			unlink(filename);
