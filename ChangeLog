@@ -1,3 +1,31 @@
+LTP-20040304
+- This patch makes rwtest generate a PASS/FAIL  (Chris Dearman) 
+  message in the output 
+  log.  Updated the runtest/* scripts that use rwtest.  also
+  changed the iogen01 test to use rwtest instead of invoking iogen/doio
+  directly.
+- Added AIO/DIO testcases from OSDL, SUSE
+- Changes to AIO/DIO                            ( Marty Ridgeway )
+  changes to aio-stress test runs
+- Applied patches from Chris Dearman to set 
+  PASS/FAIL messages for ltp-stress.            ( Chris Dearman )
+- Created 2 new testcases to test the fcntl()   ( Robbie Williamson )
+  call with the F_SETLEASE option. 
+- tcp_cmds - Changed the ipchains test to       ( Robbie Williamson )
+  iptables. 
+- mmstress - Applied patch from Jacky Malcles and Gary Williams to remove the path 
+  constraints when calling "dummy". 
+- added new ltp epoll testcases                  ( Marty ridgeway )
+- Added tests for GETLEASE, and SETLEASE w/FD_UNLCK ( Robbie Williamson )
+- sendmsg01 - Removed test number 11, b/c it was not testing for EINVAL correctly. ( Robbie Williamson )
+- setregid02 - Changes to accept now valid user ID ( Marty Ridgeway )
+  and update testcase msg to reflect test group vs user 
+- dhcpd_tests - Appled syntax error patch.          ( Hubert Lin )
+- Updates to SCTP and new tests added.              ( Marty Ridgeway )
+- Update to OpenHPI 0.5.0                           ( Robbie Williamson )
+- Added Dan Carpenter's "Strace Test" 
+
+
 LTP-20040206
 - Applied documentation cleanup patch.		( Randy Dunlap )
 - Fixed the "-t" default option in 		( Hubert Lin )
