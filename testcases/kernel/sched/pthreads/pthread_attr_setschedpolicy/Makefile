@@ -1,9 +1,9 @@
-CFLAGS := -Wall -I ../../../../../include -I ../include
+CFLAGS := -Wall -I ../../../../../include -I ../include -D _GNU_SOURCE
 LDFLAGS := -L ../../../../../lib -lpthread -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=pthread_attr_setschedpolicy01
+TEST=`ls | grep 01 | grep -v '\.'`
 
 all: $(TARGETS)
 	@chmod 755 $(TEST)

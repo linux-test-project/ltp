@@ -80,6 +80,7 @@ COUNT=0
 TST_LIST=`ls $NAME.*|grep -v "\.c"|cut -d. -f1,2`
 for TEST in $TST_LIST
 do
+
   COUNT=$(($COUNT + 1))
   export TST_COUNT=$COUNT
   $BIN/$TEST >$OUTPUT_FILE 2>&1
@@ -90,3 +91,4 @@ done
 rm -f $OUTPUT_FILE
 
 exit $NOPASS
+
