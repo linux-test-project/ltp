@@ -42,6 +42,14 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+int pid_count = 0;
+
+void handler(int signo)
+{
+        pid_count++;
+}
+
+
 int main(int argc, char* argv[]) {
   char* mem;
   float percent;
@@ -52,7 +60,7 @@ int main(int argc, char* argv[]) {
   extern char* optarg;
   int chunksize = 1024*1024; /* one meg at a time by default */
   struct sysinfo sstats;
-  int i;
+  int i,pid_cntr;
   pid_t pid,pid_list[1000];
 
   for (i=0;i<1000;i++)
@@ -68,6 +76,12 @@ int main(int argc, char* argv[]) {
         break;
       case 'p':
         maxpercent = atoi(optarg);
+	if (maxpercent <= 0){
+	  printf("ERROR: -p option requires number greater than 0\n");
+	  exit(1);}
+	if (maxpercent > 99){
+	  printf("ERROR: -p option cannot be greater than 99\n");
+	  exit(1);}
         break;
       case 'w':
         dowrite = 1;
@@ -125,8 +139,11 @@ int main(int argc, char* argv[]) {
   }
   original_maxbytes=maxbytes;
   i=0;
+  pid_cntr=0;
   pid=fork();
-  pid_list[i]=pid;
+  if (pid != 0)
+    pid_cntr++;
+    pid_list[i]=pid;
 
 #if __WORDSIZE==32
   while( (pid!=0) && (maxbytes > 1024*1024*1024) )
@@ -135,6 +152,7 @@ int main(int argc, char* argv[]) {
     maxbytes=maxbytes-(1024*1024*1024);
     pid=fork();
     if (pid != 0)
+      pid_cntr++;
       pid_list[i]=pid;
   }
   if( maxbytes > 1024*1024*1024 )
@@ -148,6 +166,7 @@ int main(int argc, char* argv[]) {
     maxbytes=maxbytes-(unsigned long long)3*1024*1024*1024;
     pid=fork();
     if (pid != 0)
+      pid_cntr++;
       pid_list[i]=pid;
   }
   if( maxbytes > (unsigned long long)3*1024*1024*1024 )
@@ -176,11 +195,19 @@ int main(int argc, char* argv[]) {
       printf("... %lu bytes allocated and used.\n",bytecount);
     else
       printf("... %lu bytes allocated only.\n",bytecount);
+    kill(getppid(),SIGUSR1);
     while(1)
       sleep(1);
   }
   else					/** PARENT **/
   {
+    struct sigaction act;
+
+    act.sa_handler = handler;
+    act.sa_flags = 0;
+    sigemptyset(&act.sa_mask);
+    sigaction(SIGUSR1,  &act, 0);
+
     i=0;
     sysinfo(&sstats);
     
@@ -189,8 +216,9 @@ int main(int argc, char* argv[]) {
       /* Total Free Post-Test RAM */
       post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
       post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
-    
-      while ( ((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes )
+	    
+      while ( (((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes) &&
+              (pid_count < pid_cntr) )
       {
        sleep(1);
        sysinfo(&sstats);
