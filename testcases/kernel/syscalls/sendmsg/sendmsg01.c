@@ -41,6 +41,13 @@
  *
  */
 
+/* The #ifdef code below is for 2.5 64-bit kernels */
+#ifdef MSG_CMSG_COMPAT
+#undef MSG_CMSG_COMPAT
+#define MSG_CMSG_COMPAT 0
+#endif
+/***************************************************/
+
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
