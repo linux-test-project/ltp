@@ -1,12 +1,14 @@
 // tbase.h
 
 #define TMOD_DRIVER_NAME	"ltp test drivers/base"
-#define DEVICE_NAME		"tbase"
+#define DEVICE_NAME		"/dev/tbase"
 #define MAG_NUM			'k'
 
 /* put ioctl flags here, use the _IO macro which is 
  found in linux/ioctl.h, takes a letter, and an 
  integer */
+
+#define TBASEMAJOR      253
 
 #define DEV_PROBE		_IO(MAG_NUM, 1)
 #define REG_DEVICE		_IO(MAG_NUM, 2)
@@ -22,7 +24,7 @@
 #define CREATE_FILE		_IO(MAG_NUM, 12)
 #define DEV_SUSPEND		_IO(MAG_NUM, 13)
 #define DEV_FILE		_IO(MAG_NUM, 14)
-#define BUS_RESCAN		_IO(MAG_NUM, 15)
+#define BUS_RESCAN		_IO(TBASEMAJOR, 15)
 #define BUS_FILE		_IO(MAG_NUM, 16)
 #define CLASS_REG		_IO(MAG_NUM, 17)
 #define CLASS_UNREG		_IO(MAG_NUM, 18)

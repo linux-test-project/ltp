@@ -52,7 +52,7 @@ static int test_classint_reg(void);
 static int test_sysdev_cls_reg(void);
 static int test_sysdev_reg(void);
 
-static int Major = 0;
+static int Major = TBASEMAJOR;
 static ltpmod_user_t ltp_mod;
 
 /*
@@ -817,6 +817,8 @@ static int tbase_init_module(void) {
 	device_register(&test_device);
 
 	tbase_fops.owner = THIS_MODULE;
+
+    printk("tbase: *** Register device %s **\n", DEVICE_NAME);
 
 	rc = register_chrdev(Major, DEVICE_NAME, &tbase_fops);
         if (rc < 0) {
