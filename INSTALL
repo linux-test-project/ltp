@@ -1,18 +1,18 @@
-$Id: INSTALL,v 1.15 2003/02/26 17:31:39 robbiew Exp $
+$Id: INSTALL,v 1.16 2004/02/05 17:33:10 robbiew Exp $
 
 Quick Start
 -----------
 
 1> tar xzf ltp-XXXXXXXX.tar.gz
 2> cd ltp
-3> make 
+3> make
 4> make install
 5> ./runalltests.sh
 
-*NOTE: The LTP assumes the existence of the nobody, bin, and daemon users and their groups.  
-If these ids do not exist, certain tests will fail. The users and groups IDs should be the 
-same, i.e. if user "nobody" is 99, then it's group should also be "99". The names of the 
-groups are irrelevant.  
+*NOTE: The LTP assumes the existence of the nobody, bin, and daemon users and
+their groups.  If these IDs do not exist, certain tests will fail. The users
+and groups IDs should be the same, i.e. if user "nobody" is 99, then it's
+group should also be "99". The names of the groups are irrelevant.
 
 
 Detailed Installation
@@ -27,22 +27,22 @@ contributions are welcome.
 
 2. Untar the ltp tarball into a spare directory.  There is not a
    standard location for it yet.  We put it in out home directory
-   while we're working on it.  
+   while we're working on it.
 
-3. Run "make" to build everything.  
-   *NOTE: Some of the Makefiles (ex: pan/Makefile) require the lex (or flex)
-   package to be installed.
+3. Run "make" to build everything.
+   *NOTE: Some of the Makefiles (example: pan/Makefile) require the lex (or
+   flex) package to be installed.
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.
    See pan(1) for more information on the test driver we have provided.
-   It is simple, but it can do a lot of stuff. 
+   It is simple, but it can do a lot of stuff.
 
-   NOTE: The diskio and network tests will NOT be run by the runalltests.sh 
-   script.  We chose to seperate these tests because of there required setup
-   overhead. 
+   NOTE: The diskio and network tests will NOT be run by the runalltests.sh
+   script.  We chose to separate these tests because of their required setup
+   overhead.
 
-5. The disk i/o tests can be ran by executing the diskio.sh script.  Inorder
+5. The disk i/o tests can be run by executing the diskio.sh script.  In order
    for these tests to successfully operate a writable high-density 3.5" floppy
    must be in the disk drive and a CD-ROM with more than 100Mb of data must be
    in the CD-ROM drive.  The corresponding tests will fail if either disk is
@@ -58,13 +58,13 @@ contributions are welcome.
 	expect to find server files in certain locations.  Make sure to compile
 	the LTP on this server machine also.
 
-    ii) Second, the server must be setup to allow the client to connect using the
-	"r" commands, such as rsh.  This is done by simply creating/editing the
-	".rhosts" file under /root.  Place the hostname of the client machine
-	in this file to allow root to remotely connect without the use of a 
-	password.
+    ii) Second, the server must be setup to allow the client to connect using
+		 the "r" commands, such as rsh.  This is done by simply creating/editing
+		 the ".rhosts" file under /root.  Place the hostname of the client
+		 machine in this file to allow root to remotely connect without the use
+		 of a password.
 
-   iii) Next, certain services must be activated in order for certain tests to 
+   iii) Next, certain services must be activated in order for certain tests to
 	execute.  The following services are activated via inetd/xinetd:
 		rlogind
 		ftpd
@@ -72,12 +72,13 @@ contributions are welcome.
 		echo (stream)
 		fingerd
 		rshd
-	Also, because certain RPC programs are tested, the "portmapper" daemon MUST
-	be started, as well as NFS server AND lock services.
+		 Also, because certain RPC programs are tested, the "portmapper" daemon
+		 MUST be started, as well as NFS server AND lock services.
 
-    iv) Finally, before running the networktests.sh script, two variables must be set 
-	within the script file.  The "RHOST" variable should be set to the hostname 
-	of the server.  The "PASSWD" variable should be set to root's password on the 
-	server machine.  This is neccessary for tests such as telnet01 and ftp01.       
+    iv) Finally, before running the networktests.sh script, two variables must
+		 be set within the script file.  The "RHOST" variable should be set to
+		 the hostname of the server.  The "PASSWD" variable should be set to
+		 root's password on the server machine.  This is neccessary for tests
+		 such as telnet01 and ftp01.
 
    You can now successfully execute the networktests.sh script.

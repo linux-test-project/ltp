@@ -8,10 +8,10 @@ The latest image is always available at http://ltp.sf.net
 About the Linux Test Project
 
 The Linux Test Project is a joint project with SGI, IBM, OSDL, and Bull with a
-goal to deliver test suites to the open source community that validate the 
-reliability, robustness, and stability of Linux. The Linux Test Project is a 
-collection of tools for testing the Linux kernel and related features. Our goal 
-is to improve the Linux kernel by bring test automation to the kernel testing 
+goal to deliver test suites to the open source community that validate the
+reliability, robustness, and stability of Linux. The Linux Test Project is a
+collection of tools for testing the Linux kernel and related features. Our goal
+is to improve the Linux kernel by bringing test automation to the kernel testing
 effort. Interested open source contributors are encouraged to join the project.
 
 
@@ -29,18 +29,18 @@ CREDITS
 	Credits to those who have contributed to the project.
 
 COPYING
-	GNU Public License
+		 GNU General Public License
 
 ChangeLog
 	An incomplete list of changes to the project.  We will try harder to
 	keep this up to date.
 
 Makefile
-	Top level make file for LTP.  
+		 Top level make file for LTP.
 
 runalltests.sh
 	A simple script to run all of the packaged tests in sequential order and
-	report the over all result.  
+		 report the overall result.
 
 diskio.sh
 	A simple script to run all the diskio tests that pertain to the CD-ROM
@@ -59,11 +59,11 @@ include/*
 lib/*
 	The include and lib directories contain headers and codes for common
 	routines used by many of the tests.  We have tried to keep this to a
-	minimum.  
+		 minimum.
 
 testcases/*
 	Contains all tests that run under the LTP as well as the "bin"
-	directory, which has hardlinks to all the test executables. 
+		 directory, which has hardlinks to all the test executables.
 
 runtest/*
 	It houses command lists that are used by pan for automated testing.
@@ -93,5 +93,5 @@ Contact Information and Updates
 URL: http://ltp.sf.net
 
 Questions and comments should be sent to the LTP mailing list located on the
-project page. 
+project page.
 
