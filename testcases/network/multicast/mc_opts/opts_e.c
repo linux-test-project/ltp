@@ -3,12 +3,16 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <netdb.h>
 
 #define	MAXBUFSIZ	8096
 
 char buff[MAXBUFSIZ];
 
+int
 main(argc, argv)
 int argc;
 char *argv[];
@@ -16,10 +20,9 @@ char *argv[];
         int s;
         struct in_addr simr, gimr;
 
-        unsigned i1, i2, i3, i4, g1, g2, g3, g4;
+        unsigned i1, i2, i3, i4;
         struct hostent *hp, *gethostbyname();
 
-        char sintf[20], gintf[20];
         unsigned char ttl;
         char no_loop=0, do_loop=1;
         unsigned long len=0;
@@ -36,8 +39,8 @@ char *argv[];
             exit(1);
         }
 
-        if(hp = gethostbyname(argv[1]))
-           bcopy(hp->h_addr, &simr.s_addr, hp->h_length);
+        if((hp = gethostbyname(argv[1])))
+           memcpy(&simr.s_addr, hp->h_addr, hp->h_length);
         else 
            if((n = sscanf(argv[1], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4)
            {
@@ -51,11 +54,11 @@ char *argv[];
                         sizeof(simr)) != 0 )
            perror ("Setting IP_MULTICAST_IF"), exit(1); 
         len = sizeof (gimr);
-        if ( getsockopt(s,IPPROTO_IP,IP_MULTICAST_IF,&gimr,&len)!= 0 )
+        if ( getsockopt(s,IPPROTO_IP,IP_MULTICAST_IF,&gimr,(socklen_t*)&len)!= 0 )
            perror ("Getting IP_MULTICAST_IF"), exit(1); 
 
         len = sizeof (ttl);
-	if ( getsockopt(s,IPPROTO_IP,IP_MULTICAST_TTL,&ttl,&len) != 0 )
+	if ( getsockopt(s,IPPROTO_IP,IP_MULTICAST_TTL,&ttl,(socklen_t*)&len) != 0 )
            perror ("Getting IP_MULTICAST_TTL"), exit(1); 
 
         ttl = 10; /* Set ttl to 10 */
@@ -68,7 +71,7 @@ char *argv[];
       if (setsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&no_loop,sizeof(char)) != 0)
            perror ("Setting IP_MULTICAST_LOOP"), exit(1);
       len = sizeof (no_loop);
-      if(getsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&no_loop,&len) != 0 )
+      if(getsockopt(s,IPPROTO_IP,IP_MULTICAST_LOOP,&no_loop,(socklen_t*)&len) != 0 )
            perror ("Getting IP_MULTICAST_LOOP"), exit(1); 
 
         close (s);
