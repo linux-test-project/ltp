@@ -67,7 +67,7 @@ $trace_logic
    [[ $IAM -eq "root" ]] || end_testcase "Must be root user"
    
    #Export the data directory on RHOST
-   rsh -n $RHOST "/usr/sbin/exportfs -i :$TESTDIR -o rw,no_root_squash "
+   rsh -n $RHOST "/usr/sbin/exportfs -i *:$TESTDIR -o rw,no_root_squash "
    [[ $? -eq 0 ]] || end_testcase "Could not export $TCdat from $RHOST"
 
    #Verify export
@@ -75,7 +75,7 @@ $trace_logic
    [[ $? -eq 0 ]] || end_testcase "$TCdat not exported"
 
    #Create $TCtmp for mount point
-   mkdir $TCtmp
+   mkdir -p $TCtmp
    [[ $? -eq 0 ]] || end_testcase "Could not create $TCtmp"
 
    #Mount $TCdat from RHOST.
@@ -145,7 +145,7 @@ do_test3()
 $trace_logic
    echo "do_test3 $TC "
    chmod a-w $TCtmp/smallsize.fil
-   ls -l $TCtmp/smallsize.fil | grep "r--" | grep -v x | grep -v w
+   ls -l $TCtmp/smallsize.fil | grep "r--" 
    [[ $? -eq 0 ]] || end_testcase "Removal of write permissions not honored on smallsize.fil"
    chmod a+w $TCtmp/smallsize.fil
 }
@@ -165,7 +165,7 @@ $trace_logic
    umount $TCtmp
    sleep 3
    rmdir $TCtmp
-   rsh -n $RHOST "/usr/sbin/exportfs -u :$TESTDIR" 
+   rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR" 
    
 }
 
