@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rand_lines.c,v 1.4 2002/06/20 19:03:00 nstraz Exp $ */
+/* $Id: rand_lines.c,v 1.5 2002/09/16 15:02:57 nstraz Exp $ */
 /**************************************************************
  *
  *    OS Testing - Silicon Graphics, Inc.
@@ -430,7 +430,7 @@ long seed;
 
     char line[MAX_LN_SZ];		/* max size of a line */
     int cnt;				/* offset printer counter */
-    int loffset;			/* last line address */
+    long loffset;			/* last line address */
     char *buffer;			/* malloc space for file reads */
     char *rdbuff;			/* where to start read */
     long stopaddr;			/* end of read space (address)*/
