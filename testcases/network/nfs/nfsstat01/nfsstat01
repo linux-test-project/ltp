@@ -31,7 +31,7 @@
 #**********************************************************************
 
 #Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
+trace_logic=${trace_logic:-"set -x"}
 
 $trace_logic
 
@@ -43,7 +43,7 @@ TC=nfsstat01
 TCbin=${TCbin:=`pwd`}
 EXPORTDIR=/tmp/$TC$$
 HOST=`hostname`
-MOUNTDIR=${MOUNTDIR:=/tmp/$TC$$}
+MOUNTDIR=${MOUNTDIR:=/tmp/$TC$$Mount}
 CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=2}
 
