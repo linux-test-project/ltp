@@ -309,23 +309,23 @@ mremap04 mremap04
 msgctl01 msgctl01
 msgctl02 msgctl02
 msgctl03 msgctl03
-#msgctl04 msgctl04
+msgctl04 msgctl04
 msgctl05 msgctl05
 
 msgget01 msgget01
 msgget02 msgget02
 msgget03 msgget03
-#msgget04 msgget04
+msgget04 msgget04
 
 msgrcv01 msgrcv01
-#msgrcv02 msgrcv02
+msgrcv02 msgrcv02
 msgrcv03 msgrcv03
 msgrcv04 msgrcv04
 msgrcv05 msgrcv05
 msgrcv06 msgrcv06
 
 msgsnd01 msgsnd01
-#msgsnd02 msgsnd02
+msgsnd02 msgsnd02
 msgsnd03 msgsnd03
 msgsnd04 msgsnd04
 msgsnd05 msgsnd05
@@ -349,7 +349,7 @@ nanosleep04 nanosleep04
 nice01 nice01
 nice02 nice02
 nice03 nice03
-#nice04 nice04
+nice04 nice04
 nice05 nice05
 
 open01 open01
@@ -360,7 +360,7 @@ open04 open04
 open05 open05
 open06 open06
 open07 open07
-#open08 open08
+open08 open08
 
 pathconf01 pathconf01
 
