@@ -1,0 +1,20 @@
+BOUNDARY TESTS
+==============
+It is sometimes useful to test parameter boundaries as part of API testing.
+In the POSIX Test Suite Framework, variables cannot be assigned to values that
+would cause warnings (because warnings are treated as errors), so the following
+list of boundary values has been created for boundary testing.
+
+These boundary values are those values that the gcc compiler would set an 
+invalid parameter to during compile time:
+
+INT32_MAX+1       -2147483647 (gcc compiler gave -2147483648)
+INT32_MIN-1        2147483647
+unassigned val    -1073743192
+unassigned val     1075002478
+
+Potentially the MAX+1/MIN-1 values are deterministic.  The others are just
+empirical examples.
+
+Contributors:	julie.n.fleischer REMOVE-THIS AT intel DOT com
+		geoffrey.r.gustafson REMOVE-THIS AT intel DOT com

@@ -1,0 +1,73 @@
+DEFINITIONS TESTING
+===================
+A variety of header file definitions are listed in the POSIX Base Definitions
+document.  The steps below describe how to test the various types of
+definitions that appear.
+
+Definitions Testing -> STRUCTURES
+---------------------------------
+To test that a structure has been correctly defined, we add two tests into
+one .c file.  The first test tests that the structure has been declared, and
+the second that all elements of the structure are correctly defined.
+
+To make the first test and setup the second, delcare the structure as:
+
+struct <structure under test> this_type_should_exist, t;
+
+To make the second test, create a dummy function and assign elements of
+the correct structure to t or assign t to certain elements:
+
+int dummyfcn (void)
+{
+	t.<field> = <value>;
+	<variable> = t.<field>;
+}
+
+For assignment, some rules of thumb are:
+- For variables of a defined type, assign t.<field> to these values.
+ex.
+sigset_t *set;
+set = &t.sa_mask;
+
+- For variables which are other functions, assign a function to t.<field>.
+ex.
+extern void signal_handler(int);
+t.sa_handler = signal_handler;
+
+For examples, see posixtestsuite/conformance/definitions/signal/15-1.c
+
+Definitions Testing -> MACROS
+-----------------------------
+Macros are tested to see if they are defined.  This is done via the
+#ifdef preprocessor lines.
+
+ex.
+#include <include file with definitions.h>
+
+#ifndef <Macro name>
+#error <Macro name> not defined
+#endif
+
+For examples, see posixtestsuite/conformance/definitions/signal/22-*.c
+
+Definitions Testing -> FUNCTIONS
+--------------------------------
+To test functions, declare a typedef of a test function identical to the
+function under test, create a variable of that typedef, and try to assign
+it to the function under test.
+
+ex.
+typedef int (*fcn_test)(char *, char *);
+int dummyfcn (void)
+{
+	fcn_test dummyvar;
+	dummyvar = fcn;
+	return 0;
+}
+
+For examples, see posixtestsuite/conformance/definitions/signal/43-1.c
+
+Contributors:  	Inaky.Perez-Gonzalez REMOVE-THIS AT intel DOT com
+		Julie.N.Fleischer REMOVE-THIS AT intel DOT com
+
+

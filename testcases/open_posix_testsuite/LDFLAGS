@@ -1,0 +1,8 @@
+#This file contains all lines needed for linking the test suites.
+#These may be on one line or multiple lines.
+#
+#Place the -l, -L, or -D piece before the item to link.
+#Lines beginning with # are comments.
+#
+#For example,
+#-lposixtime -D_GNU_SOURCE

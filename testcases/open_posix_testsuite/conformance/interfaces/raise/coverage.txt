@@ -1,0 +1,16 @@
+The current coverage of this suite is limited to testing raise() on processes.
+
+The threads items that could be added later are:
+
+- Test assertion 1 for threads.
+- Test assertion 3.
+This document defines the coverage for function raise().
+
+Assertion	Covered?
+1		YES, only covering processes, not threads
+2		YES
+3		WON'T test for now since it is specific to threads
+4		YES
+5		IMPLICITLY tested by testing assertion 1
+6		YES
+7		YES

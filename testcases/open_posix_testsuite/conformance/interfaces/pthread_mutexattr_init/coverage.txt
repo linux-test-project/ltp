@@ -1,0 +1,13 @@
+This document defines the coverage for the pthread_mutexattr_init function:
+
+Assertion	Tested?
+1		YES
+2		NO  *Looking for indicators to judge if initialized mutexes 
+		     are affected. The prioceiling or protocol attributes may
+		     be relied on, but they belong to REALTIME_THREADS scope, 
+		     which is low priority in the schedule.
+3		YES
+4		NO  *Looking for a way to use up the memory without screwing
+ 		     up the machine.
+
+Note: 

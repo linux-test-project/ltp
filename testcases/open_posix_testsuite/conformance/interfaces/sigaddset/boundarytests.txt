@@ -1,0 +1,14 @@
+The following values will be used for boundary testing:
+
+Note:  These numbers are not magical just the ones a gcc compiler gave on
+a certain compilation of a test program.
+
+Potentially the MAX+1/MIN-1 values are deterministic.  The others are just
+empirical examples.
+
+To simulate:       Use:
+INT32_MAX+1       -2147483647 (gcc compiler gave -2147483648)
+INT32_MIN-1        2147483647
+unassigned val    -1073743192
+unassigned val     1075002478
+

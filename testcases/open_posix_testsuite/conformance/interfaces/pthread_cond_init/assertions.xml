@@ -1,0 +1,35 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32357:32360">
+  The function
+    int pthread_cond_init(pthread_cond_t *restrict cond,
+ 	                  const pthread_condattr_t *restrict attr);
+  shall initialize the condition variable referenced by cond with
+  attributes referenced by attr.If attr is NULL, the default condition variable attributes shall be
+  used; the effect is the same as passing the address of a default condition variable attributes
+  object. Upon successful initialization, the state of the condition variable shall become initialized.  
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32365:32368">
+  In cases where default condition variable attributes are appropriate, the macro
+  PTHREAD_COND_INITIALIZER can be used to initialize condition variables that are statically
+  allocated. The effect shall be equivalent to dynamic initialization by a call to pthread_cond_init()
+  with parameter attr specified as NULL, except that no error checks are performed.  
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32370:32370">
+  If successful, the pthread_cond_init() function shall return zero;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32381:32390">
+  The pthread_cond_init() function shall fail if:
+    [EAGAIN] The system lacked the necessary resources (other than memory) to initialize
+             another condition variable.
+    [ENOMEM] Insufficient memory exists to initialize the condition variable.
+  The pthread_cond_init() function may fail if:
+    [EBUSY]  The implementation has detected an attempt to reinitialize the object
+             referenced by cond, a previously initialized, but not yet destroyed, condition
+             variable.
+    [EINVAL] The value specified by attr is invalid.
+  The function shall not return an error code of [EINTR].
+  </assertion> 
+</assertions>

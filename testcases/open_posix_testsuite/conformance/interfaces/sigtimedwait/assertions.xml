@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42484:42486 pt:RTS">
+	sigtimedwait( ) shall wait for the time interval specified in the timespec
+	structure referenced by timeout, if none of the signals specified by set are pending,
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42486:42488 pt:RTS">
+	sigtimedwait( ) shall return immediately with an error, if the timespec structure
+	pointed to by timeout is7 zero-valued and if none of the signals specified by set are pending.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42488:42490 pt:MON">
+	The CLOCK_MONOTONIC clock shall be used to measure the time interval specified by
+	the timeout argument, if the Monotonic Clock option is supported.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:424506:42508 pt:RTS">
+	sigtimedwait( ) shall return the selected signal number, upon successful completion 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42508:42509 pt:RTS">
+	sigtimedwait() shall return a value of -1 upon unsuccessful completion.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42510:42512 pt:RTS">
+	sigtimedwait() shall set errno to [EAGAIN] if no signal specified by set was generated
+	within the specified timeout period.
+  </assertion>
+</assertions>
+
+

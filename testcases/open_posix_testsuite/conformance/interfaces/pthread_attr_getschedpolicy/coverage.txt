@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_attr_getschedpolicy function:
+
+Assertion	Tested?
+1		NO
+2		NO
+3		NO
+
+Note: 

@@ -1,0 +1,36 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31990:31991">
+   The function
+
+   int pthread_cancel(pthread_t thread); 
+   
+   sends a request that 'thread' shall be canceled.  The target thread's 
+   cancelability state and type determines when/if the cancelation takes
+   effect.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31991:31994">
+  When the cancelation request is honored, the cancelation cleanup handlers for
+  'thread' are called.
+
+  When the last cancelation cleanup handler returns, the thread-specific
+  data destructer functions will be called for 'thread'.
+  When the last destructer function returns, 'thread' then terminates. 
+
+  NOTE: Still trying to find a good way to test the second paragraph of 
+  assertion #2.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:31995:31996">
+  The cancelation processing in the target thread will run asynchronously
+  with respect to the calling thread returning from pthread_cancel();
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:31998:31998">
+  If success, it returns a 0;
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:32001:32004">
+  It may return an error number if:
+
+  -[ESRCH] No thread could be found corresponding to that thread ID  
+
+  It will not return [EINTR]
+  </assertion> 
+</assertions>

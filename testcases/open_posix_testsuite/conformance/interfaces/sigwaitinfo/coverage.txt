@@ -1,0 +1,12 @@
+This document defines the coverage for function sigwaitinfo().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		IMPLICITLY tested in assertions 1, 2, and 3.
+5		YES
+6		YES
+7		YES
+8		YES
+9		YES

@@ -1,0 +1,21 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32765:32766">
+   The function
+     int pthread_condattr_setpshared(pthread_condattr_t *attr,
+                                     int pshared);
+  shall set the process-shared attribute in an initialized attributes object 
+  referenced by attr.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32776:32777>
+  If successful, the pthread_condattr_setpshared() function shall return zero;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32782:32786">
+  The pthread_condattr_setpshared() function may fail if:
+    [EINVAL] The value specified by attr is invalid.
+    [EINVAL] The new value specified for the attribute is outside the range of legal values
+             for that attribute.  
+  </assertion> 
+  
+</assertions>

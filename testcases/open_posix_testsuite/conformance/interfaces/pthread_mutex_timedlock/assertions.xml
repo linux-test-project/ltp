@@ -1,0 +1,51 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34022:34029">
+   The function
+
+   int pthread_mutex_timedlock(pthread_mutex_t *restrict mutex, 
+	const struct timespec *restrict abs_timeout);
+
+  locks the mutex object referenced by 'mutex'.  If the mutex is
+  already locked, the calling thread shall block until the mutex becomes
+  available.  The wait will end when the specified timeout time has expired.
+
+  The timeout expires when the absolute time 'abs_timeout' passes, or if 'abs_timeout'
+  has already been passed the time of the call.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:34030:34032">
+  If the Timers option (TMR) is supported, the timeout will be based on the CLOCK_REALTIME
+  clock. Otherwise, it will be based on the system clock as returned by time()
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:34038:34041">
+  For mutexes initialized with the PRIO_INHERIT protocol, if a timed mutex wait is
+  terminated because its timeout expired, the priority of the owner of the mutex shall be 
+  adjusted to show the fact that this thread no longer is among those that are waiting for
+  the mutex.
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:34043:34044">
+  Upon success, it returns 0.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:34046:34059">
+  It SHALL fail if:
+ 
+  [EINVAL] - The mutex was created with the protocol attribute of
+             PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than
+   	     the mutex's current priority ceiling.
+
+  [EINVAL] - The process or thread would have blocked, and the abs_timeout parameter
+	     specified in nano-seconds field value is less than 0 or greater than or equal
+  	     to 1,000 million.
+
+  [ETIMEDOUT] - The timeout expried and the mutex could not be locked.
+
+  It MAY fail if:
+
+  [EVINAL] - 'mutex' does not refer to an initialized mutex object.
+
+  [EAGAIN] - (XSI)  The mutex could not be acquired, the max number of recursive locks for
+		    'mutex' has been exceeded.
+
+  [EDEADLK] - The current thread already owns the mutex.
+  </assertion>
+</assertions>

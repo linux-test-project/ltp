@@ -1,0 +1,13 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41855:41856">
+sigemptyset() initializes the signal set pointed to by set, such that
+all signals defined in IEEE Std 1003.1-2001 are excluded from the set.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41858:41859">
+sigemptyset() returns 0 upon successful completion
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41858:41859">
+sigemptyset() returns -1 and sets errno to indicate the error in case of
+unsuccessful completion.
+  </assertion>
+</assertions>

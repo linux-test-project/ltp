@@ -1,0 +1,14 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+
+Assertions     Tested ?	   Remarks
+1	       YES	   
+2	       YES	   Behavior is unspecified
+3	       YES	   Can not test the implementation defined policies
+4	       YES	   Don't test that the result is right.	   
+5	       YES	   Assume that a pid is not reatributed immediately
+6	       YES
+7	       YES
+

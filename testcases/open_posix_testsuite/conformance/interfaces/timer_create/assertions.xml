@@ -1,0 +1,68 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:46739:46741">
+   timer_create() creates a timer, timerid, for clock, clockid
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:46741:46742">
+   timerid is unique within the process that called timer_create() until
+   it is deleted
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:46743:46743">
+   timerid is in a "disarmed state" when it is created from timer_create()
+   (i.e., The timer is not active until timer_settime() is called.)
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:46745:46747">
+   evp points to a sigevent structure that defines the notification that will
+   occur when the timer expires
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:46747:46750">
+   If evp == NULL, it is the same as if evp.sigev_notify=SIGEV_SIGNAL and
+   evp.sigev_signo="a default signal number" evp.sigev_value=timerid.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:46751:46752">
+   clock_id = CLOCK_REALTIME must be supported by timer_create()
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:46752:46753 pt:MON">
+   clock_id = CLOCK_MONOTONIC is supported by timer_create() (with MON support)
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:46754:46754">
+   child processes do not inherit timers during fork()
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:46754:46755">
+   timers are disarmed and deleted by an exec()
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:46756:46757 pt:CPT">
+   If _POSIX_CPUTIME is defined, clock_id values = to the CPU-time
+   clock of the process calling timer_create() are allowed
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:46758:46759 pt:TCT">
+   If _POSIX_THREAD_CPUTIME is defined, clock_id values = to the CPU-time
+   clock of the thread calling timer_create() are allowed
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:46760:46762 pt:CPT pt:TCT">
+   If clock_id = the CPU-time clock of a process or thread that is _not_ the
+   thread calling timer_create(), it is implementation-defined whether
+   timer_create() will attempt to set the timer for that process/thread or
+   just fail.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:46764:46765">
+   timer_create() returns 0 on success and sets timerid to the correct timer
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:46765:46766">
+   timer_create() returns -1 on failure and timerid is undefined
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:46769:46772">
+   timer_create returns errno = EAGAIN if either:
+   1) the system does not have enough signal queueing resources to
+      honor the request, or
+   2) creation of this timer would exceed the allowable timers that the
+      calling process can create
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:46773:46773">
+   timer_create returns errno = EINVAL if clock_id is not a defined clock ID
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:46774:46776 pt:CPT pt:TCT">
+   timer_create returns errno = ENOTSUP if the implementation does _not_
+   support sending a CPU-time clock ID for a different (not the calling)
+   process/thread
+  </assertion>
+</assertions>

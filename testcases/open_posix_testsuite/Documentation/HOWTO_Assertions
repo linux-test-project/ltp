@@ -1,0 +1,70 @@
+ASSERTIONS
+==========
+
+This document defines the format of assertions as well as the information
+contained in the XML parameters.
+
+Format
+------
+The general format of an assertion is:
+<assertion id="<#>" tag="<string>">
+</assertion> 
+
+ID
+--
+The ID is a unique number corresponding to the test case number (see the
+README for more information).
+
+Tag
+---
+The tag uses the conventions defined below.
+
+The format of the tag is below.
+Items in <> are replaced with the correct values.
+Items in [] are optional.
+()+ means the pattern can repeat and occurs at least once
+(<type>:<source>:<start line>:<last line>)+ [pt:<POSIXtag>]
+
+type - Refers to the type of source that the assertion was taken from.
+       Valid values are:
+          ref - For reference document (generally a POSIX specification)
+          oth - For any other material (design documents, analysis of
+                                        behavior, etc.)
+
+source - Refers to the source that the assertion was taken from.  Valid
+         values are:
+            For ref:
+             (Note: # refers to the document version number)
+               XBD#   - POSIX Base Definitions document
+               XSH#   - POSIX System Interfaces document
+               XCU#   - POSIX Shell and Utilities document
+               XRAT#  - POSIX Rationale document
+	       
+	       When dealing with Technical Corrigendums, append TC# where # refers to
+		the technical corrigendum document number.  
+
+		e.g.  XSH6TC1,  XBDTC2, etc.
+
+            For oth:
+               user defined - Ideally should be short (1-3 letters) to define the
+                              source.
+
+start line/ - Refers to the first and last line in the source where the 
+last line     assertion is taken from.  If the type is oth and there are no
+              line numbers, this should be the page number (or 0 if no 
+              page numbers).
+
+              Note:  If you do not have access to the line numbers in
+                     the official POSIX Specs, then simply put in 
+                     brackets an unofficial reference
+                     (ex. <section 3.4, third bullet>)
+
+pt:<POSIXtag> - If the assertion is taken from a POSIX specification and there
+                is a POSIX tag (pt) associated with it, the additional string
+                pt:<POSIXtag> can designate this.  <tag> is the three letter 
+                POSIX tag.
+
+Contributors:  geoffrey.r.gustafson REMOVE-THIS AT intel DOT com
+               julie.n.fleischer REMOVE-THIS AT intel DOT com
+               ajosey REMOVE-THIS AT rdg DOT opengroup DOT org
+	       rolla.n.selbak REMOVE-THIS AT intel DOT com

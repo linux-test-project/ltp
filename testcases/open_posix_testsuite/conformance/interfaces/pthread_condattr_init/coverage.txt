@@ -1,0 +1,10 @@
+This document defines the coverage for the pthread_condattr_init function:
+
+Assertion	Tested?
+1		YES
+2               NO  *Looking for a way to judge if initialized condition
+                     variables are affected.
+3		YES
+4		NO  * Looking for a way to produce the error conditions
+
+NOTE:

@@ -1,0 +1,11 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_get_priority_max:DESCRIPTION}">
+   sched_get_priority_max() returns the maximum priority value on success
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_get_priority_max:RETURN VALUE}">
+   sched_get_priority_max() returns -1 on failure
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_get_priority_max:ERRORS}">
+   sched_get_priority_max() sets errno == EINVAL if policy is not a valid policy
+  </assertion>
+</assertions>

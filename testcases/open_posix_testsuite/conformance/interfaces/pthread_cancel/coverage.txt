@@ -1,0 +1,16 @@
+This document defines the coverage for the pthread_cancel function:
+
+Assertion	Tested?
+1		YES
+2		YES ** Difficult to test and assert that date destructors
+		       have been called (read assertions.xml file for more).
+3		YES
+4		YES
+5		YES ** Keeping in mind it 'may' fail and not 'shall' fail,
+		       so it will always return PASS, but will return a 
+		       PASS and print out a warning if it fails.
+
+NOTE: In a lot of these test, I didn't make use of semaphores or mutexes, but
+rather manually created my own.  This is because I was taking into account
+different implementations.
+

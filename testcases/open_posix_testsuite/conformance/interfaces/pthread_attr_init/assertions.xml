@@ -1,0 +1,38 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31116:31117">
+   The function
+
+   int pthread_attr_init(pthread_attr_t *attr)
+ 
+   initializes a thread attributes object 'attr' with the default value
+   for all the individual attributes accorinding to a given implementation.
+
+   NOTE: Since most default values are implementation specific, only the
+   attribute of the detachstate will be tested since the default value
+   is defined in the spec. (default value:  PTHREAD_CREATE_JOINABLE)
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31118:31119">
+  The resulting attributes object (that can also be  modified by setting 
+  individual attribute values) when used by pthread_create() defines the 
+  attributes of the thread created.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:31119:31120">
+  A single attributes object can be used in multiple simultaneous calls to
+  pthread_create(). 
+  NOTE: Undefined results occur if pthread_attr_init() is called specifying an 
+  already initialized 'attr' attributes object.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:31123:31124">
+  If success, pthread_attr_init() returns 0.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:31126:31128">
+  If it fails, an error number will be returned to indicate the error:
+  [ENOMEM] - Not enough memory to initialize the thread attributes 
+   	     object.
+
+  It will not return [EINTR].
+
+  NOTE: WON'T test here since it is more of a stress test, not a conformance
+  test.
+  </assertion>
+</assertions>

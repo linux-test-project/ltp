@@ -1,0 +1,122 @@
+
+SECTIONS:
+1. Open POSIX* Test Suite Overview
+2. Design Goals
+3. Implementation
+4. Developer Docs & Resources
+5. How to Contribute
+6. Who are you?
+7. Disclaimer
+
+
+
+1. Open POSIX* Test Suite Overview
+-----------------------------------
+
+The POSIX Test Suite is an open source test suite with the goal of
+performing conformance, functional, and stress testing of the IEEE
+1003.1-2001 System Interfaces specification in a manner that is
+agnostic to any given implementation.
+
+While active development and testing is currently happening on Linux,
+our choice of portable tools should make this test suite usable on any
+POSIX operating system.
+
+All code is distributed under the GNU General Public License v2.  A
+copy of this license is contained in the COPYING file.
+
+This document gives a brief overview of the test suite, including its
+design goals, implementation, and how to contribute.  Within these
+sections, we describe where to find more detailed information.
+
+2. Design Goals
+----------------
+This project was created with the following design goals:
+- Enable assertion based traceability for conformance testing of POSIX
+  specifications.  We wanted to capture enough data to make deterministic
+  statements about our coverage of the POSIX specification.
+
+- Give the ability to send test case source to bug reports to appropriate 
+  open source projects when our test cases revealed bugs in those projects.
+  (Meaning we wanted fairly simple, self-contained test cases which
+  illuminated a single failure.)
+
+- Make it easy for test cases to be contributed.
+
+3. Implementation
+------------------
+
+This project will cover conformance, functional, stress, performance,
+and speculative testing.  Conformance, functional, and stress tests are
+the only tests formally documented and enabled by our framework, with our 
+focus mainly on conformance; however, the other types of testing will be 
+added as the need arises.
+
+For more information on these types of testing, under 'Documenation' see:
+HOWTO_ConformanceTest - info on creation and structure of conformance tests
+HOWTO_Functional-     - info on creation and structure of functional
+  StressTest            and stress tests
+
+For additional information on how to build and run the tests in this
+suite, see Documentation/HOWTO_RunTests.
+
+
+4. Developer Docs & Resources
+------------------------------
+
+The following files give developers information on how to write test
+cases for the project (under Documentation):
+HOWTO_Assertions      - describes format of the assertions files used to
+                        map test case descriptions to test cases
+HOWTO_BoundaryTest    - information about testing boundary conditions
+HOWTO_CodingGuidelines- describes coding guidelines for this project
+HOWTO_Coverage        - describes format of COVERAGE.<area> files
+HOWTO_DefinitionsTest - ideas behind testing POSIX header files
+HOWTO_ResultCodes     - standardized return codes for tests
+HOWTO_Tagging         - describes how to tag files for inclusion in a release
+
+For additional information on how to build and run the tests in this
+suite, see HOWTO_RunTests.
+
+5. How to Contribute
+---------------------
+
+* Patches welcome!
+
+* When you create a new test, please fill out an assertion description
+  if none is available. Create a simple C [.c] or shell script [.sh]
+  snippet that exploits the assertion and returns 0 or !0
+  [passes/fails]. 
+
+  Please name the file after the assertion it tests-dash-the number of
+  the test [up to you, we can do the naming for you also].
+
+  The code snippets need to be as simple as possible, for the sake of
+  all. Please start them with a commentary briefly describing how
+  you will test the assertion. The idea is that at the end, we can have
+  automatic tools extracting the data from the XML and source files to
+  generate reports.
+
+
+6. Who are you?
+---------------
+
+We are the ones currently developing this:
+
+julie.n.fleischer REMOVE-THIS AT intel DOT com
+rusty.lynch REMOVE-THIS AT intel DOT com
+geoffrey.r.gustafson REMOVE-THIS AT intel DOT com
+inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
+rolla.n.selbak REMOVE-THIS AT intel DOT com
+majid.awad REMOVE-THIS AT intel DOT com
+salwan.searty REMOVE-THIS AT intel DOT com
+sunyi REMOVE-THIS AT users DOT sourceforge DOT net
+
+Some like to say 'Nih!' from time to time ...
+
+
+7. Disclaimer
+--------------
+The Open POSIX Test Suite is not affiliated with the IEEE or The Open Group.
+
+* POSIX (R) is a registered trademark of the IEEE

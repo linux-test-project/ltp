@@ -1,0 +1,78 @@
+Coverage-Area: Signals
+Area-Code: sig
+
+/*
+This document lists the items that will be tested for POSIX signals.
+
+	Item to Test		Status
+==========================================================
+||	Definitions		DONE			||
+||	Behavior		see table below		||
+||	Functionality		see table below		||
+||	Stress			see table below		||
+==========================================================
+
+The signal functions that will be tested as well as the priority to
+the POSIX Test Suite creators are listed below.
+
+Columns are:
+Function - function name
+Tag - tag that applies to the function in the POSIX spec
+Complexity - POSIX test suite owners' intuitions at complexity of the function
+as well as complexity required to create a test suite (subjective)
+Recommended? - set to "NO" if the POSIX spec recomments using *other*
+functions instead of this one going forward; set to "YES" otherwise
+Priority - POSIX test suite owners' intuitions at priorities of these
+functions (subjective)
+Behavior? - Has a behavior test been created?  Set to DONE if finished.  Set
+to tester's name if in progress.  Blank items are open.
+Functional? - Has a functional test been created?  Set to DONE if finished.
+Set to tester's name if in progress.  Blank items are open.
+Stress? - Has a stress test been created?  Set to DONE if finished.  Set
+to tester's name if in progress.  Blank items are open.
+
+*/
+//Function	Complete?	Pri
+//=============================================================================
+bsd_signal	WONT		LOW
+kill		YES		HIGH
+killpg		YES		HIGH		
+pthread_kill	YES		MED
+pthread_sigmask	YES		MED
+raise		YES		HIGH
+sigaction	YES		HIGH
+sigaddset	YES		MED
+sigaltstack	YES		LOW
+sigdelset	YES		MED
+sigemptyset	YES		MED
+sigfillset	YES		MED
+sighold		YES		MED
+sigignore	YES		MED
+siginterrupt	WONT		LOW
+sigismember	YES		MED
+sigpause	YES		MED
+sigpending	YES		MED
+sigprocmask	YES		MED
+sigqueue	YES		LOW
+sigrelse	YES		MED
+sigsuspend	YES		MED
+sigtimedwait	YES		LOW
+sigwait		YES		MED
+sigwaitinfo	YES		LOW
+signal		YES		MED
+sigset		YES		LOW
+
+/*
+Items left to prioritize:
+- Any additional information listed in the POSIX System Interfaces document
+  on signals (Namely, any requirements in section 2.4.).
+- Any functional requirements listed in the POSIX Base Definitions document.
+  (ex.  Testing that each signal listed in the POSIX Base Definitions
+   document functionally performs in the manner in which that document
+   specifies.)
+*/
+
+Maintainer: Salwan Searty
+Contributor: Rusty Lynch
+Contributor: Rolla Selbak
+Contributor: Julie Fleischer

@@ -1,0 +1,10 @@
+This document defines the coverage for function signal().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		IMPLICITLY tested by all tests.
+5		YES
+6		YES
+7		YES

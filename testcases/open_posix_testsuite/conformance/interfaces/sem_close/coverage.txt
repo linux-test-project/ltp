@@ -1,0 +1,6 @@
+
+assertion 4:
+TEST WAS REMOVED: based on the Austin Group mailing list traffic "That
+implemntation is not required to detect invalid parameters".  May be some one
+else could figure out a way to write a test case for it.
+

@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33591:33591 pt:THR">
+    The pthread_kill() function requests from the kernel to deliver a 
+    specified signal be to a specified thread.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:33591:33591 pt:THR">
+    Just like in the kill() function, error checking shall be performed 
+    but no signal shall actually be sent, if sig is zero.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:33594:33594 pt:THR">
+    The function shall return a value of zero, upon successful completion.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:33594:33595 pt:THR">
+    The function shall return an error number otherwise. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:33594:33595 pt:THR">
+    No signal shall be sent if the pthread_kill() function fails.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:33598:33599 pt:THR">
+    [ESRCH] No thread could be found corresponding to that specified by 
+    the given thread ID.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:33600:33600 pt:THR">
+    [EINVAL] The value of the sig argument is an invalid or unsupported 
+    signal number.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:33601:33601 pt:THR">
+    The pthread_kill () function shall not return an error code of 
+    [EINTR].
+  </assertion>
+</assertions>

@@ -1,0 +1,13 @@
+This document defines the coverage for the pthread_mutex_trylock function:
+
+Assertion	Tested?
+1		YES
+2		NO   * PTHREAD_MUTEX_RECURSIVE is a new XSI feature, which may not  
+		       be available in pthread implementations
+3		YES
+4		YES  * EINVAL and EAGAIN are relevant to low-priority mutex 
+		       attributes, which cannot be tested by now
+		     * When it specifies it 'may' fail and not 'shall' fail,
+		       it will always return PASS, but will return a 
+		       PASS and print out a warning if it fails.
+NOTE:

@@ -1,0 +1,20 @@
+<< First, an explaination for the perl script and the stuff >>
+<< in the template directoy                                 >>
+
+I have added a cheezy perl script for generating a bunch of test cases
+where I want to do the same simple operation on each signal.
+
+Templates are in the templates directory, and are of the form 
+template_ASSERTIONID-count.in
+
+gentest.pl will generate a ASSERTIONID-COUNT.c for each signal specified
+in the POSIX definition of required signals where %%MYSIG%% is replaced 
+with the signal name. 
+
+<< Misc thoughts >>
+
+* Assertion #5: Since almost all of the test cases in this directory assume
+                that this assertion is true, I haven't bothered adding
+                a test case that just test assertion #5.
+
+

@@ -1,0 +1,15 @@
+This file lists the coverage for all assertions:
+
+Assertion	Complete?
+1		YES
+2		YES
+3		YES*
+4		NO - process clocks not part of implementation under test
+5		NO - process clocks not part of implementation under test
+6		YES
+7		YES
+8		YES
+
+*Note:  To run against current implementation, I have to add in a line:
+#include "/usr/src/linux/Documentation/high-res-timers/lib/posix_time.h"
+for the definition of CLOCK_MONOTONIC to be included.

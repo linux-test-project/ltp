@@ -1,0 +1,14 @@
+
+Will not test the following error values of the semaphores because it is 
+unknown to me of how to return these values.
+
+-- EDEADLK:  A deadlock condition was detected.
+
+-- assertion 6: not tested.
+
+-- assertion 9: is being covered in the other sem_wait cases.
+
+TODO: Help create a test case for the EDEADLK ERROR code.
+
+
+~      

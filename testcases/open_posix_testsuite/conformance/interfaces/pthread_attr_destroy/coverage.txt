@@ -1,0 +1,11 @@
+This document defines the coverage for the pthread_attr_destroy function:
+
+Assertion	Tested?
+1		YES *Fails on the implementation of threads that I'm working
+		     on.
+2		YES
+3		YES
+
+Note: pthread_attr_destroy leaves a lot up to the implementation of threads
+that you are testing on.  For instance, on the implementation that I'm working
+on, pthread_attr_destroy() does nothing.

@@ -1,0 +1,20 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:46851:46852 pt:TMR">
+   timer_delete() deletes timer, timerid.  [timerid is created by 
+   timer_create().]
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:46852:46854 pt:TMR">
+   If timerid is an armed timer when timer_delete() is called, it will
+   appear as if the timer is automatically disarmed before removal.
+   [It is unspecified what happens to any pending signals.]
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:46856:46856 pt:TMR">
+   timer_delete() returns 0 on success
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:46856:46857 pt:TMR">
+   timer_delete returns -1 on failure
+  </assertion>
+  <assertion id="5" tag="ref:XSH6TC2:46859:46860 pt:TMR">
+   timer_delete() may set errno==EINVAL if timerid is not a valid timer ID
+  </assertion>
+</assertions>

@@ -1,0 +1,30 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32349:32353">
+  The function
+    int pthread_cond_destroy(pthread_cond_t *cond);
+  shall destroy the given condition variable specified by cond;
+  the object becomes, in effect, uninitialized. An implementation may cause pthread_cond_destroy()
+  to set the object referenced by cond to an invalid value. A destroyed condition variable object can
+  be reinitialized using pthread_cond_init(); the results of otherwise referencing the object after it
+  has been destroyed are undefined.  
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32354:32356">
+  It shall be safe to destroy an initialized condition variable upon which no threads are currently
+  blocked. Attempting to destroy a condition variable upon which other threads are currently
+  blocked results in undefined behavior.  
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32370:32370">
+  If successful, the pthread_cond_destroy() function shall return zero;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32376:32380">
+  The pthread_cond_destroy() function may fail if:
+    [EBUSY] The implementation has detected an attempt to destroy the object referenced
+            by cond while it is referenced (for example, while being used in a
+            pthread_cond_wait() or pthread_cond_timedwait( )) by another thread.
+    [EINVAL] The value specified by cond is invalid.
+  The function shall not return an error code of [EINTR].
+  </assertion> 
+</assertions>

@@ -1,0 +1,31 @@
+This document specifies the coverage for function clock_nanosleep().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES
+5		YES
+6		YES
+7		SKIP
+8		YES
+9		YES
+10		YES
+11		YES
+12		WON'T
+13		SKIP
+14		SKIP
+15		YES
+
+
+**Eventually will want to look at the Rational section in XSH6 because
+it gives motivation for some good functional and stress tests.
+
+SKIP
+----
+7-1 Skipping for now as skipping CPU-Time tests
+13-2 Skipping checking for EINVAL on CPU-Time clock b/c skipping CPU-Time
+tests
+14-1 Skipping for now as skipping CPU-Time tests
+12-1 Won't do for now as unsure how to find (or if it is available) the
+     range for CLOCK_REALTIME.

@@ -1,0 +1,36 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42431:42432 pt:CX">
+The current signal mask of the calling thread shall be replaced
+with the set of signals pointed to by sigmask, the calling thread
+will then be suspended until delivery of a signal whose action 
+is either to execute a signal-catching function or to terminate
+the process.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42433:42435 pt:CX">
+Any other signals that may have been 
+pending on the process shall not become pending on the thread.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42436:42436 pt:CX">
+sigsuspend shall never return if the action is to terminate the process.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:42436:42439 pt:CX">
+sigsuspend( ) shall return after the signal-catching
+function returns, with the signal mask restored 
+to the set that existed prior to the sigsuspend()
+call, if the action is to execute a signal-catching function.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42440:42441 pt:CX">
+The system shall enforce, without an error being indicated,
+not being able to block signals that cannot be ignored. 
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42443:42444 pt:CX">
+sigsuspend() suspends thread execution indefinitely, and therefore there is no 
+successful completion return value. The value of -1 shall be 
+returned and errno set to indicate the error in case of unsuccessful completion.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:42446:42448 pt:CX">
+If a signal is caught by the calling process 
+and control is returned from the signal-catching function, 
+the sigsuspend( ) function shall fail if and set errno to EINTR.
+  </assertion>
+</assertions>

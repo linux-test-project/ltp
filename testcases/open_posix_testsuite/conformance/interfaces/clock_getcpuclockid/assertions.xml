@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6549:6551">
+   clock_getcpuclockid() takes a process ID, pid, as input and returns the
+   CPU-time clock, clock_id.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6552:6553">
+   If pid=0, then clock_getcpuclockid() will return the CPU-time clock of
+   the calling process.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6557:6557">
+   clock_getcpuclockid() returns 0 on success.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6557:6558">
+   clock_getcpuclockid() returns -1 on failure.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6560:6562 XSH6:6554:6555">
+   clock_getcpuclockid() sets errno to EPERM if the calling process doesn't
+   have the permission to know the CPU-time clock for process ID, pid.  When
+   this happens is implementation-defined.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:6563:6564">
+   clock_getcpuclockid() _may_ fail and set errno to ESRCH if no process
+   can be found corresponding to pid.
+  </assertion>
+</assertions>

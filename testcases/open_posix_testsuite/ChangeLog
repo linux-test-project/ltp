@@ -1,0 +1,26 @@
+12-16-2002	0.1.0 Release
+		- timers tests for TMR and CS tags (for timers)
+		julie.n.fleischer REMOVE-THIS AT intel DOT com
+02-10-2003	0.2.0 Release
+		- timers bug fixes
+		- snapshot of semaphores tests
+		- snapshot of signals tests
+		- snapshot of threads tests
+		- framework can build/run functional/stress tests
+		julie.n.fleischer REMOVE-THIS AT intel DOT com
+03-21-2003	0.9.0 Release
+		- More timers bug fixes
+		- Complete semaphores suite (including bug fixes)
+		- snapshot of signals tests (including bug fixes)
+		- Complete message queues suite
+		- Snapshot of threads tests (most of the non-tag associated APIs)
+		- framework bug fixes.  Added the ./run_tests script.
+		rolla.n.selbak REMOVE-THIS AT intel DOT com 
+04-30-2003	1.0.0 Release
+		- Complete signals suite
+		- Complete <sched.h> process scheduling suite
+		- Snapshot of threads tests (most of the non-tag associated APIs)
+		- Bug fixes in all areas (including adding "_POSIX_C_SOURCE=200112L" to 
+		  the Makefile to make the actual test suite POSIX compliant)
+		- Added QUICK-START document to top-level dir
+		rolla.n.selbak REMOVE-THIS AT intel DOT com

@@ -1,0 +1,147 @@
+# Copyright (c) 2002, Intel Corporation. All rights reserved.
+# Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
+# This file is licensed under the GPL license.  For the full content
+# of this license, see the COPYING file at the top level of this
+# source tree.
+#
+# Kind of a little bit bastardized automakefile ... This is the
+# temporary glue to hold it all together; once our needs change or we
+# need something more advanced, we'll implement it.
+#
+# So far, I understand Make is not the best language, but I felt lazy
+# today and wanted to use the default rules of automake [did I alredy
+# mentioned I am bastardizing it?].
+#
+# Ok, I don't use Automake any more
+#
+# Added patch from dank REMOVE-THIS AT kegel DOT com
+
+top_builddir = .
+
+LOGFILE = $(top_builddir)/logfile
+
+LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
+
+RUN_TESTS := $(shell $(top_builddir)/locate-test \
+             --execs $(top_builddir)/$(POSIX_TARGET))
+BUILD_TESTS := $(shell $(top_builddir)/locate-test \
+               --buildable $(top_builddir)/$(POSIX_TARGET))
+FUNCTIONAL_MAKE := $(shell $(top_builddir)/locate-test --fmake)
+FUNCTIONAL_RUN := $(shell $(top_builddir)/locate-test --frun)
+STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
+STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
+PWD := $(shell pwd)
+
+all: build-tests run-tests functional-tests
+
+build-tests: $(BUILD_TESTS:.c=.test)
+run-tests: $(RUN_TESTS:.test=.run-test)
+
+functional-tests: functional-make functional-run
+stress-tests: stress-make stress-run
+
+tests-pretty:
+	$(MAKE) all | column -t -s:
+
+CFLAGS = -g -O2 -Wall -Werror -std=c99 -std=gnu99 -D_POSIX_C_SOURCE=200112L
+
+INCLUDE = -Iinclude
+
+# FIXME: exaust cmd line length
+clean:
+	@rm -f $(LOGFILE)
+# Built runnable tests
+	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
+	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
+	@$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
+
+# Rule to run a build test
+# If the .o doesn't export main, then we don't need to link
+.PRECIOUS: %.test
+%.test: %.o
+	@COMPLOG=$(LOGFILE).$$$$; \
+	[ -f $< ] || exit 0; \
+	nm -g --defined-only $< | grep -q " T main" || exit 0; \
+	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
+	then \
+		echo "$(@:.test=): link: PASS" | tee -a $(LOGFILE); \
+	else \
+		( \
+			echo "$(@:.test=): link: FAILED. Linker output: "; \
+			cat $$COMPLOG; \
+		) >> $(LOGFILE); \
+		echo "$(@:.test=): link: FAILED "; \
+	fi; \
+	rm -f $$COMPLOG;
+
+# Rule to run an executable test
+# If it is only a build test, then the binary exist, so we don't need to run
+.PHONY: %.run-test
+%.run-test: %.test
+	@COMPLOG=$(LOGFILE).$$$$; \
+	[ -f $< ] || exit 0; \
+	if $< > $$COMPLOG 2>&1; \
+	then \
+		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE); \
+	else \
+		( \
+			echo "$(@:.run-test=): execution: FAILED: Output: "; \
+			cat $$COMPLOG; \
+		) >> $(LOGFILE); \
+		echo "$(@:.run-test=): execution: FAILED "; \
+	fi; \
+	rm -f $$COMPLOG;
+
+%.run-test: %.sh
+	@COMPLOG=$(LOGFILE).$$$$; \
+	if $< > $$COMPLOG 2>&1; \
+	then \
+		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE);\
+	else \
+		( \
+			echo "$(@:.run-test=): execution: FAILED: Output: ";\
+			cat $$COMPLOG; \
+		) >> $(LOGFILE); \
+		echo "$(@:.run-test=): execution: FAILED "; \
+	fi; \
+	rm -f $$COMPLOG;
+
+
+.PRECIOUS: %.o
+%.o: %.c
+	@COMPLOG=$(LOGFILE).$$$$; \
+	if $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
+	then \
+		echo "$(@:.o=): build: PASS" | tee -a $(LOGFILE); \
+	else \
+		( \
+			echo "$(@:.o=): build: FAILED: Compiler output: "; \
+			cat $$COMPLOG; \
+		) >> $(LOGFILE); \
+		echo "$(@:.o=): build: FAILED "; \
+	fi; \
+	rm -f $$COMPLOG;
+
+# Functional/Stress test build and execution
+functional-make:
+	$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR);)
+
+.PHONY: $(FUNCTIONAL_RUN)
+
+functional-run: $(FUNCTIONAL_RUN)
+
+$(FUNCTIONAL_RUN): 
+	cd $@; ./run.sh
+	cd $(PWD)
+
+stress-make:
+	$(foreach DIR,$(STRESS_MAKE),make -C $(DIR);)
+
+.PHONY: $(STRESS_RUN)
+
+stress-run: $(STRESS_RUN)
+
+$(STRESS_RUN): 
+	cd $@; ./run.sh
+	cd $(PWD)
+

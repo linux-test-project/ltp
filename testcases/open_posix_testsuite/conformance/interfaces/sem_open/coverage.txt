@@ -1,0 +1,29 @@
+
+
+Will not test the following error values of the semaphores because it is 
+unknown to me of how to return these values.
+
+-- EMFILE: Too many semaphore descriptors or file descriptors are 
+	currently in use by this process.
+-- ENFILE: Too many semaphores are currently open in the system.
+-- ENOSPC: Threis insufficient space for the creation of the new names 
+	semaphore.
+
+-- assertion 7:  not tested.
+
+-- assertion 8:  is tested in the areas of sem_wait, sem_trywait, sem_post,
+and sem_close.
+
+-- assertion 9: is mainly tested in all test casses by calling sem_close.
+
+-- assertion 11: is all covered in many area's of the semaphore suite, that
+permission bits is set and checked, and the value is also set and checked.
+
+-- assertion 12: is mainly tests in sem_open as the maximum value and the 
+minimum value has been tested, but not the greater than SEM_VALUE_MAX.
+
+-- assertion 13: Not tested.
+
+-- assertion 14: Not tested.
+
+

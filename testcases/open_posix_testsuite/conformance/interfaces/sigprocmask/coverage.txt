@@ -1,0 +1,23 @@
+This document defines the coverage for function sigaddset().
+
+Assertion	Covered?
+1		NO, skipping any threads-related testing for now
+2		IMPLICITLY tested by assertions 1-18
+3		IMPLICITLY tested by assertions 4-6
+4		YES
+5		YES
+6		YES
+7		YES
+8		YES
+9		YES
+10		YES
+11		WON'T test, because POSIX does not define behavior in this case.
+12		YES		
+13		WON'T test, because POSIX does not define behavior in this case.
+14		WON'T test, bacause it is pthread_sigmask() specific and tested in there.
+15		YES
+16		WON'T test, bacause it is pthread_sigmask() specific and tested in there.
+17		YES
+18		WON'T test, bacause it is pthread_sigmask() specific and tested in there.
+
+		
