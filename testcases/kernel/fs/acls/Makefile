@@ -1,13 +1,15 @@
 all:
-	@rm -f unistd.h
-	@cp /lib/modules/`uname -r`/build/include/asm/unistd.h ./unistd.h
-	$(CC) -Wall -o acl_file_test acl_file_test.c
-	$(CC) -Wall -o acl_link_test acl_link_test.c
+ifneq ($(wildcard /usr/include/sys/xattr.h),)
+	$(CC) -o acl_file_test acl_file_test.c
+	$(CC) -o acl_link_test acl_link_test.c
+else
+	@echo File sys/xattr.h does not exist, attr tests cannot be build!
+endif
 install:
-	@ln -f acl_file_test ../../../bin/acl_file_test
-	@ln -f acl_link_test ../../../bin/acl_link_test
-	@ln -f acl_test01 ../../../bin/acl_test01	
+ifneq ($(wildcard /usr/include/sys/xattr.h),)
+	ln -f acl_file_test ../../bin/
+	ln -f acl_link_test ../../bin/
+	ln -f acl_test01 ../../bin/
+endif
 clean:
-	rm -f acl_file_test
-	rm -f acl_link_test
-	rm ./unistd.h
+	rm -f acl_file_test acl_link_test

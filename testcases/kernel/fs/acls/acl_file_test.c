@@ -1,18 +1,17 @@
 #include <unistd.h>
 #include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/syscall.h>
 #include <sys/types.h>
-#include "unistd.h"
+#include <errno.h>
+#include <sys/syscall.h>
+#include <fcntl.h>
+#include <sys/xattr.h>
+#include <string.h>
 
 int main(int argc, char *argv[]){
 	ssize_t s;
 	char * tok;
 	char value[1024];
 	char list[1024];
-	char delim = '\0';
 	int rc = 0;
 	char * file;
 	int fd;
@@ -30,14 +29,21 @@ int main(int argc, char *argv[]){
 		return -1;
 	} 
 	
-	//syscall(232, file, &list, 1024); //listxattr
-        syscall(__NR_listxattr, file, &list, 1024); //listxattr
-	tok = strtok((char *)&list, &delim);
-	//s = syscall(229, file,tok, (void *)&value, 1024); //getxattr
-        s = syscall(__NR_getxattr, file,tok, (void *)&value, 1024); //getxattr
-
-	//s = syscall(228, fd,tok,(void *)&value,s, 0); //fsetxattr
-        s = syscall(__NR_fsetxattr, fd,tok,(void *)&value,s, 0); //fsetxattr
+       if(-1 == (s = flistxattr(fd, list, 1024)) ) {
+               perror("flistxattr");
+               return 1;
+       }
+       if(s == 0) {
+               printf("No xattrs defined for %s, further testcase useless\n",file);
+               return 1;
+       }
+       tok = strtok(list, "\0");
+       s = fgetxattr(fd, tok, (void*)value, 1024);
+       if(s == -1) {
+               perror("fgetxattr");
+               return 1;
+       }
+       s = fsetxattr(fd, tok, (void*)value, s, 0);
 
 	if (s == -1) {
 		printf ("User unable to change extended attributes on file %s !\n", argv[1]);

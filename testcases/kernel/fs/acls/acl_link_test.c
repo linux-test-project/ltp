@@ -1,17 +1,16 @@
 #include <unistd.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
 #include <sys/types.h>
+#include <errno.h>
 #include <sys/syscall.h>
-#include "unistd.h"
+#include <string.h>
+#include <sys/xattr.h>
 
 int main(int argc, char *argv[]){
 	ssize_t s;
 	char * tok;
 	char value[1024];
 	char list[1024];
-	char delim = '\0';
 	int rc = 0;
 
 	if ( argc < 2) {
@@ -19,11 +18,22 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 	
-	syscall(__NR_listxattr, argv[1], &list, 1024); //listxattr
-	tok = strtok((char *)&list, &delim);
-	s = syscall(__NR_getxattr, argv[1],tok, (void *)&value, 1024); //getxattr
+       if(-1 == (s = listxattr(argv[1], list, 1024)) ) {
+               perror("listxattr");
+               return 1;
+       }
+       if(s == 0) {
+               printf("No xattrs defined for %s, further testcase useless\n",argv[1]);
+               return 1;
+       }
+       tok = strtok(list, "\0");
+       s = getxattr(argv[1], tok, (void*)value, 1024);
+       if(-1 == s) {
+               perror("getxattr");
+               return -1;
+       }
 
-	s = syscall(__NR_lsetxattr,argv[1],tok,(void *)&value,s, 0); //lsetxattr
+       s = lsetxattr(argv[1], tok, (void*)value, s, 0);
 
 	if (s == -1) {
 		printf ("User unable to change extended attributes %s !\n", argv[1]);
@@ -31,7 +41,7 @@ int main(int argc, char *argv[]){
 		rc = 1;
 	}
 
-	s = syscall(__NR_lremovexattr,argv[1],tok); //lremovexattr
+       s = lremovexattr(argv[1],tok);
 	if (s == -1) {
                 printf ("User unable to remove extended attributes %s !\n", argv[1]);
                 printf("errno = %i\n", errno);
