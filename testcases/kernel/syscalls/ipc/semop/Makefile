@@ -25,6 +25,7 @@ SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 IPC_LDFLAGS=-L.. -lipc
 LTP_CFLAGS=-I../../../../../include -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
 
 all: $& $(MAINS)
 
