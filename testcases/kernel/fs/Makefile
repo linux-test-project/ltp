@@ -1,4 +1,4 @@
-SUBDIRS = doio fs_inod fs_perms lftest linktest openfile proc
+SUBDIRS = doio fs_inod fs_perms fsx-linux lftest linktest openfile proc
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

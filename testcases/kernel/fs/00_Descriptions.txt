@@ -11,6 +11,10 @@ fs_perms
 
 	Regression test for Linux filesystem permissions.
 
+fsx-linux
+	
+	Filesystem stress test developed by Apple Computer, Inc.
+
 growfiles
 
 	This program will grow a list of files.
