@@ -684,7 +684,7 @@ else
     echo -e  "-)31"
 fi
  
-rm -rf $TCtmp/lib.* lib1.a dummy*
+rm -rf $TCtmp
 COUNT=`expr $COUNT + 1`
 done
 if [ $TCRESULT = 0 ]; then
