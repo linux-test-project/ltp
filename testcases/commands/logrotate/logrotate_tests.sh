@@ -205,6 +205,8 @@ cat >$LTPTMP/tst_logrotate.cron <<EOF
 * * * * * logrotate $LTPTMP/tst_largelog.conf
 EOF
 
+chmod 777 $LTPTMP/tst_logrotate.cron &>/devnull
+
 $LTPBIN/tst_resm TINFO "Test #2: Installing cron job to run logrotate"
 crontab $LTPTMP/tst_logrotate.cron &>$LTPTMP/tst_sterrout.log || RC=$?
 if [ $RC -ne 0 ]
@@ -220,9 +222,7 @@ fi
 # cron job to increase the log file size.
 cat >$LTPTMP/tst_addtolog.cron <<EOF
 
-* * * * * echo "To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer.To Err Is Human, To Really Screw Up You Need A Computer.To Err Is Human, To Really Screw Up You Need A Computer.To Err Is Human, To Really Screw Up You Need A Computer. To Err Is Human, To Really Screw Up You Need A Computer. " \
- >>/var/log/tst_largelogfile 2>/dev/null 
-
+* * * * * echo "To Err Is Human, To Really Screw Up You Need A Computer."  >>/var/log/tst_largelogfile 2>/dev/null 
 EOF
 
 $LTPBIN/tst_resm TINFO "Test #2: Installing cron job to increase logsize"
@@ -282,6 +282,7 @@ fi
 crontab -r &>/dev/null
 # remove all the temporary files created by this test.
 #rm -f $LTPTMP/tst_addtolog.cron $LTPTMP/tst_logrotate.cron \
-$LTPTMP/tst_largelog.conf $LTPTMP/tst_sterrout.log /var/log/tst_largelogfile* 
+$LTPTMP/tst_largelog.conf $LTPTMP/tst_sterrout.log /var/log/tst_largelogfile* \
+$LTPTMP/tst_logfile*
 
 exit $TFAILCNT
