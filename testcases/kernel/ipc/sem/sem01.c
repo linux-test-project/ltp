@@ -26,6 +26,10 @@
  *  HISTORY:
  *    01/15/2001 Paul Larson (plars@us.ibm.com)
  *      -written
+ *    11/09/2001 Manoj Iyer (manjo@ausin.ibm.com)
+ *    Modified.
+ *    - Removed compiler warnings. 
+ *      added exit to the end of function main()
  *
  */
 
@@ -159,4 +163,5 @@ int main(int argc, char *argv[]) {
     /* child */
     mainloop(semid);
   }
+  exit(0);
 }
