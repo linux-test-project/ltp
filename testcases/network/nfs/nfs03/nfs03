@@ -21,7 +21,7 @@
 #  FILE   : nfs03
 #
 #  DESCRIPTION: This script sets up the NFS directories in the remote machine 
-#               and invokes the program make_tree with parameters.
+#		and runs the LTP's filesystem test: fs_inod.
 #  
 #  SETUP: The home directory of root on the machine exported as "RHOST"
 #         MUST have a ".rhosts" file with the hostname of the machine
@@ -59,8 +59,8 @@ DIR_NUM=$1
 FILE_NUM=$2
 NFSD_NUM=$3
 
-DIR_NUM=${DIR_NUM:=50}
-FILE_NUM=${FILE_NUM:=50}
+DIR_NUM=${DIR_NUM:=100}
+FILE_NUM=${FILE_NUM:= 100}
 THREAD_NUM=${THREAD_NUM:=1}
 
 #============================================================================
