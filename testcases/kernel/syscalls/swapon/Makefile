@@ -19,7 +19,13 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -O -g -Wall
+NEEDSPECIAL:=$(shell cat /usr/include/linux/swap.h | grep MAX_SWAPFILES | grep 32; echo $?)
+ifeq ($(strip $(NEEDSPECIAL)),)
+export CFLAGS+=-I../../../../include -g -Wall
+else
+export CFLAGS+=-I../../../../include -g -Wall -DOLDER_DISTRO_RELEASE
+endif
+
 LOADLIBES+=	-L../../../../lib -lltp 
 
 SRCS=$(wildcard *.c)

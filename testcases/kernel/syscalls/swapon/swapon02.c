@@ -82,12 +82,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-/* Comment these out for glibc 2.2.5 */
 #include <sys/swap.h>
 #include <asm/page.h>
 #include <asm/atomic.h>
-/*************************************/
+#ifdef OLDER_DISTRO_RELEASE
 #include <linux/swap.h>
+#endif
 #include <fcntl.h>
 #include <pwd.h>
 #include <string.h>
@@ -96,14 +96,9 @@
 #include "test.h"
 #include "usctest.h"
 
-/* The value below should be defined in /linux/swap.h.  However, if using 
- * glibc 2.2.5, you should remove the include of /linux/swap.h and use the 
- * definition instead...due to compile problems with 2.2.5.
- * Kernel > 2.4.6
- * #define MAX_SWAPFILES 32 
- * Kernel < 2.4.6
- * #define MAX_SWAPFILES 8 
-*/
+#ifndef OLDER_DISTRO_RELEASE
+#define MAX_SWAPFILES 32 
+#endif
 
 static void setup();
 static void cleanup();
