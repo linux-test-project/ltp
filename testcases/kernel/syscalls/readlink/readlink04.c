@@ -79,7 +79,7 @@ char SYMFILE[] = "slink_file\0";	/* name of symbolic link to create */
 char creat_slink[] = "creat_slink\0";	/* name of executable to execv() */
 
 char nobody[] = "nobody";
-char adm[] = "adm";
+char bin[] = "bin";
 
 #define MAX_SIZE	256
 
@@ -169,13 +169,12 @@ main(int ac, char **av)
  *
  *  Create a temporary directory and change directory to it.
  *
- *  execv() the creat_slink program as adm to creat a file and symlink.
+ *  execv() the creat_slink program as bin to creat a file and symlink.
  */
 void 
 setup()
 {
 	int pid;
-	char *test_home = NULL;		/* holds the test's directory name */
 	char *tmp_dir = NULL;
 	char path_buffer[BUFSIZ];	/* Buffer to hold command string */
 	char *cargv[4];
@@ -189,11 +188,6 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Get the current working directory */
-	if ((test_home = getcwd(test_home, 0)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "getcwd failed");
-	}
-
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -205,18 +199,21 @@ setup()
 		tst_brkm(TBROK, tst_exit, "getcwd failed");
 	}
 
-	if ((pwent = getpwnam("adm")) == NULL) {
+	if ((pwent = getpwnam("bin")) == NULL) {
 		tst_brkm(TBROK, cleanup, "getpwname() failed");
 	}
 
-	/* make the tmp directory belong to adm */
+	/* make the tmp directory belong to bin */
 	if (chown(tmp_dir, pwent->pw_uid, pwent->pw_gid) == -1) {
 		tst_brkm(TBROK, cleanup, "chown() failed");
 	}
 
+	if (chmod(tmp_dir, 0711) != 0) {
+		tst_brkm(TBROK, cleanup, "chmod() failed");
+	}
+
 	/* create the full pathname of the executable to be execv'ed */
-	strcpy((char *)path_buffer, (const char *)test_home);
-	strcat((char *)path_buffer, (const char *)"/creat_slink");
+	strcat((char *)path_buffer, (const char *)"creat_slink");
 
 	/* set up the argument vector to pass into the execv call */
 	cargv[0] = creat_slink;
@@ -231,15 +228,15 @@ setup()
 	if (pid == 0) {			/* child */
 		/* 
 		 * change the group and user id of the child to "group2" and
-		 * "adm" respectively
+		 * "bin" respectively
 		 */
 		if (setegid(pwent->pw_gid) == -1) {
-			tst_brkm(TBROK, NULL, "setegid() failed for adm");
+			tst_brkm(TBROK, NULL, "setegid() failed for bin");
 			exit(1);
 		}
 
 		if (seteuid(pwent->pw_uid) == -1) {
-			tst_brkm(TBROK, NULL, "seteuid() failed for adm");
+			tst_brkm(TBROK, NULL, "seteuid() failed for bin");
 			exit(1);
 		}
 
@@ -247,7 +244,7 @@ setup()
 		 * execv the process/program that will create the test file
 		 * and set up the symlink
 		 */
-		execv(path_buffer, cargv);
+		execvp(path_buffer, cargv);
 
 		/* on success, execv will not return */
 		perror("execv");
