@@ -66,10 +66,10 @@ mount -o "proto=udp,vers=3" $RHOST:$FILESYSTEM /mnt/udp/3/${HOSTNAME}3
 mount -o "proto=tcp,vers=3" $RHOST:$FILESYSTEM /mnt/tcp/3/${HOSTNAME}4
 
 echo "Test set for $DURATION seconds. Starting test processes now."
-./fsstress -l 0 /mnt/udp/2/${HOSTNAME}1 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.2.log 2>&1 &
-./fsstress -l 0 /mnt/udp/3/${HOSTNAME}2 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.3.log 2>&1 &
-./fsstress -l 0 /mnt/tcp/2/${HOSTNAME}3 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.2.log 2>&1 &
-./fsstress -l 0 /mnt/tcp/3/${HOSTNAME}4 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.3.log 2>&1 &
+./fsstress -l 0 -d /mnt/udp/2/${HOSTNAME}1 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.2.log 2>&1 &
+./fsstress -l 0 -d /mnt/udp/3/${HOSTNAME}2 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.3.log 2>&1 &
+./fsstress -l 0 -d /mnt/tcp/2/${HOSTNAME}3 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.2.log 2>&1 &
+./fsstress -l 0 -d /mnt/tcp/3/${HOSTNAME}4 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.3.log 2>&1 &
 
 echo "Starting sar"
 sar -o /tmp/nfs_fsstress.sardata 30 0 &
