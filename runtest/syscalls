@@ -269,6 +269,9 @@ getuid03 getuid03
 ioctl01 ioctl01 -D /dev/ttyS0
 ioctl02 ioctl02 -D /dev/ttyS0
 
+iopl01 iopl01
+iopl02 iopl02
+
 kill01 kill01
 kill02 kill02
 kill03 kill03
