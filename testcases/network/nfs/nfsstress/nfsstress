@@ -49,8 +49,9 @@ TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/tmp}
 TCdump=${TCdump:=$TCbin}
 
-# Setting the NFS to version 2 by default
+# Setting the NFS to version 2 with UDP by default
 VERSION=${VERSION:=2}
+SOCKET_TYPE=${SOCKET_TYPE:=udp}
 
 # If CLEANUP is not set; set it to "ON"
 CLEANUP=${CLEANUP:="ON"}
@@ -85,6 +86,7 @@ $trace_logic
     echo "Test Options:"
     echo " VERSION: $VERSION"
     echo " RHOST: $RHOST"
+    echo " SOCKET_TYPE: $SOCKET_TYPE"
     echo ""
     echo "Test Parameters:"
     echo " Number of Directories: $DIR_NUM"
@@ -94,7 +96,7 @@ $trace_logic
     
     sleep 5
 
-    OPTS=${OPTS:="vers=$VERSION "}
+    OPTS=${OPTS:="vers=$VERSION,proto=$SOCKET_TYPE "}
     REMOTE_DIR=${RHOST}:/mnt/nfsstress.testdir
     LOCAL_DIR=$TCtmp/${RHOST}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
