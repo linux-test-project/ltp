@@ -2,7 +2,6 @@
    This is an example quickhitter test based on tests/link03.c. The comments
    have been changed to explain how the quickhit package can be used
 */
-
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  *
@@ -35,7 +34,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: quickhit.c,v 1.1 2000/10/09 20:25:12 nstraz Exp $ */
+/* $Id: quickhit.c,v 1.2 2000/10/10 21:57:51 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -237,11 +236,21 @@ main(int ac, char **av)
             /*
 	     *  Call link(2)
 	     */
+	    /* Use the TEST() macro to wrap your syscalls.  It saves the return
+	     * to TEST_RETURN and the errno to TEST_ERRNO
+	     */
 	    TEST(link(Fname, lname));
 	
 	    /* check return code */
 	    if ( TEST_RETURN == -1 ) {
+		/* To gather stats on errnos returned, log the errno */
 	        TEST_ERROR_LOG(TEST_ERRNO);
+		/* If you determine that testing shouldn't continue, report your
+		 * results using tst_brkm().  The remaining test cases will be
+		 * marked broken.  TFAIL is the result type for a test failure,
+		 * cleanup is the cleanup routine to call, and the rest is your
+		 * message in printf form.
+		 */
 	        tst_brkm(TFAIL, cleanup, "link(%s, %s) Failed, errno=%d : %s",
 		     Fname, lname, TEST_ERRNO, strerror(TEST_ERRNO));
 	    } 
@@ -260,6 +269,11 @@ main(int ac, char **av)
 		if ( fbuf.st_nlink <= 1 || lbuf.st_nlink <= 1 ||
 			(fbuf.st_nlink != lbuf.st_nlink) ) {
 
+		    /* When you have results to report, and testing can
+		     * continue, use tst_resm() to record those results.  Use
+		     * TFAIL if the test case failed and your message in printf
+		     * style.
+		     */
 		    tst_resm(TFAIL,
 			"link(%s, %s[1-%d]) ret %d for %d files, stat values do not match %d %d",
 			Fname, Basename, nlinks, TEST_RETURN, nlinks,
@@ -268,6 +282,7 @@ main(int ac, char **av)
 		}
 	    }
 	    if ( cnt >= nlinks ) {
+		/* Here the test case passed so we use TPASS */
 		tst_resm(TPASS,
 		    "link(%s, %s[1-%d]) ret %d for %d files, stat linkcounts match %d",
 		    Fname, Basename, nlinks, TEST_RETURN, nlinks,
@@ -277,6 +292,8 @@ main(int ac, char **av)
 	else
 	    Tst_count++;
 
+	/* Here we clean up after the test case so we can do another iteration.
+	 */
 	for(cnt=1; cnt < nlinks; cnt++) {
         
             sprintf(lname, "%s%d", Basename, cnt);

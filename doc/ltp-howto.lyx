@@ -30,7 +30,7 @@
 Linux Test Project HOWTO
 \layout Date
 
-4 October 2000 
+10 October 2000 
 \layout Author
 
 Nate Straz
@@ -263,7 +263,7 @@ pan
    
 \layout Subsection
 
-Pan and Scanner 
+Pan
 \layout Standard
 
 
@@ -277,13 +277,89 @@ pan
 pan
 \family default 
  has the ability to run the test sequentially or randomly and in parallel
- while capturing test output and cleaning up orphanned processes.
+ while capturing test output and cleaning up orphaned processes.
   
 \family typewriter 
 pan
 \family default 
  can also be nested to create very complex test environments.
    
+\layout Standard
+
+A pan file contains a list of tests to run.
+ The format of a pan file is as follows:
+\layout Code
+
+testtag testprogram -o one -p two other command line options
+\layout Code
+
+# This is a comment.
+ It is a good idea to describe the test 
+\layout Code
+
+# tags in your pan file.
+ Tests programs can have different 
+\layout Code
+
+# behaviors depending on the command line options so it is 
+\layout Code
+
+# helpful to describe what each test tag is meant to verify or 
+\layout Code
+
+# provoke.
+\layout Code
+
+# Some more test cases
+\layout Code
+
+mm01 mmap001 -m 10000
+\layout Code
+
+# 40 Mb mmap() test.
+\layout Code
+
+# Creates a 10000 page mmap, touches all of the map, sync's 
+\layout Code
+
+# it, and munmap()s it.
+\layout Code
+
+mm03 mmap001 -i 0 -I 1 -m 100
+\layout Code
+
+# repetitive mmapping test.
+\layout Code
+
+# Creates a one page map repetitively for one minute.
+\layout Code
+
+dup02 dup02
+\layout Code
+
+# Negative test for dup(2) with bad fd
+\layout Code
+
+kill09 kill09 
+\layout Code
+
+# Basic test for kill(2)
+\layout Code
+
+fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
+\layout Code
+
+# run the entire set of file system tests
+\layout Standard
+
+For more information on pan see the man page 
+\family typewriter 
+doc/man1/pan.1
+\family default 
+.
+\layout Subsection
+
+Scanner
 \layout Standard
 
 
@@ -301,28 +377,36 @@ pan
  generates by default.
  It will produce a table summarizing which tests passed and which failed.
    
-\layout Subsubsection
-
-Example with Pan 
-\layout Standard
-
-This would be a Good Thing(tm) to have.
- Show off the nesting that can be done with Pan
 \layout Subsection
 
-The Quickhitter Package
+The Quick-hitter Package
 \layout Standard
 
-Many of the tests released use the Quickhitter test package to perform tasks
- like create and move to a temporary directory, handle some common command
- line parameters, loop, run in parallel, handle signals, and clean up.
+Many of the tests released use the Quick-hitter test package to perform
+ tasks like create and move to a temporary directory, handle some common
+ command line parameters, loop, run in parallel, handle signals, and clean
+ up.
  
+\layout Standard
+
+There is an example test case, 
+\family typewriter 
+doc/examples/quickhit.c
+\family default 
+, which shows how the quick-hitter package can be used.
+ The file is meant to be a supplement to the documentation, not a working
+ test case.
+ Use any of the tests in 
+\family typewriter 
+tests/
+\family default 
+ as a template.
 \layout Section
 
 To Do 
 \layout Standard
 
-There are a lot of things that still need to be doine to make this a complete
+There are a lot of things that still need to be done to make this a complete
  kernel testing system.
  The following sections will discuss some of the to do items in detail.
   
@@ -461,7 +545,7 @@ Driver A program that handles the execution of test programs.
 \layout Description
 
 Test\SpecialChar ~
-Framework A mechanism for organising a group of tests.
+Framework A mechanism for organizing a group of tests.
   Frameworks may have complex or very simple API's, drivers and result logging
  mechanisms.
  Examples of frameworks are TETware and DejaGnu.
