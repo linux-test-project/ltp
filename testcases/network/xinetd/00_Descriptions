@@ -1,0 +1,2 @@
+xinetd01
+	xinetd starts programs that provide Internet services. Test xinetd with two confuration files one with telnet turned off and other with telnet turned on.
