@@ -40,21 +40,38 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <endian.h>
 
-
+#if _BYTE_ORDER == BIG_ENDIAN
+union flt {
+		 struct ff { float vv; } ff;
+		 struct fb { unsigned ss:1, ee:8, ff:23; } fb;
+};
+#endif 
+#if _BYTE_ORDER == LITLE_ENDIAN
 union flt {
 		 struct ff { float vv; } ff;
 		 struct fb { unsigned ff:23, ee:8, ss:1; } fb;
 };
+#endif
 #define		 s		 fb.ss
 #define		 e		 fb.ee
 #define		 f		 fb.ff
 #define		 v		 ff.vv
 
+
+#if _BYTE_ORDER == BIG_ENDIAN
+union dbl {
+		 struct dd { double d; } dd;
+		 struct db { unsigned ss:1, ee:11, ffh:20, ffl:32; } db;
+};
+#endif 
+#if _BYTE_ORDER == LITLE_ENDIAN
 union dbl {
 		 struct dd { double d; } dd;
 		 struct db { unsigned ffl:32, ffh:20, ee:11, ss:1; } db;
 };
+#endif
 #define		 S		 db.ss
 #define		 E		 db.ee
 #define		 FL		 db.ffl
