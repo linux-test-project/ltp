@@ -1,0 +1,147 @@
+device-drivers
+--------------
+ltpacpi.sh
+
+	ACPI (Advanced Control Power & Integration) testscript for 2.5 kernels.
+
+
+fs
+--
+doio
+
+	growfiles
+
+		This program will grow a list of files.
+		Each file will grow by grow_incr before the same
+		file grows twice.  Each file is open and closed before next file is opened.
+
+	rwtest
+
+		A wrapper for doio and iogen.
+
+		doio -  a general purpose io initiator with system call and
+                	write logging.  See doio.h for the structure which defines
+	                what doio requests should look like.
+  
+	                Currently doio can handle read,write,reada,writea,ssread,
+	                sswrite, and many varieties of listio requests.
+        	        For disk io, if the O_SSD flag is set doio will allocate
+	                the appropriate amount of ssd and do the transfer - thus, doio
+	                can handle all of the primitive types of file io.
+
+		iogen - a tool for generating file/sds io for a doio process
+
+fs_inod
+
+	Rapidly creates and deletes files through
+        multiple processes running in the background.
+        The user may specify the number of subdirectories
+        to create, the number of files to create (per
+        subdirectory), and the number of times to repeat
+        the creation/deletion cycle.
+
+fs_maim
+
+	Collection of smaller scripts to stress storage management
+	utilities.
+
+fs_perms
+
+	Regression test for Linux filesystem permissions.
+
+fsstress
+
+	A highly configurable stress test utility that calls most of the main
+	file system syscalls.  Originally developed by SGI for XFS testing.
+
+fsx-linux
+	
+	Filesystem stress test developed by Apple Computer, Inc.
+
+ftest
+
+	A collection of file system tests developed by Sequent/IBM.
+
+inode
+
+	Inode-based stress tests.
+
+lftest
+	The purpose of this test is to verify the file size limitations of a filesystem.
+        It writes one buffer at a time and lseeks from the beginning of the file to the
+        end of the last write position.  The intent is to test lseek64.
+
+linktest
+
+	Regression test for max links per file
+
+openfile
+
+	Creates files and opens simultaneously
+
+proc
+	
+	Recursively reads all files within /proc filesystem.
+
+stream
+
+	Collection of tests for testing stream functions.
+
+
+
+io
+--
+aio
+
+	Collection of asynchronous i/o tests.
+
+
+direct_io
+
+	Collection of direct i/o tests.
+
+disktest
+
+        Does repeated accesses to a filespec and optionally writes to, reads from,
+        and  verifies  the  data.  By default, disktest makes assumptions about 
+        the running environment which allows for a quick start of IO generation.  
+	However, Disktest has  a  large  number  of command line options which can 
+        be used to adapt the test for a variety of uses including data integrity, 
+	medium integraty, performance, and  simple application simulation.
+
+
+stress_cd
+
+	Creates multiple read threads on the cdrom device.
+
+stress_floppy
+
+	Tests the reading/writing/formatting on a floppy drive.
+
+
+
+ipc
+---
+ipc_stress
+
+	A collection of tests designed to stress IPC.
+
+pipeio
+
+	This tool can be used to beat on system or named pipes.
+	See the help() function below for user information.
+
+semaphore
+
+	sem01
+
+		Creates a semaphore and two processes.  The processes
+        	each go through a loop where they semdown, delay for a
+      		random amount of time, and semup, so they will almost
+        	always be fighting for control of the semaphore.
+
+	sem02
+		The application creates several threads using pthread_create().
+		One thread performs a semop() with the SEM_UNDO flag set. The
+		change in sempaphore value performed by that semop should be
+		"undone" only when the last pthread exits.
