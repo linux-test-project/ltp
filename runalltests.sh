@@ -40,16 +40,16 @@ quiet_mode=" "
 usage() 
 {
 	cat <<-END >&2
-    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
-                  -m -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
+    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ] 
+                  [ -m # (in Mb)] -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
-    -c              Run LTP under CPU load.
+    -c              Run LTP under additional background CPU load.
     -d tmpdir       Directory where temporary files will be created.
     -f cmdfile      Execute user defined list of testcases.
     -h              Help. Prints all available options.
-    -i              Run LTP under heavy IO load.
+    -i # (in Mb)    Run LTP with a _minimum_ IO load of # megabytes in background.
     -l logfile      Log results of test in a logfile.
-    -m              Run LTP under heavy memory load.
+    -m # (in Mb)    Run LTP with a _minimum_ memory load of # megabytes in background.
     -n              Run all the networking tests. 
                     (export RHOST = remote hostname)
                     (export PASSWD = passwd of remote host)
@@ -59,7 +59,7 @@ usage()
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
 
-    example: ./${0##*/} -p -q  -l /tmp/resultlog.$$ -d ${PWD}
+    example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 	END
 exit
 }
@@ -68,7 +68,7 @@ exit
 while getopts cd:f:hil:mnpqr:t:x arg
 do  case $arg in
     c)
-            $LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
+            $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null & ;;
                 
     d)      # append $$ to TMP, as it is recursively 
             # removed at end of script.
@@ -76,11 +76,12 @@ do  case $arg in
     f)        # Execute user defined set of testcases.
             cmdfile=$OPTARG;;
 
-	h)		usage;;
+    h)		usage;;
     
     i)        
-            $LTPROOT/testcases/bin/genload --io 10 2>&1 1>/dev/null &
-            $LTPROOT/testcases/bin/genload --hdd 10 --hdd-files \
+            bytesize = $OPTARG * 1024 * 1024 
+            $LTPROOT/testcases/bin/genload --io 1 2>&1 1>/dev/null &
+            $LTPROOT/testcases/bin/genload --hdd 0 --hdd-bytes $bytesize \
             2>&1 1>/dev/null & ;;
 
     l)      
@@ -103,8 +104,9 @@ do  case $arg in
 				logfile="-l $OPTARG"
 			fi ;;
 
-    m)        
-            $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
+    m)      
+            memsize = $OPTARG * 1024 * 1024 
+	    $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $memsize\
             2>&1 1>/dev/null & ;;
 
 	n)		run_netest=1;;
@@ -189,12 +191,13 @@ ${LTPROOT}/ver_linux
 
 ${LTPROOT}/pan/pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
 
-
 if [ $? -eq 0 ]; then
   echo pan reported PASS
 else
   echo pan reported FAIL
 fi
+
+killall -9 genload
 
 if [ $alt_dir -eq 1 ]
 then
