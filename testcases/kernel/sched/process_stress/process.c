@@ -955,7 +955,7 @@ follows:\n\t\tdepth\tbreadth\ttotal\n", sumit(BVAL,DVAL));
 		fprintf( stderr, "\t-b number\tnumber of children each parent will spawn ( > 1)\n");
 		fprintf( stderr, "\t-d number\tdepth of process tree ( > 1)\n");
 		fprintf( stderr, "\t-t\t\tset timeout value\n");
-		fprintf( stderr, " SEVERE : Command line parameter error." );
+		fprintf( stderr, " SEVERE : Command line parameter error.\n" );
 		exit( 1 );
 	}
 }
@@ -1186,7 +1186,7 @@ main(int argc, char *argv[])
                 fprintf( stderr, "\t-b number\tnumber of children each parent will spawn ( > 1)\n");
                 fprintf( stderr, "\t-d number\tdepth of process tree ( > 1)\n");
                 fprintf( stderr, "\t-t\t\tset timeout value\n");
-                fprintf( stderr, " SEVERE : Command line parameter error." );
+                fprintf( stderr, " SEVERE : Command line parameter error.\n" );
                 exit( 1 );
         }
 
