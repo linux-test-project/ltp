@@ -123,14 +123,14 @@ int main(int argc, char **argv)
 
 		fd[1] = -1;		/* Invalid file descriptor */
 
-		if ((int)signal(SIGTERM, sighandler) == -1) {
+		if (signal(SIGTERM, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGTERM FAILED");
 			cleanup();
 			/*NOTREACHED*/
 		}
 
-		if ((int)signal(SIGPIPE, sighandler) == -1) {
+		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
 			cleanup();

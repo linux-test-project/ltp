@@ -306,8 +306,8 @@ int main (argc, argv)
 	i = 0;
 	while ( t_index[i].s ) {
 	    if ((pr = strchr( t_index[i].s, t_index[i].c )) != t_index[i].e_res){
-		  fprintf(temp, "\t(Strchr) test %d: expected 0x%x, got 0x%x\n",
-			i, (unsigned int)t_index[i].e_res, (unsigned int)pr );
+		  fprintf(temp, "(Strchr) test %d",
+			i);
 		  local_flag = FAILED;
 		}
 	    i++;
@@ -320,8 +320,8 @@ int main (argc, argv)
 	while ( t_rindex[i].s ) {
 	    if ((pr = strrchr( t_rindex[i].s, t_rindex[i].c ))
 				!= t_rindex[i].e_res) {
-		  fprintf(temp, "\t(Strrchr) test %d: expected 0x%x, got 0x%x\n",
-			i, (unsigned int)t_rindex[i].e_res, (unsigned int)pr );
+		  fprintf(temp, "(Strrchr) test %d",
+			i);
 		  local_flag = FAILED;
 		}
 	    i++;
@@ -333,7 +333,7 @@ int main (argc, argv)
 	i = 0;
 	while ( t_len[i].s ) {
 	    if ((n = strlen( t_len[i].s )) != t_len[i].e_res) {
-		  fprintf(temp, "\t(Strlen) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strlen) test %d: expected %d, got %d",
 			i, t_len[i].e_res, n );
 		  local_flag = FAILED;
 		}
@@ -349,7 +349,7 @@ int main (argc, argv)
 	while ( t_cmp[i].s1 ) {
 	    n = strcmp( t_cmp[i].s1, t_cmp[i].s2 );
 	    if (sign(n) != sign(t_cmp[i].e_res)) {
-		  fprintf(temp, "\t(Strcmp) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strcmp) test %d: expected %d, got %d",
 			i, sign(t_cmp[i].e_res), sign(n) );
 		  local_flag = FAILED;
 	    }
@@ -366,7 +366,7 @@ int main (argc, argv)
 	while ( t_cat[i].s1 ) {
 	    if ((n = strcmp( strcat(t_cat[i].s1, t_cat[i].s2),  t_cat[i].s1s2))
 				!= t_cat[i].e_res) {
-		  fprintf(temp, "\t(Strcat) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strcat) test %d: expected %d, got %d",
 			i, t_cat[i].e_res, n );
 		  local_flag = FAILED;
 		}
@@ -381,7 +381,7 @@ int main (argc, argv)
 	while ( t_cpy[i].s1 ) {
 	    if ((n = strcmp( strcpy(t_cpy[i].s1, t_cpy[i].s2),  t_cpy[i].s2))
 				!= t_cpy[i].e_res) {
-		  fprintf(temp, "(Strcpy) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strcpy) test %d: expected %d, got %d",
 			i, t_cpy[i].e_res, n );
 		  local_flag = FAILED;
 		}
@@ -399,7 +399,7 @@ int main (argc, argv)
 	while ( t_ncat[i].s1 ) {
 	    if ((n = strcmp( strncat(t_ncat[i].s1,t_ncat[i].s2,t_ncat[i].n),
 			t_ncat[i].s1ns2)) != t_ncat[i].e_res) {
-		  fprintf(temp, "\t(Strncat) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strncat) test %d: expected %d, got %d",
 			i, t_ncat[i].e_res, n );
 		  local_flag = FAILED;
 		}
@@ -415,7 +415,7 @@ int main (argc, argv)
 	while ( t_ncmp[i].s1 ) {
 	    if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
 							!= t_ncmp[i].e_res) {
-		  fprintf(temp, "(Strncmp) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strncmp) test %d: expected %d, got %d",
 			i, t_ncmp[i].e_res, n );
 		  local_flag = FAILED;
 		}
@@ -432,7 +432,7 @@ int main (argc, argv)
 	while ( t_ncpy[i].s1 ) {
 	    if ((n = strcmp( strncpy(t_ncpy[i].s1, t_ncpy[i].s2, t_ncpy[i].n),
 					 t_ncpy[i].s1n)) != t_ncpy[i].e_res) {
-		  fprintf(temp, "\t(Strncpy) test %d: expected %d, got %d\n",
+		  fprintf(temp, "(Strncpy) test %d: expected %d, got %d",
 			i, t_ncpy[i].e_res, n );
 		  local_flag = FAILED;
 		}
