@@ -18,4 +18,4 @@ install:
 	@ln -f $(TARGETS) ../../testcases/bin/tst_brkloopm
 
 clean:
-	rm -f $(TARGETS) $(CMDLIST)
+	rm -f $(TARGETS)
