@@ -186,6 +186,8 @@ cleanup(void)
 	 * print timing status if that option was specified.
 	 * print errno log if that option was specified
 	 */
+    close(fild);
+
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files in it */
