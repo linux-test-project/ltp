@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.2 2003/03/04 18:34:08 robbiew Exp $ */
+/* $Id: sighold02.c,v 1.3 2003/04/29 16:44:42 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -86,6 +86,11 @@
 #include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
+
+#ifdef USE_NPTL
+#define SIGCANCEL 32
+#define SIGTIMER 33
+#endif
 
 #ifdef _CRAYT3E
 #define CRAYT3E 1
@@ -243,6 +248,10 @@ main(int ac, char **av)
                 }
 		if ((sig != SIGCLD) && (sig != SIGKILL) &&
 		    (sig != SIGALRM) && (sig != SIGSTOP) 
+#ifdef USE_NPTL
+		    && (sig != SIGCANCEL)
+		    && (sig != SIGTIMER)
+#endif
 #ifdef SIGRECOVERY
 		    && (sig != SIGRECOVERY) 
 #endif
@@ -327,6 +336,9 @@ main(int ac, char **av)
 			(sig != SIGALRM) && (sig != SIGSTOP)
 #ifdef SIGNOBDM
 			&& (sig != SIGNOBDM )
+#endif
+#ifdef USE_NPTL
+			&& (sig != SIGCANCEL) && (sig != SIGTIMER)
 #endif
 			) {
 
@@ -540,6 +552,9 @@ setup_sigs()
 #endif
 #ifdef SIGSWAP
 	&& (sig != SIGSWAP)
+#endif
+#ifdef USE_NPTL
+	&& (sig != SIGCANCEL) && (sig != SIGTIMER)
 #endif
 	) {
 
