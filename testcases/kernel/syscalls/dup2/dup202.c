@@ -53,6 +53,7 @@
 #include <test.h>
 #include <usctest.h>
 #include <errno.h>
+#include <fcntl.h>
 
 char *TCID = "dup202";
 int TST_TOTAL = 3;
