@@ -149,8 +149,8 @@ int main(int argc, char **argv)
 
 		if((TEST_RETURN == -1)&&
 					(TEST_ERRNO == EINVAL)){
-			tst_resm(TPASS,"flock() shows expected failure with invalid combination of arguments,
-					error number=%d : %s",TEST_ERRNO,strerror(TEST_ERRNO));
+			tst_resm(TPASS,"flock() shows expected failure with invalid combination of arguments, "
+					"error number=%d : %s",TEST_ERRNO,strerror(TEST_ERRNO));
 			continue;	/*next loop for MTKERNEL  */
 		}
 		else{

@@ -128,12 +128,12 @@ int main(int argc, char **argv)
 			fd1 = open(filename, O_RDWR);	
 			retval= flock(fd1,LOCK_SH|LOCK_NB);
 			if(retval == -1){
-				tst_resm(TPASS, "flock() FAILED to acquire shared lock on an already 
-						Exclusive Locked file as expected");
+				tst_resm(TPASS, "flock() FAILED to acquire shared lock on an already" 
+					       "- Exclusive Locked file as expected");
 			}
 			else{
-				tst_resm(TFAIL, "flock() unexpectedly PASSED in acquiring shared lock on 
-						an already Exclusive Locked file");
+				tst_resm(TFAIL, "flock() unexpectedly PASSED in acquiring shared lock on "
+						"an already Exclusive Locked file");
 			}
 			return 0;
 		}
@@ -149,12 +149,12 @@ int main(int argc, char **argv)
 			fd1 = open(filename, O_RDWR);	
 			retval= flock(fd1,LOCK_EX|LOCK_NB);
 			if(retval == -1){
-				tst_resm(TPASS, "flock() FAILED to acquire exclusive lock on existing 
-						Exclusive Locked file as expected");
+				tst_resm(TPASS, "flock() FAILED to acquire exclusive lock on existing "
+					"- Exclusive Locked file as expected");
 			}
 			else{
-				tst_resm(TFAIL, "flock() unexpectedly passed in acquiring exclusive lock on 
-						an Exclusive Locked file");
+				tst_resm(TFAIL, "flock() unexpectedly passed in acquiring exclusive lock on "
+						"an Exclusive Locked file");
 			}
 			return 0;
 		}
