@@ -31,12 +31,13 @@
 #Uncomment line below for debug output
 #trace_logic=${trace_logic:-"set -x"}
 
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/nm$$}
 TCdat=${TCdat:-`pwd`}
 LOOP=1
 do_setup()
 {
 $trace_logic
+  mkdir $TCtmp
   cc -o $TCtmp/nmfile $TCdat/nmfile.c
   cc -o $TCtmp/nmfile1 $TCdat/nmfile1.c
   cc -o $TCtmp/nmfile2 $TCdat/nmfile2.c
@@ -46,11 +47,7 @@ $trace_logic
 do_cleanup()
 {
 $trace_logic
-  rm -rf $TCtmp/nmfile*
-  rm -rf $TCtmp/nm.res*
-  rm -rf $TCtmp/nm.diff*
-  rm -rf $TCtmp/lib.a
-  rm -rf $TCtmp/a
+  rm -rf $TCtmp
 }
 
 do_test()
@@ -200,7 +197,7 @@ LOOP=`expr $LOOP - 1`
 done
 
 echo "nm01: PASS"
-do_cleanup
+#do_cleanup
 exit 0
 }
 
