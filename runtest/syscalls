@@ -142,6 +142,9 @@ fcntl19 fcntl19
 fcntl20 fcntl20
 fcntl21 fcntl21
 
+flock01 flock01
+flock02 flock02
+
 fork01 fork01
 fork02 fork02
 fork03 fork03
