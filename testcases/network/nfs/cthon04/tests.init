@@ -203,7 +203,14 @@ LOCKTESTS=tlock
 #MOUNT=/bin/mount
 #UMOUNT=/bin/umount
 
-# Use with Linux 
+# Use with Linux 2.4 / GNU libc 2.2
+#CFLAGS=`echo -DLINUX -DGLIBC=22 -DMMAP -DSTDARG -fwritable-strings`
+#LIBS=`echo -lnsl`
+#MOUNT=/bin/mount
+#UMOUNT=/bin/umount
+#LOCKTESTS=`echo tlocklfs tlock64`
+
+# Use with Linux / GNU libc 2.3
 CFLAGS=`echo -DLINUX -DMMAP -DSTDARG`
 LIBS=`echo -lnsl`
 MOUNT=/bin/mount
