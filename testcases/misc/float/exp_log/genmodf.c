@@ -51,6 +51,7 @@ int create_Result_file()
 	double	tabR[20000], Inc, tabRI[20000];
 	char *F_name, *F_name1;
 	int fp, fp1;
+	double TestInputValue, TestChkSum;
 
 	F_name =  "modf_out.ref";
 	F_name1 =  "modf1_out.ref";
@@ -59,7 +60,14 @@ int create_Result_file()
 	Inc = log( exp(1)/10 );
 
 	for (i=0; i<nbVal; i++) {
-		tabR[i] = modf( ((Inc*i) + Inc), &tabRI[i]);
+		TestInputValue = ((Inc*i) + Inc);
+		tabR[i] = modf(TestInputValue, &tabRI[i]);
+		// tabR[i] = modf( ((Inc*i) + Inc), &tabRI[i]);
+		if( (TestChkSum = tabR[i] + tabRI[i]) != TestInputValue)
+		  {
+		    return -1;
+		  }
+
 	}
 
 
