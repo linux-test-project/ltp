@@ -39,12 +39,12 @@ $trace_logic
 
 TC=mc_member
 TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-$TCsrc}
+TCtmp=${TCtmp:-$TCsrc/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 
 EXECUTABLES=${EXECUTABLES:-"member"}
 NUMLOOPS=${NUMLOOPS:-2}
-INTERFACE=${INTERFACE:-$(host `hostname`|awk '{ print $4 }'|cut -d\, -f1)}
+INTERFACE=${INTERFACE:-$(../../../../tools/gethost `hostname`| grep address |awk '{ print $2 }')}
 GLIST=${GLIST:-$TCsrc/ManyGroups}
 TooManyGLIST=${TooManyGLIST:-$TCsrc/TooManyGroups}
 ERRFILE=${ERRFILE:-$TCtmp/errors}
@@ -52,6 +52,17 @@ ERRFILE=${ERRFILE:-$TCtmp/errors}
 this_file=${0##*/}
 trap "interrupt_test" 2
 
+setup()
+{
+  mkdir -p $TCtmp
+}
+
+get_address()
+{
+  DIGIT=`ps -ef | grep mc_member | grep -v grep | wc -l`
+  ADDRESS=$DIGIT.$DIGIT.$DIGIT.$DIGIT
+}
+ 
 #******************************************************************************
 #
 # FUNCTION:  do_test
@@ -71,13 +82,13 @@ do_test()
    while [ $COUNT -le $NUMLOOPS ]
    do
       # Run setsockopt test with bogus network
-
-      echo "Running mc_member_e on 3.3.3.3"
-      $TCtmp/$EXECUTABLES -j -g $GLIST -s 30 -i 3.3.3.3 >/dev/null 2>&1
+      get_address
+      echo "Running mc_member_e on $ADDRESS"
+      $TCsrc/$EXECUTABLES -j -g $GLIST -s 30 -i $ADDRESS >/dev/null 2>&1
 
       # Run setsockopt/getsockopt test
 
-      $TCtmp/$EXECUTABLES -g $GLIST -s 80 -i $INTERFACE > $ERRFILE 2>&1 &
+      $TCsrc/$EXECUTABLES -g $GLIST -s 80 -i $INTERFACE > $ERRFILE 2>&1 &
 
       # Join twice and leave once and see if the groups are still joined on
       # all specified interfaces.
@@ -85,13 +96,13 @@ do_test()
       for agroup in `cat $GLIST`
       do
          echo "Running (1st) member on $INTERFACE"
-         $TCtmp/$EXECUTABLES -j -g $GLIST -s 30 -i $INTERFACE > $ERRFILE 2>&1 &
+         $TCsrc/$EXECUTABLES -j -g $GLIST -s 30 -i $INTERFACE > $ERRFILE 2>&1 &
          sleep 5
          grep "cannot join group" $ERRFILE
          [ $? = 0 ] && end_testcase "MC group could NOT join $INTERFACE"
 
          echo "Running (2nd) member on  $INTERFACE"
-         $TCtmp/$EXECUTABLES -g $GLIST -s 60 -i $INTERFACE > $ERRFILE 2>&1 &
+         $TCsrc/$EXECUTABLES -g $GLIST -s 60 -i $INTERFACE > $ERRFILE 2>&1 &
          sleep 5
          grep "cannot join group" $ERRFILE
          [ $? = 0 ] && end_testcase "MC group could NOT join $INTERFACE"
@@ -124,7 +135,7 @@ do_test()
       # Test the membership boundaries
 
       echo "Running member on too many groups over $INTERFACE"
-      $TCtmp/$EXECUTABLES -j -g $TooManyGLIST -i $INTERFACE > $ERRFILE 2>&1 &
+      $TCsrc/$EXECUTABLES -j -g $TooManyGLIST -i $INTERFACE > $ERRFILE 2>&1 &
 
       count=`grep 105 $ERRFILE | wc -l`
 
@@ -150,7 +161,7 @@ do_cleanup()
    $trace_logic
    echo "$this_file: doing $0."
 
-   rm -rf $ERRFILE
+   rm -rf $TCtmp
 }
 
 #=============================================================================
@@ -200,5 +211,6 @@ interrupt_test()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #******************************************************************************
+setup
 do_test
 end_testcase
