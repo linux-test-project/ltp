@@ -1,15 +1,15 @@
 #
 # PLEASE READ THE README FILE IN /nfs BEFORE RUNNING THESE.
 #
-nfs01 export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
-nfs02 export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
-nfs03 export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfs03; nfs03
-nfslock01 export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
+nfs01 export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
+nfs02 export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
+nfs03 export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/nfs03; nfs03
+nfslock01 export VERSION; export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
 
 # This will run 1 thread on 20 directories with 50 files in each.
-nfsstress export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
+nfsstress export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress 20 50 1
 
-nfsstat01 export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
-fsx-linux export VERSION=$VERS; export TCbin=$LTPROOT/testcases/network/nfs/fsx-linux; fsx.sh
+nfsstat01 export VERSION; export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
+fsx-linux export VERSION SOCKET_TYPE; export TCbin=$LTPROOT/testcases/network/nfs/fsx-linux; fsx.sh
 
 
