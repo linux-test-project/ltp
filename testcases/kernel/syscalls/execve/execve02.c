@@ -81,6 +81,7 @@ main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int fd;
+	int e_code, status, retval=0;
 	pid_t pid;
 
 	/* parse standard options */
@@ -139,13 +140,20 @@ main(int ac, char **av)
 			/* reset the file permissions */
 			if (chmod(fname, 0755) == -1) {
 				tst_brkm(TBROK, cleanup, "chmod() #2 failed");
+			exit(retval);
 			}
 		} else {
-			/* let the child carry on */
-			exit(0);
+			/* wait for the child to finish */
+                        wait(&status);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if ((e_code != 0) || (retval != 0)) {
+                          tst_resm(TFAIL, "Failures reported above");
+                        }
+
+			cleanup();
 		}
 	}
-	cleanup();
 
 	/*NOTREACHED*/
 }
