@@ -1,0 +1,14 @@
+#!/bin/sh 
+#
+# Set Password for a specific new user
+# This script should be run as 'root'
+#
+# Example:
+#		./su_set_passwd USER ENCRYPTED_PASSWD
+#
+
+USER=$1
+ENCRYPTED_PASSWD=$2
+
+usermod -p $ENCRYPTED_PASSWD $USER
+exit $?
