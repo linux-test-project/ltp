@@ -728,8 +728,8 @@ main(int   argc,    /* number of command line parameters		      */
 		      break;
 	    default: fprintf(stderr, "%s: getopt() failed!!!\n", prog_name);
 		     exit(2);
+        }
     }
-}
 
     /* duration for which the tests have to be run. test_time is converted to */
     /* corresponding seconds and the tests are run as long as the current time*/
