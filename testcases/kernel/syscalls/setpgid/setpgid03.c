@@ -126,7 +126,7 @@ test2:
 			tst_exit();
 		}
 		if (pid == 0) {
-			if (execl("/bin/sleep", "/bin/sleep", "3",
+			if (execlp("sleep", "sleep", "3",
 			    NULL) < 0) {
 				perror("exec failed");
 			}
