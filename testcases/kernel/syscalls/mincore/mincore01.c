@@ -53,6 +53,9 @@
  *	08/2004 Rajeev Tiwari : does a basic sanity check for the various error 
  *  conditions possible with the mincore system call.
  *
+ * 	2004/09/10 Gernot Payer <gpayer@suse.de>
+ * 		code cleanup
+ * 	
  * RESTRICTIONS
  *	None
  */
@@ -61,58 +64,45 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <stdlib.h>
-#include <limits.h>		/* for PAGESIZE */
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGESIZE
-#define PAGESIZE 4096
-#endif
+static int PAGESIZE;
 
-void cleanup(void);
-void setup(void);
-void setup1(void);
-void setup2(void);
-void setup3(void);
-void setup4(void);
-void setup5(void);
+static void cleanup(void);
+static void setup(void);
+static void setup1(void);
+static void setup2(void);
+static void setup3(void);
+static void setup4(void);
+static void setup5(void);
 
 char *TCID= "mincore01";
 int TST_TOTAL = 5;
 extern int Tst_count;
 
+static char file_name[] = "fooXXXXXX";
+static char* global_pointer = NULL;
+static char* global_vec = NULL;
+static int global_len = 0;
+static int file_desc = 0;
 
-char* file_pointer=NULL;
-char* global_pointer=NULL;
-char* global_vec=NULL;
-int len = 0;
-char *vec = NULL;
-int file_desc =0;
-struct stat *fst=NULL;
-	
-char * file_name = NULL;
-
-int exp_enos[]={EINVAL,EINVAL,EFAULT, ENOMEM,ENOMEM};
-
-struct test_case_t {
-        char **addr;
+static struct test_case_t {
+        char *addr;
         int len;
-        int error;
-		char **vector;
+	char *vector;
+	int exp_errno;
         void (*setupfunc)();
 } TC[] = {
-		  { &file_pointer,0,0,&vec,setup1 },
-		  { &file_pointer,0,0,&vec,setup2 },
-		  { &file_pointer,0,0,&vec,setup3 },
-		  { &file_pointer,0,0,&vec,setup4 },
-		  { &file_pointer,0,0,&vec,setup5 }
+		  { NULL,0,NULL,EINVAL,setup1 },
+		  { NULL,0,NULL,EINVAL,setup2 },
+		  { NULL,0,NULL,EFAULT,setup3 },
+		  { NULL,0,NULL,ENOMEM,setup4 },
+		  { NULL,0,NULL,ENOMEM,setup5 }
 }; 
-
-/* Uncomment the macro below to debug */
-/* #define DEBUG_MODE 1 */
 
 int main(int ac, char **av)
 {
@@ -122,13 +112,10 @@ int main(int ac, char **av)
 
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, cleanup, "error parsing options: %s", msg);
         }
 
         setup();                        /* global setup */
-
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -143,10 +130,7 @@ int main(int ac, char **av)
 			if (TC[i].setupfunc != NULL) {
 				TC[i].setupfunc();
 			}
-#ifdef DEBUG_MODE
-			printf("Before Calling mincore -->> Address : %x, len : %x, vector : %x\n", *(TC[i].addr), TC[i].len, *(TC[i].vector));
-#endif
-			TEST(mincore(*(TC[i].addr), TC[i].len, *(TC[i].vector)));
+			TEST(mincore(TC[i].addr, TC[i].len, TC[i].vector));
 
                         if (TEST_RETURN != -1) {
                                 tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -155,20 +139,19 @@ int main(int ac, char **av)
 
                         TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
+                        if (TEST_ERRNO == TC[i].exp_errno) {
+                                tst_resm(TPASS, "expected failure: "
+                                         "errno = %d (%s)", TEST_ERRNO,
                                          strerror(TEST_ERRNO));
                         } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
+                                tst_resm(TFAIL, "unexpected error %d (%s), "
                                          "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+                                         strerror(TEST_ERRNO), TC[i].exp_errno);
 			}
 		}
 	}
         cleanup();
 	return(0);
-	/*NOTREACHED*/
 }
 
 /*
@@ -178,16 +161,9 @@ int main(int ac, char **av)
 void
 setup1()
 {
-	/* resetting the value of file pointer and bitmap vector */
-	file_pointer = global_pointer;
-	vec = global_vec;
-	
-	int size = 4096*2;
-	*(TC[0].addr) = file_pointer + 1;
-	TC[0].len = size;
-	*(TC[0].vector) = vec;
-	TC[0].error = EINVAL;
-	
+	TC[0].addr = global_pointer + 1;
+	TC[0].len = global_len;
+	TC[0].vector = global_vec;
 }
 
 /*
@@ -197,17 +173,9 @@ setup1()
 void
 setup2()
 {
-	/* resetting the value of file pointer and bitmap vector */
-	file_pointer = global_pointer;
-	vec = global_vec;
-	
-	int size = 4096*2;
-	*(TC[1].addr) = file_pointer;
-	TC[1].len = -size;
-	*(TC[1].vector) = vec;
-	TC[1].error = EINVAL;
-
-	
+	TC[1].addr = global_pointer;
+	TC[1].len = -global_len;
+	TC[1].vector = global_vec;
 }
 
 /*
@@ -217,16 +185,17 @@ setup2()
 void
 setup3()
 {
-	/* resetting the value of file pointer and bitmap vector */
-	file_pointer = global_pointer;
-	vec = global_vec;
+	char *t;
 	
-	int size = 4096*2;
-	*(TC[2].addr) = file_pointer;
-	TC[2].len = size;
-	*(TC[2].vector) = 0xC0000000;
-	TC[2].error = EFAULT;
-
+	/* Create pointer to invalid address */
+	if( MAP_FAILED == (t = mmap(0,global_len,PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,0,0)) ) {
+		tst_brkm(TBROK,cleanup,"mmaping anonymous memory failed: %s",strerror(errno));
+	}
+	munmap(t,global_len);
+	
+	TC[2].addr = global_pointer;
+	TC[2].len = global_len;
+	TC[2].vector = t;
 }
 
 /*
@@ -237,16 +206,9 @@ setup3()
 void 
 setup4()
 {
-	/* resetting the value of file pointer and bitmap vector */
-	file_pointer = global_pointer;
-	vec = global_vec;
-	
-	int size = 4096*10;
-	*(TC[3].addr) = file_pointer;
-	TC[3].len = size;
-	*(TC[3].vector) = vec;
-	TC[3].error = ENOMEM;
-
+	TC[3].addr = global_pointer;
+	TC[3].len = global_len*5;
+	TC[3].vector = global_vec;
 }
 
 /*
@@ -257,17 +219,9 @@ setup4()
 void
 setup5()
 {	
-	int size = 4096;
-	
-	/* resetting the value of file pointer and bitmap vector */
-	file_pointer = global_pointer;
-	vec = global_vec;
-	
-	*(TC[4].addr) = file_pointer+2*size;
-	TC[4].len = size;
-	*(TC[4].vector) = vec;
-	TC[4].error = ENOMEM;
-
+	TC[4].addr = global_pointer+2*global_len;
+	TC[4].len = global_len;
+	TC[4].vector = global_vec;
 }
 
 /*
@@ -276,18 +230,15 @@ setup5()
 void
 setup()
 {
-	/* create a temporary buffer to fill two pages of data */
+	char *buf;
 	
-	char *buf = malloc(4096*2);
-	int counter;
-	int size = 4096*2;
-	int status;
-	char *msg;   
+	PAGESIZE = getpagesize();
 	
-	for (counter =0; counter < size ; counter++)
-	{
-		*(buf+counter) = 'x';
-	}
+	/* global_pointer will point to a mmapped area of global_len bytes */
+	global_len = PAGESIZE*2;
+	
+	buf = (char*)malloc(global_len);
+	memset(buf,42,global_len);
 	
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -295,56 +246,27 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 	
-	file_name = tmpnam(NULL);
-	
-	/* create a temporary file to be used */
-	
-	if((file_desc = open(file_name,O_RDWR|O_CREAT))==-1)
+	/* create a temporary file */
+	if( -1 == (file_desc = mkstemp(file_name)) )
 	{
-		tst_brkm(TBROK, cleanup, "Error in opening file - %s", msg);
+		tst_brkm(TBROK, cleanup, "Error while creating temporary file: %s", strerror(errno));
 	}
-	
 	
 	/* fill the temporary file with two pages of data */
-	
-	if((status=write(file_desc,buf,size))==-1)
+	if( -1 == write(file_desc,buf,global_len) )
 	{
-		tst_brkm(TBROK, cleanup, "Error in writing to the file - %s", msg);
+		tst_brkm(TBROK, cleanup, "Error while writing to temporary file: %s", strerror(errno));
 	}
-	
-	/* collect the stats on the file to get the size */
-	
-	fst = (struct stat *) malloc(sizeof(struct stat));
-	
-	if((status=fstat(file_desc,fst))==-1)
-	{
-		tst_brkm(TBROK, cleanup, "Error in getting file stats - %s", msg);
-	}
+	free(buf);
 	
 	/* map the file in memory */
-	
-	if((file_pointer = (char *)mmap(NULL,(*fst).st_size,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,NULL))==-1)
+	if( MAP_FAILED == (global_pointer = (char *)mmap(NULL,global_len,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,0)) )
 	{
-		tst_brkm(TBROK, cleanup, "File cannot be mapped in memory - %s", msg);
+		tst_brkm(TBROK, cleanup, "Temporary file could not be mmapped: %s", strerror(errno));
 	}
-	/* Align to a multiple of PAGESIZE, assumed to be power of two */
-	 
-	 file_pointer = (char *)(((int)file_pointer + PAGESIZE-1) & ~(PAGESIZE-1));
 	
-	/* set the global pointer */
-	
-	global_pointer = file_pointer;
-
-#ifdef DEBUG_MODE
-		printf("After alignment file_pointer : %x\n", file_pointer);	
-#endif
-	 
-	 /* initialize the vector buffer to collect the page info */
-	 
-	vec = malloc(4096*2);	
-	
-	/* set the global vector */
-	global_vec = vec;
+	/* initialize the vector buffer to collect the page info */
+	global_vec = malloc( (global_len+PAGESIZE-1) / PAGESIZE );	
 }
 
 /*
@@ -360,6 +282,8 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 	
+	free(global_vec);
+	munmap(global_pointer,global_len);
 	close(file_desc);
 	remove(file_name);
 
