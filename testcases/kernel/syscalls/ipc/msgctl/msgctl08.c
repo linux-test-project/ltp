@@ -64,7 +64,7 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={0};     /* List must end with 0 */
 
-#define MAXNPROCS	1000000  /* This value is set to an arbitrary high limit. */
+#define MAXNPROCS	100000000  /* This value is set to an arbitrary high limit. */
 #define MAXNREPS	100000
 #define FAIL		1
 #define PASS		0
