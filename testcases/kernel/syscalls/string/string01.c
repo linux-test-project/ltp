@@ -129,10 +129,10 @@ struct t_strcmp {
 	int e_res;
 } t_cmp[] = {
 	{ "",	"",	0 },
-	{ "",	tiat,	-((int) 'T') },
-	{ tiat,	"",	'T' },
+	{ "",	tiat,	-((int) 'T')},
+	{ tiat,	"",	'T'},
 	{ tiat,	tiat,	0 },
-	{ yat,	tiat,	'y'-'a' },
+	{ yat,	tiat,	'y'-'a'},
 	{NULL,NULL,0}
 };
 
@@ -173,17 +173,18 @@ struct t_strncmp {
 	char *s2;
 	int n;
 	int e_res;
+    int a_res;  /* Allowable results, some platforms only return 1 or -1 */
 } t_ncmp[] = {
-	{ "",	"",	0,	0 },
-	{ "",	"",	80,	0 },
-	{ tiat,	"",	0,	0 },
-	{ "",	tiat,	80,	-((int) 'T') },
-	{ tiat,	"",	80,	'T' },
-	{ tiat,	tiat,	80,	0 },
-	{ yat,	tiat,	80,	'y'-'a' },
-	{ yat,	tiat,	8,	0 },
-	{ yat,	tiat,	9,	'y'-'a' },
-	{NULL,NULL,0,0}
+	{ "",	"",	0,	0,0 },
+	{ "",	"",	80,	0,0 },
+	{ tiat,	"",	0,	0,0 },
+	{ "",	tiat,	80,	-((int) 'T'), -1 },
+	{ tiat,	"",	80,	'T',1 },
+	{ tiat,	tiat,	80,	0,0 },
+	{ yat,	tiat,	80,	'y'-'a',1 },
+	{ yat,	tiat,	8,	0,1 },
+	{ yat,	tiat,	9,	'y'-'a',1 },
+	{NULL,NULL,0,0,0}
 	
 };
 
@@ -413,11 +414,13 @@ int main (argc, argv)
 	//fprintf(temp, "\tStrncmp\n" );
 	i = 0;
 	while ( t_ncmp[i].s1 ) {
-	    n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n );
-	    if (sign(n) != sign(t_ncmp[i].e_res)) {
-		  fprintf(temp, "(Strncmp) test %d: expected %d, got %d",
-			i, sign(t_ncmp[i].e_res), sign(n) );
-		  local_flag = FAILED;
+	    if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
+							!= t_ncmp[i].e_res) {
+            if ((t_ncmp[i].a_res < 0 && n > t_ncmp[i].a_res) || (t_ncmp[i].a_res > 0 && n < t_ncmp[i].a_res)) {
+                fprintf(temp, "(Strncmp) test %d: expected %d, got %d",
+                  i, t_ncmp[i].e_res, n );
+                local_flag = FAILED;
+            }
 		}
 	    i++;
 	}
