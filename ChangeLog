@@ -11,11 +11,11 @@ o       created a KNOWN-FAILURES file to document known
         test failures (Robbie Williamson)
 o	added sem02 test to ipc section (Robbie Williamson)
 o	added SCTP section to network tests (Robbie Williamson)
-o	fixed bug [ #505515 ] perf_lan6 test (Robbie Williamson)
 o	added disktest by Brent Yardley to io section (Robbie Williamson)
 o	closed the following bugs:
 	[ #491285 ] recvfrom01 test (Paul Larson)
 	[ #491286 ] recvmsg01 test (Robbie Williamson)
+	[ #505515 ] perf_lan6 test (Robbie Williamson)
 	[ #506536 ] recv01 test (Robbie Williamson)
 	[ #514408 ] chown05 (Dave Engebretsen)
 	[ #511427 ] pread02 test (Paul Larson)
