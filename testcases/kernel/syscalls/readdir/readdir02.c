@@ -55,6 +55,9 @@
  * HISTORY
  *      04/2002 - Written by Jacky Malcles
  *
+ *      06/2003 - Added code to catch SIGSEGV and return TCONF.
+ *		Robbie Williamson<robbiew@us.ibm.com>
+ *
  * RESTRICTIONS
  *      none
  */
@@ -83,7 +86,6 @@ int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={EBADF, 0};
-
 
 
 /***********************************************************************
@@ -137,13 +139,13 @@ main(int ac, char **av)
                                  errno, strerror(errno));
                         break;
                 default:
-			if (dptr != NULL){
+		   	if (dptr != NULL){
                         tst_brkm(TFAIL, cleanup, "call failed with an "
                                  "unexpected error - %d : %s", errno,
                                  strerror(errno));
 			} else {
 			tst_resm(TINFO,"readdir() is not _required_ to fail, "
-				"errno = %d  ", errno);
+				 "errno = %d  ", errno);
 			}
                 }
                 }
@@ -160,6 +162,13 @@ main(int ac, char **av)
     return 0;
 }	/* End main */
 
+void
+sigsegv_handler(int sig)
+{
+        tst_resm(TCONF, "This system's implementation of closedir() will not allow this test 
+			 execute properly.");
+	cleanup();
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -168,12 +177,17 @@ void
 setup()
 {
 
+    struct sigaction act;
+    
     /* You will want to enable some signal handling so you can capture
      * unexpected signals like SIGSEGV. 
      */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
+    act.sa_handler = sigsegv_handler;
+    (void)sigaction(SIGSEGV, &act, NULL);
+
+    /* Pause if that option was specified */
 	TEST_PAUSE;
 
     /* If you are doing any file work, you should use a temporary directory.  We
