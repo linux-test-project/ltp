@@ -270,6 +270,8 @@ main()
             }
        done
     else
+        [ -f $CMDFILE ] || \
+                CMDFILE="$LTPROOT/runtest/$CMDFILE"
         cat $CMDFILE > ${TMP}/alltests || \
         {
             echo "FATAL: Unable to create command file"
