@@ -1,2 +1,2 @@
 install:
-	@ln -f ${PWD}/file_test.sh ../../../bin/
+	@ln -f file_test.sh ../../../bin/
