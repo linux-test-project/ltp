@@ -514,6 +514,8 @@ query_module01 query_module01
 query_module02 query_module02
 query_module03 query_module03
 
+raise01 cd $LTPROOT/testcases/bin;raise01
+
 read01 read01
 read02 read02
 read03 read03
