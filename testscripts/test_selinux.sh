@@ -1,7 +1,13 @@
 #!/bin/bash
 #
+# Copyright (c) International Business Machines  Corp., 2005
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
 # test_selinux.sh - Run the selinux test suite.
-# 
 
 # Must be root to run the selinux testsuite
 if [ $UID != 0 ]
