@@ -26,7 +26,7 @@ VERBOSE = 0
 
 all: build-tests run-tests 
 
-install: all
+install: 
 build-tests: $(BUILD_TESTS:.c=.test)
 run-tests: $(RUN_TESTS:.test=.run-test)
 
