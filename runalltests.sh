@@ -40,7 +40,7 @@ quiet_mode=" "
 usage() 
 {
 	cat <<-END >&2
-    usage: ${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
+    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
                   -m -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under CPU load.
@@ -59,7 +59,7 @@ usage()
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
 
-    example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
+    example: ./${0##*/} -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 	END
 exit
 }
