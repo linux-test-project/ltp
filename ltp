@@ -106,6 +106,12 @@ kernel()
    fi
   fi
 
+  echo -n "Do you want to run the direct I/O tests (Y/N)? >> "
+  read dio
+  if [ $dio == "Y" ] || [ $dio == "y" ]; then
+   cat ${LTPROOT}/runtest/dio >> ${TMP}/alltests
+  fi
+
   echo -n "Do you want to run the memory managment tests (Y/N)? >> "
   read mm
   if [ $mm == "Y" ] || [ $mm == "y" ]; then
