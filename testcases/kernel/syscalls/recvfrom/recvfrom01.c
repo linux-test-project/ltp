@@ -63,8 +63,14 @@ int	s;	/* socket descriptor */
 struct sockaddr_in sin1, from;
 int	fromlen;
 
-void setup(void), setup0(void), setup1(void), setup2(void),
-	cleanup(void), cleanup0(void), cleanup1(void);
+void setup(void);
+void setup0(void);
+void setup1(void);
+void setup2(void);
+void cleanup(void);
+void cleanup0(void);
+void cleanup1(void);
+pid_t start_server(struct sockaddr_in *);
 
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
@@ -81,20 +87,26 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
+/* 1 */
 	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0,
 		(struct sockaddr *)&from, &fromlen,
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
+/* 2 */
 	{ 0, 0, 0, buf, sizeof(buf), 0, (struct sockaddr *)&from, &fromlen,
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+/* 3 */
 	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), 0,
 		(struct sockaddr *)-1, &fromlen,
 		0, ENOTSOCK, setup1, cleanup1, "invalid socket buffer" },
+/* 4 */
 	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), 0,
 		(struct sockaddr *)&from, &fromlen,
-		0, ENOTSOCK, setup2, cleanup1, "invalid socket length" },
+		-1, EINVAL, setup2, cleanup1, "invalid socket length" },
+/* 5 */
 	{ PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
 		(struct sockaddr *)&from, &fromlen,
 		-1, EFAULT, setup1, cleanup1, "invalid recv buffer" },
+/* 6 */
 	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), -1,
 		(struct sockaddr *)&from, &fromlen,
 		-1, EINVAL, setup1, cleanup1, "invalid flags set" },
@@ -150,6 +162,8 @@ main(int argc, char *argv[])
 		}
 	}
 	cleanup();
+	/*NOT REACHED*/
+	return 0;
 }	/* End main */
 
 pid_t pid;
@@ -202,7 +216,7 @@ setup1(void)
 			strerror(errno));
 	}
 	if (tdat[testno].type == SOCK_STREAM &&
-	    connect(s, &sin1, sizeof(sin1)) < 0) {
+	    connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
 	}
 	fromlen = sizeof(from);
@@ -229,7 +243,6 @@ start_server(struct sockaddr_in *sin0)
 	fd_set	afds, rfds;
 	pid_t	pid;
 	int	sfd, nfds, cc, fd;
-	char	c;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
@@ -237,7 +250,7 @@ start_server(struct sockaddr_in *sin0)
 			strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, &sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			strerror(errno));
 		return -1;
@@ -278,7 +291,7 @@ start_server(struct sockaddr_in *sin0)
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
+			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 			/* send something back */
