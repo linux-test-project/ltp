@@ -41,14 +41,25 @@ $trace_logic
 
 TC=mc_opts
 TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-$TCsrc}
+TCtmp=${TCtmp:-$TCsrc/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES=${EXECUTABLES:-"opts opts_e"}
 NUMLOOPS=${NUMLOOPS:-10}
-IPADDR=${IPADDR:-$(host `hostname`|awk '{ print $4 }'|cut -d\, -f1)}
+IPADDR=${IPADDR:-$(../../../../tools/gethost `hostname`| grep address |awk '{ print $2 }')}
 
 this_file=${0##*/}
 trap "interrupt_test" 2
+
+setup()
+{
+  mkdir -p $TCtmp
+  for i in $EXECUTABLES
+  do
+    cp $TCsrc/$i $TCtmp
+    chmod 755 $TCtmp/$i
+  done
+}
+
 #-----------------------------------------------------------------------
 #
 # FUNCTION:  do_test
@@ -155,5 +166,6 @@ interrupt_test()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #******************************************************************************
+setup
 do_test
 end_testcase
