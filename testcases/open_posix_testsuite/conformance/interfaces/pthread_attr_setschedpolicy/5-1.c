@@ -32,18 +32,18 @@ int main()
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_init");
+		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 
   	rc = pthread_attr_setschedpolicy(&attr, UNSUPPOLICY);
 	if ((rc != ENOTSUP)) {
-		perror(ERROR_PREFIX "pthread_attr_setinheritsched");
+		printf(ERROR_PREFIX "pthread_attr_setinheritsched\n");
 		exit(PTS_UNRESOLVED);
 	}
   	rc = pthread_attr_destroy(&attr);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_destroy");
+		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	printf("Test PASS\n");

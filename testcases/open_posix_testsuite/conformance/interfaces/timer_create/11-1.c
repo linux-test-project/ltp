@@ -29,6 +29,10 @@ void handler(int signo)
 
 int main(int argc, char *argv[])
 {
+	int rc;
+	rc = sysconf(_SC_THREAD_CPUTIME);
+	printf("rc = %d\n", rc);
+
 #ifdef _POSIX_THREAD_CPUTIME
 	struct sigevent ev;
 	struct sigaction act;

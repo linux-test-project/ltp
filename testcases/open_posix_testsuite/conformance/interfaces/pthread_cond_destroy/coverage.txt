@@ -7,4 +7,5 @@ Assertion	Tested?
 4		NO  * When it specifies it 'may' fail and not 'shall' fail,
 		      it will always return PASS, but will return a 
 		      PASS and print out a warning if it fails.
+		    * EBUSY is tested 
 NOTE:

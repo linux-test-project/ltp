@@ -13,6 +13,10 @@
  *
 */
 
+ /*
+  * adam.li@intel.com: 2004-05-26: select should block child
+  */
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,14 +28,12 @@
 
 #define NUMSTOPS 10
 
-int child_stopped = 0;
-int waiting = 1;
+volatile int child_stopped = 0;
 
 void handler(int signo, siginfo_t *info, void *context) 
 {
 	if (info && info->si_code == CLD_STOPPED) {
 		printf("Child has been stopped\n");
-		waiting = 0;
 		child_stopped++;
 	}
 }
@@ -50,13 +52,9 @@ int main()
 
 	if ((pid = fork()) == 0) {
 		/* child */
-		while(1) {
-			/* wait forever, or until we are 
-			   interrupted by a signal */
-			tv.tv_sec = 0;
-			tv.tv_usec = 0;
-			select(0, NULL, NULL, NULL, &tv);
-		}
+		/* wait forever, or until we are 
+		   interrupted by a signal */
+		select(0, NULL, NULL, NULL, NULL);
 		return 0;
 	} else {
 		/* parent */
@@ -64,8 +62,6 @@ int main()
 		int i;
 
 		for (i = 0; i < NUMSTOPS; i++) {
-			waiting = 1;
-
 			printf("--> Sending SIGSTOP\n");
 			kill(pid, SIGSTOP);
 

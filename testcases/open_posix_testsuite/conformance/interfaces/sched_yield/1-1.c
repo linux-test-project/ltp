@@ -19,6 +19,7 @@
  *  4. Launch a thread which call sched_yield() and check that the counter has
  *     changed since the call.
  */
+#define LINUX
 
 #ifdef LINUX 
 #define _GNU_SOURCE
@@ -128,7 +129,8 @@ int set_thread_affinity(int cpu)
 #endif
         
 void * runner(void * arg) {
-	int i=0, nc, result = 0;
+	int i=0, nc;
+	long result = 0;
 #ifdef LINUX        
         set_thread_affinity(*(int *)arg);
         fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
@@ -191,7 +193,7 @@ int main() {
 	int *child_pid; 
 	pthread_t tid, tid_runner;
 	void *tmpresult;
-	int result;
+	long result;
 	pthread_attr_t attr;
         struct sched_param param;
         int thread_cpu;
@@ -254,7 +256,7 @@ int main() {
         for(i=0; i<ncpu-1; i++)
                 waitpid(child_pid[i], NULL, 0);
 	
-        result = (int)tmpresult;
+        result = (long)tmpresult;
 	if(result){
 		printf("A thread does not relinquish the processor.\n");
 		return PTS_FAIL;

@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include "posixtest.h"
+
 
 void handler(int signo)
 {
@@ -43,11 +45,11 @@ int main()
 		int s; 		
 		if (wait(&s) == -1 && errno == ECHILD) {
 			printf("Test PASSED\n");
-			return 0;
+			return PTS_PASS;
 		}
 	}
 
 	printf("Test FAILED\n");
-	return -1;
+	return PTS_FAIL;
 }
 

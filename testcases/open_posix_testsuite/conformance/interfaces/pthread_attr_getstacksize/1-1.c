@@ -48,7 +48,7 @@ int main()
 		perror(ERROR_PREFIX "pthread_attr_getstacksize");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("stack_size = %u\n", stack_size);
+	/* printf("stack_size = %lu\n", stack_size); */
 
 	stack_size = PTHREAD_STACK_MIN;
 
@@ -59,7 +59,7 @@ int main()
                         "allocating the stack memory");
       		exit(PTS_UNRESOLVED);
     	}
-	printf("stack_size = %u\n", stack_size);
+	/* printf("stack_size = %lu\n", stack_size); */
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
         if (rc != 0 ) {
@@ -72,7 +72,7 @@ int main()
                 perror(ERROR_PREFIX "pthread_attr_getstacksize");
                 exit(PTS_UNRESOLVED);
         }
-	printf("ssize = %u\n", ssize);
+	/* printf("ssize = %lu\n", ssize); */
 
 	rc = pthread_attr_destroy(&attr);
 	if(rc != 0)

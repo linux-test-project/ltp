@@ -58,7 +58,7 @@ void *thread_func()
 		perror(ERROR_PREFIX "got the wrong stacksize or stackaddr");
 		exit(PTS_FAIL);
 	}	
-	printf("saddr = %p, ssize = %u\n", saddr, ssize);
+	/* printf("saddr = %p, ssize = %u\n", saddr, ssize); */
 
 	pthread_exit(0);
 	return NULL;
@@ -85,7 +85,7 @@ int main()
 		perror(ERROR_PREFIX "pthread_attr_getstack");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size);
+	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 
 	stack_size = PTHREAD_STACK_MIN;
 
@@ -96,7 +96,7 @@ int main()
                         "allocating the stack memory");
       		exit(PTS_UNRESOLVED);
     	}
-	printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size);
+	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
         if (rc != 0 ) {
@@ -109,7 +109,7 @@ int main()
                 perror(ERROR_PREFIX "pthread_attr_getstack");
                 exit(PTS_UNRESOLVED);
         }
-	printf("saddr = %p, ssize = %u\n", saddr, ssize);
+	/* printf("saddr = %p, ssize = %u\n", saddr, ssize); */
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
 	if (rc !=0 ) {

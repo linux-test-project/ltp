@@ -33,25 +33,25 @@ int verify_policy(pthread_attr_t *attr, int policytype) {
 
 	rc = pthread_attr_getschedpolicy(attr, &policy);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_getschedpolicy");
+		printf(ERROR_PREFIX "pthread_attr_getschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	switch(policytype) {
 	case SCHED_FIFO:
   		if (policy != FIFOPOLICY) {
-    			perror(ERROR_PREFIX "got wrong policy param");
+    			printf(ERROR_PREFIX "got wrong policy param\n");
     			exit(PTS_FAIL);
   		}	
 		break;
 	case SCHED_RR:
   		if (policy != RRPOLICY) {
-    			perror(ERROR_PREFIX "got wrong policy param");
+    			printf(ERROR_PREFIX "got wrong policy param\n");
     			exit(PTS_FAIL);
   		}	
 		break;
 	case SCHED_OTHER:
   		if (policy != OTHERPOLICY) {
-    			perror(ERROR_PREFIX "got wrong policy param");
+    			printf(ERROR_PREFIX "got wrong policy param\n");
     			exit(PTS_FAIL);
   		}	
 		break;
@@ -66,34 +66,34 @@ int main()
 
 	rc = pthread_attr_init(&attr);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_init");
+		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 
   	rc = pthread_attr_setschedpolicy(&attr, FIFOPOLICY);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_setschedpolicy");
+		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
   	verify_policy(&attr, FIFOPOLICY);
 
   	rc = pthread_attr_setschedpolicy(&attr, RRPOLICY);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_setschedpolicy");
+		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
   	verify_policy(&attr, RRPOLICY);
 
   	rc = pthread_attr_setschedpolicy(&attr, OTHERPOLICY);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_setschedpolicy");
+		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
   	verify_policy(&attr, OTHERPOLICY);
 
   	rc = pthread_attr_destroy(&attr);
 	if( rc != 0) {
-		perror(ERROR_PREFIX "pthread_attr_destroy");
+		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	printf("Test PASS\n");

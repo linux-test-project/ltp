@@ -54,7 +54,7 @@ int main()
 		perror(ERROR_PREFIX "pthread_attr_getstack");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size);
+	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 
 	stack_size = STACKSIZE;
 
@@ -66,7 +66,7 @@ int main()
       		exit(PTS_UNRESOLVED);
     	}
 
-	printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size);
+	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
         if (rc != EINVAL ) {
                 perror(ERROR_PREFIX "Got the wrong return value");

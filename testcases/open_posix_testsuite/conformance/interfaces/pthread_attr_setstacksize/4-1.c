@@ -57,7 +57,6 @@ int main()
       		exit(PTS_UNRESOLVED);
     	}
 
-	printf("stack_size = %u\n", stack_size);
 	rc = pthread_attr_setstacksize(&attr, stack_size);
         if (rc != EINVAL ) {
                 perror(ERROR_PREFIX "Got the wrong return value");

@@ -52,6 +52,8 @@ CFLAGS += $(call check_gcc,-std=gnu99,)
 
 INCLUDE = -Iinclude
 
+include /opt/libc/Makefile.inc
+
 # FIXME: exaust cmd line length
 clean:
 	@rm -f $(LOGFILE)
@@ -66,7 +68,7 @@ clean:
 %.test: %.o
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
-	nm -g --defined-only $< | grep -q " T main" || exit 0; \
+	nm -g $< | grep -q " T main" || exit 0; \
 	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
 		echo "$(@:.test=): link: PASS" | tee -a $(LOGFILE); \

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	int sig;
 	sigset_t set;
 	int flags = 0;
-
+        
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if(getuid() != 0)
 	{
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	sleep(SLEEPTIME);
 	getBeforeTime(&tpreset);
 	if (clock_settime(CLOCK_REALTIME, &tpT0) != 0) {
-		printf("clock_settime() was not successful\n");
+		perror("clock_settime() was not successful");
 		return PTS_UNRESOLVED;
 	}
 

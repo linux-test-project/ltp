@@ -90,7 +90,7 @@ int main()
 	for (i=0; i<THREAD_NUM; i++) {	/* create THREAD_NUM threads */
 	    	if (pthread_create(&thread[i], NULL, thr_func, NULL) != 0) {
 			fprintf(stderr,"Fail to create thread[%d]\n", i);
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 	}
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
@@ -100,11 +100,11 @@ int main()
 	   blocked on pthread_cond_wait */
 	if (pthread_mutex_lock(&td.mutex) != 0) {	
 		fprintf(stderr,"Main: Fail to acquire mutex\n");
-		return PTS_UNRESOLVED;
+		exit(PTS_UNRESOLVED);
 	}
 	if (pthread_mutex_unlock(&td.mutex) != 0) {
 		fprintf(stderr,"Main: Fail to release mutex\n");
-		return PTS_UNRESOLVED;
+		exit(PTS_UNRESOLVED);
 	}
 	
 	/* signal once and check if at least one waiter is wakened */ 
@@ -112,7 +112,7 @@ int main()
 	rc = pthread_cond_signal(&td.cond);
 	if (rc != 0) {
 		fprintf(stderr,"[Main thread] failed to signal the condition\n");
-		return PTS_UNRESOLVED;
+		exit(PTS_UNRESOLVED);
 	}
 	sleep(1);
 	if (waken_num <= 0){
@@ -134,20 +134,28 @@ int main()
 	alarm(5);
 
 	/* loop to wake up the rest threads */
+	i=0;
 	while (waken_num < THREAD_NUM) {
+		++i;
 		fprintf(stderr,"[Main thread] signals to wake up the next thread\n");
 		if (pthread_cond_signal(&td.cond) != 0) {
 			fprintf(stderr,"Main failed to signal the condition\n");
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 		usleep(100);
 	}		
+	
+	if (i >= THREAD_NUM) {
+		fprintf(stderr,"[Main thread] had to signal the condition %i times\n", i+1);
+		fprintf(stderr,"[Main thread] to wake up %i threads\n. Test FAILED.\n", THREAD_NUM);
+		exit(PTS_FAIL);
+	}
 	
 	/* join all secondary threads */
 	for (i=0; i<THREAD_NUM; i++) {
 	    	if (pthread_join(thread[i], NULL) != 0) {
 			fprintf(stderr,"Fail to join thread[%d]\n", i);
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 	}
 	printf("Test PASSED\n");

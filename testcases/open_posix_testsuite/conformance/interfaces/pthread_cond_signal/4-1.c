@@ -88,7 +88,7 @@ int main()
 	for (i=0; i<THREAD_NUM; i++) {
 	    	if (pthread_create(&thread[i], NULL, thr_func, NULL) != 0) {
 			fprintf(stderr,"Fail to create thread[%d]\n", i);
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 	}
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
@@ -106,7 +106,7 @@ int main()
 		rc = pthread_cond_signal(&td.cond);
 		if (rc == EINVAL) {
 			fprintf(stderr,"pthread_cond_signal returns EINVAL\n");
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 		else if (rc != 0) {
 			fprintf(stderr,"pthread_cond_signal returns %d\n",rc);
@@ -119,7 +119,7 @@ int main()
 	for (i=0; i<THREAD_NUM; i++) {
 	    	if (pthread_join(thread[i], NULL) != 0) {
 			fprintf(stderr,"Fail to join thread[%d]\n", i);
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 	}
 	printf("Test PASSED\n");

@@ -46,7 +46,7 @@ int get_rand() {
 
 	int r;
 	r=rand();
-	if ((r == SIG_BLOCK) || (r == SIG_SETMASK) || (r == SIG_UNBLOCK)) {
+	while ((r == SIG_BLOCK) || (r == SIG_SETMASK) || (r == SIG_UNBLOCK)) {
 		r = get_rand();
 	}
 	return r;

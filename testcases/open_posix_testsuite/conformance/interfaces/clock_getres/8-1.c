@@ -18,8 +18,8 @@
 #define LARGENUM 100000
 int main(int argc, char *argv[])
 {
-	struct timespec res;
 #ifdef _POSIX_THREAD_CPUTIME
+	struct timespec res;
 	/* Initialize res to a number much larger than the resolution
 	 * could possibly be
 	 */
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 #else	
-	printf("_POSIX_CPUTIME not supported\n");
+	printf("_POSIX_THREAD_CPUTIME not supported\n");
 	return PTS_UNSUPPORTED;
 #endif
 }

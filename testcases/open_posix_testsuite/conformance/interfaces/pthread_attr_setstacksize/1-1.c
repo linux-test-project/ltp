@@ -50,7 +50,7 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 	
-	printf("stack_size = %u\n", stack_size);
+	/* printf("stack_size = %lu\n", stack_size); */
 
 	if (posix_memalign (&saddr, sysconf(_SC_PAGE_SIZE), 
             stack_size) != 0)
@@ -71,7 +71,7 @@ int main()
                 perror(ERROR_PREFIX "pthread_attr_getstacksize");
                 exit(PTS_UNRESOLVED);
         }
-	printf("stack_size = %u\n", ssize);
+	/* printf("stack_size = %lu\n", ssize); */
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
 	if (rc !=0 ) {

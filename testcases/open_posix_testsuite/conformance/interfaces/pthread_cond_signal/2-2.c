@@ -63,8 +63,8 @@ void *thr_func(void *arg)
                 exit(PTS_UNRESOLVED);
 	}
 	
-	if (pthread_mutex_trylock(&td.mutex) == 0) {
-		fprintf(stderr,"[Thread 0x%p] should not be able to lock the mutex again\n",
+	if (pthread_mutex_trylock(&td.mutex) != 0) {
+		fprintf(stderr,"[Thread 0x%p] should be able to lock the recursive mutex again\n",
 				(void*)self);
                 printf("Test FAILED\n");
 		exit(PTS_FAIL);
@@ -77,6 +77,11 @@ void *thr_func(void *arg)
                 printf("Test FAILED\n");
 		exit(PTS_FAIL);
 	}
+	if (pthread_mutex_unlock(&td.mutex) != 0) {
+		fprintf(stderr,"[Thread 0x%p] did not owned the mutex after the cond wait\n", (void*)self);
+                printf("Test FAILED\n");
+		exit(PTS_FAIL);
+	}
 	fprintf(stderr,"[Thread 0x%p] released the mutex\n", (void*)self);
 	return NULL;
 }
@@ -85,8 +90,18 @@ int main()
 {
 	int i;
 	pthread_t  thread[THREAD_NUM];
+	pthread_mutexattr_t ma;
+	
+	if (pthread_mutexattr_init(&ma) != 0) {
+		fprintf(stderr,"Fail to initialize mutex attribute\n");
+		return PTS_UNRESOLVED;
+	}
+	if (pthread_mutexattr_settype(&ma, PTHREAD_MUTEX_RECURSIVE) != 0) {
+		fprintf(stderr,"Fail to set the mutex attribute\n");
+		return PTS_UNRESOLVED;
+	}
 
-	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
+	if (pthread_mutex_init(&td.mutex, &ma) != 0) {
 		fprintf(stderr,"Fail to initialize mutex\n");
 		return PTS_UNRESOLVED;
 	}

@@ -30,7 +30,7 @@ int main()
 	int policy = SCHED_FIFO;
 
 	if(pthread_attr_init(&attr) != 0) {
-		perror("Error on pthread_attr_init()\n");
+		printf("Error on pthread_attr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 		

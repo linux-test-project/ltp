@@ -99,6 +99,7 @@ int main()
       	     strerror(errno));    
       return PTS_FAIL;
     }
+    printf("pa: %p\n", pa);
     /* Check the patial page is ZERO filled */ 
     ch = pa + len + 1;
     if (*ch != 0)
@@ -128,6 +129,7 @@ int main()
   prot = PROT_READ | PROT_WRITE;
   flag = MAP_SHARED; 
   off = 0; 
+  pa = mmap(addr, len, prot, flag, fd_2, off);
   pa_2 = mmap(addr, len, prot, flag, fd_2, off);
   if (pa_2 == MAP_FAILED)
   {
@@ -136,6 +138,7 @@ int main()
     exit(PTS_FAIL);
   }
     
+  printf("pa_2: %p\n", pa_2);
   ch_2 = pa_2 + len + 1;
   if (*ch_2 == 'b')
   {

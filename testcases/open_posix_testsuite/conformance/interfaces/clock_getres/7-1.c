@@ -18,8 +18,8 @@
 #define LARGENUM 100000
 int main(int argc, char *argv[])
 {
-	struct timespec res;
 #ifdef _POSIX_CPUTIME
+	struct timespec res;
 	/* Initialize res to a number much larger than the resolution
 	 * could possibly be
 	 */

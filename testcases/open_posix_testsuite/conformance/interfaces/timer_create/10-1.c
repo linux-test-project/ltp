@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 	int rc;
 
 	rc = sysconf(_SC_CPUTIME);
+	printf("sysconf(_SC_CPUTIME) returns: %d\n", rc);
 	if (rc <= 0) {
-		printf("sysconf(_SC_CPUTIME) returns: %d\n", rc);
 		return PTS_UNRESOLVED;	
 	}
 		
