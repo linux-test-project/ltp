@@ -384,11 +384,21 @@ networking()
    read VERS
    case $VERS in
     3)
-   	export VERS
+   	export VERSION=$VERS
         ;;
     *)
-        export VERS=2
+        export VERSION=2
         ;;
+   esac
+   echo -n "  Which protocol (udp/tcp)? Default is udp. (U/T)>> "
+   read PROTO
+   case $PROTO in
+    T|t)
+	export SOCKET_TYPE=tcp
+	;;
+    *)
+	export SOCKET_TYPE=udp
+	;;
    esac
 
    cat ${LTPROOT}/runtest/nfs >> ${TMP}/alltests
