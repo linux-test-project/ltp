@@ -7,19 +7,24 @@
 #  12/15/02 - Manoj Iyer  - manjo@mail.utexas.edu: Added options to run 
 #                           LTP under CPU, IO and MM load.
 #
+#  01/26/03 - Manoj Iyer  - manjo@mail.utexas.edu: Added -f option; Execute
+#                           user defined set of testcases.
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
 export TMPBASE="/tmp"
+cmdfile=""
 
 usage() 
 {
 	cat <<-END >&2
-	usage: ${0##*/} -c [-d tmpdir] -i [ -l logfile ] -m [ -r ltproot ] 
-                    [ -t duration ] [ -x instances ]
+    usage: ${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
+                  -m [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under CPU load.
     -d tmpdir       Directory where temporary files will be created.
+    -f cmdfile      Execute user defined list of testcases.
     -i              Run LTP under heavy IO load.
     -l logfile      Log results of test in a logfile.
     -m              Run LTP under heavy memory load.
@@ -27,45 +32,47 @@ usage()
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
 
-	example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
+    example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
 	END
 exit
 }
 
 
 # while getopts :t:x:l:r:d:mic arg
-while getopts cd:il:mr:t:x arg
+while getopts cd:f:il:mr:t:x arg
 do  case $arg in
-	c)
-			$LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
-				
-	d)      # append $$ to TMP, as it is recursively 
-			# removed at end of script.
-			TMPBASE=$OPTARG;;
-	
-	i)		
-			$LTPROOT/testcases/bin/genload --io 10 2>&1 1>/dev/null &
-			$LTPROOT/testcases/bin/genload --hdd 10 --hdd-files \
-			2>&1 1>/dev/null & ;;
+    c)
+            $LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
+                
+    d)      # append $$ to TMP, as it is recursively 
+            # removed at end of script.
+            TMPBASE=$OPTARG;;
+    f)        # Execute user defined set of testcases.
+            cmdfile=$OPTARG;;
+    
+    i)        
+            $LTPROOT/testcases/bin/genload --io 10 2>&1 1>/dev/null &
+            $LTPROOT/testcases/bin/genload --hdd 10 --hdd-files \
+            2>&1 1>/dev/null & ;;
 
-	l)      logfile="-l $OPTARG";;
+    l)      logfile="-l $OPTARG";;
 
-	m)		
-			$LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
-			2>&1 1>/dev/null & ;;
+    m)        
+            $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
+            2>&1 1>/dev/null & ;;
 
-	r)      LTPROOT=$OPTARG;;
+    r)      LTPROOT=$OPTARG;;
 
-	t)      # In case you want to specify the time 
-			# to run from the command line 
-			# (2m = two minutes, 2h = two hours, etc)
-			duration="-t $OPTARG" ;;
+    t)      # In case you want to specify the time 
+            # to run from the command line 
+            # (2m = two minutes, 2h = two hours, etc)
+            duration="-t $OPTARG" ;;
 
-	x)      # number of ltp's to run
-			instances="-x $OPTARG";;
+    x)      # number of ltp's to run
+            instances="-x $OPTARG";;
 
-	\?)     usage;;
-	esac
+    \?)     usage;;
+    esac
 done
 
 export TMP="${TMPBASE}/runalltests-$$"
@@ -83,7 +90,14 @@ fi
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math ${LTPROOT}/runtest/pty > ${TMP}/alltests
+# If user does not provide a command file select a default set of testcases
+# to execute.
+if [ -z $cmdfile ]
+then
+    cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math ${LTPROOT}/runtest/pty > ${TMP}/alltests
+else
+    cat $cmdfile > ${TMP}/alltests
+fi
 
 # The fsx-linux tests use the SCRATCHDEV environment variable as a location
 # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
@@ -96,7 +110,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -f ${TMP}/alltests $logfile
+${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -f ${TMP}/alltests $logfile 
 
 if [ $? -eq 0 ]; then
   echo pan reported PASS
