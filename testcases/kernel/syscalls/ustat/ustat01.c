@@ -160,8 +160,6 @@ setup()
 void
 cleanup()
 {
-	free(buf);
-	free(ubuf);
 
 	/*
 	 * print timing stats if that option was specified.
