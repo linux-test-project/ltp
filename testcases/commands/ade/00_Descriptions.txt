@@ -9,6 +9,46 @@ ar01
 	If they behave differently, then fail
 	If none of the cases fail, then pass
 
+file01
+	
+	TEST #1: file commad recogizes ASCII text files
+
+file02
+
+	TEST #2: file command recognizes bash shell scripts
+
+file03
+
+	TEST #3: file command recognizes korn shell scripts
+
+file04
+
+	TEST #4: file command recognizes C shell scripts
+
+file05
+
+	TEST #5: file command recognizes C programs text
+
+file06
+
+	TEST #6: file command recognizes ELF executables
+
+file07
+
+	TEST #7: file command recognizes tar files.
+
+file08
+
+	TEST #8: file command recognizes tar zip files
+
+file09
+
+	TEST #9: file command recognizes RPM files
+
+file10
+
+	TEST #10: file command recognizes vmlinuz file
+
 ld01
 
 	 To test the basic functionality of the `ld` command.
@@ -28,5 +68,7 @@ objdump01
 size01
 
 	To test the basic functionality of `size`.
+
+
 
 
