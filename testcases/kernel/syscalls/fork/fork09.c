@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fork01.c
+ * 	fork09.c
  *
  * DESCRIPTION
  *	Check that child has access to a full set of files.
@@ -30,7 +30,7 @@
  * 	available
  *
  * USAGE
- * 	fork01
+ * 	fork09
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -45,7 +45,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "fork01";
+char *TCID = "fork09";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -97,7 +97,7 @@ main(int ac, char **av)
 		tst_resm(TINFO, "OPEN_MAX is %d", OPEN_MAX);
 
 		/* establish first free file */
-		sprintf(filname, "fork01.%d", mypid);
+		sprintf(filname, "fork09.%d", mypid);
 		if ((first = creat(filname, 0660)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot open first file %s, "
 				 "errno = %d", filname, errno);
