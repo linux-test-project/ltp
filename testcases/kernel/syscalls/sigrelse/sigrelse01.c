@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.2 2003/03/04 18:34:10 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.3 2003/04/29 17:05:41 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -114,6 +114,11 @@
 /* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
 extern int sighold (int __sig);
 extern int sigrelse (int __sig);
+#endif
+
+#ifdef USE_NPTL
+#define SIGCANCEL 32
+#define SIGTIMER 33
 #endif
 
 void setup();
@@ -809,6 +814,10 @@ int sig;
 	case SIGTSTP:
 	case SIGCONT:
 	case SIGALRM:
+#ifdef USE_NPTL
+	case SIGCANCEL:
+	case SIGTIMER:
+#endif
 #ifdef SIGNOBDM
 	case SIGNOBDM:
 #endif
