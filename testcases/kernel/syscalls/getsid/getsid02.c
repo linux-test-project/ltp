@@ -71,7 +71,7 @@
 /*
  * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
  */
-#ifdef __ppc64__
+#ifdef __powerpc64__
 #define PID_MAX 0x8000
 #endif
 
