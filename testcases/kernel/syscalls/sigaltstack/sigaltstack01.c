@@ -78,10 +78,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifdef __ia64__ 
-#define MINSIGSTKSZ     131027  /* min. stack size for sigaltstack() */
-#define SIGSTKSZ        262144  /* default stack size for sigaltstack() */
-#endif
 
 
 char *TCID="sigaltstack01";	/* Test program identifier.    */
@@ -284,5 +280,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
-
-
