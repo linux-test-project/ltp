@@ -17,6 +17,7 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "posixtest.h"
 
 #define NUM_THREADS 5
