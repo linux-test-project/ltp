@@ -42,7 +42,7 @@ SUBDIR= \
 	listen llseek lseek lstat \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
 	mremap msync munlock munmap nanosleep nftw nice open \
-	pathconf pause personality pipe poll \
+	pathconf pause personality pipe poll prctl\
 	pread ptrace pwrite query_module read readdir \
 	readlink readv recv recvfrom recvmsg rename \
 	rmdir sbrk sched_get_priority_max sched_get_priority_min \
