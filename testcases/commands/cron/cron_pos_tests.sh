@@ -50,12 +50,8 @@ EOF
 chmod 755 /tmp/crontest/testjob_cron01
 
 crontab - << EOF
-`date '+%M %H' | gawk '{ORS=""; 
-if ($1<58) print $1+2" "$2" * * * "
-else
-if ($2<23) print $1-58" "$2+1" * * * "
-else
-print $1-58" "$2-23" * * * "}'` /tmp/crontest/testjob_cron01 >> /tmp/crontest/output_cron01 2>&1 
+`date '+%M' | awk '{ print ($1+2)%60 " * * * * "
+}'` /tmp/crontest/testjob_cron01 >> /tmp/crontest/output_cron01 2>&1
 EOF
 
 rc=$?

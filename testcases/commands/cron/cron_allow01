@@ -106,7 +106,7 @@ run cron jobs."
     crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
 	
 	crontab - << EOF
-	`date '+%M %H' | gawk '{ORS=""; print $1+2" "$2" * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test 2>&1
+        `date '+%M' | gawk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test 2>&1
 EOF
 	if [ $? != 0 ]; then
 	echo Error while adding crontab for user $TEST_USER1
@@ -143,7 +143,7 @@ then
     	crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
                                                         
         crontab - << EOF
-        `date '+%M %H' | gawk '{ORS=""; print $1+2" "$2" * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test1 2>&1
+        `date '+%M' | gawk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_allow_test1 2>&1
 EOF
         if [ $? != 0 ]; then
         echo Error while adding crontab for user $TEST_USER2

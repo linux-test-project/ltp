@@ -133,7 +133,7 @@ then
         echo "(2) TEST THAT PERSON IN $CRON_DENY IS NOT ABLE TO RUN JOB."
                                                                                                              
         crontab - << EOF
-        `date '+%M %H' | gawk '{ORS=""; print $1+2" "$2" * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_deny_test1 2>&1
+        `date '+%M' | gawk '{ORS=""; print ($1+2)%60 " * * * * "}'` echo "TEST JOB RAN" >> /tmp/cron_deny_test 2>&1
 EOF
         if [ $? != 0 ]; then
         echo Error while adding crontab for user $TEST_USER2
