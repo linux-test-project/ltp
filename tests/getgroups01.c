@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: getgroups01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -93,6 +93,7 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 /***********************************************************************
  * MAIN
  ***********************************************************************/
+int
 main(int ac, char **av)
 {
     int lc;             /* loop counter */
@@ -112,7 +113,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (ptr=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (ptr=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", ptr);
         tst_exit();
     }
@@ -273,9 +274,9 @@ main(int ac, char **av)
 	}
 
     }
-
     cleanup();
 
+    return 0;
 }	/* end main() */
 
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: asyncio02.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -95,6 +95,7 @@
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <errno.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -116,6 +117,7 @@ char	*dp;	/* pointer to area of memory */
 
 void setup();
 void cleanup();
+int testrun(int flag, int bytes, int ti);
 
 char *TCID="asyncio02";         /* Test program identifier.    */
 int TST_TOTAL=6;                /* Total number of test cases. */
@@ -141,6 +143,7 @@ int Num_flags;
 /***********************************************************************
  * MAIN
  ***********************************************************************/
+int
 main(int ac, char **av)
 {
 
@@ -158,7 +161,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
         tst_exit();
     }
@@ -228,6 +231,7 @@ main(int ac, char **av)
     }
     cleanup();
 
+    return 0;
 }	/* end main() */
 
 /***********************************************************
@@ -235,10 +239,8 @@ main(int ac, char **av)
  *	This function does the actual running of the tests.
  *
  ***********************************************************/
-testrun(flag, bytes,ti)
-int flag;
-int bytes;
-int ti;
+int
+testrun(int flag, int bytes, int ti)
 {
 
 	void cleanup();

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.1 2000/07/27 17:13:18 alaffin Exp $ */
+/* $Id: parse_opts.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -43,10 +43,11 @@
  *    SYNOPSIS:
  *	#include "usctest.h"
  *
- * 	char *parse_opts(ac, av, user_optarr)
+ * 	char *parse_opts(ac, av, user_optarr, uhf)
  *	int    ac;
  * 	char **av;
  *	option_t user_optarr[];
+ *	void (*uhf)();
  * 
  *    AUTHOR		: William Roske/Richard Logan
  * 
@@ -56,8 +57,8 @@
  * 	The parse_opts library routine takes that argc and argv parameters
  *	recevied by main() and an array of structures defining user options.
  *	It parses the command line setting flag and argument locations
- *      associated with the options.  It uses mc_getoptv to do the actual
- *      cmd line parsing.
+ *      associated with the options.  It uses getopt to do the actual cmd line
+ *      parsing.  uhf() is a function to print user define help
  *
  *      This module contains the functions usc_global_setup_hook and
  *      usc_test_looping, which are called by marcos defined in usctest.h.
@@ -77,10 +78,6 @@
 #include <sys/time.h>
 
 
-#ifdef _CRAYMPP
-#include <mpp/shmem.h>
-#endif  /* _CRAYMPP */
-
 #if UNIT_TEST
 #include <time.h>
 #endif /* UNIT_TEST */
@@ -88,7 +85,6 @@
 #include "test.h"
 #define _USC_LIB_   1	/* indicates we are the library to the usctest.h include */
 #include "usctest.h"
-#include "mc_getopt.h"
 
 #ifndef USC_COPIES
 #define USC_COPIES   "USC_COPIES"
@@ -102,17 +98,9 @@
 #define DEBUG	0
 #endif
 
-#ifndef NULL
-#define NULL 0
-#endif
-
-extern int errno;
-
 /* The timing information block. */
 struct tblock tblock={0,((long) -1)>>1,0,0};
 
-/* temp variable to store old signal action to be restored after pause */
-int (*_TMP_FUNC)(void);
 
 /* Define flags and args for standard options */
 int STD_FUNCTIONAL_TEST=1,	/* flag indicating to do functional testing code */
@@ -149,11 +137,26 @@ static int  STD_LP_recfun=0;	/* do recressive function calls in TEST_LOOPING */
 static int  STD_TP_sbrk=0;	/* do sbrk in TEST_PAUSE */
 static int  STD_LP_sbrk=0;	/* do sbrk in TEST_LOOPING */
 static char *STD_start_break=0; /* original sbrk size */
-#ifdef _CRAYMPP
-static long *STD_shmem=NULL;	/* array of shmalloc space */
-static int  MyPE=-1, Npe=-1;	/* */
-#endif
 static int  Debug=0;
+
+struct std_option_t {
+    char *optstr;
+    char *help;
+    char *flag;
+    char **arg;
+} std_options[] = {
+    { "f" , "   -f     Turn off functional testing\n", NULL, NULL},
+    { "i:", "   -i n   Execute test n times\n", NULL, NULL},
+    { "I:", "   -I n   Execute test for n seconds\n", NULL, NULL},
+    { "p" , "   -p     Pause for SIGUSR1 before starting\n", NULL, NULL}, 
+    { "P:", "   -P n   Pause for n seconds between iterations\n", NULL, NULL},
+    { "e" , "   -e     Turn on errno logging\n", NULL, NULL},
+    { "t" , "   -t     Turn on syscall timing\n", NULL, NULL},
+    { "c:", "   -c n   Run n copies concurrently\n", NULL, NULL},
+    { "h" , "   -h     Show this help screen\n", NULL, NULL},
+    {NULL, NULL, NULL, NULL}};
+
+void print_help(void (*user_help)());
 
 /*
  * Structure for usc_recressive_func argument
@@ -163,10 +166,6 @@ struct usc_bigstack_t {
 };
 
 static struct usc_bigstack_t *STD_bigstack=NULL;
-
-static int add_option(char *option, char **opt_arr[], int *nopts);
-static int rm_option(char *option, char **opt_arr[], int *nopts);
-
 
 /*
  * Counter of errnos returned (-e option).  Indexed by errno.
@@ -178,7 +177,6 @@ int STD_ERRNO_LIST[USC_MAX_ERRNO];
 /* define the string length for Mesg and Mesg2 strings */
 #define STRLEN 2048
 
-static char Mesg[STRLEN];	/* holds possible return string */
 static char Mesg2[STRLEN];	/* holds possible return string */
 static void usc_recressive_func();
 
@@ -196,19 +194,17 @@ static void usc_recressive_func();
  * parse_opts: 
  **********************************************************************/
 char *
-parse_opts(int ac, char **av, option_t *user_optarr)
+parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 {
     int found;		/* flag to indicate that an option specified was */
 			/* found in the user's list */
-    char chr;		/* used in converting option arguments */
     int k;		/* scratch integer for returns and short time usage */
     float  ftmp;	/* tmp float for parsing env variables */
     char *ptr;		/* used in getting env variables */
     int options=0;	/* no options specified */
-    int ind;		/* index */
-    int cnt;		/* counter */
-    int num;		/* size of a string */
-    char *opt;		/* return of mc_getoptv */
+    int optstrlen, i;
+    char *optionstr;
+    int opt;		/* return of getopt */
 
     /*
      * If not the first time this function is called, release the old STD_opt_arr
@@ -219,199 +215,102 @@ parse_opts(int ac, char **av, option_t *user_optarr)
 	free(STD_opt_arr);
 	STD_opt_arr=NULL;
     }
+    /* Calculate how much space we need for the option string */
+    optstrlen = 0;
+    for (i = 0; std_options[i].optstr; ++i) 
+	optstrlen += strlen(std_options[i].optstr);
+    if (user_optarr)
+	for (i = 0; user_optarr[i].option; ++i) {
+	    if (strlen(user_optarr[i].option) > 2)
+		return "parse_opts: ERROR - Only short options are allowed";
+	    optstrlen += strlen(user_optarr[i].option);
+	}
+    optstrlen += 1;
 
-    /*
-     * Define standard options known to the parse_opts package.
-     * Each option is added to the end of the STD_opt_arr array.
-     */
-    if ( add_option(ITERATIONS, &STD_opt_arr, &STD_nopts) == -1)
-	return Mesg2;
-    if ( add_option(DELAY, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(DURATION, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(NOFUNC, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(SETUP_PAUSE, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(COPIES, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(USC_HELP, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(TIMING, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
-    if ( add_option(ERRNO_LOGGING, &STD_opt_arr, &STD_nopts) == -1 )
-	return Mesg2;
+    /* Create the option string for getopt */
+    optionstr = (char *)malloc(optstrlen);
+    if (!optionstr) 
+	return "parse_opts: ERROR - Could not allocate memory for optionstr";
 
-    /* validate input array of options and build STD_opt_arr */
-
-    if ( user_optarr != (option_t *) NULL ) {
-	for(cnt=0; user_optarr[cnt].option != (char *) NULL; cnt++ ) {
-	    /*
-	     * Determine if user option already in STD_opt_arr.
-             * If the option is listed twice (in even numbers), it is disabled.
-	     * To disable the option, remove it from the option from STD_opt_arr.
-	     */
-	    for(ind=0; ind<STD_nopts; ind++) {
-		if (strcmp(user_optarr[cnt].option, STD_opt_arr[ind]) == 0 ) {
-		    /*
-		     * user option already in STD_opt_arry, which means to
-		     * disable that option.  Remove that option from STD_opt_arr.
-		     */
-    		    rm_option(user_optarr[cnt].option, &STD_opt_arr, &STD_nopts);
-		    break;
-		}
-	    }
-
-	    /*
-             * User's option is not already in STD_opt_arr so it needs to be
-	     * added.
-	     */
-	    if ( ind >= STD_nopts ) {
-		num=strlen(user_optarr[cnt].option);
-
-        	/*
-		 * If the last character is ":", make sure arg pointer
-		 * is not NULL.
-	         */
-		if ( user_optarr[cnt].option[num-1] == ':' ) {
-
-		    if ( user_optarr[cnt].arg == NULL ) {
-                        sprintf(Mesg2,
-                            "parse_opts: ERROR - option:\"%s\" expecting argument, NO POINTER GIVEN",
-                            user_optarr[cnt].option);
-                        return(Mesg2);
-		    }
-
-		} else {
-		   /*
-		    * The option does not require an argument, make sure 
-		    * user_optarr[cnt].flag is pointing to something.
-		    * The flag is optional when argument is required.
-		    */
-		    if ( user_optarr[cnt].flag == NULL ) {
-			sprintf(Mesg2,
-		    	    "parse_opts: ERROR - option:\"%s\" NO FLAG LOCATION GIVEN",
-                             user_optarr[cnt].option);
-                    return(Mesg2);
-
-		    }
-		}
-
-		/*
-		 * Add the users option to the STD_opt_arr array.
-		 */
-		if ( add_option(user_optarr[cnt].option, &STD_opt_arr, &STD_nopts) == -1 )
-		    return Mesg2;
-		
-	    }    /* new option */
-	}    /* end of options loop */
-    }    /* end of user options */
+    for (i = 0; std_options[i].optstr; ++i)
+	strcat(optionstr, std_options[i].optstr);
+    if (user_optarr)
+	for (i = 0; user_optarr[i].option; ++i)
+	    /* only add the option if it wasn't there already */
+	    if (strchr(optionstr, user_optarr[i].option[0]) == NULL) 
+		strcat(optionstr, user_optarr[i].option);
 
 #if DEBUG > 1
     printf("STD_nopts = %d\n", STD_nopts);
 #endif
 
-
     /*
      *  Loop through av parsing options.
      */
-    while ( (opt=mc_getoptv(ac, av, 0, STD_nopts, STD_opt_arr)) != MC_DONE ) {
+    while ( (opt = getopt(ac, av, optionstr)) > 0) {
 
-	STD_argind = mc_optind;
-
+	STD_argind = optind;
 #if DEBUG > 0
-	printf("parse_opts: mc_getoptv returned '%s'\n", opt);
+	printf("parse_opts: getopt returned '%c'\n", opt);
 #endif
-        if ( strcmp(opt, MC_UNKNOWN_OPTION) == 0 ) {
-	    sprintf(Mesg2,
-                    "parse_opts: ERROR - Unknown option: \"-%s\"",
-		    mc_optopt);
-	    return Mesg2;
 
- 	} else if ( strcmp(opt, MC_AMBIGUOUS_OPTION) == 0 ) {
-	    sprintf(Mesg2,
-                    "parse_opts: ERROR - option \"-%s\" is not unique, be more specific",
-		    mc_optopt);
-	    return Mesg2;
-
-	} else if  (  strcmp(opt, MC_MISSING_OPTARG) == 0 ) {
-	    sprintf(Mesg2,
-                    "parse_opts: ERROR - option \"-%s\" is missing its argument",
-		    mc_optopt);
-	    return Mesg2;
-
-    	} else if ( strcmp(opt, ITERATIONS) == 0 ) {
-            options |= OPT_iteration;
-            if ( sscanf(mc_optarg, "%i%c", &STD_LOOP_COUNT, &chr) != 1) {
-                sprintf(Mesg2,
-		    "parse_opts: ERROR - Argument for -%s option MUST be NUMERIC",
-		    mc_optopt);
-                return(Mesg2);
-	    }
-
-            if ( STD_LOOP_COUNT == 0 )   /* if arg is 0, set infinite loop flag */
-                STD_INFINITE=1;
-
-    	} else if ( strcmp(opt, DELAY) == 0 ) {
-            options |= OPT_delay;
-            if ( sscanf(mc_optarg, "%f%c", &STD_LOOP_DELAY, &chr) != 1 ) {
-		sprintf(Mesg2,
-		    "parse_opts: ERROR - Argument for -%s option MUST be NUMERIC",
-		    mc_optopt);
-                return(Mesg2);
-	    }
-
-    	} else if ( strcmp(opt, DURATION) == 0 ) {
-            options |= OPT_duration;
-            if ( sscanf(mc_optarg, "%f%c", &STD_LOOP_DURATION, &chr) != 1 ) {
-		sprintf(Mesg2,
-		    "parse_opts: ERROR - Argument for -%s option MUST be NUMERIC",
-		    mc_optopt);
-                return(Mesg2);
-	    }
-
-            if ( STD_LOOP_DURATION == 0.0 ) {
-                STD_INFINITE=1;
-            }
-
-    	} else if ( strcmp(opt, COPIES) == 0 ) {
-            options |= OPT_copies;
-            if ( sscanf(mc_optarg, "%i%c", &STD_COPIES, &chr) != 1 ) {
-		sprintf(Mesg2,
-		    "parse_opts: ERROR - Argument for -%s option MUST be NUMERIC",
-		    mc_optopt);
-                return(Mesg2);
-	    }
-
-    	} else if ( strcmp(opt, NOFUNC) == 0 ) {
-	    STD_FUNCTIONAL_TEST=0;
-    	} else if ( strcmp(opt, SETUP_PAUSE) == 0 ) {
-	    STD_PAUSE=1;
-    	} else if ( strcmp(opt, TIMING) == 0 ) {
-	    STD_TIMING_ON=1;
-    	} else if ( strcmp(opt, ERRNO_LOGGING) == 0 ) {
-	    STD_ERRNO_LOG=1;
-    	} else if ( strcmp(opt, USC_HELP) == 0 ) {
-	    printf(STD_opts_help());
-	    exit(0);
-	} else {
+	switch (opt) {
+		case '?': /* Unknown option */
+			return "Unknown option";
+			break;
+		case ':': /* Missing Arg */
+			return "Missing argument";
+			break;
+		case 'i': /* Iterations */
+			options |= OPT_iteration;
+			STD_LOOP_COUNT = atoi(optarg);
+			if (STD_LOOP_COUNT == 0) STD_INFINITE = 1;
+			break;
+		case 'P': /* Delay between iterations */
+			options |= OPT_delay;
+			STD_LOOP_DELAY = atof(optarg);
+			break;
+		case 'I': /* Time duration */
+			options |= OPT_duration;
+			STD_LOOP_DURATION = atof(optarg);
+			if ( STD_LOOP_DURATION == 0.0 ) STD_INFINITE=1; 
+			break;
+		case 'c': /* Copies */
+			options |= OPT_copies;
+			STD_COPIES = atoi(optarg);
+			break;
+		case 'f': /* Functional testing */
+			STD_FUNCTIONAL_TEST = 0;
+			break;
+		case 'p': /* Pause for SIGUSR1 */
+			STD_PAUSE = 1;
+			break;
+		case 't': /* syscall timing */
+			STD_TIMING_ON = 1;
+			break;
+		case 'e': /* errno loggin */
+			STD_ERRNO_LOG = 1;
+			break;
+		case 'h': /* Help */
+			print_help(uhf);
+			exit(0);
+			break;
+		default:
+			
             /* Check all the user specified options */
             found=0;
-	    for(ind=0; user_optarr[ind].option != (char *) NULL; ind++) {
+	    for(i = 0; user_optarr[i].option; ++i) {
 
-		if ( strcmp(opt, user_optarr[ind].option) == 0 ) {
+		if (opt == user_optarr[i].option[0]) {
                     /* Yup, This is a user option, set the flag and look for argument */
-		    if ( user_optarr[ind].flag != NULL ) {
-                        *user_optarr[ind].flag=1;
+		    if ( user_optarr[i].flag ) {
+                        *user_optarr[i].flag=1;
 		    }
                     found++;
 
-		    /* If option requires arg, save pointer  */
-		    num=strlen(user_optarr[ind].option);	
 		    /* save the argument at the user's location */
-                    if ( user_optarr[ind].option[num-1] == ':' ) {  
-                        *user_optarr[ind].arg=mc_optarg;
+                    if ( user_optarr[i].option[strlen(user_optarr[i].option)-1] == ':' ) {  
+                        *user_optarr[i].arg=optarg;
                     }
                     break;  /* option found - break out of the for loop */
                 }
@@ -419,14 +318,14 @@ parse_opts(int ac, char **av, option_t *user_optarr)
 	    /* This condition "should never happen".  SO CHECK FOR IT!!!! */
             if ( ! found ) { 
                 sprintf(Mesg2,
-		    "parse_opts: ERROR - option:\"%s\" NOT FOUND... INTERNAL ERROR", opt);
+		    "parse_opts: ERROR - option:\"%c\" NOT FOUND... INTERNAL ERROR", opt);
                 return(Mesg2);
             }
 	}
 
     }    /* end of while */
 
-    STD_argind = mc_optind;
+    STD_argind = optind;
 
     /*
      * Turn on debug
@@ -642,146 +541,28 @@ parse_opts(int ac, char **av, option_t *user_optarr)
 
 }    /* end of parse_opts */
 
-/***********************************************************************
- * This function will remove option from the opt_arr array and
- * decrement the value of nopts.  If option is not at the end
- * of the opt_arr, the remaining elements are moved up in the array.
- *  
- ***********************************************************************/
-static int
-rm_option(char *option, char **opt_arr[], int *nopts)
-{
-    int ind;
-    int found=0;
-
-    for (ind=0; ind<*nopts; ind++) {
-	if ( found ) {
-	    /*
-	     * Move all opt_arr elements down in the array
-             */
-	    if ( ind == (*nopts) )  {
-		(*opt_arr)[ind] = NULL;
-	    } else  {
-		(*opt_arr)[ind-1] = (*opt_arr)[ind];
-	    }
-		
-        } else if ( strcmp(option, (*opt_arr)[ind]) == 0 ) {
-	    found=ind+1;
-	}
-    }
-    if ( found ) {
-        (*nopts)--;
-#if DEBUG > 1
-	printf("removed %s option from opt_arr, opt_arr[%d] = %s\n",
-option, found-1, (*opt_arr)[found-1]);
-#endif
-    }
-
-    return 0;
-}
-
-/***********************************************************************
- * This function will add option to the end of opt_arr array and
- * increment the value of nopts.  The array space will be realloc'ed
- * to make space for the element.
- *
- ***********************************************************************/
-static int
-add_option(char *option, char **opt_arr[], int *nopts)
-{
-
-    if ( (*opt_arr=(char **)realloc(*opt_arr, sizeof(char * ) * (*nopts+1))) ==
-								(char **)NULL ) {
-	sprintf(Mesg2, "parse_opts: ERROR: realloc(arr, %ld) failed, errno:%d %s",
-	    (long)sizeof(char * ) * (*nopts+1), errno, strerror(errno));
-	return -1;
-    }
-
-    (*opt_arr)[*nopts] = option;
-
-#if DEBUG > 1
-    printf("adding opt_arr[%d] = %s\n", *nopts, (*opt_arr)[*nopts]);
-#endif
-    (*nopts)++;
-
-    return 0;
-}
-
 /*********************************************************************
- * STD_opts() - return a usage string for the STD_OPTIONS.
+ * print_help() - print help message and user help message
  *********************************************************************/
-char *
-STD_opts()
+void print_help(void (*user_help)())
 {
-    int ind;
+    STD_opts_help();
 
-    Mesg2[0] = '\0';
-
-    /*
-     * generate usage string from the standard options in STD_opt_arr
-     */
-    for(ind=0; ind<STD_nopts; ind++) {
-        if ( strcmp(ITERATIONS, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, ITERATIONS_USE);
-        }else if ( strcmp(DELAY, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, DELAY_USE);
-        }else if ( strcmp(DURATION, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, DURATION_USE);
-        }else if ( strcmp(COPIES, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, COPIES_USE);
-        }else if ( strcmp(NOFUNC, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, NOFUNC_USE);
-        }else if ( strcmp(SETUP_PAUSE, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, SETUP_PAUSE_USE);
-        }else if ( strcmp(TIMING, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, TIMING_USE);
-        }else if ( strcmp(ERRNO_LOGGING, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, ERRNO_LOGGING_USE);
-        }else if ( strcmp(USC_HELP, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg2, HELP_USE);
-	}
-    }
-
-    return Mesg2;
+    if (user_help) user_help();
 }
 
 /*********************************************************************
  * STD_opts_help() - return a help string for the STD_OPTIONS.
  *********************************************************************/
-char *
+void
 STD_opts_help()
 {
-    int ind;
+    int i;
 
-    sprintf(Mesg, "  Options and option args can NOT be concatenated.\n\
-  You can use smallest unique string that identifies an option\n");
-
-    /*
-     * generate usage string from the standard options in STD_opt_arr
-     */
-    for(ind=0; ind<STD_nopts; ind++) {
-        if ( strcmp(ITERATIONS, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, ITERATIONS_HELP);
-        }else if ( strcmp(DELAY, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, DELAY_HELP);
-        }else if ( strcmp(DURATION, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, DURATION_HELP);
-        }else if ( strcmp(COPIES, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, COPIES_HELP);
-        }else if ( strcmp(NOFUNC, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, NOFUNC_HELP);
-        }else if ( strcmp(SETUP_PAUSE, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, SETUP_PAUSE_HELP);
-        }else if ( strcmp(TIMING, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, TIMING_HELP);
-        }else if ( strcmp(ERRNO_LOGGING, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, ERRNO_LOGGING_HELP);
-        }else if ( strcmp(USC_HELP, STD_opt_arr[ind]) == 0 ) {
-	    strcat(Mesg, USC_HELP_HELP);
-	}
+    for(i = 0; std_options[i].optstr; ++i) {
+	if (std_options[i].help)
+	    printf(std_options[i].help);
     }
-
-    return Mesg;
 }
 
 /* 
@@ -803,6 +584,8 @@ int
 usc_global_setup_hook()
 {
     int cnt;
+    /* temp variable to store old signal action to be restored after pause */
+    int (*_TMP_FUNC)(void);
 
     /*
      * Fork STD_COPIES-1 copies.
@@ -822,13 +605,6 @@ usc_global_setup_hook()
 	}
     }
     
-
-
-#ifdef _CRAYMPP
-        MyPE = sysconf(_SC_CRAY_VPE);
-        Npe = sysconf(_SC_CRAY_NPES);
-#endif
-
     /*
      * pause waiting for sigusr1.
      */
@@ -838,42 +614,6 @@ usc_global_setup_hook()
         signal(SIGUSR1, (void (*)())_TMP_FUNC);          
     }
 
-#ifdef _CRAYMPP
-    if ( STD_TP_shmem_sz ) {
-	if ( (STD_shmem=(long *)shmalloc(STD_TP_shmem_sz*sizeof(long)*Npe)) == NULL ) {
-	    STD_TP_shmem_sz=0;
-	}
-        else {
-	    bzero(STD_shmem, STD_TP_shmem_sz*sizeof(long)*Npe);
-	    if ( Debug )
-	        printf("shmalloc(%d*%d*%d=%d) successful, pid:%d\n",
-		    STD_TP_shmem_sz, sizeof(long), Npe,
-		    STD_TP_shmem_sz*sizeof(long)*Npe, getpid());
-	}
-    }
-
-    if ( STD_TP_barrier )  {
-	switch (STD_TP_barrier) {
-	case 2: 
-	   wait_barrier();
-	   if ( Debug )
-	       printf("after wait_barrier, pid : %d\n", getpid());
-	   break;
-
-	case 3:
-	   set_barrier();
-	   if ( Debug ) 
-	       printf("after set_barrier, pid : %d\n", getpid());
-	   break;
-
-	default: 
-	    barrier();
-	    if ( Debug )
-	        printf("after barrier, pid : %d\n", getpid());
-	}
-    }
-
-#endif /* _CRAYMPP */
 
     if ( STD_TP_sbrk || STD_LP_sbrk) {
 	STD_start_break=sbrk(0);	/* get original sbreak size */
@@ -897,32 +637,23 @@ usc_global_setup_hook()
 static int
 get_timepersec()
 {
-#if CRAY
-    return sysconf(_SC_CLK_TCK);   /* clocks per second */
-#else
     return  USECS_PER_SEC;   /* microseconds per second */
-#endif /* CRAY */
 
 }
 
 /***********************************************************************
- * this function will get current time in clocks if on a CRAY system
- * or in microseconds since 1970.
+ * this function will get current time in microseconds since 1970.
  ***********************************************************************/
 static int
 get_current_time()
 {
     struct timeval curtime;
-#if CRAY
-    return _rtc();	/* clocks since last boot */
-#else
 
     gettimeofday(&curtime, NULL);
 
     /* microseconds since 1970 */
     return (curtime.tv_sec*USECS_PER_SEC) + curtime.tv_usec;
 
-#endif
 
 }
 
@@ -949,10 +680,6 @@ int counter;
     int hz=0;			/* clocks per second or usecs per second */
     int ct, end;		/* current time, end delay time */
     int keepgoing=0;		/* used to determine return value */
-#ifdef _CRAYMPP
-    long word;
-    int pe;
-#endif
 
     /*
      * If this is the first iteration and we are looping for 
@@ -1042,51 +769,6 @@ int counter;
 	sbrk(STD_LP_sbrk);
     }
 
-#ifdef _CRAYMPP
-    if ( STD_LP_shmem ) {
-	if ( (pe=MyPE-1) < 0 )	/* put to be lower pe #*/
-	   pe=Npe;
-	word=MyPE;
-
-	if ( Debug )
-	    printf("about to do shmem_put\n");
-        shmem_put(&STD_shmem[pe], &STD_shmem[MyPE], STD_TP_shmem_sz, pe); 
-	
-
-    }
-    if ( STD_TP_barrier )  {
-        switch (STD_TP_barrier) {
-        case 2:
-           wait_barrier();
-	   if ( Debug )
-              printf("after wait_barrier, pid : %d\n", getpid());
-           break;
-
-        case 3:
-           set_barrier();
-	   if ( Debug )
-               printf("after set_barrier, pid : %d\n", getpid());
-           break;
-
-        default:
-            barrier();
-	   if ( Debug )
-                printf("after barrier, pid : %d\n", getpid());
-        }
-    }
-    if ( STD_LP_shmem > 1) {
-        if ( (pe=MyPE+1) > Npe ) /* get from higher pe # */
-           pe=0;
-        word=MyPE;
-
-	if ( Debug )
-        printf("about to do shmem_get\n");
-        shmem_get(&STD_shmem[MyPE], &STD_shmem[pe], STD_TP_shmem_sz, pe);
-    }
-
-
-#endif  /* _CRAYMPP */
-
 
     if ( keepgoing )
 	return 1;
@@ -1170,22 +852,6 @@ char **argv;
 			(option_t *) Options)) != (char *) NULL ) {
 	printf("ERROR : %s\n", msg);
 	exit(1);
-    }
-
-    if ( Help ) {
-	printf("****** -h option *****\n");
-	printf("Usage %s %s[-help]\n", argv[0], STD_opts());
-	printf("%s  -help           : print this help message and exit\n",
-	    STD_opts_help());
-	exit(0);
-    }
-
-    if ( Help2 ) {
-	printf("****** -help option *****\n");
-	printf("Usage %s %s[-help]\n", argv[0], STD_opts());
-	printf("%s  -help           : print this help message and exit\n",
-	    STD_opts_help());
-	exit(0);
     }
 
     TEST_PAUSE;

@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: setuid01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: setuid01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -110,6 +110,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 
 #include <sys/types.h>
@@ -117,7 +118,6 @@
 #include "test.h"
 #include "usctest.h"
 
-void help();
 void setup();
 void cleanup();
 
@@ -129,14 +129,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int uid;		/* current user id */
 
-int Hflag;
-
-/* for test specific parse_opts options */
-option_t options[] = {
-        { "h",  &Hflag, NULL },         /* -h HELP */
-        { NULL, NULL, NULL }
-};
-
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -145,14 +138,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-
-    if(Hflag) {
-        help();
-        exit(0);
     }
 
     /***************************************************************
@@ -200,18 +188,8 @@ main(int ac, char **av)
      ***************************************************************/
     cleanup();
 
+    return 0;
 }	/* End main */
-
-/***************************************************************
- * help
- ***************************************************************/
-void
-help()
-{
-    char *STD_opts_help();
-    printf(STD_opts_help());
-    printf("  -h      : print this help message and exit.\n");
-}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

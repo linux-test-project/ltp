@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: dup01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -112,14 +112,13 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
 
 extern void setup();
 extern void cleanup();
-void help();
-
 
 
 char *TCID="dup01"; 		/* Test program identifier.    */
@@ -131,17 +130,10 @@ int exp_enos[]={0, 0};
 char Fname[255];
 int Fd;
 
-int Hflag;
-
-/* for test specific parse_opts options */
-option_t options[] = {
-        { "h",  &Hflag, NULL },         /* -h HELP */
-        { NULL, NULL, NULL }
-};
-
 /***********************************************************************
  * Main
  ***********************************************************************/
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -150,14 +142,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-
-    if(Hflag) {
-        help();
-        exit(0);
     }
 
     /***************************************************************
@@ -209,18 +196,9 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
-}	/* End main */
 
-/***************************************************************
- * help
- ***************************************************************/
-void
-help()
-{
-    char *STD_opts_help();
-    printf(STD_opts_help());
-    printf("  -h      : print this help message and exit.\n");
-}
+    return 0;
+}	/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

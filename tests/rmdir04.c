@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir04.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: rmdir04.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -109,7 +109,13 @@
  * 
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
@@ -128,6 +134,7 @@ char *cwd;
 char fname[255];
 
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -136,7 +143,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL )
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
@@ -155,7 +162,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 	
-        if (mkdir(fname) == -1) {
+        if (mkdir(fname, 0777) == -1) {
 	    tst_brkm(TBROK, cleanup,
 		     "mkdir(%s) Failure. errno=%d : %s", fname, errno, strerror(errno));
         }
@@ -184,6 +191,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

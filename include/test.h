@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.1 2000/07/27 17:13:18 alaffin Exp $ */
+/* $Id: test.h,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -186,8 +186,6 @@ extern void tst_clear_error();
  */
 #define USC_LOOP_DELAY		"USC_LOOP_DELAY"
 
-
-#ifndef CRAY
 /*
  * The following prototypes are needed to remove compile errors
  * on IRIX systems when compiled with -n32 and -64.
@@ -211,6 +209,8 @@ extern void tt_exit();
 extern int  t_environ();
 extern void t_breakum(char *tcid, int total, int typ, char *msg, void (*fnc)());
 
-#endif /* ! CRAY */
+extern void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
+extern void tst_tmpdir();
+extern void tst_rmdir();
 
 #endif	/* end of __TEST_H__ */

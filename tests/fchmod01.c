@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fchmod01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: fchmod01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -106,8 +106,10 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
@@ -127,6 +129,7 @@ char fname[255];
 int fd;
 char *buf = "davef";
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -135,7 +138,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL )
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
@@ -181,6 +184,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

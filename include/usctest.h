@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.1 2000/07/27 17:13:18 alaffin Exp $ */
+/* $Id: usctest.h,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -114,15 +114,15 @@
  * These value should match the values in USC_common.h.
  */
 
-#define NOFUNC		"nofunc"		/* no func check flag */
-#define ITERATIONS	"iterations:"		/* # iterations */
-#define DURATION	"duration:"		/* walltime floating point */
-#define DELAY		"delay:"		/* delay each iteration */
-#define TIMING		"timing"		/* sys call timing flag */
-#define ERRNO_LOGGING	"errno_logging"		/* errno logging flag */
-#define SETUP_PAUSE	"pause_for_sigusr1"	/* wait sigusr1 signal in setup */
-#define COPIES          "copies:"               /* number copies */
-#define USC_HELP	"Help"			/* basic help */
+#define NOFUNC		"f"		/* no func check flag */
+#define ITERATIONS	"i:"		/* # iterations */
+#define DURATION	"I:"		/* walltime floating point */
+#define DELAY		"P:"		/* delay each iteration */
+#define TIMING		"t"		/* sys call timing flag */
+#define ERRNO_LOGGING	"e"		/* errno logging flag */
+#define SETUP_PAUSE	"p"		/* wait sigusr1 signal in setup */
+#define COPIES          "c:"		/* number copies */
+#define USC_HELP	"h"		/* basic help */
 
 #define  ITERATIONS_HELP  \
 "  -iterations cnt : Execute test \"cnt\" times (Default is 1).\n\
@@ -151,19 +151,6 @@
 
 #define USC_HELP_HELP \
 "  -Help           : parse_opts standard help and exit.\n"
-
-/*
- * Defines used for genating usage
- */
-#define NOFUNC_USE  	    "[-nofunc]"
-#define ITERATIONS_USE      "[-iterations cnt]"
-#define DURATION_USE        "[-duration secs]"
-#define DELAY_USE           "[-delay secs]"
-#define TIMING_USE          "[-timing]"
-#define ERRNO_LOGGING_USE   "[-errno_logging]"
-#define SETUP_PAUSE_USE     "[-pause_for_sigusr1]"
-#define COPIES_USE          "[-copies num]"
-#define HELP_USE            "[-Help]"
 
 /***********************************************************************
  * Define option_t structure type.
@@ -199,6 +186,7 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
  * Prototype for parse_opts routine
  **********************************************************************/
 extern char *parse_opts();
+extern void STD_set_user_help(void (*uhf)());
 
 /*
  * define a structure 
@@ -255,8 +243,7 @@ struct tblock {
 extern struct tblock tblock;
 extern void STD_go();
 extern int (*_TMP_FUNC)(void);
-extern char *STD_opts_help();
-extern char *STD_opts();
+extern void STD_opts_help();
 
 
 /***********************************************************************
@@ -331,6 +318,7 @@ if ( STD_PAUSE ) { 					\
  *
  ***********************************************************************/
 #define TEST_PAUSE usc_global_setup_hook();
+int usc_global_setup_hook();
 
 /***********************************************************************
  * TEST_LOOPING now call the usc_test_looping function.
@@ -339,6 +327,7 @@ if ( STD_PAUSE ) { 					\
  *
  ***********************************************************************/
 #define TEST_LOOPING usc_test_looping
+int usc_test_looping(int counter);
 
 /***********************************************************************
  * TEST_ERROR_LOG(eno): log this errno if STD_ERRNO_LOG flag set

@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: symlink01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -396,46 +396,46 @@ struct all_test_cases
     char *fn_arg[3];
     
 } test_objects[] = {
-  SYMLINK, 0, 0, 0, creat_symlink, ck_symlink, "%bc+eFhi!k", S_FILE, NULL,
-  SYMLINK, 0, 0, 0, creat_symlink, ck_symlink,  O_FILE, S_FILE, NULL,
-  SYMLINK, 0, 0, 1, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  SYMLINK, 1, EEXIST, 2, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  SYMLINK, 1, ENAMETOOLONG, 3, creat_path_max, ck_path_max, O_FILE, S_FILE, NULL,
-  READLINK, 0, 0, 4, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  READLINK, 0, 0, 4, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  READLINK, 1, ENAMETOOLONG, 5, creat_path_max, ck_path_max, O_FILE, S_FILE, NULL,
-  READLINK, 1, EINVAL, 29, creat_object, ck_object, O_FILE, NULL, NULL,
-  STAT, 0, 0, 6, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  STAT, 1, ENOENT, 7, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  STAT, 1, ELOOP, 28, creat_symlink, ck_symlink, S_FILE, S_FILE, NULL,
-  LSTAT, 0, 0, 8, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  LSTAT, 0, 0, 9, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  LSTAT, 0, 0, 30, creat_object, ck_object, O_FILE, NULL, NULL,
-  MKDIR, 1, EEXIST, 10, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  RMDIR, 1, ENOTDIR, 11, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  CHDIR, 0, 0, 12, creat_symlink, ck_symlink, O_FILE, S_FILE, O_FILE,
-  CHDIR, 1, ENOENT, 13, creat_symlink, ck_symlink, "%bc+eFhi!k", S_FILE, NULL,
-  CHDIR, 1, ELOOP, 28, creat_symlink, ck_symlink, S_FILE, S_FILE, NULL,
-  LINK, 0, 0, 14, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  LINK, 0, 0, 15, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  /* The following link test case is invalid - leaving it defined so */
-  /* I don't have to change all the entries in the all_tcses array after link */
-  LINK, 1, -1, -1, creat_symlink, ck_symlink, NULL, NULL, NULL,
-  UNLINK, 0, 0, 16, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  CHMOD, 0, 0, 17, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  CHMOD, 1, ENOENT, 18, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  CHMOD, 1, ELOOP, 28, creat_symlink, ck_symlink, S_FILE, S_FILE, NULL,
-  UTIME, 0, 0, 19, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  UTIME, 1, ENOENT, 20, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  UTIME, 1, ELOOP, 28, creat_symlink, ck_symlink, S_FILE, S_FILE, NULL,
-  RENAME, 0, 0, 21, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  RENAME, 0, 0, 22, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  RENAME, 1, EXDEV, 23, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  OPEN, 0, 0, 24, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  OPEN, 0, 0, 25, creat_both, ck_both, O_FILE, S_FILE, O_FILE,
-  OPEN, 1, EEXIST, 26, creat_symlink, ck_symlink, O_FILE, S_FILE, O_FILE,
-  OPEN, 1, ENOENT, 27, creat_symlink, ck_symlink, O_FILE, S_FILE, NULL,
-  OPEN, 1, ELOOP, 28, creat_symlink, ck_symlink, S_FILE, S_FILE, NULL
+    {SYMLINK, 0, 0, 0, creat_symlink, ck_symlink, {"%bc+eFhi!k", S_FILE, NULL}},
+    {SYMLINK, 0, 0, 0, creat_symlink, ck_symlink,  {O_FILE, S_FILE, NULL}},
+    {SYMLINK, 0, 0, 1, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {SYMLINK, 1, EEXIST, 2, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {SYMLINK, 1, ENAMETOOLONG, 3, creat_path_max, ck_path_max, {O_FILE, S_FILE, NULL}},
+    {READLINK, 0, 0, 4, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {READLINK, 0, 0, 4, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {READLINK, 1, ENAMETOOLONG, 5, creat_path_max, ck_path_max, {O_FILE, S_FILE, NULL}},
+    {READLINK, 1, EINVAL, 29, creat_object, ck_object, {O_FILE, NULL, NULL}},
+    {STAT, 0, 0, 6, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {STAT, 1, ENOENT, 7, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {STAT, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
+    {LSTAT, 0, 0, 8, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {LSTAT, 0, 0, 9, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {LSTAT, 0, 0, 30, creat_object, ck_object, {O_FILE, NULL, NULL}},
+    {MKDIR, 1, EEXIST, 10, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {RMDIR, 1, ENOTDIR, 11, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {CHDIR, 0, 0, 12, creat_symlink, ck_symlink, {O_FILE, S_FILE, O_FILE}},
+    {CHDIR, 1, ENOENT, 13, creat_symlink, ck_symlink, {"%bc+eFhi!k", S_FILE, NULL}},
+    {CHDIR, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
+    {LINK, 0, 0, 14, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {LINK, 0, 0, 15, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    /* The following link test case is invalid - leaving it defined so */
+    /* I don't have to change all the entries in the all_tcses array after link */
+    {LINK, 1, -1, -1, creat_symlink, ck_symlink, {NULL, NULL, NULL}},
+    {UNLINK, 0, 0, 16, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {CHMOD, 0, 0, 17, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {CHMOD, 1, ENOENT, 18, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {CHMOD, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
+    {UTIME, 0, 0, 19, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {UTIME, 1, ENOENT, 20, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {UTIME, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
+    {RENAME, 0, 0, 21, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {RENAME, 0, 0, 22, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {RENAME, 1, EXDEV, 23, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {OPEN, 0, 0, 24, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {OPEN, 0, 0, 25, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {OPEN, 1, EEXIST, 26, creat_symlink, ck_symlink, {O_FILE, S_FILE, O_FILE}},
+    {OPEN, 1, ENOENT, 27, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {OPEN, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}}
 };
 
 /*
@@ -498,11 +498,9 @@ struct stat asymlink, statter;
 char Buffer[1024];
 char Buf[1024];
 
-int Help = 0;
 char *Tcid = NULL;
 
 option_t Options[] = {
-    { "h",  &Help, NULL },          /* -h option */
     { "T:",  NULL, &Tcid },	    /* -T tcid option */
     { NULL, NULL, NULL }
 };
@@ -510,13 +508,9 @@ option_t Options[] = {
 /***********************************************************************
  * MAIN
  ***********************************************************************/
-main(argc, argv)
-int argc;
-char *argv[];
+int
+main(int argc, char *argv[])
 {
-    int ctr, tc_ctr;
-    char *ptr;
-    struct all_test_cases *tc_ptr;
     struct tcses *tcs_ptr, *get_tcs_info();
     int do_syscalltests();
     void cleanup();
@@ -527,7 +521,7 @@ char *argv[];
    /***************************************************************
     * parse standard options, and exit if there is an error
     ***************************************************************/
-   if ( (msg=parse_opts(argc, argv, Options)) != (char *) NULL ) {
+   if ( (msg=parse_opts(argc, argv, Options, &help)) != (char *) NULL ) {
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
         tst_exit();
    }
@@ -546,12 +540,6 @@ char *argv[];
        Selectedtests = DEFAULT_TCID;
     }
 #endif
-
-    if ( Help ) {
-        printf("Usage %s %s[-h][-T tcid]\n", argv[0], STD_opts());
-	help();
-        exit(0);
-    }
 
    /*
     * Get test case specification information and assign TST_TOTAL
@@ -583,10 +571,12 @@ char *argv[];
 
     }   /* End for TEST_LOOPING */
 
-   /*
-    * End appropriately
-    */
-   cleanup();
+    /*
+     * End appropriately
+     */
+    cleanup();
+
+    return 0;
 }
 
 /***********************************************************************
@@ -601,7 +591,7 @@ struct tcses *get_tcs_info(ptr)
 char *ptr;
 {
     int ctr;
-    struct tcses *tcs_ptr, temp;
+    struct tcses *tcs_ptr;
 
 #if ALL
     if ( ptr == NULL ) {
@@ -635,6 +625,7 @@ char *ptr;
  *  Return status is one if a symbolic link file.  Zero if not a symbolic
  *  link file and a minus one if the path doesn't point at a file.
  ***********************************************************************/
+int
 see_if_a_symlink(path)
 char *path;
 {
@@ -666,6 +657,7 @@ char *path1, *path2;
  *      Argument two is name of symbolic link file.
  *
  ***********************************************************************/
+int
 creat_symlink(path1, path2)
 char *path1, *path2;
 {
@@ -695,6 +687,7 @@ char *path1, *path2;
  *      Argument one is a pathname
  *
  ***********************************************************************/
+int
 creat_object(path1)
 char *path1;
 {
@@ -732,6 +725,7 @@ char *path1;
  *      Argument three is regular file name
  *
  ***********************************************************************/
+int
 creat_both(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -751,6 +745,7 @@ char *path1, *path2, *path3;
  *      Argument three is regular file name
  *
  ***********************************************************************/
+int
 ck_symlink(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -782,6 +777,7 @@ char *path1, *path2, *path3;
  *      Argument three is regular file name
  *
  ***********************************************************************/
+int
 ck_both(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -817,6 +813,7 @@ char *path1, *path2, *path3;
  *      Argument two is symbolic link file name
  *      Argument three is regular file name
  ***********************************************************************/
+int
 creat_path_max(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -858,6 +855,7 @@ char *path1, *path2, *path3;
  *      Argument two is symbolic link file name
  *      Argument three is regular file name
  ***********************************************************************/
+int
 ck_path_max(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -883,6 +881,7 @@ char *path1, *path2, *path3;
  *      Argument three is regular file name
  *
  ***********************************************************************/
+int
 ck_object(path1, path2, path3)
 char *path1, *path2, *path3;
 {
@@ -921,6 +920,7 @@ char *path1, *path2, *path3;
  *
  *  Argument is a ptr into the all_tcses array of structures of type tcses
  ***********************************************************************/
+int
 do_syscalltests(tcs)
 struct tcses *tcs;
 {
@@ -2011,17 +2011,14 @@ cleanup()
 /*
  *
  */
-void
-help()
+void help()
 {
     int ind;
 
-    printf("%s", STD_opts_help());
-    printf("  -h              : print this help message and exit\n");
-    printf("  -T tcid         : determines which tests cases to execute:\n");
+    printf("   -T id  Determines which tests cases to execute:\n");
 
     for (ind=0; ind<sizeof(all_tcses)/sizeof(struct tcses ); ind++) {
-	printf("    %s/%s - %s\n", all_tcses[ind].tcid, all_tcses[ind].syscall,
+	printf("  %s/%s - %s\n", all_tcses[ind].tcid, all_tcses[ind].syscall,
 	    all_tcses[ind].desc);
     }
 }

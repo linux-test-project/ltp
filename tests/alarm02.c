@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm02.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: alarm02.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -99,7 +99,6 @@
 
 void setup();
 void cleanup();
-void help();
 void alarm_received();
 
 
@@ -108,28 +107,19 @@ char *TCID="alarm02";          /* Test program identifier.    */
 int TST_TOTAL=3;                /* Total number of test cases. */
 extern int Tst_count;      /* Test Case counter for tst_ * routines */
 
-int Hflag;
-
-/* for test specific parse_opts options */
-option_t options[] = {
-        { "h",  &Hflag, NULL },         /* -h HELP */
-        { NULL, NULL, NULL }
-};
-
 int received_alarm = 0;   /* Indicates a SIGALRM was received */
 
 /************************************************************
  * Main program
  ***********************************************************/
 
+int
 main(int ac, char **av)
 {
 
     /* Parameters for usc code  */
     int lc;             /* loop counter */
     char *msg;          /* message returned from parse_opts */
-
-    int param;          /* a dummy parameter */
 
     /* Parameters for alarm test */
     char *buf[] = { "-1", "ULONG_MAX", "ULONG_MAX+1"};
@@ -141,14 +131,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-
-    if(Hflag) {
-        help();
-        exit(0);
     }
 
     /***************************************************************
@@ -206,17 +191,8 @@ main(int ac, char **av)
     }   /* End for TEST_LOOPING */
     
     cleanup();
-}
 
-/***************************************************************
- * help
- ***************************************************************/
-void
-help()
-{
-    char *STD_opts_help();
-    printf(STD_opts_help());
-    printf("  -h      : print this help message and exit.\n");
+    return 0;
 }
 
 /***************************************************************
@@ -226,7 +202,6 @@ help()
 void
 setup()
 {
-     int uid;
 
      /* capture signals */
      tst_sig(NOFORK, DEF_HANDLER, cleanup);

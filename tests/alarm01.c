@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: alarm01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -110,6 +110,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
@@ -124,6 +125,7 @@ int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -132,7 +134,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
         tst_exit();
     }
@@ -176,6 +178,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

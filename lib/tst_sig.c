@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.1 2000/07/27 17:13:19 alaffin Exp $ */
+/* $Id: tst_sig.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -93,13 +93,8 @@ static void def_handler();		/* default signal handler */
  ***************************************************************************/
 
 void
-tst_sig(fork_flag, handler, cleanup)
-int fork_flag;			/* FORK if SIGCLD is expected, NOFORK if unexpected */
-void (*handler)();		/* pointer to signal handler routine or DEF_HANDLER */
-void (*cleanup)();		/* pointer to cleanup routine or NULL */
+tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 {
-	extern char *TCID;		/* test case id string (in calling prog) */
-
 	char mesg[MAXMESG];		/* message buffer for tst_res */
 	int sig;
 
@@ -188,11 +183,8 @@ void (*cleanup)();		/* pointer to cleanup routine or NULL */
  ***************************************************************************/
 
 static void
-def_handler(sig)
-int sig;	/* signal that caused the interrupt */
+def_handler(int sig)
 {
-	extern int  Tst_count;	/* number of items completed (in tst_res.c) */
-	extern int  TST_TOTAL;	/* total number of test items (in calling prog) */
 	char mesg[MAXMESG];		/* holds tst_res message */
 
 	/* first reset trap for this signal (except SIGCLD - its weird) */

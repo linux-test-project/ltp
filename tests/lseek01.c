@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: lseek01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -112,6 +112,7 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include <unistd.h>
 #include "test.h"
@@ -133,6 +134,7 @@ int Fd;
 
 int Whence[] = {SEEK_SET, SEEK_CUR, SEEK_END, -1};
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -144,7 +146,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
@@ -200,6 +202,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

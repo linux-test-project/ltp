@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: ulimit01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: ulimit01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -111,11 +111,11 @@
 
 #include <ulimit.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
 
-void help();
 void setup();
 void cleanup();
 
@@ -124,14 +124,6 @@ void cleanup();
 char *TCID="ulimit01"; 	/* Test program identifier.    */
 int TST_TOTAL=6;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-
-int Hflag;
-
-/* for test specific parse_opts options */
-option_t options[] = {
-        { "h",  &Hflag, NULL },         /* -h HELP */
-        { NULL, NULL, NULL }
-};
 
 int cmd;
 long limit;	/* saved limit */
@@ -160,6 +152,7 @@ struct limits_t {
   
 };
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -172,14 +165,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-
-    if(Hflag) {
-        help();
-        exit(0);
     }
 
     /***************************************************************
@@ -208,21 +196,22 @@ main(int ac, char **av)
 	    
 	    /* check return code */
 	    if ( TEST_RETURN == -1 ) {
-		if ( Scenarios[i].exp_fail )
+		if ( Scenarios[i].exp_fail ) {
 		    if ( STD_FUNCTIONAL_TEST ) {
-		        tst_resm(TPASS, "ulimit(%d, %d) Failed, errno=%d : %s", cmd, limit,
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS, "ulimit(%d, %d) Failed, errno=%d : %s", cmd, limit,
+					TEST_ERRNO, strerror(TEST_ERRNO));
 		    }
-		else
+		} else {
 		    tst_resm(TFAIL, "ulimit(%d, %d) Failed, errno=%d : %s", cmd, limit,
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+			   	    TEST_ERRNO, strerror(TEST_ERRNO));
+		}
 	    } else {
 		if ( Scenarios[i].exp_fail ) {
 		    tst_resm(TFAIL, "ulimit(%d, %d) returned %d",
-			     cmd, limit, TEST_RETURN);
+		       		    cmd, limit, TEST_RETURN);
 		} else if ( STD_FUNCTIONAL_TEST ) {
 		    tst_resm(TPASS, "ulimit(%d, %d) returned %d",
-			     cmd, limit, TEST_RETURN);
+		       		    cmd, limit, TEST_RETURN);
 		}
 
 		/*
@@ -239,7 +228,6 @@ main(int ac, char **av)
 			}
 		    }
 		}
-			
 	    }
 	}
     }	/* End for TEST_LOOPING */
@@ -248,18 +236,9 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
-}	/* End main */
 
-/***************************************************************
- * help
- ***************************************************************/
-void
-help()
-{
-    char *STD_opts_help();
-    printf(STD_opts_help());
-    printf("  -h              : print this help message and exit.\n");
-}
+    return 0;
+}	/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

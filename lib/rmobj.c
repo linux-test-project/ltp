@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: rmobj.c,v 1.1 2000/07/27 17:13:18 alaffin Exp $ */
+/* $Id: rmobj.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 
 /**********************************************************
  *
@@ -85,6 +85,7 @@
 #include <sys/types.h>     /* for opendir(), readdir(), closedir(), stat() */
 #include <sys/stat.h>      /* for [l]stat() */
 #include <dirent.h>        /* for opendir(), readdir(), closedir() */
+#include <unistd.h>        /* for rmdir(), unlink() */
 #include "rmobj.h"
 
 #define SYSERR strerror(errno)

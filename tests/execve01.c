@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execve01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: execve01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -110,6 +110,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 
 #include <sys/types.h>
@@ -135,6 +136,7 @@ int status;			/* status returned from waitpid */
 char *args[2]={"/usr/bin/test", 0};	/* argument list for execve call */
 extern char **environ;		/* pointer to this processes env, to pass along */
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -145,7 +147,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL )
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
@@ -202,6 +204,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

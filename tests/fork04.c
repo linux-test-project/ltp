@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork04.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: fork04.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -109,6 +109,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -204,56 +205,13 @@ void child_environment()
 
 }
 
-/***************************************************************
- * parent_environment - the parent side of the environment tests
- *        determine values for the variables
- *        read the values determined by the child
- *        compare values 
- ***************************************************************/
-void parent_environment()
-{
-  
-  int fildes;
-  char msg[MAX_LINE_LENGTH];
-  char tmp_line[MAX_LINE_LENGTH];
-  char parent_value[MAX_LINE_LENGTH];
-  char parent_value2[MAX_LINE_LENGTH];
-  int index;
-  int ret;
-  char *var;
-  
-  if ((fildes = open(OUTPUT_FILE,O_RDWR)) == -1) {
-    tst_brkm(TBROK, cleanup,
-		 "fork() test. Parent open of temporary file failed. errno %d (%s)\n",
-		 errno, strerror(errno));
-  }
-  for (index=0;index<NUMBER_OF_ENVIRON;index++) 
-    {
-      if ((ret=read(fildes,tmp_line,MAX_LINE_LENGTH)) == NULL) {
-	tst_resm(TBROK,"fork() test. parent_environment: failed to read from file with %d (%s)",
-		errno,strerror(errno));
-      }
-      else {
-
-	if ( (var=getenv(environ_list[index])) == NULL ) 
-            sprintf(parent_value,"%s:%s", environ_list[index], ENV_NOT_SET);
-	else
-            sprintf(parent_value,"%s:%s", environ_list[index], var);
-
-        cmp_env_strings(parent_value, tmp_line);
-	
-      }
-    }
-  close(fildes);
-
-}
-
 /***********************************************************************
  *
  * Compare parent env string to child's string.
  * Each string is in the format:  <env var>:<value>
  *
  ***********************************************************************/
+int
 cmp_env_strings(char *pstring, char *cstring)
 {
    char *penv, *cenv, *pvalue, *cvalue;
@@ -312,10 +270,53 @@ cmp_env_strings(char *pstring, char *cstring)
 }
 
 /***************************************************************
+ * parent_environment - the parent side of the environment tests
+ *        determine values for the variables
+ *        read the values determined by the child
+ *        compare values 
+ ***************************************************************/
+void parent_environment()
+{
+  
+  int fildes;
+  char tmp_line[MAX_LINE_LENGTH];
+  char parent_value[MAX_LINE_LENGTH];
+  int index;
+  int ret;
+  char *var;
+  
+  if ((fildes = open(OUTPUT_FILE,O_RDWR)) == -1) {
+    tst_brkm(TBROK, cleanup,
+		 "fork() test. Parent open of temporary file failed. errno %d (%s)\n",
+		 errno, strerror(errno));
+  }
+  for (index=0;index<NUMBER_OF_ENVIRON;index++) 
+    {
+      if ((ret=read(fildes,tmp_line,MAX_LINE_LENGTH)) == 0) {
+	tst_resm(TBROK,"fork() test. parent_environment: failed to read from file with %d (%s)",
+		errno,strerror(errno));
+      }
+      else {
+
+	if ( (var=getenv(environ_list[index])) == NULL ) 
+            sprintf(parent_value,"%s:%s", environ_list[index], ENV_NOT_SET);
+	else
+            sprintf(parent_value,"%s:%s", environ_list[index], var);
+
+        cmp_env_strings(parent_value, tmp_line);
+	
+      }
+    }
+  close(fildes);
+
+}
+
+/***************************************************************
  * main() - performs tests
  *	
  ***************************************************************/
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -323,12 +324,11 @@ main(int ac, char **av)
     int kid_status;     /* status returned from child */
     int wait_status;    /* status of wait system call in parent */
     int fails;          /* indicates whether to continue with tests */
-    int i;
 
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
@@ -400,4 +400,6 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fpathconf01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: fpathconf01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -112,6 +112,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
@@ -139,18 +140,19 @@ struct pathconf_args
 		   * so this is all I'll do to this test.  11/19/98 roehrich
 		   */
 } args[] = {
- "_PC_MAX_CANON", _PC_MAX_CANON, 0,
- "_PC_MAX_INPUT", _PC_MAX_INPUT, 0,
- "_PC_VDISABLE", _PC_VDISABLE, 0,
- "_PC_LINK_MAX", _PC_LINK_MAX, 1,
- "_PC_NAME_MAX", _PC_NAME_MAX, 1,
- "_PC_PATH_MAX", _PC_PATH_MAX, 1,
- "_PC_PIPE_BUF", _PC_PIPE_BUF, 0
+    {"_PC_MAX_CANON", _PC_MAX_CANON, 0},
+    {"_PC_MAX_INPUT", _PC_MAX_INPUT, 0},
+    {"_PC_VDISABLE", _PC_VDISABLE, 0},
+    {"_PC_LINK_MAX", _PC_LINK_MAX, 1},
+    {"_PC_NAME_MAX", _PC_NAME_MAX, 1},
+    {"_PC_PATH_MAX", _PC_PATH_MAX, 1},
+    {"_PC_PIPE_BUF", _PC_PIPE_BUF, 0}
 };
 
 int TST_TOTAL=((sizeof(args)/sizeof(args[0])));
 int fd;		/* temp file for fpathconf */
 
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -159,7 +161,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
@@ -208,6 +210,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

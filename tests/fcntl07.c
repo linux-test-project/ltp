@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: fcntl07.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -79,7 +79,6 @@
  *	-F name   : File to open.  Must be an absolute path
  *		    and the file must be writable;
  *	-n program: path to the 'test_open' program
- *	-h        : this a help message
  *
  *    OUTPUT SPECIFICATIONS
  *        This test uses the cuts-style test_res format output consisting of:
@@ -133,15 +132,18 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <limits.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "search_path.h"
 
 void setup();
 void cleanup();
@@ -159,7 +161,6 @@ char *fopt, *Topt;		/* option arguments */
 
 option_t options[] = {
 	{ "F:", &fflag, &fopt },	/* -F filename */
-	{ "h",	&hflag, NULL },		/* -h HELP */
 	{ "T:",	&Tflag, &Topt },	/* -T <fd>  exec'ed by test: test FD */
 	{ NULL, NULL, NULL }
 };
@@ -185,6 +186,10 @@ char *testfdtypes[] = {
     "write side of system pipe",
     };
 
+int test_open(char *arg);
+int do_exec(char *prog, int fd, char *tcd);
+
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -197,14 +202,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, options, &help)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-    
-    if(hflag) {
-	help();
-	exit(0);
     }
     
     if(fflag)		/* -F option */
@@ -275,6 +275,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************
@@ -283,8 +285,6 @@ main(int ac, char **av)
 void 
 setup(char *path)
 {
-    int ret;
-
     search_path(path, subprog_path, X_OK, 1);
 
     /* capture signals */
@@ -337,15 +337,11 @@ cleanup()
 void
 help()
 {
-    char *STD_opts_help();
-    printf(STD_opts_help());
     printf("-T fd     : If this option is given, the program runs as 'test_open'\n");
     printf("            testing <fd> to see if it is open or not and exiting accordingly\n");
     printf("-F name   : File to open.  Must be an absolute path,\n");
     printf("            and the file must be writable\n");
     printf("-n program: path to the 'test_open' program\n");
-    printf("-h        : this help message\n");
-
 }
 
 /*---------------------------------------------------------------------------*/
@@ -361,10 +357,8 @@ help()
  *	
  */
 
-do_exec(prog,fd, tcd)
-char *prog;
-int fd;
-char *tcd;
+int
+do_exec(char *prog, int fd, char *tcd)
 {
     int pid;
     char pidname[STRSIZE];
@@ -405,8 +399,8 @@ char *tcd;
  *    This function is called when fcntcs07 is called with the -T option.
  *    It tests if a file descriptor is open and exits accordingly.
  */
-test_open(arg)
-char *arg;
+int
+test_open(char *arg)
 {
     int fd, rc;
     int status;

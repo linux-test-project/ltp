@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.1 2000/08/04 20:48:23 nstraz Exp $ */
+/* $Id: select01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -135,6 +135,7 @@ fd_set Readfds;
 /***********************************************************************
  * MAIN
  ***********************************************************************/
+int
 main(int ac, char **av)
 {
     int lc;		/* loop counter */
@@ -146,7 +147,7 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
@@ -207,6 +208,8 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
 
 /***************************************************************

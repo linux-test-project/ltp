@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
+/* $Id: access01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -129,7 +129,6 @@
 #include "usctest.h"
 void setup();
 void cleanup();
-void help();
 
 char *TCID="access01"; 	/* Test program identifier.    */
 int TST_TOTAL=4;    		/* Total number of test cases. */
@@ -150,21 +149,12 @@ static struct test_case_t {
     { Fname, R_OK,  "R_OK", 0 },
 };
 
-int Hflag;
-
-/* for test specific parse_opts options */
-option_t options[] = {
-        { "h",  &Hflag, NULL },         /* -h HELP */
-        { NULL, NULL, NULL }
-};
-
-
 int Ntc = sizeof(Test_cases) / sizeof(struct test_case_t);
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-main(int ac, char **av)
+int main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
@@ -175,14 +165,9 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, options)) != (char *) NULL ) {
+    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
-    }
-
-    if(Hflag) {
-        help();
-        exit(0);
     }
 
     /***************************************************************
@@ -234,19 +219,9 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
+
+    return 0;
 }	/* End main */
-
-/***************************************************************
- * help
- ***************************************************************/
-void
-help()
-{
-    char *STD_opts_help();
-    printf(STD_opts_help());
-    printf("  -h      : print this help message and exit.\n");
-}
-
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -255,7 +230,6 @@ void
 setup()
 { 
     int fd;
-    int ind;
     struct stat stbuf;
 
     /* capture signals */

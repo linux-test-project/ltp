@@ -86,11 +86,6 @@
 /*#define PATH_MAX pathconf("/", _PC_PATH_MAX)*/
 #endif
 
-#ifndef linux
-extern char	*sys_errlist[];
-#endif
-#define SYSERR	sys_errlist[errno]
-
 char	Wlog_Error_String[256];
 
 #if __STDC__
@@ -140,7 +135,7 @@ int			mode;
 	if (wfile->w_afd == -1) {
 		sprintf(Wlog_Error_String,
 			"Could not open write_log - open(%s, %#o, %#o) failed:  %s\n",
-			wfile->w_file, oflags, mode, SYSERR);
+			wfile->w_file, oflags, mode, strerror(errno));
 		return -1;
 	}
 
@@ -152,7 +147,7 @@ int			mode;
 	if ((wfile->w_rfd = open(wfile->w_file, oflags)) == -1) {
 		sprintf(Wlog_Error_String,
 			"Could not open write log - open(%s, %#o) failed:  %s\n",
-			wfile->w_file, oflags, SYSERR);
+			wfile->w_file, oflags, strerror(errno));
 		close(wfile->w_afd);
 		wfile->w_afd = -1;
 		return -1;
@@ -258,7 +253,7 @@ long			data;
 {
 	int			fd, leftover, nbytes, offset, recnum, reclen, rval;
 	char    		buf[BSIZE*32], *bufend, *cp, *bufstart;
-	char		fname[PATH_MAX+1], albuf[WLOG_REC_MAX_SIZE];
+	char		albuf[WLOG_REC_MAX_SIZE];
 	struct wlog_rec	wrec;
 
 	fd = wfile->w_rfd;
@@ -297,9 +292,9 @@ long			data;
 
 		if (nbytes == -1) {
 			sprintf(Wlog_Error_String,
-				"Could not read history file at offset %d - read(%d, %#lo, %ld) failed:  %s\n",
-				offset, fd, bufstart,
-				bufend - bufstart - leftover, SYSERR);
+				"Could not read history file at offset %d - read(%d, %#o, %d) failed:  %s\n",
+				offset, fd, (int)bufstart,
+				bufend - bufstart - leftover, strerror(errno));
 			return -1;
 		}
 
