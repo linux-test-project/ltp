@@ -75,7 +75,7 @@ usage()
     [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -n -q 
     [ -r LTPROOT ] [ -t DURATION ] [ -x INSTANCES ] 
                 
-    -c              Run LTP under additional background CPU load.
+    -c NUM_PROCS    Run LTP under additional background CPU load.
     -d TMPDIR       Directory where temporary files will be created.
     -f CMDFILE      Execute user defined list of testcases.
     -h              Help. Prints all available options.
@@ -125,7 +125,8 @@ main()
     while getopts cd:f:hi:l:m:Nno:pqr:t:x: arg
     do  case $arg in
         c)       
-            $LTPROOT/testcases/bin/genload --cpu 1 >/dev/null 2>&1 &
+	    NUM_PROCS=$((OPTARG))
+            $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
                    
         d)  # append $$ to TMP, as it is recursively 
