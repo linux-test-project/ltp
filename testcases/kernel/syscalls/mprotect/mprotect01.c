@@ -27,7 +27,7 @@
  * ALGORITHM
  *	test1:
  *		Invoke mprotect() with an address of 0. Check if error
- *		is set to EFAULT.
+ *		is set to ENOMEM.
  *	test2:
  *		Invoke mprotect() with an address that is not a multiple
  *		of PAGESIZE.  EINVAL
@@ -47,6 +47,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	03/2002 Paul Larson: case 1 should expect ENOMEM not EFAULT
  *
  * RESTRICTIONS
  *	None
@@ -75,7 +76,7 @@ extern int Tst_count;
 void *addr1, *addr2, *addr3;
 int fd;
 
-int exp_enos[]={EFAULT, EINVAL, EACCES, 0};
+int exp_enos[]={ENOMEM, EINVAL, EACCES, 0};
 
 struct test_case_t {
         void **addr;
@@ -84,8 +85,8 @@ struct test_case_t {
         int error;
         void (*setupfunc)();
 } TC[] = {
-	/* Check for EFAULT passing memory that cannot be accessed. */
-        {&addr1, 1024, PROT_READ, EFAULT, NULL},
+	/* Check for ENOMEM passing memory that cannot be accessed. */
+        {&addr1, 1024, PROT_READ, ENOMEM, NULL},
 
 	/*
 	 * Check for EINVAL by passing a pointer which is not a
