@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.7 2002/09/04 18:45:17 plars Exp $ */
+/* $Id: tst_tmpdir.c,v 1.8 2003/04/01 20:20:54 robbiew Exp $ */
 
 /**********************************************************
  *
@@ -122,8 +122,18 @@ tst_tmpdir()
  	char template[PATH_MAX];      /* template for mkstemp, mkdtemp */
   	int  no_cleanup = 0;          /* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;            /* temporary storage for TMPDIR env var */
+/* This is an AWEFUL hack to figure out if mkdtemp() is available */
+#if defined(__GLIBC_PREREQ)
+# if __GLIBC_PREREQ(2,2)
+#  define HAVE_MKDTEMP 1
+# else
+#  define HAVE_MKDTEMP 0
 	int tfd;
-
+# endif
+#else 
+# define HAVE_MKDTEMP 0
+	int tfd;
+#endif
    	/*
 	 * If the TDIRECTORY env variable is not set, a temp dir will be
 	 * created.
@@ -149,16 +159,6 @@ tst_tmpdir()
 			snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
 		}
 		
-/* This is an AWEFUL hack to figure out if mkdtemp() is available */
-#if defined(__GLIBC_PREREQ)
-# if __GLIBC_PREREQ(2,2)
-#  define HAVE_MKDTEMP 1
-# else
-#  define HAVE_MKDTEMP 0
-# endif
-#else 
-# define HAVE_MKDTEMP 0
-#endif
 
 #if HAVE_MKDTEMP
 		/*
