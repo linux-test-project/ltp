@@ -242,7 +242,7 @@ cleanup()
 char *
 getpwd()
 {
-	FILE *fin, *popen();
+	FILE *fin;
 	char *pwd = "/bin/pwd";
 	char *cp, *cp_cur;
 	char *buf;
