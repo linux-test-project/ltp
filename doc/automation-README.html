@@ -1,0 +1,120 @@
+<html>
+<head>
+	<title>autoltp readme</title>
+   
+</head>
+ <body bgcolor="#ffffff" vlink="#800000">
+       
+<div align="center"><big><big><big><b>LTP Automation README<br>
+using autoltp</b></big></big></big></div>
+  <br>
+  <br>
+  <big><big><b>Prerequisites</b></big></big>   
+<ul>
+  <li>All LTP installation prerequisites must be met<br>
+   </li>
+   <li>Perl modules Net::SFTP and Net::SSH::Perl <b>must</b> be <a
+ href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">installed</a> 
+on MASTER machine. (<a href="http://www.cpan.org/">www.cpan.org</a> for instructions/downloads)</li>
+   <li>MASTER and TARGET machines must have sftp and ssh capabilities.<br>
+   </li>
+  <li>IP addresses may replace hostnames in this document if name service 
+is unavailable.<br>
+   </li>
+   
+</ul>
+  <big><big><b>Install files</b></big></big>   
+<ul>
+  <li>Go to <a href="http://ltp.sf.net/" target="_top">http://ltp.sf.net</a> 
+-&gt; Downloads -&gt; Download latest version of LTP</li>
+  <li>Login as root on MASTER machine</li>
+  <li>Untar ltp-xxxxxxxx.tgz in /root</li>
+     
+  <ul>
+  <li>tar -xzvf &lt;filename.tgz&gt;</li>
+  <li>mv ltp-&lt;yyyymmdd&gt;.tgz ltp <i>(&lt;yyyymmdd&gt; should be replaced 
+ with the drop date you are using</i></li>
+   
+  </ul>
+ 
+</ul>
+ <big><big><b>Setup/Edit config files</b></big></big>       
+<ul>
+      
+  <ul>
+     
+  </ul>
+ 
+</ul>
+ 
+<ul>
+   
+  <ul>
+     
+  </ul>
+   
+</ul>
+   
+<ul>
+  <li>edit runalltests.sh and modify the run line to include the PAN_LOG
+options:</li>
+   
+  <ul>
+     <li>ex: <i>${LTPROOT}/pan/pan -l $PAN_LOG -e -S $instances $time -a
+$$ -n $$ -f ${TMP}/alltests</i></li>
+   
+  </ul>
+   <li>tar up the ltp directory (<i>this is the ltp.tgz that is copied to 
+the TARGET machines</i>)</li>
+   
+  <ul>
+     <li>in the root directory of MASTER type tar -czvf ltp.tgz to tar up 
+the testcases</li>
+     <li>copy the resulting ltp.tgz to /tmp on MASTER (<i>autoltp will look 
+for /ltp.tgz in the tmp directory</i>)<br>
+     </li>
+   
+  </ul>
+     
+  <ul>
+         
+  </ul>
+   
+</ul>
+   
+<ul>
+     
+  <ul>
+     
+  </ul>
+   
+</ul>
+  <big><big><b>Run LTP</b></big></big><br>
+   
+<ul>
+  <li>cd to /root/ltp/auto on MASTER</li>
+   <li>create a config file that contains the list of hosts (TARGETS) to
+run LTP against</li>
+   
+  <ul>
+     <li>example config file:<br>
+host1,username,password,number of instances,time<br>
+ host2,username,password,number of instances,time</li>
+    <li>host is the hostname of a TARGET machine<br>
+    </li>
+    <li>username is usually root or a root privileged account</li>
+    <li>number of instances is how many copies of LTP you want running simultaneously</li>
+    <li>time is the duration of the ltp run where 10m = 10 minutes, 2h =
+2 hours, etc</li>
+  </ul>
+  <li>run ./autoltp -f &lt;config file&gt;</li>
+  <li>autoltp will then attempt to make ssh/sftp connections with your TARGET
+machines and run the LTP testcases<br>
+  </li>
+</ul>
+<ul>
+   
+</ul>
+   
+</body>
+</html>
