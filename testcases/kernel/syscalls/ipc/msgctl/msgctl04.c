@@ -125,7 +125,7 @@ int main(int ac, char **av)
 				    TC[i].buf));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "msgget() call succeeded "
+				tst_resm(TFAIL, "msgctl() call succeeded "
 					 "on expected fail");
 				continue;
 			}
