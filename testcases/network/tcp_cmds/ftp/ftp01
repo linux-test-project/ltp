@@ -47,7 +47,7 @@ PASSWD=${PASSWD:-.pasroot}
 
 TC=ftp
 TCbin=${TCbin:-`pwd`}
-TCtmp=${TCtmp:-/tmp/$TC}
+TCtmp=${TCtmp:-$TCbin/$TC$$}
 TCdat=${TCdat:-$TCbin/datafiles}
 SLEEPTIME=${SLEEPTIME:-0}
 ASCII_FILES=${ASCII_FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
@@ -158,6 +158,7 @@ do_cleanup()
 end_testcase()
 {
    $trace_logic
+   do_cleanup
    echo "$this_file: doing $0."
 
    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
@@ -175,5 +176,4 @@ end_testcase()
 #----------------------------------------------------------------------
 do_setup
 do_test
-do_cleanup
 end_testcase
