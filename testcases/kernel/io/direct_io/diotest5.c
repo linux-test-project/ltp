@@ -53,6 +53,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include <sys/fcntl.h>
+#include <sys/syscall.h>
 #include <sys/uio.h>
 #include <errno.h>
 
@@ -114,11 +115,11 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 		}
 		iovp->iov_len = bufsize;
 	}
-	
+
 	/* Test */
 	for (i = 0; i < iter; i++) {
-		vfillbuf(iov1, nvector, iter);
-		vfillbuf(iov2, nvector, iter - i);
+		vfillbuf(iov1, nvector, i);
+		vfillbuf(iov2, nvector, i+1);
 		if (lseek(fd_w, offset, SEEK_SET) < 0) {
 			fprintf(stderr, "lseek before writev failed: %s\n",
 				strerror(errno));
@@ -141,8 +142,6 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 			fprintf(stderr, "readv/writev comparision failed\n");
 			return(-1);
 		}
-		vfillbuf(iov1, nvector, '\0');
-		vfillbuf(iov2, nvector, '\0');
 	}
 
 	/* Cleanup */
@@ -174,7 +173,7 @@ main(int argc, char *argv[])
 	int	fail_count = 0, total = 0, failed = 0;
 
 	/* Options */
-	sprintf(filename,"testdata-5.%d", getpid());
+	sprintf(filename,"testdata-5.%ld", syscall(__NR_gettid));
 	while ((i = getopt(argc, argv, "b:o:i:v:f:")) != -1) {
 		switch(i) {
 		case 'b':

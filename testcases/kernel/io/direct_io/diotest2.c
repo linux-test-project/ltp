@@ -51,6 +51,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include <sys/types.h>
+#include <sys/syscall.h>
 #include <errno.h>
 
 #include "diotest_routines.h"
@@ -144,7 +145,7 @@ main(int argc, char *argv[])
 	char	filename[LEN];
 
 	/* Options */
-	sprintf(filename,"testdata-2.%d", getpid());
+	sprintf(filename,"testdata-2.%ld", syscall(__NR_gettid));
 	while ((i = getopt(argc, argv, "b:o:i:f:")) != -1) {
 		switch(i) {
 		case 'b':

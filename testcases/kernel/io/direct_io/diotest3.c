@@ -51,6 +51,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include <sys/fcntl.h>
+#include <sys/syscall.h>
 #include <errno.h>
 
 #include "diotest_routines.h"
@@ -273,7 +274,7 @@ main(int argc, char *argv[])
 			prg_usage();
 		}
 	}
-	sprintf(filename,"testdata-3.%d", getpid());
+	sprintf(filename,"testdata-3.%ld", syscall(__NR_gettid));
 
         /* Test for filesystem support of O_DIRECT */
         if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {

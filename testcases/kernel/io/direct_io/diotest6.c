@@ -50,6 +50,7 @@
 #include <string.h>
 #include <sys/file.h>
 #include <sys/fcntl.h>
+#include <sys/syscall.h>
 #include <sys/uio.h>
 #include <errno.h>
 
@@ -253,7 +254,7 @@ main(int argc, char *argv[])
 	int	fd1;
 
 	/* Options */
-	sprintf(filename,"testdata-6.%d", getpid());
+	sprintf(filename,"testdata-6.%ld", syscall(__NR_gettid));
 	while ((i = getopt(argc, argv, "b:o:i:n:v:f:")) != -1) {
 		switch(i) {
 		case 'b':
