@@ -53,6 +53,11 @@
 #include <sys/types.h>
 #include <errno.h>
 
+#include "test.h"
+#include "usctest.h"
+
+#ifdef O_DIRECT
+
 #define	BUFSIZE	4096
 #define TRUE	1
 #define LEN	30
@@ -246,3 +251,16 @@ main(int argc, char *argv[])
 		total, iter);
 	exit(0);
 }
+
+#else /* O_DIRECT */
+
+char *TCID="diotest02";		 		 /* Test program identifier.    */
+int TST_TOTAL=1;		 		 /* Total number of test conditions */
+
+int
+main() {
+
+		 tst_resm(TCONF,"O_DIRECT is not defined.");
+		 return 0;
+}
+#endif /* O_DIRECT */
