@@ -632,6 +632,10 @@ setregid02 setregid02
 setregid03 setregid03
 setregid04 setregid04
 
+setresgid01 setresgid01
+setresgid02 setresgid02
+setresgid03 setresgid03
+
 setresuid01 setresuid01
 setresuid02 setresuid02
 setresuid03 setresuid03
