@@ -52,6 +52,55 @@ LIST="file1.in file2.in file3.in file4.in file5.in file6.in file7.in file8.in fi
 LIST="$LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST"
 COUNT=1
 TCRESULT=0
+
+# Cleanup function
+function cleanup() {
+  if [ $TCRESULT = 0 ]; then
+    echo -e "---------------ar command passed the system test-----------------"
+    exit 0
+  else 
+    echo -e "---------------ar command failed the system test-----------------"
+    exit 1
+fi
+}
+
+function crtest() {
+  if [ $? -ne 0 ]
+  then
+    TCRESULT=1
+    echo -e "FAIL - could not create lib.a"
+    cleanup
+  fi
+}
+
+function ttest() {
+  if [ $? -ne 0 ]
+  then
+    TCRESULT=1
+    echo -e "FAIL - could not output table from lib.a to lib.a.stdout"
+    cleanup
+  fi
+}
+
+function rtest() {
+  if [ $? -ne 0 ]
+  then
+    TCRESULT=1
+    echo -e "FAIL - could not add file into lib.a"
+    cleanup
+  fi
+}
+
+function mtest() {
+  if [ $? -ne 0 ]
+  then
+    TCRESULT=1
+    echo -e "FAIL - could not move file into lib.a"
+    cleanup
+  fi
+}
+
+# Main Loop
 while [ $COUNT -le $LOOPS ]
 do
 echo -e "-------System test for ar command, Loop $COUNT----"
@@ -63,8 +112,11 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 echo -e "file1.in\nfile2.in\nfile3.in" >$TCtmp/lib.a.exp
 
 ar -cr $TCtmp/lib.a file1.in file3.in
+crtest
 ar -ra file1.in $TCtmp/lib.a file2.in
+rtest
 ar -t $TCtmp/lib.a > $TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -80,9 +132,12 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in file4.in 
+crtest
 echo -e "file1.in\nfile4.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -ma file1.in $TCtmp/lib.a file4.in
+mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -99,9 +154,12 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -rb file3.in $TCtmp/lib.a file2.in
+rtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -118,9 +176,12 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat 
 
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -mb file3.in $TCtmp/lib.a file2.in
+mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -141,6 +202,7 @@ rm -rf $TCtmp/lib.a.exp $TCtmp/lib.a;cd $TCdat
 touch $TCtmp/lib.a.exp
 
 ar -cr $TCtmp/lib.a file1.in > $TCtmp/lib.a.stdout
+crtest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout
 if [ $? -eq 0 ]
@@ -174,9 +236,11 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 echo -e "file3.in" > $TCtmp/lib.a.exp
 ar -d $TCtmp/lib.a file1.in file2.in
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -196,8 +260,10 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 ar -d $TCtmp/lib.a 2>&1 1>/dev/null
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -215,6 +281,7 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 touch $TCtmp/dummy.in
 ar -cr $TCtmp/lib.a $TCtmp/dummy.in file1.in file2.in file3.in
+crtest
 size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
 ar -ds $TCtmp/lib.a $TCtmp/dummy.in 2>&1 1>/dev/null
 size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
@@ -234,8 +301,11 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -cr $TCtmp/lib.a file1.in file3.in
+crtest
 ar -ri file3.in $TCtmp/lib.a file2.in
+rtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -252,9 +322,12 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -mi file3.in $TCtmp/lib.a file2.in
+mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -271,9 +344,12 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -m $TCtmp/lib.a file3.in
+mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -290,6 +366,7 @@ fi
 # CODE
 rm -rf $TCtmp/lib.*
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 echo -e "This is file one\nThis is file two\nThis is file three" > $TCtmp/lib.a.exp
 ar -p $TCtmp/lib.a 2>&1 1>$TCtmp/lib.a.stdout
 
@@ -308,6 +385,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
 ar -ps $TCtmp/lib.a 2>&1 1> /dev/null
 size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
@@ -326,9 +404,11 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in\nfile4.in" > $TCtmp/lib.a.exp
 ar -q $TCtmp/lib.a file4.in
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -345,6 +425,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
 ar -qs $TCtmp/lib.a $TCtmp/dummy.in 2>&1 1>/dev/null
 size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
@@ -363,6 +444,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.o
+crtest
 size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
 strip $TCtmp/lib.a 2>&1 1>/dev/null
 ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
@@ -383,8 +465,10 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout 2>&1
+ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
@@ -401,6 +485,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.o
+crtest
 size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
 strip $TCtmp/lib.a 2>&1 1>/dev/null
 ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
@@ -420,6 +505,7 @@ fi
 # CODE
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file0.in file2.in 
+crtest
 File1time=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d" "`
 File2time=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d" "`
 
@@ -453,6 +539,7 @@ touch file0.in
 Count=0
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 Sysmonth=`date | cut -f2 -d" "`
 Month=`ar -tv $TCtmp/lib.a | grep "file2.in" | awk '{print $4}'`
 Count=`ar -tv $TCtmp/lib.a | wc -l`
@@ -471,6 +558,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat $TCtmp/lib.a.exp *out
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 
 ls -ln file1.in file2.in file3.in |
 while
@@ -488,6 +576,7 @@ read permissions uid size month day time year file_name
 do
 echo -e "-$permissions;$uid;$size;$month;$day;$time;$file_name"
 done >> $TCtmp/lib.a.stdout
+ttest
 
 diff $TCtmp/lib.a.exp $TCtmp/lib.a.stdout
 if [ $? -eq 0 ]
@@ -505,6 +594,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 Count=`ar -xv $TCtmp/lib.a | wc -l`
 
 if [ $Count = '3' ]
@@ -521,6 +611,7 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 
 Count=`ar -xv $TCtmp/lib.a | wc -l` 
 
@@ -538,6 +629,7 @@ fi
 # CODE
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
+crtest
 Count=`ar -xv $TCtmp/lib.a file1.in | grep file | wc -l`
 
 if [ $Count = '1' ]
@@ -624,7 +716,9 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat $TCtmp/lib.a.stdout
 ar -rv $TCtmp/lib.a file1.in file2.in file3.in 2>&1 1>$TCtmp/lib.a.stdout
+rtest
 ar -rv $TCtmp/lib.a $LIST 2>&1 1>>$TCtmp/lib.a.stdout&
+rtest
 while [ ! -s $TCtmp/lib.a ]
 do
         :
@@ -646,7 +740,9 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat $TCtmp/lib.a.stdout
 ar -rv $TCtmp/lib.a file1.in file2.in file3.in 2>&1 1>$TCtmp/lib.a.stdout
+rtest
 ar -rv $TCtmp/lib.a $LIST 2>&1 1>>$TCtmp/lib.a.stdout&
+rtest
 while [ ! -s $TCtmp/lib.a ]
 do
         :
@@ -669,7 +765,9 @@ fi
 
 rm -rf $TCtmp/lib.a;cd $TCdat *.stdout
 ar -rv $TCtmp/lib.a file1.in file2.in file3.in 2>&1 1>$TCtmp/lib.a.stdout
+rtest
 ar -rv $TCtmp/lib.a $LIST 2>&1 1>>$TCtmp/lib.a.stdout&
+rtest
 while [ ! -s $TCtmp/lib.a ]
 do
         :
@@ -688,10 +786,5 @@ fi
 rm -rf $TCtmp
 COUNT=`expr $COUNT + 1`
 done
-if [ $TCRESULT = 0 ]; then
-echo -e "---------------ar command passed the system test-----------------"
-exit 0
-else 
-echo -e "---------------ar command failed the system test-----------------"
-exit 1
-fi
+cleanup
+
