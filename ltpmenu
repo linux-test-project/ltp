@@ -43,7 +43,9 @@
 #			     Robbie Williamson - robbiew@us.ibm.com
 #
 #	       April 23 2003 - Added PID to results filename.
-			     Robbie Williamson - robbiew@us.ibm.com
+#			     - Added code to allow users to redirect output and
+#                              specify test execution duration.
+#			     Robbie Williamson - robbiew@us.ibm.com
 #
 #! /bin/bash
 
@@ -189,13 +191,73 @@ disp_ltpres()
 }
 
 
+# Function:    flags_prompt
+#
+# Description: Prompt for and record user options for run duration and 
+#	       test output direction
+#
+# Input:       none
+#
+# Output:      none 
+flags_prompt()
+{
+    dialog --backtitle "Linux Test Project Control Centre"\
+           --title "Output Direction" --clear\
+	   --yesno "Would you like test output recorded to a file, instead of STDOUT?" 7 80
+    RC=$?
+    if [ $RC -eq "0" ]
+    then
+	dialog --backtitle "Linux Test Project Control Centre"\
+               --title "Output Direction" --clear\
+               --inputbox " Please enter the full path and \
+                            name of the file where you wish \
+                            to redirect output to" 17 80 \
+                          2>/tmp/runltp.outdir.$$ ;
+        flags_outfile=$(cat /tmp/runltp.outdir.$$ | awk '{print $1}') 
+        RUNALL_FLAGS=" -o $flags_outfile"
+    fi
+    
+    dialog --backtitle "Linux Test Project Control Centre"\
+           --title "Test Duration" --clear\
+	   --yesno "Would you like to specify test duration? \
+                    Default is the length of one loop." 7 80
+    RC=$?
+    if [ $RC -eq "0" ]
+    then
+	dialog --backtitle "Linux Test Project Control Centre"\
+	       --title "Test Duration - Interval Selection" --clear\
+               --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 4 \
+                       s    "Seconds" \
+                       m    "Minutes" \
+                       h    "Hours" \
+                       d    "Days" \
+                  2>/tmp/runltp.interval.$$ ;
+	flags_interval=$(cat /tmp/runltp.interval.$$ | awk '{print $1}') 
+	case $flags_interval in
+                s)	INTERVAL="seconds" ;;      
+                m)      INTERVAL="minutes" ;;      
+                h)      INTERVAL="hours"   ;;      
+                d)      INTERVAL="days"    ;;      
+        esac 
+
+	echo $INTERVAL
+	WINDOW_MSG="Please enter the number of $INTERVAL to run"
+	dialog --backtitle "Linux Test Project Control Centre"\
+               --title "Test Duration - Length Specification" --clear\
+               --inputbox "$WINDOW_MSG" 7 80 \
+		          2>/tmp/runltp.length.$$ ;
+	flags_length=$(cat /tmp/runltp.length.$$ | awk '{print $1}')
+        flags_duration="$flags_length$flags_interval"	
+	RUNALL_FLAGS=" $RUNALL_FLAGS -t $flags_duration"
+    fi
+}
+
 # Function:    exectest_screenout
 # 
 # Description: Execute tests by calling runalltests.sh, display test status 
 #              in a window.
 #
-# Input:       $1 - Flag to be passed to runalltests.sh inorder to run 
-#                   networking tests.
+# Input:       none
 # 
 # Output:      messages printed by testcases.
 exectest_screenout()
@@ -204,11 +266,13 @@ exectest_screenout()
 
     # remove old results file
     rm ./results/results.$(date -I).$$ &>/dev/null
- 
+
     # execute runalltests.sh with user defined command file.
-    ./runalltests.sh -q -p $1 -l results.$(date -I).$$ \
+    ./runalltests.sh -q -p $RUNALL_FLAGS -l results.$(date -I).$$ \
 	-f /tmp/runltp.test.list.$$  
+    
     sleep 2
+
     return
 }
 
@@ -280,7 +344,7 @@ execute_ltp()
                       $(echo $i | sed -e 's/"//g') == "nfs" || \
                       $(echo $i | sed -e 's/"//g') == "multicast" ]] ;
                 then \
-                    run_net_test=" -N " ;
+                    run_net_test="Y" ;
                 fi ;
                                        
             done ;
@@ -321,8 +385,10 @@ execute_ltp()
             fi ;
         
             dialog --clear ;
+
+	    flags_prompt ;
 	
-            exectest_screenout $run_net_test ;
+            exectest_screenout ;
 
             return ;;
         1)    \
@@ -409,6 +475,7 @@ RC=0              # return code from commands and local functions
 mmenu_item=" "
 RHOST=" "
 PASSWD=" "
+RUNALL_FLAGS=" "
 
 # call cleanup function on program exit.
 trap "cleanup" 0
