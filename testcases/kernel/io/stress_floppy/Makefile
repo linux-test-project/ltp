@@ -3,7 +3,7 @@ all:
 install: generate
 	ln -f stress_floppy ../../../bin
 	ln -f *_file ../../../bin
-	ln -fs ../kernel/io/stress_floppy/dumpdir ../../../bin/dumpdir
+	cp -rf dumpdir ../../../bin
 
 
 generate:
