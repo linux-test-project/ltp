@@ -35,8 +35,12 @@
 
 /* xfs-specific includes */
 
-#include <libxfs.h>
-#include <attributes.h>
+#if defined(NO_XFS)
+# include "xfscompat.h"
+#else
+# include <libxfs.h>
+# include <attributes.h>
+#endif
 
 /* libc includes */
 
@@ -45,7 +49,18 @@
 #include <sys/time.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <fcntl.h>
 #include <malloc.h>
 #include <dirent.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#ifndef O_DIRECT
+#define O_DIRECT 040000
+#endif
 
 #endif

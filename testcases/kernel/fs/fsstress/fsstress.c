@@ -35,17 +35,21 @@
 #define XFS_ERRTAG_MAX		17
 
 typedef enum {
+#ifndef NO_XFS
 	OP_ALLOCSP,
 	OP_ATTR_REMOVE,
 	OP_ATTR_SET,
 	OP_BULKSTAT,
 	OP_BULKSTAT1,
+#endif
 	OP_CHOWN,
 	OP_CREAT,
 	OP_DREAD,
 	OP_DWRITE,
 	OP_FDATASYNC,
+#ifndef NO_XFS	
 	OP_FREESP,
+#endif	
 	OP_FSYNC,
 	OP_GETDENTS,
 	OP_LINK,
@@ -54,14 +58,18 @@ typedef enum {
 	OP_READ,
 	OP_READLINK,
 	OP_RENAME,
+#ifndef NO_XFS	
 	OP_RESVSP,
+#endif	
 	OP_RMDIR,
 	OP_STAT,
 	OP_SYMLINK,
 	OP_SYNC,
 	OP_TRUNCATE,
 	OP_UNLINK,
+#ifndef NO_XFS	
 	OP_UNRESVSP,
+#endif	
 	OP_WRITE,
 	OP_LAST
 } opty_t;
@@ -74,6 +82,7 @@ typedef struct opdesc {
 	opfnc_t	func;
 	int	freq;
 	int	iswrite;
+	int	isxfs; 
 } opdesc_t;
 
 typedef struct fent {
@@ -144,17 +153,21 @@ void	unresvsp_f(int, long);
 void	write_f(int, long);
 
 opdesc_t	ops[] = {
-	{ OP_ALLOCSP, "allocsp", allocsp_f, 1, 1 },
-	{ OP_ATTR_REMOVE, "attr_remove", attr_remove_f, /* 1 */ 0, 1 },
-	{ OP_ATTR_SET, "attr_set", attr_set_f, /* 2 */ 0, 1 },
-	{ OP_BULKSTAT, "bulkstat", bulkstat_f, 1, 0 },
-	{ OP_BULKSTAT1, "bulkstat1", bulkstat1_f, 1, 0 },
+#ifndef NO_XFS
+	{ OP_ALLOCSP, "allocsp", allocsp_f, 1, 1, 1 },
+	{ OP_ATTR_REMOVE, "attr_remove", attr_remove_f, /* 1 */ 0, 1, 1 },
+	{ OP_ATTR_SET, "attr_set", attr_set_f, /* 2 */ 0, 1, 1 },
+	{ OP_BULKSTAT, "bulkstat", bulkstat_f, 1, 0, 1 },
+	{ OP_BULKSTAT1, "bulkstat1", bulkstat1_f, 1, 0, 1 },
+#endif
 	{ OP_CHOWN, "chown", chown_f, 3, 1 },
 	{ OP_CREAT, "creat", creat_f, 4, 1 },
 	{ OP_DREAD, "dread", dread_f, 4, 0 },
 	{ OP_DWRITE, "dwrite", dwrite_f, 4, 1 },
 	{ OP_FDATASYNC, "fdatasync", fdatasync_f, 1, 1 },
-	{ OP_FREESP, "freesp", freesp_f, 1, 1 },
+#ifndef NO_XFS
+	{ OP_FREESP, "freesp", freesp_f, 1, 1, 1 },
+#endif
 	{ OP_FSYNC, "fsync", fsync_f, 1, 1 },
 	{ OP_GETDENTS, "getdents", getdents_f, 1, 0 },
 	{ OP_LINK, "link", link_f, 1, 1 },
@@ -163,14 +176,18 @@ opdesc_t	ops[] = {
 	{ OP_READ, "read", read_f, 1, 0 },
 	{ OP_READLINK, "readlink", readlink_f, 1, 0 },
 	{ OP_RENAME, "rename", rename_f, 2, 1 },
-	{ OP_RESVSP, "resvsp", resvsp_f, 1, 1 },
+#ifndef NO_XFS
+	{ OP_RESVSP, "resvsp", resvsp_f, 1, 1, 1 },
+#endif
 	{ OP_RMDIR, "rmdir", rmdir_f, 1, 1 },
 	{ OP_STAT, "stat", stat_f, 1, 0 },
 	{ OP_SYMLINK, "symlink", symlink_f, 2, 1 },
 	{ OP_SYNC, "sync", sync_f, 1, 0 },
 	{ OP_TRUNCATE, "truncate", truncate_f, 2, 1 },
 	{ OP_UNLINK, "unlink", unlink_f, 1, 1 },
-	{ OP_UNRESVSP, "unresvsp", unresvsp_f, 1, 1 },
+#ifndef NO_XFS
+	{ OP_UNRESVSP, "unresvsp", unresvsp_f, 1, 1, 1 },
+#endif
 	{ OP_WRITE, "write", write_f, 4, 1 },
 }, *ops_end;
 
@@ -187,7 +204,9 @@ int		errrange;
 int		errtag;
 opty_t		*freq_table;
 int		freq_table_size;
+#ifndef NO_XFS
 xfs_fsop_geom_t	geom;
+#endif
 char		*homedir;
 int		*ilist;
 int		ilistlen;
@@ -203,13 +222,20 @@ int		rtpct;
 unsigned long	seed = 0;
 ino_t		top_ino;
 int		verbose = 0;
+#ifndef NO_XFS
+int no_xfs = 0;
+#else
+int no_xfs = 1;
+#endif
 
 void	add_to_flist(int, int, int);
 void	append_pathname(pathname_t *, char *);
+#ifndef NO_XFS
 int	attr_list_path(pathname_t *, char *, const int, int,
 		       attrlist_cursor_t *);
 int	attr_remove_path(pathname_t *, const char *, int);
 int	attr_set_path(pathname_t *, const char *, const char *, const int, int);
+#endif
 void	check_cwd(void);
 int	creat_path(pathname_t *, mode_t);
 void	dcache_enter(int, int);
@@ -261,14 +287,16 @@ int main(int argc, char **argv)
 	struct timeval	t;
 	ptrdiff_t	srval;
         int             nousage=0;
+#ifndef NO_XFS		
 	xfs_error_injection_t	err_inj;
+#endif	
 
 	errrange = errtag = 0;
 	umask(0);
 	nops = sizeof(ops) / sizeof(ops[0]);
 	ops_end = &ops[nops];
 	myprog = argv[0];
-	while ((c = getopt(argc, argv, "d:e:f:i:n:p:rs:vwzHS")) != -1) {
+	while ((c = getopt(argc, argv, "d:e:f:i:n:p:rs:vwzHSX")) != -1) {
 		switch (c) {
 		case 'd':
 			dirname = optarg;
@@ -327,8 +355,24 @@ int main(int argc, char **argv)
 		case 'H':
 			usage();
 			exit(1);
+		case 'X':
+			no_xfs = 1;
+			break; 
 		}
 	}
+
+	if (no_xfs && errtag) { 
+		fprintf(stderr, "error injection only works on XFS\n");
+		exit(1); 
+	} 
+
+	if (no_xfs) { 
+		int i;
+		for (i = 0; ops+i < ops_end; ++i) { 
+			if (ops[i].isxfs) 
+				ops[i].freq = 0; 
+		}
+	} 
         
         if (!dirname) {
             /* no directory specified */
@@ -355,12 +399,15 @@ int main(int argc, char **argv)
 		seed = (int)t.tv_sec ^ (int)t.tv_usec;
 		printf("seed = %ld\n", seed);
 	}
+#ifndef NO_XFS	
+	if (!no_xfs) { 
 	i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
 	if (i >= 0 && geom.rtblocks)
 		rtpct = MIN(MAX(geom.rtblocks * 100 /
 				(geom.rtblocks + geom.datablocks), 1), 99);
 	else
 		rtpct = 0;
+	}
 	if (errtag != 0) {
 		if (errrange == 0) {
 			if (errtag <= 0) {
@@ -392,17 +439,24 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 	} else
+#endif	
 		close(fd);
 	unlink(buf);
-	for (i = 0; i < nproc; i++) {
-		if (fork() == 0) {
-			procid = i;
-			doproc();
-			return 0;
+	if (nproc == 1) { 
+		procid = 0; 
+		doproc();
+	} else { 
+		for (i = 0; i < nproc; i++) {
+			if (fork() == 0) {
+				procid = i;
+				doproc();
+				return 0;
+			}
 		}
+		while (wait(&stat) > 0)
+			continue;
 	}
-	while (wait(&stat) > 0)
-		continue;
+#ifndef NO_XFS		
 	if (errtag != 0) {
 		err_inj.errtag = 0;
 		err_inj.fd = fd;
@@ -414,6 +468,7 @@ int main(int argc, char **argv)
 		}
 		close(fd);
 	}
+#endif	
 
 	return 0;
 }
@@ -453,6 +508,7 @@ append_pathname(pathname_t *name, char *str)
 	name->len += len;
 }
 
+#ifndef NO_XFS
 int
 attr_list_path(pathname_t *name, char *buffer, const int buffersize, int flags,
 	       attrlist_cursor_t *cursor)
@@ -513,6 +569,7 @@ attr_set_path(pathname_t *name, const char *attrname, const char *attrvalue,
 	free_pathname(&newname);
 	return rval;
 }
+#endif
 
 void
 check_cwd(void)
@@ -643,6 +700,9 @@ doproc(void)
 		namerand = random();
 	for (opno = 0; opno < operations; opno++) {
 		p = &ops[freq_table[random() % freq_table_size]];
+		if ((unsigned long)p->func < 4096) abort(); 
+
+		
 		p->func(opno, random());
 		/*
 		 * test for forced shutdown by stat'ing the test
@@ -1273,6 +1333,7 @@ usage(void)
 	printf("   -z               zeros frequencies of all operations\n");
 	printf("   -S               prints the table of operations (omitting zero frequency)\n");
 	printf("   -H               prints usage and exits\n");
+	printf("   -X               don't do anything XFS specific (default with -DNO_XFS)\n"); 
 }
 
 void
@@ -1294,6 +1355,8 @@ zero_freq(void)
 	for (p = ops; p < ops_end; p++)
 		p->freq = 0;
 }
+
+#ifndef NO_XFS
 
 void
 allocsp_f(int opno, long r)
@@ -1535,6 +1598,8 @@ bulkstat1_f(int opno, long r)
 	close(fd);
 }
 
+#endif
+
 void
 chown_f(int opno, long r)
 {
@@ -1560,7 +1625,6 @@ chown_f(int opno, long r)
 void
 creat_f(int opno, long r)
 {
-	struct fsxattr	a;
 	int		e;
 	int		e1;
 	int		extsize;
@@ -1572,6 +1636,7 @@ creat_f(int opno, long r)
 	int		type;
 	int		v;
 	int		v1;
+	int esz=0; 
 
 	if (!get_fname(FT_DIRm, r, NULL, NULL, &fep, &v1))
 		parid = -1;
@@ -1598,22 +1663,55 @@ creat_f(int opno, long r)
 	e = fd < 0 ? errno : 0;
 	e1 = 0;
 	check_cwd();
+	esz = 0;
 	if (fd >= 0) {
+#ifndef NO_XFS	
+		struct fsxattr	a;
 		if (extsize && ioctl(fd, XFS_IOC_FSGETXATTR, &a) >= 0) {
 			a.fsx_xflags |= XFS_XFLAG_REALTIME;
 			a.fsx_extsize =
 				geom.rtextsize * geom.blocksize * extsize;
 			if (ioctl(fd, XFS_IOC_FSSETXATTR, &a) < 0)
 				e1 = errno;
+			esz = a.fsx_estsize;
+			
 		}
 		add_to_flist(type, id, parid);
+#endif		
 		close(fd);
 	}
 	if (v)
 		printf("%d/%d: creat %s x:%d %d %d\n", procid, opno, f.path,
-			extsize ? a.fsx_extsize : 0, e, e1);
+			esz, e, e1);
 	free_pathname(&f);
 }
+
+
+
+int 
+setdirect(int fd)
+{ 
+	static int no_direct;
+	int flags; 
+
+	if (no_direct)
+		return 0; 
+
+	flags = fcntl(fd, F_GETFL, 0); 
+	if (flags < 0)  
+		return 0; 
+
+	if (fcntl(fd, F_SETFL, flags|O_DIRECT)  < 0) { 
+		if (no_xfs) {
+			no_direct = 1;
+			return 0;
+		}
+		printf("cannot set O_DIRECT: %s\n",strerror(errno)); 
+		return 0; 
+	} 
+			       
+	return 1;
+} 
 
 void
 dread_f(int opno, long r)
@@ -1629,7 +1727,7 @@ dread_f(int opno, long r)
 	off64_t		off;
 	struct stat64	stb;
 	int		v;
-
+       
 	init_pathname(&f);
 	if (!get_fname(FT_REGFILE, r, &f, NULL, NULL, &v)) {
 		if (v)
@@ -1637,7 +1735,12 @@ dread_f(int opno, long r)
 		free_pathname(&f);
 		return;
 	}
-	fd = open_path(&f, O_RDONLY|O_DIRECT);
+	fd = open_path(&f, O_RDONLY);
+
+	if (!setdirect(fd)) { 
+		return;
+	} 
+
 	e = fd < 0 ? errno : 0;
 	check_cwd();
 	if (fd < 0) {
@@ -1663,7 +1766,14 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
+	
+	if (no_xfs) { 
+		diob.d_miniosz = stb.st_blksize; 
+		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */ 
+		diob.d_mem = stb.st_blksize; 
+	} 
+#ifndef NO_XFS	
+	   else 	if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
 			"%d/%d: dread - ioctl(fd, XFS_IOC_DIOINFO) %s failed %d\n",
@@ -1672,6 +1782,7 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
+#endif	
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % stb.st_size);
@@ -1715,7 +1826,7 @@ dwrite_f(int opno, long r)
 		free_pathname(&f);
 		return;
 	}
-	fd = open_path(&f, O_WRONLY|O_DIRECT);
+	fd = open_path(&f, O_WRONLY);
 	e = fd < 0 ? errno : 0;
 	check_cwd();
 	if (fd < 0) {
@@ -1725,6 +1836,9 @@ dwrite_f(int opno, long r)
 		free_pathname(&f);
 		return;
 	}
+
+	if (!setdirect(fd)) 
+		return; 
 	if (fstat64(fd, &stb) < 0) {
 		if (v)
 			printf("%d/%d: dwrite - fstat64 %s failed %d\n",
@@ -1733,7 +1847,13 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
+	if (no_xfs) { 
+		diob.d_miniosz = stb.st_blksize; 
+		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */ 
+		diob.d_mem = stb.st_blksize; 
+	} 
+#ifndef NO_XFS	
+	else if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
 			"%d/%d: dwrite - ioctl(fd, XFS_IOC_DIOINFO) %s failed %d\n",
@@ -1742,6 +1862,7 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
+#endif	
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));
@@ -1799,6 +1920,7 @@ fdatasync_f(int opno, long r)
 	close(fd);
 }
 
+#ifndef NO_XFS
 void
 freesp_f(int opno, long r)
 {
@@ -1849,6 +1971,8 @@ freesp_f(int opno, long r)
 	free_pathname(&f);
 	close(fd);
 }
+
+#endif
 
 void
 fsync_f(int opno, long r)
@@ -2169,6 +2293,7 @@ rename_f(int opno, long r)
 	free_pathname(&f);
 }
 
+#ifndef NO_XFS
 void
 resvsp_f(int opno, long r)
 {
@@ -2219,6 +2344,7 @@ resvsp_f(int opno, long r)
 	free_pathname(&f);
 	close(fd);
 }
+#endif
 
 void
 rmdir_f(int opno, long r)
@@ -2384,6 +2510,7 @@ unlink_f(int opno, long r)
 	free_pathname(&f);
 }
 
+#ifndef NO_XFS
 void
 unresvsp_f(int opno, long r)
 {
@@ -2434,6 +2561,7 @@ unresvsp_f(int opno, long r)
 	free_pathname(&f);
 	close(fd);
 }
+#endif
 
 void
 write_f(int opno, long r)

@@ -1,4 +1,4 @@
-CFLAGS += -Wall
+CFLAGS += -Wall -g -DNO_XFS -I. -D_LARGEFILE64_SOURCE
 LDFLAGS += 
 
 SRCS=$(wildcard *.c)
