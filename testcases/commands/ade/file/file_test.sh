@@ -41,7 +41,7 @@
 
 export TST_TOTAL=10                # Number of tests in this testcase
 
-if [ -z $LTPTMP && -z $TMPBASE ]
+if [ -z $LTPTMP ] && [ -z $TMPBASE ]
 then 
     LTPTMP=/tmp/
 else
@@ -258,13 +258,13 @@ main()
 }
 EOF
 
-cc -o /tmp/cprog /tmp/cprog.c &>/dev/null
+cc -o $LTPTMP/cprog $LTPTMP/cprog.c &>/dev/null
 
 file $LTPTMP/cprog &>$LTPTMP/file.out || RC=$?
 
 if [ $RC -eq 0 ]
 then
-    grep "ELF 32-bit LSB executable, Intel 80386" $LTPTMP/file.out &>/dev/null
+    grep "ELF .*-bit LSB executable, .*" $LTPTMP/file.out &>/dev/null
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognized ELF binary executable"
@@ -328,7 +328,7 @@ export TST_COUNT=8
 
 $LTPBIN/tst_resm TINFO "TEST #8: file command recognizes tar zip files"
 
-tar cf $LTPTMP/files $LTPTMP/file1 $LTPTMP/file2 $LTPTMP/file3 \
+tar cf $LTPTMP/files.tar $LTPTMP/file1 $LTPTMP/file2 $LTPTMP/file3 \
     &>$LTPTMP/file.out
 if [ $? -ne 0 ]
 then
@@ -346,7 +346,7 @@ fi
 file $LTPTMP/files.tar.gz &>$LTPTMP/file.out || RC=$?
 if [ $RC -eq 0 ]
 then
-    grep "gzip compressed data, deflated, original filename, \`files.tar'" \
+    grep "gzip compressed data, .*" \
             $LTPTMP/file.out &>$LTPTMP/file1.out
     if [ $? -eq 0 ]
     then
@@ -373,6 +373,8 @@ export TCID=file09
 export TST_COUNT=9
 
 $LTPBIN/tst_resm TINFO "TEST #9: file command recognizes RPM files"
+[ -f /etc/redhat-release ] \
+    && bDIR=/usr/src/redhat || bDIR=/usr/src/packages
 
 cat > $LTPTMP/files.spec <<EOF
 
@@ -407,11 +409,11 @@ rm -rf $RPM_BUILD_ROOT
 
 EOF
 
-if [ -d /usr/src/packages/SOURCES ]
+if [ -d $bDIR/SOURCES ]
 then
     echo "directory exists" &>$LTPTMP/file.out
 else
-    mkdir -p /usr/src/packages/SOURCES/ &>$LTPTMP/file.out || RC=$?
+    mkdir -p $bDIR/SOURCES/ &>$LTPTMP/file.out || RC=$?
 fi
 
 if [ $RC -ne 0 ]
@@ -419,7 +421,7 @@ then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "mkdir: brok. Reason:"
 fi
 
-cat > /usr/src/packages/SOURCES/cprog.c <<EOF || RC=$?
+cat > $bDIR/SOURCES/cprog.c <<EOF || RC=$?
 #include <stdio.h>
 
 main()
@@ -439,11 +441,11 @@ then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command brok. Reason:"
 fi
 
-file /usr/src/packages/SRPMS/cprog-0.0.7-3.src.rpm &>$LTPTMP/file.out || RC=$?
+file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm &>$LTPTMP/file.out || RC=$?
 
 if [ $RC -eq 0 ]
 then
-    grep "RPM v3 src i386" $LTPTMP/file.out &>/dev/null
+    grep "RPM v3 src" $LTPTMP/file.out &>/dev/null
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised RPM file correctly"
