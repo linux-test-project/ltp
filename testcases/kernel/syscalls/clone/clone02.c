@@ -218,6 +218,10 @@ main(int ac, char **av)
 				test_cleanup();
 				continue;
 			}
+			
+			if (WTERMSIG(status)) {
+                                tst_resm(TWARN, "child exitied with signal %d", WTERMSIG(status));
+                        }			
 
 			/*
 			 * Check the return value from child function  and
