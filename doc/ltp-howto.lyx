@@ -375,9 +375,18 @@ The test tags are simple identifiers, no spaces are allowed.
 \layout Subsubsection
 
 Examples
-\layout Standard
+\layout Itemize
 
-Test true
+Using pan to run one test program (command line arg)
+\layout Itemize
+
+Using a pan file to run multiple tests
+\layout Itemize
+
+Running tests in parallel with output buffering
+\layout Itemize
+
+Nesting pan
 \layout Standard
 
 For more information on pan see the man page 

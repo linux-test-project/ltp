@@ -1,0 +1,14 @@
+-- Versions installed: (if some fields are empty or look
+-- unusual then possibly you have very old versions)
+Linux barn 2.4.0-test9 #1 Wed Oct 4 07:17:27 CDT 2000 i586 unknown
+Kernel modules         2.3.14
+Gnu C                  2.96
+Binutils               2.10.0.18
+Linux C Library        2.1.92
+Dynamic linker         ldd (GNU libc) 2.1.92
+Procps                 2.0.7
+Mount                  2.10m
+Net-tools              1.56
+Console-tools          0.3.3
+Sh-utils               2.0
+Modules Loaded         autofs 3c59x

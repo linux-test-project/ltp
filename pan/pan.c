@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.3 2000/09/22 19:52:17 nstraz Exp $ */
+/* $Id: pan.c,v 1.4 2000/10/12 16:39:26 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -167,7 +167,7 @@ main(int argc, char **argv)
 	    break;
 	case 'h':
 	    printf
-		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ] [cmd]\n");
+		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ]\n\t[-o output-file] [-O output-buffer-directory] [cmd]\n");
 	    exit(0);
 	case 'l':
 	    logfilename = strdup(optarg);

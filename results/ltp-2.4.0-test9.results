@@ -1,0 +1,1872 @@
+access01    1  PASS  :  access(accessfile, F_OK) returned 0
+access01    2  PASS  :  access(accessfile, X_OK) returned 0
+access01    3  PASS  :  access(accessfile, W_OK) returned 0
+access01    4  PASS  :  access(accessfile, R_OK) returned 0
+<<<test_start>>>
+tag=access01 stime=971350309
+cmdline="access01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+access03    1  PASS  :  access((char *)-1,R_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    2  PASS  :  access((char *)-1,W_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    3  PASS  :  access((char*)-1,X_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    4  PASS  :  access((char*)-1,F_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    5  PASS  :  access((char*)sbrk(0)+1,R_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    6  PASS  :  access((char*)sbrk(0)+1,W_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    7  PASS  :  access(high_address,X_OK) failed as expected with errno 14 (EFAULT) : Bad address
+access03    8  PASS  :  access((char*)sbrk(0)+1,F_OK) failed as expected with errno 14 (EFAULT) : Bad address
+<<<test_start>>>
+tag=access03 stime=971350309
+cmdline="access03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+alarm01     1  PASS  :  alarm(1) returned 0
+<<<test_start>>>
+tag=alarm01 stime=971350309
+cmdline="alarm01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+alarm02     1  PASS  :  alarm(4294967295) returned 0 as expected for value -1.
+alarm02     2  PASS  :  alarm(4294967295) returned 0 as expected for value ULONG_MAX.
+alarm02     3  PASS  :  alarm(0) returned 0 as expected for value ULONG_MAX+1.
+<<<test_start>>>
+tag=alarm02 stime=971350309
+cmdline="alarm02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=alarm03 stime=971350309
+cmdline="alarm03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+alarm03     1  PASS  :  alarm(100), fork, alarm(0) child's alarm returned 0
+alarm03     2  PASS  :  alarm(100), fork, alarm(0) parent's alarm returned 100
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=asyncio02 stime=971350309
+cmdline="asyncio02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+asyncio02    1  PASS  :  More than BUFSIZE bytes multiple synchronous writes to a file check out ok
+asyncio02    2  PASS  :  BUFSIZE bytes multiple synchronous writes to a file checks out ok
+asyncio02    3  PASS  :  Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok
+asyncio02    4  PASS  :  More than BUFSIZE bytes multiple synchronous writes to a file check out ok
+asyncio02    5  PASS  :  BUFSIZE bytes multiple synchronous writes to a file checks out ok
+asyncio02    6  PASS  :  Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=7
+<<<test_end>>>
+chdir02     1  PASS  :  chdir(/) returned 0
+<<<test_start>>>
+tag=chdir02 stime=971350309
+cmdline="chdir02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+chmod02     1  PASS  :  chmod(tfile, 0) returned 0
+chmod02     2  PASS  :  chmod(tfile, 07) returned 0
+chmod02     3  PASS  :  chmod(tfile, 070) returned 0
+chmod02     4  PASS  :  chmod(tfile, 0700) returned 0
+chmod02     5  PASS  :  chmod(tfile, 0777) returned 0
+chmod02     6  PASS  :  chmod(tfile, 02777) returned 0
+chmod02     7  PASS  :  chmod(tfile, 04777) returned 0
+chmod02     8  PASS  :  chmod(tfile, 06777) returned 0
+<<<test_start>>>
+tag=chmod02 stime=971350309
+cmdline="chmod02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+chown01     1  PASS  :  chown(t_6469, 0,0) returned 0
+<<<test_start>>>
+tag=chown01 stime=971350309
+cmdline="chown01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+close08     1  PASS  :  close(tfile_6470) returned 0
+<<<test_start>>>
+tag=close08 stime=971350309
+cmdline="close08"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+creat09     1  PASS  :  creat(tfile_6471, 0700) returned 3
+<<<test_start>>>
+tag=creat09 stime=971350309
+cmdline="creat09"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+dup01       1  PASS  :  dup(dupfile) returned 4
+<<<test_start>>>
+tag=dup01 stime=971350309
+cmdline="dup01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+dup02       1  PASS  :  dup(-1) Failed, errno=9 : Bad file descriptor
+dup02       2  PASS  :  dup(1500) Failed, errno=9 : Bad file descriptor
+<<<test_start>>>
+tag=dup02 stime=971350309
+cmdline="dup02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+dup03       1  PASS  :  dup(3) Failed, errno=24 : Too many open files
+<<<test_start>>>
+tag=dup03 stime=971350309
+cmdline="dup03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=3
+<<<test_end>>>
+dup04       1  PASS  :  dup(3) read side of syspipe returned 5
+dup04       2  PASS  :  dup(4) write side of syspipe returned 5
+<<<test_start>>>
+tag=dup04 stime=971350309
+cmdline="dup04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+dup05       1  PASS  :  dup(dupfile) returned 4
+<<<test_start>>>
+tag=dup05 stime=971350309
+cmdline="dup05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=execl01 stime=971350309
+cmdline="execl01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execl01     1  PASS  :  execl - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=execle01 stime=971350309
+cmdline="execle01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execle01    1  PASS  :  execle - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=execlp01 stime=971350309
+cmdline="execlp01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execlp01    1  PASS  :  execlp - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=execv01 stime=971350309
+cmdline="execv01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execv01     1  PASS  :  execv - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350309 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=3
+<<<test_end>>>
+<<<test_start>>>
+tag=execve01 stime=971350310
+cmdline="execve01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execve01    1  PASS  :  execve - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=execvp01 stime=971350310
+cmdline="execvp01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+execvp01    1  PASS  :  execvp - properly exec's a simple program..
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=2
+<<<test_end>>>
+Testing for proper f00f instruction handling.
+SIGILL received from f00f instruction.  Good.
+<<<test_start>>>
+tag=f00f stime=971350310
+cmdline="f00f"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+fchmod01    1  PASS  :  fchmod(tfile_6491, 0700) returned 0
+<<<test_start>>>
+tag=fchmod01 stime=971350310
+cmdline="fchmod01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+fchown01    1  PASS  :  fchown(Fd, geteuid(), getegid()) returned 0
+<<<test_start>>>
+tag=fchown01 stime=971350310
+cmdline="fchown01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+fcntl02     1  PASS  :  fcntl(tfile_6493, F_DUPFD, 0) returned 4
+<<<test_start>>>
+tag=fcntl02 stime=971350310
+cmdline="fcntl02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+fcntl03     1  PASS  :  fcntl(tfile_6494, F_GETFD, 0) returned 0
+<<<test_start>>>
+tag=fcntl03 stime=971350310
+cmdline="fcntl03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=fcntl04 stime=971350310
+cmdline="fcntl04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fcntl04     1  PASS  :  fcntl(tfile_6495, F_GETFL, 0) returned 2
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=1
+<<<test_end>>>
+fcntl05     1  PASS  :  fcntl(tfile_6496, F_GETLK, &flocks) returned 0
+<<<test_start>>>
+tag=fcntl05 stime=971350310
+cmdline="fcntl05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=fcntl07 stime=971350310
+cmdline="fcntl07"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fcntl07     1  PASS  :  regular file child exited 0, indicating that the file was closed
+fcntl07     2  PASS  :  write side of system pipe child exited 0, indicating that the file was closed
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=4
+<<<test_end>>>
+<<<test_start>>>
+tag=fcntl07B stime=971350310
+cmdline="fcntl07B"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fcntl07B    1  PASS  :  named pipe child exited 0, indicating that the file was closed
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=2
+<<<test_end>>>
+fcntl08     1  PASS  :  fcntl(tfile_6502, F_SETFL, 3072) returned 0
+<<<test_start>>>
+tag=fcntl08 stime=971350310
+cmdline="fcntl08"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+fcntl09     1  PASS  :  fcntl(./file_6503, F_SETLK, &flocks) flocks.l_type = F_WRLCK returned 0
+fcntl09     2  PASS  :  fcntl(./file_6503, F_SETLK, &flocks) flocks.l_type = F_UNLCK returned 0
+fcntl09     1  PASS  :  fcntl(./file_6503, F_SETLK, &flocks) flocks.l_type = F_RDLCK returned 0
+fcntl09     2  PASS  :  fcntl(./file_6503, F_SETLK, &flocks) flocks.l_type = F_UNLCK returned 0
+<<<test_start>>>
+tag=fcntl09 stime=971350310
+cmdline="fcntl09"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=fcntl10 stime=971350310
+cmdline="fcntl10"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fcntl10     1  PASS  :  fcntl(tfile_6504, F_SETLKW, &flocks) flocks.l_type = F_WRLCK returned 0
+fcntl10     2  PASS  :  fcntl(tfile_6504, F_SETLKW, &flocks) flocks.l_type = F_UNLCK returned 0
+fcntl10     1  PASS  :  fcntl(tfile_6504, F_SETLKW, &flocks) flocks.l_type = F_RDLCK returned 0
+fcntl10     2  PASS  :  fcntl(tfile_6504, F_SETLKW, &flocks) flocks.l_type = F_UNLCK returned 0
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=fork01 stime=971350310
+cmdline="fork01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fork01      1  PASS  :  fork() returned 6506
+fork01      2  PASS  :  child pid and fork() return agree: 6506
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=fork04 stime=971350310
+cmdline="fork04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fork04      1  PASS  :  Env var TERM unchanged after fork(): xterm
+fork04      2  PASS  :  Env var NoTSetzWq unchanged after fork(): getenv() does not find variable set
+fork04      3  PASS  :  Env var TESTPROG unchanged after fork(): FRKTCS04
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=fork05 stime=971350310
+cmdline="fork05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+a = 42
+%gs = 0x0007
+%gs = 0x0007
+a = 99
+a = 42
+%gs = 0x0007
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+fpathconf01    1  PASS  :  fpathconf(fd, _PC_MAX_CANON) returned 255
+fpathconf01    2  PASS  :  fpathconf(fd, _PC_MAX_INPUT) returned 255
+fpathconf01    3  PASS  :  fpathconf(fd, _PC_VDISABLE) returned 0
+fpathconf01    4  PASS  :  fpathconf(fd, _PC_LINK_MAX) returned 32000
+fpathconf01    5  PASS  :  fpathconf(fd, _PC_NAME_MAX) returned 255
+fpathconf01    6  PASS  :  fpathconf(fd, _PC_PATH_MAX) returned 4095
+fpathconf01    7  PASS  :  fpathconf(fd, _PC_PIPE_BUF) returned 4096
+<<<test_start>>>
+tag=fpathconf01 stime=971350310
+cmdline="fpathconf01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+fstat01     1  PASS  :  fstat(tfile_6513, &statter) returned 0
+<<<test_start>>>
+tag=fstat01 stime=971350310
+cmdline="fstat01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=fsync01 stime=971350310
+cmdline="fsync01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+fsync01     1  PASS  :  fsync(tfile_6515) returned 0
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+getegid01    1  PASS  :  getegid -  Get effective group id. returned 0
+<<<test_start>>>
+tag=getegid01 stime=971350310
+cmdline="getegid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+geteuid01    1  PASS  :  geteuid -  Get effective user id. returned 0
+<<<test_start>>>
+tag=geteuid01 stime=971350310
+cmdline="geteuid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+getgid01    1  PASS  :  getgid() returned 0
+<<<test_start>>>
+tag=getgid01 stime=971350310
+cmdline="getgid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+getgroups01    1  PASS  :  getgroups(-1,gidset) returned -1 and error = 22 (EINVAL) as expected
+getgroups01    2  PASS  :  getgroups(0,gidset) returned 16, the gidset array not was modified
+getgroups01    3  PASS  :  getgroups(15, gidset) returned -1, and errno 22 (EINVAL) when 16 grps
+getgroups01    4  PASS  :  getgroups(NGROUPS,gidset) ret 16 contains gid 0 (from getgid)
+<<<test_start>>>
+tag=getgroups01 stime=971350310
+cmdline="getgroups01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+getgroups02    1  PASS  :  getgroups() returned 16
+<<<test_start>>>
+tag=getgroups02 stime=971350310
+cmdline="getgroups02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+gethostid01    1  PASS  :  gethostid -  Get host name returned -1568667692
+<<<test_start>>>
+tag=gethostid01 stime=971350310
+cmdline="gethostid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+gethostname01    1  PASS  :  gethostname -  Get host name returned 0
+<<<test_start>>>
+tag=gethostname01 stime=971350310
+cmdline="gethostname01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=3
+<<<test_end>>>
+getpgrp01    1  PASS  :  getpgrp() returned 6528
+<<<test_start>>>
+tag=getpgrp01 stime=971350310
+cmdline="getpgrp01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+getpid01    1  PASS  :  getpid() returned 6529
+<<<test_start>>>
+tag=getpid01 stime=971350310
+cmdline="getpid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+getppid01    1  PASS  :  getppid() returned 6459
+<<<test_start>>>
+tag=getppid01 stime=971350310
+cmdline="getppid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350310 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+getuid01    1  PASS  :  getuid() returned 0
+<<<test_start>>>
+tag=getuid01 stime=971350311
+cmdline="getuid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=kill09 stime=971350311
+cmdline="kill09"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+kill09      1  PASS  :  kill(6535, SIGKILL) returned 0
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=link02 stime=971350311
+cmdline="link02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+link02      1  PASS  :  link(tfile, lfile) returned 0 and link cnts match
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=link03 stime=971350311
+cmdline="link03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+link03      1  PASS  :  link(lkfile_6537, lkfile_6537.[1-10]) ret 0 for 10 files, stat linkcounts match 10
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=2
+<<<test_end>>>
+link04      1  PASS  :  link(<non-existent file>, <nefile>) Failed, errno=2
+link04      2  PASS  :  link(<path is empty string>, <nefile>) Failed, errno=2
+link04      3  PASS  :  link(<path contains a non-existent file>, <nefile>) Failed, errno=2
+link04      4  PASS  :  link(<path contains a regular file>, <nefile>) Failed, errno=20
+link04      5  PASS  :  link(<pathname too long>, <nefile>) Failed, errno=36
+link04      6  PASS  :  link(<address beyond address space>, <nefile>) Failed, errno=14
+link04      7  PASS  :  link(<negative address>, <nefile>) Failed, errno=14
+link04      8  PASS  :  link(<regfile>, <empty string>) Failed, errno=2
+link04      9  PASS  :  link(<regfile>, <path contains a non-existent file>) Failed, errno=2
+link04     10  PASS  :  link(<regfile>, <path contains a regular file>) Failed, errno=2
+link04     11  PASS  :  link(<regfile>, <pathname too long>) Failed, errno=36
+link04     12  PASS  :  link(<regfile>, <address beyond address space>) Failed, errno=14
+link04     13  PASS  :  link(<regfile>, <negative address>) Failed, errno=14
+link04     14  PASS  :  link(<regfile>, <regfile2>) Failed, errno=17
+<<<test_start>>>
+tag=link04 stime=971350311
+cmdline="link04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=link05 stime=971350311
+cmdline="link05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+link05      1  PASS  :  link(lkfile_6539, lkfile_6539.[1-1000]) ret 0 for 1000 files, stat linkcounts match 1000
+<<<execution_status>>>
+duration=-971350311 termination_type=exited termination_id=0 corefile=no
+cutime=8 cstime=91
+<<<test_end>>>
+lseek01     1  PASS  :  lseek(tfile_6543, 0, 0) returned 0
+lseek01     2  PASS  :  lseek(tfile_6543, 0, 1) returned 0
+lseek01     3  PASS  :  lseek(tfile_6543, 0, 2) returned 0
+<<<test_start>>>
+tag=lseek01 stime=971350312
+cmdline="lseek01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+lseek02     1  PASS  :  lseek(-1, 1, SEEK_SET) Failed, errno=9 : Bad file descriptor
+<<<test_start>>>
+tag=lseek02 stime=971350312
+cmdline="lseek02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+lseek04     1  PASS  :  lseek(fifofd, 1, SEEK_SET) Failed, errno=29 : Illegal seek
+<<<test_start>>>
+tag=lseek04 stime=971350312
+cmdline="lseek04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+lseek05     1  PASS  :  lseek(pipefd, 1, SEEK_SET) Failed, errno=29 : Illegal seek
+<<<test_start>>>
+tag=lseek05 stime=971350312
+cmdline="lseek05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+lstat02     1  PASS  :  lstat(lnfile_6547, &statter) returned 0
+<<<test_start>>>
+tag=lstat02 stime=971350312
+cmdline="lstat02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=mkdir01 stime=971350312
+cmdline="mkdir01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mkdir01     1  PASS  :  mkdir - path argument pointing below allocated address space failed as expected with errno 14 : Bad address
+mkdir01     2  PASS  :  mkdir - path argument pointing above allocated address space failed as expected with errno 14 : Bad address
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+mkdir08     1  PASS  :  mkdir(./dir_6549) returned 0
+<<<test_start>>>
+tag=mkdir08 stime=971350312
+cmdline="mkdir08"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=mknod01 stime=971350312
+cmdline="super mknod01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mknod01     1  PASS  :  mknod(./tnode_6550, 0100777, 0) returned 0
+mknod01     2  PASS  :  mknod(./tnode_6550, 010777, 0) returned 0
+mknod01     3  PASS  :  mknod(./tnode_6550, 020777, 0) returned 0
+mknod01     4  PASS  :  mknod(./tnode_6550, 060777, 0) returned 0
+mknod01     5  PASS  :  mknod(./tnode_6550, 0104700, 0) returned 0
+mknod01     6  PASS  :  mknod(./tnode_6550, 0102700, 0) returned 0
+mknod01     7  PASS  :  mknod(./tnode_6550, 0106700, 0) returned 0
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=3 cstime=3
+<<<test_end>>>
+<<<test_start>>>
+tag=qmm01 stime=971350312
+cmdline="mmap001 -m 1"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mmap001     0  INFO  :  mmap()ing file of 1 pages or 4096 bytes
+mmap001     1  PASS  :  mmap() completed successfully.
+mmap001     0  INFO  :  touching mmaped memory
+mmap001     2  PASS  :  we're still here, mmaped area must be good
+mmap001     3  PASS  :  msync() was successful
+mmap001     4  PASS  :  munmap() was successful
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+nice05      1  PASS  :  nice(0) returned 0
+<<<test_start>>>
+tag=nice05 stime=971350312
+cmdline="nice05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+open03      1  PASS  :  open(tfile_6554, O_RDWR|O_CREAT,0700) returned 3
+<<<test_start>>>
+tag=open03 stime=971350312
+cmdline="open03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+pathconf01    1  PASS  :  pathconf(/tmp, _PC_LINK_MAX) returned 32000
+pathconf01    2  PASS  :  pathconf(/tmp, _PC_NAME_MAX) returned 255
+pathconf01    3  PASS  :  pathconf(/tmp, _PC_PATH_MAX) returned 4095
+pathconf01    4  PASS  :  pathconf(/tmp, _PC_PIPE_BUF) returned 4096
+pathconf01    5  PASS  :  pathconf(/tmp, _PC_CHOWN_RESTRICTED) returned 1
+pathconf01    6  PASS  :  pathconf(/tmp, _PC_NO_TRUNC) returned 1
+<<<test_start>>>
+tag=pathconf01 stime=971350312
+cmdline="pathconf01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=pause01 stime=971350312
+cmdline="pause01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+pause01     1  PASS  :  pause() returned -1
+<<<execution_status>>>
+duration=-971350312 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+readlink02    1  PASS  :  readlink(./sl_6557, buf, 255) returned 12
+<<<test_start>>>
+tag=readlink02 stime=971350313
+cmdline="readlink02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350313 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+rename02    1  PASS  :  rename(./tfile_6558, ./rnfile_6558) returned 0
+<<<test_start>>>
+tag=rename02 stime=971350313
+cmdline="rename02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350313 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+rmdir04     1  PASS  :  rmdir(./dir_6559) returned 0
+<<<test_start>>>
+tag=rmdir04 stime=971350313
+cmdline="rmdir04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350313 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=sbrk01 stime=971350313
+cmdline="sbrk01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+sbrk01      1  PASS  :  sbrk - Increase by 8192 bytes returned 134561792
+sbrk01      2  PASS  :  sbrk - Decrease to original size returned 134569984
+<<<execution_status>>>
+duration=-971350313 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+select01    1  PASS  :  select(4, &Readfds, 0, 0, &timeout) timeout = 0 usecs
+<<<test_start>>>
+tag=select01 stime=971350313
+cmdline="select01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350313 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+setgid01    1  PASS  :  setgid(0) returned 0
+<<<test_start>>>
+tag=setgid01 stime=971350314
+cmdline="setgid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=setgroups01 stime=971350314
+cmdline="super setgroups01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+setgroups01    1  PASS  :  setgroups(32, list) returned 0
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=3
+<<<test_end>>>
+<<<test_start>>>
+tag=setpgid01 stime=971350314
+cmdline="setpgid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+setpgid01    1  PASS  :  setpgid(6566, 6565) returned 0
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+setregid01    1  PASS  :  setregid -  Dont change either real or effective gid returned 0
+setregid01    2  PASS  :  setregid -  change effective to effective gid returned 0
+setregid01    3  PASS  :  setregid -  change real to real gid returned 0
+setregid01    4  PASS  :  setregid -  change effective to real gid returned 0
+setregid01    5  PASS  :  setregid -  try to change real to current real returned 0
+<<<test_start>>>
+tag=setregid01 stime=971350314
+cmdline="setregid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+setreuid01    1  PASS  :  setreuid -  Don't change either real or effective uid returned 0
+setreuid01    2  PASS  :  setreuid -  change effective to effective uid returned 0
+setreuid01    3  PASS  :  setreuid -  change real to real uid returned 0
+setreuid01    4  PASS  :  setreuid -  change effective to real uid returned 0
+setreuid01    5  PASS  :  setreuid -  try to change real to current real returned 0
+<<<test_start>>>
+tag=setreuid01 stime=971350314
+cmdline="setreuid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+setuid01    1  PASS  :  setuid -  Set the effective user ID to the current real uid returned 0
+<<<test_start>>>
+tag=setuid01 stime=971350314
+cmdline="setuid01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=setuid02 stime=971350314
+cmdline="super setuid02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+setuid02    1  PASS  :  setuid -  Set the effective user ID to the current real uid returned 0
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=4
+<<<test_end>>>
+stat05      1  PASS  :  stat(tfile_6572, &statter) returned 0
+<<<test_start>>>
+tag=stat05 stime=971350314
+cmdline="stat05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=sync01 stime=971350314
+cmdline="sync01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+sync01      1  PASS  :  sync() returned 0
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+time01      1  PASS  :  time(0) returned 971350314
+<<<test_start>>>
+tag=time01 stime=971350314
+cmdline="time01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+times01     1  PASS  :  times(&mytimes) returned 68214296
+<<<test_start>>>
+tag=times01 stime=971350314
+cmdline="times01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+ulimit01    1  PASS  :  ulimit(1, -1) returned 8388607
+ulimit01    2  FAIL  :  ulimit(2, -1) returned 0
+ulimit01    3  PASS  :  ulimit(2, 8388607) returned 0
+ulimit01    4  PASS  :  ulimit(2, 8388606) returned 0
+<<<test_start>>>
+tag=ulimit01 stime=971350314
+cmdline="ulimit01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=1 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+umask01     1  PASS  :  umask(022) returned 0
+<<<test_start>>>
+tag=umask01 stime=971350314
+cmdline="umask01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+uname01     1  PASS  :  uname(&un) returned 0
+<<<test_start>>>
+tag=uname01 stime=971350314
+cmdline="uname01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=unlink05 stime=971350314
+cmdline="unlink05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+unlink05    1  PASS  :  unlink(tfile_6579) returned 0
+<<<execution_status>>>
+duration=-971350314 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+unlink06    1  PASS  :  unlink(fifo_unlink6580) returned 0
+<<<test_start>>>
+tag=unlink06 stime=971350315
+cmdline="unlink06"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350315 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+unlink07    1  PASS  :  unlink(<non-existent file>) Failed, errno=2
+unlink07    2  PASS  :  unlink(<path is empty string>) Failed, errno=2
+unlink07    3  PASS  :  unlink(<path contains a non-existent file>) Failed, errno=2
+unlink07    4  PASS  :  unlink(<address beyond address space>) Failed, errno=14
+unlink07    5  PASS  :  unlink(<path contains a regular file>) Failed, errno=20
+unlink07    6  PASS  :  unlink(<address beyond address space>) Failed, errno=14
+unlink07    7  PASS  :  unlink(<pathname too long>) Failed, errno=36
+unlink07    8  PASS  :  unlink(<negative address>) Failed, errno=14
+<<<test_start>>>
+tag=unlink07 stime=971350315
+cmdline="unlink07"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350315 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=wait02 stime=971350315
+cmdline="wait02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+wait02      1  PASS  :  wait(&ret_code) returned 6583
+<<<execution_status>>>
+duration=-971350315 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+write01     1  PASS  :  write(tfile_6584, F_CLRALF, 1) returned 1
+<<<test_start>>>
+tag=write01 stime=971350316
+cmdline="write01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=2
+<<<test_end>>>
+<<<test_start>>>
+tag=symlink01 stime=971350316
+cmdline="symlink01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+symlink01    1  PASS  :  Creation of symbolic link file to no object file is ok
+symlink01    2  PASS  :  Creation of symbolic link file to no object file is ok
+symlink01    3  PASS  :  Creation of symbolic link file and object file via symbolic link is ok
+symlink01    4  PASS  :  Creating an existing symbolic link file error is caught
+symlink01    5  PASS  :  Creating a symbolic link which exceeds maximum pathname error is caught
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=3 cstime=1
+<<<test_end>>>
+symlink02    1  PASS  :  symlink(tfile_6586, st_6586) returned 0
+<<<test_start>>>
+tag=symlink02 stime=971350316
+cmdline="symlink02"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=readlink01 stime=971350316
+cmdline="symlink01 -T readlink01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+readlink01    1  PASS  :  Reading of symbolic link file contents checks out ok
+readlink01    2  PASS  :  Reading of symbolic link file contents checks out ok
+readlink01    3  PASS  :  Reading a symbolic link which exceeds maximum pathname error is caught
+readlink01    4  PASS  :  Reading a nonsymbolic link file error condition is caught.  EINVAL is returned
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=2
+<<<test_end>>>
+stat04      1  PASS  :  Getting stat info about object file through symbolic link file is ok
+stat04      2  PASS  :  Stat(2) error when accessing non-existent object through symbolic link is caught
+stat04      3  PASS  :  Nested symbolic link access condition caught.  ELOOP is returned
+<<<test_start>>>
+tag=stat04 stime=971350316
+cmdline="symlink01 -T stat04"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+<<<test_start>>>
+tag=lstat01 stime=971350316
+cmdline="symlink01 -T lstat01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+lstat01     1  PASS  :  lstat(2) of symbolic link file which points to no object file is ok
+lstat01     2  PASS  :  lstat(2) of symbolic link file which points at an object file is ok
+lstat01     3  PASS  :  lstat(2) of object file returns object file inode information
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=1
+<<<test_end>>>
+mkdir05     1  PASS  :  mkdir(2) of object file through symbolic link file failed as expected
+<<<test_start>>>
+tag=mkdir05 stime=971350316
+cmdline="symlink01 -T mkdir05"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+rmdir03     1  PASS  :  rmdir(2) of object file through symbolic link file failed as expected
+<<<test_start>>>
+tag=rmdir03 stime=971350316
+cmdline="symlink01 -T rmdir03"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+chdir01     1  PASS  :  chdir(2) to object file location through symbolic link file is ok
+chdir01     2  PASS  :  chdir(2) to non-existent object file location through symbolic link file failed as expected
+chdir01     3  PASS  :  Nested symbolic link access condition caught.  ELOOP is returned
+<<<test_start>>>
+tag=chdir01 stime=971350316
+cmdline="symlink01 -T chdir01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+link01      1  PASS  :  link(2) to a symbolic link, which is pointing to an existing object file worked - file created and link count adjusted
+link01      2  PASS  :  link(2) to a symbolic link, which is pointing to a non-existing object file worked ok - file created and link count adjusted.
+<<<test_start>>>
+tag=link01 stime=971350316
+cmdline="symlink01 -T link01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+unlink01    1  PASS  :  unlink(2) of symbolic link file with no object file removal is ok
+<<<test_start>>>
+tag=unlink01 stime=971350316
+cmdline="symlink01 -T unlink01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=chmod01 stime=971350316
+cmdline="symlink01 -T chmod01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+chmod01     1  PASS  :  chmod(2) of object file permissions through symbolic link file is ok
+chmod01     2  PASS  :  chmod(2) error when accessing non-existent object through symbolic link is caught
+chmod01     3  PASS  :  Nested symbolic link access condition caught.  ELOOP is returned
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+utime01     1  PASS  :  utime(2) change of object file access and modify times through symbolic link file is ok
+utime01     2  PASS  :  utime(2) error when accessing non-existent object through symbolic link is caught
+utime01     3  PASS  :  Nested symbolic link access condition caught.  ELOOP is returned
+<<<test_start>>>
+tag=utime01 stime=971350316
+cmdline="symlink01 -T utime01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=1
+<<<test_end>>>
+rename01    1  PASS  :  rename(3) of symbolic link file name which points at no object file is ok
+rename01    2  PASS  :  rename(3) of symbolic link file name which points at object file is ok
+<<<test_start>>>
+tag=rename01 stime=971350316
+cmdline="symlink01 -T rename01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+open01      1  PASS  :  open(2) with (O_CREAT | O_RDWR) to create object file through symbolic link file and all writes, reads, and lseeks are ok
+open01      2  PASS  :  open(2) with O_RDWR of existing  object file through symbolic link file and all writes, reads, and lseeks are ok
+open01      3  PASS  :  open(2) with (O_CREAT | O_EXCL) error  is caught when creating object file through symbolic link file
+open01      4  PASS  :  open(2) error with O_RDWR is caught when processing symbolic link file which points at no object file
+open01      5  FAIL  :  Expected ELOOP error condition when open(2) a nested symbolic link: errno:2 No such file or directory
+<<<test_start>>>
+tag=open01 stime=971350316
+cmdline="symlink01 -T open01"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=1 corefile=no
+cutime=2 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=gf01 stime=971350316
+cmdline="growfiles -b -e 1 -u -i 0 -L 20 -w -C 1 -l -I r -T 10 glseek20 glseek20.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6599 DEBUG1 Using random seed of 971356915
+growfiles: 6599 growfiles.c/1464: DONE 3307 iterations to 2 files. Hit time value of 20
+<<<execution_status>>>
+duration=-971350316 termination_type=exited termination_id=0 corefile=no
+cutime=836 cstime=742
+<<<test_end>>>
+<<<test_start>>>
+tag=gf02 stime=971350337
+cmdline="growfiles -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6614 growfiles.c/1464: DONE 102 iterations to 2 files. Hit iteration value
+<<<execution_status>>>
+duration=-971350337 termination_type=exited termination_id=0 corefile=no
+cutime=73 cstime=12
+<<<test_end>>>
+<<<test_start>>>
+tag=gf03 stime=971350338
+cmdline="growfiles -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6615 growfiles.c/1464: DONE 3 iterations to 150 files. Hit iteration value
+<<<execution_status>>>
+duration=-971350338 termination_type=exited termination_id=0 corefile=no
+cutime=2 cstime=16
+<<<test_end>>>
+<<<test_start>>>
+tag=gf04 stime=971350338
+cmdline="growfiles -b -e 1 -g 4090 -i 500 -t 39000 -u -f gf06_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6616 growfiles.c/1464: DONE 502 iterations to 1 files. Hit iteration value
+<<<execution_status>>>
+duration=-971350338 termination_type=exited termination_id=0 corefile=no
+cutime=186 cstime=25
+<<<test_end>>>
+<<<test_start>>>
+tag=gf05 stime=971350340
+cmdline="growfiles -b -e 1 -g 5000 -i 500 -t 49900 -T10 -c9 -I p -u -f gf07_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6617 growfiles.c/1464: DONE 502 iterations to 1 files. Hit iteration value
+<<<execution_status>>>
+duration=-971350340 termination_type=exited termination_id=0 corefile=no
+cutime=312 cstime=39
+<<<test_end>>>
+growfiles: 6628 DEBUG1 Using random seed of 971356972
+<<<test_start>>>
+tag=gf06 stime=971350344
+cmdline="growfiles -b -e 1 -u -r 1-5000 -R 0--1 -i 0 -L 30 -C 1 g_rand10 g_rand10.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6628 growfiles.c/1464: DONE 5605 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350344 termination_type=exited termination_id=0 corefile=no
+cutime=2622 cstime=304
+<<<test_end>>>
+growfiles: 6645 DEBUG1 Using random seed of 971357020
+<<<test_start>>>
+tag=gf07 stime=971350375
+cmdline="growfiles -b -e 1 -u -r 1-5000 -R 0--2 -i 0 -L 30 -C 1 -I p g_rand13 g_rand13.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6645 growfiles.c/1464: DONE 5531 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350375 termination_type=exited termination_id=0 corefile=no
+cutime=2603 cstime=315
+<<<test_end>>>
+growfiles: 6673 DEBUG1 Using random seed of 971357079
+<<<test_start>>>
+tag=gf08 stime=971350406
+cmdline="growfiles -b -e 1 -u -r 1-5000 -R 0--2 -i 0 -L 30 -C 1 g_rand11 g_rand11.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6673 growfiles.c/1464: DONE 5484 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350406 termination_type=exited termination_id=0 corefile=no
+cutime=2573 cstime=338
+<<<test_end>>>
+growfiles: 6700 DEBUG1 Using random seed of 971357137
+<<<test_start>>>
+tag=gf09 stime=971350437
+cmdline="growfiles -b -e 1 -u -r 1-5000 -R 0--1 -i 0 -L 30 -C 1 -I p g_rand12 g_rand12.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6700 growfiles.c/1464: DONE 5394 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350437 termination_type=exited termination_id=0 corefile=no
+cutime=2574 cstime=345
+<<<test_end>>>
+growfiles: 6728 DEBUG1 Using random seed of 971357196
+<<<test_start>>>
+tag=gf10 stime=971350468
+cmdline="growfiles -b -e 1 -u -r 1-5000 -i 0 -L 30 -C 1 -I l g_lio14 g_lio14.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6728 growfiles.c/1464: DONE 3961 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350468 termination_type=exited termination_id=0 corefile=no
+cutime=2350 cstime=535
+<<<test_end>>>
+<<<test_start>>>
+tag=gf11 stime=971350499
+cmdline="growfiles -b -e 1 -u -r 1-5000 -i 0 -L 30 -C 1 -I L g_lio15 g_lio15.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6742 DEBUG1 Using random seed of 971357241
+growfiles: 6742 growfiles.c/1464: DONE 3861 iterations to 2 files. Hit time value of 30
+<<<execution_status>>>
+duration=-971350499 termination_type=exited termination_id=0 corefile=no
+cutime=2396 cstime=482
+<<<test_end>>>
+<<<test_start>>>
+tag=gf12 stime=971350530
+cmdline="mkfifo gffifo17; growfiles -b -e 1 -u -i 0 -L 30 gffifo17"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mkfifo: invalid option -- b
+Try `mkfifo --help' for more information.
+<<<execution_status>>>
+duration=-971350530 termination_type=exited termination_id=1 corefile=no
+cutime=1 cstime=2
+<<<test_end>>>
+mkfifo: invalid option -- b
+Try `mkfifo --help' for more information.
+<<<test_start>>>
+tag=gf13 stime=971350530
+cmdline="mkfifo gffifo18; growfiles -b -e 1 -u -i 0 -L 30 -I r -r 1-4096 gffifo18"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971350530 termination_type=exited termination_id=1 corefile=no
+cutime=1 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=gf14 stime=971350530
+cmdline="growfiles -b -e 1 -u -i 0 -L 20 -w -l -C 1 -T 10 glseek19 glseek19.2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6771 growfiles.c/1464: DONE 3366 iterations to 2 files. Hit time value of 20
+<<<execution_status>>>
+duration=-971350530 termination_type=exited termination_id=0 corefile=no
+cutime=936 cstime=774
+<<<test_end>>>
+growfiles: 6786 DEBUG1 Using random seed of 971357337
+<<<test_start>>>
+tag=gf15 stime=971350551
+cmdline="growfiles -b -e 1 -u -r 1-49600 -I r -u -i 0 -L 120 Lgfile1"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6786 growfiles.c/1464: DONE 3199 iterations to 1 files. Hit time value of 120
+<<<execution_status>>>
+duration=-971350551 termination_type=exited termination_id=0 corefile=no
+cutime=9409 cstime=1494
+<<<test_end>>>
+<<<test_start>>>
+tag=gf16 stime=971350672
+cmdline="growfiles -b -e 1 -i 0 -L 120 -u -g 4090 -T 100 -t 408990 -l -C 10 -c 1000 -S 10 -f Lgf02_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6881 growfiles.c/1464: DONE 2730 iterations to 10 files. Hit time value of 120
+<<<execution_status>>>
+duration=-971350672 termination_type=exited termination_id=0 corefile=no
+cutime=8341 cstime=2530
+<<<test_end>>>
+<<<test_start>>>
+tag=gf17 stime=971350793
+cmdline="growfiles -b -e 1 -i 0 -L 120 -u -g 5000 -T 100 -t 499990 -l -C 10 -c 1000 -S 10 -f Lgf03_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 6972 growfiles.c/1464: DONE 2310 iterations to 10 files. Hit time value of 120
+<<<execution_status>>>
+duration=-971350793 termination_type=exited termination_id=0 corefile=no
+cutime=8763 cstime=2228
+<<<test_end>>>
+growfiles: 7058 DEBUG1 Using random seed of 971357973
+<<<test_start>>>
+tag=gf18 stime=971350915
+cmdline="growfiles -b -e 1 -i 0 -L 120 -w -u -r 10-5000 -I r -T 10 -l -S 2 -f Lgf04_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 7058 growfiles.c/1464: DONE 26147 iterations to 2 files. Hit time value of 120
+<<<execution_status>>>
+duration=-971350915 termination_type=exited termination_id=0 corefile=no
+cutime=5007 cstime=4949
+<<<test_end>>>
+<<<test_start>>>
+tag=gf19 stime=971351037
+cmdline="growfiles -b -e 1 -g 5000 -i 500 -t 49900 -T10 -c9 -I p -o O_RDWR,O_CREAT,O_TRUNC -u -f gf08i_"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+growfiles: 7167 growfiles.c/1464: DONE 502 iterations to 1 files. Hit iteration value
+<<<execution_status>>>
+duration=-971351037 termination_type=exited termination_id=0 corefile=no
+cutime=236 cstime=37
+<<<test_end>>>
+<<<test_start>>>
+tag=gf20 stime=971351040
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1-256000:512 -R 512-256000 -T 4 gfbigio-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351040 termination_type=exited termination_id=0 corefile=no
+cutime=5090 cstime=546
+<<<test_end>>>
+<<<test_start>>>
+tag=gf21 stime=971351101
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bld-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351101 termination_type=exited termination_id=0 corefile=no
+cutime=55 cstime=7
+<<<test_end>>>
+<<<test_start>>>
+tag=gf22 stime=971351101
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bldf-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351101 termination_type=exited termination_id=0 corefile=no
+cutime=56 cstime=11
+<<<test_end>>>
+<<<test_start>>>
+tag=gf23 stime=971351102
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 512-64000:1024 -R 1-384000 -T 4 gf-inf-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351102 termination_type=exited termination_id=0 corefile=no
+cutime=5016 cstime=585
+<<<test_end>>>
+<<<test_start>>>
+tag=gf24 stime=971351163
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 gf-jbld-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351163 termination_type=exited termination_id=0 corefile=no
+cutime=46 cstime=7
+<<<test_end>>>
+<<<test_start>>>
+tag=gf25 stime=971351163
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1024000-2048000:2048 -R 4095-2048000 -T 1 gf-large-gs-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351163 termination_type=exited termination_id=0 corefile=no
+cutime=170 cstime=20
+<<<test_end>>>
+<<<test_start>>>
+tag=gf26 stime=971351165
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 128-32768:128 -R 512-64000 -T 4 gfsmallio-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351165 termination_type=exited termination_id=0 corefile=no
+cutime=4858 cstime=696
+<<<test_end>>>
+<<<test_start>>>
+tag=gf27 stime=971351226
+cmdline="growfiles -b -D 0 -w -g 8b -C 1 -b -i 1000 -u gfsparse-1-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351226 termination_type=exited termination_id=0 corefile=no
+cutime=333 cstime=236
+<<<test_end>>>
+<<<test_start>>>
+tag=gf28 stime=971351231
+cmdline="growfiles -b -D 0 -w -g 16b -C 1 -b -i 1000 -u gfsparse-2-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351231 termination_type=exited termination_id=0 corefile=no
+cutime=743 cstime=537
+<<<test_end>>>
+<<<test_start>>>
+tag=gf29 stime=971351246
+cmdline="growfiles -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u gfsparse-3-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351246 termination_type=exited termination_id=0 corefile=no
+cutime=2979 cstime=764
+<<<test_end>>>
+<<<test_start>>>
+tag=gf30 stime=971351321
+cmdline="growfiles -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 gf-sync-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351321 termination_type=exited termination_id=0 corefile=no
+cutime=55 cstime=8
+<<<test_end>>>
+<<<test_start>>>
+tag=rwtest01 stime=971351323
+cmdline="rwtest -c -q -i 60s -f sync 10%25000:rw-sync-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351323 termination_type=exited termination_id=0 corefile=no
+cutime=2970 cstime=2937
+<<<test_end>>>
+<<<test_start>>>
+tag=rwtest02 stime=971351385
+cmdline="rwtest -c -q -i 60s -f buffered 10%25000:rw-buffered-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351385 termination_type=exited termination_id=0 corefile=no
+cutime=3089 cstime=2878
+<<<test_end>>>
+<<<test_start>>>
+tag=rwtest03 stime=971351446
+cmdline="rwtest -c -q -i 60s -n 2 -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351446 termination_type=exited termination_id=0 corefile=no
+cutime=4471 cstime=1481
+<<<test_end>>>
+<<<test_start>>>
+tag=rwtest04 stime=971351507
+cmdline="rwtest -c -q -i 60s -n 2 -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351507 termination_type=exited termination_id=0 corefile=no
+cutime=4448 cstime=1504
+<<<test_end>>>
+<<<test_start>>>
+tag=rwtest05 stime=971351568
+cmdline="rwtest -q -c -i 50 -T 64b 500b:/tmp/rwtest01%f"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351568 termination_type=exited termination_id=0 corefile=no
+cutime=9 cstime=10
+<<<test_end>>>
+iogen:  Unrecognized option -a on this platform
+<<<test_start>>>
+tag=iogen01 stime=971351568
+cmdline="iogen -i 120s -s read,write 500b:doio.f1.$$ 1000b:doio.f2.$$ | doio -akv -n 2"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+<<<execution_status>>>
+duration=-971351568 termination_type=exited termination_id=2 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=mm01 stime=971351568
+cmdline="mmap001 -m 10000"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mmap001     0  INFO  :  mmap()ing file of 10000 pages or 40960000 bytes
+mmap001     1  PASS  :  mmap() completed successfully.
+mmap001     0  INFO  :  touching mmaped memory
+mmap001     2  PASS  :  we're still here, mmaped area must be good
+mmap001     3  PASS  :  msync() was successful
+mmap001     4  PASS  :  munmap() was successful
+<<<execution_status>>>
+duration=-971351568 termination_type=exited termination_id=0 corefile=no
+cutime=506 cstime=573
+<<<test_end>>>
+<<<test_start>>>
+tag=mm02 stime=971351590
+cmdline="mmap001"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+mmap001     0  INFO  :  mmap()ing file of 1000 pages or 4096000 bytes
+mmap001     1  PASS  :  mmap() completed successfully.
+mmap001     0  INFO  :  touching mmaped memory
+mmap001     2  PASS  :  we're still here, mmaped area must be good
+mmap001     3  PASS  :  msync() was successful
+mmap001     4  PASS  :  munmap() was successful
+<<<execution_status>>>
+duration=-971351590 termination_type=exited termination_id=0 corefile=no
+cutime=50 cstime=15
+<<<test_end>>>
+pan reported FAIL
