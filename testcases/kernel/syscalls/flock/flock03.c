@@ -74,14 +74,13 @@
 
 void setup(void);
 void cleanup(void);
-void childfunc(void);
+void childfunc(int);
 
 
 char *TCID = "flock03";			/* Test program identifier */
 int TST_TOTAL = 3;			/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
-int fd;					/* for opening the temporary file */
 
 int main(int argc, char **argv)
 {
@@ -89,6 +88,7 @@ int main(int argc, char **argv)
 	char *msg;	/* message returned from parse_opts */
 	pid_t pid;
 	int status;
+	int fd;			 /* for opening the temporary file */
 
 
 	/* parse standard options */
@@ -107,18 +107,19 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
+		 /* PARENT */
+		fd = open(filename, O_RDWR);
+		if(fd == -1)
+		 	tst_brkm(TFAIL, cleanup, "parent failed to open the"
+						 "file, errno %d", errno);
+
 		pid = fork();
 		if(pid == -1)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 					errno);
 		if(pid == 0)
-			childfunc();
+			childfunc(fd);
 
-		/* PARENT */
-		fd = open(filename, O_RDWR);
-		if(fd == -1)
-			tst_brkm(TFAIL, cleanup, "parent failed to open the"
-					"file, errno %d", errno);
 		TEST(flock(fd, LOCK_EX | LOCK_NB));
 		if(TEST_RETURN != 0)
 			tst_resm(TFAIL, "Parent: Initial attempt to flock() failed, "
@@ -143,32 +144,38 @@ int main(int argc, char **argv)
 
 }
 
-void childfunc(void )
+void childfunc(int fd)
 {
+	int fd2;
 
 	/* give the parent a chance to lock the file */
 	sleep(2);
 
-	fd = open(filename, O_RDWR);
-	if(fd == -1)
+	fd2 = open(filename, O_RDWR);
+	if(fd2 == -1)
 		tst_brkm(TFAIL, cleanup, "child failed to open the"
-				"file, errno %d", errno);
-	if(flock(fd, LOCK_EX | LOCK_NB) != -1)
+			"file, errno %d", errno);
+	if(flock(fd2, LOCK_EX | LOCK_NB) != -1)
 		tst_resm(TFAIL, "Child: The file was not already locked");
 
 	TEST(flock(fd, LOCK_UN));
+	/* XXX: LOCK_UN does not return an error if there was nothing to
+	 * unlock.
+	 */
 	if(TEST_RETURN == -1)
 		tst_resm(TFAIL, "Child: Unable to unlock file locked by parent, "
 				"errno %d", TEST_ERRNO);
 	else
 		tst_resm(TPASS, "Child: Unlocked file locked by parent");
 
-	TEST(flock(fd, LOCK_EX | LOCK_NB));
+	TEST(flock(fd2, LOCK_EX | LOCK_NB));
 	if(TEST_RETURN == -1)
 		tst_resm(TFAIL, "Child: Unable to relock file after unlocking, "
 				"errno %d", TEST_ERRNO);
 	else
 		tst_resm(TPASS, "Child: flock after unlocking passed");
+
+	close(fd2);
 
 	tst_exit();
 	/* NOT REACHED */
@@ -182,6 +189,7 @@ void childfunc(void )
  */
 void setup(void)
 {
+	int fd;
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
