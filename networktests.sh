@@ -5,8 +5,8 @@ export LTPROOT=${PWD}
 
 
 # ---***** THESE MUST BE SET FOR CORRECT OPERATION *****---
-export RHOST=celica
-export PASSWD=celica
+export RHOST=
+export PASSWD=
 # ---***************************************************---
 
 
