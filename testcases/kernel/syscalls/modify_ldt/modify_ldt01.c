@@ -49,8 +49,10 @@
  *	None
  */
 
+#if defined(linux) && defined(__i386__)
 #include <asm/ldt.h>
 #include <asm/unistd.h>
+#endif
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
@@ -67,7 +69,8 @@ int seg[4];
 int flag;
 #define FAILED 1
 
-main(int ac, char **av)
+#if defined(linux) && defined(__i386__)
+int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
@@ -189,6 +192,16 @@ block3:
         cleanup();
 }
 
+#else /* if defined(linux) && defined(__i386__) */
+
+int main()
+{
+	tst_resm(TINFO, "modify_ldt01 test only for ix86");
+	return 0;
+}
+
+#endif /* if defined(linux) && defined(__i386__) */
+
 /*
  * setup() - performs all ONE TIME setup for this test
  */
@@ -219,6 +232,7 @@ cleanup(void)
 	tst_exit();
 }
 
+#if defined(linux) && defined(__i386__)
 int
 create_segment(void *seg, size_t size)
 {
@@ -235,3 +249,4 @@ create_segment(void *seg, size_t size)
 
 	return modify_ldt(1, &entry, sizeof(entry));
 }
+#endif /* if defined(linux) && defined(__i386__) */

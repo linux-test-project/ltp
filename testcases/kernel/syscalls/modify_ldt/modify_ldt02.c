@@ -43,8 +43,10 @@
  *	None
  */
 
+#if defined(linux) && defined(__i386__)
 #include <asm/ldt.h>
 #include <asm/unistd.h>
+#endif
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
@@ -63,6 +65,8 @@ int flag;
 
 int seg[4];
 
+#if defined(linux) && defined(__i386__)
+int
 main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
@@ -169,7 +173,15 @@ int read_segment(unsigned int index)
 			: "r" (index*sizeof(int)));
 	return res;
 }
+#else /* if defined(linux) && defined(__i386__) */
 
+int main()
+{
+	tst_resm(TINFO, "modify_ldt02 test only for ix86");
+	return 0;
+}
+
+#endif /* if defined(linux) && defined(__i386__) */
 void
 sigsegv_handler(int sig)
 {
