@@ -655,7 +655,6 @@ main()
 {
 if [ -d /var/lib/ltp ]; then
   cd /var/lib/ltp
-  touch blah
 fi
 
 while [ true ]
