@@ -167,7 +167,7 @@ function step1
     }
     cd dir1 || err_log "cd dir1 FAILED"
     make_subdirs || err_log "make_subdirs on dir1 FAILED"
-    touch_files 
+    touch_files &
     pid1=$!
     
     i=1;   
@@ -186,7 +186,7 @@ function step1
 	cd ../dir1
 	wait $pid1 
 	rm_files &
-	pid1=$!
+	pid2=$!
 
 	echo "$0: cd ../dir2 & creating files"
 	cd ../dir2
@@ -198,7 +198,7 @@ function step1
 	cd ../dir2
 	wait $pid2 
 	rm_files &
-	pid2=$!
+	pid1=$!
 
 	let i="$i + 1"
     done
