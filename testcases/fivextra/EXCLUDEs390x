@@ -1,0 +1,35 @@
+# comments allowed
+bluez-utils # comments allowed
+busybox#even comments like this
+	cloop # leading whitespace allowed
+cracklib
+curl
+cyrus-sasl-gssapi
+db
+expat
+fontcheck
+ftplib
+gdbm
+glib
+gmp
+imlib
+libelf
+libmng
+libpng
+libupnp
+libxml
+libxml2
+log4cpp
+mod_auth
+mpatrol
+openslp
+openssl
+pam
+readline
+sash
+strace
+template_py
+ucd-snmp
+valgrind
+xf86tools
+zlib
