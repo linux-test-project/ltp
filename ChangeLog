@@ -1,3 +1,13 @@
+LTP-20050405
+- Fixed '-d' option to runltp.sh
+- Added optional ltp (fivextra) extended testsuite
+- Added digital signiture testcases from the security team
+- Applied patch from Gernot Payer to fix, mincore01, shmget02, capset02
+- Applied suggested check from Carl van_Schaik to clone02.
+- Added seLinux testsuite from security team and Stephen Smalley.
+- Added NFS cthon04 tests needed files.
+
+
 LTP-20050307
 - Added -v option to LTP, fixed -s option
 - Removed fcntl16 until testcase can be fixed/changed.
