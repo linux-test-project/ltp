@@ -4,6 +4,9 @@
 # 03/14/03 mridge@us.ibm.com added instance and time command line options 
 # 05/16/03 changed script paths
 # 05/20/03 Added instructions on setup and warnings
+# 05/03/2004 hien1@us.ibm.com  Added resize2fs and resize_reiserfs after extend and reduce LVs
+# 05/03/2004 Moved the mount after resizing
+# 05/03/2004 Modified /dev/ram to /dev/ram0
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -117,23 +120,24 @@ mkfs -V -t ext2     /dev/ltp_test_vg1/ltp_test_lv1
 mkfs -V -t msdos    /dev/ltp_test_vg1/ltp_test_lv2
 mkreiserfs          /dev/ltp_test_vg2/ltp_test_lv3 <yesenter.txt
 mkfs -V -t minix    /dev/ltp_test_vg2/ltp_test_lv4
-mkfs -V -t ext3        /dev/ram
 
+### there is no /dev/ram - has /dev/ram0 ... /dev/ram15
+mkfs -V -t ext3        /dev/ram0
 
-mount -v -t nfs $nfsmount               /test/growfiles/nfs                                          
-mount -v /dev/ltp_test_vg1/ltp_test_lv1 /test/growfiles/ext2                              
-mount -v /dev/ltp_test_vg1/ltp_test_lv2 /test/growfiles/msdos                             
-mount -v /dev/ltp_test_vg2/ltp_test_lv3 /test/growfiles/reiser                            
-mount -v /dev/ltp_test_vg2/ltp_test_lv4 /test/growfiles/minix                             
-mount -v /dev/ram                       /test/growfiles/ramdisk                              
 
 lvmdiskscan -v
 lvscan      -v
 vgdisplay   -v
-lvextend -v -l +20 /dev/ltp_test_vg1/ltp_test_lv1
+lvextend -v -l +5000 /dev/ltp_test_vg1/ltp_test_lv1
 lvreduce -v -f -l -20 /dev/ltp_test_vg1/ltp_test_lv1
-lvextend -v -l +20 /dev/ltp_test_vg1/ltp_test_lv2
+
+### Need to be resize to get LV to the correct size
+resize2fs -f /dev/ltp_test_vg1/ltp_test_lv1
+lvextend -v -l +5000 /dev/ltp_test_vg1/ltp_test_lv2
 lvreduce -v -f -l -20 /dev/ltp_test_vg1/ltp_test_lv2
+
+### Need to be resize to get LV to the correct size
+resize_reiserfs -f /dev/ltp_test_vg1/ltp_test_lv2
 lvextend -v -l +20 /dev/ltp_test_vg2/ltp_test_lv3
 lvreduce -v -f -l -20 /dev/ltp_test_vg2/ltp_test_lv3
 lvextend -v -l +20 /dev/ltp_test_vg2/ltp_test_lv4
@@ -142,6 +146,14 @@ lvreduce -v -f -l -20 /dev/ltp_test_vg2/ltp_test_lv4
 vgreduce -v /dev/ltp_test_vg1 /dev/$part2
 vgextend -v /dev/ltp_test_vg1 /dev/$part2
 vgck -v
+
+### Move mount filesystems to the last since resize can't work on a mounted filesystem.
+mount -v -t nfs $nfsmount               /test/growfiles/nfs                                          
+mount -v /dev/ltp_test_vg1/ltp_test_lv1 /test/growfiles/ext2                              
+mount -v /dev/ltp_test_vg1/ltp_test_lv2 /test/growfiles/msdos                             
+mount -v /dev/ltp_test_vg2/ltp_test_lv3 /test/growfiles/reiser                            
+mount -v /dev/ltp_test_vg2/ltp_test_lv4 /test/growfiles/minix                             
+mount -v /dev/ram                       /test/growfiles/ramdisk                              
 
 echo "************ Running tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/lvm.part1 > ${TMPBASE}/lvm.part1
