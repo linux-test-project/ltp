@@ -221,13 +221,20 @@ networking()
   echo -n "Press [ENTER] to continue>>"
   read enter
 
+  echo "The program: expect MUST be installed under /usr/bin/expect for the rlogin"
+  echo "and telnet tests to work.  These tests will not be ran if this is not the"
+  echo "the case."
+  echo ""
+  echo -n "Press [ENTER] to continue>>"
+  read enter
+
   HOSTNAME=`hostname`
   echo ""
-  echo "Make sure that $RHOST's /root/.rhosts file has $HOSTNAME listed in it. "
+  echo "Make sure that $RHOST's /root/.rhosts file has $HOSTNAME's interface name listed in it. "
   echo -n "[ENTER] to continue>>"
   read enter
 
-  ping -c1 $RHOST > /dev/null 2>&1
+  rsh -n -l root $RHOST ls > /dev/null 2>&1
   if [ $? -ne "0" ]; then
    echo ""
    echo "               *** ERROR ***"
@@ -284,12 +291,32 @@ networking()
   mkdir $TMP
   cd $TMP
 
+  ls /usr/bin/expect > /dev/null
+  if [ $? == "0" ]; then
+   echo ""
+   echo "/usr/bin/expect found. rlogin and telnet tests will be ran."
+   echo ""
+   TCP=tcp_cmds
+   TCP6=ipv6
+  else
+   echo ""
+   echo "/usr/bin/expect NOT found. rlogin and telnet tests will NOT be ran."
+   echo ""
+   TCP=tcp_cmds_noexpect
+   TCP6=ipv6_noexpect
+  fi
   export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
   echo -n "Do you want to run the network commands tests (Y/N)? >> "
   read tcp_cmds
   if [ $tcp_cmds == "Y" ] || [ $tcp_cmds == "y" ]; then
-   cat ${LTPROOT}/runtest/tcp_cmds >> ${TMP}/alltests
+   cat ${LTPROOT}/runtest/$TCP >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the IPv6 tests (Y/N)? >> "
+  read ipv6
+  if [ $ipv6 == "Y" ] || [ $ipv6 == "y" ]; then
+   cat ${LTPROOT}/runtest/$TCP6 >> ${TMP}/alltests
   fi
 
   echo -n "Do you want to run the multicast tests (Y/N)? >> "
