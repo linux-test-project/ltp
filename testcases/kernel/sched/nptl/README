@@ -1,0 +1,2 @@
+Although some of these could be executed against Linuxthreads, these tests are 
+intended to specifically test against the Native Posix Threading Library (NPTL).
