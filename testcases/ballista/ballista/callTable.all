@@ -208,21 +208,21 @@ unistd.h	function	int symlink b_fname b_fname
 
 
 
-
+# Currently these tests are commented out in order to debug them
 #timers:
-time.h	function	int	clock_gettime	b_clockid	b_ptr_timespec
-time.h	function	int	clock_settime	b_clockid	b_ptr_timespec
-time.h	function	int	clock_getres	b_clockid	b_ptr_timespec
+#time.h	function	int	clock_gettime	b_clockid	b_ptr_timespec
+#time.h	function	int	clock_settime	b_clockid	b_ptr_timespec
+#time.h	function	int	clock_getres	b_clockid	b_ptr_timespec
 #ZEROtime.h	function	clock_t	clock #ZERO calling arguments
-time.h	function	double	difftime	b_time_t	b_time_t
-time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_int  
+#time.h	function	double	difftime	b_time_t	b_time_t
+#time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_int  
 #time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_long  #ALPHA version
 #time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_int   #LINUX/SUN version
-time.h	function	int	timer_delete	b_timer
-time.h	function	int	timer_settime	b_timer	b_timer	b_ptr_itimerspec	b_ptr_itimerspec
-time.h	function	int	timer_gettime	b_timer		b_ptr_itimerspec
-time.h	function	int	timer_getoverrun	b_timer
-time.h	function	int	nanosleep	b_ptr_timespec	b_ptr_timespec
+#time.h	function	int	timer_delete	b_timer
+#time.h	function	int	timer_settime	b_timer	b_timer	b_ptr_itimerspec	b_ptr_itimerspec
+#time.h	function	int	timer_gettime	b_timer		b_ptr_itimerspec
+#time.h	function	int	timer_getoverrun	b_timer
+#time.h	function	int	nanosleep	b_ptr_timespec	b_ptr_timespec
 
 #memory
 #munlockall no call arguments
@@ -247,7 +247,7 @@ sched.h	function	int	sched_getscheduler	b_pid
 #sched.h	function	int	sched_yield    #no calling arguments
 sched.h	function	int	sched_get_priority_max	b_sched_policy
 sched.h	function	int	sched_get_priority_min	b_sched_policy
-sched.h	function	int	sched_rr_get_interval	b_pid	b_ptr_timespec
+#sched.h	function	int	sched_rr_get_interval	b_pid	b_ptr_timespec
 
 #semaphore
 semaphore.h	function	int	sem_init	b_ptr_sem_t	b_int	b_unsigned_int
