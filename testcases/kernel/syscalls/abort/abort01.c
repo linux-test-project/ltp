@@ -58,16 +58,13 @@
 //char progname[]= "abort1()";
 char *TCID = "abort01";
 
-
-int local_flag = PASSED;
+int local_flag=PASSED;
 int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;
 
 int anyfail();
-int blenter();
-int blexit();
 int instress();
 void setup();
 void terror();
@@ -86,7 +83,6 @@ int main (int argc, char *argv[])
 
 	setup();		/* temp file is now open	*/
 /*--------------------------------------------------------------*/
-	blenter();
 
 	for (i=0; i < ITER; i++) {
 
@@ -143,12 +139,10 @@ int main (int argc, char *argv[])
 			break;
 	}
 
-	blexit();
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
 	unlink("core");
-	tst_rmdir();
 	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
   return(0);
 }
@@ -157,8 +151,8 @@ int main (int argc, char *argv[])
 /******	LTP Port	*****/
 int anyfail()
 {
-  tst_resm(TINFO, "Exiting test\n");
   (local_flag == FAILED)? tst_resm(TFAIL, "Test failed\n"): tst_resm(TPASS, "Test passed\n");
+  tst_rmdir();
   tst_exit();
   return(0);
 }
@@ -169,18 +163,6 @@ void setup()
 {
  temp = stderr;
  tst_tmpdir();
-}
-
-int blenter()
-{
-   local_flag = PASSED;
-   return(0);
-}
-
-int blexit()
-{
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
-   return(0);
 }
 
 int instress()
