@@ -34,6 +34,7 @@
  *  Waiter done waiting
  *
  *  HISTORY:
+ *    written by Dave Olien (oliend@us.ibm.com)
  *    03/06/2002 Robbie Williamson (robbiew@us.ibm.com)
  *      -ported
  *
