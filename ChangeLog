@@ -1,3 +1,9 @@
+2000-09-18 Juan J. Quintela <quintela@fi.udc.es>
+           Aaron Laffin <alaffin@sgi.com>
+
+  * tests/mmap001.c: first checkin of a modified version of
+  mmap001.c from the memtest suite.
+
 2000-09-08  Egor Duda <deo@logos-m.ru>
 
 	* tests/fpathconf01.c: Close opened file at exit.
