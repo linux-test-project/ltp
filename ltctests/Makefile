@@ -1,4 +1,4 @@
-SUBDIRS = ade cli_sev files fs io mem multicast nfs pth_str rpc tcp_cmds
+SUBDIRS = ade cli_sev files fs io ipc mem multicast nfs pth_str rpc tcp_cmds
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
