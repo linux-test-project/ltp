@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.6 2003/04/28 21:37:40 robbiew Exp $ */
+/* $Id: tst_sig.c,v 1.7 2003/09/25 15:45:17 robbiew Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -72,10 +72,9 @@
 #include <signal.h>
 #include "test.h"
 
-#ifdef USE_NPTL
+/* Needed for NPTL */
 #define SIGCANCEL 32
 #define SIGTIMER 33
-#endif
 
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
@@ -131,10 +130,9 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	        case SIGKILL:
 	        case SIGSTOP:
 	        case SIGCONT:
-#ifdef USE_NPTL 
+/* Needed for NPTL */ 
 		case SIGCANCEL:
 		case SIGTIMER:
-#endif
 #ifdef CRAY
 	        case SIGINFO:
 	        case SIGRECOVERY:	/* allow chkpnt/restart */
