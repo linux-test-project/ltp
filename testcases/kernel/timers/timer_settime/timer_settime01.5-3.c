@@ -58,21 +58,21 @@ int main(int argc, char *argv[])
 	act.sa_flags=0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
-		perror("Error calling sigemptyset");
+		perror("Error calling sigemptyset\n");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
-		perror("Error calling sigaction");
+		perror("Error calling sigaction\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
-		perror("clock_gettime() did not return success");
+		perror("clock_gettime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 

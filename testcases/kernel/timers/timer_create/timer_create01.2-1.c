@@ -22,7 +22,7 @@
 
 int compare(const void *key, const void *amemb)
 {
-	if (*(int *)key == *(int *)amemb) {
+	if (*(timer_t *)key == *(timer_t *)amemb) {
 		return 0;
 	} else {
 		return 1;
@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
 {
 	struct sigevent ev;
 	timer_t tid;
-	int tids[TIMER_MAX];
-	int i;
+	timer_t tids[TIMER_MAX];
+	size_t i;
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGALRM;
@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
 
 	for (i=0; i<TIMER_MAX;i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-			perror("timer_create() did not return success");
+			perror("timer_create() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 
 		tids[i] = tid;
-		if (lfind(&tid, tids, &i, sizeof(int), compare) != NULL) {
+		if (lfind(&tid, tids, &i, sizeof(timer_t), compare) != NULL) {
 			printf("Duplicate tid found %d\n", tid);
 			printf("Test FAILED\n");
 			return PTS_FAIL;

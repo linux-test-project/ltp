@@ -51,12 +51,12 @@ int main(int argc, char *argv[])
 	 */
 
 	if (sigemptyset(&set) == -1 ) {
-		perror("sigemptyset() failed");
+		perror("sigemptyset() failed\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaddset(&set, SIGTOTEST) == -1) {
-		perror("sigaddset() failed");
+		perror("sigaddset() failed\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	ev.sigev_signo = SIGTOTEST;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -81,22 +81,22 @@ int main(int argc, char *argv[])
 				(int) its.it_value.tv_nsec);
 
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
-			perror("clock_gettime() did not return success");
+			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 		
 		if (timer_settime(tid, 0, &its, NULL) != 0) {
-			perror("timer_settime() did not return success");
+			perror("timer_settime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 	
 		if (sigwait(&set, &sig) == -1) {
-			perror("sigwait() failed");
+			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
 	
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
-			perror("clock_gettime() did not return success");
+			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 	
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (timer_delete(tid) != 0) {
-		perror("timer_delete() did not return success");
+		perror("timer_delete() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 

@@ -46,24 +46,24 @@ int main(int argc, char *argv[])
 	itsset.it_value.tv_nsec = TIMERNSEC;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &itsset, NULL) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	ts.tv_sec=0;
 	ts.tv_nsec=SLEEPNSEC;
 	if (nanosleep(&ts, NULL) != 0) {
-		perror("nanosleep() did not return success");
+		perror("nanosleep() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_gettime(tid, &itsget) != 0) {
-		perror("timer_gettime() did not return success");
+		perror("timer_gettime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 

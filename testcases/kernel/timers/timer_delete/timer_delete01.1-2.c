@@ -36,12 +36,12 @@ int main(int argc, char *argv[])
 	ev.sigev_signo = SIGTOTEST;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_delete(tid) != 0) {
-		perror("timer_delete() did not return success");
+		perror("timer_delete() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 

@@ -69,21 +69,21 @@ int main(int argc, char *argv[])
 	its.it_value.tv_nsec = 0;
 
 	if (sigemptyset(&actp.sa_mask) == -1) {
-		perror("Error calling sigemptyset");
+		perror("Error calling sigemptyset\n");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGALRM, &actp, 0) == -1) {
-		perror("Error calling sigaction");
+		perror("Error calling sigaction\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_create(CLOCK_REALTIME, NULL, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 	
@@ -95,11 +95,11 @@ int main(int argc, char *argv[])
 		act.sa_flags=0;
 
 		if (sigemptyset(&act.sa_mask) == -1) {
-			perror("Error calling sigemptyset");
+			perror("Error calling sigemptyset\n");
 			return CHILDFAILURE;
 		}
 		if (sigaction(SIGALRM, &act, 0) == -1) {
-			perror("Error calling sigaction");
+			perror("Error calling sigaction\n");
 			return CHILDFAILURE;
 		}
 
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit");
+			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
 		}
 		if (WEXITSTATUS(i)) {

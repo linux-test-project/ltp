@@ -37,17 +37,17 @@ int main()
 	int overruns;
 
 	if (sigemptyset(&set) != 0) {
-		perror("sigemptyset() did not return success");
+		perror("sigemptyset() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaddset(&set, SIGCONT) != 0) {
-		perror("sigaddset() did not return success");
+		perror("sigaddset() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_SETMASK, &set, NULL) != 0) {
-		perror("sigprocmask() did not return success");
+		perror("sigprocmask() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -58,7 +58,7 @@ int main()
 	 * create first timer
 	 */
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -68,14 +68,14 @@ int main()
 	its.it_value.tv_nsec = 0;
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
 	sleep(VALUESEC+INTERVALSEC);
 
 	if (sigprocmask(SIG_UNBLOCK, &set, NULL) != 0) {
-		perror("sigprocmask() did not return success");
+		perror("sigprocmask() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 	

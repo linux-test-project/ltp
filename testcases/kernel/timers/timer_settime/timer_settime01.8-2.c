@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	its.it_value.tv_nsec = 0;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success");
+		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	 * set up timer that will expire
 	 */
 	if (timer_settime(tid, 0, &its, &oits) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	oits.it_interval.tv_sec = 1000; oits.it_interval.tv_nsec = 1000;
 
 	if (timer_settime(tid, 0, &its, &oits) != 0) {
-		perror("timer_settime() did not return success");
+		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
