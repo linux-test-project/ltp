@@ -103,7 +103,7 @@ int main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  */
 void
-setup()
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -118,7 +118,7 @@ setup()
  *	       completion or premature exit.
  */
 void
-cleanup()
+cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -133,10 +133,12 @@ cleanup()
 int TST_TOTAL = 0;              /* Total number of test cases. */
 
 int
-main()
+main(void)
 {
         tst_resm(TPASS, "vsyscall gettimeofday not EFAULT checked on x86-64");
         tst_exit();
+	/*NOTREACHED*/
+	return 0;
 }
 
 #endif
