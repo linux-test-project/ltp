@@ -30,6 +30,10 @@
 /*		- created usage function.                                     */
 /*		- pthread_join checks for thread exit status reported by      */
 /*		  pthread_exit()                                              */
+/*									      */
+/* Oct-25-2001  Modified.						      */
+/*		- Fixed bug in usage()				              */
+/*		- malloc'ed pointer for pthread return value.                 */
 /*								              */
 /* Purpose:	Performing General Stress with Race conditions        	      */
 /* 									      */
