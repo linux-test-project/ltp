@@ -76,7 +76,7 @@ do_test()
    do
       host $RHOST
       if [ $? -eq 0 ]; then
-         rhost_addr=`host $RHOST | tr -s ',' ' ' | awk '{print $4}'` 2>&1 \
+         rhost_addr=`host $RHOST | tr -s ',' ' ' | awk '{print $NF}'` 2>&1 \
                      >/dev/null
          host $rhost_addr  2>&1 >/dev/null
          [ $? -eq 0 ] || end_testcase "host can not do a reverse lookup"
