@@ -107,7 +107,12 @@ main(int ac, char **av)
 		 */
 		for (i=0; i<TST_TOTAL; i++) {
 
-			/* first set the handler to our own handler */
+                        /* First reset the signal to the default
+                           action to clear out any pre-test
+                           execution settings */
+                        signal(siglist[i],SIG_DFL);
+
+			/* then set the handler to our own handler */
 			if ((rval = signal(siglist[i], &sighandler))==SIG_ERR) {
 				tst_brkm(TBROK, cleanup, "initial signal call"
 					 " failed");
