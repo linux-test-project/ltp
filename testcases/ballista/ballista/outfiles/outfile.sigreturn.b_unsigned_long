@@ -1,0 +1,66 @@
+Start random sample - ~ 75% of space.
+Timeout set to 5000000
+#param:b_short_int_common	b_short_int_common_ONE	
+rval:
+Done - Pass	0
+------- 1 of ~17.25 Combination #2 of 23----
+#param:b_short_int_common	b_short_int_common_SEVENTEEN	
+rval:
+Done - Pass	0
+------- 2 of ~17.25 Combination #6 of 23----
+#param:b_short_int_common	b_short_int_common_SC_PAGE	
+rval:
+Done - Pass	0
+------- 3 of ~17.25 Combination #7 of 23----
+#param:b_short_int_common	b_short_int_common_SIXTYFIVE	
+rval:
+Done - Pass	0
+------- 4 of ~17.25 Combination #9 of 23----
+#param:b_short_int_common	b_short_int_common_ONE27	
+rval:
+Done - Pass	0
+------- 5 of ~17.25 Combination #10 of 23----
+#param:b_short_int_common	b_short_int_common_ONE29	
+rval:
+Done - Pass	0
+------- 6 of ~17.25 Combination #11 of 23----
+#param:b_short_int_common	b_short_int_common_TWO55	
+rval:
+Done - Pass	0
+------- 7 of ~17.25 Combination #12 of 23----
+#param:b_short_int_common	b_short_int_common_TWO56	
+rval:
+Done - Pass	0
+------- 8 of ~17.25 Combination #13 of 23----
+#param:b_short_int_common	b_short_int_common_TWO57	
+rval:
+Done - Pass	0
+------- 9 of ~17.25 Combination #14 of 23----
+#param:b_short_int_common	b_short_int_common_I8193	
+rval:
+Done - Pass	0
+------- 10 of ~17.25 Combination #17 of 23----
+#param:b_short_int_common	b_short_int_common_I16383	
+rval:
+Done - Pass	0
+------- 11 of ~17.25 Combination #18 of 23----
+#param:b_short_int_common	b_short_int_common_MAXSHORT	
+rval:
+Done - Pass	0
+------- 12 of ~17.25 Combination #19 of 23----
+#param:b_unsigned_short	b_unsigned_short_MAXSHORTPLUS1	
+rval:
+Done - Pass	0
+------- 13 of ~17.25 Combination #20 of 23----
+#param:b_unsigned_short	b_unsigned_short_MAXUSHORT	
+rval:
+Done - Pass	0
+------- 14 of ~17.25 Combination #21 of 23----
+#param:b_unsigned_int	b_unsigned_int_MAXUINT	
+rval:
+Done - Pass	0
+------- 15 of ~17.25 Combination #22 of 23----
+#param:b_unsigned_long	b_unsigned_long_MAXULONG	
+rval:
+Done - Pass	0
+------- 16 of ~17.25 Combination #23 of 23----

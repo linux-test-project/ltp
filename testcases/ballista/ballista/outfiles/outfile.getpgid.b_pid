@@ -1,0 +1,82 @@
+Start random sample - ~ 75% of space.
+Timeout set to 5000000
+#param:b_short_int_common	b_short_int_common_ONE	
+rval:
+Done - Pass	0
+------- 1 of ~21.75 Combination #2 of 29----
+#param:b_short_int_common	b_short_int_common_SEVENTEEN	
+rval:
+Done - Pass	0
+------- 2 of ~21.75 Combination #6 of 29----
+#param:b_short_int_common	b_short_int_common_SC_PAGE	
+rval:
+Done - Pass	0
+------- 3 of ~21.75 Combination #7 of 29----
+#param:b_short_int_common	b_short_int_common_SIXTYFIVE	
+rval:
+Done - Pass	0
+------- 4 of ~21.75 Combination #9 of 29----
+#param:b_short_int_common	b_short_int_common_ONE27	
+rval:
+Done - Pass	0
+------- 5 of ~21.75 Combination #10 of 29----
+#param:b_short_int_common	b_short_int_common_ONE29	
+rval:
+Done - Pass	0
+------- 6 of ~21.75 Combination #11 of 29----
+#param:b_short_int_common	b_short_int_common_TWO55	
+rval:
+Done - Pass	0
+------- 7 of ~21.75 Combination #12 of 29----
+#param:b_short_int_common	b_short_int_common_TWO56	
+rval:
+Done - Pass	0
+------- 8 of ~21.75 Combination #13 of 29----
+#param:b_short_int_common	b_short_int_common_TWO57	
+rval:
+Done - Pass	0
+------- 9 of ~21.75 Combination #14 of 29----
+#param:b_short_int_common	b_short_int_common_I8193	
+rval:
+Done - Pass	0
+------- 10 of ~21.75 Combination #17 of 29----
+#param:b_short_int_common	b_short_int_common_I16383	
+rval:
+Done - Pass	0
+------- 11 of ~21.75 Combination #18 of 29----
+#param:b_short_int_common	b_short_int_common_MAXSHORT	
+rval:
+Done - Pass	0
+------- 12 of ~21.75 Combination #19 of 29----
+#param:b_short	b_short_NEG_ONE	
+rval:
+Done - Pass	0
+------- 13 of ~21.75 Combination #20 of 29----
+#param:b_short	b_short_NEG_SIXTYFOUR	
+rval:
+Done - Pass	0
+------- 14 of ~21.75 Combination #21 of 29----
+#param:b_short	b_short_NEG_MAXSHORT	
+rval:
+Done - Pass	0
+------- 15 of ~21.75 Combination #22 of 29----
+#param:b_int	b_int_MAXINT	
+rval:
+Done - Pass	0
+------- 16 of ~21.75 Combination #23 of 29----
+#param:b_int	b_int_A	
+rval:
+Done - Pass	0
+------- 17 of ~21.75 Combination #25 of 29----
+#param:b_pid	b_pid_PID_SELF	
+rval:
+Done - Pass	0
+------- 18 of ~21.75 Combination #26 of 29----
+#param:b_pid	b_pid_PID_CHILD	
+rval:
+Done - Pass	0
+------- 19 of ~21.75 Combination #27 of 29----
+#param:b_pid	b_pid_PID_65535	
+rval:
+Done - Pass	0
+------- 20 of ~21.75 Combination #28 of 29----

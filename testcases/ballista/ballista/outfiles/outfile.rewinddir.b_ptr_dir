@@ -1,0 +1,210 @@
+Start random sample - ~ 75% of space.
+Timeout set to 5000000
+#param:b_ptr_void	b_ptr_void_NEGONE	
+rval:
+Done - Pass	0
+------- 1 of ~57 Combination #2 of 76----
+#param:b_ptr_void	b_ptr_void_CONST	
+rval:
+Done - Pass	0
+------- 2 of ~57 Combination #6 of 76----
+#param:b_ptr_void	b_ptr_void_FREED	
+rval:
+Done - Pass	0
+------- 3 of ~57 Combination #7 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_MED	
+rval:
+Done - Pass	0
+------- 4 of ~57 Combination #9 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_LARGE	
+rval:
+Done - Pass	0
+------- 5 of ~57 Combination #10 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_XLARGE	
+rval:
+Done - Pass	0
+------- 6 of ~57 Combination #11 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_HUGE	
+rval:
+Done - Pass	0
+------- 7 of ~57 Combination #12 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUFMAX	
+rval:
+Done - Pass	0
+------- 8 of ~57 Combination #13 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_64K	
+rval:
+Done - Pass	0
+------- 9 of ~57 Combination #14 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_ODD	
+rval:
+Done - Pass	0
+------- 10 of ~57 Combination #17 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_FREED	
+rval:
+Done - Pass	0
+------- 11 of ~57 Combination #18 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_CODE	
+rval:
+Done - Pass	0
+------- 12 of ~57 Combination #19 of 76----
+#param:b_ptr_buf	b_ptr_buf_BUF_LOW	
+rval:
+Done - Pass	0
+------- 13 of ~57 Combination #20 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_CHAR	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 14 of ~57 Combination #21 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_CHAR	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 15 of ~57 Combination #22 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_CHAR	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 16 of ~57 Combination #23 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_NUM	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 17 of ~57 Combination #25 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_NUM	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 18 of ~57 Combination #26 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_NUM	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 19 of ~57 Combination #27 of 76----
+#param:b_ptr_char	b_ptr_char_S8K	b_ptr_char_NUM	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 20 of ~57 Combination #28 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_NASTY	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 21 of ~57 Combination #30 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_NASTY	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 22 of ~57 Combination #31 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_ESC	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 23 of ~57 Combination #33 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_ESC	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 24 of ~57 Combination #34 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_ESC	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 25 of ~57 Combination #35 of 76----
+#param:b_ptr_char	b_ptr_char_S8K	b_ptr_char_ESC	b_ptr_char_EMPTY	
+rval:
+Done - Pass	0
+------- 26 of ~57 Combination #36 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_CHAR	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 27 of ~57 Combination #37 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_CHAR	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 28 of ~57 Combination #39 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_NUM	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 29 of ~57 Combination #41 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_NUM	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 30 of ~57 Combination #43 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_NASTY	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 31 of ~57 Combination #45 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_NASTY	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 32 of ~57 Combination #46 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_ESC	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 33 of ~57 Combination #49 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_ESC	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 34 of ~57 Combination #51 of 76----
+#param:b_ptr_char	b_ptr_char_S8K	b_ptr_char_ESC	b_ptr_char_SOME	
+rval:
+Done - Pass	0
+------- 35 of ~57 Combination #52 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_CHAR	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 36 of ~57 Combination #53 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_CHAR	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 37 of ~57 Combination #54 of 76----
+#param:b_ptr_char	b_ptr_char_S8K	b_ptr_char_CHAR	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 38 of ~57 Combination #56 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_NUM	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 39 of ~57 Combination #57 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_NUM	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 40 of ~57 Combination #58 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_NUM	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 41 of ~57 Combination #59 of 76----
+#param:b_ptr_char	b_ptr_char_S8K	b_ptr_char_NUM	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 42 of ~57 Combination #60 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_NASTY	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 43 of ~57 Combination #61 of 76----
+#param:b_ptr_char	b_ptr_char_S1	b_ptr_char_ESC	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 44 of ~57 Combination #65 of 76----
+#param:b_ptr_char	b_ptr_char_S4	b_ptr_char_ESC	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 45 of ~57 Combination #66 of 76----
+#param:b_ptr_char	b_ptr_char_S16	b_ptr_char_ESC	b_ptr_char_FULL	
+rval:
+Done - Pass	0
+------- 46 of ~57 Combination #67 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_CLOSED	b_ptr_dir_EMPTY	
+rval:
+Done - Pass	0
+------- 47 of ~57 Combination #69 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_OPEN	b_ptr_dir_EMPTY	
+rval:
+Done - Pass	0
+------- 48 of ~57 Combination #70 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_REMOVED	b_ptr_dir_EMPTY	
+rval:
+Done - Pass	0
+------- 49 of ~57 Combination #71 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_MIDWAY	b_ptr_dir_EMPTY	
+rval:
+Done - Pass	0
+------- 50 of ~57 Combination #72 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_CLOSED	b_ptr_dir_WITH_FILES	
+rval:
+Done - Pass	0
+------- 51 of ~57 Combination #73 of 76----
+#param:b_ptr_dir	b_ptr_dir_DIR_MIDWAY	b_ptr_dir_WITH_FILES	
+rval:
+Done - Pass	0
+------- 52 of ~57 Combination #76 of 76----
