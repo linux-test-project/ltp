@@ -71,7 +71,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be executed by 'non-super-user'  only.
  */
 
 #include <stdio.h>
@@ -81,6 +80,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -99,6 +99,10 @@ char *TCID="readlink03";	/* Test program identifier.    */
 int TST_TOTAL=5;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, EINVAL, ENAMETOOLONG, ENOENT, 0};
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 int no_setup();
 int setup1();			/* setup function to test symlink for EACCES */
@@ -212,10 +216,17 @@ setup()
 {
 	int i;
 
-	/* make sure test is not being run as root */
-	if (0 == geteuid()) {
-		tst_brkm(TBROK, tst_exit, "Must not run test as root");
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
