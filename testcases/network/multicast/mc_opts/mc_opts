@@ -40,7 +40,7 @@ unset LIBPATH
 $trace_logic
 
 if [ -z $LTPBIN ]; then
-  PATH=../../../bin/:$PATH
+  PATH=../../../bin/:./:$PATH
 fi
 TC=mc_opts
 TCsrc=${TCsrc:-`pwd`}
