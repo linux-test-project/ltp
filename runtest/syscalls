@@ -434,6 +434,7 @@ msync05 msync05
 
 munlock01 munlock01
 munlock02 munlock02
+munlock03 munlock03
 
 munlockall01 munlockall01
 munlockall02 munlockall02
