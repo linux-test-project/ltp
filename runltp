@@ -70,7 +70,7 @@ usage()
 
     usage: ./${0##*/} -c [-d TMPDIR] [-f CMDFILE ] [-i # (in Mb)] 
     [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -n -q 
-    [ -r LTPROOT ] [ -t DURATION ] [ -x INSTANCES ] 
+    [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ] -v [ -x INSTANCES ] 
                 
     -c NUM_PROCS    Run LTP under additional background CPU load.
     -d TMPDIR       Directory where temporary files will be created.
@@ -85,18 +85,17 @@ usage()
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
+    -s PATTERN       Only run test cases which match PATTERN.
     -t DURATION     Execute the testsuite for given duration. Examples:
                       -t 60s = 60 seconds
                       -t 45m = 45 minutes
                       -t 24h = 24 hours
                       -t 2d  = 2 days
-                     
+    -v              Print more verbose output to screen.                   
     -x INSTANCES    Run multiple instances of this testsuite.
 
     example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 
-    NOTE: If you do not wish to learn these options use the 
-          "runltp" program instead.
 
 	EOF
 exit 0
@@ -110,6 +109,7 @@ main()
     local ALT_DIR=0
     local RUN_NETEST=0
     local QUIET_MODE=""
+    local VERBOSE_MODE=""
     local NETPIPE=0
     local GENLOAD=0
     local MEMSIZE=0
@@ -118,8 +118,10 @@ main()
     local LOGFILE=""
     local SCENFILES=""
     local PRETTY_PRT=""
+    local TAG_RESTRICT_STRING=""
+    local PAN_COMMAND=""
 
-    while getopts c:d:f:hi:l:m:Nno:pqr:t:x: arg
+    while getopts c:d:f:hi:l:m:Nno:pqr:s:t:vx: arg
     do  case $arg in
         c)       
 	    NUM_PROCS=$(($OPTARG))
@@ -182,11 +184,15 @@ main()
     
         r)  LTPROOT=$OPTARG;;
     
+        s)  TAG_RESTRICT_STRING=$OPTARG;;
+    
         t)  # In case you want to specify the time 
             # to run from the command line 
             # (2m = two minutes, 2h = two hours, etc)
             DURATION="-t $OPTARG" ;;
     
+        v)  VERBOSE_MODE=1;;
+   
         x)  # number of ltp's to run
             cat <<-EOF >&1
             WARNING: The use of -x can cause unpredictable failures, as a
@@ -201,9 +207,20 @@ main()
         esac
     done
     
+   if [ -n "$TAG_RESTRICT_STRING" ] ; then 
+        if [ -n "$CMDFILE" ]; then
+	    echo "FATAL  -s and -f not supported together"
+	    exit 1
+	fi
+        if [ "$RUN_NETEST" -eq 1 ]; then
+	    echo "FATAL  -s and -N not supported together"
+	    exit 1
+	fi
+    fi    
+        
     mkdir -p $TMP || \
     {
-        echo "FATAL: Unable to make temporaty directory $TMP"
+        echo "FATAL: Unable to make temporary directory $TMP"
         exit 1
     }
     
@@ -264,11 +281,16 @@ main()
                 exit 1
             }
 
+	    if [ -z "$TAG_RESTRICT_STRING" ]
+	    then
             cat $SCENFILES >> ${TMP}/alltests || \
             {
                 echo "FATAL: unable to create command file"
                 exit 1
             }
+	    else
+	    grep $TAG_RESTRICT_STRING $SCENFILES >> ${TMP}/alltests #Not worth checking return codes for this case
+	    fi
        done
     else
         [ -f $CMDFILE ] || \
@@ -321,6 +343,8 @@ main()
         echo "WARNING: some test cases may fail"
     }
     
+    
+       
     # display versions of installed software
     [ -z "$QUIET_MODE" ] && \
     { 
@@ -332,6 +356,15 @@ main()
     }
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
+    PAN_COMMAND="${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE"
+    if [ ! -z "$VERBOSE_MODE" ] ; then
+      echo "COMMAND:    $PAN_COMMAND"
+      if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
+        echo "INFO: Restricted to $TAG_RESTRICT_STRING"
+      fi
+    fi
+    #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE
     
