@@ -761,8 +761,9 @@ statfs01 statfs01
 statfs02 statfs02
 statfs03 statfs03
 
+# This syscall is obsoleted by settimeofday.
 #stime01 stime01
-stime02 stime02
+#stime02 stime02
 
 string01 string01
 
@@ -813,8 +814,9 @@ syslog10 syslog10
 syslog11 syslog11
 syslog12 syslog12
 
-time01 time01
-time02 time02
+# This syscall is obsoleted by gettimeofday.
+# time01 time01
+# time02 time02
 
 times01 times01
 times02 times02
