@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl09.c,v 1.3 2000/09/04 17:25:22 alaffin Exp $ */
+/* $Id: fcntl09.c,v 1.4 2000/09/08 15:00:15 alaffin Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -157,11 +157,14 @@ main(int ac, char **av)
      * check looping state if -c option given
      ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
+     int type;
+     for (type = 0; type < 2; type ++) {
 
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-	flocks.l_type = F_RDLCK | F_WRLCK;
+	flocks.l_type = type ? F_RDLCK : F_WRLCK;
+
 	/* 
 	 * Call fcntl(2) with F_SETLK argument on fname
 	 */
@@ -171,8 +174,8 @@ main(int ac, char **av)
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
 	    tst_resm(TFAIL,
-		     "fcntl(%s, F_SETLK, &flocks) flocks.l_type = F_RDLCK | F_WRLCK Failed, errno=%d : %s",
-		     fname, TEST_ERRNO, strerror(TEST_ERRNO));
+		     "fcntl(%s, F_SETLK, &flocks) flocks.l_type = %s Failed, errno=%d : %s",
+		     fname, type ? "F_RDLCK" : "F_WRLCK", TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
 	    
 	    /***************************************************************
@@ -181,8 +184,8 @@ main(int ac, char **av)
 	    if ( STD_FUNCTIONAL_TEST ) {
 		/* No Verification test, yet... */
 		tst_resm(TPASS,
-			 "fcntl(%s, F_SETLK, &flocks) flocks.l_type = F_RDLCK | F_WRLCK returned %d",
-			 fname, TEST_RETURN);
+			 "fcntl(%s, F_SETLK, &flocks) flocks.l_type = %s returned %d",
+			 fname, type ? "F_RDLCK" : "F_WRLCK" ,TEST_RETURN);
 	    } 
 	}
 
@@ -210,6 +213,7 @@ main(int ac, char **av)
 			 fname, TEST_RETURN);
 	    } 
 	}
+     }
 
     }	/* End for TEST_LOOPING */
 
@@ -229,6 +233,9 @@ setup()
 {
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
 
     /* Pause if that option was specified */
     TEST_PAUSE;
@@ -267,6 +274,10 @@ cleanup()
        tst_resm(TWARN, "unlink(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
       
     }
+
+    /* Remove tmp dir and all files in it */
+    tst_rmdir();
+
     /* exit with return code appropriate for results */
     tst_exit();
 }	/* End cleanup() */
