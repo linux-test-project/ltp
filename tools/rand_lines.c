@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rand_lines.c,v 1.3 2002/03/27 22:54:09 robbiew Exp $ */
+/* $Id: rand_lines.c,v 1.4 2002/06/20 19:03:00 nstraz Exp $ */
 /**************************************************************
  *
  *    OS Testing - Silicon Graphics, Inc.
@@ -50,7 +50,7 @@
  *
  *    INPUT SPECIFICATIONS
  *     This tool will print lines of a file in random order.
- *     There is max line length is 2048.
+ *     The max line length is 4096.
  *     The options supported are:
  *       -h     This option prints an help message then exits.
  *
@@ -61,7 +61,7 @@
  *		the file an additional time.
  *		       
  *       -l numlines : This option specifies to randomize file in
- *		numlines chucks.  The default size if 2048.
+ *		numlines chucks.  The default size is 4096.
  *
  *       -S seed     : sets randomization seed to seed. 
  *		The default is time(0).  If seed is zero, time(0) is used.
@@ -87,12 +87,14 @@
  *      username     description
  *      ----------------------------------------------------------------
  *	rrl 	    Creatation of program
+ *	rrl  06/02  Fixed bug and some cleanup. Changed default chunk
+ *	            and line size to 4096 characters. 
  *
  *    BUGS/LIMITATIONS
  *	This program can not deal with non-seekable file like
  *	stdin or a pipe.  If more than one file is specified,
  *	each file is randomized one at a time.  The max line
- *	length is 2048 characters.
+ *	length is 4096 characters.
  *
  **************************************************************/
 
@@ -103,8 +105,7 @@
 #include <errno.h>
 #include <time.h>
 
-void usage();
-void help();
+#include "random_range.h"
 
 /*
  * Structure used to hold file line offset.
@@ -114,22 +115,20 @@ struct offset_t {
 	long offset;
 };
 
-#define DEF_SIZE	2048
-#define MAX_LN_SZ	2048		/* max line size */
-
-extern int errno;
-
-extern int random_range();
-extern int random_range_seed();
-int get_numlines(FILE *infile);
+void usage(FILE *stream);
+void help();
 int rnd_file(FILE *infile, int numlines, long seed);
-int rnd_insert(struct offset_t offsets[], int offset, int size);
+int get_numlines(FILE *infile);
+int rnd_insert(struct offset_t offsets[], long offset, int size);
+
+#define DEF_SIZE	4096            /* default chunk size */
+#define MAX_LN_SZ	4096		/* max line size */
 
 #ifndef SEEK_SET
 #define SEEK_SET	0
 #endif
 
-char *Progname;
+char *Progname = NULL;
 
 /***********************************************************************
  *  MAIN
@@ -144,10 +143,11 @@ char **argv;
     long seed = -1;		/* use time as seed */
     int lsize = DEF_SIZE;	/* num lines to randomize */
     int getfilelines = 0;	/* if set, count lines first */
-    extern int optind;
-    extern char *optarg;
 
-    Progname = argv[0];
+    if ((Progname = strrchr(argv[0], '/')) == NULL)
+	Progname = argv[0];
+    else
+	Progname++;
 
     while ((c = getopt (argc, argv, "hgS:l:")) != EOF){
 	switch(c) {
@@ -181,7 +181,7 @@ char **argv;
     }
 
     if ( optind + 1 != argc ) {
-	printf("missing argument\n");
+	fprintf(stderr, "%s: Missing argument.\n", Progname);
 	usage(stderr);
 	exit(1);
     }
@@ -192,13 +192,15 @@ char **argv;
     
     if ( strcmp(argv[argc-1],"-") == 0 ) {
 	infile = stdin;
-	printf("Can not support stdin processing\n");
+	fprintf(stderr, "%s: Can not support stdin processing.\n",
+	    Progname);
 	exit(2);
     }
     else {
 
 	if ((infile=fopen(argv[argc-1], "r")) == NULL) {
-	    printf("unable to open file %s\n", argv[argc-1]);
+	    fprintf(stderr, "%s: Unable to open file %s: %s\n",
+	       	Progname, argv[argc-1], strerror(errno));
 	    exit(1);
 	}
 
@@ -278,11 +280,9 @@ int numlines;		/* can be more or less than num lines in file */
 long seed;
 {
 
-    int c;
     char line[MAX_LN_SZ];		/* max size of a line */
     int cnt;
-    int coffset;		/* current line offset */
-    int loffset;		/* last line offset */
+    long coffset;		/* current line offset */
 
     struct offset_t *offsets;
     int memsize;
@@ -305,13 +305,12 @@ long seed;
     random_range_seed(seed);
 
     coffset=0;
-    loffset=0;
 
     while ( ! feof(infile) ) {
 
         fseek(infile, coffset, SEEK_SET);
-        loffset=ftell(infile);
-        bzero((char *)offsets, memsize);
+        coffset=ftell(infile);
+        memset(offsets, 0, memsize);
         cnt=0;
 
 	/*
@@ -321,11 +320,14 @@ long seed;
 	 */
         while ( cnt < numlines && fgets(line, MAX_LN_SZ, infile) != NULL ) {
 
-	    c=rnd_insert(offsets, loffset, numlines);
+	    if ( rnd_insert(offsets, coffset, numlines) < 0 ) {
+	      fprintf(stderr, "%s:%d rnd_insert() returned -1 (fatal error)!\n",
+		  __FILE__, __LINE__);
+	      abort();
+	    }
 	    cnt++;
 
 	    coffset=ftell(infile);
-	    loffset = coffset;
         }
 
         if ( cnt == 0 ) {
@@ -340,7 +342,7 @@ long seed;
 	    if ( offsets[cnt].used ) {
 	        fseek(infile, offsets[cnt].offset, SEEK_SET);
 	        fgets(line, MAX_LN_SZ, infile);
-	        printf("%s", line);
+	        fputs(line, stdout);
 	    }
         }
 
@@ -359,7 +361,7 @@ long seed;
 int
 rnd_insert(offsets, offset, size)
 struct offset_t offsets[];
-int offset;
+long offset;
 int size;
 {
     int rand_num;
@@ -372,7 +374,7 @@ int size;
      */
     while ( quick < 75 ) {
 
-	rand_num=random_range(0, size, 1, NULL);
+	rand_num=random_range(0, size-1, 1, NULL);
 
 	if ( ! offsets[rand_num].used ) {
 	    offsets[rand_num].offset=offset;
@@ -386,9 +388,18 @@ int size;
      * an randomly choosen index was not found, find
      * first open index and use it.
      */
-    ind=0;
-    while ( ! offsets[ind].used)
-        ind++;
+    for (ind=0; ind < size && offsets[ind].used != 0; ind++) 
+      ; /* do nothing */
+
+    if ( ind >= size ) {
+      /*
+       * If called with an array where all offsets are used,
+       * we won't be able to find an open array location.
+       * Thus, return -1 indicating the error.
+       * This should never happen if called correctly.
+       */
+      return -1;
+    }
 
     offsets[ind].offset=offset;
     offsets[ind].used++;
@@ -417,10 +428,9 @@ int numlines;		/* can be more or less than num lines in file */
 long seed;
 {
 
-    int c;
     char line[MAX_LN_SZ];		/* max size of a line */
     int cnt;				/* offset printer counter */
-    long loffset;			/* last line address */
+    int loffset;			/* last line address */
     char *buffer;			/* malloc space for file reads */
     char *rdbuff;			/* where to start read */
     long stopaddr;			/* end of read space (address)*/
@@ -434,7 +444,7 @@ long seed;
     int memsize;			/* amount of offset space to malloc */
     int newbuffer = 1;			/* need new buffer */
 
-    if ( numlines <= 0 ) {	/*use default */
+    if ( numlines <= 0 ) {		/*use default */
 	numlines = DEF_SIZE;
     }
 
@@ -524,7 +534,11 @@ long seed;
 	        newbuffer++;
 	    }
 
-	    c=rnd_insert(offsets, loffset, numlines);
+	    if ( rnd_insert(offsets, loffset, numlines) < 0 ) {
+	      fprintf(stderr, "%s:%d rnd_insert() returned -1 (fatal error)!\n",
+		  __FILE__, __LINE__);
+	      abort();
+	    }
 
             loffset = (long)chr;
 	}
