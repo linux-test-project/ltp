@@ -9,7 +9,7 @@ ln_f     := ln -f
 ln_sf    := ln -sf
 
 
-CURSES := -I/usr/include/ncurses -lncurses
+CURSES := -lncurses
 
 LDFLAGS += -Wl,-warn-common
 
@@ -33,7 +33,8 @@ clean:
 
 install: 
 	@set -e; ln -f top ../../testcases/bin
-
+	@set -e; cp -f proc/libproc.* /lib
+ 
 ############ prog.c --> prog.o
 
 %.o : %.c
