@@ -1,0 +1,149 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2001
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ * Test Name :	sysinfo01
+ *
+ * Test description
+ *  Verify that sysinfo() succeeds to get the system information and fills
+ *  the structure passed.
+ * 
+ * Expected Result :
+ *  sysinfo() returns value 0 on success and the sysinfo structure should
+ *  be filled with the system information.
+ * 
+ * Algorithm:
+ *  Setup :
+ *   Setup for signal handling.
+ *   Create temporary directory.
+ *   Pause for SIGUSR1 if option specified.
+ * Test:
+ *  Loop if the proper option is given.
+ *  Execute the system call.
+ *  Pass an invalid address to the structure.
+ *  Check return code, if system call failed (return=-1)
+ *  	Test case passed, Issue functionality pass message
+ *  Otherwise,
+ *	Issue Functionality-Fail message.
+ * Cleanup:
+ *  Print errno log and/or timing stats if options given
+ *  Delete the temporary directory created.
+ *
+ * USAGE:  <for command-line>
+ *	sysinfo02 [-c n] [-i n] [-I x] [-P x] [-t]
+ *	where,  -c n : Run n copies concurrently.
+ *		-i n : Execute test n times.
+ *		-I x : Execute test for x seconds.
+ *		-P x : Pause for x seconds between iterations.
+ *		-t   : Turn on syscall timing.
+ * History
+ *	07/2001 John George
+ *		-Ported
+ *
+ * Restrictions:
+ *  None
+ *
+ */
+
+#include <stdio.h>
+#include <errno.h>
+#include <sys/signal.h>
+#include <sys/sysinfo.h>
+
+#include "test.h"
+#include "usctest.h"
+
+#define INVALID_ADDRESS 0xffffffff;
+
+void setup();
+void cleanup();
+
+char *TCID = "sysinfo02";	/* Test program identifier */
+int TST_TOTAL = 1;		/* Total number of test cases */
+extern int Tst_count;		/* Test case counter for tst_* routines */
+
+int
+main(int ac, char **av)
+{
+	struct sysinfo *sysinfo_buf;
+	int lc;
+	char *msg;
+
+	sysinfo_buf = (void *)INVALID_ADDRESS;
+
+	/* parse standard options */
+	if((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
+		(char *) NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		/*NOTREACHED*/
+	}
+
+	setup();		/* Global setup */
+
+	/* The following loop checks looping state if -i option given */
+	for(lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+		TEST(sysinfo(sysinfo_buf));
+		/* check return code */
+		if (TEST_RETURN != 0 && TEST_ERRNO == EFAULT) {
+			/* Test succeeded as it was supposed to return -1 */
+			tst_resm(TPASS, "Test to check the error code %d",
+				TEST_ERRNO,"PASSED");
+		}
+		else {
+			/* Test Failed */
+			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
+				 "returned %d/n", TEST_ERRNO, "FAILED");
+			/*NOTREACHED*/
+		}
+	}
+	cleanup();
+	/*NOTREACHED*/
+}
+
+/*
+ * setup()
+ *	performs one time setup
+ *
+ */
+void
+setup(void)
+{
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	umask(0);
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}
+
+/*
+ * cleanup()
+ *
+ */
+void
+cleanup(void)
+{
+	TEST_CLEANUP;
+	tst_exit();
+}

@@ -1,0 +1,145 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2001
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ * NAME
+ * 	setreuid01.c
+ *
+ * DESCRIPTION
+ * 	Test that EPERM is set when setreuid is given an invalid user id.
+ *
+ * USAGE:  <for command-line>
+ *	setreuid01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *	where,  -c n : Run n copies concurrently.
+ *		-e   : Turn on errno logging.
+ *		-i n : Execute test n times.
+ *		-I x : Execute test for x seconds.
+ *		-P x : Pause for x seconds between iterations.
+ *		-t   : Turn on syscall timing.
+ *
+ * History
+ *	07/2001 John George
+ *		-Ported
+ *
+ * Restrictions
+ *      Must be ran as non-root user - nobody recommended.	
+ */
+
+#include <sys/wait.h>
+#include <limits.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/param.h>
+#include <unistd.h>
+#include <test.h>
+#include <usctest.h>
+
+#define INVAL_USER	999999	
+
+char *TCID = "setreuid01";
+int TST_TOTAL = 1;
+int exp_enos[]={EPERM, 0};
+extern int Tst_count;
+
+void setup(void);
+void cleanup(void);
+
+main(int argc, char **argv)
+{
+	int retval, fail = 0;
+
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	    (char *) NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		/*NOTREACHED*/
+	}
+
+	/*
+	 * perform global setup for the test
+	 */
+	setup();
+
+	/* check looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+		TEST(setreuid(-1, INVAL_USER));
+		if (TEST_RETURN != -1) {
+			tst_resm(TFAIL, "%s did not fail as expected", TCID);
+		} else if (TEST_ERRNO == EPERM) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TPASS, "setreuid set errno to EPERM as "
+				"expected");
+		} else {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL, "setreuid FAILED, expected 1 but "
+				"returned %d", TEST_ERRNO);
+		}
+
+	}
+	cleanup();
+	/*NOTREACHED*/
+}
+
+/*
+ * setup()
+ * 	performs all ONE TIME setup for this test
+ */
+void
+setup(void)
+{
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
+
+	umask(0);
+
+ 	if (geteuid() == 0) {
+                tst_brkm(TBROK, NULL, "Must not be root for this test! Try su'ing to nobody");
+                tst_exit();
+        }
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}
+
+/*
+ * cleanup()
+ * 	performs all the ONE TIME cleanup for this test at completion
+ * 	or premature exit
+ */
+void
+cleanup(void)
+{
+	/*
+	 * print timing status if that option was specified
+	 * print errno log if that option was specified
+	 */
+	TEST_CLEANUP;
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}

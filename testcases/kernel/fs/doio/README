@@ -1,0 +1,79 @@
+
+$Id: README,v 1.1 2001/08/27 22:15:12 plars Exp $
+
+This file contains some very basic information on:
+   iogen/doio and rwtest
+   growfiles
+
+All tools use the -h flag for printing some form of help (sometimes voluminous).
+They are extremely configurable; the examples below are some common uses. 
+Read the help and experiment!   This testing tools were originally written
+to test UNICOS's NC1 and IRIX XFS filesystems. 
+
+
+IOGEN & DOIO
+=============
+
+This is a pair of programs that does basic I/O operations on a set of files.
+The file offset, I/O length, I/O operation, and what open(2) flags are 
+selected randomly from a pre-defined or commandline given set. All data
+written can be verified (this is the usual method). 
+
+rwtest is a shell script that is a wrapper of iogen and doio.
+
+Examples:
+---------
+# run forever:  8 process - using record locks
+iogen -i 0 100000b:doio_1 | doio -av -n 8 -m 1000
+
+# run forever:  8 process - using record locks
+iogen -i 0 100000b:doio_2 | doio -akv -n 8 -m 1000
+
+# run forever: max i/o 64b, to /tmp/rwtest01%f, which 500b in size
+rwtest -c -i 0 -T 64b 500b:/tmp/rwtest01%f
+
+
+
+GROWFILES
+=============
+
+Growfiles will create and truncate files in gradual steps using write, and 
+lseek. All system calls are checked for proper returns. The writes or the
+whole file content can be verified.  It can cause disk fragmentation.
+
+
+Examples:
+---------
+growfiles -E output:
+# run forever: writes of 4090 bytes then on every 100 iterval
+# truncate file by 408990 bytes.  Done to 200 files in dir1.
+growfiles -i 0 -g 4090 -T 100 -t 408990 -l -C 10 -c 1000 -d dir1 -S 200
+
+# same as above with writes of 5000 bytes and truncs of 499990
+growfiles -i 0 -g 5000 -T 100 -t 499990 -l -C 10 -c 1000 -d dir2 -S 200
+
+# runs forever: beats on opens and closes of file ocfile - no io
+growfiles -i 0 -g 0 -c 0 -C 0 ocfile
+
+# writes 4096 to files until 50 blocks are written
+growfiles -i 0 -g 4096 -B 50b file1 file2
+
+# write one byte to 750 files in gdir then unlinks them
+growfiles -g 1 -C 0 -d gdir -u -S 750
+
+# run 30 secs: random iosize, random lseek up to eof
+# Only valid for one growfile process per file.
+growfiles -r 1-5000 -R 0--1 -i 0 -L 30 -C 1 g_rand1 g_rand2
+
+# run 30 secs: grow by lseek then write single byte, trunc every 10 itervals
+growfiles -g 5000 -wlu -i 0 -L 30 -C 1 -T 10  g_sleek1 g_lseek2
+
+# run forever: 5 copies of random iosize, random lseek to beyond eof,
+# rand io types doing a trunc every 5 iterations, with unlinks.
+growfiles -i0 -r 1-50000 -R 0--2 -I r -C1 -l -n5 -u -U 100-200 gf_rana gf_ranb
+
+# run forever: 5 copies of random iosize, random lseek to beyond eof,
+# random open flags, rand io types doing a trunc every 10 iterations.
+growfiles -i0 -r 1-50000 -R 0--2 -o random -I r -C0 -l -T 20 -uU100-200 -n 5 gf_rand1 gf_rand2
+
+

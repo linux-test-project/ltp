@@ -1,0 +1,241 @@
+#!/bin/sh
+#
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : rdist
+#
+#  PURPOSE: To test the basic functionality of the `rdist` command.
+#
+#  SETUP: The home directory of root on the machine exported as "RHOST"
+#         MUST have a ".rhosts" file with the hostname of the machine
+#         where the test is executed. 
+#
+#  HISTORY:
+#    03/01 Robbie Williamson (robbiew@us.ibm.com)
+#      -Ported
+#
+#
+#***********************************************************************
+# Uncomment line below for debug output.
+# trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+RHOST=${RHOST:-`hostname`}
+USER_LIST=${USER_LIST:-'root'}
+TCbin=${TCbin:-`pwd`}
+TCdat=${TCdat:-$TCbin}
+FILES=${FILES:-'bin.sm bin.med bin.lg bin.jmb file.dir/bin.sm file.dir/bin.med file.dir/bin.jmb'}
+SLEEPTIME=${SLEEPTIME:-10}
+CLEANUP=${CLEANUP:-ON}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  do_setup
+#
+#-----------------------------------------------------------------------
+
+do_setup()
+{
+   $trace_logic
+
+   cd $HOME
+
+   # start with a clean LHOST
+   for i in $FILES
+   do
+     rm -rf $i
+   done
+
+   for i in $FILES
+   do
+      BASE=`basename $i`
+      DIR=`dirname $i`
+      mkdir -p $DIR
+      cp $TCdat/datafiles/$BASE $DIR
+      [[ $? -eq 0 ]] || end_testcase "failed to cp $TCdat/datafiles/$BASE to $DIR"
+      chmod 764 $i
+   done
+
+   # get the sum of all the files to rdist on the local machine
+   LSUM=0
+   SUM=`sum -s $FILES|awk '{ print $1 }'`
+   for i in $SUM
+   do
+      (( LSUM = LSUM + i ))
+   done
+}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  create_distfile
+# create file $HOME/distfile
+#
+#-----------------------------------------------------------------------
+
+create_distfile()
+{
+   $trace_logic
+
+   T_FILES="FILES = ( "
+   for i in $FILES
+   do
+      DIR=`dirname $i`
+      if [[ $DIR = "." ]]; then
+         T_FILES="$T_FILES $i"
+      else
+         T_FILES="$T_FILES $DIR"
+      fi
+   done
+   T_FILES="$T_FILES )"
+
+   T_HOST="HOSTS = ("
+   for c_ruser in $RUSERS
+   do
+      for c_rhost in $HOSTS
+      do
+         T_HOST=$T_HOST"$c_ruser@$c_rhost "
+      done
+   done
+
+   T_HOST=$T_HOST")"
+   echo "$T_HOST" > $HOME/distfile
+   echo "$T_FILES" >> $HOME/distfile
+   echo '${FILES} -> ${HOSTS}' >> $HOME/distfile
+}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  check_result
+#
+# check the sum of all files rdisted from local machine to remote machine
+#
+#-----------------------------------------------------------------------
+
+check_result()
+{
+   $trace_logic
+
+   cd $HOME
+   for c_rhost in $HOSTS
+   do
+      for c_ruser in $RUSERS
+      do
+         TOTAL_SUM=`rsh -n -l $c_ruser $c_rhost \
+            x=0;SUM=\$(sum -s $FILES|awk '{ print \$1 }')
+            for i in \$SUM
+            do
+               ((x = \$x + \$i ))
+            done
+            echo \$x`
+         if [[ $TOTAL_SUM = $LSUM ]]; then 
+            echo "Success rdist in $c_ruser@$c_rhost "
+  	    rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
+         else
+            end_testcase "Wrong sum doing  rdist in $curr_ruser@$curr_rhost"
+         fi
+      done
+   done
+}
+
+#----------------------------------------------------------------------
+# FUNCTION: do_test
+# PURPOSE:  Perform the necessary steps to complete the test.
+# INPUT:    None.
+# OUPUT:    Error messages are logged if any of the tests fail.
+# EXIT VAR: 0 Success
+#----------------------------------------------------------------------
+
+do_test()
+{
+   $trace_logic
+
+   HOSTS=""
+   RUSERS=""
+
+   for cur_host in $RHOST
+   do
+      HOSTS=$HOSTS" $cur_host"
+      for cur_user in $USER_LIST
+      do
+         RUSERS=$RUSERS" $cur_user"
+         create_distfile
+         rdist -f $HOME/distfile
+         [[ $? -eq 0 ]] || end_testcase "error doing rdist -f $HOME/distfile"
+         check_result
+         sleep $SLEEPTIME
+      done
+   done
+}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:     do_cleanup
+# PURPOSE:      Called when the testcase is interrupted by the user
+#               or by interrupt_testcase() when time limit expired
+# INPUT:        None.
+# OUTPUT:       None.
+#
+#-----------------------------------------------------------------------
+
+do_cleanup()
+{
+   $trace_logic
+
+   cd $HOME
+
+   for i in $FILES
+   do
+     rm -rf $i
+   done
+}
+
+#=============================================================================
+# FUNCTION NAME:        end_testcase
+#
+# FUNCTION DESCRIPTION: Clean up
+#
+# PARAMETERS:           string, IF AND ONLY IF the testcase fails
+#
+# RETURNS:              None.
+#=============================================================================
+
+end_testcase()
+{
+   $trace_logic
+
+   # Call other cleanup functions
+   [[ $CLEANUP = "ON" ]] && do_cleanup
+
+   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   echo "Test Failed: $@"
+   exit 1
+}
+
+#----------------------------------------------------------------------
+# FUNCTION: MAIN
+# PURPOSE:  To invoke the functions to perform the tasks described in
+#           the prologue.
+# INPUT:    None.
+# OUTPUT:   A testcase run log with the results of the execution of this
+#           test.
+#----------------------------------------------------------------------
+do_setup
+do_test
+end_testcase

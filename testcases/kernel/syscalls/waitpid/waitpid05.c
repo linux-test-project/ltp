@@ -1,0 +1,242 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2001
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ * NAME
+ *	waitpid05.c
+ *
+ * DESCRIPTION
+ *	Check that when a child kills itself with a kill statement after
+ *	determining its process id by using getpid, the parent receives a
+ *	correct report of the cause of its death. This also indirectly
+ *	checks that getpid returns the correct process id.
+ *
+ * ALGORITHM
+ *	For signals 1 - 15: fork a child that determines it's own process
+ *	id, then sends the signal to itself.  The parent waits to see if the
+ *	demise of the child results in the signal number being returned to
+ *	the parent.
+ *
+ * USAGE:  <for command-line>
+ *      waitpid05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *      where,  -c n : Run n copies concurrently.
+ *              -e   : Turn on errno logging.
+ *              -i n : Execute test n times.
+ *              -I x : Execute test for x seconds.
+ *              -P x : Pause for x seconds between iterations.
+ *              -t   : Turn on syscall timing.
+ *
+ * History
+ *	07/2001 John George
+ *		-Ported
+ *
+ * Restrictions
+ *	None
+ */
+
+#include <sys/file.h>
+#include <sys/signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <test.h>
+#include <usctest.h>
+
+void setup(void);
+void cleanup(void);
+
+char *TCID = "waitpid05";
+int TST_TOTAL = 1;
+extern int Tst_count;
+
+int flag;
+#define	FAILED	1
+
+main(int ac, char **av)
+{
+	int pid, npid, sig, nsig;
+	int exno, nexno, status;
+	int ret_val = 0;
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
+
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
+	    (char *) NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+		/*NOTREACHED*/
+	}
+
+	setup();
+
+	/* check for looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+		
+		/*
+		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore
+		 * SIGTERM
+	 	 */
+		if (sigset(SIGTERM, SIG_DFL) < 0) {
+			tst_resm(TFAIL, "Sigset SIGTERM failed, errno = %d",
+				 errno);
+			tst_exit();
+		}
+
+		exno = 1;
+		for (sig = 1; sig <= 15; sig++) {
+			if (sig == SIGUSR1 || sig == SIGUSR2 || sig == SIGBUS) {
+				continue;
+			}
+			pid = fork();
+
+			if (pid == 0) {
+				pid = getpid();
+				if (kill(pid, sig) == -1) {
+					tst_resm(TFAIL, "kill error: kill "
+						 "unsuccessful");
+					exit(exno);
+				}
+			} else {
+				errno = 0;
+				while (((npid = waitpid(pid, &status, 0)) !=
+					-1) || (errno == EINTR)) {
+					if (errno == EINTR) {
+						continue;
+					}
+					if (npid != pid) {
+						tst_resm(TFAIL, "waitpid "
+							 "error: unexpected "
+							 "pid returned");
+					} else {
+						tst_resm(TPASS, "received "
+							"expected pid.");
+					}
+
+					nsig = status % 256;
+
+					/*
+					 * to check if the core dump bit has
+					 * been set, bit #7
+					 */
+					if (nsig >= 128) {
+						nsig -= 128;
+						if ((sig == 1) || (sig == 2) ||
+						    (sig == 9) ||
+						    (sig == 13) ||
+						    (sig == 14) ||
+						    (sig == 15)) {
+							tst_resm(TFAIL,
+								 "signal "
+								 "error : "
+								 "core dump "
+								 "bit set for"
+								 " exception "
+								 "number %d",
+								 sig);
+						}
+					} else if ((sig == 3) || (sig == 4) ||
+						   (sig == 5) || (sig == 6) ||
+						   (sig == 8) || (sig == 11)) {
+						tst_resm(TFAIL,
+							 "signal error: "
+							 "core dump bit not "
+							 "set for exception "
+							 "number %d", sig);
+					}
+
+					/*
+					 * nsig is the signal number returned
+					 * by waitpid
+					 */
+					if (nsig != sig) {
+						tst_resm(TFAIL, "waitpid "
+							 "error: unexpected "
+							 "signal returned");
+						tst_resm(TINFO, "got signal "
+							 "%d, expected  "
+							 "%d", nsig, sig);
+					}
+
+					/*
+					 * nexno is the exit number returned
+					 * by waitpid
+					 */
+					nexno = status / 256;
+					if (nexno != 0) {
+						tst_resm(TFAIL, "signal "
+							 "error: unexpected "
+							 "exit number "
+							 "returned");
+					} else {
+						tst_resm(TPASS, "received "
+							"expected exit number.");
+					}
+				}
+			}
+		}
+
+		if (access("core", F_OK) == 0) {
+			unlink("core");
+		}
+	}
+	cleanup();
+	/*NOTREACHED*/
+}
+
+/*
+ * setup()
+ *	performs all ONE TIME setup for this test
+ */
+void
+setup(void)
+{
+	/* Pause if that option was specified
+	 * TEST_PAUSE contains the code to fork the test with the -c option.
+	 * You want to make sure you do this before you create your temporary
+	 * directory.
+	 */
+	TEST_PAUSE;
+
+	/* Create a unique temporary directory and chdir() to it. */
+	tst_tmpdir();
+}
+
+/*
+ * cleanup()
+ *	performs all ONE TIME cleanup for this test at
+ *	completion or premature exit
+ */
+void
+cleanup(void)
+{
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+	/*NOTREACHED*/
+}

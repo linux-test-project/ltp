@@ -1,0 +1,836 @@
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/*
+ *  (c) Copyright Cray Research, Inc.  Unpublished Proprietary Information.
+ *  All Rights Reserved.
+ */
+/*
+ *  This tool can be used to beat on system or named pipes.
+ *  See the help() function below for user information.
+ */
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/stat.h>
+
+#include "tlibio.h"
+
+#if defined(linux)
+# define NBPW sizeof(int)
+#endif
+
+
+#define PPATH "tpipe"
+#define OCTAL	'o'
+#define HEX	'x'
+#define DECIMAL	'd'
+#define ASCII	'a'
+#define NO_OUT	'n'
+
+#define PIPE_NAMED	"named pipe,"
+#define PIPE_UNNAMED	"sys pipe,"
+
+#define BLOCKING_IO	"blking,"
+#define NON_BLOCKING_IO	"non-blking,"
+#define UNNAMED_IO	""
+
+void sig_handler(), help(), usage(), prt_buf(), prt_examples();
+void sig_child();
+
+extern int errno;
+
+char *Progname;
+int count = 0;
+int Nchildcomplete = 0;
+
+/*
+ * Ensure PATH_MAX is define
+ */
+#ifndef PATH_MAX
+#ifdef MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
+#else
+#define PATH_MAX 1024
+#endif /* ! MAXPATHLEN */
+#endif /* PATH_MAX */
+
+int
+main(ac,av)
+int ac;
+char *av[];
+{
+	int i,j,c,error = 0;
+	int n;
+	int nb;			/* number of bytes read */
+	int num_wrters=1;	/* number of writers */
+	int num_writes=1;	/* number of writes per child */
+	int loop=0;		/* loop indefinitely */
+	int exit_error = 1;	/* exit on error #, zero means no exit */
+	int size=327;		/* default size */
+	int unpipe = 0;		/* un-named pipe if non-zero */
+	int verbose=0;		/* verbose mode if set */
+	int quiet=0;		/* quiet mode if set */
+	int num_rpt=0;		/* ping number, how often to print message */
+	int chld_wait = 0;	/* max time to wait between writes, 1 == no wait */
+	int parent_wait = 0;	/* max time to wait between reads, 1 == no wait*/
+	int ndelay = O_NDELAY;	/* additional flag to open */
+	long clock;
+	char *writebuf;
+	char *readbuf;
+	double d;
+	char   *cp;
+        extern char *optarg;
+	char pname[PATH_MAX];	/* contains the name of the unamed pipe */
+	char dir[PATH_MAX];	/* directory to create pipe in		*/
+	char *blk_type;		/* blocking i/o or not */
+	char *pipe_type;	/* type of pipe under test */
+	int fds[2];		/* un-named pipe fds */
+	int read_fd;
+	int write_fd;
+	int empty_read = 0;	/* counter for the number of empty reads */
+	time_t stime, ctime, dtime;	/* start time, current time, diff of times */
+	int *count_word;	/* holds address where to write writers count */
+	int *pid_word;		/* holds address where to write writers pid */
+	int format;
+	int format_size = -1;
+	int background = 0;	/* if set, put process in background */
+	struct stat stbuf;
+        int iotype = 0;		/* sync io */
+	char *toutput;		/* for getenv() */
+
+	format = HEX;
+	blk_type = NON_BLOCKING_IO;
+	dir[0] = '\0';
+	sprintf(pname,"%s.%d",PPATH,getpid());
+
+	if ((Progname = (char *)strrchr(av[0],'/')) == NULL)
+                Progname = av[0];
+        else
+                ++Progname;
+
+	if( (toutput=getenv("TOUTPUT")) != NULL ) {
+	    if( strcmp( toutput, "NOPASS") == 0 ) {
+		quiet=1;
+	    }
+	}
+
+        while ((c=getopt (ac, av, "BbCc:D:d:he:Ef:i:I:ln:p:qs:uvW:w:P:")) != EOF) {
+	    switch (c) {
+		case 'h':
+			help();
+			exit(0);
+			break;
+		case 'd':	/* dir name */
+			strcpy(dir, optarg);
+			break;
+		case 'D':	/* pipe name */
+			strcpy(pname, optarg);
+			break;
+		case 'B':	/* background */
+			background=1;
+			break;
+		case 'b':	/* blocked */
+			ndelay=0;
+			blk_type = BLOCKING_IO;
+			break;
+		case 'C':
+			fprintf(stderr,
+			    "%s: --C option not supported on this architecture\n",
+			    Progname);
+			exit(1);
+			break;
+		case 'c':	/* number childern */
+			if (sscanf(optarg, "%d", &num_wrters) != 1) {
+				fprintf(stderr,"%s: --c option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( num_wrters <= 0 ) {
+				fprintf(stderr,
+				    "%s: --c option must be greater than zero.\n",
+				    Progname);
+				usage();
+				exit(1);
+			}
+			break;
+		case 'e':	/* exit on error # */
+			if (sscanf(optarg, "%d", &exit_error) != 1) {
+				fprintf(stderr,"%s: --e option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( exit_error < 0 ) {
+				fprintf(stderr,
+				    "%s: --e option must be greater than zero.\n",
+				    Progname);
+				usage();
+				exit(1);
+			}
+			break;
+
+		case 'E':
+			prt_examples();
+			exit(0);
+			break;
+		case 'f':	/* format of buffer on error */
+			switch(optarg[0]) {
+			case 'x':
+			case 'X':
+				format = HEX;
+				break;
+			case 'o':
+			case 'O':
+				format = OCTAL;
+				break;
+			case 'd':
+			case 'D':
+				format = DECIMAL;
+				break;
+			case 'a':
+			case 'A':
+				format = ASCII;
+				break;
+			case 'n':		/* not output */
+			case 'N':
+				format = NO_OUT;
+				break;
+
+			default :
+				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
+					Progname,optarg);
+				fprintf(stderr,
+				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
+				exit(1);
+				break;
+			}
+			cp = optarg;
+			cp++;
+			if ( *cp ) {
+			    if ( sscanf(cp, "%i", &format_size) != 1 ) {
+				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
+					Progname,optarg);
+				fprintf(stderr,
+				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
+				exit(1);
+				break;
+			    }
+			}
+			break;
+
+    		case 'I':
+     			if((iotype=lio_parse_io_arg1(optarg)) == -1 ) {
+         		    fprintf(stderr,
+             			"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
+             			Progname);
+         		    exit(1);
+     			}
+			break;
+
+		case 'l':	/* loop forever */
+			++loop;
+			break;
+
+		case 'i':
+		case 'n':	/* number writes per child */
+			if (sscanf(optarg, "%d", &num_writes) != 1) {
+				fprintf(stderr,"%s: --i/n option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( num_writes < 0 ) {
+				fprintf(stderr,
+				    "%s: --i/n option must be greater than equal to zero.\n", 
+				    Progname);
+				usage();
+				exit(1);
+			}
+
+			if (num_writes == 0)	/* loop forever */
+				++loop;
+
+			break;
+		case 'P':	/* panic flag */
+			fprintf(stderr, "%s: --P not supported on this architecture\n",
+			    Progname);
+			exit(1);
+			break;
+		case 'p':	/* ping */
+			if (sscanf(optarg, "%d", &num_rpt) != 1) {
+				fprintf(stderr,"%s: --p option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( num_rpt < 0 ) {
+				fprintf(stderr,
+					"%s: --p option must be greater than equal to zero.\n",
+					Progname);
+				usage();
+				exit(1);
+			}
+			break;
+	        case 'q':	/* Quiet - NOPASS */
+			quiet=1;
+			break;
+		case 's':	/* size */
+			if (sscanf(optarg, "%d", &size) != 1) {
+				fprintf(stderr,"%s: --s option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( size <= 0 ) {
+				fprintf(stderr,
+				    "%s: --s option must be greater than zero.\n",
+				    Progname);
+				usage();
+				exit(1);
+			}
+			break;
+		case 'u':
+			unpipe=1;	/* un-named pipe */
+			break;
+		case 'v':	/* verbose */
+			verbose=1;
+			break;
+		case 'W':	/* max wait time between writes */
+			d = strtod(optarg, &cp);
+			if (*cp != '\0') {
+				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( d < 0 ) {
+				fprintf(stderr,
+				    "%s: --w option must be greater than zero.\n",
+				    Progname);
+				usage();
+				exit(1);
+			}
+			parent_wait = (int)(d * 1000000.0);
+			break;
+		case 'w':	/* max wait time between writes */
+			d = strtod(optarg, &cp);
+			if (*cp != '\0') {
+				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
+					Progname,optarg);
+				usage();
+				exit(1);
+			}
+			else if ( d < 0 ) {
+				fprintf(stderr,
+				    "%s: --w option must be greater than zero.\n",
+				    Progname);
+				usage();
+				exit(1);
+			}
+			chld_wait = (int)(d * 1000000.0);
+			break;
+		case '?':
+			usage();
+			exit (1);
+			break;
+	    }
+	}
+
+	if ( format_size == -1 )
+		format_size = size;
+
+	/*
+	 * 
+	 * If there is more than one writer, all writes and reads
+	 * must be the same size.  Only writes of a size <= PIPE_BUF
+	 * are atomic.  T
+	 * Therefore, if size is greater than PIPE_BUF, we will break
+	 * the writes into PIPE_BUF chunks.  We will also increase the
+	 * number of writes to ensure the same (or more) amount of 
+	 * data is written.  This is the same as erroring and telling
+	 * the user the new cmd line to do the same thing.
+	 * Example:
+	 *	pipeio -s 5000 -n 10 -c 5
+	 *	(each child will write at least 50000 bytes, since all
+	 *	writes have to be in 4096 chuncks or 13*4096 (53248)
+	 *	bytes will be written.)  This is the same as:
+	 *      pipeio -s 4096 -n 13 -c 5
+	 */
+	if ( size > PIPE_BUF && num_wrters > 1 ) {
+	    if ( ! loop ) {
+		j=(num_writes*size)/PIPE_BUF;
+		if ( (num_writes*size)%PIPE_BUF ) 
+		    j++;
+		num_writes=j;
+	        printf("%s: adjusting i/o size to %d, and # of writes to %d\n",
+		    Progname, PIPE_BUF, num_writes);
+	    }
+	    else {
+		printf("%s: adjusting i/o size to %d\n", Progname, PIPE_BUF);
+	    }
+	    size=PIPE_BUF;
+	
+	}
+
+	if ((writebuf = (char *) malloc(size)) == NULL ||
+	    (readbuf = (char *) malloc(size)) == NULL) {
+		perror("malloc() failed:");
+		
+		exit(1);
+	}
+
+	memset(writebuf,'Z',size);
+
+	writebuf[size-1] = 'A';	/* to detect partial read/write problem */
+
+	if ( background ) {
+	    if ( (n=fork() ) == -1 ) {
+		fprintf(stderr,"%s: fork failed, errno:%d\n", Progname, errno);
+		exit(1);
+	    }
+	    else if ( n != 0 ) /* parent */
+		exit(0);
+	}
+
+	if ( unpipe ) {
+		if ( pipe(fds) == -1 ) {
+			fprintf(stderr,"%s: ERROR could not create un-named pipe\n",Progname);
+			perror("pipe");
+			fflush(stderr);
+			exit(1);
+		}
+		read_fd = fds[0];
+		write_fd = fds[1];
+		pipe_type = PIPE_UNNAMED;
+		blk_type = UNNAMED_IO;
+	} else {
+		if (strlen(dir) && chdir(dir) == -1) {
+			fprintf(stderr, "%s:  ERROR could not chdir to %s",
+				Progname, dir);
+			perror("chdir");
+			fflush(stderr);
+			exit(1);
+		}
+
+		if ( stat(pname, &stbuf) == -1 ) {
+
+		    if ( mkfifo(pname,0777) == -1 ) {
+			fprintf(stderr,"%s: ERROR could not create pipe %s\n",Progname,pname);
+			fprintf(stderr,"mkfifo(%s,0777) failed, errno:%d %s\n",
+			    pname, errno, strerror(errno));
+			fflush(stderr);
+			exit(1);
+		    }
+		}
+		pipe_type = PIPE_NAMED;
+	}
+
+	stime=time(0);
+
+#if DEBUG
+printf("num_wrters = %d\n", num_wrters);
+#endif
+
+	for (i=num_wrters; i > 0; --i) {
+		if ((c=fork()) < 0) {
+			fprintf(stderr,"%s: ERROR could not fork\n",Progname);
+			perror("fork() failed:");
+			exit(1);
+		}
+		if (c == 0) break;	/* stop child from forking */
+	}
+	if (c == 0) {	/***** if child *****/
+#if DEBUG
+printf("child after fork pid = %d\n", getpid());
+#endif
+		if ( ! unpipe ) {
+			if (ndelay) sleep(1);
+			if ((write_fd = open(pname,O_WRONLY|ndelay)) == -1) {
+				fprintf(stderr,"%s: ERROR child could not open pipe %s\n",
+					Progname,pname);
+				fprintf(stderr, "open(%s, %#o) failed, errno:%d %s\n",
+				    pname, O_WRONLY|ndelay, errno, 
+				    strerror(errno));
+				fflush(stderr);
+				exit(1);
+			}
+		}
+		else {
+			close(read_fd);
+		}
+
+		pid_word = (int *)&writebuf[0];
+		count_word = (int *)&writebuf[NBPW];
+
+		for (j=0; j < num_writes || loop; ++j) {
+
+			/* writes are only in one unit when the size of the write
+			 * is <= PIPE_BUF.
+			 * Therefore, if size is greater than PIPE_BUF, we will break
+			 * the writes into PIPE_BUF chunks.
+			 * All writes and read need to be same size.
+			 */
+
+			/*
+			 * write pid and count in first two
+			 * words of buffer
+			 */
+
+			*count_word = j;
+			*pid_word = getpid();
+			
+                        if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
+                                                        SIGUSR1, &cp, 0)) == -1 ) {
+                                fprintf(stderr, "%s: cnt:%d %s\n", Progname, j, cp);
+                                fflush(stderr);
+                                exit(1);
+                        }
+			if ( ndelay && nb == 0 ) {
+				j--;
+			}
+			/*
+			 * If lio_write_buffer returns a negative number,
+			 * the return will be -errno.
+			 */
+			else if (nb < 0 )
+				fprintf(stdout,
+					"%s: ERROR write count %d: %s\n",
+					Progname,j,cp);
+			else if (nb != size ) {
+				fprintf(stdout,
+					"%s: ERROR write count %d, wrote only wrote %d and expected %d.\n",
+					Progname,j,nb,size);
+			}
+		        if (verbose)
+				fprintf(stdout,
+					"%s: %d write count %d,wrote %d bytes expected %d bytes\n",
+					Progname,getpid(),j,nb,size);
+			
+			if (chld_wait) {
+                		clock=time(0);
+               			srand48(clock);
+                		n = lrand48() % chld_wait;
+				usleep(n); 
+			}
+			fflush(stderr);
+		}
+	}
+	if (c > 0) {	/***** if parent *****/
+#ifdef linux
+		signal(SIGCHLD, sig_child);
+		signal(SIGHUP, sig_handler);
+		signal(SIGINT, sig_handler);
+		signal(SIGQUIT, sig_handler);
+#ifdef SIGRECOVERY
+		signal(SIGRECOVERY, sig_handler);
+#endif /* SIGRECOVERY */
+#else
+		sigset(SIGCHLD, sig_child);
+		sigset(SIGHUP, sig_handler);
+		sigset(SIGINT, sig_handler);
+		sigset(SIGQUIT, sig_handler);
+#ifdef SIGRECOVERY
+		sigset(SIGRECOVERY, sig_handler);
+#endif /* SIGRECOVERY */
+#endif /* linux */
+
+		if ( ! unpipe ) {
+			if ((read_fd = open(pname,O_RDONLY|ndelay)) == -1) {
+				fprintf(stderr,"%s: ERROR parent could not open pipe %s\n",
+					Progname,pname);
+				fprintf(stderr, "open(%s, %#o) failed, errno:%d %s\n",
+				    pname, O_RDONLY|ndelay, errno, 
+				    strerror(errno));
+				fflush(stderr);
+				exit(1);
+			}
+		}
+		else {
+			close(write_fd);
+		}
+
+		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
+			if ( Nchildcomplete >= num_wrters ) {
+				break; /* All children have died */
+			}
+			if (parent_wait) {
+                		clock=time(0);
+                		srand48(clock);
+                		n = lrand48() % parent_wait;
+				usleep(n);
+			}
+			++count;
+			if ((nb = lio_read_buffer(read_fd, iotype, readbuf, size,
+                   					SIGUSR1, &cp, 0)) == -1 ) {
+				fprintf(stderr, "%s: cnt:%d %s\n", 
+				     Progname, count, cp);
+				fflush(stderr);
+				exit(1);
+			}
+                        /*
+                         * If lio_read_buffer returns a negative number,
+                         * the return will be -errno.
+                         */
+                        else if (nb < 0 ) {
+			    fprintf(stdout,
+					"%s: ERROR read count %d: %s\n",
+					Progname,i,cp);
+			    ++i;
+			    count--;
+			    continue;
+
+ 			} else {
+				if (nb == 0) {
+					empty_read++;
+/*
+					fprintf(stdout,
+						"%s: Nothing on the pipe (%d),read count %d (read not counted)\n",
+						Progname,empty_read,count);
+ */
+					fflush(stdout);
+					++i;
+					count--;
+					continue;
+				} else if (nb < size && size <= PIPE_BUF) {
+					fprintf(stdout,
+						"%s: partial read from the pipe: read %d bytes, expected %d, read count %d\n",
+						Progname,nb, size, count);
+					fflush(stdout);
+					++error;
+				} else if (nb == size) {
+					for (j=2*NBPW;j < size; ++j) {
+						if (writebuf[j] != readbuf[j]) {
+							++error;
+							fprintf(stdout,"%s 1 FAIL data error on byte %d\n",
+								Progname,j);
+							fprintf(stdout,
+							"%s: rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
+							Progname,count,size,pipe_type,blk_type,
+							empty_read,error);
+							prt_buf(&readbuf,readbuf,format_size,format);
+							fflush(stdout);
+							if ( exit_error && exit_error == error )
+								goto output;
+
+							else 
+								break;
+						}
+					}
+				} 
+				if (verbose || (num_rpt && !(count % num_rpt))) {
+					ctime = time(0);
+					dtime = ctime - stime;	/* elapsed time */
+					fprintf(stdout,
+						"%s:(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
+						Progname,(int)dtime,count,size,pipe_type,
+						blk_type,empty_read,error);
+					fflush(stdout);
+				}
+			}
+		}
+output:
+		if (error)
+			fprintf(stdout,
+				"%s 1 FAIL %d data errors on pipe, read size = %d, %s %s\n",
+				Progname,error,size,pipe_type,blk_type);
+		else
+			if( !quiet )
+				fprintf(stdout,
+					"%s 1 PASS %d pipe reads complete, read size = %d, %s %s\n",
+					Progname,count+1,size,pipe_type,blk_type);
+		fflush(stdout);
+
+		if (!unpipe)
+			unlink(pname);
+	}
+	return 0;
+}
+
+void
+usage ()
+{
+	fprintf(stderr, "Usage: %s [-BbCEv][-c #writers][-D pname][-d dir][-h][-e exit_num][-f fmt][-l][-i #writes][-n #writes][-p num_rpt]\n\t[-s size][-W max_wait][-w max_wait][-u]\n",Progname);
+	fflush(stderr);
+
+}
+
+void
+help()
+{
+        usage();
+
+    printf("  -B           - execute actions in background\n\
+  -b           - blocking reads and writes. default non-block\n\
+  -c #writers  - number of writers (childern)\n\
+  -D pname     - name of fifo (def tpipe<pid>)\n\
+  -d dir       - cd to dir before creating named pipe\n\
+               - (silently ignored if used with -u)\n\
+  -h           - print this help message\n\
+  -e exit_num  - exit on error exit_num, 0 is ignore errors, 1 is default.\n\
+  -E           - print cmd line examples and exit\n\
+  -f format    - define format of bad buffer: h(hex), o(octal)\n\
+                 d(decimal), a(ascii), n (none). hex is default\n\
+	         option size can be added to control output\n\
+  -i #writes   - number write per child, zero means forever.\n\
+  -I io_type   - Specifies io type: s - sync, p - polled async, a - async (def s)\n\
+                 l - listio sync, L - listio async, r - random\n\
+  -l           - loop forever (implied by -n 0).\n\
+  -n #writes   - same as -i (for compatability).\n\
+  -p num_rpt   - number of reads before a report\n\
+  -q           - quiet mode, no PASS results are printed\n\
+  -s size      - size of read and write (def 327)\n\
+                 if size >= 4096, i/o will be in 4096 chuncks\n\
+  -w max_wait  - max time (seconds) for sleep between writes.\n\
+                 max_wait is interpreted as a double with ms accuracy.\n\
+  -W max_wait  - max time (seconds) for sleep between reads\n\
+                 max_wait is interpreted as a double with ms accuracy.\n\
+  -u           - un-named pipe instead of named pipe\n\
+  -v           - verbose mode, all writes/reads resutlts printed\n");
+
+	fflush(stdout);
+        
+}
+
+void
+prt_buf(long addr, char * buf, int length, int format)
+{
+
+	int i;
+	int num_words = length/NBPW;  /* given length in bytes, get length in words */
+	int width;		/* number of columns */
+	int extra_words;	/* odd or even number of words */
+	char *a = buf;
+	char b[NBPW];
+	char c[NBPW*2];
+	char *p;
+	long *word;
+
+	if ( format == NO_OUT )		/* if no output wanted, return */
+		return;
+
+	if (length % NBPW) ++num_words; /* is length in full words? */
+	if (format == ASCII) {
+	 	width = 3;
+	} else {
+		width = 2;
+	    /* do we have an odd number of words? */
+		extra_words = num_words%width;
+	}
+	for(i=0; i < num_words; ++i, a += NBPW, addr++) {
+		word = (long *) a;
+		if (!(i%width)) {
+			if (i > 0 && format != ASCII) {
+		   	  /*
+		    	   * print the ascii equivalent of the data
+			   * before beginning the next line of output.
+			   */
+				bzero(c,width*NBPW);
+			   /*
+			    * get the last 2 words printed 
+			    */
+				bcopy(a-(width*NBPW),c,width*NBPW);
+				for (p = c; (p-c) < width*NBPW; ++p) {
+					if (*p < '!' || *p > '~')
+						*p = '.';
+				}
+				printf("\t%16.16s",c);
+			}
+			printf("\n%7lo: ",addr);
+			/***printf("\n%7o (%d): ",addr,i);***/
+		}
+
+		switch (format) {
+			case HEX:
+				printf("%16.16lx ",*word);
+				break;
+			case DECIMAL:
+				printf("%10.10ld ",*word);
+				break;
+			case ASCII:
+				bcopy(a,b,NBPW);
+				for (p = b; (p-b) < NBPW; ++p) {
+					if (*p < '!' || *p > '~')
+						*p = '.';
+				}
+				printf("%8.8s ",b);
+				break;
+			default:
+				printf("%22.22lo ",*word);
+				break;
+		}
+	}
+	if (format != ASCII) {
+   	  /*
+    	   * print the ascii equivalent of the last words in the buffer
+	   * before returning.
+	   */
+		bzero(c,width*NBPW);
+		if (extra_words) width = extra_words; /* odd number of words */
+		bcopy(a-(width*NBPW),c,width*NBPW);
+		for (p = c; (p-c) < width*NBPW; ++p) {
+			if (*p < '!' || *p > '~')
+				*p = '.';
+		}
+		if (width == 2) 
+			printf("\t%16.16s",c);
+		else
+			printf("\t\t%16.8s",c);
+	}
+	printf("\n");
+	fflush(stdout);
+}
+
+void
+prt_examples()
+{
+    printf("%s -c 5 -i 0 -s 4090 -b\n", Progname);
+    printf("%s -c 5 -i 0 -s 4090 -b -u \n", Progname);
+    printf("%s -c 5 -i 0 -s 4090 -b -W 3 -w 3 \n", Progname);
+
+}
+
+void
+sig_child(int sig)
+{
+    int status;
+
+    Nchildcomplete++;
+#if DEBUG
+printf("parent: received SIGCHLD\n");
+#endif
+    waitpid(-1, &status, WNOHANG);
+#if linux
+    signal(SIGCHLD, sig_child);
+#else
+    sigset(SIGCHLD, sig_child);
+#endif
+}
+
+void
+sig_handler(int sig)
+{
+#ifdef SIGRECOVERY
+    if ( sig == SIGRECOVERY) {
+	printf("%s: received SIGRECOVERY, count = %d\n", Progname, count);
+        fflush(stdout);
+#ifdef linux
+	signal(sig, sig_handler);
+#else
+	sigset(sig, sig_handler);
+#endif
+	return;
+    }
+#endif
+    printf("%s: received unexpected signal: %d\n", Progname, sig);
+    fflush(stdout);
+    exit(3);
+
+}

@@ -1,0 +1,12 @@
+#!/bin/sh
+#set -x
+cd $2
+status=$(ps -ef|grep "testsf_s"|wc -l)
+if [ $status -le 2 ]
+then
+  exec 1< /dev/null       # open descriptor 1
+  exec 2< /dev/null       # open descriptor 2
+  nohup ./testsf_s $1 &
+else
+  echo "testsf_s $1 is already running on server, not restarting process"
+fi

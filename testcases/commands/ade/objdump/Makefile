@@ -1,0 +1,18 @@
+CFLAGS += -w -o
+LDFLAGS +=
+
+SRCS=$(wildcard *.c)
+TESTS= test test_arch.o test_D
+
+all: $(TESTS)
+
+install: all
+	ln -f objdump01 ../../../bin
+
+clean:
+	rm -f $(TESTS)
+
+$(TESTS): 
+	$(CC) -O $(CFLAGS) $(cflags) test ./test.c
+	$(CC) -c $(CFLAGS) $(cflags) test_arch.o ./test.c
+	$(CC) $(CFLAGS) $(cflags) test_D ./test.c
