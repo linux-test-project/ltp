@@ -18,7 +18,7 @@
  */
 
 /*
- *  FILE        : pth_str01.c
+ *  FILE        : pth_str02.c
  *  DESCRIPTION : Create n threads
  *  HISTORY:
  *    05/16/2001 Paul Larson (plars@us.ibm.com)

@@ -18,7 +18,7 @@
  */
 
 /*
- *  FILE        : pth_str01.c
+ *  FILE        : pth_str03.c
  *  DESCRIPTION : create a tree of threads does calculations, and 
  *                returns result to parent
  *  HISTORY:
