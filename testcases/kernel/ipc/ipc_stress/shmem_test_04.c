@@ -69,6 +69,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdint.h>
 #include <sys/mman.h>
 
 #ifdef _LINUX_
