@@ -1,8 +1,0 @@
-This test requires two machines on the same subnet.  Each machine must have the same
-path setup for the test, i.e. if Machine A has "/testcases/mc_commo" for the files, then
-Machine B must also have the same path setup.  Machine B would be exported as the
-RHOST on Machine A, i.e. 'export RHOST=<Machine B hostname>'.  If this
-is not done, the test will use itself as the RHOST, which isn't very useful.  Also,
-the machine specified as the RHOST must have a ".rhosts" file in root's home
-directory with the hostname of the local machine that's running the test.  This is to
-allow the script to execute it's rsh calls.

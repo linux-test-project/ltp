@@ -1,7 +1,0 @@
-#
-# PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
-#
-rpc01 export TCbin=$LTPROOT/ltctests/rpc/rpc01; rpc01
-rpcinfo export TCbin=$LTPROOT/ltctests/rpc/rpcinfo01; rpcinfo01
-rup export TCbin=$LTPROOT/ltctests/rpc/rup; rup01
-rusers export TCbin=$LTPROOT/ltctests/rpc/rusers; rusers01
