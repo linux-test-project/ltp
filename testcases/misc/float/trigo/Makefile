@@ -20,5 +20,6 @@ clean:
 	rm -f $(DATA)
 	@for i in $(DATA); do rm -f ../../../bin/$$i ; done
 
-install:
+install: all
+	sleep 10
 	@for i in $(DATA); do ln -f $$i ../../../bin/$$i ; done ;
