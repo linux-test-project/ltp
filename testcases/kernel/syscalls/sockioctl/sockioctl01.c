@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -186,7 +187,9 @@ setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else
-		s = 0;		/* open, but not a socket */
+		if((s = open("/dev/tty3", O_RDWR)) == -1)
+			tst_brkm(TBROK, cleanup, "error opening /dev/null - "
+			"errno: %s", strerror(errno));
 }
 
 void
