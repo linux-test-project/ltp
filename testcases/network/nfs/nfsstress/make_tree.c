@@ -100,6 +100,10 @@
 /*				      numeber of .c fils in each sub dir = 100*/
 /*				- finally program is now in working state.    */
 /*                                                                            */
+/*		Nov - 01 - 2001 Modified.				      */
+/*				- fixed usage message default MAXT is 8 not 1 */
+/*				- fixed make to compile the files silently    */
+/*									      */
 /* File:        make_tree.c                                                   */
 /*                                                                            */
 /* Description:	This program is designed stress the NFS implimentation.       */
@@ -222,7 +226,7 @@ usage(char *progname)           /* name of this program                       */
                "\t -d Number of subdirectories to generate:   Default: 100\n"
                "\t -f Number of c files in each subdirectory: Default: 100\n"
                "\t -h Help!\n"
-               "\t -t Number of threads to generate:          Default: 1\n",
+               "\t -t Number of threads to generate:          Default: 8\n",
                     progname);
     exit(-1);
 }
@@ -268,7 +272,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
         return 1;
     }
 
-    what_todo ? sprintf(command, "make") : sprintf(command, "make clean");
+    what_todo ? sprintf(command, "make -s") : sprintf(command, "make -s clean");
     
     sprintf(dirname, "%s/%s.%d", base_dir, hname, getpid());
 
