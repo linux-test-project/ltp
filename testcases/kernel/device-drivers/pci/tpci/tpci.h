@@ -1,7 +1,8 @@
 //tpci.h
 
 #define TPCI_TEST_DRIVER_NAME	"pci test module"
-#define DEVICE_NAME		"tpci"
+#define TPCI_MAJOR      252
+#define DEVICE_NAME		"/dev/tpci"
 #define MAX_DEVFN		256
 #define MAX_BUS			256
 #define MAG_NUM 		'k'
@@ -26,6 +27,9 @@
 #define RESTORE_STATE		_IO(MAG_NUM, 20)
 #define TEST_MAX_BUS		_IO(MAG_NUM, 21)
 #define FIND_CAP		_IO(MAG_NUM, 22)
+#ifndef SET_MODULE_OWNER
+#define SET_MODULE_OWNER(dev) ((dev)->owner = THIS_MODULE)
+#endif
 
 /*
  * structures for PCI test driver

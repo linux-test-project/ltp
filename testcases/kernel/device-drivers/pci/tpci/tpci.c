@@ -28,7 +28,7 @@
 #include "st_tpci.h"
 
 MODULE_AUTHOR("Sean Ruyle <srruyle@us.ibm.com>");
-MODULE_DESCRIPTION(PCI_TEST_DRIVER_NAME);
+MODULE_DESCRIPTION(TPCI_TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
 static int tpci_ioctl (struct inode *, struct file *, unsigned int, unsigned long);
@@ -55,7 +55,8 @@ static int test_restore_state(void);
 static int test_max_bus(void);
 static int test_find_cap(void);
 
-static int Major = 0;
+
+static int Major = TPCI_MAJOR;
 static tpci_user_t ltp_pci;
 
 /*
@@ -739,8 +740,6 @@ static int tpci_init_module(void) {
 	if(Major == 0)
 		Major = rc;
 
-	if(!pci_present()) 
-		printk("tpci: pci_present returned false\n");
 		
 	printk("tpci: Registration success.\n");
 	return 0;

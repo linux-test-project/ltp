@@ -33,6 +33,7 @@
 #include <linux/input.h>
 #include <linux/types.h>
 #include <linux/kdev_t.h>
+#include <asm/uaccess.h>
 
 #include "tusb.h"
 #include "st_tusb.h"
@@ -54,7 +55,7 @@ static int test_hcd_resume(void);
 /* 
  * File operations stuff
  */
-static int Major = 0;
+static int Major = TUSB_MAJOR;
 static tusb_user_t ltp_usb;
 
 static struct file_operations tusb_fops = {
