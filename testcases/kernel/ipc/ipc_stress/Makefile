@@ -1,4 +1,4 @@
-CFLAGS := -O -g -D_LINUX_ -lpthread
+CFLAGS += -O -g -D_LINUX_ -lpthread -Wall
 
 SRCS=$(wildcard *.c)
 
