@@ -117,7 +117,6 @@ int main(int argc, char *argv[])
 		perror ("FAIL - Could not create file");
 		_exit(1);
 	}
-	fclose(fd);
 
 	/* Initialize thread control variables, lock & condition */
 	pthread_mutex_init(&c.m, NULL);
