@@ -67,13 +67,14 @@ mkdir -p -m 777 $MNT_POINT
 for mkisofs_opt in \
 	" " \
 	"-J" \
-	"-hfs" \
+	"-hfs -D" \
 	" -R " \
 	"-R -J" \
 	"-f -l -D -J -L -R" \
 	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
 do
-	mkisofs -o isofs.iso -quiet $mkisofs_opt /etc 2>&1 > /dev/null
+        echo "Running mkisofs -o isofs.iso -quiet $mkisofs_opt /etc  Command"
+	mkisofs -o isofs.iso -quiet $mkisofs_opt /etc 
 	if [ $? != 0 ]
 	then
 		rm -rf isofs.iso $MNT_POINT
@@ -90,10 +91,10 @@ do
 		"loop,check=strict,map=off,gid=bin,uid=bin" \
 		"loop,check=strict,map=acorn,gid=bin,uid=bin" \
 		"loop,check=relaxed,map=normal" \
-		"loop,iocharset=iso8859-1" \
 		"loop,block=512,unhide,session=2"
 		# "loop,sbsector=32"
 	do
+		echo "Running mount -o $mount_opt isofs.iso $MNT_POINT Command"
 		mount -t iso9660 -o $mount_opt isofs.iso $MNT_POINT
 		if [ $? != 0 ]
 		then
@@ -101,7 +102,8 @@ do
 			echo "FAILED: mount -t iso9660 -o $mount_opt isofs.iso $MNT_POINT failed"
 			exit 1
 		fi
-		ls -lR $MNT_POINT 2>&1 > /dev/null
+		echo "Running ls -lR $MNT_POINT Command"
+		ls -lR $MNT_POINT
 		exportfs -i -o no_root_squash,rw *:$MNT_POINT
 		exportfs -u :$MNT_POINT
 		umount $MNT_POINT

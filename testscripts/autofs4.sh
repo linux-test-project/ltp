@@ -113,7 +113,7 @@ then
 	mkdir -m 755 /AUTOFS
 fi
 
-echo "/AUTOFS/MEDIA	/etc/auto.media		--timeout=30" > /etc/auto.master
+echo "/AUTOFS/MEDIA	/etc/auto.media		" > /etc/auto.master
 echo "floppy	-fstype=ext2					:$floppy_dev" > /etc/auto.media
 
 
@@ -133,6 +133,7 @@ then
 	echo "FAILED: "/etc/init.d/autofs start""
 	exit 1
 fi
+echo "Resuming test, please wait..."
 sleep 15
 
 /etc/init.d/autofs stop 2>&1 > /dev/null
@@ -154,6 +155,7 @@ then
 	echo "FAILED: "/etc/init.d/autofs restart""
 	exit 1
 fi
+echo "Resuming test, please wait..."
 sleep 15
 
 /etc/init.d/autofs status 2>&1 > /dev/null
@@ -192,6 +194,7 @@ rm -rf /AUTOFS 2>&1 > /dev/null
 mkdir /AUTOFS/MEDIA/floppy/test
 cp /etc/auto.master /etc/auto.media /AUTOFS/MEDIA/floppy/test
 sync; sync
+echo "Resuming test, please wait..."
 sleep 60
 mkdir /AUTOFS/MEDIA/mydir 2>&1 > /dev/null
 rm -rf /AUTOFS 2>&1 > /dev/null
@@ -203,14 +206,16 @@ rm -rf /AUTOFS 2>&1 > /dev/null
 #
 ##############################################################
 
-echo "/AUTOFS/DISK	/etc/auto.disk		--timeout=30" >> /etc/auto.master
+echo "/AUTOFS/DISK	/etc/auto.disk		" >> /etc/auto.master
 echo "disk		-fstype=ext2					:$disk_partition " > /etc/auto.disk
 /etc/init.d/autofs reload 2>&1 > /dev/null
+echo "Resuming test, please wait..."
 sleep 30
 
 mkdir /AUTOFS/DISK/disk/test
 cp /etc/auto.master /etc/auto.media /AUTOFS/DISK/disk/test
 sync; sync
+echo "Resuming test, please wait..."
 sleep 60
 
 cd /AUTOFS/DISK/disk/test 
