@@ -62,6 +62,12 @@ int main(int argc, char* argv[]) {
   struct sysinfo sstats;
   int i,pid_cntr;
   pid_t pid,pid_list[1000];
+  struct sigaction act;
+
+  act.sa_handler = handler;
+  act.sa_flags = 0;
+  sigemptyset(&act.sa_mask);
+  sigaction(SIGUSR1,  &act, 0);
 
   for (i=0;i<1000;i++)
    pid_list[i]=(pid_t)0;
@@ -201,12 +207,6 @@ int main(int argc, char* argv[]) {
   }
   else					/** PARENT **/
   {
-    struct sigaction act;
-
-    act.sa_handler = handler;
-    act.sa_flags = 0;
-    sigemptyset(&act.sa_mask);
-    sigaction(SIGUSR1,  &act, 0);
 
     i=0;
     sysinfo(&sstats);
@@ -226,10 +226,9 @@ int main(int argc, char* argv[]) {
        post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
       }
     }
-    sleep(10);  
     while (pid_list[i]!=0)
     { 
-      kill(pid_list[i],SIGTERM);
+      kill(pid_list[i],SIGKILL);
       i++;
     }
     if (dowrite)
