@@ -1,0 +1,14 @@
+# Index created by AutoSplit for ./blib/lib/URI/URL.pm (file acts as timestamp)
+package URI::URL;
+sub newlocal ;
+sub strict ;
+sub base ;
+sub scheme ;
+sub crack ;
+sub abs ;
+sub rel ;
+sub as_string ;
+sub eq ;
+sub bad_method ;
+sub print_on ;
+1;

@@ -1,0 +1,15 @@
+b_float	1	b_float_ZERO	
+b_float	1	b_float_ONE	
+b_float	1	b_float_NEGONE	
+b_float	1	b_float_FMINEXP	
+b_float	1	b_float_MLN2	
+b_float	1	b_float_MPI	
+b_float	1	b_float_HALF_PI	
+b_float	1	b_float_QUARTER_PI	
+b_float	1	b_float_TWO_PI	
+b_float	1	b_float_MSQRT2	
+b_float	1	b_float_E	
+b_float	1	b_float_MAXFLOAT	
+b_float	1	b_float_MINFLOAT	
+b_float	1	b_float_NEGMAXFLOAT	
+b_float	1	b_float_NEGMINFLOAT	

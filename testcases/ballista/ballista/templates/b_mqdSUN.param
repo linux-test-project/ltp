@@ -1,0 +1,10 @@
+b_ptr_void	1	b_ptr_void_NULL	
+b_ptr_void	1	b_ptr_void_NEGONE	
+b_ptr_void	1	b_ptr_void_MAXINT	
+b_ptr_void	1	b_ptr_void_STATIC	
+b_ptr_void	1	b_ptr_void_DYNAMIC	
+b_ptr_void	1	b_ptr_void_CONST	
+b_ptr_void	1	b_ptr_void_FREED	
+b_mqd	1	b_mqd_OPEN_QUEUE	
+b_mqd	1	b_mqd_CLOSE_QUEUE	
+b_mqd	1	b_mqd_UNLINK_QUEUE	
