@@ -45,6 +45,10 @@
 /*			         pthread_join() part of the code was fixed to */
 /*			         check for the correct return status from the */
 /*			         thread function.                             */
+/*						                              */
+/*		Oct  - 25 - 2001 Modified - added OPT_MISSING                 */
+/*		                 chaned scheme, test will run once unless the */
+/*				 -x option is used.			      */
 /*								              */
 /* File: 	mmap1.c							      */
 /*									      */
@@ -88,8 +92,21 @@
 #else
 #define prtln()
 #endif
+#ifndef TRUE
+#define TRUE            1
+#endif
+#ifndef FALSE
+#define FALSE           0
+#endif
+#define OPT_MISSING(prog, opt) do {\
+                        fprintf(stderr, "%s: option -%c ", prog, opt); \
+                        fprintf(stderr, "requires and argument\n");\
+                            } while(0)
+
+
 
 /* Global Variables						              */
+int 	   verbose_print = FALSE;/* when called with -v print more info       */
 caddr_t    *map_address;	/* address of the file mapped.	              */
 sigjmp_buf jmpbuf;		/* argument to sigsetjmp and siglongjmp       */
 
@@ -301,11 +318,15 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 		       (long *)args;
     volatile int exit_val = 0;  /* exit value of the pthread		      */
 
-    fprintf(stdout, "map_write_unmap() arguments are:\n"
+    fprintf(stdout, "pid[%d]: map, change contents, unmap files %d times\n",
+		getpid(), (int)mwuargs[2]);
+    if (verbose_print)
+        fprintf(stdout, "map_write_unmap() arguments are:\n"
 		    "\t fd - arg[0]: %d\n"
 		    "\t size of file - arg[1]: %d\n"
 		    "\t num of map/write/unmap - arg[2]: %d\n", 
 		    (int)mwuargs[0], (size_t)mwuargs[1], (int)mwuargs[2]);
+
     while (mwu_ndx++ < (int)mwuargs[2])
     {
         if ((map_address = mmap(0, (size_t)mwuargs[1],  PROT_WRITE|PROT_READ, 
@@ -316,12 +337,16 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
             exit_val = MWU_FAIL;
             pthread_exit((void *)&exit_val);
         }
-        fprintf(stderr, "map address = %#x\n", map_address);
+        
+        if(verbose_print)
+            fprintf(stderr, "map address = %#x\n", map_address);
 
 	prtln();
 
         memset(map_address, 'a', mwuargs[1]);
-        fprintf(stdout, "[%d] times done: of total [%d] iterations\n"
+         
+        if (verbose_print)
+            fprintf(stdout, "[%d] times done: of total [%d] iterations\n"
 			"map_write_unmap():memset() content of memory = %s\n", 
 			mwu_ndx, (int)mwuargs[2], map_address);
 	usleep(1);
@@ -359,7 +384,8 @@ read_mem(void *args)		/* number of reads performed		      */
     char        *mem_content;	/* content of memory read                     */
     volatile int exit_val = 0;  /* pthread exit value			      */
 
-    fprintf(stdout, 
+    if (verbose_print)
+        fprintf(stdout, 
 		"read_mem()arguments are:\n"
 		"number of reads to be performed - arg[2]: %d\n"
                 "read from address %#x\n",
@@ -368,19 +394,26 @@ read_mem(void *args)		/* number of reads performed		      */
     mem_content = malloc(sizeof(char) * rd_index);
     while (rd_index++ < (int)rmargs[2])
     {
-	fprintf(stdout, "read_mem() in while loop  %d times to go %d times\n", 
+        fprintf(stdout, "pid[%d] - read contents of memory %#x %d times\n",
+               getpid(), map_address, rmargs[2]);
+        if (verbose_print)
+	    fprintf(stdout, 
+	        "read_mem() in while loop  %d times to go %d times\n", 
 		rd_index, (int)rmargs[2]);
         usleep(1);
         
         if (setjmp(jmpbuf) == 1)
         {
-	    fprintf(stdout, 
-		"page fault ocurred due a read after an unmap from %#x\n",
-		map_address);
+            if (verbose_print)
+	        fprintf(stdout, 
+		    "page fault ocurred due a read after an unmap from %#x\n",
+		    map_address);
         }
         else
         {
-	    fprintf(stdout, "read_mem(): content of memory: %s\n", map_address);
+	    if (verbose_print)
+	        fprintf(stdout, 
+		    "read_mem(): content of memory: %s\n", map_address);
             if (strncmp(mem_content, "a", 1) != 0)
             {
                 exit_val = -1;
@@ -412,11 +445,12 @@ read_mem(void *args)		/* number of reads performed		      */
 static void
 usage(char *progname)		/* name of this program			      */
 {
-    fprintf(stderr, "Usage: %s -d -l -s -x\n"
+    fprintf(stderr, "Usage: %s -d -l -s -v -x\n"
 		    "\t -h help, usage message.\n"
-		    "\t -l number of mmap/wite/unmap       default:1000\n"
-		    "\t -s size of the file to be mmaped   default:1024 bytes\n"
-		    "\t -x test execution time             default:24 Hrs\n",
+		    "\t -l number of mmap/wite/unmap      default: 1000\n"
+		    "\t -s size of the file to be mmaped  default: 1024 bytes\n"
+		    "\t -v print more info.               defailt: quiet\n"
+		    "\t -x test execution time            default: 24 Hrs\n",
 			    progname);
     exit(-1);
 }
@@ -440,6 +474,12 @@ usage(char *progname)		/* name of this program			      */
 main(int  argc,		/* number of input parameters.			      */
      char **argv)	/* pointer to the command line arguments.	      */
 {
+
+    extern char *optarg;/* getopt() function global variables         */
+    extern int   optind;
+    extern int   opterr;
+    extern int   optopt;
+
     char 	 *filename;	/* name of temp file created.     	      */
     int 	 c;		/* command line options			      */
     int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
@@ -448,7 +488,8 @@ main(int  argc,		/* number of input parameters.			      */
     int		 exec_time;	/* period for which the test is executed      */
     int		 fd;		/* temporary file descriptor		      */
     int          status[2];     /* exit status for process X and Y	      */
-    int  sig_ndx;       	/* index into signal handler structure.       */
+    int          sig_ndx;      	/* index into signal handler structure.       */
+    int		 run_once = TRUE;/* run the test once time. (dont repeat)     */
     pthread_t    thid[2];	/* pids of process X and Y		      */
     long         chld_args[3];	/* arguments to funcs execed by child process */
     extern  char *optarg;	/* arguments passed to each option	      */
@@ -485,14 +526,23 @@ main(int  argc,		/* number of input parameters.			      */
 	    case 'l':
 		if ((num_iter = atoi(optarg)) == (int)NULL)
 		    num_iter = 1000;
+                else
+		    OPT_MISSING(argv[0], optopt);
 		break;
 	    case 's':
 		if ((file_size = atoi(optarg)) == 0)
 		    file_size = 1024;        
+                else
+		    OPT_MISSING(argv[0], optopt);
 		break;
+	    case 'v':
+		verbose_print = TRUE;
 	    case 'x':
 		if ((exec_time = atoi(optarg)) == (int)NULL)
 		    exec_time = 24;
+                else
+		    OPT_MISSING(argv[0], optopt);
+	        run_once = FALSE;
 		break;
 	    default :
 		usage(argv[0]);
@@ -500,7 +550,8 @@ main(int  argc,		/* number of input parameters.			      */
         }
     }
 
-    fprintf(stdout, "Input parameters to are\n"
+    if (verbose_print)
+        fprintf(stdout, "Input parameters to are\n"
                     "\tFile size:                     %d\n"
                     "\tScheduled to run:              %d hours\n"
                     "\tNumber of mmap/write/read:     %d\n",
@@ -524,7 +575,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
     }
 
-    for(;;)
+    do
     {
         /* create temporary file */
         if ((fd = mkfile(file_size, &filename)) == -1)
@@ -534,7 +585,10 @@ main(int  argc,		/* number of input parameters.			      */
             exit (-1);
         }
         else
-            fprintf(stdout, "Tmp file %s created\n", filename);
+        {
+            if(verbose_print)
+                fprintf(stdout, "Tmp file %s created\n", filename);
+        }
 
         /* setup arguments to the function executed by process X */
         chld_args[0] = fd;
@@ -547,11 +601,21 @@ main(int  argc,		/* number of input parameters.			      */
             perror("main(): pthread_create()");
             exit(-1);
         }
+        else
+        {
+            fprintf(stdout, "%s: created thread[%d]\n",
+				argv[0], thid[0]);
+        }
         sched_yield();
         if (pthread_create(&thid[1], NULL, read_mem, chld_args))
         {
             perror("main(): pthread_create()");
             exit(-1);
+        }
+        else
+        {
+            fprintf(stdout, "%s: created thread[%d]\n",
+				argv[0], thid[1]);
         }
         sched_yield();
         
@@ -574,6 +638,6 @@ main(int  argc,		/* number of input parameters.			      */
             }
         }
         close(fd);
-    }
+    }while (TRUE && !run_once);
     exit (0);
 }
