@@ -722,7 +722,8 @@ sigaction03 sigaction03
 # The following test hangs
 # sigaction04 sigaction04
 sigaction05 sigaction05
-sigaction06 sigaction06
+# The following test was removed by the posixtestsuite for inaccurate assumptions
+# sigaction06 sigaction06
 sigaction07 sigaction07
 sigaction08 sigaction08
 sigaction09 sigaction09
