@@ -57,7 +57,7 @@ $trace_logic
 test_format() {
 $trace_logic
 echo "Testing format..."
-fdformat  /dev/fd0H1440 
+fdformat  /dev/fd0
   if [ $? -ne 0 ]; then
     echo "Format failed!"
     exit 1
@@ -263,5 +263,5 @@ test_dosformat
 
 #If we made it this far, all tests passed.
 echo ""
-echo "stress_format: PASS"
+echo "stress_floppy: PASS"
 exit 0
