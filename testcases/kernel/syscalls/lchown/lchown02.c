@@ -111,6 +111,7 @@ int longpath_setup();	/* setup function to test chown for ENAMETOOLONG */
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
 char* EXEC_DIR;
+char main_test_dir[PATH_MAX+2];
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	char *pathname;
@@ -238,7 +239,7 @@ setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Get the current directory of the test executable*/
-	EXEC_DIR=get_current_dir_name();
+	EXEC_DIR=(char *)get_current_dir_name();
 
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
@@ -261,6 +262,12 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+		 /* remember current dir, because create_link has been copied here */
+		 if (getcwd(main_test_dir, sizeof(main_test_dir)) == NULL) {
+                tst_brkm(TBROK, cleanup,
+                         "getcwd(3) fails to get working directory of process");
+        }
 
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
@@ -302,7 +309,6 @@ setup1()
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Path2_name[PATH_MAX];	/* Buffer for just the path name */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
-	char Cmd2_buffer[BUFSIZ];       /* Buffer to hold command string */
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
@@ -331,18 +337,11 @@ setup1()
 
 	strcpy(Path2_name,Path_name);
 
-	/* Copy the create_link program to the tmpdir */
-	strcat((char *)Cmd2_buffer, (const char *)"cp -f ");
-	strcat((char *)Cmd2_buffer, EXEC_DIR);
-	strcat((char *)Cmd2_buffer, (const char *)"/create_link ");
-	strcat((char *)Cmd2_buffer, Path2_name);
-	system((const char *)Cmd2_buffer);
-
 	/* Get the path of test file created under temporary directory */
 	strcat(Path_name, "/"TEST_FILE1);
 
 	/* Get the command name to be executed as setuid to root */
-	strcat((char *)Cmd_buffer, Path2_name);
+	strcat((char *)Cmd_buffer, main_test_dir);
 	strcat((char *)Cmd_buffer, (const char *)"/create_link ");
 	strcat((char *)Cmd_buffer, Path_name);
 
