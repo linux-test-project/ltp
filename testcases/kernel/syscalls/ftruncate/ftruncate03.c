@@ -22,8 +22,8 @@
  *
  * Test Description:
  *  Verify that,
- *  1) ftruncate(2) returns -1 and sets errno to EINVAL if the specified
- *     truncate length is less than 0.
+ *  1) ftruncate(2) returns -1 and sets errno to EACCES if the specified
+ *     file descriptor has an attempt to write, when open for read only.
  *  2) ftruncate(2) returns -1 and sets errno to EBADF if the file descriptor
  *     of the specified file is not valid.
  *
@@ -64,7 +64,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be executed by 'non-super-user'  only.
  */
 
 #include <stdio.h>
@@ -99,7 +98,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int len;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ 1, "Length argument is -ve", EINVAL, -1, setup1 },
+	{ 1, "File descriptor not open for writing", EACCES, -1, setup1 },
 	{ 2, "File descriptor is not valid", EBADF, 256, setup2 },
 	{ 0, NULL, 0, 0, no_setup }
 };
@@ -212,11 +211,17 @@ setup()
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
          ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
+         if (setgid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setgid failed to "
                          "to set the effective uid to %d",
                          ltpuser->pw_uid);
-                perror("seteuid");
+                perror("setgid");
+         }
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
          }
 
 
@@ -235,16 +240,16 @@ setup()
 /*
  * int
  * setup1() - setup function for a test condition for which ftruncate(2)
- *	      returns -1 and sets errno to EINVAL.
- *  Create a test file and open it for writing only.
+ *	      returns -1 and sets errno to EACCES.
+ *  Create a test file and open it for reading only.
  */
 int
 setup1()
 {
-	/* Open the testfile in write-only mode */
-	if ((fd1 = open(TEST_FILE1, O_WRONLY|O_CREAT, 0644)) == -1) {
+	/* Open the testfile in read-only mode */
+	if ((fd1 = open(TEST_FILE1, O_RDONLY|O_CREAT, 0644)) == -1) {
 		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_WRONLY) Failed, errno=%d : %s",
+			 "open(%s, O_RDONLY) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
 	return 0;
