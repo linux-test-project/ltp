@@ -50,7 +50,7 @@
 int parent_pipe[2];
 int child_pipe[2];
 int fd;
-int parent_pid, child_pid;
+pid_t parent_pid, child_pid;
 char *file;
 
 void parent_put();
@@ -58,7 +58,7 @@ void parent_get();
 void child_put();
 void child_get();
 void stop_child();
-void compare_lock(struct flock *, short, short, int, int, short);
+void compare_lock(struct flock *, short, short, int, int, pid_t);
 void unlock_file();
 void do_test(struct flock *, short, short, int, int);
 void catch_child();
@@ -133,7 +133,7 @@ block1:
 		 * Test that the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -176,7 +176,7 @@ block2:
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -220,7 +220,7 @@ block3:
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -270,7 +270,7 @@ block4:
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 20, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 20, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 20, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -314,7 +314,7 @@ block5:
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 13, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 13, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 13, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -358,7 +358,7 @@ block6:
 		 * Test to make sure the end of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 14, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 14, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 14, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -403,7 +403,7 @@ block7:
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 16, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 16, 0, (short)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 16, 0, (pid_t)0);
 
 		/*
 		 * remove all the locks set above
@@ -527,7 +527,7 @@ do_test(struct flock *fl, short type, short whence, int start, int len)
 
 void
 compare_lock(struct flock *fl, short type, short whence, int start, int len,
-	     short pid)
+	     pid_t pid)
 {
 	if (fl->l_type != type) {
 		tst_resm(TFAIL, "lock type is wrong should be %s is %s",
@@ -571,7 +571,7 @@ unlock_file()
 		fail = 1;
 	}
 	do_test(&fl, F_WRLCK, 0, 0, 0);
-	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (short)0);
+	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (pid_t)0);
 }
 
 char *

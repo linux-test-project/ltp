@@ -50,7 +50,7 @@
 int parent_pipe[2];
 int child_pipe[2];
 int fd;
-int parent_pid, child_pid;
+pid_t parent_pid, child_pid;
 char *file;
 
 void parent_put();
@@ -58,7 +58,7 @@ void parent_get();
 void child_put();
 void child_get();
 void stop_child();
-void compare_lock(struct flock *, short, short, int, int, short);
+void compare_lock(struct flock *, short, short, int, int, pid_t);
 void unlock_file();
 void do_test(struct flock *, short, short, int, int);
 void catch_child();
@@ -682,7 +682,7 @@ do_test(struct flock *fl, short type, short whence, int start, int len)
 
 void
 compare_lock(struct flock *fl, short type, short whence, int start, int len,
-	     short pid)
+	     pid_t pid)
 {
 	if (fl->l_type != type) {
 		tst_resm(TFAIL, "lock type is wrong should be %s is %s",
@@ -726,7 +726,7 @@ unlock_file()
 		fail = 1;
 	}
 	do_test(&fl, F_WRLCK, 0, 0, 0);
-	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (short)0);
+	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (pid_t)0);
 }
 
 char *
