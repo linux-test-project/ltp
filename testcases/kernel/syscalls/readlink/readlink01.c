@@ -69,6 +69,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -86,6 +87,10 @@ int exp_val;			/* strlen of testfile */
 
 void setup();			/* Setup function for the test */
 void cleanup();			/* Cleanup function for the test */
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 int
 main(int ac, char **av)
@@ -171,10 +176,17 @@ setup()
 {
 	int fd;			/* file handle for testfile */
 
-	/* make sure test is not being run as root */
-	if (0 == geteuid()) {
-		tst_brkm(TBROK, tst_exit, "Must not run test as root");
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
