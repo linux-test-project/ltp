@@ -49,7 +49,7 @@
  *	None
  */
 
-#if defined(linux) && defined(__i386__)
+#ifdef __i386__
 #include <asm/ldt.h>
 #include <asm/unistd.h>
 #endif
@@ -69,7 +69,8 @@ int seg[4];
 int flag;
 #define FAILED 1
 
-#if defined(linux) && defined(__i386__)
+#if defined(__i386__)
+extern int modify_ldt(int, void*, unsigned long);
 int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
@@ -92,7 +93,7 @@ int main(int ac, char **av)
                 /* reset Tst_count in case we are looping */
                 Tst_count = 0;
 
-block1:
+//block1:
 		/*
 		 * Check for ENOSYS.
 		 */
@@ -122,7 +123,7 @@ block1:
 		tst_resm(TINFO, "Exit block 1");
 		free(ptr);
 
-block2:
+//block2:
 		/*
 		 * Check for EINVAL
 		 */
@@ -152,7 +153,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3:
+//block3:
 
 		/*
 		 * Create a new LDT segment.
@@ -190,6 +191,7 @@ block3:
 
         }
         cleanup();
+	return(0);
 }
 
 #else /* if defined(linux) && defined(__i386__) */
@@ -232,7 +234,7 @@ cleanup(void)
 	tst_exit();
 }
 
-#if defined(linux) && defined(__i386__)
+#if defined(__i386__)
 int
 create_segment(void *seg, size_t size)
 {

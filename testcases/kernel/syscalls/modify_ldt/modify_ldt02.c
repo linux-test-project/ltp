@@ -43,7 +43,7 @@
  *	None
  */
 
-#if defined(linux) && defined(__i386__)
+#if defined(__i386__)
 #include <asm/ldt.h>
 #include <asm/unistd.h>
 #endif
@@ -65,7 +65,9 @@ int flag;
 
 int seg[4];
 
-#if defined(linux) && defined(__i386__)
+#if defined(__i386__)
+extern int modify_ldt(int, void*, unsigned long);
+int read_segment(unsigned int);
 int
 main(int ac, char **av)
 {
@@ -88,7 +90,7 @@ main(int ac, char **av)
                 /* reset Tst_count in case we are looping */
                 Tst_count = 0;
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		flag = 0;
 
@@ -114,7 +116,7 @@ block1:
 
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		flag = 0;
 
@@ -143,6 +145,7 @@ block2:
 		}
 	}
         cleanup();
+	return(0);
 }
 
 int
@@ -173,7 +176,7 @@ int read_segment(unsigned int index)
 			: "r" (index*sizeof(int)));
 	return res;
 }
-#else /* if defined(linux) && defined(__i386__) */
+#else /* if defined(__i386__) */
 
 int main()
 {
@@ -181,7 +184,7 @@ int main()
 	return 0;
 }
 
-#endif /* if defined(linux) && defined(__i386__) */
+#endif /* if defined(__i386__) */
 void
 sigsegv_handler(int sig)
 {
