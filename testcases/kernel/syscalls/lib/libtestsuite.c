@@ -31,6 +31,7 @@
  */
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <pwd.h>
 #include <errno.h>
 #include <fcntl.h>
