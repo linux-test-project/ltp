@@ -61,12 +61,14 @@ $trace_logic
 
    echo "do_setup $TC"
 
+   echo "This test runs LOCALLY."
+
    IAM=${IAM:=`whoami`}
    [[ $IAM -eq "root" ]] || end_testcase "Must be root user"
    
    #Export the data directory on HOST
    /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
-   [[ $? -eq 0 ]] || end_testcase "Could not export $EXPORTDIR"
+   [[ $? -eq 0 ]] || end_testcase "Could not export $EXPORTDIR on $HOST"
 
    #Verify export
    /usr/sbin/showmount -e $HOST | grep $EXPORTDIR > /dev/null
