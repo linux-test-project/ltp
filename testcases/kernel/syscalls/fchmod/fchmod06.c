@@ -75,6 +75,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
 #include <sys/types.h>

@@ -292,9 +292,9 @@ long			data;
 
 		if (nbytes == -1) {
 			sprintf(Wlog_Error_String,
-				"Could not read history file at offset %d - read(%d, %#o, %d) failed:  %s\n",
-				offset, fd, (int)bufstart,
-				bufend - bufstart - leftover, strerror(errno));
+				"Could not read history file at offset %d - read(%d, %#lo, %d) failed:  %s\n",
+				offset, fd, bufstart,
+				(int)(bufend - bufstart - leftover), strerror(errno));
 			return -1;
 		}
 

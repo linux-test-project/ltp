@@ -104,6 +104,8 @@ int setup2();			/* setup function to test chmod for EACCES */
 int setup3();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
 
+char	*get_high_address();	/* Function from ltp-Lib */
+
 char *test_home;		/* variable to hold TESTHOME env. */
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];

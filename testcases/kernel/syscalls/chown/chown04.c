@@ -104,6 +104,8 @@ int setup2();			/* setup function to test chown for EACCES */
 int setup3();			/* setup function to test chown for ENOTDIR */
 int longpath_setup();	/* setup function to test chown for ENAMETOOLONG */
 
+char	*get_high_address();	/* Function from ltp-lib	*/
+
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
 

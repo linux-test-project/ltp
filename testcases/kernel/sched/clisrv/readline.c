@@ -33,6 +33,7 @@
  *
  ******************************************************************************/
 
+#include <unistd.h>
 
 /* Read line from a descriptor, byte at a time, return number of 
    characters up to the null */

@@ -176,7 +176,7 @@ int	synchronize_children( c_info *parent ) {
 	info_p->index = my_index;
 
 	if ( debug ) {
-	    printf( "thread %d info_p=%x\n", my_index, (unsigned int)info_p );
+	    printf( "thread %d info_p=%p\n", my_index, info_p );
 	    fflush( stdout );
 	}
 
@@ -186,8 +186,8 @@ int	synchronize_children( c_info *parent ) {
 	 * do the increment.
 	 */
 	if ( debug ) {
-	    printf( "thread %d locking child_mutex %x\n", my_index,
-	      (unsigned int)&parent->child_mutex );
+	    printf( "thread %d locking child_mutex %p\n", my_index,
+	      &parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_lock( &parent->child_mutex );
@@ -198,8 +198,8 @@ int	synchronize_children( c_info *parent ) {
 	}
 	parent->child_ptrs[parent->child_count++] = info_p;
 	if ( debug ) {
-	    printf( "thread %d unlocking child_mutex %x\n", my_index,
-	      (unsigned int)&parent->child_mutex );
+	    printf( "thread %d unlocking child_mutex %p\n", my_index,
+	      &parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_unlock( &parent->child_mutex );
@@ -303,7 +303,7 @@ int	doit( c_info *parent ) {
 	struct timespec	timer;
 
 	if ( debug ) {
-	    printf( "parent=%#010x\n", (unsigned int)parent );
+	    printf( "parent=%#010x\n", (intptr_t)parent );
 	    fflush( stdout );
 	}
 
@@ -344,7 +344,7 @@ int	doit( c_info *parent ) {
 
 	if ( debug ) {
 	    printf( "thread %d getting to heart of doit.\n", my_index );
-	    printf( "info_p=%x, cdepth=%d, depth=%d\n", (unsigned int)info_p, cdepth, depth );
+	    printf( "info_p=%p, cdepth=%d, depth=%d\n", info_p, cdepth, depth );
 	    fflush( stdout );
 	}
 
@@ -363,7 +363,7 @@ int	doit( c_info *parent ) {
 	     */
 	    for ( child = 0; child < breadth; child++ ) {
 		if ( debug ) {
-		    printf( "thread %d making child %d, ptr=%x\n", my_index,
+		    printf( "thread %d making child %d, ptr=%p\n", my_index,
 		      child, (unsigned int)&(info_p->threads[child]) );
 		    fflush( stdout );
 		}
@@ -374,8 +374,8 @@ int	doit( c_info *parent ) {
 		    exit( 3 );
 		} else {
 		    if ( debug ) {
-			printf( "pthread_create made thread %x\n",
-			  (unsigned int)&(info_p->threads[child]) );
+			printf( "pthread_create made thread %lx\n",
+			  &(info_p->threads[child]) );
 			fflush( stdout );
 		    }
 		}
@@ -392,15 +392,15 @@ int	doit( c_info *parent ) {
 	     */
 	    for ( child = 0; child < breadth; child++ ) {
 		if ( debug ) {
-		    printf( "attempting join on thread %x\n",
-		      (unsigned int)&(info_p->threads[child]) );
+		    printf( "attempting join on thread %p\n",
+		      &(info_p->threads[child]) );
 		    fflush( stdout );
 		}
 		if ((rc = pthread_join((info_p->threads[child]), &status))) {
 		    if ( debug ) {
 			fprintf( stderr,
-			  "join failed on thread %d, status addr=%x: %s\n",
-			  my_index, (unsigned int)status, sys_errlist[rc] );
+			  "join failed on thread %d, status addr=%p: %s\n",
+			  my_index, status, sys_errlist[rc] );
 			fflush( stderr );
 		    }
 		    exit( 4 );
@@ -493,8 +493,8 @@ int	doit( c_info *parent ) {
 	/*
 	 * Our work is done.  We're outta here.
 	 */
-	printf( "thread %d exiting, depth=%d, status=%d, addr=%x\n", my_index,
-	  cdepth, info_p->status, (unsigned int)info_p);
+	printf( "thread %d exiting, depth=%d, status=%d, addr=%p\n", my_index,
+	  cdepth, info_p->status, info_p);
 	fflush( stdout );
 
 	pthread_exit( 0 );

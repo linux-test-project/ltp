@@ -104,6 +104,8 @@ int setup3();			/* setup() to test access() for EACCES */
 int setup4();			/* setup() to test access() for EINVAL */
 int longpath_setup();	/* setup function to test access() for ENAMETOOLONG */
 
+char *get_high_address();	/* function from ltp-lib	*/
+
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
 
@@ -170,7 +172,7 @@ main(int ac, char **av)
 			test_desc = Test_cases[ind].desc;
 
 			if (file_name == High_address_node) {
-				file_name = (char *)get_high_address();
+				file_name = get_high_address();
 			}
 
 			/* 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: symbol.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: symbol.c,v 1.3 2002/04/10 16:10:40 robbiew Exp $ */
 /*
  *			Generic Symbol Table
  *
@@ -434,7 +434,7 @@ sym_dump_s(SYM sym, int depth)
 	    putchar('\n');
 	    sym_dump_s((SYM)se->data, depth+1);
 	} else {
-	    printf("(%#x) = %s (%#x)\n", (unsigned int)se->key, (char *)se->data, (unsigned int)se->data);
+	    printf("(%p) = %s (%p)\n", se->key, (char *)se->data, se->data);
 	}	    
     }
     return 0;

@@ -77,7 +77,7 @@
 static void sys_error (const char *, int);
 static void error (const char *, int);
 static void parse_args (int, char **);
-void *thread (void *);
+void *thread (int *);
 int read_data (int, unsigned long);
 
 /*
@@ -101,6 +101,7 @@ int main (int argc, char **argv)
 {
 	pthread_attr_t  attr;
 	int *array;
+	int *arg;
 	int rc = 0, i;
 
 	/* Parse command line arguments and print out program header */
@@ -120,12 +121,15 @@ int main (int argc, char **argv)
 	printf("\tThread [main] Creating %d threads\n", num_threads);
 
 	array = (int *) malloc (sizeof (int) * num_threads);
+	arg = (int *) malloc (sizeof (int) * num_threads);
 	assert (array);
+	assert (arg);
 	for (i=0; i < num_threads; i++) 
         {
 	    if (debug) 
 	       printf("\tThread [main]: creating thread %d\n", i + 1);
-	    if (pthread_create ((pthread_t *) &array [i], &attr, thread, (void *) ((int) i + 1))) 
+	    arg[i] = i + 1;
+	    if (pthread_create ((pthread_t *) &array [i], &attr, (void *)thread, (void *) &arg[i])) 
 	    {
 	       if (errno == EAGAIN) 
 		  fprintf(stderr, "\tThread [main]: unable to create thread %d\n", i);
@@ -151,6 +155,7 @@ int main (int argc, char **argv)
 	    rc += exit_value;
 	}
 	free(array);
+	free(arg);
 
 	/* One or more of the threads did not complete sucessfully! */
 	if (rc != 0) 
@@ -172,9 +177,9 @@ int main (int argc, char **argv)
 | Function:  ...                                                     |
 |                                                                    |
 +-------------------------------------------------------------------*/
-void *thread (void *parm)
+void *thread (int *parm)
 {
-	int num = (int) parm;
+	int num = *parm;
 	unsigned long cksum = 0;
 
 	

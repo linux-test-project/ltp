@@ -34,7 +34,7 @@
  *	Added timer options: William Jay Huie, IBM
  *
  */
-/* $Id: pan.c,v 1.9 2002/02/19 18:06:31 robbiew Exp $ */
+/* $Id: pan.c,v 1.10 2002/04/10 16:10:40 robbiew Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -432,7 +432,7 @@ main(int argc, char **argv)
            FILE *f = (FILE*)-1;
            if ((f = fopen(PAN_STOP_FILE, "r")) != 0)
            {  printf("Got %s Stopping!\n", PAN_STOP_FILE);
-              close((int)f); unlink(PAN_STOP_FILE); stop++; 
+              fclose(f); unlink(PAN_STOP_FILE); stop++; 
            }
         }
 

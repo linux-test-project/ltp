@@ -55,6 +55,10 @@
 #include <sys/wait.h>
 #include <test.h>
 #include <usctest.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 char *TCID = "chdir03";
 int TST_TOTAL = 1;
@@ -74,13 +78,13 @@ struct passwd *ltpuser1, *ltpuser2;
 
 extern struct passwd *my_getpwnam(char *);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	pid_t pid, pid1;
-	int retval, status;
+	int status;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -193,7 +197,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
 	}
 
-	sprintf(good_dir, "%s.%d\0", cur_dir, getpid());
+	sprintf(good_dir, "%s.%d\n", cur_dir, getpid());
 
 	ltpuser1 = my_getpwnam(user1name);
 	ltpuser2 = my_getpwnam(user2name);

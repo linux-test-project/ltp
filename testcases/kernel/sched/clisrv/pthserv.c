@@ -50,6 +50,7 @@
 */
 
 #include <pthread.h>
+#include <string.h>
 #include "inet.h"
 #define MAXLINE 1024
 pthread_t	th;
@@ -75,7 +76,7 @@ int sockfd;
       if (n == 0)
       {
          dprt("%s: str_echo(): connection terminated\n", __FILE__);
-         return; /* connection terminated */
+         return 0; /* connection terminated */
       }
       else if (n < 0)
       {

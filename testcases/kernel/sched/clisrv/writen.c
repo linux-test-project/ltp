@@ -35,6 +35,7 @@
  *
  ******************************************************************************/
 
+#include <unistd.h>
 
 /* Write "n" bytes to a descriptor
    Use instead of write() when fd is a stream socket. */

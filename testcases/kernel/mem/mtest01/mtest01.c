@@ -37,8 +37,8 @@
 
 int main(int argc, char* argv[]) {
   char* mem;
-  unsigned int bytecount, maxpercent=0, dowrite=0, verbose=0, j, c;
-  unsigned long int maxbytes;
+  unsigned int maxpercent=0, dowrite=0, verbose=0, j, c;
+  unsigned long int bytecount, maxbytes;
   extern char* optarg;
   size_t chunksize = 1024*1024; /* one meg at a time by default */
   struct sysinfo sstats;
@@ -91,23 +91,23 @@ int main(int argc, char* argv[]) {
 
     /* set maxbytes to the extra amount we want to allocate */
     maxbytes = D-C;
-    printf("Filling up %d%%  of ram which is %lud bytes\n",maxpercent,maxbytes);
+    printf("Filling up %d%% of ram which is %lu bytes\n",maxpercent,maxbytes);
   }
 
   bytecount=chunksize;
   while(1) {
     if((mem = (char*)malloc(chunksize)) == NULL) {
-      printf("stopped at %d bytes\n",bytecount);
+      printf("stopped at %lu bytes\n",bytecount);
       exit(1);
     }
     if(dowrite)
       for(j=0; j<chunksize; j++)
         *(mem+j)='a';
-    if(verbose) printf("allocated %d bytes chunksize is %d\n",bytecount,chunksize);
+    if(verbose) printf("allocated %lu bytes chunksize is %ld\n",bytecount,chunksize);
     bytecount+=chunksize;
     if(maxbytes && (bytecount >= maxbytes))
       break;
   }
-  printf("PASS ... %d bytes allocated.\n",bytecount);
+  printf("PASS ... %lu bytes allocated.\n",bytecount);
   exit(0);
 }

@@ -63,6 +63,7 @@
 #include <signal.h>     /* definitions for signals - required for SIGALRM     */
 #include <errno.h>	/* definitions for errors		              */
 #include <stdlib.h>     /* definitions for malloc			      */
+#include <string.h>     /* definitions for memset			      */
 
 /* GLOBAL DEFINES							      */
 #define READ_FAULT      0
@@ -108,7 +109,8 @@ static   int  verbose_print = FALSE; /* print more test information           */
 /* Description: handle SIGALRM raised by set_timer(), SIGALRM is raised when  */
 /*              the timer expires. If any other signal is recived exit the    */
 /*              test.                                                         */
-/*                                                                            *//* Input:       signal - signal number, intrested in SIGALRM!                 */
+/*                                                                            */
+/* Input:       signal - signal number, intrested in SIGALRM!                 */
 /*                                                                            */
 /* Return:      exit 1 if unexpected signal is recived                        */
 /*              exit 0 if SIGALRM is recieved                                 */
@@ -224,7 +226,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
          start_addr += local_args[2]; 
          if (verbose_print)
              fprintf(stdout, "thread_fault(): generating fault type %d" 
-		    " @page adress %#lx\n", (int)local_args[3], 
+		    " @page adress %p\n", local_args[3], 
 		      start_addr);
 	 fflush(NULL);
     }
@@ -349,7 +351,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
 	    retinfo->mapaddr = map_addr;
             if (verbose_print)
     	        fprintf(stdout, 
-		  "map_and_thread(): mmap success, address = %#lx\n", map_addr);
+		  "map_and_thread(): mmap success, address = %p\n", map_addr);
 	    fflush(NULL);
 	}
     }
@@ -406,7 +408,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
             if ((int)*th_status == 1)
             {
                 fprintf(stderr,
-                        "thread [%d] - process exited with errors\n",
+                        "thread [%ld] - process exited with errors\n",
 			   (long)pthread_ids[thrd_ndx]);
                 free(empty_buf);                          
                 remove_files(tmpfile);

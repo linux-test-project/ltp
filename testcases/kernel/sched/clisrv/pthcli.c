@@ -44,6 +44,8 @@
 /* client using TCP */
 
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include "inet.h"
 #include <sys/errno.h>
 #define MAXLINE 1024

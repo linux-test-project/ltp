@@ -51,6 +51,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 
