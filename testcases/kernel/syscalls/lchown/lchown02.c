@@ -74,7 +74,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be executed by 'non-super-user'  only.
  *
  */
 
@@ -132,6 +131,11 @@ char *TCID="lchown02";           /* Test program identifier.    */
 int TST_TOTAL = 7;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+char *test_home;		/* variable to hold TESTHOME env */
+
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
@@ -232,12 +236,19 @@ setup()
 
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
+	test_home = get_current_dir_name();
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -273,25 +284,11 @@ no_setup()
 int
 setup1()
 {
-	char *test_home;		/* variable to hold TESTHOME env */
 	int fd;				/* file handler for testfile */
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
-	
-	/* Get the TESTHOME env */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, cleanup, "Fail to get TESTHOME env. variable!");
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-         */ 
-	if (!(strstr((const char *)test_home, "lchown"))) {
-		strcat(test_home, "/lchown");
-	}
 
+	setuid(ltpuser->pw_uid);	
 	/* Creat a testfile and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,

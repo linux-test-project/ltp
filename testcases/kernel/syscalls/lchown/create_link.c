@@ -34,17 +34,17 @@
 #include <grp.h>
 #include <errno.h>
 
-#define LTPUSER		"ltpuser2"
-#define LTPGRP		"group2"
+#define LTPUSER		"nobody"
+#define LTPGRP		"users"
 #define SFILE1		"sfile_1"
 
 int
 main(int argc, char **argv)
 {
-	struct passwd *ltpuser;		/* password struct for ltpuser2 */
-	struct group *ltpgroup;		/* group struct for ltpuser2 */
-	uid_t user_uid;			/* user id of ltpuser2 */
-	gid_t group_gid;		/* group id of ltpuser2 */
+	struct passwd *ltpuser;		/* password struct for nobody */
+	struct group *ltpgroup;		/* group struct for nobody */
+	uid_t user_uid;			/* user id of nobody */
+	gid_t group_gid;		/* group id of nobody */
 	char *path_name;		/* name of test directory/file */
 
 	path_name = argv[1];

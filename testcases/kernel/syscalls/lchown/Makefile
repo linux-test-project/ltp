@@ -23,10 +23,15 @@
 CFLAGS+=	-I../../../../include
 LDFLAGS+=	-L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
+SRCS=$(wildcard lchown*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS)
+all: create_link $(TARGETS)
+
+create_link: 
+	$(CC) -o create_link create_link.c $(CFLAGS) $(LDFLAGS)
+	chown root create_link
+	chmod 04755 create_link 
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
@@ -35,6 +40,6 @@ install: all
 	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) create_link
 
 
