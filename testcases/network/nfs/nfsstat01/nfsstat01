@@ -65,7 +65,15 @@ $trace_logic
 
    IAM=${IAM:=`whoami`}
    [[ $IAM -eq "root" ]] || end_testcase "Must be root user"
+
+   #Check for mountd.
+   rpcinfo -p | grep mountd
+   [[ $? -eq 0 ]] || end_testcase "Mountd is NOT running"
    
+   #Check for nfsd.
+   rpcinfo -p | grep nfs
+   [[ $? -eq 0 ]] || end_testcase "NFS server daemon (nfsd) is NOT running"
+
    #Export the data directory on HOST
    /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
    [[ $? -eq 0 ]] || end_testcase "Could not export $EXPORTDIR on $HOST"
