@@ -50,42 +50,72 @@
 /*				  changed variable th_status from dynamic to  */
 /*				  static array.			              */
 /*                                                                            */
+/*		May - 15 - 2002 Dan Kegel (dank@kegel.com)                    */
+/*		                - Fixed crash on > 30 threads                 */
+/*		                - Cleaned up, fixed compiler warnings         */
+/*		                - Removed mallocs that could fail             */
+/*		                - Note that pthread_create fails with EINTR   */
+/*                                                                            */
 /* File:	mallocstress.c						      */
 /*									      */
-/* Description:	This program is designed to stress the VMM by doing repeated  */
-/*		mallocs and frees, with out using the swap space. This is     */
-/*		achived by spawnning N threads with repeatedly malloc and free*/
-/*		a memory of size M. The stress can be increased by increasing */
-/*		the number of repetations over the default number using the   */
-/*		-l [num] option.					      */
+/* Description:	This program stresses the VMM and C library                   */
+/*              by spawning N threads which                                   */
+/*              malloc blocks of increasing size until malloc returns NULL.   */
 /******************************************************************************/
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
+#include <errno.h>
 
 #define MAXL    100     /* default number of loops to do malloc and free      */
-#define MAXT    30      /* default number of threads to create.               */
+#define MAXT     60     /* default number of threads to create.               */
 
 #ifdef DEBUG
-#define dprt	printf
+#define dprt(args)	printf args
 #else
-#define dprt
+#define dprt(args)
 #endif
-
-#define PTHREAD_EXIT(val)    do {\
-			exit_val = val; \
-                        dprt("pid[%d]: exiting with %d\n", getpid(),exit_val); \
-			pthread_exit((void *)&exit_val); \
-				} while (0)
 
 #define OPT_MISSING(prog, opt)   do{\
 			       fprintf(stderr, "%s: option -%c ", prog, opt); \
                                fprintf(stderr, "requires an argument\n"); \
                                usage(prog); \
                                    } while (0)
-#define FOREVER 1
+
+int num_loop = MAXL;/* number of loops to perform		      */
+
+
+/* Define SPEW_SIGNALS to tickle thread_create bug (it fails if interrupted). */
+#define SPEW_SIGNALS
+
+/******************************************************************************/
+/*								 	      */
+/* Function:	my_yield						      */
+/*									      */
+/* Description:	Yield control to another thread.                              */
+/*              Generate a signal, too.                                       */
+/*									      */
+/******************************************************************************/
+static void
+my_yield()
+{
+#ifdef SPEW_SIGNALS
+    /* usleep just happens to use signals in glibc at moment.
+     * This is good because it allows us to test whether pthread_create
+     * improperly returns EINTR (which would violate SUSv3)
+     */
+    usleep(0);
+#else
+    /* If you want this test to pass, don't define SPEW_SIGNALS,
+     * as pthread_create is broken at moment, and fails if interrupted
+     */
+    static const stuct timespec t0 = {0, 0};
+    nanosleep(&t0, NULL);
+#endif
+}
 
 /******************************************************************************/
 /*								 	      */
@@ -99,7 +129,8 @@
 /*									      */
 /******************************************************************************/
 static void
-usage(char *progname)           /* name of this program                       */{
+usage(char *progname)           /* name of this program                       */
+{
     fprintf(stderr, 
                "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
                "\t -h Help!\n"
@@ -109,106 +140,100 @@ usage(char *progname)           /* name of this program                       */
     exit(-1);
 }
 
-
 /******************************************************************************/
 /* Function:	allocate_free				                      */
 /*								              */
 /* Description:	This function does the allocation and free by calling malloc  */
 /*		and free fuctions. The size of the memory to be malloced is   */
 /*		determined by the caller of this function. The size can be    */
-/*		a number from the fibannoaci series, power of 2 or 3 or 7     */
+/*		a number from the fibannoaci series, power of 2 or 3 or 5     */
 /*									      */
 /* Input:	int repeat - number of times the alloc/free is repeated.      */
-/*		int topower - power of the number that has to be calculated.  */
+/*		int scheme  - 0 to 3; selects how fast memory size grows      */
 /*								              */
 /* Return:	1 on failure						      */
 /*		0 on success						      */
 /******************************************************************************/
 int
 allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
-              int    topow)	/* caculate the power                         */
+              int    scheme)	/* how fast to increase block size            */
 {
-    int  loop = 0;		/* index to the number of allocs and frees    */
-    long **memptr;		/* array of pointers to the memory allocated  */
-    long **anchor;		/* save this pointer in anchor                */
+    int  loop;
+    const int MAXPTRS = 50;	    /* only 42 or so get used on 32 bit machine */
+
+    dprt(("pid[%d]: allocate_free: repeat %d, scheme %d\n", getpid(), repeat, scheme));
 
     for (loop = 0; loop < repeat; loop++)
     {
-        int     fib1       = 0;	    /* first number in the fibannoci series   */
-        int     fib2       = 1;	    /* second number in the fibanocci series  */
-        int     fib3       = 1;	    /* third number in the fibanocci series   */
-        int     num_alloc  = 0;	    /* number of memory chunks allocated      */
-        int     index      = 0;     /* num of and frees to perform            */
-        int     size       = topow; /* size of mem to malloc or free          */
+        size_t  oldsize    = 1;	    /* remember size for fibannoci series     */
+        size_t  size       = 1;     /* size of next block in ptrs[]           */
+        long    *ptrs[MAXPTRS];     /* the pointers allocated in this loop    */
+        int     num_alloc;	    /* number of elements in ptrs[] so far    */
+        int     i;
  
-        dprt("pid[%d]: In for loop = %d times\n", getpid(), loop);
+        dprt(("pid[%d]: allocate_free: loop %d of %d\n", getpid(), loop, repeat));
 
-        if ((anchor = malloc((size_t)sizeof(int *))) == NULL)
+	/* loop terminates in one of three ways:
+	 * 1. after MAXPTRS iterations
+	 * 2. if malloc fails
+	 * 3. if new size overflows
+	 */
+        for (num_alloc=0; num_alloc < MAXPTRS; num_alloc++)
         {
-            perror("do_malloc(): allocating space for anchor malloc()");
-            return 1;
-        }
+            size_t  newsize;
 
-        dprt("pid[%d]: loop = %d anchor = %#x\n", getpid(), loop, anchor);
+            dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n", 
+		getpid(), loop, repeat, num_alloc, size));
 
-        while(FOREVER)
-        {
-            dprt("pid[%d]: In for loop = %d\n", getpid(), loop); 
-            dprt("pid[%d]: In while loop = %d\n", getpid(), num_alloc);
-            memptr = anchor + num_alloc;
-            if ((*memptr = (int *)malloc((size_t)size)) == NULL)
+	    /* Malloc the next block */
+            ptrs[num_alloc] = (long *)malloc(size);
+            if (ptrs[num_alloc] == NULL)
             {
-                perror("alloc_mem(): malloc()");
-                fprintf(stdout, "pid[%d]: malloc failed on size %d\n", getpid(),
-			    size);
+		/* terminate loop if malloc couldn't give us the memory we asked for */
                 break;
             }
+            ptrs[num_alloc][0] = num_alloc;
 
-            dprt("pid[%d]: memptr = %#x\n", getpid(), *memptr);
-            
-            if (!topow)
-            {
-                fib3 = fib2 + fib1;
-                fib1 = fib2;
-                fib2 = fib3;
-                size = fib3;
+	    /* Increase size according to one of four schedules. */
+	    switch (scheme) {
+	    case 0:
+                newsize = size + oldsize;
+		oldsize = size;
+		break;
+	    case 1:
+		newsize = size * 2;
+		break;
+	    case 2:
+		newsize = size * 3;
+		break;
+	    case 3:
+		newsize = size * 5;
+		break;
+	    default:
+		assert(0);
             }
-            else 
-            {
-                size = (topow == 2) ? (size * 2) : (size * 3);
-            }
+	    /* terminate loop on overflow */
+	    if (newsize < size)
+		break;
+	    size = newsize;
 
-            num_alloc++;
-            **memptr = num_alloc;
-            
-            dprt("pid[%d]: malloc size = %d\n", getpid(), size);
-            dprt("pid[%d]: content of memptr = %d\n", getpid(), **memptr);
-            dprt("pid[%d]: number of allocations = %d\n", getpid(), num_alloc);
-
-            if ((anchor = 
-                        (int **) realloc(anchor, (num_alloc + 2)*sizeof(int *)))
-		        == NULL)
-            {
-                perror("do_malloc(): reallocating space for anchor malloc()");
-                return 1;
-            }
-            usleep(0);
-            dprt("pid[%d]: remalloced anchor = %#x\n", getpid(), anchor);
+            my_yield();
         }
 
-        for (index = 0; index < num_alloc; index++)
+        for (i = 0; i < num_alloc; i++)
         {
-            dprt("pid[%d]: freeing *memptr %#x\n", getpid(), *memptr);
-            free(*memptr);
-            memptr--;
-            usleep(0);
+            dprt(("pid[%d]: freeing ptrs[i] %p\n", getpid(), ptrs[i]));
+	    if (ptrs[i][0] != i) {
+		fprintf(stderr, "pid[%d]: fail: bad sentinel value\n", getpid());
+		return 1;
+	    }
+	    free(ptrs[i]);
+            my_yield();
         }
 
-        dprt("pid[%d]: freeing anchor %#x\n", getpid(), anchor);
-        free(anchor);
-        usleep(0);
-    }   
-    fprintf(stdout, "pid[%d]: exiting sucessfully\n", getpid());
+        my_yield();
+    }
+    /* Success! */
     return 0;
 }
 
@@ -216,102 +241,26 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 /******************************************************************************/
 /* Function:	alloc_mem				                      */
 /*								              */
-/* Description:	This thread function will allocate and free memory.           */
-/*		This function will pick a random scheme to calculate memory   */
-/*		size that needs to be allocated. size is calculated as a      */
-/*		number from the fibannoci series, 3*3*3..., 2*2*2... or 7*7*..*/
-/*									      */
-/* Input:	args - arg[0] is the numof times the allocation and free is to*/
-/*			      be repeated.			              */
+/* Description:	Decide how fast to increase block sizes, then call            */
+/*              allocate_free() to actually to the test.                      */
+/*								              */
+/* Input:	threadnum is the thread number, 0...N-1                       */
+/*              global num_loop is how many iterations to run                 */
 /*								              */
 /* Return:	pthread_exit -1	on failure				      */
 /*		pthread_exit  0 on success			              */
 /*								              */
 /******************************************************************************/
 void *
-alloc_mem(void * args)
+alloc_mem(void * threadnum)
 {
-    int random	          = 0;  /* random number 			      */
-    volatile int exit_val = 0;  /* exit value of the pthreads                 */
-    long *locargptr =           /* local pointer to thread arguments          */
-                      (long *)args;
-
-    srand(time(NULL)%100);
-    random = (1 + (int)(10.0*rand()/(RAND_MAX+1.0)));
-    
-    if (!(random % 2))
-    {
-        fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = fibnonnaci number\n", 
-		        getpid());
-        if (allocate_free((int)locargptr[0], 0))
-        {
-            fprintf(stdout, "pid[%d]: alloc_mem(): fib_alloc() failed\n", 
-		getpid());
-            PTHREAD_EXIT(-1);
-        }
-        else
-        {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
-		getpid());
-            PTHREAD_EXIT(0);
-        }
-    }
-            
-    usleep(0);
-    if (!(random % 3))
-    {
-        fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = the power of 2\n",
-			getpid());
-        if (allocate_free((int)locargptr[0], 2))
-        {
-            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n",
-			getpid());
-            PTHREAD_EXIT(-1);
-        }
-        else
-        {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
-		getpid());
-            PTHREAD_EXIT(0);
-        }
-    }
-    usleep(0);
-    if (!(random % 5))
-    {
-        fprintf(stdout, 
-                 "pid[%d]: allocating memory of size = the power of 3\n",
-			getpid());
-        if (allocate_free((int)locargptr[0], 3))
-        {
-            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n",
-		getpid());
-            PTHREAD_EXIT(-1);
-        }
-        else
-        {
-            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", 
-		getpid());
-            PTHREAD_EXIT(0);
-        }
-    }
-    usleep(0);
-
-    /* default  power of "seven"*/
+    /* thread N will use growth scheme N mod 4 */
+    int err = allocate_free(num_loop, ((int)threadnum) % 4);
     fprintf(stdout, 
-             "pid[%d]: allocating memory of size = the power of 7\n", getpid());
-    if (allocate_free((int)locargptr[0], 7))
-    {
-        fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n", 
-		getpid());
-        PTHREAD_EXIT(-1);
-    }
-    else
-    {
-        fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n", getpid());
-        PTHREAD_EXIT(0);
-    }
+	"pid[%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
+	getpid(), err,
+	(err ? "failed" : "succeeded"));
+    return (void *)(err ? -1 : 0);
 }
         
 
@@ -337,11 +286,8 @@ main(int	argc,		/* number of input parameters		      */
 {
     int		c;		/* command line options			      */
     int		num_thrd = MAXT;/* number of threads to create                */
-    int		num_loop = MAXL;/* number of loops to perform		      */
     int		thrd_ndx;	/* index into the array of thread ids         */
-    int		th_status[1];	/* exit status of LWP's	                      */
-    pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
-    long	chld_args[3];   /* arguments to the thread function           */
+    pthread_t	*thrdid;	/* the threads                                */
     extern int	 optopt;	/* options to the program		      */
 
     while ((c =  getopt(argc, argv, "hl:t:")) != -1)
@@ -355,7 +301,7 @@ main(int	argc,		/* number of input parameters		      */
 		if ((num_loop = atoi(optarg)) == (int)NULL)
 	            OPT_MISSING(argv[0], optopt);
                 else
-                if (num_loop < 0)
+                if (num_loop < 1)
                 {
                     fprintf(stdout,
                         "WARNING: bad argument. Using default\n");
@@ -366,7 +312,7 @@ main(int	argc,		/* number of input parameters		      */
 		if ((num_thrd = atoi(optarg)) == (int)NULL)
 	            OPT_MISSING(argv[0], optopt);
                 else
-                if (num_thrd < 0)
+                if (num_thrd < 1)
                 {
                     fprintf(stdout,
                         "WARNING: bad argument. Using default\n");
@@ -379,39 +325,52 @@ main(int	argc,		/* number of input parameters		      */
 	}
     }
     
-    dprt("number of times to loop in the thread = %d\n", num_loop);
-    chld_args[0] = num_loop;
+    dprt(("number of times to loop in the thread = %d\n", num_loop));
+
+    thrdid = malloc(sizeof(pthread_t) * num_thrd);
+    if (thrdid == NULL)
+    {
+	perror("main(): allocating space for thrdid[] malloc()");
+	return 1;
+    }
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, chld_args))
+        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
         {
+	    int err = errno;
+	    if (err == EINTR) {
+		fprintf(stderr, "main(): pthread_create failed with EINTR!\n");
+		exit(-1);
+	    }
             perror("main(): pthread_create()");
             exit(-1);
         }
     }
+    my_yield();
     
-    usleep(0);
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_join(thrdid[thrd_ndx], (void **)&th_status) != 0)
+        void *th_status;	/* exit status of LWP */
+        if (pthread_join(thrdid[thrd_ndx], &th_status) != 0)
         {
             perror("main(): pthread_join()");
             exit(-1);
         }
         else
         {
-            if (*th_status == -1)
+            if ((int)th_status != 0)
             {
                 fprintf(stderr,
                         "main(): thread [%d] - process exited with errors\n",
-                            thrdid[thrd_ndx]);
+                            (int) thrdid[thrd_ndx]);
                 exit(-1);
             }
-            dprt("main(): thread[%d]: exiting without errors\n", thrd_ndx);
+            dprt(("main(): thread[%d]: exiting without errors\n", thrd_ndx));
         }
-        usleep(0);
+        my_yield();
     }
+    printf("main(): test passed.\n");
     exit(0);
 }
