@@ -8,6 +8,6 @@ install:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
-	rm -f bin/*
+	rm -rf bin/*
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
 
