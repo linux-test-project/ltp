@@ -85,11 +85,6 @@ void noprintf(char* string, ...){
                                usage(prog); \
                                    } while (0)
 
-#define PTHREAD_EXIT(val) do {\
-	           exit_val = val; \
-		   dprt("pid[%d]: exiting with %d\n", getpid(),(int)exit_val); \
-		   pthread_exit((void *)exit_val); \
-		              } while (0)
 typedef struct {        /* contains priority and CPU info of the task.        */
     int exp_prio;	/* priority that we wish to set.                      */
     int act_prio;	/* priority set by the scheduler.                     */
@@ -205,7 +200,6 @@ thread_func(void *args)		/* arguments to the thread function           */
     static int get_priority;    /* get the priority that is set for this proc.*/
     static int procnum;         /* processor number last executed on.         */
     static int sched_policy;    /* scheduling policy as set by user/default   */
-    void*  exit_val = 0;  	/* exit value of the pthreads.                */
     struct sched_param ssp;     /* set schedule priority.                     */
     struct sched_param gsp;     /* gsp schedule priority.                     */
     struct timeb       tptr;    /* tptr.millitm will be used to seed srand.   */
@@ -217,7 +211,8 @@ thread_func(void *args)		/* arguments to the thread function           */
          ((min_priority = sched_get_priority_min(SCHED_FIFO)) == -1))
     {
         fprintf(stderr, "failed to get static priority range\n");
-	PTHREAD_EXIT((void*)-1);
+	dprt("pid[%d]: exiting with -1\n", getpid());
+	pthread_exit((void*)-1);
     }
 
     if ((sched_policy = locargptr->s_policy) == SCHED_OTHER)
@@ -240,27 +235,31 @@ thread_func(void *args)		/* arguments to the thread function           */
     if ((sched_setscheduler(getpid(), sched_policy, &ssp)) == -1)
     {
         perror("main(): sched_setscheduler()");
-	PTHREAD_EXIT((void*)-1);
+	dprt("pid[%d]: exiting with -1\n", getpid());
+        pthread_exit((void*)-1);
     }
 
     /* processor number this process last executed on */
     if ((procnum = get_proc_num()) == -1)
     {
         fprintf(stderr, "main(): get_proc_num() failed\n");
-	PTHREAD_EXIT((void*)-1);
+	dprt("pid[%d]: exiting with -1\n", getpid());
+        pthread_exit((void*)-1);
     }
     
     if ((get_priority = sched_getparam(getpid(), &gsp)) == -1)
     {
         perror("main(): sched_setscheduler()");
-	PTHREAD_EXIT((void*)-1);
+	dprt("pid[%d]: exiting with -1\n", getpid());
+        pthread_exit((void*)-1);	
     }
 
     /* processor number this process last executed on */
     if ((procnum = get_proc_num()) == -1)
     {
         fprintf(stderr, "main(): get_proc_num() failed\n");
-	PTHREAD_EXIT((void*)-1);
+	dprt("pid[%d]: exiting with -1\n", getpid());
+        pthread_exit((void*)-1);	
     }
 
     if (verbose)
@@ -281,7 +280,8 @@ thread_func(void *args)		/* arguments to the thread function           */
     locargptr->proc_num = procnum;
     locargptr->procs_id = getpid();
 
-    PTHREAD_EXIT((void *)locargptr);
+    dprt("pid[%d]: exiting with %ld\n", getpid(),locargptr);
+    pthread_exit((void*)locargptr);
 }
 
 
