@@ -1,9 +1,7 @@
  
 /*
  * Client for the send_file test program
- * Syntax: testsf_c <server IP addr> <client_filename> <server_filename> <file length> <header length> 
- * <trailer length> <flags { N - nonblocking, B - blocking, C - SF_CLOSE, 
- * D - SF_DONT_CACHE, S - SF_SYNC_CACHE, at least one } >
+ * Syntax: testsf_c <server IP addr> <client_filename> <server_filename> <file length> 
  */
 
 #include <stdio.h>
@@ -39,7 +37,7 @@ char *argv[];
   /* open socket to server */
   if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
 	printf("socket error = %d\n", errno);
-	exit(-1);
+	exit(1);
   }
 
   clnt_fname = argv[2]; /* filename to create */
@@ -49,7 +47,7 @@ char *argv[];
   if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {
 	printf("file open error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(1);
   }
 
   lp = argv[4]; /* get file size */
@@ -78,14 +76,14 @@ char *argv[];
   if ( connect(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
         printf("connect error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(1);
   }
  
   /* send request info to server */
   if ((nbyte = write(s, rbuf, strlen(rbuf))) <= 0) {
         printf("socket write  error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(1);
   }
 
 printf("client write %d bytes to server with contents %s\n", nbyte, rbuf);
@@ -96,14 +94,14 @@ printf("client write %d bytes to server with contents %s\n", nbyte, rbuf);
     nlen += nbyte;
     if (write(fd, rbuf, nbyte) != nbyte) {
       printf("Error writing to file %s on client\n",clnt_fname);
-      exit(-3);
+      exit(1);
     }
   }
 
   printf("Asking for %s\n",serv_fname);
   if (nlen != flen) { /* compare expected size with current size */
     printf("WRONG!!! nlen = %d, should be %d\n", nlen, flen);
-    exit (-2);
+    exit (1);
   }
   else
     printf("File %s received\n", serv_fname);
