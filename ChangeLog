@@ -1,3 +1,28 @@
+LTP-20020507
+------------
+
+* New Additions
+  - New syscalls tests, chroot, fchdir, fstat 
+    pread, pwrite, and reddir.  				    ( Bull )
+  - New syscalls test.                              ( Ihno Krumreich )
+
+* Fixes
+  - S390 bug fixes, patches to remove complier 
+    warnings.         								( Ihno Krumreich )
+  - S390 bug fixes.									( William Jay Huie )
+  - LTP Automation script updates.					( William Jay Huie )
+  - make testcases work without a controlling tty.  
+    for recv01, recvfrom01 and recvmsg01.			( Paul Larson )
+  - Networking test updates, multiple concurrent
+    runs.											( Robert Williamson )
+  - test01 patch for wrap around at 2gigs           ( Randall Hron )
+  - patches to syscalls test wait402, chdir03	    ( Andreas Jaeger )
+
+
+CVS Bugs closed.
+----------------
+  #545739 fcntl17 failing getting unexep. sig13 	( Paul Larson )
+
 LTP-20020408
 -----------
 * New Additions
