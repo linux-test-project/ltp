@@ -59,7 +59,7 @@
 #include "usctest.h"
 
 char *TCID="diotest06";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
+int TST_TOTAL=3;		 		 /* Total number of test conditions */
 
 #ifdef O_DIRECT
 
@@ -310,12 +310,17 @@ main(int argc, char *argv[])
 	if (forkchldrn(&pidlst, numchild, READ_DIRECT, child_function) < 0 ) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Read with Direct IO, Write without");
 	}
 	else {
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "Read with Direct IO, Write without");
 		}
+		else
+			tst_resm (TPASS, "Read with Direct IO, Write without");
+
 	}
 	unlink(filename);
 	free(pidlst);
@@ -325,12 +330,16 @@ main(int argc, char *argv[])
 	if (forkchldrn(&pidlst, numchild, WRITE_DIRECT, child_function) < 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Write with Direct IO, Read without");
 	}
 	else {
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "Write with Direct IO, Read without");
 		}
+		else
+			tst_resm (TPASS, "Write with Direct IO, Read without");
 	}
 	unlink(filename);
 	free(pidlst);
@@ -340,25 +349,29 @@ main(int argc, char *argv[])
 	if (forkchldrn(&pidlst, numchild, RDWR_DIRECT, child_function) < 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Read, Write with Direct IO");
 	}
 	else {
 		if (waitchldrn(&pidlst, numchild) < 0) {
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "Read, Write with Direct IO");
 		}
+		else
+			tst_resm (TPASS, "Read, Write with Direct IO");
 	}
 	unlink(filename);
 	free(pidlst);
 	total++;
 
-	if (failed) {
+	if (failed)
 		fprintf(stdout, "diotest6: %d/%d testblocks failed\n", 
 			fail_count, total);
-		exit(1);
-	}
-	fprintf(stdout, "diotest6: %d testblocks %d iterations with %d children completed\n", 
+	else
+		fprintf(stdout, "diotest6: %d testblocks %d iterations with %d children completed\n", 
 			total, iter, numchild);
-	exit(0);
+	tst_exit();
+	return 0;
 }
 
 

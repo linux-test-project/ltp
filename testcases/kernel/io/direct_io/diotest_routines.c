@@ -44,6 +44,7 @@
 #include <sys/uio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "diotest_routines.h"
 
@@ -146,8 +147,8 @@ filecmp(char *f1, char *f2)
 		for (i = 0; i < ret1; i++) {
 			if ( buf1[i] != buf2[i] ) {
 				fprintf(stderr, "compare_file: char mismatch:");
-				fprintf(stderr, " %s offset %d: %c  ", f1, i, buf1[i]);
-				fprintf(stderr, " %s offset %d: %c\n", f2, i, buf2[i]);
+				fprintf(stderr, " %s offset %d: 0x%02x %c  ", f1, i, buf1[i], isprint(buf1[i]) ? buf1[1] : '.');
+				fprintf(stderr, " %s offset %d: 0x%02x %c\n", f2, i, buf2[i], isprint(buf2[i]) ? buf2[i] : '.');
 				close(fd1);
 				close(fd2);
 				return(-1);

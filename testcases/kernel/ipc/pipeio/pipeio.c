@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.4 2003/03/04 18:33:47 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.5 2004/03/01 22:36:39 robbiew Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -49,6 +49,25 @@
 #include <sys/stat.h>
 
 #include "tlibio.h"
+
+#include "test.h"
+
+char *TCID="pipeio"; 		/* Test program identifier.    */
+int TST_TOTAL=1;    		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+
+
+/* To avoid extensive modifications to the code, use this bodge */
+#define exit(x) myexit(x)
+void
+myexit (int x)
+{
+  if (x) 
+    tst_resm (TFAIL, "Test failed");
+  else
+    tst_resm (TPASS, "Test passed");
+  tst_exit();
+}
 
 #if defined(linux)
 # define NBPW sizeof(int)
@@ -147,8 +166,11 @@ char *av[];
 	    }
 	}
 
-        while ((c=getopt (ac, av, "BbCc:D:d:he:Ef:i:I:ln:p:qs:uvW:w:P:")) != EOF) {
+        while ((c=getopt (ac, av, "T:BbCc:D:d:he:Ef:i:I:ln:p:qs:uvW:w:P:")) != EOF) {
 	    switch (c) {
+		case 'T':
+			TCID = optarg;
+			break;
 		case 'h':
 			help();
 			exit(0);
@@ -677,7 +699,8 @@ output:
 		if (!unpipe)
 			unlink(pname);
 	}
-	return 0;
+
+	exit (error);
 }
 
 void

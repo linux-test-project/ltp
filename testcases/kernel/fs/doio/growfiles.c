@@ -90,6 +90,25 @@
 #include <sys/category.h>
 #endif
 
+#include "test.h"
+
+/* LTP status reporting */
+char *TCID="growfiles";		/* Default test program identifier.    */
+int TST_TOTAL=1;    		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+
+/* To avoid extensive modifications to the code, use this bodge */
+#define exit(x) myexit(x)
+void
+myexit (int x)
+{
+  if (x) 
+    tst_resm (TFAIL, "Test failed");
+  else
+    tst_resm (TPASS, "Test passed");
+  tst_exit();
+}
+
 extern char *openflags2symbols();
 
 extern int parse_open_flags();
@@ -879,6 +898,7 @@ struct timeval tv1;
 			break;
 
 		case 'W':
+			TCID = optarg;
 			sprintf( TagName, "(%.39s)", optarg );
 			break;
 

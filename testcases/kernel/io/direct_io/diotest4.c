@@ -72,7 +72,7 @@
 #include "usctest.h"
 
 char *TCID="diotest4";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
+int TST_TOTAL=17;		 		 /* Total number of test conditions */
 
 #ifdef O_DIRECT
 
@@ -216,33 +216,39 @@ main(int argc, char *argv[])
         if ((fd = open(filename, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
 		fprintf(stderr, "open failed for %s: %s\n", 
 			filename, strerror(errno));
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
         if ((buf0 = valloc(BUFSIZE)) == NULL) {
 		fprintf(stderr, "valloc buf0 failed:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "valloc failed");
+                tst_exit();
         }
         for (i = 1; i < fblocks; i++) {
                 fillbuf(buf0, BUFSIZE, (char)i);
                 if (write(fd, buf0, BUFSIZE) < 0) {
 			fprintf(stderr, "write failed for %s:%s\n",
 				filename, strerror(errno));
+			close(fd);
                         unlink(filename);
-                        exit(1);
+			tst_resm (TFAIL, "write failed");
+                        tst_exit();
                 }
         }
 	close(fd);
         if ((buf2 = valloc(BUFSIZE)) == NULL) {
 		fprintf(stderr, "valloc buf2 failed:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "valloc failed");
+                tst_exit();
         }
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
 		fprintf(stderr, "open failed for %s:%s\n",
 				filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 
 	/* Test-1: Negative Offset */
@@ -254,8 +260,14 @@ main(int argc, char *argv[])
 			ret, strerror(errno));
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Negative Offset");
 	}
+	else
+		tst_resm (TPASS, "Negative Offset");
 	total++;
+
+	/* Test-2: Removed */
+	tst_resm (TPASS, "removed");
 
 	/* Test-3: Odd count of read and write */
 	offset = 0;
@@ -268,7 +280,10 @@ main(int argc, char *argv[])
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Odd count of read and write");
 	}
+	else
+		tst_resm (TPASS, "Odd count of read and write");
 	total++;
 
 	/* Test-4: Read beyond the file size */
@@ -278,6 +293,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "[4.1] lseek failed: %s\n", strerror(errno));
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Read beyond the file size");
 	}
 	else {
         	ret = read(fd, buf2, count);
@@ -286,7 +302,10 @@ main(int argc, char *argv[])
 				ret, strerror(errno));
                 	failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "Read beyond the file size");
 		}
+		else
+			tst_resm (TPASS, "Read beyond the file size");
 	}
 	total++;
 
@@ -298,7 +317,10 @@ main(int argc, char *argv[])
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Invalid file descriptor");
 	}
+	else
+		tst_resm (TPASS, "Invalid file descriptor");
 	total++;
 
 	/* Test-6: Out of range file descriptor */
@@ -307,11 +329,17 @@ main(int argc, char *argv[])
 	if ((newfd = getdtablesize()) < 0) {
 		fprintf(stderr, "[6] getdtablesize failed:%s\n", strerror(errno));
                 failed = TRUE;
+		tst_resm (TFAIL, "Out of range file descriptor");
 	}
-	ret = runtest_f(newfd, buf2, offset, count, EBADF, 6,"out of range fd");
-	if (ret != 0) {
-		failed = TRUE;
-		fail_count++;
+	else {
+		ret = runtest_f(newfd, buf2, offset, count, EBADF, 6,"out of range fd");
+		if (ret != 0) {
+			failed = TRUE;
+			fail_count++;
+			tst_resm (TFAIL, "Out of range file descriptor");
+		}
+		else
+			tst_resm (TPASS, "Out of range file descriptor");
 	}
 	total++;
 
@@ -322,26 +350,37 @@ main(int argc, char *argv[])
         if (close(fd) < 0) {
 		fprintf(stderr, "can't close fd %d: %s\n", fd, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "close failed");
+                tst_exit();
         }
 	ret = runtest_f(fd, buf2, offset, count, EBADF, 7, "closed fd");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "Closed file descriptor");
 	}
+	else
+		tst_resm (TPASS, "Closed file descriptor");
 	total++;
+
+	/* Test-9: removed */
+	tst_resm (TPASS, "removed");
 
 	/* Test-9: Character device (/dev/null) read, write */
 	offset = 0;
 	count = bufsize;
         if ((newfd = open("/dev/null", O_DIRECT|O_RDWR)) < 0) {
 		fprintf(stderr, "[9] Direct I/O on /dev/null is not supported, skip test #9.\n");
+		tst_resm (TCONF, "Skipped Character device read, write");
         } else { 
 		ret = runtest_s(newfd, buf2, offset, count, 9, "/dev/null");
 		if (ret != 0) {
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "character device read, write");
 		}
+		else 
+			tst_resm (TPASS, "character device read, write");
 	}
 	total++;
 	
@@ -351,7 +390,8 @@ main(int argc, char *argv[])
         if (shm_base == NULL) {
 		fprintf(stderr, "[10] sbrk failed:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "sbrk failed");
+                tst_exit();
         }
 	offset = 4096;
 	count = bufsize;
@@ -359,20 +399,25 @@ main(int argc, char *argv[])
 		fprintf(stderr, "can't open %s: %s\n", 
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	shm_base = mmap(shm_base, 0x100000, PROT_READ|PROT_WRITE, 
 		        MAP_SHARED|MAP_FIXED, fd, 0);
         if (shm_base == (caddr_t)-1) {
                 fprintf(stderr, "[10] can't mmap file:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "mmap failed");
+                tst_exit();
         }
 	ret = runtest_s(fd, buf2, offset, count, 10, "mmapped file");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write to a mmaped file");
 	}
+	else
+		tst_resm (TPASS, "read, write to a mmaped file");
 	total++;  
 
 
@@ -380,13 +425,17 @@ main(int argc, char *argv[])
 	if ((ret = munmap(shm_base, 0x100000)) < 0) {
                 fprintf(stderr, "[11] can't unmap file:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "munmap failed");
+                tst_exit();
         }
 	ret = runtest_s(fd, buf2, offset, count, 11, "unmapped file");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write to an unmapped file");
 	}
+	else
+		tst_resm (TPASS, "read, write to an unmapped file");
 	total++;
 
 
@@ -397,12 +446,14 @@ main(int argc, char *argv[])
 		fprintf(stderr, "[12] can't open %s: %s\n",
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		fprintf(stderr, "[12] lseek failed:%s\n", strerror(errno));
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "lseek failed");
 	}
 	else {
 		ret = read(fd, buf2, count);
@@ -411,7 +462,10 @@ main(int argc, char *argv[])
 				ret, strerror(errno));
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "read from file not open for reading");
 		}
+		else
+			tst_resm (TPASS, "read from file not open for reading");
 	}
 	close(fd);
 	total++;
@@ -423,12 +477,14 @@ main(int argc, char *argv[])
 		fprintf(stderr, "[13] can't open %s: %s\n",
 			filename, strerror(errno));
 		unlink(filename);
-		exit(1);
+		tst_resm (TFAIL, "open failed");
+		tst_exit();
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		fprintf(stderr, "[13] lseek failed:%s\n", strerror(errno));
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "lseek failed");
 	}
 	else {
 		ret = write(fd, buf2, count);
@@ -437,7 +493,10 @@ main(int argc, char *argv[])
 				ret, strerror(errno));
 			failed = TRUE;
 			fail_count++;
+			tst_resm (TFAIL, "write to file not open for writing");
 		}
+		else
+			tst_resm (TPASS, "write to file not open for writing");
 	}
 	close(fd);
 	total++;
@@ -450,7 +509,8 @@ main(int argc, char *argv[])
 		fprintf(stderr, "[14] can't open %s: %s\n",
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		fprintf(stderr, "[14] lseek before read failed: %s\n",
@@ -479,7 +539,10 @@ main(int argc, char *argv[])
 	if (l_fail) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write with non-aligned buffer");
 	}
+	else
+		tst_resm (TPASS, "read, write with non-aligned buffer");
 	total++;
 	close(fd);
 
@@ -492,7 +555,8 @@ main(int argc, char *argv[])
                 fprintf(stderr, "[15] can't open %s: %s\n",
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		fprintf(stderr, "[15] lseek before read failed: %s\n",
@@ -531,7 +595,10 @@ main(int argc, char *argv[])
 	if (l_fail) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write buffer in read-only space");
 	}
+	else
+		tst_resm (TPASS, "read, write buffer in read-only space");
 	close(fd);
 	total++;
 
@@ -541,19 +608,24 @@ main(int argc, char *argv[])
 	if ((buf1 = (char *) (((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1))) == NULL) {
                 fprintf(stderr,"[20] sbrk:%s\n", strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "sbrk failed");
+                tst_exit();
         }
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
 		fprintf(stderr, "[16] can't open %s: %s\n",
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	ret =runtest_f(fd, buf1, offset, count, EFAULT, 16, " nonexistant space");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write in non-existant space");
 	}
+	else
+		tst_resm (TPASS, "read, write in non-existant space");
 	total++;
 	close(fd);
 
@@ -564,24 +636,30 @@ main(int argc, char *argv[])
 		fprintf(stderr, "[17] can't open %s:%s\n",
 			filename, strerror(errno));
                 unlink(filename);
-                exit(1);
+		tst_resm (TFAIL, "open failed");
+                tst_exit();
         }
 	ret = runtest_s(fd, buf2, offset, count, 17, "opened with O_SYNC");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
+		tst_resm (TFAIL, "read, write for file with O_SYNC");
 	}
+	else
+		tst_resm (TPASS, "read, write for file with O_SYNC");
 	total++;
 	close(fd);
+
         unlink(filename);
 	if (failed) {
 		fprintf(stderr, "diotest4: %d/%d test blocks failed\n",
 			fail_count, total);
-		exit(1);
+		tst_exit();
 	}
 	fprintf(stderr, "diotest4: %d testblocks completed\n",
 		 		 total);
-	exit(0);
+	tst_exit();
+	return 0;
 }
 
 #else /* O_DIRECT */

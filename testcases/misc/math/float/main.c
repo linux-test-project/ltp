@@ -25,6 +25,25 @@
 /******************************************************************************/
 #include "tfloat.h"
 
+#include "test.h"
+
+/* LTP status reporting */
+char *TCID;	 		/* Test program identifier.    */
+int TST_TOTAL=1;    		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+
+/* To avoid extensive modifications to the code, use this bodge */
+#define exit(x) myexit(x)
+void
+myexit (int x)
+{
+  if (x) 
+    tst_resm (TFAIL, "Test failed");
+  else
+    tst_resm (TPASS, "Test passed");
+  tst_exit();
+}
+
 TH_DATA *pcom;
 TH_DATA **tabcom;
 TH_DATA **tabcour;
@@ -89,6 +108,12 @@ int main(int argc, char *argv[])
 	int error =0;
 	/*int time=1;*/
 	int i;
+
+	/* Generate test ID from invocation name */
+	if ((TCID = strrchr (argv[0], '/')) != NULL)
+	  TCID++;
+	else
+	  TCID = argv[0];
 
 	setbuf(stdout, (char *)0);
 	setbuf(stderr, (char *)0);
@@ -244,6 +269,7 @@ finished:
 	}
 	if (error) exit (1);
 	else exit(0);
+	return 0;
 }
 
 

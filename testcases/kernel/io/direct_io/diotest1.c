@@ -70,7 +70,8 @@ void
 prg_usage()
 {
 	fprintf(stderr, "Usage: diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]\n");
-	exit(1);
+	tst_resm (TBROK, "usage");
+	tst_exit();
 }
 
 /*
@@ -83,7 +84,8 @@ fail_clean(int fd1, int fd2, char *infile, char *outfile)
 	close(fd2);
 	unlink(infile);
 	unlink(outfile);
-	exit(1);
+	tst_resm (TFAIL, "Test failed");
+	tst_exit();
 }
 
 int
@@ -140,14 +142,16 @@ main(int argc, char *argv[])
 	/* Open files */
 	if ((fd1 = open(infile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
 		fprintf(stderr, "open infile: %s\n", strerror(errno));
-		exit(1);
+		tst_resm(TFAIL, "open failed");
+		tst_exit();
 	}
 
 	if ((fd2 = open(outfile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
 		fprintf(stderr, "open outfile: %s\n", strerror(errno));
 		close(fd1);
-		unlink("infile");
-		exit(1);
+		unlink(infile);
+		tst_resm(TFAIL,"open failed");
+		tst_exit();
 	}
 
 	/* Allocate for buf, Create input file */
@@ -199,7 +203,9 @@ main(int argc, char *argv[])
 	close(fd2);
 	unlink(infile);
 	unlink(outfile);
-	exit(0);
+	tst_resm(TPASS, "Test passed");
+	tst_exit();
+	return 0;
 }
 
 #else /* O_DIRECT */
