@@ -56,34 +56,6 @@ main(int argc, char *argv[])
 	signal(SIGSEGV, sig_handler);
 	signal(SIGQUIT, sig_handler);
 
-	status = system("/bin/cp /etc/syslog.conf /etc/syslog_conf.bak");
-	if(status == 0) {
-		flag1 = 1;
-#ifdef DEBUG
-		tst_resm(TINFO, "Backup of the /etc/syslog file is done.\n");
-#endif
-	}
-	else {
-		tst_resm(TFAIL, "/bin/cp failed...\nSetup cannot continue...exiting.\n");
-		tst_exit();
-	}
-
-	status = system("/bin/cp ./conf.tmp /etc/syslog.conf");
-	if(status == 0) {
-		flag2 = 1;	/* 
-				 * Setting flag2 to 1 shows that files have 
-				 * been modified.
-				 */
-#ifdef DEBUG 
-		tst_resm(TINFO, "conf.tmp is now replaced.\n");
-#endif
-		system("kill -1 `/bin/ps -ef | /bin/grep syslogd | /bin/grep -v grep | /usr/bin/awk '{ print $2 }'`");
-	}
-	else {
-		tst_resm(TFAIL, "/bin/cp failed...\nSetup cannot continue...exiting.\n");
-		system("/bin/rm -f /etc/syslog_conf.bak");
-		tst_exit();
-	}
 
 	/*
 	 * Send syslog messages according to the case number, which
@@ -174,7 +146,7 @@ main(int argc, char *argv[])
 		break;
 	case 6:
 		openlog("without log_ndelay", LOG_PID, LOG_USER);
-		fd = open("README", O_RDONLY);
+		fd = open("Makefile", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() without LOG_NDELAY option...\n");
 #endif
@@ -194,7 +166,7 @@ main(int argc, char *argv[])
 		closelog();
 
 		openlog("with log_ndelay", LOG_NDELAY, LOG_USER);
-		fd = open("README", O_RDONLY);
+		fd = open("Makefile", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() with LOG_NDELAY option...\n");
 #endif
@@ -256,18 +228,6 @@ main(int argc, char *argv[])
 		break;
 	}
 	
-	/* 
-	 * Restore the original file...if needed
-	 */
-	if(flag1 && flag2) {
-		status = system("/bin/mv -f /etc/syslog_conf.bak /etc/syslog.conf");
-		if(status != 0) {
-			tst_resm(TFAIL, "/bin/mv failed...\nRestoring files cannot continue...exiting.\n");
-			exit(1);
-		}
-		system("kill -1 `/bin/ps -ef | /bin/grep syslogd | /bin/grep -v grep | /usr/bin/awk '{ print $2 }'`");
-	}
-
 	/*
 	 * Check the exit_flag and if it is set,
 	 * exit with status 1, indicating failure.
@@ -315,12 +275,5 @@ void sig_handler(int signal)
 		break;
 	}
 	
-	/*
-	 * Call exit_script to restore the original file.
-	 */
-	status=system("./exit_script");
-	if(status != 0) {
-		tst_resm(TFAIL, "Could not restore the /etc/syslog.conf....\n");
-	}
 	exit(signal);
 }
