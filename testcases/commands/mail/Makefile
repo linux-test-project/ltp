@@ -1,2 +1,2 @@
 install:
-	@ln -f cron_tests.sh ../../bin/mail_tests.sh
+	@ln -f mail_tests.sh ../../bin/mail_tests.sh
