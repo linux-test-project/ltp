@@ -36,6 +36,7 @@ $trace_logic
 
 TC=mc_cmds
 PING_OUT=/tmp/${TC}_out
+LTPROOT=${LTPROOT:-../../../..}
 HOSTNAME=`hostname`
 CLEANUP=${CLEANUP:-ON}
 #*******************************************************************************
@@ -54,7 +55,7 @@ do_test()
 
    IFNAME=`netstat -in | grep "^[b-z]\{2,4\}[0-9][^*]"|\
       awk '{print $1}'` 
-   INTERFACE=`$LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}'` 
+   INTERFACE=`$LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}'` 
 
    echo "Testing ifconfig and netstat"
 
