@@ -53,9 +53,10 @@ do_test()
    $trace_logic
    echo "Getting ALL enabled interfaces which are configured !"
 
-   IFNAME=`netstat -in | grep "^[b-z]\{2,4\}[0-9][^*]"|\
-      awk '{print $1}'` 
-   INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
+   IFNAME=$INTERFACE
+   IFNAME=${INTERFACE:-$(netstat -in | grep "^[b-z]\{2,4\}[0-9][^*]"|\
+      awk '{print $1}')} 
+   IPADDR=${IPADDR:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
    echo "Testing ifconfig and netstat"
 
@@ -75,10 +76,10 @@ do_test()
    [ $? = 0 ] || end_testcase "No response from MC hosts to ping 224.0.0.1"
 
    echo "Ping all-host-groups over specified interface"
-   ping -c2 -I $INTERFACE 224.0.0.1 > $PING_OUT
-   [ $? = 0 ] || end_testcase "No response from MC hosts to ping -c2 -I$INTERFACE 224.0.0.1"
-   grep -q $INTERFACE $PING_OUT
-   [ $? = 0 ] || end_testcase "Local host did not respond to ping -c2 -I$INTERFACE 224.0.0.1"
+   ping -c2 -I $IPADDR 224.0.0.1 > $PING_OUT
+   [ $? = 0 ] || end_testcase "No response from MC hosts to ping -c2 -I$IPADDR 224.0.0.1"
+   grep -q $IPADDR $PING_OUT
+   [ $? = 0 ] || end_testcase "Local host did not respond to ping -c2 -I$IPADDR 224.0.0.1"
 
 
 }
