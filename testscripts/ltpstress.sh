@@ -208,7 +208,7 @@ fi
 
 if [ $Top -eq 1 ]; then
   screen -d -m $LTPROOT/testcases/bin/top -o $datafile -d $interval &
-  SCREEN_PID=$!
+  SCREEN_PID=$(ps -e | grep screen | awk {'print $1'})
 fi
 
 sleep 2
