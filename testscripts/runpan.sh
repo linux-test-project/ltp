@@ -2,6 +2,12 @@
 # This will only run the quickhit tests.  
 cd `dirname $0`
 LTPROOT=${PWD}
+echo $LTPROOT | grep testscripts > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cd ..
+ export LTPROOT=${PWD}
+fi
+
 
 mkdir /tmp/runpan-$$
 cd /tmp/runpan-$$

@@ -10,7 +10,13 @@
 #
     
 cd `dirname $0`
+
 export LTPROOT=${PWD}
+echo $LTPROOT | grep testscripts > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cd ..
+ export LTPROOT=${PWD}
+fi
 
 export TMPDIR=/tmp
 

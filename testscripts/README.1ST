@@ -1,5 +1,0 @@
-To execute any one of these scripts, copy it to the top-level LTP directory first, i.e:
-
-  # cp ./ltpstress.sh ../.
-
-and execute from there.

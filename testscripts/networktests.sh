@@ -2,6 +2,11 @@
 # This will run all the network tests, with the status logged in /tmp/netpan.log  
 cd `dirname $0`
 export LTPROOT=${PWD}
+echo $LTPROOT | grep testscripts > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cd ..
+ export LTPROOT=${PWD}
+fi
 
 
 # ---***** THESE MUST BE SET FOR CORRECT OPERATION *****---
