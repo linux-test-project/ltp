@@ -21,6 +21,9 @@ set +x
 #                           this script, added the -n option to run these
 #                           tests. Also, added -h option to print help messages.
 #                          
+#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: merged networktests.sh with
+#                           added code to cause pan to print less verbose 
+#                           output.
 #
 
 cd `dirname $0`
@@ -32,12 +35,13 @@ alt_dir=0
 RHOST=""
 PASSWD=""
 run_netest=0
+quiet_mode=" "
 
 usage() 
 {
 	cat <<-END >&2
     usage: ${0##*/} -c [-d tmpdir] [-f cmdfile ] -i [ -l logfile ] 
-                  -m -n [ -r ltproot ] [ -t duration ] [ -x instances ] 
+                  -m -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under CPU load.
     -d tmpdir       Directory where temporary files will be created.
@@ -50,6 +54,7 @@ usage()
                     (export RHOST = remote hostname)
                     (export PASSWD = passwd of remote host)
     -p              Human readable format logfiles. 
+    -q              Print less verbose output to screen.
     -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
@@ -60,7 +65,7 @@ exit
 }
 
 
-while getopts cd:f:hil:mnpr:t:x arg
+while getopts cd:f:hil:mnpqr:t:x arg
 do  case $arg in
     c)
             $LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
@@ -105,6 +110,8 @@ do  case $arg in
 	n)		run_netest=1;;
 
     p)      pretty_prt=" -p ";;
+
+    q)      quiet_mode=" -q ";;
 
     r)      LTPROOT=$OPTARG;;
 
@@ -180,7 +187,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
+${LTPROOT}/pan/pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
 
 
 if [ $? -eq 0 ]; then
