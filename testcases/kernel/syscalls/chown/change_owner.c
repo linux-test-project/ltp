@@ -29,14 +29,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
-#include <grp.h>
 #include <errno.h>
+
+#define LTPUSER		"nobody"
 
 int
 main(int argc, char **argv)
 {
 	struct passwd *ltpuser;		/* password struct for ltpuser2 */
-	struct group *ltpgroup;		/* group struct for ltpuser2 */
 	uid_t user_uid;			/* user id of ltpuser2 */
 	gid_t group_gid;		/* group id of ltpuser2 */
 	char *test_name;		/* test specific name */
@@ -46,25 +46,22 @@ main(int argc, char **argv)
 	path_name = argv[2];
 
 	/*
-	 * Get the user id and group id of "ltpuser2" user from password
-	 * and group files.
+	 * Get the user id and group id of LTPUSER from password
+	 * file.
 	 */
-	if ((ltpuser = getpwnam("nobody")) == NULL) {
-		perror("modify_mode: nobody not found in /etc/passwd\n");
-		exit(1);
-	}
-	if ((ltpgroup = getgrnam("nogroup")) == NULL) {
-		perror("modify_mode: nogroup not found in /etc/group\n");
+	if ((ltpuser = getpwnam(LTPUSER)) == NULL) {
+		fprintf(stderr, "change_owner: %s not found in /etc/passwd\n",
+			LTPUSER);
 		exit(1);
 	}
 
 	/* Check for test specific name and set uid/gid accordingly */
-	if (!(strcmp(test_name, "chown03"))) {
+	if (!(strcmp(test_name, "chmod05"))) {
 		user_uid = -1;
-		group_gid = ltpgroup->gr_gid;
-	} else if (!(strcmp(test_name, "chown04"))) {
+		group_gid = 100;	/* set gid to some dummy value */
+	} else if (!(strcmp(test_name, "chmod06"))) {
 		user_uid = ltpuser->pw_uid;
-		group_gid = ltpgroup->gr_gid;
+		group_gid = ltpuser->pw_gid;
 	}
 
 	/*
@@ -72,8 +69,8 @@ main(int argc, char **argv)
 	 * pathname to that of user_uid and group_gid.
 	 */
 	if (chown(path_name, user_uid, group_gid) < 0) {
-		fprintf(stderr, \
-			"change_owner: chown() of %s failed, error %d\n",
+		fprintf(stderr,
+		        "change_owner: chown() of %s failed, error %d\n",
 			path_name, errno);
 		exit(1);
 	}
