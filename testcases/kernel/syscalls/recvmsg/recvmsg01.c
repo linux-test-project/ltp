@@ -108,7 +108,7 @@ struct test_case_t {		/* test case structure */
 		0, ENOTSOCK, setup1, cleanup1, "invalid socket length" },
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
-		0, ENOTSOCK, setup1, cleanup1, "invalid recv buffer" },
+		-1, EFAULT, setup1, cleanup1, "invalid recv buffer" },
 	{ PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EFAULT, setup1, cleanup1, "invalid iovec buffer" },
