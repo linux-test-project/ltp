@@ -25,19 +25,22 @@
 # $1 scratch device to use for testing
 # $2 optional file system type
 # $3 number of operations to perform 
-# 
-set -x
+
+#Uncomment line below for debugging
+#set -x
 mkfs -t $2 $1
 mkdir /testmount
 mount -t $2 $1 /testmount
 touch /testmount/testfile
 fsx-linux -N $3 /testmount/testfile
+RESULT=$?
 # report the results
-if [[ $? -eq "0" ]]; then
+if [[ $RESULT -eq "0" ]]; then
   echo "PASS: fsxtest $1 $2 $3"
 else
   echo "FAIL: fsxtest $1 $2 $3"
 fi
 umount /testmount
 rm -rf /testmount
-fsck -t $2 $1  # report the results
+fsck -a -t $2 $1  # report the results
+exit $RESULT
