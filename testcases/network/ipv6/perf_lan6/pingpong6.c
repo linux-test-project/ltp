@@ -64,7 +64,6 @@ extern	int errno;
 int s;			/* Socket file descriptor */
 struct addrinfo *hp;	/* Pointer to host info */
 struct addrinfo hints;
-struct timezone tz;	/* leftover */
 
 struct sockaddr_in6 whereto;/* Who to pingpong */
 int datalen;		/* How much data */
@@ -114,7 +113,7 @@ char *argv[];
 	/*  Determine Packet Size - either use what was passed in or default */
         printf ("Determine packet size \n");
 	if( argc >= 3 )
-		datalen = atoi( av[2] );
+		datalen = atoi( av[2] );  
 	else
 		datalen = 64-8;
 	if (datalen > MAXPACKET) {
@@ -137,7 +136,7 @@ char *argv[];
 
         /* Get network protocol to use (check /etc/protocol) */
 	if ((proto = getprotobyname("ipv6-icmp")) == NULL) {
-		printf("ICMP: unknown protocol\n");
+		printf("ICMP6: unknown protocol\n");
 		exit(1);
 	}
 
@@ -182,18 +181,13 @@ char *argv[];
 #endif
 
 			/* Receive packet from socket */
-			printf("Receiving packet \n");
 			fromlen = sizeof (from);
 			if ( (cc=recvfrom(s, packet, len, 0, (struct sockaddr *)&from, &fromlen)) < 0) {
 				printf("ERROR in recvfrom\n");
 			}
                         /* Verify contents of packet */
-                        if ((rc = ck_packet (packet, cc, &from)) != 0) {
-                                printf("ERROR - network garbled packet\n");
-			}
-                        else {
+                        if ((rc = ck_packet (packet, cc, &from)) == 0) 
 				nreceived++;
-			} 
 		}
 	}
 }
@@ -212,8 +206,7 @@ int npackets;
                         int cc;
 #endif
 
-	register struct timeval *tp = (struct timeval *) &outpack[8];
-	register u_char *datap = &outpack[8+sizeof(struct timeval)];
+	register u_char *datap = &outpack[8];
 
 
         /* Setup the packet structure */
@@ -226,17 +219,10 @@ int npackets;
 	cc = datalen+8;			/* skips ICMP portion */
 
 
-        /* Add time stamp and user data */
-        printf ("Add time stamp, user data, and check sum to packet. \n");
-	if (timing)
-		gettimeofday( tp, &tz );
 
-	for( i=8; i<datalen; i++) {	/* skip 8 for time */
+	for( i=8; i<datalen; i++) {	
 		*datap++ = i;
 	}
-
-	/* Compute ICMP checksum here */
-	icp->icmp6_cksum = in6_cksum( icp, cc );
 
 	ntransmitted=0;
 	while (count < npackets) {
@@ -257,58 +243,6 @@ int npackets;
 
 
 
-/*
- *			I N 6_ C K S U M
- *
- * Checksum routine for Internet Protocol version 6 family headers (C Version)
- *
- */
-in6_cksum(u_short *addr, int len)
-{
-    register int nleft = len;
-    register u_short *w = addr, tmp;
-    register int sum = 0;
-    register u_long answer = 0;
-
-    /*
-     * Our algorithm is simple, using a 128 bit accumulator (sum), we add
-     * sequential 16 bit words to it, and at the end, fold back all the
-     * carry bits from the top 64 bits into the lower 64 bits.
-     */
-    while (nleft > 1)  {
-        sum += *w++;
-        nleft -= 2;
-    }
-
-    /* mop up an odd byte, if necessary */
-    if (nleft == 1) {
-        tmp = *(u_char *)w;
-        sum += (tmp << 8);
-    }
-    /* add back carry outs from top 64 bits to low 64 bits */
-    sum = (sum >> 64) + (sum & 0xffffffffffffffff); /* add hi 64 to low 64 */
-    sum += (sum >> 64);         /* add carry */
-    answer = ~sum;              /* truncate to 64 bits */
-    return(answer);
-}
-
-
-/*
- * 			T V S U B
- * 
- * Subtract 2 timeval structs:  out = out - in.
- * 
- * Out is assumed to be >= in.
- *tvsub( out, in )
- *register struct timeval *out, *in;
- *{
- *	if( (out->tv_usec -= in->tv_usec) < 0 )   {
- *		out->tv_sec--;
- *		out->tv_usec += 1000000;
- *	}
- *	out->tv_sec -= in->tv_sec;
- *}
- */
 
 /*
  *			F I N I S H      
@@ -334,31 +268,23 @@ int	cc;			/* total size of received packet */
 struct sockaddr_in6 *from; 	/* address of sender */
 {
 	u_char 	i;
-	int 	iphdrlen;
-	struct 	ip6_hdr *ip6 = (struct ip6_hdr *) buf;          /* pointer to IP header */
-	register struct	icmp6_hdr *icp;                   /* ptr to ICMP */
-	struct timeval *tp = (struct timeval *) &buf[8];
+	struct  icmp6_hdr icp_hdr;
+	struct	icmp6_hdr *icp = (struct ip6_hdr *) buf;          /* pointer to IP header */
   	u_char *datap ;
 	
-	/*from->sin6_addr.s6_addr32= ntohl(from->sin6_addr.s6_addr32);*/
 
-	cc = ip6->ip6_plen << 2; /* Convert # 16-bit words to #bytes */ 
-        icp = (struct icmp6 *) (buf + iphdrlen);
-	datap = (u_char *)icp + sizeof(struct timeval) + 8;
+	datap = (u_char *)icp + sizeof(icp_hdr);
 	if (icp->icmp6_type != ICMP6_ECHO_REPLY) {
-		return(0);	 /* Not your packet 'cause not an echo */
+		return(1);	 /* Not your packet 'cause not an echo */
 	}
 	if (icp->icmp6_id != ident) {
-		return(0);			/* Sent to us by someone else */
+		return(1);			/* Sent to us by someone else */
 	}	
-
+	printf("Receiving packet \n");
         /* Verify data in packet */
-        printf ("Verify data in packet after returned from sender \n");
-	if ( datalen > 118 ) {
-		datalen=118;
-	}
+
 	printf ("Checking Data.\n");
-        for( i=8; i<datalen; i++) {             /* skip 8 for time */
+        for( i=8; i<datalen; i++) {             /* skip 8 for header */
                 if ( i !=  (*datap)) {               
                         printf ("Data cannot be validated. \n");
                 }
