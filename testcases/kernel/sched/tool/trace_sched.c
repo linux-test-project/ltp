@@ -67,10 +67,7 @@ void noprintf(char* string, ...){
 #define dprt    noprintf
 #endif
 
-/*
- * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
- */
-#ifdef __ppc64__
+#ifndef PID_MAX
 #define PID_MAX 0x8000
 #endif
 
@@ -81,7 +78,7 @@ void noprintf(char* string, ...){
 #define PIDS PTHREAD_THREADS_MAX /* maximum thread allowed.                     */
 #elif defined(PID_MAX_DEFAULT)
 #define PIDS PID_MAX_DEFAULT     /* maximum pids allowed.                       */
-#elif defined(PID_MAX)
+#else
 #define PIDS PID_MAX		 /* alternative way maximum pids may be defined */
 #endif
 
