@@ -1,3 +1,54 @@
+LTP-20030807
+
+- Reorganized and updated the testcase		( Robbie Williamson )
+  descriptions under /doc
+- Updated the tst_rmdir API to use		( Robbie Williamson )
+  remove() instead of rmdir().
+- Added support for the __ARM_ARCH_4T__ 	( Ramesh Subramanian )
+  architecture.
+- Updated clone() tests to allow them		( Robbie Williamson )
+  to execute on ppc64.
+- Created new clone07 test to check for		( Robbie Williamson )
+  glibc bug.
+- Rewrote the generate.sh scripts to perl	( Randy Hron
+  for faster execution.				  Robbie Williamson )
+- Updated "fsstress" to allow setting the	( Robbie Williamson )
+  number of loops to run and cleanup options.
+- Removed case from diotest4 for read/writes	( Robbie Williamson )
+  with negative counts. Not in SUS.
+- Fixed chown03 testcase to allow for better	( Paul Larson )
+  execution stability.
+- Added check to mmapstress tests to see if 	( Robbie Williamson )
+  roundup() is defined, before defining it.
+- Cleaned up sched_stress.			( Randy Hron )
+- Modified diotest4 to test dio to /dev/null	( Robbie Williamson )
+  but not record it as a pass or fail.
+- Removed extra "\n"s from creat09.		( Paul Larson )
+- Updated syscall tests that used their own	( Randy Hron )
+  strcpy() definition, instead of string.h's.
+- Fixed fchown04 testcase to allow for better	( Paul Larson )
+  execution stability.
+- Updated fcntl14 to allow for better execution	( Ramesh Subramanian )
+  stability & remove possibility of false fails.
+- Applied Xtensa architecture specific patches. ( Joe Taylor )
+- Updated memory tests to allow for distros	( Robbie Williamson )
+  that allow non-root users to m(un)lockall 
+  within the RLIMIT_MEMLOCK resource limit.
+- Changed the way munlock02 attempts to access  ( Robbie Williamson )
+  outside it's memory space to a more reliable
+  method.
+- Corrected an expected error return for a case ( Andrew Morton 
+  in recvmsg01 and sendmsg01.			  Paul Larson )
+- Corrected compiler warnings in the multicast  ( Robbie Williamson )
+  test, mc_opts.
+- Corrected syntax error reported in 		( Robbie Williamson )
+  Bug #773670.
+- Corrected unitialized variable problem in 	( Ramesh Subramanian )
+  sendfile01.
+- Updated the Open Posix Test Suite to 1.2	( Robbie Williamson )
+- Applied patches to Open HPI Test Suite.	( Kevin Gao )
+
+
 LTP-20030710
 
 - Added LIB_DIR variable to top-level Makefile	  ( Robbie Williamson )
