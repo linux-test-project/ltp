@@ -54,8 +54,10 @@ main(int argc, char **argv)
 		exit(1);
 	}
 	if ((ltpgroup = getgrnam("nobody")) == NULL) {
-		perror("change_owner: nobody's group not found in /etc/group\n");
-		exit(1);
+		if ((ltpgroup = getgrnam("nogroup")) == NULL) {
+			perror("change_owner: nobody/nogroup's group not found in /etc/group\n");
+			exit(1);
+		}
 	}
 
 	user_uid=0;

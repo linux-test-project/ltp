@@ -216,13 +216,12 @@ int main (int argc, char **argv)
                 offset = offsets[i];
 
 #ifndef __64BIT__
-         printf ("\n\toffset of the shared memory segment 0x%x\n",offset);
-        if ((int)(shmptr[i] = (char *) shmat (shmid[i], (const void *)offset, 0)
-) == -1) 
+         printf ("\n\toffset of the shared memory segment 0x%lx\n",offset);
+        if ((shmptr[i] = (char *) shmat (shmid[i], (const void *)offset, 0)) == (char *)-1) 
 #else
          printf ("\n\toffset of the shared memory is determined by the system\n"
 );
-         if ((int)(shmptr[i] = (char *) shmat (shmid[i], 0 , 0)) == -1)
+         if ((shmptr[i] = (char *) shmat (shmid[i], 0 , 0)) == (char *)-1)
 #endif
                 sys_error ("shmat failed", __LINE__);
 

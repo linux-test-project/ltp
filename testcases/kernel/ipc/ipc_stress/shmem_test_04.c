@@ -65,6 +65,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/mman.h>
@@ -214,7 +215,7 @@ int main (int argc, char **argv)
 	 */
 	if ((region = mmap(0, length, PROT_READ | PROT_WRITE,
 				map_flags | MAP_SHARED, fd, 0))
-		 == (caddr_t)-1) {
+		 == MAP_FAILED) {
 		sys_error ("mmap failed", __LINE__);
 	}
 

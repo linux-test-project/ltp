@@ -188,8 +188,8 @@ int main (int argc, char **argv)
 	 * Get chunk of memory for writing scratch data
 	 */
 	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
-	if ((int)(shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE, 
-		MAP_ANON | MAP_SHARED, -1, 0)) < 0)
+	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE, 
+		MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED)
 		sys_error ("mmap failed", __LINE__);
 
 	/*
