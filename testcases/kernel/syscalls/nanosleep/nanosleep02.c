@@ -70,7 +70,8 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
-#include <sys/wait.h>
+#include <wait.h>
+#include <sys/time.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -236,6 +237,8 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
+
 }	/* End main */
 
 /*

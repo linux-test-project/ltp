@@ -64,7 +64,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/wait.h>
+#include <time.h>
+#include <wait.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -170,7 +171,9 @@ main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
+	/*NOTREACHED*/	
+	return(0);
+
 }	/* End main */
 
 /*
