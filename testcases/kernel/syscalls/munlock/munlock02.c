@@ -115,7 +115,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++) {
 #ifdef __ia64__
-	                TC[0].len = getpagesize() + 1;
+	                TC[0].len = 8 * getpagesize();
 #endif
 			TEST(munlock(*(TC[i].addr), TC[i].len));
 
