@@ -1738,9 +1738,9 @@ static void parse_args (char **args)
 
    int   Mem1,Mem2,Mem3,Mem4;
    int   AvgMem1=0;
-   float AvgMem2=0.0,AvgMem3=0.0,AvgMem4=0.0,UsedMemPercentage=0.0;
+   long double AvgMem2=0.0,AvgMem3=0.0,AvgMem4=0.0,UsedMemPercentage=0.0;
    int   AvgSwap1=0;
-   float AvgSwap2=0.0,AvgSwap3=0.0,AvgSwap4=0.0,UsedSwapPercentage=0.0;
+   long double AvgSwap2=0.0,AvgSwap3=0.0,AvgSwap4=0.0,UsedSwapPercentage=0.0;
 
    while (*args) {
       const char *cp = *(args++);
@@ -1834,11 +1834,11 @@ static void parse_args (char **args)
    		        AvgMaxTasks,AvgRunningTasks,AvgSleepingTasks,AvgStoppedTasks,AvgZombieTasks);
 	       printf(" Cpu(s) : User:%.2f\%\tSystem:%.2f\%\t\tNice:%.2f\%\t\tIdle:%.2f\%\t\tIO-wait:%.2f\%\n\n",
    			AvgCPUuser,AvgCPUsys,AvgCPUnice,AvgCPUidle,AvgCPUiowait);
-	       printf(" TotalMem:%dk\tUsedMem:%.0fk\t\tFreeMem:%.0fk\t\tBuffers:%.0fk\n",
+	       printf(" TotalMem:%dk\tUsedMem:%.0Lfk\t\tFreeMem:%.0Lfk\t\tBuffers:%.0Lfk\n",
    			AvgMem1,AvgMem2,AvgMem3,AvgMem4);
-	       printf(" TotalSwap:%dk\tUsedSwap:%.0fk\t\tFreeSwap:%.0fk\tCached:%.0fk\n",
+	       printf(" TotalSwap:%dk\tUsedSwap:%.0Lfk\t\tFreeSwap:%.0Lfk\tCached:%.0Lfk\n",
    		        AvgSwap1,AvgSwap2,AvgSwap3,AvgSwap4);
-	       printf(" UsedMem Percentage:%.2f\%\tUsedSwap Percentage:%.2f\%\n\n",UsedMemPercentage,UsedSwapPercentage);
+	       printf(" UsedMem Percentage:%.2Lf\%\tUsedSwap Percentage:%.2Lf\%\n\n",UsedMemPercentage,UsedSwapPercentage);
 	       printf("A total of [%d] entries processed from %s.\n\n",loopcntr,cp);
                exit(0);               
 	       break;
