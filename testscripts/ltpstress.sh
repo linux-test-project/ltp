@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -x
 #    Copyright (c) International Business Machines  Corp., 2003
 #
 #    This program is free software;  you can redistribute it and/or modify
@@ -28,10 +28,17 @@
 ####################################################
 
 export LTPROOT=${PWD}
+echo $LTPROOT | grep testscripts > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cd ..
+ export LTPROOT=${PWD}
+fi
 export TMPBASE="/tmp"
 export TMP="${TMPBASE}/ltpstress-$$"
 export PATH=$PATH:$LTPROOT/testcases/bin
 memsize=0
+PROC_NUM=0
+leftover_memsize=0
 duration=86400
 datafile="/tmp/ltpstress.data"
 interval=10
@@ -55,6 +62,17 @@ usage()
 exit
 }
 
+check_memsize()
+{
+  while [ $memsize -gt 1048576 ]   #if greater than 1GB
+  do
+    PROC_NUM=$(( PROC_NUM + 1 ))
+    memsize=$(( $memsize - 1048576 ))
+  done  
+  leftover_memsize=$memsize
+}
+
+
 mkdir -p ${TMP}
 
 cd ${TMP}
@@ -75,7 +93,8 @@ do  case $arg in
 
         l)      logfile="-l $OPTARG";;
 
-        m)	memsize=$(($OPTARG * 1024 * 1024));;
+        m)	memsize=$(($OPTARG * 1024))
+		check_memsize;;	
 
         S)      Sar=1;;
 
@@ -148,7 +167,12 @@ if [ $memsize -eq 0 ]; then
   memsize=$((64 * 1024 * 1024))
 fi
 
-genload --vm 0 --vm-bytes $memsize 2>&1 1>/dev/null & 
+if [ $PROC_NUM -gt 0 ];then
+  genload --vm $PROC_NUM --vm-bytes 1073741824 2>&1 1>/dev/null &
+fi
+if [ $leftover_memsize -gt 0 ];then
+  genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) 2>&1 1>/dev/null & 
+fi
 
 netpipe.sh >/dev/null 2>/dev/null &
 
