@@ -85,12 +85,19 @@
  *				-P x : Pause for x seconds between iterations.
  *				-t   : Turn on syscall timing.
  *
+ *
+ * MODIFIED: - mridge@us.ibm.com -- changed getpid to syscall(get thread ID) for unique ID on NPTL threading
+ *
+ *
  ****************************************************************/
 
 #include <errno.h>
 #include <sched.h> 
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <linux/unistd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -141,6 +148,7 @@ struct test_case_t {
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 	
+
 
 int
 main(int ac, char **av)
@@ -253,7 +261,7 @@ setup()
 	tst_tmpdir();
 	
 	/* Get unique file name for each child process */
-	if ((sprintf(file_name, "parent_file_%d", getpid())) <= 0 ) {
+	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0 ) {
 		tst_brkm(TBROK, cleanup, "sprintf() failed");
 	}
 
@@ -357,7 +365,9 @@ child_fn()
 {
 
 	/* save child pid */
-	child_pid = getpid();
+    child_pid = syscall(__NR_gettid);
+
+	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */ 
 
 	if (test_VM() && test_FILES() && test_FS() && test_SIG()) {
 		exit(1);
@@ -564,7 +574,7 @@ modified_SIG()
 void
 sig_child_defined_handler(int pid)
 {
-	if((getpid()) == child_pid) {
+	if((syscall(__NR_gettid)) == child_pid) {
 		/* Child got signal, give warning */
 		tst_resm(TWARN, "Child got SIGUSR2 signal");
 	} else {
