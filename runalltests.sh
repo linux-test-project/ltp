@@ -125,7 +125,7 @@ main()
     while getopts cd:f:hi:l:m:Nno:pqr:t:x: arg
     do  case $arg in
         c)       
-            $LTPROOT/testcases/bin/GENLOAD --cpu 1 >/dev/null 2>&1 &
+            $LTPROOT/testcases/bin/genload --cpu 1 >/dev/null 2>&1 &
             GENLOAD=1 ;;
                    
         d)  # append $$ to TMP, as it is recursively 
@@ -139,8 +139,8 @@ main()
         
         i)       
             BYTESIZE=$(($OPTARG * 1024 * 1024))
-            $LTPROOT/testcases/bin/GENLOAD --io 1 >/dev/null 2>&1 &
-            $LTPROOT/testcases/bin/GENLOAD --hdd 0 --hdd-bytes $BYTESIZE \
+            $LTPROOT/testcases/bin/genload --io 1 >/dev/null 2>&1 &
+            $LTPROOT/testcases/bin/genload --hdd 0 --hdd-bytes $BYTESIZE \
             >/dev/null 2>&1 & 
             GENLOAD=1 ;;
     
@@ -165,7 +165,7 @@ main()
     
         m)      
             MEMSIZE=$(($OPTARG * 1024 * 1024)) 
-            $LTPROOT/testcases/bin/GENLOAD  --vm 0 --vm-bytes $MEMSIZE \
+            $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $MEMSIZE \
                 >/dev/null 2>&1 & 
             GENLOAD=1;;
     
