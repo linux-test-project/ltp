@@ -22,15 +22,20 @@
  * Test Name: fstat05
  *
  * Test Description:
- *   Verify that, fstat(2) returns -1 and sets errno to EFAULT if buffer 
- *   points outside user's accessible address space.
+ *   Verify that, 
+ *   if buffer points outside user's accessible address space fstat(2)
+ *	either returns -1 and sets errno to EFAULT
+ *	or SIGSEGV is returned instead of EFAULT
  *
  * Expected Result:
  *   fstat() should fail with return value -1 and set expected errno.
+ *    or
+ *   fstat() should fail with SIGSEGV returned.
+ *   Both results are considered as acceptable.
  *
  * Algorithm:
  *  Setup:
- *   Setup signal handling.
+ *   Setup signal handling SIGSEGV included.
  *   Switch to nobody user.
  *   Pause for SIGUSR1 if option specified.
  *   Create temporary directory.
@@ -48,6 +53,12 @@
  *   Otherwise,
  *	Issue sys call returns unexpected value.
  *
+ *  Sighandler:
+ *	if signal == SIGSEGV
+ *		Issue sys call fails with expected signal 
+ *      Otherwise,
+ *              Issue sys call fails with unexpected signal.
+ *
  *  Cleanup:
  *   Print errno log and/or timing stats if options given
  *   Close the test file
@@ -63,7 +74,7 @@
  *		-t   : Turn on syscall timing.
  *
  * History
- *	04/2002 Jacky Malcles
+ *	05/2002 Jacky Malcles
  *		-Ported
  *
  * Restrictions:
@@ -92,7 +103,7 @@ extern struct passwd *my_getpwnam(char *);
 
 
 char *TCID="fstat05";           /* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+int TST_TOTAL = 1;              /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EFAULT, 0};
 int fildes;                     /* testfile descriptor */
@@ -100,6 +111,16 @@ int fildes;                     /* testfile descriptor */
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
+void sighandler(int sig);	/* signals handler function for the test */
+
+int SIG_SEEN = 31;
+
+int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
+                SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
+                SIGTERM, SIGSTKFLT, SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
+                SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
+                SIGWINCH, SIGIO, SIGPWR, SIGSYS, SIGUNUSED};
+
 
 int
 main(int ac, char **av)
@@ -123,8 +144,7 @@ main(int ac, char **av)
 	ptr_str=(void *)sbrk(0) + (4 * getpagesize());
 
 	/*
-	 * Invoke setup function to call individual test setup functions
-	 * to simulate test conditions.
+	 * Invoke setup function 
 	 */
 	setup();
 
@@ -178,9 +198,16 @@ main(int ac, char **av)
 void
 setup()
 {
+	int i;
 
-	/* Capture unexpected signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* 
+	 * Capture unexpected signals SIGSEGV included
+	 * SIGSEGV being considered as acceptable as returned value 
+	*/
+        for (i=0; i<SIG_SEEN; i++) {
+
+                signal(siglist[i], &sighandler);
+	}
 
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
@@ -247,3 +274,21 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
+
+/*
+ * sighandler() - handle the signals
+ */
+
+void
+sighandler(int sig)
+{
+        if (sig == SIGSEGV) {
+                tst_resm(TPASS, "fstat() fails with "
+                         "expected signal SIGSEGV");
+        } else {
+		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
+        }
+	cleanup();
+	/*NOT REACHED*/
+
+}
