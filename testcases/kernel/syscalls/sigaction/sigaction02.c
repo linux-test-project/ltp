@@ -67,92 +67,6 @@ extern int Tst_count;
 
 volatile sig_atomic_t testcase_no;
 
-int
-main(int ac, char **av)
-{
-	char *msg;			/* message got from parse_opts */
-
-	int ret;
-
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
-
-test1:
-	testcase_no = 1;
-
-	tst_resm(TINFO, "Enter test %d: set handler for SIGKILL", testcase_no);
-	if ((ret = set_handler(SIGKILL, 0, 0)) == 0) {
-		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
-	}
-	if (ret != EINVAL) {
-		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EINVAL, got: %d", ret);
-	} else {
-		tst_resm(TPASS, "call failed with expected EINVAL error");
-	}
-
-test2:
-	testcase_no++;
-
-	tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP", testcase_no);
-	if ((ret = set_handler(SIGSTOP, 0, 0)) == 0) {
-		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
-	}
-	if (ret != EINVAL) {
-		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EINVAL, got: %d", ret);
-	} else {
-		tst_resm(TPASS, "call failed with expected EINVAL error");
-	}
-
-test3:
-	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler for bad signal number",
-		 testcase_no);
-	if ((ret = set_handler(SIGBAD, 0, 0)) == 0) {
-		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
-	}
-	if (ret != EINVAL) {
-		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EINVAL, got: %d", ret);
-	} else {
-		tst_resm(TPASS, "call failed with expected EINVAL error");
-	}
-
-#ifndef GLIBC_SIGACTION_BUG
-
-test4:
-	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler with bad \"act\" param",
-		 testcase_no);
-	if ((ret = set_handler(SIGUSR1, 0, 1)) == 0) {
-		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
-	}
-	if (ret != EFAULT) {
-		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EFAULT, got: %d", ret);
-	} else {
-		tst_resm(TPASS, "call failed with expected EFAULT error");
-	}
-
-test5:
-	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler with bad \"oact\" param",
-		 testcase_no);
-	if ((ret = set_handler(SIGUSR1, 0, 2)) == 0) {
-		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
-	}
-	if (ret != EFAULT) {
-		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EFAULT, got: %d", ret);
-	} else {
-		tst_resm(TPASS, "call failed with expected EFAULT error");
-	}
-#endif		/* GLIBC_SIGACTION_BUG */
-
-	tst_exit();
-}
 /*
  * handler()
  *	A dummy signal handler for attempting to catch signals.
@@ -196,3 +110,92 @@ set_handler(int sig, int sig_to_mask, int flag)
 	}
 }
 
+int
+main(int ac, char **av)
+{
+	char *msg;			/* message got from parse_opts */
+
+	int ret;
+
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+
+//test1:
+	testcase_no = 1;
+
+	tst_resm(TINFO, "Enter test %d: set handler for SIGKILL", testcase_no);
+	if ((ret = set_handler(SIGKILL, 0, 0)) == 0) {
+		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
+	}
+	if (ret != EINVAL) {
+		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
+			 "EINVAL, got: %d", ret);
+	} else {
+		tst_resm(TPASS, "call failed with expected EINVAL error");
+	}
+
+//test2:
+	testcase_no++;
+
+	tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP", testcase_no);
+	if ((ret = set_handler(SIGSTOP, 0, 0)) == 0) {
+		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
+	}
+	if (ret != EINVAL) {
+		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
+			 "EINVAL, got: %d", ret);
+	} else {
+		tst_resm(TPASS, "call failed with expected EINVAL error");
+	}
+
+//test3:
+	testcase_no++;
+	tst_resm(TINFO, "Enter test %d: set handler for bad signal number",
+		 testcase_no);
+	if ((ret = set_handler(SIGBAD, 0, 0)) == 0) {
+		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
+	}
+	if (ret != EINVAL) {
+		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
+			 "EINVAL, got: %d", ret);
+	} else {
+		tst_resm(TPASS, "call failed with expected EINVAL error");
+	}
+
+#ifndef GLIBC_SIGACTION_BUG
+
+//test4:
+	testcase_no++;
+	tst_resm(TINFO, "Enter test %d: set handler with bad \"act\" param",
+		 testcase_no);
+	if ((ret = set_handler(SIGUSR1, 0, 1)) == 0) {
+		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
+	}
+	if (ret != EFAULT) {
+		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
+			 "EFAULT, got: %d", ret);
+	} else {
+		tst_resm(TPASS, "call failed with expected EFAULT error");
+	}
+
+//test5:
+	testcase_no++;
+	tst_resm(TINFO, "Enter test %d: set handler with bad \"oact\" param",
+		 testcase_no);
+	if ((ret = set_handler(SIGUSR1, 0, 2)) == 0) {
+		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
+	}
+	if (ret != EFAULT) {
+		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
+			 "EFAULT, got: %d", ret);
+	} else {
+		tst_resm(TPASS, "call failed with expected EFAULT error");
+	}
+#endif		/* GLIBC_SIGACTION_BUG */
+
+	tst_exit();
+
+  return(0);
+
+}

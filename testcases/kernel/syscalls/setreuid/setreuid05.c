@@ -118,11 +118,10 @@ void setup(void);
 void cleanup(void);
 void uid_verify(struct passwd *, struct passwd *, char *);
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -205,6 +204,9 @@ main(int argc, char **argv)
 	}
 	cleanup();
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 
 /*

@@ -119,7 +119,7 @@ void setup(void);
 void cleanup(void);
 void uid_verify(struct passwd *, struct passwd *, char *);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;			/* message returned from parse_opts */
@@ -193,6 +193,9 @@ main(int ac, char **av)
 
 	cleanup();
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 
 /*

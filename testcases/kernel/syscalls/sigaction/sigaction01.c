@@ -81,59 +81,6 @@ extern int Tst_count;
 volatile sig_atomic_t testcase_no;
 volatile sig_atomic_t pass;
 
-int
-main(int ac, char **av)
-{
-	int lc;				/* loop counter */
-	char *msg;			/* message got from parse_opts */
-	int i;
-	int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND,
-			    SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO};
-
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
-
-	setup();
-
-	/* check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-		testcase_no = 0;
-
-		for (i=0; i<TST_TOTAL; i++) {
-			if (set_handler(test_flags[i], 0) == 0) {
-				if (STD_FUNCTIONAL_TEST) {
-					testcase_no++;
-					switch(i) {
-					case 0: /*FALLTHROUGH*/
-					case 1:
-						(void)kill(getpid(), SIGUSR1);
-						break;
-					case 2: /*FALLTHROUGH*/
-					case 3:
-						(void)pthread_kill(
-						      pthread_self(), SIGUSR1);
-						break;
-					default:
-						tst_brkm(TBROK, cleanup,
-							 "illegal case number");
-						break;
-					}
-				} else {
-					tst_resm(TPASS, "call succeeded");
-				}
-			}
-		}
-	}
-	cleanup();
-
-	/*NOTREACHED*/
-}
-
 /*
  * handler()
  *
@@ -290,3 +237,56 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+int main(int ac, char **av)
+{
+	int lc;				/* loop counter */
+	char *msg;			/* message got from parse_opts */
+	int i;
+	int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND,
+			    SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO};
+
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	setup();
+
+	/* check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+		testcase_no = 0;
+
+		for (i=0; i<TST_TOTAL; i++) {
+			if (set_handler(test_flags[i], 0) == 0) {
+				if (STD_FUNCTIONAL_TEST) {
+					testcase_no++;
+					switch(i) {
+					case 0: /*FALLTHROUGH*/
+					case 1:
+						(void)kill(getpid(), SIGUSR1);
+						break;
+					case 2: /*FALLTHROUGH*/
+					case 3:
+						(void)pthread_kill(
+						      pthread_self(), SIGUSR1);
+						break;
+					default:
+						tst_brkm(TBROK, cleanup,
+							 "illegal case number");
+						break;
+					}
+				} else {
+					tst_resm(TPASS, "call succeeded");
+				}
+			}
+		}
+	}
+	cleanup();
+
+	/*NOTREACHED*/
+	return(0);
+}
+

@@ -30,12 +30,14 @@
  * RESTRICTIONS
  * 	This test doesn't follow good LTP format - PLEASE FIX!
  */
-#include <sys/wait.h>
+#include <wait.h>
 #include <limits.h>
 #include <signal.h>
 #include <errno.h>
-#include <sys/param.h>
 #include <unistd.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -52,12 +54,11 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int pid;
 	int retval, fail = 0;
 	int ret, status;
-	int count;
 	int exno = 0;
 
 	int lc;				/* loop counter */
@@ -173,6 +174,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

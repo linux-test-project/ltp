@@ -41,6 +41,7 @@
  */
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
@@ -59,7 +60,7 @@ int exp_enos[] = {EPERM, 0};
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -101,7 +102,8 @@ main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
+	/*NOTREACHED*/	
+	return(0);
 }
 
 /*

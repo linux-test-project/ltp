@@ -71,8 +71,10 @@
 #include <errno.h>
 
 extern int Tst_count;
-
+extern int getresuid(uid_t*, uid_t*, uid_t*);
+extern int setresuid(uid_t, uid_t, uid_t);
 char *TCID = "setresuid01";
+
 uid_t nobody_pw_uid, root_pw_uid, bin_pw_uid;
 int neg_one = -1;
 int exp_enos[]={0};
@@ -113,7 +115,7 @@ void cleanup(void);			/* Cleanup function for the test */
 void
 uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -166,6 +168,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -132,6 +132,9 @@ main(int argc, char *argv[])
 	}
 
 	cleanup();
+
+  return(0);
+
 }	/* End main */
 
 void

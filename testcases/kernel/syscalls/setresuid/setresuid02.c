@@ -68,6 +68,8 @@
 
 char *TCID = "setresuid02";
 extern int Tst_count;
+extern int getresuid(uid_t*, uid_t*, uid_t*);
+extern int setresuid(uid_t, uid_t, uid_t);
 
 int neg_one = -1;
 
@@ -107,7 +109,7 @@ void cleanup(void);
 void
 uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;			/* message returned from parse_opts */
@@ -188,6 +190,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

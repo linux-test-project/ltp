@@ -41,15 +41,17 @@
  *      Must be ran as non-root user - nobody recommended.	
  */
 
-#include <sys/wait.h>
+#include <wait.h>
 #include <limits.h>
 #include <signal.h>
 #include <errno.h>
-#include <sys/param.h>
 #include <unistd.h>
 #include <pwd.h>
-#include <test.h>
-#include <usctest.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "test.h"
+#include "usctest.h"
 
 #define INVAL_USER	999999	
 
@@ -65,9 +67,8 @@ struct passwd *ltpuser;
 void setup(void);
 void cleanup(void);
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int retval, fail = 0;
 
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -105,6 +106,9 @@ main(int argc, char **argv)
 	}
 	cleanup();
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 
 /*
