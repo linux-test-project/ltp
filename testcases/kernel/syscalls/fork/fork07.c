@@ -25,8 +25,9 @@
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent opens a file, writes to it; forks processes until
- * 	-1 is returned. Each child attempts to read the file then returns.
+ * 	Parent opens a file, writes to it; forks Nforks children. 
+ * 	Each child attempts to read the file then returns.
+ * 	Parent reports PASS if all children succeed.
  *
  * USAGE
  * 	fork07

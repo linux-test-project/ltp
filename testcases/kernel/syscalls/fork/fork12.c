@@ -25,9 +25,8 @@
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent opens a file, writes to it; forks processes until
- * 	-1 is returned. Each child attempts to read the file then returns.
- *
+ * 	Parent forks processes until -1 is returned.  
+ * 	
  * USAGE
  * 	fork12
  * 	** CAUTION ** Can hang your machine, esp prior to 2.4.19
