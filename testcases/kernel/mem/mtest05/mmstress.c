@@ -37,6 +37,10 @@
 /*		- changed scheme. If no options are specified, all the tests  */
 /*		  will be run once.                                           */
 /*								              */
+/* Nov-02-2001  Modified - Paul Larson					      */
+/*		- Added sched_yield to thread_fault to fix hang	              */
+/*		- Removed thread_mmap				              */
+/*								              */
 /* Purpose:	Performing General Stress with Race conditions        	      */
 /* 									      */
 /******************************************************************************/
@@ -202,7 +206,9 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
     volatile int exit_val = 0;   /* exit value of the pthread. 0 - success    */
 
-    while (wait_thread);
+    while (wait_thread) {
+        sched_yield();
+    }
 
     for (; pgnum_ndx < (NUMPAGES/NUMTHREAD); pgnum_ndx++)
     {
@@ -216,43 +222,6 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 		    " @page adress %#lx\n", (int)local_args[3], 
 		     start_addr);
 	 fflush(NULL);
-    }
-    PTHREAD_EXIT(0);
-}
-
-
-/******************************************************************************/
-/*							                      */
-/* Function:	thread_mmap						      */
-/* 								              */
-/* Description:	perfom mmap operations over the base mmap that was performed  */
-/*              by the controlling process.			              */
-/*								              */
-/******************************************************************************/
-static void *
-thread_mmap(void *args)		/* pointer to the arguments passed in         */
-{
-    long *local_args = args;	/* local pointer to list of arguments	      */
-    int   page_ndx;	        /* index to the page		              */
-    int   num_pages;	        /* number of pages			      */
-    off_t map_offset;		/* offset from the base addr to start mmap    */
-    char *layout     = 		/* local pointer to memory layout	      */
-		       (char *)local_args[4];
-    volatile int exit_val = 0;  /* exit value of the pthread. 0 - success    */
-
-    while (wait_thread);	/* when wait set to true - loop		      */
-
-    while (scanf(layout, "%lx%lx", &page_ndx, &num_pages) == 2)
-    {
-        map_offset = num_pages * local_args[2];
-	if (mmap((caddr_t)(local_args[1] + map_offset), map_offset, 
-		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED, (int)local_args[5],
-		map_offset) == (caddr_t)-1)
-        {
-	    perror("thread_mmap(): mmap()");
-	    PTHREAD_EXIT(1);
-        }
-        layout += 2;
     }
     PTHREAD_EXIT(0);
 }
