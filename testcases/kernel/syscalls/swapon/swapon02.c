@@ -107,7 +107,6 @@ static void cleanup();
 static int setup01();
 static int cleanup01();
 static int setup02();
-static int cleanup02();
 static int setup03();
 static int cleanup03();
 void handler(int);
@@ -119,23 +118,22 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static int swapfile;		/* Number of swapfiles turned on*/
 
-static char *path[] = {"./abcd", "/dev/tty",
-			"./swapfilenext", "./swapfile01"};
-
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
 
 static struct test_case_t {
 	char *err_desc;		/* error description */
 	int  exp_errno;		/* expected error number*/
 	char *exp_errval;	/* Expected errorvalue string*/
+	char *path;		/* path to swapon */
 	int (*setupfunc)();	/* Test setup function */
 	int (*cleanfunc)();	/* Test cleanup function */
 } testcase[] = {
-	{"path does not exist", ENOENT, "ENOENT ", setup02,  cleanup02},
-	{"Invalid path", EINVAL, "EINVAL ", setup02, cleanup02},
+	{"path does not exist", ENOENT, "ENOENT", "./abcd", NULL,  NULL},
+	{"Invalid path", EINVAL, "EINVAL", "./nofile", setup02, NULL},
 	{"Permission denied: more than MAX_SWAPFILES  swapfiles in use",
-		EPERM, "EPERM ", setup03, cleanup03},
-	{"Permission denied", EPERM, "EPERM ", setup01, cleanup01}
+		EPERM, "EPERM", "./swapfilenext", setup03, cleanup03},
+	{"Permission denied", EPERM, "EPERM", "./swapfile01", 
+		setup01, cleanup01}
 };
 
 int
@@ -160,15 +158,17 @@ main(int ac, char **av)
 		for(i = 0; i < TST_TOTAL; i++) {
 
 			/* reset Tst_count in case we are looping. */
-			if(testcase[i].setupfunc() == -1) {
+			if(testcase[i].setupfunc && 
+			   testcase[i].setupfunc() == -1) {
 				tst_resm(TWARN, "Failed to setup test %d."
 						" Skipping test", i);
 				continue;
 			} else {
-				TEST(swapon(path[i], 0));
+				TEST(swapon(testcase[i].path, 0));
 			}
 
-			if(testcase[i].cleanfunc() == -1) {
+			if(testcase[i].cleanfunc && 
+			   testcase[i].cleanfunc() == -1) {
 				tst_brkm(TBROK, cleanup, "Cleanup failed,"
 							" quitting the test");
 	 		}
@@ -193,7 +193,7 @@ main(int ac, char **av)
 
 				/*If swapfile is turned on, turn it off*/
 				if(TEST_RETURN == 0) {
-					if(swapoff(path[i]) != 0) {
+					if(swapoff(testcase[i].path) != 0) {
 						tst_resm(TWARN, "Failed to"
 							" turn off swapfile"
 							" swapfile. System" 
@@ -253,12 +253,11 @@ cleanup01()
 int
 setup02()
 {
-	return 0;
-}
-
-int
-cleanup02()
-{
+	int fd;
+	fd = creat("nofile", S_IRWXU);
+	if(fd == -1)
+		tst_resm(TWARN, "Failed to create temporary file");
+	close(fd);
 	return 0;
 }
 
