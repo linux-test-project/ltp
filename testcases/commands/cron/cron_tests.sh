@@ -69,7 +69,7 @@ $LTPBIN/tst_resm TINFO "Test #1: crontab <filename> installs the crontab file an
 # every minute, every hour, every day, every month, any weekday. 
 
 cat > $LTPTMP/tst1_cronjob.cron <<EOF 
-* * * * * /$LTPTMP/tst1_cronprg.sh
+* * * * * $LTPTMP/tst1_cronprg.sh
 EOF
 
 # Create the program that will be run by the cronjob. This program will print a
