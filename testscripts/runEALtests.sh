@@ -151,12 +151,12 @@ do  case $arg in
     esac
 done
 
-if [ -z $ROOT_PASSWORD ]
+if [ -z $PASSWD ]
 then
 	echo " "
 	echo "ERROR:"
-	echo "Please export enviroment variable ROOT_PASSWORD"
-	echo "INFO: export ROOT_PASSWORD = 'root's password'"
+	echo "Please export enviroment variable PASSWD"
+	echo "INFO: export PASSWD = 'root's password'"
     exit 1	
 fi
 
