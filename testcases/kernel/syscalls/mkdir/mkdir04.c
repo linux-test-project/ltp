@@ -206,7 +206,7 @@ main(int ac, char **av)
 		}
 		waitpid(pid1, &status, 0);
 		if (WEXITSTATUS(status) == 0) {
-			tst_resm(TPASS, "Test to attempt to creat a directory"
+			tst_resm(TPASS, "Test to attempt to creat a directory "
 				 "in a directory having no permissions "
 				 "SUCCEEDED in setting errno to EACCES");
 		} else {
