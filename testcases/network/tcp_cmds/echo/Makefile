@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install: all
-	ln -f echo601 ../../../bin
+	ln -f echo01 ../../../bin
 
 clean:
 	rm -f $(TARGETS)
