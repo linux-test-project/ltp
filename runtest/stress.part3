@@ -61,7 +61,6 @@ chroot02 chroot02
 chroot03 chroot03
 chroot04 chroot04
 
-clock01 cd $LTPROOT/testcases/bin;clock01
 
 clone01 clone01
 clone02 clone02
@@ -299,10 +298,6 @@ kill09 kill09
 kill10 kill10
 kill11 ulimit -c 1024;kill11
 kill12 kill12
-#Commenting this out until hang issue is resolved.
-#kill13 cd $LTPROOT/testcases/bin;kill13
-
-killpg01 cd $LTPROOT/testcases/bin;killpg01
 
 lchown01 lchown01
 lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
@@ -449,7 +444,6 @@ nanosleep01 nanosleep01
 nanosleep02 nanosleep02
 nanosleep03 nanosleep03
 nanosleep04 nanosleep04
-nanosleep05 cd $LTPROOT/testcases/bin;nanosleep05
 
 nftw01 nftw01
 nftw6401 nftw6401
@@ -513,7 +507,6 @@ pwrite02 pwrite02
 pwrite03 pwrite03
 pwrite04 pwrite04
 
-raise01 cd $LTPROOT/testcases/bin;raise01
 
 read01 read01
 read02 read02
@@ -722,39 +715,15 @@ shmget05 shmget05
 
 sigaction01 sigaction01
 sigaction02 sigaction02
-sigaction03 cd $LTPROOT/testcases/bin;sigaction03
-# The following test hangs on Linuxthreads
-# sigaction04 cd $LTPROOT/testcases/bin;sigaction04
-sigaction05 cd $LTPROOT/testcases/bin;sigaction05
-# The following test was removed by the posixtestsuite for inaccurate assumptions
-# sigaction06 cd $LTPROOT/testcases/bin;sigaction06
-sigaction07 cd $LTPROOT/testcases/bin;sigaction07
-sigaction08 cd $LTPROOT/testcases/bin;sigaction08
-sigaction09 cd $LTPROOT/testcases/bin;sigaction09
-sigaction10 cd $LTPROOT/testcases/bin;sigaction10
-sigaction11 cd $LTPROOT/testcases/bin;sigaction11
 
-sigaddset01 cd $LTPROOT/testcases/bin;sigaddset01
-sigaddset02 cd $LTPROOT/testcases/bin;sigaddset02
-sigaddset03 cd $LTPROOT/testcases/bin;sigaddset03
 
 sigaltstack01 sigaltstack01
 sigaltstack02 sigaltstack02
 
-sigdelset01 cd $LTPROOT/testcases/bin;sigdelset01
-sigdelset02 cd $LTPROOT/testcases/bin;sigdelset02
-sigdelset03 cd $LTPROOT/testcases/bin;sigdelset03
 
-sigemptyset01 cd $LTPROOT/testcases/bin;sigemptyset01
 
-sigfillset01 cd $LTPROOT/testcases/bin;sigfillset01
-
-sighold01 cd $LTPROOT/testcases/bin;sighold01
 sighold02 sighold02
-sighold03 cd $LTPROOT/testcases/bin;sighold03
 
-sigismember01 cd $LTPROOT/testcases/bin;sigismember01
-sigismember02 cd $LTPROOT/testcases/bin;sigismember02
 
 signal01 signal01
 signal02 signal02
@@ -762,21 +731,14 @@ signal03 signal03
 signal04 signal04
 signal05 signal05
 
-sigpending01 cd $LTPROOT/testcases/bin;sigpending01
 sigpending02 sigpending02
 
 sigprocmask01 sigprocmask01
-sigprocmask02 cd $LTPROOT/testcases/bin;sigprocmask02
-sigprocmask03 cd $LTPROOT/testcases/bin;sigprocmask03
 
 sigrelse01 sigrelse01
-sigrelse02 cd $LTPROOT/testcases/bin;sigrelse02
-sigrelse03 cd $LTPROOT/testcases/bin;sigrelse03
 
 sigsuspend01 sigsuspend01
-sigsuspend02 cd $LTPROOT/testcases/bin;sigsuspend02
 
-sigwait01 cd $LTPROOT/testcases/bin;sigwait01
 
 socket01 socket01
 
