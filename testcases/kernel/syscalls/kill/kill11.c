@@ -80,11 +80,11 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	int core;
 	int pid, npid;
         int sig, nsig, exno, nexno, status;
-	int ret_val = 0;
 	/*SIGIOT is 6, but since linux doesn't have SIGEMT, just using
 		SIGIOT for place filling */
 	int signum[14];
 	int j;
+	int ret_val = 0;
 	signum[1]=SIGHUP;	signum[2]=SIGINT;	signum[3]=SIGQUIT;
 	signum[4]=SIGILL;	signum[5]=SIGTRAP;	signum[6]=SIGABRT;
 	signum[7]=SIGIOT;	signum[8]=SIGFPE;	signum[9]=SIGKILL;
