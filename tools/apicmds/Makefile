@@ -17,14 +17,5 @@ install:
 	@ln -f $(TARGETS) ../testcases/bin/brkloop
 	@ln -f $(TARGETS) ../testcases/bin/brkloopm
 
-#install:
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_brk ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_brkm ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_res ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_resm ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_exit ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_flush ; done
-#	@for i in $(TARGETS); do ln -f $$i ../../testcases/bin/tst_tmpdir ; done
-
 clean:
 	rm -f $(TARGETS) $(CMDLIST)
