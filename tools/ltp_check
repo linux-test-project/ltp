@@ -4,6 +4,7 @@
 #       3/12/02 William Jay Huie (creation)
 #       3/28/02 William Jay Huie minor fixes, increased results parsing
 #       5/01/02 William Jay Huie parsing changes
+#       5/17/02 Casey Abell added sar results
 #This will log into the LTP_HOST machine, which may be different then the 
 #machine used to run the ltp_master script
 #This script will check for *ltpoutput.tgz files created by the ltprun script
@@ -19,6 +20,7 @@ use Net::FTP ();
 $LTP_RES_DIR="/home/wjhuie/ltp/results";
 #CHANGEME:
 $LTP_HOST="ltp_host.somewhere.org";
+
 #This is who has the *ltpoutput.tgz files, where the results are uploaded
 #     not necessarially the user id that ran the test
 $LTP_USER="ltp";
@@ -28,11 +30,13 @@ $LTP_RUN_OUTPUT="ltprun.out";
 $LTP_RUNALL_OUT="runall.output";
 $RESULTS_OUT="results.out";
 $FAILS_OUT="failures.list";
+$SAR_OUTFILE="sar.data";
 
 @res_dirs;
 $count = 0;
 $RES = 0;
 $FAILS = 0;
+%hash;
 
 sub download_results()
 {
@@ -136,6 +140,25 @@ sub gather_results()
       @fails = `grep "stat=" $LTP_LOGFILE | grep -v "stat=0"`;
       $num_fail = $#fails + 1;
 
+      # gather the same fail cases together and have a counter for each different fail case.
+
+        foreach $each (@fails) {
+                if ($each =~ /(.)*tag=(\w+)\sstime=(.+)/){
+                        $case = $2;
+                        # print "$case\n";
+                        if (exists $hash{$case}) {
+                        #       print "$hash{$case} before\n";
+                                $counter = $hash{$case}+1;
+                                $hash{$case} = $counter;
+                        #       print "$hash{$case} later\n";
+
+                        }
+                        else {
+                                $hash{$case}=1;
+                        }
+                }
+        }
+
       $pass_percent = sprintf("%.2f", 
                          ($num_success / ($num_success + $num_fail)) * 100);
 
@@ -143,7 +166,24 @@ sub gather_results()
       if ( $ltp_ver =~ m/.*version: (.*)/ ) { $ltp_ver = $1; }
 
       $line = "Pass $pass_percent % : $num_success succeeded : $num_fail failed";
-      print "$line";
+      print "$line\n";
+
+      $line1 = `sar -f $SAR_OUTFILE |tail -1`;
+      if ($line1 =~ /(.+)/) {
+        @sarstats1 = split(/\s+/, $line1);
+        print "Cpu user = $sarstats1[2]%\n";
+        print "Cpu nice = $sarstats1[3]%\n";
+        print "Cpu system = $sarstats1[4]%\n";
+
+        $line2 = `sar -r -f $SAR_OUTFILE |tail -1`;
+        @sarstats2 = split(/\s+/, $line2);
+        print "Memory used = $sarstats2[3]%\n";
+        print "Swap used = $sarstats2[9]%\n";
+
+        $line3 = `sar -c -f $SAR_OUTFILE |tail -1`;
+        @sarstats3 = split(/\s+/, $line3);
+        print "Processes created per second = $sarstats3[1]%\n";
+      }  
 
       if (open RES, ">$RESULTS_OUT")
       {
@@ -160,37 +200,60 @@ sub gather_results()
 
          if ($ltp_ver) { print RES "$ltp_ver : "; }
          print RES "$line\n\n";
+         if ($line1 =~ /(.+)/) {
+           print RES "Cpu user = $sarstats1[2]%\n";
+           print RES "Cpu nice = $sarstats1[3]%\n";
+           print RES "Cpu system = $sarstats1[4]%\n";
+           print RES "Memory used = $sarstats2[3]%\n";
+           print RES "Swap used = $sarstats2[9]%\n";
+           print RES "processes created per second = $sarstats3[1]%\n\n";
+        }
          print RES "@system_info\n";
-         print RES "$stat:\n ";
-         print RES "@fails\n";
+         print RES "$stat:\n";
+
+         #print out each failed case information.
+         foreach $case(keys %hash){
+                print RES "failed case=$case\tnumber of failures=$hash{$case}\n";
+         }
+#end of new ouput section
 
          $runall = `cat $LTP_RUNALL_OUT`;
+	 
+	 # reset hash table values to 0
+	 foreach $case(keys %hash){
+		$hash{$case}=0;
+	 }	
+         
          for ($j = 0; $j < $num_fail; $j++)
          {
             if ( $fails[$j] =~ m/^tag=(\w+?) / )
             { 
-               $test_case = $1;
-               if (FAILS) { print FAILS "$test_case\n"; }
-               print RES "\nTrying to find $test_case output";
-               if ( $runall =~ 
-#modified because some output is appearing before tagline
-                    m/((^$test_case.*?)*<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms
-                  )
-               {
-                  print RES "\n-------------------------\n";
-                  print RES "$1";
-                  print RES "\n-------------------------\n";
-               }
-               else
-               {  
-                  print RES "\n-------------------------\n";
-                  print RES "Unable to locate output for $test_case!";
-                  print RES "\n-------------------------\n";
-               }
+               	$test_case = $1;
+		# each failure case will be printed out only once
+	       	if ((exists $hash{$test_case})&&( $hash{$test_case}==0 )) {  	
+			$hash{$test_case}=1;
+	     	
+                        if (FAILS) { print FAILS "$test_case\n"; }
+               		print RES "\nTrying to find $test_case output";
+               		if ( $runall =~ 
+			#modified because some output is appearing before tagline
+                    		m/((^$test_case.*?)*<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms )
+               		{
+               		   	print RES "\n-------------------------\n";
+                 		print RES "$1";
+                 		print RES "\n-------------------------\n";
+               		}
+              		else
+               		{  
+                  		print RES "\n-------------------------\n";
+                  		print RES "Unable to locate output for $test_case!";
+                  		print RES "\n-------------------------\n";
+               		}
+		}
             }
          }
          close(RES); close(FAILS);
-      }
+      } 
       else
       { print "Can't open $RESULTS_OUT, test failures are:\n @fails\n"; }
    }
