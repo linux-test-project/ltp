@@ -27,11 +27,23 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 	SaErrorT		val;
 	int 			ret = HPI_TEST_PASS;
 
-	next_entry_id = SAHPI_OLDEST_ENTRY;
+	val = saHpiEventLogEntryGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID, 
+			SAHPI_OLDEST_ENTRY, &prev_entry_id, &next_entry_id, 
+			&eventlog_entry, &rdr, &rpt_entry1);
+	if (val == SA_ERR_HPI_INVALID) 
+		goto out;
+	if (val != SA_OK) {
+		printf("  Does not conform the expected behaviors!\n");
+		printf("  Retrieve the oldest event log entry failed!(Domain)\n");
+		printf("  Return value: %s\n", get_error_string(val));
+		ret = HPI_TEST_FAIL;
+		goto out;
+	}
+
 	while (next_entry_id != SAHPI_NO_MORE_ENTRIES) {
 		current_entry_id = next_entry_id;
 		val = saHpiEventLogEntryGet(session_id, 
-				SAHPI_DOMAIN_CONTROLLER_ID,current_entry_id, 
+				SAHPI_DOMAIN_CONTROLLER_ID, current_entry_id, 
 				&prev_entry_id, &next_entry_id, &eventlog_entry, 				&rdr, &rpt_entry1);
 		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
@@ -59,7 +71,20 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 	int 			ret = HPI_TEST_PASS;
 
 	if (rpt_entry.ResourceCapabilities & SAHPI_CAPABILITY_SEL) {
-		next_entry_id = SAHPI_OLDEST_ENTRY;
+		val = saHpiEventLogEntryGet(session_id, resource_id,
+				SAHPI_OLDEST_ENTRY, &prev_entry_id, 
+				&next_entry_id, &eventlog_entry, 
+				&rdr, &rpt_entry1);
+		if (val == SA_ERR_HPI_INVALID)
+			goto out;
+		if (val != SA_OK) {
+			printf("  Does not conform the expected behaviors!\n");
+			printf("  Retrieve the oldest event log entry failed!(Domain)\n");
+			printf("  Return value: %s\n", get_error_string(val));
+			ret = HPI_TEST_FAIL;
+			goto out;
+		}
+		
 		while (next_entry_id != SAHPI_NO_MORE_ENTRIES) {
 			current_entry_id = next_entry_id;
 			val = saHpiEventLogEntryGet(session_id, resource_id,
