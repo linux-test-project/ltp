@@ -31,6 +31,7 @@
 #            facility.                                           #
 #         o Send the message and grep for the entry in log file. #
 ##################################################################
+DEBIAN=0
 
 cleanup()
 {
@@ -77,7 +78,8 @@ syslog_case8()
 	fi
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
-        find /etc/init.d/ -name sysklogd 2>&1 1>/dev/null || RC=$?
+        find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
+	RC=$?
         if [ $RC -eq 0 ]
         then
                 ln -s /etc/init.d/sysklogd /etc/init.d/syslog
@@ -85,7 +87,8 @@ syslog_case8()
         fi
 
 	# check if /etc/init/syslog script exists
-	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	find /etc/init.d/ |grep syslog 2>&1 1>/dev/null 
+	RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
@@ -115,7 +118,8 @@ syslog_case8()
 		# check if /var/log/maillog script exists
 		for logf in messages maillog
 		do
-			find /var/log/ -name $logf 2>&1 1>/dev/null || RC=$?
+			find /var/log/ |grep $logf 2>&1 1>/dev/null 
+			RC=$?
 			if [ $RC -ne 0 ]
 			then
 				tst_resm TBROK "/var/log/$logf no such log file"
@@ -136,7 +140,8 @@ syslog_case8()
 		# check if /var/log/maillog script exists
 		for logf in messages maillog
 		do
-			find /var/log/ -name $logf 2>&1 1>/dev/null || RC=$?
+			find /var/log/ |grep $logf 2>&1 1>/dev/null 
+			RC=$?
 			if [ $RC -ne 0 ]
 			then
 				tst_resm TBROK "/var/log/$logf no such log file"

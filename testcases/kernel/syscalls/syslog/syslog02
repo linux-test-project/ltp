@@ -25,6 +25,7 @@
 #        For each level, a seperate configuration file is        #
 #        created and that will be used as syslog.conf file.      #
 ##################################################################
+DEBIAN=0
 
 cleanup()
 {
@@ -73,7 +74,8 @@ syslog_case2()
 	fi
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
-        find /etc/init.d/ -name sysklogd 2>&1 1>/dev/null || RC=$?
+        find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
+	RC=$?
         if [ $RC -eq 0 ]
         then
                 ln -s /etc/init.d/sysklogd /etc/init.d/syslog
@@ -81,7 +83,8 @@ syslog_case2()
         fi
 
 	# check if /etc/init/syslog script exists
-	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	find /etc/init.d/ |grep syslog 2>&1 1>/dev/null 
+	RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
@@ -106,7 +109,8 @@ syslog_case2()
 		# syslogtst: mail $current test.
 
 		# check if /var/log/maillog script exists
-		find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+		find /var/log/ |grep maillog 2>&1 1>/dev/null 
+		RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_resm TBROK "/var/log/maillog no such log file"
@@ -126,7 +130,8 @@ syslog_case2()
 		sleep 2
 
 		# check if /var/log/maillog script exists
-		find /var/log/ -name maillog 2>&1 1>/dev/null || RC=$?
+		find /var/log/ |grep maillog 2>&1 1>/dev/null 
+		RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_resm TBROK "/var/log/maillog no such log file"

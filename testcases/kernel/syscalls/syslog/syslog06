@@ -30,7 +30,7 @@
 #         o open a file and check the returned file descriptor.  #
 #           It should be greater than 3.                         #
 ##################################################################
-
+DEBIAN=0
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -75,7 +75,8 @@ syslog_case6()
 	fi
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
-        find /etc/init.d/ -name sysklogd 2>&1 1>/dev/null || RC=$?
+        find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
+	RC=$?
         if [ $RC -eq 0 ]
         then
                 ln -s /etc/init.d/sysklogd /etc/init.d/syslog
@@ -83,7 +84,8 @@ syslog_case6()
         fi
 
 	# check if /etc/init/syslog script exists
-	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
+	find /etc/init.d/ |grep syslog 2>&1 1>/dev/null 
+	RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
