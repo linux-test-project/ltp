@@ -48,6 +48,7 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include <pwd.h>
 
 char *TCID = "chroot01";
 int TST_TOTAL = 1;
@@ -56,6 +57,8 @@ int fail;
 
 char path[] = "/tmp";
 int exp_enos[] = {EPERM, 0};
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 void setup(void);
 void cleanup(void);
@@ -104,10 +107,19 @@ main(int ac, char **av)
 void
 setup()
 {
-	/* make sure the process ID is not root */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, cleanup, "Test must not be run as root.");
-	}
+
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
+
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
