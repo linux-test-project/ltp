@@ -28,13 +28,22 @@
 #
 # History:     Dec 16 2002 - Created. - Manoj Iyer manjo@austin.ibm.com.
 #              Dec 17 2002 - Added.   - GPL header and minor doc changes.
+#                            If LTPTMP and LTPBIN are not exported set their
+#                            values to /tmp and 'pwd' respectively.
 #! /bin/sh
 
 
 export TST_TOTAL=10                # Number of tests in this testcase
 
-LTPTMP=/tmp
-LTPBIN=../../../bin
+if [ -z $LTPTMP ]
+then 
+    LTPTMP=/tmp
+fi
+
+if [ -z $LTPBIN ]
+then
+    LTPBIN=./
+fi
 
 # set return code RC variable to 0, it will be set with a non-zero return code 
 # in case of error.
