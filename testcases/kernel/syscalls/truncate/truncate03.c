@@ -85,6 +85,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -96,6 +97,8 @@
 #define BUF_SIZE	256			/* buffer size */
 #define FILE_SIZE	1024			/* test file size */
 #define TRUNC_LEN	256			/* truncation length */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 int no_setup();
 int setup1();			/* setup function to test chmod for EACCES */
@@ -221,11 +224,18 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+		
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
