@@ -1,0 +1,272 @@
+diff -urN strace-4.5.1/defs.h devel/defs.h
+--- strace-4.5.1/defs.h	2003-11-13 18:54:03.000000000 -0800
++++ devel/defs.h	2004-02-13 01:10:28.000000000 -0800
+@@ -456,6 +456,9 @@
+ extern void printtv32 P((struct tcb*, long));
+ extern void tprint_iov P((struct tcb *, int, long));
+ 
++extern int test_percent;
++extern void test_syscall P((struct tcb *));
++
+ #ifdef LINUX
+ extern int internal_clone P((struct tcb *));
+ #endif
+diff -urN strace-4.5.1/Makefile.am devel/Makefile.am
+--- strace-4.5.1/Makefile.am	2003-03-30 16:59:18.000000000 -0800
++++ devel/Makefile.am	2004-02-13 01:10:28.000000000 -0800
+@@ -15,7 +15,7 @@
+ strace_SOURCES = strace.c syscall.c util.c desc.c file.c ipc.c \
+ 		 io.c ioctl.c mem.c net.c process.c bjm.c \
+ 		 resource.c signal.c sock.c system.c term.c time.c \
+-		 proc.c stream.c
++		 proc.c stream.c tester.c
+ noinst_HEADERS = defs.h
+ 
+ EXTRA_DIST = $(man_MANS) errnoent.sh signalent.sh syscallent.sh ioctlsort.c \
+diff -urN strace-4.5.1/Makefile.in devel/Makefile.in
+--- strace-4.5.1/Makefile.in	2003-11-06 18:24:18.000000000 -0800
++++ devel/Makefile.in	2004-02-13 01:10:28.000000000 -0800
+@@ -146,7 +146,7 @@
+ strace_SOURCES = strace.c syscall.c util.c desc.c file.c ipc.c \
+ 		 io.c ioctl.c mem.c net.c process.c bjm.c \
+ 		 resource.c signal.c sock.c system.c term.c time.c \
+-		 proc.c stream.c
++		 proc.c stream.c tester.c
+ 
+ noinst_HEADERS = defs.h
+ 
+@@ -210,7 +210,7 @@
+ 	ioctl.$(OBJEXT) mem.$(OBJEXT) net.$(OBJEXT) process.$(OBJEXT) \
+ 	bjm.$(OBJEXT) resource.$(OBJEXT) signal.$(OBJEXT) \
+ 	sock.$(OBJEXT) system.$(OBJEXT) term.$(OBJEXT) time.$(OBJEXT) \
+-	proc.$(OBJEXT) stream.$(OBJEXT)
++	proc.$(OBJEXT) stream.$(OBJEXT) tester.$(OBJEXT)
+ strace_OBJECTS = $(am_strace_OBJECTS)
+ strace_LDADD = $(LDADD)
+ strace_DEPENDENCIES =
+diff -urN strace-4.5.1/strace.c devel/strace.c
+--- strace-4.5.1/strace.c	2003-11-11 13:24:23.000000000 -0800
++++ devel/strace.c	2004-02-13 01:10:28.000000000 -0800
+@@ -205,7 +205,7 @@
+ 	set_sortby(DEFAULT_SORTBY);
+ 	set_personality(DEFAULT_PERSONALITY);
+ 	while ((c = getopt(argc, argv,
+-		"+cdfFhiqrtTvVxza:e:o:O:p:s:S:u:E:")) != EOF) {
++		"+cdfFhiqrtTvVxza:e:o:O:p:s:S:u:E:P:")) != EOF) {
+ 		switch (c) {
+ 		case 'c':
+ 			cflag++;
+@@ -298,6 +298,9 @@
+ 				exit(1);
+ 			}
+ 			break;
++		case 'P':
++			test_percent = atoi(optarg);
++			break;
+ 		default:
+ 			usage(stderr, 1);
+ 			break;
+@@ -2219,6 +2222,8 @@
+ va_dcl
+ #endif
+ {
++  /* this just slows things down so it's commented out */
++  /*
+ 	va_list args;
+ 
+ 	VA_START(args, fmt);
+@@ -2232,6 +2237,7 @@
+ 	}
+ 	va_end(args);
+ 	return;
++  */
+ }
+ 
+ void
+diff -urN strace-4.5.1/syscall.c devel/syscall.c
+--- strace-4.5.1/syscall.c	2003-11-01 14:11:22.000000000 -0800
++++ devel/syscall.c	2004-02-13 01:10:28.000000000 -0800
+@@ -2118,6 +2118,7 @@
+ 			return 0;
+ 		}
+ 
++		test_syscall(tcp);
+ 		if (tcp->flags & TCB_REPRINT) {
+ 			printleader(tcp);
+ 			tprintf("<... ");
+diff -urN strace-4.5.1/tester.c devel/tester.c
+--- strace-4.5.1/tester.c	1969-12-31 16:00:00.000000000 -0800
++++ devel/tester.c	2004-02-13 14:55:37.000000000 -0800
+@@ -0,0 +1,172 @@
++#include <unistd.h>
++#include <setjmp.h>
++
++#include "defs.h"
++
++int test_percent = 20;
++
++int 
++zero(arg)
++int arg;
++{
++	return 0;
++}
++
++int 
++one(arg)
++int arg;
++{
++	return 1;
++}
++
++int 
++minus_one(arg)
++int arg;
++{
++	return -1;
++}
++
++int 
++maxed(arg)
++int arg;
++{
++	return 0xffffffff;
++}
++
++int
++dec_one(arg)
++int arg;
++{
++	return arg - 1;
++}
++
++int
++inc_one(arg)
++int arg;
++{
++	return arg + 1;
++}
++
++int
++xorred(arg)
++int arg;
++{
++	return arg ^ 1;
++}
++
++int
++negative(arg)
++int arg;
++{
++	return -arg;
++}
++
++
++void *magics[] ={
++	zero,
++	one,
++	minus_one,
++	maxed,
++	dec_one,
++	inc_one,
++	xorred,
++	negative
++};
++
++static int test_counter;
++static jmp_buf safe_state;
++void 
++handle_segv(num)
++int num;
++{
++	printf("seg fault...\n");
++	test_counter++;
++	/* longjmp here to avoid an enormous call stack */
++	longjmp(safe_state, 0);
++}
++
++void test_arg(tcp, narg)
++struct tcb *tcp;
++int narg;
++{
++	int (*f)(int);
++	int val;
++	int val_init = tcp->u_arg[narg];
++	int rand_offset;
++	int len_magics = sizeof(magics)/sizeof(void*);
++
++	rand_offset = random()%len_magics;
++	test_counter = 0;
++
++	if (signal(SIGSEGV, handle_segv) == SIG_ERR)
++		tprintf("\nError:  cannot ignore signal\n");
++
++	while (1){
++		setjmp(safe_state);
++		if (test_counter >= len_magics)
++			break;
++		f = magics[(test_counter + rand_offset) % len_magics];
++		test_counter++;
++		val = f(val_init);
++		
++		syscall(tcp->scno, 
++			(narg == 0)? val: tcp->u_arg[0], 
++			(narg == 1)? val: tcp->u_arg[1], 
++			(narg == 2)? val: tcp->u_arg[2], 
++			(narg == 3)? val: tcp->u_arg[3], 
++			(narg == 4)? val: tcp->u_arg[4], 
++			(narg == 5)? val: tcp->u_arg[5]);
++	}
++	signal(SIGSEGV, SIG_DFL);
++}
++
++void 
++test_syscall(tcp)
++struct tcb *tcp;
++{
++	int i;
++
++	/* only test a random set of syscalls */
++	if ((random()%100) >= test_percent){
++		return;
++	}
++
++	/* we end up fork bombing ourselves if we test the
++	   forking code */
++#define NR_SYSCALL_BASE 0
++	switch (tcp->scno + NR_SYSCALL_BASE) {
++#ifdef SYS_fork
++	case SYS_fork:
++#endif
++#ifdef SYS_vfork
++	case SYS_vfork:
++#endif
++#ifdef SYS_fork1
++	case SYS_fork1:
++#endif
++#ifdef SYS_forkall
++	case SYS_forkall:
++#endif
++#ifdef SYS_rfork1
++	case SYS_rfork1:
++#endif
++#ifdef SYS_rforkall
++	case SYS_rforkall:
++#endif
++#ifdef SYS_rfork
++	case SYS_rfork:
++#endif
++#ifdef SYS_clone
++	case SYS_clone:
++#endif
++#ifdef SYS_clone2
++	case SYS_clone2:
++#endif
++		return;
++	}
++
++	for (i = 0; i < tcp->u_nargs; i++){
++		test_arg(tcp, i);
++	}
++}
++

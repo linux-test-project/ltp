@@ -1,0 +1,19 @@
+Strace Test
+
+Introduction:
+Strace Test is designed to test the kernel by calling syscalls improperly.  
+It uses ltp as a base to generate realistic syscalls and then it randomly
+calls improper variations of those system calls. 
+
+The tests are started by root but they are run with user permisions.  The root
+user needs to restart the tests around every 10 seconds.
+
+Usage:
+./go_go.sh [user][max_tests][test_percent]
+        user => username to the scripts under
+   max_tests => maximun concurrent tests to run
+test_percent => percent of the syscalls to test
+
+Copying:
+Strace Test is distributed under the GPL
+Strace, and LTP are GPL as well.
