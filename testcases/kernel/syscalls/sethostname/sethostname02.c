@@ -77,13 +77,14 @@
  *
  ***************************************************************************/
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
-#include <linux/utsname.h>
+#include <sys/utsname.h>
 #include "test.h"
 #include "usctest.h"
 
-#define MAX_LENGTH __NEW_UTS_LEN
 #define LARGE_LENGTH MAX_LENGTH + 1
+#define MAX_LENGTH _UTSNAME_LENGTH - 1
 
 extern int Tst_count;
 
@@ -201,7 +202,7 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Set the host name back to original name */
-	if( (ret = sethostname (hname, sizeof(hname))) < 0 ) {
+	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
 			" hostname to \"%s\"", hname);
 	} 

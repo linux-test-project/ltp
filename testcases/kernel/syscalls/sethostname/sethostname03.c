@@ -68,6 +68,7 @@
  *************************************************************************/
 
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <pwd.h>
 #include <linux/utsname.h>
@@ -195,7 +196,7 @@ cleanup()
 	}
 
 	/* Restore host name */
-	if( (ret = sethostname (hname, sizeof(hname))) < 0 ) {
+	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
 			" hostname to \"%s\"", hname);
 	} 
