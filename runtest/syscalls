@@ -690,6 +690,16 @@ unlink06 unlink06
 unlink07 unlink07
 unlink08 unlink08
 
+#
+# These tests require an unmounted block device
+# to run correctly. Please see individual test
+# code for more information.
+#
+#umount01 umount01 -D /dev/...
+#umount02 umount02 -D /dev/...
+#umount03 umount03 -D /dev/...
+#umount04 umount04 -D /dev/...
+
 utime01 utime01
 utime01A symlink01 -T utime01
 utime02 utime02
