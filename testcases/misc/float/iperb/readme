@@ -1,0 +1,14 @@
+/* please, adapt the Makefile file to your environment */
+
+/* cd to iperb directory */
+$ pwd
+/home/linux/livr/iperb
+
+/* compile */
+$ make all
+
+/* start datafiles generator */
+$ geniperb
+
+/* put datafiles where they have to be loaded */
+$ make install

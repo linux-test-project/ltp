@@ -1,0 +1,14 @@
+/* please, adapt the Makefile file to your environment */
+
+/* cd to exp_log directory */
+$ pwd
+/home/linux/livr/exp_log
+
+/* compile */
+$ make all
+
+/* start datafiles generator */
+$ genexp_log
+
+/* put datafiles where they have to be loaded */
+$ make install
