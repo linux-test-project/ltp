@@ -24,7 +24,8 @@
 /* The thread start routine. */
 void *a_thread_func(void* num)
 {
-	printf("Passed argument for thread: %d\n", (int)num);
+	intptr_t i = (intptr_t) num;
+	printf("Passed argument for thread: %d\n", (int)i);
 
 	pthread_exit(0);
 	return NULL;
@@ -33,7 +34,7 @@ void *a_thread_func(void* num)
 int main()
 {
 	pthread_t new_th;
-	int i;
+	long i;
 
 	for(i=1;i<NUM_THREADS+1;i++)
 	{	
