@@ -70,12 +70,12 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
-
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 
-char TESTFILE[] = "testfile\0";		/* name of file to create */
-char SYMFILE[] = "slink_file\0";	/* name of symbolic link to create */
+char TESTFILE[] = "/testfile \0";		/* name of file to create */
+char SYMFILE[] = "/slink_file\0";	/* name of symbolic link to create */
 char creat_slink[] = "creat_slink\0";	/* name of executable to execv() */
 
 char nobody[] = "nobody";
@@ -87,6 +87,7 @@ char *TCID="readlink04";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
+char *symfile_path;
 int exp_val;			/* strlen of testfile */
 char buffer[MAX_SIZE];		/* temporary buffer to hold symlink contents*/
 
@@ -118,12 +119,12 @@ main(int ac, char **av)
 		 * Call readlink(2) to read the contents of
 		 * symlink into a buffer.
 		 */
-		TEST(readlink(SYMFILE, buffer, sizeof(buffer)));
+		TEST(readlink(symfile_path, buffer, sizeof(buffer)));
 	
 		/* Check return code of readlink(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "readlink() on %s failed, errno=%d : "
-				 "%s", SYMFILE, TEST_ERRNO,
+				 "%s", symfile_path, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
 		}
@@ -178,6 +179,7 @@ setup()
 	char *tmp_dir = NULL;
 	char path_buffer[BUFSIZ];	/* Buffer to hold command string */
 	char *cargv[4];
+	char *bin_dir;
 	struct passwd *pwent;
 
 	/* Check that the test process id is super/root  */
@@ -191,6 +193,8 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+	bin_dir=(char *)get_current_dir_name();
+	
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
@@ -213,12 +217,16 @@ setup()
 	}
 
 	/* create the full pathname of the executable to be execv'ed */
-	strcat((char *)path_buffer, (const char *)"creat_slink");
+	strcat((char *)path_buffer, (char *)bin_dir);
+
+	strcat((char *)path_buffer, (const char *)"/creat_slink");
+
+	symfile_path = "slink_file\0";
 
 	/* set up the argument vector to pass into the execv call */
-	cargv[0] = creat_slink;
+	cargv[0] = tmp_dir;
 	cargv[1] = TESTFILE;
-	cargv[2] = SYMFILE;
+	cargv[2] = symfile_path;
 	cargv[3] = NULL;
 
 	if ((pid = fork()) == -1) {
@@ -226,20 +234,6 @@ setup()
 	}
 
 	if (pid == 0) {			/* child */
-		/* 
-		 * change the group and user id of the child to "group2" and
-		 * "bin" respectively
-		 */
-		if (setegid(pwent->pw_gid) == -1) {
-			tst_brkm(TBROK, NULL, "setegid() failed for bin");
-			exit(1);
-		}
-
-		if (seteuid(pwent->pw_uid) == -1) {
-			tst_brkm(TBROK, NULL, "seteuid() failed for bin");
-			exit(1);
-		}
-
 		/*
 		 * execv the process/program that will create the test file
 		 * and set up the symlink
