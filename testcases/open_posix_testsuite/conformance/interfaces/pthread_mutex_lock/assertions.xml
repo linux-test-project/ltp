@@ -24,4 +24,14 @@
   -[EDEADLK] The current thread already owns the mutex
   It shall not return [EINTR].
   </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:33950:33965">
+  If the mutex type is PTHREAD_MUTEX_RECURSIVE, 
+  the mutex shall maintain the concept of a lock count
+  </assertion> 
+  
+  <assertion id="5" tag="ref:XSH6:33950:33965">
+  If a signal is delivered to a thread waiting for a mutex, 
+  when return from the signal handler the thread shall resume waiting.
+  </assertion> 
 </assertions>
