@@ -31,6 +31,7 @@
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
+#include <wait.h>
 /*extern char *sys_errlist[ ];*/
 
 #ifdef __MATH__
