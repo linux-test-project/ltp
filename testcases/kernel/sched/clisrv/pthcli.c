@@ -51,6 +51,9 @@
 #include <stdlib.h>
 #define MAXLINE 1024
 
+void noprintf(char* string, ...){
+}
+
 /* Read contents of FILE *fp. Write each line to socket, then
    read line back from socket and write to standard output.
    Return to caller when done */
@@ -96,7 +99,7 @@ register int sockfd;
 int
 main(int argc, char *argv[])
 {
-    FILE *fi, *input;
+    FILE *fi=NULL, *input;
     int sockfd;
     struct sockaddr_in serv_addr;
     char *errfilename;
@@ -152,7 +155,7 @@ main(int argc, char *argv[])
     if ((input = fopen("./data", "r")) == NULL) 
     {
 	perror("fopen");
-        close(fi);
+        fclose(fi);
         return(errno);
     }
     str_cli(input, sockfd); /* call the routines that do the work */

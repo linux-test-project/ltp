@@ -56,6 +56,9 @@
 #include <unistd.h>
 
 #define MAXLINE 1024
+void noprintf(char* string, ...){
+}
+
 pthread_t	th;
 pthread_mutex_t current_mutex;
 int sockfd; 

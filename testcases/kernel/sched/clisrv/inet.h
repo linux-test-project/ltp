@@ -32,6 +32,7 @@ char *pname;
 
 extern int writen(int fd, char *ptr, int nbytes);
 extern int readline(int fd, char *ptr, int maxlen);
+extern void noprintf(char* string, ...);
 
 
 /* debug */
@@ -44,8 +45,8 @@ extern int readline(int fd, char *ptr, int maxlen);
 
 #else
 
-#define prtln()
-#define dprt
-#define dprt2(args)
+#define prtln() 
+#define dprt	noprintf
+#define dprt2(args) noprintf args
 
 #endif
