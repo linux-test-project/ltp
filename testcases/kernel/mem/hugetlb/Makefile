@@ -20,9 +20,9 @@
 # name of file	: Makefile						#
 # description	: make(1) description file                           	#
 #########################################################################
-CFLAGS+=-I../../../../../include -g -Wall -m64
+CFLAGS+=-I../../../../../include -g -Wall
 LOADLIBES+=-L../../../../lib -lltp
-TESTS=hugeshmget hugeshmat
+TESTS=hugeshmget hugeshmat hugeshmdt
 
 all: $& $(TESTS)
 	set -e; for i in lib $(TESTS); do \
