@@ -2,7 +2,7 @@
 
 cd `dirname $0`
 export LTPROOT=${PWD}
-TMP="/tmp/runalltests-$$"
+export TMP="/tmp/runalltests-$$"
 
 mkdir ${TMP}
 cd ${TMP}
