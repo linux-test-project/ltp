@@ -65,6 +65,7 @@
  *  None.
  *
  */
+#define _GNU_SOURCE 1
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -74,7 +75,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#include <wait.h>
 
 #include "test.h"
 #include "usctest.h"
