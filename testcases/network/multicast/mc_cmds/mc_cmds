@@ -54,18 +54,56 @@ do_test()
    echo "Getting ALL enabled interfaces which are configured !"
 
    IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]"|\
-      awk '{print $1}')} 
-   INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
+      awk '{print $1}')}
+   #INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
+   INTERFACE=${INTERFACE:-$(../../tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
    echo "Testing ifconfig and netstat"
 
-   # See if interface can be used for IP Multicast
-   ifconfig $IFNAME | grep -q MULTICAST
-   if [ $? != 0 ]; then
+# Commented begin
+#   # See if interface can be used for IP Multicast
+#   ifconfig $IFNAME | grep -q MULTICAST
+#   if [ $? != 0 ]; then
+#	end_testcase "Multicast not listed for $IFNAME"
+#   fi
+#   netstat -gn | grep $IFNAME | grep -q 224.0.0.1
+#   [ $? = 0 ] || end_testcase "all-host-group for $IFNAME not joined"
+# Commented end
+
+# Added for support for more adapters configured
+    MulticastAdap=
+    for eth in $IFNAME 
+    do
+	$trace_logic
+	ifconfig $eth | grep -q MULTICAST
+	if [ $? -eq 0 ]
+	then
+	    $trace_logic
+	    MulticastAdap=$eth
+	    break
+	fi
+    done
+    if [ -z $MulticastAdap ]
+    then
 	end_testcase "Multicast not listed for $IFNAME"
-   fi
-   netstat -gn | grep $IFNAME | grep -q 224.0.0.1
-   [ $? = 0 ] || end_testcase "all-host-group for $IFNAME not joined"
+    fi
+    MulticastAdapJoined=
+    for eth in $IFNAME
+    do
+	$trace_logic
+	netstat -gn | grep $eth | grep -q 224.0.0.1
+	if [ $? -eq 0 ]
+	then
+	    $trace_logic
+	    MulticastAdapJoined=1
+	    break
+	fi
+    done
+    if [ -z $MulticastAdapJoined ]
+    then
+	end_testcase "all-host-group for $IFNAME not joined"
+    fi
+# Added end
 
    # Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper 
    # number of responses are returned.
