@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.2 2002/07/23 13:11:21 plars Exp $ */
+/* $Id: stat06.c,v 1.3 2003/10/30 22:03:42 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -127,7 +127,7 @@ void setup();
 void cleanup();
 
 char *TCID="stat06";		/* Test program identifier.    */
-int TST_TOTAL=8;    		/* Total number of test cases. */
+int TST_TOTAL=7;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0, 0};
@@ -160,7 +160,6 @@ struct test_case_t {
     { Longpathname, &statbuf, "pathname too long", ENAMETOOLONG, longpath_setup },
     { High_address, &statbuf, "address beyond address space", EFAULT, high_address_setup },
     { (char *)-1, &statbuf, "negative address", EFAULT, no_setup },
-    { "file", (struct stat *)-1, "invalid struct stat address", EFAULT, filepath_setup },
     { NULL, NULL, NULL, 0, no_setup }
 };
 
