@@ -19,12 +19,13 @@ fi
 run0=0
 runTest=0
 nextTest=0
+runExtendedStress=0
 
 export TMPBASE="/tmp"
 usage() 
 {
 	cat <<-END >&2
-	usage: ${0##*/} [ -f large_filename -b partition] [-e 1] [-t 1] [-j 1] [-x 1] or [-a 1]
+	usage: ${0##*/} [ -f large_filename -b partition] [-o optional partition] [-e 1] [-t 1] [-j 1] [-x 1] or [-a 1]
 
 	defaults:
 	file1=$file1
@@ -34,7 +35,8 @@ usage()
         jfs=0
         xfs=0
 
-	example: ${0##*/} -f MyLargeFile -b /dev/hdc1 [-a 1] or [-e 1] [-x 1] [-j 1] [-s 1]
+	example: ${0##*/} -f MyLargeFile -b /dev/hdc1 [-o /dev/hdc2] [-a 1] or [-e 1] [-x 1] [-j 1] [-s 1]
+        -o = optional partition allows some of the tests to utilize multiple filesystems to further stress AIO/DIO
         -e = test ex2 filesystem.
         -t = test ext3 filesystem
         -j = test JFS filesystem
@@ -55,10 +57,11 @@ usage()
 exit
 }
 
-while getopts :a:b:e:f:t:x:j: arg
+while getopts :a:b:e:f:t:o:x:j: arg
 do      case $arg in
 		f)	file1=$OPTARG;;
 		b)	part1=$OPTARG;;
+		o)	part2=$OPTARG;;
 		e)	ext2=$OPTARG;;
 		t)	ext3=$OPTARG;;
 		x)	xfs=$OPTARG;;
@@ -111,14 +114,24 @@ if [ -n "$jfs"  ]; then
   run0=$(($run0+1))
 fi
 
+if [ -n "$part2" -a "$run0" -gt 1  ]; then
+  echo "** Running extended stress testing **"
+  runExtendedStress=1
+elif [ -n "$part2" -a "$run0" -eq 1 ]; then
+  echo " ** You must pass at least 2 filesystems to run an extended AIO stress test **"
+  usage;
+fi
+
 if [ "$run0" -eq 0 ]; then
   echo "No filesystems passed to test"
   echo "Please pass at least one supported filesystem or the -a 1 flag to run all "
+  usage;
 fi
 
-
+umount -f $part1
 mkdir /test  2&>1 > /dev/nul
 mkdir /test/aiodio  2&>1 > /dev/nul 
+mkdir /test/aiodio2  2&>1 > /dev/nul 
 
 while [ "$runTest" -lt "$run0" ]
 do
@@ -131,6 +144,16 @@ if [ -n "$ext2" -a $nextTest -eq 0 ]; then
   echo "***************************"
   mkfs -t ext2 $part1
   mount -t ext2 $part1 /test/aiodio
+  if [ "$runExtendedStress" -eq 1 -a -n "$ext3" ]; then
+    mkfs -t ext3 $part2
+    mount -t ext3 $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$jfs" ]; then
+    mkfs.jfs  $part2 <testscripts/yesenter.txt
+    mount -t jfs $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$xfs" ]; then
+    mkfs.xfs -f $part2
+    mount -t xfs $part2 /test/aiodio2
+  fi
 elif [ $nextTest -eq 0 ]; then
   nextTest=$(($nextTest+1))
 fi
@@ -141,6 +164,16 @@ if [ -n "$ext3" -a $nextTest -eq 1 ]; then
   echo "***************************"
   mkfs -t ext3 $part1
   mount -t ext3 $part1 /test/aiodio
+  if [ "$runExtendedStress" -eq 1 -a -n "$jfs" ]; then
+    mkfs.jfs  $part2 <testscripts/yesenter.txt
+    mount -t jfs $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$xfs" ]; then
+    mkfs.xfs -f $part2
+    mount -t xfs $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$ext2" ]; then
+    mkfs -t ext2 $part2
+    mount -t ext2 $part2 /test/aiodio2
+  fi
 elif [ $nextTest -eq 1 ]; then
   nextTest=$(($nextTest+1))
 fi
@@ -149,8 +182,18 @@ if [ -n "$jfs" -a $nextTest -eq 2 ]; then
   echo "**************************"
   echo "* Testing jfs filesystem *"
   echo "**************************"
-  mkfs.jfs  $part1 <yesenter.txt
+  mkfs.jfs  $part1 <testscripts/yesenter.txt
   mount -t jfs $part1 /test/aiodio
+  if [ "$runExtendedStress" -eq 1 -a -n "$ext3" ]; then
+    mkfs -t ext3  $part2
+    mount -t ext3 $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$xfs" ]; then
+    mkfs.xfs -f $part2
+    mount -t xfs $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$ext2" ]; then
+    mkfs -t ext2 $part2
+    mount -t ext2 $part2 /test/aiodio2
+  fi
 elif [ $nextTest -eq 2 ]; then
   nextTest=$(($nextTest+1))
 fi
@@ -161,6 +204,16 @@ if [ -n "$xfs" -a $nextTest -eq 3 ]; then
   echo "**************************"
   mkfs.xfs -f $part1
   mount -t xfs $part1 /test/aiodio
+  if [ "$runExtendedStress" -eq 1 -a -n "$ext2" ]; then
+    mkfs -t ext2 $part2
+    mount -t ext2 $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$ext3" ]; then
+    mkfs -t ext3  $part2
+    mount -t ext3 $part2 /test/aiodio2
+  elif [ "$runExtendedStress" -eq 1 -a -n "$jfs" ]; then
+    mkfs.jfs  $part2 <testscripts/yesenter.txt
+    mount -t jfs $part2 /test/aiodio2
+  fi
 elif [ $nextTest -eq 3 ]; then
   nextTest=$(($nextTest+1))
 fi
@@ -175,10 +228,25 @@ cp $file1 /test/aiodio/ff1
 cp $file1 /test/aiodio/ff2
 cp $file1 /test/aiodio/ff3
 
+date
+#echo "************ Running aio-stress tests " 
+#echo "current working dir = ${PWD}"
+#${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
 
+#${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
+
+#wait $!
+
+if [ "$runExtendedStress" -eq 1 ];then
+echo "************ Running EXTENDED aio-stress tests " 
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part2 > ${TMPBASE}/ltp-aio-stress.part2
+
+${LTPROOT}/pan/pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part2 &
+
+wait $!
+fi
 
 echo "************ Running aiocp tests " 
-echo "current working dir = ${PWD}"
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
 
 ${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio.logfile -f ${TMPBASE}/ltp-aiodio.part1 &
@@ -190,13 +258,6 @@ echo "************ Running aiodio_sparse tests "
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part2 > ${TMPBASE}/ltp-aiodio.part2
 
 ${LTPROOT}/pan/pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio2.logfile -f ${TMPBASE}/ltp-aiodio.part2 &
-
-wait $!
-
-echo "************ Running aio-stress tests " 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
-
-${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
 
 wait $!
 
@@ -220,8 +281,8 @@ var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
 echo -n "$var0 iteration on dio_sparse"
-  dirty
-  dio_sparse
+  testcases/kernel/io/ltp-aiodio/dirty
+  testcases/kernel/io/ltp-aiodio/dio_sparse
   date
   var0=$(($var0+1))
 done
@@ -230,7 +291,7 @@ var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
 echo -n "$var0 iteration on dio_sparse"
-./dio_sparse
+  testcases/kernel/io/ltp-aiodio/dio_sparse
   date
   var0=$(($var0+1))
 done
@@ -239,7 +300,7 @@ echo "Running aiodio_append"
 var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
-  ./aiodio_append
+  testcases/kernel/io/ltp-aiodio/aiodio_append
   date
   var0=$(($var0+1))
 done
@@ -248,7 +309,7 @@ echo "Running dio_append"
 var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
-./dio_append
+testcases/kernel/io/ltp-aiodio/dio_append
 date
   var0=$(($var0+1))
 done
@@ -257,7 +318,7 @@ done
 #var0=1
 #while [ "$var0" -lt "$LIMIT" ]
 #do
-#./dio_truncate
+#testcases/kernel/io/ltp-aiodio/dio_truncate
 #date
 #  var0=$(($var0+1))
 #done
@@ -266,7 +327,7 @@ echo "Running read_checkzero"
 var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
-./read_checkzero
+testcases/kernel/io/ltp-aiodio/read_checkzero
 date
   var0=$(($var0+1))
 done
@@ -275,7 +336,7 @@ echo "Running ltp-diorh"
 var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
-./ltp-diorh /test/aiodio/file
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file
 date
   var0=$(($var0+1))
 done
@@ -292,5 +353,5 @@ rm -rf /test/aiodio/junkdir
 umount $part1
 
 done
-
+date
 echo "AIO/DIO test complete " date
