@@ -487,7 +487,7 @@ int main(int argc, char **argv)
 #endif
 	if (cleanup == 0)
 	{
-	  sprintf(cmd,"rm -rf %s",dirname);
+	  sprintf(cmd,"rm -rf %s/*",dirname);
 	  system(cmd);
 	}	
         loopcntr++;
