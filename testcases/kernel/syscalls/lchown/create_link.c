@@ -34,8 +34,8 @@
 #include <grp.h>
 #include <errno.h>
 
-#define LTPUSER		"nobody"
-#define LTPGRP		"users"
+#define LTPUSER		"bin"
+#define LTPGRP		"bin"
 #define SFILE1		"sfile_1"
 
 int

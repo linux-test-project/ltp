@@ -28,8 +28,8 @@
  *	1. Pass an invalid signal as the "sig" parameter, and expect EINVAL.
  *	2. Attempt to catch the SIGKILL, and expect EINVAL.
  *	3. Attempt to catch the SIGSTOP, and expect EINVAL.
- *	4. Pass an invalid address as the "oact" parameter, expect an EFAULT.
- *	5. Pass an invalid address as the "act" parameter, and expect EFAULT.
+ *	4. Pass an invalid address as the "act" parameter, expect an EFAULT.
+ *	5. Pass an invalid address as the "oact" parameter, and expect EFAULT.
  *
  * USAGE
  *	sigaction02
