@@ -22,6 +22,8 @@ cd /tmp/netpan-$$
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
  
+${LTPROOT}/ver_linux
+
 ${LTPROOT}/pan/pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f ${TMPDIR}/network.tests
 
 if [ $? -eq "0" ]; then

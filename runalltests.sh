@@ -11,6 +11,8 @@ export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched > ${TMP}/alltests
 
+${LTPROOT}/ver_linux
+
 ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests
 
 if [ $? -eq "0" ]; then
