@@ -214,8 +214,8 @@ set_shmat()
 	 * print a message to that effect.
 	 */
 	if (rval == (void *)-1) {
-		tst_resm(TINFO, "shmat() failed - %s",strerror(errno));
-		tst_exit();
+		tst_resm(TBROK, "shmat() failed - %s",strerror(errno));
+		cleanup();
 	}
 
 	return rval;
