@@ -6,5 +6,8 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
+install: all
+	ln -sf make_tree ../../../bin
+
 clean:
 	rm -f $(TARGETS)
