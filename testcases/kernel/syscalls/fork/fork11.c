@@ -56,7 +56,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int i, pid, cpid, status;
-
+	int fail=0;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -90,18 +90,19 @@ int main(int ac, char **av)
 
 			if (pid > 0) {			/* parent */
 				cpid = wait(&status);
-				if (cpid == pid) {
-					tst_resm(TPASS, "fork #%d passed", i+1);
-				} else {
-					tst_resm(TFAIL, "fork #%d failed", i+1);
+				if (cpid != pid) {
+					fail++;
 				}
 			} else {
-				tst_resm(TFAIL, "fork #%d failed", i+1);
+				fail++;
 				break;
 			}
 		}
-		tst_resm(TINFO, "Number of processes forked = %d", i);
-		tst_resm(TINFO, "Exit test 1");
+		if (fail) {
+			tst_resm(TFAIL, "fork failed %d times", fail);
+		} else {
+			tst_resm(TPASS, "fork test passed, %d processes", i);
+		}
 	}
 	cleanup();
 
