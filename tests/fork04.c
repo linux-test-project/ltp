@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork04.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
+/* $Id: fork04.c,v 1.4 2001/06/21 15:44:27 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -369,7 +369,7 @@ main(int ac, char **av)
 	} else {
 	  /* parent of successful fork */
 	  /* wait for the child to complete */
-	  wait_status = wait(&kid_status);
+	  wait_status = waitpid(TEST_RETURN, &kid_status, 0);
 	  if ( STD_FUNCTIONAL_TEST ) {
 	    /* validate the child exit status */
 	    if (wait_status == TEST_RETURN) {
