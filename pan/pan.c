@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.7 2001/09/28 21:56:46 nstraz Exp $ */
+/* $Id: pan.c,v 1.8 2001/11/30 19:30:29 plars Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -593,8 +593,8 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 				"pan(%s): tag=%s exited 130, known to be signaled; will give it an exit 0.\n",
 				panname, running[i].cmd->name);
 		}
+		time(&t);
 		if (logfile != NULL) {
-		    time(&t);
 		    fprintf(logfile,
 			    "tag=%s stime=%d dur=%d exit=%s stat=%d core=%s cu=%d cs=%d\n",
 			    running[i].cmd->name, (int) (running[i].stime),
