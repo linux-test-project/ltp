@@ -1,4 +1,4 @@
-all: clean install
+all: clean 
 
 install: generate
 	ln -f stress_floppy ../../../bin
