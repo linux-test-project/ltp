@@ -243,7 +243,9 @@ sleep 10s
 # increase the log file size.
 
 # wait for the /var/log/tst_largelogfile to be filled to a size greater than 2k
-$LTPBIN/tst_resm TINFO "Test #2: Checking if file size is > 2k ..."
+$LTPBIN/tst_resm TINFO "Test #2: Checking if file size is > 2k"
+$LTPBIN/tst_resm TINFO "Test #2: Pls be patient this will take some time."
+$LTPBIN/tst_resm TINFO "Test #2: or killall -9 logrotate02 to skip.."
 if [ -f `which awk` ]
 then
     while [ $filesize -lt 2046 ]
