@@ -45,9 +45,7 @@ EXPORTDIR=/tmp
 HOST=`hostname`
 MOUNTDIR=${MOUNTDIR:=/root/tmpmnt}
 CLEANUP=${CLEANUP:="ON"}
-VERS=2
-# VERS=3
-# Uncomment above line if version 3 testing is desired instead.
+VERSION=${VERSION:=2}
 
 #---------------------------------------------------------------------#
 # FUNCTION: do_setup
@@ -87,7 +85,7 @@ $trace_logic
    [[ $? -eq 0 ]] || end_testcase "Could not create $MOUNTDIR"
 
    #Mount from HOST.
-   mount -o vers=$VERS $HOST:$EXPORTDIR $MOUNTDIR
+   mount -o vers=$VERSION $HOST:$EXPORTDIR $MOUNTDIR
    [[ $? -eq 0 ]] || end_testcase "Could not mount from $HOST"
 
 }
@@ -132,7 +130,7 @@ $trace_logic
   echo "Checking NFS calls for server and client"
 
   # Server
-  if [ "$VERS" = "2" ]; then
+  if [ "$VERSION" = "2" ]; then
    SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
   else
    SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc3 | awk '{print $15}'`
@@ -141,7 +139,7 @@ $trace_logic
   [[ $? -eq 0 ]] || end_testcase "Check of server NFS calls failed"
 
   # Client
-  if [ "$VERS" = "2" ]; then
+  if [ "$VERSION" = "2" ]; then
     CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc2 | awk '{print $13}'`
   else
     CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc3 | awk '{print $15}'`
@@ -153,14 +151,14 @@ $trace_logic
   echo "Checking for tracking of NFS calls for server and client"
   
   rm -f $MOUNTDIR/nfsstat01.tmp
-  if [ "$VERS" = "2" ]; then
+  if [ "$VERSION" = "2" ]; then
    NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
   else
    NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc3 | awk '{print $15}'`
   fi
   [[ $NEW_SERVER_CALLS -gt $SERVER_CALLS ]] || end_testcase "Server NFS calls not increased"
 
-  if [ "$VERS" = "2" ]; then
+  if [ "$VERSION" = "2" ]; then
     NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc2 | awk '{print $13}'`
   else
     NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc3 | awk '{print $15}'`
