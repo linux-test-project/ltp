@@ -53,7 +53,7 @@ SUBDIR= \
 	sigprocmask sigrelse sigsuspend socket socketpair sockioctl \
 	stat statfs stime symlink sync sysctl \
 	sysinfo time times truncate umask \
-	uname unlink utime vfork vhangup wait \
+	uname unlink umount utime vfork vhangup wait \
 	wait4 waitpid write writev
 
 
