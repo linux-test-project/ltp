@@ -17,8 +17,8 @@ growfiles: growfiles.o
 iogen: iogen.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-rwtest: rwtest.ks doio iogen
-	cp rwtest.ks rwtest
+rwtest: rwtest.sh doio iogen
+	cp rwtest.sh rwtest
 	chmod a+rx rwtest
 
 clean:

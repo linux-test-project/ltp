@@ -1,4 +1,5 @@
-#! /bin/ksh
+#!/bin/ksh
+#!/bin/bash
 
 # Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 # 
@@ -378,14 +379,14 @@ else
 	  r=$?
 	  if [ $r -ne 0 ]
 	  then
-		print -u2 "$Prog$Name : iogen reported errors (r=$r)"
+		echo "$Prog$Name : iogen reported errors (r=$r)" >&2
 		kill -HUP $$
 	  fi
 	) | $MPPrun doio ${dOpts}
 	r=$?
 	if [ $r -ne 0 ]
 	then
-		print -u2 "$Prog$Name : doio reported errors (r=$r)"
+		echo "$Prog$Name : doio reported errors (r=$r)" >&2
 	fi
 
 	cleanup_and_exit $r
