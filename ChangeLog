@@ -7,7 +7,7 @@ o       added "gethost" to /tools (Robbie Williamson)
 o	fixed the race conditions in the float tests and removed 
 	the sleeps (Robbie Williamson)
 o       enabled non-root make authority (Paul Larson)
-o       seperated compilation into "make" and "make install" (Paul Larson)
+o       separated compilation into "make" and "make install" (Paul Larson)
 o       added ipc_stress test (Manoj Iyer)
 o       added pthreads_stress test (Manoj Iyer)
 o       made changes to support architecture independence (Manoj Iyer & Paul Larson)
