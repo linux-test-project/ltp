@@ -36,8 +36,8 @@ SUBDIR= \
 	fchown fcntl flock fork fpathconf fstat fstatfs \
 	fsync ftruncate getcwd getdents getdomainname getegid geteuid \
 	getgid getgroups gethostid gethostname getitimer getpeername \
-	getpgid getpgrp getpid getppid getpriority getresgid \
-	getresuid getsid getsockname getsockopt gettimeofday getuid \
+	getpgid getpgrp getpid getppid getpriority getresgid getresuid \
+	getrusage getsid getsockname getsockopt gettimeofday getuid \
 	ioctl ipc kill lchown link \
 	listen llseek lseek lstat \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
