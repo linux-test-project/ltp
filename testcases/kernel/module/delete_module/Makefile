@@ -19,6 +19,7 @@
 ###########################################################################
 
 CFLAGS+=	-I../../../../include -Wall
+MODCFLAGS+=	-I/lib/modules/$(shell uname -r)/build/include -Wall
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRC1=dummy_del_mod.c dummy_del_mod_dep.c
@@ -29,10 +30,7 @@ all: $(TARGETS)
 	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
-	$(CC) -c $(SRC1) -Wall 
-#	$(CC) -c $(SRC1) -Wall -DMODULE -D__KERNEL__
-# Removed defintions, b/c they are already set in source files.
-# -11/22/02 Robbie Williamson <robbiew@us.ibm.com>     
+	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall 
 
 delete_module01: delete_module01.c
 	$(CC) $(CFLAGS) delete_module01.c $(LOADLIBES) -o $@

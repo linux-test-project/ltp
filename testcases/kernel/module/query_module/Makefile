@@ -19,6 +19,7 @@
 ###########################################################################
 
 CFLAGS+=	-I../../../../include -Wall
+MODCFLAGS+=	-I/lib/modules/$(shell uname -r)/build/include -Wall
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRC1=dummy_query_mod.c dummy_query_mod_dep.c
@@ -29,7 +30,7 @@ all: $(TARGETS)
 	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
-	$(CC) -c $(SRC1) -Wall 
+	$(CC) -DEXPORT_SYMTAB $(MODCFLAGS) -c $(SRC1) -Wall 
 
 query_module01: query_module01.c
 	$(CC) $(CFLAGS) query_module01.c $(LOADLIBES) -o $@
