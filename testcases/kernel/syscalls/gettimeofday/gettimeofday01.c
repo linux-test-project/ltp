@@ -98,18 +98,6 @@ main(int ac, char **av)
 
 	/*NOTREACHED*/
 }
-#else
-int TST_TOTAL = 0;              /* Total number of test cases. */
-
-int
-main()
-{
-        tst_resm(TPASS, "vsyscall gettimeofday not EFAULT checked on x86-64");
-        tst_exit();
-}
-
-#endif
-
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
@@ -140,4 +128,16 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+#else
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+        tst_resm(TPASS, "vsyscall gettimeofday not EFAULT checked on x86-64");
+        tst_exit();
+}
+
+#endif
+
 
