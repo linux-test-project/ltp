@@ -63,6 +63,7 @@ pthread_create01 cd $LTPROOT/testcases/bin;pthread_create01
 pthread_detach01 cd $LTPROOT/testcases/bin;pthread_detach01
 pthread_equal01 cd $LTPROOT/testcases/bin;pthread_equal01
 pthread_exit01 cd $LTPROOT/testcases/bin;pthread_exit01
+pthread_join01 cd $LTPROOT/testcases/bin;pthread_join01
 pthread_mutex_destroy01 cd $LTPROOT/testcases/bin;pthread_mutex_destroy01
 pthread_mutex_init01 cd $LTPROOT/testcases/bin;pthread_mutex_init01
 pthread_mutex_lock01 cd $LTPROOT/testcases/bin;pthread_mutex_lock01
