@@ -23,7 +23,6 @@ char *argv[];
   char *lp, *sp;
   int i;
   int nbyte;
-  char *serv_fname;
   char *clnt_fname;
   char rbuf[81];
   int flen, nlen;
@@ -36,8 +35,7 @@ char *argv[];
   }
 
   clnt_fname = argv[3]; /* filename to create/
-  serv_fname = argv[4]; /* filename to request */
-
+  
   /* prepare to copy file from server to local machine */
   if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {
 	printf("file open error = %d\n", errno);
@@ -94,7 +92,7 @@ printf("client write %d bytes to server with contents %s\n", nbyte, rbuf);
     exit (1);
   }
   else
-    printf("File %s received\n", serv_fname);
+    printf("File %s received\n", argv[4]);
 
   close(s);
   close(fd);
