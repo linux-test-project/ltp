@@ -54,6 +54,9 @@
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
@@ -209,6 +212,8 @@ main(int ac, char **av)
 void
 setup(void)
 {
+	struct rlimit newlimit;
+
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 * You want to make sure you do this before you create your temporary
@@ -218,6 +223,9 @@ setup(void)
 
 	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
+
+	newlimit.rlim_max=newlimit.rlim_cur=RLIM_INFINITY;
+	setrlimit(RLIMIT_CORE, &newlimit);
 }
 
 /*
