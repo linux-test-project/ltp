@@ -1,3 +1,27 @@
+LTP-20020408
+-----------
+* New Additions
+  - Scripts to automate LTP test suite execution.   ( William Jay Huie )
+  - IPV6 port of NetPIPE, network stress tool.      ( Robert Williamson )
+
+* Fixes
+  - Numerous 64-bit updates, remove warnings
+    and errors.                                     ( Andi Kleen )
+  - 64-bit patches to memory and IPC tests.         ( Ihno Krumreich )
+  - 64-bit IA64 port related patches.               ( Jacky Malcles )
+  - patches to remove warnings and bugs.            ( Andreas Jaeger )
+  - mmstress bug: deletes /dev/zero.                ( Sachin Vyas )
+  - sem02: make test remove semids it created.      ( Robert Williamson )
+  - Report missing groups and users in IDcheck.sh   ( Robert Williamson )
+  - expected error modified in mprotect and
+    msync tests.                                    ( Paul Larson )
+  - make testcases work without a controlling tty.  ( Paul Larson )
+
+CVS Bugs closed.
+~~~~~~~~~~~~~~~~
+ #536483 sem02 does not clean up /tmp directory   (Robert Willamson
+
+
 LTP-20020307
 ------------
 o	fixed IDcheck.sh to prompt for IDs only when missing (Jay Huie)
