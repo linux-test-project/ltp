@@ -37,13 +37,13 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Issue a FAIL message.
+ *    Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *    Verify the Functionality of system call 
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *       Issue Functionality-Pass message.
  *      Otherwise,
- *		Issue Functionality-Fail message.
+ *  Issue Functionality-Fail message.
  *  Cleanup:
  *   Print errno log and/or timing stats if options given
  *
@@ -51,13 +51,13 @@
  *  nanosleep01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ *        -i n : Execute test n times.
+ *        -I x : Execute test for x seconds.
+ *        -P x : Pause for x seconds between iterations.
+ *        -t   : Turn on syscall timing.
  *
  * HISTORY
- *	07/2001 Ported by Wayne Boyer
+ * 07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
  *  None.
@@ -67,100 +67,108 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <sys/time.h>
 #include <sys/wait.h>
 
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="nanosleep01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+#define SLOP_MS  250 /* Allowed error one way or another in time slept. */
 
-struct timespec timereq;	/* time struct. buffer for nanosleep() */
+char *TCID="nanosleep01"; /* Test program identifier.    */
+int TST_TOTAL=1;  /* Total number of test cases. */
+extern int Tst_count;  /* Test Case counter for tst_* routines */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+struct timespec timereq; /* time struct. buffer for nanosleep() */
+
+void setup();   /* Main setup function of test */
+void cleanup();   /* cleanup function for the test */
 
 int
 main(int ac, char **av)
 {
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	pid_t cpid;		/* Child process id */
-	time_t otime;		/* time before child execution suspended */
-	time_t ntime;		/* time after child resumes execution */
-	int retval=0, e_code, status;
+ int lc;   /* loop counter */
+ char *msg;  /* message returned from parse_opts */
+ pid_t cpid;  /* Child process id */
+ struct timeval otime;  /* time before child execution suspended */
+ struct timeval ntime;  /* time after child resumes execution */
+ int retval=0, e_code, status;
     
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+ /* Parse standard options given to run the test. */
+ msg = parse_opts(ac, av, (option_t *) NULL, NULL);
+ if (msg != (char *) NULL) {
+   tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+   tst_exit();
+ }
 
-	/* Perform global setup for test */
-	setup();
+ /* Perform global setup for test */
+ setup();
 
-	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+ /* Check looping state if -i option given */
+ for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+  /* Reset Tst_count in case we are looping. */
+  Tst_count=0;
 
-		/*
-		 * Creat a child process and suspend it till
-		 * time specified by timespec struct element
-		 * time_t tv_sec.
-		 */
-		cpid = fork();
-		if (cpid == -1) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
+  /*
+   * Creat a child process and suspend it till
+   * time specified by timespec struct element
+   * time_t tv_sec.
+   */
+  cpid = fork();
+  if (cpid == -1) {
+   tst_brkm(TBROK, cleanup, "fork() failed");
+  }
 
-		if (cpid == 0) {		/* Child process */
-			/* Note down the current time */
-			time(&otime);
-			/* 
-			 * Call nanosleep() to suspend child process
-			 * for specified time.
-			 */
-			TEST(nanosleep(&timereq, NULL));
+  if (cpid == 0) {  /* Child process */
+   /* Note down the current time */
+      gettimeofday(&otime, 0);
+   /* 
+    * Call nanosleep() to suspend child process
+    * for specified time.
+    */
+   TEST(nanosleep(&timereq, NULL));
 
-			/* time after child resumes execution */
-			time(&ntime);
+   /* time after child resumes execution */
+      gettimeofday(&ntime, 0);
 
-			/* check return code of nanosleep() */
-			if (TEST_RETURN == -1) {
-				retval=1;
-				tst_resm(TFAIL,
-					 "nanosleep() failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-				continue;
-			}
+   /* check return code of nanosleep() */
+   if (TEST_RETURN == -1) {
+    retval=1;
+    tst_resm(TFAIL,
+      "nanosleep() failed, errno=%d : %s",
+      TEST_ERRNO, strerror(TEST_ERRNO));
+    continue;
+   }
 
-			/*
-		 	 * Perform functional verification if test
-		 	 * executed without (-f) option.
-		 	 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Verify whether child execution was 
-				 * actually suspended.
-				 */
-				if ((ntime - otime) != timereq.tv_sec) {
-					retval=1;
-					tst_resm(TFAIL, "Child execution not "
-						 "suspended for %d seconds",
-						 timereq.tv_sec);
-				} else {
-					tst_resm(TPASS, "nanosleep "
-						 "functionality is correct");
-				}
-			} else {
-				tst_resm(TPASS, "call succeeded");
-			}
-			exit(retval);
-		} else {			/* parent process */
+   /*
+     * Perform functional verification if test
+     * executed without (-f) option.
+     */
+   if (STD_FUNCTIONAL_TEST) {
+    /*
+     * Verify whether child execution was 
+     * actually suspended to desired interval
+     * plus or minus SLOP_MS milliseconds.
+     */
+       long want_ms, got_ms;
+       want_ms = timereq.tv_sec * 1000 + timereq.tv_nsec / 1000000;
+       got_ms = ntime.tv_sec * 1000 + ntime.tv_usec / 1000;
+       got_ms -= otime.tv_sec * 1000 + otime.tv_usec / 1000;
+       if ( (got_ms < (want_ms - SLOP_MS)) || (got_ms > (want_ms + SLOP_MS)) ) {
+     retval=1;
+     tst_resm(TFAIL, "Child execution not "
+       "suspended for %d seconds.  (Wanted %ld ms, got %ld ms)",
+       timereq.tv_sec, want_ms, got_ms);
+    } else {
+     tst_resm(TPASS, "nanosleep "
+       "functionality is correct");
+    }
+   } else {
+    tst_resm(TPASS, "call succeeded");
+   }
+   exit(retval);
+  } else {   /* parent process */
                         /* wait for the child to finish */
                         wait(&status);
                         /* make sure the child returned a good exit status */
@@ -168,31 +176,31 @@ main(int ac, char **av)
                         if (e_code != 0) {
                                 tst_resm(TFAIL, "Failures reported above");
                         }
-		}
-	}	/* End for TEST_LOOPING */
+  }
+ } /* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
-	cleanup();
+ /* Call cleanup() to undo setup done for the test. */
+ cleanup();
 
-	return 0;
-}	/* End main */
+ return 0;
+} /* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  	     Initialize time structure elements.
+ *        Initialize time structure elements.
  */
 void 
 setup()
 {
-	/* capture signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+ /* capture signals */
+ tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified */
-	TEST_PAUSE;
+ /* Pause if that option was specified */
+ TEST_PAUSE;
 
-	/* Initialise time variables which used to suspend child execution */
-	timereq.tv_sec = 2;
-	timereq.tv_nsec = 9999;
+ /* Initialise time variables which used to suspend child execution */
+ timereq.tv_sec = 2;
+ timereq.tv_nsec = 9999;
 }
 
 
@@ -203,12 +211,12 @@ setup()
 void 
 cleanup()
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+ /*
+  * print timing stats if that option was specified.
+  * print errno log if that option was specified.
+  */
+ TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
+ /* exit with return code appropriate for results */
+ tst_exit();
 }
