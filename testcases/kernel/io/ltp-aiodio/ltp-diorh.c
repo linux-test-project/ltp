@@ -48,6 +48,7 @@
 
 int pagesize;
 char *iobuf;
+int pass = 0;
 
 void assert(const char *what, int assertion)
 {
@@ -67,8 +68,8 @@ void do_buffered_writes(int fd, int pattern)
 		 		 rc = pwrite(fd, iobuf, WRITESIZE, offset);
 		 		 assert("pwrite", rc >= 0);
 		 		 if (rc != WRITESIZE) {
-		 		 		 fprintf(stderr, "short write (%d out of %d)\n",
-		 		 		 		 rc, WRITESIZE);
+		 		 		 fprintf(stderr, "Pass %d: short write (%d out of %d)\n",
+		 		 		 		 pass, rc, WRITESIZE);
 		 		 		 exit(1);
 		 		 }
 		 		 fsync(fd);
@@ -89,15 +90,15 @@ int do_direct_reads(char *filename)
 		 		 rc = pread(fd, iobuf, READSIZE, offset);
 		 		 assert("pread", rc >= 0);
 		 		 if (rc != READSIZE) {
-		 		 		 fprintf(stderr, "short read (%d out of %d)\n",
-		 		 		 		 rc, READSIZE);
+		 		 		 fprintf(stderr, "Pass: %d short read (%d out of %d)\n",
+		 		 		 		 pass, rc, READSIZE);
 		 		 		 exit(1);
 		 		 }
 		 		 for (i=0, p=(int *)iobuf; i<READSIZE; i+=4) {
 		 		 		 if (*p) {
 		 		 		 		 fprintf(stderr,
-		 		 		 		 		 "Found data (%08x) at offset %d+%d\n",
-		 		 		 		 		 *p, offset, i);
+		 		 		 		 		 "Pass: %d Found data (%08x) at offset %d+%d\n",
+		 		 		 		 		 pass, *p, offset, i);
                                  close(fd);
 		 		 		 		 return 1;
 		 		 		 }
@@ -114,9 +115,7 @@ int main(int argc, char *argv[])
 		 int fd;
 		 int pid;
 		 int err;
-		 int pass = 0;
 		 int bufsize;
-		 int i = 0;
 		 
 		 if (argc != 2) {
 		 		 fprintf(stderr, "Needs a filename as an argument.\n");
@@ -139,7 +138,6 @@ int main(int argc, char *argv[])
 		 assert("open", fd >= 0);
 		 
 		 do {
-		 		 printf("Pass %d...\n", ++pass);
 		 		 
 		 		 assert("ftruncate", ftruncate(fd, BIGSIZE) == 0);
 		 		 fsync(fd);
@@ -166,7 +164,11 @@ int main(int argc, char *argv[])
 
 		 		 assert("ftruncate", ftruncate(fd, 0) == 0);
 		 		 fsync(fd);
-		 } while (i++ < MAX_ITERATIONS);
+		 } while (pass++ < MAX_ITERATIONS);
+
+         if (!err) {
+             fprintf(stdout, "ltp-diorh: Completed %d iterations OK \n", pass);
+         }
 		 
 		 return err;
 }
