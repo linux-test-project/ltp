@@ -91,18 +91,17 @@ while {$count < $LOOPCOUNT} {
       expect -re "#"
 
       # Run passwd command - and respond to its prompts
-      send "ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$RHOST \r"
+      send "ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r" 
       # When shell prompt comes back, logout
 
       expect -re "#"
       exp_send "logout\r"
 
       send_user "CHECKING TELNET STATUS\n"
-      send "cat $TESTLOG/$RUSER.$HOST\n"
-      set nummatch [exec grep -c "9" $TESTLOG/$RUSER.$HOST]
+      set nummatch [exec rsh -n -l $RUSER $HOST "cat $TESTLOG/$RUSER.$HOST|grep -c 9"] 
       if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
-         exec rm -rf $TESTLOG/$RUSER.$HOST
+         exec rsh -n -l $RUSER $HOST "rm -f $TESTLOG/$RUSER.$HOST" 
       } else {
          send_user "$TC interactive session failed\n"
          exit 1

@@ -88,11 +88,10 @@ while {$count < $LOOPCOUNT} {
       exp_send "logout\r"
 
       send_user "CHECKING RLOGIN STATUS\n"
-      send "cat $TESTLOG/$RUSER.$RHOST\n"
-      set nummatch [exec grep -c "9" $TESTLOG/$RUSER.$RHOST]
+      set nummatch [exec rsh -n -l $RUSER $RHOST "cat $TESTLOG/$RUSER.$RHOST|grep -c 9"] 
       if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
-         exec rm -rf $TESTLOG/$RUSER.$RHOST
+         exec rsh -n -l $RUSER $RHOST "rm -f $TESTLOG/$RUSER.$RHOST" 
       } else {
          send_user "$TC interactive session FAILED\r"
          exit 1
