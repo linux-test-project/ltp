@@ -265,7 +265,7 @@ stat_setup()
 				tst_resm(TINFO, "shmdt() failed - %d", errno);
 			}
 
-			exit();
+			tst_exit();
 
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
