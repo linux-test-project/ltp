@@ -42,6 +42,7 @@ do_cleanup()
 res=0
 TCdat=${TCdat:-`pwd`}
 TCtmp=${TCtmp:-/tmp/ld-$$}
+mkdir $TCtmp
 
 #ASSERTION 1 
 #Test for graceful failure when ld can't find a fileTest calling ld directly

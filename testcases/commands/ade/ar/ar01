@@ -43,6 +43,7 @@
 $trace_logic
 
 TCtmp=${TCtmp:-/tmp/ar01-$$}
+mkdir $TCtmp
 TCdat=${TCdat:-`pwd`}
 cd $TCdat
 
