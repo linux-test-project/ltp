@@ -83,8 +83,8 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define NEW_PERMS       S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
+#define FILE_MODE	(mode_t)S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define NEW_PERMS       (mode_t)S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for test file */
@@ -218,7 +218,7 @@ setup()
                 perror("seteuid");
          }
 
-	test_home = get_current_dir_name();
+	test_home = (char*)get_current_dir_name();
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;

@@ -221,7 +221,7 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	test_home = get_current_dir_name();
+	test_home = (char*)get_current_dir_name();
 	
 	/* Switch to bin user for correct error code collection */
         if (geteuid() != 0) {
