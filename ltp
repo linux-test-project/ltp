@@ -3,18 +3,16 @@
 kernel()
 {
 
-  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
-  if [ $LOOPS -eq ""]; then
-    LOOPS=1
-  fi 
   echo""
   echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
   read kernel_log
   case $kernel_log in
     y|Y)
   	echo "   The logfile will be /tmp/kernel_tests.log"
-        LOGFILE="-l /tmp/kernel_tests.log"
+        TIMESTAMP=`date +%Y%m%d%I%M%S`
+        LOGFILE="-l /tmp/kernel_tests.log-$TIMESTAMP"
 	;;
     *)
 	LOGFILE=" "
@@ -26,7 +24,7 @@ kernel()
   case $kernel_out in
     y|Y)
   	echo "   The output file will be /tmp/kernel_tests.output"
-        OUTFILE="-o /tmp/kernel_tests.output"
+        OUTFILE="-o /tmp/kernel_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
@@ -119,18 +117,16 @@ networking()
   rsh -n $RHOST "uname -a"
   sleep 1
 
-  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
-  if [ $LOOPS -eq ""]; then
-    LOOPS=1
-  fi 
   echo""
   echo -n "Do you want to keep a logfile (Y/N)? >> "
   read network_log
   case $network_log in
     y|Y)
   	echo "   The logfile will be /tmp/network_tests.log"
-        LOGFILE="-l /tmp/network_tests.log"
+        TIMESTAMP=`date +%Y%m%d%I%M%S`
+        LOGFILE="-l /tmp/network_tests.log-$TIMESTAMP"
 	;;
     *)
 	LOGFILE=" "
@@ -142,7 +138,7 @@ networking()
   case $network_out in
     y|Y)
   	echo "   The output file will be /tmp/network_tests.output"
-        OUTFILE="-o /tmp/network_tests.output"
+        OUTFILE="-o /tmp/network_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
@@ -179,18 +175,20 @@ networking()
 
 diskio()
 {
-  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  echo ""
+  echo "Please make sure a data CD and an unprotected floppy disk are in"
+  echo "there respectable drives."
+  ehco ""
+  echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
-  if [ $LOOPS -eq ""]; then
-    LOOPS=1
-  fi 
   echo""
   echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
   read diskio_log
   case $diskio_log in
     y|Y)
   	echo "   The logfile will be /tmp/diskio_tests.log"
-        LOGFILE="-l /tmp/diskio_tests.log"
+        TIMESTAMP=`date +%Y%m%d%I%M%S`
+        LOGFILE="-l /tmp/diskio_tests.log-$TIMESTAMP"
 	;;
     *)
 	LOGFILE=" "
@@ -202,7 +200,7 @@ diskio()
   case $diskio_out in
     y|Y)
   	echo "   The output file will be /tmp/diskio_tests.output"
-        OUTFILE="-o /tmp/diskio_tests.output"
+        OUTFILE="-o /tmp/diskio_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
@@ -280,7 +278,7 @@ GO=true
 
 while [ $GO == "true" ]
 do
-  sleep 3
+  sleep 2
   menu_print
 
   read ans
