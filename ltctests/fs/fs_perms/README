@@ -1,0 +1,84 @@
+Readme file for fs_perms test
+
+License:
+
+    Copyright (c) International Business Machines  Corp., 2001
+
+    This program is free software;  you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 2 of
+    the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be 
+    useful, but WITHOUT ANY WARRANTY;  without even the implied 
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    PURPOSE.  See the GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public 
+    License along with this program;  if not, write to the Free 
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+    MA 02111-1307 USA
+
+
+Overview: 
+    Name:           fs_perms
+    Description:    A regression test for unix rwx permissions 
+                    that allows the user to create a list of files
+                    as someuser/somegroup, set the file 
+                    permissions mode and test those permissions as
+                    anotheruser/anothergroup.  The idea is to 
+                    verify filesystem permissions on various new 
+                    (or old) filesystems. 
+                        
+Files:
+    fs_perms.c
+    simpletest.sh
+    testx.c
+    Makefile
+    README 
+                        
+Availability:
+    Currently only available via internal IBM websites pending 
+    legal review:
+    http://cvs.opensource.ibm.com/cgi-bin/cvsweb.cgi/testcases/fs/fs_perms/?cvsroot=ltp
+
+Installation:
+    Unzip/Untar files.
+    make all 
+                        
+Use:
+    Create as many test user accounts and groups as you think you
+    will need if you don't want to use existing accounts.
+
+    [Octal Mode] [File Owner's UID] [File Owner's GID] [Test User's UID] [Test User's GID] [r|w|x] [Expected Result 0|1]
+
+    (ex.) If you wanted someuser in nobody's group to test group 
+    permissions on a file owned by nobody.nobody you would want a
+    command line like the following:
+    ./fs_perms 020 99 99 200 99 w 1
+
+Warning(s):
+    This program does ZERO data validation!  Be very careful that
+    you don't include any extra white space in your conf file!
+    Remember that ownership and permissions of the current 
+    directory may affect your test results.
+
+ToDo:
+
+    Add some data validation.
+
+ChangeLog:
+    Date      Version       Author                  Reason
+    04/12/01    .99         martinjn@us.ibm.com     Needed permissions regression test and couldn't
+                                                    find a "REAL" programmer to write it for me.
+    04/19/01   1.0          martinjn@us.ibm.com     Added test for execute bit and README.
+    05/23/01   1.1          martinjn@us.ibm.com     Added command line parameter to specify test file.
+    07/12/01   1.2          martinjn@us.ibm.com     Removed need for config file.  All parameters are passed 
+                                                    from command line.  These changes were made to allow 
+                                                    fs_perms to work with our test harness.
+
+
+Jeff Martin
+Software Engineer(Tester)
+IBM Linux Technology Center-Test Team
+martinjn@us.ibm.com
