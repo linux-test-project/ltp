@@ -88,7 +88,7 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-        int Hflag;              /* binary flag: opt or not */
+        int Hflag=0;              /* binary flag: opt or not */
 
        	option_t options[] = {
         	{ "H:",   &Hflag, &Hopt },    /* Required for location of hugetlbfs */
