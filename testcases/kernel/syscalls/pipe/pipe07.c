@@ -47,6 +47,8 @@
  */
 #include <fcntl.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -65,7 +67,11 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int min;			/* number of file descriptors */
+	int usedfds;			/* number of currently used file descriptors */
 	int npipes;			/* number of pipes opened */
+	pid_t mypid;			/* process of id of test */
+	char* cmdstring;		/* hold command string to execute using system() */
+	FILE* f;			/* used for retrieving the used fds */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -75,6 +81,16 @@ int main(int ac, char **av)
 
 	setup();
 
+        /* Get the currently used number of file descriptors */
+	mypid=getpid();
+	cmdstring=malloc(sizeof(cmdstring));
+	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l > current_fd_count",mypid);
+	system(cmdstring);
+	f = fopen("./current_fd_count", "r");	
+	fscanf(f,"%d",&usedfds);	
+	fclose(f);
+	unlink("current_fd_count");
+
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -83,8 +99,8 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		min = getdtablesize();
-		/* subtract 3 for std files */
-		min -= 3;
+		/* subtract used fds */
+		min -= usedfds;
 
 		for (npipes = 0; ; npipes++) {
 			pipe_ret = pipe(pipes);
@@ -98,7 +114,7 @@ int main(int ac, char **av)
 			}
 		}
 		if (npipes == (min / 2))
-			tst_resm(TPASS, "Opened maxfds/2 pipes");
+			tst_resm(TPASS, "Opened %d pipes",npipes);
 		else
 			tst_resm(TFAIL, "Unable to open maxfds/2 pipes");
 
@@ -115,8 +131,11 @@ int main(int ac, char **av)
 void
 setup()
 {
+	/* Create temporary directory and cd to it */
+	tst_tmpdir();
+
 	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -130,6 +149,9 @@ setup()
 void
 cleanup()
 {
+	/* Remove temporary directory */
+	tst_rmdir();
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
