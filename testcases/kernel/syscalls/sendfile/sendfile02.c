@@ -39,6 +39,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	08/2002 Make it use a socket so it works with 2.5 kernel
  *
  * RESTRICTIONS
  *	NONE
@@ -48,6 +49,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/sendfile.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "usctest.h"
 #include "test.h"
 
@@ -57,9 +61,12 @@ extern int Tst_count;
 
 char in_file[100];
 char out_file[100];
+struct sockaddr_in sin1;
+int out_fd;
 
 void cleanup(void);
 void setup(void);
+int create_server(void);
 
 struct test_case_t {
 	char *desc;
@@ -102,7 +109,7 @@ main(int ac, char **av)
 
 do_sendfile(off_t offset, int i)
 {
-	int in_fd, out_fd;
+	int in_fd;
 	struct stat sb;
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
@@ -111,10 +118,6 @@ do_sendfile(off_t offset, int i)
 	}
 	if (stat(in_file, &sb) < 0) {
 		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-		/*NOTREACHED*/
-	}
-	if ((out_fd = creat(out_file, 00700)) < 0) {
-		tst_brkm(TBROK, cleanup, "creat failed: %d", errno);
 		/*NOTREACHED*/
 	}
 
@@ -134,7 +137,6 @@ do_sendfile(off_t offset, int i)
 		tst_resm(TPASS, "call succeeded");
 	}
 
-	close(out_fd);
 	close(in_fd);
 }
 
@@ -148,11 +150,15 @@ setup()
 	char buf[100];
 
 	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+	sin1.sin_family = AF_INET;
+	sin1.sin_port = htons((getpid() % 32768) + 11000);
+	sin1.sin_addr.s_addr = INADDR_ANY;
 
+	out_fd = create_server();
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 	sprintf(in_file, "in.%d", getpid());
@@ -183,6 +189,7 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
+	close(out_fd);
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
@@ -190,3 +197,48 @@ cleanup()
 	tst_exit();
 }
 
+int create_server(void) {
+	pid_t mypid;
+	int lc;
+	int sockfd, s;
+	int length, newfd;
+	char rbuf[4096];
+
+	sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+	if(sockfd < 0) {
+		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	if(bind(sockfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+		tst_brkm(TBROK, cleanup, "call to bind() failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	mypid = fork();
+	if(mypid < 0) {
+		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	if(!mypid) { 
+		for (lc = 0; TEST_LOOPING(lc); lc++) {
+			recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, sizeof(sin1));
+		}
+		exit(0);
+	}
+
+	s = socket(PF_INET, SOCK_DGRAM, 0);
+	inet_aton("127.0.0.1", &sin1.sin_addr);
+	if(s < 0) {
+		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	if (connect(s, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+		tst_brkm(TBROK, cleanup, "call to connect() failed: %s",
+			strerror(errno));
+	}
+	return s;
+
+}
