@@ -72,7 +72,7 @@ echo "Test set for $DURATION seconds. Starting test processes now."
 ./fsstress -l 0 /mnt/tcp/3/${HOSTNAME}4 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.3.log 2>&1 &
 
 echo "Starting sar"
-sar -o ./nfs_fsstress.sardata 30 0 &
+sar -o /tmp/nfs_fsstress.sardata 30 0 &
 
 echo "Testing in progress"
 sleep $DURATION
