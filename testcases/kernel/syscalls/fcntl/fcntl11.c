@@ -635,6 +635,9 @@ cleanup()
 
 	unlink(file);
 
+        /* Remove tmp dir and all files in it */
+        tst_rmdir();
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
