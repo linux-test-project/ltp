@@ -30,6 +30,9 @@
  * RESTRICTIONS
  * 	This test is not completely written in the LTP format - PLEASE FIX!
  */
+
+#define DEBUG 0
+
 #include <wait.h>
 #include <limits.h>
 #include <signal.h>
@@ -104,18 +107,21 @@ int main(int ac, char **av)
 			}
 			sleep(1);
 			if ((ret = wait(&status)) > 0) {
-				tst_resm(TINFO, "Test {%d} exited "
-					 "status 0x%0x", ret, status);
+				if (DEBUG)
+					tst_resm(TINFO, "Test {%d} exited "
+					 	"status 0x%0x", ret, status);
 
 				if (status != 0) {
 					fail = 1;
 				}
 			}
 		}
-		if (fail || exno) {
-			tst_resm(TINFO, "Test test 1: FAILED");
-		} else {
-			tst_resm(TINFO, "Test test 1: PASSED");
+		if (DEBUG) {
+			if (fail || exno) {
+				tst_resm(TINFO, "Test test 1: FAILED");
+			} else {
+				tst_resm(TINFO, "Test test 1: PASSED");
+			}
 		}
 
 //test2:
@@ -144,7 +150,8 @@ int main(int ac, char **av)
 					 "got %d", errno);
 			}
 			if ((ret = wait(&status)) > 0) {
-				tst_resm(TINFO, "Test {%d} exited "
+				if (DEBUG)
+					tst_resm(TINFO, "Test {%d} exited "
 					 "status 0x%0x", ret, status);
 				if (status != 0) {
 					fail = 1;
