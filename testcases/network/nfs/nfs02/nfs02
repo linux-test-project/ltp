@@ -45,11 +45,11 @@ TC=nfs02
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin/dat}
 TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCbin/tmp}
+TCtmp=${TCtmp:=$TCbin/$TC$$}
 RHOST=${RHOST:=`hostname`}
 VERSION=${VERSION:=2}
 SOCKET_TYPE=${SOCKET_TYPE:=udp}
-TESTDIR=${TESTDIR:=/root}
+TESTDIR=${TESTDIR:=/mnt/$TC$$}
 CLEANUP=${CLEANUP:="ON"}
 
 
@@ -68,13 +68,15 @@ $trace_logic
    IAM=${IAM:=`whoami`}
    [[ $IAM -eq "root" ]] || end_testcase "Must be root user"
    
-   #Export the data directory on RHOST
+   #Setup and Export the data directory on RHOST
+   rsh -n $RHOST "mkdir -p $TESTDIR"
+   [[ $? -eq 0 ]] || end_testcase "Could not create $TESTDIR from $RHOST"
    rsh -n $RHOST "/usr/sbin/exportfs -i *:$TESTDIR -o rw,no_root_squash "
-   [[ $? -eq 0 ]] || end_testcase "Could not export $TCdat from $RHOST"
+   [[ $? -eq 0 ]] || end_testcase "Could not export $TESTDIR from $RHOST"
 
    #Verify export
    /usr/sbin/showmount -e $RHOST | grep $TESTDIR
-   [[ $? -eq 0 ]] || end_testcase "$TCdat not exported"
+   [[ $? -eq 0 ]] || end_testcase "$TESTDIR not exported"
 
    #Create $TCtmp for mount point
    mkdir -p $TCtmp
@@ -175,7 +177,7 @@ $trace_logic
    sleep 3
    rmdir $TCtmp
    rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR" 
-   
+   rsh -n $RHOST "rm -rf $TESTDIR"   
 }
 
 #=============================================================================
