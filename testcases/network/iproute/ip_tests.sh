@@ -1,4 +1,4 @@
-set +x
+#! /bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -26,8 +26,11 @@ set +x
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Feb 19 2003 - Created - Manoj Iyer.
+#               Feb 26 2003 - Added - test05, test06
+#                           - Commands mroute, tunnel, monitor and rtmon are
+#                             not covered by this testcase.
 #
-#! /bin/sh
+set +x
 
 
 # Function:		init
@@ -150,7 +153,6 @@ cleanup()
 	TST_COUNT=0
 	RC=0
 
-
 	/sbin/ifconfig eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
 	if [ $RC -eq 0 ]
 	then
@@ -234,7 +236,7 @@ test02()
 	if [ $RC -ne 0 ]
 	then 
 		tst_brk TBROK $LTPTMP/tst_ip.out NULL \
-			"Test #2 modprobe failed to load dummy.o"
+			"Test #2: modprobe failed to load dummy.o"
 		return $RC
 	fi
 
@@ -397,6 +399,186 @@ test04()
 	return $RC
 }
 
+
+# Function:		test05
+#
+# Description	- Test basic functionality of ip command
+#               - Test #5: ip route add - add new route entry to route table
+#               - Test #5: ip route show - show route entry to route table
+#               - Test #5: ip route delete - delete route entry to route table
+#               - execute the command and create output.
+#               - create expected output
+#               - compare expected output with actual output.
+#
+# Return		- zero on success
+#               - non zero on failure. return value from commands ($RC)
+
+test05()
+{
+	RC=0			# Return value from commands.
+	TCID=ip05	    # Name of the test case.
+	TST_COUNT=5		# Test number.
+
+	tst_resm TINFO \
+	 "Test #5: ip route add - adds a new route to route tables."
+
+	
+	tst_resm TINFO \
+	 "Test #5: create an interface with inet 10.6.6.6 alias to eth0"
+
+	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_brk TBROK $LTPTMP/tst_ip.err NULL \
+			"Test #5: unable to create interface eth0:1 inet 10.6.6.6. Reason:"
+		return $RC
+	fi
+	
+	ip route add 10.6.6.6 via 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_res TFAIL $LTPTMP/tst_ip.err \
+			"Test #5: ip route add command failed. Reason:"
+		return $RC
+	else
+		tst_resm TINFO \
+		 "Test #5: ip route show - shows all route entries in route tables."
+
+		# create expected output file.
+		cat > $LTPTMP/tst_ip.exp <<-EOF
+		10.6.6.6 via 127.0.0.1 dev lo
+		EOF
+
+		ip route show | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #5: ip route show command failed. Reason:"
+			return $RC
+		else
+			diff -iwB  $LTPTMP/tst_ip.out $LTPTMP/tst_ip.exp \
+				&>$LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -ne 0 ]
+			then
+				tst_res FAIL $LTPTMP/tst_ip.err \
+					"Test #5: ip route show did not list new route. Details:"
+				return $RC
+			fi
+		fi
+
+		tst_resm TINFO \
+		 "Test #5: ip route del - deletes route from the route table."
+
+		ip route del 10.6.6.6 via 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #5: ip route del command failed return = $RC. Reason: "
+			return $RC
+		else
+			ip route show | grep 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -eq 0 ]
+			then
+				tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #5: route not deleted. ip route show:"
+				return $(($RC+1))
+			fi
+		fi
+		
+		tst_resm TPASS \
+			"Test #5: ip route command tests successful"
+	fi
+	return $RC
+}
+
+
+# Function:		test06
+#
+# Description	- Test basic functionality of ip command
+#               - Test #6: ip maddr add - add new multicast addr entry
+#               - Test #6: ip maddr show - show multicast addr entry
+#               - Test #6: ip maddr delete - delete new multicast addr entry
+#               - execute the command and create output.
+#               - create expected output
+#               - compare expected output with actual output.
+#
+# Return		- zero on success
+#               - non zero on failure. return value from commands ($RC)
+
+test06()
+{
+	RC=0			# Return value from commands.
+	TCID=ip06	    # Name of the test case.
+	TST_COUNT=6		# Test number.
+
+	tst_resm TINFO \
+	 "Test #6: ip maddr add - adds a new multicast addr"
+
+	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_brk TBROK $LTPTMP/tst_ip.err NULL \
+			"Test #6: unable to create interface eth0:1 inet 10.6.6.6. Reason:"
+		return $RC
+	fi
+	
+	ip maddr add 66:66:00:00:00:66 dev eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_res TFAIL $LTPTMP/tst_ip.err \
+			"Test #6: ip maddr add command failed. Reason:"
+		return $RC
+	else
+		tst_resm TINFO \
+		 "Test #6: ip maddr show - shows all multicast addr entries."
+
+		cat > $LTPTMP/tst_ip.exp <<-EOF
+        link  66:66:00:00:00:66 static
+		EOF
+
+		ip maddr show | grep "66:66:00:00:00:66" &>$LTPTMP/tst_ip.out || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #6: ip maddr show dev: command failed. Reason:"
+			return $RC
+		else
+			diff -iwB  $LTPTMP/tst_ip.out $LTPTMP/tst_ip.exp \
+				&>$LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -ne 0 ]
+			then
+				tst_res FAIL $LTPTMP/tst_ip.err \
+					"Test #6: multicast addr not added to eth0:1. Details:"
+				return $RC
+			fi
+		fi
+
+		tst_resm TINFO \
+		 "Test #6: ip maddr del - deletes multicast addr."
+
+		ip maddr del 66:66:00:00:00:66 dev eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #6: ip maddr del command failed return = $RC. Reason: "
+			return $RC
+		else
+			ip maddr show | grep "66:66:00:00:00:66" &>$LTPTMP/tst_ip.err \
+				|| RC=$?
+			if [ $RC -eq 0 ]
+			then
+				tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #6: 66:66:00:00:00:66 is not deleted. Details:"
+				return $(($RC+1))
+			fi
+		fi
+		
+		tst_resm TPASS \
+			"Test #6: ip maddr command tests successful"
+	fi
+	return $RC
+}
+
 # Function:		main
 #
 # Description:	- Execute all tests, report results.
@@ -412,5 +594,7 @@ test01 || RC=$?
 test02 || RC=$?
 test03 || RC=$?
 test04 || RC=$?
+test05 || RC=$?
+test06 || RC=$?
 
 exit $RC
