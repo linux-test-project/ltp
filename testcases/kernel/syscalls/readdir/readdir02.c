@@ -130,20 +130,20 @@ main(int ac, char **av)
 		tst_resm(TFAIL, "closedir(\".\") Failed, errno=%d : %s",
 			    errno, strerror(errno));
 		} else {
-                TEST(dptr = readdir(test_dir));
-                switch(TEST_ERRNO) {
+                dptr=readdir(test_dir);
+                switch(errno) {
                 case EBADF:
                         tst_resm(TPASS, "expected failure - errno = %d : %s",
-                                 TEST_ERRNO, strerror(TEST_ERRNO));
+                                 errno, strerror(errno));
                         break;
                 default:
 			if (dptr != NULL){
                         tst_brkm(TFAIL, cleanup, "call failed with an "
-                                 "unexpected error - %d : %s", TEST_ERRNO,
-                                 strerror(TEST_ERRNO));
+                                 "unexpected error - %d : %s", errno,
+                                 strerror(errno));
 			} else {
 			tst_resm(TINFO,"readdir() is not _required_ to fail, "
-				"errno = %d  ", TEST_ERRNO);
+				"errno = %d  ", errno);
 			}
                 }
                 }
