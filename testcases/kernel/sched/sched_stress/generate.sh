@@ -25,7 +25,7 @@
 #
 ############################################################################
 
-my $file = 'sched.datafile';
+my $file = 'sched_datafile';
 my $size = 1200010;
 
 unless (-f $file) {
