@@ -28,7 +28,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 	int 			ret = HPI_TEST_PASS;
 
 	prev_entry_id = SAHPI_NEWEST_ENTRY;
-	while (next_entry_id != SAHPI_NO_MORE_ENTRIES) {
+	while (prev_entry_id != SAHPI_NO_MORE_ENTRIES) {
 		current_entry_id = prev_entry_id;
 		val = saHpiEventLogEntryGet(session_id, 
 			SAHPI_DOMAIN_CONTROLLER_ID, current_entry_id, 
@@ -60,8 +60,8 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 	int 			ret = HPI_TEST_PASS;
 
 	if (rpt_entry.ResourceCapabilities & SAHPI_CAPABILITY_SEL) {
-		next_entry_id = SAHPI_NEWEST_ENTRY;
-		while (next_entry_id != SAHPI_NO_MORE_ENTRIES) {
+		prev_entry_id = SAHPI_NEWEST_ENTRY;
+		while (prev_entry_id != SAHPI_NO_MORE_ENTRIES) {
 			current_entry_id = prev_entry_id;
 			val = saHpiEventLogEntryGet(session_id, resource_id,
 					current_entry_id, &prev_entry_id, 
