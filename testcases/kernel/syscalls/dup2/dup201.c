@@ -102,10 +102,10 @@ struct test_case_t {
         { &mystdout, &maxfd, EBADF, NULL},
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
-	int i, j, rval;
+	int i, j;
 	char *msg;			/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -165,6 +165,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

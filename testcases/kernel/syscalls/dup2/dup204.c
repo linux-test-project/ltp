@@ -59,7 +59,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int Fd[2];
 int NFd[2];
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -117,6 +117,7 @@ main(int ac, char **av)
     	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

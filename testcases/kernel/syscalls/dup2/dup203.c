@@ -58,7 +58,7 @@ char *TCID = "dup203";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int fd0, fd1, fd2, rval;
 	char filename0[40], filename1[40];
@@ -79,7 +79,7 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		tst_resm(TINFO, "Test duping over an open fd");
 
@@ -155,7 +155,7 @@ block1:
 
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		tst_resm(TINFO, "Test close on exec flag");
 
@@ -204,6 +204,7 @@ block2:
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
