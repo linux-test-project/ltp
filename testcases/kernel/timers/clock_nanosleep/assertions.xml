@@ -1,0 +1,77 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6713:6717 pt:CS">
+   clock_nanosleep() causes the current thread to stop executing for
+   the time interval (clocked by clock_id) in rqtp unless:
+   - TIMER_ABSTIME is set in the flags argument
+   - a signal whose action is to invoke a signal catching function is
+     delivered to the current thread
+   - the process is terminated
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6718:6722 pt:CS">
+   If TIMER_ABSTIME is set in flags, then clock_nanosleep() uses
+   absolute time for the suspension of execution.  That is, it stops for:
+   - the absolute time specified by rqtp
+   or until
+   - a signal whose action is to invoke a signal catching function is
+     delivered to the current thread
+   - the process is terminated
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6722:6724 pt:CS">
+   If TIMER_ABSTIME is set in flags, then if, when clock_nanosleep() is
+   called, rqtp time value less than or equal to specified clock\'s time value,
+   clock_nanosleep() returns immediately and the calling process is *not* 
+   suspended.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6725:6730 pt:CS">
+   For TIMER_ABSTIME _not_ set:
+   Suspension time is always greater than or equal to the rqtp time interval.
+   [May be greater b/c of rounding or scheduling, just never less than.]
+   Unless clock_nanosleep() is interrupted by a signal.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6730:6733 pt:CS">
+   For TIMER_ABSTIME set:
+   Syspension time is always at least until the corresponding clock 
+   reaches time rqtp.
+   Unless clock_nanosleep() is interrupted by a signal.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:6734:6735 pt:CS">
+   clock_nanosleep() does not affect the action/blockage of a signal.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:6736:6737 pt:CS">
+   clock_nanosleep() fails if clock_id is for the CPU-time clock of
+   the calling thread
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:6740:6741 pt:CS">
+   clock_nanosleep() returns 0 on success (i.e., the full time requested
+   by rqtp has elapsed)
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:6743:6747 pt:CS">
+   For relative clock_nanosleep(), if clock_nanosleep() is 
+   interrupted by a signal and rmtp is not-NULL, rmtp contains the 
+   amount of time remaining.  [If rmtp is NULL, no time is returned.]
+   -- Absolute timers have no effect on rmtp.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:6751:6751 pt:CS">
+   clock_nanosleep sets errno=EINTR if it was interrupted by a signal
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:6752:6753 pt:CS">
+   clock_nanosleep sets errno=EINVAL if rqpt below 0 or above (or equal to)
+   1,000 million
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:6753:6754 pt:CS">
+   clock_nanosleep sets errno=EINVAL if TIMER_ABSTIME was specified
+   and rqpt is outside the range for clock_id
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:6755:6756 pt:CS">
+   clock_nanosleep sets errno=EINVAL if clock_id does not refer to a known
+   clock or refers to the CPU-time clock of the calling thread
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:6757:6758 pt:CS">
+   clock_nanosleep sets errno=ENOTSUP if clock_id refers to a clock
+   that clock_nanosleep does not support (ex. if CPU-time clock is not
+   supported)
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:6762:6764 pt:CS">
+   clock_nanosleep() with CLOCK_REALTIME == nanosleep()
+  </assertion>
+</assertions>
