@@ -118,7 +118,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ TEST_FILE1, "Process is not owner/root", FILE_MODE, EACCES, setup1 },
+	{ TEST_FILE1, "Process is not owner/root", FILE_MODE, EPERM, setup1 },
 	{ TEST_FILE2,  "No Search permissions to process", FILE_MODE, EACCES, setup2 },
 	{ High_address_node, "Address beyond address space", FILE_MODE, EFAULT, no_setup },
 	{ (char *)-1, "Negative address", FILE_MODE, EFAULT, no_setup },
