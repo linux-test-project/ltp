@@ -217,7 +217,7 @@ void read_raw_device()
 #else
 	static char   raw_dev[16];		/* name of raw device file  */
 
-        if (getenv("RAWDEV")
+        if (getenv("RAWDEV"))
         	sprintf(raw_dev, "%s", getenv("RAWDEV")); 
         else
         {
