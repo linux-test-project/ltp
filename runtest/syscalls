@@ -424,7 +424,7 @@ rename10 rename10
 rename13 rename13
 
 rmdir01 rmdir01
-#rmdir02 rmdir02
+rmdir02 rmdir02
 rmdir03 rmdir03
 rmdir03A symlink01 -T rmdir03
 rmdir04 rmdir04
@@ -445,7 +445,7 @@ select02 select02
 select03 select03
 
 semctl01 semctl01
-#semctl02 semctl02
+semctl02 semctl02
 semctl03 semctl03
 semctl05 semctl05
 
