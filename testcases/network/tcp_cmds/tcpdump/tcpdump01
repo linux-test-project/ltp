@@ -39,6 +39,7 @@ $trace_logic
 TC=tcpdump
 TCtmp=${TCtmp:-/tmp/$TC$$}
 RHOST=${RHOST:-`hostname`}
+IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]" | awk '{print $1}' | head -n1)}
 NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out
 LTPROOT=${LTPROOT:-"../../../../"}
