@@ -1,6 +1,0 @@
-This document defines the coverage for function sighold().
-
-Assertion	Covered?
-1		YES
-2		YES
-3		YES

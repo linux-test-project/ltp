@@ -1,5 +1,0 @@
-This file defines the coverage for the gmtime() function testing.
-
-Assertion	Status
-1		YES
-2		YES
