@@ -310,8 +310,13 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 /*                                                                            */
 /******************************************************************************/
 static int
-remove_files(char *filename)    /* name of the file that is to be removed     */
+remove_files(char *filename, char * addr)    /* name of the file that is to be removed     */
 {
+    if (addr)
+		     if (munmap(addr, sysconf(_SC_PAGESIZE)*NUMPAGES) < 0) {
+		 		     perror("map_and_thread(): munmap()");
+		 		     return FAILED;
+		     }
     if (strcmp(filename, "NULL") && strcmp(filename, "/dev/zero"))
     {
         if (unlink(filename))
@@ -395,7 +400,7 @@ map_and_thread(
             perror("map_and_thread(): write()");
             free(empty_buf);
             fflush(NULL);
-            remove_files(tmpfile);
+            remove_files(tmpfile, NULL);
             close(fd);
             retinfo->status = FAILED;
             return retinfo;
@@ -416,7 +421,7 @@ map_and_thread(
             perror("map_and_thread(): mmap()");
             free(empty_buf);
             fflush(NULL);
-            remove_files(tmpfile);
+            remove_files(tmpfile, NULL);
             close(fd);
             retinfo->status = FAILED;
             return retinfo;
@@ -465,7 +470,7 @@ map_and_thread(
             thread_begin = FALSE;
             free(empty_buf);
             fflush(NULL);
-            remove_files(tmpfile);
+            remove_files(tmpfile, map_addr);
             close(fd);
             retinfo->status = FAILED;
             return retinfo;
@@ -493,7 +498,7 @@ map_and_thread(
             perror("map_and_thread(): pthread_join()");
             free(empty_buf);
             fflush(NULL);
-            remove_files(tmpfile);
+            remove_files(tmpfile, map_addr);
             close(fd);
             retinfo->status = FAILED;
             return retinfo;
@@ -506,7 +511,7 @@ map_and_thread(
                         "thread [%ld] - process exited with errors\n",
                 (long)pthread_ids[thrd_ndx]);
                 free(empty_buf);                          
-                remove_files(tmpfile);
+                remove_files(tmpfile, map_addr);
                 close(fd);
                 exit(1);
             }
@@ -523,7 +528,7 @@ map_and_thread(
      *   above condition would indicate failure.  This change
      *   fixes that.
      */
-    if (remove_files(tmpfile) == FAILED)
+    if (remove_files(tmpfile, map_addr) == FAILED)
     {
         free(empty_buf);
         retinfo->status = FAILED;
