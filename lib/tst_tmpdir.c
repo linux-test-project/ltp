@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.4 2001/03/15 21:21:46 nstraz Exp $ */
+/* $Id: tst_tmpdir.c,v 1.5 2002/09/04 14:01:28 plars Exp $ */
 
 /**********************************************************
  *
@@ -119,7 +119,7 @@ extern char *TESTDIR;         /* the directory created; defined in */
 void
 tst_tmpdir()
 {
- 	char template[PATH_MAX];      /* template for mktemp, mkdtemp */
+ 	char template[PATH_MAX];      /* template for mkstemp, mkdtemp */
   	int  no_cleanup = 0;          /* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;            /* temporary storage for TMPDIR env var */
 
@@ -172,9 +172,9 @@ tst_tmpdir()
 		/*
 		 * Make the template name, then the directory
 		 */
-		if (mktemp(template) == NULL)
+		if (mkstemp(template) == NULL)
 			tst_brkm(TBROK, tmpdir_cleanup,
-							"%s: mktemp(%s) failed; errno = %d: %s",
+							"%s: mkstemp(%s) failed; errno = %d: %s",
 							FN_NAME, template, errno, strerror(errno));
 		TESTDIR = strdup(template);
 		if (mkdir(TESTDIR, DIR_MODE)) {
