@@ -60,7 +60,6 @@
  *		-Ported
  *
  * Restrictions:
- *  This test must be executed by 'non-super-user' only.
  */
 
 #include <stdio.h>
@@ -72,6 +71,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -85,6 +85,9 @@ int exp_enos[]={EPERM, 0};
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */
 time_t tloc;			/* argument var. for time() */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -154,11 +157,17 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is non-super/root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-super/root for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
