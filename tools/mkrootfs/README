@@ -1,0 +1,21 @@
+mkrootfs
+--------
+
+This tool can be used to create a root filesystem that will fit on a floppy.
+You can then boot the kernel on a floppy and use this root disk and boot into
+a functional linux operating system.
+
+This can be used as a recovery disk, to put linux on systems that do not
+have a hard disk. For instance to boot a PPC32 F50 machine you may do the
+following.
+
+1. dd if=<compressed kernel image> of=/dev/fd0h1440 bs=1k (floppy 1)
+2. create a root filesystem using mkrootfs, use options to choose the
+   appropriate file system support. (floppy 2)
+3. insert the floppy 1 and cycle the power, at the Open Firmware (OF) boot
+   prompt type the following.
+   ok> boot floppy:,\<kernel image> load_ramdisk=1 ramdisk_size=128000
+   root=/dev/fd0h1440 video=keep (hit enter)
+4. when prompted for root disk, remove floppy 1 and insert floppy 2 (hit enter)
+   
+
