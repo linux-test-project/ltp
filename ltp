@@ -97,6 +97,12 @@ kernel()
    cat ${LTPROOT}/runtest/sched >> ${TMP}/alltests
   fi
 
+  echo -n "Do you want to run the floating point tests (Y/N)? >> "
+  read float
+  if [ $float == "Y" ] || [ $float == "y" ]; then
+   cat ${LTPROOT}/runtest/float >> ${TMP}/alltests
+  fi
+
   echo "Test will begin after pressing [ENTER]."
   read GO
 
