@@ -26,6 +26,7 @@ OBJS=$(SRC1:.c=.o)
 TARGETS=delete_module01 delete_module02 delete_module03 $(OBJS)
 
 all: $(TARGETS)
+	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
 	$(CC) -c $(SRC1) -Wall 

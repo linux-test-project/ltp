@@ -116,6 +116,7 @@ main(int argc, char **argv)
 			"at a time"); 
 		STD_COPIES = 1;
 	}
+	tst_tmpdir();
 	if(setup() != 0) {
 		return 1;
 	}
@@ -167,6 +168,15 @@ setup(void)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
+	if( sprintf(cmd, "cp `which %s.o` ./", DUMMY_MOD) == -1) {
+                tst_resm(TBROK, "sprintf failed");
+                return 1;
+        }
+        if(system(cmd) != 0 ) {
+                tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
+                return 1;
+        }
+
 	/* Load first kernel module */
 	if( sprintf(cmd, "insmod --force %s.o >/dev/null 2>&1", DUMMY_MOD) <= 0) {
 		tst_resm(TBROK, "sprintf failed");
@@ -177,6 +187,14 @@ setup(void)
 		return 1;
 	}
 
+	if( sprintf(cmd, "cp `which %s.o` ./", DUMMY_MOD_DEP) == -1) {
+                tst_resm(TBROK, "sprintf failed");
+                return 1;
+        }
+        if(system(cmd) != 0 ) {
+                tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD_DEP);
+                return 1;
+        }
 	/* Load dependent kernel module */
 	if( sprintf(cmd, "insmod --force %s.o >/dev/null 2>&1", DUMMY_MOD_DEP) <= 0) {
 		tst_resm(TBROK, "sprintf failed");
@@ -224,7 +242,7 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
+	tst_rmdir();
 	/* exit with return code appropriate for results */
 	tst_exit();
 	/*NOTREACHED*/
