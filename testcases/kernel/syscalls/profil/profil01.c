@@ -97,8 +97,13 @@ int main (argc, argv)
 	register int i;
 	int count, loc, bsize;
 	void alrm();
+#ifdef __mips__
+	extern int __start;
+	int lotext = (int)&__start;
+#else
 	extern int _start;
 	int lotext = (int)&_start;
+#endif
 
 	bsize = (int) &etext;
 	bsize -= lotext & ~ 4096;
