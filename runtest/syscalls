@@ -114,17 +114,17 @@ fcntl07B fcntl07B
 fcntl08 fcntl08
 fcntl09 fcntl09
 fcntl10 fcntl10
-fcntl011 fcntl011
-fcntl012 fcntl012
-fcntl013 fcntl013
-fcntl014 fcntl014
-fcntl015 fcntl015
-fcntl016 fcntl016
-fcntl017 fcntl017
-fcntl018 fcntl018
-fcntl019 fcntl019
-fcntl020 fcntl020
-fcntl021 fcntl021
+fcntl11 fcntl11
+fcntl12 fcntl12
+fcntl13 fcntl13
+fcntl14 fcntl14
+fcntl15 fcntl15
+fcntl16 fcntl16
+fcntl17 fcntl17
+fcntl18 fcntl18
+fcntl19 fcntl19
+fcntl20 fcntl20
+fcntl21 fcntl21
 
 fork01 fork01
 fork02 fork02
@@ -135,8 +135,8 @@ fork06 fork06
 fork07 fork07
 fork08 fork08
 fork09 fork09
-fork010 fork010
-fork011 fork011
+fork10 fork10
+fork11 fork11
 
 fpathconf01 fpathconf01
 
