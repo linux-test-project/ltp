@@ -30,10 +30,10 @@ all: $(TARGETS)
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
-	@chmod 755 $(TEST)
 
 install: all
 	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
+	@chmod 755 $(TEST)
 
 clean:
 	rm -f $(TARGETS)
