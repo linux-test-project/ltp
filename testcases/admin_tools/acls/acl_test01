@@ -1,0 +1,146 @@
+#!/bin/sh
+#*********************************************************************
+#   Copyright (c) International Business Machines  Corp., 2003
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : acls 
+#
+#  PURPOSE: Tests extended acls 
+#
+#  HISTORY:
+#    03/03 Jerone Young  (jyoung5@us.ibm.com)
+#*********************************************************************
+TEST_USER1="acltest1"
+TEST_USER1_GROUP="users"
+TEST_USER1_PASSWD="ltp_test_pass1"
+TEST_USER1_HOMEDIR="/home/$TEST_USER1"
+
+FILE_ACL="/tmp/test_file"
+FILE_ACL_LINK="/tmp/test_file_link"
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_setup
+#-----------------------------------------------------------------------
+
+do_setup(){
+
+	rm -f $FILE_ACL
+	rm -f $FILE_ACL_LINK
+
+	rm -rf /home/$TEST_USER1 
+	userdel $TEST_USER1 
+	sleep 1
+	useradd -m -g $TEST_USER1_GROUP $TEST_USER1
+
+	if [ $? != 0 ]
+	then {
+		echo "Could not add test user $TEST_USER1."
+		exit 1
+	}
+	fi
+
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_cleanup
+#-----------------------------------------------------------------------
+
+do_cleanup() {
+        rm -rf /home/$TEST_USER1
+	userdel $TEST_USER1
+	rm -f $FILE_ACL &> /dev/null
+	rm -f $FILE_ACL_LINK &> /dev/null
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  MAIN
+#-----------------------------------------------------------------------
+
+iam=`whoami`
+EXIT_CODE=0
+if [ "z$iam" = "z$TEST_USER1" ]
+then
+	echo "TESTING ACLS FOR 2ND USER $iam"
+
+	echo "Trying extened acls for files"
+	${TCbin}/acl_file_test $FILE_ACL
+	if [ $? = 0 ]
+	then 
+		EXIT_CODE=1
+		echo "Extended acls for files (FAILED)"
+	else
+		echo "Extended acls for files (PASSED)"
+	fi
+
+	echo "Trying extened acls for file links"
+	${TCbin}/acl_link_test $FILE_ACL_LINK
+	if [ $? = 0 ]
+        then
+                EXIT_CODE=1
+		echo "Extended acls for links (FAILED)"
+	else 
+		echo "Extended acls for links (PASSED)"	
+        fi
+else
+	do_setup
+	echo "TESTING ACLS FOR USER $iam"
+
+	touch $FILE_ACL
+	touch $FILE_ACL_LINK
+
+	#setup files for extended attributes
+	setfacl -mu:root:r $FILE_ACL_LINK
+	setfacl -mu:root:r $FILE_ACL
+	
+	echo "Trying extened acls for files"
+	acl_file_test $FILE_ACL
+	if [ $? != 0 ]
+    	then
+      	 	EXIT_CODE=1
+		echo "Extended acls for files (FAILED)"
+	else
+		echo "Extended acls for files (PASSED)"
+    	fi
+
+	echo "Trying extened acls for file links"	
+	acl_link_test $FILE_ACL_LINK
+	if [ $? != 0 ]
+	then
+		EXIT_CODE=1
+		echo "Extended acls for links (FAILED)"
+	else
+		echo "Extended acls for links (PASSED)"
+	fi
+
+	rm -f $FILE_ACL_LINK
+	rm -f $FILE_ACL
+	touch $FILE_ACL
+        touch $FILE_ACL_LINK
+
+	if [ -z ${TCbin} ]
+	then
+   		export TCbin=$PWD
+	fi
+	
+	su $TEST_USER1 -c "$0"
+	EXIT_CODE=$?
+	
+	do_cleanup
+fi	
+
+exit $EXIT_CODE

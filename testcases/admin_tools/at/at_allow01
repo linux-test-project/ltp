@@ -1,0 +1,169 @@
+#!/bin/sh
+#
+#   Copyright (c) International Business Machines  Corp., 2003
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# 	FILE: /etc/at.allow
+#
+#	PURPOSE: Test that /etc/at.allow , only allows those in the file to run cron jobs.
+#
+#	HISTORY:
+#		04/03 Jerone Young (jyoung5@us.ibm.com)
+#
+
+iam=`whoami`
+
+at_ACCEPT="/etc/at.allow"
+
+TEST_USER1="test_user_1"
+TEST_USER1_HOME="/home/$TEST_USER1"
+TEST_USER2="test_user_2"
+TEST_USER2_HOME="/home/$TEST_USER2"
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_setup
+#-----------------------------------------------------------------------
+
+do_setup() {
+	#move any files that may get in the way
+	rm /tmp/at_allow_test &> /dev/null
+	mv $at_ACCEPT $at_ACCEPT.old &> /dev/null
+
+	#remove users for clean enviroment
+        rm -rf /home/$TEST_USER1
+        rm -rf /home/$TEST_USER2
+	userdel $TEST_USER1 
+	userdel $TEST_USER2
+	sleep 1
+
+#create 1st user
+	useradd -m -g users $TEST_USER1
+	if [ $? != 0 ]
+        then {
+        	echo "Could not add test user $TEST_USER1 to system."
+        	exit 1
+    	}
+    	fi
+
+#create 2nd user	
+	useradd -m -g users $TEST_USER2
+    	if [ $? != 0 ]
+    	then {
+        	echo "Could not add test user $TEST_USER2 to system."
+        	exit 1
+    	}
+    	fi
+    # restart atd daemon
+    /etc/init.d/atd restart
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_cleanup
+#-----------------------------------------------------------------------
+do_cleanup(){
+        rm -rf /home/$TEST_USER1
+        rm -rf /home/$TEST_USER2
+	userdel $TEST_USER1
+	userdel $TEST_USER2
+	rm $at_ACCEPT
+	mv $at_ACCEPT.old $at_ACCEPT &> /dev/null
+	rm /tmp/at_allow_test &>/dev/null
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  run_test
+#-----------------------------------------------------------------------
+run_test() {
+
+if [ $iam = $TEST_USER1 ]
+then 
+	echo "TEST: $at_ACCEPT should allow only those who in the file to
+run jobs."
+		
+	echo "(1) TEST THAT PERSON IN $at_ACCEPT IS ABLE TO RUN JOB."
+	echo "echo TEST JOB RAN >> /tmp/at_allow_test 2>&1" | at -m now + 1 minutes	
+	if [ $? != 0 ]; then
+	echo Error while adding job using at for user $TEST_USER1
+	exit 1
+	fi
+	
+	echo "sleeping for 75 seconds...."	
+	sleep 75 
+	
+	EXIT_CODE=1
+	test -e /tmp/at_allow_test && EXIT_CODE=0
+	
+	if [ $EXIT_CODE = 1 ]; then
+		echo "at did not allow user to execute job , TEST FAILED"
+	else
+		echo "at allowed user to exectue test job, TEST PASSED"
+	fi
+
+	rm -f /tmp/at_allow_test &> /dev/null
+	
+	exit $EXIT_CODE	
+fi
+
+if [ $iam = $TEST_USER2 ]
+then
+        echo "(2) TEST PERSON THAT IS NOT IN $at_ACCEPT IS NOT ABLE TO RUN JOB."
+         
+	echo "echo TEST JOB RAN >> /tmp/at_allow_test 2>&1" | at -m now + 1 minutes                                                                                                    
+        if [ $? != 0 ]; then
+        echo Error while adding job user at for user $TEST_USER2
+        fi
+                                                                                                             
+        echo "sleeping for 75 seconds...."
+        sleep 75 
+                                                                                                             
+        EXIT_CODE=0
+        test -e /tmp/at_allow_test && EXIT_CODE=1
+                                                                                                             
+        if [ $EXIT_CODE = 0 ]; then
+                echo "at did not allow user to execute job , TEST PASSED"
+        else
+                echo "at allowed user to exectue test job, TEST FAILED"
+        fi
+                                                                                                             
+        rm -f /tmp/at_allow_test &> /dev/null
+                                                                                                             
+        exit $EXIT_CODE
+fi
+
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION: main
+#-----------------------------------------------------------------------
+if [ $iam = "root" ] 
+then
+	do_setup
+	echo $TEST_USER1 > $at_ACCEPT
+	EXIT_CODE=0
+	su $TEST_USER1 -c "$0"
+	if [ $? != 0 ]
+	then 
+	   EXIT_CODE=1
+	fi
+	su $TEST_USER2 -c "$0"
+	if [ $? != 0 ]
+	then EXIT_CODE=1
+	fi 
+	do_cleanup
+	exit $EXIT_CODE
+else
+	run_test
+fi
