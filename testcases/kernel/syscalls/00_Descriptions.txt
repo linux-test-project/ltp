@@ -1990,15 +1990,15 @@
    Verify that send() returns the proper errno for various failure cases
  
 
-  sendfile01  
-  
- 	Testcase to test that sendfile(2) system call returns appropriete
- 	errnos on error.
  
   sendfile02  
   
  	Testcase to test the basic functionality of the sendfile(2) system call.
  
+  sendfile03  
+  
+ 	Testcase to test that sendfile(2) system call returns appropriete
+ 	errnos on error.
 
   sendmsg01  
   
