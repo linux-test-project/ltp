@@ -86,6 +86,7 @@ void setup5();
 
 char *TCID = "mkdir03";           /* Test program identifier.    */
 int TST_TOTAL = 5;                /* Total number of test cases. */
+int fileHandle = 0;
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 char tstdir3[NAMELEN];
@@ -204,7 +205,7 @@ setup3()
 	sprintf(tstdir3, "%s", tstfile3);
 
 	/* create a file */
-	if (creat(tstfile3, PERMS) == -1) {
+	if ((fileHandle = creat(tstfile3, PERMS)) == -1) {
 		tst_brkm(TBROK, cleanup, "file creation failed is setup3");
 	}
 }
@@ -289,6 +290,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fileHandle);
+
 	TEST_CLEANUP;
 
 	/*
