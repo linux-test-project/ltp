@@ -2,6 +2,8 @@
 # This script should be run prior to running executing the filesystem tests.
 # valid devices need to be passed for Device Mapper to work correctly
 # 03/14/03 mridge@us.ibm.com added instance and time command line options 
+# 05/16/03 changed script paths
+# 05/20/03 Added instructions on setup and warnings
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -31,6 +33,12 @@ usage()
 	example: ${0##*/} -a hdc1 -b hdc2 -c hdc3 -d hdc4 -n mytesthost:/testmountdir 
 
         fdisk needs to be run and the 4 HD partitions marked as 0x8e -- Linux LVM
+
+        - If this is run on a 2.4 kernel system then LVM must be configured and the kernel rebuilt. In a 2.5 environment
+        you must configure Device Mapper and install LVM2 from www.systina.com for the testcase to run correctly.
+
+        - These operations are destructive so do NOT point the tests to partitions where the data shouldn't be overwritten.
+        Once these tests are started all data in the partitions you point to will be destroyed.
 
 	END
 exit
