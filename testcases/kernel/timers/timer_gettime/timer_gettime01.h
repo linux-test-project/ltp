@@ -51,7 +51,7 @@
 #endif
 #pragma weak timer_delete
 
-/* timer_delete */
+/* clock_gettime */
 #ifndef __NR_clock_gettime
 #if defined(__parisc__)
 #define __NR_HPUX_clock_gettime 346
