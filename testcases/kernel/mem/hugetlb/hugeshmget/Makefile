@@ -1,6 +1,5 @@
 CFLAGS += -I../lib -I../../../../../include -g -Wall
 LOADLIBES += -L../../../../../lib -lltp -L../lib -lipc
-LDFLAGS := 
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
