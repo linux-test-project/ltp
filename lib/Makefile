@@ -1,5 +1,5 @@
 
-NPTL:=$(shell LD_ASSUME_KERNEL=2.4.1 getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
+NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
 ifeq ($(NPTL),)
 CFLAGS+= -Wall -I../include 
 else
