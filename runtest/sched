@@ -3,4 +3,4 @@ pth_str02 pth_str02 -n1000
 pth_str03 pth_str03
 
 process_stress process -d 8 -b 2 -t 1
-sched_stress sched_driver.sh
+
