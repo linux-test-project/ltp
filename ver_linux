@@ -78,8 +78,8 @@ if [ -e /proc/modules ]; then
 fi
 
 echo
-echo 'free -m reports:'
-free -m
+echo 'free reports:'
+free 
 
 echo
 echo '/proc/cpuinfo'
