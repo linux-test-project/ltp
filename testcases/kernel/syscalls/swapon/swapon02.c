@@ -275,27 +275,36 @@ setup03()
 		 char decimal[3];		 /* array for digits at end of filename*/
 		 char temp[7];		 		 /* to store wc -l output*/
 
-		 /*Find out how many swapfiles (1 line per entry) already exist*/
-		 if(system("cat /proc/swaps | wc -l > ./linecount") != 0) {
-		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
-		 		 		 		 " files");
-		 		 exit(1);
+		/*Find out how many swapfiles (1 line per entry) already exist*/
+	    	 if(system("cat /proc/swaps | wc -l > ./linecount") != 0) {
+	 			 tst_resm(TWARN, "Failed to find out existing number of swap"
+	 			 		 		 " files");
+	 		 	exit(1);
 		 }
-
 		 /*open linecount file to know the number of entries*/
 		 if((fd = open("./linecount", O_RDONLY)) == -1) {
 		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
 		 		 		 		 " files");
 		 		 exit(1);
 		 }
-
+		 int res = 0;
 		 /* 6th and 7th character in the file contains output of wc -l*/
-		 if( read(fd, temp, 7) != 7) {
+		 if( (res = read(fd, temp, 7)) < 0) {
 		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
 		 		 		 		 " files");
 		 		 exit(1);
 		 }
 
+		// Added by CSDL - for ppc64 SLES, temp[0-6]="XX....."
+		 if ((strncmp(kmachine, "ppc64", 5)) == 0) {
+			int i;
+			for (i=res; i<7; i++) {
+				temp[i]=0;
+			}
+			int nSwapNO = atoi(temp);
+			sprintf(temp,"%7d",nSwapNO);
+		 }
+		// Adde end
 		 /*check if number of lines are less than 10 in /proc/swaps*/
 		 if(temp[5] == ' ') {
 		 		 decimal[0] = '0';
@@ -306,7 +315,6 @@ setup03()
 		 decimal[1] = temp[6];		 /*temp[6] unit digit of wc -l result*/
 
 		 swapfile = atoi(decimal);
-
 		 if(swapfile < 0) {
 		 		 tst_resm(TWARN, "Failed to find existing number of swapfiles");
 		 		 exit(1);
