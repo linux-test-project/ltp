@@ -19,13 +19,13 @@
 #
 #   FILE: generate.sh
 #
-#   PURPOSE: Creates datafiles for use in network file transfer tests.
+#   PURPOSE: Creates data_dir for use in network file transfer tests.
 #
 #   AUTHOR: Robbie Williamson (robbiew@us.ibm.com)
 #
 ############################################################################
 
-my $datafiles = 'datafiles';
+my $data_dir = 'datafiles';
 my $small_file = 'ascii.sm';
 my $medium_file = 'ascii.med';
 my $large_file = 'ascii.lg';
@@ -35,10 +35,10 @@ my $medium_size = 80020;
 my $large_size = 4020;
 my $jumbo_size = 220;
 
-unless ( -f $datafiles ) {
-	mkdir("datafiles",0777)
+unless ( -d $data_dir ) {
+	mkdir($data_dir,0777)
 }
-chdir($datafiles);
+chdir($data_dir);
 unless (-f $small_file) {
         open(DATAFILE, ">$small_file") or die "$0: could not create $small_file: $!\n";
         print DATAFILE 'A' x $small_size;
