@@ -1,9 +1,9 @@
-$Id: INSTALL,v 1.10 2001/09/19 15:25:43 robbiew Exp $
+$Id: INSTALL,v 1.11 2001/09/19 16:11:23 robbiew Exp $
 
 Quick Start
 -----------
 
-1> tar xzf ltp-20000908.tar.gz
+1> tar xzf ltp-XXXXXXXX.tar.gz
 2> cd ltp
 3> make
 4> ./runalltests.sh
