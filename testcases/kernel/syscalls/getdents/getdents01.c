@@ -72,6 +72,15 @@ char *TCID = "getdents01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+#ifndef __i386__
+int main()
+{
+	tst_resm(TINFO, "This test includes x86 asm and will not work on "
+			"this machine");
+	tst_exit();
+	return(0);
+}
+#else
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -83,11 +92,6 @@ int main(int ac, char **av)
 	char *dir_name = NULL;
 	struct dirent *dirp;
 
-#ifndef __i386__
-	tst_resm(TINFO, "This test includes x86 asm and will not work on "
-			"this machine");
-	tst_exit();
-#endif /* __i386__ */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -231,3 +235,4 @@ cleanup(void)
 	tst_exit();
 }
 
+#endif /* __i386__ */
