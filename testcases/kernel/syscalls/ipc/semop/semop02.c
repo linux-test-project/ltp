@@ -66,7 +66,7 @@ int bad_id = -1;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-struct sembuf s_buf;
+struct sembuf s_buf[PSEMS];
 int badbuf = -1;
 
 #define NSOPS	5		/* a resonable number of operations */
