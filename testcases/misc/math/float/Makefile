@@ -1,4 +1,4 @@
-CFLAGS+= -Wall -O -g 
+CFLAGS+= -Wall -g 
 LOADLIBES+= -lpthread -lm 
 
 SRCS=$(wildcard float*.c)
