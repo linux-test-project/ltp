@@ -1,0 +1,63 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25852:25852 ref:XSH6:25855:25856 pt:MSG">
+mq_timedreceive() receive the oldest of the highest priority message(s) from the message queue specified by mqdes. The selected message will be removed from the queue and copied to the buffer pointed to by the msg_ptr argument. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:25853:25854 pt:MSG">
+mq_timedreceive() will fail and return an error if the size of the buffer in bytes, specified by the msg_len argument, is less than the mq_msgsize attribute of the message queue.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:25857:25857 pt:MSG">
+if msg_len is greater than SSIZE_MAX, the result is implementation-defined.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:25858:25859 pt:MSG">
+If msg_prio is not NULL, the priority of the selected message will be stored in the location referenced by msg_prio.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:25870:25873 pt:MSG pt:TMO">
+If the specified message queue is empty and O_NONBLOCK is not set, then mq_timedreceive() will block until a message is enqueued on the message queue or until a signal interrupts mq_timedreceive() or until the time specified by abs_timeout expires.
+abs_timeout refers to the absolute time at which the timeout will expire
+(current time meets or exceeds that time).
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:25862:25865 pt:MSG">
+If there are more than one thread waiting to receive a message when a message arrives at an empty queue and the Priority Scheduling option is supported, then the thread with highest priority that has been waiting the longest will receive the message. If Priority Scheduling option is not supported, then it is unspecified which waiting thread is able to receive the message. 
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:25866:25868 pt:MSG">
+If the specified message queue is empty and O_NONBLOCK is set, no message will be removed from the queue, and mq_timedreceive() will return an error.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:25879:25881 pt:MSG pt:TMO pt:TMR">
+If Timers option is supported, then abs_timeout is based on CLOCK_REALTIME.
+Otherwise, the timeout is based on the system clock (time() function).
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:25882:25883 pt:MSG pt:TMO">
+The timeout has the same resolution as the clock it is based on.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:25884:25886 pt:MSG pt:TMO">
+If the message can be removed from the message queue immedietely, the operation will never fail and the validity of abs_timeout need not be checked.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:25888:25889 pt:MSG">
+mq_timedreceive() will return the length of the selected message in bytes and the message will be removed from the queue on success.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:25890:25891 pt:MSG">
+mq_timedreceive() will return -1 on failure, no message will be removed from the queue, and the errno will be set.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:25894:25895 pt:MSG">
+mq_timedreceive() will return EAGAIN if O_NONBLOCK is set and the message queue is empty.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:25896:25896 pt:MSG">
+mq_timedreceive() will return EBADF if mqdes is not a valid message queue descriptor open for reading. 
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:25897:25898 pt:MSG">
+mq_timedreceive() will return EMSGSIZE if the specified buffer size, msg_len, is less than the message size attribute of the message queue.
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:25899:25899 pt:MSG pt:TMO">
+mq_timedreceive() will return EINTR if it is interrupted by a signal
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:25900:25902 pt:MSG pt:TMO">
+mq_timedreceive() will return EINVAL if the process or thread have blocked, and abs_timeout had a tv_nsec field less than zero or greater than or equal to 1000 million.
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:25903:25904 ref:XSH6:25877:25878 pt:MSG pt:TMO">
+mq_timedreceive() will return ETIMEDOUT if O_NONBLOCK was not set when open the message queue, and no message arrived on the queue before the timeout expired. 
+If abs_timeout has already passed the time at the time mq_timedreceive() called, the timeout shall expire too.
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:25906:25907 pt:MSG">
+mq_timedreceive() will return EBADMSG if the implementation has detected a data corruption problem with the message.
+  </assertion>
+</assertions>

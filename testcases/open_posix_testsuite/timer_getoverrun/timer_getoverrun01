@@ -1,0 +1,97 @@
+#!/bin/sh
+####################################################
+#    Copyright (c) International Business Machines  Corp., 2003
+#
+#    This program is free software;  you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#    the GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program;  if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#   DESCRIPTION : a wrapper interface for tests from the Open POSIX* Testsuite.
+#   HISTORY     :
+#       02/19/2003 Robbie Williamson (robbiew@austin.ibm.com)
+#               written
+####################################################
+
+#Set variables NAME and TST_TOTAL
+NAME=timer_getoverrun01
+export TST_TOTAL=8
+
+check_return_code()
+{
+  #PTS_PASS
+  if [ $RC -eq 0 ];then
+      $LTPBIN/tst_resm TPASS "`cat $OUTPUT_FILE`" 
+  fi
+
+  #PTS_FAIL
+  if [ $RC -eq 1 ];then
+      $LTPBIN/tst_resm TFAIL "`cat $OUTPUT_FILE`"
+      NOPASS=1
+  fi
+  #PTS_UNRESOLVED 
+  if [ $RC -eq 2 ];then
+      $LTPBIN/tst_resm TBROK "`cat $OUTPUT_FILE`"
+      NOPASS=1
+  fi
+  #PTS_UNSUPPORTED 
+  if [ $RC -eq 4 ];then
+      $LTPBIN/tst_resm TCONF "`cat $OUTPUT_FILE`"
+  fi
+  #define PTS_UNTESTED    
+  if [ $RC -eq 5 ];then
+      $LTPBIN/tst_resm TINFO "UNTESTED: `cat $OUTPUT_FILE`"
+  fi
+  if [ $RC -gt 5 ]; then
+      $LTPBIN/tst_resm TBROK "Problem with test execution. $TEST $COUNT returned $RC"
+      NOPASS=1
+  fi
+
+}
+
+if [ -z $LTPROOT ]
+  then
+    BIN=.
+    ls | grep tst_resm >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      LTPBIN=$BIN
+    else
+      LTPBIN=../../../bin
+    fi
+  else
+    BIN=$LTPROOT/testcases/bin
+    LTPBIN=$BIN
+fi
+
+if [ -z $TMP ]
+then
+    TMP=/tmp
+fi
+
+OUTPUT_FILE=$TMP/$NAME.$$
+export TCID=$NAME
+NOPASS=0
+COUNT=0
+TST_LIST=`ls $NAME.*|grep -v "\.c"|cut -d. -f1,2`
+for TEST in $TST_LIST
+do
+
+  COUNT=$(($COUNT + 1))
+  export TST_COUNT=$COUNT
+  $BIN/$TEST >$OUTPUT_FILE 2>&1
+  RC=$?
+  check_return_code
+done
+
+rm -f $OUTPUT_FILE
+
+exit $NOPASS

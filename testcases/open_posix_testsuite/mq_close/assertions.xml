@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25615:25615 pt:MSG">
+mq_close will return zero after successful completion.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:25611:25613 pt:MSG">
+All notification requests that have been successfully attached to 
+the message queue through the descriptor being closed will be removed,
+so another process will be able to set up notification.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:25616:25619 pt:MSG">
+Calling mq_close with an invalid descriptor will result in a
+mq_close returning -1 and errno being set to EBADF.  
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:25607:25608 pt:MSG">
+mq_close removes the association between the descriptor being closed and
+the message queue it represents.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:25608:25610 pt:MSG">
+It is undefined what will happen if mqdes is used after mq_close() is
+successfully called and mq_open() has not been called again.
+  </assertion>
+</assertions>

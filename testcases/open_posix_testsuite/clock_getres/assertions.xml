@@ -1,0 +1,21 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6588:6591">
+   clock_getres() returns the resolution of clock clock_id in res if res != NULL
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6598:6599">
+   clock_getres() supports a clock_id of CLOCK_REALTIME
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6615:6616 pt:MON">
+   clock_getres() supports a clock_id of CLOCK_MONOTONIC (if pt:MON)
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6652:6652">
+   clock_getres() returns 0 on success
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6652:6652">
+   clock_getres returns -1 on failure
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:6656:6656">
+   clock_getres() sets errno=EINVAL if clock_id does not refer to a known
+   clock
+  </assertion>
+</assertions>

@@ -1,0 +1,63 @@
+/*
+    Copyright (c) 2002, Intel Corporation. All rights reserved.
+    Created by:  majid.awad REMOVE-THIS AT intel DOT com
+    This file is licensed under the GPL license.  For the full content 
+    of this license, see the COPYING file at the top level of this 
+    source tree.
+ */
+
+/*
+ * ERROR: EINVAL -- tries to unlock invalid semaphore.
+ */
+
+
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "posixtest.h"
+
+
+#define TEST "3-1"
+#define FUNCTION "sem_post"
+#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
+
+
+
+int main() {
+	sem_t *mysemp;
+	char semname[20];
+
+	sprintf(semname, "/tmp/" FUNCTION "_" TEST "_%d", getpid());
+
+	/* Initial value of Semaphore is 0 */
+	mysemp = sem_open(semname, O_CREAT, 0777, 0);
+	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+		perror(ERROR_PREFIX "sem_open");
+		return PTS_UNRESOLVED;
+	}
+
+	/* closing the semaphore */
+	if( sem_close(mysemp) == -1 ) {
+		perror(ERROR_PREFIX "sem_close");
+		return PTS_UNRESOLVED; 
+	}
+
+	/* Make sure semaphore doesn't exist */
+	if( sem_unlink(semname) == -1 ) {
+		perror(ERROR_PREFIX "sem_close");
+		return PTS_UNRESOLVED; 
+	}
+
+	/* Try to increment mysemp */
+	if( (sem_post(mysemp) == -1) && (errno == EINVAL)) {
+	        puts("TEST PASSED");
+	        return PTS_PASS;
+	} else {
+	        puts("TEST FAILED");
+	        return PTS_FAIL;
+	}
+}
+

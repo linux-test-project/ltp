@@ -1,0 +1,11 @@
+This document defines the coverage for function sigemptyset().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		WON'T
+
+WON'T TEST
+3-1 - Not possible to make sigfillset() fail at will to return a -1.
+	POSIX spec doesn't mention how to cause sigfillset() to fail
+	when called.

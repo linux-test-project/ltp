@@ -1,0 +1,23 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:26099:26100 pt:MSG">
+mq_unlink() function will remove the message queue named by the pathname name. After a successful call to mq_unlink() with name, mq_open() with name will fail if the flag O_CREAT is not set.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:26101:26106 pt:MSG">
+Destruction of the message queue will be postponed until all references to the message queue have been closed. So calls to mq_open() to recreate the message queue may fail until all the message queue is actually removed. However, mq_unlink() call need not block untill all the references have been closed, it may return immediately.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:26108:26108 pt:MSG">
+If mq_unlink() is successful, it will return a value of zero. 
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:26109:26110 pt:MSG">
+If mq_unlink() is not successful, the named message queue will be unchanged by this function call, and the function will return a value of -1 and set errno to indicate the error.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:26113:26113 pt:MSG">
+mq_unlink() fails with EACCES if permission is denied to unlink the named message queue.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:26114:26116 pt:MSG">
+mq_unlink() fails with ENAMETOOLONG if the length of the name argument exceeds {PATH_MAX} or a pathname component is longer than {NAME_MAX}.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:26117:26117 pt:MSG">
+mq_unlink() fails with ENOENT if the named message queue does not exist.
+  </assertion>
+</assertions>

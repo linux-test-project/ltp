@@ -1,0 +1,20 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41814:41815">
+sigdelset() deletes signal signo from signal set set.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41816:41820">
+The results are undefined if an object does not call sigemptyset() or sigfillset() 
+before calling sigdelset().
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41822:41822">
+sigdelset() returns 0 on success.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41822:41823">
+sigdelset() returns -1 when not successful.  It also sets errno to
+indicate the error.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:41825:41827">
+If the signo argument is not a valid signal number or is an unsupported
+signal number, the sigdelset() function will fail with error EINVAL.
+  </assertion>
+</assertions>

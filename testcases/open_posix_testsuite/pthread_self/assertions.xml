@@ -1,0 +1,9 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35217:35221">
+   The function
+
+   pthread_t pthread_self(void)
+ 
+  returns the thread ID of the calling thread.  No errors are defined.
+  </assertion>
+</assertions>

@@ -1,0 +1,9 @@
+This document defines the coverage for the pthread_mutex_lock function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		NO  * Error codes are either implementation dependent or 
+		      relatedd to the low-priority mutex attributes
+
+NOTE:

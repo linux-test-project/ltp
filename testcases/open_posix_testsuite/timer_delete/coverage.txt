@@ -1,0 +1,8 @@
+This file defines the coverage for function timer_delete().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES
+5		YES

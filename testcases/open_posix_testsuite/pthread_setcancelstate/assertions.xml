@@ -1,0 +1,23 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35253:35256">
+   The function
+
+   int pthread_setcancelstate(int state, int* oldstate); 
+  
+  Atomically sets the cancelability state to 'state' and returns the old
+  cancelability state in the location referenced by 'oldstate'.
+
+  'state' can either be PTHREAD_CANCEL_ENABLE, or PTHREAD_CANCEL_DISABLE.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:35261:35263">
+  The cancelability state of a newly created thread is PTHREAD_CANCEL_ENABLE.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:35267:35276">
+  It returns a 0 on success.  It may return an error code of:
+
+  [EINVAL] The specified state is not PTHREAD_CANCEL_ENABLE or
+  PTHREAD_CANCEL_DISABLE.
+
+  It will not return EINTR.
+  </assertion> 
+</assertions>

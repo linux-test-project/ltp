@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6514:6519">
+   clock() returns a clock_t containing the processor time since a specific
+   point in time (implementation defined).
+   This return value should be divided by CLOCKS_PER_SEC to get the time
+   in seconds.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6519:6519 pt:XSI">
+   CLOCKS_PER_SEC == 1,000,000 in time.h
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6520:6521">
+   clock() returns (clock_t) - 1 if the processor time used cannot be
+   represented or is somehow unavailable
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6527:6530">
+   clock() is best used to get a delta between two times in a program.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6531:6532">
+   It is acceptable for clock() to wrap on some implementations.  (No
+   specifics on when/where.)
+  </assertion>
+</assertions>

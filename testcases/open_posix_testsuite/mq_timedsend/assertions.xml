@@ -1,0 +1,91 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25950:25951 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() places the message msg_ptr points to into message queue mqdes
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:25951:25953 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will fail if msg_len, the message length, is not less than or 
+equal to mq_attr->mq_msgsize.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:25954:25958 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will insert the message into the message queue according to
+msg_prio (if the message queue is not full):
+- Larger msg_prio values mean the message is inserted before those with
+  lower values.
+- For messages with equal msg_prio values, the message is inserted after
+  those.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:25958:25958 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+msg_prio must be less than MQ_PRIO_MAX
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:25969:25976 pt:MSG pt:TMO">
+If the message queue pointed to by msg_ptr is full and O_NONBLOCK is not
+set, then mq_timedsend() will block until it can place the message in the queue
+or until a signal interrupts mq_timedsend() or when the time specified by
+abs_timeout expires.
+
+abs_timeout refers to the absolute time at which the timeout will expire
+(current time meets or exceeds that time).
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:25962:25965 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+If there are greater than one threads which are waiting to place a message
+in the message queue, the thread which will be able to place its message
+when space is available is the one with the greatest priority that has been
+waiting the longest if Priority Scheduling is supported.  If not, then it
+is unspecified which thread is able to place its message.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:25965:25967 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+If the message queue pointed to by msg_ptr is full and O_NONBLOCK is set,
+then mq_timedsend() will just return an error and the message will not
+be queued.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:25986:25987 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return 0 on success.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:25988:25989 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return -1 on failure, no message will be queued, and errno
+will be set.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:25992:25993 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return EAGAIN if O_NONBLOCK is set and the message queue
+is full
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:25994:25994 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return EBADF if mqdes is not a valid message queue descriptor
+that is also open for writing
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:25995:25995 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return EINTR if it is interrupted by a signal
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:25996:25996 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return EINVAL if msg_prio wasn't in the valid range
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:26000:26001 ref:XSH6:25968:25969 pt:MSG pt:TMO">
+mq_timedsend() will return EMSGSIZE if msg_len is greater than the message
+queues message size attribute
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:25976:25977 pt:MSG pt:TMO">
+If abs_timeout has already passed at the time mq_timedsend is called, then the
+timeout shall expire.
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:25978:25980 pt:MSG pt:TMO pt:TMR">
+If Timers is supported, then abs_timeout is based on CLOCK_REALTIME.
+Otherwise, the timeout is based on the system clock (time() function).
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:25981:25981 pt:MSG pt:TMO">
+The timeout has the same resolution as the clock it's based on.
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:25983:25985 pt:MSG pt:TMO">
+If the queue already has room, then mq_timedsend() should never fail.
+Also, in this case, abs_timeout doesn't need to be checked for validity.
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:25997:25999 pt:MSG pt:TMO">
+mq_timedsend() will return EINVAL if the message queue was full and
+abs_timeout had a tv_nsec field less than 0 or greater than or equal
+to 1000 million.
+  </assertion>
+  <assertion id="20" tag="ref:XSH6:26002:26003 pt:MSG pt:TMO">
+mq_timedsend() will return ETIMEDOUT if O_NONBLOCK was not set when
+mq_open() was called for the message queue, but the message could not
+be added to the queue because it timed out
+  </assertion>
+</assertions>

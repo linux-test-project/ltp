@@ -1,0 +1,8 @@
+This document defines the coverage for the mq_close function.
+
+ASSERTION	COVERED?
+1		YES
+2		YES
+3		YES
+4		YES
+5		WON'T - will not cover as this is undefined behavior

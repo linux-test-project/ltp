@@ -1,0 +1,47 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33638:33640">
+   The function
+
+   int pthread_mutex_init(pthread_mutex_t *restrict mutex,
+ 	const pthread_mutexattr_t *restrict attr); 
+
+   pthread_mutex_t = PHTREAD_MUTEX_INITIALIZER
+ 
+  initializes a mutex referenced by 'mutex' with attributes specified by
+  'attr'.  If 'attr' is NULL, the default mutex attributes are used.  The 
+  effect shall be the same as passing the address of a default mutex attributes
+  object. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:33640:33645">
+  Upon successful initialization, the state of the mutex becomes initialized
+  and unlocked.  Attempting to initialize an already intialized mutex
+  results in undefined behavior.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:33646:33649">
+  In cases where default mutex attributes are appropriate, the macro
+  PTHREAD_MUTEX_INITIALIZER can be used to intiailize mutexes that are
+  statically allocated.  The effect shall be equivilant to dynamic
+  intialization by a call to pthread_mutex_init() with paramter 'attr'
+  specified as NULL, except that no error checks are performed. 
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:33651:33651">
+  Upon success, it returns a 0;
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:33662:33671">
+  It SHALL fail if:
+
+  -[EAGAIN] The system lacked the neccessary resources (other than memory)
+  to intialize another mutex.
+  -[ENOMEM] Insufficient memory exists to initialize the mutex.
+ -[EPERM] The caller does not have the privilage to perform the operation.
+ 
+  It MAY fail if:
+   
+  -[EBUSY] The implementation has detected an attempt to reinitialize the
+   object referenced by 'mutex', a previously intialized, but not yet 
+   destroyed, mutex.
+  -[EINVAL] The value specified by 'attr' is invalid.
+
+  It shall not return [EINTR]
+  </assertion> 
+</assertions>

@@ -1,0 +1,6 @@
+This document defines the coverage for the pthread_self() function:
+
+Assertion	Tested?
+1		YES
+
+NOTE:
