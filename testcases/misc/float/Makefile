@@ -9,7 +9,7 @@ SUBDIRS=bessel exp_log iperb power trigo
 all: $(TARGETS)
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
-install: all
+install: 
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 	@for i in $(TARGETS); do ln -f $$i ../../bin/$$i; done
 
