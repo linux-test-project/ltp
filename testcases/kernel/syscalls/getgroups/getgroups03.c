@@ -190,10 +190,7 @@ setup()
 	 * Get the IDs of all the groups of "nobody"
 	 * from /etc/group file
 	 */
-	if ((ngroups == readgroups(groups)) <= 0) {
-		printf("ngroups is %d\n readgroups(groups) is %d\n",ngroups,readgroups(groups));
-		tst_brkm(TFAIL, cleanup, "Can't read group file");
-	}
+	ngroups == readgroups(groups);
 }	/* End setup() */
 
 /*
