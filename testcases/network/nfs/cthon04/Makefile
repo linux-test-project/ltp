@@ -20,6 +20,8 @@ all: domount getopt
 	cd lock; $(MAKE)
 	if test ! -x runtests; then chmod a+x runtests; fi
 
+install:
+
 lint:
 	cd basic; $(MAKE) lint
 	cd special; $(MAKE) lint
