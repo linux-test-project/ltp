@@ -24,7 +24,7 @@
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
 #         The user invoking this test script must NOT be "root".
-#     	  The ROOT_PASSWORD variable should be set prior to execution
+#     	  The PASSWD variable should be set prior to execution
 #
 #  HISTORY:
 #    03/03 Dustin Kirkland (dkirklan@us.ibm.com)
@@ -39,10 +39,10 @@ if { $whoami=="root" } {
 }
 
 #Grab input from enviroment
-if [info exists env(ROOT_PASSWORD)] {
-  	set ROOT_PASSWORD $env(ROOT_PASSWORD)
+if [info exists env(PASSWD)] {
+  	set PASSWD $env(PASSWD)
 } else {
-	send_user "YOU NEED TO SET ENVIROMENT VARIABLE ROOT_PASSWORD. \n"
+	send_user "YOU NEED TO SET ENVIROMENT VARIABLE PASSWD. \n"
 	exit 1
 }
 
@@ -117,7 +117,7 @@ spawn /bin/su -c whoami
 sleep 1
 expect {
   "Password:" {
-  	send "$ROOT_PASSWORD\r"
+  	send "$PASSWD\r"
 	sleep 1
     expect {
       "root" { set i_am_root 1
@@ -142,7 +142,7 @@ if { $i_am_root==1 } {
 	sleep 1
 	expect {
 		 "Password:" {
-			send "$ROOT_PASSWORD\r"
+			send "$PASSWD\r"
 			sleep 1
 		}
 	}
@@ -183,7 +183,7 @@ spawn /bin/su -c whoami
 sleep 1
 expect {
   "Password:" {
-    send "wrong_$ROOT_PASSWORD\r"
+    send "wrong_$PASSWD\r"
 	sleep 1
     expect {
       "root" { set displayed_error 0 }
@@ -219,7 +219,7 @@ spawn /bin/su -l root -c whoami
 sleep 1
 expect {
   "Password:" {
-    send "$ROOT_PASSWORD\r"
+    send "$PASSWD\r"
 	sleep 1
     expect {
       "root" { set i_am_root 1 }
@@ -243,7 +243,7 @@ if { $i_am_root==1 } {
 	sleep 1
         expect {
                  "Password:" {
-			send "$ROOT_PASSWORD\r"
+			send "$PASSWD\r"
 			sleep 1
                 }
         }
@@ -278,7 +278,7 @@ spawn /bin/su -l root -c whoami
 sleep 1
 expect {
   "Password:" {
-    send "wrong_$ROOT_PASSWORD\r"
+    send "wrong_$PASSWD\r"
 	sleep 1
     expect {
       "root" { set displayed_error 0 }
@@ -416,7 +416,7 @@ spawn /bin/su -l root -c "passwd -e $USER1"
 sleep 1
 expect {
   "Password:" {
-    send "$ROOT_PASSWORD\r"
+    send "$PASSWD\r"
 	sleep 1
     expect {
       "Password changed." {}
@@ -456,7 +456,7 @@ spawn /bin/su -l root -c "passwd $USER1"
 sleep 1
 expect {
   "Password: " {
-    send "$ROOT_PASSWORD\r"
+    send "$PASSWD\r"
 	sleep 1
     expect {
      "Enter new password: " {
