@@ -160,9 +160,14 @@ int main(int ac, char **av)
 			 * their assigned tasks.
 			 */
 			kid_count = 0;
+			/*
+		* Clearing the intinitr flag here for all the children.
+		* So that we may not miss any signals !
+		*/
+			intintr = 0;
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 0 */
-				intintr = 0;
+			//    	intintr = 0;  
 				do_exit();
 			}
 			if (ret_val < 0) {
@@ -176,7 +181,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 1 */
-				intintr = 0;
+			//	intintr = 0;
 				do_exit();
 			}
 			if (ret_val < 0) {
@@ -190,7 +195,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 2 */
-				intintr = 0;
+			//	intintr = 0;
 				do_compute();
 				exit(4);
 			}
@@ -205,7 +210,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 3 */
-				intintr = 0;
+			//	intintr = 0;
 				do_compute();
 				exit(4);
 			}
@@ -220,7 +225,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 4 */
-				intintr = 0;
+			//	intintr = 0;
 				do_fork();
 				exit(4);
 			}
@@ -235,7 +240,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 5 */
-				intintr = 0;
+			//	intintr = 0;
 				do_fork();
 				exit(4);
 			}
@@ -250,7 +255,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 6 */
-				intintr = 0;
+			//	intintr = 0;
 				do_sleep();
 				exit(4);
 			}
@@ -265,7 +270,7 @@ int main(int ac, char **av)
 
 			ret_val = fork();
 			if (ret_val == 0) {		/* child 7 */
-				intintr = 0;
+			//	intintr = 0;
 				do_sleep();
 				exit(4);
 			}
