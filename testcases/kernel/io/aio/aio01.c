@@ -32,18 +32,17 @@
  *              Testblock5: Prepare, Write/Read one request at a time.
  *              Testblock6: Prepare, Write/Read/Verify one request at a time.
  *
- * USAGE
- *      aiotest1 [-b buffersize] [-n number_of_requests] [-f filename]
- *              [-t test_number] [-z]
- *      -z enables timing information getting printed for each testblock.
- *
  * Author
  * 08/24/2002   Narasimha Sharoff       nsharoff@us.ibm.com
 */
 
 /*
  * History
- *      04/18/2003      nsharoff@us.ibm.com     Updated
+ *      04/18/2003      nsharoff@us.ibm.com
+ *      		Updated
+ *      05/21/2003      Paul Larson	plars@linuxtestproject.org
+ *      		Rewrote the test under LTP, using LTP test harness
+ *      		and other minor improvements and fixes
 */
 
 #define _XOPEN_SOURCE 600
