@@ -35,12 +35,12 @@ int main()
 
 	sem_close(mysemp);
 
-	if ( errno == EINVAL )  {
-		puts("TEST PASSED");
-		sem_unlink(semname);
-		return PTS_PASS;
-	} else {
-		puts("TEST FAILED");
-		return PTS_FAIL;
-	}
+	if ((sem_close(mysemp)  == -1) && ( errno == EINVAL)) {
+                puts("TEST PASSED");
+                return PTS_PASS;
+        } else {
+                puts("TEST FAILED");
+                return PTS_FAIL;
+        }
+
 }
