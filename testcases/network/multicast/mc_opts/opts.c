@@ -30,7 +30,7 @@ char *argv[];
         int n=0;
         unsigned char ttl;
         char loop=0;
-	unsigned long len=0;
+	unsigned int len=0;
 
   	if ( argc != 2) {
            fprintf(stderr, 
@@ -53,8 +53,8 @@ char *argv[];
            } else
                simr.imr_interface.s_addr = 
                                    htonl((i1<<24) | (i2<<16) | (i3<<8) | i4);
-           strcpy(sintf, inet_ntoa(simr.imr_interface));
-
+        strcpy(sintf, inet_ntoa(simr.imr_interface));
+         
         /* verify socket options */
 	if ( setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF, 
                         &simr.imr_interface.s_addr, 
