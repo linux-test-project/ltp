@@ -91,21 +91,21 @@ fi
 if [ $BIN_ID != "1" ] && [ $BIN_GRP != "1" ]; then
   echo "Bin user id and group exist."
 else
-  if [[ $BIN_ID -eq "1" ]] && [[ $CREATE -eq "1" ]]; then
+  if [ $BIN_ID -eq "1" ] && [ $CREATE -eq "1" ]; then
     echo bin:x:1:1:bin:: >> /etc/passwd
   fi
-  if [[ $BIN_GRP -eq "1" ]] && [[ $CREATE -eq "1" ]]; then
+  if [ $BIN_GRP -eq "1" ] && [ $CREATE -eq "1" ]; then
     echo bin:x:`id -u bin`:bin >> /etc/group
   fi
 fi
 
-if [[ $DAEMON_ID -ne "1" ]] && [[ $DAEMON_GRP -ne "1" ]]; then
+if [ $DAEMON_ID -ne "1" ] && [ $DAEMON_GRP -ne "1" ]; then
   echo "Daemon user id and group exist."
 else
-  if [[ $DAEMON_ID -eq "1" ]] && [[ $CREATE -eq "1" ]]; then
+  if [ $DAEMON_ID -eq "1" ] && [ $CREATE -eq "1" ]; then
     echo daemon:x:2:2:daemon:: >> /etc/passwd
   fi
-  if [[ $DAEMON_GRP -eq "1" ]] && [[ $CREATE -eq "1" ]]; then
+  if [ $DAEMON_GRP -eq "1" ] && [ $CREATE -eq "1" ]; then
     echo daemon:x:`id -u daemon`:daemon >> /etc/group
   fi
 fi
