@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
   while( (pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024) )
   {
     i++;
-    maxbytes=maxbytes-(unsigned long long)(3*1024*1024*1024);
+    maxbytes=maxbytes-(unsigned long long)3*1024*1024*1024;
     pid=fork();
     if (pid != 0)
       pid_list[i]=pid;
