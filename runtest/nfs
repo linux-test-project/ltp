@@ -4,4 +4,5 @@
 nfs01 export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
 nfs02 export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
 nfslock01 export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
+nfsstress export TCbin=$LTPROOT/testcases/network/nfs/nfsstress; nfsstress
 nfsstat01 export TCbin=$LTPROOT/testcases/network/nfs/nfsstat01; nfsstat01
