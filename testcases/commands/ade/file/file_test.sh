@@ -30,6 +30,9 @@
 #              Dec 17 2002 - Added.   - GPL header and minor doc changes.
 #                            If LTPTMP and LTPBIN are not exported set their
 #                            values to /tmp and 'pwd' respectively.
+#                          - Added.   - exit status, if any test fails the test
+#                            exits with non-zero value if all tests pass test
+#                            exits with zero.
 #! /bin/sh
 
 
@@ -46,8 +49,9 @@ then
 fi
 
 # set return code RC variable to 0, it will be set with a non-zero return code 
-# in case of error.
+# in case of error. Set TFAILCNT to 0, increment if there occures a failure.
 
+TFAILCNT=0
 RC=0
 
 # TEST #1
@@ -77,10 +81,12 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
                 "file: Failed to recognise ASCII file correctlyi. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_res TFAIL $LTPTMP/file.out  \
                 "file: failed to recognize ASCII file correctly\t\t"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 # TEST #2
@@ -110,9 +116,11 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
             "file: Failed to recognise bash shell script. Reason"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize bash shell script"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 # TEST #3
@@ -142,9 +150,11 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
             "file: Failed to recognise korn shell script. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "File: Failed to recognize korn shell script"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -175,9 +185,11 @@ then
     else
         $LTPBIN/tst_resm TFAIL $LTPTMP/file.out \
             "file: Failed to recognise C shell script correctly. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize C shell script"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -210,10 +222,12 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize C program text correctly. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
         
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize C programi text"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -250,10 +264,11 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize ELF binary executable. Reason:"
-        
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize ELF binay executable"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -290,9 +305,11 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize tar files. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize tar files."
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -333,10 +350,12 @@ then
 original filename, \`files.tar'"
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize tar zip. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
         "file: Failed to recognize tar zip file. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -424,10 +443,12 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize RPM file. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
         
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize RPM file"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 
@@ -455,8 +476,11 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
              "file: Failed to Recognize vmlinuz correctly. Reason:"
-        
+        TFAILCNT=$((TFAILCNT+1))
     fi
 else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize vmlinuz file"
+    TFAILCNT=$((TFAILCNT+1))
 fi
+
+exit $TFAILCNT
