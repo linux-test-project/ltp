@@ -24,7 +24,8 @@ LOADLIBES+=	-lpthread -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=sigaction03
+TEST=sigaction03 sigaction04 sigaction05 sigaction06 sigaction07 \
+     sigaction08 sigaction09 sigaction10 sigaction11
 
 all: $(TARGETS)
 
