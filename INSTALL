@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.16 2004/02/05 17:33:10 robbiew Exp $
+$Id: INSTALL,v 1.17 2004/03/01 22:16:02 robbiew Exp $
 
 Quick Start
 -----------
@@ -26,7 +26,7 @@ contributions are welcome.
 1. Log in as root.
 
 2. Untar the ltp tarball into a spare directory.  There is not a
-   standard location for it yet.  We put it in out home directory
+   standard location for it yet.  We put it in our home directory
    while we're working on it.
 
 3. Run "make" to build everything.
@@ -78,7 +78,7 @@ contributions are welcome.
     iv) Finally, before running the networktests.sh script, two variables must
 		 be set within the script file.  The "RHOST" variable should be set to
 		 the hostname of the server.  The "PASSWD" variable should be set to
-		 root's password on the server machine.  This is neccessary for tests
+		 root's password on the server machine.  This is necessary for tests
 		 such as telnet01 and ftp01.
 
    You can now successfully execute the networktests.sh script.
