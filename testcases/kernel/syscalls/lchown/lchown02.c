@@ -134,7 +134,6 @@ int exp_enos[]={EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-char *test_home;		/* variable to hold TESTHOME env */
 
 
 void setup();			/* Main setup function for the tests */
@@ -236,7 +235,6 @@ setup()
 
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	test_home = get_current_dir_name();
 
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
@@ -255,6 +253,11 @@ setup()
 
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
+
+        /* fix permissions on the tmpdir */
+        if (chmod(".", 0711) != 0) {
+                tst_brkm(TBROK, cleanup, "chmod() failed");
+        }
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -318,8 +321,7 @@ setup1()
 	strcat(Path_name, "/"TEST_FILE1);
 
 	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, (const char *)"/create_link ");
+	strcat((char *)Cmd_buffer, (const char *)"create_link ");
 	strcat((char *)Cmd_buffer, Path_name);
 
 	if (system((const char *)Cmd_buffer) != 0) {
