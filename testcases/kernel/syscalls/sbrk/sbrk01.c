@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: sbrk01.c,v 1.2 2002/06/12 17:43:17 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -134,7 +134,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    long tret;
+    void *tret;
     
     /***************************************************************
      * parse standard options
@@ -165,16 +165,12 @@ main(int ac, char **av)
 	Increment = 8192;
 
 	/* Call sbrk(2) */
-#if defined(sgi)
-	tret=(long)sbrk(Increment);   /* Remove -64 IRIX compiler warning */
+	errno = 0;
+	tret=sbrk(Increment);   /* Remove -64 IRIX compiler warning */
 	TEST_ERRNO=errno;
-#else
-	TEST(sbrk(Increment));
-	tret=TEST_RETURN;
-#endif
 	
 	/* check return code */
-	if ( tret == -1 ) {
+	if ( tret == (void *)-1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
 	    tst_resm(TFAIL, "sbrk - Increase by 8192 bytes failed, errno=%d : %s",
 		     TEST_ERRNO, strerror(TEST_ERRNO));
@@ -184,7 +180,7 @@ main(int ac, char **av)
 	     ***************************************************************/
 	    if ( STD_FUNCTIONAL_TEST ) {
 		/* No Verification test, yet... */
-		tst_resm(TPASS, "sbrk - Increase by 8192 bytes returned %d", 
+		tst_resm(TPASS, "sbrk - Increase by 8192 bytes returned %p", 
 		    tret);
 	    } 
 	}
@@ -197,16 +193,12 @@ main(int ac, char **av)
 	Increment=(Increment * -1);
 
 	/* Call sbrk(2) */
-#ifdef CRAY
-	TEST(sbrk(Increment));
-	tret=TEST_RETURN;
-#else
-	tret=(long)sbrk(Increment);
+	errno = 0;
+	tret=sbrk(Increment);
 	TEST_ERRNO=errno;
-#endif
 	
 	/* check return code */
-	if ( tret == -1 ) {
+	if ( tret == (void *)-1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
 	    tst_resm(TFAIL, "sbrk - Decrease to original size failed, errno=%d : %s",
 		     TEST_ERRNO, strerror(TEST_ERRNO));
@@ -216,7 +208,7 @@ main(int ac, char **av)
 	     ***************************************************************/
 	    if ( STD_FUNCTIONAL_TEST ) {
 		/* No Verification test, yet... */
-		tst_resm(TPASS, "sbrk - Decrease to original size returned %d", tret);
+		tst_resm(TPASS, "sbrk - Decrease to original size returned %p", tret);
 	    } 
 	}
 	
