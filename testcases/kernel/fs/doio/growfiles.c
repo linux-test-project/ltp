@@ -372,7 +372,7 @@ char *strrchr();
 char *filename;                 /* name of file specified by user */
 char *cptr;			/* temp char pointer */
 extern int Forker_npids;	/* num of forked pid, defined in forker.c */
-
+struct timeval tv1;
 
 	if ( argv[0][0] == '-' )
 	   reexec=REXEC_DONE;
@@ -1190,8 +1190,9 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 */
 		
 	for(ind=0;ind<num_auto_files; ind++, num++) {
-		sprintf((char *)filenames+(num*PATH_MAX), "%s.%d",
-			tempnam(auto_dir, auto_file), ind );
+		gettimeofday(&tv1,NULL);
+		sprintf((char *)filenames+(num*PATH_MAX), "%s/%s%ld%ld.%d",
+			auto_dir, auto_file, (long)tv1.tv_sec, (long)tv1.tv_usec, ind );
 	}
 
 	/*
