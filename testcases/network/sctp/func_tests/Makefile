@@ -24,16 +24,22 @@ LIBS = -L../../../../lib -L../lib -L../testlib
 
 CFLAGS = -g $(INCLUDES) -DLTP
 
-LOADLIBES = $(LIBS) -lltp -lsctp -lsctputil
+LOADLIBES = $(LIBS) -lltp -lsctp -lsctputil -lpthread
 
 V6FLAGS = -DTEST_V6=1 $(CFLAGS)
 
 SRCS = $(wildcard *.c)
 
-V4_TARGETS = test_assoc_abort test_assoc_shutdown test_autoclose test_basic \
-             test_connect test_fragments test_getname test_inaddr_any \
-             test_peeloff test_recvmsg test_sctp_sendrecvmsg \
-             test_sockopt test_tcp_style test_timetolive 
+V4_TARGETS = test_1_to_1_accept_close test_1_to_1_addrs test_1_to_1_connect \
+             test_1_to_1_events test_1_to_1_initmsg_connect \
+             test_1_to_1_nonblock test_1_to_1_recvfrom test_1_to_1_recvmsg \
+             test_1_to_1_rtoinfo test_1_to_1_send test_1_to_1_sendmsg \
+             test_1_to_1_sendto test_1_to_1_shutdown \
+             test_1_to_1_socket_bind_listen test_1_to_1_sockopt \
+             test_1_to_1_threads test_assoc_abort test_assoc_shutdown \
+             test_autoclose test_basic test_connect test_fragments \
+             test_getname test_inaddr_any test_peeloff test_recvmsg \
+             test_sctp_sendrecvmsg test_sockopt test_tcp_style test_timetolive 
 
 V6_TARGETS = test_basic_v6 test_fragments_v6 test_getname_v6 \
              test_inaddr_any_v6 test_peeloff_v6 test_sctp_sendrecvmsg_v6 \
@@ -41,6 +47,22 @@ V6_TARGETS = test_basic_v6 test_fragments_v6 test_getname_v6 \
 
 all: $(V4_TARGETS) $(V6_TARGETS)
 
+test_1_to_1_accept_close: test_1_to_1_accept_close.c
+test_1_to_1_addrs: test_1_to_1_addrs.c
+test_1_to_1_connect: test_1_to_1_connect.c
+test_1_to_1_events: test_1_to_1_events.c
+test_1_to_1_initmsg_connect: test_1_to_1_initmsg_connect.c
+test_1_to_1_nonblock: test_1_to_1_nonblock.c
+test_1_to_1_recvfrom: test_1_to_1_recvfrom.c
+test_1_to_1_recvmsg: test_1_to_1_recvmsg.c
+test_1_to_1_rtoinfo: test_1_to_1_rtoinfo.c
+test_1_to_1_send: test_1_to_1_send.c
+test_1_to_1_sendmsg: test_1_to_1_sendmsg.c
+test_1_to_1_sendto: test_1_to_1_sendto.c
+test_1_to_1_shutdown: test_1_to_1_shutdown.c
+test_1_to_1_socket_bind_listen: test_1_to_1_socket_bind_listen.c
+test_1_to_1_sockopt: test_1_to_1_sockopt.c
+test_1_to_1_threads: test_1_to_1_threads.c
 test_assoc_abort: test_assoc_abort.c
 test_assoc_shutdown: test_assoc_shutdown.c
 test_autoclose: test_autoclose.c

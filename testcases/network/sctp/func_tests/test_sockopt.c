@@ -1,5 +1,5 @@
 /* SCTP kernel reference Implementation
- * (C) Copyright IBM Corp. 2001, 2003
+ * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
  * Copyright (c) 1999-2001 Motorola, Inc.
  * Copyright (c) 2001 Intel Corp.
@@ -68,8 +68,6 @@ main(void)
 	int accept_sk, peeloff_sk;
         sockaddr_storage_t udp_svr_loop, udp_clt_loop;
         sockaddr_storage_t tcp_svr_loop, tcp_clt_loop;
-        sockaddr_storage_t udp_svr_loop_h, udp_clt_loop_h;
-        sockaddr_storage_t tcp_svr_loop_h, tcp_clt_loop_h;
         struct iovec iov;
         struct msghdr inmessage;
 	struct msghdr outmessage;
@@ -125,22 +123,6 @@ main(void)
         tcp_clt_loop.v6.sin6_family = AF_INET6;
         tcp_clt_loop.v6.sin6_addr = in6addr_loopback;
         tcp_clt_loop.v6.sin6_port = htons(SCTP_TESTPORT_1+3);
-
-        udp_svr_loop_h.v6.sin6_family = AF_INET6;
-        udp_svr_loop_h.v6.sin6_addr = in6addr_loopback;
-        udp_svr_loop_h.v6.sin6_port = SCTP_TESTPORT_1;
-
-        udp_clt_loop_h.v6.sin6_family = AF_INET6;
-        udp_clt_loop_h.v6.sin6_addr = in6addr_loopback;
-        udp_clt_loop_h.v6.sin6_port = SCTP_TESTPORT_1+1;
-
-        tcp_svr_loop_h.v6.sin6_family = AF_INET6;
-        tcp_svr_loop_h.v6.sin6_addr = in6addr_loopback;
-        tcp_svr_loop_h.v6.sin6_port = SCTP_TESTPORT_1+2;
-
-        tcp_clt_loop_h.v6.sin6_family = AF_INET6;
-        tcp_clt_loop_h.v6.sin6_addr = in6addr_loopback;
-        tcp_clt_loop_h.v6.sin6_port = SCTP_TESTPORT_1+3;
 #else
 	pf_class = PF_INET;
 	af_family = AF_INET;
@@ -160,22 +142,6 @@ main(void)
         tcp_clt_loop.v4.sin_family = AF_INET;
         tcp_clt_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
         tcp_clt_loop.v4.sin_port = htons(SCTP_TESTPORT_2+3);
-
-        udp_svr_loop_h.v4.sin_family = AF_INET;
-        udp_svr_loop_h.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        udp_svr_loop_h.v4.sin_port = SCTP_TESTPORT_1;
-
-        udp_clt_loop_h.v4.sin_family = AF_INET;
-        udp_clt_loop_h.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        udp_clt_loop_h.v4.sin_port = SCTP_TESTPORT_1+1;
-
-        tcp_svr_loop_h.v4.sin_family = AF_INET;
-        tcp_svr_loop_h.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        tcp_svr_loop_h.v4.sin_port = SCTP_TESTPORT_1+2;
-
-        tcp_clt_loop_h.v4.sin_family = AF_INET;
-        tcp_clt_loop_h.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        tcp_clt_loop_h.v4.sin_port = SCTP_TESTPORT_2+3;
 #endif /* TEST_V6 */
 
         /* Create the two endpoints which will talk to each other.  */
@@ -863,7 +829,7 @@ main(void)
 	memset(&pinfo, 0, sizeof(pinfo));
 	optlen = sizeof(pinfo);
 	pinfo.spinfo_assoc_id = udp_clt_associd;
-	memcpy(&pinfo.spinfo_address, &udp_clt_loop_h, sizeof(udp_clt_loop_h));
+	memcpy(&pinfo.spinfo_address, &udp_clt_loop, sizeof(udp_clt_loop));
 	error = getsockopt(udp_clt_sk, SOL_SCTP, SCTP_GET_PEER_ADDR_INFO,
 			   &pinfo, &optlen);			   
 	if ((-1 != error) || (EINVAL != errno))
@@ -878,7 +844,7 @@ main(void)
 	memset(&pinfo, 0, sizeof(pinfo));
 	optlen = sizeof(pinfo);
 	pinfo.spinfo_assoc_id = udp_clt_associd;
-	memcpy(&pinfo.spinfo_address, &udp_svr_loop_h, sizeof(udp_svr_loop_h));
+	memcpy(&pinfo.spinfo_address, &udp_svr_loop, sizeof(udp_svr_loop));
 	test_getsockopt(udp_clt_sk, SCTP_GET_PEER_ADDR_INFO, &pinfo, &optlen);			   
 
 	tst_resm(TPASS, "getsockopt(SCTP_GET_PEER_ADDR_INFO) - "
@@ -888,7 +854,7 @@ main(void)
 	memset(&pinfo, 0, sizeof(pinfo));
 	optlen = sizeof(pinfo);
 	pinfo.spinfo_assoc_id = 0;
-	memcpy(&pinfo.spinfo_address, &udp_clt_loop_h, sizeof(udp_clt_loop_h));
+	memcpy(&pinfo.spinfo_address, &udp_clt_loop, sizeof(udp_clt_loop));
 	test_getsockopt(peeloff_sk, SCTP_GET_PEER_ADDR_INFO, &pinfo, &optlen);			   
 
 	tst_resm(TPASS, "getsockopt(SCTP_GET_PEER_ADDR_INFO) - "
@@ -898,7 +864,7 @@ main(void)
 	memset(&pinfo, 0, sizeof(pinfo));
 	optlen = sizeof(pinfo);
 	pinfo.spinfo_assoc_id = 0;
-	memcpy(&pinfo.spinfo_address, &tcp_clt_loop_h, sizeof(tcp_clt_loop_h));
+	memcpy(&pinfo.spinfo_address, &tcp_clt_loop, sizeof(tcp_clt_loop));
 	error = test_getsockopt(accept_sk, SCTP_GET_PEER_ADDR_INFO, &pinfo,
 				&optlen);			   
 

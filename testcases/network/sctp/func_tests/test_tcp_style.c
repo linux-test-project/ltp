@@ -52,7 +52,7 @@
 #include <sctputil.h>
 
 char *TCID = __FILE__;
-int TST_TOTAL = 21;
+int TST_TOTAL = 22;
 int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
@@ -77,6 +77,10 @@ main(int argc, char *argv[])
 	struct iovec out_iov;
 	struct cmsghdr *cmsg;
 	struct sctp_sndrcvinfo *sinfo;
+	struct msghdr inmessage;
+	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
+	char *big_buffer;
+	struct iovec iov;
 
         /* Rather than fflush() throughout the code, set stdout to 
 	 * be unbuffered.  
@@ -240,6 +244,9 @@ main(int argc, char *argv[])
 	errno = 0;
 	test_send(accept_sk[0], message, strlen(message), 0);
 
+	/* Enable ASSOC_CHANGE and SNDRCVINFO notifications. */
+	test_enable_assoc_change(clt_sk[0]);
+
 	/* Do a SHUT_WR on clt_sk[0] to disable any new sends. */
 	test_shutdown(clt_sk[0], SHUT_WR);
 
@@ -257,6 +264,24 @@ main(int argc, char *argv[])
 	 * SHUTDOWN call.
 	 */  
 	test_recv(clt_sk[0], msgbuf, 100, 0);
+
+	/* Initialize inmessage for all receives. */
+	big_buffer = test_malloc(REALLY_BIG);
+	memset(&inmessage, 0, sizeof(inmessage));	
+	iov.iov_base = big_buffer;
+	iov.iov_len = REALLY_BIG;
+	inmessage.msg_iov = &iov;
+	inmessage.msg_iovlen = 1;
+	inmessage.msg_control = incmsg;
+	inmessage.msg_controllen = sizeof(incmsg);
+
+	/* Receive the SHUTDOWN_COMP notification as they are enabled. */
+	error = test_recvmsg(clt_sk[0], &inmessage, MSG_WAITALL);
+	test_check_msg_notification(&inmessage, error,
+				    sizeof(struct sctp_assoc_change),
+				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
+
+	tst_resm(TPASS, "recv SHUTDOWN_COMP notification on a SHUT_WR socket");
 
 	/* No more messages and the association is SHUTDOWN, should fail. */
 	error = recv(clt_sk[0], msgbuf, 100, 0);

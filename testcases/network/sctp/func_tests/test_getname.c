@@ -1,5 +1,5 @@
 /* SCTP kernel reference Implementation
- * (C) Copyright IBM Corp. 2003
+ * (C) Copyright IBM Corp. 2004
  * Copyright (c) 1999-2001 Motorola, Inc.
  *
  * The SCTP reference implementation is free software;
@@ -51,7 +51,7 @@
 #include <sctputil.h>
 
 char *TCID = __FILE__;
-int TST_TOTAL = 7;
+int TST_TOTAL = 13;
 int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
@@ -176,19 +176,78 @@ main(int argc, char *argv[])
 		tst_brkm(TBROK, tst_exit, "Server's peer port(%d) doesn't "
 			 "match Client's local port(%d)\n",
 			 svr_peer_addr.v4.sin_port, clt_local_addr.v4.sin_port);
-
-	if (memcmp(&svr_local_addr, &clt_peer_addr,
-			       	sizeof(sockaddr_storage_t)) != 0)
+#if TEST_V6
+	if (memcmp(&svr_local_addr, &clt_peer_addr, len) != 0)
 		tst_brkm(TBROK, tst_exit, "Server's local address and client's "
 			 "peer addresses do not match\n");
 
-	if (memcmp(&svr_peer_addr, &clt_local_addr,
-			       	sizeof(sockaddr_storage_t)) != 0)
+	if (memcmp(&svr_peer_addr, &clt_local_addr, len) != 0)
 		tst_brkm(TBROK, tst_exit, "Server's peer address and client's "
 			 "local addresses do not match\n");
-
+#else
+	if (svr_local_addr.v4.sin_addr.s_addr !=
+		 		clt_peer_addr.v4.sin_addr.s_addr)
+		tst_brkm(TBROK, tst_exit, "Server's local address and client's "
+			 "peer addresses do not match\n");
+	if (svr_peer_addr.v4.sin_addr.s_addr !=
+		 		clt_local_addr.v4.sin_addr.s_addr)
+		tst_brkm(TBROK, tst_exit, "Server's peer address and client's "
+			 "local addresses do not match\n");
+#endif
 	tst_resm(TPASS, "getsockname/getpeername server/client match");
 
+	bzero(&clt_local_addr, sizeof(clt_local_addr));
+	len = sizeof(clt_local_addr);
+	/*getsockname():  Bad socket descriptor, EBADF expected error*/
+	error = getsockname(-1, (struct sockaddr *)&clt_local_addr, &len);
+	if (error != -1 || errno != EBADF)
+		tst_brkm(TBROK, tst_exit, "getsockname on a bad socket "
+			 "descriptor. error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getsockname on a bad socket descriptor - EBADF");
+
+	/*getsockname(): Invalid socket, ENOTSOCK expected error*/
+	error = getsockname(0, (struct sockaddr *)&clt_local_addr, &len);
+	if (error != -1 || errno != ENOTSOCK)
+		tst_brkm(TBROK, tst_exit, "getsockname on an invalid socket "
+			 "error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getsockname on an invalid socket - ENOTSOCK");
+
+	/*getsockname(): Invalid structure, EFAULT expected error*/
+	error = getsockname(clt_sk, (struct sockaddr *)-1, &len);
+	if (error != -1 || errno != EFAULT)
+		tst_brkm(TBROK, tst_exit, "getsockname with invalid buffer "
+			 "error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getsockname with invalid buffer - EFAULT");
+ 
+	bzero(&clt_peer_addr, sizeof(clt_peer_addr));
+	len = sizeof(clt_peer_addr);
+	/*getpeername():  Bad socket descriptor, EBADF expected error*/
+	error = getpeername(-1, (struct sockaddr *)&clt_local_addr, &len);
+	if (error != -1 || errno != EBADF)
+		tst_brkm(TBROK, tst_exit, "getpeername on a bad socket "
+			 "descriptor. error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getpeername on a bad socket descriptor - EBADF");
+
+	/*getpeername(): Invalid socket, ENOTSOCK expected error*/
+	error = getpeername(0, (struct sockaddr *)&clt_local_addr, &len);
+	if (error != -1 || errno != ENOTSOCK)
+		tst_brkm(TBROK, tst_exit, "getpeername on an invalid socket "
+			 "error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getpeername on an invalid socket - ENOTSOCK");
+
+	/*getpeername(): Invalid structure, EFAULT expected error*/
+	error = getpeername(clt_sk, (struct sockaddr *)-1, &len);
+	if (error != -1 || errno != EFAULT)
+		tst_brkm(TBROK, tst_exit, "getpeername with invalid buffer "
+			 "error:%d errno:%d", error, errno);
+
+	tst_resm(TPASS, "getpeername with invalid buffer - EFAULT");
+ 
 	close(clt_sk);
 	close(svr_sk);
 	close(accept_sk);
