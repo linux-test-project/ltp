@@ -54,7 +54,7 @@ do_test()
 
    IFNAME=`netstat -in | grep "^[b-z]\{2,4\}[0-9][^*]"|\
       awk '{print $1}'` 
-   INTERFACE=`host $HOSTNAME | awk '{print $4}'` 
+   INTERFACE=`$LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}'` 
 
    echo "Testing ifconfig and netstat"
 
