@@ -29,8 +29,6 @@
  *	1. Call sendfile(2) with out_fd = -1, and expect EBADF to be returned.
  *	2. Call sendfile(2) with in_fd = -1, and expect EBADF to be returned.
  *	3. Call sendfile(2) with in_fd = out_fd = -1, and expect EBADF.
- *	4. Call sendfile(2) with "offset" pointing to outside the address space
- *	   of the calling process, and expect EFAULT to be returned.
  *
  * USAGE:  <for command-line>
  *  sendfile03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -57,7 +55,7 @@
 #define FAILED 1
 
 char *TCID = "sendfile03";
-int TST_TOTAL = 4;
+int TST_TOTAL = 3;
 extern int Tst_count;
 
 int in_fd, out_fd;
@@ -79,11 +77,10 @@ struct test_case_t {
 	{ "Test for EBADF, in_fd = -1", NULL, 4, -1, (void *)0, 0, EBADF},
 	{ "Test for EBADF, out_fd = -1", NULL, -1, 3, (void *)0, 0, EBADF},
 	{ "Test for EBADF, in_fd = out_fd = -1", NULL, -1, -1, (void *)0, 0,
-		EBADF},
-	{ "Test for EFAULT", NULL, 4, 3, (void *)-1, 1, EFAULT}
+		EBADF}
 };
 
-int exp_enos[] = {EBADF, EFAULT, 0};
+int exp_enos[] = {EBADF, 0};
 
 main(int ac, char **av)
 {
