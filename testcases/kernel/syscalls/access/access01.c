@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: access01.c,v 1.2 2002/09/04 13:34:31 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -119,7 +119,7 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <string.h>
-#include <sys/unistd.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
