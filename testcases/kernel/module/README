@@ -1,0 +1,3 @@
+Many of these tests have requirements on the test machine.  To ensure proper 
+build and execution, the kernel must be build on the test machine and you 
+must also do a 'make modules' and 'make modules_install'.
