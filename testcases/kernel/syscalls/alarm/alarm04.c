@@ -134,7 +134,6 @@ setup()
 	/* Get the TESTHOME env. variable */
 	if ((test_home = getenv("TESTHOME")) == NULL) {
 		test_home = get_current_dir_name();
-		printf("test_home is %s",test_home);
 	}
 
 	/*
