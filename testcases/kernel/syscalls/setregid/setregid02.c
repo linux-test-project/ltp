@@ -79,7 +79,7 @@ char *TCID = "setregid02";
 gid_t users_gr_gid, root_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={EPERM, 0};
-int inval_user = (USHRT_MAX-2);
+int inval_user = (USHRT_MAX);
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -106,8 +106,8 @@ struct test_data_t {
 	{ &bin_gr_gid, &neg_one, EPERM, &users, &users, "After setregid(bin, -1)," },
 	{ &root_gr_gid, &bin_gr_gid, EPERM, &users, &users, "After setregid(root, bin)" },
 	{ &bin_gr_gid, &root_gr_gid, EPERM, &users, &users, "After setregid(bin, root)," },
-	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(-1, invalid user)," },
-	{ &neg_one, &inval_user, EPERM, &users, &users, "After setregid(-1, invalid user)," },
+	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(invalid group, -1)," },
+	{ &neg_one, &inval_user, EPERM, &users, &users, "After setregid(-1, invalid group)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
