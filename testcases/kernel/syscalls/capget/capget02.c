@@ -77,11 +77,14 @@
 #include "usctest.h"
 
 /**************************************************************************/
-#include <sys/capability.h>
 /*                                                                        */
 /*   Some archs do not have the manpage documented sys/capability.h file, */
-/*   and will require the use of the line below                           */
-//#include <linux/capability.h>
+/*   and require the use of the line below                                */
+
+#include <linux/capability.h>
+
+/*   If you are having issues with including this file and have the sys/  */
+/*   version, then you may want to try switching to it. -Robbie W.        */
 /**************************************************************************/
 
 #define INVALID_PID 999999
