@@ -17,13 +17,13 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #   FILE        : ltpoutput2
-#   DESCRIPTION : reads from STDOUT and rips failures out of the output from PAN
+#   DESCRIPTION : reads from STDIN and rips failures out of the output from PAN
 #   HISTORY	:
 #	12/12/2001 Robbie Williamson (robbiew@us.ibm.com) 
 #		adapted from `ltpoutput`
 
 
-$buf = <STDOUT>;
+$buf = <STDIN>;
 foreach $_ (<>) {
   $line = $_;
   $buf = $buf . $line;
