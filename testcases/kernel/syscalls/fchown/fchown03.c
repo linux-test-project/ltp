@@ -85,6 +85,7 @@
 
 #define FILE_MODE	(mode_t)S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define NEW_PERMS       (mode_t)S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
+#define FCHOWN_PERMS    (mode_t)S_IFREG | S_IRWXU | S_IRWXG
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for test file */
@@ -173,7 +174,7 @@ main(int ac, char **av)
 			if (stat_buf.st_mode & (S_ISUID | S_ISGID)) {
 				tst_resm(TFAIL, "%s: Incorrect mode permissions"
 					 " %#o, Expected %#o", TESTFILE,
-					 stat_buf.st_mode, NEW_PERMS);
+					 stat_buf.st_mode, FCHOWN_PERMS);
 			} else {
 				tst_resm(TPASS, "fchown() on %s succeeds: "
 					 "Setuid/gid bits cleared", TESTFILE);
