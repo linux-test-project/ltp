@@ -3240,7 +3240,7 @@ do_rw(req)
 					doio_fprintf(stderr,
 						     "%s() iosw error set: %s\n%s\n%s\n",
 						     sy->sy_name,
-						     sys_errlist[iosw->sw_error],
+						     strerror(iosw->sw_error),
 						     fmt_ioreq(req, sy, fd),
 						     (*sy->sy_format)(req, sy, fd, addr));
 					doio_upanic(U_IOSW);
@@ -3278,7 +3278,7 @@ do_rw(req)
 					doio_fprintf(stderr,
 						     "%s() aio error set: %s (%d)\n%s\n%s\n",
 						     sy->sy_name,
-						     sys_errlist[aiop->aio_errno],
+						     strerror(aiop->aio_errno),
 						     aiop->aio_errno,
 						     fmt_ioreq(req, sy, fd),
 						     (*sy->sy_format)(req, sy, fd, addr));
