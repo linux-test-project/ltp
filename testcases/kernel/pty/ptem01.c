@@ -28,8 +28,6 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <sys/poll.h>
-//#include <sys/stream.h>
-#include <sys/stropts.h>
 #include <sys/types.h>
 
 #ifndef _GNU_SOURCE
