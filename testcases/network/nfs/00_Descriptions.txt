@@ -1,3 +1,8 @@
+fsx-linux
+	Created by NeXT Software (Apple Computer, Inc.).  This test will 
+        thrash your NFS	filesystem and has uncovered numerous bugs within 
+        the Linux implementation.
+
 nfs01
 
 	Stresses NFS by opening a large number of files on a nfs
