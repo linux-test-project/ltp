@@ -1,0 +1,103 @@
+LTP Automation
+~~~~~~~~~~~~~~~
+
+The LTP automation scripts are intended to completely automate the
+updating, running, and reporting of an LTP test run. The ltpupdate script
+simply produces a copy of the latest CVS code and packages it up as a tgz
+file and uploads it to the designated LTP host machine. The ltp_master
+script first kicks off the test (this could possibly be controlled by another
+script say after a new release for example). This script uploads the
+ltprun script (which does the actual test run) to each machine specified.
+Currently I use this mostly as a single shot run. I envision a time to come
+when I have enough machines to run a copy of LTP against a test farm of say
+the same distro on different machine configurations, or on every machine I
+have control over for example. The ltprun scripts does what one would
+usually do on a system to be tested, download the code, compile, execute,
+but it also handles the reporting process as well. It will upload the data
+to the LTP host to be collected later. The ltp_check script does the brunt
+of the results processing. It produces a results.out file which has a
+summary of the system under test, the success (or failure) of the test and
+if there are failures the output from each testcase. 
+
+Here's the scenario (pardon the ASCII art);
+
+----------  ------            -----------
+|master|    |test|            |ltp_host|
+----------  ------            -----------
+  |             |                     |
+  +-------------+---------------------+
+
+
+I've divided it up into 3 machine types viz, "master", "test" and
+"ltp_host". For purposes of this documents lts consider we have one test
+machine.
+
+ltp_master script
+~~~~~~~~~~~~~~~~~
+The ltp_master script is the driver that runs LTP testsuite on a machine
+of choice, it takes a single argument ie the name of the victim machine
+
+ltp_master can be invoked in the following 3 ways:
+
+#1 ltp_master -f system_file
+ - system_file is an ASCII file containing the list of victim machines.
+
+#2 ltp_master system.name.dom.com 
+ - space separated names of victim machines.
+
+#3 ltp_master
+ - will prompt user for the names of the victim machines.
+
+I reccomend using scheme #2, this will help seperate different
+distros, platforms etc, for example, We might say have a file with RedHat 
+machines, or all SuSE, or all machines of a certain platform (say zSeries).
+
+Regardless of how it's invoked ltp_master does the following on each
+victim machine.
+
+  -  FTP connect to the test system and uploads ltprun
+  -  Telnet to each system and kick off ltprun ( runs under nohup )
+
+ltprun script
+~~~~~~~~~~~~~
+ltprun is where bulk of the automation of ltp is done. 
+It does the following.
+  - downloads the ltp test suite tarfile (ltp.tgz) from ltp_host.
+  - uncompress the test suite and compile it.
+  - runs the test suite.
+  - tars up the results.
+  - uploads results back to ltp_host.
+
+In case any of the get, build, run fails, the script will still upload
+the results back to the ltp_host machine, so you don't have to try to remember
+which runs were kicked off and correlate that with which runs were reported.
+
+ltp_check
+~~~~~~~~~
+ltp_check lives on the master machine, this script has to be run as root
+user and it saves the ltp test results in /root/ltp_results.
+
+ltp_check does the following;
+  - FTPs to ltp_host and downloads all of the *-ltpoutput.tgz files
+  - Creates a results directory for each machine (using the short
+    hostname) and for each run (based on timestamping)
+  - Uncompresses the gathered result files into the new directory
+  - parses results gathered,  saves it as results.out file in the same 
+    directory. The results are sorted by system name and then run time.
+
+Note: 
+  - Check through the scripts for appropriate variables that you may need to
+change in order to customize further, they should be at the beginning of the 
+file.
+
+  - This "fire and forget" might not work 100%. But if you find a test
+(like pth_str02) that hangs you can log in as root and do something like;
+killall pth_str02 a few times and the test should pick up where it left
+off.
+
+Please send comments or suggestions to:
+
+Jay Huie
+wjhuie@us.ibm.com
+Linux System Test
+Phone: 845-435-8164
