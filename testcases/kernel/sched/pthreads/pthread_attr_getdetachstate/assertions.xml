@@ -1,0 +1,13 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31221:31224">
+   The function
+
+   int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
+  
+  will get the detachstate attribute in the 'attr' object.  The detach state
+  can be either PTHREAD_CREATE_DETACHED or PTHEAD_CREATE_JOINABLE.  
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31232:31233">
+  If success, it returns 0.
+  </assertion> 
+</assertions>
