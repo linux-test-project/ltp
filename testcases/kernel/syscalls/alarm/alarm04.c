@@ -104,7 +104,7 @@ main(int ac, char **av)
 
 	if (STD_FUNCTIONAL_TEST) {
 		/* exec a process "sig_rev" */
-		execl(Cmd_buffer, "sig_rev", "3", 0);
+		execl(Cmd_buffer, "sig_rev", "3", NULL);
 	}
 
 	/* This message never printed unless exec fails */

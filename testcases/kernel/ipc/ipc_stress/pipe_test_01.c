@@ -131,7 +131,7 @@ int main (int argc, char **argv)
 		close (fd [WRITE]);
 
 /* Vernon Mauery 6/1/2001 changed path and file to work will more flavors of unix */
-		execl ("/bin/cat", "cat", "/etc/inittab", 0);
+		execl ("/bin/cat", "cat", "/etc/inittab", NULL);
 		sys_error ("execl failed (should not reach this line) ", __LINE__);
 	}	
 
@@ -156,7 +156,7 @@ int main (int argc, char **argv)
 		}
 		close (fd [READ]);
 
-		execl ("/usr/bin/wc","wc","-c",0);
+		execl ("/usr/bin/wc","wc","-c",NULL);
 		sys_error ("execl failed (should not reach this line) ", __LINE__);
 	}
 

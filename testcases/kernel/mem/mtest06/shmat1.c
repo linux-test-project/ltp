@@ -368,8 +368,7 @@ write_to_mem(void *args)
 
 	fprintf(stdout, "write_to_mem(): memory address: [%p]\n", 
 		map_address);
-	(char *)map_address = "Y";
-        //memset(map_address, 'Y', fsize);
+        memset(map_address, 'Y', 1);
         usleep(1);
 	sched_yield();
     }

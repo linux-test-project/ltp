@@ -260,7 +260,7 @@ int runtest()
                 tst_exit();
 	}
 	if (pid == 0) {
-		execl("/bin/rm", "rm", "-rf", fuss, 0);
+		execl("/bin/rm", "rm", "-rf", fuss, NULL);
 		tst_exit();
 	}
 

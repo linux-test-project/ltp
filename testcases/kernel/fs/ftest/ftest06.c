@@ -250,7 +250,7 @@ int main (ac, av)
 			tst_exit();
 		}
 		if (pid == 0) {
-			execl("/bin/rm", "rm", "-rf", homedir, 0);
+			execl("/bin/rm", "rm", "-rf", homedir, NULL);
 			tst_exit();
 		} else
 			wait(&status);
@@ -266,7 +266,7 @@ int main (ac, av)
 			tst_exit();
 		}
 		if (pid == 0) {
-			execl("/bin/rm", "rm", "-rf", dirname, 0);
+			execl("/bin/rm", "rm", "-rf", dirname, NULL);
 			tst_exit();
 		} else
 			wait(&status);

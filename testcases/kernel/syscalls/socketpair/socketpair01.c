@@ -107,9 +107,9 @@ main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno=0; testno < TST_TOTAL; ++testno) {
-			TEST(s=socketpair(tdat[testno].domain,
+			TEST((s=socketpair(tdat[testno].domain,
 				tdat[testno].type, tdat[testno].proto,
-				tdat[testno].sv));
+				tdat[testno].sv)));
 			if (TEST_RETURN >= 0) {
 				TEST_RETURN = 0;	/* > 0 equivalent */
 			} else {

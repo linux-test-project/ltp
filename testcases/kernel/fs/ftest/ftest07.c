@@ -274,7 +274,7 @@ int runtest()
 	}
 
 	if (pid == 0) {
-		execl("/bin/rm", "rm", "-rf", fuss, 0);
+		execl("/bin/rm", "rm", "-rf", fuss, NULL);
 			exit(1);
 		} else
 			wait(&status);

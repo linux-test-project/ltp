@@ -103,8 +103,8 @@ main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno=0; testno < TST_TOTAL; ++testno) {
-			TEST(s=socket(tdat[testno].domain, tdat[testno].type,
-				tdat[testno].proto));
+			TEST((s=socket(tdat[testno].domain, tdat[testno].type,
+				tdat[testno].proto)));
 			if (TEST_RETURN >= 0) {
 				TEST_RETURN = 0;	/* > 0 equivalent */
 			} else {

@@ -996,7 +996,7 @@ int setup_shared_mem(int num_threads, int num_files, int depth,
 	goto free_buffers;
     }
     unaligned_buffer = p;
-    (unsigned long)p = ((unsigned long) (p + page_size_mask) & ~page_size_mask);
+    p = (char*)((intptr_t) (p + page_size_mask) & ~page_size_mask);
     aligned_buffer = p;
     return 0;
 

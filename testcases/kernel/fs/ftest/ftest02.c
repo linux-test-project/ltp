@@ -232,7 +232,7 @@ int main (ac, av)
 		cleanup();
 	}
 	if (pid == 0) {
-		execl("/bin/rm", "rm", "-rf", homedir, 0);
+		execl("/bin/rm", "rm", "-rf", homedir, NULL);
 		exit(1);
 	} else
 		wait(&status);
@@ -248,7 +248,7 @@ int main (ac, av)
 	        cleanup();
 	}
 	if (pid == 0) {
-		execl("/bin/rm", "rm", "-rf", dirname, 0);
+		execl("/bin/rm", "rm", "-rf", dirname, NULL);
 		exit(1);
 	} else
 		wait(&status);

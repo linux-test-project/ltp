@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execle01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: execle01.c,v 1.2 2005/02/07 19:40:22 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -173,7 +173,7 @@ main(int ac, char **av)
 	 */
 	switch(pid=fork()) {
 	case 0: 	/* CHILD - Call execle(2) */
-	    execle("test", "test", 0, environ);
+	    execle("test", "test", NULL, environ);
 	    /* should not get here!! if we do, the parent will fail the Test Case */
 	    exit(errno);	
 	case -1:	/* ERROR!!! exit now!!*/
