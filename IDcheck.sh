@@ -59,27 +59,27 @@ if [ $? != "0" ]; then
  DAEMON_ID=1
 fi
 
-id -g nobody > /dev/null
+grep -q ^nobody: /etc/group
 if [ $? != "0" ]; then
  NOBODY_GRP=1
 fi
      
-id -g bin > /dev/null
+grep -q ^bin: /etc/group
 if [ $? != "0" ]; then
  BIN_GRP=1
 fi
 
-id -g daemon > /dev/null
+grep -q ^daemon: /etc/group
 if [ $? != "0" ]; then
  DAEMON_GRP=1
 fi
 
-grep users /etc/group | cut -d: -f1 | grep users > /dev/null
+grep -q ^users: /etc/group
 if [ $? != "0" ]; then
  USERS_GRP=1
 fi
 
-grep sys /etc/group | cut -d: -f1 | grep sys > /dev/null
+grep -q ^sys: /etc/group
 if [ $? != "0" ]; then
  SYS_GRP=1
 fi
