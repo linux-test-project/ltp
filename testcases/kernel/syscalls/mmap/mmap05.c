@@ -170,7 +170,7 @@ main(int ac, char **av)
 		}
 
 		/* Unmap mapped memory and reset pass in case we are looping */
-		if (munmap(addr, page_sz) != 0) {
+		if (munmap((void *)addr, page_sz) != 0) {
 			tst_brkm(TFAIL, cleanup, "munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
@@ -181,6 +181,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
