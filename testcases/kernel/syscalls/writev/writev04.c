@@ -118,14 +118,14 @@ main(int argc, char **argv)
 
 		fd[1] = -1;		/* Invalid file descriptor */
 
-		if (signal(SIGTERM, sighandler) == -1) {
+		if ((int)signal(SIGTERM, sighandler) == -1) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGTERM FAILED");
 			cleanup();
 			/*NOTREACHED*/
 		}
 
-		if (signal(SIGPIPE, sighandler) == -1) {
+		if ((int)signal(SIGPIPE, sighandler) == -1) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
 			cleanup();

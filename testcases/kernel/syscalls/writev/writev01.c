@@ -40,6 +40,8 @@
  *	07/2001 John George
  *		-Ported
  *      04/2002 wjhuie sigset cleanups
+ *     06/2002 Shaobo Li
+ *             fix testcase 7, add each testcase comment.
  *
  * Restrictions
  *	None
@@ -99,10 +101,8 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	/* testcase# 8 */
 	(buf1 + CHUNK * 13),	0,
 
-	/* testcase# 9 */
+	/* testcase# 7 */
 	(caddr_t)NULL,		0,
-
-	/* testcase# 10 */
 	(caddr_t)NULL,		0,
 };
 
@@ -197,7 +197,7 @@ main(int argc, char **argv)
 			/*NOTREACHED*/
 		}
 
-block1:
+block1: /* given vector length -1, writev() return EINVAL. */
 		tst_resm(TINFO, "Enter Block 1");
 		fail = 0;
 
@@ -222,7 +222,10 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+block2: /* This testcases doesn't look like what it intent to do
+        * 1. it is not using the wr_iovec initialized 
+        * 2. read() and following message is not consistent 
+        */
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
 
@@ -262,7 +265,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3:
+block3: /* given 1 bad vector buffer with good ones, writev() success */
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 
@@ -303,7 +306,7 @@ block3:
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-block4:
+block4: /* given bad file discriptor, writev() return EBADF. */
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
 
@@ -330,7 +333,7 @@ block4:
 		}
 		tst_resm(TINFO, "Exit block 4");
 
-block5:
+block5: /* given invalid vector count, writev() return EINVAL */
 		tst_resm(TINFO, "Enter block 5");
 		fail = 0;
 
@@ -357,7 +360,7 @@ block5:
 		}
 		tst_resm(TINFO, "Exit block 5");
 
-block6:
+block6: /* given no buffer vector, writev() success */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
 
@@ -378,12 +381,14 @@ block6:
 		}
 		tst_resm(TINFO, "Exit block 6");
 
-block7:
+block7: /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
+         * writev() success writing fixed length.
+         */
 		tst_resm(TINFO, "Enter block 7");
 		fail = 0;
 
 		l_seek(fd[0], CHUNK * 12, 0);
-   		if ((ret = writev(fd[0], (wr_iovec + 12), 5)) != CHUNK) {
+   		if ((ret = writev(fd[0], (wr_iovec + 12), 4)) != CHUNK) {
 			tst_resm(TFAIL, "writev() failed writing %d bytes, "
 				 "followed by two NULL vectors", CHUNK);
 			fail = 1;
@@ -399,7 +404,7 @@ block7:
 		}
 		tst_resm(TINFO, "Exit block 7");
 
-block8:
+block8: /* try to write to a closed pipe, writev() return EPIPE. */
 		tst_resm(TINFO, "Enter block 8");
 		fail = 0;
 
