@@ -191,8 +191,9 @@ setup0(void)
 		s = 400;	/* anything not an open file */
 	else
 		if((s = open("/dev/tty0", O_RDWR)) == -1)
-			tst_brkm(TBROK, cleanup, "error opening /dev/tty0 - "
-			"errno: %s", strerror(errno));
+			if((s = open("/dev/tty", O_RDWR)) == -1)
+				tst_brkm(TBROK, cleanup, "Could not open /dev/tty0 or /dev/tty - "
+				"errno: %s", strerror(errno));
 }
 
 void
