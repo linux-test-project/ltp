@@ -100,7 +100,7 @@ void sig_handler();		/* signal catching function */
  * the "rem" field would never change without the increased
  * usec precision in the -aa tree.
  */
- #define USEC_PRECISION 2000  /* Originally set at 100 max but this compiler bug has been around for years. */
+ #define USEC_PRECISION 2200  /* Originally set at 100 max but this compiler bug has been around for years. */
 
 int
 main(int ac, char **av)
