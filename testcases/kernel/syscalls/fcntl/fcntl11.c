@@ -104,6 +104,7 @@ setup()
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
+	struct sigaction act;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -127,7 +128,11 @@ setup()
                 tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
         }
 
-	if ((signal(SIGCLD, catch_child)) == SIG_ERR) {
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = catch_child;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGCLD);
+	if ((sigaction(SIGCLD, &act, NULL)) < 0) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
 			 errno);
 		fail = 1;

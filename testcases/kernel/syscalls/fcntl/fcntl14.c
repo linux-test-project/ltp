@@ -573,6 +573,8 @@ cleanup(void)
 void
 setup(void)
 {
+	struct sigaction act;
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
 	umask(0);
 	TEST_PAUSE;			/* Pause if that option is specified */
@@ -583,13 +585,22 @@ setup(void)
 	sprintf(tmpname, "fcntl2.%d", parent);
 
 	/* setup signal handler for signal from child */
-	if ((signal(SIGUSR1, catch1)) == SIG_ERR) {
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = catch1;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGUSR1);
+	if ((sigaction(SIGUSR1, &act, NULL)) < 0) {
 		tst_resm(TFAIL, "SIGUSR1 signal setup failed, errno = %d",
 			 errno);
 		cleanup();
 		/*NOTREACHED*/
 	}
-	if ((signal(SIGALRM, catch_alarm)) == SIG_ERR) {
+
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = catch_alarm;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGALRM);
+	if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed");
 		cleanup();
 		/*NOTREACHED*/
@@ -922,11 +933,17 @@ catch_alarm()
 void
 catch1()				/* invoked on catching SIGUSR1 */
 {
+	struct sigaction act;
+
 	/*
 	 * Set flag to let parent know that child is ready to have lock
 	 * removed
 	 */
-	signal(SIGUSR1, (void (*)())catch1);
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = catch1;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGUSR1);
+	sigaction(SIGUSR1, &act, NULL);
 	got1++;
 }
 

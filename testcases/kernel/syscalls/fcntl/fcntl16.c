@@ -405,7 +405,7 @@ void child_sig(int sig, int nkids)
 void
 setup(void)
 {
-    struct sigaction sact;
+	struct sigaction sact;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -425,21 +425,23 @@ setup(void)
 	/*
 	 * Set up signal handling functions
 	 */
-        sact.sa_flags = 0;
-
+	memset(&sact, 0, sizeof(sact));
         sact.sa_handler = catch_usr1;
-	(void)sigaction(SIGUSR1, &sact, NULL);
+	sigemptyset(&sact.sa_mask);
+	sigaddset(&sact.sa_mask, SIGUSR1);
+	sigaction(SIGUSR1, &sact, NULL);
 
+	memset(&sact, 0, sizeof(sact));
         sact.sa_handler = catch_usr2;
-	(void)sigaction(SIGUSR2, &sact, NULL);
+	sigemptyset(&sact.sa_mask);
+	sigaddset(&sact.sa_mask, SIGUSR2);
+	sigaction(SIGUSR2, &sact, NULL);
 
+	memset(&sact, 0, sizeof(sact));
         sact.sa_handler = catch_alarm;
-	(void)sigaction(SIGALRM, &sact, NULL);
-
-/*    (void)signal(SIGUSR1, catch_usr1);
-    (void)signal(SIGUSR2, catch_usr2);
-    (void)signal(SIGALRM, catch_alarm);
-*/
+	sigemptyset(&sact.sa_mask);
+	sigaddset(&sact.sa_mask, SIGALRM);
+	sigaction(SIGALRM, &sact, NULL);
 }
 
 int
