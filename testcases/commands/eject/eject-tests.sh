@@ -34,6 +34,7 @@
 #                           - Corrected code to check if return code is not 0
 #                             which indicated failure.
 #                           - fixed code to add $LTPTMP/cdrom to /etc/fstab
+#               Jan 07 2003 - Call eject with -v for verbose information.
 #
 #! /bin/sh
 
@@ -102,14 +103,22 @@ RC=0
 $LTPBIN/tst_resm TINFO "Test #2: eject commad with no options"
 $LTPBIN/tst_resm TINFO "Test #2: will eject the default cdrom device."
 
-eject &>$LTPTMP/tst_eject.res || RC=$?
+eject -v &>$LTPTMP/tst_eject.res || RC=$?
 if [ $RC -eq 0 ]
 then
-	# Close the tray if it is supported.
-    eject -t &>/dev/null
-    $LTPBIN/tst_resm TPASS  "Test #2: eject succeded"
+    grep "CD-ROM eject command succeeded" $LTPTMP/tst_eject.res \
+        &>$LTPTMP/tst_eject.out || RC=$?
+    if [ $RC -eq 0 ]
+    then
+        # Close the tray if it is supported.
+        eject -t &>/dev/null
+        $LTPBIN/tst_resm TPASS  "Test #2: eject succeded"
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out  \
+            "Test #2: eject fail.  Reason"
+    fi
 else
-    echo "Error code returned by eject: $RC" >> $LTPTMP/tst_eject.res \
+    echo "Error code returned by eject: $RC" >>$LTPTMP/tst_eject.res \
         2&/dev/null
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res \
         "Test #2: eject failed. Reason:"
@@ -133,16 +142,16 @@ cp /etc/fstab $LTPTMP/fstab.bak &>/dev/null
 
 if [ -d $LTPTMP/cdrom ]
 then
-	$LTPBIN/tst_resm TINFO \
+    $LTPBIN/tst_resm TINFO \
         "Test #3: test cdrom mount point $LTPTMP/cdrom exists. Skip creation" 
 else
-	mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
-			"Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
-	fi
+    mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+    if [ $RC -ne 0 ]
+    then
+        $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+            "Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
 fi
 
 echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
