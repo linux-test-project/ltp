@@ -1,6 +1,6 @@
 
 CFLAGS+= -Wall -I../../../../include
-LDFLAGS+= -L../../../../lib -lltp
+LDLIBS+= -L../../../../lib -lltp
 
 TARGETS=doio growfiles rwtest iogen
 SRCS=$(wildcard *.c)
@@ -9,13 +9,13 @@ OBJS=$(patsubst %.c,%.o,$(SRCS))
 all: $(TARGETS)
 
 doio: doio.o
-	$(CC) -o $@ $^ -I. $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $^ -I. $(CFLAGS) $(LDLIBS)
 
 growfiles: growfiles.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 iogen: iogen.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 rwtest: rwtest.sh doio iogen
 	cp rwtest.sh rwtest

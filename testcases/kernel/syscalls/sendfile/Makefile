@@ -21,7 +21,7 @@
 # description	: make(1) description file for the sendfile(2) tests.	  #
 ###########################################################################
 CFLAGS+=        -I../../../../include
-LDFLAGS+=       -L../../../../lib -lltp
+LDLIBS+=       -L../../../../lib -lltp
 
 DIR=sendfile
 MAINS=sendfile02 sendfile03
@@ -31,7 +31,7 @@ OBJS=$(MAINS:=.o)
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)

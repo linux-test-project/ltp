@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-Wall -I../../../../include
-LDFLAGS+=	-L../../../../lib -lltp
+LDLIBS+=		 -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -28,7 +28,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 $(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
 
 install: all
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

@@ -1,5 +1,5 @@
 
-LDFLAGS = -lm
+LDLIBS = -lm
 LFLAGS = -l
 CFLAGS += -Wall
 

@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include
-LDFLAGS+=	-L../../../../lib -lltp
+LDLIBS+=		 -L../../../../lib -lltp
 
 SRCS=$(wildcard fchown*.c) change_owner.c
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -29,10 +29,10 @@ all: $(TARGETS)
 
 change_owner.mode: 
 	@/bin/sh ./change_owner.mode.sh
-	
+
 
 $(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
 
 
 install: change_owner.mode

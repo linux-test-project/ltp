@@ -23,8 +23,28 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.3 2003/03/13 15:34:18 robbiew Exp $
+# $Id: Makefile,v 1.4 2003/03/13 20:09:12 robbiew Exp $
 # $Log: Makefile,v $
+# Revision 1.4  2003/03/13 20:09:12  robbiew
+# Applied Andreas Jaeger's patch for library linking:
+# <<<<<<<<<<<<<<<<<<<<<<
+# The ltp tests link files in the wrong order, this is rather important
+# with static libraries - especially since glibc 2.3.2 contains a
+# libpthread.so that is a linker script referencing a static library.
+#
+# The following is wrong:
+# gcc -lm file.o -o file
+# The order has to be: "file.o -lm"
+#
+# I'm appending a first round of patches to get this fixed.
+#
+# I noticed a number of failures with the threads tests and also
+# problems when compiling in a static environment.
+#
+# I renamed LDFLAGS since those are  flags (and therefore come before
+# the objects), LDLIBS should be used instead.
+# >>>>>>>>>>>>>>>>>>>>>>>
+#
 # Revision 1.3  2003/03/13 15:34:18  robbiew
 # Applied Vasan Sundar's patch:
 # <<<<<<<<<<<<<<<<<<<<
@@ -89,7 +109,7 @@ CFLAGS+= -Wall -O -g -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 
 all:	disktest
 disktest: threading.o childmain.o globals.o main.o usage.o sfunc.o parse.o defs.h
-	$(CC) $(CFLAGS) -lpthread -o disktest threading.o main.o usage.o sfunc.o parse.o childmain.o globals.o
+		 $(CC) $(CFLAGS)  -o disktest threading.o main.o usage.o sfunc.o parse.o childmain.o globals.o -lpthread
 main.o: main.c main.h sfunc.h usage.h defs.h
 	$(CC) $(CFLAGS) -c -o main.o main.c
 sfunc.o: sfunc.c sfunc.h main.h defs.h

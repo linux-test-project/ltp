@@ -1,6 +1,6 @@
 
 CFLAGS+= -O -Wall -g -D_GNU_SOURCE -I../../../include
-LDFLAGS+= -L../../../lib -lltp
+LDLIBS+= -L../../../lib -lltp
 
 BIN= hangup01 ptem01 pty01
 
@@ -13,12 +13,12 @@ install:  FRC
 	@set -e; for i in $(BIN); do ln -f $$i ../../bin/$$i ; done
 
 hangup01: hangup01.c
-	$(CC) $(CFLAGS) -o hangup01 hangup01.c $(LDFLAGS) 
+		 $(CC) $(CFLAGS) -o hangup01 hangup01.c $(LDLIBS) 
 
 ptem01: ptem01.c
-	$(CC) $(CFLAGS) -o ptem01 ptem01.c $(LDFLAGS)
+		 $(CC) $(CFLAGS) -o ptem01 ptem01.c $(LDLIBS)
 
 pty01: pty01.c	
-	$(CC) $(CFLAGS) -o pty01 pty01.c $(LDFLAGS)
+		 $(CC) $(CFLAGS) -o pty01 pty01.c $(LDLIBS)
 
 FRC:

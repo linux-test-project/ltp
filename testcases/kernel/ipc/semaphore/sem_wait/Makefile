@@ -1,5 +1,5 @@
 CFLAGS := -Wall -I ../../../../../include -I ../include -D_GNU_SOURCE
-LDFLAGS := -L ../../../../../lib -lltp -lpthread
+LDLIBS := -L ../../../../../lib -lltp -lpthread
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
