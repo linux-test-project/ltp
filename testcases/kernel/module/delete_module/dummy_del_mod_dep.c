@@ -30,25 +30,23 @@
 #include <asm/atomic.h>
 #include <linux/module.h>
 #include <linux/config.h>
+#include <linux/init.h>
+#include <linux/proc_fs.h>
 #include <linux/kernel.h>
 
-extern void dummy_func_test(void);
+extern int dummy_func_test(void);
 
-/* Initialization routine of module */
-int
-init_module (void)
-{
-	/*
-	 * Call function of other module, does nothing, used to create
-	 * dependency with other module
-	 */
-	dummy_func_test();
-	return 0;
+static int __init dummy_init(void) {
+        struct proc_dir_entry *proc_dummy;
+
+        proc_dummy = proc_mkdir("dummy_dep", 0);
+        dummy_func_test();
+        return 0;
 }
 
-/* Cleanup routine of module */
-void
-cleanup_module (void)
-{
-	return;
+static void __exit dummy_exit(void) {
+        remove_proc_entry("dummy_dep", 0);
 }
+
+module_init(dummy_init);
+module_exit(dummy_exit);
