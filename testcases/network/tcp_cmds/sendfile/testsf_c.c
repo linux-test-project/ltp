@@ -12,6 +12,10 @@
 #include <sys/socket.h>
 #include <errno.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 main(argc, argv)
 int argc;
 char *argv[];

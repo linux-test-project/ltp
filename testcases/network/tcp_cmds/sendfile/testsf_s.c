@@ -15,7 +15,9 @@
 
 #define LISTEN_BACKLOG	10
 
-
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
 void *
 test_sig(sig)
