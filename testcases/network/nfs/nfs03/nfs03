@@ -46,7 +46,7 @@ TC=${TC:=nfs03}
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin}
 TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCbin/tmp}
+TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
 
 # Setting the NFS to version 2 by default
@@ -319,15 +319,16 @@ $trace_logic
     
     sleep 5
 
+    PID=$$
     OPTS=${OPTS:="vers=$VERSION,proto=$SOCKET_TYPE "}
-    REMOTE_DIR=${RHOST}:/mnt/nfs03.testdir
+    REMOTE_DIR=${RHOST}:/mnt/nfs03$PID.testdir
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /mnt/nfs03.testdir"
+    rsh -n $RHOST "mkdir /mnt/nfs03$PID.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfs03.testdir"
+    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfs03$PID.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $OPTS"
@@ -386,8 +387,8 @@ $trace_logic
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	sleep 2
 	rmdir $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs03.testdir"
-	rsh -n $RHOST "rm -rf /mnt/nfs03.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs03$PID.testdir"
+	rsh -n $RHOST "rm -rf /mnt/nfs03$PID.testdir"
 	rsh -n $RHOST "/usr/sbin/rpc.nfsd $ORIG_NFSD"
 
     fi
