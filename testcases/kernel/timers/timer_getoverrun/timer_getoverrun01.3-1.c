@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include "posixtest.h"
+#include "timer_getoverrun01.h"
 
 int main()
 {

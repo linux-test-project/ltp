@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "timer_getoverrun01.h"
+
 
 #define TIMERSEC 3
 
