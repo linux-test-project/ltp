@@ -132,7 +132,7 @@ main()
             # removed at end of script.
             TMPBASE=$OPTARG
             TMP="${TMPBASE}/ltp-$$"
-            export TMPDIR = "$TMP";;
+            export TMPDIR="$TMP";;
         f)  # Execute user defined set of testcases.
             CMDFILE=$OPTARG;;
     
