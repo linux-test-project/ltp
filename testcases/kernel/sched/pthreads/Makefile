@@ -1,4 +1,4 @@
-SUBDIRS = pth_str
+SUBDIRS = pth_str pthread_attr_destroy
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
