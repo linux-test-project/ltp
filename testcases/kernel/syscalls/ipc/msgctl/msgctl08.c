@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <values.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -63,13 +64,12 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={0};     /* List must end with 0 */
 
-
+#define MAXNPROCS	1000000  /* This value is set to an arbitrary high limit. */
 #define MAXNREPS	100000
-#define MAXNPROCS	20
 #define FAIL		1
 #define PASS		0
 
-key_t	keyarray[MAXNPROCS];
+key_t	keyarray[MAXNPROCS];    
 
 struct {
 	long	type;
@@ -81,7 +81,7 @@ struct {
 
 int	pidarray[MAXNPROCS];
 int tid;
-int nprocs, nreps;
+int MSGMNI,nprocs, nreps;
 int procstat;
 int dotest(key_t key, int child_process);
 int doreader(int id, long key, int child);
@@ -100,12 +100,12 @@ char	*argv[];
 	int count, status;
 
 	setup();
-
+	
 	if (argc == 1 )
 	{
 		/* Set default parameters */
 		nreps = MAXNREPS;
-		nprocs = MAXNPROCS;
+		nprocs = MSGMNI;
 	}
 	else if (argc == 3 )
 	{
@@ -118,10 +118,10 @@ char	*argv[];
 		{
 			nreps = atoi(argv[1]);
 		}
-		if (atoi(argv[2]) > MAXNPROCS )
+		if (atoi(argv[2]) > MSGMNI )
 		{
-		        tst_resm(TCONF,"\tRequested number of processes too large, setting to Max. of %d \n", MAXNPROCS);
-			nprocs = MAXNPROCS;
+		        tst_resm(TCONF,"\tRequested number of processes too large, setting to Max. of %d \n", MSGMNI);
+			nprocs = MSGMNI;
 		}
 		else
 		{
@@ -388,6 +388,9 @@ sig_handler()
 void
 setup()
 {
+  FILE* f;
+  size_t msgmni;
+  
         /* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 */
@@ -400,6 +403,15 @@ setup()
 	 * before you create your temporary directory.
 	 */
         TEST_PAUSE;
+
+	/* Get the max number of message queues allowed on system */
+	f = fopen("/proc/sys/kernel/msgmni", "r");
+	if (!f){
+		tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
+		tst_exit();
+        }
+	MSGMNI = fscanf(f,"%d",&msgmni);	
+	
 }
 
 
