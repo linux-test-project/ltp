@@ -222,6 +222,12 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/* Make a temp dir and cd to it */
+	tst_tmpdir();
+
         /* Get the current working directory of the process */
         if (getcwd(test_home, sizeof(test_home)) == NULL) {
                 tst_brkm(TBROK, cleanup,
@@ -244,12 +250,6 @@ setup()
                          ltpuser->pw_uid);
                 perror("seteuid");
          }
-
-	/* Pause if that option was specified */
-	TEST_PAUSE;
-
-	/* Make a temp dir and cd to it */
-	tst_tmpdir();
 
 
 	/* call individual setup functions */

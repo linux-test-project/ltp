@@ -205,6 +205,12 @@ setup()
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
 	char *change_owner_path;
 
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -234,12 +240,6 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			"getcwd(3) fails to get working directory of process");
         }
-	/* Pause if that option was specified */
-	TEST_PAUSE;
-
-	/* make a temp directory and cd to it */
-	tst_tmpdir();
-
 
 	/* Create a test file under temporary directory */
 	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
