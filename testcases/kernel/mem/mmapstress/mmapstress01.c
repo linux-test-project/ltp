@@ -526,8 +526,8 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 			offset/pagesize, nloops);
 #else /* LARGE_FILE */
 		(void)printf("child %d (pid %d): seed %d, fsize %ld, "
-			"mapsize %d, off %ld, loop %d\n",
-			procno, getpid(), seed, filesize, mapsize,
+			"mapsize %ld, off %ld, loop %d\n",
+			procno, getpid(), seed, filesize, (long)mapsize,
 			offset/pagesize, nloops);
 #endif /* LARGE_FILE */
 	}
@@ -666,9 +666,9 @@ fileokay(char *file, uchar_t *expbuf)
 			 *  Okay if at last page in file... 
 			 */
 			if ((i * pagesize) + cnt != mapsize) {
-				(void)fprintf(stderr, "read %d of %d bytes\n",
+				(void)fprintf(stderr, "read %d of %ld bytes\n",
 					      (i*pagesize)+cnt, 
-					      mapsize);
+					      (long)mapsize);
 				return(0);
 			}
 		}
