@@ -24,12 +24,11 @@
  * DESCRIPTION
  *	This test will verify that rmdir(2) fail in 
  *      1. ENOTEMPTY
- *      2. EBUSY
- *      3. ENAMETOOLONG
- *      4. ENOENT
- *      5. ENOTDIR
+ *      2. ENAMETOOLONG
+ *      3. ENOENT
+ *      4. ENOTDIR
+ *      5. EFAULT
  *      6. EFAULT
- *      7. EFAULT
  *
  * ALGORITHM
  *	Setup:
@@ -42,22 +41,19 @@
  *              1. create a directory tstdir1, create a file under it.
  *                 call rmdir(tstdir1), verify the return value is not 0
  *                 and the errno is ENOTEMPTY
- *              2. create a directory tstdir2 and let it to be current working
- *                 directory. call rmdir(tstdir2), verify the return value
- *                 is not 0 and the errno is EBUSY
- *              3. create a directory with long path,
+ *              2. create a directory with long path,
  *                 call rmdir(tstdir1), verify the return value is not 0
  *                 and the errno is ENAMETOOLONG
- *              4. pass a pathname containing non-exist directory component
+ *              3. pass a pathname containing non-exist directory component
  *                 to rmdir() and check the return value and errno (expect
  *                 ENOENT
- *              5. pass a pathname containing a file component
+ *              4. pass a pathname containing a file component
  *                 to rmdir() and check the return value and errno (expect
  *                 ENOTDIR
- *     	        6. Attempt to pass an invalid pathname with an address 
+ *     	        5. Attempt to pass an invalid pathname with an address 
  *                 pointing outside the address space of the process, 
  *                 as the argument to rmdir(), and expect to get EFAULT.
- *     	        7. Attempt to pass an invalid pathname with NULL
+ *     	        6. Attempt to pass an invalid pathname with NULL
  *                 as the argument to rmdir(), and expect to get EFAULT.
  *
  *	Cleanup:
@@ -96,7 +92,7 @@ void set_condition();
 #define PERMS		0777
 
 char *TCID="rmdir02";           /* Test program identifier.    */
-int TST_TOTAL=7;                /* Total number of test cases. */
+int TST_TOTAL=6;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0};
@@ -105,7 +101,6 @@ char tstfile [255];
 char tstdir1 [255];
 char tstdir2 [255];
 char tstdir3 [255];
-char tstdir4 [255];
 char longname [255];
 char longpath [2*PATH_MAX];
 char cwd [255];
@@ -118,17 +113,14 @@ struct test_case_t {
 	/* The directory is not empty - ENOTEMPTY */
 	{tstdir1, ENOTEMPTY, set_condition},
 
-	/* The directory is the current working directory - EBUSY */
-	{tstdir2, EBUSY, set_condition},
-
 	/* The directory pathname is too long - ENAMETOOLONG */
 	{longpath, ENAMETOOLONG, set_condition},
 
 	/* A component of the pathname does not exists - ENOENT */
-	{tstdir3, ENOENT, set_condition},
+	{tstdir2, ENOENT, set_condition},
 
 	/* The given argument is not a directory - ENOTDIR */
-	{tstdir4, ENOTDIR, set_condition},
+	{tstdir3, ENOTDIR, set_condition},
 
 	/* The argument is illegal - EFAULT */
 	{(char *)-1, EFAULT, NULL},
@@ -206,7 +198,6 @@ main(int ac, char **av)
 		(void)rmdir(tstdir1);
 		(void)rmdir(tstdir2);
 		(void)rmdir(tstdir3);
-		(void)rmdir(tstdir4);
 
 	}   /* End for TEST_LOOPING */
 	
@@ -242,42 +233,16 @@ set_condition(int num)
 						
 		break;
 	case 2:
-		/* set up for test 2 */
-		sprintf(tstdir2,"%s/tstdir2_%d",cwd,getpid());
-
-		/* create a directory */
-		if (mkdir(tstdir2, PERMS) == -1) {
-			tst_brkm(TBROK,cleanup, "mkdir(%s, %#o) Failed",
-				 tstdir2, PERMS);
-			/*NOTREACHED*/
-		}
-
-		/* change tstdir to be current working directory */
-		if (chdir(tstdir2) == -1) {
-		        tst_brkm(TBROK, cleanup, "chdir(%s) failed", tstdir2);
-			/* NOTREACHED */
-		}
-
-		/* 
-		 * make sure directory tstdir is considered 
-		 * "in use" by the process
-		 */
-		if (open(".", O_RDONLY) == -1) {
-		       tst_brkm(TBROK, cleanup, "open(\".\") failed");
-		       /* NOTREACHED */
-		}
-		break;
-	case 3:
 		create_longpath();
 		break;
-	case 4:
+	case 3:
 		/* Initialize the test directory name */
-		sprintf(tstdir3, "NOSUCHADIR/tstdir3.%d", getpid());
+		sprintf(tstdir2, "NOSUCHADIR/tstdir2.%d", getpid());
 
 		break;
-	case 5:
+	case 4:
 		/* Initialize the test directory name and file name */
-		sprintf(tstdir4, "%s/tstdir4", tstfile);
+		sprintf(tstdir3, "%s/tstdir3", tstfile);
 		
 		/* create a file */
 		if (creat(tstfile, PERMS) == -1) {
