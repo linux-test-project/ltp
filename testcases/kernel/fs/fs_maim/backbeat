@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+
+#
+#  FILE(s)     : backbeat
+#  DESCRIPTION : Test takes 3 partitions (ex: /dev/hda1 /dev/hda2 /dev/hda3) and simulates 
+#                an online backup of /sbin using cp, tar and diff.
+#  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
+#  HISTORY     : 
+#
+
+($junk,$junk,$part1)=split(/\//,$ARGV[0]);
+($junk,$junk,$part2)=split(/\//,$ARGV[1]);
+($junk,$junk,$part3)=split(/\//,$ARGV[2]);
+
+mkdir ("$part1/sbin");
+print "\ncp:\n";
+print `cp -aL /sbin/* $part1/sbin`;
+print "\ncd:\n";
+chdir "$part1" || die "Can't cd to $part1: $!\n";
+print "\ntar:\n";
+print `tar -cf test.tar sbin`;
+print "\nmv:\n";
+print `mv test.tar ../$part2`;
+
+chdir "../$part2" || die "Can't cd to ../$part2: $!\n";
+
+`tar -xvf test.tar -C ../$part3`;
+
+chdir ".." || die "Can't cd to ..: $!\n";
+
+$tmp = `diff $part3/sbin $part1/sbin`;
+
+if ($tmp) {
+        print $tmp;
+        print "\nDiff: FAIL\n"; 
+        exit 1;
+        }
+    else {
+        print "\nDiff: PASS\n"; 
+        exit 0;
+        }

@@ -1,0 +1,81 @@
+#!/usr/bin/perl
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+
+#
+#  FILE(s)     : maimparts
+#  DESCRIPTION : Takes the disk device name (ex: hda) and number of iterations 
+#                to run thru and then rips the drive into a defined number of 
+#                partitions ($parts).  This sets up the device for partbeat 
+#                and backbeat which are called after setup occurs.
+#
+#  WARNING!!!  : The device you specify on the command line (hda/sda/etc) will be
+#                blown away...smoking any important data, programs, OS, etc.
+#                Don't specify a device name that you don't want to wipe out.
+#                YOU HAVE BEEN WARNED!
+#
+#  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
+#  HISTORY     : 
+#
+
+# target is device to split into partions
+$target=$ARGV[0];
+$iterations=$ARGV[1];
+# part is the number of partitions to split the drive into (max is 4)
+$parts=3;
+# fsid is the partition id or type (83 is linux native)
+$fstype="jfs";
+$fsid=0x83;
+
+if (!$ARGV[0]) {
+    print "Usage: maimparts [target device ie: hda or sda] [iterations]\n";
+    exit;
+    } 
+# run sfdisk to display device geometry and rip out info 
+# (specifically cylinders)
+$Geom = `/sbin/sfdisk -g /dev/$target`;
+chomp $Geom;
+($Junk,$Temp1) = split(/\: /,$Geom,2);
+($Cyl,$Heads,$Sec) = split(/\, /,$Temp1,3);
+($Cyl,$Junk) = split(/ /,$Cyl,2);
+($Heads,$Junk) = split(/ /,$Heads,2);
+($Sec,$Junk) = split(/ /,$Sec,2);
+
+# determine partition size to create (force int so we don't 
+# try to use 1/2 a cylinder!)
+$psize = int($Cyl/$parts);
+
+# create a config file in /tmp for sfdisk creation run
+open(CONFIG,">/tmp/part.cfg") ||
+    die "Couldn't create /tmp/part.cfg\n";
+for($i=1;$i<=$parts;$i++) {
+    printf(CONFIG ",%d,%x\n",$psize,$fsid); # write the lines in cfg
+    }
+close(CONFIG);
+
+# create the partitions!
+`sfdisk --force /dev/$target < /tmp/part.cfg`;
+
+#run partbeat on the partitions
+for ($k=1;$k<=$parts;$k++) {
+    $part[$k] = sprintf("%s%d",$target,$k);
+    $tmp = `./partbeat /dev/$target$k $iterations $fstype`;
+    print $tmp;
+    }
+$tmp = `./backbeat /dev/$part[1] /dev/$part[2] /dev/$part[3]`;
+print $tmp;

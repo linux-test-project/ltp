@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+
+#
+#  FILE(s)     : partbeat 
+#  DESCRIPTION : Quick test to test storage management functions like mount and fsck.
+#                More can be added later without much trouble.  Command line takes the
+#                partition device name (ex: /dev/hda1), an integer for how many iterations
+#                of the test you would like to run and the filesystem type to use (jfs or ext2 for now).
+#  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
+#  HISTORY     : 
+#
+
+$target=$ARGV[0];
+$iterations=$ARGV[1];
+$fstype=$ARGV[2];
+
+print "mkfs:";
+if ($fstype =~ /jfs\b/i) {
+    $tmp = `mkfs.jfs -f $target`;
+    }
+elsif ($fstype =~ /ext2\b/i) {
+    $tmp=`mkfs $target`;
+    }
+else {
+    $tmp=`mkfs $target`;
+    }
+print $tmp;
+
+print "fsck:";
+$tmp=`fsck -t $fstype -a $target`;
+print $tmp;
+
+($junk,$junk,$device)=split(/\//,$target);
+
+`mkdir $device`;
+
+for ($i=1;$i<=$iterations;$i++) {
+    print "mount:";
+    $tmp=`mount -t $fstype $target $device`;
+    print ($tmp."\n");
+
+    `touch $device/indicator$i`;
+
+    print "umount:";
+    $tmp=`umount $target`;
+    print ($tmp."\n");
+    }
+
+print "fsck:";
+$tmp=`fsck -t $fstype -a $target`;
+print $tmp;
+
+`mount -t $fstype $target $device`;
+`rm -f $device/indicator*`;
