@@ -11,7 +11,7 @@ sched.o: sched.h sched.c
 	$(CC) $(CFLAGS) -c sched.c
 
 install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
+	@set -e; for i in $(TARGETS) sched.datafile ; do ln -f $$i ../../../bin/$$i ; done ;
 	ln -f sched_stress.sh ../../../bin/sched_stress.sh
 clean:
 	rm -f $(TARGETS) sched.o sched.datafile
