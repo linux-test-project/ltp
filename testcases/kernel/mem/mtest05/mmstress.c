@@ -40,6 +40,10 @@
 /* Nov-02-2001  Modified - Paul Larson					      */
 /*		- Added sched_yield to thread_fault to fix hang	              */
 /*		- Removed thread_mmap				              */
+/*									      */
+/* Nov-09-2001  Modified - Manoj Iyer					      */
+/*		- Removed compile warnings.				      */
+/*		- Added missing header file. #include <stdlib.h>	      */
 /*								              */
 /* Purpose:	Performing General Stress with Race conditions        	      */
 /* 									      */
@@ -58,6 +62,7 @@
 #include <pthread.h>    /* definitions for creating threads                   */
 #include <signal.h>     /* definitions for signals - required for SIGALRM     */
 #include <errno.h>	/* definitions for errors		              */
+#include <stdlib.h>     /* definitions for malloc			      */
 
 /* GLOBAL DEFINES							      */
 #define READ_FAULT      0
@@ -220,7 +225,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
          if (verbose_print)
              fprintf(stdout, "thread_fault(): generating fault type %d" 
 		    " @page adress %#lx\n", (int)local_args[3], 
-		     start_addr);
+		      start_addr);
 	 fflush(NULL);
     }
     PTHREAD_EXIT(0);
@@ -242,6 +247,7 @@ static int
 remove_files(char *filename)	/* name of the file that is to be removed     */
 {
     if (strcmp(filename, "NULL") || strcmp(filename, "/dev/zero"))
+    {
         if (unlink(filename))
         {
             perror("map_and_thread(): ulink()");
@@ -251,8 +257,9 @@ remove_files(char *filename)	/* name of the file that is to be removed     */
 	{
             if (verbose_print)
 	        fprintf(stdout, "file %s removed\n", filename);
-	    return SUCCESS;
         }
+    }      
+    return SUCCESS;
 }
 
 
@@ -279,8 +286,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
 	       RETINFO_t *retinfo)    /* return map address and oper status   */
 	       
 {
-    int  fd;			/* file descriptor of the file created	      */
-    int  page_ndx;	 	/* number of pages to write to the temp file  */
+    int  fd = 0;		/* file descriptor of the file created	      */
     int  thrd_ndx = 0;	 	/* index to the number of threads created     */
     int  map_type;	        /* specifies the type of the mapped object    */
     int  *th_status;            /* status of the thread when it is finished   */
@@ -646,6 +652,7 @@ test6()
 /* Output:	none							      */
 /*								              */
 /******************************************************************************/
+int
 main(int   argc,    /* number of command line parameters		      */
      char **argv)   /* pointer to the array of the command line parameters.   */
 {
