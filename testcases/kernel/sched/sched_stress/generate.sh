@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/perl
 #
 #   Copyright (c) International Business Machines  Corp., 2001
 #
@@ -25,16 +25,12 @@
 #
 ############################################################################
 
+my $file = 'sched.datafile';
+my $size = 1200010;
 
-COUNT=0
-LIMIT=120000
-ls ./sched.datafile > /dev/null 2>&1
-if [ $? -eq 1 ];then
-  while [ $COUNT -le $LIMIT ]
-  do
-    echo -n "AAAAAAAAAA" >> sched.datafile
-    COUNT=$(( $COUNT + 1 ))
-  done
-  chmod 666 sched.datafile
-fi
-
+unless (-f $file) {
+	open(DATAFILE, ">$file") or die "$0: could not create $file: $!\n";
+	print DATAFILE 'A' x $size;
+	close(DATAFILE);
+	chmod 0666, $file;
+}
