@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: alarm03.c,v 1.2 2001/09/13 18:25:06 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -112,6 +112,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
+    int e_code, status, retval=0;
     
     /***************************************************************
      * parse standard options
@@ -148,30 +149,40 @@ main(int ac, char **av)
 	case  0:
 	    TEST( alarm(0) );
 
-	    if ( TEST_RETURN != 0 )
+	    if ( TEST_RETURN != 0 ) {
+		retval=1;
 		tst_resm(TFAIL,
 		    "alarm(100), fork, alarm(0) child's alarm returned %d",
                     TEST_RETURN);
-	    else if ( STD_FUNCTIONAL_TEST )
+	    } else if ( STD_FUNCTIONAL_TEST ) {
 		tst_resm(TPASS,
 		    "alarm(100), fork, alarm(0) child's alarm returned %d",
 		    TEST_RETURN);
+	    }
 
-	     exit(0);
-	     break;
+	    exit(retval);
+	    break;
 
 	default:
 	    Tst_count++;
 	    TEST( alarm(0) );
-	    if ( TEST_RETURN <= 0 || TEST_RETURN > 100 )
+	    if ( TEST_RETURN <= 0 || TEST_RETURN > 100 ) {
+		retval = 1;
                 tst_resm(TFAIL,
 		    "alarm(100), fork, alarm(0) parent's alarm returned %d",
                     TEST_RETURN);
-
-	    else if ( STD_FUNCTIONAL_TEST )
+	    } else if ( STD_FUNCTIONAL_TEST ) {
                 tst_resm(TPASS,
 		    "alarm(100), fork, alarm(0) parent's alarm returned %d",
                     TEST_RETURN);
+	    }
+	    /* wait for the child to finish */
+	    wait(&status);
+	    /* make sure the child returned a good exit status */
+	    e_code = status >> 8;
+	    if ((e_code != 0) || (retval != 0)) {
+	        tst_resm(TFAIL, "Failures reported above");
+	    }
 
         }
 	
@@ -181,8 +192,6 @@ main(int ac, char **av)
      * cleanup and exit
      ***************************************************************/
     cleanup();
-
-    return 0;
 }	/* End main */
 
 
