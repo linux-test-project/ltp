@@ -89,7 +89,8 @@ while {$count < $LOOPCOUNT} {
 
       send_user "CHECKING RLOGIN STATUS\n"
       send "cat $TESTLOG/$RUSER.$RHOST\n"
-      if 1==[catch {exec grep -c "9" $TESTLOG/$RUSER.$RHOST}] {
+      set nummatch [exec grep -c "9" $TESTLOG/$RUSER.$RHOST]
+      if {$nummatch==1} {
          send_user "$TC interactive Test Successful in LOOP $count\r"
          exec rm -rf $TESTLOG/$RUSER.$RHOST
       } else {
