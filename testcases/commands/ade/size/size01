@@ -34,7 +34,7 @@
 $trace_logic
 
 TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/size01-$$}
 
 do_setup()
 {
@@ -131,7 +131,7 @@ if [ $? -eq 0 ]
 		exit 1
 fi
 
-rm -f $TCtmp/*r_size_x
+rm -rf $TCtmp
 
 echo "Test Result: PASS"
 exit 0

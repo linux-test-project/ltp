@@ -33,11 +33,11 @@
 $trace_logic
 
 TCdat=${TCdat:-`pwd`}
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/ldd01-$$}
 
 do_cleanup()
 {
-rm -rf $TCtmp/*.o.so a.out
+rm -rf $TCtmp
 }
 
 do_setup()

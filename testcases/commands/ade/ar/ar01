@@ -42,7 +42,7 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/ar01-$$}
 TCdat=${TCdat:-`pwd`}
 cd $TCdat
 
