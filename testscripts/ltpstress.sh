@@ -55,7 +55,7 @@ usage()
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
     -l logfile      Log results of test in a logfile.
-    -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is 64Mb.
+    -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
     -S              Use 'sar' to measure data. 
     -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
