@@ -1,3 +1,4 @@
+#DESCRIPTION:Interprocess communication stress
 # These tests use tests/pipeio to put pipes (named or unnamed) through a workout
 #
 pipeio_1 pipeio -c 5 -s 4090 -i 100 -b -f x80

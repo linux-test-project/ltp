@@ -1,3 +1,4 @@
+#DESCRIPTION:SCTP over TCP
 accept01-sctp accept01-sctp
 bind01-sctp-tcp	bind01-sctp-tcp
 listen01-sctp-tcp listen01-sctp-tcp

@@ -1,3 +1,4 @@
+#DESCRIPTION:SCTP over IPv6
 close02-sctp-udp-ipv6 close02-sctp-udp-ipv6
 close03-sctp-udp-ipv6 close03-sctp-udp-ipv6
 connect01-sctp-udp-ipv6 connect01-sctp-udp-ipv6

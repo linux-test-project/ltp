@@ -1,3 +1,4 @@
+#DESCRIPTION:Part four for ltpstress.sh
 mc_cmds mc_cmds
 mc_commo export TCsrc=$LTPROOT/testcases/network/multicast/mc_commo; mc_commo
 mc_member export TCsrc=$LTPROOT/testcases/network/multicast/mc_member; mc_member

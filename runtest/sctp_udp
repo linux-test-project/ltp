@@ -1,3 +1,4 @@
+#DESCRIPTION:SCTP over UDP
 bind01-sctp-udp	bind01-sctp-udp
 bind02-sctp-udp bind02-sctp-udp
 close01-sctp-udp close01-sctp-udp

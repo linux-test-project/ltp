@@ -1,3 +1,4 @@
+#DESCRIPTION:lvm filesystem tests
 # Check the MSDOS filesystem
 gf101 growfiles -d /test/growfiles/msdos -b -e 1 -u -i 0 -L 20 -w -C 1 -l -I r -T 10 glseek20 glseek20.2
 gf102 growfiles -d /test/growfiles/msdos -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_

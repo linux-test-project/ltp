@@ -1,3 +1,4 @@
+#DESCRIPTION:Part three for ltpstress.sh
 abort01 ulimit -c 1024;abort01
 
 accept01 accept01

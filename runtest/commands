@@ -1,3 +1,4 @@
+#DESCRIPTION:General Linux commands
 ar export TCdat=$LTPROOT/testcases/bin; ar01
 ld export TCdat=$LTPROOT/testcases/bin; ld01
 ldd export TCdat=$LTPROOT/testcases/bin; ldd01

@@ -1,3 +1,4 @@
+#DESCRIPTION:Direct IO tests
 ## Complete a default run.
 dio01 diotest1
 dio02 diotest2

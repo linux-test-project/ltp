@@ -1,3 +1,4 @@
+#DESCRIPTION:A small subset of the syscalls
 access01 access01
 # Basic test for access(2) using F_OK, R_OK, W_OK and X_OK arguments.
 access03 access03

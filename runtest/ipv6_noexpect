@@ -1,3 +1,4 @@
+#DESCRIPTION:IPV6 related tests that don't require expect
 echo6 export TCbin=$LTPROOT/testcases/network/ipv6/echo6;echo601
 finger6 finger601
 ftp6 export TCbin=$LTPROOT/testcases/network/ipv6/ftp6; ftp01

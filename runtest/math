@@ -1,3 +1,4 @@
+#DESCRIPTION:Math library tests (CPU stress)
 abs01 abs01
 
 atof01 atof01

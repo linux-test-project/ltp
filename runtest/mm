@@ -1,3 +1,4 @@
+#DESCRIPTION:Memory Mgmt tests
 mm01 mmap001 -m 10000
 # 40 Mb mmap() test.
 # Creates a 10000 page mmap, touches all of the map, sync's it, and
