@@ -22,8 +22,11 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.c,v 1.2 2003/04/17 15:21:57 robbiew Exp $
+* $Id: parse.c,v 1.3 2003/05/07 16:38:52 robbiew Exp $
 * $Log: parse.c,v $
+* Revision 1.3  2003/05/07 16:38:52  robbiew
+* Added code to handle cases where direct I/O is not supported.
+*
 * Revision 1.2  2003/04/17 15:21:57  robbiew
 * Updated to v1.1.10
 *
@@ -415,7 +418,12 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					}
 				}
 				if (strchr(optarg,'D') || strchr(optarg,'d'))
+#ifdef O_DIRECT
 					args->flags |= CLD_FLG_DIRECT;
+#else
+					pMsg(WARN, "This system does not support direct I/O\n");
+					return(-1);
+#endif
 				break;
 			case 'T' :
 				if(optarg == NULL) {
