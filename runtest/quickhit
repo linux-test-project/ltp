@@ -251,6 +251,8 @@ sigrelse01 sigrelse01
 # Releasing held signals
 stat05 stat05
 # Basic test for stat(2)
+stat06 stat06
+# Negative tests for stat(2)
 statfs01 statfs01
 # Basic test for statfs(2) mounted filesys
 sync01 sync01
