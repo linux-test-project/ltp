@@ -99,7 +99,7 @@ create_distfile()
    for i in $FILES
    do
       DIR=`dirname $i`
-      if [[ $DIR = "." ]]; then
+      if [ $DIR = "." ]; then
          T_FILES="$T_FILES $i"
       else
          T_FILES="$T_FILES $DIR"

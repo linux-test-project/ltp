@@ -148,7 +148,7 @@ init()
 		mv /etc/dhcpd.conf $LTPTMP/dhcpd.conf &>$LTPTMP/tst_dhcpd.err || RC=$?
 		mv $LTPTMP/tst_dhcpd.conf /etc/dhcpd.conf &>$LTPTMP/tst_dhcpd.err \
 			|| RC1=$?
-		if [[ $RC -ne 0 || $RC1 -ne 0 ]]
+		if [ $RC -ne 0 || $RC1 -ne 0 ]
 		then
 			tst_brkm TBROK NULL \
 				"INIT: Failed to create dhcpd.conf file."
