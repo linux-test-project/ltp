@@ -2,18 +2,21 @@
 
 cd `dirname $0`
 LTPROOT=${PWD}
+TMP="/tmp/runalltests-$$"
 
-mkdir /tmp/runalltests-$$
-cd /tmp/runalltests-$$
+mkdir ${TMP}
+cd ${TMP}
 
 export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/tests"
 
-python ${LTPROOT}/runtest/runtests.py ${LTPROOT}/runtest/quickhit ${LTPROOT}/runtest/fs
+cat ${LTPROOT}/runtest/quickhit ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm > ${TMP}/alltests
+
+${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests
 
 if [ $? -eq "0" ]; then
-  echo runtests reported PASS
+  echo pan reported PASS
 else
-  echo runtests reported FAIL
+  echo pan reported FAIL
 fi
 
-rm -rf /tmp/runalltests-$$
+rm -rf ${TMP}

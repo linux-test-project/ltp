@@ -4,6 +4,6 @@ mm01 mmap001 -m 10000
 # munmap()s it.
 mm02 mmap001
 # simple mmap() test.
-mm03 mmap001 -i 0 -I 1 -m 100
+#mm03 mmap001 -i 0 -I 1 -m 100
 # repetitive mmapping test.
 # Creates a one page map repetitively for one minute.
