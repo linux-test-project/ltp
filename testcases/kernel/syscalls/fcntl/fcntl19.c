@@ -57,7 +57,6 @@ int parent_pipe[2];
 int child_pipe[2];
 int fd;
 pid_t parent_pid, child_pid;
-char *file;
 
 void parent_put();
 void parent_get();
@@ -89,6 +88,7 @@ void
 setup()
 {
 	char *buf = STRING;
+        char template[PATH_MAX];
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -101,17 +101,15 @@ setup()
 	pipe(parent_pipe);
 	pipe(child_pipe);
 	parent_pid = getpid();
-	file = tempnam(".", NULL);
+	snprintf(template, PATH_MAX, "fcntl19XXXXXX");
 
-	if ((fd = open(file, O_RDWR|O_CREAT, 0777)) < 0) {
-		tst_resm(TFAIL, "Couldn't open %s! errno = %d", file, errno);
-		fail = 1;
-	}
+	if ((fd = mkstemp(template)) < 0) {
+                tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
+        }
 
-	if (write(fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write %s! errno = %d", file, errno);
-		fail = 1;
-	}
+        if (write(fd, buf, STRINGSIZE) < 0) {
+                tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
+        }
 
 	if ((signal(SIGCLD, catch_child)) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
@@ -134,7 +132,6 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	unlink(file);
 
 	/* exit with return code appropriate for results */
 	tst_exit();
@@ -149,8 +146,8 @@ void do_child()
 	while(1) {
 		child_get(&fl);
 		if (fcntl(fd, F_GETLK, &fl) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 		child_put(&fl);
@@ -222,7 +219,7 @@ unlock_file()
 	struct flock fl;
 
 	if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
-		tst_resm(TFAIL, "fcntl on file %s failed, errno =%d", file,
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
 			 errno);
 		fail = 1;
 	}
@@ -342,14 +339,14 @@ int main(int ac, char **av)
 		 * section just before the lock
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 5, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -385,14 +382,14 @@ int main(int ac, char **av)
 		 * ends at the first byte of the write lock.
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 5, 6) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -429,14 +426,14 @@ int main(int ac, char **av)
 		 * unlock that overlaps the front of the write
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 5, 8) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -473,14 +470,14 @@ int main(int ac, char **av)
 		 * section in the middle of it
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 10) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 13, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -523,14 +520,14 @@ int main(int ac, char **av)
 		 * unlock that overlaps the end
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 13, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -567,14 +564,14 @@ int main(int ac, char **av)
 		 * starting at the last byte of the write lock
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 14, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
@@ -612,14 +609,14 @@ int main(int ac, char **av)
 		 * lock
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 
 		if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 16, 0) < 0) {
-			tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-				 file, errno);
+			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
+				 errno);
 			fail = 1;
 		}
 

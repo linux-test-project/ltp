@@ -67,7 +67,6 @@ int child_pipe3[2];
 int file_fd;
 pid_t parent_pid, child_pid1, child_pid2, child_pid3;
 int child_stat;
-char *file;
 struct flock lock1 = { (short)F_WRLCK, (short)0,  2,  5, (short)0 };
 struct flock lock2 = { (short)F_WRLCK, (short)0,  9,  5, (short)0 };
 struct flock lock3 = { (short)F_WRLCK, (short)0, 17,  5, (short)0 };
@@ -94,6 +93,7 @@ char *str_type();
 int setup()
 {
 	char *buf = STRING;
+        char template[PATH_MAX];
 
 	tst_sig(FORK, DEF_HANDLER, NULL);	/* capture signals */
 	umask(0);
@@ -121,17 +121,15 @@ int setup()
 		return(1);
 	}
 	parent_pid = getpid();
-	file = tempnam(".", NULL);
+	snprintf(template, PATH_MAX, "fcntl17XXXXXX");
 
-	if ((file_fd = open(file, O_RDWR|O_CREAT, 0777)) < 0) {
-		tst_resm(TFAIL, "Couldn't open %s! errno = %d", file, errno);
-		return(1);	
-	}
+        if ((file_fd = mkstemp(template)) < 0) {
+                tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
+        }
 
-	if (write(file_fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write %s! errno = %d", file, errno);
-		return(1);
-	}
+        if (write(file_fd, buf, STRINGSIZE) < 0) {
+                tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
+        }
 
 	if (signal(SIGALRM, catch_alarm) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed, errno: %d",
@@ -150,7 +148,6 @@ int setup()
 void
 cleanup()
 {
-	unlink(file);
 	tst_rmdir();
 	tst_exit();
 }
@@ -246,7 +243,7 @@ do_test(struct flock *lock, short pid)
 	fl.l_len = lock->l_len;
 	fl.l_pid = (short) 0;
 	if (fcntl(file_fd, F_GETLK, &fl) < 0) {
-		tst_resm(TFAIL, "fcntl on file %s failed, errno =%d", file,
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
 			 errno);
 		return(1);
 	}
@@ -538,7 +535,6 @@ int main(int ac, char **av)
 		do_test(&lock3, child_pid3);
 
 		stop_children();
-		close(file_fd);
 		if (fail) {
 			tst_resm(TINFO, "Block 1 FAILED");
 		} else {
