@@ -110,7 +110,7 @@ int longpath_setup();	/* setup function to test chown for ENAMETOOLONG */
 
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
-char* EXEC_DIR;
+char EXEC_DIR[PATH_MAX];
 char main_test_dir[PATH_MAX+2];
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
@@ -239,7 +239,10 @@ setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Get the current directory of the test executable*/
-	EXEC_DIR=(char *)get_current_dir_name();
+ 	if (getcwd(EXEC_DIR, sizeof(EXEC_DIR)) == NULL) {
+                tst_brkm(TBROK, cleanup,
+                         "getcwd(3) fails to get working directory of process");        }
+	
 
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
