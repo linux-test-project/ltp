@@ -319,7 +319,7 @@ int pagesize;
 
 	if ( !p ) {
 	    tst_resm(TFAIL, "malloc - alloc of %dMB failed", memsize/1024/1024);
-    	    tst_exit();
+    	    cleanup();
 	}
 	
 	/* 
