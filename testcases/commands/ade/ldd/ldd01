@@ -43,11 +43,11 @@ rm -rf $TCtmp
 do_setup()
 {
 mkdir $TCtmp
-ld -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
-ld -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
-ld -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
-ld -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
-ld -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
+cc -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
+cc -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
+cc -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
+cc -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
+cc -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
 cc -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
 } 
 
