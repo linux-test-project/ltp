@@ -19,10 +19,6 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-LKSCTP_DIR=/usr/src/lksctp-2.4.18/lksctp
-INCLUDE_USR=${LKSCTP_DIR}/test/libc/include
-LINUX=${LKSCTP_DIR}/linux_sctp
-SCTP_LIB_DIR=${LKSCTP_DIR}/test
 CC=gcc
 
 CFLAGS=-g ${INCLUDES} ${WARNINGS} -DTEST_FRAME=1 \
@@ -33,9 +29,9 @@ CFLAGS=-g ${INCLUDES} ${WARNINGS} -DTEST_FRAME=1 \
 V6FLAGS=-DCONFIG_IPV6=1 -DTEST_V6=1 -I${INCLUDE_V6}
 
 
-CFLAGS+=	-I../../../../include -I${INCLUDE_USR} -I${LINUX}/include
-LOADLIBES+=	-L../../../../lib -lltp -L${SCTP_LIB_DIR} -lsctp \
-		-L.. -lsctp_test
+CFLAGS+=	-I../../../../include 
+LOADLIBES+=	-lsctp -L../../../../lib -lltp \
+		-L../ -lsctp_test
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
