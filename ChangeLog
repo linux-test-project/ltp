@@ -1,3 +1,28 @@
+LTP-20040908
+- Modified runalltests.sh to call runltp.sh. runalltests.sh is now deprecated and will be removed early next year.
+- Modified tst_tmpdir to ensure 777 permissions on test directory.
+- Changes to ltp-aiodio.part3 for testcase run parameters
+- Changes for 2.6.X so only delete modules is run, query and create are obsolete
+- Updated runtest scenario with the latest SCTP tests.
+- uncommented swapon() tests.
+- added new paging tests, mincore and madvise
+- Change to fix aio-stress problem will io errors on a short read during the random read portion
+- Change to only print out a pass/fail instead of # of iterations pass/fail
+- Added IA64 specific code for shmt09.
+- Change to not do /dev/ptmx group write on arm arch.
+- Applied patch from Ling, Xiaofeng to allow the test to use TDIRECTORY correctly.
+- Corrected test 1 to show EPERM error pointed out by Ling, Xiaofeng.
+- Change to close fileHandle prior to cleanup to correct testcase failure in NFS filesystems
+- Change sleep time from 1 second to 10 seconds to allow system to pass
+- Change to define RUSAGE_BOTH if not defined, RH removed from user space and other distros still support.
+- Add arm arch to the ALIGNED typedefs
+- Changes from Ihno for llseek01.c to check TEST_RETURN vs TEST_ERRNO
+- use ltp functions in f00f test for better output parsing
+- Fix Makefile to link open_files into the bin directory
+- Get rid of extra = of "must be Root user" check
+- Change the awk $4 to an $NF to support debian only returning 3 terms
+- Change to tcpdump to check IFNAME define
+
 LTP-20040804
 - Corrected TCbin definition.
 - Changes to check for RedHat install when setting up environment variables
