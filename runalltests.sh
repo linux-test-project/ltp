@@ -43,6 +43,7 @@ alt_dir=0
 run_netest=0
 quiet_mode=" "
 NetPipe=0
+GenLoad=0
 
 usage() 
 {
@@ -82,8 +83,9 @@ fi
 
 while getopts cd:f:hi:l:m:Nnpqr:t:x arg
 do  case $arg in
-    c)
-            $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null & ;;
+    c)	   
+            $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null &
+	    GenLoad=1 ;;
                 
     d)      # append $$ to TMP, as it is recursively 
             # removed at end of script.
@@ -97,7 +99,8 @@ do  case $arg in
             bytesize=$(($OPTARG * 1024 * 1024))
             $LTPROOT/testcases/bin/genload --io 1 2>&1 1>/dev/null &
             $LTPROOT/testcases/bin/genload --hdd 0 --hdd-bytes $bytesize \
-            2>&1 1>/dev/null & ;;
+            2>&1 1>/dev/null & 
+	    GenLoad=1 ;;
 
     l)      
             if [ ${OPTARG:0:1} != "/" ]
@@ -122,7 +125,8 @@ do  case $arg in
     m)      
             memsize=$(($OPTARG * 1024 * 1024)) 
 	    $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $memsize\
-            2>&1 1>/dev/null & ;;
+            2>&1 1>/dev/null & 
+	    GenLoad=1;;
 
     N)	    run_netest=1;;
 
@@ -173,7 +177,7 @@ fi
 # to execute.
 if [ -z $cmdfile ]
 then
-    cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math ${LTPROOT}/runtest/pty > ${TMP}/alltests
+    cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math ${LTPROOT}/runtest/pty > ${TMP}/alltests
 else
     cat $cmdfile > ${TMP}/alltests
 fi
@@ -205,7 +209,10 @@ else
   echo pan reported FAIL
 fi
 
-killall -9 genload
+if [ $GenLoad -eq 1 ]
+then
+	killall -9 genload
+fi 
 
 if [ $NetPipe -eq 1 ]
 then
