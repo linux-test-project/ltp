@@ -78,6 +78,7 @@ creat04 creat04
 creat05 creat05
 creat06 creat06
 creat07 creat07 -F $LTPROOT/testcases/bin/test1
+creat08 creat08
 creat09 creat09
 
 create_module01 create_module01
