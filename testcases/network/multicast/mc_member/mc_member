@@ -42,7 +42,7 @@ TCsrc=${TCsrc:-`pwd`}
 TCtmp=${TCtmp:-$TCsrc/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 
-LTPROOT=${LTPROOT:-"../../../../"
+LTPROOT=${LTPROOT:-"../../../../"}
 EXECUTABLES=${EXECUTABLES:-"member"}
 NUMLOOPS=${NUMLOOPS:-2}
 INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname`| grep address |awk '{ print $2 }')}
