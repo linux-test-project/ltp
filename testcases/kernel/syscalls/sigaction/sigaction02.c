@@ -131,11 +131,11 @@ test4:
 	if ((ret = set_handler(SIGUSR1, 0, 1)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
-	if (ret != EINVAL) {
+	if (ret != EFAULT) {
 		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EINVAL, got: %d", ret);
+			 "EFAULT, got: %d", ret);
 	} else {
-		tst_resm(TPASS, "call failed with expected EINVAL error");
+		tst_resm(TPASS, "call failed with expected EFAULT error");
 	}
 
 test5:
@@ -145,11 +145,11 @@ test5:
 	if ((ret = set_handler(SIGUSR1, 0, 2)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
-	if (ret != EINVAL) {
+	if (ret != EFAULT) {
 		tst_resm(TFAIL, "sigaction set incorrect errno. Expected "
-			 "EINVAL, got: %d", ret);
+			 "EFAULT, got: %d", ret);
 	} else {
-		tst_resm(TPASS, "call failed with expected EINVAL error");
+		tst_resm(TPASS, "call failed with expected EFAULT error");
 	}
 #endif		/* GLIBC_SIGACTION_BUG */
 
