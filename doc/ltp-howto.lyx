@@ -308,62 +308,100 @@ pan file
  The format of a pan file is as follows:
 \layout Code
 
+
+\latex no_latex 
 testtag testprogram -o one -p two other command line options
 \layout Code
 
+
+\latex no_latex 
 # This is a comment.
  It is a good idea to describe the test 
 \layout Code
 
+
+\latex no_latex 
 # tags in your pan file.
  Tests programs can have different 
 \layout Code
 
+
+\latex no_latex 
 # behaviors depending on the command line options so it is 
 \layout Code
 
+
+\latex no_latex 
 # helpful to describe what each test tag is meant to verify or # provoke.
 \layout Code
 
+
+\latex no_latex 
 # Some more test cases
 \layout Code
 
+
+\latex no_latex 
 mm01 mmap001 -m 10000
 \layout Code
 
+
+\latex no_latex 
 # 40 Mb mmap() test.
 \layout Code
 
+
+\latex no_latex 
 # Creates a 10000 page mmap, touches all of the map, sync's 
 \layout Code
 
+
+\latex no_latex 
 # it, and munmap()s it.
 \layout Code
 
+
+\latex no_latex 
 mm03 mmap001 -i 0 -I 1 -m 100
 \layout Code
 
+
+\latex no_latex 
 # repetitive mmapping test.
 \layout Code
 
+
+\latex no_latex 
 # Creates a one page map repetitively for one minute.
 \layout Code
 
+
+\latex no_latex 
 dup02 dup02
 \layout Code
 
+
+\latex no_latex 
 # Negative test for dup(2) with bad fd
 \layout Code
 
+
+\latex no_latex 
 kill09 kill09 
 \layout Code
 
+
+\latex no_latex 
 # Basic test for kill(2)
 \layout Code
 
+
+\latex no_latex 
 fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
 \layout Code
 
+
+\latex no_latex 
 # run the entire set of file system tests
 \layout Standard
 
@@ -375,15 +413,338 @@ The test tags are simple identifiers, no spaces are allowed.
 \layout Subsubsection
 
 Examples
-\layout Itemize
+\layout Standard
 
-Using pan to run one test program (command line arg)
+The most basic way to run pan is by passing the test program and parameters
+ on the command line.
+ This will run the single program once and wrap the output.
+ 
+\layout Code
+
+
+\latex no_latex 
+$ pan -a ltp.zoo -n tutor sleep 4
+\layout Code
+
+
+\latex no_latex 
+<<<test_start>>> 
+\layout Code
+
+
+\latex no_latex 
+tag=cmdln stime=971450564
+\layout Code
+
+
+\latex no_latex 
+cmdline="sleep 4"
+\layout Code
+
+
+\latex no_latex 
+contacts=""
+\layout Code
+
+
+\latex no_latex 
+analysis=exit
+\layout Code
+
+
+\latex no_latex 
+initiation_status="ok"
+\layout Code
+
+
+\latex no_latex 
+<<<test_output>>>
+\layout Code
+
+
+\latex no_latex 
+<<<execution_status>>>
+\layout Code
+
+
+\latex no_latex 
+duration=103341903 termination_type=exited termination_id=0 corefile=no
+ cutime=0 cstime=0
+\layout Code
+
+
+\latex no_latex 
+<<<test_end>>>
+\layout Code
+
+
+\latex no_latex 
+$ cat ltp.zoo
+\layout Code
+
+
+\latex no_latex 
+#9357,tutor,pan/pan -a ltp.zoo -n tutor sleep 4 
+\layout Code
+
+
+\latex no_latex 
+#9358,cmdln,sleep 4
+\layout Code
+
+
+\latex no_latex 
+$ 
+\layout Paragraph
+
+How it works
+\layout Standard
+
+This example shows the two parameters that are always required by pan, the
+ active file and a test tag for pan.
+ The 
+\begin_inset Quotes eld
+\end_inset 
+
+sleep 4
+\begin_inset Quotes erd
+\end_inset 
+
+ on the end of the command line is a test program and parameters that pan
+ should run.
+ This test is given the tag 
+\begin_inset Quotes eld
+\end_inset 
+
+cmdln.
+\begin_inset Quotes erd
+\end_inset 
+
+ Pan will run one test randomly, which ends up being cmdln since it is the
+ only test that we told pan about.
+ 
+\layout Standard
+
+In the active file, 
+\family typewriter 
+ltp.zoo
+\family default 
+, pan writes the pid, test tag, and part of the command line for the currently
+ running tests.
+ The command lines are truncated so each line will fit on an 80 column display.
+ When a test tag finishes, pan will place a '#' at the beginning of the
+ line to mark it as available.
+ Here you can see that cmdln and tutor, the name we gave pan, ran to completion.
+ If the computer hangs, you can read this file to see which test programs
+ were running.
+\layout Standard
+
+We have run one test once.
+ Let's do something a little more exciting.
+ Let's run one test several times, at the same time.
+ 
+\layout Code
+
+
+\latex no_latex 
+$ pan -a ltp.zoo -n tutor -x 3 -s 3 -O /tmp sleep 1
+\layout Code
+
+
+\latex no_latex 
+<<<test_start>>>
+\layout Code
+
+
+\latex no_latex 
+tag=cmdln stime=971465653
+\layout Code
+
+
+\latex no_latex 
+cmdline="sleep 1"
+\layout Code
+
+
+\latex no_latex 
+contacts=""
+\layout Code
+
+
+\latex no_latex 
+analysis=exit
+\layout Code
+
+
+\latex no_latex 
+initiation_status="ok"
+\layout Code
+
+
+\latex no_latex 
+<<<test_output>>>
+\layout Code
+
+
+\latex no_latex 
+ 
+\layout Code
+
+
+\latex no_latex 
+<<<execution_status>>>
+\layout Code
+
+
+\latex no_latex 
+duration=103326814 termination_type=exited termination_id=0 corefile=no
+\layout Code
+
+
+\latex no_latex 
+cutime=1 cstime=0
+\layout Code
+
+
+\latex no_latex 
+<<<test_end>>>
+\layout Code
+
+
+\latex no_latex 
+<<<test_start>>>
+\layout Code
+
+
+\latex no_latex 
+tag=cmdln stime=971465653
+\layout Code
+
+
+\latex no_latex 
+cmdline="sleep 1"
+\layout Code
+
+
+\latex no_latex 
+contacts=""
+\layout Code
+
+
+\latex no_latex 
+analysis=exit
+\layout Code
+
+
+\latex no_latex 
+initiation_status="ok"
+\layout Code
+
+
+\latex no_latex 
+<<<test_output>>>
+\layout Code
+
+
+\latex no_latex 
+ 
+\layout Code
+
+
+\latex no_latex 
+<<<execution_status>>>
+\layout Code
+
+
+\latex no_latex 
+duration=103326814 termination_type=exited termination_id=0 corefile=no
+\layout Code
+
+
+\latex no_latex 
+cutime=0 cstime=1
+\layout Code
+
+
+\latex no_latex 
+<<<test_end>>>
+\layout Code
+
+
+\latex no_latex 
+<<<test_start>>>
+\layout Code
+
+
+\latex no_latex 
+tag=cmdln stime=971465653
+\layout Code
+
+
+\latex no_latex 
+cmdline="sleep 1"
+\layout Code
+
+
+\latex no_latex 
+contacts=""
+\layout Code
+
+
+\latex no_latex 
+analysis=exit
+\layout Code
+
+
+\latex no_latex 
+initiation_status="ok"
+\layout Code
+
+
+\latex no_latex 
+<<<test_output>>>
+\layout Code
+
+
+\latex no_latex 
+ 
+\layout Code
+
+
+\latex no_latex 
+<<<execution_status>>>
+\layout Code
+
+
+\latex no_latex 
+duration=103326814 termination_type=exited termination_id=0 corefile=no
+\layout Code
+
+
+\latex no_latex 
+cutime=0 cstime=0
+\layout Code
+
+
+\latex no_latex 
+<<<test_end>>>
+\layout Paragraph
+
+How it works
+\layout Standard
+
+In this example we run another fake test from the command line, but we run
+ it three times (-s 3) and keep three test tags active at the same time
+ (-x 3).
+ The -O parameter is a directory where temporary files can be created to
+ buffer the output of each test tag.
+ You can see in the output that cmdln ran three times.
+ If the -O option were omitted, your test output would be mixed, making
+ it almost worthless.
+ 
 \layout Itemize
 
 Using a pan file to run multiple tests
-\layout Itemize
-
-Running tests in parallel with output buffering
 \layout Itemize
 
 Nesting pan
