@@ -110,7 +110,11 @@ int main(int argc, char *argv[])
 		 * This way we are forcing syslog to write messages to
 		 * console.
 		 */
+#ifdef DEBUG2
 		status = system("/bin/mv -f /var/log/messages /var/log/messages.tmp");
+#else
+        status = 0;
+#endif
 		if (status == 0) {
 #ifdef DEBUG
 			tst_resm(TINFO,"/var/log/messages is moved to /var/log/messages.tmp...\n");
@@ -130,7 +134,11 @@ int main(int argc, char *argv[])
 		 * Restore /dev/syslog file.
 		 */
 		if (flag3 == 1) {
+#ifdef DEBUG2
 			status = system("/bin/mv -f /var/log/messages.tmp /var/log/messages");
+#else
+        status = 0;
+#endif
 			if (status != 0) {
 				tst_resm(TFAIL, "Restoring /var/log/messages failed...\n");
 				tst_exit();
