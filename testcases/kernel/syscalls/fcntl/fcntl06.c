@@ -49,8 +49,10 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
-#include <test.h>
-#include <usctest.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "test.h"
+#include "usctest.h"
 
 #define F_RGETLK 10		/* kludge code */
 #define F_RSETLK 11		/* kludge code */
@@ -70,12 +72,10 @@ char *file;
 void unlock_file();
 int do_lock(int, short, short, int, int);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	struct flock tl;
 	int fail = 0;
 
-	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -85,7 +85,7 @@ main(int ac, char **av)
 	
 	setup();			/* global setup */
 
-block1:					/* Error: when no lock is set */
+//block1:					/* Error: when no lock is set */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 
@@ -129,6 +129,7 @@ block1:					/* Error: when no lock is set */
 
 	tst_resm(TINFO, "Exit block 1");
 	cleanup();
+	return(0);
 }
 
 /*
@@ -177,8 +178,6 @@ do_lock(int cmd, short type, short whence, int start, int len)
 void
 unlock_file()
 {
-	struct flock fl;
-
 	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
 		perror("");
 		tst_resm(TINFO, "fcntl on file %s failed: Test PASSED", file);

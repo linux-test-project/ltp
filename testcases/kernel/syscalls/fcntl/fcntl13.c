@@ -49,7 +49,7 @@ int fail;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -69,7 +69,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		tst_resm(TINFO, "Test for errno EINVAL");
 		fail = 0;
@@ -89,7 +89,7 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		tst_resm(TINFO, "Test for errno EFAULT");
 		fail = 0;
@@ -131,7 +131,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3:
+//block3:
 		tst_resm(TINFO, "Enter block 3");
 		tst_resm(TINFO, "Test for errno EINVAL");
 		fail = 0;
@@ -156,7 +156,7 @@ block3:
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-block4:
+//block4:
 		tst_resm(TINFO, "Enter block 4");
 		tst_resm(TINFO, "Test for errno EBADF");
 		fail = 0;
@@ -178,6 +178,7 @@ block4:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

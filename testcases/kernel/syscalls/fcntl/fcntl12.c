@@ -54,7 +54,7 @@ char fname[20];
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -75,7 +75,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		tst_resm(TINFO, "Test for errno EMFILE");
 		fail = 0;
@@ -114,6 +114,7 @@ block1:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

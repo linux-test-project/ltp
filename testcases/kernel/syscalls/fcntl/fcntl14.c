@@ -39,7 +39,7 @@
  * RESTRICTIONS
  * 	None
  */
-
+#define _GNU_SOURCE 1
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -544,252 +544,24 @@ extern int Tst_count;		/* Test case counter */
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+
+/*
+ * cleanup()
+ * 	performs all the ONE TIME cleanup for this test at completion or
+ * 	premature exit
+ */
+void
+cleanup(void)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	/*
+	 * print timing status if that option was specified
+	 * print errno log if that option was specified
+	 */
+	TEST_CLEANUP;
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_rmdir();
 
-	setup();			/* global setup */
-
-	/* Check for looping state if -i option is given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-block1:
-		tst_resm(TINFO, "Enter block 1: without mandatory locking");
-		fail = 0;
-		/* 
-	 	 * try various file locks on an ordinary file without
-		 * mandatory locking
-		 */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 0, 36);
-		if (fail) {
-			tst_resm(TFAIL, "Block 1, test 1 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 1, test 1 PASSED");
-		}
-
-		/* Now try with negative values for L_start and L_len */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 5, 36, 45);
-
-		if (fail) {
-			tst_resm(TFAIL, "Block 1, test 2 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 1, test 2 PASSED");
-		}
-
-
-		tst_resm(TINFO, "Exit block 1");
-
-block2:
-		tst_resm(TINFO, "Enter block 2: with mandatory locking");
-		fail = 0;
-		/* 
-		 * Try various locks on a file with mandatory record locking
-		 * this should behave the same as an ordinary file
-		 */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
-			       S_IWUSR, 0, 0, 36);
-		if (fail) {
-			tst_resm(TFAIL, "Block 2, test 1 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 2, test 1 PASSED");
-		}
-
-
-		/* Now try negative values for L_start and L_len */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
-			       S_IWUSR, 5, 36, 45);
-		if (fail) {
-			tst_resm(TFAIL, "Block 2, test 2 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 2, test 2 PASSED");
-		}
-
-		tst_resm(TINFO, "Exit block 2");
-
-block3:
-		tst_resm(TINFO, "Enter block 3");
-		fail = 0;
-		/*
-		 * Check that proper error status is returned when invalid
-		 * argument used for WHENCE (negative value)
-		 */
-
-		/* open a temporary file to lock */
-		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0) {
-			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
-
-		/* Write some dummy data to the file */
-		if (write(fd, FILEDATA, 10) < 0) {
-			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
-
-		/* Initialize lock structure */
-		flock.l_type = F_WRLCK;
-		flock.l_whence = -1;
-		flock.l_start = 0L;
-		flock.l_len = 0L;
-
-		/* Set the lock on the file */
-		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
-			if (errno != EINVAL) {
-				tst_resm(TFAIL, "Expected %d got %d",
-					 EINVAL, errno);
-				fail = 1;
-			}
-		} else {
-			tst_resm(TFAIL, "Lock succeeded when it should have "
-				 "failed");
-			fail = 1;
-		}
-
-		/* Close and remove temp file */
-		close(fd);
-		unlink(tmpname);
-
-		if (fail) {
-			tst_resm(TINFO, "Test with mandatory "
-				 "locking FAILED");
-		} else {
-			tst_resm(TINFO, "Test with mandatory "
-				 "locking PASSED");
-		}
-		tst_resm(TINFO, "Exit block 3");
-
-block4:
-		tst_resm(TINFO, "Enter block 4");
-		fail = 0;
-		/*
-		 * Check that a lock on end of file is still valid when
-		 * additional data is appended to end of file and a new
-		 * process attempts to lock new data
-		 */
-		/* open a temp file to lock */
-		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0) {
-			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
-
-		/* Write some dummy data to the file */
-		if (write(fd, FILEDATA, 10) < 0) {
-			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
-
-		/* Initialize first parent lock structure */
-		thiscase = &testcases[58];
-		flock.l_type = thiscase->a_type;
-		flock.l_whence = thiscase->a_whence;
-		flock.l_start = thiscase->a_start;
-		flock.l_len = thiscase->a_len;
-
-		/* Set the initial parent lock on the file */
-		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
-			tst_resm(TFAIL, "First parent lock failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", 58, errno);
-			fail = 1;
-		}
-
-		/* Write some additional data to end of file */
-		if (write(fd, FILEDATA, 10) < 0) {
-			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
-
-		/* Mask signal to avoid race */
-		if (sighold(SIGUSR1) < 0) {
-			tst_brkm(TBROK, cleanup, "sighold failed");
-			/*NOTREACHED*/
-		}
-
-		/* spawn a child process */
-		if ((child = fork()) == 0) {
-			dochild();
-		}
-		if (child < 0) {
-			tst_resm(TFAIL, "Fork failed");
-			cleanup();
-			/*NOTREACHED*/
-		}
-
-		/* parent process */
-
-		/*
-		 * Wait for a signal from the child then remove blocking lock.
-		 * Set a 60 sec alarm to break the pause just in case the
-		 * child doesn't terminate on its own accord
-		 */
-		(void)alarm(TIME_OUT);
-
-		/* pause for the SIGUSR1 signal from child */
-		(void)sigpause(SIGUSR1);
-
-		/* turn off the alarm timer */
-		(void)alarm((unsigned)0);
-		if (got1 != 1) {
-			tst_resm(TINFO, "Pause terminated without signal "
-				 "SIGUSR1 from child");
-		}
-		got1 = 0;		/* reset flag */
-
-		/*
-		 * Set up lock structure for parent to delete
-		 * blocking lock then wait for child to exit
-		 */
-		flock.l_type = F_UNLCK;
-		flock.l_whence = 0;
-		flock.l_start = 0L;
-		flock.l_len = 0L;
-		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
-			tst_resm(TFAIL, "Attempt to release parent lock "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-		}
-
-		/*
-		 * set a 60 sec alarm to break the wait just in case the
-		 * child doesn't terminate on its own accord
-		 */
-		(void)alarm(TIME_OUT);
-
-		/* wait for the child to terminate and close the file */
-		waitpid(child, &status, 0);
-		if (WEXITSTATUS(status) != 0) {
-			fail = 1;
-			tst_resm(TFAIL, "child returned bad exit status");
-		}
-
-		/* turn off the alarm clock */
-		(void)alarm((unsigned)0);
-		if (status != 0) {
-			tst_resm(TFAIL, "child returned status 0x%x", status);
-			fail = 1;
-		}
-		close(fd);
-		unlink(tmpname);
-
-		if (fail) {
-			tst_resm(TINFO, "Test of locks on file FAILED");
-		} else {
-			tst_resm(TINFO, "Test of locks on file PASSED");
-		}
-		tst_resm(TINFO, "Exit block 4");
-	}
-	cleanup();
+	tst_exit();
 }
 
 /*
@@ -822,10 +594,138 @@ setup(void)
 	}
 }
 
-run_test(int file_flag, int file_mode, int seek, int start, int end)
+void dochild()
+{					/* child process */
+	/* Initialize the child lock structure */
+	flock.l_type = thiscase->c_type;
+	flock.l_whence = thiscase->c_whence;
+	flock.l_start = thiscase->c_start;
+	flock.l_len = thiscase->c_len;
+	flock.l_pid = 0;
+	fail = 0;
+
+	/*
+	 * Check to see if child lock will succeed. If it will, FLOCK
+	 * structure will return with l_type changed to F_UNLCK. If it will
+	 * not, the parent pid will be returned in l_pid and the type of
+	 * lock that will block it in l_type.
+	 */
+	if ((fcntl(fd, F_GETLK, &flock)) < 0) {
+		tst_resm(TFAIL, "Attempt to check lock status failed");
+		tst_resm(TFAIL, "Test case %d, errno = %d",
+			 test + 1, errno);
+		fail = 1;
+	}
+
+	if ((thiscase->c_flag) == NOBLOCK) {
+		if (flock.l_type != F_UNLCK) {
+			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
+				 "%d was expected", test + 1, flock.l_type,
+				 F_UNLCK);
+			fail = 1;
+		}
+
+		if (flock.l_whence != thiscase->c_whence) {
+			tst_resm(TFAIL, "Test case %d, GETLK: whence = %d, "
+				 "should have remained %d", test + 1,
+				 flock.l_whence, thiscase->c_whence);
+			fail = 1;
+		}
+
+		if (flock.l_start != thiscase->c_start) {
+			tst_resm(TFAIL, "Test case %d, GETLK: start = %d, "
+				 "should have remained %d", test + 1,
+				 flock.l_start, thiscase->c_start);
+			fail = 1;
+		}
+
+		if (flock.l_len != thiscase->c_len) {
+			tst_resm(TFAIL, "Test case %d, GETLK: len = %d, "
+				 "should have remained %d", test + 1,
+				 flock.l_len, thiscase->c_len);
+			fail = 1;
+		}
+
+		if (flock.l_pid != 0) {
+			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
+				 "should have remained 0", test + 1,
+				 flock.l_pid);
+			fail = 1;
+		}
+	} else {
+		if (flock.l_pid != parent) {
+			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
+				 "should be parent's id of %d", test + 1,
+				 flock.l_pid, parent);
+			fail = 1;
+		}
+
+		if (flock.l_type != thiscase->a_type) {
+			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
+				 "should be parent's first lock type of %d",
+				 test + 1, flock.l_type, thiscase->a_type);
+			fail = 1;
+		}
+	}
+
+	/*
+	 * now try to set the lock, nonblocking
+	 * This will succeed for NOBLOCK,
+	 * fail for WILLBLOCK
+	 */
+	flock.l_type = thiscase->c_type;
+	flock.l_whence = thiscase->c_whence;
+	flock.l_start = thiscase->c_start;
+	flock.l_len = thiscase->c_len;
+	flock.l_pid = 0;
+
+	if ((fcntl(fd, F_SETLK, &flock)) < 0) {
+		if ((thiscase->c_flag) == NOBLOCK) {
+			tst_resm(TFAIL, "Attempt to set child NONBLOCKING "
+				 "lock failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d",
+				 test + 1, errno);
+			fail = 1;
+		}
+	}
+
+	if ((thiscase->c_flag) == WILLBLOCK) {
+		/* Check for proper errno condition */
+		if (errno != EACCES && errno != EAGAIN) {
+			tst_resm(TFAIL, "SETLK: errno = %d, EAGAIN or EACCES "
+				 "was expected", errno);
+			fail = 1;
+		}
+
+		/*
+		 * Lock should succeed after blocking and parent releases
+		 * lock, tell the parent to release the locks
+		 */
+		if ((kill(parent, SIGUSR1)) < 0) {
+			tst_resm(TFAIL, "Attempt to send signal to parent "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
+				 errno);
+			fail = 1;
+		}
+		if ((fcntl(fd, F_SETLKW, &flock)) < 0) {
+			tst_resm(TFAIL, "Attempt to set child BLOCKING "
+				 "lock failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
+				 errno);
+			fail = 1;
+		}
+	}
+	if (fail) {
+		exit(1);
+	} else {
+		exit(0);
+	}
+}
+
+
+void run_test(int file_flag, int file_mode, int seek, int start, int end)
 {
-	int retc;
-	long t;
 	extern long time();
 
 	/* loop thru all test cases */
@@ -959,135 +859,6 @@ run_test(int file_flag, int file_mode, int seek, int start, int end)
 	unlink(tmpname);
 }
 
-dochild()
-{					/* child process */
-	/* Initialize the child lock structure */
-	flock.l_type = thiscase->c_type;
-	flock.l_whence = thiscase->c_whence;
-	flock.l_start = thiscase->c_start;
-	flock.l_len = thiscase->c_len;
-	flock.l_pid = 0;
-	fail = 0;
-
-	/*
-	 * Check to see if child lock will succeed. If it will, FLOCK
-	 * structure will return with l_type changed to F_UNLCK. If it will
-	 * not, the parent pid will be returned in l_pid and the type of
-	 * lock that will block it in l_type.
-	 */
-	if ((fcntl(fd, F_GETLK, &flock)) < 0) {
-		tst_resm(TFAIL, "Attempt to check lock status failed");
-		tst_resm(TFAIL, "Test case %d, errno = %d",
-			 test + 1, errno);
-		fail = 1;
-	}
-
-	if ((thiscase->c_flag) == NOBLOCK) {
-		if (flock.l_type != F_UNLCK) {
-			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
-				 "%d was expected", test + 1, flock.l_type,
-				 F_UNLCK);
-			fail = 1;
-		}
-
-		if (flock.l_whence != thiscase->c_whence) {
-			tst_resm(TFAIL, "Test case %d, GETLK: whence = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_whence, thiscase->c_whence);
-			fail = 1;
-		}
-
-		if (flock.l_start != thiscase->c_start) {
-			tst_resm(TFAIL, "Test case %d, GETLK: start = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_start, thiscase->c_start);
-			fail = 1;
-		}
-
-		if (flock.l_len != thiscase->c_len) {
-			tst_resm(TFAIL, "Test case %d, GETLK: len = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_len, thiscase->c_len);
-			fail = 1;
-		}
-
-		if (flock.l_pid != 0) {
-			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
-				 "should have remained 0", test + 1,
-				 flock.l_pid);
-			fail = 1;
-		}
-	} else {
-		if (flock.l_pid != parent) {
-			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
-				 "should be parent's id of %d", test + 1,
-				 flock.l_pid, parent);
-			fail = 1;
-		}
-
-		if (flock.l_type != thiscase->a_type) {
-			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
-				 "should be parent's first lock type of %d",
-				 test + 1, flock.l_type, thiscase->a_type);
-			fail = 1;
-		}
-	}
-
-	/*
-	 * now try to set the lock, nonblocking
-	 * This will succeed for NOBLOCK,
-	 * fail for WILLBLOCK
-	 */
-	flock.l_type = thiscase->c_type;
-	flock.l_whence = thiscase->c_whence;
-	flock.l_start = thiscase->c_start;
-	flock.l_len = thiscase->c_len;
-	flock.l_pid = 0;
-
-	if ((fcntl(fd, F_SETLK, &flock)) < 0) {
-		if ((thiscase->c_flag) == NOBLOCK) {
-			tst_resm(TFAIL, "Attempt to set child NONBLOCKING "
-				 "lock failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d",
-				 test + 1, errno);
-			fail = 1;
-		}
-	}
-
-	if ((thiscase->c_flag) == WILLBLOCK) {
-		/* Check for proper errno condition */
-		if (errno != EACCES && errno != EAGAIN) {
-			tst_resm(TFAIL, "SETLK: errno = %d, EAGAIN or EACCES "
-				 "was expected", errno);
-			fail = 1;
-		}
-
-		/*
-		 * Lock should succeed after blocking and parent releases
-		 * lock, tell the parent to release the locks
-		 */
-		if ((kill(parent, SIGUSR1)) < 0) {
-			tst_resm(TFAIL, "Attempt to send signal to parent "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-		}
-		if ((fcntl(fd, F_SETLKW, &flock)) < 0) {
-			tst_resm(TFAIL, "Attempt to set child BLOCKING "
-				 "lock failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-		}
-	}
-	if (fail) {
-		exit(1);
-	} else {
-		exit(0);
-	}
-}
-
 void
 catch_alarm()
 {
@@ -1115,21 +886,251 @@ catch1()				/* invoked on catching SIGUSR1 */
 	got1++;
 }
 
-/*
- * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
- */
-void
-cleanup(void)
+int main(int ac, char **av)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
-	TEST_CLEANUP;
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
 
-	tst_rmdir();
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
 
-	tst_exit();
+	setup();			/* global setup */
+
+	/* Check for looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+//block1:
+		tst_resm(TINFO, "Enter block 1: without mandatory locking");
+		fail = 0;
+		/* 
+	 	 * try various file locks on an ordinary file without
+		 * mandatory locking
+		 */
+		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 0, 36);
+		if (fail) {
+			tst_resm(TFAIL, "Block 1, test 1 FAILED");
+		} else {
+			tst_resm(TPASS, "Block 1, test 1 PASSED");
+		}
+
+		/* Now try with negative values for L_start and L_len */
+		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 5, 36, 45);
+
+		if (fail) {
+			tst_resm(TFAIL, "Block 1, test 2 FAILED");
+		} else {
+			tst_resm(TPASS, "Block 1, test 2 PASSED");
+		}
+
+
+		tst_resm(TINFO, "Exit block 1");
+
+//block2:
+		tst_resm(TINFO, "Enter block 2: with mandatory locking");
+		fail = 0;
+		/* 
+		 * Try various locks on a file with mandatory record locking
+		 * this should behave the same as an ordinary file
+		 */
+		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
+			       S_IWUSR, 0, 0, 36);
+		if (fail) {
+			tst_resm(TFAIL, "Block 2, test 1 FAILED");
+		} else {
+			tst_resm(TPASS, "Block 2, test 1 PASSED");
+		}
+
+
+		/* Now try negative values for L_start and L_len */
+		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
+			       S_IWUSR, 5, 36, 45);
+		if (fail) {
+			tst_resm(TFAIL, "Block 2, test 2 FAILED");
+		} else {
+			tst_resm(TPASS, "Block 2, test 2 PASSED");
+		}
+
+		tst_resm(TINFO, "Exit block 2");
+
+//block3:
+		tst_resm(TINFO, "Enter block 3");
+		fail = 0;
+		/*
+		 * Check that proper error status is returned when invalid
+		 * argument used for WHENCE (negative value)
+		 */
+
+		/* open a temporary file to lock */
+		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
+		if (fd < 0) {
+			tst_brkm(TBROK, cleanup, "open failed");
+			/*NOTREACHED*/
+		}
+
+		/* Write some dummy data to the file */
+		if (write(fd, FILEDATA, 10) < 0) {
+			tst_brkm(TBROK, cleanup, "write failed");
+			/*NOTREACHED*/
+		}
+
+		/* Initialize lock structure */
+		flock.l_type = F_WRLCK;
+		flock.l_whence = -1;
+		flock.l_start = 0L;
+		flock.l_len = 0L;
+
+		/* Set the lock on the file */
+		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
+			if (errno != EINVAL) {
+				tst_resm(TFAIL, "Expected %d got %d",
+					 EINVAL, errno);
+				fail = 1;
+			}
+		} else {
+			tst_resm(TFAIL, "Lock succeeded when it should have "
+				 "failed");
+			fail = 1;
+		}
+
+		/* Close and remove temp file */
+		close(fd);
+		unlink(tmpname);
+
+		if (fail) {
+			tst_resm(TINFO, "Test with mandatory "
+				 "locking FAILED");
+		} else {
+			tst_resm(TINFO, "Test with mandatory "
+				 "locking PASSED");
+		}
+		tst_resm(TINFO, "Exit block 3");
+
+//block4:
+		tst_resm(TINFO, "Enter block 4");
+		fail = 0;
+		/*
+		 * Check that a lock on end of file is still valid when
+		 * additional data is appended to end of file and a new
+		 * process attempts to lock new data
+		 */
+		/* open a temp file to lock */
+		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
+		if (fd < 0) {
+			tst_brkm(TBROK, cleanup, "open failed");
+			/*NOTREACHED*/
+		}
+
+		/* Write some dummy data to the file */
+		if (write(fd, FILEDATA, 10) < 0) {
+			tst_brkm(TBROK, cleanup, "write failed");
+			/*NOTREACHED*/
+		}
+
+		/* Initialize first parent lock structure */
+		thiscase = &testcases[58];
+		flock.l_type = thiscase->a_type;
+		flock.l_whence = thiscase->a_whence;
+		flock.l_start = thiscase->a_start;
+		flock.l_len = thiscase->a_len;
+
+		/* Set the initial parent lock on the file */
+		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
+			tst_resm(TFAIL, "First parent lock failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", 58, errno);
+			fail = 1;
+		}
+
+		/* Write some additional data to end of file */
+		if (write(fd, FILEDATA, 10) < 0) {
+			tst_brkm(TBROK, cleanup, "write failed");
+			/*NOTREACHED*/
+		}
+
+		/* Mask signal to avoid race */
+		if (sighold(SIGUSR1) < 0) {
+			tst_brkm(TBROK, cleanup, "sighold failed");
+			/*NOTREACHED*/
+		}
+
+		/* spawn a child process */
+		if ((child = fork()) == 0) {
+			dochild();
+		}
+		if (child < 0) {
+			tst_resm(TFAIL, "Fork failed");
+			cleanup();
+			/*NOTREACHED*/
+		}
+
+		/* parent process */
+
+		/*
+		 * Wait for a signal from the child then remove blocking lock.
+		 * Set a 60 sec alarm to break the pause just in case the
+		 * child doesn't terminate on its own accord
+		 */
+		(void)alarm(TIME_OUT);
+
+		/* pause for the SIGUSR1 signal from child */
+		(void)sigpause(SIGUSR1);
+
+		/* turn off the alarm timer */
+		(void)alarm((unsigned)0);
+		if (got1 != 1) {
+			tst_resm(TINFO, "Pause terminated without signal "
+				 "SIGUSR1 from child");
+		}
+		got1 = 0;		/* reset flag */
+
+		/*
+		 * Set up lock structure for parent to delete
+		 * blocking lock then wait for child to exit
+		 */
+		flock.l_type = F_UNLCK;
+		flock.l_whence = 0;
+		flock.l_start = 0L;
+		flock.l_len = 0L;
+		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
+			tst_resm(TFAIL, "Attempt to release parent lock "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
+				 errno);
+			fail = 1;
+		}
+
+		/*
+		 * set a 60 sec alarm to break the wait just in case the
+		 * child doesn't terminate on its own accord
+		 */
+		(void)alarm(TIME_OUT);
+
+		/* wait for the child to terminate and close the file */
+		waitpid(child, &status, 0);
+		if (WEXITSTATUS(status) != 0) {
+			fail = 1;
+			tst_resm(TFAIL, "child returned bad exit status");
+		}
+
+		/* turn off the alarm clock */
+		(void)alarm((unsigned)0);
+		if (status != 0) {
+			tst_resm(TFAIL, "child returned status 0x%x", status);
+			fail = 1;
+		}
+		close(fd);
+		unlink(tmpname);
+
+		if (fail) {
+			tst_resm(TINFO, "Test of locks on file FAILED");
+		} else {
+			tst_resm(TINFO, "Test of locks on file PASSED");
+		}
+		tst_resm(TINFO, "Exit block 4");
+	}
+	cleanup();
+	return(0);
 }

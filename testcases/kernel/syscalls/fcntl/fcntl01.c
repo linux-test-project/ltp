@@ -31,8 +31,10 @@
 
 #include <fcntl.h>
 #include <errno.h>
-#include <test.h>
-#include <usctest.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup(void);
 void cleanup(void);
@@ -41,10 +43,10 @@ char *TCID = "fcntl01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int flags;
-	int res, fail;
+	int fail;
 	char fname[40];
 	int fd[10], fd2[10];
 	int mypid, i;
@@ -64,7 +66,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block0:
+//block0:
 		tst_resm(TINFO, "Enter block 0");
 		fail = 0;
 		/*
@@ -140,7 +142,7 @@ block0:
 		}
 		tst_resm(TINFO, "Exit block 0");
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		flags = fcntl(fd[2], F_GETFL, 0);
@@ -213,7 +215,7 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		/*
 		 * Check ability to set (F_SETFD) the close on exec flag
@@ -274,6 +276,7 @@ block2:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
