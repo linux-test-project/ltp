@@ -12,17 +12,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#define HLEN	128 * 1025	/* 128K + 128 */
-#define TLEN	128 * 1025	/* 128K + 128 */
 #define LISTEN_BACKLOG	10
-
-/*
- * Flags for the send_file() system call
- */
-#define SF_CLOSE        0x00000001      /* close the socket after completion */
-#define SF_REUSE        0x00000002      /* reuse socket. not supported */
-#define SF_DONT_CACHE   0x00000004      /* don't apply network buffer cache */
-#define SF_SYNC_CACHE   0x00000008      /* sync/update network buffer cache */
 
 
 extern int errno;
@@ -52,10 +42,8 @@ char *argv[];
   char *number;
   int i, clen, pid;
   int flags, nonblocking;
-  int nbytes, flen;
+  int nbytes, flen,count;
   char rbuf[81];
-  char header[HLEN];
-  char trailer[TLEN];
   int chunks=0;
   off_t *offset; 
   char nbuf[81];
@@ -71,7 +59,7 @@ char *argv[];
   /* server IP and port */
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = inet_addr(argv[1]);
-  sa.sin_port = htons(256);
+  sa.sin_port = htons(12345);
 
   /* bind IP and port to socket */
   if ( bind(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
@@ -129,12 +117,14 @@ char *argv[];
 
 	/* start with file length, '=' will start the filename */
 	flen = 0;
-	nbuf[0]='\0';
+	count = 0;
 	number = &nbuf[0];
 	while (*lp != '=') { /* convert ascii to integer */
-	  number = strcat(number,lp);
+	  nbuf[count] = *lp;
+	  count++;
 	  lp++;
 	}
+	 nbuf[count] = '\0';
 	 flen = strtol(number, (char **)NULL, 10); 
 
 	/* the file name */
@@ -148,8 +138,9 @@ char *argv[];
 	  exit(-1);
   	}
 	offset=NULL;
+	errno=0;
         do { /* send file parts until EOF */
-           if ((rc = sendfile(as, fd, offset, flen)) != 0) {
+           if ((rc = sendfile(as, fd, offset, flen)) != flen) {
                 if ((errno != EWOULDBLOCK) && (errno != EAGAIN)) {
                         printf("sendfile error = %d, rc = %d\n", errno, rc);
                         close(as);

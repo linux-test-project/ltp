@@ -43,15 +43,14 @@ RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
 TCdat=${TCdat:-$TCsrc/datafiles}
-TCtmp=${TCtmp:-$TCsrc}
+TCtmp=${TCtmp:-$TCsrc/tmp}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="testsf_c"
 REMOTE_EXEC="testsf_s"
 
-FILES=${FILES:-"datafiles/ascii.sm datafiles/ascii.med datafiles/ascii.lg datafiles/ascii.jmb"}
+FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
 
 IPADDR=$(host $RHOST|awk '{print $4}'|cut -d\, -f1)
-
 
 #=============================================================================
 # FUNCTION NAME:        do_test
@@ -66,24 +65,26 @@ do_test()
 {
    $trace_logic
    echo "$this_file: doing $0."
-   
-   rsh -n -l root $RHOST "$TCsrc/SF_Server $IPADDR $TCsrc"
+  
+   mkdir -p $TCtmp
+ 
+   rsh -n -l root $IPADDR "$TCsrc/SF_Server $IPADDR $TCsrc"
    sleep 10
-   PID=$(rsh -n -l root $RHOST "ps -ef "|grep $REMOTE_EXEC | grep -v grep|awk '{print $2}')
+   PID=$(rsh -n -l root $IPADDR "ps -ef "|grep $REMOTE_EXEC | grep -v grep|awk '{print $2}')
    [ "$PID" ] || end_testcase "Could not start server"
 
-   for File in $FILES
+   for clnt_fname in $FILES
       do
-	 file=$TCsrc/$File
-	 SIZE=`ls -l $file|awk '{print $5}'`
-	 echo "Starting $EXECUTABLES $IPADDR FILE file SIZE HEADER TAILER Flag"
+	 serv_fname=$TCdat/$clnt_fname
+	 SIZE=`ls -l $serv_fname|awk '{print $5}'`
+	 echo "Starting $EXECUTABLES $IPADDR Client_filename Server_filename Size "
   
-	 $TCtmp/$EXECUTABLES $IPADDR $TCsrc/$File $file $SIZE $HEADER $TAILER $Flag
+	 $TCsrc/$EXECUTABLES $IPADDR $TCtmp/$clnt_fname $serv_fname $SIZE 
 	 RetVal=$?
   
          [[ $RetVal -eq 0 ]] || end_testcase "$EXECUTABLES returned error $RetVal"
 
-	 diff $file $TCsrc/$File
+	 diff $serv_fname $TCtmp/$clnt_fname
 	 DiffVal=$?
 	 [[ $DiffVal -gt 1 ]] && end_testcase "ERROR: Cannot compare files"
 	 [[ $DiffVal -eq 1 ]] && end_testcase "The file copied differs from the original"
@@ -104,8 +105,7 @@ do_cleanup()
 {
    $trace_logic
       
-   rm -rf $TCtmp/ascii*
-   rsh -n -l root $RHOST "cd /; rm -rf $TCtmp/ascii*"
+   rm -rf $TCtmp
 }
 
 #=============================================================================
