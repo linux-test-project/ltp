@@ -30,7 +30,7 @@ int main()
 	}
 
 	if (sigaddset(&blockset, SIGALRM) == -1) {
-		perror("Error calling sigaddset()");
+		perror("Error calling sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 

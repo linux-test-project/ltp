@@ -33,7 +33,7 @@ int main()
 	if ( (sigaddset(&blockset, SIGALRM) == -1) ||
 		(sigaddset(&blockset, SIGHUP) == -1) ||
 		(sigaddset(&blockset, SIGQUIT) == -1) ) {
-		perror("Error calling sigaddset()");
+		perror("Error calling sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
