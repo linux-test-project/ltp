@@ -747,7 +747,7 @@ test6()
     
     if (sbrk(BRKSZ) == (caddr_t)-1)
     {
-        perror("test5(): sbrk()");
+        perror("test6(): sbrk()");
         fflush(NULL);
         return FAILED;
     }
@@ -789,9 +789,9 @@ test6()
    
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
-        fprintf(stderr, "test5(): rollback sbrk failed\n");
+        fprintf(stderr, "test6(): rollback sbrk failed\n");
         fflush(NULL);
-        perror("test5(): sbrk()");
+        perror("test6(): sbrk()");
         fflush(NULL);
         return FAILED;
     }
