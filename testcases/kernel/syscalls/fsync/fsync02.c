@@ -54,6 +54,7 @@
 #include <sys/resource.h>
 #include <test.h>
 #include <usctest.h>
+#include <time.h>
 
 #define BLOCKSIZE 8192
 #define MAXBLKS 262144
@@ -82,7 +83,8 @@ main(int ac, char **av)
 	long rlp;
 	int ret, max_block;
 	int i;
-	int time_start, time_end, time_delta;
+	time_t time_start, time_end;
+	double time_delta;
 	int data_blocks;
 	
 	/* parse standard options */
@@ -124,10 +126,16 @@ main(int ac, char **av)
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
-			if((time_delta = time_end - time_start) > TIME_LIMIT) {
+			if (time_end < time_start) { 
+				tst_resm(TFAIL, "timer broken end %ld < start %ld",
+						time_end, time_start); 
+			}
+	
+
+			if((time_delta = difftime(time_end,time_start)) > TIME_LIMIT) {
 				tst_resm(TFAIL, "fsync took too long: %d "
 					 "seconds; max_block: %d; data_blocks: "
-					 "%d", time_delta, max_block,
+					 "%d", (int)time_delta, max_block,
 					 data_blocks);
 			} else {
 				tst_resm(TPASS, "fsync() succeeded in an "
