@@ -7,7 +7,7 @@ export TMP="/tmp/runalltests-$$"
 mkdir ${TMP}
 cd ${TMP}
 
-export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/tests"
+export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched > ${TMP}/alltests
 
