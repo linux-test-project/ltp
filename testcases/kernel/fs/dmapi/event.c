@@ -1323,7 +1323,10 @@ void *Thread(void *parm)
 		case GET_EVENTS_BASE + 9:
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(%s with %d message(s))\n", szFuncName, (eventsFlags & DM_EV_WAIT) ? "DM_EV_WAIT" : "!DM_EV_WAIT", expectedNumMsg);
-			rc = dm_get_events(sid, MAX_EVENT, 0, sizeof(dmMsgBuf), dmMsgBuf, &rlen);
+			do {
+				rlen = 0;
+				rc = dm_get_events(sid, MAX_EVENT, eventsFlags, sizeof(dmMsgBuf), dmMsgBuf, &rlen);
+			} while ((eventsFlags & DM_EV_WAIT) && (rc == -1) && (errno == EINTR) && (rlen == 0));
 			if (rc == 0) {
 				LogEventMsgs(dmMsgBuf);
 				numMsg = GetNumEventMsg(dmMsgBuf);
@@ -1413,16 +1416,6 @@ void *Thread(void *parm)
 
 			break;
 			
-		case GET_EVENTS_BASE + 11:
-			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_EV_WAIT with no messages)\n", szFuncName);
-			rc = dm_get_events(sid, MAX_EVENT, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINTR);
-		
-			/* Variation clean up */
-
-			break;
-
 		case RESPOND_EVENT_BASE + 9:
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_RESP_INVALID)\n", szFuncName);

@@ -1602,8 +1602,6 @@ int main(int argc, char **argv)
 	for (i = 0, varNum = SET_EVENTLIST_BASE + 10; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
 			dm_sessid_t newsid;
-			void *hanp;
-			size_t hlen;
 			dm_eventset_t eventset;
 
 			/* Variation set up */
@@ -1624,7 +1622,6 @@ int main(int argc, char **argv)
 				if (rc == -1) {
 					DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
 				}
-				dm_handle_free(hanp, hlen);
 			}
 		}
 	}
@@ -2954,9 +2951,15 @@ void *Thread(void *parm)
 	dm_response_t response;
 
 	do {
-		DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
+		/* Loop until message received (wait could be interrupted) */
+		do {
+			DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
+			dmMsgBufLen = 0;
 
-		rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
+			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
+			DMLOG_PRINT(DMLVL_DEBUG, "... dm_get_events returned %d (errno %d)\n", rc, errno);
+		} while ((rc == -1) && (errno == EINTR) && (dmMsgBufLen == 0));
+
 		if (rc) {
 			DMLOG_PRINT(DMLVL_ERR, "dm_get_events failed with rc = %d, errno = %d\n", rc, errno);
 			dm_destroy_session(sid);

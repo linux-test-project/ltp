@@ -506,9 +506,15 @@ void *Thread(void *parm)
 	dm_response_t response;
 
 	do {
-		DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
+		/* Loop until message received (wait could be interrupted) */
+		do {
+			DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
+			dmMsgBufLen = 0;
 
-		rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
+			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
+			DMLOG_PRINT(DMLVL_DEBUG, "... dm_get_events returned %d (errno %d)\n", rc, errno);
+		} while ((rc == -1) && (errno == EINTR) && (dmMsgBufLen == 0));
+
 		if (rc) {
 			DMLOG_PRINT(DMLVL_ERR, "dm_get_events failed with rc = %d, errno = %d\n", rc, errno);
 			dm_destroy_session(sid);
