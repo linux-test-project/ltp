@@ -188,7 +188,7 @@ mkdir01 mkdir01
 # Basic errno test for mkdir(2)
 mkdir08 mkdir08
 # Basic test for mkdir(2)
-mknod01 mknod01
+mknod01 super mknod01
 # Basic test for mknod(2)
 qmm01 mmap001 -m 1
 # Basic mmap() test.
@@ -214,7 +214,7 @@ select01 select01
 #      1.) select(2) to a fd of regular file with no I/O and small timeout
 setgid01 setgid01
 # Basic test for setgid(2)
-setgroups01 setgroups01
+setgroups01 super setgroups01
 # Basic test for setgroups(2)
 setpgid01 setpgid01
 # Basic test for setpgid(2)
@@ -224,7 +224,7 @@ setreuid01 setreuid01
 # Basic test for setreuid(2)
 setuid01 setuid01
 # Basic test for setuid(2)
-setuid02 setuid02
+setuid02 super setuid02
 # Basic test for setuid(2) as root
 stat05 stat05
 # Basic test for stat(2)
