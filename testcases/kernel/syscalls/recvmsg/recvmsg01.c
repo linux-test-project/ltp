@@ -70,11 +70,19 @@ struct cmsghdr *control = 0;
 int	controllen = 0;
 struct iovec iov[1];
 
-void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
-	setup4(void), cleanup(void), cleanup0(void), cleanup1(void),
-	cleanup2(void);
+void setup(void);
+void setup0(void);
+void setup1(void);
+void setup2(void);
+void setup3(void);
+void setup4(void);
+void cleanup(void);
+void cleanup0(void);
+void cleanup1(void);
+void cleanup2(void);
 
 void sender(int);
+pid_t start_server(struct sockaddr_in *, struct sockaddr_un *);
 
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
@@ -94,36 +102,47 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
+/* 1 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
+/* 2 */
 	{ 0, 0, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+/* 3 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)-1, sizeof(from),
 		0, ENOTSOCK, setup1, cleanup1, "invalid socket buffer" },
+/* 4 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, -1,
-		0, ENOTSOCK, setup1, cleanup1, "invalid socket length" },
+		-1, EINVAL, setup1, cleanup1, "invalid socket length" },
+/* 5 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EFAULT, setup1, cleanup1, "invalid recv buffer" },
+/* 6 */
 	{ PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EFAULT, setup1, cleanup1, "invalid iovec buffer" },
+/* 7 */
 	{ PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf), &msgdat,0,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EINVAL, setup1, cleanup1, "invalid iovec count" },
+/* 8 */
 	{ PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,0,
 		(struct sockaddr *)&from, sizeof(from),
 		0, 0, setup2, cleanup2, "rights reception" },
+/* 9 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,-1,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EINVAL, setup1, cleanup1, "invalid flags set" },
+/* 10 */
 	{ PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,0,
 		(struct sockaddr *)&from, sizeof(from),
 		0, EINVAL, setup3, cleanup2, "invalid cmsg length" },
+/* 11 */
 	{ PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&from, sizeof(from),
 		0, 0, setup4, cleanup2, "large cmesg length" },
@@ -189,6 +208,8 @@ main(int argc, char *argv[])
 		}
 	}
 	cleanup();
+	/*NOT REACHED*/
+	return 0;
 }	/* End main */
 
 pid_t pid;
@@ -255,11 +276,11 @@ setup1(void)
 	}
 	if (tdat[testno].type == SOCK_STREAM) {
 		if (tdat[testno].domain == PF_INET) {
-	    		if (connect(s, &sin1, sizeof(sin1)) < 0)
+	    		if (connect(s, (struct sockaddr*)&sin1, sizeof(sin1))<0)
 				tst_brkm(TBROK, cleanup, "connect failed: %s ",
 					strerror(errno));
 		} else if (tdat[testno].domain == PF_UNIX) {
-	    		if (connect(s, &sun1, sizeof(sun1)) < 0)
+	    		if (connect(s, (struct sockaddr*)&sun1, sizeof(sun1))<0)
 				tst_brkm(TBROK, cleanup, "UD connect failed:",
 					" %s ", strerror(errno));
 		}
@@ -320,7 +341,6 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 	fd_set	afds, rfds;
 	pid_t	pid;
 	int	sfd, nfds, cc, fd, ufd;
-	char	c;
 
 	/* set up inet socket */
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -394,7 +414,7 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
+			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
 			if (newfd >= 0) {
 				FD_SET(newfd, &afds);
 				/* send something back */
@@ -405,7 +425,7 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 			int newfd;
 
 			fromlen = sizeof(fsun);
-			newfd = accept(ufd, &fsun, &fromlen);
+			newfd = accept(ufd, (struct sockaddr *)&fsun, &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 		}
@@ -433,7 +453,6 @@ sender(int fd)
 	struct msghdr mh;
 	struct cmsghdr *control;
 	char	tmpfn[1024], snd_cbuf[1024];
-	char	*p;
 	int	tfd;
 
 	(void) strcpy(tmpfn, "/tmp/smtXXXXXX");
