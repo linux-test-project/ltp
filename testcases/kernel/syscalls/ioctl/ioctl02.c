@@ -455,6 +455,10 @@ setup()
 	act.sa_flags = 0;
 	(void)sigaction(SIGUSR2, &act, 0);
 
+	act.sa_handler = SIG_IGN;
+	act.sa_flags = 0;
+	(void)sigaction(SIGTTOU, &act, 0);
+
 	sigterm = sigusr1 = sigusr2 = 0;
 
 	/* Pause if that option was specified */
