@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     /* check command line args */
     if (argc < 4) {
         printf("usage :<server-hostname> <trace-hostName> <data1> ... <dataN> \n");
-        exit(1);
+        _exit(1);
     }
 
     strncpy(progName, argv[0], MAX_MSG_LEN);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 
     if (hostEntry == NULL) {
         printf("%s: unknown host passed'%s' \n", progName, hostName);
-        exit(1);
+        _exit(1);
     }
 
     printf("%s: sending data to '%s' (IP : %s) \n", progName, hostEntry->h_name,

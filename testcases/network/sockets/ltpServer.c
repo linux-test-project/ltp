@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 
     if (argc!=2) {
         printf("Server arguments : %s <multiCast I.P.address/hostname>\n", argv[0]);
-        exit(0);
+        _exit(0);
     }
 
     strncpy(hostname, argv[1], 255);
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 
     if (hostEntry == NULL) {
         printf("Server %s : You need to pass a multiCast group '%s'\n", argv[0], argv[1]);
-        exit(1);
+        _exit(1);
     }
 
     memcpy(&multiCastAddr, hostEntry->h_addr_list[0], hostEntry->h_length);
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
 
     if ( udpSocketHandle < 0) {
         printf("%s: cannot open socket \n",argv[0]);
-        exit(1);
+        _exit(1);
     }
 
     /* tcp socket creation */
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     if ( rc < 0) {
         printf("%s: Error binding port number %d \n", 
                argv[0], LOCAL_UDP_SERVER_PORT);
-        exit(1);
+        _exit(1);
     } else {
         printf("%s: bound port number %d \n", 
                argv[0], LOCAL_UDP_SERVER_PORT);
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
     if ( rc < 0) {
         printf("%s: Error binding port number %d \n", 
                argv[0], LOCAL_TCP_SERVER_PORT);
-        exit(1);
+        _exit(1);
     } else {
         printf("%s: bound port number %d \n", 
                argv[0], LOCAL_TCP_SERVER_PORT);
