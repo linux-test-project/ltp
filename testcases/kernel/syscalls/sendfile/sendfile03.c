@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	sendfile01.c
+ *	sendfile03.c
  *
  * DESCRIPTION
  *	Testcase to test that sendfile(2) system call returns appropriete
@@ -33,7 +33,7 @@
  *	   of the calling process, and expect EFAULT to be returned.
  *
  * USAGE:  <for command-line>
- *  sendfile01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  sendfile03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -56,7 +56,7 @@
 
 #define FAILED 1
 
-char *TCID = "sendfile01";
+char *TCID = "sendfile03";
 int TST_TOTAL = 4;
 extern int Tst_count;
 
