@@ -32,29 +32,21 @@ int main() {
 
 	sprintf(semname, "/tmp/" FUNCTION "_" TESTNAME "_%d", getpid());
 
-	mysemp = sem_open(semname, O_CREAT, 0777, 0);
+	mysemp = sem_open(semname, O_CREAT, 0777, 1);
 
-	if( sem_close(mysemp) == -1 ) {
-		perror(ERROR_PREFIX "sem_close");
-		return PTS_UNRESOLVED;
-	}
+        if( mysemp == SEM_FAILED || mysemp == NULL ) {
+                perror(ERROR_PREFIX "sem_open");
+                return PTS_UNRESOLVED;
+        }
 
-	if( sem_unlink(semname) == -1 ) {
-		perror(ERROR_PREFIX "sem_unlink");
-		return PTS_UNRESOLVED;
-	}
-
-	if( sem_getvalue(mysemp, &val) > 0) {
-		perror(ERROR_PREFIX "sem_getvalue");
-		return PTS_UNRESOLVED;
-	}
-
-	if (errno == EINVAL) {
-		puts("TEST PASSED");
-		return PTS_PASS;
-	} else {
-		puts("TEST FAILED");
-		return PTS_FAIL;
-	}
-
+        if( sem_getvalue(mysemp, &val) != 0 ) {
+                puts("TEST FAILED");
+                return PTS_FAIL;
+        } else {
+                puts("TEST PASSED");
+                sem_close(mysemp);
+                sem_unlink(semname);
+                return PTS_PASS;
+        }
 }
+

@@ -21,7 +21,7 @@
 #       02/19/2003 Robbie Williamson (robbiew@austin.ibm.com)
 #               written
 ####################################################
-set -x
+
 #Set variables NAME and TST_TOTAL
 NAME=sem_getvalue01
 export TST_TOTAL=5
@@ -52,6 +52,9 @@ check_return_code()
       $LTPBIN/tst_resm TINFO "UNTESTED: `cat $OUTPUT_FILE`"
   fi
 
+  if [ $RC -gt 5 ];then
+      $LTPBIN/tst_resm TBROK "$TEST: Test did not execute."
+  fi
 }
 
 if [ -z "$LTPROOT" ]
