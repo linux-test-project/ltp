@@ -1,17 +1,22 @@
 SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 
-# Use this "all" if you want to continue on errors.
-#
-#all:
-#	@set -e; for i in $(SUBDIRS); do $(MAKE) -C -i $$i ; done
-
 all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+	@set -e; rm -f 00_Build_Errors; for i in $(SUBDIRS); do $(MAKE) -i -C $$i 2>> 00_Build_Errors; done
+	@echo ""
+	@echo "**********************************************"
+	@echo "Open POSIX Test Suite build errors located in `pwd`/00_Build_Errors"
+	@echo "**********************************************"
+	@echo ""
 
 install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@set -e; rm -f 00_Install_Errors; for i in $(SUBDIRS); do $(MAKE) -i -C $$i install 2>> 00_Install_Errors ; done
+	@echo ""
+	@echo "************************************************"
+	@echo "Open POSIX Test Suite install errors located in `pwd`/00_Install_Errors"
+	@echo "************************************************"
+	@echo ""
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -i -C $$i clean ; done; rm -f 00_*_Errors
 
 
