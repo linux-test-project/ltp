@@ -35,12 +35,12 @@
 $trace_logic
 
 TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-/tmp}
+TCtmp=${TCtmp:-/tmp/objdump$$}
 export DUMP=/usr/bin/objdump
 
 do_setup()
 {
-
+mkdir $TCtmp
 /usr/bin/ar -cr $TCtmp/lib.a $TCsrc/test_arch.o
 
 echo 1; $DUMP -f $TCsrc/test > $TCtmp/er_dump_f
@@ -420,8 +420,7 @@ if [ $? -eq 0 ]
 		exit 1
 fi
 
-rm -f $TCtmp/ar_dump_D
-rm -f $TCtmp/er_dump_D
+rm -rf $TCtmp
 
 echo PASS
 exit 0
@@ -429,4 +428,3 @@ exit 0
 
 do_setup
 do_test
-rm -f $TCtmp/lib.a
