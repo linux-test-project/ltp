@@ -590,6 +590,7 @@ setup()
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
+		 tst_tmpdir();
 
 	umask(0);
 
@@ -696,7 +697,7 @@ compare_lock(struct flock *fl, short type, short whence, int start, int len,
 	}
 
 	if (fl->l_start != start) {
-		tst_resm(TFAIL, "region starts in wrong place, should be"
+		 		 tst_resm(TFAIL, "region starts in wrong place, should be "
 			 "%d is %d", start, fl->l_start);
 		fail = 1;
 	}
@@ -734,11 +735,11 @@ str_type(int type)
 	static char buf[20];
 
 	switch (type) {
-	case 1:
+		 case 0:
 		return("F_RDLCK");
-	case 2:
+		 case 1:
 		return("F_WRLCK");
-	case 3:
+		 case 2:
 		return("F_UNLCK");
 	default:
 		sprintf(buf, "BAD VALUE: %d", type);
