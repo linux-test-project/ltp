@@ -92,9 +92,9 @@ int main()
     /* Sleep long enough to see that the other threads do what they are supposed to do */
     sleep(20);
     if ( err_ret == 1 )
-	printf("sem02: PASS\n");
-    else
 	printf("sem02: FAIL\n");
+    else
+	printf("sem02: PASS\n");
     return(err_ret);
 }
 
