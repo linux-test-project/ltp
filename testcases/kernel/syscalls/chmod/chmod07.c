@@ -84,7 +84,7 @@
 #include "usctest.h"
 
 #define LTPUSER		"nobody"
-#define LTPGRP		"nobody"
+#define LTPGRP		"users"
 #define FILE_MODE 	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define PERMS		01777	/*
 				 * Mode permissions of test file with sticky
