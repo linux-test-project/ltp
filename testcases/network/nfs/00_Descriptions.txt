@@ -20,7 +20,7 @@ nfsstat01
 	 Tests the 'nfsstat' command.  This test runs locally, so no
          actual network connection is needed.
 
-nfsstress
+nfsstress - ** MUST RUN MANUALLY - NOT PAN COMPLIANT **
 
 	This program is designed stress the NFS implimentation.       
 	Many bugs were uncovered in the AIX operating system          
