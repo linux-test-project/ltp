@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.3 2000/08/31 19:20:35 nstraz Exp $ */
+/* $Id: usctest.h,v 1.4 2000/09/06 14:33:29 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -127,8 +127,8 @@ typedef struct {
 extern int STD_FUNCTIONAL_TEST,	/* turned off by -f to not do functional test */
            STD_TIMING_ON,	/* turned on by -t to print timing stats */
            STD_PAUSE,		/* turned on by -p to pause before loop */
-           STD_INFINITE,	/* turned on by -c0 to loop forever */
-           STD_LOOP_COUNT,	/* changed by -cn to set loop count to n */
+           STD_INFINITE,	/* turned on by -i0 to loop forever */
+           STD_LOOP_COUNT,	/* changed by -in to set loop count to n */
            STD_ERRNO_LOG,	/* turned on by -e to log errnos returned */
            STD_ERRNO_LIST[],	/* counts of errnos returned.  indexed by errno */
 	   STD_COPIES,

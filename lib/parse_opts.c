@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.3 2000/08/31 18:40:28 nstraz Exp $ */
+/* $Id: parse_opts.c,v 1.4 2000/09/06 14:33:29 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -231,6 +231,8 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
     optionstr = (char *)malloc(optstrlen);
     if (!optionstr) 
 	return "parse_opts: ERROR - Could not allocate memory for optionstr";
+
+    optionstr[0] = '\0';
 
     for (i = 0; std_options[i].optstr; ++i)
 	strcat(optionstr, std_options[i].optstr);
