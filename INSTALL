@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.3 2000/07/27 17:13:18 alaffin Exp $
+$Id: INSTALL,v 1.4 2000/08/31 21:31:08 alaffin Exp $
 
 Building and Installation of Test Tools.
 
@@ -10,4 +10,5 @@ build process reflects that.  Simply:
 
 make
 
-This does two things, builds the test libraries and then the tests.
+This does two things, builds the test libraries and then the tests. It
+should work on i386 and ia64, Redhat, Turbo, or Suse Linux systems.
