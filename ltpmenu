@@ -231,7 +231,8 @@ flags_prompt()
                             to redirect output to" 17 80 \
                           2>/tmp/runltp.outdir.$$ ;
         flags_outfile=$(cat /tmp/runltp.outdir.$$ | awk '{print $1}') 
-        RUNALL_FLAGS=" -o $flags_outfile"
+        ./ver_linux > $flags_outfile 2>&1
+	RUNALL_FLAGS=" -o $flags_outfile"
     fi
     
     dialog --backtitle "Linux Test Project Control Centre"\
