@@ -1,4 +1,4 @@
-SUBDIRS = crash f00f float
+SUBDIRS = crash disktest f00f float
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
