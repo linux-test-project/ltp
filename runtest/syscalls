@@ -434,6 +434,10 @@ pwrite01 pwrite01
 pwrite02 pwrite02
 pwrite03 pwrite03
 
+query_module01 query_module01
+query_module02 query_module02
+query_module03 query_module03
+
 read01 read01
 read02 read02
 read03 read03
