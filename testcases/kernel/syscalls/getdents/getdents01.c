@@ -68,6 +68,12 @@
 void cleanup(void);
 void setup(void);
 
+#if defined(__ia64__)
+#define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
+#else
+_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
+#endif
+
 char *TCID = "getdents01";
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -78,7 +84,6 @@ int main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 	int rval, fd;
 	int count;
-	const int cnum = 141;		/* system call number 141 = getdents */
 	size_t size = 0;
 	char *dir_name = NULL;
 	struct dirent *dirp;
@@ -132,7 +137,6 @@ int main(int ac, char **av)
 		 * if we could call getdents that way.
 		 */
 	
-		_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
 		rval = getdents(fd, dirp, count);
 	
 		if (rval < 0) {		/* call returned an error */
