@@ -9,6 +9,12 @@ echo 'If some fields are empty or look unusual you may have an old version.'
 echo 'Compare to the current minimal requirements in Documentation/Changes.'
 echo ' '
 
+cat /etc/*release 2> /dev/null
+if [ $? = 1 ]; then
+   echo '/etc/issue:'
+   cat /etc/issue 2> /dev/null
+fi
+
 uname -a
 echo ' '
 
@@ -70,3 +76,11 @@ if [ -e /proc/modules ]; then
     X=`cat /proc/modules | sed -e "s/ .*$//"`
     echo "Modules Loaded         "$X
 fi
+
+echo
+echo 'free -m reports:'
+free -m
+
+echo
+echo '/proc/cpuinfo'
+cat /proc/cpuinfo
