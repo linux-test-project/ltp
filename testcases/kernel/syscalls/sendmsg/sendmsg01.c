@@ -372,6 +372,7 @@ setup7(void)
 {
 	setup4();
 	controllen = 128 * 1024;
+	control->cmsg_len = 0;
 }
 
 void
