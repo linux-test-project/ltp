@@ -1,0 +1,12 @@
+#DESCRIPTION:POSIX compliant message queue functions 
+
+mq_getattr01 cd $LTPROOT/testcases/bin;mq_getattr01
+mq_notify01 cd $LTPROOT/testcases/bin;mq_notify01
+mq_open01 cd $LTPROOT/testcases/bin;mq_open01
+mq_receive01 cd $LTPROOT/testcases/bin;mq_receive01
+mq_send01 cd $LTPROOT/testcases/bin;mq_send01
+mq_setattr01 cd $LTPROOT/testcases/bin;mq_setattr01
+mq_timedreceive01 cd $LTPROOT/testcases/bin;mq_timedreceive01
+mq_timedsend01 cd $LTPROOT/testcases/bin;mq_timedsend01
+mq_unlink01 cd $LTPROOT/testcases/bin;mq_unlink01
+
