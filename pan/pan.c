@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.20 2003/03/03 23:35:55 nstraz Exp $ */
+/* $Id: pan.c,v 1.21 2004/07/15 19:13:51 robbiew Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -705,7 +705,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 			{
 					if (w != 0) 
 						++*failcnt;
-					fprintf(logfile, "%-30.20s %-10.10s %-5d\n", 
+					fprintf(logfile, "%-30.30s %-10.10s %-5d\n", 
 							running[i].cmd->name, ((w != 0) ? "FAIL" : "PASS"),
 							w);
 			}
