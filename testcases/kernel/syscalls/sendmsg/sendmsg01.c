@@ -381,7 +381,8 @@ setup(void)
 void
 cleanup(void)
 {
-	(void) kill(pid, SIGKILL);	/* kill server */
+	if(pid > 0)
+		(void) kill(pid, SIGKILL);	/* kill server, if server exists */
 	unlink(tmpsunpath);
 	TEST_CLEANUP;
         tst_rmdir();
