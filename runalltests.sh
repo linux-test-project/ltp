@@ -11,12 +11,15 @@
 #                           user defined set of testcases.
 #  01/27/03 - Manoj Iyer  - manjo@mail.utexas.edu: Enabled formatted printing
 #                           of logfiles.
+#  01/28/03 - Manoj Iyer  - manjo@mail.utexas.edu: added option to enable 
+#                           formatted printing of logfiles.
 #
 
 cd `dirname $0`
 export LTPROOT=${PWD}
 export TMPBASE="/tmp"
 cmdfile=""
+pretty_prt=" "
 
 usage() 
 {
@@ -30,6 +33,7 @@ usage()
     -i              Run LTP under heavy IO load.
     -l logfile      Log results of test in a logfile.
     -m              Run LTP under heavy memory load.
+    -p              Human readable format logfiles. 
     -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
@@ -41,7 +45,7 @@ exit
 
 
 # while getopts :t:x:l:r:d:mic arg
-while getopts cd:f:il:mr:t:x arg
+while getopts cd:f:il:mpr:t:x arg
 do  case $arg in
     c)
             $LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
@@ -62,6 +66,8 @@ do  case $arg in
     m)        
             $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
             2>&1 1>/dev/null & ;;
+
+	p)		pretty_prt=" -p ";;
 
     r)      LTPROOT=$OPTARG;;
 
@@ -112,9 +118,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -f ${TMP}/alltests $logfile 
-# Comment out the line above and use the line below if you want formatted printing.
-#${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -p -f ${TMP}/alltests $logfile 
+${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
 
 
 if [ $? -eq 0 ]; then
