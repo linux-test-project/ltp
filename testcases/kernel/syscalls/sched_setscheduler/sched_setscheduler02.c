@@ -75,7 +75,7 @@ main(int ac, char **av)
 
 	struct passwd *nobody;
 	pid_t pid;
-	struct sched_param *param;
+	struct sched_param param;
 	int status;
 	
 	/* parse standard options */
@@ -99,7 +99,7 @@ main(int ac, char **av)
 		}
 
 		if (pid == 0) {		/* child */
-			param->sched_priority = 1;
+			param.sched_priority = 1;
 
 			nobody = my_getpwnam(user1name);
 
@@ -107,7 +107,7 @@ main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "seteuid() failed");
 			}
 
-			TEST(sched_setscheduler(pid, SCHED_FIFO, param));
+			TEST(sched_setscheduler(pid, SCHED_FIFO, &param));
 
 			if (TEST_ERRNO) {
 				TEST_ERROR_LOG(TEST_ERRNO);
