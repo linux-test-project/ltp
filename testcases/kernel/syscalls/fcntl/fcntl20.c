@@ -457,7 +457,7 @@ setup()
 		fail = 1;
 	}
 
-	if ((int)(signal(SIGCLD, catch_child)) < 0) {
+	if ((signal(SIGCLD, catch_child)) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
 			 errno);
 		fail = 1;
