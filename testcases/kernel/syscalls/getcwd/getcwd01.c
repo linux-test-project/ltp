@@ -71,12 +71,12 @@ struct test_case_t {
 	char *buf;
 	int size;
 	int exp_errno;
-	int exp_retval;
+	char *exp_retval;
 } testcases[] = {
-	{ "Test for EFAULT", NULL, (void *)-1, BUFSIZ, EFAULT, 0 },
-	{ "Test for ENOMEM", NULL,  NULL, -1, ENOMEM, 0 },
-	{ "Test for EINVAL", NULL, buf, 0, EINVAL, 0 },
-	{ "Test for ERANGE", (void *)setup_test4, buf, 1, ERANGE, 0 }
+	{ "Test for EFAULT", NULL, (void *)-1, BUFSIZ, EFAULT, NULL },
+	{ "Test for ENOMEM", NULL,  NULL, -1, ENOMEM, NULL },
+	{ "Test for EINVAL", NULL, buf, 0, EINVAL, NULL },
+	{ "Test for ERANGE", (void *)setup_test4, buf, 1, ERANGE, NULL }
 };
 
 int exp_enos[] = {EFAULT, ENOMEM, EINVAL, ERANGE, 0};
@@ -86,6 +86,7 @@ main(int ac, char **av)
 	int i;
 	int lc;				/* loop counter */
 	char *msg;			/* parse_opts() return message */
+	char *test_erg;
 
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -108,15 +109,17 @@ main(int ac, char **av)
 				testcases[i].setupfunc();
 			}
 
-			TEST(getcwd(testcases[i].buf, testcases[i].size));
+			errno = 0;
+			test_erg = getcwd(testcases[i].buf, testcases[i].size);
+			TEST_ERRNO = errno;
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_RETURN != testcases[i].exp_retval) {
+			if (test_erg != testcases[i].exp_retval) {
 				tst_resm(TFAIL, "getcwd(2) failed to return"
-					 "expected value, expected: %d, "
-					 "got: %d", testcases[i].exp_retval,
-					 TEST_RETURN);
+					 "expected value, expected: %p, "
+					 "got: %p", testcases[i].exp_retval,
+					 test_erg);
 				continue;
 			}
 			if (TEST_ERRNO != testcases[i].exp_errno) {
