@@ -1,0 +1,329 @@
+Content-type: text/html
+
+<HTML><HEAD><TITLE>Manpage of PCL</TITLE>
+</HEAD><BODY text="#0000FF" bgcolor="#FFFFFF">
+<H1>PCL</H1>
+Section: Portable Coroutine Library (3)<BR>Updated: 1.2<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+co_create, co_call, co_resume, co_delete, co_exit_to, co_exit, co_current - C coroutine management
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:/usr/include/pcl.h">pcl.h</A>&gt;</B>
+
+<B>coroutine_t co_create(void *</B><I>func</I><B>, void *</B><I>data</I><B>, void *</B><I>stack</I><B>, int </B><I>stacksize</I><B>);</B>
+<B>void co_delete(coroutine_t </B><I>co</I><B>);</B>
+<B>void co_call(coroutine_t </B><I>co</I><B>);</B>
+<B>void co_resume(void);</B>
+<B>void co_exit_to(coroutine_t </B><I>co</I><B>);</B>
+<B>void co_exit(void);</B>
+<B>coroutine_t co_current(void);</B>
+</PRE><A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<B>Portable Coroutine Library (PCL)</B>
+
+implements the low level functionality for coroutines. For a definition
+of the term
+<B>coroutine</B>
+
+see
+<I>The Art of Computer Programming</I> by <I>Donald E. Knuth</I>.
+
+Coroutines are a very simple cooperative multitasking environment
+where the switch from one task to another is done explicitly by a function call.
+Coroutines are a lot faster than processes or threads switch, since
+there is no OS kernel involvement for the operation. This document
+defines an API for the low level handling of coroutines
+i.e. creating and deleting coroutines and switching between them.
+Higher level functionality (scheduler, etc.) is not covered.
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H3>Functions</H3>
+
+The following functions are defined:
+<DL COMPACT>
+<DT><B>coroutine_t co_create(void *</B><I>func</I><B>, void *</B><I>data</I><B>, void *</B><I>stack</I><B>, int </B><I>stacksize</I><B>);</B>
+
+<DD>
+<P>
+This function creates a new coroutine.
+<I>func</I>
+
+is the entry point of the coroutine.  It will be called with one
+arg, a
+<B>void *</B>,
+
+which holds the data passed through the
+<I>data</I>
+
+parameter. If
+<I>func</I>
+
+terminates, the associated coroutine is deleted.
+<I>stack</I>
+
+is the base of the stack this coroutine will use and
+<I>stacksize</I>
+
+its size in bytes.  You may pass a
+<B>NULL</B>
+
+pointer for
+<I>stack</I>
+
+in which case the memory will be allocated by
+<B>co_create</B>
+
+itself.  Both,
+<I>stack</I> and <I>stacksize</I>
+
+are aligned to system requirements.
+A
+<I>stacksize</I>
+
+of less then 4096 bytes will be rejected.
+You have to make sure, that the stack is large enough for your
+coroutine and possible signal handlers (see below).  The stack
+will not grow!  (Exception: the main coroutine uses the standard
+system stack which may still grow) On success, a handle
+(<B>coroutine_t</B>)
+
+for a new coroutine is returned, otherwise
+<B>NULL</B>.
+
+<P>
+<DT><B>void co_delete(coroutine_t </B><I>co</I><B>);</B>
+
+<DD>
+<P>
+This function deletes the given coroutine
+<I>co</I>.
+
+If the stack for this coroutine was allocated by
+<B>co_create</B>
+
+it will be freed.  After a coroutine handle was passed to
+<B>co_delete</B>
+
+it is invalid and may not be used any more.
+It is invalid for a coroutine to delete itself with this
+function.
+<P>
+<DT><B>void co_call(coroutine_t </B><I>co</I><B>);</B>
+
+<DD>
+<P>
+This function passes execution to the given coroutine
+<I>co</I>.
+
+The first time the coroutine is executed, its entry point
+<I>func</I>
+
+is called, and the
+<I>data</I>
+
+parameter used during the call to
+<B>co_create</B>
+
+is passed to
+<I>func</I>.
+
+The current coroutine is suspended until another one restarts it with a
+<B>co_call</B>
+
+or
+<B>co_resume</B>
+
+call. Calling oneself returns immediately.
+<P>
+<DT><B>void co_resume(void);</B>
+
+<DD>
+<P>
+This function passes execution back to the coroutine which either
+initially started this one or restarted it after a prior
+<B>co_resume</B>.
+
+<P>
+<DT><B>void co_exit_to(coroutine_t </B><I>co</I><B>);</B>
+
+<DD>
+<P>
+This function does the same a
+<B>co_delete(co_current())</B>
+
+followed by a
+<B>co_call</B>
+
+would do.  That is, it deletes itself and then passes execution
+to another coroutine
+<I>co</I>.
+
+<P>
+<DT><B>void co_exit(void);</B>
+
+<DD>
+<P>
+This function does the same a
+<B>co_delete(co_current())</B>
+
+followed by a
+<B>co_resume</B>
+
+would do.  That is, it deletes itself and then passes execution
+back to the coroutine which either initially started this one or
+restarted it after a prior
+<B>co_resume</B>.
+
+<P>
+<DT><B>coroutine_t co_current(void);</B>
+
+<DD>
+<P>
+This function returns the currently running coroutine.
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H3>Notes</H3>
+
+Some interactions with other parts of the system are covered here.
+<DL COMPACT>
+<DT><B>Signals</B>
+
+<DD>
+First, a signal handler is not defined to run in any specific
+coroutine. The only way to leave the signal handler is
+by a return statement.
+<P>
+Second, the signal handler may run with the stack of any coroutine,
+even with the stack of library internal coroutines which have an
+undefined stack size (just enough to perform a kernel call).
+Using and alternate stack for signal processing (see
+<B><A HREF="http://localhost/cgi-bin/man/man2html?2+sigaltstack">sigaltstack</A></B>(2))
+
+is recommended!
+<P>
+Conclusion: avoid signals like a plague.  The only thing you may
+do reliable is setting some global variables and return.
+Simple kernel calls may work too, but nowadays it's pretty hairy
+to tell, which function really is a kernel call.
+(Btw, all this applies to normal C programs, too.  The coroutines
+just add one more problem)
+<DT><B>setjmp</B>/<B>longjmp</B>
+
+<DD>
+The use of
+<B><A HREF="http://localhost/cgi-bin/man/man2html?2+setjmp">setjmp</A></B>(2)/<B><A HREF="http://localhost/cgi-bin/man/man2html?2+longjmp">longjmp</A></B>(2)
+
+is limited to jumping inside one coroutine.  Never try to jump from
+one coroutine to another with
+<B><A HREF="http://localhost/cgi-bin/man/man2html?2+longjmp">longjmp</A></B>(2).
+
+<P>
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>DIAGNOSTICS</H2>
+
+Some fatal errors are caught by the library.  If one occurs,
+a short message is written to file descriptor 2 (stderr) and
+a segmentation violation is generated.
+<DL COMPACT>
+<DT><B>[PCL]: Cannot delete itself</B>
+
+<DD>
+A coroutine has called
+<B>co_delete</B>
+
+with it's own handle.
+<DT><B>[PCL]: Resume to deleted coroutine</B>
+
+<DD>
+A coroutine has deleted itself with
+<B>co_exit</B> or <B>co_exit_to</B>
+
+and the coroutine that was activated by the exit tried a
+<B>co_resume</B>.
+
+<DT><B>[PCL]: Stale coroutine called</B>
+
+<DD>
+Someone tried to active a coroutine that has already been
+deleted.  This error is only detected, if the stack of the
+deleted coroutine is still resident in memory.
+<DT><B>[PCL]: Context switch failed</B>
+
+<DD>
+Low level error generated by the library in case a context switch
+between two coroutines failes.
+<P>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+Original
+<B>coroutine</B>
+
+library at
+<B><A HREF="http://www.goron.de/~froese/coro/coro.html">http://www.goron.de/~froese/coro/coro.html</A></B> .
+
+GNU Pth library at
+<B><A HREF="http://www.gnu.org/software/pth/">http://www.gnu.org/software/pth/</A></B> .
+
+<P>
+<A NAME="lbAI">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Developed by Davide Libenzi &lt;
+<B><A HREF="mailto:davidel@xmailserver.org">davidel@xmailserver.org</A></B> &gt;.
+
+Ideas and man page base source taken by the coroutine library developed by
+E. Toernig &lt;
+<B><A HREF="mailto:froese@gmx.de">froese@gmx.de</A></B> &gt;.
+
+Also some code and ideas comes from the GNU Pth library available at
+<B><A HREF="http://www.gnu.org/software/pth/">http://www.gnu.org/software/pth/</A></B> .
+
+<P>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>BUGS</H2>
+
+There are no known bugs.  But, this library is still
+in development even if it results very stable and pretty much ready for
+production use.
+<P>
+Bug reports and comments to Davide Libenzi &lt;
+<B><A HREF="mailto:davidel@xmailserver.org">davidel@xmailserver.org</A></B> &gt;.
+
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DL>
+<DT><A HREF="#lbAE">Functions</A><DD>
+<DT><A HREF="#lbAF">Notes</A><DD>
+</DL>
+<DT><A HREF="#lbAG">DIAGNOSTICS</A><DD>
+<DT><A HREF="#lbAH">SEE ALSO</A><DD>
+<DT><A HREF="#lbAI">AUTHOR</A><DD>
+<DT><A HREF="#lbAJ">BUGS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:03:45 GMT, August 21, 2003
+</BODY>
+</HTML>

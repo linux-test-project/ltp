@@ -1,0 +1,50 @@
+Readme for building and executing the following epoll tests:
+Pipetest, Http/Blaster and Libevent
+
+
+
+Pipetest/Http/Blaster
+
+ 1.  copy pcl-1.2.tar.gz to /root/epoll 
+ 2.  tar -zxvf  pcl-1.2.tar.gz
+ 3.  cd libpcl directory, ./configure 
+ 4.  make
+ 5.  make install
+ 6.  copy libpcl/include/pcl.h /usr/include
+ 7.  copy libpcl/pcl/.libs/* /lib
+ 8.  copy epoll-lib-0.11.tar.gz  to /root/epoll
+ 9.  tar -zxvf epoll-lib-0.11.tar.gz 
+10.  cd  epoll-lib-0.1 and copy epoll-lib-0.11/include/epoll.h /usr/include 
+11.  Modify the epoll-lib-0.1/Makefile & epoll-lib-0.1/examples/Makefile
+12.  make
+13.  there should be executables in epoll-lib-0.11/bin	
+	
+Execution:
+	Pipetest: 
+1.	./root/epoll/epoll-lib-0.11/bin/epoll-pipetest
+
+
+	Http/Blaster:
+		Server/client test (preferably 2 machines)
+1.	On server ./root/epoll/epoll-lib-0.11/bin/epoll-http
+2.	On client:  
+./epoll-blaster --server <ip_address_of_server> --numconns 100 --nreq 20
+
+
+
+Libevent:
+
+1. copy libevent-0.8.tar.gz
+2. tar -zxvf libevent-0.8.tar.gz
+3. cd libevent-0.8
+4. ./configure
+5. make
+6. make install
+
+Execution:
+1. cd /root/epoll/libevent-0.8/test
+2. ./test.sh
+
+
+
+	
