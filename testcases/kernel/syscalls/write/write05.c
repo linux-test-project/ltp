@@ -56,8 +56,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <wait.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
+
 
 void setup(void);
 void cleanup(void);
@@ -69,6 +71,8 @@ char *TCID = "write05";			/* Test program identifier */
 int TST_TOTAL = 1;			/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
+
+char * bad_addr = 0;
 
 int main(int argc, char **argv)
 {
@@ -116,7 +120,7 @@ int main(int argc, char **argv)
 			cleanup();
 			/*NOTREACHED*/
 		}
-		if (write(fd, (void *)-1, 10) != -1) {
+		if (write(fd, bad_addr, 10) != -1) {
 			tst_resm(TFAIL, "write() on an invalid buffer "
 				 "succeeded, but should have failed");
 			cleanup();
@@ -206,6 +210,12 @@ setup(void)
 	tst_tmpdir();
 
 	sprintf(filename, "write05.%d", getpid());
+
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+            printf("mmap failed\n");
+        }
+
 }
 
 /*

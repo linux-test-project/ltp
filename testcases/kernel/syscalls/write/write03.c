@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <sys/mman.h>
 
 /* 0 terminated list of expected errnos */
 int exp_enos[] = {14,0};
@@ -60,6 +61,8 @@ int exp_enos[] = {14,0};
 char *TCID = "write03";
 int TST_TOTAL = 1;
 extern int Tst_count;
+
+char * bad_addr = 0;
 
 void setup(void);
 void cleanup(void);
@@ -109,7 +112,7 @@ int main(int argc, char **argv)
 			/*NOTREACHED*/
 		}
 
-		if (write(fd, (void *)-1, 100) != -1) {
+		if (write(fd, bad_addr, 100) != -1) {
 			tst_resm(TFAIL, "write(2) failed to fail");
 			cleanup();
 			/*NOTREACHED*/
@@ -166,6 +169,12 @@ setup(void)
 	tst_tmpdir();
 
 	sprintf(filename, "./write03.%d", getpid());
+
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+            printf("mmap failed\n");
+        }
+
 }
 
 /*
