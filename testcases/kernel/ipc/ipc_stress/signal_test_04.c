@@ -106,8 +106,8 @@ void error (const char *, int);
 
 
 /* Flag set upon receiving SIGCHLD signal */
-int sigchld_flag = 0;
-int sigusr1_count = 0;
+volatile int sigchld_flag = 0;
+volatile int sigusr1_count = 0;
 
 
 /*---------------------------------------------------------------------+
