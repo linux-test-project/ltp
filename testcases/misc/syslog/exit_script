@@ -1,0 +1,44 @@
+#!/bin/sh
+
+#  Copyright (c) International Business Machines  Corp., 2002
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+
+# Restore /dev/syslog file.
+if [[ -a /dev/syslog.tmp ]]; then
+	/bin/mv -f /dev/syslog.tmp /dev/syslog 2>/dev/null
+	if [[ $? -ne 0 ]]; then
+		exit 1
+	else 
+		exit 0
+	fi
+fi
+
+# Restore /etc/syslog.conf file.
+if [[ -s /etc/syslog_conf.bak ]];then
+	/bin/mv -f /etc/syslog_conf.bak /etc/syslog.conf 2>/dev/null
+	if [[ $? -ne 0 ]];then
+		exit 1
+	else
+		# Send SIGHUP to syslogd to restart it.
+		kill -1 `/bin/ps -ef | /bin/grep syslogd | grep -v grep | /usr/bin/awk '{print $2 }'`
+		if [[ $? -ne 0 ]];then
+			exit 1
+		fi
+		exit 0
+	fi
+
+fi

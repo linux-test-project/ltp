@@ -1,0 +1,514 @@
+##################################################
+#                                                #
+# syslog test cases.                             #
+#                                                #
+##################################################
+
+##################################################################
+# case1: Test whether messages are logged to the specified file  #
+#        in the configuration file.                              #
+#                                                                #
+#        Send messages to syslogd at some level and facility     #
+#        and grep for those messages.                            #
+#                                                                #
+# syslog.conf should contain:                                    #
+#        *.crit           /var/log/messages                      #
+#         mail.info        /var/log/maillog                 #
+##################################################################
+
+syslog_case1()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing whether messages are logged into log file..."
+	echo
+	# Create the configuration file specific to this test case.
+	echo "*.crit		/var/log/messages" > conf.tmp
+	echo "mail.info	/var/log/maillog" >> conf.tmp
+	
+	# Grepping pattern has to be changed whenever the executable name
+	# changes, ex: syslogtst executable.
+	oldvalue1=`grep -c "syslogtst: mail info test" /var/log/maillog`
+	# Call syslogtst executable with case number as argument
+	./syslogtst 1 2>/dev/null
+	if [[ $? -ne 0 ]]; then
+		status_flag=1
+		return
+	fi
+	sleep 2
+	newvalue1=`grep -c "syslogtst: mail info test" /var/log/maillog`
+	(( diff=$newvalue1 - $oldvalue1 ))
+	if [[ $diff -ne 1 ]]; then
+		status_flag=1
+	fi
+}
+
+##################################################################
+# case2: Test if messages of all levels are logged.              #
+#        For each level, a seperate configuration file is        #
+#        created and that will be used as syslog.conf file.      #
+##################################################################
+
+syslog_case2()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the messages of all levels..."
+
+	level_no=0
+	level="emerg alert crit err warning notice info debug"
+	for current in $level
+	do
+		echo
+		echo "Doing level: $current..."
+
+		# Create the configuration file specific to this level
+		echo "*.crit		/var/log/messages" > conf.tmp
+		echo "mail.$current	/var/log/maillog" >> conf.tmp
+
+		# Grepping pattern is as follows:
+		# syslogtst: mail $current test.
+		oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
+
+		# syslogtst has to be called with additional level argument(0-7)
+		./syslogtst 2 $level_no 2>/dev/null
+		if [[ $? -ne 0 ]]; then
+			status_flag=1
+			return
+		fi
+		sleep 2 
+		newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
+		(( diff=$newvalue - $oldvalue ))
+		if [[ $diff -ne 1 ]]; then
+			status_flag=1
+			echo "*****--- Level $current failed ---*****"
+		elif [[ $diff -eq 1 ]]; then
+			echo "*****--- Level $current passed ---*****"
+		fi
+		# Increment the level_no for next level...
+		level_no=$(($level_no+1))
+	done
+}
+
+##################################################################
+# case 3: Do openlog(), log the messages and see whether         #
+#          ident string is prepended to the mesage.              #
+#                                                                #
+# syslog.conf should contain:                                    #
+#        *.crit           /var/log/messages                      #
+#         daemon.info        /var/log/maillog               #
+##################################################################
+
+syslog_case3()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing opnlog() with ident strings...."
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+        echo "daemon.info        /var/log/maillog" >> conf.tmp
+
+	# Grep for the ident prefix: SYSLOG_CASE3 in the log file.
+	oldvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
+	./syslogtst 3 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+                status_flag=1
+                return
+        fi
+        sleep 2
+	newvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
+        (( diff=$newvalue4 - $oldvalue4 ))
+        if [[ $diff -ne 1 ]]; then
+                status_flag=1
+        fi
+
+}
+
+##################################################################
+# case4: Test the logging option: LOG_PID                        #
+#                                                                #
+#        Do openlog() with LOG_PID option and see whether pid    #
+#        is logged with message.                                 #
+##################################################################
+
+syslog_case4()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the log option: LOG_PID..." 
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+        echo "user.info        /var/log/maillog" >> conf.tmp
+
+	# Run syslogtst in the background and get the process id.
+	./syslogtst 4 2>/dev/null &
+	log_pid=$!
+	wait $log_pid
+	if [[ $? -ne 0 ]]; then
+		status_flag=1
+		return
+	fi
+	
+	sleep 2
+	found=`grep -c "\[$log_pid\]: syslogtst: user info test." /var/log/messages`
+	if [[ found -ne 1 ]]; then
+		status_flag=1
+	fi
+}
+
+##################################################################
+# case5: Test the logging option: LOG_CONS                       #
+#                                                                #
+#        o Do openlog() with LOG_CONS option.                    #
+#        o Disable /dev/syslog by moving it to a temporary file  #
+#          name.                                                 #
+#        o Send the syslog message.                              #
+#        o Check whether this is written to the console i.e to   #
+#          the  file /usr/adm/ktlog/<this year>/<this month>/    #
+#          <to_day>                                              #
+##################################################################
+
+syslog_case5()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the log option: LOG_CONS..." 
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+        echo "user.info        /var/log/maillog" >> conf.tmp
+
+
+	oldvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
+	# syslogtst does the disabling of /dev/syslog, sends the message and
+        # enables /dev/syslog.
+	./syslogtst 5 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+                status_flag=1
+                return
+        fi
+        sleep 2
+	
+	newvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
+ 
+	(( diff=$newvalue - $oldvalue ))
+	if [[ $diff -ne 1 ]]; then
+		status_flag=1
+		echo "*****--- Level $current failed ---*****"
+	elif [[ $diff -eq 1 ]]; then
+		echo "*****--- Level $current passed ---*****"
+	fi
+	(( diff=$newvalue - $oldvalue ))
+        if [[ $diff -ne 1 ]]; then
+                status_flag=1
+        fi
+}
+
+##################################################################
+# case 6: Test the logging option: LOG_NDELAY                    #
+#                                                                #
+#         o Do openlog() without LOG_NDELAY option.              #
+#         o open a file and check the returned file descriptor   #
+#           It should be 3.                                      #
+#         o Now do openlog() with LOG_NDELAY option.             #
+#         o open a file and check the returned file descriptor.  #
+#           It should be greater than 3.                         #
+##################################################################
+
+syslog_case6()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the log option: LOG_NDELAY..." 
+	echo
+
+        # Create the configuration file specific to this test case.
+	# For this case, it's a dummy one. No use of it.
+        echo "*.crit           /var/log/messages" > conf.tmp
+        echo "user.info        /var/log/maillog" >> conf.tmp
+
+	# Just call syslogtst. It will do everything.
+        # It will return 0 to indicate that test has passed.
+
+	./syslogtst 6 2>/dev/null
+	if [[ $? -ne 0 ]]; then
+		status_flag=1
+	fi
+}
+
+##################################################################
+# case 7: Test the priorities....                                #
+#                                                                #
+#         o Add lowest prority level i.e debug level entry to    #
+#           configuration file.                                  #
+#         o Send syslog messages at all levels and see whether   #
+#           higher level messages are logged.                    #
+##################################################################
+
+syslog_case7()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing the priorities ..." 
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+        echo "user.debug        /var/log/maillog" >> conf.tmp
+
+	# Grep for the following patterns in the log file...
+	emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
+	alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
+	crit_old=`grep -c "syslogtst: critical log" /var/log/messages`
+	err_old=`grep -c "syslogtst: error log" /var/log/messages`
+	warning_old=`grep -c "syslogtst: warning log" /var/log/messages`
+	notice_old=`grep -c "syslogtst: notice log" /var/log/messages`
+	info_old=`grep -c "syslogtst: info log" /var/log/messages`
+	debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
+
+        # Call syslogtst. It will send the messages of all levels.
+        ./syslogtst 7 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+                status_flag=1
+		return
+        fi
+	sleep 2
+
+	emerg_new=`grep -c "syslogtst: emergency log" /var/log/messages`
+	alert_new=`grep -c "syslogtst: alert log" /var/log/messages`
+	crit_new=`grep -c "syslogtst: critical log" /var/log/messages`
+	err_new=`grep -c "syslogtst: error log" /var/log/messages`
+	warning_new=`grep -c "syslogtst: warning log" /var/log/messages`
+	notice_new=`grep -c "syslogtst: notice log" /var/log/messages`
+	info_new=`grep -c "syslogtst: info log" /var/log/messages`
+	debug_new=`grep -c "syslogtst: debug log" /var/log/messages`
+
+	(( emerg=$emerg_new - $emerg_old ))
+	(( alert=$alert_new - $alert_old ))
+	(( crit=$crit_new - $crit_old ))
+	(( err=$err_new - $err_old ))
+	(( warning=$warning_new - $warning_old ))
+	(( notice=$notice_new - $notice_old ))
+	(( info=$info_new - $info_old ))
+
+	if [[ $emerg -ne 1 || $alert -ne 1 || $crit -ne 1 || $err -ne 1 || \
+	$warning -ne 1 || $notice -ne 1 || $info -ne 1 || $info -ne 1 ]];then 
+		status_flag=1
+	fi
+}
+
+##################################################################
+# case 8: Test all the facilities at a particular level.         #
+#                                                                #
+#         Facilities available are: LOG_KERN, LOG_USER, LOG_MAIL #
+#         LOG_DAEMON, LOG_AUTH, LOG_LPR.                         #
+#         Don't know how to send kernel messages from syslog()   #
+#                                                                #
+#         o Create seperate entries in config file for each      #
+#            facility.                                           #
+#         o Send the message and grep for the entry in log file. #
+##################################################################
+
+syslog_case8()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing all the facilities...."
+
+	facility_no=1
+	facility="user mail daemon auth lpr"
+	for current in $facility
+	do
+		echo
+		echo "Doing facility: $current..."
+
+		# Create the configuration file specific to this facility
+		# Level is fixed at info.
+		echo "*.crit		/var/log/messages" > conf.tmp
+		echo "$current.info	/var/log/maillog" >> conf.tmp
+
+		# Grepping pattern is as follows:
+		# syslogtst: $current info test.
+		oldvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
+		old_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
+
+		# syslogtst has to be called with one more additional facility argument(1-6)
+		./syslogtst 8 $facility_no 2>/dev/null
+		if [[ $? -ne 0 ]]; then
+			status_flag=1
+			return
+		fi
+		sleep 2
+		new_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
+		newvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
+		
+		(( diff=$newvalue - $oldvalue ))
+		(( mail_check=$new_mail_check - $old_mail_check ))
+		if [[ $current == "mail" ]]; then
+			if [[ $mail_check -ne 1 ]]; then
+				status_flag=1
+				iecho "****--- Facility $current failed ---****"
+			elif [[ $mail_check -eq 1 ]]; then
+				echo "****--- Facility $current passed ---****"
+			fi
+		elif [[ $diff -ne 1 ]]; then
+				status_flag=1
+				echo "****--- Facility $current failed ---****"
+			else
+				echo "****--- Facility $current passed ---****"
+		fi
+		# Increment the facility_no for next...
+		facility_no=$(($facility_no+1))
+	done
+}
+
+##################################################################
+# case 9: Test setlogmask() with LOG_UPTO macro.                 #
+#                                                                #
+#         o Use setlogmask() with LOG_UPTO macro to set some     #
+#            priority level.                                     #
+#         o Send message which is lower priority than the one    #
+#           set above, which should not be logged.               #
+##################################################################
+
+syslog_case9()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing setlogmask() with LOG_UPTO macro..."
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+	echo "user.debug	/var/log/maillog" >> conf.tmp
+
+	allow1=`grep -c "syslogtst: error level is logged" /var/log/messages`
+	donot_allow1=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
+	
+	./syslogtst 9 2>/dev/null
+	if [[ $? -ne 0 ]]; then
+		status_flag=1
+		return
+	fi
+	sleep 2
+
+	allow2=`grep -c "syslogtst: error level is logged" /var/log/messages`
+	donot_allow2=`grep -c "syslogtst: warning level not to be logged" /var/log/messages`
+
+	(( diff1=$allow2 - $allow1 ))
+	if [[ $diff1 -ne 1 ]]; then
+		echo "Expected message is not logged...."
+		status_flag=1
+		return
+	fi
+
+	(( diff2=$donot_allow2 - $donot_allow1 ))
+	if [[ $diff2 -ne 0 ]]; then
+		echo "Unexpected message is logged..."
+		status_flag=1
+	fi
+}
+
+##################################################################
+# case 10: Test setlogmask() with LOG_MASK macro.                #
+#                                                                #
+#         o Use setlogmask() with LOG_MASK macro to set an       #
+#            individual priority level.                          #
+#         o Send the message of above prority and expect it to   #
+#           be logged.                                           #
+#         o Send message which is at other priority level to     #
+#           the one set above, which should not be logged.       #
+##################################################################
+
+syslog_case10()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing setlogmask() with LOG_MASK macro..."
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "*.crit           /var/log/messages" > conf.tmp
+	echo "user.debug	/var/log/maillog" >> conf.tmp
+
+	allow1=`grep -c "syslogtst:10 error level is logged" /var/log/messages`
+	donot_allow1=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
+	
+	./syslogtst 10 2>/dev/null
+	if [[ $? -ne 0 ]]; then
+		status_flag=1
+		return
+	fi
+	sleep 2
+
+	allow2=`grep -c "syslogtst:10 error level is logged" /var/log/messages`
+	donot_allow2=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
+
+	(( diff1=$allow2 - $allow1 ))
+	if [[ $diff1 -ne 1 ]]; then
+		echo "Expected message is not logged...."
+		status_flag=1
+		return
+	fi
+
+	(( diff2=$donot_allow2 - $donot_allow1 ))
+	if [[ $diff2 -ne 0 ]]; then
+		echo "Unexpected message is logged..."
+		status_flag=1
+	fi
+}

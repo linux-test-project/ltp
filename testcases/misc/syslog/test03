@@ -1,0 +1,75 @@
+#! /bin/sh
+
+#  Copyright (c) International Business Machines  Corp., 2002
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+# 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
+
+##################################################################
+# case 3: Do openlog(), log the messages and see whether         #
+#          ident string is prepended to the mesage.              #
+#                                                                #
+# syslog.conf should contain:                                    #
+#        *.crit           /usr/adm/critical                      #
+#         daemon.info        /usr/spool/adm/syslog               #
+##################################################################
+
+syslog_case3()
+{
+	#set the trap to handle signals.
+	trap '
+		echo Testing is terminating due to a signal...
+		exit 1
+	' 1 2 3 6 11 15
+
+	echo
+	echo "syslog: Testing openlog() with ident strings...."
+	echo
+
+        # Create the configuration file specific to this test case.
+        echo "daemon.info      /var/log/messages" > conf.tmp
+
+        # Grep for the ident prefix: SYSLOG_CASE3 in the log file.
+        oldvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
+        ./syslogtst 3 2>/dev/null
+        if [[ $? -ne 0 ]]; then
+                status_flag=1
+                return
+        fi
+        sleep 2
+        newvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
+        (( diff=$newvalue4 - $oldvalue4 ))
+        if [[ $diff -ne 1 ]]; then
+                status_flag=1
+        fi
+
+
+}
+
+echo start $0
+echo "----------------------------------------------------------------"
+status_flag=0
+syslog_case3
+if [ $status_flag -eq 0 ]
+then
+	echo
+	echo $0 "PASSED"
+else
+	echo
+	echo $0 "FAILED"
+fi
+echo "----------------------------------------------------------------"
+exit $status_flag
