@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07B.c,v 1.2 2003/03/26 18:05:32 robbiew Exp $ */
+/* $Id: fcntl07B.c,v 1.3 2003/05/07 16:58:46 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -172,7 +172,12 @@ char *File1 = DEFAULT_FILE;
 
 #define DEFAULT_SUBPROG "test_open"
 char *openck = DEFAULT_SUBPROG;		/* support program name to check for open FD */
+
+#ifndef _POSIX_PATH_MAX
+#define _POSIX_PATH_MAX 256
+#endif
 char subprog_path[_POSIX_PATH_MAX];	/* path to exec "openck" with */
+
 #define STRSIZE 255
 #define FIFONAME "FiFo"
 
