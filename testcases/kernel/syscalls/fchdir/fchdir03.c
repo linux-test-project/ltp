@@ -87,7 +87,7 @@ int main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 
 	pid_t pid; 
-	int retval, status;
+	int status;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -163,6 +163,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

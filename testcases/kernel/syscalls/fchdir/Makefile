@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
+CFLAGS+=	-I../../../../include -Wall
 LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite
 
 SRCS=$(wildcard *.c)

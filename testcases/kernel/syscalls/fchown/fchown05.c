@@ -192,6 +192,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
@@ -202,7 +203,6 @@ main(int ac, char **av)
 void 
 setup()
 {
-	int fd;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

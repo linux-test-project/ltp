@@ -19,8 +19,8 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
-LDLIBS+=		 -L../../../../lib -lltp
+CFLAGS+=	-I../../../../include -Wall
+LDLIBS+=	 -L../../../../lib -lltp
 
 SRCS=$(wildcard fchown*.c) change_owner.c
 TARGETS=$(patsubst %.c,%,$(SRCS))

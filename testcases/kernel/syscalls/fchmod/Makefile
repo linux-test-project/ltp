@@ -19,7 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -D_GNU_SOURCE
+CFLAGS+=	-I../../../../include -D_GNU_SOURCE -Wall
 LDLIBS+=		 -L../../../../lib -lltp
 
 SRCS=$(wildcard fchmod*.c) change_owner.c

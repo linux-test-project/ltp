@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
@@ -211,6 +212,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -84,7 +84,6 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int fd;
 	int e_code, status, retval=0;
 	pid_t pid;
 
@@ -161,6 +160,7 @@ main(int ac, char **av)
 	}
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

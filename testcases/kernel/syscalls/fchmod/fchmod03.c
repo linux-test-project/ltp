@@ -107,7 +107,6 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat struct.*/
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	int ind;
 	mode_t file_mode;	/* mode permissions set on testfile */
 
 	/* Parse standard options given to run the test. */
@@ -170,6 +169,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
