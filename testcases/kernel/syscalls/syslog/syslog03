@@ -48,14 +48,14 @@ syslog_case3()
         # Grep for the ident prefix: SYSLOG_CASE3 in the log file.
         oldvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
         syslogtst 3 2>/dev/null
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
                 return
         fi
         sleep 2
         newvalue4=`grep -c "SYSLOG_CASE3" /var/log/messages`
-        (( diff=$newvalue4 - $oldvalue4 ))
-        if [[ $diff -ne 1 ]]; then
+        diff=$(( $newvalue4 - $oldvalue4 ))
+        if [ $diff -ne 1 ]; then
                 status_flag=1
         fi
 

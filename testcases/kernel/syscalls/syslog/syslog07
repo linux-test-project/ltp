@@ -57,7 +57,7 @@ syslog_case7()
 
         # Call syslogtst. It will send the messages of all levels.
         syslogtst 7 2>/dev/null
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
                 return
         fi
@@ -72,16 +72,16 @@ syslog_case7()
         info_new=`grep -c "syslogtst: info log" /var/log/messages`
         debug_new=`grep -c "syslogtst: debug log" /var/log/messages`
 
-        (( emerg=$emerg_new - $emerg_old ))
-        (( alert=$alert_new - $alert_old ))
-        (( crit=$crit_new - $crit_old ))
-        (( err=$err_new - $err_old ))
-        (( warning=$warning_new - $warning_old ))
-        (( notice=$notice_new - $notice_old ))
-        (( info=$info_new - $info_old ))
+        emerg=$(( $emerg_new - $emerg_old ))
+        alert=$(( $alert_new - $alert_old ))
+        crit=$(( $crit_new - $crit_old ))
+        err=$(( $err_new - $err_old ))
+        warning=$(( $warning_new - $warning_old ))
+        notice=$(( $notice_new - $notice_old ))
+        info=$(( $info_new - $info_old ))
 
-        if [[ $emerg -ne 1 || $alert -ne 1 || $crit -ne 1 || $err -ne 1 || \
-        $warning -ne 1 || $notice -ne 1 || $info -ne 1 || $info -ne 1 ]];then
+        if [ $emerg   -ne 1 ] || [ $alert  -ne 1 ] || [ $crit -ne 1 ] || [ $err  -ne 1 ] || \
+           [ $warning -ne 1 ] || [ $notice -ne 1 ] || [ $info -ne 1 ] || [ $info -ne 1 ]; then
                 status_flag=1
         fi
 }

@@ -52,7 +52,7 @@ syslog_case6()
         # It will return 0 to indicate that test has passed.
 
         syslogtst 6 2>/dev/null
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
         fi
 }

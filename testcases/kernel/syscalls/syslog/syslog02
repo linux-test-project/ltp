@@ -54,17 +54,17 @@ syslog_case2()
 
                 # syslogtst has to be called with additional level argument(0-7)
                 syslogtst 2 $level_no 2>/dev/null
-                if [[ $? -ne 0 ]]; then
+                if [ $? -ne 0 ]; then
                         status_flag=1
                         return
                 fi
                 sleep 2
                 newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
-                (( diff=$newvalue - $oldvalue ))
-                if [[ $diff -eq 0 ]]; then
+                diff=$(( $newvalue - $oldvalue ))
+                if [ $diff -eq 0 ]; then
                         status_flag=1
                         echo "*****--- Level $current failed ---*****"
-                elif [[ $diff -ge 1 ]]; then
+                elif [ $diff -ge 1 ]; then
                         echo "*****--- Level $current passed ---*****"
                 fi
                 # Increment the level_no for next level...

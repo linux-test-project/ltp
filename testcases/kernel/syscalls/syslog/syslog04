@@ -47,14 +47,14 @@ syslog_case4()
         syslogtst 4 2>/dev/null &
         log_pid=$!
         wait $log_pid
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
                 return
         fi
 
         sleep 2
         found=`grep -c "\[$log_pid\]: syslogtst: user info test." /var/log/messages`
-        if [[ found -ne 1 ]]; then
+        if [ found -ne 1 ]; then
                 status_flag=1
         fi
 

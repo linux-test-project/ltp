@@ -52,7 +52,7 @@ syslog_case5()
         # syslogtst does the disabling of /dev/syslog, sends the message and
         # enables /dev/syslog.
         syslogtst 5 2>/dev/null
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
                 return
         fi
@@ -60,16 +60,12 @@ syslog_case5()
 
         newvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
 
-        (( diff=$newvalue - $oldvalue ))
-        if [[ $diff -ne 1 ]]; then
+        diff=$(( $newvalue - $oldvalue ))
+        if [ $diff -ne 1 ]; then
                 status_flag=1
                 echo "*****--- Level $current failed ---*****"
-        elif [[ $diff -eq 1 ]]; then
+        elif [ $diff -eq 1 ]; then
                 echo "*****--- Level $current passed ---*****"
-        fi
-        (( diff=$newvalue - $oldvalue ))
-        if [[ $diff -ne 1 ]]; then
-                status_flag=1
         fi
 }
 

@@ -63,7 +63,7 @@ syslog_case8()
 
                 # syslogtst has to be called with one more additional facility argument(1-6)
                 syslogtst 8 $facility_no 2>/dev/null
-                if [[ $? -ne 0 ]]; then
+                if [ $? -ne 0 ]; then
                         status_flag=1
                         return
                 fi
@@ -71,16 +71,16 @@ syslog_case8()
                 new_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
                 newvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
 
-                (( diff=$newvalue - $oldvalue ))
-                (( mail_check=$new_mail_check - $old_mail_check ))
-                if [[ $current == "mail" ]]; then
-                        if [[ $mail_check -ne 1 ]]; then
+                diff=$(( $newvalue - $oldvalue ))
+                mail_check=$(( $new_mail_check - $old_mail_check ))
+                if [ $current = "mail" ]; then
+                        if [ $mail_check -ne 1 ]; then
                                 status_flag=1
                                 echo "****--- Facility $current failed ---****"
-                        elif [[ $mail_check -eq 1 ]]; then
+                        elif [ $mail_check -eq 1 ]; then
                                 echo "****--- Facility $current passed ---****"
                         fi
-                elif [[ $diff -ne 1 ]]; then
+                elif [ $diff -ne 1 ]; then
                                 status_flag=1
                                 echo "****--- Facility $current failed ---****"
                         else

@@ -51,14 +51,14 @@ syslog_case1()
 	oldvalue1=`grep -c "syslogtst: mail info test" /var/log/maillog`
 	# Call syslogtst executable with case number as argument
 	syslogtst 1 2>/dev/null
-	if [[ $? -ne 0 ]]; then
+	if [ $? -ne 0 ]; then
 		status_flag=1
 		return
 	fi
 	sleep 2
 	newvalue1=`grep -c "syslogtst: mail info test" /var/log/maillog`
-	(( diff=$newvalue1 - $oldvalue1 ))
-	if [[ $diff -ne 1 ]]; then
+	diff=$(( $newvalue1 - $oldvalue1 ))
+	if [ $diff -ne 1 ]; then
 		status_flag=1
 	fi
 }
