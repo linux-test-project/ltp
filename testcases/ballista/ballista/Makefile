@@ -24,7 +24,7 @@
 ########################
 
 # compiler info for the host
-CC = /usr/local/g++ -Wno-deprecated
+CC = g++ -Wno-deprecated
 CFLAGS = -w -O ${TARGET_DEF}
 CLIBS = -lpthread -ldl -lnsl -rdynamic
 TEST_MAN_FILE = selfHost

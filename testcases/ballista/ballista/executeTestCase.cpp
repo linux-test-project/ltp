@@ -61,9 +61,10 @@ int execute_test_case (char *marshaled_parameters)
 
 //inlining variable instantiations
 int	rval;
-b_ptr_char param1;
-b_wchar param2;
-b_wchar param3;
+b_ptr_sigset_t param1;
+b_ptr_siginfo_t param2;
+b_ptr_timespec param3;
+b_ptr_timespec param4;
 
   
 #ifdef     B_HANDLE_EXCEPTIONS

@@ -1,1 +1,1 @@
-termios.h	function	speed_t	cfgetispeed	b_ptr_termios
+signal.h	function	int	sigtimedwait	b_ptr_sigset_t	b_ptr_siginfo_t	b_ptr_timespec

@@ -16,8 +16,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  
 #include "userIncludes.h"
-#include "templates/b_char.h"
-#include "templates/b_wchar.h"
 #include "templates/b_ptr_void.h"
 #include "templates/b_ptr_buf.h"
-#include "templates/b_ptr_char.h"
+#include "templates/b_ptr_timespec.h"
+#include "templates/b_ptr_siginfo_t.h"
+#include "templates/b_ptr_int.h"
+#include "templates/b_ptr_long.h"
+#include "templates/b_ptr_sigset_t.h"
