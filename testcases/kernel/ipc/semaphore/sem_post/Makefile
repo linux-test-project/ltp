@@ -1,9 +1,9 @@
-CFLAGS := -Wall -I ../../../../../include -I ../include 
+CFLAGS := -Wall -I ../../../../../include -I ../include -D_GNU_SOURCE
 LDFLAGS := -L ../../../../../lib -lltp -lpthread
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=sem_post01
+TEST=`ls | grep 01 | grep -v '\.'`
 
 all: $(TARGETS)
 	@chmod 755 $(TEST)
