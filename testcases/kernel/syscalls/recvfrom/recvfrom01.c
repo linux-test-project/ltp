@@ -210,6 +210,10 @@ cleanup0(void)
 void
 setup1(void)
 {
+        fd_set rdfds;
+        struct timeval timeout;
+        int n;
+ 
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
@@ -219,6 +223,14 @@ setup1(void)
 	    connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
 	}
+        /* Wait for something to be readable, else we won't detect EFAULT on recv */
+        FD_ZERO(&rdfds);
+        FD_SET(s, &rdfds);
+        timeout.tv_sec = 2;
+        timeout.tv_usec = 0;
+        n = select(s+1, &rdfds, 0, 0, &timeout);
+        if (n != 1 || !FD_ISSET(s, &rdfds))
+                tst_brkm(TBROK, cleanup, "client setup1 failed - no message ready in 2 sec");
 	fromlen = sizeof(from);
 }
 
