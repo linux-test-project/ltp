@@ -326,6 +326,16 @@ mmap08 mmap08
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
 
+#
+# These tests require an unmounted block device
+# to run correctly. Please see individual test
+# code for more information.
+#
+#mount01 mount01 -D /dev/...
+#mount02 mount02 -D /dev/...
+#mount03 mount03 -D /dev/...
+#mount04 mount04 -D /dev/...
+
 mprotect01 mprotect01
 mprotect02 mprotect02
 mprotect03 mprotect03
