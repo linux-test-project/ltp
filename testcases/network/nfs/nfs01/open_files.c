@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 
 
-#define TEMPLATE "aptXXXXXX"
+#define TEMPLATE "ltpXXXXXX"
 
 main(argc,argv)
 int argc;
@@ -35,7 +35,7 @@ char *argv[];
     fork_number = 0;
     for (n=0;  n < n_files; n++) {
 	strcpy(filename, TEMPLATE);
-	mkstemp(filename);
+	mktemp(filename);
 	filedes[n] = open(filename, O_EXCL|O_RDWR|O_CREAT);
 	if (filedes[n] == -1) {
 	    if (errno != EMFILE)
