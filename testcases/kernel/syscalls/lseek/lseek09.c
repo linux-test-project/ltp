@@ -97,7 +97,6 @@ int
 main(int ac, char **av)
 {
 	int lc;			/* loop counter */
-	int rval;
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[BUFSIZ];	/* data read from temp. file */
     
@@ -183,6 +182,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
