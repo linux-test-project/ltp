@@ -57,10 +57,13 @@
 #include <sys/mman.h>   /* required by mmap()                                 */
 #include <fcntl.h>	/* required by open()				      */
 
+void noprintf(char* string, ...){
+}
+
 #ifdef DEBUG
 #define dprt	printf
 #else
-#define dprt
+#define dprt	noprintf	
 #endif
 
 #define PTHREAD_EXIT(val)    do {\
@@ -126,11 +129,11 @@ rm_shared_mem(key_t  shm_id,	/* id of shared memory segment to be removed  */
 	      char *shm_addr,   /* address of shared mem seg to be removed    */
 	      int  cmd)         /* remove id only or remove id and detach seg */
 {
-    struct shmid *shmbuf;	/* info about the segment pointed by shmkey   */
+    struct shmid *shmbuf=NULL;	/* info about the segment pointed by shmkey   */
 
     dprt("pid[%d]: rm_shared_mem(): shm_id = %d shm_addr = %#x cmd = %d\n",
         getpid(), shm_id, shm_addr, cmd);
-    if (shmctl(shm_id, IPC_RMID, shmbuf) == -1)
+    if (shmctl(shm_id, IPC_RMID, (struct shmid_ds *)shmbuf) == -1)
     {
 	dprt("pid[%d]: rm_shared_mem(): shmctl unable to remove shm_id[%d]\n",
 	    getpid(), shm_id);
@@ -298,8 +301,8 @@ main(int	argc,		/* number of input parameters		      */
     int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[3];   /* arguments to the thread function           */
-    char        *map_address;   /* address in memory of the mapped file       */
-    extern char* optargs;	/* pointer to arguments for each option flag  */
+    char        *map_address=NULL; 
+				/* address in memory of the mapped file       */
     extern int	 optopt;	/* options to the program		      */
 
     while ((c =  getopt(argc, argv, "hl:t:")) != -1)
@@ -379,7 +382,7 @@ main(int	argc,		/* number of input parameters		      */
         else
         {
             dprt("WE ARE HERE %d\n", __LINE__);
-            if (th_status == -1)
+            if ((*th_status) == -1)
             {
                 fprintf(stderr,
                         "thread [%ld] - process exited with errors\n",
