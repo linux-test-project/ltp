@@ -145,7 +145,8 @@ main(int ac, char **av)
 			exit(retval);	
 		} else {	/* parent */
 			 /* wait for the child to finish */
-                        wait(&status);
+			waitpid(pid,NULL,0);
+                        waitpid(pid1,&status,0);
                         /* make sure the child returned a good exit status */
                         e_code = status >> 8;
                         if ((e_code != 0) || (retval != 0)) {
