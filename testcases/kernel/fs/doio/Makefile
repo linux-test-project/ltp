@@ -1,5 +1,5 @@
 
-CFLAGS+= -Wall -I../../../../include
+CFLAGS+= -Wall -I../../../../include -D_LARGEFILE64_SOURCE
 LDLIBS+= -L../../../../lib -lltp
 
 TARGETS=doio growfiles rwtest iogen

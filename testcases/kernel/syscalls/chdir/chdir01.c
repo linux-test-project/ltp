@@ -65,7 +65,7 @@ int exp_enos[] = {ENOTDIR, 0};
 
 void setup(void);
 void cleanup(void);
-static void checkname(char*, DIR*);
+static void checknames(char**, int, DIR*);
 
 char testdir[40] = "";
 
@@ -75,6 +75,7 @@ main(int ac, char **av)
 	DIR *ddir, *opendir();
 	int fd, ret;
 	char *filname = "chdirtest";
+       char *filenames[3];
 
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -109,9 +110,10 @@ main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		checkname(".", ddir);
-		checkname("..", ddir);
-		checkname(filname, ddir);
+               filenames[0] = ".";
+               filenames[1] = "..";
+               filenames[2] = filname;
+               checknames(filenames, 3, ddir);
 
 		TEST(chdir(filname));
 
@@ -188,17 +190,25 @@ cleanup(void)
 }
 
 void
-checkname(pfilname, ddir)
-char *pfilname;
+checknames(pfilnames, fnamecount, ddir)
+char **pfilnames;
+int fnamecount;
 DIR *ddir;
 {
 	struct dirent *dir;
+       int i, found;
 
-	if ((dir = readdir(ddir)) != (struct dirent *) 0) {
-		tst_resm(TINFO, "File %s in directory %s", dir->d_name,
-			 pfilname);
-		if (strncmp(pfilname, dir->d_name, strlen(pfilname)) != 0) {
-			tst_brkm(TFAIL, cleanup, "strncmp failed in checkname");
+       found = 0;
+       while ((dir = readdir(ddir)) != (struct dirent *) 0) {
+               for(i = 0; i < fnamecount; i++) {
+                       /* if dir->d_name is not null terminated it is a bug anyway */
+                       if (strcmp(pfilnames[i], dir->d_name) == 0) {
+                               tst_resm(TINFO, "Found file %s", dir->d_name);
+                               found++;
+                       }
 		}
 	}
+       if(found < fnamecount) {
+               tst_brkm(TFAIL, cleanup, "Some files do not exist, but they must exist");
+       }
 }

@@ -164,7 +164,13 @@ int Debug  = 1;
 int Pid=0;
 
 int io_type = 0;			/* I/O type -sync */
+
+#ifdef O_LARGEFILE
+int open_flags = O_RDWR|O_CREAT|O_LARGEFILE;   /* open flags */
+#else
+#warning O_LARGEFILE is not defined!
 int open_flags = O_RDWR|O_CREAT;	/* open flags */
+#endif
 
 #define MAX_FC_READ	196608		/* 4096 * 48 - 48 blocks */
 
