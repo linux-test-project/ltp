@@ -397,6 +397,9 @@ nanosleep02 nanosleep02
 nanosleep03 nanosleep03
 nanosleep04 nanosleep04
 
+nftw01 nftw01
+nftw6401 nftw6401
+
 nice01 nice01
 nice02 nice02
 nice03 nice03
