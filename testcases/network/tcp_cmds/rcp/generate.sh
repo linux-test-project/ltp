@@ -37,9 +37,9 @@ do
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> datafiles/$the_file
-    (( COUNT = COUNT + 1 ))
+    COUNT=$(( $COUNT + 1 ))
   done
-  (( LIMIT = LIMIT * 20 ))
+  LIMIT=$(( $LIMIT * 20 ))
   COUNT=0
   cat datafiles/$the_file > tmpfile
   cat tmpfile >> datafiles/$the_file
@@ -58,19 +58,19 @@ COUNT=0
 while [ $COUNT -lt 3 ]
 do
   gzip -9 -c datafiles/ascii.jmb >> datafiles/bin.med
-  (( COUNT = COUNT + 1 ))
+  COUNT=$(( $COUNT + 1 ))
 done
 COUNT=0
 while [ $COUNT -lt 12 ]
 do
   gzip -1 -c datafiles/ascii.jmb >> datafiles/bin.lg
-  (( COUNT = COUNT + 1 ))
+  COUNT=$(( $COUNT + 1 ))
 done
 COUNT=0
 while [ $COUNT -lt 144 ]
 do
   gzip -1 -c datafiles/ascii.jmb >> datafiles/bin.jmb
-  (( COUNT = COUNT + 1 ))
+  COUNT=$(( $COUNT + 1 ))
 done
 chmod 666 datafiles/bin.*
 

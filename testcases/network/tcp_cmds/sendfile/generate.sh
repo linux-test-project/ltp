@@ -37,9 +37,9 @@ do
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> datafiles/$the_file
-    (( COUNT = COUNT + 1 ))
+    COUNT=$(( $COUNT + 1 ))
   done
-  (( LIMIT = LIMIT * 20 ))
+  LIMIT=$(( $LIMIT * 20 ))
   COUNT=0
   cat datafiles/$the_file > tmpfile
   cat tmpfile >> datafiles/$the_file
