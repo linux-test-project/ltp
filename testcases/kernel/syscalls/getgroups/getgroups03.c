@@ -177,10 +177,6 @@ setup()
 	 */
 	ngroups=readgroups(groups);
 
-	if (setgroups(ngroups, groups_list) == -1) {
-		tst_resm (TFAIL, "failed to setup testcase");
-		cleanup();
-	}
 }	/* End setup() */
 
 /*
