@@ -127,11 +127,18 @@ $trace_logic
   while [ $loopcount -lt $LOOPS ]
     do
 	cp /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount	
-	diff /tmp/nfs04$PID.testfile$loopcount $TCtmp/nfs04$PID.testfile$loopcount
+	diff /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount
 	retval=$?
 	if [ "$retval" != 0 ]; then
-		end_testcase "Error in loop $loopcount: Diff FAILED"
+		end_testcase "Error in loop $loopcount: First Diff FAILED"
 	fi
+	cp $TCtmp/nfs04$PID.testfile$loopcount /tmp/nfs04$PID.testfile_compare	
+	diff /tmp/nfs04$PID.testfile /tmp/nfs04$PID.testfile_compare
+	retval=$?
+	if [ "$retval" != 0 ]; then
+		end_testcase "Error in loop $loopcount: Second Diff FAILED"
+	fi
+	rm -f /tmp/nfs04$PID.testfile_compare
 	loopcount=$(( $loopcount + 1 ))
 	tst_resm TINFO "Completed Loop $loopcount"
     done
