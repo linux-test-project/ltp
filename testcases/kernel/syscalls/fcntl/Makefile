@@ -20,8 +20,18 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -Wall -D_GNU_SOURCE
-LOADLIBES+=	-L../../../../lib -lltp
+TOP=../../../..
+ifeq ($(shell uname -s),SunOS)
+CC=gcc -Wall
+endif
+ifeq ($(shell uname -s),HP-UX)
+CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
+endif
+CFLAGS+=	-I$(TOP)/include -D_GNU_SOURCE
+ifeq ($(shell uname -s),Linux)
+CFLAGS+= -Wall
+endif
+LOADLIBES+=	-L$(TOP)/lib/$(CCPU) -L$(TOP)/lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

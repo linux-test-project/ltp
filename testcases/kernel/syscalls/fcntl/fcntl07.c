@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.3 2003/05/07 17:01:11 robbiew Exp $ */
+/* $Id: fcntl07.c,v 1.4 2005/01/04 21:04:18 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -138,7 +138,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <limits.h>
 
 #include "test.h"

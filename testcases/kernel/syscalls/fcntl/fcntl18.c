@@ -36,12 +36,13 @@
 
 #include <signal.h>
 #include <errno.h>
-#include <wait.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -75,7 +76,7 @@ int main(int ac, char **av)
 
 	setup();			/* global setup */
 
-//block1:
+/* //block1: */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 	if ((fd = open("temp.dat", O_CREAT|O_RDWR)) < 0) {
@@ -98,7 +99,7 @@ int main(int ac, char **av)
 	}
 	tst_resm(TINFO, "Exit block 1");
 
-//block2:
+/* //block2: */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 	/* Error condition if address is bad */
@@ -116,7 +117,7 @@ int main(int ac, char **av)
 	}
 	tst_resm(TINFO, "Exit block 2");
 
-//block3:
+/* //block3: */
 	tst_resm(TINFO, "Enter block 3");
 	fail = 0;
 	if ((pid = fork()) == 0) {		/* child */

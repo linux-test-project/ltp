@@ -66,7 +66,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-//block0:
+/* //block0: */
 		tst_resm(TINFO, "Enter block 0");
 		fail = 0;
 		/*
@@ -142,7 +142,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 0");
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		flags = fcntl(fd[2], F_GETFL, 0);
@@ -215,7 +215,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-//block2:
+/* //block2: */
 		tst_resm(TINFO, "Enter block 2");
 		/*
 		 * Check ability to set (F_SETFD) the close on exec flag

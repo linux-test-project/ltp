@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl08.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: fcntl08.c,v 1.2 2005/01/04 21:04:18 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -110,7 +110,8 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string.h>
@@ -213,8 +214,14 @@ setup()
     /* set the flags to be used */
 #ifdef CRAY
     arg = (O_NDELAY | O_APPEND | O_RAW | O_NONBLOCK);
-#else
+#else /* ! CRAY */
+#ifdef __hpux
+    /* HP-UX doesn't allow O_NDELAY and O_NONBLOCK;
+       we choose O_NONBLOCK (POSIX style) */
+    arg = (O_APPEND | O_NONBLOCK);
+#else /* ! __hpux */
     arg = (O_NDELAY | O_APPEND | O_NONBLOCK);
+#endif /* ! __hpux */
 #endif   /* ! CRAY */
 
 }	/* End setup() */

@@ -44,9 +44,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
-#include <wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -156,6 +156,8 @@ cleanup()
 void
 do_child1()
 {
+    int err;
+
 	close(parent_pipe[0]);
 	close(child_pipe1[1]);
 	close(child_pipe2[0]);
@@ -164,22 +166,31 @@ do_child1()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe1[0]);
+        tst_resm(TINFO, "child 1 starting");
 	if (fcntl(file_fd, F_SETLK, &lock1) < 0) {
-		parent_free(errno);
+            err = errno;
+            tst_resm(TINFO, "child 1 lock err %d", err);
+		parent_free(err);
 	} else {
+            tst_resm(TINFO, "child 1 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe1[0]);
+        tst_resm(TINFO, "child 1 resuming");
 	fcntl(file_fd, F_SETLK, &unlock);
+        tst_resm(TINFO, "child 1 unlocked");
 
 	child_wait(child_pipe1[0]);
+        tst_resm(TINFO, "child 1 exiting");
 	exit(1);
 }
 
 void
 do_child2()
 {
+    int err;
+
 	close(parent_pipe[0]);
 	close(child_pipe1[0]);
 	close(child_pipe1[1]);
@@ -188,26 +199,37 @@ do_child2()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe2[0]);
+        tst_resm(TINFO, "child 2 starting");
 	if (fcntl(file_fd, F_SETLK, &lock2) < 0) {
-		parent_free(errno);
+            err = errno;
+            tst_resm(TINFO, "child 2 lock err %d", err);
+		parent_free(err);
 	} else {
+            tst_resm(TINFO, "child 2 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe2[0]);
+        tst_resm(TINFO, "child 2 resuming");
 	if (fcntl(file_fd, F_SETLKW, &lock4) < 0) {
-		parent_free(errno);
+            err = errno;
+            tst_resm(TINFO, "child 2 lockw err %d", err);
+		parent_free(err);
 	} else {
+            tst_resm(TINFO, "child 2 lockw locked");
 		parent_free(0);
 	}
 
 	child_wait(child_pipe2[0]);
+        tst_resm(TINFO, "child 2 exiting");
 	exit(1);
 }
 
 void
 do_child3()
 {
+    int err;
+
 	close(parent_pipe[0]);
 	close(child_pipe1[0]);
 	close(child_pipe1[1]);
@@ -216,20 +238,29 @@ do_child3()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe3[0]);
+        tst_resm(TINFO, "child 3 starting");
 	if (fcntl(file_fd, F_SETLK, &lock3) < 0) {
-		parent_free(errno);
+            err = errno;
+            tst_resm(TINFO, "child 3 lock err %d", err);
+		parent_free(err);
 	} else {
+            tst_resm(TINFO, "child 3 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe3[0]);
+        tst_resm(TINFO, "child 3 resuming");
 	if (fcntl(file_fd, F_SETLKW, &lock5) < 0) {
-		parent_free(errno);
+            err = errno;
+            tst_resm(TINFO, "child 3 lockw err %d", err);
+		parent_free(err);
 	} else {
+            tst_resm(TINFO, "child 3 lockw locked");
 		parent_free(0);
 	}
 
 	child_wait(child_pipe3[0]);
+        tst_resm(TINFO, "child 3 exiting");
 	exit(1);
 }
 
@@ -238,7 +269,7 @@ do_test(struct flock *lock, short pid)
 {
 	struct flock fl;
 
-	fl.l_type = lock->l_type;
+	fl.l_type = /* lock->l_type */ F_RDLCK;
 	fl.l_whence = lock->l_whence;
 	fl.l_start = lock->l_start;
 	fl.l_len = lock->l_len;
@@ -287,11 +318,11 @@ str_type(int type)
 	static char buf[20];
 
 	switch (type) {
-	case 1:
+	case F_RDLCK:
 		return("F_RDLCK");
-	case 2:
+	case F_WRLCK:
 		return("F_WRLCK");
-	case 3:
+	case F_UNLCK:
 		return("F_UNLCK");
 	default:
 		sprintf(buf, "BAD VALUE: %d", type);
@@ -365,17 +396,26 @@ catch_child()
 void
 catch_alarm()
 {
+    sighold(SIGCHLD);
 	/*
 	 * Timer has runout and the children have not detected the deadlock.
 	 * Need to kill the kids and exit
 	 */
-	if ((kill(child_pid1, SIGKILL)) < 0) {
+        if (child_pid1 != 0 && 
+            (kill(child_pid1, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 1 failed.");
 	}
 
-	if ((kill(child_pid2, SIGKILL)) < 0) {
+	if (child_pid2 != 0 && 
+            (kill(child_pid2, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 2 failed.");
 	}
+	if (child_pid3 != 0 &&
+            (kill(child_pid3, SIGKILL)) < 0) {
+		tst_resm(TFAIL, "Attempt to signal child 2 failed.");
+	}
+        tst_resm(TFAIL, "Alarm expired, deadlock not detected");
+        tst_resm(TWARN, "You may need to kill child processes by hand");
 	cleanup();
 	/*NOTREACHED*/
 }
@@ -451,7 +491,7 @@ int main(int ac, char **av)
 		close(child_pipe3[0]);
 		tst_resm(TINFO, "Exit preparation phase");
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		/*

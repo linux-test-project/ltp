@@ -40,9 +40,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
-#include <wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -331,7 +331,7 @@ int main(int ac, char **av)
 		(void)close(parent_pipe[0]);
 		(void)close(child_pipe[1]);
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Enter block 1");
 		/*
 		 * Add a read lock to the middle of the file and unlock a
@@ -373,7 +373,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-//block2:
+/* //block2: */
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
 		/*
@@ -416,7 +416,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-//block3:
+/* //block3: */
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 
@@ -460,7 +460,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-//block4:
+/* //block4: */
 		tst_resm(TINFO, "Enter blcok 4");
 		fail = 0;
 		
@@ -510,7 +510,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 4");
 
-//block5:
+/* //block5: */
 		tst_resm(TINFO, "Enter block 5");
 		fail = 0;
 
@@ -554,7 +554,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 5");
 
-//block6:
+/* //block6: */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
 		
@@ -598,7 +598,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 6");
 
-//block7:
+/* //block7: */
 		tst_resm(TINFO, "Enter block 7");
 		fail = 0;
 

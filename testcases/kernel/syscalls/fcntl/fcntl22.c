@@ -73,7 +73,8 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -81,7 +82,12 @@ int child_pid;
 int file;
 struct flock fl;                /* struct flock for fcntl */
 
+#ifdef __hpux
+/* oddball HP-UX declares the error case to be EACCES in the man page */
+int exp_enos[]={EACCES, 0};
+#else
 int exp_enos[]={EAGAIN, 0};
+#endif
 
 char *TCID = "fcntl22";
 int TST_TOTAL = 1;
@@ -92,71 +98,75 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-		 int lc;		 		 		 		 /* loop counter */
-		 char *msg;		 		 		 /* message returned from parse_opts */
-		 char *test_desc;                /* test specific error message */
+    int lc;                             /* loop counter */
+    char *msg;                  /* message returned from parse_opts */
+    char *test_desc;                 /* test specific error message */
 		 
-		 /* parse standard options */
-		 if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		 		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		 }
+    /* parse standard options */
+    if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+    }
 		 
-		 /* setup */
-		 setup();		 		 		 
+    /* setup */
+    setup();		 		 		 
 
-		 /* set the expected errnos... */
-    		 TEST_EXP_ENOS(exp_enos);
+    /* set the expected errnos... */
+    TEST_EXP_ENOS(exp_enos);
     		 
-		 /* Check for looping state if -i option is given */
-		 for (lc = 0; TEST_LOOPING(lc); lc++) {
-		 		 test_desc = "EAGAIN";
+    /* Check for looping state if -i option is given */
+    for (lc = 0; TEST_LOOPING(lc); lc++) {
+#ifdef __hpux
+        test_desc = "EACCES";
+#else
+        test_desc = "EAGAIN";
+#endif
 		 		 
-		 		 /* reset Tst_count in case we are looping */
-		 		 Tst_count = 0;
+        /* reset Tst_count in case we are looping */
+        Tst_count = 0;
 		 		 
-		 		 /* duplicate process */
-                if ((child_pid = fork()) == 0) {
-		 		 		 /* child */
-		 		 		 /* 
-		 		 		  * Call fcntl(2) with F_SETLK   argument on file
-		 		  		 */
-		 		 		 TEST(fcntl(file, F_SETLK, &fl));
+        /* duplicate process */
+        if ((child_pid = fork()) == 0) {
+            /* child */
+            /* 
+             * Call fcntl(2) with F_SETLK   argument on file
+             */
+            TEST(fcntl(file, F_SETLK, &fl));
 		 		 
-		 		 		 /* Check return code from fcntl(2) */
-		 		 		 if (TEST_RETURN != -1) {
-		 		 		 		 tst_resm(TFAIL,"fcntl() returned %d,"
-		 		 		 		 		  "expected -1, errno=%d",TEST_RETURN,
-		 		 		 		 		  exp_enos[0]);
-		 		 		 }
-		 		 		 else{
-		 		 		 		 TEST_ERROR_LOG(TEST_ERRNO);
+            /* Check return code from fcntl(2) */
+            if (TEST_RETURN != -1) {
+                tst_resm(TFAIL,"fcntl() returned %d,"
+                         "expected -1, errno=%d",TEST_RETURN,
+                         exp_enos[0]);
+            }
+            else{
+                TEST_ERROR_LOG(TEST_ERRNO);
 		 		 		 		 
-		 		 		 		 if (TEST_ERRNO == exp_enos[0]) {
-		 		 		 		 tst_resm(TPASS,"fcntl() fails with expected "
-		 		 		 		 		 "error %s errno:%d",
-		 		 		 		 		 test_desc,TEST_ERRNO);
-		 		 		 		 } else {
-		 		 		 		 		 tst_resm(TFAIL, "fcntl() fails, %s, "
-		 		 		 		 		 		  "errno=%d, expected errno=%d",
-		 		 		 		 		 		  test_desc, TEST_ERRNO,
-		 		 		 		 		 		  exp_enos[0]);
-		 		 		 		 }
-		 		 		 }
-		 		 /* end child */
-		 		 } else { 
-		 		 		 if (child_pid < 0) {
-		         		 		 /* quit if fork fail */
-                       		 		 tst_resm(TFAIL, "Fork failed");
-                        		 cleanup();
-                		 } else {
-                        		 /* Parent waits for child termination */
-                        		 wait(0);
-		 		 		 		 cleanup();
-                		 }
-		 		 }
+                if (TEST_ERRNO == exp_enos[0]) {
+                    tst_resm(TPASS,"fcntl() fails with expected "
+                             "error %s errno:%d",
+                             test_desc,TEST_ERRNO);
+                } else {
+                    tst_resm(TFAIL, "fcntl() fails, %s, "
+                             "errno=%d, expected errno=%d",
+                             test_desc, TEST_ERRNO,
+                             exp_enos[0]);
+                }
+            }
+            /* end child */
+        } else { 
+            if (child_pid < 0) {
+                /* quit if fork fail */
+                tst_resm(TFAIL, "Fork failed");
+                cleanup();
+            } else {
+                /* Parent waits for child termination */
+                wait(0);
+                cleanup();
+            }
+        }
 
-		 		 }/* end for */		 		 
-return(0);
+    }/* end for */		 		 
+    return(0);
 }
 
 /*

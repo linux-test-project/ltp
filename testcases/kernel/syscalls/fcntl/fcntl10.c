@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl10.c,v 1.2 2002/09/09 17:17:12 robbiew Exp $ */
+/* $Id: fcntl10.c,v 1.3 2005/01/04 21:04:18 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -110,7 +110,8 @@
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string.h>

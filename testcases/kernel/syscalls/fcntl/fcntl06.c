@@ -84,7 +84,7 @@ int main(int ac, char **av)
 	
 	setup();			/* global setup */
 
-//block1:					/* Error: when no lock is set */
+/* //block1:	*/				/* Error: when no lock is set */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 

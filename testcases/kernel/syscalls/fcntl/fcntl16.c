@@ -47,11 +47,15 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
-#include <wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
-#define	SKIP	0, 0, 0L, 0L, 0
+#define SKIPVAL 0x0f00
+#define	SKIP	SKIPVAL, 0, 0L, 0L, IGNORED
+#if (SKIPVAL == F_RDLCK) || (SKIPVAL == F_WRLCK)
+#error invalid SKIP, must not be F_RDLCK or F_WRLCK
+#endif
 
 #define	IGNORED		0
 #define	NOBLOCK		2	/* immediate success */
@@ -397,6 +401,8 @@ void child_sig(int sig, int nkids)
 void
 setup(void)
 {
+    struct sigaction sact;
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -415,9 +421,16 @@ setup(void)
 	/*
 	 * Set up signal handling functions
 	 */
-	(void)signal(SIGUSR1, catch_usr1);
-	(void)signal(SIGUSR2, catch_usr2);
-	(void)signal(SIGALRM, catch_alarm);
+        sact.sa_flags = 0;
+
+        sact.sa_handler = catch_usr1;
+	(void)sigaction(SIGUSR1, &sact, NULL);
+
+        sact.sa_handler = catch_usr2;
+	(void)sigaction(SIGUSR2, &sact, NULL);
+
+        sact.sa_handler = catch_alarm;
+	(void)sigaction(SIGALRM, &sact, NULL);
 }
 
 int
@@ -457,7 +470,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize second parent lock structure */
 		thislock = &thiscase->parent_b;
 
-		if ((thislock->type) != IGNORED) {
+		if ((thislock->type) != SKIPVAL) {
 			/* set the second parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TFAIL, "Second parent lock failed");
@@ -478,7 +491,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
-			if (thislock->type != IGNORED) {
+			if (thislock->type != SKIPVAL) {
 				if ((child = fork()) == 0) {
 					dochild(i);
 				}
@@ -532,7 +545,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize fourth parent lock structure */
 		thislock = &thiscase->parent_d;
 
-		if ((thislock->type) != IGNORED) {
+		if ((thislock->type) != SKIPVAL) {
 			/* set the fourth parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TINFO, "Fourth parent lock failed");
@@ -638,7 +651,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-//block1:
+/* //block1: */
 		/* 
 		 * Check file locks on an ordinary file without
 		 * mandatory locking
@@ -653,7 +666,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exiting block 1");
 
-//block2:
+/* //block2: */
 		/*
 		 * Check the file locks on a file with mandatory record
 		 * locking
@@ -669,7 +682,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exiting block 2");
 
-//block3:
+/* //block3: */
 		/*
 		 * Check file locks on a file with mandatory record locking
 		 * and no delay

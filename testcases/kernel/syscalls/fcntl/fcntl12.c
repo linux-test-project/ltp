@@ -40,7 +40,8 @@
  */
 
 #include <fcntl.h>
-#include <wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
@@ -75,7 +76,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Enter block 1");
 		tst_resm(TINFO, "Test for errno EMFILE");
 		fail = 0;

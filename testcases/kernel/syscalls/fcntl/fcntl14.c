@@ -45,12 +45,17 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <usctest.h>
 #include <test.h>
 
-#define SKIP 0
+#define SKIP 0x0c00
+#if SKIP == F_RDLCK || SKIP== F_WRLCK
+#error invalid value for SKIP, must be distinct from F_RDLCK and F_WRLCK
+#endif
+#ifndef S_ENFMT
 #define S_ENFMT S_ISGID
+#endif
 
 /* NOBLOCK - immediate success */
 #define NOBLOCK 2
@@ -65,7 +70,7 @@ typedef struct {
 	short a_whence;
 	long a_start;
 	long a_len;
-	short b_type;			/* 0 means suppress fcntl call */
+	short b_type;			/* SKIP means suppress fcntl call */
 	short b_whence;
 	long b_start;
 	long b_len;
@@ -184,7 +189,7 @@ static	testcase	testcases[] = {
 	 * Child attempting a read lock from beginning of
 	 * file for 5 bytes
 	 */
-		F_RDLCK, 0, 0L, 5L, WILLBLOCK },
+		F_RDLCK, 0, 0L, 5L, NOBLOCK },
 
 	/*
 	 * #16 Parent making a read lock from beginning of
@@ -591,8 +596,23 @@ setup(void)
 	}
 }
 
+void
+wake_parent(void)
+{
+                    if ((kill(parent, SIGUSR1)) < 0) {
+			tst_resm(TFAIL, "Attempt to send signal to parent "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
+				 errno);
+			fail = 1;
+                    }
+}
+
 void dochild()
 {					/* child process */
+        int rc;
+        pid_t pid;
+
 	/* Initialize the child lock structure */
 	flock.l_type = thiscase->c_type;
 	flock.l_whence = thiscase->c_whence;
@@ -607,12 +627,12 @@ void dochild()
 	 * not, the parent pid will be returned in l_pid and the type of
 	 * lock that will block it in l_type.
 	 */
-	if ((fcntl(fd, F_GETLK, &flock)) < 0) {
+	if ((rc = fcntl(fd, F_GETLK, &flock)) < 0) {
 		tst_resm(TFAIL, "Attempt to check lock status failed");
 		tst_resm(TFAIL, "Test case %d, errno = %d",
 			 test + 1, errno);
 		fail = 1;
-	}
+	} else {
 
 	if ((thiscase->c_flag) == NOBLOCK) {
 		if (flock.l_type != F_UNLCK) {
@@ -664,6 +684,7 @@ void dochild()
 			fail = 1;
 		}
 	}
+        }
 
 	/*
 	 * now try to set the lock, nonblocking
@@ -676,7 +697,7 @@ void dochild()
 	flock.l_len = thiscase->c_len;
 	flock.l_pid = 0;
 
-	if ((fcntl(fd, F_SETLK, &flock)) < 0) {
+	if ((rc = fcntl(fd, F_SETLK, &flock)) < 0) {
 		if ((thiscase->c_flag) == NOBLOCK) {
 			tst_resm(TFAIL, "Attempt to set child NONBLOCKING "
 				 "lock failed");
@@ -688,30 +709,51 @@ void dochild()
 
 	if ((thiscase->c_flag) == WILLBLOCK) {
 		/* Check for proper errno condition */
-		if (errno != EACCES && errno != EAGAIN) {
-			tst_resm(TFAIL, "SETLK: errno = %d, EAGAIN or EACCES "
-				 "was expected", errno);
+		if (rc != -1 || (errno != EACCES && errno != EAGAIN)) {
+			tst_resm(TFAIL,
+                                 "SETLK: rc = %d, errno = %d, -1/EAGAIN or EACCES "
+				 "was expected", rc, errno);
 			fail = 1;
 		}
-
+                if (rc == 0) {
+                    /* accidentally got the lock */
+                    /* XXX how to clean up? */
+                    (void) fcntl(fd, F_UNLCK, &flock);
+                }
 		/*
 		 * Lock should succeed after blocking and parent releases
-		 * lock, tell the parent to release the locks
+		 * lock, tell the parent to release the locks.
+                 * Do the lock in this process, send the signal in a child
+                 * process, so that the SETLKW actually uses the blocking
+                 * mechanism in the kernel.
+                 *
+                 * XXX inherent race: we want to wait until the
+                 * F_SETLKW has started, but we don't have a way to
+                 * check that reliably in the child.  (We'd
+                 * need some way to have fcntl() atomically unblock a
+                 * signal and wait for the lock.)
 		 */
-		if ((kill(parent, SIGUSR1)) < 0) {
-			tst_resm(TFAIL, "Attempt to send signal to parent "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-		}
-		if ((fcntl(fd, F_SETLKW, &flock)) < 0) {
-			tst_resm(TFAIL, "Attempt to set child BLOCKING "
+                pid = fork();
+                switch (pid) {
+                  case -1:
+                    tst_resm(TFAIL, "Fork failed");
+                    break;
+                  case 0: /* child */
+                    usleep(100000); /* XXX how long is long enough? */
+                    wake_parent();
+                    break;
+
+                  default:
+                    if ((rc = fcntl(fd, F_SETLKW, &flock)) < 0) {
+                        tst_resm(TFAIL, "Attempt to set child BLOCKING "
 				 "lock failed");
 			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
 				 errno);
 			fail = 1;
-		}
+                    }
+                    waitpid(pid, &status, 0);
+                    break;
+                }
 	}
 	if (fail) {
 		exit(1);
@@ -844,8 +886,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		alarm(TIME_OUT);
 
 		/* wait for the child to terminate and close the file */
-		wait(&status);
-
+		waitpid(child, &status, 0);
 		/* turn off the alarm clock */
 		alarm((unsigned)0);
 		if (status != 0) {
@@ -906,7 +947,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Enter block 1: without mandatory locking");
 		fail = 0;
 		/* 
@@ -932,7 +973,7 @@ int main(int ac, char **av)
 
 		tst_resm(TINFO, "Exit block 1");
 
-//block2:
+/* //block2: */
 		tst_resm(TINFO, "Enter block 2: with mandatory locking");
 		fail = 0;
 		/* 
@@ -959,7 +1000,7 @@ int main(int ac, char **av)
 
 		tst_resm(TINFO, "Exit block 2");
 
-//block3:
+/* //block3: */
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 		/*
@@ -1012,7 +1053,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-//block4:
+/* //block4: */
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
 		/*

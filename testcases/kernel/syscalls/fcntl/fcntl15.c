@@ -55,7 +55,8 @@
 #include <fcntl.h>
 #include <test.h>
 #include <usctest.h>
-#include <wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <linux/unistd.h>
@@ -467,7 +468,7 @@ int main(int ac, char **av)
 			exit(1);
 		}
 
-//block1:
+/* //block1: */
 		tst_resm(TINFO, "Entering block 1");
 		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, DUP)) {
 			tst_resm(TINFO, "Test 1: test with \"dup\" FAILED");
@@ -477,7 +478,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exiting block 1");
 
-//block2:
+/* //block2: */
 		tst_resm(TINFO, "Entering block 2");
 		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, OPEN)) {
 			tst_resm(TINFO, "Test 2: test with \"open\" FAILED");
@@ -487,7 +488,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exiting block 2");
 
-//block3:
+/* //block3: */
 		tst_resm(TINFO, "Entering block 3");
 		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, FORK_)) {
 			tst_resm(TINFO, "Test 3: test with \"fork\" FAILED");
