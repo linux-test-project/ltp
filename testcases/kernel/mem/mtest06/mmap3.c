@@ -31,6 +31,9 @@
 /*              Aug  - 01 - 2001 Modified. Added include file signal.h        */
 /*                               has defines required by signal handler.      */
 /*                                                                            */
+/*		Oct  - 25 - 2001 Modified. Fixed bug in main(). Pthread_join  */
+/*				 sets the return value of the thread in thread*/
+/*			         return_status parameter.                     */
 /* File:	mmap3.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -414,15 +417,19 @@ main(int  argc,		/* number of input parameters.			      */
             if (pthread_join(thid[thrd_ndx], (void **)&status))
             {
                 perror("main(): pthread_create()");
-                if (!*status)
+                exit(-1);
+            }
+            else
+            {
+                if (*status)
                 {
                     fprintf(stderr, 
 			    "thread [%d] - process exited with errors %d\n",
 			        WEXITSTATUS(status[0]));
-	            exit (-1);
+	            exit(-1);
                 }
             }
         }
     }
-    exit (0);
+    exit(0);
 }
