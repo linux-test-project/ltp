@@ -30,6 +30,8 @@
 #         active, the test will handle this. 
 #
 #  HISTORY:
+#    06/09 Manoj Iyer manjo@mail.utexas.edu
+#    - Modified to use test harness API and also fix defects
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -57,6 +59,26 @@ OUTFILE=${OUTFILE:-$TCtmp/rwho.out}
 
 #-----------------------------------------------------------------------
 #
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
+
+#-----------------------------------------------------------------------
+#
 # FUNCTION:  do_setup
 #
 #-----------------------------------------------------------------------
@@ -64,9 +86,16 @@ OUTFILE=${OUTFILE:-$TCtmp/rwho.out}
 do_setup()
 {
    $trace_logic
+
+   export TCID=rwho01
+   export TST_TOTAL=1
+   export TST_COUNT=1
+
+   exists "rwho rsh killall grep awk cut"
+
    ps -ef | grep rwhod | grep -v grep 
    if [ $? != 0 ]; then
-      echo "Starting rwhod on $LHOST"
+      tst_resm TINFO "Starting rwhod on $LHOST"
       /usr/sbin/rwhod  
       [ $? = 0 ] || end_testcase "Unable to start rwhod on $LHOST"
       PID=1
@@ -75,7 +104,7 @@ do_setup()
 
    rsh -n -l root $RHOST ps -ef | grep rwhod
    if [ $? != 0 ]; then
-      echo "Starting rwhod on $RHOST"
+      tst_resm TINFO "Starting rwhod on $RHOST"
       rsh -n -l root $RHOST /usr/sbin/rwhod
       if [ $? != 0 ]; then
 	  end_testcase "Unable to start rwhod on $RHOST"
@@ -114,7 +143,7 @@ do_test()
       HOST=`awk '{print $1}' $OUTFILE|grep $RHOSTNAME|sort -u`
       [ $HOST = $RHOSTNAME ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
-      echo "Test $COUNT of $NUMLOOPS complete"
+      tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
       COUNT=$(( $COUNT + 1 ))
    done
 }
@@ -129,12 +158,12 @@ do_cleanup()
 {
  rm -fr $TCtmp
  if [ $PID != 0 ]; then
-    echo "Stopping rwhod on $LHOST"
+    tst_resm TINFO "Stopping rwhod on $LHOST"
     killall rwhod 
  fi
 
  if [ $RHOST_PID != 0 ]; then
-    echo "Stopping rwhod on $RHOST"
+    tst_resm TINFO "Stopping rwhod on $RHOST"
     rsh -n -l root $RHOST "killall rwhod"
  fi
 }
@@ -156,8 +185,8 @@ end_testcase()
    if [ $CLEANUP == "ON" ]; then
      do_cleanup
    fi
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
