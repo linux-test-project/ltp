@@ -28,6 +28,8 @@
 #         of the tested machine will be used.
 #
 #  HISTORY:
+#    06/05/03 Manoj Iyer - manjo@mail.utexas.edu 
+#      - Ported to use LTP test harness API
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -42,6 +44,25 @@ NUMLOOPS=${NUMLOOPS:-20}
 
 #-----------------------------------------------------------------------
 #
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
+#-----------------------------------------------------------------------
+#
 # FUNCTION:  do_setup
 #
 #-----------------------------------------------------------------------
@@ -49,6 +70,11 @@ NUMLOOPS=${NUMLOOPS:-20}
 do_setup()
 {
    $trace_logic
+   export TCID="arp01"
+   export TST_TOTAL=1
+   export TST_COUNT=1
+
+   exists "arp tr awk ping sleep"
 
    LUSER=`id | tr -s '()' '  ' | awk '{print $2}'`
    [ "$LUSER" = "root" ] || end_testcase "Must be root to run this test!"
@@ -106,7 +132,7 @@ end_testcase()
    $trace_logic
 
    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
