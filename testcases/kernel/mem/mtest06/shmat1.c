@@ -414,7 +414,7 @@ read_from_mem(void *args)
 			map_address);
         }
 
-        fprintf(stdout, "read_mem(): content of memory: %s\n", map_address);
+        fprintf(stdout, "read_mem(): content of memory: %s\n", (char *)map_address);
 
         if (strncmp(map_address, "Y", 1) != 0)
         {

@@ -268,9 +268,9 @@ mkfile(int size,	/* size of the temp file that needs to be created.    */
     *filename = tempnam(".", "ashfile");
 
     /* open the file for writing and write to the required length. */
-    if ((fd = open(*filename,  O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
+   if ((fd = open(*filename,  O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
     {
-	perror("mkfile(): open()");
+	perror("open(): mkstemp()");
 	return -1;
     }
     else
@@ -297,9 +297,9 @@ mkfile(int size,	/* size of the temp file that needs to be created.    */
 	/* unlink the file so that if test dies abnormally, temp files are */
         /* removed.							   */
         if (unlink(*filename) == -1)
-	{
-	    perror("mkfile(): unlink()");
-	    return -1;
+        {
+	   perror("mkfile(): unlink()");
+	   return -1;
 	}
         return fd;
    }
@@ -359,7 +359,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         if (verbose_print)
             fprintf(stdout, "[%d] times done: of total [%d] iterations\n"
 			"map_write_unmap():memset() content of memory = %s\n", 
-			mwu_ndx, (int)mwuargs[2], map_address);
+			mwu_ndx, (int)mwuargs[2], (char*)map_address);
 	usleep(1);
         if (munmap(map_address, (size_t)mwuargs[1]) == -1)
         {
@@ -424,7 +424,7 @@ read_mem(void *args)		/* number of reads performed		      */
         {
 	    if (verbose_print)
 	        fprintf(stdout, 
-		    "read_mem(): content of memory: %s\n", map_address);
+		    "read_mem(): content of memory: %s\n", (char *)map_address);
             if (strncmp(mem_content, "a", 1) != 0)
             {
                 exit_val = -1;
