@@ -289,6 +289,9 @@ lstat01 lstat01
 lstat02 lstat02
 lstat03 lstat03
 
+mlockall01 mlockall01
+mlockall02 mlockall02
+
 mkdir01 mkdir01
 mkdir02 mkdir02
 mkdir03 mkdir03
