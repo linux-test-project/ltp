@@ -366,7 +366,7 @@ if [[ -n "$opt_F" ]]; then
 
 else
 
-	cmd="iogen ${iOpts} ${Files} | $MPPrun doio ${dOpts}"
+	cmd="${LTPROOT}/testcases/bin/iogen ${iOpts} ${Files} | $MPPrun ${LTPROOT}/testcases/bin/doio ${dOpts}"
 
 	if [[ -z "$Quiet" ]]; then
 		echo $cmd
@@ -375,14 +375,14 @@ else
 	trap "killkids" INT
 	trap "cleanup_and_exit 2" HUP
 
-	( iogen ${iOpts} ${Files}
+	( ${LTPROOT}/testcases/bin/iogen ${iOpts} ${Files}
 	  r=$?
 	  if [ $r -ne 0 ]
 	  then
 		echo "$Prog$Name : iogen reported errors (r=$r)" >&2
 		kill -HUP $$
 	  fi
-	) | $MPPrun doio ${dOpts}
+	) | $MPPrun ${LTPROOT}/testcases/bin/doio ${dOpts}
 	r=$?
 	if [ $r -ne 0 ]
 	then
