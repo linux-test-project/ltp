@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -61,6 +62,8 @@ void functest2(void);
 char *TCID = "creat01";
 int TST_TOTAL = 2;
 extern int Tst_count;
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 char filename[40];
 
@@ -162,10 +165,18 @@ functest2()
 void
 setup()
 {
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, tst_exit, "Must not run this as root");
-		/*NOTREACHED*/
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

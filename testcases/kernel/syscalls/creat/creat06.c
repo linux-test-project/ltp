@@ -63,6 +63,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -87,7 +88,9 @@ char good_dir[NSIZE];
 char no_dir[] = "testfile/testdir";
 char not_dir[] = "file1/testdir";
 char test6_file[] = "dir6/file6";
+char nobody_uid[] = "nobody";
 
+struct passwd *ltpuser;
 struct test_case_t {
 	char *fname;
 	int mode;
@@ -169,6 +172,19 @@ void
 setup()
 {
 	char *cur_dir = NULL;
+
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
+
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
