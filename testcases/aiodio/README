@@ -1,0 +1,13 @@
+
+TESTS to check consistency between O_DIRECT reads/writes and buffered
+reads/writes and truncate.
+
+These tests should be run from the aiodio directory and MUST use a kernel 
+compiled with GCC 3.3.X. Older versions of the compiler will fail and seg fault.
+
+The large file passed should be at least 25M to properly stress AIO & DIO. A
+suggestion would be a tarred version of the gcc package.
+
+Run the ltp-aiodio.sh file to execute all the tests. The tests can also be run
+individually, just execute the program and the excepted params will be output.
+No scripts were created to run the test standalone.

@@ -1,0 +1,82 @@
+#DESCRIPTION:ltp A-sync IO and Direct IO tests
+# 
+ADS000 aiodio_sparse 
+ADS001 aiodio_sparse -s 180k
+ADS002 aiodio_sparse -dd -s 1751k -r 18k -w 11k
+ADS003 aiodio_sparse -i 9 -d -s 180k -r 18k -w 18k
+ADS004 aiodio_sparse -i 2 -a 2 -r 2k -w 2k -s 2k -n 2
+ADS005 aiodio_sparse -i 2 -a 4 -r 4k -w 4k -s 2k -n 2
+ADS006 aiodio_sparse -i 2 -a 4 -r 4k -w 4k -s 4k -n 2
+ADS007 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 16k -n 2
+ADS008 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 32k -n 2
+ADS009 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 64k -n 2
+ADS010 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 128k -n 2
+ADS011 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 256k -n 2
+ADS012 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 512k -n 2
+ADS013 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 1024k -n 2
+ADS014 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 2048k -n 2
+ADS015 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 4096k -n 2
+ADS016 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 8192k -n 2
+ADS017 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 18192k -n 2
+ADS018 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 518192k -n 2
+ADS019 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 58192k -n 4
+ADS020 aiodio_sparse -i 4 -a 8 -r 8k -w 8k -s 58192k -n 6
+ADS021 aiodio_sparse -i 4 -a 8 -r 16k -w 8k -s 256k -n 6
+ADS022 aiodio_sparse -i 4 -a 8 -r 16k -w 8k -s 512k -n 6
+ADS023 aiodio_sparse -i 4 -a 8 -r 8k -w 16k -s 1024k -n 6
+ADS024 aiodio_sparse -i 4 -a 8 -r 8k -w 16k -s 2048k -n 6
+ADS025 aiodio_sparse -i 4 -a 8 -r 32k -w 16k -s 4096k -n 6
+ADS026 aiodio_sparse -i 4 -a 8 -r 32k -w 16k -s 8192k -n 6
+ADS027 aiodio_sparse -i 4 -a 8 -r 8k -w 32k -s 18192k -n 6
+ADS028 aiodio_sparse -i 4 -a 8 -r 8k -w 32k -s 518192k -n 6
+ADS029 aiodio_sparse -i 4 -a 8 -r 64k -w 64k -s 58192k -n 6
+ADS030 aiodio_sparse -i 6 -a 8 -r 8k -w 8k -s 58192k -n 6
+ADS031 aiodio_sparse -i 8 -a 8 -r 16k -w 8k -s 256k -n 6
+ADS032 aiodio_sparse -i 16 -a 8 -r 16k -w 8k -s 512k -n 6
+ADS033 aiodio_sparse -i 32 -a 8 -r 8k -w 16k -s 1024k -n 6
+ADS034 aiodio_sparse -i 64 -a 8 -r 8k -w 16k -s 2048k -n 6
+ADS035 aiodio_sparse -i 4 -a 8 -r 32k -w 16k -s 4096k -n 32
+ADS036 aiodio_sparse -i 4 -a 8 -r 32k -w 16k -s 8192k -n 64
+ADS037 aiodio_sparse -i 4 -a 8 -r 8k -w 32k -s 18192k -n 128
+ADS038 aiodio_sparse -i 4 -a 8 -r 8k -w 32k -s 518192k -n 512
+ADS039 aiodio_sparse -i 4 -a 8 -r 64k -w 64k -s 58192k -n 1000
+ADS040 dio_sparse 
+ADS041 dio_sparse -s 180k
+ADS042 dio_sparse -dd -s 1751k -r 18k -w 11k
+ADS043 dio_sparse  -d -s 180k -r 18k -w 18k
+ADS044 dio_sparse  -a 2 -r 2k -w 2k -s 2k -n 2
+ADS045 dio_sparse  -a 4 -r 4k -w 4k -s 2k -n 2
+ADS046 dio_sparse  -a 4 -r 4k -w 4k -s 4k -n 2
+ADS047 dio_sparse  -a 8 -r 8k -w 8k -s 16k -n 2
+ADS048 dio_sparse  -a 8 -r 8k -w 8k -s 32k -n 2
+ADS049 dio_sparse  -a 8 -r 8k -w 8k -s 64k -n 2
+ADS050 dio_sparse  -a 8 -r 8k -w 8k -s 128k -n 2
+ADS051 dio_sparse  -a 8 -r 8k -w 8k -s 256k -n 2
+ADS052 dio_sparse  -a 8 -r 8k -w 8k -s 512k -n 2
+ADS053 dio_sparse  -a 8 -r 8k -w 8k -s 1024k -n 2
+ADS054 dio_sparse  -a 8 -r 8k -w 8k -s 2048k -n 2
+ADS055 dio_sparse  -a 8 -r 8k -w 8k -s 4096k -n 2
+ADS056 dio_sparse  -a 8 -r 8k -w 8k -s 8192k -n 2
+ADS057 dio_sparse  -a 8 -r 8k -w 8k -s 18192k -n 2
+ADS058 dio_sparse  -a 8 -r 8k -w 8k -s 518192k -n 2
+ADS059 dio_sparse  -a 8 -r 8k -w 8k -s 58192k -n 4
+ADS060 dio_sparse  -a 8 -r 8k -w 8k -s 58192k -n 6
+ADS061 dio_sparse  -a 8 -r 16k -w 8k -s 256k -n 6
+ADS062 dio_sparse  -a 8 -r 16k -w 8k -s 512k -n 6
+ADS063 dio_sparse  -a 8 -r 8k -w 16k -s 1024k -n 6
+ADS064 dio_sparse  -a 8 -r 8k -w 16k -s 2048k -n 6
+ADS065 dio_sparse  -a 8 -r 32k -w 16k -s 4096k -n 6
+ADS066 dio_sparse  -a 8 -r 32k -w 16k -s 8192k -n 6
+ADS067 dio_sparse  -a 8 -r 8k -w 32k -s 18192k -n 6
+ADS068 dio_sparse  -a 8 -r 8k -w 32k -s 518192k -n 6
+ADS069 dio_sparse  -a 8 -r 64k -w 64k -s 58192k -n 6
+ADS070 dio_sparse  -a 8 -r 8k -w 8k -s 58192k -n 6
+ADS071 dio_sparse  -a 8 -r 16k -w 8k -s 256k -n 6
+ADS072 dio_sparse  -a 8 -r 16k -w 8k -s 512k -n 6
+ADS073 dio_sparse  -a 8 -r 8k -w 16k -s 1024k -n 6
+ADS074 dio_sparse  -a 8 -r 8k -w 16k -s 2048k -n 6
+ADS075 dio_sparse  -a 8 -r 32k -w 16k -s 4096k -n 32
+ADS076 dio_sparse  -a 8 -r 32k -w 16k -s 8192k -n 64
+ADS077 dio_sparse  -a 8 -r 8k -w 32k -s 18192k -n 128
+ADS078 dio_sparse  -a 8 -r 8k -w 32k -s 518192k -n 512
+ADS079 dio_sparse  -a 8 -r 64k -w 64k -s 58192k -n 1000
