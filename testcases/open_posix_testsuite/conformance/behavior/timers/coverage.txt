@@ -1,0 +1,5 @@
+This file defines the coverage for the behavior/timers section.
+
+ASSERTION	COVERED?
+1		YES
+2		YES
