@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: access03
+ * Test Name: access05
  *
  * Test Description:
  *  Verify that,
@@ -60,7 +60,7 @@
  *   Delete the temporary directory(s)/file(s) created.
  *
  * Usage:  <for command-line>
- *  access03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  access05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
@@ -124,7 +124,7 @@ struct test_case_t {		/* test case structure */
 	{ NULL, 0, NULL, 0, no_setup }
 };
 
-char *TCID="access03";		/* Test program identifier.    */
+char *TCID="access05";		/* Test program identifier.    */
 int TST_TOTAL=8;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0};

@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: access01
+ * Test Name: access04
  *
  * Test Description:
  *  Verify that access() succeeds to check the existance of a file if
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  access01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  access04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -83,7 +83,7 @@
 #define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="access01";		/* Test program identifier.    */
+char *TCID="access04";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
