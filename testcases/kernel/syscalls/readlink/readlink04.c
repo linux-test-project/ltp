@@ -76,7 +76,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char TESTFILE[] = "/testfile\0";		/* name of file to create */
+char TESTFILE[] = "./testfile\0";		/* name of file to create */
 char SYMFILE[] = "slink_file\0";	/* name of symbolic link to create */
 char creat_slink[] = "/creat_slink";	/* name of executable to execvp() */
 
