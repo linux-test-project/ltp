@@ -1,4 +1,4 @@
-SUBDIRS = kernel network commands misc
+SUBDIRS = `ls -d * | grep -v Makefile`
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
