@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
 #ifdef __ia64__
-                TEST(madvise(file,stat.st_size + 40960 + pagesize,MADV_NORMAL));
+                TEST(madvise(file,stat.st_size + 5 * pagesize,MADV_NORMAL));
 #else
         	TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
 #endif
