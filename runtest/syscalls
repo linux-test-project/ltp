@@ -147,6 +147,9 @@ fcntl19 fcntl19
 fcntl20 fcntl20
 fcntl21 fcntl21
 
+fdatasync01 fdatasync01
+fdatasync02 fdatasync02
+
 flock01 flock01
 flock02 flock02
 flock03 flock03
