@@ -346,7 +346,7 @@ main(int argc, char *argv[])
 		fail_count++;
 	}
 	total++;
-
+	
 
 	/* Test-10: read, write to a mmaped file */
   	shm_base = (char *)(((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1));
@@ -502,7 +502,11 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
+#if defined(__powerpc64__) || defined(__ia64__)
+		ret = read(fd, (char*)(((ulong *)main)[0] & pagemask), count);
+#else
 		ret = read(fd, (char*)((ulong)main & pagemask), count);
+#endif
 		if (ret >= 0 || errno != EFAULT) {   
 			fprintf(stderr,"[15] read to read-only space. returns %d:%s\n",
 				ret, strerror(errno));
@@ -515,7 +519,11 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
+#if defined(__powerpc64__) || defined(__ia64__)
+		ret = write(fd, (char *)(((ulong *)main)[0] & pagemask), count);
+#else
 		ret = write(fd, (char *)((ulong)main & pagemask), count);
+#endif
 		if (ret < 0 ) {
 			fprintf(stderr,"[15] write to read-only space. returns %d:%s\n",
 				ret, strerror(errno));
