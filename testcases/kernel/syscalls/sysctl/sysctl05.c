@@ -124,8 +124,6 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			tst_resm(TINFO, "%s", testcases[i].desc);
-
 			osnamelth = SIZE(osname);
 
 			TEST(sysctl(testcases[i].name, testcases[i].size,
