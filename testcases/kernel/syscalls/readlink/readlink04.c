@@ -68,8 +68,8 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/fcntl.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
 #include "test.h"
@@ -180,7 +180,7 @@ setup()
 	char *tmp_dir = NULL;
 	char path_buffer[BUFSIZ];	/* Buffer to hold command string */
 	char *cargv[4];
-	char *bin_dir;
+	char bin_dir[PATH_MAX];		/* variable to hold TESTHOME env */
 	struct passwd *pwent;
 
 	/* Check that the test process id is super/root  */
@@ -194,7 +194,12 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	bin_dir=(char *)get_current_dir_name();
+        /* Get current bin directory */
+        if (getcwd(bin_dir, sizeof(bin_dir)) == NULL) {
+                tst_brkm(TBROK, tst_exit,
+                         "getcwd(3) fails to get working directory of process");
+        }
+
 	
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
@@ -220,6 +225,7 @@ setup()
 	/* create the full pathname of the executable to be execvp'ed */
 	strcat((char *)path_buffer, (char *)bin_dir);
 	strcat((char *)path_buffer, (char *)creat_slink);
+
 
 	symfile_path = "slink_file\0";
 
@@ -252,7 +258,8 @@ setup()
 	}
 
 	/* parent */
-	
+
+
 	/* wait to let the execvp'ed process do its work */
         waitpid(pid, NULL, 0);
 
