@@ -76,7 +76,7 @@ do_test()
    COUNT=1
    while [[ $COUNT -le $NUMLOOPS ]]
    do
-      strace $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
+      $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
       [[ $? = 0 ]] || end_testcase "Error in $ECHOES test in loop $COUNT"
 
       NUM=0
