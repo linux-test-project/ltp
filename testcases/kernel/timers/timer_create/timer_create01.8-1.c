@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "posixtest.h"
-#include "timer_create01.h"
 
 #define TIMERSEC 2
 #define SLEEPDELTA 4
