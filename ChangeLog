@@ -5,6 +5,7 @@ o	necessary users/groups can now be created on installation with
 o	added a simple menu-based interface for running the LTP testsuite
 o	fixed negative duration in pan output when -l isn't used
 o	new test mallocstress
+o	new set of tests under fs-maim
 o	fixed race condition in nfslock01
 o	ar01, ld01, ldd01, nm01, objdump01, and size01 fixed when multiple 
 	copies are run simultaneously
