@@ -90,7 +90,7 @@ export TCID=tar02
 export TST_COUNT=2
 
 $LTPBIN/tst_resm TINFO \
-        "TEST #1: tar command with cvf options creates an archive file"
+    "TEST #1: tar command with tvf options lists all files in an archive file"
 
 if [ -f $LTPTMP/tar_tstf.tar ]
 then
