@@ -1,0 +1,4 @@
+cron01
+	Test that crontab <filename> installs the cron-job-file and cron will
+	schedule the job correctly.
+
