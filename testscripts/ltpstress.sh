@@ -221,7 +221,7 @@ sleep $(($duration + 10))
 if [ $Sar -eq 1 ]; then
   killall -9 sadc >/dev/null 2>&1
 fi
-if [ $Top -eq 1]; then
+if [ $Top -eq 1 ]; then
   kill -9 $SCREEN_PID >/dev/null 2>&1
 fi
 killall -9 pan >/dev/null 2>&1
