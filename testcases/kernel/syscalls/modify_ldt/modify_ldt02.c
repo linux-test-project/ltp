@@ -52,6 +52,11 @@
 #include "test.h"
 #include "usctest.h"
 
+/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
+#ifndef modify_ldt_ldt_s
+#define modify_ldt_ldt_s user_desc
+#endif
+
 int create_segment(void *, size_t);
 void cleanup(void);
 void setup(void);
