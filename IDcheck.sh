@@ -21,6 +21,10 @@
 #   HISTORY     :
 #       11/28/2001 Robbie Williamson (robbiew@austin.ibm.com)
 #               written
+#	03/05/2002 Jay Huie	(wjh@us.ibm.com)
+#		Changed script to only ask regarding creation of IDs if
+#			necessary. Cleaner automation of the script and
+#			most distos now have IDs already added
 
 
 
@@ -28,16 +32,6 @@
 clear
 echo "Checking for required user/group ids"
 echo ""
-echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
-read ans
-case $ans in
-    Y*|y*)
-        CREATE=1
-	;;
-    *)
-        CREATE=0 
-        ;;
-esac
 
 # Check ids and create if needed.  
 NOBODY_ID=0
@@ -75,6 +69,20 @@ fi
 id -g daemon > /dev/null
 if [ $? != "0" ]; then
  DAEMON_GRP=1
+fi
+
+if [ $NOBODY_ID != "0" ] || [ $BIN_ID != "0" ] || [ $DAEMON_ID != "0" ] || [ $NOBODY_GRP != "0" ] || [ $BIN_GRP != "0" ] || [ $DAEMON_GRP != "0" ];
+then
+   echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
+   read ans
+   case $ans in
+       Y*|y*)
+           CREATE=1
+           ;;
+       *)
+           CREATE=0 
+           ;;
+   esac
 fi
 
 if [ $NOBODY_ID != "1" ] && [ $NOBODY_GRP != "1" ]; then
