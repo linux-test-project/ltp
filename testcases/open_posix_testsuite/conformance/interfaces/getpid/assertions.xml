@@ -1,0 +1,5 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6TC2:18116:18116">
+	getpid() always returns the process ID of the calling thread/process.
+	</assertion>
+</assertions>

@@ -1,0 +1,12 @@
+this file defines the coverage for the aio_suspend() function testing.
+
+Assertion	Covered?
+1		NO
+2		YES
+3		NO
+4		NO
+5		NO
+6		NO
+7		NO
+8		NO
+9		NO

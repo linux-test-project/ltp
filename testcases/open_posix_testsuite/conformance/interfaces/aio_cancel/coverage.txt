@@ -1,0 +1,21 @@
+this file defines the coverage for the aio_cancel() function testing.
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES *
+4		YES *
+5		YES +
+6		YES *
+7		YES *
+8		YES
+9		YES
+10		YES
+
+* can be unresolved, because:
+
+  - cancelable operations are implementation specific
+  - we have no way to be sure we try to cancel an operation that is not
+    already done or is in progress.
+
++ can be unresolved, because we must have at least one not canceled.

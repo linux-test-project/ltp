@@ -1,0 +1,15 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6TC2:4016:4017">
+	The aio_error() function shall return the error status (errno)
+	associated with tha aiobcp argument.
+	</assertion>
+	<assertion id="2" tag="ref:XSH6TC2:4019:4020">
+	It the operations has not yet completed, [EINPROGRESS] shall be
+	returned.
+	</assertion>
+	<assertion id="3" tag="ref:XSH6TC2:4028:4029">
+	aio_error() shall fail if:
+	[EINVAL] The aiocbp argument does not refer to an asynchronous 
+	operation whose return status has not yet been retrieved.
+	</assertion>
+</assertions>
