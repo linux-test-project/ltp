@@ -48,6 +48,7 @@ TCdat=${TCdat:=$TCbin}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
+RHOST=${RHOST:=`hostname|awk {'print $1'}`}
 
 # Setting the NFS to version 2 with UDP by default
 VERSION=${VERSION:=2}
