@@ -111,6 +111,7 @@
 #include <stdlib.h>    
 #include <sys/user.h>	/* getpagesize() */
 #include <time.h>
+#include <limits.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -216,9 +217,14 @@ size_t get_memsize()
   res=res+freeswap;
 
   printf("Total Free:\t%llu Mb\n",res/1024/1024);
-
+#if __WORDSIZE == 32
   if ( res > 1*1024*1024*1024 )
     res = 1*1024*1024*1024;
+#elif __WORDSIZE == 64
+  if ( res > (unsigned long long)3*1024*1024*1024 )
+    res = (unsigned long long)3*1024*1024*1024;
+#endif
+
   printf("Total Tested:\t%llu Mb\n",res/1024/1024);
   return (size_t)res;
 }
