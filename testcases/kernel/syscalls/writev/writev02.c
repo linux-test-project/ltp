@@ -69,8 +69,8 @@ char	buf1[K_1];
 char	buf2[K_1];
 
 struct	iovec	wr_iovec[MAX_IOVEC] = {
-	(caddr_t)-1,	CHUNK,
-	(caddr_t)NULL,	0,
+	{(caddr_t)-1,	CHUNK},
+	{(caddr_t)NULL,	0},
 };
 
 char	name[K_1], f_name[K_1];
@@ -91,7 +91,7 @@ void setup(void);
 void cleanup(void);
 int fail;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -166,7 +166,7 @@ main(int argc, char **argv)
 			/*NOTREACHED*/
 		}
 
-block1:
+//block1:
 		/*
 		 * In this block we are trying to call writev() with invalid
 		 * vector to be written in a sparse file. This will return
@@ -215,6 +215,7 @@ block1:
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
+	return(0);
 }
 
 /*

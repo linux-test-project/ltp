@@ -65,8 +65,8 @@ char	buf2[K_1];
 char	buf3[K_1];
 
 struct	iovec	wr_iovec[MAX_IOVEC] = {
-	(caddr_t)-1,	CHUNK,
-	(caddr_t)NULL,	0,
+	{(caddr_t)-1,	CHUNK},
+	{(caddr_t)NULL,	0}
 };
 
 /* 0 terminated list of expected errnos */
@@ -86,7 +86,7 @@ void setup(void);
 void cleanup(void);
 int fail;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -166,7 +166,7 @@ main(int argc, char **argv)
 		 * the scheduled write() with valid data is done correctly
 		 * or not.
 		 */
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 
@@ -200,6 +200,7 @@ block1:
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
+	return(0);
 }
 
 /*

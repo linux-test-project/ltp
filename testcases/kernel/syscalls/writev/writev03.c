@@ -64,10 +64,10 @@ char	buf1[K_1], buf2[K_1], buf3[K_1];
 
 struct iovec wr_iovec[MAX_IOVEC] = {
 	/* testcase #1 */
-	buf1 + (CHUNK * 6),	CHUNK,
-	(caddr_t)-1,		CHUNK,
-	buf1 + (CHUNK * 8),	CHUNK,
-	(caddr_t)NULL,		0,
+	{buf1 + (CHUNK * 6),	CHUNK},
+	{(caddr_t)-1,		CHUNK},
+	{buf1 + (CHUNK * 8),	CHUNK},
+	{(caddr_t)NULL,		0}
 };
 
 /* 0 terminated list of expected errnos */
@@ -87,7 +87,7 @@ void setup(void);
 void cleanup(void);
 int fail;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -163,7 +163,7 @@ main(int argc, char **argv)
 			/*NOTREACHED*/
 		}
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		
@@ -197,7 +197,7 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
 
@@ -230,7 +230,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3:
+//block3:
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 
@@ -267,6 +267,7 @@ block3:
 		tst_resm(TINFO, "Exit block 3");
 	}
 	cleanup();
+	return(0);
 }
 
 /*

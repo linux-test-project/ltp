@@ -72,38 +72,38 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	/* iov_base */		/* iov_len */
 
 	/* testcase# 1 */
-	buf1,			-1,
-	(buf1 + CHUNK),		CHUNK,
-	(buf1 + CHUNK * 2),	CHUNK,
+	{buf1,			-1},
+	{(buf1 + CHUNK),	CHUNK},
+	{(buf1 + CHUNK * 2),	CHUNK},
 
 	/* testcase# 2 */
-	(buf1 + CHUNK * 3),	G_1,
-	(buf1 + CHUNK * 4),	G_1,
-	(buf1 + CHUNK * 5),	G_1,
+	{(buf1 + CHUNK * 3),	G_1},
+	{(buf1 + CHUNK * 4),	G_1},
+	{(buf1 + CHUNK * 5),	G_1},
 
 	/* testcase# 3 */
-	(buf1 + CHUNK * 6),	CHUNK,
-	(caddr_t)-1,		CHUNK,
-	(buf1 + CHUNK * 8),	CHUNK,
+	{(buf1 + CHUNK * 6),	CHUNK},
+	{(caddr_t)-1,		CHUNK},
+	{(buf1 + CHUNK * 8),	CHUNK},
 
 	/* testcase# 4 */
-	(buf1 + CHUNK * 9),	CHUNK,
+	{(buf1 + CHUNK * 9),	CHUNK},
 
 	/* testcase# 5 */
-	(buf1 + CHUNK * 10),	CHUNK,
+	{(buf1 + CHUNK * 10),	CHUNK},
 
 	/* testcase# 6 */
-	(buf1 + CHUNK * 11),	CHUNK,
+	{(buf1 + CHUNK * 11),	CHUNK},
 
 	/* testcase# 7 */
-	(buf1 + CHUNK * 12),	CHUNK,
+	{(buf1 + CHUNK * 12),	CHUNK},
 
 	/* testcase# 8 */
-	(buf1 + CHUNK * 13),	0,
+	{(buf1 + CHUNK * 13),	0},
 
 	/* testcase# 7 */
-	(caddr_t)NULL,		0,
-	(caddr_t)NULL,		0,
+	{(caddr_t)NULL,		0},
+	{(caddr_t)NULL,		0}
 };
 
 char name[K_1], f_name[K_1];
@@ -127,7 +127,7 @@ char *TCID = "writev01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int nbytes, ret;
 
@@ -197,7 +197,7 @@ main(int argc, char **argv)
 			/*NOTREACHED*/
 		}
 
-block1: /* given vector length -1, writev() return EINVAL. */
+//block1: /* given vector length -1, writev() return EINVAL. */
 		tst_resm(TINFO, "Enter Block 1");
 		fail = 0;
 
@@ -222,7 +222,8 @@ block1: /* given vector length -1, writev() return EINVAL. */
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2: /* This testcases doesn't look like what it intent to do
+//block2:
+	/* This testcases doesn't look like what it intent to do
         * 1. it is not using the wr_iovec initialized 
         * 2. read() and following message is not consistent 
         */
@@ -265,7 +266,7 @@ block2: /* This testcases doesn't look like what it intent to do
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3: /* given 1 bad vector buffer with good ones, writev() success */
+//block3: /* given 1 bad vector buffer with good ones, writev() success */
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 
@@ -306,7 +307,7 @@ block3: /* given 1 bad vector buffer with good ones, writev() success */
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-block4: /* given bad file discriptor, writev() return EBADF. */
+//block4: /* given bad file discriptor, writev() return EBADF. */
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
 
@@ -333,7 +334,7 @@ block4: /* given bad file discriptor, writev() return EBADF. */
 		}
 		tst_resm(TINFO, "Exit block 4");
 
-block5: /* given invalid vector count, writev() return EINVAL */
+//block5: /* given invalid vector count, writev() return EINVAL */
 		tst_resm(TINFO, "Enter block 5");
 		fail = 0;
 
@@ -360,7 +361,7 @@ block5: /* given invalid vector count, writev() return EINVAL */
 		}
 		tst_resm(TINFO, "Exit block 5");
 
-block6: /* given no buffer vector, writev() success */
+//block6: /* given no buffer vector, writev() success */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
 
@@ -381,7 +382,8 @@ block6: /* given no buffer vector, writev() success */
 		}
 		tst_resm(TINFO, "Exit block 6");
 
-block7: /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
+//block7:
+	 /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
          * writev() success writing fixed length.
          */
 		tst_resm(TINFO, "Enter block 7");
@@ -404,7 +406,7 @@ block7: /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
 		}
 		tst_resm(TINFO, "Exit block 7");
 
-block8: /* try to write to a closed pipe, writev() return EPIPE. */
+//block8: /* try to write to a closed pipe, writev() return EPIPE. */
 		tst_resm(TINFO, "Enter block 8");
 		fail = 0;
 
@@ -446,6 +448,7 @@ block8: /* try to write to a closed pipe, writev() return EPIPE. */
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
