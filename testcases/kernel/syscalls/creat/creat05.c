@@ -192,6 +192,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(first);
+
 	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
