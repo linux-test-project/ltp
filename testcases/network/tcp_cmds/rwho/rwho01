@@ -84,7 +84,7 @@ do_setup()
       sleep $SLEEPTIME
    fi
 
-   $RHOSTNAME = `rsh -n -l root $RHOST hostname`
+   RHOSTNAME=`rsh -n -l root $RHOST hostname`
 
    mkdir -p $TCtmp
 }
