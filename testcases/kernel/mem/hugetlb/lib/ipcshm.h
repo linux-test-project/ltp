@@ -38,6 +38,10 @@ void setup(void);
 #define SHM_WR	0200
 #define SHM_RW	SHM_RD | SHM_WR
 
+#ifndef SHM_HUGETLB
+#define SHM_HUGETLB   04000    /* segment is mapped via hugetlb */
+#endif
+
 #define HUGE_SHM_SIZE	(256UL*1024UL*1024UL)	/* a resonable size for a large page segment */
 
 #define MODE_MASK	0x01FF			/* to get the lower nine permission bits */
