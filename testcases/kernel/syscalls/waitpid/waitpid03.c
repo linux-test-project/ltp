@@ -47,8 +47,10 @@
  *	None
  */
 
+#include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include <test.h>
 #include <usctest.h>
 
@@ -64,7 +66,7 @@ extern int Tst_count;
 int flag, condition_number;
 #define	FAILED	1
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -91,7 +93,7 @@ main(int argc, char **argv)
 		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore
 		 * SIGTERM
 		 */
-		if ((int)signal(SIGTERM, SIG_DFL) == SIG_ERR) {
+		if ((sig_t)signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 			tst_resm(TFAIL, "Signal SIGTERM failed, errno = %d",
 				 errno);
 			tst_exit();
