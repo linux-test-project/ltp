@@ -22,7 +22,7 @@
 #########################################################################
 CFLAGS+=-I../../../../../include -g -Wall
 LOADLIBES+=-L../../../../lib -lltp
-TESTS=hugeshmget hugeshmat hugeshmdt
+TESTS=hugeshmget hugeshmat hugeshmdt hugeshmctl
 
 all: $& $(TESTS)
 	set -e; for i in lib $(TESTS); do \
