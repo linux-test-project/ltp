@@ -197,7 +197,9 @@ void help()
 #define BUFF_SIZE 384
 size_t get_memsize()
 {
-		 size_t unused, res, freesize;
+		 long unsigned int res;
+		 long unsigned int unused;
+		 long unsigned int freesize;
 		 FILE *f;
 		 int retcode;
 		 int ictl;
@@ -230,13 +232,14 @@ size_t get_memsize()
         if ((strncmp(buf->release, "2.5", 3)) < 0) {
 
 		 /* FIXME: check return code! */
-		 retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused, 		 		 		 &freesize, &unused, &unused, &unused);
+		 retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused,
+ 		 		 		 &freesize, &unused, &unused, &unused);
 		 if (retcode != 6) {
 		 		 fclose(f);
 		 		 return 0;
 		 }
 
-		 printf("Free Mem: %d bytes\n",freesize);
+		 printf("Free Mem: %ld bytes\n",freesize);
 		 res = freesize;
 
 		 if (!fgets(buff, BUFF_SIZE, f))		 { /* flush end of line */
@@ -250,7 +253,7 @@ size_t get_memsize()
 		 		 return 0;
 		 }
 
-		 printf("Free Swap: %d bytes\n",freesize);
+		 printf("Free Swap: %ld bytes\n",freesize);
 		 res += freesize;
 		 res = res / 1024;
 
@@ -263,7 +266,7 @@ size_t get_memsize()
 	                return 0;
 	        }
         
-		printf("Free Mem: %d Kb\n",freesize);
+		printf("Free Mem: %ld Kb\n",freesize);
 		res = freesize;
 
 	        if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
@@ -280,7 +283,7 @@ size_t get_memsize()
 		 }
 
 	        retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
-		printf("Free Swap: %d Kb\n",freesize);
+		printf("Free Swap: %ld Kb\n",freesize);
 	        if (retcode != 1) {
         	       		  fclose(f);
                			  return 0;
@@ -289,7 +292,7 @@ size_t get_memsize()
         	res += freesize;
 
 	 } /* end check release */
-	printf("Total Free: %d Kb\n",res);
+	printf("Total Free: %ld Kb\n",res);
 	/*Safety section*/				
         if (res > 4*1024*1024)				 /* >4Gb free mem then  */
                 res -= (1*1024*1024);	 		 /* subtract 1Gb        */
