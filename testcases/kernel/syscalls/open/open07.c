@@ -86,16 +86,17 @@ struct test_case_t {
 	int mode;
 	void (*setupfunc)();
 	int exp_errno;
+    int fileHandle;
 } TC[] = {
 	{ "Test for ELOOP on f2: f1 -> f2", file2, O_NOFOLLOW, 00700,
-		setupfunc_test1, ELOOP},
+		setupfunc_test1, ELOOP, 0},
 	{ "Test for ELOOP on d2: d1 -> d2", file2, O_NOFOLLOW, 00700,
-		setupfunc_test2, ELOOP},
+		setupfunc_test2, ELOOP, 0},
 	{ "Test for ELOOP on f3: f1 -> f2 -> f3", file3, O_NOFOLLOW, 00700,
-		setupfunc_test3, ELOOP},
+		setupfunc_test3, ELOOP, 0},
 	{ "Test for ELOOP on d3: d1 -> d2 -> d3", file3, O_NOFOLLOW, 00700,
-		setupfunc_test4, ELOOP},
-	{ NULL, NULL, 0, 0, NULL, 0}
+		setupfunc_test4, ELOOP, 0},
+	{ NULL, NULL, 0, 0, NULL, 0, 0}
 };
 
 int main(int ac, char **av)
@@ -144,6 +145,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "open returned expected "
 					 "ELOOP error");
 			}
+            close(TC[i].fileHandle);
 		}
 	}
 	cleanup();
