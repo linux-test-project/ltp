@@ -109,6 +109,7 @@ char	buf[1024];
 int	s, cfd;	/* socket descriptor */
 struct sockaddr_in sin1, from, to;
 int	fromlen;
+pid_t   pid;
 
 void setup(void), setup0(void), setup1(void), setup2(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
@@ -237,7 +238,6 @@ main(int argc, char *argv[])
 	cleanup();
 }	/* End main */
 
-pid_t pid;
 
 void
 setup(void)
@@ -335,7 +335,7 @@ start_client(void)
 
 	memset(&to, 0, sizeof(to));
 	to.sin_family = AF_INET;
-	to.sin_addr.s_addr = inet_addr("9.53.216.162");
+	to.sin_addr.s_addr = inet_addr("127.0.0.1");
 	to.sin_port = htons(PORT);
 
 	memset(&local, 0, sizeof(local));
