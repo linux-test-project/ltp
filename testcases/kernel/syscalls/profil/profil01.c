@@ -41,6 +41,12 @@
 #define _GNU_SOURCE 1
 #endif
 
+#ifdef __arm__
+#define ADDRESS_OFFSET 0x8000
+#else
+#define ADDRESS_OFFSET 0
+#endif
+
 #include <stdio.h>
 #include <signal.h>
 #include <limits.h>
@@ -147,7 +153,7 @@ int main (argc, argv)
 	for (i=0; i < bsize; i++)
 		pbuf[i] = 0;
 
-	if (profil(pbuf, bsize, 0, 0x10000)) {
+	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0x10000)) {
 		fprintf(temp, "\tprofile (on) failed, errno = %d\n", errno);
 		fail_exit();
 	}
@@ -174,7 +180,7 @@ int main (argc, argv)
 		loops_completed++;
 	}
 
-	if (profil(pbuf, bsize, 0, 0)) {
+	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0)) {
 		fprintf(temp, "\tprofile (off) failed, errno = %d\n", errno);
 		fail_exit();
 	}
@@ -203,7 +209,7 @@ int main (argc, argv)
 	for (i=0; i < bsize; i++)
 		pbuf[i] = 0;
 
-	if (profil(pbuf, bsize, 0, 0x10000)) {
+	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0x10000)) {
 		fprintf(temp, "\tprofile (on) failed, errno = %d\n", errno);
 		fail_exit();
 	}
@@ -220,7 +226,7 @@ int main (argc, argv)
 		kill(getpid(), SIGCLD);
 	}
 
-	if (profil(pbuf, bsize, 0, 0)) {
+	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0)) {
 		fprintf(temp, "\tprofile (off) failed, errno = %d\n", errno);
 		fail_exit();
 	}
