@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "posixtest.h"
-#include "timer_getoverrun01.h"
 
 #define SIGTOTEST SIGALRM
 #define TIMERVAL 2

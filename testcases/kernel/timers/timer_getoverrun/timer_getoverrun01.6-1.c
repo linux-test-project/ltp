@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-#include "timer_getoverrun01.h"
 
 
 #define BOGUSTID 9999

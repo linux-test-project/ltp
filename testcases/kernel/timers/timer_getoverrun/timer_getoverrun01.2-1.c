@@ -22,7 +22,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "posixtest.h"
-#include "timer_getoverrun01.h"
 
 
 #define VALUESEC 2
