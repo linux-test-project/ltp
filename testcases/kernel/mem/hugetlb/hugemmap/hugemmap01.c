@@ -194,7 +194,7 @@ setup()
 {
 	char mypid[40];
 
-	sprintf(mypid,"%d",getpid());
+	sprintf(mypid,"/%d",getpid());
 	TEMPFILE=strcat(mypid,TEMPFILE);
 	TEMPFILE=strcat(Hopt,TEMPFILE);
 
