@@ -1,3 +1,32 @@
+LTP-20020607
+------------
+
+Change Log
+----------
+* New Additions
+- Tests if gettimeofday02 is monotonous      ( Andi Kleen          )
+- Added new tests readv03, setgroups04
+  and truncate04                             ( Group Bull          )
+
+* Fixes
+----------------
+- Bug fixes and ports for MIPS               ( Johannes Stezenbach )
+- Fixes BROKs on 64bit x86,ISO-C complience  ( Andi Kleen          )
+- 64 bit bug fixes and remove warnings
+  on 64 bit arch                             ( Ihno Krumreich      )
+- Clean up warnings on s390                  ( William Jay Huie    )
+- Improvements on fstat05 for IA64           ( Group Bull          )
+- Testcase ID clean ups, improvements
+  to mallocstress                            ( Nathan Straz        )
+- Fix warnings and bugs in clisrv
+  and mallocstress   i                       ( Dan Kegel           )
+- Fixed sendfile601 for IPV6                 ( Robert Willionsom   )
+- Fixes for shmctl & mprotect03              ( Paul Larson         )
+- multicast testcase fixes                   ( Ted Cheslak         )
+- Automation: added sar results to ltp_check ( Casey Abell         )
+- Automation: added function to ltp_check    ( Li Ge               )
+
+
 LTP-20020507
 ------------
 
