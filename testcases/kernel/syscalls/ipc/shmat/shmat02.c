@@ -113,7 +113,7 @@ main(int ac, char **av)
                        	addr = shmat(*(TC[i].shmid), (const void *)TC[i].addr, 0);
                        	TEST_ERRNO = errno;
 
-                      	if (addr != -1) {
+                      	if (addr != (void *)-1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
