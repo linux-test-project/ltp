@@ -1,4 +1,4 @@
-SUBDIRS = ade tar
+SUBDIRS = ade tar cron logrotate
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
