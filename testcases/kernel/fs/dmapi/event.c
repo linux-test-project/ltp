@@ -35,7 +35,6 @@
 #include <sys/mount.h>
 #include <fcntl.h>
 #include <signal.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define MAX_EVENT (sizeof(dmMsgBuf)/(MSG_DATALEN+sizeof(dm_eventmsg_t)))

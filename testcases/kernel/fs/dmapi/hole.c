@@ -19,7 +19,7 @@
 /*
  * TEST CASE	: hole.c
  *
- * VARIATIONS	: 57
+ * VARIATIONS	: 77
  *
  * API'S TESTED	: dm_get_allocinfo
  * 		  dm_probe_hole
@@ -31,14 +31,14 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define TMP_FILELEN 500000
 #define NUM_EXTENTS 8
 
-char command[4096];
+char command[PAGE_SIZE];
 dm_sessid_t sid;
 dm_extent_t Extents[NUM_EXTENTS];
 dm_extent_t bigExtents[20];
@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = 1234;
+		dm_off_t off = UNALIGNED_BLK_OFF;
 		u_int nelem;
 
 		/* Variation set up */
@@ -386,7 +386,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = TMP_FILELEN + 1;
+		dm_off_t off = TMP_FILELEN+1;
 		u_int nelem;
 
 		/* Variation set up */
@@ -663,7 +663,7 @@ int main(int argc, char **argv)
 			/* No clean up */
 		} else if (((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
 			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(PAGE_SIZE-1))))) == -1) ||
+			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(BLK_SIZE-1))))) == -1) ||
 			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
@@ -682,7 +682,7 @@ int main(int argc, char **argv)
 				if (nelem == 1) {
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((Extents[0].ex_length == ((TMP_FILELEN/2)&(~(PAGE_SIZE-1)))) && (Extents[0].ex_offset == 0) && (Extents[0].ex_type == DM_EXTENT_HOLE)) {
+					if ((Extents[0].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) && (Extents[0].ex_offset == 0) && (Extents[0].ex_type == DM_EXTENT_HOLE)) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
 						DMVAR_PASS();
 					} else {
@@ -792,7 +792,7 @@ int main(int argc, char **argv)
 		} else if (((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
 			   ((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
 			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(PAGE_SIZE-1))))) == -1) ||
+			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(BLK_SIZE-1))))) == -1) ||
 			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
@@ -813,7 +813,7 @@ int main(int argc, char **argv)
 
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == ((TMP_FILELEN/2)&(~(PAGE_SIZE-1)))) && 
+					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) && 
 					    (i=2) && (Extents[0].ex_offset == 0) && 
 					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
 					    (i=4) && (Extents[0].ex_type == DM_EXTENT_RES) && 
@@ -1539,8 +1539,22 @@ int main(int argc, char **argv)
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
 				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if (outoff == inoff) {
+					if (outlen == inlen) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1553,15 +1567,15 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_probe_hole - part of file without rounding
+	 * TEST    : dm_probe_hole - end of file without rounding
 	 * EXPECTED: rc = 0
 	 */
 	if (DMVAR_EXEC(PROBE_HOLE_BASE + 11)) {
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t inoff = PAGEALIGN(1234), outoff;
-		dm_size_t inlen = PAGEALIGN(TMP_FILELEN - PAGE_SIZE - 1234), outlen;
+		dm_off_t inoff = BLKALIGN(UNALIGNED_BLK_OFF), outoff;
+		dm_size_t inlen = 0, outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1578,13 +1592,27 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(part of file without rounding)\n", szFuncName);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(end of file without rounding)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
 				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if (outoff == inoff) {
+					if (outlen == inlen) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1597,15 +1625,15 @@ int main(int argc, char **argv)
 	}
 	
 	/*
-	 * TEST    : dm_probe_hole - part of file with rounding
+	 * TEST    : dm_probe_hole - end of file with rounding
 	 * EXPECTED: rc = 0
 	 */
 	if (DMVAR_EXEC(PROBE_HOLE_BASE + 12)) {
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t inoff = 1234, outoff;
-		dm_size_t inlen = TMP_FILELEN - 1234, outlen;
+		dm_off_t inoff = UNALIGNED_BLK_OFF, outoff;
+		dm_size_t inlen = TMP_FILELEN - UNALIGNED_BLK_OFF, outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1622,13 +1650,27 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(part of file with rounding)\n", szFuncName);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(end of file with rounding)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
 				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
+					if (outlen == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, 0);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1641,10 +1683,244 @@ int main(int argc, char **argv)
 	}
 	
 	/*
+	 * TEST    : dm_probe_hole - middle of file without rounding
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 13)) {
+#ifdef INTERIOR_HOLES
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t inoff = BLKALIGN(UNALIGNED_BLK_OFF), outoff;
+		dm_size_t inlen = BLKALIGN(TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF), outlen;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file without rounding)\n", szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			if (rc == 0) {
+				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if (outoff == inoff)  {
+					if (outlen == inlen) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
+			}
+
+			/* Variation clean up */
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
+	}
+	
+	/*
+	 * TEST    : dm_probe_hole - middle of file with rounding, large
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 14)) {
+#ifdef INTERIOR_HOLES
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t inoff = UNALIGNED_BLK_OFF, outoff;
+		dm_size_t inlen = TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF, outlen;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, large)\n", szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			if (rc == 0) {
+				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
+					if ((outlen <= inlen) && (!(outlen & (BLK_SIZE-1)))) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen %d\n", szFuncName, rc, outlen);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
+			}
+
+			/* Variation clean up */
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
+	}
+	
+	/*
+	 * TEST    : dm_probe_hole - middle of file with rounding, small
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 15)) {
+#ifdef INTERIOR_HOLES
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t inoff = TMP_FILELEN/2 - BLK_SIZE, outoff;
+		dm_size_t inlen = 5*BLK_SIZE, outlen;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, small)\n", szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			if (rc == 0) {
+				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
+					if ((outlen <= inlen) && (!(outlen & (BLK_SIZE-1)))) {
+						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMVAR_PASS();
+					} else {
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen %d\n", szFuncName, rc, outlen);
+						DMVAR_FAIL();
+					}
+				} else {
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMVAR_FAIL();
+				}
+			} else {
+				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMVAR_FAIL();
+			}
+
+			/* Variation clean up */
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
+	}
+	
+	/*
+	 * TEST    : dm_probe_hole - middle of file with rounding, no hole
+	 * EXPECTED: rc = -1, errno = EINVAL
+	 */
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 16)) {
+#ifdef INTERIOR_HOLES
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t inoff = ((TMP_FILELEN/2) & ~(BLK_SIZE-1)) + 1, outoff;
+		dm_size_t inlen = BLK_SIZE, outlen;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, no hole)\n", szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+
+			/* Variation clean up */
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
+	}
+
+	/*
 	 * TEST    : dm_probe_hole - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
 	 */
-	if (DMVAR_EXEC(PROBE_HOLE_BASE + 13)) {
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 17)) {
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -1684,7 +1960,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_probe_hole - fs handle
 	 * EXPECTED: rc = -1, errno = EINVAL
 	 */
-	if (DMVAR_EXEC(PROBE_HOLE_BASE + 14)) {
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 18)) {
 		void *hanp;
 		size_t hlen;
 		dm_off_t inoff = 0, outoff;
@@ -1718,7 +1994,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_probe_hole - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
 	 */
-	if (DMVAR_EXEC(PROBE_HOLE_BASE + 15)) {
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 19)) {
 		dm_off_t inoff = 0, outoff;
 		dm_size_t inlen = 0, outlen;
 
@@ -1736,7 +2012,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_probe_hole - invalidated hanp
 	 * EXPECTED: rc = -1, errno = EBADF
 	 */
-	if (DMVAR_EXEC(PROBE_HOLE_BASE + 16)) {
+	if (DMVAR_EXEC(PROBE_HOLE_BASE + 20)) {
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -2136,8 +2412,8 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = 1234;
-		dm_size_t len = TMP_FILELEN - 1234;
+		dm_off_t off = UNALIGNED_BLK_OFF;
+		dm_size_t len = TMP_FILELEN - UNALIGNED_BLK_OFF;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -2237,7 +2513,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = PAGE_SIZE;
+		dm_off_t off = BLK_SIZE;
 		dm_size_t len = 0;
 		u_int nelem;
 
@@ -2299,8 +2575,8 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = PAGE_SIZE;
-		dm_size_t len = TMP_FILELEN-PAGE_SIZE;
+		dm_off_t off = BLK_SIZE;
+		dm_size_t len = TMP_FILELEN-BLK_SIZE;
 		u_int nelem;
 
 		/* Variation set up */
@@ -2358,11 +2634,12 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = 0, nelem = 3
 	 */
 	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 14)) {
+#ifdef INTERIOR_HOLES	
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = (TMP_FILELEN/2) & (~(PAGE_SIZE-1));
-		dm_size_t len = 2*PAGE_SIZE;
+		dm_off_t off = (TMP_FILELEN/2) & (~(BLK_SIZE-1));
+		dm_size_t len = 2*BLK_SIZE;
 		u_int nelem;
 		char buf[DUMMY_STRLEN];
 
@@ -2420,6 +2697,10 @@ int main(int argc, char **argv)
 			}
 			dm_handle_free(hanp, hlen);
 		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
 	}
 
 	/*
@@ -2427,11 +2708,12 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = 0, nelem = 3
 	 */
 	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 15)) {
+#ifdef INTERIOR_HOLES	
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = PAGE_SIZE;
-		dm_size_t len = (TMP_FILELEN-(2*PAGE_SIZE)) & (~(PAGE_SIZE-1));
+		dm_off_t off = BLK_SIZE;
+		dm_size_t len = (TMP_FILELEN-(2*BLK_SIZE)) & (~(BLK_SIZE-1));
 		u_int nelem;
 
 		/* Variation set up */
@@ -2482,6 +2764,10 @@ int main(int argc, char **argv)
 			}
 			dm_handle_free(hanp, hlen);
 		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMVAR_SKIP();		
+#endif
 	}
 
 	/*
@@ -2612,6 +2898,742 @@ int main(int argc, char **argv)
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
 
 			/* Variation clean up */
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private read mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 20)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private write mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 21)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private exec mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 22)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private r/w mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 23)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared read mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 24)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared write mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 25)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared exec mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 26)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared r/w mmap overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 27)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = 0;
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private read mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 28)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private write mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 29)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private exec mmap not overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 30)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - private r/w mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 31)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared read mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 32)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared write mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 33)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared exec mmap not overlapping hole
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 34)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_punch_hole - shared r/w mmap not overlapping hole
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 35)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_size_t len = 0;
+		void *memmap;
+
+		/* Variation set up */
+		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DUMMY_FILE, O_RDWR)) == -1) {
+			remove(DUMMY_FILE);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DUMMY_FILE);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			dm_handle_free(hanp, hlen);
+			close(fd);
+			remove(DUMMY_FILE);
+		}
+		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap not overlap hole)\n", szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DUMMY_FILE);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
 			dm_handle_free(hanp, hlen);
 		}
 	}

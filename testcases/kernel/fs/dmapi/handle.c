@@ -44,7 +44,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define PATHBUF_LEN 256

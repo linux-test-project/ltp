@@ -34,7 +34,6 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/mount.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 pthread_t tid;

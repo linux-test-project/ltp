@@ -22,20 +22,27 @@
 
 # dmapi_imp is platform for DMAPI implementation (currently supported: JFS)
 dmapi_imp = JFS
-# dmapi_dir is path of directory containing dmapi.h
-dmapi_dir = .
 # dmapi_lib is path of user space library for DMAPI implementation
 dmapi_lib = /usr/lib/libjfsdm.a
 
-std_cflags = -I. -I$(dmapi_dir) -g -Wall -D$(dmapi_imp)
+std_cflags = -I. -g -Wall -D$(dmapi_imp)
 
 #	Define USER_SPACE_FAULTS if DMAPI implementation handles user space
 #	  faults (JFS has plenty of handle code in user space, which causes
 #	  faults when invalid pointers are passed in)	
 #	Define DIRECTORY_LINKS if DMAPI FS supports links on directories (JFS
 #	  does not)
+#	Define INTERIOR_HOLES if DMAPI implementation supports probing/punching
+#	  interior holes (JFS does); if not defined, only probing/punching 
+#	  holes to end-of-file is supported
+#	Define MULTIPLE_REGIONS if DMAPI implementation supports multiple
+#	  interior regions (JFS does); if not defined, only one region
+#	  covering entire file is supported
 #extra_cflags = -DUSER_SPACE_FAULTS
 #extra_cflags = -DDIRECTORY_LINKS
+#extra_cflags = -DINTERIOR_HOLES
+#extra_cflags = -DMULTIPLE_REGIONS
+extra_cflags = -DINTERIOR_HOLES -DMULTIPLE_REGIONS
 
 cflags = $(std_cflags) $(extra_cflags)
 

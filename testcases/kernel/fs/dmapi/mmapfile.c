@@ -46,7 +46,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 char DummyFile[FILENAME_MAX];
@@ -122,7 +121,7 @@ int main(int argc, char **argv)
 
 	if (memmap != MAP_FAILED) {
 		printf("invoking munmap(%p, %d)\n", memmap, length);
-		munmap(memmap, DUMMY_STRLEN);
+		munmap(memmap, length);
 	}
 
 	close(fd);

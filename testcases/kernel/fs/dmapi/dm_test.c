@@ -35,7 +35,6 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define TEST_NAME "dm_test"
@@ -421,12 +420,13 @@ void dm_LogHandle(char *hdl, int len) {
 }	
 
 /* This static array is for the persistent managed region test */
-int dm_PMR_nelem = PMR_NUM_REGIONS;
 dm_region_t dm_PMR_regbuf[PMR_NUM_REGIONS] = {
+#ifdef MULTIPLE_REGIONS
 	{    0, 1000, DM_REGION_WRITE },
 	{ 2000, 1000, DM_REGION_TRUNCATE },
 	{ 3005,  995, DM_REGION_READ },
 	{ 5432, 2345, DM_REGION_NOEVENT },
+#endif
 	{ 8000,    0, DM_REGION_READ|DM_REGION_WRITE|DM_REGION_TRUNCATE }
 };
 

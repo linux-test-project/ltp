@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define NUM_SESSIONS 8

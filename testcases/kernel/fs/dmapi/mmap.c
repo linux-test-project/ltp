@@ -33,7 +33,6 @@
 #include <sys/mount.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define TMP_FILELEN 50000

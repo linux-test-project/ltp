@@ -29,7 +29,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 int main(int argc, char **argv)

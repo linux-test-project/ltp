@@ -40,7 +40,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/xattr.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define TMP_FILELEN 1000

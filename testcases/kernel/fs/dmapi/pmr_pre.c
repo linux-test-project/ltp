@@ -19,7 +19,7 @@
 /*
  * TEST CASE	: pmr_pre.c
  *
- * VARIATIONS	: 17
+ * VARIATIONS	: 33
  *
  * API'S TESTED	: dm_set_region
  *
@@ -36,12 +36,12 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <sys/xattr.h>
+#include <sys/mman.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define ATTR_LISTLEN 1000
-#define TMP_FILELEN 10000
+#define TMP_FILELEN 10000	/* must be > 2*PAGE_SIZE */
 
 pthread_t tid;
 dm_sessid_t sid;
@@ -693,6 +693,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = 0
 	 */
 	if (DMVAR_EXEC(SET_REGION_BASE + 14)) {
+#ifdef MULTIPLE_REGIONS
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -748,6 +749,10 @@ int main(int argc, char **argv)
 			}
 			dm_handle_free(hanp, hlen);
 		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with MULTIPLE_REGIONS defined\n");
+		DMVAR_SKIP();		
+#endif
 	}
 
 	/*
@@ -764,6 +769,7 @@ int main(int argc, char **argv)
 		char value[ATTR_LISTLEN];
 
 		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
 		nelem = 2;
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = 1000;
@@ -771,6 +777,12 @@ int main(int argc, char **argv)
 		regbuf[1].rg_offset = 2000;
 		regbuf[1].rg_size = 1000;
 		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = 1000;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -781,10 +793,11 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag)) == -1) ||
-			   ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < (2 * sizeof(dm_region_t)))) {
+			   ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < (nelem * sizeof(dm_region_t)))) {
 			close(fd);
 			remove(DummyFile);
 			dm_handle_free(hanp, hlen);
+			rc = -1;	/* rc could be >= 0 from getxattr */
 		}
 		if (rc == -1 || fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
@@ -829,15 +842,23 @@ int main(int argc, char **argv)
 		dm_region_t regbuf[2];
 		dm_boolean_t exactflag;
 		char value[ATTR_LISTLEN];
+		ssize_t xattrlen;
 
 		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
 		nelem = 2;
 		regbuf[0].rg_offset = 0;
 		regbuf[0].rg_size = 1000;
-		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
 		regbuf[1].rg_offset = 2000;
 		regbuf[1].rg_size = 1000;
-		regbuf[1].rg_flags = DM_REGION_WRITE;
+		regbuf[1].rg_flags = DM_REGION_READ;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = 1000;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -848,16 +869,19 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag)) == -1) ||
-			   ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < (2 * sizeof(dm_region_t)))) {
+			   ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < (nelem * sizeof(dm_region_t)))) {
 			close(fd);
 			remove(DummyFile);
 			dm_handle_free(hanp, hlen);
+			rc = -1;	/* rc could be >= 0 from getxattr */
 		}
 		if (rc == -1 || fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
+			xattrlen = rc;
+
 			nelem = 1;
 			regbuf[0].rg_offset = 0;
 			regbuf[0].rg_size = 1000;
@@ -867,11 +891,15 @@ int main(int argc, char **argv)
 			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "exactflag = %d\n", exactflag);
-				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) >= sizeof(dm_region_t)) {
+#ifdef MULTIPLE_REGIONS
+				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) < xattrlen) {
+#else
+				if ((rc = getxattr(DummyFile, PMR_AttrName, value, sizeof(value))) == xattrlen) {
+#endif					
 					DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = 0\n", szFuncName);
 					DMVAR_PASS();
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected getxattr(%s) rc (%d vs %d), errno %d\n", szFuncName, 0, PMR_AttrName, rc, sizeof(dm_region_t), errno);
+					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected getxattr(%s) rc (%d vs %d), errno %d\n", szFuncName, 0, PMR_AttrName, rc, xattrlen, errno);
 					DMVAR_FAIL();
 				}
 			} else {
@@ -890,10 +918,1002 @@ int main(int argc, char **argv)
 	}
 
 	/*
+	 * TEST    : dm_set_region - private read mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 17)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private write mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 18)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else		
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private exec mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 19)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private read/write mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 20)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared read mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 21)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared write mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 22)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared exec mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 23)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared read/write mmap overlapping region
+	 * EXPECTED: rc = -1, errno = EBUSY
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 24)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private read mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 25)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private write mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 26)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private exec mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 27)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - private r/w mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 28)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 2*PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared read mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 29)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = PAGE_SIZE;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_WRITE;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared write mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 30)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared exec mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 31)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
+	 * TEST    : dm_set_region - shared r/w mmap not overlapping region
+	 * EXPECTED: rc = 0
+	 */
+	if (DMVAR_EXEC(SET_REGION_BASE + 32)) {
+		int fd;
+		void *hanp;
+		size_t hlen;
+		u_int nelem;
+		dm_region_t regbuf[2];
+		dm_boolean_t exactflag;
+		void *memmap;
+
+		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
+		nelem = 2;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+		regbuf[1].rg_offset = PAGE_SIZE;
+		regbuf[1].rg_size = PAGE_SIZE/2;
+		regbuf[1].rg_flags = DM_REGION_WRITE;
+#else
+		nelem = 1;
+		regbuf[0].rg_offset = 0;
+		regbuf[0].rg_size = PAGE_SIZE/2;
+		regbuf[0].rg_flags = DM_REGION_READ;
+#endif		
+
+		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
+		if ((rc = system(command)) == -1) {
+			/* No clean up */
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+			remove(DummyFile);
+		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
+			close(fd);
+			remove(DummyFile);
+		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 2*PAGE_SIZE)) == MAP_FAILED) {
+			close(fd);
+			remove(DummyFile);
+			dm_handle_free(hanp, hlen);
+		}
+		if (rc == -1 || fd == -1 || memmap == MAP_FAILED) {
+			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMVAR_SKIP();
+		} else {
+			/* Variation */
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap not overlap region)\n", szFuncName);
+			rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, nelem, regbuf, &exactflag);
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
+
+			/* Variation clean up */
+			munmap(memmap, PAGE_SIZE);
+			rc = close(fd);
+			rc |= remove(DummyFile);
+			if (rc == -1) {
+				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+			}
+			dm_handle_free(hanp, hlen);
+		}
+	}
+
+	/*
 	 * TEST    : dm_set_region - persistent, Part I
 	 * EXPECTED: rc = 0
 	 */
-	if (DMVAR_EXEC(SET_REGION_BASE + 17)) {
+	if (DMVAR_EXEC(SET_REGION_BASE + 33)) {
 		int fd;
 		void *hanp;
 		size_t hlen;

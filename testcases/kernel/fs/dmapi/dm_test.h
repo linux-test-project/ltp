@@ -23,6 +23,7 @@
  */
 
 #include <stdlib.h>
+#include <sys/jfsdmapi.h>
 #include "dm_vars.h"
 
 /* The following constants are implementation-independent */
@@ -67,6 +68,9 @@
 #define PMR_ATTRNAME "system.dmi.persistent.regions"
 #define MAXFILESIZE ((__s64)1 << 52)
 #define ROOT_INODE 2
+#define BLK_SIZE 4096
+#define BLKALIGN(n) (((n)+(BLK_SIZE-1)) & ~(BLK_SIZE-1))
+#define UNALIGNED_BLK_OFF 1357 /* Odd number less than BLK_SIZE */
 
 /* The following constants are file/directory/link names */
 #define DUMMY_FILE "dummy.txt"
@@ -127,8 +131,12 @@ int dm_CheckVariation_FailureExpected(int expectedRC, int actualRC, int expected
 void dm_LogHandle(char *hdl, int len);
 
 /* Persistent managed regions global data */
+
+#ifdef MULTIPLE_REGIONS
 #define PMR_NUM_REGIONS 5
-extern int dm_PMR_nelem;
+#else
+#define PMR_NUM_REGIONS 1
+#endif
 extern dm_region_t dm_PMR_regbuf[];
 
 /* Implementation-dependent data structures */

@@ -36,7 +36,6 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 #define TMP_FILELEN 1000

@@ -83,6 +83,7 @@ README		: You're looking at it
 Makefile	: Builds the test harness and scenario; the platform must be
 		  defined (i.e. JFS) to build the proper stuff in dm_impl.c,
 		  and other constants as necessary to build the proper support 
+		  (i.e. MULTIPLE_REGIONS)
 
 III. Test Bucket Omissions
 
@@ -122,9 +123,6 @@ DMAPI implementation (kernel and user space code) is installed on the system
 	2) Make the test bucket:
 
 		make
-
-	   NOTE: Either copy dmapi.h into this directory or modify dmapi_dir
-	   in Makefile to point to the directory containing dmapi.h 
 
 	   NOTE: Modify dmapi_lib in Makefile to point to the user space
 	   library for the DMAPI implementation to be tested
@@ -235,5 +233,11 @@ arrival.
 
 IX. Implementation-dependent Notes
 
-1) JFS	- Instructions for installing DMAPI for IBM JFS can be found at
+1) JFS
+	a) Instructions for installing DMAPI for IBM JFS can be found at
 	http://oss.software.ibm.com/jfs/.
+	b) The test case and user space library must match the architecture
+	of the kernel.  In other words, the test case and library must be
+	compiled as 32-bit if running on a 32-bit kernel, and must be compiled
+	as 64-bit if running on a 64-bit kernel.  Currently, JFS DMAPI does
+	not support a 32-bit DM app running on a 64-bit kernel.

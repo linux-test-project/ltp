@@ -36,7 +36,6 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "dmapi.h"
 #include "dm_test.h"
 
 pthread_t tid;
@@ -822,6 +821,7 @@ void DoTest()
 	 * EXPECTED: rc = 0
 	 */
 	if (DMVAR_EXEC(GET_REGION_BASE + 13)) {
+#ifdef MULTIPLE_REGIONS
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -889,6 +889,10 @@ void DoTest()
 			}
 			dm_handle_free(hanp, hlen);
 		}
+#else
+		DMLOG_PRINT(DMLVL_WARN, "Test case not built with MULTIPLE_REGIONS defined\n");
+		DMVAR_SKIP();		
+#endif
 	}
 
 	/*
@@ -904,6 +908,7 @@ void DoTest()
 		dm_boolean_t exactflag;
 
 		/* Variation set up */
+#ifdef MULTIPLE_REGIONS
 		nelemin = 2;
 		regbufin[0].rg_offset = 0;
 		regbufin[0].rg_size = 1000;
@@ -911,6 +916,12 @@ void DoTest()
 		regbufin[1].rg_offset = 2000;
 		regbufin[1].rg_size = 1000;
 		regbufin[1].rg_flags = DM_REGION_WRITE;
+#else		
+		nelemin = 1;
+		regbufin[0].rg_offset = 0;
+		regbufin[0].rg_size = 1000;
+		regbufin[0].rg_flags = DM_REGION_READ;
+#endif		
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -931,15 +942,15 @@ void DoTest()
 		} else {
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(regbuf too small)\n", szFuncName);
-			rc = dm_get_region(sid, hanp, hlen, DM_NO_TOKEN, 1, regbufout, &nelemout);
+			rc = dm_get_region(sid, hanp, hlen, DM_NO_TOKEN, nelemin-1, regbufout, &nelemout);
 			if (rc == -1) {
 				if (errno == E2BIG) {
 					DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelemout);
-					if (nelemout == 2) {
+					if (nelemout == nelemin) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and expected errno = %d\n", szFuncName, rc, errno);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d and expected errno = %d but unexpected nelemp (%d vs %d)\n", szFuncName, rc, errno, nelemout, 2);
+						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d and expected errno = %d but unexpected nelemp (%d vs %d)\n", szFuncName, rc, errno, nelemout, nelemin);
 						DMVAR_FAIL();
 					}
 				} else {
