@@ -149,15 +149,16 @@ int main(int ac, char **av)
 						 TEST_ERRNO,
 						 strerror(TEST_ERRNO));
 			} else {
-				if (i == 1)
-					tst_resm(TINFO,
-						 "mlockall() did not fail for non-root user."
-						 "This may be okay for your distribution.");
-				else
-					tst_brkm(TFAIL, cleanup,
-					 	"mlock() Failed, expected "
-					 	"return value=-1, got %d",
-					 	TEST_RETURN);
+				if (i <= 1)
+                                        tst_resm(TCONF,
+                                                 "mlockall02 did not FAIL as expected."
+                                                 "This may be okay if you are running Red Hat"
+						 " Enterprise Linux 3 (RHEL)");
+                                else
+                                        tst_brkm(TFAIL, cleanup,
+                                                "mlock() Failed, expected "
+                                                "return value=-1, got %d",
+                                                TEST_RETURN);
 			}
 			cleanup_test(i);
 		}
