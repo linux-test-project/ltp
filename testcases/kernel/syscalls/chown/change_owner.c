@@ -53,7 +53,7 @@ main(int argc, char **argv)
 		perror("change_owner: nobody not found in /etc/passwd\n");
 		exit(1);
 	}
-	if ((ltpgroup = getpwnam("nobody")) == NULL) {
+	if ((ltpgroup = getpwnam((const char *)"nobody")) == NULL) {
 		perror("change_owner: nobody's group not found in /etc/group\n");
 		exit(1);
 	}
