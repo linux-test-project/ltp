@@ -1,0 +1,2 @@
+Note on the DRM testcases, the kernel modules will load but all the tests
+will fail if AGP hardware isn't present or supported on the test system.
