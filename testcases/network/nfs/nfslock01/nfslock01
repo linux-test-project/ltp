@@ -105,7 +105,7 @@ $trace_logic
    echo "locking $FLOCK_IDATA file and writing data"
    $FLOCK_FRK $FLOCK_EXEC $FLOCK_IDATA 
    [ $? = 0 ] || end_testcase "Errors in do_test $TC"
-
+   sleep 1
    diff $FLOCK_ODATA $FLOCK_IDATA > /dev/null 2>&1
    [ $? = 0 ] || end_testcase "$FLOCK_ODATA is different than $FLOCK_IDATA"   
 
