@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that,
- *  1) ftruncate(2) returns -1 and sets errno to EACCES if the specified
+ *  1) ftruncate(2) returns -1 and sets errno to EINVAL if the specified
  *     file descriptor has an attempt to write, when open for read only.
  *  2) ftruncate(2) returns -1 and sets errno to EBADF if the file descriptor
  *     of the specified file is not valid.
@@ -98,7 +98,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int len;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ 1, "File descriptor not open for writing", EACCES, -1, setup1 },
+	{ 1, "File descriptor not open for writing", EINVAL, -1, setup1 },
 	{ 2, "File descriptor is not valid", EBADF, 256, setup2 },
 	{ 0, NULL, 0, 0, no_setup }
 };
@@ -240,7 +240,7 @@ setup()
 /*
  * int
  * setup1() - setup function for a test condition for which ftruncate(2)
- *	      returns -1 and sets errno to EACCES.
+ *	      returns -1 and sets errno to EINVAL.
  *  Create a test file and open it for reading only.
  */
 int
