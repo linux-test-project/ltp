@@ -121,19 +121,19 @@ main(int ac, char **av)
 	}
 
 	if (Tflag) {
-		Fstype = (char *) malloc(strlen(fstype));
+		Fstype = (char *) malloc(strlen(fstype)+1);
 		if(Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
 				 "errno %d", strlen(fstype), errno);
 		}
-		strncpy(Fstype, fstype, strlen(fstype));
+		strncpy(Fstype, fstype, strlen(fstype)+1);
 	} else {
-		Fstype = (char *) malloc(strlen(DEFAULT_FSTYPE));
+		Fstype = (char *) malloc(strlen(DEFAULT_FSTYPE)+1);
 		if(Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
 				 "errno %d", strlen(DEFAULT_FSTYPE), errno);
 		}
-		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
+		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE)+1);
 	}
 
 	if (STD_COPIES != 1) {
