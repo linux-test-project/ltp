@@ -1,0 +1,21 @@
+
+CFLAGS = -lm -lpthread
+BIN = gensinh gencosh gentanh geniperb
+DATA = dsinh rsinh dcosh rcosh dtanh rtanh
+
+all:
+	gcc $(CFLAGS) gensinh.c -o gensinh
+	gcc $(CFLAGS) gencosh.c -o gencosh
+	gcc $(CFLAGS) gentanh.c -o gentanh
+	gcc $(CFLAGS) geniperb.c -o geniperb
+	./geniperb
+
+clean:
+	rm -f $(BIN)
+	@for i in $(BIN); do rm -f ../../../bin/$$i ; done
+	rm -f $(DATA)
+	@for i in $(DATA); do rm -f ../../../bin/$$i ; done
+
+install: all
+	sleep 1
+	@for i in $(DATA); do ln -f $$i ../../../bin/$$i ; done ;
