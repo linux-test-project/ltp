@@ -40,6 +40,8 @@ LTP-20020909
   allow setting of various pan options and         Paul Larson,
   changing the temp directory                      Nate Straz )
 - Created automation-cookbook documentation      ( Jeff Martin )
+- Patched nanosleep02.c to correctly test the    ( Andrea Arcangeli )
+  functionality and avoid false positives.
 
 
 LTP-20020813
