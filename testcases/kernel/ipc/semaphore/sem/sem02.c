@@ -84,6 +84,10 @@ int main()
 		 printf ("semget failed, errno = %d\n", errno);
 		 exit (1);
     }
+    /* initialize data  structure associated to the semaphore */
+    semunion.val = 1;
+    semctl(sem_id, 0, SETVAL, semunion);
+
     
     /* setup the attributes of the thread        */
     /* set the scope to be system to make sure the threads compete on a  */
