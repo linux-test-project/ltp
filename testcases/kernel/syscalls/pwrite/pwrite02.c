@@ -27,7 +27,7 @@
  *
  * Expected Result:
  *  1) pwrite() should return -1 and set errno to ESPIPE.
- *  2) pwrite() should return -1 and set errno to EFBIG.
+ *  2) pwrite() should return -1 and set errno to EINVAL.
  *
  * Algorithm:
  *  Setup:
@@ -91,7 +91,7 @@ int setup2();			/* setup function for test #2 */
 int no_setup();
 void init_buffers();		/* function to initialize/allocate buffers */
 
-int exp_enos[] = {ESPIPE, EFBIG, EBADF, 0};
+int exp_enos[] = {ESPIPE, EINVAL, EBADF, 0};
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int fd;
@@ -102,7 +102,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ 1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1 },
-	{ 2, K1, -1, "specified offset is -ve or invalid", EFBIG, setup2 },
+	{ 2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2 },
 	{ 3, K1, 0, "file descriptor is bad", EBADF, no_setup },
 	{ 0, 0, 0, NULL, 0, no_setup }
 };
@@ -265,7 +265,7 @@ setup1()
 
 /*
  * setup2 - setup function for a test condition for which pwrite()
- * 	    returns -ve value and sets errno to EFBIG.
+ * 	    returns -ve value and sets errno to EINVAL.
  *
  *  Create a temporary directory and a file under it.
  *  return 0.
