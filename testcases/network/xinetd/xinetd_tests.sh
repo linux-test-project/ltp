@@ -113,7 +113,7 @@ init()
 		instances      = 25
 		log_type       = FILE /var/log/servicelog
 		log_on_success = HOST PID
-		log_on_failure = HOST RECORD
+		log_on_failure = HOST
 		# disabled       = telnet
 	}
 
@@ -172,7 +172,7 @@ cleanup()
 	# restore the original xinetd.conf if a back up exits.
 	if [ -f /etc/xinetd.conf.orig ]
 	then
-		mv /etc/xinetd.conf.orig /etc/xinetd.çonf \
+		mv /etc/xinetd.conf.orig /etc/xinetd.conf \
 			&>$LTPTMP/tst_xinetd.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
@@ -309,7 +309,7 @@ test01()
 		else
 			RC=0
 			tst_resm TINFO \
-				"Test #1: xinetd re-started successfully with telnet disabled."
+				"Test #1: xinetd re-started successfully with telnet enabled."
 		fi
 	fi
 
