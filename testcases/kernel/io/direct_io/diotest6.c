@@ -76,8 +76,6 @@ static off64_t	offset = 0;		/* Offset. Default 0 */
 static int	nvector = 20;		/* Vector array. Default 20 */
 static char	filename[LEN];		/* Test data file */
 
-char	*valloc();
-
 /*
  * prg_usage: display the program usage
 */

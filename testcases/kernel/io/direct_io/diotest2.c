@@ -70,8 +70,6 @@ int TST_TOTAL=1;		 		 /* Total number of test conditions */
 #define WRITE_DIRECT 2
 #define RDWR_DIRECT 3
 
-char *valloc();
-
 /*
  * runtest: write the data to the file. Read the data from the file and compare.
  *	For each iteration, write data starting at offse+iter*bufsize 

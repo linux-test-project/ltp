@@ -75,8 +75,6 @@ static int	bufsize = BUFSIZE;	/* Buffersize. Default 4k */
 static int	offset = 0;		/* Offset. Default 0 */
 static char	filename[LEN];
 
-char	*valloc();
-
 /*
  * prg_usage: display the program usage
 */

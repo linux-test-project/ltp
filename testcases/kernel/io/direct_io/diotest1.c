@@ -63,8 +63,6 @@ int TST_TOTAL=1;		 		 /* Total number of test conditions */
 #define	LEN	30
 #define	TRUE 1
 
-extern char *valloc();
-
 /* 
  * prg_usage: display the program usage.
 */

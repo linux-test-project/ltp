@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.4 2003/09/25 15:44:20 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.5 2004/01/20 07:07:12 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -409,7 +409,6 @@ child()
     int sig;			/* signal value */
     int exit_val;		/* exit value to send to parent */
     char note[MAXMESG];		/* message buffer for pipe */
-    extern int sig_caught;	/* when TRUE, causes wait_a_while() to return */
     int setup_sigs(), write_pipe(), set_timeout();
     void handler(), wait_a_while(), clear_timeout();
     char *str;
@@ -592,10 +591,6 @@ int sig;	/* the signal causing the execution of this handler */
 {
     static int s = 0;		/* semaphore so that we don't handle 2 */
 				/* sigs at once */
-    extern int sig_array[];	/* array of counters for signals */
-    extern int sig_caught;	/* flag telling wait_a_while() to */
-				/* stop waiting */
-
 #if DEBUG > 1
     printf("child: handler phase%d: caught signal %d.\n", phase, sig);
 #endif
@@ -744,8 +739,6 @@ static void
 wait_a_while()
 {
     long btime, time();
-    extern int sig_caught;	/* TRUE if we are done waiting */
-				/* for sig to be caught */
 
     btime = time((long *) 0);
     while (time((long *) 0) - btime < (long) TIMEOUT) {
@@ -764,8 +757,6 @@ wait_a_while()
 static void
 getout()
 {
-    extern int pid;		/* process id of child */
-
     if ( pid > 0 ) {
         if (kill(pid, SIGKILL) < 0) {
 	    (void) sprintf(mesg,

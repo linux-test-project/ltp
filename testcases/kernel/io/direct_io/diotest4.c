@@ -80,8 +80,6 @@ int TST_TOTAL=1;		 		 /* Total number of test conditions */
 #define TRUE	1
 #define LEN	30
 
-char    *valloc();
-
 
 /*
  * runtest_f: Do read, writes. Verify the error value obtained by
