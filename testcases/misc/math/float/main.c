@@ -105,7 +105,6 @@ int main(int argc, char *argv[])
                 }
         }
 	}
-	
 	pid=fork();
         if ( pid == 0 )                     /*Child*/
 		generate((char*)&datadir);           
