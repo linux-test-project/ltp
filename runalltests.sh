@@ -20,7 +20,7 @@
 ################################################################################
 # File:        runalltests.sh
 #
-# Description:    This script can be used to run the testcase in the LTP suite,
+# Description:  This script can be used to run the testcase in the LTP suite,
 #               by default it does not run all the testcases like the name 
 #               suggestes but all the tests can be run by using various 
 #               options that the script provides.
@@ -33,6 +33,10 @@
 #               - clean up on script exit
 #               - error checking etc.
 #                
+#               Oct 08 2003 - Modified - Manoj Iyer
+#               - fixed bug in creating results directory
+#               - all checks should be enlclosed in  " " to avoid bash error
+#               - exit with error if pan is not found in pan directory
 
 
 setup()
@@ -47,9 +51,16 @@ setup()
     export TMP="${TMPBASE}/runalltests-$$"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-    [ -d ${LTPROOT}/testcases/bin ] ||
+    [ -d $LTPROOT/testcases/bin ] ||
     {
         echo "FATAL: Test suite not installed correctly"
+        echo "INFO: as root user type 'make ; make install'"
+        exit 1
+    }
+
+    [ -e $LTPROOT/pan/pan ] ||
+    {
+        echo "FATAL: Test suite driver 'pan' not found"
         echo "INFO: as root user type 'make ; make install'"
         exit 1
     }
@@ -134,18 +145,19 @@ main()
             GENLOAD=1 ;;
     
         l)      
-            case $OPTARG in
-            /*)    
-                LOGFILE="-l $OPTARG" ;;
-            *)
-                [ ! -d $LTPROOT/results ] || \
-                {
-                    mkdir -p $LTPROOT/results || \
-                    {
-                        echo "ERROR: failed to create $LTPROOT/results"
-                        exit 1
-                    }
+
+			echo "INFO: creating $LTPROOT/results directory"
+            [ ! -d $LTPROOT/results ] && \
+            {
+               mkdir -p $LTPROOT/results || \
+               {
+                   echo "ERROR: failed to create $LTPROOT/results"
+                   exit 1
                 }
+            }
+            case $OPTARG in
+            *)    
+                #LOGFILE="-l $OPTARG" ;;
                 LOGFILE="-l $LTPROOT/results/$OPTARG"
                 ALT_DIR=1 ;;
             esac ;;
@@ -201,11 +213,11 @@ main()
       exit 1
     }
     
-    [ $RUN_NETEST -eq 1 ] && \
+    [ "$RUN_NETEST" -eq 1 ] && \
     {
-        [ -z $RHOST ] || [ -z $PASSWD ] && \
+        [ -z "$RHOST" ] || [ -z "$PASSWD" ] && \
         {
-            [ -z $RHOST ] && \
+            [ -z "$RHOST" ] && \
             {
                 echo \
                 "INFO: Enter RHOST = 'name of the remote host machine'"
@@ -213,7 +225,7 @@ main()
                 read RHOST
             }
 
-            [ -z $PASSWD ] && \
+            [ -z "$PASSWD" ] && \
             {
                 echo " "
                 echo \
@@ -229,7 +241,7 @@ main()
     
     # If user does not provide a command file select a default set of testcases
     # to execute.
-    if [ -z $CMDFILE ]
+    if [ -z "$CMDFILE" ]
     then
     cat <<-EOF >&1
 
@@ -246,7 +258,7 @@ main()
                      ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
                      ${LTPROOT}/runtest/pty
         do
-            [ -a $SCENFILES ] || \
+            [ -a "$SCENFILES" ] || \
             {
                 echo "FATAL: missing scenario file $SCENFILES"
                 exit 1
@@ -266,14 +278,14 @@ main()
         }
     fi
     
-    [ $RUN_NETEST -eq 1 ] && \
+    [ "$RUN_NETEST" -eq 1 ] && \
     {
         for SCENFILES in ${LTPROOT}/runtest/tcp_cmds \
                          ${LTPROOT}/runtest/multicast \
                          ${LTPROOT}/runtest/rpc \
                          ${LTPROOT}/runtest/nfs
         do
-            [ -a $SCENFILES ] || \
+            [ -a "$SCENFILES" ] || \
             { 
                 echo "FATAL: missing scenario file $SCENFILES"
                 exit 1
@@ -308,7 +320,7 @@ main()
     }
     
     # display versions of installed software
-    [ -z $QUIET_MODE ] && \
+    [ -z "$QUIET_MODE" ] && \
     { 
         ${LTPROOT}/ver_linux || \
         {
@@ -317,7 +329,7 @@ main()
     }
     }
 
-    [ ! -z $QUIET_MODE ] && { echo "INFO: Test start time: $(date)" ; }
+    [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE
     
@@ -326,12 +338,12 @@ main()
     else
       echo "INFO: pan reported some tests FAIL"
     fi
-    [ ! -z $QUIET_MODE ] && { echo "INFO: Test end time: $(date)" ; }
+    [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
-    [ $GENLOAD -eq 1 ] && { killall -9 genload ; }
-    [ $NETPIPE -eq 1 ] && { killall -9 NPtcp ; }
+    [ "$GENLOAD" -eq 1 ] && { killall -9 genload ; }
+    [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp ; }
     
-    [ $ALT_DIR -eq 1 ] && \
+    [ "$ALT_DIR" -eq 1 ] && \
     {
     cat <<-EOF >&1
         
