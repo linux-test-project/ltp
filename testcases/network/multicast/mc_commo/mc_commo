@@ -41,14 +41,14 @@ TCtmp=${TCtmp:-$TCsrc}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="mc_recv"
 REMOTE_EXEC="mc_send"
-
+LTPROOT=${LTPROOT:-../../../..}
 TTL=10
 GROUP_ADDR=224.0.0.1
 PORT=3333
 RHOST=${RHOST:-`hostname`}
 OUTFILE=$TCtmp/mc_commo_out
 NUMLOOPS=${NUMLOOPS:-2}
-INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')}
+INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
 this_file=${0##*/}
 trap "interrupt_test" 2
