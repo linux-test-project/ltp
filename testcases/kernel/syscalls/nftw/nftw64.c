@@ -736,7 +736,7 @@ setup()
 
     /* Get the user id "nobody" */
     if ((ltpuser = getpwnam("nobody")) == NULL) {
-        perror("change_owner: nobody not found in /etc/passwd\n");
+        perror("change_owner: nobody not found in /etc/passwd");
         exit(1);
     }
 

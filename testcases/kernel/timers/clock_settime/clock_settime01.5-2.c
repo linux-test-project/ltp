@@ -61,22 +61,22 @@ int main(int argc, char *argv[])
 
 	if ( (sigemptyset(&set) != 0) ||
 		(sigemptyset(&act.sa_mask) != 0) ) {
-		perror("sigemptyset() was not successful\n");
+		perror("sigemptyset() was not successful");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaddset(&set, SIGTOTEST) != 0) {
-		perror("sigaddset() was not successful\n");
+		perror("sigaddset() was not successful");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaction(SIGTOTEST, &act, 0) != 0) {
-		perror("sigaction() was not successful\n");
+		perror("sigaction() was not successful");
 		return PTS_UNRESOLVED;
 	}
 
  	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	its.it_value.tv_sec = TIMERSEC; its.it_value.tv_nsec = 0;
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

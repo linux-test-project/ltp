@@ -42,14 +42,14 @@ int main()
 	/* Initialize attribute */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object\n");
+		perror("Cannot initialize attribute object");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create a new thread passing it the new attribute object */
 	if(pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 
@@ -68,7 +68,7 @@ int main()
 		/* pthread_join() failed for another reason */
 		else
 		{
-			perror("Error in pthread_join()\n");
+			perror("Error in pthread_join()");
 			return PTS_UNRESOLVED;
 		}
 	}
@@ -86,7 +86,7 @@ int main()
 		/* pthread_detach() failed for another reason. */
 		else
 		{
-			perror("Error in pthread_detach()\n");
+			perror("Error in pthread_detach()");
 			return PTS_UNRESOLVED;
 		}
 	}

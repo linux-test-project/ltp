@@ -39,12 +39,12 @@ int main(int argc, char *argv[])
 	its.it_interval.tv_nsec = 0; its.it_value.tv_nsec = 0;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &its, &oits) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	 * second call to timer_settime()
 	 */
 	if (timer_settime(tid, 0, &its, &oits) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

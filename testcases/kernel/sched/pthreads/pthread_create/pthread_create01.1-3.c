@@ -49,7 +49,7 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&a, NULL, a_thread_function, NULL) != 0)
 	{
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 	

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	int pid;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsT0) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (clock_gettime(CLOCK_REALTIME, &tsT3) != 0) {
-			perror("clock_gettime() did not return success\n");
+			perror("clock_gettime() did not return success");
 			return CHILDFAIL;
 		}
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit\n");
+			perror("Error waiting for child to exit");
 			return PTS_UNRESOLVED;
 		}
 

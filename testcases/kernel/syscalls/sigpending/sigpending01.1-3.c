@@ -95,7 +95,7 @@ int main()
 
         if ( (sigaddset(&blockset, SIGALRM) == -1) ||
                 (sigaddset(&blockset, SIGHUP) == -1) ) {
-                perror("Error calling sigaddset()\n");
+                perror("Error calling sigaddset()");
                 return PTS_UNRESOLVED;
         }
 
@@ -108,7 +108,7 @@ int main()
 	if ( (sigaddset(&act.sa_mask, SIGCONT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGABRT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGUSR1) == -1) ) {
-		perror("Error calling sigaddset()\n");
+		perror("Error calling sigaddset()");
 		return PTS_UNRESOLVED;
 	}
 

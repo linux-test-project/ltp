@@ -101,7 +101,7 @@ int main()
    while (count < strlen(str) )
    {
       if ((count += write(wjh_f, str, strlen(str))) == -1) 
-      { perror("Write failed!\n"); close(wjh_f); exit(-1); } 
+      { perror("Write failed!"); close(wjh_f); exit(-1); } 
    }
    close(wjh_f); errno = 0; 
 

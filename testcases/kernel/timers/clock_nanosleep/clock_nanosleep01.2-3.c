@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	int pid, sleepuntilsec;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
 		}
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit\n");
+			perror("Error waiting for child to exit");
 			return PTS_UNRESOLVED;
 		}
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
-			perror("clock_gettime() did not return success\n");
+			perror("clock_gettime() did not return success");
 			return PTS_UNRESOLVED;
 		}
 

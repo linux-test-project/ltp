@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
 	for (i=0; i<TIMER_MAX;i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-			perror("timer_create() did not return success\n");
+			perror("timer_create() did not return success");
 			return PTS_UNRESOLVED;
 		}
 

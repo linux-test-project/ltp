@@ -41,12 +41,12 @@ int main(int argc, char *argv[])
 	ev.sigev_signo = SIGCONT;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -57,12 +57,12 @@ int main(int argc, char *argv[])
 
 	flags |= TIMER_ABSTIME;
 	if (timer_settime(tid, flags, &itsset, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_gettime(tid, &itsget) != 0) {
-		perror("timer_gettime() did not return success\n");
+		perror("timer_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

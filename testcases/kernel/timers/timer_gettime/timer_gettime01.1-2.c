@@ -45,22 +45,22 @@ int main(int argc, char *argv[])
 	itsset.it_value.tv_nsec = 0;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &itsset, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sleep(SLEEPSEC) != 0) {
-		perror("sleep() did not return 0\n");
+		perror("sleep() did not return 0");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_gettime(tid, &itsget) != 0) {
-		perror("timer_gettime() did not return success\n");
+		perror("timer_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

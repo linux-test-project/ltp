@@ -34,7 +34,7 @@ int main()
 	/* Create a new thread */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 	
@@ -42,7 +42,7 @@ int main()
 	 * the thread ID value from pthread_self(). */
 	if(pthread_join(new_th, NULL) != 0)
 	{
-		perror("Error calling pthread_join()\n");
+		perror("Error calling pthread_join()");
 		return PTS_UNRESOLVED;
 	}
 

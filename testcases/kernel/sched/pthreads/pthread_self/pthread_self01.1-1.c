@@ -38,14 +38,14 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th1, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to return */
 	if(pthread_join(new_th1, NULL) != 0)
 	{
-		perror("Error in pthread_join()\n");
+		perror("Error in pthread_join()");
 		return PTS_UNRESOLVED;
 	}
 	

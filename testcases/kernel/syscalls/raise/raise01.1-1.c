@@ -36,11 +36,11 @@ int main()
 	act.sa_handler=handler;
 	act.sa_flags=0;
 	if (sigemptyset(&act.sa_mask) == -1) {
-		perror("Error calling sigemptyset\n");
+		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
-		perror("Error calling sigaction\n");
+		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 	if (raise(SIGTOTEST) != 0) {

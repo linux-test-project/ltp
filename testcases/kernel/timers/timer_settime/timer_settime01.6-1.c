@@ -44,12 +44,12 @@ int main(int argc, char *argv[])
 	 */
 
 	if (sigemptyset(&set) == -1 ) {
-		perror("sigemptyset() failed\n");
+		perror("sigemptyset() failed");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaddset(&set, SIGTOTEST) == -1) {
-		perror("sigaddset() failed\n");
+		perror("sigaddset() failed");
 		return PTS_UNRESOLVED;
 	}
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	its.it_value.tv_nsec = 0;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -81,35 +81,35 @@ int main(int argc, char *argv[])
 	 */
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigwait(&set, &sig) == -1) {
-		perror("sigwait() failed\n");
+		perror("sigwait() failed");
 		return PTS_UNRESOLVED;
 	}
 
 	if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	timeelapsed = tsafter.tv_sec-tsbefore.tv_sec;
 	if (timeelapsed < 0) {
-		perror("clock_gettime inconsistent\n");
+		perror("clock_gettime inconsistent");
 		return PTS_UNRESOLVED;
 	}
 
 	delta = timeelapsed-TIMERVALUESEC;
 
 	if ( (delta > ACCEPTABLEDELTA) || (delta < 0) ) {
-		perror("timer_settime() did not expire after value.it_value\n");
+		perror("timer_settime() did not expire after value.it_value");
 		return PTS_UNRESOLVED;
 	}
 		
@@ -117,17 +117,17 @@ int main(int argc, char *argv[])
 		tsbefore.tv_sec=tsafter.tv_sec;
 		tsbefore.tv_nsec=tsafter.tv_nsec;
 		if (sigwait(&set, &sig) == -1) {
-			perror("sigwait() failed\n");
+			perror("sigwait() failed");
 			return PTS_UNRESOLVED;
 		}
 	
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
-			perror("clock_gettime() did not return success\n");
+			perror("clock_gettime() did not return success");
 			return PTS_UNRESOLVED;
 		}
 		timeelapsed = tsafter.tv_sec-tsbefore.tv_sec;
 		if (timeelapsed < 0) {
-			perror("clock_gettime inconsistent\n");
+			perror("clock_gettime inconsistent");
 			return PTS_UNRESOLVED;
 		}
 
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (timer_delete(tid) != 0) {
-		perror("timer_delete() did not return success\n");
+		perror("timer_delete() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

@@ -40,14 +40,14 @@ int main()
 	/* Initialize attribute */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object\n");
+		perror("Cannot initialize attribute object");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy attribute */
 	if(pthread_attr_destroy(&new_attr) != 0)
 	{
-		perror("Cannot destroy the attribute object\n");
+		perror("Cannot destroy the attribute object");
 		return PTS_UNRESOLVED;
 	}
 
@@ -62,7 +62,7 @@ int main()
        }
        else if((ret != 0) && ((ret == EPERM) || (ret == EAGAIN)))
        {
-	       perror("Error created a new thread\n");
+	       perror("Error created a new thread");
 	       return PTS_UNRESOLVED;
        }
        else

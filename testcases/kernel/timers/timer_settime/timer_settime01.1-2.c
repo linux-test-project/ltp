@@ -58,11 +58,11 @@ int main(int argc, char *argv[])
 	its.it_interval.tv_nsec = 0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
-		perror("Error calling sigemptyset\n");
+		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
-		perror("Error calling sigaction\n");
+		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 
@@ -74,17 +74,17 @@ int main(int argc, char *argv[])
 		ts.tv_nsec=timervals[i][1];
 
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-			perror("timer_create() did not return success\n");
+			perror("timer_create() did not return success");
 			return PTS_UNRESOLVED;
 		}
 
 		if (timer_settime(tid, 0, &its, NULL) != 0) {
-			perror("timer_settime() did not return success\n");
+			perror("timer_settime() did not return success");
 			failure = 1;
 		}
 
 		if (nanosleep(&ts, &tsleft) != -1) {
-			perror("nanosleep() not interrupted\n");
+			perror("nanosleep() not interrupted");
 			failure = 1;
 		}
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (timer_delete(tid) == -1) {
-			perror("timer_delete() returned failure\n");
+			perror("timer_delete() returned failure");
 			/*
 			 * do not continue
 			 */

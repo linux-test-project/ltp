@@ -51,11 +51,11 @@ int main()
 	parentact.sa_handler=parenthandler;
 	parentact.sa_flags=0;
 	if (sigemptyset(&parentact.sa_mask) == -1) {
-		perror("Error calling sigemptyset\n");
+		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &parentact, 0) == -1) {
-		perror("Error calling sigaction\n");
+		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 
@@ -66,11 +66,11 @@ int main()
 		childact.sa_handler=childhandler;
 		childact.sa_flags=0;
 		if (sigemptyset(&childact.sa_mask) == -1) {
-			perror("Error calling sigemptyset\n");
+			perror("Error calling sigemptyset");
 			return PTS_UNRESOLVED;
 		}
 		if (sigaction(SIGTOTEST, &childact, 0) == -1) {
-			perror("Error calling sigaction\n");
+			perror("Error calling sigaction");
 			return PTS_UNRESOLVED;
 		}
 		if (raise(SIGTOTEST) != 0) {
@@ -85,7 +85,7 @@ int main()
 		int i;
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit\n");
+			perror("Error waiting for child to exit");
 			return PTS_UNRESOLVED;
 		}
 		if (WEXITSTATUS(i)) {

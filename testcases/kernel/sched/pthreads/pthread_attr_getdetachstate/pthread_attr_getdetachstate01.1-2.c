@@ -32,14 +32,14 @@ int main()
 	/* Initialize attribute */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object\n");
+		perror("Cannot initialize attribute object");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the detachstate to PTHREAD_CREATE_DETACHED. */
 	if(pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
 	{
-		perror("Error in pthread_attr_setdetachstate()\n");
+		perror("Error in pthread_attr_setdetachstate()");
 		return PTS_UNRESOLVED;
 	}
 	

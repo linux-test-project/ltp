@@ -40,21 +40,21 @@ int main(int argc, char *argv[])
 	act.sa_flags=0;
 	sigemptyset(&act.sa_mask);
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
-		perror("Error calling sigaction\n");
+		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_FAIL;
 	}
 
 	ts.tv_sec=SLEEPTIME;
 	ts.tv_nsec=0;
 	if (nanosleep(&ts, NULL) == -1) {
-		perror("nanosleep() interrupted\n");
+		perror("nanosleep() interrupted");
 		return PTS_FAIL;
 	}
 

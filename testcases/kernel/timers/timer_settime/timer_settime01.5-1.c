@@ -52,21 +52,21 @@ int main(int argc, char *argv[])
 	act.sa_flags=0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
-		perror("Error calling sigemptyset\n");
+		perror("Error calling sigemptyset");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &act, 0) == -1) {
-		perror("Error calling sigaction\n");
+		perror("Error calling sigaction");
 		return PTS_UNRESOLVED;
 	}
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (clock_gettime(CLOCK_REALTIME, &beforets) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -80,12 +80,12 @@ int main(int argc, char *argv[])
 
 	flags |= TIMER_ABSTIME;
 	if (timer_settime(tid, flags, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (nanosleep(&ts, &tsleft) != -1) {
-		perror("nanosleep() not interrupted\n");
+		perror("nanosleep() not interrupted");
 		return PTS_FAIL;
 	}
 

@@ -72,7 +72,7 @@ void *a_thread_func()
 	sleep(10);
 	
 	/* If we reach here, operation timed out */
-	perror("Operation timed out, thread could not cancel itself\n");
+	perror("Operation timed out, thread could not cancel itself");
 	cleanup_flag=1;
 	pthread_exit(PTHREAD_CANCELED);
 }
@@ -89,7 +89,7 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 	
@@ -119,7 +119,7 @@ int main()
 			return PTS_FAIL;
 		}
 		
-		perror("Error in pthread_join\n");
+		perror("Error in pthread_join");
 		return PTS_UNRESOLVED;		
 	}
 

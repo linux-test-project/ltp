@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	struct sigaction act;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
 		act.sa_handler=handler;
 		act.sa_flags=0;
 		if (sigemptyset(&act.sa_mask) != 0) {
-			perror("sigemptyset() did not return success\n");
+			perror("sigemptyset() did not return success");
 			return PTS_UNRESOLVED;
 		}
 		if (sigaction(SIGABRT, &act, 0) != 0) {
-			perror("sigaction() did not return success\n");
+			perror("sigaction() did not return success");
 			return PTS_UNRESOLVED;
 		}
 		tssleep.tv_sec=SLEEPSEC;
@@ -70,11 +70,11 @@ int main(int argc, char *argv[])
 		}
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit\n");
+			perror("Error waiting for child to exit");
 			return PTS_UNRESOLVED;
 		}
 		if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
-			perror("clock_gettime() did not return success\n");
+			perror("clock_gettime() did not return success");
 			return PTS_UNRESOLVED;
 		}
 

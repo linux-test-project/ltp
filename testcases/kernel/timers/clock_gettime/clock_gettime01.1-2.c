@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 				return PTS_FAIL;
 			}
 		} else {
-			perror("Error calling gettimeofday()\n");
+			perror("Error calling gettimeofday()");
 			return PTS_UNRESOLVED;
 		}
 	} else {

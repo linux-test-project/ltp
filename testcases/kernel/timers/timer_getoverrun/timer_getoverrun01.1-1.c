@@ -55,11 +55,11 @@ int main()
 	 * set up handler for SIGTOTEST
 	 */
 	if (sigemptyset(&act.sa_mask) != 0) {
-		perror("sigemptyset() did not return success\n");
+		perror("sigemptyset() did not return success");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaction(SIGTOTEST, &act, 0) != 0) {
-		perror("sigaction() did not return success\n");
+		perror("sigaction() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -68,7 +68,7 @@ int main()
 	 */
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
-		perror("timer_create() did not return success\n");
+		perror("timer_create() did not return success");
 		return PTS_UNRESOLVED;
 	}
 	its.it_interval.tv_sec = TIMERINTERVAL;
@@ -77,7 +77,7 @@ int main()
 	its.it_value.tv_nsec = 0;
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
+		perror("timer_settime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -85,25 +85,25 @@ int main()
 	 * block signal SIGTOTEST
 	 */
 	if (sigemptyset(&set) != 0) {
-		perror("sigemptyset() did not return success\n");
+		perror("sigemptyset() did not return success");
 		return PTS_UNRESOLVED;
 	}
 	if (sigaddset(&set, SIGTOTEST) != 0) {
-		perror("sigaddset() did not return success\n");
+		perror("sigaddset() did not return success");
 		return PTS_UNRESOLVED;
 	}
 	if (sigprocmask(SIG_SETMASK, &set, NULL) != 0) {
-		perror("sigprocmask() did not return success\n");
+		perror("sigprocmask() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sleep(2*TIMERINTERVAL + TIMERVAL) != 0) {
-		perror("Could not sleep for correct amount of time\n");
+		perror("Could not sleep for correct amount of time");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_UNBLOCK, &set, NULL) != 0) {
-		perror("sigprocmask() did not return success\n");
+		perror("sigprocmask() did not return success");
 		return PTS_UNRESOLVED;
 	}
 

@@ -30,14 +30,14 @@ int main()
 	/* Initialize attribute */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Cannot initialize attribute object\n");
+		perror("Cannot initialize attribute object");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy attribute */
 	if(pthread_attr_destroy(&new_attr) != 0)
 	{
-		perror("Cannot destroy the attribute object\n");
+		perror("Cannot destroy the attribute object");
 		return PTS_UNRESOLVED;
 	}
 

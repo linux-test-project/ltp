@@ -65,7 +65,7 @@ main(int argc, char *argv[])
    buf[BSIZE-1]='Z';
     
    if ((fd = creat("large_file",0755)) == -1)
-      perror("lftest: \n");
+      perror("lftest: ");
 
    for (i=0;i<bufnum;i++)
    {

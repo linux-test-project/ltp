@@ -39,7 +39,7 @@ int main()
 	/* Initialize the attribute object */
 	if(pthread_attr_init(&new_attr) != 0)
 	{
-		perror("Error intializing attribute object\n");
+		perror("Error intializing attribute object");
 		return PTS_UNRESOLVED;
 		
 	}
@@ -47,7 +47,7 @@ int main()
 	/* Make the new attribute object joinable */
 	if(pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_JOINABLE) != 0)
 	{
-		perror("Error setting the detached state of the attribute\n");
+		perror("Error setting the detached state of the attribute");
 		return PTS_UNRESOLVED;
 	}
 
@@ -55,14 +55,14 @@ int main()
 	 * make it joinable. */
 	if(pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Now change the attribute object to be in a detached state */
 	if(pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
 	{
-		perror("Error setting the detached state of the attribute\n");
+		perror("Error setting the detached state of the attribute");
 		return PTS_UNRESOLVED;
 	}
 	

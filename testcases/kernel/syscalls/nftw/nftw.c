@@ -739,7 +739,7 @@ setup()
 
     /* Get the user id "nobody" */
     if ((ltpuser = getpwnam("nobody")) == NULL) {
-        perror("nobody not found in /etc/passwd\n");
+        perror("nobody not found in /etc/passwd");
         exit(1);
     }
 

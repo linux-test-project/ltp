@@ -52,12 +52,12 @@ main(int argc, char **argv)
 	 * and group files.
 	 */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
-		perror("change_owner: nobody not found in /etc/passwd\n");
+		perror("change_owner: nobody not found in /etc/passwd");
 		exit(1);
 	}
 	if ((ltpgroup = getgrnam("nobody")) == NULL) {
 		if ((ltpgroup = getgrnam("nogroup")) == NULL) {
-			perror("change_owner: nobody/nogroup's group not found in /etc/group\n");
+			perror("change_owner: nobody/nogroup's group not found in /etc/group");
 			exit(1);
 		}
 	}

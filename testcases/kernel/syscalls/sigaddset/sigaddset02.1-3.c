@@ -47,7 +47,7 @@ int main()
 	signallist[19] = SIGUSR2;
 	signallist[20] = SIGURG;
 	if (sigemptyset(&signalset) == -1) {
-		perror("sigemptyset failed -- test aborting\n");
+		perror("sigemptyset failed -- test aborting");
 		return -1;
 	}
 

@@ -55,7 +55,7 @@ void *a_thread_func()
 	 * since pthread_cleanup_push is in the code.  Else a compile error
 	 * will result. */
 	pthread_cleanup_pop(0);
-	perror("Operation timed out, thread could not be canceled\n");
+	perror("Operation timed out, thread could not be canceled");
 	pthread_exit(0);
 }
 
@@ -70,7 +70,7 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
-		perror("Error creating thread\n");
+		perror("Error creating thread");
 		return PTS_UNRESOLVED;
 	}
 	

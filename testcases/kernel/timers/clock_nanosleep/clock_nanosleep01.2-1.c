@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	int sleepuntilsec, flags = 0;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
-		perror("clock_gettime() did not return success\n");
+		perror("clock_gettime() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
-		perror("Error in clock_gettime()\n");
+		perror("Error in clock_gettime()");
 		return PTS_UNRESOLVED;
 	}
 
