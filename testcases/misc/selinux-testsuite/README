@@ -1,0 +1,25 @@
+These testcases test the SELinux Security Module.
+
+A kernel with SELinux configured, and SELinux policy and userspace
+tools installed, are required to build and run the SELinux testsuite. 
+
+To build the testsuite, you must first compile the testcases and then 
+install them. Thus, change into the selinux-testsuite directory
+and from the command line execute,
+	make 
+	make install
+
+To run the testsuite, change to the testscripts directory and 
+from the command line execute
+	./test-selinux
+to start the test-selinux script. This script builds the test policy 
+in the selinux-testsuite/policy directory and runs the testsuite.
+After the testcases have completed, the test policy will be removed and
+the original policy will be restored. Thus, if the test-selinux
+script is not allowed to complete, you will manually have to restore
+your system's original policy. This can be done by changing
+to the the selinux-testsuite/policy directory and from
+the commandline, issue a "make cleanup" to remove the test policy
+and restore the original policy.
+
+Results of the test run are in the LTPROOT/results directory.

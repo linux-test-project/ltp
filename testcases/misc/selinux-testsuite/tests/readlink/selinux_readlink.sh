@@ -1,0 +1,96 @@
+#!/bin/sh
+
+setup()
+{
+        LTPTMP="/tmp/selinux"
+        export TCID="setup"
+        export TST_COUNT=0
+
+	# Remove any leftover test files from prior failed runs.
+	rm -rf $LTPTMP/test_file $LTPTMP/test_symlink
+
+	# Create a test file.  
+	touch $LTPTMP/test_file 2>&1
+	chcon -t test_readlink_file_t $LTPTMP/test_file 2>&1
+
+	# Create a test symbolic link to the test file.
+	ln -sf test_file $LTPTMP/test_symlink 2>&1
+	chcon -h -t test_readlink_link_t $LTPTMP/test_symlink 2>&1
+}
+
+test01()
+{
+	TCID="test01"
+	TST_COUNT=1
+	RC=0
+
+	# Verify that test_readlink_t can read and follow this link.
+	runcon -t test_readlink_t -- ls -Ll $LTPTMP/test_symlink
+	RC=$?
+        if [ $RC -eq 0 ]
+        then
+                echo "Test #1: readlink passed."
+        else
+                echo "Test #1: readlink failed."
+        fi
+        return $RC
+}
+
+test02()
+{
+	TCID="test02"
+	TST_COUNT=2
+	RC=0
+
+	# Verify that test_noreadlink_t cannot read or follow this link.
+	runcon -t test_noreadlink_t -- ls -l $LTPTMP/test_symlink 2>&1
+	RC=$?
+        if [ $RC -ne 0 ]
+        then
+                echo "Test #2: readlink passed."
+		return 0
+        else
+                echo "Test #2: readlink failed."
+		return 1
+        fi
+}
+
+test03()
+{
+	TCID="test03"
+	TST_COUNT=3
+	RC=0
+
+	runcon -t test_noreadlink_t -- ls -Ll $LTPTMP/test_symlink 2>&1
+	RC=$?
+        if [ $RC -ne 0 ]
+        then
+                echo "Test #3: readlink passed."
+		return 0
+        else
+                echo "Test #3: readlink failed."
+		return 1
+        fi
+}
+
+cleanup()
+{
+	# Cleanup.
+	rm -rf $LTPTMP/test_file $LTPTMP/test_symlink
+}
+
+# Function:     main
+#
+# Description:  - Execute all tests, exit with test status.
+#
+# Exit:         - zero on success
+#               - non-zero on failure.
+#
+RC=0    # Return value from setup, and test functions.
+
+setup  || exit $RC
+test01 || exit $RC
+test02 || exit $RC
+test03 || exit $RC
+cleanup
+exit 0 
