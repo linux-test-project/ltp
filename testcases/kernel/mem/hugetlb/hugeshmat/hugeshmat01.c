@@ -65,7 +65,11 @@ extern int Tst_count;
 #define CASE0		10		/* values to write into the shared */
 #define CASE1		20		/* memory location.		   */
 
+#if __WORDSIZE==64
+#define UNALIGNED      0x10000000eee
+#else
 #define UNALIGNED      0x90000eee
+#endif
 
 int shm_id_1 = -1;
 
