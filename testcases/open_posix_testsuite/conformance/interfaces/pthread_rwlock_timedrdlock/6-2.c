@@ -97,6 +97,7 @@ static void * th_fn(void *arg)
 	
 	before_wait = time(NULL);
 	abs_timeout.tv_sec = before_wait + TIMEOUT;
+	abs_timeout.tv_nsec = 0;
 	
 	thread_state = ENTERED_THREAD;
 	
