@@ -84,8 +84,9 @@ int main(int ac, char **av)
 	setup();
         /* Get the currently used number of file descriptors */
 	mypid=getpid();
-	cmdstring=malloc(sizeof(cmdstring));
-	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'}> pipe07.tmp",mypid);
+	cmdstring=malloc(BUFSIZ);
+	snprintf(cmdstring, BUFSIZ, "ls -A -1 /proc/%d/fd | "
+		"wc -l | awk {'print $1'}> pipe07.tmp", mypid);
 	if (system(cmdstring) == 0)
 	{
 		f = fopen("pipe07.tmp", "r");	
