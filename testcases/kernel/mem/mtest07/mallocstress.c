@@ -39,6 +39,7 @@
 /*				  scheme. size = fibannoci number, pow of 2 or*/
 /*				  power of 3.                                 */
 /*				- changed comments.                           */
+/*				- Added test to LTP.                          */
 /*                                                                            */
 /* File:	mallocstress.c						      */
 /*									      */
