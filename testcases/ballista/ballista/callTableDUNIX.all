@@ -1,0 +1,374 @@
+# callTableDUNIX.all: function definition file used by Ballista - DUNIX
+# Copyright (C) 1998-2001  Carnegie Mellon University
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#------------------------------------------------------------------------
+
+#Calltable file
+#This file is ported to Digital UNIX 4.0
+#The file format is as follows
+#
+# include file name  callType  return type  function name  ballista type
+#
+# callType can be:
+# constructor   -   puts a new before method name ie: result = new widget;
+# function - normal function
+#------------------------------------------------------------------------
+
+
+#files:
+unistd.h	function	int	access	b_fname	b_int_amode
+unistd.h	function	int	chdir	b_fname
+sys/stat.h	function	int	chmod	b_fname	b_mode_t
+sys/types.h	function	int	chown	b_fname	b_id	b_id
+unistd.h	function	int	close	b_fd
+fcntl.h	function	int	creat	b_fname	b_mode_t
+unistd.h	function	int	dup	b_fd
+unistd.h	function	int	dup2	b_fd	b_fd
+sys/stat.h	function	int	fchmod	b_fd	b_mode_t
+fcntl.h	function	int	fcntl	b_fd	b_int	b_int
+unistd.h	function	int	fdatasync	b_fd
+sys/stat.h	function	int	fstat	b_fd	b_ptr_stat
+unistd.h	function	int	fsync	b_fd
+unistd.h	function	int	ftruncate	b_fd	b_long
+unistd.h	function	char*	getcwd	b_ptr_char	b_int
+unistd.h	function	int	link	b_fname	b_fname
+unistd.h	function	off_t	lseek	b_fd	b_long	b_int_whence
+sys/stat.h	function	int	mkdir	b_fname	b_mode_t
+sys/stat.h	function	int	mkfifo	b_fname	b_mode_t
+fcntl.h	function	int	open	b_fname	b_oflag
+fcntl.h	function	int	open	b_fname	b_oflag	b_mode_t
+#unistd.h	function	ssize_t	read	b_fd	b_ptr_buf	b_int
+unistd.h	function	int	rename	b_fname	b_fname
+unistd.h	function	int	rmdir	b_fname
+sys/stat.h	function	int	stat	b_fname	b_ptr_stat
+sys/stat.h	function	mode_t	umask	b_mode_t
+unistd.h	function	int	unlink	b_fname
+unistd.h	function	ssize_t	write	b_fd	b_ptr_char	b_int
+utime.h	function	int	utime	b_fname	b_ptr_utimbuf
+
+#dir:
+dirent.h	function	int	closedir	b_ptr_dir
+dirent.h	function	DIR*	opendir	b_fname
+dirent.h	function	dirent*	readdir	b_ptr_dir
+dirent.h	function	void	rewinddir	b_ptr_dir
+
+#processes:
+unistd.h	function	int	execl	b_fname	b_ptr_char
+unistd.h	function	int	execl	b_fname	b_ptr_char	b_ptr_char
+unistd.h	function	int	execle	b_fname	b_ptr_char
+unistd.h	function	int	execle	b_fname	b_ptr_char	b_ptr_char
+unistd.h	function	int	execlp	b_fname	b_ptr_char
+unistd.h	function	int	execlp	b_fname	b_ptr_char	b_ptr_char
+unistd.h	function	int	execv	b_fname	b_ptr_ptr_char
+unistd.h	function	int	execve	b_fname	b_ptr_ptr_char	b_ptr_ptr_char
+unistd.h	function	int	execvp	b_fname	b_ptr_ptr_char
+#unistd.h	function	int	pipe	b_ptr_int       #pipe intentionally left off the list
+sys/wait.h	function	pid_t	wait	b_ptr_int
+sys/wait.h	function	pid_t	waitpid	b_pid	b_ptr_int	b_waitopt
+
+#pid:
+sys/types.h	function	int	getgroups	b_int	b_ptr_gid_t
+sys/types.h	function	int	setgid	b_pid
+sys/types.h	function	int	setpgid	b_pid	b_pid
+sys/types.h	function	int	setuid	b_pid
+
+#signals:
+unistd.h	function	int	alarm	b_int
+#signal.h	int	kill	b_pid	b_int	# sends a SIGHUP to all procs in proc grp
+signal.h	function	int	sigaction	b_signal	b_ptr_sigaction	b_ptr_sigaction
+signal.h	function	int	sigaddset	b_ptr_sigset_t	b_signal
+signal.h	function	int	sigdelset	b_ptr_sigset_t	b_signal
+signal.h	function	int	sigemptyset	b_ptr_sigset_t
+signal.h	function	int	sigfillset	b_ptr_sigset_t
+signal.h	function	int	sigismember	b_ptr_sigset_t	b_signal
+signal.h	function	int	sigpending	b_ptr_sigset_t
+signal.h	function	int	sigprocmask	b_sig_how	b_ptr_sigset_t	b_ptr_sigset_t
+#signal	int	sigqueue	b_pid	b_signal	b_ptr_char	# same reason as kill()
+#signal.h	int	sigsuspend	b_ptr_sigset_t	#inflated restarts
+#sigwaitinfo and sigtimedwait comment out as correct operation would be counted as Restarts
+#uncomment to check for Catastrophics
+#signal.h	function	int	sigtimedwait	b_ptr_sigset_t	b_ptr_siginfo_t	b_ptr_timespec
+#signal.h	function	int	sigwaitinfo	b_ptr_sigset_t	b_ptr_siginfo_t
+
+#termio:
+termios.h	function	speed_t	cfgetispeed	b_ptr_termios
+termios.h	function	speed_t	cfgetospeed	b_ptr_termios
+termios.h	function	int	cfsetispeed	b_ptr_termios	b_unsigned_int
+termios.h	function	int	cfsetospeed	b_ptr_termios	b_unsigned_int
+termios.h	function	int	tcdrain	b_fd
+#termios.h	function	int	tcflow	b_fd	b_int   # restart inflated
+termios.h	function	int	tcflush	b_fd	b_int_tc
+termios.h	function	int	tcgetattr	b_fd	b_ptr_termios
+termios.h	function	int	tcsendbreak	b_fd	b_int
+termios.h	function	int	tcsetattr	b_fd	b_int_tc	b_ptr_termios
+sys/types.h	function	pid_t	tcgetpgrp	b_fd
+#sys/types.h	function	int	tcsetpgrp	b_fd	b_pid  #suspend ttyoutput
+
+#jumps:
+setjmp.h	function	void	longjmp	b_jmp_buf	b_int
+setjmp.h	function	int	setjmp	b_jmp_buf
+setjmp.h	function	void	siglongjmp	b_jmp_buf	b_int
+setjmp.h	function	int	sigsetjmp	b_jmp_buf	b_int
+
+#misc:
+#assert.h	function	void	assert	#inflate the abort percentages
+locale.h	function	char*	setlocale	b_int_category	b_ptr_char
+stdio.h	function	void	perror	b_ptr_char
+time.h	function	time_t	time	b_ptr_time_t
+sys/times.h	function	clock_t	times	b_ptr_tms
+stdio.h	function	char*	ctermid	b_ptr_char
+unistd.h	function	int	isatty	b_fd
+unistd.h	function	char*	ttyname	b_fd
+sys/utsname.h	function	int	uname	b_ptr_utsname
+unistd.h	function	int	fpathconf	b_fd	b_int_file_var
+unistd.h	function	int	pathconf	b_fname	b_int_file_var
+unistd.h	function	long	sysconf	b_int_sys_var
+stdlib.h	function	char*	getenv	b_ptr_char
+grp.h	function	group*	getgrgid	b_id
+grp.h	function	group*	getgrnam	b_ptr_char_id
+pwd.h	function	passwd*	getpwnam	b_ptr_char_id
+pwd.h	function	passwd*	getpwuid	b_id
+
+#stdio:
+stdio.h	function	void	clearerr	b_ptr_file
+stdio.h	function	int	fclose	b_ptr_file
+stdio.h	function	FILE*	fdopen	b_fd	b_ptr_char_mode
+stdio.h	function	int	feof	b_ptr_file
+stdio.h	function	int	ferror	b_ptr_file
+stdio.h	function	int	fflush	b_ptr_file
+stdio.h	function	int	fgetc	b_ptr_file
+stdio.h	function	char*	fgets	b_ptr_char	b_size	b_ptr_file
+stdio.h	function	int	fileno	b_ptr_file
+stdio.h	function	FILE*	fopen	b_fname	b_ptr_char_mode
+stdio.h	function	int	fprintf	b_ptr_file	b_ptr_char
+stdio.h	function	int	fprintf	b_ptr_file	b_ptr_char	b_int
+stdio.h	function	int	fprintf	b_ptr_file	b_ptr_char	b_ptr_char
+stdio.h	function	int	fputc	b_int	b_ptr_file
+#fputs is okay to test but your xterm window stops being updated so results and summary information is not shown
+#stdio.h	function	int	fputs	b_ptr_char	b_ptr_file
+stdio.h	function	int	fread	b_ptr_buf	b_unsigned_long	b_unsigned_long	b_ptr_file
+stdio.h	function	FILE*	freopen	b_fname	b_ptr_char_mode	b_ptr_file
+stdio.h	function	int	fscanf	b_ptr_file	b_ptr_char
+stdio.h	function	int	fscanf	b_ptr_file	b_ptr_char	b_ptr_buf
+stdio.h	function	int	fseek	b_ptr_file	b_long	b_int_whence
+stdio.h	function	long	ftell	b_ptr_file
+stdio.h	function	int	fwrite	b_ptr_char	b_unsigned_long	b_unsigned_long	b_ptr_file
+stdio.h	function	int	getc	b_ptr_file
+#unistd.h	function	char*	gets	b_ptr_char  //inflate the number of Restarts
+stdio.h	function	int	printf	b_ptr_char
+stdio.h	function	int	printf	b_ptr_char	b_int
+stdio.h	function	int	printf	b_ptr_char	b_ptr_char
+stdio.h	function	int	putchar	b_int
+stdio.h	function	int	putc	b_int	b_ptr_file
+stdio.h	function	int	puts	b_ptr_char
+stdio.h	function	int	remove	b_fname
+stdio.h	function	void	rewind	b_ptr_file
+#stdio.h	function	int	scanf	b_ptr_char  //inflate the number of Restarts
+#stdio.h	function	int	scanf	b_ptr_char	b_ptr_char
+stdio.h	function	void	setbuf	b_ptr_file	b_ptr_char
+stdio.h	function	int	sprintf	b_ptr_char	b_ptr_char
+stdio.h	function	int	sprintf	b_ptr_char	b_ptr_char	b_int
+stdio.h	function	int	sprintf	b_ptr_char	b_ptr_char	b_ptr_char
+stdio.h	function	int	sscanf	b_ptr_char	b_ptr_char
+stdio.h	function	int	sscanf	b_ptr_char	b_ptr_char	b_ptr_char
+stdio.h	function	int	ungetc	b_int	b_ptr_file
+stdio.h	function	char*	tmpnam	b_ptr_char
+
+#stdlib:
+stdlib.h	function	int	abs	b_int
+#stdlib.h	function	void	abort	#inflate the number of aborts
+#stdlib.h	function	void	atexit  #operation occurs later and could throw statistics
+#stdlib.h	function	void*	bsearch #intentionally commented out
+stdlib.h	function	void	srand	b_unsigned_int
+stdlib.h	function	double	atof	b_ptr_char
+stdlib.h	function	int	atoi	b_ptr_char
+stdlib.h	function	long	atol	b_ptr_char
+stdlib.h	function	void*	malloc	b_unsigned_long
+stdlib.h	function	void*	calloc	b_unsigned_long	b_unsigned_long
+stdlib.h	function	void*	realloc	b_ptr_buf	b_unsigned_long
+stdlib.h	function	void	free	b_ptr_buf
+
+#strings:
+string.h	function	char*	strcat	b_ptr_char	b_ptr_char
+string.h	function	char*	strchr	b_ptr_char	b_int
+string.h	function	int	strcmp	b_ptr_char	b_ptr_char
+string.h	function	char*	strcpy	b_ptr_char	b_ptr_char
+string.h	function	int	strcspn	b_ptr_char	b_ptr_char
+string.h	function	size_t	strlen	b_ptr_char
+string.h	function	char*	strncat	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	int	strncmp	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	char*	strncpy	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	char*	strpbrk	b_ptr_char	b_ptr_char
+string.h	function	char*	strrchr	b_ptr_char	b_int
+string.h	function	size_t	strspn	b_ptr_char	b_ptr_char
+string.h	function	char*	strstr	b_ptr_char	b_ptr_char
+string.h	function	char*	strtok	b_ptr_char	b_ptr_char
+
+#char:
+ctype.h	function	int	isalnum	b_int
+ctype.h	function	int	isalpha	b_int
+ctype.h	function	int	iscntrl	b_int
+ctype.h	function	int	isdigit	b_int
+ctype.h	function	int	isgraph	b_int
+ctype.h	function	int	islower	b_int
+ctype.h	function	int	isprint	b_int
+ctype.h	function	int	ispunct	b_int
+ctype.h	function	int	isspace	b_int
+ctype.h	function	int	isupper	b_int
+ctype.h	function	int	isxdigit	b_int
+ctype.h	function	int	tolower	b_int
+ctype.h	function	int	toupper	b_int
+
+#math:  add -lm in configHints.txt [DIGITAL]
+math.h	function	double	acos	b_double
+math.h	function	double	asin	b_double
+math.h	function	double	atan	b_double
+math.h	function	double	atan2	b_double	b_double
+math.h	function	double	ceil	b_double
+math.h	function	double	cos	b_double
+math.h	function	double	cosh	b_double
+math.h	function	double	exp	b_double
+math.h	function	double	fabs	b_double
+math.h	function	double	floor	b_double
+math.h	function	double	fmod	b_double	b_double
+math.h	function	double	frexp	b_double	b_ptr_int
+math.h	function	double	ldexp	b_double	b_int
+math.h	function	double	log	b_double
+math.h	function	double	log10	b_double
+math.h	function	double	modf	b_double	b_ptr_double
+math.h	function	double	pow	b_double	b_double
+math.h	function	double	sin	b_double
+math.h	function	double	sinh	b_double
+math.h	function	double	sqrt	b_double
+math.h	function	double	tan	b_double
+math.h	function	double	tanh	b_double
+
+#time:
+time.h	function	char*	asctime	b_ptr_tm
+time.h	function	char*	ctime	b_ptr_time_t
+time.h	function	tm*	gmtime	b_ptr_time_t
+time.h	function	tm*	localtime	b_ptr_time_t
+time.h	function	time_t	mktime	b_ptr_tm
+time.h	function	size_t	strftime	b_ptr_char	b_unsigned_long	b_ptr_char	b_ptr_tm
+
+#timers:
+time.h	function	int	clock_gettime	b_clockid	b_ptr_timespec
+time.h	function	int	clock_settime	b_clockid	b_ptr_timespec
+time.h	function	int	clock_getres	b_clockid	b_ptr_timespec
+#ZEROtime.h	function	clock_t	clock #ZERO calling arguments
+time.h	function	double	difftime	b_time_t	b_time_t
+time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_long  
+#time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_long  #ALPHA version
+#time.h	function	int	timer_create	b_clockid	b_ptr_sigevent	b_ptr_int   #LINUX/SUN version
+time.h	function	int	timer_delete	b_timer
+time.h	function	int	timer_settime	b_timer	b_timer	b_ptr_itimerspec	b_ptr_itimerspec
+time.h	function	int	timer_gettime	b_timer		b_ptr_itimerspec
+time.h	function	int	timer_getoverrun	b_timer
+time.h	function	int	nanosleep	b_ptr_timespec	b_ptr_timespec
+
+#memory
+#munlockall no call arguments
+sys/mman.h	function	int 	mlockall	b_mcl_flag
+sys/mman.h	function	int	mlock	b_ptr_void	b_unsigned_long
+sys/mman.h	function	int	munlock	b_ptr_void	b_unsigned_long
+sys/mman.h	function	void*	mmap	b_ptr_void	b_unsigned_long	b_prot_flag	b_map_flag	b_fd	b_int
+#note mmap probably should be tested on shared memory w/ b_fd
+sys/mman.h	function	int	munmap	b_ptr_void	b_unsigned_long
+sys/mman.h	function	int	mprotect	b_ptr_void	b_unsigned_long	b_prot_flag
+sys/mman.h	function	int	msync	b_ptr_void	b_unsigned_long	b_ms_flag
+sys/mman.h	function	int	shm_open	b_fname	b_oflag	b_mode_t
+sys/mman.h	function	int 	shm_unlink	b_fname
+#note shm_* should probably also try names that start with /
+
+#mqueues:  (not supported on LINUX )
+mqueue.h	function	mqd_t	mq_open	b_fname	b_oflag
+mqueue.h	function	int	mq_close	b_mqd
+mqueue.h	function	int	mq_unlink	b_fname
+mqueue.h	function	int	mq_send	b_mqd	b_ptr_char	b_size	b_unsigned_int
+mqueue.h	function	ssize_t	mq_receive	b_mqd	b_ptr_char	b_unsigned_long	b_ptr_unsigned_int
+mqueue.h	function	int	mq_notify	b_mqd	b_ptr_sigevent
+mqueue.h	function	int	mq_setattr	b_mqd	b_mq_attr	b_mq_attr
+mqueue.h	function	int	mq_getattr	b_mqd	b_mq_attr
+
+#sched:
+sched.h	function	int	sched_setparam	b_pid	b_ptr_sched_param
+sched.h	function	int	sched_getparam	b_pid	b_ptr_sched_param
+sched.h	function	int	sched_setscheduler	b_pid	b_sched_policy	b_ptr_sched_param
+sched.h	function	int	sched_getscheduler	b_pid
+#sched.h	function	int	sched_yield    #no calling arguments
+sched.h	function	int	sched_get_priority_max	b_sched_policy
+sched.h	function	int	sched_get_priority_min	b_sched_policy
+sched.h	function	int	sched_rr_get_interval	b_pid	b_ptr_timespec
+
+#semaphore
+semaphore.h	function	int	sem_init	b_ptr_sem_t	b_int	b_unsigned_int
+semaphore.h	function	int	sem_destroy	b_ptr_sem_t
+semaphore.h	function	sem_t*	sem_open	b_fname	b_oflag
+semaphore.h	function	int	sem_close	b_ptr_sem_t
+semaphore.h	function	int	sem_unlink	b_fname
+semaphore.h	function	int	sem_wait	b_ptr_sem_t
+semaphore.h	function	int	sem_trywait	b_ptr_sem_t
+semaphore.h	function	int	sem_post	b_ptr_sem_t
+semaphore.h	function	int	sem_getvalue	b_ptr_sem_t	b_ptr_int
+
+#aio
+aio.h	function	int	aio_read	b_ptr_aiocb
+aio.h	function	int	aio_write	b_ptr_aiocb
+#aio.h   function        int     lio_listio      b_aio_mode      b_ptr_ptr_aiocb b_int   b_ptr_sigevent
+aio.h	function	int	aio_error	b_ptr_aiocb
+aio.h	function	ssize_t	aio_return	b_ptr_aiocb
+aio.h	function	int	aio_cancel	b_fd	b_ptr_aiocb
+aio.h	function	int	aio_suspend	b_ptr_ptr_aiocb	b_int	b_ptr_timespec
+aio.h	function	int	aio_fsync	b_oflag	b_ptr_aiocb
+
+#additions
+#stdio.h	function	char*	cuserid	b_ptr_char  #check the b_ptr_char for array...
+
+#sun, alpha and linux
+stdlib.h	function	div_t	div	b_int	b_int 
+
+#stdlib.h	function	exit	b_int	#inflated robustness failure rates
+stdio.h	function	int	fgetpos	b_ptr_file	b_ptr_fpos_t  
+stdio.h	function	int	fsetpos	b_ptr_file	b_ptr_fpos_t
+
+# getchar intentionally omitted since it requires stdin
+stdlib.h	function	long	labs	b_long
+stdlib.h	function	ldiv_t	ldiv	b_long	b_long
+stdlib.h	function	int	mblen	b_ptr_char	b_unsigned_long
+stdlib.h	function	size_t	mbstowcs	b_ptr_wchar	b_ptr_char	b_unsigned_long	
+stdlib.h	function	int	mbtowc	b_ptr_wchar	b_ptr_char	b_unsigned_long
+# qsort intentionally left off the list
+# rand has zero parameters and therefore, intentionally left off the list
+string.h	function	void*	memchr	b_ptr_char	b_int	b_unsigned_long
+string.h	function	int	memcmp	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	void*	memcpy	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	void*	memmove	b_ptr_char	b_ptr_char	b_unsigned_long
+string.h	function	void*	memset	b_ptr_char	b_int	b_unsigned_long
+
+stdio.h	function	int	setvbuf	b_ptr_file	b_ptr_char	b_int_buffer_mode	b_unsigned_long
+# raise, signal, & system intentionally left off the list
+string.h	function	int	strcoll	b_ptr_char	b_ptr_char
+string.h	function	char*	strerror	b_int
+stdlib.h	function	double	strtod	b_ptr_char	b_ptr_ptr_char
+stdlib.h	function	long	strtol	b_ptr_char	b_ptr_ptr_char	b_int
+stdlib.h	function	ulong	strtoul	b_ptr_char	b_ptr_ptr_char	b_int
+string.h	function	size_t	strxfrm	b_ptr_char	b_ptr_char	b_unsigned_long
+
+# tmpfile not defined as zero parameters
+stdlib.h	function	size_t	wcstombs	b_ptr_char	b_ptr_wchar	b_unsigned_int
+stdlib.h	function	int	wctomb	b_ptr_char	b_wchar
+
+#vfprintf, vprintf, vsprintf omitted 

@@ -1,0 +1,7 @@
+#################################################
+# The datatype hierachy is generated for the MuT 
+#   'cfgetispeed' using the script 'dataClimber'.        
+#################################################
+b_ptr_void void*
+b_ptr_buf void*
+b_ptr_termios structTermiosPtr
