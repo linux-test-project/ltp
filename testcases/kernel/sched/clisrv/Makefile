@@ -12,7 +12,7 @@ pthserv:
 	$(CC) $(CFLAGS) $(LDFLAGS) -opthserv pthserv.o readline.o writen.o $(LOADLIBES)
 
 install:
-	@for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
+	@set -e; for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:
 	rm -fr $(OFILES) $(TESTS)

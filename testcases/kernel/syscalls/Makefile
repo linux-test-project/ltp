@@ -28,20 +28,20 @@ DEBUG_LDFLAGS=-s
 CFLAGS+=-I../../include -g -Wall
 LOADLIBES+=
 
-SUBDIR = `ls -d * | grep -v lib | grep -v Makefile | grep -v CVS | grep -v 00_Descriptions.txt` 
+SUBDIR = `ls */Makefile | sed "s/Makefile//g"` 
 
 all:  
-	@for i in lib $(SUBDIR); do \
-		(cd $$i; $(MAKE) all ) \
+	@set -e; for i in lib $(SUBDIR); do \
+		$(MAKE) -C $$i  all; \
 	done
 
 install:
-	@for i in lib $(SUBDIR); do \
-		(cd $$i; $(MAKE) install) \
+	@set -e; for i in lib $(SUBDIR); do \
+		$(MAKE) -C $$i  install; \
 	done
 
 clean:
-	@for i in lib $(SUBDIR); do \
-		(cd $$i; $(MAKE) clean) \
+	@set -e; for i in lib $(SUBDIR); do \
+		$(MAKE) -C $$i  clean; \
 	done
 

@@ -10,7 +10,7 @@ ht_affinity:
 	gcc -o ht_affinity HTaffinity.c HTutils.c $(CFLAGS) $(LOADLIBES) 
 
 install:
-	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)

@@ -1,13 +1,13 @@
-SUBDIRS = `ls -d * | grep -v Makefile`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 
 all:
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
 	mkdir -p bin
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
 	rm -rf bin/*
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
 

@@ -25,21 +25,21 @@ LTP_LDFLAGS+=-L../../../../../lib -lltp
 IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
 
 all: $& $(IPCTESTS)
-	for i in lib $(IPCTESTS); do \
-		(cd $$i; $(MAKE) all) \
+	set -e; for i in lib $(IPCTESTS); do \
+		$(MAKE) -C $$i  all; \
 	done
 
 clean:
-	for i in lib $(IPCTESTS); do \
-		(cd $$i; $(MAKE) clean) \
+	set -e; for i in lib $(IPCTESTS); do \
+		$(MAKE) -C $$i  clean; \
 	done
 
 install:
-	for i in lib $(IPCTESTS); do \
-		(cd $$i; $(MAKE) install) \
+	set -e; for i in lib $(IPCTESTS); do \
+		$(MAKE) -C $$i  install; \
 	done
 
 strip_bin:
-	for i in $(IPCTESTS); do \
-		(cd $$i; $(MAKE) strip_bin) \
+	set -e; for i in $(IPCTESTS); do \
+		$(MAKE) -C $$i  strip_bin; \
 	done

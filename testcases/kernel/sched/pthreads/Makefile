@@ -1,12 +1,12 @@
-SUBDIRS = `ls -d * | grep pth`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 
 all:
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
 
 

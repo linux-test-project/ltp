@@ -30,7 +30,7 @@ SCRIPTS= syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08
 all: $(TARGETS) 
 
 install:
-	@for i in $(TARGETS) $(SCRIPTS) ; do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(SCRIPTS) ; do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS) 

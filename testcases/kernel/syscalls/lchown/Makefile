@@ -29,13 +29,12 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-create_link: create_link.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $@.c $(LDLIBS)
+change_owner.mode: 
 	chown root create_link
 	chmod 04755 create_link 
 
-install:
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+install: all change_owner.mode
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS) 

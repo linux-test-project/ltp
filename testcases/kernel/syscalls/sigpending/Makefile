@@ -27,13 +27,13 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 TEST=sigpending01
 
 all: $(TARGETS)
-	@chmod 755 $(TEST)
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+	@chmod 755 $(TEST)
 
 install: all
-	@for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)

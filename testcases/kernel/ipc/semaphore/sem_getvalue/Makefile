@@ -6,10 +6,10 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 TEST=`ls | grep 01 | grep -v '\.'`
 
 all: $(TARGETS)
-	@chmod 755 $(TEST)
 
 install:
-	for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../../bin/$$i ; done ;
+	@chmod 755 $(TEST)
+	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../../bin/$$i ; done ;
 
 clean:
 	rm -f $(TARGETS)

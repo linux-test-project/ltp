@@ -28,10 +28,10 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 TEST=nanosleep05
 
 all: $(TARGETS)
-	@chmod 755 $(TEST)
 
 install:
-	@for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
+	@chmod 755 $(TEST)
 
 clean:
 	rm -f $(TARGETS)

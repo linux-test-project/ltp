@@ -35,7 +35,7 @@ clean:
 	/bin/rm -rf $(MAINS)
 
 install:
-	@for i in $(MAINS); do ln -f $$i ../../../../bin/$$i ; done
+	@set -e; for i in $(MAINS); do ln -f $$i ../../../../bin/$$i ; done
 
 strip_bin:
 	strip $(MAINS) > /dev/null 2>&1

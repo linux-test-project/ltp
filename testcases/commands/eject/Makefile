@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install:
-	@for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
 	@ln -f eject-tests.sh ../../bin/eject_tests.sh
 
 clean:

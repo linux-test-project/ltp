@@ -7,14 +7,14 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 SUBDIRS=bessel exp_log iperb power trigo
 
 all: $(TARGETS)
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i; done
 
 clean: 
-	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
 	rm -f $(TARGETS) 
-	@for i in $(TARGETS); do rm -rf ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS); do rm -rf ../../../bin/$$i ; done
 

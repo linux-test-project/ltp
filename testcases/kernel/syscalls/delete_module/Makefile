@@ -44,7 +44,7 @@ delete_module03: delete_module03.c
 	$(CC) $(CFLAGS) delete_module03.c $(LOADLIBES) -o $@
 
 install:
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)

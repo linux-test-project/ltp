@@ -10,7 +10,7 @@ clean:	FRC
 	rm -f $(BIN)
 
 install:  FRC
-	@for i in $(BIN); do ln -f $$i ../../bin/$$i ; done
+	@set -e; for i in $(BIN); do ln -f $$i ../../bin/$$i ; done
 
 hangup01: hangup01.c
 	$(CC) $(CFLAGS) -o hangup01 hangup01.c $(LDFLAGS) 

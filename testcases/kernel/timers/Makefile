@@ -27,17 +27,17 @@ LOADLIBES+=
 SUBDIR = `ls -d * | grep -v include | grep -v Makefile | grep -v CVS | grep -v README` 
 
 all:  
-	@for i in $(SUBDIR); do \
-		(cd $$i; $(MAKE) all ) \
+	@set -e; for i in $(SUBDIR); do \
+		$(MAKE) -C $$i  all; \
 	done
 
 install:
-	@for i in $(SUBDIR); do \
-		(cd $$i; $(MAKE) install) \
+	@set -e; for i in $(SUBDIR); do \
+		$(MAKE) -C $$i  install; \
 	done
 
 clean:
-	@for i in $(SUBDIR); do \
-		(cd $$i; $(MAKE) clean) \
+	@set -e; for i in $(SUBDIR); do \
+		$(MAKE) -C $$i  clean; \
 	done
 

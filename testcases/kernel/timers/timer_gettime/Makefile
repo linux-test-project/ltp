@@ -1,15 +1,15 @@
-CFLAGS := -Wall -I ../../../../include -I../include -D _GNU_SOURCE
-LDFLAGS := -L ../../../../lib -lltp 
+CFLAGS := -Wall -I ../../../../include -I ../include -D _GNU_SOURCE
+LDFLAGS := -L ../../../../lib -lpthread -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=timer_gettime01
+TEST=`ls | grep 01 | grep -v '\.'`
 
 all: $(TARGETS)
-	@chmod 755 $(TEST)
 
 install:
-	for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../bin/$$i ; done ;
+	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../bin/$$i ; done ;
+	@chmod 755 $(TEST)
 
 clean:
 	rm -f $(TARGETS)

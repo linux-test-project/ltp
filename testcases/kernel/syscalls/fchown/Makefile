@@ -36,7 +36,7 @@ $(TARGETS): $(SRCS)
 
 
 install: change_owner.mode
-	@for i in $(TARGETS) change_owner; do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) change_owner; do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS) change_owner
