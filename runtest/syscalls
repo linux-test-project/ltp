@@ -238,6 +238,9 @@ getresuid01 getresuid01
 getresuid02 getresuid02
 getresuid03 getresuid03
 
+getrusage01 getrusage01
+getrusage02 getrusage02
+
 getsid01 getsid01
 getsid02 getsid02
 
