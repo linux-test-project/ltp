@@ -89,8 +89,7 @@ extern int Tst_count;
 #define DUMMY_MOD	"dummy_del_mod"
 #define DUMMY_MOD_DEP	"dummy_del_mod_dep"
 #define EXP_RET_VAL	-1
-#define	EXP_ERRNO	EBUSY
-#define TEST_DESC	"Expected failure for module in-use"
+#define EXP_ERRNO	EBUSY
 
 char *TCID = "delete_module03";
 static int exp_enos[] = {EBUSY, 0};
@@ -132,12 +131,13 @@ main(int argc, char **argv)
 		TEST_ERROR_LOG(TEST_ERRNO);
 		if ( (TEST_RETURN == (int) EXP_RET_VAL ) && 
 				(TEST_ERRNO == EXP_ERRNO) ) {
-			tst_resm(TPASS, "%s, errno: %d", TEST_DESC, TEST_ERRNO);
+			tst_resm(TPASS, "Expected failure for module in-use, "
+				"errno: %d", TEST_ERRNO);
 		} else {
-			tst_resm(TFAIL, "%s ; returned" " %d (expected %d),
-				errno %d (expected" " %d)", TEST_DESC, 
-				TEST_RETURN, EXP_RET_VAL, TEST_ERRNO,
-				EXP_ERRNO);
+			tst_resm(TFAIL, "Unexpected results for module in-use; "
+				"returned %d (expected %d), errno %d "
+				"(expected %d)", TEST_RETURN, EXP_RET_VAL,
+				TEST_ERRNO, EXP_ERRNO);
 		}
 	}
 	cleanup();

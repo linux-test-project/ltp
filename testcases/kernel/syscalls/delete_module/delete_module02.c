@@ -119,15 +119,15 @@ static void cleanup1(void);
 
 static struct test_case_t  tdat[] = {
 	{ modname, ENOENT,
-		"Expected failure for non-existing module", NULL, NULL},
+		"non-existing module", NULL, NULL},
 	{ NULLMODNAME, EINVAL,
-		"Expected failure for null terminated module name", NULL, NULL},
-	{ (char *) -1, EFAULT, "Expected failure for name outside program's "
+		"null terminated module name", NULL, NULL},
+	{ (char *) -1, EFAULT, "module name outside program's "
 		"accessible address space", NULL, NULL},
 	{ longmodname, ENAMETOOLONG,
-		"Expected failure for long module name", NULL, NULL},
+		"long module name", NULL, NULL},
 	{ modname, EPERM,
-		"Expected failure for non-superuser", setup1, cleanup1},
+		"non-superuser", setup1, cleanup1},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
@@ -162,12 +162,13 @@ main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ( (TEST_RETURN == EXP_RET_VAL) &&
 				(TEST_ERRNO == tdat[testno].experrno) ) {
-				tst_resm(TPASS, "%s, errno: %d",
-					tdat[testno].desc, TEST_ERRNO);
+				tst_resm(TPASS, "Expected results for %s, "
+					"errno: %d", tdat[testno].desc,
+					TEST_ERRNO);
 			} else {
-				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
+				tst_resm(TFAIL, "Unexpected results for %s ; "
+					"returned %d (expected %d), errno %d "
+					"(expected %d)", tdat[testno].desc,
 					TEST_RETURN, EXP_RET_VAL,
 					TEST_ERRNO, tdat[testno].experrno);
 			}
