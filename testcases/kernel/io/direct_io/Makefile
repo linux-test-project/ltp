@@ -48,9 +48,7 @@ diotest6: diotest6.c diotest_routines.o
 
 clean:	
 	rm -f $(BINS) diotest_routines.o
-	cd ../../../bin
-	rm -f $(BINS)
 
 install:
-	ln -f $(BINS) ../../../bin
+	ln -f $(BINS) ../../../../bin
 
