@@ -50,8 +50,10 @@
 #include <sys/stat.h>
 #include <sys/sendfile.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include "usctest.h"
 #include "test.h"
 
@@ -61,8 +63,8 @@ extern int Tst_count;
 
 char in_file[100];
 char out_file[100];
-struct sockaddr_in sin1;
 int out_fd;
+pid_t child_pid;
 
 void cleanup(void);
 void setup(void);
@@ -112,7 +114,9 @@ do_sendfile(off_t offset, int i)
 	int in_fd;
 	struct stat sb;
 	int wait_status;
-	int * wait_stat;
+	int wait_stat;
+
+	out_fd = create_server();
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
@@ -131,17 +135,22 @@ do_sendfile(off_t offset, int i)
 				 "expected value, expected: %d, "
 				 "got: %d", testcases[i].exp_retval,
 				 TEST_RETURN);
+			kill(child_pid, SIGKILL);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "
 					"correct");
+			wait_status = waitpid(-1, &wait_stat, 0);
 			}
 	} else {
 		tst_resm(TPASS, "call succeeded");
+		if (TEST_RETURN != testcases[i].exp_retval) 
+			kill(child_pid, SIGKILL);
+		else 
+			wait_status = waitpid(-1, &wait_stat, 0);
 	}
 
 	close(in_fd);
 
-        wait_status = waitpid(-1, wait_stat, 0);
 }
 
 /*
@@ -158,11 +167,7 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
 
-	out_fd = create_server();
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 	sprintf(in_file, "in.%d", getpid());
@@ -202,11 +207,12 @@ cleanup()
 }
 
 int create_server(void) {
-	pid_t mypid;
 	int lc;
 	int sockfd, s;
-	int length, newfd;
+	int length;
 	char rbuf[4096];
+	struct sockaddr_in sin1;
+	static int count=0;
 
 	sockfd = socket(PF_INET, SOCK_DGRAM, 0);
 	if(sockfd < 0) {
@@ -214,20 +220,24 @@ int create_server(void) {
 			strerror(errno));
 		return -1;
 	}
+	sin1.sin_family = AF_INET;
+	sin1.sin_port = htons((getpid() % 32768) + 11000 + count++);
+	sin1.sin_addr.s_addr = INADDR_ANY;
 	if(bind(sockfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "call to bind() failed: %s",
 			strerror(errno));
 		return -1;
 	}
-	mypid = fork();
-	if(mypid < 0) {
+	child_pid = fork();
+	if(child_pid < 0) {
 		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
 			strerror(errno));
 		return -1;
 	}
-	if(!mypid) { 
+	if(!child_pid) { 
 		for (lc = 0; TEST_LOOPING(lc); lc++) {
-			recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, sizeof(sin1));
+			length = sizeof(sin1);
+			recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, &length);
 		}
 		exit(0);
 	}
