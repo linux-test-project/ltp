@@ -1,3 +1,54 @@
+LTP-20030606
+
+- Updated ltpmenu to redirect `ver_linux` output  ( Robbie Williamson )
+  to the redirected output file.
+- Added warning to runalltests.sh when the "-x"   ( Robbie Williamson )
+  option is selected.
+- Corrected syntax error in RHOST/PASSWD          ( Robbie Williamson )
+  checking section.
+- Made `pan` Makefile honor top-level LOADLIBES.  ( Robbie Williamson )
+- Relocated all Open POSIX Test Suite tests       ( Robbie Williamson ) 
+  listed in the scenario files to /runtest/posix.
+- Relocated all Open POSIX Test Suite tests to    ( Robbie Williamson )
+  /testcases/open_posix_testsuite.
+- Removed OPEN Posix Test Suite tests from	  ( Robbie Williamson )
+  runalltests.sh default run.
+- Ported new asynchronous I/O test, aio01, to     ( Narasimha Sharoff
+  LTP.						    Paul Larson )
+- Added ppc64/ia64 fix to diotest4.		  ( Peter Bergner
+						    Robbie Williamson )
+- Updated mem01 to use sysinfo() and adjusted     ( Robbie Williamson )
+  allocation limits.
+- Updated mtest01 to run on large memory machines ( Robbie Williamson )
+- Updated mmap tests to correctly cleanup after   ( Paul Larson )
+  execution.
+- Cleaned up sched_stress and fixed problem with  ( Paul Larson )
+  segfaulting reported by Andi Kleen.
+- Added s390/s390x specific code to clone() tests ( Jay Huie
+						    Robbie Williamson )
+- Fixed typo in mkdir04 in PASS output.		  ( Paul Larson )
+- Corrected syntax error in munlockall02.	  ( Robbie Williamson )
+- Applied ppc64 and s390x fix to profil01.        ( Steve Munroe
+						    Robbie Williamson )
+- Fixed syntax problem in mc_opts.                ( Robbie Williamson )
+- Fixed "-i" problem with sendfile02.		  ( Aniruddha Marathe )
+- Included /asm/atomic.h file to swapon02         ( Paul Larson )
+  includes to allow test to compile on RH 7.2
+- Applied ia64 fix for sysctl() tests.		  ( Jacky Malcles )
+- Made syslog tests correctky cleanup after       ( Robbie Williamson )
+  failure and handle multiple instances.
+- Fixed mc_commo to make sure `ping` uses the     ( Dang En Ren
+  correct interface.				    Robbie Williamson )
+- Fixed small bug in ltpServer.c.		  ( Paul Larson )
+- Allowed `make` to continue on errors in	  ( Robbie Williamson )
+  open_posix_testsuite build/install.
+- Added pause in "all" and "install" section of   ( Robbie Williamson )
+  open_posix_testsuite/Makefile to allow user to
+  read location of build/install error logfiles.
+- Removed the procps directory in /tools and	  ( Robbie Williamson )
+  replaced with a stripped down version: top-LTP.
+
+
 LTP-20030508
 
 - Updated the LTP to build and execute on NPTL	  ( Robbie Williamson )
