@@ -1,15 +1,17 @@
 /*
- * This pci testing kernel module will allow test calls 
+ * This pci and pci-express testing kernel module will allow test calls 
  * to be driven through various ioctl calls in a 
  * user space program that has attained the appropriate
  * file descriptor for this device. For the functions of
- * this module to work correctly there must be a pci 
+ * this module to work correctly there must be a pci / pci-express 
  * device somewhere in the system. The tests do not need 
  * a specific device, and the first pci device available 
  * will be grabbed.
  *
  * author: Sean Ruyle (srruyle@us.ibm.com)
- * date:   5/20/2003
+ * date:   5/20/2003 
+ * PCI-Express test scripts author: Amit Khanna (amit.khanna@intel.com) 
+ * date:   8/20/2004
  *
  * file:   tpci.c, 
  * module: tpci	
@@ -27,7 +29,7 @@
 #include "tpci.h"
 #include "st_tpci.h"
 
-MODULE_AUTHOR("Sean Ruyle <srruyle@us.ibm.com>");
+MODULE_AUTHOR("Sean Ruyle <srruyle@us.ibm.com>, Amit Khanna <amit.khanna@intel.com>");
 MODULE_DESCRIPTION(TPCI_TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
@@ -54,6 +56,8 @@ static int test_save_state(void);
 static int test_restore_state(void);
 static int test_max_bus(void);
 static int test_find_cap(void);
+static int test_find_pci_exp_cap(void);
+static int test_read_pci_exp_config(void);
 
 
 static int Major = TPCI_MAJOR;
@@ -155,6 +159,8 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
 		case RESTORE_STATE:	rc = test_restore_state(); break;
 		case TEST_MAX_BUS:	rc = test_max_bus(); break;
 		case FIND_CAP:		rc = test_find_cap(); break;
+		case FIND_PCI_EXP_CAP:  rc = test_find_pci_exp_cap(); break;
+		case READ_PCI_EXP_CONFIG:  rc = test_read_pci_exp_config(); break;
 		default:
 			printk("Mismatching ioctl command\n");
 			break;
@@ -717,8 +723,55 @@ static int test_find_cap() {
 	return rc;
 }
 	
+/*
+ * test_find_pci_exp_cap
+ *	make call to pci_find_capability, which will
+ *  determine if a device has PCI-EXPRESS capability,
+ *  use second parameter to specify which capability
+ *  you are looking for
+ */
+static int test_find_pci_exp_cap() {
+	int rc;
+	struct pci_dev *dev = ltp_pci.dev;
+	
+	rc = pci_find_capability(dev, PCI_CAP_ID_EXP);
+	if(rc)
+	 	printk("tpci: Device has PCI-EXP capability\n");
+	else
+		printk ("tpci: Device doesn't have PCI-EXP capability\n");
+	return rc;
+}
+	
+ 
+/*
+ * test_read_pci_exp_config
+ *	make call to pci_config_read and determine if 
+ *  the PCI-Express enhanced config space of this 
+ *  device can be read successfully.
+ */
+static int test_read_pci_exp_config() { 
+	int rc;
+	int reg= 100, len= 4; /*PCI-Exp enhanced config register 0x100, 4 implies dword access*/
+	struct pci_dev *dev = ltp_pci.dev;
+  
+	u32 data, *value;
 
+	printk("tpci: Device(%d) on bus(%d) & slot(%d) \n",dev,dev->bus->number,dev->devfn);
+	printk("tpci: Reading the PCI Express configuration registers---\n");
 
+	printk("tpci: Reading PCI-Express AER CAP-ID REGISTER at Enh-Cfg AddrSpace 0x100\n");
+	
+	rc = pci_config_read(0, dev->bus->number, PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), reg        , len, &data);
+	
+	*value = (u32)data;
+		
+	if (*value==AER_CAP_ID_VALUE) /*comparing the value read with AER_CAP_ID_VALUE macro */
+	printk("tpci: \nCorrect value read using PCI-Express driver installed\n\n");
+	else
+	printk("tpci: \nIncorrect value read. PCI-Express driver/device not installed\n\n");
+	
+	return rc;
+}
 
 /*
  * tpci_init_module
@@ -764,7 +817,6 @@ static void tpci_exit_module(void) {
 		printk("tpci: unregister success\n");
 
 }
-
 
 module_init(tpci_init_module)
 module_exit(tpci_exit_module)

@@ -1,11 +1,12 @@
 //tpci.h
 
-#define TPCI_TEST_DRIVER_NAME	"pci test module"
+#define TPCI_TEST_DRIVER_NAME	"pci/pci-express test module"
 #define TPCI_MAJOR      252
 #define DEVICE_NAME		"/dev/tpci"
 #define MAX_DEVFN		256
 #define MAX_BUS			256
 #define MAG_NUM 		'k'
+#define AER_CAP_ID_VALUE	0x14011
 
 #define PCI_PROBE		_IO(MAG_NUM, 1)
 #define PCI_ENABLE		_IO(MAG_NUM, 2)
@@ -27,6 +28,8 @@
 #define RESTORE_STATE		_IO(MAG_NUM, 20)
 #define TEST_MAX_BUS		_IO(MAG_NUM, 21)
 #define FIND_CAP		_IO(MAG_NUM, 22)
+#define FIND_PCI_EXP_CAP	_IO(MAG_NUM, 23)
+#define READ_PCI_EXP_CONFIG	_IO(MAG_NUM, 24)
 #ifndef SET_MODULE_OWNER
 #define SET_MODULE_OWNER(dev) ((dev)->owner = THIS_MODULE)
 #endif
