@@ -88,7 +88,7 @@ fi
 # Test that eject -d lists the default device. 
 
 export TCID=eject02
-export TST_COUNT=1
+export TST_COUNT=2
 
 $LTPBIN/tst_resm TINFO "Test #1: eject commad with no options"
 $LTPBIN/tst_resm TINFO "Test #1: will eject the default cdrom device."
