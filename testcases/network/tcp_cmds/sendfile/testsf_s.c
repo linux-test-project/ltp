@@ -9,6 +9,7 @@
 #include <sys/file.h>
 #include <sys/errno.h>
 #include <sys/signal.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
@@ -47,6 +48,7 @@ char *argv[];
   int chunks=0;
   off_t *offset; 
   char nbuf[81];
+  int port;
  
   /* open socket */
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -59,13 +61,14 @@ char *argv[];
   /* server IP and port */
   sa.sin_family = AF_INET;
   sa.sin_addr.s_addr = inet_addr(argv[1]);
-  sa.sin_port = htons(12345);
+  port=atoi(argv[2]);
+  sa.sin_port = htons(port);
 
   /* bind IP and port to socket */
   if ( bind(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
         printf("bind error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(-1); 
   }
  
   /* start to listen socket */
