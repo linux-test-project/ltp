@@ -19,12 +19,12 @@
 
 int main() {
 
-	char *siglist[] = { "SIGABRT", "SIGALRM", "SIGBUS", "SIGCHLD", 
-			"SIGCONT", "SIGFPE", "SIGHUP", "SIGILL", "SIGINT", 
-			"SIGKILL", "SIGPIPE", "SIGQUIT", "SIGSEGV", "SIGSTOP", 
-			"SIGTERM", "SIGTSTP", "SIGTTIN", "SIGTTOU", "SIGUSR1",
-			"SIGUSR2", "SIGPOLL", "SIGPROF", "SIGSYS", "SIGTRAP",
-			"SIGURG", "SIGVTALRM", "SIGXCPU", "SIGXFSZ" };
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD, 
+			SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT, 
+			SIGKILL, SIGPIPE, SIGQUIT, SIGSEGV, SIGSTOP, 
+			SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR1,
+			SIGUSR2, SIGPOLL, SIGPROF, SIGSYS, SIGTRAP,
+			SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 	sigset_t signalset;
 	int i, test_failed=0;
 
@@ -34,7 +34,7 @@ int main() {
 	}
 
 	for (i=NUMSIGNALS-1; i>=0; i--) {
-		if (sigismember(&signalset, (int)siglist[i]) == 1) {
+		if (sigismember(&signalset, (siglist[i])) == 1) {
 			#ifdef DEBUG
 				printf("sigemptyset did not clear set of signal %s\n", siglist[i]);
 			#endif
