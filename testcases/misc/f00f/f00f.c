@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: f00f.c,v 1.1 2001/08/27 22:15:16 plars Exp $ */
+/* $Id: f00f.c,v 1.2 2004/08/16 18:09:33 plars Exp $ */
 /*
  * This is a simple test for handling of the pentium f00f bug.
  * It is an example of a catistrophic test case.  If the system
@@ -39,7 +39,12 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "test.h"
+#include "usctest.h"
 #ifdef __i386__
+
+char *TCID="f00f";
+int TST_TOTAL=1;
 
 /*
  * an f00f instruction
@@ -49,8 +54,8 @@ char x[5] = { 0xf0, 0x0f, 0xc7, 0xc8 };
 void
 sigill (int sig)
 {
-  printf ("SIGILL received from f00f instruction.  Good.\n");
-  exit (0);
+  tst_resm(TPASS, "SIGILL received from f00f instruction.  Good.");
+  tst_exit();
 }
 
 int 
@@ -59,7 +64,7 @@ main ()
   void (*f) () = (void *) x;
 
   signal (SIGILL, sigill);
-  printf ("Testing for proper f00f instruction handling.\n");
+  tst_resm(TINFO, "Testing for proper f00f instruction handling.");
 
   f ();
 
@@ -67,7 +72,8 @@ main ()
    * we shouldn't get here, the f00f instruction should trigger
    * a SIGILL or lock the system.
    */
-  exit (1);
+  tst_resm(TFAIL, "f00f instruction did not properly cause SIGILL");
+  tst_exit();
 }
 
 #else /* __i386__ */
@@ -75,8 +81,8 @@ main ()
 int
 main ()
 {
-  printf ("f00f bug test only for i386\n");
-  exit (0);
+  tst_resm(TCONF, "f00f bug test only for i386");
+  tst_exit();
 }
 
 #endif /* __i386__ */
