@@ -36,7 +36,16 @@ then
 fi
 
 export TEST_USER1="su_usr1"
+
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+
+if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+then
+export TEST_USER1_GROUP="wheel"
+else
 export TEST_USER1_GROUP="trusted"
+fi
 export TEST_USER1_PASSWD="eal"
 export TEST_USER1_ENCRYPTED_PASSWD="42VmxaOByKwlA"
 export TEST_USER1_NEW_PASSWD="a_very_good_and_long_password"
