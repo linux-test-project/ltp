@@ -413,33 +413,13 @@ int main (argc, argv)
 	//fprintf(temp, "\tStrncmp\n" );
 	i = 0;
 	while ( t_ncmp[i].s1 ) {
-	    if (t_ncmp[i].e_res==0) {
-		if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
-			!= 0) {
-		    fprintf(temp, "(Strncmp) test %d: expected 0, got %d",
-			    i, n );
-		    local_flag = FAILED;
+	    if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
+							!= t_ncmp[i].e_res) {
+		  fprintf(temp, "(Strncmp) test %d: expected %d, got %d",
+			i, t_ncmp[i].e_res, n );
+		  local_flag = FAILED;
 		}
-		i++;
-	    }
-	    if (t_ncmp[i].e_res>0) {
-		if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
-			< 1) {
-		    fprintf(temp, "(Strncmp) test %d: expected > 0, got %d",
-			    i, n );
-		    local_flag = FAILED;
-		}
-		i++;
-	    }
-	    if (t_ncmp[i].e_res<0) {
-		if ((n = strncmp( t_ncmp[i].s1, t_ncmp[i].s2, t_ncmp[i].n ))
-			> 1) {
-		    fprintf(temp, "(Strncmp) test %d: expected < 0, got %d",
-			    i, n );
-		    local_flag = FAILED;
-		}
-		i++;
-	    }
+	    i++;
 	}
 
 	/*
