@@ -20,24 +20,27 @@
 #	Makefile
 #
 
+# dmapi_imp is platform for DMAPI implementation (currently supported: JFS)
+dmapi_imp = JFS
+# dmapi_dir is path of directory containing dmapi.h
 dmapi_dir = .
+# dmapi_lib is path of user space library for DMAPI implementation
+dmapi_lib = /usr/lib/libjfsdm.a
 
-std_cflags = -I. -I$(dmapi_dir) -g -Wall
+std_cflags = -I. -I$(dmapi_dir) -g -Wall -D$(dmapi_imp)
 
-#	Must define platform (i.e. JFS) to build proper code in dm_impl.h
 #	Define USER_SPACE_FAULTS if DMAPI implementation handles user space
 #	  faults (JFS has plenty of handle code in user space, which causes
 #	  faults when invalid pointers are passed in)	
 #	Define DIRECTORY_LINKS if DMAPI FS supports links on directories (JFS
 #	  does not)
-extra_cflags = -DJFS
 #extra_cflags = -DUSER_SPACE_FAULTS
 #extra_cflags = -DDIRECTORY_LINKS
 
 cflags = $(std_cflags) $(extra_cflags)
 
-lflags = /usr/lib/libjfsdm.a -L/usr/lib -Wl,-rpath,'pwd'
-lflags_thd = /usr/lib/libjfsdm.a -lpthread -L/usr/lib -Wl,-rpath,'pwd'
+lflags = $(dmapi_lib)
+lflags_thd = $(dmapi_lib) -lpthread
 
 progs = handle session event_sn event_sd event_an pmr_pre pmr_post event_am \
 	  hole invis attr event_us disp config objref mount token right mmap \
