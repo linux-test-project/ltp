@@ -111,8 +111,6 @@
 #include <sys/user.h>	/* getpagesize() */
 #include <time.h>
 
-#include <sys/utsname.h>
-
 #include "test.h"
 #include "usctest.h"
 
@@ -197,119 +195,109 @@ void help()
 #define BUFF_SIZE 384
 size_t get_memsize()
 {
-	long unsigned int res;
-	long unsigned int unused;
-	long unsigned int freesize;
-	FILE *f;
-	int retcode;
-	int ictl;
-	char buff[BUFF_SIZE];
-	struct utsname *buf;
+  long unsigned int res;
+  long unsigned int unused;
+  long unsigned int freesize;
+  FILE *f;
+  int retcode;
+  int ictl;
+  char buff[BUFF_SIZE];
+  struct utsname *buf;
 
-        /* allocate some space for buf */
+/* allocate some space for buf */
 
-        if ((buf = (struct utsname *)malloc((size_t)
-                        sizeof(struct utsname))) == NULL) {
-		tst_resm(TFAIL, "malloc failed for buf");
-		return 0;
+
+  f = fopen("/proc/meminfo", "r");
+  if (!f)
+    return 0;
+
+/* ignore first line(titles or MemTotal) */
+  if (!fgets(buff, BUFF_SIZE, f)) {
+    fclose(f);
+    return 0;
+  }
+
+  if (tst_kvercmp(2,5,0) < 0){
+
+    /* FIXME: check return code! */
+    retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused,
+                     &freesize, &unused, &unused, &unused);
+    if (retcode != 6) {
+      fclose(f);
+      return 0;
+    }
+
+    printf("Free Mem: %ld bytes\n",freesize);
+    res = freesize;
+
+    if (!fgets(buff, BUFF_SIZE, f))	{ /* flush end of line */
+      fclose(f);
+      return 0;
+    }
+
+    retcode = fscanf(f, "Swap: %lu %lu %lu", &unused, &unused, &freesize);
+    if (retcode != 3) {
+      fclose(f);
+      return 0;
+    }
+
+    printf("Free Swap: %ld bytes\n",freesize);
+    res += freesize;
+    res = res / 1024;
+
+  } else {
+    
+    /* FIXME: check return code! */
+    retcode = fscanf(f, "MemFree:  %lu ", &freesize);
+    if (retcode != 1) {
+      fclose(f);
+      return 0;
+    }
+       
+    printf("Free Mem: %ld Kb\n",freesize);
+    res = freesize;
+
+    if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
+      fclose(f);
+      return 0;
+    }
+
+	/* ignore next 10 lines */
+    for (ictl = 0; ictl < 10; ictl++) {
+      if (!fgets(buff, BUFF_SIZE, f)) { 
+        fclose(f);
+        return 0;
+      }
+    }
+
+    retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
+    printf("Free Swap: %ld Kb\n",freesize);
+    if (retcode != 1) {
+      fclose(f);
+      return 0;
+    }
+
+    res += freesize;
+
+  } /* end check release */
+  printf("Total Free: %ld Kb\n",res);
+/*Safety section*/				
+  if (res > 4*1024*1024)			/* >4Gb free mem then  */
+    res -= (1*1024*1024);	 	/* subtract 1Gb        */
+  else {
+       	if (res > 4*128*1024)   	/* >512Mb free mem then*/
+          res -= 1*100*1024;     	/* subtract 100MB      */
+	else {
+      	  if (res > 4*1024)	/* >4Mb free mem then  */
+            res -= 1*512;     	 /* subtract 512k       */
+	  else
+	    res -= 1;	/* <4Mb free mem, so subtract 1Kb */
         }
-
-        if (uname(buf) < 0) {
-		tst_resm(TFAIL, "uname failed getting release number");
-		return 0;
-	}
-
-	f = fopen("/proc/meminfo", "r");
-	if (!f)
-		return 0;
-
-	/* ignore first line(titles or MemTotal) */
-	if (!fgets(buff, BUFF_SIZE, f)) {
-		fclose(f);
-		return 0;
-	}
-
-        if ((strncmp(buf->release, "2.5", 3)) < 0) {
-
-	/* FIXME: check return code! */
-	retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused,
- 			&freesize, &unused, &unused, &unused);
-	if (retcode != 6) {
-		fclose(f);
-		return 0;
-	}
-
-	printf("Free Mem: %ld bytes\n",freesize);
-	res = freesize;
-
-	if (!fgets(buff, BUFF_SIZE, f))	{ /* flush end of line */
-		fclose(f);
-		return 0;
-	}
-
-	retcode = fscanf(f, "Swap: %lu %lu %lu", &unused, &unused, &freesize);
-	if (retcode != 3) {
-		fclose(f);
-		return 0;
-	}
-
-	printf("Free Swap: %ld bytes\n",freesize);
-	res += freesize;
-	res = res / 1024;
-
-	 } else {
-
-        	/* FIXME: check return code! */
-	        retcode = fscanf(f, "MemFree:  %lu ", &freesize);
-	        if (retcode != 1) {
-	                fclose(f);
-	                return 0;
-	        }
-        
-		printf("Free Mem: %ld Kb\n",freesize);
-		res = freesize;
-
-	        if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
-	                fclose(f);
-	                return 0;
-	        }
-
-		/* ignore next 10 lines */
-	for (ictl = 0; ictl < 10; ictl++) {
-	       	if (!fgets(buff, BUFF_SIZE, f)) { 
-        	      	 fclose(f);
-               		 return 0;
-	       	}
-	}
-
-	        retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
-		printf("Free Swap: %ld Kb\n",freesize);
-	        if (retcode != 1) {
-        	       	 fclose(f);
-               		 return 0;
-	       }
-
-        	res += freesize;
-
-	 } /* end check release */
-	printf("Total Free: %ld Kb\n",res);
-	/*Safety section*/				
-        if (res > 4*1024*1024)			/* >4Gb free mem then  */
-                res -= (1*1024*1024);	 	/* subtract 1Gb        */
-        else {
-        	if (res > 4*128*1024)   	/* >512Mb free mem then*/
-                        res -= 1*100*1024;     	/* subtract 100MB      */
-		else {
-        		if (res > 4*1024)	/* >4Mb free mem then  */
-                        	res -= 1*512;     	 /* subtract 512k       */
-			else
-				res -= 1;	/* <4Mb free mem, so subtract 1Kb */
-		}
-	 }
-        res = res * 1024;
-	free(buf);
-	fclose(f);
-	return res;
+  }
+  res = res * 1024;
+  free(buf);
+  fclose(f);
+  return res;
 }
 
 /*
@@ -327,17 +315,17 @@ option_t options[] =
 int
 main(int argc, char *argv[])
 {
-size_t memsize=0;	/* at first in MB, limited to 4Go on 32 bits */
-int pagesize;
+  size_t memsize=0;	/* at first in MB, limited to 4Go on 32 bits */
+  int pagesize;
 
   int i;
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-	char *p, *bigmalloc;
-	int loop_count;	/* limited to 16Go on 32 bits systems */
+  int lc;		/* loop counter */
+  char *msg;		/* message returned from parse_opts */
+  char *p, *bigmalloc;
+  int loop_count;	/* limited to 16Go on 32 bits systems */
 
 
-	pagesize = getpagesize();
+  pagesize = getpagesize();
 
     /***************************************************************
      * parse standard options
