@@ -44,4 +44,3 @@ else
 	echo "NFS test make_tree FAILED"
 	exit 1
 fi
-fi
