@@ -1,0 +1,63 @@
+cpio -idvB <livr.cpio
+
+there are 5 sets of datafiles [trigo, power, iperb, exp_log, bessel]
+
+there are 5 testcases [float_trigo, float_power, float_iperb, float_exp_log,
+float_bessel]
+
+how to do it
+============
+1)
+
+first of all you have to generate datafiles, following is the trigo set of
+datafiles way of doing:
+/* there is a readme file within the directory if necessary */
+
+$ cd trigo
+
+/* compile */
+$ make all
+
+/* start the trigo datafiles generator */
+$ gentrigo
+
+/* check that make install will install datafiles where they've to be placed */
+/* check that repository is existing */
+/* see Makefile file */
+$ make install
+
+2) do the same with the others (iperb, exp_log, power & bessel)
+
+...........................................................................
+3) compiling & installing testcases
+
+$ cd ..
+$ make all
+$ make install
+..........................................................................
+/* starting the testcase */
+$ cd ../bin
+$ float_trigo
+$ float_power
+$ float_exp_log
+$ float_iperb
+$ float_bessel
+$ echo $?
+0
+$
+
+Notes:
+------
+1)
+/* datafiles are supposed to be placed to the same directory as executables */
+/* this can be changed giving the absolute path of the directory to the 
+ testcase ex:$ float_trigo -D /home/linux/livr */
+
+2) number of threads is initialized to 20 per function
+
+3) number of loops is initialized to 500 (ability to view cpus loading)
+
+4) these tests have been started on ia64 and ia32 architectures.
+
+
+

@@ -1,0 +1,14 @@
+/* please, adapt the Makefile file to your environment */
+
+/* cd to bessel directory */
+$ pwd
+/home/linux/livr/bessel
+
+/* compile */
+$ make all
+
+/* start datafiles generator */
+$ genbessel  
+
+/* put datafiles where they have to be loaded */
+$ make install

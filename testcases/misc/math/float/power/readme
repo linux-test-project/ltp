@@ -1,0 +1,14 @@
+/* please, adapt the Makefile file to your environment */
+
+/* cd to power directory */
+$ pwd
+/home/linux/livr/power
+
+/* compile */
+$ make all
+
+/* start datafiles generator */
+$ genpower  
+
+/* put datafiles where they have to be loaded */
+$ make install
