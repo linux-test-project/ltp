@@ -43,12 +43,24 @@ rm -rf $TCtmp
 do_setup()
 {
 mkdir $TCtmp
-cc -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
-cc -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
-cc -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
-cc -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
-cc -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
-cc -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
+
+# Check for ppc64 architecture
+file lddfile1.o | grep PowerPC | grep 64-bit >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  cc -m64 -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
+  cc -m64 -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
+  cc -m64 -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
+  cc -m64 -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
+  cc -m64 -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
+  cc -m64 -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
+else
+  cc -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
+  cc -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
+  cc -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
+  cc -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
+  cc -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
+  cc -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
+fi
 } 
 
 do_test()
