@@ -78,8 +78,8 @@ main(int ac, char **av)
 				 time_sec);
 		} else {
 			tst_resm(TFAIL,
-				 "alarm() fails to send SIGALRM to execed
-				  process");
+				 "alarm() fails to send SIGALRM to execede"
+				 " process");
 		}
 	}
 
