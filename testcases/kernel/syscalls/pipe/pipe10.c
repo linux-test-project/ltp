@@ -57,6 +57,17 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -113,7 +124,7 @@ int main(int ac, char **av)
 		}
 
 		if (forkstat == 0) {		/* child */
-			red = read(fd[0], rebuf, written);
+			red = safe_read(fd[0], rebuf, written);
 
 			/* did read , get at least some chars */
 			if ((red < 0) || (red > written)) {

@@ -62,6 +62,17 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -163,7 +174,7 @@ int main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		while ((red = read(pipefd[0], rebuf, 100)) > 0) {
+		while ((red = safe_read(pipefd[0], rebuf, 100)) > 0) {
 			for (i = 0; i < red; i++) {
 				if (rebuf[i] == 'A') {
 					Acnt++;

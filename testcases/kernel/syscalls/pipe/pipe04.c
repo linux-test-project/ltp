@@ -65,6 +65,17 @@ void c1func(void);
 void c2func(void);
 void alarmfunc(int);
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -112,7 +123,7 @@ int main(int ac, char **av)
 		 * Read a bit from the children first
 		 */
 		while((acnt < 100) && (bcnt < 100)) {
-			bytesread = read(fildes[0], rbuf, sizeof(rbuf));
+			bytesread = safe_read(fildes[0], rbuf, sizeof(rbuf));
 			if (bytesread < 0) {
 				tst_resm(TFAIL, "Unable to read from pipe, "
 						"errno=%d",errno);

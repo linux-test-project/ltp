@@ -71,6 +71,17 @@ int szcharbuf;			/* size of char buf */
 int pipewrcnt;			/* chars written to pipe */
 char *wrbuf, *rdbuf;
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -130,7 +141,7 @@ refork:
 					 "pipe", kidid);
 				exit(0);
 			}
-			nread = read(fd[0], rdbuf, ncperchild);
+			nread = safe_read(fd[0], rdbuf, ncperchild);
 			if (nread == ncperchild) {
 				tst_resm(TINFO, "child %d " "got %d chars",
 					 kidid, nread);

@@ -56,6 +56,17 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -101,7 +112,7 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if ((red = read(fildes[0], rebuf, written)) == -1) {
+			if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
 				tst_brkm(TBROK, cleanup, "read() failed");
 			}
 

@@ -56,6 +56,17 @@ int exp_enos[] = {EBADF, 0};
 void setup(void);
 void cleanup(void);
 
+ssize_t safe_read(int fd, void *buf, size_t count)
+{
+	ssize_t n;
+
+	do {
+		n = read(fd, buf, count);
+	} while (n < 0 && errno == EINTR);
+
+	return n;
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -92,7 +103,7 @@ int main(int ac, char **av)
 					"end of pipe ret=%d, errno=%d", 
 					TEST_RETURN, TEST_ERRNO);
 
-		TEST(read(fildes[1], rbuf, 1));
+		TEST(safe_read(fildes[1], rbuf, 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
 			tst_resm(TPASS, "expected failure reading from "
 					"write end of pipe");
