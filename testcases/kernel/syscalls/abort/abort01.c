@@ -180,7 +180,6 @@ int blenter()
 int blexit()
 {
    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
-   tst_exit();
    return(0);
 }
 
