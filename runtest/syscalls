@@ -265,13 +265,13 @@ lseek10 lseek10
 lstat01A symlink01 -T lstat01
 lstat01 lstat01
 lstat02 lstat02
-#lstat03 lstat03
+lstat03 lstat03
 
 mkdir01 mkdir01
 mkdir02 mkdir02
 mkdir03 mkdir03
 mkdir04 mkdir04
-#mkdir05 mkdir05
+mkdir05 mkdir05
 mkdir05A symlink01 -T mkdir05
 mkdir08 mkdir08
 
