@@ -1,0 +1,6 @@
+finger6 finger601
+ftp6 export TCbin=$LTPROOT/testcases/network/ipv6/ftp; ftp01
+ping6 ping601
+rcp6 export TCbin=$LTPROOT/testcases/network/ipv6/rcp; rcp01
+rsh6 rsh01
+rwho6 rwho01
