@@ -411,7 +411,7 @@ setup()
 		tst_exit();
         }
 	MSGMNI = fscanf(f,"%d",&msgmni);	
-	
+	fclose(f);	
 }
 
 
