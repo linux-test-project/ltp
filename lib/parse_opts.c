@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: parse_opts.c,v 1.3 2000/08/31 18:40:28 nstraz Exp $ */
 
 /**********************************************************
  * 
@@ -145,15 +145,15 @@ struct std_option_t {
     char *flag;
     char **arg;
 } std_options[] = {
-    { "f" , "   -f     Turn off functional testing\n", NULL, NULL},
-    { "i:", "   -i n   Execute test n times\n", NULL, NULL},
-    { "I:", "   -I n   Execute test for n seconds\n", NULL, NULL},
-    { "p" , "   -p     Pause for SIGUSR1 before starting\n", NULL, NULL}, 
-    { "P:", "   -P n   Pause for n seconds between iterations\n", NULL, NULL},
-    { "e" , "   -e     Turn on errno logging\n", NULL, NULL},
-    { "t" , "   -t     Turn on syscall timing\n", NULL, NULL},
-    { "c:", "   -c n   Run n copies concurrently\n", NULL, NULL},
-    { "h" , "   -h     Show this help screen\n", NULL, NULL},
+    { "c:", "  -c n    Run n copies concurrently\n", NULL, NULL},
+    { "e" , "  -e      Turn on errno logging\n", NULL, NULL},
+    { "f" , "  -f      Turn off functional testing\n", NULL, NULL},
+    { "h" , "  -h      Show this help screen\n", NULL, NULL},
+    { "i:", "  -i n    Execute test n times\n", NULL, NULL},
+    { "I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
+    { "p" , "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL}, 
+    { "P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
+    { "t" , "  -t      Turn on syscall timing\n", NULL, NULL},
     {NULL, NULL, NULL, NULL}};
 
 void print_help(void (*user_help)());

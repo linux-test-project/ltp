@@ -1,4 +1,4 @@
-.\" $Id: usctest.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\" $Id: usctest.3,v 1.2 2000/08/31 18:40:28 nstraz Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -121,43 +121,45 @@ template may be found in the CUTS/sun/skel directory, in the file \fBusctest.c\f
 void
 setup()
 {
-TEST_PAUSE	/* Pause  if option specified */
+	TEST_PAUSE;	/* Pause  if option specified */
 }
 
 void
 cleanup()
 {
-TEST_CLEANUP
+	TEST_CLEANUP;
 }
 
-main(ac, av)
+int main(ac, av)
 {
-int lc;		/* loop counter */
-char *msg;	/* return from parse_opts */
+	int lc;		/* loop counter */
+	char *msg;	/* return from parse_opts */
 
-int exp_enos[]={EACCESS, 0};	/* expected errnos */
+	int exp_enos[]={EACCESS, 0};	/* expected errnos */
 
 
-TEST_EXP_ENOS(exp_enos);	/* set expected errnos */
+	TEST_EXP_ENOS(exp_enos);	/* set expected errnos */
 
-setup();	/* execute setup */
+	setup();	/* execute setup */
 
-/* parse options */
-msg=parse_opts(ac, av, (option_t *)NULL);
+	/* parse options */
+	msg=parse_opts(ac, av, (option_t *)NULL);
 
-/* Check parse_opts return */
+	/* Check parse_opts return */
 
-for (lc=0; TEST_LOOPING(lc); lc++) {
-	TEST(open("file", O_RDWR))
+	for (lc=0; TEST_LOOPING(lc); lc++) {
+		TEST(open("file", O_RDWR))
 	
-	if ( TEST_RETURN == -1) {
-		TEST_ERROR_LOG(TEST_ERRNO)
-		/* BREAK test case, or whatever... */
+		if ( TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO)
+			/* BREAK test case, or whatever... */
+		}
+
 	}
 
-}
+	cleanup();
 
-cleanup();
+	return 0;
 }
 .fi
 

@@ -1,5 +1,5 @@
 .\"
-.\" $Id: parse_opts.3,v 1.2 2000/08/30 21:56:48 nstraz Exp $
+.\" $Id: parse_opts.3,v 1.3 2000/08/31 18:40:28 nstraz Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -31,9 +31,9 @@
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
-.TH PARSE_OPTS 3 "30 Aug 2000" "Linux Test Project"
+.TH PARSE_OPTS 3 "30 Aug 2000" "LTP" "Linux Test Project"
 .SH NAME
-parse_opts \- parse standard and user options
+parse_opts \- parse standard and user options for LTP test programs
 .SH SYNOPSIS
 .nf
 .B #include \(rqtest.h\(rq
@@ -52,15 +52,16 @@ main() function on program invocation. User options may be specified in the
 \fIuser_help_func\fP argument.  
 .sp
 \fIoption_array\fP is a pointer to the first element of an array of
-\fBoption_t\fP declared in \fBusctest.h\fP as
+\fBoption_t\fP.  If no additional options are needed, pass NULL.
+\fBoption_t\fR is declared in \fBusctest.h\fP as
 .nf
 .sp
 .in 10
 typedef struct {
 .in 14
-char	*option;	/* Valid option string (one option only) like "a:" */
-int	*flag;		/* pointer to integer location to set true if option given */
-char	**arg;		/* pointer to location to place argument, if needed */
+char	*option;
+int	*flag;
+char	**arg;
 .in 10
 } option_t;
 .fi
@@ -71,90 +72,110 @@ The meanings of the different fields are:
 is a valid option string to be given to getopt().
 .TP
 .I flag
-is a pointer to an integer location to set true if option is given.
+is a pointer to an integer location to set true if option is given in
+\fIargv\fR.  This can be NULL if the option doesn't require an argument.
 .TP
 .I arg
-is a pointer to a location to place argument, if needed.
+is a pointer to a character pointer variable that will be set with the option
+argument if the option is present in argv.  This pointer MUST be provided if
+the option can take an argument.  Failure to provide a location will cause
+\fBparse_opts()\fR to return an error.
 .PP
-
-Users specify options by initializing elements of an array of \fBoption_t\fR
-structures.
+.I user_help_func
+is a pointer to a function that will be called when the \-h option is found.
+This function should print help messages for the options in \fIoption_array\fR
+to standard out. The standard help messages are formatted such that the option
+designator starts in column 3 and the description starts in column 11.
 .sp
-The \fBoption\fR field is the option string.  If the option requires
-an argument, the last character must be a "\fB:\fR".  If the user specifies a
-standard option, the standard option is disabled.
-.sp
-The \fBflag\fR field is a pointer to an integer location that is to be set if
-the option is present in the set of command line arguments (av).  If the
-\fBoption\fR field does require an argument, then \fBflag\fR is optional,
-\fBflag\fR equal to NULL.  Otherwise it must contain address of the integer
-to be set. 
-.sp
-The \fBarg\fR field is a pointer to a character pointer variable that will be
-set to the option argument (av[optind]) if the option is present in the set of
-command line arguments.  This pointer MUST be provided if the \fBoption\fR
-field contains a "\fB:\fR".  Failure to provide a location will cause
-\fBparse_opts\fR to return an error.
-.sp
-For example, the following code defines two options, one with an argument,
-one without.
-.sp
-.nf
-int aflag, bflag;
-char *b_arg;
-option_t opt_array[3] = {	{"a", &aflag, (char **) NULL},	/* No argument */
-			{"b:", &bflag, &b_arg} };	/* argument required */
-main(ac, av)
-int ac;
-char **av;
-{
-char* msg;
-
-if ( (msg=parse_opts(ac, av, opt_array)) != (char *) NULL )
-	error_exit(msg);
-}
-.fi
-.sp 
-If no user options exist, a null pointer ( (option_t *)NULL ) must be sent
-as \fBoption_array\fR.
-.sp 
-Below is a list of the standard options defined in \fBparse_opts\fR:
-.in +1
-.nf
--\fBiteration\fI cnt\fR	set STD_LOOP_COUNT to \fIcnt\fR if \fIcnt\fR > 0 (default 1).
-	                Loop \fIcnt\fR times, or infinitely if \fIcnt\fR=0.
--\fBduration\fI secs\fR Set STD_LOOP_WALLTIME to \fIsecs\fR  (default is 0.0)
-		        The test will loop until \fIsecs\fR has pasted.
--\fBdelay\fI secs\fR    This option will do a delay of \fIsecs\fR after each iteration.
--\fBnofunc\fR	        set STD_FUNCTIONAL_TEST to 0 (default 1).
-
--\fBerrno_logging\fR	set STD_ERRNO_LOG to 1 (default 0).  turn on
-		        logging all errno's received.
-	                This option is to facilitate security audit testing for MLS.
--\fBpause_for_sigusr1\fR set STD_PAUSE to 1 (default 0).  Pause for SIGUSR1 before
-			testing.
--\fBtiming\fR	        set STD_TIMING_ON to 1 (default 0).  Produce timing statistics.
-
-.fi
-.in -1
-The format of the help message is as follows:
-.nf
-.in +1
--o      : Description
-.in -1
-.fi
-The option designator (-o) is in columns 3 and 4.  The colon (:) is in column 11.  The Description
-starts in column 13.
+.SH "STANDARD OPTIONS"
+Below is a list of the standard options defined in \fBparse_opts()\fR:
+.TP
+.BI \-c " n" 
+Run \fIn\fR copies of the test in parallel.  This is done by forking \fIn\fR
+times and running the test as usual.  If \-i or \-I are specified, each process
+will run for that amount of time.
+.TP
+.B \-e
+Turn on logging all errno's received.  This option is to facilitate security
+audit testing for MLS.  
+.TP
+.B \-f
+Suppresses functional testing messages.
+.TP
+.B \-h
+Print help message.  The standard options will be printed first, then a call to
+.I user_help_func()
+will be made.  
+.TP
+.BI \-i " n"
+Run for \fIn\fR iterations. A value of 0 makes the test loop infinitely.
+(default 1) 
+.TP
+.BI \-I " x"
+The test will loop until \fIx\fR seconds have passed. (default 0.0)
+.TP
+.B \-p
+Pause for SIGUSR1 before testing. The test will pause were you place
+TEST_PAUSE.  \fIWarning\fR: The test will also fork at this point if \-c is
+used.  
+.TP
+.BI \-P " x"
+This option will do a delay of \fIx\fR seconds after each iteration. (default 0.0)
+.TP
+.B \-t
+Produce timing statistics. *NOT IMPLEMENTED*
+.PP
 .sp
 The STD_* flags are used by system call test macros defined in usctest.h
 (see \fBusctest(3)\fR), or may be used in the user's code.
-.SH "RETURN VALUES"
-\fBparse_opts\fR returns a null pointer upon successful completion.
-\fBparse_opts\fR validates the array of user options to verify that valid 
-pointers are present when needed.  If an error occurs in the
-\fBparse_opts\fR routine, a pointer to an error message is returned.  The
-\fBSTD_opts\fR and \fBSTD_opts_help\fR routines each return a character pointer.
+.SH "RETURN VALUE"
+.B parse_opts()
+returns a NULL pointer upon successful completion.  If an error occurs a
+pointer to an error message is returned.  
+.SH "EXAMPLE"
+The following example defines two options, one with an argument, one without.
+.sp
+.nf
+int fflag, Tflag;	/* binary flags: opt or not */
+char *Topt;		/* option arguments */
+
+option_t options[] = {
+	{ "F", &fflag, NULL },		/* No argument */
+	{ "T:",	&Tflag, &Topt },	/* argument required */
+	{ NULL, NULL, NULL }		/* NULL required to end array */
+};
+
+void help()
+{
+	printf("  -F       An option with no argument\\n");
+	printf("  -T opt   An option that requires an argument\\n");
+}
+
+int main(int argc, char *argv[])
+{
+	char *msg;
+
+	if ( (msg=parse_opts(argc, argv, options, &help)) != NULL )
+		error_exit(msg);
+
+	return 0;
+}
+.fi
+.sp 
+The following example shows how to use \fBparse_opts()\fR without defining new options.
+.sp
+.nf
+int main(int argc, char *argv[])
+{
+	char *msg;
+
+	if ((msg=parse_opts(argc, argv, (option_t *)NULL, NULL)) != NULL)
+		error_exit(msg);
+	
+	return 0;
+}
+.fi
 .SH "SEE ALSO"
-usctest(3).
+usctest(3), getopt(3).
 
 

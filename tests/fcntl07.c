@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fcntl07.c,v 1.3 2000/08/31 18:40:28 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -156,7 +156,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 
 /* for parse_opts */
-int fflag, hflag, Tflag;	/* binary flags: opt or not */
+int fflag, Tflag;		/* binary flags: opt or not */
 char *fopt, *Topt;		/* option arguments */
 
 option_t options[] = {
