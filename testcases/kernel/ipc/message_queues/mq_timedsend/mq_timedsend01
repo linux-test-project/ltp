@@ -23,7 +23,7 @@
 ####################################################
 
 #Set variables NAME and TST_TOTAL
-NAME=mq_timedsend
+NAME=mq_timedsend01
 export TST_TOTAL=26
 
 check_return_code()

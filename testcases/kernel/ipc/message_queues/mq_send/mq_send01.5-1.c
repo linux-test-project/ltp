@@ -128,5 +128,7 @@ int main()
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
+	/* NOT REACHED */
+	return(0);
 }
 

@@ -106,5 +106,8 @@ int main()
 		/* send signal to parent */
 		kill(getppid(), SIGABRT);
 	}
+	/*NOT REACHED*/
+	return(0);
+
 }
 
