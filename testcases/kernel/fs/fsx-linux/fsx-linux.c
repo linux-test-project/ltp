@@ -84,7 +84,7 @@ int			logcount = 0;	/* total ops */
 #define OP_SKIPPED	7
 
 #ifndef PAGE_SIZE
-#define PAGE_SIZE       4096
+#define PAGE_SIZE       getpagesize()
 #endif
 #define PAGE_MASK       (PAGE_SIZE - 1)
 
