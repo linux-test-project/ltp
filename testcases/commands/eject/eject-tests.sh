@@ -107,12 +107,14 @@ else
     TFAILCNT=$((TFAILCNT+1))
 fi
 
+
 # Test #3
 # Test the eject command will eject the default cdrom device and also unmount
 # device if it is currently mounted.
 
 export TCID=eject03
 export TST_COUNT=3
+RC=0
 
 $LTPBIN/tst_resm TINFO "Test #3: eject command will eject the default cdrom"
 $LTPBIN/tst_resm TINFO "Test #3: device and also unmount the device if it"
