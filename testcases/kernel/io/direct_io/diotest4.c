@@ -35,7 +35,7 @@
  *	[5] Invalid file descriptor
  *	[6] Out of range file descriptor
  *	[7] Closed file descriptor
- *	[8] Directory read, write
+ *	[8] Directory read, write - removed 10/7/2002 - plars
  *	[9] Character device (/dev/null) read, write
  *	[10] read, write to a mmaped file
  *	[11] read, write to an unmaped file with munmap
@@ -319,47 +319,6 @@ main(int argc, char *argv[])
         }
 	ret = runtest_f(fd, buf2, offset, count, EBADF, 7, "closed fd");
 	if (ret != 0) {
-		failed = TRUE;
-		fail_count++;
-	}
-	total++;
-
-	/* Test-8: Directory read, write */
-	offset = 4096;
-	count = bufsize;
-	l_fail = 0;
-        if ((newfd = open("/tmp", O_DIRECT|O_RDONLY)) < 0) {
-		fprintf(stderr, "open /tmp failed: %s\n", strerror(errno));
-                unlink(filename);
-                exit(1);
-        }
-	if (lseek(fd, offset, SEEK_SET) < 0) {
-		fprintf(stderr, "[8] lseek before read failed:%s\n", 
-			strerror(errno));
-		l_fail = TRUE;
-	}
-	else {
-		ret = read(newfd, buf2, count);
-		if (ret >= 0 || errno != EISDIR) {
-			fprintf(stderr, "[8] read to directory. returns %d: %s\n",
-				ret, strerror(errno));
-			l_fail = TRUE;
-		}
-	}
-	if (lseek(fd, offset, SEEK_SET) < 0) {
-		fprintf(stderr, "[8] lseek before write failed:%s\n", 
-			strerror(errno));
-		l_fail = TRUE;
-	}
-	else {
-		ret = write(newfd, buf2, count);
-		if (ret >= 0 || errno != EBADF) {
-			fprintf(stderr, "[8] read to directory. returns %d: %s\n",
-				ret, strerror(errno));
-			l_fail = TRUE;
-		}
-	}
-	if (l_fail) {
 		failed = TRUE;
 		fail_count++;
 	}
