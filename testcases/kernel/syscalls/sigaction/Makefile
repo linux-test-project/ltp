@@ -24,11 +24,13 @@ LOADLIBES+=	-lpthread -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TEST=sigaction03
 
 all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
+	@/bin/sh ./chmod.sh $(TEST)
 
 clean:
 	rm -f $(TARGETS)
