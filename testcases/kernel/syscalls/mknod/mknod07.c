@@ -76,7 +76,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <pwd.h)
 
 #include "test.h"
 #include "usctest.h"
@@ -96,7 +95,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ "tnode_1", "Process is not root/super-user", SOCKET_MODE, EPERM, no_setup },
+	{ "tnode_1", "Process is not root/super-user", SOCKET_MODE, EACCES, no_setup },
 	{ "tnode_2",  "No Write permissions to process", NEWMODE, EACCES, setup2 },
 	{ NULL, NULL, 0, 0, no_setup }
 };
