@@ -211,20 +211,22 @@ int test_epoll_create (unsigned int num_rand_attempts)
   int epoll_fd = -1;
   int fd_set_size = -1;
   unsigned int attempt_count;
-  int result = 0;
-  
+  unsigned int num_epoll_create_test_fails = 0;
+  unsigned int num_epoll_create_test_calls = 0;
+
   /* Negative set sizes */
   errno = 0;
   fd_set_size = -1;
+  num_epoll_create_test_calls++;
   epoll_fd = epoll_create(fd_set_size);
   if (epoll_fd >= 0){
 	tst_resm(TFAIL, "epoll_create with negative set size returned a valid fd (errno = %d:%s)", errno, strerror(errno));
-	result++;
+	num_epoll_create_test_fails++;
 	close(epoll_fd);
   } else {
 	if (errno != EINVAL){
 	  tst_resm(TFAIL, "epoll_create with negative set size failed to set errno to EINVAL (%d:%s)", errno, strerror(errno));
-	  result++;
+	  num_epoll_create_test_fails++;
 	} else {
 	  tst_resm(TPASS, "epoll_create with negative set size");
 	}
@@ -233,15 +235,16 @@ int test_epoll_create (unsigned int num_rand_attempts)
   /* Zero set sizes */
   errno = 0;
   fd_set_size = 0;
+  num_epoll_create_test_calls++;
   epoll_fd = epoll_create(fd_set_size);
   if (epoll_fd >= 0){
 	tst_resm(TFAIL, "epoll_create with zero set size returned a valid fd (errno = %d:%s)", errno, strerror(errno));
-	result++;
+	num_epoll_create_test_fails++;
 	close(epoll_fd);
   } else {
 	if (errno != EINVAL){
 	  tst_resm(TFAIL, "epoll_create with zero set size failed to set errno to EINVAL (%d:%s)", errno, strerror(errno));
-	  result++;
+	  num_epoll_create_test_fails++;
 	} else {
 	  tst_resm(TPASS, "epoll_create with zero set size");
 	}
@@ -252,11 +255,12 @@ int test_epoll_create (unsigned int num_rand_attempts)
 	 amount we'd like to go below INT_MAX). */
   fd_set_size = INT_MAX;
   for(attempt_count = num_rand_attempts; attempt_count > 0; attempt_count--, fd_set_size--){
+  	num_epoll_create_test_calls++;
 	epoll_fd = epoll_create(fd_set_size);
 	if (epoll_fd == -1){
 	  if (errno != ENOMEM){
 		tst_resm(TFAIL, "epoll_create with large set size (size = %d)", fd_set_size);
-		result++;
+		num_epoll_create_test_fails++;
 	  } else {
 		tst_resm(TPASS, "epoll_create with large set size (size = %d)", fd_set_size);
 	  }
@@ -270,11 +274,12 @@ int test_epoll_create (unsigned int num_rand_attempts)
   for(attempt_count = num_rand_attempts; attempt_count > 0; attempt_count--){
 	fd_set_size = abs(rand() + SHRT_MAX) % INT_MAX;
 	errno = 0;
+	num_epoll_create_test_calls++;
 	epoll_fd = epoll_create(fd_set_size);
 	if (epoll_fd < 0){
 	  if (errno != ENOMEM){
 		tst_resm(TFAIL, "epoll_create with random random large set size (size = %d)", fd_set_size);
-		result++;
+		num_epoll_create_test_fails++;
 	  } else {
 		tst_resm(TPASS, "epoll_create with random random large set size (size = %d)", fd_set_size);
 	  }
@@ -284,7 +289,11 @@ int test_epoll_create (unsigned int num_rand_attempts)
 	}
   }
 
-  return result;
+  tst_resm(TINFO, "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).\n", num_epoll_create_test_calls, num_epoll_create_test_fails, 
+		   ((float)(num_epoll_create_test_calls - num_epoll_create_test_fails) * 100.0f / (float)num_epoll_create_test_calls));
+  /* Return 0 on success. */
+
+  return num_epoll_create_test_fails;
 }
 
 			/* RES_PASS indicates a PASS result */
@@ -374,8 +383,10 @@ static const char* result_strings[] = {
 #endif
 
 /****************************************************************************************/
+
 int test_epoll_ctl (int epoll_fd)
 {
+  int fds[] = {-1, INT_MAX};
   int epoll_fds[] = {0, -1, 0, INT_MAX};
   int epoll_events[64];
   /* The list of operations to try AND THE ORDER THEY ARE TRIED IN */
@@ -396,7 +407,7 @@ int test_epoll_ctl (int epoll_fd)
 							  parameter */
   unsigned int num_epoll_ctl_test_fails = 0;
   unsigned int num_epoll_ctl_test_calls = 0;
-  
+
   /* Generate all possible combinations of events (2^6 == 64)
      Assume we know nothing about the EPOLL event types _except_
      that they describe bits in a set. */
@@ -443,7 +454,7 @@ int test_epoll_ctl (int epoll_fd)
 	
 	for(epfd_index = 0; epfd_index < (sizeof(epoll_fds)/sizeof(int)); epfd_index++){
 	  for(event_index = 0; event_index < (sizeof(epoll_events)/sizeof(int)); event_index++){
-		for(fd_index = 0; fd_index < (sizeof(epoll_fds)/sizeof(int)); fd_index++){
+		for(fd_index = 0; fd_index < (sizeof(fds)/sizeof(int)); fd_index++){
 		  /* Now epoll_fd is a descriptor that references the set of
 			 file descriptors we are interested in. Next we test epoll_ctl */
 		  for(op_index = 0; op_index < (sizeof(epoll_ctl_ops)/sizeof(int)); op_index++){
@@ -464,7 +475,7 @@ int test_epoll_ctl (int epoll_fd)
 			/* NOTE that we are assuming that epoll will operate across
 			   a fork() call such that a subsequent fork() in the parent
 			   will also manipulate the same set */
-			result = epoll_ctl(epoll_fds[epfd_index], epoll_ctl_ops[op_index], epoll_fds[fd_index], ev_ptr);
+			result = epoll_ctl(epoll_fds[epfd_index], epoll_ctl_ops[op_index], fds[fd_index], ev_ptr);
 
 			/* We can't test errno resulting from the epoll_ctl call outside of
 			   the PROTECT_REGION hence we do not have a PROTECT_REGION_END
@@ -496,11 +507,8 @@ int test_epoll_ctl (int epoll_fd)
 			  break;
 			}
 
-			if (epoll_fds[fd_index] != 0){
-			  /* Expect an error */
-			  expected_errno = EPERM;
-			  num_errors_expected++;
-			}
+			expected_errno = EPERM;
+			num_errors_expected++;
 
 			if (ev_ptr == NULL){
 			  expected_errno = EINVAL;
@@ -608,10 +616,10 @@ int test_epoll_ctl (int epoll_fd)
 #undef PROTECT_REGION_BEGIN
 #undef PROTECT_REGION_END
 		  }
-		  close(epoll_fd);
 		}
 	  }
 	}
+	close(epoll_fd);
   }
 
   tst_resm(TINFO, "Summary: Of %d tests, epoll_ctl failed %d (%3.0f%% passed).\n", num_epoll_ctl_test_calls, num_epoll_ctl_test_fails, 
@@ -658,6 +666,5 @@ int main (int argc, char** argv)
 	/* ctl test(s) failed */
   }
 
-  /* Return 0 on success. */
   return 0;
 }
