@@ -125,6 +125,9 @@ else
   echo "$the_file dump write passed."
 fi
 
+rm -rf $TCtmp/dumpdir 
+cd /
+
 restore -v -r -f /dev/fd0 2>/dev/null
 if [ $? -ne 0 ]; then
   echo "$the_file restore read failed!"
@@ -135,7 +138,7 @@ fi
 
 for the_file in `echo 1K_file 10K_file 100K_file`
 do
-  diff $TCtmp/dumpdir/$the_file /$TCtmp/$TCtmp/dumpdir/$the_file 2>&1 >/dev/null
+  diff $TCtmp/dumpdir/$the_file /$TCdat/dumpdir/$the_file 2>&1 >/dev/null
   if [ $? -ne 0 ]; then
     echo "Diff of the $the_file backup files failed!"
     exit 1
@@ -144,8 +147,7 @@ do
   fi
 done
 rm -rf $TCtmp/dumpdir
-rm -rf $TCtmp/$TCtmp
-rm -f restoresymtable
+rm -f $TCtmp/restoresymtable
 }
 
 test_cpio() {
