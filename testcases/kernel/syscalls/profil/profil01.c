@@ -60,7 +60,6 @@
 #define P_TIME		10	/* profile for this many  seconds */
 
 extern int etext;
-extern char *malloc();
 
 volatile int t_flag;
 

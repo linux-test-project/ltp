@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: read01.c,v 1.2 2004/05/18 15:58:51 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -137,7 +137,7 @@ int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0, 0};
-char fname[255], *malloc();
+char fname[255];
 int fd, i;
 int offset=0;
 char *s;
