@@ -29,7 +29,7 @@ LTP-20030206
   BSD accounting before execution.
 - Corrected description of flock03.    	   	  ( Robbie Williamson )
 - Added code to handle formatting issues with     ( Robbie Williamson )
-  gtehostid01 test.
+  gethostid01 test.
 - Applied patch to ioperm(2) & iopl(2) tests to	  ( V.R. Sundar ) 
   check for IA32 architecture before executing.
 - Added code to msgctl08 and msgctl09 to ensure   ( Robbie Williamson )
