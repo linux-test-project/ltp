@@ -1,4 +1,4 @@
-SUBDIRS = fs io ipc mem pty sched syscalls
+SUBDIRS = fs io ipc mem pty sched syscalls module
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
