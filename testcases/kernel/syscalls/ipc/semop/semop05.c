@@ -150,6 +150,7 @@ main(int ac, char **av)
 				}
 
 				/* let the child carry on */
+				waitpid(pid,NULL,0);
 				exit(0);
 			}
 
@@ -167,7 +168,7 @@ main(int ac, char **av)
 			}
 		}
 	}
-
+	
 	cleanup();
 
 	/*NOTREACHED*/
@@ -262,6 +263,7 @@ cleanup(void)
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
+
 	tst_exit();
 }
 
