@@ -54,7 +54,7 @@
  *
  * NOTES
  *	It appears that the personality() call will always be
- *	successful with the way it is implemented in the 2.2.14 kernel.
+ *	successful with the way it is implemented in the kernel.
  *	This behavior differs from that described in the man page.
  */
 
