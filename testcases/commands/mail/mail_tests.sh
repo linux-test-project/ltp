@@ -20,12 +20,22 @@
 #
 # File :        mail_tests.sh
 #
-# Description:  Tests basic mail command.
+# Description:  Tests basic functions of mail system. The aim of the test is to
+#               make sure that certain basic functionality of mail is expected
+#               to work as per man page. There are 4 - 5 operations that are
+#               done on a regular basis wrt mail. ie. 
+#               mail send to an user@domain - received by that user@domain
+#               mail is send to nosuchuser@domain - mail delivery failure
+#               mail is send to user@nosuchdomain - mail delivery failure
+#               mail to user1@domain and cc user2@domain - mail rec by both
+#               mail to user1@domain and bcc user2@domain - mail rec by both
 #
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Jan 07 2003 - Created - Manoj Iyer.
-#				Jan 09 2003 - Added Test #2 #3 #4 and #5.
+#               Jan 09 2003 - Added Test #2 #3 #4 and #5.
+#                Jan 10 2002 - Fixed various bugs I had introduced in the test.
+#                           - Added SETUP and CLEANUP sections 
 #
 #! /bin/sh
 
@@ -47,14 +57,17 @@ else
 fi
 
 RC=0
+export TCID=SETUP
+export TST_COUNT=1
 
 # check if the user mail_test exists on this system.
 # if not add that user mail_test, will removed before exiting test.
 RC=$(awk '/^mail_test/ {print 1}' /etc/passwd)
 if [ -z $RC ]
 then
-    $LTPBIN/tst_resm TINFO "Test #4: Adding temporary user mail_test"
-    useradd mail_test &>$LTPTMP/tst_mail.out || RC=$?
+    RC=0
+    $LTPBIN/tst_resm TINFO "INIT: Adding temporary user mail_test"
+    useradd -m -s /bin/bash mail_test &>$LTPTMP/tst_mail.out || RC=$?
     if [ $RC -ne 0 ]
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_mail.out NULL \
@@ -62,6 +75,9 @@ then
         exit 1
     fi
 fi
+$LTPBIN/tst_resm TINFO "INIT: Removing all mails for mail_test and root"
+echo "d*" | mail -u mail_test &>/dev/null
+echo "d*" | mail -u root &>/dev/null
 
 # Set return code RC variable to 0, it will be set with a non-zero return code
 # in case of error. Set TFAILCNT to 0, increment if there occures a failure.
@@ -238,6 +254,7 @@ then
 else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
+    sleep 5s
     echo "d" | mail -u root &>$LTPTMP/tst_mail.res
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
@@ -248,7 +265,7 @@ else
             "Test #4: Mail was carbon copied to user mail_test"
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
-            "Test #4: mail failed to carbon copy user mail_test"
+            "Test #4: mail failed to carbon copy user mail_test. Reason:"
         TFAILCNT=$((TFAILCNT+1))
     fi
 fi
@@ -275,6 +292,7 @@ then
 else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
+    sleep 5s
     echo "d" | mail -u root &>$LTPTMP/tst_mail.res
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
@@ -285,7 +303,7 @@ else
             "Test #5: Mail was carbon copied to user mail_test"
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
-            "Test #5: mail failed to carbon copy user mail_test"
+            "Test #5: mail failed to carbon copy user mail_testi. Reason:"
         TFAILCNT=$((TFAILCNT+1))
     fi
 fi
@@ -293,21 +311,13 @@ fi
 
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
+export TCID=CLEANUP
+export TST_COUNT=1
+
+$LTPBIN/tst_resm TINFO "Test CLEAN: Removing temporary files from $LTPTMP"
 rm -fr $LTPTMP/tst_mail* 
 
-# check if the user mail_test exists on this system.
-# if yes delete user mail_test
-RC=$(awk '/^mail_test/ {print 1}' /etc/passwd)
-if [ $RC -eq 0 ]
-then
-    $LTPBIN/tst_resm TINFO "Test #4: Adding temporary user mail_test"
-    userdel mail_test &>$LTPTMP/tst_mail.out || RC=$?
-    if [ $RC -ne 0 ]
-    then
-        $LTPBIN/tst_res TBROK $LTPTMP/tst_mail.out NULL \
-            "Test CLEAN: Failed adding user mail_test. Reason:"
-        exit 1
-    fi
-fi
+$LTPBIN/tst_resm TINFO "Test CLEAN: Removing temporary user mail_test"
+userdel -r mail_test &>/dev/null
 
 exit $TFAILCNT
