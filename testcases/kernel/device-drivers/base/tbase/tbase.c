@@ -82,7 +82,7 @@ struct device test_device;
 static int test_device_match (struct device *dev, struct device_driver *drv) {
 	
 	printk("tbase: driver is %s\n", drv->name);
-	printk("tbase: device is %s\n", dev->name);
+//	printk("tbase: device is %s\n", dev->name);
 
 	if (drv == &test_driver && dev == &test_device) {
 		printk("tbase: match\n");
@@ -124,7 +124,7 @@ struct device_driver test_driver = {
 
 /* my device stuff */
 struct device test_device = {
-	.name = "TestDevice",
+//	.name = "TestDevice",
 	.bus = &test_bus_type,
 	.bus_id = "test_bus",
 };
@@ -578,20 +578,20 @@ static int test_create_file() {
 static int test_dev_suspend() {
 	int error = 0;
 
-	error = device_suspend(4, SUSPEND_SAVE_STATE);
+	error = device_suspend(SUSPEND_SAVE_STATE);
 	if (error) 
 		printk("tbase: Failed on device suspend call\n");
 	else {
 		printk("tbase: Successful on device suspend call\n");
-		device_resume(RESUME_RESTORE_STATE);
+		device_resume();
 	}
 
-	error = device_suspend(4, SUSPEND_DISABLE);
+	error = device_suspend(SUSPEND_DISABLE);
         if (error) 
                 printk("tbase: Failed on device suspend call\n");
         else {
                 printk("tbase: Successful on device suspend call\n");
-                device_resume(RESUME_ENABLE);
+                device_resume();
         }
 
 	return error;
