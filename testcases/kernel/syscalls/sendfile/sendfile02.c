@@ -30,7 +30,7 @@
  *
  * USAGE:  <for command-line>
  *  sendfile02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
+ *     where,  
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.
@@ -65,6 +65,7 @@ char in_file[100];
 char out_file[100];
 int out_fd;
 pid_t child_pid;
+static int sockfd, s;
 
 void cleanup(void);
 void setup(void);
@@ -102,6 +103,9 @@ void do_sendfile(off_t offset, int i)
 	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size - offset));
 
 	if (STD_FUNCTIONAL_TEST) {
+		/* Close the sockets */
+		shutdown(sockfd, SHUT_RDWR);
+		shutdown(s, SHUT_RDWR);
 		if (TEST_RETURN != testcases[i].exp_retval) {
 			tst_resm(TFAIL, "sendfile(2) failed to return "
 				 "expected value, expected: %d, "
@@ -115,10 +119,14 @@ void do_sendfile(off_t offset, int i)
 			}
 	} else {
 		tst_resm(TPASS, "call succeeded");
-		if (TEST_RETURN != testcases[i].exp_retval) 
+		/* Close the sockets */
+		shutdown(sockfd, SHUT_RDWR);
+		shutdown(s, SHUT_RDWR);
+		if (TEST_RETURN != testcases[i].exp_retval) {
 			kill(child_pid, SIGKILL);
-		else 
+		} else {
 			wait_status = waitpid(-1, &wait_stat, 0);
+		}
 	}
 
 	close(in_fd);
@@ -180,7 +188,6 @@ cleanup()
 
 int create_server(void) {
 	int lc;
-	int sockfd, s;
 	int length;
 	char rbuf[4096];
 	struct sockaddr_in sin1;
