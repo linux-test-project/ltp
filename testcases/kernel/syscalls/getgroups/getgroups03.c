@@ -177,11 +177,6 @@ setup()
 	 */
 	ngroups=readgroups(groups);
 
-	/* Setgroups is called by the login(1) process
-	 * if the testcase is executed via an ssh session this
-         * testcase will fail. So execute setgroups() before executing
-	 * getgroups()
-	 */
 	if (setgroups(ngroups, groups_list) == -1) {
 		tst_resm (TFAIL, "failed to setup testcase");
 		cleanup();
