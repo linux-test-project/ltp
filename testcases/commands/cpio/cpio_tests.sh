@@ -46,13 +46,13 @@ init()
 	export TCID=cpio	# this is the init function.
 	export TST_COUNT=0	# init identifier,
 
-	if [ -z $LTPTMP && -z $TMPBASE ]
+	if [ -z "$LTPTMP" -a -z "$TMPBASE" ]
 	then
 		LTPTMP=/tmp
 	else
 		LTPTMP=$TMPBASE
 	fi
-	if [ -z $LTPBIN && -z $LTPROOT ]
+	if [ -z "$LTPBIN" -a -z "$LTPROOT" ]
 	then
 		LTPBIN=./
 	else
