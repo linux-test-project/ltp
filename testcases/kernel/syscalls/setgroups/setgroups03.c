@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: setgroups02
+ * Test Name: setgroups03
  *
  * Test Description:
  *  Verify that,
@@ -50,7 +50,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  setgroups02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  setgroups03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -79,7 +79,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 
-char *TCID="setgroups02";	/* Test program identifier.    */
+char *TCID="setgroups03";	/* Test program identifier.    */
 int TST_TOTAL=2;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
