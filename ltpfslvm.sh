@@ -1,7 +1,7 @@
 #!/bin/sh
 # This script should be run prior to running executing the filesystem tests.
-# fdisk needs to be run and the HD partitions marked as DOS 0x8e
-# 02/13/03 mridge@us.ibm.com added instance and time command line options 
+# valid devices need to be passed for Device Mapper to work correctly
+# 03/14/03 mridge@us.ibm.com added instance and time command line options 
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -102,7 +102,7 @@ mkfs -V -t ext2     /dev/ltp_test_vg1/ltp_test_lv1
 mkfs -V -t msdos    /dev/ltp_test_vg1/ltp_test_lv2
 mkreiserfs          /dev/ltp_test_vg2/ltp_test_lv3 <yesenter.txt
 mkfs -V -t minix    /dev/ltp_test_vg2/ltp_test_lv4
-mkfs -t ext2        /dev/ram
+mkfs -V -t ext3        /dev/ram
 
 
 mount -v -t nfs $nfsmount               /test/growfiles/nfs                                          
