@@ -11,6 +11,13 @@ export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/float > ${TMP}/alltests
 
+# Uncomment below and define if execution of the fsx-linux tests is desired.
+# Example:
+# SCRATCHDEV=/dev/hda
+
+# Uncomment the next line if SCRATCHDEV defined
+#cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests
+
 ${LTPROOT}/ver_linux
 
 ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests
