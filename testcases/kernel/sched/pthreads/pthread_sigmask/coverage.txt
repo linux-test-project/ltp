@@ -1,0 +1,25 @@
+This document defines the coverage for function pthread_sigmask(). The functions pthread_sigmask() 
+and sigprocmask() are equivalent functions, but pthread_sigmask() should also work in a
+multi-threaded process. The tests in this section are similar in n nature to the tests for the
+sigprocmask() function, but calls will be made from threads that belong to multi-threaded processes 
+instead of single-threaded processes.
+
+Assertion	Covered?
+1		IMPLICITLY tested by assertions 1-18
+2		WON'T test. Pertains only to sigprocmask().
+3		IMPLICITLY tested by assertions 4-6
+4		YES
+5		YES
+6		YES
+7		YES
+8		YES
+9		YES
+10		YES
+11		WON'T test, because POSIX does not define behavior in this case.
+12		YES
+13		WON'T test, because POSIX does not define behavior in this case.
+14		YES
+15		WON'T test, pertains only to sigprocmask()
+16		YES
+17		WON'T test, pertains only to sigprocmask()
+18		NO, won't test for now.
