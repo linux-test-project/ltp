@@ -6,12 +6,12 @@ kernel()
   echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
   echo""
-  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
+  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >> " 
   read kernel_log
   case $kernel_log in
     y|Y)
-  	echo "   The logfile will be /tmp/kernel_tests.log"
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+  	echo "   The logfile will be /tmp/kernel_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/kernel_tests.log-$TIMESTAMP"
 	;;
     *)
@@ -23,8 +23,8 @@ kernel()
   read kernel_out
   case $kernel_out in
     y|Y)
-  	echo "   The output file will be /tmp/kernel_tests.output"
         OUTFILE="-o /tmp/kernel_tests.output-$TIMESTAMP"
+  	echo "   The output file will be /tmp/kernel_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
@@ -68,7 +68,7 @@ networking()
 {
   RHOST=loopback
   echo ""
-  echo -n " Please specify hostname of server machine. Default is loopback. >> "
+  echo -n "Please specify hostname of server machine. Default is loopback. >> "
   read RHOST
   echo "Server machine is $RHOST."
   echo ""
@@ -107,8 +107,8 @@ networking()
   ping -c1 $RHOST > /dev/null 2>&1
   if [ $? -ne "0" ]; then
    echo ""
-   echo " ERROR:"
-   echo " Could not reach $RHOST. Network tests aborting"
+   echo "               *** ERROR ***"
+   echo "Could not reach $RHOST. Network tests aborting"
    echo ""
    main
   fi
@@ -124,8 +124,8 @@ networking()
   read network_log
   case $network_log in
     y|Y)
-  	echo "   The logfile will be /tmp/network_tests.log"
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+  	echo "   The logfile will be /tmp/network_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/network_tests.log-$TIMESTAMP"
 	;;
     *)
@@ -137,8 +137,8 @@ networking()
   read network_out
   case $network_out in
     y|Y)
-  	echo "   The output file will be /tmp/network_tests.output"
         OUTFILE="-o /tmp/network_tests.output-$TIMESTAMP"
+  	echo "   The output file will be /tmp/network_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
@@ -182,12 +182,12 @@ diskio()
   echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
   echo""
-  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
+  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >> " 
   read diskio_log
   case $diskio_log in
     y|Y)
-  	echo "   The logfile will be /tmp/diskio_tests.log"
         TIMESTAMP=`date +%Y%m%d%I%M%S`
+  	echo "   The logfile will be /tmp/diskio_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/diskio_tests.log-$TIMESTAMP"
 	;;
     *)
@@ -199,8 +199,8 @@ diskio()
   read diskio_out
   case $diskio_out in
     y|Y)
-  	echo "   The output file will be /tmp/diskio_tests.output"
         OUTFILE="-o /tmp/diskio_tests.output-$TIMESTAMP"
+  	echo "   The output file will be /tmp/diskio_tests.output-$TIMESTAMP"
 	;;
     *)
 	OUTFILE=" "
