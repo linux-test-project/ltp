@@ -4,12 +4,15 @@ LDFLAGS +=
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS)
+all: $(TARGETS) generate
+
+generate:
+	./generate.sh
 
 install: all
-	ln -f perf_lan6 ../../../bin
+	ln -f sendfile601 ../../../bin
 
 clean:
 	rm -f $(TARGETS)
-
+	rm -rf datafiles
 

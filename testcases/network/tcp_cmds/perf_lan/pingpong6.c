@@ -44,8 +44,8 @@
 
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
+#include <netinet/ip6.h>
+#include <netinet/icmp6.h>
 #include <netdb.h>
 
 #define	MAXPACKET	4096	/* max packet size */
@@ -65,7 +65,7 @@ int s;			/* Socket file descriptor */
 struct hostent *hp;	/* Pointer to host info */
 struct timezone tz;	/* leftover */
 
-struct sockaddr whereto;/* Who to pingpong */
+struct sockaddr_in6 whereto;/* Who to pingpong */
 int datalen;		/* How much data */
 
 
@@ -86,10 +86,10 @@ int nwrite;
 main(argc, argv)
 char *argv[];
 {
-	struct sockaddr_in from;
+	struct sockaddr_in6 from;
 	char **av = argv;
 	int nrcv;
-	struct sockaddr_in *to = (struct sockaddr_in *) &whereto;
+	struct sockaddr_in6 *to = (struct sockaddr_in6 *) &whereto;
 	int on = 1;
 	int rc = 0;
 	struct protoent *proto;
@@ -98,16 +98,16 @@ char *argv[];
 
         /* Get Host net address */
         printf ("Get host net address for sending packets \n");
-	bzero( (char *)&whereto, sizeof(struct sockaddr) );
-	to->sin_family = AF_INET;
-	to->sin_addr.s_addr = inet_addr(av[1]);
-	if (to->sin_addr.s_addr != -1) {
+	bzero( (char *)&whereto, sizeof(struct sockaddr_in6) );
+	to->sin6_family = AF_INET6;
+	to->sin6_addr.s6_addr = inet_addr(av[1]);
+	if (to->sin6_addr.s6_addr != -1) {
 		strcpy(hnamebuf, av[1]);
 		hostname = hnamebuf;
 	} else {
 		hp = gethostbyname(av[1]);
 		if (hp) {
-			to->sin_family = hp->h_addrtype;
+			to->sin6_family = hp->h_addrtype;
 			bcopy(hp->h_addr, (caddr_t)&to->sin_addr, hp->h_length);
 			hostname = hp->h_name;
 		} else {
@@ -143,8 +143,8 @@ char *argv[];
 
 
         /* Get network protocol to use (check /etc/protocol) */
-	if ((proto = getprotobyname("icmp")) == NULL) {
-		printf("ICMP: unknown protocol\n");
+	if ((proto = getprotobyname("ipv6-icmp")) == NULL) {
+		printf("IPv6-ICMP: unknown protocol\n");
 		exit(10);
 	}
 
@@ -191,7 +191,7 @@ char *argv[];
 			/* Receive packet from socket */
 			printf("Receiving packet \n");
 			fromlen = sizeof (from);
-			if ( (cc=recvfrom(s, packet, len, 0, (struct sockaddr *)&from, &fromlen)) < 0) {
+			if ( (cc=recvfrom(s, packet, len, 0, (struct sockaddr_in6 *)&from, &fromlen)) < 0) {
 				printf("ERROR in recvfrom\n");
 			}
                         /* Verify contents of packet */
@@ -211,7 +211,7 @@ int npackets;
 {
 	int count=0;
 	static u_char outpack[MAXPACKET];
-	register struct icmp *icp = (struct icmp *) outpack;
+	register struct icmp_hdr *icp = (struct icmp_hdr *) outpack;
         int i;
 #ifdef __64BIT__
                         long cc;
@@ -225,10 +225,10 @@ int npackets;
 
         /* Setup the packet structure */
         printf ("Setup ICMP packet structure to send to host \n");
-	icp->icmp_type = ICMP_ECHO;
-	icp->icmp_code = 0;
-	icp->icmp_cksum = 0;
-	icp->icmp_id = ident;		/* ID */
+	icp->icmp6_type = ICMP6_ECHO_REQUEST;
+	icp->icmp6_code = 0;
+	icp->icmp6_cksum = 0;
+	icp->icmp6_id = ident;		/* ID */
 
 	cc = datalen+8;			/* skips ICMP portion */
 
@@ -243,7 +243,7 @@ int npackets;
 	}
 
 	/* Compute ICMP checksum here */
-	icp->icmp_cksum = in_cksum( icp, cc );
+	icp->icmp6_cksum = in_cksum( icp, cc );
 
 	/* cc = sendto(s, msg, len, flags, to, tolen) */
 	ntransmitted=0;
@@ -251,7 +251,7 @@ int npackets;
 		count++;
                 /* Send packet through socket created */
                 printf ("Sending packet through created socket \n");
-		i = sendto( s, outpack, cc, 0, &whereto, sizeof(struct sockaddr) );
+		i = sendto( s, outpack, cc, 0, &whereto, sizeof(struct sockaddr_in6) );
 
 		if( i < 0 || i != cc )  {
 			if( i<0 )  perror("sendto");
@@ -339,7 +339,7 @@ void finish(int n)
 ck_packet (buf, cc, from)
 char 	*buf;			/* pointer to start of IP header */
 int	cc;			/* total size of received packet */
-struct sockaddr_in *from; 	/* address of sender */
+struct sockaddr_in6 *from; 	/* address of sender */
 {
 	u_char 	i;
 	int 	iphdrlen;
