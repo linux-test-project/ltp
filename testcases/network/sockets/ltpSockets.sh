@@ -56,6 +56,9 @@ echo "Starting ltpServer..."
 ./ltpServer $hostname1 &
 sleep 5s
 echo "Starting ltpClient..."
-./ltpClient $hostname1 $testdata
+./ltpClient $hostname1 $hostname1 $testdata
+sleep 1s
+killall -9 ltpServer
+killall -9 ltpClient
 
 
