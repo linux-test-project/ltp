@@ -109,7 +109,7 @@ char *argv[];
 	close(s); /* close service socket */
 
 	/* get client request information */
-	if ((nbytes = read(as, rbuf, 80)) <= 0) {
+	if ((nbytes = read(as, rbuf, PATH_MAX)) <= 0) {
 	  printf("socket read error = %d\n", errno);
 	  close(as);
 	  exit(-1);

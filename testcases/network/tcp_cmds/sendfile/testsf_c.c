@@ -77,7 +77,7 @@ printf("client write %d bytes to server with contents %s\n", nbyte, rbuf);
 
   nlen = 0; /* init size of info received */
   rbuf[0] = '\0';
-  while ((nbyte = read(s, rbuf, 80)) >0) { /* receive info until EOF */
+  while ((nbyte = read(s, rbuf, PATH_MAX)) >0) { /* receive info until EOF */
     nlen += nbyte;
     if (write(fd, rbuf, nbyte) != nbyte) {
       printf("Error writing to file %s on client\n",clnt_fname);
