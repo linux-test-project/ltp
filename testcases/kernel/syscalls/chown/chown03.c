@@ -198,7 +198,7 @@ main(int ac, char **av)
 void 
 setup()
 {
-	char *test_home;		/* variable to hold TESTHOME env */
+	char *test_home[PATH_MAX];	/* variable to hold TESTHOME env */
 	int fd;				/* file handler for testfile */
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
