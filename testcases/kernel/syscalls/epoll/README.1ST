@@ -1,9 +1,23 @@
 Epoll Setup
 
-In order to compile the epoll-ltp successfully you need the following libraries:
 
--	Epoll library http://www.xmailserver.org/linux-patches/epoll-lib-0.11.tar.gz
--	Portable Coroutine Library (PCL)  http://www.xmailserver.org/libpcl.html
+	** Directions for glibc version of 2.3.2 or higher **
+
+Epoll support is currently implemented in glibc 2.3.2, therefore if you have a 
+glibc version of 2.3.2 or higher then do the following steps:
+
+1. Download and untar the epoll library from:
+  http://www.xmailserver.org/linux-patches/epoll-lib-0.11.tar.gz
+2. Copy <epoll-lib_directory>/include/epoll.h    /usr/include
+3. Compile epoll-ltp.c in the  <ltp_dir>testcases/kernel/syscall/epoll
+
+
+
+	** Older version of glibc **
+To compile the epoll-ltp successfully the following libraries are needed:
+
+Epoll library http://www.xmailserver.org/linux-patches/epoll-lib-0.11.tar.gz
+Portable Coroutine Library (PCL)  http://www.xmailserver.org/libpcl.html
 
 
 1.	Download and untar the PCL library
@@ -20,4 +34,5 @@ In order to compile the epoll-ltp successfully you need the following libraries:
 8.	Copy <epoll-lib_directory>/include/epoll.h    /usr/include
 9.	<epoll-lib_directory>  make
 10. Copy <epoll-lib_directory>/lib/libepoll*    /lib
+11. Compile epoll-ltp.c in the  <ltp_dir>testcases/kernel/syscall/epoll
 
