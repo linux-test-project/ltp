@@ -42,14 +42,14 @@
 
 export TST_TOTAL=4
 
-if [[ -z $LTPTMP && -z $TMPBASE ]]
+if [ -z $LTPTMP && -z $TMPBASE ]
 then
     LTPTMP=/tmp
 else
     LTPTMP=$TMPBASE
 fi
 
-if [[ -z $LTPBIN && -z $LTPROOT ]]
+if [ -z $LTPBIN && -z $LTPROOT ]
 then
     LTPBIN=./
 else

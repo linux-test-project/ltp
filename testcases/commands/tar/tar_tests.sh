@@ -33,7 +33,7 @@
 
 export TST_TOTAL=1
 
-if [[ -z $LTPTMP && -z $TMPBASE ]]
+if [ -z $LTPTMP && -z $TMPBASE ]
 then
     LTPTMP=/tmp
 else
