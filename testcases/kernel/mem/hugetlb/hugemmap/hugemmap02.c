@@ -65,7 +65,9 @@
 
 #define PAGE_SIZE      ((1UL) << 12) 	/* Normal page size */
 #define HPAGE_SIZE     ((1UL) << 24) 	/* Huge page size */
+#define MAP_SIZE       (2*HPAGE_SIZE) 	/* Huge map page size */
 #define LOW_ADDR       (void *)(0x80000000)
+#define LOW_ADDR2       (void *)(0x80000000+MAP_SIZE+HPAGE_SIZE)
 
 char* TEMPFILE="mmapfile";
 
@@ -151,8 +153,8 @@ main(int ac, char **av)
 
 		/* Attempt to mmap a huge page into a low memory address */
 		errno = 0;
-		addr2 = mmap(NULL, HPAGE_SIZE, PROT_READ | PROT_WRITE,
-			    MAP_SHARED, fildes, 0);
+		addr2 = mmap(LOW_ADDR2, MAP_SIZE, PROT_READ | PROT_WRITE,
+			    MAP_SHARED | MAP_FIXED, fildes, 0);
 		
 #if __WORDSIZE==64 /* 64-bit process */ 
 		if (addr2 == MAP_FAILED) {
@@ -179,7 +181,7 @@ main(int ac, char **av)
         	}
 		
 #if __WORDSIZE==64
-		if (munmap(addr2, HPAGE_SIZE) != 0) {
+		if (munmap(addr2, MAP_SIZE) != 0) {
 			tst_brkm(TFAIL, NULL, "huge munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
