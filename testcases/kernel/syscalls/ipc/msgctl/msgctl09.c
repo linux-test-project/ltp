@@ -554,7 +554,9 @@ setup()
 #define BUFSIZE 512
   FILE* f;
   char buff[BUFSIZE];
+  int used_queues;
 
+	tst_tmpdir();
         /* You will want to enable some signal handling so you can capture
          * unexpected signals like SIGSEGV.
          */
@@ -577,6 +579,20 @@ setup()
         fgets(buff, BUFSIZE, f);
 	fclose(f);
         MSGMNI = atoi(buff);
+	if (system("ipcs -q | wc -l > used")==-1){
+                tst_resm(TBROK,"Could not calculate used message queues");
+                tst_exit();
+        }
+        f = fopen("used","r");
+        fgets(buff, BUFSIZE, f);
+        used_queues = atoi(buff);
+        MSGMNI = MSGMNI - (used_queues - 4);
+        fclose(f);
+        if (MSGMNI <= 0){
+                tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
+                cleanup();
+        }
+
 }
 
 
@@ -610,7 +626,7 @@ cleanup()
 					        }
 
         fflush (stdout);
-
+	tst_rmdir();
         /* exit with return code appropriate for results */
         tst_exit();
 }
