@@ -1,2 +1,0 @@
-stress_floppy export TCdat=$LTPROOT/testcases/kernel/io/stress_floppy; stress_floppy
-stress_cd stress_cd

@@ -1,6 +1,0 @@
-float_bessel float_bessel -D $LTPROOT/testcases/bin -v
-float_exp_log float_exp_log -D $LTPROOT/testcases/bin -v
-float_iperb float_iperb  -D $LTPROOT/testcases/bin -v
-float_power float_power  -D $LTPROOT/testcases/bin -v
-float_trigo float_trigo  -D $LTPROOT/testcases/bin -v
-
