@@ -1,0 +1,152 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2001
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/******************************************************************************
+ *
+ *   pthcli.c
+ *
+ *
+ *   (C) COPYRIGHT International Business Machines Corp. 1993
+ *   All Rights Reserved
+ *   Licensed Materials - Property of IBM
+ *   US Government Users Restricted Rights - Use, duplication or
+ *   disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ *
+ *****************************************************************************/
+
+/* 01-04-02	Ported to Linux		Manoj Iyer email:manjo@austin.ibm.com */
+
+/* client using TCP */
+
+#include <stdio.h>
+#include "inet.h"
+#include <sys/errno.h>
+#define MAXLINE 1024
+extern int errno;
+
+/* Read contents of FILE *fp. Write each line to socket, then
+   read line back from socket and write to standard output.
+   Return to caller when done */
+
+str_cli(fp, sockfd)
+register FILE *fp;
+register int sockfd;
+{
+    int n;
+    char sendline[MAXLINE], recvline[MAXLINE + 1];
+prtln();
+    while (fgets(sendline, MAXLINE, fp) != NULL)
+        {
+	    n = strlen(sendline);
+	    
+	    dprt("%s: str_cli(): sendline = %s", __FILE__, sendline);
+	    
+	    if (writen(sockfd, sendline, n) != n)
+	        perror("str_cli: writen error on socket");
+	    /*
+	    * read a line from socket and write it to standard output
+	    */
+
+prtln();
+	    n = readline(sockfd, recvline, MAXLINE);
+prtln();
+	    /*
+	    printf("strcli: recvline = %s", recvline);
+	    */
+	    if (n < 0)
+	        perror("str_cli: readline error on socket");
+	    recvline[n] = 0;
+	    fputs(recvline, stdout);
+prtln();
+        }
+
+prtln();
+    if (ferror(fp))
+            perror("str_cli: error reading file");
+}
+
+main(int argc, char *argv[])
+{
+    FILE *fi, *input;
+    int sockfd;
+    struct sockaddr_in serv_addr;
+    char *errfilename;
+
+    pname = argv[0];
+    if (argc < 2) 
+    {
+  	printf("\nusage: %s ip#\n", pname);
+  	exit(1);
+    }
+
+    errfilename = argv[1];
+
+    /* Fill in the structure */
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
+    serv_addr.sin_port = htons(SERV_TCP_PORT);
+prtln();
+dprt("%s: main(): Binding local address for client to use\n"
+     "serv_addr.sin_family = %d\n serv_addr.sin_addr.s_addr = %#x\n"
+     "serv_addr.sin_port = %d\n", __FILE__, serv_addr.sin_family,
+      serv_addr.sin_addr.s_addr, serv_addr.sin_port);
+
+    /* Open Internet stream socket */
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+	if ((fi = fopen(errfilename, "w")) != 0)
+	{
+	    fprintf(fi,"client: socket open failure, no = %d\n", errno);
+	    close(fi);
+            return(errno);
+	}
+	exit(1);
+    }
+prtln();
+dprt("%s: main(): Open Internet stream socket, socfd = %d\n", __FILE__, sockfd);
+    /* Connect to the server */
+    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+    {
+prtln();
+	if ((fi = fopen(errfilename, "w")) != 0)
+	{
+	    fprintf(fi,"client: connect failure, no = %d\n", errno);
+	    close(fi);
+            return(errno);
+	}
+	exit(1);
+    }
+#ifdef _LINUX
+    if ((input = fopen("./data", "r")) == NULL) 
+    {
+	perror("fopen");
+        close(fi);
+        return(errno);
+    }
+    str_cli(input, sockfd); /* call the routines that do the work */
+prtln();
+#else
+prtln();
+    str_cli(stdin, sockfd); /* call the routines that do the work */
+#endif
+prtln();
+    close(sockfd);
+    exit(0);
+}
