@@ -92,7 +92,6 @@ int fildes;			/* file handle for temp file */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-extern loff_t llseek(int fildes, loff_t offset, int origin);
 
 int
 main(int ac, char **av)
@@ -120,7 +119,7 @@ main(int ac, char **av)
 		/* 
 		 * set file size limit, seek to a file using llseek.
 		 */
-		TEST(llseek(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
+		 		 TEST(lseek64(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
 
 		/* check return code of lseek(2) */
 		if (TEST_ERRNO == (loff_t)-1) {
@@ -153,7 +152,7 @@ main(int ac, char **av)
 			}
 
 			/* Seeking to end of last valid write */
-			offset = llseek(fildes, (loff_t)BUFSIZ, SEEK_SET);
+		 		 		 offset = lseek64(fildes, (loff_t)BUFSIZ, SEEK_SET);
 			if (offset != (loff_t)BUFSIZ) {
 				tst_brkm(TFAIL, cleanup,
 					 "llseek under file size limit");

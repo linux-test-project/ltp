@@ -19,6 +19,7 @@
 
 /*
  * Test Name: llseek02
+ * Note that glibc exports the llseek syscall as lseek64.
  *
  * Test Description:
  *  Verify that,
@@ -158,7 +159,7 @@ main(int ac, char **av)
 		 	 * Verify that it fails with -1 return value and
 			 * sets appropriate errno.
 		 	 */
-			TEST(llseek(fildes, (loff_t)0, whence));
+		 		 		 TEST(lseek64(fildes, (loff_t)0, whence));
 
 			/* check return code of llseek(2) */
 			if (TEST_RETURN != (loff_t)-1) {
