@@ -4,6 +4,7 @@ clock_getres01 cd $LTPROOT/testcases/bin;clock_getres01
 clock_gettime01 cd $LTPROOT/testcases/bin;clock_gettime01
 clock_nanosleep01 cd $LTPROOT/testcases/bin;clock_nanosleep01
 clock_settime01 cd $LTPROOT/testcases/bin;clock_settime01
+nanosleep06 cd $LTPROOT/testcases/bin;nanosleep06
 timer_create01 cd $LTPROOT/testcases/bin;timer_create01
 timer_delete01 cd $LTPROOT/testcases/bin;timer_delete01
 timer_getoverrun01 cd $LTPROOT/testcases/bin;timer_getoverrun01
