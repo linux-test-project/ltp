@@ -190,6 +190,8 @@ mkdir08 mkdir08
 # Basic test for mkdir(2)
 mknod01 mknod01
 # Basic test for mknod(2)
+qmm01 mmap001 -m 1
+# Basic mmap() test.
 nice05 nice05
 # Basic test for nice(2)
 open03 open03
