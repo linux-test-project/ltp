@@ -48,7 +48,7 @@ GenLoad=0
 usage() 
 {
 	cat <<-END >&2
-    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ] 
+    usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ] [ -o outputfile ] 
                   [ -m # (in Mb)] -N -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under additional background CPU load.
@@ -62,6 +62,7 @@ usage()
                     (export RHOST = remote hostname)
                     (export PASSWD = passwd of remote host)
     -n              Run LTP with network traffic in background.
+    -o outputfile   Redirect test output to a file.
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r ltproot      Fully qualified path where testsuite is installed.
@@ -88,7 +89,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-while getopts cd:f:hi:l:m:Nnpqr:t:x: arg
+while getopts cd:f:hi:l:m:Nno:pqr:t:x: arg
 do  case $arg in
     c)	   
             $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null &
@@ -135,6 +136,8 @@ do  case $arg in
 
     n)	    $LTPROOT/testcases/bin/netpipe.sh
 	    NetPipe=1;;
+
+    o)      outputfile="-o $OPTARG" ;;
 
     p)      pretty_prt=" -p ";;
 
@@ -203,7 +206,7 @@ ${LTPROOT}/IDcheck.sh
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
+${LTPROOT}/pan/pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile $outputfile 
 
 if [ $? -eq 0 ]; then
   echo pan reported PASS
