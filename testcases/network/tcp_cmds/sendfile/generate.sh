@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/perl
 #
 #   Copyright (c) International Business Machines  Corp., 2001
 #
@@ -19,31 +19,47 @@
 #
 #   FILE: generate.sh
 #
-#   PURPOSE: Creates datafiles for use in network file transfer tests.
+#   PURPOSE: Creates data_dir for use in network file transfer tests.
 #
 #   AUTHOR: Robbie Williamson (robbiew@us.ibm.com)
 #
 ############################################################################
 
+my $data_dir = 'datafiles';
+my $small_file = 'ascii.sm';
+my $medium_file = 'ascii.med';
+my $large_file = 'ascii.lg';
+my $jumbo_file = 'ascii.jmb';
+my $jumbo_size = 1600020;
+my $large_size = 80020;
+my $medium_size = 4020;
+my $small_size = 220;
 
-COUNT=0
-LIMIT=10
-
-mkdir datafiles 2>/dev/null
-
-for the_file in `echo ascii.sm ascii.med ascii.lg ascii.jmb`
-do
-  rm -f datafiles/$the_file 2>/dev/null
-  while [ $COUNT -le $LIMIT ]
-  do
-    echo -n "AAAAAAAAAA" >> datafiles/$the_file
-    COUNT=$(( $COUNT + 1 ))
-  done
-  LIMIT=$(( $LIMIT * 20 ))
-  COUNT=0
-  cat datafiles/$the_file > tmpfile
-  cat tmpfile >> datafiles/$the_file
-  rm -f tmpfile
-  chmod 666 datafiles/$the_file
-done
-
+unless ( -d $data_dir ) {
+	mkdir($data_dir,0777)
+}
+chdir($data_dir);
+unless (-f $small_file) {
+        open(DATAFILE, ">$small_file") or die "$0: could not create $small_file: $!\n";
+        print DATAFILE 'A' x $small_size;
+        close(DATAFILE);
+        chmod 0666, $small_file;
+}
+unless (-f $medium_file) {
+        open(DATAFILE, ">$medium_file") or die "$0: could not create $medium_file: $!\n";
+        print DATAFILE 'A' x $medium_size;
+        close(DATAFILE);
+        chmod 0666, $medium_file;
+}
+unless (-f $large_file) {
+        open(DATAFILE, ">$large_file") or die "$0: could not create $large_file: $!\n";
+        print DATAFILE 'A' x $large_size;
+        close(DATAFILE);
+        chmod 0666, $large_file;
+}
+unless (-f $jumbo_file) {
+        open(DATAFILE, ">$jumbo_file") or die "$0: could not create $jumbo_file: $!\n";
+        print DATAFILE 'A' x $jumbo_size;
+        close(DATAFILE);
+        chmod 0666, $jumbo_file;
+}

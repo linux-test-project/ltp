@@ -30,10 +30,10 @@ my $small_file = 'ascii.sm';
 my $medium_file = 'ascii.med';
 my $large_file = 'ascii.lg';
 my $jumbo_file = 'ascii.jmb';
-my $small_size = 1600020;
-my $medium_size = 80020;
-my $large_size = 4020;
-my $jumbo_size = 220;
+my $jumbo_size = 1600020;
+my $large_size = 80020;
+my $medium_size = 4020;
+my $small_size = 220;
 
 unless ( -d $data_dir ) {
 	mkdir($data_dir,0777)

@@ -30,10 +30,10 @@ my $small_file = 'smallsize.fil';
 my $medium_file = 'medsize.fil';
 my $large_file = 'largesize.fil';
 my $jumbo_file = 'maxsize.fil';
-my $small_size = 1600020;
-my $medium_size = 80020;
-my $large_size = 4020;
-my $jumbo_size = 220;
+my $jumbo_size = 1600020;
+my $large_size = 80020;
+my $medium_size = 4020;
+my $small_size = 220;
 
 unless ( -d $data_dir ) {
 	mkdir($data_dir,0777)
