@@ -1,4 +1,4 @@
-SUBDIRS = sem pipeio
+SUBDIRS = sem pipeio ipc_stress
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
