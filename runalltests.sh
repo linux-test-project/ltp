@@ -92,7 +92,7 @@ do  case $arg in
     h)	    usage;;
     
     i)        
-            bytesize=($OPTARG * 1024 * 1024) 
+            bytesize =$(($OPTARG * 1024 * 1024))
             $LTPROOT/testcases/bin/genload --io 1 2>&1 1>/dev/null &
             $LTPROOT/testcases/bin/genload --hdd 0 --hdd-bytes $bytesize \
             2>&1 1>/dev/null & ;;
@@ -118,14 +118,14 @@ do  case $arg in
 			fi ;;
 
     m)      
-            memsize=($OPTARG * 1024 * 1024 )
+            memsize =$(($OPTARG * 1024 * 1024)) 
 	    $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $memsize\
             2>&1 1>/dev/null & ;;
 
     N)	    run_netest=1;;
 
     n)	    $LTPROOT/testcases/bin/netpipe.sh
-	    NetPipe=1;;
+	    NetPipe = 1;;
 
     p)      pretty_prt=" -p ";;
 
