@@ -24,7 +24,7 @@
 
 while [ 1 ]
 do
-	$LTPROOT/testcases/bin/NPtcp -sar >/dev/null 2>/dev/null &
-	$LTPROOT/testcases/bin/NPtcp -sth localhost >/dev/null 2>/dev/null 
+	./NPtcp -sar >/dev/null 2>/dev/null &
+	./NPtcp -sth localhost >/dev/null 2>/dev/null 
 	sleep 1
 done
