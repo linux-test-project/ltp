@@ -735,6 +735,8 @@ sigdelset01 cd $LTPROOT/testcases/bin;sigdelset01
 sigdelset02 cd $LTPROOT/testcases/bin;sigdelset02
 sigdelset03 cd $LTPROOT/testcases/bin;sigdelset03
 
+sigemptyset01 cd $LTPROOT/testcases/bin;sigemptyset01
+
 sigfillset01 cd $LTPROOT/testcases/bin;sigfillset01
 
 sighold02 sighold02
