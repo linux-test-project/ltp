@@ -94,7 +94,12 @@
 #include "test.h"
 #include "usctest.h"
 
+#ifdef __powerpc64__
+#define CHILD_STACK_SIZE 8192
+#else
 #define CHILD_STACK_SIZE 1024
+#endif
+
 #define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD
 #define FLAG_NONE SIGCHLD
 #define PARENT_VALUE 1

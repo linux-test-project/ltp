@@ -72,7 +72,12 @@
 #include "test.h"
 #include "usctest.h"
 
+#ifdef __powerpc64__
+#define CHILD_STACK_SIZE 8192
+#else
 #define CHILD_STACK_SIZE 1024
+#endif
+
 
 #include "clone_platform.h"
 

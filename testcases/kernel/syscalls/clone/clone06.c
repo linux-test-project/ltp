@@ -78,7 +78,12 @@
 #include "usctest.h"
 #include "clone_platform.h"
 
+#ifdef __powerpc64__
+#define CHILD_STACK_SIZE 8192
+#else
 #define CHILD_STACK_SIZE 1024
+#endif
+
 #define MAX_LINE_LENGTH 256
 
 static void setup();

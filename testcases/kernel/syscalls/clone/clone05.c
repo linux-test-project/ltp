@@ -71,8 +71,11 @@
 #include "test.h"
 #include "usctest.h"
 #include "clone_platform.h"
-
+#ifdef __powerpc64__
+#define CHILD_STACK_SIZE 8192
+#else
 #define CHILD_STACK_SIZE 1024
+#endif
 #define FLAG CLONE_VM | CLONE_VFORK
 
 static void setup();
