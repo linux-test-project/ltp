@@ -78,6 +78,7 @@ main(int argc, char **argv)
 	int fail;
 	int cnt, c;
 	char wbuf[8 * PIPE_BUF];
+	struct sigaction sigptr; /* set up signal handler */
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -111,7 +112,19 @@ main(int argc, char **argv)
 			cleanup();
 			/*NOTREACHED*/
 		}
+#if 0
 		sigset(SIGALRM, alarm_handler);
+#endif
+		sigptr.sa_handler = (void (*)(int signal))alarm_handler;
+		sigfillset(&sigptr.sa_mask);
+		sigptr.sa_flags = 0;
+		sigaddset(&sigptr.sa_mask, SIGALRM);
+		if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1)
+		{
+			tst_resm(TBROK, "sigaction(): Failed\n");
+			cleanup();
+		}   
+
 
 block1:
 		tst_resm(TINFO, "Enter block 1: test for EAGAIN in write()");
