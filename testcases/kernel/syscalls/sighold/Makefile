@@ -20,13 +20,7 @@
 # name of file	: Makefile						  #
 ###########################################################################
 
-NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),)
-export CFLAGS+= -I../../../../include -D_GNU_SOURCE
-else
-export CFLAGS+= -I../../../../include -D_GNU_SOURCE -DUSE_NPTL
-endif
-
+CFLAGS+= -I../../../../include -D_GNU_SOURCE
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)

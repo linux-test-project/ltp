@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.3 2003/04/29 17:05:41 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.4 2003/09/25 15:44:20 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -116,10 +116,9 @@ extern int sighold (int __sig);
 extern int sigrelse (int __sig);
 #endif
 
-#ifdef USE_NPTL
+/* Needed for NPTL */
 #define SIGCANCEL 32
 #define SIGTIMER 33
-#endif
 
 void setup();
 void cleanup();
@@ -814,10 +813,8 @@ int sig;
 	case SIGTSTP:
 	case SIGCONT:
 	case SIGALRM:
-#ifdef USE_NPTL
 	case SIGCANCEL:
 	case SIGTIMER:
-#endif
 #ifdef SIGNOBDM
 	case SIGNOBDM:
 #endif

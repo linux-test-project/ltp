@@ -19,12 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),)
 export CFLAGS+= -I../../../../include 
-else
-export CFLAGS+= -I../../../../include -DUSE_NPTL
-endif
 
 LOADLIBES+=	-L../../../../lib -lltp
 
