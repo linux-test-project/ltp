@@ -15,9 +15,9 @@ usage()
                 [ -r ltproot ] [ -d tmpdir ]
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
-    -l logfile        Log results of test in a logfile.
-    -r ltproot        Fully qualified path where testsuite is installed.
-    -d tmpdir        Directory where temporary files will be created.
+    -l logfile      Log results of test in a logfile.
+    -r ltproot      Fully qualified path where testsuite is installed.
+    -d tmpdir       Directory where temporary files will be created.
 
 	example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
 	END
