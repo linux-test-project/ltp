@@ -21,7 +21,7 @@
 #
 #   PURPOSE: Creates dat for use in network file transfer tests.
 #
-#   AUTHOR: Robbie Williamson (robbiew@us.ibm.com)
+#   AUTHOR: Randy Hron (rwhron@earthlink.net)
 #
 ############################################################################
 
