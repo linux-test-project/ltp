@@ -233,7 +233,7 @@ else
     if [ -z "$RC1" -a -z "$RC2" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
-        "Test #2: No new mail for root. Reason:"
+        "Test #3: No new mail for root. Reason:"
         TFAILCNT=$(( $TFAILCNT+1 ))
     else
         if [ $RC1 -ne 0 -a $RC2 -ne 0 ]
