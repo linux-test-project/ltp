@@ -1,0 +1,4 @@
+Warning:  This routine is obsolete. The include file is no
+        longer provided by glibc.  Use getrlimit(2),  setrlimit(2)
+        and sysconf(3) instead.  For the shell command ulimit, see
+        bash(1).
