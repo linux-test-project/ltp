@@ -24,8 +24,6 @@ LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=sigaction03 sigaction04 sigaction05 sigaction06 sigaction07 \
-     sigaction08 sigaction09 sigaction10 sigaction11
 
 all: $(TARGETS)
 
@@ -33,8 +31,7 @@ sigaction01:
 	$(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread
 
 install:
-	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
-	@/bin/sh ./chmod.sh $(TEST)
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
