@@ -84,7 +84,6 @@
 #include <sys/stat.h>
 #include <sys/swap.h>
 #include <asm/page.h>
-#include <asm/atomic.h>
 #include <linux/swap.h>
 #include <fcntl.h>
 #include <pwd.h>
