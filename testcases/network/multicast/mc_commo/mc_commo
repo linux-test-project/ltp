@@ -96,8 +96,8 @@ do_test ()
       [ $? = 0 ] || end_testcase "membership not set for $GROUP_ADDR"
 
       echo "Running ping to verify group can be reached "
-      ping -c5 $GROUP_ADDR > /dev/null 
-      [ $? = 0 ] || end_testcase "failed: ping -c5 $GROUP_ADDR"
+      ping -c5 -I $INTERFACE $GROUP_ADDR > /dev/null 
+      [ $? = 0 ] || end_testcase "failed: ping -c5 -I $INTERFACE $GROUP_ADDR"
 
       # Flood the interface in an attempt to overload the sends and
       # recvs to and from the host.
