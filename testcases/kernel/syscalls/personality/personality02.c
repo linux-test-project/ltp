@@ -22,7 +22,7 @@
  *	personality02.c
  *
  * DESCRIPTION
- *	personality02 - Check that we get EINVAL for a bad personality.
+ *	personality02 - Check that we don't get EINVAL for a bad personality.
  *
  * CALLS
  *	personality()
@@ -31,10 +31,9 @@
  *	loop if that option was specified
  *	issue the system call
  *	check the errno value
- *	  issue a PASS message if we get EINVAL
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
+ *	  issue a FAIL message if we get EINVAL
+ *	otherwise, the tests passes
+ *	  issue a PASS message
  *	  call cleanup
  *
  * USAGE:  <for command-line>
@@ -48,6 +47,10 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *	02/2003 - inverted by Paul Larson
+ *		  It appears that personality() should NEVER return
+ *		  EINVAL unless something went horribly wrong. Changed
+ *		  the test to reflect this behaviour.
  *
  * RESTRICTIONS
  *	none
@@ -63,6 +66,7 @@
 
 #include <errno.h>
 #include <linux/personality.h>
+#undef personality
 
 void cleanup(void);
 void setup(void);
@@ -72,8 +76,6 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 #define	PER_BAD	0x00dd		/* A non-existent personality type */
-
-int exp_enos[] = {22, 0};	/* EINVAL */
 
 main(int ac, char **av)
 {
@@ -96,24 +98,15 @@ main(int ac, char **av)
 
 		TEST(personality(PER_BAD));
 
-		if (TEST_RETURN != -1) {
+		if (TEST_RETURN != 0) {
 			tst_brkm(TFAIL, cleanup, "call failed - errno = %d "
 				 "- %s", TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
+			tst_resm(TPASS, "call to personality() with a "
+					"bad personality passed");
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-
-		switch(TEST_ERRNO) {
-		case EINVAL:
-			tst_resm(TPASS, "expected failure - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_brkm(TFAIL, cleanup, "call failed with an "
-				 "unexpected error - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		}
 
 		/*
 		 * set our personality back to PER_LINUX
@@ -136,9 +129,6 @@ setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* set expected errnos for -e option */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
