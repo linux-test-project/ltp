@@ -176,7 +176,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-	return 0;
+	return 1;
 }	/* End main */
 
 /*
