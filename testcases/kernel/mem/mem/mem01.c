@@ -106,6 +106,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/sysinfo.h>
 #include <stdio.h>
 #include <stdlib.h>    
 #include <sys/user.h>	/* getpagesize() */
@@ -140,6 +141,7 @@ static char *m_copt;
 static int r_opt = 0;	/* random access versus linear */
 static int v_opt = 0;	/* verbose progress indication */
 
+struct sysinfo info;
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
@@ -192,109 +194,27 @@ void help()
  * return MemFree+SwapFree, from /proc/meminfo
  * returned value is in bytes.
  */
-#define BUFF_SIZE 384
 size_t get_memsize()
 {
-  long unsigned int res;
-  long unsigned int unused;
-  long unsigned int freesize;
-  FILE *f;
+  size_t res;
+  unsigned long freeswap;
+  unsigned long freeram;
   int retcode;
-  int ictl;
-  char buff[BUFF_SIZE];
 
-/* allocate some space for buf */
+  retcode = sysinfo(&info);
+  if (retcode != 0) {
+    tst_resm(TFAIL,"Could not retrieve memory information using sysinfo()");
+    cleanup();
+  } 
+  
+  freeram = info.freeram * info.mem_unit;      
+  printf("Free Mem: %lu bytes\n",freeram);
 
+  freeswap = info.freeswap * info.mem_unit;      
+  printf("Free Swap: %lu bytes\n",freeswap);
 
-  f = fopen("/proc/meminfo", "r");
-  if (!f)
-    return 0;
-
-/* ignore first line(titles or MemTotal) */
-  if (!fgets(buff, BUFF_SIZE, f)) {
-    fclose(f);
-    return 0;
-  }
-
-  if (tst_kvercmp(2,5,0) < 0){
-
-    /* FIXME: check return code! */
-    retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused,
-                     &freesize, &unused, &unused, &unused);
-    if (retcode != 6) {
-      fclose(f);
-      return 0;
-    }
-
-    printf("Free Mem: %ld bytes\n",freesize);
-    res = freesize;
-
-    if (!fgets(buff, BUFF_SIZE, f))	{ /* flush end of line */
-      fclose(f);
-      return 0;
-    }
-
-    retcode = fscanf(f, "Swap: %lu %lu %lu", &unused, &unused, &freesize);
-    if (retcode != 3) {
-      fclose(f);
-      return 0;
-    }
-
-    printf("Free Swap: %ld bytes\n",freesize);
-    res += freesize;
-    res = res / 1024;
-
-  } else {
-    
-    /* FIXME: check return code! */
-    retcode = fscanf(f, "MemFree:  %lu ", &freesize);
-    if (retcode != 1) {
-      fclose(f);
-      return 0;
-    }
-       
-    printf("Free Mem: %ld Kb\n",freesize);
-    res = freesize;
-
-    if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
-      fclose(f);
-      return 0;
-    }
-
-	/* ignore next 10 lines */
-    for (ictl = 0; ictl < 10; ictl++) {
-      if (!fgets(buff, BUFF_SIZE, f)) { 
-        fclose(f);
-        return 0;
-      }
-    }
-
-    retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
-    printf("Free Swap: %ld Kb\n",freesize);
-    if (retcode != 1) {
-      fclose(f);
-      return 0;
-    }
-
-    res += freesize;
-
-  } /* end check release */
-  printf("Total Free: %ld Kb\n",res);
-/*Safety section*/				
-  if (res > 4*1024*1024)			/* >4Gb free mem then  */
-    res -= (1*1024*1024);	 	/* subtract 1Gb        */
-  else {
-       	if (res > 4*128*1024)   	/* >512Mb free mem then*/
-          res -= 1*100*1024;     	/* subtract 100MB      */
-	else {
-      	  if (res > 4*1024)	/* >4Mb free mem then  */
-            res -= 1*512;     	 /* subtract 512k       */
-	  else
-	    res -= 1;	/* <4Mb free mem, so subtract 1Kb */
-        }
-  }
-  res = res * 1024;
-  fclose(f);
+  res = (size_t)(freeram + freeswap);
+  printf("Total Free: %lu bytes\n",freeram+freeswap);
   return res;
 }
 
