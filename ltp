@@ -105,21 +105,27 @@ kernel()
 
   ${LTPROOT}/ver_linux >> $OUTFILE
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
-  PID=$!
+  if [ $LOOPS -eq 0 ]; then
+    echo ""
+    echo "       Tests running....Press [Ctrl]-C to stop."
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+  else
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
+    PID=$!
   
-  tail -f $OUTFILE &
-  TAIL_PID=$!
+    tail -f $OUTFILE &
+    TAIL_PID=$!
 
-  ps -ef | grep -v grep | grep $PID > /dev/null
-  while [ $? -eq "0" ]
-  do
-   ps -ef | grep -v grep | grep $PID > /dev/null
-  done
-
-  kill $TAIL_PID > /dev/null 2>&1
-  sleep 1
-  clear
+    ps -ef | grep -v grep | grep $PID > /dev/null
+    while [ $? -eq "0" ]
+    do
+     ps -ef | grep -v grep | grep $PID > /dev/null
+    done
+  
+    kill $TAIL_PID > /dev/null 2>&1
+    sleep 1
+    clear
+  fi
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -270,21 +276,27 @@ networking()
 
   ${LTPROOT}/ver_linux >> $OUTFILE
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
-  PID=$!
+  if [ $LOOPS -eq 0 ]; then
+    echo ""
+    echo "       Tests running....Press [Ctrl]-C to stop."
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+  else
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+    PID=$!
 
-  tail -f $OUTFILE &
-  TAIL_PID=$!
+    tail -f $OUTFILE &
+    TAIL_PID=$!
  
-  ps -ef | grep -v grep | grep $PID > /dev/null
-  while [ $? -eq "0" ]
-  do
-   ps -ef | grep -v grep | grep $PID > /dev/null
-  done
+    ps -ef | grep -v grep | grep $PID > /dev/null
+    while [ $? -eq "0" ]
+    do
+     ps -ef | grep -v grep | grep $PID > /dev/null
+    done
 
-  kill $TAIL_PID > /dev/null 2>&1
-  sleep 1
-  clear
+    kill $TAIL_PID > /dev/null 2>&1
+    sleep 1
+    clear
+  fi
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -356,22 +368,27 @@ diskio()
 
   ${LTPROOT}/ver_linux >> $OUTFILE
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
-  PID=$!
+  if [ $LOOPS -eq 0 ]; then
+    echo ""
+    echo "       Tests running....Press [Ctrl]-C to stop."
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+  else
+    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+    PID=$!
 
-  tail -f $OUTFILE &
-  TAIL_PID=$!
+    tail -f $OUTFILE &
+    TAIL_PID=$!
 
-  ps -ef | grep -v grep | grep $PID > /dev/null
-  while [ $? -eq "0" ]
-  do
-   ps -ef | grep -v grep | grep $PID > /dev/null
+    ps -ef | grep -v grep | grep $PID > /dev/null
+    while [ $? -eq "0" ]
+    do
+     ps -ef | grep -v grep | grep $PID > /dev/null
+    done
+
+    kill $TAIL_PID > /dev/null 2>&1
+    sleep 1
+    clear
   done
-
-  kill $TAIL_PID > /dev/null 2>&1
-  sleep 1
-  clear
-
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
