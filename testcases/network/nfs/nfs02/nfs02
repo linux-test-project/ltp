@@ -95,8 +95,8 @@ do_test1()
 {
 $trace_logic 
   echo "do_test1 $TC "
-  cp $TCdat/maxsize.fil $TCtmp
-
+  cp $TCdat/maxsize.fil $TCtmp &
+  wait $!
   echo "compare both maxsize.fils"
   diff $TCtmp/maxsize.fil $TCdat/maxsize.fil 
   [[ $? -eq 0 ]] || end_testcase "'diff' of maxsize.fil FAILED" 
@@ -113,22 +113,28 @@ do_test2()
 {
 $trace_logic
    echo "do_test2 $TC "
-   cp $TCdat/smallsize.fil $TCtmp
-   cp $TCdat/medsize.fil $TCtmp
-   cp $TCdat/largesize.fil $TCtmp
+   cp $TCdat/smallsize.fil $TCtmp &
+   wait $!
+   cp $TCdat/medsize.fil $TCtmp &
+   wait $!
+   cp $TCdat/largesize.fil $TCtmp &
+   wait $!
 
    #small file
-   cp $TCtmp/smallsize.fil $TCtmp/smallsize.filcp
+   cp $TCtmp/smallsize.fil $TCtmp/smallsize.filcp &
+   wait $!
    diff $TCtmp/smallsize.filcp $TCdat/smallsize.fil
    [[ $? -eq 0 ]] || end_testcase "'diff' of smallsize.fil FAILED" 
 
    #medium file
-   cp $TCtmp/medsize.fil $TCtmp/medsize.filcp
+   cp $TCtmp/medsize.fil $TCtmp/medsize.filcp &
+   wait $!
    diff $TCtmp/medsize.filcp $TCdat/medsize.fil
    [[ $? -eq 0 ]] || end_testcase "'diff' of medsize.fil FAILED" 
 
    #large file
-   cp $TCtmp/largesize.fil $TCtmp/largesize.filcp
+   cp $TCtmp/largesize.fil $TCtmp/largesize.filcp &
+   wait $!
    diff $TCtmp/largesize.filcp $TCdat/largesize.fil
    [[ $? -eq 0 ]] || end_testcase "'diff' of largesize.fil FAILED" 
 
@@ -144,7 +150,8 @@ do_test3()
 {
 $trace_logic
    echo "do_test3 $TC "
-   chmod a-w $TCtmp/smallsize.fil
+   chmod a-w $TCtmp/smallsize.fil &
+   wait $!
    ls -l $TCtmp/smallsize.fil | grep "r--" 
    [[ $? -eq 0 ]] || end_testcase "Removal of write permissions not honored on smallsize.fil"
    chmod a+w $TCtmp/smallsize.fil
