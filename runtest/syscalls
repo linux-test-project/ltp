@@ -178,6 +178,8 @@ getdents02 getdents02
 getdents03 getdents03
 getdents04 getdents04
 
+getdomainname01 getdomainname01
+
 getegid01 getegid01
 
 geteuid01 geteuid01
