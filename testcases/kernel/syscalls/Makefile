@@ -34,7 +34,7 @@ SUBDIR= \
 	creat create_module dup dup2 execl execle execlp \
 	execv execve execvp exit fchdir fchmod \
 	fchown fcntl fork fpathconf fstat fstatfs \
-	fsync ftruncate getcwd getdents getegid geteuid \
+	fsync ftruncate getcwd getdents getdomainname getegid geteuid \
 	getgid getgroups gethostid gethostname getitimer getpeername \
 	getpgid getpgrp getpid getppid getpriority getresgid \
 	getresuid getsid getsockname getsockopt gettimeofday getuid \
