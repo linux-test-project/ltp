@@ -74,7 +74,6 @@
  *		-Ported
  *
  * Restrictions:
- *  This test should be executed by 'non-super-user' only.
  */
 
 #include <stdio.h>
@@ -84,6 +83,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -129,6 +129,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ TEST_FILE3, SYM_FILE3, "Symlink Path contains regular file", ENOTDIR, setup3 },
 	{ NULL, NULL, NULL, 0, no_setup }
 };
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 extern void setup();		/* Setup function for the test */
 extern void cleanup();		/* Cleanup function for the test */
@@ -232,6 +235,19 @@ setup()
 	 * directory.
 	 */
 	TEST_PAUSE;
+
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
