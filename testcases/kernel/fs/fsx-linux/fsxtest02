@@ -35,7 +35,7 @@ touch $TCtmp/testfile
 $TCbin/fsx-linux -N $1 $TCtmp/testfile
 RESULT=$?
 # report the results
-if [[ $RESULT -eq "0" ]]; then
+if [ $RESULT -eq "0" ]; then
   echo "PASS: fsxtest02 $1 $2 $3"
 else
   echo "FAIL: fsxtest02 $1 $2 $3"

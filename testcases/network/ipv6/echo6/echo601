@@ -67,29 +67,29 @@ do_test()
    mkdir -p $TCtmp
    echo  "Creating echo file $ECHOFILE"
    $TCbin/$CREATFILE $ECHOSIZE $TCtmp/$ECHOFILE
-   [[ $? = 0 ]] || end_testcase "$ECHOFILE not created"
+   [ $? = 0 ] || end_testcase "$ECHOFILE not created"
 
    echo "Compute the checksum of this file"
    csum1=`sum $TCtmp/$ECHOFILE |awk '{print $1}'`
    [ $csum1 ] || end_testcase "initial checksum computation failed"
 
    COUNT=1
-   while [[ $COUNT -le $NUMLOOPS ]]
+   while [ $COUNT -le $NUMLOOPS ]
    do
       $TCbin/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
-      [[ $? = 0 ]] || end_testcase "Error in $ECHOES test in loop $COUNT"
+      [ $? = 0 ] || end_testcase "Error in $ECHOES test in loop $COUNT"
 
       NUM=0
-      while [[ $NUM -lt $NUMPROCESSES ]]
+      while [ $NUM -lt $NUMPROCESSES ]
       do
          csum2=`sum $TCtmp/$ECHOFILE\$NUM |awk '{print $1}'`
-         [[ "$csum1" -eq "$csum2" ]] || end_testcase "Checksums differ in loop $COUNT"
+         [ "$csum1" -eq "$csum2" ] || end_testcase "Checksums differ in loop $COUNT"
          NUM=`expr $NUM + 1`
       done
 
       echo "Successful execution for loop $COUNT" 
       COUNT=`expr $COUNT + 1`
-      if [[ $COUNT -le $NUMLOOPS ]]; then
+      if [ $COUNT -le $NUMLOOPS ]; then
   	echo "Sleeping 60 seconds to avoid hitting max. connections setting for service"
 	sleep 60
       fi
@@ -129,9 +129,9 @@ end_testcase()
    $trace_logic
     
    # Call other cleanup functions
-   [[ $CLEANUP = "ON" ]] && do_cleanup
+   [ $CLEANUP = "ON" ] && do_cleanup
 
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    echo""
    echo "***NOTE***"

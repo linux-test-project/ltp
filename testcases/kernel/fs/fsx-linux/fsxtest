@@ -28,7 +28,7 @@
 
 #Uncomment line below for debugging
 #set -x
-if [[ $2 -eq "jfs" ]]; then
+if [ $2 -eq "jfs" ]; then
   mkfs -t $2 -q $1
 else
   mkfs -t $2 $1
@@ -39,7 +39,7 @@ touch /testmount/testfile
 fsx-linux -N $3 /testmount/testfile
 RESULT=$?
 # report the results
-if [[ $RESULT -eq "0" ]]; then
+if [ $RESULT -eq "0" ]; then
   echo "PASS: fsxtest $1 $2 $3"
 else
   echo "FAIL: fsxtest $1 $2 $3"

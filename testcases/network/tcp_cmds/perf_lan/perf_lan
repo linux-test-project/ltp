@@ -72,8 +72,8 @@ do_test()
 
    TLOOP=1
    COUNT=1
-   [[ $NUMLOOPS -gt 0 ]] || TLOOP=$NUMLOOPS
-   while [[ $TLOOP -le $NUMLOOPS ]]
+   [ $NUMLOOPS -gt 0 ] || TLOOP=$NUMLOOPS
+   while [ $TLOOP -le $NUMLOOPS ]
    do
       $TCbin/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
       RETVALUE=$?
@@ -89,7 +89,7 @@ do_test()
          10)end_testcase "Error - wrong Protocol" ;;
          *) end_testcase "Return code from $EXECUTABLES is $RETVALUE" ;;
       esac
-      [[ $NUMLOOPS -gt 0 ]] && (( TLOOP = TLOOP + 1 ))
+      [ $NUMLOOPS -gt 0 ] && (( TLOOP = TLOOP + 1 ))
       (( COUNT = COUNT + 1 ))
    done
 }
@@ -110,7 +110,7 @@ do_cleanup()
    echo "$this_file: doing $0."
 
    cd /
-   if [[ $TCtmp != $TCsrc ]]; then
+   if [ $TCtmp != $TCsrc ]; then
       rm -rf $TCtmp
    fi
 }
@@ -131,9 +131,9 @@ end_testcase()
    echo "$this_file: doing $0."
    
    # Call other cleanup functions
-   [[ $CLEANUP = "ON" ]] && do_cleanup
+   [ $CLEANUP = "ON" ] && do_cleanup
    
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

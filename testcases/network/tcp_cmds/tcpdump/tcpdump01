@@ -56,12 +56,12 @@ do_test()
    $trace_logic
 
    mkdir -p $TCtmp
-   [[ $? -eq 0 ]] || end_testcase "mkdir -p $TCtmp failed"
+   [ $? -eq 0 ] || end_testcase "mkdir -p $TCtmp failed"
    ping -f $RHOST > /dev/null 2>&1 &
    /usr/sbin/tcpdump -c $NUMLOOPS > $OUTFILE
-   [[ $? -eq 0 ]] || end_testcase "Problems trying to launch tcpdump"
+   [ $? -eq 0 ] || end_testcase "Problems trying to launch tcpdump"
    grep $RHOST $OUTFILE 
-   [[ $? -eq 0 ]] || end_testcase "$RHOST was not listed in network traffic"
+   [ $? -eq 0 ] || end_testcase "$RHOST was not listed in network traffic"
    PID=`ps -ef | grep "ping -f $RHOST" | grep -v grep | awk '{print $2}'`
    kill -9 $PID
    rm -rf $OUTFILE
@@ -82,7 +82,7 @@ end_testcase()
    $trace_logic
    echo "$this_file: doing $0."
    rm -rf $TCtmp
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

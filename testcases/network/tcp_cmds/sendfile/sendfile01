@@ -82,12 +82,12 @@ do_test()
 	 $TCsrc/$EXECUTABLES $IPADDR $PORT $TCtmp/$clnt_fname $serv_fname $SIZE 
 	 RetVal=$?
   
-         [[ $RetVal -eq 0 ]] || end_testcase "$EXECUTABLES returned error $RetVal"
+         [ $RetVal -eq 0 ] || end_testcase "$EXECUTABLES returned error $RetVal"
 
 	 diff $serv_fname $TCtmp/$clnt_fname
 	 DiffVal=$?
-	 [[ $DiffVal -gt 1 ]] && end_testcase "ERROR: Cannot compare files"
-	 [[ $DiffVal -eq 1 ]] && end_testcase "The file copied differs from the original"
+	 [ $DiffVal -gt 1 ] && end_testcase "ERROR: Cannot compare files"
+	 [ $DiffVal -eq 1 ] && end_testcase "The file copied differs from the original"
       done
 }
 
@@ -128,9 +128,9 @@ end_testcase()
 
    
    # Call other cleanup functions
-   [[ $CLEANUP = "ON" ]] && do_cleanup
+   [ $CLEANUP = "ON" ] && do_cleanup
    
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

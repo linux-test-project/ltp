@@ -78,7 +78,7 @@ do_test()
       rsh -n -l root $RHOST "rm -f $TCtmp/$j"
       sleep $SLEEPTIME
 
-      if [[ $SUM1 = $SUM2 ]]
+      if [ $SUM1 = $SUM2 ]
       then
          echo "rcp $TCdat/$j $RHOST:$TCtmp/$j successful"
       else
@@ -96,7 +96,7 @@ do_test()
       rm -f $TCtmp/$j
       sleep $SLEEPTIME
 
-      if [[ $SUM1 = $SUM2 ]]
+      if [ $SUM1 = $SUM2 ]
       then
          echo "rcp $RHOST:$TCdat/$j $TCtmp/$j successful"
       else
@@ -135,7 +135,7 @@ end_testcase()
    $trace_logic
    do_cleanup
 
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

@@ -53,6 +53,13 @@ LIST="$LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST $LIST"
 COUNT=1
 TCRESULT=0
 
+# Setup function
+function setup() {
+  for i in $LIST;do
+    touch $i
+  done
+}
+
 # Cleanup function
 function cleanup() {
   if [ $TCRESULT = 0 ]; then
@@ -99,6 +106,8 @@ function mtest() {
     cleanup
   fi
 }
+
+setup
 
 # Main Loop
 while [ $COUNT -le $LOOPS ]
@@ -544,7 +553,7 @@ Sysmonth=`date | cut -f2 -d" "`
 Month=`ar -tv $TCtmp/lib.a | grep "file2.in" | awk '{print $4}'`
 Count=`ar -tv $TCtmp/lib.a | wc -l`
 
-if [[ $Sysmonth == $Month ]] && [[ $Count -eq 3 ]]
+if [ $Sysmonth == $Month ] && [ $Count -eq 3 ]
 then
 		echo -e  "-)21"
 else

@@ -66,25 +66,25 @@ $trace_logic
    echo "do_setup $TC"
 
    IAM=${IAM:=`whoami`}
-   [[ $IAM -eq "root" ]] || end_testcase "Must be root user"
+   [ $IAM -eq "root" ] || end_testcase "Must be root user"
    
    #Setup and Export the data directory on RHOST
    rsh -n $RHOST "mkdir -p $TESTDIR"
-   [[ $? -eq 0 ]] || end_testcase "Could not create $TESTDIR from $RHOST"
+   [ $? -eq 0 ] || end_testcase "Could not create $TESTDIR from $RHOST"
    rsh -n $RHOST "/usr/sbin/exportfs -i *:$TESTDIR -o rw,no_root_squash "
-   [[ $? -eq 0 ]] || end_testcase "Could not export $TESTDIR from $RHOST"
+   [ $? -eq 0 ] || end_testcase "Could not export $TESTDIR from $RHOST"
 
    #Verify export
    /usr/sbin/showmount -e $RHOST | grep $TESTDIR
-   [[ $? -eq 0 ]] || end_testcase "$TESTDIR not exported"
+   [ $? -eq 0 ] || end_testcase "$TESTDIR not exported"
 
    #Create $TCtmp for mount point
    mkdir -p $TCtmp
-   [[ $? -eq 0 ]] || end_testcase "Could not create $TCtmp"
+   [ $? -eq 0 ] || end_testcase "Could not create $TCtmp"
 
    #Mount $TCdat from RHOST.
    mount -o vers=$VERSION,proto=$SOCKET_TYPE $RHOST:$TESTDIR $TCtmp
-   [[ $? -eq 0 ]] || end_testcase "Could not mount from $RHOST"
+   [ $? -eq 0 ] || end_testcase "Could not mount from $RHOST"
 
 }
 
@@ -103,7 +103,7 @@ $trace_logic
   wait $!
   echo "compare both maxsize.fils"
   diff $TCtmp/maxsize.fil $TCdat/maxsize.fil 
-  [[ $? -eq 0 ]] || end_testcase "'diff' of maxsize.fil FAILED" 
+  [ $? -eq 0 ] || end_testcase "'diff' of maxsize.fil FAILED" 
 
 }
 
@@ -128,19 +128,19 @@ $trace_logic
    cp $TCtmp/smallsize.fil $TCtmp/smallsize.filcp &
    wait $!
    diff $TCtmp/smallsize.filcp $TCdat/smallsize.fil
-   [[ $? -eq 0 ]] || end_testcase "'diff' of smallsize.fil FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of smallsize.fil FAILED" 
 
    #medium file
    cp $TCtmp/medsize.fil $TCtmp/medsize.filcp &
    wait $!
    diff $TCtmp/medsize.filcp $TCdat/medsize.fil
-   [[ $? -eq 0 ]] || end_testcase "'diff' of medsize.fil FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of medsize.fil FAILED" 
 
    #large file
    cp $TCtmp/largesize.fil $TCtmp/largesize.filcp &
    wait $!
    diff $TCtmp/largesize.filcp $TCdat/largesize.fil
-   [[ $? -eq 0 ]] || end_testcase "'diff' of largesize.fil FAILED" 
+   [ $? -eq 0 ] || end_testcase "'diff' of largesize.fil FAILED" 
 
 }
 
@@ -157,7 +157,7 @@ $trace_logic
    chmod a-w $TCtmp/smallsize.fil &
    wait $!
    ls -l $TCtmp/smallsize.fil | grep "r--" 
-   [[ $? -eq 0 ]] || end_testcase "Removal of write permissions not honored on smallsize.fil"
+   [ $? -eq 0 ] || end_testcase "Removal of write permissions not honored on smallsize.fil"
    chmod a+w $TCtmp/smallsize.fil
 }
 

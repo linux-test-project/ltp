@@ -139,7 +139,7 @@ fi
 echo "Assertion 5 .................."
 	ld -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/test.lib
 file $TCtmp/test.lib | grep -q shared
-if [[ $? -eq 0 ]]
+if [ $? -eq 0 ]
 then
 	echo "-)"
 else
@@ -157,7 +157,7 @@ echo "Assertion 6 .................."
 	ld -Bdynamic -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/lola 2>$TCtmp/errmsg.out
 	ld -Bstatic  -L. $TCdat/ldmain.o $TCdat/rd1.o $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
 nm $TCtmp/a.out | grep -q DYNAMIC
-if [[ $? -eq 0 ]]
+if [ $? -eq 0 ]
 then
 	echo "-)"
 else

@@ -71,7 +71,7 @@ do_setup()
       DIR=`dirname $i`
       mkdir -p $DIR
       cp $TCdat/datafiles/$BASE $DIR
-      [[ $? -eq 0 ]] || end_testcase "failed to cp $TCdat/datafiles/$BASE to $DIR"
+      [ $? -eq 0 ] || end_testcase "failed to cp $TCdat/datafiles/$BASE to $DIR"
       chmod 764 $i
    done
 
@@ -146,7 +146,7 @@ check_result()
                ((x = \$x + \$i ))
             done
             echo \$x`
-         if [[ $TOTAL_SUM = $LSUM ]]; then 
+         if [ $TOTAL_SUM = $LSUM ]; then 
             echo "Success rdist in $c_ruser@$c_rhost "
   	    rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
          else
@@ -179,7 +179,7 @@ do_test()
          RUSERS=$RUSERS" $cur_user"
          create_distfile
          rdist -f $TCtmp/distfile
-         [[ $? -eq 0 ]] || end_testcase "error doing rdist -f $TCtmp/distfile"
+         [ $? -eq 0 ] || end_testcase "error doing rdist -f $TCtmp/distfile"
          check_result
          sleep $SLEEPTIME
       done
@@ -218,9 +218,9 @@ end_testcase()
    $trace_logic
 
    # Call other cleanup functions
-   [[ $CLEANUP = "ON" ]] && do_cleanup
+   [ $CLEANUP = "ON" ] && do_cleanup
 
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

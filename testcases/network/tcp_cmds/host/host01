@@ -53,10 +53,10 @@ do_test()
    while (( $count < $NUMLOOPS ))
    do
       host $RHOST
-      if [[ $? -eq 0 ]]; then
+      if [ $? -eq 0 ]; then
          rhost_addr=`host $RHOST | tr -s ',' ' ' | awk '{print $4}'`
          host $rhost_addr
-         [[ $? -eq 0 ]] || end_testcase "host can not do a reverse lookup"
+         [ $? -eq 0 ] || end_testcase "host can not do a reverse lookup"
       else 
          end_testcase "host $RHOST on local machine failed"
       fi
@@ -80,7 +80,7 @@ end_testcase()
    $trace_logic
    echo "$this_file: doing $0."
 
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

@@ -114,7 +114,7 @@ do_cleanup()
    echo "$this_file: doing $0."
 
    cd /
-   if [[ $TCtmp != $TCsrc ]]; then
+   if [ $TCtmp != $TCsrc ]; then
       rm -rf $TCtmp
    fi
 }

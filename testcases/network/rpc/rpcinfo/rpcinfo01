@@ -80,16 +80,16 @@ $trace_logic
 echo "Checking for portmap daemon on `hostname` and $RHOST"
 #Check for portmap on localhost 
 ps -ewf | grep portmap | grep -v grep > /dev/null
-[[ $? -eq 0 ]] || end_testcase "The portmap daemon is NOT running"
+[ $? -eq 0 ] || end_testcase "The portmap daemon is NOT running"
 
 #Check for portmap on remotehost
 rsh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
-[[ $? -eq 0 ]] || end_testcase "The portmap daemon is NOT running on $RHOST"
+[ $? -eq 0 ] || end_testcase "The portmap daemon is NOT running on $RHOST"
 
 echo "Test rpcinfo with default options"
 echo "rpcinfo -p"
 rpcinfo -p | grep portmapper 
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -p failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -p failed"
 
 echo "Test rpcinfo with options"
 
@@ -99,7 +99,7 @@ rpcinfo -p $RHOST | grep tcp | sed -n 2p > $TCtmp/rpc_out
 rpcinfo -p $RHOST | grep udp | sed -n 2p >> $TCtmp/rpc_out
 
 wc -l $TCtmp/rpc_out | grep "2" > /dev/null
-[[ $? -eq 0 ]] || end_testcase "Not enough programs registered on $RHOST for test"
+[ $? -eq 0 ] || end_testcase "Not enough programs registered on $RHOST for test"
 
 # Using "rpc_out" file created above, assign variables for rpcinfo options.
 TPNUM=`grep tcp $TCtmp/rpc_out | awk '{print $1}'`
@@ -115,7 +115,7 @@ UDPNAME=`grep udp $TCtmp/rpc_out | awk '{print $5}'`
 echo "rpcinfo -b <prog num> <ver num>"
 rpcinfo -b $UPNUM $UVNUM &
 sleep 5
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -b <prog num> <ver num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -b <prog num> <ver num> - failed"
 PID=$!
 kill -9 $PID > /dev/null 2>&1
 PID=0
@@ -130,7 +130,7 @@ if [ $? = 1 ]; then
     rpcinfo -d 100002 3
     rpcinfo -p | grep 100002
     rpcinfo -p | grep 100002 | wc -l | grep "1" > /dev/null
-    [[ $? = 0 ]] || end_testcase "rpcinfo -d <prog num> <ver num> - failed"
+    [ $? = 0 ] || end_testcase "rpcinfo -d <prog num> <ver num> - failed"
     RUSERSD_PID=`ps -ewf | grep rusersd | grep -v grep | awk '{print $2}'`
     kill -9 $RUSERSD_PID > /dev/null 2>&1
   else
@@ -143,36 +143,36 @@ fi
 # -t options
 echo "rpcinfo -t <hostname> <tcp prog num>"
 rpcinfo -t $RHOST $TPNUM 
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -t <hostname> <tcp prog num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog num> - failed"
 
 echo "rpcinfo -t <hostname> <tcp prog num> <ver num>"
 rpcinfo -t $RHOST $TPNUM $TVNUM 
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -t <hostname> <tcp prog num> <ver num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog num> <ver num> - failed"
 
 echo "rpcinfo -t <hostname> <tcp prog name>"
 rpcinfo -t $RHOST $TCPNAME
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -t <hostname> <tcp prog name> -  failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog name> -  failed"
 
 echo "rpcinfo -t <hostname> <tcp prog name> <ver num>"
 rpcinfo -t $RHOST $TCPNAME $TVNUM
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -t <hostname> <tcp prog name> <ver num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -t <hostname> <tcp prog name> <ver num> - failed"
 
 # -u options
 echo "rpcinfo -u <hostname> <udp prog num>"
 rpcinfo -u $RHOST 100000 
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -u <hostname> <udp prog num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -u <hostname> <udp prog num> - failed"
 
 echo "rpcinfo -u <hostname> <udp prog num> <ver num>"
 rpcinfo -u $RHOST 100000 2
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -u <hostname> <udp prog num> <ver num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -u <hostname> <udp prog num> <ver num> - failed"
 
 echo "rpcinfo -u <hostname> <udp prog name>"
 rpcinfo -u $RHOST portmapper
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -u <hostname> <udp prog name> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -u <hostname> <udp prog name> - failed"
 
 echo "rpcinfo -u <hostname> <udp prog name> <ver num>"
 rpcinfo -u $RHOST portmapper 2
-[[ $? -eq 0 ]] || end_testcase "rpcinfo -u <hostname> <udp prog name> <ver num> - failed"
+[ $? -eq 0 ] || end_testcase "rpcinfo -u <hostname> <udp prog name> <ver num> - failed"
 
 echo "Test rpcinfo with missing or bad options"
 
@@ -181,35 +181,35 @@ echo "Test rpcinfo with missing or bad options"
 
 echo "rpcinfo <no flags>"
 rpcinfo 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo <no flags> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo <no flags> should fail"
 
 echo "rpcinfo -p <bad hostname>"
 rpcinfo -p bogushost 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo <bad hostname> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo <bad hostname> should fail"
 
 echo "rpcinfo <bad flag>"
 rpcinfo -bogusflag 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo <bad flag> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo <bad flag> should fail"
 
 echo "rpcinfo -t <hostname> <no prognum>"
 rpcinfo -t $RHOST
-[[ $? -eq 1 ]] || end_testcase "rpcinfo -t <hostname> <no prognum> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo -t <hostname> <no prognum> should fail"
 
 echo "rpcinfo -u <hostname> <no prognum>"
 rpcinfo -u $RHOST 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo -u <hostname> <no prognum> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <no prognum> should fail"
 
 echo "rpcinfo -u <hostname> <bad prog name>"
 rpcinfo -u $RHOST bogusprog 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo -u <hostname> <invalid program name> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <invalid program name> should fail"
 
 echo "rpcinfo -u <hostname> <bad prog num>"
 rpcinfo -u $RHOST 11579 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo -u <hostname> 11579 should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> 11579 should fail"
 
 echo "rpcinfo -u <hostname> <prog num> <bad ver num>"
 rpcinfo -u $RHOST 100000 5 
-[[ $? -eq 1 ]] || end_testcase "rpcinfo -u <hostname> <prog num> <bad ver num> should fail"
+[ $? -eq 1 ] || end_testcase "rpcinfo -u <hostname> <prog num> <bad ver num> should fail"
 }
 
 #=============================================================================

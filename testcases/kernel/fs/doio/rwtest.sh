@@ -203,7 +203,7 @@ do	case $1 in
 	shift
 done
 
-if [[ $TOUTPUT = "NOPASS" ]]; then
+if [ $TOUTPUT = "NOPASS" ]; then
 	iOpts="$iOpts -q"
 	Quiet="-q"
 fi
@@ -344,7 +344,7 @@ do
 		  ;;
 		esac
 
-		if [[ $sz -gt $max ]]
+		if [ $sz -gt $max ]
 		then
 			sz=$max
 		fi

@@ -68,7 +68,7 @@ do_test()
    while [ $COUNT -le $NUMLOOPS ]
    do
       arp -a
-      [[ $? -eq 0 ]] || end_testcase "arp -a failed"
+      [ $? -eq 0 ] || end_testcase "arp -a failed"
       COUNT=`expr $COUNT + 1`
    done
 

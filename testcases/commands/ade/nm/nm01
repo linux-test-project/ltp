@@ -54,7 +54,7 @@ do_test()
 {
 $trace_logic
 TCRESULT=0
-while [[ $LOOP -gt 0 ]]
+while [ $LOOP -gt 0 ]
 do
 echo "-------System test for nm command------"
 cd $TCdat
@@ -76,7 +76,7 @@ nm -f posix -A $TCtmp/a/b/c/d/lib.a | grep "$TCtmp/a/b/c/d/lib.a\[nmfile2.o\]\:"
 RC2=$? 
 
 
-if [[ $RC1 -eq  '0' ]] && [[ $RC2 -eq '0' ]] 
+if [ $RC1 -eq  '0' ] && [ $RC2 -eq '0' ] 
 then
 	echo "-)1"
 else
@@ -106,7 +106,7 @@ fi
 
 # CODE
 nm -f posix -t o $TCtmp/nmfile1 | awk '{print $3}' | grep "[8-9]" >/dev/null 2>&1
-if [[ $? -eq "1" ]] 
+if [ $? -eq "1" ] 
 then
 	echo "-)3"
 else
@@ -183,7 +183,7 @@ fi
 # CODE
 
 nm -s $TCtmp/lib.a | grep "index" 2>&1 1>/dev/null
-if [[ $? -eq 0 ]]
+if [ $? -eq 0 ]
 then
 	echo "-)8"
 else

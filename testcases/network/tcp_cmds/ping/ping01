@@ -56,7 +56,7 @@ do_test()
    for packetsize in $PACKETSIZES
    do
       ping  -R -c $COUNT -s $packetsize $RHOST 
-      [[ $? -eq 0 ]] || end_testcase "failed: ping -c $COUNT -s $packetsize $RHOST"
+      [ $? -eq 0 ] || end_testcase "failed: ping -c $COUNT -s $packetsize $RHOST"
       sleep $SLEEPTIME
    done
 }
@@ -75,7 +75,7 @@ end_testcase()
 {
    $trace_logic
 
-   [[ $# -eq 0 ]] && { echo "Test Successful"; exit 0; }
+   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }

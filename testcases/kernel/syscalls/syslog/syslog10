@@ -51,7 +51,7 @@ syslog_case10()
         donot_allow1=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
 
         syslogtst 10 2>/dev/null
-        if [[ $? -ne 0 ]]; then
+        if [ $? -ne 0 ]; then
                 status_flag=1
                 return
         fi
@@ -61,14 +61,14 @@ syslog_case10()
         donot_allow2=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
 
         (( diff1=$allow2 - $allow1 ))
-        if [[ $diff1 -ne 1 ]]; then
+        if [ $diff1 -ne 1 ]; then
                 echo "Expected message is not logged...."
                 status_flag=1
                 return
         fi
 
         (( diff2=$donot_allow2 - $donot_allow1 ))
-        if [[ $diff2 -ne 0 ]]; then
+        if [ $diff2 -ne 0 ]; then
                 echo "Unexpected message is logged..."
                 status_flag=1
         fi
