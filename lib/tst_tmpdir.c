@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.8 2003/04/01 20:20:54 robbiew Exp $ */
+/* $Id: tst_tmpdir.c,v 1.9 2004/08/25 05:07:02 robbiew Exp $ */
 
 /**********************************************************
  *
@@ -193,12 +193,16 @@ tst_tmpdir()
 
 		/*
 		 * Change the group on this temporary directory to be that of the
-		 * gid of the person running the tests.
+		 * gid of the person running the tests and permissions to 777.
 		 */
 		if ( chown(TESTDIR, -1, getgid()) == -1 )
 			tst_brkm(TBROK, tmpdir_cleanup, 
 				"chown(%s, -1, %d) failed; errno = %d: %s", 
 				TESTDIR, getgid(), errno, strerror(errno));
+		if ( chmod(TESTDIR,S_IRWXU | S_IRWXG | S_IRWXO) == -1 )
+			tst_brkm(TBROK, tmpdir_cleanup,
+				"chmod(%s,777) failed; errno %d: %s",
+				TESTDIR, errno, strerror(errno)); 
  	}
 
 #if UNIT_TEST
