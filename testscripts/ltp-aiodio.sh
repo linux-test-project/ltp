@@ -229,13 +229,13 @@ cp $file1 /test/aiodio/ff2
 cp $file1 /test/aiodio/ff3
 
 date
-#echo "************ Running aio-stress tests " 
-#echo "current working dir = ${PWD}"
-#${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
+echo "************ Running aio-stress tests " 
+echo "current working dir = ${PWD}"
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
 
-#${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
+${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
 
-#wait $!
+wait $!
 
 if [ "$runExtendedStress" -eq 1 ];then
 echo "************ Running EXTENDED aio-stress tests " 
