@@ -130,8 +130,7 @@ main(int ac, char **av)
 		tst_resm(TFAIL, "closedir(\".\") Failed, errno=%d : %s",
 			    errno, strerror(errno));
 		} else {
-                dptr = readdir(test_dir);
-                TEST_ERRNO = errno;
+                TEST(dptr = readdir(test_dir));
                 switch(TEST_ERRNO) {
                 case EBADF:
                         tst_resm(TPASS, "expected failure - errno = %d : %s",
