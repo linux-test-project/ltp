@@ -1067,16 +1067,16 @@ restart:
 //    printf("cnt:%d max_iterations:%d oper:%p\n",cnt, iterations,oper);
                         
     while (t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
-        printf("active_opers %p line:%d cnt:%d ", t->active_opers,__LINE__,cnt);
+//        printf("active_opers %p line:%d cnt:%d ", t->active_opers,__LINE__,cnt);
         if (stonewall && threads_ending) {
             oper = t->active_opers;     
             oper->stonewalled = 1;
             oper_list_del(oper, &t->active_opers);
             oper_list_add(oper, &t->finished_opers);
-            printf(" if branch\n");
+//            printf(" if branch\n");
         } else {
             run_active_list(t, io_iter,  max_io_submit);
-            printf(" else branch\n");
+//            printf(" else branch\n");
         }
         cnt++;
     }
@@ -1408,7 +1408,7 @@ int main(int ac, char **av)
 	for (j = 0 ; j < num_contexts ; j++) {
 	    thread_index = open_fds % num_threads;
 	    open_fds++;
-	    fprintf(stderr, "adding file %s thread %d\n", av[i], thread_index);
+//	    fprintf(stderr, "adding file %s thread %d\n", av[i], thread_index);
 
 	    rwfd = open(av[i], O_CREAT | O_RDWR | o_direct | o_sync, 0600);
 	    assert(rwfd != -1);
@@ -1442,10 +1442,19 @@ int main(int ac, char **av)
         status = worker(t);
     }
 
+
+    for (i = optind ; i < ac ; i++) {
+        printf("Cleaning up file %s \n", av[i]);
+        unlink(av[i]);
+    }
+
     if (status) {
     printf("non zero return %d \n", status);
-	exit(1);
     }
-    return status;
+    else{
+        printf("aio-stress Completed successfully %d \n", status);
+    }
+
+    exit(0);
 }
 
