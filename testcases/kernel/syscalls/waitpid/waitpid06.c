@@ -57,7 +57,7 @@ void cleanup(void);
 
 char *TCID = "waitpid06";
 int TST_TOTAL = 1;
-int intintr;
+volatile int intintr;
 void inthandlr();
 void do_exit();
 int flag;

@@ -70,7 +70,8 @@ char *TCID = "waitpid10";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int alrmintr, intintr;
+int alrmintr;
+volatile int intintr;
 
 void setup(void);
 void cleanup(void);

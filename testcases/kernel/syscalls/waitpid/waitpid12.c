@@ -55,7 +55,7 @@ char *TCID = "waitpid12";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int intintr;
+volatile int intintr;
 void setup(void);
 void cleanup(void);
 void inthandlr();

@@ -317,7 +317,7 @@ test4()
 void
 sighandler(int sig)
 {
-	if (sig != SIGSEGV) {
+	if (sig != SIGSEGV && sig != SIGXFSZ) {
 		tst_resm(TWARN, "caught signal %d, not SIGSEGV", sig);
 		exit(1);
 	}

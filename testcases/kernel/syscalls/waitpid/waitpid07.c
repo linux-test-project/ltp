@@ -59,7 +59,7 @@ char *TCID = "waitpid07";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int intintr;
+volatile int intintr;
 int flag;
 void inthandlr();
 void do_exit();

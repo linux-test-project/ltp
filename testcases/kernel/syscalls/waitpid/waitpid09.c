@@ -66,7 +66,7 @@
 
 char *TCID = "waitpid09";
 int TST_TOTAL = 1;
-int intintr;
+volatile int intintr;
 
 /* 0 terminated list of expected errnos */
 int exp_enos[] = {10,0};

@@ -54,7 +54,7 @@ char *TCID = "waitpid11";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int intintr;
+volatile int intintr;
 void setup(void);
 void cleanup(void);
 void inthandlr();
@@ -103,9 +103,9 @@ int main(int ac, char **av)
 				fail = 1;
 			}
 			if (fail) {
-				tst_resm(TINFO, "%s FAILED", TCID);
+				tst_resm(TFAIL, "%s FAILED", TCID);
 			} else {
-				tst_resm(TINFO, "%s PASSED", TCID);
+				tst_resm(TPASS, "%s PASSED", TCID);
 			}
 			cleanup();
 			/*NOTREACHED*/
@@ -285,10 +285,10 @@ int main(int ac, char **av)
 		}
 
 		if (fail) {
-			tst_resm(TINFO, "Test FAILED");
+			tst_resm(TFAIL, "Test FAILED");
 			exit(1);
 		} else {
-			tst_resm(TINFO, "Test PASSED");
+			tst_resm(TPASS, "Test PASSED");
 			exit(0);
 		}
 	}
