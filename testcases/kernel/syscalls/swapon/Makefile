@@ -19,7 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-NEEDSPECIAL:=$(shell cat /usr/include/linux/swap.h | grep MAX_SWAPFILES | grep 32; echo $?)
+NEEDSPECIAL:=$(shell echo MAX_SWAPFILES | $(CC) -E -xc -include linux/swap.h - | tail -n 1 | grep 32; echo $?)
 ifeq ($(strip $(NEEDSPECIAL)),)
 export CFLAGS+=-I../../../../include -g -Wall
 else
