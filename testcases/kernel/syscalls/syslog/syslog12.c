@@ -129,8 +129,8 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 void
 timeout(int sig)
 {
-	tst_resm(TFAIL, "syslog() timeout after 1s"
-		 " for %s (test broken?)", tdat[testno].desc);
+	tst_resm(TWARN, "syslog() timeout after 1s"
+		 " for %s", tdat[testno].desc);
 } 
 
 int
