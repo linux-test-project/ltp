@@ -55,11 +55,13 @@
  * RESTRICTIONS
  *	none
  */
-
-#include "test.h"
-#include "usctest.h"
+#define _GNU_SOURCE 1
 
 #include <errno.h>
+#include <wait.h>
+#include <unistd.h>
+#include "test.h"
+#include "usctest.h"
 
 void cleanup(void);
 void setup(void);
@@ -70,7 +72,7 @@ extern int Tst_count;
 
 pid_t p_sid;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -145,7 +147,8 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
+	/*NOTREACHED*/	
+	return(0);
 }
 
 /*

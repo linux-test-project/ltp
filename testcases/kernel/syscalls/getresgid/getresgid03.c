@@ -65,6 +65,7 @@
  *  This test should be run by 'super-user' (root) only.
  *
  */
+#define _GNU_SOURCE 1
 
 #include <stdio.h>
 #include <unistd.h>
@@ -77,6 +78,9 @@
 
 #include "test.h"
 #include "usctest.h"
+
+extern int getresgid(gid_t*, gid_t*, gid_t*);
+extern int setresgid(gid_t, gid_t, gid_t);
 
 char *TCID="getresgid03";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -150,6 +154,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*

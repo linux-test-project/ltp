@@ -57,6 +57,7 @@
  *  None.
  *
  */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -67,6 +68,8 @@
 
 #include "test.h"
 #include "usctest.h"
+
+extern int getresgid(gid_t*, gid_t*, gid_t*);
 
 char *TCID="getresgid01";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -138,6 +141,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*

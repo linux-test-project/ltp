@@ -52,6 +52,7 @@
  * RESTRICTIONS
  *	none
  */
+#define _GNU_SOURCE 1
 
 #include "test.h"
 #include "usctest.h"
@@ -76,7 +77,7 @@ extern int Tst_count;
 
 int exp_enos[] = {ESRCH, 0};	/* 0 terminated list of expected errnos */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -127,6 +128,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

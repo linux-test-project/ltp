@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getuid01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: getuid01.c,v 1.2 2003/03/26 20:56:04 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -184,7 +184,7 @@ main(int ac, char **av)
      ***************************************************************/
     cleanup();
 
-    return 0;
+    return(0);
 }	/* End main */
 
 /***************************************************************

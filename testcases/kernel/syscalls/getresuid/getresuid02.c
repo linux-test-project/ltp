@@ -79,6 +79,8 @@
 
 #define LTPUSER		"nobody"
 
+extern int getresuid(uid_t*, uid_t*, uid_t*);
+
 char *TCID="getresuid02";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -151,6 +153,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 /*
