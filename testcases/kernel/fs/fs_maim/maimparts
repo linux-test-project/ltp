@@ -39,7 +39,7 @@ $iterations=$ARGV[1];
 # part is the number of partitions to split the drive into (max is 4)
 $parts=3;
 # fsid is the partition id or type (83 is linux native)
-$fstype="jfs";
+$fstype=$ARGV[2];
 $fsid=0x83;
 
 if (!$ARGV[0]) {

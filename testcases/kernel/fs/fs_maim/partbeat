@@ -38,6 +38,12 @@ if ($fstype =~ /jfs\b/i) {
 elsif ($fstype =~ /ext2\b/i) {
     $tmp=`mkfs $target`;
     }
+elsif ($fstype =~ /ext3\b/i) {
+    $tmp=`mkfs -t ext3 $target`;
+    }
+elsif ($fstype =~ /reiserfs\b/i) {
+    $tmp=`mkfs -t reiserfs $target`;
+    }
 else {
     $tmp=`mkfs $target`;
     }

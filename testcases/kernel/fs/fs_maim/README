@@ -35,7 +35,7 @@ Availability:
 
 Installation:      Untar. 
                         
-Use:               maimparts <device like hda, sda, etc.> <iterations>
+Use:               maimparts <device like hda, sda, etc.> <iterations> <fstype like jfs, ext3, etc>
 
 Warning(s):        The device you specify on the command line (hda/sda/etc)
                    will be blown away...smoking any important data, programs, 
