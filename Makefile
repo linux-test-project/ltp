@@ -27,9 +27,6 @@
 
 export CFLAGS = -Wall $(CROSS_CFLAGS)
 
-menuconfig:
-	@./ltpmenu
-
 all: libltp.a 
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C testcases $@
@@ -46,6 +43,9 @@ install: all
 
 libltp.a:
 	@$(MAKE) -C lib $@
+
+menuconfig:
+	@./ltpmenu
 
 clean:
 	@$(MAKE) -C lib $@
