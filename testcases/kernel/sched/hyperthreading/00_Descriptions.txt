@@ -1,0 +1,15 @@
+ht_enabled
+
+	Test for whether HT enabling is the default setting and
+	the kernel option works as expected.
+
+ht_affinity
+
+	Test for whether a set of system calls is provided to bind
+	itself or another process to a subset of currently active
+	processors and to get affinity information.
+
+ht_interrupt
+	Test for SMP interrupt distribution among all logical CPU
+	should not be interfered by HT patch.
+
