@@ -71,7 +71,7 @@ for mkisofs_opt in \
 	" -R " \
 	"-R -J" \
 	"-f -l -D -J -L -R" \
-	"-allow-lowercase -allow-multidot -iso-level 3 -joliet-long -f -l -D -J -L -R"
+	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
 do
 	mkisofs -o isofs.iso -quiet $mkisofs_opt /etc 2>&1 > /dev/null
 	if [ $? != 0 ]
