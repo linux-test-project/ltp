@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-volatile sig_atomic_t wakeup = 1;
+int wakeup = 1;
 
 void handler(int signo)
 {
