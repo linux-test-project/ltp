@@ -8,6 +8,9 @@ all: $(TARGETS) object
 
 install:
 	ln -f ar01 ../../../bin
+	ln -f file*.in ../../../bin
+	ln -f file1.o ../../../bin
+
 
 object:
 	cc -c file1.c

@@ -8,6 +8,7 @@ all: $(TARGETS)
 
 install:
 	ln -f ldd01 ../../../bin
+	ln -f *.o ../../../bin
 
 clean:
 	rm -f $(TARGETS)

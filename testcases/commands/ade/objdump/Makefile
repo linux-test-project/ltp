@@ -8,6 +8,10 @@ all: $(TESTS)
 
 install:
 	ln -f objdump01 ../../../bin
+	ln -f test_arch.o ../../../bin
+	ln -f test ../../../bin
+	ln -f test_D ../../../bin
+
 
 clean:
 	rm -f $(TESTS)
