@@ -48,10 +48,13 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>
+#include <stdlib.h>
 #include <signal.h>
+#include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/fcntl.h>
+#include <sys/utsname.h>
+#include <linux/version.h>
 #include <memory.h>
 #include <errno.h>
 #include <test.h>
@@ -67,6 +70,7 @@
 #define	DATA_FILE	"writev_data_file"
 
 char buf1[K_1], buf2[K_1], buf3[K_1];
+int newwritev;
 
 struct iovec wr_iovec[MAX_IOVEC] = {
 	/* iov_base */		/* iov_len */
@@ -361,17 +365,19 @@ block5: /* given invalid vector count, writev() return EINVAL */
 		tst_resm(TINFO, "Exit block 5");
 
 block6: /* given no buffer vector, writev() success */
+		if(newwritev) {
+
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
 
 		TEST(writev(fd[0], (wr_iovec + 11), 0));
-		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "writev() failed with unexpected errno "
-				 "%d", TEST_ERRNO);
-			fail = 1;
+		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
+			tst_resm(TPASS, "writev() failed with expected EINVAL "
+					"when count == 0");
 		} else {
-			tst_resm(TPASS, "writev() wrote 0 iovectors");
+			tst_resm(TFAIL, "writev() did not fail with EINVAL "
+					"when count == 0");
+			fail = 1;
 		}
 
 		if (fail) {
@@ -380,6 +386,7 @@ block6: /* given no buffer vector, writev() success */
 			tst_resm(TINFO, "block 6 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 6");
+		}
 
 block7: /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
          * writev() success writing fixed length.
@@ -455,6 +462,10 @@ block8: /* try to write to a closed pipe, writev() return EPIPE. */
 void
 setup(void)
 {
+	struct utsname utsbuf;
+	char *r1, *r2, *r3;
+
+	newwritev=0;
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -473,6 +484,16 @@ setup(void)
 
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
+
+	/* kernels after 2.5.35 implement a new readv/writev behaviour
+	 *          * that returns EINVAL when count == 0
+	 *                   */
+        uname(&utsbuf);
+        r1 = strtok(utsbuf.release,".");
+        r2 = strtok(NULL,".");
+        r3 = strtok(NULL,".");
+        if (KERNEL_VERSION(atoi(r1),atoi(r2),atoi(r3)) > KERNEL_VERSION(2,5,35))
+		newwritev = 1;
 }
 
 /*
