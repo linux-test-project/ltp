@@ -1,3 +1,17 @@
+LTP-20050207
+- runltp now exports $TMPDIR as a copy of $TMP, certain exceptions caused these to be different.
+- extra functions for LTP libs are to make these tests fail with a more
+  informative message when attempts to create swap on tmpfs are made.
+- IPV6 testcase updates from David Stevens
+- Applied patch from Jacky Malcles that fixes an inconsistency regarding synchronization.
+- Make proc01 skip kcore
+- Fix gives an hint to the probable solution if capset01 test fails
+- Fix for race conditions in synchronization between children and parent on fcntl15.
+- Applied patch from Jacky Malcles to allow test to run on ia64.
+- The test llseek sets RLIMIT_FSIZE to a small number, this fix to
+  restore it to its original value.
+- Fix IPV6 Makefile install path problem
+
 LTP-20050107
 - Porting changes from John Kohl to help support compatablility LTP on Solaris, HP-UX and AIX.
 - Add scsi virtual devices testsuite using scsi_debug
