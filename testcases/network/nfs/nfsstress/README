@@ -23,7 +23,8 @@ To run this test
 1) export LOCALDIR=<dir name>
    eg: export LOCALDIR=testdir  [NOTE: do not provide absolute dir name!]
 
-2) run setup.sh
+2) run setup.sh, change the script if you need to run the test differntly, 
+   the test is currently set up to run with default values.
 
 More details on setup.sh and make_tree.c are available as comments in the 
 soure code.
