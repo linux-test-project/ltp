@@ -4,6 +4,8 @@
  */
 
 #include <stdio.h>
+#include <netdb.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/file.h>
@@ -12,17 +14,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#define HLEN	128 * 1025	/* 128K + 128 */
-#define TLEN	128 * 1025	/* 128K + 128 */
 #define LISTEN_BACKLOG	10
-
-/*
- * Flags for the send_file() system call
- */
-#define SF_CLOSE        0x00000001      /* close the socket after completion */
-#define SF_REUSE        0x00000002      /* reuse socket. not supported */
-#define SF_DONT_CACHE   0x00000004      /* don't apply network buffer cache */
-#define SF_SYNC_CACHE   0x00000008      /* sync/update network buffer cache */
 
 
 extern int errno;
@@ -45,46 +37,53 @@ int argc;
 char *argv[];
 
 {
-  struct sockaddr_in sa, *ap;
-  struct sockaddr from;
+  struct sockaddr_in6 sa, *ap;
+  struct sockaddr_in6 from;
+  struct  addrinfo *hp;
+  struct  addrinfo hints;
   int s, fd, as, rc;
   char *lp;
   char *number;
   int i, clen, pid;
   int flags, nonblocking;
-  int nbytes, flen;
+  int nbytes, flen,gai,count;
   char rbuf[81];
-  char header[HLEN];
-  char trailer[TLEN];
   int chunks=0;
   off_t *offset; 
   char nbuf[81];
  
   /* open socket */
-  if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+  if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
 	printf("socket error = %d\n", errno);
-	exit(-1);
+	exit(1);
   }
 
   signal(SIGCHLD, SIG_IGN); /* ignore signals from children */
 
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = PF_INET6;
+  if ((gai=getaddrinfo(argv[1], NULL, &hints, &hp))!=0)
+        errx(2, "Unknown subject address %s: %s\n",argv[1], gai_strerror(gai));
+  if (!hp->ai_addr || hp->ai_addr->sa_family != AF_INET6)
+        errx(2, "getaddrinfo failed");
+
+
   /* server IP and port */
-  sa.sin_family = AF_INET;
-  sa.sin_addr.s_addr = inet_addr(argv[1]);
-  sa.sin_port = htons(256);
+  memcpy(&sa, hp->ai_addr, hp->ai_addrlen);
+  sa.sin6_port = htons(12345);
 
   /* bind IP and port to socket */
-  if ( bind(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
+  if ( bind(s, (struct sockaddr_in6*) &sa, sizeof(sa) ) < 0 ) {
         printf("bind error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(1);
   }
  
   /* start to listen socket */
   if ( listen(s, LISTEN_BACKLOG ) < 0 ) {
         printf("listen error = %d\n", errno);
 	close(s);
-	exit(-1);
+	exit(1);
   }
 
   /* process connections */
@@ -96,16 +95,16 @@ char *argv[];
 	  if (errno == EINTR)
 		continue;
 	  close(s);
-	  exit(-1);
+	  exit(1);
   	}
 
-	ap = (struct sockaddr_in *)&from;
+	ap = (struct sockaddr_in6 *)&from;
 
 	/* create a process to manage the connection */
 	if ((pid = fork()) < 0) {
 	  printf("fork error = %d\n", errno);
 	  close(as);
-	  exit(-1);
+	  exit(1);
   	}
 	if (pid > 0) {	/* parent, go back to accept */
 	  close(as);
@@ -122,20 +121,23 @@ char *argv[];
 	if ((nbytes = read(as, rbuf, 80)) <= 0) {
 	  printf("socket read error = %d\n", errno);
 	  close(as);
-	  exit(-1);
+	  exit(1);
   	}
 	rbuf[nbytes] = '\0'; /* null terminate the info */
 	lp = &rbuf[0];
 
 	/* start with file length, '=' will start the filename */
 	flen = 0;
-	nbuf[0]='\0';
+	count = 0;
 	number = &nbuf[0];
 	while (*lp != '=') { /* convert ascii to integer */
-	  number = strcat(number,lp);
+	  nbuf[count] = *lp;
+	  count++;
 	  lp++;
 	}
+	 nbuf[count] = '\0';
 	 flen = strtol(number, (char **)NULL, 10); 
+	 printf("flen is %d.\n",flen);
 
 	/* the file name */
 	lp++;
@@ -145,11 +147,12 @@ char *argv[];
 	if ((fd = open(lp, O_RDONLY)) < 0) {
 	  printf("file open error = %d\n", errno);
 	  close(as);
-	  exit(-1);
+	  exit(1);
   	}
 	offset=NULL;
+	errno=0;
         do { /* send file parts until EOF */
-           if ((rc = sendfile(as, fd, offset, flen)) != 0) {
+           if ((rc = sendfile(as, fd, offset, flen)) != flen) {
                 if ((errno != EWOULDBLOCK) && (errno != EAGAIN)) {
                         printf("sendfile error = %d, rc = %d\n", errno, rc);
                         close(as);
