@@ -97,9 +97,6 @@ main(int ac, char **av)
 
 		do_child();
 
-		cleanup();
-
-		/*NOTREACHED*/
 	} else {		/* parent */
 		/* wait for the child to return */
 		if (waitpid(pid, NULL, 0) == -1) {
@@ -112,6 +109,8 @@ main(int ac, char **av)
 		/* Remove the temporary directory */
 		tst_rmdir();
 	}
+
+	cleanup();
 }
 
 /*
