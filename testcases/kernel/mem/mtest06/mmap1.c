@@ -621,7 +621,7 @@ main(int  argc,		/* number of input parameters.			      */
         
         for (thrd_ndx = 0; thrd_ndx < 2; thrd_ndx++)
         {
-            if (pthread_join(thid[thrd_ndx], &status[thrd_ndx]))
+            if (pthread_join(thid[thrd_ndx], (void *)&status[thrd_ndx]))
             {
                 perror("main(): pthread_create()");
                 exit(-1);
