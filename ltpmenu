@@ -42,6 +42,9 @@
 #			       scenario file.
 #			     Robbie Williamson - robbiew@us.ibm.com
 #
+#	       April 23 2003 - Added PID to results filename.
+			     Robbie Williamson - robbiew@us.ibm.com
+#
 #! /bin/bash
 
 # Function:    cleanup
@@ -154,7 +157,7 @@ compile_ltp()
 disp_ltpres()
 {
     RC=0
-    if ! [ -f ./results/results.$(date -I) ]
+    if ! [ -f ./results/results.$(date -I).$$ ]
     then
         display_info_msg "LTP Test Results" \
             "Sorry cannot display test results, you have to run \
@@ -165,7 +168,7 @@ disp_ltpres()
 
     dialog --backtitle "Linux Test Project Control Centre" \
            --title "LTP Test Results. Scroll [UP] [DOWN]/[PGUP] [PGDN]" \
-           --textbox ./results/results.$(date -I) 17 70 
+           --textbox ./results/results.$(date -I).$$ 17 70 
 
     dialog --backtitle "Linux Test Project Control Centre" \
            --title "LTP Test Results." \
@@ -175,7 +178,7 @@ disp_ltpres()
     case $RC in 
         0) \
             mail ltp-results@lists.sourceforge.net < \
-                    ./results/results.$(date -I) ;
+                    ./results/results.$(date -I).$$ ;
             return ;;
 
         1) return ;;
@@ -200,10 +203,10 @@ exectest_screenout()
     RC=0    # setting return code to 0, to loop in while
 
     # remove old results file
-    rm ./results/results.$(date -I) &>/dev/null
+    rm ./results/results.$(date -I).$$ &>/dev/null
  
     # execute runalltests.sh with user defined command file.
-    ./runalltests.sh -q -p $1 -l results.$(date -I) \
+    ./runalltests.sh -q -p $1 -l results.$(date -I).$$ \
 	-f /tmp/runltp.test.list.$$  
     sleep 2
     return
