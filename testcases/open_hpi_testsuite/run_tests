@@ -1,0 +1,152 @@
+#! /bin/sh
+#
+# Copyright (c) 2003 by Intel Corp.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
+# file and program are licensed under a BSD style license.  See
+# the Copying file included with the OpenHPI distribution for
+# full licensing terms.
+#
+# Authors:
+#     Kevin Gao <kevin.gao@intel.com>
+
+BASEDIR=src
+LOGFILE=log/logfile
+CURLOG=log/current_log
+TMPLOG=log/hpi_log.tmp
+Verbose=0
+DIFF=0
+
+usage()
+{
+    cat <<EOF 
+Usage: $0 [OPTION] [init|session|resource|eventlog|event|
+		   rdr|sensor|control|inventory|watchdogtimer|
+		   hotswap|config|reset|all|help]
+
+Mandatory arguments to long options are mandatory for short options too.
+-v, --verbose	   Give the detailed test information.
+-d, --diff	   Give the different info between new, and old log info.
+	
+EOF
+}
+
+runtests()
+{
+	for test in `ls -d $1`; do
+		POSIX_TARGET=$test make build-tests VERBOSE=$Verbose
+		POSIX_TARGET=$test make run-tests VERBOSE=$Verbose
+	done
+}
+echo -e "\n****************Start testing****************" >> $LOGFILE
+
+if [ -z $1 ]; then
+	usage
+	exit 1
+fi
+
+CMD=$1
+if [ $CMD = "-d" ] || [ $CMD = "--diff" ]; then
+	CMD=$2
+	cp $CURLOG $TMPLOG > /dev/null 2>&1
+	DIFF=1
+fi
+
+if [ $CMD = "-v" ] || [ $CMD = "--verbose" ]; then
+	CMD=$2
+	Verbose=1
+fi
+
+case $CMD in
+init)
+	echo "Executing init tests"
+	runtests "$BASEDIR/init" > $CURLOG
+	;;
+
+session)
+	echo "Executing session management tests"
+	runtests "$BASEDIR/session_open" > $CURLOG
+	;;
+
+resource)
+	echo "Executing resource management tests"
+	runtests "$BASEDIR/resource_discover" > $CURLOG
+	runtests "$BASEDIR/rpt_entry_process" >> $CURLOG
+	runtests "$BASEDIR/self_resourceID_get" >> $CURLOG
+	runtests "$BASEDIR/entity_schema_get" >> $CURLOG
+	;;
+
+eventlog)
+	echo "Excuting event log management tests"
+	runtests "$BASEDIR/event_log*" > $CURLOG
+	;;
+
+event)
+	echo "Excuting events tests"
+	runtests "$BASEDIR/events" > $CURLOG
+	;;
+
+rdr)
+	echo "Excuting resource data record(RDR) repository management tests"
+	runtests "$BASEDIR/rdr_get" > $CURLOG
+	;;
+
+sensor)
+	echo "Excuting sensor function tests"
+	runtests "$BASEDIR/sensor*" > $CURLOG
+	;;
+
+control)
+	echo "Excuting controls tests"
+	runtests "$BASEDIR/control*" > $CURLOG
+	;;
+
+inventory)
+	echo "Excuting entity inventory data tests"
+	runtests "$BASEDIR/entity_inventory_data" > $CURLOG
+	;;
+
+watchdogtimer)
+	echo "Excuting watch timer tests" 
+	runtests "$BASEDIR/watchdog_timer" > $CURLOG
+	;;
+
+hotswap)
+	echo "Excuting managed hot swap tests"
+	runtests "$BASEDIR/hotswap*" > $CURLOG
+	runtests "$BASEDIR/resource_active" >> $CURLOG
+	runtests "$BASEDIR/auto*" >> $CURLOG
+	runtests "$BASEDIR/resource_power_state_process" >> $CURLOG
+	;;
+
+config)
+	echo "Excuting configuration tests"
+	runtests "$BASEDIR/parm_control" > $CURLOG
+	;;
+
+reset)
+	echo "Excuting reset tests"
+	runtests "$BASEDIR/resource_reset_state_process" > $CURLOG
+	;;
+
+all)	echo "Executing all tests"
+	runtests "$BASEDIR" > $CURLOG
+	;;
+
+*)	usage
+	rm -f $TMPLOG > /dev/null 2>&1
+	exit 1
+	;;
+esac
+
+if [ $DIFF -eq 1 ]; then
+	diff -Nur $TMPLOG $CURLOG
+	rm -f $TMPLOG > /dev/null 2>&1
+	exit 0
+fi
+
+cat $CURLOG
+echo "****Tests Complete****" 
+echo "****************Finish testing****************" >> $LOGFILE

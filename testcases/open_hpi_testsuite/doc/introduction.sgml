@@ -1,0 +1,111 @@
+<!-- ...................................................................... -->
+<!-- File introduction.dtd ................................................ -->
+<!-- 
+        This material may be distributed only subject to the terms and 
+        conditions set forth in the Open Publication License, v1.0 or later 
+        (the latest version is currently available at 
+        http://www.opencontent.org/openpub/).  Distribution of substantively 
+        modified version of this document is prohibited without the explicit 
+        permission of the copyright holder.
+
+        Other company, product, or service names may be trademarks or service 
+        marks of others.
+-->
+
+<chapter>
+
+  <title>Introduction</title>
+  <para>
+The Service Availability Forum(SAF) Hardware Platform Interface (HPI) provides 
+an industry  standard interface to monitor and control highly available 
+telecommunications system  platforms. The ability to monitor and control 
+these platforms is provided through a consistent  and standard set of 
+programmatic interfaces that are targeted for adoption by the telecom  
+building block industry to significantly reduce product time-to-market 
+and development costs  while retaining or enhancing total system/network 
+availability.   
+  </para>
+  <para>
+HPI provides the interface between the middleware software solution stack 
+and the  hardware solution stack, allowing portability of middleware 
+software building blocks  across many different hardware platforms and 
+portability of hardware platforms across  many different middleware 
+software building blocks.     
+  </para>
+  <section>
+    <title>Purpose of this document</title>
+    <para>
+This test specification was written as part of the OpenHPI effort to create
+a non-implementation biased test suite to expose where a given HPI
+implementation does not conform with the SAF HPI specification.  This document
+was created by studying the SAF publicly released documents that pertain
+to HPI, and is not affiliated with the SAF.
+    </para>
+    <para>
+With that said, it is the goal of this test specification (and therefore any
+test suites that follow this test specification) to accurately depict HPI as
+envisioned by the SAF.  Any feedback from the SAF on areas where we have failed
+to meet this goal will be treated as a priority one item to fix.
+    </para>
+    <para>
+Specifically, the purpose of this document is to: 
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+Provide the framework for SAF HPI conformance testing activities so that it is 
+clear  what will be tested in each stage of testing, who will perform the 
+testing activities, how the  testing activities will be performed and the 
+sequence of the test activities. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Define the scope of the conformance testing for SAF HPI. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Ensure that there is not any unnecessary duplication of testing taking place 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Document a consistent and maintainable coding style for all test 
+cases to follow. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Define the approach to each stage of testing.   
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Scope of this document</title>
+    <para>
+This  document  covers  all  testing  activities  for  this  component.    
+After  reading  this  document, a user should be able to:
+    </para> 
+    <itemizedlist>
+      <listitem>
+        <para>
+Set up the environment to run all tests.   
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Run all tests and log results. We will give a test script for run all test 
+cases, and log  results automatically. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Understand what all tests are testing.
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>

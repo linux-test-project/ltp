@@ -1,0 +1,1072 @@
+<!-- ...................................................................... -->
+<!-- File strategies.dtd .................................................. -->
+<!-- 
+        This material may be distributed only subject to the terms and 
+        conditions set forth in the Open Publication License, v1.0 or later 
+        (the latest version is currently available at 
+        http://www.opencontent.org/openpub/).  Distribution of substantively 
+        modified version of this document is prohibited without the explicit 
+        permission of the copyright holder.
+
+        Other company, product, or service names may be trademarks or service 
+        marks of others.
+-->
+
+<chapter>
+  <title>Strategies and Approaches</title>
+  <section>
+    <title>Test Suite Layout</title>
+  <para>
+The beta release of the hpitest suite contains
+the following tree listing:
+    <literallayout>
+[rusty@penguin tmp]$ tree hpitest/
+hpitest/
+|-- README
+|-- hpitest
+`-- v1
+    `-- 1.0
+        |-- AUTHORS
+        |-- COPYING
+        |-- ChangeLog
+        |-- LDFLAGS
+        |-- Makefile
+        |-- README
+        |-- doc
+        |   |-- Makefile
+        |   |-- authors.dtd
+        |   |-- bookinfo.sgml
+        |   |-- environment.sgml
+        |   |-- features.sgml
+        |   |-- introduction.sgml
+        |   |-- legal.dtd
+        |   |-- revisions.dtd
+        |   |-- strategies.sgml
+        |   `-- test_specification.sgml
+        |-- include
+        |   `-- hpitest.h
+        |-- locate-test
+        |-- run_tests
+        `-- src
+            |-- auto_extract_timeout
+            |   |-- hs_201.c
+            |   |-- hs_202.c
+            |   `-- hs_203.c
+            |-- auto_insert_timeout
+            |   |-- hs_101.c
+            |   |-- hs_102.c
+            |   `-- hs_103.c
+            |-- control_state
+            |   `-- co_101.c
+            |-- control_type_get
+            |   `-- co_001.c
+            |-- entity_inventory_data
+            |   |-- ei_001.c
+            |   |-- ei_002.c
+            |   `-- ei_003.c
+            |-- entity_schema_get
+            |   `-- rm_301.c
+            |-- event_log_process
+            |   |-- el_001.c
+            |   |-- el_002.c
+            |   |-- el_003.c
+            |   |-- el_004.c
+            |   |-- el_005.c
+            |   |-- el_006.c
+            |   |-- el_007.c
+            |   |-- el_008.c
+            |   `-- el_009.c
+            |-- event_log_time
+            |   |-- el_101.c
+            |   |-- el_102.c
+            |   |-- el_103.c
+            |   `-- el_104.c
+            |-- events
+            |   |-- ev_001.c
+            |   |-- ev_002.c
+            |   |-- ev_003.c
+            |   |-- ev_004.c
+            |   |-- ev_005.c
+            |   |-- ev_006.c
+            |   |-- ev_007.c
+            |   `-- ev_008.c
+            |-- hotswap_action_request
+            |   |-- hs_401.c
+            |   `-- hs_402.c
+            |-- hotswap_indicator_state_process
+            |   |-- hs_601.c
+            |   `-- hs_602.c
+            |-- hotswap_state_get
+            |   `-- hs_301.c
+            |-- init
+            |   |-- gf_001.c
+            |   `-- gf_002.c
+            |-- parm_control
+            |   |-- cf_001.c
+            |   |-- cf_002.c
+            |   `-- cf_003.c
+            |-- rdr_get
+            |   `-- rdrm_001.c
+            |-- resource_active
+            |   |-- hs_001.c
+            |   `-- hs_002.c
+            |-- resource_discover
+            |   `-- rm_001.c
+            |-- resource_power_state_process
+            |   |-- hs_501.c
+            |   |-- hs_502.c
+            |   `-- hs_503.c
+            |-- resource_reset_state_process
+            |   |-- rs_001.c
+            |   |-- rs_002.c
+            |   `-- rs_003.c
+            |-- rpt_entry_process
+            |   |-- rm_101.c
+            |   |-- rm_102.c
+            |   |-- rm_103.c
+            |   `-- rm_104.c
+            |-- self_resourceID_get
+            |   `-- rm_201.c
+            |-- sensor_event_enable
+            |   `-- sf_401.c
+            |-- sensor_reading_convert
+            |   |-- sf_101.c
+            |   |-- sf_102.c
+            |   |-- sf_103.c
+            |   |-- sf_104.c
+            |   `-- sf_105.c
+            |-- sensor_reading_get
+            |   `-- sf_001.c
+            |-- sensor_thresholds
+            |   |-- sf_201.c
+            |   `-- sf_202.c
+            |-- sensor_type_get
+            |   `-- sf_301.c
+            |-- session_open
+            |   |-- sm_001.c
+            |   `-- sm_002.c
+            `-- watchdog_timer
+                `-- wt_001.c
+    </literallayout>
+As seen in the tree above, multiple versions of the SAF specification can be 
+can be supported by partitioning test cases into a directory structure that 
+looks like ==>
+    <literallayout>
+       TEST_ROOT/vMAJOR/MINOR/
+
+For example test cases that test the v1.0 HPI specification would be located
+in the following directory ==>
+
+        TEST_ROOT/v1/1.0/
+    </literallayout>
+  </para>
+  <para>
+Inside each minor directory, all the test cases are further partitioned
+into sections as specified by the "Test Cases" part of this test 
+specification.  For example the following test cases exist that validate the 
+HPI event mechanism ==>
+    <literallayout>
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_001.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_002.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_003.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_004.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_005.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_006.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_007.c
+        TEST_ROOT/v1/1.0/src/watchdog/events/ev_008.c
+    </literallayout>
+  </para>
+  </section>
+  <section>
+    <title>Test Execution</title>
+  <para>
+For each test case (single "c" source file) there are three ways the test will
+be used.
+    <itemizedlist>
+      <listitem>
+        <para>
+          <emphasis>compile test run: </emphasis>
+Each test case will be compiled, with a successful compile registered as
+a successful test run.  The intent to verify the correctness of the header 
+files used by the HPI implementation.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>link test run: </emphasis>
+Each test case object file will be linked, with a successful link registered
+as a successful test run.  The intent of this type of test is to verify
+the implementation contains the specified symbols.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>binary execution test run: </emphasis>
+Each test binary executible will be executed by a shell, with a zero returned
+by the shell registered as a successfull test run.  The intent of this type 
+of test is to verify the run-time behavior of the HPI implementation compiles
+with the HPI specification.
+        </para>
+      </listitem>
+    </itemizedlist>
+  </para>
+  <para>
+All test cases for a specific HPI version can be executed using the "hpitest"
+script located in root test directory, or by changing to the specific 
+MAJOR/MINOR directory and using the "run-test" script.
+  </para>
+  </section>
+  <section>
+    <title>Self Certification</title>  
+    <para>
+It is the understanding of the OpenHPI project that each SAF HPI
+implementor is responsible for creating their own conformance suite,
+and that the conformance suite should be available for HPI consumers
+to independently verify the conformance of the implementation to the
+published SAF HPI specification.
+     </para>
+     <para>
+OpenHPI, like most open source projects, will not have a formal
+quality and assurance engineering team, but will depend on OpenHPI 
+contributors and users to perform unit testing and conformance testing.
+We strongly believe that the full exposure of the OpenHPI source tree
+and development/design process to peer review (where everyone is
+a peer) is a fundamentally better way of developing quality source
+code, and that a robust HPI implementation will be the end result
+of the open source methodology.
+    </para>
+  </section>
+
+  <section>
+    <title>Validation Strategy</title>
+    <para>
+This validation suite approaches testing using the POSIX assertion
+methodology, where a carefully reading of the SAF HPI specification
+yields a collection of testable assertions, and then each of those
+assertions is challenged by a test script which calls on multiple
+test cases.
+    </para>
+  </section>
+
+  <section>
+    <title>Portability</title>
+    <para>
+Even though this test suite is being developed as part of the OpenHPI
+project, the goal of this test suite is to be able to run on any
+HPI implementation available for a POSIX operating system.
+    </para>
+    <para>
+As a result of this:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+ All test cases and test infrastructure is required 
+ to be POSIX complaint
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Patches for build options (not covered by the HPI SAF 
+specification) that enable this test suite to be built 
+against other HPI implementations are allowed and encouraged.
+        </para>
+      </listitem>
+    </itemizedlist>      
+  </section>
+
+  <section>
+    <title>Test Cases</title> 
+
+    <section>
+      <title>General Functions</title>
+
+      <section>
+        <title>Initialization and Cleanup</title>
+        <para></para>
+                <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='1'>init</entry>
+                <entry morerows='1'>
+                  saHpiInitialize()
+                  saHpiFinalize()
+                </entry>
+                <entry>gf_001</entry>
+                <entry>
+                  Initialize/Cleanup HPI, 
+                  Note: The first time to initialize the HPI
+                </entry>
+                <entry>saHpiInitialize() returns SA_OK</entry>
+              </row>
+              <row>
+                <entry>gf_002</entry>
+                <entry>Initialize HPI twice, then cleanup HPI,</entry>
+                <entry>
+                  saHpiInitialize() returns SA_ERR_HPI_DUPLICATE
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+    </section>
+
+    <section>
+      <title>Domains</title>
+
+      <section>
+        <title>Session Management</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='1'>session_open</entry>
+                <entry morerows='1'>
+                  saHpiSessionOpen()
+                  saHpiSessionClose()
+                </entry>
+                <entry>sm_001</entry>
+                <entry>The DomainID exists (SAHPI_DEFAULT_DOMAIN)</entry>
+                <entry>saHpiSessionOpen() returns SA_OK</entry>
+              </row>
+              <row>
+                <entry>sm_002</entry>
+                <entry>The DomainID does not exist</entry>
+                <entry>
+saHpiSessionOpen() returns SA_ERR_HPI_INVALID_DOMAIN
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Resource Management</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+           <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+
+            <tbody>
+              <row>
+                <entry>resources_discover</entry>
+                <entry>
+                  saHpiResourcesDiscover()
+                </entry>
+                <entry>rm_001</entry>
+                <entry>The SessionId existes.</entry>
+                <entry>saHpiResourcesDiscover() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='3'>rpt_entry_process</entry>
+                <entry morerows='3'>
+                  saHpiRptInfoGet()
+                  saHpiRptEntryGet()
+                  saHpiResourceSeveritySet()
+                  saHpiResourceTagSet()
+                </entry>
+                <entry>rm_101</entry>
+                <entry>Track an entire list of entries.
+                       Call the function first with EntryID of SAHPI_FIRST_ENTRY and then use the returned NextEntryID in the next call. Proceed until the NextEntryID returned is SAHPI_LAST_ENTRY.
+                </entry>
+                <entry>saHpiRptEntryGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>rm102</entry>
+                <entry>Get the RPT Entry by the ResourceId.</entry>
+                <entry>
+                  saHpiRptEntryGetByResourceId() returns SA_OK, and the entry associates with the ResourceId is returned.
+                </entry>
+              </row>
+              <row>
+                <entry>rm103</entry>
+                <entry>Set severity level of event issued when the resource unexpectedly becomes unavailable to the HPI.</entry>
+                <entry>
+                  aHpiResourceSeveritySet() returns SA_OK, and Severity is set to the Entry.
+                </entry>
+              </row>
+              <row>
+                <entry>rm104</entry>
+                <entry>Set resource tag for a particular resource.</entry>
+                <entry>
+                  saHpiResourceTagSet() returns SA_OK, and ResourceTag is set to the Entry.
+                </entry>
+              </row>
+              <row>
+                <entry>self_resourceID_get</entry>
+                <entry>saHpiResourceIdGet()</entry>
+                <entry>rm_201</entry>
+                <entry>Get the respirce OD pf the resource associated with the entity upon which the caller is running.</entry>
+                <entry>saHpiResourceIdGet() returns SA_OK/SA_ERR_HPI_NOT_PRESENT/SA_ERR_HPI_UNKNOWN based on hardware environment.</entry>
+              </row>
+              <row>
+                <entry>entity_schema_get</entry>
+                <entry>saHpiEntitySchemaGet()</entry>
+                <entry>rm_301</entry>
+                <entry>Get the identifier of the Entity Schema for the HPI implementation.</entry>
+                <entry>saHpiEntitySchemaGet() returns SA_OK.</entry>
+              </row>    
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Event Log Management</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='8'>event_log_process</entry>
+                <entry morerows='8'>
+                  saHpiEventLogInfoGet()
+		  saHpiEventLogEntryGet()
+		  saHpiEventLogEntryAdd()
+		  saHpiEventLogEntryDelete()
+		</entry>
+		<entry>el_001</entry>
+		<entry>Get the information of event log. (entry number, total size, timestamp, etc)</entry>
+		<entry>saHpiEventLogInfoGet() returns SA_OK.</entry>
+              </row>        
+              <row>
+                <entry>el_002</entry>
+                <entry>
+                  Retrieve an entire list of entries going forward in the log. EntryId:
+		  First: SAHPI_OLDEST_ENTRY
+		  Then: returned NextEntryID
+		  Until: NextEntryID returned is SAHPI_NO_MORE_ENTRIES.
+		</entry>
+		<entry>saHpiEventLogEntryGet() returns SA_OK, and entire list of entries is tracked forward.</entry>
+              </row>
+              <row>
+                <entry>el_003</entry>
+                <entry>
+                  Retrieve an entire list of entries going backrward in the log. EntryId:
+		  First: SAHPI_NEWEST_ENTRY
+		  Then: returned PreEntryID
+		  Until: PreEntryID returned is SAHPI_NO_MORE_ENTRIES.
+		</entry>
+		<entry>saHpiEventLogEntryGet() returns SA_OK, and entire list of entries is tracked backward.</entry>
+              </row>
+              <row>
+                <entry>el_004</entry>
+                <entry>Add entries to the system event log.</entry>
+                <entry>saHpiEventLogEntryAdd() returns SA_OK. The entry will be added.</entry>
+              </row>
+              <row>
+                <entry>el_005</entry>
+                <entry>Delete an event log entry. EntryId = SAHPI_OLDEST_ENTRY</entry>
+                <entry>saHpiEventLogEntryDelete() returns SA_OK, and the entry specified is deleted. (If log does not support, it will returns SA_ERR_INVALID_CMD).</entry>
+              </row>
+              <row>
+                <entry>el_006</entry>
+                <entry>Delete an event log entry. EntryId = SAHPI_NEWEST_ENTRY</entry>
+                <entry>saHpiEventLogEntryDelete() returns SA_OK, and the entry specified is deleted. (If log does not support, it will returns SA_ERR_INVALID_CMD).</entry>
+              </row>
+              
+	      <row>
+                <entry>el_007</entry>
+                <entry>Erase the contents of the specified system event log.</entry>
+                <entry>saHpiEventLogEntryClear() returns SA_OK, and the the event log specified is cleared.</entry>
+              </row>
+              <row>
+                <entry>el_008</entry>
+                <entry>
+                  Set the event log enable state.
+                  Enable = SAHPI_TRUE.
+                </entry>
+                <entry>saHpiEventLogStateSet() returns SA_OK, and event log enable state changes to Enable.</entry>
+              </row>
+              <row>
+                <entry>el_009</entry>
+                <entry>
+                  Set the event log enable state
+                  Enable = SAHPI_FALSE.
+                </entry>
+                <entry>saHpiEventLogStateSet() returns SA_OK, and event log enable state changes to Disable.</entry>
+              </row>
+              <row>
+                <entry morerows='3'>event_log_time</entry>
+                <entry morerows='3'>
+                  saHpiEventLogTimeGet
+		  saHpiEventLogTimeSet
+                </entry>
+                <entry>el_101</entry>
+                <entry>
+                  Set event log's time clock.
+  		  Time <= SAHPI_TIME_MAX_RELATIVE.
+  		</entry>
+  		<entry>saHpiEventLogTimeSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>el_102</entry>
+                <entry>
+                  Set event log's time clock.
+		  Time>SAHPI_TIME_MAX_RELATIVE.
+		</entry>
+		<entry>saHpiEventLogTimeSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>el_103</entry>
+                <entry>
+                  Set event log's time clock
+		  Time = SAHPI_TIME_UNSPECIFIED.
+		</entry>
+		<entry>saHpiEventLogTimeSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>el_104</entry>
+                <entry>Retrieves the current time frome the event log's own time clock.</entry>
+                <entry>saHpiEventLogTimeGet() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Events</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='7'>events</entry>
+                <entry morerows='7'>
+                  saHpiSubscribe()
+		  saHpiUnsubscribe()
+		  saHpiEventGet()
+                </entry>
+                <entry>ev_001</entry>
+                <entry>
+                  Subscribe for session events. 
+		  No subscription is in place for the session.
+		  ProvideActiveAlarms = true.
+                </entry>
+                <entry>
+                  saHpiSubScribe() returns SA_OK.
+		  Active alarms should be queued for future retrieval.
+                </entry>
+              </row>
+              <row>
+                <entry>ev_002</entry>
+                <entry>
+                  Subscribe for session events. 
+		  No subscription is in place for the session.
+		  ProvideActiveAlarms = false.
+                </entry>
+                <entry>
+                  saHpiSubScribe() returns SA_OK.
+		  Active alarms should not be queued for future retrieval.
+                </entry>
+              </row>
+              <row>
+                <entry>ev_003</entry>
+                <entry>
+                  Subscribe for session events
+		  A subscription is already in place for the session.
+                </entry>
+                <entry>saHpiSubScribe() returns SA_ERR_HPI_DUPLICATE.</entry>
+              </row>
+              <row>
+                <entry>ev_004</entry>
+                <entry>
+                  Remove the subscription for the session.
+		  The events in the session are subscribed.
+                </entry>
+                <entry>saHpiUnsubscribe() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>ev_005</entry>
+                <entry>
+                  Remove the subscription for the session.
+		  The events in the session are not subscribed.
+                </entry>
+                <entry>saHpiUnsubscribe() returns SA_ERR_HPI_INVALID_REQUEST.</entry>
+              </row>
+              <row>
+                <entry>ev_006</entry>
+                <entry>
+                  Get an event.
+		  Timeout != SAHPI_TIMEOUT_IMMEDIATE and Timeout != SAHPI_TIMEOUT_BLOCK.
+                </entry>
+                <entry>saHpiEventGet returns SA_OK/SA_HPI_TIMEOUT.</entry>
+              </row>
+              <row>
+                <entry>ev_007</entry>
+                <entry>
+                  Get an event.
+		  Timeout = SAHPI_TIMEOUT_IMMEDIATE.
+                </entry>
+                <entry>saHpiEventGet returns SA_OK/SA_HPI_TIMEOUT.</entry>
+              </row>
+              <row>
+                <entry>ev_008</entry>
+                <entry>Get an event. Timeout = SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiEventGet returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+    </section>
+
+    <section>
+      <title>Resource Functions</title>
+      <para>
+      </para>
+
+      <section>
+        <title>Resource Data Record (RDR) Repository Management</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>rdr_get</entry>
+                <entry>saHpiRdrGet()</entry>
+                <entry>rdrm_001</entry>
+                <entry>Retrieve an entire list of RDRs. EntryId: First: SAHPI_FIRST_ENTRY, Then: returned NextEntryID, Until: NextEntryID returned is SAHPI_LAST_ENTRY.</entry>
+                <entry>saHpiRdrGet() returns SA_OK, and entire list of RDRs is tracked.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Sensor Functions</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>sensor_reading_get</entry>
+                <entry>saHpiSensorReadingGet()</entry>
+                <entry>sf_001</entry>
+                <entry>Retrieve a sensor reading.</entry>
+                <entry>saHpiSensorReadingGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='4'>sensor_reading_convert</entry>
+                <entry morerows='4'>saHpiSensorReadingConvert()</entry>
+                <entry>sf_101</entry>
+                <entry>Convert between raw and interpreted sensor values. ReadingInput only contains interpreted value.</entry>
+                <entry>saHpiSensorReadingConvert() returns SA_OK, or returns SA_ERR_HPI_INVALID_DATA if the sensor does not support raw readings.</entry>
+              </row>
+              <row>
+                <entry>sf_102</entry>
+                <entry>Convert between raw and interpreted sensor values. ReadingInput only contains raw value.</entry>
+                <entry>saHpiSensorReadingConvert() returns SA_OK, or returns SA_ERR_HPI_INVALID_DATA if the sensor does not support raw readings.</entry>            
+              </row>
+              <row>
+                <entry>sf_103</entry>
+                <entry>Convert between raw and interpreted sensor values. ReadingInput neither contains raw value nor contains interpreted value.</entry>
+                <entry>saHpiSensorReadingConvert() returns SA_ERR_HPI_INVALID_PARAMS.</entry>
+              </row>
+              <row>
+                <entry>sf_104</entry>
+                <entry>Convert between raw and interpreted sensor values. ReadingInput both contains raw value and contains interpreted value.</entry>
+                <entry>saHpiSensorReadingConvert() returns SA_ERR_HPI_INVALID_PARAMS.</entry>
+              </row>
+              <row>
+                <entry>sf_105</entry>
+                <entry>Convert between raw and interpreted sensor values. The sensor is not present.</entry>
+                <entry>saHpiSensorReadingConvert() returns SA_ERR_HPI_NOT_PRESENT.</entry>
+              </row>
+              <row>
+                <entry morerows='1'>sensor_thresholds</entry>
+                <entry morerows='1'>saHpiSensorThresholdsSet() saHpiSensorThresholdsGet()</entry>
+                <entry>sf_201</entry>
+                <entry>Set the specified thresholds for the given sensor.</entry>
+                <entry>saHpiSensorThresholdsSet() returns SA_OK. saHpiSensorThresholdsGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>sf_202</entry>
+                <entry>Set the specified thresholds for the given sensor. Nether raw nor interpreted value of corresponding sensor reading structure is present.</entry>
+                <entry>saHpiSensorThresholdsSet() returns SA_OK, and threshold value will not be set. saHpiSensorThresholdsGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>sensor_type_get</entry>
+                <entry>saHpiSensorTypeGet()</entry>
+                <entry>sf_301</entry>
+                <entry>Retrieve the sensor type and event category for the specified sensor.</entry>
+                <entry>saHpiSensorTypeGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>sensor_event_enable</entry>
+                <entry>saHpiSensorEventEnableGet() saHpiSensorEventEnableSet()</entry>
+                <entry>sf_401</entry>
+                <entry>Set the disable or enable event message generation status for individual sensor events.</entry>
+                <entry>saHpiSensorEventEnableSet() returns SA_OK. saHpiSensorEventEnableGet() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Controls</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>control_type_get</entry>
+                <entry>saHpiControlTypeGet()</entry>
+                <entry>co_001</entry>
+                <entry>Retrieve the control type of a control object.</entry>
+                <entry>saHpiControlTypeGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>control_state</entry>
+                <entry>saHpiControlStateGet() saHpiControlStateSet()</entry>
+                <entry>co_101</entry>
+                <entry>Set the state of the specified control object.</entry>
+                <entry>saHpiControlStateSet() returns SA_OK. saHpiControlStateGet() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Entity Inventory Data</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='2'>entity_inventory_data</entry>
+                <entry morerows='2'>saHpiEntityInventoryDataRead() saHpiEntityInventoryDataWrite()</entry>
+                <entry>ei_001</entry>
+                <entry>Write the specified data to the inventory information area.</entry>
+                <entry>saHpiEntityInventoryDataWrite() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>ei_002</entry>
+                <entry>Return the inventory data for a particular entity associated with a resource. BufferSize is large enough.</entry>
+                <entry>saHpiEntityInventoryDataRead() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>ei_003</entry>
+                <entry>Return the inventory data for a particular entity associated with a resource. BufferSize is not large enough.</entry>
+                <entry>saHpiEntityInventoryDataRead() returns SA_ERR_INVENT_DATA_TRUNCATED.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Watchdog Timer</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>watchdog_timer</entry>
+                <entry>saHpiWatchdogTimerGet() saHpiWatchdogTimerSet() saHpiWatchdogTimerReset()</entry>
+                <entry>wt_001</entry>
+                <entry>Provides a method for initializing the watchdog timer configuration, and restart the watchdog timer.</entry>
+                <entry>saHpiWatchdogTimerGet() returns SA_OK. saHpiWatchdogTimerSet() returns SA_OK. saHpiWatchdogTimerReset() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Managed Hotswap</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows="1">resource_active</entry>
+                <entry morerows="1">saHpiHotSwapControlRequest() saHpiResourceActiveSet() saHpiResourceInactiveSet()</entry>
+                <entry>hs_001</entry>
+                <entry>Signal that the resource should now transition into ACTIVE/HEALTHY or ACTIVE/UNHEALTHY state.</entry>
+                <entry>saHpiHotSwapControlRequest() returns SA_OK. saHpiResourceActiveSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>hs_002</entry>
+                <entry>Signal that the resource should now transition into INACTIVE state.</entry>
+                <entry>saHpiHotSwapControlRequest() returns SA_OK. saHpiResourceInactiveSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='2'>auto_insert_timeout</entry>
+                <entry morerows='2'>saHpiAutoInsertTimeoutGet() saHpiAutoInsertTimeoutSetA()</entry>
+                <entry>hs_101</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-insertion policy is invoked. Timeout = SAHPI_TIMEOUT_IMMEDIATE.</entry>
+                <entry>saHpiAutoInsertTimeoutSet() returns SA_OK. The autonomous handling is proceeded immediately.</entry>
+              </row>
+              <row>
+                <entry>hs_102</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-insertion policy is invoked. Timeout != SAHPI_TIMEOUT_IMMEDIATE and Timeout != SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiAutoInsertTimeoutSet() returns SA_OK. The autonomous handling is not proceeded until Timeout.</entry>
+              </row>
+              <row>
+                <entry>hs_103</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-insertion policy is invoked. Timeout = SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiAutoInsertTimeoutSet() returns SA_OK. The autonomous handling is never proceeded.</entry>
+              </row>
+              <row>
+                <entry morerows='2'>auto_extract_timeout</entry>
+                <entry morerows='2'>saHpiAutoExtractTimeoutGet() saHpiAutoExtractTimeoutSet()</entry>
+                <entry>hs_201</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-extraction policy is invoked. Timeout = SAHPI_TIMEOUT_IMMEDIATE.</entry>
+                <entry>saHpiAutoExtractTimeoutSet() returns SA_OK. The autonomous handling is proceeded immediately.</entry>             </row>
+              <row>
+                <entry>hs_202</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-extraction policy is invoked. Timeout != SAHPI_TIMEOUT_IMMEDIATE and Timeout != SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiAutoExtractTimeoutSet() returns SA_OK. The autonomous handling is not proceeded until Timeout.</entry>
+              </row>
+              <row>
+                <entry>hs_203</entry>
+                <entry>Configure a timeout for how long to wait before the default auto-extraction policy is invoked. Timeout = SAHPI_TIMEOUT_BLOCK.</entry>
+                <entry>saHpiAutoExtractTimeoutSet() returns SA_OK. The autonomous handling is never proceeded.</entry>
+              </row>
+              <row>
+                <entry>hotswap_state_get</entry>
+                <entry>saHpiHotSwapStateGet()</entry>
+                <entry>hs_301</entry>
+                <entry>Retrieve the current hot swap state of a resource.</entry>
+                <entry>saHpiHotSwapStateGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='1'>hotswap_action_reqest</entry>
+                <entry morerows='1'>saHpiHotSwapActionRequest()</entry>
+                <entry>hs_401</entry>
+                <entry>Invoke an insertion process via software. Action = SAHPI_HS_ACTION_INSERTION.</entry>
+                <entry>saHpiHotSwapActionRequest() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>hs_402</entry>
+                <entry>Invoke an extraction process via software. Action = SAHPI_HS_ACTION_EXTRACTION.</entry>
+                <entry>saHpiHotSwapActionRequest() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='2'>resource_power_state_process</entry>
+                <entry morerows='2'>saHpiResourcePowerStateGet() saHpiResourcePowerStateSet()</entry>
+                <entry>hs_501</entry>
+                <entry>Set the current power state of the FRU associated with the specified resource. State = SAHPI_HS_POWER_OFF.</entry>
+                <entry>saHpiResourcePowerStateSet() returns SA_OK. saHpiResourcePowerStateGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>hs_502</entry>
+                <entry>Set the current power state of the FRU associated with the specified resource. State = SAHPI_HS_POWER_ON.</entry>
+                <entry>saHpiResourcePowerStateSet() returns SA_OK. saHpiResourcePowerStateGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>hs_503</entry>
+                <entry>Set the current power state of the FRU associated with the specified resource. State = SAHPI_HS_POWER_CYCLE.</entry>
+                <entry>saHpiResourcePowerStateSet() returns SA_OK. saHpiResourcePowerStateGet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry morerows='1'>hotswap_indicator_state_process</entry>
+                <entry morerows='1'>saHpiHotSwapIndicatorStateGet() saHpiHotSwapIndicatorStateSet()</entry>
+                <entry>hs_601</entry>
+                <entry>Set the state of the hot swap indicator associated with the specified resource. State = SAHPI_HS_INDICATOR_OFF.</entry>
+                <entry>saHpiHotSwapIndicatorStateGet() returns SA_OK. saHpiHotSwapIndicztorStateSet() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>hs_602</entry>
+                <entry>Set the state of the hot swap indicator associated with the specified resource. State = SAHPI_HS_INDICATOR_ON.</entry>
+                <entry>saHpiHotSwapIndicatorStateGet() returns SA_OK. saHpiHotSwapIndicztorStateSet() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+     </section>
+
+      <section>
+        <title>Configuration</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows='2'>parm_control</entry>
+                <entry morerows='2'>SaHpiParmControl()</entry>
+                <entry>cf_001</entry>
+                <entry>Restore the factory default settings for a specific resource. Action = SAHPI_DEFAULT_PARM.</entry>
+                <entry>saHpiParmControl() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>cf_002</entry>
+                <entry>Stores the resource configuration parameters in non-volatile storage. Action = SAHPI_SAVE_PARM.</entry>
+                <entry>saHpiParmControl() returns SA_OK.</entry>
+              </row>
+              <row>
+                <entry>cf_003</entry>
+                <entry>Restores resource configuration parameters from non-volatile storage. Action = SAHPI_RESTORE_PARM.</entry>
+                <entry>saHpiParmControl() returns SA_OK.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+      <section>
+        <title>Reset</title>
+        <para></para>
+        <informaltable frame="all">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Script Name</entry>
+                <entry>HPI API to Test</entry>
+                <entry>Test Case ID</entry>
+                <entry>Description</entry>
+                <entry>Expected Behavior</entry>
+              </row>
+            </thead>
+            <tbody>
+            <row>
+              <entry morerows='2'>resource_reset_state_process</entry>
+              <entry morerows='2'>saHpiResourceResetStateGet() saHpiResourceResetStateSet()</entry>
+              <entry>rs_001</entry>
+              <entry>Perform a 'Cold Reset' on the entity, leaving reset de-asserted. ResetAction = SAHPI_COLD_RESET.</entry>
+              <entry>
+                saHpiResourceResetStateGet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+		saHpiResourceResetStateSet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+	      </entry>
+            </row>
+            <row>
+              <entry>rs_002</entry>
+              <entry>Perform a 'Warm Reset' on the entity, leaving reset de-asserted. ResetAction = SAHPI_WARM_RESET.</entry>
+              <entry>
+                saHpiResourceResetStateGet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+		saHpiResourceResetStateSet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+	      </entry>
+            </row>
+            <row>
+              <entry>rs_003</entry>
+              <entry>Put entity into reset state and hold reset asserted. ResetAction = SAHPI_RESET_ASSERT.</entry>
+              <entry>
+                saHpiResourceResetStateGet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+		saHpiResourceResetStateSet() returns SA_OK, or SA_ERR_HPI_INVALID_CMD if resource has no reset control.
+              </entry>
+            </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+
+    </section>    
+  </section>
+
+</chapter>
