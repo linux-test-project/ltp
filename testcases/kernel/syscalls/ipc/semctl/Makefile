@@ -18,14 +18,12 @@
 
 ###########################################################################
 # name of file	: Makefile						  #
-# description	: make(1) description file for the ipc(2) semget tests.	  #
 ###########################################################################
-MAINS=semctl01 semctl02 semctl03 semctl04 semctl05
-SRCS=$(MAINS:=.c)
-OBJS=$(MAINS:=.o)
+SRCS=$(wildcard *.c)
+MAINS=$(patsubst %.c,%,$(SRCS))
 IPC_LDFLAGS=-L.. -lipc
-LTP_CFLAGS=-I../lib -I../../../../../include -Wall -g
 LTP_LDFLAGS=-L../../../../../lib -lltp
+LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
 
 all: $& $(MAINS)
 
@@ -33,7 +31,7 @@ $(MAINS): $(SRCS)
 	$(CC) -o $@ $@.c $(LTP_CFLAGS) $(LTP_LDFLAGS) $(IPC_LDFLAGS) $(LOADLIBES)
 
 clean:
-	/bin/rm -rf $(OBJS) $(MAINS)
+	/bin/rm -rf $(MAINS)
 
 install:
 	@for i in $(MAINS); do ln -f $$i ../../../../bin/$$i ; done
