@@ -1,4 +1,39 @@
-LTP-20030108
+LTP-20040206
+- Applied documentation cleanup patch.		( Randy Dunlap )
+- Fixed the "-t" default option in 		( Hubert Lin )
+  runalltests.sh
+- Relocated the aio tests to all reside		( Robbie Williamson )
+  in one location under kernel/io.
+- Fixed a 2.6 related compile error in the	( Marty Ridgeway )
+  device driver test tbase.c file. 
+- Updated the diotests to compile with gcc	( Mark Meissner )
+  3.4.
+- Fixed race condition and stability of the	( Gary Williams )
+  mmstress.c.
+- Corrected pth_str02's return value checking   ( Gary Williams )
+  and results handling.
+- Updated open08 to use an FHS specified file.	( Randy Hron )
+- Fixed a buffer overflow problem in pipe07.    ( Erik Andersen )
+- Fixed setregid02's test case id.		( Paul Larson )
+- Relaxed the expected results for string01.	( Marty Ridgeway )
+- Removed the EFAULT test from syslog12 b/c	( Andi Kleen )
+  it was unpredictable and didn't acheive the	  
+  intended test result.
+- Fixed an issue with data generation in 	( Michael Wolf )
+  gentan.c of float_trigo.
+- Added tests for iptables.			( Hubert Lin )
+- Updated mc_cmds to use 'netstat -i -n'.	( Hubert Lin )
+- Corrected the "this_file" variable in the	( Jacky Malcles )
+  rpc testcases.
+- Corrected a typo in rusers test.		( Jacky Malcles )
+- Fixed execution bug in ltpSockets.sh.		( Robbie Williamson )
+- Updated the rlogin and telnet tests to	( Hubert Lin )
+  execute correctly.
+- Updated the xinetd tests to run under RHEL.	( Ming Gao )
+- Corrected path locations in ltpfslvm.sh.	( Robbie Williamson )
+
+ 
+LTP-20040108
 - Fixed broken -l option in runalltests.sh.	( Paul Larson )
 - Fixed netpipe typo in runalltests.sh.		( Paul Larson )
 - Fixed memory leak in parse_opts.c library.	( Randy Hron )
