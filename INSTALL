@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.7 2001/02/27 22:04:27 nstraz Exp $
+$Id: INSTALL,v 1.8 2001/03/13 16:38:16 nstraz Exp $
 
 Quick Start
 -----------
@@ -24,17 +24,14 @@ contributions are welcome.
 2. Run "make" to build everything.  
 
 3. Some tests need to run as "root" and will fail if they are not run as
-   root.  We have decided to use super[1] to change to root when tests
-   need to.  Super doesn't require a password and is safer than
-   installing test cases setuid.  Add the following line to your
-   /etc/super.tab and edit it to match your user and where you installed
-   LTP.  See super(5) for details.
+   root.  There are several programs that will do this for you.  We have
+   supplied sample config files for sudo[1] and super[2] in
+   doc/examples.  Please see the related sudoers(5) and super.tab(5) man
+   pages for more information on setting up these programs.
 
-{mknod01,setgroups01,setuid02,unlink08} /home/tester/ltp/tests/* tester uid=0
-
-   There are some tests that require root, others that behave differently
-   as root, and others that shouldn't be run as root.  Any tests that you
-   want to run as root should be added to your /etc/super.tab.  
+   The tests that require these programs have been split into separate
+   pan files.  Add these to your working pan file once you have your
+   system configured properly.
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.
@@ -42,5 +39,5 @@ contributions are welcome.
    It is simple, but it can do a lot of stuff.  
 
 
-
-[1] http://freshmeat.net/projects/super/
+[1] http://www.courtesan.com/sudo/
+[2] http://freshmeat.net/projects/super/

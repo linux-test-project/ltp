@@ -194,8 +194,6 @@ mkdir01 mkdir01
 # Basic errno test for mkdir(2)
 mkdir08 mkdir08
 # Basic test for mkdir(2)
-mknod01 super mknod01
-# Basic test for mknod(2)
 qmm01 mmap001 -m 1
 # Basic mmap() test.
 nice05 nice05
@@ -228,8 +226,6 @@ select03 select03
 # select of fd of a named-pipe (FIFO)
 setgid01 setgid01
 # Basic test for setgid(2)
-setgroups01 super setgroups01
-# Basic test for setgroups(2)
 setpgid01 setpgid01
 # Basic test for setpgid(2)
 setpgrp01 setpgrp01
@@ -240,8 +236,6 @@ setreuid01 setreuid01
 # Basic test for setreuid(2)
 setuid01 setuid01
 # Basic test for setuid(2)
-setuid02 super setuid02
-# Basic test for setuid(2) as root
 sighold02 sighold02
 # Holding all signals
 signal03 signal03
@@ -275,8 +269,6 @@ unlink07 unlink07
 # unlink(2) negative testcases
 unlink08 unlink08
 # unlink(2) negative testcases
-unlink08-root super unlink08
-# unlink(2) negative testcases as root
 wait02 wait02
 # Basic test for wait(2)
 write01 write01

@@ -1,0 +1,28 @@
+# Sample sudoers file for Linux Test Project.
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# See the sudoers man page for the details on how to write a sudoers file.
+#
+
+# Host alias specification
+
+# User alias specification
+# List the users allowed to run the LTP tests requiring root
+User_Alias	LTPUSERS = puw, nstraz, jgarzik
+
+
+# Cmnd alias specification
+
+# List the tests requiring root, LTPROOT must be replaced with the full
+# path to your ltp installation. Producing something like:
+#   /usr/local/ltp/tests/mknod01, \
+#   ...
+Cmnd_Alias	LTPTESTS = LTPROOT/tests/mknod01, \
+			   LTPROOT/tests/setgroups01, \
+			   LTPROOT/tests/setuid02, \
+			   LTPROOT/tests/unlink08
+
+# User privilege specification
+root		ALL=(ALL) ALL
+LTPUSERS	ALL = NOPASSWD: LTPTESTS

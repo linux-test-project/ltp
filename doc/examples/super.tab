@@ -1,0 +1,8 @@
+#
+# Sample super.tab file for Linux Test Project.
+#
+# see super.tab(5) for more information on this file
+#
+# replace LTPROOT with the actual path of your LTP files
+
+{mknod01,setgroups01,setuid02,unlink08} LTPROOT/tests/* puw,nstraz,jgarzik uid=0
