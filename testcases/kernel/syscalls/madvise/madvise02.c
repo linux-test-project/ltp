@@ -61,31 +61,26 @@
  * 
  *	DETAILED DESCRIPTION
  *		This is a test for the madvise(2) system call. It is intended
- *		to provide a complete exposure of the system call. It tests madvise(2) for
- *		all error conditions to occur correctly.
+ *		to provide a complete exposure of the system call. It tests 
+ *		madvise(2) for all error conditions to occur correctly.
  * 
- * 		(1) Test Case for EINVAL
- *       	a. length is negative
- *       	b. start is not page-aligned
- *       	c. advice is not a valid value
- *       	d. application is attempting to release
+ * 		(A) Test Case for EINVAL
+ *       	1. start is not page-aligned
+ *       	2. advice is not a valid value
+ *       	3. application is attempting to release
  *			   locked or shared pages (with MADV_DONTNEED)
  *
- * 		(2) Test Case for ENOMEM
- *       	a. addresses in the specified range are not currently mapped
+ * 		(B) Test Case for ENOMEM
+ *       	4. addresses in the specified range are not currently mapped
  * 			   or are outside the address space of the process
  *		 	b. Not enough memory - paging in failed
  *
- * 		(3) Test Case for EIO
- *       	a. Paging in this area would exceed
- *			   the process's maximum resident size
- *
- * 		(4) Test Case for EBADF
- *       	a. the map exists,
+ * 		(C) Test Case for EBADF
+ *       	5. the map exists,
  *			   but the area maps something that isn't a file.
  *
- * 		(5) Test Case for EAGAIN
- *       	a. a kernel resource was temporarily unavailable.
+ * 		(D) Test Case for EAGAIN
+ *       	6. a kernel resource was temporarily unavailable.
  *
  *	Setup:
  *		Setup signal handling.
@@ -140,8 +135,6 @@ int main(int argc, char *argv[])
 	struct stat stat;
 	char *ptr_memory_allocated = NULL;
 	char *tmp_memory_allocated = NULL;
-	struct rlimit rlim;	/* For getting rlimit for DATA */
-	int no_of_file_pages=0;	/* Total no of pages in file */
 
 	char *msg=NULL;
 	char filename[64];
@@ -149,10 +142,8 @@ int main(int argc, char *argv[])
 	char *str_for_file="abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
 	
 	
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL)
-	{
-		tst_brkm(TBROK, NULL,
-			"OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 	
@@ -165,30 +156,25 @@ int main(int argc, char *argv[])
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
 	
-	for(lc = 0; TEST_LOOPING(lc); lc++)
-	{
+	for(lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/* Create a temporary file for testing */
-		if ((fd = open (filename, O_RDWR | O_CREAT, 0664)) < 0)
-		{
+		if ((fd = open (filename, O_RDWR | O_CREAT, 0664)) < 0) {
 			tst_brkm(TBROK, cleanup,
 				"Could not open file \"%s\" with O_RDWR",
 				filename);
 		}
 #ifdef MM_DEBUG
-		tst_resm(TINFO,
-			"filename = %s opened successfully",
+		tst_resm(TINFO, "filename = %s opened successfully",
 			filename);
 #endif
 
 		/* Writing 40 KB of random data into this file
 		   [32 * 1280 = 40960] */
-		for(i=0; i<1280; i++)
-		{	
-			if(write(fd, str_for_file, strlen(str_for_file)) < 0)
-			{
+		for(i=0; i<1280; i++) {	
+			if(write(fd, str_for_file, strlen(str_for_file)) < 0) {
 				tst_brkm(TBROK, cleanup,
 					"Could not write data to file \"%s\"",
 					filename);
@@ -196,167 +182,74 @@ int main(int argc, char *argv[])
 		}
 
 		/* Get file status for its size */
-		if(fstat(fd, &stat) < 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Could not stat file \"%s\"",
+		if(fstat(fd, &stat) < 0) {
+			tst_brkm(TBROK, cleanup, "Could not stat file \"%s\"",
 				filename);
 		}
 
 		/* Map the input file into memory */
-		if ((file =
-    	   (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Could not mmap file \"%s\"",
+		if ((file = (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
+			tst_brkm(TBROK, cleanup, "Could not mmap file \"%s\"",
 				filename);
 		}
 
 		pagesize=getpagesize();
 
 #ifdef MM_DEBUG
-		tst_resm(TINFO,
-			"The Page size is %d",
-			pagesize);
+		tst_resm(TINFO, "The Page size is %d", pagesize);
 #endif
 
-		/* Test Case 1a */
-        TEST(madvise(file, -100, MADV_NORMAL));
-		check_and_print(EINVAL);
-		
-        /* Test Case 1b */
-        TEST(madvise(file+100, stat.st_size, MADV_NORMAL));
+		/* Test Case 1 */
+		TEST(madvise(file+100, stat.st_size, MADV_NORMAL));
 		check_and_print(EINVAL);
         
-        /* Test Case 1c */
-        TEST(madvise(file,stat.st_size,1212));
+		/* Test Case 2 */
+		TEST(madvise(file,stat.st_size,1212));
 		check_and_print(EINVAL);
 
-        /* Test Case 1d */
-		if(mlock((void *)file,stat.st_size)<0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Error in getting memory "
+		/* Test Case 3 */
+		if(mlock((void *)file,stat.st_size)<0) {
+			tst_brkm(TBROK, cleanup, "Error in getting memory "
 				"lock for the requested page(s)");
 		}
 	
-        TEST(madvise(file,stat.st_size,MADV_DONTNEED));
+        	TEST(madvise(file,stat.st_size,MADV_DONTNEED));
 		check_and_print(EINVAL);
 
-        if(munmap(file,stat.st_size) < 0)
-        {
-            tst_brkm(TBROK, cleanup,
-				"Error %d in munmap : %s",
+        	if(munmap(file,stat.st_size) < 0) {
+			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
 				errno, strerror(errno));
-        }
+        	}
 
-        /* Test Case 2a */
-        if ((file =
-       	(char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1)
-        {
-            tst_brkm(TBROK, cleanup,
-				"Could not mmap file");
-        }
+        	/* Test Case 4 */
+        	if ((file = (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
+			tst_brkm(TBROK, cleanup, "Could not mmap file");
+        	}
 
-        TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
+        	TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
 		check_and_print(ENOMEM);
 
-		/* Test Case 3a */
-		/* Set new Process RSS (in no of pages)
-		   for the current process */
-		if(stat.st_size == 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"File size is 0, "
-				"test can not proceed\n");
-		}
-		
-		no_of_file_pages = (stat.st_size / pagesize);
-		if(stat.st_size % pagesize != 0)
-		{
-			no_of_file_pages++;
-		}
-		
-		if(getrlimit(RLIMIT_RSS, &rlim) < 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Error %d in getrlimit : %s",
-				errno, strerror(errno));
-		}
-
-#ifdef MM_DEBUG
-		tst_resm(TINFO,
-			"RLIM_INFINITY :: %d\n",
-			RLIM_INFINITY);
-		tst_resm(TINFO,
-			"Current RSS [soft limit :: %d, "
-			"hard limit :: %d]",
-			rlim.rlim_cur, rlim.rlim_max);
-#endif
-	
-		/* Set the rlimit for RSS to half of the actual file size */
-		rlim.rlim_cur = no_of_file_pages / 2;
-	
-		if(setrlimit(RLIMIT_RSS, &rlim) < 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Error %d in setrlimit : %s",
-				errno, strerror(errno));
-		}
-		else
-		{
-#ifdef MM_DEBUG
-			tst_resm(TINFO,
-				"New RSS rlimit has been set successfully");
-#endif
-		}
-
-		if(getrlimit(RLIMIT_RSS, &rlim) < 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Error %d in getrlimit : %s",
-				errno, strerror(errno));
-		}
-
-#ifdef MM_DEBUG
-		tst_resm(TINFO,
-			"RLIM_INFINITY :: %d",
-			RLIM_INFINITY);
-		tst_resm(TINFO,
-			"Current RSS [soft limit is :: %d, "
-			"hard limit :: %d]",
-			rlim.rlim_cur, rlim.rlim_max);
-#endif
-
-		/* Now give advice to kernel
-		   for keeping more than max RSS limit for the process */
-        TEST(madvise(file,stat.st_size,MADV_WILLNEED));
-		check_and_print(EIO);
-		
-		
-		/* Test Case 4a */
+		/* Test Case 5 */
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *) malloc(5 * sizeof(pagesize));
 		/* Take temporary pointer for later freeing up the original one */
 		tmp_memory_allocated = ptr_memory_allocated;
 		tmp_memory_allocated = (char *)(((int) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
-		
-		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_NORMAL));
+
+		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
 		check_and_print(EBADF);
 
 		free((void *)ptr_memory_allocated);
-		
+
 		/* Finally Unmapping the whole file */
-		if(munmap(file,stat.st_size) < 0)
-        {
-                tst_brkm(TBROK, cleanup,
-					"Error %d in munmap : %s",
-					errno, strerror(errno));
-        }
+		if(munmap(file,stat.st_size) < 0) {
+			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
+				errno, strerror(errno));
+        	}
 		
 		close(fd);
 	}
-    cleanup();
+	cleanup();
 	return 0;
 }
 
@@ -365,15 +258,15 @@ int main(int argc, char *argv[])
  ***************************************************************/
 void setup(void)
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
 	/* Create temp directory and change to that */
 	tst_tmpdir();
-}	/* End setup() */
+}/* End setup() */
 
 
 /***************************************************************
@@ -382,49 +275,37 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
-	
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
 	/* Remove temp directory and files */
 	tst_rmdir();
 
     /* exit with return code appropriate for results */
     tst_exit();
 
-}	/* End cleanup() */
+} /* End cleanup() */
 
 /***************************************************************
  * check_and_print(extected_errno) - checks the returned value of call
- *		and tests whether the returned errno is the expected errno or not
- *		and prints the appropriate messages.
+ * and tests whether the returned errno is the expected errno or not
+ * and prints the appropriate messages.
  ***************************************************************/
 void check_and_print(int expected_errno)
 {
-	if(TEST_RETURN == -1)
-	{
-       	if(TEST_ERRNO == expected_errno)
-		{
-            tst_resm(TPASS,
-				"expected failure - errno = %d : %s",
+	if(TEST_RETURN == -1) {
+       		if(TEST_ERRNO == expected_errno) {
+            		tst_resm(TPASS, "expected failure - errno = %d : %s",
 				TEST_ERRNO, strerror(TEST_ERRNO));
-		}
-		else
-		{
-           	tst_resm(TFAIL,
-				"madvise failed with wrong errno, "
-				"expected errno = %d, "
-				"got errno = %d : %s",
+		} else {
+           		tst_resm(TFAIL, "got errno = %d : %s",
 				EINVAL, TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-	}
-       else
-	{
-		tst_resm(TFAIL,
-			"madvise failed, expected "
-			"return value = -1, got %d",
-			TEST_RETURN);
+	} else {
+		tst_resm(TFAIL, "madvise failed, expected "
+			"return value = -1, got %d", TEST_RETURN);
  	}
 }
