@@ -1,5 +1,6 @@
 Build Notes for POSIX Test Suite
 ================================
+Last update : 2004-04-04 updated for posixtestsuite-1.4.0 
 
 The POSIX Test Suite should be able to be run independently of any given
 OS, so the OS-specific steps for configuring the POSIX Test Suite to run
@@ -18,28 +19,17 @@ POSIX functionality.  (Note:  If these implementations are accepted into
 the kernel, then the manual intervention will no longer apply, and we will
 update this document.)
 
-Notes for each test section are here.
+Please refer to your linux distribution's manual for the kernel and
+library information. 
+
+Notes for each test section are here. It is targeted for general linux 
+kernel 2.6 and glibc-2.3.3.
 
 =============
 Clocks/Timers
 =============
-High-Res-Timers POSIX interfaces should now be in the kernel; however,
-the user-space library still needs to be installed.
-
-If you are using the user-space library from http://high-res-timers.sf.net,
-then do:
-
-# cd /usr/src/linux/Documentation/high-res-timers/lib
-# make
-  (Note: You may need to add:  -I../../../include/ to the SYSASM= line)
-# cp libposixtime.so /usr/lib
-# vi posixtestsuite/LDFLAGS
-  - Add line: "-lposixtime -D_GNU_SOURCE"
-(If /usr/lib is not in your path, add -L/usr/lib.)
-
-For the CLOCK_MONOTONIC tests, you may need to play around with include
-files and headers to get the CLOCK_MONOTONIC defines.  (Kind of sloppy, but
-you can also just do a "#define CLOCK_MONOTONIC <correct value>" instead.)
+Both Linux kernel 2.6 and Glibc support Clocks/Timers now.
+Add the '-lrt' option to the LDFLAGS.
 
 =======
 Threads
@@ -47,21 +37,21 @@ Threads
 
 LinuxThreads
 -------------
-To build against Linux Threads, add the line -lpthread to LDFLAGS.
+If LinuxThreads is the default POSIX thread implementation,
+to build against LinuxThreads, add the line -lpthread to LDFLAGS.
 
 NPTL
 ----
-To build against NPTL, export the following variable:
+If NPTL is the default POSIX thread implementation,
+add the line -lpthread to LDFLAGS.
+
+Otherwise, to build against NPTL, export the following variable:
 
 export GLIBCDIR=/path/to/NPTL/libc-build
 
 Then in LDFLAGS, add the following lines:
 
 $GLIBCDIR/nptl/libpthread.so.0 $GLIBCDIR/libc.so.6 -Wl,-rpath,$GLIBCDIR:$GLIBCDIR/nptl:$GLIBCDIR/elf,-dynamic-linker,$GLIBCDIR/elf/ld-linux.so.2
-
-Also, in the Makefile, line #113, remove the reference to the variable $(LDFLAGS) completely.  This is a quick-fix to a linking problem that we are currently trying to find a more efficient solution for.
-
-*Note: Make sure you modify the Makefile to have all the include files you need for NPTL.
 
 NGPT
 ----
@@ -75,6 +65,10 @@ Then make sure to add the line -lpthread to the file LDFLAGS.
 ==============
 Message Queues
 ==============
+POSIX Message Queue (Wronski/Benedyczak's implementation) has been 
+included into linux kernel since 2.6.4-rc1-mm1.
+But you still need to install a user library at the time of writing this
+document.
 
 posix1b
 -------
@@ -91,16 +85,15 @@ To create the message queue file system, do:
 # mkdir /dev/mqueue
 # mount -t mqueue none /dev/mqueue
 
-Waechtler
----------
-To build against the Waechtler message queues TBD.
-
 ==========
 Semaphores
 ==========
 NPTL
 ----
-To build against NPTL, export the following variable:
+If NPTL is installed as default POSIX thread library, use
+'-lpthread' and '-lrt' flags.
+
+Otherwise, to build against NPTL, export the following variable:
 export GLIBCDIR=/path/to/NPTL/libc-build
 Then in LDFLAGS, add the following lines:
 
@@ -145,5 +138,8 @@ Maintainers:	Julie Fleischer
 		Rolla Selbak
 		Salwan Searty
 		Majid Awad
-Contributors:	Jerome Marchand
+		Crystal Xiong
+		Adam Li
+Contributors:	Jerome Marchand 
+		Ulrich Drepper
 

@@ -1,3 +1,32 @@
+05-01-2004	1.4.1 Release
+04-30-2004	adam.li@intel.com 
+		 - sigqueue/12-1.c: Use setuid() instead of seteuid()
+		 - sigqueue/3-1.c: Same as above.
+		 - shm_open/40-1.c: Remove it. This case cannot exit cleanly, 
+		   leaving zombie processes.
+		 - shm_open/33-1.c: Remove. Improper scenario.
+		 - shm_open/23-1.c: Rewrite the test scenario.
+		 - pthread_attr_setinheritsched/2-2.c: Bug fix
+		 - pthread_attr_setinheritsched/5-1.c: Remove. Not correct.
+		 - pthread_attr_setscope/5-1.c: Return PTS_UNTESTED
+		 - sched_setparam/23-6.c: Fix the case. It was untested before.
+		 - sched_setscheduler/17-5.c: make -1 as a invalid policy. 
+		 - sched_setscheduler/20-1.c: Fix. It was untested before.
+04-29-2004	adam.li@intel.com
+		 - add mq_timedsend/16-1.c: Use CLOCK_REALTIME
+		 - timer_getoverrun/2-3.c: Fix bug. It can pass on glibc now.
+04-23-2004	adam.li@intel.com
+		 - add mmap/11-4.c mmap/11-5.c
+		 - mmap/11-2.c mmap/11-3.c: Misunderstand the spec. Fix.
+04-22-2004	adam.li@intel.com
+		 - pthread_mutexattr_settype/2-1.c: Bug fix
+04-20-2004	adam.li@intel.com
+		 - mmap/24-2.c 11-2.c 11-3.c: Bug fix
+
+04-04-2004	1.4.0 Release
+		- Add test cases to implement tags: CS, CPT, TCT.
+		- Bug fix from Ulrich Drepper.
+		- Tested on Linux kernel 2.6, and fixed bugs exposed.
 12-16-2002	0.1.0 Release
 		- timers tests for TMR and CS tags (for timers)
 		julie.n.fleischer REMOVE-THIS AT intel DOT com
@@ -24,3 +53,4 @@
 		  the Makefile to make the actual test suite POSIX compliant)
 		- Added QUICK-START document to top-level dir
 		rolla.n.selbak REMOVE-THIS AT intel DOT com
+				

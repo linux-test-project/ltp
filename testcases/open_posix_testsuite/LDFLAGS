@@ -5,4 +5,4 @@
 #Lines beginning with # are comments.
 #
 #For example,
-#-lposixtime -D_GNU_SOURCE
+#-lpthread -D_GNU_SOURCE
