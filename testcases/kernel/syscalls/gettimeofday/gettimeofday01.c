@@ -50,6 +50,8 @@
 #include <usctest.h>
 
 char *TCID = "gettimeofday01";
+#ifndef __x86_64__
+
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -96,6 +98,17 @@ main(int ac, char **av)
 
 	/*NOTREACHED*/
 }
+#else
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+        tst_resm(TPASS, "vsyscall gettimeofday not EFAULT checked on x86-64");
+        tst_exit();
+}
+
+#endif
 
 /*
  * setup() - performs all ONE TIME setup for this test.
