@@ -63,7 +63,7 @@ void cleanup(void);
 
 int exp_enos[] = {EPERM, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int gid;
 	struct passwd *getpwnam(), *rootpwent;
@@ -112,6 +112,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -142,6 +142,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -150,7 +151,6 @@ main(int ac, char **av)
 void 
 setup()
 {
-	int i;
 
 	/* check root user */
         if (geteuid() != 0) {

@@ -112,6 +112,77 @@ int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, 
 
 extern int Tst_count;
 
+pid_t
+start_server(struct sockaddr_in *sin0)
+{
+	struct sockaddr_in sin1 = *sin0, fsin;
+	fd_set	afds, rfds;
+	pid_t	pid;
+	int	sfd, nfds, cc, fd;
+
+	sfd = socket(PF_INET, SOCK_STREAM, 0);
+	if (sfd < 0) {
+		tst_brkm(TBROK, cleanup, "server socket failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	if (bind(sfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+		tst_brkm(TBROK, cleanup, "server bind failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	if (listen(sfd, 10) < 0) {
+		tst_brkm(TBROK, cleanup, "server listen failed: %s",
+			strerror(errno));
+		return -1;
+	}
+	switch ((pid = fork())) {
+	case 0:	/* child */
+		break;
+	case -1:
+		tst_brkm(TBROK, cleanup, "server fork failed: %s",
+			strerror(errno));
+		/* fall through */
+	default: /* parent */
+		(void) close(sfd);
+		return pid;
+	}
+
+	FD_ZERO(&afds);
+	FD_SET(sfd, &afds);
+
+	nfds = getdtablesize();
+
+	/* accept connections until killed */
+	while (1) {
+		int	fromlen;
+
+		memcpy(&rfds, &afds, sizeof(rfds));
+
+		if (select(nfds, &rfds, (fd_set *)0, (fd_set *)0,
+		    (struct timeval *)0) < 0)
+			if (errno != EINTR)
+				exit(1);
+		if (FD_ISSET(sfd, &rfds)) {
+			int newfd;
+
+			fromlen = sizeof(fsin);
+			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
+			if (newfd >= 0)
+				FD_SET(newfd, &afds);
+		}
+		for (fd=0; fd<nfds; ++fd) {
+			if (fd != sfd && FD_ISSET(fd, &rfds)) {
+				cc = read(fd, buf, sizeof(buf));
+				if (cc == 0 || (cc < 0 && errno != EINTR)) {
+					(void) close(fd);
+					FD_CLR(fd, &afds);
+				}
+			}
+		}
+	}
+}
+
 int
 main(int ac, char *av[])
 {
@@ -136,7 +207,7 @@ main(int ac, char *av[])
 			tdat[testno].setup();
 
 			TEST(sendto(s, tdat[testno].buf, tdat[testno].buflen,
-				tdat[testno].flags, tdat[testno].to,
+				tdat[testno].flags, (const struct sockaddr*)tdat[testno].to,
 				tdat[testno].tolen));
 
 			if (TEST_RETURN > 0)
@@ -162,6 +233,7 @@ main(int ac, char *av[])
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 pid_t pid;
@@ -214,7 +286,7 @@ setup1(void)
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
 			strerror(errno));
 	}
-	if (connect(s, &sin1, sizeof(sin1)) < 0) {
+	if (connect(s, (const struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
 	}
 }
@@ -245,74 +317,3 @@ setup3(void)
 	}
 }
 
-pid_t
-start_server(struct sockaddr_in *sin0)
-{
-	struct sockaddr_in sin1 = *sin0, fsin;
-	fd_set	afds, rfds;
-	pid_t	pid;
-	int	sfd, nfds, cc, fd;
-	char	c;
-
-	sfd = socket(PF_INET, SOCK_STREAM, 0);
-	if (sfd < 0) {
-		tst_brkm(TBROK, cleanup, "server socket failed: %s",
-			strerror(errno));
-		return -1;
-	}
-	if (bind(sfd, &sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "server bind failed: %s",
-			strerror(errno));
-		return -1;
-	}
-	if (listen(sfd, 10) < 0) {
-		tst_brkm(TBROK, cleanup, "server listen failed: %s",
-			strerror(errno));
-		return -1;
-	}
-	switch ((pid = fork())) {
-	case 0:	/* child */
-		break;
-	case -1:
-		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			strerror(errno));
-		/* fall through */
-	default: /* parent */
-		(void) close(sfd);
-		return pid;
-	}
-
-	FD_ZERO(&afds);
-	FD_SET(sfd, &afds);
-
-	nfds = getdtablesize();
-
-	/* accept connections until killed */
-	while (1) {
-		int	fromlen;
-
-		memcpy(&rfds, &afds, sizeof(rfds));
-
-		if (select(nfds, &rfds, (fd_set *)0, (fd_set *)0,
-		    (struct timeval *)0) < 0)
-			if (errno != EINTR)
-				exit(1);
-		if (FD_ISSET(sfd, &rfds)) {
-			int newfd;
-
-			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
-			if (newfd >= 0)
-				FD_SET(newfd, &afds);
-		}
-		for (fd=0; fd<nfds; ++fd) {
-			if (fd != sfd && FD_ISSET(fd, &rfds)) {
-				cc = read(fd, buf, sizeof(buf));
-				if (cc == 0 || (cc < 0 && errno != EINTR)) {
-					(void) close(fd);
-					FD_CLR(fd, &afds);
-				}
-			}
-		}
-	}
-}

@@ -69,6 +69,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -171,6 +172,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -181,7 +183,6 @@ main(int ac, char **av)
 void 
 setup()
 {
-	int i;
 
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");

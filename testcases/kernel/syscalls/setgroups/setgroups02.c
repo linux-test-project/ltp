@@ -68,6 +68,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -151,6 +152,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
