@@ -77,12 +77,12 @@ int pass = 0;
 int neg_one = -1;
 int exp_enos[]={EPERM,0};
 
-uid_t root_pw_uid, nobody_pw_uid, adm_pw_uid;
+uid_t root_pw_uid, nobody_pw_uid, bin_pw_uid;
 char user1name[] = "nobody";
-char user2name[] = "adm";
+char user2name[] = "bin";
 char rootname[] = "root";
 
-struct passwd nobody, adm, root;
+struct passwd nobody, bin, root;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -105,12 +105,12 @@ struct test_data_t {
 	{ &root_pw_uid, &neg_one, &fail, &nobody, &nobody, "After setreuid(root, -1)," },
 	{ &root_pw_uid, &root_pw_uid, &fail, &nobody, &nobody, "After setreuid(root, root)," },
 	{ &root_pw_uid, &nobody_pw_uid, &fail, &nobody, &nobody, "After setreuid(root, nobody)," },
-	{ &root_pw_uid, &adm_pw_uid, &fail, &nobody, &nobody, "After setreuid(root, nobody)," },
-	{ &adm_pw_uid, &root_pw_uid, &fail, &nobody, &nobody, "After setreuid(adm, root)," },
-	{ &adm_pw_uid, &neg_one, &fail, &nobody, &nobody, "After setreuid(adm, -1)," },
-	{ &adm_pw_uid, &adm_pw_uid, &fail, &nobody, &nobody, "After setreuid(adm, adm,)," },
-	{ &adm_pw_uid, &nobody_pw_uid, &fail, &nobody, &nobody, "After setreuid(adm, nobody)," },
-	{ &nobody_pw_uid, &adm_pw_uid, &fail, &nobody, &nobody, "After setreuid(nobody, adm)," },
+	{ &root_pw_uid, &bin_pw_uid, &fail, &nobody, &nobody, "After setreuid(root, nobody)," },
+	{ &bin_pw_uid, &root_pw_uid, &fail, &nobody, &nobody, "After setreuid(bin, root)," },
+	{ &bin_pw_uid, &neg_one, &fail, &nobody, &nobody, "After setreuid(bin, -1)," },
+	{ &bin_pw_uid, &bin_pw_uid, &fail, &nobody, &nobody, "After setreuid(bin, bin,)," },
+	{ &bin_pw_uid, &nobody_pw_uid, &fail, &nobody, &nobody, "After setreuid(bin, nobody)," },
+	{ &nobody_pw_uid, &bin_pw_uid, &fail, &nobody, &nobody, "After setreuid(nobody, bin)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
@@ -211,8 +211,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("bin") == NULL) {
+		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -227,8 +227,8 @@ setup(void)
 	nobody = *( getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *(getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	bin = *(getpwnam("bin"));
+	bin_pw_uid = bin.pw_uid;
 
 	/* Check that the test process id is nobody */
 	if (geteuid() != nobody.pw_uid) {
