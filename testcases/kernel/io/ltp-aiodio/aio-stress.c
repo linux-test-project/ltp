@@ -314,12 +314,24 @@ static void oper_list_del(struct io_oper *oper, struct io_oper **list)
 static int check_finished_io(struct io_unit *io) {
     int i;
     if (io->res != io->buf_size) {
-        fprintf(stderr, "io err %lu (%s) op %d, size %d\n",
-		io->res, strerror(-io->res), io->iocb.aio_lio_opcode,
-		io->buf_size);
-        io->io_oper->last_err = io->res;
-        io->io_oper->num_err++;
-	return -1;
+
+  		 struct stat s;
+  		 fstat(io->io_oper->fd, &s);
+  
+  		 /*
+  		  * If file size is large enough for the read, then this short
+  		  * read is an error.
+  		  */
+  		 if ((io->io_oper->rw == READ || io->io_oper->rw == RREAD) &&
+  		     s.st_size > (io->iocb.u.c.offset + io->res)) {
+  
+  		 		 fprintf(stderr, "io err %lu (%s) op %d, off %Lu size %d\n",
+  		 		 		 io->res, strerror(-io->res), io->iocb.aio_lio_opcode,
+  		 		 		 io->iocb.u.c.offset, io->buf_size);
+  		 		 io->io_oper->last_err = io->res;
+  		 		 io->io_oper->num_err++;
+  		 		 return -1;
+  		 }
     }
     if (verify && io->io_oper->rw == READ) {
         if (memcmp(io->buf, verify_buf, io->io_oper->reclen)) {
