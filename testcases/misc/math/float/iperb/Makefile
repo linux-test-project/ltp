@@ -1,5 +1,6 @@
+CFLAGS = -Wall
+LOADLIBES = -lm
 
-LDFLAGS = -lm
 BIN = gensinh gencosh gentanh geniperb
 DATA = dsinh rsinh dcosh rcosh dtanh rtanh
 
