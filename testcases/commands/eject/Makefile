@@ -8,4 +8,4 @@ all: $(TARGETS)
 
 install:
 	@for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
-	@ln -f eject_tests.sh ../../bin/eject_tests.sh
+	@ln -f eject-tests.sh ../../bin/eject_tests.sh
