@@ -1,4 +1,4 @@
-SUBDIRS = ade
+SUBDIRS = ade tar
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
