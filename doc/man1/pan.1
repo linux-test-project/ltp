@@ -1,5 +1,5 @@
 .\"
-.\" $Id: pan.1,v 1.3 2002/02/19 18:59:05 robbiew Exp $
+.\" $Id: pan.1,v 1.4 2003/01/27 23:15:37 iyermanoj Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -34,7 +34,7 @@
 .SH NAME
 pan \- A light-weight driver to run tests and clean up their pgrps
 .SH SYNOPSIS
-\fBpan -n tagname [-SyAeh] [-t #s|m|h|d \fItime\fB] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
+\fBpan -n tagname [-SyAehp] [-t #s|m|h|d \fItime\fB] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
 .SH DESCRIPTION
 
 Pan will run a command, as specified on the commandline, or collection of
@@ -112,6 +112,9 @@ The file to which all test output will be saved.  Normally all test output is se
 .TP 1i
 \fB-O \fIbuffer_directory\fB
 A directory where pan can place temporary files to capture test output.  This will prevent output from several tests mixing together in the output file.
+.TP 1i
+\fB-p\fP
+Enables printing results in human readable format.
 .TP 1i
 \fB-r \fIreport_type\fB
 This controls the type of output that pan will produce.  Supported formats are \fIrts\fP and \fInone\fP.  The default is \fIrts\fP.
