@@ -1,6 +1,6 @@
 
 LOADLIBES += -lm
-LFLAGS += -lw
+
 CFLAGS += -w 
 
 all: pan bump scanner
