@@ -34,6 +34,9 @@
 /*		Oct  - 25 - 2001 Modified. Fixed bug in main(). Pthread_join  */
 /*				 sets the return value of the thread in thread*/
 /*			         return_status parameter.                     */
+/*		Nov - 09  - 2001 Modified. Removed compile errors             */
+/*				 - incomplete comment in line 301             */
+/*				 - missing argument to printf in pthread_join */
 /* File:	mmap3.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -239,7 +242,6 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     int	    fsize;		/* size of the file to be created.	      */
     int     fd;			/* temporary file descriptor		      */
     int     mwu_ndx = 0;	/* index to number of map/write/unmap         */
-    int     nbytes = 0;		/* number of bytes to write into the region   */
     caddr_t *map_address;	/* pointer to file in memory		      */
     int     map_type;		/* MAP_PRIVATE or MAP_SHARED	              */
     long    *mwuargs =          /* local pointer to arguments		      */
@@ -298,12 +300,13 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 /*		lower case alphabet 'a'. Map the file and change the contents */
 /*		to 'A's (upper case alphabet), write the contents to the file,*/
 /*		and unmap the file from memory. Spwan a certian number of     */
-/*		LWP's that will do the above.
+/*		LWP's that will do the above.				      */
 /*                                                                            */
 /* Return:	exits with -1 on error					      */
 /*		exits with a 0 on success.				      */
 /*                                                                            */
 /******************************************************************************/
+int
 main(int  argc,		/* number of input parameters.			      */
      char **argv)	/* pointer to the command line arguments.	      */
 {
@@ -425,7 +428,7 @@ main(int  argc,		/* number of input parameters.			      */
                 {
                     fprintf(stderr, 
 			    "thread [%d] - process exited with errors %d\n",
-			        WEXITSTATUS(status[0]));
+			        WEXITSTATUS(status[0]), *status);
 	            exit(-1);
                 }
             }

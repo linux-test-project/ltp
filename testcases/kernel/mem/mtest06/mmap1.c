@@ -49,6 +49,11 @@
 /*		Oct  - 25 - 2001 Modified - added OPT_MISSING                 */
 /*		                 chaned scheme, test will run once unless the */
 /*				 -x option is used.			      */
+/*		Nov  - 09 - 2001 Modified - Removed compile errors            */
+/*				 - too many to list!			      */
+/*				 - major change - added header file string.h  */
+/*				 - missing argument status[thrd_ndx] added    */
+/*				   to printf in pthread_join() logic          */
 /*								              */
 /* File: 	mmap1.c							      */
 /*									      */
@@ -81,6 +86,7 @@
 #include <setjmp.h>
 #include <pthread.h>
 #include <signal.h>
+#include <string.h>
 
 
 /* Defines								      */
@@ -143,7 +149,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     else
     {
         except = scp->trapno; 
-        fprintf(stderr, "signal caught - [%d] exception - [%d]\n", 
+        fprintf(stderr, "signal caught - [%d] exception - [%ld]\n", 
 			signal, except);
     }
 
@@ -151,32 +157,32 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     {
         case 10:
             fprintf(stderr, 
-	        "Exception - invalid TSS, exception #[%d]\n", except);
+	        "Exception - invalid TSS, exception #[%ld]\n", except);
 	    break;
 	case 11:
 	    fprintf(stderr,
-	        "Exception - segment not present, exception #[%d]\n",
+	        "Exception - segment not present, exception #[%ld]\n",
 		    except);
 	    break;
 	case 12:
 	    fprintf(stderr,
-		"Exception - stack segment not present, exception #[%d]\n",
+		"Exception - stack segment not present, exception #[%ld]\n",
 		    except);
 	    break;
         case 13:
 	    fprintf(stderr,
-		"Exception - general protection, exception #[%d]\n",
+		"Exception - general protection, exception #[%ld]\n",
 		    except);
 	    break;
 	case 14:
 	    fprintf(stderr,
-		"Exception - page fault, exception #[%d]\n",
+		"Exception - page fault, exception #[%ld]\n",
 		    except);
             ret = 1;
 	    break;
         default:
 	    fprintf(stderr,
-		"Exception type not handled... unknown exception #[%d]\n",
+		"Exception type not handled... unknown exception #[%ld]\n",
 		    except);
 	    break;
     }
@@ -186,7 +192,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
         if (scp->eax == (int)map_address)
 	{
 	    fprintf(stdout, 
-			"page fault at %#x\n" 
+			"page fault at %#lx\n" 
 			" - ignore\n", scp->eax);
 	    longjmp(jmpbuf, 1);
         }
@@ -312,8 +318,6 @@ void *
 map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 {
     int     mwu_ndx = 0;	/* index to number of map/write/unmap         */
-    int     nbytes = 0;		/* number of bytes to write into the region   */
-    caddr_t map_addr;		/* pointer to file in memory		      */
     long    *mwuargs =          /* local pointer to arguments		      */
 		       (long *)args;
     volatile int exit_val = 0;  /* exit value of the pthread		      */
@@ -339,7 +343,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         }
         
         if(verbose_print)
-            fprintf(stderr, "map address = %#x\n", map_address);
+            fprintf(stderr, "map address = %#lx\n", map_address);
 
 	prtln();
 
@@ -379,8 +383,8 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 void *
 read_mem(void *args)		/* number of reads performed		      */
 {
+    static int	 rd_index = 0;	/* index to the number of reads performed.    */
     long 	*rmargs = args;	/* local pointer to the arguments	      */
-    int		rd_index = 0;	/* index to the number of reads performed.    */
     char        *mem_content;	/* content of memory read                     */
     volatile int exit_val = 0;  /* pthread exit value			      */
 
@@ -388,8 +392,8 @@ read_mem(void *args)		/* number of reads performed		      */
         fprintf(stdout, 
 		"read_mem()arguments are:\n"
 		"number of reads to be performed - arg[2]: %d\n"
-                "read from address %#x\n",
-		(int)rmargs[2], map_address);
+                "read from address %#lx\n",
+		(int)rmargs[2], (long *)map_address);
 
     mem_content = malloc(sizeof(char) * rd_index);
     while (rd_index++ < (int)rmargs[2])
@@ -399,7 +403,7 @@ read_mem(void *args)		/* number of reads performed		      */
         if (verbose_print)
 	    fprintf(stdout, 
 	        "read_mem() in while loop  %d times to go %d times\n", 
-		rd_index, (int)rmargs[2]);
+		(int)rd_index, (int)rmargs[2]);
         usleep(1);
         
         if (setjmp(jmpbuf) == 1)
@@ -471,6 +475,7 @@ usage(char *progname)		/* name of this program			      */
 /*              exits with a 0 on success				      */
 /*									      */
 /******************************************************************************/
+int
 main(int  argc,		/* number of input parameters.			      */
      char **argv)	/* pointer to the command line arguments.	      */
 {
@@ -632,7 +637,7 @@ main(int  argc,		/* number of input parameters.			      */
                 {
                     fprintf(stderr, 
 			    "thread [%d] - process exited with errors %d\n",
-			        thid[thrd_ndx]);
+			        thid[thrd_ndx], status[thrd_ndx]);
 	            exit (-1);
 	        }
             }
