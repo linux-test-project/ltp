@@ -70,7 +70,7 @@
  *
  * Restrictions:
  *  This test should be run by root only.
- *  nobody and adm must be valid users.
+ *  nobody and bin must be valid users.
  * 
  */
 
@@ -93,7 +93,7 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRWXU | S_IRGRP | S_IWGRP| S_IROTH | S_IWOTH
 #define LTPUSER1	"nobody"
-#define LTPUSER2	"adm"
+#define LTPUSER2	"bin"
 
 char *TCID="utime03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -249,13 +249,14 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
- *  Change the ownership of testfile to that of "adm" user.
+ *  Change the ownership of testfile to that of "bin" user.
  *  Record the current time.
  */
 void 
 setup()
 {
 	int fildes;			/* file handle for temp file */
+	char *tmpd = NULL;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -275,6 +276,11 @@ setup()
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
+
+        /* get the name of the temporary directory */
+        if ((tmpd = getcwd(tmpd, 0)) == NULL) {
+                tst_brkm(TBROK, tst_exit, "getcwd failed");
+        }
 
 	/* Creat a temporary file under above directory */
 	if ((fildes = creat(TEMP_FILE, FILE_MODE)) == -1) {
@@ -302,6 +308,10 @@ setup()
 			 TEMP_FILE, errno, strerror(errno));
 		/*NOTREACHED*/
 	}
+
+        if (chmod(tmpd, 0711) != 0) {
+                tst_brkm(TBROK, cleanup, "chmod() failed");
+        }
 
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd\n",
