@@ -122,7 +122,7 @@ main(int ac, char **av)
 		 		 TEST(lseek64(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
 
 		/* check return code of lseek(2) */
-		if (TEST_ERRNO == (loff_t)-1) {
+		if (TEST_RETURN == (loff_t)-1) {
 			tst_resm(TFAIL, "llseek on (%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
