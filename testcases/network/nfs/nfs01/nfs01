@@ -93,7 +93,7 @@ $trace_logic
     echo "Setting up remote machine: $RHOST"
     rsh -n $RHOST "mkdir /mnt/nfs01.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw :/mnt/nfs01.testdir"
+    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfs01.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $SOCKET_TYPE$OPTS"
@@ -137,6 +137,7 @@ $trace_logic
 
         cd $HOME
     	echo "Unmounting $TCtmp"
+	sleep 2
         umount $TCtmp || error "Cannot umount $TCtmp"
     done
 }
@@ -155,16 +156,15 @@ end_testcase()
 {
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
-	cd /
-
+	cd \
+	
 	echo "Cleaning up testcase"
 
         mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || echo "Cannot mount $TCtmp"
 	rm -rf $LOCAL_DIR || echo "Cannot remove $LOCAL_DIR"
-        umount $TCtmp || echo "Cannot umount $TCtmp"
-        sleep 2
+        /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u :/mnt/nfs01.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs01.testdir"
 	rsh -n $RHOST "rm -rf /mnt/nfs01.testdir"
     fi
 
