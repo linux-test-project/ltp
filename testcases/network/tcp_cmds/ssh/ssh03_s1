@@ -1,0 +1,63 @@
+#! /usr/bin/expect -f
+#*********************************************************************
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#  FILE   : ssh 
+#
+#  PURPOSE: Tests to see that ssh accepts a valid user (non-root)
+#
+#  SETUP: The program `/usr/bin/expect' MUST be installed.
+#
+#  HISTORY:
+#    03/03 Jerone Young (jeroney@us.ibm.com)
+#
+#
+set RHOST $env(RHOST)
+set TEST_USER $env(TEST_USER)
+set TEST_USER_PASSWD $env(TEST_USER_PASSWD)
+
+set RUSER $TEST_USER
+
+set timeout 90
+
+#test invalid username
+
+send_user "TEST: SSH allow (non-root) valid User \n"
+
+set RUSER $TEST_USER 
+set PASSWD $TEST_USER_PASSWD
+
+
+spawn ssh -l $RUSER $RHOST whoami
+
+while 1 {
+    sleep 2
+    expect {
+
+        "Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}
+        "password:" {exp_send "$PASSWD\r"}
+        "Permission denied" {
+            send_user "\nSSH would not allow $RUSER to login, Test FAILED \n"
+            exit 1
+        }
+        "$RUSER" {send_user "\nSSH allowed $RUSER to login, Test PASSED \n" ;break}
+    }
+    sleep 1
+}
+
+
+exit 0 

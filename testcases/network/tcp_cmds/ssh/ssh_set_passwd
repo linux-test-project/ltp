@@ -1,0 +1,28 @@
+#!/usr/bin/expect 
+#
+# Set Password for a specific new user
+# This script should be run as 'root'
+#
+# Example:
+#		./set_passwd USER PASSWD
+#
+
+if { [llength $argv] < 2} {
+	exit 1
+}
+ 
+set USER [lindex $argv 0]
+set PASSWD [lindex $argv 1]
+
+set timeout 30
+
+spawn passwd $USER
+expect "password:"
+sleep 1
+send "$PASSWD\r"
+expect "Re-type password:"
+sleep 1
+send "$PASSWD\r"
+expect succeed
+
+exit 0
