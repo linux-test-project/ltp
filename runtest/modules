@@ -1,0 +1,10 @@
+#DESCRIPTION:2.4.x kernel module tests
+create_module01 create_module01
+create_module02 create_module02
+delete_module01 delete_module01
+delete_module02 delete_module02
+delete_module03 delete_module03
+query_module01 query_module01
+query_module02 query_module02
+query_module03 query_module03
+
