@@ -37,6 +37,10 @@
 /*									      */
 /*		Oct  - 25 - 2001 Modified - changed scheme. Test will be run  */
 /*				 once unless -x option is used.               */
+/*									      */
+/*		Apr  - 16 - 2003 Modified - replaced tempnam() use with       */
+/*				 mkstemp(). -Robbie Williamson                */
+/*				 email:robbiew@us.ibm.com                     */
 /* File:	mmap2.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -65,6 +69,10 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
+#include "test.h"
+#include "usctest.h"
+
+
 
 /* Defines								      */
 #define GB 1000000000
@@ -84,38 +92,30 @@
 /*                                                                            */
 /* Input:	size - size of the temp file to be created in giga bytes      */
 /*                                                                            */
-/* Output:	filename - name of the temp file created.		      */
-/*                                                                            */
 /* Return:      int fd - file descriptor if the file was created.             */
 /*              -1     - if it failed to create.                              */
 /*                                                                            */
 /******************************************************************************/
 static int
-mkfile(int size, 		/* size of the file to be generated in GB     */
-       char **filename)		/* output parameter - file name of tmp file   */
+mkfile(int size) 		/* size of the file to be generated in GB     */
 {
     int  fd;			/* file descriptior of tmpfile		      */
     int  index = 0;		/* index into the file, fill it with a's      */
     char buff[4096];		/* buffer that will be written to the file.   */
+    char template[PATH_MAX];    /* template for temp file name                */
+
 
     /* fill the buffer with a's and open a temp file */
     memset(buff, 'a', 4096); 
-    *filename = (char *)tempnam(".", "ashfile");
-    if ((fd = open(*filename, O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
+    snprintf(template, PATH_MAX, "ashfileXXXXXX");
+    if ((fd = mkstemp(template)) == -1)
     {
-	perror("mkfile(): open()");
+	perror("mkfile(): mkstemp()");
 	return -1;
     }
     else
     {
-        fprintf(stdout, "creating tmp file %s and writing 'a' to it ", 
-		*filename);
-	/* if the program dies prematurely, clean up temporary files. */
-	if (unlink(*filename) == -1)
-        {
-	    perror("mkfile(): unlink()");
-            exit (-1);
-        }
+        fprintf(stdout, "creating tmp file and writing 'a' to it "); 
     }
 
     /* fill the file with the character a */
@@ -128,8 +128,8 @@ mkfile(int size, 		/* size of the file to be generated in GB     */
 	    return -1;
 	}
     }
-    fprintf(stdout, "created file %s of size %d\n"
-		    "content of the file is 'a'\n", *filename, index);
+    fprintf(stdout, "created file of size %d\n"
+		    "content of the file is 'a'\n", index);
     
     /* make sure a's are written to the file. */
     if (fsync(fd) == -1)
@@ -245,7 +245,6 @@ int main(int argc,	    /* number of input parameters.		      */
     int  map_anon =  FALSE; /* do not map anonymous memory,map file by default*/
     int  run_once = TRUE;   /* run the test once. (dont repeat)               */
     char *memptr;	    /* address of the mapped file.	              */
-    char *filename;	    /* name of the temp file created.		      */
     extern  char *optarg;   /* arguments passed to each option                */
     struct sigaction sigptr;/* set up signal, for interval timer              */
 
@@ -327,7 +326,7 @@ int main(int argc,	    /* number of input parameters.		      */
         if (!map_anon)
         {
             /* create a new file of giga byte size */ 
-            if ((fd = mkfile(fsize, &filename)) == -1)
+            if ((fd = mkfile(fsize)) == -1)
             {
  	        fprintf(stderr, 
 			     "main(): mkfile(): Failed to create temp file.\n");

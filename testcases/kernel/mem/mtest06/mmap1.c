@@ -54,6 +54,10 @@
 /*				 - major change - added header file string.h  */
 /*				 - missing argument status[thrd_ndx] added    */
 /*				   to printf in pthread_join() logic          */
+/*                                                                            */
+/*              Apr  - 16 - 2003 Modified - replaced tempnam() use with       */
+/*                               mkstemp(). -Robbie Williamson                */
+/*                               email:robbiew@us.ibm.com                     */
 /*								              */
 /* File: 	mmap1.c							      */
 /*									      */
@@ -87,7 +91,8 @@
 #include <pthread.h>
 #include <signal.h>
 #include <string.h>
-
+#include "test.h"
+#include "usctest.h"
 
 /* Defines								      */
 #define M_SUCCESS 	0	/* exit code - on success, clone functions    */
@@ -260,17 +265,17 @@ set_timer(int run_time)		/* period for which test is intended to run   */
 /*									      */
 /******************************************************************************/
 int
-mkfile(int size,	/* size of the temp file that needs to be created.    */
-       char **filename)	/* directory where the temporary file is created.     */
+mkfile(int size	/* size of the temp file that needs to be created.    */ )
 {
-    int  fd;		/* file descriptor of the temp file created.          */
+    int  fd;			/* file descriptor of the temp file created.  */
+    char template[PATH_MAX];    /* template for temp file name		      */	
 
-    *filename = tempnam(".", "ashfile");
+    snprintf(template, PATH_MAX, "ashfileXXXXXX");
 
     /* open the file for writing and write to the required length. */
-   if ((fd = open(*filename,  O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
+   if ((fd = mkstemp(template)) == -1)
     {
-	perror("open(): mkstemp()");
+	perror("mkfile(): mkstemp()");
 	return -1;
     }
     else
@@ -294,13 +299,6 @@ mkfile(int size,	/* size of the temp file that needs to be created.    */
 	    return -1;
         }
         
-	/* unlink the file so that if test dies abnormally, temp files are */
-        /* removed.							   */
-        if (unlink(*filename) == -1)
-        {
-	   perror("mkfile(): unlink()");
-	   return -1;
-	}
         return fd;
    }
 }
@@ -492,7 +490,6 @@ main(int  argc,		/* number of input parameters.			      */
     extern int   opterr;
     extern int   optopt;
 
-    char 	 *filename;	/* name of temp file created.     	      */
     int 	 c;		/* command line options			      */
     int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
     int		 file_size;	/* size of the file to be created.	      */
@@ -592,7 +589,7 @@ main(int  argc,		/* number of input parameters.			      */
     do
     {
         /* create temporary file */
-        if ((fd = mkfile(file_size, &filename)) == -1)
+        if ((fd = mkfile(file_size)) == -1)
         {
 	    fprintf(stderr, 
 			"main(): mkfile(): Failed to create temporary file\n");
@@ -601,7 +598,7 @@ main(int  argc,		/* number of input parameters.			      */
         else
         {
             if(verbose_print)
-                fprintf(stdout, "Tmp file %s created\n", filename);
+                fprintf(stdout, "Tmp file created\n");
         }
 
         /* setup arguments to the function executed by process X */

@@ -37,6 +37,10 @@
 /*		Nov - 09  - 2001 Modified. Removed compile errors             */
 /*				 - incomplete comment in line 301             */
 /*				 - missing argument to printf in pthread_join */
+/*                                                                            */
+/*              Apr  - 16 - 2003 Modified - replaced tempnam() use with       */
+/*                               mkstemp(). -Robbie Williamson                */
+/*                               email:robbiew@us.ibm.com                     */
 /* File:	mmap3.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -68,6 +72,8 @@
 #include <pthread.h>
 #include <signal.h>
 #include <string.h>
+#include "test.h"
+#include "usctest.h"
 
 /* Defines								      */
 #ifndef TRUE
@@ -86,37 +92,27 @@
 /*                                                                            */
 /* Input:	NONE							      */
 /*                                                                            */
-/* Output:	filename - name of the temp file created.		      */
-/* 	        size - size of the temp file  created 			      */
+/* Output:      size - size of the temp file  created 			      */
 /*                                                                            */
 /* Return:      int fd - file descriptor if the file was created.             */
 /*              -1     - if it failed to create.                              */
 /*                                                                            */
 /******************************************************************************/
 static int
-mkfile(int  *size, 		/* size of the file to be generated in GB     */
-       char **filename)		/* output parameter - file name of tmp file   */
+mkfile(int  *size) 		/* size of the file to be generated in GB     */
 {
     int   fd;			/* file descriptior of tmpfile		      */
     int   index = 0;		/* index into the file, fill it with a's      */
     char  buff[4096];		/* buffer that will be written to the file.   */
+    char template[PATH_MAX];    /* template for temp file name                */
 
     /* fill the buffer with a's and open a temp file */
     memset(buff, 'a', 4096); 
-    *filename = (char *)tempnam(".", "ashfile");
-    if ((fd = open(*filename, O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
+    snprintf(template, PATH_MAX, "ashfileXXXXXX");
+    if ((fd = mkstemp(template)) == -1)
     {
-	perror("mkfile(): open()");
+        perror("mkfile(): mkstemp()");
 	return -1;
-    }
-    else
-    {
-	/* if the program dies prematurely, clean up temporary files. */
-	if (unlink(*filename) == -1)
-        {
-	    perror("mkfile(): unlink()");
-            exit (-1);
-        }
     }
 
     srand(time(NULL)%100);
@@ -239,7 +235,6 @@ usage(char *progname)           /* name of this program                       */
 void * 
 map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 {
-    char    *fname;	        /* name of temp file created.     	      */
     int	    fsize;		/* size of the file to be created.	      */
     int     fd;			/* temporary file descriptor		      */
     int     mwu_ndx = 0;	/* index to number of map/write/unmap         */
@@ -251,15 +246,13 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 
     while (mwu_ndx++ < (int)mwuargs[0])
     {
-        if ((fd = mkfile(&fsize, &fname)) == -1)
+        if ((fd = mkfile(&fsize)) == -1)
         {
             fprintf(stderr,
             	"main(): mkfile(): Failed to create temp file.\n");
 	    exit_val = -1;
 	    pthread_exit((void *)&exit_val); 
         }
-        else
-            fprintf(stdout, "\n\nFile name: %s\nFile size: %d\n", fname, fsize);
 
         if ((int)mwuargs[1])
 	    map_type = MAP_PRIVATE;
