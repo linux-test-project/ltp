@@ -762,13 +762,16 @@ test6()
         {
             if (execvp("dummy", argv_init) == -1)
             {
-                perror("test6(): execvp()");
-                fflush(NULL);
-                /*************************************************/
-                /*   Dummy uses exit 0 so use something else for
-                 *   error exit.
-                 */
-                exit(99);
+                if (execvp("./dummy", argv_init) == -1)
+		{
+		   perror("test6(): execvp()");
+                   fflush(NULL);
+                   /*************************************************/
+                   /*   Dummy uses exit 0 so use something else for
+                    *   error exit.
+                    */
+                    exit(99);
+		}
             }
         }
         else
