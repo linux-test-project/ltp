@@ -13,7 +13,7 @@ cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LT
 
 # Uncomment below and define if execution of the fsx-linux tests is desired.
 # Example:
-# SCRATCHDEV=/dev/hda
+# export SCRATCHDEV=/dev/hda
 
 # Uncomment the next line if SCRATCHDEV defined
 #cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests
