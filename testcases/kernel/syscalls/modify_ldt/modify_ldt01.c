@@ -127,7 +127,7 @@ block2:
 
 		ptr = 0;
 
-		retval = modify_ldt(0, ptr, sizeof(ptr));
+		retval = modify_ldt(1, ptr, sizeof(ptr));
 		if (retval < 0) {
 			if (errno != EINVAL) {
 				tst_resm(TFAIL, "modify_ldt() set invalid "
