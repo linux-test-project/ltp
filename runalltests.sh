@@ -21,6 +21,7 @@ export LTPROOT=${PWD}
 export TMPBASE="/tmp"
 cmdfile=""
 pretty_prt=" "
+alt_dir=0
 
 usage() 
 {
@@ -63,11 +64,13 @@ do  case $arg in
             2>&1 1>/dev/null & ;;
 
     l)      
-            if [ ${OPTARG:0:1} != "/" ]; then
-                echo "-l option requires an absolute path"
-                exit 1
-            fi
-            logfile="-l $OPTARG";;
+            if [ ${OPTARG:0:1} != "/" ]
+			then
+				logfile="-l $LTPROOT/results/$OPTARG"
+				alt_dir=1
+            else
+				logfile="-l $OPTARG"
+			fi ;;
 
     m)        
             $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
@@ -133,4 +136,10 @@ else
   echo pan reported FAIL
 fi
 
-rm -rf ${TMP}
+if [ $alt_dir -eq 1 ]
+then
+	echo "###############################################################"
+	echo " result log is in the $LTPROOT/results directory"
+	echo "###############################################################"
+fi
+#rm -rf ${TMP}
