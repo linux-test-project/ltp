@@ -78,7 +78,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i;
+	int i, start_pers;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -86,6 +86,12 @@ int main(int ac, char **av)
 	}
 
 	setup();			/* global setup */
+
+        start_pers = personality(PER_LINUX);
+        if (start_pers == -1) {
+           printf("personality01:  Test Failed\n");
+           exit(-1);
+        }
 
 	/* The following checks the looping state if -i option given */
 
@@ -131,7 +137,7 @@ int main(int ac, char **av)
 		/*
 		 * set our personality back to PER_LINUX
 		 */
-		if (personality(PER_LINUX) == -1) {
+		if (personality(start_pers) == -1) {
 			tst_brkm(TBROK, cleanup, "failed personality reset");
 		}
 	}
