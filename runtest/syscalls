@@ -146,6 +146,7 @@ fstat01 fstat01
 fstat02 fstat02
 fstat03 fstat03
 fstat04 fstat04
+fstat05 fstat05
 
 fstatfs01 fstatfs01
 fstatfs02 fstatfs02
@@ -489,6 +490,7 @@ setgid03 setgid03
 setgroups01 setgroups01
 setgroups02 setgroups02
 setgroups03 setgroups03
+setgroups04 setgroups04
 
 setitimer01 setitimer01
 setitimer02 setitimer02
@@ -590,6 +592,7 @@ stat06 stat06
 
 statfs01 statfs01
 statfs02 statfs02
+statfs03 statfs03
 
 stime01 stime01
 stime02 stime02
@@ -621,6 +624,7 @@ times03 times03
 truncate01 truncate01
 truncate02 truncate02
 truncate03 truncate03
+truncate04 truncate04
 
 # This syscall is obsolete.  The latest glibc does not even
 # include the ulimit.h file anymore.  The test will fail
