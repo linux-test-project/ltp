@@ -80,6 +80,8 @@
 #define EXP_RET_VAL	0
 
 extern int Tst_count;
+extern int setresgid(gid_t, gid_t, gid_t);
+extern int getresgid(gid_t*, gid_t*, gid_t*);
 
 struct test_case_t {			/* test case structure */
 	uid_t	*rgid;			/* real GID */
