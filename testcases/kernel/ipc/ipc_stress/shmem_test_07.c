@@ -289,7 +289,7 @@ int main (int argc, char **argv)
         if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
                 sys_error ("read_count shmget failed", __LINE__);
 
-        if ((int)(read_count[i] = (int *) shmat (shmid[j], 0, 0)) == -1)
+        if ((long)(read_count[i] = (int *) shmat (shmid[j], 0, 0)) == -1)
 		sys_error ("shmat failed", __LINE__);
 
         *(read_count[i]) = 0;
@@ -306,7 +306,7 @@ int main (int argc, char **argv)
         if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
                 sys_error ("checksum shmget failed", __LINE__);
 
-        if ((int)(checksum[i] = (unsigned long *) shmat (shmid[j], 0, 0)) == -1)
+        if ((long)(checksum[i] = (unsigned long *) shmat (shmid[j], 0, 0)) == -1)
                 sys_error ("shmat failed", __LINE__);
 
 
@@ -330,7 +330,7 @@ int main (int argc, char **argv)
         if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
                 sys_error ("shmptr shmget failed", __LINE__);
 
-        if ((int)(shmptr[i] = shmat (shmid[j], 0, 0)) == -1)
+        if ((long)(shmptr[i] = shmat (shmid[j], 0, 0)) == -1)
                 sys_error ("shmat failed", __LINE__);
 
 
@@ -396,7 +396,7 @@ int main (int argc, char **argv)
 
         for (i = 0; i < num_writers; i++)
         {
-                if (pthread_create (&writer_th[i], &newattr, writer, (void *) i))
+                if (pthread_create (&writer_th[i], &newattr, writer, (void *) (long)i))
                         sys_error ("writer: pthread_create failed", __LINE__);
 
         /*
@@ -409,7 +409,7 @@ int main (int argc, char **argv)
 	k=i*num_readers;
         for (j = k; j < (k + num_readers) ; j++)
         {
-                if (pthread_create (&reader_th[j], &newattr, reader, (void *) j))
+                if (pthread_create (&reader_th[j], &newattr, reader, (void *) (long)j))
                         sys_error ("reader: pthread_create failed", __LINE__);
 	}
 	}
@@ -476,7 +476,7 @@ int main (int argc, char **argv)
 +---------------------------------------------------------------------*/
 void *writer (void *parm)
 {
-	int num_w = (int) parm;
+	int num_w = (int) (long)parm;
 	unsigned long cksum_w = 0;	/* Shared memory regions checksum */
         char    data = 0;       /* Value written into shared memory segment */
         char    *ptr;           /* Misc pointer */
@@ -521,7 +521,7 @@ void *writer (void *parm)
 +---------------------------------------------------------------------*/
 void *reader (void *parm)
 {
-	int num_p = (int) parm;
+	int num_p = (int) (long)parm;
 	unsigned long cksum_r = 0;	/* Shared memory regions checksum */
 	int	i;			/* Misc index */
 	int	num_r;			/* Misc index */
