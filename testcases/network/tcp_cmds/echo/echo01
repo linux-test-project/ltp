@@ -75,7 +75,7 @@ do_test()
    COUNT=1
    while [[ $COUNT -le $NUMLOOPS ]]
    do
-      $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
+      strace $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
       [[ $? = 0 ]] || end_testcase "Error in $ECHOES test in loop $COUNT"
 
       NUM=0
@@ -88,6 +88,10 @@ do_test()
 
       echo "Successful execution for loop $COUNT" 
       COUNT=`expr $COUNT + 1`
+      if [[ $COUNT -le $NUMLOOPS ]]; then
+        echo "Sleeping 60 seconds to avoid hitting max. connections setting for service"
+        sleep 60
+      fi
    done
 }
 

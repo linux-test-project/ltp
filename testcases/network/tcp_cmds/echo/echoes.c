@@ -126,6 +126,7 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 	sa.sin_addr=hostaddr;
 
 #ifdef 	DEBUG
+	printf("sizeof (hostaddr)=%d\n",sizeof (hostaddr));
 	printf("port=%d hostaddr=%x", ntohs(port), hostaddr);
 	printf("Connect .......\n");
 #endif
@@ -137,6 +138,10 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 	}
 #ifdef DEBUG
 	addrlen=sizeof(address);
+	printf("addrlen=%d\n",addrlen);
+	printf("hp->h_length=%d\n",hp->h_length);
+	printf("hp->h_addrtype=%d\n",hp->h_addrtype);
+	printf("hp->h_addr=%d\n",inet_ntoa(hp->h_addr));
 	if (getsockname(s,&address,&addrlen) == -1 ) {
 		printf ("ERROR occured during getsockname(%d)\n",pid);
 		perror("echo");
