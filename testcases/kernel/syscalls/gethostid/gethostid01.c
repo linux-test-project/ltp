@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: gethostid01.c,v 1.2 2002/12/31 16:00:18 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -103,6 +103,10 @@
  * 
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
+ *
+ * 	History:
+ * 	  12/2002 Paul Larson - Added functional test to compare 
+ * 	  	output from hostid command and gethostid()
  * 
  * 
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
@@ -114,10 +118,10 @@
 #include "test.h"
 #include "usctest.h"
 
+#define HOSTIDLEN 40
+
 extern void setup();
 extern void cleanup();
-
-
 
 char *TCID="gethostid01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
@@ -130,8 +134,8 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
-    ;
+    char name[HOSTIDLEN], hostid[HOSTIDLEN];
+    FILE *fp;
 
     /***************************************************************
      * parse standard options
@@ -155,13 +159,6 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
-	/* 
-	 * TEST CASE:
-	 *  Get host name
-	 */
-	;
-
 	/* Call gethostid(2) */
 	TEST(gethostid( ));
 	
@@ -172,13 +169,31 @@ main(int ac, char **av)
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 	    continue;	/* next loop for MTKERNEL */
 	}
+	sprintf(hostid, "%x", TEST_RETURN);
 
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
 	if ( STD_FUNCTIONAL_TEST ) {
-	    /* No Verification test, yet... */
-	    tst_resm(TPASS, "gethostid -  Get host name returned %d", TEST_RETURN);
+	    if (system("hostid > hostid.x") == -1)
+		    tst_brkm(TFAIL, cleanup, "system() returned errno %d", 
+				    errno);
+	    if ((fp=fopen("hostid.x", "r")) == NULL)
+		    tst_brkm(TFAIL, cleanup, "fopen failed");
+	    if (fgets(name, HOSTIDLEN, fp) == NULL)
+		    tst_brkm(TFAIL, cleanup, "fgets failed");
+	    fclose(fp);
+
+	    /* strip off the \n we got from reading the file */
+	    name[strlen(name)-1] = 0;
+
+	    if (strcmp(name, hostid) == 0) {
+	    tst_resm(TPASS, "Hostid command and gethostid both report hostid "
+			    "is %s", hostid);
+	    } else 
+		    tst_resm(TFAIL, "Hostid command reports hostid is %s, "
+				    "but gethostid() reports %s", 
+				    name, hostid);
 	} 
     }	/* End for TEST_LOOPING */
 
@@ -197,10 +212,12 @@ void
 setup()
 {
     /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+    tst_sig(FORK, DEF_HANDLER, cleanup);
 
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    tst_tmpdir();
 }	/* End setup() */
 
 
@@ -216,6 +233,8 @@ cleanup()
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
+
+    tst_rmdir();
 
     /* exit with return code appropriate for results */
     tst_exit();
