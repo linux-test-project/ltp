@@ -18,11 +18,11 @@ usage()
 	usage: ${0##*/} -c [-d tmpdir] -i [ -l logfile ] -m [ -r ltproot ] 
                     [ -t duration ] [ -x instances ]
                 
-    -c 				Run LTP under CPU load.
+    -c              Run LTP under CPU load.
     -d tmpdir       Directory where temporary files will be created.
-    -i				Run LTP under heavy IO load.
+    -i              Run LTP under heavy IO load.
     -l logfile      Log results of test in a logfile.
-    -m				Run LTP under heavy memory load.
+    -m              Run LTP under heavy memory load.
     -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
