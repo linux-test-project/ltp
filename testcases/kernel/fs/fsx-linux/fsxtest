@@ -26,6 +26,7 @@
 # $2 optional file system type
 # $3 number of operations to perform 
 # 
+set -x
 TCbin=${TCbin:=`pwd`}
 mkfs -t $2 $1
 mkdir /testmount
@@ -38,6 +39,6 @@ if [[ $? -eq "0" ]]; then
 else
   echo "FAIL: fsxtest $1 $2 $3"
 fi
-umount testmount
+umount /testmount
 rm -rf /testmount
 fsck -t $2 $1  # report the results
