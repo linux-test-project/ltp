@@ -1,3 +1,4 @@
+set +x
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -42,7 +43,7 @@ init()
 {
 
 	export RC=0					# Return code from commands.
-	export TST_TOTAL=1			# total numner of tests in this file.
+	export TST_TOTAL=2			# total numner of tests in this file.
 	export TCID="ip_tests  "		# this is the init function.
 	export TST_COUNT=0			# init identifier,
 
@@ -109,6 +110,21 @@ init()
 		fi
 	fi
 
+	cat > $LTPTMP/tst_ip02.exp <<-EOF || RC=$?
+	1:
+	link/loopback
+	2:
+	link/ether
+	3:
+	link/ether
+	EOF
+
+	if [ $RC -ne 0 ]
+	then
+		tst_brkm TBROK NULL "INIT: failed creating expected output for test02"
+		return $RC
+	fi
+
 	return $RC
 }
 
@@ -133,7 +149,7 @@ cleanup()
 		/sbin/ifconfig eth0:1 down &>$LTPTMP/tst_ip.err
 	fi
 
-	rm -fr $LTPTMP/tst_ip.*
+	#rm -fr $LTPTMP/tst_ip.*
 	return $RC
 }
 
@@ -185,7 +201,7 @@ test01()
 # Function:		test02
 #
 # Description	- Test basic functionality of ip command
-#               - Test #1: ip link show DEVICE lists device attributes.
+#               - Test #1: ip link show lists device attributes.
 #               - execute the command and create output.
 #               - create expected output
 #               - compare expected output with actual output.
@@ -196,29 +212,27 @@ test01()
 test02()
 {
 	RC=0			# Return value from commands.
-	TCID=ip01	    # Name of the test case.
-	TST_COUNT=1		# Test number.
+	TCID=ip02	    # Name of the test case.
+	TST_COUNT=2		# Test number.
 
 	tst_resm TINFO \
-	 "Test #1: ip link set DEVICE mtu MTU changes the device mtu size"
+	 "Test #2: ip link show lists device attributes." 
 
-	tst_resm TINFO "Test #1: changing mtu size of eth0:1 device."
-
-	ip link show eth0 &>$LTPTMP/tst_ip.err
+	ip link show eth0:1 | grep eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_res TFAIL $LTPTMP/tst_ip.err \
-			"Test #1: ip command failed. Reason: "
+		tst_res TFAIL $LTPTMP/tst_ip.err "Test #2: ip command failed. Reason:"
 		return $RC
 	else
-		=`ifconfig eth0 | grep -i MTU | awk '{print $5}'`
-		if [ $RC == "MTU:300" ]
+		MTUSZ=`cat $LTPTMP/tst_ip.err | awk '{print $5}'`
+		if [ $MTUSZ -ne 300 ]
 		then
-			tst_resm TPASS "Test #1: changing mtu size success"
-		else
-			tst_brkm TBROK NULL \
-				"Test #1: MTU != 300: ifconfig returned $RC"
+			tst_resm TFAIL \
+			    "Test #2: device attrib incorrectly listed MTUSZ=$MTUSZ"
 			return $RC
+		else
+			tst_resm TPASS \
+				"Test #2: Listed eth0:1 and returned correct attributes"
 		fi
 	fi
 	return $RC
@@ -245,5 +259,6 @@ else
 fi
 
 test01 || RC=$?
+test02 || RC=$?
 
 exit $RC
