@@ -229,8 +229,8 @@ int main(int argc, char *argv[])
                 TEST(madvise(file,stat.st_size + 40960 + pagesize,MADV_NORMAL));
 #else
         	TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
-		check_and_print(ENOMEM);
 #endif
+		check_and_print(ENOMEM);
 
 		/* Test Case 5 */
 #ifdef __ia64__
@@ -243,8 +243,8 @@ int main(int argc, char *argv[])
 		tmp_memory_allocated = (char *)(((int) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
 
 		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
-		check_and_print(EBADF);
 #endif
+		check_and_print(EBADF);
 		free((void *)ptr_memory_allocated);
 
 		/* Finally Unmapping the whole file */
