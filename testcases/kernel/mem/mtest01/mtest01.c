@@ -24,24 +24,38 @@
  *    04/10/2001 Paul Larson (plars@us.ibm.com)
  *      written
  *    11/09/2001 Manoj Iyer (manjo@austin.ibm.com)
- *    Modified.
- *    - Removed compile warnings.
- *    - Added header file #include <unistd.h> definition for getopt()
+ *      Modified.
+ *      - Removed compile warnings.
+ *      - Added header file #include <unistd.h> definition for getopt()
+ *    05/13/2003 Robbie Williamson (robbiew@us.ibm.com)
+ *      Modified.
+ *      - Rewrote the test to be able to execute on large memory machines.
  *
  */
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/sysinfo.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/sysinfo.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 int main(int argc, char* argv[]) {
   char* mem;
+  float percent;
   unsigned int maxpercent=0, dowrite=0, verbose=0, j, c;
-  unsigned long int bytecount, maxbytes = 0;
+  unsigned long bytecount, alloc_bytes;
+  unsigned long long original_maxbytes,maxbytes=0;
+  unsigned long long pre_mem, post_mem;
   extern char* optarg;
   int chunksize = 1024*1024; /* one meg at a time by default */
   struct sysinfo sstats;
+  int i;
+  pid_t pid,pid_list[1000];
+
+  for (i=0;i<1000;i++)
+   pid_list[i]=(pid_t)0;
 
   while((c=getopt(argc, argv, "c:b:p:wvh")) != EOF) {
     switch((char)c) {
@@ -49,7 +63,7 @@ int main(int argc, char* argv[]) {
         chunksize = atoi(optarg);
         break;
       case 'b':
-        maxbytes = atoi(optarg);
+        maxbytes = atoll(optarg);
         break;
       case 'p':
         maxpercent = atoi(optarg);
@@ -73,41 +87,110 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  sysinfo(&sstats);
   if(maxpercent) {
-    unsigned long int D, C;
-    sysinfo(&sstats);
-    maxbytes = ((float)maxpercent/100)*(sstats.totalram+sstats.totalswap) - ((sstats.totalram+sstats.totalswap)-(sstats.freeram+sstats.freeswap));
-    /* Total memory needed to reach maxpercent */
-    D = ((float)maxpercent/100)*(sstats.totalram+sstats.totalswap);
+    unsigned long long total_ram, total_free, D, C;
+    percent=(float)maxpercent/100.00;
+
+    total_ram=sstats.totalram;
+    total_ram=total_ram+sstats.totalswap;
+
+    total_free=sstats.freeram;
+    total_free=total_free+sstats.freeswap;
+
+    /* Total memory used needed to reach maxpercent */
+    D = percent*(sstats.mem_unit*total_ram);
+    printf("Total memory used needed to reach maxpercent = %llu kbytes\n",D/1024);
 
     /* Total memory already used */
-    C = (sstats.totalram+sstats.totalswap)-(sstats.freeram+sstats.freeswap);
+    C = sstats.mem_unit*(total_ram-total_free);
+    printf("Total memory already used on system = %llu kbytes\n",C/1024);
+
+    /* Total Free Pre-Test RAM */
+    pre_mem = sstats.mem_unit*total_free;
 
     /* Are we already using more than maxpercent? */
     if(C>D) {
       printf("More memory than the maximum amount you specified is already being used\n");
       exit(1);
     }
+    else
+      pre_mem = sstats.mem_unit*total_free;
+    
 
     /* set maxbytes to the extra amount we want to allocate */
     maxbytes = D-C;
-    printf("Filling up %d%% of ram which is %lu bytes\n",maxpercent,maxbytes);
+    printf("Filling up %d%% of ram which is %llu kbytes\n",maxpercent,maxbytes/1024);
   }
-
-  bytecount=chunksize;
-  while(1) {
-    if((mem = (char*)malloc(chunksize)) == NULL) {
-      printf("stopped at %lu bytes\n",bytecount);
-      exit(1);
+  original_maxbytes=maxbytes;
+  i=0;
+  pid=fork();
+  pid_list[i]=pid;
+  while( (pid!=0) && (maxbytes > 1024*1024*1024) )
+  {
+    i++;
+    maxbytes=maxbytes-(1024*1024*1024);
+    pid=fork();
+    if (pid != 0)
+      pid_list[i]=pid;
+  }
+  if( maxbytes > 1024*1024*1024 )
+    alloc_bytes=1024*1024*1024;
+  else
+    alloc_bytes=(unsigned long)maxbytes;
+  
+  if ( pid == 0)			/** CHILD **/
+  { 
+    bytecount=chunksize;
+    while(1) {
+      if((mem = (char*)malloc(chunksize)) == NULL) {
+        printf("stopped at %lu bytes\n",bytecount);
+        exit(1);
+      }
+      if(dowrite)
+        for(j=0; j<chunksize; j++)
+          *(mem+j)='a';
+      if(verbose) printf("allocated %lu bytes chunksize is %d\n",bytecount,chunksize);
+      bytecount+=chunksize;
+      if(alloc_bytes && (bytecount >= alloc_bytes))
+        break;
     }
-    if(dowrite)
-      for(j=0; j<chunksize; j++)
-        *(mem+j)='a';
-    if(verbose) printf("allocated %lu bytes chunksize is %d\n",bytecount,chunksize);
-    bytecount+=chunksize;
-    if(maxbytes && (bytecount >= maxbytes))
-      break;
+    if (dowrite)
+      printf("... %lu bytes allocated and used.\n",bytecount);
+    else
+      printf("... %lu bytes allocated only.\n",bytecount);
+    while(1)
+      sleep(1);
   }
-  printf("PASS ... %lu bytes allocated.\n",bytecount);
+  else					/** PARENT **/
+  {
+    i=0;
+    sysinfo(&sstats);
+    
+    if (dowrite) 
+    {
+      /* Total Free Post-Test RAM */
+      post_mem = sstats.mem_unit*sstats.freeram;
+      post_mem = post_mem+(sstats.mem_unit*sstats.freeswap);
+    
+      while ( (pre_mem - post_mem) < original_maxbytes )
+      {
+       sleep(1);
+       sysinfo(&sstats);
+       post_mem = sstats.mem_unit*sstats.freeram;
+       post_mem = post_mem+(sstats.mem_unit*sstats.freeswap);
+      }
+    }
+    sleep(10);  
+    while (pid_list[i]!=0)
+    { 
+      kill(pid_list[i],SIGTERM);
+      i++;
+    }
+    if (dowrite)
+      printf("PASS .. %llu kbytes allocated and used.\n",original_maxbytes/1024);
+    else
+      printf("PASS .. %llu kbytes allocated only.\n",original_maxbytes/1024);
+  }
   exit(0);
 }
