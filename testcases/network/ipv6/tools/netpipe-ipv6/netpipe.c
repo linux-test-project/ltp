@@ -26,7 +26,7 @@ extern char *optarg;
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: netpipe.c,v 1.1 2002/03/18 21:39:34 robbiew Exp $";
+	"$Id: netpipe.c,v 1.2 2002/04/18 13:26:59 robbiew Exp $";
 #endif
 
 main(int argc, char *argv[])
@@ -342,11 +342,11 @@ main(int argc, char *argv[])
             memtmp1 = args.buff1;
             if (bufalign != 0)
                 args.buff +=(bufalign - 
-                        ((int)args.buff % bufalign) + bufoffset) % bufalign;
+                        ((intptr_t)args.buff % bufalign) + bufoffset) % bufalign;
 
             if (bufalign != 0)
                 args.buff1 +=(bufalign - 
-                        ((int)args.buff1 % bufalign) + bufoffset) % bufalign;
+                        ((intptr_t)args.buff1 % bufalign) + bufoffset) % bufalign;
 
 
             if (args.tr && printopt)
