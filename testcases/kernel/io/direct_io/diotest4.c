@@ -336,14 +336,13 @@ main(int argc, char *argv[])
 	offset = 0;
 	count = bufsize;
         if ((newfd = open("/dev/null", O_DIRECT|O_RDWR)) < 0) {
-                fprintf(stderr, "[9] open /dev/null:%s\n", strerror(errno));
-                unlink(filename);
-                exit(1);
-        }
-	ret = runtest_s(newfd, buf2, offset, count, 9, "/dev/null");
-	if (ret != 0) {
-		failed = TRUE;
-		fail_count++;
+		fprintf(stderr, "[9] Direct I/O on /dev/null is not supported, skip test #9.\n");
+        } else { 
+		ret = runtest_s(newfd, buf2, offset, count, 9, "/dev/null");
+		if (ret != 0) {
+			failed = TRUE;
+			fail_count++;
+		}
 	}
 	total++;
 	
@@ -577,7 +576,7 @@ main(int argc, char *argv[])
 	close(fd);
         unlink(filename);
 	if (failed) {
-		fprintf(stderr, "diotest7: %d/%d test blocks failed\n",
+		fprintf(stderr, "diotest4: %d/%d test blocks failed\n",
 			fail_count, total);
 		exit(1);
 	}
@@ -588,7 +587,7 @@ main(int argc, char *argv[])
 
 #else /* O_DIRECT */
 
-char *TCID="diotest04";		 		 /* Test program identifier.    */
+char *TCID="diotest4";		 		 /* Test program identifier.    */
 int TST_TOTAL=1;		 		 /* Total number of test conditions */
 
 int
