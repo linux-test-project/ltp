@@ -47,7 +47,18 @@ kernel()
   esac
   OUTFILE="/tmp/kernel_tests.output-$TIMESTAMP"
   echo""
-  echo "   The output file will be /tmp/kernel_tests.output-$TIMESTAMP"
+  echo "   The output file will be $OUTFILE"
+  echo""
+  echo -n "    Would you like only the FAILURES documented in $OUTFILE (Y/N)? Default is no. >> "
+  read failures
+  case $failures in
+    y|Y)
+	FAILURES_ONLY=1
+	;;
+    *)
+	FAILURES_ONLY=0
+	;;
+  esac
   echo""
   echo -n "How many simultaneous runs do you want? >> "
   read COPIES
@@ -114,10 +125,20 @@ kernel()
   if [ $LOOPS -eq 0 ]; then
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    else # Strip out the passes.
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+    fi  
   else
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
-    PID=$!
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
+      PID=$!
+    else #Strip out the passes.
+      echo "      Tests running....Failures will display to the screen at the end of the run."
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      PID=$!
+    fi
   
     tail -f $OUTFILE &
     TAIL_PID=$!
@@ -141,19 +162,21 @@ kernel()
 
   rm -rf $TMP
 
-  echo ""
-  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
-  read extract
-  case $extract in
-    Y*|y*)
-	   echo ""
-           echo "The file $OUTFILE-errors will contain this information."
-	   sleep 1
-	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
-	   ;;
-    *)
-	   ;;
-  esac
+  if [ $FAILURES_ONLY -eq 0 ]; then
+    echo ""
+    echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+    read extract
+    case $extract in
+      Y*|y*)
+  	     echo ""
+             echo "The file $OUTFILE-errors will contain this information."
+	     sleep 1
+	     ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+	     ;;
+      *)
+             ;;
+    esac
+  fi
 
 }
 
@@ -240,6 +263,17 @@ networking()
   echo""
   echo "   The output file will be /tmp/network_tests.output-$TIMESTAMP"
   echo""
+  echo -n "    Would you like only the FAILURES documented in $OUTFILE (Y/N)? Default is no. >> "
+  read failures
+  case $failures in
+    y|Y)
+	FAILURES_ONLY=1
+	;;
+    *)
+	FAILURES_ONLY=0
+	;;
+  esac
+  echo""
 
   cd `dirname $0`
   export LTPROOT=${PWD}
@@ -285,10 +319,21 @@ networking()
   if [ $LOOPS -eq 0 ]; then
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    else # Strip out the passes.
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+    fi
   else
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
-    PID=$!
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+      PID=$!
+    else # Strip out the passes.
+      echo "      Tests running....Failures will display to the screen"
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      PID=$!
+    fi
+
 
     tail -f $OUTFILE &
     TAIL_PID=$!
@@ -310,21 +355,24 @@ networking()
     echo pan reported FAIL
   fi
   
-  echo ""
-  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
-  read extract
-  case $extract in
-    Y*|y*)
-	   echo ""
-           echo "The file $OUTFILE-errors will contain this information."
-	   sleep 1
-	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
-	   ;;
-    *)
-	   ;;
-  esac
-
   rm -rf $TMP
+
+  if [ $FAILURES_ONLY -eq 0 ]; then
+    echo ""
+    echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+    read extract
+    case $extract in
+      Y*|y*)
+             echo ""
+             echo "The file $OUTFILE-errors will contain this information."
+             sleep 1
+             ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+             ;;
+      *)
+             ;;
+    esac
+  fi
+
 }
 
 
@@ -357,6 +405,18 @@ diskio()
   OUTFILE="/tmp/diskio_tests.output-$TIMESTAMP"
   echo""
   echo "   The output file will be /tmp/diskio_tests.output-$TIMESTAMP"
+  echo""
+  echo -n "    Would you like only the FAILURES documented in $OUTFILE (Y/N)? Default is no. >> "
+  read failures
+  case $failures in
+    y|Y)
+        FAILURES_ONLY=1
+        ;;
+    *)
+        FAILURES_ONLY=0
+        ;;
+  esac
+  echo""
 
   cd `dirname $0`
   export LTPROOT=${PWD}
@@ -377,10 +437,21 @@ diskio()
   if [ $LOOPS -eq 0 ]; then
     echo ""
     echo "       Tests running....Press [Ctrl]-C to stop."
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE
+    else # Strip out the passes.
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE
+    fi
   else
-    ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
-    PID=$!
+    if [ $FAILURES_ONLY -eq 0 ]; then
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+      PID=$!
+    else # Strip out the passes.
+      echo "      Tests running....Failures will display to the screen"
+      ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE | ${LTPROOT}/tools/ltpoutput2 > $OUTFILE &
+      PID=$!
+    fi
+
 
     tail -f $OUTFILE &
     TAIL_PID=$!
@@ -402,21 +473,24 @@ diskio()
     echo pan reported FAIL
   fi
   
-  echo ""
-  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
-  read extract
-  case $extract in
-    Y*|y*)
-	   echo ""
-           echo "The file $OUTFILE-errors will contain this information."
-	   sleep 1
-	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
-	   ;;
-    *)
-	   ;;
-  esac
-
   rm -rf $TMP
+
+  if [ $FAILURES_ONLY -eq 0 ]; then
+    echo ""
+    echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+    read extract
+    case $extract in
+      Y*|y*)
+             echo ""
+             echo "The file $OUTFILE-errors will contain this information."
+             sleep 1
+             ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+             ;;
+      *)
+             ;;
+    esac
+  fi
+
 }
 
 
