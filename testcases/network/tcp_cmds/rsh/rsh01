@@ -76,7 +76,7 @@ do_test()
    do
       CHECK=$(rsh -n -l root $RHOST "ls -l /etc/hosts | wc -w")
 
-      if [ "$CHECK" == "9" ]; then 
+      if [ "$CHECK" -eq 9 ]; then 
          tst_resm TINFO "rsh Test successful in loop $COUNT"
       else
          tst_resm TBROK "FAILED: rsh failed"
