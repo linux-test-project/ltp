@@ -13,7 +13,7 @@ install:
 
 
 object:
-	cc -c file1.c
+	$(CC) -c file1.c
 
 clean:
 	rm -f $(TARGETS) file1.o
