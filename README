@@ -1,0 +1,56 @@
+
+Linux Test Project
+------------------
+
+08-21-2000
+
+The Linux Test Project is a project that has the noble goal of building a set
+of functionality regression tests for the kernel.  To date (21-AUG-2000), this
+is our goal, but additional goals have been suggested: stress testing,
+benchmarking, and standards conformance.  For the basic reason that this project
+is still in its infancy, we're going to the leave the others in the 'suggested' list
+for future consideration.  If you have ideas on ways of bringing a member of the
+'suggested' list under the Linux Test Project, by all means, show us the code!
+
+The Linux Test Project home is located on the SGI Open Source Software site,
+oss.sgi.com.  The project web URL is at http://oss.sgi.com/projects/ltp/.  The
+project also has an email list which can be subscribed to by sending an email
+to majordomo@oss.sgi.com with the string 'subscribe ltp your@email.addr' where
+'your@email.addr' is your email address.  More information and an email archive
+can be found at http://oss.sgi.com/projects/ltp/mail.html.
+
+About the Code
+--------------
+
+Here's a bit of a description of the current directory structure.  For now this
+structure is simple.
+
+doio/
+          The doio directory contains three tools: doio, iogen, and growfiles.
+          These are elaborate filesystem tests for stressing and testing the
+          functionality of the filesystem.  There is also a wrapper for doio
+          and iogen called rwtest.  Command examples for these tools can be found
+          in the cmdlines in the root of the ltp directory.
+
+include/
+lib/
+          The include and lib directories contain headers and codes for common
+          routines used by many of the tests.
+
+tests/
+          To date the tests directory contains a number of simple tests called
+          'quickhitters'.  These tests are designed to be simple and quick and be
+          run in conjunction with each other.  They have some use as stand alone
+          tests, but when run many-at-a-time, interesting issues can come up.
+
+doc/
+          The doc directory contains mainly man pages for mainly the library codes.
+
+
+Notes
+-----
+Be careful with these tests!
+
+Don't run them on production systems.  Growfiles, doio, and iogen in particular
+stress the I/O capabilities of systems and while they should not cause problems
+on properly functioning systems, they are intended to find (or cause) problems.
