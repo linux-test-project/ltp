@@ -1,3 +1,5 @@
+abs01 abs01
+
 float_bessel float_bessel -D $LTPROOT/testcases/bin -v
 float_exp_log float_exp_log -D $LTPROOT/testcases/bin -v
 float_iperb float_iperb  -D $LTPROOT/testcases/bin -v
