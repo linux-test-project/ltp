@@ -1,0 +1,3 @@
+#DESCRIPTION:filesystem tests
+# Check the XFS filesystems
+bfs201 ltpfstest /test/growfiles/xfs

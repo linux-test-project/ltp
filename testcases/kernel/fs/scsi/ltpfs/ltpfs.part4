@@ -1,0 +1,3 @@
+#DESCRIPTION:filesystem tests
+# Check the Reiser filesystems
+bfs401 ltpfstest /test/growfiles/reiser

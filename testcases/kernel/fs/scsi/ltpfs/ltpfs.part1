@@ -1,0 +1,4 @@
+#DESCRIPTION:filesystem tests
+# Check the EXT2 & NFS filesystems
+bfs101 ltpfstest /test/growfiles/ext2
+bfs102 ltpfstest /test/growfiles/nfs
