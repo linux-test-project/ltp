@@ -133,6 +133,7 @@ main(int ac, char **av)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
 						SIGCHLD, NULL));
 #elif defined(__ia64__)
+			test_cases[ind].child_fn = NULL;
 			TEST(clone2(test_cases[ind].child_fn, test_stack,
 						CHILD_STACK_SIZE, SIGCHLD, NULL,
 						NULL, NULL, NULL));
