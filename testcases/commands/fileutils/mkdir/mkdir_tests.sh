@@ -217,6 +217,6 @@ then
 fi
 
 
-#rm -fr $LTPTMP/tst_mkdir.*
+rm -fr $LTPTMP/tst_mkdir.*
 
 exit $((TFAILCNT))
