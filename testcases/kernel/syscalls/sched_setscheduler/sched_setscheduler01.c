@@ -33,6 +33,8 @@
  *	3.	Call sched_setscheduler with an invalid "param" address,
  *	which lies outside the address space of the process, and expect
  *	EFAULT to be returned.
+ *	4.	Call sched_setscheduler with an invalid priority value
+ *	in "param" and expect EINVAL to be returned
  *
  * USAGE:  <for command-line>
  *  sched_setscheduler01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -60,10 +62,11 @@
 #define INVALID_PID	999999
 
 char *TCID = "sched_setscheduler01";
-int TST_TOTAL = 3;
+int TST_TOTAL = 4;
 extern int Tst_count;
 
 struct sched_param param;
+struct sched_param param1 = { 1 };
 int exp_enos[]={ESRCH, EINVAL, EFAULT, 0};
 
 void setup(void);
@@ -82,7 +85,10 @@ struct test_case_t {
 	{1, SCHED_INVALID, &param, EINVAL},
 
 	/* The param address is invalid - EFAULT */
-	{1, SCHED_OTHER, (struct sched_param *)-1, EFAULT}
+	{1, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
+
+	/* The priority value in param invalid - EINVAL*/
+	{0, SCHED_OTHER, &param1, EINVAL}
 };
 
 int main(int ac, char **av)
