@@ -122,10 +122,10 @@ main()
     local SCENFILES=""
     local PRETTY_PRT=""
 
-    while getopts cd:f:hi:l:m:Nno:pqr:t:x: arg
+    while getopts c:d:f:hi:l:m:Nno:pqr:t:x: arg
     do  case $arg in
         c)       
-	    NUM_PROCS=$((OPTARG))
+	    NUM_PROCS=$(($OPTARG))
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
                    
