@@ -76,7 +76,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define TEMPDIR		"test"
+#define PREAD_TEMPDIR	"test"
 #define K1              2048
 #define NBUFS           1
 
@@ -179,7 +179,7 @@ setup()
 	/*
          * create a temporary directory 
          */
-        if(mkdir(TEMPDIR, 0777) != 0) {
+        if(mkdir(PREAD_TEMPDIR, 0777) != 0) {
                 tst_resm(TFAIL, "mkdir() failed to create"
                                 " test directory");
                 exit(1);
@@ -187,9 +187,9 @@ setup()
         }
 	
 	/* open temporary directory used for test */
-	if ((fd1 = open(TEMPDIR,O_RDONLY)) < 0) {
+	if ((fd1 = open(PREAD_TEMPDIR,O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
-			 TEMPDIR, errno, strerror(errno));
+			 PREAD_TEMPDIR, errno, strerror(errno));
 	}
 
 }
