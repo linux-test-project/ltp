@@ -1,0 +1,14 @@
+tar01
+	tar command with cvf options creates an archive file
+
+tar02
+	tar command with tvf option will list all the files in the archive.
+
+tar03
+	tar command with zcvf options creates an compressed archive files
+
+tar04
+	tar command with xvf options extracts files from an archive file
+
+tar05
+	tar command with zxvf options extracts a compressed archive file
