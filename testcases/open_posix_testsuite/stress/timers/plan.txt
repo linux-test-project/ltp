@@ -1,0 +1,60 @@
+This document defines the plan for stress testing of POSIX Clocks
+and Timers.
+
+First a list of the features that will and will not be tested is given.
+
+Then, an attempt is made to break down the features into possible testing
+scenarios.  Not all of these may be implemented.  The assertions.xml file
+will have the additional detail on which were chosen for implementation.
+
+Features To Be Tested
+=====================
+The following features will be tested:
+ - Repetition of key clocks/timers functions.
+ - Behavior of normal functions under heavy memory usage.
+ - Behavior of normal functions under heavy CPU usage.
+ - Behavior of normal functions under heavy timers usage.
+
+Features Not To Be Tested
+=========================
+API testing of the clocks/timers functions is considered to be done by
+the conformance section.
+Functionality testing is considered to be done by the functional section.
+Stress testing involving specific hardware is not defined at this time.
+Stress testing involving use interaction is not defined at this time.
+
+Test Case Scenarios
+===================
+Some potential test case scenarios are listed after each functional
+area.
+
+Repetition
+----------
+- Repeat key functional tests multiple times.
+- Set clock time forward and backward multiple times.
+- Set up a repeating timer and block the signals to attempt to get a large
+  overrun.
+- Send many (1000s) of signals at the same time.
+
+Heavy Memory
+------------
+- Set memory to 95% and run through key clocks functions.
+- Set memory to 95% and run through key timers functions.
+
+Heavy CPU
+---------
+- Set CPU to 95% and run through key clocks functions.
+- Set CPU to 95% and run through key timers functions.
+
+Heavy Timers
+------------
+- Set up >10,000 timers and run through key clocks functions.
+- Set up >10,000 timers and run through key timers functions.
+
+* Will also perform kernel profiling on select stress tests.
+Contributors:	julie.n.fleischer REMOVE-THIS AT intel DOT com
+		geoffrey.r.gustafson REMOVE-THIS AT intel DOT com
+		rolla.n.selbak REMOVE-THIS AT intel DOT com
+		majid.awad REMOVE-THIS AT intel DOT com
+		salwan.searty REMOVE-THIS AT intel DOT com
+		rddunlap REMOVE-THIS AT osdl DOT org
