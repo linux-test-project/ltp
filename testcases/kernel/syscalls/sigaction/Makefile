@@ -19,7 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
+CFLAGS+=	-I../../../../include -DGLIBC_SIGACTION_BUG=1
 LDFLAGS+=	-lpthread -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
