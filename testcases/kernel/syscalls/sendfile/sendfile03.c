@@ -75,8 +75,8 @@ struct test_case_t {
 	int count;
 	int exp_errno;
 } testcases[] = {
-	{ "Test for EBADF, in_fd = -1", NULL, 4, -1, (void *)0, 0, EBADF},
-	{ "Test for EBADF, out_fd = -1", NULL, -1, 3, (void *)0, 0, EBADF},
+	{ "Test for EBADF, in_fd = -1", NULL, 8, -1, (void *)0, 0, EBADF},
+	{ "Test for EBADF, out_fd = -1", NULL, -1, 7, (void *)0, 0, EBADF},
 	{ "Test for EBADF, in_fd = out_fd = -1", NULL, -1, -1, (void *)0, 0,
 		EBADF}
 };
