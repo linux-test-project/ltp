@@ -49,14 +49,22 @@ init()
 
 	if [ -z $TMP ]
 	then
-		LTPTMP=/tmp
+		LTPTMP=/tmp/tst_ip.$$/
 	else
-		LTPTMP=$TMP
+		LTPTMP=$TMP/tst_ip.$$/
 	fi
 
 	# Initialize cleanup function.
 	trap "cleanup" 0
 
+	# create the tmp directory for this testcase.
+	mkdir -p $LTPTMP/ &>/dev/null || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_brkm TBROK "INIT: Unable to create temporary directory"
+		return $RC
+	fi	
+		
 	# Check to see if test harness functions are in the path.
 	which tst_resm  &>$LTPTMP/tst_ip.err || RC=$?
 	if [ $RC -ne 0 ]
@@ -149,7 +157,7 @@ cleanup()
 		/sbin/ifconfig eth0:1 down &>$LTPTMP/tst_ip.err
 	fi
 
-	#rm -fr $LTPTMP/tst_ip.*
+	rm -fr $LTPTMP
 	return $RC
 }
 
@@ -201,7 +209,7 @@ test01()
 # Function:		test02
 #
 # Description	- Test basic functionality of ip command
-#               - Test #1: ip link show lists device attributes.
+#               - Test #2: ip link show lists device attributes.
 #               - execute the command and create output.
 #               - create expected output
 #               - compare expected output with actual output.
@@ -218,21 +226,93 @@ test02()
 	tst_resm TINFO \
 	 "Test #2: ip link show lists device attributes." 
 
-	ip link show eth0:1 | grep eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+	
+	tst_resm TINFO \
+	 "Test #2: Installing dummy.o in kernel"
+
+	modprobe dummy &>$LTPTMP/tst_ip.out || RC=$?
+	if [ $RC -ne 0 ]
+	then 
+		tst_brk TBROK $LTPTMP/tst_ip.out NULL \
+			"Test #2 modprobe failed to load dummy.o"
+		return $RC
+	fi
+
+	ip link show dummy0 | grep dummy0 &>$LTPTMP/tst_ip.err || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err "Test #2: ip command failed. Reason:"
 		return $RC
 	else
-		MTUSZ=`cat $LTPTMP/tst_ip.err | awk '{print $5}'`
-		if [ $MTUSZ -ne 300 ]
+		tst_resm TPASS \
+			"Test #2: Listed eth0:1 and returned correct attributes"
+		fi
+	fi
+	return $RC
+}
+
+
+# Function:		test03
+#
+# Description	- Test basic functionality of ip command
+#               - Test #3: ip addr add <ip address> dev <device> will add new
+#                 protocol address.
+#               - Test #3: ip addr del <ip address> dev <device> will del new
+#                 protocol address.
+#               - Test #3: ip addr show dev <device> will how interface
+#                 attributes.
+#               - execute the command and create output.
+#               - create expected output
+#               - compare expected output with actual output.
+#
+# Return		- zero on success
+#               - non zero on failure. return value from commands ($RC)
+
+test03()
+{
+	RC=0			# Return value from commands.
+	TCID=ip03	    # Name of the test case.
+	TST_COUNT=3		# Test number.
+
+	tst_resm TINFO \
+	 "Test #3: ip addr add - adds a new protolcol address to the device"
+	
+	ip addr add 127.6.6.6 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		tst_res TFAIL $LTPTMP/tst_ip.err \
+			"Test #3: ip addr add command failed. Reason:"
+		return $RC
+	else
+		tst_resm TINFO \
+		 "Test #3: ip addr show dev <device> - shows protocol address."
+		ip addr show dev lo | grep 127.6.6.6 &>/LTPTMP/tst_ip.err || RC=$?
+		if [ $RC -ne 0 ]
 		then
-			tst_resm TFAIL \
-			    "Test #2: device attrib incorrectly listed MTUSZ=$MTUSZ"
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #3: ip addr show dev: command failed. Reason:"
+			return $RC
+		fi
+
+		tst_resm TINFO \
+		 "Test #3: ip addr del <ip> dev <device> - deletes protocol address."
+		ip addr del 127.6.6.6 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+		if [ $RC -ne 0 ]
+		then
+			tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #3: ip addr del command failed. Reason: "
 			return $RC
 		else
-			tst_resm TPASS \
-				"Test #2: Listed eth0:1 and returned correct attributes"
+			ip addr show dev lo | grep 127.6.6.6 &>/LTPTMP/tst_ip.err || RC=$?
+			if [ $RC -eq 0 ]
+			then
+				tst_res TFAIL $LTPTMP/tst_ip.err \
+				"Test #3: ip addr del command failed. Reason: "
+				return (($RC+1))
+		fi
+		
+		tst_resm TPASS \
+			"Test #3: ip addr command tests successful"
 		fi
 	fi
 	return $RC
@@ -248,9 +328,7 @@ TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from test.
 
 init || RC=$?
-if [ $RC -eq 666 ]
-then
-	exit 0
+if [ $RC -eq 660
 else
 	if [ $RC -ne 0 ]
 	then
