@@ -9,7 +9,7 @@ BASE_VER=1
 ifneq (${BASE_VER},${VER_LEVEL})
 LDLIBS+= -L /lib -L../../../../lib -lepoll -lltp
 else
-LDLIBS+= -lltp
+LDLIBS+= -L../../../../lib -lltp
 endif
 
 
