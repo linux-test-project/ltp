@@ -84,6 +84,8 @@ do_setup()
       sleep $SLEEPTIME
    fi
 
+   $RHOSTNAME = `rsh -n -l root $RHOST hostname`
+
    mkdir -p $TCtmp
 }
 
@@ -103,14 +105,14 @@ do_test()
       rwho -a > $OUTFILE
       HOST=`awk '{print $2}' $OUTFILE|grep $LHOST|cut -f1 -d:|sort -u`
       [[ $HOST = $LHOST ]] || end_testcase "$LHOST is not in rwho outfile"
-      HOST=`awk '{print $2}' $OUTFILE|grep $RHOST|cut -f1 -d:|sort -u`
-      [[ $HOST = $RHOST ]] || end_testcase "$RHOST is not in rwho outfile"
+      HOST=`awk '{print $2}' $OUTFILE|grep $RHOSTNAME|cut -f1 -d:|sort -u`
+      [[ $HOST = $RHOSTNAME ]] || end_testcase "$RHOST is not in rwho outfile"
 
       ruptime -a > $OUTFILE
       HOST=`awk '{print $1}' $OUTFILE|grep $LHOST|sort -u`
       [[ $HOST = $LHOST ]] || end_testcase "$LHOST is not in ruptime outfile"
-      HOST=`awk '{print $1}' $OUTFILE|grep $RHOST|sort -u`
-      [[ $HOST = $RHOST ]] || end_testcase "$RHOST is not in ruptime outfile"
+      HOST=`awk '{print $1}' $OUTFILE|grep $RHOSTNAME|sort -u`
+      [[ $HOST = $RHOSTNAME ]] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
       echo "Test $COUNT of $NUMLOOPS complete"
       (( COUNT = COUNT + 1 ))
