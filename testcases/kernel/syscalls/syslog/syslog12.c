@@ -77,6 +77,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 #include <linux/unistd.h>
 #include "test.h"
 #include "usctest.h"
@@ -125,11 +126,19 @@ static struct test_case_t  tdat[] = {
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
+void
+timeout(int sig)
+{
+	tst_resm(TFAIL, "syslog() timeout after 1s"
+		 " for %s (test broken?)", tdat[testno].desc);
+} 
+
 int
 main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	struct sigaction sa;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -138,6 +147,11 @@ main(int argc, char **argv)
 	}
 
 	setup();
+
+	memset(&sa, 0, sizeof(struct sigaction));
+	sa.sa_handler = timeout;
+	sa.sa_flags = 0; 
+	sigaction(SIGALRM, &sa, NULL);
 
 	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -151,8 +165,12 @@ main(int argc, char **argv)
 				continue;
 			}
 
+			alarm(1); 
+
 			TEST(syslog(tdat[testno].type, tdat[testno].buf,
 					tdat[testno].len));
+
+			alarm(0);
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ( (TEST_RETURN == EXP_RET_VAL) &&
