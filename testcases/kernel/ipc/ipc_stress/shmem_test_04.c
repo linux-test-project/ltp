@@ -194,7 +194,7 @@ int main (int argc, char **argv)
 			 (objtype == MEMOBJ) ? "Anonymous memory" : "File");
 	printf ("\tNumber of loops    = %d\n", nloops);
 	printf ("\tNumber of procs    = %d\n", nprocs);
-	printf ("\tBytes per process  = %d (%dMB)\n", length, length/MB);
+	printf ("\tBytes per process  = %ld (%ldMB)\n", (long)length, (long)length/MB);
 
 	/*
 	 * Determine the number of words for that size.
@@ -245,8 +245,8 @@ int main (int argc, char **argv)
         for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
 		if (Vflg) {
 			if (word && word % WPERMB == 0)
-				printf ("\t[%d] %dMB initialized...\n", 
-					pid, word/WPERMB);
+				printf ("\t[%d] %ldMB initialized...\n", 
+					pid, (long)word/WPERMB);
 		}
 		*wptr = word;
                 checksum += word;
@@ -265,8 +265,8 @@ int main (int argc, char **argv)
         for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
 		if (Vflg) {
 			if (word && word % WPERMB == 0)
-				printf ("\t[%d][%d] %dMB verified...\n", pid, loop,
-					word/WPERMB);
+				printf ("\t[%d][%d] %ldMB verified...\n", pid, loop,
+					(long)word/WPERMB);
 		}
                 if (*wptr != word) {
                         addr = ((intptr_t)wptr & 0x0fffffff)/4096;
