@@ -83,7 +83,7 @@ int main()
                 wjh_f, wjh_ret, errno, strerror(errno));
 #endif
    if (wjh_ret == -1 && errno == EINVAL)
-   {   printf("Test Failed as Expected!\n"); }
+   {   printf("Test Passed\n"); }
    else 
    {   printf("ftruncate(socket) Failed! Should be-> "
                "ret: -1 errno: EINVAL(%d)\n", EINVAL);
@@ -117,7 +117,7 @@ int main()
                 wjh_f, wjh_ret, errno, strerror(errno));
 #endif
    if ((flag == O_RDONLY) && (wjh_ret == -1) && (errno == EINVAL))
-   {   printf("Test failed as Expected!\n"); }
+   {   printf("Test Passed\n"); }
    else if ((flag == O_RDWR))
    {   if (wjh_ret == 0) { printf("Test Succeeded!\n"); }
        else { printf("Truncate should have succeeded, but didn't! ret: "
@@ -142,7 +142,7 @@ int main()
    {   printf("ftruncate(invalid_fd) failed! Should be-> "
                "ret: -1 errno: EBADF(%d)\n", EBADF);
    }
-   else { printf("Test failed as Expected!\n"); }
+   else { printf("Test Passed\n"); }
 
 /* Remove tmp dir and all files in it */
    tst_rmdir();
