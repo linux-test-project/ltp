@@ -63,7 +63,7 @@ int do_exit();
 
 int fail;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -118,7 +118,7 @@ main(int ac, char **av)
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
 		 * has been received before they proceed.
 		 */
-		if ((int)signal(SIGINT, inthandlr) == SIG_ERR) {
+		if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
 			tst_resm(TFAIL, "signal SIGINT failed, errno = %d",
 				 errno);
 			tst_exit();
