@@ -205,6 +205,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(first);
+
 	TEST_CLEANUP;
 
 	/* Remove the tmp dir and all files it */

@@ -79,6 +79,7 @@
 
 char *TCID = "execve03";
 int TST_TOTAL = 6;
+int fileHandle = 0;
 extern int Tst_count;
 
 char nobody_uid[] = "nobody";
@@ -216,7 +217,7 @@ setup()
 
 	sprintf(test_name5, "%s/fake.%d", cwdname, getpid());
 
-	if ((creat(test_name5, 0444)) == -1) {
+	if ((fileHandle = creat(test_name5, 0444)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat(2) FAILED to create temp file");
 	}
 
@@ -251,6 +252,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fileHandle);
+
 	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
