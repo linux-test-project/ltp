@@ -17,6 +17,14 @@ export TMPBASE="/tmp"
 usage() 
 {
 	cat <<-END >&2
+
+	Note: In order to run this test, you must turn on "device mapper"
+	component in kernel (it is under device drivers item when you 
+	run make menuconfig); and you must install userspace supporting  
+	files (libdevmapper and dmsetup). They are in the device-mapper 
+	package. You can download it from http://www.sistina.com. Follow
+	the README/INSTALL file within the package to install it.
+
 	usage: ${0##*/} [ -a part1 ] [ -b part2 ]
              
 	defaults:
