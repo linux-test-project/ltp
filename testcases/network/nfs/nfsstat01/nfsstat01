@@ -41,9 +41,9 @@ $trace_logic
 
 TC=nfsstat01
 TCbin=${TCbin:=`pwd`}
-EXPORTDIR=/tmp
+EXPORTDIR=/tmp/$TC$$
 HOST=`hostname`
-MOUNTDIR=${MOUNTDIR:=/root/tmpmnt}
+MOUNTDIR=${MOUNTDIR:=/mnt/$TC$$}
 CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=2}
 
@@ -71,6 +71,10 @@ $trace_logic
    #Check for nfsd.
    rpcinfo -p | grep nfs
    [[ $? -eq 0 ]] || end_testcase "NFS server daemon (nfsd) is NOT running"
+
+   #Create export directory
+   mkdir -p $EXPORTDIR
+   [[ $? -eq 0 ]] || end_testcase "Could not create $EXPORTDIR"
 
    #Export the data directory on HOST
    /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
@@ -188,6 +192,7 @@ $trace_logic
    rm -rf $MOUNTDIR
    sleep 3
    /usr/sbin/exportfs -u $HOST:$EXPORTDIR 
+   rm -rf $EXPORTDIR
    
 }
 
