@@ -145,7 +145,7 @@ do_child()
 			}
 
 
-			TEST(semctl(sem_id_1, 0, TC[i], arg.buf));
+			TEST(semctl(sem_id_1, 0, TC[i], arg));
 	
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");

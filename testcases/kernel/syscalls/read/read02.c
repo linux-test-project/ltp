@@ -57,6 +57,7 @@
  * RESTRICTIONS
  * 	None
  */
+#define _GNU_SOURCE		/* for O_DIRECTORY */
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
@@ -64,8 +65,6 @@
 #include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
-
-#define	O_DIRECTORY	0100000		/* kludge code */
 
 void cleanup(void);
 void setup(void);
