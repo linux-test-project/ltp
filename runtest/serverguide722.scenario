@@ -1,0 +1,83 @@
+## LTP scenario file for ServerGuide_7.2_2
+## Generated on 2 August 2004.
+##
+## This file should be saved in the ltp directory as
+##	runtest/serverguide722.scenario
+##
+## If there are specific tests you do NOT want to run, 
+## create a file called
+##	runtest/serverguide722.exclude
+##
+## and list those tests there. (In this way you will not
+## need to edit this file every time you re-cerate it.)
+##
+## Run the following to execute the LTP in the standard FIV manner
+##	./run_extended_ltp.sh serverguide722
+##
+
+##
+## LTP tests follow ...
+##
+busybox                 	busybox.sh
+dosfstools              	dosfstools.sh
+e2fsprogs               	e2fsprogs2.sh
+eject                   	eject.sh
+gawk                    	gawk.sh
+glibc                   	glibc.sh
+jpeg                    	jpeg.sh
+libpng                  	testpng.sh
+libstdcxx               	libstdcxx.sh
+mfonts-1                	fontcheck.sh -estf wt-mtsans_j -d /usr/share/fonts/truetype -l "^ja.*"
+mfonts-2                	fontcheck.sh -estf wt-tnrwt_j -d /usr/share/fonts/truetype -l "^ja.*"
+mfonts-3                	notice there is also a manual test that should be run
+modutils-1              	lsmod.sh
+modutils-2              	insmod.sh
+modutils-3              	modprobe.sh
+modutils-4              	notice rmmod is tested by modprobe.sh and insmod.sh
+rpm-1                   	rpm.sh
+rpm-2                   	popt.sh
+unzip                   	unzip.sh
+utempter                	utempter_tests.sh
+util-linux              	util-linux.sh # there is also a manual test that should be run
+xf86-fonts-1            	fontcheck.sh -eastf 100dpi
+xf86-fonts-2            	fontcheck.sh -eastf 75dpi
+zip                     	zip.sh
+zlib                    	zlib.sh
+
+##
+## LTPpkgcheck tests follow ...
+##
+# busybox-links           	-n/a-	Done
+
+##
+## LTPbase tests follow ...
+##
+# kernel                  	-n/a-	Done
+# termcap                 	-n/a-	Done
+
+##
+## Manual tests follow ...
+##
+# dhcpcd                  	manjo	Done
+# fluxbox                 	rcp	Done
+# loadlin                 	china	Done
+# ncurses                 	robb	Done
+# xf86                    	robb	Done
+# xloadimage              	rcp	Done
+
+##
+## Other tests follow ...
+##
+# java-jre                	paulw	Done
+# javatest-bigdecimal     	paulw	Done
+# javatest-jared          	paulw	Done
+# javatest-pthreads       	paulw	Done
+
+##
+## Implicit tests follow ...
+##
+# aaa_skel                	-n/a-	Implicit
+# devs                    	-n/a-	Implicit
+# filesystem              	-n/a-	Implicit
+# kbd-shared              	-n/a-	Implicit
+# syslinux                	-n/a-	Implicit

@@ -1,0 +1,58 @@
+# Exclude list for RDM
+
+# These all seem to be fixed with latest LTP and MCP 3.0 kernel, at least
+# on X86. Some of these were only expected to fail in certain situations:
+#	NFS mounted file shystem
+#	memory constrained system
+#	specific architecture
+#
+# alarm04		# 2586 should be fixed in LTP
+# chown02		# 3126 NFS mounted fs only
+# chown03		# 3201 rdm, fsp, serverguide
+# creat07		# 3129 should be fixed in LTP
+# execve04		# 2587 should be fixed in LTP
+# fchown03		# 3126 NFS mounted fs only
+# fchown04		# 3201 rdm, fsp, serverguide
+# flock03		# 2232 NFS mounted fs only
+# getgroups03		# 3133 testcase problem with tinylogin
+# gethostid01		# 2952 /etc/hosts needs 127.0.0.1 localhost
+# mem01			# 3194 limited memory only systems
+# mem02			# 3194 limited memory only systems
+# ngpt.sh		# MCP bug 8245
+# page01		# 3194 limited memory only systems
+# personality02		# 2224 should be fixed in LTP
+# pread02		# 2230 known glibc failure (commented out for now)
+# pthread_join01	# 2879 LTP problem?
+# pthread_sigmask01	# 2871 Fixed?
+# pwrite02		# 2231 known glibc failure (commented out for now)
+# readlink04		# 2593 should be fixed in LTP
+# recvfrom01		# 2225 should be fixed in 2.4.21 kernel
+# recvmsg01		# 2228 should be fixed in 2.4.21 kernel
+# rename03		# 3280 NFS mounted fs only
+# rename04		# 3280 NFS mounted fs only
+# sem02			# 2227 should be fixed in LTP
+# sigprocmask02		# 2869 (ppc) 3007 (x86) fixed?
+# sigsuspend02		# 2770 fixed?
+# sockioctl01		# 2596 unreproducable
+# stack_space		# 3194 limited memory only systems
+# sysctl??		# 2906 NFS mounted fs only
+
+chown03			# 3201 rdm, fsp, serverguide
+creat07			# 3129 should be fixed in LTP (but apparently not)
+fchown04		# 3201 rdm, fsp, serverguide
+iogen01			# no bug, but bogus output from testcase
+setegid01		# no bug yet, U/I by LTP team
+rwtest01		# LTP bug 8494 (broken testcase in busybox)
+rwtest02		# LTP bug 8494
+rwtest03		# LTP bug 8494
+rwtest04		# LTP bug 8494
+rwtest05		# LTP bug 8494
+linker01		# no bug, but detailed output from tescase is bogus
+nanosleep02		# LTP bug 2229
+mem01			# LTP bug 3194 limited memory only systems
+pty01			# no bug, but detailed output from tescase is bogus
+rpm-1			# gendiff uses find in a way that busybox doesn't support
+dio??			# not supported on serverguire 2_2 kernel
+syslog0?		# syslog01 - 09	fail on non- sysv init nsystem
+syslog10		# syslog10 fail on non- sysv init system
+utempter		# non- sysv init system
