@@ -130,8 +130,8 @@ join_group (int s, char *glist, struct ip_mreq *imr)
               perror("can't join group");
               errors++;
            } else {
-              strcpy (group,inet_ntoa(imr->imr_multiaddr.s_addr));
-              strcpy (itf,inet_ntoa(imr->imr_interface.s_addr));
+              strcpy (group,inet_ntoa(imr->imr_multiaddr));
+              strcpy (itf,inet_ntoa(imr->imr_interface));
               printf ("IPM group: %s added to interface: %s\n",group,itf);
            }
         }
@@ -162,8 +162,8 @@ leave_group (int s, char *glist, struct ip_mreq *imr)
               perror("can't leave group");
               errors++;
            } else {
-              strcpy (group,inet_ntoa(imr->imr_multiaddr.s_addr));
-              strcpy (itf,inet_ntoa(imr->imr_interface.s_addr));
+              strcpy (group,inet_ntoa(imr->imr_multiaddr));
+              strcpy (itf,inet_ntoa(imr->imr_interface));
               printf ("IPM group: %s dropped from interface: %s\n",group,itf);
            }
         }
