@@ -70,15 +70,15 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <time.h>
-#include <sys/file.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <time.h>
+//#include <sys/file.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/param.h>
 #include <sys/signal.h>
+#include <asm/fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include "dataascii.h"
@@ -1503,8 +1503,10 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		}
 		exit(1);
 	}
-	if ( Debug > 2 )
+	if ( Debug > 2 ){
 	    printf("%s%s: %d DEBUG3 %s/%d: no errors, exiting with value of 0\n", Progname, TagName, Pid, __FILE__, __LINE__);
+    }
+
 	exit(0);
 }
 
