@@ -1,3 +1,27 @@
+LTP-20040506
+- Corrected a bug fix, so that the runalltests.sh script ends correctly and returns a
+  0 or 1 depending on PASS/FAIL result.
+- Applied bug fixes from Gernot Payer
+- Changes for parameters passed to aio-sparse for correct offsets and restrictions on sizes.
+- Changes to fix error "invalid argument" on parameters for aiodio_sparse tests
+- Relocated the acl tests to /kernel/fs
+- Added initial drop of DMapi testcases
+- Applied fix from Joe Habermann for the "v" option, where in some cases the
+  routine, sy_mmrw, will pass sbuf.st_size for the msync length without first
+  having done the fstat to populate sbuf.
+- Changes to have the directio run a pre-defined number of iterations for more complete testing
+- Fix too many open filehandle problem on direct io tests
+- Created a second test that checks how huge pages are mapped in 32-bit and
+  64-bit processes.
+- Added new test for testing that a normal mmap cannot be mapped into a
+  high memory region.
+- Added test to map a file to the max size possible.
+- Made the tests 64bot friendly.
+- Added tests for shmat() calls using hugetlb.
+- Corrected tests to allow EACCES or EPERM, which is documented in POSIX.
+- Update open_posix_tests to 1.4.1
+
+
 LTP-20040405
 - Added nptl scenario.
 - Added ltp-run-files.txt file to identify testcases/scripts that are NOT run using runalltests.sh
