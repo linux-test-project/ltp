@@ -132,7 +132,7 @@
 |    0.1     011697  JM    Initial version for AIX 4.2G                |
 |                                                                      |
 +---------------------------------------------------------------------*/
-
+#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <errno.h>
 #include <stdio.h>

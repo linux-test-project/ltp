@@ -143,7 +143,7 @@ int main (int argc, char **argv)
 		printf ("cgid	%d\n",  buf.msg_perm.cgid);
 		printf ("mode	%d\n",  buf.msg_perm.mode);
 #ifdef _LINUX_
-		printf ("seq	%d\n",  buf.msg_perm.__seq);
+		printf ("seq	%ld\n",  (long int)buf.msg_perm.__seq);
 		printf ("key	0x%x\n",  buf.msg_perm.__key);
 #else
 		printf ("seq	%d\n",  buf.msg_perm.seq);
