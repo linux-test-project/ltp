@@ -1,3 +1,17 @@
+LTP-20041105
+- Added extensive syscall testsuite (Ballista)
+- Added new tests to EPoll testsuite
+- Applied long path name patch from Michael Vieths
+- Removed the requirement to have "." listed as the first directory, since it is not a documented requirement.
+- GetDents01 - Used _syscall3() to allow this test to run on non-x86 archs.
+- Applied message formatting patch from Gordon Jin.
+- Applied IA64 specific patch from Jacky Malcles.
+- Fixes from Chris Wright for swapon02 failures
+- Restored the compile settings for Linux2.4/GLIBC2.2 and created a new one for Linux/GLIBC2.3 Removed -fwritable-strings 
+  and -DGLIBC=22 flags from compile.
+- Applied a patch from Zhao Kai that added a pause to allow for testing on installations with improved PAM security.
+
+
 LTP-20041007
 - Applied fix from patch 1037010, submitted by mator.
 - Changes from Kris Wilson on RH specific changes
