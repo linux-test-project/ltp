@@ -1,0 +1,93 @@
+# This is a start at an exclude list for the full fivextra set of tests.
+# It needs to be customized for each individual customer and/or architecture.
+#
+# This is the PPC32 version.
+
+# These all seem to be fixed with latest LTP and MCP 3.0 kernel, at least
+# on PPC32. Some of these were only expected to fail in certain situations:
+#       NFS mounted file shystem
+#       memory constrained system
+#       specific architecture
+
+# These are DevKit.
+pkgchk_binutils             	
+pkgchk_crash                	
+pkgchk_nasm                 	
+binutils                	
+gdb-6.1                 	
+glibc-profile           	
+libtool                 	
+
+
+
+# These packages do not exist at all
+pkgchk_gettyps              	              	
+pkgchk_ucdsnmp 
+pkgchk_make             	
+pkgchk_NVIDIA_GLX           	
+pkgchk_NVIDIA_kernel        	
+pkgchk_xf86-xvesa           	
+pkgchk_mfont_suppl          	         	
+
+# These are out of plan test cases.
+pkgchk_ssmtp                	
+
+# Thess packages configure files are changed when install the test machine.
+pkgchk_pam                  	
+
+# The /etc/securetty changed to /etc/securetty.sav when install the test machine.
+pkgchk_devs                 	
+
+
+
+
+# The font server changed the following packages' encodings.dir and fonts.dir.
+pkgchk_mfont_tt_wt-mtsans_j 	
+pkgchk_mfont_tt_wt-mtsans_k 	
+pkgchk_mfont_tt_wt-mtsans_s 	
+pkgchk_mfont_tt_wt-mtsans_t 	
+pkgchk_mfont_tt_wt-tnrwt_j  	
+pkgchk_mfont_tt_wt-tnrwt_k  	
+pkgchk_mfont_tt_wt-tnrwt_s  	
+pkgchk_mfont_tt_wt-tnrwt_t  	
+
+
+# These are known bugs.
+rwtest03
+rwtest04
+
+# CSDL: Direct IO do not support by this kernel
+dio01
+dio02
+dio03
+dio04
+dio05
+dio06
+
+dio07
+dio08
+dio09
+dio10
+dio11
+dio12
+
+dio13
+dio14
+dio15
+dio16
+dio17
+
+dio18
+dio19
+dio20
+dio21
+
+dio22
+dio23
+dio24
+dio25
+
+dio26
+dio27
+dio28
+
