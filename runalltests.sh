@@ -82,14 +82,6 @@ usage()
 exit
 }
 
-mkdir -p ${TMP}
-
-cd ${TMP}
-if [ $? -ne 0 ]; then
-  echo "could not cd ${TMP} ... exiting"
-  exit
-fi
-
 while getopts cd:f:hi:l:m:Nno:pqr:t:x: arg
 do  case $arg in
     c)	   
@@ -98,7 +90,8 @@ do  case $arg in
                 
     d)      # append $$ to TMP, as it is recursively 
             # removed at end of script.
-            TMPBASE=$OPTARG;;
+            TMPBASE=$OPTARG
+            TMP="${TMPBASE}/runalltests-$$";;
     f)        # Execute user defined set of testcases.
             cmdfile=$OPTARG;;
 
@@ -163,6 +156,14 @@ do  case $arg in
     \?)     usage;;
     esac
 done
+
+mkdir -p ${TMP}
+
+cd ${TMP}
+if [ $? -ne 0 ]; then
+  echo "could not cd ${TMP} ... exiting"
+  exit
+fi
 
 if [ $run_netest -eq 1 ]
 then
