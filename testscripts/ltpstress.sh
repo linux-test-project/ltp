@@ -201,6 +201,9 @@ if [ $memsize -eq 0 ]; then
   check_memsize	
 fi
 
+# Set max processes to unlimited.
+ulimit -u unlimited
+
 if [ $PROC_NUM -gt 0 ];then
   genload --vm $PROC_NUM --vm-bytes 1073741824 2>&1 1>/dev/null &
 fi
