@@ -125,15 +125,8 @@ char 	*priority = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename=NULL;
 	long	start_time;      /* time at start of testcase */
 	int	i;
-
-	if ((filename=getenv("KERNEL"))==NULL)
-        {
-            errno = ENODATA;
-            sys_error("environment variable KERNEL not set",__FILE__, __LINE__);
-        }
 
 	/*
 	 * Setup signal handler & setup alarm so we do not loop forever...

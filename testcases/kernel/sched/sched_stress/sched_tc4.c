@@ -129,18 +129,11 @@ char 	*priority_type = DEFAULT_PRIORITY_TYPE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*filename=NULL;
 	FILE	*statfile;
 	clock_t	start_time;		/* start & stop times */
 	clock_t	stop_time;
 	float	elapsed_time;
 	struct tms timer_info;		/* time accounting info */
-
-	if ((filename=getenv("KERNEL"))==NULL)
-        {
-            errno = ENODATA;
-            sys_error("environment variable KERNEL not set",__FILE__, __LINE__);
-        }
 
 	/*
 	 * Process command line arguments...
