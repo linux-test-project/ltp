@@ -24,7 +24,10 @@
 #  PURPOSE : Exports required environment variables and runs sched_driver
 #
 
+# The command below will only work on x86 setups, b/c other archs keep 
+# their bootfiles other locations.
 export `cat /proc/cmdline | awk {'print $5'}`
+
 export KERNEL=$BOOT_FILE
 export RAWDEV=`df / | grep dev | awk {'print $1'}`
 ./sched_driver -s 0.9 -v
