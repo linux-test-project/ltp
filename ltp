@@ -154,12 +154,6 @@ kernel()
     clear
   fi
 
-  if [ $? -eq "0" ]; then
-    echo pan reported PASS
-  else
-    echo pan reported FAIL
-  fi
-
   rm -rf $TMP
 
   if [ $FAILURES_ONLY -eq 0 ]; then
@@ -305,6 +299,17 @@ networking()
   echo -n "Do you want to run the network filesystem (nfs) tests (Y/N)? >> "
   read nfs
   if [ $nfs == "Y" ] || [ $nfs == "y" ]; then
+   echo -n "  Which version (2/3)? Default is 2. >> "
+   read VERS
+   case $VERS in
+    3)
+   	export VERS
+        ;;
+    *)
+        export VERS=2
+        ;;
+   esac
+
    cat ${LTPROOT}/runtest/nfs >> ${TMP}/alltests
   fi
 
@@ -349,12 +354,6 @@ networking()
     clear
   fi
 
-  if [ $? -eq "0" ]; then
-    echo pan reported PASS
-  else
-    echo pan reported FAIL
-  fi
-  
   rm -rf $TMP
 
   if [ $FAILURES_ONLY -eq 0 ]; then
@@ -467,12 +466,6 @@ diskio()
     clear
   fi
 
-  if [ $? -eq "0" ]; then
-    echo pan reported PASS
-  else
-    echo pan reported FAIL
-  fi
-  
   rm -rf $TMP
 
   if [ $FAILURES_ONLY -eq 0 ]; then
