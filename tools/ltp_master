@@ -35,8 +35,11 @@ $LTP_RUN = "ltprun";
 $LTP_RUN_DIR = "/home/wjhuie/bin/";
 $LTP_CMD_LINE = "chmod +x $LTP_RUN && nohup ./$LTP_RUN &> $LTP_RUN.out &";
 
-print "FIXME: Need to change this to su to root, not login over telnet\n";
-print "       Or run in some other way like ssh\n";
+#print "For this to work root must be able to ftp and telnet into the machines\n";
+#print "Check #LTP_RUN_DIR/ltp_master for root password: $LTP_PASS\n";
+
+#print "FIXME: Need to change this to su to root, not login over telnet\n";
+#print "       Or run in some other way like ssh\n";
 
 if ( $ARGV[0] eq "-f" )
 {

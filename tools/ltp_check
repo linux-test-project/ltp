@@ -3,6 +3,7 @@
 #LTP results gathering script: ltp_check
 #       3/12/02 William Jay Huie (creation)
 #       3/28/02 William Jay Huie minor fixes, increased results parsing
+#       5/01/02 William Jay Huie parsing changes
 #This will log into the LTP_HOST machine, which may be different then the 
 #machine used to run the ltp_master script
 #This script will check for *ltpoutput.tgz files created by the ltprun script
@@ -18,16 +19,20 @@ use Net::FTP ();
 $LTP_RES_DIR="/home/wjhuie/ltp/results";
 #CHANGEME:
 $LTP_HOST="ltp_host.somewhere.org";
+#This is who has the *ltpoutput.tgz files, where the results are uploaded
+#     not necessarially the user id that ran the test
 $LTP_USER="ltp";
 $LTP_PASS="ltp";
 $LTP_LOGFILE="ltp-logfile";
 $LTP_RUN_OUTPUT="ltprun.out";
 $LTP_RUNALL_OUT="runall.output";
 $RESULTS_OUT="results.out";
+$FAILS_OUT="failures.list";
 
 @res_dirs;
 $count = 0;
 $RES = 0;
+$FAILS = 0;
 
 sub download_results()
 {
@@ -57,7 +62,7 @@ sub download_results()
       if ($ftp->get($files[$i]))
       { 
          print "Successful\n"; 
-        $ftp->delete($files[$i]);
+         $ftp->delete($files[$i]);
       }
       else
       { print "FAILED\n"; }
@@ -143,10 +148,12 @@ sub gather_results()
       if (open RES, ">$RESULTS_OUT")
       {
          print ". -> Results stored in $RESULTS_OUT\n";
+         if (!open FAILS, ">$FAILS_OUT") { print "Error opening $FAILS_OUT\n"; }
          $num = 
-#The <<test_start>> doesn't seem to always get into the runalltest.sh output capture
-#So for now relying on the last thing in the ver_linux script to tell us when to stop copying
-#          system("awk '/<<test_start>>/ { exit NR-1; }' $LTP_RUNALL_OUT") / 256;
+#The <<<test_start>>> doesn't always get into the runalltest.sh output capture
+#because some output will appear before its corresponding block
+#So for now relying on last thing from ver_linux to know when to stop copying
+#          system("awk '/<<<test_start>>>/ { exit NR-1; }' $LTP_RUNALL_OUT") / 256;
            system("awk '/bogomips/ { exit NR; }' $LTP_RUNALL_OUT") / 256;
 
          @system_info = `head -n $num $LTP_RUNALL_OUT`;
@@ -163,9 +170,11 @@ sub gather_results()
             if ( $fails[$j] =~ m/^tag=(\w+?) / )
             { 
                $test_case = $1;
+               if (FAILS) { print FAILS "$test_case\n"; }
                print RES "\nTrying to find $test_case output";
                if ( $runall =~ 
-                    m/(^<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms 
+#modified because some output is appearing before tagline
+                    m/((^$test_case.*?)*<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms
                   )
                {
                   print RES "\n-------------------------\n";
@@ -180,7 +189,7 @@ sub gather_results()
                }
             }
          }
-         close(RES);
+         close(RES); close(FAILS);
       }
       else
       { print "Can't open $RESULTS_OUT, test failures are:\n @fails\n"; }

@@ -11,12 +11,15 @@
 #
 #CHANGEME:
 LTP_HOST=ltp_host.somewhere.org
+#This is the user to get the ltp.tgz file from, not who we're running as,
+#     that's ocntrolled by ltp_master
 LTP_USER=ltp
 LTP_PASS=ltp
 LTP_TARFILE=ltp.tgz
 LTP_RUNALL_OUT=runall.output
 LTP_LOGFILE=ltp-logfile
 LTP_RUN_OUTPUT=ltprun.out
+SAR_OUTFILE=sar.data
 
 #This script relies upon the -l ~/ltp/ltp-logfile pan option in runalltests.sh
 #We want to also include in the output tarfile a system_info file 
@@ -80,11 +83,15 @@ build_ltp()
 
 run_ltp()
 {
-   echo "Running LTP testsuite"
    cd ~/ltp
-   rm -f $LTP_RUNALL_OUT $LTP_LOGFILE
+   rm -f $LTP_RUNALL_OUT $LTP_LOGFILE $SAR_OUTFILE
+   echo "Trying to start sar"
+   sar -o $SAR_OUTFILE 60 0 &
+   echo "Running LTP testsuite"
    ./runalltests.sh &> $LTP_RUNALL_OUT 
    echo "Done running tests"
+   killall -9 sadc
+   echo "Killing sar if it is running"
    return 1;
 }   
 
@@ -96,7 +103,7 @@ collect_results()
    echo "Collecting LTP output"
    cd ~/ltp
    cp ~/$LTP_RUN_OUTPUT .
-   tar -czf ~/$LTP_OUTPUT_TAR $LTP_RUNALL_OUT $LTP_LOGFILE $LTP_RUN_OUTPUT
+   tar -czf ~/$LTP_OUTPUT_TAR $LTP_RUNALL_OUT $LTP_LOGFILE $LTP_RUN_OUTPUT $SAR_OUTFILE
 
    if [ -s ~/$LTP_OUTPUT_TAR ]; then 
       echo "LTP output tarfile created sucessfully";
