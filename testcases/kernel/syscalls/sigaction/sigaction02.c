@@ -48,6 +48,7 @@
  *
  *	This test doesn't follow the correct LTP format - PLEASE FIX!
  */
+#define DEBUG 0
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> 
@@ -74,7 +75,8 @@ volatile sig_atomic_t testcase_no;
 void
 handler(int sig)
 {
-	tst_resm(TINFO, "Inside signal handler. Got signal: %d", sig);
+	if (DEBUG)
+		tst_resm(TINFO, "Inside signal handler. Got signal: %d", sig);
 	return;
 }
 
@@ -124,7 +126,9 @@ main(int ac, char **av)
 //test1:
 	testcase_no = 1;
 
-	tst_resm(TINFO, "Enter test %d: set handler for SIGKILL", testcase_no);
+	if (DEBUG)
+		tst_resm(TINFO, "Enter test %d: set handler for SIGKILL", 
+				testcase_no);
 	if ((ret = set_handler(SIGKILL, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -138,7 +142,9 @@ main(int ac, char **av)
 //test2:
 	testcase_no++;
 
-	tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP", testcase_no);
+	if (DEBUG)
+		tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP", 
+				testcase_no);
 	if ((ret = set_handler(SIGSTOP, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -151,7 +157,9 @@ main(int ac, char **av)
 
 //test3:
 	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler for bad signal number",
+	if (DEBUG)
+		tst_resm(TINFO, "Enter test %d: set handler for bad "
+				"signal number",
 		 testcase_no);
 	if ((ret = set_handler(SIGBAD, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
@@ -167,8 +175,9 @@ main(int ac, char **av)
 
 //test4:
 	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler with bad \"act\" param",
-		 testcase_no);
+	if (DEBUG)
+		tst_resm(TINFO, "Enter test %d: set handler with "
+				"bad \"act\" param", testcase_no);
 	if ((ret = set_handler(SIGUSR1, 0, 1)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -181,8 +190,9 @@ main(int ac, char **av)
 
 //test5:
 	testcase_no++;
-	tst_resm(TINFO, "Enter test %d: set handler with bad \"oact\" param",
-		 testcase_no);
+	if (DEBUG)
+		tst_resm(TINFO, "Enter test %d: set handler with "
+				"bad \"oact\" param", testcase_no);
 	if ((ret = set_handler(SIGUSR1, 0, 2)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
