@@ -61,5 +61,5 @@ int tst_kvercmp(int r1, int r2, int r3) {
 	testver = (r1 << 16) + (r2 << 8) + r3;
 	currver = (a1 << 16) + (a2 << 8) + a3;
 
-	return testver - currver;
+	return currver - testver;
 }
