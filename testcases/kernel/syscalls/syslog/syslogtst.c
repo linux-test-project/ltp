@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 		break;
 	case 6:
 		openlog("without log_ndelay", LOG_PID, LOG_USER);
-		fd = open("Makefile", O_RDONLY);
+		fd = open("/etc/syslog.conf", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() without LOG_NDELAY option...\n");
 #endif
