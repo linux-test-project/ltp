@@ -42,7 +42,7 @@ elsif ($fstype =~ /ext3\b/i) {
     $tmp=`mkfs -t ext3 $target`;
     }
 elsif ($fstype =~ /reiserfs\b/i) {
-    $tmp=`mkfs -t reiserfs $target`;
+    $tmp=`mkreiserfs --format 3.6 -f $target`;
     }
 else {
     $tmp=`mkfs $target`;
