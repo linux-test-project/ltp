@@ -45,6 +45,7 @@
  */
 #include <fcntl.h>
 #include <errno.h>
+#include <setjmp.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -57,11 +58,15 @@ int exp_enos[] = {EFAULT, 0};
 intptr_t pipes;
 void setup(void);
 void cleanup(void);
+jmp_buf sig11_recover;
+void sig11_handler(int sig);
+
 
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	struct sigaction sa, osa;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -77,8 +82,21 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+                /* special sig11 case */
+                sa.sa_handler = &sig11_handler;
+                sigemptyset(&sa.sa_mask);
+                sa.sa_flags = 0;
 
+                sigaction(SIGSEGV, NULL, &osa);
+                sigaction(SIGSEGV, &sa, NULL);
+
+                if (setjmp(sig11_recover)) {
+                    TEST_RETURN = -1;
+                    TEST_ERRNO = EFAULT;
+                } else {
 		TEST(pipe((int *)pipes));
+                }
+                sigaction(SIGSEGV, &osa, NULL);
 	
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -113,6 +131,15 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
+/******************************************************************
+ * sig11_handler() - our segfault recover hack
+ ******************************************************************/
+void
+sig11_handler(int sig)
+{
+    longjmp(sig11_recover, 1);
+}
+
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -130,3 +157,4 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
