@@ -1,4 +1,4 @@
-SUBDIRS = fs_inod linktest
+SUBDIRS = fs_inod linktest fs_perms lftest
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
