@@ -1,4 +1,5 @@
 #!/bin/sh
+set +x
 
 # 
 #  07/10/02 - Jeff Martin - martinjn@us.ibm.com: Added instance and 
@@ -61,13 +62,18 @@ do  case $arg in
             $LTPROOT/testcases/bin/genload --hdd 10 --hdd-files \
             2>&1 1>/dev/null & ;;
 
-    l)      logfile="-l $OPTARG";;
+    l)      
+            if [ ${OPTARG:0:1} != "/" ]; then
+                echo "-l option requires an absolute path"
+                exit 1
+            fi
+            logfile="-l $OPTARG";;
 
     m)        
             $LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
             2>&1 1>/dev/null & ;;
 
-	p)		pretty_prt=" -p ";;
+    p)      pretty_prt=" -p ";;
 
     r)      LTPROOT=$OPTARG;;
 
