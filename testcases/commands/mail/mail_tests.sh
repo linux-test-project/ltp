@@ -25,11 +25,12 @@
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Jan 07 2003 - Created - Manoj Iyer.
+#				Jan 09 2003 - Added Test #2 #3 #4 and #5.
 #
 #! /bin/sh
 
 
-export TST_TOTAL=1
+export TST_TOTAL=5
 
 if [[ -z $LTPTMP && -z $TMPBASE ]]
 then
@@ -45,8 +46,26 @@ else
     LTPBIN=$LTPROOT/testcases/bin
 fi
 
+RC=0
+
+# check if the user mail_test exists on this system.
+# if not add that user mail_test, will removed before exiting test.
+RC=$(awk '/^mail_test/ {print 1}' /etc/passwd)
+if [ -z $RC ]
+then
+    $LTPBIN/tst_resm TINFO "Test #4: Adding temporary user mail_test"
+    useradd mail_test &>$LTPTMP/tst_mail.out || RC=$?
+    if [ $RC -ne 0 ]
+    then
+        $LTPBIN/tst_brk TBROK $LTPTMP/tst_mail.out NULL \
+            "Test INIT: Failed adding user mail_test. Reason:"
+        exit 1
+    fi
+fi
+
 # Set return code RC variable to 0, it will be set with a non-zero return code
 # in case of error. Set TFAILCNT to 0, increment if there occures a failure.
+
 
 TFAILCNT=0
 RC=0
@@ -68,31 +87,227 @@ This is a test email.
 EOF
 
 mail -s "Test" root@localhost < $LTPTMP/tst_mail.in \
-	&>$LTPTMP/tst_mail.out || RC=$?
+    &>$LTPTMP/tst_mail.out || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
-		"Test #1: mail command failed. Reason: "
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
+        "Test #1: mail command failed. Reason: "
     TFAILCNT=$((TFAILCNT+1))
 else
-	# check if root received a new email with Test as subject
-	# but wait for the mail to arrive.
-	
-	sleep 10s
-	echo "d" | mail -u root &>$LTPTMP/tst_mail.res
-	mailsub=$(awk '/^>N/ {print $9}' $LTPTMP/tst_mail.res)
-	if [ $mailsub == "\"Test\"" ]
-	then
-		$LTPBIN/tst_resm TPASS "Test #1: Mail was send to root & was received"
-	else
-		$LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
-			"Test #1: Mail send to root, but was not received"
-		TFAILCNT=$((TFAILCNT+1))
-	fi
+    # check if root received a new email with Test as subject
+    # but wait for the mail to arrive.
+    
+    sleep 10s
+    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    mailsub=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
+    if [ $mailsub -ne 0 ]
+    then
+        $LTPBIN/tst_resm TPASS \
+            "Test #1: Mail was send to root & was received"
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
+            "Test #1: Mail send to root, but was not received"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
 fi
+
+
+# Test #2
+# Test that mail user@bad-domain will result in a warning from the mailer
+# deamon that the domain does not exist. 
+
+export TCID=mail02
+export TST_COUNT=2
+RC=0
+RC1=0
+RC2=0
+
+$LTPBIN/tst_resm TINFO \
+    "Test #2: mail user@bad-domain will result in failure"
+$LTPBIN/tst_resm TINFO "Test #2: to deliver the mail. Mailer deamon should"
+$LTPBIN/tst_resm TINFO "Test #2: report this failure."
+
+cat > $LTPTMP/tst_mail.in <<EOF
+This is a test email.
+EOF
+
+mail -s "Test" root@this_domain_does_not_exist < $LTPTMP/tst_mail.in \
+     &>$LTPTMP/tst_mail.out || RC=$?
+if [ $RC -ne 0 ]
+then
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
+        "Test #2: mail command failed. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
+else
+    # check if Mailer-Deamon reported any delivery failure.    
+    # but wait for the mail to arrive first, sleep 5s.
+    sleep 5s
+    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    RC1=$(awk '/^>N/ {print match($3, "Mailer-Daemon")}' $LTPTMP/tst_mail.res)
+    RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
+        $LTPTMP/tst_mail.res)
+    if [[ -z $RC1 && -z $RC2 ]]
+    then
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \ 
+        "Test #2: No new mail for root. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    else
+        if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+        then
+            $LTPBIN/tst_resm TPASS \
+                "Test #2: Mailer-Deamon reported delivery failure"
+        else
+            $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
+            "Test #2: Mailer-Deamon failed to report delivery failure. Reason:"
+            TFAILCNT=$((TFAILCNT+1))
+        fi
+    fi
+fi
+    
+
+# Test #3
+# Test that mail non_existant_user@localhost will result in delivery failure.
+# Mailer-Deamon will report this failure.
+
+export TCID=mail03
+export TST_COUNT=3
+RC=0
+RC1=0
+RC2=0
+
+$LTPBIN/tst_resm TINFO \
+    "Test #3: mail non_existant_user@localhost will fail"
+$LTPBIN/tst_resm TINFO "Test #3: to deliver the mail. Mailer deamon should"
+$LTPBIN/tst_resm TINFO "Test #3: report this failure."
+
+cat > $LTPTMP/tst_mail.in <<EOF
+This is a test email.
+EOF
+
+mail -s "Test" non_existant_userr@localhost < $LTPTMP/tst_mail.in \
+     &>$LTPTMP/tst_mail.out || RC=$?
+if [ $RC -ne 0 ]
+then
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
+        "Test #3: mail command failed. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
+else
+    # check if Mailer-Deamon reported any delivery failure.    
+    # but wait for the mail to arrive first, sleep 5s.
+    sleep 5s
+    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    RC1=$(awk '/^>N/ {print match($3, "Mailer-Daemon")}' $LTPTMP/tst_mail.res)
+    RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
+        $LTPTMP/tst_mail.res)
+    if [[ -z $RC1 && -z $RC2 ]]
+    then
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \ 
+        "Test #2: No new mail for root. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    else
+        if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+        then
+            $LTPBIN/tst_resm TPASS \
+                "Test #3: Mailer-Deamon reported delivery failure"
+        else
+            $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
+            "Test #3: Mailer-Deamon failed to report delivery failure. Reason:"
+            TFAILCNT=$((TFAILCNT+1))
+        fi
+    fi
+fi
+
+# Test #4 
+# Test that mail -c user@domain option will carbon copy that user.
+
+export TCID=mail04
+export TST_COUNT=4
+RC=0
+
+$LTPBIN/tst_resm TINFO "Test #4: Test that mail -c user@domain will"
+$LTPBIN/tst_resm TINFO "Test #4: carbon copy user@domain"
+
+# send mail to root and carbon copy mail_test 
+mail -s "Test" root@localhost -c mail_test@localhost < \
+    $LTPTMP/tst_mail.in &>$LTPTMP/tst_mail.out || RC=$?
+if [ $RC -ne 0 ]
+then
+     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
+        "Test #4: mail command failed. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
+else
+    # Check if mail_test received the mail and 
+    # also if root received the main copy of the email.
+    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
+    echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
+    RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
+    if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+    then
+        $LTPBIN/tst_resm TPASS \
+            "Test #4: Mail was carbon copied to user mail_test"
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
+            "Test #4: mail failed to carbon copy user mail_test"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
+fi
+
+
+# Test #5 
+# Test that mail -b user@domain option will blind carbon copy that user.
+
+export TCID=mail05
+export TST_COUNT=5
+RC=0
+
+$LTPBIN/tst_resm TINFO "Test #5: Test that mail -b user@domain will"
+$LTPBIN/tst_resm TINFO "Test #5: blind carbon copy user@domain"
+
+# send mail to root and carbon copy mail_test 
+mail -s "Test" root@localhost -c mail_test@localhost < \
+    $LTPTMP/tst_mail.in &>$LTPTMP/tst_mail.out || RC=$?
+if [ $RC -ne 0 ]
+then
+     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
+        "Test #5: mail command failed. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
+else
+    # Check if mail_test received the mail and 
+    # also if root received the main copy of the email.
+    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
+    echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
+    RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
+    if [[ $RC1 -ne 0 && $RC2 -ne 0 ]]
+    then
+        $LTPBIN/tst_resm TPASS \
+            "Test #5: Mail was carbon copied to user mail_test"
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
+            "Test #5: mail failed to carbon copy user mail_test"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
+fi
+    
 
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
-#rm -fr $LTPTMP/tst_mail* 
+rm -fr $LTPTMP/tst_mail* 
+
+# check if the user mail_test exists on this system.
+# if yes delete user mail_test
+RC=$(awk '/^mail_test/ {print 1}' /etc/passwd)
+if [ $RC -eq 0 ]
+then
+    $LTPBIN/tst_resm TINFO "Test #4: Adding temporary user mail_test"
+    userdel mail_test &>$LTPTMP/tst_mail.out || RC=$?
+    if [ $RC -ne 0 ]
+    then
+        $LTPBIN/tst_res TBROK $LTPTMP/tst_mail.out NULL \
+            "Test CLEAN: Failed adding user mail_test. Reason:"
+        exit 1
+    fi
+fi
 
 exit $TFAILCNT
