@@ -1,4 +1,4 @@
-SUBDIRS = pth_str pthread_attr_destroy
+SUBDIRS = `ls -d * | grep pth`
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
