@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: ulimit01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: ulimit01.c,v 1.2 2001/09/25 16:44:41 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -136,7 +136,6 @@ struct limits_t {
 } Scenarios[] = {
 
   { UL_GETFSIZE, -1, 0, 0 },
-  { UL_SETFSIZE, -1, 0, 1 },	/* negative test */
   { UL_SETFSIZE, -2, 1, 0 },	/* case case: must be after UL_GETFSIZE */
   { UL_SETFSIZE, -2, 2, 0 },	/* case case: must be after UL_GETFSIZE */
 
