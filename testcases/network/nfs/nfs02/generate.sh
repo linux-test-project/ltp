@@ -33,6 +33,7 @@ mkdir dat 2>/dev/null
 
 for the_file in `echo smallsize.fil medsize.fil largesize.fil maxsize.fil`
 do
+  rm -f dat/$the_file	
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> dat/$the_file
