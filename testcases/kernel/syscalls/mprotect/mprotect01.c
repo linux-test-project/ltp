@@ -180,11 +180,13 @@ setup1()
 void
 setup2()
 {
-	addr2 = (char *)malloc(PAGESIZE - 1);
+
+	addr2 = (char *)malloc(PAGESIZE);
 	if (addr2 == NULL) {
 		tst_brkm(TINFO, cleanup, "malloc failed");
 		/*NOTREACHED*/
-	}
+	}        
+	addr2++; /* Ensure addr2 is not page aligned */
 }
 
 /*
