@@ -34,7 +34,16 @@
 *   File: pthserv.c	Version: 1.3		Last update: 5/19/94 08:55:35
 */
 /******************************************************************************/
-/* File:        pthserv.c                                                     *//*                                                                            *//* Description: Read a stream socket one line at a time and write each line   *//*              back to the sender.                                           *//*                                                                            *//* History:     Contact - 06/21/2001 - Manoj Iyeri, IBM Austin                *//*                                                                            *//* Usage:       pthcli [port number]                                          *//*                                                                            *//******************************************************************************/
+/* File:        pthserv.c                                                     */
+/*                                                                            */
+/* Description: Read a stream socket one line at a time and write each line   */
+/*              back to the sender.                                           */
+/*                                                                            */
+/* History:     Contact - 06/21/2001 - Manoj Iyeri, IBM Austin                */
+/*                                                                            */
+/* Usage:       pthcli [port number]                                          */
+/*                                                                            */
+/******************************************************************************/
 
 /*
     TCP server 
