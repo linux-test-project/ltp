@@ -27,7 +27,7 @@
 
 #Set variables NAME and TST_TOTAL
 NAME=pthread_kill01
-export TST_TOTAL=6
+export TST_TOTAL=4
 
 check_return_code()
 {
