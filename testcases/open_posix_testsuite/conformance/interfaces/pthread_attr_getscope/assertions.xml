@@ -1,0 +1,12 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31485:31490">
+pthread_attr_getscope shall get the inheritsched attribute in the attr argument
+The contentionscope attribute may have the values PTHREAD_SCOPE_SYSTEM, signifying system scheduling contention scope, or PTHREAD_SCOPE_PROCESS, signifying process scheduling contention scope. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31492:31492">
+If succesful, the pthread_attr_getscope shall return zero.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:31493:31493">
+If fail, the pthread_attr_getscope shall return an error number.
+  </assertion>
+</assertions>

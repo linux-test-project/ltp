@@ -1,0 +1,18 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33138:33139">
+  pthread_getcpuclockid() function shall return in the clock ID of the CPU-time
+  clock of the thread specified by thread_id, if the thread specified by
+  thread_id exists.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:33141:33141">
+  If success, it returns zero. 
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:33144:33145">
+  If fails, an error number shall be returned to indicate the error.
+  The pthread_getcpuclockid() may fail if:
+  [ESRCH] The value specified by thread_id does not refer to an existing 
+  thread. 
+  </assertion>
+</assertions>

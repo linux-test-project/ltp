@@ -1,0 +1,30 @@
+<assertions>
+
+  <assertion id="1" tag="ref:XSH6:35336:35338">
+  pthread_setschedprio( ) function shall set the scheduling priority 
+  for the thread whose thread ID is given by thread to the value given by prio. 
+  See Scheduling Policies (on page 44) for a description on how this function 
+  call affects the ordering of the thread in the thread list for its
+  new priority.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35339:34340">
+  If the pthread_setschedprio( ) function fails, the scheduling priority 
+  of the target thread shall not be changed. 
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:33343:33344">
+  If successful, the pthread_setschedprio( ) function shall return zero; 
+  otherwise, an error number shall be returned to indicate the error.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:1885:1890">
+  If a thread whose policy or priority has been modified by pthread_setschedprio( ) 
+  is a running thread or is runnable, the effect on its position in the thread list 
+  depends on the direction of the modification, as follows:
+	a. If the priority is raised, the thread becomes the tail of the thread list.
+	b. If the priority is unchanged, the thread does not change position in the 
+	thread list.
+	c. If the priority is lowered, the thread becomes the head of the thread list.
+  </assertion>
+</assertions>

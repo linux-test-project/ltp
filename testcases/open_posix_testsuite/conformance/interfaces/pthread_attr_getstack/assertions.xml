@@ -1,0 +1,14 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31532:31533">
+  The pthread_attr_getstack() shall get the thread creation stack attributes
+  stackaddr and stacksize in the attr ojbect.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31541:31541">
+   If success, it returns zero. 
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:31554:31554">
+   Shall not return an error code of [EINTR]
+  </assertion>
+</assertions>

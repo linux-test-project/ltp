@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31485:31486">
+pthread_attr_setscope shall set the contentionscope attribute in the attr object.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31487:31489">
+The contentionscope attribute may have the values PTHREAD_SCOPE_SYSTEM, signifying system scheduling contention scope, or PTHREAD_SCOPE_PROCESS, signifying process scheduling contention scope. 
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:31492:31492">
+If successful, pthread_attr_setscope functions return zero.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:31493:31496">
+If fail, an error number shall be returned to indicate the error.
+[EINVAL] The value of contentionscope is not valid.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:31497:31497">
+If fail, an error number shall be returned to indicate the error.
+[ENOTSUP] An attempt was made to set the attribute to an unsupported value.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:31498:31498">
+Shall not return an error code of [EINTR]
+  </assertion>
+</assertions>

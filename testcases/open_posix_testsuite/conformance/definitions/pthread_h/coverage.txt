@@ -1,0 +1,30 @@
+This document defines the coverage for
+conformance/definitions/pthread_h
+testing
+
+
+Assertion #	Covered?	Notes
+1		YES
+2		YES  		The symbols with tags associated with them 
+				usually fail on my implementaion of linux (e.g.
+ 				BAR, XSI, etc.)
+3		YES		#2,3,10,11,12 fail on my implemention of linux
+				#2 and 3 with BAR tag, #12 with
+				SPI tag, and #11 and 12 with no tag.
+4		YES
+5		YES
+6		YES
+7		YES
+8		YES
+9		YES
+10		YES
+11		YES
+12		YES
+13		YES
+14		YES
+15		YES
+16		YES
+17		YES
+18		YES
+19		YES
+20		YES

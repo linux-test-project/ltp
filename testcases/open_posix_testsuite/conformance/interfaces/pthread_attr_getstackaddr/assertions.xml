@@ -1,0 +1,18 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31585:31586">
+  The pthread_attr_getstackaddr() shall get the thread creation stackaddr 
+  attribute in the attr ojbect.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31590:31591 ref:XSH6:31592:31593">
+   If success, it returns zero and stores the stackaddr attribute value
+   in stackaddr.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:31595:31596">
+   No errors are defined.
+   The functions shall not return an error code of [EINTR].
+  </assertion>
+  
+  </assertion>
+</assertions>

@@ -1,0 +1,52 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31532:31533">
+  The pthread_attr_setstack() shall set the thread creation stack attributes
+  stackaddr and stacksize in the attr ojbect.
+  The stack attributes specify the area of storage to be used for the created
+  thread's stack. 
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31534:31534">
+  The stack attributes specify the area of storage to be used for the created
+  thread's stack. 
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:31534:31538">
+  The base of the storage shall be stackaddr, and the size of the storage
+  shall be stacksize bytes. The stacksize shall be at least 
+  {PTHREAD_STACK_MIN}.  The stackaddr shall be aligned appropriately to be 
+  used as a stack. 
+  </assertion>
+
+  <assertion id="4" tag="ref:XSH6:31538:31539">
+  All pages within the stack described by stackaddr and stacksize shall be
+  both readable and writable by the thread.
+  </assertion>
+  
+  <assertion id="5" tag="ref:XSH6:31541:31541">
+   If success, it returns zero. 
+  </assertion>
+  
+  <assertion id="6" tag="ref:XSH6:31541:31542 ref:XSH6:31547:31548">
+   if fail, an error number shall be returned to indicate the error.
+   The pthread_attr_setstack() function shall fail if:
+   [EINVAL] The value of stacksize is less than {PTHREAD_STACK_MIN} 
+   or exceeds an implementation-defined limit.
+  </assertion>
+
+  <assertion id="7" tag="ref:XSH6:31550:31551">
+   The function may fail if:
+   [EINVAL] The value of stackaddr does not have proper alignment to
+   be used as a stack or if (stackaddr + stacksize) lacks proper alignment.
+  </assertion>
+
+  <assertion id="8" tag="ref:XSH6:31552:31553">
+   The function may fail if:
+   [EACCES] The stack page(s) described by stackaddr and stacksize are not
+   both readable and writable by the thread.
+  </assertion>
+
+  <assertion id="9" tag="ref:XSH6:31554:31554">
+   Shall not return an error code of [EINTR]
+  </assertion>
+</assertions>
