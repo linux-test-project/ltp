@@ -27,6 +27,9 @@
 
 export CFLAGS = -Wall $(CROSS_CFLAGS)
 
+menuconfig:
+	@./ltpmenu
+
 all: libltp.a 
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C testcases $@
@@ -39,7 +42,7 @@ all: libltp.a
 install: all
 	@$(MAKE) -C testcases install
 	@$(MAKE) -C tools install
-	./IDcheck.sh
+	@./IDcheck.sh
 
 libltp.a:
 	@$(MAKE) -C lib $@
