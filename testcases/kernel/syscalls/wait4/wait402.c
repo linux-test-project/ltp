@@ -120,7 +120,7 @@ main(int ac, char **av)
 			/*
 			 * sleep for a moment to let us do the test
 			 */
-			sleep(1);
+			sleep(2);
 			exit(0);
 		} else {		/* this is the parent */
 			/*
@@ -183,6 +183,7 @@ setup(void)
 void
 cleanup(void)
 {
+	wait(NULL);
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
