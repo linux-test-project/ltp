@@ -62,7 +62,7 @@ syslog_case8()
                 old_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
 
                 # syslogtst has to be called with one more additional facility argument(1-6)
-                ./syslogtst 8 $facility_no 2>/dev/null
+                syslogtst 8 $facility_no 2>/dev/null
                 if [[ $? -ne 0 ]]; then
                         status_flag=1
                         return

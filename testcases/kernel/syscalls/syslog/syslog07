@@ -56,7 +56,7 @@ syslog_case7()
         debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
 
         # Call syslogtst. It will send the messages of all levels.
-        ./syslogtst 7 2>/dev/null
+        syslogtst 7 2>/dev/null
         if [[ $? -ne 0 ]]; then
                 status_flag=1
                 return

@@ -50,7 +50,7 @@ syslog_case10()
         allow1=`grep -c "syslogtst:10 error level is logged" /var/log/messages`
         donot_allow1=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
 
-        ./syslogtst 10 2>/dev/null
+        syslogtst 10 2>/dev/null
         if [[ $? -ne 0 ]]; then
                 status_flag=1
                 return

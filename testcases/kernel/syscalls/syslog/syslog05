@@ -51,7 +51,7 @@ syslog_case5()
         oldvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
         # syslogtst does the disabling of /dev/syslog, sends the message and
         # enables /dev/syslog.
-        ./syslogtst 5 2>/dev/null
+        syslogtst 5 2>/dev/null
         if [[ $? -ne 0 ]]; then
                 status_flag=1
                 return

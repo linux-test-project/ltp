@@ -44,7 +44,7 @@ syslog_case4()
 	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
 
         # Run syslogtst in the background and get the process id.
-        ./syslogtst 4 2>/dev/null &
+        syslogtst 4 2>/dev/null &
         log_pid=$!
         wait $log_pid
         if [[ $? -ne 0 ]]; then
