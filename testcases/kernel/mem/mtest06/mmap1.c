@@ -280,6 +280,7 @@ mkfile(int size	/* size of the temp file that needs to be created.    */ )
     }
     else
     {
+	unlink(template);
         if (lseek(fd,  (size - 1), SEEK_SET) == -1)
         {
             perror("mkfile(): lseek()");
