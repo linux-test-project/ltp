@@ -1,3 +1,5 @@
+$Id: INSTALL,v 1.2 2000/05/08 20:31:30 alaffin Exp $
+
 Building and Installation of Test Tools.
 
 At the time of release, simplicity of the released code was considered
@@ -9,6 +11,6 @@ build process reflects that.  Simply:
 cd <tool>
 make
 
-At the time of release, <tool> is one of doio or pan.  The build process
-builds the tools in question and leaves them among the sources.  There
-are no install routines, yet.
+At the time of release, <tool> is doio.  The build process builds the
+tools in question and leaves them among the sources.  There are no
+install routines, yet.
