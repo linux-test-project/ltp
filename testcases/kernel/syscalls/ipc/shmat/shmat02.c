@@ -50,10 +50,14 @@
  */
 
 #include "../lib/ipcshm.h"
+#include <pwd.h>
 
 char *TCID = "shmat02";
 int TST_TOTAL = 3;
 extern int Tst_count;
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 int exp_enos[] = {EINVAL, EACCES, 0};	/* 0 terminated list of */
 					/* expected errnos      */
@@ -137,6 +141,19 @@ main(int ac, char **av)
 void
 setup(void)
 {
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
