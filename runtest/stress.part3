@@ -62,13 +62,6 @@ chroot03 chroot03
 chroot04 chroot04
 
 
-clone01 clone01
-clone02 clone02
-clone03 clone03
-clone04 clone04
-clone05 clone05
-clone06 clone06
-
 close01 close01
 close02 close02
 close08 close08
@@ -222,7 +215,6 @@ getgid03 getgid03
 
 getgroups01 getgroups01
 getgroups02 getgroups02
-getgroups03 getgroups03
 getgroups04 getgroups04
 
 gethostid01 gethostid01
@@ -276,9 +268,6 @@ gettimeofday02 gettimeofday02
 getuid01 getuid01
 getuid02 getuid02
 getuid03 getuid03
-
-ioctl01 ioctl01 -D /dev/ttyS0
-ioctl02 ioctl02 -D /dev/ttyS0
 
 ioperm01 ioperm01
 ioperm02 ioperm02
@@ -376,16 +365,6 @@ mmap09 mmap09
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
 
-#
-# These tests require an unmounted block device
-# to run correctly. Please see individual test
-# code for more information.
-#
-#mount01 mount01 -D /dev/...
-#mount02 mount02 -D /dev/...
-#mount03 mount03 -D /dev/...
-#mount04 mount04 -D /dev/...
-
 mprotect01 mprotect01
 mprotect02 mprotect02
 mprotect03 mprotect03
@@ -441,7 +420,6 @@ munmap02 munmap02
 munmap03 munmap03
 
 nanosleep01 nanosleep01
-nanosleep02 nanosleep02
 nanosleep03 nanosleep03
 nanosleep04 nanosleep04
 
@@ -472,7 +450,6 @@ pause01 pause01
 pause02 pause02
 pause03 pause03
 
-personality01 personality01
 personality02 personality02
 
 pipe01 pipe01
@@ -798,19 +775,6 @@ sysfs06 sysfs06
 sysinfo01 sysinfo01
 sysinfo02 sysinfo02
 
-syslog01 syslog01
-syslog02 syslog02
-syslog03 syslog03
-syslog04 syslog04
-syslog05 syslog05
-syslog06 syslog06
-syslog07 syslog07
-syslog08 syslog08
-syslog09 syslog09
-syslog10 syslog10
-syslog11 syslog11
-syslog12 syslog12
-
 time01 time01
 time02 time02
 
@@ -842,19 +806,6 @@ unlink05 unlink05
 unlink06 unlink06
 unlink07 unlink07
 unlink08 unlink08
-
-#
-# These tests require an unmounted block device
-# to run correctly. Please see individual test
-# code for more information.
-#
-#umount01 umount01 -D /dev/...
-#umount02 umount02 -D /dev/...
-#umount03 umount03 -D /dev/...
-#umount04 umount04 -D /dev/...
-
-ustat01 ustat01
-ustat02 ustat02
 
 utime01 utime01
 utime01A symlink01 -T utime01
@@ -902,7 +853,10 @@ writev04 writev04
 writev05 writev05
 
 pty01 pty01
-ptem01 ptem01
 hangup01 hangup01
 
+mc_cmds mc_cmds
+mc_opts export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts
+rpc01 export TCbin=$LTPROOT/testcases/network/rpc/rpc01; rpc01
+perf_lan export TCbin=$LTPROOT/testcases/network/tcp_cmds/perf_lan; perf_lan
 
