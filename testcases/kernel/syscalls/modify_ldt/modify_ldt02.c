@@ -56,8 +56,8 @@
 #ifdef MODIFY_LDT_SPECIALCASE
 #define modify_ldt_ldt_s user_desc
 #else
- #if !defined modify_ldt_ldt_s
- struct modify_ldt_ldt_s
+ #ifndef modify_ldt_ldt_s
+ typedef struct modify_ldt_ldt_t
  {
    unsigned int entry_number;
    unsigned long int base_addr;
@@ -69,7 +69,9 @@
    unsigned int seg_not_present:1;
    unsigned int useable:1;
    unsigned int empty:25;
- };
+ }modify_ldt_s;
+ #else
+ #define modify_ldt_s modify_ldt_ldt_s
  #endif
 #endif
 
@@ -172,7 +174,7 @@ main(int ac, char **av)
 int
 create_segment(void *seg, size_t size)
 {
-	struct modify_ldt_ldt_s entry;
+	modify_ldt_s entry;
 
 	entry.entry_number = 0;
 	entry.base_addr = (unsigned long)seg;
