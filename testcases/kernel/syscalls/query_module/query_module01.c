@@ -380,6 +380,10 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
+	if (tst_kvercmp(2,5,48) >= 0)
+		tst_brkm(TCONF, tst_exit, "This test will not work on "
+				"kernels after 2.5.48");
+
 	/* Initialize longmodname to LONGMODNAMECHAR character */
 	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
 
