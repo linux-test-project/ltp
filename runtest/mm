@@ -15,6 +15,9 @@ mtest01w mtest01 -p80 -w
 mtest05 mmstress
 mtest06 mmap1
 
+mem01 mem01
+mem02 mem02
+
 page01 page01
 page02 page02
 
