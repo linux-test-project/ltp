@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.1 2000/09/08 15:48:17 nstraz Exp $ */
+/* $Id: fork05.c,v 1.2 2000/09/08 16:26:52 nstraz Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -87,9 +87,10 @@
  *
  *
  *********************************************************/
-#include <stdlib.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 struct modify_ldt_ldt_s
 {
@@ -160,8 +161,8 @@ main ()
 
       exit (lo != 99);
   } else {
-      waitpid (pid, &res);
+      waitpid (pid, &res, 0);
   }
 
-  return res;
+  return WIFSIGNALED(res);
 }
