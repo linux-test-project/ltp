@@ -7,7 +7,7 @@ LTP-20020909
 - runtest/syscalls:
         a.Removed the {} from the environment    ( Robbie Williamson )
           variables
-        b.Comment out stime01, since it sets     ( Paul Larson, David Barrera )
+        b.Comment out stime01, since it sets     ( David Barrera )
           the system time forward and could
           cause problems with several other
           tests if it's running at the same
@@ -26,10 +26,19 @@ LTP-20020909
 - Applied patch for adding some missing includes ( Andreas Jaeger )
   to remove warnings about missing prototypes
 - Applied x86-64 patch for ldd01                 ( Andreas Jaeger )
-- Applied uClibc patches.                        ( Steven J. Hill )
-- Applied string formatting patches.             ( Xiao Feng Shi )
+- Fix for ar01 hang when filesystem is full      ( Paul Larson )
+- Make ltp run with uClibc                       ( Steven J. Hill )
+- Fix compiler warnings in various tests         ( Xiao Feng Shi )
+- Clean up many of the the mktemp warnings       ( Paul Larson )
+  And use mkstemp in tst_tmpdir()
 - Applied pan/logfile/tools patches.             ( William J. Huie )
-- Applied fcntl test patches.                    ( Matthew Wilcox )   
+- Use regular instead of mandatory locks in      ( Matthew Wilcox )   
+  fcntl09, fcntl10, fcntl11 to fix with NFS
+- Fix pids in fcntl11, fcntl19, fcntl20, fcntl21 ( Paul Larson )
+  to be pid_t instead of short for 2.5 compat
+- Add command line options to runalltests.sh to  ( Randy Hron, 
+  allow setting of various pan options and         Paul Larson,
+  changing the temp directory                      Nate Straz )
 
 
 LTP-20020813
