@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-#
 #   Copyright (c) International Business Machines  Corp., 2001
 #
 #   This program is free software;  you can redistribute it and/or modify
@@ -18,14 +17,23 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 #
+#   FILE: generate.sh
 #
-#  FILE   : sched_stress
+#   PURPOSE: Creates dat for use in network file transfer tests.
 #
-#  PURPOSE : Exports required environment variables and runs sched_driver
+#   AUTHOR: Robbie Williamson (robbiew@us.ibm.com)
 #
+############################################################################
 
-# The command below will only work on x86 setups, b/c other archs keep 
-# their bootfiles other locations.
-export KERNEL=./sched_datafile
-export RAWDEV=`df / | grep dev | awk {'print $1'}`
-./sched_driver -s 0.9 -v
+
+COUNT=0
+LIMIT=120000
+
+  rm -f ./sched.datafile	
+  while [ $COUNT -le $LIMIT ]
+  do
+    echo -n "AAAAAAAAAA" >> sched.datafile
+    COUNT=$(( $COUNT + 1 ))
+  done
+  chmod 666 sched.datafile
+
