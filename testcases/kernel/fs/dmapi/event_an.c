@@ -381,7 +381,6 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_ERR, "Parent handle NOT root! (%lld vs %d)\n", ino1, ROOT_INODE);
 					varStatus = DMSTAT_FAIL;
 			 	} else if (ino2 != statfs.st_ino) {
-					system("ls -li /oops/* > a_dir");
 					DMLOG_PRINT(DMLVL_ERR, "Entry handle NOT correct! (%lld vs %d)\n", ino2, statfs.st_ino);
 					varStatus = DMSTAT_FAIL;
 				} else if (dm_handle_cmp(hanp1, hlen1, ahanp1, ahlen1) != 0) {
@@ -723,7 +722,6 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_ERR, "Parent handle NOT root! (%lld vs %d)\n", ino1, ROOT_INODE);
 					varStatus = DMSTAT_FAIL;
 			 	} else if (ino2 != statfs.st_ino) {
-					system("ls -li /oops/* > a_file");
 					DMLOG_PRINT(DMLVL_ERR, "Entry handle NOT correct! (%lld vs %d)\n", ino2, statfs.st_ino);
 					varStatus = DMSTAT_FAIL;
 				} else if (dm_handle_cmp(hanp1, hlen1, ahanp1, ahlen1) != 0) {
@@ -1273,7 +1271,6 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_ERR, "Parent handle NOT root! (%lld vs %d)\n", ino1, ROOT_INODE);
 					varStatus = DMSTAT_FAIL;
 			 	} else if (ino2 != statfs.st_ino) {
-					system("ls -li /oops/* > a_dir");
 					DMLOG_PRINT(DMLVL_ERR, "Entry handle NOT correct! (%lld vs %d)\n", ino2, statfs.st_ino);
 					varStatus = DMSTAT_FAIL;
 				} else if (dm_handle_cmp(hanp1, hlen1, ahanp1, ahlen1) != 0) {
@@ -1791,7 +1788,6 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_ERR, "Parent handle NOT root! (%lld vs %d)\n", ino1, ROOT_INODE);
 					varStatus = DMSTAT_FAIL;
 			 	} else if (ino2 != statfs.st_ino) {
-					system("ls -li /oops/* > a_file");
 					DMLOG_PRINT(DMLVL_ERR, "Entry handle NOT correct! (%lld vs %d)\n", ino2, statfs.st_ino);
 					varStatus = DMSTAT_FAIL;
 				} else if (dm_handle_cmp(hanp1, hlen1, ahanp1, ahlen1) != 0) {

@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -398,7 +398,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 0);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 0);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -519,7 +519,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -576,7 +576,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -641,7 +641,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -689,7 +689,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -745,7 +745,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -801,7 +801,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -858,7 +858,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -924,7 +924,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 0);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 0);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -989,7 +989,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -1045,7 +1045,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -1102,7 +1102,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
@@ -1167,7 +1167,7 @@ int main(int argc, char **argv)
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %d %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;

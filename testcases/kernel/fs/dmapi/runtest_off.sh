@@ -19,22 +19,24 @@
 
 #
 # This script, and hence the invoked test cases, need to be run from a 
-# directory that is NOT on the DMAPI-enabled partition being tested
+# directory that is NOT on the DMAPI-enabled partition (/dmtest below) being 
+# tested; also, the DMAPI-enabled partition must be a disk (/dev/hda7 below)
+# preformatted for JFS via mkfs.fs
 #
-./event_sn -loglevel 4 -termlevel 4 -logname event_sn.log -mtpt /oops -device /dev/hda7
-./event_sd -loglevel 4 -termlevel 4 -logname event_sd.log -mtpt /oops -device /dev/hda7
-./event_an -loglevel 4 -termlevel 4 -logname event_an.log -mtpt /oops -device /dev/hda7
+./event_sn -loglevel 4 -termlevel 4 -logname event_sn.log -mtpt /dmtest -device /dev/hda7
+./event_sd -loglevel 4 -termlevel 4 -logname event_sd.log -mtpt /dmtest -device /dev/hda7
+./event_an -loglevel 4 -termlevel 4 -logname event_an.log -mtpt /dmtest -device /dev/hda7
 # For true results, run pmr_pre, reboot and run pmr_post to test persistent
 # managed regions across reboots; however, the tests will work when run in
 # succession as below
-./pmr_pre -loglevel 4 -termlevel 4 -logname pmr_pre.log -mtpt /oops -device /dev/hda7
-./pmr_post -loglevel 4 -termlevel 4 -logname pmr_post.log -mtpt /oops -device /dev/hda7
-./event_am -loglevel 4 -termlevel 4 -logname event_am.log -mtpt /oops -device /dev/hda7
-./invis -loglevel 4 -termlevel 4 -logname invis.log -mtpt /oops -device /dev/hda7
-./event_us -loglevel 4 -termlevel 4 -logname event_us.log -mtpt /oops -device /dev/hda7
-./disp -loglevel 4 -termlevel 4 -logname disp.log -mtpt /oops -device /dev/hda7
-./objref -loglevel 4 -termlevel 4 -logname objref.log -mtpt /oops -device /dev/hda7
-./mount -loglevel 4 -termlevel 4 -logname mount.log -mtpt /oops -device /dev/hda7
-./token -loglevel 4 -termlevel 4 -logname token.log -mtpt /oops -device /dev/hda7
-./right -loglevel 4 -termlevel 4 -logname right.log -mtpt /oops -device /dev/hda7
-./mmap -loglevel 4 -termlevel 4 -logname mmap.log -mtpt /oops -device /dev/hda7
+./pmr_pre -loglevel 4 -termlevel 4 -logname pmr_pre.log -mtpt /dmtest -device /dev/hda7
+./pmr_post -loglevel 4 -termlevel 4 -logname pmr_post.log -mtpt /dmtest -device /dev/hda7
+./event_am -loglevel 4 -termlevel 4 -logname event_am.log -mtpt /dmtest -device /dev/hda7
+./invis -loglevel 4 -termlevel 4 -logname invis.log -mtpt /dmtest -device /dev/hda7
+./event_us -loglevel 4 -termlevel 4 -logname event_us.log -mtpt /dmtest -device /dev/hda7
+./disp -loglevel 4 -termlevel 4 -logname disp.log -mtpt /dmtest -device /dev/hda7
+./objref -loglevel 4 -termlevel 4 -logname objref.log -mtpt /dmtest -device /dev/hda7
+./mount -loglevel 4 -termlevel 4 -logname mount.log -mtpt /dmtest -device /dev/hda7
+./token -loglevel 4 -termlevel 4 -logname token.log -mtpt /dmtest -device /dev/hda7
+./right -loglevel 4 -termlevel 4 -logname right.log -mtpt /dmtest -device /dev/hda7
+./mmap -loglevel 4 -termlevel 4 -logname mmap.log -mtpt /dmtest -device /dev/hda7

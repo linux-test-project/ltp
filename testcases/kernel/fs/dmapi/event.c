@@ -1255,7 +1255,7 @@ void *Thread(void *parm)
 
 	EVENT_DELIVERY_DELAY;
 
-	switch ((int)parm) {
+	switch ((long)parm) {
 		case GET_EVENTS_BASE + 2:
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid buflen)\n", szFuncName);
