@@ -58,6 +58,9 @@
 #include "test.h"
 #include "usctest.h"
 
+char *TCID="diotest02";		 		 /* Test program identifier.    */
+int TST_TOTAL=1;		 		 /* Total number of test conditions */
+
 #ifdef O_DIRECT
 
 #define	BUFSIZE	4096
@@ -137,7 +140,7 @@ main(int argc, char *argv[])
 	int	iter = 100;		/* Iterations. Default 100 */
 	int	bufsize = BUFSIZE;	/* Buffer size. Default 4k */
 	off64_t	offset = 0;		/* Offset. Default 0 */
-	int	i, action, fd_r, fd_w;
+	int	i, action, fd_r, fd_w, fd1;
 	int	fail_count = 0, total = 0, failed = 0;
 	char	filename[LEN];
 
@@ -174,6 +177,14 @@ main(int argc, char *argv[])
 			prg_usage();
 		}
 	}
+
+        /* Test for filesystem support of O_DIRECT */
+        if ((fd1 = open(filename, O_DIRECT, 0666)) < 0) {
+                 tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
+                 tst_exit();
+        }else{
+                close(fd1);
+        }
 
 	/* Testblock-1: Read with Direct IO, Write without */
 	action = READ_DIRECT;
@@ -254,9 +265,6 @@ main(int argc, char *argv[])
 }
 
 #else /* O_DIRECT */
-
-char *TCID="diotest02";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
 
 int
 main() {

@@ -47,10 +47,14 @@
 #include <sys/fcntl.h>
 #include <errno.h>
 
+#include "diotest_routines.h"
+
 #include "test.h"
 #include "usctest.h"
 
-#include "diotest_routines.h"
+char *TCID="diotest01";		 		 /* Test program identifier.    */
+int TST_TOTAL=1;		 		 /* Total number of test conditions */
+
 
 #ifdef O_DIRECT
 
@@ -91,7 +95,7 @@ main(int argc, char *argv[])
 	int	numblks = NBLKS;	/* Number of blocks. Default 20 */
 	char	infile[LEN];		/* Input file. Default "infile" */
 	char	outfile[LEN];		/* Output file. Default "outfile" */
-	int	fd1, fd2;
+	int	fd, fd1, fd2;
 	int	i, n, offset;
 	char	*buf;
 
@@ -125,6 +129,14 @@ main(int argc, char *argv[])
 		default:
 			prg_usage();
 		}
+	}
+
+	/* Test for filesystem support of O_DIRECT */
+	if ((fd = open(infile, O_DIRECT, 0666)) < 0) {
+	         tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
+                 tst_exit();
+	}else{
+		close(fd);
 	}
 
 	/* Open files */
@@ -194,13 +206,10 @@ main(int argc, char *argv[])
 
 #else /* O_DIRECT */
 
-char *TCID="diotest01";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
-
 int
 main() {
 
 		 tst_resm(TCONF,"O_DIRECT is not defined.");
-		 return 0;
+		 tst_exit(); 
 }
 #endif /* O_DIRECT */

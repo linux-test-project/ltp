@@ -71,6 +71,9 @@
 #include "test.h"
 #include "usctest.h"
 
+char *TCID="diotest4";		 		 /* Test program identifier.    */
+int TST_TOTAL=1;		 		 /* Total number of test conditions */
+
 #ifdef O_DIRECT
 
 #define BUFSIZE 	4096
@@ -176,7 +179,7 @@ main(int argc, char *argv[])
         int     bufsize = BUFSIZE;
         int     count, ret; 
 	int     offset;
-        int     fd, newfd;
+        int     fd, newfd, fd1;
         int     i, l_fail = 0, fail_count = 0, total = 0;
 	int	failed = 0;
      	int	pgsz = getpagesize();
@@ -202,6 +205,14 @@ main(int argc, char *argv[])
 	act.sa_handler = SIG_IGN;
 	(void) sigaction(SIGXFSZ, &act, NULL);
         sprintf(filename,"testdata-4.%d", getpid()); 
+
+        /* Test for filesystem support of O_DIRECT */
+        if ((fd1 = open(filename, O_DIRECT, 0666)) < 0) {
+                 tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
+                 tst_exit();
+        }else{
+                close(fd1);
+        }
 
 	/* Open file and fill, allocate for buffer */
         if ((fd = open(filename, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
@@ -576,9 +587,6 @@ main(int argc, char *argv[])
 }
 
 #else /* O_DIRECT */
-
-char *TCID="diotest4";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
 
 int
 main() {
