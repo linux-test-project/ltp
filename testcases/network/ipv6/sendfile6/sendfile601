@@ -38,12 +38,12 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TC=sendfile
+TC=sendfile6
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
 TCdat=${TCdat:-$TCsrc/datafiles}
-TCtmp=${TCtmp:-$TCsrc/tmp}
+TCtmp=${TCtmp:-$TCsrc/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="testsf_c6"
 REMOTE_EXEC="testsf_s6"
@@ -67,17 +67,17 @@ do_test()
    echo "$this_file: doing $0."
   
    mkdir -p $TCtmp
- 
-   rsh -n -l root $RHOST "$TCsrc/SF_Server6 $RHOST $TCsrc"
+   PORT=$$ 
+   rsh -n -l root $RHOST "$TCsrc/SF_Server6 $RHOST $PORT $TCsrc"
    sleep 10
-   PID=$(rsh -n -l root $RHOST "ps -ef "|grep $REMOTE_EXEC | grep -v grep|awk '{print $2}')
+   PID=$(rsh -n -l root $RHOST "ps -ef "|grep $REMOTE_EXEC | grep $PORT | grep -v grep|awk '{print $2}')
    [ "$PID" ] || end_testcase "Could not start server"
 
    for clnt_fname in $FILES
       do
 	 serv_fname=$TCdat/$clnt_fname
 	 SIZE=`ls -l $serv_fname|awk '{print $5}'`
-	 echo "Starting $EXECUTABLES $RHOST Client_filename Server_filename Size "
+	 echo "Starting $EXECUTABLES $RHOST $PORT Client_filename Server_filename Size "
   
 	 $TCsrc/$EXECUTABLES $RHOST $TCtmp/$clnt_fname $serv_fname $SIZE 
 	 RetVal=$?
@@ -104,6 +104,9 @@ do_test()
 do_cleanup()
 {
    $trace_logic
+   PID=$(rsh -n -l root $RHOST "ps -ef|grep \"$REMOTE_EXEC $RHOST\""| grep $PORT|
+      grep -v grep|grep -v vi|awk '{print $2}')
+   [ "$PID" ] && rsh -n -l root $RHOST kill -9 $PID
       
    rm -rf $TCtmp
 }
@@ -123,9 +126,6 @@ end_testcase()
    $trace_logic
    echo "$this_file: doing $0."
 
-   PID=$(rsh -n -l root $RHOST "ps -ef|grep \"$REMOTE_EXEC $RHOST\""|
-      grep -v grep|grep -v vi|awk '{print $2}')
-   [ "$PID" ] && rsh -n -l root $RHOST kill -9 $PID
    
    # Call other cleanup functions
    [[ $CLEANUP = "ON" ]] && do_cleanup

@@ -32,7 +32,7 @@ char *argv[];
   int gai;
   struct  addrinfo *hp;
   struct  addrinfo hints;
-
+  int port;
 
   /* open socket to server */
   if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
@@ -40,8 +40,8 @@ char *argv[];
 	exit(1);
   }
 
-  clnt_fname = argv[2]; /* filename to create */
-  serv_fname = argv[3]; /* filename to request */
+  clnt_fname = argv[3]; /* filename to create */
+  serv_fname = argv[4]; /* filename to request */
 
   /* prepare to copy file from server to local machine */
   if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {
@@ -50,14 +50,14 @@ char *argv[];
 	exit(1);
   }
 
-  lp = argv[4]; /* get file size */
+  lp = argv[5]; /* get file size */
   flen = strtol(lp,(char **)NULL,10);
 	
 
   /* initialize request info: */
   rbuf[0] = '\0';
   sp = &rbuf[0];
-  sp = strcat(sp, argv[4]); /* file size */
+  sp = strcat(sp, argv[5]); /* file size */
   sp = strcat(sp, "=");
   sp = strcat(sp, serv_fname); /* requested file */
 
@@ -71,7 +71,8 @@ char *argv[];
 
   /* initialize server info to make the connection */
   memcpy(&sa, hp->ai_addr, hp->ai_addrlen);
-  sa.sin6_port = htons(12345);
+  port=atoi(argv[2]);
+  sa.sin6_port = htons(port);
 
   if ( connect(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
         printf("connect error = %d\n", errno);

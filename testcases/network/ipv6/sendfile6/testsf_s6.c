@@ -51,6 +51,7 @@ char *argv[];
   int chunks=0;
   off_t *offset; 
   char nbuf[81];
+  int port;
  
   /* open socket */
   if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
@@ -70,7 +71,8 @@ char *argv[];
 
   /* server IP and port */
   memcpy(&sa, hp->ai_addr, hp->ai_addrlen);
-  sa.sin6_port = htons(12345);
+  port=atoi(argv[2]);
+  sa.sin6_port = htons(port);
 
   /* bind IP and port to socket */
   if ( bind(s, (struct sockaddr_in6*) &sa, sizeof(sa) ) < 0 ) {
