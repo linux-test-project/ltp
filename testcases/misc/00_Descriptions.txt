@@ -41,14 +41,6 @@ crash02
 	        Running as user nobody and with all your filesystems
 	        remounted to readonly may be wise..
 
-Disktest 
-
-	Does repeated accesses to a filespec and optionally writes to, reads from,
-       	and  verifies  the  data.  By default, disktest makes assumptions about the running
-       	environment which allows for a quick start of IO generation.  However, Disktest has
-       	a  large  number  of command line options which can be used to adapt the test for a
-       	variety of uses including data integraty, medium integraty, perforamance, and  sim-
-       	ple application simulation.
 
 f00f
 
