@@ -1,0 +1,121 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2002
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ *  FILE        : sem02.c
+ *  DESCRIPTION : The application creates several threads using pthread_create().
+ *  One thread performs a semop() with the SEM_UNDO flag set. The change in
+ *  sempaphore value performed by that semop should be "undone" only when the 
+ *  last pthread exits.
+ *  HISTORY:
+ *    03/06/2002 Robbie Williamson (robbiew@us.ibm.com)
+ *      -ported
+ *
+ */
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <pthread.h>
+
+#define KEY IPC_PRIVATE
+
+#define NUMTHREADS 2
+
+void *retval[NUMTHREADS]; 
+void * waiter(void *);
+void * poster(void *);
+
+struct sembuf Psembuf = {0, -1, SEM_UNDO};
+struct sembuf Vsembuf = {0, 1, SEM_UNDO};
+
+int sem_id;
+int err_ret;  /* This is used to determine PASS/FAIL status */
+int main()
+{
+    int i, rc;
+
+    pthread_t pt[NUMTHREADS];
+    pthread_attr_t attr;
+
+    /* Create the semaphore set */
+    sem_id = semget(KEY, 1, 0666 | IPC_CREAT);
+    if (sem_id < 0)
+    {
+		 printf ("semget failed, errno = %d\n", errno);
+		 exit (1);
+    }
+    
+    /* setup the attributes of the thread        */
+    /* set the scope to be system to make sure the threads compete on a  */
+    /* global scale for cpu   */
+    pthread_attr_init(&attr);
+    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+
+    err_ret=1;  /* Set initial error value to 1 */ 
+    /* Create the threads */
+    for (i=0; i<NUMTHREADS; i++)
+    {
+		 if (i == 0)
+		     rc = pthread_create(&pt[i], &attr, waiter, retval[i]);
+		 else
+		     rc = pthread_create(&pt[i], &attr, poster, retval[i]);
+    }
+
+    /* Sleep long enough to see that the other threads do what they are supposed to do */
+    sleep(20);
+    return(err_ret);
+}
+
+
+/* This thread sleeps 10 seconds then waits on the semaphore.  As long
+   as someone has posted on the semaphore, and no undo has taken
+   place, the semop should complete and we'll print "Waiter done
+   waiting." */
+void * waiter(void * foo)
+{
+    int pid;
+    pid = getpid();
+
+    printf ("Waiter, pid = %d\n", pid);
+    sleep(10);
+
+    printf("Waiter waiting, pid = %d\n", pid);
+    semop(sem_id, &Psembuf, 1);
+    printf("Waiter done waiting\n");
+    err_ret=0; /* If the message above is displayed, the test is a PASS */
+    pthread_exit(0);
+}
+
+/* This thread immediately posts on the semaphore and then immediately
+   exits.  If the *thread* exits, the undo should not happen, and the
+   waiter thread which will start waiting on it in 10 seconds, should
+   still get it.   */
+void * poster(void * foo)
+{
+    int pid;
+   
+    pid = getpid();
+    printf ("Poster, pid = %d, posting\n", pid);
+    semop(sem_id, &Vsembuf, 1);
+    printf ("Poster posted\n");
+    printf ("Poster exiting\n");
+    
+    pthread_exit(0);
+}
