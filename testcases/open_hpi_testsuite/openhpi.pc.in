@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: OpenHPI
+Description: Implementation of SA Forum's Hardware Platform Interface
+Version: @VERSION@
+Requires: glib
+Libs: -L${libdir} -l@HPI_PKG@
+Cflags: -I${includedir}/@HPI_PKG@ 

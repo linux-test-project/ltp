@@ -1,0 +1,61 @@
+<!-- ...................................................................... -->
+<!-- $Id: openhpi-manual.sgml,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ................................................ -->
+<!-- 
+        Copyright (C) Intel Corp 2003
+        Copyright (C) IBM Corp 2003
+
+        Authors:
+            Andrea Bruger
+            Sean Dague 
+
+        This material may be distributed only subject to the terms and 
+        conditions set forth in the Open Publication License, v1.0 or later 
+        (the latest version is currently available at 
+        http://www.opencontent.org/openpub/).  Distribution of substantively 
+        modified version of this document is prohibited without the explicit 
+        permission of the copyright holder.
+
+        Other company, product, or service names may be trademarks or service 
+        marks of others.
+-->
+
+<!doctype book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+<!ENTITY % legal PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "legal.dtd">
+%legal;
+
+<!ENTITY % authors PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "authors.dtd">
+%authors;
+
+<!ENTITY % revisions PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "revisions.dtd">
+%revisions;
+
+<!ENTITY chapter1 SYSTEM "bookinfo.sgml">
+<!ENTITY chapter2 SYSTEM "introduction.sgml">
+<!ENTITY chapter3 SYSTEM "obtaining.sgml">
+<!ENTITY chapter4 SYSTEM "sahpi_breakdown.sgml">
+<!ENTITY chapter5 SYSTEM "openhpi_highlevel.sgml">
+<!ENTITY chapter6 SYSTEM "openhpi_structure.sgml">
+<!ENTITY chapter7 SYSTEM "plugin_usage.sgml">
+<!ENTITY chapter8 SYSTEM "plugin_guide.sgml">
+<!ENTITY appendix SYSTEM "appendix.sgml">
+]>
+
+<!--
+        This file should only contain the structure of the HLD document.
+        All content should be included using an entity reference.
+-->
+
+<book>
+        &chapter1;
+        &chapter2;
+        &chapter3;
+        &chapter4;
+        &chapter5;
+        &chapter6;
+        &chapter7;
+        &chapter8;
+        &appendix;
+</book>
+      
+

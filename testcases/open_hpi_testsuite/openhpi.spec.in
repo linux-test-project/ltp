@@ -1,0 +1,119 @@
+%define prefix /usr
+
+Name: @HPI_PKG@
+Summary: @HPI_PKG@ - implementation of SAForum Hardware Platform Interface 
+Version: @VERSION@
+Release: 1
+Copyright: BSD
+URL: http://openhpi.sourceforge.net
+Group: Utilities
+Vendor: OpenHPI Project
+Packager: TariqX
+Source: @HPI_PKG@-@VERSION@.tar.gz
+Buildroot: /var/tmp/@HPI_PKG@-root
+BuildRequires: pkgconfig glib-devel
+BuildRequires: docbook-utils docbook-utils-pdf docbook-dtd41-sgml
+Summary: Library that provides SAForum's HPI
+Group: Utilities
+AutoReq: no
+Requires: libc.so.6 libglib-1.2.so.0 libpthread.so.0
+
+%package devel
+Summary: Development files for HPI
+Group: Utilities
+AutoReq: yes
+Requires: openhpi 
+Requires: pkgconfig
+
+%package clients
+Summary: HPI command line applications
+Group: Utilities
+AutoReq: yes
+
+%description 
+This package contains an implementation of Service Availability Forum's 
+HPI specification.  It includes support for multiple different types of
+hardware including: IPMI, IBM Blade Center (via SNMP), Linux Watchdog devices,
+and Sysfs based systems.
+
+%description devel
+Contains additional files need for a developer to create applications
+and/or middleware that depends uses the Service Availability Forum's
+HPI specification
+
+%description clients
+This package contains hpi command line utilities 
+
+###################################################
+%prep
+###################################################
+
+###################################################
+%setup
+###################################################
+
+###################################################
+%build
+###################################################
+./configure @ac_configure_args@ --sysconfdir=/etc \
+    --localstatedir=/var --prefix=%{prefix}
+make
+make -C docs/hld pdf-am
+make -C docs/hld openhpi-manual/book1.html
+
+###################################################
+%install
+###################################################
+if
+  [ ! -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]
+then
+  rm -rf $RPM_BUILD_ROOT
+fi
+make DESTDIR=$RPM_BUILD_ROOT install
+mkdir -p $RPM_BUILD_ROOT/etc/@HPI_PKG@
+mkdir -p $RPM_BUILD_ROOT/var/lib/@HPI_PKG@
+install -C -m 644 examples/openhpi.conf.example $RPM_BUILD_ROOT/etc/@HPI_PKG@/@HPI_PKG@.conf
+%post
+
+###################################################
+%files
+###################################################
+%defattr(-,root,root)
+%doc README COPYING ChangeLog
+%doc docs/hld/*pdf
+%doc docs/hld/openhpi-manual
+%config /etc/@HPI_PKG@/*
+%dir /var/lib/@HPI_PKG@
+%{prefix}/lib/libopen*
+%{prefix}/lib/@HPI_PKG@/lib*
+# dummy*
+#%{prefix}/lib/@HPI_PKG@/libsysfs*
+#%{prefix}/lib/@HPI_PKG@/libsnmp_bc*
+#%{prefix}/lib/@HPI_PKG@/libwatchdog*
+#%{prefix}/lib/@HPI_PKG@/libipmidirect*
+#%{prefix}/lib/@HPI_PKG@/libipmi*
+
+###################################################
+%files devel
+###################################################
+%defattr(-,root,root)
+%dir %{prefix}/include/@HPI_PKG@
+%{prefix}/include/@HPI_PKG@/*h
+%{prefix}/lib/pkgconfig/openhpi.pc
+
+###################################################
+%files clients
+###################################################
+%defattr(-,root,root)
+%{prefix}/bin/hpi*
+
+###################################################
+%clean
+###################################################
+if
+    [ -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]
+then
+    rm -rf $RPM_BUILD_ROOT
+fi
+rm -rf $RPM_BUILD_DIR/@HPI_PKG@-@VERSION@
+

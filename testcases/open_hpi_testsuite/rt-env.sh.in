@@ -1,0 +1,9 @@
+#!/bin/sh -x
+#
+OPENHPI_CONF=@abs_top_srcdir@/examples/openhpi.conf
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:@abs_top_builddir@/src/.libs 
+PLUGIN_ROOT=@abs_top_builddir@/src/plugins
+OPENHPI_PATH=${PLUGIN_ROOT}/dummy:${PLUGIN_ROOT}/ipmi:${PLUGIN_ROOT}/ipmidirect:${PLUGIN_ROOT}/watchdog:${PLUGIN_ROOT}/sysfs:${PLUGIN_ROOT}/text_remote:${PLUGIN_ROOT}/snmp_bc:${LTDL_LIBRARY_PATH}
+CSCOPE_DB=@abs_top_srcdir@/cscope.out
+
+export OPENHPI_CONF LD_LIBRARY_PATH OPENHPI_PATH CSCOPE_DB
