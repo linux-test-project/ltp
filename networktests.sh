@@ -16,15 +16,15 @@ export PASSWD=
 # ---*********************************---
 
 
-export TMPDIR=/tmp
+export TMPDIR=/tmp/netpan-$$
 
 cat  ${LTPROOT}/runtest/tcp_cmds > $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/multicast >> $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/rpc >> $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/nfs >> $TMPDIR/network.tests
 
-mkdir /tmp/netpan-$$
-cd /tmp/netpan-$$
+mkdir $TMPDIR
+cd $TMPDIR
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
  
@@ -38,4 +38,4 @@ else
   echo pan reported FAIL
 fi
 
-rm -f ${TMPDIR}/network.tests
+rm -rf ${TMPDIR}
