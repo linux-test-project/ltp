@@ -22,6 +22,15 @@
 /* Apr-13-2001	Created: Manoj Iyer, IBM Austin. 			      */
 /*		These tests are adapted from AIX vmm FVT tests.		      */
 /* 									      */
+/* Oct-24-2001  Modified. 						      */
+/*		- freed buffers that were allocated.			      */
+/*		- closed removed files. This will remove the disk full error  */
+/*		- use pthread_exit in case of theads instead of return. This  */
+/*		  was really bad to use return!                               */
+/*		- created usage function.                                     */
+/*		- pthread_join checks for thread exit status reported by      */
+/*		  pthread_exit()                                              */
+/*								              */
 /* Purpose:	Performing General Stress with Race conditions        	      */
 /* 									      */
 /******************************************************************************/
@@ -59,6 +68,12 @@
 			fprintf(stderr, "%s: option -%c ", prog, opt); \
 			fprintf(stderr, "requires and argument\n");\
 			    } while(0)
+
+#define PTHREAD_EXIT(val)      do {\
+			exit_val = val; \
+		        pthread_exit((void *)&exit_val); \
+                                  } while (0)
+
 #define MAXTEST		7
 
 /* GLOBAL VARIABLES							      */
@@ -95,6 +110,30 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
     else
         fprintf(stdout, "Test ended, success\n");
     exit(0);
+}
+
+
+/******************************************************************************/
+/*                                                                            */
+/* Function:    usage                                                         */
+/*                                                                            */
+/* Description: prints the usage function.                                    */
+/*                                                                            */
+/* Input:	char *progname - name of this executable.                     */
+/*                                                                            */
+/* Return:      exit 1						              */
+/*                                                                            */
+/******************************************************************************/
+static void 
+usage(char *progname)		/* name of this program                       */
+{
+    fprintf(stderr, "usage:%s -n test -t time -v [-V]\n", *progname);
+    fprintf(stderr, "\t-n the test number, if no test number\n"
+		    "\t   is specified all the tests will be run\n");
+    fprintf(stderr, "\t-t specify the time in hours\n");
+    fprintf(stderr, "\t-v verbose output\n");
+    fprintf(stderr, "\t-V program version\n");
+    exit(1);
 }
 
 
@@ -154,6 +193,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 		 	   * (NUMPAGES/NUMTHREAD) * local_args[2]);
     char    read_from_addr;	 /* address to which read from page is done   */
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
+    volatile int exit_val = 0;   /* exit value of the pthread. 0 - success    */
 
     while (wait_thread);
 
@@ -170,7 +210,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 		     start_addr);
 	 fflush(NULL);
     }
-    return;
+    PTHREAD_EXIT(0);
 }
 
 
@@ -191,6 +231,7 @@ thread_mmap(void *args)		/* pointer to the arguments passed in         */
     off_t map_offset;		/* offset from the base addr to start mmap    */
     char *layout     = 		/* local pointer to memory layout	      */
 		       (char *)local_args[4];
+    volatile int exit_val = 0;  /* exit value of the pthread. 0 - success    */
 
     while (wait_thread);	/* when wait set to true - loop		      */
 
@@ -202,10 +243,11 @@ thread_mmap(void *args)		/* pointer to the arguments passed in         */
 		map_offset) == (caddr_t)-1)
         {
 	    perror("thread_mmap(): mmap()");
-	    return;
+	    PTHREAD_EXIT(1);
         }
         layout += 2;
     }
+    PTHREAD_EXIT(0);
 }
 
 
@@ -265,6 +307,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
     int  page_ndx;	 	/* number of pages to write to the temp file  */
     int  thrd_ndx = 0;	 	/* index to the number of threads created     */
     int  map_type;	        /* specifies the type of the mapped object    */
+    int  *th_status;            /* status of the thread when it is finished   */
     long th_args[NUMTHREAD];    /* argument list passed to  thread_fault()    */
     char *empty_buf;		/* empty buffer used to fill temp file	      */
     long pagesize 		/* contains page size at runtime	      */
@@ -281,6 +324,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
 		== -1 )
         {
 	    perror("map_and_thread(): open()");
+	    close(fd);
 	    fflush(NULL);
 	    retinfo->status = FAILED;
 	    return retinfo;
@@ -291,8 +335,10 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
         if (write(fd, empty_buf, pagesize*NUMPAGES) != (pagesize*NUMPAGES))
         {
 	    perror("map_and_thread(): write()");
+	    free(empty_buf);
 	    fflush(NULL);
             remove_files(tmpfile);
+            close(fd);
 	    retinfo->status = FAILED;
 	    return retinfo;
         }
@@ -309,8 +355,10 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
 		                        map_type, fd, 0)) == MAP_FAILED)
         {
             perror("map_and_thread(): mmap()");
+	    free(empty_buf);
 	    fflush(NULL);
             remove_files(tmpfile);
+            close(fd);
 	    retinfo->status = FAILED;
 	    return retinfo;
         }
@@ -343,8 +391,10 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
 		       (void *)&th_args))
         {
 	    perror("map_and_thread(): pthread_create()");
+	    free(empty_buf);
 	    fflush(NULL);
             remove_files(tmpfile);
+            close(fd);
 	    retinfo->status = FAILED;
 	    return retinfo;
         }
@@ -358,23 +408,41 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
     /* other thread has been terminated.				      */
     for (thrd_ndx = 0; thrd_ndx < NUMTHREAD; thrd_ndx++)
     {
-        if (pthread_join(pthread_ids[thrd_ndx],0))
+        if (pthread_join(pthread_ids[thrd_ndx],(void **)th_status))
         {
             perror("map_and_thread(): pthread_join()");
+	    free(empty_buf);
             fflush(NULL);
             remove_files(tmpfile);
+            close(fd);
 	    retinfo->status = FAILED;
 	    return retinfo;
         }
+        else
+        {
+            if ((int)*th_status == 1)
+            {
+                fprintf(stderr,
+                        "thread [%d] - process exited with errors\n",
+			    pthread_ids[thrd_ndx]);
+                free(empty_buf);                          
+                remove_files(tmpfile);
+                close(fd);
+                exit(1);
+            }
+        }   
     }
     
     /* remove the temporary file that was created. - clean up                 */
     /* but dont try to remove special files.			              */
     if (!remove_files(tmpfile))
         {
+	    free(empty_buf);
 	    retinfo->status = FAILED;
 	    return retinfo;
         }
+    free(empty_buf);
+    close(fd);
     retinfo->status = SUCCESS;
     return retinfo;
 }
@@ -614,7 +682,7 @@ main(int   argc,    /* number of command line parameters		      */
     int   ch;			/* command line flag character		      */
     int   test_num  = 0;	/* test number that is to be run              */
     int   test_time = 0;	/* duration for which test is to be run       */
-    int  sig_ndx;               /* index into signal handler structure.       */
+    int   sig_ndx;              /* index into signal handler structure.       */
     char *prog_name = argv[0]; 	/* name of this program			      */
     int   rc = 0;		/* return value from the tests.	0 - success   */
     int   version_flag = FALSE; /* printf the program version		      */
@@ -641,13 +709,7 @@ main(int   argc,    /* number of command line parameters		      */
 
     if (argc < 2)
     {
-        fprintf(stderr, "usage:%s -n test -t time -v [-V]\n", *argv);
-	fprintf(stderr, "\t-n the test number, if no test number\n"
-			"\t   is specified all the tests will be run\n");
-        fprintf(stderr, "\t-t specify the time in hours\n");
-        fprintf(stderr, "\t-v verbose output\n");
-	fprintf(stderr, "\t-V program version\n");
-	exit(0);
+        usage(argv);
     }
     if (*argv[1] == '-')
     {
