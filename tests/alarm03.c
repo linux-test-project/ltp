@@ -29,11 +29,12 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
+/* $Id: alarm03.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
 /**********************************************************
  * 
- *    UNICOS Feature Test and Evaluation - Silicon Graphics, Inc.
+ *    OS Test - Silicon Graphics, Inc.
  * 
- *    TEST IDENTIFIER	: Qalarm03
+ *    TEST IDENTIFIER	: alarm03
  * 
  *    EXECUTED BY	: anyone
  * 
@@ -102,7 +103,7 @@ void help();
 
 
 
-char *TCID="Qalarm03"; 		/* Test program identifier.    */
+char *TCID="alarm03"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

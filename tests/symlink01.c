@@ -29,11 +29,12 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
+/* $Id: symlink01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
 /**********************************************************
 * 
-*    UNICOS Quality Test and Evaluation - Silicon Graphics, Inc.
+*    OS Test - Silicon Graphics, Inc.
 * 
-*    TEST IDENTIFIER	: Qsymlink01 (symlink)
+*    TEST IDENTIFIER	: symlink01 (symlink)
 * 
 *    TEST TITLE		: Make a Symbolic Link to a File
 * 
@@ -43,7 +44,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qreadlink01 (readlink)
+*    TEST IDENTIFIER	: readlink01 (readlink)
 * 
 *    TEST TITLE		: Reads Value of a Symbolic Link
 * 
@@ -53,7 +54,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qstat04  (stat)
+*    TEST IDENTIFIER	: stat04  (stat)
 * 
 *    TEST TITLE		: Gets File Status Indirectly From a Symbolic Link 
 *                         File
@@ -64,7 +65,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qlstat01 (lstat)
+*    TEST IDENTIFIER	: lstat01 (lstat)
 * 
 *    TEST TITLE		: Get file Status About a Symbolic Link File
 * 
@@ -74,7 +75,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qmkdir05 (mkdir)
+*    TEST IDENTIFIER	: mkdir05 (mkdir)
 * 
 *    TEST TITLE		: Fail When Making a Directory File Indirectly From
 *                         a Symbolic Link File
@@ -85,7 +86,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qrmdir03 (rmdir)
+*    TEST IDENTIFIER	: rmdir03 (rmdir)
 * 
 *    TEST TITLE		: Fail When Removing a Directory File Indirectly 
 *                         From a Symbolic Link File
@@ -96,7 +97,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qchdir01 (chdir)
+*    TEST IDENTIFIER	: chdir01 (chdir)
 * 
 *    TEST TITLE		: Changes Current Working DIrectory Location 
 *                         Indirectly From a Symbolic Link File
@@ -107,7 +108,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qlink01 (link)
+*    TEST IDENTIFIER	: link01 (link)
 * 
 *    TEST TITLE		: Creates a Link To a File Indirectly From a 
 *                         Symbolic Link File
@@ -118,7 +119,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qunlink01 (unlink)
+*    TEST IDENTIFIER	: unlink01 (unlink)
 * 
 *    TEST TITLE		: Removes a Link To a File And Not Any Object File
 *                         Which Maybe Pointed At
@@ -129,7 +130,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qchmod01 (chmod)
+*    TEST IDENTIFIER	: chmod01 (chmod)
 * 
 *    TEST TITLE		: Change Object File Permissions Indirectly From a
 *                         Symbolic Link File
@@ -140,7 +141,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qutime01 (utime)
+*    TEST IDENTIFIER	: utime01 (utime)
 * 
 *    TEST TITLE		: Set File Access And Modify Object File Times
 *                         Indirectly From a Symbolic Link File
@@ -151,7 +152,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qrename01 (rename)
+*    TEST IDENTIFIER	: rename01 (rename)
 * 
 *    TEST TITLE		: Rename a Symbolic Link File And Not Any Object
 *                         File
@@ -162,7 +163,7 @@
 * 
 *    WALL CLOCK TIME	: 3
 *
-*    TEST IDENTIFIER	: Qopen01 (open)
+*    TEST IDENTIFIER	: open01 (open)
 * 
 *    TEST TITLE		: Create/Open a File For Reading Or Writing
 *                         Indirectly From a Symbolic Link File
@@ -315,21 +316,21 @@ void do_open();
 #define Y_A_S_FILE "/NiCkEr" /* Yet another symbolic link file */
 #define BIG_STRING "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
-#define DEFAULT_TCID  "Qsymlink01"
+#define DEFAULT_TCID  "symlink01"
 
-#define SYMLINK "Qsymlink01"
-#define READLINK "Qreadlink01"
-#define STAT "Qstat04"
-#define LSTAT "Qlstat01"
-#define MKDIR "Qmkdir05"
-#define RMDIR "Qrmdir03"
-#define CHDIR "Qchdir01"
-#define LINK "Qlink01"
-#define UNLINK "Qunlink01"
-#define CHMOD "Qchmod01"
-#define UTIME "Qutime01"
-#define RENAME "Qrename01"
-#define OPEN "Qopen01"
+#define SYMLINK "symlink01"
+#define READLINK "readlink01"
+#define STAT "stat04"
+#define LSTAT "lstat01"
+#define MKDIR "mkdir05"
+#define RMDIR "rmdir03"
+#define CHDIR "chdir01"
+#define LINK "link01"
+#define UNLINK "unlink01"
+#define CHMOD "chmod01"
+#define UTIME "utime01"
+#define RENAME "rename01"
+#define OPEN "open01"
 
 #define cktcsid(s1,s2) (!strcmp(s1,s2))
 #define BUFMAX 512

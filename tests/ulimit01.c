@@ -29,11 +29,12 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
+/* $Id: ulimit01.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
 /**********************************************************
  * 
- *    UNICOS Feature Test and Evaluation - Silicon Graphics, Inc.
+ *    OS Test - Silicon Graphics, Inc.
  * 
- *    TEST IDENTIFIER	: Qulimit01
+ *    TEST IDENTIFIER	: ulimit01
  * 
  *    EXECUTED BY	: anyone
  * 
@@ -46,10 +47,6 @@
  *    WALL CLOCK TIME	: 1
  * 
  *    CPU TYPES		: ALL
- * 
- *    BINARY LOCATION	: CUTS_BIN/rf_tests/sys
- * 
- *    SOURCE LOCATION	: CUTS_SRC/src/tests/sys
  * 
  *    AUTHOR		: William Roske
  * 
@@ -124,7 +121,7 @@ void cleanup();
 
 
 
-char *TCID="Qulimit01"; 	/* Test program identifier.    */
+char *TCID="ulimit01"; 	/* Test program identifier.    */
 int TST_TOTAL=6;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

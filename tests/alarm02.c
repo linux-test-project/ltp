@@ -29,11 +29,12 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
+/* $Id: alarm02.c,v 1.2 2000/07/31 22:41:24 alaffin Exp $ */
 /**********************************************************
  *
- *    UNICOS MLS Testing - Silicon Graphics, Inc.
+ *    OS Test - Silicon Graphics, Inc.
  *
- *    TEST IDENTIFIER   : Qalarm02
+ *    TEST IDENTIFIER   : alarm02
  *
  *    TEST TITLE        : Boundary Value Test for alarm(2)
  *
@@ -103,7 +104,7 @@ void alarm_received();
 
 
 
-char *TCID="Qalarm02";          /* Test program identifier.    */
+char *TCID="alarm02";          /* Test program identifier.    */
 int TST_TOTAL=3;                /* Total number of test cases. */
 extern int Tst_count;      /* Test Case counter for tst_ * routines */
 
