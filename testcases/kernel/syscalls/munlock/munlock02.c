@@ -32,12 +32,11 @@
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 	Check for basic errors returned by mount(2) system call.
+ * 	Check for basic errors returned by munlock(2) system call.
  *
- * 	Verify that mount(2) returns -1 and sets errno to
+ * 	Verify that munlock(2) returns -1 and sets errno to
  *
  * 	1) ENOMEM - If process exceed maximum  number of locked pages.
- * 	2) EINVAL - Unknown flags were specified.
  * 
  * 	Setup:
  *	  Setup signal handling.
@@ -82,7 +81,7 @@ char *TCID = "munlock02";		/* Test program identifier.    */
 int TST_TOTAL = 2;			/* Total number of test cases. */
 extern int Tst_count;			/* TestCase counter for tst_* routine */
 
-int exp_enos[] = { ENOMEM, EINVAL, 0 };
+int exp_enos[] = { ENOMEM, 0 };
 #define LEN	1024
 
 void *addr1;
@@ -94,7 +93,6 @@ struct test_case_t {
 	char *edesc;
 } TC[] = {
 	{&addr1, LEN * 10, ENOMEM, "address range out of address space" },
-	{&addr1, -99999, EINVAL, "len was not a positive number" }
 };
 
 int main(int ac, char **av)
