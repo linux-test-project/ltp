@@ -1,16 +1,16 @@
 
 Linux Test Project
-http://oss.sgi.com/projects/ltp/
+http://ltp.sf.net
 
 
 About the Linux Test Project
 
-The Linux Test Project aims to develop a set of tools and tests to verify the
-functionality and stability of the Linux kernel.  We hope this will support
-Linux development by making unit testing more complete and minimizing user
-impact by building a barrier to keep bugs from making it to the user.  The main
-goal of the project is regression and functional testing, but there are many
-ways this project can grow.  
+The Linux Test Project is a joint project with SGI, IBM, OSDL, and Bull with a
+goal to deliver test suites to the open source community that validate the 
+reliability, robustness, and stability of Linux. The Linux Test Project is a 
+collection of tools for testing the Linux kernel and related features. Our goal 
+is to improve the Linux kernel by bring test automation to the kernel testing 
+effort. Interested open source contributors are encouraged to join the project.
 
 
 In the Package
@@ -40,16 +40,18 @@ runalltests.sh
 	A simple script to run all of the packaged tests in sequential order and
 	report the over all result.  
 
+diskio.sh
+	A simple script to run all the diskio tests that pertain to the CD-ROM and
+	floppy disk file systems.
+
+networktests.sh
+	A simple script to run all the network related tests that require another 
+	remote machine.
+
 doc/*
 	Documentation for the project including man pages for some of the
 	tools and library functions.
 
-doio/*
-	The doio directory contains three tools: doio, iogen, and growfiles.
-	These are elaborate filesystem tests for stressing and testing the
-	functionality of the filesystem.  There is also a wrapper for doio
-	and iogen called rwtest.  Command examples for these tools can be
-	found in runtest/fs.
 
 include/*
 lib/*
@@ -57,16 +59,12 @@ lib/*
 	routines used by many of the tests.  We have tried to keep this to a
 	minimum.  
 
-tests/*
-	To date the tests directory contains a number of simple tests called
-	'quickhitters'.  These tests are designed to be simple and quick and
-	be run in conjunction with each other.  They have some use as stand
-	alone tests, but when run many-at-a-time, interesting issues can come
-	up.
+testcases/*
+	Contain all tests that run under the LTP.
 
 runtest/*
-	This directory should be removed.  Currently it houses command lists that
-	are used by pan for automated testing.
+	It houses command lists that are used by pan for automated testing.
+
 pan/*
 	The pan directory contains a simple, lightweight test harness.  pan
 	has the ability to run tests randomly and in parallel.  See pan's man
@@ -85,11 +83,7 @@ on properly functioning systems, they are intended to find (or cause) problems.
 Contact Information and Updates
 -------------------------------
 
-URL: http://oss.sgi.com/projects/ltp/
-email: owners-ltp@oss.sgi.com
+URL: http://ltp.sf.net
 
-Questions and comments should be sent to the LTP mailing list at
-ltp@oss.sgi.com.  To subscribe, send mail to majordomo@oss.sgi.com with
-"subscribe ltp" in the body of the message.
+Questions and comments should be sent to the LTP mailing list located on the project page. 
 
-A list archive is available at http://oss.sgi.com/projects/ltp/mail-threaded/
