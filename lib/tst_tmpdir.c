@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.5 2002/09/04 14:01:28 plars Exp $ */
+/* $Id: tst_tmpdir.c,v 1.6 2002/09/04 18:40:11 plars Exp $ */
 
 /**********************************************************
  *
@@ -165,25 +165,28 @@ tst_tmpdir()
 		 */
 		if (mkdtemp(template) == NULL)
 			tst_brkm(TBROK, tmpdir_cleanup, 
-							"%s: mkdtemp(%s) failed; errno = %d: %s",
-						   	FN_NAME, template, errno, strerror(errno));
+				"%s: mkdtemp(%s) failed; errno = %d: %s", 
+				FN_NAME, template, errno, strerror(errno));
 		TESTDIR = strdup(template);
 #else 
 		/*
 		 * Make the template name, then the directory
 		 */
-		if (mkstemp(template) == NULL)
-			tst_brkm(TBROK, tmpdir_cleanup,
-							"%s: mkstemp(%s) failed; errno = %d: %s",
-							FN_NAME, template, errno, strerror(errno));
+		if (tfd = mkstemp(template) == -1)
+			tst_brkm(TBROK, tmpdir_cleanup, 
+				"%s: mkstemp(%s) failed; errno = %d: %s", 
+				FN_NAME, template, errno, strerror(errno));
+		close(tfd);
+		unlink(template);
 		TESTDIR = strdup(template);
 		if (mkdir(TESTDIR, DIR_MODE)) {
 			/* If we start failing with EEXIST, wrap this section in 
 			 * a loop so we can try again.
 			 */
-			tst_brkm(TBROK, tmpdir_cleanup,
-							"%s: mkdir(%s, %#o) failed; errno = %d: %s",
-							FN_NAME, TESTDIR, DIR_MODE, errno, strerror(errno));
+			tst_brkm(TBROK, tmpdir_cleanup, 
+				"%s: mkdir(%s, %#o) failed; errno = %d: %s", 
+				FN_NAME, TESTDIR, DIR_MODE, errno, 
+				strerror(errno));
 		}
 #endif
 
@@ -192,9 +195,9 @@ tst_tmpdir()
 		 * gid of the person running the tests.
 		 */
 		if ( chown(TESTDIR, -1, getgid()) == -1 )
-			tst_brkm(TBROK, tmpdir_cleanup,
-						  	"chown(%s, -1, %d) failed; errno = %d: %s", 
-							TESTDIR, getgid(), errno, strerror(errno));
+			tst_brkm(TBROK, tmpdir_cleanup, 
+				"chown(%s, -1, %d) failed; errno = %d: %s", 
+				TESTDIR, getgid(), errno, strerror(errno));
  	}
 
 #if UNIT_TEST
@@ -209,12 +212,12 @@ tst_tmpdir()
 	 */
 	if ( chdir(TESTDIR) == -1 ) {
 		tst_brkm(TBROK, NULL, "%s: chdir(%s) failed; errno = %d: %s",
-				  		FN_NAME, TESTDIR, errno, strerror(errno) );
+				FN_NAME, TESTDIR, errno, strerror(errno) );
 
 		/* Try to remove the directory */
 		if ( !no_cleanup && rmdir(TESTDIR) == -1 )
 			tst_resm(TWARN, "%s: rmdir(%s) failed; errno = %d: %s",
-							FN_NAME, TESTDIR, errno, strerror(errno) );
+				FN_NAME, TESTDIR, errno, strerror(errno) );
 
 		tmpdir_cleanup();
 	}
