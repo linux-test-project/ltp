@@ -86,6 +86,7 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	blenter();
 
+#if defined(SYS_getpid)
 	for (i=0; i < ITER; i++) {
 		v1 = getpid();
 		v2 = syscall(SYS_getpid);
@@ -96,11 +97,16 @@ int main (int argc, char *argv[])
 			break;
 		}
 	}
-
+#else
+	fprintf(temp,"\tgetpid syscall failed.\n");
+	fprintf(temp,"\tSYS_getpid not defined\n");
+	local_flag = FAILED;
+#endif
 	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
+#if defined(SYS_getuid)
 	for (i=0; i < ITER; i++) {
 		v1 = getuid();
 		v2 = syscall(SYS_getuid);
@@ -111,11 +117,16 @@ int main (int argc, char *argv[])
 			break;
 		}
 	}
-
+#else
+	 fprintf(temp,"\tgetuid syscall failed.\n");
+         fprintf(temp,"\tSYS_getuid not defined\n");
+         local_flag = FAILED;
+#endif
 	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
+#if defined(SYS_getgid)
 	for (i=0; i < ITER; i++) {
 		v1 = getgid();
 		v2 = syscall(SYS_getgid);
@@ -126,6 +137,11 @@ int main (int argc, char *argv[])
 			break;
 		}
 	}
+#else
+	         fprintf(temp,"\tgetgid syscall failed.\n");
+		 fprintf(temp,"\tSYS_getgid not defined\n");
+                 local_flag = FAILED; 
+#endif
 
 	blexit();
 /*--------------------------------------------------------------*/
