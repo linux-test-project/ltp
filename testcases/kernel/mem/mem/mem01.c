@@ -198,8 +198,8 @@ void help()
 size_t get_memsize()
 {
   unsigned long long res;
-  unsigned long freeswap;
-  unsigned long freeram;
+  unsigned long long freeswap;
+  unsigned long long freeram;
   int retcode;
 
   retcode = sysinfo(&info);
@@ -208,12 +208,12 @@ size_t get_memsize()
     cleanup();
   } 
   
-  freeram = info.freeram * info.mem_unit;      
-  printf("Free Mem:\t%lu Mb\n",freeram/1024/1024);
+  freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;      
+  printf("Free Mem:\t%llu Mb\n",freeram/1024/1024);
   res=freeram; 
 
-  freeswap = info.freeswap * info.mem_unit;      
-  printf("Free Swap:\t%lu Mb\n",freeswap/1024/1024);
+  freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;      
+  printf("Free Swap:\t%llu Mb\n",freeswap/1024/1024);
   res=res+freeswap;
 
   printf("Total Free:\t%llu Mb\n",res/1024/1024);
@@ -247,7 +247,7 @@ option_t options[] =
 int
 main(int argc, char *argv[])
 {
-  size_t memsize=0;	/* at first in MB, limited to 4Go on 32 bits */
+  size_t memsize=0;	/* at first in MB, limited to 4Gb on 32 bits */
   int pagesize;
 
   int i;
