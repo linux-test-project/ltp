@@ -53,7 +53,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define INVAL_USER	999999	
+#define INVAL_USER		 (USHRT_MAX-2)
 
 char *TCID = "setreuid06";
 int TST_TOTAL = 1;

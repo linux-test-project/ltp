@@ -76,7 +76,7 @@ extern int getresuid(uid_t*, uid_t*, uid_t*);
 extern int setresuid(uid_t, uid_t, uid_t);
 
 int neg_one = -1;
-int inval_user = 999999;
+int inval_user = (USHRT_MAX-2);
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;

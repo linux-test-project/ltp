@@ -79,7 +79,7 @@ char *TCID = "setregid02";
 gid_t users_gr_gid, root_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={EPERM, 0};
-int inval_user = 999999;
+int inval_user = (USHRT_MAX-2);
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
