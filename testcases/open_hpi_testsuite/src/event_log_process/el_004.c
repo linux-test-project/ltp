@@ -18,20 +18,22 @@
 #include <hpitest.h>
 
 #define	TEST_STR	"Event log test str"
+#define TEST_ENTRY_ID	2
 
 int process_domain_eventlog(SaHpiSessionIdT session_id)
 {
+#if 0
 	SaHpiSelEntryIdT	prev_entry_id;
 	SaHpiSelEntryIdT	next_entry_id;
 	SaHpiSelEntryT		entry_get, entry_add;
 	SaHpiRdrT		rdr;
 	SaHpiRptEntryT 		rpt_entry1;
-	SaErrorT		val;
+#endif
+	SaHpiSelEntryT	entry_add;
+	SaErrorT	val;
 	int 			ret = HPI_TEST_PASS;
 
-/* I suppose that the function saHpiEventLogEntryAdd() will set rpt_entry_add
- * to then event log entry specified by its EntryId. If there is a entry used
- * the same ID, the function will override it with new entry we set.	*/
+#if 0
 	val = saHpiEventLogEntryGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
 			SAHPI_NEWEST_ENTRY, &prev_entry_id, &next_entry_id,
 			&entry_add, &rdr, &rpt_entry1);
@@ -42,8 +44,11 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 		ret = HPI_TEST_FAIL;
 		goto out;
 	}
-
+#endif
+	/* We need to wait until the function saHpiEventLogEntryAdd has clear 
+	 * sytax.*/
 	memset(&entry_add, 0, sizeof(entry_add));
+	entry_add.EntryId = TEST_ENTRY_ID;
 	entry_add.Timestamp = SAHPI_TIME_UNSPECIFIED;
 	entry_add.Event.Source = SAHPI_UNSPECIFIED_RESOURCE_ID;
 	entry_add.Event.EventType = SAHPI_ET_USER;
@@ -60,7 +65,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 		ret = HPI_TEST_FAIL;
 		goto out;
 	}
-
+#if 0
 	val = saHpiEventLogEntryGet(session_id, SAHPI_DOMAIN_CONTROLLER_ID,
 			entry_add.EntryId, &prev_entry_id, &next_entry_id,
 			&entry_get, &rdr, &rpt_entry1);
@@ -77,7 +82,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 		printf("  Add event log entry function is invalid!\n");
 		ret = HPI_TEST_FAIL;
 	}
-
+#endif
 out:
 	return ret;
 }

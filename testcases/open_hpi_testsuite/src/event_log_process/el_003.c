@@ -27,7 +27,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 	SaErrorT		val;
 	int 			ret = HPI_TEST_PASS;
 
-	next_entry_id = SAHPI_NEWEST_ENTRY;
+	prev_entry_id = SAHPI_NEWEST_ENTRY;
 	while (next_entry_id != SAHPI_NO_MORE_ENTRIES) {
 		current_entry_id = prev_entry_id;
 		val = saHpiEventLogEntryGet(session_id, 

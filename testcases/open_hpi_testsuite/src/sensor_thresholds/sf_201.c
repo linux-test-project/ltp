@@ -19,84 +19,86 @@
 
 #define THRESHOLDS_TEST_DATA 	2
 
-void value_init(SaHpiSensorThresholdsT *thresholds, SaHpiSensorThdDefnT defn)
+void set_data(SaHpiSensorReadingT *reading, SaHpiSensorReadingT *reading_old)
 {
-	SaHpiSensorThdMaskT read_thold = defn.ReadThold;
-	SaHpiSensorThdMaskT write_thold = defn.WriteThold;
+	SaHpiSensorInterpretedTypeT     type;
+	
+	type = reading_old->Interpreted.Type;
+	reading->ValuesPresent = SAHPI_SRF_INTERPRETED;
+	reading->Interpreted.Type = type;
+
+	switch(type) {
+	case SAHPI_SENSOR_INTERPRETED_TYPE_UINT8:
+		reading->Interpreted.Value.SensorUint8 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_UINT16:
+		reading->Interpreted.Value.SensorUint16 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_UINT32:
+		reading->Interpreted.Value.SensorUint32 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_INT8:
+		reading->Interpreted.Value.SensorInt8 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_INT16:
+		reading->Interpreted.Value.SensorInt16 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_INT32:
+		reading->Interpreted.Value.SensorInt32 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_FLOAT32:
+		reading->Interpreted.Value.SensorFloat32 = THRESHOLDS_TEST_DATA;
+		break;
+	case SAHPI_SENSOR_INTERPRETED_TYPE_BUFFER:
+		memset(reading->Interpreted.Value.SensorBuffer, 0, 
+			sizeof(reading->Interpreted
+				       .Value.SensorBuffer));
+		reading->Interpreted.Value.SensorBuffer[0] =
+			THRESHOLDS_TEST_DATA;
+		break;
+	}
+}
+
+void value_init(SaHpiSensorThresholdsT *thresholds, SaHpiSensorThresholdsT 
+		*thresholds_old, SaHpiSensorThdDefnT defn)
+{
+	SaHpiSensorThdMaskT 		read_thold = defn.ReadThold;
+	SaHpiSensorThdMaskT 		write_thold = defn.WriteThold;
 
 	if (read_thold & SAHPI_STM_LOW_CRIT && 
-			write_thold & SAHPI_STM_LOW_CRIT) {
-		thresholds->LowCritical.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->LowCritical.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->LowCritical.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_LOW_CRIT) 
+		set_data(&thresholds->LowCritical,
+				&thresholds_old->LowCritical);
 
 	if (read_thold & SAHPI_STM_LOW_MAJOR &&
-			write_thold & SAHPI_STM_LOW_MAJOR) {
-		thresholds->LowMajor.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->LowMajor.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->LowMajor.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_LOW_MAJOR) 
+		set_data(&thresholds->LowMajor, &thresholds_old->LowMajor);
 
 	if (read_thold & SAHPI_STM_LOW_MINOR && 
-			write_thold & SAHPI_STM_LOW_MINOR) {
-		thresholds->LowMinor.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->LowMinor.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->LowMinor.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_LOW_MINOR) 
+		set_data(&thresholds->LowMinor, &thresholds_old->LowMinor);
 
 	if (read_thold & SAHPI_STM_UP_CRIT &&
-			write_thold & SAHPI_STM_UP_CRIT) {
-		thresholds->UpCritical.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->UpCritical.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->UpCritical.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_UP_CRIT) 
+		set_data(&thresholds->UpCritical, &thresholds_old->UpCritical);
 	
 	if (read_thold & SAHPI_STM_UP_MAJOR &&
-			write_thold & SAHPI_STM_UP_MAJOR) {
-		thresholds->UpMajor.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->UpMajor.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->UpMajor.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_UP_MAJOR) 
+		set_data(&thresholds->UpMajor, &thresholds_old->UpMajor);
 	
 	if (read_thold & SAHPI_STM_UP_MINOR &&
-			write_thold & SAHPI_STM_UP_MINOR) {
-		thresholds->UpMinor.ValuesPresent = SAHPI_SRF_INTERPRETED;
-		thresholds->UpMinor.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->UpMinor.Interpreted.Value.SensorUint32 =
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_UP_MINOR) 
+		set_data(&thresholds->UpMinor, &thresholds_old->UpMinor);
 	
 	if (read_thold & SAHPI_STM_UP_HYSTERESIS &&
-			write_thold & SAHPI_STM_UP_HYSTERESIS) {
-		thresholds->PosThdHysteresis.ValuesPresent = 
-			SAHPI_SRF_INTERPRETED;
-		thresholds->PosThdHysteresis.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->PosThdHysteresis.Interpreted.Value.SensorUint32 = 
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_UP_HYSTERESIS) 
+		set_data(&thresholds->PosThdHysteresis, 
+				&thresholds_old->PosThdHysteresis);
 
 	if (read_thold & SAHPI_STM_LOW_HYSTERESIS &&
-			write_thold & SAHPI_STM_LOW_HYSTERESIS) {
-		thresholds->NegThdHysteresis.ValuesPresent = 
-			SAHPI_SRF_INTERPRETED;
-		thresholds->NegThdHysteresis.Interpreted.Type = 
-			SAHPI_SENSOR_INTERPRETED_TYPE_UINT32;
-		thresholds->NegThdHysteresis.Interpreted.Value.SensorUint32 = 
-			THRESHOLDS_TEST_DATA;
-	}
+			write_thold & SAHPI_STM_LOW_HYSTERESIS) 
+		set_data(&thresholds->NegThdHysteresis,
+				&thresholds_old->NegThdHysteresis);
 }
 
 int thrd_cmp(SaHpiSensorThresholdsT thresholds, SaHpiSensorThresholdsT thresholds_new, SaHpiSensorThdDefnT defn)
@@ -191,6 +193,9 @@ int do_sensor(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdr
 	if (rdr.RdrType == SAHPI_SENSOR_RDR) {
 		num = rdr.RdrTypeUnion.SensorRec.Num;
 		defn = rdr.RdrTypeUnion.SensorRec.ThresholdDefn;
+
+		if (defn.IsThreshold == SAHPI_FALSE)
+			goto out;
 		if (!defn.ReadThold || !defn.WriteThold)
 			goto out;
 		
@@ -206,7 +211,7 @@ int do_sensor(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdr
 		}
 
 		memset(&thresholds, 0, sizeof(thresholds));
-		value_init(&thresholds, defn);
+		value_init(&thresholds, &thresholds_old, defn);
 		val = saHpiSensorThresholdsSet(session_id, resource_id,
 				num, &thresholds);
 		if (val != SA_OK) {

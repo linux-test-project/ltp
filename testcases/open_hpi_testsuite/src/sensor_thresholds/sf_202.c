@@ -104,13 +104,20 @@ int do_sensor(SaHpiSessionIdT session_id, SaHpiResourceIdT resource_id, SaHpiRdr
 {
 	SaHpiSensorThresholdsT	thresholds, thresholds_old, thresholds_new;
 	SaHpiSensorNumT 	num;
+	SaHpiSensorThdDefnT     defn;
 	SaErrorT        	val;
 	int             	ret = HPI_TEST_UNKNOW;
 
 	if (rdr.RdrType == SAHPI_SENSOR_RDR) {
-		ret = HPI_TEST_PASS;
 		num = rdr.RdrTypeUnion.SensorRec.Num;
-		
+		defn = rdr.RdrTypeUnion.SensorRec.ThresholdDefn;
+
+		if (defn.IsThreshold == SAHPI_FALSE)
+			goto out;
+		if (!defn.ReadThold || !defn.WriteThold)
+			goto out;
+
+		ret = HPI_TEST_PASS;
 		val = saHpiSensorThresholdsGet(session_id, resource_id,	num, 
 				&thresholds_old);
 		if (val != SA_OK) {
