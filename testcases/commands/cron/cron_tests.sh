@@ -36,6 +36,7 @@
 #                         after executing crontab -l.
 #                       - Fixed bug in #3, test was not installing the cronjob.
 #                       - Added more informational messages TINFO.
+#                       - Changed permissions to this file to 'x'
 
 export TST_TOTAL=3
 
