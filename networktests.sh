@@ -17,13 +17,13 @@ export PASSWD=
 
 
 export TMPDIR=/tmp/netpan-$$
+mkdir $TMPDIR
 
 cat  ${LTPROOT}/runtest/tcp_cmds > $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/multicast >> $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/rpc >> $TMPDIR/network.tests
 cat  ${LTPROOT}/runtest/nfs >> $TMPDIR/network.tests
 
-mkdir $TMPDIR
 cd $TMPDIR
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
