@@ -117,6 +117,9 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+
+  return(0);
+
 }
 /*
  * setup() - performs all ONE TIME setup for this test.
