@@ -71,13 +71,14 @@
 
 #include <errno.h>
 #include <syscall.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 
 static void setup();
 static void cleanup();
 
-_syscall3(long, sysfs, int, option, unsigned int, fs_index, char, *buf);
+_syscall3(long, sysfs, int, option, unsigned int, fs_index, char, bad_addr);
 
 char *TCID = "sysfs06"; 	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
@@ -96,13 +97,14 @@ static struct test_case_t {
 	{"buf is outside your accessible address space", EFAULT, "EFAULT "}
 };
 
+char * bad_addr = 0;
+
 int
 main(int ac, char **av)
 {
 
 	int lc, i;	/* loop counter */
 	char *msg;	/* message returned from parse_opts */
-	char buf[40];
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
@@ -120,7 +122,8 @@ main(int ac, char **av)
 
 			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
-			TEST(sysfs(option[i], fsindex[i], buf));
+		        TEST(sysfs(option[i], fsindex[i], (char) &bad_addr));
+		  	
 			/* check return code */
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
 					exp_errno)) {
@@ -160,6 +163,10 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+		        tst_brkm(TBROK, cleanup, "mmap failed");
+			    }
 }	/* End setup() */
 
 /*
