@@ -2779,6 +2779,7 @@ int rw;
 	void			*mrc, *memaddr;
 	struct fd_cache		*fdc;
 	struct stat		sbuf;
+    int rc;
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if( status == NULL ){
@@ -2827,6 +2828,11 @@ int rw;
 
 	status->rval = req->r_data.io.r_nbytes;
 	status->err = 0;
+
+    if (v_opt) {
+      rc = munmap(mrc, (int)sbuf.st_size);
+    }
+
 	return(status);
 }
 
