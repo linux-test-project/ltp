@@ -21,26 +21,23 @@
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include
-LDFLAGS+=	-L../../../../lib -lltp
+LDFLAGS+=	-L../../../../lib 
+LDLIBS+=        -lltp
 
-SRCS=$(wildcard lchown*.c)
+SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: create_link.mode $(TARGETS)
+all: $(TARGETS)
 
-create_link.mode: create_link
+create_link: create_link.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $@.c $(LDLIBS)
 	chown root create_link
 	chmod 04755 create_link 
 
-$(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
-
-
 install:
-	@for i in create_link $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS) create_link
+	rm -f $(TARGETS) 
 
-.PHONY: create_link.mode
 
