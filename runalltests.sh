@@ -257,7 +257,7 @@ main()
                      ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio \
                      ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/ipc \
                      ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
-                     ${LTPROOT}/runtest/pty
+                     ${LTPROOT}/runtest/nptl ${LTPROOT}/runtest/pty
         do
             [ -a "$SCENFILES" ] || \
             {
