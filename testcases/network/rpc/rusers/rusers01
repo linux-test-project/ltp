@@ -76,7 +76,7 @@ if [ $? -ne 0 ]; then
   rsh -n -l root $RHOST "/usr/sbin/rpc.rusersd &"
   [ $? -eq 0 ] || end_testcase "rusersd is inactive on $RHOST" 
   PID=`rsh -n $RHOST ps -ewf | grep rusersd | awk '{print $2 }'`
-  echo "ruserd started on $RHOST"
+  echo "rusersd started on $RHOST"
 fi
 
 echo "Test rusers with defaults...please be patient"
