@@ -28,7 +28,11 @@
 
 #Uncomment line below for debugging
 #set -x
-mkfs -t $2 $1
+if [[ $2 -eq "jfs" ]]; then
+  mkfs -t $2 -q $1
+else
+  mkfs -t $2 $1
+fi
 mkdir /testmount
 mount -t $2 $1 /testmount
 touch /testmount/testfile
