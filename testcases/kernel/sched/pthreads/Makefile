@@ -1,13 +1,12 @@
-CFLAGS := -Wall
-LDFLAGS := -lpthread
+SUBDIRS = pth_str
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-
-all: $(TARGETS)
+all:
+	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install:
-	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
+	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
-	rm -f $(TARGETS)
+	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+
+
