@@ -834,7 +834,7 @@ echo "attr -r to remove the named object"
 attr -r attrname2 tacl/mount-ext2/shared/team2/file1
 if [ $? != 0 ]
 then
-	echo "FAILED: attr: to removr the named object"     
+	echo "FAILED: attr: to remove the named object"     
 fi
 
 
@@ -843,11 +843,11 @@ fi
 # Backup and Restore
 #
 #################################
-getfattr -dhR -m- -e hex tacl/mount-ext2 > backup.ea
-setfattr -h --restore=backup.ea
+getfattr -dhR -m- -e hex tacl/mount-ext2 > tacl/backup.ea
+setfattr -h --restore=tacl/backup.ea
 
-getfattr -dhR -m- -e hex tacl/mount-ext2 > backup.ea1
-if [ `diff  backup.ea1  backup.ea` ]
+getfattr -dhR -m- -e hex tacl/mount-ext2 > tacl/backup.ea1
+if [ `diff  tacl/backup.ea1  tacl/backup.ea` ]
 then
         echo ""
         echo "FAILED:  EAs backup and restore are not correct"
