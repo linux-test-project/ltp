@@ -106,7 +106,7 @@ do  case $arg in
                 fi;;
 
 	T)	if [ $Sar -eq 0 ]; then
-                  top -h 2>&1 | grep "\-f filename" >/dev/null
+                  $LTPROOT/testcases/bin/top -h 2>&1 | grep "\-f filename" >/dev/null
 		  if [ $? -eq 0 ]; then
                     Top=1
                   else
@@ -199,7 +199,6 @@ netpipe.sh >/dev/null 2>/dev/null &
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part1 > ${TMP}/stress.part1
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part2 > ${TMP}/stress.part2
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part3 > ${TMP}/stress.part3
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part4 > ${TMP}/stress.part4
 
 sleep 2
 
@@ -208,7 +207,7 @@ if [ $Sar -eq 1 ]; then
 fi
 
 if [ $Top -eq 1 ]; then
-  screen -d -m top -o $datafile -d $interval &
+  screen -d -m $LTPROOT/testcases/bin/top -o $datafile -d $interval &
   SCREEN_PID=$!
 fi
 
@@ -217,12 +216,10 @@ sleep 2
 output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
-output4=${TMPBASE}/ltpstress.$$.output4
 
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${TMP}/stress.part1 -o $output1 & 
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 -o $output2 &
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 -o $output3 &
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress4 -n stress4 $logfile -f ${TMP}/stress.part4 -o $output4 &
 
 echo "Running LTP Stress for $hours hour(s)"
 echo ""
@@ -230,7 +227,6 @@ echo "Test output recorded in:"
 echo "        $output1"
 echo "        $output2"
 echo "        $output3"
-echo "        $output4"
 
 # Sleep a little longer than duration to let pan "try" to gracefully end itself.
 sleep $(($duration + 10))  
