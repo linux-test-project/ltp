@@ -1,0 +1,325 @@
+dhcpd
+-----
+dhcpd_tests.sh
+
+	Test basic functionality of dhcpd server.
+
+
+ipchains
+--------
+ipchains_tests.sh
+
+	Test basic functionality of ipchains.
+
+
+iproute
+-------
+ip_tests.sh
+
+	Test basic functionality of ip command in route2 package
+
+
+ipv6
+----
+echo601
+
+	Stresses the inetd/xinetd daemon using the `echo` service.
+
+finger601
+
+	test the basic functionality of the `finger` command.
+
+ftp601
+
+	test the basic functionality of the `ftp` command.
+
+perf_lan6
+
+	Generates LAN traffic using ICMP echo packets.
+
+ping601
+
+	test the basic functionality of the `ping` command.
+
+rcp601
+
+	test the basic functionality of the `rcp` command.
+
+
+rlogin601
+
+	Tests the basic functionality of `rlogin`.
+
+rsh601
+
+	test the basic functionality of the `rsh` command.
+
+rwho601
+
+	test the basic functionality of the rwhod daemon using the
+
+sendfile601
+
+	 Copy files from server to client using the sendfile()
+         function.
+
+tcpdump6
+	
+	test the basic functionality of `tcpdump`.
+
+telnet601
+
+	Tests the basic functionality of `telnet`.
+
+
+
+multicast
+---------
+
+mc_cmds
+	
+	To determine the stability of the IP Multicast product
+        and to verify the accuracy and usablility of IP Multicast
+        related publications associated with changes and/or
+        additions to command level interfaces for this implementations
+        of IP Multicast.
+
+mc_commo
+
+	 To verify that IP Multicast can be used to send UDP datagrams
+         between two or more nodes on the same subnetwork using
+         a specific IP Multicast group and a specific port address.
+
+mc_member
+
+	To verify that two of the new options for level IPPROTO_IP
+        Service Interface allow the list of host group memberships
+        to be updated properly in response to the JoinHostGroup and
+        LeaveHostGroup requests. To test boundary conditions while
+        exercising IP Multicast JoinHostGroup and LeaveHostGroup
+        Service Interfaces.
+
+mc_opts
+
+	To verify that three of the new options for level IPPROTO_IP
+        Service Interface are initially set to the default values as
+        defined in the documentation and that each of the new options
+        can be set and read properly by the setsockopt and getsockopt
+        routines, respectively.  To test boundary conditions and to
+        generate errors while exercising the IP Multicast Service
+        Interface options.
+
+
+
+nfs
+---
+fsx-linux
+	Created by NeXT Software (Apple Computer, Inc.).  This test will 
+        thrash your NFS	filesystem and has uncovered numerous bugs within 
+        the Linux implementation.
+
+nfs01
+
+	Stresses NFS by opening a large number of files on a nfs
+        mounted filesystem.
+
+nfs02
+
+	Tests NFS copy of various filesizes, file consistency between copies
+        and preservation of write/nowrite permissions.
+
+nfs03
+	Runs the LTP filesystem test: fs_inod, on an NFS mountpoint.	
+
+
+nfslock01
+
+	Two processes open FLOCK_IDATA file simultaneously
+        each one locks odd and even lines of the file simultaneously
+        and fill them with '0's and '1's. After they find eof, the
+        datafiles are compared.
+
+nfsstat01
+
+	 Tests the 'nfsstat' command.  This test runs locally, so no
+         actual network connection is needed.
+
+nfsstress 
+
+	This program is designed stress the NFS implimentation.       
+	Many bugs were uncovered in the AIX operating system          
+	implimentation of NFS when AIX kernel was built over NFS.     
+	Source directory on a remote machine (one server many clients)
+	NFS-mounted on to a directory on a local machine from which   
+	the kernel build was initiated. Apparently many defects/bugs  
+	were uncovered when multiple users tried to build the kernel  
+	by NFS mounting the kernel source from a remote machine and   
+	tried to build the kernel on a local machine. AIX build envi- 
+	ronment is set up to create the object files and executable   
+	on the local machine. 					      
+	This testcase will try to recreate such a senario.            
+	Spawn N number of threads. Each thread does the following.    
+	* Create a directory tree.                                    
+	* Populate it with ".c" files and makefiles.                  
+	* initate a build. Executable will print hello world when executed
+	* clean up all the executables that were created.             
+	* recurssively remove each subdir and its contents.           
+	The test is aimed at stressing the NFS client and server.     
+
+
+
+rpc
+---
+rpc01
+
+	Test rpc using file transfers between a client & server
+
+rpcinfo01
+
+	Basic test for the `rpcinfo` command.
+
+rup01
+
+	Basic test for the `rup` command.
+
+rusers01
+
+	Basic test for the `rusers` command.
+
+
+
+sctp
+----
+accept01-sctp
+ 
+	Verify that accept() returns the proper errno for various failure cases
+  
+bind01-sctp-udp/tcp  
+  
+	Verify that bind() returns the proper errno for various failure cases
+ 
+listen01-sctp-udp/tcp
+  
+	Verify that listen() returns the proper errno for various failure cases
+ 
+recv01-sctp-udp/tcp  
+  
+	Verify that recv() returns the proper errno for various failure cases
+
+recvfrom01-sctp-udp/tcp  
+  
+	Verify that recvfrom() returns the proper errno for various failure cases
+
+recvmsg01-sctp-udp/tcp  
+  
+	Verify that recvmsg() returns the proper errno for various failure cases
+ 
+send01-sctp-udp/tcp  
+  
+	Verify that send() returns the proper errno for various failure cases
+
+sendmsg01-sctp-udp/tcp  
+  
+	Verify that sendmsg() returns the proper errno for various failure cases
+
+sendto01-sctp-udp/tcp  
+  
+	Verify that sendto() returns the proper errno for various failure cases
+
+setsockopt01-sctp-udp/tcp  
+  
+	Verify that setsockopt() returns the proper errno for various failure cases
+ 
+socket01-sctp-udp/tcp  
+  
+	Verify that socket() returns the proper errno for various failure cases
+
+
+sockets
+-------
+ltpSockets.sh
+
+	Run basic socket related tests over UDP, TCP, and Multicast.
+
+
+tcp_cmds
+--------
+arp01
+	Test the basic functionality of `arp`.
+
+echo01
+
+	Stresses the inetd/xinetd daemon using the `echo` service.
+
+finger01
+
+	test the basic functionality of the `finger` command.
+
+ftp01
+
+	test the basic functionality of the `ftp` command.
+
+host01
+
+	test the basic functionality of the `host` command.
+
+netstat01
+
+	test the basic functionality of the `netstat` command.
+
+perf_lan
+
+	Generates LAN traffic using ICMP echo packets.
+
+ping01
+
+	test the basic functionality of the `ping` command.
+
+rcp01
+
+	test the basic functionality of the `rcp` command.
+
+rdist01
+
+	test the basic functionality of the `rdist` command.
+
+rlogin01
+
+	Tests the basic functionality of `rlogin`.
+
+rsh01
+
+	test the basic functionality of the `rsh` command.
+
+rwho01
+
+	test the basic functionality of the rwhod daemon using the
+
+sendfile
+
+	 Copy files from server to client using the sendfile()
+         function.
+
+tcpdump
+	
+	test the basic functionality of `tcpdump`.
+
+telnet01
+
+	Tests the basic functionality of `telnet`.
+
+
+
+traceroute
+----------
+traceroute_tests.sh
+
+	Test basic functionality of `traceroute` command.
+
+
+
+xinetd
+------
+xinetd_tests.sh
+	
+	Test basic functionality of `xinetd` command.
