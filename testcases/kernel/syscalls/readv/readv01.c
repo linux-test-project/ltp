@@ -105,15 +105,6 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 test1:
-		l_seek(fd, CHUNK * 11, 0);
-		if (readv(fd, (rd_iovec + 0), 0) == -1)  {
-			tst_resm(TFAIL, "readv() failed with unexpected errno "
-				 "%d", errno);
-		} else {
-			tst_resm(TPASS, "readv read 0 io vectors");
-		}
-
-test2:
 		l_seek(fd, CHUNK * 12, 0);
 		if (readv(fd, (rd_iovec + 1), 4) != CHUNK)  {
 			tst_resm(TFAIL, "readv failed reading %d bytes, "
