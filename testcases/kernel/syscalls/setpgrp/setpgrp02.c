@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	setpgrp01.c
+ * 	setpgrp02.c
  *
  * DESCRIPTION
  *	Testcase to check the basic functionality of the setpgrp(2) syscall.
@@ -30,7 +30,7 @@
  *	the new pgid.
  *
  * USAGE:  <for command-line>
- *  setpgrp01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  setpgrp02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -48,7 +48,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "setpgrp01";
+char *TCID = "setpgrp02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -61,6 +61,8 @@ main(int ac, char **av)
 	char *msg;			/* message returned by parse_opts */
 
 	int pid, pgrp, oldpgrp;
+	int e_code, status, retval=0;
+
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -102,12 +104,18 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "functionality is correct");
 			}
+			exit(retval);
 		} else {			/* parent */
-			/* let the child carry on */
-			exit(0);
+			/* wait for the child to finish */
+            		wait(&status);
+            		/* make sure the child returned a good exit status */
+            		e_code = status >> 8;
+            		if ((e_code != 0) || (retval != 0)) {
+                	tst_resm(TFAIL, "Failures reported above");
+            		}
+			cleanup();
 		}
 	}
-	cleanup();
 
 	/*NOTREACHED*/
 }
