@@ -52,10 +52,11 @@
 #include "test.h"
 #include "usctest.h"
 
-/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
-#ifndef modify_ldt_ldt_s
-#define modify_ldt_ldt_s user_desc
-#endif
+/* Some asm/ldt.h files use user_desc, instead of modify_ldt_ldt_s. *
+ * Uncomment the line below if the test does not build because it   *
+ * does not know the storage size of `entry'                        *
+ *                                                                  */
+/* #define modify_ldt_ldt_s user_desc */
 
 int create_segment(void *, size_t);
 void cleanup(void);
