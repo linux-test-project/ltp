@@ -14,3 +14,9 @@ mtest01w mtest01 -p80 -w
 #test for race conditions
 mtest05 mmstress
 mtest06 mmap1
+
+page01 page01
+page02 page02
+
+data_space data_space
+stack_space stack_space

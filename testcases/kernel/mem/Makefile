@@ -1,4 +1,4 @@
-SUBDIRS = mem01 mtest01 mtest05 mtest06 mtest07 page
+SUBDIRS = mem01 mtest01 mtest05 mtest06 mtest07 page vmtests
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
