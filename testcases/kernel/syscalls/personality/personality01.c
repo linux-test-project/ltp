@@ -59,6 +59,7 @@
 
 #include <errno.h>
 #include <linux/personality.h>
+#undef personality
 
 void cleanup(void);
 void setup(void);
