@@ -108,7 +108,7 @@ int main (argc, argv)
 int  argc;
 char *argv[];
 {
-	char c;
+	int c;
 
 	setup();
 
