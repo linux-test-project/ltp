@@ -6,7 +6,7 @@ TESTS= test test_arch.o test_D
 
 all: $(TESTS)
 
-install: all
+install:
 	ln -f objdump01 ../../../bin
 
 clean:

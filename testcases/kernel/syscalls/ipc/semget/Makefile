@@ -33,7 +33,7 @@ $(MAINS): $(SRCS)
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)
 
-install: all
+install:
 	@for i in $(MAINS); do ln -f $$i ../../../../bin/$$i ; done
 
 strip_bin:

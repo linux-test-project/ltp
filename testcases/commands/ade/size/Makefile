@@ -6,7 +6,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-install: all
+install:
 	ln -f size01 ../../../bin
 
 clean:

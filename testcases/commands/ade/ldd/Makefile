@@ -6,7 +6,7 @@ TARGETS=$(patsubst %.c,%.o,$(SRCS))
 
 all: $(TARGETS)
 
-install: all
+install:
 	ln -f ldd01 ../../../bin
 
 clean:

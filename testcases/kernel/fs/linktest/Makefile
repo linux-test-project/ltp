@@ -2,7 +2,7 @@ TARGETS=linktest.pl
 
 all:
  
-install: all
+install:
 	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
 
 clean:

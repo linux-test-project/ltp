@@ -1,6 +1,6 @@
-all: generate
+all:
 
-install: all
+install: generate
 	ln -f nfs02 ../../../bin
 
 generate:

@@ -10,7 +10,7 @@ pthcli:
 pthserv:
 	$(CC) $(CFLAGS) -opthserv pthserv.o readline.o writen.o -lpthread
 
-install: all
+install:
 	@for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:

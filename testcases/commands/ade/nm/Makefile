@@ -6,7 +6,7 @@ OBJECTS=$(patsubst %.c,%.o,$(SRCS))
 
 all:  $(OBJECTS)
 
-install: all
+install:
 	ln -f nm01 ../../../bin
 
 clean:

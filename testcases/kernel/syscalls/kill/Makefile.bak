@@ -31,7 +31,7 @@ all: $(TARGETS)
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(IPC_LDFLAGS)
 
-install: all
+install:
 	@for i in $(TARGETS); do ln $$i ../../../bin/$$i ; done
 
 clean:

@@ -6,7 +6,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS) object
 
-install: all
+install:
 	ln -f ar01 ../../../bin
 
 object:

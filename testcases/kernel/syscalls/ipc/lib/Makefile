@@ -34,7 +34,7 @@ all: ../libipc.a
 $(OBJS):
 	$(CC) -c $(SRCS) $(LTP_CFLAGS)
 
-install: all
+install:
 
 clean:
 	/bin/rm -rf $(OBJS) ../libipc.a

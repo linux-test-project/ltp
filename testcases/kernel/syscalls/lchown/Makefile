@@ -36,7 +36,7 @@ create_link:
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
-install: all
+install:
 	@for i in create_link $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:

@@ -4,12 +4,12 @@ LDFLAGS +=
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS) generate
+all: $(TARGETS)
 
 generate:
 	./generate.sh
 
-install: all 
+install: generate
 	ln -f sendfile601 ../../../bin
 
 clean:

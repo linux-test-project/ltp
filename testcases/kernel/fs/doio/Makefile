@@ -21,7 +21,7 @@ rwtest: rwtest.sh doio iogen
 	cp rwtest.sh rwtest
 	chmod a+rx rwtest
 
-install: all
+install:
 	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:

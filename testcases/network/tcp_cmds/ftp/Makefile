@@ -1,4 +1,4 @@
-all: generate
+all:
 
 generate:
 	./generate.sh
@@ -6,5 +6,5 @@ generate:
 clean:
 	rm -rf datafiles
 
-install: all
+install: generate
 	ln -f ftp01 ../../../bin

@@ -6,7 +6,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-install: all
+install:
 	ln -f nfsstress ../../../bin
 
 clean:

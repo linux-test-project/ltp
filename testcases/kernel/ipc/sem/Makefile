@@ -6,7 +6,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-install: all
+install:
 	@for i in  $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:

@@ -1,6 +1,6 @@
 all:
 
-install: all
+install:
 	ln -f nfs03 ../../../bin
 
 clean:

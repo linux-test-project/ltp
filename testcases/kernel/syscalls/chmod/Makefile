@@ -36,7 +36,7 @@ change_owner:
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
-install: all
+install:
 	@for i in $(TARGETS) change_owner; do ln -f $$i ../../../bin/$$i ; done
 
 clean:

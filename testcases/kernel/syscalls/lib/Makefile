@@ -32,7 +32,7 @@ all: ../libtestsuite.a
 ../libtestsuite.a: $(OBJS)
 	ar -rv $@ $(OBJS)
 
-install: all
+install:
 
 clean:
 	/bin/rm -rf $(OBJS) ../libtestsuite.a

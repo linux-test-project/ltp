@@ -3,7 +3,7 @@ TESTS	= nfs_flock nfs_flock_dgen nfs_flock_frk
 
 all: $(TESTS)
 
-install: all
+install:
 	ln -f nfslock01 ../../../bin
 
 nfs_flock:

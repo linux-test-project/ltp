@@ -1,9 +1,9 @@
-all: generate
+all:
 
 generate:
 	./generate.sh
 
-install: all
+install: generate
 	ln -f rcp01 ../../../bin
 
 clean:
