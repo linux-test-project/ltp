@@ -68,15 +68,16 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include "test.h"
 #include "usctest.h"
 
-char TESTFILE[] = "testfile \0";		/* name of file to create */
-char SYMFILE[] = "/slink_file\0";	/* name of symbolic link to create */
-char creat_slink[] = "creat_slink\0";	/* name of executable to execvp() */
+char TESTFILE[] = "/testfile\0";		/* name of file to create */
+char SYMFILE[] = "slink_file\0";	/* name of symbolic link to create */
+char creat_slink[] = "/creat_slink";	/* name of executable to execvp() */
 
 char nobody[] = "nobody";
 char bin[] = "bin";
@@ -218,6 +219,7 @@ setup()
 
 	/* create the full pathname of the executable to be execvp'ed */
 	strcat((char *)path_buffer, (char *)bin_dir);
+	strcat((char *)path_buffer, (char *)creat_slink);
 
 	symfile_path = "slink_file\0";
 
@@ -236,7 +238,7 @@ setup()
 		 * execvp the process/program that will create the test file
 		 * and set up the symlink
 		 */
-		execvp(creat_slink, cargv);
+		execvp(path_buffer, cargv);
 
 		/* on success, execvp will not return */
 		perror("execvp");
@@ -250,10 +252,9 @@ setup()
 	}
 
 	/* parent */
-
-	/* sleep briefly to let the execvp'ed process do its work */
-
-	usleep(25000);
+	
+	/* wait to let the execvp'ed process do its work */
+        waitpid(pid, NULL, 0);
 
 	/* set up the expected return value from the readlink() call */
 	exp_val = strlen(TESTFILE);
