@@ -3,6 +3,7 @@
 #
 nfs01 export TCbin=$LTPROOT/testcases/network/nfs/nfs01; nfs01
 nfs02 export TCbin=$LTPROOT/testcases/network/nfs/nfs02; nfs02
+nfs03 export TCbin=$LTPROOT/testcases/network/nfs/nfs03; nfs03
 nfslock01 export TCbin=$LTPROOT/testcases/network/nfs/nfslock01; nfslock01
 
 # This will run 1 thread on 20 directories with 50 files in each.
