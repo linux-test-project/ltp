@@ -108,12 +108,13 @@ WHERE="$1"
 find "$WHERE" -type f \
     \( \
        \( -name "[0-9]*-*.c" -o -name "[0-9]*-[0-9]*.sh" \) \
-       ! -name \*.o ! -name \*~  \
+       ! -name \*.o ! -name \*~ \
     \) \
     $buildable $execs \
     | if [ $print_execs -eq 1 ]
         then
-            sed 's/\.\(sh\|c\)$/.test/'
+	    # Will not deal with the speculative directory automatically
+            sed 's/\.\(sh\|c\)$/.test/' | grep -v speculative
         else
             cat
         fi

@@ -1,0 +1,64 @@
+This document defines the coverage for the mmap() function:
+
+Assertion	Tested?
+1		Not fully: ** Typed Memory object not tested. Tested file and shared
+memory object.
+2		NO: ** Typed Memory object
+3		YES
+4		NO: ** Typed Memory object not tested
+5		YES
+6		YES
+7		YES
+8		NO: ** Typed Memory object
+9		YES
+10		YES
+11		YES
+12		YES
+13  		YES
+14		YES
+15  		NO ** May assertion
+16		YES
+17		YES
+18  		YES 
+19  		YES
+20		YES
+21		YES
+22  		NO ** Not sure how to get/set the limit of the number of mapped region 
+       		** for a process or system. 
+23		YES
+24  		YES
+25		YES
+26		NO ** Typed Memory Object
+27		YES
+28  		YES
+29		YES
+30  		NO ** Typed Memory object
+31		YES
+
+NOTE:
+
+Some issues.
+
+11-2: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+      The SIGBUS cannot be triggered as expected.
+
+11-3: Same as 11-2.
+
+13-1: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+      The file's st_atime will not be updated as expected.
+
+14-1: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+      The file's st_ctime and st_mtime will not be updated as expected.
+
+24-2: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+      Get EINVAL instead of ENOMEM.
+
+25-1: Freezes with glibc-3.4 & linux kernel 2.5.67
+
+28-1: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+
+29-1: Will trigger SIGBUS (freezes with glibc-3.4 * linux kernel 2.5.67)
+
+31-1: Will fail with glibc-2.3 & linux kernel 2.6.0-test2.
+      EXPECT EOVERFLOW but get not error.
+

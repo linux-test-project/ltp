@@ -32,10 +32,7 @@ STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
 STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
 PWD := $(shell pwd)
 
-all: build-tests
-#all: build-tests run-tests functional-tests
-
-install:
+all: build-tests run-tests functional-tests
 
 build-tests: $(BUILD_TESTS:.c=.test)
 run-tests: $(RUN_TESTS:.test=.run-test)
@@ -46,7 +43,12 @@ stress-tests: stress-make stress-run
 tests-pretty:
 	$(MAKE) all | column -t -s:
 
-CFLAGS = -g -O2 -Wall -Werror -std=c99 -std=gnu99 -D_POSIX_C_SOURCE=200112L
+CFLAGS = -g -O2 -Wall -Werror -D_POSIX_C_SOURCE=200112L
+
+# add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
+check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
+CFLAGS += $(call check_gcc,-std=c99,)
+CFLAGS += $(call check_gcc,-std=gnu99,)
 
 INCLUDE = -Iinclude
 
@@ -83,15 +85,33 @@ clean:
 %.run-test: %.test
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
-	if $< > $$COMPLOG 2>&1; \
+	$< > $$COMPLOG 2>&1; \
+	RESULT=$$?; \
+	if [ $$RESULT == 1 ]; \
+	then \
+		MSG="FAILED"; \
+	fi; \
+	if [ $$RESULT == 2 ]; \
+	then \
+		MSG="UNRESOLVED"; \
+	fi; \
+	if [ $$RESULT == 4 ]; \
+	then \
+		MSG="UNSUPPORTED"; \
+	fi; \
+	if [ $$RESULT == 5 ]; \
+	then \
+		MSG="UNTESTED"; \
+	fi; \
+	if [ $$RESULT == 0 ]; \
 	then \
 		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE); \
 	else \
 		( \
-			echo "$(@:.run-test=): execution: FAILED: Output: "; \
+			echo "$(@:.run-test=): execution: $$MSG: Output: "; \
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
-		echo "$(@:.run-test=): execution: FAILED "; \
+		echo "$(@:.run-test=): execution: $$MSG "; \
 	fi; \
 	rm -f $$COMPLOG;
 

@@ -35,6 +35,13 @@ int main(int argc, char *argv[])
 {
 	struct timespec tsT0, tssleep;
 	int pid;
+	
+	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
+	if(getuid() != 0)
+	{
+		printf("Run this test as ROOT, not as a Regular User");
+		return PTS_UNTESTED;
+	}
 
 	if (clock_gettime(CLOCK_REALTIME, &tsT0) != 0) {
 		perror("clock_gettime() did not return success\n");

@@ -46,6 +46,13 @@ int main(int argc, char *argv[])
 	sigset_t set;
 	int flags = 0;
 
+	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
+	if(getuid() != 0)
+	{
+		printf("Run this test as ROOT, not as a Regular User");
+		return PTS_UNTESTED;
+	}
+
 	/*
 	 * set up sigevent for timer
 	 * set up signal set for sigwait

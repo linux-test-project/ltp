@@ -13,6 +13,8 @@
  */
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+#include <errno.h>
 #include "posixtest.h"
 #include "helpers.h"
 
@@ -23,6 +25,13 @@ int main(int argc, char *argv[])
 {
 	struct timespec tpset, tpget, tpreset;
 	int delta;
+
+	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
+	if(getuid() != 0)
+	{
+		printf("Run this test as ROOT, not as a Regular User");
+		return PTS_UNTESTED;
+	}
 
 	getBeforeTime(&tpreset);
 
