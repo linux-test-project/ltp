@@ -65,7 +65,7 @@ int idle_count = 0;
  * The value of 1000 seems to work (ie. demonstrate the problem) on my
  * 8 way (hyperthreaded) 2GHz Xeon box.
  */
-#define NSECS_TO_WAIT	(1000)
+#define NSECS_TO_WAIT	(1)
 
 void call_mutex_init(pthread_mutex_t* mutex, char* buf, size_t buf_len) {
     int ret;
@@ -140,8 +140,8 @@ void do_timedwait(pthread_cond_t* cond, pthread_mutex_t* mutex,
 
     call_mutex_lock(mutex, buf, buf_len);
     if ((ret = pthread_cond_timedwait(cond, mutex, &ts)) != ETIMEDOUT) {
-	tst_resm(TWARN, "Loop %d of 1000000: pthread_cond_timedwait() didn't timeout",i);
-	tst_resm(TWARN, "You may want to try reducing the value of NSECS_TO_WAIT (currently=%d)",
+	tst_resm(TINFO, "Loop %d of 1000000: pthread_cond_timedwait() didn't timeout",i);
+	tst_resm(TINFO, "You may want to try reducing the value of NSECS_TO_WAIT (currently=%d)",
 		NSECS_TO_WAIT);
     }
     call_mutex_unlock(mutex, buf, buf_len);
@@ -250,12 +250,6 @@ int main(int argc, char** argv)
 void
 cleanup()
 {
-
-        /*
-         * print timing stats if that option was specified.
-         * print errno log if that option was specified.
-         */
-        TEST_CLEANUP;
 
         /* exit with return code appropriate for results */
         tst_exit();
