@@ -13,8 +13,8 @@ export CC AR LDFLAGS LOADLIBES
 
 all: libltp.a 
 	@$(MAKE) -C pan $@
-	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases $@
+	@$(MAKE) -C tools $@
 	@echo
 	@echo "***********************************************"
 	@echo "** You now need to do a make install as root **"
