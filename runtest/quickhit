@@ -1,0 +1,105 @@
+access01 access01
+access03 access03
+alarm01 alarm01
+alarm02 alarm02
+alarm03 alarm03
+asyncio02 asyncio02
+chdir02 chdir02
+chmod02 chmod02
+chown01 chown01
+close08 close08
+creat09 creat09
+dup01 dup01
+dup02 dup02
+dup03 dup03
+dup04 dup04
+dup05 dup05
+execl01 execl01
+execle01 execle01
+execlp01 execlp01
+execv01 execv01
+execve01 execve01
+execvp01 execvp01
+fchmod01 fchmod01
+fchown01 fchown01
+fcntl02 fcntl02
+fcntl03 fcntl03
+fcntl04 fcntl04
+fcntl05 fcntl05
+fcntl07 fcntl07
+fcntl07B fcntl07B
+fcntl08 fcntl08
+fcntl09 fcntl09
+fcntl10 fcntl10
+fork01 fork01
+fork04 fork04
+fpathconf01 fpathconf01
+fstat01 fstat01
+fsync01 fsync01
+getegid01 getegid01
+geteuid01 geteuid01
+getgid01 getgid01
+getgroups01 getgroups01
+getgroups02 getgroups02
+gethostid01 gethostid01
+gethostname01 gethostname01
+getpgrp01 getpgrp01
+getpid01 getpid01
+getppid01 getppid01
+getuid01 getuid01
+kill09 kill09
+link02 link02
+link03 link03
+link04 link04
+link05 link05
+lseek01 lseek01
+lseek02 lseek02
+lseek04 lseek04
+lseek05 lseek05
+lstat02 lstat02
+mkdir01 mkdir01
+mkdir08 mkdir08
+mknod01 mknod01
+nice05 nice05
+open03 open03
+pathconf01 pathconf01
+pause01 pause01
+readlink02 readlink02
+rename02 rename02
+rmdir04 rmdir04
+sbrk01 sbrk01
+select01 select01
+setgid01 setgid01
+setgroups01 setgroups01
+setpgid01 setpgid01
+setregid01 setregid01
+setreuid01 setreuid01
+setuid01 setuid01
+setuid02 setuid02
+stat05 stat05
+sync01 sync01
+time01 time01
+times01 times01
+ulimit01 ulimit01
+umask01 umask01
+uname01 uname01
+unlink05 unlink05
+unlink06 unlink06
+unlink07 unlink07
+wait02 wait02
+write01 write01
+symlink01 symlink01
+symlink02 symlink02
+readlink01 symlink01 -T readlink01
+stat04 symlink01 -T stat04
+lstat01 symlink01 -T lstat01
+mkdir05 symlink01 -T mkdir05
+rmdir03 symlink01 -T rmdir03
+chdir01 symlink01 -T chdir01
+link01 symlink01 -T link01
+unlink01 symlink01 -T unlink01
+chmod01 symlink01 -T chmod01
+utime01 symlink01 -T utime01
+rename01 symlink01 -T rename01
+open01 symlink01 -T open01
+
