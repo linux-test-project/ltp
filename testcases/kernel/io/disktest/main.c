@@ -38,10 +38,27 @@
 *	non-distructive: will read lba/write lba with XOR/bit inverted read data/then read lba to verify
 *
 *
-* $Id: main.c,v 1.2 2003/04/17 15:21:57 robbiew Exp $
+* $Id: main.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: main.c,v $
-* Revision 1.2  2003/04/17 15:21:57  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
+*
+* Revision 1.15  2003/09/12 21:23:01  yardleyb
+* The following isses have been fixed:
+* - Updated to Version 1.12
+* - Disktest will falsely detect a data miscompare
+* when using random block sizes and random data
+* - If the linear option is used while doing random
+* block sizes and read/write/error checks, disktest
+* will hang
+* - Disktest will use the wrong transfer size on
+* the last IO when using random block transfer size
+* and the number of seeks are specified.
+* - Total Reads and Writes not reported correctly
+* - While running linear write/read tests while
+* doing the heartbeat performance and you get an
+* error on the 'write' side of the test, disktest
+* does not exit
 *
 * Revision 1.14  2002/05/31 18:47:59  yardleyb
 * Updates to -pl -pL options.
@@ -268,8 +285,8 @@ void print_stats(child_args_t *args, op_t operation)
 				printf(TCTWSTR, (global_stats.wbytes), (global_stats.wcount));
 			}
 			if((args->flags & CLD_FLG_TPUTS)) {
-				printf(TCTRRSTR, (double) ((global_stats.rbytes) / (read_time)), (double) ((global_stats.rcount) / (read_time)));
-				printf(TCTRWSTR, (double) ((global_stats.wbytes) / (write_time)), (double) ((global_stats.wcount) / (write_time)));
+				printf(TCTRRSTR, (double) ((global_stats.rbytes) / (gr_time)), (double) ((global_stats.rcount) / (gr_time)));
+				printf(TCTRWSTR, (double) ((global_stats.wbytes) / (gw_time)), (double) ((global_stats.wcount) / (gw_time)));
 			}
 			if((args->flags & CLD_FLG_RUNT)) {
 				printf("%lu;secs;",(curr_time - global_start_time));
@@ -419,6 +436,8 @@ void *ChildPS(void *vargs)
 			}
 			seconds = 0;
 		}
+		/* If test failed don't continue to report stats */
+		if(!(TST_STS(args->test_state))) { break; }
 	} while(bContinue);
 	TEXIT(exit_code);
 }
@@ -461,6 +480,9 @@ void linear_read_write_test(child_args_t *args)
 		cycle_stats.wtime = time(NULL) - start_time;
 		if(args->hbeat == 0) print_stats(args, WRITER);
 	}
+
+	/* If the write test failed don't start the read test */
+	if(!(TST_STS(args->test_state))) { return; }
 
 	if(args->flags & CLD_FLG_R) {
 		bContinue = TRUE;
@@ -590,6 +612,7 @@ int main(int argc, char **argv)
 	extern stats_t global_stats;	/* global statistics */
 	extern time_t global_end_time;	/* overall end time of test */
 	extern BOOL bContinue;			/* global that when set to false will force exit of all threads */
+	extern unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
 
 	time_t start_time;
 	OFF_T *pVal1;
@@ -663,8 +686,10 @@ int main(int argc, char **argv)
 			clean_up();
 			cycle_stats.wtime = time(NULL) - start_time;
 			cycle_stats.rtime = time(NULL) - start_time;
-			if(args.hbeat == 0) print_stats(&args, READER);
-			if(args.hbeat == 0) print_stats(&args, WRITER);
+			if(!(glb_flags & GLB_FLG_PERFP)) {
+				if(args.hbeat == 0) print_stats(&args, READER);
+				if(args.hbeat == 0) print_stats(&args, WRITER);
+			}
 		}
 		/* 
 		 * Reset all the start conditions in case
@@ -681,7 +706,7 @@ int main(int argc, char **argv)
 			&& (args.flags & CLD_FLG_SKS)
 			&& ((global_stats.rcount+global_stats.wcount) >= args.seeks))
 			break;
-	} while(TST_STS(args.test_state) == 1);
+	} while(TST_STS(args.test_state));
 
 	print_stats(&args, ALL);
 

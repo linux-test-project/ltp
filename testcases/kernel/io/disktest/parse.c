@@ -22,13 +22,21 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.c,v 1.3 2003/05/07 16:38:52 robbiew Exp $
+* $Id: parse.c,v 1.4 2003/09/17 17:15:28 robbiew Exp $
 * $Log: parse.c,v $
-* Revision 1.3  2003/05/07 16:38:52  robbiew
-* Added code to handle cases where direct I/O is not supported.
+* Revision 1.4  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
 *
-* Revision 1.2  2003/04/17 15:21:57  robbiew
-* Updated to v1.1.10
+* Revision 1.12  2003/09/12 21:47:22  yardleyb
+* Removed a debug message
+*
+* Revision 1.11  2003/09/12 18:10:09  yardleyb
+* Updated to version 1.11
+* Code added to fix compile
+* time warnings
+*
+* Revision 1.10  2003/04/08 17:21:19  yardleyb
+* Added get volume size code for any AIX volume type
 *
 * Revision 1.9  2002/05/31 18:47:59  yardleyb
 * Updates to -pl -pL options.
@@ -243,6 +251,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					}
 					args->htrsiz = args->ltrsiz;
 				}
+				PDBG5(DEBUG,"Parsed Transfer size: %ld\n", args->htrsiz);
 				break;
 			case 'c' :
 				if(args->flags & CLD_FLG_PTYPS) {
@@ -418,12 +427,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					}
 				}
 				if (strchr(optarg,'D') || strchr(optarg,'d'))
-#ifdef O_DIRECT
 					args->flags |= CLD_FLG_DIRECT;
-#else
-					pMsg(WARN, "This system does not support direct I/O\n");
-					return(-1);
-#endif
 				break;
 			case 'T' :
 				if(optarg == NULL) {
@@ -778,10 +782,12 @@ int check_conclusions(child_args_t *args)
 		pMsg(WARN, "Can't have unfixed block sizes and specify seek range in terms of blocks.\n");
 		return(-1);
 	}
+	/* Commented out to not limit the block transfer size
 	if(args->htrsiz > M_BLK_SIZE) {
 		pMsg(WARN, "Transfer size exceeds max transfer size of %luk, use -B to adjust.\n", M_BLK_SIZE/2);
 		return(-1);
 	}
+	*/
 	if((args->vsiz < 0) || (args->ltrsiz < 1) || (args->htrsiz < 1)) {
 		pMsg(WARN, "Bounds exceeded for transfer size and/or volume size.\n");
 #ifdef WINDOWS

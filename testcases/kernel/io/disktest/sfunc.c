@@ -23,10 +23,27 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.c,v 1.2 2003/04/17 15:21:58 robbiew Exp $
+* $Id: sfunc.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: sfunc.c,v $
-* Revision 1.2  2003/04/17 15:21:58  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
+*
+* Revision 1.17  2003/09/12 21:23:01  yardleyb
+* The following isses have been fixed:
+* - Updated to Version 1.12
+* - Disktest will falsely detect a data miscompare
+* when using random block sizes and random data
+* - If the linear option is used while doing random
+* block sizes and read/write/error checks, disktest
+* will hang
+* - Disktest will use the wrong transfer size on
+* the last IO when using random block transfer size
+* and the number of seeks are specified.
+* - Total Reads and Writes not reported correctly
+* - While running linear write/read tests while
+* doing the heartbeat performance and you get an
+* error on the 'write' side of the test, disktest
+* does not exit
 *
 * Revision 1.16  2003/01/13 21:58:23  yardleyb
 * Added includes for AIX change
@@ -443,8 +460,18 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 			}
 			break;
 		case CLD_FLG_RPTYPE :
-			/* Will fill buffer with a random pattern. */
-			for(i=0;i<len/sizeof(OFF_T);i++) *(off_tbuf+i) = Rand64();
+			/* Will fill buffer with a random pattern.
+			 * Unfortunatly, every LBA, 512 bytes of data will be
+			 * the same random data set, this is due to the LBA
+			 * boundary requirement of disktest.  This should be fixed
+			 * at some point...
+			 */
+			for(i=0;i<BLK_SIZE/sizeof(OFF_T);i++)
+				*(off_tbuf+i) = Rand64();
+
+			for(i=BLK_SIZE;i<len;i+=BLK_SIZE)
+				memcpy((ucharbuf+i), ucharbuf, BLK_SIZE);
+//			for(i=0;i<len/sizeof(OFF_T);i++) *(off_tbuf+i) = Rand64();
 			break;
 		default :
 			printf("Unknown fill pattern\n");

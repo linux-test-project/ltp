@@ -22,13 +22,10 @@
 *
 *  Project Website:  TBD
 *
-* $Id: io.c,v 1.2 2003/05/07 16:38:52 robbiew Exp $
+* $Id: io.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: io.c,v $
-* Revision 1.2  2003/05/07 16:38:52  robbiew
-* Added code to handle cases where direct I/O is not supported.
-*
-* Revision 1.1  2003/04/17 15:22:46  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
 *
 * Revision 1.6  2002/05/31 18:47:59  yardleyb
 * Updates to -pl -pL options.
@@ -197,10 +194,8 @@ fd_t Open(const char *filespec, const OFF_T flags)
 #ifdef CLD_FLG_FILE
 	if(flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
 #endif
-#ifdef CLD_FLG_DIRECT 
-#ifdef O_DIRECT
+#ifdef CLD_FLG_DIRECT
 	if(flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
-#endif
 #endif
 	fd = open(filespec,OPEN_MASK,00600);
 #endif

@@ -23,10 +23,32 @@
 *  Project Website:  TBD
 *
 *
-* $Id: main.h,v 1.2 2003/04/17 15:21:57 robbiew Exp $
+* $Id: main.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: main.h,v $
-* Revision 1.2  2003/04/17 15:21:57  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
+*
+* Revision 1.14  2003/09/12 21:23:01  yardleyb
+* The following isses have been fixed:
+* - Updated to Version 1.12
+* - Disktest will falsely detect a data miscompare
+* when using random block sizes and random data
+* - If the linear option is used while doing random
+* block sizes and read/write/error checks, disktest
+* will hang
+* - Disktest will use the wrong transfer size on
+* the last IO when using random block transfer size
+* and the number of seeks are specified.
+* - Total Reads and Writes not reported correctly
+* - While running linear write/read tests while
+* doing the heartbeat performance and you get an
+* error on the 'write' side of the test, disktest
+* does not exit
+*
+* Revision 1.13  2003/09/12 18:10:09  yardleyb
+* Updated to version 1.11
+* Code added to fix compile
+* time warnings
 *
 * Revision 1.12  2003/01/13 21:33:31  yardleyb
 * Added code to detect AIX volume size.
@@ -192,7 +214,7 @@
 #include <fcntl.h>
 #include "defs.h"
 
-#define VER_STR "v1.1.10"
+#define VER_STR "v1.1.12"
 #define BLKGETSIZE _IO(0x12,96)
 #define BLKSSZGET  _IO(0x12,104)
 
@@ -202,13 +224,15 @@
 #define BLK_SIZE	512
 #define M_BLK_SIZE	512
 #define ALIGNSIZE	4096	/* 4k alignment works in all cases ?? */
+
 #if __WORDSIZE == 64
 #define ALIGN(x, bs) (((OFF_T)x + ((OFF_T)bs - 1)) & ~((OFF_T)bs - 1))
-#define BUFALIGN(x) (void *) (((unsigned long)x + (OFF_T)(ALIGNSIZE - 1)) & (OFF_T)~(ALIGNSIZE - 1)) 
+#define BUFALIGN(x) (void *) (((unsigned long)x + (OFF_T)(ALIGNSIZE - 1)) & (OFF_T)~(ALIGNSIZE - 1))
 #else
 #define ALIGN(x, bs) ((x + (bs - 1)) & ~(bs - 1))
-#define BUFALIGN(x) (void *) (((unsigned long)x + (ALIGNSIZE - 1)) & ~(ALIGNSIZE - 1)) 
+#define BUFALIGN(x) (void *) (((unsigned long)x + (ALIGNSIZE - 1)) & ~(ALIGNSIZE - 1))
 #endif
+
 #define MASK(x,y) (x & y)
 
 /* each is a 64b number.  offsets are in 8B*offset placement */

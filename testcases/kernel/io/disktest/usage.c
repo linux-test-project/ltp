@@ -23,10 +23,10 @@
 *  Project Website:  TBD
 *
 *
-* $Id: usage.c,v 1.2 2003/04/17 15:21:59 robbiew Exp $
+* $Id: usage.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: usage.c,v $
-* Revision 1.2  2003/04/17 15:21:59  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
 *
 * Revision 1.11  2002/03/07 03:33:11  yardleyb
 * More cleanup to usage text.

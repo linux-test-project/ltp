@@ -22,10 +22,27 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.2 2003/04/17 15:21:56 robbiew Exp $
+* $Id: childmain.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: childmain.c,v $
-* Revision 1.2  2003/04/17 15:21:56  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
+*
+* Revision 1.11  2003/09/12 21:23:01  yardleyb
+* The following isses have been fixed:
+* - Updated to Version 1.12
+* - Disktest will falsely detect a data miscompare
+* when using random block sizes and random data
+* - If the linear option is used while doing random
+* block sizes and read/write/error checks, disktest
+* will hang
+* - Disktest will use the wrong transfer size on
+* the last IO when using random block transfer size
+* and the number of seeks are specified.
+* - Total Reads and Writes not reported correctly
+* - While running linear write/read tests while
+* doing the heartbeat performance and you get an
+* error on the 'write' side of the test, disktest
+* does not exit
 *
 * Revision 1.10  2003/01/13 21:33:31  yardleyb
 * Added code to detect AIX volume size.
@@ -144,6 +161,7 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 	action_t target;
 	short direct = 0;
 	BOOL bChangeState = FALSE;
+	static unsigned long last_trsiz = 0;
 
 	/* pick an operation */
 	if(args->flags & CLD_FLG_RANDOM) {
@@ -162,13 +180,18 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 	if(!(args->flags & CLD_FLG_RTRSIZ)) {
 		target.trsiz = args->ltrsiz;
 	} else {
-		do {
-			if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
-				break;
-			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
-				break;
-			target.trsiz = (rand()&0xFF) + args->ltrsiz;
-		} while(target.trsiz > args->htrsiz);
+		if((last_trsiz != 0) && (args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_LINEAR) && (target.oper == READER)) {
+			target.trsiz = last_trsiz;
+		} else {
+			do {
+				target.trsiz = (rand()&0xFF) + args->ltrsiz;
+				if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
+					break;
+				if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
+					break;
+			} while(target.trsiz > args->htrsiz);
+			last_trsiz = target.trsiz;
+		}
 	}
 
 	/* pick an lba */

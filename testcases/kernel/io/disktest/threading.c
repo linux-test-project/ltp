@@ -22,10 +22,10 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.c,v 1.2 2003/04/17 15:21:58 robbiew Exp $
+* $Id: threading.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
 * $Log: threading.c,v $
-* Revision 1.2  2003/04/17 15:21:58  robbiew
-* Updated to v1.1.10
+* Revision 1.3  2003/09/17 17:15:28  robbiew
+* Update to 1.1.12
 *
 * Revision 1.7  2002/04/24 01:45:31  yardleyb
 * Minor Fixes:
