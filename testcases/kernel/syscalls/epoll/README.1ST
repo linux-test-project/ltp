@@ -1,0 +1,23 @@
+Epoll Setup
+
+In order to compile the epoll-ltp successfully you need the following libraries:
+
+-	Epoll library http://www.xmailserver.org/linux-patches/epoll-lib-0.11.tar.gz
+-	Portable Coroutine Library (PCL)  http://www.xmailserver.org/libpcl.html
+
+
+1.	Download and untar the PCL library
+2.	Run ./configure
+3.	Run make
+4.	Run make install
+5.	Copy <libpcl_directory>/pcl/.libs/libpcl.* /lib
+6.	Download and untar the epoll library
+7.	*You may have to modify the makefile in <epoll-lib_directory>/Makefile and <epoll-lib_directory>/examples/Makefile with the following
+-	KERNELDIR = kernel_directory
+-	#all: .depend $(TARGET) epoll-example  change this line to 
+-	all: .$(TARGET) epoll-example
+-	#include .depend  comment out this line
+8.	Copy <epoll-lib_directory>/include/epoll.h    /usr/include
+9.	<epoll-lib_directory>  make
+10. Copy <epoll-lib_directory>/lib/libepoll*    /lib
+
