@@ -56,7 +56,7 @@
 #define PASSED 1
 
 
-char *TCID = "kill11";
+char *TCID = "kill12";
 
 
 int local_flag = PASSED;
