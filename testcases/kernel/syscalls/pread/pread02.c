@@ -157,10 +157,10 @@ main(int ac, char **av)
 
 			/* Check for the return code of pread() */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "pread() returned %d, expected "
-					 "-1, errno:%d", TEST_RETURN,
+				tst_brkm(TFAIL, cleanup, "pread() returned "
+					 "%d, expected -1, errno:%d",
+					 TEST_RETURN,
 					 Test_cases[i].exp_errno);
-				continue;
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -326,4 +326,6 @@ cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
+
+	tst_exit();
 }
