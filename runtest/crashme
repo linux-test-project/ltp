@@ -3,7 +3,7 @@ f00f f00f
 # This is a simple test for handling of the pentium f00f bug.
 # It is an example of a catistrophic test case.  If the system
 # doesn't correctly handle this test, it will likely lockup.
-#crash01 crash01
+crash01 crash01
 # Generate random code and execute it. Read f00f comment,
 # this test lockup SunOS,WindowsNT,etc. in seconds..
 crash02 crash02
