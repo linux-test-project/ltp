@@ -118,7 +118,7 @@ struct passwd *ltpuser;
 struct utsname uval;
 char *kmachine;
 
-static int swapfile;	 	 /* Number of swapfiles turned on*/
+static int swapfiles;	 	 /* Number of swapfiles turned on*/
 
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
 
@@ -267,146 +267,154 @@ setup02()
 int
 setup03()
 {
-		 int j, fd;		 		 /*j is loop counter, fd is file descriptor*/
-		 int pid;		    		 /* used for fork */
-		 int *status=NULL;		 /* used for fork */
-		 int res = 0;
-		 int nSwapNO;
-		 char cmd_buffer[100];		 /* array to hold command line*/
-		 char filename[15];		 /* array to store new filename*/
-		 char decimal[3];		 /* array for digits at end of filename*/
-		 char temp[7];		 		 /* to store wc -l output*/
+    int j, fd;              /*j is loop counter, fd is file descriptor*/
+    int pid;                    /* used for fork */
+    int *status=NULL;       /* used for fork */
+    int res = 0;
+    int  bs, count;
+    char cmd_buffer[100];       /* array to hold command line*/
+    char filename[15];      /* array to store new filename*/
+    char decimal[3];        /* array for digits at end of filename*/
+#if 0
+    char temp[7];               /* to store wc -l output*/
+#endif
+    /*Find out how many swapfiles (1 line per entry) already exist*/
+    /*This includes the first (header) line*/
+    if (system("cat /proc/swaps | wc -l > ./linecount") != 0) {
+        tst_resm(TWARN, "Failed to find out existing number of swap"
+                 " files");
+        exit(1);
+    }
+    /*open linecount file to know the number of entries*/
+    if ((fd = open("./linecount", O_RDONLY)) == -1) {
+        tst_resm(TWARN, "Failed to find out existing number of swap"
+                 " files");
+        exit(1);
+    }
 
-		/*Find out how many swapfiles (1 line per entry) already exist*/
-	    	 if(system("cat /proc/swaps | wc -l > ./linecount") != 0) {
-	 			 tst_resm(TWARN, "Failed to find out existing number of swap"
-	 			 		 		 " files");
-	 		 	exit(1);
-		 }
-		 /*open linecount file to know the number of entries*/
-		 if((fd = open("./linecount", O_RDONLY)) == -1) {
-		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
-		 		 		 		 " files");
-		 		 exit(1);
-		 }
-		 /* 6th and 7th character in the file contains output of wc -l*/
-		 if( (res = read(fd, temp, 7)) < 0) {
-		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
-		 		 		 		 " files");
-		 		 exit(1);
-		 }
+    /* 1st and 2nd character in the file contains output of wc -l*/
+    if ( (res = read(fd, decimal, 3)) < 0) {
+        tst_resm(TWARN, "Failed to find out existing number of swap"
+                 " files");
+        exit(1);
+    }
+    close(fd);
 
-		// Added by CSDL - for ppc64 SLES, temp[0-6]="XX....."
-		 if ((strncmp(kmachine, "ppc64", 5)) == 0) {
-			int i;
-			for (i=res; i<7; i++) {
-				temp[i]=0;
-			}
-			nSwapNO = atoi(temp);
-			sprintf(temp,"%7d",nSwapNO);
-		 }
-		// Adde end
-		 /*check if number of lines are less than 10 in /proc/swaps*/
-		 if(temp[5] == ' ') {
-		 		 decimal[0] = '0';
-		 } else {
-		 		 decimal[0] = temp[5];
-		 }
+#if 0
+    // Added by CSDL - for ppc64 SLES, temp[0-6]="XX....."
+    if ((strncmp(kmachine, "ppc64", 5)) == 0) {
+        int nSwapNO, i;
+        for (i=res; i<7; i++) {
+            temp[i]=0;
+        }
+        nSwapNO = atoi(temp);
+        sprintf(temp,"%7d",nSwapNO);
+    }
+    // Adde end
+    /*check if number of lines are less than 10 in /proc/swaps*/
+    if (temp[5] == ' ') {
+        decimal[0] = '0';
+    } else {
+        decimal[0] = temp[5];
+    }
 
-		 decimal[1] = temp[6];		 /*temp[6] unit digit of wc -l result*/
+    decimal[1] = temp[6];       /*temp[6] unit digit of wc -l result*/
 
-		 swapfile = atoi(decimal);
-		 if(swapfile < 0) {
-		 		 tst_resm(TWARN, "Failed to find existing number of swapfiles");
-		 		 exit(1);
-		 }
+#endif
 
-		 /* Determine how many more files are to be created*/
-		 swapfile = MAX_SWAPFILES - swapfile + 1;
-			 if (swapfile > MAX_SWAPFILES) {
-				 swapfile = MAX_SWAPFILES;
-			 }	
+    swapfiles = atoi(decimal);
+    swapfiles--; /* don't count the /proc/swaps header */
 
-		 pid=fork();
-        if (pid == 0){
-		   /*create and turn on remaining swapfiles*/
-		   for(j = 0; j < swapfile; j++) {
+    if (swapfiles < 0) {
+        tst_resm(TWARN, "Failed to find existing number of swapfiles");
+        exit(1);
+    }
 
-		 		 /*prepare filename for the iteration*/
-		 		 if(sprintf(filename, "swapfile%02d", j+2) < 0) {
-		 		 		 tst_resm(TWARN, "sprintf() failed to create filename");
-		 		 		 exit(1);
-		 		 }
-		 		 
-		 		 /*prepare the path string for dd command and dd command*/
-		if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		 		 if(sprintf(cmd_buffer, "dd if=/dev/zero of=%s  bs=1024"
-		 		 		 		 " count=1024 > tmpfile 2>&1", filename) < 0) {
-		 		 		 tst_resm(TWARN, "dd command failed to create file");
-		 		 		 exit(1);
-		 		 }
-		 } else {
-		 		 if(sprintf(cmd_buffer, "dd if=/dev/zero of=%s  bs=1048"
-		 		 		 " count=40 > tmpfile 2>&1", filename) < 0) {
-		 		 tst_resm(TWARN, "dd command failed to create file");
-		 		 exit(1);
-		 		 }
+    /* Determine how many more files are to be created*/
+    swapfiles = MAX_SWAPFILES - swapfiles;
+    if (swapfiles > MAX_SWAPFILES) {
+        swapfiles = MAX_SWAPFILES;
+    }
 
 
-		 }
+    /* args for dd */
+    if ((strncmp(kmachine, "ia64", 4)) == 0) {
+        bs = 1024;
+        count = 1024;
+    } else {
+        bs = 1048;
+        count = 40;
+    }
 
-		 		 if(system(cmd_buffer) != 0) {
-		 		 		 tst_resm(TWARN, "sprintf() failed to create swapfiles");
-		 		 		 exit(1);
-		 		 }
+    pid=fork();
+    if (pid == 0) {
+        /*create and turn on remaining swapfiles*/
+        for (j = 0; j < swapfiles; j++) {
 
-		 		 /* make the file swapfile*/
-		 		 if(sprintf(cmd_buffer, "mkswap %s > tmpfile 2>&1", filename)
-		 		 		 		 < 0) {
-		 		 		 tst_resm(TWARN, "Failed to make swap %s", filename);
-		 		 		 exit(1);
-		 		 }
+            /*prepare filename for the iteration*/
+            if (sprintf(filename, "swapfile%02d", j+2) < 0) {
+                tst_resm(TWARN, "sprintf() failed to create filename");
+                exit(1);
+            }
 
-		 		 if(system(cmd_buffer) != 0) {
-		 		 		 tst_resm(TWARN, "failed to make swap file %s",
-		 		 		 		 		 filename); 
-		 		 		 exit(1);
-		 		 }
 
-		 		 /* turn on the swap file*/
-		 		 if(swapon(filename, 0) != 0) {
-		 		 		 tst_resm(TWARN, "Failed swapon for file %s"
-		 		 		 		 		 "returned %d", filename);
-		 		 		 /* must cleanup already swapon files */
-		 		 		 cleanup03();
-		 		 		 exit(1);
-		 		 }
-		   }
-		   tst_exit();
-		 }
-		 else
-		   waitpid(pid,status,0);
-		 /*create extra swapfile for testing*/
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		 if(system("dd if=/dev/zero of=swapfilenext bs=1024 count=1024 >tmpfile"
-		 		 		 		 " 2>&1") != 0) {
-		 		 tst_resm(TWARN, "Failed to create extra file for swap");
-		 		 exit(1);
-		 }
-		 } else {
-		 if(system("dd if=/dev/zero of=swapfilenext bs=1048 count=40 > tmpfile"
-		 		 		 		 " 2>&1") != 0) {
-		 		 tst_resm(TWARN, "Failed to create extra file for swap");
-		 		 exit(1);
-		 }
-		 }
+            /*prepare the path string for dd command and dd command*/
+            if (sprintf(cmd_buffer, "dd if=/dev/zero of=%s bs=%d"
+                        " count=%d > tmpfile 2>&1", filename, bs, count) < 0) {
+                tst_resm(TWARN, "dd command failed to create file");
+                exit(1);
+            }
+            if (system(cmd_buffer) != 0) {
+                tst_resm(TWARN, "sprintf() failed to create swapfiles");
+                exit(1);
+            }
 
-		 if(system("mkswap ./swapfilenext > tmpfle 2>&1") != 0) {
-		 		 tst_resm(TWARN, "Failed to make extra swapfile");
-		 		 exit(1);
-		 }
+            /* make the file swapfile*/
+            if (sprintf(cmd_buffer, "mkswap %s > tmpfile 2>&1", filename)
+                < 0) {
+                tst_resm(TWARN, "Failed to make swap %s", filename);
+                exit(1);
+            }
 
-		 return 0;
+            if (system(cmd_buffer) != 0) {
+                tst_resm(TWARN, "failed to make swap file %s",
+                         filename); 
+                exit(1);
+            }
+
+            /* turn on the swap file*/
+            if (swapon(filename, 0) != 0) {
+                tst_resm(TWARN, "Failed swapon for file %s"
+                         "returned %d", filename);
+                /* must cleanup already swapon files */
+                cleanup03();
+                exit(1);
+            }
+        }
+        tst_exit();
+    } else
+        waitpid(pid,status,0);
+    /*create extra swapfile for testing*/
+    if ((strncmp(kmachine, "ia64", 4)) == 0) {
+        if (system("dd if=/dev/zero of=swapfilenext bs=1024 count=65536 >tmpfile"
+                   " 2>&1") != 0) {
+            tst_resm(TWARN, "Failed to create extra file for swap");
+            exit(1);
+        }
+    } else {
+        if (system("dd if=/dev/zero of=swapfilenext bs=1048 count=40 > tmpfile"
+                   " 2>&1") != 0) {
+            tst_resm(TWARN, "Failed to create extra file for swap");
+            exit(1);
+        }
+    }
+
+    if (system("mkswap ./swapfilenext > tmpfle 2>&1") != 0) {
+        tst_resm(TWARN, "Failed to make extra swapfile");
+        exit(1);
+    }
+
+    return 0;
 }
 
 /*
@@ -418,7 +426,7 @@ cleanup03()
 		 int j;		 		 		 /* loop counter*/
 		 char filename[15];
 
-		 for(j = 0; j < swapfile; j++) {
+		 for(j = 0; j < swapfiles; j++) {
 		 		 if( sprintf(filename, "swapfile%02d", j+2) < 0) {
 		 		 		 tst_resm(TWARN, "sprintf() failed to create filename");
 		 		 		 tst_resm(TWARN, "Failed to turn off swap files. System"
@@ -456,7 +464,7 @@ setup()
 
   /*create file*/
   if ((strncmp(kmachine, "ia64", 4)) == 0) {
-    if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=1024 > tmpfile"
+    if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
 	     " 2>&1") != 0) {
      tst_brkm(TBROK, cleanup, "Failed to create file for swap");
     }
