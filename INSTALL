@@ -1,12 +1,13 @@
-$Id: INSTALL,v 1.13 2001/10/12 20:51:55 robbiew Exp $
+$Id: INSTALL,v 1.14 2003/02/05 16:30:06 robbiew Exp $
 
 Quick Start
 -----------
 
 1> tar xzf ltp-XXXXXXXX.tar.gz
 2> cd ltp
-3> make
-4> ./runalltests.sh
+3> make 
+4> make install
+5> ./runalltests.sh
 
 *NOTE: The LTP assumes the existence of the nobody, bin, and daemon users and their groups.  
 If these ids do not exist, certain tests will fail. The users and groups IDs should be the 
