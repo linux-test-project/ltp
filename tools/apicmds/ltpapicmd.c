@@ -51,6 +51,9 @@
  * Dec 12 2002 - Modified - Code that checked if the environment variables
  *               TCID and TST_TOTAL were set did not print usage message. 
  *               Modified code to print usage message in each case.
+ * Dec 16 2002 - Modified - Code to get the test number, gets environment
+ *               variable TST_COUNT and initializes Tst_count.
+ * Dec 16 2002 - Documentation and comment changes.
  * 
  */
 
@@ -130,6 +133,12 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
  *              The different commands are actually a hard link to this program
  *              the program invokes the appropriate function based on the
  *              command name with which it was invoked.
+ *
+ *              Set the values for TCID to the name of the test case.
+ *              set the value for TST_TOTAL for total number of tests this is
+ *              required in case one test breaks and all following tests also
+ *              should be reported as broken. 
+ *              Set Tst_count before every individual test.
  *              
  * Exit:        0 on success
  *              -1 on failure
@@ -137,39 +146,41 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
 main( int argc,
       char *argv[])
 {
-    int trestype;
-    char *arg_fmt;
-    char *cmd_name;
-    char *testdir;
-    char *tst_total;
-    char *file_name;
+    int  trestype;      /* test result type TFAIL, TPASS, TINFO etc           */
+    char *arg_fmt;      /* message string printed along with test type        */
+    char *cmd_name;     /* name by which this program is invoked tst_brk etc  */
+    char *tst_total;    /* total number of tests in the file.                 */
+    char *tst_count;    /* sets the value of Tst_count with this value        */
+    char *file_name;    /* contents of this file are printed; see tst_res()   */
 
     arg_fmt = malloc(1024);
     cmd_name = malloc(1024);
-    testdir = malloc(1024);
 
     if (((TCID = getenv("TCID")) == NULL) || 
-			((tst_total = getenv("TST_TOTAL")) == NULL))
+            ((tst_total = getenv("TST_TOTAL")) == NULL) || 
+            ((tst_count = getenv("TST_COUNT")) == NULL))
     {
         fprintf(stderr, "\nSet variables TCID and TST_TOTAL\n"
-				"export TCID=<test name>\n"
-				"export TST_TOTAL=<Total Number of Tests >\n\n");
+                "export TCID=<test name>\n"
+                "export TST_TOTAL=<Total Number of Tests >\n"
+                "export TST_COUNT=<Test case number; before each test\n\n");
     }
-	else
-	{
-		TST_TOTAL = atoi(tst_total);
+    else
+    {
+        TST_TOTAL = atoi(tst_total);
+        Tst_count = atoi(tst_count) - 1;
 
-		if (strcmp(TCID, " ") == 0)
-		{
-			fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-			exit(-1);
-		}
-		if (TST_TOTAL == 0)
-		{
-			fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-			exit(-1);
-		}
-	}
+        if (strcmp(TCID, " ") == 0)
+        {
+            fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+            exit(-1);
+        }
+        if (TST_TOTAL == 0)
+        {
+            fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+            exit(-1);
+        }
+    }
 
     strcpy(cmd_name, (char *)basename(argv++[0]));
 
