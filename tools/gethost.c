@@ -4,10 +4,6 @@
 
 /* DECWRL Header: host.c,v 1.1 89/04/05 15:41:12 vixie Locked $ */
 
-#ifndef lint
-static char RcsId[] = "$Id: gethost.c,v 1.2 2002/03/27 22:54:09 robbiew Exp $";
-#endif
-
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
