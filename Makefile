@@ -6,6 +6,7 @@ all: libltp.a
 	@$(MAKE) -C doio $@
 	@$(MAKE) -C tests $@
 	@$(MAKE) -C pan $@
+	@$(MAKE) -C tools $@
 
 libltp.a:
 	@$(MAKE) -C lib $@
@@ -15,3 +16,4 @@ clean:
 	@$(MAKE) -C doio $@
 	@$(MAKE) -C tests $@
 	@$(MAKE) -C pan $@
+	@$(MAKE) -C tools $@
