@@ -34,6 +34,8 @@
 
 #define SIGTOTEST SIGALRM
 
+extern int setresuid(uid_t, uid_t, uid_t);
+
 int main()
 {
 	int pid;
@@ -59,7 +61,7 @@ int main()
 	} else {
 		/* parent here */
 
-	        if (-1 == setuid(1)) {
+	        if (-1 == setresuid(1,1,-1)) {
 			printf("Error setting user ID\n");
 			return PTS_UNRESOLVED;
         	}
@@ -73,6 +75,8 @@ int main()
 		} else {
 			if (EPERM == errno) {
 				printf("Test PASSED\n");
+				setresuid(0,0,-1);
+				kill(pid, SIGKILL);
 				return PTS_PASS;
 			} else {
 				printf("kill failed; errno != EPERM\n");
