@@ -35,6 +35,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <resolv.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -107,7 +108,7 @@ int main(int argc, char *argv[]) {
     /* check command line args */
     if (argc < 4) {
         printf("usage :<server-hostname> <trace-hostName> <data1> ... <dataN> \n");
-        _exit(1);
+        exit(1);
     }
 
     strncpy(progName, argv[0], MAX_MSG_LEN);
@@ -119,7 +120,7 @@ int main(int argc, char *argv[]) {
 
     if (hostEntry == NULL) {
         printf("%s: unknown host passed'%s' \n", progName, hostName);
-        _exit(1);
+        exit(1);
     }
 
     printf("%s: sending data to '%s' (IP : %s) \n", progName, hostEntry->h_name,
