@@ -96,7 +96,7 @@ struct test_case_t {
 	int error;
 	char *edesc;
 } TC[] = {
-	{&addr1, LEN, EINVAL, "len was not a positive number" },
+	{&addr1, LEN, EINVAL, "EINVAL:len was not a positive number" },
 };
 
 int main(int ac, char **av)
