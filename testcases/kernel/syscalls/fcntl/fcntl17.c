@@ -63,6 +63,7 @@ int child_pipe2[2];
 int child_pipe3[2];
 int file_fd;
 short parent_pid, child_pid1, child_pid2, child_pid3;
+int child_stat;
 char *file;
 struct flock lock1 = { (short)F_WRLCK, (short)0,  2,  5, (short)0 };
 struct flock lock2 = { (short)F_WRLCK, (short)0,  9,  5, (short)0 };
@@ -252,6 +253,9 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 	}
+	waitpid(child_pid1, &child_stat, 0);
+	waitpid(child_pid2, &child_stat, 0);
+	waitpid(child_pid3, &child_stat, 0);
 	cleanup();
 }
 
