@@ -1,0 +1,234 @@
+/*
+ * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ *
+ */
+/**********************************************************
+ * 
+ *    TEST IDENTIFIER	: capset02
+ * 
+ *    EXECUTED BY	: anyone
+ * 
+ *    TEST TITLE	: Tests for error conditions.
+ * 
+ *    TEST CASE TOTAL	: 4
+ * 
+ *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
+ * 
+ *    SIGNALS
+ * 	Uses SIGUSR1 to pause before test if option set.
+ * 	(See the parse_opts(3) man page).
+ *
+ *    DESCRIPTION
+ *	Verify that
+ *	1) capset() fails with errno set to EFAULT if an invalid address
+ *	   is given for header
+ *	2) capset() fails with errno set to EFAULT if an invalid address
+ *	   is given for data
+ *	3) capset() fails with errno set to EINVAL if an invalid value
+ *	   is given for header->version
+ *	4) capset() fails with errno set to EPERM the process does not
+ *	   have enough privilege to set capabilities
+ *	
+ * 
+ * 	Setup:
+ * 	  Setup signal handling.
+ *	  Pause for SIGUSR1 if option specified.
+ *	  Call capget() to save current capability data
+ * 
+ * 	Test:
+ *	 Loop if the proper options are given.
+ *	  do test specific setup.
+ * 	  call capset with proper arguments
+ *	  if capset() fails with expected errno
+ *		Test passed
+ *	  Otherwise
+ *		Test failed
+ *	  do test specific cleanup
+ * 
+ * 	Cleanup:
+ * 	  Print errno log and/or timing stats if options given
+ * 
+ * USAGE:  <for command-line>
+ * capset02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
+ *			where,  -c n : Run n copies concurrently.
+ *				-e   : Turn on errno logging.
+ *				-h   : Show help screen
+ *				-f   : Turn off functional testing
+ *				-i n : Execute test n times.
+ *				-I x : Execute test for x seconds.
+ *				-p   : Pause for SIGUSR1 before starting
+ *				-P x : Pause for x seconds between iterations.
+ *				-t   : Turn on syscall timing.
+ *
+ ****************************************************************/
+#undef _POSIX_SOURCE
+#include <errno.h>
+#include <pwd.h>
+#include <linux/capability.h> 
+#include "test.h"
+#include "usctest.h"
+
+#define INVALID_VERSION 0
+
+static void setup();
+static void cleanup();
+static void test_setup(int);
+
+char *TCID = "capset02";	/* Test program identifier.    */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+static int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
+
+static struct __user_cap_header_struct header;
+static struct __user_cap_data_struct data;
+
+struct test_case_t {
+	cap_user_header_t headerp;
+	cap_user_data_t datap;
+	int exp_errno;
+	char *errdesc;
+} test_cases[] = {
+	{ (cap_user_header_t)-1, &data, EFAULT, "EFAULT" },
+	{ &header, (cap_user_data_t)-1, EFAULT, "EFAULT" },
+	{ &header, &data, EINVAL, "EINVAL" },
+	{ &header, &data, EPERM, "EPERM" },
+};
+
+int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
+
+int
+main(int ac, char **av)
+{
+
+	int lc, i;		/* loop counter */
+	char *msg;	/* message returned from parse_opts */
+
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
+	     != (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	/* perform global setup for test */
+	setup();
+
+	/* check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
+
+		for (i = 0; i < TST_TOTAL; ++i) {
+
+			test_setup(i);
+			TEST(capset(test_cases[i].headerp,
+				    test_cases[i].datap));
+
+			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
+						test_cases[i].exp_errno)) {
+				tst_resm(TPASS, "capset() returned -1,"
+					" errno: %s", test_cases[i].errdesc);
+			} else {
+				tst_resm(TFAIL, "Test Failed, capset()"
+				 " returned %d, errno = %d : %s", TEST_RETURN,
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+			}
+			TEST_ERROR_LOG(TEST_ERRNO);
+		} 
+	}	/* End for TEST_LOOPING */
+
+	/* cleanup and exit */
+	cleanup();
+
+	/*NOTREACHED*/
+	return 0;
+
+}	/* End main */
+
+/* setup() - performs all ONE TIME setup for this test */
+void
+setup()
+{
+
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	/* Set up the expected error numbers for -e option */
+	TEST_EXP_ENOS(exp_enos);
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/*
+	 * Save current capability data.
+	 * header.version must be _LINUX_CAPABILITY_VERSION
+	 */
+	header.version = _LINUX_CAPABILITY_VERSION;
+	if ((capget(&header, &data)) == -1) {
+		tst_brkm(TBROK, tst_exit, "capget() failed");
+	}
+
+}	/* End setup() */
+
+
+/*
+ *cleanup() -  performs all ONE TIME cleanup for this test at
+ *		completion or premature exit.
+ */
+void
+cleanup()
+{
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}	/* End cleanup() */
+
+void
+test_setup(int i)
+{
+
+	switch (i) {
+
+	case 0 :
+		break;
+
+	case 1 :
+		header.version = _LINUX_CAPABILITY_VERSION;
+		header.pid = 0;
+		break;
+
+	case 2 :
+		header.version = INVALID_VERSION;
+		header.pid = 0;
+		break;
+
+	case 3 :
+		header.version = _LINUX_CAPABILITY_VERSION;
+		/*
+		 * when a non-zero pid is specified, process should have
+		 * CAP_SETPCAP capability to change capabilities.
+		 * by default, CAP_SETPCAP is not enabled. So giving
+		 * a non-zero pid results in capset() failing with
+		 * errno EPERM
+		 */
+		header.pid = getpid();
+		break;
+
+	}
+}

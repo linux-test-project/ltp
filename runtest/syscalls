@@ -31,6 +31,9 @@ brk01 brk01
 capget01 capget01
 capget02 capget02
 
+capset01 capset01
+capset02 capset02
+
 chdir01 chdir01
 chdir01A symlink01 -T chdir01
 chdir02 chdir02

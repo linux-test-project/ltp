@@ -30,7 +30,7 @@ LOADLIBES+=
 
 SUBDIR= \
 	abort accept access acct adjtimex alarm asyncio bind brk capget\
-	chdir chmod chown chroot clone close connect confstr \
+	capset chdir chmod chown chroot clone close connect confstr \
 	creat create_module delete_module dup dup2 execl \
 	execle execlp execv execve execvp exit fchdir fchmod \
 	fchown fcntl fdatasync flock fmtmsg fork fpathconf fstat fstatfs \
