@@ -23,6 +23,9 @@
 #  PURPOSE: To test the basic functionality of the `netstat` command.
 #
 #  HISTORY:
+#    06/06/03 Manoj Iyer manjo@mail.utexas.edu
+#      - Modified test to use LTP harness API
+#      - Fixed bugs.
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -34,6 +37,26 @@ $trace_logic
 
 NUMLOOPS=${NUMLOOPS:-5}
 SLEEPTIME=${SLEEPTIME:-0}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
 
 #-------------------------------------------------------------------------
 # FUNCTION:  do_test
@@ -50,11 +73,11 @@ do_test() {
    $trace_logic
 
    COUNT=1
-   while [ $COUNT -le NUMLOOPS ]
+   while [ $COUNT -le $NUMLOOPS ]
    do
       for COMMAND in "netstat -s" "netstat -rn" "netstat -i" "netstat -gn" "netstat -apn"
       do
-         $COMMAND
+         $COMMAND 2>&1 1>/dev/null
          [ $? -eq 0 ] || end_testcase "$COMMAND failed" 
       done
 
@@ -77,8 +100,8 @@ end_testcase()
 {
    $trace_logic
 
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
@@ -91,5 +114,9 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
+export TCID="netstat01"
+export TST_TOTAL=1
+export TST_COUNT=1
+exists "netstat"
 do_test
 end_testcase
