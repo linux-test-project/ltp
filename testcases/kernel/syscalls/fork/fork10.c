@@ -162,6 +162,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TPASS, "test 1 PASSED");
 	}
+    close(fildes);
 	cleanup();
 
 	/*NOTREACHED*/
