@@ -111,8 +111,8 @@ int main(int ac, char **av)
 				" as expected for non-superuser"
 				":GOT EPERM");			
 		} else {
-	  		tst_resm(TINFO, "munlockall() failed to produce "	
-					"expected errno :%d Got : %d, %s. Some distros support non-superuser munlockall calls.",
+	  		tst_resm(TCONF, "munlockall() failed to produce "	
+					"expected errno :%d Got : %d, %s. ***Some distros, such as Red Hat Enterprise Linux, support non-superuser munlockall calls.***",
 				EPERM,TEST_ERRNO,
 				strerror(TEST_ERRNO));
 					  
