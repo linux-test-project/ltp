@@ -30,7 +30,7 @@ LOADLIBES+=
 
 SUBDIR= \
 	accept access alarm asyncio bind brk \
-	chdir chmod chown chroot close connect \
+	chdir chmod chown chroot clone close connect \
 	creat create_module dup dup2 execl execle execlp \
 	execv execve execvp exit fchdir fchmod \
 	fchown fcntl fork fpathconf fstat fstatfs \
