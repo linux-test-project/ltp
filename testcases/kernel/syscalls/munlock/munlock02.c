@@ -92,7 +92,7 @@ struct test_case_t {
 	int error;
 	char *edesc;
 } TC[] = {
-	{&addr1, LEN * 10, ENOMEM, "address range out of address space" },
+	{&addr1, LEN * 1024, ENOMEM, "address range out of address space" },
 };
 
 int main(int ac, char **av)
