@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "posixtest.h"
-#include "timer_settime01.h"
 
 
 #define TIMERSEC 1

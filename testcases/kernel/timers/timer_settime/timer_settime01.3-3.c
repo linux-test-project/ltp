@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "posixtest.h"
-#include "timer_settime01.h"
 
 
 #define TIMEREXPIRENSEC 10000000

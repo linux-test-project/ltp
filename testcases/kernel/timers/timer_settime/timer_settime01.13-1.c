@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
-#include "timer_settime01.h"
 
 
 #define SIGTOTEST SIGALRM
