@@ -192,7 +192,7 @@ setup(void)
 {
 	/* capture signals */
 
-	tst_sig(NOFORK, sighandler, cleanup);
+//	tst_sig(NOFORK, sighandler, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
