@@ -102,11 +102,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#if defined (__s390__) || (__s390x__)
-#define clone __clone
-extern int __clone(int(void*),void*,int,void*);
-#endif
-
+#include "clone_platform.h"
 
 static void setup();
 static int test_setup();
@@ -188,6 +184,10 @@ main(int ac, char **av)
 #ifdef __hppa__
 			TEST(clone(child_fn, child_stack,
 				   test_cases[i].flags, NULL));
+#elif defined(__ia64__)
+			TEST(clone2(child_fn, child_stack,
+				CHILD_STACK_SIZE, test_cases[i].flags, NULL,
+				NULL, NULL, NULL));
 #else
 			TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE,
 				   test_cases[i].flags, NULL));

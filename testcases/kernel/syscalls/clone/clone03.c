@@ -74,11 +74,7 @@
 
 #define CHILD_STACK_SIZE 1024
 
-#if defined (__s390__) || (__s390x__)
-#define clone __clone
-extern int __clone(int(void*),void*,int,void*);
-#endif
-
+#include "clone_platform.h"
 
 static void setup();
 static void cleanup();
@@ -129,6 +125,10 @@ main(int ac, char **av)
 		 */
 #ifdef __hppa__
 		TEST(clone(child_fn, child_stack, (int)NULL, NULL));
+#elif defined(__ia64__)
+		TEST(clone2(child_fn, child_stack,
+				CHILD_STACK_SIZE, (int)NULL, NULL,
+				NULL, NULL, NULL));
 #else
 		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, (int)NULL, NULL));
 #endif

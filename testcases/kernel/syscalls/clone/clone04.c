@@ -75,10 +75,7 @@
 
 #define CHILD_STACK_SIZE 1024
 
-#if defined (__s390__) || (__s390x__)
-#define clone __clone
-extern int __clone(int(void*),void*,int,void*);
-#endif
+#include "clone_platform.h"
 
 static void cleanup(void);
 static void setup(void);
@@ -86,16 +83,18 @@ static int child_fn();
 
 char *TCID= "clone04";
 extern int Tst_count;
+void *child_stack;
 
 static int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of *
 					 * expected errnos */
 static struct test_case_t {
 	int (*child_fn)();
+	void **child_stack;
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ (int)NULL, EINVAL, "EINVAL" },
-	{ child_fn, EINVAL, "EINVAL" },
+	{ (int)NULL, &child_stack, EINVAL, "EINVAL" },
+	{ child_fn, NULL, EINVAL, "EINVAL" },
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -105,7 +104,6 @@ main(int ac, char **av)
 {
 	int lc, ind;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	void *child_stack;
 	void *test_stack;
 
 	/* parse standard options */
@@ -116,8 +114,6 @@ main(int ac, char **av)
 
 	setup();			/* global setup */
 
-	/* Allocate stack for child */
-	child_stack = (void *) malloc(CHILD_STACK_SIZE);
 
 	/* The following loop checks looping state if -i option given */
 
@@ -126,26 +122,30 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
-			if (ind == 0) {
-				if (child_stack == NULL) {
-					tst_resm(TWARN, "Can not allocate stack for"
-						 "child, skipping test case");
-					continue;
-				}
-#ifdef __hppa__				
+			if (test_cases[ind].child_stack == NULL) {
+				test_stack = (void *)NULL;
+			} else if (*test_cases[ind].child_stack == NULL) {
+				tst_resm(TWARN, "Can not allocate stack for"
+			       			"child, skipping test case");
+				continue;
+			} else {
 				test_stack = child_stack;
-#else
-				test_stack = child_stack + CHILD_STACK_SIZE;
-#endif
 			}
-			else
-				test_stack = (void *) NULL;
 			
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
+#if defined(__hppa__)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
+						SIGCHLD, NULL));
+#elif defined(__ia64__)
+			TEST(clone2(test_cases[ind].child_fn, test_stack,
+						CHILD_STACK_SIZE, SIGCHLD, NULL,
+						NULL, NULL, NULL));
+#else
+			TEST(clone(test_cases[ind].child_fn, test_stack + CHILD_STACK_SIZE,
 				   (int)NULL, NULL));
+#endif
 	
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
@@ -161,8 +161,6 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
-
-	free(child_stack);
 
 	cleanup();
 	
@@ -187,6 +185,9 @@ setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+	/* Allocate stack for child */
+	child_stack = (void *) malloc(CHILD_STACK_SIZE);
+
 }
 
 /*
@@ -202,6 +203,8 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	free(child_stack);
 
 	/* exit with return code appropriate for results */
 	tst_exit();

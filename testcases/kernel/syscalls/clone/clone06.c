@@ -76,12 +76,7 @@
 #include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
-
-#if defined (__s390__) || (__s390x__)
-#define clone __clone
-extern int __clone(int(void*),void*,int,void*);
-#endif
-
+#include "clone_platform.h"
 
 #define CHILD_STACK_SIZE 1024
 #define MAX_LINE_LENGTH 256
@@ -136,6 +131,10 @@ main(int ac, char **av)
 		 */
 #ifdef __hppa__
 		TEST(clone(child_environ, child_stack, (int)NULL, NULL));
+#elif defined(__ia64__)
+		TEST(clone2(child_environ, child_stack,
+					CHILD_STACK_SIZE, (int)NULL, NULL,
+					NULL, NULL, NULL));
 #else
 		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, (int)NULL, NULL));
 #endif
