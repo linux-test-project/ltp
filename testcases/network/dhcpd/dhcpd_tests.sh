@@ -31,8 +31,12 @@
 #                             dhcp server using rules in dhcp.conf file.
 #               Feb 13 2003 - Added - Manoj Iyer. added check to see if command
 #                             is installed.
-#               Feb 28 2002 - Fixed testcase from incorrectly exiting test with
+#               Feb 28 2003 - Fixed testcase from incorrectly exiting test with
 #                             a PASS result when dhcpd is not running.
+#               Mar 02 2003 - Fixed exit code check, removed return 666.
+#                             `ps -ef | grep dhcpd` was returning success even
+#                             if dhcpd was not running. Worked around this
+#                             problem.
 #
 #! /bin/sh
 
@@ -90,15 +94,19 @@ init()
 
 	tst_resm TINFO "INIT: Inititalizing tests."
 
-	# setting RC to non-zero value. The return value expected from 
-	# grep command is zero, setting RC to non-zero will avoid false 
-	# alarms.
-	RC=1
-	ps -ef | grep "dhcpd" &>$LTPTMP/tst_dhcpd.err || RC=$?
+	ps -ef &>$LTPTMP/tst_dhcpd.out || RC=$?
+	if [ $RC -ne ]
+	then
+		tst_res TBROK $LTPTMP/tst_dhcpd.out NULL \
+			"INIT: ps command failed. Reason:"
+		return $RC
+	fi
+
+	grep "dhcpd" $LTPTMP/tst_dhcpd.out &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -eq 0 ]
 	then
 		tst_resm TPASS "INIT: dhcpd is already running. Declaring success"
-		return 666;
+		exit 0
 	fi
 
 	RC=0
@@ -195,7 +203,7 @@ cleanup()
 		/sbin/ifconfig eth0:1 down &>$LTPTMP/tst_dhcpd.err
 	fi
 
-	rm -fr $LTPTMP/tst_dhcpd.*
+	rm -fr $LTPTMP
 	return $RC
 }
 
@@ -277,6 +285,7 @@ test01()
 			tst_resm TPASS "Test #1: dhcpd started and stoped successfully"
 		fi
 	fi
+	return $RC
 }
 
 
@@ -290,14 +299,9 @@ TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
 RC=0				# Return code from test.
 
 init || RC=$?
-if [ $RC -eq 666 ]
+if [ $RC -ne 0 ]
 then
-	exit 0
-else
-	if [ $RC -ne 0 ]
-	then
-		exit $RC
-	fi
+	exit $RC
 fi
 
 test01 || RC=$?
