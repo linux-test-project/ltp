@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "timer_gettime01.h"
+
 
 int main(int argc, char *argv[])
 {
