@@ -545,17 +545,58 @@ term(int sig)
 			kill(wkidarray[i], SIGTERM);
 	}
 }
+
+#define BUFSIZE 512
+
+/** Get the number of message queues already in use */
+static int get_used_msgqueues()
+{
+        FILE *f;
+        int used_queues;
+        char buff[BUFSIZE];
+
+        f = popen("ipcs -q", "r");
+        if (!f) {
+                tst_resm(TBROK,"Could not run 'ipcs' to calculate used message queues");
+                tst_exit();
+        }
+        /* FIXME: Start at -4 because ipcs prints four lines of header */
+        for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++)
+                ;
+        fclose(f);
+        if (used_queues < 0) {
+                tst_resm(TBROK,"Could not read output of 'ipcs' to calculate used message queues");
+                tst_exit();
+        }
+        return used_queues;
+}
+
+/** Get the max number of message queues allowed on system */
+static int get_max_msgqueues()
+{
+        FILE *f;
+        char buff[BUFSIZE];
+
+        /* Get the max number of message queues allowed on system */
+        f = fopen("/proc/sys/kernel/msgmni", "r");
+        if (!f){
+                tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
+                tst_exit();
+        }
+        if (!fgets(buff, BUFSIZE, f)) {
+                tst_resm(TBROK,"Could not read /proc/sys/kernel/msgmni");
+                tst_exit();
+        }
+        fclose(f);
+        return atoi(buff);
+}
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
 void
 setup()
 {
-#define BUFSIZE 512
-  FILE* f;
-  char buff[BUFSIZE];
-  int used_queues;
-
 	tst_tmpdir();
         /* You will want to enable some signal handling so you can capture
          * unexpected signals like SIGSEGV.
@@ -570,24 +611,7 @@ setup()
          */
         TEST_PAUSE;
 
-        /* Get the max number of message queues allowed on system */
-        f = fopen("/proc/sys/kernel/msgmni", "r");
-        if (!f){
-                tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
-                tst_exit();
-        }
-        fgets(buff, BUFSIZE, f);
-	fclose(f);
-        MSGMNI = atoi(buff);
-	if (system("ipcs -q | wc -l > used")==-1){
-                tst_resm(TBROK,"Could not calculate used message queues");
-                tst_exit();
-        }
-        f = fopen("used","r");
-        fgets(buff, BUFSIZE, f);
-        used_queues = atoi(buff);
-        MSGMNI = MSGMNI - (used_queues - 4);
-        fclose(f);
+        MSGMNI = get_max_msgqueues() - get_used_msgqueues();
         if (MSGMNI <= 0){
                 tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
                 cleanup();
