@@ -28,12 +28,13 @@
 
 COUNT=0
 LIMIT=120000
-
-  rm -f ./sched.datafile	
+ls ./sched.datafile > /dev/null
+if [ $? -eq 1 ];then
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> sched.datafile
     COUNT=$(( $COUNT + 1 ))
   done
   chmod 666 sched.datafile
+fi
 
