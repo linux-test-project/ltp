@@ -83,7 +83,6 @@ do
 
   COUNT=$(($COUNT + 1))
   export TST_COUNT=$COUNT
-  #$BIN/$TEST >$OUTPUT_FILE 2>$OUTPUT_FILE
   $BIN/$TEST >$OUTPUT_FILE 2>&1
   RC=$?
   check_return_code
