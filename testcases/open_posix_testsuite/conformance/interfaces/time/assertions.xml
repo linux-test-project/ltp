@@ -1,0 +1,6 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6:46648:46662 pt:CX">
+	time() shall return the value of time in seconds since the 
+	Epoch.  Otherwise shall return -1.
+	</assertion>
+</assertions>

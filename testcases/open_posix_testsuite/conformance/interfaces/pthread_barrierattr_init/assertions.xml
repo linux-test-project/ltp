@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31882:31883">
+  The pthread_barrierattr_init( ) function shall initialize a barrier attributes object attr 
+  with the default value for all of the attributes defined by the implementation.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31886:31888">
+  After a barrier attributes object has been used to initialize one or more barriers, any 
+  function affecting the attributes object (including destruction) shall not affect any 
+  previously initialized barrier.
+  </assertion>
+  
+ <assertion id="3" tag="ref:XSH6:31890:31897">  
+  If successful, 
+  it shall return zero; otherwise, an error number shall be returned to indicate the error.
+  The pthread_barrierattr_init( ) function shall fail if:
+
+  [ENOMEM] Insufficient memory exists to initialize the barrier attributes object.
+
+  This function shall not return an error code of [EINTR].
+
+  </assertion>
+  
+</assertions>
+

@@ -1,0 +1,36 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34613:34617">
+   The function
+
+   int pthread_once(pthread_once_t *once_control, void (*init_routine) (void)); 
+   
+   The first call to pthread_once() by any
+   thread in a process, with a given 'once_control', shall call the 
+   'init_routine' with no arguments.  Subsequent calls of pthread_once()
+   with the same once_control shall not call the 'init_routine'.  The
+   'once_control' paramter shall determine whether the associated initialization
+   routine has been called.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:34615:34615">
+  On return from pthread_once(), 'init_routine' shall have completed.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:34618:34619">
+  The pthread_once() function is not a cancelation point.  But if
+  'init_routine' is a cancelation point and is canceled, the effect on 
+  'once_control' shall be as if pthread_once() was never called.
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:34620:34622">
+  The constant PTHREAD_ONCE_INIT is defined in the pthread.h header.  The
+  behavior of pthread_once() is undefined if 'once_control' has automatic
+  storage duration or is not initialized by PTHREAD_ONCE_INIT.
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:34624:34624">
+  Upon success, it returns a 0;
+  </assertion> 
+  <assertion id="6" tag="ref:XSH6:34627:34629">
+  Upon failure, it may return an error number:
+  -[EINVAL] If either 'once_control' or 'init_routine' is invalid
+
+  It shall not return [EINTR]
+  </assertion> 
+</assertions>

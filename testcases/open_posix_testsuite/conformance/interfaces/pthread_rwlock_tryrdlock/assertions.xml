@@ -1,0 +1,23 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34787:34790">
+	The pthread_rwlock_tryrdlock( ) function shall apply a read lock as in the 
+	pthread_rwlock_rdlock( ) function, with the exception that the function shall fail 
+	if the equivalent pthread_rwlock_rdlock( ) call would have blocked the calling thread. 
+	In no case shall the pthread_rwlock_tryrdlock( ) function ever block; it always either 
+	acquires the lock or fails and returns immediately.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:34798:34800">
+	The pthread_rwlock_tryrdlock( ) function shall return zero if the lock for reading on 
+	the read-write lock object referenced by rwlock is acquired. Otherwise, an error number 
+	shall be returned to indicate the error.  
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:34802:34804">  
+	The pthread_rwlock_tryrdlock( ) function shall fail if:
+	[EBUSY] The read-write lock could not be acquired for reading because a writer holds
+	the lock or a writer with the appropriate priority was blocked on it.
+	The function shall not return an error code of [EINTR].
+   </assertion>
+    
+</assertions>

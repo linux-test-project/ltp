@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:46919:46921">
+   Only one signal that is sent as the result of a timer expiring can
+   be sent to the timer's process at a time.  So, if a signal of that timer
+   is still pending, and the timer expires again, no signal is queued, and a
+   timer overrun occurs.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:46921:46925 ref:XSH6:46928:46929 pt:RTS">
+   timer_getoverrun() returns the number of overruns that have happened
+   due to signals being sent from a timer.  It can be run after the timer
+   expiration signal is finally delivered or accepted.  The overrun count
+   == the number of _extra_ timer expirations that happened after the most
+   recent signal delivered/accepted was generated and before it was
+   delivered/accepted.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:46926:46928 pt:RTS">
+   timer_getoverrun() can only return a value up to but not including
+   {DELAYTIMER_MAX}.  If the number of overruns > {DELAYTIMER_MAX}, 
+   timer_getoverrun() returns {DELAYTIMER_MAX}.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:46933:46934">
+   timer_getoverrun() returns the overrun count on success.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:46936:46937">
+   timer_getoverrun() returns -1 on failure
+  </assertion>
+  <assertion id="6" tag="ref:XSH6TC2:46940:46941">
+   if timerid is not a valid timer ID, timer_getoverrun() may sets 
+   errno == EINVAL
+  </assertion>
+</assertions>

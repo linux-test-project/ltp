@@ -1,0 +1,11 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+
+Assertions     Tested ?	   Remarks
+1	       YES	   max and min priorities are taken from the system (AIX)
+			   only tested for SCHED_FIFO, SCHED_RR and SCHED_OTHER policy
+			   speculative for AIX (FIFO2, FIFO3, FIFO4)
+2	       YES
+3	       YES

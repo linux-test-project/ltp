@@ -1,0 +1,8 @@
+This document defines the coverage for function sigaddset().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		IMPLICITLY tested by assertion 1
+4		YES
+5		IMPLICITLY tested by assertion 4

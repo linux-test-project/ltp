@@ -1,0 +1,54 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41734:41738 pt:XSI">
+	The sigaltstack ( ) function allows
+	A process is able to define and examine the state of an alternate stack for signal handlers using 
+	sigaltstack(). Signals shall be delivered on the alternate stack if they have been explicitly declared to 
+	execute on the alternate stack. Unless it is a null pointer, ss points to a stack_t structure that 
+	specifies the alternate signal stack that shall take effect upon return from sigaltstack ( ).
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41738:41739 pt:XSI">
+	The stack is disabled and ss_sp and ss_size are ignored, if ss_flags is set to SS_DISABLE
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41740:41741 pt:XSI">
+	The stack shall be enabled, and the ss_sp and ss_size members specify the new address
+	and size of the stack, if ss_flags is not set to SS_DISABLE.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41742:41743 pt:XSI">
+	The area of memory starting at ss_sp up to but not including ss_sp+ss_size is available to the
+	implementation for use as the stack. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:41745:41747 pt:XSI">
+	On successful completion, oss shall point to a stack_t structure that if it's is not a null pointer.
+	It specifies the alternate signal stack that was in effect prior to the call to sigaltstack ( ). 
+	The address and size of that stack are respectively the ss_sp and ss_size members.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:41747:41749 pt:XSI">
+	When ss_flags is set to SS_ONSTACK, the process is currently executing on the alternate signal stack.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:41749:41750 pt:XSI">
+	An attempt to modify the alternate signal stack while the process is executing on it will fail.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:41752:41752 pt:XSI">
+	When ss_flags is set to SS_DISABLE, the alternate signal stack is currently disabled.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:41759:41760 pt:XSI">
+	There are no alternate signal stacks in the new process image, after a successful call to one of the 
+	exec functions.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:41766:41767 pt:XSI">
+	sigaltstack ( ) shall return 0 upon successful completion, 
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:41770:41772 pt:XSI">
+	sigaltstack shall return -1 and set errno to [EINVAL] if the ss argument is not a null pointer, and 
+	the ss_flags member pointed to by ss contains flags other than SS_DISABLE.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:41773:41773 pt:XSI">
+	sigaltstack shall return -1 and set errno to [ENOMEM] if The size of the alternate stack area is 
+	less than MINSIGSTKSZ.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:41774:41774 pt:XSI">
+	sigaltstack shall return -1 and set errno to [EPERM] An attempt was made to modify an active stack.
+  </assertion>
+</assertions>
+
+

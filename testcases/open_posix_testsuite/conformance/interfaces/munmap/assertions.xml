@@ -1,0 +1,60 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:256578:26589">
+  The munmap( ) function shall remove any mappings for those entire pages containing any part of
+  the address space of the process starting at addr and continuing for len bytes. Further 
+  references to these pages shall result in the generation of a SIGSEGV signal to the process.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:256589:26590">  
+  If there are no mappings in the specified address range, then munmap( ) has no effect.
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:256591:26591">
+  The implementation shall require that addr be a multiple of the page size {PAGESIZE}.
+  </assertion>
+ 
+  <assertion id="4" tag="ref:XSH6:256592:26593">
+  If a mapping to be removed was private, any modifications made in this address range shall be
+  discarded.
+  </assertion>
+
+  <assertion id="5" tag="ref:XSH6:256592:26593"> 
+  ML|MLR Any memory locks (see mlock( ) and mlockall ( )) associated with this address range 
+  shall be removed, as if by an appropriate call to munlock( ).
+</assertion>
+
+  <assertion id="6" tag="ref:XSH6:256594:26604"> 
+  TYM If a mapping removed from a typed memory object causes the corresponding address range of
+  the memory pool to be inaccessible by any process in the system except through allocatable
+  mappings (that is, mappings of typed memory objects opened with the
+  POSIX_TYPED_MEM_MAP_ALLOCATABLE flag), then that range of the memory pool shall
+  become deallocated and may become available to satisfy future typed memory allocation
+  requests.
+  A mapping removed from a typed memory object opened with the
+  POSIX_TYPED_MEM_MAP_ALLOCATABLE flag shall not affect in any way the availability of
+  that typed memory for allocation.
+  </assertion>
+
+  <assertion id="7" tag="ref:XSH6:256608:26609">   
+  Upon successful completion, munmap( ) shall return 0; otherwise, it shall return .1 and set 
+  errno to indicate the error.
+  </assertion>
+  
+  <assertion id="8" tag="ref:XSH6:256611:26613">  
+  The munmap( ) function shall fail if:
+  [EINVAL] Addresses in the range [addr,addr+len) are outside the valid range for the
+  address space of a process.
+  </assertion>
+  
+  <assertion id="9" tag="ref:XSH6:25611:26614">  
+  The munmap( ) function shall fail if:
+  [EINVAL] The len argument is 0.
+  </assertion>
+  
+  <assertion id="10" tag="ref:XSH6:256611:26615">  
+  The munmap( ) function shall fail if:
+  [EINVAL] The addr argument is not a multiple of the page size as returned by sysconf( ).
+ </assertion>
+ 
+</assertions>
+

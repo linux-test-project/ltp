@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_mutexattr_setpshared function:
+
+Assertion	Tested?
+		YES
+2		YES
+3		YES
+
+NOTE:

@@ -1,0 +1,8 @@
+-- assertion 5: not tested.
+
+-- assertion 6: ERROR EBUSY: is not tested.  Please contribute 
+your help for this test case.
+
+-- assertion 7: Won't be tested. (Undefined).
+
+-- assertion 8: Won't be tested. (Undefined).

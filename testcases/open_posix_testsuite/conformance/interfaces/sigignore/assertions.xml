@@ -1,0 +1,28 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41955:41955 pt:XSI">
+The sigignore() function sets the disposition of the signal sig to 
+SIG_IGN.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41959:41960 pt:XSI">
+Child processes of the calling processes shall not be transformed into zombie processes when they 
+terminate, if the action for the SIGCHLD signal is set to SIG_IGN.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41960:41963 pt:XSI">
+The calling process shall block until all of its children terminate, and wait(),
+waitid ( ), and waitpid ( ) shall fail and set errno to [ECHILD], if that calling process  
+waits for its children, and has no unwaited-for children that were transformed into zombie processes.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41970:41971 pt:XSI">
+sigignore will return 0 upon successful completion.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:41973:41974 pt:XSI">
+If the function is passed an illegal signal number, then errno will be set 
+to [EINVAL], and sigrelse() will 
+return -1.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:41975:41977 pt:XSI">
+If an attempt is made to ignore a signal that cannot be ignored, or catch 
+a signal that cannot be caught, sigignore() shall fail, and set the value 
+of errno to [EINVAL]
+  </assertion>
+</assertions>

@@ -1,0 +1,25 @@
+This document defines the coverage for the fsync() function:
+
+Assertion	Tested?
+1		NO
+2		NO
+3		NO ** Synchronized I/O
+4		YES
+5		YES
+6		NO 
+7		YES
+8		NO: ** Not sure how to generate an I/O error
+9		NO: ** Synchronized I/O
+
+NOTE:
+
+Assertion 1 is hard to test. Here cited the specification:
+
+It is reasonable to assert that the key aspects of fsync( ) are unreasonable to test in a test 
+suite.
+That does not make the function any less valuable, just more difficult to test. A formal
+conformance test should probably force a system crash (power shutdown) during the test for
+this condition, but it needs to be done in such a way that automated testing does not require 
+this to be done except when a formal record of the results is being made. It would also not be
+unreasonable to omit testing for fsync( ), allowing it to be treated as a 
+quality-of-implementation issue.

@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34447:34456">
+   The function
+
+   int pthread_mutexattr_setpshared(const pthread_mutexattr_t *attr, int pshared);
+
+   It shall set the process-shared attribute in an initialized attributes object 'attr'.
+
+  The process-shared attribute is set to PTHREAD_PROCESS_SHARED to permit a mutex to be
+  operated upon by any thread that has access to the memory where the mutex is allocated,
+  even if the mutex is allocated in memory that is shared by multiple processes.
+
+  If the process-shared attribute is PTHREAD_PROCESS_PRIVATE, the mutex shall only be 
+  operated upon by threads created within the same process as the thread that initialized
+  the mutex; if threads of differing processes attempt to operate on such a mutex,
+  the behavior is undefined.
+
+  The default value of the attribute is PTHREAD_PROCESS_PRIVATE.
+  </assertion>  
+  <assertion id="2" tag="ref:XSH6:34458:34459">
+  Upon success, it returns 0.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34464:34468">
+  It MAY fail if:
+
+  [EINVAL] - 'attr' is invalid.
+
+  [EINVAL] - the new value pshared value is outside the range of legal values for that 
+             attribute.
+  </assertion>
+</assertions>

@@ -1,0 +1,91 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6594:6595">
+   clock_settime() sets the clock clock_id to the value specified
+   by tp.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6595:6596">
+   clock_settime() truncates time values that are between resolution multiples
+   to the smaller resolution multiple
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6597:6603">
+   clock_settime() supports CLOCK_REALTIME
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6604:6609">
+   If clock_settime() changes the time for CLOCK_REALTIME, then any absolute
+   timers will use the new time for expiration.  If at this point, the timer
+   should have expired in the past, it will expire immediately (no error).
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6610:6614">
+   clock_settime() does not affect _relative_ timers (either timers or
+   nanosleep() calls).  These expire when the relative time interval elapses,
+   regardless of what the clock says.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:6615:6621 pt:MON">
+   clock_settime() cannot set the monotonic clock CLOCK_MONOTONIC and will
+   fail if invoked with clock_id CLOCK_MONOTONIC
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:6624:6628 pt:CS">
+   If clock_settime() changes the time for CLOCK_REALTIME, then any threads
+   blocked on clock_nanosleep() for the CLOCK_REALTIME clock
+   will use the new time for expiration.  If at this point, the timer
+   should have expired in the past, it will expire immediately (no error).
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:6629:6631 pt:CS">
+   clock_settime() does not affect clock_nanosleep() _relative_ timers.
+   These expire when the relative time interval elapses,
+   regardless of what the clock says.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:6633:6639 pt:CPT">
+   If _POSIX_CPUTIME is defined, clock_settime() supports clock_ids obtained
+   via clock_getcpuclockid().  The value set is the amount of execution
+   time of the process associated with the clock.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:6635:6639 pt:CPT">
+   If _POSIX_CPUTIME is defined, clock_settime() supports clock_id
+   CLOCK_PROCESS_CPUTIME_ID (= the CPU clock of the calling process).
+   The value set is the amount of execution time of the calling process.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:6639:6641 pt:CPT">
+   If clock_settime() is used to change the value of a CPU-time clock,
+   sporadic server scheduling policy is unaffected.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:6642:6648 pt:TCT">
+   If _POSIX_THREAD_CPUTIME is defined, clock_settime() supports clock_ids 
+   obtained via pthread_getcpuclockid().  The value set is the amount of 
+   execution time of the thread associated with the clock.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:6644:6648 pt:TCT">
+   If _POSIX_THREAD_CPUTIME is defined, clock_settime() supports clock_id
+   CLOCK_THREAD_CPUTIME_ID (= the CPU clock of the calling thread).
+   The value set is the amount of execution time of the calling thread.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:6648:6650 pt:TCT">
+   If clock_settime() is used to change the value of a CPU-time clock,
+   sporadic server scheduling policy is unaffected.
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:6652:6652">
+   clock_settime() returns 0 on success
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:6652:6653">
+   clock_settime() returns -1 on failure
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:6656:6656">
+   clock_settime() sets errno=EINVAL if clock_id does not specify a known
+   clock
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:6658:6658">
+   clock_settime() sets errno=EINVAL if tp is outside the valid range for
+   clock_id
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:6659:6660">
+   clock_settime() sets errno=EINVAL if tp has a nsec value below 0 or 
+   above (or equal to) 1000 million
+  </assertion>
+  <assertion id="20" tag="ref:XSH6:6661:6661 pt:MON">
+   clock_settime() sets errno=EINVAL if clock_id is CLOCK_MONOTONIC
+  </assertion>
+  <assertion id="21" tag="ref:XSH6:6663:6664">
+   clock_settime() sets errno=EPERM if the calling process does not have
+   privileges to set clockid (MAY, not SHOULD).
+  </assertion>
+</assertions>

@@ -1,0 +1,62 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:46894:46896">
+   timer_settime() sets the time until the next timer, timerid, expiration to
+   value.it_value, and, if value != 0, it arms the timer.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:46896:46897">
+   timer_settime() resets the time until the next timer, timerid, expiration
+   to value.it_value if the timer was already armed.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:46897:46898">
+   If value.it_value = 0, the timer is disarmed.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:46900:46902">
+   If TIMER_ABSTIME is not set in flags,
+   timer_settime() behaves relatively.  That is, it expires exactly
+   value.it_value nanoseconds from when it was set.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:46903:46908">
+   If TIMER_ABSTIME is set in flags,
+   timer_settime() behaves absolutely.  That is, it expires when the
+   current clock time is the value in value.it_value (clock = clock
+   associated with timerid).
+   If this time has already passed, the function succeeds, and the
+   expiration notification is made.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:46909:46911">
+   If value.it_interval != 0, the timer is periodic, and it is reloaded
+   according to the interval specified in value.it_interval.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:46912:46914">
+   If any time values happen to be between resolution multiples, they
+   are rounded to the larger resolution multiple.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:46915:46917">
+   If ovalue != NULL, then ovalue will store:
+   ovalue.it_value =
+   - 0, if the timer was previously disarmed
+   - previous amount of time before the timer would have expired, if the
+     timer was previously armed
+   ovalue.it_interval = 
+   - 0, if the timer was previously disarmed
+   - previous timer reload value, if the timer was previously armed
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:46918:46918">
+   Timers are not allowed to expire _before_ their scheduled time.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:46935:46935">
+   timer_settime() returns 0 on success
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:46936:46936">
+   timer_settime() returns -1 on failure
+  </assertion>
+  <assertion id="12" tag="ref:XSH6TC2:46940:46941">
+   if timerid doesn't = a timer ID created via timer_create() and not yet 
+   deleted by timer_delete(), timer_settime() may set errno=EINVAL
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:46943:46945">
+   timer_settime() sets errno=EINVAL if value.*.tv_nsec below 0 or above
+   (or equal to) 1,000 million _and_ (value.it_value.it_sec != 0 and
+   value.it_value.it_nsec != 0 -- i.e., disabled)
+  </assertion>
+</assertions>

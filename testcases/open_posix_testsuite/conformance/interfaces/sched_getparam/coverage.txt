@@ -1,0 +1,14 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+
+Assertions     Tested ?	   Remarks
+1	       YES	   Can priority be negative ?
+2	       YES	   
+3	       YES	   
+4	       YES	   Assume that a pid is not reatributed immediately
+5	       YES	   
+6	       YES	   (Has root always uid 0 ? Process pid 1 always 
+			   belongs to root ?)
+7	       YES	   speculative test, not in the spec !

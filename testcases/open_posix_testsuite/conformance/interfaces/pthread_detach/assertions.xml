@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32943:32944">
+   The function
+
+   int pthread_detach(pthread_t thread); 
+  
+  detaches a thread. It shall indicate to the implementation that storage 
+  for 'thread' can be reclaimed when that thread terminates. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:32944:32946">
+  If 'thread' has not terminated, pthread_detach() won't cause it to
+  terminate.  The effect of multiple pthread_detach() calls on the same
+  target thread is unspecified.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:32948:32948">
+  If success, it returns 0;
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:32951:32956">
+  Upon failure, it returns an error number:
+  -[EINVAL] 'thread' does not refer to a joinable thread.
+  -[ESRCH] No thread could be found corresponding to that thread ID
+
+  It shall not return [EINTR]
+  </assertion> 
+</assertions>

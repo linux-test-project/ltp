@@ -1,0 +1,20 @@
+This document defines the coverage for the timer_create function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		YES
+5		YES
+6		YES
+7		YES
+8		YES
+9		YES
+10		YES
+11		YES
+12		NO *Skipping CPT, TCT for now
+13		YES
+14		YES
+15		YES
+16		YES
+17		NO *Skipping CPT, TCT for now

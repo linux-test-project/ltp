@@ -1,0 +1,43 @@
+RESULT CODES
+============
+
+POSIX Test Suite tests all return standard result codes for ease in
+interpreting the output.  The result code terms are taken from 
+IEEE Test Methods for Measuring Conformance to POSIX (IEEE 1003.3-1991).
+These result codes are a subset of the LSB result codes and, for
+consistency with LSB, are given the same number.
+
+Initial Contributors:
+	ajosey REMOVE-THIS AT rdg DOT opengroup DOT org
+	julie.n.fleischer REMOVE-THIS AT intel DOT com
+	geoffrey.r.gustafson REMOVE-THIS AT intel DOT com
+
+The PTS result codes are:
+
+#define PTS_PASS        0
+#define PTS_FAIL        1
+#define PTS_UNRESOLVED  2
+#define PTS_UNSUPPORTED 4
+#define PTS_UNTESTED    5
+
+A brief discussion of each of these follows:
+
+PTP_PASS	Used when the test executes fully with no problems and passes.
+PTP_FAIL	Used when the test executes fully, but fails.
+PTP_UNRESOLVED	Used when the test was blocked from fully completing and
+		the pass/failure results cannot be determined.
+PTP_UNSUPPORTED	Used if the test is for a conditional feature that is
+		not implemented.
+PTP_UNTESTED	Used when a feature does not have a test associated
+		with it because:
+		- The test is just a stub and doesn't do anything
+		- The test is only partially complete and can't really 
+		  finish the test
+		- The test is complete in some cases, but certain things 
+		  can happen that leave the test incomplete.  When these
+		  happen, it's PTP_UNTESTED.
+
+These result codes are contained in the header file posixtest.h, located
+in the include/ directory.
+
+This header file should be included in each test suite created.

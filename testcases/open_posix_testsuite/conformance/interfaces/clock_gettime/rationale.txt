@@ -1,0 +1,25 @@
+For these tests, the date returned by clock_gettime() will be compared
+with that returned by the gettimeofday() function.
+
+Assumptions:
+- Machines running these test cases also have access to the gettimeofday
+  function.
+- Ideally, the gettimeofday() function has different internals than 
+  clock_gettime().  [Hopefully, clock_gettime() doesn't just _call_ 
+  gettimeofday(), for instance.]
+  However, even if not, it's still a valid test to make sure clock_gettime()
+  doesn't have an error somewhere else.
+==> See
+http://sourceforge.net/mailarchive/forum.php?thread_id=591583&forum_id=2469
+It turns out these two functions _should_ return the same value but do
+have different internals, so this is a good test case.
+
+
+-----
+Another note:  At one point, I considered using ntpd to do date checking.
+That idea ended up getting thrown out, but one thing I want to document is
+that, if I did chose that idea, the tester would need to install RPMs:
+  ntp
+  libcap
+for it to run.
+

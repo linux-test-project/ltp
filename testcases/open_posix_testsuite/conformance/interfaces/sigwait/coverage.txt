@@ -1,0 +1,13 @@
+This document defines the coverage for function sigwait().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES
+5		NOT DONE YET
+6		NOT DONE YET
+7		NOT DONE YET
+8		YES
+9		WON'T test, as there is no known way to create a signal set that contains an invalid or unsupported signal.
+10		NOT DONE YET

@@ -1,0 +1,7 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6:24968:24999 pt:CX">
+ This test case shall return PASS on converting the broken down July 4th 2001
+ into a time since the Epoch, which is the same encoding as of the value 
+ returned by time(), otherwise it fails with -1.
+	</assertion>
+</assertions>

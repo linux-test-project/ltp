@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25644:25645 pt:MSG">
+mq_getattr will get status infomation and attributes of message queue.
+The result will return in mqstat argument.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:25648:25650 pt:MSG">
+mq_getattr gets mq_flags value, which is set when message queue was opened and can be modified by mq_setattr calls.
+  </assertion>
+  <assertion id="3" tag="pt:XSH6:25651:25652 pt:MSG">
+mq_getattr gets mq_maxmsg, mq_msgsize value, which will be returned when message queue was opened.
+  </assertion>
+  <assertion id="4" tag="pt:XSH6:25653:25654 pt:MSG">
+mq_getattr gets mq_curmsgs value, which will be returned as the number of the message currently on the queue.
+  </assertion>
+  <assertion id="5" tag="pt:XSH6:25657:25657 pt:MSG">
+mq_getattr will return 0 on success.
+  </assertion>
+  <assertion id="6" tag="pt:XSH6:25657:25658 pt:MSG">
+mq_getattr shall return -1 and set errno to indicate the error.
+  </assertion>
+  <assertion id="7" tag="pt:XSH6TC2:25661:25661 pt:MSG">
+mq_getattr may fail with EBADF if the mqdes is not a valid message message queue descriptor.
+  </assertion>
+</assertions>

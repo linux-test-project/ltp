@@ -1,0 +1,29 @@
+This document defines the coverage for function sigaction().
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES
+5		NOT DONE YET
+6		YES
+7		NOT DONE YET
+8		YES
+9		YES
+10		YES
+11		NOT DONE YET
+12		YES
+13		YES
+14		NOT DONE YET
+15		NOT DONE YET
+16		WON'T test. Not aware of any function that can easily be interrupted in the middle.
+17		YES
+18		NOT DONE YET
+19		NOT DONE YET
+20		NOT DONE YET
+21		YES
+22		YES
+23		NOT DONE YET
+24		NOT DONE YET
+25		YES
+26		NOT DONE YET

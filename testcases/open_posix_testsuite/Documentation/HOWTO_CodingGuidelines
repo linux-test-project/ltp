@@ -1,0 +1,12 @@
+This document describes the coding guidelines for this project.
+
+Since one of the most common uses of these API tests is to find bugs
+with the Linux kernel and submit bug reports to the linux-kernel
+mailing list with a pointer to the source code of the test case that
+demonstrates the bug, it makes sense to follow the coding guidelines
+followed by the Linux kernel.  These are available at:
+http://www.purists.org/linux/ or in linux/Documentation/CodingStyle
+in a Linux distribution.
+
+Contributors:	rusty.lynch REMOVE-THIS AT intel DOT com
+		julie.n.fleischer REMOVE-THIS AT intel DOT com

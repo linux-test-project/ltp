@@ -1,0 +1,18 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+
+Assertions     Tested ?	   Remarks
+1	       NO
+2	       YES	   May assertion
+3	       NO
+4	       YES
+5	       YES
+6	       NO
+7	       YES
+8	       YES
+9	       NO	   
+10	       YES	   May assertion
+11	       NO	   May assertion
+12	       YES	   May assertion

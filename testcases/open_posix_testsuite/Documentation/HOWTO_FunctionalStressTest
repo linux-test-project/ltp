@@ -1,0 +1,79 @@
+Functional and Stress Tests:  Definition and Structure
+======================================================
+
+This document describes what functional and stress tests are, how they
+are created, and the structure that they follow in CVS.
+
+Functional Test Definition
+--------------------------
+
+Functional tests test the behavior of functional areas of the POSIX*
+specification.  They do not relate directly to lines in the POSIX
+specifications, but rather test that the overall behavior specified by
+the functional area is present.
+
+Stress Test Definition
+----------------------
+
+Stress tests are designed to monitor how the system behaves when it is 
+taxed by excessively using the functional areas in the POSIX specification
+or monitoring how the functional areas in the POSIX specification behave 
+when the system is taxed.
+
+Directory Structure
+-------------------
+Functional and stress tests follow the same structure.
+
+The functional/ and stress directories off of posixtestsuite are where the
+functional and stress tests, respectively, are stored.
+
+Each of these are further subdivided into POSIX area (Timers, Semaphores,
+etc.).  For example, functional/timers.
+
+Within the functional/<POSIX area> directory, you should create the
+following files.
+- Makefile - master Makefile which will make all tests within the area
+
+- run.sh - file which will run all functional tests.  The run.sh can run
+conformance tests, functional tests from a different area (i.e.,
+functional/threads/run.sh can call functional/timers/threadstests/test.c),
+as well as functional tests in the current area.  If there are tests that
+apply to more than one area, they can go in either area and be called from
+the other if needed.
+Assume that the run.sh is called from the directory it is currently in
+when writing path names to files.
+
+- assertions.xml - This file maps test descriptions to test cases as in
+conformance tests.  The grammar for functional/stress tests is:
+<?xml version "1.0"?>
+<!DOCTYPE assertions [
+  <!ELEMENT assertion>
+  <!ATTLIST assertion
+      files  CDATA    #REQUIRED
+      tag    CDATA    #REQUIRED
+  >
+]>
+Where the tag follows the same structure outlined in HOWTO_Assertions, and
+the files="..." field tags a comma delimited list of files which are
+used to test the assertion.  For example,
+  <assertion id="1" files="threadone,threadtwo,threadthree" tag="pt:THR">
+  Three threads can be run in parallel.
+  </assertion>
+
+- coverage.txt - This document contain information on the completion of
+test cases for assertions as in the conformance tests.
+Content is lines with content:
+<assertion ID>		<YES/NO - for completed/not completed>
+
+So long as the functional/stress tests follow these guidelines, they
+can be built and run by the framework.  How the directory is subdivided
+is up to the area creator to define, but some suggestions have been:
+ -  create directories corresponding to POSIX chapters (see .1-1990 or
+    .1-1996 specs)
+ - create a number corresponding to the assertion ID for each directory
+
+* POSIX (R) is a registered trademark of the IEEE
+
+Contributors:	julie.n.fleischer REMOVE-THIS AT intel DOT com
+                ajosey REMOVE-THIS AT rdg DOT opengroup DOT org
+                geoffrey.r.gustafson REMOVE-THIS AT intel DOT com

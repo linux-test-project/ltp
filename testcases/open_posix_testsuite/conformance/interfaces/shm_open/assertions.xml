@@ -1,0 +1,180 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The shm_open() function shall establish a connection between a shared memory
+   object and a file descriptor
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The shm_open() function shall create an open file description that refers to
+   the shared memory object and a file descriptor that refers to that open file
+   description
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   It is unspecified whether the name appears in the file system and is visible
+   to other functions that take pathnames as arguments
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The name argument conforms to the construction rules for a pathname.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If name begins with the slash character, then processes calling shm_open()
+   with the same value of name refer to the same shared memory object, as long
+   as that name has not been removed
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If name does not begin with the slash character, the effect is
+   implementation-defined
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The interpretation of slash characters other than the leading slash
+   character in name is implementation-defined
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If successful, shm_open() shall return a file descriptor for the shared
+   memory object that is the lowest numbered file descriptor not currently open
+   for that process
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The open file description is new, and therefore the file descriptor does not
+   share it with any other processes
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   It is unspecified whether the file offset is set.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The FD_CLOEXEC file descriptor flag associated with the new file descriptor
+   is set
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   Applications specify exactly one of the first two values (access modes)
+   below in the value of oflag:
+       O_RDONLY 
+       O_RDWR 
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   When the applications specify the value of O_RDONLY, the file is open for
+   read acces only
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   When the applications specify the value of O_RDWR, the file is open for both
+   read and write acces
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists and the O_CREAT flags is set,
+   the shared memory object is created
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists and the O_CREAT flags is set,
+   the user ID of the shared memory object shall be set to the effective user
+   ID of the process
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists and the O_CREAT flags is set,
+   the group ID of the shared memory object is set to a system default group ID
+   or to the effective group ID of the process
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists and the O_CREAT flags is set,
+   the permission bits of the shared memory object shall be set to the value of
+   the mode argument except those set in the file mode creation mask of the
+   process
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists, the O_CREAT flags is set, and
+   bits in mode other than the file permission bits are set, the effect is
+   unspecified
+  </assertion>
+  <assertion id="20" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If the shared memory object does not exists and the O_CREAT flags is set, 
+   the mode argument does not affect whether the shared memory object is opened
+   for reading, for writing, or for both
+  </assertion>
+  <assertion id="21" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   When created, the shared memory object has a size of zero. 
+  </assertion>
+  <assertion id="22" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If O_EXCL and O_CREAT are set, shm_open() fails if the shared memory object
+   exist
+  </assertion>
+  <assertion id="23" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The check for the existence of the shared memory object and the creation of
+   the object if it does not exist is atomic with respect to other processes
+   executing shm_open() naming the same shared memory object with O_EXCL and
+   O_CREAT set
+  </assertion>
+  <assertion id="24" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If O_EXCL is set and O_CREAT is not set, the result is undefined
+  </assertion>
+  <assertion id="25" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If O_TRUNC is set, the shared memory object exists and it is successfully
+   opened O_RDWR, the object shall be truncated to zero length
+  </assertion>
+  <assertion id="26" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   If O_TRUNC is set, the shared memory object exists and it is successfully
+   opened O_RDWR, the mode and owner shall be unchanged by this function call
+  </assertion>
+  <assertion id="27" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   The result of using O_TRUNC with O_RDONLY is undefined
+  </assertion>
+  <assertion id="28" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   When a shared memory object is created, the state of the shared memory
+   object, including all data associated with the shared memory object,
+   persists until the shared memory object is unlinked and all other references
+   are gone
+  </assertion>
+  <assertion id="29" tag="ref:XSH6:{System Interfaces:shm_open:DESCRIPTION}">
+   It is unspecified whether the name and shared memory object state remain
+   valid after a system reboot
+  </assertion>
+  <assertion id="30" tag="ref:XSH6:{System Interfaces:shm_open:RETURN VALUE}">
+   Upon successful completion, the shm_open() function shall return a
+   non-negative integer representing the lowest numbered unused file descriptor
+  </assertion>
+  <assertion id="31" tag="ref:XSH6:{System Interfaces:shm_open:RETURN VALUE}">
+   Upon unsuccessful completion, the shm_open() function shall return -1
+  </assertion>
+  <assertion id="32" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EACCES if the shared memory object
+   exists and the permissions specified by oflag are denied
+  </assertion>
+  <assertion id="33" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EACCES if the shared memory object does
+   not exist and permission to create the shared memory object is denied
+  </assertion>
+  <assertion id="34" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EACCES if O_TRUNC is specified and
+   write permission is denied
+  </assertion>
+  <assertion id="35" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EEXIST if O_CREAT and O_EXCL are set
+   and the named shared memory object already exists
+  </assertion>
+  <assertion id="36" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EINTR if the shm_open() operation was
+   interrupted by a signal
+  </assertion>
+  <assertion id="37" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EINVAL if the shm_open() operation is
+   not supported for the given name
+  </assertion>
+  <assertion id="38" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = EMFILE if too many file descriptors are
+   currently in use by this process
+  </assertion>
+  <assertion id="39" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = ENAMETOOLONG if the length of the name
+   argument exceeds {PATH_MAX} or a pathname component is longer than
+   {NAME_MAX}
+  </assertion>
+  <assertion id="40" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = ENFILE if too many shared memory
+   objects are currently open in the system
+  </assertion>
+  <assertion id="41" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = ENOENT if O_CREAT is not set and the
+   named shared memory object does not exist
+  </assertion>
+  <assertion id="42" tag="ref:XSH6:{System Interfaces:shm_open:ERRORS}">
+   The shm_open() function sets errno = ENOSPC if there is insufficient space
+   for the creation of the new shared memory object
+  </assertion>
+</assertions>

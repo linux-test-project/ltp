@@ -1,0 +1,33 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31437:31438">
+   The function
+     int pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy);
+
+   sets the schedpolicy attribute in the 'attr' argument.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:31439:31442">
+   The supported values of 'policy' include SCHED_FIFO, SCHED_RR, 
+   and SCHED_OTHER. When threads executing with the scheduling policy
+   are waiting on a mutex, they shall acquire the mutex in priority order 
+   when the mutex is unlocked.
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:31443:31444">
+   If success, it returns zero.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:31445:31448">
+   if fail, an error number shall be returned to indicate the error.
+   The pthread_attr_setschedpolicy() function may fail if:
+   [EINVAL] The value of policy is invalid.
+  </assertion>
+
+  <assertion id="5" tag="ref:XSH6:31449:31449">
+   [ENOTSUP] An attempt to set the attribute to an unsupported value.
+  </assertion>
+
+  <assertion id="6" tag="ref:XSH6:31450:31450">
+   Shall not return an error code of [EINTR]
+  </assertion>
+</assertions>

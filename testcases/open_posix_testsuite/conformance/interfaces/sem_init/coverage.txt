@@ -1,0 +1,17 @@
+
+
+-- assertion 4: Not tested.  Help needed!
+
+-- assertion 7: Not tested.  I couldn't find a way to exhaust 
+the system in order to satisfy this test case.
+
+-- assertion 8: Not tested.  I couldn't figure out how to make 
+this test case to happen.  In NPTL, the semaphore creator has to 
+be root, and the semaphore is  created in /dev/shm file system.  
+Any other user can't create under that file system.
+
+-- assertion 9: Won't test.  Undefined.
+
+-- assertion 10: Won't test.  Undefined.
+
+-- assertion 11: Won't test.  Undefined.

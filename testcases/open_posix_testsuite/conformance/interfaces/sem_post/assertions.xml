@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38941:38942">
+sem_post will unlock a locked semaphore, and will increment the value of
+the semaphore when the value is positive.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:38945:38946">
+sem_post will return a value of 0 on successful calls when it unlock a 
+semaphore.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38941:38942">
+sem_post return EINVAL ERROR on invalid reference to a semaphore.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38959:38960">
+sem_post return zero on a successful call.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:38956:38956">
+sem_post will continue after it is interrupted by a signal
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:38956:38957">
+sem_post cam be called from within a signal catching function
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:38947:38953">
+38947 If the Process Scheduling option is supported, the thread to be unblocked shall be
+38948 chosen in a manner appropriate to the scheduling policies and parameters in effect for the
+38949 blocked threads. In the case of the schedulers SCHED_FIFO and SCHED_RR, the highest
+38950 priority waiting thread shall be unblocked, and if there is more than one highest priority thread
+38951 blocked waiting for the semaphore, then the highest priority thread that has been waiting the
+38952 longest shall be unblocked. If the Process Scheduling option is not defined, the choice of a thread
+38953 to unblock is unspecified.
+</assersion>
+</assertions>

@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_atfork() function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES - *Note: will not test ENOMEM
+
+NOTE:

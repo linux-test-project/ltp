@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32050:32055">
+   The function
+
+   void pthread_cleanup_push(void (*routine) (void*), void *arg); 
+
+  Shall push the specified cancelation cleanup handler routine onto the calling thread's
+  cancelation cleanup stack.
+
+  The cancelation cleanup handler shall be popped from the cancelation cleanup stack and invoked
+  with the argument arg when:
+
+  - The thread exits (calls pthread_exit())
+  - The thread acts upon a cancelation request
+  - the thread calls pthread_cleanup_pop() with a non-zero execution argument
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32066:32069">
+  It will not return a value, or an error code of [EINTR]
+  </assertion>
+
+</assertions>

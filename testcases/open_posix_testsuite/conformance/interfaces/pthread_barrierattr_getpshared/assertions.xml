@@ -1,0 +1,29 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31924:31925">
+  The pthread_barrierattr_getpshared( ) function shall obtain the value of the process-shared 
+  attribute from the attributes object referenced by attr.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31927:31934">
+  The process-shared attribute is set to PTHREAD_PROCESS_SHARED to permit a barrier to be
+  operated upon by any thread that has access to the memory where the barrier is allocated. 
+  If the process-shared attribute is PTHREAD_PROCESS_PRIVATE, the barrier shall only be operated
+  upon by threads created within the same process as the thread that initialized the barrier; if
+  threads of different processes attempt to operate on such a barrier, the behavior is undefined.
+  The default value of the attribute shall be PTHREAD_PROCESS_PRIVATE. Both constants
+  PTHREAD_PROCESS_SHARED and PTHREAD_PROCESS_PRIVATE are defined in "pthread.h".
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:31938:31940">
+  If successful, the pthread_barrierattr_getpshared( ) function shall return zero and store the 
+  value of the process-shared attribute of attr into the object referenced by the pshared 
+  parameter. Otherwise, an error number shall be returned to indicate the error.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:31944:31945">  
+  These functions may fail if:
+  [EINVAL] The value specified by attr is invalid.
+  These functions shall not return an error code of EINTR.
+  </assertion>
+</assertions>
+

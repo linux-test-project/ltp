@@ -1,0 +1,42 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25688:25690 pt:MSG">
+If notification is not NULL, this function will register the calling proces to 
+be notified of message arrival. The notification will be sent to the process 
+when the message queue transit from empty to non-empty.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:25691:25694 pt:MSG">
+Only one process may be registerd for notification of message arrival at any 
+time, other process attempts to register for that message queue shall fail.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:25695:25696 pt:MSG">
+If notification is NULL and the process is currently registered for 
+notification by the specified message queue, the existing registration shall 
+be removed.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:25697:25698 pt:MSG">
+If the notification is sent to the registered process, its registration shall 
+be removed. The message queue shall be available for next registration.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:25699:225702 pt:MSG">
+If a process is registered for notification of message arrival at a message 
+queue and some thread is blocked in mq_receive() waiting to receive a 
+message, the arriving message shall satisfy the appropriate mq_receive(). 
+The resulting behavior is as if the message queue remains empty, no 
+notification shall be sent.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:25704:25704 pt:MSG">
+If mq_notify is successful, it will return a value of zero.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:25705:25705 pt:MSG">
+If mq_notify is not successful, it will return a value of -1 and set errno 
+to indicate the error.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:25707:25708 pt:MSG">
+mq_notify will fail with EBADF if mqdes argument is not a valid messsage 
+queue descriptor.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:25709:25709 pt:MSG">
+mq_notify will fail with EBUSY if a process is already registered for 
+notification by the message queue.
+  </assertion>
+</assertions>

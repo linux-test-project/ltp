@@ -1,0 +1,38 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41944:41946 pt:XSI">
+	If sigset() is used and disp is SIG_DFL, then the default action associated with that process will be taken when the 
+        signal occurs.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41944:41946 pt:XSI">
+	If sigset() is used and disp is SIG_IGN, then the signal will be ignored
+        signal occurs.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41944:41946 pt:XSI">
+	If sigset() is used and disp is the address of a signal handler, then the signal handler will be executed 
+        when the signal is generated.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41946:41948 pt:XSI">
+	If sigset( ) is used, and disp is the address of a signal handler, the system shall add sig to the calling process'
+	signal mask before executing the signal handler
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:41948:41949 pt:XSI">
+	The calling process's signal mask shall be restored to its state prior to the delivery of the signal, 
+	when the signal handler returns.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:41950:41951 pt:XSI">
+	If disp is equal to SIG_HOLD, sig shall be added to the calling process' signal mask.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:41950:41951 pt:XSI">
+	If disp is equal to SIG_HOLD, sig's disposition shall remain unchanged. 
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:41965:41966 pt:XSI">
+	If the signal had been blocked, upon successful completion, sigset( ) shall return SIG_HOLD
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:41965:41966 pt:XSI">
+	If the signal had not been blocked, upon successful completion, sigset( ) shall return the signal's previous disposition
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:41967:41977 pt:XSI">
+	If sigset() was not successful, SIG_ERR shall be returned and errno set to indicate the error.
+  </assertion>
+</assertions>
+

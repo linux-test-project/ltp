@@ -1,0 +1,16 @@
+This is an index to the various HOWTO files in this directory.
+
+HOWTO_Assertions      - describes format of assertions.xml files
+HOWTO_BoundaryTest    - information about testing boundary conditions
+HOWTO_BugReport       - dealing with a test failure the suite finds
+HOWTO_CodingGuidelines- describes coding guidelines for this project
+HOWTO_ConformanceTest - info on creation and structure of conformance tests
+HOWTO_Coverage        - describes format of COVERAGE.<area> files
+HOWTO_DefinitionsTest - ideas behind testing POSIX header files
+HOWTO_Functional-     - info on creation and structure of functional
+  StressTest            and stress tests
+HOWTO_INDEX           - lists all HOWTO files with descriptions
+HOWTO_Release         - describes how to release a version of PTS
+HOWTO_ResultCodes     - standardized return codes for tests
+HOWTO_RunTests        - information on building/running tests
+HOWTO_Tagging         - describes how to tag files for inclusion in a release

@@ -1,0 +1,51 @@
+This document describes the process for reporting bugs found _by_ the
+POSIX Test Test Suites.
+
+A future document will cover how to report bugs found _within_ the
+POSIX Test Test Suites.
+
+This document describes the steps we'd like to take to ensure we are finding
+new, important issues and reporting them in a clear, consice, and effective
+manner.
+
+1.  Bug is found - i.e., Test case shows failure.
+    Ensure you were testing using:
+    - The latest version of the test case.
+    - The latest version of the code under test.
+    - Code under test that is targeted* for the POSIX Test Suite reporting.
+2.  Research.
+    Research as many of the following areas as possible to ensure the bug
+    is new:
+    - Mailing list for the code under test.
+    - Bug database for the code under test.
+    - LKML - (one archive:  http://marc.theaimsgroup.com/?l=linux-kernel)
+    - Kernel bug database - http://bugme.osdl.org
+3.  Debug as much as possible.
+    Some steps include:
+    - Create a test case which clearly shows the bug.
+    - If possible, find the fault in the code under test causing the test case 
+      failure.
+    - If possible, create a patch to fix the fault.
+4.  If the code under test is compatible with another POSIX version (e.g.,
+    1993), then determine whether this test case is for functionality
+    added by the 2001 spec.
+    If yes, document this in the assertions.xml file**.
+5.  Create an email bug report containing:
+    - description of the issue
+    - kernel used
+    - patches applied
+    - relevant configuration information
+    - hardware used
+    - test case to reproduce the issue (can be included in the email)
+6.  Send email bug report to the mailing list for the code under test (or
+    its bug database, if applicable).  Copy LKML, if applicable.  [If it
+    is a bug in the Linux Kernel, submit directly to the Linux Kernel
+    bug database.]
+
+*targeted implementation = an implementation which POSIX Test Suite will
+be run against; not yet formally defined
+**Process for tracing a test case to previous POSIX specifications not 
+yet defined.
+
+Contributors:	geoffrey.r.gustafson REMOVE-THIS AT intel DOT com
+		julie.n.fleischer REMOVE-THIS AT intel DOT com

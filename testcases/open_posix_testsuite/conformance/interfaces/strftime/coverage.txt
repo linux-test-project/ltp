@@ -1,0 +1,12 @@
+
+I have commented some of the conversions specifications because there is a bug
+in gcc that complains about them.  Here is a log file of the output:
+
+conformance/interfaces/strftime/1-1: build: FAILED: Compiler output: 
+cc1: warnings being treated as errors
+conformance/interfaces/strftime/1-1.c: In function `main':
+conformance/interfaces/strftime/1-1.c:67: warning: `%c' yields only last 2 digits of year in some locales
+conformance/interfaces/strftime/1-1.c:95: warning: `%D' yields only last 2 digits of year
+conformance/interfaces/strftime/1-1.c:132: warning: `%g' yields only last 2 digits of year
+conformance/interfaces/strftime/1-1.c:312: warning: `%x' yields only last 2 digits of year in some locales
+conformance/interfaces/strftime/1-1.c:330: warning: `%y' yields only last 2 digits of year

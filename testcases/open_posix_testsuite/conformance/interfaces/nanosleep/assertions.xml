@@ -1,0 +1,35 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:26693:26695">
+   nanosleep() causes the current thread to be suspended until either:
+    1) the time interval in rqtp passes
+    2) a signal whose action is to terminate the process or invoke a signal
+       catching function is delivered to the current thread
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:26696:26699">
+   Unless nanosleep() is interrupted (as in 2) above), nanosleep() must always
+   suspend the process for _at least_ the time interval in rqtp - as 
+   measured by CLOCK_REALTIME.
+   [Occasionally, the time could be > rqtp interval because of 
+   scheduling/rounding.]
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:26700:26700">
+   nanosleep() does not effect the action/blockage of a signal
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:26702:26703">
+   nanosleep() returns 0 if it returns because the time interval in rqtp
+   has elapsed
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:26709:26709 XSH6:26730:26730">
+   nanosleep() returns -1 on failure or if interrupted
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:26713:26714">
+   nanosleep() sets errno to EINVAL if rqtp contained a nanosecond value
+   below 0 or above (or equal to) 1,000 million
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:26704:26708 XSH6:26712:26712">
+   nanosleep() sets errno to EINTR if it is interrupted by a signal.
+   Also, if rmtp != NULL, rmtp will be set to the time remaining (i.e., 
+   requested time - time slept).  Otherwise, time remaining is not
+   returned.
+  </assertion>
+</assertions>

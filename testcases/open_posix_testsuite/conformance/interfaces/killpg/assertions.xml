@@ -1,0 +1,33 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:22101:22101 pt:XSI">
+The killpg () function sends the signal sig to the process 
+group pgrp.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:22102:22102 pt:XSI">
+killpg(pgrp, sig) is equivalent to kill(-pgrp, sig), when pgrp is greater than 1,
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:22102:22103 pt:XSI">
+The behavior of killpg ( ) is undefined if pgrp is less than or equal to 1.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:22105:22105 pt:XSI">
+killpg returns 0 upon successful completion. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:22105:22106 pt:XSI">
+killpg returns -1, upon unsuccessful completion.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:22009:22009 pt:XSI">
+errno shall be set to EINVAL, when tThe value of the sig argument is an 
+invalid or unsupported signal 
+number.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:22010:22011 pt:XSI">
+errno shall be set to EPERM, when the process does not have permission to 
+send the signal to any 
+receiving process.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:22012:22013 pt:XSI">
+errno shall be set to ESRCH, when no process or process group can be found 
+corresponding to that specified by pid.
+  </assertion>
+</assertions>
+

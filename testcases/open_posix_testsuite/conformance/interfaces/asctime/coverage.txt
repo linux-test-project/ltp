@@ -1,0 +1,4 @@
+This file defines the coverage for the asctime() function testing.
+
+Assertion	Status
+1		YES

@@ -1,0 +1,93 @@
+COVERAGE FILES
+==============
+
+Every area of the POSIX spec that has tests written for it should be tracked by
+a corresponding COVERAGE.<area> file in the Documentation directory. The first
+example file is COVERAGE.timers, which I will keep up to date with the latest
+format.
+
+The idea with these files is to track the progress of test creation. Also, the
+files will be parsed nightly to generate the Project Status web page at
+http://posixtest.sf.net/status.html so they must conform to a certain format.
+
+To simplify the creation of a tool to parse these files, the following rules
+should be observed in creating the file.
+
+Completion of POSIX Function Conformance Tests
+----------------------------------------------
+There should be one line for each POSIX function included in this area of the
+POSIX spec. The tests for these functions are currently found in the
+conformance/behavior/<function-name> directory. (They may be moved to
+conformance/interfaces/<function-name> shortly.) The function test directory
+need not exist yet, but the list of functions in the COVERAGE file should be
+complete.
+
+Each line should have this format:
+<function-name>  <complete?>  <other-fields>
+
+That is, spaces or tabs as whitespace separating the function name and complete
+fields, and any other fields, if present. Other fields will be ignored by the
+parser currently.
+
+For example, from COVERAGE.timers:
+clock_gettime	NO*	MED
+
+Only the first letter of the complete? field will be read, and should be either
+N or Y. (So you are free to have asterisks as Julie has done.)
+
+She has a priority field after that HIGH/MED/LOW which is currently not used by
+the parser.
+
+Information Fields
+------------------
+Additional information should be provided with this format:
+Field-Name: Value-Data
+
+The field "Coverage-Area" MUST be provided with a description of this area of
+the POSIX spec such as "Clocks & Timers (TMR)".
+
+The field "Area-Code" MUST be provided, a unique code with no spaces to use
+internally within the web page to link to the stats about this coverage area,
+such as "tmr" or "sig".
+
+The field "Maintainer" SHOULD be provided with the name of the active
+maintainer of this area.
+
+The field "Contributor" MAY be provided (one or more times) with a name of
+someone who contributed to the tests in this area (other than the active
+maintainer).
+
+Comment Lines
+-------------
+Any line that is not of the type defined above must be denoted as a comment
+line. There are three types of comment lines that will be ignored:
+
+- Any blank line or line with whitespace only
+- Any line beginning with //
+- Any lines between an opening line of /* and a closing line of */ (inclusive)
+
+For example, only the clock_gettime line would be parsed below:
+
+// SAMPLE FILE: First Line
+   
+// The line above is whitespace only, and the line below is blank
+
+/*
+This section is for longer
+comments.
+*/
+clock_gettime	NO*	MED
+
+// SAMPLE FILE: Last Line
+
+Other Tests: Definitions, Functional, Stress, etc.
+--------------------------------------------------
+These tests are not currently handled by the parser tool, and thus should be
+included in comment fields if the information is present.
+
+Future Extensions
+-----------------
+If other fields become required later, they will be moved to the front of the
+text lines, so that optional fields can still appear after them.
+
+Contributors:	geoffrey.r.gustafson REMOVE-THIS AT intel DOT com

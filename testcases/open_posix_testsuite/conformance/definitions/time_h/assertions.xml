@@ -1,0 +1,166 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD6:13642:13644">
+   The time.h file exists.
+  </assertion>
+  <assertion id="2" tag="ref:XBD6:13650:13660">
+   The time.h header declares struct tm with the members below, at a
+   minimum:
+      tm_sec
+      tm_min
+      tm_hour
+      tm_mday
+      tm_mon
+      tm_year
+      tm_wday
+      tm_yday
+      tm_isdst
+  </assertion>
+  <assertion id="3" tag="ref:XBD6:13663:13672">
+   The time.h header defines the symbolic names below:
+    NULL
+    CLOCKS_PER_SEC
+    CLOCK_PROCESS_CPUTIME_ID (TMR,CPT)
+    CLOCK_THREAD_CPUTIME_ID (TMR,TCT)
+  </assertion>
+  <assertion id="4" tag="ref:XBD6:13673:13676 pt:TMR">
+   The time.h header declares struct timespec with the members below, at
+   a minimum:
+    time_t tv_sec
+    long tv_nsec
+  </assertion>
+  <assertion id="5" tag="ref:XBD6:13677:13680 pt:TMR">
+   The time.h header declares struct itimerspec with the members below, at
+   a minimum:
+    struct timespec it_interval
+    struct timespec it_value
+  </assertion>
+  <assertion id="6" tag="ref:XBD6:13681:13689 pt:TMR">
+   The manifest constants below are defined:
+    CLOCK_REALTIME
+    TIMER_ABSTIME
+    CLOCK_MONOTONIC (@pt:MON)
+  </assertion>
+  <assertion id="7" tag="ref:XBD6:13690:13691">
+   sys/types.h shall define clock_t, size_t, time_t, clockid_t (@pt:TMR), 
+   and timer_t (@pt:TMR).
+  </assertion>
+  <assertion id="8" tag="ref:XBD6:13698:13698">
+   The function below is defined:
+   char *asctime(const struct tm *);
+  </assertion>
+  <assertion id="9" tag="ref:XBD6:13699:13699 pt:TSF">
+   The function below is defined:
+   char *asctime_r(const struct tm *restrict, char *restrict);
+  </assertion>
+  <assertion id="10" tag="ref:XBD6:13700:13700">
+   The function below is defined:
+   clock_t clock(void);
+  </assertion>
+  <assertion id="11" tag="ref:XBD6:13701:13701 pt:CPT">
+   The function below is defined:
+   int clock_getcpuclockid(pid_t, clockid_t *);
+  </assertion>
+  <assertion id="12" tag="ref:XBD6:13702:13702 pt:TMR">
+   The function below is defined:
+   int clock_getres(clockid_t, struct timespec *);
+  </assertion>
+  <assertion id="13" tag="ref:XBD6:13703:13703">
+   The function below is defined:
+   int clock_gettime(clockid_t, struct timespec *);
+  </assertion>
+  <assertion id="14" tag="ref:XBD6:13704:13705 pt:CS">
+   The function below is defined:
+   int clock_nanosleep(clockid_t, int, const struct timespec *,
+    struct timespec *);
+  </assertion>
+  <assertion id="15" tag="ref:XBD6:13706:13706 pt:TMR">
+   The function below is defined:
+   int clock_settime(clockid_t, const struct timespec *);
+  </assertion>
+  <assertion id="16" tag="ref:XBD6:13707:13707">
+   The function below is defined:
+   char *ctime(const time_t *);
+  </assertion>
+  <assertion id="17" tag="ref:XBD6:13708:13708 pt:TSF">
+   The function below is defined:
+   char *ctime_r(const time_t *, char *);
+  </assertion>
+  <assertion id="18" tag="ref:XBD6:13709:13709">
+   The function below is defined:
+   double difftime(time_t, time_t);
+  </assertion>
+  <assertion id="19" tag="ref:XBD6:13710:13710 pt:XSI">
+   The function below is defined:
+   struct tm *getdate(const char *);
+  </assertion>
+  <assertion id="20" tag="ref:XBD6:13711:13711">
+   The function below is defined:
+   struct tm *gmtime(const time_t *);
+  </assertion>
+  <assertion id="21" tag="ref:XBD6:13712:13712 pt:TSF">
+   The function below is defined:
+   struct tm *gmtime_r(const time_t *restrict, struct tm *restrict);
+  </assertion>
+  <assertion id="22" tag="ref:XBD6:13713:13713">
+   The function below is defined:
+   struct tm *localtime(const time_t *);
+  </assertion>
+  <assertion id="23" tag="ref:XBD6:13714:13714 pt:TSF">
+   The function below is defined:
+   struct tm *localtime_r(const time_t *restrict, struct tm *restrict);
+  </assertion>
+  <assertion id="24" tag="ref:XBD6:13715:13715">
+   The function below is defined:
+   time_t mktime(struct tm *);
+  </assertion>
+  <assertion id="25" tag="ref:XBD6:13716:13716 pt:TMR">
+   The function below is defined:
+   int nanosleep(const struct timespec *, struct timespec *);
+  </assertion>
+  <assertion id="26" tag="ref:XBD6:13717:13718">
+   The function below is defined:
+   size_t strftime(char *restrict, size_t, const char *restrict,
+   const struct tm *restrict);
+  </assertion>
+  <assertion id="27" tag="ref:XBD6:13719:13720 pt:XSI">
+   The function below is defined:
+   char *strptime(const char *restrict, const char *restrict,
+   struct tm *restrict);
+  </assertion>
+  <assertion id="28" tag="ref:XBD6:13721:13721">
+   The function below is defined:
+   time_t time(time_t *);
+  </assertion>
+  <assertion id="29" tag="ref:XBD6:13722:13723 pt:TMR">
+   The function below is defined:
+   int timer_create(clockid_t, struct sigevent *restrict,
+   timer_t *restrict);
+  </assertion>
+  <assertion id="30" tag="ref:XBD6:13724:13724 pt:TMR">
+   The function below is defined:
+   int timer_delete(timer_t);
+  </assertion>
+  <assertion id="31" tag="ref:XBD6:13725:13725 pt:TMR">
+   The function below is defined:
+   int timer_gettime(timer_t, struct itimerspec *);
+  </assertion>
+  <assertion id="32" tag="ref:XBD6:13726:13726 pt:TMR">
+   The function below is defined:
+   int timer_getoverrun(timer_t);
+  </assertion>
+  <assertion id="33" tag="ref:XBD6:13727:13728 pt:TMR">
+   The function below is defined:
+   int timer_settime(timer_t, int, const struct itimerspec *restrict,
+   struct itimerspec *restrict);
+  </assertion>
+  <assertion id="34" tag="ref:XBD6:13729:13729 pt:CX">
+   The function below is defined:
+   void tzset(void);
+  </assertion>
+  <assertion id="35" tag="ref:XBD6:13731:13734">
+   The variables below are declared:
+   extern int daylight; (@pt:XSI)
+   extern long timezone;
+   extern char *tzname[]; (@pt:CX)
+  </assertion>
+</assertions>

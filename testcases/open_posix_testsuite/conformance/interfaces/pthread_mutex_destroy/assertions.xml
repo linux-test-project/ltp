@@ -1,0 +1,32 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33631:33633">
+  The function
+
+  int pthread_mutex_destroy(pthread_mutex_t *mutex);
+
+  destroys the mutex referenced by 'mutex'; the mutex object now becomes
+  becomes uninitialized.  An implementation may cause pthread_mutex_destroy()
+  to set the object referenced by 'mutex' to an invalid value.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:33633:33635">
+  A destroyed mutex object can be reinitialized using pthread_mutex_init();
+  the results of referencing the object after it has been
+  destroyed are undefined.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:33651:33651">
+  Upon success, it returns a 0;
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:33657:33661">
+  pthread_mutex_destroy() may fail if:
+
+  -[EBUSY] The implementation has detected an attempt to destory the
+  object referenced by 'mutex' while it is locked or referenced.
+  -[EINVAL] The value specified by 'mutex' is invalid.
+ 
+  It shall not return [EINTR]
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:33636:33636">
+  It shall be safe to destroy an initialized mutex that is unlocked.
+  </assertion> 
+  
+</assertions>

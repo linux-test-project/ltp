@@ -1,0 +1,11 @@
+This document defines the coverage for function sigsuspend().
+
+Assertion	Covered?
+1		YES, but will go back an investigate incase there's a better way to test this.
+2		NO, skipping any threads-related testing for now
+3		YES
+4		YES
+5		Already tested in sigignore.
+6		YES
+7		YES
+		

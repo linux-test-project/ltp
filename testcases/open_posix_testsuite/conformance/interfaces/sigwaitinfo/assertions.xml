@@ -1,0 +1,39 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42491:42491 pt:RTS">
+	The sigwaitinfo ( ) function selects the pending signal from the set specified by set. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42492:42493 pt:RTS">
+	The lowest pending signal should be selected first numbered one, if it is one of multiple
+	pending signals in the range SIGRTMIN to SIGRTMAX be selected.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42494:42496 pt:RTS">
+	The calling thread shall be suspended until one or more signals in set become pending or
+	until it is interrupted by an unblocked, caught signal, if no signal in set is pending at
+	the time of the call.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:42497:42498 pt:RTS">
+	If the info argument is NULL, the sigwaitinfo ( ) function shall be equivalent to the sigwait( ) function.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42498:42499 pt:RTS">
+	If the something other than NULL is specified by the info argument, the sigwaitinfo ( ) function
+	shall be equivalent to sigwait( ), except that the selected signal
+	number shall be stored in the si_signo member.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42498:42500 pt:RTS">
+	If the something other than NULL is specified by the info argument, the sigwaitinfo ( ) function
+	shall be equivalent to sigwait( ), except that the cause of the signal shall be stored in the si_code member. 
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:42500:42502 pt:RTS">
+	If the info argument is non-NULL, the selected signal's queued value - if any - shall be
+	stored in the si_value member of info, 	and shall be dequeued.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:42504:42505 pt:RTS">
+	The pending indication for that signal shall be reset, if no further signals are queued for the selected signal.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:42506:42508 pt:RTS">
+	Upon successful completion sigwaitinfo ( ) returns the selected signal number.
+  </assertion>
+</assertions>
+
+
+
