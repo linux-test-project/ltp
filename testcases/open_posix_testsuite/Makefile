@@ -32,7 +32,10 @@ STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
 STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
 PWD := $(shell pwd)
 
-all: build-tests run-tests functional-tests
+all: build-tests
+#all: build-tests run-tests functional-tests
+
+install:
 
 build-tests: $(BUILD_TESTS:.c=.test)
 run-tests: $(RUN_TESTS:.test=.run-test)
