@@ -53,6 +53,7 @@
                                fprintf(stderr, "requires an argument\n"); \
                                usage(prog); \
                                    } while (0)
+#define FOREVER 1
 
 /******************************************************************************/
 /*								 	      */
@@ -89,9 +90,9 @@ usage(char *progname)           /* name of this program                       */
 void *
 alloc_mem(void * args)
 {
-    int	 fib1       = 0;	/* first number in the fibannoci series       */
-    int  fib2       = 1;	/* second number in the fibanocci series      */
-    int  fib3       = 1;	/* third number in the fibanocci series       */
+    static int	fib1       = 0;	/* first number in the fibannoci series       */
+    static int  fib2       = 1;	/* second number in the fibanocci series      */
+    static int  fib3       = 1;	/* third number in the fibanocci series       */
     int  num_alloc  = 0;	/* number of memory chunks allocated          */
     int  index      = 0;        /* num of and frees to perform                */
     int  loop       = 0;        /* number of times to repeat alloc and free   */
@@ -103,30 +104,37 @@ alloc_mem(void * args)
 
     for (loop = 0; loop < (int)locargptr[0]; loop++)
     {
-        dprt("mallocing memory for anchor\n");
+        fib1 = 0;
+        fib2 = 1;
+        fib3 = 1;
+ 
         if ((anchor = malloc(sizeof(int *))) == NULL)
         {
             perror("do_malloc(): allocating space for anchor malloc()");
             PTHREAD_EXIT(-1);
         }
 
-        memptr = anchor;
-        dprt("malloc done. anchor = %#x memptr = %#x\n", anchor, memptr);
+        dprt("pid[%d]: loop = %d anchor = %#x\n", getpid(), loop, anchor);
 
-        while ((*memptr = (int *)malloc(fib3)) != NULL)
+        //while ((*memptr = (int *)malloc(fib3)) != NULL)
+        while(FOREVER)
         {
-            dprt("fib1 = %d fib2 = %d and fib3 = %d\n", fib1, fib2, fib3);
+            memptr = anchor + num_alloc;
+            if ((*memptr = (int *)malloc(fib3)) != NULL)
+                break;
+            dprt("pid[%d]: memptr = %#x\n", getpid(), anchor, memptr);
 
             fib3 = fib2 + fib1;
             fib1 = fib2;
             fib2 = fib3;
+
+            dprt("pid[%d]: fib3 = %d\n", getpid(), fib3);
        
             num_alloc++;
             **memptr = num_alloc;
-            memptr = anchor + num_alloc;
             
-            dprt("content of memptr = %d\n", **memptr);
-            dprt("number of allocations = %d\n", num_alloc);
+            dprt("pid[%d]: content of memptr = %d\n", getpid(), **memptr);
+            dprt("pid[%d]: number of allocations = %d\n", getpid(), num_alloc);
 
             if ((anchor = 
                         (int **) realloc(anchor, (num_alloc + 2)*sizeof(int *)))
@@ -135,16 +143,18 @@ alloc_mem(void * args)
                 perror("do_malloc(): reallocating space for anchor malloc()");
                 PTHREAD_EXIT(-1);
             }
-            dprt("anchor remalloced... anchor = %#x\n", anchor);
+            dprt("pid[%d]: remalloced anchor = %#x\n", getpid(), anchor);
         }
         for (index = 0; index < num_alloc; index++)
         {
+            dprt("pid[%d]: freeing %#x\n", *memptr);
             free(*memptr);
             memptr--;
         }
 
         free(anchor);
     }   
+    PTHREAD_EXIT(0);
 }
 
 /******************************************************************************/
@@ -235,7 +245,6 @@ main(int	argc,		/* number of input parameters		      */
         }
         else
         {
-            dprt("WE ARE HERE %d\n", __LINE__);
             if ((int)*th_status == -1)
             {
                 fprintf(stderr,
@@ -243,6 +252,7 @@ main(int	argc,		/* number of input parameters		      */
                             thrdid[thrd_ndx]);
                 exit(-1);
             }
+            dprt("thread[%d]: exiting without errors\n", thrd_ndx);
         }
     }
     exit(0);
