@@ -164,7 +164,7 @@ disp_ltpres()
 {
     RC=0
 
-    RESULTS_LIST=$(for i in `ls -1 -A -I "CVS" results`;do echo -n "$i <- "; done)
+    RESULTS_LIST=$(for i in `ls -1 -A -I "CVS" results`;do echo -n "$i [more...] "; done)
     while [ $RC -ne "1" ] 
     do
       dialog --clear
@@ -441,7 +441,7 @@ ltp_scenarios()
 {
 
 RC=0
-SCENARIOS=$(for i in `ls -1 -A -I "CVS" runtest`;do echo -n "$i <- "; done)
+SCENARIOS=$(for i in `ls -1 -A -I "CVS" runtest`;do echo -n "$i [more...] "; done)
 
 while [ $RC -ne "1" ] 
 do
