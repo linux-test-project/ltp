@@ -73,6 +73,10 @@
 #include "test.h"
 #include "usctest.h"
 
+#ifndef RUSAGE_BOTH      /* Removed from user space on RHEL4 */
+#define RUSAGE_BOTH (-2) /* still works on SuSE      */
+#endif			 /* so this is a work around */
+
 static void setup();
 static void cleanup();
 static int exp_enos[] = {EINVAL, EFAULT, 0};
