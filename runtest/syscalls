@@ -443,6 +443,10 @@ pipe11 pipe11
 
 poll01 poll01
 
+prctl01 prctl01
+prctl02 prctl02
+prctl03 prctl03
+
 pread01 pread01
 pread02 pread02
 pread03 pread03
