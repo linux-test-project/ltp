@@ -140,8 +140,7 @@ main(int ac, char **av)
 		beforetest = getfreehugepages();
 
 		/* 
-		 * Call mmap to map the temporary file beyond EOF
-	 	 * with write access.
+		 * Call mmap
 		 */
 		errno = 0;
 		addr = mmap(NULL, page_sz, PROT_READ | PROT_WRITE,
