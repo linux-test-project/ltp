@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pathconf01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: pathconf01.c,v 1.3 2000/10/31 17:17:57 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -116,8 +116,9 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
+void help();
 
 
 
@@ -128,7 +129,6 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0, 0};
 
 int i;
-char *path = "/tmp";
 
 struct pathconf_args
 {
@@ -144,6 +144,14 @@ struct pathconf_args
     {NULL, 0}
 };
 
+int lflag;
+char *path;
+
+option_t options[] = {
+    { "l:", &lflag, &path }, /* -l <path to test> */
+    { NULL, NULL, NULL }
+};
+
 int
 main(int ac, char **av)
 {
@@ -155,9 +163,12 @@ main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
+    if ( (msg=parse_opts(ac, av, options, &help)) != (char *) NULL )
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
+    if (!lflag) {
+	path = strdup("/tmp");
+    }
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
@@ -244,3 +255,12 @@ cleanup()
     /* exit with return code appropriate for results */
     tst_exit();
 }	/* End cleanup() */
+
+/***************************************************************
+ * help
+ ***************************************************************/
+void
+help()
+{
+    printf("  -l path a path to test with pathconf(2) (def: /tmp)\n");
+}

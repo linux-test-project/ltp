@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: sbrk01.c,v 1.3 2000/10/31 17:17:57 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -165,12 +165,12 @@ main(int ac, char **av)
 	Increment = 8192;
 
 	/* Call sbrk(2) */
-#ifdef CRAY
-	TEST(sbrk(Increment));
-	tret=TEST_RETURN;
-#else
+#if defined(sgi)
 	tret=(long)sbrk(Increment);   /* Remove -64 IRIX compiler warning */
 	TEST_ERRNO=errno;
+#else
+	TEST(sbrk(Increment));
+	tret=TEST_RETURN;
 #endif
 	
 	/* check return code */

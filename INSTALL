@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.5 2000/09/26 20:59:21 nstraz Exp $
+$Id: INSTALL,v 1.6 2000/10/31 17:17:56 nstraz Exp $
 
 Quick Start
 -----------
@@ -32,7 +32,7 @@ contributions are welcome.
 
 {mknod01,setgroups01,setuid02} /home/tester/ltp/tests/* tester uid=0
 
-   There are currently (09/26/2000) the tests that require root.  The
+   There are currently (09/26/2000) three tests that require root.  The
    rest of the tests don't need to be run as root, and probably
    shouldn't.
 
