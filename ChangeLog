@@ -1,3 +1,40 @@
+LTP-20021105
+------------
+- Added "setdomainname01", "setdomainname02",     ( Saji Kumar )
+  and "setdomainname03" to "syscalls" runtest file
+- Added "sethostname01", "sethostname02",         ( Suresh Babu )
+  and "sethostname03" to "syscalls" runtest file
+- Fixed bug introduced in "fsstress.c"            ( Andi Kleen, Andrew Morton )
+- Fix "chdir03.c" to remove unintentional \n in   ( Paul Larson )
+  the directory name
+- Added code to remove the tmp test dir           ( Robbie Williamson )
+  in "fcntl11.c"
+- fix for "shmctl01.c" to get rid of the shmdt    ( Manfred Spraul )
+  failures in "shmctl01"
+- Fix for "readdir01" slightly incorrect errno    ( Paul Larson )
+  handling
+- Back out "readv01", "readv02" changes to        ( Paul Larson )
+  expect EINVAL when count==0.  Kernel is going 
+  to keep the old behaviour.
+- Fix for "waitpid02". uses undefined div by      ( Paul Larson )
+  0 behaviour 
+- Revert "writev01.c" back to not expect EINVAL   ( Paul Larson )
+  when count==0
+- Fix for "mc_commo". Changed a 'ps -ef' command  ( Robbie Williamson )
+  to 'ps -ewf' to ensure that a grep finds the 
+  info it needs.
+- Fix in mc_member. Corrected typo causing false  ( Robbie Williamson )
+  pass. Found by Li Ge <lge@us.ibm.com>
+- Fix in "tcpdump01". Removed erroneous INTERFACE ( Robbie Williamson )
+  declaration.
+- Fix tools/ltprun to use the new runalltests     ( William Jay Huie )
+  semantics
+- Added fsxtest02.  Similar test to fsxtest, but  (Robbie Williamson)
+  this test runs fsx-linux on a file created in 
+  the $TCtmp directory. No unformatted partition 
+  required.
+
+
 
 LTP-20021002
 ------------
