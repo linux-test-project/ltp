@@ -23,7 +23,10 @@
 MAINS=semget01 semget02 semget03 semget05 semget06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc
+IPC_LDFLAGS=-L.. -lipc  
+LTP_CFLAGS=-I../../../../../include -Wall -g
+LTP_LDFLAGS=-L../../../../../lib -lltp
+
 
 all: $& $(MAINS)
 

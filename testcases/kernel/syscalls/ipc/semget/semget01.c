@@ -65,7 +65,7 @@ extern int Tst_count;
 
 int sem_id_1 = -1;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -117,6 +117,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -126,7 +127,6 @@ void
 check_functionality()
 {
 	struct semid_ds semary;
-	struct ipc_perm *ipcp = &semary.sem_perm;
 	union semun un_arg;		/* union defined in ipcsem.h */
 
 	/* STAT the semaphore */

@@ -66,7 +66,7 @@ int sem_id_1 = -1;
 int num_sems[] = {LARGENUM, SMALLNUM};
 
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -116,6 +116,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

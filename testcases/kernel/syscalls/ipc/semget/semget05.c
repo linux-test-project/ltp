@@ -67,7 +67,7 @@ int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
 int sem_id_arr[MAXIDS];		/* hold the semaphore IDs that are created */
 int num_sems = 0;		/* count the semaphores created */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -112,6 +112,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
