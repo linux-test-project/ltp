@@ -301,7 +301,7 @@ kill11 ulimit -c 1024;kill11
 kill12 kill12
 kill13 cd $LTPROOT/testcases/bin;kill13
 
-killpg01 cd $LTPROOT/testcases/bin:kill01pg
+killpg01 cd $LTPROOT/testcases/bin;kill01pg
 
 lchown01 lchown01
 lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
