@@ -11,14 +11,13 @@
   The default value of the attribute is PTHREAD_PROCESS_PRIVATE.  
   </assertion> 
 
-  <assertion id="3" tag="ref:XSH6:32778:32779>
-  If successful, the pthread_condattr_getpshared() function shall return zero and store the value of
-  the process-shared attribute of attr into the object referenced by the pshared parameter.  
+  <assertion id="3" tag="ref:XSH6:32778:32779">
+  If successful, the pthread_condattr_getpshared() function shall return zero and store the 
+  value of the process-shared attribute of attr into the object referenced by the pshared 
+  parameter. 
+
+  The pthread_condattr_getpshared() function may fail if:
+  [EINVAL] The value specified by attr is invalid.  
   </assertion> 
 
-  <assertion id="4" tag="ref:XSH6:32782:32783">
-  The pthread_condattr_getpshared() function may fail if:
-    [EINVAL] The value specified by attr is invalid.  
-  </assertion> 
-  
 </assertions>

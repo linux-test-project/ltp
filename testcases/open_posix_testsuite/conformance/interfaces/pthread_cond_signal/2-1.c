@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include "posixtest.h"
 
 #define THREAD_NUM  3
@@ -27,9 +28,22 @@ struct testdata
 	pthread_cond_t  cond;
 } td;
 
+pthread_t  thread[THREAD_NUM];
+
 int start_num = 0;
 int waken_num = 0;
 
+/* Alarm handler */
+void alarm_handler(int signo)
+{
+	int i;
+	printf("Error: failed to wakeup all threads\n");
+	for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
+	    	pthread_cancel(thread[i]); 
+	}
+
+	exit(PTS_UNRESOLVED);
+}
 void *thr_func(void *arg)
 {
 	int rc;
@@ -70,7 +84,7 @@ void *thr_func(void *arg)
 int main()
 {
 	int i;
-	pthread_t  thread[THREAD_NUM];
+	struct sigaction act;
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
 		fprintf(stderr,"Fail to initialize mutex\n");
@@ -92,6 +106,13 @@ int main()
 
 	sleep(1);
 	
+	/* Setup alarm handler */
+	act.sa_handler=alarm_handler;
+	act.sa_flags=0;
+	sigemptyset(&act.sa_mask);
+	sigaction(SIGALRM, &act, 0);
+	alarm(5);
+
 	while (waken_num < THREAD_NUM) { /* waiting for all threads wakened */
 		fprintf(stderr,"[Main thread] signals a condition\n");
 		if (pthread_cond_signal(&td.cond) != 0) {

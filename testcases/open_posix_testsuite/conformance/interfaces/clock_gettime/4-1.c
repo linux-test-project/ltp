@@ -13,6 +13,7 @@
  */
 #include <stdio.h>
 #include <time.h>
+#include <errno.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include "posixtest.h"
@@ -34,27 +35,30 @@ int main(int argc, char *argv[])
 #else
 #ifdef CLOCK_PROCESS_CPUTIME_ID
 	struct timespec ts1, ts2, ts3, ts4;
-
+	
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts1) != 0) {
-		printf("clock_gettime() failed\n");
+		printf("clock_gettime() failed: errno %d\n", errno);
 		return PTS_UNRESOLVED;
 	}
 
+	dosomething();
+
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts2) != 0) {
-		printf("clock_gettime() failed\n");
+		printf("clock_gettime() failed: errno %d\n", errno);
 		return PTS_UNRESOLVED;
 	}
 
 	dosomething();
 
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts3) != 0) {
-		printf("clock_gettime() failed\n");
+		printf("clock_gettime() failed: errno %d\n", errno);
 		return PTS_UNRESOLVED;
 	}
 
 	dosomething();
+
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts4) != 0) {
-		printf("clock_gettime() failed\n");
+		printf("clock_gettime() failed: errno %d\n", errno);
 		return PTS_UNRESOLVED;
 	}
 

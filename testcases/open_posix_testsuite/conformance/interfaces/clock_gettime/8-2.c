@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		printf("At least one test FAILED -- see above\n");
 		return PTS_FAIL;
 	} else {
-		printf("All tests PASSED\n");
+		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 

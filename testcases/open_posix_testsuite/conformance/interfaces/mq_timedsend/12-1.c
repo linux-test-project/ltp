@@ -9,15 +9,18 @@
 /*
  * Test mq_timedsend() will set errno == EINTR if it is interrupted by a signal.
  *
- * Have a child send signals until it starts to block.  At that point, have
- * the parent send a signal to interrupt the child.  Test passes if errno ==
- * EINVAL.
+ * Steps:
+ * 1. Create a thread and set up a signal handler for SIGUSR1
+ * 2. Thread indicates to main that it is ready to start calling mq_timedsend until it
+ *    blocks for a timeout of 10 seconds.
+ * 3. In main, send the thread the SIGUSR1 signal while mq_timedsend is blocking.
+ * 4. Check to make sure that mq_timedsend blocked, and that it returned EINTR when it was
+ *    interrupted by SIGUSR1.
  *
- * Test very similar to 5-2.c except we don't have the additional test to
- * verify the child _was_ blocking.
  */
 
 #include <stdio.h>
+#include <pthread.h>
 #include <mqueue.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -35,13 +38,15 @@
 #define NAMESIZE 50
 #define MSGSTR "0123456789"
 #define BUFFER 40
-#define MAXMSG 5
+#define MAXMSG 10
 
-#define CHILDPASS 1
-#define CHILDFAIL 0
+#define INTHREAD 0
+#define INMAIN 1
 
-char gqname[NAMESIZE];
-mqd_t gqueue;
+int sem; 		/* manual semaphore */
+int in_handler;		/* flag to indicate signal handler was called */
+int errno_eintr;	/* flag to indicate that errno was set to eintr when mq_timedsend()
+			   was interruped. */
 
 /*
  * This handler is just used to catch the signal and stop sleep (so the
@@ -49,87 +54,128 @@ mqd_t gqueue;
  */
 void justreturn_handler(int signo)
 {
+	/* Indicate that the signal handler was called */
+	in_handler=1;
 	return;
 }
 
-int main()
+void *a_thread_func()
 {
-	int pid;
-        const char *msgptr = MSGSTR;
-	struct mq_attr attr;
-	struct sigaction act;
-
-        sprintf(gqname, "/msgqueue_%d", getpid());
-
-	attr.mq_maxmsg = MAXMSG;
-	attr.mq_msgsize = BUFFER;
-        gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (gqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
-
-	/* parent and child use justreturn_handler to just return out of
-	 * situations -- parent uses to stop it's sleep and wait again for
-	 * the child; child uses to stop its mq_timedsend
-	 */
-	act.sa_handler=justreturn_handler;
-	act.sa_flags=0;
-	sigemptyset(&act.sa_mask);
-	sigaction(SIGABRT, &act, 0);
-
-	if ((pid = fork()) == 0) {
-		/* child here */
+		
 		int i;
+		struct sigaction act;
+		char gqname[NAMESIZE];
+		mqd_t gqueue;
+		const char *msgptr = MSGSTR;
+		struct mq_attr attr;
 		struct timespec ts;
 
-		ts.tv_sec=time(NULL)+1;
+		/* Set up handler for SIGUSR1 */
+		act.sa_handler=justreturn_handler;
+		act.sa_flags=0;
+		sigemptyset(&act.sa_mask);
+		sigaction(SIGUSR1, &act, 0);
+
+		/* Set up mq */
+        	sprintf(gqname, "/msgqueue_%d", getpid());
+
+		attr.mq_maxmsg = MAXMSG;
+		attr.mq_msgsize = BUFFER;
+       		gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
+        	if (gqueue == (mqd_t)-1) {
+                	perror("mq_open() did not return success");
+			pthread_exit((void*)PTS_UNRESOLVED);
+                	return NULL;
+        	}
+		
+		/* mq_timedsend will block for 10 seconds when it waits */
+		ts.tv_sec=time(NULL)+10;
 		ts.tv_nsec=0;
-		sleep(1);  // give parent time to set up handler
+
+		/* Tell main it can go ahead and start sending SIGUSR1 signal */
+		sem = INMAIN;
+
 		for (i=0; i<MAXMSG+1; i++) {
         		if (mq_timedsend(gqueue, msgptr, 
 					strlen(msgptr), 1, &ts) == -1) {
 				if (errno == EINTR) {
-				printf("mq_timedsend interrupted by signal\n");
-					return CHILDPASS;
+				printf("thread: mq_timedsend interrupted by signal and correctly set errno to EINTR\n");
+				errno_eintr=1;
+					pthread_exit((void*)PTS_PASS);
+					return NULL;
 				} else {
-				printf("mq_timedsend not interrupted by signal\n");
-					return CHILDFAIL;
+				printf("mq_timedsend not interrupted by signal or set errno to incorrect code: %d\n", errno);
+					pthread_exit((void*)PTS_FAIL);
+					return NULL;
 				}
         		}
-			/* send signal to parent each time message is sent */
-			kill(getppid(), SIGABRT);
 		}
 
-		printf("Child never blocked\n");
-		return CHILDFAIL;
-	} else {
-		/* parent here */
-		int j,k;
+		/* Tell main that it the thread did not block like it should have */
+		sem = INTHREAD;
 
-		for (j=0; j<MAXMSG+1; j++) {  // "infinite" loop
-			if (sleep(6) == 0) {
-			/* If sleep finished, child is probably blocking */
-				kill(pid, SIGABRT); //signal child
-				break;
-			}
-		}
+		perror("Error: thread never blocked\n");
+		pthread_exit((void*)PTS_FAIL);
+		return NULL;
+}
 
-		if (wait(&k) == -1) {
-			perror("Error waiting for child to exit\n");
-			kill(pid, SIGKILL); //kill child if not gone
+int main()
+{
+        pthread_t new_th;
+	int i;
+
+	/* Initialized values */
+	i = 0;
+	in_handler=0;
+	errno_eintr=0;
+	sem = INTHREAD;
+
+	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	{
+		perror("Error: in pthread_create\n");
+		return PTS_UNRESOLVED;
+	}
+	
+	/* Wait for thread to set up handler for SIGUSR1 */
+	while(sem==INTHREAD)
+	 	sleep(1);
+
+	while((i != 10) && (sem==INMAIN))
+	{
+		/* signal thread while it's in mq_timedsend */
+		if(pthread_kill(new_th, SIGUSR1) != 0)	
+		{
+			perror("Error: in pthread_kill\n");
 			return PTS_UNRESOLVED;
 		}
+		i++;
+	}
 
-		if (!WIFEXITED(k) || !WEXITSTATUS(k)) {
-			printf("Test FAILED\n");
+	if(pthread_join(new_th, NULL) != 0)
+	{
+		perror("Error: in pthread_join()\n");
+		return PTS_UNRESOLVED;
+	}
+
+	/* Test to see if the thread blocked correctly in mq_timedsend, and if it returned
+	 * EINTR when it caught the signal */
+	if(errno_eintr != 1)
+	{
+		if(sem==INTHREAD)
+		{
+			printf("Test FAILED: mq_timedsend() never blocked for any timeout period.\n");
 			return PTS_FAIL;
 		}
 
-		printf("Test PASSED\n");
-		return PTS_PASS;
+		if(in_handler != 0)
+		{
+			perror("Error: signal SIGUSR1 was never received, and/or the signal handler was never called.\n");
+			return PTS_UNRESOLVED;
+		}
 	}
+	
+	printf("Test PASSED\n");
+	return PTS_PASS;
 
-	return PTS_UNRESOLVED;
 }
 

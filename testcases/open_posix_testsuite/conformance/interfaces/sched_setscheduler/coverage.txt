@@ -5,23 +5,24 @@ Assertions not listed here should be covered by the tests in this directory.
 
 Assertions     Tested ?	   Remarks
 1	       YES
-2	       NO	   Behavior unspecified
+2	       YES	   Behavior unspecified
 3	       YES
 4	       YES
-5	       NO	   Implementation-defined
-6	       NO	   may assertion
-7	       NO	   Implementation-defined
+5	       YES	   Implementation-defined
+6	       YES	   may assertion
+7	       YES	   Implementation-defined
 8	       YES
-9	       NO
-10	       NO
-11	       NO
-12	       NO
-13	       NO
-14	       NO
-15	       NO
+9	       YES
+10	       YES
+11	       YES
+12	       YES
+13	       YES
+14	       YES
+15	       YES
 16	       YES
 17	       YES
 18	       YES
 19	       YES
 20	       YES
 21	       YES
+22	       YES

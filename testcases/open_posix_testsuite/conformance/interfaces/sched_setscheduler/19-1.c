@@ -75,7 +75,7 @@ int main(){
 			printf("  The returned code is not -1.\n");
 			result = PTS_FAIL;
 		} else if(errno == EPERM) {
-			printf("  This process does not have the permission to set its own scheduling parameter.\n  Try to launch this test as root.\n");
+			printf("  This process does not have the permission to set its own scheduling policy.\n  Try to launch this test as root.\n");
 			if(result != PTS_FAIL) {
 				result = PTS_UNRESOLVED;
 			}

@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 int main()
@@ -29,6 +30,14 @@ int main()
 
 	union sigval value;
 	value.sival_int = 0;	/* 0 is just an arbitrary value */
+
+        /* We assume process Number 1 is created by root */
+        /* and can only be accessed by root */
+        /* This test should be run under standard user permissions */
+        if (getuid() == 0) {
+                puts("Run this test case as a Regular User, but not ROOT");
+                return PTS_UNTESTED;
+        }
 
 	if (sigqueue(1, 0, value) != -1) {
 		printf("Test FAILED: sigqueue() succeeded even though this program's user id did not match the recieving process's user id\n");

@@ -145,4 +145,3 @@ $(STRESS_RUN):
 	cd $@; ./run.sh
 	cd $(PWD)
 
-install:

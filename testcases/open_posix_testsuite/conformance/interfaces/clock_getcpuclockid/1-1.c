@@ -36,14 +36,21 @@ int main(int argc, char *argv[])
         return PTS_UNSUPPORTED;
 #else
 	clockid_t clockid;
+	struct timespec tp1;
 
 	dosomething();
+
 	if (clock_getcpuclockid(getpid(), &clockid) != 0) {
 		printf("clock_getcpuclockid() failed\n");
 		return PTS_FAIL;
 	}
 
-	//Eventually, should use clockid in a function to verify it's valid
+	/* Verify that it returned a valid clockid_t that can be used in other functions */
+	if (clock_settime(clockid, &tp1) != 0) {
+		printf("clock_getcpuclockid() returned an invalid clockid_t: %d\n", clockid);
+		return PTS_FAIL;
+	}
+	
 	printf("Test PASSED\n");
 	return PTS_PASS;
 #endif

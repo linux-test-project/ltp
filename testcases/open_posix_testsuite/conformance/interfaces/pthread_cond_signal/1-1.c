@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include "posixtest.h"
 
 #define THREAD_NUM  3
@@ -26,8 +27,22 @@ struct testdata
 	pthread_cond_t  cond;
 } td;
 
+pthread_t  thread[THREAD_NUM];
+
 int start_num = 0;
 int waken_num = 0;
+
+/* Alarm handler */
+void alarm_handler(int signo)
+{
+	int i;
+	printf("Error: failed to wakeup all threads\n");
+	for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
+	    	pthread_cancel(thread[i]); 
+	}
+
+	exit(PTS_UNRESOLVED);
+}
 
 void *thr_func(void *arg)
 {
@@ -61,7 +76,7 @@ void *thr_func(void *arg)
 int main()
 {
 	int i, rc;
-	pthread_t  thread[THREAD_NUM];
+	struct sigaction act;
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
 		fprintf(stderr,"Fail to initialize mutex\n");
@@ -103,9 +118,20 @@ int main()
 	if (waken_num <= 0){
 		fprintf(stderr,"[Main thread] but no waiters were wakened\n");
                 printf("Test FAILED\n");
+		/* Cancel the threads */
+		for (i=0; i<THREAD_NUM; i++) {	/* cancel threads */
+	    		pthread_cancel(thread[i]); 
+		}
                 exit(PTS_FAIL);
 	}	
 	fprintf(stderr,"[Main thread] %d waiters were wakened\n", waken_num);
+
+	/* Setup alarm handler */
+	act.sa_handler=alarm_handler;
+	act.sa_flags=0;
+	sigemptyset(&act.sa_mask);
+	sigaction(SIGALRM, &act, 0);
+	alarm(5);
 
 	/* loop to wake up the rest threads */
 	while (waken_num < THREAD_NUM) {

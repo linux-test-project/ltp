@@ -42,7 +42,7 @@ int main(){
 		printf("Test PASSED\n");
 		return PTS_PASS;	
 	} else if(result == -1 && errno == EPERM) {
-		printf("The process have not permission to change its own param.\n");
+		printf("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
 	

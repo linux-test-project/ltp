@@ -38,7 +38,7 @@ int main()
 	pthread_mutexattr_t mta;
 	int ret;
 	
-	 /* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
+	 /* Set the attribute to INVALID_PSHARED_VALUE.  */
 	ret=pthread_mutexattr_setpshared(&mta, INVALID_PSHARED_VALUE);
 	if(ret != 0)
 	{

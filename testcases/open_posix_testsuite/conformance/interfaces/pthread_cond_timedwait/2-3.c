@@ -56,7 +56,7 @@ void *t1_func(void *arg)
 	rc = pthread_cond_timedwait(&td.cond, &td.mutex, &timeout);
 	if (rc == ETIMEDOUT) {
 		fprintf(stderr,"Thread1 stops waiting when time is out\n");
-		exit(PTS_PASS);
+		pthread_exit((void*)PTS_PASS);
 	}
 	else {
 		fprintf(stderr,"pthread_cond_timedwait return %d instead of ETIMEDOUT\n", rc);
@@ -94,10 +94,11 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Make sure pthread_cond_timedwait released the mutex as it should. */
+	/* Make sure pthread_cond_timedwait released and re-acquired the mutex 
+	 * as it should. */
 	rc=pthread_mutex_trylock(&td.mutex);
-	if (rc != 0) {	
-		fprintf(stderr,"Test FAILED: Main failed to acquire mutex, return error: %d\n", rc);
+	if (rc == 0) {	
+		fprintf(stderr,"Test FAILED: Did not re-acquire mutex after timedout out call to pthread_cond_timedwait\n");
 		return PTS_FAIL;
 	}
 

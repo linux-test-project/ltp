@@ -25,8 +25,6 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-/* FIXME: tout a faire */
-
 
 #ifdef _POSIX_SPORADIC_SERVER
 

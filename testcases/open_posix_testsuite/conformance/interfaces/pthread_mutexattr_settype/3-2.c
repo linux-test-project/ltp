@@ -92,11 +92,9 @@ int main()
 		return PTS_FAIL;
 	}
 	
-	if(pthread_mutex_destroy(&mutex))
-	{
-		perror("Error at pthread_mutex_destory().\n");
-		return PTS_UNRESOLVED;
-	}
+	/* cleanup */
+	pthread_mutex_unlock(&mutex);	
+	pthread_mutex_destroy(&mutex);
 	
 	if(pthread_mutexattr_destroy(&mta))
 	{

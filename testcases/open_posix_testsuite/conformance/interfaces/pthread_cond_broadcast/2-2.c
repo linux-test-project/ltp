@@ -125,6 +125,9 @@ int main()
 	sleep(1);
 	if (waken_num < THREAD_NUM){
 		fprintf(stderr,"[Main thread] Not all waiters were wakened\n");
+		for (i=0; i<THREAD_NUM; i++) {
+			pthread_cancel(thread[i]);
+		}
                 return PTS_UNRESOLVED;
 	}	
 	fprintf(stderr,"[Main thread] all waiters were wakened\n");

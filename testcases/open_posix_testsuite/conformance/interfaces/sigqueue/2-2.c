@@ -49,21 +49,6 @@ int main()
 		failure = 1;
 	}
 
-	/*
-	 * EPERM
-	 */
-	if (-1 == sigqueue(1, 0, value)) {
-		if (EPERM == errno) {
-			printf("EPERM error received\n");
-		} else {
-			printf("sigqueue() failed on EPERM but errno not set correctly\n");
-			failure = 1;
-		}	
-	} else {
-		printf("sigqueue() did not return -1 on EPERM\n");
-		failure = 1;
-	}
-
 	if (failure) {
 		printf("At least one test FAILED -- see output for status\n");
 		return PTS_FAIL;
