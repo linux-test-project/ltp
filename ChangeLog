@@ -1,3 +1,24 @@
+LTP-20031002
+- Enabled better binary compatibility between	( Robbie Williamson )
+  executions on NPTL and Linuxthreads.
+- Created README for device drivers test	( Marty Ridgeway )
+  executions.
+- Resolved bugs #807255 & #807400 for fs_maim.	( Hien Nguyen )
+- Updated disktest to version 1.1.12		( Brent Yardley )
+- Corrected the headers for capset and capget.  ( Robbie Williamson )
+- Applied IA-64 fix to clone06 and munlock02.	( Jacky Malcles )
+- Fixed compile warning for gettimeofday01.	( Andreas Jaeger )
+- Applied testcase stability patch to pipe()	( Erik Andersen )
+  testcases.
+- Fixed rlogin01 and telnet01 so that they	( Paul Larson ) 
+  correctly detect when they pass.	
+- Applied updates to the OpenHPI test suite.    ( Kevin Gao )
+- Updated the Open POSIX test suite to 1.3.0.	( Robbie Williamson )
+- Changed ltpstress to use all installed RAM    ( Robbie Williamson )
+  plus 1/2 swap space by default.
+
+
+
 LTP-20030905
 
 - Corrected "-d" option for runalltests.sh      ( David Smith )
