@@ -36,8 +36,11 @@
  *			   - option '-p' (pretty printing)i to enabled formatted printing 
  *			     of results.
  *
+ *	01/27/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
+ *			   - added code to print system information
+ *
  */
-/* $Id: pan.c,v 1.14 2003/01/27 22:56:23 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.15 2003/01/28 19:44:34 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -49,6 +52,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <sys/utsname.h>
 
 #include "splitstr.h"
 #include "zoolib.h"
@@ -90,7 +94,7 @@ static struct collection *get_collection(char *file, int optind, int argc,
 static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
 		      int keep_active, FILE * logfile, struct orphan_pgrp *orphans,
-			  int fmt_print);
+			  int fmt_print, int *failcnt);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -129,18 +133,18 @@ main(int argc, char **argv)
 {
     extern char *optarg;
     extern int optind;
-    int c;
     char *zooname = NULL;	/* name of the zoo file to use */
     char *filename = "/dev/null";	/* filename to read test tags from */
     char *logfilename = NULL;
-    FILE *logfile = NULL;
     char *outputfilename = NULL;
     struct collection *coll = NULL;
-    pid_t cpid;
     struct tag_pgrp *running;
     struct orphan_pgrp *orphans, *orph;
+	struct utsname unamebuf;
+    FILE *logfile = NULL;
     int keep_active = 1;
     int num_active = 0;
+	int failcnt = 0;           /* count of total testcases that failed. */
     int err, i;
     int starts = -1;
     int run_time = -1; char modifier = 'm'; int ret = 0;
@@ -152,6 +156,8 @@ main(int argc, char **argv)
     int exit_stat;
     int track_exit_stats = 0;	/* exit non-zero if any test exits non-zero */
 	int fmt_print = 0;          /* enables formatted printing of logfiles. */
+    int c;
+    pid_t cpid;
 
     while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pr:s:t:x:y")) != -1) {
 	switch (c) {
@@ -279,7 +285,8 @@ main(int argc, char **argv)
 		fprintf(logfile, "startup='%s'\n", s);
 	else
 	{
-		fprintf(logfile, "Test Start Time: %s\n\n", s);
+		fprintf(logfile, "Test Start Time: %s\n", s);
+		fprintf(logfile, "-----------------------------------------\n");
 		fprintf(logfile, "%-30.20s %s\n", "Testcase", "Result");
 		fprintf(logfile, "%-30.20s %s\n", "--------", "------");
 	}
@@ -477,7 +484,7 @@ main(int argc, char **argv)
 	}
 
 	err = check_pids(running, &num_active, keep_active,
-			 logfile, orphans, fmt_print);
+			 logfile, orphans, fmt_print, &failcnt);
 	if (Debug & Drunning) {
 	    pids_running(running, keep_active);
 	    orphans_running(orphans);
@@ -531,7 +538,14 @@ main(int argc, char **argv)
 	++exit_stat;
     }
     fclose(zoofile);
-
+	if (uname(&unamebuf) == -1)
+		fprintf(stderr, "ERROR: uname(): %s\n", strerror(errno));
+	fprintf(logfile, "\n-----------------------------------\n");
+	fprintf(logfile, "Total Tests: %d\n", coll->cnt);
+	fprintf(logfile, "Total Failures: %d\n", failcnt);
+	fprintf(logfile, "Kernel Version: %s\n", unamebuf.release);
+	fprintf(logfile, "Machine Architecture: %s\n", unamebuf.machine);
+	fprintf(logfile, "Hostname: %s\n\n", unamebuf.nodename);
     if (logfile && (logfile != stdout))
 	fclose(logfile);
 
@@ -580,7 +594,8 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
-	   FILE * logfile, struct orphan_pgrp *orphans, int fmt_print)
+	   FILE * logfile, struct orphan_pgrp *orphans, int fmt_print, 
+	   int *failcnt)
 {
     int w;
     pid_t cpid;
@@ -670,6 +685,8 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 					(int) (tms2.tms_cstime - tms1.tms_cstime));
 			else
 			{
+					if (w != 0) 
+						++*failcnt;
 					fprintf(logfile, "%-30.20s %s\n", running[i].cmd->name, 
 						((w != 0) ? "FAIL" : "PASS"));
 			}
