@@ -145,7 +145,7 @@ main(int ac, char **av)
 				 * access times will be different from the
 				 * current time
 				 */
-				sleep(1);
+				sleep(2);
 
 				/*
 				 * Get the current time now, after calling
@@ -254,7 +254,7 @@ setup()
 	 * Sleep for a second so that mod time and access times will be
 	 * different from the current time
 	 */
-	sleep(1);
+	sleep(2);	/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
 		
 }	/* End setup() */
 
