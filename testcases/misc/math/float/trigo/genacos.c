@@ -145,4 +145,7 @@ int main(int argc, char  *argv[])
 		if (create_Result_file() != 0)
 			printf("problem during acos result file creation\n");
 	}
+
+  return(0);
+
 }

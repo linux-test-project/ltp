@@ -150,4 +150,7 @@ int main(int argc, char  *argv[])
 		if (create_Result_file() != 0)
 			printf("problem during tan result file creation\n");
 	}
+
+  return(0);
+
 }
