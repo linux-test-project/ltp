@@ -41,7 +41,7 @@ fi
 
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests -l /tmp/sniff
+${LTPROOT}/pan/pan -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests 
 # Use the following pan runline for use with ltp automation scripts instead of the one above.
 # ${LTPROOT}/pan/pan -l $PAN_LOG -e -S $instances $time -a $$ -n $$ -f ${TMP}/alltests
 
