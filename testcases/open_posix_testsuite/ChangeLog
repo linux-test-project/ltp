@@ -1,3 +1,33 @@
+05-27-2004	1.4.2 Release		 
+05-24-2004      adam.li@ihtel.com
+                 - mmap/13-1.c: Fix. mmap() will update st_atime().
+                 - sigaction/9-1.c: Fix. Select not block.
+                 - strftime/1-1.c: Fix. %B judgement is not correct.
+                 - mmap/32-1.c: Fix. Change the scenario.
+05-20-2004      adam.li@intel.com
+                 - sched_yield/1-1.c: Fix. Incorrect thread return
+                   status.
+                 - Add test case by Sebastien
+                   Decugis(sebastien.decugis@ext.bull.net)
+                   pthread_mutex_unlock/5-1.c, 5-2.c
+                 - pthread_mutexattr_settype/coverage.txt: Fix.
+                 - behavior/signal.h/18-1.c,19-1.c,20-1.c,21-1.c: Fix 
+                   struct stack_t, struct siginfo_t. 
+05-13-2004	adam.li@intel.com
+		 - Add case pthread_mutex_init/5-1.c,
+		   pthread_mutex_init/speculative/5-2.c, 
+		   pthread_mutex_lock/3-1.c, 4-1.c, 5-1.c 
+		   by Sebastien Decugis(sebastien.decugis@ext.bull.net)
+		 - sem_post/8-1.c: Fix. Will leave Zombie process if fail.
+05-10-2004	adam.li@intel.com
+		 - Apply Ulrich Drepper's patch:
+		   sem_post/8-1.c: Add error check and clean up code
+		   pthread_attr_getstackaddr/1-1.c: Fix printf format.
+		   pthread_attr_setstack/2-1.c, pthread_attr_setstackaddr/2-1.c,
+		   pthread_attr_setstacksize/2-1.c: define _GNU_SOURCE correctly.
+05-09-2004	adam.li@intle.com
+		 - Add cases pthread_mutex_init/1-2.c, 3-2.c, 5-3.c 
+		   by Sebastien Decugis(sebastien.decugis@ext.bull.net)
 05-01-2004	1.4.1 Release
 04-30-2004	adam.li@intel.com 
 		 - sigqueue/12-1.c: Use setuid() instead of seteuid()
@@ -22,29 +52,10 @@
 		 - pthread_mutexattr_settype/2-1.c: Bug fix
 04-20-2004	adam.li@intel.com
 		 - mmap/24-2.c 11-2.c 11-3.c: Bug fix
-
 04-04-2004	1.4.0 Release
 		- Add test cases to implement tags: CS, CPT, TCT.
 		- Bug fix from Ulrich Drepper.
 		- Tested on Linux kernel 2.6, and fixed bugs exposed.
-12-16-2002	0.1.0 Release
-		- timers tests for TMR and CS tags (for timers)
-		julie.n.fleischer REMOVE-THIS AT intel DOT com
-02-10-2003	0.2.0 Release
-		- timers bug fixes
-		- snapshot of semaphores tests
-		- snapshot of signals tests
-		- snapshot of threads tests
-		- framework can build/run functional/stress tests
-		julie.n.fleischer REMOVE-THIS AT intel DOT com
-03-21-2003	0.9.0 Release
-		- More timers bug fixes
-		- Complete semaphores suite (including bug fixes)
-		- snapshot of signals tests (including bug fixes)
-		- Complete message queues suite
-		- Snapshot of threads tests (most of the non-tag associated APIs)
-		- framework bug fixes.  Added the ./run_tests script.
-		rolla.n.selbak REMOVE-THIS AT intel DOT com 
 04-30-2003	1.0.0 Release
 		- Complete signals suite
 		- Complete <sched.h> process scheduling suite
@@ -53,4 +64,22 @@
 		  the Makefile to make the actual test suite POSIX compliant)
 		- Added QUICK-START document to top-level dir
 		rolla.n.selbak REMOVE-THIS AT intel DOT com
+03-21-2003	0.9.0 Release
+		- More timers bug fixes
+		- Complete semaphores suite (including bug fixes)
+		- snapshot of signals tests (including bug fixes)
+		- Complete message queues suite
+		- Snapshot of threads tests (most of the non-tag associated APIs)
+		- framework bug fixes.  Added the ./run_tests script.
+		rolla.n.selbak REMOVE-THIS AT intel DOT com 
+02-10-2003	0.2.0 Release
+		- timers bug fixes
+		- snapshot of semaphores tests
+		- snapshot of signals tests
+		- snapshot of threads tests
+		- framework can build/run functional/stress tests
+		julie.n.fleischer REMOVE-THIS AT intel DOT com
+12-16-2002	0.1.0 Release
+		- timers tests for TMR and CS tags (for timers)
+		julie.n.fleischer REMOVE-THIS AT intel DOT com
 				

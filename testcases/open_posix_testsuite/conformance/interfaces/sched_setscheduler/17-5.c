@@ -29,10 +29,11 @@ int main(){
 	int invalid_policy;
 
 	invalid_policy = 0;
+	/* Linux does not treat minus value as invalid for policy */
 	while(invalid_policy == SCHED_OTHER || 
 		invalid_policy == SCHED_FIFO ||
 		invalid_policy == SCHED_RR)
-	invalid_policy--;
+	invalid_policy++;
 
 	if(sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");

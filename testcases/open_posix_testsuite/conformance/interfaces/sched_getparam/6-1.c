@@ -11,6 +11,14 @@
  * Test that sched_getparam() sets errno == EPERM if the requesting process
  * does not have permission.
  */
+
+ /* adam.li@intel.com - 2004-05-21
+  *  
+  * On Linux, e.g, the kernel makes no check on user permission to call this
+  * API. So basically we don't know on what condition a system should return
+  * EPERM. It is implementation defined.
+  */
+
 #define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sched.h>
@@ -78,8 +86,9 @@ int main(int argc, char **argv)
 		return PTS_FAIL;
 	}
 	if(errno != EPERM ) {
-		perror("errno is not EPERM");
-		return PTS_FAIL;
+		perror("errno is not EPERM: The system allows a non-root
+                        user to use sched_getparam()");
+		return PTS_UNRESOLVED;
 	} else {
 		perror("Unresolved test error");
 		return PTS_UNRESOLVED;	

@@ -15,6 +15,10 @@
  *    also after writing the mapped region.
  * 2. Compare whether st_atime has been updated. 
  */
+ 
+ /* adam.li@intel.com: On linux, it looks mmap() will update
+  * st_atime, write to the mapped region will not cause the update
+  * */
 
 #define _XOPEN_SOURCE 600
 
@@ -69,6 +73,7 @@ int main()
   
   data = (char *) malloc(total_size); 
   memset(data, 'a', total_size);
+  printf("Time before write(): %ld\n", time(NULL));
   if (write(fd, data, total_size) != total_size)
   {
     printf(TNAME "Error at write(): %s\n", 
@@ -85,12 +90,14 @@ int main()
     unlink(tmpfname);
     exit(PTS_UNRESOLVED);
   }
-  
-  /* atime1: before mmap */
+  /* atime1: write */
   atime1 = stat_buff.st_atime;
+  
+  sleep(1); 
   
   flag = MAP_SHARED;
   prot = PROT_READ | PROT_WRITE;
+  printf("Time before mmap(): %ld\n", time(NULL));
   pa = mmap(addr, size, prot, flag, fd, off);
   if (pa == MAP_FAILED)
   {
@@ -100,18 +107,6 @@ int main()
     exit(PTS_FAIL);
   }
  
-  /* write reference to mapped memory */
-  ch = pa;
-  *ch = 'b';
- 
-  /* Wait a while in case the precision of the sa_time 
-  * is not acurate enough to reflect the change
-  */
-  sleep(1);
-
-  /* FIXME: Update the in-core meta data to the disk */
-  fsync(fd);
- 
   if (stat(tmpfname, &stat_buff2) == -1)
   {
     printf(TNAME " Error at 2nd stat(): %s\n", 
@@ -119,14 +114,24 @@ int main()
     unlink(tmpfname);
     exit(PTS_UNRESOLVED);
   }
+  /* for mmap */
   atime2 = stat_buff2.st_atime;
-
   
+  /* Wait a while in case the precision of the sa_time 
+  * is not acurate enough to reflect the change
+  */
+  sleep(1);
+  
+  /* write reference to mapped memory */
+  ch = pa;
+  *ch = 'b';
+  
+  printf("Time before munmap(): %ld\n", time(NULL));
   munmap(pa, size);
+  
+  /* FIXME: Update the in-core meta data to the disk */
+  fsync(fd);
   close(fd);
-
-  sleep(1);  
-  fsync(fd); 
   if (stat(tmpfname, &stat_buff) == -1)
   {
     printf(TNAME " Error at 3rd stat(): %s\n", 
@@ -134,13 +139,12 @@ int main()
     unlink(tmpfname);
     exit(PTS_UNRESOLVED);
   }
-  
-  /* atime3: after mmap */
+  /* atime3: write to memory */
   atime3 = stat_buff.st_atime;
   
   printf("atime1: %d, atime2: %d, atime3: %d\n",
          (int)atime1, (int)atime2, (int)atime3);
-  if (atime1 != atime3 && 
+  if (atime1 != atime3 || 
   	  atime1 != atime2 )
   {
   	printf ("Test Pass\n");

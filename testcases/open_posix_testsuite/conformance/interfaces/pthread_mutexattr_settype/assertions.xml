@@ -24,17 +24,6 @@
   thread has locked will return with an error.  A thread attempting to unlock an unlocked
   mutex will return with an error.
   </assertion>
-  <assertion id="4" tag="ref:XSH6:34512:34519">
-  PTHREAD_MUTEX_RECURSIVE
-
-  A thread attempting to relock this mutex without first unlocking it will actually succeed
-  in locking the mutex.  The relocking deadlock which can occur with mutexes of type
-  PTHREAD_MUTEX_NORMAL cannot occur with this type of mutex.  Multiple locks of this mutex
-  will require the same number of unlocks to release the mutex before another thread can 
-  acquire the mutex.  A thread attempting to unlock a mutex which another thread has
-  locked shall return with an error.  A thread attempting to unlock an unlocked mutex will
-  return with an error.
-  </assertion>
   <assertion id="5" tag="ref:XSH6:34520:34525">
   PTHREAD_MUTEX_DEFAULT
 

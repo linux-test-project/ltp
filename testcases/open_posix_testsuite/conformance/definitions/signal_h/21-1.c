@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
-struct siginfo_t this_type_should_exist, t;
+siginfo_t this_type_should_exist, t;
 int tsigno;
 int terrno;
 int tcode;

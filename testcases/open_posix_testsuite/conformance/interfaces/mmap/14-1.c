@@ -68,6 +68,7 @@ int main()
   
   data = (char *) malloc(total_size); 
   memset(data, 'a', total_size);
+  printf("Time before write(): %ld\n", time(NULL));
   if (write(fd, data, total_size) != total_size)
   {
     printf(TNAME "Error at write(): %s\n", 
@@ -76,9 +77,10 @@ int main()
     exit(PTS_UNRESOLVED);
   }
   free(data);
-    
+  sleep(1); 
   flag = MAP_SHARED;
   prot = PROT_READ | PROT_WRITE;
+  printf("Time before mmap(): %ld\n", time(NULL));
   pa = mmap(addr, size, prot, flag, fd, off);
   if (pa == MAP_FAILED)
   {
@@ -87,7 +89,8 @@ int main()
     unlink(tmpfname);
     exit(PTS_FAIL);
   }
-
+  sleep(1); 
+  printf("Time before write reference: %ld\n", time(NULL));
   /* Before write reference */
   if (stat(tmpfname, &stat_buff) == -1)
   {
@@ -102,13 +105,13 @@ int main()
 
   ch = pa;
   *ch = 'b';
-    
-  msync(pa, size, MS_SYNC);
   
   /* Wait a while in case the precision of the sa_time 
   * is not acurate enough to reflect the update
   */
   sleep(1);
+  printf("Time before msync(): %ld\n", time(NULL));
+  msync(pa, size, MS_SYNC);
 
   /* FIXME: Update the in-core meta data to the disk */
   fsync(fd);
@@ -123,7 +126,9 @@ int main()
 
   ctime2 = stat_buff.st_ctime;
   mtime2 = stat_buff.st_mtime;
-  
+ 
+  printf("ctime1: %ld, ctime2: %ld\nmtime1: %ld, mtime2: %ld\n",
+                  ctime1, ctime2, mtime1, mtime2); 
   if (ctime2 == ctime1 || mtime2 == mtime1)
   {
     printf("Test Fail " TNAME 

@@ -4,7 +4,7 @@
 
 #include <signal.h>
 
-struct stack_t this_type_should_exist, t;
+stack_t this_type_should_exist, t;
 void *sp;
 size_t size;
 int flags;

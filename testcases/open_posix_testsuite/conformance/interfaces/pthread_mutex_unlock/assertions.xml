@@ -23,4 +23,10 @@
 
   It shall not return [EINTR].
   </assertion> 
+  <assertion id="5" tag="ref:XSH6:33919:33929">
+  If the mutex type is PTHREAD_MUTEX_RECURSIVE:
+     1. If a thread attempts to unlock a mutex that it does not own
+     2. or an unlocked mutex, 
+  an error is returned.
+  </assertion> 
 </assertions>

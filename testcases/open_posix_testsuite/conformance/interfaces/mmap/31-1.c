@@ -10,9 +10,9 @@
  * file description associated with fildes.
  *
  * Test Steps:
- * 1. Create a file, and set its size using ftruncate;
- * 2. mmap() the file, set (len + off) > file size;
- *
+ * 1. Set off and let to ULONG_MAX (make them align to page_size
+ * 2. Assume the offset maximum is ULONG_MAX (on both 32 and 64 system).
+ * 
  * FIXME: Not quite sure how to make "the value of off plus len
  * exceeds the offset maxium established in the open file description
  * associated with files".
@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,7 +40,6 @@
 int main()
 {
   char tmpfname[256];
-  long file_size; 
 
   void *pa = NULL; 
   void *addr = NULL;
@@ -51,7 +51,6 @@ int main()
 
   long page_size = sysconf(_SC_PAGE_SIZE);
 
-  file_size = 2 * page_size;
   
   snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_31_1_%d",
            getpid());
@@ -66,23 +65,29 @@ int main()
   }
   unlink(tmpfname);
   
-  /* Set size of the file */
-  if (ftruncate(fd, file_size) == -1)
-  {
-    printf(TNAME "Error at ftruncate(): %s\n", 
-            strerror(errno));    
-    exit(PTS_UNRESOLVED);
-  }
-  
   flag = MAP_SHARED;
   prot = PROT_READ | PROT_WRITE;
   
-  /* len + off > file_size */
-  len = file_size;
+  /* len + off > maximum offset 
+   * FIXME: We assume maximum offset is ULONG_MAX  
+   * */
   
-  /* off should be a multiple of page size */
-  off = file_size / 2;
+  len = ULONG_MAX;
+  if (len % page_size)
+  {
+    /* Lower boundary */
+    len &= ~(page_size - 1);
+  }	
   
+  off = ULONG_MAX;
+  if (off % page_size)
+  {
+    /* Lower boundary */
+    off &= ~(page_size - 1);
+  }	
+  
+  printf("off: %lx, len: %lx\n", (unsigned long)off, 
+		(unsigned long)len); 
   pa = mmap(addr, len, prot, flag, fd, off);
   if (pa == MAP_FAILED && errno == EOVERFLOW)
   {

@@ -17,39 +17,43 @@
  
  
  * This sample test aims to check the following assertion:
- * The function fails and return EPERM if caller has not the 
- * privilege to perform the operation.
-
-
+ * If the mutex type is PTHREAD_MUTEX_RECURSIVE,
+ * and a thread attempts to unlock an unlocked mutex,
+ * an error is returned.
 
  * The steps are:
- * -> if this implementation does not support privileges, return PTS_UNSUPPORTED
- * -> Otherwise, use the implementation features to come to a situation where
- *      pthread_mutex_init should fail because of the privileges, and then check 
- *      that the return code is EPERM.
- * -> return PTS_UNTESTED if the architecture is not present in the test.
+ *  -> Initialize a recursive mutex
+ *  -> Attempt to unlock the mutex when it is unlocked 
+ *      and when it has been locked then unlocked.
  */
+
+ /* 
+  * - adam.li@intel.com 2004-05-20
+  *   Add to PTS. Please refer to http://nptl.bullopensource.org/phpBB/ 
+  *   for general information
+  */
  
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
  #define _POSIX_C_SOURCE 200112L
-
+ 
+ /* We enable the following line to have mutex attributes defined */
+#ifndef WITHOUT_XOPEN
+ #define _XOPEN_SOURCE	600
+ 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
  #include <pthread.h>
- #include <stdio.h>
  #include <unistd.h>
  #include <stdlib.h>
- #include <errno.h>
+ #include <stdio.h>
  #include <stdarg.h>
- #include <sys/utsname.h>
- #include <string.h>
- 
+
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw.h"
- #include "../testfrmw.c"
+ #include "testfrmw.h"
+ #include "testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);  
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -72,56 +76,80 @@
 /********************************** Configuration ******************************************/
 /********************************************************************************************/
 #ifndef VERBOSE
-#define VERBOSE 1
+#define VERBOSE 1 
 #endif
-
-#ifndef PTS_UNSUPPORTED
-#define PTS_UNSUPPORTED 4
-#endif
-#ifndef PTS_UNTESTED
-#define PTS_UNTESTED 5
-#endif
-
 
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
+
+
+/** parent thread function **/
 int main(int argc, char * argv[])
 {
 	int ret;
-	struct utsname un;
-	
+	pthread_mutexattr_t ma;
+	pthread_mutex_t m;
+
 	output_init();
-	ret = uname(&un);
-	if (ret == -1)
-	{  UNRESOLVED(errno, "Unable to get Implementation name");  }
-	
-	#if VERBOSE > 0
-	output("Implementation is: \n\t%s\n\t%s\n\t%s\n", un.sysname, un.release, un.version);
+
+	#if VERBOSE >1
+	output("Initialize the PTHREAD_MUTEX_RECURSIVE mutex\n");
 	#endif
 	
-	/* If we are running Linux */
-	if (strcmp(un.sysname, "Linux") == 0 )
-	{
-		/* Linux does not provide privilege access to pthread_mutex_init function */
-		ret = PTS_UNSUPPORTED;
-		output("Linux does not provide this feature\n");
-		output_fini();
-		return ret;
-	}
+	ret = pthread_mutexattr_init(&ma);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex attribute init failed");  }
+
+	ret = pthread_mutexattr_settype(&ma, PTHREAD_MUTEX_RECURSIVE);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Set type recursive failed");  }
+
+	ret = pthread_mutex_init(&m, &ma);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex init failed");  }
+
+	#if VERBOSE >1
+	output("Unlock unlocked mutex\n");
+	#endif
 	
-	/* If we are running AIX */
-	if (strcmp(un.sysname, "AIX") == 0 )
-	{
-		;
-	}
-	/* If we are running Solaris */
-	if (strcmp(un.sysname, "SunOS") == 0 )
-	{
-		;
-	}
+	ret = pthread_mutex_unlock(&m);
+	if (ret == 0)
+	{  FAILED("Unlocking an unlocked recursive mutex succeeded");  }
 	
-	output("This implementation is not tested yet\n");
-	output_fini();
-	return PTS_UNTESTED;
+	#if VERBOSE >1
+	output("Lock and unlock the mutex\n");
+	#endif
+	
+	ret = pthread_mutex_lock(&m);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex lock failed");  }
+	ret = pthread_mutex_lock(&m);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex recursive lock failed");  }
+	ret = pthread_mutex_unlock(&m);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex unlock failed");  }
+	ret = pthread_mutex_unlock(&m);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex recursive unlock failed");  }
+
+	/* destroy the mutex attribute object */
+	ret = pthread_mutexattr_destroy(&ma);
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex attribute destroy failed");  }
+
+	ret = pthread_mutex_unlock(&m);
+	if (ret == 0)
+	{  FAILED("Unlocking an unlocked recursive mutex succeeded");  }
+
+	PASSED;
 }
+#else /* WITHOUT_XOPEN */
+int main(int argc, char * argv[])
+{
+	output_init();
+	UNTESTED("This test requires XSI features");
+}
+#endif
+

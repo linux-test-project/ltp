@@ -63,8 +63,8 @@ int main () {
 
     result = strftime(text, 256, "%B", local_t);
     printf("B   Bytes %i           %s	", result, text);
-    if ( result <= 3 ) {
-	    puts("Test Failed: \%B doesn't equal to 3 bytes");
+    if ( result < 3 ) {
+	    puts("Test Failed: \%B is less than3 bytes");
 	    return PTS_FAIL;
     } else {
 	    puts ("PASS");

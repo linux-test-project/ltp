@@ -10,6 +10,8 @@
  * Same test as 1-1.c.
  */
 
+#define _XOPEN_SOURCE 600
+
 #include <time.h>
 #include <signal.h>
 #include <stdio.h>
@@ -29,13 +31,23 @@ void handler(int signo)
 
 int main(int argc, char *argv[])
 {
-#ifdef _POSIX_CPUTIME
+#ifndef _POSIX_CPUTIME
+	printf("_POSIX_CPUTIME not defined\n");
+	return PTS_UNSUPPORTED;
+#else
 	struct sigevent ev;
 	struct sigaction act;
 	timer_t tid;
 	struct itimerspec its;
 	struct timespec ts, tsleft;
+	int rc;
 
+	rc = sysconf(_SC_CPUTIME);
+	if (rc <= 0) {
+		printf("sysconf(_SC_CPUTIME) returns: %d\n", rc);
+		return PTS_UNRESOLVED;	
+	}
+		
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
@@ -86,9 +98,5 @@ int main(int argc, char *argv[])
 	}
 
 	return PTS_UNRESOLVED;
-#else
-	printf("_POSIX_CPUTIME unsupported\n");
-	return PTS_UNSUPPORTED;
 #endif
-
 }

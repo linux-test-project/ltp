@@ -20,7 +20,7 @@
  *
  * Test Steps:
  * Here we test SCHED_FIFO
- * 1. Parent lock a semaphore, it has highest priority P0.
+ * 1. Parent locks a semaphore, it has highest priority P0.
  * 2. It forks 2 child processes 1, 2, as for priority P1, P2, P0 > P2 > P1
  * 3. The children lock the semaphore.
  *    Make sure the two children are waiting.
@@ -43,7 +43,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
-#define TEST "13-1"
+#define TEST "8-1"
 #define FUNCTION "sem_wait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
@@ -78,10 +78,6 @@ int get_my_prio()
 
 int child_fn(int priority, int id)
 {
-#ifndef _POSIX_PRIORITY_SCHEDULING
-	printf("_POSIX_PRIORITY_SCHEDULING not defined\n");
-	return PTS_UNTESTED;
-#endif
 	sem_t *sem, *sem_1;
 	if (set_my_prio(priority) == -1)
 		exit(-1);
@@ -110,6 +106,10 @@ int child_fn(int priority, int id)
 
 int main() 
 {
+#ifndef _POSIX_PRIORITY_SCHEDULING
+	printf("_POSIX_PRIORITY_SCHEDULING not defined\n");
+	return PTS_UNTESTED;
+#endif
 	sem_t *sem, *sem_1;
 	int val = 3; /* for sem_1 to track the child state */
 	int priority;
@@ -129,16 +129,15 @@ int main()
 	sem_1 = sem_open(semname_1, O_CREAT, 0777, val);
 	if( sem_1 == SEM_FAILED || sem_1 == NULL ) {
 		perror(ERROR_PREFIX "sem_open: sem_1");
-		sem_unlink (semname);
+		sem_unlink(semname);
 		return PTS_UNRESOLVED;
 	}
 
 	/* The parent has highest priority */	
 	priority = sched_get_priority_min(SCHED_FIFO) + 3;
 	if (set_my_prio(priority) == -1) {
-		sem_unlink (semname);
-		sem_unlink (semname_1);
-		return PTS_UNRESOLVED;
+		retval = PTS_UNRESOLVED;
+		goto clean_up;
 	}
 
 	/* Lock Semaphore */
@@ -192,7 +191,7 @@ int main()
 	}
 	fprintf(stderr, "P: child_3: %d forked\n", c_3);
 	
-	/* Make sure child 3 has been waiting the lock */	
+	/* Make sure child 3 has been waiting for the lock */	
 	do { 
 		sleep(1);
 		sem_getvalue(sem_1, &val);
@@ -232,6 +231,8 @@ int main()
 			printf("Test Fail: Expect child_3: %d, got %d\n",
 			c_3, ret_pid);
 			retval = PTS_FAIL;
+			sem_post(sem);
+			while((wait(NULL) > 0));
 			goto clean_up;
 		}
 	}
@@ -240,6 +241,9 @@ int main()
 		printf("Test Fail: Expect child_2: %d, got %d\n",
 			c_2, ret_pid);
 		retval = PTS_FAIL;
+		sem_post(sem);
+		sem_post(sem);
+		while((wait(NULL) > 0));
 		goto clean_up;
 	}
 
