@@ -405,9 +405,9 @@ readv02 readv02
 
 recv01 recv01
 
-#recvfrom01 recvfrom01
+recvfrom01 recvfrom01
 
-#recvmsg01 recvmsg01
+recvmsg01 recvmsg01
 
 rename01 rename01
 rename01A symlink01 -T rename01
@@ -420,7 +420,6 @@ rename07 rename07
 rename08 rename08
 #rename09 rename09
 rename10 rename10
-#rename11 rename11
 #rename12 rename12
 rename13 rename13
 
