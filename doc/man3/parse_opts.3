@@ -1,5 +1,5 @@
 .\"
-.\" $Id: parse_opts.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\" $Id: parse_opts.3,v 1.2 2000/08/30 21:56:48 nstraz Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -31,41 +31,52 @@
 .\" 
 .\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 .\"
-.TH PARSE_OPTS 3 07/25/2000 "Linux Test Project"
+.TH PARSE_OPTS 3 "30 Aug 2000" "Linux Test Project"
 .SH NAME
 parse_opts \- parse standard and user options
 .SH SYNOPSIS
-#include "test.h"
-#include "usctest.h"
-.sp
-char *\fBparse_opts\fR(ac, av, option_array)
-.br
-int ac;
-.br
-char **av;
-.br
-option_t option_array[\fInum\fR];
-.sp
-char *\fBSTD_opts\fR();
-.sp
-char *\fBSTD_opts_help\fR();
-.P
-.SH DESCRIPTION
-The \fBparse_opts\fR routine parses options from the command line, looking for user
-specified options or standard options (see below).  The command line arguments are
-provided to \fBparse_opts\fR by sending the \fBargc\fR and \fBargv\fR from \fBmain\fR in the
-\fBac\fR and \fBav\fR parameters.  User options may be specified in the \fBoption_array\fR.
-.sp
-The \fBoption_t\fR data type is defined as follows:
-.sp
 .nf
+.B #include \(rqtest.h\(rq
+.B #include \(rqusctest.h\(rq
+.sp
+.BI "char *parse_opts(int " argc ", char *" argv[] ", "
+.BI "                 option_t " option_array[] ","
+.BI "                 void (*" user_help_func ")());"
+.fi
+.SH DESCRIPTION
+The \fBparse_opts()\fP routine parses options from the command line, looking
+for user specified options or standard options (see below). Its arguments
+\fIargc\fP and \fIargv\fP are the argument count and array as passed to the
+main() function on program invocation. User options may be specified in the
+\fIoption_array\fR argument. A help function may be specified in the
+\fIuser_help_func\fP argument.  
+.sp
+\fIoption_array\fP is a pointer to the first element of an array of
+\fBoption_t\fP declared in \fBusctest.h\fP as
+.nf
+.sp
+.in 10
 typedef struct {
-  char	*option;		/* Valid option string (one option only) like "a:" */
-  int	*flag;		/* pointer to integer location to set true if option given */
-  char	**arg;		/* pointer to location to place argument, if needed */
+.in 14
+char	*option;	/* Valid option string (one option only) like "a:" */
+int	*flag;		/* pointer to integer location to set true if option given */
+char	**arg;		/* pointer to location to place argument, if needed */
+.in 10
 } option_t;
 .fi
-.sp
+.PP
+The meanings of the different fields are:
+.TP
+.I option
+is a valid option string to be given to getopt().
+.TP
+.I flag
+is a pointer to an integer location to set true if option is given.
+.TP
+.I arg
+is a pointer to a location to place argument, if needed.
+.PP
+
 Users specify options by initializing elements of an array of \fBoption_t\fR
 structures.
 .sp
@@ -126,23 +137,6 @@ Below is a list of the standard options defined in \fBparse_opts\fR:
 
 .fi
 .in -1
-To make dealing with word options easier, the parsing
-allows the minimum unique string that identifies an option.
-.sp
-It should be strongly noted that the minimum unique option string
-should only be used when running tests manually.  When coding
-command lines in scripts or in databases, use the full option
-string.    Failing to code full option strings, could under
-mine the effort of word options.
-
-.sp
-The \fBSTD_opts\fR routine returns
-a pointer to a string containing the usage information for the standard
-options recognized by \fBparse_opts\fR.  The string is of the form: 
-"[-iteration cnt][-duration secs][-delay secs][-nofunc]".
-.sp
-The \fBSTD_opts_help\fR routine returns a pointer to a string containing a
-help message, describing the standard options recognized by \fBparse_opts\fR.
 The format of the help message is as follows:
 .nf
 .in +1
@@ -161,7 +155,6 @@ pointers are present when needed.  If an error occurs in the
 \fBparse_opts\fR routine, a pointer to an error message is returned.  The
 \fBSTD_opts\fR and \fBSTD_opts_help\fR routines each return a character pointer.
 .SH "SEE ALSO"
-mc_getopt(3),
 usctest(3).
 
 
