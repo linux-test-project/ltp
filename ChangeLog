@@ -1,5 +1,20 @@
 LTP-00000000
 ------------
+o	Many improvements to mtest05 and mtest06 tests
+o	new test nfsstress
+o	included ver_linux in LTP and made it run at the end of test scripts
+o	check for necessary users/groups in Makefile and warn if they don't
+	exist
+o	documented the users and groups necessary for the testcases to run
+o	simplified telnet01 when looking for root prompt
+o	removed incorrect testcase from sendfile03
+o	fixed modify_ldt01 test problems on newer kernels
+o	added setrlimit to unlimit core size in waitpid05 test to work 
+	around systems where this is set to 0
+o	fixed mmstress pthread hang problem
+
+LTP-20010925
+------------
 o	Testcases have been organized into categories in a directory 
 	structure under the testcases subdirectory
 o	About 400 new testcases added covering various system calls
