@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 		closelog();
 
 		openlog("with log_ndelay", LOG_NDELAY, LOG_USER);
-		fd = open("Makefile", O_RDONLY);
+		fd = open("/etc/syslog.conf", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() with LOG_NDELAY option...\n");
 #endif
