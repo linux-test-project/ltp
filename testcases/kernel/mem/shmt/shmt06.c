@@ -49,6 +49,8 @@
 
 #define		ADDR		(void *)0x80000
 #define		ADDR1		(void *)0xA0000
+#define         ADDR_MIPS       (void *)0x80000
+#define         ADDR1_MIPS      (void *)0xC0000
 #define 	ADDR_IA    	(void *)0x40000000
 #define 	ADDR1_IA    	(void *)0x50000000
 #define		SIZE		16*1024
@@ -107,6 +109,8 @@ int main()
 		  cp = (char *) shmat(shmid, ADDR_IA, 0);
 #elif defined(__ARM_ARCH_4T__)
 		  cp = (char *) shmat(shmid, (void*) NULL, 0);
+#elif defined(__mips__)
+		  cp = (char *) shmat(shmid, ADDR_MIPS, 0);
 #else
 		  cp = (char *) shmat(shmid, ADDR, 0);
 #endif	
@@ -181,6 +185,8 @@ int child()
 		  cp = (char *) shmat(shmid, ADDR1_IA, 0);
 #elif defined(__ARM_ARCH_4T__)	
 		  cp = (char *) shmat(shmid, (void *) NULL, 0);
+#elif defined(__mips__)	
+		  cp = (char *) shmat(shmid, ADDR1_MIPS, 0);
 #else
 		  cp = (char *) shmat(shmid, ADDR1, 0);
 #endif

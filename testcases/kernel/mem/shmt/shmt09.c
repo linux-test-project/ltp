@@ -65,7 +65,7 @@ int main()
 	char	*c1=NULL, *c2=NULL, *c3=NULL;
 	void	*vp;
 	int	shmid;
-#ifdef __ia64__
+#if defined(__ia64__) || defined(__mips__)
 	int     increment;
 #endif
 	key_t	key;
@@ -144,7 +144,11 @@ int main()
 		tst_exit() ;
 	}
 
+#ifdef __mips__
+	vp = (void *) ((char *)sbrk(0) + 256 * K_1);
+#else
 	vp = (void *) ((char *)sbrk(0) + 4 * K_1);
+#endif
 	c3 = (char *) shmat(shmid, vp, SHM_RND);
 	if (c3 == (char *)-1) {
 		perror("shmat1");
@@ -160,6 +164,15 @@ int main()
 /*--------------------------------------------------------*/
 #ifdef __ia64__
 		increment=8388608;	 /* 8Mb */
+		while ((vp = sbrk(increment)) != (void *)-1);
+		if (errno != ENOMEM) {
+			tst_resm(TFAIL,
+                	"Error: sbrk failed, errno = %d\n", errno) ;
+			rm_shm(shmid);
+			tst_exit();
+	}
+#elif __mips__
+		increment=262144;	 /* 256Kb */
 		while ((vp = sbrk(increment)) != (void *)-1);
 		if (errno != ENOMEM) {
 			tst_resm(TFAIL,
