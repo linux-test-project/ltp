@@ -64,6 +64,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <string.h>
 
 /* Defines								      */
 #define GB 1000000000

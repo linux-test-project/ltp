@@ -48,12 +48,14 @@
 #include <unistd.h>
 #include "inet.h"
 #include <errno.h>
+#include <stdlib.h>
 #define MAXLINE 1024
 
 /* Read contents of FILE *fp. Write each line to socket, then
    read line back from socket and write to standard output.
    Return to caller when done */
 
+void
 str_cli(fp, sockfd)
 register FILE *fp;
 register int sockfd;
@@ -91,6 +93,7 @@ register int sockfd;
             perror("str_cli: error reading file");
 }
 
+int
 main(int argc, char *argv[])
 {
     FILE *fi, *input;
@@ -125,7 +128,7 @@ main(int argc, char *argv[])
 	if ((fi = fopen(errfilename, "w")) != 0)
 	{
 	    fprintf(fi,"client: socket open failure, no = %d\n", errno);
-	    close(fi);
+		     fclose(fi);
             return(errno);
 	}
 	exit(1);
@@ -140,7 +143,7 @@ main(int argc, char *argv[])
 	if ((fi = fopen(errfilename, "w")) != 0)
 	{
 	    fprintf(fi,"client: connect failure, no = %d\n", errno);
-	    close(fi);
+		     fclose(fi);
             return(errno);
 	}
 	exit(1);

@@ -30,6 +30,10 @@
 /* address for server */
 char *pname;
 
+extern int writen(int fd, char *ptr, int nbytes);
+extern int readline(int fd, char *ptr, int maxlen);
+
+
 /* debug */
 #ifdef DEBUG
 

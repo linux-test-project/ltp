@@ -52,6 +52,9 @@
 #include <pthread.h>
 #include <string.h>
 #include "inet.h"
+#include <stdlib.h>
+#include <unistd.h>
+
 #define MAXLINE 1024
 pthread_t	th;
 pthread_mutex_t current_mutex;
@@ -95,6 +98,7 @@ int sockfd;
    }
 }
 
+int
 main(int argc, char *argv[])
 {
     void new_thread();

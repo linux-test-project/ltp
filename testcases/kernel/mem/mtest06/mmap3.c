@@ -67,6 +67,7 @@
 #include <sys/wait.h>
 #include <pthread.h>
 #include <signal.h>
+#include <string.h>
 
 /* Defines								      */
 #ifndef TRUE

@@ -213,16 +213,16 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
                         ==  (void *)-1)
         {
             rm_shared_mem(shmkey, shmat_addr, 0);
-            fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#x\n", 
-			getpid(), shmat_addr);
+            fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n", 
+		 		 		 getpid(), (long)shmat_addr);
             perror("do_shmat_shmadt(): shmat()");
             PTHREAD_EXIT(-1);
         }
 	dprt("pid[%d]: do_shmat_shmadt(): content of memory shmat_addr = %s\n",
             getpid(), shmat_addr);
         
-        fprintf(stdout, "pid[%d]: do_shmat_shmadt(): got shmat address = %#x\n",
-            getpid(), shmat_addr);
+        fprintf(stdout, "pid[%d]: do_shmat_shmadt(): got shmat address = %#lx\n",
+            getpid(), (long)shmat_addr);
 
 	if (!reader)
         {	
@@ -285,6 +285,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 /*		 0 on success						      */
 /*									      */
 /******************************************************************************/
+int
 main(int	argc,		/* number of input parameters		      */
      char	**argv)		/* pointer to the command line arguments.     */
 {
@@ -381,8 +382,8 @@ main(int	argc,		/* number of input parameters		      */
             if (th_status == -1)
             {
                 fprintf(stderr,
-                        "thread [%d] - process exited with errors\n",
-                            thrdid[thrd_ndx]);
+                        "thread [%ld] - process exited with errors\n",
+                            (long)thrdid[thrd_ndx]);
                 exit(-1);
             }
         }
