@@ -197,7 +197,7 @@ LOOP=`expr $LOOP - 1`
 done
 
 echo "nm01: PASS"
-#do_cleanup
+do_cleanup
 exit 0
 }
 
