@@ -18,30 +18,87 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/kernel.h>
+#include <linux/errno.h>
+#include <errno.h>
 
 #include "user_tbase.h"
 #include "../tbase/tbase.h"
+
 
 static int tbase_fd = -1;		/* file descriptor */
 
 
 int 
 tbaseopen() {
+
+    dev_t devt;
 	struct stat     st;
+    int    rc = 0;
 
-	/* determine if there is a tbase device loaded */
-        if (stat("/dev/tbase", &st)) {
-                printf("\tERROR, Failed finding test base kernel interface \n");
-                return (1);
+    devt = makedev(TBASEMAJOR, 0);
+
+    if (rc) {
+        if (errno == ENOENT) {
+            /* dev node does not exist. */
+            rc = mkdir("/dev/tbase", (S_IFDIR | S_IRWXU |
+                                                S_IRGRP | S_IXGRP |
+                                                S_IROTH | S_IXOTH));
+        } else {
+            printf("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n", errno);
         }
 
-	/* open tbase device */
-        if ((tbase_fd = open("/dev/tbase", O_RDWR)) < 0) {
-                printf("\tFailed opening test base kernel interface \n");
-                return (1);
+    } else {
+        if (!(st.st_mode & S_IFDIR)) {
+            rc = unlink("/dev/tbase");
+            if (!rc) {
+                rc = mkdir("/dev/tbase", (S_IFDIR | S_IRWXU |
+                                                S_IRGRP | S_IXGRP |
+                                                S_IROTH | S_IXOTH));
+            }
+        }
+    }
+
+
+    /*
+     * Check for the /dev/tbase node, and create if it does not
+     * exist.
+     */
+    rc = stat("/dev/tbase", &st);
+    if (rc) {
+        if (errno == ENOENT) {
+            /* dev node does not exist */
+            rc = mknod("/dev/tbase", (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
+        } else {
+            printf("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n", errno);
         }
 
+    } else {
+        /*
+         * /dev/tbase CHR device exists.  Check to make sure it is for a
+         * block device and that it has the right major and minor.
+         */
+        if ((!(st.st_mode & S_IFCHR)) ||
+             (st.st_rdev != devt)) {
+
+            /* Recreate the dev node. */
+            rc = unlink("/dev/tbase");
+            if (!rc) {
+                rc = mknod("/dev/tbase", (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
+            }
+        }
+    }
+
+    tbase_fd = open("/dev/tbase", O_RDWR);
+
+    if (tbase_fd < 0) {
+        printf("ERROR: Open of device %s failed %d errno = %d\n", "/dev/tbase",tbase_fd, errno);
+        return errno;
+    }
+    else {
+        printf("Device opened successfully \n");
         return 0;
+    }
+
 }
 
 int 
