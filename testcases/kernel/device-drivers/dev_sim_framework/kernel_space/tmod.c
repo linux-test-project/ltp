@@ -32,7 +32,7 @@ static int tmod_close(struct inode *, struct file *);
 
 static int test_option(void);
 
-static int Major = 0;
+static int Major = TMOD_MAJOR;
 //static ltpmod_user_t ltp_mod;
 
 /*

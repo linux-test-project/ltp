@@ -11,8 +11,12 @@
  */
 
 #define TMOD_DRIVER_NAME	"ltp example module"
-#define DEVICE_NAME		"tmod"
+#define DEVICE_NAME		"/dev/tmod"
+#define TMOD_MAJOR      252
 #define MAG_NUM			'k'
+#ifndef SET_MODULE_OWNER
+#define SET_MODULE_OWNER(dev) ((dev)->owner = THIS_MODULE)
+#endif
 
 /* put ioctl flags here, use the _IO macro which is 
  found in linux/ioctl.h, takes a letter, and an 
