@@ -43,7 +43,7 @@ TC=nfsstat01
 TCbin=${TCbin:=`pwd`}
 EXPORTDIR=/tmp/$TC$$
 HOST=`hostname`
-MOUNTDIR=${MOUNTDIR:=/mnt/$TC$$}
+MOUNTDIR=${MOUNTDIR:=/tmp/$TC$$}
 CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=2}
 

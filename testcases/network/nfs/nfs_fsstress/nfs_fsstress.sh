@@ -54,38 +54,38 @@ HOSTNAME=$(hostname | awk {'print $1'})
 DURATION=$(( $DURATION * 60 * 60 ))
 
 echo "Setting up local mount points"
-mkdir -p /mnt/udp/2/${HOSTNAME}1
-mkdir -p /mnt/tcp/2/${HOSTNAME}2
-mkdir -p /mnt/udp/3/${HOSTNAME}3
-mkdir -p /mnt/tcp/3/${HOSTNAME}4
+mkdir -p /tmp/udp/2/${HOSTNAME}1
+mkdir -p /tmp/tcp/2/${HOSTNAME}2
+mkdir -p /tmp/udp/3/${HOSTNAME}3
+mkdir -p /tmp/tcp/3/${HOSTNAME}4
 
 echo "Mounting NFS filesystem"
-mount -o "intr,soft,proto=udp,vers=2" $RHOST:$FILESYSTEM /mnt/udp/2/${HOSTNAME}1 >/dev/null 2>&1
+mount -o "intr,soft,proto=udp,vers=2" $RHOST:$FILESYSTEM /tmp/udp/2/${HOSTNAME}1 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using UDP & version 2 failed"
   exit 1 
 fi
-mount -o "intr,soft,proto=tcp,vers=2" $RHOST:$FILESYSTEM /mnt/tcp/2/${HOSTNAME}2 >/dev/null 2>&1
+mount -o "intr,soft,proto=tcp,vers=2" $RHOST:$FILESYSTEM /tmp/tcp/2/${HOSTNAME}2 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using TCP & version 2 failed"
   exit 1 
 fi
-mount -o "intr,soft,proto=udp,vers=3" $RHOST:$FILESYSTEM /mnt/udp/3/${HOSTNAME}3 >/dev/null 2>&1
+mount -o "intr,soft,proto=udp,vers=3" $RHOST:$FILESYSTEM /tmp/udp/3/${HOSTNAME}3 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using UDP & version 3 failed"
   exit 1 
 fi
-mount -o "intr,soft,proto=tcp,vers=3" $RHOST:$FILESYSTEM /mnt/tcp/3/${HOSTNAME}4 >/dev/null 2>&1
+mount -o "intr,soft,proto=tcp,vers=3" $RHOST:$FILESYSTEM /tmp/tcp/3/${HOSTNAME}4 >/dev/null 2>&1
 if [ $? -ne 0 ];then
   echo "Error: mount using TCP & version 3 failed"
   exit 1 
 fi
 
 echo "Test set for $DURATION seconds. Starting test processes now."
-./fsstress -l 0 -d /mnt/udp/2/${HOSTNAME}1 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.2.log 2>&1 &
-./fsstress -l 0 -d /mnt/udp/3/${HOSTNAME}2 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.3.log 2>&1 &
-./fsstress -l 0 -d /mnt/tcp/2/${HOSTNAME}3 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.2.log 2>&1 &
-./fsstress -l 0 -d /mnt/tcp/3/${HOSTNAME}4 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.3.log 2>&1 &
+./fsstress -l 0 -d /tmp/udp/2/${HOSTNAME}1 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.2.log 2>&1 &
+./fsstress -l 0 -d /tmp/udp/3/${HOSTNAME}2 -n 1000 -p 50 -r > /tmp/nfs_fsstress.udp.3.log 2>&1 &
+./fsstress -l 0 -d /tmp/tcp/2/${HOSTNAME}3 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.2.log 2>&1 &
+./fsstress -l 0 -d /tmp/tcp/3/${HOSTNAME}4 -n 1000 -p 50 -r > /tmp/nfs_fsstress.tcp.3.log 2>&1 &
 
 echo "Starting sar"
 sar -o /tmp/nfs_fsstress.sardata 30 0 &
@@ -108,10 +108,10 @@ done
 echo " "
 echo "All processes killed."
 echo "Unmounting NFS filesystem"
-umount /mnt/udp/2/${HOSTNAME}1
-umount /mnt/tcp/2/${HOSTNAME}2
-umount /mnt/udp/3/${HOSTNAME}3
-umount /mnt/tcp/3/${HOSTNAME}4
+umount /tmp/udp/2/${HOSTNAME}1
+umount /tmp/tcp/2/${HOSTNAME}2
+umount /tmp/udp/3/${HOSTNAME}3
+umount /tmp/tcp/3/${HOSTNAME}4
 echo " Testing Complete: PASS"
 
 

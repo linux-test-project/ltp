@@ -49,7 +49,7 @@ TCtmp=${TCtmp:=$TCbin/$TC$$}
 RHOST=${RHOST:=`hostname`}
 VERSION=${VERSION:=2}
 SOCKET_TYPE=${SOCKET_TYPE:=udp}
-TESTDIR=${TESTDIR:=/mnt/$TC$$}
+TESTDIR=${TESTDIR:=/tmp/$TC$$}
 CLEANUP=${CLEANUP:="ON"}
 
 

@@ -85,16 +85,16 @@ $trace_logic
 
     PID=$$
     OPTS=${OPTS:=",vers=$VERSION "}
-    REMOTE_DIR=${RHOST}:/mnt/nfs01$PID.testdir
+    REMOTE_DIR=${RHOST}:/tmp/nfs01$PID.testdir
     LOCAL_DIR=$TCtmp/${RHOST}.${LUSER}
     LUSER=${LUSER:=root}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /mnt/nfs01$PID.testdir"
+    rsh -n $RHOST "mkdir /tmp/nfs01$PID.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfs01$PID.testdir"
+    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/tmp/nfs01$PID.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $SOCKET_TYPE$OPTS"
@@ -165,8 +165,8 @@ $trace_logic
 	rm -rf $LOCAL_DIR || echo "Cannot remove $LOCAL_DIR"
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs01$PID.testdir"
-	rsh -n $RHOST "rm -rf /mnt/nfs01$PID.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:/tmp/nfs01$PID.testdir"
+	rsh -n $RHOST "rm -rf /tmp/nfs01$PID.testdir"
     fi
 
     [ $# = 0 ] && { echo "Test Successful"; exit 0; }
