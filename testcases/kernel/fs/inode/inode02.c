@@ -73,7 +73,7 @@ char name[NAME_LENGTH + 1];
 char path_string[PATH_STRING_LENGTH + 1];
 char read_string[PATH_STRING_LENGTH + 1];
 char write_string[PATH_STRING_LENGTH + 1];
-char remove_string[80];
+char remove_string[PATH_STRING_LENGTH + 10];
 int  parent_pid;
 int  nchild;
 
@@ -251,8 +251,7 @@ int tree()
 	int gen_ret_val, ch_ret_val, exit_val, level;
 	int ret_val;
 	int generate(), check();
-	char path_list_string[18];
-	char remove_string[80];
+	char path_list_string[PATH_STRING_LENGTH + 10];
 	int len;
 	int status;
 
