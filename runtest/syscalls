@@ -385,7 +385,7 @@ pread01 pread01
 pread02 pread02
 
 pwrite01 pwrite01
-#pwrite02 pwrite02
+pwrite02 pwrite02
 
 read01 read01
 read02 read02
@@ -398,7 +398,7 @@ readlink01A symlink01 -T readlink01
 readlink0l readlink0l
 readlink02 readlink02
 readlink03 readlink03
-#readlink04 readlink04
+readlink04 cp -f ${LTPROOT}/testcases/bin/creat_slink ${TMP}; readlink04
 
 readv01 readv01
 readv02 readv02
