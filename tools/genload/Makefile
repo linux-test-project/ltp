@@ -2,7 +2,7 @@ CFLAGS+= -DPACKAGE=\"stress\" -DVERSION=\"0.17pre11\" -DSTDC_HEADERS=1 \
 		  -DHAVE_UNISTD_H=1 -DHAVE_LIBM=1  -I. -Wall -D_FILE_OFFSET_BITS=64 \
 		  -D_LARGEFILE_SOURCE 
 
-LDFLAGS+= -lm
+LDFLAGS+= -L../../lib -lltp -lm
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
