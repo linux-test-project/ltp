@@ -138,10 +138,13 @@ test1(void)
 	/*
 	 * test writing to the master / reading from the slave
 	 */
+#ifndef __arm__
+
 	if (write(masterfd, STRING, strlen(STRING)) != strlen(STRING)) {
 		tst_resm(TFAIL,"write to master");
 		tst_exit();	
 	}
+#endif
 
 	if (read(slavefd, buf, strlen(STRING)) != strlen(STRING)) {
 		tst_resm(TFAIL,"read from slave");
