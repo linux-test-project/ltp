@@ -86,10 +86,11 @@ void cleanup();			/* cleanup function for the test */
 int
 main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc,i;			/* loop counters */
+	int length;			/* length of character string */
 	char *msg;			/* message returned from parse_opts */
 	pid_t cpid;			/* child process id */
-	char write_buf[] = "Testing\0";	/* buffer string for write */
+	char write_buf[] = "Testing";	/* buffer string for write */
 	char read_buf[BUF_SIZE];	/* buffer for read-end of pipe */
 	int status;			/* exit status of child process */
 	int rval;
@@ -102,6 +103,7 @@ main(int ac, char **av)
 
 	/* Perform global setup for test */
 	setup();
+
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -127,6 +129,8 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "write() failed on write "
 				 "to pipe, error:%d", errno);
 		}
+
+		length=sizeof(write_buf);
 
 		/* Fork child process */
 		if ((cpid = fork()) == -1) {
@@ -164,7 +168,7 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(errno));
 				exit(1);
 			}
-
+			
 			/* Read data from read end of pipe */
 			if (read(fildes[0], read_buf, sizeof(read_buf)) !=
 				     strlen(write_buf)) {
@@ -177,6 +181,7 @@ main(int ac, char **av)
 			if (strcmp(read_buf, write_buf)) {
 				tst_resm(TFAIL, "Data from reading pipe "
 					 "are different");
+				printf(" read_buf is %s\n write_buf is %s\n length is %d\n",read_buf,write_buf,length);
 				exit(1);
 			}
 
