@@ -39,8 +39,10 @@
  *	01/27/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code to print system information
  *
+ *	01/28/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
+ *			   - added code to print test exit value.
  */
-/* $Id: pan.c,v 1.16 2003/01/28 22:33:34 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.17 2003/01/29 02:09:13 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -287,8 +289,10 @@ main(int argc, char **argv)
 	{
 		fprintf(logfile, "Test Start Time: %s\n", s);
 		fprintf(logfile, "-----------------------------------------\n");
-		fprintf(logfile, "%-30.20s %s\n", "Testcase", "Result");
-		fprintf(logfile, "%-30.20s %s\n", "--------", "------");
+		fprintf(logfile, "%-30.20s %-10.10s %-10.10s\n", 
+				"Testcase", "Result", "Exit Value");
+		fprintf(logfile, "%-30.20s %-10.10s %-10.10s\n",
+			   	"--------", "------", "------------");
 	}
     }
 
@@ -690,8 +694,9 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 			{
 					if (w != 0) 
 						++*failcnt;
-					fprintf(logfile, "%-30.20s %s\n", running[i].cmd->name, 
-						((w != 0) ? "FAIL" : "PASS"));
+					fprintf(logfile, "%-30.20s %-10.10s %-5d\n", 
+							running[i].cmd->name, ((w != 0) ? "FAIL" : "PASS"),
+							w);
 			}
 
 				fflush(logfile);
