@@ -79,7 +79,7 @@ do_test()
 	 SIZE=`ls -l $serv_fname|awk '{print $5}'`
 	 echo "Starting $EXECUTABLES $RHOST $PORT Client_filename Server_filename Size "
   
-	 $TCsrc/$EXECUTABLES $RHOST $TCtmp/$clnt_fname $serv_fname $SIZE 
+	 $TCsrc/$EXECUTABLES $RHOST $PORT $TCtmp/$clnt_fname $serv_fname $SIZE 
 	 RetVal=$?
   
          [[ $RetVal -eq 0 ]] || end_testcase "$EXECUTABLES returned error $RetVal"
