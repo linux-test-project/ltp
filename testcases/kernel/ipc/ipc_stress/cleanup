@@ -1,0 +1,19 @@
+#!/bin/sh
+ 
+SEMS=`ipcs -sp | gawk '{printf " %d", $1}' | sed -e 's/ 0//g'`
+if test "$SEMS" != ""; then
+        echo ipcrm sem $SEMS
+        ipcrm sem $SEMS
+fi
+ 
+MSGS=`ipcs -qp | gawk '{printf " %d", $1}' | sed -e 's/ 0//g'`
+if test "$MSGS" != ""; then
+        echo ipcrm msg $MSGS
+        ipcrm msg $MSGS
+fi
+ 
+SHMS=`ipcs -mp | gawk '{printf " %d", $1}' | sed -e 's/ 0//g'`
+if test "$SHMS" != ""; then
+        echo ipcrm shm $SHMS
+        ipcrm shm $SHMS
+fi

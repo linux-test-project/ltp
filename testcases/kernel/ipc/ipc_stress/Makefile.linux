@@ -1,0 +1,6 @@
+CFLAGS= -O -lpthread -D_LINUX_
+SRCS=$(wildcard *.c)
+TARGETS=$(patsubst %.c,%,$(SRCS))
+
+all: $(TARGETS)
+

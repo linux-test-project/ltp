@@ -1,0 +1,57 @@
+#!/bin/sh
+
+echo RUNNING ALL TESTS.  stdout > testlog
+
+rm -f testlog
+touch testlog
+
+export CYCLE=5
+
+while 
+	[ -w testlog ]
+do
+	./message_queue_test_01 		1>> testlog 2>> testlog
+	./message_queue_test_02_get 		1>> testlog 2>> testlog
+	./message_queue_test_02_rcv 		1>> testlog 2>> testlog&
+	./message_queue_test_02_snd 		1>> testlog 2>> testlog
+	./message_queue_test_02_ctl -r  	1>> testlog 2>> testlog 
+	./message_queue_test_04 		1>> testlog 2>> testlog
+	./message_queue_test_05 -n 8 		1>> testlog 2>> testlog
+	./cleanup
+	./pipe_test_01  			1>> testlog 2>> testlog
+	./pipe_test_02  			1>> testlog 2>> testlog
+	./pipe_test_02 -n 			1>> testlog 2>> testlog
+	./pipe_test_02 -b 8192 -p 32 		1>> testlog 2>> testlog
+	./pipe_test_02 -b 8192 -p 32 -n 	1>> testlog 2>> testlog
+	./semaphore_test_01			1>> testlog 2>> testlog
+	./semaphore_test_02			1>> testlog 2>> testlog
+	./semaphore_test_02 -s 64 -p 16 	1>> testlog 2>> testlog
+	./semaphore_test_03			1>> testlog 2>> testlog
+	./semaphore_test_03 -s 30 -p 16 	1>> testlog 2>> testlog
+	./cleanup	
+	./shmem_test_01 			1>> testlog 2>> testlog
+	./shmem_test_01 -s 1024 		1>> testlog 2>> testlog
+	./shmem_test_02 	 		1>> testlog 2>> testlog
+	./shmem_test_02 -s 1024 -c 16		1>> testlog 2>> testlog
+	./shmem_test_03 			1>> testlog 2>> testlog
+	./shmem_test_03 -s 1024 -c 16		1>> testlog 2>> testlog
+	./shmem_test_04 			1>> testlog 2>> testlog
+	./shmem_test_04 -l 16 -p 16 -m 2	1>> testlog 2>> testlog
+	./shmem_test_04 -F 			1>> testlog 2>> testlog
+	./shmem_test_04 -F -l 16 -p 16 -m 2	1>> testlog 2>> testlog
+	./shmem_test_05 			1>> testlog 2>> testlog
+	./shmem_test_06 			1>> testlog 2>> testlog
+	./shmem_test_07 			1>> testlog 2>> testlog
+	./shmem_test_07 -c 4 -g 8 -s 1048576	1>> testlog 2>> testlog
+	./shmem_test_07 -c 16 -g 16 -s 1048576  1>> testlog 2>> testlog
+	./cleanup
+	./signal_test_01			1>> testlog 2>> testlog
+	./signal_test_02			1>> testlog 2>> testlog
+	./signal_test_03			1>> testlog 2>> testlog
+	./signal_test_04			1>> testlog 2>> testlog
+	./signal_test_05			1>> testlog 2>> testlog
+	./signal_test_06			1>> testlog 2>> testlog
+	./signal_test_07			1>> testlog 2>> testlog
+	./cleanup
+	echo ipc_str complete
+done
