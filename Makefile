@@ -2,10 +2,11 @@
 CFLAGS+= -Wall
 LDFLAGS+=
 
-all: libltp.a
+all: libltp.a 
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases install
+	./IDcheck.sh
 
 libltp.a:
 	@$(MAKE) -C lib $@
