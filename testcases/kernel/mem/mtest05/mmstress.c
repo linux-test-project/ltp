@@ -638,7 +638,7 @@ test6()
 /* Desciption:	This is the main function of mmstress program. It processes   */
 /*		all command line options and flags and runs the tests.        */
 /*		If no specific tests are chosen, all tests will be run one    */
-/*		time by default.			                      */
+/*		time by default. 			                      */
 /*									      */
 /* Input:	argc - number of command line parameters		      */
 /*		argv - pointer to the array of the command line parameters.   */
