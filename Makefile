@@ -3,7 +3,6 @@ CFLAGS+= -Wall
 LDFLAGS+=
 
 all: libltp.a
-	@$(MAKE) -C tests $@
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases install
