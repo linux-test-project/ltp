@@ -35,6 +35,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      04/2002 wjhuie sigset testx for SIG_ERR not < 0, TPASS|TFAIL issued
  *
  * Restrictions
  * 	None
@@ -101,9 +102,9 @@ main(int argc, char **argv)
 				fail = 1;
 			}
 			if (fail) {
-				tst_resm(TINFO, "%s FAILED", TCID);
+				tst_resm(TFAIL, "%s FAILED", TCID);
 			} else {
-				tst_resm(TINFO, "%s PASSED", TCID);
+				tst_resm(TPASS, "%s PASSED", TCID);
 			}
 			cleanup();
 			/*NOTREACHED*/
@@ -116,7 +117,7 @@ main(int argc, char **argv)
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
 		 * has been received before they proceed.
 		 */
-		if ((int)sigset(SIGINT, inthandlr) < 0) {
+		if ((int)sigset(SIGINT, inthandlr) == (int)SIG_ERR) {
 			tst_resm(TFAIL, "sigset SIGINT failed, errno = %d",
 				 errno);
 			tst_exit();
@@ -291,10 +292,10 @@ main(int argc, char **argv)
 		}
 
 		if (fail) {
-			tst_resm(TINFO, "Test FAILED");
+			tst_resm(TFAIL, "Test FAILED");
 			exit(1);
 		} else {
-			tst_resm(TINFO, "Test PASSED");
+			tst_resm(TPASS, "Test PASSED");
 			exit(0);
 		}
 	}
