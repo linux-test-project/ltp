@@ -36,6 +36,10 @@ asyncio02 asyncio02
 # 	Now check to see if the number of bytes written is the
 # 		same as the number of bytes in the file.
 # 	Cleanup
+brk01 brk01
+# Basic test for brk()
+#    TEST CASES
+# 	1.) brk(2) returns...
 chdir02 chdir02
 # Basic test for chdir(2)
 #    TEST CASES
@@ -206,6 +210,10 @@ pause01 pause01
 # Basic test for pause(2)
 read01 read01
 # Basic test for read(2)
+readdir01 readdir01
+# write multiple files and try to find them with readdir
+#    TEST CASES
+# 	1.) Create n files and check that readdir() finds n files
 readlink02 readlink02
 # Basic test for readlink(2)
 rename02 rename02
