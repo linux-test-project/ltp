@@ -43,7 +43,7 @@ init()
 
 	export RC=0					# Return code from commands.
 	export TST_TOTAL=1			# total numner of tests in this file.
-	export TCID="dhcpd  "		# this is the init function.
+	export TCID="ip_tests  "		# this is the init function.
 	export TST_COUNT=0			# init identifier,
 
 	if [ -z $TMP ]
@@ -105,7 +105,7 @@ init()
 			tst_brk TBROK "INIT: failed adding route to 10.1.1.12"
 			return $RC
 		else
-			tst_resm TINFO "INIT: added alias eth0:1 with ip 10.1.1.12"
+			tst_resm TINFO "INIT: added alias: `ifconfig eth0:1`"
 		fi
 	fi
 
@@ -168,12 +168,13 @@ test01()
 			"Test #1: ip command failed. Reason: "
 		return $RC
 	else
-		if [ `ifconfig eth0:1 | grep -i MTU | awk '{print $5}'` == "MTU:300" ]
+		MTUSZ=`ifconfig eth0:1 | grep -i MTU | awk '{print $5}'`
+		if [ $MTUSZ == "MTU:300" ]
 		then
 			tst_resm TPASS "Test #1: changing mtu size success"
 		else
-			tst_brkm TBROK NULL \
-				"Test #1: unable to create output file."
+			tst_resm FAIL NULL \
+				"Test #1: MTU value not set to 300: ifconfig returned: $MTUSZ"
 			return $RC
 		fi
 	fi
@@ -192,7 +193,7 @@ test01()
 # Return		- zero on success
 #               - non zero on failure. return value from commands ($RC)
 
-test01()
+test02()
 {
 	RC=0			# Return value from commands.
 	TCID=ip01	    # Name of the test case.
@@ -210,12 +211,13 @@ test01()
 			"Test #1: ip command failed. Reason: "
 		return $RC
 	else
-		if [ `ifconfig eth0 | grep -i MTU | awk '{print $5}'` == "MTU:300" ]
+		=`ifconfig eth0 | grep -i MTU | awk '{print $5}'`
+		if [ $RC == "MTU:300" ]
 		then
 			tst_resm TPASS "Test #1: changing mtu size success"
 		else
 			tst_brkm TBROK NULL \
-				"Test #1: unable to create output file."
+				"Test #1: MTU != 300: ifconfig returned $RC"
 			return $RC
 		fi
 	fi
