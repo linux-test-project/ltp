@@ -41,7 +41,7 @@ int main()
 
     printf("Starting dirty tests...\n");
 
-	sprintf(filename, "file.xx.%d", getpid());
+	sprintf(filename, "/test/aiodio/file.xx.%d", getpid());
 	fd = open(filename, O_CREAT|O_WRONLY, 0666);
 
 	memset(buf, 0xaa, sizeof(buf));

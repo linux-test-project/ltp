@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
-	char *filename = "file";
+	char *filename = "/test/aiodio/file";
 
     printf("Begin dio_append test...\n");
 

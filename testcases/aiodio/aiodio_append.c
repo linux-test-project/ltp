@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
-	char *filename = "file";
+	char *filename = argv[1];
 
     printf("Starting aio/dio append test...\n");
 

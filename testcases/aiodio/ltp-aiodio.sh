@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script should be run after installing the libaio RPM or libraries
 # A valid large file should be passed to the test.
 # These tests will only run correctly if the kernel and libaio has been compiled
@@ -16,46 +16,165 @@ if [ $? -eq 0 ]; then
  export LTPROOT=${PWD}
 fi
 
+run0=0
+runTest=0
+nextTest=0
+
 export TMPBASE="/tmp"
 usage() 
 {
 	cat <<-END >&2
-	usage: ${0##*/} [ -a large_filename ]
+	usage: ${0##*/} [ -f large_filename -b partition] [-e 1] [-t 1] [-j 1] [-x 1] or [-a 1]
 
 	defaults:
+	file1=$file1
 	part1=$part1
+        ext2=0
+        ext3=0
+        jfs=0
+        xfs=0
 
-	example: ${0##*/} -a MyLargeFile
+	example: ${0##*/} -f MyLargeFile -b /dev/hdc1 [-a 1] or [-e 1] [-x 1] [-j 1] [-s 1]
+        -e = test ex2 filesystem.
+        -t = test ext3 filesystem
+        -j = test JFS filesystem
+        -x = test XFS filesystem
+                    or
+        -a = test all supported filesystems, this will override any other filesystem flags passed.
 
-        - A Large file should be passed to fully stress the test.
+        - a 1 turns on the test for the above supported filesystem, just omit passing the flag to skip that filesystem.
+
+        - A Large file should be passed to fully stress the test. You must pass at least one filesystem to test, you can pass any combination
+          but there is not a default filesystem. ReiserFS does not support AIO so these tests will not support ReiserFS.
+
+        - WARNING !! The partition you pass will be overwritten. This is a destructive test so only pass a partition where data can be destroyed.
+          
         
 
 	END
 exit
 }
 
-while getopts :a: arg
+while getopts :a:b:e:f:t:x:j: arg
 do      case $arg in
-		a)	part1=$OPTARG;;
+		f)	file1=$OPTARG;;
+		b)	part1=$OPTARG;;
+		e)	ext2=$OPTARG;;
+		t)	ext3=$OPTARG;;
+		x)	xfs=$OPTARG;;
+		j)	jfs=$OPTARG;;
+		a)	allfs=$OPTARG;;
 			
                 \?)     echo "************** Help Info: ********************"
                         usage;;
         esac
 done
 
-if [ ! -n "$part1"  ]; then
+if [ ! -n "$file1"  ]; then
   echo "Missing the large file. You must pass a large filename for testing"
   usage;
   exit
 fi
 
-clear
-mkdir junkdir
-cp $part1 junkfile
-cp $part1 fff
-cp $part1 ff1
-cp $part1 ff2
-cp $part1 ff3
+if [ ! -n "$part1"  ]; then
+  echo "Missing the partition. You must pass a partition for testing"
+  usage;
+  exit
+fi
+
+if [ -n "$allfs"  ]; then
+  echo "testing ALL supported filesystems"
+  ext2="1"
+  ext3="1"
+  jfs="1"
+  xfs="1"
+  echo "test run = $run0"
+fi
+
+if [ -n "$ext2"  ]; then
+  echo "** testing ext2 **"
+  run0=$(($run0+1))
+fi
+
+if [ -n "$ext3"  ]; then
+  echo "** testing ext3 **"
+  run0=$(($run0+1))
+fi
+
+if [ -n "$xfs"  ]; then
+  echo "** testing xfs **"
+  run0=$(($run0+1))
+fi
+
+if [ -n "$jfs"  ]; then
+  echo "** testing jfs **"
+  run0=$(($run0+1))
+fi
+
+if [ "$run0" -eq 0 ]; then
+  echo "No filesystems passed to test"
+  echo "Please pass at least one supported filesystem or the -a 1 flag to run all "
+fi
+
+
+mkdir /test  2&>1 > /dev/nul
+mkdir /test/aiodio  2&>1 > /dev/nul 
+
+while [ "$runTest" -lt "$run0" ]
+do
+
+echo "runTest=$runTest run0=$run0 nextTest=$nextTest"
+
+if [ -n "$ext2" -a $nextTest -eq 0 ]; then
+  echo "***************************"
+  echo "* Testing ext2 filesystem *" 
+  echo "***************************"
+  mkfs -t ext2 $part1
+  mount -t ext2 $part1 /test/aiodio
+elif [ $nextTest -eq 0 ]; then
+  nextTest=$(($nextTest+1))
+fi
+
+if [ -n "$ext3" -a $nextTest -eq 1 ]; then
+  echo "***************************"
+  echo "* Testing ext3 filesystem *"
+  echo "***************************"
+  mkfs -t ext3 $part1
+  mount -t ext3 $part1 /test/aiodio
+elif [ $nextTest -eq 1 ]; then
+  nextTest=$(($nextTest+1))
+fi
+
+if [ -n "$jfs" -a $nextTest -eq 2 ]; then
+  echo "**************************"
+  echo "* Testing jfs filesystem *"
+  echo "**************************"
+  mkfs.jfs  $part1 <yesenter.txt
+  mount -t jfs $part1 /test/aiodio
+elif [ $nextTest -eq 2 ]; then
+  nextTest=$(($nextTest+1))
+fi
+
+if [ -n "$xfs" -a $nextTest -eq 3 ]; then
+  echo "**************************"
+  echo "* Testing xfs filesystem *"
+  echo "**************************"
+  mkfs.xfs -f $part1
+  mount -t xfs $part1 /test/aiodio
+elif [ $nextTest -eq 3 ]; then
+  nextTest=$(($nextTest+1))
+fi
+
+nextTest=$(($nextTest+1))
+runTest=$(($runTest+1))
+
+mkdir /test/aiodio/junkdir
+cp $file1 /test/aiodio/junkfile
+cp $file1 /test/aiodio/fff
+cp $file1 /test/aiodio/ff1
+cp $file1 /test/aiodio/ff2
+cp $file1 /test/aiodio/ff3
+
 
 
 echo "************ Running aiocp tests " 
@@ -73,12 +192,12 @@ ${LTPROOT}/../../pan/pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio
 
 wait $!
 
-#echo "************ Running aio-stress tests " 
-#${LTPROOT}/../../tools/rand_lines -g ${LTPROOT}/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
+echo "************ Running aio-stress tests " 
+${LTPROOT}/../../tools/rand_lines -g ${LTPROOT}/ltp-aio-stress.part1 > ${TMPBASE}/ltp-aio-stress.part1
 
-#${LTPROOT}/../../pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
+${LTPROOT}/../../pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostress.logfile -f ${TMPBASE}/ltp-aio-stress.part1 &
 
-#wait $!
+wait $!
 
 
 echo "************ Running aiodio_sparse tests " 
@@ -155,15 +274,22 @@ echo "Running ltp-diorh"
 var0=1
 while [ "$var0" -lt "$LIMIT" ]
 do
-./ltp-diorh file
+./ltp-diorh /test/aiodio/file
 date
   var0=$(($var0+1))
 done
 
-rm -f fff
-rm -f ff1
-rm -f ff2
-rm -f ff3
-rm -f junkfile*
-rm -f file*
-rm -rf junkdir
+
+rm -f /test/aiodio/fff
+rm -f /test/aiodio/ff1
+rm -f /test/aiodio/ff2
+rm -f /test/aiodio/ff3
+rm -f /test/aiodio/junkfile*
+rm -f /test/aiodio/file*
+rm -rf /test/aiodio/junkdir
+
+umount $part1
+
+done
+
+echo "AIO/DIO test complete " date

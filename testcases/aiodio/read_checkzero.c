@@ -89,7 +89,12 @@ int read_eof(char *filename)
 
 int main(int argc, char **argv)
 {
-	char *filename = "file";
+    if (argc < 2) {
+        printf("You must pass a filename to the test \n");
+        exit(1);
+    }
+
+	char *filename = argv[1];
 
 	read_eof(filename);
 

@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
-	char *filename = "file";
+	char *filename = "/test/aiodio/file";
 
 	for (i = 0; i < num_children; i++) {
 		if ((pid[i] = fork()) == 0) {
