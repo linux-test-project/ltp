@@ -44,7 +44,6 @@
 #define _FILE_OFFSET_BITS 64
 #define PROG_VERSION "0.18"
 #define NEW_GETEVENTS
-#define MAX_ERRORS_ALLOWED  250
 
 #include <stdio.h>
 #include <errno.h>
@@ -65,6 +64,7 @@
 
 #define IO_FREE 0
 #define IO_PENDING 1
+#define RUN_FOREVER -1
 
 #ifndef O_DIRECT
 #define O_DIRECT         040000 /* direct disk access hint */
@@ -92,6 +92,7 @@ int o_direct = 0;
 int o_sync = 0;
 int latency_stats = 0;
 int io_iter = 8;
+int iterations = RUN_FOREVER;
 int max_io_submit = 0;
 long rec_len = 64 * 1024;
 int depth = 64;
@@ -313,9 +314,9 @@ static void oper_list_del(struct io_oper *oper, struct io_oper **list)
 static int check_finished_io(struct io_unit *io) {
     int i;
     if (io->res != io->buf_size) {
-        fprintf(stderr, "io err %lu (%s) op %d, size %d num_err %d\n",
+        fprintf(stderr, "io err %lu (%s) op %d, size %d\n",
 		io->res, strerror(-io->res), io->iocb.aio_lio_opcode,
-		io->buf_size, io->io_oper->num_err+1);
+		io->buf_size);
         io->io_oper->last_err = io->res;
         io->io_oper->num_err++;
 	return -1;
@@ -419,7 +420,7 @@ void finish_io(struct thread_info *t, struct io_unit *io, long result) {
 }
 
 int read_some_events(struct thread_info *t) {
-    struct io_unit *event_io = NULL;
+    struct io_unit *event_io;
     struct io_event *event;
     int nr;
     int i; 
@@ -439,14 +440,8 @@ int read_some_events(struct thread_info *t) {
     for (i = 0 ; i < nr ; i++) {
 	event = t->events + i;
 	event_io = (struct io_unit *)((unsigned long)event->obj); 
-    printf("Calling finish_io from %d nr %d\n", __LINE__,nr);
 	finish_io(t, event_io, event->res);
     }
-
-    if(event_io->io_oper->num_err >= MAX_ERRORS_ALLOWED){
-        nr = 0;
-    }
-
     return nr;
 }
 
@@ -457,7 +452,7 @@ int read_some_events(struct thread_info *t) {
 static struct io_unit *find_iou(struct thread_info *t, struct io_oper *oper)
 {
     struct io_unit *event_io;
-    int nr = 0;
+    int nr;
 
 retry:
     if (t->free_ious) {
@@ -469,8 +464,6 @@ retry:
 	}
 	return event_io;
     }
-
-    printf("Calling read_some_events from %d nr %d\n", __LINE__,nr);
     nr = read_some_events(t);
     if (nr > 0)
     	goto retry;
@@ -485,6 +478,10 @@ retry:
 static int io_oper_wait(struct thread_info *t, struct io_oper *oper) {
     struct io_event event;
     struct io_unit *event_io;
+
+    if (oper == NULL) {
+        return 0;
+    }
 
     if (oper->num_pending == 0)
         goto done;
@@ -707,7 +704,6 @@ resubmit:
 	 * retry
 	 */
 	if (ret > 0 || ret == -EAGAIN) {
-        printf("Calling read_some_events from %d \n", __LINE__);
 	    if ((ret = read_some_events(t) > 0)) {
 		goto resubmit;
 	    }
@@ -1040,105 +1036,127 @@ int worker(struct thread_info *t)
     char *this_stage = NULL;
     struct timeval stage_time;
     int status = 0;
+    int iteration = 0;
+    int cnt;
 
     aio_setup(&t->io_ctx, 512);
 
 restart:
+    printf("Starting %s iter:%d \n", __FUNCTION__,iteration);
     if (num_threads > 1) {
+        printf("num_threads %d \n", num_threads);
         pthread_mutex_lock(&stage_mutex);
-	threads_starting++;
-	if (threads_starting == num_threads) {
-	    threads_ending = 0;
-	    gettimeofday(&global_stage_start_time, NULL);
-	    pthread_cond_broadcast(&stage_cond);
-	}
-	while (threads_starting != num_threads)
-	    pthread_cond_wait(&stage_cond, &stage_mutex);
+        threads_starting++;
+        if (threads_starting == num_threads) {
+            threads_ending = 0;
+            gettimeofday(&global_stage_start_time, NULL);
+            pthread_cond_broadcast(&stage_cond);
+        }
+        while (threads_starting != num_threads)
+            pthread_cond_wait(&stage_cond, &stage_mutex);
         pthread_mutex_unlock(&stage_mutex);
     }
     if (t->active_opers) {
+//        printf("active_opers %p line:%d\n", t->active_opers, __LINE__);
         this_stage = stage_name(t->active_opers->rw);
-	gettimeofday(&stage_time, NULL);
-	t->stage_mb_trans = 0;
+        gettimeofday(&stage_time, NULL);
+        t->stage_mb_trans = 0;
     }
-
+    cnt = 0;
     /* first we send everything through aio */
-    while(t->active_opers) {
-	if (stonewall && threads_ending) {
-	    oper = t->active_opers;
-	    oper->stonewalled = 1;
-	    oper_list_del(oper, &t->active_opers);
-	    oper_list_add(oper, &t->finished_opers);
-	} else {
-	    run_active_list(t, io_iter,  max_io_submit);
+//    printf("cnt:%d max_iterations:%d oper:%p\n",cnt, iterations,oper);
+                        
+    while (t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
+        printf("active_opers %p line:%d cnt:%d ", t->active_opers,__LINE__,cnt);
+        if (stonewall && threads_ending) {
+            oper = t->active_opers;     
+            oper->stonewalled = 1;
+            oper_list_del(oper, &t->active_opers);
+            oper_list_add(oper, &t->finished_opers);
+            printf(" if branch\n");
+        } else {
+            run_active_list(t, io_iter,  max_io_submit);
+            printf(" else branch\n");
         }
+        cnt++;
     }
+  
     if (latency_stats)
         print_latency(t);
 
     /* then we wait for all the operations to finish */
     oper = t->finished_opers;
+//    printf("line:%d oper:%p\n", __LINE__, oper);
     do {
-	io_oper_wait(t, oper);
-	oper = oper->next;
-    } while(oper != t->finished_opers);
+        io_oper_wait(t, oper);
+        if (oper != NULL) {
+            oper = oper->next;
+        }
+    } while (oper != t->finished_opers);
+//    printf("finished_opers %p line:%d\n", t->finished_opers,__LINE__);
 
     /* then we do an fsync to get the timing for any future operations
      * right, and check to see if any of these need to get restarted
      */
     oper = t->finished_opers;
-    while(oper) {
-	if (fsync_stages)
+//    printf("oper %p line:%d\n", oper,__LINE__);
+    while (oper) {
+        if (fsync_stages)
             fsync(oper->fd);
-	t->stage_mb_trans += oper_mb_trans(oper);
-	if (restart_oper(oper)) {
-	    oper_list_del(oper, &t->finished_opers);
-	    oper_list_add(oper, &t->active_opers);
-	    oper = t->finished_opers;
-	    continue;
-	}
-	oper = oper->next;
-	if (oper == t->finished_opers)
-	    break;
+        t->stage_mb_trans += oper_mb_trans(oper);
+        if (restart_oper(oper)) {
+            oper_list_del(oper, &t->finished_opers);
+            oper_list_add(oper, &t->active_opers);
+            oper = t->finished_opers;
+            continue;
+        }
+        oper = oper->next;
+        if (oper == t->finished_opers)
+            break;
     } 
 
     if (t->stage_mb_trans && t->num_files > 0) {
+//        printf("num_files %d line:%d\n", t->num_files,__LINE__);
         double seconds = time_since(&stage_time);
-	fprintf(stderr, "thread %d %s totals (%.2f MB/s) %.2f MB in %.2fs\n", 
-	        t - global_thread_info, this_stage, t->stage_mb_trans/seconds, 
-		t->stage_mb_trans, seconds);
+        fprintf(stderr, "thread %d %s totals (%.2f MB/s) %.2f MB in %.2fs\n", 
+                t - global_thread_info, this_stage, t->stage_mb_trans/seconds, 
+                t->stage_mb_trans, seconds);
     }
 
     if (num_threads > 1) {
-	pthread_mutex_lock(&stage_mutex);
-	threads_ending++;
-	if (threads_ending == num_threads) {
-	    threads_starting = 0;
-	    pthread_cond_broadcast(&stage_cond);
-	    global_thread_throughput(t, this_stage);
-	}
-	while(threads_ending != num_threads)
-	    pthread_cond_wait(&stage_cond, &stage_mutex);
-	pthread_mutex_unlock(&stage_mutex);
+//        printf("num_threads %d line:%d\n", num_threads,__LINE__);
+        pthread_mutex_lock(&stage_mutex);
+        threads_ending++;
+        if (threads_ending == num_threads) {
+            threads_starting = 0;
+            pthread_cond_broadcast(&stage_cond);
+            global_thread_throughput(t, this_stage);
+        }
+//        printf("threads_ending %d line:%d\n", threads_ending,__LINE__);
+        while (threads_ending != num_threads)
+            pthread_cond_wait(&stage_cond, &stage_mutex);
+        pthread_mutex_unlock(&stage_mutex);
     }
-    
+
     /* someone got restarted, go back to the beginning */
-    if (t->active_opers) {
+    if (t->active_opers && (cnt < iterations || iterations == RUN_FOREVER)) {
+        iteration++;
         goto restart;
     }
 
     /* finally, free all the ram */
-    while(t->finished_opers) {
-	oper = t->finished_opers;
-	oper_list_del(oper, &t->finished_opers);
-	status = finish_oper(t, oper);
+//    printf("finished_opers %p line:%d\n", t->finished_opers,__LINE__);
+    while (t->finished_opers) {
+        oper = t->finished_opers;
+        oper_list_del(oper, &t->finished_opers);
+        status = finish_oper(t, oper);
     }
 
     if (t->num_global_pending) {
         fprintf(stderr, "global num pending is %d\n", t->num_global_pending);
     }
     io_queue_release(t->io_ctx);
-    
+
     return status;
 }
 
@@ -1149,6 +1167,7 @@ int run_workers(struct thread_info *t, int num_threads)
     int thread_ret;
     int i;
 
+//    printf("%s num_threads %d line:%d\n", __FUNCTION__,num_threads,__LINE__);
     for(i = 0 ; i < num_threads ; i++) {
         ret = pthread_create(&t[i].tid, NULL, (start_routine)worker, t + i);
 	if (ret) {
@@ -1205,6 +1224,7 @@ void print_usage(void) {
     printf("\t-r record size in KB used for each io, default 64KB\n");
     printf("\t-d number of pending aio requests for each file, default 64\n");
     printf("\t-i number of ios per file sent before switching\n\t   to the next file, default 8\n");
+    printf("\t-I total number of ayncs IOs the program will run, default is run until Cntl-C\n");
     printf("\t-O Use O_DIRECT (not available in 2.4 kernels),\n");
     printf("\t-S Use O_SYNC for writes\n");
     printf("\t-o add an operation to the list: write=0, read=1,\n"); 
@@ -1241,7 +1261,7 @@ int main(int ac, char **av)
     page_size_mask = getpagesize() - 1;
 
     while(1) {
-	c = getopt(ac, av, "a:b:c:C:m:s:r:d:i:o:t:lnhOSxv");
+	c = getopt(ac, av, "a:b:c:C:m:s:r:d:i:I:o:t:lnhOSxv");
 	if  (c < 0)
 	    break;
 
@@ -1270,6 +1290,9 @@ int main(int ac, char **av)
 	case 'i':
 	    io_iter = atoi(optarg);
 	    break;
+        case 'I':
+          iterations = atoi(optarg);
+        break;
 	case 'n':
 	    fsync_stages = 0;
 	    break;
@@ -1410,12 +1433,17 @@ int main(int ac, char **av)
 	if (setup_ious(&t[i], t[i].num_files, depth, rec_len, max_io_submit))
 		exit(1);
     }
-    if (num_threads > 1)
+    if (num_threads > 1){
+        printf("Running multi thread version num_threads:%d\n", num_threads);
         run_workers(t, num_threads);
-    else
-	status = worker(t);
+    }
+    else {
+        printf("Running single thread version \n");
+        status = worker(t);
+    }
 
     if (status) {
+    printf("non zero return %d \n", status);
 	exit(1);
     }
     return status;
