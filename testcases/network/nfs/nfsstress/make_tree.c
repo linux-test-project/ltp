@@ -104,6 +104,10 @@
 /*				- fixed usage message default MAXT is 8 not 1 */
 /*				- fixed make to compile the files silently    */
 /*									      */
+/*		Nov - 19 - 2001 Modified.				      */
+/*				- changed th_status in function main() from   */
+/*				  dynamic variable to static array.           */
+/*									      */
 /* File:        make_tree.c                                                   */
 /*                                                                            */
 /* Description:	This program is designed stress the NFS implimentation.       */
@@ -725,7 +729,7 @@ main(int	argc,		/* number of input parameters		      */
     int		num_dirs = MAXD;/* number of subdirectories to create         */
     int		num_files = MAXF;/* number of files in each subdirectory      */
     int		thrd_ndx;	/* index into the array of thread ids         */
-    int		*th_status;	/* exit status of LWP's	                      */
+    int		th_status[1];	/* exit status of LWP's	                      */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[3];   /* arguments to the thread function           */
     extern char* optargs;	/* pointer to arguments for each option flag  */
@@ -790,7 +794,6 @@ main(int	argc,		/* number of input parameters		      */
     }
     
     sync();
-    th_status = malloc(sizeof(int *));
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
@@ -802,7 +805,7 @@ main(int	argc,		/* number of input parameters		      */
         else
         {
             dprt("WE ARE HERE %d\n", __LINE__);
-            if ((int)*th_status == -1)
+            if (*th_status == -1)
             {
                 fprintf(stderr,
                         "thread [%d] - process exited with errors\n",
