@@ -26,6 +26,7 @@
 #
 # History:      Jan 01 2003 - Created - Manoj Iyer.
 #                           - Added - Test #2.
+#               Jan 03 2003 - Added - Test #3.
 #
 #! /bin/sh
 
@@ -89,22 +90,75 @@ fi
 
 export TCID=eject02
 export TST_COUNT=2
+RC=0
 
-$LTPBIN/tst_resm TINFO "Test #1: eject commad with no options"
-$LTPBIN/tst_resm TINFO "Test #1: will eject the default cdrom device."
+$LTPBIN/tst_resm TINFO "Test #2: eject commad with no options"
+$LTPBIN/tst_resm TINFO "Test #2: will eject the default cdrom device."
 
 eject &>$LTPTMP/tst_eject.res || RC=$?
 if [ $RC -eq 0 ]
 then
-    $LTPBIN/tst_resm TPASS  "Test #1: eject succeded"
+    $LTPBIN/tst_resm TPASS  "Test #2: eject succeded"
 else
     echo "Error code returned by eject: $RC" >> $LTPTMP/tst_eject.res \
         2&/dev/null
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res \
-        "Test #1: eject failed. Reason:"
+        "Test #2: eject failed. Reason:"
     TFAILCNT=$((TFAILCNT+1))
 fi
 
+# Test #3
+# Test the eject command will eject the default cdrom device and also unmount
+# device if it is currently mounted.
+
+export TCID=eject03
+export TST_COUNT=3
+
+$LTPBIN/tst_resm TINFO "Test #3: eject command will eject the default cdrom"
+$LTPBIN/tst_resm TINFO "Test #3: device and also unmount the device if it"
+$LTPBIN/tst_resm TINFO "Test #3: is currently mounted."
+
+cp /etc/fstab $LTPTMP/fstab.bak &>/dev/null
+mkdir $LTPTMP/cdrom &>/dev/null
+
+echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" \
+    >> /etc/fstab 2>/dev/null
+
+mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+if [ $RC -eq 0 ]
+then
+    echo ".Failed to mount $LTPTMP/cdrom." >> $LTPTMP/tst_eject.out 2>/dev/null
+    $LTPBIN/tst_brk TBROK tst_eject.out "Test #3: mount failed. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
+else
+    eject &>$LTPTMP/tst_eject.out || RC=$?
+    if [ $RC -eq 0 ]
+    then 
+        mount &>$LTPTMP/tst_eject.res
+        grep "$LTPTMP/cdrom" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out \
+            || RC=$?
+        if [ $RC -ne 0 ]
+        then
+            $LTPBIN/tst_resm TPASS  "Test #3: eject unmounted device"
+        else
+            $LTPBIN/tst_resm TFAIL \
+                "Test #3: eject failed to unmount /dev/cdrom."
+            TFAILCNT=$((TFAILCNT+1))
+        fi
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out \
+           "Test #3: eject failed. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
+fi
+ 
+if [ -f $LTPTMP/fstab.bak ]
+then
+    cp $LTPTMP/fstab.bak /etc/fstab &>/dev/null
+else
+    $LTPBIN/tst_res TINFO "Test #3: Could not restore /etc/fstab coz"
+    $LTPBIN/tst_res TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
+fi
 
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
