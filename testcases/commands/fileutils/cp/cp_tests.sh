@@ -253,6 +253,6 @@ then
 fi
 
 
-#rm -fr $LTPTMP/tst_cp.*
+rm -fr $LTPTMP/tst_cp.*
 
 exit $((TFAILCNT))
