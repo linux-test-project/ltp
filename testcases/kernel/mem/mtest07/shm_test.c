@@ -186,7 +186,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
     char         *read_from_mem;/* ptr to touch each (4096) block in memory   */
     char         *write_to_mem; /* ptr to touch each (4096) block in memory   */
     char         *shmat_addr;   /* address of the attached memory             */
-    char	 buff[0];       /* remporary buffer                           */
+    char	 buff;          /* temporary buffer                           */
 
 
     reader = (int)locargs[3];
@@ -246,7 +246,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 	    read_from_mem = shmat_addr;
 	    while (index < (int)locargs[2])
             {
-	        buff[0] = *read_from_mem;
+	        buff = *read_from_mem;
 		index += sizeof(char *);
 		read_from_mem++;
 		sched_yield();
