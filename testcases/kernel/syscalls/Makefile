@@ -31,8 +31,8 @@ LOADLIBES+=
 SUBDIR= \
 	accept access alarm asyncio bind brk \
 	chdir chmod chown chroot clone close connect \
-	creat create_module dup dup2 execl execle execlp \
-	execv execve execvp exit fchdir fchmod \
+	creat create_module dup dup2 delete_module execl\
+	execle execlp execv execve execvp exit fchdir fchmod \
 	fchown fcntl fork fpathconf fstat fstatfs \
 	fsync ftruncate getcwd getdents getdomainname getegid geteuid \
 	getgid getgroups gethostid gethostname getitimer getpeername \
