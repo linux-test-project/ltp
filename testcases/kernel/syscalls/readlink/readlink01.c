@@ -180,7 +180,9 @@ setup()
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         ltpuser = getpwnam(nobody_uid);
+	 if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");
+	 }
          if (seteuid(ltpuser->pw_uid) == -1) {
                 tst_resm(TINFO, "seteuid failed to "
                          "to set the effective uid to %d",

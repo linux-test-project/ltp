@@ -36,7 +36,8 @@
  *
  * 	Verify that munlock(2) returns -1 and sets errno to
  *
- * 	1) ENOMEM - If process exceed maximum  number of locked pages.
+ * 	1) ENOMEM - Some of the specified address range does not correspond to
+ *			mapped pages in the address space of the process.
  * 
  * 	Setup:
  *	  Setup signal handling.
@@ -87,12 +88,12 @@ int exp_enos[] = { ENOMEM, 0 };
 void *addr1;
 
 struct test_case_t {
-	void **addr;
+	void *addr;
 	int len;
 	int error;
 	char *edesc;
 } TC[] = {
-	{&addr1-100, LEN, ENOMEM, "address range out of address space" },
+	{NULL, 0, ENOMEM, "address range out of address space" },
 };
 
 int main(int ac, char **av)
@@ -117,7 +118,7 @@ int main(int ac, char **av)
 #ifdef __ia64__
 	                TC[0].len = 8 * getpagesize();
 #endif
-			TEST(munlock(*(TC[i].addr), TC[i].len));
+			TEST(munlock(TC[i].addr, TC[i].len));
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
@@ -155,23 +156,34 @@ int main(int ac, char **av)
 
 void setup()
 {
+
+	char *address;
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	addr1 = (char *) malloc(LEN);
-	if (addr1 == NULL)
-		tst_brkm(TFAIL, cleanup, "malloc failed");
-	TEST(mlock(addr1, LEN));
+	TC[0].len = 8 * getpagesize();
+	address = mmap(0, TC[0].len, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (address == MAP_FAILED)
+	  tst_brkm(TFAIL, cleanup, "mmap_failed");
+	memset(address, 0x20, TC[0].len);
+	TEST(mlock(address, TC[0].len));
 
 	/* check return code */
 	if (TEST_RETURN == -1) {
 		tst_brkm(TFAIL, cleanup, "mlock(%p, %d) Failed with return=%d,"
-			"errno=%d : %s", addr1, LEN, TEST_RETURN,
+			"errno=%d : %s", address, TC[0].len, TEST_RETURN,
 			TEST_ERRNO, strerror(TEST_ERRNO));
 	}
+	TC[0].addr = address;
+	/* 
+	 * unmap part of the area, to create the condition for ENOMEM
+	*/
+	address += 2 * getpagesize();
+	munmap(address, 4 * getpagesize());
 
 	TEST_PAUSE;
 
