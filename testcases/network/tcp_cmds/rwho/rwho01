@@ -94,26 +94,33 @@ do_setup()
    exists "rwho rsh killall grep awk cut"
 
    ps -ef | grep rwhod | grep -v grep 
-   if [ $? != 0 ]; then
+   if [ $? -ne 0 ]; then
       tst_resm TINFO "Starting rwhod on $LHOST"
       /usr/sbin/rwhod  
-      [ $? = 0 ] || end_testcase "Unable to start rwhod on $LHOST"
+      [ $? -eq 0 ] || end_testcase "Unable to start rwhod on $LHOST"
       PID=1
       sleep $SLEEPTIME
    fi
 
    rsh -n -l root $RHOST ps -ef | grep rwhod
-   if [ $? != 0 ]; then
+   if [ $? -ne 0 ]; then
       tst_resm TINFO "Starting rwhod on $RHOST"
       rsh -n -l root $RHOST /usr/sbin/rwhod
-      if [ $? != 0 ]; then
+      if [ $? -ne 0 ]; then
 	  end_testcase "Unable to start rwhod on $RHOST"
       fi
-      RHOST_PID=1
+      RHOST_PID=$(rsh -n -l root $RHOST ps -ef | grep rwhod | grep -v grep | awk '{print $2 ; exit}')
+      if [ -z "$RHOST_PID" ]; then
+	  RHOST_PID=0
+	  end_testcase "Unable to start rwhod on $RHOST"
+      fi
       sleep $SLEEPTIME
    fi
 
-   RHOSTNAME=`rsh -n -l root $RHOST hostname`| cut -f1 -d.
+   RHOSTNAME=`rsh -n -l root $RHOST hostname | cut -f1 -d.`
+   if [ -z "$RHOSTNAME" ]; then
+       end_testcase "Unable to determine RHOSTNAME"
+   fi
 
    mkdir -p $TCtmp
 }
@@ -133,15 +140,15 @@ do_test()
    do
       rwho -a > $OUTFILE
       HOST=`awk '{print $2}' $OUTFILE|grep $LHOST|cut -f1 -d:|sort -u`
-      [ $HOST = $LHOST ] || end_testcase "$LHOST is not in rwho outfile"
+      [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in rwho outfile"
       HOST=`awk '{print $2}' $OUTFILE|grep $RHOSTNAME|cut -f1 -d:|sort -u`
-      [ $HOST = $RHOSTNAME ] || end_testcase "$RHOSTNAME is not in rwho outfile"
+      [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in rwho outfile"
 
       ruptime -a > $OUTFILE
       HOST=`awk '{print $1}' $OUTFILE|grep $LHOST|sort -u`
-      [ $HOST = $LHOST ] || end_testcase "$LHOST is not in ruptime outfile"
+      [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in ruptime outfile"
       HOST=`awk '{print $1}' $OUTFILE|grep $RHOSTNAME|sort -u`
-      [ $HOST = $RHOSTNAME ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
+      [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
       tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
       COUNT=$(( $COUNT + 1 ))
@@ -157,12 +164,12 @@ do_test()
 do_cleanup()
 {
  rm -fr $TCtmp
- if [ $PID != 0 ]; then
+ if [ $PID -ne 0 ]; then
     tst_resm TINFO "Stopping rwhod on $LHOST"
     killall rwhod 
  fi
 
- if [ $RHOST_PID != 0 ]; then
+ if [ $RHOST_PID -ne 0 ]; then
     tst_resm TINFO "Stopping rwhod on $RHOST"
     rsh -n -l root $RHOST "killall rwhod"
  fi
