@@ -3,13 +3,11 @@ LDLIBS := -L ../../../../lib -lpthread -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=`ls | grep 01 | grep -v '\.'`
 
 all: $(TARGETS)
 
 install:
-	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../bin/$$i ; done ;
-	@/bin/sh ./chmod.sh $(TEST)
+	set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:
 	rm -f $(TARGETS)
