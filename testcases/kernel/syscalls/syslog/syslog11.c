@@ -105,8 +105,10 @@ static struct test_case_t  tdat[] = {
 	{ 3, &buf, 0, NULL, NULL, "type 3/Read ring buffer" },
 	{ 3, &buf, 0, setup1, cleanup1, "type 3/Read ring buffer for non-root "
 		"user" },
-	{ 4, &buf, 0, NULL, NULL, "type 4/Read and clear ring buffer" },
-	{ 5, &buf, 0, NULL, NULL, "type 5/Clear ring buffer" },
+  /* Next two lines will clear dmesg. Uncomment if that is okay. -Robbie Williamson */
+  /*	{ 4, &buf, 0, NULL, NULL, "type 4/Read and clear ring buffer" },            */
+  /*	{ 5, &buf, 0, NULL, NULL, "type 5/Clear ring buffer" },                     */
+
 	{ 8, NULL, 1, NULL, NULL, "type 8/Set log level to 1" },
 	{ 8, NULL, 7, NULL, NULL, "type 8/Set log level to 7(default)" },
 	{ 6, NULL, 0, NULL, NULL, "type 6/Disable printk's to console" },
