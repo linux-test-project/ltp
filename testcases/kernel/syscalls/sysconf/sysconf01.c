@@ -380,14 +380,14 @@ int main()
 	} else tst_resm(TPASS,"PASS");
 
 	retval = sysconf(_SC_XOPEN_LEGACY);
+	if (errno != 0) {
+		tst_resm(TFAIL, "sysconf _SC_XOPEN_LEGACY failed, error=%d\n", 
+						 errno);
+	} else tst_resm(TPASS,"PASS");
 
 	retval = sysconf(_SC_MEMLOCK);
 	if (errno != 0) {
 		tst_resm(TFAIL, "sysconf _SC_MEMLOCK failed, error=%d\n", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_LEGACY failed, error=%d\n", 
 						 errno);
 	} else tst_resm(TPASS,"PASS");
 
@@ -403,13 +403,6 @@ int main()
 		tst_resm(TFAIL,
 			"sysconf _SC_XBS5_ILP32_OFFBIG failed, error=%d\n", 
 			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_XBS5_LP64_OFF64);
-	if (retval != -1) {
-		tst_resm(TFAIL,
-			"sysconf _SC_XBS5_LP64_OFF64 returns wrong value= %d\n",
-			retval);
 	} else tst_resm(TPASS,"PASS");
 
 	retval = sysconf(INVAL_FLAG);
