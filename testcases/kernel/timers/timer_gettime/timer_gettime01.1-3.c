@@ -24,7 +24,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "posixtest.h"
-#include "timer_gettime01.h"
 
 
 #define TIMERNSEC 80000000

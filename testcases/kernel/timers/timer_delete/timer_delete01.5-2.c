@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
-#include "timer_delete01.h"
 
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 3
