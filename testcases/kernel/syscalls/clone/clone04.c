@@ -129,7 +129,7 @@ main(int ac, char **av)
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
-#if defined(__hppa__) || defined(__powerpc64__)
+#if defined(__hppa__)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
 						SIGCHLD, NULL));
 #elif defined(__ia64__)

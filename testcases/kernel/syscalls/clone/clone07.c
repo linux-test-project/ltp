@@ -123,7 +123,7 @@ main(int ac, char **av)
 		/* 
 		 * Call clone(2)
 		 */
-#if defined(__hppa__) || defined(__powerpc64__)
+#if defined(__hppa__)
 		child_pid=clone(do_child, child_stack, SIGCHLD, NULL);
 #elif defined(__ia64__)
 		child_pid=clone2(do_child, child_stack,

@@ -188,7 +188,7 @@ main(int ac, char **av)
 			}
 			
 			/* Test the system call */
-#if defined(__hppa__) || defined(__powerpc64__)
+#if defined(__hppa__)
 			TEST(clone(child_fn, child_stack,
 				   test_cases[i].flags, NULL));
 #elif defined(__ia64__)

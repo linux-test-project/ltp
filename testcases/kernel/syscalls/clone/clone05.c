@@ -115,7 +115,7 @@ main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-#if defined(__hppa__) || defined(__powerpc64__)
+#if defined(__hppa__)
 		TEST(clone(child_fn, child_stack, FLAG, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(child_fn, child_stack,
