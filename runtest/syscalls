@@ -9,7 +9,7 @@ access05 access05
 alarm01 alarm01
 alarm02 alarm02
 alarm03 alarm03
-alarm04 cp -f ${LTPROOT}/testcases/bin/sig_rev ${TMP};alarm04
+alarm04 cp -f $LTPROOT/testcases/bin/sig_rev $TMP;alarm04
 alarm05 alarm05
 alarm06 alarm06
 alarm07 alarm07
@@ -31,14 +31,14 @@ chmod01A symlink01 -T chmod01
 chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
-chmod05 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};chmod05 
-chmod06 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};chmod06
+chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chmod05 
+chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chmod06
 chmod07 chmod07
 
 chown01 chown01
 chown02 chown02
-chown03 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};chown03
-chown04 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};chown04
+chown03 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chown03
+chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chown04
 chown05 chown05
 
 chroot01 chroot01
@@ -57,7 +57,7 @@ creat03 creat03
 creat04 creat04
 creat05 creat05
 creat06 creat06
-creat07 creat07 -F ${LTPROOT}/testcases/bin/test1
+creat07 creat07 -F $LTPROOT/testcases/bin/test1
 creat09 creat09
 
 dup01 dup01
@@ -77,11 +77,11 @@ execlp01 execlp01
 
 execv01 execv01
 execve01 execve01
-execve02 execve02 -F ${LTPROOT}/testcases/bin/test3
+execve02 execve02 -F $LTPROOT/testcases/bin/test3
 execve03 execve03
-execve04 cp -f ${LTPROOT}/testcases/bin/test3 ${TMP}; execve04 -F test3
-execve05 execve05 -F ${LTPROOT}/testcases/bin/test3
-execve06 execve06 20 ${LTPROOT}/testcases/bin/execve06 ${LTPROOT}/testcases/bin/execve06 4
+execve04 cp -f $LTPROOT/testcases/bin/test3 $TMP; execve04 -F test3
+execve05 execve05 -F $LTPROOT/testcases/bin/test3
+execve06 execve06 20 $LTPROOT/testcases/bin/execve06 $LTPROOT/testcases/bin/execve06 4
 execvp01 execvp01
 
 exit01 exit01
@@ -95,14 +95,14 @@ fchmod01 fchmod01
 fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
-fchmod05 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};fchmod05 
-fchmod06 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};fchmod06
+fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchmod05 
+fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchmod06
 fchmod07 fchmod07
 
 fchown01 fchown01
 fchown02 fchown02
-fchown03 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown03
-fchown04 cp -p ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown04
+fchown03 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown03
+fchown04 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown04
 fchown05 fchown05
 
 fcntl01 fcntl01
@@ -242,7 +242,7 @@ kill09 kill09
 kill10 kill10
 
 lchown01 lchown01
-lchown02 cp -p ${LTPROOT}/testcases/bin/create_link ${TMP}; lchown02
+lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
 
 link01 symlink01 -T link01
 link02 link02
@@ -411,7 +411,7 @@ readlink01A symlink01 -T readlink01
 readlink01 readlink01
 readlink02 readlink02
 readlink03 readlink03
-readlink04 cp -f ${LTPROOT}/testcases/bin/creat_slink ${TMP}; readlink04
+readlink04 cp -f $LTPROOT/testcases/bin/creat_slink $TMP; readlink04
 
 readv01 readv01
 readv02 readv02
