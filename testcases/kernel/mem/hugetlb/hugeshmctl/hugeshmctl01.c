@@ -267,10 +267,10 @@ stat_setup()
 
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1) {
-				tst_resm(TINFO, "shmdt() failed - %d", errno);
+				tst_resm(TBROK, "shmdt() failed - %d", errno);
 			}
 
-			tst_exit();
+			cleanup();
 
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
