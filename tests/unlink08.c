@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: unlink08.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: unlink08.c,v 1.2 2001/02/19 15:43:13 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -270,7 +270,7 @@ setup()
     }
 
     for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
-	if ( postest )
+	if ( Test_cases[ind].exp_errno == EACCES && postest )
 	    Test_cases[ind].exp_ret=0;	/* set as a pos test */
 	Test_cases[ind].setupfunc(0);
     }
