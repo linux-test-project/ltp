@@ -34,10 +34,11 @@
  *	Added timer options: William Jay Huie, IBM
  *
  */
-/* $Id: pan.c,v 1.11 2002/05/28 16:26:16 robbiew Exp $ */
+/* $Id: pan.c,v 1.12 2002/09/04 13:15:55 plars Exp $ */
 
 #include <errno.h>
 #include <string.h>
+#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/times.h>
 #include <sys/wait.h>
