@@ -1,4 +1,6 @@
-CFLAGS+= -Wall -O -g -I../../../../include
+CFLAGS+= -Wall -O -g -I../../../../include 
+
+
 
 LIBC_VER=$(shell ldd --version | grep libc |  cut -d " " -f4)
 CUR_LIBC_VER:=$(LIBC_VER)
@@ -6,10 +8,10 @@ EPOLL_INC:=2.3.2
 VER_LEVEL=$(shell ./CheckVer $(EPOLL_INC) $(CUR_LIBC_VER) | grep Return | cut -d " " -f2)
 BASE_VER=1
 
-ifneq (${BASE_VER},${VER_LEVEL})
-LDLIBS+= -L /lib -L../../../../lib -lepoll -lltp
+ifeq (${BASE_VER},${VER_LEVEL})
+LDLIBS+= -L /lib -L../../../../lib -lltp -lepoll
 else
-LDLIBS+= -L../../../../lib -lltp
+LDLIBS+= -L../../../../lib -lltp 
 endif
 
 
