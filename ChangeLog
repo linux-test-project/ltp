@@ -1,3 +1,54 @@
+LTP-20030710
+
+- Added LIB_DIR variable to top-level Makefile	  ( Robbie Williamson )
+  to allow specification of where to install
+  libproc.so for the top-LTP tool.
+- Updated Open POSIX Test Suite to 1.1.0.         ( Robbie Williamson )
+- Added JFS tests to the LVM test script.	  ( Marty Ridgeway )
+- Removed tests from the LTP system stress 	  ( Robbie Williamson )
+  script that had problems running concurrently. 
+- Updated ar01 to avoid bug if building rpm.	  ( Manoj Iyer )
+- Added ACPI testcases.				  ( Marty Ridgeway )
+- Added testcases to execute inline functions in  ( Marty Ridgeway )
+  the kernel tree.
+- Added testcases to for the NLS filesystem.	  ( Marty Ridgeway )
+- Added PCI testcases.				  ( Marty Ridgeway )
+- Added USB device testcases.			  ( Marty Ridgeway )
+- Applied code cleanup patches to stream tests.   ( Randy Hron )
+- Ported sem02.c to use some of the LTP test      ( Paul Larson )
+  harness API.
+- Updated mtest01 to fix hang issues.		  ( Robbie Williamson
+						    Paul Larson )
+- TCID fixes to various syscall tests.		  ( Paul Larson )
+- Cleanup of various syscall test outputs.	  ( Paul Larson )
+- IA64 fix to mlock02, mprotect01, munlock02.	  ( Jacky Malcles )
+- Applied uclibc patch for memory tests.	  ( David McKay )
+- Increased the size of memory to attempt to	  ( Robbie Williamson )
+  munlock for munlock02 to ensure correct
+  test execution.
+- Updated readdir02 to catch SIGSEGV and fixed    ( Robbie Williamson
+  small bug in test.				    Paul Larson )
+- Updated recvmsg01 and sendmsg01 to handle 2.5   ( Robbie Williamson )
+  64bit architecture specifics.
+- Updates to syslog01-10 to support Debian	  ( Robbie Williamson  
+  systems and improved their stability.  	    Paul Larson )
+- Applied IA64 specific patch to syslog11/12.	  ( Robbie Williamson )
+- Removed an unneccessary free() call in ustat01  ( Doug Ramier )
+- Corrected the "install:" section of the mc_opts ( Robbie Williamson )
+  network test.
+- Added default option for RHOST for nfs03 and    ( Robbie Williamson )
+  nfsstress. 
+- Modified rwho01, sendfile01, tcpdump01 to use   ( Manoj Iyer )
+  test APIs and added checks for required 
+  commands.
+- Added the Open HPI testsuite.			  ( Kevin Gao
+    http://openhpi.sourceforge.net/		    Robbie Williamson )
+- Added new filesystem testscripts.		  ( Marty Ridgeway )
+- Added 'mkrootfs' utility to tools section.	  ( Manoj Iyer )
+
+ 
+
+
 LTP-20030606
 
 - Updated ltpmenu to redirect `ver_linux` output  ( Robbie Williamson )
