@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 	
 	struct stat statbuf;
 	int mskval = 0000;
+	int failcnt = 0;
 	int fildes, i;
 	unsigned low9mode;
 
@@ -101,21 +102,20 @@ int main(int argc, char **argv)
 				} else {
 					low9mode = statbuf.st_mode & 0777;
 					if (low9mode != (~mskval & 0777)) {
-						tst_brkm(TBROK, cleanup,
+						tst_resm(TFAIL, 
 							 "got %0 expected %o"
 							 "mask didnot take",
 							 low9mode,
 							 (~mskval & 0777));
 						/*NOTREACHED*/
-					} else {
-						tst_resm(TPASS, "Test "
-							"condition: %d, umask: "
-							"0%o", i, mskval);
 					}
 				}
 			}
 			close(fildes);
 		}
+		if (!failcnt)
+			tst_resm(TPASS, "umask correctly returns the "
+					"previous value for all masks");
 	}
 	cleanup();
 	/*NOTREACHED*/
