@@ -744,7 +744,9 @@ sigemptyset01 cd $LTPROOT/testcases/bin;sigemptyset01
 
 sigfillset01 cd $LTPROOT/testcases/bin;sigfillset01
 
+sighold01 sighold01
 sighold02 sighold02
+sighold03 sighold03
 
 sigismember01 cd $LTPROOT/testcases/bin;sigismember01
 sigismember02 cd $LTPROOT/testcases/bin;sigismember02
