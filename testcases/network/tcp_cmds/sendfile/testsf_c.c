@@ -23,7 +23,7 @@ char *argv[];
   int i;
   int nbyte;
   char *clnt_fname;
-  char rbuf[81];
+  char rbuf[PATH_MAX];
   int flen, nlen;
   int port;
 

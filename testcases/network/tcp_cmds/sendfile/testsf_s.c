@@ -43,10 +43,10 @@ char *argv[];
   int i, clen, pid;
   int flags, nonblocking;
   int nbytes, flen,count;
-  char rbuf[81];
+  char rbuf[PATH_MAX];
   int chunks=0;
   off_t *offset; 
-  char nbuf[81];
+  char nbuf[PATH_MAX];
   int port;
  
   /* open socket */
