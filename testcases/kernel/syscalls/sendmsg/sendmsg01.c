@@ -41,9 +41,10 @@
  *
  */
 
-/* The #ifdef code below is for 2.5 64-bit kernels */
-#ifdef MSG_CMSG_COMPAT
-#undef MSG_CMSG_COMPAT
+/* The #ifndef code below is for 2.5 64-bit kernels, where     */
+/* the MSG_CMSG_COMPAT flag must be 0 in order for the syscall */
+/* and this test to function correctly.                        */
+#ifndef MSG_CMSG_COMPAT
 #define MSG_CMSG_COMPAT 0
 #endif
 /***************************************************/
