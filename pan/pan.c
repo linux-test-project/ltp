@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.4 2000/10/12 16:39:26 nstraz Exp $ */
+/* $Id: pan.c,v 1.5 2001/03/08 19:13:21 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -39,19 +39,18 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <time.h>
-#include <math.h>		/* log10() for subst_pcnt_f */
 #include <stdlib.h>
 #include <limits.h>
 
 #include "splitstr.h"
 #include "zoolib.h"
 
+/* One entry in the command line collection.  */
 struct coll_entry
 {
-    char *name;
-    char **argv;
-    int argc;
-    char *pcnt_f;
+    char *name;		/* tag name */
+    char *cmdline;	/* command line */
+    char *pcnt_f;	/* location of %f in the command line args, flag */
     struct coll_entry *next;
 };
 
@@ -86,7 +85,7 @@ static int check_pids(struct tag_pgrp *running, int *num_active,
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
-static char **subst_pcnt_f(struct coll_entry *colle);
+static char *subst_pcnt_f(struct coll_entry *colle);
 static void mark_orphan(struct orphan_pgrp *orphans, pid_t cpid);
 static void orphans_running(struct orphan_pgrp *orphans);
 static void check_orphans(struct orphan_pgrp *orphans, int sig);
@@ -101,7 +100,6 @@ static char *panname = NULL;
 static char *test_out_dir = NULL;
 FILE *zoofile;
 static char *reporttype = NULL;
-static char *errmsg;
 
 /* Debug Bits */
 int Debug = 0;
@@ -198,7 +196,7 @@ main(int argc, char **argv)
 	exit(1);
     }
     if (zooname == NULL) {
-	zooname = zoo_active();
+	zooname = zoo_getname();
 	if (zooname == NULL) {
 	    fprintf(stderr,
 		    "pan(%s): Must supply -a or set ZOO env variable\n",
@@ -315,13 +313,12 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((zoofile = open_file(zooname, "r+", &errmsg)) == NULL) {
-	fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+    if ((zoofile = zoo_open(zooname)) == NULL) {
+	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	exit(1);
     }
-    if (write_active_args(zoofile, getpid(), panname, argc, argv, &errmsg) ==
-	-1) {
-	fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+    if (zoo_mark_args(zoofile, getpid(), panname, argc, argv)) {
+	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	exit(1);
     }
 
@@ -330,23 +327,21 @@ main(int argc, char **argv)
      */
     {
 	char *av[2], bigarg[82];
-	int t;
 
-	t = 1;
 	memset(bigarg, '.', 81);
 	bigarg[81] = '\0';
 	av[0] = bigarg;
 	av[1] = NULL;
 
 	for (c = 0; c < keep_active; c++) {
-	    if (write_active_args(zoofile, t, panname, 1, av, &errmsg) == -1) {
-		fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+	    if (zoo_mark_cmdline(zoofile, c, panname, "")) {
+		fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 		exit(1);
 	    }
 	}
 	for (c = 0; c < keep_active; c++) {
-	    if (clear_active(zoofile, t, &errmsg) != 1) {
-		fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+	    if (zoo_clear(zoofile, c)) {
+		fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 		exit(1);
 	    }
 	}
@@ -472,8 +467,8 @@ main(int argc, char **argv)
     }
 
     signal(SIGINT, SIG_DFL);
-    if (clear_active(zoofile, getpid(), &errmsg) != 1) {
-	fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+    if (zoo_clear(zoofile, getpid())) {
+	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	++exit_stat;
     }
     fclose(zoofile);
@@ -630,18 +625,16 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 		    ret++;
 
 		running[i].pgrp = 0;
-		if (clear_active(zoofile, cpid, &errmsg) == -1) {
-		    fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+		if (zoo_clear(zoofile, cpid)) {
+		    fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 		    exit(1);
 		}
 
 		/* Check for orphaned pgrps */
 		if ((kill(-cpid, 0) == 0) || (errno == EPERM)) {
-		    if (write_active_args(zoofile, cpid, "panorphan",
-					  running[i].cmd->argc,
-					  running[i].cmd->argv,
-					  &errmsg) == -1) {
-			fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+		    if (zoo_mark_cmdline(zoofile, cpid, "panorphan",
+					  running[i].cmd->cmdline)) {
+			fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 			exit(1);
 		    }
 		    mark_orphan(orphans, cpid);
@@ -663,9 +656,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
     int cpid;
     int c_stdout;		/* child's stdout, stderr */
     int capturing = 0;		/* output is going to a file instead of stdout */
-    char **eargv;
+    char *c_cmdline;
     static long cmdno = 0;
-    int i;
     int errpipe[2];		/* way to communicate to parent that the tag  */
     char errbuf[1024];		/* didn't actually start */
     int errlen;
@@ -691,9 +683,9 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
      * static counter, that's why we do it here instead of after we fork.
      */
     if (colle->pcnt_f) {
-	eargv = subst_pcnt_f(colle);
+	c_cmdline = subst_pcnt_f(colle);
     } else {
-	eargv = colle->argv;
+	c_cmdline = colle->cmdline;
     }
     
     if (pipe(errpipe) < 0) {
@@ -749,11 +741,28 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 		exit(2);
 	    }
 	}
-	/* execute command */
-	execvp(eargv[0], eargv);
-	errlen = sprintf(errbuf,
-		"pan(%s): execvp of '%s' (tag %s) failed.  errno:%d  %s",
-		panname, eargv[0], colle->name, errno, strerror(errno));
+	/* If there are any shell-type characters in the cmdline
+	 * such as '>', '<', '$', '|', etc, then we exec a shell and
+	 * run the cmd under a shell.
+	 *
+	 * Otherwise, break the cmdline at white space and exec the
+	 * cmd directly.
+	 */
+	if (strpbrk(c_cmdline, "\"';|<>$\\")) {
+	    execlp("sh", "sh", "-c", c_cmdline, 0);
+	    errlen = sprintf(errbuf, 
+		    "pan(%s): execlp of '%s' (tag %s) failed.  errno:%d %s",
+		    panname, c_cmdline, colle->name, errno, strerror(errno));
+	} else {
+	    char **arg_v;
+
+	    arg_v = (char **)splitstr(c_cmdline, NULL, NULL);
+	    
+	    execvp(arg_v[0], arg_v);
+    	    errlen = sprintf(errbuf,
+		    "pan(%s): execvp of '%s' (tag %s) failed.  errno:%d  %s",
+		    panname, arg_v[0], colle->name, errno, strerror(errno));
+	}
 	write(errpipe[1], &errlen, sizeof(errlen));
 	write(errpipe[1], errbuf, errlen);
 	exit(errno);
@@ -761,15 +770,11 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 
     /* parent */
 
-    /* subst_pcnt_f() allocates dynamically any arguments with %f in it.
-     * free the mallocs now to prevent memory leak
+    /* subst_pcnt_f() allocates the command line dynamically
+     * free the malloc to prevent a memory leak
      */
-    if (colle->pcnt_f) {
-	for (i = 0; i < colle->argc; ++i)
-	    if (strstr(colle->argv[i], "%f"))
-		free(eargv[i]);
-	free(eargv);
-    }
+    if (colle->pcnt_f) free(c_cmdline); 
+
     close(errpipe[1]);
     time(&active->stime);
     active->cmd = colle;
@@ -819,9 +824,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
     active->pgrp = cpid;
     active->stopping = 0;
 
-    if (write_active_args
-	(zoofile, cpid, colle->name, colle->argc, colle->argv, &errmsg) == -1) {
-	fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+    if (zoo_mark_cmdline(zoofile, cpid, colle->name, colle->cmdline)) {
+	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	exit(1);
     }
 
@@ -830,11 +834,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 		colle->name, cpid, ctime(&active->stime));
 
     if (Debug & Dstart) {
-	int ac;
-	fprintf(stderr, "Executing test = %s as ", colle->name);
-	for (ac = 0; ac < colle->argc; ac++) {
-	    fprintf(stderr, "%s ", colle->argv[ac]);
-	}
+	fprintf(stderr, "Executing test = %s as %s", colle->name, colle->cmdline);
 	if (capturing)
 	    fprintf(stderr, "with output file = %s\n", active->output);
 	else
@@ -845,39 +845,20 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 }
 
 
-static char **
+static char *
 subst_pcnt_f(struct coll_entry *colle)
 {
-    char **eargv;
-    char *p;
-    int i;
+    static int counter = 1;
+    char pid_and_counter[20];
+    char new_cmdline[1024];
 
-    eargv = (char **) malloc((colle->argc + 1) * sizeof(char *));
+    /* if we get called falsely, do the right thing anyway */
+    if (!colle->pcnt_f) 
+	return colle->cmdline;
 
-    for (i = 0; i < colle->argc; ++i) {
-	if ((p = strstr(colle->argv[i], "%f")) != NULL) {
-	    /* simple, for now */
-	    static int counter = 1;
-	    char *b, *p2;
-	    int pidlen, counterlen;
-
-	    *p = '\0';		/* cut off at % */
-	    p2 = p + 2;		/* stuff that follows %f */
-
-	    pidlen = 1 + (int) log10((double) getpid());
-	    counterlen = 1 + (int) log10((double) counter);
-
-	    b = (char *) malloc(strlen(colle->argv[i]) +
-				pidlen + 1 + counterlen + strlen(p2) + 1);
-	    sprintf(b, "%s%d_%d%s", colle->argv[i], getpid(), counter++, p2);
-	    *p = '%';		/* restore % */
-	    eargv[i] = b;
-	} else {
-	    eargv[i] = colle->argv[i];
-	}
-    }
-    eargv[i] = NULL;
-    return eargv;
+    snprintf(pid_and_counter, 20, "%d_%d", getpid(), counter++);
+    snprintf(new_cmdline, 1024, colle->cmdline, pid_and_counter);
+    return strdup(new_cmdline);
 }
 
 static struct collection *
@@ -896,31 +877,28 @@ get_collection(char *file, int optind, int argc, char **argv)
     head = p = n = NULL;
     a = b = buf;
     while (*b != '\0') {
+	/* set b to the start of the next line and add a NULL character
+	 * to separate the two lines */
 	if ((b = strchr(a, '\n')) != NULL)
 	    *b = '\0';
 
+	/* If this is line isn't a comment */
 	if ((*a != '#') && (*a != '\0') && (*a != ' ')) {
-	    if (head == NULL) {
-		head =
-		    (struct coll_entry *) malloc(sizeof(struct coll_entry));
-		head->pcnt_f = strstr(a, "%f");
-		head->argv = (char **) splitstr(a, NULL, &head->argc);
-		head->name = head->argv[0];
-		head->argv++;	/* remove name from command */
-		head->argc--;
-		head->next = NULL;
-		p = head;
-	    } else {
-		n = (struct coll_entry *) malloc(sizeof(struct coll_entry));
-		p->next = n;
-		n->pcnt_f = strstr(a, "%f");
-		n->argv = (char **) splitstr(a, NULL, &n->argc);
-		n->name = n->argv[0];
-		n->argv++;	/* remove name from command */
-		n->argc--;
-		n->next = NULL;
-		p = n;
+	    n = (struct coll_entry *) malloc(sizeof(struct coll_entry));
+	    if ((n->pcnt_f = strstr(a, "%f"))) {
+		n->pcnt_f[1] = 's';
 	    }
+	    n->name = strdup(strsep(&a, " \t"));
+	    n->cmdline = strdup(a);
+	    n->next = NULL;
+	    
+	    if (p) {
+		p->next = n;
+	    }
+	    if (head == NULL) {
+		head = n;
+	    }
+	    p = n;
 	    coll->cnt++;
 	}
 	a += strlen(a) + 1;
@@ -930,34 +908,29 @@ get_collection(char *file, int optind, int argc, char **argv)
 
     /* is there something on the commandline to be counted? */
     if (optind < argc) {
-	char **args;
-	char *pcnt_f = NULL;
-
-	args = (char **) malloc((argc - optind + 1) * sizeof(char *));
+	char workstr[1024] = "";
+	int workstr_left = 1023;
+	
 	/* fill arg list */
 	for (i = 0; optind < argc; ++optind, ++i) {
-	    args[i] = argv[optind];
-	    if ((pcnt_f == NULL) && ((strstr(args[i], "%f")) != NULL)) {
-		pcnt_f = args[i];
-	    }
+	    strncat(workstr, argv[optind], workstr_left);
+	    workstr_left = workstr_left - strlen(argv[optind]);
+	    strncat(workstr, " ", workstr_left);
+	    workstr_left--;
 	}
-	args[i] = NULL;
 
-	if (head == NULL) {
-	    head = (struct coll_entry *) malloc(sizeof(struct coll_entry));
-	    head->pcnt_f = pcnt_f;
-	    head->argv = args;
-	    head->name = "cmdln";
-	    head->argc = i;
-	    head->next = NULL;
-	} else {
-	    n = (struct coll_entry *) malloc(sizeof(struct coll_entry));
+    	n = (struct coll_entry *) malloc(sizeof(struct coll_entry));
+    	if ((n->pcnt_f = strstr(workstr, "%f"))) {
+	    n->pcnt_f[1] = 's';
+	}
+	n->cmdline = strdup(workstr);
+	n->name = "cmdln";
+	n->next = NULL;
+	if (p) {
 	    p->next = n;
-	    n->pcnt_f = pcnt_f;
-	    n->argv = args;
-	    n->name = "cmdln";
-	    n->argc = i;
-	    n->next = NULL;
+	}
+	if (head == NULL) {
+	    head = n;
 	}
 	coll->cnt++;
     }
@@ -1027,8 +1000,8 @@ check_orphans(struct orphan_pgrp *orphans, int sig)
 	if (kill(-(orph->pgrp), sig) != 0) {
 	    if (errno == ESRCH) {
 		/* This pgrp is now empty */
-		if (clear_active(zoofile, orph->pgrp, &errmsg) == -1) {
-		    fprintf(stderr, "pan(%s): %s\n", panname, errmsg);
+		if (zoo_clear(zoofile, orph->pgrp)) {
+		    fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 		}
 		orph->pgrp = 0;
 	    } else {
@@ -1084,17 +1057,12 @@ static void
 write_test_start(struct tag_pgrp *running, const char *init_status)
 {
     if (!strcmp(reporttype, "rts")) {
-	char *args = NULL;
-
-	args = cat_args(running->cmd->argc, running->cmd->argv, &errmsg);
-	if (!args) args = "Unable_to_malloc_cmdline";
 
 	printf("%s\ntag=%s stime=%ld\ncmdline=\"%s\"\ncontacts=\"%s\"\nanalysis=%s\ninitiation_status=\"%s\"\n%s\n",
 			"<<<test_start>>>",
-			running->cmd->name, running->stime, args, "",
+			running->cmd->name, running->stime, running->cmd->cmdline, "",
 			"exit", init_status,
 			"<<<test_output>>>");
-	if (args) free(args);
     }
     fflush(stdout);
 }
@@ -1148,14 +1116,36 @@ orphans_running(struct orphan_pgrp *orphans)
 static void
 dump_coll(struct collection *coll)
 {
-    int x, i;
+    int i;
 
     for (i = 0; i < coll->cnt; ++i) {
 	fprintf(stderr, "coll %d\n", i);
-	fprintf(stderr, "  name=%s #args=%d\n", coll->ary[i]->name,
-		coll->ary[i]->argc);
-	for (x = 0; coll->ary[i]->argv[x]; ++x) {
-	    fprintf(stderr, "  argv[%d] = (%s)\n", x, coll->ary[i]->argv[x]);
-	}
+	fprintf(stderr, "  name=%s cmdline=%s\n", coll->ary[i]->name,
+		coll->ary[i]->cmdline);
+    }
+}
+
+void
+wait_handler( int sig )
+{
+    static int lastsent = 0;
+
+    if( sig == 0 ){
+	lastsent = 0;
+    } else {
+	rec_signal = sig;
+	if( sig == SIGUSR2 )
+	    return;
+	if( lastsent == 0 )
+	    send_signal = sig;
+	else if( lastsent == SIGUSR1 )
+	    send_signal = SIGINT;
+	else if( lastsent == sig )
+	    send_signal = SIGTERM;
+	else if( lastsent == SIGTERM )
+	    send_signal = SIGHUP;
+	else if( lastsent == SIGHUP )
+	    send_signal = SIGKILL;
+	lastsent = send_signal;
     }
 }

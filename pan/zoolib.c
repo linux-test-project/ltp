@@ -30,7 +30,25 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: zoolib.c,v 1.4 2001/03/08 19:13:21 nstraz Exp $ */
+/* 
+ * ZooLib
+ *
+ * A Zoo is a file used to record what test tags are running at the moment.
+ * If the system crashes, we should be able to look at the zoo file to find out
+ * what was currently running.  This is especially helpful when running multiple
+ * tests at the same time.  
+ *
+ * The zoo file is meant to be a text file that fits on a standard console.
+ * You should be able to watch it with `cat zoofile`
+ *
+ * zoo file format:
+ * 	80 characters per line, ending with a \n
+ * 	available lines start with '#'
+ * 	expected line fromat: pid_t,tag,cmdline
+ *
+ */
+
 #include <stdlib.h> /* for getenv */
 #include <string.h>
 #include "zoolib.h"
@@ -41,317 +59,413 @@ extern int sighold (int __sig);
 extern int sigrelse (int __sig);
 #endif
 
-#define A_BUF_SZ 100
+/* zoo_mark(): private function to make an entry to the zoo 
+ * 	returns 0 on success, -1 on error */
+static int zoo_mark(zoo_t z, char *entry);
+static int zoo_lock(zoo_t z);
+static int zoo_unlock(zoo_t z);
+/* cat_args(): helper function to make cmdline from argc, argv */
+char *cat_args(int argc, char **argv);
 
-static char Errmsg[500];
+
+/* zoo_getname(): create a filename to use for the zoo */
+char *
+zoo_getname()
+{
+    char buf[1024];
+    char *zoo;
+    
+    zoo = getenv( "ZOO" );
+    if (zoo) {
+	snprintf(buf, 1024, "%s/%s", zoo, "active");
+	return strdup(buf);
+    } else {
+	/* if there is no environment variable, we don't know where to put it */
+	return NULL;
+    }
+}
+
+
+/* zoo_open(): open a zoo for use */
+zoo_t
+zoo_open(char *zooname)
+{
+    zoo_t new_zoo;
+
+    new_zoo = (zoo_t)fopen(zooname, "r+");
+    if (!new_zoo) {
+	if (errno == ENOENT) {
+	    /* file doesn't exist, try fopen(xxx, "a+") */
+	    new_zoo = (zoo_t)fopen(zooname, "a+");
+	    if (!new_zoo) {
+		/* total failure */
+		snprintf(zoo_error, ZELEN, 
+				"Could not open zoo as \"%s\", errno:%d %s", 
+				zooname, errno, strerror(errno));
+	    }
+	    fclose(new_zoo);
+	    new_zoo = fopen(zooname, "r+");
+	} else {
+	    snprintf(zoo_error, ZELEN,
+			    "Could not open zoo as \"%s\", errno:%d %s",
+			    zooname, errno, strerror(errno));
+	}
+    }
+    return new_zoo;
+}
+
+int
+zoo_close(zoo_t z)
+{
+    int ret;
+
+    ret = fclose(z);
+    if (ret) {
+	snprintf(zoo_error, ZELEN,
+			"closing zoo caused error, errno:%d %s",
+			errno, strerror(errno));
+    }
+    return ret;
+}
+
+
+static int
+zoo_mark(zoo_t z, char *entry)
+{
+    FILE *fp = (FILE *)z;
+    int found = 0;
+    long pos;
+    char buf[BUFLEN];
+
+    if (fp == NULL)
+	return -1;
+    
+    if (zoo_lock(z))
+	return -1;
+    
+    /* first fit */
+    rewind(fp);
+
+    do {
+	pos = ftell(fp);
+
+	if (fgets(buf, BUFLEN, fp) == NULL) 
+	    break;
+
+	if (buf[0] == '#') {
+	    rewind(fp);
+	    if (fseek(fp, pos, SEEK_SET)) {
+		/* error */
+		snprintf(zoo_error, ZELEN,
+			"seek error while writing to zoo file, errno:%d %s",
+			errno, strerror(errno));
+		return -1;
+	    }
+	    /* write the entry, left justified, and padded/truncated to the 
+	     * same size as the previous entry */
+	    fprintf(fp, "%-*.*s\n", (int)strlen(buf)-1, (int)strlen(buf)-1, entry);
+	    found = 1;
+	    break;
+	}
+    } while (buf);
+
+    if (!found) {
+	if (fseek(fp, 0, SEEK_END)) {
+	    snprintf(zoo_error, ZELEN,
+			    "error seeking to end of zoo file, errno:%d %s",
+			    errno, strerror(errno));
+	    return -1;
+	}
+	fprintf(fp, "%-*.*s\n", 79, 79, entry);
+    }
+    fflush(fp);
+
+    if (zoo_unlock(z))
+	return -1;
+    return 0;
+}
+
+int
+zoo_mark_cmdline(zoo_t z, pid_t p, char *tag, char *cmdline)
+{
+    char new_entry[BUFLEN];
+    
+    snprintf(new_entry, 80, "%d,%s,%s", p, tag, cmdline);
+    return zoo_mark(z, new_entry);
+}
+
+int
+zoo_mark_args(zoo_t z, pid_t p, char *tag, int ac, char **av)
+{
+    char *cmdline;
+    int ret;
+
+    cmdline = cat_args(ac, av);
+    ret = zoo_mark_cmdline(z, p, tag, cmdline);
+    
+    free(cmdline);
+    return ret;
+}
+
+int
+zoo_clear(zoo_t z, pid_t p)
+{
+    FILE *fp = (FILE *)z;
+    long pos;
+    char buf[BUFLEN];
+    pid_t that_pid;
+    int found = 0;
+
+
+    if (fp == NULL)
+	return -1;
+
+    if (zoo_lock(z))
+	return -1;
+    rewind(fp);
+
+    do {
+	pos = ftell(fp);
+
+	if (fgets(buf, BUFLEN, fp) == NULL) 
+	    break;
+
+	if (buf[0] == '#')
+	    continue;
+
+	that_pid = atoi(buf);
+	if (that_pid == p) {
+	    if (fseek(fp, pos, SEEK_SET)) {
+		/* error */
+		snprintf(zoo_error, ZELEN,
+			"seek error while writing to zoo file, errno:%d %s",
+			errno, strerror(errno));
+		return -1;
+	    }
+	    if (ftell(fp) != pos) {
+		printf("fseek failed\n");
+	    }
+	    fputs("#", fp);
+	    found = 1;
+	    break;
+	}
+    } while (buf);
+
+    fflush( fp );
+
+    /* FIXME: unlock zoo file */
+    if (zoo_unlock(z))
+	return -1;
+
+    if(!found) {
+	snprintf(zoo_error, ZELEN, 
+			"zoo_clear() did not find pid(%d)", 
+			p);
+	return 1;
+    }
+    return 0;
+
+}
+
+pid_t 
+zoo_getpid(zoo_t z, char *tag)
+{
+    FILE *fp = (FILE *)z;
+    char buf[BUFLEN], *s;
+    pid_t this_pid;
+
+
+    if (fp == NULL)
+	return -1;
+
+    if (zoo_lock(z))
+	return -1;
+
+    rewind(fp);
+    do {
+	if (fgets(buf, BUFLEN, fp) == NULL) 
+	    break;
+
+	if (buf[0] == '#')
+	    continue; /* recycled line */
+
+	if ((s = strchr(buf, ',')) == NULL) 
+	    continue; /* line was not expected format */
+
+	if (strncmp(s+1, tag, strlen(tag)))
+	    continue; /* tag does not match */
+
+	this_pid = atoi(buf);
+	break;
+    } while (buf);
+
+    if (zoo_unlock(z))
+	return -1;
+    return this_pid;
+}
+
+int
+zoo_lock(zoo_t z)
+{
+    FILE *fp = (FILE *)z;
+    struct flock zlock;
+    sigset_t block_these;
+    int ret;
+    
+    if (fp == NULL)
+	return -1;
+
+    zlock.l_whence = zlock.l_start = zlock.l_len = 0;
+    zlock.l_type = F_WRLCK;
+
+    sigemptyset(&block_these);
+    sigaddset(&block_these, SIGINT);
+    sigaddset(&block_these, SIGTERM);
+    sigaddset(&block_these, SIGHUP);
+    sigaddset(&block_these, SIGUSR1);
+    sigaddset(&block_these, SIGUSR2);
+    sigprocmask(SIG_BLOCK, &block_these, NULL);
+
+    do {
+	ret = fcntl(fileno(fp), F_SETLKW, &zlock);
+    } while (ret == -1 && errno == EINTR);
+
+    sigprocmask(SIG_UNBLOCK, &block_these, NULL);
+    if (ret == -1) {
+	snprintf(zoo_error, ZELEN,
+			"failed to unlock zoo file, errno:%d %s",
+			errno, strerror(errno));
+	return -1;
+    } 
+    return 0;
+
+}
+
+int
+zoo_unlock(zoo_t z)
+{
+    FILE *fp = (FILE *)z;
+    struct flock zlock;
+    sigset_t block_these;
+    int ret;
+    
+    if (fp == NULL)
+	return -1;
+
+    zlock.l_whence = zlock.l_start = zlock.l_len = 0;
+    zlock.l_type = F_UNLCK;
+
+    sigemptyset(&block_these);
+    sigaddset(&block_these, SIGINT);
+    sigaddset(&block_these, SIGTERM);
+    sigaddset(&block_these, SIGHUP);
+    sigaddset(&block_these, SIGUSR1);
+    sigaddset(&block_these, SIGUSR2);
+    sigprocmask(SIG_BLOCK, &block_these, NULL);
+
+    do {
+	ret = fcntl(fileno(fp), F_SETLKW, &zlock);
+    } while (ret == -1 && errno == EINTR);
+
+    sigprocmask(SIG_UNBLOCK, &block_these, NULL);
+
+    if (ret == -1) {
+	snprintf(zoo_error, ZELEN,
+			"failed to lock zoo file, errno:%d %s",
+			errno, strerror(errno));
+	return -1;
+    } 
+    return 0;
+}
 
 char *
-zoo_active()
-{
-	char *fname = "active";
-	static char *active = NULL;
-	char *zoo;
-
-	if( active == NULL ){
-		zoo = getenv( "ZOO" );
-		if( zoo != NULL ){
-			active = (char*)malloc( strlen(zoo) + 1 +
-					       strlen(fname) + 1 );
-			sprintf( active, "%s/%s", zoo, fname );
-		}
-	}
-	return active;
-}
-
-
-FILE *
-open_file( char *file, char *mode, char **errmsg )
-{
-	FILE *fp;
-
-	if( errmsg != NULL )
-		*errmsg = Errmsg;
-
-	if( strcmp( mode, "r+" ) == 0 ){
-		/* make sure there's a file */
-		if( (fp = fopen( file, "a" )) == NULL ){
-			sprintf(Errmsg, "Unable to create file '%s'.  %s/%d  errno:%d  %s\n",
-				file, __FILE__, __LINE__, errno, strerror(errno));
-			return(NULL);
-		}
-		else
-			fclose( fp );
-	}
-	
-
-	if( (fp = fopen( file, mode )) == NULL ){
-		sprintf(Errmsg, "Unable to open(%s,%s).  %s/%d  errno:%d  %s\n",
-			file, mode, __FILE__, __LINE__, errno, strerror(errno));
-		return(NULL);
-	}
-	return fp;
-}
-
-int
-seek_file( FILE *fp, long int offset, int whence, char **errmsg )
-{
-	if( errmsg != NULL )
-		*errmsg = Errmsg;
-
-	if( (whence != SEEK_SET) && (whence != SEEK_END) ){
-		sprintf(Errmsg, "whence is bad.  %s/%d\n", __FILE__, __LINE__ );
-		return(-1);
-	}
-
-	if( fseek( fp, offset, whence ) != 0 ){
-		sprintf(Errmsg,"fseek(%ld,%s) failed.  %s/%d  errno:%d  %s\n",
-			offset,
-			whence == SEEK_SET ? "SEEK_SET" : "SEEK_END",
-			__FILE__, __LINE__,
-			errno, strerror(errno));
-		return(-1);
-	}
-	return whence;
-}
-
-
-int
-lock_file( FILE *fp, short ltype, char **errmsg )
-{
-	struct flock flk;
-	int ret=1;
-
-	if( errmsg != NULL )
-		*errmsg = Errmsg;
-
-	if( (ltype != F_WRLCK) && (ltype != F_UNLCK) ){
-		sprintf(Errmsg, "bad ltype, %s/%d\n", __FILE__, __LINE__ );
-		return(-1);
-	}
-
-	flk.l_whence = flk.l_start = flk.l_len = 0;
-	flk.l_type = ltype;
-/* XXX it's time to upgrade this code for sigaction */
-	sighold(SIGINT);
-	sighold(SIGTERM);
-	sighold(SIGHUP);
-	sighold(SIGUSR1);
-	sighold(SIGUSR2);
-	if( fcntl( fileno(fp), F_SETLKW, &flk ) == -1 ){
-		sprintf(Errmsg, "fcntl(%s) failed. %s/%d  errno:%d  %s\n",
-			ltype == F_WRLCK ? "F_WRLCK" : "F_UNLCK",
-			__FILE__, __LINE__,
-			errno, strerror(errno));
-		ret=-1;
-	}
-	sigrelse(SIGINT);
-	sigrelse(SIGTERM);
-	sigrelse(SIGHUP);
-	sigrelse(SIGUSR1);
-	sigrelse(SIGUSR2);
-	return(ret);
-}
-
-
-int
-write_active( FILE *fp, char *name, char **errmsg )
-{
-	pid_t pid = getpid();
-	char *emsg;
-
-	if( fp == NULL )
-		return(1);
-
-	if( errmsg != NULL )
-		*errmsg = Errmsg;
-
-	if( lock_file( fp, F_WRLCK, &emsg ) == -1 )
-		return(-1);
-	if( seek_file( fp, 0, SEEK_END, &emsg ) == -1 )
-		return(-1);
-
-	/* Write pid first so update_active() can find it quickly.
-	 * update_active() will probably be used far more often than any
-	 * process that needs to search by name anyway.
-	 */
-	fprintf( fp, "%d,%s\n", pid, name );
-	fflush( fp );
-
-	if( lock_file( fp, F_UNLCK, &emsg ) == -1 )
-		return(-1);
-	return(1);
-}
-
-/*
- * Write a command to the active file, with arguments.
- * Uses a "first fit" algorithm to take the first available line
- * Inactive commandlines are assumed to start with a "#"
- */
-int
-write_active_args( FILE *fp, pid_t pid, char *name, int argc,
-		  char **argv, char **errmsg )
-{
-	char *args, *cat_args();
-	char active[81];		/* max length.. */
-	int len, l2, found;
-	long int pos;
-	char buf[A_BUF_SZ];
-	char *emsg;
-
-	if( fp == NULL )
-		return(1);
-
-	if( errmsg != NULL )
-		*errmsg = Errmsg;
-
-	if( (args = cat_args(argc, argv, &emsg)) == NULL )
-		return(-1);
-	len = sprintf(active, "%d,%s,", pid, name);
-	strncat(active, args, 80 - len);
-	len = strlen(active);
-	free(args);
-
-	if( lock_file( fp, F_WRLCK, &emsg ) == -1 )
-		return(-1);
-	if( seek_file( fp, 0, SEEK_SET, &emsg ) == -1 )
-		return(-1);
-
-	found=0;
-	while(1) {
-		pos = ftell( fp );
-		if( fgets( buf, A_BUF_SZ - 1, fp ) == NULL )
-			break;
-
-		if( buf[0] == '#' ) {
-		    /* "First Fit" */
-		    if( (l2=strlen(buf)) > len ) { /* can rewrite this one */
-			if( seek_file( fp, pos, SEEK_SET, &emsg ) == -1 )
-				return(-1);
-			fprintf( fp, "%s%*.*s\n", active, l2-len-1, l2-len-1,
-				"|");
-			found=1;
-			break;
-		    }
-		}
-	}/* while */
-
-	if(!found) {
-	    if( seek_file( fp, 0, SEEK_END, &emsg ) == -1 )
-		return(-1);
-
-	    /* Write pid first so update_active() can find it quickly.
-	     * update_active() will probably be used far more often than any
-	     * process that needs to search by name anyway.
-	     */
-	    fprintf( fp, "%s\n", active );
-	}
-
-	fflush( fp );
-	if( lock_file( fp, F_UNLCK, &emsg ) == -1 )
-		return(-1);
-
-	return(1);
-}
-
-
-int
-clear_active( FILE *fp, pid_t me, char **errmsg )
-{
-	char buf[A_BUF_SZ];
-	int pid;
-	long int pos;
-	int found = 0;
-	char *emsg;
-
-	if( fp == NULL )
-		return(1);
-
-	if( lock_file( fp, F_WRLCK, &emsg ) == -1 )
-		return(-1);
-	if( seek_file( fp, 0, SEEK_SET, &emsg ) == -1 )
-		return(-1);
-
-	while(1){
-		pos = ftell( fp );
-		if( fgets( buf, A_BUF_SZ - 1, fp ) == NULL )
-			break;
-
-		if( buf[0] == '#' )
-			continue;
-
-		/* is pid me? */
-		pid = atoi( buf );
-		if( pid != me )
-			continue;
-
-		if( seek_file( fp, pos, SEEK_SET, &emsg ) == -1 )
-			return(-1);
-		fprintf( fp, "#" );
-		found++;
-		break;
-	}/* while */
-
-	fflush( fp );
-	if( lock_file( fp, F_UNLCK, &emsg ) == -1 )
-		return(-1);
-
-	if( ! found ){
-		sprintf(Errmsg, "clear_active() did not find pid(%d).  %s/%d\n",
-			me, __FILE__, __LINE__ );
-		return(0);
-	}
-	return(1);
-}
-
-
-void
-wait_handler( int sig )
-{
-	static int lastsent = 0;
-
-	if( sig == 0 ){
-		lastsent = 0;
-	}
-	else {
-		rec_signal = sig;
-		if( sig == SIGUSR2 )
-			return;
-		if( lastsent == 0 )
-			send_signal = sig;
-		else if( lastsent == SIGUSR1 )
-			send_signal = SIGINT;
-		else if( lastsent == sig )
-			send_signal = SIGTERM;
-		else if( lastsent == SIGTERM )
-			send_signal = SIGHUP;
-		else if( lastsent == SIGHUP )
-			send_signal = SIGKILL;
-		lastsent = send_signal;
-	}
-}
-
-char *
-cat_args(int argc, char **argv, char **errmsg)
+cat_args(int argc, char **argv)
 {
     int a, size;
     char *cmd;
 
-    for(size=a=0;a<argc;a++) {
+    for( size = a = 0; a < argc; a++) {
 	size += strlen(argv[a]);
 	size++;
     }
 
     if( (cmd = (char *)malloc(size)) == NULL ) {
-	sprintf(Errmsg, "Malloc Error, %s/%d", __FILE__, __LINE__);
-	return(NULL);
+	snprintf(zoo_error, ZELEN, 
+			"Malloc Error, %s/%d", 
+			__FILE__, __LINE__);
+	return NULL;
     }
 
     *cmd='\0';
-    for(a=0;a<argc;a++) {
+    for(a = 0; a < argc ; a++) {
 	if(a != 0)
 	    strcat(cmd, " ");
 	strcat(cmd, argv[a]);
     }
 
-    return(cmd);
+    return cmd;
 }
+
+#if defined(UNIT_TEST)
+
+
+void 
+zt_add(zoo_t z, int n)
+{
+    char cmdline[200];
+    char tag[10];
+
+    snprintf(tag, 10, "%s%d", "test", n);
+    snprintf(cmdline, 200, "%s%d %s %s %s", "runtest", n, "one", "two", "three");
+    
+    zoo_mark_cmdline(z, n, tag, cmdline);
+}
+    
+int
+main(int argc, char *argv[])
+{
+
+    char *zooname;
+    zoo_t test_zoo;
+    char *test_tag = "unittest";
+    int i,j;
+
+
+    zooname = zoo_getname();
+
+    if (!zooname) {
+	zooname = strdup("test_zoo");
+    }
+    printf("Test zoo filename is %s\n", zooname);
+
+    if ((test_zoo = zoo_open(zooname)) == NULL) {
+	printf("Error opennning zoo\n");
+	exit(-1);
+    }
+    
+
+    zoo_mark_args(test_zoo, getpid(), test_tag, argc, argv);
+    
+
+    for(j = 0; j < 5; j++) {
+	for(i = 0; i < 20; i++) {
+	    zt_add(test_zoo, i);
+	}
+	
+	for(; i >=0; i--) {
+	    zoo_clear(test_zoo, i);
+	}
+    }
+    
+    zoo_clear(test_zoo, getpid());
+    
+
+    return 0;
+}
+
+
+
+
+
+
+#endif

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: bump.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: bump.c,v 1.4 2001/03/08 19:13:21 nstraz Exp $ */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/signal.h>
@@ -42,8 +42,6 @@
 pid_t
 read_active( FILE *fp, char *name );
 
-static char *errmsg;
-
 int 
 main( int argc, char **argv ){
 	extern char *optarg;
@@ -51,7 +49,7 @@ main( int argc, char **argv ){
 	int c;
 	char *active = NULL;
 	pid_t nanny;
-	FILE *fp;
+	zoo_t zoo;
 	int sig = SIGINT;
 
 	while( (c = getopt(argc, argv, "a:s:12")) != -1 ){
@@ -73,7 +71,7 @@ main( int argc, char **argv ){
 	}
 
 	if( active == NULL ){
-		active = zoo_active();
+		active = zoo_getname();
 		if( active == NULL ){
 			fprintf(stderr, "bump: Must supply -a or set ZOO env variable\n");
 			exit(1);
@@ -85,86 +83,31 @@ main( int argc, char **argv ){
 	}
 
 	/* need r+ here because we're using write-locks */
-	if( (fp = open_file( active, "r+", &errmsg )) == NULL ){
-		fprintf(stderr, "bump: %s\n", errmsg);
+	if( (zoo = zoo_open(active)) == NULL ){
+		fprintf(stderr, "bump: %s\n", zoo_error);
 		exit(1);
 	}
 	while( optind < argc ){
 		/*printf("argv[%d] = (%s)\n", optind, argv[optind] );*/
-		nanny = read_active( fp, argv[optind] );
+		nanny = zoo_getpid(zoo, argv[optind]);
 		if( nanny == -1 ){
-			fprintf(stderr, "bump: Did not find name '%s'\n",
+			fprintf(stderr, "bump: Did not find tag '%s'\n",
 				argv[optind] );
 		}
 		else{
-			if( kill( nanny, sig ) == -1 ){
-				if( errno == ESRCH ){
-					fprintf(stderr,"bump: Did not find nanny '%s', pid %d\n",
+			if (kill( nanny, sig ) == -1){
+				if (errno == ESRCH){
+					fprintf(stderr,"bump: Tag %s (pid %d) seems to be dead already.\n",
 						argv[optind], nanny );
-					if( clear_active( fp, nanny, &errmsg ) != 1 )
-						fprintf(stderr,"bump: %s\n", errmsg);
+					if (zoo_clear(zoo, nanny))
+						fprintf(stderr,"bump: %s\n", zoo_error);
 				}
 			}
 		}
 		++optind;
 	}
-	fclose( fp );
+	zoo_close(zoo);
 
 	exit(0);
-}
-
-
-
-
-pid_t
-read_active( FILE *fp, char *name )
-{
-	char buf[1024];
-	pid_t nanny = -1;
-	char *n;
-	int len;
-
-	if( lock_file( fp, F_WRLCK, &errmsg ) == -1 ){
-		fprintf(stderr, "bump: %s\n", errmsg );
-		return(-1);
-	}
-	if( seek_file( fp, 0, SEEK_SET, &errmsg ) == -1 ){
-		fprintf(stderr, "bump: %s\n", errmsg );
-		return(-1);
-	}
-
-	len = strlen( name );
-	while(1){
-		if( fgets( buf, 1023, fp ) == NULL ){
-			/*printf("end of file\n");*/
-			break;
-		}
-
-		if( buf[0] == '#' ){
-			/*printf("skip line (%s)\n", buf );*/
-			continue;
-		}
-
-		/* get name */
-		if( (n = strchr( buf, ',' )) == NULL ){
-			/*printf("no comma (%s)\n", buf );*/
-			continue;
-		}
-
-		if( strncmp( n + 1, name, len ) != 0 ){
-			/*printf("not matching (%s) and (%s)\n",
-			       n+1, name );*/
-			continue;
-		}
-
-		nanny = atoi( buf );
-		break;
-	}/* while */
-
-	if( lock_file( fp, F_UNLCK, &errmsg ) == -1 ){
-		fprintf(stderr, "bump: %s\n", errmsg );
-		return(-1);
-	}
-	return nanny;
 }
 

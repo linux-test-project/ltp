@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.h,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
+/* $Id: zoolib.h,v 1.3 2001/03/08 19:13:21 nstraz Exp $ */
 #ifndef ZOOLIB_H
 #define ZOOLIB_H
 
@@ -41,19 +41,46 @@
 #include <fcntl.h>
 #include <sys/signal.h>
 
-int rec_signal;	/* received signal */
+int rec_signal; 	/* received signal */
 int send_signal;	/* signal to send */
 
+typedef FILE *zoo_t;
+#define ZELEN 512
+char zoo_error[ZELEN];
+#define BUFLEN 81
+
 int lock_file( FILE *fp, short ltype, char **errmsg );
-FILE *open_file( char *file, char *mode, char **errmsg );
+/* FILE *open_file( char *file, char *mode, char **errmsg ); */
 
 void wait_handler();
 
-char *zoo_active( void );
-int write_active( FILE *fp, char *name, char **errmsg );
-int clear_active( FILE *fp, pid_t me, char **errmsg );
-int write_active_args( FILE *fp, pid_t pid, char *name, int argc, char **argv, char **errmsg );
-int seek_file( FILE *fp, long int offset, int whence, char **errmsg );
-char *cat_args(int argc, char **argv, char **errmsg);
+/*  char *zoo_active( void ); */
+/* zoo_getname(): create a filename to use for the zoo
+ * 	returns NULL on error */
+char *zoo_getname(void);
+
+/* zoo_open(): open a zoo file for use 
+ * 	returns NULL on error */
+zoo_t zoo_open(char *zooname);
+
+/* zoo_close(): close an open zoo file */
+int zoo_close(zoo_t z);
+
+/* zoo_mark_cmdline(): make an entry to the zoo 
+ *	returns 0 on success, -1 on error */
+int zoo_mark_cmdline(zoo_t z, pid_t p, char *tag, char *cmdline);
+
+/* zoo_mark_args(): make an entry to the zoo using argc argv
+ *	returns 0 on success, -1 on error */
+int zoo_mark_args(zoo_t z, pid_t p, char *tag, int ac, char **av);
+
+/* zoo_clear(): mark a pid as completed
+ *	returns 0 on success, -1 on error, 1 as warning */
+int zoo_clear(zoo_t z, pid_t p);
+
+/* zoo_getpid(): get the pid for a specified tag
+ * 	returns pid_t on success and 0 on error */
+pid_t zoo_getpid(zoo_t z, char *tag);
+
 
 #endif /* ZOOLIB_H */
