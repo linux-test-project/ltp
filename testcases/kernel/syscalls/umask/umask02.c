@@ -66,6 +66,7 @@ int main(int argc, char **argv)
 	char *msg;			/* message returned from parse_opts */
 
 	int uret = 0, i, mskval = 0000;
+	int failcnt = 0;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -85,17 +86,14 @@ int main(int argc, char **argv)
 		for (umask(++mskval), i = 1; mskval < 01000;
 			uret = umask(++mskval), i++) {
 			if ((uret != mskval - 1) && (mskval != 0000)) {
-				tst_brkm(TBROK, cleanup, "bad mask value "
-					 "returned");
-				/*NOTREACHED*/
-			} else {
-				 tst_resm(TPASS, "umask(%d) susuccessfully "
-						"returned %d.", mskval, uret);
+				failcnt = 1;
+				tst_resm(TFAIL, "umask(%d) returned bad mask "
+						"value %d.", mskval, uret);
 			}
 		}
-	mskval = 0000;
-	uret = 0;
-	tst_resm(TINFO, "end of loop %d\n", lc);
+		if (!failcnt)
+			tst_resm(TPASS, "All umask values return correct "
+					"values");
 	}
 	cleanup();
 	/*NOTREACHED*/
