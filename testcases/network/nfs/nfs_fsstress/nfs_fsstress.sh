@@ -41,9 +41,9 @@
 
 $trace_logic
 
-echo -n "Please enter the server location of the NFS exported filesystem "
+echo -n "Please enter the server location of the NFS exported filesystem: "
 read RHOST
-echo -n "Please enter the name of the NFS exported filesystem "
+echo -n "Please enter the name of the NFS exported filesystem: "
 read FILESYSTEM
 echo -n "Please enter the test duration in hours: "
 read DURATION
