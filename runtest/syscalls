@@ -729,6 +729,13 @@ sysctl03 sysctl03
 sysctl04 sysctl04
 sysctl05 sysctl05
 
+sysfs01 sysfs01
+sysfs02 sysfs02
+sysfs03 sysfs03
+sysfs04 sysfs04
+sysfs05 sysfs05
+sysfs06 sysfs06
+
 sysinfo01 sysinfo01
 sysinfo02 sysinfo02
 
