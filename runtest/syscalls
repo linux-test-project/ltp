@@ -1,3 +1,5 @@
+abort01 ulimit -c 1024;abort01;ulimit -c 0
+
 accept01 accept01
 
 access01 access01
