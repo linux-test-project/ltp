@@ -129,12 +129,17 @@ int main()
 	sem_1 = sem_open(semname_1, O_CREAT, 0777, val);
 	if( sem_1 == SEM_FAILED || sem_1 == NULL ) {
 		perror(ERROR_PREFIX "sem_open: sem_1");
+		sem_unlink (semname);
 		return PTS_UNRESOLVED;
 	}
 
 	/* The parent has highest priority */	
 	priority = sched_get_priority_min(SCHED_FIFO) + 3;
-	set_my_prio(priority);
+	if (set_my_prio(priority) == -1) {
+		sem_unlink (semname);
+		sem_unlink (semname_1);
+		return PTS_UNRESOLVED;
+	}
 
 	/* Lock Semaphore */
 	if( sem_wait(sem) == -1 ) {

@@ -48,7 +48,7 @@ int main()
 		perror(ERROR_PREFIX "pthread_attr_getstackaddr");
 		exit(PTS_UNRESOLVED);
 	}
-	printf("stack_addr = %u\n", stack_addr);
+	printf("stack_addr = %p\n", stack_addr);
 
 	ssize = PTHREAD_STACK_MIN;
 
@@ -59,7 +59,7 @@ int main()
                         "allocating the stack memory");
       		exit(PTS_UNRESOLVED);
     	}
-	printf("stack_addr = %u\n", stack_addr);
+	printf("stack_addr = %p\n", stack_addr);
 
 	rc = pthread_attr_setstackaddr(&attr, stack_addr);
         if (rc != 0 ) {
@@ -72,7 +72,7 @@ int main()
                 perror(ERROR_PREFIX "pthread_attr_getstackaddr");
                 exit(PTS_UNRESOLVED);
         }
-	printf("saddr = %u\n", saddr);
+	printf("saddr = %p\n", saddr);
 
 	rc = pthread_attr_destroy(&attr);
 	if(rc != 0)
