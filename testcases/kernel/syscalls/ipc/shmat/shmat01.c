@@ -64,9 +64,14 @@ extern int Tst_count;
 #define CASE0		10		/* values to write into the shared */
 #define CASE1		20		/* memory location.		   */
 
-#define UNALIGNED	0x5fffeeee	/* an address not evenly divisible by */
-					/* SHMLBA which defaults to 0x8048e8b */
-#define UNALIGNED_IA64	0x5ff00eee
+#ifdef __ia64__
+#define UNALIGNED      0x5ff00eee      /* an address not evenly divisible by */
+#elif defined __XTENSA__               /* SHMLBA which defaults to 0x8048e8b */
+/* TASK_SIZE on Xtensa is only 0x40000000 */
+#define UNALIGNED      0x28ffeeee
+#else
+#define UNALIGNED      0x5fffeeee
+#endif
 
 int shm_id_1 = -1;
 
@@ -80,13 +85,9 @@ struct test_case_t {
 	/* a straight forward read/write attach */
 	{&shm_id_1, 0, 0},
 
-#ifdef __ia64__
-	/* an attach using non alligned memory */
-	{&shm_id_1, (void *)UNALIGNED_IA64, SHM_RND},
-#else
-	/* an attach using non alligned memory */
+       /* an attach using non aligned memory */
 	{&shm_id_1, (void *)UNALIGNED, SHM_RND},
-#endif
+
 	/* a read only attach */
 	{&shm_id_1, 0, SHM_RDONLY}
 };
