@@ -731,6 +731,10 @@ sigaddset03 cd $LTPROOT/testcases/bin;sigaddset03
 sigaltstack01 sigaltstack01
 sigaltstack02 sigaltstack02
 
+sigdelset01 cd $LTPROOT/testcases/bin;sigdelset01
+sigdelset02 cd $LTPROOT/testcases/bin;sigdelset02
+sigdelset03 cd $LTPROOT/testcases/bin;sigdelset03
+
 sigfillset01 cd $LTPROOT/testcases/bin;sigfillset01
 
 sighold02 sighold02
