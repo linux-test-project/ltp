@@ -118,11 +118,13 @@ init()
 # 				- non-zero on failure.
 cleanup()
 {
-
 	#remove all cronjobs that were installed.
+	tst_resm TINFO "CLEAN: removing all cron jobs."
 	crontab -r &>/dev/null
+
 	# remove all the temporary files created by this test.
-	rm -fr $LTPTMP/tst_logrotate.$$
+	tst_resm TINFO "CLEAN: removing $LTPTMP"
+	rm -fr $LTPTMP
 }
 
 
