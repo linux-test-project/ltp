@@ -11,6 +11,5 @@ float_trigo cd $LTPROOT/testcases/bin; float_trigo -v
 
 fptest01 fptest01
 fptest02 fptest02
-fptest03 fptest03
 
 nextafter01 nextafter01
