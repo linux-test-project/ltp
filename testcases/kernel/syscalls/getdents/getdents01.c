@@ -135,8 +135,8 @@ int main(int ac, char **av)
 #define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
 #else	
 	  	_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
-		rval = getdents(fd, dirp, count);
 #endif	
+		rval = getdents(fd, dirp, count);
 		if (rval < 0) {		/* call returned an error */
 	
 			rval *= -1;
