@@ -33,7 +33,16 @@
 RHOST="localhost"
 TEST_USER="anonymous"
 TEST_USER_PASSWD="noone@nowhere.com"
+
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+
+if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+then
+ANONYMOUS_ENABLE=`cat /etc/vsftpd/vsftpd.conf | grep "^anonymous_enable=" | awk -F= '{print $2}'`
+else
 ANONYMOUS_ENABLE=`cat /etc/vsftpd.conf | grep "^anonymous_enable=" | awk -F= '{print $2}'`
+fi
 if [ "$ANONYMOUS_ENABLE" != "NO" ]; then
   ANONYMOUS_ENABLE="YES"
 fi 

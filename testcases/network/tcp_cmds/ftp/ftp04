@@ -32,11 +32,11 @@
 RHOST=localhost
 TEST_USER=root
 
-if [ $PASSWD ]
+if [ $ROOT_PASSWORD ]
 then
-	TEST_USER_PASSWORD=$PASSWD
+	TEST_USER_PASSWORD=$ROOT_PASSWORD
 else	
-	echo "YOU MUST EXPORT PASSWD VARIABLE"
+	echo "YOU MUST EXPORT ROOT_PASSWORD VARIABLE"
 	exit 1
 fi
 
@@ -48,8 +48,18 @@ EXIT_CODE=0
 #-----------------------------------------------------------------------
                                                                                
 verify_user_is_in_ftpusers_db(){
+
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+
+       if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+       then
+        echo "Verifying test user $TEST_USER is in /etc/vsftpd.ftpusers database..."
+        FTPUSERS=`grep $TEST_USER /etc/vsftpd.ftpusers`
+       else
         echo "Verifying test user $TEST_USER is in /etc/ftpusers database..."
         FTPUSERS=`grep $TEST_USER /etc/ftpusers`
+       fi
         if [ "x$FTPUSERS" == "x" ]
         then {
             echo "Test user $TEST_USER not found in /etc/ftpusers unable to run TEST, exiting 0 ..."

@@ -35,7 +35,15 @@ TEST_USER="ftpuser1"
 TEST_USER_PASSWD="eal"
 TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
 TEST_USER_HOMEDIR="/home/$TEST_USER"
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+
+if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+then
+LOCAL_ENABLE=`cat /etc/vsftpd/vsftpd.conf | grep "^local_enable=" | awk -F= '{print $2}'`
+else
 LOCAL_ENABLE=`cat /etc/vsftpd.conf | grep "^local_enable=" | awk -F= '{print $2}'`
+fi
 if [ "$LOCAL_ENABLE" != "YES" ]; then
   LOCAL_ENABLE="NO"
 fi 
