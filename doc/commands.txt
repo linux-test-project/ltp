@@ -1,0 +1,117 @@
+ade
+---
+ar01
+
+	Construct one or more command lines which use options that do not
+	take arguments
+	For each of these invocations
+	Specify the options seperately
+	Group the options together
+	Compare the behavior of the two cases
+	If they behave differently, then fail
+	If none of the cases fail, then pass
+
+ld01
+
+	 To test the basic functionality of the `ld` command.
+
+ldd01
+
+	 To test the basic functionality of the `ldd` command.
+
+nm01
+
+	To test the basic functionality of the `nm` command.
+
+objdump01
+
+	Tests the functionality of the `objdump` command.
+
+size01
+
+	To test the basic functionality of `size`.
+
+
+
+cpio
+----
+cpio_test.sh
+	
+	Tests the basic functionality of `cpio` command
+
+
+
+cron
+----
+cron_test.sh
+	
+	This testcase tests if crontab <filename> installs the cronjob 
+	and cron schedules the job correctly.
+
+
+
+eject
+-----
+eject_tests.sh
+
+	Tests the basic functionality of `eject` command.
+
+
+
+fileutils
+---------
+cp_tests.sh
+	
+	Test basic functionality of `cp` command
+
+ln_tests.sh
+	
+	Test basic functionality of `ln` command
+
+mkdir_tests.sh
+
+	Test basic functionality of `mkdir` command
+
+mv_test.sh
+
+	Test basic functionality of `mv` command
+
+
+
+gzip
+----
+gzip_tests.sh
+
+	Test basic functionality of `gzip` and `gunzip` command
+
+
+
+logrotate
+---------
+logrotate_tests.sh
+
+	Test basic functionality of `logrotate` command.
+
+
+
+mail
+----
+mail_tests.sh
+	
+	Test basic functionality of `mail` command.
+
+
+
+tar
+---
+tar_tests.sh
+	
+	Test basic functionality of `tar` command.
+
+
+unzip
+-----
+unzip_tests.sh
+
+	Test basic functionality of `unzip` command.
+
