@@ -6,7 +6,7 @@ I. Test Bucket Introduction
 This test bucket tests the interfaces and events defined in the CAE 
 Specification entitled "Systems Management: Data Storage Management (XDSM) 
 API," which was copyrighted in February, 1997 by The Open Group.  The test
-bucket consists of 20 executables containing 1061 variations which test 59 of 
+bucket consists of 20 executables containing 1097 variations which test 59 of 
 67 published DMAPIs and all JFS-supported events except DM_EVENT_NOSPACE on a 
 functional level.
 

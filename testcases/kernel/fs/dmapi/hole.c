@@ -38,7 +38,7 @@
 #define TMP_FILELEN 500000
 #define NUM_EXTENTS 8
 
-char command[PAGE_SIZE];
+char command[4096];
 dm_sessid_t sid;
 dm_extent_t Extents[NUM_EXTENTS];
 dm_extent_t bigExtents[20];
