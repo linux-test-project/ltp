@@ -1,3 +1,34 @@
+LTP-20020806
+------------
+
+Change Log
+----------
+
+* New Additions
+---------------
+- Added new testcases of link07,fcntl22,link06          ( Bull Group         )
+- Added linux kernel scheduler latency tester           ( Davide Libenzi     )
+
+* Fixes
+-------
+- Several fixes for 64-bit                              ( Gerhard Tonn       )
+- Commited fix from Carsten Langgaard for fstat05 
+  compile break on MIPS                                 ( Paul Larson        )
+- Fixed check in getgroups03 that was causing 
+  failures if 'nobody' isn't in any secondary groups    ( Paul Larson        )
+- Fix sendfile02 to work with the new 2.5 kernels which 
+  no longer allow it to fall back on write              ( Paul Larson        )
+- Applied patch from Carsten Langgaard to add llseek 
+  prototype to llseek01                                 ( Paul Larson        )
+- Changed the hardcoded ip address to 127.0.0.1 in 
+  recvfrom01-sctp-udp-ipv6                              ( Robbie Williamson  )
+- Added instance and time command line options          ( Martin Jeff        )
+- Fixed the algorithm description for fork07,fork12     
+  Reduced the output of fork07 to a finite amount       ( Nathan Straz       )
+- Added fork12 to runtest/crashme.                      ( Nathan Straz       )
+- Added option for interface selection                  ( Robbie Williamson  )
+
+
 LTP-20020709
 -----------
 Change Log
