@@ -17,6 +17,8 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
+# 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
+#           fixed bugs.
 
 ##################################################################
 # case2: Test if messages of all levels are logged.              #
@@ -28,19 +30,18 @@ syslog_case2()
 {
 	#set the trap to handle signals.
 	trap '
-		echo Testing is terminating due to a signal...
+		tst_resm TBROK "Testing is terminating due to a signal"
 		exit 1
 	' 1 2 3 6 11 15
 
 	echo
-	echo "syslog: Testing the messages of all levels..."
+	tst_resm TINFO  "syslog: Testing the messages of all levels"
 
 	level_no=0
 	level="emerg alert crit err warning notice info debug"
 	for current in $level
 	do
-                echo
-                echo "Doing level: $current..."
+                tst_resm TINFO "Doing level: $current..."
 
                 # Create the configuration file specific to this level
                 echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
@@ -63,9 +64,9 @@ syslog_case2()
                 diff=$(( $newvalue - $oldvalue ))
                 if [ $diff -eq 0 ]; then
                         status_flag=1
-                        echo "*****--- Level $current failed ---*****"
+                        tst_resm TINFO "***** Level $current failed *****"
                 elif [ $diff -ge 1 ]; then
-                        echo "*****--- Level $current passed ---*****"
+                        tst_resm TINFO "***** Level $current passed *****"
                 fi
                 # Increment the level_no for next level...
                 level_no=$(($level_no+1))
@@ -73,23 +74,30 @@ syslog_case2()
 	done
 }
 
-echo start $0
-echo "----------------------------------------------------------------"
+export TST_TOTAL=1
+export TST_COUNT=1
+export TCID=$(basename $0)
+
 status_flag=0
+tst_resm TINFO "Test if messages of all levels are logged."
+tst_resm TINFO "For each level, a separate configuration file is"
+tst_resm TINFO "created and that will be used as syslog.conf file."
 
 #Back up /etc/syslog.conf
-cp /etc/syslog.conf /etc/syslog.conf.bak02
+if ! [ -a /etc/syslog.conf ]
+then
+	tst_resm TBROK "/etc/syslog.conf file not found!"
+else
+	cp /etc/syslog.conf /etc/syslog.conf.bak02
+fi
 
 syslog_case2
 if [ $status_flag -eq 0 ]
 then
-	echo
-	echo $0 "PASSED"
+	tst_resm TPASS "messages of all levels are logged"
 else
-	echo
-	echo $0 "FAILED"
+	tst_resm TFAIL "failed to log messages of all levels."
 fi
-echo "----------------------------------------------------------------"
 
 #Restore syslog.conf
 mv /etc/syslog.conf.bak02 /etc/syslog.conf

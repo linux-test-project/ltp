@@ -17,6 +17,8 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
+# 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
+#           fixed bugs.
 
 ##################################################################
 # case 8: Test all the facilities at a particular level.         #
@@ -34,19 +36,18 @@ syslog_case8()
 {
         #set the trap to handle signals.
         trap '
-                echo Testing is terminating due to a signal...
+                tst_resm TBROK "Testing is terminating due to a signal"
                 exit 1
         ' 1 2 3 6 11 15
 
         echo
-        echo "syslog: Testing all the facilities...."
+        tst_resm  TINFO "syslog: Testing all the facilities"
 
         facility_no=1
         facility="user mail daemon auth lpr"
         for current in $facility
         do
-                echo
-                echo "Doing facility: $current..."
+                tst_resm TINFO "Doing facility: $current..."
 
                 # Create the configuration file specific to this facility
                 # Level is fixed at info.
@@ -76,38 +77,50 @@ syslog_case8()
                 if [ $current = "mail" ]; then
                         if [ $mail_check -ne 1 ]; then
                                 status_flag=1
-                                echo "****--- Facility $current failed ---****"
+                                tst_resm TINFO  " Facility $current failed"
                         elif [ $mail_check -eq 1 ]; then
-                                echo "****--- Facility $current passed ---****"
+                                tst_resm TINFO  " Facility $current passed"
                         fi
                 elif [ $diff -ne 1 ]; then
                                 status_flag=1
-                                echo "****--- Facility $current failed ---****"
+                                tst_resm TINFO  " Facility $current failed"
                         else
-                                echo "****--- Facility $current passed ---****"
+                                tst_resm TINFO  " Facility $current passed"
                 fi
                 # Increment the facility_no for next...
                 facility_no=$(($facility_no+1))
         done
 }
 
-echo start $0
-echo "----------------------------------------------------------------"
+export TST_TOTAL=1
+export TST_COUNT=1
+export TCID=$(basename $0)
+
 status_flag=0
 
+tst_resm TINFO " Test all the facilities at a particular level."
+tst_resm TINFO " Facilities available are: LOG_KERN, LOG_USER, LOG_MAIL"
+tst_resm TINFO " LOG_DAEMON, LOG_AUTH, LOG_LPR."
+tst_resm TINFO " Don't know how to send kernel messages from syslog()"
+tst_resm TINFO " o Create seperate entries in config file for each facility."
+tst_resm TINFO " o Send the message and grep for the entry in log file."
+
 #Back up /etc/syslog.conf
-cp /etc/syslog.conf /etc/syslog.conf.bak08
+if ! [ -a /etc/syslog.conf ]
+then
+    tst_resm TBROK "/etc/syslog.conf not found!"
+else
+	cp /etc/syslog.conf /etc/syslog.conf.bak08
+fi
+
 syslog_case8
 
 if [ $status_flag -eq 0 ]
 then
-	echo
-	echo $0 "PASSED"
+	tst_resm TPASS "all facilities work"
 else
-	echo
-	echo $0 "FAILED"
+	tst_resm TPASS "some facilities failed to work"
 fi
-echo "----------------------------------------------------------------"
 
 #Restore syslog.conf
 mv /etc/syslog.conf.bak08 /etc/syslog.conf

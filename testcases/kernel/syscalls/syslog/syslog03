@@ -17,6 +17,8 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
+# 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
+#           fixed bugs.
 
 ##################################################################
 # case 3: Do openlog(), log the messages and see whether         #
@@ -31,16 +33,14 @@ syslog_case3()
 {
 	#set the trap to handle signals.
 	trap '
-		echo Testing is terminating due to a signal...
+		tst_resm TBROK "Testing is terminating due to a signal"
 		exit 1
 	' 1 2 3 6 11 15
 
-	echo
-	echo "syslog: Testing openlog() with ident strings...."
-	echo
+	tst_resm TINFO  "syslog: Testing openlog() with ident strings"
 
-        # Create the configuration file specific to this test case.
-        echo "daemon.info      /var/log/messages" > /etc/syslog.conf
+	# Create the configuration file specific to this test case.
+	echo "daemon.info      /var/log/messages" > /etc/syslog.conf
 
 	#Restart syslog
 	kill -1 `ps -ef | grep syslogd | grep -v grep | awk '{ print $2 }'`
@@ -62,23 +62,30 @@ syslog_case3()
 
 }
 
-echo start $0
-echo "----------------------------------------------------------------"
+export TST_TOTAL=1
+export TST_COUNT=1
+export TCID=$(basename $0)
+
 status_flag=0
 
+tst_resm TINFO "Do openlog(), log the messages and see whether"
+tst_resm TINFO "ident string is prepended to the mesage."
+
 #Back up /etc/syslog.conf
-cp /etc/syslog.conf /etc/syslog.conf.bak03
+if ! [ -a /etc/syslog.conf ]
+then
+	tst_resm TBROK "/etc/syslog.conf file not found!"
+else
+	cp /etc/syslog.conf /etc/syslog.conf.bak03
+fi
 
 syslog_case3
 if [ $status_flag -eq 0 ]
 then
-	echo
-	echo $0 "PASSED"
+	tst_resm TPASS "ident string is prepended to the mesage."
 else
-	echo
-	echo $0 "FAILED"
+	tst_resm TFAIL "ident string is not prepended to the mesage."
 fi
-echo "----------------------------------------------------------------"
 
 #Restore syslog.conf
 mv /etc/syslog.conf.bak03 /etc/syslog.conf
