@@ -83,8 +83,10 @@ while {$count < $LOOPCOUNT} {
       # telnet to the host
       spawn telnet $HOST
       expect -re "login:"
+      sleep 1
       send "$RUSER\r"
       expect -re "Password:"
+      sleep 1
       send "$PASSWD\r"
 
       # Wait for shell prompt
