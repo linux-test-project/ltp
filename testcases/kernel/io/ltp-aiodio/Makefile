@@ -1,4 +1,4 @@
-CFLAGS+= -Wall -O -g
+CFLAGS+= -Wall -O -g -DAIO
 LDLIBS+= -L /usr/lib -laio
 
 TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero fsx-linux aio-stress
