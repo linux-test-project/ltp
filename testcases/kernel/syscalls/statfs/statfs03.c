@@ -57,7 +57,7 @@
 #include "usctest.h"
 #include <pwd.h>
 
-
+extern char *TESTDIR;
 char *TCID = "statfs03";
 int TST_TOTAL = 1;
 int fileHandle = 0;
@@ -137,13 +137,15 @@ setup()
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
+    if (chmod(TESTDIR, S_IRWXU) == -1) 
+        tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s", TESTDIR, errno, strerror(errno));
 	
 	/* create a test file */
         sprintf(fname, "%s.%d", fname, getpid());
         if ((fileHandle = creat(fname, 0444)) == -1) {
                 tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
         }
-        sprintf(path, "%s/%s", fname, fname);
+        sprintf(path, "%s", fname);
 
 
         /* Switch to nobody user for correct error code collection */
