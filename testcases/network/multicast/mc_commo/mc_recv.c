@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +13,7 @@
 
 char buf[MAXBUFSIZ];
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 { 
 	struct ip_mreq imr;
         struct sockaddr_in from_in, mcast_in;
@@ -43,7 +44,7 @@ main(int argc, char *argv[])
         }
         imr.imr_multiaddr.s_addr = htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
-        if(hp = gethostbyname(argv[2]))
+        if((hp = gethostbyname(argv[2])))
            bcopy(hp->h_addr, &imr.imr_interface.s_addr, hp->h_length);
         else 
            if((n = sscanf(argv[2], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
@@ -65,7 +66,7 @@ main(int argc, char *argv[])
         /* allow address reuse for binding multiple multicast applications to
            the same group */
         if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) < 0) {
-           perror("setsockopt SO_REUSEADDR failed\n");
+           perror("setsockopt SO_REUSEADDR failed");
            exit(1);
         }
 

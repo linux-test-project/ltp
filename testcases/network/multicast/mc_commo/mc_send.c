@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +15,7 @@
 char buf[MAXBUFSIZ];
 int Num_Loops=100;
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 { 
@@ -24,8 +25,6 @@ char *argv[];
         unsigned i1, i2, i3, i4, g1, g2, g3, g4;
         struct hostent *hp, *gethostbyname();
         char myname[64];
-
-        char loop=0;
 	char ttl=0;
 
   	if ( argc < 4) {
@@ -48,7 +47,7 @@ char *argv[];
         }
         imr.imr_multiaddr.s_addr = htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
-        if(hp = gethostbyname(argv[2])) {
+        if((hp = gethostbyname(argv[2]))) {
            bcopy(hp->h_addr, &imr.imr_interface.s_addr, hp->h_length);
         } else 
            if((n = sscanf(argv[2], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
@@ -98,7 +97,7 @@ char *argv[];
 
         /* Send datagrams */
         for (i=1;i < Num_Loops;i++) {
-            sprintf(buf, "%s %d %d", argv[2], i, time(0));
+            sprintf(buf, "%s %d %d", argv[2], i, (int)time(0));
             if ((n = sendto(s, buf, sizeof(buf), 0, (struct sockaddr *) &mcast_out,
                           sizeof(mcast_out))) < 0) {
                perror("setsockopt");

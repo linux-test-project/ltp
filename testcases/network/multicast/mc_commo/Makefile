@@ -1,4 +1,4 @@
-CFLAGS += -O
+CFLAGS += -O -Wall
 LDLIBS += 
 
 SRCS=$(wildcard *.c)
