@@ -50,7 +50,7 @@ SUBDIR= \
 	sched_rr_get_interval sched_setscheduler sched_yield select \
 	send sendfile sendmsg sendto setdomainname setfsgid setfsuid \
 	setgid setgroups sethostname setitimer setpgid setpgrp setpriority \
-	setregid setresuid setreuid setrlimit setsid setsockopt \
+	setregid setresgid setresuid setreuid setrlimit setsid setsockopt \
 	settimeofday setuid sigaction sigaltstack sighold signal \
 	sigprocmask sigrelse sigsuspend socket socketpair sockioctl \
 	stat statfs stime symlink sync sysconf sysctl sysfs \
