@@ -1,0 +1,14 @@
+-- Versions installed: (if some fields are empty or look
+-- unusual then possibly you have very old versions)
+Linux maine 2.2.13-2SGI_21 #1 Mon Apr 17 16:37:24 EDT 2000 i686 unknown
+Kernel modules         2.3.11
+Gnu C                  2.95.2
+Binutils               2.9.5.0.37
+Linux C Library        2.1.3
+Dynamic linker         ldd: version 1.9.11
+Procps                 2.0.6
+Mount                  2.10f
+Net-tools              2.05
+Console-tools          0.2.3
+Sh-utils               2.0
+Modules Loaded         loop nls_iso8859-1 isofs nfs lockd sunrpc sgivpro autofs eepro100 es1371 soundcore
