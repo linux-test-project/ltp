@@ -51,7 +51,8 @@ check_return_code()
   #define PTS_UNTESTED    
   if [ $RC -eq 5 ];then
       $LTPBIN/tst_resm TINFO "UNTESTED: `cat $OUTPUT_FILE`"
-  else
+  fi
+  if [ $RC -gt 5 ];then
       $LTPBIN/tst_resm TBROK "Problem with test execution. $TEST returned $RC"
       NOPASS=1
   fi
