@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.6 2002/09/04 18:40:11 plars Exp $ */
+/* $Id: tst_tmpdir.c,v 1.7 2002/09/04 18:45:17 plars Exp $ */
 
 /**********************************************************
  *
@@ -122,6 +122,7 @@ tst_tmpdir()
  	char template[PATH_MAX];      /* template for mkstemp, mkdtemp */
   	int  no_cleanup = 0;          /* !0 means TDIRECTORY env var was set */
 	char *env_tmpdir;            /* temporary storage for TMPDIR env var */
+	int tfd;
 
    	/*
 	 * If the TDIRECTORY env variable is not set, a temp dir will be
