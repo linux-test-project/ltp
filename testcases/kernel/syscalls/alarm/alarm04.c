@@ -133,7 +133,8 @@ setup()
 
 	/* Get the TESTHOME env. variable */
 	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, tst_exit, "TESTHOME variable is not set");
+		test_home = get_current_dir_name();
+		printf("test_home is %s",test_home);
 	}
 
 	/*
