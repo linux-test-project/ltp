@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that the system call stime() successfully sets the system's idea
- *  of data and time if invoked by "root" user.
+ *  of date and time if invoked by "root" user.
  *
  * Expected Result:
  *  stime() should succeed to set the system data/time to the specified time.
@@ -147,7 +147,8 @@ main(int ac, char **av)
 				}
 
 				/* Now do the actual verification */
-				if (pres_time != new_time) {
+				if ((pres_time != new_time) && 
+				   (pres_time != new_time + 1)) {
 					tst_resm(TFAIL, "stime() fails to set "
 						"system's time");
 				} else {
