@@ -48,14 +48,12 @@ $trace_logic
 #-----------------------------------------------------------------------
 TC=${TC:=nfs04}
 TCbin=${TCbin:=`pwd`}
-TCtmp=${TCtmp:=$TCbin/$TC$$}
+TCtmp=${TCtmp:=/tmp/$TC$$}
+export TCID=$TC
+export TST_TOTAL=1
 
 # If CLEANUP is not set; set it to "ON"
 CLEANUP=${CLEANUP:="ON"}
-
-# If EXECUTABLES is not set; set it to default executables
-EXECUTABLES=${EXECUTABLES:="create_file"}
-
 
 #=============================================================================
 # FUNCTION NAME:        setup_testcase
@@ -76,6 +74,7 @@ $trace_logic
     FILESIZE=${FILESIZE:=10}
     SOCKET_TYPE=${SOCKET_TYPE:=udp}
     LOOPS=${LOOPS:=1}
+    export TST_COUNT=$LOOPS
 
     echo ""
     echo "Test Options:"
@@ -119,10 +118,9 @@ do_test()
 {
 $trace_logic
   loopcount=0
-  while [ $loopcount < $LOOPS ]
+  while [ $loopcount -lt $LOOPS ]
     do
-        cd $TCbin
-	./${executable} $FILESIZE /tmp/nfs04$PID.testfile 
+	create_file $FILESIZE /tmp/nfs04$PID.testfile 
 	cp /tmp/nfs04$PID.testfile $TCtmp	
 	diff /tmp/nfs04$PID.testfile $TCtmp
 	retval=$?
