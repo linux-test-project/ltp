@@ -35,6 +35,8 @@
 cd `dirname $0`
 export LTPROOT=${PWD}
 export TMPBASE="/tmp"
+export TMP="${TMPBASE}/runalltests-$$"
+export PATH="${PATH}:${LTPROOT}/testcases/bin"
 cmdfile=""
 pretty_prt=" "
 alt_dir=0
@@ -70,6 +72,11 @@ usage()
 exit
 }
 
+cd ${TMP}
+if [ $? -ne 0 ]; then
+  echo "could not cd ${TMP} ... exiting"
+  exit
+fi
 
 while getopts cd:f:hi:l:m:Nnpqr:t:x arg
 do  case $arg in
@@ -155,20 +162,12 @@ then
 	fi
 fi
 	
-export TMP="${TMPBASE}/runalltests-$$"
 mkdir -p ${TMP}
 
 if [ -n "$instances" ]; then
   instances="$instances -O ${TMP}"
 fi
 
-cd ${TMP}
-if [ $? -ne 0 ]; then
-  echo "could not cd ${TMP} ... exiting"
-  exit
-fi
-
-export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 # If user does not provide a command file select a default set of testcases
 # to execute.
