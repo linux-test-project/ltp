@@ -331,6 +331,8 @@ lstat01 lstat01
 lstat02 lstat02
 lstat03 lstat03
 
+memset01 memset01
+
 mlockall01 mlockall01
 mlockall02 mlockall02
 
