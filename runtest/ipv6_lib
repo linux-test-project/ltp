@@ -1,0 +1,2 @@
+#DESCRIPTION:IPV6 related tests
+lib6 export TCbin=$LTPROOT/testcases/network/ipv6/lib6;lib601
