@@ -110,24 +110,20 @@ do  case $arg in
 	    GenLoad=1 ;;
 
     l)      
-            if [ ${OPTARG:0:1} != "/" ]
-			then
-				if [ -d $LTPROOT/results ]
-				then
-					logfile="-l $LTPROOT/results/$OPTARG"
-				else
-					mkdir -p $LTPROOT/results
-					if [ $? -ne 0 ]
-					then
-						echo "ERROR: failed to create $LTPROOT/results"
-						exit 1
-					fi
-					logfile="-l $LTPROOT/results/$OPTARG"
+	    case $OPTARG in
+		/*)	
+			logfile="-l $OPTARG" ;;
+		*)
+			if [ ! -d $LTPROOT/results ]; then
+				mkdir -p $LTPROOT/results
+				if [ $? -ne 0 ]; then
+					echo "ERROR: failed to create $LTPROOT/results"
+					exit 1
 				fi
-				alt_dir=1
-            else
-				logfile="-l $OPTARG"
-			fi ;;
+			fi
+			logfile="-l $LTPROOT/results/$OPTARG"
+			alt_dir=1 ;;
+	    esac ;;
 
     m)      
             memsize=$(($OPTARG * 1024 * 1024)) 
