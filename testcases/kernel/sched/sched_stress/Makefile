@@ -9,7 +9,7 @@ all: sched.o $(TARGETS)
 sched.o: sched.h sched.c
 	$(CC) $(CFLAGS) -c sched.c
 
-install:
+install: all
 	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 clean:
 	rm -f $(TARGETS) sched.o
