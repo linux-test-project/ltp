@@ -1,3 +1,8 @@
+2000-09-08  Egor Duda <deo@logos-m.ru>
+
+	* tests/fpathconf01.c: Close opened file at exit.
+	* tests/select01.c: Ditto.
+
 2000-09-08  Andrea Arcangeli <andrea@suse.de>
   * tests/fcntl09.c, tests/fcntl10.c: Rearrange the F_SETLK test to
   to correctly use F_RDLCK and F_WRLCK.
@@ -6,3 +11,4 @@
 
 	* lib/parse_opts.c (parse_opts): Initialize allocated string
 	to prevent heap corruption.
+

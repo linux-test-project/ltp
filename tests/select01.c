@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: select01.c,v 1.3 2000/09/08 15:56:25 alaffin Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -129,7 +129,7 @@ char *TCID="select01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int Fd;
+int Fd=-1;
 fd_set Readfds;
 
 /***********************************************************************
@@ -255,6 +255,14 @@ cleanup()
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
+
+    if (Fd >= 0) {
+	if (close(Fd) == -1) {
+		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
+			FILENAME, errno, strerror(errno));
+    	}
+	Fd=-1;
+    }
 
     /* remove temporary directory and all files in it. */
     tst_rmdir();

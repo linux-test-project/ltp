@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fpathconf01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fpathconf01.c,v 1.3 2000/09/08 15:56:25 alaffin Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -150,7 +150,7 @@ struct pathconf_args
 };
 
 int TST_TOTAL=((sizeof(args)/sizeof(args[0])));
-int fd;		/* temp file for fpathconf */
+int fd=-1;		/* temp file for fpathconf */
 
 int
 main(int ac, char **av)
@@ -247,6 +247,14 @@ cleanup()
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
+
+    if (fd >= 0) {
+	if (close(fd) == -1) {
+		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
+			FILENAME, errno, strerror(errno));
+    	}
+	fd=-1;
+    }
 
     /* exit with return code appropriate for results */
     tst_rmdir();
