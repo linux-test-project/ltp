@@ -236,6 +236,7 @@ size_t get_memsize()
 		 		 return 0;
 		 }
 
+		 printf("Free Mem: %d bytes\n",freesize);
 		 res = freesize;
 
 		 if (!fgets(buff, BUFF_SIZE, f))		 { /* flush end of line */
@@ -249,43 +250,46 @@ size_t get_memsize()
 		 		 return 0;
 		 }
 
+		 printf("Free Swap: %d bytes\n",freesize);
 		 res += freesize;
 		 res = res / 1024;
 
-		 } else {
+	 } else {
 
-        /* FIXME: check return code! */
-        retcode = fscanf(f, "MemFree:  %lu ", &freesize);
-        if (retcode != 1) {
-                fclose(f);
-                return 0;
-        }
+        	/* FIXME: check return code! */
+	        retcode = fscanf(f, "MemFree:  %lu ", &freesize);
+	        if (retcode != 1) {
+	                fclose(f);
+	                return 0;
+	        }
+        
+		printf("Free Mem: %d Kb\n",freesize);
+		res = freesize;
 
-        res = freesize;
+	        if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
+	                fclose(f);
+	                return 0;
+	        }
 
-        if (!fgets(buff, BUFF_SIZE, f)) { /* flush end of line */
-                fclose(f);
-                return 0;
-        }
-
-		 for (ictl = 0; ictl < 11; ictl++) {
-		 		 /* ignore that is to be ignored */
-        		 if (!fgets(buff, BUFF_SIZE, f)) { 
-               		  fclose(f);
-               		  return 0;
-        		 }
+		/* ignore next 10 lines */
+		 for (ictl = 0; ictl < 10; ictl++) {
+	       		 if (!fgets(buff, BUFF_SIZE, f)) { 
+        	      		  fclose(f);
+               			  return 0;
+	       		 }
 		 }
 
-        retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
-        if (retcode != 1) {
-               		  fclose(f);
-               		  return 0;
-        }
+	        retcode = fscanf(f, "SwapFree:  %lu ", &freesize);
+		printf("Free Swap: %d Kb\n",freesize);
+	        if (retcode != 1) {
+        	       		  fclose(f);
+               			  return 0;
+		        }
 
-        res += freesize;
+        	res += freesize;
 
-		 } /* end check release */
-
+	 } /* end check release */
+	printf("Total Free: %d Kb\n",res);
         if (res > 4*1024*1024)
                 res -= 1*1024*1024;     		 /* safty measure: 1Gb */
 		 else {
