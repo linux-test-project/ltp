@@ -66,7 +66,7 @@ void setup(void);
 void sighandler(int);
 
 char *TCID= "signal03()";
-int TST_TOTAL = 31;
+int TST_TOTAL;
 extern int Tst_count;
 
 int fail = 0;
@@ -168,6 +168,7 @@ sighandler(int sig)
 void
 setup(void)
 {
+	TST_TOTAL = sizeof(siglist)/sizeof(int);
 	/* capture signals in our own handler */
 	tst_sig(NOFORK, sighandler, cleanup);
 

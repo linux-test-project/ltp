@@ -66,7 +66,7 @@ void setup(void);
 void sighandler(int);
 
 char *TCID= "signal05()";
-int TST_TOTAL = 31;
+int TST_TOTAL;
 extern int Tst_count;
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
@@ -167,7 +167,7 @@ sighandler(int sig)
 void
 setup(void)
 {
-
+	TST_TOTAL = sizeof(siglist)/sizeof(int);
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
