@@ -31,6 +31,9 @@
 #                                 generator sections.  Also added network traffic
 #				  option.
 #
+#  04/23/03 - Robbie Williamson - Added "-o" option and ability to set network
+#				  testing variables RHOST and PASSWD.
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -59,8 +62,6 @@ usage()
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Run LTP with a _minimum_ memory load of # megabytes in background.
     -N              Run all the networking tests. 
-                    (export RHOST = remote hostname)
-                    (export PASSWD = passwd of remote host)
     -n              Run LTP with network traffic in background.
     -o outputfile   Redirect test output to a file.
     -p              Human readable format logfiles. 
@@ -161,17 +162,23 @@ if [ $run_netest -eq 1 ]
 then
 	if [ -z $RHOST || -z $PASSWD ]
 	then
-		echo " "
-		echo " "
-		echo "ERROR: Initializing networking tests."
-		echo "INFO: Please export RHOST = 'name of the remote host machine'"
-		echo "INFO: Please export PASSWD = 'passwd of the remote host machine'"
-		echo "INFO: before running the networking tests."
-		echo " "
-		echo " "
-		echo " "
-		usage	
+		if [ -z $RHOST ]
+		then
+			echo " "
+			echo "Please enter RHOST = 'name of the remote host machine'"
+			echo -n "-> "
+			read RHOST
+		fi
+		if [ -z $PASSWD ]
+		then
+			echo " "
+			echo "Please enter PASSWD = 'root passwd of the remote host machine'"
+			echo -n "-> "
+			read PASSWD
+		fi
 	fi
+	export $RHOST
+	export $PASSWD
 fi
 	
 
