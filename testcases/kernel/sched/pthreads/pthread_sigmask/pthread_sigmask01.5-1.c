@@ -104,12 +104,12 @@ int main() {
                 return PTS_UNRESOLVED;
         }
 
-        if ((int)thread_return_value != 0) {
-                if ((int)thread_return_value == 1) {
+        if ((long)thread_return_value != 0) {
+                if ((long)thread_return_value == 1) {
                         printf ("Test UNRESOLVED\n");
                         return PTS_UNRESOLVED;
                 }
-                else if ((int)thread_return_value == -1) {
+                else if ((long)thread_return_value == -1) {
                         printf ("Test FAILED\n");
                         return PTS_FAIL;
                 }
