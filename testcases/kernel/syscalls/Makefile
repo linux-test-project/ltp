@@ -47,7 +47,7 @@ SUBDIR= \
 	readlink readv recv recvfrom recvmsg rename \
 	rmdir sbrk sched_get_priority_max sched_get_priority_min \
 	sched_getparam sched_setparam sched_getscheduler \
-	sched_setscheduler sched_yield select \
+	sched_rr_get_interval sched_setscheduler sched_yield select \
 	send sendfile sendmsg sendto setdomainname setfsgid setfsuid \
 	setgid setgroups sethostname setitimer setpgid setpgrp setpriority \
 	setregid setresuid setreuid setrlimit setsid setsockopt \
