@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fcntl03.c
+ * 	fcntl15.c
  *
  * DESCRIPTION
  * 	Check that file locks are removed when file closed
@@ -27,8 +27,8 @@
  * ALGORITHM
  * 	Use three testcases to check removal of locks when a file is closed.
  *
- * 	Case 1: Parent opens a file and duplicates it, plces locks using
- * 	both fiel descriptors then closes one descriptor, all locks should
+ * 	Case 1: Parent opens a file and duplicates it, places locks using
+ * 	both file descriptors then closes one descriptor, all locks should
  * 	be removed.
  * 	
  * 	Case 2: Open same file twice using(open), place locks using both
@@ -41,7 +41,7 @@
  * 	again. Only locks set on first file should have been removed
  *
  * USAGE
- *	fcntl03
+ *	fcntl15
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -60,7 +60,7 @@
 #define	OPEN	1
 #define	FORK_	2
 
-char *TCID = "fcntl03";
+char *TCID = "fcntl15";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -150,7 +150,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 
 	tst_tmpdir();
 	/* setup temporary file name */
-	sprintf(tmpname, "fcntl03.%d", parent);
+	sprintf(tmpname, "fcntl15.%d", parent);
 
 	/* initialize signal flags */
 	child_flag = parent_flag = 0;
