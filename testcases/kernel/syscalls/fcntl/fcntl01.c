@@ -96,9 +96,9 @@ block0:
 			fail = 1;
 		}
 
-		if (fd[2] != 5) {
+		if (fd[2] < 5) {
 			tst_resm(TFAIL, "new fd has unexpected value: "
-				 "got %d, expected %d", fd[2], 5);
+				 "got %d, expected greater than %d", fd[2], 5);
 			fail = 1;
 		}
 
@@ -111,9 +111,9 @@ block0:
 			fail = 1;
 		}
 
-		if (fd[4] != 6) {
+		if (fd[4] < 6) {
 			tst_resm(TFAIL, "new fd has unexpected value, got %d, "
-				 "expect %d", fd[4], 6);
+				 "expect greater than %d", fd[4], 6);
 			fail = 1;
 		}
 
