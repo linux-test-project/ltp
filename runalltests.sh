@@ -74,6 +74,8 @@ usage()
     -x instances    Run multiple instances of this testsuite.
 
     example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
+
+    NOTE: If you do not wish to learn these options use the "runltp" program instead.
 	END
 exit
 }
