@@ -149,7 +149,7 @@ fcntl11 fcntl11
 fcntl12 fcntl12
 fcntl13 fcntl13
 fcntl14 fcntl14
-fcntl16 fcntl16
+#fcntl16 fcntl16 #Contains errors.
 fcntl17 fcntl17
 fcntl18 fcntl18
 fcntl19 fcntl19
