@@ -66,16 +66,16 @@ init()
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
-			"Test #1: cpio command does not exist."
-		exit $RC
+			"Test #1: cpio command does not exist. Reason:"
+		return $RC
 	fi
 
 	mkdir -p $LTPTMP/tst_cpio.tmp &> $LTPTMP/tst_cpio.err || RC=$? 
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
-			"Test #1: failed creating temp directory."
-		exit $RC
+			"Test #1: failed creating temp directory. Reason:"
+		return $RC
 	fi
 	
 	for i in a b c d e f g h i j k l m n o p q r s t u v w x y z
@@ -84,11 +84,28 @@ init()
 		if [ $RC -ne 0 ]
 		then
 			$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
-				"Test #1: failed creating temp directory."
-			exit $RC
+				"Test #1: failed creating temp directory. Reason:"
+			return $RC
 		fi
 	done
+	return $RC
 }
+
+# Function:		clean
+#
+# Description	- Remove all temorary directories and file.s
+#
+# Return		- NONE
+clean()
+{
+	export TCID=cpio	# this is the init function.
+	export TST_COUNT=0	# init identifier,
+
+	$LTPBIN/tst_resm TINFO "CLEAN cleaning up before return"
+	rm -fr $LTPTMP/tst_cpio* &>/dev/null 
+	return
+}
+
 
 # Function:		test01
 #
@@ -111,7 +128,7 @@ test01()
 	then
 		 $LTPBIN/tst_res TFAIL $LTPTMP/tst_cpio.err \
 			"Test #1: creating cpio archive failed. Reason:"
-		exit $RC
+		return $RC
 	else
 		if [ -f $LTPTMP/tst_cpio.out ]
 		then
@@ -119,14 +136,15 @@ test01()
 			if [ $? -ne 0 ]
 			then
 				$LTPBIN/tst_res TFAIL $LTPTMP/tst_cpio.err	\
-				"Test #1: bad output, not cpio format."
-				exit $RC
+				"Test #1: bad output, not cpio format. Reason:"
+				return $RC
 			fi
 		else
 			 $LTPBIN/tst_resm TFAIL "Test #1: did not create cpio file."
-			 exit $RC
+			 return $RC
 		fi
 	fi
+	return $RC
 }
 
 
@@ -150,5 +168,7 @@ then
 else
 	TFAILCNT=$((TFAILCNT+1))
 fi
+
+clean				# clean up before returning
 
 exit $TFAILCNT
