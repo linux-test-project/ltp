@@ -33,7 +33,6 @@
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
-#
 #-----------------------------------------------------------------------
 # Uncomment line below for debugging information
 #trace_logic=${trace_logic:-"set -x"}
