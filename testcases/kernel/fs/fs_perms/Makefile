@@ -1,6 +1,8 @@
 TARGETS=fs_perms
-all: fs_perms.o testx.o
+all: fs_perms testx.file
+fs_perms:
 	$(CC) fs_perms.o -o fs_perms
+testx.file:
 	$(CC) testx.o -o testx.file
 install:
 	@for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done

@@ -114,16 +114,19 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
             int code,
             struct ucontext *ut)/* contains pointer to sigcontext structure   */
 {
+#ifdef __i386__
     unsigned long     except;   /* exception type.			      */
     int               ret = 0;  /* exit code from signal handler.             */
     struct   sigcontext *scp = 	/* pointer to sigcontext structure	      */
 				(struct sigcontext *)&ut->uc_mcontext;
+#endif
 
     if (signal == SIGALRM)
     {
         fprintf(stdout, "Test ended, success\n");
         exit(0);
     }
+#ifdef __i386__
     else
     {
         except = scp->trapno; 
@@ -183,6 +186,10 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     }
     else
         exit (-1);
+#else
+    fprintf(stderr, "caught signal %d -- exiting.\n", signal);
+    exit (-1);
+#endif
 }
 
 
@@ -285,7 +292,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         if ((map_address = shmat(shmkey, (void *)0, SHMLBA))
 			 ==  (void *)-1)
         {
-	    fprintf(stderr, "shmat_shmat(): map address = %d\n", 
+	    fprintf(stderr, "shmat_shmat(): map address = %p\n", 
 		map_address);
             perror("shmat_shmdt(): shmat()");
             exit_val = -1;
@@ -299,7 +306,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         }
 
         fprintf(stdout, 
-		"Map address = %#x\nNum iter: [%d] Total Num Iter: [%d]\n",
+		"Map address = %p\nNum iter: [%d] Total Num Iter: [%d]\n",
 			 map_address, shm_ndx, (int)locargs[0]);
 	usleep(0);
 	sched_yield();
@@ -354,11 +361,11 @@ write_to_mem(void *args)
         if (sigsetjmp(jmpbuf,0) == 1)
         {
             fprintf(stdout,
-                "page fault ocurred due a write after an shmdt from [%#x]\n",
+                "page fault ocurred due a write after an shmdt from [%p]\n",
                         map_address);
         }
 
-	fprintf(stdout, "write_to_mem(): memory address: [%#x]\n", 
+	fprintf(stdout, "write_to_mem(): memory address: [%p]\n", 
 		map_address);
 	(char *)map_address = "Y";
         //memset(map_address, 'Y', fsize);
@@ -396,13 +403,13 @@ read_from_mem(void *args)
 
     while (read_ndx++ < (int)locargs[0])
     {
-	fprintf(stdout, "read_from_mem():  memory address: [%#x]\n", 
+	fprintf(stdout, "read_from_mem():  memory address: [%p]\n", 
 		map_address);
         
 	if (sigsetjmp(jmpbuf,0) == 1)
         {
             fprintf(stdout,
-                "page fault ocurred due a read after an shmdt from %#x\n",
+                "page fault ocurred due a read after an shmdt from %p\n",
 			map_address);
         }
 
@@ -437,6 +444,7 @@ read_from_mem(void *args)
 /*		exits with a 0 on success.				      */
 /*                                                                            */
 /******************************************************************************/
+int
 main(int  argc,		/* number of input parameters.			      */
      char **argv)	/* pointer to the command line arguments.	      */
 {
@@ -575,4 +583,5 @@ main(int  argc,		/* number of input parameters.			      */
 	fprintf(stdout, "TEST PASSED\n");
         exit (0);
     }
+    return 0;
 }

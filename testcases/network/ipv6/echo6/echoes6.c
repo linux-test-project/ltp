@@ -19,9 +19,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <curses.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#define TRUE 1
+#define FALSE 0
 
 main (int argc,char *argv[],char *env[])
 {

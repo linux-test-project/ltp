@@ -23,8 +23,24 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.1 2002/03/15 21:33:56 robbiew Exp $
+# $Id: Makefile,v 1.2 2002/05/28 14:45:38 plars Exp $
 # $Log: Makefile,v $
+# Revision 1.2  2002/05/28 14:45:38  plars
+# MIPS fixes from Johannes Stezenbach:
+# ltp-20020507 / current CVS does not compile on MIPS, because
+# some i386 specifics were used in signal handlers in the
+# kernel/mem/mtest06/mmap1.c and kernel/mem/mtest06/shmat1.c
+# test cases. While I was at it I cleaned up some warnings
+# regarding printf("%x") used for printing pointers,
+# vs. printf("%p").
+#
+# Also, SIGSTKFLT and SIGUNUSED are not defined on MIPS
+# (kernel/syscalls/signal/* test cases).
+#
+# And some test cases #include <curses.h>, which is not
+# present on my (semi-embedded) MIPS system, and is unnecessary for
+# the tests.
+#
 # Revision 1.1  2002/03/15 21:33:56  robbiew
 # Forgot to add this.
 #
@@ -59,7 +75,8 @@
 CFLAGS= -Wall -O -g -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 #CC=gcc
 
-all:	threading.o childmain.o globals.o main.o usage.o sfunc.o parse.o defs.h
+all:	disktest
+disktest: threading.o childmain.o globals.o main.o usage.o sfunc.o parse.o defs.h
 	$(CC) $(CFLAGS) -lpthread -o disktest threading.o main.o usage.o sfunc.o parse.o childmain.o globals.o
 main.o: main.c main.h sfunc.h usage.h defs.h
 	$(CC) $(CFLAGS) -c -o main.o main.c

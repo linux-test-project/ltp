@@ -136,16 +136,19 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
             int code,	        
             struct ucontext *ut)/* contains pointer to sigcontext structure   */
 {
+#ifdef __i386__
     unsigned long     except;   /* exception type.			      */
     int               ret = 0;  /* exit code from signal handler.             */
     struct   sigcontext *scp = 	/* pointer to sigcontext structure	      */
 				(struct sigcontext *)&ut->uc_mcontext;
+#endif
 
     if (signal == SIGALRM)
     {
         fprintf(stdout, "Test ended, success\n");
         exit(0);
     }
+#ifdef __i386__
     else
     {
         except = scp->trapno; 
@@ -204,6 +207,10 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     }
     else
         exit (-1);
+#else
+    fprintf(stderr, "caught signal %d -- exiting.\n", signal);
+    exit (-1);
+#endif
 }
 
 
@@ -343,7 +350,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         }
         
         if(verbose_print)
-            fprintf(stderr, "map address = %#lx\n", map_address);
+            fprintf(stderr, "map address = %p\n", map_address);
 
 	prtln();
 
@@ -392,25 +399,25 @@ read_mem(void *args)		/* number of reads performed		      */
         fprintf(stdout, 
 		"read_mem()arguments are:\n"
 		"number of reads to be performed - arg[2]: %d\n"
-                "read from address %#lx\n",
+                "read from address %p\n",
 		(int)rmargs[2], (long *)map_address);
 
     mem_content = malloc(sizeof(char) * rd_index);
     while (rd_index++ < (int)rmargs[2])
     {
-        fprintf(stdout, "pid[%d] - read contents of memory %#x %d times\n",
+        fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
                getpid(), map_address, rmargs[2]);
         if (verbose_print)
 	    fprintf(stdout, 
-	        "read_mem() in while loop  %d times to go %d times\n", 
-		(int)rd_index, (int)rmargs[2]);
+	        "read_mem() in while loop  %d times to go %ld times\n", 
+		rd_index, rmargs[2]);
         usleep(1);
         
         if (setjmp(jmpbuf) == 1)
         {
             if (verbose_print)
 	        fprintf(stdout, 
-		    "page fault ocurred due a read after an unmap from %#x\n",
+		    "page fault ocurred due a read after an unmap from %p\n",
 		    map_address);
         }
         else
@@ -502,18 +509,20 @@ main(int  argc,		/* number of input parameters.			      */
     
     static struct signal_info
     {
-        int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
+        int  signum;    /* signal number that hasto be handled                */
+	char *signame;  /* name of the signal to be handled.                  */
+    } sig_info[] =
                    {
-                        SIGHUP,"SIGHUP",
-                        SIGINT,"SIGINT",
-                        SIGQUIT,"SIGQUIT",
-                        SIGABRT,"SIGABRT",
-                        SIGBUS,"SIGBUS",
-                        SIGSEGV,"SIGSEGV",
-                        SIGALRM, "SIGALRM",
-                        SIGUSR1,"SIGUSR1",
-                        SIGUSR2,"SIGUSR2",
-                        -1,     "ENDSIG"
+			{ SIGHUP,"SIGHUP" },
+                        { SIGINT,"SIGINT" },
+                        { SIGQUIT,"SIGQUIT" },
+                        { SIGABRT,"SIGABRT" },
+                        { SIGBUS,"SIGBUS" },
+                        { SIGSEGV,"SIGSEGV" },
+                        { SIGALRM, "SIGALRM" },
+                        { SIGUSR1,"SIGUSR1" },
+                        { SIGUSR2,"SIGUSR2" },
+                        { -1,     "ENDSIG" }
                    };
 
     /* set up the default values */
@@ -636,7 +645,7 @@ main(int  argc,		/* number of input parameters.			      */
                 if (!status[thrd_ndx])
                 {
                     fprintf(stderr, 
-			    "thread [%d] - process exited with errors %d\n",
+			    "thread [%ld] - process exited with errors %d\n",
 			        thid[thrd_ndx], status[thrd_ndx]);
 	            exit (-1);
 	        }
