@@ -634,6 +634,8 @@ setgid01 setgid01
 setgid02 setgid02
 setgid03 setgid03
 
+setegid01 setegid01
+
 setgroups01 setgroups01
 setgroups02 setgroups02
 setgroups03 setgroups03
