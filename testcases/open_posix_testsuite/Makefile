@@ -52,8 +52,6 @@ CFLAGS += $(call check_gcc,-std=gnu99,)
 
 INCLUDE = -Iinclude
 
-include /opt/libc/Makefile.inc
-
 # FIXME: exaust cmd line length
 clean:
 	@rm -f $(LOGFILE)
