@@ -22,7 +22,7 @@
 #               written
 ####################################################
 
-NAME=$(echo $0 | cut -d/ -f2)
+NAME=sigaction04
 
 export TST_TOTAL=$(ls -1 $NAME.*|grep -v "\.c"|wc -l|awk {'print $1'})
 
