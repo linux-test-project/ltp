@@ -191,6 +191,8 @@ cleanup()
 	 * print timing status if that option was specified.
 	 * print errno log if that option was specified
 	 */
+    close(fd);
+
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files in it */

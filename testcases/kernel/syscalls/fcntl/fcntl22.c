@@ -207,6 +207,8 @@ cleanup()
 		  * print timing stats if that option was specified
 		  * print errno log if that option was specified
 		  */
+         close(file);
+
 		 TEST_CLEANUP;
 		 /* remove temporary directory */
 		 tst_rmdir();

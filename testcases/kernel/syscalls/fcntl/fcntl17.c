@@ -148,6 +148,7 @@ int setup()
 void
 cleanup()
 {
+    close(file_fd);
 	tst_rmdir();
 	tst_exit();
 }
