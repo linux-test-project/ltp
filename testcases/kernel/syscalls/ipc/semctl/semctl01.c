@@ -479,12 +479,13 @@ void
 func_sval()
 {
 	int semv;
+	union semun arr;
 
 	/*
 	 * do a GETVAL and compare it to the value set above
 	 */
 
-	if ((semv = semctl(sem_id_1, SEM4, GETVAL, NULL)) == -1) {
+	if ((semv = semctl(sem_id_1, SEM4, GETVAL, arr)) == -1) {
 		tst_brkm(TBROK, cleanup, "semctl failed in func_sval");
 	}
 
