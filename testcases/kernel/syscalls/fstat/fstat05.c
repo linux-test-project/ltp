@@ -113,14 +113,21 @@ void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
 void sighandler(int sig);	/* signals handler function for the test */
 
-int SIG_SEEN = 31;
-
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
                 SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
-                SIGTERM, SIGSTKFLT, SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
+                SIGTERM, 
+#ifdef SIGSTKFLT
+SIGSTKFLT, 
+#endif
+		SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
                 SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
-                SIGWINCH, SIGIO, SIGPWR, SIGSYS, SIGUNUSED};
+                SIGWINCH, SIGIO, SIGPWR, SIGSYS, 
+#ifdef SIGUNUSED
+SIGUNUSED
+#endif
+};
 
+int SIG_SEEN = sizeof(siglist)/sizeof(int);
 
 int
 main(int ac, char **av)
