@@ -26,6 +26,7 @@ OBJS=$(SRC1:.c=.o)
 TARGETS=query_module01 query_module02 query_module03 $(OBJS)
 
 all: $(TARGETS)
+	chmod 755 $(OBJS)
 
 $(OBJS): $(SRC1)
 	$(CC) -c $(SRC1) -Wall 
@@ -39,7 +40,7 @@ query_module02: query_module02.c
 query_module03: query_module03.c
 	$(CC) $(CFLAGS) query_module03.c $(LOADLIBES) -o $@
 
-install:
+install: 
 	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:

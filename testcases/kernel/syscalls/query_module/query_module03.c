@@ -157,6 +157,7 @@ main(int argc, char **argv)
 			"at a time"); 
 		STD_COPIES = 1;
 	}
+	tst_tmpdir();
 	setup();
 
 	/* check looping state if -i option is given */
@@ -200,9 +201,19 @@ int
 setup1(void)
 {
 	char cmd[80];
+
+        if( sprintf(cmd, "cp `which %s.o` ./", DUMMY_MOD) == -1) {
+                tst_resm(TBROK, "sprintf failed");
+                return 1;
+        }
+        if(system(cmd) != 0 ) {
+                tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
+                return 1;
+        }
+
 	/* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
-        /* if( sprintf(cmd, "insmod %s.o", mod) == -1) {               */
+        /* if( sprintf(cmd, "insmod %s.o", DUMMY_MOD) == -1) {         */
 	if( sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", DUMMY_MOD) == -1) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
@@ -264,7 +275,7 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
+	tst_rmdir();
 	/* exit with return code appropriate for results */
 	tst_exit();
 	/*NOTREACHED*/

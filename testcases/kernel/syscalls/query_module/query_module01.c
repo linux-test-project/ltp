@@ -169,6 +169,7 @@ main(int argc, char **argv)
 		STD_COPIES = 1;
 	}
 
+	tst_tmpdir();
 	setup();
 
 	/* check looping state if -i option is given */
@@ -289,7 +290,16 @@ int
 insert_mod(char *mod)
 {
 	char cmd[80];
-
+	
+	if( sprintf(cmd, "cp `which %s.o` ./", mod) == -1) {
+		tst_resm(TBROK, "sprintf failed");
+		return 1;
+	}
+	if(system(cmd) != 0 ) {
+		tst_resm(TBROK, "Failed to copy %s module", mod);
+		return 1;
+	}
+	
         /* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
 	/* if( sprintf(cmd, "insmod %s.o", mod) == -1) {               */
@@ -393,7 +403,7 @@ cleanup(void)
 	 */
 
 	TEST_CLEANUP;
-
+	tst_rmdir();
 	/* exit with return code appropriate for results */
 	tst_exit();
 	/*NOTREACHED*/
