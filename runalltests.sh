@@ -72,6 +72,8 @@ usage()
 exit
 }
 
+mkdir -p ${TMP}
+
 cd ${TMP}
 if [ $? -ne 0 ]; then
   echo "could not cd ${TMP} ... exiting"
@@ -162,8 +164,6 @@ then
 	fi
 fi
 	
-mkdir -p ${TMP}
-
 if [ -n "$instances" ]; then
   instances="$instances -O ${TMP}"
 fi
