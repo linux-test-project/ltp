@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install:
-	ln -s fsstress ../../../bin
+	ln -f fsstress ../../../bin
 
 clean:
 	rm -f $(TARGETS)
