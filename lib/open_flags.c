@@ -195,7 +195,7 @@ parse_open_flags(char *string, char **badname)
    char *cc;
    char savecc;
    int  found;
-   int  ind;
+   unsigned int  ind;
 
    name=string;
    cc=name;
