@@ -72,7 +72,7 @@
  * -c option can't be used.
  *
  *CHANGES:
- *  01/02/03  Added code to handle SIGSEGV generated when the intentional EPERM error 
+ *  01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM error 
  *            for hitting MAX_SWAPFILES is hit. -Robbie Williamson <robbiew@us.ibm.com>
  *****************************************************************************/
 
@@ -110,7 +110,6 @@ static int setup02();
 static int cleanup02();
 static int setup03();
 static int cleanup03();
-int set_handler(int, int);
 void handler(int);
 
 char *TCID = "swapon02";	/* Test program identifier.    */
@@ -367,6 +366,7 @@ setup03()
 			return -1;
 		}
 	  }
+	  tst_exit();
 	}
 	else
 	  waitpid(pid,status,0);
@@ -419,7 +419,6 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	set_handler(SIGSEGV,0);
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
@@ -467,40 +466,5 @@ cleanup()
 	tst_exit();
 }	/* End cleanup() */
 
-/*
- * handler()
- *      A dummy signal handler for attempting to catch signals.
- */
-void
-handler(int sig)
-{
-        tst_exit();
-}
-
-/*
- * set_handler()
- *      Establish a signal handler for "sig" with the specified flags and
- *      signal to mask while the handler executes.
- * Returns
- *      0 on success, errno on failure
- */
-int
-set_handler(int sig, int sig_to_mask)
-{
-        struct sigaction sa;
-        int err;
-
-        sa.sa_sigaction = (void *)handler;
-        sa.sa_flags = SA_NOMASK;
-        sigemptyset(&sa.sa_mask);
-        sigaddset(&sa.sa_mask, sig_to_mask);
-        err = sigaction(sig, &sa, NULL);
-
-        if (err == 0) {
-                return 0;
-        } else {
-                return errno;
-        }
-}
 
 

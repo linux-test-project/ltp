@@ -752,6 +752,7 @@ string01 string01
 swapoff01 swapoff01
 swapoff02 swapoff02
 
+swapon01 swapon01
 swapon02 swapon02
 
 symlink01 symlink01
