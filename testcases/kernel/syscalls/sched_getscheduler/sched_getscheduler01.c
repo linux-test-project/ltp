@@ -72,13 +72,13 @@ struct test_case_t {
 	{1, SCHED_FIFO}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned by parse_opts */
 
-	int i, retval;
-	struct sched_param *param;
+	int i;
+	struct sched_param param;
 	
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -98,9 +98,9 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* set up test specific conditions */
-			param->sched_priority = TC[i].prio;
+			param.sched_priority = TC[i].prio;
 
-			if (sched_setscheduler(0, TC[i].policy, param) == -1) {
+			if (sched_setscheduler(0, TC[i].policy, &param) == -1) {
 				tst_brkm(TBROK, cleanup, "sched_setscheduler() "
 					 "failed");
 			}
@@ -127,6 +127,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 
+	return -1;
 	/*NOTREACHED*/
 }
 
