@@ -388,8 +388,9 @@ sig_handler()
 void
 setup()
 {
+#define BUFSIZE 512
   FILE* f;
-  size_t msgmni;
+  char buff[BUFSIZE];
   
         /* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
@@ -410,8 +411,9 @@ setup()
 		tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
 		tst_exit();
         }
-	MSGMNI = fscanf(f,"%d",&msgmni);	
-	fclose(f);	
+	fgets(buff, BUFSIZE, f);
+	fclose(f);
+	MSGMNI = atoi(buff);	
 }
 
 

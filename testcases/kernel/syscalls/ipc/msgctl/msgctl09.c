@@ -551,19 +551,21 @@ term(int sig)
 void
 setup()
 {
+#define BUFSIZE 512
   FILE* f;
-  size_t msgmni;
+  char buff[BUFSIZE];
+
         /* You will want to enable some signal handling so you can capture
-	 * unexpected signals like SIGSEGV.
-	 *                   */
+         * unexpected signals like SIGSEGV.
+         */
         tst_sig(FORK, DEF_HANDLER, cleanup);
 
 
         /* Pause if that option was specified */
         /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
-	 * fork the test with the -c option.  You want to make sure you do this
-	 * before you create your temporary directory.
-	 */
+         * fork the test with the -c option.  You want to make sure you do this
+         * before you create your temporary directory.
+         */
         TEST_PAUSE;
 
         /* Get the max number of message queues allowed on system */
@@ -572,8 +574,9 @@ setup()
                 tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
                 tst_exit();
         }
-        MSGMNI = fscanf(f,"%d",&msgmni);
+        fgets(buff, BUFSIZE, f);
 	fclose(f);
+        MSGMNI = atoi(buff);
 }
 
 
