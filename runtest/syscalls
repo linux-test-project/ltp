@@ -876,6 +876,9 @@ unlink08 unlink08
 #umount03 umount03 -D /dev/...
 #umount04 umount04 -D /dev/...
 
+ustat01 ustat01
+ustat02 ustat02
+
 utime01 utime01
 utime01A symlink01 -T utime01
 utime02 utime02
