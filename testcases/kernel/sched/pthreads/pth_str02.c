@@ -112,6 +112,7 @@ void *thread (void *parm)
 	int num = (int) parm;
 	pthread_t	th;
 	pthread_attr_t	attr;
+	size_t		stacksize = 1046528;
 
 	if (debug) {
 		printf ("\tThread [%d]: new\n", num);
@@ -125,6 +126,8 @@ void *thread (void *parm)
 
 		if (pthread_attr_init (&attr))
 			sys_error ("pthread_attr_init failed", __LINE__);
+		if (pthread_attr_setstacksize (&attr, stacksize))
+			sys_error ("pthread_attr_setstacksize failed", __LINE__);
 		if (pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE))
 			sys_error ("pthread_attr_setdetachstate failed", __LINE__);
 		if (pthread_create (&th, &attr, thread, (void *)(num + 1))) {
