@@ -65,7 +65,6 @@
  ****************************************************************/
 
 #include <errno.h>
-#include <asm/current.h>
 #include <sched.h>
 #include "test.h"
 #include "usctest.h"
