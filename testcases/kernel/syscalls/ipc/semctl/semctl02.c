@@ -51,12 +51,16 @@
  */
 
 #include "../lib/ipcsem.h"
+#include <pwd.h>
 
 char *TCID = "semctl02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
 int exp_enos[] = {EACCES, 0};	/* 0 terminated list of expected errnos */
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 int sem_id_1 = -1;
 
@@ -128,6 +132,19 @@ setup(void)
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/*
 	 * Create a temporary directory and cd into it.
