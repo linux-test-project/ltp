@@ -280,6 +280,9 @@ getuid03 getuid03
 ioctl01 ioctl01 -D /dev/ttyS0
 ioctl02 ioctl02 -D /dev/ttyS0
 
+ioperm01 ioperm01
+ioperm02 ioperm02
+
 iopl01 iopl01
 iopl02 iopl02
 

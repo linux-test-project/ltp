@@ -38,7 +38,7 @@ SUBDIR= \
 	getgid getgroups gethostid gethostname getitimer getpeername \
 	getpgid getpgrp getpid getppid getpriority getresgid getresuid \
 	getrusage getsid getsockname getsockopt gettimeofday getuid \
-	ioctl iopl ipc kill lchown link \
+	ioctl ipc ioperm iopl kill lchown link \
 	listen llseek lseek lstat \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
 	mremap msync munlock munlockall munmap nanosleep nftw nice open \
