@@ -53,21 +53,17 @@
 
 extern int errno;
 
-char *TCID="shmt03";            /* Test program identifier.    */
+char *TCID="shmt04";            /* Test program identifier.    */
 int TST_TOTAL=2;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
 key_t	key;
+sigset_t sigset;
 
 #define		ADDR		(void *)0x80000
 #define		SIZE		16*1024
 
-/* ARGSUSED */
-void
-sigusr1(int sig)
-{
-}
 
 int child();
 int rm_shm(int);
@@ -79,8 +75,11 @@ int main()
 	int	status;
 
 	key = (key_t) getpid() ;
-	signal(SIGUSR1, sigusr1);
 
+	sigemptyset(&sigset);
+	sigaddset(&sigset,SIGUSR1);
+	sigprocmask(SIG_BLOCK,&sigset,NULL);
+	
 	pid = fork();
 	switch (pid) {
 	case -1:
@@ -159,8 +158,9 @@ int child()
 	int 	shmid, 
 		chld_pid ;
 	char 	*cp;
+	int sig;
 
-	pause();
+	sigwait(&sigset, &sig);
 	chld_pid = getpid() ;
 /*--------------------------------------------------------*/
 

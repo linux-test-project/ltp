@@ -62,12 +62,7 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
 key_t	key;
-
-/* ARGSUSED */
-void
-sigusr1(int sig)
-{
-}
+sigset_t sigset;
 
 int child();
 int rm_shm(int);
@@ -80,7 +75,9 @@ int main()
 
 	key = (key_t)getpid() ;
 
-	signal(SIGUSR1, sigusr1);
+	sigemptyset(&sigset);
+	sigaddset(&sigset,SIGUSR1);
+	sigprocmask(SIG_BLOCK,&sigset,NULL);
 
 	pid = fork();
 	switch (pid) {
@@ -160,8 +157,9 @@ int child()
 	int 	shmid ,
 		chld_pid ;
 	char 	*cp;
+	int sig;
 
-	pause();
+	sigwait(&sigset, &sig);
 	chld_pid = getpid() ;
 	
 	if ((shmid = shmget(key, SIZE, 0)) < 0) {
