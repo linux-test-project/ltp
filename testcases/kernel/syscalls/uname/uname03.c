@@ -19,10 +19,10 @@
 
 /*
  * NAME
- *	uname01.c
+ *	uname03.c
  *
  * DESCRIPTION
- *	uname01 - call uname() and make sure it succeeds
+ *	uname03 - call uname() and make sure it succeeds
  *
  * ALGORITHM
  *	loop if that option was specified
@@ -35,7 +35,7 @@
  *	  call cleanup
  *
  * USAGE:  <for command-line>
- *  uname01 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
+ *  uname03 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-f   : Turn off functionality Testing.
  *		-i n : Execute test n times.
@@ -61,7 +61,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "uname01";
+char *TCID= "uname03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
