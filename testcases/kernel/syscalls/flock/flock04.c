@@ -151,8 +151,8 @@ int main(int argc, char **argv)
 			fd1 = open(filename, O_RDWR);	
 			retval= flock(fd1,LOCK_EX|LOCK_NB);
 			if(retval == -1){
-				tst_resm(TPASS, "flock() FAILED to acquire exclusive lock on existing "
-						"Share Locked file as expected");
+				tst_resm(TPASS, "flock() failed to acquire exclusive lock on existing "
+						"share locked file as expected");
 			}
 			else{
 				tst_resm(TFAIL, "flock() unexpectedly passed in acquiring exclusive lock on "
