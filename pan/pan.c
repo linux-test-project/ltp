@@ -32,9 +32,12 @@
  * Changelog:
  * 
  *	Added timer options: William Jay Huie, IBM
+ *	01/27/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
+ *			   - option '-p' (pretty printing)i to enabled formatted printing 
+ *			     of results.
  *
  */
-/* $Id: pan.c,v 1.13 2002/09/05 20:48:35 robbiew Exp $ */
+/* $Id: pan.c,v 1.14 2003/01/27 22:56:23 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -86,7 +89,8 @@ static struct collection *get_collection(char *file, int optind, int argc,
 					 char **argv);
 static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
-		      int keep_active, FILE * logfile, struct orphan_pgrp *orphans);
+		      int keep_active, FILE * logfile, struct orphan_pgrp *orphans,
+			  int fmt_print);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -147,8 +151,9 @@ main(int argc, char **argv)
     int fork_in_road = 0;
     int exit_stat;
     int track_exit_stats = 0;	/* exit non-zero if any test exits non-zero */
+	int fmt_print = 0;          /* enables formatted printing of logfiles. */
 
-    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:r:s:t:x:y")) != -1) {
+    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pr:s:t:x:y")) != -1) {
 	switch (c) {
 	case 'A':	/* all-stop flag */
 	    has_brakes = 1;
@@ -173,8 +178,11 @@ main(int argc, char **argv)
 	    filename = strdup(optarg);
 	    break;
 	case 'h':	/* help */
-	    printf
-		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [-t time[s|m|h|d] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ]\n\t[-o output-file] [-O output-buffer-directory] [cmd]\n");
+	    fprintf(stdout, "Usage: pan -n name [ -SyAehp ] [ -s starts ]"
+				 " [-t time[s|m|h|d] [ -x nactive ] [ -l logfile ]\n\t"
+				 "[ -a active-file ] [ -f command-file ] "
+				 "[ -d debug-level ]\n\t[-o output-file] "
+				 "[-O output-buffer-directory] [cmd]\n");
 	    exit(0);
 	case 'l':	/* log file */
 	    logfilename = strdup(optarg);
@@ -185,6 +193,9 @@ main(int argc, char **argv)
 	case 'o':	/* send test output here */
 	    outputfilename = strdup(optarg);
 	    break;
+	case 'p':	/* formatted printing. */
+		fmt_print = 1;
+		break;
 	case 'r':	/* reporting type: none, rts */
 	    reporttype = strdup(optarg);
 	    break;
@@ -264,7 +275,14 @@ main(int argc, char **argv)
 	time(&startup);
 	s = ctime(&startup);
 	*(s + strlen(s) - 1) = '\0';
-	fprintf(logfile, "startup='%s'\n", s);
+	if (!fmt_print)
+		fprintf(logfile, "startup='%s'\n", s);
+	else
+	{
+		fprintf(logfile, "Test Start Time: %s\n\n", s);
+		fprintf(logfile, "%-30.20s %s\n", "Testcase", "Result");
+		fprintf(logfile, "%-30.20s %s\n", "--------", "------");
+	}
     }
 
     coll = get_collection(filename, optind, argc, argv);
@@ -459,7 +477,7 @@ main(int argc, char **argv)
 	}
 
 	err = check_pids(running, &num_active, keep_active,
-			 logfile, orphans);
+			 logfile, orphans, fmt_print);
 	if (Debug & Drunning) {
 	    pids_running(running, keep_active);
 	    orphans_running(orphans);
@@ -562,7 +580,7 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
-	   FILE * logfile, struct orphan_pgrp *orphans)
+	   FILE * logfile, struct orphan_pgrp *orphans, int fmt_print)
 {
     int w;
     pid_t cpid;
@@ -642,14 +660,21 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 		}
 		time(&t);
 		if (logfile != NULL) {
-		    fprintf(logfile,
-			    "tag=%s stime=%d dur=%d exit=%s stat=%d core=%s cu=%d cs=%d\n",
-			    running[i].cmd->name, (int) (running[i].stime),
-			    (int) (t - running[i].stime), status, w,
-			    (stat_loc & 0200) ? "yes" : "no",
-			    (int) (tms2.tms_cutime - tms1.tms_cutime),
-			    (int) (tms2.tms_cstime - tms1.tms_cstime));
-		    fflush(logfile);
+			if (!fmt_print)
+				fprintf(logfile,
+				 "tag=%s stime=%d dur=%d exit=%s stat=%d core=%s cu=%d cs=%d\n",
+					running[i].cmd->name, (int) (running[i].stime),
+					(int) (t - running[i].stime), status, w,
+					(stat_loc & 0200) ? "yes" : "no",
+					(int) (tms2.tms_cutime - tms1.tms_cutime),
+					(int) (tms2.tms_cstime - tms1.tms_cstime));
+			else
+			{
+					fprintf(logfile, "%-30.20s %s\n", running[i].cmd->name, 
+						((w != 0) ? "FAIL" : "PASS"));
+			}
+
+				fflush(logfile);
 		}
 
 
