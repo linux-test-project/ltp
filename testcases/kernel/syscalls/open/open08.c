@@ -72,7 +72,7 @@ int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0};
 char * bad_addr = 0;
 
 char filename[40] = "";
-char fname[] = "/usr/bin/test";		/* test executable to open */
+char fname[] = "/bin/cat";		/* test executable to open */
 char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 struct test_case_t {
