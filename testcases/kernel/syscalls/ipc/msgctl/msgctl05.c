@@ -98,10 +98,6 @@ main(int ac, char **av)
 		}
 	
 		do_child();
-
-		cleanup();
-
-		/*NOTREACHED*/
 	} else {		/* parent */
 		if (waitpid(pid, NULL, 0) == -1) {
 			tst_resm(TBROK, "waitpid() failed");
@@ -115,6 +111,9 @@ main(int ac, char **av)
 		/* Remove the temporary directory */
 		tst_rmdir();
 	}
+
+	cleanup ();
+
 }
 
 /*

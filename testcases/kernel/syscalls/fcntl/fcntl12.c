@@ -149,4 +149,7 @@ cleanup(void)
 
 	unlink(fname);
 	tst_rmdir();
+
+        /* exit with return code appropriate for results */
+        tst_exit();
 }
