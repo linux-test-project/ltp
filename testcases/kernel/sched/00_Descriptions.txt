@@ -1,0 +1,17 @@
+clisrv
+
+	Read contents of data file. Write each line to socket, then   
+	read line back from socket and write to standard output. 
+
+pth_str01
+
+	Creates a tree of threads
+
+pth_str02
+
+	Creates n threads
+
+pth_str03
+	
+	Creates a tree of threads does calculations, and
+        returns result to parent
