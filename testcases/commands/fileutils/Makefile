@@ -1,4 +1,4 @@
-SUBDIRS = cp mv mkdir
+SUBDIRS = cp mv mkdir ln
 
 all:
 
