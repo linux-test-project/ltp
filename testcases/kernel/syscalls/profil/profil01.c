@@ -62,7 +62,7 @@ extern int errno;
 extern int etext;
 extern char *malloc();
 
-int t_flag;
+volatile int t_flag;
 
 //char progname[]= "profil1()";
 
