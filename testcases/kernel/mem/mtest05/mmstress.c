@@ -74,6 +74,12 @@
 /*        - formatting changes.                                               */
 /*        - increased NUMPAGES to 9999.                                       */
 /*                                                                            */
+/* Jan-30-2003  Modified - Gary Williams                                      */
+/*        - fixed a race condition between the two threads                    */
+/*        - made is so if any of the testcases fail the test will fail        */
+/*        - fixed so status of child in test 6 is used to determine result    */
+/*        - fixed the use of the remove_files function in a conditional       */
+/*                                                                            */
 /******************************************************************************/
 
 
@@ -133,6 +139,7 @@ typedef struct {      /* structure returned by map_and_thread()               */
 } RETINFO_t;
 
 static   int  wait_thread = 0;       /* used to wake up sleeping threads      */
+static   int  thread_begin = 0;      /* used to coordinate threads            */
 static   int  verbose_print = FALSE; /* print more test information           */
 
 
@@ -258,6 +265,16 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
     char    read_from_addr = 0;  /* address to which read from page is done   */
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
     volatile int exit_val = 0;   /* exit value of the pthread. 0 - success    */
+
+    /*************************************************************/
+    /*   The way it was, args could be overwritten by subsequent uses
+     *   of it before this routine had a chance to use the data.
+     *   This flag stops the overwrite until this routine gets to
+     *   here.  At this point, it is done initializing and it is
+     *   safe of the parent thread to continue (which will change
+     *   args).
+     */
+    thread_begin = FALSE;
 
     while (wait_thread) 
         sched_yield();
@@ -431,16 +448,33 @@ map_and_thread(
         th_args[0] = thrd_ndx;
         th_args[4] = (long)0;
     
+       /*************************************************************/
+       /*   The way it was, args could be overwritten by subsequent uses
+        *   of it before the called routine had a chance to fully initialize.
+        *   This flag stops the overwrite until that routine gets to
+        *   begin.  At that point, it is done initializing and it is
+        *   safe for the this thread to continue (which will change
+        *   args).
+        *   A basic race condition.
+        */
+        thread_begin = TRUE;
         if (pthread_create(&pthread_ids[thrd_ndx++], NULL, exec_func,
                            (void *)&th_args))
         {
             perror("map_and_thread(): pthread_create()");
+            thread_begin = FALSE;
             free(empty_buf);
             fflush(NULL);
             remove_files(tmpfile);
             close(fd);
             retinfo->status = FAILED;
             return retinfo;
+        } else {
+            /***************************************************/
+            /*   Yield until new thread is done with args.
+             */
+            while (thread_begin)
+                sched_yield();
         }
     } while (thrd_ndx < num_thread);
 
@@ -482,7 +516,14 @@ map_and_thread(
     /* remove the temporary file that was created. - clean up                 */
     /* but dont try to remove special files.                                  */
 
-    if (!remove_files(tmpfile))
+    /***********************************************/
+    /*   Was if !(remove_files()) ...
+     *   If that routine succeeds, it returns SUCCESS, which
+     *   happens to be 0.  So if the routine succeeded, the
+     *   above condition would indicate failure.  This change
+     *   fixes that.
+     */
+    if (remove_files(tmpfile) == FAILED)
     {
         free(empty_buf);
         retinfo->status = FAILED;
@@ -691,6 +732,7 @@ test5()
 static int
 test6()
 {
+    int    res = SUCCESS;
     int    fork_ndx = 0;   /* index to the number of processes forked         */
     pid_t  pid = 0;        /* process id, returned by fork system call.       */
     int    wait_status;    /* if status is not NULL store status information  */
@@ -722,13 +764,25 @@ test6()
             {
                 perror("test6(): execvp()");
                 fflush(NULL);
-                return FAILED;
+                /*************************************************/
+                /*   Dummy uses exit 0 so use something else for
+                 *   error exit.
+                 */
+                exit(99);
             }
         }
         else
         {
             if (pid != -1)
                 wait(&wait_status);
+            /*************************************************/
+            /*   Dummy uses exit 0.
+             *   Capture exit of child and set res accordingly.
+             *   It defaults to SUCCESS.  Only gets set if 
+             *   child fails.
+             */
+            if (WEXITSTATUS(wait_status) != 0)
+               res = FAILED;
         }
 
     } while (fork_ndx++ < NUMTHREAD);
@@ -741,7 +795,11 @@ test6()
         fflush(NULL);
         return FAILED;
     }
-    return SUCCESS;
+    /*************************************/
+    /*  This used to return SUCCESS, whether or not the
+     *  test actually worked.
+     */
+    return res;
 }
 
     
@@ -784,6 +842,7 @@ main(int   argc,     /* number of command line parameters                     */
     int    run_once     = TRUE;     /* test/tests are run once by default.    */
     char   *prog_name   = argv[0];  /* name of this program                   */
     int    rc           = 0;        /* return value from tests.  0 - success  */
+    int    global_rc    = 0;        /* return value from tests.  0 - success  */
     int    version_flag = FALSE;    /* printf the program version             */
     struct sigaction sigptr;        /* set up signal, for interval timer      */
 
@@ -875,28 +934,47 @@ main(int   argc,     /* number of command line parameters                     */
         }
     }
 
+    /*************************************************/
+    /*   The way this loop was, 5 of 6 tests could fail,
+     *   and as long test test 6 passed, the test passed.
+     *   The changes in this loop repair that problem.
+     */
     do
     {
         if(!test_num)
         {
             int test_ndx = 0;  /* index into the array of tests               */
 
-            for (test_ndx = 1; test_ndx <= (MAXTEST - 1); test_ndx++)
+            for (test_ndx = 1; test_ndx <= (MAXTEST - 1); test_ndx++) {
                 rc = test_ptr[test_ndx]();
+                if (rc == SUCCESS) {
+                   printf("                TEST %d Passed\n", test_ndx);
+                } else {
+                   printf("                TEST %d Failed\n", test_ndx);
+                   global_rc = rc;
+                }
+            }
         }
         else
         {
-            rc = (test_num > MAXTEST) ? 
+            global_rc = (test_num > MAXTEST) ? 
 		  fprintf(stderr, 
                             "Invalid test number, must be in range [1 - %d]\n",
                              MAXTEST): 
                   test_ptr[test_num]();
         }
 
-        if (rc != SUCCESS)
-            exit(rc);
+        if (global_rc != SUCCESS) {
+            printf("mmstress:  Test Failed\n");
+            exit(global_rc);
+        }
 
     } while ((TRUE) && (!run_once));
 
-    exit(rc);
+    if (global_rc != SUCCESS) {
+        printf("mmstress:  Test Failed\n");
+    } else {
+        printf("mmstress:  Test Passed\n");
+    }
+    exit(global_rc);
 }
