@@ -91,6 +91,7 @@ struct test_case_t {
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
+	int retval=0;
 	char *msg;			/* message returned from parse_opts */
 
 	pid_t pid, pid1;
@@ -157,6 +158,7 @@ main(int ac, char **av)
 				TEST(creat(TC[i].fname, FMODE));
 
 				if (TEST_RETURN != -1) {
+					retval=1;
 					tst_resm(TFAIL, "call succeeded "
 						 "unexpectedly");
 					continue;
@@ -165,6 +167,7 @@ main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 
 				if (TEST_ERRNO != EACCES) {
+					retval=1;
 					tst_resm(TFAIL, "Expected EACCES got "
 						 "%d : %s", TEST_ERRNO,
 						 strerror(TEST_ERRNO));
@@ -181,10 +184,16 @@ main(int ac, char **av)
 			unlink(fname);
 			unlink(fname1);
 			rmdir(good_dir);
+			exit(retval);
 
 		} else {			/* parent */
-			/* let the child carry on */
-			exit(0);
+			/* wait for the child to finish */
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if (e_code != 0) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 		}
 	}
 	cleanup();
