@@ -35,6 +35,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	05/2003 Modified by Manoj Iyer - Make setup function set up lo device.
  *
  * RESTRICTIONS:
  *  None.
@@ -54,12 +55,15 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/signal.h>
 #include <sys/uio.h>
 #include <sys/un.h>
 #include <sys/file.h>
+#include <sys/wait.h>
+
 
 #include <netinet/in.h>
 
@@ -324,6 +328,7 @@ void
 setup(void)
 {
 
+	int ret = 0;
 	TEST_PAUSE;	/* if -P option specified */
 
 	/* initialize sockaddr's */
@@ -335,6 +340,18 @@ setup(void)
         snprintf(tmpsunpath, 1024, "udsock%ld",(long)time(NULL));
 	sun1.sun_family = AF_UNIX;
 	strcpy(sun1.sun_path, tmpsunpath);
+
+	/* this test will fail or in some cases hang if no eth or lo is
+	 * configured, so making sure in setup that atleast lo is up
+	 */
+	ret = system("ifconfig lo up 127.0.0.1");
+	if (WEXITSTATUS(ret) != 0)
+	{
+		tst_brkm(TBROK, cleanup,
+					"ifconfig failed to bring up loop back device" );
+		tst_exit();
+	}
+
 
 	pid = start_server(&sin1, &sun1);
 
