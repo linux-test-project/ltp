@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readdir01.c,v 1.2 2001/12/03 16:41:57 nstraz Exp $ */
+/* $Id: readdir01.c,v 1.3 2002/10/31 18:59:54 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -244,6 +244,7 @@ main(int ac, char **av)
 	} else {
 	    /* count the entries we find to see if any are missing */
 	    cnt = 0;
+	    errno = 0;
 	    while (dptr = readdir(test_dir)) {
 		if (strcmp(dptr->d_name, ".") && strcmp(dptr->d_name, ".."))
 		    cnt++;
