@@ -1,3 +1,4 @@
+echo6 echo601
 finger6 finger601
 ftp6 export TCbin=$LTPROOT/testcases/network/ipv6/ftp6; ftp01
 ping6 ping601
