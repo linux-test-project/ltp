@@ -162,6 +162,7 @@ int main(int ac, char **av)
 		}
         }
         cleanup();
+	return(0);
 }
 
 void sighandler(int sig) {
