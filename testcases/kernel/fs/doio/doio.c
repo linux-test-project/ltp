@@ -2821,6 +2821,8 @@ int rw;
 		memcpy(memaddr, addr, req->r_data.io.r_nbytes);
 	else
 		memcpy(addr, memaddr, req->r_data.io.r_nbytes);
+       if (v_opt) 
+               msync(fdc->c_memaddr, (int)sbuf.st_size, MS_SYNC);
 	active_mmap_rw = 0;
 
 	status->rval = req->r_data.io.r_nbytes;
