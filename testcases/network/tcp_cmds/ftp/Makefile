@@ -1,6 +1,7 @@
 all:
 
 install:
+	ln -f ftp01 ../../../bin
 	ln -f ftp02 ../../../bin
 	ln -f ftp02_s1 ../../../bin
 	ln -f ftp03 ../../../bin
