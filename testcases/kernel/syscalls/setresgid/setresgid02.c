@@ -68,8 +68,12 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
+ * CHANGE:  Madhu T L <madhu.tarikere@wipro.com>
+ * Date: April 9 2003 
+ * Replaced setegid() by setresgid() in setup() 
  ****************************************************************/
+
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -79,9 +83,10 @@
 
 #define EXP_RET_VAL	0
 
-extern int Tst_count;
 extern int setresgid(gid_t, gid_t, gid_t);
 extern int getresgid(gid_t*, gid_t*, gid_t*);
+
+extern int Tst_count;
 
 struct test_case_t {			/* test case structure */
 	uid_t	*rgid;			/* real GID */
@@ -184,6 +189,7 @@ test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 	if(STD_FUNCTIONAL_TEST == 0) {
 		return 0;
 	}
+
 	/* Get current real, effective and saved group id */
 	if(getresgid(&cur_rgid, &cur_egid, &cur_sgid) == -1) {
 		tst_brkm(TBROK, cleanup, "getresgid() failed");
@@ -236,11 +242,13 @@ setup(void)
 	nobody = *passwd_p;
 	nobody_gid = nobody.pw_gid;
 
-	/* Set effective group id by setregid, since root, sets saved gid also */
-	if (setregid(-1,nobody_gid) == -1) {
-		tst_brkm(TBROK, tst_exit, "setegid failed");
+	/* Set effective/saved gid to nobody */
+	if ( setresgid(-1, nobody_gid, nobody_gid) == -1) {
+		tst_brkm(TBROK, tst_exit, "setup() failed for setting while"
+			" setting real/effective/saved gid");
 		/* NOTREACHED */
 	}
+
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
