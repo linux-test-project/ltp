@@ -1191,8 +1191,8 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		
 	for(ind=0;ind<num_auto_files; ind++, num++) {
 		gettimeofday(&tv1,NULL);
-		sprintf((char *)filenames+(num*PATH_MAX), "%s/%s%ld%ld.%d",
-			auto_dir, auto_file, (long)tv1.tv_sec, (long)tv1.tv_usec, ind );
+		sprintf((char *)filenames+(num*PATH_MAX), "%s/%s%ld%ld%d.%d",
+			auto_dir, auto_file, (long)tv1.tv_sec, (long)tv1.tv_usec, rand(), ind );
 	}
 
 	/*
