@@ -12,6 +12,8 @@ o	fixed bug [ #523055 ] sched_getscheduler test (Paul Larson)
 o	fixed bug [ #523137 ] sched_setscheduler02 test (Paul Larson)
 o	fixed bug [ #525688 ] sendfile01 (Paul Larson)
 o	added sigpending02 test to syscalls section (Paul Larson)
+o       created a KNOWN-FAILURES file to document known 
+        test failures (Robbie Williamson)
 o	added sem02 test to ipc section (Robbie Williamson)
 o	added SCTP section to network tests (Robbie Williamson)
 o	fixed bug [ #505515 ] perf_lan6 test (Robbie Williamson)
