@@ -1,0 +1,22 @@
+nfs01
+
+	 Stresses NFS by opening a large number of files on a nfs
+         mounted filesystem.
+
+nfs02
+
+	Tests NFS copy of various filesizes, file consistency between copies
+        and preservation of write/nowrite permissions.
+
+nfslock01
+
+	Two processes open FLOCK_IDATA file simultaneously
+        each one locks odd and even lines of the file simultaneously
+        and fill them with '0's and '1's. After they find eof, the
+        datafiles are compared.
+
+nfsstat01
+
+	 Tests the 'nfsstat' command.  This test runs locally, so no
+         actual network connection is needed.
+
