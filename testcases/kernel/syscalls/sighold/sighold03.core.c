@@ -66,13 +66,13 @@ int main(int argc, char *argv[])
 
         if (setjmp(sig11_recover)) {
               errno = EINVAL;
-	      TEST_RETURN=-1;
+	      TEST_RETURN=-2;
         } else {
               TEST_RETURN=sighold(signo);
         }
         sigaction(SIGSEGV, &osa, NULL);
 
-        if (TEST_RETURN == -1) {
+	if (TEST_RETURN == -1) {
 		if (EINVAL == errno) {
 			printf ("errno set to EINVAL\n");
 			return PTS_PASS;
@@ -80,6 +80,10 @@ int main(int argc, char *argv[])
 			printf ("errno not set to EINVAL\n");
 			return PTS_FAIL;
 		}
+	}
+	if (TEST_RETURN == -2) {
+		printf ("test received SIGSEGV\n");
+		return PTS_UNRESOLVED;
 	}
 	
 	printf("sighold did not return -1\n");
