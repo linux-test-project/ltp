@@ -735,6 +735,9 @@ signal03 signal03
 signal04 signal04
 signal05 signal05
 
+sigpending01 cd $LTPROOT/testcases/bin;sigpending01
+sigpending02 sigpending02
+
 sigprocmask01 sigprocmask01
 
 sigrelse01 sigrelse01
