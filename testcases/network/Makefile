@@ -1,4 +1,4 @@
-SUBDIRS = multicast nfs rpc tcp_cmds ipv6 
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v sctp`
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
