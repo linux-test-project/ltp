@@ -1,3 +1,36 @@
+LTP-20030905
+
+- Corrected "-d" option for runalltests.sh      ( David Smith )
+- Corrected ade commands tests to allow for     ( Xu Cheng
+  cross platform ppc64 execution.		  Robbie Williamson )
+- Fixed compile errors for device driver	( Marty Ridgeway )
+  tests seen on 2.5.73 kernels and above.	( Marty Ridgeway )
+- Initial drop of drivers/base code.
+- Added Device Simulator Framework.		( Marty Ridgeway
+						  David Cruz
+						  Sean Ruyle )
+- Removed the need to include sys/stropts.h     ( Robbie Williamson )
+  in the syscall tests.  
+- Modified acct01 to use tty0 to allow for	( Paul Larson )
+  testing in environments without a controlling
+  terminal.
+- Modified alarm03 to allow the timer to be 	( George Ansinger
+  rounded up to the next second.		  Paul Larson )
+- Corrected ifdef settings for PowerPC64 by	( Robbie Williamson )
+  changing all __ppc64__ to __powerpc64__
+- Corrected pthread id display in the float_    ( Robbie Williamson )
+  tests.
+- Updated mc_cmds and tcpdump01 to support	( Xu Cheng
+  multiple interfaces.				  Robbie Williamson )
+- Applied patches: #788275, #788323, 788727,	( David Smith )
+  and 788836.
+- Updated OpenHPI testsuite.			( Kevin Gao )
+- Removed the top-LTP tool from being built	( Robbie Williamson )
+  using `make all` or `make install`.
+- Removed the open_posix and open_hpi		( Robbie Williamson )
+  testsuites from being built using `make all`
+  or `make install`.
+
 LTP-20030807
 
 - Reorganized and updated the testcase		( Robbie Williamson )
