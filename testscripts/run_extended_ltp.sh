@@ -20,9 +20,9 @@
 ##									      ##
 ################################################################################
 #
-# File :	runfiv.sh
+# File :	run_extended_ltp.sh
 #
-# Description:	Invoke runalltests.sh with standard options for FIV.
+# Description:	Invoke runltp.sh with standard options for extended ltp.
 #
 # Author:	Robert Paulsen, rpaulsen@us.ibm.com
 #
@@ -33,16 +33,41 @@
 #               19 Nov 2004  Change to use runltp instead of runalltest
 #			     Changed to include process number in the name
 #			     of the logfiles
+#               1 Apr 2005  Changed the script to work in the testscripts 
+#                           Directory instead of the main ltp directory
+#                           Added a temporary hack to remove a directory
+#                           created in the main ltp directory
 
 PROJECT=$1
 ONLY=$2		# quick hack -- if $2 = 'only' we only run this scenario,
 		#			no other tests.
-LTPROOT=$PWD
+
+
+tmpltp=$PWD  # find the current directory to run script
+
+cd ..        # find the top ltp directory
+LTPROOT=$PWD 
+
+
+cd $tmpltp # move back to the testscripts directory
+ 
+
 TMP=/tmp
+
+# Create a directory for the results if one does not exit already
+if [ ! -d /tmp/results_extended ] 
+then
+mkdir /tmp/results_extended
+fi
+
+
+
 CMDFILE=$TMP/$PROJECT-tests
-LOGFILE=$PROJECT-`date +%Y%m%d-`$$.log
-LOGFILE_FULL=$LTPROOT/results/$LOGFILE
+LOGFILE=$TMP/results_extended/$PROJECT-`date +%Y%m%d-`$$.log
+#LOGFILE_FULL=$LOGFILE
 OUTFILE=$TMP/$PROJECT-`date +%Y%m%d-`$$.out
+
+#echo $LTPROOT 
 
 function usage()
 {
@@ -58,20 +83,6 @@ function usage()
 
 [ "$PROJECT" ] && [ -r $LTPROOT/runtest/$PROJECT.scenario ] || usage
 
-# Don't allow existing logfile to be reused.
-#if [ -s $LOGFILE_FULL ] ; then
-#	1>&2 echo "Cowardly refusing to run since $LOGFILE_FULL already exists"
-#	exit 1
-#fi
-
-# Don't allow existing output file to be reused.
-#if [ -s $OUTFILE ] ; then
-#	1>&2 echo "Cowardly refusing to run since $OUTFILE already exists"
-#	exit 1
-#fi
-
-# Create our own command file based on the project's scenario file.
-# (The following was removed:	"$LTPROOT/runtest/dio \")
 
 if [ "$ONLY" = "only" ] ; then
 	cp $LTPROOT/runtest/$PROJECT.scenario $CMDFILE
@@ -115,3 +126,9 @@ fi
 # Invoke with our command file; put results in known places.
 $LTPROOT/runltp -p -f $CMDFILE -l $LOGFILE -o $OUTFILE
 
+
+#Temporary fix to remove a directory thats not needed.  
+if [ ! -d $LTPROOT/results ]
+then
+rmdir $LTPROOT/results
+fi
