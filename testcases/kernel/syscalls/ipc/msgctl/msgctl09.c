@@ -51,7 +51,7 @@
 #include "usctest.h"
 
 #define MAXNREPS	1000
-#define MAXNPROCS	15
+#define MAXNPROCS       1000000  /* This value is set to an arbitrary high limit. */
 #define MAXNKIDS	10
 #define FAIL		1
 #define PASS		0
@@ -90,7 +90,7 @@ int	pidarray[MAXNPROCS];
 int	rkidarray[MAXNKIDS];
 int	wkidarray[MAXNKIDS];
 int 	tid;
-int 	nprocs, nreps, nkids;
+int 	nprocs, nreps, nkids, MSGMNI;
 int 	procstat;
 void 	term(int);
 
@@ -108,7 +108,7 @@ char	*argv[];
 	{
 		/* Set default parameters */
 		nreps = MAXNREPS;
-		nprocs = MAXNPROCS;
+		nprocs = MSGMNI;
 		nkids = MAXNKIDS;
 	}
 	else if (argc == 4 )
@@ -122,10 +122,10 @@ char	*argv[];
 		{
 			nreps = atoi(argv[1]);
 		}
-		if (atoi(argv[2]) > MAXNPROCS )
+		if (atoi(argv[2]) > MSGMNI )
 		{
-                        tst_resm(TCONF,"\tRequested number of processes too large, setting to Max. of %d \n", MAXNPROCS);
-			nprocs = MAXNPROCS;
+                        tst_resm(TCONF,"\tRequested number of processes too large, setting to Max. of %d \n", MSGMNI);
+			nprocs = MSGMNI;
 		}
 		else
 		{
@@ -551,6 +551,8 @@ term(int sig)
 void
 setup()
 {
+  FILE* f;
+  size_t msgmni;
         /* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 *                   */
@@ -563,6 +565,15 @@ setup()
 	 * before you create your temporary directory.
 	 */
         TEST_PAUSE;
+
+        /* Get the max number of message queues allowed on system */
+        f = fopen("/proc/sys/kernel/msgmni", "r");
+        if (!f){
+                tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
+                tst_exit();
+        }
+        MSGMNI = fscanf(f,"%d",&msgmni);
+	fclose(f);
 }
 
 
