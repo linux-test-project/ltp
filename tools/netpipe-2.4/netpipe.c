@@ -24,7 +24,7 @@ extern char *optarg;
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: netpipe.c,v 1.2 2003/03/14 16:34:26 robbiew Exp $";
+	"$Id: netpipe.c,v 1.3 2003/03/21 17:00:33 robbiew Exp $";
 #endif
 
 int
@@ -36,14 +36,12 @@ main(int argc, char *argv[])
     char        *memtmp1;
 
     int         c,              /* option index                              */
-                i, j, k, n, nq, /* Loop indices                              */
+                i, j, n, nq,    /* Loop indices                              */
 		asyncReceive=0, /* Pre-post a receive buffer?                */
-                bits,           /* Number of bits transmitted                */
                 bufoffset=0,    /* Align buffer to this                      */
                 bufalign=16*1024,/* Boundary to align buffer to              */
 		errFlag,        /* Error occurred in inner testing loop      */
                 nrepeat,        /* Number of time to do the transmission     */
-                nzero=0,
                 len,            /* Number of bytes to be transmitted         */
                 inc=0,          /* Increment value                           */
                 trans=-1,       /* Transmitter flag. 1 if transmitting.      */
@@ -59,14 +57,7 @@ main(int argc, char *argv[])
 
     double      t, t0, t1, t2,  /* Time variables                            */
                 tlast,          /* Time for the last transmission            */
-                tzero=0,
-                latency,        /* Network message latency                   */
-                ackt,           /* Time for acknowlegement                   */
-                bps,            /* Bits per second                           */
-                bwtmp,          /* Temporary for calculating Net bps         */
-                trepeat,
-                expectedMbps,   /* Expected Mbps                             */
-                netbps;         /* Net bandwidth                             */
+                latency;        /* Network message latency                   */
 
     Data        bwdata[NSAMP];  /* Bandwidth curve data                      */
 
