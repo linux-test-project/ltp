@@ -232,8 +232,9 @@ setup(void)
 
 	/* Check that the test process id is nobody */
 	if (geteuid() != nobody.pw_uid) {
-		tst_brkm(TBROK, NULL, "Must be nobody for this test!");
-		tst_exit();
+/*		tst_brkm(TBROK, NULL, "Must be nobody for this test!");
+		tst_exit();*/
+		setuid(nobody.pw_uid);
 	}
 
 	/* Pause if that option was specified
