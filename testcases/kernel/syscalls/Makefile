@@ -40,7 +40,7 @@ SUBDIR= \
 	getresuid getsid getsockname getsockopt gettimeofday getuid \
 	ioctl ipc kill lchown link \
 	listen llseek lseek lstat \
-	mkdir mknod mmap modify_ldt mprotect mremap \
+	mkdir mknod mlock mmap modify_ldt mprotect mremap \
 	msync munmap nanosleep nice open \
 	pathconf pause personality pipe poll \
 	pread pwrite read readdir \
