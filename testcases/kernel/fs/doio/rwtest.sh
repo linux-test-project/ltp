@@ -203,11 +203,6 @@ do	case $1 in
 	shift
 done
 
-if [ $TOUTPUT = "NOPASS" ]; then
-	iOpts="$iOpts -q"
-	Quiet="-q"
-fi
-
 #
 # Hard-Coded Scenario Specifications
 #
