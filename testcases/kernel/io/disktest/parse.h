@@ -22,10 +22,50 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: parse.h,v 1.2 2003/04/17 15:21:58 robbiew Exp $
 * $Log: parse.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:58  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.5  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.4  2002/04/02 01:18:12  yardleyb
+* Added ifdef for AIX and raw
+* device path
+*
+* Revision 1.3  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.2  2002/03/07 03:38:52  yardleyb
+* Added dump function from command
+* line.  Created formatted dump output
+* for Data miscomare and command line.
+* Can now leave off filespec the full
+* path header as it will be added based
+* on -I.
 *
 * Revision 1.1  2001/12/04 18:51:06  yardleyb
 * Checkin of new source files and removal
@@ -36,18 +76,38 @@
 #ifndef _PARSE_H
 #define _PARSE_H
 
-#ifdef WIN32
+#ifdef WINDOWS
 #include "getopt.h"
-#define BLKDEVICESTR "PHYSICALDRIVE"
+#define BLKDEVICESTR "\\\\"
 #else
+#ifdef _AIX
+#define RAWDEVICESTR "rhdisk"
+#else
+#define RAWDEVICESTR "raw"
+#endif
 #define BLKDEVICESTR "DEV"
 #endif
+
+
+
 
 #include "main.h"
 #include "defs.h"
 
-void fill_cld_args(int argc, char **argv, child_args_t *args);
-void make_assumptions(child_args_t *args);
-int check_conclusions(child_args_t *args);
+#ifdef WINDOWS
+#define DEV_BLK_HEADER "\\\\.\\"
+#define DEV_RAW_HEADER "\\\\.\\"
+#else
+#define DEV_BLK_HEADER "/dev/"
+#ifdef AIX
+#define DEV_BLK_HEADER "/dev/"
+#else
+#define DEV_RAW_HEADER "/dev/raw/"
+#endif
+#endif
+
+int fill_cld_args(int, char **, child_args_t *);
+int make_assumptions(child_args_t *, char *);
+int check_conclusions(child_args_t *);
 
 #endif

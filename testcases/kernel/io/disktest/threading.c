@@ -22,10 +22,46 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: threading.c,v 1.2 2003/04/17 15:21:58 robbiew Exp $
 * $Log: threading.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:58  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.7  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.6  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.5  2002/03/07 03:30:11  yardleyb
+* Return errno on thread
+* create failure
+*
+* Revision 1.4  2002/02/28 04:25:45  yardleyb
+* reworked threading code
+* made locking code a macro.
 *
 * Revision 1.3  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -50,7 +86,7 @@
 *
 */
 
-#ifdef WIN32
+#ifdef WINDOWS
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -67,142 +103,78 @@
 #include "threading.h"
 
 /*
-* Upon exit of a child, the parent will be called to
-* clean up its child zombies.  In most cases this will
-* be called using the SIGCHLD signal passed back to the
-* parent, however, if more then one child dies at a time
-* then we have to try and clean up all child zombies.
-* This is done with the while loop.
-*
-* this cleans up the shared memory only.  Need to learn
-* what to do about other resources like process allocated buffers
-*/
-void clean_up(void *arg)
+ * This routine will sit waiting for
+ * all threads to exit.  In unix, this
+ * is done through pthread_join.  In
+ * Windows we use a sleeping loop.
+ */
+void clean_up(void)
 {
 	extern thread_struct_t *pThreads;	/* Global List of child processes */
 	extern unsigned short kids;			/* global number of current child processes */
-	BOOL bFound = TRUE;
 	thread_struct_t *pTmpThread = NULL, *pTmpThreadLast = NULL;
  
-#ifdef WIN32
-	DWORD dwExitCode;
-	bFound = TRUE;
- 
-	while(bFound) {
-		if(pThreads == NULL) break;
+#ifdef WINDOWS
+	DWORD dwExitCode = 0;
+#endif
+
+	while(pThreads) {
 		pTmpThread = pThreads->next;
 		pTmpThreadLast = pThreads;
-		GetExitCodeThread(pThreads->hThread, &dwExitCode);
-		if(dwExitCode != STILL_ACTIVE) { /* remove Thread from list, first in list */
-			pThreads = pTmpThread;
-			free(pTmpThreadLast);
-			kids--;
-		} else {/* look somewhere else */
-			bFound = FALSE;
-			while((pTmpThread != NULL) && (!bFound)) {
-				GetExitCodeThread(pTmpThread->hThread, &dwExitCode);
-				if(dwExitCode != STILL_ACTIVE) { /* remove Thread from list, others */
-					pTmpThreadLast->next = pTmpThread->next;
-					free(pTmpThread);
-					kids--;
-					bFound = TRUE;
-				} else {
-					pTmpThreadLast = pTmpThread;
-					pTmpThread = pTmpThread->next;
-				}
-			}
-		}
-	}
+#ifdef WINDOWS
+		do {
+			GetExitCodeThread(pThreads->hThread, &dwExitCode);
+			/*
+			 * Sleep(0) will force this thread to
+			 * relinquish the remainder of its time slice
+			 */
+			if(dwExitCode == STILL_ACTIVE) Sleep(0);
+		} while(dwExitCode == STILL_ACTIVE); 
 #else
-	pthread_t calling_thread;
-	bFound = FALSE;
-
-	if(arg == NULL) { /* called as part of main */
-		/* look through list for threads that can be joined */
-		bFound = TRUE;
-		while(bFound) {
-			if(pThreads == NULL) break;
-			pTmpThread = pThreads->next;
-			pTmpThreadLast = pThreads;
-			if(pThreads->bCanBeJoined) {
-				pthread_join(pThreads->hThread, NULL);
-				pThreads = pTmpThread;
-				free(pTmpThreadLast);
-				kids--;
-			} else {/* look somewhere else */
-				bFound = FALSE;
-				while((pTmpThread != NULL) && (!bFound)) {
-					if(pTmpThread->bCanBeJoined) {
-						pthread_join(pTmpThread->hThread, NULL);
-						pTmpThreadLast->next = pTmpThread->next;
-						free(pTmpThread);
-						kids--;
-						bFound = TRUE;
-					} else {
-						pTmpThreadLast = pTmpThread;
-						pTmpThread = pTmpThread->next;
-					}
-				}
-			}
-		}
-	} else { /* this is a thread dieing */
-		bFound = FALSE;
-		calling_thread = pthread_self();
-		pTmpThread = pThreads;
-		while((pTmpThread != NULL) && (!bFound)) {
-			if(pTmpThread->hThread == calling_thread) {
-				pTmpThread->bCanBeJoined = TRUE;
-				bFound = TRUE;
-			} else {
-				pTmpThread = pTmpThread->next;
-			}
-		}
-	}
+		pthread_join(pThreads->hThread, NULL);
 #endif
+		pThreads = pTmpThread;
+		FREE(pTmpThreadLast);
+		kids--;
+	}
 }
 
 /*
-* This function will create children for us based on the action specified
-* during the call.  if we cannot create a child, we fail and exit with
-* errno as the exit status. What do we do about shared resources on failure???
-*/
-void CreateChild(child_args_t *args)
+ * This function will create children for us based on the action specified
+ * during the call.  if we cannot create a child, we fail and exit with
+ * errno as the exit status.
+ */
+void CreateChild(void *function, child_args_t *args)
 {
 	extern thread_struct_t *pThreads;	/* Global List of child processes */
 	extern unsigned short kids;			/* global number of current child processes */
-	thread_struct_t *pNewThread, *pTmpThread;
-
-#ifdef WIN32
+	thread_struct_t *pNewThread;
+#ifdef WINDOWS
 	HANDLE hTmpThread;
- 
-	if((hTmpThread = CreateThread(NULL, 0, ChildMain, args, 0, NULL)) == NULL) {
+#else
+	pthread_t hTmpThread;
+#endif
+
+	kids++;
+#ifdef WINDOWS
+	if((hTmpThread = CreateThread(NULL, 0, function, args, 0, NULL)) == NULL) {
+		kids--;
 		pMsg(ERR, "Failed trying to create thread with error code %u\n", GetLastError());
 		pMsg(INFO, "Total Number of Threads created was %u\n", kids);
 		exit(GetLastError());
 	}
 #else
-	pthread_t hTmpThread;
- 
-	if(pthread_create(&hTmpThread, NULL, ChildMain, args) != 0) {
+	if(pthread_create(&hTmpThread, NULL, function, args) != 0) {
+		kids--;
 		pMsg(ERR, "Could not create child thread...\n");
 		pMsg(INFO, "Total Number of Threads created was %u\n", kids);
-		exit(1);
+		exit(errno);
 	}
 #endif
-	pTmpThread = pThreads;
-	pNewThread = (thread_struct_t *) malloc(sizeof(thread_struct_t));
+	pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t));
 	memset(pNewThread, 0, sizeof(thread_struct_t));
-	if(pThreads == NULL) { /* first thread */
-		pThreads = pNewThread;
-		pThreads->next = NULL;
-		pThreads->hThread = hTmpThread;
-	} else { /* not the first so add to end, no sorting */
-		pTmpThread = pThreads;
-		while(pTmpThread->next != NULL) pTmpThread = pTmpThread->next;
-		pTmpThread->next = pNewThread;
-		pTmpThread->next->hThread = hTmpThread;
-		pTmpThread->next->next = NULL;
-	}
-	kids++;
-	pTmpThread = pThreads;
+	pNewThread->next = pThreads;
+	pThreads = pNewThread;
+	pThreads->hThread = hTmpThread;
 }
+

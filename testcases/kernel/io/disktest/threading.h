@@ -1,5 +1,5 @@
 /*
-* Disktest
+* Tapetest
 * Copyright (c) International Business Machines Corp., 2001
 *
 *
@@ -22,10 +22,34 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: threading.h,v 1.2 2003/04/17 15:21:58 robbiew Exp $
 * $Log: threading.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:58  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.5  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.4  2002/02/28 04:25:45  yardleyb
+* reworked threading code
+* made locking code a macro.
 *
 * Revision 1.3  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -51,9 +75,9 @@
 */
 
 #ifndef THREADING_H
-#define THREADING_H
+#define THREADING_H 1
 
-#ifdef WIN32
+#ifdef WINDOWS
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -67,9 +91,23 @@
 #include "threading.h"
 
 #define MAX_THREADS 65536		/* max number of threads, reader/writer, per test */
- 
+
+#ifdef WINDOWS
+#define LOCK(Mutex) WaitForSingleObject((void *) Mutex, INFINITE)
+#define UNLOCK(Mutex) ReleaseMutex((void *) Mutex)
+#define TEXIT(errno) ExitThread(errno); return(errno)
+#else
+#define LOCK(Mutex) \
+		pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &Mutex); \
+		pthread_mutex_lock(&Mutex)
+#define UNLOCK(Mutex) \
+		pthread_mutex_unlock(&Mutex); \
+		pthread_cleanup_pop(0)
+#define TEXIT(errno) pthread_exit(&errno)
+#endif
+
 typedef struct thread_struct {
-#ifdef WIN32
+#ifdef WINDOWS
 	HANDLE hThread;				/* handle to thread */
 #else
 	pthread_t hThread;			/* thread */
@@ -78,7 +116,7 @@ typedef struct thread_struct {
 	struct thread_struct *next;	/* pointer to next thread */
 } thread_struct_t;
 
-void clean_up(void *);
-void CreateChild(child_args_t *);
+void clean_up(void);
+void CreateChild(void *, child_args_t *);
 
 #endif /* THREADING_H */

@@ -23,10 +23,60 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: sfunc.c,v 1.2 2003/04/17 15:21:58 robbiew Exp $
 * $Log: sfunc.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:58  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.16  2003/01/13 21:58:23  yardleyb
+* Added includes for AIX change
+*
+* Revision 1.15  2003/01/13 21:33:31  yardleyb
+* Added code to detect AIX volume size.
+* Updated mask for random LBA to use start_lba offset
+* Updated version to 1.1.10
+*
+* Revision 1.14  2002/05/31 18:47:59  yardleyb
+* Updates to -pl -pL options.
+* Fixed test status to fail on
+* failure to open filespec.
+* Version set to 1.1.9
+*
+* Revision 1.13  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.12  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.11  2002/03/07 03:34:42  yardleyb
+* Rearranged string length
+* calculation, removed appname
+*
+* Revision 1.10  2002/02/28 02:04:32  yardleyb
+* Moved FileSeek64 to IO
+* source files.
 *
 * Revision 1.9  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -77,11 +127,16 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <signal.h>
-#ifdef WIN32
+#ifdef WINDOWS
 #include <process.h>
 #include <windows.h>
 #include <winbase.h>
+#include <winioctl.h>
 #else
+#if AIX
+#include <sys/ioctl.h>
+#include <sys/devinfo.h>
+#endif
 #include <unistd.h>
 #include <ctype.h>
 #endif
@@ -96,6 +151,23 @@
 #include "defs.h"
 #include "globals.h"
 
+/*
+ * Generates a random 32bit number.
+ */
+long Rand32(void)
+{
+	/*
+	 * based on the fact that rand returns
+	 * 0 - 0x7FFF
+	 */
+	long myRandomNumber = 0;
+
+	myRandomNumber  = ((long) (rand() & 0x7FFF)) << 16;
+	myRandomNumber |= ((long) (rand() & 0x7FFF)) << 1;
+	myRandomNumber |= ((long) (rand() & 0x1));
+
+	return(myRandomNumber);
+}
 
 /*
  * Generates a random 64bit number.
@@ -104,35 +176,14 @@ OFF_T Rand64(void)
 {
 	OFF_T myRandomNumber = 0;
 
-	myRandomNumber = (OFF_T) rand() << 48;
-	myRandomNumber |= (OFF_T) rand() << 32;
-	myRandomNumber |= (OFF_T) rand() << 16;
-	myRandomNumber |= (OFF_T) rand();
+	myRandomNumber  = ((OFF_T) (rand() & 0x7FFF)) << 48;
+	myRandomNumber |= ((OFF_T) (rand() & 0x7FFF)) << 33;
+	myRandomNumber |= ((OFF_T) (rand() & 0x7FFF)) << 18;
+	myRandomNumber |= ((OFF_T) (rand() & 0x7FFF)) << 3;
+	myRandomNumber |= ((OFF_T) (rand() & 0x7));
 
 	return(myRandomNumber);
 }
-
-#ifdef WIN32
-/*
- * wrapper for file seeking in WIN32 API to hind the ugle 32 bit
- * interface of SetFile Pointer
- */
-OFF_T FileSeek64(HANDLE hf, OFF_T distance, DWORD MoveMethod)
-{
-   LARGE_INTEGER li;
-
-   li.QuadPart = distance;
-
-   li.LowPart = SetFilePointer(hf, li.LowPart, &li.HighPart, MoveMethod);
-
-   if (li.LowPart == 0xFFFFFFFF && GetLastError() != NO_ERROR)
-   {
-      li.QuadPart = -1;
-   }
-
-   return li.QuadPart;
-}
-#endif
 
 /*
 * could not find a function that represented a conversion
@@ -194,20 +245,19 @@ int pMsg(lvl_t level, char *Msg,...)
 {
 #define FORMAT "| %s | %s | %d | %s | %s | %s"
 #define TIME_FORMAT "%04d/%02d/%02d-%02d:%02d:%02d"
-#define TIME_FMT_LEN 19
+#define TIME_FMT_LEN 20
 	va_list l;
 	int rv = 0;
-	int len = strlen(Msg);
+	size_t len = 0;
 	char *cpTheMsg;
 	char levelStr[10];
 	struct tm *pstruct_time;
 	char time_str[TIME_FMT_LEN];
-	extern char *appname;
 	extern char *devname;
 	extern unsigned long glb_flags;
 	
 
-#ifdef WIN32
+#ifdef WINDOWS
 	pid_t my_pid = _getpid();
 #else
 	pid_t my_pid = getpid();
@@ -217,6 +267,14 @@ int pMsg(lvl_t level, char *Msg,...)
 
 	if((glb_flags & GLB_FLG_QUIET) && (level == INFO))
 		return(0);
+
+	va_start(l, Msg);
+
+	if(glb_flags & GLB_FLG_SUPRESS) {
+		rv = vprintf(Msg,l);
+		va_end(l);
+		return rv;
+	}
 
 	switch(level) {
 		case START:
@@ -242,21 +300,6 @@ int pMsg(lvl_t level, char *Msg,...)
 			break;
 	}
 
-	len += TIME_FMT_LEN;
-	len += strlen(levelStr);
-	len += strlen(FORMAT);
-	len += strlen(appname);
-	len += strlen(VER_STR);
-	len += sizeof(pid_t)*8 + 1;
-	va_start(l, Msg);
-
-	if((cpTheMsg = (char *)malloc(len)) == NULL) {
-		printf("Can't print formatted message, printing message raw.\n");
-		rv = vprintf(Msg,l);
-		va_end(l);
-		return rv;
-	}
-
 	sprintf(time_str, TIME_FORMAT, pstruct_time->tm_year+1900,
 		pstruct_time->tm_mon+1,
 		pstruct_time->tm_mday,
@@ -265,11 +308,27 @@ int pMsg(lvl_t level, char *Msg,...)
 		pstruct_time->tm_sec
 	);
 
+	len += strlen(FORMAT);
+	len += strlen(time_str);
+	len += strlen(levelStr);
+	len += sizeof(pid_t)*8 + 1;
+	len += strlen(VER_STR);
+	len += strlen(devname);
+	len += strlen(Msg);
+
+	if((cpTheMsg = (char *)ALLOC(len)) == NULL) {
+		printf("Can't print formatted message, printing message raw.\n");
+		rv = vprintf(Msg,l);
+		va_end(l);
+		return rv;
+	}
+
+
 	memset(cpTheMsg, 0, len);
 	sprintf(cpTheMsg, FORMAT, time_str, levelStr, my_pid, VER_STR, devname, Msg);
 
 	rv = vprintf(cpTheMsg,l);
-	free(cpTheMsg);
+	FREE(cpTheMsg);
 
 	va_end(l);
 	return rv;
@@ -342,7 +401,6 @@ void mark_buffer(void *buf, const size_t buf_len, void *lba, const OFF_T pass_co
 
 void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const unsigned int pattern_type)
 {
-	/* unsigned int rand_seed; */
 	size_t i, j;
 	unsigned char *ucharbuf = buf;
 	OFF_T *off_tbuf = buf;
@@ -385,15 +443,8 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 			}
 			break;
 		case CLD_FLG_RPTYPE :
-			/*
-			* Will fill buffer with a random pattern.  The first 64 bits
-			* are the seed to the rest of data.  This is done so
-			* that the data can be regenerated on the fly when it is read.
-			* The seed is passed in through pattern
-			*/
-			for(i=1;i<len;i++)
-				*(off_tbuf+i) = Rand64();
-			*off_tbuf = (*poff_tpattern & 0xFFFFFFFF);  /* seed is only 32 bits */
+			/* Will fill buffer with a random pattern. */
+			for(i=0;i<len/sizeof(OFF_T);i++) *(off_tbuf+i) = Rand64();
 			break;
 		default :
 			printf("Unknown fill pattern\n");
@@ -406,10 +457,8 @@ void normalize_percs(child_args_t *args)
 	int i, j;
 
 	if((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) {
-		pMsg(INFO, "Forcing to 100%% read\n");
 		args->rperc = 100;
 	} else if((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R)) {
-		pMsg(INFO, "Forcing to 100%% write\n");
 		args->wperc = 100;
 	} else { /* must be reading and writing */
 		if (args->rperc == 0 && args->wperc == 0) {
@@ -458,16 +507,16 @@ OFF_T get_vsiz(char *device)
 {
 	OFF_T size = 0;
 
-#ifdef WIN32
+#ifdef WINDOWS
 	HANDLE hFileHandle;
-	DISK_GEOMETRY DiskGeom;
 	BOOL bRV;
-
 	DWORD dwLength;
-	
+	GET_LENGTH_INFORMATION myLengthInfo;
+	DISK_GEOMETRY DiskGeom;
+
 	hFileHandle = CreateFile(device, 
-		0,
-		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		GENERIC_READ,
+		FILE_SHARE_READ,
 		NULL,
 		OPEN_EXISTING,
 		0,
@@ -479,39 +528,84 @@ OFF_T get_vsiz(char *device)
 		return(GetLastError());
 	}
 
+	SetLastError(0);
 	bRV = DeviceIoControl(hFileHandle,
-		IOCTL_DISK_GET_DRIVE_GEOMETRY,
+		IOCTL_DISK_GET_LENGTH_INFO,
 		NULL,
 		0,
-		&DiskGeom,
-		sizeof(DISK_GEOMETRY),
+		&myLengthInfo,
+		sizeof(GET_LENGTH_INFORMATION),
 		&dwLength,
 		NULL);
 
-	CloseHandle(hFileHandle);
 
 	if(bRV) {
-		size =  (OFF_T) DiskGeom.Cylinders.QuadPart;
-		size *= (OFF_T) DiskGeom.TracksPerCylinder;
-		size *= (OFF_T) DiskGeom.SectorsPerTrack;
+		size = myLengthInfo.Length.QuadPart;
+	} else {
+		bRV = DeviceIoControl(hFileHandle,
+			IOCTL_DISK_GET_DRIVE_GEOMETRY,
+			NULL,
+			0,
+			&DiskGeom,
+			sizeof(DISK_GEOMETRY),
+			&dwLength,
+			NULL);
+
+		if(bRV) {
+			size =  (OFF_T) DiskGeom.Cylinders.QuadPart;
+			size *= (OFF_T) DiskGeom.TracksPerCylinder;
+			size *= (OFF_T) DiskGeom.SectorsPerTrack;
+		} else {
+			size = -1;
+			PDBG4(DEBUG, "get_vsiz failed: %d, %lu, %lu\n", bRV, GetLastError(), dwLength);
+		}
 	}
+	CloseHandle(hFileHandle);
 #else
-	int fd;
+	int fd = 0;
+#if AIX
+	struct devinfo *my_devinfo = NULL;
+#endif
 
 	if((fd = open(device, 0)) < 0) {
 		pMsg(ERR,"Cannot open %s\n", device);
 		exit(1);
 	}
+
+#if AIX
+	my_devinfo = (struct devinfo*) malloc(sizeof(struct devinfo));
+	if(my_devinfo != NULL) {
+		memset(my_devinfo, 0, sizeof(struct devinfo));
+		if(ioctl(fd, IOCINFO, my_devinfo) == -1) size = -1;
+		else size = (OFF_T)(my_devinfo->un.scdk.numblks) - (OFF_T)1;
+		free(my_devinfo);
+	}
+#else
 	if(ioctl(fd, BLKGETSIZE, &size) == -1) size = -1;
+	else size--;
+#endif
+
 	close(fd);
 #endif
 	return(size);
 }
 
-#ifndef WIN32
+#ifndef WINDOWS
 void Sleep(unsigned int msecs)
 {
 	usleep(msecs*1000);
 }
 #endif
+
+fmt_time_t format_time(time_t seconds)
+{
+	fmt_time_t time_struct;
+
+	time_struct.hours = seconds/3600;
+	time_struct.minutes = (seconds%3600)/60;
+	time_struct.seconds = seconds%60;
+
+	return time_struct;
+}
+
 

@@ -22,10 +22,53 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: childmain.c,v 1.2 2003/04/17 15:21:56 robbiew Exp $
 * $Log: childmain.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:56  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.10  2003/01/13 21:33:31  yardleyb
+* Added code to detect AIX volume size.
+* Updated mask for random LBA to use start_lba offset
+* Updated version to 1.1.10
+*
+* Revision 1.9  2002/05/31 18:47:59  yardleyb
+* Updates to -pl -pL options.
+* Fixed test status to fail on
+* failure to open filespec.
+* Version set to 1.1.9
+*
+* Revision 1.8  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.7  2002/03/07 03:38:52  yardleyb
+* Added dump function from command
+* line.  Created formatted dump output
+* for Data miscomare and command line.
+* Can now leave off filespec the full
+* path header as it will be added based
+* on -I.
+*
+* Revision 1.6  2002/02/28 04:25:45  yardleyb
+* reworked threading code
+* made locking code a macro.
 *
 * Revision 1.4  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -59,7 +102,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#ifdef WIN32
+#ifdef WINDOWS
 #include <windows.h>
 #include <winioctl.h>
 #include <io.h>
@@ -83,16 +126,16 @@
 #include "sfunc.h"
 #include "threading.h"
 #include "childmain.h"
+#include "io.h"
+#include "dump.h"
 
-action_t get_next_action(child_args_t *args, const time_t end_time, const OFF_T mask)
+action_t get_next_action(child_args_t *args, const OFF_T mask)
 {
-	extern void *shared_mem;	/* global pointer to shared memory */
-	extern OFF_T pass_count;	/* current pass */
+	extern void *shared_mem;		/* global pointer to shared memory */
+	extern time_t global_end_time;	/* overall end time of test */
+	extern stats_t cycle_stats;		/* per cycle statistics */
 	
 	OFF_T *pVal1 = (OFF_T *)shared_mem;
-	OFF_T *test_state = (OFF_T *)shared_mem + OFF_TST_STAT;
-	OFF_T *wcount = (OFF_T *)shared_mem + OFF_WCOUNT;
-	OFF_T *rcount = (OFF_T *)shared_mem + OFF_RCOUNT;
 	OFF_T *tmpLBA;
 	unsigned char *wbitmap = (unsigned char *)shared_mem + BMP_OFFSET;
 
@@ -104,88 +147,66 @@ action_t get_next_action(child_args_t *args, const time_t end_time, const OFF_T 
 
 	/* pick an operation */
 	if(args->flags & CLD_FLG_RANDOM) {
-		if((((*wcount)*100)/(((*rcount)+1)+(*wcount))) >= (args->wperc)) {
-			*test_state = SET_OPER_R(*test_state);
+		if((((cycle_stats.wcount)*100)/(((cycle_stats.rcount)+1)+(cycle_stats.wcount))) >= (args->wperc)) {
+			args->test_state = SET_OPER_R(args->test_state);
 		} else {
-			*test_state = SET_OPER_W(*test_state);
+			args->test_state = SET_OPER_W(args->test_state);
 		}
-	} else if((args->flags & CLD_FLG_NTRLVD) && !TST_wFST_TIME(*test_state)) {
+	} else if((args->flags & CLD_FLG_NTRLVD) && !TST_wFST_TIME(args->test_state)) {
 		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W))
-			*test_state = CNG_OPER(*test_state);
+			args->test_state = CNG_OPER(args->test_state);
 	}
-	target.oper = TST_OPER(*test_state);
+	target.oper = TST_OPER(args->test_state);
 
 	/* pick a transfer length */
 	if(!(args->flags & CLD_FLG_RTRSIZ)) {
 		target.trsiz = args->ltrsiz;
 	} else {
 		do {
-			if((args->flags & CLD_FLG_SKS) && (((*wcount)+(*rcount)) >= (args->seeks*pass_count)))
+			if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
 				break;
-			if((args->flags & CLD_FLG_TMD) && (time(NULL) > end_time))
+			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
 				break;
 			target.trsiz = (rand()&0xFF) + args->ltrsiz;
 		} while(target.trsiz > args->htrsiz);
 	}
 
 	/* pick an lba */
-	if(args->start_lba == args->stop_lba) { /* diskcache test */
+	if(args->vsiz == args->htrsiz) { /* diskcache test */
 		target.lba = args->start_lba;
 	} else if (args->flags & CLD_FLG_LINEAR) {
-			tmpLBA = (target.oper == WRITER) ? pVal1+OFF_WLBA : pVal1+OFF_RLBA;
-		direct = (TST_DIRCTN(*test_state)) ? 1 : -1;
-		if((target.oper == WRITER) && TST_wFST_TIME(*test_state)) {
+		tmpLBA = (target.oper == WRITER) ? pVal1+OFF_WLBA : pVal1+OFF_RLBA;
+		direct = (TST_DIRCTN(args->test_state)) ? 1 : -1;
+		if((target.oper == WRITER) && TST_wFST_TIME(args->test_state)) {
 			*(tmpLBA) = args->start_lba;
-		} else if((target.oper == READER) && TST_rFST_TIME(*test_state)) {
+		} else if((target.oper == READER) && TST_rFST_TIME(args->test_state)) {
 			*(tmpLBA) = args->start_lba;
-		} else if((TST_DIRCTN(*test_state)) && ((*(tmpLBA)+target.trsiz) <= args->stop_lba)) {
-		} else if(!(TST_DIRCTN(*test_state)) && (*(tmpLBA) >= args->start_lba)) {
+		} else if((TST_DIRCTN(args->test_state)) && ((*(tmpLBA)+(target.trsiz-1)) <= args->stop_lba)) {
+		} else if(!(TST_DIRCTN(args->test_state)) && (*(tmpLBA) >= args->start_lba)) {
 		} else {
 			bChangeState = TRUE;
-		}
-		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
-			if(((target.oper == WRITER) && ((*wcount) >= ((args->seeks/2)*pass_count))) ||
-				((target.oper == READER) && ((*rcount) >= ((args->seeks/2)*pass_count)))) {
-				bChangeState = TRUE;
-			}
 		}
 		if(bChangeState) {			
 			if (args->flags & CLD_FLG_LUNU) {
 				*(tmpLBA) = args->start_lba;
-				if(!(args->flags & CLD_FLG_NTRLVD)) {
-					if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W))
-						*test_state = CNG_OPER(*test_state);
-					target.oper = TST_OPER(*test_state);
-				}
-				if((target.oper == WRITER) && (args->flags & CLD_FLG_CYC)) {
+				if((args->flags & CLD_FLG_CYC) && (target.oper == WRITER)) {
 					target.oper = NONE;
 				}
 			} else if (args->flags & CLD_FLG_LUND) {
-				*test_state = DIRCT_CNG(*test_state);
-				direct = (TST_DIRCTN(*test_state)) ? 1 : -1;
-				if(!(args->flags & CLD_FLG_NTRLVD)) {
-					if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
-						*test_state = CNG_OPER(*test_state);
-						target.oper = TST_OPER(*test_state);
-						tmpLBA = (target.oper == WRITER) ? pVal1+OFF_WLBA : pVal1+OFF_RLBA;
-					} else {
-						*(tmpLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
-					}
-				} else {
-					*(tmpLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
-				}
-				if((direct > 0) && (args->flags & CLD_FLG_CYC)) {
+				args->test_state = DIRCT_CNG(args->test_state);
+				direct = (TST_DIRCTN(args->test_state)) ? 1 : -1;
+				*(tmpLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
+				if((args->flags & CLD_FLG_CYC) && (direct > 0)) {
 					target.oper = NONE;
 				}
 			}
 		}
 		target.lba = *(tmpLBA);
-	}
-	else if (args->flags & CLD_FLG_RANDOM) {
+	} else if (args->flags & CLD_FLG_RANDOM) {
 		do {
-			if((args->flags & CLD_FLG_SKS) && (((*wcount)+(*rcount)) >= (args->seeks*pass_count)))
+			if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
 				break;
-			if((args->flags & CLD_FLG_TMD) && (time(NULL) > end_time))
+			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
 				break;
 			target.lba = (Rand64()&mask) + args->start_lba;
 			target.lba = ALIGN(target.lba, target.trsiz);
@@ -197,22 +218,34 @@ action_t get_next_action(child_args_t *args, const time_t end_time, const OFF_T 
 		 * a cycle has been completed.
 		 */
 		if(!(args->flags & (CLD_FLG_TMD|CLD_FLG_SKS)) && (args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_R) &&
-			(((*(rcount)*100)/((args->seeks+1)*pass_count)) >= 80)) {
+			(((cycle_stats.rcount*100)/(args->seeks+1)) >= 80)) {
 				target.oper = NONE;
 		}
 	}
 
-	/* get out if exceeded one of the following */
-	if((args->flags & CLD_FLG_SKS) && (((*wcount)+(*rcount)) >= (args->seeks*pass_count))) {
-		target.oper = NONE;
+	if(!(args->flags & CLD_FLG_NTRLVD)
+		&& !(args->flags & CLD_FLG_RANDOM)
+		&& (args->flags & CLD_FLG_W)
+		&& (args->flags & CLD_FLG_R)) {
+			if(((target.oper == WRITER) ? cycle_stats.wcount : cycle_stats.rcount) >= (args->seeks/2)) {
+				target.oper = NONE;
+			}
 	}
-	if((args->flags & CLD_FLG_TMD) && (time(NULL) > end_time)) {
-		target.oper = NONE;
+
+	/* get out if exceeded one of the following */
+	if((args->flags & CLD_FLG_SKS)
+		&& (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks)) {
+			target.oper = NONE;
+	}
+
+	if((args->flags & CLD_FLG_TMD)
+		&& (time(NULL) >= global_end_time)) {
+			target.oper = NONE;
 	}
 
 	if((target.oper == READER) && (args->flags & CLD_FLG_CMPR) && (args->flags & CLD_FLG_W)) {
 		for(i=0;i<target.trsiz;i++) {
-			if((*(wbitmap+((target.lba+i)/8))&(0x80>>((target.lba+i)%8))) == 0) {
+			if((*(wbitmap+(((target.lba-args->start_lba)+i)/8))&(0x80>>(((target.lba-args->start_lba)+i)%8))) == 0) {
 				blk_written = 0;
 				break;
 			}
@@ -228,45 +261,67 @@ action_t get_next_action(child_args_t *args, const time_t end_time, const OFF_T 
 		 * since this is a read, we will wait here till the write finishes
 		 */
 		for(i=0;i<target.trsiz;i++)
-			while((*(wbitmap+((target.lba+i)/8))&(0x80>>((target.lba+i)%8))) == 0)
-				Sleep(10);
+			while((*(wbitmap+(((target.lba-args->start_lba)+i)/8))&(0x80>>(((target.lba-args->start_lba)+i)%8))) == 0)
+				Sleep(1);
 	else {
 		/* should have been a random reader, but blk not written, so make me a writer */
 		target.oper = WRITER;
-		*test_state = SET_OPER_W(*test_state);
+		args->test_state = SET_OPER_W(args->test_state);
 	}
 
-#ifdef _DEBUG
-#ifdef WIN32
-	printf("%I64d, %I64d, %I64d, %I64d, %I64d\n", *(wcount), *(rcount), args->seeks, args->stop_lba, pass_count);
+#ifdef WINDOWS
+	PDBG5(DEBUG, "%I64d, %I64d, %I64d, %I64d\n", cycle_stats.wcount, cycle_stats.rcount, args->seeks, args->stop_lba);
 #else
-	printf("%lld, %lld, %lld, %lld, %lld\n", *(wcount), *(rcount), args->seeks, args->stop_lba, pass_count);
-#endif
+	PDBG5(DEBUG, "%lld, %lld, %lld, %lld\n", cycle_stats.wcount, cycle_stats.rcount, args->seeks, args->stop_lba);
 #endif
 
 	if(target.oper == WRITER) {
-		(*wcount)++;
+		(cycle_stats.wcount)++;
 		if((args->flags & CLD_FLG_LUND))
 			*(pVal1+OFF_RLBA) = *(pVal1+OFF_WLBA);
 		*(pVal1+OFF_WLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
-		if(TST_wFST_TIME(*test_state)) *test_state = CLR_wFST_TIME(*test_state);
+		if(TST_wFST_TIME(args->test_state)) args->test_state = CLR_wFST_TIME(args->test_state);
 	}
 	if(target.oper == READER) {
-		(*rcount)++;
+		(cycle_stats.rcount)++;
 		*(pVal1+OFF_RLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
-		if(TST_rFST_TIME(*test_state)) *test_state = CLR_rFST_TIME(*test_state);
+		if(TST_rFST_TIME(args->test_state)) args->test_state = CLR_rFST_TIME(args->test_state);
 	}
 	return target;
 }
 
+void miscompare_dump(const unsigned char *expected, const unsigned char *actual, const size_t buf_len, OFF_T tPosition)
+{
+	FILE *fpDumpFile;
+	pid_t my_pid;
+	char obuff[80];
+
+	my_pid = GETPID();
+
+	obuff[0] = 0;
+	sprintf(obuff, "dump_%d.dat", my_pid);
+	fpDumpFile = fopen(obuff, "a");
+
+	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n");
+    pMsg(ERR, DMSTR, tPosition, tPosition);
+	if(fpDumpFile) fprintf(fpDumpFile, DMSTR, tPosition, tPosition);
+	pMsg(ERR, "EXPECTED:\n");
+	if(fpDumpFile) fprintf(fpDumpFile, "********** EXPECTED: **********\n\n\n");
+	dump_data(stdout, expected, 16, 16, FMT_STR);
+	if(fpDumpFile) dump_data(fpDumpFile, expected, buf_len, 16, FMT_STR);
+	pMsg(ERR, "ACTUAL:\n");
+	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n********** ACTUAL: **********\n\n\n\n");
+	dump_data(stdout, actual, 16, 16, FMT_STR);
+	if(fpDumpFile) dump_data(fpDumpFile, actual, buf_len, 16, FMT_STR);
+	if(fpDumpFile) fclose(fpDumpFile);
+}
+
 /*
-* This function is really the main function for a child
+* This function is really the main function for a thread
 * Once here, this function will act as if it
-* were 'main' for that child, and therefore a child will
-* never return from this function, only exit.
-* args is shared so the children should NEVER update them.
+* were 'main' for that thread.
 */
-#ifdef WIN32
+#ifdef WINDOWS
 DWORD WINAPI ChildMain(child_args_t *args)
 #else
 void *ChildMain(void *vargs)
@@ -276,143 +331,92 @@ void *ChildMain(void *vargs)
 	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
 	extern OFF_T pass_count;			/* current pass */
 	extern unsigned char *data_buffer;	/* global pointer to shared memory */
+	extern stats_t cycle_stats;		/* per cycle statistics */
 
-#ifndef WIN32
-	static pthread_mutex_t global = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t data = PTHREAD_MUTEX_INITIALIZER;
-	child_args_t *args = (child_args_t *) vargs;
-#endif
 	unsigned char *buf1 = NULL, *buffer1 = NULL; /* 'buf' is the aligned 'buffer' */
 	unsigned char *buf2 = NULL, *buffer2 = NULL; /* 'buf' is the aligned 'buffer' */
-	OFF_T *wcount = (OFF_T *)shared_mem + OFF_WCOUNT;
-	OFF_T *rcount = (OFF_T *)shared_mem + OFF_RCOUNT;
-	OFF_T *rbytes = (OFF_T *)shared_mem + OFF_RBYTES;
-	OFF_T *wbytes = (OFF_T *)shared_mem + OFF_WBYTES;
-	OFF_T *test_state = (OFF_T *)shared_mem + OFF_TST_STAT;
 	unsigned char *wbitmap = (unsigned char *)shared_mem + BMP_OFFSET;
+	unsigned long ulLastError;
 
-	time_t end_time = 0;
 	action_t target = { NONE, -1, 0};
 	unsigned int i;
-	OFF_T lba2=0, lba3=0, mask=1;
+	OFF_T ActualBytePos=0, TargetBytePos=0, mask=1;
 	long tcnt=0;
 	int exit_code=0;
+	char filespec[DEV_NAME_LEN];
+	fd_t fd;
 
-#ifdef WIN32
-	DWORD OPEN_FLAGS = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
-	DWORD OPEN_DISPO = OPEN_EXISTING;
-	HANDLE hFileHandle, hSemGBL, hSemDATA;
+#ifdef WINDOWS
+	HANDLE MutexGBL, MutexDATA;
 
-	if(args->flags & CLD_FLG_RANDOM) OPEN_FLAGS |= FILE_FLAG_RANDOM_ACCESS;
-	if(args->flags & CLD_FLG_LINEAR) OPEN_FLAGS |= FILE_FLAG_SEQUENTIAL_SCAN;
-	if(args->flags & CLD_FLG_FILE) {
-		OPEN_FLAGS |= FILE_ATTRIBUTE_ARCHIVE;
-		OPEN_DISPO = OPEN_ALWAYS;
-	}
-
-	if((hSemGBL = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
+	if((MutexGBL = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
 		pMsg(ERR, "Failed to open semaphore, error = %u\n", GetLastError());
-		exit(GetLastError());
+		args->test_state = SET_STS_FAIL(args->test_state);
+		TEXIT(GETLASTERROR());
 	}
-	if((hSemDATA = OpenMutex(SYNCHRONIZE, TRUE, "data")) == NULL) {
+	if((MutexDATA = OpenMutex(SYNCHRONIZE, TRUE, "data")) == NULL) {
 		pMsg(ERR, "Failed to open semaphore, error = %u\n", GetLastError());
-		exit(GetLastError());
-	}
-
-	hFileHandle = CreateFile(args->device, 
-						GENERIC_READ | GENERIC_WRITE,
-						FILE_SHARE_READ | FILE_SHARE_WRITE,
-						NULL,
-						OPEN_DISPO,
-						OPEN_FLAGS,
-						NULL);
-
-	if(hFileHandle == INVALID_HANDLE_VALUE) {
-		pMsg(ERR, "Error = %u\n",GetLastError());
-		ExitThread(GetLastError());
-		return(GetLastError());
+		args->test_state = SET_STS_FAIL(args->test_state);
+		TEXIT(GETLASTERROR());
 	}
 #else
-	int fd = -1; /* file discipter */
-#ifdef _AIX
-	int OPEN_MASK = O_RDWR|O_LARGEFILE; /* RDWR and LARGEFILE */
-	if(args->flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
-	if(args->flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
-#else
-	int OPEN_MASK = 02|0100000; /* O_RDWR and O_LARGEFILE */
-	if(args->flags & CLD_FLG_FILE) OPEN_MASK |= 0100; /* O_CREAT */
-	if(args->flags & CLD_FLG_DIRECT) OPEN_MASK |= 040000; /* O_DIRECT Linux */
+	static pthread_mutex_t MutexGBL = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t MutexDATA = PTHREAD_MUTEX_INITIALIZER;
+	child_args_t *args = (child_args_t *) vargs;
 #endif
-	if((fd = open(args->device,OPEN_MASK,00600)) == -1) {
-		*test_state = SET_STS_FAIL(*test_state);
+
+	strncpy(filespec, args->device, DEV_NAME_LEN);
+
+	fd = Open(filespec, args->flags);
+	if(INVALID_FD(fd)) {
+		pMsg(ERR, "Error = %u\n",GETLASTERROR());
 		pMsg(ERR, "could not open %s.\n",args->device);
-		perror(args->device);
-		exit(errno);
+		args->test_state = SET_STS_FAIL(args->test_state);
+		TEXIT(GETLASTERROR());
 	}
-	pthread_cleanup_push(clean_up, &exit_code);
-#endif
 
 	/* Create aligned memory buffers for sending IO. */
-	if ((buffer1 = (unsigned char *) malloc((T_MAX_SIZE+ALIGNSIZE))) == NULL) {
+	if ((buffer1 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
 		perror("allocation failed, buffer1");
-		*test_state = SET_STS_FAIL(*test_state);
-		exit(errno);
+		args->test_state = SET_STS_FAIL(args->test_state);
+		CLOSE(fd);
+		TEXIT(errno);
 	}
 	buf1 = (unsigned char *) BUFALIGN(buffer1);
 
-	if ((buffer2 = (unsigned char *) malloc((T_MAX_SIZE+ALIGNSIZE))) == NULL) {
+	if ((buffer2 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
 		perror("allocation failed, buffer2");
-		*test_state = SET_STS_FAIL(*test_state);
-		exit(errno);
+		FREE(buffer1);
+		args->test_state = SET_STS_FAIL(args->test_state);
+		CLOSE(fd);
+		TEXIT(errno);
 	}
 	buf2 = (unsigned char *) BUFALIGN(buffer2);
 
 	/*  set up lba mask of all 1's with value between vsiz and 2*vsiz */
-	while(mask <= args->stop_lba) {	mask = mask<<1; }
+	while(mask <= (args->stop_lba - args->start_lba)) { mask = mask<<1; }
 	mask -= 1;
 
-	if(args->flags & CLD_FLG_TMD) {
-		end_time = time(NULL) + args->run_time;
-	}
-
-	for(;;) {
-		if(!bContinue) break;	/* someone said to die */
-#ifdef WIN32
-		WaitForSingleObject(hSemGBL, INFINITE);
+	while(bContinue) {
+		LOCK(MutexGBL);
+		target = get_next_action(args, mask);
+#ifdef WINDOWS
+		PDBG5(DEBUG, "%s, %I64d, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
 #else
-		pthread_mutex_lock(&global);
+		PDBG5(DEBUG, "%s, %lld, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
 #endif
-		target = get_next_action(args, end_time, mask);
+		UNLOCK(MutexGBL);
 
-#ifdef _DEBUG
-#ifdef WIN32
-		printf("%s, %I64d, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
-#else
-		printf("%s, %lld, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
-#endif
-#endif
+		if(target.oper == NONE) {
+			bContinue = FALSE;
+            break;
+		}
 
-#ifdef WIN32
-		ReleaseMutex(hSemGBL);
-#else
-		pthread_mutex_unlock(&global);
-#endif
-
-		if(target.oper == NONE) break;
-
-		lba3=(OFF_T) (target.lba*BLK_SIZE);
-#ifdef WIN32
-		lba2=FileSeek64(hFileHandle, lba3, FILE_BEGIN);
-#else
-		lba2=(OFF_T) lseek64(fd,lba3,SEEK_SET);
-#endif
-		if(lba2 != lba3) {
-#ifdef WIN32
-			pMsg(ERR, "seek failed seek %I64d, lba = %I64d, request pos = %I64d, seek pos = %I64d\n",(target.oper == WRITER) ? (*wcount) : (*rcount),target.lba,lba3,lba2);
-#else
-			pMsg(ERR, "seek failed seek %lld, lba = %lld, request pos = %lld, seek pos = %lld\n",(target.oper == WRITER) ? (*wcount) : (*rcount),target.lba,lba3,lba2);
-#endif
-			*test_state = SET_STS_FAIL(*test_state);
+		TargetBytePos=(OFF_T) (target.lba*BLK_SIZE);
+		ActualBytePos=Seek(fd, TargetBytePos);
+		if(ActualBytePos != TargetBytePos) {
+			pMsg(ERR, SFSTR,(target.oper == WRITER) ? (cycle_stats.wcount) : (cycle_stats.rcount),target.lba,TargetBytePos,ActualBytePos);
+			args->test_state = SET_STS_FAIL(args->test_state);
 			if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
 			exit_code = SEEK_FAILURE;
 			continue;
@@ -422,55 +426,36 @@ void *ChildMain(void *vargs)
 			if(args->flags & CLD_FLG_LPTYPE) {
 				fill_buffer(buf2, target.trsiz, &(target.lba), sizeof(OFF_T), CLD_FLG_LPTYPE);
 			} else {
-				memcpy(buf2, data_buffer+OFF_DATA, target.trsiz*BLK_SIZE);
+				memcpy(buf2, data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
 				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), pass_count, args->mrk_flag);
 			}
-#ifdef WIN32
-			WriteFile(hFileHandle, buf2, target.trsiz*BLK_SIZE, &tcnt, NULL);
-#else
-			tcnt = write(fd,buf2,target.trsiz*BLK_SIZE);
-#endif
+			tcnt = Write(fd, buf2, target.trsiz*BLK_SIZE);
 		}
 		if(target.oper == READER) {
-#ifdef WIN32
-			ReadFile(hFileHandle, buf1, target.trsiz*BLK_SIZE, &tcnt, NULL);
-#else
-			tcnt = read(fd,buf1,target.trsiz*BLK_SIZE);
-#endif
+			tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
 		}
 		if(tcnt != (long) target.trsiz*BLK_SIZE) {
-#ifdef WIN32
-			pMsg(ERR, "access failed: seek %I64u, lba %I64u (0x%I64x), got = %ld, asked for = %ld\n",(target.oper == WRITER) ? (*wcount) : (*rcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
-#else
-			pMsg(ERR, "access failed: seek %llu, lba %lld (0x%llx), got = %ld, asked for = %ld\n",(target.oper == WRITER) ? (*wcount) : (*rcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
-#endif
-			*test_state = SET_STS_FAIL(*test_state);
+			ulLastError = GETLASTERROR();
+			pMsg(ERR, AFSTR, (target.oper) ? "Read" : "Write", (target.oper) ? (cycle_stats.rcount) : (cycle_stats.wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
+			args->test_state = SET_STS_FAIL(args->test_state);
 			if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
 			exit_code = ACCESS_FAILURE;
 			continue;
 		}
 
 		/* update bytes transfered and bitmap */
-#ifdef WIN32
-		WaitForSingleObject(hSemDATA, INFINITE);
-#else
-		pthread_mutex_lock(&data);
-#endif
+		LOCK(MutexDATA);
 		if(target.oper == WRITER) {
-			(*wbytes) += target.trsiz*BLK_SIZE;
+			(cycle_stats.wbytes) += target.trsiz*BLK_SIZE;
 			for(i=0;i<target.trsiz;i++) {
-				*(wbitmap+(((target.lba)+i)/8)) |= 0x80>>(((target.lba)+i)%8);
+				*(wbitmap+(((target.lba-args->start_lba)+i)/8)) |= 0x80>>(((target.lba-args->start_lba)+i)%8);
 			}
 		} else {
-			(*rbytes) += target.trsiz*BLK_SIZE;
+			(cycle_stats.rbytes) += target.trsiz*BLK_SIZE;
 		}
-#ifdef WIN32
-		ReleaseMutex(hSemDATA);
-#else
-		pthread_mutex_unlock(&data);
-#endif
+		UNLOCK(MutexDATA);
 
 		/* data compare routine.  Act as if we were to write, but just compare */
 		if((target.oper == READER) && (args->flags & CLD_FLG_CMPR)) {
@@ -481,52 +466,27 @@ void *ChildMain(void *vargs)
 			if(args->flags & CLD_FLG_LPTYPE) {
 				fill_buffer(buf2, target.trsiz, &(target.lba), sizeof(OFF_T), CLD_FLG_LPTYPE);
 			} else {
-				memcpy(buf2, data_buffer+OFF_DATA, target.trsiz*BLK_SIZE);
+				memcpy(buf2, data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
 				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), pass_count, args->mrk_flag);
 			}
 			if(memcmp(buf2, buf1, args->cmp_lng) != 0) {
 				/* data miscompare !!! */
-#ifdef WIN32
-				WaitForSingleObject(hSemGBL, INFINITE);
-				pMsg(ERR, "Data miscompare at lba %I64d (0x%I64x)\n", target.lba, target.lba);
-#else
-				pthread_mutex_lock(&global);
-				pMsg(ERR, "Data miscompare at lba %lld (0x%llx)\n", target.lba, target.lba);
-#endif
-				pMsg(ERR, "EXPECTED: ");
-				for(i=0;i<args->cmp_lng;i++)
-					printf("%02x",*(buf2+i));
-				printf("\n");
-				pMsg(ERR, "ACTUAL:   ");
-				for(i=0;i<args->cmp_lng;i++)
-					printf("%02x",*(buf1+i));
-				printf("\n");
-				*test_state = SET_STS_FAIL(*test_state);
-#ifdef WIN32
-				ReleaseMutex(hSemGBL);
-#else
-				pthread_mutex_unlock(&global);
-#endif
+				LOCK(MutexGBL);
+				miscompare_dump(buf2, buf1, args->htrsiz*BLK_SIZE, target.lba);
+				args->test_state = SET_STS_FAIL(args->test_state);
 				if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
+				UNLOCK(MutexGBL);
 				exit_code = DATA_MISCOMPARE;
 				continue;
 			}
 		}
-
 	}
 
-	free(buffer1);
-	free(buffer2);
-#ifdef WIN32
-	CloseHandle(hFileHandle);
-	ExitThread((unsigned long) exit_code);
-	return((unsigned long) exit_code);
-#else
-	close(fd);
-	pthread_exit(&exit_code); /* ChildMain (Good Exit) */
-	pthread_cleanup_pop(0);
-#endif
+	FREE(buffer1);
+	FREE(buffer2);
+	CLOSE(fd);
+	TEXIT(exit_code);
 }
 

@@ -23,10 +23,36 @@
 *  Project Website:  TBD
 *
 *
-* $Id: Getopt.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: Getopt.c,v 1.2 2003/04/17 15:21:55 robbiew Exp $
 * $Log: Getopt.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:55  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.4  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.3  2002/02/21 21:32:19  yardleyb
+* Added more unix compatability
+* ifdef'd function out when
+* compiling for unix env. that
+* have getopt
 *
 * Revision 1.2  2002/02/04 20:35:38  yardleyb
 * Changed max. number of threads to 64k.
@@ -41,6 +67,8 @@
 * This source add for windows compatability only.
 *
 */
+
+#ifdef WINDOWS
 
 #include <stdio.h>
 #include <stddef.h>
@@ -89,6 +117,9 @@ int getopt (int argc, char** argv, char* pszValidOpts) {
 									/* next argv is a new option, so param
 									 * not given for current option
 									*/
+									fprintf(stderr, "-%c option requires an argument.\n", chOpt);
+									chOpt = '?';
+									pszParam = NULL;
 								} else {
 									/* next argv is the param */
 									iArg++;
@@ -108,7 +139,7 @@ int getopt (int argc, char** argv, char* pszValidOpts) {
 					/* option specified is not in list of valid options */
 					fprintf(stderr, "Invalid option -- %c\n", chOpt);
 					chOpt = '?';
-					pszParam = &chOpt;
+					pszParam = NULL;
 				}
 			} else {
 				/* though option specifier was given, option character
@@ -131,3 +162,5 @@ int getopt (int argc, char** argv, char* pszValidOpts) {
 	optarg = pszParam;
 	return (chOpt);
 }
+
+#endif /* defined WINDOWS */

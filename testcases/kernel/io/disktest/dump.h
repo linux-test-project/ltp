@@ -22,13 +22,12 @@
 *
 *  Project Website:  TBD
 *
-*
-* $Id: Getopt.h,v 1.2 2003/04/17 15:21:55 robbiew Exp $
-* $Log: Getopt.h,v $
-* Revision 1.2  2003/04/17 15:21:55  robbiew
+* $Id: dump.h,v 1.1 2003/04/17 15:22:46 robbiew Exp $
+* $Log: dump.h,v $
+* Revision 1.1  2003/04/17 15:22:46  robbiew
 * Updated to v1.1.10
 *
-* Revision 1.3  2002/03/30 01:32:14  yardleyb
+* Revision 1.2  2002/03/30 01:32:14  yardleyb
 * Major Changes:
 *
 * Added Dumping routines for
@@ -48,16 +47,25 @@
 * if #ifdef for windows/unix functional
 * differences.
 *
-* Revision 1.2  2002/02/21 21:32:19  yardleyb
-* Added more unix compatability
-* ifdef'd function out when
-* compiling for unix env. that
-* have getopt
-*
-* Revision 1.1  2001/12/04 18:57:36  yardleyb
-* This source add for windows compatability only.
+* Revision 1.1  2002/03/07 03:38:52  yardleyb
+* Added dump function from command
+* line.  Created formatted dump output
+* for Data miscomare and command line.
+* Can now leave off filespec the full
+* path header as it will be added based
+* on -I.
 *
 */
-#ifdef WINDOWS
-int getopt(int argc, char** argv, char* pszValidOpts);
-#endif /* defined WINDOWS */
+#ifndef _DUMP_H
+#define _DUMP_H 1
+
+#include "main.h"
+
+#define FMT_STR 1
+#define FMT_RAW 2
+
+int dump_data(FILE *, const unsigned char *, const size_t, const size_t, const int);
+int do_dump(child_args_t *);
+
+#endif /* _DUMP_H */
+

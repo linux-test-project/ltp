@@ -22,10 +22,35 @@
 *
 *  Project Website:  TBD
 *
-* $Id: globals.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: globals.h,v 1.2 2003/04/17 15:21:56 robbiew Exp $
 * $Log: globals.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:56  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.3  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.2  2002/03/07 03:32:13  yardleyb
+* Removed the use of global
+* appname.  Set devname to
+* init. value of "No Device"
 *
 * Revision 1.1  2001/12/04 18:51:06  yardleyb
 * Checkin of new source files and removal
@@ -34,20 +59,38 @@
 */
 
 #ifndef _GLOBALS_H
-#define _GLOBALS_H
+#define _GLOBALS_H 1
+
+#include "defs.h"
 
 /* global flags */
 #define GLB_FLG_QUIET	0x00000001
-#define GLB_FLG_PERFP	0x00000002
+#define GLB_FLG_SUPRESS	0x00000002
+#define GLB_FLG_PERFP	0x00000004
 
-#ifndef WIN32
-/* semaphore lock definitions */
+#define PDBG1  if(gbl_dbg_lvl > 0) pMsg
+#define PDBG2  if(gbl_dbg_lvl > 1) pMsg
+#define PDBG3  if(gbl_dbg_lvl > 2) pMsg
+#define PDBG4  if(gbl_dbg_lvl > 3) pMsg
+#define PDBG5  if(gbl_dbg_lvl > 4) pMsg
 
-#define TOTAL_SEMS	6
+extern unsigned int gbl_dbg_lvl;
 
+typedef struct stats {
+	OFF_T wcount;
+	OFF_T rcount;
+	OFF_T wbytes;
+	OFF_T rbytes;
+	time_t wtime;
+	time_t rtime;
+} stats_t;
+
+void init_gbl_data(void);
+void update_gbl_stats(void);
+#ifdef WINDOWS
+void PrintLastSystemError(unsigned long);
+void GetSystemErrorString(unsigned long, void *);
 #endif
-
-void init_gbl_data(char **argv);
 
 #endif /* _GLOBALS_H */
 

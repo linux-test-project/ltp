@@ -23,10 +23,34 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: sfunc.h,v 1.2 2003/04/17 15:21:58 robbiew Exp $
 * $Log: sfunc.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:58  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.9  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.8  2002/02/28 02:04:32  yardleyb
+* Moved FileSeek64 to IO
+* source files.
 *
 * Revision 1.7  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -60,6 +84,9 @@
 *
 */
 
+#ifndef _SFUNC_H
+#define _SFUNC_H 1
+
 #include <stdarg.h>
 
 #include "main.h"
@@ -73,17 +100,25 @@ typedef enum lvl {
 	START, END, STAT, INFO, DEBUG, WARN, ERR
 } lvl_t;
 
+typedef struct fmt_time {
+	time_t hours;
+	time_t minutes;
+	time_t seconds;
+} fmt_time_t;
+
 OFF_T my_strtofft(const char *pStr);
 int pMsg(lvl_t level, char *Msg,...);
 void fill_buffer(void *, size_t, void *, size_t, const unsigned int);
 void mark_buffer(void *, const size_t, void *, const OFF_T, const unsigned short);
 void normalize_percs(child_args_t *args);
-#ifdef WIN32
-OFF_T FileSeek64(HANDLE hf, OFF_T distance, DWORD MoveMethod);
-#else
+#ifndef WINDOWS
 void Sleep(unsigned int);
 #endif
 OFF_T get_vsiz(char *device);
 OFF_T Rand64(void);
 char *strupr(char *String);
 char *strlwr(char *String);
+fmt_time_t format_time(time_t);
+
+#endif /* _SFUNC_H */
+

@@ -26,29 +26,40 @@
 .\" Process this file with
 .\" groff -man -Tascii disktest.1
 .\"
-.\" $Id: disktest.1,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+.\" $Id: disktest.1,v 1.2 2003/04/17 15:21:59 robbiew Exp $
 .\" $Log: disktest.1,v $
-.\" Revision 1.1  2002/02/21 16:49:04  robbiew
-.\" Relocated disktest to /kernel/io/.
+.\" Revision 1.2  2003/04/17 15:21:59  robbiew
+.\" Updated to v1.1.10
+.\"
+.\" Revision 1.15  2002/04/02 00:00:31  yardleyb
+.\" Fixed spelling errors
+.\"
+.\" Revision 1.14  2002/04/01 20:21:42  yardleyb
+.\" Add descriptions for multipliers
+.\" Added dump option and description
+.\"
+.\" Revision 1.13  2002/04/01 20:05:50  yardleyb
+.\" Modified Makefiles for linux,
+.\" Created Makefiles for windows/aix
 .\"
 .\" Revision 1.12  2002/02/21 01:01:30  yardleyb
-.\" minor update to -I verbage
+.\" minor update to -I verbiage
 .\"
 .\" Revision 1.11  2002/02/20 18:42:47  yardleyb
 .\" Updated last revision date
 .\"
 .\" Revision 1.10  2002/02/13 01:11:45  yardleyb
-.\" Updated outout examples
+.\" Updated output examples
 .\" fixed spelling errors
 .\"
 .\" Revision 1.9  2001/12/04 19:25:47  yardleyb
-.\" Finished removeal of -t option
+.\" Finished removal of -t option
 .\"
 .\" Revision 1.8  2001/12/04 19:22:19  yardleyb
 .\" Removed -t option from usage
 .\"
 .\" Revision 1.7  2001/10/15 18:15:20  yardleyb
-.\" Added text on performance optons, -PR and -PA.
+.\" Added text on performance options, -PR and -PA.
 .\"
 .\" Revision 1.6  2001/10/10 00:17:13  yardleyb
 .\" Added Copyright and GPL license text.
@@ -73,7 +84,7 @@
 .\"
 .\"
 
-.TH DISKTEST 1 "February 2002" Linux "Diag Tools"
+.TH DISKTEST 1 "March 2002" OS "Diag Tools"
 .SH NAME
 disktest \- Tool for testing disk devices
 .SH SYNOPSIS
@@ -81,7 +92,7 @@ disktest \- Tool for testing disk devices
 .I cmp_length
 .B ] [-a
 .I seed
-.B ] [-z|c|n|f
+.B ] [ -A ] [-z|c|n|f
 .I fixed_pattern
 .B ] [-B
 .I sBLK[:eBLK]
@@ -143,7 +154,7 @@ and optionally writes to, reads from, and verifies the data.  By default,
 .B disktest
 makes assumptions about the running environment which allows for a quick start of IO generation.  However,
 .B Disktest
-has a large number of command line options which can be used to adapt the test for a variety of uses including data integraty, medium integraty, perforamance, and simple application simulation.
+has a large number of command line options which can be used to adapt the test for a variety of uses including data integrity, medium integrity, performance, and simple application simulation.
 
 .B Disktest
 will use the device specified by
@@ -152,14 +163,29 @@ If no option is specified otherwise,
 .B disktest
 will attempt to determine
 .I filespec
-type.  Fully qualified path mut be give when
+type.  Fully qualified path must be give when
 .I filespec
 is not a normal file.  This will help to determine it's type.
 .SH OPTIONS
+Most options have multipliers that can be used to specify larger amounts.  The following are a list of these multipliers.
+.RS
+
+k = 1024, K = 10^3, m = 1024^2, M = 10^6
+
+.RE
+These can be used on options such as -B, -L, -N, -S, -s.  The time options also have multipliers.
+.RS
+
+m = 60, h = 60*60, d = 60*60*24
+
+.RE
+These can be used on options such as -h and -T.
 .IP -?
-Displays a short discription of the command line options and exits normally.
+Displays a short description of the command line options and exits normally.
 .IP "-a seed"
-Use seed for all random number generation when constructing blocks of pseudo-random data and random seeks.  By default, seed is set to the process id number.  To reproduce a previous test run, use the process id number outputed to stdout.
+Use seed for all random number generation when constructing blocks of pseudo-random data and random seeks.  By default, seed is set to the process id number.  To reproduce a previous test run, use the process id number outputted to stdout.
+.IP -A
+By default, when an access failure occurs all threads will die.  If this option is specified, the threads will continue on.
 .IP "-B sBlockSize[:eBlockSize]"
 Set the size of the data block transfer.  If only
 .I sBlockSize
@@ -171,16 +197,18 @@ is specified, then the transfer length will be randomly chosen between
 .I sBlockSize
 and
 .I eBlockSize.
-The transfer size will always be a multipule of the sector size.
-If either parameter is greater then 256, then the value will be integer divided by the sector size default, which is 512 bytes. If either parameter is preceeded by a 'k', i.e. 8k, then the value will be multiplied by 1024. Otherwize, the parameters will be taken literally.  The default block size is (1*sector size) or 512.  Note that O_DIRECT, no filesystem buffering, and some file system may not be able to perform accesses as small as 512 bytes.  This will result in an IO failure with a transfer length of -1.
+The transfer size will always be a multipile of the sector size.
+If either parameter is greater then 256, then the value will be integer divided by the sector size default, which is 512 bytes. If either parameter is preceded by a 'k', i.e. 8k, then the value will be multiplied by 1024. Otherwise, the parameters will be taken literally.  The default block size is (1*sector size) or 512.  Note that O_DIRECT, no filesystem buffering, and some file system may not be able to perform accesses as small as 512 bytes.  This will result in an IO failure with a transfer length of -1.
 .IP -c
 Use a counting sequence for the bytes within to each block.  The count starts at 0 and increments to 255 then begins again at 0.  Each sector is filled with two of these sequences.
 .IP "-C cycles"
 Run until
 .I cycles
-access cycles are complete.  When cycles is set to zero, disktest will run until killed.  By default cycles is not used. So run time is specified by time, -T, or seeks, -L. Using this option only works with sequencial type access currently.
+access cycles are complete.  When cycles is set to zero, disktest will run until killed or run time, -T, has expired. By default cycles is not used, so run time is specified by time, -T, or seeks, -L.
 .IP -d
-By default, when an access failure occures all threads will die.  If this option is specified, the threads will continue on.
+Force
+.B disktest
+to dump to stdout the amount of data at the location specified by the other command-line option, i.e. -d -s50 -B 32k will dump 32768 bytes of data to stdout starting at LBA 50. The data is formatted into lines of 16 bytes with the location offset and ASCII equivalent.
 .IP "-D r%:w%"
 Duty cycle used while reading and/or writing.  For example, -D 20:80 would cause
 .B disktest
@@ -198,11 +226,11 @@ is 0 then the block size is used as the compare length. By default, data read is
 .IP "-f fixed_pattern"
 Use a data pattern consisting of a fixed value.
 .I fixed_pattern
-must be given in hexadecimal, and must be between 0x0 and 0xffffffffffffffff.
+can be entered using decimal, any number not starting with a 0, octel, any number staring with a 0, or hexadecimal, any number and [A-F] starting with 0x. The value can be no greater +/- 2^63, in size.
 .IP "-h heartbeat"
 Performance data will be sent to stdout every
 .I heartbeat
-seconds.  The default is to only display performance data at the end of the test.
+seconds. During a linear test, -pL, only heartbeat statistics for the current operational cycle will be displayed. The default is to only display performance data at the end of the test, which is cumulative for all IO performed throughout the test.
 .IP "-I IO_type"
 Set the data transfer type to IO_type. Valid IO types are
 .B R
@@ -224,7 +252,7 @@ in
 .B open(2)
 for more details. Access to the file is performed through the file system that the file is stored on.  Adding 
 .B D
-will open with the O_DIRECT flag set.  If this option is used, then I/O is limited to being aligned to the file systems block size.  When transfering to a block device w/o a file system, then alignment is to 1k.  These limits have been verified with the 2.4.9 kernel and the o_direct patch from AA.
+will open with the O_DIRECT flag set.  If this option is used, then I/O is limited to being aligned to the file systems block size.  When transferring to a block device w/o a file system, then alignment is to 1k.  These limits have been verified with the 2.4.9 kernel and the o_direct patch from AA.
 .B Disktest
 will report a failure if
 .I filespec
@@ -242,7 +270,7 @@ This option will add a the lba and pass count to the data before any IO operatio
 .I mark_options
 are
 .B f
-which will mark the first LBA of the transfer with the starting LBA numberand current pass count,
+which will mark the first LBA of the transfer with the starting LBA number and current pass count,
 .B l
 which will mark the last LBA of the transfer with the starting LBA number and current pass count and
 .B a
@@ -264,7 +292,7 @@ Valid patterns are
 .B u
 specifies that the test should start back at first block after reaching the last block.
 .B d
-specifies that the test, after reaching the last block, should start at the last block and go to the fisrt block. The default extra option for linear is 'u'. The default seek is random.
+specifies that the test, after reaching the last block, should start at the last block and go to the first block. The default extra option for linear is 'u'. The default seek is random.
 .IP "-P perf_opts"
 Record performance statistic to stdout. Perf_opts is a string of characters representing which statistics should be reported.  The possible options are:
 
@@ -288,11 +316,11 @@ Record performance statistic to stdout. Perf_opts is a string of characters repr
 .RE
 .RE
 .IP -q
-This option sprecesses all the 'INFO' level messages that are send to stdout.  This includes all the assumtion messages the disktest will print as it finds that the option was not specified in the command line arguments.
+This option supresses all the 'INFO' level messages that are send to stdout.  This includes all the assumption messages the disktest will print as it finds that the option was not specified in the command line arguments.
 .IP -r
 Read from
 .I filespec.
-This is the default option if -w or -r are not specified.  -E must be specified if data integrate checking is desired.
+This is the default option if -w or -r are not specified.  -E must be specified if data integrity checking is desired.
 .IP "-S start_block[:end_block]"
 Set the starting test block to
 .I start_block
@@ -308,7 +336,7 @@ is not given, and
 .I filespec
 is a block device, then
 .I end_block
-is set to the volume capacity reported by the device divided by the tranfer length.  This option can only be used when there is a fiexed pattern length.
+is set to the volume capacity reported by the device divided by the transfer length.  This option can only be used when there is a fixed pattern length.
 .IP "-s start_LBA[:end_LBA]"
 Set the starting test LBA to
 .I start_LBA
@@ -336,7 +364,7 @@ The version information will be displayed and disktest will exit normally.
 .IP -w
 Write to 
 .I filespec.
-Data will be written as fast as possible and not read back to check for data corruption. can be combined with -r option to do read/write testing and -E to perform data integraty checking.
+Data will be written as fast as possible and not read back to check for data corruption. can be combined with -r option to do read/write testing and -E to perform data integrity checking.
 .SH FILES
 .I ./disktest
 .SH ENVIRONMENT
@@ -349,7 +377,7 @@ to create different types of workloads.  Please use these as a guideline to get 
 .RS
 disktest -r -S10:15 -pld -L35 -B 256k -K3 -PTX /dev/sdaa
 
-This will start a read test to blocks 10 through 15.  Seeks are linear and will be performed starting at 10 going to 15 then back to 10.  35 seeks will be performed.  The block size 256k and there will be three threads.  Also, total tranfer and throughput will be displayed at the end of the test.
+This will start a read test to blocks 10 through 15.  Seeks are linear and will be performed starting at 10 going to 15 then back to 10.  35 seeks will be performed.  The block size 256k and there will be three threads.  Also, total transfer and throughput will be displayed at the end of the test.
 
 disktest -r -w -D30:70 -K2 -E32 -B 8192 -T 600 -pR -Ibd /dev/sdzz
 
@@ -368,7 +396,7 @@ The first value is the system date and time.  It is expressed as:
 <MONTH>/<DAY>/<YEAR>-<HOUR>:<MIN>:<SEC>.
 
 .RE
-The second value is the level of the message.  Current levels include START, END, DEBUG, INFO, WARN, STAT, and ERROR.  The third value is the process id.  This can be used to match up the test processes with the output information if more then one test process is outputing to the same context, such as file. It can also be used to regenerate a test with the same seeks and random data using the -a. The fourth value is the revision number of the test process. The fifth is the target device.  The sixth is the informational message.  The following are some examples:
+The second value is the level of the message.  Current levels include START, END, DEBUG, INFO, WARN, STAT, and ERROR.  The third value is the process id.  This can be used to match up the test processes with the output information if more then one test process is outputting to the same context, such as file. It can also be used to regenerate a test with the same seeks and random data using the -a. The fourth value is the revision number of the test process. The fifth is the target device.  The sixth is the informational message.  The following are some examples:
 .RS
 
 | 11/12/01-02:05:01 | START | 1314 | v1.2.3 | /dev/sdaa | Start args: -S100:105 -K5 -pid -r -PTX -L 25 -B 1 -z /dev/sdaa
@@ -383,7 +411,7 @@ The second value is the level of the message.  Current levels include START, END
 .RE
 Error Checking
 .RS
-When error checking is enabled, each read is compared with data that is generated by the command line options specified or assumtions made when no command line is given.  If a data miscompare results the expected and actual data is printed to STDOUT, or a file if redirected, and the IO thread will die without completing any other IO operations, and set a flag to force all other threads to die. if the compare_length is not zero, then only the first compare_length bytes are compared, and only if those bytes miscompare will a data miscompare be reported.
+When error checking is enabled, each read is compared with data that is generated by the command line options specified or assumptions made when no command line is given.  If a data miscompare results the expected and actual data is printed to STDOUT, or a file if redirected, and the IO thread will die without completing any other IO operations, and set a flag to force all other threads to die. if the compare_length is not zero, then only the first compare_length bytes are compared, and only if those bytes miscompare will a data miscompare be reported.
 
 .RE
 Seeking/Accessing
@@ -408,8 +436,19 @@ Performance
 Performance options will display information about throughput, IO per second, and runtime. This information can be print at the end of the test only, or throughout the test at a given interval using the heartbeat option, -h.
 
 .RE
+Dumping
+.RS
+When dumping data from filespec you will specify -d along with other command-line options.  Here is an example:
+
+.RS
+disktest -d -B 1k -s25 /dev/sddz
+
+.RE
+This will dump 1024 bytes of data to stdout starting at LBA 25.
+
+.RE
 .SH TODO
-The following are options that are forthcomin, ideas, and other good stuff:
+The following are options that are forthcoming, ideas, and other good stuff:
 .RS
 Header on first lba should include fclun, target LUN ID, etc.
 
@@ -419,7 +458,7 @@ Add the following options:
 .RS
 butterfly: seek option: test will seek lba start/end/start+1/end-1/etc...
 
-non-distructive: will read lba/write lba with read data/then read lba to verify
+non-destructive: will read lba/write lba with read data/then read lba to verify
 
 min seek: force a minimum seek distance during any IO access
 
@@ -435,9 +474,7 @@ serialize: only one I/O request is ever outstanding no mater how many threads
 
 retry: number of times an I should be retried before counting as a failure
 
-pattern length: if fixed pattern, option is given to specify length default is a byte
-
-unique read/write: perf option to display unque lbas hit with read or write
+Add option for MxN testing.  This will allow the specification of multiple targets, M, with multiple thread, N, operation on each target.
 
 .SH AUTHOR
 Brent Yardley (yardleyb@us.ibm.com)

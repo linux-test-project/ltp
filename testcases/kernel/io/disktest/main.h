@@ -23,10 +23,64 @@
 *  Project Website:  TBD
 *
 *
-* $Id: main.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: main.h,v 1.2 2003/04/17 15:21:57 robbiew Exp $
 * $Log: main.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:57  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.12  2003/01/13 21:33:31  yardleyb
+* Added code to detect AIX volume size.
+* Updated mask for random LBA to use start_lba offset
+* Updated version to 1.1.10
+*
+* Revision 1.11  2002/05/31 18:47:59  yardleyb
+* Updates to -pl -pL options.
+* Fixed test status to fail on
+* failure to open filespec.
+* Version set to 1.1.9
+*
+* Revision 1.10  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.9  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.8  2002/03/07 03:38:52  yardleyb
+* Added dump function from command
+* line.  Created formatted dump output
+* for Data miscomare and command line.
+* Can now leave off filespec the full
+* path header as it will be added based
+* on -I.
+*
+* Revision 1.7  2002/02/26 19:35:59  yardleyb
+* Updates to parsing routines for user
+* input.  Added multipliers for -S and
+* -s command line arguments. Forced
+* default seeks to default if performing
+* a diskcache test.
 *
 * Revision 1.6  2002/02/20 18:45:00  yardleyb
 * Set revision number v1.0.0
@@ -117,7 +171,7 @@
 #ifndef _DISKTEST_H
 #define _DISKTEST_H
 
-#ifdef WIN32
+#ifdef WINDOWS
 #include <windows.h>
 #include <winioctl.h>
 #include <io.h>
@@ -138,29 +192,30 @@
 #include <fcntl.h>
 #include "defs.h"
 
-#define VER_STR "v1.0.0"
+#define VER_STR "v1.1.10"
 #define BLKGETSIZE _IO(0x12,96)
 #define BLKSSZGET  _IO(0x12,104)
 
+#define DEV_NAME_LEN 80
+#define MAX_ARG_LEN 160
+
 #define BLK_SIZE	512
 #define M_BLK_SIZE	512
-#define T_MAX_SIZE	M_BLK_SIZE*BLK_SIZE*2
 #define ALIGNSIZE	4096	/* 4k alignment works in all cases ?? */
+#if __WORDSIZE == 64
+#define ALIGN(x, bs) (((OFF_T)x + ((OFF_T)bs - 1)) & ~((OFF_T)bs - 1))
+#define BUFALIGN(x) (void *) (((unsigned long)x + (OFF_T)(ALIGNSIZE - 1)) & (OFF_T)~(ALIGNSIZE - 1)) 
+#else
 #define ALIGN(x, bs) ((x + (bs - 1)) & ~(bs - 1))
-/* #define ALIGN2(x, bs) ((x/bs) * bs) */
-#define BUFALIGN(x) (void *) (((unsigned long)x + (ALIGNSIZE - 1)) & ~(ALIGNSIZE - 1))
+#define BUFALIGN(x) (void *) (((unsigned long)x + (ALIGNSIZE - 1)) & ~(ALIGNSIZE - 1)) 
+#endif
 #define MASK(x,y) (x & y)
 
 /* each is a 64b number.  offsets are in 8B*offset placement */
-#define OFF_TST_STAT	0	/* offset in memseg were global test status lives */
-#define OFF_RLBA	1	/* offset in memseg of current read LBA */
-#define OFF_WLBA	2	/* offset in memseg of current write LBA */
-#define OFF_WCOUNT	3	/* offset in memseg were total write count lives */
-#define OFF_RCOUNT	4	/* offset in memseg were total read count lives */
-#define OFF_RBYTES	5	/* bytes read */
-#define OFF_WBYTES	6	/* bytes written */
+#define OFF_RLBA	0	/* offset in memseg of current read LBA */
+#define OFF_WLBA	1	/* offset in memseg of current write LBA */
 
-#define BMP_OFFSET	7*sizeof(OFF_T)		/* bitmap starts here */
+#define BMP_OFFSET	2*sizeof(OFF_T)		/* bitmap starts here */
 
 #define TST_STS(x)			(x & 0x1)	/* current testing status */
 #define SET_STS_PASS(x)		(x | 0x01)
@@ -180,9 +235,6 @@
 #define SET_OPER_W(x)	(x & ~0x10)
 #define CNG_OPER(x)		(x & 0x10) ? (x & ~0x10) : (x | 0x10)
 
-#define DBUF_SIZE	(1*T_MAX_SIZE)
-#define OFF_DATA	(0*T_MAX_SIZE)
-
 #define CLD_FLG_CMPR	0x000000001	/* will cause readers to compare data read */
 #define CLD_FLG_MBLK	0x000000002	/* will add header info to fist block, fc lun, lba, etc */
 #define CLD_FLG_SQNCE	0x000000004	/* forces IOs to be queued one at a time */
@@ -192,13 +244,15 @@
 #define CLD_FLG_XFERS	0x000000010	/* reports # of transfers */
 #define CLD_FLG_TPUTS	0x000000020	/* reports calculated throughtput */
 #define CLD_FLG_RUNT	0x000000040	/* reports run time */
+#define CLD_FLG_PRFTYPS	(CLD_FLG_XFERS|CLD_FLG_TPUTS|CLD_FLG_RUNT)
 
 /* Seek Flags */
 #define CLD_FLG_RANDOM	0x000000100	/* child seeks are random */
 #define CLD_FLG_LINEAR	0x000000200	/* child seeks are linear */
-#define CLD_FLG_PP		0x000000400	/* ping pong seeks: start/end/start+1/end-1 */
-#define CLD_FLG_NTRLVD	0x000000800	/* reads and writes are mixed during sequential IO */
-#define CLD_FLG_SKTYPS	(CLD_FLG_RANDOM|CLD_FLG_LINEAR|CLD_FLG_PP)
+#define CLD_FLG_NTRLVD	0x000000400	/* reads and writes are mixed during sequential IO */
+#define CLD_FLG_SKTYPS	(CLD_FLG_RANDOM|CLD_FLG_LINEAR)
+
+#define CLD_FLG_VSIZ	0x000000800	/* Volume size specified on cli */
 
 /* IO Type Flags */
 #define CLD_FLG_RAW		0x000001000	/* child IO is to a RAW device */
@@ -223,6 +277,7 @@
 #define CLD_FLG_LBA_RNG	0x001000000	/* write multipule read multipule, must define multiple */
 #define CLD_FLG_BLK_RNG	0x002000000	/* write once read multiple, must define multiple */
 #define CLD_FLG_ALLDIE	0x004000000	/* will force all children to die on any error if set */
+#define CLD_FLG_DUMP	0x008000000	/* will dump formatted data */
 
 #define CLD_FLG_LUNU	0x010000000	/* seek start/end and then start/end */
 #define CLD_FLG_LUND	0x020000000	/* seek start/end and then end/start */
@@ -236,11 +291,11 @@
 #define KIDS	4		/* default number of children */
 
 typedef enum op {
-	WRITER,READER,NONE
+	WRITER,READER,NONE,ALL
 } op_t;
 
 typedef struct child_args {
-	char *device;			/* pointer to device name */
+	char device[DEV_NAME_LEN];			/* pointer to device name */
 	OFF_T vsiz;				/* volume size in blocks */
 	unsigned long ltrsiz;	/* low bound of transfer size in blocks */
 	unsigned long htrsiz;	/* high bound of transfer size in blocks */
@@ -263,6 +318,36 @@ typedef struct child_args {
 	unsigned short t_kids;	/* total children, max is 64k */
 	unsigned int cmp_lng;	/* how much of the data should be compared */
 	short mrk_flag;			/* how the tranfsers should be marked */
+	OFF_T test_state;		/* current test state */
+	unsigned int seed;		/* test seed */
 } child_args_t;
+
+#ifdef WINDOWS
+#define CTRSTR "%I64d;Rbytes;%I64d;Rxfers;"
+#define CTWSTR "%I64d;Wbytes;%I64d;Wxfers;"
+#define TCTRSTR "%I64d;TRbytes;%I64d;TRxfers;"
+#define TCTWSTR "%I64d;TWbytes;%I64d;TWxfers;"
+#define RTSTR "%I64d bytes read in %I64d transfers.\n"
+#define WTSTR "%I64d bytes written in %I64d transfers.\n"
+#define TRTSTR "Total bytes read in %I64d transfers: %I64d\n"
+#define TWTSTR "Total bytes written in %I64d transfers: %I64d\n"
+#else
+#define CTRSTR "%lld;Rbytes;%lld;Rxfers;"
+#define CTWSTR "%lld;Wbytes;%lld;Wxfers;"
+#define TCTRSTR "%lld;TRbytes;%lld;TRxfers;"
+#define TCTWSTR "%lld;TWbytes;%lld;TWxfers;"
+#define RTSTR "%lld bytes read in %lld transfers.\n"
+#define WTSTR "%lld bytes written in %lld transfers.\n"
+#define TRTSTR "Total bytes read in %lld transfers: %lld\n"
+#define TWTSTR "Total bytes written in %lld transfers: %lld\n"
+#endif
+#define RTHSTR "Read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define WTHSTR "Write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define TRTHSTR "Total read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define TWTHSTR "Total write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define CTRRSTR "%.1f;RB/s;%.1f;RIOPS;"
+#define CTRWSTR "%.1f;WB/s;%.1f;WIOPS;"
+#define TCTRRSTR "%.1f;TRB/s;%.1f;TRIOPS;"
+#define TCTRWSTR "%.1f;TWB/s;%.1f;TWIOPS;"
 
 #endif /* _DISKTEST_H */

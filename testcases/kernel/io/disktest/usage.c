@@ -23,10 +23,13 @@
 *  Project Website:  TBD
 *
 *
-* $Id: usage.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: usage.c,v 1.2 2003/04/17 15:21:59 robbiew Exp $
 * $Log: usage.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:59  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.11  2002/03/07 03:33:11  yardleyb
+* More cleanup to usage text.
 *
 * Revision 1.10  2001/12/04 19:22:19  yardleyb
 * Removed -t option from usage
@@ -76,28 +79,29 @@ void usage(void)
 	printf("\n");
 	printf("\tdisktest [OPTIONS...] filespec\n");
 	printf("\t-?\t\tDisplay this help text and exit.\n");
-	printf("\t-a seed\t\tsets seed for random number generation\n");
-	printf("\t-B lblk[:hblk]\tSet the size of the data blocks\n");
+	printf("\t-a seed\t\tsets seed for random number generation.\n");
+	printf("\t-A\t\tAll threads will not die on error.\n");
+	printf("\t-B lblk[:hblk]\tSet the block transfer size.\n");
 	printf("\t-c\t\tUse a counting sequence as the data pattern.\n");
 	printf("\t-C cycles\tRun until cycles disk access cycles are complete.\n");
-	printf("\t-d\t\tAll threads will not die on error.\n");
+	printf("\t-d\t\tDump data to standard out and exit.\n");
 	printf("\t-D r%%:w%%\tDuty cycle used while reading and/or writing.\n");
 	printf("\t-E cmp_len\tTurn on error checking comparing <cmp_len> bytes.\n");
 	printf("\t-f byte\t\tUse a fixed data pattern up to 8 bytes.\n");
-	printf("\t-h heartbeat\tDisplays performance statistic every (heartbeat) seconds.\n");
+	printf("\t-h hbeat\tDisplays performance statistic every <hbeat> seconds.\n");
 	printf("\t-I IO_type\tSet the data transfer type to IO_type.\n");
-	printf("\t-K children\tSet the number of test children.\n");
+	printf("\t-K threads\tSet the number of test threads.\n");
 	printf("\t-L seeks\tTotal number of seeks to occur.\n");
-	printf("\t-m mark\t\tMark blocks with lba and pass count\n");
-	printf("\t-n\t\tUse a data pattern that consists of the the lba number.\n");
-	printf("\t-N num_secs\tSet the number of available sectors to num_secs.\n");
-	printf("\t-p seek_pattern\tSet the pattern of disk seeks to seek_pattern.\n");
+	printf("\t-m mark\t\tMark blocks with LBA and pass count\n");
+	printf("\t-n\t\tUse the LBA number as the data pattern.\n");
+	printf("\t-N num_secs\tSet the number of available sectors.\n");
+	printf("\t-p seek_pattern\tSet the pattern of disk seeks.\n");
 	printf("\t-P perf_opts\tDisplays performance statistic.\n");
-	printf("\t-q\t\tSepress INFO type messages.\n");
+	printf("\t-q\t\tSepress INFO level messages.\n");
 	printf("\t-r\t\tRead data from disk.\n");
-	printf("\t-s sLBA[:eLBA]\tSet the start (and stop) test LBAs\n");
-	printf("\t-S sblk[:eblk]\tSet the start (and stop) test transfer blocks\n");
-	printf("\t-T runtime\tRun until runtime seconds have elapsed.\n");
+	printf("\t-s sLBA[:eLBA]\tSet the start [and stop] test LBA.\n");
+	printf("\t-S sblk[:eblk]\tSet the start [and stop] test block.\n");
+	printf("\t-T runtime\tRun until <runtime> seconds have elapsed.\n");
 	printf("\t-w\t\tWrite data to disk.\n");
 	printf("\t-v\t\tDisplay version information and exit.\n");
 }

@@ -22,11 +22,22 @@
 *
 *  Project Website:  TBD
 *
-*
-* $Id: Getopt.h,v 1.2 2003/04/17 15:21:55 robbiew Exp $
-* $Log: Getopt.h,v $
-* Revision 1.2  2003/04/17 15:21:55  robbiew
+* $Id: io.h,v 1.1 2003/04/17 15:22:47 robbiew Exp $
+* $Log: io.h,v $
+* Revision 1.1  2003/04/17 15:22:47  robbiew
 * Updated to v1.1.10
+*
+* Revision 1.5  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.4  2002/04/03 20:17:16  yardleyb
+* Fixed return value for Read/Write
+* to be size_t not unsigned long
 *
 * Revision 1.3  2002/03/30 01:32:14  yardleyb
 * Major Changes:
@@ -48,16 +59,36 @@
 * if #ifdef for windows/unix functional
 * differences.
 *
-* Revision 1.2  2002/02/21 21:32:19  yardleyb
-* Added more unix compatability
-* ifdef'd function out when
-* compiling for unix env. that
-* have getopt
+* Revision 1.2  2002/03/07 03:35:31  yardleyb
+* Added Open routine
 *
-* Revision 1.1  2001/12/04 18:57:36  yardleyb
-* This source add for windows compatability only.
+* Revision 1.1  2002/02/28 04:21:35  yardleyb
+* Split out Read, Write, and Seek
+* Initial Checkin
 *
 */
+#ifndef IO_H_
+#define IO_H_ 1
+
 #ifdef WINDOWS
-int getopt(int argc, char** argv, char* pszValidOpts);
-#endif /* defined WINDOWS */
+#include <windows.h> /* HANDLE */
+#endif
+
+#include "defs.h"
+
+#ifdef WINDOWS
+#define CLOSE(fd) CloseHandle(fd)
+typedef HANDLE fd_t;
+#else
+#include <stdio.h>
+#define CLOSE(fd) close(fd)
+typedef int fd_t;
+#endif
+
+fd_t Open(const char *, const OFF_T);
+OFF_T Seek(fd_t, OFF_T);
+long Write(fd_t, const void *, const unsigned long);
+long Read(fd_t, void *, const unsigned long);
+
+#endif /* IO_H_ */
+

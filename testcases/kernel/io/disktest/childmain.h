@@ -22,10 +22,30 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.h,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: childmain.h,v 1.2 2003/04/17 15:21:56 robbiew Exp $
 * $Log: childmain.h,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:56  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.3  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
 *
 * Revision 1.2  2001/12/07 23:33:29  yardleyb
 * Fixed bug where a false positive data
@@ -39,6 +59,9 @@
 *
 */
 
+#ifndef _CHILDMAIN_H
+#define _CHILDMAIN_H 1
+
 #define SEEK_FAILURE	1
 #define ACCESS_FAILURE	2
 #define DATA_MISCOMPARE	3
@@ -49,8 +72,17 @@ typedef struct action {
 	OFF_T	lba;
 } action_t;
 
-#ifdef WIN32
+#ifdef WINDOWS
+#define DMSTR "Data miscompare at lba %I64d (0x%I64X)\n"
+#define AFSTR "%s failed: seek %I64u, lba %I64u (0x%I64X), got = %ld, asked for = %ld\n"
+#define SFSTR "seek failed seek %I64d, lba = %I64d, request pos = %I64d, seek pos = %I64d\n"
 DWORD WINAPI ChildMain(child_args_t *);
 #else
+#define DMSTR "Data miscompare at lba %lld (0x%llX)\n"
+#define AFSTR "%s failed: seek %llu, lba %lld (0x%llX), got = %ld, asked for = %ld\n"
+#define SFSTR "seek failed seek %lld, lba = %lld, request pos = %lld, seek pos = %lld\n"
 void *ChildMain(void *);
 #endif
+
+#endif /* _CHILDMAIN_H */
+

@@ -38,10 +38,67 @@
 *	non-distructive: will read lba/write lba with XOR/bit inverted read data/then read lba to verify
 *
 *
-* $Id: main.c,v 1.1 2002/02/21 16:49:04 robbiew Exp $
+* $Id: main.c,v 1.2 2003/04/17 15:21:57 robbiew Exp $
 * $Log: main.c,v $
-* Revision 1.1  2002/02/21 16:49:04  robbiew
-* Relocated disktest to /kernel/io/.
+* Revision 1.2  2003/04/17 15:21:57  robbiew
+* Updated to v1.1.10
+*
+* Revision 1.14  2002/05/31 18:47:59  yardleyb
+* Updates to -pl -pL options.
+* Fixed test status to fail on
+* failure to open filespec.
+* Version set to 1.1.9
+*
+* Revision 1.13  2002/04/24 01:45:31  yardleyb
+* Minor Fixes:
+* Read/write time could exceeds overall time
+* Heartbeat options sometimes only displayed once
+* Cleanup time for large number of threads was very long (windows)
+* If heartbeat specified, now checks for performance option also
+* No IO was performed when -S0:0 and -pr specified
+*
+* Revision 1.12  2002/04/03 20:16:07  yardleyb
+* Added check for case when
+* fixed pattern is 0
+*
+* Revision 1.11  2002/03/30 01:32:14  yardleyb
+* Major Changes:
+*
+* Added Dumping routines for
+* data miscompares,
+*
+* Updated performance output
+* based on command line.  Gave
+* one decimal in MB/s output.
+*
+* Rewrote -pL IO routine to show
+* correct stats.  Now show pass count
+* when using -C.
+*
+* Minor Changes:
+*
+* Code cleanup to remove the plethera
+* if #ifdef for windows/unix functional
+* differences.
+*
+* Revision 1.10  2002/03/07 03:38:52  yardleyb
+* Added dump function from command
+* line.  Created formatted dump output
+* for Data miscomare and command line.
+* Can now leave off filespec the full
+* path header as it will be added based
+* on -I.
+*
+* Revision 1.9  2002/02/28 04:25:45  yardleyb
+* reworked threading code
+* made locking code a macro.
+*
+* Revision 1.8  2002/02/26 19:35:59  yardleyb
+* Updates to parsing routines for user
+* input.  Added multipliers for -S and
+* -s command line arguments. Forced
+* default seeks to default if performing
+* a diskcache test.
 *
 * Revision 1.7  2002/02/19 02:46:37  yardleyb
 * Added changes to compile for AIX.
@@ -141,7 +198,7 @@
 *
 */
 #include <stdio.h>
-#ifdef WIN32
+#ifdef WINDOWS
 #include <windows.h>
 #include <winioctl.h>
 #include <io.h>
@@ -169,271 +226,477 @@
 #include "parse.h"
 #include "childmain.h"
 #include "threading.h"
+#include "dump.h"
 
-void print_stats(time_t start_time, child_args_t *args)
+void print_stats(child_args_t *args, op_t operation)
 {
-	extern void *shared_mem;			/* global pointer to shared memory */
-	extern unsigned long glb_flags;		/* global flags GLB_FLG_xxx */
-	extern char *devname;				/* global pointer to device name */
+	extern unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
+	extern time_t global_start_time;/* global pointer to overall start */
+	extern stats_t cycle_stats;		/* per cycle statistics */
+	extern stats_t global_stats;	/* per cycle statistics */
 
-	OFF_T *wcount = (OFF_T *)shared_mem + OFF_WCOUNT;
-	OFF_T *rcount = (OFF_T *)shared_mem + OFF_RCOUNT;
-	OFF_T *rbytes = (OFF_T *)shared_mem + OFF_RBYTES;
-	OFF_T *wbytes = (OFF_T *)shared_mem + OFF_WBYTES;
-	time_t curr_time;
-	OFF_T run_time, wrun_time, rrun_time;
+	time_t curr_time = 0, write_time = 0, read_time = 0, gw_time = 0, gr_time = 0;
+	fmt_time_t time_struct;
 
 	curr_time = time(NULL);
 
-	if((args->flags & CLD_FLG_TMD) && ((curr_time - start_time) > args->run_time))
-		curr_time = start_time + args->run_time;
+	if((curr_time - global_start_time) == 0) curr_time++;
+
+	if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+		read_time = cycle_stats.rtime;
+		write_time = cycle_stats.wtime;
+		gr_time = global_stats.rtime;
+		gw_time = global_stats.wtime;
+	} else {
+		read_time = ((cycle_stats.rtime * args->rperc) / 100);
+		write_time = ((cycle_stats.wtime * args->wperc) / 100);
+		gr_time = (time_t) ((global_stats.rtime * args->rperc) / 100);
+		gw_time = (time_t) ((global_stats.wtime * args->wperc) / 100);
+	}
 
 	/* if one second really has not passed, then make it at least one second */
-	if((curr_time - start_time) == 0)
-		curr_time++;
-
-	run_time = (OFF_T) (curr_time - start_time);
-	wrun_time = (run_time * (OFF_T) args->wperc) / (OFF_T) 100;
-	rrun_time = (run_time * (OFF_T) args->rperc) / (OFF_T) 100;
+	if(read_time == 0) read_time++;
+	if(write_time == 0) write_time++;
+	if(gr_time == 0) gr_time++;
+	if(gw_time == 0) gw_time++;
 
 	if(glb_flags & GLB_FLG_PERFP) {
-		printf("%s;", devname);
-		if((args->flags & CLD_FLG_XFERS)) {
-#ifdef WIN32
-			printf("%I64d;Rbytes;%I64d;Rxfers;", (*rbytes), (*rcount));
-			printf("%I64d;Wbytes;%I64d;Wxfers;", (*wbytes), (*wcount));
-#else
-			printf("%lld;Rbytes;%lld;Rxfers;", (*rbytes), (*rcount));
-			printf("%lld;Wbytes;%lld;Wxfers;", (*wbytes), (*wcount));
-#endif
+		printf("%s;", args->device);
+		if(operation == ALL) {
+			if((args->flags & CLD_FLG_XFERS)) {
+				printf(TCTRSTR, (global_stats.rbytes), (global_stats.rcount));
+				printf(TCTWSTR, (global_stats.wbytes), (global_stats.wcount));
+			}
+			if((args->flags & CLD_FLG_TPUTS)) {
+				printf(TCTRRSTR, (double) ((global_stats.rbytes) / (read_time)), (double) ((global_stats.rcount) / (read_time)));
+				printf(TCTRWSTR, (double) ((global_stats.wbytes) / (write_time)), (double) ((global_stats.wcount) / (write_time)));
+			}
+			if((args->flags & CLD_FLG_RUNT)) {
+				printf("%lu;secs;",(curr_time - global_start_time));
+			}
+			printf("\n");
+		} else {
+			if((args->flags & CLD_FLG_XFERS)) {
+				printf(CTRSTR, (cycle_stats.rbytes), (cycle_stats.rcount));
+				printf(CTWSTR, (cycle_stats.wbytes), (cycle_stats.wcount));
+			}
+			if((args->flags & CLD_FLG_TPUTS)) {
+				printf(CTRRSTR, (double) ((cycle_stats.rbytes) / (read_time)), (double) ((cycle_stats.rcount) / (read_time)));
+				printf(CTRWSTR, (double) ((cycle_stats.wbytes) / (write_time)), (double) ((cycle_stats.wcount) / (write_time)));
+			}
+			if((args->flags & CLD_FLG_RUNT)) {
+				printf("%lu;Rsecs;%lu;Wsecs;",read_time, write_time);
+			}
+			printf("\n");
 		}
-		if((args->flags & CLD_FLG_TPUTS)) {
-#ifdef WIN32
-			printf("%I64d;RB/s;%I64d;RIOPS;", ((*rbytes) / rrun_time), ((*rcount) / rrun_time));
-			printf("%I64d;WB/s;%I64d;WIOPS;", ((*wbytes) / wrun_time), ((*wcount) / wrun_time));
-#else
-			printf("%lld;RB/s;%lld;RIOPS;", ((*rbytes) / rrun_time), ((*rcount) / rrun_time));
-			printf("%lld;WB/s;%lld;WIOPS;", ((*wbytes) / wrun_time), ((*wcount) / wrun_time));
-#endif
-		}
-		if((args->flags & CLD_FLG_RUNT)) {
-#ifdef WIN32
-			printf("%I64d;secs;",run_time);
-#else
-			printf("%lld;secs;",run_time);
-#endif
-		}
-		printf("\n");
 	} else {
 		if((args->flags & CLD_FLG_XFERS)) {
-			if (args->flags & CLD_FLG_R) {
-#ifdef WIN32
-				pMsg(STAT, "%I64d bytes read in %I64d transfers.\n",
-#else
-				pMsg(STAT, "%lld bytes read in %lld transfers.\n",
-#endif
-					(*rbytes), (*rcount));
-			}
-			if (args->flags & CLD_FLG_W) {
-#ifdef WIN32
-				pMsg(STAT, "%I64d bytes written in %I64d transfers.\n",
-#else
-				pMsg(STAT, "%lld bytes written in %lld transfers.\n",
-#endif
-					(*wbytes), (*wcount));
+			switch(operation) {
+				case READER: /* only display current read stats */
+					PDBG1(STAT, RTSTR, (cycle_stats.rbytes), (cycle_stats.rcount));
+					break;
+				case WRITER:  /* only display current write stats */
+					PDBG1(STAT, WTSTR, (cycle_stats.wbytes), (cycle_stats.wcount));
+					break;
+				case ALL: /* display total read and write stats */
+					if(args->flags & CLD_FLG_R) {
+						pMsg(STAT, TRTSTR, (global_stats.rcount), (global_stats.rbytes));
+					}
+					if(args->flags & CLD_FLG_W) {
+						pMsg(STAT, TWTSTR, (global_stats.wcount), (global_stats.wbytes));
+					}
+					break;
+				default:
+					pMsg(ERR, "Unknown stats display type.\n");
 			}
 		}
+
 		if((args->flags & CLD_FLG_TPUTS)) {
-			if (args->flags & CLD_FLG_R) {
-#ifdef WIN32
-				pMsg(STAT, "Read Throughput %I64dB/s (%I64dMB/s), IOPS %I64d/s.\n",
-#else
-				pMsg(STAT, "Read Throughput %lldB/s (%lldMB/s), IOPS %lld/s.\n",
-#endif
-					((*rbytes) / rrun_time),
-					(((*rbytes) / rrun_time) / (OFF_T) (1024 * 1024)),
-					((*rcount) / rrun_time));
-			}
-			if (args->flags & CLD_FLG_W) {
-#ifdef WIN32
-				pMsg(STAT, "Write Throughput %I64dB/s (%I64dMB/s), IOPS %I64d/s.\n",
-#else
-				pMsg(STAT, "Write Throughput %lldB/s (%lldMB/s), IOPS %lld/s.\n",
-#endif
-					((*wbytes) / wrun_time),
-					(((*wbytes) / wrun_time) / (OFF_T) (1024 * 1024)),
-					((*wcount) / wrun_time));
+			switch(operation) {
+				case READER: /* only display current read stats */
+					PDBG1(STAT, RTHSTR,
+						((double) cycle_stats.rbytes / (double) (read_time)),
+						(((double) cycle_stats.rbytes / (double) read_time) / (double) 1048576.),
+						((double) cycle_stats.rcount / (double) (read_time)));
+					break;
+				case WRITER:  /* only display current write stats */
+					PDBG1(STAT, WTHSTR,
+						((double) cycle_stats.wbytes / (double) write_time),
+						(((double) cycle_stats.wbytes / (double) write_time) / (double) 1048576.),
+						((double) cycle_stats.wcount / (double) write_time));
+					break;
+				case ALL: /* display total read and write stats */
+					if(args->flags & CLD_FLG_R) {
+						pMsg(STAT, TRTHSTR,
+							((double) global_stats.rbytes / (double) gr_time),
+							(((double) global_stats.rbytes / (double) gr_time) / (double) 1048576.),
+							((double) global_stats.rcount / (double) gr_time));
+					}
+					if(args->flags & CLD_FLG_W) {
+						pMsg(STAT, TWTHSTR,
+							((double) global_stats.wbytes / (double) gw_time),
+							(((double) global_stats.wbytes / (double) gw_time) / (double) 1048576.),
+							((double) global_stats.wcount / (double) gw_time));
+					}
+					break;
+				default:
+					pMsg(ERR, "Unknown stats display type.\n");
 			}
 		}
-		if((args->flags & CLD_FLG_RUNT)) {
-			pMsg(STAT,"Runtime %u seconds (%luh%lum%lus)\n", (unsigned long) run_time, (unsigned long) (run_time/3600), (unsigned long) ((run_time%3600)/60), (unsigned long) (run_time%60));
+		if(args->flags & CLD_FLG_RUNT) {
+			switch(operation) {
+				case READER: /* only display current read stats */
+					time_struct = format_time(read_time);
+					PDBG1(STAT,"Read Time: %u seconds (%luh%lum%lus)\n", read_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
+					break;
+				case WRITER:
+					time_struct = format_time(write_time);
+					PDBG1(STAT,"Write Time: %u seconds (%luh%lum%lus)\n", write_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
+					break;
+				case ALL:
+					if(args->flags & CLD_FLG_R) {
+						time_struct = format_time(gr_time);
+						pMsg(STAT,"Total Read Time: %u seconds (%luh%lum%lus)\n", gr_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
+					}
+					if(args->flags & CLD_FLG_W) {
+						time_struct = format_time(gw_time);
+						pMsg(STAT,"Total Write Time: %u seconds (%luh%lum%lus)\n", gw_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
+					}
+					time_struct = format_time((curr_time - global_start_time));
+					pMsg(STAT,"Total overall runtime: %u seconds (%luh%lum%lus)\n", (curr_time - global_start_time), time_struct.hours, time_struct.minutes, time_struct.seconds);
+					break;
+				default:
+					pMsg(ERR, "Unknown stats display type.\n");
+			}
 		}
 	}
 }
 
-int main(int argc, char **argv)
+#ifdef WINDOWS
+DWORD WINAPI ChildPS(child_args_t *args)
+#else
+void *ChildPS(void *vargs)
+#endif
+{
+	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
+	extern unsigned int gbl_dbg_lvl;	/* global flags GLB_FLG_xxx */
+	extern stats_t cycle_stats;
+
+	unsigned long exit_code = 0;
+	time_t seconds = 0;
+
+#ifndef WINDOWS
+	child_args_t *args = (child_args_t *) vargs;
+#endif
+
+	if(gbl_dbg_lvl < 1) gbl_dbg_lvl++;
+
+	do {
+		Sleep(1000);
+		seconds++;
+		if(seconds == args->hbeat) {
+			if(args->flags & CLD_FLG_W) {
+				if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+					if(TST_OPER(args->test_state) == WRITER) {
+						cycle_stats.wtime += (time_t) args->hbeat;
+						print_stats(args, WRITER);
+					}
+				} else {
+					cycle_stats.wtime += (time_t) args->hbeat;
+					print_stats(args, WRITER);
+				}
+			} 
+			if(args->flags & CLD_FLG_R) {
+				if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+					if(TST_OPER(args->test_state) == READER) {
+						cycle_stats.rtime += (time_t) args->hbeat;
+						print_stats(args, READER);
+					}
+				} else {
+					cycle_stats.rtime += (time_t) args->hbeat;
+					print_stats(args, READER);
+				}
+			}
+			seconds = 0;
+		}
+	} while(bContinue);
+	TEXIT(exit_code);
+}
+
+void linear_read_write_test(child_args_t *args)
+{
+	extern void *shared_mem;
+	extern OFF_T pass_count;
+	extern stats_t cycle_stats;
+	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
+
+	OFF_T *pVal1 = (OFF_T *)shared_mem;
+	time_t start_time;
+	int i;
+
+	if(args->flags & CLD_FLG_W) {
+		bContinue = TRUE;
+		*(pVal1 + OFF_WLBA) = args->start_lba;
+		args->test_state = DIRCT_INC(args->test_state);
+		args->test_state = SET_wFST_TIME(args->test_state);
+		srand(args->seed);	/* reseed so we can re create the same random transfers */
+		if(args->flags & CLD_FLG_CYC)
+			pMsg(INFO,"Starting write pass %lu of %lu\n", (unsigned long) pass_count, args->cycles);
+		else
+			pMsg(INFO,"Starting write pass\n");
+		args->test_state = SET_OPER_W(args->test_state);
+		start_time = time(NULL);
+		/*
+		 * If we are using a heartbeat to print stats
+		 * create a thread to do it for us.
+		 */
+		if(args->hbeat > 0) CreateChild(ChildPS, args);
+
+		for(i=0;i<args->t_kids;i++) {
+			CreateChild(ChildMain, args);
+		}
+		/* Wait for the writers to finish */
+		clean_up();
+
+		cycle_stats.wtime = time(NULL) - start_time;
+		if(args->hbeat == 0) print_stats(args, WRITER);
+	}
+
+	if(args->flags & CLD_FLG_R) {
+		bContinue = TRUE;
+		*(pVal1 + OFF_RLBA) = args->start_lba;
+		args->test_state = DIRCT_INC(args->test_state);
+		args->test_state = SET_rFST_TIME(args->test_state);
+		srand(args->seed);	/* reseed so we can re create the same random transfers */
+		if(args->flags & CLD_FLG_CYC)
+			pMsg(INFO,"Starting read pass %lu of %lu\n", (unsigned long) pass_count, args->cycles);
+		else
+			pMsg(INFO,"Starting read pass\n");
+		args->test_state = SET_OPER_R(args->test_state);
+		start_time = time(NULL);
+		/*
+		 * If we are using a heartbeat to print stats
+		 * create a thread to do it for us.
+		 */
+		if(args->hbeat > 0) CreateChild(ChildPS, args);
+
+		for(i=0;i<args->t_kids;i++) {
+			CreateChild(ChildMain, args);
+		}
+		/* Wait for the writers to finish */
+		clean_up();
+
+		cycle_stats.rtime = time(NULL) - start_time;
+		if(args->hbeat == 0) print_stats(args, READER);
+	}
+}
+
+unsigned long init_data(child_args_t *args, unsigned char **data_buffer_unaligned)
 {
 	extern void *shared_mem;			/* global pointer to shared memory */
-	extern char *devname;				/* global pointer to device name */
-	extern unsigned short kids;			/* global number of current child processes */
 	extern unsigned char *data_buffer;	/* global pointer to shared memory */
 	extern size_t bmp_siz;				/* size of bitmask */
-	extern size_t seed;					/* random seed */
-	extern OFF_T pass_count;			/* current pass */
+	extern time_t global_start_time;	/* overall start time of test */
+	extern time_t global_end_time;		/* overall end time of test */
 
 	int i;
-	time_t start_time;
-	OFF_T *pVal1, *test_state;
-	unsigned char *data_buffer_unaligned;
-	child_args_t args;
+	OFF_T *pVal1;
 	pid_t my_pid;
-	char argstr[80];
 
-#ifdef WIN32
-	HANDLE hSem;
-#endif
-	init_gbl_data(argv);
-	
-#ifdef WIN32
-	my_pid = _getpid();
-#else
-	my_pid = getpid();
-#endif
+	unsigned long data_buffer_size;
 
-	memset(&args,0,sizeof(child_args_t));
-	memset(argstr, 0, 80);
-
-	args.stop_lba = -1;
-	args.flags |= CLD_FLG_ALLDIE;
-
-	for(i=1;i<argc-1;i++) {
-		strncat(argstr, argv[i], 79-strlen(argstr));
-		strncat(argstr, " ", 79-strlen(argstr));
-	}
-	devname = argv[argc-1];
-
-	fill_cld_args(argc, argv, &args);
-	make_assumptions(&args);
-	if(check_conclusions(&args) < 0) exit(1);
-	
-	if(seed == -1) seed = my_pid;
-	srand(seed);
-
-	if(args.flags & CLD_FLG_DUTY) normalize_percs(&args);
+	my_pid = GETPID();
+	if(args->seed == 0) args->seed = my_pid;
+	srand(args->seed);
 
 	/* create bitmap to hold write/read context: each bit is an LBA */
 	/* the stuff before BMP_OFFSET is the data for child/thread shared context */
-	bmp_siz = (((((size_t)args.vsiz))/8) == 0) ? 1 : ((((size_t)args.vsiz))/8);
-	if ((args.vsiz/8) != 0) bmp_siz += 1;	/* account for rounding error */
+	bmp_siz = (((((size_t)args->vsiz))/8) == 0) ? 1 : ((((size_t)args->vsiz))/8);
+	if ((args->vsiz/8) != 0) bmp_siz += 1;	/* account for rounding error */
 
-	/*
-	 * We use that same data buffer for static data, so alloc here.
-	 */
-	if((data_buffer_unaligned = (unsigned char *) malloc(DBUF_SIZE+ALIGNSIZE)) == NULL) {
+	/* We use that same data buffer for static data, so alloc here. */
+	data_buffer_size = ((args->htrsiz*BLK_SIZE)*2);
+	if((*data_buffer_unaligned = (unsigned char *) ALLOC(data_buffer_size+ALIGNSIZE)) == NULL) {
 		pMsg(ERR, "Failed to allocate static data buffer memory.\n");
-		exit(1);
+		return(-1);
 	}
-	data_buffer = (unsigned char *) BUFALIGN(data_buffer_unaligned);
+	data_buffer = (unsigned char *) BUFALIGN(*data_buffer_unaligned);
 
-	if((shared_mem = (void *) malloc(bmp_siz+BMP_OFFSET)) == NULL) {
+	if((shared_mem = (void *) ALLOC(bmp_siz+BMP_OFFSET)) == NULL) {
 		pMsg(ERR, "Failed to allocate bitmap memory\n");
-		exit(1);
+		return(-1);
 	}
-#ifdef WIN32
-	if((hSem = CreateMutex(NULL, FALSE, "gbl")) == NULL) {
+#ifdef WINDOWS
+	if(CreateMutex(NULL, FALSE, "gbl") == NULL) {
 		pMsg(ERR, "Failed to create semaphore, error = %u\n", GetLastError());
-		exit(GetLastError());
+		return(GetLastError());
 	}
-	if((hSem = CreateMutex(NULL, FALSE, "data")) == NULL) {
+	if(CreateMutex(NULL, FALSE, "data") == NULL) {
 		pMsg(ERR, "Failed to create semaphore, error = %u\n", GetLastError());
-		exit(GetLastError());
+		return(GetLastError());
 	}
 #endif
 
 	memset((char *)shared_mem,0,bmp_siz+BMP_OFFSET);
-	memset((unsigned char *)data_buffer,0,DBUF_SIZE);
+	memset((unsigned char *)data_buffer,0,data_buffer_size);
 
 	pVal1 = (OFF_T *)shared_mem;
-	*(pVal1 + OFF_WLBA) = args.start_lba;
-	*(pVal1 + OFF_RLBA) = args.start_lba;
-	*(pVal1 + OFF_TST_STAT) = SET_STS_PASS(*(pVal1 + OFF_TST_STAT));
-	*(pVal1 + OFF_TST_STAT) = SET_wFST_TIME(*(pVal1 + OFF_TST_STAT));
-	*(pVal1 + OFF_TST_STAT) = SET_rFST_TIME(*(pVal1 + OFF_TST_STAT));
-	*(pVal1 + OFF_TST_STAT) = DIRCT_INC(*(pVal1 + OFF_TST_STAT));
-	if(args.flags & CLD_FLG_W)
-		*(pVal1 + OFF_TST_STAT) = SET_OPER_W(*(pVal1 + OFF_TST_STAT));
+	*(pVal1 + OFF_WLBA) = args->start_lba;
+	*(pVal1 + OFF_RLBA) = args->start_lba;
+	args->test_state = SET_STS_PASS(args->test_state);
+	args->test_state = SET_wFST_TIME(args->test_state);
+	args->test_state = SET_rFST_TIME(args->test_state);
+	args->test_state = DIRCT_INC(args->test_state);
+	if(args->flags & CLD_FLG_W)
+		args->test_state = SET_OPER_W(args->test_state);
 	else
-		*(pVal1 + OFF_TST_STAT) = SET_OPER_R(*(pVal1 + OFF_TST_STAT));
+		args->test_state = SET_OPER_R(args->test_state);
 
-	/*
-	* prefill the data buffer with data for compares and writes
-	* larges transfer size is T_MAX_SIZE, so fill to that size.
-	*/
-	
-	switch(args.flags & CLD_FLG_PTYPS) {
+	/* prefill the data buffer with data for compares and writes */
+	switch(args->flags & CLD_FLG_PTYPS) {
 		case CLD_FLG_FPTYPE :
-			for(i=0;i<sizeof(args.pattern);i++) {
-				if((args.pattern & (((OFF_T) 0xff) << (((sizeof(args.pattern)-1)-i)*8))) != 0) break;
+			for(i=0;i<sizeof(args->pattern);i++) {
+				if((args->pattern & (((OFF_T) 0xff) << (((sizeof(args->pattern)-1)-i)*8))) != 0) break;
 			}
-			fill_buffer(data_buffer+OFF_DATA, T_MAX_SIZE, &args.pattern, sizeof(args.pattern)-i, CLD_FLG_FPTYPE);
+			/* special case for pattern = 0 */
+			if(i == sizeof(args->pattern)) i = 0;
+			fill_buffer(data_buffer, data_buffer_size, &args->pattern, sizeof(args->pattern)-i, CLD_FLG_FPTYPE);
 			break;
 		case CLD_FLG_RPTYPE :
-			fill_buffer(data_buffer+OFF_DATA, T_MAX_SIZE/8, &seed, sizeof(pid_t), CLD_FLG_RPTYPE);
+			fill_buffer(data_buffer, data_buffer_size, NULL, 0, CLD_FLG_RPTYPE);
 			break;
 		case CLD_FLG_CPTYPE :
-			fill_buffer(data_buffer+OFF_DATA, T_MAX_SIZE, 0, 0, CLD_FLG_CPTYPE);
+			fill_buffer(data_buffer, data_buffer_size, 0, 0, CLD_FLG_CPTYPE);
 		case CLD_FLG_LPTYPE :
 			break;
 		default :
 			pMsg(WARN, "Unknown fill pattern\n");
-			exit(1);
+			return(-1);
 	}
-	
-	pMsg(START, "Start args: %s\n", argstr);
 
-	start_time = time(NULL);
+	if(args->flags & CLD_FLG_TMD) {
+		global_end_time = global_start_time + args->run_time;
+	}
+
+	return(0);
+}
+
+int main(int argc, char **argv)
+{
+	extern void *shared_mem;		/* global pointer to shared memory */
+	extern size_t bmp_siz;			/* size of bitmask */
+	extern OFF_T pass_count;		/* current pass */
+	extern stats_t cycle_stats;		/* per cycle statistics */
+	extern stats_t global_stats;	/* global statistics */
+	extern time_t global_end_time;	/* overall end time of test */
+	extern BOOL bContinue;			/* global that when set to false will force exit of all threads */
+
+	time_t start_time;
+	OFF_T *pVal1;
+	unsigned char *data_buffer_unaligned = NULL;
+	unsigned long ulRV;
+	child_args_t args;
+	char argstr[MAX_ARG_LEN];
+	int i;
+	
+	init_gbl_data();
+	
+	memset(&args,0,sizeof(child_args_t));
+	memset(argstr, 0, MAX_ARG_LEN);
+
+	args.stop_lba = -1;
+	args.stop_blk = -1;
+	args.flags |= CLD_FLG_ALLDIE;
+
+	for(i=1;i<argc-1;i++) {
+		strncat(argstr, argv[i], (MAX_ARG_LEN-1)-strlen(argstr));
+		strncat(argstr, " ", (MAX_ARG_LEN-1)-strlen(argstr));
+	}
+
+	if(fill_cld_args(argc, argv, &args) < 0) exit(1);
+	if(make_assumptions(&args, argstr) < 0) exit(1);
+	if(check_conclusions(&args) < 0) exit(1);
+	if(args.flags & CLD_FLG_DUMP) {
+		/*
+		 * All we are doing is dumping filespec data to STDOUT, so
+		 * we will do this here and be done.
+		 */
+		do_dump(&args);
+		exit(0);
+	} else {
+		ulRV = init_data(&args, &data_buffer_unaligned);
+		if(ulRV != 0) exit(ulRV);
+		pVal1 = (OFF_T *)shared_mem;
+	}
+
+	pMsg(START, "Start args: %s\n", argstr);
 
 	/*
 	 * This loop takes care of passes
 	 */
 	do {
-		for(i=0;i<args.t_kids;i++) {
-			CreateChild(&args);
-		}
+		if((args.flags & CLD_FLG_LINEAR) && !(args.flags & CLD_FLG_NTRLVD)) {
+			linear_read_write_test(&args);
+		} else {
+			bContinue = TRUE;
+			*(pVal1 + OFF_WLBA) = args.start_lba;
+			args.test_state = DIRCT_INC(args.test_state);
+			args.test_state = SET_wFST_TIME(args.test_state);
+			args.test_state = SET_rFST_TIME(args.test_state);
 
-		/*
-		* If we missed any zombied kids along the way, then we will clean
-		* them up here.  We also wait in this loop while the kids do
-		* their work.  'clean_up' does nothing if there are no
-		* zombied children.
-		*/
-		while (kids) {
-			Sleep(1000);
-			if((args.hbeat > 0) && (((time(NULL) - start_time) % args.hbeat) == 0))
-				print_stats(start_time, &args);
-			clean_up(NULL);
-		}
+			if(args.flags & CLD_FLG_CYC)
+				pMsg(INFO,"Starting pass %lu of %lu\n", (unsigned long) pass_count, args.cycles);
+			else
+				pMsg(INFO,"Starting pass\n");
 
+			start_time = time(NULL);
+			/*
+			 * If we are using a heartbeat to print stats
+			 * create a thread to do it for us.
+			 */
+			if(args.hbeat > 0) CreateChild(ChildPS, &args);
+
+			for(i=0;i<args.t_kids;i++) {
+				CreateChild(ChildMain, &args);
+			}
+			/* Wait for the children to finish */
+			clean_up();
+			cycle_stats.wtime = time(NULL) - start_time;
+			cycle_stats.rtime = time(NULL) - start_time;
+			if(args.hbeat == 0) print_stats(&args, READER);
+			if(args.hbeat == 0) print_stats(&args, WRITER);
+		}
+		/* 
+		 * Reset all the start conditions in case
+		 * we are doing more passes.
+		 */
 		memset((char *)shared_mem+BMP_OFFSET,0,bmp_siz);
 		pass_count++;
-		*(pVal1 + OFF_TST_STAT) = SET_wFST_TIME(*(pVal1 + OFF_TST_STAT));
-		*(pVal1 + OFF_TST_STAT) = SET_rFST_TIME(*(pVal1 + OFF_TST_STAT));
-	} while((args.flags & CLD_FLG_CYC) && (pass_count <= args.cycles));
+		update_gbl_stats();
+		if((args.flags & CLD_FLG_CYC) && (pass_count > args.cycles) && (args.cycles != 0))
+			break;
+		if((args.flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
+			break;
+		if(!(args.flags & CLD_FLG_CYC) && !(args.flags & CLD_FLG_TMD)
+			&& (args.flags & CLD_FLG_SKS)
+			&& ((global_stats.rcount+global_stats.wcount) >= args.seeks))
+			break;
+	} while(TST_STS(args.test_state) == 1);
 
-	if(args.hbeat == 0)
-		print_stats(start_time, &args);
+	print_stats(&args, ALL);
 
-	test_state = (OFF_T *)shared_mem + OFF_TST_STAT;
-	if(TST_STS(*test_state))
-		pMsg(END, "Test Done (Passed)\n");
-	else
-		pMsg(END, "Test Done (Failed)\n");
-
-	free(data_buffer_unaligned);
-#ifdef WIN32
-	free(shared_mem);
+	FREE(data_buffer_unaligned);
+	FREE(shared_mem);
+#ifdef WINDOWS
 	CloseHandle(OpenMutex(SYNCHRONIZE, TRUE, "gbl"));
 	CloseHandle(OpenMutex(SYNCHRONIZE, TRUE, "data"));
 #endif
-	exit(0);
+
+	if(TST_STS(args.test_state)) {
+		pMsg(END, "Test Done (Passed)\n");
+		exit(0);
+	} else {
+		pMsg(END, "Test Done (Failed)\n");
+		exit(1);
+	}
 }
