@@ -67,6 +67,14 @@
  * RESTRICTIONS
  *	-c option has no effect for this testcase, even if used allows only 
  *	one instance to run at a time.
+ *
+ * CHANGELOG
+ *    
+ *  11/22/02 - Added "--force" to insmod options and redirected output to /dev/null.
+ *             This was done to allow kernel mismatches, b/c it doesn't matter in
+ *             this case.
+ *           Robbie Williamson <robbiew@us.ibm.com>
+ *
  ****************************************************************/
 
 #include <errno.h>
