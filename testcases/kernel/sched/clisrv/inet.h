@@ -36,10 +36,12 @@ char *pname;
 #define prtln()	fflush(NULL); \
 		printf("Reached %s: %d\n", __FILE__, __LINE__);
 #define dprt	printf
+#define dprt2(args)    printf args
 
 #else
 
 #define prtln()
 #define dprt
+#define dprt2(args)
 
 #endif

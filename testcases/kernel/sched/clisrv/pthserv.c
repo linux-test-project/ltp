@@ -70,12 +70,12 @@ int sockfd;
    for ( ; ; )
    {
    prtln();
-   dprt("%s: str_echo(): reading from sockfd %d\n", __FILE__, sockfd);
+   dprt2(("%s: str_echo(): reading from sockfd %d\n", __FILE__, sockfd));
       n = readline(sockfd, line, MAXLINE);
       printf("str_echo: n = %d\n",n);
       if (n == 0)
       {
-         dprt("%s: str_echo(): connection terminated\n", __FILE__);
+         dprt2(("%s: str_echo(): connection terminated\n", __FILE__));
          return 0; /* connection terminated */
       }
       else if (n < 0)
@@ -83,7 +83,7 @@ int sockfd;
          perror("str_echo: readline error");
          return(-1);
       }
-      dprt("%s: str_echo(): writing to sockfd = %d\n", __FILE__, sockfd);
+      dprt2(("%s: str_echo(): writing to sockfd = %d\n", __FILE__, sockfd));
       testint = writen(sockfd, line, n);
       prtln();
       if (testint != n)
@@ -111,7 +111,7 @@ main(int argc, char *argv[])
 	exit(1);
     }
     prtln();
-    dprt("%s: main(): Open inet stream socket sockfd = %d\n", __FILE__, sockfd);
+    dprt2(("%s: main(): Open inet stream socket sockfd = %d\n", __FILE__, sockfd));
 
     /* Bind local address for client to use */
     bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -119,10 +119,10 @@ main(int argc, char *argv[])
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY) ;
     serv_addr.sin_port = htons(SERV_TCP_PORT);
     prtln();
-    dprt("%s: main(): Binding local address for client to use\n"
+    dprt2(("%s: main(): Binding local address for client to use\n"
      "serv_addr.sin_family = %d\n serv_addr.sin_addr.s_addr = %#x\n"
      "serv_addr.sin_port = %d\n", __FILE__, serv_addr.sin_family, 
-      serv_addr.sin_addr.s_addr, serv_addr.sin_port);
+      serv_addr.sin_addr.s_addr, serv_addr.sin_port));
 
     prtln();
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
