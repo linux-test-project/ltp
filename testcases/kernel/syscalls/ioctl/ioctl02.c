@@ -314,20 +314,20 @@ chk_tty_parms()
 		}
 	}
 
-	if (termio.c_lflag != (ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH)) {
+	if (!(termio.c_lflag && (ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH))) {
 		tst_resm(TINFO, "lflag has incorrect value. %o",
 			 termio.c_lflag);
 		flag++;
 	}
 
-	if (termio.c_iflag != (BRKINT|IGNPAR|INPCK|ISTRIP|ICRNL|IUCLC|IXON|
-			       IXANY|IXOFF)) {
+	if (!(termio.c_iflag && (BRKINT|IGNPAR|INPCK|ISTRIP|ICRNL|IUCLC|IXON|
+			       IXANY|IXOFF))) {
 		tst_resm(TINFO, "iflag has incorrect value. %o",
 			 termio.c_iflag);
 		flag++;
 	}
 
-	if (termio.c_oflag != (OPOST|OLCUC|ONLCR|ONOCR)) {
+	if (!(termio.c_oflag && (OPOST|OLCUC|ONLCR|ONOCR))) {
 		tst_resm(TINFO, "oflag has incorrect value. %o",
 			 termio.c_oflag);
 		flag++;
