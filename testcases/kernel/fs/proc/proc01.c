@@ -172,7 +172,8 @@ readproc(const char *obj)
             dir_ent = (struct dirent *)readdir(dir)) {
 
          /* Ignore "." or ".." */
-         if ( !strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, "..") )
+         if ( !strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, "..") ||
+	      !strcmp(dir_ent->d_name, "kcore"))
             continue;
 
 	if (opt_verbose)
