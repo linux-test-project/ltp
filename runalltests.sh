@@ -152,6 +152,12 @@ do  case $arg in
             duration="-t $OPTARG" ;;
 
     x)      # number of ltp's to run
+	    echo "WARNING: The use of -x can cause unpredictable failures, as a"
+	    echo "         result of concurrently running multiple tests designed"
+	    echo "         to be ran exclusively."
+	    echo ""
+	    echo "Press [Enter] to continue or [CTRL-C] to abort."
+	    read go 
             instances="-x $OPTARG -O ${TMP}";;
 
     \?)     usage;;
