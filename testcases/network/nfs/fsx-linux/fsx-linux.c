@@ -258,7 +258,7 @@ save_buffer(char *buffer, off_t bufferlength, int fd)
 	if (fd <= 0 || bufferlength == 0)
 		return;
 
-	if (bufferlength > SSIZE_MAX) {
+	if (bufferlength > INT_MAX) {
 		prt("fsx flaw: overflow in save_buffer\n");
 		exit(67);
 	}
