@@ -166,6 +166,7 @@ int main()
                 	"Error: sbrk failed, errno = %d\n", errno) ;
 			rm_shm(shmid);
 			tst_exit();
+	}
 #else
 	if ((vp = sbrk(16000)) != (void *)-1) {
 		  tst_resm(TFAIL,
