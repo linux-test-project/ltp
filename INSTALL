@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.14 2003/02/05 16:30:06 robbiew Exp $
+$Id: INSTALL,v 1.15 2003/02/26 17:31:39 robbiew Exp $
 
 Quick Start
 -----------
@@ -30,6 +30,8 @@ contributions are welcome.
    while we're working on it.  
 
 3. Run "make" to build everything.  
+   *NOTE: Some of the Makefiles (ex: pan/Makefile) require the lex (or flex)
+   package to be installed.
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.
