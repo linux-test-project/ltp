@@ -86,6 +86,85 @@ prg_usage()
 }
 
 /*
+ * runtest: write the data to the file. Read the data from the file and compare.
+ *	For each iteration, write data starting at offse+iter*bufsize 
+ *	location in the file and read from there.
+*/
+int
+runtest(int fd_r, int fd_w, int childnum, int action)
+{
+	off64_t	seekoff;
+	int	i, bufsize = BUFSIZE;
+	struct  iovec   *iov1, *iov2, *iovp;
+
+	/* Allocate for buffers and data pointers */
+	seekoff = offset+bufsize * childnum;
+	if ((iov1 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
+		fprintf(stderr, "valloc buf1 failed:%s\n", strerror(errno));
+		return(-1);
+	}
+	if ((iov2 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
+		fprintf(stderr, "valloc buf2 failed:%s\n", strerror(errno));
+		return(-1);
+	}
+	for (i = 0, iovp = iov1; i < nvector; iovp++, i++) {
+		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
+			fprintf(stderr, "valloc for iovp->iov_base:%s\n",
+			strerror(errno));
+			return(-1);
+		}
+		iovp->iov_len = bufsize;
+	}
+	for (i = 0, iovp = iov2; i < nvector; iovp++, i++) {
+		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
+			fprintf(stderr, "valloc, iov2 for iovp->iov_base:%s\n",
+			strerror(errno));
+			return(-1);
+		}
+		iovp->iov_len = bufsize;
+	}
+
+	/* seek, write, read and verify */
+	for (i = 0; i < iter; i++) {
+		/*
+		fillbuf(buf1, bufsize, childnum+i);
+		*/
+		vfillbuf(iov1, nvector, childnum+i);
+		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
+			fprintf(stderr, "lseek before write failed:%s\n", 
+				strerror(errno));
+			return(-1);
+		}
+		if (write(fd_w, iov1, bufsize) < bufsize) {
+			fprintf(stderr, "write failed:%s\n", strerror(errno));
+			return(-1);
+		}
+		if (action == READ_DIRECT) {
+			/* Make sure data is on to disk before read */
+			if (fsync(fd_w) < 0) {
+				fprintf(stderr, "fsync failed:%s\n",
+					strerror(errno));
+				return(-1);
+			}
+		}
+		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
+			fprintf(stderr, "lseek before read failed:%s\n", 
+				strerror(errno));
+			return(-1);
+		}
+		if (read(fd_r, iov2, bufsize) < bufsize) {
+			fprintf(stderr, "read failed:%s\n", strerror(errno));
+			return(-1);
+		}
+		if (bufcmp((char*)iov1, (char*)iov2, bufsize) != 0) {
+			fprintf(stderr, "comparsion failed. Child=%d offset=%d\n", 
+				childnum, (int)seekoff);
+			return(-1);
+		}
+	}
+	return(0);
+}
+/*
  * child_function: open the file for read and write. Call the runtest routine.
 */
 int
@@ -163,86 +242,6 @@ child_function(int childnum, int action)
 	exit(0);
 }
 
-/*
- * runtest: write the data to the file. Read the data from the file and compare.
- *	For each iteration, write data starting at offse+iter*bufsize 
- *	location in the file and read from there.
-*/
-int
-runtest(int fd_r, int fd_w, int childnum, int action)
-{
-	char	*buf1, *buf2;
-	off64_t	seekoff;
-	int	i, bufsize = BUFSIZE;
-	struct  iovec   *iov1, *iov2, *iovp;
-
-	/* Allocate for buffers and data pointers */
-	seekoff = offset+bufsize * childnum;
-	if ((iov1 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
-		fprintf(stderr, "valloc buf1 failed:%s\n", strerror(errno));
-		return(-1);
-	}
-	if ((iov2 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
-		fprintf(stderr, "valloc buf2 failed:%s\n", strerror(errno));
-		return(-1);
-	}
-	for (i = 0, iovp = iov1; i < nvector; iovp++, i++) {
-		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
-			fprintf(stderr, "valloc for iovp->iov_base:%s\n",
-			strerror(errno));
-			return(-1);
-		}
-		iovp->iov_len = bufsize;
-	}
-	for (i = 0, iovp = iov2; i < nvector; iovp++, i++) {
-		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
-			fprintf(stderr, "valloc, iov2 for iovp->iov_base:%s\n",
-			strerror(errno));
-			return(-1);
-		}
-		iovp->iov_len = bufsize;
-	}
-
-	/* seek, write, read and verify */
-	for (i = 0; i < iter; i++) {
-		/*
-		fillbuf(buf1, bufsize, childnum+i);
-		*/
-		vfillbuf(iov1, nvector, childnum+i);
-		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before write failed:%s\n", 
-				strerror(errno));
-			return(-1);
-		}
-		if (write(fd_w, iov1, bufsize) < bufsize) {
-			fprintf(stderr, "write failed:%s\n", strerror(errno));
-			return(-1);
-		}
-		if (action == READ_DIRECT) {
-			/* Make sure data is on to disk before read */
-			if (fsync(fd_w) < 0) {
-				fprintf(stderr, "fsync failed:%s\n",
-					strerror(errno));
-				return(-1);
-			}
-		}
-		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before read failed:%s\n", 
-				strerror(errno));
-			return(-1);
-		}
-		if (read(fd_r, iov2, bufsize) < bufsize) {
-			fprintf(stderr, "read failed:%s\n", strerror(errno));
-			return(-1);
-		}
-		if (bufcmp(iov1, iov2, bufsize) != 0) {
-			fprintf(stderr, "comparsion failed. Child=%d offset=%d\n", 
-				childnum, seekoff);
-			return(-1);
-		}
-	}
-	return(0);
-}
 
 int
 main(int argc, char *argv[])

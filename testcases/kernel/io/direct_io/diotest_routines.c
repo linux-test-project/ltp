@@ -99,7 +99,7 @@ vbufcmp(struct iovec *iv1, struct iovec *iv2, int vcnt)
 	for (i = 0; i < vcnt; iv1++, iv2++, i++) {
 		if (bufcmp(iv1->iov_base, iv2->iov_base, iv1->iov_len) < 0) {
 			fprintf(stderr, "Vector: %d, iv1base=%s, iv2base=%s\n", 
-				i, iv1->iov_base, iv2->iov_base);
+				i, (char *)iv1->iov_base, (char *)iv2->iov_base);
 			return(-1);
 		}
 	}
@@ -116,7 +116,7 @@ filecmp(char *f1, char *f2)
 {
 	int i;
 	int fd1, fd2;
-	int ret1, ret2, ret = 0;
+	int ret1, ret2 = 0;
 	char buf1[BUFSIZ], buf2[BUFSIZ];
 
 	/* Open the file for read */

@@ -139,7 +139,6 @@ main(int argc, char *argv[])
 	off64_t	offset = 0;		/* Offset. Default 0 */
 	int	i, action, fd_r, fd_w;
 	int	fail_count = 0, total = 0, failed = 0;
-	char	*buf1, *buf2;
 	char	filename[LEN];
 
 	/* Options */

@@ -85,6 +85,69 @@ prg_usage()
 }
 
 /*
+ * runtest: write the data to the file. Read the data from the file and compare.
+ *	For each iteration, write data starting at offse+iter*bufsize 
+ *	location in the file and read from there.
+*/
+int
+runtest(int fd_r, int fd_w, int childnum, int action)
+{
+	char	*buf1;
+	char	*buf2;
+	off_t	seekoff;
+	int	bufsize = BUFSIZE;
+	int	i;
+
+	/* Allocate for buffers */
+	seekoff = offset+bufsize * childnum;
+	if ((buf1 = valloc(bufsize)) == 0) {
+		fprintf(stderr, "valloc buf1:%s\n", strerror(errno));
+		return(-1);
+	}
+	if ((buf2 = valloc(bufsize)) == 0) {
+		fprintf(stderr, "valloc buf2:%s\n", strerror(errno));
+		return(-1);
+	}
+
+	/* seek, write, read and verify */
+	for (i = 0; i < iter; i++) {
+		fillbuf(buf1, bufsize, childnum+i);
+		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
+			fprintf(stderr, "lseek before write failed:%s\n", 
+				strerror(errno));
+			return(-1);
+		}
+		if (write(fd_w, buf1, bufsize) < bufsize) {
+			fprintf(stderr, "write failed:%s\n", strerror(errno));
+			return(-1);
+		}
+		if (action == READ_DIRECT) {
+			/* Make sure data is on to disk before read */
+			if (fsync(fd_w) < 0) {
+				fprintf(stderr, "fsync failed:%s\n",
+					strerror(errno));
+				return(-1);
+			}
+		}
+		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
+			fprintf(stderr, "lseek before read failed:%s\n", 
+				strerror(errno));
+			return(-1);
+		}
+		if (read(fd_r, buf2, bufsize) < bufsize) {
+			fprintf(stderr, "read failed:%s\n", strerror(errno));
+			return(-1);
+		}
+		if (bufcmp(buf1, buf2, bufsize) != 0) {
+			fprintf(stderr, "comparsion failed. Child=%d offset=%d\n", 
+				childnum, (int)seekoff);
+			return(-1);
+		}
+	}
+	return(0);
+}
+
+/*
  * child_function: open the file for read and write. Call the runtest routine.
 */
 int
@@ -162,68 +225,6 @@ child_function(int childnum, int action)
 	exit(0);
 }
 
-/*
- * runtest: write the data to the file. Read the data from the file and compare.
- *	For each iteration, write data starting at offse+iter*bufsize 
- *	location in the file and read from there.
-*/
-int
-runtest(int fd_r, int fd_w, int childnum, int action)
-{
-	char	*buf1;
-	char	*buf2;
-	off_t	seekoff;
-	int	bufsize = BUFSIZE;
-	int	i;
-
-	/* Allocate for buffers */
-	seekoff = offset+bufsize * childnum;
-	if ((buf1 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf1:%s\n", strerror(errno));
-		return(-1);
-	}
-	if ((buf2 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf2:%s\n", strerror(errno));
-		return(-1);
-	}
-
-	/* seek, write, read and verify */
-	for (i = 0; i < iter; i++) {
-		fillbuf(buf1, bufsize, childnum+i);
-		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before write failed:%s\n", 
-				strerror(errno));
-			return(-1);
-		}
-		if (write(fd_w, buf1, bufsize) < bufsize) {
-			fprintf(stderr, "write failed:%s\n", strerror(errno));
-			return(-1);
-		}
-		if (action == READ_DIRECT) {
-			/* Make sure data is on to disk before read */
-			if (fsync(fd_w) < 0) {
-				fprintf(stderr, "fsync failed:%s\n",
-					strerror(errno));
-				return(-1);
-			}
-		}
-		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before read failed:%s\n", 
-				strerror(errno));
-			return(-1);
-		}
-		if (read(fd_r, buf2, bufsize) < bufsize) {
-			fprintf(stderr, "read failed:%s\n", strerror(errno));
-			return(-1);
-		}
-		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			fprintf(stderr, "comparsion failed. Child=%d offset=%d\n", 
-				childnum, seekoff);
-			return(-1);
-		}
-	}
-	return(0);
-}
 
 int
 main(int argc, char *argv[])
