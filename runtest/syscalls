@@ -294,7 +294,7 @@ mmap06 mmap06
 mmap07 mmap07
 mmap08 mmap08
 
-#modify_ldt01 modify_ldt01
+modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
 
 mprotect01 mprotect01
