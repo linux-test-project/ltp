@@ -70,12 +70,14 @@
 #include "test.h"
 #include "usctest.h"
 
+char *TCID = "socketcall01";		 		 /* Test program identifier.    */
+#ifdef __NR_socketcall
+
 _syscall2(int ,socketcall ,int ,call, unsigned long *, args);
 
 void setup();
 void cleanup();
 
-char *TCID = "socketcall01";		/* Test program identifier.    */
 extern int Tst_count;			/* TestCase counter for tst_* routine */
 
 struct test_case_t {
@@ -159,3 +161,18 @@ void cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
+#else
+
+
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+        tst_resm(TPASS, "socket call test on this architecture disabled.");
+        tst_exit();
+		 return 0;
+}
+
+#endif
