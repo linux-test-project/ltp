@@ -80,11 +80,12 @@ int main(int ac, char **av)
 
 	off_t offsetret, offset;
 	char pbuf[BUFSIZ];
-	int ret, max_block;
+	int ret, max_block=0;
 	int i;
 	time_t time_start, time_end;
 	double time_delta;
-	int data_blocks;
+	int data_blocks=0;
+	long int random_number;
 	
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -98,8 +99,11 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		max_block = lrand48() % max_blks;
-		data_blocks = lrand48() % 1000 + 1;
+		while (max_block <= data_blocks) {
+			random_number = random();
+			max_block = random_number % max_blks;
+			data_blocks = random_number % 1000 + 1;
+		}
 
 		for (i = 0; i < data_blocks; i++) {
 			if ((offsetret = lseek(fd, offset = BLOCKSIZE
