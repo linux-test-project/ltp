@@ -1,4 +1,5 @@
-fsx-ext2 fsxtest $SCRATCHDEV ext2 10000
+fsx-linux fsxtest02 10000
+#fsx-ext2 fsxtest $SCRATCHDEV ext2 10000
 #fsx-ext3 fsxtest $SCRATCHDEV ext3 10000
 #fsx-jfs fsxtest $SCRATCHDEV jfs 10000
 #fsx-xfs  fsxtest $SCRATCHDEV xfs 10000
