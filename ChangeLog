@@ -1,3 +1,30 @@
+LTP-20041007
+- Applied fix from patch 1037010, submitted by mator.
+- Changes from Kris Wilson on RH specific changes
+- Changes from the security team testcases
+- Add HOWTO for pci tests
+- Changes for pci testcases
+- Disable -std=c99 and -peandtic flags in writetest's Makefile.  Some users of very old gcc versions 
+  had problems with this, but it looks like those versions of gcc will still compile it ok.
+- Fix typo and add log statement if a failure on loading the test module
+- Changes requested from the security team for fix PPC64 error
+- Small fix to chown03 and fchown04.  tst_tmpdir() call was happening in a spot that would cause 
+  it to break under certain automation environments.
+- un-spamify fork11 test
+- Fix getrlimit02.  Rajeev Tiwari <rajeevti@in.ibm.com> pointed out that RLIMIT_NLIMIT was now too 
+  low in the usr include files for newer kernels to cause this to fail.  Defined a new high one that 
+  ought to work for the forseeable future.
+- Overhaul madvise02.  Removed some invalid testcases, fixed one case that was an invalid failure, and a lot of cleanup
+- Changes from SuSE for mincore tests
+- Changes from Ihno for Itainium failures
+- Changes from SuSE for setdomainname tests
+- Changes submitted from SuSE for sethostname
+- Changes to fix statfs03 error on trying to write to protected directory
+- Change to fix defect 10947, failure on tmp directory
+- Applied IA64 specific patch from Jacky Malcles:
+
+
+
 LTP-20040908
 - Modified runalltests.sh to call runltp.sh. runalltests.sh is now deprecated and will be removed early next year.
 - Modified tst_tmpdir to ensure 777 permissions on test directory.
