@@ -44,6 +44,11 @@
 /*		Nov - 09 - 2001 Modified - Manoj Iyer,IBM Austin TX.	      */
 /*				- Removed compile errors.                     */
 /*				- too many missing arguments.                 */
+/*								              */
+/*		Nov - 19 - 2001 Modified - Manoj Iyer, IBM Austin TX.	      */
+/*				- fixed segmentation fault. 		      */
+/*				  changed variable th_status from dynamic to  */
+/*				  static array.			              */
 /*                                                                            */
 /* File:	mallocstress.c						      */
 /*									      */
@@ -334,7 +339,7 @@ main(int	argc,		/* number of input parameters		      */
     int		num_thrd = MAXT;/* number of threads to create                */
     int		num_loop = MAXL;/* number of loops to perform		      */
     int		thrd_ndx;	/* index into the array of thread ids         */
-    int		*th_status;	/* exit status of LWP's	                      */
+    int		th_status[1];	/* exit status of LWP's	                      */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[3];   /* arguments to the thread function           */
     extern int	 optopt;	/* options to the program		      */
@@ -387,7 +392,6 @@ main(int	argc,		/* number of input parameters		      */
     }
     
     usleep(0);
-    th_status = malloc(sizeof(int *));
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
@@ -398,7 +402,7 @@ main(int	argc,		/* number of input parameters		      */
         }
         else
         {
-            if ((int)*th_status == -1)
+            if (*th_status == -1)
             {
                 fprintf(stderr,
                         "main(): thread [%d] - process exited with errors\n",
