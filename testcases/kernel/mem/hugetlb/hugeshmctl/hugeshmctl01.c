@@ -271,7 +271,7 @@ stat_setup()
 				tst_resm(TBROK, "shmdt() failed - %d", errno);
 			}
 
-			cleanup();
+			tst_exit();
 
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
