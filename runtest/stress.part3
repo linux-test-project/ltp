@@ -449,6 +449,7 @@ nanosleep01 nanosleep01
 nanosleep02 nanosleep02
 nanosleep03 nanosleep03
 nanosleep04 nanosleep04
+nanosleep05 cd $LTPROOT/testcases/bin;nanosleep05
 
 nftw01 nftw01
 nftw6401 nftw6401
