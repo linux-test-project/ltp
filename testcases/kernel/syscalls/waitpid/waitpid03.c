@@ -47,6 +47,8 @@
  *	None
  */
 
+#define DEBUG 0
+
 #include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
@@ -101,24 +103,28 @@ int main(int argc, char **argv)
 
 		while (++ikids < MAXUPRC) {
 			if ((pid[ikids] = fork()) > 0) {
-				tst_resm(TINFO, "child # %d", ikids);
+				if (DEBUG)
+					tst_resm(TINFO, "child # %d", ikids);
 			} else if (pid[ikids] == -1) {
 				tst_resm(TFAIL, "cannot open fork #%d",
 					 ikids);
 			} else {
-				tst_resm(TINFO, "child:%d", ikids);
+				if (DEBUG)
+					tst_resm(TINFO, "child:%d", ikids);
 				pause();
 				exit(0);
 			}
 		}
 
 		for (ikids = 1; ikids < MAXUPRC; ikids++) {
-			tst_resm(TINFO, "Killing #%d", ikids);
+			if (DEBUG)
+				tst_resm(TINFO, "Killing #%d", ikids);
 			kill(pid[ikids], 15);
 		}
 
 		/* Wait on one specific child */
-		tst_resm(TINFO, "Waiting for child:#%d", MAXUPRC / 2);
+		if (DEBUG)
+			tst_resm(TINFO, "Waiting for child:#%d", MAXUPRC / 2);
 		ret = waitpid(pid[MAXUPRC / 2], &status, 0);
 		if (ret != pid[MAXUPRC / 2]) {
 			tst_resm(TFAIL, "condition %d test failed. "
