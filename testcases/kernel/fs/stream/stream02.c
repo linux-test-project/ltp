@@ -72,7 +72,7 @@ int main(int ac, char *av[])
 		sprintf(tempfile1, "stream1.%d", getpid());
 	/*--------------------------------------------------------------------*/
 	//block0:
-		if(mknod(tempfile1,0,0010666) < 0) {
+		if(mknod(tempfile1, (S_IFIFO|0666), 0) != 0) {
 			tst_resm(TFAIL,"\tmknod failed in block0\n");
 			local_flag = FAILED;
 			goto block1;
@@ -80,14 +80,16 @@ int main(int ac, char *av[])
 		if((stream=fopen(tempfile1,"w+")) == NULL) {
 			tst_resm(TFAIL,"\tfopen w+ failed for pipe file\n");
 			local_flag = FAILED;
+		} else {
+			fclose(stream);
 		}
-		fclose(stream);
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"\tfopen a+ failed\n");
 			local_flag = FAILED;
+		} else {
+			fclose(stream);
+			unlink(tempfile1);
 		}
-		fclose(stream);
-		unlink(tempfile1);
 		if (local_flag == PASSED) {
 		         tst_resm(TPASS, "Test passed in block0.\n");
 		} else {
@@ -103,8 +105,9 @@ int main(int ac, char *av[])
 			if(( stream = fopen("/dev/tty","w"))==NULL) {
 				tst_resm(TFAIL,"\tfopen write  failed for /dev/tty\n");
 				local_flag = FAILED;
+			} else {
+				fclose(stream);
 			}
-			fclose(stream);
 		}
 		if (local_flag == PASSED) {
 		         tst_resm(TPASS, "Test passed in block1.\n");

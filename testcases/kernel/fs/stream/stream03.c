@@ -96,7 +96,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		pos=ftell(stream);
-		if (pos != strlen(junk) ) {
+		if ((size_t)pos != strlen(junk) ) {
 			tst_resm(TFAIL, "strlen(junk):file pointer descrepancy 2");
 			local_flag = FAILED;
 		}
@@ -113,7 +113,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		pos=ftell(stream);
-		if (pos != strlen(junk) ) {
+		if ((size_t)pos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 4");
 			local_flag = FAILED;
 		}
@@ -123,7 +123,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		pos=ftell(stream);
-		if (pos != strlen(junk) ) {
+		if ((size_t)pos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 5");
 			local_flag = FAILED;
 		}
@@ -139,11 +139,11 @@ int main(int ac, char *av[])
 		}
 
 		/* read till EOF, do getc and then check ftell */
-		while (fgets (buf, 30, stream));
+		while (fgets (buf, sizeof(buf), stream));
 		pos=ftell(stream);
 		(void) getc(stream);
 		pos=ftell(stream);
-		if (pos != strlen(junk) ) {
+		if ((size_t)pos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 7");
 			local_flag = FAILED;
 		}
@@ -179,7 +179,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		opos=ftello(stream);
-		if (opos != strlen(junk) ) {
+		if ((size_t)opos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 2");
 			local_flag = FAILED;
 		}
@@ -196,7 +196,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		opos=ftello(stream);
-		if (opos != strlen(junk) ) {
+		if ((size_t)opos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 4");
 			local_flag = FAILED;
 		}
@@ -206,7 +206,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 		opos=ftello(stream);
-		if (opos != strlen(junk) ) {
+		if ((size_t)opos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 5");
 			local_flag = FAILED;
 		}
@@ -222,11 +222,11 @@ int main(int ac, char *av[])
 		}
 
 		/* read till EOF, do getc and then check ftello */
-		while (fgets (buf, 30, stream));
+		while (fgets (buf, sizeof(buf), stream));
 		opos=ftello(stream);
 		(void) getc(stream);
 		opos=ftello(stream);
-		if (opos != strlen(junk) ) {
+		if ((size_t)opos != strlen(junk) ) {
 			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 7");
 			local_flag = FAILED;
 		}

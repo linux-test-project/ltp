@@ -92,7 +92,7 @@ int main(int ac, char *av[])
 			tst_exit();
 		}
 
-		if(ret != strlen(junk)) {
+		if((size_t)ret != strlen(junk)) {
 			tst_resm(TFAIL,"strlen(junk),return value from fwrite");
 			local_flag = FAILED;
 		}
@@ -110,7 +110,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL,"\tfread failed\n");
 			tst_exit();
 		}
-		if(ret != strlen(junk)) {
+		if((size_t)ret != strlen(junk)) {
 			tst_resm(TFAIL,"strlen(junk),return value from fread");
 			local_flag = FAILED;
 		}
