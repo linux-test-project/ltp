@@ -52,3 +52,5 @@ dummy_func_test(void)
 {
 	return;
 }
+
+EXPORT_SYMBOL(dummy_func_test);
