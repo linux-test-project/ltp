@@ -101,8 +101,13 @@ int main (argc, argv)
 
 	/* check the errno, for EACCESS */
 	if( errno != EACCES ) {
-		tst_resm(TFAIL,"Attempt to use non-ordinary file didn't receive EACCESS error\n");
-		tst_exit();
+ /* if platform is s390 or s390x then the device tty0 does not exist and we should not check */
+#if defined (__s390__) || (__s390x__)
+                tst_resm(TPASS,"EACCES test for tty0 is not valid on s390/s390x\n");
+#else
+                tst_resm(TFAIL,"Attempt to use non-ordinary file didn't receive EACCESS error - received %d\n",errno);
+                tst_exit();
+#endif
 	} else tst_resm(TPASS,"Received expected error: EACCESS");
 
 
