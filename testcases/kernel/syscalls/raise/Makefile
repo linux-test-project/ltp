@@ -1,4 +1,4 @@
-CFLAGS := -Wall -I ../../../../include 
+CFLAGS := -Wall -I ../../../../include -D _GNU_SOURCE
 LDFLAGS := -L ../../../../lib -lltp 
 
 SRCS=$(wildcard *.c)
