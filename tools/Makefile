@@ -11,6 +11,7 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@set -e; ln -f gethost ../testcases/bin
 
 clean:
 	rm -f $(TARGETS)
