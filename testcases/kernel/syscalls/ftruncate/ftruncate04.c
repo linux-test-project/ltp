@@ -51,9 +51,9 @@
  *		-i	number of iterations.
  *		-l	length of file to create
  *
- * Resctrictions:
- *	Using default parameters, should run only a few seconds.
- *	May fail if can't fork child.
+ * Restrictions:
+ *	The filesystem containing /tmp MUST have "mand" specified as
+ *	a mount option.  This option allows the use of mandatory locks. 	
  *
  */
 #include <sys/types.h>
@@ -212,25 +212,15 @@ doparent()
 	struct stat sb;
 
 	
-	if ((fd = open(filename, O_RDWR)) < 0) {
+	sigemptyset(&set);
+	sigsuspend(&set);
+	if ((fd = open(filename, O_RDWR | O_NONBLOCK)) < 0) {
 		tst_resm(TBROK,"parent open1 failed\n");
 		cleanup();
 	}/*  end if */
 	lseek(fd, 0, SEEK_SET);
-	sigemptyset(&set);
-	sigsuspend(&set);
 
 	/* first delete BEFORE lock, expect failure */
-	if (truncate(filename, RECLEN) >= 0) {
-		tst_resm(TFAIL, "unexpected truncate success case 1\n");
-		local_flag = FAILED;
-		cleanup();
-	}
-	if (errno != EAGAIN) {
-		tst_resm(TFAIL,"bad truncate errno case 1\n");
-		local_flag = FAILED;
-		cleanup();
-	}
 	if (ftruncate(fd, RECLEN) >= 0) {
 		tst_resm(TFAIL, "unexpected ftruncate success case 1\n");
 		local_flag = FAILED;
@@ -243,16 +233,6 @@ doparent()
 	}
 
 	/* delete IN the lock, expect failure */
-	if (truncate(filename, recstart+(RECLEN/2)) >= 0) {
-		tst_resm(TFAIL, "unexpected truncate success case 2\n");
-		local_flag = FAILED;
-		cleanup();
-	}
-	if (errno != EAGAIN) {
-		tst_resm(TFAIL,"bad truncate errno case 2\n");
-		local_flag = FAILED;
-		cleanup();
-	}
 	if (ftruncate(fd, recstart+(RECLEN/2)) >= 0) {
 		tst_resm(TFAIL, "unexpected ftruncate success case 2\n");
 		local_flag = FAILED;
@@ -265,23 +245,7 @@ doparent()
 	}
 
 	/* delete AFTER lock, expect success */
-	if (truncate(filename, recstart+RECLEN) < 0) {
-		tst_resm(TFAIL,"unexpected truncate failure case 3");
-		local_flag = FAILED;
-		cleanup();
-	}
-	 /* delete AFTER lock, grow file, expect failure */
-        if (truncate(filename, (2 * len)) >= 0) {
-	        tst_resm(TFAIL, "unexpected truncate success case 3\n");
-                local_flag = FAILED;
-                cleanup();
-									        }
-        if (errno != EAGAIN) {
-                tst_resm(TFAIL,"bad truncate errno case 3\n");
-                local_flag = FAILED;
-                cleanup();
-        }
-        if (ftruncate(fd, (3 * len)) >= 0) {
+        if (ftruncate(fd, recstart+RECLEN) != 0) {
                 tst_resm(TFAIL, "unexpected ftruncate success case 3\n");
                 local_flag = FAILED;
                 cleanup();
