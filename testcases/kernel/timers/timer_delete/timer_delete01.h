@@ -24,7 +24,7 @@
 /* timer_settime */
 #ifndef __NR_timer_settime
 #if defined(__parisc__)
-#define __NR_timer_settime 350
+#define __NR_HPUX_timer_settime 350
 #else
 #define __NR_timer_settime (__NR_timer_create+1)
 #endif
@@ -34,7 +34,7 @@
 /* timer_delete */
 #ifndef __NR_timer_delete
 #if defined(__parisc__)
-#define __NR_timer_delete 349
+#define __NR_HPUX_timer_delete 349
 #else
 #define __NR_timer_delete (__NR_timer_create+4)
 #endif

@@ -24,7 +24,7 @@
 /* timer_settime */
 #ifndef __NR_timer_settime
 #if defined(__parisc__)
-#define __NR_timer_settime 350
+#define __NR_HPUX_timer_settime 350
 #else
 #define __NR_timer_settime (__NR_timer_create+1)
 #endif
@@ -34,7 +34,7 @@
 /* timer_getoverrun */
 #ifndef __NR_timer_getoverrun
 #if defined(__parisc__)
-#define __NR_timer_getoverrun 352
+#define __NR_HPUX_timer_getoverrun 352
 #else
 #define __NR_timer_getoverrun (__NR_timer_create+3)
 #endif
@@ -44,7 +44,7 @@
 /* timer_delete */
 #ifndef __NR_timer_delete
 #if defined(__parisc__)
-#define __NR_timer_delete 349
+#define __NR_HPUX_timer_delete 349
 #else
 #define __NR_timer_delete (__NR_timer_create+4)
 #endif
@@ -54,7 +54,7 @@
 /* clock_getres */
 #ifndef __NR_clock_getres
 #if defined(__parisc__)
-#define __NR_clock_getres 347
+#define __NR_HPUX_clock_getres 347
 #else
 #define __NR_clock_getres (__NR_timer_create+7)
 #endif
