@@ -1,5 +1,6 @@
 #simple script to refresh ltp.tgz on LTP_HOST: ltpupdate
 #       3/12/02 William Jay Huie (creation)
+#       3/28/02 William Jay Huie minor updates
 #I use this to update my copy of the CVS code, and upload it to the LTP_HOST
 #from which the ltprun script pulls down the source for building/executing
 #

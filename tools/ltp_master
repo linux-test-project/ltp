@@ -2,6 +2,7 @@
 
 #Master control script; ltp_master
 #       3/12/02 William Jay Huie (creation)
+#       3/28/02 William Jay Huie minor updates
 #This will upload the ltprun script to the test system and kick off this script
 #uses the Net:Telnet and Net::Ftp modules from www.cpan.org
 #the ltprun script is a shell script to eliminate the need to write a script
@@ -9,8 +10,9 @@
 
 #FIXME: One problem is that the tests need to be run as root as as of now
 #this means that LTP_USER needs to be root, which means root needs to be
-#able to telnet into the machine. Couldn't figure out how to add a su -c
-#to the LTP_CMD_LINE variable
+#able to telnet and ftp into the machine. Couldn't figure out how to add 
+#a su -c to the LTP_CMD_LINE variable, ssh will probably be the solution
+#but for now this works
 
 use Net::Telnet ();
 use Net::FTP ();
@@ -18,19 +20,23 @@ use Net::FTP ();
 #Leave this set to keep perl from buffering IO
 $| = 1;
 
+#CHANGEME:
 #change these for different defaults
 #Think carefully because things like ltprun.out are relied upon in the ltprun
 #     script, so you need to change them there too, or better yet make them 
 #     cmd line parms
-$LTP_USER = "ltp";
-$LTP_PASS = "ltp";
+#$LTP_USER = "ltp";
+#$LTP_PASS = "ltp";
+$LTP_USER = "root";
+$LTP_PASS = "password";
 $LTP_RUN = "ltprun";
 #CHANGEME:
 #Can't use ~/bin so have to explicitly hardcode this directory
 $LTP_RUN_DIR = "/home/wjhuie/bin/";
 $LTP_CMD_LINE = "chmod +x $LTP_RUN && nohup ./$LTP_RUN &> $LTP_RUN.out &";
 
-print "FIXME: Need to change this to su to root, or in some other way fix\n";
+print "FIXME: Need to change this to su to root, not login over telnet\n";
+print "       Or run in some other way like ssh\n";
 
 if ( $ARGV[0] eq "-f" )
 {
@@ -63,12 +69,13 @@ $t = new Net::Telnet (Timeout => 30, Prompt => '/.* $/'
 for ($j = 0; $j <= $#hosts; $j++)
 {
    chdir "$LTP_RUN_DIR" or die "Can't change to $LTP_RUN_DIR";
-   print "\nUploading $LTP_RUN to: $hosts[$j]";
+   print "\nAttempting to Upload $LTP_RUN to: $hosts[$j]";
 
-   $ftp = Net::FTP->new($hosts[$j], Debug => 0);
-   $ftp->login($LTP_USER, $LTP_PASS) or die "Unable to login";
-   $ftp->type('I') or die "Unable to set type to Binary";
-   $ftp->put($LTP_RUN) or die "Unable to put $LTP_RUN";
+   $ftp = Net::FTP->new($hosts[$j], Debug => 0) or 
+      do { print "\n\tCouldn't connect to: $hosts[$j] --- skipping\n"; next; };
+   $ftp->login($LTP_USER, $LTP_PASS) or die "\nUnable to login";
+   $ftp->type('I') or die "\nUnable to set type to Binary";
+   $ftp->put($LTP_RUN) or die "\nUnable to put $LTP_RUN";
    $ftp->quit;
    print "\nUploading $LTP_RUN Done";
 

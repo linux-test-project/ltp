@@ -2,6 +2,7 @@
  
 #LTP results gathering script: ltp_check
 #       3/12/02 William Jay Huie (creation)
+#       3/28/02 William Jay Huie minor fixes, increased results parsing
 #This will log into the LTP_HOST machine, which may be different then the 
 #machine used to run the ltp_master script
 #This script will check for *ltpoutput.tgz files created by the ltprun script
@@ -42,7 +43,7 @@ sub download_results()
    else
    { chdir "$LTP_RES_DIR" or die "Can't change to $LTP_RES_DIR\n"; }
 
-   $ftp = Net::FTP->new($LTP_HOST, Debug => 0) or die "Can't connect";
+   $ftp = Net::FTP->new($LTP_HOST, Debug => 0) or die "Can't connect to ftp: $LTP_HOST";
    $ftp->login($LTP_USER, $LTP_PASS) or die "Unable to login";
    $ftp->type('I') or die "Unable to set type to Binary";
    @files = $ftp->ls("*ltpoutput.tgz");
@@ -56,7 +57,7 @@ sub download_results()
       if ($ftp->get($files[$i]))
       { 
          print "Successful\n"; 
-         $ftp->delete($files[$i]);
+        $ftp->delete($files[$i]);
       }
       else
       { print "FAILED\n"; }
@@ -114,31 +115,75 @@ sub untar_results()
 
 sub gather_results()
 {
-   print "Gathering results:\n";
+   print "Gathering $count result(s):\n";
 
    for ($i = 0; $i < $count; $i++)
    {
-      print "Results for: $res_dirs[$i]\n";
+      print "\nResults for: $res_dirs[$i]\n";
       chdir "$res_dirs[$i]" or die "Can't change to $res_dirs[$i]\n";
-      $stat = `tail -n1 $LTP_RUNALL_OUT`;
-      print "\t\t$stat";
+
+      chomp($stat = `tail -n1 $LTP_RUNALL_OUT`);
+      print "\t\t$stat\n";
+
+      $num_success = `grep "stat=0" $LTP_LOGFILE | wc -l`;
+      if ( $num_success =~ /\s*(\d+)\s*/ ) { $num_success = $1; }
 
       @fails = `grep "stat=" $LTP_LOGFILE | grep -v "stat=0"`;
+      $num_fail = $#fails + 1;
 
-      print "$#fails test failures, results stored in $RESULTS_OUT\n";
+      $pass_percent = sprintf("%.2f", 
+                         ($num_success / ($num_success + $num_fail)) * 100);
+
+      $ltp_ver = `grep "version" $LTP_RUN_OUTPUT`;
+      if ( $ltp_ver =~ m/.*version: (.*)/ ) { $ltp_ver = $1; }
+
+      $line = "Pass $pass_percent % : $num_success succeeded : $num_fail failed";
+      print "$line";
+
       if (open RES, ">$RESULTS_OUT")
       {
-         print RES " ";
+         print ". -> Results stored in $RESULTS_OUT\n";
+         $num = 
+#The <<test_start>> doesn't seem to always get into the runalltest.sh output capture
+#So for now relying on the last thing in the ver_linux script to tell us when to stop copying
+#          system("awk '/<<test_start>>/ { exit NR-1; }' $LTP_RUNALL_OUT") / 256;
+           system("awk '/bogomips/ { exit NR; }' $LTP_RUNALL_OUT") / 256;
+
+         @system_info = `head -n $num $LTP_RUNALL_OUT`;
+
+         if ($ltp_ver) { print RES "$ltp_ver : "; }
+         print RES "$line\n\n";
+         print RES "@system_info\n";
+         print RES "$stat:\n ";
          print RES "@fails\n";
+
+         $runall = `cat $LTP_RUNALL_OUT`;
+         for ($j = 0; $j < $num_fail; $j++)
+         {
+            if ( $fails[$j] =~ m/^tag=(\w+?) / )
+            { 
+               $test_case = $1;
+               print RES "\nTrying to find $test_case output";
+               if ( $runall =~ 
+                    m/(^<<<test_start>>>.tag=$test_case.*?<<<test_end>>>)/ms 
+                  )
+               {
+                  print RES "\n-------------------------\n";
+                  print RES "$1";
+                  print RES "\n-------------------------\n";
+               }
+               else
+               {  
+                  print RES "\n-------------------------\n";
+                  print RES "Unable to locate output for $test_case!";
+                  print RES "\n-------------------------\n";
+               }
+            }
+         }
+         close(RES);
       }
       else
-      { 
-         print "Can't open $RESULTS_OUT, test failures are:\n ";
-         print "@fails\n"; 
-      }
-      close(RES);
-#Uncomment this if you want to print the failure list to the screen
-#     print " @fails\n"; 
+      { print "Can't open $RESULTS_OUT, test failures are:\n @fails\n"; }
    }
    return 1;
 }
@@ -151,4 +196,3 @@ if (!untar_results)
 
 if (!gather_results)
 { exit 0; }
-

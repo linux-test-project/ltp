@@ -1,5 +1,6 @@
 #initial attempt at an automation script: ltprun
 #       3/12/02 William Jay Huie (creation)
+#       3/28/02 William Jay Huie minor updates
 #this will be kicked off by ltp_master from the master control machine which
 #uploads this script and then telnets into each machine and kick this script off
 #perhaps by passing a uniq ID to name the LTP_OUTPUT_TAR file by, or 
@@ -66,8 +67,8 @@ untar_ltp()
     
 build_ltp()
 {
-   echo "Building LTP Testsuite";
    cd ~/ltp
+   echo "Building LTP Testsuite version: `head -n1 ChangeLog`";
    make clean install &> /dev/null
    if [ $? != "0" ]; then
       echo "FAILED   LTP Testsuite compilation"; return 0;
