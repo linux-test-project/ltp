@@ -78,8 +78,9 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	i = llabs(MININT);
-	if (i != MININT) {
+	i = llabs(MININT) + (long long)MININT;
+	
+	if (i != 0) {
 		fprintf(temp, "abs of minimum integer failed.");
 		local_flag = FAILED;
 	}
