@@ -202,7 +202,6 @@ size_t get_memsize()
   int retcode;
   int ictl;
   char buff[BUFF_SIZE];
-  struct utsname *buf;
 
 /* allocate some space for buf */
 
@@ -295,7 +294,6 @@ size_t get_memsize()
         }
   }
   res = res * 1024;
-  free(buf);
   fclose(f);
   return res;
 }
