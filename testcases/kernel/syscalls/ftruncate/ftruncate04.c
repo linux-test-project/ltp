@@ -93,7 +93,6 @@ extern char *optarg;
 extern int optind, opterr;
 int 	local_flag;
 
-
 usr1hndlr()
 {
 	usrcnt++;
@@ -216,7 +215,8 @@ doparent()
 	if ((fd = open(filename, O_RDWR)) < 0) {
 		tst_resm(TBROK,"parent open1 failed\n");
 		cleanup();
-	} /* end if */
+	}/*  end if */
+	lseek(fd, 0, SEEK_SET);
 	sigemptyset(&set);
 	sigsuspend(&set);
 
@@ -377,7 +377,7 @@ dochild()
 		tst_resm(TFAIL,"child open");
 		tst_exit();
 	}
-
+	lseek(fd, 0, SEEK_SET);
 	flocks.l_type = F_WRLCK;
 	flocks.l_whence = SEEK_CUR;
 	flocks.l_start = recstart;
