@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
         if (setjmp(sig11_recover)) {
               errno = EINVAL;
-              TEST_RETURN=-1;
+              TEST_RETURN=-2;
         } else {
               TEST_RETURN=sigrelse(signo);
         }
@@ -81,6 +81,10 @@ int main(int argc, char *argv[])
                         printf ("errno not set to EINVAL\n");
                         return PTS_FAIL;
                 }
+        }
+	if (TEST_RETURN == -2) {
+                printf ("test received SIGSEGV\n");
+                return PTS_UNRESOLVED;
         }
 
         printf("sigrelse did not return -1\n");
