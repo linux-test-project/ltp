@@ -76,6 +76,7 @@ main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 	int fildes;
 	pid_t pid, pid1;
+	int e_code, status, retval=0;
 	char *argv[1], *env[1];
 
 	/* parse standard options */
@@ -141,12 +142,18 @@ main(int ac, char **av)
 
 			/* wait for the first child to exit */
 			(void)waitpid(pid, NULL, 0);
-		} else {
-			/* let the child carry on */
-			exit(0);
+			exit(retval);	
+		} else {	/* parent */
+			 /* wait for the child to finish */
+                        wait(&status);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if ((e_code != 0) || (retval != 0)) {
+                          tst_resm(TFAIL, "Failures reported above");
+                        }
+			cleanup();
 		}
 	}
-	cleanup();
 
 	/*NOTREACHED*/
 }
