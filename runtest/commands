@@ -6,3 +6,4 @@ objdump export TCdat=$LTPROOT/testcases/bin; objdump01
 file export TCdat=$LTPROOT/testcases/bin; file_test.sh
 tar export TCdat=$LTPROOT/testcases/bin; tar_tests.sh
 cron export TCdat=$LTPROOT/testcases/bin; cron_tests.sh
+logrotate export TCdat=$LTPROOT/testcases/bin; logrotate_tests.sh
