@@ -24,9 +24,10 @@ extern char *optarg;
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: netpipe.c,v 1.1 2003/02/05 15:44:54 robbiew Exp $";
+	"$Id: netpipe.c,v 1.2 2003/03/14 16:34:26 robbiew Exp $";
 #endif
 
+int
 main(int argc, char *argv[])
 {
     FILE        *out;           /* Output data file                          */
@@ -513,7 +514,8 @@ When()
     return ((double) tp.tv_sec + (double) tp.tv_usec * 1e-6);
 }
 
-PrintUsage()
+void
+PrintUsage(void)
 {
 	printf("\n NETPIPE USAGE \n\n");
 	printf("A: specify buffers alignment e.g.: <-A 1024>\n");

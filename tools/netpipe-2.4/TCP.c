@@ -15,14 +15,13 @@
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: TCP.c,v 1.1 2003/02/05 15:44:54 robbiew Exp $";
+	"$Id: TCP.c,v 1.2 2003/03/14 16:34:26 robbiew Exp $";
 #endif
 
 int Setup(ArgStruct *p)
 {
 
  int tr, one = 1;                 /* tr==1 if process is a transmitter */
- short port;
  int sockfd;
  struct sockaddr_in *lsin1, *lsin2;      /* ptr to sockaddr_in in ArgStruct */
  char *host;
@@ -64,13 +63,13 @@ int Setup(ArgStruct *p)
      if(setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz), 
                                        sizeof(p->prot.sndbufsz)) < 0)
      {
-          printf("NetPIPE: setsockopt: SO_SNDBUF failed! errno=\n", errno);
+          printf("NetPIPE: setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
           exit(556);
      }
      if(setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz), 
                                        sizeof(p->prot.rcvbufsz)) < 0)
      {
-          printf("NetPIPE: setsockopt: SO_RCVBUF failed! errno=\n", errno);
+          printf("NetPIPE: setsockopt: SO_RCVBUF failed! errno=%d\n", errno);
           exit(556);
      }
  }
@@ -337,13 +336,13 @@ int Establish(ArgStruct *p)
       if(setsockopt(p->commfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz), 
                                        sizeof(p->prot.sndbufsz)) < 0)
       {
-	printf("setsockopt: SO_SNDBUF failed! errno=\n", errno);
+		 printf("setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
 	exit(556);
       }
       if(setsockopt(p->commfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz), 
                                        sizeof(p->prot.rcvbufsz)) < 0)
       {
-	printf("setsockopt: SO_RCVBUF failed! errno=\n", errno);
+		 printf("setsockopt: SO_RCVBUF failed! errno=%d\n", errno);
 	exit(556);
       }
     }

@@ -11,7 +11,7 @@
 /*     * netpipe.h          ---- General include file                        */
 /*****************************************************************************/
 
-/* $Id: netpipe.h,v 1.1 2003/02/05 15:44:54 robbiew Exp $ */
+/* $Id: netpipe.h,v 1.2 2003/03/14 16:34:27 robbiew Exp $ */
 
 #include <ctype.h>
 #include <errno.h>
@@ -24,6 +24,7 @@
 #ifdef HAVE_GETRUSAGE
 #include <sys/resource.h>
 #endif
+#include <unistd.h>
 
 
 #define  DEFPORT            5002
@@ -83,6 +84,8 @@ struct data
 };
 
 double When();
+
+void PrintUsage(void);
 
 int Setup(ArgStruct *p);
 
