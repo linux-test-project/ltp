@@ -336,10 +336,10 @@ main()
     
     if [ $? -eq 0 ]; then
       echo "INFO: pan reported all tests PASS"
-      exit 0
+      VALUE=0
     else
       echo "INFO: pan reported some tests FAIL"
-      exit 1
+      VALUE=1
     fi
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
@@ -359,7 +359,7 @@ main()
        
 	EOF
     }
-    return
+    exit $VALUE
 }
 
 cleanup()
