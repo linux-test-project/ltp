@@ -24,5 +24,5 @@ clean:
 	@for i in $(REF2); do rm -f ../../../bin/$$i ; done
 
 install:
-	sleep 1
+	sleep 60
 	@for i in $(REF) $(REF2); do ln -f $$i ../../../bin/$$i ; done ;
