@@ -47,6 +47,7 @@ interval=10
 Sar=0
 Top=0
 Iostat=0
+LOGGING=0
 
 usage()
 {
@@ -100,7 +101,8 @@ do  case $arg in
 	I)	Iostat=1
 		iofile=$OPTARG;;
 
-        l)      logfile="-l $OPTARG";;
+        l)      logfile="-l $OPTARG"
+		LOGGING=1;;
 
         m)	memsize=$(($OPTARG * 1024))
 		check_memsize;;	
@@ -265,10 +267,13 @@ if [ $Iostat -eq 1 ];then
 fi
 rm -rf ${TMP}
 echo "Testing done"
-grep FAIL $logfile >/dev/null 2>&1
-if [ $? -eq 1 ]; then
-  echo "All Tests PASSED!"
-else
-  echo "Testing yielded failures. See logfile: $logfile"
+if [ $LOGGING -eq 1 ];then
+  grep FAIL $logfile >/dev/null 2>&1
+  if [ $? -eq 1 ]; then
+    echo "All Tests PASSED!"
+  else
+    echo "Testing yielded failures. See logfile: $logfile"
+  fi
 fi
+
 
