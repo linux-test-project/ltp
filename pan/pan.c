@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.19 2003/01/30 06:28:39 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.20 2003/03/03 23:35:55 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -165,6 +165,7 @@ main(int argc, char **argv)
 	int quiet_mode = 0;			/* supresses test start and test end tags. */
     int c;
     pid_t cpid;
+    struct sigaction sa;
 
     while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pqr:s:t:x:y")) != -1) {
 	switch (c) {
@@ -417,12 +418,13 @@ main(int argc, char **argv)
 
     rec_signal = send_signal = 0;
     if (run_time != -1) { alarm(run_time); }
-    signal(SIGALRM, wait_handler);
-    signal(SIGINT, wait_handler);
-    signal(SIGTERM, wait_handler);
-    signal(SIGHUP, wait_handler);
-    signal(SIGUSR1, wait_handler);	/* ignore fork_in_road */
-    signal(SIGUSR2, wait_handler);	/* stop the scheduler */
+    sa.sa_handler = wait_handler;
+    sigaction(SIGALRM, &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGHUP, &sa, NULL);
+    sigaction(SIGUSR1, &sa, NULL);	/* ignore fork_in_road */
+    sigaction(SIGUSR2, &sa, NULL);	/* stop the scheduler */
 
     c = 0;			/* in this loop, c is the command index */
     stop = 0;
@@ -486,7 +488,6 @@ main(int argc, char **argv)
 		    ++go_idle;
 		else
 		    ++stop;
-		signal(rec_signal, wait_handler);
 		rec_signal = send_signal = 0;
 	    } else {
 		if (rec_signal == SIGUSR1)
@@ -548,7 +549,6 @@ main(int argc, char **argv)
 	    break;
     }
 
-    signal(SIGINT, SIG_DFL);
     if (zoo_clear(zoofile, getpid())) {
 	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	++exit_stat;
@@ -606,7 +606,6 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
     check_orphans(orphans, send_signal);
 
-    signal(rec_signal, wait_handler);
     rec_signal = send_signal = 0;
 }
 
