@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.3 2000/09/07 14:34:44 alaffin Exp $ */
+/* $Id: tst_sig.c,v 1.4 2001/06/01 19:46:13 nstraz Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -75,6 +75,12 @@
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
 void (*T_cleanup)();		/* pointer to cleanup function */
+
+/****************************************************************************
+ * STD_COPIES is defined in parse_opts.c but is externed here in order to
+ * test whether SIGCHILD should be ignored or not.
+ ***************************************************************************/
+extern int STD_COPIES;
 
 extern int errno;
 static void def_handler();		/* default signal handler */
@@ -151,7 +157,7 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	            break;
 
 	        case SIGCLD:
-	            if ( fork_flag == FORK )
+	            if ( fork_flag == FORK || STD_COPIES > 1)
 		        continue;
 
 	        default:
