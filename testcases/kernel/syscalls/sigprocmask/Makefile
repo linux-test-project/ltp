@@ -24,6 +24,7 @@ LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TESTS=sigprocmask02 sigprocmask03
 
 all: $(TARGETS)
 
