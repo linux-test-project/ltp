@@ -1,3 +1,5 @@
+CFLAGS+= -Wall
+
 TARGETS=fs_perms
 all: fs_perms testx.file
 fs_perms: fs_perms.o

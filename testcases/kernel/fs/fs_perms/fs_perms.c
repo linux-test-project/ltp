@@ -31,6 +31,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -40,9 +42,7 @@ int testsetup(mode_t mode, int cuserId, int cgroupId);
 int testfperm(int userId, int groupId, char* fperm);
 
 int main( int argc, char *argv[]) {
-   FILE *infile;
    char fperm[1];
-   char *config;
    int result, exresult=0,  cuserId=0, cgroupId=0, userId=0, groupId=0;
    mode_t mode;
 
@@ -116,7 +116,7 @@ int testfperm(int userId, int groupId, char* fperm) {
 	  return(nuthertmpi);
 
        default: 
-          if(testfile=fopen("test.file",fperm)){
+          if((testfile=fopen("test.file",fperm))){
             fclose(testfile);
             seteuid(0);
             setegid(0);
