@@ -13,12 +13,11 @@ usage()
 	cat <<-END >&2
 	usage: ${0##*/} [ -t duration ] [ -x instances ] [ -l logfile ]
                 [ -r ltproot ] [ -d tmpdir ]
-	defaults:
-	duration=$duration
-	instances=$instances
-	logfile=$logfile
-	ltproot=$LTPROOT
-	tmpdir=$TMPBASE
+    -t duration     Execute the testsuite for given duration in hours.
+    -x instances    Run multiple instances of this testsuite.
+    -l logfile        Log results of test in a logfile.
+    -r ltproot        Fully qualified path where testsuite is installed.
+    -d tmpdir        Directory where temporary files will be created.
 
 	example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
 	END
