@@ -120,8 +120,8 @@ typedef struct pathname {
 #define	FLIST_SLOT_INCR	16
 #define	NDCACHE	64
 
-#define	MAXFSIZE	(long)((1ULL << 63) - 1ULL)
-#define	MAXFSIZE32	(long)((1ULL << 40) - 1ULL)
+#define	MAXFSIZE	((1ULL << 63) - 1ULL)
+#define	MAXFSIZE32	((1ULL << 40) - 1ULL)
 
 void	allocsp_f(int, long);
 void	attr_remove_f(int, long);
@@ -1796,7 +1796,7 @@ dread_f(int opno, long r)
 	len -= (len % align);
 	if (len <= 0)
 		len = align;
-	else if ( len > (size_t)diob.d_maxiosz) 
+	else if ( len > diob.d_maxiosz) 
 		len = diob.d_maxiosz;
 	buf = memalign(diob.d_mem, len);
 	e = read(fd, buf, len) < 0 ? errno : 0;
