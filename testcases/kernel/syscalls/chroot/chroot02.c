@@ -65,7 +65,7 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int pid;
+	int pid, e_code, status, retval=0;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -88,6 +88,7 @@ main(int ac, char **av)
 			TEST(chroot(path));
 
 			if (TEST_RETURN == -1) {
+				retval=1;
 				tst_resm(TFAIL, "chroot(2) failed errno = %d",
 					 TEST_ERRNO);
 				continue;
@@ -95,6 +96,7 @@ main(int ac, char **av)
 
 			if (STD_FUNCTIONAL_TEST) {
 				if (stat(file, &buf) == -1) {
+					retval=1;
 					tst_resm(TFAIL, "stat(2) failed errno "
 						 "= %d", errno);
 				} else {
@@ -104,11 +106,16 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
-			exit(0);
+			exit(retval);
 		}
 
 		/* parent */
-		wait(NULL);
+		wait(&status);
+		/* make sure the child returned a good exit status */
+		e_code = status >> 8;
+		if (e_code != 0) {
+			tst_resm(TFAIL, "Failures reported above");
+		}
 	}
 	cleanup();
 
