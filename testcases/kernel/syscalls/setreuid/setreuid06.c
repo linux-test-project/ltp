@@ -47,6 +47,7 @@
 #include <errno.h>
 #include <sys/param.h>
 #include <unistd.h>
+#include <pwd.h>
 #include <test.h>
 #include <usctest.h>
 
@@ -56,6 +57,10 @@ char *TCID = "setreuid01";
 int TST_TOTAL = 1;
 int exp_enos[]={EPERM, 0};
 extern int Tst_count;
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup(void);
 void cleanup(void);
@@ -117,10 +122,18 @@ setup(void)
 
 	umask(0);
 
- 	if (geteuid() == 0) {
-                tst_brkm(TBROK, NULL, "Must not be root for this test! Try su'ing to nobody");
-                tst_exit();
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
