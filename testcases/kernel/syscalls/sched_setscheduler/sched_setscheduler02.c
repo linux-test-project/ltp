@@ -48,6 +48,8 @@
 #include <errno.h>
 #include <sched.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -74,6 +76,7 @@ main(int ac, char **av)
 	struct passwd *nobody;
 	pid_t pid;
 	struct sched_param *param;
+	int status;
 	
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -121,7 +124,12 @@ main(int ac, char **av)
 			}
 		} else {		/* parent */
 			/* let the child carry on */
-			exit(0);
+			wait(&status);
+			if (WIFEXITED(status) != 0) {  /* Exit with errors */
+				exit(WEXITSTATUS(status));
+			} else {
+				exit(0);
+			}
 		}
 
 		if (seteuid(0) == -1) {
@@ -129,7 +137,6 @@ main(int ac, char **av)
 		}
 	}	
 	cleanup();
-
 	/*NOTREACHED*/
 }
 
@@ -166,4 +173,5 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
+
 }
