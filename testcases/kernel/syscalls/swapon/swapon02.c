@@ -271,6 +271,7 @@ setup03()
 		 int pid;		    		 /* used for fork */
 		 int *status=NULL;		 /* used for fork */
 		 int res = 0;
+		 int nSwapNO;
 		 char cmd_buffer[100];		 /* array to hold command line*/
 		 char filename[15];		 /* array to store new filename*/
 		 char decimal[3];		 /* array for digits at end of filename*/
@@ -301,7 +302,7 @@ setup03()
 			for (i=res; i<7; i++) {
 				temp[i]=0;
 			}
-			int nSwapNO = atoi(temp);
+			nSwapNO = atoi(temp);
 			sprintf(temp,"%7d",nSwapNO);
 		 }
 		// Adde end
