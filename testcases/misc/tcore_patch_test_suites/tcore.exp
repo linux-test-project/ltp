@@ -1,0 +1,149 @@
+#!/usr/bin/expect --
+
+#    Copyright (c) Guo Min <min.guo@intel.com>., 2002
+#
+#    This program is free software;  you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#    the GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program;  if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+set curr_thread 0 
+set pass 0
+proc check_buf {buf key} {
+    set num 0
+    for {} 1 {} {
+	set split_buf [split $buf ""]
+	set i [string first "\n" $buf]
+	if $i==-1 break;
+   	set line [join [lrange $split_buf 0 $i] ""]
+  	set buf [join [lrange $split_buf [expr 1+$i] end] ""]
+	set i [lsearch $line $key]
+	if -1!=$i {
+		incr num
+	}
+    }
+	return $num
+}
+proc check_threads {} {
+    global curr_thread
+    global pass
+    set istrue 0 
+    send "info threads\n"
+    expect {
+       	-re " \[0-9\]+ process .*(gdb)" {
+	set buf $expect_out(0,string)
+    	}
+	timeout {
+		fail "timeout while  run info threads"
+		return 1
+	}
+    }
+    set curr_thread [check_buf $buf "process"]
+    if { $curr_thread == 0 } {
+	send_user "check_threads (no current thread)\n"
+	return 1
+    }
+    if { $curr_thread >= 1 } {
+	set pass [expr $pass + 1]
+	send_user "the core dump includes multi thread information\n"
+	return 0
+    }
+}
+
+proc check_bt {} {
+	global curr_thread
+	global pass
+	set test 0
+        set counter 1
+        while { $counter <= $curr_thread }  {
+                send "\n"
+                send "thread $counter\n"
+                expect {
+                        -re "Switching to thread $counter .*\n" {
+                                set buf $expect_out(0,string)
+                        }
+                        timeout {
+                                 send_user "timeout ";
+                                 return 1
+                        }
+                }
+                set number1 [check_buf $buf "(process"]
+                send "bt\n"
+                expect {
+                        -re  " bt.*#\[0-9\]+ .*(gdb)" {
+                                set buf $expect_out(0,string)
+		             }
+                }
+                set number [check_buf $buf "in"]
+                if {  $number < 1  } {
+			set test 1
+	        } 
+                set counter [expr $counter + 1]
+        }
+	if { 0 == $test } {
+		set pass [expr $pass + 1]
+		send_user "check bt in coredump successfully"
+		return 0
+	} else {
+		send_user  "check bt in coredump incorrectly"
+		return 1
+	}
+        return 0
+}
+
+proc check_fpu {num} {
+	global expect_out
+	global pass
+	send "\n"
+	send "info register\n"
+	send "\n"
+	expect { 
+		-re "xmm$num\[\t \]+\{f \= .*\}+\[\t \]+\{f \= .*\}" {
+			set buf $expect_out(0,string)
+		}
+		timeout {
+	            fail "fail to check the xmm value(timeout)"
+        	    return 1
+        	}
+	}
+	send "quit\n"
+	set buf_tmp [split $buf "\{"]
+	set buf1 [lindex $buf_tmp 4]
+	set buf2 [split $buf1 ","]
+	set number [lindex $buf2 1]
+	if { 0 != $number } {
+		set pass [expr $pass + 1]
+		send_user "success while check whether core dump includes fpu information"	
+		return 0
+	} else {
+		send_user "fail while check whether core dump includes fpu information"
+		return 1
+	}
+}
+set GDB gdb
+set binfile ./tcore
+set corefile  ./corefile
+
+spawn $GDB ${binfile} ${corefile}
+check_fpu 5
+send "quit\n"
+
+spawn $GDB ${binfile} ${corefile}
+check_threads
+send "quit\n"
+
+
+spawn $GDB ${binfile} ${corefile}
+check_bt
+send "quit\n"
+exit $pass
+
