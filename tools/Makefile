@@ -1,4 +1,4 @@
-SUBDIRS = apicmds genload netpipe-2.4
+SUBDIRS = apicmds genload netpipe-2.4 netpipe-2.4-ipv6
 
 CFLAGS+= -Wall -I../include
 LOADLIBES+= -L../lib -lltp

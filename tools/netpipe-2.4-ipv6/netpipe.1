@@ -1,0 +1,404 @@
+.\" -*- nroff -*-
+.\"
+.\" NetPIPE -- Network Protocol Independent Performance Evaluator.
+.\" Copyright 1997, 1998 Iowa State University Research Foundation, Inc.
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation.  You should have received a copy of the
+.\" GNU General Public License along with this program; if not, write to the
+.\" Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" netpipe.1
+.\" Created: Mon Jun 15 1998 by Guy Helmer
+.\"
+.\" $Id: netpipe.1,v 1.1 2003/03/28 18:14:44 robbiew Exp $
+.\"
+.TH netpipe 1 "June 15, 1998" "NetPIPE" "netpipe"
+
+.SH NAME
+NetPIPE \- network protocol independent performance evaluator
+
+.SH SYNOPSIS
+.B NPtcp
+[\c
+.BI \-A \ buffer_alignment\fR\c
+]
+[\c
+.BR \-a \c
+]
+[\c
+.BI \-b \ TCP_buffer_size\fR\c
+]
+[\c
+.BI \-h \ host_name\fR\c
+]
+[\c
+.BI \-H \ server_name\fR\c
+]
+[\c
+.BI \-i \ increment\fR\c
+]
+[\c
+.BI \-l \ starting_msg_size\fR\c
+]
+[\c
+.BI \-O \ buffer_offset\fR\c
+]
+[\c
+.BI \-o \ output_filename\fR\c
+]
+[\c
+.BR \-P \c
+]
+[\c
+.BI \-p \ port\fR\c
+]
+[\c
+.BR \-r \c
+]
+[\c
+.BR \-s \c
+]
+[\c
+.BR \-t \c
+]
+[\c
+.BI \-u \ ending_msg_size\fR\c
+]
+
+.PP
+
+.B NPmpi
+[\c
+.BI \-A \ buffer_alignment\fR\c
+]
+[\c
+.BR \-a \c
+]
+[\c
+.BI \-i \ increment\fR\c
+]
+[\c
+.BI \-l \ starting_msg_size\fR\c
+]
+[\c
+.BI \-O \ buffer_offset\fR\c
+]
+[\c
+.BI \-o \ output_filename\fR\c
+]
+[\c
+.BR \-P \c
+]
+[\c
+.BR \-s \c
+]
+[\c
+.BI \-u \ ending_msg_size\fR\c
+]
+
+.PP
+
+.B NPpvm
+[\c
+.BI \-A \ buffer_alignment\fR\c
+]
+[\c
+.BR \-a \c
+]
+[\c
+.BI \-i \ increment\fR\c
+]
+[\c
+.BI \-l \ starting_msg_size\fR\c
+]
+[\c
+.BI \-O \ buffer_offset\fR\c
+]
+[\c
+.BI \-o \ output_filename\fR\c
+]
+[\c
+.BR \-P \c
+]
+[\c
+.BR \-r \c
+]
+[\c
+.BR \-s \c
+]
+[\c
+.BR \-t \c
+]
+[\c
+.BI \-u \ ending_msg_size\fR\c
+]
+
+.SH DESCRIPTION
+.PP
+.B NetPIPE
+is a protocol independent performance tool that encapsulates
+the best of ttcp and netperf and visually represents the network
+performance under a variety of conditions. By taking the end-to-end
+application view of a network,
+.B NetPIPE
+clearly shows the overhead
+associated with different protocol layers.
+.B NetPIPE
+answers such questions as:
+.RS
+How soon will a given data block of size k arrive at its destination?
+.PP
+Which network and protocol will transmit size k blocks the fastest?
+.PP
+What is a given network's effective maximum throughput and saturation
+level?
+.PP
+Does there exist a block size k for which the throughput is maximized?
+.PP
+How much communication overhead is due to the network communication
+protocol layer(s)?
+.PP
+How quickly will a small (< 1 kbyte) control message arrive, and which
+network and protocol are best for this purpose?
+.RE
+.PP
+.B NetPIPE
+is provided with interfaces for TCP, MPI, and PVM, but TCP is the most
+commonly used interface for general network testing purposes.  It
+should be easy to write new interfaces for other reliable protocols based
+on the examples provided by the TCP, MPI and PVM interfaces.
+.SH TESTING TCP
+.PP
+Typical use for TCP involves running the TCP NetPIPE receiver on one
+system with the command
+.PP
+.Ex
+NPtcp \-r
+.Ee
+.PP
+.PP
+.Ex
+NPtcp \-r -H <specified interface address/hostname>
+.Ee
+.PP
+and running the TCP NetPIPE transmitter on another system with the
+command
+.PP
+.Ex
+NPtcp \-h receiver_hostname \-o output_filename \-P \-t
+.Ee
+.PP
+If any options are used that modify the test protocol, including \-i,
+\-l, \-p, \-s, and \-u, those parameters
+.B must
+be used on both the transmitter and the receiver, or the test
+will not run properly.
+.SH TESTING PVM
+.PP
+Typical use for PVM first requires starting PVM with the command
+.PP
+.Ex
+pvm
+.Ee
+.PP
+and adding a second machine with the PVM command
+.PP
+.Ex
+add othermachine
+.Ee
+.PP
+(then exit the PVM command line interface).  Then run the PVM NetPIPE
+receiver on one system with the command
+.PP
+.Ex
+NPpvm \-r
+.Ee
+.PP
+and run the TCP NetPIPE transmitter on the other system with the
+command
+.PP
+.Ex
+NPpvm \-t \-o output_filename \-P
+.Ee
+.PP
+If any options are used that modify the test protocol, including \-i,
+\-l, \-p, \-s, and \-u, those parameters
+.B must
+be used on both the transmitter and the receiver, or the test
+will not run properly.
+.SH TESTING MPI
+.PP
+Use of the MPI interface for NetPIPE depends on the MPI implementation
+used.  For the Argonne MPICH implementation using the p4 device (for a
+cluster of individual systems interconnected using TCP/IP), create a
+file that contains the hostnames of the two systems you want to
+include in the test, with one hostname on each line of the file
+(assume the file is named "machines.p4").  Then, use the command
+.PP
+.Ex
+mpirun \-machinefile machines.p4 \-np 2 NPmpi \-o output_filename \-P
+.Ee
+.PP
+to start the test.  MPICH will start an NPmpi process on each of the
+two selected machines and the test will begin.
+.SH TESTING METHODOLOGY
+.PP
+.B NetPIPE
+tests network performance by sending a number of messages at each
+block size, starting from the lower bound on message size.
+.B NetPIPE
+increments the message size until the upper bound on message size is
+reached or the time to transmit a block exceeds one second, which ever
+occurs first.
+.PP
+.B NetPIPE\c
+\'s output file may be graphed with a program such as
+.B gnuplot(1)
+to view the results of the test.
+.B NetPIPE\c
+\'s
+output file contains five columns: time to transfer the block, bits
+per second, bits in block, bytes in block, and variance.  These
+columns may be graphed to represent and compare the network's
+performance.  For example, the
+.B network signature graph
+can be created by graphing time versus bits per second.  Sample
+.B gnuplot(1)
+commands for such a graph would be
+.PP
+.Ex
+set logscale x
+.Ee
+.PP
+.Ex
+plot "NetPIPE.out" using 1:2
+.Ee
+.PP
+The more traditional
+.B throughput versus block size
+graph can be created by graphing bytes versus bits per second.
+Sample
+.B gnuplot(1)
+commands for such a graph would be
+.PP
+.Ex
+set logscale x
+.Ee
+.PP
+.Ex
+plot "NetPIPE.out" using 4:2
+.Ee
+
+.ne 5
+.SH OPTIONS
+.TP
+.B \-A \ \fIalignment\fR
+Align buffers to the given boundary.  For example, a value of 4 would
+align buffers to 4-byte (word) boundaries.
+.ne 3
+.TP
+.B \-a
+Specify asynchronous receive (a.k.a. preposted receive), if the
+underlying protocol supports it.
+.ne 3
+.TP
+.BI \-b \ \fIbuffer_size\fR
+[TCP only] Set send and receive TCP buffer sizes.
+.ne 3
+.TP
+.BI \-h \ \fIhostname\fR
+[TCP transmitter only] Specify name of host to which to connect.
+.ne 3
+.TP
+.BI \-i \ \fIincrement\fR
+Specify increment step size (default is an exponentially increasing
+increment).
+.ne 3
+.TP
+.BI \-l \ \fIstart_msg_size\fR
+Specify the starting message size.  The test will start with messages
+of this size and increment, either exponentially or with an increment
+specified by the
+.B \-i
+flag, until a block requires more than one second to transmit or the
+ending message size specified by the
+.B \-u
+flag is reached, which ever occurs first.
+.ne 3
+.TP
+.BI \-O \ \fIbuffer_offset\fR
+Specify offset of buffers from alignment.  For example, specifying an
+alignment of 4 (with \-A) and an offset of 1 would align buffers to
+the first byte after a word boundary.
+.ne 3
+.TP
+.BI \-o \ \fIoutput_filename\fR
+Specify output filename.  By default, the output filename is
+.IR NetPIPE.out .
+.ne 3
+.TP
+.B \-P
+Print results on screen during execution of the test.  By default,
+NetPIPE is silent during execution of the test.
+.ne 3
+.TP
+.BI \-p \ \fIport_number\fR
+[TCP only] Specify TCP port number to which to connect (for the
+transmitter) or the port on which to listen for connections (for the
+receiver).
+.ne 3
+.TP
+.B \-r
+[TCP only] This process is a TCP receiver.
+.ne 3
+.TP
+.B \-s
+Set streaming mode: data is only transmitted in one direction.  By
+default, the transmitter measures the time taken as each data block is
+sent from the transmitter to the receiver and back, then divides the
+round-trip time by two to obtain the time taken by the message to
+travel in each direction.  In streaming mode, the receiver measures
+the time required to receive the message and sends the measured time
+back to the transmitter for posting to the output file.
+.ne 3
+.TP
+.B \-t
+[TCP only] This process is a TCP transmitter.
+.ne 3
+.TP
+.BI \-u \ \fIending_msg_size\fR
+Specify the ending message size.  By default, the test will end when
+the time to transmit a block exceeds one second.  If
+.B \-u
+is specified, the test will end when either the test time exceeds one
+second or the ending message size is reached, which ever occurs first.
+
+.ne 3
+.SH FILES
+.TP
+.I NetPIPE.out
+Default output file for
+.BR NetPIPE .
+Overridden by the
+.B \-o
+option.
+
+.SH AUTHOR
+.PP
+Quinn Snell <snell@cs.byu.edu>, Guy Helmer <ghelmer@scl.ameslab.gov>,
+and others.
+.PP
+Clark Dorman <dorman@s3i.com> contributed the PVM interface.
+.PP
+Information about
+.B NetPIPE
+can be found on the World Wide Web at
+http://www.scl.ameslab.gov/netpipe/.
+
+.SH BUGS
+By nature,
+.B NetPIPE
+will use as much of the network bandwidth as possible.  Other users of
+the network may notice the effect.

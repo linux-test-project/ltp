@@ -1,0 +1,263 @@
+NetPIPE Network Protocol Independent Performance Evaluator, Release 2.4
+Copyright 1997, 1998, 1999 Iowa State University Research Foundation, Inc.
+
+$Id: README,v 1.1 2003/03/28 18:14:44 robbiew Exp $
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation.  You should have received a copy of the
+GNU General Public License along with this program; if not, write to the
+Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+The URL for this document:
+
+ftp://ftp.scl.ameslab.gov/pub/netpipe/README
+
+Getting NetPIPE
+---------------
+
+The NetPIPE implementation in C can be found at:
+
+ftp://ftp.scl.ameslab.gov/pub/netpipe/netpipe-2.4.tar.gz
+
+The source code for NetPIPE 2.4 is provided as a gzipped tar archive,
+which can be uncompressed with "gunzip netpipe-2.4.tar.gz" (or "gzip
+-d netpipe-2.4.tar.gz"), and then extracted from the uncompressed
+archive with the command "tar xvf netpipe-2.4.tar".  If you do not
+have the gzip program, it can be obtained as:
+
+ftp://prep.ai.mit.edu/pub/gnu/gzip-1.2.4.tar
+
+Similarly, the NetPIPE implementation in Java can be found at:
+
+ftp://ftp.scl.ameslab.gov/pub/netpipe-Java-1.0.tar.gz
+
+The instructions that follow apply to the C implementation of
+NetPIPE.
+
+What is NetPIPE?
+----------------
+
+NetPIPE is a protocol independent performance tool that encapsulates
+the best of ttcp and netperf and visually represents the network
+performance under a variety of conditions. By taking the end-to-end
+application view of a network, NetPIPE clearly shows the overhead
+associated with different protocol layers. Netpipe answers such
+questions as: how soon will a given data block of size k arrive at its
+destination? Which network and protocol will transmit size k blocks
+the fastest? What is a given network's effective maximum throughput
+and saturation level?  Does there exist a block size k for which the
+throughput is maximized? How much communication overhead is due to the
+network communication protocol layer(s)? How quickly will a small (< 1
+kbyte) control message arrive, and which network and protocol are best
+for this purpose?
+
+For a paper fully describing NetPIPE and sample investigation of
+network performance issues using NetPIPE, see
+http://www.scl.ameslab.gov/netpipe/paper/full.html.
+
+Building NetPIPE
+----------------
+
+NetPIPE is provided with protocol-specific shims for TCP (using the
+Berkeley sockets interface), MPI, and PVM.  If you do not have MPI or
+PVM, don't worry; TCP is the typical shim used.  It should be easy to
+write new interfaces for other protocols based on the examples shown
+by the TCP, MPI and PVM interfaces.
+
+NetPIPE requires an ANSI C compiler.
+
+Review the provided Makefile and change any necessary settings, such
+as the CFLAGS compiler flags, required extra libraries, and MPI or PVM
+library & include file pathnames if you have these communication
+libraries.  If you want to turn on getrusage calls to get CPU time
+required for communication, add "-DHAVE_GETRUSAGE" to the CFLAGS line
+in the Makefile.
+
+Compile NetPIPE with the desired communication interface by using the
+command "make TCP", "make MPI", or "make PVM" as appropriate,
+corresponding to the executable files NPtcp, NPmpi, or NPpvm
+respectively.
+
+Consult the appropriate section below for details on running NetPIPE
+over TCP, MPI, or PVM, and the following section on interpreting the
+results.
+
+Running NPtcp
+-------------
+
+For TCP, run a NetPIPE receiver on one computer by issuing the command
+"NPtcp -r".  Run a NetPIPE sender on another computer by issuing the
+command "NPtcp -t -h <receiver's address> -o <output file> -P" and any
+other options as appropriate (each option affects only the process on
+which it is specified -- options are not negotiated between the
+transmitter and the receiver):
+
+	-A: specify buffers alignment e.g. "-A 4096"
+
+	-a: asynchronous receive (a.k.a. preposted receive)
+		This option currently has no effect on TCP
+
+	-b: specify send and receive TCP buffer sizes e.g. "-b 32768"
+
+	-h: specify hostname of receiver e.g. "-h mumblehost"
+
+	-i: specify increment step size e.g. "-i 64"
+		Default is exponential increment calculated at runtime
+
+	-l: lower bound (start value for block size) e.g. "-l 1"
+
+	-O: specify buffer offset e.g. "-O 127"
+
+	-o: specify output filename e.g. "-o output.txt"
+
+	-P: print real-time results on stdout
+
+	-p: specify port e.g. "-p 5150"
+
+	-s: stream option (default mode is "ping pong")
+		If this option is used, it must be specified on both
+		the sending and receiving processes
+
+	-u: upper bound (stop value for block size) e.g. "-u 1048576"
+
+Running NPmpi
+-------------
+
+For MPI, how you run NPmpi may depend on the MPI implementation you
+are using.  Assuming you are using the "p4" device (for a cluster of
+individual systems interconnected using TCP/IP) in the Argonne MPICH
+implementation, you could run NPmpi one of two ways.
+
+	If your system's default machine file begins with the two
+	names of the systems you want to test, use "mpirun -np 2
+	NPmpi", followed by any of the NetPIPE options listed below.
+
+	Otherwise, create a file that contains the host names of the
+	two systems you want to include in the test, one host name on
+	each line (assume the file is named "machines.p4").  Then, use
+	the command "mpirun -machinefile machines.p4 -np 2 NPmpi",
+	followed by any of the NetPIPE options listed below.
+
+To find out how to run NPmpi using any other implementation of MPI,
+please consult the implementation's documentation.
+
+The NetPIPE options for MPI are:
+
+	-A: specify buffers alignment e.g. "-A 4096"
+
+	-a: asynchronous receive (a.k.a. preposted receive)
+		May not have any effect, depending on your MPI
+		implementation
+
+	-i: specify increment step size e.g. "-i 64"
+		Default is exponential increment calculated at runtime
+
+	-l: lower bound (start value for block size) e.g. "-l 1"
+
+	-O: specify buffer offset e.g. "-O 127"
+
+	-o: specify output filename e.g. "-o output.txt"
+
+	-P: print real-time results on stdout
+
+	-s: stream option (default mode is "ping pong")
+		If this option is used, it must be specified on both
+		the sending and receiving processes
+
+	-u: upper bound (stop value for block size) e.g. "-u 1048576"
+
+Running NPpvm
+-------------
+
+First, start PVM with the command "pvm" on one machine and a second
+machine with the PVM command "add <othermachine>", where
+<othermachine> is the name of the other computer to include in the
+test.  Exit the PVM command line interface.  Start the receiver
+process on one of the machines with the command "NPpvm -r".  Finally,
+start the transmitter process on the other machine with the command
+"NPpvm -t -o <output file> -P" and any other options as appropriate
+(each option affects only the process on which it is specified --
+options are not negotiated between the transmitter and the receiver):
+
+	-A: specify buffers alignment e.g. "-A 4096"
+
+	-a: asynchronous receive (a.k.a. preposted receive)
+		This option has no effect on PVM
+
+	-i: specify increment step size e.g. "-i 64"
+		Default is exponential increment calculated at runtime
+
+	-l: lower bound (start value for block size) e.g. "-l 1"
+
+	-O: specify buffer offset e.g. "-O 127"
+
+	-o: specify output filename e.g. "-o output.txt"
+
+	-P: print real-time results on stdout
+
+	-s: stream option (default mode is "ping pong")
+		If this option is used, it must be specified on both
+		the sending and receiving processes
+
+	-u: upper bound (stop value for block size) e.g. "-u 1048576"
+
+
+Interpreting the Results
+------------------------
+
+NetPIPE's output file contains five columns: time to transfer the block,
+bits per second, bits in block, bytes in block, and variance.  These
+columns may be graphed to represent and compare the network's
+performance.  For example, the "network signature" graph can be
+created by graphing the time column versus the bits per second column
+(see the NetPIPE report at the URL above for the details why this
+graph is important and how to interpret it).  The more traditional
+"throughput versus block size" graph can be created by
+graphing the bytes column versus the bits per second column.
+
+See http://www.scl.ameslab.gov/Projects/ClusterCookbook/nprun.html for
+a detailed tutorial on running NetPIPE and graphing the results.
+
+Help
+----
+
+NetPIPE is currently maintained by Guy Helmer.  Email
+"ghelmer@scl.ameslab.gov" or call 515-294-9469 for help or
+suggestions.
+
+Changes
+-------
+
+version 2.4 (12/16/99)
+   * Add getrusage calls to get CPU time used by communication if
+     HAVE_GETRUSAGE is defined (be aware that no studies have been
+     conducted to test the accuracy of results across different systems)
+   * Use "unsigned int" instead of "unsigned long" to communicate 32-bit
+     integers in TCP.c (this solves interoperability problems between
+     Compaq/DEC Alphas and most other systems)
+   * Add dummy "echo" commands after TCP, MPI, and PVM targets in the
+     Makefile.  Some implementations of make(1) (such as those found
+     in Linux distributions) interpret the targets with no following
+     statements as a rule to do something silly like
+     "cc -O -o TCP TCP.c" after the dependency is satisfied.
+
+version 2.3 (9/24/98)
+   * Add PVM interface contributed by Clark E. Dorman <dorman@s3i.com>
+
+   * Revamp README file with instructions for NPmpi and NPpvm, and
+     clarify some instructions for NPtcp
+
+version 2.2 (8/21/98):
+   * Carefully check all return values from write(2) and read(2)
+     system calls in TCP.c.  Handle short reads properly.  Make the Sync()
+     function transmit and receive a useful string which can be
+     checked for validity.
+
+   * Correct the overloading of SendTime() and RecvTime() functions
+     by breaking out SendRepeat() and RecvRepeat() as separate
+     functions.
+
+   * Handle systems whose accept(2) system call does not carry socket
+     options over from the listening socket.  In particular, set the
+     TCP_NODELAY flag and socket buffers on an accepted socket.
