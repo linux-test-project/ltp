@@ -39,7 +39,7 @@ SUBDIR= \
 	getpgid getpgrp getpid getppid getpriority getresgid getresuid \
 	getrusage getsid getsockname getsockopt gettimeofday getuid \
 	ioctl ipc ioperm iopl kill lchown link \
-	listen llseek lseek lstat memcmp memcpy memset\
+	listen llseek lseek lstat mallopt memcmp memcpy memset\
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
 	mremap msync munlock munlockall munmap nanosleep nftw nice open \
 	pathconf pause personality pipe poll prctl\
