@@ -126,7 +126,7 @@ main(int argc, char **argv)
 		} while (ok == 0);
 	}
 
-	if (((int)signal(SIGTERM, term)) == -1) {
+	if ((signal(SIGTERM, term)) == SIG_ERR) {
                 tst_resm(TFAIL, "\tsignal failed. errno = %d\n", errno);
 		tst_exit();
 	}
@@ -306,7 +306,7 @@ term(int sig)
 {
 	int i;
 
-	if (((int)signal(SIGTERM, term)) == -1) {
+	if ((signal(SIGTERM, term)) == SIG_ERR) {
 		tst_resm(TFAIL, "\tsignal failed. errno %d\n", errno);
 		exit(1);
 	}

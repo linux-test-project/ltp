@@ -112,7 +112,7 @@ int main (argc, argv)
 
 	setup();		/* temp file is now open	*/
 	/*
-	if (((int)sigset(SIGALRM, alrm)) == -1) {
+	if ((sigset(SIGALRM, alrm)) == SIG_ERR) {
 		fprintf(temp,"signal failed. errno = %d\n",errno);
 		fail_exit();
 	}*/
@@ -186,7 +186,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	if (((int)sigset(SIGCLD, SIG_IGN)) == -1) {
+	if ((sigset(SIGCLD, SIG_IGN)) == SIG_ERR) {
 		fprintf(temp,"signal failed. errno = %d\n",errno);
 		fail_exit();
 	}

@@ -39,8 +39,8 @@
 #include <sys/types.h>		/* needed for test		*/
 #include <sys/ipc.h>		/* needed for test		*/
 #include <sys/msg.h>		/* needed for test		*/
-#include <sys/signal.h>		/* needed for test		*/
-#include <sys/wait.h>		/* needed for test		*/
+#include <signal.h>		/* needed for test		*/
+#include <wait.h>		/* needed for test		*/
 #include <stdio.h>		/* needed by testhead.h		*/
 #include "test.h"
 #include "usctest.h"
@@ -115,7 +115,7 @@ char *argv[];
 		exit(0);
 	}
 	else {
-		if (((int)signal(SIGALRM, (sighandler_t)alrm)) == -1) {
+		if ((signal(SIGALRM, (sighandler_t)alrm)) == SIG_ERR) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
         	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);
@@ -192,7 +192,7 @@ char *argv[];
 		exit(0);
 	}
 	else {
-		if (((int)signal(SIGALRM, (sighandler_t)alrm)) == -1) {
+		if ((signal(SIGALRM, (sighandler_t)alrm)) == SIG_ERR) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
         	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);
