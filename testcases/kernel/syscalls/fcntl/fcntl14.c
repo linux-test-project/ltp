@@ -725,6 +725,9 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 {
 	extern long time();
 
+        /* reset fail to 0 for each run_test call */
+         fail = 0;
+
 	/* loop thru all test cases */
 	for (test = start; test < end; test++) {
 		/* open a temp file to lock */
@@ -788,6 +791,9 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		 * Mask SIG_USR1 before forking child, to avoid race
 		 */
 		(void)sighold(SIGUSR1);
+
+		/* flush the stdout to avoid garbled output */
+		fflush(stdout);
 
 		/* spawn a child process */
 		if ((child = fork()) == 0) {
