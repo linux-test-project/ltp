@@ -266,7 +266,7 @@ static void *handle_signals (void *arg)
 	int	retvalsig = 0;
 
 	if (debug) {
-		printf ("signal handler %ld started\n", pthread_self());
+		printf ("signal handler %lu started\n", pthread_self());
 	}
 	/*
          * Set up the signals that we want to handle...
