@@ -34,6 +34,9 @@
 /*                               Default is to map a file.		      */
 /*									      */
 /*		Aug  - 01 - 2001 Modified - added option 'a' to getop list.   */
+/*									      */
+/*		Oct  - 25 - 2001 Modified - changed scheme. Test will be run  */
+/*				 once unless -x option is used.               */
 /* File:	mmap2.c							      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -238,7 +241,8 @@ main(int argc,		    /* number of input parameters.		      */
     int  sig_ndx;	    /* index into signal handler structure.	      */
     int  map_flags =        /* type of mapping, defaut is MAP_SHARED .	      */
 		     MAP_SHARED;
-    int  map_anon =  FALSE;
+    int  map_anon =  FALSE; /* do not map anonymous memory,map file by default*/
+    int  run_once = TRUE;   /* run the test once. (dont repeat)               */
     char *memptr;	    /* address of the mapped file.	              */
     char *filename;	    /* name of the temp file created.		      */
     extern  char *optarg;   /* arguments passed to each option                */
@@ -284,6 +288,7 @@ main(int argc,		    /* number of input parameters.		      */
 		if ((exec_time = atoi(optarg)) == (int)NULL)
 		    fprintf(stderr, "Using default exec time %d hrs", 
 		          exec_time = 24);
+                run_once = FALSE;
 		break;
 	    default :
 		usage(argv[0]);
@@ -316,7 +321,7 @@ main(int argc,		    /* number of input parameters.		      */
         }
     }
 
-    for(;;)
+    do
     {
         if (!map_anon)
         {
@@ -365,7 +370,7 @@ main(int argc,		    /* number of input parameters.		      */
 
 	close(fd);
         sync();
-    }   
+    }while (TRUE && !run_once);
     exit (0);
 }
 
