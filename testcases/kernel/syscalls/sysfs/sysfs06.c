@@ -78,7 +78,11 @@
 static void setup();
 static void cleanup();
 
+#if defined(__ia64__)
+#define sysfs(arg1, arg2, arg3) syscall(__NR_sysfs, arg1, arg2, arg3)
+#else
 _syscall3(long, sysfs, int, option, unsigned int, fs_index, char, bad_addr);
+#endif
 
 char *TCID = "sysfs06"; 	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */

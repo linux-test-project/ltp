@@ -82,7 +82,11 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = {EINVAL, 0};
 
+#if defined(__ia64__)
+#define sysfs(arg1) syscall(__NR_sysfs, arg1)
+#else
 _syscall1(long, sysfs, int, option);
+#endif
 
 int
 main(int ac, char **av)
