@@ -1,0 +1,309 @@
+#!/bin/sh
+
+kernel()
+{
+
+  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  read LOOPS
+  if [ $LOOPS -eq ""]; then
+    LOOPS=1
+  fi 
+  echo""
+  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
+  read kernel_log
+  case $kernel_log in
+    y|Y)
+  	echo "   The logfile will be /tmp/kernel_tests.log"
+        LOGFILE="-l /tmp/kernel_tests.log"
+	;;
+    *)
+	LOGFILE=" "
+	;;
+  esac
+  echo""
+  echo -n "Do you want output to go to a file instead of the screen (Y/N)? Default is no. >> "
+  read kernel_out
+  case $kernel_out in
+    y|Y)
+  	echo "   The output file will be /tmp/kernel_tests.output"
+        OUTFILE="-o /tmp/kernel_tests.output"
+	;;
+    *)
+	OUTFILE=" "
+	;;
+  esac
+  echo""
+  echo -n "How many simultaneous runs do you want? Default is 1. >> "
+  read COPIES
+  if [ $COPIES -eq ""]; then
+    COPIES=1
+  fi 
+
+  cd `dirname $0`
+  export LTPROOT=${PWD}
+  export TMP="/tmp/kerneltests-$$"
+
+  mkdir $TMP
+  cd $TMP
+
+  export PATH="${PATH}:${LTPROOT}/testcases/bin"
+
+  cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched > ${TMP}/alltests
+
+  TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
+  LOOPS=$(( $LOOPS * $TESTS ))
+
+  ${LTPROOT}/ver_linux
+
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE $OUTFILE
+
+  if [ $? -eq "0" ]; then
+    echo pan reported PASS
+  else
+    echo pan reported FAIL
+  fi
+
+  rm -rf $TMP
+}
+
+networking()
+{
+  RHOST=loopback
+  echo ""
+  echo -n " Please specify hostname of server machine. Default is loopback. >> "
+  read RHOST
+  echo "Server machine is $RHOST."
+  echo ""
+  export RHOST
+  sleep 1
+  
+  PASSWD=""
+  echo -n "Please specify root's password on $RHOST. >> "
+  read PASSWD
+  echo "$RHOST has \"$PASSWD\" as its root password."
+  echo""
+  export PASSWD
+  sleep 1
+
+  echo "Performing pre-test server check on $RHOST."
+  sleep 1
+  echo "" 
+  echo "Please verify that the following inetd/xinetd services are turned on for $RHOST:"
+  echo ""
+  echo "  echo (stream)"
+  echo "  fingerd"
+  echo "  ftpd"
+  echo "  telnetd"
+  echo "  rshd"
+  echo "  rlogind"
+  echo ""
+  echo -n "Press [ENTER] to continue>>"
+  read enter
+
+  HOSTNAME=`hostname`
+  echo ""
+  echo "Make sure that $RHOST's /root/.rhosts file has $HOSTNAME listed in it. "
+  echo -n "[ENTER] to continue>>"
+  read enter
+
+  ping -c1 $RHOST > /dev/null 2>&1
+  if [ $? -ne "0" ]; then
+   echo ""
+   echo " ERROR:"
+   echo " Could not reach $RHOST. Network tests aborting"
+   echo ""
+   main
+  fi
+ 
+  echo -n "RHOST is: " 
+  rsh -n $RHOST "uname -a"
+  sleep 1
+
+  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  read LOOPS
+  if [ $LOOPS -eq ""]; then
+    LOOPS=1
+  fi 
+  echo""
+  echo -n "Do you want to keep a logfile (Y/N)? >> "
+  read network_log
+  case $network_log in
+    y|Y)
+  	echo "   The logfile will be /tmp/network_tests.log"
+        LOGFILE="-l /tmp/network_tests.log"
+	;;
+    *)
+	LOGFILE=" "
+	;;
+  esac
+  echo""
+  echo -n "Do you want output to go to a file instead of the screen (Y/N)? >> "
+  read network_out
+  case $network_out in
+    y|Y)
+  	echo "   The output file will be /tmp/network_tests.output"
+        OUTFILE="-o /tmp/network_tests.output"
+	;;
+    *)
+	OUTFILE=" "
+	;;
+  esac
+  echo""
+
+  cd `dirname $0`
+  export LTPROOT=${PWD}
+  export TMP="/tmp/networktests-$$"
+
+  mkdir $TMP
+  cd $TMP
+
+  export PATH="${PATH}:${LTPROOT}/testcases/bin"
+
+  cat ${LTPROOT}/runtest/tcp_cmds ${LTPROOT}/runtest/multicast ${LTPROOT}/runtest/rpc ${LTPROOT}/runtest/nfs > ${TMP}/alltests
+ 
+  TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l `
+  LOOPS=$(( $TESTS * $LOOPS ))
+
+  ${LTPROOT}/ver_linux
+
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE $OUTFILE
+
+  if [ $? -eq "0" ]; then
+    echo pan reported PASS
+  else
+    echo pan reported FAIL
+  fi
+
+  rm -rf $TMP
+}
+
+diskio()
+{
+  echo -n "How many loops do you want to run? Default is 1. Use 0 for infinite. >> "
+  read LOOPS
+  if [ $LOOPS -eq ""]; then
+    LOOPS=1
+  fi 
+  echo""
+  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >>" 
+  read diskio_log
+  case $diskio_log in
+    y|Y)
+  	echo "   The logfile will be /tmp/diskio_tests.log"
+        LOGFILE="-l /tmp/diskio_tests.log"
+	;;
+    *)
+	LOGFILE=" "
+	;;
+  esac
+  echo""
+  echo -n "Do you want output to go to a file instead of the screen (Y/N)? Default is no. >> "
+  read diskio_out
+  case $diskio_out in
+    y|Y)
+  	echo "   The output file will be /tmp/diskio_tests.output"
+        OUTFILE="-o /tmp/diskio_tests.output"
+	;;
+    *)
+	OUTFILE=" "
+	;;
+  esac
+
+  cd `dirname $0`
+  export LTPROOT=${PWD}
+  export TMP="/tmp/diskiotests-$$"
+
+  mkdir $TMP
+  cd $TMP
+
+  export PATH="${PATH}:${LTPROOT}/testcases/bin"
+
+  cat ${LTPROOT}/runtest/io > ${TMP}/alltests
+
+  TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
+  LOOPS=$(( $LOOPS * $TESTS ))
+
+  ${LTPROOT}/ver_linux
+
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE $OUTFILE
+
+  if [ $? -eq "0" ]; then
+    echo pan reported PASS
+  else
+    echo pan reported FAIL
+  fi
+}
+
+
+menu_print()
+{
+  clear
+  echo "          *****************************************"
+  echo "          *                                       *"
+  echo "          *                                       *"
+  echo "          *   LL         TTTTTTTTTT   PPPPPPPP    *"
+  echo "          *   LL             TT       PP     PP   *"
+  echo "          *   LL             TT       PP     PP   *"
+  echo "          *   LL             TT       PP     PP   *"
+  echo "          *   LL             TT       PPPPPPPP    *"
+  echo "          *   LL             TT       PP          *"
+  echo "          *   LL             TT       PP          *"
+  echo "          *   LL             TT       PP          *"
+  echo "          *   LLLLLLLL       TT       PP          *"
+  echo "          *                                       *"
+  echo "          *                                       *"
+  echo "          *****************************************"
+  echo ""
+  echo "               The Linux Test Project Testsuite    "
+  echo ""
+  
+  echo "               (1)  Kernel system call tests"
+  echo "               (2)  Disk I/O tests"
+  echo "               (3)  Networking tests"
+  echo "               (4)  EXIT"
+  echo ""
+  echo -n "   Please select 1, 2, 3, or 4 >> "
+}
+
+cleanup()
+{
+  rm -rf /tmp/kerneltests-*
+  rm -rf /tmp/networktests-*
+  rm -rf /tmp/diskiotests-*
+  exit 0
+}
+
+
+main()
+{
+GO=true
+
+while [ $GO == "true" ]
+do
+  sleep 3
+  menu_print
+
+  read ans
+  case $ans in
+    1*)
+	kernel
+	;;
+    2*)
+	diskio
+	;;
+    3*)
+	networking
+	;;
+    4*)
+	GO=false
+        ;;
+    *) 
+        main
+	;;
+  esac
+done
+cleanup
+}
+
+
+main
