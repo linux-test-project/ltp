@@ -505,6 +505,7 @@ ptrace03 ptrace03
 pwrite01 pwrite01
 pwrite02 pwrite02
 pwrite03 pwrite03
+pwrite04 pwrite04
 
 query_module01 query_module01
 query_module02 query_module02
