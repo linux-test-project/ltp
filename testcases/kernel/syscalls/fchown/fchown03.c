@@ -91,6 +91,9 @@ int fildes;			/* File descriptor for test file */
 char *TCID="fchown03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -203,26 +206,19 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-super/root for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
 
-	/* Get the TESTHOME env */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, NULL, "Fail to get TESTHOME env. variable!");
-		tst_exit();
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "fchown"))) {
-		strcat(test_home, "/fchown");
-	}
+	test_home = get_current_dir_name();
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
