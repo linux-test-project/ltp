@@ -49,11 +49,9 @@ int main()
 	/* Create a new thread. */
 	if(pthread_create(&a, NULL, a_thread_function, NULL) != 0)
 	{
-		perror("Error creating thread");
+		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
-	
-//	sleep(1);
 	
 	pthread_cancel(a);
 	/* If 'main' has reached here, then the test passed because it means
@@ -67,7 +65,12 @@ int main()
 void *a_thread_function()
 {
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-	while(1);
+	
+	while(1)
+		sleep(1);
+
+	pthread_exit(0);
+	return NULL;
 }
 
 /* If this handler is called, that means that the test has failed. */

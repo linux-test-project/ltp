@@ -26,8 +26,8 @@
 ####################################################
 
 #Set variables NAME and TST_TOTAL
-NAME=pthread_create01
-export TST_TOTAL=10
+NAME=pthread_create02
+export TST_TOTAL=1
 
 check_return_code()
 {
