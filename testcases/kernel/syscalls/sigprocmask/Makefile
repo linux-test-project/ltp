@@ -29,7 +29,7 @@ TESTS=sigprocmask02 sigprocmask03
 all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TESTS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
