@@ -27,12 +27,35 @@
 #        is logged with message.                                 #
 ##################################################################
 
+cleanup()
+{
+if [ $status_flag -eq 0 ]
+then
+	tst_resm TPASS "pid is logged with message."
+else
+	tst_resm TFAIL "pid is not logged with message."
+fi
+
+#Restore syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
+exit $status_flag
+}
 syslog_case4()
 {
 	#set the trap to handle signals.
 	trap '
 			tst_resm TBROK "Testing is terminating due to a signal"
-			exit 1
+			status_flag=1
+			cleanup
 	' 1 2 3 6 11 15
 
 	tst_resm TINFO "syslog: Testing the log option: LOG_PID..."
@@ -41,7 +64,8 @@ syslog_case4()
 	if [ -z $(which syslogd) ]
 	then
 		tst_resm TBROK "syslogd no such command"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	# check if /etc/init/syslog script exists
@@ -49,7 +73,8 @@ syslog_case4()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 	
 	# Create the configuration file specific to this test case.
@@ -61,7 +86,8 @@ syslog_case4()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "failed to restart syslog deamon"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	# Run syslogtst in the background and get the process id.
@@ -80,7 +106,8 @@ syslog_case4()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/var/log/messages no such log file"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	found=`grep -c "\[$log_pid\]: syslogtst: user info test." /var/log/messages`
@@ -114,22 +141,4 @@ else
 fi
 
 syslog_case4
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "pid is logged with message."
-else
-	tst_resm TFAIL "pid is not logged with message."
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
+cleanup

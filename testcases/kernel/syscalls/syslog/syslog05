@@ -31,13 +31,36 @@
 #          the  file /usr/adm/ktlog/<this year>/<this month>/    #
 #          <to_day>                                              #
 ##################################################################
+cleanup()
+{
+if [ $status_flag -eq 0 ]
+then
+	tst_resm TPASS "wrote to console"
+else
+	tst_resm TFAIL "write to console failed"
+fi
+
+#Restore syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
+exit $status_flag
+}
 
 syslog_case5()
 {
 	#set the trap to handle signals.
 	trap '
 			tst_resm TBROK "Testing is terminating due to a signal"
-			exit 1
+			status_flag=1
+			cleanup
 	' 1 2 3 6 11 15
 
 	tst_resm TINFO "syslog: Testing the log option: LOG_CONS..."
@@ -49,7 +72,8 @@ syslog_case5()
 	if [ -z $(which syslogd) ]
 	then
 		tst_resm TBROK "syslogd no such command"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	# check if /etc/init/syslog script exists
@@ -57,7 +81,8 @@ syslog_case5()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	#Restart syslog
@@ -66,7 +91,8 @@ syslog_case5()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "failed to restart syslog deamon"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 
 	# check if /var/log/messages script exists
@@ -74,7 +100,8 @@ syslog_case5()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/var/log/messages no such log file"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 	oldvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
 	# syslogtst does the disabling of /dev/syslog, sends the message and
@@ -91,7 +118,8 @@ syslog_case5()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/var/log/messages no such log file"
-		exit 1
+			status_flag=1
+			cleanup
 	fi
 	newvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
 
@@ -128,22 +156,4 @@ else
 fi
 
 syslog_case5
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "wrote to console"
-else
-	tst_resm TFAIL "write to console failed"
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
+cleanup

@@ -28,13 +28,36 @@
 #         o Send syslog messages at all levels and see whether   #
 #           higher level messages are logged.                    #
 ##################################################################
+cleanup()
+{
+if [ $status_flag -eq 0 ]
+then
+	tst_resm TPASS "higher level messages are logged."
+else
+	tst_resm TFAIL "higher level messages are not logged."
+fi
+
+#Restore syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
+if [ $RC -ne 0 ]
+then
+	tst_resm TBROK "failed to restart syslog deamon"
+	exit 1
+fi
+exit $status_flag
+}
 
 syslog_case7()
 {
 	#set the trap to handle signals.
 	trap '
 		tst_resm TBROK "Testing is terminating due to a signal"
-		exit 1
+		status_flag=1
+		cleanup
 	' 1 2 3 6 11 15
 
 	echo
@@ -45,7 +68,8 @@ syslog_case7()
 	if [ -z $(which syslogd) ]
 	then
 		tst_resm TBROK "syslogd no such command"
-		exit 1
+		status_flag=1
+		cleanup
 	fi
 
 	# check if /etc/init/syslog script exists
@@ -53,7 +77,8 @@ syslog_case7()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
-		exit 1
+		status_flag=1
+		cleanup
 	fi
 
 
@@ -66,7 +91,8 @@ syslog_case7()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "failed to restart syslog deamon"
-		exit 1
+		status_flag=1
+		cleanup
 	fi
 
 	# Grep for the following patterns in the log file...
@@ -75,7 +101,8 @@ syslog_case7()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/var/log/maillog no such log file"
-		exit 1
+		status_flag=1
+		cleanup
 	fi
 	emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
 	alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
@@ -99,7 +126,8 @@ syslog_case7()
 	if [ $RC -ne 0 ]
 	then
 		tst_resm TBROK "/var/log/maillog no such log file"
-		exit 1
+		status_flag=1
+		cleanup
 	fi
 	emerg_new=`grep -c "syslogtst: emergency log" /var/log/messages`
 	alert_new=`grep -c "syslogtst: alert log" /var/log/messages`
@@ -151,23 +179,4 @@ fi
 
 
 syslog_case7
-
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "higher level messages are logged."
-else
-	tst_resm TFAIL "higher level messages are not logged."
-fi
-
-#Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
-#Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
-if [ $RC -ne 0 ]
-then
-	tst_resm TBROK "failed to restart syslog deamon"
-	exit 1
-fi
-exit $status_flag
+cleanup
