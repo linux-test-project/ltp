@@ -71,7 +71,7 @@ int sem_id_1 = -1;
 struct sembuf s_buf;
 
 struct test_case_t {
-	short i_val;
+	union semun semunptr;
 	short op;
 	short flg;
 	short num;
@@ -119,7 +119,7 @@ main(int ac, char **av)
 			s_buf.sem_num = TC[i].num;
 
 			/* initialize all of the primitive semaphores */
-			if (semctl(sem_id_1, TC[i].num, SETVAL, TC[i].i_val)
+			if (semctl(sem_id_1, TC[i].num, SETVAL, TC[i].semunptr)
 			    == -1) {
 				tst_brkm(TBROK, cleanup, "semctl() failed");
 			}
