@@ -26,12 +26,31 @@
 /*                                                                            */
 /*		Nov - 06 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
 /*				- added function alloc_mem()                  */
+/*    								              */
+/*		Nov - 08 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
+/*				- added logic to allocate memory in the size  */
+/*				  of fibanocci numbers.                       */
+/*				- fixed segmetation fault.                    */
+/*									      */
+/*		Nov - 09 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
+/*				- separated alocation logic to allocate_free()*/
+/*				  function.                                   */
+/*				- introduced logic to randomly pick allocation*/
+/*				  scheme. size = fibannoci number, pow of 2 or*/
+/*				  power of 3.                                 */
 /*                                                                            */
+/* File:	mallocstress.c						      */
+/*									      */
+/* Description:	This program is designed to stress the VMM by doing repeated  */
+/*		mallocs and frees, with out using the swap space. This is     */
+/*		achived by spawnning N threads with repeatedly malloc and free*/
+/*		a memory of size M.                                           */
 /******************************************************************************/
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #define MAXL    1000    /* default number of loops to do malloc and free      */
 #define MAXT    30      /* default number of threads to create.               */
@@ -61,6 +80,8 @@
 /*									      */
 /* Description:	Print the usage message.				      */
 /*									      */
+/* Input:	char *progname - name of this program                         */
+/*									      */
 /* Return:	exits with -1						      */
 /*									      */
 /******************************************************************************/
@@ -76,41 +97,43 @@ usage(char *progname)           /* name of this program                       */
 }
 
 
-
 /******************************************************************************/
-/* Function:	alloc_mem				                      */
+/* Function:	allocate_free				                      */
 /*								              */
-/* Description:	This thread function will allocate and free memory by calling */
-/*		malloc and free functions. The function will generate a random*/
-/* 		number and depending on the number generated, it will chose   */
-/* 		between the three algorythims to calculate how much it should */
-/*		allocate. It will allocate fibannoci series, power of 2 or    */
-/* 		power of 3 size memory.					      */
+/* Description:	This function does the allocation and free by calling malloc  */
+/*		and free fuctions. The size of the memory to be malloced is   */
+/*		determined by the caller of this function. The size can be    */
+/*		a number from the fibannoaci series, power of 2 or 3 or 7     */
+/*									      */
+/* Input:	int repeat - number of times the alloc/free is repeated.      */
+/*		int topower - power of the number that has to be calculated.  */
+/*								              */
+/* Return:	1 on failure						      */
+/*		0 on success						      */
 /******************************************************************************/
-void *
-alloc_mem(void * args)
+int
+allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
+              int    topow)	/* caculate the power                         */
 {
-    int  loop       = 0;        /* number of times to repeat alloc and free   */
+    int  loop = 0;		/* index to the number of allocs and frees    */
     long **memptr;		/* array of pointers to the memory allocated  */
     long **anchor;		/* save this pointer in anchor                */
-    long *locargptr =           /* local pointer to thread arguments          */
-                      (long *)args;
-    volatile int exit_val = 0;  /* exit value of the pthreads                 */
 
-    for (loop = 0; loop < (int)locargptr[0]; loop++)
+    for (loop = 0; loop < repeat; loop++)
     {
-        int  fib1       = 0;	/* first number in the fibannoci series       */
-        int  fib2       = 1;	/* second number in the fibanocci series      */
-        int  fib3       = 1;	/* third number in the fibanocci series       */
-        int  num_alloc  = 0;	/* number of memory chunks allocated          */
-        int  index      = 0;    /* num of and frees to perform                */
+        int     fib1       = 0;	    /* first number in the fibannoci series   */
+        int     fib2       = 1;	    /* second number in the fibanocci series  */
+        int     fib3       = 1;	    /* third number in the fibanocci series   */
+        int     num_alloc  = 0;	    /* number of memory chunks allocated      */
+        int     index      = 0;     /* num of and frees to perform            */
+        int     size       = topow; /* size of mem to malloc or free          */
  
         dprt("pid[%d]: In for loop = %d times\n", getpid(), loop);
 
-        if ((anchor = malloc(sizeof(int *))) == NULL)
+        if ((anchor = malloc((size_t)sizeof(int *))) == NULL)
         {
             perror("do_malloc(): allocating space for anchor malloc()");
-            PTHREAD_EXIT(-1);
+            return 1;
         }
 
         dprt("pid[%d]: loop = %d anchor = %#x\n", getpid(), loop, anchor);
@@ -120,24 +143,32 @@ alloc_mem(void * args)
             dprt("pid[%d]: In for loop = %d\n", getpid(), loop); 
             dprt("pid[%d]: In while loop = %d\n", getpid(), num_alloc);
             memptr = anchor + num_alloc;
-            if ((*memptr = (int *)malloc(fib3)) == NULL)
+            if ((*memptr = (int *)malloc((size_t)size)) == NULL)
             {
                 perror("alloc_mem(): malloc()");
                 fprintf(stdout, "pid[%d]: malloc failed on size %d\n", getpid(),
-			    fib3);
+			    size);
                 break;
             }
 
             dprt("pid[%d]: memptr = %#x\n", getpid(), *memptr);
-
-            fib3 = fib2 + fib1;
-            fib1 = fib2;
-            fib2 = fib3;
+            
+            if (!topow)
+            {
+                fib3 = fib2 + fib1;
+                fib1 = fib2;
+                fib2 = fib3;
+                size = fib3;
+            }
+            else 
+            {
+                size = (topow == 2) ? (size * 2) : (size * 3);
+            }
 
             num_alloc++;
             **memptr = num_alloc;
             
-            dprt("pid[%d]: malloc size = %d\n", getpid(), fib3);
+            dprt("pid[%d]: malloc size = %d\n", getpid(), size);
             dprt("pid[%d]: content of memptr = %d\n", getpid(), **memptr);
             dprt("pid[%d]: number of allocations = %d\n", getpid(), num_alloc);
 
@@ -146,7 +177,7 @@ alloc_mem(void * args)
 		        == NULL)
             {
                 perror("do_malloc(): reallocating space for anchor malloc()");
-                PTHREAD_EXIT(-1);
+                return 1;
             }
             usleep(0);
             dprt("pid[%d]: remalloced anchor = %#x\n", getpid(), anchor);
@@ -165,8 +196,101 @@ alloc_mem(void * args)
         usleep(0);
     }   
     fprintf(stdout, "pid[%d]: exiting sucessfully\n", getpid());
-    PTHREAD_EXIT(0);
+    return 0;
 }
+
+
+/******************************************************************************/
+/* Function:	alloc_mem				                      */
+/*								              */
+/* Description:	This thread function will allocate and free memory.           */
+/*		This function will pick a random scheme to calculate memory   */
+/*		size that needs to be allocated. size is calculated as a      */
+/*		number from the fibannoci series, 3*3*3..., 2*2*2... or 7*7*..*/
+/*									      */
+/* Input:	args - arg[0] is the numof times the allocation and free is to*/
+/*			      be repeated.			              */
+/*								              */
+/* Return:	pthread_exit -1	on failure				      */
+/*		pthread_exit  0 on success			              */
+/*								              */
+/******************************************************************************/
+void *
+alloc_mem(void * args)
+{
+    int random	          = 0;  /* random number 			      */
+    volatile int exit_val = 0;  /* exit value of the pthreads                 */
+    long *locargptr =           /* local pointer to thread arguments          */
+                      (long *)args;
+
+    srand(time(NULL)%100);
+    random = (1 + (int)(10.0*rand()/(RAND_MAX+1.0)));
+    
+    if (!(random % 2))
+    {
+        fprintf(stdout, 
+                 "pid[%d]: allocating memory of size = fibnonnaci number\n");
+        if (allocate_free((int)locargptr[0], 0))
+        {
+            fprintf(stdout, "pid[%d]: alloc_mem(): fib_alloc() failed\n");
+            PTHREAD_EXIT(-1);
+        }
+        else
+        {
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            PTHREAD_EXIT(0);
+        }
+    }
+            
+    usleep(0);
+    if (!(random % 3))
+    {
+        fprintf(stdout, 
+                 "pid[%d]: allocating memory of size = the power of 2\n");
+        if (allocate_free((int)locargptr[0], 2))
+        {
+            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+            PTHREAD_EXIT(-1);
+        }
+        else
+        {
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            PTHREAD_EXIT(0);
+        }
+    }
+    usleep(0);
+    if (!(random % 5))
+    {
+        fprintf(stdout, 
+                 "pid[%d]: allocating memory of size = the power of 3\n");
+        if (allocate_free((int)locargptr[0], 3))
+        {
+            fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+            PTHREAD_EXIT(-1);
+        }
+        else
+        {
+            fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+            PTHREAD_EXIT(0);
+        }
+    }
+    usleep(0);
+
+    /* default  power of "seven"*/
+    fprintf(stdout, 
+             "pid[%d]: allocating memory of size = the power of 7\n");
+    if (allocate_free((int)locargptr[0], 7))
+    {
+        fprintf(stdout, "pid[%d]: alloc_mem(): allocate_free() failed\n");
+        PTHREAD_EXIT(-1);
+    }
+    else
+    {
+        fprintf(stdout, "pid[%d]: Thread exiting. Task complete.\n");
+        PTHREAD_EXIT(0);
+    }
+}
+        
 
 /******************************************************************************/
 /*								 	      */
