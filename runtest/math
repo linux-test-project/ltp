@@ -4,3 +4,7 @@ float_iperb float_iperb  -D $LTPROOT/testcases/bin -v
 float_power float_power  -D $LTPROOT/testcases/bin -v
 float_trigo float_trigo  -D $LTPROOT/testcases/bin -v
 
+fptest01 fptest01
+fptest02 fptest02
+fptest03 fptest03
+
