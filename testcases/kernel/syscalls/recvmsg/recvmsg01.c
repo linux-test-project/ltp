@@ -144,7 +144,7 @@ struct test_case_t {		/* test case structure */
 		(struct sockaddr *)&from, sizeof(from),
 		0, 0, setup2, cleanup2, "rights reception" },
 /* 9 */
-	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,-1,
+	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,~MSG_CMSG_COMPAT,
 		(struct sockaddr *)&from, sizeof(from),
 		-1, EINVAL, setup1, cleanup1, "invalid flags set" },
 /* 10 */
