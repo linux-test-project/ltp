@@ -1,37 +1,48 @@
-LTP-20020806
-------------
-
 Change Log
 ----------
 
+LTP-20020813
+------------
+* Fixes
+-------
+- Fix runtest/commands to export the	 	( Paul Larson	     )
+  correct TCdat
+- Add some missing includes and remove 		( Andreas Jaeger     )
+  warnings about missing prototypes
+- Add better initialization to waitpid05,	( Robbie Williamson  )
+  signal04, getgroups01
+- Fix sockioctl01 to work even if fd0 isn't	( Paul Larson        )
+  open
+
+LTP-20020807
+------------
+
 * New Additions
 ---------------
-- Added new testcases of link07,fcntl22,link06          ( Bull Group         )
-- Added linux kernel scheduler latency tester           ( Davide Libenzi     )
-- Database test tool 'dbgrinder'                        ( James Kenefick     )
+- Added new testcases of link07,fcntl22,link06          ( Bull Group        )
+- Added linux kernel scheduler latency tester           ( Davide Libenzi    )
+- Database test tool 'dbgrinder'                        ( James Kenefick    )
 
 * Fixes
 -------
-- Several fixes for 64-bit                              ( Gerhard Tonn       )
-- fstat05,llseek fixes for MIPS                         ( Carsten Langgaard  )
+- Several fixes for 64-bit                              ( Gerhard Tonn      )
+- fstat05,llseek fixes for MIPS                         ( Carsten Langgaard )
 - Fixed check in getgroups03 that was causing 
-  failures if 'nobody' isn't in any secondary groups    ( Paul Larson        )
+  failures if 'nobody' isn't in any secondary groups    ( Paul Larson       )
 - Fix sendfile02 to work with the new 2.5 kernels which 
-  no longer allow it to fall back on write              ( Paul Larson        )
+  no longer allow it to fall back on write              ( Paul Larson       )
 - Changed the hardcoded ip address to 127.0.0.1 in 
-  recvfrom01-sctp-udp-ipv6                              ( Robbie Williamson  )
+  recvfrom01-sctp-udp-ipv6                              ( Robbie Williamson )
 - Added instance and time command line options in
-  runalltests.sh                                        ( Jeff Martin        )
+  runalltests.sh                                        ( Jeff Martin       )
 - Fixed the algorithm description for fork07,fork12     
-  Reduced the output of fork07 to a finite amount       ( Nathan Straz       )
-- Added fork12 to runtest/crashme.                      ( Nathan Straz       )
-- Added option for interface selection in tcpdump01     ( Robbie Williamson  )
+  Reduced the output of fork07 to a finite amount       ( Nathan Straz      )
+- Added fork12 to runtest/crashme.                      ( Nathan Straz      )
+- Added option for interface selection in tcpdump01     ( Robbie Williamson )
 
 
 LTP-20020709
 -----------
-Change Log
-----------
 * New Additions
 ---------------
 - New testcases fcntl22, link06, link07,
@@ -49,9 +60,6 @@ Change Log
 
 LTP-20020607
 ------------
-
-Change Log
-----------
 * New Additions
 - Tests if gettimeofday02 is monotonous      ( Andi Kleen          )
 - Added new tests readv03, setgroups04
