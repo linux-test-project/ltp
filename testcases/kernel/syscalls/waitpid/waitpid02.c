@@ -22,13 +22,12 @@
  *	waitpid02.c
  *
  * DESCRIPTION
- *	Check that when a child kills itself by generating an integer zero
+ *	Check that when a child gets killed by an integer zero
  *	divide exception, the waiting parent is correctly notified.
  *
  * ALGORITHM
- *	Fork a child that causes an integer zero divide exception. The
- *	parent waits for the death of the child and checks that SIG_FPE was
- *	returned.
+ *	Fork a child and send a SIGFPE to it. The parent waits for the 
+ *	death of the child and checks that SIGFPE was returned.
  *
  * USAGE:  <for command-line>
  *      waitpid02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -42,6 +41,9 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *	10/2002 Paul Larson
+ *		Div by zero doesn't cause SIGFPE on some archs, fixed 
+ *		to send the signal with kill
  *
  * Restrictions
  *	None
@@ -87,19 +89,17 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		exno = 1;
-		sig = 8;
+		sig = SIGFPE;
 
 		pid = fork();
 
 		if (pid == 0) {
-			volatile int x, y, z;
-
-			y = 1;
-			z = 0;
-			x = y/z;
+			while(1)
+				usleep(10);
 
 			exit(exno);
 		} else {
+			kill(pid, sig);
 			errno = 0;
 			while(((npid = waitpid(pid, &status, 0)) != -1) ||
 			      (errno == EINTR)) {
