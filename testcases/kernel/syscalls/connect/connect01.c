@@ -226,7 +226,7 @@ void
 setup2(void)
 {
 	setup1();	/* get a socket in s */
-	if (connect(s, &sin1, sizeof(sin1)) < 0) {
+	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed connect "
 			"test %d: %s", testno, strerror(errno));
 	}
@@ -247,7 +247,7 @@ start_server(struct sockaddr_in *sin0)
 			strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, &sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			strerror(errno));
 		return -1;
@@ -288,7 +288,8 @@ start_server(struct sockaddr_in *sin0)
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
+			newfd = accept(sfd, (struct  sockaddr  *)&fsin, 
+				       &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 		}
