@@ -464,6 +464,7 @@ semop05 semop05
 send01 send01
 
 sendfile02 sendfile02
+sendfile03 sendfile03
 
 sendmsg01 sendmsg01
 
