@@ -60,7 +60,8 @@ lib/*
 	minimum.  
 
 testcases/*
-	Contain all tests that run under the LTP.
+	Contains all tests that run under the LTP as well as the "bin" directory,
+	which has hardlinks to all the test executables. 
 
 runtest/*
 	It houses command lists that are used by pan for automated testing.
