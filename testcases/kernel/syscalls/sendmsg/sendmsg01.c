@@ -15,6 +15,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
  */
 
 /*
@@ -36,9 +37,6 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *	05/2003 Modified by Manoj Iyer - Make setup function set up lo device.
- *	10/2003 Modified by Manoj Iyer - fixed test11 wrt sugegstionis from
- *	        Wayne Boyer
- *
  *
  * RESTRICTIONS:
  *  None.
@@ -231,23 +229,15 @@ main(int argc, char *argv[])
 				TEST_RETURN = 0;	/* all success equal */
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-                        /* special case treatment for test11, changes made
-			 *  wrt suggestion from original author Wayne Boyer
-			 *  IBM - Beaverton, Oregon
-			 *   EINVAL is also correct as an expect error.
-			 */
-			int temp_val;
-			(testno == 10) ? (temp_val = EINVAL) :
-					(temp_val = (int)tdat[testno].experrno);
-						
+
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN < 0 &&
-			     TEST_ERRNO != temp_val)) {
+			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
 					" %d (expected %d), errno %d (expected"
 					" %d)", tdat[testno].desc,
 					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, temp_val);
+					TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
 					tdat[testno].desc);
