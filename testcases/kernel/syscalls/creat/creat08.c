@@ -107,21 +107,6 @@ int main (int ac, char **av)
 		tst_exit();
 	}
 
-        if ( (ret = system("/usr/sbin/useradd user1 -p user1")) == -1) {
-                tst_resm(TBROK, "add user1 failed\n");
-                tst_exit();
-        }
-
-        if ( (ret = system("/usr/sbin/groupadd group1")) == -1) {
-                tst_resm(TBROK, "add group1 failed\n");
-                tst_exit();
-        }
-
-        if ( (ret = system("/usr/sbin/groupadd group2")) == -1) {
-                tst_resm(TBROK, "add group2 failed\n");
-                tst_exit();
-        }
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		local_flag = PASSED;
@@ -137,8 +122,8 @@ int main (int ac, char **av)
 		sprintf(root_setgid_B, "%s/%s", DIR_B, ROOT_SETGID);
 	
 		/* Get the uid of user1 */
-		if ((user1 = getpwnam("user1")) == NULL) {
-			tst_resm(TBROK, "user1 not in /etc/passwd\n");
+		if ((user1 = getpwnam("nobody")) == NULL) {
+			tst_resm(TBROK, "nobody not in /etc/passwd\n");
 			tst_exit();
 		}
 
@@ -147,12 +132,12 @@ int main (int ac, char **av)
 		/*
 		 * Get the group IDs of group1 and group2. 
 		 */
-		if ((group = getgrnam("group1")) == NULL) {
-			tst_resm(TINFO, "group1 not in /etc/group\n");
+		if ((group = getgrnam("nobody")) == NULL) {
+			tst_resm(TINFO, "nobody not in /etc/group\n");
 		}
 		group1_gid = group->gr_gid;
-		if ((group = getgrnam("group2")) == NULL) {
-		tst_resm(TINFO, "group2 not in /etc/group\n");
+		if ((group = getgrnam("bin")) == NULL) {
+		tst_resm(TINFO, "bin not in /etc/group\n");
 		}
 		group2_gid = group->gr_gid;
 
