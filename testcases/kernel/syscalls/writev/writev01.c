@@ -56,6 +56,7 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <sys/mman.h>
 
 #define	K_1	1024
 #define	M_1	K_1 * K_1
@@ -107,6 +108,8 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 };
 
 char name[K_1], f_name[K_1];
+
+char * bad_addr = 0;
 
 /* 0 terminated list of expected errnos */
 int exp_enos[] = {14, 22, 32, 77, 0};
@@ -476,6 +479,13 @@ setup(void)
 
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
+
+        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+        if (bad_addr <= 0) {
+            printf("mmap failed\n");
+        }
+        wr_iovec[7].iov_base = bad_addr;
+
 }
 
 /*
