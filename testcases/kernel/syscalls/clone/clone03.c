@@ -121,7 +121,11 @@ main(int ac, char **av)
 		/* 
 		 * Call clone(2)
 		 */
+#ifdef __hppa__
 		TEST(clone(child_fn, child_stack, (int)NULL, NULL));
+#else
+		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, (int)NULL, NULL));
+#endif
 	
 		/* check return code */
 		if (TEST_RETURN == -1) {

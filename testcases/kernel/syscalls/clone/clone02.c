@@ -179,8 +179,13 @@ main(int ac, char **av)
 			}
 			
 			/* Test the system call */
+#ifdef __hppa__
+			TEST(clone(child_fn, child_stack,
+				   test_cases[i].flags, NULL));
+#else
 			TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE,
 				   test_cases[i].flags, NULL));
+#endif
 
 			/* check return code */
 			if (TEST_RETURN == -1) {

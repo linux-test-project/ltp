@@ -79,11 +79,9 @@
 static void cleanup(void);
 static void setup(void);
 static int child_fn();
-static int allocate_stack();
 
 char *TCID= "clone04";
 extern int Tst_count;
-static void *child_stack;
 
 static int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of *
 					 * expected errnos */
@@ -104,6 +102,7 @@ main(int ac, char **av)
 	int lc, ind;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	void *child_stack;
+	void *test_stack;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
@@ -113,27 +112,35 @@ main(int ac, char **av)
 
 	setup();			/* global setup */
 
+	/* Allocate stack for child */
+	child_stack = (void *) malloc(CHILD_STACK_SIZE);
+
 	/* The following loop checks looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (ind =0; ind < TST_TOTAL; ind++) {
-		
-			/* Allocate stack for first test case */	
-			if ((ind == 0) && !(allocate_stack())) {
-				tst_resm(TWARN, "Can not allocate stack for"
-						"child, skipping test case");
-				continue;
-			} else if (ind == 1) {
-				child_stack = (void*) NULL;
+		for (ind = 0; ind < TST_TOTAL; ind++) {
+			if (ind == 0) {
+				if (child_stack == NULL) {
+					tst_resm(TWARN, "Can not allocate stack for"
+						 "child, skipping test case");
+					continue;
+				}
+#ifdef __hppa__				
+				test_stack = child_stack;
+#else
+				test_stack = child_stack + CHILD_STACK_SIZE;
+#endif
 			}
+			else
+				test_stack = (void *) NULL;
 			
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
-			TEST(clone(test_cases[ind].child_fn, child_stack,
+			TEST(clone(test_cases[ind].child_fn, test_stack,
 				   (int)NULL, NULL));
 	
 			if ((TEST_RETURN == -1) &&
@@ -194,16 +201,6 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}
-
-int
-allocate_stack()
-{
-	/* Allocate stack for child */
-	if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
-		return 0;
-	}
-	return 1;
 }
 
 /*

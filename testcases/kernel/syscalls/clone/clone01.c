@@ -117,8 +117,12 @@ main(int ac, char **av)
 		/* 
 		 * Call clone(2)
 		 */
+#ifdef __hppa__
 		TEST(clone(do_child, child_stack, SIGCHLD, NULL));
-	
+#else
+		TEST(clone(do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
+#endif	
+
 		if ((child_pid = wait(&status)) == -1) {
 			tst_brkm(TBROK, cleanup, "wait() failed; error no ="
 				 " %d, %s", errno, strerror(errno));

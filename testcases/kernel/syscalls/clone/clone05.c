@@ -115,7 +115,11 @@ main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
+#ifdef __hppa__
 		TEST(clone(child_fn, child_stack, FLAG, NULL));
+#else
+		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, FLAG, NULL));
+#endif
 	
 		/* check return code & parent_variable*/
 		if ((TEST_RETURN != -1) && (parent_variable)) {
@@ -127,6 +131,8 @@ main(int ac, char **av)
 		/* Reset parent_variable */
 		parent_variable = 0; 
 	}	/* End for TEST_LOOPING */
+
+	free (child_stack);
 
 	/* cleanup and exit */
 	cleanup();
