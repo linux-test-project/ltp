@@ -274,6 +274,9 @@ setup()
 	/* Get the path of TESTFILE under temporary directory */
 	strcat(Path_name, "/"TESTFILE);
 
+	/* Set the environment variable change_owner if not already set */
+	setenv("change_owner",strcat(test_home,"/change_owner"),0);
+
 	/* Get the command name to be executed as setuid to root */
 	if ((change_owner_path = getenv("change_owner")) == NULL) {
 	    tst_brkm(TBROK, cleanup,
