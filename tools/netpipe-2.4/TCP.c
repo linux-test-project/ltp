@@ -15,7 +15,7 @@
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: TCP.c,v 1.2 2003/03/14 16:34:26 robbiew Exp $";
+	"$Id: TCP.c,v 1.3 2003/03/21 16:43:03 robbiew Exp $";
 #endif
 
 int Setup(ArgStruct *p)
@@ -347,6 +347,7 @@ int Establish(ArgStruct *p)
       }
     }
   } 
+  return(0);
 }
 
 int  CleanUp(ArgStruct *p)
@@ -365,5 +366,6 @@ int  CleanUp(ArgStruct *p)
      close(p->commfd);
      close(p->servicefd);
  }
+ return(0);
 }
 
