@@ -290,16 +290,19 @@ size_t get_memsize()
 
 	 } /* end check release */
 	printf("Total Free: %d Kb\n",res);
-        if (res > 4*1024*1024)
-                res -= 1*1024*1024;     		 /* safty measure: 1Gb */
-		 else {
-        		 if (res > 4*128*1024)
-                        res -= 2*128*1024;     		 /* safty measure: 200MB */
-		 		 else {
-        		 if (res > 4*1024)
-                        res -= 4*1024;     		 /* safty measure: 4MB */
-		 		 }
-		 }
+	/*Safety section*/				
+        if (res > 4*1024*1024)				 /* >4Gb free mem then  */
+                res -= (1*1024*1024);	 		 /* subtract 1Gb        */
+        else {
+        	if (res > 4*128*1024)   		 /* >512Mb free mem then*/
+                        res -= 1*100*1024;     		 /* subtract 100MB      */
+		else {
+        		if (res > 4*1024)		 /* >4Mb free mem then  */
+                        	res -= 1*512;     	 /* subtract 512k       */
+			else
+				res -= 1;		 /* <4Mb free mem, so subtract 1Kb */
+		}
+	 }
         res = res * 1024;
 		 free(buf);
 		 fclose(f);
