@@ -63,7 +63,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be run by 'non-super-user' only.
  *	
  */
 
@@ -173,15 +172,6 @@ main(int ac, char **av)
 			 */
 			TEST(ftruncate(fd, TRUNC_LEN2));
 
-			/* check return code of ftruncate(2) */
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "ftruncate of %s to size %d "
-					 "Failed, errno=%d : %s", TESTFILE,
-					 TRUNC_LEN2, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				continue;
-			}
-
 			/*
 			 * Get the testfile information using
 			 * fstat(2)
@@ -216,18 +206,38 @@ main(int ac, char **av)
 
 			/*
 			 * Check for expected size of testfile after
-			 * issuing ftruncate(2) on it.
+			 * issuing ftruncate(2) on it. If the ftruncate(2)
+			 * to a smaller file passed, then check to see 
+			 * if file size was increased. If the ftruncate(2)
+			 * to a smaller file failed, then don't check. 
+			 * Both results are allowed according to the SUS.
 			 */
-			if ((file_length1 != TRUNC_LEN1) ||
-			    (file_length2 != TRUNC_LEN2) ||
-			    (read_len != TRUNC_LEN1) ||
-			    (err_flag != 0)) {
-				tst_resm(TFAIL, "Functionality of ftruncate(2) "
-					 "on %s Failed", TESTFILE);
-			} else {
-				tst_resm(TPASS, "Functionality of ftruncate(2) "
-					 "on %s successful", TESTFILE);
+			
+			/* check return code of ftruncate(2) */
+			if (TEST_RETURN != -1) {
+			  if ((file_length1 != TRUNC_LEN1) ||
+			      (file_length2 != TRUNC_LEN2) ||
+			      (read_len != TRUNC_LEN1) ||
+			      (err_flag != 0)) {
+			  	  tst_resm(TFAIL, "Functionality of ftruncate(2) "
+					   "on %s Failed", TESTFILE);
+			  } else {
+				  tst_resm(TPASS, "Functionality of ftruncate(2) "
+					   "on %s successful", TESTFILE);
+			  }
 			}
+			if (TEST_RETURN == -1) {
+			  if ((file_length1 != TRUNC_LEN1) ||
+			      (read_len != TRUNC_LEN1) ||
+			      (err_flag != 0)) {
+			  	  tst_resm(TFAIL, "Functionality of ftruncate(2) "
+					   "on %s Failed", TESTFILE);
+			  } else {
+				  tst_resm(TPASS, "Functionality of ftruncate(2) "
+					   "on %s successful", TESTFILE);
+			  }
+			}
+
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
