@@ -58,10 +58,13 @@
 #include <unistd.h>
 #include <string.h>
 
+void noprintf(char* string, ...){
+}
+
 #ifdef DEBUG		/* compile with this flag for debug, use dprt in code */
 #define dprt    printf
 #else
-#define dprt
+#define dprt    noprintf
 #endif
 
 #define MAXT 100
@@ -194,7 +197,7 @@ thread_func(void *args)		/* arguments to the thread function           */
     static int get_priority;    /* get the priority that is set for this proc.*/
     static int procnum;         /* processor number last executed on.         */
     static int sched_policy;    /* scheduling policy as set by user/default   */
-    volatile int exit_val = 0;  /* exit value of the pthreads.                */
+    void*  exit_val = 0;  	/* exit value of the pthreads.                */
     struct sched_param ssp;     /* set schedule priority.                     */
     struct sched_param gsp;     /* gsp schedule priority.                     */
     struct timeb       tptr;    /* tptr.millitm will be used to seed srand.   */
@@ -206,7 +209,7 @@ thread_func(void *args)		/* arguments to the thread function           */
          ((min_priority = sched_get_priority_min(SCHED_FIFO)) == -1))
     {
         fprintf(stderr, "failed to get static priority range\n");
-	PTHREAD_EXIT(-1);
+	PTHREAD_EXIT((void*)-1);
     }
 
     if ((sched_policy = locargptr->s_policy) == SCHED_OTHER)
@@ -229,27 +232,27 @@ thread_func(void *args)		/* arguments to the thread function           */
     if ((sched_setscheduler(getpid(), sched_policy, &ssp)) == -1)
     {
         perror("main(): sched_setscheduler()");
-	PTHREAD_EXIT(-1);
+	PTHREAD_EXIT((void*)-1);
     }
 
     /* processor number this process last executed on */
     if ((procnum = get_proc_num()) == -1)
     {
         fprintf(stderr, "main(): get_proc_num() failed\n");
-	PTHREAD_EXIT(-1);
+	PTHREAD_EXIT((void*)-1);
     }
     
     if ((get_priority = sched_getparam(getpid(), &gsp)) == -1)
     {
         perror("main(): sched_setscheduler()");
-	PTHREAD_EXIT(-1);
+	PTHREAD_EXIT((void*)-1);
     }
 
     /* processor number this process last executed on */
     if ((procnum = get_proc_num()) == -1)
     {
         fprintf(stderr, "main(): get_proc_num() failed\n");
-	PTHREAD_EXIT(-1);
+	PTHREAD_EXIT((void*)-1);
     }
 
     if (verbose)
