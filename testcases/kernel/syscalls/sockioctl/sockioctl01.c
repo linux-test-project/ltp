@@ -190,8 +190,8 @@ setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else
-		if((s = open("/dev/tty", O_RDWR)) == -1)
-			tst_brkm(TBROK, cleanup, "error opening /dev/tty - "
+		if((s = open("/dev/tty0", O_RDWR)) == -1)
+			tst_brkm(TBROK, cleanup, "error opening /dev/tty0 - "
 			"errno: %s", strerror(errno));
 }
 
