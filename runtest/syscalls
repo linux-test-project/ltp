@@ -360,6 +360,10 @@ msgctl02 msgctl02
 msgctl03 msgctl03
 msgctl04 msgctl04
 msgctl05 msgctl05
+msgctl06 msgctl06
+msgctl07 msgctl07
+msgctl08 msgctl08
+msgctl09 msgctl09
 
 msgget01 msgget01
 msgget02 msgget02

@@ -20,9 +20,8 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the ipc(2) shmat tests.	  #
 ###########################################################################
-MAINS=msgctl01 msgctl02 msgctl03 msgctl04 msgctl05
-SRCS=$(MAINS:=.c)
-OBJS=$(MAINS:=.o)
+SRCS=$(wildcard *.c)
+MAINS=$(patsubst %.c,%,$(SRCS))
 IPC_LDFLAGS=-L.. -lipc
 LTP_LDFLAGS=-L../../../../../lib -lltp
 LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
@@ -33,7 +32,7 @@ $(MAINS): $(SRCS)
 	$(CC) -o $@ $@.c $(LTP_CFLAGS) $(LTP_LDFLAGS) $(IPC_LDFLAGS) $(LOADLIBES)
 
 clean:
-	/bin/rm -rf $(OBJS) $(MAINS)
+	/bin/rm -rf $(MAINS)
 
 install:
 	@for i in $(MAINS); do ln -f $$i ../../../../bin/$$i ; done
