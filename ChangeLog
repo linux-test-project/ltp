@@ -7,7 +7,7 @@ LTP-20020909
 - runtest/syscalls:
         a.Removed the {} from the environment    ( Robbie Williamson )
           variables
-        b.Comment out stime01, since it sets     ( Paul Larson )
+        b.Comment out stime01, since it sets     ( Paul Larson, David Barrera )
           the system time forward and could
           cause problems with several other
           tests if it's running at the same
@@ -25,9 +25,11 @@ LTP-20020909
 - Applied patches for IA64                       ( Jacky Malcles )
 - Applied patch for adding some missing includes ( Andreas Jaeger )
   to remove warnings about missing prototypes
+- Applied x86-64 patch for ldd01                 ( Andreas Jaeger )
 - Applied uClibc patches.                        ( Steven J. Hill )
 - Applied string formatting patches.             ( Xiao Feng Shi )
-- Applied pan/logfile/tools patches.             ( William J. Huie )    
+- Applied pan/logfile/tools patches.             ( William J. Huie )
+- Applied fcntl test patches.                    ( Matthew Wilcox )   
 
 
 LTP-20020813
