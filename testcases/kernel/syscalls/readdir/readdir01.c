@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readdir01.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: readdir01.c,v 1.2 2001/12/03 16:41:57 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -251,7 +251,7 @@ main(int ac, char **av)
 
 	    if (errno != 0) {
 		tst_resm(TFAIL, "readir(test_dir) Failed on try %d, errno=%d : %s",
-				cnt, errno, strerror(errno));
+				cnt+1, errno, strerror(errno));
 	    }
 	    if (cnt == nfiles) {
 		tst_resm(TPASS, "found all %d that were created", nfiles);
