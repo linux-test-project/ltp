@@ -105,6 +105,8 @@ $LTPBIN/tst_resm TINFO "Test #2: will eject the default cdrom device."
 eject &>$LTPTMP/tst_eject.res || RC=$?
 if [ $RC -eq 0 ]
 then
+	# Close the tray if it is supported.
+    eject -t &>/dev/null
     $LTPBIN/tst_resm TPASS  "Test #2: eject succeded"
 else
     echo "Error code returned by eject: $RC" >> $LTPTMP/tst_eject.res \
@@ -191,5 +193,6 @@ fi
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
 rm -fr $LTPTMP/tst_eject* $LTPTMP/cdrom
+eject -t &>/dev/null
 
 exit $TFAILCNT
