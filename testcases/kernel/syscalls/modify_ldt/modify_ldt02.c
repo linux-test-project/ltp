@@ -56,7 +56,7 @@
 #ifdef MODIFY_LDT_SPECIALCASE
 #define modify_ldt_ldt_s user_desc
 #else
- #if undefined(modify_ldt_ldt_s)
+ #if !defined modify_ldt_ldt_s
  struct modify_ldt_ldt_s
  {
    unsigned int entry_number;
