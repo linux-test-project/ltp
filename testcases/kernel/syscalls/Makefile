@@ -29,7 +29,7 @@ CFLAGS+=-I../../include -g -Wall
 LOADLIBES+=
 
 SUBDIR= \
-	accept access alarm asyncio bind brk \
+	accept access acct alarm asyncio bind brk \
 	chdir chmod chown chroot clone close connect \
 	creat create_module delete_module dup dup2 execl\
 	execle execlp execv execve execvp exit fchdir fchmod \
