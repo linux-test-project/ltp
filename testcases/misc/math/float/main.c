@@ -33,6 +33,9 @@ TH_DATA **tabcour;
 #endif
 char datadir[PATH_MAX];     		/* DATA directory */
 
+#ifndef PTHREAD_THREADS_MAX
+#define PTHREAD_THREADS_MAX 1024
+#endif
 #define DEFAULT_NUM_THREADS             20
 int     num_threads      = DEFAULT_NUM_THREADS;
 int     num_loops=500; 
