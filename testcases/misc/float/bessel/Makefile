@@ -21,6 +21,6 @@ clean:
 	rm -f *.ref2 
 	@for i in $(REF2); do rm -f ../../../bin/$$i ; done
 
-install: all
+install: 
 	sleep 1
 	@for i in $(REF) $(REF2); do ln -f $$i ../../../bin/$$i ; done ;
