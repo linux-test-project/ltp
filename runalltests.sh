@@ -116,7 +116,7 @@ main()
     local NETPIPE=0
     local GENLOAD=0
     local MEMSIZE=0
-    local DURATION=0
+    local DURATION=""
     local BYTESIZE=0
     local LOGFILE=""
     local SCENFILES=""
