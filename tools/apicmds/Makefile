@@ -1,4 +1,4 @@
-CFLAGS+=	-I../../include
+CFLAGS+=	-D_GNU_SOURCE -I../../include
 LOADLIBES+=	-L../../lib -lltp
 
 SRCS=$(wildcard *.c)

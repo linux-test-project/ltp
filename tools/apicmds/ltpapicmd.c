@@ -146,7 +146,7 @@ ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
  * Exit:        0 on success
  *              -1 on failure
  */
-main( int argc,
+int main( int argc,
       char *argv[])
 {
     int  trestype;      /* test result type TFAIL, TPASS, TINFO etc           */
