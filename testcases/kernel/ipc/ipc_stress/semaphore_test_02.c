@@ -63,6 +63,11 @@
 |    0.1     050689  CTU   Initial version                             |
 |    0.2     111993  DJK   Modify for AIX version 4.1                  |
 |    1.2     021494  DJK   Moved to "prod" directory                   |
+|							               |
+|    1.3     Jan-28-02 	Manoj Iyer, IBM Austin TX. manjo@austin.ibm.com|
+|			Modified semctl() to work in linux. Also the   |
+|			#ifdef _LINUX_ was removed from the code.      |
+|								       |
 |                                                                      |
 +---------------------------------------------------------------------*/
 
@@ -84,19 +89,11 @@
  *
  * NUM_SEMAPHORES: number of semaphores to create
  */
-#ifdef _LINUX_
 # define MAX_SEMAPHORES	250
 # define MAX_CHILDREN		200
 # define DEFAULT_NUM_SEMAPHORES	96
 # define DEFAULT_NUM_CHILDREN	0
 
-#else
-
-# define MAX_SEMAPHORES	4096
-# define MAX_CHILDREN		400
-# define DEFAULT_NUM_SEMAPHORES	1000
-# define DEFAULT_NUM_CHILDREN	0
-#endif
 
 #define USAGE	"\nUsage: %s [-s nsems] [-p nproc]\n\n" \
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
@@ -225,11 +222,8 @@ static void test_commands (pid_t pid)
 	gid_t	gid = getgid ();	/* User's group id */
 	mode_t	mode = 0666;		/* User's mode value */
 	uid_t	uid = getuid ();	/* User's user id */
-	ushort	array [MAX_SEMAPHORES];	/* Misc array of semaphore values */
-	struct semid_ds	*buf;		/* Misc buff for semaphore info */
-#ifdef _LINUX_
 	struct sembuf sops;
-#endif
+	union  semun semunptr;		/* This union has struct semid_ds *buf*/
 	/*
 	 * Test semget () with IPC_PRIVATE command 
 	 *
@@ -248,13 +242,16 @@ static void test_commands (pid_t pid)
 	 */
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (IPC_SET) command operation\n");
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	buf->sem_perm.uid = uid;
-	buf->sem_perm.gid = gid;
-	buf->sem_perm.mode = mode;
-	if (semctl (semid, 0, IPC_SET, buf) < 0)
+
+
+	semunptr.buf = (struct semid_ds *) calloc(1, sizeof (struct semid_ds));
+	semunptr.buf->sem_perm.uid = uid;
+	semunptr.buf->sem_perm.gid = gid;
+	semunptr.buf->sem_perm.mode = mode;
+
+	if (semctl (semid, 0, IPC_SET, semunptr) < 0)
 		sys_error ("semctl failed", __LINE__);
-	free (buf);
+
 
 	/*
 	 * Test semctl () with IPC_STAT command 
@@ -263,19 +260,18 @@ static void test_commands (pid_t pid)
 	 */
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (IPC_STAT) command operation\n");
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	if (semctl (semid, 0, IPC_STAT, buf) < 0)
+
+	if (semctl (semid, 0, IPC_STAT, semunptr) < 0)
 		sys_error ("semctl failed", __LINE__);
-	if (buf->sem_perm.uid != uid)
+	if (semunptr.buf->sem_perm.uid != uid)
 		sys_error ("semctl: uid was not set", __LINE__);
-	if (buf->sem_perm.gid != gid)
+	if (semunptr.buf->sem_perm.gid != gid)
 		sys_error ("semctl: gid was not set", __LINE__);
-	if ((buf->sem_perm.mode & 0777) != mode) 
+	if ((semunptr.buf->sem_perm.mode & 0777) != mode) 
 		sys_error ("semctl: mode was not set", __LINE__);
-	if (buf->sem_nsems != nsems) 
+	if (semunptr.buf->sem_nsems != nsems) 
 		sys_error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
-	free (buf);
 
 	/*
 	 * Test semctl () with SETVAL command
@@ -300,14 +296,13 @@ static void test_commands (pid_t pid)
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (GETVAL) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETVAL, 0)) < 0)
+		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != i)
 			sys_error ("semctl (GETVAL) failed", __LINE__);
 	}
 
 
-#ifdef _LINUX_
 	// testing in linux.  before semctl(GETPID) works, we must call semop
 	if (pid == parent_pid)
 		printf ("\n\tTesting semop (signal and wait) operations\n");
@@ -321,7 +316,6 @@ static void test_commands (pid_t pid)
 		if ((val = semop (semid, &sops, 1)) < 0)
 		        sys_error ("semop wait failed", __LINE__);
 	}
-#endif
 
 	/*
 	 * Test semctl () with GETPID command
@@ -329,7 +323,7 @@ static void test_commands (pid_t pid)
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (GETPID) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETPID, 0)) < 0)
+		if ((val = semctl (semid, i, GETPID, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != pid)
 			sys_error ("semctl (GETPID) failed", __LINE__);
@@ -347,7 +341,7 @@ static void test_commands (pid_t pid)
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (GETNCNT) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETNCNT, 0)) < 0)
+		if ((val = semctl (semid, i, GETNCNT, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != 0)
 			sys_error ("semctl (GETNCNT) returned wrong value", 
@@ -366,7 +360,7 @@ static void test_commands (pid_t pid)
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (GETZCNT) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETZCNT, 0)) < 0)
+		if ((val = semctl (semid, i, GETZCNT, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != 0)
 			sys_error ("semctl (GETZCNT) returned wrong value", 
@@ -378,11 +372,12 @@ static void test_commands (pid_t pid)
 	 *
 	 * Set all of the semaphore values in the set.
 	 */
+	arg.array = malloc(sizeof(int) * nsems);
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (SETALL) command operation\n");
 	for (i = 0; i < nsems; i++)
-		array [i] = i;
-	if (semctl (semid, 0, SETALL, array) < 0)
+		arg.array[i] = i;
+	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
 
 	/*
@@ -393,10 +388,10 @@ static void test_commands (pid_t pid)
 	 */
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (GETALL) command operation\n");
-	if (semctl (semid, nsems, GETALL, array) < 0)
+	if (semctl (semid, nsems, GETALL, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
-		if (array [i] != i)
+		if (arg.array [i] != i)
 			sys_error ("semaphore does not match expected value", 
 				__LINE__);
 	}
@@ -408,7 +403,7 @@ static void test_commands (pid_t pid)
 	 */
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (IPC_RMID) command operation\n");
-	if (semctl (semid, nsems, IPC_RMID, 0) < 0)
+	if (semctl (semid, nsems, IPC_RMID, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
 
 }
