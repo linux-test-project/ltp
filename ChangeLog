@@ -1,6 +1,35 @@
 Change Log
 ----------
 
+LTP-20020909
+------------
+- Fix path in runpan.sh                          ( Paul Larson )
+- runtest/syscalls:
+        a.Removed the {} from the environment    ( Robbie Williamson )
+          variables
+        b.Comment out stime01, since it sets     ( Paul Larson )
+          the system time forward and could
+          cause problems with several other
+          tests if it's running at the same
+          time (-x nn)
+- Renamed the fsx-linux test on nfs to           ( Robbie Williamson )
+  "nfsx-linux"
+- fsxtest: Added code to handle JFS.             ( Robbie Williamson )
+- ld01: Made the diff case insensative for       ( Robbie Williamson )
+  cross-platform compatibility.
+- Removed obsolete test, "ulimit", from          ( Robbie Williamson)
+  automatic build and install.
+- Moved the 'chown' commands to "install         ( Robbie Williamson )
+  section in the Makefile of fchmod
+- Applied patches for s390                       ( Susanne Wintenberger )
+- Applied patches for IA64                       ( Jacky Malcles )
+- Applied patch for adding some missing includes ( Andreas Jaeger )
+  to remove warnings about missing prototypes
+- Applied uClibc patches.                        ( Steven J. Hill )
+- Applied string formatting patches.             ( Xiao Feng Shi )
+- Applied pan/logfile/tools patches.             ( William J. Huie )    
+
+
 LTP-20020813
 ------------
 * Fixes
