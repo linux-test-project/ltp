@@ -112,7 +112,7 @@ int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EPERM, EBADF, 0};
 
-char nobody_uid[] = "nobody";
+char bin_uid[] = "bin";
 struct passwd *ltpuser;
 
 
@@ -216,16 +216,23 @@ setup()
 {
 	int ind;			/* counter for setup functions */
 
+        ltpuser = getpwnam(bin_uid);
+
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	test_home = get_current_dir_name();
-
-	/* Switch to nobody user for correct error code collection */
+	
+	/* Switch to bin user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         ltpuser = getpwnam(nobody_uid);
+         if (setegid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setegid failed to "
+                         "to set the effective gid to %d",
+                         ltpuser->pw_uid);
+                perror("setegid");
+         }
          if (seteuid(ltpuser->pw_uid) == -1) {
                 tst_resm(TINFO, "seteuid failed to "
                          "to set the effective uid to %d",
@@ -238,6 +245,7 @@ setup()
 
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
+
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -260,7 +268,6 @@ setup1()
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
 	
-
 	/* Create a testfile under temporary directory */
 	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -286,8 +293,7 @@ setup1()
 	if (system((const char *)Cmd_buffer) != 0) {
 		tst_brkm(TBROK, cleanup,
 			 "Fail to modify %s ownership(s)!", TEST_FILE1);
-	}
-	
+	}	
 	return 0;
 }
 
