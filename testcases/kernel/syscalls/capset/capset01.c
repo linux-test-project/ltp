@@ -61,6 +61,10 @@
  *				-p   : Pause for SIGUSR1 before starting
  *				-P x : Pause for x seconds between iterations.
  *				-t   : Turn on syscall timing.
+ *
+ * CHANGES:
+ *  2005/01/01: add an hint to a possible solution when test fails
+ *              - Ricky Ng-Adam <rngadam@yahoo.com>
  ****************************************************************/
 #include <unistd.h>
 #include <errno.h>
@@ -123,8 +127,10 @@ main(int ac, char **av)
 			tst_resm(TPASS, "capset() returned %d", TEST_RETURN);
 		} else {
 			tst_resm(TFAIL, "Test Failed, capset()"
-				 " returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+				 " returned %d, errno = %d : %s."
+				 " Maybe you need to do `modprobe capability`?",
+				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO)
+				 );
 		} 
 	}	/* End for TEST_LOOPING */
 
