@@ -82,9 +82,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+/* Comment these out for glibc 2.2.5 */
 #include <sys/swap.h>
 #include <asm/page.h>
 #include <asm/atomic.h>
+/*************************************/
 #include <linux/swap.h>
 #include <fcntl.h>
 #include <pwd.h>
