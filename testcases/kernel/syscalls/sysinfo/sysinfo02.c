@@ -71,7 +71,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define INVALID_ADDRESS 0xffffffff;
+#define INVALID_ADDRESS 0xffffffffffffffff;
 
 void setup();
 void cleanup();
