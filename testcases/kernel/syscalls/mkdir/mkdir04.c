@@ -85,8 +85,8 @@ int fail;
 
 #define PERMS		0700
 
-char user1name[] = "ltpuser1";
-char user2name[] = "ltpuser2";
+char user1name[] = "nobody";
+char user2name[] = "bin";
 
 char *TCID="mkdir04";           /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

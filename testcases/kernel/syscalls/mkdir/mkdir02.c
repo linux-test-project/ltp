@@ -90,8 +90,8 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 char tstdir1 [100];
 char tstdir2 [100];
 
-char user1name[] = "ltpuser1";
-char user2name[] = "ltpuser2";
+char user1name[] = "nobody";
+char user2name[] = "bin";
 
 int
 main(int ac, char **av)
