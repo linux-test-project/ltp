@@ -1,0 +1,195 @@
+#!/bin/sh
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : ld01
+#
+#  PURPOSE: To test the basic functionality of the `ld` command.
+#
+#  HISTORY:
+#    06/01 Robbie Williamson (robbiew@us.ibm.com)
+#     -Ported
+#
+#
+#---------------------------------------------------------------------------
+#Uncomment line below for debug output
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+do_cleanup()
+{
+ rm -rf $TCtmp/errmsg.out
+ rm -rf $TCtmp/errmsg.exp
+ rm -rf $TCtmp/test.lib
+}
+
+res=0
+TCdat=${TCdat:-`pwd`}
+TCtmp=${TCtmp:-/tmp}
+
+#ASSERTION 1 
+#Test for graceful failure when ld can't find a fileTest calling ld directly
+#
+#CODE
+	echo "Assertion 1 .................."
+	/usr/bin/ld x.o y.o 2> $TCtmp/errmsg.out
+cat <<EOF > $TCtmp/errmsg.exp
+/usr/bin/ld: cannot open x.o: No such file or directory
+EOF
+
+diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+if [ $? -eq 0 ]
+then
+	echo  "-)"
+else
+	echo "FAIL -  ld failed to give expected error msg"
+	do_cleanup
+	exit 1
+fi
+
+
+
+##ASSERTION 2 
+#Test for graceful failure when ld can't find a fileTest calling ld through cc
+#
+#CODE
+	echo "Assertion 2 .................."
+	/usr/bin/cc x.o  y.o 2> $TCtmp/errmsg.out
+cat <<EOF > $TCtmp/errmsg.exp
+cc: x.o: No such file or directory
+cc: y.o: No such file or directory
+cc: No input files
+EOF
+
+diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+if [ $? -eq 0 ]
+then
+	echo  "-)"
+else
+	echo "FAIL -  ld failed to give expected error msg"
+	do_cleanup
+	exit 1
+fi
+
+
+
+##ASSERTION 3
+#Test for graceful failure when ld can't find a fileTest calling ld directly, with a non-existent path
+#
+#CODE
+	echo "Assertion 3 .................."
+	/usr/bin/ld bad/x.o 2> $TCtmp/errmsg.out
+cat <<EOF > $TCtmp/errmsg.exp
+/usr/bin/ld: cannot open bad/x.o: No such file or directory
+EOF
+
+diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+if [ $? -eq 0 ]
+then
+	echo  "-)"
+else
+	echo "FAIL -  ld failed to give expected error msg"
+	do_cleanup
+	exit 1
+fi
+
+
+
+##ASSERTION 4
+#Test for graceful failure when ld can't find a fileTest calling ld through cc, with a non-existent path
+#
+#CODE
+	echo "Assertion 4 .................."
+	/usr/bin/cc bad/x.o 2> $TCtmp/errmsg.out
+cat <<EOF > $TCtmp/errmsg.exp
+cc: bad/x.o: No such file or directory
+cc: No input files
+EOF
+
+diff -w  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+if [ $? -eq 0 ]
+then
+	echo  "-)"
+else
+	echo "FAIL -  ld failed to give expected error msg"
+	do_cleanup
+	exit 1
+fi
+
+## ASSERTION 5
+## Making sure the "shared" option works as designed
+##
+echo "Assertion 5 .................."
+	ld -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/test.lib
+file $TCtmp/test.lib | grep -q shared
+if [[ $? -eq 0 ]]
+then
+	echo "-)"
+else
+	echo "FAIL - ld failed to build a shared object"
+	do_cleanup
+	exit 1
+fi
+
+
+## ASSERTION 6
+## Making sure that the linker ignores the "-Bstatic" option 
+## when using a dynamically linked shared object
+##
+echo "Assertion 6 .................."
+	ld -Bdynamic -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/lola 2>$TCtmp/errmsg.out
+	ld -Bstatic  -L. $TCdat/ldmain.o $TCdat/rd1.o $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
+nm $TCtmp/a.out | grep -q DYNAMIC
+if [[ $? -eq 0 ]]
+then
+	echo "-)"
+else
+	echo "FAIL - ld failed ignore the -Bstatic option with shared objects"
+	do_cleanup
+	exit 1
+fi
+
+
+##
+## ASSERTION 7
+## Making sure that the linker does not accepts shared object
+## when doing static linking try to link with a with and
+## without -r*repeat with -r
+##
+echo "Assertion 7 .................."
+	ld -Bstatic -r  $TCdat/ldmain.o $TCdat/rf1.o $TCtmp/lola -L/usr/lib/ 2> $TCtmp/errmsg.out
+cat <<EOF > $TCtmp/errmsg.exp
+$TCtmp/lola: could not read symbols: Invalid operation
+EOF
+
+diff -w $TCtmp/errmsg.out $TCtmp/errmsg.exp
+if [ $? -eq 0 ]
+then
+	echo "-)"
+else
+	echo "FAIL - ld failed to give expected error msg"
+	do_cleanup
+	exit 1
+fi
+
+
+
+do_cleanup
+echo "ld: PASS"
+exit 0
