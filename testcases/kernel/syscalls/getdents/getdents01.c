@@ -72,15 +72,6 @@ char *TCID = "getdents01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-#ifndef __i386__
-int main()
-{
-	tst_resm(TINFO, "This test includes x86 asm and will not work on "
-			"this machine");
-	tst_exit();
-	return(0);
-}
-#else
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -141,7 +132,8 @@ int main(int ac, char **av)
 		 * if we could call getdents that way.
 		 */
 	
-		rval = GETDENTS_ASM();
+		_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
+		rval = getdents(fd, dirp, count);
 	
 		if (rval < 0) {		/* call returned an error */
 	
@@ -158,27 +150,29 @@ int main(int ac, char **av)
 				 "end of directory", TCID);
 			continue;
 		}
-
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Now we have dirp pointing to the "base" dirent
-			 * structure for the directory that we opened.
-			 */
-		
-			/*
-			 * The first dirent structure returned should point
-			 * to the current directory, AKA "."
-			 */
-		
-			if (strcmp(".", dirp->d_name) == 0) {
-				tst_resm(TPASS, "%s call succeeded", TCID);
-			} else {
-				tst_resm(TFAIL, "%s call failed - "
-					 "unexpected directory name: %s", TCID, dirp->d_name);
-			}
-		} else {
+	
+	/* Removed this b/c there isn't any documentation on its validity
+         */
+	//	if (STD_FUNCTIONAL_TEST) {
+	//		/*
+	//		 * Now we have dirp pointing to the "base" dirent
+	//		 * structure for the directory that we opened.
+	//		 */
+	//	
+	//		/*
+	//		 * The first dirent structure returned should point
+	//		 * to the current directory, AKA "."
+	//		 */
+	//	
+	//		if (strcmp(".", dirp->d_name) == 0) {
+	//			tst_resm(TPASS, "%s call succeeded", TCID);
+	//		} else {
+	//			tst_resm(TFAIL, "%s call failed - "
+	//				 "unexpected directory name: %s", TCID, dirp->d_name);
+	//		}
+	//	} else {
 			tst_resm(TPASS, "call succeeded");
-		}
+	//	}
 
 		/*
 		 * clean up things in case we are looping
@@ -235,4 +229,3 @@ cleanup(void)
 	tst_exit();
 }
 
-#endif /* __i386__ */
