@@ -171,6 +171,7 @@ main(int argc, char **argv)
 		 */
 		kid_count = 0;
 		errno = 0;
+		sleep(2);
 		while (((ret_val = waitpid(0, &status, WNOHANG)) != -1) ||
 		       (errno == EINTR)) {
 			if ((ret_val == -1) || (ret_val == 0)) {
