@@ -24,7 +24,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int wakeup = 0;
+volatile sig_atomic_t wakeup = 0;
 
 void handler(int signo)
 {
@@ -46,8 +46,8 @@ int main()
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGURG,  &act, 0);     
 
-		while(wakeup == 1) {
-			tv.tv_sec = 1;
+		while(wakeup == 0) {
+			tv.tv_sec = 10;
 			tv.tv_usec = 0;
 			if (select(0, NULL, NULL, NULL, &tv)== -1 && 
 			    errno == EINTR) {
@@ -74,6 +74,7 @@ int main()
 		   POSIX conformant OS to not schedule the child process
 		   for a long time.)
 		*/
+		/* This timeout should be smaller than the one in the child.  */
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
 		select(0, NULL, NULL, NULL, &tv);
