@@ -35,6 +35,7 @@
 #                             which indicated failure.
 #                           - fixed code to add $LTPTMP/cdrom to /etc/fstab
 #               Jan 07 2003 - Call eject with -v for verbose information.
+#				Jan 08 2003 - Added test #4.
 #
 #! /bin/sh
 
@@ -191,6 +192,15 @@ else
     fi
 fi
 
+if [ -f $LTPTMP/fstab.bak ]
+then
+    mv $LTPTMP/fstab.bak /etc/fstab &>/dev/null
+else
+    $LTPBIN/tst_resm TINFO "Test #3: Could not restore /etc/fstab coz"
+    $LTPBIN/tst_resm TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
+fi
+
+
 # Test #4
 # Test if eject -a on|1|off|0 will enable/disable auto-eject mode 
 # the drive automatically ejects when the device is closed.
@@ -287,12 +297,64 @@ else
 	fi
 fi
 
+# disable auto-eject, closing the device should not open the tray.
+
 eject -a 0 &>$LTPTMP/tst_eject.out || RC=$?
 if [ $RC -ne 0 ]
 then
 	$LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
 		"Test #4: eject command failed setting auto-eject mode on. Reason:"
 	TFAILCNT=$((TFAILCNT+1))
+else
+	$LTPBIN/tst_resm TINFO "Test #4: auto-eject feature disabled"
+fi
+
+# close the tray
+
+eject -tv &>$LTPTMP/tst_eject.res || RC=$?
+if [ $RC -ne 0 ]
+then
+	$LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res NULL \
+		"Test #4: eject command to close the tray. Reason:"
+	TFAILCNT=$((TFAILCNT+1))
+else
+	grep "closing tray" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out || RC=$?	
+	if [ $RC -eq 0 ]
+	then
+		$LTPBIN/check_tray || RC=$?
+		if [ $RC -eq 2 ]
+		then 
+			$LTPBIN/tst_brkm TBROK NULL \
+				"Test #4: eject -t reported tray closed, but tray is open"
+			TFAILCNT=$((TFAILCNT+1)) 
+		fi
+	fi
+fi
+
+mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+if [ $RC -ne 0 ]
+then
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
+fi
+
+umount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+if [ $RC -ne 0 ]
+then
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
+fi
+
+$LTPBIN/check_tray || RC=$?
+if [ $RC -eq 2 ]
+then
+	$LTPBIN/tst_resm TFAIL \
+		"Test #4: closing the device opened the tray, but, auto-eject = off"
+    TFAILCNT=$((TFAILCNT+1))
+else
+	$LTPBIN/tst_resm TPASS "Test #4: eject can enable and disable auto-eject"
 fi
 
 
@@ -300,8 +362,8 @@ if [ -f $LTPTMP/fstab.bak ]
 then
     mv $LTPTMP/fstab.bak /etc/fstab &>/dev/null
 else
-    $LTPBIN/tst_resm TINFO "Test #3: Could not restore /etc/fstab coz"
-    $LTPBIN/tst_resm TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
+    $LTPBIN/tst_resm TINFO "Test #4: Could not restore /etc/fstab coz"
+    $LTPBIN/tst_resm TINFO "Test #4: backup file $LTPTMP/fstab.bak was lost!"
 fi
 
 #CLEANUP & EXIT
