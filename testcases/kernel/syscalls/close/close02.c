@@ -64,7 +64,7 @@ void setup(void);
 
 int exp_enos[] = {EBADF, 0};
 
-char *TCID = "close02()";
+char *TCID = "close02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

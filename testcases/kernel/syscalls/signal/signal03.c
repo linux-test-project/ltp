@@ -65,7 +65,7 @@ void cleanup(void);
 void setup(void);
 void sighandler(int);
 
-char *TCID= "signal03()";
+char *TCID= "signal03";
 int TST_TOTAL;
 extern int Tst_count;
 

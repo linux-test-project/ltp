@@ -66,7 +66,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID = "close01()";
+char *TCID = "close01";
 int TST_TOTAL = 2;
 extern int Tst_count;
 

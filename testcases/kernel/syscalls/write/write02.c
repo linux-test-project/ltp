@@ -54,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "write02()";
+char *TCID = "write02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

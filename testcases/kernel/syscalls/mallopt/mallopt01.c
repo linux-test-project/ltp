@@ -46,7 +46,7 @@
 
 int local_flag = PASSED;
 
-char *TCID = "mallopt01()";
+char *TCID = "mallopt01";
 int block_number;
 int errno;
 FILE *temp;
