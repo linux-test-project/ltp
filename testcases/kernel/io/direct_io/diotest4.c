@@ -207,7 +207,7 @@ main(int argc, char *argv[])
         sprintf(filename,"testdata-4.%d", getpid()); 
 
         /* Test for filesystem support of O_DIRECT */
-        if ((fd1 = open(filename, O_DIRECT, 0666)) < 0) {
+        if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {
                  tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
                  tst_exit();
         }else{
