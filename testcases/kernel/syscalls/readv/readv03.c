@@ -63,7 +63,7 @@
 char buf1[K_1]; 
 
 struct iovec rd_iovec[1] = { 
-	buf1,			K_1
+	{buf1,			K_1}
 };
 
 const char *TEST_DIR = "alpha";
@@ -79,7 +79,7 @@ void setup();
 void cleanup();
 
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -113,6 +113,7 @@ main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

@@ -63,10 +63,10 @@ struct iovec rd_iovec[MAX_IOVEC] = {
 	/* iov_base */		/* iov_len */
 
 	/* Test case #1 */
-	(buf2 + CHUNK * 10),	CHUNK,
+	{(buf2 + CHUNK * 10),	CHUNK},
 
 	/* Test case #2 */
-	(buf2 + CHUNK * 11),	CHUNK
+	{(buf2 + CHUNK * 11),	CHUNK}
 };
 
 char f_name[K_1];
@@ -85,7 +85,7 @@ char *getenv();
 void setup();
 void cleanup();
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -104,7 +104,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-test1:
+//test1:
 		l_seek(fd, CHUNK * 11, 0);
 		if (readv(fd, (rd_iovec + 0), 0) == -1)  {
 			tst_resm(TFAIL, "readv() failed with unexpected errno "
@@ -113,7 +113,7 @@ test1:
 			tst_resm(TPASS, "readv read 0 io vectors");
 		}
 
-test2:
+//test2:
 		l_seek(fd, CHUNK * 12, 0);
 		if (readv(fd, (rd_iovec + 1), 4) != CHUNK)  {
 			tst_resm(TFAIL, "readv failed reading %d bytes, "
@@ -126,6 +126,7 @@ test2:
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 int
@@ -149,6 +150,7 @@ init_buffs(char *pbufs[])
 			tst_brkm(TBROK, cleanup, "Error in init_buffs()");
 		}
 	}
+	return(0);
 }
 
 int
@@ -163,6 +165,7 @@ fill_mem(char *c_ptr, int c1, int c2)
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
+	return(0);
 }
 
 long
@@ -171,6 +174,7 @@ l_seek(int fdesc, long offset, int whence)
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek Failed : errno = %d", errno);
 	}
+	return(0);
 }
 
 /*

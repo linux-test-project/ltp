@@ -64,22 +64,22 @@ struct iovec rd_iovec[MAX_IOVEC] = {
 	/* iov_base */		/* iov_len */
 
 	/* Test case #1 */
-	buf2,			-1,
-	(buf2 + CHUNK),		CHUNK,
-	(buf2 + CHUNK * 2),	CHUNK,
+	{buf2,			-1},
+	{(buf2 + CHUNK),	CHUNK},
+	{(buf2 + CHUNK * 2),	CHUNK},
 
 	/* Test case #2 */
-	(buf2 + CHUNK * 3),	G_1,
-	(buf2 + CHUNK * 4),	G_1,
-	(buf2 + CHUNK * 5),	G_1,
+	{(buf2 + CHUNK * 3),	G_1},
+	{(buf2 + CHUNK * 4),	G_1},
+	{(buf2 + CHUNK * 5),	G_1},
 
 	/* Test case #3 */
-	(caddr_t)-1,		CHUNK,
-	(buf2 + CHUNK * 6),	CHUNK,
-	(buf2 + CHUNK * 8),	CHUNK,
+	{(caddr_t)-1,		CHUNK},
+	{(buf2 + CHUNK * 6),	CHUNK},
+	{(buf2 + CHUNK * 8),	CHUNK},
 
 	/* Test case #4 */
-	(buf2 + CHUNK * 9),	CHUNK
+	{(buf2 + CHUNK * 9),	CHUNK}
 };
 
 char f_name[K_1];
@@ -100,7 +100,7 @@ char *getenv();
 void setup();
 void cleanup();
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -119,7 +119,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-test1:
+//test1:
 		if (readv(fd[0], rd_iovec, 1) < 0) {
 			if (errno != EINVAL) {
 				tst_resm(TFAIL, "readv() set an illegal errno:"
@@ -132,7 +132,7 @@ test1:
 				 "value");
 		}
 
-test2:
+//test2:
 		l_seek(fd[0], CHUNK * 6, 0);
 		if (readv(fd[0], (rd_iovec + 6), 3) < 0) {
 			if (errno != EFAULT) {
@@ -151,7 +151,7 @@ test2:
 				 "value");
 		}
 
-test3:
+//test3:
 		if (readv(fd[1], (rd_iovec + 9), 1) < 0) {
 			if (errno != EBADF) {
 				tst_resm(TFAIL, "expected errno = EBADF, "
@@ -164,7 +164,7 @@ test3:
 				 "value");
 		}
 
-test4:
+//test4:
 		l_seek(fd[0], CHUNK * 10, 0);
 		if (readv(fd[0], (rd_iovec + 10), -1) < 0) {
 			if (errno != EINVAL) {
@@ -182,6 +182,7 @@ test4:
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
@@ -274,6 +275,7 @@ init_buffs(char *pbufs[])
 			tst_brkm(TBROK, cleanup, "Error in init_buffs()");
 		}
 	}
+	return(0);
 }
 
 int
@@ -288,6 +290,7 @@ fill_mem(char *c_ptr, int c1, int c2)
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
+	return(0);
 }
 
 long
@@ -296,4 +299,5 @@ l_seek(int fdesc, long offset, int whence)
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek Failed : errno = %d", errno);
 	}
+	return(0);
 }
