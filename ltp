@@ -79,12 +79,13 @@ kernel()
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
   LOOPS=$(( $LOOPS * $TESTS ))
 
-  ${LTPROOT}/ver_linux
+  ${LTPROOT}/ver_linux >> $OUTFILE
 
   ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
   PID=$!
   
   tail -f $OUTFILE &
+  TAIL_PID=$!
 
   ps -ef | grep -v grep | grep $PID > /dev/null
   while [ $? -eq "0" ]
@@ -92,7 +93,9 @@ kernel()
    ps -ef | grep -v grep | grep $PID > /dev/null
   done
 
-  kill $PID
+  kill $TAIL_PID > /dev/null 2>&1
+  sleep 1
+  clear
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -101,6 +104,21 @@ kernel()
   fi
 
   rm -rf $TMP
+
+  echo ""
+  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+  read extract
+  case $extract in
+    Y*|y*)
+	   echo ""
+           echo "The file $OUTFILE-errors will contain this information."
+	   sleep 1
+	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+	   ;;
+    *)
+	   ;;
+  esac
+
 }
 
 
@@ -154,6 +172,8 @@ networking()
    echo "               *** ERROR ***"
    echo "Could not reach $RHOST. Network tests aborting"
    echo ""
+   echo -n "Press [ENTER] to continue.>>"
+   read continue
    main
   fi
 
@@ -224,26 +244,43 @@ networking()
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l `
   LOOPS=$(( $TESTS * $LOOPS ))
 
-  ${LTPROOT}/ver_linux
+  ${LTPROOT}/ver_linux >> $OUTFILE
 
   ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
   PID=$!
 
   tail -f $OUTFILE &
-
+  TAIL_PID=$!
+ 
   ps -ef | grep -v grep | grep $PID > /dev/null
   while [ $? -eq "0" ]
   do
    ps -ef | grep -v grep | grep $PID > /dev/null
   done
 
-  kill $PID
+  kill $TAIL_PID > /dev/null 2>&1
+  sleep 1
+  clear
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
   else
     echo pan reported FAIL
   fi
+  
+  echo ""
+  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+  read extract
+  case $extract in
+    Y*|y*)
+	   echo ""
+           echo "The file $OUTFILE-errors will contain this information."
+	   sleep 1
+	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+	   ;;
+    *)
+	   ;;
+  esac
 
   rm -rf $TMP
 }
@@ -293,12 +330,13 @@ diskio()
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
   LOOPS=$(( $LOOPS * $TESTS ))
 
-  ${LTPROOT}/ver_linux
+  ${LTPROOT}/ver_linux >> $OUTFILE
 
   ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
   PID=$!
 
   tail -f $OUTFILE &
+  TAIL_PID=$!
 
   ps -ef | grep -v grep | grep $PID > /dev/null
   while [ $? -eq "0" ]
@@ -306,13 +344,32 @@ diskio()
    ps -ef | grep -v grep | grep $PID > /dev/null
   done
 
-  kill $PID
+  kill $TAIL_PID > /dev/null 2>&1
+  sleep 1
+  clear
+
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
   else
     echo pan reported FAIL
   fi
+  
+  echo ""
+  echo -n "Would you like the errors extracted from $OUTFILE? (Y/N) >> "
+  read extract
+  case $extract in
+    Y*|y*)
+	   echo ""
+           echo "The file $OUTFILE-errors will contain this information."
+	   sleep 1
+	   ${LTPROOT}/tools/ltpoutput $OUTFILE > $OUTFILE-errors
+	   ;;
+    *)
+	   ;;
+  esac
+
+  rm -rf $TMP
 }
 
 
@@ -341,7 +398,6 @@ menu_print()
   echo ""
   echo "               The Linux Test Project Testsuite    "
   echo ""
-  
   echo "               (1)  Kernel system call tests"
   echo "               (2)  Disk I/O tests"
   echo "               (3)  Networking tests"
