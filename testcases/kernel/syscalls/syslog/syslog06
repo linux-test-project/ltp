@@ -101,7 +101,7 @@ syslog_case6()
 	echo "user.info        /var/log/messages" > /etc/syslog.conf
 
 	#Restart syslog
-	tst_resm TINFO "Restart syslog deamon"
+	tst_resm TINFO "Restart syslog daemon"
 
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
 	sleep 2

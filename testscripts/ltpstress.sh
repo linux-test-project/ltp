@@ -141,7 +141,7 @@ chmod 644 /root/.rhosts
 
 netstat -an | grep 514
 if [ $? -eq 1 ];then
-  echo "Error: 'rsh' deamon not active on this machine."
+  echo "Error: 'rsh' daemon not active on this machine."
   exit 1
 fi
 

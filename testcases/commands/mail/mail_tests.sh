@@ -130,7 +130,7 @@ fi
 
 # Test #2
 # Test that mail user@bad-domain will result in a warning from the mailer
-# deamon that the domain does not exist. 
+# daemon that the domain does not exist. 
 
 export TCID=mail02
 export TST_COUNT=2
@@ -140,7 +140,7 @@ RC2=0
 
 $LTPBIN/tst_resm TINFO \
     "Test #2: mail user@bad-domain will result in failure"
-$LTPBIN/tst_resm TINFO "Test #2: to deliver the mail. Mailer deamon should"
+$LTPBIN/tst_resm TINFO "Test #2: to deliver the mail. Mailer daemon should"
 $LTPBIN/tst_resm TINFO "Test #2: report this failure."
 
 cat > $LTPTMP/tst_mail.in <<EOF
@@ -201,7 +201,7 @@ RC2=0
 
 $LTPBIN/tst_resm TINFO \
     "Test #3: mail non_existant_user@localhost will fail"
-$LTPBIN/tst_resm TINFO "Test #3: to deliver the mail. Mailer deamon should"
+$LTPBIN/tst_resm TINFO "Test #3: to deliver the mail. Mailer daemon should"
 $LTPBIN/tst_resm TINFO "Test #3: report this failure."
 
 cat > $LTPTMP/tst_mail.in <<EOF
