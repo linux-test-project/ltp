@@ -15,5 +15,13 @@ TARGETS := s-c stress1 stress2
 
 all: $(TARGETS)
 
+graph: pthread_cond_timedwait.png
+
+pthread_cond_timedwait.png: s-c.c
+	$(CC) $(CFLAGS) -DPLOT_OUTPUT -o s-c s-c.c $(LDFLAGS)
+	./s-c > data.plot
+	./do-plot data.plot
+	rm -f data.plot
+
 clean:
 	rm -f $(TARGETS)

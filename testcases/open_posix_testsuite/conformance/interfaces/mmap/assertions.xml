@@ -68,7 +68,7 @@ processor that may access that typed memory object.
 When MAP_FIXED is set in the flags argument, the implementation is informed that the value of
 pa shall be addr, exactly. If MAP_FIXED is set, mmap( ) may returnMAP_FAILED and set errno to
 [EINVAL]. If a MAP_FIXED request is successful, the mapping established by mmap( ) replaces
-any previous mappings for the process¡¯ pages in the range [pa,pa+len).
+any previous mappings for the process' pages in the range [pa,pa+len).
   </assertion>
   
     <assertion id="10" tag="ref:XSH6:25265:25271">
@@ -103,7 +103,7 @@ removed when there are no more mappings to the file.
       <assertion id="13" tag="ref:XSH6:25287:25290">
 The st_atime field of the mapped file may be marked for update at any time between the mmap( )
 call and the corresponding munmap( ) call. The initial read or write reference to a mapped region
-shall cause the file¡¯s st_atime field to be marked for update if it has not already been marked for
+shall cause the file's st_atime field to be marked for update if it has not already been marked for
 update.
   </assertion>
   
@@ -124,7 +124,7 @@ unmapped.
       <assertion id="16" tag="ref:XSH6:25305:25308">
 Upon successful completion, the mmap( ) function shall return the address at which the mapping
 was placed (pa); otherwise, it shall return a value of MAP_FAILED and set errno to indicate the
-error. The symbol MAP_FAILED is defined in the <sys/mman.h> header. No successful return
+error. The symbol MAP_FAILED is defined in the sys/mman.h header. No successful return
 from mmap( ) shall return the value MAP_FAILED.
       </assertion>
   

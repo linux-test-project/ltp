@@ -43,6 +43,9 @@ void *a_thread_func()
 
 	printf("Test PASSED\n");
 	pthread_exit((void*)0);
+
+        /* To please some compilers */
+	return NULL;
 }
 
 int main() {

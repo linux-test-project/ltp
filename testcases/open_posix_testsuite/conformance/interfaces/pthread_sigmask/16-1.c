@@ -50,6 +50,9 @@ void *a_thread_func() {
 
 	printf("PASS: pthread_sigmask returned the correct error value.\n");
 	pthread_exit((void*)0);
+
+        /* To please some compilers */
+	return NULL;
 }
 
 int main() {

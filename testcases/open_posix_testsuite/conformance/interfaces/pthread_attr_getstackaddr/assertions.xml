@@ -14,5 +14,4 @@
    The functions shall not return an error code of [EINTR].
   </assertion>
   
-  </assertion>
 </assertions>

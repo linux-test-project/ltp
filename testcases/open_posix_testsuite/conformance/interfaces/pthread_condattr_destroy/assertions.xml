@@ -12,7 +12,7 @@
   the results of otherwise referencing the object after it has been destroyed are undefined.
   </assertion> 
 
-  <assertion id="3" tag="ref:XSH6:32682:32683>
+  <assertion id="3" tag="ref:XSH6:32682:32683">
   If successful, it shall return zero;
   </assertion> 
 

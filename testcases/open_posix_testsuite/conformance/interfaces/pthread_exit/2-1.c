@@ -12,10 +12,9 @@
  * 
  * Steps:
  * 1.  Create a new thread.
- * 2.  Send a cancel request to it from main, then use pthread_join to wait for it to end.
- * 3.  The thread will sleep for 3 seconds, then call test_cancel() to cancel execution.
- * 4.  When this happens, the cleanup handler should be called.  
- * 5.  Main will test that when pthread_join allows main to continue with the process that
+ * 2.  The thread will call pthread_exit().
+ * 3.  When this happens, the cleanup handler should be called.  
+ * 4.  Main will test that when pthread_join allows main to continue with the process that
  *     the thread has ended execution.  If the cleanup_handler was not called, then the
  *     test fails.
  * 
@@ -62,9 +61,7 @@ void *a_thread_func()
 	pthread_cleanup_push(a_cleanup_func2,NULL);
 	pthread_cleanup_push(a_cleanup_func3,NULL);
 	
-	/* Wait for a while for main to send the cancel request. */
-	sleep(3);
-	
+	/* Terminate the thread here. */
 	pthread_exit(0);
 	
 	/* Need these here for it to compile nicely.  We never reach here though. */
@@ -89,13 +86,6 @@ int main()
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
-		return PTS_UNRESOLVED;
-	}
-	
-	/* Send cancel request to the thread.  */
-	if(pthread_cancel(new_th) != 0) 
-	{
-		perror("Couldn't cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
 	

@@ -15,6 +15,15 @@
 # Ok, I don't use Automake any more
 #
 # Added patch from dank REMOVE-THIS AT kegel DOT com
+#
+
+# Added tests timeout from Sebastien Decugis (http://nptl.bullopensource.org) 
+# Expiration delay is 120 seconds
+TIMEOUT_VAL = 120
+# The following value is the shell return value of a timedout application.
+# with the bash shell, the ret val of a killed application is 128 + signum
+# and under Linux, SIGALRM=14, so we have (Linux+bash) 142.
+TIMEOUT_RET = $(shell cat $(top_builddir)/t0.val)
 
 top_builddir = .
 
@@ -31,6 +40,8 @@ FUNCTIONAL_RUN := $(shell $(top_builddir)/locate-test --frun)
 STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
 STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
 PWD := $(shell pwd)
+TIMEOUT = $(top_builddir)/t0 $(TIMEOUT_VAL)
+
 
 all: build-tests run-tests 
 
@@ -55,6 +66,8 @@ INCLUDE = -Iinclude
 # FIXME: exaust cmd line length
 clean:
 	@rm -f $(LOGFILE)
+# Timeout helper files
+	@rm -f $(top_builddir)/t0{,.val}
 # Built runnable tests
 	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
 	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
@@ -66,7 +79,8 @@ clean:
 %.test: %.o
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
-	nm -g $< | grep -q " T main" || exit 0; \
+	{ nm -g $< | grep -q " T main"; } || \
+	{ echo "$(@:.test=): link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
 	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
 		echo "$(@:.test=): link: PASS" | tee -a $(LOGFILE); \
@@ -82,28 +96,36 @@ clean:
 # Rule to run an executable test
 # If it is only a build test, then the binary exist, so we don't need to run
 .PHONY: %.run-test
-%.run-test: %.test
+%.run-test: %.test $(top_builddir)/t0
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
-	$< > $$COMPLOG 2>&1; \
+	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
 	RESULT=$$?; \
-	if [ $$RESULT == 1 ]; \
+	if [ $$RESULT -eq 1 ]; \
 	then \
 		MSG="FAILED"; \
 	fi; \
-	if [ $$RESULT == 2 ]; \
+	if [ $$RESULT -eq 2 ]; \
 	then \
 		MSG="UNRESOLVED"; \
 	fi; \
-	if [ $$RESULT == 4 ]; \
+	if [ $$RESULT -eq 4 ]; \
 	then \
 		MSG="UNSUPPORTED"; \
 	fi; \
-	if [ $$RESULT == 5 ]; \
+	if [ $$RESULT -eq 5 ]; \
 	then \
 		MSG="UNTESTED"; \
 	fi; \
-	if [ $$RESULT == 0 ]; \
+	if [ $$RESULT -eq $(TIMEOUT_RET) ]; \
+	then \
+		MSG="HUNG"; \
+	fi; \
+	if [  $$RESULT -gt 5  -a  $$RESULT -ne $(TIMEOUT_RET)  ]; \
+	then \
+		MSG="INTERRUPTED"; \
+	fi; \
+	if [ $$RESULT -eq 0 ]; \
 	then \
 		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE); \
 	else \
@@ -115,10 +137,15 @@ clean:
 	fi; \
 	rm -f $$COMPLOG;
 
+$(top_builddir)/t0: $(top_builddir)/t0.c
+	@echo Building timeout helper files; \
+	$(CC) -O2 -o $@ $< ; \
+	echo `$(top_builddir)/t0 0; echo $$?` > $(top_builddir)/t0.val
+	
 %.run-test: %.sh
 	@COMPLOG=$(LOGFILE).$$$$; \
 	chmod +x $<; \
-	if $< > $$COMPLOG 2>&1; \
+	if $(TIMEOUT) $< > $$COMPLOG 2>&1; \
 	then \
 		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE);\
 	else \

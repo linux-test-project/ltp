@@ -22,7 +22,7 @@
 	If the Timers option is not supported, the timeout shall be based on the 
 	system clock as returned by the time( ) function. The resolution of the timeout 
 	shall be the resolution of the clock on which it is based. The timespec data type 
-	is defined in the <time.h> header.
+	is defined in the time.h header.
   </assertion> 
   
   <assertion id="5" tag="ref:XSH6:34920:34921">

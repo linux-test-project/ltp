@@ -27,5 +27,5 @@ sem_post cam be called from within a signal catching function
 38951 blocked waiting for the semaphore, then the highest priority thread that has been waiting the
 38952 longest shall be unblocked. If the Process Scheduling option is not defined, the choice of a thread
 38953 to unblock is unspecified.
-</assersion>
+   </assertion>
 </assertions>

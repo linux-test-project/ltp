@@ -34,22 +34,19 @@ int main()
 	}
 	
 	/* Check if returned values are tolerable */
+	/* PATCH: since we are using the mutex properly,*/
+	/*  errors are NOT tolerable here */ 
 	else if(rc == EBUSY) {
 		fprintf(stderr,"The mutex was already locked\n");
-		return PTS_UNRESOLVED;
 	}
 	else if(rc == EINVAL) {
 		fprintf(stderr,"Invalid mutex object\n");
-		return PTS_UNRESOLVED;
 	}
 	else if(rc == EAGAIN) {
 		fprintf(stderr,"The maximum number of recursive locks has been exceeded\n");
-		return PTS_UNRESOLVED;
 	}
 
 	/* Any other returned value means the test failed */
-	else {
-		printf("Test FAILED\n");
-		return PTS_FAIL;
-	}
+	printf("Test FAILED\n");
+	return PTS_FAIL;
 }

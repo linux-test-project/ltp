@@ -12,7 +12,7 @@ BASEDIR=conformance/interfaces
 usage()
 {
     cat <<EOF 
-Usage: $0 [SIG|SEM|THR|TMR|MSG]
+Usage: $0 [AIO|MEM|MSG|SEM|SIG|THR|TMR|TPS]
 
 Build and run the tests for POSIX area specified by the 3 letter tag
 in the POSIX spec
@@ -29,6 +29,10 @@ runtests()
 }
 
 case $1 in
+  AIO) echo "Executing asynchronous I/O tests"
+	runtests "$BASEDIR/aio_*"
+	runtests "$BASEDIR/lio_listio"
+	;;
   SIG) echo "Executing signals tests"
 	runtests "$BASEDIR/sig*"
 	runtests $BASEDIR/raise
@@ -43,13 +47,22 @@ case $1 in
   THR) echo "Executing threads tests"
 	runtests "$BASEDIR/pthread_*"
 	;;
-  TMR) echo "Executing timers tests"
-	runtests "$BASEDIR/timer_*"
+  TMR) echo "Executing timers and clocks tests"
+	runtests "$BASEDIR/time*"
+	runtests "$BASEDIR/*time"
 	runtests "$BASEDIR/clock*"
 	runtests $BASEDIR/nanosleep
 	;;
   MSG) echo "Executing message queues tests"
 	runtests "$BASEDIR/mq_*"
+	;;
+  TPS) echo "Executing process and thread scheduling tests"
+	runtests "$BASEDIR/*sched*"
+	;;
+  MEM) echo "Executing mapped, process and shared memory tests"
+	runtests "$BASEDIR/m*lock*"
+	runtests "$BASEDIR/m*map"
+	runtests "$BASEDIR/shm_*"
 	;;
   *)	usage
 	exit 1

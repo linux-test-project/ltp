@@ -6,7 +6,7 @@
   <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_yield:RETURN VALUE}">
    sched_yield() returns 0 on success
   </assertion>
-  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_yield:RETURN VALUE}">
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_yield:RETURN VALUE}">
    sched_yield() returns -1 on failure
   </assertion>
 </assertions>

@@ -171,6 +171,11 @@ void * threaded (void * arg)
 	ret= pthread_mutex_lock(&(data.mtx));
 	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex in thread");  }
 	
+        do {
+                ret = sem_post(&(data.semA));
+        } while ((ret != 0) && (errno == EINTR));
+        if (ret != 0)  {  UNRESOLVED(errno, "Sem post failed in thread");  }
+
 	pthread_cleanup_push ( clnp3, NULL);
 	pthread_cleanup_push ( clnp2, NULL);
 	pthread_cleanup_push ( clnp1, NULL);
@@ -317,6 +322,11 @@ int main(int argc, char * argv[])
 		ret = pthread_create(&th, NULL, threaded, NULL);
 		if (ret != 0)  {  UNRESOLVED(ret, "Thread creation failed");  }
 		
+                /** Wait for the thread to be waiting */
+                do {
+                        ret = sem_wait(&(data.semA));
+                } while ((ret != 0) && (errno == EINTR));
+                if (ret != 0)  {  UNRESOLVED(errno, "Sem wait failed in main");  }
 		
 		ret = pthread_mutex_lock(&(data.mtx));
 		if (ret != 0)  {  UNRESOLVED(ret, "Unable to lock mutex in main");  }

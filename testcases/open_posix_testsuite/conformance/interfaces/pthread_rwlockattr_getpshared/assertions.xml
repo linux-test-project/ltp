@@ -22,6 +22,7 @@
 	within the same process as the thread that initialized the read-write lock; 
 	if threads of different processes attempt to operate on such a read-write lock, 
 	the behavior is undefined. 
+  </assertion>
   <assertion id="4" tag="ref:XSH6:35157:35158">
 	The default value of the process-shared attribute shall be PTHREAD_PROCESS_PRIVATE.
   </assertion>

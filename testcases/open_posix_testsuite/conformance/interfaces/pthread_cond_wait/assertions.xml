@@ -12,7 +12,7 @@
   by the calling thread.
   </assertion> 
 
-  <assertion id="3" tag="ref:XSH6:32516:32516>
+  <assertion id="3" tag="ref:XSH6:32516:32516">
   Upon successful completion, a value of zero shall be returned;
   </assertion> 
 

@@ -34,17 +34,17 @@ int main()
 	/* Check if returned values are tolerable */
 	else if(rc == EBUSY) {
 		fprintf(stderr,"Detected an attempt to destroy a cond in use\n");
-		return PTS_UNRESOLVED;
+		return PTS_FAIL;
 	}
 	else if(rc == EINVAL) {
 		fprintf(stderr,"The value specified by 'cond' is invalid\n");
-		return PTS_UNRESOLVED;
+		return PTS_FAIL;
 	}
 
 	/* Any other returned value means the test failed */
 	else 
 	{
-		printf("Test FAILED\n");
+		printf("Test FAILED (error %i unexpected)\n", rc);
 		return PTS_FAIL;
 	}
 }

@@ -9,7 +9,7 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:33310:33312">  
   On return from a successful pthread_join() call with a non-NULL 'value_ptr'
-  argument, the avlue passed to pthread_exit() by the terminating thread shall
+  argument, the value passed to pthread_exit() by the terminating thread shall
   be made available in the location referenced by 'value_ptr'.
   </assertion> 
   <assertion id="3" tag="ref:XSH6:33312:33313">
@@ -26,12 +26,12 @@
   <assertion id="6" tag="ref:XSH6:33322:33329">
   pthread_join() SHALL fail if:
 
-  -[EINVAL] The implementation has detected that the value specified by
-   'thread' does not refer to a joinable thread.
   -[ESRCH] No thread could be found corresponding to that thread ID  
  
   pthread_join() MAY fail if:
 
+  -[EINVAL] The implementation has detected that the value specified by
+   'thread' does not refer to a joinable thread.
   -[EDEADLK] A deadlock was detected or the value of 'thread' specifies the 
    calling thread.
   

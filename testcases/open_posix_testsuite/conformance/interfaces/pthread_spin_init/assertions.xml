@@ -8,7 +8,7 @@
   referenced by lock and initialize the lock to an unlocked state.
   </assertion>
 
-  <assertion id="2" tag="ref:XSH6:35479:35487" pt:"TSH">
+  <assertion id="2" tag="ref:XSH6:35479:35487 pt:TSH">
   If the Thread Process-Shared Synchronization option is supported and the value of pshared is
   PTHREAD_PROCESS_SHARED, the implementation shall permit the spin lock to be operated
   upon by any thread that has access to the memory where the spin lock is allocated, even if it 

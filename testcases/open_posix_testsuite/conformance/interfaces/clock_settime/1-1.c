@@ -11,6 +11,7 @@
  * The date chosen is Nov 12, 2002 ~11:13am (date when test was first
  * written).
  */
+
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
@@ -18,19 +19,28 @@
 #include "posixtest.h"
 #include "helpers.h"
 
+#ifndef PR_NSEC_PER_SEC 
+#define PR_NSEC_PER_SEC 1000000000UL
+#endif
+
 #define TESTTIME 1037128358
 #define ACCEPTABLEDELTA 1
 
 int main(int argc, char *argv[])
 {
-	struct timespec tpset, tpget, tpreset;
-	int delta;
+	struct timespec tpset, tpget, tpreset, tpres;
+	int delta,nsdelta;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if(getuid() != 0)
 	{
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
+	}
+        if (clock_getres(CLOCK_REALTIME, &tpres) != 0){
+		printf("Time resolution is not provided\n");
+		tpres.tv_sec = 0;
+		tpres.tv_nsec = 10000000;
 	}
 
 	getBeforeTime(&tpreset);
@@ -40,22 +50,31 @@ int main(int argc, char *argv[])
 	if (clock_settime(CLOCK_REALTIME, &tpset) == 0) {
 		if (clock_gettime(CLOCK_REALTIME, &tpget) == -1) {
 			printf("Error in clock_gettime()\n");
+			setBackTime(tpreset);
 			return PTS_UNRESOLVED;
 		}
 		delta = tpget.tv_sec-tpset.tv_sec;
+		nsdelta = PR_NSEC_PER_SEC - tpget.tv_nsec;
 		if ( (delta <= ACCEPTABLEDELTA) && (delta >= 0) ) {
+			printf("Test PASSED\n");
+			setBackTime(tpreset);
+			return PTS_PASS;
+		} else if( (nsdelta <= tpres.tv_nsec) && (delta == -1 )) {
 			printf("Test PASSED\n");
 			setBackTime(tpreset);
 			return PTS_PASS;
 		} else {
 			printf("clock does not appear to be set\n");
+			setBackTime(tpreset);
 			return PTS_FAIL;
 		}
 	} else {
 		printf("clock_settime() failed\n");
+		setBackTime(tpreset);
 		return PTS_UNRESOLVED;
 	}
 
 	printf("This code should not be executed.\n");
+	setBackTime(tpreset);
 	return PTS_UNRESOLVED;
 }

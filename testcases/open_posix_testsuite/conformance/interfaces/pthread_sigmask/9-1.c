@@ -78,6 +78,9 @@ void *a_thread_func()
 
 	printf("Test PASSED: signal was delivered before the call to pthread_sigmask returned.\n");
 	pthread_exit((void*)0);
+
+        /* To please some compilers */
+	return NULL;
 }
 
 int main() {

@@ -14,7 +14,7 @@
 	lock object, the read-write lock object shall be put in the unlocked state.
   </assertion>
 
-  <assertion id="3" tag="ref:XSH6:35041:35046" pt:"TPS">
+  <assertion id="3" tag="ref:XSH6:35041:35046 pt:TPS">
   	If there are threads blocked on the lock when it becomes available, 
 	the scheduling policy shall determine which thread(s) shall acquire the lock. 
 	If the Thread Execution Scheduling option is supported, when threads executing 

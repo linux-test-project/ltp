@@ -98,6 +98,7 @@
   <assertion id="23" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">   
    If the call to sched_setparam() is unsuccessful, the priority shall remain
    unchanged
+  </assertion>
   <assertion id="24" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE">
    If the call to sched_setparam() is unsuccessful, the function shall return a
    value of -1

@@ -25,9 +25,9 @@ errno return EINTR: a signal interrupted the waiting semaphore.
   <assertion id="8" tag="ref:XSH6:39070:39070">
 errno return EDEADLK: sem_wait/trywait will fail if a deadlock condition is 
 detected.
+  </assertion>
   <assertion id="9" tag="ref:XSH6:39059:39063">
 sem_wait/trywait return 0 on success and -1 of failure.
-  </assertion>
   </assertion>
   <assertion id="11" tag="ref:XSH6:39049:39050">
 sem_trywait shall try to lock the unlocked semaphore and decrement 

@@ -15,6 +15,7 @@
  *     the return value (which is the thread ID of the thread calling it) into
  *     a global variable. 
  * 3.  Call pthread_equal and verify that the thread IDs are the same.        
+ * 4.  Verify that the new thread ID is not the same as main thread ID.
  * 
  */
 
@@ -59,12 +60,13 @@ int main()
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
-	else
+	if (pthread_equal(new_th1, pthread_self()) != 0)
 	{
-		printf("Test PASSED\n");
-		return PTS_PASS;
+		printf("Test FAILED -- 2 threads have the same ID\n");
+		return PTS_FAIL;
 	}
-	
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
 
 

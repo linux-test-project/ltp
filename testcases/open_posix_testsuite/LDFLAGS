@@ -6,3 +6,6 @@
 #
 #For example,
 #-lpthread -D_GNU_SOURCE
+#
+#Recommended flags:
+#-D_XOPEN_SOURCE=600 -lpthread -lrt -lm

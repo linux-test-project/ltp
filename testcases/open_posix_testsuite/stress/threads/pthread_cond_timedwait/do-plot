@@ -53,7 +53,7 @@ count=2
 with="with linespoints"
 cat > $TMP/gnuplot.script <<EOF
 set term png
-set output "scalable.png"
+set output "pthread_cond_timedwait.png"
 set xlabel "${column[1]}"
 set ylabel "Latency (s)"
 set key below
@@ -99,5 +99,5 @@ done
 echo $plot_cmd >> $TMP/gnuplot.script
 
 #cp $TMP/gnuplot.script .
-( cat $TMP/gnuplot.script; cat ) | gnuplot
+cat $TMP/gnuplot.script | gnuplot
 rm -rf $TMP

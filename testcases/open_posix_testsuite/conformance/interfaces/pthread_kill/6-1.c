@@ -25,6 +25,9 @@ void * thread_function(void *arg)
 {
 	/* Does nothing */
 	pthread_exit((void*)0);
+	
+	/* To please some compilers */
+	return NULL;
 }
 
 int main()

@@ -8,4 +8,7 @@
   value if t1 and t2 are equal, othersise it returns zero.  
   No errors are defined.
   </assertion>
+  <assertion id="2" tag="ref:XSH6TC2:33834:33834">
+   The function must not return EINTR
+  </assertion>
 </assertions>

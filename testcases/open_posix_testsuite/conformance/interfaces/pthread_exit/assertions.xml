@@ -20,7 +20,7 @@
   Thread termination does not release any application visible process 
   resources include, but not limited to, mutexes and file descriptors, nor
   does it perform any process-level cleanup actions, including but not
-  limited to, calling any at exit() routines that may exist.
+  limited to, calling any atexit() routines that may exist.
   </assertion> 
   <assertion id="5" tag="ref:XSH6:33031:33033">
   An implicit call to pthread_exit() is made when a thread other than the 

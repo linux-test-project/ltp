@@ -31,20 +31,18 @@ int main()
 		return PTS_PASS;
 	}
 
-	/* Check if returned values are tolerable */
+	/* The following error codes are possible, but against assertion 5 */
 	else if(rc == EBUSY) {
 		fprintf(stderr,"Detected an attempt to destroy a mutex in use\n");
-		return PTS_UNRESOLVED;
 	}
 	else if(rc == EINVAL) {
 		fprintf(stderr,"The value specified by 'mutex' is invalid\n");
-		return PTS_UNRESOLVED;
 	}
 
 	/* Any other returned value means the test failed */
 	else 
 	{
-		printf("Test FAILED\n");
-		return PTS_FAIL;
+		printf("Test FAILED (error: %i)\n", rc);
 	}
+	return PTS_FAIL;
 }

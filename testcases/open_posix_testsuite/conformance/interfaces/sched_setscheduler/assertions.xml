@@ -20,6 +20,7 @@
    The condition under which one process has the appropriate privilege to
    change the scheduling parameters of another process are
    implementation-defined
+  </assertion>
   <assertion id="6" tag="ref:XSH6:{System Interfaces:sched_setscheduler:DESCRIPTION}">
    Implementations may require that the requesting process have permission to
    set its own scheduling parameters or those of another process

@@ -17,4 +17,4 @@
   [EINVAL] - 'clock_id' doesn't refer to a known clock or is a CPU-time clock.
   
   </assertion>
-</assertionss>
+</assertions>

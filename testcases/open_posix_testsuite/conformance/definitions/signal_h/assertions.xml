@@ -296,7 +296,7 @@
    int sigwaitinfo(const sigset_t *restrict, siginfo_t *restrict);
   </assertion>
   <assertion id="50" tag="ref:XBD6:10959:10959">
-   Inclusion of the <signal.h> header may make visible all symbols from 
-   the <time.h> header.
+   Inclusion of the signal.h header may make visible all symbols from 
+   the time.h header.
   </assertion>
 </assertions>

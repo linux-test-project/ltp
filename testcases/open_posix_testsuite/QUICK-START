@@ -32,7 +32,7 @@ to the directory you want, then perform a "make".  e.g.:
 
 * An easy way to run all tests specific to your area of focus, run:
 
-	# ./run_tests [SIG|SEM|THR|TMR|MSG]
+	# ./run_tests [MEM|MSG|SEM|SIG|THR|TMR|TPS]
 	the argument is the 3 letter POSIX abbreviation for area
 
 * For additional information on how to build and run the tests in this

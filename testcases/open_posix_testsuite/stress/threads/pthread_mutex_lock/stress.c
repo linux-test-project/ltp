@@ -130,6 +130,8 @@ typedef struct
 	char sigok;                   /* Used to tell the threads they can return */
 	sem_t  semsig;             /* Semaphore for synchronizing the signal handler */
 	int id;                             /* An identifier for the threads group */
+	int tcnt;	 /* we need to make sure the threads are started before killing 'em */
+	pthread_mutex_t tmtx;
 	unsigned long long sigcnt, opcnt; /* We count every iteration */
 } cell_t;
 
@@ -142,6 +144,16 @@ void * sigthr(void * arg)
 	int ret;
 	int i=0;
 	cell_t * c = (cell_t *)arg;
+	
+	do 
+	{ 
+		sched_yield();
+		ret = pthread_mutex_lock(&(c->tmtx));
+		if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+		i = c->tcnt;
+		ret = pthread_mutex_unlock(&(c->tmtx));
+		if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
+	} while (i<9);
 	
 	/* Until we must stop, do */
 	while (do_it)
@@ -177,17 +189,6 @@ void sighdl(int sig)
 	ret = sem_post(&(c->semsig));
 	if (ret != 0)
 	{  UNRESOLVED(errno, "Unable to post semaphore in signal handler");  }
-}
-
-/***** The next function is used to register the signal handler
- * in the worker threads */
-int regsighdl(void)
-{
-	struct sigaction sa;
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = 0;
-	sa.sa_handler = sighdl;
-	return sigaction (SIGUSR2, &sa, NULL);
 }
 
 /***** The next function can return only when the sigthr has terminated.
@@ -231,10 +232,12 @@ void * lockthr(void * arg)
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
 	
-	/* Register the signal handler */
-	ret = regsighdl();
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to register the signal handler");  }
+	/* Signal we're started */
+	ret = pthread_mutex_lock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	c->tcnt += 1;
+	ret = pthread_mutex_unlock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
 	
 	do
 	{
@@ -271,10 +274,12 @@ void * timedlockthr(void * arg)
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
 	
-	/* Register the signal handler */
-	ret = regsighdl();
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to register the signal handler");  }
+	/* Signal we're started */
+	ret = pthread_mutex_lock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	c->tcnt += 1;
+	ret = pthread_mutex_unlock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
 	
 	do
 	{
@@ -317,10 +322,12 @@ void * trylockthr(void * arg)
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
 	
-	/* Register the signal handler */
-	ret = regsighdl();
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to register the signal handler");  }
+	/* Signal we're started */
+	ret = pthread_mutex_lock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	c->tcnt += 1;
+	ret = pthread_mutex_unlock(&(c->tmtx));
+	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
 	
 	do
 	{
@@ -362,8 +369,12 @@ void cell_init(int id, cell_t * c, pthread_mutexattr_t *pma)
 	c->ctrl = 0;
 	c->sigcnt = 0;
 	c->opcnt = 0;
+	c->tcnt = 0;
 	
 	/* Initialize the mutex */
+	ret = pthread_mutex_init(&(c->tmtx), NULL); 
+	if (ret != 0)
+	{  UNRESOLVED(ret, "Mutex init failed"); }
 	ret = pthread_mutex_init(&(c->mtx), pma); 
 	if (ret != 0)
 	{  UNRESOLVED(ret, "Mutex init failed"); }
@@ -558,12 +569,17 @@ int main(int argc, char * argv[])
 	output("TLD key initialized\n");
 	#endif
 	
-	/* Register the signal handler  */
+	/* Register the signal handler for SIGUSR1  */
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = globalsig;
 	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register main signal handler"); }
+	{ UNRESOLVED(ret, "Unable to register signal handler"); }
+	
+	/* Register the signal handler for SIGUSR2  */
+	sa.sa_handler = sighdl;
+	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
+	{ UNRESOLVED(ret, "Unable to register signal handler"); }
 	
 	/* Start every threads */
 	#if VERBOSE > 0

@@ -7,7 +7,7 @@
   <assertion id="2" tag="ref:XSH6:35496:35507">
 	Upon successful completion, these functions shall return zero; 
 	otherwise, an error number shall be returned to indicate the error.
-  </assertions>
+  </assertion>
 
   <assertion id="3" tag="ref:XSH6:35496:35507">
 
