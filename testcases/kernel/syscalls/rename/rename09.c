@@ -234,7 +234,12 @@ main(int ac, char **av)
 			}
 		} else {
 			/* parent - let the second child carry on */
-			exit(0);
+			waitpid(pid1,&status,0);
+			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
+				exit(WEXITSTATUS(status));
+			} else {
+			   exit(0);
+			}
 		}
 	}   /* End for TEST_LOOPING */
 	

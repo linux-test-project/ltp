@@ -67,6 +67,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <pwd.h>
 #include <unistd.h>
@@ -101,6 +102,7 @@ main(int ac, char **av)
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
 	pid_t pid;
+	int status;
 
 	/*
 	 * parse standard options
@@ -170,8 +172,13 @@ main(int ac, char **av)
 				tst_resm(TWARN, "seteuid(0) failed");
 			}
 		} else {		/* parent */
-			/* let the child carry on */
-			exit(0);
+			wait(&status);
+                        if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
+                                exit(WEXITSTATUS(status));
+                        } else {
+                           exit(0);
+                        }
+
 		}
 	}   /* End for TEST_LOOPING */
 	
