@@ -36,6 +36,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	04/2002 wjhuie sigset cleanups
  *
  * RESTRICTIONS
  * 	None
@@ -556,7 +557,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 dochild(int kid)
 {
 	/* child process */
-	(void)sigset(SIGUSR1, catch_int);
+	(void)signal(SIGUSR1, catch_int);
 
 	/* Lock should succeed after blocking and parent releases lock */
 	if (kid) {
@@ -669,9 +670,9 @@ setup(void)
 	/*
 	 * Set up signal handling functions
 	 */
-	(void)sigset(SIGUSR1, catch_usr1);
-	(void)sigset(SIGUSR2, catch_usr2);
-	(void)sigset(SIGALRM, catch_alarm);
+	(void)signal(SIGUSR1, catch_usr1);
+	(void)signal(SIGUSR2, catch_usr2);
+	(void)signal(SIGALRM, catch_alarm);
 }
 
 /*

@@ -39,6 +39,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
  *	None
@@ -102,8 +103,8 @@ main(int argc, char **argv)
 			 * Set up to catch SIGINT.  The kids will wait till a
 			 * SIGINT has been received before they proceed.
 			 */
-			if ((int)sigset(SIGINT, inthandlr) < 0) {
-				tst_resm(TFAIL, "sigset SIGINT failed, "
+			if ((int)signal(SIGINT, inthandlr) < 0) {
+				tst_resm(TFAIL, "signal SIGINT failed, "
 					"errno = %d", errno);
 				tst_exit();
 			}

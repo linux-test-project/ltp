@@ -48,6 +48,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
  * 	None
@@ -117,8 +118,8 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if (sigset(SIGALRM, alrmhandlr) == -1) {
-			tst_resm(TFAIL, "sigset SIGALRM failed.  errno = %d",
+		if (signal(SIGALRM, alrmhandlr) == SIG_ERR) {
+			tst_resm(TFAIL, "signal SIGALRM failed.  errno = %d",
 				 errno);
 			tst_exit();
 		}
@@ -128,8 +129,8 @@ main(int ac, char **av)
 		 * Set up to catch SIGINT. The kids will wait till a SIGINT
 		 * has been received before they proceed.
 		 */
-		if (sigset(SIGINT, inthandlr) == -1) {
-			tst_resm(TFAIL, "sigset SIGINT failed.  errno = %d",
+		if (signal(SIGINT, inthandlr) == SIG_ERR) {
+			tst_resm(TFAIL, "signal SIGINT failed.  errno = %d",
 				 errno);
 			tst_exit();
 		}

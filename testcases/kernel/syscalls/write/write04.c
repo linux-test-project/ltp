@@ -38,6 +38,9 @@
  *              -P x : Pause for x seconds between iterations.
  *              -t   : Turn on syscall timing.
  *
+ * HISTORY
+ *      ??/???? someone made this testcase but didn't add HISTORY
+ *
  * RESTRICTIONS
  *	NONE
  */
@@ -47,6 +50,7 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <errno.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 

@@ -41,6 +41,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *	04/2002 wjhuie sigset cleanups
  *
  * Restrictions
  *	None
@@ -90,8 +91,8 @@ main(int argc, char **argv)
 		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore
 		 * SIGTERM
 		 */
-		if ((int)sigset(SIGTERM, SIG_DFL) < 0) {
-			tst_resm(TFAIL, "Sigset SIGTERM failed, errno = %d",
+		if ((int)signal(SIGTERM, SIG_DFL) == SIG_ERR) {
+			tst_resm(TFAIL, "Signal SIGTERM failed, errno = %d",
 				 errno);
 			tst_exit();
 		}

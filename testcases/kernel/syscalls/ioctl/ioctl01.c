@@ -42,6 +42,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	04/2002 Fixes by wjhuie
  *
  * RESTRICTIONS
  *      test must be run with the -D option
@@ -66,7 +67,7 @@ void setup(void);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = {EBADF, EFAULT, EINVAL, ENOTTY, 0};
+int exp_enos[] = {EBADF, EFAULT, EINVAL, ENOTTY, EFAULT, 0};
 
 int fd, fd1;
 int bfd = -1;

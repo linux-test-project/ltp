@@ -45,6 +45,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
  * 	None
@@ -134,8 +135,8 @@ block2:
 block3:
 		tst_resm(TINFO, "Enter Block 3: test with invalid pipe");
 		if ((pid = fork()) == 0) {	/* child */
-			if (sigset(SIGPIPE, SIG_IGN) < 0) {
-				tst_resm(TINFO, "sigset failed");
+			if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+				tst_resm(TINFO, "signal failed");
 			}
 			if (pipe(pipefildes) == -1) {
 				tst_brkm(TBROK, NULL, "can't open pipe");

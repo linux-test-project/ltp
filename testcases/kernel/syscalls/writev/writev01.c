@@ -39,6 +39,7 @@
  * History
  *	07/2001 John George
  *		-Ported
+ *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions
  *	None
@@ -157,14 +158,14 @@ main(int argc, char **argv)
 
 		fd[1] = -1;		/* Invalid file descriptor  */
 
-		if (sigset(SIGTERM, sighandler) == -1) {
-			perror("sigset: SIGTERM");
+		if (signal(SIGTERM, sighandler) == SIG_ERR) {
+			perror("signal: SIGTERM");
 			cleanup();
 			/*NOTREACHED*/
 		}
 
-		if (sigset(SIGPIPE, sighandler) == -1) {
-			perror("sigset: SIGPIPE");
+		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
+			perror("signal: SIGPIPE");
 			cleanup();
 			/*NOTREACHED*/
 		}
