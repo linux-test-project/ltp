@@ -36,6 +36,11 @@
 /*				 removed stray code and options. Pthread_join */
 /*			         part fixed, older version was completely bad */
 /*                                                                            */
+/*		Nov  - 09 - 2001 Modified - Removed compile errors	      */
+/*				 - added missing header file string.h         */
+/*				 - removed unused variables.                  */
+/*				 - made read_ndx and write_ndx static variable*/
+/*                                                                            */
 /* File:	shmat1.c						      */
 /*			         					      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
@@ -66,6 +71,7 @@
 #include <sys/ucontext.h>	/* required by the signal handler             */
 #include <sys/ipc.h>		/* required by shmat shmget etc		      */
 #include <sys/shm.h>            /* required by shmat shmget etc               */
+#include <string.h>		/* required by strncmp                        */
 
 
 /* Defines								      */
@@ -244,9 +250,7 @@ usage(char *progname)           /* name of this program                       */
 void * 
 shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 {
-    char    *fname;	        /* name of temp file created.     	      */
     int     shm_ndx  = 0;	/* index to number of shmat/shmdt             */
-    int     nbytes   = 0;	/* number of bytes to write into the region   */
     key_t   shmkey   = 0;	/* shared memory id                           */
     long    *locargs =          /* local pointer to arguments		      */
 		       (long *)args;
@@ -332,7 +336,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 void *
 write_to_mem(void *args)
 {
-    int          write_ndx = 0;	/* index to the number of writes to perform   */
+    static   int write_ndx = 0;	/* index to the number of writes to perform   */
     volatile int exit_val  = 0; /* exit value of the pthread                  */
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
@@ -377,7 +381,7 @@ write_to_mem(void *args)
 void *
 read_from_mem(void *args)
 {
-    int          read_ndx = 0;	/* index to the number of writes to perform   */
+    static   int read_ndx = 0;	/* index to the number of writes to perform   */
     volatile int exit_val  = 0; /* exit value of the pthread                  */
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
