@@ -30,7 +30,7 @@ TEST=sigaction03 sigaction04 sigaction05 sigaction06 sigaction07 \
 all: $(TARGETS)
 
 sigaction01:
-	cc -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread
+	$(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread
 
 install:
 	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
