@@ -45,6 +45,7 @@
 #trace_logic=${trace_logic:-"set -x"}
 
 $trace_logic
+this_file=${0##*/}
 
 TC=rusers
 TCtmp=${TCtmp:=`pwd`}

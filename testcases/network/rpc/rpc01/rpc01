@@ -34,7 +34,7 @@
 #Uncomment line below for debug output.
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
-
+this_file=${0##*/}
 TC=${TC:=rpc01}
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin/datafiles}
