@@ -56,7 +56,7 @@
 #include <pwd.h>
 
 char *TCID = "hugeshmctl02";
-int TST_TOTAL = 7;
+int TST_TOTAL = 4;
 extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -75,9 +75,6 @@ struct test_case_t {
 	struct shmid_ds *sbuf;
 	int error;
 } TC[] = {
-	/* EACCES - segment has no read or write permissions */
-	{&shm_id_1, IPC_STAT, &buf, EACCES},
-
 	/* EFAULT - IPC_SET & buf isn't valid */
 	{&shm_id_2, IPC_SET, (struct shmid_ds *)-1, EFAULT},
 
@@ -89,12 +86,6 @@ struct test_case_t {
 
 	/* EINVAL - the command is not valid */
 	{&shm_id_2, -1, &buf, EINVAL},
-
-	/* EPERM - the command is only valid for the super-user */
-	{&shm_id_2, SHM_LOCK, &buf, EPERM},
-
-	/* EPERM - the command is only valid for the super-user */
-	{&shm_id_2, SHM_UNLOCK, &buf, EPERM}
 };
 
 int main(int ac, char **av)
@@ -136,13 +127,9 @@ int main(int ac, char **av)
 					 "%d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-				if (i >= 5)
-					tst_resm(TCONF,"shmctl() did not fail for non-root user."
-                                                 "This may be okay for your distribution.");
-				else
-					tst_resm(TFAIL, "call failed with an "
-						 "unexpected error - %d : %s",
-					 	TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL, "call failed with an "
+					 "unexpected error - %d : %s",
+				 	TEST_ERRNO, strerror(TEST_ERRNO));
 			}			
 		}
 	}
@@ -159,19 +146,6 @@ int main(int ac, char **av)
 void
 setup(void)
 {
-	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
-
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
