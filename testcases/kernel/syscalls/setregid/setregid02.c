@@ -147,19 +147,19 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == test_data[i].exp_errno) {
-					tst_resm(TPASS, "setresuid(%d, %d) "
+					tst_resm(TPASS, "setregid(%d, %d) "
 						"failed as expected.",
 						*test_data[i].real_gid,
 						*test_data[i].eff_gid);
 				} else {
-					tst_resm(TFAIL, "setresuid(%d, %d) "
+					tst_resm(TFAIL, "setregid(%d, %d) "
 						"failed but did not set the "
 						"expected errno.",
 						*test_data[i].real_gid,
 						*test_data[i].eff_gid);
 				}
 			} else {
-				tst_resm(TFAIL, "setresuid(%d, %d) "
+				tst_resm(TFAIL, "setregid(%d, %d) "
 					"did not fail as expected.",
 					*test_data[i].real_gid,
 					*test_data[i].eff_gid);
