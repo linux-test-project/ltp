@@ -217,7 +217,13 @@ void read_raw_device()
 #else
 	static char   raw_dev[16];		/* name of raw device file  */
 
-        sprintf(raw_dev, "%s", getenv("RAWDEV")); 
+        if (getenv("RAWDEV")
+        	sprintf(raw_dev, "%s", getenv("RAWDEV")); 
+        else
+        {
+	    errno = ENODATA;
+	    sys_error("environment variable RAWDEV not set", __FILE__,__LINE__);
+	}
 #endif
 
 	/* 
