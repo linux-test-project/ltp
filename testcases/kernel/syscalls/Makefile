@@ -25,7 +25,7 @@
 #########################################################################
 DEBUG_CFLAGS=-O
 DEBUG_LDFLAGS=-s
-CFLAGS+=-I../../include -g
+CFLAGS+=-I../../include -g -Wall
 LOADLIBES+=
 
 SUBDIR= \
