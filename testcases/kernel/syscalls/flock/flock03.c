@@ -157,10 +157,19 @@ void childfunc(void )
 		tst_resm(TFAIL, "The file was not already locked");
 
 	TEST(flock(fd, LOCK_UN));
-	if(TEST_RETURN != -1)
-		tst_resm(TFAIL, "File unlock by another process allowed");
+	if(TEST_RETURN == -1)
+		tst_resm(TFAIL, "Unable to unlock file locked by parent, "
+				"errno %d", TEST_ERRNO);
 	else
-		tst_resm(TPASS, "File unlock by another process not allowed");
+		tst_resm(TPASS, "Unlocked filed locked by parent");
+
+	TEST(flock(fd, LOCK_EX | LOCK_NB));
+	if(TEST_RETURN == -1)
+		tst_resm(TFAIL, "Unable to relock file after unlocking, "
+				"errno %d", TEST_ERRNO);
+	else
+		tst_resm(TPASS, "flock after unlocking passed");
+
 	tst_exit();
 	/* NOT REACHED */
 	return;
