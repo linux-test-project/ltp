@@ -264,10 +264,26 @@ setup()
 	TEST_PAUSE;			/* Pause if that option is specified */
 	tst_tmpdir();			/* make temp dir and cd to it */
 
-	pipe(parent_pipe);
-	pipe(child_pipe1);
-	pipe(child_pipe2);
-	pipe(child_pipe3);
+	if(pipe(parent_pipe) < 0) {
+		tst_resm(TFAIL, "Couldn't create parent_pipe! errno = %d", 
+			 errno);
+		return(1);
+	}
+	if(pipe(child_pipe1) < 0) {
+		tst_resm(TFAIL, "Couldn't create child_pipe1! errno = %d", 
+			 errno);
+		return(1);
+	}
+	if(pipe(child_pipe2) < 0) {
+		tst_resm(TFAIL, "Couldn't create child_pipe2! errno = %d", 
+			 errno);
+		return(1);
+	}
+	if(pipe(child_pipe3) < 0) {
+		tst_resm(TFAIL, "Couldn't create child_pipe3! errno = %d", 
+			 errno);
+		return(1);
+	}
 	parent_pid = getpid();
 	file = tempnam(".", NULL);
 
@@ -281,13 +297,13 @@ setup()
 		return(1);
 	}
 
-	if ((int)(signal(SIGALRM, catch_alarm)) == SIG_ERR) {
+	if (signal(SIGALRM, catch_alarm) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed, errno: %d",
 			 errno);
 		return(1);
 	}
 
-	if ((int)(signal(SIGCLD, catch_child)) == SIG_ERR) {
+	if (signal(SIGCLD, catch_child) == SIG_ERR) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
 			 errno);
 		return(1);
