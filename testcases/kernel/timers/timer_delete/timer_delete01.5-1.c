@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "timer_delete01.h"
 
 #define BOGUSTIMERID 99999
 
