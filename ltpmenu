@@ -165,38 +165,45 @@ disp_ltpres()
     RC=0
 
     RESULTS_LIST=$(for i in `ls -1 -A -I "CVS" results`;do echo -n "$i [more...] "; done)
-    while [ $RC -ne "1" ] 
-    do
-      dialog --clear
-      dialog --backtitle "Linux Test Project Control Centre" \
-             --title "LTP Test Results" \
-             --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 8 \
-                    $RESULTS_LIST \
-                    2>/tmp/runltp.results.$$ || RC=$?
-      results_item=$(cat /tmp/runltp.results.$$)
-      if ! [ -z $results_item ];then
+    if ! [ -z $RESULTS_LIST ] ;then
+      while [ $RC -ne "1" ] 
+      do
         dialog --clear
         dialog --backtitle "Linux Test Project Control Centre" \
                --title "LTP Test Results" \
-               --textbox results/$results_item 17 70
-      
-        dialog --backtitle "Linux Test Project Control Centre" \
-               --title "LTP Test Results." \
-               --yesno "Would you like to share these results with the LTP \
-                        community by posting it to the LTP results mailing list?" \
-                        7 70 || RESPONSE=$?
-        case $RESPONSE in 
-            0) \
-                mail ltp-results@lists.sourceforge.net < \
-                        ./results/$results_item ;
-                ;;
-  
-            1)  ;;
-   
-            255)  ;;
-        esac
-      fi
-    done
+               --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 8 \
+                      $RESULTS_LIST \
+                      2>/tmp/runltp.results.$$ || RC=$?
+        results_item=$(cat /tmp/runltp.results.$$)
+        if ! [ -z $results_item ];then
+          dialog --clear
+          dialog --backtitle "Linux Test Project Control Centre" \
+                 --title "LTP Test Results" \
+                 --textbox results/$results_item 17 70
+        
+          dialog --backtitle "Linux Test Project Control Centre" \
+                 --title "LTP Test Results." \
+                 --yesno "Would you like to share these results with the LTP \
+                          community by posting it to the LTP results mailing list?" \
+                          7 70 || RESPONSE=$?
+          case $RESPONSE in 
+              0) \
+                  mail ltp-results@lists.sourceforge.net < \
+                          ./results/$results_item ;
+                  ;;
+    
+              1)  ;;
+     
+              255)  ;;
+          esac
+        fi
+      done
+    else
+      dialog --clear
+      dialog --backtitle "Linux Test Project Control Centre" \
+             --title "LTP Test Results" \
+             --msgbox "ERROR: No files to view in /results directory." 5 53 
+    fi
     return
 }
 
