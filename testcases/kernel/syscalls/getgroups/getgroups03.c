@@ -176,6 +176,16 @@ setup()
 	 * from /etc/group file
 	 */
 	ngroups=readgroups(groups);
+
+	/* Setgroups is called by the login(1) process
+	 * if the testcase is executed via an ssh session this
+         * testcase will fail. So execute setgroups() before executing
+	 * getgroups()
+	 */
+	if (setgroups(ngroups, groups_list) == -1) {
+		tst_resm (TFAIL, "failed to setup testcase");
+		cleanup();
+	}
 }	/* End setup() */
 
 /*
@@ -313,8 +323,8 @@ int ret_val;
 	}
 	if (ngroups != ret_val) {
 		tst_resm(TFAIL, \
-			 "getgroups(2) returned incorrect no. of gids %d",
-			 ret_val);
+		 "getgroups(2) returned incorrect no. of gids %d expect %d", 
+			ret_val);
 		fflag = 0;
 	}
 
