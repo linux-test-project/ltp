@@ -129,7 +129,8 @@ main()
         d)  # append $$ to TMP, as it is recursively 
             # removed at end of script.
             TMPBASE=$OPTARG
-            TMP="${TMPBASE}/ltp-$$";;
+            TMP="${TMPBASE}/ltp-$$"
+            export TMPDIR = "$TMP";;
         f)  # Execute user defined set of testcases.
             CMDFILE=$OPTARG;;
     
