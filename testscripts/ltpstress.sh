@@ -227,6 +227,7 @@ sleep 2
 
 if [ $Iostat -eq 1 ]; then
   while [ 0 = 0 ];do iostat -dt >> $iofile; sleep $interval;done &
+  Iostat_PID=$?
 fi
 
 sleep 2
@@ -259,7 +260,9 @@ killall -9 pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
 killall -9 netpipe.sh >/dev/null 2>&1
 killall -9 NPtcp >/dev/null 2>&1
-
+if [ $Iostat -eq 1 ];then
+  kill -9 $Iostat_PID >/dev/null 2>&1
+fi
 rm -rf ${TMP}
 echo "Testing done"
 grep FAIL $logfile >/dev/null 2>&1
