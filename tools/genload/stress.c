@@ -17,15 +17,17 @@
  * Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <ctype.h>
+#include <errno.h>
+#include <libgen.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <ctype.h>
 #include <signal.h>
+#include <time.h>
+#include <unistd.h>
 #include <sys/wait.h>
-#include <libgen.h>
 
 /* By default, print all messages of severity info and above.  */
 static int global_debug = 2;
@@ -33,8 +35,8 @@ static int global_debug = 2;
 /* By default, just print warning for non-critical errors.  */
 static int global_ignore = 1;
 
-/* By default, retry on non-critical errors every 500ms.  */
-static int global_retry = 500000;
+/* By default, retry on non-critical errors every 50ms.  */
+static int global_retry = 50000;
 
 /* By default, use this as backoff coefficient for good fork throughput.  */
 static int global_backoff = 3000;
@@ -43,17 +45,24 @@ static int global_backoff = 3000;
 static int global_timeout = 0;
 
 /* Name of this program */
-static char *progname;
+static char *global_progname = PACKAGE;
+
+/* By default, do not hang after allocating memory.  */
+static int global_vmhang = 0;
 
 /* Implemention of runtime-selectable severity message printing.  */
 #define dbg if (global_debug >= 3) \
-            fprintf (stdout, "%s: debug: (%d) ", PACKAGE, __LINE__), fprintf
+            fprintf (stdout, "%s: debug: (%d) ", global_progname, __LINE__), \
+            fprintf
 #define out if (global_debug >= 2) \
-            fprintf (stdout, "%s: info: ", PACKAGE), fprintf
+            fprintf (stdout, "%s: info: ", global_progname), \
+            fprintf
 #define wrn if (global_debug >= 1) \
-            fprintf (stderr, "%s: warn: (%d) ", PACKAGE, __LINE__), fprintf
+            fprintf (stderr, "%s: warn: (%d) ", global_progname, __LINE__), \
+            fprintf
 #define err if (global_debug >= 0) \
-            fprintf (stderr, "%s: error: (%d) ", PACKAGE, __LINE__), fprintf
+            fprintf (stderr, "%s: error: (%d) ", global_progname, __LINE__), \
+            fprintf
 
 /* Implementation of check for option argument correctness.  */
 #define assert_arg(A) \
@@ -79,8 +88,8 @@ int hoghdd (long long forks, int clean, long long files, long long bytes);
 int
 main (int argc, char **argv)
 {
-  int i, pid;
-  int children = 0;
+  int i, pid, children = 0, retval = 0;
+  long starttime, stoptime, runtime;
 
   /* Variables that indicate which options have been selected.  */
   int do_dryrun = 0;
@@ -99,7 +108,15 @@ main (int argc, char **argv)
   long long do_hdd_files = 1;
   long long do_hdd_bytes = 1024 * 1024 * 1024;
 
-  progname = basename(argv[0]);
+  /* Record our start time.  */
+  if ((starttime = time (NULL)) == -1)
+    {
+      err (stderr, "failed to acquire current time\n");
+      exit (1);
+    }
+
+  /* SuSv3 does not define any error conditions for this function.  */
+  global_progname = basename (argv[0]);
 
   /* For portability, parse command line options without getopt_long.  */
   for (i = 1; i < argc; i++)
@@ -152,8 +169,8 @@ main (int argc, char **argv)
         {
           do_timeout = 1;
           assert_arg ("--timeout");
-          global_timeout = atoll (arg);
-          dbg (stdout, "setting timeout to %dus\n", global_backoff);
+          global_timeout = atoll_s (arg);
+          dbg (stdout, "setting timeout to %ds\n", global_timeout);
         }
       else if (strcmp (arg, "--cpu") == 0 || strcmp (arg, "-c") == 0)
         {
@@ -182,6 +199,10 @@ main (int argc, char **argv)
         {
           assert_arg ("--vm-bytes");
           do_vm_bytes = atoll_b (arg);
+        }
+      else if (strcmp (arg, "--vm-hang") == 0)
+        {
+          global_vmhang = 1;
         }
       else if (strcmp (arg, "--hdd") == 0 || strcmp (arg, "-d") == 0)
         {
@@ -213,42 +234,40 @@ main (int argc, char **argv)
   /* Hog CPU option.  */
   if (do_cpu)
     {
-      out (stdout, "hogcpu: prepare %lli forks\n", do_cpu_forks);
+      out (stdout, "dispatching %lli hogcpu forks\n", do_cpu_forks);
 
       switch (pid = fork ())
         {
-        case -1:
-          err (stderr, "hogcpu dispatcher fork failed\n");
-          exit (1);
-        case 0:
-          dbg (stdout, "hogcpu dispatcher forked\n");
+        case 0:                /* child */
           if (do_dryrun)
             exit (0);
-          hogcpu (do_cpu_forks);
-          exit (0);
-        default:
+          exit (hogcpu (do_cpu_forks));
+        case -1:               /* error */
+          err (stderr, "hogcpu dispatcher fork failed\n");
+          exit (1);
+        default:               /* parent */
           children++;
+          dbg (stdout, "--> hogcpu dispatcher forked (%i)\n", pid);
         }
     }
 
   /* Hog I/O option.  */
   if (do_io)
     {
-      out (stdout, "hogio: prepare %lli forks\n", do_io_forks);
+      out (stdout, "dispatching %lli hogio forks\n", do_io_forks);
 
       switch (pid = fork ())
         {
-        case -1:
-          err (stderr, "fork failed\n");
-          exit (1);
-        case 0:
-          dbg (stdout, "hogio dispatcher forked\n");
+        case 0:                /* child */
           if (do_dryrun)
             exit (0);
-          hogio (do_io_forks);
-          exit (0);
-        default:
+          exit (hogio (do_io_forks));
+        case -1:               /* error */
+          err (stderr, "hogio dispatcher fork failed\n");
+          exit (1);
+        default:               /* parent */
           children++;
+          dbg (stdout, "--> hogio dispatcher forked (%i)\n", pid);
         }
     }
 
@@ -256,67 +275,43 @@ main (int argc, char **argv)
   if (do_vm)
     {
       out (stdout,
-           "hogvm: prepare %lli forks, %lli chunks of %lli bytes\n",
+           "dispatching %lli hogvm forks, each %lli chunks of %lli bytes\n",
            do_vm_forks, do_vm_chunks, do_vm_bytes);
 
       switch (pid = fork ())
         {
-        case -1:
-          err (stderr, "fork failed\n");
-          exit (1);
-        case 0:
-          alarm (global_timeout);
-          dbg (stdout, "hogvm dispatcher forked\n");
+        case 0:                /* child */
           if (do_dryrun)
             exit (0);
-          if (do_vm_forks == 0)
-            while (1)
-              hogvm (1, do_vm_chunks, do_vm_bytes);
-          else if (do_vm_forks < 0)
-            {
-              while (do_vm_forks++ < 0)
-                hogvm (1, do_vm_chunks, do_vm_bytes);
-              exit (0);
-            }
-          else
-            hogvm (do_vm_forks, do_vm_chunks, do_vm_bytes);
-          exit (0);
-        default:
+          exit (hogvm (do_vm_forks, do_vm_chunks, do_vm_bytes));
+        case -1:               /* error */
+          err (stderr, "hogvm dispatcher fork failed\n");
+          exit (1);
+        default:               /* parent */
           children++;
+          dbg (stdout, "--> hogvm dispatcher forked (%i)\n", pid);
         }
     }
 
   /* Hog HDD option.  */
   if (do_hdd)
     {
-      out (stdout, "hoghdd: prepare %lli forks, cln %i, %lli files of "
-           "%lli bytes\n", do_hdd_forks, do_hdd_clean, do_hdd_files,
-           do_hdd_bytes);
+      out (stdout, "dispatching %lli hoghdd forks, each %lli files of "
+           "%lli bytes\n", do_hdd_forks, do_hdd_files, do_hdd_bytes);
 
-      switch (fork ())
+      switch (pid = fork ())
         {
-        case -1:
-          err (stderr, "fork failed\n");
-          exit (1);
-        case 0:
-          alarm (global_timeout);
-          dbg (stdout, "hoghdd dispatcher forked\n");
+        case 0:                /* child */
           if (do_dryrun)
             exit (0);
-          if (do_hdd_forks == 0)
-            while (1)
-              hoghdd (1, do_hdd_clean, do_hdd_files, do_hdd_bytes);
-          else if (do_hdd_forks < 0)
-            {
-              while (do_hdd_forks++ < 0)
-                hoghdd (1, do_hdd_clean, do_hdd_files, do_hdd_bytes);
-              exit (0);
-            }
-          else
-            hoghdd (do_hdd_forks, do_hdd_clean, do_hdd_files, do_hdd_bytes);
-          exit (0);
-        default:
+          exit (hoghdd
+                (do_hdd_forks, do_hdd_clean, do_hdd_files, do_hdd_bytes));
+        case -1:               /* error */
+          err (stderr, "hoghdd dispatcher fork failed\n");
+          exit (1);
+        default:               /* parent */
           children++;
+          dbg (stdout, "--> hoghdd dispatcher forked (%i)\n", pid);
         }
     }
 
@@ -324,31 +319,63 @@ main (int argc, char **argv)
   if (children == 0)
     usage (0);
 
-  /* We have work to do, and we are supposed to respect a timeout.  */
-  if (do_timeout)
+  /* Wait for our children to exit.  */
+  while (children)
     {
-      int pid = getpid ();
+      int status, ret;
 
-      sleep (global_timeout);
-      out (stdout, "timeout after %d secs, killing group\n", global_timeout);
+      if ((pid = wait (&status)) > 0)
+        {
+          if ((WIFEXITED (status)) != 0)
+            {
+              if ((ret = WEXITSTATUS (status)) != 0)
+                {
+                  err (stderr, "dispatcher %i returned error %i\n", pid, ret);
+                  retval += ret;
+                }
+              else
+                {
+                  dbg (stdout, "<-- dispatcher return (%i)\n", pid);
+                }
+            }
+          else
+            {
+              err (stderr, "dispatcher did not exit normally\n");
+              ++retval;
+            }
 
-      /* Kill our process group.  */
-      dbg (stdout, "sending SIGTERM (%d) to group %d\n", SIGTERM, pid);
-      kill (-1 * pid, SIGTERM);
-      kill (-1 * pid, SIGKILL);
-
-      err (stderr, "we should not be here, trying to abort\n");
-      abort ();
+          --children;
+        }
+      else
+        {
+          dbg (stdout, "wait() returned error: %s\n", strerror (errno));
+          err (stderr, "detected missing dispatcher children\n");
+          ++retval;
+          break;
+        }
     }
 
-  /* We have work to do, and we are supposed to wait indefinitely.  */
-  while (children-- > 0)
+  /* Record our stop time.  */
+  if ((stoptime = time (NULL)) == -1)
     {
-      int status;
-      wait (&status);
+      err (stderr, "failed to acquire current time\n");
+      exit (1);
     }
 
-  exit (0);
+  /* Calculate our runtime.  */
+  runtime = stoptime - starttime;
+
+  /* Print final status message.  */
+  if (retval)
+    {
+      err (stderr, "failed run completed in %lis\n", runtime);
+    }
+  else
+    {
+      out (stdout, "successful run completed in %lis\n", runtime);
+    }
+
+  exit (retval);
 }
 
 int
@@ -363,7 +390,7 @@ usage (int status)
     " -q, --quiet           be quiet\n"
     " -n, --dry-run         show what would have been done\n"
     "     --no-retry        exit rather than retry non-critical errors\n"
-    "     --retry-delay n   wait n us before retrying on error\n"
+    "     --retry-delay n   wait n us before continuing past error\n"
     " -t, --timeout n       timeout after n seconds\n"
     "     --backoff n       wait for factor of n us before starting work\n"
     " -c, --cpu n           spawn n procs spinning on sqrt()\n"
@@ -371,6 +398,7 @@ usage (int status)
     " -m, --vm n            spawn n procs spinning on malloc()\n"
     "     --vm-chunks c     malloc c chunks (default is 1)\n"
     "     --vm-bytes b      malloc chunks of b bytes (default is 256MB)\n"
+    "     --vm-hang         hang in a sleep loop after memory allocated\n"
     " -d, --hdd n           spawn n procs spinning on write()\n"
     "     --hdd-noclean     do not unlink file to which random data written\n"
     "     --hdd-files f     write to f files (default is 1)\n"
@@ -379,7 +407,7 @@ usage (int status)
     "n<0 means redo abs(n) times. Valid suffixes are m,h,d,y for time;\n"
     "k,m,g for size.\n\n";
 
-  fprintf (stdout, mesg, progname, progname);
+  fprintf (stdout, mesg, global_progname, global_progname);
 
   if (status <= 0)
     exit (-1 * status);
@@ -392,7 +420,7 @@ version (int status)
 {
   char *mesg = "%s %s\n";
 
-  fprintf (stdout, mesg, progname, VERSION);
+  fprintf (stdout, mesg, global_progname, VERSION);
 
   if (status <= 0)
     exit (-1 * status);
@@ -499,111 +527,180 @@ hogcpu (long long forks)
 {
   long long i;
   double d;
+  int pid, retval = 0;
 
   /* Make local copies of global variables.  */
   int ignore = global_ignore;
   int retry = global_retry;
   int timeout = global_timeout;
-  int backoff = global_backoff * forks;
+  long backoff = global_backoff * forks;
 
-  dbg (stdout, "using backoff sleep of %llius\n", backoff * forks);
+  dbg (stdout, "using backoff sleep of %lius for hogcpu\n", backoff);
 
   for (i = 0; forks == 0 || i < forks; i++)
     {
-      switch (fork ())
+      switch (pid = fork ())
         {
-        case -1:
-          if (ignore)
-            {
-              wrn (stderr, "hogcpu worker fork failed, retrying\n");
-              usleep (retry);
-              continue;
-            }
-          else
-            {
-              err (stderr, "hogcpu worker fork failed\n");
-              exit (1);
-            }
-        case 0:
+        case 0:                /* child */
           alarm (timeout);
-          out (stdout, "hogcpu worker forked (%lli)\n", i);
 
           /* Use a backoff sleep to ensure we get good fork throughput.  */
           usleep (backoff);
 
           while (1)
             d = sqrt (rand ());
+
+          /* This case never falls through; alarm signal can cause exit.  */
+        case -1:               /* error */
+          if (ignore)
+            {
+              ++retval;
+              wrn (stderr, "hogcpu worker fork failed, continuing\n");
+              usleep (retry);
+              continue;
+            }
+
+          err (stderr, "hogcpu worker fork failed\n");
+          return 1;
+        default:               /* parent */
+          dbg (stdout, "--> hogcpu worker forked (%i)\n", pid);
         }
     }
 
-  while (i-- > 0)
+  /* Wait for our children to exit.  */
+  while (i)
     {
-      int status;
-      wait (&status);
+      int status, ret;
+
+      if ((pid = wait (&status)) > 0)
+        {
+          if ((WIFEXITED (status)) != 0)
+            {
+              if ((ret = WEXITSTATUS (status)) != 0)
+                {
+                  err (stderr, "hogcpu worker %i exited %i\n", pid, ret);
+                  retval += ret;
+                }
+              else
+                {
+                  dbg (stdout, "<-- hogcpu worker exited (%i)\n", pid);
+                }
+            }
+          else
+            {
+              dbg (stdout, "<-- hogcpu worker signalled (%i)\n", pid);
+            }
+
+          --i;
+        }
+      else
+        {
+          dbg (stdout, "wait() returned error: %s\n", strerror (errno));
+          err (stderr, "detected missing hogcpu worker children\n");
+          ++retval;
+          break;
+        }
     }
 
-  return 0;
+  return retval;
 }
 
 int
 hogio (long long forks)
 {
   long long i;
+  int pid, retval = 0;
 
   /* Make local copies of global variables.  */
   int ignore = global_ignore;
   int retry = global_retry;
   int timeout = global_timeout;
-  int backoff = global_backoff * forks;
+  long backoff = global_backoff * forks;
+
+  dbg (stdout, "using backoff sleep of %lius for hogio\n", backoff);
 
   for (i = 0; forks == 0 || i < forks; i++)
     {
-      switch (fork ())
+      switch (pid = fork ())
         {
-        case -1:
-          if (ignore)
-            {
-              wrn (stderr, "hogio worker fork failed, retrying\n");
-              usleep (retry);
-              continue;
-            }
-          else
-            {
-              err (stderr, "hogio worker fork failed\n");
-              exit (1);
-            }
-        case 0:
+        case 0:                /* child */
           alarm (timeout);
-          out (stdout, "hogio worker forked (%lli)\n", i);
 
           /* Use a backoff sleep to ensure we get good fork throughput.  */
           usleep (backoff);
 
           while (1)
             sync ();
+
+          /* This case never falls through; alarm signal can cause exit.  */
+        case -1:               /* error */
+          if (ignore)
+            {
+              ++retval;
+              wrn (stderr, "hogio worker fork failed, continuing\n");
+              usleep (retry);
+              continue;
+            }
+
+          err (stderr, "hogio worker fork failed\n");
+          return 1;
+        default:               /* parent */
+          dbg (stdout, "--> hogio worker forked (%i)\n", pid);
         }
     }
 
-  while (i-- > 0)
+  /* Wait for our children to exit.  */
+  while (i)
     {
-      int status;
-      wait (&status);
+      int status, ret;
+
+      if ((pid = wait (&status)) > 0)
+        {
+          if ((WIFEXITED (status)) != 0)
+            {
+              if ((ret = WEXITSTATUS (status)) != 0)
+                {
+                  err (stderr, "hogio worker %i exited %i\n", pid, ret);
+                  retval += ret;
+                }
+              else
+                {
+                  dbg (stdout, "<-- hogio worker exited (%i)\n", pid);
+                }
+            }
+          else
+            {
+              dbg (stdout, "<-- hogio worker signalled (%i)\n", pid);
+            }
+
+          --i;
+        }
+      else
+        {
+          dbg (stdout, "wait() returned error: %s\n", strerror (errno));
+          err (stderr, "detected missing hogio worker children\n");
+          ++retval;
+          break;
+        }
     }
 
-  return 0;
+  return retval;
 }
 
 int
 hogvm (long long forks, long long chunks, long long bytes)
 {
   long long i, j, k;
+  int pid, retval = 0;
   char *ptr;
 
   /* Make local copies of global variables.  */
   int ignore = global_ignore;
   int retry = global_retry;
   int timeout = global_timeout;
-  int backoff = global_backoff * forks;
+  long backoff = global_backoff * forks;
+
+  dbg (stdout, "using backoff sleep of %lius for hogvm\n", backoff);
 
   if (bytes == 0)
     {
@@ -613,66 +710,115 @@ hogvm (long long forks, long long chunks, long long bytes)
 
   for (i = 0; forks == 0 || i < forks; i++)
     {
-      switch (fork ())
+      switch (pid = fork ())
         {
-        case -1:
-          if (ignore)
-            {
-              wrn (stderr, "hogvm worker fork failed, retrying\n");
-              usleep (retry);
-              continue;
-            }
-          else
-            {
-              err (stderr, "hogvm worker fork failed\n");
-              exit (1);
-            }
-        case 0:
+        case 0:                /* child */
           alarm (timeout);
-          out (stdout, "hogvm worker forked (%lli)\n", i);
 
           /* Use a backoff sleep to ensure we get good fork throughput.  */
           usleep (backoff);
 
-          for (j = 0; chunks == 0 || j < chunks; j++)
+          while (1)
             {
-              if ((ptr = (char *) malloc (bytes * sizeof (char))))
+              for (j = 0; chunks == 0 || j < chunks; j++)
                 {
-                  for (k = 0; k < bytes; k++)
-                    ptr[k] = 'Z';       /* Ensure that COW happens.  */
-                  out (stdout, "malloced %lli bytes\n", k);
+                  if ((ptr = (char *) malloc (bytes * sizeof (char))))
+                    {
+                      for (k = 0; k < bytes; k++)
+                        ptr[k] = 'Z';   /* Ensure that COW happens.  */
+                      dbg (stdout, "hogvm worker malloced %lli bytes\n", k);
+                    }
+                  else if (ignore)
+                    {
+                      ++retval;
+                      wrn (stderr, "hogvm malloc failed, continuing\n");
+                      usleep (retry);
+                      continue;
+                    }
+                  else
+                    {
+                      ++retval;
+                      err (stderr, "hogvm malloc failed\n");
+                      break;
+                    }
                 }
-              else if (ignore)
+              if (global_vmhang && retval == 0)
                 {
-                  wrn (stderr, "hogvm malloc failed, retrying\n");
-                  usleep (retry);
+                  dbg (stdout, "sleeping forever with allocated memory\n");
+                  while (1)
+                    sleep (1024);
+                }
+              if (retval == 0)
+                {
+                  dbg (stdout,
+                       "hogvm worker freeing memory and starting over\n");
+                  free (ptr);
                   continue;
                 }
-              else
-                {
-                  err (stderr, "hogvm malloc failed\n");
-                  exit (1);
-                }
+
+              exit (retval);
             }
-          out (stdout, "hogvm worker freeing memory and exiting\n");
-          exit (0);
+
+          /* This case never falls through; alarm signal can cause exit.  */
+        case -1:               /* error */
+          if (ignore)
+            {
+              ++retval;
+              wrn (stderr, "hogvm worker fork failed, continuing\n");
+              usleep (retry);
+              continue;
+            }
+
+          err (stderr, "hogvm worker fork failed\n");
+          return 1;
+        default:               /* parent */
+          dbg (stdout, "--> hogvm worker forked (%i)\n", pid);
         }
     }
 
-  while (i-- > 0)
+  /* Wait for our children to exit.  */
+  while (i)
     {
-      int status;
-      wait (&status);
+      int status, ret;
+
+      if ((pid = wait (&status)) > 0)
+        {
+          if ((WIFEXITED (status)) != 0)
+            {
+              if ((ret = WEXITSTATUS (status)) != 0)
+                {
+                  err (stderr, "hogvm worker %i exited %i\n", pid, ret);
+                  retval += ret;
+                }
+              else
+                {
+                  dbg (stdout, "<-- hogvm worker exited (%i)\n", pid);
+                }
+            }
+          else
+            {
+              dbg (stdout, "<-- hogvm worker signalled (%i)\n", pid);
+            }
+
+          --i;
+        }
+      else
+        {
+          dbg (stdout, "wait() returned error: %s\n", strerror (errno));
+          err (stderr, "detected missing hogvm worker children\n");
+          ++retval;
+          break;
+        }
     }
 
-  return 0;
+  return retval;
 }
 
 int
 hoghdd (long long forks, int clean, long long files, long long bytes)
 {
   long long i, j;
-  int fd;
+  int fd, pid, retval = 0;
   int chunk = (1024 * 1024) - 1;        /* Minimize slow writing.  */
   char buff[chunk];
 
@@ -680,7 +826,7 @@ hoghdd (long long forks, int clean, long long files, long long bytes)
   int ignore = global_ignore;
   int retry = global_retry;
   int timeout = global_timeout;
-  int backoff = global_backoff * forks;
+  long backoff = global_backoff * forks;
 
   /* Initialize buffer with some random ASCII data.  */
   dbg (stdout, "seeding buffer with random data\n");
@@ -694,99 +840,140 @@ hoghdd (long long forks, int clean, long long files, long long bytes)
     }
   buff[i] = '\n';
 
+  dbg (stdout, "using backoff sleep of %lius for hoghdd\n", backoff);
+
   for (i = 0; forks == 0 || i < forks; i++)
     {
-      switch (fork ())
+      switch (pid = fork ())
         {
-        case -1:
-          if (ignore)
-            {
-              wrn (stderr, "hoghdd worker fork failed, retrying\n");
-              usleep (retry);
-              continue;
-            }
-          else
-            {
-              err (stderr, "hoghdd worker fork failed\n");
-              exit (1);
-            }
-        case 0:
+        case 0:                /* child */
           alarm (timeout);
-          out (stdout, "hoghdd worker forked (%lli)\n", i);
 
           /* Use a backoff sleep to ensure we get good fork throughput.  */
           usleep (backoff);
 
-          for (i = 0; i < files; i++)
+          while (1)
             {
-              char name[] = "./stress.XXXXXX";
-
-              if ((fd = mkstemp (name)) < 0)
+              for (i = 0; i < files; i++)
                 {
-                  perror ("mkstemp");
-                  err (stderr, "mkstemp failed\n");
-                  exit (1);
-                }
+                  char name[] = "./stress.XXXXXX";
 
-              if (clean == 0)
-                {
-                  out (stdout, "unlinking %s\n", name);
-                  if (unlink (name))
+                  if ((fd = mkstemp (name)) < 0)
                     {
-                      err (stderr, "unlink failed\n");
+                      perror ("mkstemp");
+                      err (stderr, "mkstemp failed\n");
                       exit (1);
                     }
-                }
 
-              dbg (stdout, "fast writing to %s\n", name);
-              for (j = 0; bytes == 0 || j + chunk < bytes; j += chunk)
-                {
-                  if (write (fd, buff, chunk) != chunk)
+                  if (clean == 0)
+                    {
+                      dbg (stdout, "unlinking %s\n", name);
+                      if (unlink (name))
+                        {
+                          err (stderr, "unlink failed\n");
+                          exit (1);
+                        }
+                    }
+
+                  dbg (stdout, "fast writing to %s\n", name);
+                  for (j = 0; bytes == 0 || j + chunk < bytes; j += chunk)
+                    {
+                      if (write (fd, buff, chunk) != chunk)
+                        {
+                          err (stderr, "write failed\n");
+                          exit (1);
+                        }
+                    }
+
+                  dbg (stdout, "slow writing to %s\n", name);
+                  for (; bytes == 0 || j < bytes - 1; j++)
+                    {
+                      if (write (fd, "Z", 1) != 1)
+                        {
+                          err (stderr, "write failed\n");
+                          exit (1);
+                        }
+                    }
+                  if (write (fd, "\n", 1) != 1)
                     {
                       err (stderr, "write failed\n");
                       exit (1);
                     }
-                }
+                  ++j;
 
-              dbg (stdout, "slow writing to %s\n", name);
-              for (; bytes == 0 || j < bytes - 1; j++)
-                {
-                  if (write (fd, "Z", 1) != 1)
+                  dbg (stdout, "closing %s after writing %lli bytes\n", name,
+                       j);
+                  close (fd);
+
+                  if (clean == 1)
                     {
-                      err (stderr, "write failed\n");
-                      exit (1);
+                      if (unlink (name))
+                        {
+                          err (stderr, "unlink failed\n");
+                          exit (1);
+                        }
                     }
                 }
-              if (write (fd, "\n", 1) != 1)
+              if (retval == 0)
                 {
-                  err (stderr, "write failed\n");
-                  exit (1);
+                  dbg (stdout, "hoghdd worker starting over\n");
+                  continue;
                 }
-              ++j;
 
-              out (stdout, "closing %s after writing %lli bytes\n", name, j);
-              close (fd);
-
-              if (clean == 1)
-                {
-                  if (unlink (name))
-                    {
-                      err (stderr, "unlink failed\n");
-                      exit (1);
-                    }
-                }
+              exit (retval);
             }
 
-          out (stdout, "hoghdd worker exiting\n");
-          exit (0);
+          /* This case never falls through; alarm signal can cause exit.  */
+        case -1:               /* error */
+          if (ignore)
+            {
+              ++retval;
+              wrn (stderr, "hoghdd worker fork failed, continuing\n");
+              usleep (retry);
+              continue;
+            }
+
+          err (stderr, "hoghdd worker fork failed\n");
+          return 1;
+        default:               /* parent */
+          dbg (stdout, "--> hoghdd worker forked (%i)\n", pid);
         }
     }
 
-  while (i-- > 0)
+  /* Wait for our children to exit.  */
+  while (i)
     {
-      int status;
-      wait (&status);
+      int status, ret;
+
+      if ((pid = wait (&status)) > 0)
+        {
+          if ((WIFEXITED (status)) != 0)
+            {
+              if ((ret = WEXITSTATUS (status)) != 0)
+                {
+                  err (stderr, "hoghdd worker %i exited %i\n", pid, ret);
+                  retval += ret;
+                }
+              else
+                {
+                  dbg (stdout, "<-- hoghdd worker exited (%i)\n", pid);
+                }
+            }
+          else
+            {
+              dbg (stdout, "<-- hoghdd worker signalled (%i)\n", pid);
+            }
+
+          --i;
+        }
+      else
+        {
+          dbg (stdout, "wait() returned error: %s\n", strerror (errno));
+          err (stderr, "detected missing hoghdd worker children\n");
+          ++retval;
+          break;
+        }
     }
 
-  return 0;
+  return retval;
 }
