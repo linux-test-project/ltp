@@ -44,12 +44,16 @@
 #include <unistd.h>
 #include <errno.h>
 #include <linux/fs.h>
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "setrlimit02";
 int TST_TOTAL = 3;
 extern int Tst_count;
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 struct rlimit rlim;
 
@@ -130,16 +134,25 @@ main(int ac, char **av)
 void
 setup()
 {
-	/* must run test as a non-root user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, tst_exit, "must not run test as root");
-	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
+
 
 	/* set an illegal value for a non-root user - test #3 - EPERM */
 	rlim.rlim_max = NR_OPEN + 1;
