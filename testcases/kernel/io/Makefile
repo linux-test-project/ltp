@@ -1,4 +1,4 @@
-SUBDIRS = stress_cd stress_floppy
+SUBDIRS = disktest stress_cd stress_floppy
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

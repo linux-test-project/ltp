@@ -1,0 +1,92 @@
+Disktest Version v1.0.0
+
+WHAT IS DISKTEST?
+
+  Disktest does repeated accesses to a disk devices and filesystems and
+  optionally writes to, reads from, and verifies the data.
+
+  There are many optional parameters that can be supplied to disktest to have
+  it perform in a multitude of test cases.
+
+  It is distributed under the GNU General Public License - See the LICENSE
+  file that should have accompanied this distrobution for more details.
+
+WHAT OS DOES IT RUN ON?
+
+  This code has been written to compile on Linux, AIX, and Windows.  Both
+  on a 32bit and 64bit environments.  There should be no compatability issues
+  at the time of compliation or execution.
+
+DOCUMENTATION:
+
+  At present the only documentation that accompanies disktest is the man page
+  which is included with the source files as disktest.1.  You can either
+  install it as a man page on your system, use groff to view it of man is
+  not available, or export the man page to another readable format such as
+  html.
+
+INSTALLING THE SOURCE:
+
+  You can install the source my untaring the source files:
+          gzip -cd disktest.<version>.tar.gz | tar xvf -
+  This will create a directroy in the current directory of:
+          disktest.<version>
+  The directory contents that should have been included in this package are:
+
+          README     LICENSE      childmain.c  childmain.h
+          defs.h     disktest.1   Getopt.c     Getopt.h
+          globals.c  globals.h    main.c       main.h
+          Makefile   parse.c      parse.h      sfunc.c
+          sfunc.h    threading.c  threading.h  usage.c
+          usage.h
+
+BUILDING THE SOURCE
+
+  You will need a compiler for the machine that you want to build the source
+  for.  There is a mike file that is included which will use the default
+  compiler for your system.
+
+  If you wish, add the system type to the CFLAG line in the Makefile for the
+  system that you are compileing the code for:
+          Windows: -D"WIN32"
+          AIX:     -D"_AIX"
+          Linux:   -D"LINUX"  (Not needed as Linux is the default)
+  This will setup the includes and the typedefs correctly to support the
+  different system types.
+
+  Issue the make command:
+          "make all"
+  The result should be a file in the source directory that is executable with
+  'disktest' as the name.
+
+  There are other make commands defined:
+          "make clean"  Will clean out executables, temp files and archives
+          "make distro" Will repackage the source files
+
+EXECUTING
+
+  To get started run distest with the -? flag:
+          "disktest -?"
+  This will display a simplified usage to get started.  More discriptive
+  documentation is located in the manpage, along with examples of executions
+  and output that can give you the first look and feel of how disktest will
+  recive inputs and display outputs.
+
+SO WHAT ABOUT BUGS, FEATURES, ENHANCEMENTS?
+
+  It is possible that there will be issues, weather they be bugs or features
+  that would like to be added.  You can do a couple of things, on fix/add the
+  code yourself and send it to me.  This is the fastest way to get improvements
+  into the code.  You can send me a note that has a discription of the problem
+  and if possible the recreate setup.  I will see what I can do about getting
+  these things added to the code.
+
+  Comments are always welcome, even if it is just a note to let me know how
+  well the tools is working for you.  I am also interested in comparing the
+  tool to others that people have used.  I would be interested in any feedback
+  about the usability, data output, functionality, etc. as compared to other
+  tools.
+
+CONTACT
+
+  My email address is: yardleyb@us.ibm.com  (Brent Yardley)
