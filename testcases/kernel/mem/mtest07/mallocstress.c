@@ -38,13 +38,16 @@
 /*				- introduced logic to randomly pick allocation*/
 /*				  scheme. size = fibannoci number, pow of 2 or*/
 /*				  power of 3.                                 */
+/*				- changed comments.                           */
 /*                                                                            */
 /* File:	mallocstress.c						      */
 /*									      */
 /* Description:	This program is designed to stress the VMM by doing repeated  */
 /*		mallocs and frees, with out using the swap space. This is     */
 /*		achived by spawnning N threads with repeatedly malloc and free*/
-/*		a memory of size M.                                           */
+/*		a memory of size M. The stress can be increased by increasing */
+/*		the number of repetations over the default number using the   */
+/*		-l [num] option.					      */
 /******************************************************************************/
 #include <stdio.h>
 #include <pthread.h>
@@ -52,7 +55,7 @@
 #include <unistd.h>
 #include <math.h>
 
-#define MAXL    1000    /* default number of loops to do malloc and free      */
+#define MAXL    100     /* default number of loops to do malloc and free      */
 #define MAXT    30      /* default number of threads to create.               */
 
 #ifdef DEBUG
