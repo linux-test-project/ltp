@@ -1,3 +1,22 @@
+LTP-20040405
+- Added nptl scenario.
+- Added ltp-run-files.txt file to identify testcases/scripts that are NOT run using runalltests.sh
+- Added EAL2 (security) testsuite.
+- Applied daemon typo patch from Andrew R. Reiter.
+- Fixed a bug so that sysinfo() works on 32bit machines with +4GB of memory.
+- Updated the nptl tests to only execute on NPTL enabled systems.
+- Added a new test for testing a specific problem seen in certain version of NPTL where 
+pthread_cond_timedwait() can hang. This was written by 	Neil Richards of IBMUK.
+- Fix EPoll PROTECT_FUNC macro to get around compiler bug for varible parameter list
+- Fix for bug 7007, pickup correct NGROUPS
+- Applied patch from Yaroslav Popovitch that addresses problems related
+to the __syscall2 definition and 2.6 kernel based systems with glibc-kernheaders-2.4-8.43.
+- Fix for bug 7009, failure on ppc64
+- Changed NFS test to use /tmp instead of /mnt.
+- Corrected sctp Makefile to allow for cross-compiled options to be passed down.
+- Fixed bug 7011 on reiserfs
+
+
 LTP-20040304
 - This patch makes rwtest generate a PASS/FAIL  (Chris Dearman) 
   message in the output 
