@@ -187,6 +187,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(out_fd);
+
 	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
