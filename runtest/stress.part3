@@ -772,6 +772,8 @@ sigrelse03 cd $LTPROOT/testcases/bin;sigrelse03
 sigsuspend01 sigsuspend01
 sigsuspend02 cd $LTPROOT/testcases/bin;sigsuspend02
 
+sigwait01 cd $LTPROOT/testcases/bin;sigwait01
+
 socket01 socket01
 
 socketcall01 socketcall01
