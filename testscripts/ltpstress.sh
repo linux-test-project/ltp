@@ -156,17 +156,6 @@ if [ $? -eq 1 ];then
   exit 1
 fi
 
-rpcinfo -p | grep status 
-if [ $? -eq 1 ];then
-  /sbin/rpc.statd 
-fi
-sleep 1
-rpcinfo -p | grep status 
-if [ $? -eq 1 ];then
-  echo "Error: Could not start statd daemon."
-  exit 1
-fi
-
 rpcinfo -p | grep nfs 
 if [ $? -eq 1 ];then
   /usr/sbin/rpc.nfsd 
@@ -175,6 +164,17 @@ sleep 1
 rpcinfo -p | grep nfs 
 if [ $? -eq 1 ];then
   echo "Error: Could not start nfs server daemon."
+  exit 1
+fi
+
+rpcinfo -p | grep status 
+if [ $? -eq 1 ];then
+  /sbin/rpc.statd 
+fi
+sleep 1
+rpcinfo -p | grep status 
+if [ $? -eq 1 ];then
+  echo "Error: Could not start statd daemon."
   exit 1
 fi
 
