@@ -24,7 +24,17 @@
 /* History:	July - 16 - 2001 Created by Manoj Iyer, IBM Austin TX.	      */
 /*			         email:manjo@austin.ibm.com		      */
 /*                                                                            */
-/*		July - 30 - 2001 Added function write_to_mem.	              */
+/*		July - 30 - 2001 Modified - Added function write_to_mem.      */
+/*							                      */
+/*              Aug  - 14 - 2001 Modified - Added code to remove the shared   */
+/*			         memory segment ids.                          */
+/*							                      */
+/*              Aug  - 15 - 2001 Modified - Added for loop to run the test    */
+/*			         repeatedly.                                  */
+/*                                                                            */
+/*		Oct  - 22 - 2001 Modified - Fixed bad code in main().         */
+/*				 removed stray code and options. Pthread_join */
+/*			         part fixed, older version was completely bad */
 /*                                                                            */
 /* File:	shmat1.c						      */
 /*			         					      */
@@ -43,22 +53,19 @@
 
 
 /* Include Files							      */
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sched.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <pthread.h>
-#include <setjmp.h>
-#include <sys/ucontext.h>
-#include <sys/shm.h>
+#include <stdio.h>		/* definitions for standard I/O               */
+#include <unistd.h>		/* required by usleep()		              */
+#include <errno.h>		/* definitions for errno                      */
+#include <sched.h>		/* definitions for sched_yield()              */
+#include <stdlib.h>		/* definitions for WEXIT macros               */
+#include <signal.h>		/* required by sigaction & sig handling fncs  */
+#include <sys/time.h>		/* definitions of settimer()                  */
+#include <sys/wait.h>		/* definitions of itimer structure            */
+#include <pthread.h>		/* definitions for pthread_create etc         */
+#include <setjmp.h>		/* required by setjmp longjmp                 */
+#include <sys/ucontext.h>	/* required by the signal handler             */
+#include <sys/ipc.h>		/* required by shmat shmget etc		      */
+#include <sys/shm.h>            /* required by shmat shmget etc               */
 
 
 /* Defines								      */
@@ -72,73 +79,10 @@
 
 
 /* Global Variables						              */
-caddr_t     *map_address;	/* pointer to file in memory	      	      */
+void        *map_address;	/* pointer to file in memory	      	      */
 sigjmp_buf  jmpbuf;      	/* argument to setjmp and longjmp             */
 int	    fsize;		/* size of the file to be created.	      */
-
-
-/******************************************************************************/
-/*                                                                            */
-/* Function:    mkfile                                                        */
-/*                                                                            */
-/* Description: Create a temparory file of ramdom size. 		      */
-/*                                                                            */
-/* Input:	NONE							      */
-/*                                                                            */
-/* Output:	filename - name of the temp file created.		      */
-/* 	        size - size of the temp file  created 			      */
-/*                                                                            */
-/* Return:      int fd - file descriptor if the file was created.             */
-/*              -1     - if it failed to create.                              */
-/*                                                                            */
-/******************************************************************************/
-static int
-mkfile( char **filename)	/* output parameter - file name of tmp file   */
-{
-    int   fd;			/* file descriptior of tmpfile		      */
-    int   index = 0;		/* index into the file, fill it with a's      */
-    char  buff[4096];		/* buffer that will be written to the file.   */
-
-    /* fill the buffer with a's and open a temp file */
-    memset(buff, 'a', 4096); 
-    *filename = (char *)tempnam(".", "ashfile");
-    if ((fd = open(*filename, O_CREAT | O_EXCL | O_RDWR, 0777)) == -1)
-    {
-	perror("mkfile(): open()");
-	return -1;
-    }
-    else
-    {
-	/* if the program dies prematurely, clean up temporary files. */
-	if (unlink(*filename) == -1)
-        {
-	    perror("mkfile(): unlink()");
-            exit (-1);
-        }
-    }
-
-    srand(time(NULL)%100);
-    fsize = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4069;
-
-    /* fill the file with the character a */
-    while (index < fsize)
-    {
-        index += 4096;
-        if (write(fd, buff, 4096) == -1)
-	{
-	    perror("mkfile(): write()");
-	    return -1;
-	}
-    }
-    
-    /* make sure a's are written to the file. */
-    if (fsync(fd) == -1)
-    {
-	perror("mkfile(): fsync()");
-	return -1;
-    }
-    return fd;
-}
+int	    done_shmat = 0;	/* disallow read and writes before shmat      */
 
 
 /******************************************************************************/
@@ -173,8 +117,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     else
     {
         except = scp->trapno; 
-        fprintf(stderr, "signal caught - [%d] exception - [%d]\n", 
-			signal, except);
+        fprintf(stderr, "signal caught - [%d] ", signal);
     }
 
     switch(except)
@@ -213,15 +156,17 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 
     if (ret)
     {
-        if (scp->eax == (int)map_address)
+        if (scp->edi == (int)map_address)
 	{
 	    fprintf(stdout, 
-			"page fault at %#x\n" 
-			" - ignore\n", scp->eax);
-	    longjmp(jmpbuf, 1);
+			"page fault at [%#x] - ignore\n", scp->edi);
+	    siglongjmp(jmpbuf, 1);
         }
 	else
         { 
+            fprintf(stderr, "address at which sigfault occured: [%#x]\n"
+                            "address at which memory was shmat: [%#x]\n",
+		        scp->edi, map_address);
 	    fprintf(stderr, "bad page fault exit test\n");
 	    exit (-1);
         }
@@ -273,11 +218,9 @@ set_timer(double run_time)      /* period for which test is intended to run   */
 static void
 usage(char *progname)           /* name of this program                       */{
     fprintf(stderr, 
-               "Usage: %s -h -l -n -p -x\n"
+               "Usage: %s -h -l -x\n"
                "\t -h help, usage message.\n"
                "\t -l number of map - write - unmap.    default: 1000\n"
-               "\t -n number of LWP's to create.        default: 20\n"
-               "\t -p set mapping to MAP_PRIVATE.       default: MAP_SHARED\n"
                "\t -x time for which test is to be run. default: 24 Hrs\n",
                     progname);
     exit(-1);
@@ -302,46 +245,71 @@ void *
 shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 {
     char    *fname;	        /* name of temp file created.     	      */
-    int     fd;			/* temporary file descriptor		      */
-    int     shm_ndx = 0;	/* index to number of shmat/shmdt             */
-    int     nbytes = 0;		/* number of bytes to write into the region   */
+    int     shm_ndx  = 0;	/* index to number of shmat/shmdt             */
+    int     nbytes   = 0;	/* number of bytes to write into the region   */
+    key_t   shmkey   = 0;	/* shared memory id                           */
     long    *locargs =          /* local pointer to arguments		      */
 		       (long *)args;
+    struct  shmid_ds *shmbuf;   /* info about the segment pointed to by shmkey*/
     volatile int exit_val = 0;  /* exit value of the pthread		      */
 
     while (shm_ndx++ < (int)locargs[0])
     {
-        if ((fd = mkfile(&fname)) == -1)
+	/* put the reader and writer threads to sleep		              */
+        done_shmat = 0;
+
+	/* generate a random size, we will ask for this amount of shared mem  */
+        srand(time(NULL)%100);
+        fsize = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4069;
+
+        if (shmget(shmkey, fsize, IPC_CREAT | 0666 ) == -1)
         {
-            fprintf(stderr,
-            	"main(): mkfile(): Failed to create temp file.\n");
-	    exit_val = -1;
-	    pthread_exit((void *)&exit_val); 
+            perror("shmat_shmdt(): shmget()");
+            exit_val = -1;
+            pthread_exit((void *)&exit_val);
         }
         else
-            fprintf(stdout, "\n\nFile name: %s\nFile size: %d\n", fname, fsize);
-
-        if ((map_address = (caddr_t *)shmat(fd, (void *)0, SHMLBA))
-			 == (caddr_t *) -1)
         {
+            fprintf(stdout, "shmget(): success, got segment of size %d\n",
+		     fsize);
+        }
+
+        if ((map_address = shmat(shmkey, (void *)0, SHMLBA))
+			 ==  (void *)-1)
+        {
+	    fprintf(stderr, "shmat_shmat(): map address = %d\n", 
+		map_address);
             perror("shmat_shmdt(): shmat()");
             exit_val = -1;
             pthread_exit((void *)&exit_val);
         }
+        else
+        {
+	    /* Wake up the reader and writer threads.			      */
+            done_shmat = 1;
+	    usleep(0);
+        }
 
         fprintf(stdout, 
-		"Map address = %#x\nNum iter: [%d]\nTotal Num Iter: [%d]",
-		 map_address, shm_ndx, (int)locargs[0]);
-	usleep(1);
+		"Map address = %#x\nNum iter: [%d] Total Num Iter: [%d]\n",
+			 map_address, shm_ndx, (int)locargs[0]);
+	usleep(0);
 	sched_yield();
-
+	
+	/* put the threads to sleep before un-shmatting 		      */
+        done_shmat = 0;
         if (shmdt((void *)map_address) == -1)
         {
 	    perror("shmat_shmdt(): shmdt()");
             exit_val = -1;
             pthread_exit((void *)&exit_val);
         }
-        close (fd);
+        if (shmctl(shmkey, IPC_RMID, shmbuf))
+        {
+            perror("shmat_shmdt(): shmctl()");
+	    exit_val = -1;
+	    pthread_exit((void *)&exit_val);
+        }
     }
     exit_val = 0;
     pthread_exit((void *)&exit_val);
@@ -369,9 +337,23 @@ write_to_mem(void *args)
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
 
+    /* wait for the thread to shmat, and dont sleep on the processor. */
+    while(!done_shmat)
+        usleep(0);
+
     while (write_ndx++ < (int)locargs[0])
     {
-        memset(map_address, 'Y', fsize);
+        if (sigsetjmp(jmpbuf,0) == 1)
+        {
+            fprintf(stdout,
+                "page fault ocurred due a write after an shmdt from [%#x]\n",
+                        map_address);
+        }
+
+	fprintf(stdout, "write_to_mem(): memory address: [%#x]\n", 
+		map_address);
+	(char *)map_address = "Y";
+        //memset(map_address, 'Y', fsize);
         usleep(1);
 	sched_yield();
     }
@@ -400,25 +382,30 @@ read_from_mem(void *args)
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
 
+    /* wait for the shmat to happen */
+    while(!done_shmat)
+        usleep(0);
+
     while (read_ndx++ < (int)locargs[0])
     {
+	fprintf(stdout, "read_from_mem():  memory address: [%#x]\n", 
+		map_address);
         
-	if (setjmp(jmpbuf) == 1)
+	if (sigsetjmp(jmpbuf,0) == 1)
         {
             fprintf(stdout,
                 "page fault ocurred due a read after an shmdt from %#x\n",
 			map_address);
         }
-        else
+
+        fprintf(stdout, "read_mem(): content of memory: %s\n", map_address);
+
+        if (strncmp(map_address, "Y", 1) != 0)
         {
-            fprintf(stdout, "read_mem(): content of memory: %s\n", map_address);
-            if (strncmp(map_address, "Y", 1) != 0)
+            if (strncmp(map_address, "X", 1) != 0)
             {
-                if (strncmp(map_address, "X", 1) != 0)
-                {
-                    exit_val = -1;
-                    pthread_exit((void *)&exit_val);
-                }
+                exit_val = -1;
+                pthread_exit((void *)&exit_val);
             }
         }
         usleep(1);
@@ -436,7 +423,7 @@ read_from_mem(void *args)
 /*		lower case alphabet 'a'. Map the file and change the contents */
 /*		to 'A's (upper case alphabet), write the contents to the file,*/
 /*		and unmap the file from memory. Spwan a certian number of     */
-/*		LWP's that will do the above.
+/*		LWP's that will do the above.                                 */
 /*                                                                            */
 /* Return:	exits with -1 on error					      */
 /*		exits with a 0 on success.				      */
@@ -447,7 +434,6 @@ main(int  argc,		/* number of input parameters.			      */
 {
     int 	 c;		/* command line options			      */
     int		 num_iter;	/* number of iteration to perform             */
-    int		 num_thrd;	/* number of threads to create                */
     int		 thrd_ndx;	/* index into the array of threads.	      */
     double	 exec_time;	/* period for which the test is executed      */
     int          *status;       /* exit status for light weight process       */
@@ -456,8 +442,6 @@ main(int  argc,		/* number of input parameters.			      */
     long         chld_args[3];	/* arguments to funcs execed by child process */
     extern  char *optarg;	/* arguments passed to each option	      */
     struct sigaction sigptr;	/* set up signal, for interval timer          */
-    int          map_private =  /* if TRUE mapping is private, ie, MAP_PRIVATE*/
-			       FALSE;
     
     static struct signal_info
     {
@@ -477,10 +461,9 @@ main(int  argc,		/* number of input parameters.			      */
 
     /* set up the default values */
     num_iter = 1000;	/* repeate map - write - unmap operation 1000 times   */
-    num_thrd = 40;	/* number of LWP's to create			      */
-    exec_time = 24;	/* minimum time period for which to run the tests     */
+    exec_time = 24.0;	/* minimum time period for which to run the tests     */
 
-    while ((c =  getopt(argc, argv, "h:l:n:px:")) != -1)
+    while ((c =  getopt(argc, argv, "h:l:x:")) != -1)
     {
         switch(c)
 	{
@@ -500,6 +483,11 @@ main(int  argc,		/* number of input parameters.			      */
 		break;
         }
     }
+
+    fprintf(stdout, "\n\n\nTest is set to run with the following parameters:\n"
+		    "\tDuration of test: [%f]hrs\n"
+		    "\tnumber of shmat  shm detach: [%d]\n", exec_time,
+			 num_iter);
 
     /* set up signals */
     sigptr.sa_handler = (void (*)(int signal))sig_handler;
@@ -521,46 +509,62 @@ main(int  argc,		/* number of input parameters.			      */
     chld_args[0] = num_iter;
     set_timer(exec_time);
 
-    fprintf(stdout, "\n\n\nTest is set to run with the following parameters:\n"
-		    "\tDuration of test: [%d]hrs\n"
-		    "\tnumber of shmat  shm detach: [%d]\n" , exec_time, 
-			num_iter);
-
-    /* create num_thrd number of threads. */
-    if (pthread_create(&thid[0], NULL, shmat_shmdt, chld_args))
+    for (;;)
     {
-        perror("main(): pthread_create()");
-        exit(-1);
-    }
-    sched_yield();
-
-    if (pthread_create(&thid[0], NULL, write_to_mem, chld_args))
-    {
-        perror("main(): pthread_create()");
-        exit(-1);
-    }
-    sched_yield();
-
-    if (pthread_create(&thid[0], NULL, read_from_mem, chld_args))
-    {
-        perror("main(): pthread_create()");
-        exit(-1);
-    }
-    sched_yield();
-
-    /* wait for the children to terminate */
-    for (thrd_ndx = 0; thrd_ndx < 3; thrd_ndx++)
-    {
-        if (pthread_join(thid[thrd_ndx], (void **)&status))
+        /* create 3 threads threads. */
+        if (pthread_create(&thid[0], NULL, shmat_shmdt, chld_args))
         {
             perror("main(): pthread_create()");
-            if (!*status)
+            exit(-1);
+        }
+	else
+	{
+	    fprintf(stdout, "created thread id[%d], execs fn shmat_shmdt()\n",
+		thid[0]);
+        }
+        sched_yield();
+
+        if (pthread_create(&thid[1], NULL, write_to_mem, chld_args))
+        {
+            perror("main(): pthread_create()");
+            exit(-1);
+        }
+	else
+	{
+	    fprintf(stdout, "created thread id[%d], execs fn write_to_mem()\n",
+		thid[1]);
+        }
+        sched_yield();
+
+        if (pthread_create(&thid[2], NULL, read_from_mem, chld_args))
+        {
+            perror("main(): pthread_create()");
+            exit(-1);
+        }
+	else
+	{
+	    fprintf(stdout, "created thread id[%d], execs fn read_from_mem()\n",
+		thid[2]);
+        }
+        sched_yield();
+
+        /* wait for the children to terminate */
+        for (thrd_ndx = 0; thrd_ndx < 3; thrd_ndx++)
+        {
+            if (pthread_join(thid[thrd_ndx], (void **)&status))
             {
-                fprintf(stderr, "thread [%d] - process exited with errors %d\n",
-			       WEXITSTATUS(status[0]));
+                perror("main(): pthread_create()");
+		exit (-1);
+            }
+            if ((int)*status == -1)
+            {
+                fprintf(stderr, 
+	              "thread [%d] - process exited with errors %d\n",
+		         thid[thrd_ndx], *status);
 	        exit (-1);
             }
         }
+	fprintf(stdout, "TEST PASSED\n");
+        exit (0);
     }
-    exit (0);
 }
