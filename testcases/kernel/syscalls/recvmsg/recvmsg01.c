@@ -44,7 +44,12 @@
 /* the MSG_CMSG_COMPAT flag must be 0 in order for the syscall */
 /* and this test to function correctly.                        */
 #ifndef MSG_CMSG_COMPAT
+
+#if defined (__powerpc64__) || defined (__x86_64__) || define (__sparc64__)
+#define MSG_CMSG_COMPAT 0x80000000
+#else
 #define MSG_CMSG_COMPAT 0
+
 #endif
 /***************************************************/
 
