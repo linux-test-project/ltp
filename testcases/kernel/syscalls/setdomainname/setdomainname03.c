@@ -71,6 +71,7 @@
  *
  ****************************************************************/
 
+#include <string.h>
 #include <errno.h>
 #include <pwd.h>
 #include <linux/utsname.h>
@@ -205,7 +206,7 @@ cleanup()
 	}
 
 	/* Restore domain name */
-	if((setdomainname (old_domain_name, sizeof(old_domain_name)))
+	if((setdomainname (old_domain_name, strlen(old_domain_name)))
 	   < 0 ) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"
 				" domainname to \"%s\"", old_domain_name);

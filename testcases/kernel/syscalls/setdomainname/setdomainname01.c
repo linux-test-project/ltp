@@ -65,11 +65,12 @@
  ****************************************************************/
 
 #include <errno.h>
-#include <linux/utsname.h>
+#include <string.h>
+#include <sys/utsname.h>
 #include "test.h"
 #include "usctest.h"
 
-#define MAX_NAME_LEN __NEW_UTS_LEN
+#define MAX_NAME_LEN _UTSNAME_DOMAIN_LENGTH
 
 static void setup();
 static void cleanup();
@@ -170,7 +171,7 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Restore domain name */
-	if((setdomainname(old_domain_name, MAX_NAME_LEN)) < 0 ) {
+	if((setdomainname(old_domain_name, strlen(old_domain_name))) < 0 ) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"
 				" domainname to \"%s\"", old_domain_name);
 	}

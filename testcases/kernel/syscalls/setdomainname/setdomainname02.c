@@ -80,9 +80,9 @@
 #include "usctest.h"
 
 #include <errno.h>
-#include <linux/utsname.h>
+#include <sys/utsname.h>
 
-#define MAX_NAME_LEN __NEW_UTS_LEN
+#define MAX_NAME_LEN _UTSNAME_DOMAIN_LENGTH - 1
 
 static void cleanup(void);
 static void setup(void);
