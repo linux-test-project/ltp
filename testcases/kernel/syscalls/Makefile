@@ -52,7 +52,7 @@ SUBDIR= \
 	setgid setgroups sethostname setitimer setpgid setpgrp setpriority \
 	setregid setresgid setresuid setreuid setrlimit setsid setsockopt \
 	settimeofday setuid sigaction sigaltstack sighold signal \
-	sigprocmask sigrelse sigsuspend socket socketpair sockioctl \
+	sigprocmask sigrelse sigsuspend socket socketcall socketpair sockioctl \
 	stat statfs stime string symlink sync syscall sysconf sysctl sysfs \
 	sysinfo syslog time times truncate umask \
 	uname unlink umount utime vfork vhangup wait \

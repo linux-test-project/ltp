@@ -724,6 +724,11 @@ sigsuspend01 sigsuspend01
 
 socket01 socket01
 
+socketcall01 socketcall01
+socketcall02 socketcall02
+socketcall03 socketcall03
+socketcall04 socketcall04
+
 socketpair01 socketpair01
 
 sockioctl01 sockioctl01

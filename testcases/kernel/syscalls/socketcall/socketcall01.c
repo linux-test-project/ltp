@@ -1,0 +1,161 @@
+/*
+ * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ *
+ */
+/**************************************************************************
+ * 
+ *    TEST IDENTIFIER	: socketcall01
+ * 
+ *    EXECUTED BY	: All user
+ * 
+ *    TEST TITLE	: Basic test for socketcall(2) for socket(2)
+ * 
+ *    TEST CASE TOTAL	: 4
+ * 
+ *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
+ * 
+ *    SIGNALS
+ * 	Uses SIGUSR1 to pause before test if option set.
+ * 	(See the parse_opts(3) man page).
+ *
+ *    DESCRIPTION
+ *	This is a phase I test for the socketcall(2) system call.
+ *	It is intended to provide a limited exposure of the system call.
+ *	
+ * 	Setup:
+ *	  Setup signal handling.
+ *	  Pause for SIGUSR1 if option specified.
+ * 
+ * 	Test:
+ *        Execute system call
+ *	  Check return code, if system call failed (return=-1)
+ *	  Log the errno and Issue a FAIL message.
+ *	  Otherwise, Issue a PASS message.
+ * 
+ * 	Cleanup:
+ * 	  Print errno log and/or timing stats if options given
+ * 
+ * USAGE:  <for command-line>
+ *  socketcall01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
+ *		where,		-c n : Run n copies concurrently
+ *	               		-e   : Turn on errno logging.
+ *				-h   : Show this help screen
+ *				-i n : Execute test n times.
+ *				-I x : Execute test for x seconds.
+ *				-p   : Pause for SIGUSR1 before starting
+ *                      	-P x : Pause for x seconds between iterations.
+ *                       	 t   : Turn on syscall timing.
+ *
+ * RESTRICTIONS
+ * None
+ *****************************************************************************/
+#include <errno.h>
+#include <asm/unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <linux/net.h>
+
+#include "test.h"
+#include "usctest.h"
+
+_syscall2(int ,socketcall ,int ,call, unsigned long *, args);
+
+void setup();
+void cleanup();
+
+char *TCID = "socketcall01";		/* Test program identifier.    */
+extern int Tst_count;			/* TestCase counter for tst_* routine */
+
+struct test_case_t {
+	int call;
+	unsigned long args[3];
+	char *desc;
+}TC[] = {
+	{ SYS_SOCKET,{PF_INET, SOCK_STREAM,0},"TCP stream"},
+	{ SYS_SOCKET,{PF_UNIX, SOCK_DGRAM, 0}, "unix domain dgram"},
+	{ SYS_SOCKET,{AF_INET, SOCK_RAW, 6}, "Raw socket"},
+	{ SYS_SOCKET,{PF_INET, SOCK_DGRAM, 17}, "UDP dgram"}
+};
+
+int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);	
+
+int main(int ac, char **av)
+{
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
+	int i;				/* s is socket descriptor */
+
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *) NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
+
+	/* perform global setup for test */
+	setup();
+
+	/* check looping state */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
+
+		for( i=0 ;i < TST_TOTAL ; i++) {
+
+			TEST(socketcall(TC[i].call,TC[i].args));
+
+			/* check return code */
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL, "socketcall() Failed with"
+					" return=%d, errno=%d : %s",
+					TEST_RETURN, TEST_ERRNO,
+					strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TPASS, "socketcall() passed for"
+					" :%s with return=%d ",
+					TC[i].desc,TEST_RETURN);          
+				close(TEST_RETURN);
+			}
+		}			/* End for TEST_LOOPING */
+	}
+              
+	/* cleanup and exit */
+	cleanup();
+
+	return 0;
+}					/* End main */
+
+
+/* setup() - performs all ONE TIME setup for this test. */
+void setup()
+{
+
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	/* pause if that option was specified*/
+	TEST_PAUSE;
+}
+
+/*
+ * cleanup() - performs all ONE TIME cleanup for this test at
+ *		completion or premature exit.
+ */
+void cleanup()
+{
+	TEST_CLEANUP;
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}
