@@ -93,7 +93,7 @@ struct test_case_t {		/* test case structure */
 		0, ENOTSOCK, setup2, cleanup1, "invalid socket length" },
 	{ PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
 		(struct sockaddr *)&from, &fromlen,
-		0, ENOTSOCK, setup1, cleanup1, "invalid recv buffer" },
+		-1, EFAULT, setup1, cleanup1, "invalid recv buffer" },
 	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), -1,
 		(struct sockaddr *)&from, &fromlen,
 		-1, EINVAL, setup1, cleanup1, "invalid flags set" },
