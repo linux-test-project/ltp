@@ -21,9 +21,11 @@ set +x
 #                           this script, added the -n option to run these
 #                           tests. Also, added -h option to print help messages.
 #                          
-#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: merged networktests.sh with
+#  01/29/03 - Manoj Iyer  - manjo@mail.utexas.edu: 
 #                           added code to cause pan to print less verbose 
 #                           output.
+#  02/01/03 - Manoj Iyer  - manjo@mail.utexas.edu: Removed variables
+#                           initialization of RHOST and PASSWD.
 #
 
 cd `dirname $0`
@@ -32,8 +34,6 @@ export TMPBASE="/tmp"
 cmdfile=""
 pretty_prt=" "
 alt_dir=0
-RHOST=""
-PASSWD=""
 run_netest=0
 quiet_mode=" "
 
