@@ -58,6 +58,9 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
+	user_uid=0;
+        group_gid=0;
+
 	/* Check for test specific name and set uid/gid accordingly */
 	if (!(strcmp(test_name, "fchown03"))) {
 		user_uid = -1;
