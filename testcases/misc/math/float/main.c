@@ -57,9 +57,12 @@ const double EPS=  0.1e-300;
 
 const int nb_func = NB_FUNC;
 
+extern int generate(char*);
+
 int main(int argc, char *argv[])
 {
         int             opt = 0;
+        pid_t           pid;
         extern int      optind;
         extern char     *optarg;
 
@@ -102,8 +105,13 @@ int main(int argc, char *argv[])
                 }
         }
 	}
+	
+	pid=fork();
+        if ( pid == 0 )                     /*Child*/
+		generate((char*)&datadir);           
+	else                                /*Parent*/
+		waitpid(pid,NULL,0);
 
-           
 	if(debug)
 		printf("%s: will run for %d loops\n", argv[0], num_loops);
 
