@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: f00f.c,v 1.2 2004/08/16 18:09:33 plars Exp $ */
+/* $Id: f00f.c,v 1.3 2004/08/17 16:54:27 plars Exp $ */
 /*
  * This is a simple test for handling of the pentium f00f bug.
  * It is an example of a catistrophic test case.  If the system
@@ -41,10 +41,12 @@
 #include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-#ifdef __i386__
 
 char *TCID="f00f";
 int TST_TOTAL=1;
+
+#ifdef __i386__
+
 
 /*
  * an f00f instruction
