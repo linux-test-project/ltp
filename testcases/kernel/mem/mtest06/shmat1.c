@@ -276,7 +276,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 
 	/* generate a random size, we will ask for this amount of shared mem  */
         srand(time(NULL)%100);
-        fsize = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4069;
+        fsize = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
 
         if (shmget(shmkey, fsize, IPC_CREAT | 0666 ) == -1)
         {
