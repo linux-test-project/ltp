@@ -127,7 +127,7 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
 static void 
 usage(char *progname)		/* name of this program                       */
 {
-    fprintf(stderr, "usage:%s -n test -t time -v [-V]\n", *progname);
+    fprintf(stderr, "usage:%s -n test -t time -v [-V]\n", progname);
     fprintf(stderr, "\t-n the test number, if no test number\n"
 		    "\t   is specified all the tests will be run\n");
     fprintf(stderr, "\t-t specify the time in hours\n");
@@ -403,6 +403,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
     if (verbose_print)
         fprintf(stdout, "map_and_thread(): pthread_create() success\n");
     wait_thread = FALSE; 
+    th_status = malloc(sizeof(int *));
     
     /* suspend the execution of the calling thread till the execution of the  */
     /* other thread has been terminated.				      */
@@ -709,7 +710,7 @@ main(int   argc,    /* number of command line parameters		      */
 
     if (argc < 2)
     {
-        usage(argv);
+        usage(argv[0]);
     }
     if (*argv[1] == '-')
     {
