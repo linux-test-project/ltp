@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -DGLIBC_SIGACTION_BUG=1 -Wall -D_GNU_SOURCE
-LOADLIBES+=	-lpthread -L../../../../lib -lltp
+LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -28,6 +28,9 @@ TEST=sigaction03 sigaction04 sigaction05 sigaction06 sigaction07 \
      sigaction08 sigaction09 sigaction10 sigaction11
 
 all: $(TARGETS)
+
+sigaction01:
+	cc -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread
 
 install:
 	@set -e; for i in $(TARGETS) $(TEST); do ln -f $$i ../../../bin/$$i ; done
