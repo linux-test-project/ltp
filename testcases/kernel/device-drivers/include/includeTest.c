@@ -138,10 +138,10 @@ static int test_init_module(void) {
 	gd_ptr->major = INCLUDEMAJOR;
 	gd_ptr->first_minor = 0;
 	gd_ptr->fops = &bdops;
-	gd_ptr->minor_shift= MINOR_SHIFT_BITS;
+//	gd_ptr->minor_shift= MINOR_SHIFT_BITS;
 	gd_ptr->driverfs_dev = NULL;
 	gd_ptr->capacity = MAX_NUM_DISKS;
-	gd_ptr->disk_de = NULL;
+//	gd_ptr->disk_de = NULL;
 	gd_ptr->flags = genhd_flags;
 
 	sprintf(gd_ptr->disk_name, DEVICE_NAME);

@@ -138,18 +138,18 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         printk(KERN_ALERT "TEST -- acpi_get_table \n");
 
-        status = acpi_get_table(ACPI_TABLE_RSDP, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_DSDT, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_FADT, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_FACS, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_PSDT, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_SSDT, 1, &dsdt);
-        status = acpi_get_table(ACPI_TABLE_XSDT, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_RSDP, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_DSDT, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_FADT, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_FACS, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_PSDT, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_SSDT, 1, &dsdt);
+//        status = acpi_get_table(ACPI_TABLE_XSDT, 1, &dsdt);
 
         printk(KERN_ALERT "TEST -- acpi_get_firmware_table \n");
 
         status = acpi_get_firmware_table("ECDT", 1, ACPI_LOGICAL_ADDRESSING, 
-            (struct acpi_table_header **) &ecdt_ptr);
+            (struct acpi_table_header **) &dsdt);
 
         printk(KERN_ALERT "TEST -- acpi_install_notify_handler \n");
 
@@ -174,7 +174,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
             printk(KERN_ALERT "TEST -- acpi_install_gpe_handler \n");
             ec->status_addr = ec->command_addr;
-            status = acpi_install_gpe_handler(ec->gpe_bit, ACPI_EVENT_EDGE_TRIGGERED, &acpi_ec_gpe_handler, ec);
+            status = acpi_install_gpe_handler(device, ec->gpe_bit, ACPI_EVENT_EDGE_TRIGGERED, &acpi_ec_gpe_handler, ec);
 /*
             status = acpi_install_address_space_handler (ACPI_ROOT_OBJECT,
                     ACPI_ADR_SPACE_EC, &acpi_ec_space_handler,
@@ -188,7 +188,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
                 ACPI_ADR_SPACE_EC, &acpi_ec_space_handler);
 */
             printk(KERN_ALERT "TEST -- acpi_remove_gpe_handler \n");
-            acpi_remove_gpe_handler(ec->gpe_bit, &acpi_ec_gpe_handler);
+            acpi_remove_gpe_handler(device, ec->gpe_bit, &acpi_ec_gpe_handler);
         }
      
         printk(KERN_ALERT "TEST -- acpi_get_current_resources \n");
@@ -486,10 +486,10 @@ int init_module(void)
     gd_ptr->major = ltp_acpi_major;
     gd_ptr->first_minor = 0;
     gd_ptr->fops = &blkops;
-    gd_ptr->minor_shift = MINOR_SHIFT_BITS;
+//    gd_ptr->minor_shift = MINOR_SHIFT_BITS;
     gd_ptr->driverfs_dev = NULL;
     gd_ptr->capacity = MAX_NUM_DISKS;
-    gd_ptr->disk_de = NULL;
+//    gd_ptr->disk_de = NULL;
     gd_ptr->flags = genhd_flags;
 
 
