@@ -149,6 +149,5 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
-do_setup
 do_test
 end_testcase
