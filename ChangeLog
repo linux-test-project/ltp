@@ -1,7 +1,7 @@
 Change Log
 ----------
 
-LTP-20020909
+LTP-20020910
 ------------
 - Fix path in runpan.sh                          ( Paul Larson )
 - runtest/syscalls:
@@ -29,7 +29,7 @@ LTP-20020909
 - Fix for ar01 hang when filesystem is full      ( Paul Larson )
 - Make ltp run with uClibc                       ( Steven J. Hill )
 - Fix compiler warnings in various tests         ( Xiao Feng Shi )
-- Clean up many of the the mktemp warnings       ( Paul Larson )
+- Clean up many of the mktemp warnings           ( Paul Larson )
   And use mkstemp in tst_tmpdir()
 - Applied pan/logfile/tools patches.             ( William J. Huie )
 - Use regular instead of mandatory locks in      ( Matthew Wilcox )   
@@ -39,7 +39,7 @@ LTP-20020909
 - Add command line options to runalltests.sh to  ( Randy Hron, 
   allow setting of various pan options and         Paul Larson,
   changing the temp directory                      Nate Straz )
-- Created automation-cookbook documentation      ( Jeff Martin )
+- Added automation documentation to /doc         ( Jeff Martin )
 - Patched nanosleep02.c to correctly test the    ( Andrea Arcangeli )
   functionality and avoid false positives.
 
