@@ -114,7 +114,7 @@ cleanup()
 		iptables -F -t filter &>$LTPTMP/tst_iptables.out
 		iptables -F -t nat &>$LTPTMP/tst_iptables.out
 		iptables -F -t mangle &>$LTPTMP/tst_iptables.out
-		rmmod ip_tables &>$LTPTMP/tst_iptables.out 
+		rmmod -v ipt_limit ipt_multiport ipt_LOG ipt_REJECT iptable_mangle iptable_nat ip_conntrack iptable_filter ip_tables &>$LTPTMP/tst_iptables.out 
 	fi
 	rm -fr $LTPTMP/tst_iptables.*
 	return $RC
