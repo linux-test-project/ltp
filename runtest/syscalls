@@ -736,6 +736,8 @@ statfs03 statfs03
 #stime01 stime01
 stime02 stime02
 
+string01 string01
+
 symlink01 symlink01
 symlink02 symlink02
 symlink03 symlink03

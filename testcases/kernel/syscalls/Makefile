@@ -43,7 +43,7 @@ SUBDIR= \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
 	mremap msync munlock munlockall munmap nanosleep nftw nice open \
 	pathconf pause personality pipe poll prctl\
-	pread ptrace pwrite query_module read readdir \
+	pread profil ptrace pwrite query_module read readdir \
 	readlink readv reboot recv recvfrom recvmsg rename \
 	rmdir sbrk sched_get_priority_max sched_get_priority_min \
 	sched_getparam sched_setparam sched_getscheduler \
@@ -53,7 +53,7 @@ SUBDIR= \
 	setregid setresgid setresuid setreuid setrlimit setsid setsockopt \
 	settimeofday setuid sigaction sigaltstack sighold signal \
 	sigprocmask sigrelse sigsuspend socket socketpair sockioctl \
-	stat statfs stime symlink sync sysconf sysctl sysfs \
+	stat statfs stime string symlink sync sysconf sysctl sysfs \
 	sysinfo syslog time times truncate umask \
 	uname unlink umount utime vfork vhangup wait \
 	wait4 waitpid write writev
