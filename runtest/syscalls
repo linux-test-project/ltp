@@ -308,6 +308,7 @@ mkdir04 mkdir04
 mkdir05 mkdir05
 mkdir05A symlink01 -T mkdir05
 mkdir08 mkdir08
+mkdir09 mkdir09
 
 mknod01 mknod01
 mknod02 mknod02
