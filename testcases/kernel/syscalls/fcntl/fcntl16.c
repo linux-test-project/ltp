@@ -52,7 +52,8 @@
 #include <sys/wait.h>
 
 #define SKIPVAL 0x0f00
-#define	SKIP	SKIPVAL, 0, 0L, 0L, IGNORED
+//#define	SKIP	SKIPVAL, 0, 0L, 0L, IGNORED
+#define SKIP 0,0,0L,0L,0
 #if (SKIPVAL == F_RDLCK) || (SKIPVAL == F_WRLCK)
 #error invalid SKIP, must not be F_RDLCK or F_WRLCK
 #endif
@@ -431,6 +432,11 @@ setup(void)
 
         sact.sa_handler = catch_alarm;
 	(void)sigaction(SIGALRM, &sact, NULL);
+
+/*    (void)signal(SIGUSR1, catch_usr1);
+    (void)signal(SIGUSR2, catch_usr2);
+    (void)signal(SIGALRM, catch_alarm);
+*/
 }
 
 int
@@ -441,6 +447,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 	int nexited;
 	int status, expect_stat;
 	int i, fail = 0;
+
 
 	/* loop through all test cases */
 	for (test = start; test < end; test++) {
@@ -470,7 +477,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize second parent lock structure */
 		thislock = &thiscase->parent_b;
 
-		if ((thislock->type) != SKIPVAL) {
+		if ((thislock->type) != IGNORED) { /*SKIPVAL */
 			/* set the second parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TFAIL, "Second parent lock failed");
@@ -491,7 +498,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
-			if (thislock->type != SKIPVAL) {
+			if (thislock->type != IGNORED) {
 				if ((child = fork()) == 0) {
 					dochild(i);
 				}
@@ -545,7 +552,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize fourth parent lock structure */
 		thislock = &thiscase->parent_d;
 
-		if ((thislock->type) != SKIPVAL) {
+		if ((thislock->type) != IGNORED) { /*SKIPVAL */
 			/* set the fourth parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TINFO, "Fourth parent lock failed");
