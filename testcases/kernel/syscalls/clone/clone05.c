@@ -72,7 +72,6 @@
 #include "usctest.h"
 #include "clone_platform.h"
 
-#define CHILD_STACK_SIZE 8192
 #define FLAG CLONE_VM | CLONE_VFORK
 
 static void setup();

@@ -73,16 +73,11 @@
 #include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
+#include "clone_platform.h"
 
-#ifdef __powerpc64__
-#define CHILD_STACK_SIZE 8192
-#else
-#define CHILD_STACK_SIZE 1024
-#endif
 #define TRUE 1
 #define FALSE 0
 
-#include "clone_platform.h"
 
 static void setup();
 static void cleanup();

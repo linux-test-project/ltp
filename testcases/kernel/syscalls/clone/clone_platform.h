@@ -16,6 +16,9 @@
  */
 /* Common platform specific defines for the clone system call tests */
 
+//#define CHILD_STACK_SIZE 8192
+#define CHILD_STACK_SIZE 16384
+
 #if defined (__s390__) || (__s390x__)
 #define clone __clone
 extern int __clone(int(void*),void*,int,void*);
