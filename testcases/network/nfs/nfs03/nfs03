@@ -51,6 +51,7 @@ TCdump=${TCdump:=$TCbin}
 
 # Setting the NFS to version 2 by default
 VERSION=${VERSION:=2}
+SOCKET_TYPE=${SOCKET_TYPE:=udp}
 
 # If CLEANUP is not set; set it to "ON"
 CLEANUP=${CLEANUP:="ON"}
@@ -307,6 +308,7 @@ $trace_logic
     echo ""
     echo "Test Options:"
     echo " VERSION: $VERSION"
+    echo " SOCKET_TYPE: $SOCKET_TYPE"
     echo " RHOST: $RHOST"
     echo ""
     echo "Test Parameters:"
@@ -317,7 +319,7 @@ $trace_logic
     
     sleep 5
 
-    OPTS=${OPTS:="vers=$VERSION "}
+    OPTS=${OPTS:="vers=$VERSION,proto=$SOCKET_TYPE "}
     REMOTE_DIR=${RHOST}:/mnt/nfs03.testdir
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp

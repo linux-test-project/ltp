@@ -47,6 +47,8 @@ TCdat=${TCdat:=$TCbin/dat}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/tmp}
 RHOST=${RHOST:=`hostname`}
+VERSION=${VERSION:=2}
+SOCKET_TYPE=${SOCKET_TYPE:=udp}
 TESTDIR=${TESTDIR:=/root}
 CLEANUP=${CLEANUP:="ON"}
 
@@ -79,7 +81,7 @@ $trace_logic
    [[ $? -eq 0 ]] || end_testcase "Could not create $TCtmp"
 
    #Mount $TCdat from RHOST.
-   mount $RHOST:$TESTDIR $TCtmp
+   mount -o vers=$VERSION,proto=$SOCKET_TYPE $RHOST:$TESTDIR $TCtmp
    [[ $? -eq 0 ]] || end_testcase "Could not mount from $RHOST"
 
 }
