@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
 		act.sa_handler=handler;
 		act.sa_flags=0;
 		if (sigemptyset(&act.sa_mask) == -1) {
-			perror("Error calling sigemptyset");
+			perror("Error calling sigemptyset\n");
 			return CHILDFAILURE;
 		}
 		if (sigaction(SIGABRT, &act, 0) == -1) {
-			perror("Error calling sigaction");
+			perror("Error calling sigaction\n");
 			return CHILDFAILURE;
 		}
 		tssleepfor.tv_sec=sleepsec;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (wait(&i) == -1) {
-			perror("Error waiting for child to exit");
+			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
 		}
 
