@@ -1,3 +1,17 @@
+LTP-20011205
+------------
+o	necessary users/groups can now be created on installation with 
+	user's permission
+o	added a simple menu-based interface for running the LTP testsuite
+o	fixed negative duration in pan output when -l isn't used
+o	new test mallocstress
+o	fixed race condition in nfslock01
+o	ar01, ld01, ldd01, nm01, objdump01, and size01 fixed when multiple 
+	copies are run simultaneously
+o	workaround for SIGTTOU hang in ioctl02
+o	shmget03 uses IPC_PRIVATE to make it safe when running multiple copies
+o	compiler warnings and other minor errors fixed in many tests
+
 LTP-20011107
 ------------
 o	Many improvements to mtest05 and mtest06 tests
