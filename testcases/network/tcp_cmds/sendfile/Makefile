@@ -9,7 +9,7 @@ all: $(TARGETS) generate
 generate:
 	./generate.sh
 
-install: all
+install: 
 	ln -f sendfile01 ../../../bin
 
 clean:
