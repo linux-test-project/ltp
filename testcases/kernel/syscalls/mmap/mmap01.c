@@ -78,6 +78,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <signal.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
