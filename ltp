@@ -388,7 +388,7 @@ diskio()
     kill $TAIL_PID > /dev/null 2>&1
     sleep 1
     clear
-  done
+  fi
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
