@@ -447,6 +447,10 @@ pread01 pread01
 pread02 pread02
 pread03 pread03
 
+ptrace01 ptrace01
+ptrace02 ptrace02
+ptrace03 ptrace03
+
 pwrite01 pwrite01
 pwrite02 pwrite02
 pwrite03 pwrite03
