@@ -2791,7 +2791,7 @@ int rw;
 
 	fdc = alloc_fdcache(req->r_data.io.r_file, req->r_data.io.r_oflags);
 
-	if( fdc->c_memaddr == NULL ) {
+	if( v_opt || fdc->c_memaddr == NULL ) {
 		if( fstat(fd, &sbuf) < 0 ){
 			doio_fprintf(stderr, "fstat failed, errno=%d\n",
 				     errno);
