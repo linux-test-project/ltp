@@ -56,6 +56,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <stdlib.h>
 #include <limits.h>		/* for PAGESIZE */
 #include "test.h"
 #include "usctest.h"
