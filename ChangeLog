@@ -1,5 +1,35 @@
-Change Log
-----------
+
+LTP-20021002
+------------
+- Added "shmctl04" to test the SHM_INFO command  ( Mingming Cao )
+- Fix for improper child exit in "execve02"      ( Colin Gibbs )
+- Fix for "nanosleep02" to eliminate false       ( Andreas Arcangeli )
+  positives
+- Fix for "personality01 to undef the personality( Marcus Meissner )
+  macro before calling personality()
+- Fix for "sendfile02" that adds a waitpid() call( Susanne Wintenberger )
+  to guarantee child exit before the test ends
+- Fix for /tools/rand_lines.c that eliminates an ( Nathan Straz )
+  IA64 compile time warning
+- Added "shmctl04" to the "syscalls" runtest file( Paul Larson )
+- Removed test 8 from "diotest4". Opening a      ( Paul Larson )
+  directory for direct I/O is not allowed.
+- Fix for PPC cross compile issues applied to:   ( Paul Larson )
+    "mmap01"
+    "pth_str01"
+    "pth_str03"
+    "shmem_test_04"
+- Fix for "fcntl01" to allow it to run without   ( Paul Larson )
+  predefining the file descriptors
+- Fix for "readv02" to check for EINVAL on       ( Paul Larson )
+  2.5.35 and above kernels
+- Fix for "stime01" to allow the checked time to ( Paul Larson )
+  be off +1 second
+- Fix for "writev01" to check for EINVAL on      ( Paul Larson )
+  2.5.35 and above kernels
+  
+
+
 
 LTP-20020910
 ------------
