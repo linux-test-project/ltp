@@ -1,5 +1,4 @@
-SUBDIRS = fsx-linux nfslock01 nfs01 nfs02 nfs03 nfsstat01 nfsstress
-
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
