@@ -6,7 +6,7 @@ LTPROOT=${PWD}
 mkdir /tmp/runpan-$$
 cd /tmp/runpan-$$
 
-export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/tests"
+export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/testcases/bin"
  
 ${LTPROOT}/pan/pan -e $@ -a ltp -n ltp -f ${LTPROOT}/runtest/quickhit
 
