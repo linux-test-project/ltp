@@ -1,3 +1,48 @@
+LTP-20030508
+
+- Updated the LTP to build and execute on NPTL	  ( Robbie Williamson )
+  installed systems
+- Applied 'ash' compatibilty patch		  ( Dan Kegel )
+- Applied "CFLAGS+=" Makefile patch		  ( Vasan Sundar )
+- Created "/testscripts" directory and relocated  ( Robbie Williamson )
+  scripts to it
+- Fixed kill problem with genload's stress.c	  ( Amos Waterland )
+- Added checking for users and sys groups to	  ( Robbie Williamson ) 
+  IDcheck.sh. Also, called the script from 
+  runalltests.sh before executing tests to support 
+  cross-compiled platforms
+- Added 'ltpmenu' GUI				  ( Manoj Iyer
+						    Robbie Williamson )
+- Applied "posixfy" patches			  ( Vasan Sundar )
+- Updated runalltests.sh to use -o for	 	  ( Robbie Williamson )
+  redirecting output.
+- Added code to runalltests.sh to prompt for 	  ( Robbie Williamson )
+  RHOST and PASSWD when running network tests.
+- Updated Open POSIX Test Suite header file to    ( Robbie Williamson )
+  allow timer tests to build.
+- Compiler warnings cleanups.			  ( Robbie Williamson )
+- Corrected buffer overflow in inode02.		  ( Dan Kegel )
+- Updated disktest to 1.1.10 and fixed for        ( Robbie Williamson )
+  systems w/o O_DIRECT
+- Completed merge of Open POSIX Test Suite 0.9.0  ( Robbie Williamson )
+- Applied ia64 specific patches			  ( Jacky Malcles )
+- Updated Makefiles to allow use of "-j"	  ( Nate Straz )
+- Correct fork05 for use in newer glibc/kernels   ( Ulrich Drepper )
+- Applied "type" fixes to recvfrom and recvmsg    ( Andreas Jaeger )
+- Applied x86_64 specific patches		  ( Andreas Jaeger )
+- Applied MSG_CMSG_COMPAT fix for 64bit 2.5	  ( Bryan Logan )
+  kernels.
+- Added new testcase for setegid.		  ( Dan Kegel )
+- Modified syslog tests to use test apis	  ( Manoj Iyer )
+- Added 2.5 timer tests.			  ( Aniruddha Marathe )
+- Added Device Mapper tests.			  ( Marty Ridgeway )
+- Added sockets tests.				  ( Marty Ridgeway )
+- Removed fptest03 due to use of obsolete 	  ( Robbie Williamson )
+  syscalls that perform 48bit math operations
+
+ 
+
+
 LTP-20030403
 
 - Fixed CFLAGS in all makefiles to append (+=)	  ( Vasan Sundar )
