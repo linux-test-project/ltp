@@ -166,7 +166,7 @@ setup()
 
         /* Setup signal handler for SIGUSR2 */
         def_act.sa_handler = sigusr2_handler;
-        def_act.sa_flags = SA_RESTART||SA_RESETHAND;
+        def_act.sa_flags = SA_RESTART|SA_RESETHAND;
 
         if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
                 tst_resm(TWARN, "sigaction() for SIGUSR2 failed in test_setup()\n");
@@ -208,6 +208,7 @@ sigsegv_handler(int sig)
 {
   if (child_pid==0){
   	kill(getppid(), SIGUSR2);
+	_exit(42);
   }
 }
 
