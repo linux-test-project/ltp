@@ -620,6 +620,12 @@ menu_print()
   echo "          *   LL             TT       PP     PP   *"
   echo "          *   LL             TT       PP     PP   *"
   echo "          *   LL             TT       PP     PP   *"
+  echo "     ---------------------------------------------------"
+  echo "    |                                                   |"
+  echo "    |      THIS IS DEPRECATED AND WILL BE REMOVED.      |"
+  echo "    |                                                   |"
+  echo "    |             # ./runalltests.sh -?                 |"
+  echo "     ---------------------------------------------------"
   echo "          *   LL             TT       PPPPPPPP    *"
   echo "          *   LL             TT       PP          *"
   echo "          *   LL             TT       PP          *"
@@ -637,6 +643,8 @@ menu_print()
   echo "               (4)  EXIT"
   echo ""
   echo -n "   Please select 1, 2, 3, or 4 >> "
+  echo ""
+  exit
 }
 
 
