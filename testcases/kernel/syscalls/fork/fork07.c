@@ -33,12 +33,19 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	07/2002 Limited forking and split "infinite forks" test case to
+ *	        fork12.c by Nate Straz
  *
  * RESTRICTIONS
  * 	None
  */
 
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -46,17 +53,31 @@ char *TCID = "fork07";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+void help(void);
 void setup(void);
 void cleanup(void);
 
 char pbuf[10];
 char fnamebuf[40];
 
+char *Nforkarg;
+int Nflag=0;
+int Nforks=0;
+int vflag=0;
+
+option_t options[] = {
+	{ "N:", &Nflag, &Nforkarg },	/* -N #forks */
+	{ "v" , &vflag, NULL },		/* -v (verbose) */
+	{ NULL, NULL, NULL }
+};
+
+int
 main(int ac, char **av)
 {
-	int status, count, forks, pid1;
+	int status, forks, pid1;
 	int ch_r_stat;
 	FILE *rea, *writ;
+	int c_pass, c_fail;
 
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -64,9 +85,18 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
+	}
+
+	if ( Nflag ) {
+    	    if (sscanf(Nforkarg, "%i", &Nforks) != 1 ) {
+		tst_brkm(TBROK, cleanup, "--N option arg is not a number");
+		tst_exit();
+	    }
+	} else {
+	    Nforks = 100;
 	}
 
 	/*
@@ -95,53 +125,72 @@ main(int ac, char **av)
 		if ((getc(rea)) != 'a') 
 			tst_resm(TFAIL, "getc from read side was confused");
 
-		forks = 0;
-
-forkone:
-		++forks;
-		if ((pid1 = fork()) != 0) {	/* parent */
-			if (pid1 > 0) {
-				goto forkone;
-			} else if (pid1 < 0) {
-				tst_resm(TINFO, "last child forked");
-			} 
-		} else {			/* child */
+		/* fork off the children */
+		tst_resm(TINFO, "Forking %d children", Nforks);
+		for (forks = 0; forks < Nforks; forks++) {
+		    if ((pid1 = fork()) == 0) { /* child */
 			ch_r_stat = getc(rea);
 #ifdef DEBUG
 			tst_resm(TINFO, "Child got char: %c", ch_r_stat);
 			tst_resm(TINFO, "integer value of getc in child "
 				 "expected %d got %d", 'b', ch_r_stat);
 #endif
-			if (ch_r_stat != EOF) {	/* for error or EOF */
-				tst_resm(TPASS, "test passed in child no %d",
-					 forks);
+			if (ch_r_stat == 'b') {
+			    if (vflag) {
+				tst_resm(TINFO, "%6d: read correct character",
+						getpid());
+			    }
 				exit(0);
 			} else {
-				tst_resm(TFAIL, "Test failed in child no. %d",
-					 forks);
-				exit(-1);
+			    if (vflag) {
+				tst_resm(TINFO, "%6d: read '%c' instead of 'b'",
+						getpid(), (char)ch_r_stat);
+			    }
+				exit(1);
 			}
+		    } else if (pid1 == -1) {
+			tst_brkm(TBROK, cleanup,
+					"Failed to fork child %d, %s (%d)",
+					forks+1, strerror(errno), errno);
+			tst_exit();
+		    }
 		}
+		tst_resm(TINFO, "Forked all %d children, now collecting", Nforks);
 
-		/* parent */
-		--forks;
-		for (count = 0; count <= forks; count++) {
-			wait(&status);
-#ifdef DEBUG
-			tst_resm(TINFO, " exit status of wait "
-				 " expected 0 got %d", status);
-#endif
-			if (status == 0) {
-				tst_resm(TPASS, "parent test passed");
-			} else {
-				tst_resm(TFAIL, "parent test failed");
-			}
+		/* Collect all the kids and see how they did */
+
+		c_pass = c_fail = 0;
+		while (wait(&status) > 0) {
+		    if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			c_pass++;
+		    } else {
+			c_fail++;
+		    }
+		    --forks;
 		}
-		tst_resm(TINFO, "Number of processes forked is %d", forks);
+		if (forks == 0) {
+		    tst_resm(TINFO, "Collected all %d children", Nforks);
+		    if (c_fail > 0) {
+			tst_resm(TFAIL, "%d/%d children didn't read correctly from an inheritted fd", c_fail, Nforks);
+		    } else {
+			tst_resm(TPASS, "%d/%d children read correctly from an inheritted fd", c_pass, Nforks);
+		    }
+		} else if (forks > 0) {
+		    tst_brkm(TBROK, cleanup, "There should be %d more children to collect!\n", forks);
+		} else /* forks < 0 */ {
+		    tst_brkm(TBROK, cleanup, "Collected %d more children then I should have!\n", abs(forks));
+		}
 	}
 	cleanup();
 
 	/*NOTREACHED*/
+	return 0;
+}
+
+void
+help()
+{
+    printf("  -N n    Create n children each iteration\n");
 }
 
 /*
@@ -179,11 +228,15 @@ setup()
 void
 cleanup()
 {
+	int waitstatus;
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* collect our zombies */
+	while (wait(&waitstatus) > 0);
 
 	/*
 	 * remove tmp dir and all files in it
