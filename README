@@ -26,11 +26,11 @@ Here's a bit of a description of the current directory structure.  For now this
 structure is simple.
 
 doio/
-          The doio directory contains three tools: doio, iogen, and growfiles.
-          These are elaborate filesystem tests for stressing and testing the
-          functionality of the filesystem.  There is also a wrapper for doio
-          and iogen called rwtest.  Command examples for these tools can be found
-          in the cmdlines in the root of the ltp directory.
+	  The doio directory contains three tools: doio, iogen, and growfiles.
+	  These are elaborate filesystem tests for stressing and testing the
+	  functionality of the filesystem.  There is also a wrapper for doio
+	  and iogen called rwtest.  Command examples for these tools can be
+	  found in the cmdlines in the root of the ltp directory.
 
 include/
 lib/
@@ -38,13 +38,24 @@ lib/
           routines used by many of the tests.
 
 tests/
-          To date the tests directory contains a number of simple tests called
-          'quickhitters'.  These tests are designed to be simple and quick and be
-          run in conjunction with each other.  They have some use as stand alone
-          tests, but when run many-at-a-time, interesting issues can come up.
+	  To date the tests directory contains a number of simple tests called
+	  'quickhitters'.  These tests are designed to be simple and quick and
+	  be run in conjunction with each other.  They have some use as stand
+	  alone tests, but when run many-at-a-time, interesting issues can come
+	  up.
 
 doc/
-          The doc directory contains mainly man pages for mainly the library codes.
+	  The doc directory contains mainly man pages for mainly the library
+	  codes.
+
+runtest/
+	  The runtest directory contains a simple test harness that Aaron
+	  Laffin hacked up in Python.  It runs tests from a file in sequential
+	  order.  It is meant to be an example of a simple test harness.
+pan/
+	  The pan directory contains a simple, lightweight test harness.  pan
+	  has the ability to run tests randomly and in parallel.  See pan's man
+	  page for more information.
 
 
 Notes

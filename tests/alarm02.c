@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm02.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: alarm02.c,v 1.4 2000/09/14 21:54:44 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -45,10 +45,6 @@
  *    WALL CLOCK TIME   : 1
  *
  *    CPU TYPES         : ALL
- *
- *    BINARY LOCATION   : CUTS_BIN/rf_tests/sys
- *
- *    SOURCE LOCATION   : CUTS_SRC/src/tests/sys
  *
  *    AUTHOR            : Billy Jean Horne
  *
@@ -82,7 +78,7 @@
  *       Loop for each test case.
  *        Execute alarm (0) system call to clear previous alarm.
  *        Check return code, if system call failed (return=-1)
- *           Issue a BROK message and exit the test.
+ *           Issue a FAIL message and exit the test.
  *        Call alarm() with boundary values for seconds.
  *        Verify that returned value is as expected.
  *        Report results.
