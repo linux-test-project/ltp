@@ -1,4 +1,3 @@
-#!/bin/sh
 #*********************************************************************
 #   Copyright (c) International Business Machines  Corp., 2003
 #
@@ -28,10 +27,11 @@
 TEST_USER1="acltest1"
 TEST_USER1_GROUP="users"
 TEST_USER1_PASSWD="ltp_test_pass1"
-TEST_USER1_HOMEDIR="/home/$TEST_USER1"
+#ensure the test partition is ACL aware
+TEST_USER1_HOMEDIR="`pwd`/$TEST_USER1"
 
-FILE_ACL="/tmp/test_file"
-FILE_ACL_LINK="/tmp/test_file_link"
+FILE_ACL="`pwd`/test_file"
+FILE_ACL_LINK="`pwd`/test_file_link"
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
@@ -42,10 +42,17 @@ do_setup(){
 	rm -f $FILE_ACL
 	rm -f $FILE_ACL_LINK
 
-	rm -rf /home/$TEST_USER1 
-	userdel $TEST_USER1 
+	if [ "$TEST_USER1_HOMEDIR" = "" ]
+	then {
+                echo "Could not find user $TEST_USER1's home directory."
+                exit 1
+        }
+        fi
+
+	rm -rf $TEST_USER1_HOMEDIR 
+	userdel $TEST_USER1 &> /dev/null
 	sleep 1
-	useradd -m -g $TEST_USER1_GROUP $TEST_USER1
+	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
 
 	if [ $? != 0 ]
 	then {
@@ -61,7 +68,13 @@ do_setup(){
 #-----------------------------------------------------------------------
 
 do_cleanup() {
-        rm -rf /home/$TEST_USER1
+	if [ "$TEST_USER1_HOMEDIR" = "" ]
+	then {
+                echo "Could not remove home directory of the user $TEST_USER1."
+                exit 1
+        }
+        fi
+        rm -rf $TEST_USER1_HOMEDIR
 	userdel $TEST_USER1
 	rm -f $FILE_ACL &> /dev/null
 	rm -f $FILE_ACL_LINK &> /dev/null
@@ -77,9 +90,13 @@ if [ "z$iam" = "z$TEST_USER1" ]
 then
 	echo "TESTING ACLS FOR 2ND USER $iam"
 
-	echo "Trying extened acls for files"
+	#setup files for extended attributes
+	setfacl -m u:$TEST_USER1:r $FILE_ACL_LINK
+	setfacl -m u:$TEST_USER1:r $FILE_ACL
+
+	echo "Trying extended acls for files"
 	${TCbin}/acl_file_test $FILE_ACL
-	if [ $? = 0 ]
+	if [ $? != 0 ]
 	then 
 		EXIT_CODE=1
 		echo "Extended acls for files (FAILED)"
@@ -87,9 +104,9 @@ then
 		echo "Extended acls for files (PASSED)"
 	fi
 
-	echo "Trying extened acls for file links"
+	echo "Trying extended acls for file links"
 	${TCbin}/acl_link_test $FILE_ACL_LINK
-	if [ $? = 0 ]
+	if [ $? != 0 ]
         then
                 EXIT_CODE=1
 		echo "Extended acls for links (FAILED)"
@@ -107,7 +124,7 @@ else
 	setfacl -mu:root:r $FILE_ACL_LINK
 	setfacl -mu:root:r $FILE_ACL
 	
-	echo "Trying extened acls for files"
+	echo "Trying extended acls for files"
 	acl_file_test $FILE_ACL
 	if [ $? != 0 ]
     	then
@@ -117,7 +134,7 @@ else
 		echo "Extended acls for files (PASSED)"
     	fi
 
-	echo "Trying extened acls for file links"	
+	echo "Trying extended acls for file links"	
 	acl_link_test $FILE_ACL_LINK
 	if [ $? != 0 ]
 	then
@@ -127,10 +144,8 @@ else
 		echo "Extended acls for links (PASSED)"
 	fi
 
-	rm -f $FILE_ACL_LINK
-	rm -f $FILE_ACL
-	touch $FILE_ACL
-        touch $FILE_ACL_LINK
+	chown $TEST_USER1 $FILE_ACL
+	chown $TEST_USER1 $FILE_ACL_LINK
 
 	if [ -z ${TCbin} ]
 	then
