@@ -106,7 +106,7 @@ do  case $arg in
                 fi;;
 
 	T)	if [ $Sar -eq 0 ]; then
-                  top -h 2>&1 | grep "\-f filename"
+                  top -h 2>&1 | grep "\-f filename" >/dev/null
 		  if [ $? -eq 0 ]; then
                     Top=1
                   else
