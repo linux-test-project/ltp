@@ -23,7 +23,7 @@ INCLUDE_USR=/usr/src/lksctp-2.4.18/lksctp/test/libc/include
 LINUX=/usr/src/lksctp-2.4.18/lksctp/linux_sctp
 CC=gcc
 
-CFLAGS=-g ${INCLUDES} ${WARNINGS} -DTEST_FRAME=1 \
+CFLAGS+=-g ${INCLUDES} ${WARNINGS} -DTEST_FRAME=1 \
         -DCONFIG_IP_SCTP=1 \
         -DUSE_CRC32C=1 \
         -DCONFIG_IP_SCTP_ADDIP=0 -DSCTP_DEBUG=1

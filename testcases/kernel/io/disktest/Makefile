@@ -23,8 +23,20 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.2 2002/05/28 14:45:38 plars Exp $
+# $Id: Makefile,v 1.3 2003/03/13 15:34:18 robbiew Exp $
 # $Log: Makefile,v $
+# Revision 1.3  2003/03/13 15:34:18  robbiew
+# Applied Vasan Sundar's patch:
+# <<<<<<<<<<<<<<<<<<<<
+# This fixes  2 problems we noticed with setting CFLAGS in the makefiles.
+#
+# 1. export CFLAGS from the top-level makefile so that it is available for
+# the sub-makes. (We somehow missed this in our earlier patch in Jan. This
+# is useful for cross-compilation)
+# 2. In the lower-level makefiles, append to CFLAGS ( +=) instead of
+# setting it.
+# >>>>>>>>>>>>>>>>>>>>
+#
 # Revision 1.2  2002/05/28 14:45:38  plars
 # MIPS fixes from Johannes Stezenbach:
 # ltp-20020507 / current CVS does not compile on MIPS, because
@@ -72,7 +84,7 @@
 # Split usage out. Split header out.  Added usage text.
 # Made signal handler one function. code cleanup.
 #
-CFLAGS= -Wall -O -g -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS+= -Wall -O -g -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 #CC=gcc
 
 all:	disktest

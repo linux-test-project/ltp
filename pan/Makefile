@@ -1,7 +1,7 @@
 
 LDFLAGS = -lm
 LFLAGS = -l
-CFLAGS = -Wall
+CFLAGS += -Wall
 
 all: pan bump scanner
 

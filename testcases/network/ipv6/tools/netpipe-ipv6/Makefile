@@ -1,6 +1,6 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.1 2002/03/18 21:39:34 robbiew Exp $
+# $Id: Makefile,v 1.2 2003/03/13 15:34:19 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler
@@ -13,7 +13,7 @@ INCLUDES   = netpipe.h
 TARGETS    = NPtcp
 # If you have TCP, MPI and PVM
 #TARGETS    = NPtcp NPmpi NPpvm
-CFLAGS	   = -O
+CFLAGS		    += -O
 # Adjust these for MPI (only used if you have MPI)
 MPI_HOME   = /home/mpich
 MPI_ARCH   = IRIX

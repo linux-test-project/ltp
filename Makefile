@@ -25,7 +25,7 @@
 # in the commandline and in the Makefiles use a dummy variable like in
 # CFLAGS
 
-CFLAGS = -Wall $(CROSS_CFLAGS)
+export CFLAGS = -Wall $(CROSS_CFLAGS)
 
 all: libltp.a 
 	@$(MAKE) -C pan $@

@@ -6,7 +6,7 @@
 #
 
 
-CFLAGS=	-O -DSHARED_OFILE -D_GNU_SOURCE
+CFLAGS+=		 -O -DSHARED_OFILE -D_GNU_SOURCE
 
 SRCS=	diotest1.c diotest2.c diotest3.c diotest4.c diotest5.c \
 	diotest6.c
