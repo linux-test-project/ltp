@@ -172,7 +172,7 @@ main()
         N)  RUN_NETEST=1;;
     
         n)  
-            $LTPROOT/testcases/bin/NETPIPE.sh
+            $LTPROOT/testcases/bin/netpipe.sh
             NETPIPE=1;;
     
         o)  OUTPUTFILE="-o $OPTARG" ;;
