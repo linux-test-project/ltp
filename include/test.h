@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.4 2002/05/28 16:26:16 robbiew Exp $ */
+/* $Id: test.h,v 1.5 2002/06/05 16:08:08 plars Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -216,6 +216,5 @@ extern void tst_tmpdir();
 extern void tst_rmdir();
 
 extern char * get_high_address(void);
-extern void do_file_setup(char *);
 
 #endif	/* end of __TEST_H__ */
