@@ -46,7 +46,7 @@ TC=${TC:=nfsstress}
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin}
 TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCbin/tmp}
+TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
 
 # Setting the NFS to version 2 with UDP by default
@@ -96,16 +96,17 @@ $trace_logic
     
     sleep 5
 
+    PID=$$
     OPTS=${OPTS:="vers=$VERSION,proto=$SOCKET_TYPE "}
-    REMOTE_DIR=${RHOST}:/mnt/nfsstress.testdir
+    REMOTE_DIR=${RHOST}:/mnt/nfsstress$PID.testdir
     LOCAL_DIR=$TCtmp/${RHOST}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /mnt/nfsstress.testdir"
+    rsh -n $RHOST "mkdir /mnt/nfsstress$PID.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfsstress.testdir"
+    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfsstress$PID.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $OPTS"
@@ -172,8 +173,8 @@ $trace_logic
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	sleep 2
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfsstress.testdir"
-	rsh -n $RHOST "rm -rf /mnt/nfsstress.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfsstress$PID.testdir"
+	rsh -n $RHOST "rm -rf /mnt/nfsstress$PID.testdir"
     fi
 
     [ $# = 0 ] && { echo "Test Successful"; exit 0; }
