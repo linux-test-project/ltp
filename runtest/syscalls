@@ -156,6 +156,8 @@ fdatasync02 fdatasync02
 flock01 flock01
 flock02 flock02
 flock03 flock03
+flock04 flock04
+flock05 flock05
 
 fork01 fork01
 fork02 fork02
