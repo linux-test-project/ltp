@@ -112,7 +112,10 @@ fi
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -p -f ${TMP}/alltests $logfile 
+${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -f ${TMP}/alltests $logfile 
+# Comment out the line above and use the line below if you want formatted printing.
+#${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -p -f ${TMP}/alltests $logfile 
+
 
 if [ $? -eq 0 ]; then
   echo pan reported PASS
