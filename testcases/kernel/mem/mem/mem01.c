@@ -196,7 +196,7 @@ void help()
  */
 size_t get_memsize()
 {
-  size_t res;
+  unsigned long long res;
   unsigned long freeswap;
   unsigned long freeram;
   int retcode;
@@ -208,14 +208,19 @@ size_t get_memsize()
   } 
   
   freeram = info.freeram * info.mem_unit;      
-  printf("Free Mem: %lu bytes\n",freeram);
+  printf("Free Mem:\t%lu Mb\n",freeram/1024/1024);
+  res=freeram; 
 
   freeswap = info.freeswap * info.mem_unit;      
-  printf("Free Swap: %lu bytes\n",freeswap);
+  printf("Free Swap:\t%lu Mb\n",freeswap/1024/1024);
+  res=res+freeswap;
 
-  res = (size_t)(freeram + freeswap);
-  printf("Total Free: %lu bytes\n",freeram+freeswap);
-  return res;
+  printf("Total Free:\t%llu Mb\n",res/1024/1024);
+
+  if ( res > 1*1024*1024*1024 )
+    res = 1*1024*1024*1024;
+  printf("Total Tested:\t%llu Mb\n",res/1024/1024);
+  return (size_t)res;
 }
 
 /*
