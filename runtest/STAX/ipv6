@@ -1,0 +1,12 @@
+echo6 export TCbin=$LTPROOT/testcases/network/ipv6/echo6;echo601
+finger6 finger601
+ftp6 export TCbin=$LTPROOT/testcases/network/ipv6/ftp6; ftp01
+perf_lan6 export TCbin=$LTPROOT/testcases/network/ipv6/perf_lan6; perf_lan6
+ping6 ping601
+rcp6 export TCbin=$LTPROOT/testcases/network/ipv6/rcp6; rcp01
+rlogin6 rlogin01
+rsh6 rsh01
+rwho6 rwho01
+sendfile6 export TCbin=$LTPROOT/testcases/network/ipv6/sendfile6; sendfile601
+tcpdump6 tcpdump601
+telnet6 telnet01

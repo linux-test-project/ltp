@@ -1,0 +1,7 @@
+#
+# PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
+#
+rpc01 export TCbin=$LTPROOT/testcases/network/rpc/rpc01; rpc01
+rpcinfo export TCbin=$LTPROOT/testcases/network/rpc/rpcinfo01; rpcinfo01
+rup export TCbin=$LTPROOT/testcases/network/rpc/rup; rup01
+rusers export TCbin=$LTPROOT/testcases/network/rpc/rusers; rusers01
