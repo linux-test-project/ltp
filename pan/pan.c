@@ -41,8 +41,11 @@
  *
  *	01/28/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code to print test exit value.
+ *
+ *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
+ *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.17 2003/01/29 02:09:13 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.18 2003/01/30 06:22:31 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -89,14 +92,15 @@ struct orphan_pgrp
     struct orphan_pgrp *next;
 };
 
-static pid_t run_child(struct coll_entry *colle, struct tag_pgrp *active);
+static pid_t run_child(struct coll_entry *colle, struct tag_pgrp *active,
+				int quiet_mode);
 static char *slurp(char *file);
 static struct collection *get_collection(char *file, int optind, int argc,
 					 char **argv);
 static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
 		      int keep_active, FILE * logfile, struct orphan_pgrp *orphans,
-			  int fmt_print, int *failcnt);
+			  int fmt_print, int *failcnt, int quiet_mode);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -158,10 +162,11 @@ main(int argc, char **argv)
     int exit_stat;
     int track_exit_stats = 0;	/* exit non-zero if any test exits non-zero */
 	int fmt_print = 0;          /* enables formatted printing of logfiles. */
+	int quiet_mode = 0;			/* supresses test start and test end tags. */
     int c;
     pid_t cpid;
 
-    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pr:s:t:x:y")) != -1) {
+    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pqr:s:t:x:y")) != -1) {
 	switch (c) {
 	case 'A':	/* all-stop flag */
 	    has_brakes = 1;
@@ -203,6 +208,9 @@ main(int argc, char **argv)
 	    break;
 	case 'p':	/* formatted printing. */
 		fmt_print = 1;
+		break;
+	case 'q':	/* supress test start and test end messages */
+		quiet_mode = 1;
 		break;
 	case 'r':	/* reporting type: none, rts */
 	    reporttype = strdup(optarg);
@@ -442,7 +450,7 @@ main(int argc, char **argv)
 		break;
 	    }
 
-	    cpid = run_child(coll->ary[c], running + i);
+	    cpid = run_child(coll->ary[c], running + i, quiet_mode);
 	    if (cpid != -1) {
 		++num_active;
 		if (starts > 0)
@@ -488,7 +496,7 @@ main(int argc, char **argv)
 	}
 
 	err = check_pids(running, &num_active, keep_active,
-			 logfile, orphans, fmt_print, &failcnt);
+			 logfile, orphans, fmt_print, &failcnt, quiet_mode);
 	if (Debug & Drunning) {
 	    pids_running(running, keep_active);
 	    orphans_running(orphans);
@@ -546,7 +554,7 @@ main(int argc, char **argv)
 	{
 		if (uname(&unamebuf) == -1)
 			fprintf(stderr, "ERROR: uname(): %s\n", strerror(errno));
-		fprintf(logfile, "\n-----------------------------------\n");
+		fprintf(logfile, "\n-----------------------------------------------\n");
 		fprintf(logfile, "Total Tests: %d\n", coll->cnt);
 		fprintf(logfile, "Total Failures: %d\n", failcnt);
 		fprintf(logfile, "Kernel Version: %s\n", unamebuf.release);
@@ -602,7 +610,7 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 	   FILE * logfile, struct orphan_pgrp *orphans, int fmt_print, 
-	   int *failcnt)
+	   int *failcnt, int quiet_mode)
 {
     int w;
     pid_t cpid;
@@ -707,12 +715,14 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 		    status = "driver_interrupt";
 
 		if (test_out_dir) {
-		    write_test_start(running+i, "ok");
-	    	    copy_buffered_output(running + i);
-    		    unlink(running[i].output);
+			if (!quiet_mode)
+				write_test_start(running+i, "ok");
+			copy_buffered_output(running + i);
+			unlink(running[i].output);
 		}
-		write_test_end(running+i, t, status,
-		   stat_loc, w, &tms1, &tms2);
+		if (!quiet_mode)
+			write_test_end(running+i, t, status,
+			   stat_loc, w, &tms1, &tms2);
 
 		/* If signaled and we weren't expecting
 		 * this to be stopped then the proc
@@ -748,7 +758,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 
 
 static pid_t
-run_child(struct coll_entry *colle, struct tag_pgrp *active)
+run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 {
     int cpid;
     int c_stdout = -1;		/* child's stdout, stderr */
@@ -909,9 +919,12 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 	    termtype = "unknown";
 	}
 	time(&end_time);
-	write_test_start(active, errbuf);
-	write_test_end(active, end_time, termtype, status, 
+	if (!quiet_mode) 
+	{
+		write_test_start(active, errbuf);
+		write_test_end(active, end_time, termtype, status, 
 			termid, &notime, &notime);
+	}
         if (capturing) {
             close(c_stdout);
             unlink(active->output);
@@ -923,7 +936,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
     if (capturing) close(c_stdout);
 	
     if (!test_out_dir) 
-	write_test_start(active, "ok");
+	if (!quiet_mode)
+		write_test_start(active, "ok");
 
     active->pgrp = cpid;
     active->stopping = 0;
