@@ -547,28 +547,31 @@ else
     echo -e "FAIL - ar with -x lib filename did not extract the named file alone"
 fi
 
+# This test will fail under pan, so it's commented out by default.
+echo -e "-)26 SKIPPED UNDER PAN"
+#
 # Signal SIGHUP
 
 # CODE
-
-
-rm -rf $TCtmp/lib.* 
-
-ar -vr $TCtmp/lib.a $LIST >>$TCtmp/lib.a.stdout&
-while [ ! -s $TCtmp/lib.a ]
-do
-        :
-done
-kill -1 $! >/dev/null 2>&1
-
-sleep 1
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 100 ]
-then
-    TCRESULT=26
-    echo -e "FAIL - ar could not create the archive ; killed by SIGHUP"
-else
-    echo -e  "-)26"
-fi
+#
+#
+#rm -rf $TCtmp/lib.* 
+#
+#ar -vr $TCtmp/lib.a $LIST >>$TCtmp/lib.a.stdout&
+#while [ ! -s $TCtmp/lib.a ]
+#do
+#        :
+#done
+#kill -1 $! >/dev/null 2>&1
+#
+#sleep 1
+#if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 100 ]
+#then
+#    TCRESULT=26
+#    echo -e "FAIL - ar could not create the archive ; killed by SIGHUP"
+#else
+#    echo -e  "-)26"
+#fi
  
 # Signal SIGINT
 
