@@ -17,4 +17,4 @@
 #define PTS_UNRESOLVED  2
 #define PTS_UNSUPPORTED 4
 #define PTS_UNTESTED    5
-
+#undef TEST
