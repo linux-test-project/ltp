@@ -356,7 +356,7 @@ int dotest(testers, me, fd)
 		 */
 
 	for (i = 0; i < MAXIOVCNT; i++) {
-		if( (r_iovec[i].iov_base = (char*)malloc(r_ioveclen)) == 0) {
+		if( (r_iovec[i].iov_base = (char*)calloc(r_ioveclen, 1)) == 0) {
 			tst_brkm(TBROK, NULL, "\tmalloc failed\n");
 			/* tst_exit(); */
 		}
@@ -369,7 +369,7 @@ int dotest(testers, me, fd)
 		if(malloc((i+1)*8) == 0) {
 			tst_brkm(TBROK,NULL, "\tmalloc failed\n");
 		}
-		if( (val_iovec[i].iov_base = (char*)malloc(w_ioveclen)) == 0) {
+		if( (val_iovec[i].iov_base = (char*)calloc(w_ioveclen, 1)) == 0) {
 			tst_resm(TBROK, "\tmalloc failed\n");
 			tst_exit();
 		}
@@ -379,7 +379,7 @@ int dotest(testers, me, fd)
 			tst_resm(TBROK, "\tmalloc failed\n");
 			tst_exit();
 		}
-		if( (zero_iovec[i].iov_base = (char*)malloc(w_ioveclen)) == 0) {
+		if( (zero_iovec[i].iov_base = (char*)calloc(w_ioveclen, 1)) == 0) {
 			tst_resm(TBROK, "\tmalloc failed\n");
 			tst_exit();
 		}

@@ -316,23 +316,23 @@ int dotest(testers, me, fd)
 	int	xfr;
 
 	nchunks = max_size / csize;
-	if( (bits = (char*)malloc((nchunks+7)/8)) == 0) {
+	if( (bits = (char*)calloc((nchunks+7)/8, 1)) == 0) {
 		tst_resm(TFAIL, "\tmalloc failed(bits)\n");
 		tst_exit();
 	}
-	if( (hold_bits = (char*)malloc((nchunks+7)/8)) == 0) {
+	if( (hold_bits = (char*)calloc((nchunks+7)/8, 1)) == 0) {
 		tst_resm(TFAIL, "\tmalloc failed(bold_bits)\n");
 		tst_exit();
 	}
-	if( (buf = (char*)(malloc(csize))) == 0) {
+	if( (buf = (char*)(calloc(csize, 1))) == 0) {
 		tst_resm(TFAIL, "\tmalloc failed(buf)\n");
 		tst_exit();
 	}
-	if( (val_buf = (char*)(malloc(csize))) == 0) {
+	if( (val_buf = (char*)(calloc(csize, 1))) == 0) {
 		tst_resm(TFAIL, "\tmalloc failed(val_buf)\n");
 		tst_exit();
 	}
-	if( (zero_buf = (char*)(malloc(csize))) == 0) {
+	if( (zero_buf = (char*)(calloc(csize, 1))) == 0) {
 		tst_resm(TFAIL, "\tmalloc failed(zero_buf)\n");
 		tst_exit();
 	}
