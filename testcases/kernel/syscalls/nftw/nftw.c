@@ -774,8 +774,8 @@ void
 blexit()
 {
     (local_flag == PASSED) ?
-        tst_resm(TPASS, "Test block %d\n", block_number)
-     :  tst_resm(TFAIL, "Test block %d\n", block_number);
+        tst_resm(TPASS, "Test block %d", block_number)
+     :  tst_resm(TFAIL, "Test block %d", block_number);
       block_number++;
         return;
 }
@@ -789,9 +789,9 @@ blexit()
 void
 anyfail()
 {
-    tst_resm(TINFO, "Exiting test\n");
-    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n")
-           : tst_resm(TPASS, "Test passed\n");
+    tst_resm(TINFO, "Exiting test");
+    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
+           : tst_resm(TPASS, "Test passed");
     tst_rmdir();
     tst_exit();
 }
