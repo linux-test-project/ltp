@@ -1,66 +1,95 @@
 
 Linux Test Project
-------------------
+http://oss.sgi.com/projects/ltp/
 
-08-21-2000
 
-The Linux Test Project is a project that has the noble goal of building a set
-of functionality regression tests for the kernel.  To date (21-AUG-2000), this
-is our goal, but additional goals have been suggested: stress testing,
-benchmarking, and standards conformance.  For the basic reason that this project
-is still in its infancy, we're going to the leave the others in the 'suggested' list
-for future consideration.  If you have ideas on ways of bringing a member of the
-'suggested' list under the Linux Test Project, by all means, show us the code!
+About the Linux Test Project
 
-The Linux Test Project home is located on the SGI Open Source Software site,
-oss.sgi.com.  The project web URL is at http://oss.sgi.com/projects/ltp/.  The
-project also has an email list which can be subscribed to by sending an email
-to majordomo@oss.sgi.com with the string 'subscribe ltp your@email.addr' where
-'your@email.addr' is your email address.  More information and an email archive
-can be found at http://oss.sgi.com/projects/ltp/mail.html.
+The Linux Test Project aims to develop a set of tools and tests to verify the
+functionality and stability of the Linux kernel.  We hope this will support
+Linux development by making unit testing more complete and minimizing user
+impact by building a barrier to keep bugs from making it to the user.  The main
+goal of the project is regression and functional testing, but there are many
+ways this project can grow.  
 
-About the Code
+
+In the Package
 --------------
+Here is a short description of what is included in this package
 
-Here's a bit of a description of the current directory structure.  For now this
-structure is simple.
+INSTALL
+	Installation documentation and quick start guide
 
-doio/
-	  The doio directory contains three tools: doio, iogen, and growfiles.
-	  These are elaborate filesystem tests for stressing and testing the
-	  functionality of the filesystem.  There is also a wrapper for doio
-	  and iogen called rwtest.  Command examples for these tools can be
-	  found in the cmdlines in the root of the ltp directory.
+README
+	This document
 
-include/
-lib/
-          The include and lib directories contain headers and codes for common
-          routines used by many of the tests.
+CREDITS
+	Credits to those who have contributed to the project.
 
-tests/
-	  To date the tests directory contains a number of simple tests called
-	  'quickhitters'.  These tests are designed to be simple and quick and
-	  be run in conjunction with each other.  They have some use as stand
-	  alone tests, but when run many-at-a-time, interesting issues can come
-	  up.
+COPYING
+	GNU Public License
 
-doc/
-	  The doc directory contains mainly man pages for mainly the library
-	  codes.
+ChangeLog
+	An incomplete list of changes to the project.  We will try harder to
+	keep this up to date.
 
-runtest/
-    This directory should be removed.  Currently it houses command lists that
-    are used by pan for automated runtime.
-pan/
-	  The pan directory contains a simple, lightweight test harness.  pan
-	  has the ability to run tests randomly and in parallel.  See pan's man
-	  page for more information.
+Makefile
+	Top level make file for LTP.  
+
+runalltests.sh
+	A simple script to run all of the packaged tests in sequential order and
+	report the over all result.  
+
+doc/*
+	Documentation for the project including man pages for some of the
+	tools and library functions.
+
+doio/*
+	The doio directory contains three tools: doio, iogen, and growfiles.
+	These are elaborate filesystem tests for stressing and testing the
+	functionality of the filesystem.  There is also a wrapper for doio
+	and iogen called rwtest.  Command examples for these tools can be
+	found in runtest/fs.
+
+include/*
+lib/*
+	The include and lib directories contain headers and codes for common
+	routines used by many of the tests.  We have tried to keep this to a
+	minimum.  
+
+tests/*
+	To date the tests directory contains a number of simple tests called
+	'quickhitters'.  These tests are designed to be simple and quick and
+	be run in conjunction with each other.  They have some use as stand
+	alone tests, but when run many-at-a-time, interesting issues can come
+	up.
+
+runtest/*
+	This directory should be removed.  Currently it houses command lists that
+	are used by pan for automated testing.
+pan/*
+	The pan directory contains a simple, lightweight test harness.  pan
+	has the ability to run tests randomly and in parallel.  See pan's man
+	page for more information.
 
 
-Notes
------
+Warning!
+--------
 Be careful with these tests!
 
 Don't run them on production systems.  Growfiles, doio, and iogen in particular
 stress the I/O capabilities of systems and while they should not cause problems
 on properly functioning systems, they are intended to find (or cause) problems.
+
+
+Contact Information and Updates
+-------------------------------
+
+URL: http://oss.sgi.com/projects/ltp/
+email: owners-ltp@oss.sgi.com
+
+Questions and comments should be sent to the LTP mailing list at
+ltp@oss.sgi.com.  To subscribe, send mail to majordomo@oss.sgi.com with
+"subscribe ltp" in the body of the message.
+
+A list archive is available at http://oss.sgi.com/projects/ltp/mail-threaded/

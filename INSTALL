@@ -1,14 +1,46 @@
-$Id: INSTALL,v 1.4 2000/08/31 21:31:08 alaffin Exp $
+$Id: INSTALL,v 1.5 2000/09/26 20:59:21 nstraz Exp $
 
-Building and Installation of Test Tools.
+Quick Start
+-----------
 
-At the time of release, simplicity of the released code was considered
-paramount to understanding and adoption.  For this reason no effort was
-put into engineering complicated and convoluted build processes that
-were not necessary.  Instead, a minimal approach was taken and the
-build process reflects that.  Simply:
+1> tar xzf ltp-20000908.tar.gz
+2> cd ltp
+3> make
+4> ./runalltests.sh
 
-make
 
-This does two things, builds the test libraries and then the tests. It
-should work on i386 and ia64, Redhat, Turbo, or Suse Linux systems.
+Detailed Installation
+---------------------
+
+Beyond the "Quick Start" instructions, there are only a few other things
+that should be done.  The Linux Test Project build process uses a
+minimalist approach.  There is a lot of room for improvement and
+contributions are welcome.
+
+1. Untar the ltp tarball into a spare directory.  There is not a
+   standard location for it yet.  We put it in out home directory
+   while we're working on it.  
+
+2. Run "make" to build everything.  
+
+3. Some tests need to run as "root" and will fail if they are not run as
+   root.  We have decided to use super[1] to change to root when tests
+   need to.  Super doesn't require a password and is safer than
+   installing test cases setuid.  Add the following line to your
+   /etc/super.tab and edit it to match your user and where you installed
+   LTP.  See super(5) for details.
+
+{mknod01,setgroups01,setuid02} /home/tester/ltp/tests/* tester uid=0
+
+   There are currently (09/26/2000) the tests that require root.  The
+   rest of the tests don't need to be run as root, and probably
+   shouldn't.
+
+4. You can run all of the tests sequentially by using the example test
+   script runalltests.sh.  The script is there just to get you started.
+   See pan(1) for more information on the test driver we have provided.
+   It is simple, but it can do a lot of stuff.  
+
+
+
+[1] http://freshmeat.net/projects/super/
