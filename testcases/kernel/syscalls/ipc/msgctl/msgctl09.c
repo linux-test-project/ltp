@@ -563,7 +563,7 @@ static int get_used_msgqueues()
         /* FIXME: Start at -4 because ipcs prints four lines of header */
         for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++)
                 ;
-        fclose(f);
+        pclose(f);
         if (used_queues < 0) {
                 tst_resm(TBROK,"Could not read output of 'ipcs' to calculate used message queues");
                 tst_exit();
