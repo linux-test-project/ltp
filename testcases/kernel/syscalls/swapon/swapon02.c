@@ -270,6 +270,7 @@ setup03()
 		 int j, fd;		 		 /*j is loop counter, fd is file descriptor*/
 		 int pid;		    		 /* used for fork */
 		 int *status=NULL;		 /* used for fork */
+		 int res = 0;
 		 char cmd_buffer[100];		 /* array to hold command line*/
 		 char filename[15];		 /* array to store new filename*/
 		 char decimal[3];		 /* array for digits at end of filename*/
@@ -287,7 +288,6 @@ setup03()
 		 		 		 		 " files");
 		 		 exit(1);
 		 }
-		 int res = 0;
 		 /* 6th and 7th character in the file contains output of wc -l*/
 		 if( (res = read(fd, temp, 7)) < 0) {
 		 		 tst_resm(TWARN, "Failed to find out existing number of swap"
