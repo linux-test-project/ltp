@@ -31,9 +31,11 @@ kernel()
   read DURATION
   case $DURATION in
     l|L)
-	LOOPS=1
   	echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
   	read LOOPS
+	if [ -z $LOOPS ]; then
+		LOOPS=1
+	fi
 	TIME=""
 	;;
     *)
@@ -290,9 +292,11 @@ networking()
   read DURATION
   case $DURATION in
     l|L)
-        LOOPS=1
         echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
         read LOOPS
+	if [ -z $LOOPS ]; then
+		LOOPS=1
+	fi
         TIME=""
         ;;
     *)
@@ -485,9 +489,11 @@ diskio()
   read DURATION
   case $DURATION in
     l|L)
-        LOOPS=1
         echo -n "How many loops do you want to run (Default is 1)? Use 0 for infinite. >> "
         read LOOPS
+	if [ -z $LOOPS ]; then
+		LOOPS=1
+	fi
         TIME=""
         ;;
     *)
