@@ -670,6 +670,8 @@ symlink05 symlink05
 sync01 sync01
 sync02 sync02
 
+sysconf01 sysconf01
+
 sysctl01 sysctl01
 sysctl03 sysctl03
 sysctl04 sysctl04
