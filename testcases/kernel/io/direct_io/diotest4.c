@@ -29,7 +29,7 @@
  *	is filesize_in_blocks * 4k.
  *	Test blocks:
  *	[1] Negative Offset 
- *	[2] Negative count
+ *	[2] Negative count - removed 08/01/2003 - robbiew
  *	[3] Odd count of read and write
  *	[4] Read beyond the file size
  *	[5] Invalid file descriptor
@@ -243,16 +243,6 @@ main(int argc, char *argv[])
 	if ((ret >= 0) || (errno != EINVAL)) {
 		fprintf(stderr, "[1] lseek allows negative offset. returns %d:%s",
 			ret, strerror(errno));
-		failed = TRUE;
-		fail_count++;
-	}
-	total++;
-
-	/* Test-2: Negative count */
-	offset = bufsize;
-	count = -1;
-	ret = runtest_f(fd, buf2, offset, count, EINVAL, 2, "negative count");
-	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
 	}
