@@ -113,15 +113,13 @@ char *argv[];
 	/*  Determine Packet Size - either use what was passed in or default */
         printf ("Determine packet size \n");
 	if( argc >= 3 )
-		datalen = atoi( av[2] );  
+		datalen = atoi( av[2] ) - 8;  
 	else
 		datalen = 64-8;
 	if (datalen > MAXPACKET) {
 		printf("Pingpong: packet size too large\n");
 		exit(1);
 	}
-	if (datalen >= sizeof(struct timeval))
-		timing = 1;
 
 
         /* Set number of packets to be sent */
@@ -148,6 +146,7 @@ char *argv[];
 	}
 
 	printf("echoing %s: %d data bytes\n", hostname, datalen );
+	printf("Total packet size is %d bytes\n",datalen+8);	
 
 	setlinebuf( stdout );
 
@@ -215,15 +214,12 @@ int npackets;
 	icp->icmp6_code = 0;
 	icp->icmp6_cksum = 0;
 	icp->icmp6_id = ident;		/* ID */
-
+	
 	cc = datalen+8;			/* skips ICMP portion */
 
-
-
-	for( i=8; i<datalen; i++) {	
-		*datap++ = i;
+	for( i=0; i<datalen; i++) {	
+		*datap++ = 6;
 	}
-
 	ntransmitted=0;
 	while (count < npackets) {
 		count++;
@@ -263,11 +259,11 @@ void finish(int n)
  */
 
 ck_packet (buf, cc, from)
-char 	*buf;			/* pointer to start of IP header */
+u_char 	*buf;			/* pointer to start of IP header */
 int	cc;			/* total size of received packet */
 struct sockaddr_in6 *from; 	/* address of sender */
 {
-	u_char 	i;
+	int 	i;
 	struct  icmp6_hdr icp_hdr;
 	struct	icmp6_hdr *icp = (struct ip6_hdr *) buf;          /* pointer to IP header */
   	u_char *datap ;
@@ -284,11 +280,12 @@ struct sockaddr_in6 *from; 	/* address of sender */
         /* Verify data in packet */
 
 	printf ("Checking Data.\n");
-        for( i=8; i<datalen; i++) {             /* skip 8 for header */
-                if ( i !=  (*datap)) {               
-                        printf ("Data cannot be validated. \n");
-                }
-                datap++; 
-        }
+        for( i=0; i<datalen; i++) {     
+          if ( (*datap) != 6 ) {               
+                 printf ("RVW: Data in [%d] is %d\n",i,(*datap));
+		 printf ("Data cannot be validated. \n");
+          }
+          datap++;
+	}
 	return(0);
 }
