@@ -1,4 +1,4 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+SUBDIRS = `ls */Makefile | grep -v open_posix_testsuite | sed "s/Makefile//g"`
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
