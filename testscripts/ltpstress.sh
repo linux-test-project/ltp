@@ -239,7 +239,7 @@ if [ $Sar -eq 1 ]; then
   killall -9 sadc >/dev/null 2>&1
 fi
 if [ $Top -eq 1 ]; then
-  kill -9 $SCREEN_PID >/dev/null 2>&1
+  kill $SCREEN_PID >/dev/null 2>&1
 fi
 killall -9 pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
