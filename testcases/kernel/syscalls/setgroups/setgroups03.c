@@ -65,6 +65,7 @@
  *  This test should be executed by 'non-super-user' only.
  *
  */
+#include "/usr/src/linux/include/linux/limits.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
@@ -98,7 +99,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{NGROUPS+1, 1, "Size is > NGROUPS", EINVAL, NULL},
+	{NGROUPS_MAX+1, 1, "Size is > NGROUPS", EINVAL, NULL},
 	{NGROUPS, 2, "Permission denied, not super-user", EPERM, setup1}
 };
 
@@ -142,6 +143,7 @@ main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */ 
+			 printf("gidsetsize=%d\n",gidsetsize);
 			 TEST(setgroups(gidsetsize, groups_list));
 	
 			/* check return code of setgroups(2) */
