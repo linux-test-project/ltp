@@ -106,7 +106,12 @@ do  case $arg in
                 fi;;
 
 	T)	if [ $Sar -eq 0 ]; then
-                  Top=1
+                  top -h 2>&1 | grep "\-f filename"; then
+                    Top=1
+                  else
+		    echo "ERROR: Please build and install the version of top in the /tools dir"
+		    exit
+ 		  fi
                 else
                   echo "Cannot specify -S and -T...exiting"
                   exit
