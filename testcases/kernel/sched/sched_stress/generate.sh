@@ -28,7 +28,7 @@
 
 COUNT=0
 LIMIT=120000
-ls ./sched.datafile > /dev/null
+ls ./sched.datafile > /dev/null 2>&1
 if [ $? -eq 1 ];then
   while [ $COUNT -le $LIMIT ]
   do
