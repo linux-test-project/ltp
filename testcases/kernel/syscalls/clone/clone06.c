@@ -77,6 +77,12 @@
 #include "test.h"
 #include "usctest.h"
 
+#if defined (__s390__) || (__s390x__)
+#define clone __clone
+extern int __clone(int(void*),void*,int,void*);
+#endif
+
+
 #define CHILD_STACK_SIZE 1024
 #define MAX_LINE_LENGTH 256
 

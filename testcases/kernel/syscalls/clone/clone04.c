@@ -75,6 +75,10 @@
 
 #define CHILD_STACK_SIZE 1024
 
+#if defined (__s390__) || (__s390x__)
+#define clone __clone
+extern int __clone(int(void*),void*,int,void*);
+#endif
 
 static void cleanup(void);
 static void setup(void);

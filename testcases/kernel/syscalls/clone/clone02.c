@@ -102,6 +102,12 @@
 #define TRUE 1
 #define FALSE 0
 
+#if defined (__s390__) || (__s390x__)
+#define clone __clone
+extern int __clone(int(void*),void*,int,void*);
+#endif
+
+
 static void setup();
 static int test_setup();
 static void cleanup();
