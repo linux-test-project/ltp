@@ -52,6 +52,7 @@ CALLS:	mkdir, stat, open
 #define WRITE 1
 
 #include <stdio.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
@@ -105,7 +106,6 @@ int instress(void);
 #define PASSED 1
 
 int local_flag = PASSED;
-extern int errno;
 FILE *temp;
 
 char *TCID="inode02";           /* Test program identifier.    */

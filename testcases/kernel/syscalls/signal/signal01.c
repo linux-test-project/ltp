@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.3 2002/11/14 16:16:17 plars Exp $ */
+/* $Id: signal01.c,v 1.4 2003/03/04 18:34:09 robbiew Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -198,8 +198,6 @@ void update_timings();
 
 int exit_val;		/* Global variable, used to tell whether the	*/
 			/* child exited instead of being killed.	*/
-extern int errno;	/* errno holds the error value returned by	*/
-			/* a system call.                        	*/
 char mesg[MAXMESG];	/* Holds messages to pass to tst_res.		*/ 
 
 struct ipc_t {

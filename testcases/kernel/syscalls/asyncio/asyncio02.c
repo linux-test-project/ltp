@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: asyncio02.c,v 1.2 2003/03/04 18:34:01 robbiew Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -124,7 +124,6 @@ int TST_TOTAL=6;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 extern int Tst_nobuf;           /* variable used to turn off tst_res buffering */
 
-extern int errno;
 
 int exp_enos[]={0};             /* Array of expected errnos */
 char mesg[150];

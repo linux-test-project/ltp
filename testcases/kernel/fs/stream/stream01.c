@@ -30,6 +30,7 @@
 ======================================================================*/
 
 #include <stdio.h>
+#include <errno.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -42,7 +43,6 @@ int     local_flag;
 #define FAILED 0
 
 
-extern int errno;
 char progname[] = "stream01()" ;
 char tempfile1[40]="";
 char tempfile2[40]="";

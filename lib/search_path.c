@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/ltp/ltp/lib/search_path.c,v 1.1 2000/08/04 20:48:22 nstraz Exp $ */
+/* $Header: /cvsroot/ltp/ltp/lib/search_path.c,v 1.2 2003/03/04 18:33:41 robbiew Exp $ */
 
 /*
  *	(C) COPYRIGHT CRAY RESEARCH, INC.
@@ -48,11 +48,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/param.h>
 #include <sys/stat.h>
 
-extern int errno;
 
 struct stat stbuf;
 

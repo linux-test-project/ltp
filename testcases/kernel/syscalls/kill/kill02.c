@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: kill02.c,v 1.2 2003/03/04 18:34:05 robbiew Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -167,7 +167,6 @@ int pidA;			/*Return value from 1st fork in child 1. Global so that it 	*/
 				/*can be used in interrupt handling routines.		*/
 int pidB;			/*Return value from 2nd fork in child 1. Global so that it 	*/
 				/*can be used in interrupt handling routines.		*/
-extern int errno;		/*Error number returned by a system call.		*/
 int pipe1_fd[2];		/*Pipe file descriptors used for communication  	*/
 				/*between child 1 and the 1st parent.			*/
 int pipe2_fd[2];		/*Pipe file descriptors used for communication  	*/

@@ -38,6 +38,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
+#include <errno.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -49,7 +50,6 @@ int     local_flag;
 #define PASSED 1
 #define FAILED 0
 
-extern int errno;
 char progname[] = "stream05()" ;
 char tempfile[40]="";
 

@@ -41,7 +41,6 @@
 #include <string.h> /* memset, strerror */
 #include "file_lock.h"
 
-extern int errno;
 
 #ifndef EFSEXCLWR
 #define EFSEXCLWR	503

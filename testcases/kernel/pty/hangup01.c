@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <sys/fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
@@ -35,7 +36,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int errno;
 
 char *TCID="hangup01";            /* Test program identifier.    */
 int TST_TOTAL=5;                /* Total number of test cases. */

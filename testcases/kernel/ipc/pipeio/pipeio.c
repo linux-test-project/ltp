@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.3 2002/12/04 18:42:53 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.4 2003/03/04 18:33:47 robbiew Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -71,8 +71,6 @@
 
 void sig_handler(), help(), usage(), prt_buf(), prt_examples();
 void sig_child();
-
-extern int errno;
 
 char *Progname;
 int count = 0;

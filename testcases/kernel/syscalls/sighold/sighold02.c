@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: sighold02.c,v 1.2 2003/03/04 18:34:08 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -115,7 +115,6 @@ extern int sighold (int __sig);
 
 #define TIMEOUT 2		/* time used in the alarm calls as backup */
 
-extern int errno;		/* system errno number */
 
 char *TCID="sighold02";         /* Test program identifier.    */
 int TST_TOTAL=2;                /* Total number of test cases. */

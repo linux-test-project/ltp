@@ -31,6 +31,7 @@
 ======================================================================*/
 
 #include <stdio.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -46,7 +47,6 @@ int     local_flag;
 #define FAILED 0
 
 
-extern int errno;
 char progname[] = "stream04()" ;
 char tempfile1[40]="";
 long ftell();

@@ -9,15 +9,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/file.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/signal.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
 #define LISTEN_BACKLOG	10
 
-
-extern int errno;
 
 void *
 test_sig(sig)

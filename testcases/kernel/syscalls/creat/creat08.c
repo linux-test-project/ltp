@@ -71,8 +71,6 @@ int     local_flag;
 #define ROOT_SETGID	"root_setgid"
 #define	MSGSIZE		150
 
-extern int errno;
-
 int issu();
 
 /*--------------------------------------------------------------*/

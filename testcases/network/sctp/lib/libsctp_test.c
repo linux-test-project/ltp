@@ -28,12 +28,11 @@
  */
 
 #include <stdio.h>
+#include <errno.h>
 #include <netdb.h>
 
 #include "libsctp_test.h"
 
-
-extern int errno;
 
 
 /*

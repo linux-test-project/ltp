@@ -67,6 +67,7 @@
  *
  */
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -88,8 +89,6 @@
 #include <sys/panic.h>
 #include <sys/category.h>
 #endif
-
-extern int errno;
 
 extern char *openflags2symbols();
 

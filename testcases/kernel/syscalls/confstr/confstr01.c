@@ -49,7 +49,6 @@
 #define PASSED 1
 
 int local_flag = PASSED;
-extern int errno;
 
 char *TCID="confstr01";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

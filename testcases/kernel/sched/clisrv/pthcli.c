@@ -47,9 +47,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "inet.h"
-#include <sys/errno.h>
+#include <errno.h>
 #define MAXLINE 1024
-extern int errno;
 
 /* Read contents of FILE *fp. Write each line to socket, then
    read line back from socket and write to standard output.

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: sigrelse01.c,v 1.2 2003/03/04 18:34:10 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -152,8 +152,6 @@ int choose_sig(int sig);
 #define SIG_CAUGHT 8
 #define WRITE_BROK 16
 #define HANDLE_ERR 32
-
-extern int errno;		/* system errno number */
 
 int  TST_TOTAL = 1;		/* number of test items */
 extern int Tst_count;           /* Test Case counter for tst_* routines */

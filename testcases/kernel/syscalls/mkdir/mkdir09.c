@@ -71,7 +71,6 @@ extern int optind, opterr;
 char *goodopts = "c:t:d:";
 int errflg;
 
-extern int errno;
 
 /*
  *  * These globals must be defined in the test.

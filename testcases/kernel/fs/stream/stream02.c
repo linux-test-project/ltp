@@ -27,6 +27,7 @@
 ======================================================================*/
 
 #include <stdio.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -43,7 +44,6 @@ int     local_flag;
 #define FAILED 0
 
 
-extern int errno;
 char progname[] = "stream02()" ;
 char tempfile1[40]="";
 

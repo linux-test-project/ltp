@@ -34,6 +34,7 @@
  */
 
 #include <stdio.h>	
+#include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,7 +51,6 @@
 #define PASSED 1
 
 int local_flag = PASSED;
-extern int errno;
 
 char *TCID="rename14";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

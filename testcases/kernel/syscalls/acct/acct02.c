@@ -50,7 +50,6 @@
 #define FAILED 0
 #define PASSED 1
 
-extern int errno;
 
 char *TCID="acct02";            /* Test program identifier.    */
 int TST_TOTAL=2;                /* Total number of test cases. */

@@ -118,7 +118,6 @@
 			   */
 #endif
 
-extern int errno;
 
 #ifndef linux
 static void lio_async_signal_handler();

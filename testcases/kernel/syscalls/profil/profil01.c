@@ -58,7 +58,6 @@
 
 #define P_TIME		10	/* profile for this many  seconds */
 
-extern int errno;
 extern int etext;
 extern char *malloc();
 

@@ -50,7 +50,6 @@
 void setup();
 void cleanup();
 
-extern int errno;
 
 /*
  *These globals must be defined in the test.

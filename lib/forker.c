@@ -117,8 +117,6 @@
 #include <stdlib.h> /* exit */
 #include "forker.h"
 
-extern int errno;
-
 int Forker_pids[FORKER_MAX_PIDS];      /* holds pids of forked processes */
 int Forker_npids=0;             /* number of entries in Forker_pids */
 

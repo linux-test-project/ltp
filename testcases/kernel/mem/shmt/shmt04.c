@@ -51,7 +51,6 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int errno;
 
 char *TCID="shmt04";            /* Test program identifier.    */
 int TST_TOTAL=2;                /* Total number of test cases. */

@@ -32,6 +32,7 @@
  */
 
 #include <stdio.h>
+#include <errno.h>
 #include <math.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -83,8 +84,6 @@ union dbl {
 /** LTP Port **/
 #include "test.h"
 #include "usctest.h"
-
-extern int errno;
 
 char *TCID="fptest03";          /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

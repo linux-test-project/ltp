@@ -56,7 +56,6 @@ void ok_exit();
 
 extern time_t	time(time_t *);
 extern char	*ctime(const time_t *);
-extern int errno;
 extern int atoi(const char *);
 
 #define NMFPTEPG		(1024)

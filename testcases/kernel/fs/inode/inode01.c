@@ -54,6 +54,7 @@ CALLS:	mkdir, stat, open
 #define WRITE 1
 
 #include <stdio.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -76,7 +77,6 @@ void ok_exit(void);
 
 int local_flag = PASSED;
 int block_number;
-extern int errno;
 FILE *temp;
 
 char *TCID="inode01";           /* Test program identifier.    */

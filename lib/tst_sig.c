@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.4 2001/06/01 19:46:13 nstraz Exp $ */
+/* $Id: tst_sig.c,v 1.5 2003/03/04 18:33:43 robbiew Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -82,7 +82,6 @@ void (*T_cleanup)();		/* pointer to cleanup function */
  ***************************************************************************/
 extern int STD_COPIES;
 
-extern int errno;
 static void def_handler();		/* default signal handler */
 static void (*tst_setup_signal( int, void (*)(int)))(int);
 

@@ -53,7 +53,6 @@
 #include "ipcsem.h"
 
 int local_flag=1;
-extern int errno;
 
 
 #define NREPS	500
