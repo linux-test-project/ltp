@@ -27,6 +27,8 @@
 #        is logged with message.                                 #
 ##################################################################
 DEBIAN=0
+#number of seconds to wait for another syslog test to complete
+wait_count=60
 
 cleanup()
 {
@@ -142,7 +144,15 @@ then
 else
     while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
     do
-      sleep 5
+        if [ $(( wait_count-- )) -gt 0 ]
+        then
+          sleep 1
+        else
+          tst_resm TBROK "Another syslog test appears to be stuck, could not run"
+          status_flag=1
+          exit $status_flag
+        fi
+
     done
     cp /etc/syslog.conf /etc/syslog.conf.ltpbak
 fi
