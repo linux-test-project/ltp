@@ -52,6 +52,9 @@ check_return_code()
       $LTPBIN/tst_resm TINFO "UNTESTED: `cat $OUTPUT_FILE`"
   fi
 
+  if [ $RC -gt 5 ];then
+      $LTPBIN/tst_resm TBROK "$NAME: test did not execute"
+  fi
 }
 
 if [ -z "$LTPROOT" ]

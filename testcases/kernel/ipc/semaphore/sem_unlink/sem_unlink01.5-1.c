@@ -35,7 +35,7 @@ int main()
 
 	sprintf(semname, "/tmp/" FUNCTION "_" TEST "_%d", getpid());
 
-	for (i=0; i< NAME_MAX - 10 ; i++) {  /* Making the longer than 255 */
+	for (i=0; i< NAME_MAX ; i++) {  /* Making the longer than 255 */
 		strcat(semname,"d");
 	}
 
@@ -44,14 +44,12 @@ int main()
 	len = strlen(semname);
 	printf("LENGTH %i\n", len);
 */
-	sem_unlink(semname);
-	if  (errno == ENAMETOOLONG ) 
-	{
-		puts("TEST PASSED");
-		return PTS_PASS;
-	} else {
-		printf("TEST FAILED ERROR IS: %s\n", strerror(errno)); 
-		return PTS_FAIL;
-	}
+	if ((sem_unlink(semname) == -1) && (errno == ENAMETOOLONG ) ) {
+                puts("TEST PASSED");
+                return PTS_PASS;
+        } else {
+                printf("TEST FAILED ERROR IS: %s\n", strerror(errno));
+                return PTS_FAIL;
+        }
 
 }
