@@ -50,6 +50,8 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "diotest_routines.h"
+
 #ifdef O_DIRECT
 
 #define	BUFSIZE	8192

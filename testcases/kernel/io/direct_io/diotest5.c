@@ -56,6 +56,8 @@
 #include <sys/uio.h>
 #include <errno.h>
 
+#include "diotest_routines.h"
+
 #include "test.h"
 #include "usctest.h"
 
@@ -160,6 +162,7 @@ prg_usage()
 	exit(1);
 }
 
+int
 main(int argc, char *argv[])
 {
 	int	i, action, fd_r, fd_w;

@@ -53,6 +53,8 @@
 #include <sys/types.h>
 #include <errno.h>
 
+#include "diotest_routines.h"
+
 #include "test.h"
 #include "usctest.h"
 

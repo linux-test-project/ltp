@@ -71,6 +71,11 @@
 #include <usctest.h>
 #include <pwd.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
 
 char *TCID = "execve03";
 int TST_TOTAL = 6;
@@ -115,6 +120,7 @@ struct test_case_t {
 	{test_name6, ENOEXEC}
 };
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */

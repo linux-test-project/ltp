@@ -66,6 +66,8 @@
 #include <sys/mman.h>
 #include <errno.h>
 
+#include "diotest_routines.h"
+
 #include "test.h"
 #include "usctest.h"
 
@@ -572,7 +574,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 	fprintf(stderr, "diotest4: %d testblocks completed\n",
-		total, fblocks);
+		 		 total);
 	exit(0);
 }
 

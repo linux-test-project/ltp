@@ -50,6 +50,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -76,6 +79,7 @@ char user1name[] = "nobody";
 extern struct passwd * my_getpwnam(char *);
 struct passwd *ltpuser1;
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */

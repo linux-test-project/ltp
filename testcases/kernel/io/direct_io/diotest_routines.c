@@ -40,8 +40,14 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/uio.h>
 #include <errno.h>
+#include <unistd.h>
+
+#include "diotest_routines.h"
+
+
 
 /* **** Routines for buffer actions, comparisions **** */
 
@@ -210,6 +216,7 @@ killchldrn(int **pidlst, int numchld, int sig)
 /*
  * waitchldrn: wait for child process listed in pidlst to finish.
 */
+int
 waitchldrn(int **pidlst, int numchld)
 {
 	int i, cpid, ret, errflag = 0;

@@ -48,6 +48,9 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <test.h>
 #include <usctest.h>
 
@@ -75,6 +78,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */

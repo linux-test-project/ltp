@@ -40,6 +40,8 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -59,13 +61,15 @@ char *prog;
 char *av[6];
 char *ev[1];
 
-usage()
+void
+usage(void)
 {
 	tst_resm(TBROK, "usage: %s <iters> <fname1> <fname2> <count>", TCID);
 	tst_resm(TINFO, "example: %s 20 test1 test2 4\n", TCID);
 	tst_exit();
 }
 
+int
 main(int ac, char **av)
 {
 	char iter[20];
@@ -94,7 +98,6 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block1:
 		prog = av[0];
 		iterations = atoi(av[1]);
 		fname1 = av[2];
