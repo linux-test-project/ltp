@@ -146,6 +146,8 @@ int main()
 
 #ifdef __mips__
 	vp = (void *) ((char *)sbrk(0) + 256 * K_1);
+#elif  __ia64__
+	vp = (void *) ((char *)sbrk(0) - 256 * K_1);
 #else
 	vp = (void *) ((char *)sbrk(0) + 4 * K_1);
 #endif
