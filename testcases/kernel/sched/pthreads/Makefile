@@ -1,4 +1,4 @@
-#CFLAGS := -Wall
+CFLAGS := -Wall
 LDFLAGS := -lpthread
 
 SRCS=$(wildcard *.c)

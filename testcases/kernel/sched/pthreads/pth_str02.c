@@ -28,6 +28,9 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/errno.h>
 
 
@@ -143,7 +146,7 @@ void *thread (void *parm)
 		fflush (stdout);
 	}
 
-	if (num != 0) pthread_exit (0);
+	pthread_exit(0);
 }
 
 
