@@ -86,7 +86,6 @@ static void cleanup();
 static int setup01();
 static int cleanup01();
 static int setup02();
-static int cleanup02();
 
 char *TCID = "swapoff02"; 	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
@@ -94,20 +93,21 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-static char *path[] = {"./abcd", "/dev/tty", "./swapfile01"};
-
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
 
 static struct test_case_t {
 	char *err_desc;		/* error description */
 	int  exp_errno;		/* expected error number*/
 	char *exp_errval;	/* Expected errorvalue string*/
+	char *path;		/* path for swapon */
 	int (*setupfunc)();	/* Test setup function */
 	int (*cleanfunc)();	/* Test cleanup function */
 } testcase[] = {
-	{"path does not exist", ENOENT, "ENOENT ", setup02,  cleanup02},
-	{"Invalid path", EINVAL, "EINVAL ", setup02, cleanup02},
-	{"Permission denied", EPERM, "EPERM ", setup01, cleanup01}
+	{"path does not exist", ENOENT, "ENOENT", "./abcd", 
+		NULL,  NULL},
+	{"Invalid path", EINVAL, "EINVAL ", "./nofile", setup02, NULL},
+	{"Permission denied", EPERM, "EPERM ", "./swapfile01", 
+		setup01, cleanup01}
 };
 
 int
@@ -135,15 +135,17 @@ main(int ac, char **av)
 		for(i = 0; i < TST_TOTAL; i++) {
 
 
-			if(testcase[i].setupfunc() == -1) {
+			if(testcase[i].setupfunc && 
+			   testcase[i].setupfunc() == -1) {
 				tst_resm(TWARN, "Failed to setup test %d."
 						" Skipping test", i);
 				continue;
 			} else {
-				TEST(swapoff(path[i]));
+				TEST(swapoff(testcase[i].path));
 			}
 
-			if(testcase[i].cleanfunc() == -1) {
+			if(testcase[i].cleanfunc && 
+			   testcase[i].cleanfunc() == -1) {
 			       tst_brkm(TBROK, cleanup, "cleanup failed,"
 				       			" quitting the test");
 	 		}
@@ -223,12 +225,10 @@ cleanup01()
 int
 setup02()
 {
-	return 0;
-}
-
-int
-cleanup02()
-{
+	int fd;
+	fd = creat("nofile", S_IRWXU);
+	if (fd == -1)
+		tst_resm(TWARN, "Failed to create temporary file");
 	return 0;
 }
 
