@@ -51,6 +51,7 @@
 #include <sys/wait.h>
 #include <sys/timeb.h>
 #include <unistd.h>
+#include <string.h>
 
 #ifdef DEBUG		/* compile with this flag for debug, use dprt in code */
 #define dprt    printf
@@ -189,7 +190,6 @@ thread_func(void *args)		/* arguments to the thread function           */
     static int procnum;         /* processor number last executed on.         */
     static int sched_policy;    /* scheduling policy as set by user/default   */
     volatile int exit_val = 0;  /* exit value of the pthreads.                */
-    pid_t  ppid;                /* pid of the current process.                */
     struct sched_param ssp;     /* set schedule priority.                     */
     struct sched_param gsp;     /* gsp schedule priority.                     */
     struct timeb       tptr;    /* tptr.millitm will be used to seed srand.   */
