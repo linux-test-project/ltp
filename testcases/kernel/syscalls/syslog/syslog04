@@ -43,6 +43,10 @@ mv /etc/syslog.conf.ltpbak /etc/syslog.conf
 tst_resm TINFO "Restart syslog"
 /etc/init.d/syslog restart 2>&1 1>/dev/null 
 sleep 2
+if [ $DEBIAN -eq 1 ];then
+ rm -f /etc/init.d/syslog
+fi
+
 exit $status_flag
 }
 syslog_case4()
@@ -63,6 +67,14 @@ syslog_case4()
 			status_flag=1
 			cleanup
 	fi
+
+	#Create symlink to /etc/init.d/sysklogd for Debian
+        find /etc/init.d/ -name sysklogd 2>&1 1>/dev/null || RC=$?
+        if [ $RC -eq 0 ]
+        then
+                ln -s /etc/init.d/sysklogd /etc/init.d/syslog
+                DEBIAN=1
+        fi
 
 	# check if /etc/init/syslog script exists
 	find /etc/init.d/ -name syslog 2>&1 1>/dev/null || RC=$?
