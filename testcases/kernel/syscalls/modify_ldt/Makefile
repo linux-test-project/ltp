@@ -20,7 +20,14 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -Wall
+
+NEEDSPECIAL:=$(shell cat /usr/include/asm/ldt.h | grep user_desc; echo $?)
+ifeq ($(strip $(NEEDSPECIAL)),)
+export CFLAGS+=-I../../../../include -g -Wall
+else
+export CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
+endif
+
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)

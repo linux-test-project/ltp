@@ -57,11 +57,10 @@
 #include "test.h"
 #include "usctest.h"
 
-/* Some asm/ldt.h files use user_desc, instead of modify_ldt_ldt_s. */
-#ifndef modify_ldt_ldt_s
+/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
+#ifdef MODIFY_LDT_SPECIALCASE
 #define modify_ldt_ldt_s user_desc
 #endif
- 
 
 int create_segment(void *, size_t);
 void cleanup(void);
