@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	setregid01.c
+ * 	setregid04.c
  *
  * DESCRIPTION
  * 	Test setregid() when executed by root.
@@ -45,7 +45,7 @@
  *	  Print errno log and/or timing stats if options given.
  *
  * USAGE:  <for command-line>
- *	setregid01 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
+ *	setregid04 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-e   : Turn on errno logging.
  *		-f   : Turn off functionality Testing.
@@ -72,7 +72,7 @@
 
 extern int Tst_count;
 
-char *TCID = "setregid01";
+char *TCID = "setregid04";
 gid_t users_gr_gid, root_gr_gid, adm_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={0};
