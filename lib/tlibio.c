@@ -615,7 +615,7 @@ long wrd;	/* to allow future features, use zero for now */
 	}
 	else{
 		sprintf(Errormsg, "%s/%d lseek(fd=%d,0,SEEK_CUR) failed, errno=%d  %s",
-			__FILE__, __LINE__, fd, errno, sys_errlist[errno]);
+			__FILE__, __LINE__, fd, errno, strerror(errno));
 		return -errno;
 	}
     }
@@ -696,7 +696,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ((ret = write(fd, buffer, size)) == -1) {
 	    sprintf(Errormsg, "%s/%d write(%d, buf, %d) ret:-1, errno=%d %s",
 		__FILE__, __LINE__,
-		fd, size, errno, sys_errlist[errno]);
+		fd, size, errno, strerror(errno));
 	    return -errno;
 	}
 
@@ -729,7 +729,7 @@ long wrd;	/* to allow future features, use zero for now */
 	    sprintf(Errormsg,
 		"%s/%d writea(%d, buf, %d, &stat, %d) ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
-		fd, size, sig, errno, sys_errlist[errno]);
+		fd, size, sig, errno, strerror(errno));
 	    sigon();
 	    return -errno;
 	}
@@ -749,7 +749,7 @@ long wrd;	/* to allow future features, use zero for now */
 	    sprintf(Errormsg,
 		"%s/%d aio_write(fildes=%d, buf, nbytes=%d, signo=%d) ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
-		fd, size, sig, errno, sys_errlist[errno]);
+		fd, size, sig, errno, strerror(errno));
 	    if( sig )
 		sigrelse( sig );
 	    return -errno;
@@ -784,7 +784,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ( listio(listio_cmd, &request, 1) == -1 ) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
-		Lio_SysCall, fd, size, errno, sys_errlist[errno]);
+		Lio_SysCall, fd, size, errno, strerror(errno));
 	    sigon();
             return -errno;
         }
@@ -816,7 +816,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
-		Lio_SysCall, fd, size, errno, sys_errlist[errno]);
+		Lio_SysCall, fd, size, errno, strerror(errno));
 	    if( sig )
 		sigrelse( sig );
             return -errno;
@@ -858,7 +858,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ( listio(listio_cmd, &request, 1) == -1 ) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
-		Lio_SysCall, fd, size, errno, sys_errlist[errno]);
+		Lio_SysCall, fd, size, errno, strerror(errno));
 	    sigon();
             return -errno;
         }
@@ -881,7 +881,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ( lio_listio(listio_cmd, aiolist, 1, NULL) == -1 ) {
             sprintf(Errormsg, "%s/%d %s failed, fd:%d, nbyte:%d errno=%d %s",
 		    __FILE__, __LINE__,
-		Lio_SysCall, fd, size, errno, sys_errlist[errno]);
+		Lio_SysCall, fd, size, errno, strerror(errno));
 	    if( sig )
 		sigrelse( sig );
             return -errno;
@@ -902,7 +902,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ((ret = writev(fd, &iov, 1)) == -1) {
 	    sprintf(Errormsg, "%s/%d writev(%d, iov, 1) nbyte:%d ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
-		fd, size, errno, sys_errlist[errno]);
+		fd, size, errno, strerror(errno));
 	    return -errno;
 	}
 
@@ -933,7 +933,7 @@ long wrd;	/* to allow future features, use zero for now */
 	if ((ret = pwrite(fd, buffer, size, poffset)) == -1) {
 	    sprintf(Errormsg, "%s/%d pwrite(%d, buf, %d, %lld) ret:-1, errno=%d %s",
 		    __FILE__, __LINE__,
-		fd, size, poffset, errno, sys_errlist[errno]);
+		fd, size, poffset, errno, strerror(errno));
 	    return -errno;
 	}
 

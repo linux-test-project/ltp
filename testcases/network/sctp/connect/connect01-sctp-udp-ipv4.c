@@ -321,7 +321,7 @@ check_for_comm_up(void)
 
 
 	if (error < 0) {
-		printf("Error recvmsg(): %s.\n", sys_errlist[errno]);
+		printf("Error recvmsg(): %s.\n", strerror(errno));
 	}
 
 	if (MSG_NOTIFICATION & inmessage.msg_flags) {

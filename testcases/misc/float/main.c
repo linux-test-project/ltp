@@ -333,7 +333,7 @@ static void sys_error (const char *msg, int line)
 {
         char syserr_msg [256];
 
-        sprintf (syserr_msg, "%s: %s\n", msg, sys_errlist[errno]);
+        sprintf (syserr_msg, "%s: %s\n", msg, strerror(errno));
         error (syserr_msg, line);
 }
 

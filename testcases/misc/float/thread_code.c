@@ -53,7 +53,7 @@ static size_t read_file(char *fname, void **data)
 	while(stat(path, &bufstat)) {
 		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error stat'ing %s: %s\n",
-				path, sys_errlist[errno]);
+				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
 			if(maxretries--)
@@ -69,7 +69,7 @@ static size_t read_file(char *fname, void **data)
 
 	while((buffer = malloc(fsize)) == (void *)0) {
 		if(errno == EINTR || errno == 0) {
-			printf("Error malloc'ing: %s\n", sys_errlist[errno]);
+			printf("Error malloc'ing: %s\n", strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
 			if(maxretries--)
@@ -81,7 +81,7 @@ static size_t read_file(char *fname, void **data)
 	while((fd = open(path, O_RDONLY)) < 0) {
 		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error opening %s: %s\n",
-				path, sys_errlist[errno]);
+				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
 			if(maxretries--)
@@ -94,7 +94,7 @@ static size_t read_file(char *fname, void **data)
 	while(read(fd, buffer, fsize) != fsize) {
 		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error reading %s: %s\n",
-				path, sys_errlist[errno]);
+				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
 			if(lseek(fd, (off_t)0, SEEK_SET) == (off_t)0) {
@@ -288,7 +288,7 @@ void * thread_code(void * arg)
 			"FAIL: %s: reading %s, %s\n",
 			th_data->th_func.fident,
 			th_data->th_func.din_fname,
-			sys_errlist[errno]);
+			strerror(errno));
 		th_data->th_result = 1;
 		pthread_exit((void *)1);
 	}
@@ -298,7 +298,7 @@ void * thread_code(void * arg)
 			"FAIL: %s: reading %s, %s\n",
 			th_data->th_func.fident,
 			th_data->th_func.dex_fname,
-			sys_errlist[errno]);
+			strerror(errno));
 		th_data->th_result = 1;
 		free(din);
 		pthread_exit((void *)1);
@@ -319,7 +319,7 @@ void * thread_code(void * arg)
 					"FAIL: %s: reading %s, %s\n",
 					th_data->th_func.fident,
 					th_data->th_func.dex2_fname,
-					sys_errlist[errno]);
+					strerror(errno));
 				th_data->th_result = 1;
 				free(din);
 				free(dex);

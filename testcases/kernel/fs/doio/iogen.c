@@ -82,7 +82,7 @@
 #ifndef linux
 extern char 	*sys_errlist[];
 #endif
-#define SYSERR	sys_errlist[errno]
+#define SYSERR	strerror(errno)
 
 /*
  * Structure for retaining test file information
@@ -998,7 +998,7 @@ struct file_info    *rec;
 	    } else {
 		fprintf(stderr,
 			"iogen%s: Error %s (%d) getting direct I/O info of file %s\n",
-			TagName, sys_errlist[errno], errno, rec->f_path);
+			TagName, strerror(errno), errno, rec->f_path);
 	    }
 	    close(fd);
 	} else {

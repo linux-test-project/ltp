@@ -257,7 +257,7 @@ int	synchronize_children( c_info *parent ) {
 	    if ((rc = pthread_cond_timedwait(&node_condvar, &node_mutex,
 	      &timer))) {
 		fprintf( stderr, "pthread_cond_timedwait (sync) %d: %s\n",
-		    my_index, sys_errlist[rc] );
+		    my_index, strerror(rc) );
 		exit( 2 );
 	    }
 
@@ -370,7 +370,7 @@ int	doit( c_info *parent ) {
 		if ((rc = pthread_create(&(info_p->threads[child]), &attr,
 		  (void *)doit, (void *)info_p))) {
 		    fprintf( stderr, "pthread_create (doit): %s\n",
-		      sys_errlist[rc] );
+		      strerror(rc) );
 		    exit( 3 );
 		} else {
 		    if ( debug ) {
@@ -400,7 +400,7 @@ int	doit( c_info *parent ) {
 		    if ( debug ) {
 			fprintf( stderr,
 			  "join failed on thread %d, status addr=%p: %s\n",
-			  my_index, status, sys_errlist[rc] );
+			  my_index, status, strerror(rc) );
 			fflush( stderr );
 		    }
 		    exit( 4 );
@@ -448,7 +448,7 @@ int	doit( c_info *parent ) {
 			    if ((rc = pthread_cond_broadcast(
 			      &parent->child_ptrs[child]->talk_condvar))) {
 				fprintf( stderr, "pthread_cond_broadcast: %s\n",
-				  sys_errlist[rc] );
+				  strerror(rc) );
 				exit( 5 );
 			    }
 			}
@@ -480,7 +480,7 @@ int	doit( c_info *parent ) {
 		      &info_p->talk_mutex, &timer))) {
 			fprintf( stderr,
 			  "pthread_cond_timedwait (leaf) %d: %s\n",
-			  my_index, sys_errlist[rc] );
+			  my_index, strerror(rc) );
 			exit( 6 );
 		    }
 		}
@@ -515,7 +515,7 @@ int	main( int argc, char *argv[] ) {
 	 */
 	if ((rc = pthread_mutex_init(&node_mutex, NULL))) {
 		fprintf( stderr, "pthread_mutex_init(node_mutex): %s\n",
-		    sys_errlist[rc] );
+		    strerror(rc) );
 		exit( 7 );
 	}
 
@@ -524,7 +524,7 @@ int	main( int argc, char *argv[] ) {
 	 */
 	if ((rc = pthread_cond_init(&node_condvar, NULL))) {
 		fprintf( stderr, "pthread_cond_init(node_condvar): %s\n",
-		    sys_errlist[rc] );
+		    strerror(rc) );
 		exit( 8 );
 	}
 
@@ -570,14 +570,14 @@ int	main( int argc, char *argv[] ) {
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex,
 		    NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
-			    sys_errlist[rc] );
+			    strerror(rc) );
 			exit( 13 );
 		}
 
 		if ((rc = pthread_mutex_init(&child_info[ind].talk_mutex,
 		    NULL))) {
 			fprintf( stderr, "pthread_mutex_init talk_mutex: %s\n",
-			    sys_errlist[rc] );
+			    strerror(rc) );
 			exit( 14 );
 		}
 		
@@ -585,14 +585,14 @@ int	main( int argc, char *argv[] ) {
 		    NULL))) {
 			fprintf( stderr,
 			    "pthread_cond_init child_condvar: %s\n",
-			    sys_errlist[rc] );
+			    strerror(rc) );
 			exit( 15 );
 		}
 
 		if ((rc = pthread_cond_init(&child_info[ind].talk_condvar,
 		    NULL))) {
 			fprintf( stderr, "pthread_cond_init talk_condvar: %s\n",
-			    sys_errlist[rc] );
+			    strerror(rc) );
 			exit( 16 );
 		}
 
@@ -607,7 +607,7 @@ int	main( int argc, char *argv[] ) {
 	fflush( stdout );
 
 	if ((rc = pthread_attr_init(&attr))) {
-		fprintf( stderr, "pthread_attr_init: %s\n", sys_errlist[rc] );
+		fprintf( stderr, "pthread_attr_init: %s\n", strerror(rc) );
 		exit( 17 );
 	}
 
@@ -619,7 +619,7 @@ int	main( int argc, char *argv[] ) {
 	if ((rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))
 	   ) {
 		fprintf( stderr, "pthread_attr_setdetachstate: %s\n",
-		    sys_errlist[rc] );
+		    strerror(rc) );
 		exit( 18 );
 	}
 
@@ -627,7 +627,7 @@ int	main( int argc, char *argv[] ) {
 	fflush( stdout );
 
 	if ((rc = pthread_create(&root_thread, &attr, (void *)doit, NULL))) {
-		fprintf( stderr, "pthread_create: %s\n", sys_errlist[rc] );
+		fprintf( stderr, "pthread_create: %s\n", strerror(rc) );
 		exit( 19 );
 	}
 
@@ -640,7 +640,7 @@ int	main( int argc, char *argv[] ) {
 	 * Wait for the root child to exit.
 	 */
 	if (( rc = pthread_join(root_thread, NULL) )) {
-		fprintf( stderr, "pthread_join: %s\n", sys_errlist[rc] );
+		fprintf( stderr, "pthread_join: %s\n", strerror(rc) );
 		exit( 20 );
 	}
 

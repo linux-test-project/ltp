@@ -60,7 +60,7 @@
 
 #ifndef __KARMA__
 #  define mt_num_processors() 1   /*  Set to the number of processors   */
-#  define ERRSTRING sys_errlist[errno]
+#  define ERRSTRING strerror(errno)
 #  define FALSE 0
 #  define TRUE  1
 #else
