@@ -24,18 +24,23 @@
 #ifndef __GETDENTS_H
 #define __GETDENTS_H	1
 
-#define GETDENTS_ASM() ({ int __rval;					\
-			__asm__ __volatile__("				\
-				movl	%4, %%edx \n			\
-				movl	%3, %%ecx \n			\
-				movl	%2, %%ebx \n			\
-				movl	%1, %%eax \n			\
-				int	$0x80 \n			\
-				movl	%%eax, %0"			\
-			: "=a" (__rval)					\
-			: "a" (cnum), "b" (fd), "c" (dirp), "d" (count)	\
-			: "memory"					\
-			);						\
-			__rval;						\
-		    })
+#ifdef __i386__
+	#define GETDENTS_ASM() ({ int __rval;				\
+				__asm__ __volatile__("			\
+					movl	%4, %%edx \n		\
+					movl	%3, %%ecx \n		\
+					movl	%2, %%ebx \n		\
+					movl	%1, %%eax \n		\
+					int	$0x80 \n		\
+					movl	%%eax, %0"		\
+				: "=a" (__rval)				\
+				: "a" (cnum), "b" (fd), "c" (dirp), "d" (count)\
+				: "memory"				\
+				);					\
+				__rval;					\
+		    	})
+#else
+	#define GETDENTS_ASM() 0
+#endif /* __i386__ */
+
 #endif /* getdents.h */

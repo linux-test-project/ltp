@@ -88,6 +88,12 @@ main(int ac, char **av)
 	struct stat *sbuf;
 	char *newfile;
 
+#ifndef __i386__
+	tst_resm(TINFO, "This test includes x86 asm and will not work on "
+			"this machine");
+	tst_exit();
+#endif /* __i386__ */
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
