@@ -1,0 +1,30 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:39101:39102">
+sem_unlink shall remove the created named semaphore by returning zero on
+success.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:39101:39102">
+Verify that the named semaphore has been removed after calling sem_wait
+after sem_unlink.
+</assertion>
+<assertion id="3" tag="ref:XSH6:39115:39115">
+ERROR: EACCES:  created a semaphore with write permission only, then trying to unlink it which results in permission denied.  
+</assertion>
+  <assertion id="4" tag="ref:XSH6:39119:39119">
+ERROR: ENOENT: Trying to unlink a named semaphore which it doesn't exist. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:39116:39118">
+ERROR: ENAMETOOLONG: Trying to unlink a named semaphore which exceeds the 
+maximum of NAME_MAX. 
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:39105:39106">
+Calls to sem_open to recreate/reconnect the semaphore actually refer to a new
+semaphore after sem_unlink has been called.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:39107:39108">
+Calls to sem_unlink are not blocking.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:39110:39112">
+Calls to sem_unlink should return 0 on success and -1 on failure.
+  </assertion>
+</assertions>
