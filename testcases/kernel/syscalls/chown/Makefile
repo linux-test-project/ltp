@@ -23,10 +23,15 @@
 CFLAGS+=	-I../../../../include
 LDFLAGS+=	-L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
+SRCS=$(wildcard chown*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS)
+all: change_owner $(TARGETS)
+
+change_owner: 
+	$(CC) -o change_owner change_owner.c $(CFLAGS) $(LDFLAGS)
+	chown root change_owner
+	chmod 04755 change_owner 
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
@@ -35,6 +40,6 @@ install: all
 	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) change_owner
 
 
