@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #******************************************************************************
 #   Copyright (c) International Business Machines  Corp., 2000
 #
@@ -42,6 +43,11 @@ NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out
 LTPROOT=${LTPROOT:-"../../../../"}
 
+#If INTERFACE is set then use it.
+if [ ! -z $INTERFACE ]; then
+IFNAME="-i $INTERFACE"
+fi
+
 
 #-----------------------------------------------------------------------
 #
@@ -79,7 +85,7 @@ do_test()
    mkdir -p $TCtmp
    [ $? -eq 0 ] || end_testcase "mkdir -p $TCtmp failed"
    ping -f $RHOST > /dev/null 2>&1 &
-   /usr/sbin/tcpdump -c $NUMLOOPS > $OUTFILE
+   /usr/sbin/tcpdump $IFNAME -c $NUMLOOPS > $OUTFILE
    [ $? -eq 0 ] || end_testcase "Problems trying to launch tcpdump"
    grep $RHOST $OUTFILE 
    [ $? -eq 0 ] || end_testcase "$RHOST was not listed in network traffic"
