@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/ltp/ltp/lib/get_high_address.c,v 1.1 2000/08/04 20:48:22 nstraz Exp $ */
+/* $Header: /cvsroot/ltp/ltp/lib/get_high_address.c,v 1.2 2002/01/17 21:56:50 iyermanoj Exp $ */
 
 /*
  *	(C) COPYRIGHT CRAY RESEARCH, INC.
@@ -11,5 +11,5 @@
 char *
 get_high_address()
 {
-       return (char *)sbrk(0) + 16384;
+       return (char *)sbrk(0) + getpagesize();
 }
