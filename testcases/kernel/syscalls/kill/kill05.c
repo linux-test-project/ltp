@@ -97,7 +97,7 @@ main(int ac, char **av)
 	int status, i;
 
 	char user1name[] = "nobody";
-	char user2name[] = "operator";
+	char user2name[] = "bin";
 
 	extern struct passwd * my_getpwnam(char *);
 
