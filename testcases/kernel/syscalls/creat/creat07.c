@@ -50,6 +50,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -76,7 +77,7 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int retval, status, fd;
+	int retval=0, status, e_code, fd;
 	struct stat statbuf;
 	pid_t pid, pid2;
 
@@ -128,6 +129,7 @@ main(int ac, char **av)
 			TEST(creat(fname, O_WRONLY));
 
 			if (TEST_RETURN != -1) {
+				retval=1;
 				tst_resm(TFAIL, "creat(2) succeeded on "
 					 "expected fail");
 				continue;
@@ -136,6 +138,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
+				retval=1;
 				tst_resm(TFAIL, "expected ETXTBSY, instead "
 					 "received %d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
@@ -145,11 +148,18 @@ main(int ac, char **av)
 
 			/* kill off the dummy test program */
 			if (kill(pid, SIGKILL) == -1) {
+				retval=1;
 				tst_brkm(TBROK, cleanup, "kill failed");
 			}
+			exit(retval);
 		} else {
-			/* let the child carry on */
-			exit(0);
+                       /* wait for the child to finish */
+                        wait(&status);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if (e_code != 0) {
+                                tst_resm(TFAIL, "Failures reported above");
+                        }
 		}
 	}
 	cleanup();
