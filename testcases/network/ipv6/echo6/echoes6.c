@@ -25,16 +25,24 @@
 
 main (int argc,char *argv[],char *env[])
 {
-	int	i,j,k,wait_stat,pid,finish;
+
+	int	i,j,k,wait_stat,pid,finish,gai;
 	struct	servent *sp;
-	struct 	hostent *hp;
+	struct 	addrinfo *hp;
+	struct	addrinfo hints;
 	struct  {
 		char	resultfile[35];
 		int	pid;
 		int	status;
 	}echo_struc[200];
 
-	hp = gethostbyname2(argv[1],AF_INET6);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = PF_INET6;
+
+	if ((gai=getaddrinfo(argv[1], NULL, &hints, &hp))!=0) 
+                errx(2, "Unknown subject address %s: %s\n",argv[1], gai_strerror(gai));	
+	if (!hp->ai_addr || hp->ai_addr->sa_family != AF_INET6)
+                errx(2, "getaddrinfo failed");
 	if ((sp=getservbyname("echo","tcp"))==NULL) {
 		printf("ERROR service is not available\n");
 		perror("echo");
@@ -88,19 +96,13 @@ main (int argc,char *argv[],char *env[])
 	exit(0);
 }
 
-echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfile)
+echofile (struct servent *sp, struct addrinfo *hp, char *resultfile, char *orgfile)
 {
 	int	n;
 	int	port;
 	char	wr_buffer[BUFSIZ];
 	char	rd_buffer[BUFSIZ];
-	struct	in6_addr hostaddr;
-	struct sockaddr_in6 sa;
-#ifdef DEBUG
-	struct	sockaddr_in6 address;
-	u_short	addrlen;
-	u_short	portnum;
-#endif
+	struct 	sockaddr_in6 sa;
 	int	s;
 	int	finish;
 	int	fdw,fdr;
@@ -118,41 +120,24 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 		exit(1);
 	}
 	port=sp->s_port;
-	bcopy(hp->h_addr_list[0],&hostaddr,sizeof(struct in6_addr));
-	bzero((char *)&sa,sizeof (sa));
+	memcpy(&sa, hp->ai_addr, hp->ai_addrlen);
 	sa.sin6_port=port;
-	sa.sin6_addr=hostaddr;
 
 #ifdef 	DEBUG
-	printf("port=%d hostaddr=%x\n", ntohs(port), hostaddr);
+	printf("port=%d\n", ntohs(port));
 	printf("Connect .......\n");
 #endif
-	if (connect(s,(struct sockaddr_in6 *) &sa,sizeof(sa))==-1) {
+	if (connect(s,(struct sockaddr *) &sa,sizeof(sa))==-1) {
 		printf ("ERROR occured during connect socket operation(%d)\n",pid);
 		perror("echo:connect");
 		cleanup(s);
 		exit(1);
 	}
 #ifdef DEBUG
-	addrlen=sizeof(address);
-	printf("addrlen is %d.\n",addrlen);
-	if (getsockname(s,&address,&addrlen) == -1 ) {
-		printf ("ERROR occured during getsockname(%d)\n",pid);
-		perror("echo");
-		cleanup(s);
-		exit(1);
-	}
-	portnum=ntohs(address.sin6_port);
-	printf ("local port is: %d\n",portnum);
-	if (getpeername(s,&address,&addrlen) == -1) {
-		printf ("ERROR occured during getpeername(%d)\n",pid);
-		perror("echo");
-		cleanup(s);
-		exit(1);
-	}
-	portnum=ntohs(address.sin6_port);
-	/*	printf ("remote address is: %d\n",portnum);
-*/
+	printf("hp->ai_addrlen=%d\n",hp->ai_addrlen);
+	printf("hp->ai_family=%d\n",hp->ai_family);
+	printf("hp->ai_socktype=%d\n",hp->ai_socktype);
+	printf("hp->ai_protocol=%d\n",hp->ai_protocol);
 #endif
 	if ((fdr=open(orgfile,O_RDONLY)) < 0 ) {
 		printf("ERROR when opening the input file(%d)\n",pid);

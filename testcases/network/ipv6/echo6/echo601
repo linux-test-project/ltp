@@ -19,7 +19,7 @@ unset LIBPATH
 #
 #
 #
-#  FILE   : echo601
+#  FILE   : echo
 #
 #  PURPOSE: Stresses the inetd/xinetd daemon using the `echo` service.
 #           
@@ -36,20 +36,19 @@ unset LIBPATH
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TC=echo601
+TC=sine
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
 TCtmp=${TCtmp:-$TCsrc}
 CLEANUP=${CLEANUP:-ON}
 CREATFILE=createfile
-ECHOES=echoes6
-
+ECHOES=echoes
 
 EXECUTABLES=${EXECUTABLES:-"$CREATFILE $ECHOES"}
 ECHOFILE=${ECHOFILE:-echofile}
 NUMLOOPS=${NUMLOOPS:-2}
-NUMPROCESSES=${NUMPROCESSES:-10}
+NUMPROCESSES=${NUMPROCESSES:-15}
 
 #-----------------------------------------------------------------------
 #
@@ -76,7 +75,7 @@ do_test()
    COUNT=1
    while [[ $COUNT -le $NUMLOOPS ]]
    do
-      strace $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
+      $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
       [[ $? = 0 ]] || end_testcase "Error in $ECHOES test in loop $COUNT"
 
       NUM=0
@@ -89,6 +88,10 @@ do_test()
 
       echo "Successful execution for loop $COUNT" 
       COUNT=`expr $COUNT + 1`
+      if [[ $COUNT -le $NUMLOOPS ]]; then
+  	echo "Sleeping 60 seconds to avoid hitting max. connections setting for service"
+	sleep 60
+      fi
    done
 }
 

@@ -1,4 +1,4 @@
-CFLAGS += -w -O -DDEBUG
+CFLAGS += -w -O 
 LDFLAGS += 
 
 SRCS=$(wildcard *.c)
