@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.1 2000/11/15 15:18:33 nstraz Exp $ */
+/* $Id: sighold02.c,v 1.2 2001/02/19 15:13:42 nstraz Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -230,7 +230,7 @@ main(int ac, char **av)
 	     * send signals to child and see if it holds them 
 	     */
 
-	    for (sig = 1; sig <= NUMSIGS; sig++) {
+	    for (sig = 1; sig < NUMSIGS; sig++) {
                 if ((sig == 41) && !CRAYT3E && !SGI) {
                         sig = 42;  /* skip over SIGPEFAILURE for non-CRAYT3E systems */
                 }
@@ -312,7 +312,7 @@ main(int ac, char **av)
 	    } else {
 		/* all set up to catch signals, now hold them */
 
-		for (cnt=0, sig = 1; sig <= NUMSIGS; sig++) {
+		for (cnt=0, sig = 1; sig < NUMSIGS; sig++) {
                     if ((sig == 41) && !CRAYT3E && !SGI) {
                         sig = 42;  /* skip over SIGPEFAILURE for non-CRAYT3E systems */
                     }
@@ -342,7 +342,7 @@ main(int ac, char **av)
 		if ( p_p.result == TPASS ) {
 		    sprintf(p_p.mesg,
 			"Sighold called without error for %d of %d signals",
-			cnt, NUMSIGS);
+			cnt, NUMSIGS-1);
 		}
 	    }
 
