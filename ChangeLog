@@ -1,3 +1,27 @@
+LTP-20040603
+- Minor corrections to the NUM_PROCS patch
+- Added the ability to pass NUM_PROCS to the -c option for runalltests.sh
+- Fix genload in runalltests.sh, it was trying to run it in all caps, but the binary is all lower case.  
+  Should actually run genload now.
+- Patch from Alastair McKinstry to allow LTP to build on Linux/HPPA
+- Changes for parameters passed to aio-sparse for correct offsets and restrictions on sizes.
+- Add new security tests to syscalls testsuite
+- In acl_file_test.c and acl_link_test.c syscalls regarding xattrs are still
+   done via syscall, although libc functions are available. Furthermore I found
+   out that on older distros for non-intel architectures both attr/xattr.h and
+   constants like __NR_getxattr are not available, so in this case the these
+   testcases are not built.
+- Updates for the DMPAI testsuite ppc64 support.
+- Fix failure on rwtest versions rwtest03 and rwtest04 due to mmap running out of resources.
+- Made changes to get thread ID vs get PID for NPTL threads for unique filenames where child/parent PIDs are the same.
+- Changes to diotest5 and diotest_routines to eliminate random/intermitant failures on data compare.
+- Fixed memory leak in mmstress testcase.
+- Changed clone02 to use tid instead of pid to eliminate failures on NPTL threads(same PIDs for parent/child)
+- Changed fcntl15 getpid to gettid (syscall(gettid)) to get unique thread ID vs common PID in NPTL threads.
+- Added adp testcases.
+
+
+
 LTP-20040506
 - Corrected a bug fix, so that the runalltests.sh script ends correctly and returns a
   0 or 1 depending on PASS/FAIL result.
