@@ -260,7 +260,7 @@ alloc_mem(void * threadnum)
 	"pid[%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
 	getpid(), err,
 	(err ? "failed" : "succeeded"));
-    return (void *)(err ? -1 : 0);
+    return (void *)(&err ? -1 : 0);
 }
         
 
@@ -336,7 +336,7 @@ main(int	argc,		/* number of input parameters		      */
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
+        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)&thrd_ndx))
         {
 	    int err = errno;
 	    if (err == EINTR) {
