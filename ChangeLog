@@ -1,3 +1,73 @@
+LTP-20030403
+
+- Fixed CFLAGS in all makefiles to append (+=)	  ( Vasan Sundar )
+- Removed the outdated & poorly written 	  ( Robbie Williamson )
+  GUI ( ltp )		 
+- Corrected bug with -x flag in runalltests.sh	  ( Robbie Williamson )
+- Added additional documentation into 		  ( Manoj Iyer  
+  runalltests.sh 				    Robbie Williamson )
+- MASSIVE compiler warnings cleanup.		  ( Andreas Jaeger )
+						  ( Robbie Williamson )
+- Corrected library linking at build time.	  ( Andreas Jaeger )
+- Added descriptions to first line of all	  ( Robbie Williamson )
+  runtest scenarios.
+- Commented out 2 cases in syslog11 test that     ( Paul Larson        
+  clear the dmesg buffer.                           Robbie Williamson )
+- Updated fs_maim to use ext3 and reiserfs.	  ( Airong Zhang )
+- Removed "\n"s from testcase outputs.		  ( Dan Kegel )
+- Corrected direct_io tests to compile a dummy	  ( Vasan Sundar )
+  program if O_DIRECT is not defined & return
+  TCONF. 
+- Changed stress_floppy to use `cp` instead of    ( Robbie Williamson )
+  `ln` with its data directory.
+- Applied IA64 specific patch to shmt02, shmt04,  ( Jacky Malcles )
+  shmt05, shmt06, shmt07.
+- Relocated the module tests to .../kernel/module ( Paul Larson )
+- Removed module tests from syscalls scenario	  ( Paul Larson )
+  file.
+- Corrected the stack management in clone tests.  ( Chris Dearman )
+- Corrected the pids casting from int to pid_t	  ( Jaideep Dharap )
+  in fcntl17.
+- Applied fix to flock03 to have the file 	  ( Matthew Wilcox )
+  descriptor passed to the child.
+- Enabled the validation section of getgroups03.  ( Robbie Williamson )
+- Added code to getsid02, setpriority04, & 	  ( Robbie Williamson )
+  wait402 to use PID_MAX_DEFAULT if PID_MAX is
+  not defined.
+- Fixed gettimeofday01 for gcc-3.2 quirk with     ( Andi Kleen
+  x86-64.					    Paul Larson )
+- Fixed msgctl08 and msgctl09 to check for the	  ( Dan Kegel )
+  `ipcs` command before trying to use it.
+- Added IA64 specific code to shmat01.		  ( Jacky Malcles )
+- Fixed problem with kill11 false failure with	  ( Paul Larson )
+  some compilers.
+- Changed llseek tests to call lseek64.		  ( Andreas Jaeger )
+- Replaced calls to time() with calls to 	  ( Dan Kegel )
+  gettimeofday() in nanosleep01 to help avoid
+  race conditions.
+- Removed race condtions in recv01, recvfrom01, & ( Dan Kegel )
+  recvmsg01.
+- Replaced setegid() call with setregid() call in ( Robbie Williamson )
+  setresgid01.
+- Added code to check for NR_socketcall before	  ( Andi Kleen )
+  executing the socketcall tests.
+- Fixed swapon02 for correct execution on 2.5 	  ( Susanne Wintenberger )
+- Fixed system specific build problem with 	  ( Paul Larson )
+  swapon02 
+- Corrected the MININT section of abs01.	  ( Robbie Williamson )
+- Moved generate() into main.c for the float_*	  ( Robbie Williamson )
+  tests. 
+- Explicitly set the stacksize in main.c for the  ( Robbie Williamson )
+  float_* tests.
+- Removed optimization from building the float_*  ( Robbie Williamson )
+  tests.
+- Relocated netpipe-ipv6 from ipv6/tools to the	  ( Robbie Williamson )
+  top-level /tools directory.
+- Adjusted send and receive buffers for 	  ( Robbie Williamson )
+  sendfile01 to PATH_MAX.
+ 
+
+
 LTP-20030306
 
 - Changed IDcheck.sh to only prompt for id	  ( Robbie Williamson )
