@@ -35,7 +35,7 @@ int main()
     pthread_t prod, cons; 
    void *producer(void *);
    void *consumer(void *);
-   int cnt = 3;
+   long cnt = 3;
 
    n = 0;
    if (sem_init(&csem, 0, 0) < 0) {
@@ -71,7 +71,7 @@ int main()
 void producer(void *arg)
 {
     int i, cnt;
-    cnt = (int)arg;
+    cnt = (long)arg;
     for (i=0; i<cnt; i++) {
             sem_wait(&psem);
             n++;  
@@ -82,7 +82,7 @@ void producer(void *arg)
 void consumer(void *arg)
 {
     int i, cnt;
-    cnt = (int)arg;
+    cnt = (long)arg;
     for (i=0; i<cnt; i++) {
            sem_wait(&csem);
            sem_post(&psem);
