@@ -43,7 +43,7 @@ SUBDIR= \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
 	mremap msync munlock munmap nanosleep nice open \
 	pathconf pause personality pipe poll \
-	pread pwrite read readdir \
+	pread pwrite query_module read readdir \
 	readlink readv recv recvfrom recvmsg rename \
 	rmdir sbrk sched_getscheduler sched_setscheduler sched_yield select \
 	send sendfile sendmsg sendto setdomainname setfsgid setfsuid \
