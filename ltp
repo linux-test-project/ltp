@@ -1,16 +1,18 @@
 #!/bin/sh
 
+####################################################
+
 kernel()
 {
 
   echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
   echo""
-  echo -n "Do you want to keep a logfile (Y/N)? Default is no. >> " 
+  echo -n "Do you want to keep a summary logfile (Y/N)? Default is no. >> " 
   read kernel_log
+  TIMESTAMP=`date +%Y%m%d%I%M%S`
   case $kernel_log in
     y|Y)
-        TIMESTAMP=`date +%Y%m%d%I%M%S`
 	echo""
   	echo "   The logfile will be /tmp/kernel_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/kernel_tests.log-$TIMESTAMP"
@@ -19,19 +21,9 @@ kernel()
 	LOGFILE=" "
 	;;
   esac
+  OUTFILE="/tmp/kernel_tests.output-$TIMESTAMP"
   echo""
-  echo -n "Do you want output to go to a file instead of the screen (Y/N)? Default is no. >> "
-  read kernel_out
-  case $kernel_out in
-    y|Y)
-        OUTFILE="-o /tmp/kernel_tests.output-$TIMESTAMP"
-	echo""
-  	echo "   The output file will be /tmp/kernel_tests.output-$TIMESTAMP"
-	;;
-    *)
-	OUTFILE=" "
-	;;
-  esac
+  echo "   The output file will be /tmp/kernel_tests.output-$TIMESTAMP"
   echo""
   echo -n "How many simultaneous runs do you want? >> "
   read COPIES
@@ -45,14 +37,62 @@ kernel()
 
   export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-  cat ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/commands ${LTPROOT}/runtest/ipc ${LTPROOT}/runtest/sched > ${TMP}/alltests
+  echo -n "Do you want to run the system call tests (Y/N)? >> "
+  read syscall
+  if [ $syscall == "Y" ] || [ $syscall == "y" ]; then
+   cat ${LTPROOT}/runtest/syscalls >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the filesystem tests (Y/N)? >> "
+  read fs
+  if [ $fs == "Y" ] || [ $fs == "y" ]; then
+   cat ${LTPROOT}/runtest/fs >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the memory managment tests (Y/N)? >> "
+  read mm
+  if [ $mm == "Y" ] || [ $mm == "y" ]; then
+   cat ${LTPROOT}/runtest/mm >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the application development environment (ade) command tests (Y/N)? >> "
+  read commands
+  if [ $commands == "Y" ] || [ $commands == "y" ]; then
+   cat ${LTPROOT}/runtest/commands >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the interprocess communication (ipc) tests (Y/N)? >> "
+  read ipc
+  if [ $ipc == "Y" ] || [ $ipc == "y" ]; then
+   cat ${LTPROOT}/runtest/ipc >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the scheduler tests (Y/N)? >> "
+  read sched
+  if [ $sched == "Y" ] || [ $sched == "y" ]; then
+   cat ${LTPROOT}/runtest/sched >> ${TMP}/alltests
+  fi
+
+  echo "Test will begin after pressing [ENTER]."
+  read GO
 
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l`
   LOOPS=$(( $LOOPS * $TESTS ))
 
   ${LTPROOT}/ver_linux
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE $OUTFILE
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS -x$COPIES $LOGFILE -o $OUTFILE &
+  PID=$!
+  
+  tail -f $OUTFILE &
+
+  ps -ef | grep -v grep | grep $PID > /dev/null
+  while [ $? -eq "0" ]
+  do
+   ps -ef | grep -v grep | grep $PID > /dev/null
+  done
+
+  kill $PID
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -62,6 +102,11 @@ kernel()
 
   rm -rf $TMP
 }
+
+
+
+
+####################################################
 
 networking()
 {
@@ -111,19 +156,21 @@ networking()
    echo ""
    main
   fi
- 
+
+  echo "" 
   echo -n "RHOST is: " 
   rsh -n $RHOST "uname -a"
+  echo ""
   sleep 1
 
   echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
   echo""
-  echo -n "Do you want to keep a logfile (Y/N)? >> "
+  echo -n "Do you want to keep a summary logfile (Y/N)? Default is no. >> "
   read network_log
+  TIMESTAMP=`date +%Y%m%d%I%M%S`
   case $network_log in
     y|Y)
-        TIMESTAMP=`date +%Y%m%d%I%M%S`
 	echo""
   	echo "   The logfile will be /tmp/network_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/network_tests.log-$TIMESTAMP"
@@ -133,18 +180,9 @@ networking()
 	;;
   esac
   echo""
-  echo -n "Do you want output to go to a file instead of the screen (Y/N)? >> "
-  read network_out
-  case $network_out in
-    y|Y)
-        OUTFILE="-o /tmp/network_tests.output-$TIMESTAMP"
-	echo""
-  	echo "   The output file will be /tmp/network_tests.output-$TIMESTAMP"
-	;;
-    *)
-	OUTFILE=" "
-	;;
-  esac
+  OUTFILE="/tmp/network_tests.output-$TIMESTAMP"
+  echo""
+  echo "   The output file will be /tmp/network_tests.output-$TIMESTAMP"
   echo""
 
   cd `dirname $0`
@@ -156,14 +194,50 @@ networking()
 
   export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-  cat ${LTPROOT}/runtest/tcp_cmds ${LTPROOT}/runtest/multicast ${LTPROOT}/runtest/rpc ${LTPROOT}/runtest/nfs > ${TMP}/alltests
+  echo -n "Do you want to run the network commands tests (Y/N)? >> "
+  read tcp_cmds
+  if [ $tcp_cmds == "Y" ] || [ $tcp_cmds == "y" ]; then
+   cat ${LTPROOT}/runtest/tcp_cmds >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the multicast tests (Y/N)? >> "
+  read multicast
+  if [ $multicast == "Y" ] || [ $multicast == "y" ]; then
+   cat ${LTPROOT}/runtest/multicast >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the remote procedure call (rpc) tests (Y/N)? >> "
+  read rpc
+  if [ $rpc == "Y" ] || [ $rpc == "y" ]; then
+   cat ${LTPROOT}/runtest/rpc >> ${TMP}/alltests
+  fi
+
+  echo -n "Do you want to run the network filesystem (nfs) tests (Y/N)? >> "
+  read nfs
+  if [ $nfs == "Y" ] || [ $nfs == "y" ]; then
+   cat ${LTPROOT}/runtest/nfs >> ${TMP}/alltests
+  fi
+
+  echo "Test will begin after pressing [ENTER]."
+  read GO
  
   TESTS=`cat ${TMP}/alltests | grep -v "#" | grep [[:alnum:]] | wc -l `
   LOOPS=$(( $TESTS * $LOOPS ))
 
   ${LTPROOT}/ver_linux
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE $OUTFILE
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+  PID=$!
+
+  tail -f $OUTFILE &
+
+  ps -ef | grep -v grep | grep $PID > /dev/null
+  while [ $? -eq "0" ]
+  do
+   ps -ef | grep -v grep | grep $PID > /dev/null
+  done
+
+  kill $PID
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -174,20 +248,24 @@ networking()
   rm -rf $TMP
 }
 
+
+
+####################################################
+
 diskio()
 {
   echo ""
   echo "Please make sure a data CD and an unprotected floppy disk are in"
   echo "there respectable drives."
-  ehco ""
+  echo ""
   echo -n "How many loops do you want to run? Use 0 for infinite. >> "
   read LOOPS
   echo""
   echo -n "Do you want to keep a logfile (Y/N)? Default is no. >> " 
   read diskio_log
+  TIMESTAMP=`date +%Y%m%d%I%M%S`
   case $diskio_log in
     y|Y)
-        TIMESTAMP=`date +%Y%m%d%I%M%S`
 	echo""
   	echo "   The logfile will be /tmp/diskio_tests.log-$TIMESTAMP"
         LOGFILE="-l /tmp/diskio_tests.log-$TIMESTAMP"
@@ -197,18 +275,9 @@ diskio()
 	;;
   esac
   echo""
-  echo -n "Do you want output to go to a file instead of the screen (Y/N)? Default is no. >> "
-  read diskio_out
-  case $diskio_out in
-    y|Y)
-        OUTFILE="-o /tmp/diskio_tests.output-$TIMESTAMP"
-	echo""
-  	echo "   The output file will be /tmp/diskio_tests.output-$TIMESTAMP"
-	;;
-    *)
-	OUTFILE=" "
-	;;
-  esac
+  OUTFILE="/tmp/diskio_tests.output-$TIMESTAMP"
+  echo""
+  echo "   The output file will be /tmp/diskio_tests.output-$TIMESTAMP"
 
   cd `dirname $0`
   export LTPROOT=${PWD}
@@ -226,7 +295,18 @@ diskio()
 
   ${LTPROOT}/ver_linux
 
-  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE $OUTFILE
+  ${LTPROOT}/pan/pan -e -S -a $$ -n $$ -f ${TMP}/alltests -s$LOOPS $LOGFILE -o $OUTFILE &
+  PID=$!
+
+  tail -f $OUTFILE &
+
+  ps -ef | grep -v grep | grep $PID > /dev/null
+  while [ $? -eq "0" ]
+  do
+   ps -ef | grep -v grep | grep $PID > /dev/null
+  done
+
+  kill $PID
 
   if [ $? -eq "0" ]; then
     echo pan reported PASS
@@ -235,6 +315,10 @@ diskio()
   fi
 }
 
+
+
+
+####################################################
 
 menu_print()
 {
@@ -266,6 +350,11 @@ menu_print()
   echo -n "   Please select 1, 2, 3, or 4 >> "
 }
 
+
+
+
+####################################################
+
 cleanup()
 {
   rm -rf /tmp/kerneltests-*
@@ -275,13 +364,15 @@ cleanup()
 }
 
 
+
+
+####################################################
+
 main()
 {
-GO=true
 
-while [ $GO == "true" ]
+while [ true ]
 do
-  sleep 2
   menu_print
 
   read ans
@@ -296,15 +387,19 @@ do
 	networking
 	;;
     4*)
-	GO=false
+        cleanup
         ;;
     *) 
         main
 	;;
   esac
+  sleep 2
 done
-cleanup
 }
 
+
+
+####################################################
+####################################################
 
 main
