@@ -7,7 +7,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install: all
-	ln -f perf_lan6 ../../../bin
+	ln -f perf_lan ../../../bin
 
 clean:
 	rm -f $(TARGETS)
