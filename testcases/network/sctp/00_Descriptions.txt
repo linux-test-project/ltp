@@ -1,55 +1,150 @@
-  accept01-sctp 
+  bind01-sctp-udp 
   
-   Verify that accept() returns the proper errno for various failure cases
-
-  
-  bind01-sctp-udp/tcp  
-  
-   Verify that bind() returns the proper errno for various failure cases
+   Verify that bind() returns the proper errno for various failure cases.
+   Verify that bind() succeeds upon various INADDR_ANY/port combinations.
  
 
-  listen01-sctp-udp/tcp
+  bind02-sctp-udp  
   
-   Verify that listen() returns the proper errno for various failure cases
+   This is the IPv6 version of bind01-sctp-udp.  
+   
+
+  bind03-sctp-udp  
+  
+   Bind combo test cases.  
+   
+   
+  bindx01-sctp-udp 
+  
+   Verify that bindx() returns the proper errno for various failure cases.
+   Verify that bindx() succeeds upon various INADDR_ANY/port combinations.
  
 
-  recv01-sctp-udp/tcp  
+  bindx02-sctp-udp  
   
-   Verify that recv() returns the proper errno for various failure cases
+   Verify that bindx() succeeds upon various INADDR_ANY/port combinations on 
+   a IPv6 socket.  
+
+
+  bindx03-sctp-udp 
+  
+   Verify that bindx() returns the proper errno for various IPv4 and IPv4 
+   combination failure cases.
+   Verify that bindx() succeeds upon various 
+   SCTP_BINDX_ADD_ADDR/SCTP_BINDX_REM_ADDR combinations. 
+   (Incomplete yet. Need sctp_getladdrs.
+
+
+  bindx04-sctp-udp 
+   Bindx combo test cases.
+
+
+  close01-sctp-udp
+
+   Verify that close() returns EBADF errno when passed in an invalid 
+   descriptor.  
+
+
+  close02-sctp-udp-ipv4
+
+   Verify that multiple associations are closed as expected.
+   Verify that on close, shutdown event is sent to individual associations. 
+
+
+  close03-sctp-udp-ipv4
+
+   Verify that process-shared socket is closed as expected.
+   Verify that a second close() to the same socket fails. 
+
+
+  close02-sctp-udp-ipv6
+
+   This is the IPv6 version of close02-sctp-udp-ipv4.  
+
+
+  close03-sctp-udp-ipv6
+
+   This is the IPv6 version of close03-sctp-udp-ipv4.  
+
+
+  connect01-sctp-udp-ipv4
+
+   Verify that connect() returns the proper errno for various failure cases.
+   Verify that connect() returns zero on valid input arguments. 
+
+
+  connect01-sctp-udp-ipv6
+
+   This is the IPv6 version of connect01-sctp-udp-ipv4.  
 
  
-  recvfrom01-sctp-udp/tcp  
-  
-   Verify that recvfrom() returns the proper errno for various failure cases
+  listen01-sctp-udp-ipv4
+
+   Verify that listen() returns the proper errno for various failure cases.
+   Verify that listen() returns zero on valid input arguments. 
 
  
-  recvmsg01-sctp-udp/tcp  
-  
-   Verify that recvmsg() returns the proper errno for various failure cases
+  listen04-sctp-udp-ipv6
 
- 
-  send01-sctp-udp/tcp  
-  
-   Verify that send() returns the proper errno for various failure cases
- 
+   This is the IPv6 version of listen04-sctp-udp-ipv4.  
 
-  sendmsg01-sctp-udp/tcp  
-  
-   Verify that sendmsg() returns the proper errno for various failure cases
 
- 
-  sendto01-sctp-udp/tcp  
-  
-   Verify that sendto() returns the proper errno for various failure cases
+  read02-sctp-udp-ipv4
 
- 
-  setsockopt01-sctp-udp/tcp  
-  
-   Verify that setsockopt() returns the proper errno for various failure cases
- 
+   Verify that read() returns the proper errno for various failure cases.
+   Verify that read()'s undefined behaviors on valid inputs.
 
-  socket01-sctp-udp/tcp  
+
+  read02-sctp-udp-ipv6
+
+   This is the IPv6 version of read02-sctp-udp-ipv4.
+
+
+  recv01-sctp-udp-ipv4
+
+   Verify that recv() returns the proper errno for various failure cases.
+   Verify that recv()'s undefined behaviors on valid inputs.
+
+
+  recv01-sctp-udp-ipv6
+
+   This is the IPv6 version of recv01-sctp-udp-ipv4.
+
+
+  recvfrom01-sctp-udp-ipv4
+
+   Verify that recvfrom() returns the proper errno for various failure cases.
+   Verify that recvfrom()'s behaviors on valid inputs.
+
+
+  recvfrom01-sctp-udp-ipv6
+
+   This is the IPv6 version of recvfrom01-sctp-udp-ipv4.
+
+
+  send01-sctp-udp-ipv4
+
+   Verify that send() returns the proper errno for various failure cases.
+   Verify that send()'s undefined behaviors on valid inputs.
+
+
+  send01-sctp-udp-ipv6
+
+   This is the IPv6 version of send01-sctp-udp-ipv4.
+
+
+  socket01-sctp-udp  
   
    Verify that socket() returns the proper errno for various failure cases
 
 
+  write05-sctp-udp-ipv4  
+  
+        Check the return value, and errnos of write(2)
+        - when the file descriptor is invalid - EBADF
+        - when the buf parameter is invalid - EFAULT | EINVAL
+        - on an attempt to write to UDP-style socket - EINVAL
+
+  write05-sctp-udp-ipv6  
+   This is the IPv6 version of write05-sctp-udp-ipv6.
+	

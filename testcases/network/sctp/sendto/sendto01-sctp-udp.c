@@ -21,12 +21,47 @@
  * Test Name: sendto01-sctp-udp
  *
  * Test Description:
- *  Verify that sendto() returns the proper errno for various failure cases
+ *  Test 1: 
+ *   Check whether EBADF is returned when sendto() is called with an 
+ *   invalid socket descriptor.
+ *
+ *  Test 2: 
+ *   Check whether ENOTSOCK is returned when sendto() is called with a 
+ *   valid file descriptor rather than a valid socket descriptor. 
+ *
+ *  Test 3: 
+ *   Chech whether EFAULT is returned when sendto() is called with an
+ *   invalid send buffer.
+ *
+ *  Test 4: 
+ *   Check whether EINVAL is returned when sendto() is called with an
+ *   sock addr length.
+ * 
+ *  Test 5: 
+ *   Check whether EFAULT is returned when sendto() is called with an
+ *   invalid sock addr pointer.
+ *
+ *  Test 6: 
+ *   Check whether EINVAL is returned when sendto() is called with an 
+ *   invalid flag.
+ *
+ *  Test 7: 
+ *   Check whether EAGAIN is returned when sendto() is called upon a 
+ *   non-blocking socket. 
+ *
+ *  Test 8: 
+ *   Check whether MSG_DONTWAIT flag is accepted.
+ * 
+ *  Test 9: 
+ *   Check whether MSG_NOSIGNAL is accepted.  
+ *
+ *  Test 10: 
+ *   Check whether a regular sendto() behaves as expected.
+ *
  *
  * Usage:  <for command-line>
- *  sendto01-sctp-udp [-c n] [-e] [-f] [-i n] [-I x] [-p x] [-t]
+ *  sendto01-sctp-udp [-c n] [-f] [-i n] [-I x] [-p x] [-t]
  *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
@@ -36,10 +71,13 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *      02/2002 Adapted for SCTP by Robbie Williamson
+ *	05/2002 Added in new test cases by Mingqin Liu
  *
  * RESTRICTIONS:
  *  None.
  *
+ * NOTE
+ *  O_NONBLOCK and MSG_DONTWAIT do the same thing. 
  */
 
 #include <stdio.h>
@@ -52,27 +90,32 @@
 #include <sys/un.h>
 
 #include <netinet/in.h>
+#include <netinet/sctp.h>
+#include <fcntl.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "../lib/libsctp_test.h"
+
+#define PORT 10001
 
 char *TCID="sendto01-sctp-udp";		/* Test program identifier.    */
 int testno;
 
-char	buf[1024], bigbuf[128*1024];
+char	buf[]="This is sendto", bigbuf[128*1024];
 int	s;	/* socket descriptor */
-struct sockaddr_in sin1, sin2;
+struct sockaddr_in sin1, server_addr;
 
-void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
+void setup(void), setup0(void), setup1(void), setup2(void), 
 	cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
+	int	domain; /* PF_INET, PF_UNIX, ... */
+	int	type;	/* SOCK_STREAM, SOCK_SEQPACKET... */
 	int	proto;	/* protocol number (usually 0 = default) */
-	void	*buf;	/* send data buffer */
-	int	buflen;	/* send's 3rd argument */
-	unsigned flags;	/* send's 4th argument */
+	void	*buf;	/* sendto data buffer */
+	int	buflen;	/* sendto's 3rd argument */
+	unsigned flags;	/* sendto's 4th argument */
 	struct sockaddr_in *to;	/* destination */
 	int	tolen;		/* length of "to" buffer */
 	int	retval;		/* syscall return value */
@@ -81,28 +124,38 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_SEQPACKET, 132, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
-		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
-	{ 0, 0, 132, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 0, 
+		&sin1, sizeof(sin1), -1, EBADF, setup0, cleanup0, 
+		"bad file descriptor" },
+	{ 0, 0, IPPROTO_SCTP, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
-	{ PF_INET, SOCK_SEQPACKET, 132, (void *)-1, sizeof(buf), 0, &sin1,
-		sizeof(sin1),
-		-1, EFAULT, setup1, cleanup1, "invalid send buffer" },
-	{ PF_INET, SOCK_SEQPACKET, 132, buf, sizeof(buf), 0, &sin1, -1,
-		-1, EINVAL, setup1, cleanup1, "invalid to buffer length" },
-	{ PF_INET, SOCK_SEQPACKET, 132, buf, sizeof(buf), 0, (struct sockaddr_in *)-1,
-		sizeof(sin1),
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (void *)-1, sizeof(buf), 0, 
+		&sin1, sizeof(sin1), -1, EFAULT, setup1, cleanup1, 
+		"invalid send buffer" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 0, 
+		&sin1, -1, -1, EINVAL, setup1, cleanup1, 
+		"invalid to buffer length" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 0, 
+		(struct sockaddr_in *)-1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid to buffer" },
-	{ PF_INET, SOCK_SEQPACKET, 132, bigbuf, sizeof(bigbuf), 0, &sin1,
-		sizeof(sin1),
-		-1, EMSGSIZE, setup1, cleanup1, "message too big" },
-	{ PF_INET, SOCK_SEQPACKET, 132, buf, sizeof(buf), -1, &sin1, sizeof(sin1),
-		0, EPIPE, setup1, cleanup1, "invalid flags set" }
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), -1, 
+		&sin1, sizeof(sin1), 0, EINVAL, setup1, cleanup1, 
+		"invalid flags set" },
+        { PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 0,
+		(struct sockaddr_in *)&sin1, sizeof(sin1),
+               -1, EAGAIN, setup2, cleanup1, "EAGAIN" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 
+		MSG_DONTWAIT, &sin1, sizeof(sin1), 0, 0, setup1, cleanup1, 
+		"MSG_DONTWAIT flag" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 
+		MSG_NOSIGNAL, &sin1, sizeof(sin1), 0, 0, setup1, cleanup1, 
+		"MSG_NOSIGNAL flag" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, buf, sizeof(buf), 0, 
+		&sin1, sizeof(sin1), 0, 0, setup1, cleanup1, 
+		"a regular sendto" },
 };
 
 int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
-
-int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, EPIPE, 0};
 
 extern int Tst_count;
 
@@ -120,7 +173,6 @@ main(int ac, char *av[])
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
@@ -129,8 +181,10 @@ main(int ac, char *av[])
 		for (testno=0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
-			TEST(sendto(s, tdat[testno].buf, tdat[testno].buflen,
-				tdat[testno].flags, tdat[testno].to,
+			TEST(sendto(s, tdat[testno].buf, 
+				tdat[testno].buflen,
+				tdat[testno].flags, 
+				(struct sockaddr *) tdat[testno].to,
 				tdat[testno].tolen));
 
 			if (TEST_RETURN > 0)
@@ -158,7 +212,6 @@ main(int ac, char *av[])
 	/*NOTREACHED*/
 }
 
-pid_t pid;
 
 void
 setup(void)
@@ -166,10 +219,15 @@ setup(void)
 	TEST_PAUSE;	/* if -P option specified */
 
 	/* initialize sockaddr's */
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(PORT);
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	start_server(&server_addr);
+
+	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) +11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
-	pid = start_server(&sin1);
+	sin1.sin_port = htons(PORT);
+	sin1.sin_addr.s_addr = inet_addr("9.53.216.162");
 
 	(void) signal(SIGPIPE, SIG_IGN);
 }
@@ -177,7 +235,6 @@ setup(void)
 void
 cleanup(void)
 {
-	(void) kill(pid, SIGKILL);	/* kill server */
 	TEST_CLEANUP;
 	tst_exit();
 }
@@ -206,9 +263,6 @@ setup1(void)
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
 			strerror(errno));
 	}
-	if (connect(s, &sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
-	}
 }
 
 void
@@ -221,38 +275,33 @@ cleanup1(void)
 void
 setup2(void)
 {
-	setup1();	/* get a socket in s */
-	if (shutdown(s, 1) < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed connect "
-			"test %d: %s", testno, strerror(errno));
-	}
-}
-void
-setup3(void)
-{
-	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			strerror(errno));
-	}
+        s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
+        if (s < 0) {
+                tst_brkm(TBROK, cleanup, "socket setup failed: %s",
+                        strerror(errno));
+        }
+
+        if (set_nonblock(s) < 0) {
+                tst_brkm(TBROK, cleanup, "socket setup failed: %s",
+                        strerror(errno));
+
+        }       
 }
 
-pid_t
 start_server(struct sockaddr_in *sin0)
 {
 	struct sockaddr_in sin1 = *sin0, fsin;
 	fd_set	afds, rfds;
-	pid_t	pid;
 	int	sfd, nfds, cc, fd;
 	char	c;
 
-	sfd = socket(PF_INET, SOCK_STREAM, 0);
+	sfd = socket(PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	if (sfd < 0) {
 		tst_brkm(TBROK, cleanup, "server socket failed: %s",
 			strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, &sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *) &sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			strerror(errno));
 		return -1;
@@ -262,49 +311,5 @@ start_server(struct sockaddr_in *sin0)
 			strerror(errno));
 		return -1;
 	}
-	switch ((pid = fork())) {
-	case 0:	/* child */
-		break;
-	case -1:
-		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			strerror(errno));
-		/* fall through */
-	default: /* parent */
-		(void) close(sfd);
-		return pid;
-	}
 
-	FD_ZERO(&afds);
-	FD_SET(sfd, &afds);
-
-	nfds = getdtablesize();
-
-	/* accept connections until killed */
-	while (1) {
-		int	fromlen;
-
-		memcpy(&rfds, &afds, sizeof(rfds));
-
-		if (select(nfds, &rfds, (fd_set *)0, (fd_set *)0,
-		    (struct timeval *)0) < 0)
-			if (errno != EINTR)
-				exit(1);
-		if (FD_ISSET(sfd, &rfds)) {
-			int newfd;
-
-			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
-			if (newfd >= 0)
-				FD_SET(newfd, &afds);
-		}
-		for (fd=0; fd<nfds; ++fd) {
-			if (fd != sfd && FD_ISSET(fd, &rfds)) {
-				cc = read(fd, buf, sizeof(buf));
-				if (cc == 0 || (cc < 0 && errno != EINTR)) {
-					(void) close(fd);
-					FD_CLR(fd, &afds);
-				}
-			}
-		}
-	}
 }

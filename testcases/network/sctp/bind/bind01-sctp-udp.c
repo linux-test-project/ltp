@@ -21,12 +21,37 @@
  * Test Name: bind01-sctp-udp
  *
  * Test Description:
- *  Verify that bind() returns the proper errno for various failure cases
+ *  Test 1:
+ *   Expect EFAULT when passed in an invalid sockaddr. 
+ *
+ *  Test 2:
+ *   Expect EINVAL when passed in an invalid sockaddr length. 
+ *
+ *  Test 3: 
+ *   Expect ENOTSOCK when passed in an invalid socket descriptor.
+ *
+ *  Test 4: 
+ *   Expect EADDRNOTAVAIL when passed in an invalid host name. 
+ * 
+ *  Test 5:
+ *   Expect bind to succeed when asked to bind to an INADDR_ANY address and 
+ *   an non-zero port. 
+ *
+ *  Test 6:
+ *   Expect bind to succeed when asked to bind to an INADDR_ANY address and 
+ *   zero port. 
+ *
+ *  Test 7:
+ *   Expect bind to succeed when asked to bind to local address and
+ *   zero port.
+ * 
+ *  Test 8: 
+ *   Expect bind to succeed when asked to bind to an INADDR_ANY address and
+ *   an non zero port.
  *
  * Usage:  <for command-line>
- *  bind01-sctp-udp [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  bind01-sctp-udp [-c n] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
  *	       -P x : Pause for x seconds between iterations.
@@ -35,6 +60,7 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *      02/2002 Adapted for SCTP by Robbie Williamson
+ *      04/2002 Added new test cases by Mingqin Liu
  *
  * RESTRICTIONS:
  *  None.
@@ -50,23 +76,25 @@
 #include <sys/un.h>
 
 #include <netinet/in.h>
+#include <netdb.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "../lib/libsctp_test.h"
 
 char *TCID="bind01-sctp-udp";		/* Test program identifier.    */
 int testno;
 
 int	s;	/* socket descriptor */
-struct sockaddr_in sin1, sin2, sin3;
-struct sockaddr_un sun1;
 
-void setup(void), setup0(void), setup1(void), setup2(void),
+struct sockaddr_in sin1, sin2, sin3, sin4, sin5;
+
+void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
+	int	domain;	/* PF_INET, PF_INET6, ... */
+	int	type;	/* SOCK_STREAM, SOCK_SEQPACKET... */
 	int	proto;	/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
 	int	salen;	/* bind's 3rd argument */
@@ -76,26 +104,33 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_SEQPACKET, 132, (struct sockaddr *)-1,
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)-1,
 		sizeof(struct sockaddr_in), -1, EFAULT, setup0, cleanup0,
 		"invalid sockaddr for UDP style SCTP" },
-	{ PF_INET, SOCK_SEQPACKET, 132, (struct sockaddr *)&sin1,
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin1,
 		3, -1, EINVAL, setup0, cleanup0,
 		"invalid salen for UDP style SCTP" },
-	{ 0, 0, 132, (struct sockaddr *)&sin1,
+	{ 0, 0, IPPROTO_SCTP, (struct sockaddr *)&sin1,
 		sizeof(sin1), -1, ENOTSOCK, setup1, cleanup1,
 		"invalid socket for UDP style SCTP" },
-	{ PF_INET, SOCK_SEQPACKET, 132, (struct sockaddr *)&sin2,
-		sizeof(sin2), 0, 0, setup0, cleanup0,
-		"INADDR_ANYPORT for UDP style SCTP" },
-	{ PF_INET, SOCK_SEQPACKET, 132, (struct sockaddr *)&sin3,
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin3,
 		sizeof(sin3), -1, EADDRNOTAVAIL, setup0, cleanup0,
 		"non-local address for UDP style SCTP" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin1,
+		sizeof(sin1), 0, 0, setup0, cleanup0,
+		"INADDR_ANY/non zero port for UDP style SCTP" },
+	{ PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin2,
+		sizeof(sin2), 0, 0, setup0, cleanup0,
+		"INADDR_ANY/zero port for UDP style SCTP" },
+        { PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin4,
+               sizeof(sin4), 0, 0, setup0, cleanup0,
+                "local addr/zero port for IPv4 UDP style SCTP socket" },
+        { PF_INET, SOCK_SEQPACKET, IPPROTO_SCTP, (struct sockaddr *)&sin5,
+                sizeof(sin5), 0, 0, setup0, cleanup0,
+                "a regular bind" },
 };
 
 int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
-
-int exp_enos[] = {EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0};
 
 extern int Tst_count;
 
@@ -140,16 +175,20 @@ main(int argc, char *argv[])
 					tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
-		}
-	}
+		} /* for (testno=0; testno < TST_TOTAL; ++testno) */
+
+	} /* for (lc = 0; TEST_LOOPING(lc); ++lc)  */
 	cleanup();
 }	/* End main */
 
 void
 setup(void)
 {
-	/* set expected errnos for -e option */
-	TEST_EXP_ENOS(exp_enos);
+        int count, i, got_addr;
+        char local_host[64];
+        struct hostent *hst;
+        local_addr_t    local_addrs[10];
+        void *la_raw;  /* This is the addr part of local_addr. */
 
 	TEST_PAUSE;	/* if -p option specified */
 
@@ -168,8 +207,45 @@ setup(void)
 		/* assumes 10.255.254.253 is not a local interface address! */
 	sin3.sin_addr.s_addr = htonl(0x0AFFFEFD);
 
-	sun1.sun_family = AF_UNIX;
-	strncpy(sun1.sun_path, ".", sizeof(sun1.sun_path));
+        /* local IP addr/0 port. */
+        
+        get_ip_addresses(local_addrs, &count);
+
+        i = 0;
+        got_addr = 0;   
+        while (i < count && !got_addr)
+        {
+                if ((strcmp(local_addrs[i].if_name, "lo"))
+                     && local_addrs[i].has_v4) {
+                        strcpy(local_host, local_addrs[i].v4_addr);
+                        got_addr = 1;
+                }  
+                i++;
+        }
+
+        if (!got_addr) {
+                strcpy(local_host, "localhost");
+        }
+
+        //printf ("i= %i, local_host: %s\n",i, local_host);
+
+        hst = gethostbyname(local_host);
+
+        if (hst == NULL || hst->h_length < 1) {
+                TEST_ERROR_LOG(TEST_ERRNO);
+                exit(-1);
+        }
+
+        la_raw = &sin4.sin_addr;
+        sin4.sin_port = 0;
+        sin4.sin_family = AF_INET;
+
+        memcpy(la_raw, hst->h_addr_list[0], hst->h_length);
+
+        sin5.sin_family = AF_INET;
+        /* must be a unused port. */
+        sin5.sin_port = htons((getpid() % 32768) +10001);
+        memcpy(&(sin5.sin_addr), hst->h_addr_list[0], hst->h_length);
 
 }
 
@@ -179,7 +255,6 @@ cleanup(void)
 	TEST_CLEANUP;
 	tst_exit();
 }
-
 
 void 
 setup0(void)
