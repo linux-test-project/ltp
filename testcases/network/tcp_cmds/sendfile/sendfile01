@@ -29,6 +29,9 @@
 #         machine, where the test is executed. 
 #
 #  HISTORY:
+#    06/09/2003 Manoj Iyer manjo@mail.utexas.edu
+#    - Modified to use LTP APIs, and added check to if commands used in test
+#    exists.
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -52,6 +55,29 @@ FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
 
 IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
 
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  exists
+#
+# DESCRIPTION: Check if required commands exits.
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
+
 #=============================================================================
 # FUNCTION NAME:        do_test
 #
@@ -64,7 +90,7 @@ IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
 do_test()
 {
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
   
    mkdir -p $TCtmp
    PORT=$$ 
@@ -77,7 +103,7 @@ do_test()
       do
 	 serv_fname=$TCdat/$clnt_fname
 	 SIZE=`ls -l $serv_fname|awk '{print $5}'`
-	 echo "Starting $EXECUTABLES $IPADDR Client_filename Server_filename Size "
+	 tst_resm TINFO "Starting $EXECUTABLES $IPADDR Client_filename Server_filename Size "
   
 	 $TCsrc/$EXECUTABLES $IPADDR $PORT $TCtmp/$clnt_fname $serv_fname $SIZE 
 	 RetVal=$?
@@ -124,19 +150,23 @@ do_cleanup()
 end_testcase()
 {  
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
 
    
    # Call other cleanup functions
    [ $CLEANUP = "ON" ] && do_cleanup
    
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 
 #=============================================================================
 # MAIN PROCEDURE
 #=============================================================================
+export TCID="sendfile"
+export TST_TOTAL=1
+export TST_COUNT=1
+exists "rsh diff awk grep"
 do_test
 end_testcase

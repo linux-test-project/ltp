@@ -12,12 +12,20 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include "test.h"
+#include "usctest.h"
+
 
 #define LISTEN_BACKLOG	10
 
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
+
+char *TCID="sendfile";
+int TST_TOTAL=1;
+extern int Tst_count;
+
 
 void *
 test_sig(sig)
@@ -53,7 +61,7 @@ char *argv[];
  
   /* open socket */
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-	printf("socket error = %d\n", errno);
+	tst_resm(TBROK, "socket error = %d\n", errno);
 	exit(-1);
   }
 
@@ -67,14 +75,14 @@ char *argv[];
 
   /* bind IP and port to socket */
   if ( bind(s, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
-        printf("bind error = %d\n", errno);
+        tst_resm(TBROK, "bind error = %d\n", errno);
 	close(s);
 	exit(-1); 
   }
  
   /* start to listen socket */
   if ( listen(s, LISTEN_BACKLOG ) < 0 ) {
-        printf("listen error = %d\n", errno);
+        tst_resm(TBROK, "listen error = %d\n", errno);
 	close(s);
 	exit(-1);
   }
@@ -84,7 +92,7 @@ char *argv[];
 	/* accept a connection from a client */
   	clen = sizeof(from);
   	if ((as = accept(s, &from, &clen )) < 0 ) {
-	  printf("accept error = %d\n", errno);
+	  tst_resm(TBROK, "accept error = %d\n", errno);
 	  if (errno == EINTR)
 		continue;
 	  close(s);
@@ -95,7 +103,7 @@ char *argv[];
 
 	/* create a process to manage the connection */
 	if ((pid = fork()) < 0) {
-	  printf("fork error = %d\n", errno);
+	  tst_resm(TBROK, "fork error = %d\n", errno);
 	  close(as);
 	  exit(-1);
   	}
@@ -112,7 +120,7 @@ char *argv[];
 
 	/* get client request information */
 	if ((nbytes = read(as, rbuf, PATH_MAX)) <= 0) {
-	  printf("socket read error = %d\n", errno);
+	  tst_resm(TBROK, "socket read error = %d\n", errno);
 	  close(as);
 	  exit(-1);
   	}
@@ -134,10 +142,10 @@ char *argv[];
 	/* the file name */
 	lp++;
 
-        printf("The file to send is %s\n", lp);
+        tst_resm(TBROK, "The file to send is %s\n", lp);
   	/* open requested file to send */
 	if ((fd = open(lp, O_RDONLY)) < 0) {
-	  printf("file open error = %d\n", errno);
+	  tst_resm(TBROK, "file open error = %d\n", errno);
 	  close(as);
 	  exit(-1);
   	}
@@ -146,7 +154,7 @@ char *argv[];
         do { /* send file parts until EOF */
            if ((rc = sendfile(as, fd, offset, flen)) != flen) {
                 if ((errno != EWOULDBLOCK) && (errno != EAGAIN)) {
-                        printf("sendfile error = %d, rc = %d\n", errno, rc);
+                        tst_resm(TBROK, "sendfile error = %d, rc = %d\n", errno, rc);
                         close(as);
                         close(fd);
                         exit(-1);
@@ -154,7 +162,7 @@ char *argv[];
           }
 	  chunks++;
         } while (rc != 0);
-	printf("File %s sent in %d parts\n", lp, chunks);
+	tst_resm(TINFO, "File %s sent in %d parts\n", lp, chunks);
 
 
 	close(as); /* close connection */
@@ -162,12 +170,5 @@ char *argv[];
 	exit(0);
 
   }
-
-
   close(s); /* close parent socket (never reached because of the while(1)) */
-
-
-
-
 }
-

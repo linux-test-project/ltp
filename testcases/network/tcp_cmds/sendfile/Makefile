@@ -1,5 +1,6 @@
-CFLAGS += -w -O
-LDLIBS += 
+CFLAGS+=    -I../../../../include -Wall -w -O
+LOADLIBES+= -L../../../../lib -lltp
+LDLIBS +=
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -15,4 +16,3 @@ install: generate
 clean:
 	rm -f $(TARGETS)
 	rm -rf datafiles
-
