@@ -69,14 +69,14 @@ char fifo[100] = "fifo";
 static sigjmp_buf jmp;
 int rfd, wfd;
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
 	struct stat buf;
 	int fail;
-	int cnt, c;
+	int cnt;
 	char wbuf[8 * PIPE_BUF];
 	struct sigaction sigptr; /* set up signal handler */
 
@@ -126,7 +126,7 @@ main(int argc, char **argv)
 		}   
 
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1: test for EAGAIN in write()");
 		fail = 0;
 
@@ -214,6 +214,7 @@ block1:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 void

@@ -66,7 +66,7 @@ void cleanup(void);
 
 char filename[100];
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -90,7 +90,7 @@ main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter Block 1: test to check if write "
 			 "corrupts the file when write fails");
 
@@ -140,6 +140,7 @@ block1:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

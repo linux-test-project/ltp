@@ -50,10 +50,12 @@
  * Restrictions
  * 	None
  */
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
-#include <sys/wait.h>
+#include <wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -68,7 +70,7 @@ int TST_TOTAL = 1;			/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -93,7 +95,7 @@ main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-block1:
+//block1:
 		tst_resm(TINFO, "Enter Block 1: test with bad fd");
 		if (write(-1, pbuf, 1) != -1) {
 			tst_resm(TFAIL, "write of invalid fd passed");
@@ -106,7 +108,7 @@ block1:
 		}
 		tst_resm(TINFO, "Exit Block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter Block 2: test with a bad address");
 		fd = creat(filename, 0644);
 		if (fd < 0) {
@@ -132,7 +134,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit Block 2");
 
-block3:
+//block3:
 		tst_resm(TINFO, "Enter Block 3: test with invalid pipe");
 		if ((pid = fork()) == 0) {	/* child */
 			if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
@@ -176,6 +178,7 @@ block3:
 	}
 	cleanup();
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
