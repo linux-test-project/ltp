@@ -47,7 +47,7 @@ TCtmp=${TCtmp:-$TCsrc/tmp}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="testsf_c"
 REMOTE_EXEC="testsf_s"
-
+LTPROOT=${LTPROOT:-../../../..}
 FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
 
 IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
