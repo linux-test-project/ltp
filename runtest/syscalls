@@ -220,6 +220,7 @@ getsockname01 getsockname01
 getsockopt01 getsockopt01
 
 gettimeofday01 gettimeofday01
+gettimeofday02 gettimeofday02
 
 getuid01 getuid01
 getuid02 getuid02
