@@ -67,6 +67,11 @@
  *				-t   : Turn on syscall timing.
  *
  ****************************************************************/
+
+char *TCID = "ioperm02";	/* Test program identifier.    */
+
+#ifdef __i386__  /* ioperm() is i386 specific */
+
 #include <errno.h>
 #include <unistd.h>
 #include <sys/io.h>
@@ -86,7 +91,6 @@ static int  setup1(void);
 static void cleanup1();
 static void cleanup();
 
-char *TCID = "ioperm02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = {EINVAL, EPERM, 0};
 
@@ -240,3 +244,19 @@ cleanup()
 	tst_exit();
 
 }	/* End cleanup() */
+
+#else /* __i386__ */
+
+#include "test.h"
+#include "usctest.h"
+
+int TST_TOTAL = 0;		/* Total number of test cases. */
+
+int
+main()
+{
+	tst_resm(TPASS, "LSB v1.3 does not specify ioperm() for this architecture.");
+	tst_exit();
+}
+
+#endif /* __i386__ */
