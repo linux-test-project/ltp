@@ -111,55 +111,72 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
+/* 1 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
+/* 2 */
 	{ 0, 0, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+/* 3 */
 	{ PF_INET, SOCK_DGRAM, 0, iov, 1, (void *)-1, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid send buffer" },
+/* 4 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin2, sizeof(sin2),
 		0, EFAULT, setup5, cleanup1, "connected TCP" },
+/* 5 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EPIPE, setup3, cleanup1, "not connected TCP" },
+/* 6 */
 	{ PF_INET, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, -1,
 		-1, EINVAL, setup1, cleanup1, "invalid to buffer length" },
+/* 7 */
 	{ PF_INET, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)-1, -1,
 		-1, EINVAL, setup1, cleanup1, "invalid to buffer" },
+/* 8 */
 	{ PF_INET, SOCK_DGRAM, 0, iov, 1, (void *)bigbuf, sizeof(bigbuf),
 		&msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EMSGSIZE, setup1, cleanup1, "UDP message too big" },
+/* 9 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EPIPE, setup2, cleanup1, "local endpoint shutdown" },
+/* 10 */
 	{ PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf), &msgdat, 0,
 		(struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid iovec pointer" },
+/* 11 */
 	{ PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sin1, sizeof(sin1),
-		-1, EINVAL, setup1, cleanup1, "invalid iovec count" },
+		-1, EMSGSIZE, setup1, cleanup1, "invalid iovec count" },
+/* 12 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), 0,
 		0, (struct sockaddr *)&sin1, sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid msghdr pointer" },
+/* 13 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		0, 0, setup4, cleanup4, "rights passing" },
+/* 14 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		~MSG_CMSG_COMPAT, (struct sockaddr *)&sun1, sizeof(sun1),
 		-1, EOPNOTSUPP, setup4, cleanup4, "invalid flags set w/ control" },
+/* 15 */
 	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		~MSG_CMSG_COMPAT, (struct sockaddr *)&sin1, sizeof(sin1),
 		0, EOPNOTSUPP, setup1, cleanup1, "invalid flags set" },
+/* 16 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		0, EOPNOTSUPP, setup6, cleanup4, "invalid cmsg length" },
+/* 17 */
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		-1, EFAULT, setup8, cleanup4, "invalid cmsg pointer" },
