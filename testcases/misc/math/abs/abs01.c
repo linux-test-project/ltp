@@ -70,13 +70,14 @@ int main (argc, argv)
 	int  argc;
 	char *argv[];
 {
-	register int i,j, k, l;
+	register long long i;
+	register int j, k, l,m;
 
 	setup();		/* temp file is now open	*/
 /*--------------------------------------------------------------*/
 	blenter();
 
-	i = abs(MININT);
+	i = llabs(MININT);
 	if (i != MININT) {
 		fprintf(temp, "abs of minimum integer failed.");
 		local_flag = FAILED;
@@ -87,7 +88,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	i = abs(0);
+	i = llabs(0);
 	if (i != 0) {
 		fprintf(temp, "abs(0) failed, returned 0x%x\n", i);
 		local_flag = FAILED;
@@ -97,11 +98,11 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (i = 1; i >= 0 ; i <<= 1) {
-		j = ~i;
+	for (m = 1; m >= 0 ; m <<= 1) {
+		j = ~m;
 		k = j + 1;
 		l = abs(k);
-		if (l != i)
+		if (l != m)
 			local_flag = FAILED;
 	}
 
