@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.6 2003/02/27 16:48:33 plars Exp $ */
+/* $Id: test.h,v 1.7 2003/03/03 21:41:20 plars Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -218,6 +218,6 @@ extern void tst_rmdir();
 extern char * get_high_address(void);
 
 extern void get_kver(int*, int*, int*);
-extern int tst_kver(int, int, int);
+extern int tst_kvercmp(int, int, int);
 
 #endif	/* end of __TEST_H__ */

@@ -53,7 +53,7 @@ void get_kver(int *k1, int *k2, int *k3)
 	*k3 = atoi(r3);
 }
 
-int tst_kver(int r1, int r2, int r3) {
+int tst_kvercmp(int r1, int r2, int r3) {
 	int a1, a2, a3;
 	int testver, currver;
 
