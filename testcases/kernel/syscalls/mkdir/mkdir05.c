@@ -70,6 +70,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pwd.h>
 #include "test.h" 
 #include "usctest.h"
 
@@ -81,6 +82,9 @@ void cleanup();
 char *TCID="mkdir01";           /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 char tstdir1 [100];
 
@@ -171,9 +175,17 @@ main(int ac, char **av)
 void 
 setup()
 {
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, cleanup, "Must not run this as root");
-	}
+	 /* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
