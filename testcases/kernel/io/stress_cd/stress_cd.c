@@ -120,7 +120,7 @@ int main (int argc, char **argv)
 	/* Create num_thread threads... */
 	printf("\tThread [main] Creating %d threads\n", num_threads);
 
-	array = (int *) malloc (sizeof (int) * num_threads);
+	array = (int *) malloc (sizeof (pthread_t) * num_threads);
 	arg = (int *) malloc (sizeof (int) * num_threads);
 	assert (array);
 	assert (arg);
