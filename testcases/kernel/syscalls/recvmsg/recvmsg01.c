@@ -124,7 +124,7 @@ struct test_case_t {		/* test case structure */
 		(struct sockaddr *)-1, sizeof(from),
 		0, ENOTSOCK, setup1, cleanup1, "invalid socket buffer" },
 /* 4 */
-	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, 0,
+	{ PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat, -1,
 		(struct sockaddr *)&from, -1,
 		-1, EINVAL, setup1, cleanup1, "invalid socket length" },
 /* 5 */
