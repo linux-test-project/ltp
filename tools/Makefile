@@ -1,4 +1,4 @@
-SUBDIRS = apicmds
+SUBDIRS = apicmds genload
 
 CFLAGS+= -Wall -I../include
 LOADLIBES+= -L../lib -lltp
