@@ -102,7 +102,7 @@ int main (argc, argv)
 #ifdef __mips__
 	extern int __start;
 	int lotext = (int)&__start;
-#elif defined(__powerpc64__) || defined(__ia64__)
+#elif defined(__powerpc64__) 
 	extern long int _start;
 	long int *lotextptr = (long*)&_start;
         long int lotext = *lotextptr;
