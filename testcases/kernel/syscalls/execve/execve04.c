@@ -157,7 +157,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Could not get current directory");
 	}
 	/*sprintf(test_name, "%s/%s", pname, fname1);*/
-	sprintf(test_name, "%s/test3", pname);
+	sprintf(test_name, "%s/%s", pname, fname1);
 	printf("test_name is %s\n",test_name);
 	
 	/* make temp dir and cd to it */
