@@ -9,7 +9,7 @@ access05 access05
 alarm01 alarm01
 alarm02 alarm02
 alarm03 alarm03
-#alarm04 alarm04
+alarm04 cp -f ${LTPROOT}/testcases/bin/sig_rev ${TMP};alarm04
 alarm05 alarm05
 alarm06 alarm06
 alarm07 alarm07
@@ -31,14 +31,14 @@ chmod01A symlink01 -T chmod01
 chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
-#chmod05 chmod05
-#chmod06 chmod06
+chmod05 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};chmod05 -f
+chmod06 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};chmod06
 chmod07 chmod07
 
 chown01 chown01
 chown02 chown02
-#chown03 chown03
-#chown04 chown04
+chown03 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};chown03
+chown04 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};chown04
 chown05 chown05
 
 chroot01 chroot01
@@ -93,14 +93,14 @@ fchmod01 fchmod01
 fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
-#fchmod05 fchmod05
-#fchmod06 fchmod06
+fchmod05 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchmod05 -f
+fchmod06 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchmod06
 fchmod07 fchmod07
 
 fchown01 fchown01
 fchown02 fchown02
-#fchown03 fchown03
-#fchown04 fchown04
+fchown03 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown03
+fchown04 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown04
 fchown05 fchown05
 
 #fcntl01 fcntl01
@@ -404,7 +404,7 @@ readlink04 readlink04
 readv01 readv01
 readv02 readv02
 
-#recv01 recv01
+recv01 recv01
 
 #recvfrom01 recvfrom01
 
@@ -501,16 +501,16 @@ setpriority04 setpriority04
 setpriority05 setpriority05
 
 setregid01 setregid01
-#setregid02 setregid02
-#setregid03 setregid03
-#setregid04 setregid04
+setregid02 setregid02
+setregid03 setregid03
+setregid04 setregid04
 
-#setresuid01 setresuid01
-#setresuid02 setresuid02
+setresuid01 setresuid01
+setresuid02 setresuid02
 #setresuid03 setresuid03
 
 setreuid01 setreuid01
-#setreuid02 setreuid02
+setreuid02 setreuid02
 setreuid03 setreuid03
 setreuid04 setreuid04
 setreuid05 setreuid05
@@ -539,7 +539,7 @@ shmctl01 shmctl01
 shmctl02 shmctl02
 shmctl03 shmctl03
 
-#shmdt01 shmdt01
+shmdt01 shmdt01
 #shmdt02 shmdt02
 
 shmget01 shmget01
@@ -654,7 +654,7 @@ waitpid01 waitpid01
 waitpid02 waitpid02
 waitpid03 waitpid03
 waitpid04 waitpid04
-#waitpid05 waitpid05
+waitpid05 waitpid05
 waitpid06 waitpid06
 waitpid07 waitpid07
 waitpid08 waitpid08
