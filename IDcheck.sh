@@ -124,7 +124,7 @@ if [ $? -eq "0" ]; then
   if [ $? -eq "0" ]; then
     id daemon > /dev/null
     if [ $? -eq "0" ]; then
-      id -g nobody > /dev/null
+      id -gn nobody | grep "nobody" > /dev/null
       if [ $? -eq "0" ]; then
         id -g bin > /dev/null
         if [ $? -eq "0" ]; then
