@@ -1,6 +1,6 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.3 2003/02/05 16:00:04 robbiew Exp $
+# $Id: Makefile,v 1.4 2003/02/05 16:17:09 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler
@@ -30,7 +30,7 @@ targets:    $(TARGETS)
 all:	targets
 
 install:
-	@ln -f $(TARGETS) ../../testcases/bin/
+	@ln -f $(TARGETS) netpipe.sh ../../testcases/bin/
 #
 # This section of the Makefile is for compiling the binaries
 #
