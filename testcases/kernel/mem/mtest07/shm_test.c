@@ -31,6 +31,10 @@
 /*				- Added code to spawn threads.		      */
 /*				- Removed dead code.		              */
 /*				- Checked in the initial version to CVS       */
+/*								              */
+/*		Feb - 27 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
+/*				- removed compiler warnings.                  */
+/*				- removed compiler errors.                    */
 /*                                                                            */
 /* File:	shm_test.c				                      */
 /*									      */
@@ -179,8 +183,11 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
     long         *locargs = 	/* local pointer to arguments		      */
 		            (long *)args;
     volatile int exit_val = 0;	/* exit value of the pthread 		      */
+    char         *read_from_mem;/* ptr to touch each (4096) block in memory   */
     char         *write_to_mem; /* ptr to touch each (4096) block in memory   */
     char         *shmat_addr;   /* address of the attached memory             */
+    char	 buff[0];       /* remporary buffer                           */
+
 
     reader = (int)locargs[3];
     while (shmndx++ < (int)locargs[0])
@@ -237,7 +244,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
             /* read from the memory area */
             index = 0;
 	    read_from_mem = shmat_addr;
-	    while (index < (int)Locargs[2])
+	    while (index < (int)locargs[2])
             {
 	        buff[0] = *read_from_mem;
 		index += sizeof(char *);
@@ -285,7 +292,7 @@ main(int	argc,		/* number of input parameters		      */
     int		num_thrd = MAXT;/* number of threads to create                */
     int		num_reps = MAXR;/* number of repatitions the test is run      */
     int		thrd_ndx;	/* index into the array of thread ids         */
-    int		th_status[1];	/* exit status of LWP's	                      */
+    int		*th_status;	/* exit status of LWP's	                      */
     int		map_size;	/* size of the file mapped.                   */
     int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
@@ -336,7 +343,7 @@ main(int	argc,		/* number of input parameters		      */
         srand(time(NULL)%100);
         map_size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
 
-        chld_args[1] = shm_key++;
+        chld_args[1] = shmkey++;
         chld_args[2] = map_size;
 
 	dprt("main(): thrd_ndx = %d map_address = %#x map_size = %d\n",
@@ -371,7 +378,7 @@ main(int	argc,		/* number of input parameters		      */
         else
         {
             dprt("WE ARE HERE %d\n", __LINE__);
-            if (*th_status == -1)
+            if (th_status == -1)
             {
                 fprintf(stderr,
                         "thread [%d] - process exited with errors\n",
