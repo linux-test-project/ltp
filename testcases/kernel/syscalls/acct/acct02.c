@@ -80,7 +80,7 @@ int main (argc, argv)
 
 /*--------------------------------------------------------------*/
 
-	/* turn off acct, so we are in a known state
+	/* Attempt to turn off acct as non-root
 	*/
 	if( acct( NULL ) != -1 ) {
 		tst_resm(TBROK, "Non-root attempting to disable acct: didn't fail\n", errno );
@@ -88,9 +88,15 @@ int main (argc, argv)
 	}
 
 	if( errno != EPERM ) {
-		tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d\n", 
-				EPERM, errno );
-		tst_exit();
+	        if( errno == ENOSYS ){
+                        tst_resm(TCONF,"BSD process accounting is not configured in this kernel.");
+                        tst_resm(TCONF,"Test will not run.");
+                        tst_exit();
+                }else{
+			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d\n", 
+					EPERM, errno );
+			tst_exit();
+                }
 	} else tst_resm(TPASS, "Received expected error: EPERM");
 
 //-------------------------------------------------

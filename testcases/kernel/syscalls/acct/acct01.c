@@ -78,11 +78,17 @@ int main (argc, argv)
 	/* turn off acct, so we are in a known state
 	*/
 	if( acct( NULL ) == -1 ) {
-		tst_resm(TBROK, "Attempting to disable acct, but got= %d\n",
-			 errno );
-		tst_exit();
+		if( errno == ENOSYS ){
+			tst_resm(TCONF,"BSD process accounting is not configured in this kernel.");
+			tst_resm(TCONF,"Test will not run.");
+			tst_exit();
+		}else{
+			tst_resm(TBROK, "Attempting to disable acct, but got= %d\n",
+				 errno );
+			tst_exit();
+		}
 	}
-
+	
 
 	/* now try to use the tty device, and it should fail
 	*/
