@@ -47,6 +47,10 @@
 #                              specify test execution duration.
 #			     Robbie Williamson - robbiew@us.ibm.com
 #
+#	       April 30, 2003 - Recoded results display to allow selection
+#				of results file.
+#			      - Created variable to hold results filename
+#		 	      - Added time to results filename.
 #! /bin/bash
 
 # Function:    cleanup
@@ -153,40 +157,45 @@ compile_ltp()
 #              info message window notifing the user that LTP test cases
 #              need to be executed inorder to view results.
 #
-# Input:       ltp-mmddyy/results/results.todaysdate
+# Input:       ltp-mmddyy/results/results.todaysdate.time
 #
 # Output:      Window displaying results of testcases that were executed.
 disp_ltpres()
 {
     RC=0
-    if ! [ -f ./results/results.$(date -I).$$ ]
-    then
-        display_info_msg "LTP Test Results" \
-            "Sorry cannot display test results, you have to run \
-             the test cases  first. Please choose the Execute LTP \
-             option in the Main Menu."
-        return
-    fi
 
-    dialog --backtitle "Linux Test Project Control Centre" \
-           --title "LTP Test Results. Scroll [UP] [DOWN]/[PGUP] [PGDN]" \
-           --textbox ./results/results.$(date -I).$$ 17 70 
-
-    dialog --backtitle "Linux Test Project Control Centre" \
-           --title "LTP Test Results." \
-           --yesno "Would you like to share these results with the LTP \
-                    community by posting it to the LTP results mailing list?" \
-                    7 70 || RC=$?
-    case $RC in 
-        0) \
-            mail ltp-results@lists.sourceforge.net < \
-                    ./results/results.$(date -I).$$ ;
-            return ;;
-
-        1) return ;;
-
-        255) return ;;
-    esac
+    RESULTS_LIST=$(for i in `ls -1 -A -I "CVS" results`;do echo -n "$i <- "; done)
+    while [ $RC -ne "1" ] 
+    do
+      dialog --clear
+      dialog --backtitle "Linux Test Project Control Centre" \
+             --title "LTP Test Results" \
+             --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 8 \
+                    $RESULTS_LIST \
+                    2>/tmp/runltp.results.$$ || RC=$?
+      results_item=$(cat /tmp/runltp.results.$$)
+      if ! [ -z $results_item ];then
+        dialog --clear
+        dialog --backtitle "Linux Test Project Control Centre" \
+               --title "LTP Test Results" \
+               --textbox results/$results_item 17 70
+      fi
+    done
+#    dialog --backtitle "Linux Test Project Control Centre" \
+#           --title "LTP Test Results." \
+#           --yesno "Would you like to share these results with the LTP \
+#                    community by posting it to the LTP results mailing list?" \
+#                    7 70 || RC=$?
+#    case $RC in 
+#        0) \
+#            mail ltp-results@lists.sourceforge.net < \
+#                    ./results/results.$RESULTS_FILE ;
+#            return ;;
+#
+#        1) return ;;
+#
+#        255) return ;;
+#    esac
     return
 }
 
@@ -264,11 +273,10 @@ exectest_screenout()
 {
     RC=0    # setting return code to 0, to loop in while
 
-    # remove old results file
-    rm ./results/results.$(date -I).$$ &>/dev/null
+    RESULTS_FILE=$(date +%Y-%m-%d.%H.%M.%S).$$
 
     # execute runalltests.sh with user defined command file.
-    ./runalltests.sh -q -p $RUNALL_FLAGS -l results.$(date -I).$$ \
+    ./runalltests.sh -q -p $RUNALL_FLAGS -l results.$RESULTS_FILE \
 	-f /tmp/runltp.test.list.$$  
     
     sleep 2
@@ -476,6 +484,7 @@ mmenu_item=" "
 RHOST=" "
 PASSWD=" "
 RUNALL_FLAGS=" "
+RESULTS_FILE=" "
 
 # call cleanup function on program exit.
 trap "cleanup" 0
