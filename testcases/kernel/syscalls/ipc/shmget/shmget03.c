@@ -92,7 +92,7 @@ main(int ac, char **av)
 		 * use the TEST() macro to make the call
 		 */
 	
-		TEST(shmget(shmkey + num_shms, SHM_SIZE, IPC_CREAT | IPC_EXCL
+		TEST(shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | IPC_EXCL
 			    | SHM_RW));
 	
 		if (TEST_RETURN != -1) {
@@ -149,7 +149,7 @@ setup(void)
 	 * Use a while loop to create the maximum number of memory segments.
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
-	while ((shm_id_1 = shmget(shmkey + num_shms, SHM_SIZE, IPC_CREAT |
+	while ((shm_id_1 = shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT |
 	     IPC_EXCL | SHM_RW)) != -1) {
 		shm_id_arr[num_shms++] = shm_id_1;
 		if (num_shms == MAXIDS) {
