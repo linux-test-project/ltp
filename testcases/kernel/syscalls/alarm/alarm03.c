@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.3 2002/11/11 19:01:34 robbiew Exp $ */
+/* $Id: alarm03.c,v 1.4 2003/08/25 15:12:24 plars Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -167,7 +167,8 @@ main(int ac, char **av)
 	default:
 	    Tst_count++;
 	    TEST( alarm(0) );
-	    if ( TEST_RETURN <= 0 || TEST_RETURN > 100 ) {
+#The timer may be rounded up to the next nearest second, this is OK
+	    if ( TEST_RETURN <= 0 || TEST_RETURN > 101 ) {
 		retval = 1;
                 tst_resm(TFAIL,
 		    "alarm(100), fork, alarm(0) parent's alarm returned %d",
