@@ -71,7 +71,7 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 static	int	parent, child1, child2, status;
-static	int	parent_flag, child_flag;
+static	volatile sig_atomic_t 	parent_flag, child_flag, alarm_flag;
 static	char	tmpname[40];
 struct	flock	flock;
 
@@ -96,6 +96,7 @@ void
 alarm_sig()
 {
 	signal(SIGALRM, (void (*)())alarm_sig);
+	alarm_flag = 1;
 	if ((syscall(__NR_gettid)) == parent) {
 		tst_resm(TINFO, "Alarm caught by parent");
 	} else {
@@ -120,6 +121,7 @@ parent_sig()
 int dochild1(int file_flag, int file_mode)
 {
 	int fd_B;
+	sigset_t newmask, zeromask, oldmask;
 
 	if ((fd_B = open(tmpname, file_flag, file_mode)) < 0) {
 		perror("open on child1 file failed");
@@ -138,6 +140,15 @@ int dochild1(int file_flag, int file_mode)
 		exit(1);
 	}
 
+	sigemptyset(&zeromask);
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGUSR1);
+	sigaddset(&newmask, SIGUSR2);
+	sigaddset(&newmask, SIGALRM);
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+		perror("child1 sigprocmask SIG_BLOCK fail");
+		exit(1);
+	}
 	/*
 	 * send signal to parent here to tell parent we have locked the
 	 * file, thus allowing parent to proceed
@@ -151,16 +162,23 @@ int dochild1(int file_flag, int file_mode)
 	 * set alarm to break pause if parent fails to signal then spin till
 	 * parent ready
 	 */
-	if (parent_flag == 0) {
-		alarm(60);
-		pause();
-		alarm((unsigned)0);
-		if (parent_flag != 1) {
-			perror("pause in child1 terminated without "
-			       "SIGUSR2 signal from parent");
-			exit(1);
-		}
+	alarm(60);
+	while (parent_flag == 0 && alarm_flag == 0) 
+		sigsuspend(&zeromask);
+	alarm((unsigned)0);
+	if (parent_flag != 1) {
+		perror("pause in child1 terminated without "
+				"SIGUSR2 signal from parent");
+		exit(1);
 	}
+	parent_flag = 0;
+	alarm_flag = 0;
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+		perror("child1 sigprocmask SIG_SETMASK fail");
+		exit(1);
+	}
+	
+
 	/* wait for child2 to complete then cleanup */
 	sleep(10);
 	close(fd_B);
@@ -183,16 +201,35 @@ int dofork(int file_flag, int file_mode)
 		 * need to wait for child1 to open, and lock the area of the
 		 * file prior to continuing on from here
 		 */
-		if (child_flag == 0) {
-			alarm(60);
-			pause();
-			alarm((unsigned)0);
-			if (child_flag == 0) {
-				perror("parent paused without SIGUSR1 "
-				       "from child");
-				return(1);
-			}
-			child_flag = 0;	/* reset the child flag for child2 */
+		sigset_t newmask, zeromask, oldmask;
+		sigemptyset(&zeromask);
+		sigemptyset(&newmask);
+		sigaddset(&newmask, SIGUSR1);
+		sigaddset(&newmask, SIGUSR2);
+		sigaddset(&newmask, SIGALRM);
+		if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+			perror("parent sigprocmask SIG_BLOCK fail");
+			exit(1);
+		}
+
+		/*
+		 * set alarm to break pause if parent fails to signal then spin till
+		 * parent ready
+		 */
+		alarm(60);
+		while (child_flag == 0 && alarm_flag == 0) 
+			sigsuspend(&zeromask);
+		alarm((unsigned)0);
+		if (child_flag != 1) {
+			perror("parent paused without SIGUSR1 "
+					"from child");
+			exit(1);
+		}
+		child_flag = 0;
+		alarm_flag = 0;
+		if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+			perror("parent sigprocmask SIG_SETMASK fail");
+			exit(1);
 		}
 	}
 	return(0);
@@ -201,6 +238,7 @@ int dofork(int file_flag, int file_mode)
 int dochild2(int file_flag, int file_mode, int dup_flag)
 {
 	int fd_C;
+	sigset_t newmask, zeromask, oldmask;
 
 	if ((fd_C = open(tmpname, file_flag, file_mode)) < 0) {
 		perror("open on child2 file failed");
@@ -233,22 +271,42 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 		exit(1);
 	}
 
-	/* send signal to parent */
+	sigemptyset(&zeromask);
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGUSR1);
+	sigaddset(&newmask, SIGUSR2);
+	sigaddset(&newmask, SIGALRM);
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+		perror("child2 sigprocmask SIG_BLOCK fail");
+		exit(1);
+	}
+	/*
+	 * send signal to parent here to tell parent we have locked the
+	 * file, thus allowing parent to proceed
+	 */
 	if ((kill(parent, SIGUSR1)) < 0) {
-		perror("signal to parent failed");
+		perror("child2 signal to parent failed");
 		exit(1);
 	}
 
-	/* spin until parent signals or alarm runs out */
-	if (parent_flag == 0) {
-		alarm(60);
-		pause();
-		alarm((unsigned)0);
-		if (parent_flag != 1) {
-			tst_resm(TFAIL, "pause in child2 terminated "
-				 "without signal from parent");
-			exit(1);
-		}
+	/*
+	 * set alarm to break pause if parent fails to signal then spin till
+	 * parent ready
+	 */
+	alarm(60);
+	while (parent_flag == 0 && alarm_flag == 0) 
+		sigsuspend(&zeromask);
+	alarm((unsigned)0);
+	if (parent_flag != 1) {
+		perror("pause in child2 terminated without "
+				"SIGUSR2 signal from parent");
+		exit(1);
+	}
+	parent_flag = 0;
+	alarm_flag = 0;
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+		perror("child2 sigprocmask SIG_SETMASK fail");
+		exit(1);
 	}
 
 	/* initialize lock structure for first 5 bytes of file */
@@ -306,6 +364,7 @@ int
 run_test(int file_flag, int file_mode, int dup_flag)
 {
 	int fd_A, fd_B;
+	sigset_t newmask, zeromask, oldmask;
 
 	/* setup to catch SIGUSR1 signal from child process */
 	if ((signal(SIGUSR1, child_sig)) == SIG_ERR) {
@@ -324,7 +383,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	sprintf(tmpname, "fcntl15.%d", parent);
 
 	/* initialize signal flags */
-	child_flag = parent_flag = 0;
+	child_flag = parent_flag = alarm_flag = 0;
 
 	if ((fd_A = open(tmpname, file_flag, file_mode)) < 0) {
 		perror("open first parent file failed");
@@ -400,16 +459,35 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	 * Set alarm to break pause if child fails to signal then spin till
 	 * child is ready
 	 */
-	if (child_flag == 0) {
-		alarm(60);
-		pause();
-		alarm((unsigned)0);
-		if (child_flag != 1) {
-			perror("Pause terminated without SIGUSR1 "
-			       "signal from child");
-			tst_rmdir();
-			return(1);
-		}
+
+	sigemptyset(&zeromask);
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGUSR1);
+	sigaddset(&newmask, SIGUSR2);
+	sigaddset(&newmask, SIGALRM);
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+		perror("parent sigprocmask SIG_BLOCK fail");
+		exit(1);
+	}
+
+	/*
+	 * set alarm to break pause if parent fails to signal then spin till
+	 * parent ready
+	 */
+	alarm(60);
+	while (child_flag == 0 && alarm_flag == 0) 
+		sigsuspend(&zeromask);
+	alarm((unsigned)0);
+	if (child_flag != 1) {
+		perror("parent paused without SIGUSR1 "
+				"from child");
+		exit(1);
+	}
+	child_flag = 0;
+	alarm_flag = 0;
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+		perror("parent sigprocmask SIG_SETMASK fail");
+		exit(1);
 	}
 
 	/* close the first file then signal child to test locks */
