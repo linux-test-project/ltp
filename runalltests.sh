@@ -9,6 +9,8 @@
 #
 #  01/26/03 - Manoj Iyer  - manjo@mail.utexas.edu: Added -f option; Execute
 #                           user defined set of testcases.
+#  01/27/03 - Manoj Iyer  - manjo@mail.utexas.edu: Enabled formatted printing
+#                           of logfiles.
 #
 
 cd `dirname $0`
@@ -110,7 +112,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -f ${TMP}/alltests $logfile 
+${LTPROOT}/pan/pan -e -S $instances $duration -a $$ -n $$ -p -f ${TMP}/alltests $logfile 
 
 if [ $? -eq 0 ]; then
   echo pan reported PASS
