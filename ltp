@@ -23,7 +23,6 @@
 #               written
 
 
-
 ####################################################
 
 kernel()
@@ -296,6 +295,7 @@ networking()
         echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
         read TIME
         TIME="-t $TIME"
+        LOOPS=0
         ;;
   esac
   echo""
@@ -490,6 +490,7 @@ diskio()
         echo -n "Use s=seconds, m=minutes, h=hours, or d=days >> "
         read TIME
         TIME="-t $TIME"
+	LOOPS=0
         ;;
   esac
   echo""
