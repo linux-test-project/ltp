@@ -39,6 +39,7 @@
 /* set write buffer size to whatever floats your boat.  I usually use 1M */
 #define BSIZE 1048576L
 
+int
 main(int argc, char *argv[])
 {
    off_t i;
@@ -52,7 +53,7 @@ main(int argc, char *argv[])
 
    if (argc != 2 || atoi(argv[1]) < 1)
    {
-      printf("usage:<# of %d buffers to write>\n",BSIZE);
+      printf("usage:<# of %ld buffers to write>\n",BSIZE);
       exit(3);
    }
    bufnum = strtol(argv[1],NULL,0);
