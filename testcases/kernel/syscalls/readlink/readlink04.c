@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name : readlink02
+ * Test Name : readlink04
  *
  * Test Description :
  *  Verify that, readlink call will succeed to read the contents of the
@@ -51,7 +51,7 @@
  *   Delete the temporary directory(s)/file(s) created.
  *
  * Usage:  <for command-line>
- *  readlink02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  readlink04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -83,7 +83,7 @@ char bin[] = "bin";
 
 #define MAX_SIZE	256
 
-char *TCID="readlink02";	/* Test program identifier.    */
+char *TCID="readlink04";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
