@@ -1,0 +1,244 @@
+.\"
+.\" $Id: write_log.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH WRITE_LOG 3 07/25/2000 "Linux Test Project"
+.SH NAME
+write_log \- a set of routines for logging writes to a history file
+.SH SYNOPSIS
+.nf
+\fB#include "write_log.h"\fP
+
+\fBint wlog_open(struct wlog_file *\fIwfile\fB, int \fItrunc\fB, int \fImode\fB);\fR
+\fBint wlog_close(struct wlog_file *\fIwfile\fB);\fR
+\fBint wlog_record_write(struct wlog_file *\fIwfile\fB, struct wlog_rec *\fIwrec\fB, long \fIoffset\fB);\fR
+\fBint wlog_scan_backward(struct wlog_file *\fIwfile\fB, int \fInrecs\fB, int (*func)(struct wlog_rec *\fIrec\fB), long \fIdata\fB);\fR
+
+\fBchar *Wlog_Error_String;\fR
+.fi
+.SH DESCRIPTION
+
+The write_log package is a set of routines for creating a history file
+of write operations done to a set of files.
+
+It is assumed that the actual pattern written to the file will be 
+repeated occurrences of a string whose length is no greater than
+WLOG_MAX_PATTERN.  See the pattern(3) man
+page for routines to conveniently generate buffers of this kind.
+
+wlog_open() initializes the history file contained in wfile->w_file, and 
+fills in the wfile structure.  If trunc is non-zero, and existing history
+file by the same name will be truncated.  If no history file exists, it
+will be created with the specified mode.
+
+wlog_close() releases any resources associated with the given wfile.  Use
+of wfile after this point is undefined until it is initialized again with
+wlog_open().
+
+wlog_record_write() is the main routine for putting a wlog_rec into the
+history file.  The caller is responsible for supplying a fully initialized
+wlog_rec structure.  If offset is < 0, the record will be appended to the
+end of the history file.  If offset is >= 0, the record will be written
+at the indicated offset.  This, along with the w_done field in the wlog_rec
+structure, provide a mechanism for 'pre-logging' a write, doing the write
+operation, and then overlaying the original record with the w_done flag
+set to 1.  This is useful for async writes which may not complete in a 
+timely manner.  It is also useful for seeing which write operations were
+pending at the time of a system crash - the ones whose w_done flag is 0 have
+not yet been verified as complete.
+The return value from wlog_record_write() is the offset
+in the history file at which the record was written.
+
+wlog_scan_backward() can be used to conveniently scan a write history file.
+The routine scans the file in reverse order (ie. first record written is
+scanned last).  For every record found, the user supplied function is called
+with 2 parameters:  the read record, and an arbitrary word passed in by the
+user.  This word may be interpreted however the user desires.  If nrecs is
+greater than 0, up to nrecs will be scanned.  The user supplied function should
+return 1 of the following:  WLOG_STOP_SCAN, or WLOG_CONTINUE_SCAN.
+WLOG_STOP_SCAN provides a way for the user supplied function to prematurely
+abort the scanning process.  WLOG_CONTINUE_SCAN instructs wlog_scan_backward()
+to continue scanning the next record.
+
+In order for the history file to be effective, some basic rules must
+be followed by the programs using the history mechanism:
+
+.in +.5i
+.ll -.5i
+The area of the data file being written must be locked from
+before the write operation, until after the wlog_record_write()
+is complete.  This is necessary to 'synchronize' simultaneous
+writes to the same area of a file.  Note that the entire file
+does not need to be locked, only the portion being written to.
+If the calling program can guarantee that there will never be more
+than 1 process writing to the same area of a file at the same time, 
+locking is not necessary.  (Note:  UNICOS Shared File Systems do not support
+record locking.  The whole file is silently locked.)
+
+Pathnames in the history file (w_path field) should be full
+pathnames if possible.  This allows validation tools to be
+able to find the test files without having to take working
+directory considerations into account.
+.ll +.5i
+.in -.5i
+
+.nf
+\fC
+.ta .25i +.5i +1i
+/*
+ * write log file data type.  wlog_open() initializes this structure
+ * which is then passed around to the various wlog_xxx routines.
+ */
+
+struct wlog_file {
+	int	w_afd;	/* append fd */
+	int	w_rfd;	/* random-access fd */
+	char	w_file[1024];	/* name of the write_log */
+};
+\fR
+.DT
+.fi
+
+.nf
+\fC
+.ta .25i +.5i +2.0i
+/*
+ * User view of a history file record.  Note that this is not
+ * necessarily how the data is formatted on disk (significant
+ * compression occurs), so don't expect to od(1) the history file and
+ * see things formatted this way.  See the file write_log.h for comments
+ * on how the data is actually written to disk.
+ */
+
+struct wlog_rec {
+	int	w_pid;	/* pid doing the write */
+	int	w_offset;	/* file offset */
+	int	w_nbytes;	/* # bytes written */
+	int	w_oflags;	/* low-order open() flags */
+	int	w_done;	/* 1 if io confirmed done */
+	int	w_async;	/* 1 if async write (writea) */
+
+	char	w_host[WLOG_MAX_HOST+1];	/* host doing write */
+	int	w_hostlen;	/* host name length */
+	char	w_path[WLOG_MAX_PATH+1];	/* file written to */
+	int	w_pathlen;	/* file name length */
+	char	w_pattern[WLOG_MAX_PATTERN+1];	/* pattern written */
+	int	w_patternlen;	/* pattern length */
+};
+\fR
+.DT
+.fi
+
+Note:  The history files can become very large very quickly if a lot of
+processes are logging writes.  This is especially apt to happen if long
+pathnames or patterns are used.  This is because the w_host, w_path, and
+w_pattern fields are variable length fields when stored on disk.  Thus, use
+short pathnames and patterns to minimize the size of the history file.  If
+any of the w_path, w_pattern, or w_host fields are not important to you, set
+the respective length field to 0 in the wlog_rec structure.
+
+.SH EXAMPLES
+This is a simple example of how to initialize a history file, and
+record a write to it.
+
+.nf
+#include "write_log.h"
+
+main()
+{
+	struct wlog_rec wrec;
+	struct wlog_file wfile;
+
+	...
+	strcpy(wfile.w_file, hisfile);
+	if (wlog_open(&wfile, 1, 0666) < 0) {
+		fprintf("wlog_open failed\n");
+		exit(2);
+	}
+
+	...
+
+	wrec.w_pid = getpid();
+	wrec.w_offset = write_offset;
+	wrec.w_nbytes = nbytes;
+	wrec.w_oflags = open_flags;
+	wrec.w_done = 0;
+	wrec.w_async = 0;
+	wrec.w_host = 0;             /* don't care about host */
+
+	wrec.w_pathlen = sprintf(wrec.w_path, "%s", path);
+	wrec.w_patternlen = sprintf(wrec.w_pattern, "%s", pattern);
+
+	pattern_fill(buf, nbytes, pattern, strlen(pattern), 0);
+
+	... lock fd here ...
+
+	log_offset = wlog_record_write(&wfile, &wrec, -1);
+	write(fd, buf, nbytes);
+	wrec.w_done = 1;
+	wlog_record_write(&wfile, &wrec, log_offset);
+
+	... unlock fd here ...
+
+	...
+
+	/*
+	 * Scan the logfile printing records for the file in 'path'.
+	 */
+
+	wlog_scan_backward(&wfile, 0, print_log_record, (long)path);
+}
+
+int
+print_log_record(record, data)
+struct wlog_rec	*record;
+long		data;
+{
+	char	*path;
+
+	path = (char *)data;
+	if (strcmp(record->w_path, path) == 0) {
+		printf("write() of %d bytes to %s at offset %d by pid %d\n",
+			record->w_nbytes, record->path, record->w_offset, record->w_pid);
+	}
+
+	return WLOG_CONTINUE_SCAN;
+}
+
+.fi
+.SH "SEE ALSO"
+pattern(3).
+.SH DIAGNOSTICS
+All routines return a value < 0 on failure, and >= 0 on success.  Error
+messages can be accessed through Wlog_Error_String.
+.SH BUGS
+None known.

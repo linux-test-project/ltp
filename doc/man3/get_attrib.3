@@ -1,0 +1,136 @@
+.\"
+.\" $Id: get_attrib.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH GET_ATTRIB 3 07/25/2000 "Linux Test Project"
+.SH NAME
+\fBget_attrib\fR \- Returns needed attributes to execute a command successfully on any system.
+.SH SYNOPSIS
+.sp
+\fB#include "get_attrib.h"\fR
+.sp
+\fBchar *get_attrib (char *\fIcommand_name\fB, char *\fIpermits\fB, char *\fIactive_categories\fB, char *\fIauthorized_categories\fB, long \fIflag\fR);\fR
+.SH DESCRIPTION
+The \fBget_attributes\fR routine is designed to determine the system type
+currently running and return the needed \fBruncmd(1)\fR string to run the
+command specified successfully on any 7.0 and above systems.  On systems
+with TFM configured 'ON' some commands need special attributes that can't
+be determined easily, this routine then uses an internal table to return the
+needed attributes to run the command.  On other system types the needed
+attributes are easily determined without use of this table.
+.PP
+The \fBget_attrib\fR arguments are as follows:
+.TP 10
+\fIcommand_name\fR
+Pointer to the command the attributes are to be returned about.
+.TP
+\fIpermits\fR
+Pointer to either an octal or name string of permits to be
+added to string returned.
+.TP
+\fIactive_category\fR
+Pointer to either an octal or name string of active categories to be
+added to string returned.
+.TP
+\fIauthorized_categories\fR
+Pointer to either an octal or name string of categories to be
+added to string returned.
+.TP
+\fIflag\fR
+Long set to any combination of values defined in get_attrib.h.  These values
+are used to specify that the string returned should be for the specified
+system type.
+.sp
+	\fBGA_BOTH_OFF   \fR	PRIV_SU and PRIV_TFM off.
+.sp
+	\fBGA_SU_ON      \fR	PRIV_SU on.
+.sp
+	\fBGA_TFM_ON     \fR	PRIV_TFM on.
+.sp
+	\fBGA_BOTH_ON    \fR	PRIV_SU and PRIV_TFM on.
+.sp
+	\fBGA_CURRENT_SYS\fR	Current system type.
+.sp
+.PP
+.SH "EXAMPLE"
+.P
+The following example shows how \fBget_attrib\fR can be used to determine
+the needed attributes to run a command successfully:
+.P
+.nf
+#include <stdio.h>
+#include "get_attrib.h"
+
+main()
+{
+ char cmd[256];
+ char *string;
+
+ if ((string =
+      get_attrib("mount",NULL,NULL,NULL,GA_CURRENT_SYS)) == (char *)NULL) {
+    printf("get_attrib() failed\en");
+    exit(1);
+ } else {
+    sprintf(cmd, "runcmd %s mount /dev/dsk/qtest3 /qtest3", string);
+    printf("Command = %s\en",cmd);
+ }
+
+
+ if ((string =
+      get_attrib("mount", NULL, NULL, NULL, GA_BOTH_OFF))==(char *)NULL) {
+    printf("get_attrib() failed\en");
+    exit(1);
+ } else {
+    sprintf(cmd, "runcmd %s mount /dev/dsk/qtest3 /qtest3", string);
+    printf("Command = %s\en",cmd);
+ }
+}
+.ni
+
+On an MLS system with PRIV_SU ON the first sprintf would return,
+\fBruncmd -u root mount /dev/dsk/qtest3 /qtest3\fR.
+
+On the same system the second sprintf would return, \fBruncmd -J secadm -j
+secadm  mount /dev/dsk/qtest3 /qtest3\fR  Which is as if PRIV_TFM and PRIV_SU
+were OFF.
+.PP
+.SH "RETURN VALUE"
+If \fBget_attrib()\fR completes successfully, a pointer to a string
+containing the options of the runcmd string is returned; otherwise NULL is
+returned.
+.SH ERRORS
+If \fBget_attrib()\fR has problems, an error message will be put in GA_Err_Msg
+and NULL will be returned.
+.SH "SEE ALSO"
+\fBget_attrib\fR(1)
+.P
+\fBruncmd\fR(1)

@@ -1,0 +1,101 @@
+.\"
+.\" $Id: str_to_bytes.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH STR_TO_BYTES 3 07/25/2000 "Linux Test Project"
+.SH NAME
+str_to_bytes \- convert a string to a int byte count
+str_to_lbytes \- convert a string to a long byte count
+str_to_llbytes \- convert a string to a long long byte count
+.SH SYNOPSIS
+int str_to_byte(char *\fIstr\fR);
+.br
+long str_to_lbyte(char *\fIstr\fR);
+.br
+long long str_to_llbyte(char *\fIstr\fR);
+.SH DESCRIPTION
+\fBstr_to_bytes()\fR, \fBstr_to_lbytes()\fR, and \fBstr_to_llbytes()\fR converts
+\fIstr\fR to an integer, long, or long long  byte count.  \fIstr\fR is an
+floating point number optionally followed by a single character multiplier.
+Currently the following multipliers are supported:
+.sp
+.nf
+    Char  Meaning       Multiplier
+    ----  ---------     --------------------------------
+    b     Blocks        BSIZE or UBSIZE
+    k     Kilobytes     2^10 (1024)
+    K     Kilowords     2^10 (1024) * sizeof(long)
+    m     Megabytes     2^20 (1048576)
+    M     Megawords     2^20 (1048576) * sizeof(long)
+    g     Gigabytes     2^30 (1073741824)
+    G     Gigawords     2^30 (1073741824) * sizeof(long)
+.fi
+.sp
+\fIstr\fR is interpreted as floating point number (base 10).
+When using \fBstr_to_llbytes()\fR, the uppercase suffix will result
+in multiplying by the size of a (long long) or 8.
+.SH RETURNS
+-1 if the integer portion of \fIstr\fR is invalid, if an unsupported
+multiplier is supplied, or if \fIstr\fR has extra leading or trailing
+characters.  If \fIstr\fR contains a negative number, the return
+value will be negative.
+.SH EXAMPLES
+\fBstr_to_bytes("1000")\fR
+.br
+.RS 8
+Returns 1000
+.RE
+.br
+\fBstr_to_bytes("5b")\fR
+.br 
+.RS 8 
+Returns 5 * BSIZE.
+.RE
+\fBstr_to_bytes("1.5m")\fR
+.br
+.RS 8
+Returns 1.5 * 1048576 or 1572864
+.RE
+
+.SH LIMITATIONS
+
+\fBstr_to_bytes()\fR and \fBstr_to_lbytes()\fR when compiled as
+a 32 bit IRIX binary can only return a max number of 2g (2147483647).
+However, \fBstr_to_lbytes()\fR is not limited by the 2g limit when
+compiled as 64 bit binary, where \fBstr_to_bytes()\fR still is limited.
+
+Note that the size of long will vary depending how if compiled as
+a 32 or 64 bit binary.  The size of a long long is always 8.
+
+Also note that on a traditional CRAY system, a block is 4096 bytes, where
+on most IRIX systems a block is 1024 bytes.
+

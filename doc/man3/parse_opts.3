@@ -1,0 +1,167 @@
+.\"
+.\" $Id: parse_opts.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH PARSE_OPTS 3 07/25/2000 "Linux Test Project"
+.SH NAME
+parse_opts \- parse standard and user options
+.SH SYNOPSIS
+#include "test.h"
+#include "usctest.h"
+.sp
+char *\fBparse_opts\fR(ac, av, option_array)
+.br
+int ac;
+.br
+char **av;
+.br
+option_t option_array[\fInum\fR];
+.sp
+char *\fBSTD_opts\fR();
+.sp
+char *\fBSTD_opts_help\fR();
+.P
+.SH DESCRIPTION
+The \fBparse_opts\fR routine parses options from the command line, looking for user
+specified options or standard options (see below).  The command line arguments are
+provided to \fBparse_opts\fR by sending the \fBargc\fR and \fBargv\fR from \fBmain\fR in the
+\fBac\fR and \fBav\fR parameters.  User options may be specified in the \fBoption_array\fR.
+.sp
+The \fBoption_t\fR data type is defined as follows:
+.sp
+.nf
+typedef struct {
+  char	*option;		/* Valid option string (one option only) like "a:" */
+  int	*flag;		/* pointer to integer location to set true if option given */
+  char	**arg;		/* pointer to location to place argument, if needed */
+} option_t;
+.fi
+.sp
+Users specify options by initializing elements of an array of \fBoption_t\fR
+structures.
+.sp
+The \fBoption\fR field is the option string.  If the option requires
+an argument, the last character must be a "\fB:\fR".  If the user specifies a
+standard option, the standard option is disabled.
+.sp
+The \fBflag\fR field is a pointer to an integer location that is to be set if
+the option is present in the set of command line arguments (av).  If the
+\fBoption\fR field does require an argument, then \fBflag\fR is optional,
+\fBflag\fR equal to NULL.  Otherwise it must contain address of the integer
+to be set. 
+.sp
+The \fBarg\fR field is a pointer to a character pointer variable that will be
+set to the option argument (av[optind]) if the option is present in the set of
+command line arguments.  This pointer MUST be provided if the \fBoption\fR
+field contains a "\fB:\fR".  Failure to provide a location will cause
+\fBparse_opts\fR to return an error.
+.sp
+For example, the following code defines two options, one with an argument,
+one without.
+.sp
+.nf
+int aflag, bflag;
+char *b_arg;
+option_t opt_array[3] = {	{"a", &aflag, (char **) NULL},	/* No argument */
+			{"b:", &bflag, &b_arg} };	/* argument required */
+main(ac, av)
+int ac;
+char **av;
+{
+char* msg;
+
+if ( (msg=parse_opts(ac, av, opt_array)) != (char *) NULL )
+	error_exit(msg);
+}
+.fi
+.sp 
+If no user options exist, a null pointer ( (option_t *)NULL ) must be sent
+as \fBoption_array\fR.
+.sp 
+Below is a list of the standard options defined in \fBparse_opts\fR:
+.in +1
+.nf
+-\fBiteration\fI cnt\fR	set STD_LOOP_COUNT to \fIcnt\fR if \fIcnt\fR > 0 (default 1).
+	                Loop \fIcnt\fR times, or infinitely if \fIcnt\fR=0.
+-\fBduration\fI secs\fR Set STD_LOOP_WALLTIME to \fIsecs\fR  (default is 0.0)
+		        The test will loop until \fIsecs\fR has pasted.
+-\fBdelay\fI secs\fR    This option will do a delay of \fIsecs\fR after each iteration.
+-\fBnofunc\fR	        set STD_FUNCTIONAL_TEST to 0 (default 1).
+
+-\fBerrno_logging\fR	set STD_ERRNO_LOG to 1 (default 0).  turn on
+		        logging all errno's received.
+	                This option is to facilitate security audit testing for MLS.
+-\fBpause_for_sigusr1\fR set STD_PAUSE to 1 (default 0).  Pause for SIGUSR1 before
+			testing.
+-\fBtiming\fR	        set STD_TIMING_ON to 1 (default 0).  Produce timing statistics.
+
+.fi
+.in -1
+To make dealing with word options easier, the parsing
+allows the minimum unique string that identifies an option.
+.sp
+It should be strongly noted that the minimum unique option string
+should only be used when running tests manually.  When coding
+command lines in scripts or in databases, use the full option
+string.    Failing to code full option strings, could under
+mine the effort of word options.
+
+.sp
+The \fBSTD_opts\fR routine returns
+a pointer to a string containing the usage information for the standard
+options recognized by \fBparse_opts\fR.  The string is of the form: 
+"[-iteration cnt][-duration secs][-delay secs][-nofunc]".
+.sp
+The \fBSTD_opts_help\fR routine returns a pointer to a string containing a
+help message, describing the standard options recognized by \fBparse_opts\fR.
+The format of the help message is as follows:
+.nf
+.in +1
+-o      : Description
+.in -1
+.fi
+The option designator (-o) is in columns 3 and 4.  The colon (:) is in column 11.  The Description
+starts in column 13.
+.sp
+The STD_* flags are used by system call test macros defined in usctest.h
+(see \fBusctest(3)\fR), or may be used in the user's code.
+.SH "RETURN VALUES"
+\fBparse_opts\fR returns a null pointer upon successful completion.
+\fBparse_opts\fR validates the array of user options to verify that valid 
+pointers are present when needed.  If an error occurs in the
+\fBparse_opts\fR routine, a pointer to an error message is returned.  The
+\fBSTD_opts\fR and \fBSTD_opts_help\fR routines each return a character pointer.
+.SH "SEE ALSO"
+mc_getopt(3),
+usctest(3).
+
+

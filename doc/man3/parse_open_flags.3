@@ -1,0 +1,137 @@
+.\"
+.\" $Id: parse_open_flags.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH PARSE_OPEN_FLAGS 3 07/25/2000 "Linux Test Project"
+.SH NAME
+parse_open_flags \- converts open flag symbols into bitmask
+.br
+openflags2symbols \- converts open flag bitmask into symbols
+
+.SH SYNOPSIS
+int
+.br
+\fBparse_open_flags\fR(\fIsymbols, badname\fR)
+.br
+char *\fIsymbols\fR;
+.br
+char **\fIbadname\fR;
+
+char *
+.br
+\fBopenflags2symbols\fR(\fIopenflags, sep, mode\fR)
+.br
+int \fIopenflags\fR;
+.br
+char *\fIsep\fR;
+.br
+int \fImode\fR;
+
+.SH DESCRIPTION
+The \fBparse_open_flags\fR function can be used to convert
+a list of comma separated \fBopen\fR(2) flag symbols (i.e. O_TRUNC)
+into the bitmask that can be used by open(2).
+If a symbol is unknown and \fIbadname\fR is not NULL, \fIbadname\fR
+will updated to point that symbol in \fIsymbols\fR.
+\fBParse_open_flags\fR will return -1 on this error.
+Otherwise \fBparse_open_flags\fR will return the open flag bitmask.
+If \fBparse_open_flags\fR returns, \fIstring\fR will left unchanged.
+
+The \fBopenflags2symbols\fR function attempts to convert open flag
+bits into human readable  symbols (i.e. O_TRUNC).  If there
+are more than one symbol, the \fBsep\fR string will be placed as
+a separator between symbols.  Commonly used separators would
+be a comma "," or pipe "|".  If \fImode\fR is one and not all
+\fIopenflags\fR bits can be converted to symbols, the \fBUNKNOWN\fR
+symbol will be added to return string.
+Openflags2symbols will return the identified symbols.
+If no symbols are recognized the return value will be a empty
+string or the \fBUNKNOWN\fR symbol.
+
+If the \fBO_WRONLY\fR and \fBO_RDWR\fR bits are not set, \fBopenflags2symbols\fR
+assumes that \fBO_RDONLY\fR symbol is wanted.
+
+.SH "SEE ALSO"
+open(2),
+/usr/include/sys/fcntl.h.
+
+.SH EXAMPLES
+.nf
+.in +3
+/*
+ * The following code provides a UNIT test main for
+ * parse_open_flags and openflags2symbols functions.
+ */
+#include <stdio.h>
+
+main(argc, argv)
+int argc;
+char **argv;
+{
+    int bits;
+    int ret;
+    char *err;
+
+    if (argc == 1 ) {
+        printf("Usage: %s openflagsbits\n\t%s symbols\n", argv[0], argv[0]);
+        exit(1);
+    }
+
+    if ( sscanf(argv[1], "%i", &bits) == 1 ) {
+        printf("openflags2symbols(%#o, \",\", 1) returned %s\n",
+            bits, openflags2symbols(bits, ",", 1));
+
+    } else {
+        ret=parse_open_flags(argv[1], &err);
+        if ( ret == -1 )
+            printf("parse_open_flags(%s, &err) returned -1, err = %s\n",
+                argv[0], err);
+        else
+            printf("parse_open_flags(%s, &err) returned %#o\n", argv[0], ret);
+    }
+
+    exit(0);
+}
+
+.in -3
+.fi
+
+.SH LIMITATIONS
+Currently (06/96) all known symbols are coded into \fBopenflags2symbols\fR.
+If new open flags are added this function code will have to updated
+to know about them or they will not be recognized.
+
+The static space where \fBopenflags2symbols\fR stores open flag
+symbols with callers separators is limited to 512 characters.
+This should be large enough for most open flags symbols as long as the
+separator is kept short.
+

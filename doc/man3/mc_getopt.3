@@ -1,0 +1,275 @@
+.\"
+.\" $Id: mc_getopt.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH MC_GETOPT 3 07/25/2000 "Linux Test Project"
+.SH NAME
+mc_getopt \- multiple character option parsing like getopt(3)
+.br
+mc_getoptv \- multiple character option parsing like getopt(3)
+
+.SH SYNOPSIS
+
+#include "mc_getopt.h"
+.br
+
+char *
+.br
+\fBmc_getopt\fR(\fIargc, argv, flags, optstring\fR)
+.br
+int \fIargc\fR;
+.br
+char \fI*argv[]\fR;
+.br
+int \fIflags\fR;
+.br
+char \fI*optstring\fR;
+
+\fBmc_getoptv\fR(\fIargc, argv, flags, nopts, opt_arr\fR)
+.br
+int \fIargc\fR;
+.br
+char \fI*argv[]\fR;
+.br
+int \fIflags\fR;
+.br
+int \fInopts\fR;
+.br
+char \fI*opt_arr[]\fR;
+.br
+
+extern int \fImc_optind\fR;
+.br
+extern char *\fImc_optarg\fR;
+.br
+extern char *\fImc_optopt\fR;
+
+.SH DESCRIPTION
+The \fBmc_getopt()\fR and \fBmc_getoptv()\fR functions are command line parsers.
+The \fIargc\fR parameter specifies the argument count and the \fIargv\fR parameter
+specifies the argument array.  The \fIoptstring\fR argument contains a string
+of recognized option strings; if an option string is followed by a
+colon, the option takes an argument.  Options are whitespace separated.
+A option string can be a single character or a word.
+
+The \fIopt_arr\fR array contains \fInopts\fR elements.  Each option element in
+\fIopt_arr\fR must be NULL terminated string; if an option string is followed
+by a colon, the option takes an argument.  A option string can be a
+single character or a word.  \fIopt_arr\fR must be at least \fInopts\fR elements
+in size.
+
+The variable \fImc_optind\fR specifies the index of the next element of the
+\fIargv\fR parameter to be processed.  It is initialized to 1, and the
+\fBmc_getopt()\fR function updates it as each element of \fIargv\fR is processed.
+
+The \fBmc_getopt()\fR and \fBmc_getoptv()\fR functions returns the \fIoptstring\fR
+string that uniquely matches the next element of the \fIargv\fR parameter.
+If the option string takes an argument, the \fBmc_getopt()\fR
+function sets the \fImc_optarg\fR variable to point to the option string
+argument according to the following rules:
+
+.BL
+.LI
+If the \fIargv\fR's option was the last option string in the string,
+\fImc_optarg\fR contains
+the next element of the \fIargv\fR array, and the \fImc_optind\fR variable is
+incremented by 2.  If the resulting value of \fImc_optind\fR is greater than
+or equal to \fIargc\fR, the \fBmc_getopt()\fR function returns an \fBMC_MISSING_OPTARG\fR
+.LI
+Otherwise, \fImc_optarg\fR points to the string following the option
+character in that element of the \fIargv\fR parameter, and the \fImc_optind\fR
+variable is incremented by 1.
+.LE
+
+If any of the following conditions are true when the \fBmc_getopt()\fR
+function is called, the \fBmc_getopt()\fR function returns \fBMC_DONE\fR without
+changing the \fImc_optind\fR variable:
+
+.BL
+.LI
+\fIargv[\fImc_optind\fR] is a null pointer
+.LI
+*\fIargv[\fImc_optind\fR] is not the character '-'
+.LI
+\fIargv[\fImc_optind\fR] points to the string "-"
+.LE
+
+If the \fIargv[\fImc_optind\fR] parameter points to the "--" string, the \fImc_getopt\fR
+function returns \fBMC_DONE\fR after incrementing the \fImc_optind\fR variable.
+
+The \fIflags\fR argument can be used to change how an \fIargv\fR option string
+is compared to \fIoptstring\fR.  The \fRflags\fR argument is a bitmask.
+The only two bits defined thus far are:
+
+.BL
+.LI
+\fBMC_FULL_TOKEN_MATCH\fR
+.LI
+MC_CASE_INSENSITIVE
+.LE
+
+How \fIflags\fR bits can be used to affect \fBmc_getopt()'\fRs actions:
+.BL
+.LI
+Without the \fBMC_FULL_TOKEN_MATCH\fR bit set, if the \fIargv\fR string exactly
+matches one \fIoptstring\fR option, that option will be returned.
+Otherwise, if the \fIargv\fR string matches the beginning of only one
+\fIoptstring\fR option, that \fIoptstring\fR option is returned.
+.LI
+With the \fBMC_FULL_TOKEN_MATCH\fR bit set, the \fIargv\fR string must exactly
+match the \fIoptstring\fR, excluding the colon ":".  When word options are
+being used, the exact word option string must be in \fIargv\fR to be
+recognized as a match.
+.LI
+Without the MC_CASE_INSENSITIVE bit set, case comparisons are used.
+The -I option is different than the -i option.
+.LI
+With the MC_CASE_INSENSITIVE bit set, all strings are converted to
+lower case before comparisons are made.  This means the -I and -i
+option are the same.  The returned option string will be all lowercase.
+The \fBmc_getoptv()\fR function assumes the option string in the \fIopt_arr\fR
+is already converted to lowercase.
+.LE
+
+If the \fBmc_getopt(v)\fR function encounters an option string that is not
+contained in the \fIoptstring\fR parameter, it returns \fBMC_UNKNOWN_OPTION\fR
+string.  If it detects a missing option argument, it returns
+\fBMC_MISSING_OPTARG\fR string.  Unlike getopt, \fBmc_getopt()\fR will NOT print
+message if an \fIargv\fR option string is not found in \fIoptstring\fR.
+
+If the \fIargv\fR option string matches more than one \fIoptstring\fR strings,
+\fBMC_AMBIGUOUS_OPTION\fR string is returned.
+
+\fBmc_getopt\fR and \fBmc_getoptv\fR will not modify \fIargv\fR or \fIoptstring\fR.
+\fBmc_getopt\fR will will strdup \fIoptstring\fR and update some character pointers.
+The \fIoptstring\fR is parsed only once whenever a \fImc_optind\fR is set to
+one or once a \fBMC_DONE\fR was returned.  The strdup space is freed before
+a \fBMC_DONE\fR is returned.  This means that \fIoptstring\fR is ignored on all
+subsequent calls.  The user is not given a pointer to the strdup'ed space; thus
+a user can not free it directly.
+
+.SH EXAMPLES
+.nf
+.in +3
+#include <stdio.h>
+#include "mc_getopt.h"
+
+#define ITERATION       "iterations:"
+#define FLAG            "flag"
+
+#define OPTSTR  "iterations: flag"
+
+main(argc, argv)
+int argc;
+char **argv;
+{
+ char *option;
+ int iterate=1;
+ int flag=0;
+ extern int mc_optind;
+ extern char *mc_optarg, *mc_optopt;
+
+ while ( (option=mc_getopt(argc, argv, 0, OPTSTR)) != MC_DONE) {
+
+   if ( strcmp(MC_UNKNOWN_OPTION, option) == 0 ) {
+     fprintf(stderr,
+       "ERROR - Unknown option: \\"-%s\\"\\n", mc_optopt);
+     exit(1);
+   } else if ( strcmp(MC_AMBIGIOUS_OPTION, option) == 0 ) {
+     fprintf(stderr,
+       "ERROR - option \\"-%s\\" is not unique, be more specific\\n",
+       mc_optopt);
+     exit(1);
+   } else if ( strcmp(MC_MISSING_OPTARG, option) == 0 ) {
+     fprintf(stderr,
+       "ERROR - option \\"-%s\\" is missing its argument\\n",
+       mc_optopt);
+     exit(1);
+
+   } else if ( strcmp(option, ITERATION) == 0 ) {
+     if ( sscanf(mc_optarg, "%i", &iterate) != 1 ) {
+       fprintf(stderr,
+         "ERROR - option \\"-%s\\" argument must be numeric\\n",
+         mc_optopt);
+       exit(1);
+     }
+   } else if ( strcmp(option, FLAG) == 0 ) {
+     flag=1;
+   }
+
+ } /* end of mc_getopt loop */
+
+ /* ... code ... */
+
+}
+.in -3
+.fi
+
+.SH "SEE ALSO"
+getopt(3), parse_opts(3), 
+.\"USC_setup(3).
+
+.SH DIAGNOSTICS
+The \fBmc_getopt(v)\fR function returns the next option string specified on
+the command line.  The string will be the string as listed in \fIoptstring\fR.
+
+\fBMC_MISSING_OPTARG\fR is returned if the \fBmc_getopt(v)\fR function detects a
+missing argument.
+
+\fBMC_UNKNOWN_OPTION\fR is returned if the \fBmc_getopt(v)\fR function encounters an
+option string not in the \fIoptstring\fR argument.
+
+\fBMC_AMBIGUOUS_OPTION\fR is returned if the \fBmc_getopt(v)\fR function encounters
+option string that matches two or more \fIoptstring\fR argument and there
+is not a single exact match.  This condition could occur if
+\fIflags\fR argument does not have the \fBMC_FULL_TOKEN_MATCH\fR bit set and
+the option string is not a unique string as defined in \fIoptstring\fR.
+(i.e.  -it, when optsting contains " iterations:  italic")  It
+could also occur if an \fIoptstring\fR option is duplicated
+(i.e.  -iterations, when optsting contains " iterations: iterations").
+
+Otherwise, the \fBmc_getopt(v)\fR function returns \fBMC_DONE\fR when all command
+line options are parsed.
+
+.SH LIMITATIONS
+\fBmc_getopt()\fR has an internal limit of 256 options
+allowed in \fIoptstring\fR.
+
+Most users are familiar with \fBgetopt\fR(3) and how it affects
+the parsing of command-lines.  In attempting to deal with
+word, or multiple character, options, there are a couple
+differences between command-lines parsed with \fBgetop\fRt and
+\fBmc_getopt()\fR.  Command-lines parsed with \fBmc_getopt()\fR,
+options can not be concatenated; each option must be listed beginning 
+with "\fI-\fR" minus sign and be whitespace separated.
+The option argument can not be concatenated to the option;
+there must be a whitespace between the option and its argument.

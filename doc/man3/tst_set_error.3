@@ -1,0 +1,150 @@
+.\"
+.\" $Id: tst_set_error.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH TST_SET_ERROR 3 07/25/2000 "Linux Test Project"
+.SH NAME
+tst_set_error \- Sets global Tst_error values
+.br
+tst_clear_error \- clears global Tst_error values
+.SH SYNOPSIS
+.nf
+\fB
+#include "test.h"
+
+void
+tst_set_error(file, line, func, fmt...)
+char *file;
+int line;
+char *func;
+char *fmt;     /* printf format */
+
+void
+tst_clear_error()
+\fR
+.fi
+
+.SH DESCRIPTION
+These two functions provide a simple interface to allow
+a programmer set and clear the global variables in 
+\fBTst_error\fR defined in \fItest_error.c\fR.
+
+The purpose of these global variables to provide space
+for error messages passing.  Functions within our library
+can use this space and these routines to a pass error messages and
+some debug data to the caller.
+
+\fBTst_error\fR is a global variable, which is really a structure
+of five elements.   The structure is defined \fItest.h\fR and looks
+like:
+
+.nf
+    int  te_line;               
+				/* line where last error was reported. */
+				/* Use "__LINE__" and let compiler do */
+				/* the rest */
+    int  te_level;              
+				/* If set, will prevent current stored */
+				/* error to not be overwritten */
+    char te_func[TST_ERR_FUNC_SIZE+1];
+				/* name of function of last error */
+				/* Name of function or NULL */
+    char te_file[TST_ERR_FILE_SIZE+1];
+				/* module of last error.  Use */
+				/* "__FILE__" and let compiler do the */
+				/* rest */
+    char te_mesg[TST_ERR_MESG_SIZE+1];
+				/* string of last error */
+.fi
+
+Any new or existing function will be able to call \fBtst_set_error()\fR
+to save error information.  Any caller of a function that uses
+this data, can access the data fields directly and print any of
+error data in desired format.
+
+Do not append newline to the end \fBte_mesg\fR string, it is the
+responsibility of the user of these mesg to print the trailing newline.
+This does not say that for long error messages, that there can not be
+newlines in the message.
+
+\fBtst_set_error()\fR will not overwrite these global variables if
+\fBTst_error.te_level\fR is not zero.
+
+\fBtst_clear_error()\fR will make all strings zero length and set all integers to zero.
+
+These global variables should not be used as the
+method for determining if there is an error.  The functions that use
+\fBtst_set_error\fR, should provide another way to indicating that an error
+has occurred.  These variables should be used reporting the error message.
+Although, if you use \fBtst_clear_error()\fR prior to calling any functions
+and \fBTst_error.te_mesg\fR[0] != '\0', you know someone reported an error or
+at least used the space.
+
+.RE
+
+.SH "Examples"
+
+To clear/initialize a programmer can use the tst_clear_error()
+function or access the variables directly.
+
+.nf
+#include "test.h"
+	....
+	tst_clear_error();
+.fi
+
+To report an error, use tst_set_error() function:
+
+.nf
+#include "test.h"
+	....
+	tst_set_error(__LINE__, __FILE__, "funcname",
+		"Malloc(%d) failed, errno:%d", size, errno);
+.fi
+
+To access the error information an issue an error message:
+
+.nf
+#include "test.h"
+ 	....
+	fprintf(stderr, "%s: funcname failed: %s\n", Prog, Tst_error.te_mesg);
+
+.fi
+
+.SH DIAGNOSTICS
+Both functions are void, thus not return value.
+
+.SH BUGS
+There is no space overwrite preventions on the \fBTst_error.te_mesg\fR field.
+If \fIfmt\fR parameter of \fBtst_set_error\fR expands to a string 
+larger than the space in \fBTst_error.te_mesg\fR, you will start overwriting
+memory.  This field contains 1024 bytes, which is fairly big error message.

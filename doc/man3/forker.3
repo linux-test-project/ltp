@@ -1,0 +1,151 @@
+.\"
+.\" $Id: forker.3,v 1.1 2000/07/27 16:59:03 alaffin Exp $
+.\"
+.\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+.\" 
+.\" This program is free software; you can redistribute it and/or modify it
+.\" under the terms of version 2 of the GNU General Public License as
+.\" published by the Free Software Foundation.
+.\" 
+.\" This program is distributed in the hope that it would be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\" 
+.\" Further, this software is distributed without any warranty that it is
+.\" free of the rightful claim of any third person regarding infringement
+.\" or the like.  Any license provided herein, whether implied or
+.\" otherwise, applies only to this software file.  Patent licenses, if
+.\" any, provided herein do not apply to combinations of this program with
+.\" other software, or any other product whatsoever.
+.\" 
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write the Free Software Foundation, Inc., 59
+.\" Temple Place - Suite 330, Boston MA 02111-1307, USA.
+.\" 
+.\" Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
+.\" Mountain View, CA  94043, or:
+.\" 
+.\" http://www.sgi.com 
+.\" 
+.\" For further information regarding this notice, see: 
+.\" 
+.\" http://oss.sgi.com/projects/GenInfo/NoticeExplan/
+.\"
+.TH FORKER 3 07/25/2000 "Linux Test Project"
+.SH NAME
+forker \- fork desired number of copies of the current process
+.br
+background \- fork a process and return control to caller
+
+.SH SYNOPSIS
+int 
+.br
+\fBbackground\fR(\fIprefix\fR)
+.br
+char *\fIprefix\fR;
+
+int
+.br
+\fBforker\fR(\fIncopies, mode, prefix\fR)
+.br
+int \fIncopies\fR;
+.br
+int \fImode\fR;
+.br
+char *\fIprefix\fR;
+
+extern int \fBForker_pids\fR[];
+.br
+extern int \fBForker_npids\fR;
+
+.SH DESCRIPTION
+The \fBbackground\fR function will do a fork of the current process.
+The parent process will then exit, thus orphaning the
+child process.  Doing this will not nice the child process
+like executing a cmd in the background using "&" from the shell.
+If the fork fails and prefix is not NULL, a error message is printed
+to stderr and the process will exit with a value of errno.
+
+The \fBforker\fR function will fork \fIncopies\fR minus one copies
+of the current process.  There are two modes in how the forks
+will be done.  Mode 0 (default) will have all new processes
+be children of the parent process.    Using Mode 1,
+the parent process will have one child and that child will
+fork the next process, if necessary, and on and on.
+The \fBforker\fR function will return the number of successful
+forks.  This value will be different for the parent and each child.
+Using mode 0, the parent will get the total number of successful
+forks.  Using mode 1, the newest child will get the total number
+of forks.  The parent will get a return value of 1.
+
+The \fBforker \fRfunction also updates the global variables
+\fIForker_pids[\fR] and Forker_npids.  The \fIForker_pids\fR array will
+be updated to contain the pid of each new process.  The
+\fIForker_npids\fR variable contains the number of entries
+in \fIForker_pids.\fR  Note, not all processes will have
+access to all pids via \fIForker_pids.\fR  If using mode 0, only the
+parent process will have all information.  If using mode 1,
+only the last child process will have all information.
+
+If the \fIprefix\fR parameter is not NULL and the fork system call fails,
+a error message will be printed to stderr.  The error message
+will be preceded with \fIprefix\fR string.  If \fIprefix\fR is NULL,
+no error message is printed.
+
+.SH EXAMPLES
+
+.nf
+.in +3
+/*
+ * The following is a unit test main for the background and forker
+ * functions.
+ */
+
+#include <stdio.h>
+
+main(argc, argv)
+int argc;
+char **argv;
+{
+    int ncopies=1;
+    int mode=0;
+    int ret;
+
+    if ( argc == 1 ) {
+        printf("Usage: %s ncopies [mode]\n", argv[0]);
+        exit(1);
+    }
+
+    if ( sscanf(argv[1], "%i", &ncopies) != 1 ) {
+        printf("%s: ncopies argument must be integer\n", argv[0]);
+        exit(1);
+    }
+
+    if ( argc == 3 )
+        if ( sscanf(argv[2], "%i", &mode) != 1 ) {
+        printf("%s: mode argument must be integer\n", argv[0]);
+        exit(1);
+    }
+
+    printf("Starting Pid = %d\n", getpid());
+    ret=background(argv[0]);
+    printf("After background() ret:%d, pid = %d\n", ret, getpid());
+
+    ret=forker(ncopies, mode, argv[0]);
+
+    printf("forker(%d, %d, %s) ret:%d, pid = %d, sleeping 30 seconds.\n",
+        ncopies, mode, argv[0], ret, getpid());
+    sleep(30);
+    exit(0);
+}
+.in -3
+.fi
+
+.SH "SEE ALSO"
+fork(2).
+
+.SH BUGS
+The child pids are stored in the fixed array, \fIForker_pids\fR.
+The array only has space for 4098 pids.  Only the first
+4098 pids will be stored in the array.
+
