@@ -38,7 +38,7 @@ endif
 install: 
 	@set -e; ln -f top ../../testcases/bin
 	@set -e; cp -f proc/libproc.so.$(LIBVERSION) $(LIB_DIR) 
-	@set -e; ln -s $(LIB_DIR)/libproc.so.$(LIBVERSION) $(LIB_DIR)/libproc.so
+	@set -e; ln -fs $(LIB_DIR)/libproc.so.$(LIBVERSION) $(LIB_DIR)/libproc.so
  
 ############ prog.c --> prog.o
 
