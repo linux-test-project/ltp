@@ -7,8 +7,9 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install:
-	ln -f mc_opts ../../../bin
-	ln -f opts ../../../bin
+	@set -e;ln -f mc_opts ../../../bin
+	@set -e;ln -f opts ../../../bin
+	@set -e;ln -f opts_e ../../../bin
 
 clean:
 	rm -f $(TARGETS)
