@@ -239,7 +239,7 @@ int	child_process;
 	int id, pid;
 
 	sighold(SIGTERM);
-	TEST(msgget(key, IPC_CREAT));
+		 TEST(msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR));
 	if (TEST_RETURN < 0)
 	{
                 tst_resm(TFAIL, "\tMsgget error in child %d, errno = %d\n", child_process, TEST_ERRNO);

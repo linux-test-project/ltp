@@ -36,6 +36,7 @@
  */
 
 #define _XOPEN_SOURCE 500
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -256,7 +257,7 @@ int	child_process;
 	int i, count, status, exit_status;
 
 	sighold(SIGTERM);
-	if ((id = msgget(key, IPC_CREAT)) < 0)
+		 if ((id = msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR )) < 0)
 	{
                 tst_resm(TFAIL, "\tMsgget error in child %d, errno = %d\n", child_process, errno);
                 tst_exit();
@@ -354,6 +355,9 @@ int	child_process;
 					kill(rkidarray[i], SIGTERM);
 					kill(wkidarray[i], SIGTERM);
 				}
+		 		 		 		 if (msgctl(tid, IPC_RMID, 0) < 0) {
+		 		 		 		 		 tst_resm(TFAIL, "\tMsgctl error, errno = %d\n", errno);
+		 		 		 		 }
                                 tst_exit();
 			}
 			count++;
@@ -370,6 +374,9 @@ int	child_process;
 	if (count != (nkids * 2))
 	{
 		tst_resm(TFAIL, "\tWrong number of children exited in child group %d, Saw %d Expected %d \n", child_process, count, (nkids * 2));
+		 		 if (msgctl(tid, IPC_RMID, 0) < 0) {
+		 		 		 tst_resm(TFAIL, "\tMsgctl error, errno = %d\n", errno);
+		 		 }
                 tst_exit();
 	}
 	if (msgctl(id, IPC_RMID, 0) < 0)
@@ -432,7 +439,7 @@ long key;
 	int i, size;
 	int id;
 
-	if ((id = msgget(key, IPC_CREAT)) < 0)
+		 if ((id = msgget(key, 0)) < 0)
 	{
                 tst_resm(TFAIL, "\tMsgget error in writer of child group %d, errno = %d\n", child, errno);
                 tst_exit();
