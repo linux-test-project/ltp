@@ -30,6 +30,27 @@
 #         o Send message which is at other priority level to     #
 #           the one set above, which should not be logged.       #
 ##################################################################
+<<<<<<< syslog10
+cleanup()
+{
+if [ $status_flag -eq 0 ]
+then
+	tst_resm TPASS " setlogmask() with LOG_MASK macro worked"
+else
+	tst_resm TFAIL " setlogmask() with LOG_MASK macro failed"
+fi
+
+#Restore syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null 
+sleep 2
+
+exit $status_flag
+}
+=======
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -53,6 +74,7 @@ fi
 
 exit $status_flag
 }
+>>>>>>> 1.9
 
 syslog_case10()
 {
@@ -89,6 +111,10 @@ syslog_case10()
 
 	#Restart syslog
 	tst_resm TINFO "Restart syslog"
+<<<<<<< syslog10
+	/etc/init.d/syslog restart 2>&1 1>/dev/null 
+	sleep 2
+=======
 	/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -96,6 +122,7 @@ syslog_case10()
 		status_flag=1
 		cleanup
 	fi
+>>>>>>> 1.9
 
 	# check if /var/log/messages script exists
 	find /var/log/ -name messages 2>&1 1>/dev/null || RC=$?

@@ -31,6 +31,27 @@
 #            facility.                                           #
 #         o Send the message and grep for the entry in log file. #
 ##################################################################
+<<<<<<< syslog08
+cleanup()
+{
+if [ $status_flag -eq 0 ]
+then
+	tst_resm TPASS "all facilities work"
+else
+	tst_resm TPASS "some facilities failed to work"
+fi
+
+#Restore syslog.conf
+mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+
+
+#Restart syslog
+tst_resm TINFO "Restart syslog"
+/etc/init.d/syslog restart 2>&1 1>/dev/null 
+sleep 2
+exit $status_flag
+}
+=======
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -54,6 +75,7 @@ then
 fi
 exit $status_flag
 }
+>>>>>>> 1.8
 
 syslog_case8()
 {
@@ -97,6 +119,10 @@ syslog_case8()
 
 		#Restart syslog
 		tst_resm TINFO "Restart syslog"
+<<<<<<< syslog08
+		/etc/init.d/syslog restart 2>&1 1>/dev/null 
+		sleep 2
+=======
 		/etc/init.d/syslog restart 2>&1 1>/dev/null || RC=$?
 		if [ $RC -ne 0 ]
 		then
@@ -104,6 +130,7 @@ syslog_case8()
 			status_flag=1
 			cleanup
 		fi
+>>>>>>> 1.8
 
 		# Grepping pattern is as follows:
 		# syslogtst: $current info test.
