@@ -1,4 +1,4 @@
-SUBDIRS = ade tar cron logrotate mail cpio
+SUBDIRS = ade tar cron logrotate mail cpio fileutils
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
