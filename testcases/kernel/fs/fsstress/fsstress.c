@@ -1802,8 +1802,8 @@ dread_f(int opno, long r)
 	e = read(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
-		printf("%d/%d: dread %s [%lld,%d] %d\n",
-			procid, opno, f.path, off, len, e);
+		printf("%d/%d: dread %s [%lld,%ld] %d\n",
+			procid, opno, f.path, (long long int)off, (long)len, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -1885,8 +1885,8 @@ dwrite_f(int opno, long r)
 	e = write(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
-		printf("%d/%d: dwrite %s [%lld,%d] %d\n",
-			procid, opno, f.path, off, len, e);
+		printf("%d/%d: dwrite %s [%lld,%ld] %d\n",
+			procid, opno, f.path, (long long)off, (long int)len, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -2212,8 +2212,8 @@ read_f(int opno, long r)
 	e = read(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
-		printf("%d/%d: read %s [%lld,%d] %d\n",
-			procid, opno, f.path, off, len, e);
+		printf("%d/%d: read %s [%lld,%ld] %d\n",
+			procid, opno, f.path, (long long)off, (long int)len, e);
 	free_pathname(&f);
 	close(fd);
 }
@@ -2485,7 +2485,7 @@ truncate_f(int opno, long r)
 	check_cwd();
 	if (v)
 		printf("%d/%d: truncate %s %lld %d\n", procid, opno, f.path,
-			off, e);
+			(long long)off, e);
 	free_pathname(&f);
 }
 
@@ -2615,8 +2615,8 @@ write_f(int opno, long r)
 	e = write(fd, buf, len) < 0 ? errno : 0;
 	free(buf);
 	if (v)
-		printf("%d/%d: write %s [%lld,%d] %d\n",
-			procid, opno, f.path, off, len, e);
+		printf("%d/%d: write %s [%lld,%ld] %d\n",
+			procid, opno, f.path, (long long)off, (long int)len, e);
 	free_pathname(&f);
 	close(fd);
 }
