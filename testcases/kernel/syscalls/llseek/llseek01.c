@@ -91,6 +91,8 @@ int fildes;			/* file handle for temp file */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
+extern loff_t llseek(int fildes, loff_t offset, int origin);
+
 int
 main(int ac, char **av)
 {
