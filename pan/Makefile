@@ -1,7 +1,7 @@
 
 LDLIBS = -lm
 LFLAGS = -lw
-CFLAGS += -Wall
+CFLAGS += 
 
 all: pan bump scanner
 
