@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.2 2000/09/08 16:26:52 nstraz Exp $ */
+/* $Id: fork05.c,v 1.3 2001/02/11 17:11:24 alaffin Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -88,6 +88,8 @@
  *
  *********************************************************/
 #include <stdio.h>
+
+#if defined(linux) && defined(__i386__)
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -166,3 +168,18 @@ main ()
 
   return WIFSIGNALED(res);
 }
+
+#else /* if defined(linux) && defined(__i386__) */
+
+int
+main()
+{
+  printf("%%gs test only for ix86\n");
+
+  /*
+   * should be successful on all non-ix86 platforms.
+   */
+  return(0);
+}
+
+#endif /* if defined(linux) && defined(__i386__) */
