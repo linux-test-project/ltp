@@ -165,6 +165,10 @@ setup(void)
 		return 1;
 	}
 
+	if (tst_kvercmp(2,5,48) >= 0)
+		tst_brkm(TCONF, tst_exit, "This test will not work on "
+				"kernels after 2.5.48");
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
