@@ -110,6 +110,7 @@ int longpath_setup();	/* setup function to test chown for ENAMETOOLONG */
 
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
+char* EXEC_DIR;
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	char *pathname;
@@ -236,16 +237,26 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	/* Get the current directory of the test executable*/
+	EXEC_DIR=get_current_dir_name();
+
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
          ltpuser = getpwnam(nobody_uid);
+         if (setgid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setgid failed to "
+                         "to set the effective gid to %d",
+                         ltpuser->pw_uid);
+                perror("setgid");
+         }
+
          if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
+                tst_resm(TINFO, "setuid failed to "
                          "to set the effective uid to %d",
                          ltpuser->pw_uid);
-                perror("seteuid");
+                perror("setuid");
          }
 
 	/* Pause if that option was specified */
@@ -289,9 +300,10 @@ setup1()
 {
 	int fd;				/* file handler for testfile */
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
+	char Path2_name[PATH_MAX];	/* Buffer for just the path name */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
+	char Cmd2_buffer[BUFSIZ];       /* Buffer to hold command string */
 
-	setuid(ltpuser->pw_uid);	
 	/* Creat a testfile and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -317,11 +329,21 @@ setup1()
 			 Path_name, errno, strerror(errno));
 	}
 
+	strcpy(Path2_name,Path_name);
+
+	/* Copy the create_link program to the tmpdir */
+	strcat((char *)Cmd2_buffer, (const char *)"cp -f ");
+	strcat((char *)Cmd2_buffer, EXEC_DIR);
+	strcat((char *)Cmd2_buffer, (const char *)"/create_link ");
+	strcat((char *)Cmd2_buffer, Path2_name);
+	system((const char *)Cmd2_buffer);
+
 	/* Get the path of test file created under temporary directory */
 	strcat(Path_name, "/"TEST_FILE1);
 
 	/* Get the command name to be executed as setuid to root */
-	strcat((char *)Cmd_buffer, (const char *)"create_link ");
+	strcat((char *)Cmd_buffer, Path2_name);
+	strcat((char *)Cmd_buffer, (const char *)"/create_link ");
 	strcat((char *)Cmd_buffer, Path_name);
 
 	if (system((const char *)Cmd_buffer) != 0) {
