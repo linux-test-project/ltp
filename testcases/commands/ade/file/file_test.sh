@@ -41,14 +41,14 @@
 
 export TST_TOTAL=10                # Number of tests in this testcase
 
-if [ -z $LTPTMP ] && [ -z $TMPBASE ]
+if [ -z "$LTPTMP" -a -z "$TMPBASE" ]
 then 
     LTPTMP=/tmp/
 else
 	LTPTMP=$TMPBASE
 fi
 
-if [ -z "$LTPBIN" ] && [ -z "$LTPROOT" ]
+if [ -z "$LTPBIN" -a -z "$LTPROOT" ]
 then
     LTPBIN=./
 else
@@ -283,7 +283,7 @@ fi
 # Test if file command can recognize tar files
 
 export TCID=file07
-export TST_COUN=7
+export TST_COUNT=7
 
 $LTPBIN/tst_resm TINFO "TEST #7: file command recognizes tar files."
 
@@ -465,21 +465,24 @@ fi
 # Test if file command can recognize vmlinz file
 
 export TCID=file10
-export TST_COUNT=5
+export TST_COUNT=10
 
 $LTPBIN/tst_resm TINFO "TEST #10: file command recognizes vmlinuz file"
 
-if [ -f /boot/vmlinuz ]
-then
-    file /boot/vmlinuz* &>$LTPTMP/file.out || RC=$?
-else
-    file /boot/bzImage* &>$LTPTMP/file.out || RC=$?
-fi
+KERNFILE=$(find /boot ! -type l -name 'vmlinuz*' | tail -1)
+file $KERNFILE &> $LTPTMP/file.out
 
-if [ $RC -eq 0 ]
+if [ $? -eq 0 ]
 then
-    grep -i "kernel" $LTPTMP/file.out &>/dev/null
-    if [ $? -eq 0 ]
+#####
+# There are lots of possible strings to look for, given the number
+# of different architectures...
+#####
+    MATCHED=""
+    grep -i "kernel" $LTPTMP/file.out && MATCHED="y"
+    grep -i "compressed data" $LTPTMP/file.out && MATCHED="y"
+    grep -i "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
+    if [ -n "$MATCHED" ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised vmlinuz file correctly"
     else
