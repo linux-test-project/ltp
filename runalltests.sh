@@ -146,7 +146,7 @@ main()
     
         l)      
 
-			echo "INFO: creating $LTPROOT/results directory"
+            echo "INFO: creating $LTPROOT/results directory"
             [ ! -d $LTPROOT/results ] && \
             {
                mkdir -p $LTPROOT/results || \
@@ -156,8 +156,9 @@ main()
                 }
             }
             case $OPTARG in
+	    /*)
+                LOGFILE="-l $OPTARG" ;;
             *)    
-                #LOGFILE="-l $OPTARG" ;;
                 LOGFILE="-l $LTPROOT/results/$OPTARG"
                 ALT_DIR=1 ;;
             esac ;;
