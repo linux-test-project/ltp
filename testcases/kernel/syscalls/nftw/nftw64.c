@@ -789,8 +789,8 @@ anyfail()
     tst_resm(TINFO, "Exiting test\n");
     (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n")
            : tst_resm(TPASS, "Test passed\n");
-    tst_exit();
     tst_rmdir();
+    tst_exit();
 }
 
 /**************/
