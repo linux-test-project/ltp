@@ -148,6 +148,7 @@ int main (int argc, char *argv[])
 /* Clean up any files created by test before call to anyfail.	*/
 
 	unlink("core");
+	tst_rmdir();
 	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
   return(0);
 }
@@ -167,6 +168,7 @@ int anyfail()
 void setup()
 {
  temp = stderr;
+ tst_tmpdir();
 }
 
 int blenter()
