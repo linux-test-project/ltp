@@ -103,7 +103,7 @@ fchown03 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown03
 fchown04 cp -f ${LTPROOT}/testcases/bin/change_owner ${TMP};fchown04
 fchown05 fchown05
 
-#fcntl01 fcntl01
+fcntl01 fcntl01
 fcntl02 fcntl02
 fcntl03 fcntl03
 fcntl04 fcntl04
