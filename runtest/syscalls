@@ -465,7 +465,6 @@ semop05 semop05
 
 send01 send01
 
-#sendfile01 sendfile01
 sendfile02 sendfile02
 
 sendmsg01 sendmsg01
