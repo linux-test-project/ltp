@@ -50,3 +50,4 @@ pipeio_8 pipeio -T pipeio_8 -c 5 -s 5000 -i 10 -u -f x80
 sem01 sem01
 sem02 sem02
 
+nptl01 nptl01
