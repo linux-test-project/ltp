@@ -29,8 +29,12 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
+ * Changelog:
+ * 
+ *	Added timer options: William Jay Huie, IBM
+ *
  */
-/* $Id: pan.c,v 1.8 2001/11/30 19:30:29 plars Exp $ */
+/* $Id: pan.c,v 1.9 2002/02/19 18:06:31 robbiew Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -96,6 +100,9 @@ static void write_test_end(struct tag_pgrp *running,
 			   time_t exit_time, char *term_type, int stat_loc,
 			   int term_id, struct tms *tms1, struct tms *tms2);
 
+//wjh
+static char PAN_STOP_FILE[] = "PAN_STOP_FILE";
+
 static char *panname = NULL;
 static char *test_out_dir = NULL;	/* dir to buffer output to */
 zoo_t zoofile;
@@ -131,6 +138,7 @@ main(int argc, char **argv)
     int num_active = 0;
     int err, i;
     int starts = -1;
+    int run_time = -1; char modifier = 'm'; int ret = 0;
     int stop;
     int go_idle;
     int has_brakes = 0;		/* stop everything if a test case fails */
@@ -139,7 +147,7 @@ main(int argc, char **argv)
     int exit_stat;
     int track_exit_stats = 0;	/* exit non-zero if any test exits non-zero */
 
-    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:r:s:x:y")) != -1) {
+    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:r:s:t:x:y")) != -1) {
 	switch (c) {
 	case 'A':	/* all-stop flag */
 	    has_brakes = 1;
@@ -165,7 +173,7 @@ main(int argc, char **argv)
 	    break;
 	case 'h':	/* help */
 	    printf
-		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ]\n\t[-o output-file] [-O output-buffer-directory] [cmd]\n");
+		("Usage: pan -n name [ -SyAeh ] [ -s starts ] [-t time[s|m|h|d] [ -x nactive ] [ -l logfile ]\n\t[ -a active-file ] [ -f command-file ] [ -d debug-level ]\n\t[-o output-file] [-O output-buffer-directory] [cmd]\n");
 	    exit(0);
 	case 'l':	/* log file */
 	    logfilename = strdup(optarg);
@@ -181,6 +189,28 @@ main(int argc, char **argv)
 	    break;
 	case 's':	/* number of tags to run */
 	    starts = atoi(optarg);
+	    break;
+	case 't':	/* run_time to run */
+	    ret = sscanf(optarg, "%d%c", &run_time, &modifier);
+            if (ret == 0) { printf("Need proper time input: ####x where"
+                                    "x is one of s,m,h,d\n"); break; }
+            else if (ret == 1) { printf("Only got a time value of %d "
+                                 "modifiers need to come immediately after #"
+                                 " assuming %c\n", run_time, modifier); }
+            else
+            {
+               switch (modifier)
+               {
+                  case 's': run_time = run_time; break; 
+                  case 'm': run_time = run_time * 60; break; 
+                  case 'h': run_time = run_time * 60 * 60; break; 
+                  case 'd': run_time = run_time * 60 * 60 * 24; break;
+                  default: 
+                     printf("Invalid time modifier, try: s|h|m|d\n"); exit(-1);
+               }
+               printf("PAN will run for %d seconds\n", run_time);
+            }
+            starts = 0; //-t implies run as many starts as possible
 	    break;
 	case 'x':	/* number of tags to keep running */
 	    keep_active = atoi(optarg);
@@ -348,6 +378,8 @@ main(int argc, char **argv)
     }
 
     rec_signal = send_signal = 0;
+    alarm(run_time);
+    signal(SIGALRM, wait_handler);
     signal(SIGINT, wait_handler);
     signal(SIGTERM, wait_handler);
     signal(SIGHUP, wait_handler);
@@ -391,10 +423,18 @@ main(int argc, char **argv)
 		if (++c >= coll->cnt)
 		    c = 0;
 
-	}			/* while( (num_active < keep_active) && (starts != 0) ) */
+	} /* while( (num_active < keep_active) && (starts != 0) ) */
 
 	if (starts == 0)
-	    ++stop;
+	{ printf("incrementing stop\n"); ++stop; }
+        else if (starts == -1) //wjh
+        {
+           FILE *f = (FILE*)-1;
+           if ((f = fopen(PAN_STOP_FILE, "r")) != 0)
+           {  printf("Got %s Stopping!\n", PAN_STOP_FILE);
+              close((int)f); unlink(PAN_STOP_FILE); stop++; 
+           }
+        }
 
 	if (rec_signal) {
 	    /* propagate everything except sigusr2 */
@@ -489,6 +529,12 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
     if (Debug & Dshutdown)
 	fprintf(stderr, "pan was signaled with sig %d...\n", rec_signal);
+
+    if (rec_signal == SIGALRM)
+    {
+       printf("PAN stop Alarm was received\n");
+       rec_signal = SIGTERM;
+    }
 
     for (i = 0; i < keep_active; ++i) {
 	if (running[i].pgrp == 0)
