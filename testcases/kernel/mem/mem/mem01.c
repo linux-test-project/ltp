@@ -195,7 +195,7 @@ void help()
 #define BUFF_SIZE 384
 size_t get_memsize()
 {
-	size_t unused, res, freesize, bufferssize, cachesize;
+	size_t unused, res, freesize;
 	FILE *f;
 	int retcode;
 	char buff[BUFF_SIZE];
@@ -210,21 +210,21 @@ size_t get_memsize()
 	}
 
 	/* FIXME: check return code! */
-	retcode = fscanf(f, "Mem: %u %u %u %u %u %u", &unused, &unused, &freesize, 
-					&unused, &bufferssize, &cachesize);
+	retcode = fscanf(f, "Mem: %lu %lu %lu %lu %lu %lu", &unused, &unused, &freesize, 
+					&unused, &unused, &unused);
 	if (retcode != 6) {
 		fclose(f);
 		return 0;
 	}
 
-	res = freesize+bufferssize+cachesize;
+	res = freesize;
 
 	if (!fgets(buff, BUFF_SIZE, f))	{ /* flush end of line */
 		fclose(f);
 		return 0;
 	}
 
-	retcode = fscanf(f, "Swap: %u %u %u", &unused, &unused, &freesize);
+	retcode = fscanf(f, "Swap: %lu %lu %lu", &unused, &unused, &freesize);
 	if (retcode != 3) {
 		fclose(f);
 		return 0;
