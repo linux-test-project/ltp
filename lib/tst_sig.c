@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.5 2003/03/04 18:33:43 robbiew Exp $ */
+/* $Id: tst_sig.c,v 1.6 2003/04/28 21:37:40 robbiew Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -72,6 +72,11 @@
 #include <signal.h>
 #include "test.h"
 
+#ifdef USE_NPTL
+#define SIGCANCEL 32
+#define SIGTIMER 33
+#endif
+
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
 void (*T_cleanup)();		/* pointer to cleanup function */
@@ -109,7 +114,7 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 		/* use default handler */
 		handler = def_handler;
 	}
-
+  
 	/*
 	 * now loop through all signals and set the handlers
 	 */
@@ -126,6 +131,10 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	        case SIGKILL:
 	        case SIGSTOP:
 	        case SIGCONT:
+#ifdef USE_NPTL 
+		case SIGCANCEL:
+		case SIGTIMER:
+#endif
 #ifdef CRAY
 	        case SIGINFO:
 	        case SIGRECOVERY:	/* allow chkpnt/restart */
