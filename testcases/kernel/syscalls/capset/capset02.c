@@ -74,7 +74,11 @@
  *
  ****************************************************************/
 #include <errno.h>
+#include <string.h>
 #include <pwd.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -97,6 +101,8 @@ extern int capset(cap_user_header_t, const cap_user_data_t);
 static void setup();
 static void cleanup();
 static void test_setup(int);
+
+static pid_t child_pid = -1;
 
 char *TCID = "capset02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -201,6 +207,8 @@ setup()
 void
 cleanup()
 {
+	if(child_pid > 0)
+		kill(child_pid,SIGTERM);
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -211,10 +219,15 @@ cleanup()
 	tst_exit();
 }	/* End cleanup() */
 
+void child_func()
+{
+	signal(SIGTERM,SIG_DFL);
+	for(;;) { sleep(10); }
+}
+
 void
 test_setup(int i)
 {
-
 	switch (i) {
 
 	case 0 :
@@ -238,8 +251,24 @@ test_setup(int i)
 		 * by default, CAP_SETPCAP is not enabled. So giving
 		 * a non-zero pid results in capset() failing with
 		 * errno EPERM
+		 * 
+		 * Note: this seems to have changed with recent kernels
+		 * => create a child and try to set its capabilities
 		 */
-		header.pid = getpid();
+		child_pid = fork();
+		switch(child_pid) {
+		case -1:
+			tst_resm(TBROK,"fork() failed: %s\n",strerror(errno));
+			cleanup();
+			break;
+		case 0:
+			child_func();
+			break;
+		default:
+			signal(SIGCHLD,SIG_IGN);
+			header.pid = child_pid;
+			break;
+		}
 		break;
 
 	}

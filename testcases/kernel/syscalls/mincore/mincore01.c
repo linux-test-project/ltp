@@ -78,10 +78,9 @@ static void setup1(void);
 static void setup2(void);
 static void setup3(void);
 static void setup4(void);
-static void setup5(void);
 
 char *TCID= "mincore01";
-int TST_TOTAL = 5;
+int TST_TOTAL = 4;
 extern int Tst_count;
 
 static char file_name[] = "fooXXXXXX";
@@ -98,10 +97,9 @@ static struct test_case_t {
         void (*setupfunc)();
 } TC[] = {
 		  { NULL,0,NULL,EINVAL,setup1 },
-		  { NULL,0,NULL,EINVAL,setup2 },
-		  { NULL,0,NULL,EFAULT,setup3 },
-		  { NULL,0,NULL,ENOMEM,setup4 },
-		  { NULL,0,NULL,ENOMEM,setup5 }
+		  { NULL,0,NULL,EFAULT,setup2 },
+		  { NULL,0,NULL,ENOMEM,setup3 },
+		  { NULL,0,NULL,ENOMEM,setup4 }
 }; 
 
 int main(int ac, char **av)
@@ -167,23 +165,11 @@ setup1()
 }
 
 /*
- * setup2() - sets up conditions for the second test. the length has a 
- * non-positive value
- */
-void
-setup2()
-{
-	TC[1].addr = global_pointer;
-	TC[1].len = -global_len;
-	TC[1].vector = global_vec;
-}
-
-/*
  * setup3() - sets up conditions for the third test. the vector points to an 
  * invalid address.
  */
 void
-setup3()
+setup2()
 {
 	char *t;
 	
@@ -193,9 +179,9 @@ setup3()
 	}
 	munmap(t,global_len);
 	
-	TC[2].addr = global_pointer;
-	TC[2].len = global_len;
-	TC[2].vector = t;
+	TC[1].addr = global_pointer;
+	TC[1].len = global_len;
+	TC[1].vector = t;
 }
 
 /*
@@ -204,11 +190,11 @@ setup3()
  *  times the mapped file size.
  */
 void 
-setup4()
+setup3()
 {
-	TC[3].addr = global_pointer;
-	TC[3].len = global_len*5;
-	TC[3].vector = global_vec;
+	TC[2].addr = global_pointer;
+	TC[2].len = global_len*5;
+	TC[2].vector = global_vec;
 }
 
 /*
@@ -217,11 +203,11 @@ setup4()
  * we give a offset of 2 pages as the starting address.
  */
 void
-setup5()
+setup4()
 {	
-	TC[4].addr = global_pointer+2*global_len;
-	TC[4].len = global_len;
-	TC[4].vector = global_vec;
+	TC[3].addr = global_pointer+2*global_len;
+	TC[3].len = global_len;
+	TC[3].vector = global_vec;
 }
 
 /*

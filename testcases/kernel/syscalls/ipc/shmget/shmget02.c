@@ -60,7 +60,7 @@ int exp_enos[] = {ENOENT, EEXIST, EINVAL, 0};	/* 0 terminated list of */
 						/* expected errnos 	*/
 
 int shm_id_1 = -1;
-int shm_id_2 = -1;
+int shm_nonexisting_key = -1;
 int shmkey2;
 
 struct test_case_t {
@@ -83,7 +83,7 @@ struct test_case_t {
 	
 	/* ENOENT - no segment exists for the key and IPC_CREAT is not given */
 	/* use shm_id_2 (-1) as the key */
-	{&shm_id_2, SHM_SIZE, SHM_RW, ENOENT}
+	{&shm_nonexisting_key, SHM_SIZE, SHM_RW, ENOENT}
 };
 
 int main(int ac, char **av)
@@ -172,7 +172,14 @@ setup(void)
 			 "segment in setup()");
 	}
 
-
+	/* Make sure shm_nonexisting_key is a nonexisting key */
+	while(1) {
+		while(-1 != shmget(shm_nonexisting_key,1,SHM_RD)) {
+			shm_nonexisting_key--;
+		}
+		if(errno == ENOENT)
+			break;
+	}
 }
 
 /*
