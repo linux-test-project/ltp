@@ -25,10 +25,6 @@ LOADLIBES+=	-L../../../../lib -lltp
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-# add -m64 if compiler supports it
-check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
-CFLAGS += $(call check_gcc,-m64,)
-
 all: $(TARGETS)
 
 install:
