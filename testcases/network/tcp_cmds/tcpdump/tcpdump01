@@ -36,7 +36,7 @@
 $trace_logic
 
 TC=tcpdump
-TCtmp=${TCtmp:-/tmp/$TC}
+TCtmp=${TCtmp:-/tmp/$TC$$}
 RHOST=${RHOST:-`hostname`}
 NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out

@@ -70,7 +70,7 @@ do_test()
    [[ $NUMLOOPS -gt 0 ]] || TLOOP=$NUMLOOPS
    while [[ $TLOOP -le $NUMLOOPS ]]
    do
-      $TCtmp/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
+      $TCbin/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
       RETVALUE=$?
 
       case "$RETVALUE" in
