@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill09.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: kill09.c,v 1.2 2003/09/24 14:41:10 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -226,8 +226,6 @@ setup()
 {
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-    (void) signal(SIGCHLD, SIG_IGN);
 
     /* Pause if that option was specified */
     TEST_PAUSE;
