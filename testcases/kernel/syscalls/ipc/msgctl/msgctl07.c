@@ -115,7 +115,13 @@ char *argv[];
 		exit(0);
 	}
 	else {
-		if ((signal(SIGALRM, (sighandler_t)alrm)) == SIG_ERR) {
+		struct sigaction act;
+
+		memset(&act, 0, sizeof(act));
+		act.sa_handler = (sighandler_t) alrm;
+		sigemptyset(&act.sa_mask);
+		sigaddset(&act.sa_mask, SIGALRM);
+		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
         	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);
@@ -192,7 +198,13 @@ char *argv[];
 		exit(0);
 	}
 	else {
-		if ((signal(SIGALRM, (sighandler_t)alrm)) == SIG_ERR) {
+		struct sigaction act;
+
+		memset(&act, 0, sizeof(act));
+		act.sa_handler = (sighandler_t) alrm;
+		sigemptyset(&act.sa_mask);
+		sigaddset(&act.sa_mask, SIGALRM);
+		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
         	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);

@@ -98,6 +98,7 @@ char	*argv[];
 {
 	register int i, j, ok, pid;
 	int count, status;
+	struct sigaction act;
 
 	setup();
 	
@@ -138,7 +139,11 @@ char	*argv[];
 	tid = -1;
 
 	/* Setup signal handleing routine */
-	if (signal(SIGTERM, sig_handler) == SIG_ERR) 
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = sig_handler;
+	sigemptyset(&act.sa_mask);
+	sigaddset(&act.sa_mask, SIGTERM);
+	if (sigaction(SIGTERM, &act, NULL) < 0) 
 	{
                 tst_resm(TFAIL, "\tSigset SIGTERM failed\n");
                 tst_exit();
