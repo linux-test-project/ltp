@@ -47,20 +47,29 @@
  * RESTRICTIONS
  *	Test must be run as root.
  */
+#include "test.h"
+#include "usctest.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
 #include <linux/unistd.h>
-#include <sys/sysctl.h>
+#include <linux/sysctl.h>
 #include <pwd.h>
-#include "test.h"
-#include "usctest.h"
 
 char *TCID = "sysctl03";
 int TST_TOTAL = 2;
 extern int Tst_count;
+
+_syscall1(int, _sysctl, struct __sysctl_args *, args);
+int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
+           void *newval, size_t newlen)
+{
+        struct __sysctl_args args={name,nlen,oldval,oldlenp,newval,newlen};
+        return _sysctl(&args);
+}
+
 
 #define SIZE(x) sizeof(x)/sizeof(x[0])
 #define OSNAMESZ 100
@@ -162,6 +171,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

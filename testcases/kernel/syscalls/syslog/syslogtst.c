@@ -42,12 +42,10 @@ int exp_enos[]={0};     /* List must end with 0 */
 
 void sig_handler(int signal); 
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int status, flag3, uid, fd;
+	int status, flag3, fd;
 	int exit_flag = 0;	/* used for syslog test case 6. */
-	int flag1 = 0;
-	int flag2 = 0;
 
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
@@ -234,13 +232,12 @@ main(int argc, char *argv[])
 	 */
 	if (exit_flag == 1) exit(1);
 	else exit(0);
-	
+		
 }
 
 
 void sig_handler(int signal)
 {
-	int status;
 	
 	switch(signal) {
 	case SIGINT:
