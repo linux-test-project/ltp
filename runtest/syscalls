@@ -553,6 +553,7 @@ shmat03 shmat03
 shmctl01 shmctl01
 shmctl02 shmctl02
 shmctl03 shmctl03
+shmctl04 shmctl04
 
 shmdt01 shmdt01
 shmdt02 shmdt02
