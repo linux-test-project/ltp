@@ -762,6 +762,8 @@ sigpending01 cd $LTPROOT/testcases/bin;sigpending01
 sigpending02 sigpending02
 
 sigprocmask01 sigprocmask01
+sigprocmask02 cd $LTPROOT/testcases/bin;sigprocmask02
+sigprocmask03 cd $LTPROOT/testcases/bin;sigprocmask03
 
 sigrelse01 sigrelse01
 
