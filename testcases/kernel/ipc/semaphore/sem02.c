@@ -37,8 +37,13 @@
  *    written by Dave Olien (oliend@us.ibm.com)
  *    03/06/2002 Robbie Williamson (robbiew@us.ibm.com)
  *      -ported
+ *    07/04/2003 Paul Larson (plars@linuxtestproject.org)
+ *      -ported to LTP
  *
  */
+#include "test.h"
+#include "usctest.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,6 +60,11 @@
 void *retval[NUMTHREADS]; 
 void * waiter(void *);
 void * poster(void *);
+void cleanup(void);
+
+char *TCID = "sem02";
+int TST_TOTAL = 1;
+extern int Tst_count;
 
 struct sembuf Psembuf = {0, -1, SEM_UNDO};
 struct sembuf Vsembuf = {0, 1, SEM_UNDO};
@@ -69,14 +79,18 @@ union semun {
 
 int sem_id;
 int err_ret;  /* This is used to determine PASS/FAIL status */
-int main()
+int main(int argc, char **argv)
 {
     int i, rc;
+    char *msg;
     union semun semunion;
     
     pthread_t pt[NUMTHREADS];
     pthread_attr_t attr;
 
+    if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL) {
+	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+    }
     /* Create the semaphore set */
     sem_id = semget(KEY, 1, 0666 | IPC_CREAT);
     if (sem_id < 0)
@@ -110,10 +124,12 @@ int main()
     semunion.val = 1;
     semctl(sem_id, 0, IPC_RMID, semunion);
     if ( err_ret == 1 )
-	printf("sem02: FAIL\n");
+	tst_resm(TFAIL, "failed");
     else
-	printf("sem02: PASS\n");
-    return(err_ret);
+	tst_resm(TPASS, "passed");
+    cleanup();
+    /* NOT REACHED */
+    return 1;
 }
 
 
@@ -126,12 +142,12 @@ void * waiter(void * foo)
     int pid;
     pid = getpid();
 
-    printf ("Waiter, pid = %d\n", pid);
+    tst_resm(TINFO, "Waiter, pid = %d", pid);
     sleep(10);
 
-    printf("Waiter waiting, pid = %d\n", pid);
+    tst_resm(TINFO, "Waiter waiting, pid = %d", pid);
     semop(sem_id, &Psembuf, 1);
-    printf("Waiter done waiting\n");
+    tst_resm(TINFO, "Waiter done waiting");
     err_ret=0; /* If the message above is displayed, the test is a PASS */
     pthread_exit(0);
 }
@@ -145,10 +161,16 @@ void * poster(void * foo)
     int pid;
    
     pid = getpid();
-    printf ("Poster, pid = %d, posting\n", pid);
+    tst_resm(TINFO, "Poster, pid = %d, posting", pid);
     semop(sem_id, &Vsembuf, 1);
-    printf ("Poster posted\n");
-    printf ("Poster exiting\n");
+    tst_resm(TINFO, "Poster posted");
+    tst_resm(TINFO, "Poster exiting");
     
     pthread_exit(0);
+}
+
+void cleanup(void)
+{
+	TEST_CLEANUP;
+	tst_exit();
 }
