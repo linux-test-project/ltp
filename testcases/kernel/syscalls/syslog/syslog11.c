@@ -95,7 +95,11 @@ static void cleanup(void);
 static int setup1(void);
 static void cleanup1(void);
 
+#if defined(__ia64__)
+#define syslog(arg1, arg2, arg3) syscall(__NR_syslog, arg1, arg2, arg3)
+#else
 _syscall3(int, syslog, int, type, char *, bufp, int, len);
+#endif
 
 static struct test_case_t  tdat[] = {
 	/* Type 0 and 1 are currently not implemented, always returns success */
@@ -128,7 +132,6 @@ main(int argc, char **argv)
 	    (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 	setup();
 
 	/* check looping state if -i option is given */
@@ -234,3 +237,4 @@ cleanup(void)
 	tst_exit();
 	/*NOTREACHED*/
 }
+

@@ -106,7 +106,11 @@ static void cleanup(void);
 static int setup1(void);
 static void cleanup1(void);
 
+#if defined(__ia64__)
+#define syslog(arg1, arg2, arg3) syscall(__NR_syslog, arg1, arg2, arg3)
+#else
 _syscall3(int, syslog, int, type, char *, bufp, int, len);
+#endif
 
 static struct test_case_t  tdat[] = {
 	{ 100, &buf, 0, EINVAL, NULL, NULL, "invalid type/command" },
