@@ -23,15 +23,14 @@
 MAINS=semget01 semget02 semget03 semget05 semget06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc  
-LTP_CFLAGS=-I../../../../../include -Wall -g
-LTP_LDFLAGS=-L../../../../../lib -lltp
+CFLAGS+=-I../../../../../include -Wall -g
+LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
 
 
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-	$(CC) -o $@ $@.c $(LTP_CFLAGS) $(LTP_LDFLAGS) $(IPC_LDFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LOADLIBES)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)

@@ -66,7 +66,7 @@ int exp_enos[]={0};     /* List must end with 0 */
 
 /*--------------------------------------------------------------*/
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {

@@ -24,7 +24,7 @@
 SRCS=libipc.c
 OBJS=$(SRCS:.c=.o)
 MAINS=../libipc.a
-LTP_CFLAGS=-I../../../../../include -g -Wall
+CFLAGS+=-I../../../../../include -g -Wall
 
 all: ../libipc.a
 
@@ -32,7 +32,7 @@ all: ../libipc.a
 	$(AR) -rv $@ $(OBJS)
 
 $(OBJS):
-	$(CC) -c $(SRCS) $(LTP_CFLAGS)
+	$(CC) -c $(SRCS) $(CFLAGS)
 
 install:
 

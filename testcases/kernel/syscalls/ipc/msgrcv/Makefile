@@ -23,14 +23,13 @@
 MAINS=msgrcv01 msgrcv02 msgrcv03 msgrcv04 msgrcv05 msgrcv06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc
-LTP_LDFLAGS=-L../../../../../lib -lltp
-LTP_CFLAGS=-I../lib -I../../../../../include -g -Wall
+CFLAGS=-I../lib -I../../../../../include -g -Wall
+LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
 
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-	$(CC) -o $@ $@.c $(LTP_CFLAGS) $(LTP_LDFLAGS) $(IPC_LDFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LOADLIBES)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)

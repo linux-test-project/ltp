@@ -23,13 +23,13 @@
 MAINS=shmat01 shmat02 shmat03
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
-IPC_LDFLAGS=-L.. -lipc  -L../../../../../lib -lltp
-LTP_CFLAGS=-I../lib -I../../../../../include -g
+CFLAGS+=-I../lib -I../../../../../include -g
+LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
 
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-	$(CC) -o $@ $@.c $(LTP_CFLAGS) $(LTP_LDFLAGS) $(IPC_LDFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LOADLIBES)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)
