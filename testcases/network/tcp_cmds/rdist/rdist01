@@ -84,7 +84,7 @@ do_setup()
    export TST_COUNT=1
 
 
-   exists "dirname basenamei rdist"
+   exists "dirname basename rdist"
 
    mkdir -p $TCtmp
    cd $TCtmp
