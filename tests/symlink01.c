@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: symlink01.c,v 1.4 2000/09/26 20:43:38 nstraz Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -472,7 +472,7 @@ struct tcses
 		"Change Object File Permissions Indirectly From a Symbolic" },
    { UTIME,    "utime",    3, &test_objects[27],
 		"Set File Access And Modify Object File Times via symlink" },
-   { RENAME,   "rename",   3, &test_objects[30],
+   { RENAME,   "rename",   2, &test_objects[30],
 		"Rename a Symbolic Link File And Not Any Object file" },
    { OPEN,     "open",     5, &test_objects[33],
 		"Create/Open a File For Reading Or Writing via symlink" },
