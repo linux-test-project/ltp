@@ -109,6 +109,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EACCES) {
+				retval=1;
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
 			} else {
