@@ -418,9 +418,9 @@ rename05 rename05
 rename06 rename06
 rename07 rename07
 rename08 rename08
-#rename09 rename09
+rename09 rename09
 rename10 rename10
-#rename12 rename12
+rename12 rename12
 rename13 rename13
 
 rmdir01 rmdir01
@@ -613,7 +613,11 @@ truncate01 truncate01
 truncate02 truncate02
 truncate03 truncate03
 
-ulimit01 ulimit01
+# This syscall is obsolete.  The latest glibc does not even
+# include the ulimit.h file anymore.  The test will fail
+# because the error handling has been simplified.
+# 
+# ulimit01 ulimit01
 
 umask01 umask01
 umask02 umask02
