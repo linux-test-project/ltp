@@ -1,5 +1,5 @@
 #!/bin/sh
-set +x
+
 
 # 
 #  07/10/02 - Jeff Martin - martinjn@us.ibm.com: Added instance and 
@@ -27,6 +27,10 @@ set +x
 #  02/01/03 - Manoj Iyer  - manjo@mail.utexas.edu: Removed variables
 #                           initialization of RHOST and PASSWD.
 #
+#  02/05/03 - Robbie Williamson - Added configurability to the optional load
+#                                 generator sections.  Also added network traffic
+#				  option.
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -36,12 +40,13 @@ pretty_prt=" "
 alt_dir=0
 run_netest=0
 quiet_mode=" "
+NetPipe_Pid=0
 
 usage() 
 {
 	cat <<-END >&2
     usage: ./${0##*/} -c [-d tmpdir] [-f cmdfile ] [-i # (in Mb)] [ -l logfile ] 
-                  [ -m # (in Mb)] -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
+                  [ -m # (in Mb)] -N -n -q [ -r ltproot ] [ -t duration ] [ -x instances ] 
                 
     -c              Run LTP under additional background CPU load.
     -d tmpdir       Directory where temporary files will be created.
@@ -50,9 +55,10 @@ usage()
     -i # (in Mb)    Run LTP with a _minimum_ IO load of # megabytes in background.
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Run LTP with a _minimum_ memory load of # megabytes in background.
-    -n              Run all the networking tests. 
+    -N              Run all the networking tests. 
                     (export RHOST = remote hostname)
                     (export PASSWD = passwd of remote host)
+    -n              Run LTP with network traffic in background.
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r ltproot      Fully qualified path where testsuite is installed.
@@ -65,7 +71,7 @@ exit
 }
 
 
-while getopts cd:f:hil:mnpqr:t:x arg
+while getopts cd:f:hi:l:m:Nnpqr:t:x arg
 do  case $arg in
     c)
             $LTPROOT/testcases/bin/genload --cpu 1 2>&1 1>/dev/null & ;;
@@ -76,7 +82,7 @@ do  case $arg in
     f)        # Execute user defined set of testcases.
             cmdfile=$OPTARG;;
 
-    h)		usage;;
+    h)	    usage;;
     
     i)        
             bytesize = $OPTARG * 1024 * 1024 
@@ -109,7 +115,10 @@ do  case $arg in
 	    $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $memsize\
             2>&1 1>/dev/null & ;;
 
-	n)		run_netest=1;;
+    N)	    run_netest=1;;
+
+    n)	    $LTPROOT/testcases/bin/netpipe.sh
+	    NetPipe = 1;;
 
     p)      pretty_prt=" -p ";;
 
@@ -198,6 +207,11 @@ else
 fi
 
 killall -9 genload
+
+if [ $NetPipe -eq 1 ]
+then
+	killall -9 NPtcp
+fi
 
 if [ $alt_dir -eq 1 ]
 then
