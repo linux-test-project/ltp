@@ -65,7 +65,7 @@
  *  This test should be executed by 'non-super-user' only.
  *
  */
-#include "/usr/src/linux/include/linux/limits.h"
+#include <limits.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
