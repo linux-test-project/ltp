@@ -722,7 +722,7 @@ shmget05 shmget05
 sigaction01 sigaction01
 sigaction02 sigaction02
 sigaction03 cd $LTPROOT/testcases/bin;sigaction03
-# The following test hangs
+# The following test hangs on Linuxthreads
 # sigaction04 cd $LTPROOT/testcases/bin;sigaction04
 sigaction05 cd $LTPROOT/testcases/bin;sigaction05
 # The following test was removed by the posixtestsuite for inaccurate assumptions
