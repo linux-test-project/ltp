@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 unset LIBPATH
 #
 #   Copyright (c) International Business Machines  Corp., 2000
@@ -37,10 +37,11 @@ $trace_logic
 
 TC=mc_commo
 TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-$TCsrc/$TC$$}
+TCtmp=${TCtmp:-"/tmp/mc_commo.$$"}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="mc_recv"
 REMOTE_EXEC="mc_send"
+FAILLOG=${FAILLOG:-"/tmp/faillogs/mc_commo.`date +%s`.$$"}
 LTPROOT=${LTPROOT:-../../../..}
 TTL=10
 PORT=3333
@@ -52,13 +53,11 @@ INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | a
 this_file=${0##*/}
 trap "interrupt_test" 2
 
-setup ()
-{
+do_setup() {
   mkdir -p $TCtmp
-  OCTET=`ps -ef | grep mc_commo | grep -v grep | wc -l | awk {'print $1'}` 
+  OCTET=`ps -ef | grep [m]c_commo | wc -l | awk '{print $1}'`
   GROUP_ADDR=224.0.0.$OCTET
 }
-
 
 #*******************************************************************************
 #
@@ -75,22 +74,27 @@ do_test ()
    $trace_logic
    echo "$this_file: doing $0."
 
-   # Run setsockopt/getsockopt test
-   # Start up the recv on local host
-   echo "Starting mc_recv on $GROUP_ADDR $INTERFACE $PORT"
 
-   $TCsrc/$EXECUTABLES $GROUP_ADDR $INTERFACE $PORT >> $OUTFILE &
-   SERVER_PID=$!
-   sleep 5
-   ps -ewf | grep mc_recv | grep -v grep
-   [ $? = 0 ] || end_testcase "Could NOT start mc_recv on `hostname`"
-
-   grep -q "cannot join group" $OUTFILE
-   [ $? = 0 ] && end_testcase "Membership NOT set" 
+   exec 1>$FAILLOG
+   exec 2>$FAILLOG
 
    COUNT=1
    while [ $COUNT -le $NUMLOOPS ]
    do
+
+      # Run setsockopt/getsockopt test
+      # Start up the recv on local host
+      echo "Starting mc_recv on $GROUP_ADDR $INTERFACE $PORT"
+
+      $TCsrc/$EXECUTABLES $GROUP_ADDR $INTERFACE $PORT >> $OUTFILE &
+      SERVER_PID=$!
+      sleep 5
+      ps -ewf | grep mc_recv | grep -v grep
+      [ $? = 0 ] || end_testcase "Could NOT start mc_recv on `hostname`"
+
+      grep -q "cannot join group" $OUTFILE
+      [ $? = 0 ] && end_testcase "Membership NOT set" 
+
       netstat -ng | grep -q $GROUP_ADDR
       [ $? = 0 ] || end_testcase "membership not set for $GROUP_ADDR"
 
@@ -154,6 +158,8 @@ do_cleanup()
    #do
    #   kill -9 $PID > /dev/null 2>>/dev/null
    #done
+   rm -rf $TCtmp/pingfile
+   rm -rf $TCtmp/mc_commo_out
    rm -rf $TCtmp
 }
 
@@ -175,7 +181,8 @@ end_testcase()
    # Call other cleanup functions
    [ $CLEANUP = "ON" ] && do_cleanup
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
+   [ $# = 0 ] && { echo "Test Successful"; rm $FAILLOG; exit 0; }
+   #[ $# = 0 ] && { echo "Test Successful"; exit 0; }
    echo "Test Failed: $@"
    exit 1
 }
@@ -204,6 +211,6 @@ interrupt_test()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #******************************************************************************
-setup
+do_setup
 do_test
 end_testcase
