@@ -40,8 +40,8 @@ query_module03: query_module03.c
 	$(CC) $(CFLAGS) query_module03.c $(LOADLIBES) -o $@
 
 install:
-	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@for i in $(TARGETS) $(OBJS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) $(OBJS)
 
