@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.6 2000/10/31 17:17:56 nstraz Exp $
+$Id: INSTALL,v 1.7 2001/02/27 22:04:27 nstraz Exp $
 
 Quick Start
 -----------
@@ -30,11 +30,11 @@ contributions are welcome.
    /etc/super.tab and edit it to match your user and where you installed
    LTP.  See super(5) for details.
 
-{mknod01,setgroups01,setuid02} /home/tester/ltp/tests/* tester uid=0
+{mknod01,setgroups01,setuid02,unlink08} /home/tester/ltp/tests/* tester uid=0
 
-   There are currently (09/26/2000) three tests that require root.  The
-   rest of the tests don't need to be run as root, and probably
-   shouldn't.
+   There are some tests that require root, others that behave differently
+   as root, and others that shouldn't be run as root.  Any tests that you
+   want to run as root should be added to your /etc/super.tab.  
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.

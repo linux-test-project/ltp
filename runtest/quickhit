@@ -273,6 +273,8 @@ unlink07 unlink07
 # unlink(2) negative testcases
 unlink08 unlink08
 # unlink(2) negative testcases
+unlink08 super unlink08
+# unlink(2) negative testcases as root
 wait02 wait02
 # Basic test for wait(2)
 write01 write01
