@@ -158,15 +158,15 @@ do
 		# flag as failure.
 		FAILCNT=$((FAILCNT+1))
 		echo "\n\t\tExpected $TS_MIN2 \n Received $TS_MIN1" \
-			> $LTPTMP/tst1_cron.out 
-		$LTPBIN/tst_res TFAIL $LTPTMP/tst1_cron.out \
+			> $LTPTMP/tst1_cron.log
+		$LTPBIN/tst_res TFAIL $LTPTMP/tst1_cron.log \
 			"Test #1: Failed to update every minute. Reason:
 		crontab -r &>/dev/null
 		break
 	else
 		echo "\n\t\t Expected $TS_MIN2 \n Received $TS_MIN1" \
-			> $LTPTMP/tst1_cron.out 
-		$LTPBIN/tst_res TINFO $LTPTMP/tst1_cron.out \
+			> $LTPTMP/tst1_cron.log
+		$LTPBIN/tst_res TINFO $LTPTMP/tst1_cron.log \
 			"Test #1: Values are good: "
 	fi
 	LOOP_CNTR=$((LOOP_CNTR-1))
@@ -313,7 +313,7 @@ then
 	TFAILCNT=$((TFAILCNT+1))
 fi
 
-crontab -l &>$LTPTMP/cron_tst2n1.out || RC=$?
+crontab -l &>$LTPTMP/cron_tst2.out || RC=$?
 if [ $RC -ne 0 ]
 then	
 	grep "no crontab for" $LTPTMP/cron_tst2.out &>$LTPTMP/cron_tst2n1.out \
