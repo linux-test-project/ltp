@@ -147,9 +147,10 @@ cat > $LTPTMP/tst_mail.in <<EOF
 This is a test email.
 EOF
 
-mail -s "Test" root@this_domain_does_not_exist < $LTPTMP/tst_mail.in \
-     &>$LTPTMP/tst_mail.out || RC=$?
-if [ $RC -ne 0 ]
+# Don't use underscores in domain names (they're illegal)...
+mail -s "Test" root@thisdomaindoesnotexist < $LTPTMP/tst_mail.in \
+     &>$LTPTMP/tst_mail.out
+if [ $? -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #2: mail command failed. Reason: "
@@ -208,8 +209,8 @@ This is a test email.
 EOF
 
 mail -s "Test" non_existant_userr@localhost < $LTPTMP/tst_mail.in \
-     &>$LTPTMP/tst_mail.out || RC=$?
-if [ $RC -ne 0 ]
+     &>$LTPTMP/tst_mail.out
+if [ $? -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #3: mail command failed. Reason: "
