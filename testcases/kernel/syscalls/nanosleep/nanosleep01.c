@@ -89,7 +89,7 @@ main(int ac, char **av)
 	pid_t cpid;		/* Child process id */
 	time_t otime;		/* time before child execution suspended */
 	time_t ntime;		/* time after child resumes execution */
-	int status;		/* child exit status */
+	int retval=0, e_code, status;
     
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -131,6 +131,7 @@ main(int ac, char **av)
 
 			/* check return code of nanosleep() */
 			if (TEST_RETURN == -1) {
+				retval=1;
 				tst_resm(TFAIL,
 					 "nanosleep() failed, errno=%d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -147,6 +148,7 @@ main(int ac, char **av)
 				 * actually suspended.
 				 */
 				if ((ntime - otime) != timereq.tv_sec) {
+					retval=1;
 					tst_resm(TFAIL, "Child execution not "
 						 "suspended for %d seconds",
 						 timereq.tv_sec);
@@ -157,9 +159,15 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
+			exit(retval);
 		} else {			/* parent process */
-			/* let the child carry on */
-			exit(0);
+                        /* wait for the child to finish */
+                        wait(&status);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if (e_code != 0) {
+                                tst_resm(TFAIL, "Failures reported above");
+                        }
 		}
 	}	/* End for TEST_LOOPING */
 
