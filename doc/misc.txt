@@ -1,3 +1,5 @@
+crash
+-----
 crash01
 
 	A signal handler is set up so that in most cases the machine exception
@@ -41,9 +43,58 @@ crash02
 	        Running as user nobody and with all your filesystems
 	        remounted to readonly may be wise..
 
+
+
+f00f
+----
 f00f
 
 	This is a simple test for handling of the pentium f00f bug.
 	It is an example of a catistrophic test case.  If the system
 	doesn't correctly handle this test, it will likely lockup.
 
+
+
+math
+----
+abs
+
+	Test the basic functionality of the abs() system call.
+
+atof
+
+        Test the basic functionality of the atof() system call.
+
+float
+
+ 	Increase CPUs workload - verify that results of some math functions are stable
+
+	Floating testcases are related to :
+	----------------------------------
+	- trigonometric (acos, asin, atan, atan2, cos, sin, tan),
+	- Euclidean distance function (hypot), 
+	- Computes the natural logarithm of the gamma function (lgamma),
+	- Functions that manipulate floating-point numbers (modf, ldexp, frexp),
+	- exponential and logarithmic functions (exp, log, log10),
+	- hyperbolic (cosh, sinh, tanh),
+	- Bessel (j0, j1, y0, y1),
+	- and power functions (ceil, fabs, floor, fmod, pow, sqrt).
+
+	The testcase is splitted into 5 sets:
+	-------------------------------------
+	 float_bessel, float_exp_log, float_iperb, float_power, float_trigo
+
+fptests
+
+	Additional floating point tests.
+
+nextafter
+
+	Test basic functionality of nextafter() system call.
+
+
+
+tcore_patch_test_suites
+-----------------------
+	
+	Test suite for multi-thread core dump kernel patch.
