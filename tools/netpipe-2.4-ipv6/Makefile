@@ -1,6 +1,6 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.1 2003/03/28 18:14:44 robbiew Exp $
+# $Id: Makefile,v 1.2 2003/03/28 20:28:35 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler
@@ -10,7 +10,7 @@ DRIV_SRC   = netpipe.c
 DRIV_OBJ   = netpipe.o
 INCLUDES   = netpipe.h
 # Default target is just TCP
-TARGETS    = NPtcp
+TARGETS    = NPtcp-ipv6
 # If you have TCP, MPI and PVM
 #TARGETS    = NPtcp NPmpi NPpvm
 CFLAGS		    += -O -Wall
@@ -27,15 +27,17 @@ EXTRA_LIBS =
 
 targets:    $(TARGETS)
 
+install:
+	@ln -f NPtcp-ipv6 ../../testcases/bin	
 #
 # This section of the Makefile is for compiling the binaries
 #
 
-TCP:	NPtcp
+TCP:	NPtcp-ipv6
 	@echo 'NPtcp has been built.'
 
-NPtcp:	NPtcp.o TCP.o
-	$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp $(EXTRA_LIBS)
+NPtcp-ipv6:	NPtcp.o TCP.o
+	$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp-ipv6 $(EXTRA_LIBS)
 
 NPtcp.o:	$(DRIV_SRC) $(INCLUDES)
 	$(CC) $(CFLAGS) -DTCP -c -o NPtcp.o $(DRIV_SRC)
