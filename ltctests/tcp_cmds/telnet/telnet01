@@ -23,7 +23,7 @@
 #  PURPOSE: Tests the basic functionality of `telnet`. 
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
-#	  The PASSWORD and RHOST variables MUST be set prior to execution. 
+#	  The PASSWD and RHOST variables MUST be set prior to execution. 
 #
 #  HISTORY:
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
@@ -48,11 +48,11 @@ if [info exists env(RUSER)] {
    set RUSER root
 } 
 
-if [info exists env(PASSWORD)] {
-   set PASSWORD $env(PASSWORD)
+if [info exists env(PASSWD)] {
+   set PASSWD $env(PASSWD)
 } else {
-   set PASSWORD .pasroot
-   send_user "PASSWORD NOT SET:Using .pasroot as the PASSWORD variable for $RUSER. \n"
+   set PASSWD .pasroot
+   send_user "PASSWD NOT SET:Using .pasroot as the PASSWD variable for $RUSER. \n"
 } 
 
 if [info exists env(RHOST)] {
@@ -85,7 +85,7 @@ while {$count < $LOOPCOUNT} {
       expect -re "login:"
       send "$RUSER\r"
       expect -re "Password:"
-      send "$PASSWORD\r"
+      send "$PASSWD\r"
 
       # Wait for shell prompt
       expect -re "$RUSER@"
