@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	chdir02.c
+ * 	chdir04.c
  *
  * DESCRIPTION
  *	Testcase to test whether chdir(2) sets errno correctly.
@@ -39,7 +39,7 @@
  *		process, and expect an EFAULT.
  *
  * USAGE:  <for command-line>
- * chdir02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ * chdir04 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -60,7 +60,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "chdir02";
+char *TCID = "chdir04";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
