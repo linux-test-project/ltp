@@ -5,14 +5,14 @@ REF = exp_inp.ref frexp_inp.ref hypot_out.ref ldexp_out.ref log_inp.ref modf_out
 REF2 = log_out.ref2
 
 all:
-	gcc $(CFLAGS) genexp.c -o genexp
-	gcc $(CFLAGS) genlog.c -o genlog
-	gcc $(CFLAGS) genlog10.c -o genlog10
-	gcc $(CFLAGS) genfrexp.c -o genfrexp
-	gcc $(CFLAGS) genldexp.c -o genldexp
-	gcc $(CFLAGS) genmodf.c -o genmodf
-	gcc $(CFLAGS) genhypot.c -o genhypot
-	gcc $(CFLAGS) genexp_log.c -o genexp_log
+	$(CC) $(CFLAGS) genexp.c -o genexp
+	$(CC) $(CFLAGS) genlog.c -o genlog
+	$(CC) $(CFLAGS) genlog10.c -o genlog10
+	$(CC) $(CFLAGS) genfrexp.c -o genfrexp
+	$(CC) $(CFLAGS) genldexp.c -o genldexp
+	$(CC) $(CFLAGS) genmodf.c -o genmodf
+	$(CC) $(CFLAGS) genhypot.c -o genhypot
+	$(CC) $(CFLAGS) genexp_log.c -o genexp_log
 	./genexp_log
 
 clean:

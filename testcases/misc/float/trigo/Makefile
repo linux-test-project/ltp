@@ -4,14 +4,14 @@ BIN = gensin gencos gentan genatan genatan2 genacos genasin gentrigo
 DATA = dtan rtan datan ratan dsin rsin datan2 ratan2 dcos rcos dasin rasin dacos racos
 
 all:
-	gcc $(CFLAGS) gensin.c -o gensin
-	gcc $(CFLAGS) gencos.c -o gencos
-	gcc $(CFLAGS) gentan.c -o gentan
-	gcc $(CFLAGS) genatan.c -o genatan
-	gcc $(CFLAGS) genatan2.c -o genatan2
-	gcc $(CFLAGS) genasin.c -o genasin
-	gcc $(CFLAGS) genacos.c -o genacos
-	gcc $(CFLAGS) gentrigo.c -o gentrigo
+	$(CC) $(CFLAGS) gensin.c -o gensin
+	$(CC) $(CFLAGS) gencos.c -o gencos
+	$(CC) $(CFLAGS) gentan.c -o gentan
+	$(CC) $(CFLAGS) genatan.c -o genatan
+	$(CC) $(CFLAGS) genatan2.c -o genatan2
+	$(CC) $(CFLAGS) genasin.c -o genasin
+	$(CC) $(CFLAGS) genacos.c -o genacos
+	$(CC) $(CFLAGS) gentrigo.c -o gentrigo
 	./gentrigo
 
 clean:

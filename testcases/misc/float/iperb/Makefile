@@ -4,10 +4,10 @@ BIN = gensinh gencosh gentanh geniperb
 DATA = dsinh rsinh dcosh rcosh dtanh rtanh
 
 all:
-	gcc $(CFLAGS) gensinh.c -o gensinh
-	gcc $(CFLAGS) gencosh.c -o gencosh
-	gcc $(CFLAGS) gentanh.c -o gentanh
-	gcc $(CFLAGS) geniperb.c -o geniperb
+	$(CC) $(CFLAGS) gensinh.c -o gensinh
+	$(CC) $(CFLAGS) gencosh.c -o gencosh
+	$(CC) $(CFLAGS) gentanh.c -o gentanh
+	$(CC) $(CFLAGS) geniperb.c -o geniperb
 	./geniperb
 
 clean:

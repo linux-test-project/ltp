@@ -5,12 +5,12 @@ REF = gamma_inp.ref  gamma_out.ref  gamma_sign.ref  j0_inp.ref  j1_inp.ref  y0_i
 REF2 = j0_out.ref2  j1_out.ref2  y0_out.ref2  y1_out.ref2
 
 all:
-	gcc $(CFLAGS) genj0.c -o genj0
-	gcc $(CFLAGS) genj1.c -o genj1
-	gcc $(CFLAGS) geny0.c -o geny0
-	gcc $(CFLAGS) geny1.c -o geny1
-	gcc $(CFLAGS) genlgamma.c -o genlgamma
-	gcc $(CFLAGS) genbessel.c -o genbessel
+	$(CC) $(CFLAGS) genj0.c -o genj0
+	$(CC) $(CFLAGS) genj1.c -o genj1
+	$(CC) $(CFLAGS) geny0.c -o geny0
+	$(CC) $(CFLAGS) geny1.c -o geny1
+	$(CC) $(CFLAGS) genlgamma.c -o genlgamma
+	$(CC) $(CFLAGS) genbessel.c -o genbessel
 	./genbessel
 
 clean:
