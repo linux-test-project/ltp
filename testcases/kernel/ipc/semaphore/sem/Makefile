@@ -3,10 +3,9 @@ LDFLAGS := -L ../../../../../lib -lpthread -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=pthread_cancel01
 
 all: $(TARGETS)
-	@chmod 755 $(TEST)
+
 
 install:
 	for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../../bin/$$i ; done ;
