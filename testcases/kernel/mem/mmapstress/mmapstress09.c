@@ -76,7 +76,9 @@ void ok_exit();
 
 #define MAXLOOPS	500	/* max pages for map children to write */
 #define	MAPSIZE		(64*1024)   /* default mapsize set up by parent */	
-
+#ifdef roundup
+#undef roundup
+#endif
 #define roundup(x, y)	((((x)+((y)-1))/(y))*(y))
 #define min(x, y)	(((x) < (y)) ? (x) : (y))
 

@@ -105,7 +105,9 @@ void ok_exit();
 #define GROWSIZE	20	/* # bytes to write per write call */
 #define SLEEPTIME	1	/* # secs to sleep between writes */
 #define	FILESIZE	4096	/* initial filesize set up by parent */	
-
+#ifdef roundup
+#undef roundup
+#endif
 #define roundup(x, y)	((((x)+((y)-1))/(y))*(y))
 #define min(x, y)	(((x) < (y)) ? (x) : (y))
 
