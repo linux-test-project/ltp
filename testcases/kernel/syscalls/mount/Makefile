@@ -19,7 +19,7 @@
 # description	: make(1) description file for the mount(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -D_GNU_SOURCE -Wall -g
-LDFLAGS+=	-L../../../../lib -lltp
+LDLIBS+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard mount*.c) setuid_test.c
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -30,7 +30,7 @@ setuid_test.mode:
 	@/bin/sh ./setuid_test.mode.sh
 
 $(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
 
 install: setuid_test.mode
 	@set -e; for i in $(TARGETS) setuid_test; do ln -f $$i ../../../bin/$$i ; done
