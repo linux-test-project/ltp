@@ -28,38 +28,9 @@ DEBUG_LDFLAGS=-s
 CFLAGS+=-I../../include -g -Wall
 LOADLIBES+=
 
-SUBDIR= \
-	abort accept access acct adjtimex alarm asyncio bind brk capget\
-	capset chdir chmod chown chroot clone close connect confstr \
-	creat create_module delete_module dup dup2 execl \
-	execle execlp execv execve execvp exit fchdir fchmod \
-	fchown fcntl fdatasync flock fmtmsg fork fpathconf fstat fstatfs \
-	fsync ftruncate getcwd getdents getdomainname getegid geteuid \
-	getgid getgroups gethostid gethostname getitimer getpeername \
-	getpgid getpgrp getpid getppid getpriority getresgid getresuid \
-	getrlimit getrusage getsid getsockname getsockopt gettimeofday getuid \
-	ioctl ipc ioperm iopl kill lchown link \
-	listen llseek lseek lstat mallopt memcmp memcpy memset\
-	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
-	mremap msync munlock munlockall munmap nanosleep nftw nice open \
-	pathconf pause personality pipe poll prctl\
-	pread profil ptrace pwrite query_module read readdir \
-	readlink readv reboot recv recvfrom recvmsg rename \
-	rmdir sbrk sched_get_priority_max sched_get_priority_min \
-	sched_getparam sched_setparam sched_getscheduler \
-	sched_rr_get_interval sched_setscheduler sched_yield select \
-	send sendfile sendmsg sendto setdomainname setfsgid setfsuid \
-	setgid setgroups sethostname setitimer setpgid setpgrp setpriority \
-	setregid setresgid setresuid setreuid setrlimit setsid setsockopt \
-	settimeofday setuid sigaction sigaltstack sighold signal \
-	sigprocmask sigrelse sigsuspend socket socketcall socketpair sockioctl \
-	stat statfs stime string swapoff swapon symlink sync syscall sysconf \
-	sysctl sysfs sysinfo syslog time times truncate umask \
-	uname unlink umount utime vfork vhangup wait \
-	wait4 waitpid write writev
+SUBDIR = `ls -d * | grep -v lib | grep -v Makefile | grep -v CVS | grep -v 00_Descriptions.txt` 
 
-
-all:  $& $(SUBDIR)
+all:  
 	@for i in lib $(SUBDIR); do \
 		(cd $$i; $(MAKE) all ) \
 	done
