@@ -126,9 +126,12 @@ main(int ac, char **av)
 				/* Child */
 				if (i == 1) {
 					sig = SIGUSR2;
+					TEST(prctl(option[i], sig));
+				}
+				else {
+					TEST(prctl(option[i], &sig));
 				}
 
-				TEST(prctl(option[i], sig));
 				if (TEST_RETURN == 0) {
 					exit(0);
 				} else {
