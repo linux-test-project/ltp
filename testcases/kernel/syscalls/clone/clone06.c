@@ -138,7 +138,7 @@ main(int ac, char **av)
 		TEST(clone(child_environ, child_stack, (int)NULL, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(child_environ, child_stack,
-					CHILD_STACK_SIZE, (int)NULL, NULL,
+					(int) NULL, (int)NULL, NULL,
 					NULL, NULL, NULL));
 #else
 		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, (int)NULL, NULL));
