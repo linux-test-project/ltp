@@ -299,7 +299,8 @@ kill09 kill09
 kill10 kill10
 kill11 ulimit -c 1024;kill11
 kill12 kill12
-kill13 cd $LTPROOT/testcases/bin;kill13
+#Commenting this out until hang issue is resolved.
+#kill13 cd $LTPROOT/testcases/bin;kill13
 
 killpg01 cd $LTPROOT/testcases/bin;killpg01
 
