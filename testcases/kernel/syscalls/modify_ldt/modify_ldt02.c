@@ -56,7 +56,9 @@
  * Uncomment the line below if the test does not build because it   *
  * does not know the storage size of `entry'                        *
  *                                                                  */
-/* #define modify_ldt_ldt_s user_desc */
+#ifndef modify_ldt_ldt_s
+#define modify_ldt_ldt_s user_desc
+#endif
 
 int create_segment(void *, size_t);
 void cleanup(void);
