@@ -67,7 +67,7 @@
 #define HPAGE_SIZE     ((1UL) << 24) 	/* Huge page size */
 #define MAP_SIZE       (2*HPAGE_SIZE) 	/* Huge map page size */
 #define LOW_ADDR       (void *)(0x80000000)
-#define LOW_ADDR2       (void *)(0x80000000+MAP_SIZE+HPAGE_SIZE)
+#define LOW_ADDR2       (void *)(0x90000000)
 
 char* TEMPFILE="mmapfile";
 
