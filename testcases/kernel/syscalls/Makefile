@@ -52,7 +52,7 @@ SUBDIR= \
 	settimeofday setuid sigaction sigaltstack sighold signal \
 	sigprocmask sigrelse sigsuspend socket socketpair sockioctl \
 	stat statfs stime symlink sync sysctl \
-	sysinfo time times truncate ulimit umask \
+	sysinfo time times truncate umask \
 	uname unlink utime vfork vhangup wait \
 	wait4 waitpid write writev
 
