@@ -246,7 +246,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
 static int
 remove_files(char *filename)	/* name of the file that is to be removed     */
 {
-    if (strcmp(filename, "NULL") && strcmp(filename, "/dev/zero"))
+    if (strcmp(filename, "NULL") || strcmp(filename, "/dev/zero"))
     {
         if (unlink(filename))
         {

@@ -66,6 +66,8 @@ int exp_enos[] = {EACCES, 0};	/* 0 terminated list of expected errnos */
 
 int shm_id_1 = -1;
 
+void	*addr;			/* for result of shmat-call */
+
 uid_t ltp_uid;
 char *ltp_user = "nobody";
 
@@ -129,10 +131,11 @@ do_child()
 		/*
 		 * use TEST macro to make the call
 		 */
+		errno = 0;
+		addr = shmat(shm_id_1, (const void *)0, 0);
+		TEST_ERRNO = errno;
 	
-		TEST(shmat(shm_id_1, (const void *)0, 0));
-	
-		if (TEST_RETURN != -1) {
+		if (addr != (char *)-1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}

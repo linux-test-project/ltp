@@ -66,10 +66,12 @@ int shm_id_1 = -1;
 int shm_id_2 = -1;
 int shm_id_3 = -1;
 
+void	*addr;				/* for result of shmat-call */
+
 #define NADDR	0x40FFFEE5		/* a non alligned address value */
 struct test_case_t {
 	int *shmid;
-	int add;
+	void *addr;
 	int error;
 } TC[] = {
 	/* EINVAL - the shared memory ID is not valid */
@@ -107,10 +109,11 @@ main(int ac, char **av)
 			 * make the call using the TEST() macro - attempt
 			 * various invalid shared memory attaches
 			 */
-	
-			TEST(shmat(*(TC[i].shmid), (const void *)TC[i].add, 0));
-	
-			if (TEST_RETURN != -1) {
+ 			errno = 0;
+                       	addr = shmat(*(TC[i].shmid), (const void *)TC[i].addr, 0);
+                       	TEST_ERRNO = errno;
+
+                      	if (addr != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}

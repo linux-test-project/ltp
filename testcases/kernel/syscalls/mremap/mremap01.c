@@ -123,10 +123,12 @@ main(int ac, char **av)
 		 * Call mremap to expand the existing mapped 
 		 * memory region (memsize) by newsize limits.
 		 */
-		TEST(mremap(addr, memsize, newsize, MREMAP_MAYMOVE));
+		errno = 0;
+		addr = mremap(addr, memsize, newsize, MREMAP_MAYMOVE);
+		TEST_ERRNO = errno;
 
 		/* Check for the return value of mremap() */
-		if ((void *)TEST_RETURN == (char *)MAP_FAILED) {
+		if (addr == MAP_FAILED) {
 			tst_resm(TFAIL, "mremap() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			cleanup();
@@ -138,7 +140,6 @@ main(int ac, char **av)
 		 * executed without (-f) option.
 		 */
 		if (STD_FUNCTIONAL_TEST) {
-			addr = (void *)TEST_RETURN;
 			/*
 			 * Attempt to initialize the expanded memory
 			 * mapped region with data. If the map area

@@ -125,11 +125,13 @@ main(int ac, char **av)
 		 * Call mmap to map the temporary file 'TEMPFILE'
 	 	 * with write access.
 		 */
-		TEST(mmap(0, page_sz, PROT_WRITE,
-			    MAP_FILE|MAP_PRIVATE, fildes, 0));
+		errno = 0;
+		addr = mmap(0, page_sz, PROT_WRITE,
+			    MAP_FILE|MAP_PRIVATE, fildes, 0);
+		TEST_ERRNO = errno;
 
 		/* Check for the return value of mmap() */
-		if (TEST_RETURN != (int)MAP_FAILED) {
+		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL, "mmap() returned invalid value, "
 				 "expected: -1");
 			/* Unmap the mapped memory */

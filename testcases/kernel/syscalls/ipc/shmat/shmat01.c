@@ -69,9 +69,11 @@ extern int Tst_count;
 
 int shm_id_1 = -1;
 
+void	*addr;				/* for result of shmat-call */
+
 struct test_case_t {
 	int *shmid;
-	int addr;
+	void *addr;
 	int flags;
 } TC[] = {
 	/* a straight forward read/write attach */
@@ -110,11 +112,12 @@ main(int ac, char **av)
 			/*
 			 * Use TEST macro to make the call
 			 */
+			errno = 0;
+			addr = shmat(*(TC[i].shmid), (void *)(TC[i].addr),
+				   TC[i].flags);
+			TEST_ERRNO = errno;
 	
-			TEST(shmat(*(TC[i].shmid), (void *)(TC[i].addr),
-				   TC[i].flags));
-	
-			if (TEST_RETURN == -1) {
+			if (addr == -1) {
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
@@ -130,7 +133,7 @@ main(int ac, char **av)
 			 * clean up things in case we are looping - in
 			 * this case, detach the shared memory
 			 */
-			if (shmdt((const void *)TEST_RETURN) == -1) {
+			if (shmdt((const void *)addr) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "Couldn't detach shared memory");
 			}
@@ -149,12 +152,12 @@ main(int ac, char **av)
 void
 check_functionality(int i)
 {
-	int orig_add;
+	void *orig_add;
 	int *shared;
 	int fail = 0;
 	struct shmid_ds buf;
 
-	shared = (int *)TEST_RETURN;
+	shared = (int *)addr;
 
 	/* stat the shared memory ID */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
@@ -194,7 +197,7 @@ check_functionality(int i)
 		 */
 
 		*shared = CASE1;
-		orig_add = TEST_RETURN + (TC[i].addr%SHMLBA);
+		orig_add = addr + ((unsigned long)TC[i].addr%SHMLBA);
 		if (orig_add != TC[i].addr) {
 			tst_resm(TFAIL, "shared memory address is not "
 				 "correct");

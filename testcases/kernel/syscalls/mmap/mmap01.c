@@ -124,11 +124,13 @@ main(int ac, char **av)
 		 * Call mmap to map the temporary file beyond EOF
 	 	 * with write access.
 		 */
-		TEST(mmap(addr, page_sz, PROT_READ | PROT_WRITE,
-			    MAP_FILE|MAP_SHARED|MAP_FIXED, fildes, 0));
+		errno = 0;
+		addr = mmap(addr, page_sz, PROT_READ | PROT_WRITE,
+			    MAP_FILE|MAP_SHARED|MAP_FIXED, fildes, 0);
+		TEST_ERRNO = errno;
 
 		/* Check for the return value of mmap() */
-		if (TEST_RETURN == (int)MAP_FAILED) {
+		if (addr == MAP_FAILED) {
 			tst_resm(TFAIL, "mmap() Failed on %s, errno=%d : %s",
 				 TEMPFILE, errno, strerror(errno));
 			continue;
@@ -138,9 +140,6 @@ main(int ac, char **av)
 		 * executed without (-f) option.
 		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/* Get the mmap return value */
-			addr = (char *)TEST_RETURN;
-
 			/*
 			 * Check if mapped memory area beyond EOF are
 			 * zeros and changes beyond EOF are not written

@@ -133,15 +133,17 @@ main(int ac, char **av)
 		 * memory area already locked and MREMAP_MAYMOVE
 		 * flag unset.
 		 */
-		TEST(mremap(shmaddr, memsize, newsize, 0));
+		errno = 0;
+		addr = mremap(shmaddr, memsize, newsize, 0);
+		TEST_ERRNO = errno;
 
 		/* Check for the return value of mremap() */
-		if ((void *)TEST_RETURN != (char *)MAP_FAILED) {
+		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL,
 				 "mremap returned invalid value, expected: -1");
 
 			/* Unmap the mapped memory region */
-			if (munmap((void *)TEST_RETURN, newsize) != 0) {
+			if (munmap(addr, newsize) != 0) {
 				tst_brkm(TFAIL, cleanup, "munmap failed to "
 					 "unmap the expanded memory region, "
 					 "error=%d", errno);

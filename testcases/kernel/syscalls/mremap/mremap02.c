@@ -124,15 +124,17 @@ main(int ac, char **av)
 		 * mremap() should fail as old virtual address is not
 		 * page aligned.
 		 */
-		TEST(mremap(addr, memsize, newsize, MREMAP_MAYMOVE));
+		errno = 0;
+		addr = mremap(addr, memsize, newsize, MREMAP_MAYMOVE);
+		TEST_ERRNO = errno;
 
 		/* Check for the return value of mremap() */
-		if ((void *)TEST_RETURN != (char *)MAP_FAILED) {
+		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL,
 				 "mremap returned invalid value, expected: -1");
 
 			/* Unmap the mapped memory region */
-			if (munmap((void *)TEST_RETURN, newsize) != 0) {
+			if (munmap(addr, newsize) != 0) {
 				tst_brkm(TBROK, cleanup, "munmap fails to "
 					 "unmap the expanded memory region, "
 					 "error=%d", errno);
