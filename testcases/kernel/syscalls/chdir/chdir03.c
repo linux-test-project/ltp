@@ -64,7 +64,7 @@ void setup(void);
 void cleanup(void);
 
 char user1name[] = "nobody";
-char user2name[] = "operator";
+char user2name[] = "bin";
 
 int exp_enos[] = {EACCES, 0};
 

@@ -53,8 +53,8 @@ char *TCID = "chroot02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-char path[] = "/tmp";
-char file[] = "/date";
+char path[] = "/usr/bin";
+char file[] = "/test";
 char tmpbuf[50];
 struct stat buf;
 

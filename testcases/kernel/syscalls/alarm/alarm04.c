@@ -123,7 +123,6 @@ main(int ac, char **av)
 void
 setup()
 {
-	char *test_home;		/* TESTHOME env. variable */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -131,23 +130,7 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* Get the TESTHOME env. variable */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		test_home = get_current_dir_name();
-	}
-
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "alarm"))) {
-		strcat(test_home, "/alarm");
-	}
-	
-	/* Get the path name of test program to be execed */
-	sprintf(Cmd_buffer, "%s/sig_rev", test_home);
+	sprintf(Cmd_buffer, "sig_rev");
 }
 
 /*
