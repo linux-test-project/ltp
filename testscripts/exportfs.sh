@@ -206,5 +206,3 @@ rsh -n -l root $NFS_SERVER "umount $MNT_POINT"
 rsh -n -l root $NFS_SERVER "rm -rf $MNT_POINT"
 echo "PASSED: $0 passed!"
 exit 0
-
-
