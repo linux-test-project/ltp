@@ -307,7 +307,10 @@ cleanup(void)
 void dochild(int kid)
 {
 	/* child process */
-	(void)signal(SIGUSR1, catch_int);
+	struct sigaction sact;
+	sact.sa_flags=0;
+	sact.sa_handler=catch_int;
+	(void)sigaction(SIGUSR1, &sact, NULL);	
 
 	/* Lock should succeed after blocking and parent releases lock */
 	if (kid) {
