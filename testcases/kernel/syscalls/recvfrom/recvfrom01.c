@@ -61,7 +61,7 @@ int testno;
 char	buf[1024];
 int	s;	/* socket descriptor */
 struct sockaddr_in sin1, from;
-int	fromlen;
+socklen_t	fromlen;
 
 void setup(void);
 void setup0(void);
@@ -77,10 +77,10 @@ struct test_case_t {		/* test case structure */
 	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
 	int	proto;	/* protocol number (usually 0 = default) */
 	void	*buf;	/* recv data buffer */
-	int	buflen;	/* recv's 3rd argument */
+	size_t	buflen;	/* recv's 3rd argument */
 	unsigned flags;	/* recv's 4th argument */
 	struct sockaddr *from;	/* from address */
-	int	*salen;	/* from address value/result buffer length */
+	socklen_t *salen;	/* from address value/result buffer length */
 	int	retval;		/* syscall return value */
 	int	experrno;	/* expected errno */
 	void	(*setup)(void);
@@ -99,7 +99,7 @@ struct test_case_t {		/* test case structure */
 		(struct sockaddr *)-1, &fromlen,
 		0, ENOTSOCK, setup1, cleanup1, "invalid socket buffer" },
 /* 4 */
-	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), 0,
+	{ PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), -1,
 		(struct sockaddr *)&from, &fromlen,
 		-1, EINVAL, setup2, cleanup1, "invalid socket length" },
 /* 5 */
@@ -291,7 +291,7 @@ start_server(struct sockaddr_in *sin0)
 
 	/* accept connections until killed */
 	while (1) {
-		int	fromlen;
+		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
