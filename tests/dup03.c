@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup03.c,v 1.3 2000/10/31 17:17:57 nstraz Exp $ */
+/* $Id: dup03.c,v 1.4 2000/11/14 22:47:34 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -107,27 +107,28 @@
 
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#if defined(linux)
+#include <linux/limits.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
 
+#if defined(linux)
+#define MAX_FDS OPEN_MAX
+#else
+# define MAX_FDS 16384
+#endif
+
 void setup();
 void cleanup();
-
-
 
 char *TCID="dup03"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-#if defined(linux)
-# include <linux/limits.h>
-# define MAX_FDS OPEN_MAX
-#else
-# define MAX_FDS 16384
-#endif
 
 char Fname[255];
 int Fd[MAX_FDS];
