@@ -1,0 +1,117 @@
+author: Sean Ruyle (srruyle@us.ibm.com)
+
+RUNTIME:
+To run the test case simply enter the user_space directory, type make
+to compile the program, and run ./test_mod in this case, or whatver
+you have named your program. However, the test kernel module must be
+loaded before the test case can work. If the module is not loaded you
+will recieve an error when attempting to open the module. 
+
+Enter the kernel_space directory, and again type make to compile the 
+module. After successful compilation use the load script to load the 
+module into the system (./load_tmod.sh). The reason for the script 
+instead of just using insmod to load the module is to ensure that 
+there is a correct node in /dev, by parsing /proc/devices to get the 
+right major number. 
+
+Check that the module has been loaded by using the lsmod command. 
+You should see ouput similar to this:
+
+ausag:~ # lsmod
+Module                  Size  Used by
+tmod                    3812  0
+gcov_prof               8292  0
+uhci_hcd               51812  0
+
+
+To unload the module use the rmmod command. A module cannot be
+unloaded if it is still in use by the system or a program.
+
+
+
+
+USER SPACE:
+Ive tried to abstract user space as much as possible so that if 
+a new test does not need any additional setup of parameters 
+before the ioctl call, ki_generic can be used by passing in 
+the file_descriptor and the ioctl flag corresponding to the 
+current test. 
+
+Examples have been provided for correct usage of passing in 
+structures to the ioctl call if they are needed for a given
+test. These are fuond at the bottom of tmod_ki.c file.
+
+If a test does call for a structure to be passed in to 
+kernel space or a structure to be returned you will need to
+setup the tif pointer. Use the examples I just mentioned 
+and it should be easy. The ioctl call is setup so that it 
+will check if the values passed in need a copy_from_user
+or a copy_to_user before moving on. The tif pointer 
+allows the kernel space ioctl function to handle all
+calls in a similar function without depending on the test
+that is to be run, in regards to copy_from_user and 
+copy_to_user.
+
+
+
+
+KERNEL SPACE:
+I strongly suggest that when creating a Makefile for your 
+test modules you use the one provided here, and just change 
+the name of the .o file. Little differences can throw a 
+compiler off even if you dont see a problem.
+
+The test functions and the ioctl call, as well as init and 
+exit functions are located in the tmod.c file. Most of it 
+should be streamlined so that all you need to do to add a 
+new test function is add an ioctl flag in tmod.h, a function
+prototype, a new case in the ioctl switch, and the actual 
+function itself.
+
+Two header files are needed in kernel space so that we may
+seperate what can be used in user space programs from
+what can only be used in kernel space. I put my #defines 
+and ioctl flags in tmod.h, along with the tif structure. 
+This is because all of these will need to be used by both 
+the user space program as well as the kernel module. 
+
+Any extern definitions from the kernel or structures that 
+will have pointers in them that will differ in user space, 
+should go in another header file. I used str_mod.h for this, 
+and for example in my pci testcase, I need a struct pci_dev *
+for most of my tests, along with several other pointers. 
+This structure will allow you to hold the pointers from one 
+test to another without having to use copy_to_user to 
+return the pointers to user space program.
+
+
+
+
+
+
+On naming: 
+For this example I just called everything tmod (short for test_mod), 
+so if you are using these files as a base for your testcases, make
+sure that you change tmod and other such inferences, so that it 
+will be easier to tell in the kernel which module is performing 
+which action.
+
+
+
+
+
+
+Hope this helps. Send me an email if you have any problems
+Thanks and gigem,
+Sean Ruyle 
+
+srruyle@us.ibm.com
+ 
+
+
+
+
+ 
+
+
+  
