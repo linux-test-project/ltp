@@ -72,7 +72,7 @@
  *
  * Restrictions:
  *  This test must be executed by root.
- *   nobody and adm must be valid users.
+ *   nobody and bin must be valid users.
  */
 
 #include <errno.h>
@@ -92,7 +92,7 @@
 #include "usctest.h"
 
 #define LTPUSER1        "nobody"
-#define LTPUSER2        "adm"
+#define LTPUSER2        "bin"
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
 
@@ -272,7 +272,7 @@ no_setup()
  * setup1() - setup function for a test condition for which utime(2)
  *		returns -1 and sets errno to EACCES.
  *  Create a testfile under temporary directory and change the ownership of
- *  testfile to "adm".
+ *  testfile to "bin".
  */
 int
 setup1()
