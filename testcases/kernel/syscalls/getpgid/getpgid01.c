@@ -41,13 +41,15 @@
  *	Expects that there are no EPERM limitations on getting the
  *	process group ID from proc 1 (init).
  */
+#define _GNU_SOURCE 1
 
-#include <sys/types.h>
 #include <errno.h>
+#include <unistd.h>
 #include <stdarg.h>
-#include <sys/wait.h>
-#include <test.h>
-#include <usctest.h>
+#include <wait.h>
+#include <sys/types.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup(void);
 void cleanup(void);
@@ -56,7 +58,7 @@ char *TCID = "getpgid01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned by parse_opts */
@@ -98,7 +100,7 @@ main(int ac, char **av)
 		}
 
 		/* child */
-block1:
+//block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		if ((pgid_0 = getpgid(0)) < 0) {
@@ -114,7 +116,7 @@ block1:
 		}
 		tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
 
@@ -138,7 +140,7 @@ block2:
 		}
 		tst_resm(TINFO, "Exit block 2");
 
-block3:
+//block3:
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
 
@@ -164,7 +166,7 @@ block3:
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-block4:
+//block4:
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
 
@@ -186,7 +188,7 @@ block4:
 		}
 		tst_resm(TINFO, "Exit block 4");
 
-block5:
+//block5:
 		tst_resm(TINFO, "Enter block 5");
 		fail = 0;
 
@@ -204,6 +206,7 @@ block5:
 		tst_resm(TINFO, "Exit block 5");
 	}
 	cleanup();
+	return(0);
 }
 
 /*

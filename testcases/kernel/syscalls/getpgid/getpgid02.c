@@ -43,13 +43,15 @@
  * RESTRICTIONS
  *	none
  */
+#define _GNU_SOURCE 1
 
-#include <sys/types.h>
 #include <errno.h>
+#include <unistd.h>
 #include <stdarg.h>
-#include <sys/wait.h>
-#include <test.h>
-#include <usctest.h>
+#include <wait.h>
+#include <sys/types.h>
+#include "test.h"
+#include "usctest.h"
 
 void setup(void);
 void cleanup(void);
@@ -74,7 +76,7 @@ struct test_case_t {
         {&pgid_1, ESRCH}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int i;
@@ -122,6 +124,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
