@@ -49,7 +49,7 @@ TC=${TC:=fsx}
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin}
 TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCbin/tmp}
+TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
 
 # If CLEANUP is not set; set it to "ON"
@@ -87,17 +87,18 @@ $trace_logic
     sleep 5
 
     OPTS=${OPTS:=",vers=$VERSION "}
-    REMOTE_DIR=${RHOST}:/mnt/fsx.testdir
+    PID=$$
+    REMOTE_DIR=${RHOST}:/mnt/fsx$PID.testdir
     LUSER=${LUSER:=root}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /mnt/fsx.testdir"
+    rsh -n $RHOST "mkdir /mnt/fsx$PID.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "touch /mnt/fsx.testdir/testfile"
+    rsh -n $RHOST "touch /mnt/fsx$PID.testdir/testfile"
     [ $? = 0 ] || end_testcase "Could not create testfile in remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/fsx.testdir"
+    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/fsx$PID.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
     echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $SOCKET_TYPE$OPTS"
@@ -159,8 +160,8 @@ $trace_logic
         mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || echo "Cannot mount $TCtmp"
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/fsx.testdir"
-	rsh -n $RHOST "rm -rf /mnt/fsx.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/fsx$PID.testdir"
+	rsh -n $RHOST "rm -rf /mnt/fsx$PID.testdir"
     fi
 
     [ $# = 0 ] && { echo "Test Successful"; exit 0; }
