@@ -7,9 +7,9 @@ else
 endif
 install:
 ifneq ($(wildcard /usr/include/sys/xattr.h),)
-	ln -f acl_file_test ../../bin/
-	ln -f acl_link_test ../../bin/
-	ln -f acl_test01 ../../bin/
+	ln -f acl_file_test ../../../bin/
+	ln -f acl_link_test ../../../bin/
+	ln -f acl_test01 ../../../bin/
 endif
 clean:
 	rm -f acl_file_test acl_link_test
