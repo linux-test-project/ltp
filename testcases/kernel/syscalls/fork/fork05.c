@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.3 2002/11/14 16:16:15 plars Exp $ */
+/* $Id: fork05.c,v 1.4 2003/05/07 15:46:32 robbiew Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -47,6 +47,26 @@
  *
  *    AUTHORS		: Ulrich Drepper
  *			  Nate Straz
+ *
+ *On Friday, May 2, 2003 at 09:47:00AM MST, Ulrich Drepper wrote:
+ *>Robert Williamson wrote:
+ *>
+ *>>   I'm getting a SIGSEGV with one of our tests, fork05.c, that apparently
+ *>> you wrote (attached below).  The test passes on my 2.5.68 machine running
+ *>> SuSE 8.0 (glibc 2.2.5 and Linuxthreads), however it segmentation faults on
+ *>> RedHat 9 running 2.5.68.  The test seems to "break" when it attempts to run
+ *>> the assembly code....could you take a look at it?
+ *>
+ *>There is no need to look at it, I know it cannot work anymore on recent
+ *>systems.  Either change all uses of %gs to %fs or skip the entire patch
+ *>if %gs has a nonzero value.
+ *>
+ *>- -- 
+ *>- --------------.                        ,-.            444 Castro Street
+ *>Ulrich Drepper \    ,-----------------'   \ Mountain View, CA 94041 USA
+ *>Red Hat         `--' drepper at redhat.com `---------------------------
+ *
+ *
  *
  *On Sat, Aug 12, 2000 at 12:47:31PM -0700, Ulrich Drepper wrote:
  *> Ever since the %gs handling was fixed in the 2.3.99 series the
@@ -155,23 +175,23 @@ main ()
 
   modify_ldt (1, &ldt0, sizeof (ldt0));
 
-  asm ("movw %w0, %%gs" : : "q" (7));
+  asm ("movw %w0, %%fs" : : "q" (7));
 
-  asm ("movl %%gs:0, %0" : "=r" (lo));
+  asm ("movl %%fs:0, %0" : "=r" (lo));
   tst_resm(TINFO,"a = %d", lo);
 
-  asm ("pushl %%gs; popl %0" : "=q" (lo));
-  tst_resm(TINFO,"%%gs = %#06hx", lo);
+  asm ("pushl %%fs; popl %0" : "=q" (lo));
+  tst_resm(TINFO,"%%fs = %#06hx", lo);
 
-  asm ("movl %0, %%gs:0" : : "r" (99));
+  asm ("movl %0, %%fs:0" : : "r" (99));
 
   pid = fork ();
 
   if (pid == 0) {
-      asm ("pushl %%gs; popl %0" : "=q" (lo));
-      tst_resm(TINFO,"%%gs = %#06hx", lo);
+      asm ("pushl %%fs; popl %0" : "=q" (lo));
+      tst_resm(TINFO,"%%fs = %#06hx", lo);
 
-      asm ("movl %%gs:0, %0" : "=r" (lo));
+      asm ("movl %%fs:0, %0" : "=r" (lo));
       tst_resm(TINFO,"a = %d", lo);
 
       if (lo != 99)
@@ -190,7 +210,7 @@ main ()
 int
 main()
 {
-  tst_resm(TINFO, "%%gs test only for ix86");
+  tst_resm(TINFO, "%%fs test only for ix86");
 
   /*
    * should be successful on all non-ix86 platforms.
