@@ -35,12 +35,12 @@
 #                             which indicated failure.
 #                           - fixed code to add $LTPTMP/cdrom to /etc/fstab
 #               Jan 07 2003 - Call eject with -v for verbose information.
-#				Jan 08 2003 - Added test #4.
+#                Jan 08 2003 - Added test #4.
 #
 #! /bin/sh
 
 
-export TST_TOTAL=3
+export TST_TOTAL=4
 
 if [[ -z $LTPTMP && -z $TMPBASE ]]
 then
@@ -205,8 +205,8 @@ fi
 # Test if eject -a on|1|off|0 will enable/disable auto-eject mode 
 # the drive automatically ejects when the device is closed.
 
-export TCID=eject03
-export TST_COUNT=3
+export TCID=eject04
+export TST_COUNT=4
 RC=0
 
 $LTPBIN/tst_resm TINFO "Test #4: eject -a on|1|off|0 will "
@@ -218,15 +218,15 @@ $LTPBIN/tst_resm TINFO "Test #4: so test may fail."
 # if not create one.
 if [ -d $LTPTMP/cdrom ]
 then
-	$LTPBIN/tst_resm TINFO "$LTPTMP/cdrom exists, skip creating the directory" 
+    $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom exists, skip creating the directory" 
 else
-	mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
-			"Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
-	fi
+    mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+    if [ $RC -ne 0 ]
+    then
+        $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+            "Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
 fi
 
 # Check if /etc/fstab has this temporary mount point for /dev/cdrom listed 
@@ -235,16 +235,16 @@ fi
 grep "$LTPTMP/cdrom" /etc/fstab &>$LTPTMP/tst_eject.out || RC=$?
 if [ -f $LTPTMP/fstab.bak && $RC -eq 0 ]
 then
-	 $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom entry exists in /etc/fstab" 
+     $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom entry exists in /etc/fstab" 
 else
-	cp /etc/fstab $LTPTMP/fstab.bak &>$LTPTMP/tst_eject.out
-	echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
-		"Test #4: failed adding $LTPTMP/cdrom to /etc/fstab. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
-	fi
+    cp /etc/fstab $LTPTMP/fstab.bak &>$LTPTMP/tst_eject.out
+    echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
+    if [ $RC -ne 0 ]
+    then
+        $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #4: failed adding $LTPTMP/cdrom to /etc/fstab. Reason:"
+        TFAILCNT=$((TFAILCNT+1))
+    fi
 fi
 
 # mount the cdrom device /dev/cdrom on to $LTPTMP/cdrom 
@@ -254,17 +254,17 @@ fi
 mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
-		"Test #4: failed mounting $LTPTMP/cdrom. Reason: "
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 eject -a 1 &>$LTPTMP/tst_eject.out || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
-		"Test #4: eject command failed setting auto-eject mode on. Reason:"
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
+        "Test #4: eject command failed setting auto-eject mode on. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 # check if the tray is still closed and not open.
@@ -273,9 +273,9 @@ fi
 $LTPBIN/check_tray || RC=$?
 if [ $RC -eq 2 ]
 then
-	$LTPBIN/tst_brkm TBROK NULL \
-		"Test #4: /dev/cdrom is mounted but the tray is open!"
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_brkm TBROK NULL \
+        "Test #4: /dev/cdrom is mounted but the tray is open!"
+    TFAILCNT=$((TFAILCNT+1))
 fi
 
 # closing the device i.e unmounting $LTPTMP/cdrom should now open the tray
@@ -284,17 +284,17 @@ fi
 umount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
-		"Test #4: unmounting the cdrom failed. Reason: "
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #4: unmounting the cdrom failed. Reason: "
+    TFAILCNT=$((TFAILCNT+1))
 else
-	$LTPBIN/check_tray || RC=$?
-	if [ $RC -eq 2 ]
-	then
-		$LTPBIN/tst_resm TPASS  "Test #4: /dev/cdrom is tray is open"
-	else
-		$LTPBIN/tst_resm TFAIL "Test #4: /dev/cdrom is tray is still closed" 
-	fi
+    $LTPBIN/check_tray || RC=$?
+    if [ $RC -eq 2 ]
+    then
+        $LTPBIN/tst_resm TPASS  "Test #4: /dev/cdrom is tray is open"
+    else
+        $LTPBIN/tst_resm TFAIL "Test #4: /dev/cdrom is tray is still closed" 
+    fi
 fi
 
 # disable auto-eject, closing the device should not open the tray.
@@ -302,11 +302,11 @@ fi
 eject -a 0 &>$LTPTMP/tst_eject.out || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
-		"Test #4: eject command failed setting auto-eject mode on. Reason:"
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
+        "Test #4: eject command failed setting auto-eject mode on. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
 else
-	$LTPBIN/tst_resm TINFO "Test #4: auto-eject feature disabled"
+    $LTPBIN/tst_resm TINFO "Test #4: auto-eject feature disabled"
 fi
 
 # close the tray
@@ -314,21 +314,21 @@ fi
 eject -tv &>$LTPTMP/tst_eject.res || RC=$?
 if [ $RC -ne 0 ]
 then
-	$LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res NULL \
-		"Test #4: eject command to close the tray. Reason:"
-	TFAILCNT=$((TFAILCNT+1))
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res NULL \
+        "Test #4: eject command to close the tray. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
 else
-	grep "closing tray" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out || RC=$?	
-	if [ $RC -eq 0 ]
-	then
-		$LTPBIN/check_tray || RC=$?
-		if [ $RC -eq 2 ]
-		then 
-			$LTPBIN/tst_brkm TBROK NULL \
-				"Test #4: eject -t reported tray closed, but tray is open"
-			TFAILCNT=$((TFAILCNT+1)) 
-		fi
-	fi
+    grep "closing tray" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out || RC=$?    
+    if [ $RC -eq 0 ]
+    then
+        $LTPBIN/check_tray || RC=$?
+        if [ $RC -eq 2 ]
+        then 
+            $LTPBIN/tst_brkm TBROK NULL \
+                "Test #4: eject -t reported tray closed, but tray is open"
+            TFAILCNT=$((TFAILCNT+1)) 
+        fi
+    fi
 fi
 
 mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
@@ -350,11 +350,11 @@ fi
 $LTPBIN/check_tray || RC=$?
 if [ $RC -eq 2 ]
 then
-	$LTPBIN/tst_resm TFAIL \
-		"Test #4: closing the device opened the tray, but, auto-eject = off"
+    $LTPBIN/tst_resm TFAIL \
+        "Test #4: closing the device opened the tray, but, auto-eject = off"
     TFAILCNT=$((TFAILCNT+1))
 else
-	$LTPBIN/tst_resm TPASS "Test #4: eject can enable and disable auto-eject"
+    $LTPBIN/tst_resm TPASS "Test #4: eject can enable and disable auto-eject"
 fi
 
 
