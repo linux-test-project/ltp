@@ -27,4 +27,4 @@
 export `cat /proc/cmdline | awk {'print $5'}`
 export KERNEL=$BOOT_FILE
 export RAWDEV=`df / | grep dev | awk {'print $1'}`
-./sched_driver
+./sched_driver -s 0.9 -v
