@@ -47,6 +47,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/sendfile.h>
 #include "usctest.h"
 #include "test.h"
 
@@ -99,7 +100,7 @@ main(int ac, char **av)
 	/*NOTREACHED*/
 }
 
-do_sendfile(int offset, int i)
+do_sendfile(off_t offset, int i)
 {
 	int in_fd, out_fd;
 	struct stat sb;

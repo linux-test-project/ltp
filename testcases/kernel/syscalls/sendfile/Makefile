@@ -24,7 +24,7 @@ CFLAGS+=        -I../../../../include
 LDFLAGS+=       -L../../../../lib -lltp
 
 DIR=sendfile
-MAINS=sendfile03 sendfile02
+MAINS=sendfile02 sendfile03
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 

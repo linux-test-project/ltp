@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/sendfile.h>
 #include "usctest.h"
 #include "test.h"
 
@@ -70,7 +71,7 @@ struct test_case_t {
 	void (*setupfunc)();
 	int out_fd;
 	int in_fd;
-	int *offset;
+	off_t *offset;
 	int count;
 	int exp_errno;
 } testcases[] = {
