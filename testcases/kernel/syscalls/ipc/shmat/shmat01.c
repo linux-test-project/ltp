@@ -73,6 +73,10 @@ extern int Tst_count;
 #define UNALIGNED      0x5fffeeee
 #endif
 
+#ifdef __arm__
+#define UNALIGNED      0x28ffeeee
+#endif
+
 int shm_id_1 = -1;
 
 void	*addr;				/* for result of shmat-call */
