@@ -26,18 +26,25 @@
 # Author:      Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:     Dec 17 2002 - Created - Manoj Iyer.
+#              Dec 18 2002 - Added code to read the LTPROOT and TMPBASE
+#              variables to set LTPBIN and LTPTMP variables
 #
 #! /bin/sh
+
 export TST_TOTAL=1
 
-if [ -z $LTPTMP ]
+if [[ -z $LTPTMP && -z $TMPBASE ]]
 then
     LTPTMP=/tmp
+else
+	LTPTMP=$TMPBASE
 fi
 
-if [ -z $LTPBIN ]
+if [[ -z $LTPBIN && -z $LTPROOT ]]
 then
     LTPBIN=./bin
+else
+	LTPBIN=$LTPROOT/testcases/bin
 fi
 
 # set return code RC variable to 0, it will be set with a non-zero return code
@@ -301,4 +308,4 @@ fi
 
 rm -fr $LOCTMP
 
-exit TFAILCNT
+exit $TFAILCNT
