@@ -57,6 +57,8 @@ int create_Result_file()
 	{
 		if ( (Inc*i) != (M_PIl/2) )
 			tabRtan[i] = tan (Inc * i);
+		else
+			tabRtan[i] = tan (0);
 	}
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
@@ -95,6 +97,8 @@ int create_Data_file()
 	{
 		if ( (Inc*i) != (M_PIl/2) )
 			tabDtan[i] = (Inc * i);
+                else
+			tabDtan[i] = 0;
 	}
 
 
