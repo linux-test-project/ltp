@@ -1,4 +1,0 @@
-
--- assertion 6: Not tested.
--- assertion 7: Not tested.
--- assertion 8: is being tested in the sem_unlink test cases.
