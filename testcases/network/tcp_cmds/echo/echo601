@@ -36,7 +36,7 @@ unset LIBPATH
 trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TC=sine
+TC=echo601
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
