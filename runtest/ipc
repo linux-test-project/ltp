@@ -31,13 +31,3 @@ pipeio_8 pipeio -c 5 -s 5000 -i 10 -u -f x80
 sem01 sem01
 sem02 sem02
 
-# The following will test for POSIX compliant semaphore functions that are
-# currently unimplemented in Linux.
-
-#sem_close01 cd $LTPROOT/testcases/bin;sem_close01 
-#sem_getvalue01 cd $LTPROOT/testcases/bin;sem_getvalue01 
-#sem_open01 cd $LTPROOT/testcases/bin;sem_open01 
-#sem_post01 cd $LTPROOT/testcases/bin;sem_post01 
-#sem_unlink01 cd $LTPROOT/testcases/bin;sem_unlink01 
-#sem_wait01 cd $LTPROOT/testcases/bin;sem_wait01 
-

@@ -1,0 +1,10 @@
+#DESCRIPTION:POSIX compliant semaphore functions 
+
+sem_close01 cd $LTPROOT/testcases/bin;sem_close01
+sem_destroy01 cd $LTPROOT/testcases/bin;sem_destroy01
+sem_getvalue01 cd $LTPROOT/testcases/bin;sem_getvalue01
+sem_open01 cd $LTPROOT/testcases/bin;sem_open01
+sem_post01 cd $LTPROOT/testcases/bin;sem_post01
+sem_unlink01 cd $LTPROOT/testcases/bin;sem_unlink01
+sem_wait01 cd $LTPROOT/testcases/bin;sem_wait01
+
