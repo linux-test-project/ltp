@@ -92,7 +92,7 @@ int main(int argc, char * argv[])
   char *array,*msg;
   int i,lc;
   int fd;
-  int pages,memsize;
+  unsigned int pages,memsize;
 
   if ( (msg=parse_opts(argc, argv, options, help)) != (char *) NULL )
    tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
     memsize *= getpagesize();
   }
 
-  tst_resm(TINFO,"mmap()ing file of %d pages or %d bytes", pages,memsize);
+  tst_resm(TINFO,"mmap()ing file of %u pages or %u bytes", pages,memsize);
 
   setup();
 
