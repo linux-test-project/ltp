@@ -37,6 +37,7 @@ export TMPBASE="/tmp"
 export TMP="${TMPBASE}/ltpstress-$$"
 export PATH=$LTPROOT/testcases/bin:$PATH
 memsize=0
+hours=24
 PROC_NUM=0
 leftover_memsize=0
 duration=86400
@@ -181,10 +182,15 @@ if [ $? -eq 1 ];then
 fi
 # End of network setup
 
-
-
+#If -m not set, use all the RAM + 1/2 swapspace
 if [ $memsize -eq 0 ]; then
-  memsize=$((64 * 1024 * 1024))
+  TOTALRAM=$(free -m | grep Mem: | awk {'print $2'})
+  TOTALSWAP=$(free -m | grep Swap: | awk {'print $2'})
+  TESTSWAP=$(($TOTALSWAP / 2))
+  TESTMEM=$(($TESTSWAP + $TOTALRAM))
+ #Convert to kilobytes
+  memsize=$(($TESTMEM * 1024))
+  check_memsize	
 fi
 
 if [ $PROC_NUM -gt 0 ];then
@@ -221,7 +227,7 @@ ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 -o $output2 &
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 -o $output3 &
 
-echo "Running LTP Stress for $hours hour(s)"
+echo "Running LTP Stress for $hours hour(s) using $TESTMEM Mb"
 echo ""
 echo "Test output recorded in:"
 echo "        $output1"
