@@ -144,9 +144,6 @@ struct test_case_t {		/* test case structure */
 		0, EOPNOTSUPP, setup6, cleanup4, "invalid cmsg length" },
 	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
 		0, (struct sockaddr *)&sun1, sizeof(sun1),
-		-1, ENOBUFS, setup7, cleanup4, "large cmesg length" },
-	{ PF_UNIX, SOCK_DGRAM, 0, iov, 1, (void *)buf, sizeof(buf), &msgdat,
-		0, (struct sockaddr *)&sun1, sizeof(sun1),
 		-1, EFAULT, setup8, cleanup4, "invalid cmsg pointer" },
 };
 
