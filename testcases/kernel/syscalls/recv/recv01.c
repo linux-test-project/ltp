@@ -64,6 +64,7 @@ struct sockaddr_in sin1, sin2, sin3, sin4;
 
 void setup(void), setup0(void), setup1(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
+pid_t start_server(struct sockaddr_in *);
 
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
@@ -137,6 +138,8 @@ main(int argc, char *argv[])
 		}
 	}
 	cleanup();
+
+	return -1;	/* NOTREACHED */
 }	/* End main */
 
 pid_t pid;
@@ -185,15 +188,27 @@ cleanup0(void)
 void
 setup1(void)
 {
+	fd_set rdfds;
+	struct timeval timeout;
+	int n;
+
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
 			strerror(errno));
 	}
 	if (tdat[testno].type == SOCK_STREAM &&
-	    connect(s, &sin1, sizeof(sin1)) < 0) {
+	    connect(s, (struct sockaddr *) &sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
 	}
+	/* Wait for something to be readable, else we won't detect EFAULT on recv */
+	FD_ZERO(&rdfds);
+	FD_SET(s, &rdfds);
+	timeout.tv_sec = 2;
+	timeout.tv_usec = 0;
+	n = select(s+1, &rdfds, 0, 0, &timeout);
+	if (n != 1 || !FD_ISSET(s, &rdfds))
+		tst_brkm(TBROK, cleanup, "client setup1 failed - no message ready in 2 sec");
 }
 
 void
@@ -210,7 +225,6 @@ start_server(struct sockaddr_in *sin0)
 	fd_set	afds, rfds;
 	pid_t	pid;
 	int	sfd, nfds, cc, fd;
-	char	c;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
@@ -218,7 +232,7 @@ start_server(struct sockaddr_in *sin0)
 			strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, &sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			strerror(errno));
 		return -1;
@@ -259,7 +273,7 @@ start_server(struct sockaddr_in *sin0)
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, &fsin, &fromlen);
+			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 			/* send something back */
