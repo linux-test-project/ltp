@@ -25,6 +25,7 @@
  *                       -12/03/02 Robbie Williamson <robbiew@us.ibm.com>
  */
 
+#include <asm/atomic.h>
 #include <linux/module.h>
 #include <linux/config.h>
 #include <linux/kernel.h>

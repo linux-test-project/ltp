@@ -89,6 +89,7 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <asm/page.h>
+#include <asm/atomic.h>
 #include <linux/module.h>
 #include "test.h"
 #include "usctest.h"

@@ -28,6 +28,7 @@
  */
 
 #include <linux/config.h>
+#include <asm/atomic.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 
