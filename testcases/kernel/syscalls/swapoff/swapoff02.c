@@ -1,0 +1,299 @@
+/*
+ * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc., 59
+ * Temple Place - Suite 330, Boston MA 02111-1307, USA.
+ *
+ */
+/**************************************************************************
+ * 
+ *    TEST IDENTIFIER	: swapoff02
+ *
+ * 
+ *    EXECUTED BY	: root / superuser
+ * 
+ *    TEST TITLE	: Test checking for basic error conditions
+ *    				 for swapoff(2)
+ * 
+ *    TEST CASE TOTAL	: 3 
+ * 
+ *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
+ * 
+ *    SIGNALS
+ * 	Uses SIGUSR1 to pause before test if option set.
+ * 	(See the parse_opts(3) man page).
+ *
+ *    DESCRIPTION
+ *	This test case checks whether swapoff(2) system call  returns 
+ *	1. EINVAL when the path does not exist
+ *	2. ENOENT when the path exists but is invalid
+ *	3. EPERM when user is not a superuser
+ *	 
+ * 	Setup:
+ *	  Setup signal handling.
+ *	  Pause for SIGUSR1 if option specified.
+ *	 1.  For testing error on invalid user, change the effective uid
+ * 	 	
+ * 	Test:
+ *	  Loop if the proper options are given.
+ *	  Execute system call.
+ *	  Check return code, if system call fails with errno == expected errno
+ *		Issue syscall passed with expected errno
+ *	  Otherwise, 
+ *	  Issue syscall failed to produce expected errno
+ * 
+ * 	Cleanup:
+ * 	  Do cleanup for the test.
+ * 	   
+ * USAGE:  <for command-line>
+ *  swapoff02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
+ *  where 
+ *  	-c n : Run n copies simultaneously
+ *	-e   : Turn on errno logging.
+ *	-i n : Execute test n times.
+ *	-I x : Execute test for x seconds.
+ *	-p   : Pause for SIGUSR1 before starting
+ *	-P x : Pause for x seconds between iterations.
+ *	-t   : Turn on syscall timing.
+ *		
+ *RESTRICTIONS:
+ *Incompatible with kernel versions below 2.1.35.
+ *****************************************************************************/
+
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <string.h>
+#include "test.h"
+#include "usctest.h"
+#include <stdlib.h>
+#include <sys/swap.h>
+
+static void setup();
+static void cleanup();
+static int setup01();
+static int cleanup01();
+static int setup02();
+static int cleanup02();
+
+char *TCID = "swapoff02"; 	/* Test program identifier.    */
+int TST_TOTAL = 3;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
+static char *path[] = {"./abcd", "/dev/mouse", "./swapfile01"};
+
+static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
+
+static struct test_case_t {
+	char *err_desc;		/* error description */
+	int  exp_errno;		/* expected error number*/
+	char *exp_errval;	/* Expected errorvalue string*/
+	int (*setupfunc)();	/* Test setup function */
+	int (*cleanfunc)();	/* Test cleanup function */
+} testcase[] = {
+	{"path does not exist", ENOENT, "ENOENT ", setup02,  cleanup02},
+	{"Invalid path", EINVAL, "EINVAL ", setup02, cleanup02},
+	{"Permission denied", EPERM, "EPERM ", setup01, cleanup01}
+};
+
+int
+main(int ac, char **av)
+{
+
+	int lc, i;	/* loop counter */
+	char *msg;	/* message returned from parse_opts */
+
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
+		!= (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	/* perform global setup for test */
+	setup();
+
+	/* check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
+
+		for(i = 0; i < TST_TOTAL; i++) {
+
+
+			if(testcase[i].setupfunc() == -1) {
+				tst_resm(TWARN, "Failed to setup test %d."
+						" Skipping test", i);
+				continue;
+			} else {
+				TEST(swapoff(path[i]));
+			}
+
+			if(testcase[i].cleanfunc() == -1) {
+			       tst_brkm(TBROK, cleanup, "cleanup failed,"
+				       			" quitting the test");
+	 		}
+
+			/* check return code */
+			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
+					exp_errno)) {
+				tst_resm(TPASS, "swapoff(2) expected failure;"
+						" Got errno - %s : %s",
+						testcase[i].exp_errval,
+						testcase[i].err_desc);
+				
+			} else {
+				tst_resm(TFAIL, "swapoff(2) failed to produce"
+						" expected error; %d, errno" 
+					       ": %s and got %d",
+						testcase[i].exp_errno,
+						testcase[i].exp_errval,
+						TEST_ERRNO);
+			
+				if((TEST_RETURN == 0) && (i == 2)) {
+					if(swapon("./swapfile01", 0) != 0) {
+						tst_brkm(TBROK, cleanup,
+							" Failed to turn on"
+							" swap file");
+					}
+				}	
+			}
+
+			TEST_ERROR_LOG(TEST_ERRNO);
+		}	/*End of TEST LOOPS*/
+	}		/* End of TEST_LOOPING*/
+
+	/*Clean up and exit*/
+	cleanup();
+
+	/*NOTREACHED*/
+	return 0;
+}	/*End of main*/
+
+/*
+ * setup01() - This function sets the user as nobody
+ */
+int
+setup01()
+{
+	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
+		return -1;
+	}
+
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TWARN, "seteuid failed to "
+			"to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+		return -1;
+	}
+
+	return 0;	/* user switched to nobody*/
+}
+
+/*
+ * cleanup01() - switch back to user root
+ */
+int
+cleanup01()
+{
+	if(seteuid(0) == -1) {
+		tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
+		perror("seteuid");
+		return -1;
+	}
+	
+	return 0;
+}
+
+int
+setup02()
+{
+	return 0;
+}
+
+int
+cleanup02()
+{
+	return 0;
+}
+
+/* setup() - performs all ONE TIME setup for this test */
+void
+setup()
+{
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
+
+	/* Check whether we are root*/
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+
+	/*create file*/
+	if(system("dd if=/dev/zero of=swapfile01 bs=1048  count=40 > tmpfile"
+			" 2>&1")
+		!= 0) {
+		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
+	}
+
+	/* make above file a swap file*/
+	if( system("mkswap ./swapfile01 > tmpfile 2>&1") != 0) {
+		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
+	}
+
+	if(swapon("./swapfile01", 0) != 0) {
+		tst_brkm(TBROK, cleanup, "Failed to turn on the swap file."
+			" skipping  the test iteration");
+	}	
+
+}	/* End setup() */
+
+/*
+* cleanup() - Performs one time cleanup for this test at
+* completion or premature exit
+*/
+void
+cleanup()
+{
+	/*
+	* print timing stats if that option was specified.
+	* print errno log if that option was specified.
+	*/
+	TEST_CLEANUP;
+
+	if(swapoff("./swapfile01") != 0) {
+		tst_resm(TWARN, " Failed to turn off swap file. System reboot"
+				" after execution of LTP test suite is"
+				" recommended.");
+	}
+	/* Remove tmp dir and all files inside it*/
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}	/* End cleanup() */
+
