@@ -54,7 +54,7 @@ check_return_code()
 
 }
 
-if [[ -z $LTPROOT ]]
+if [ -z "$LTPROOT" ]
   then
     BIN=.
     ls | grep tst_resm >/dev/null 2>&1
@@ -68,7 +68,7 @@ if [[ -z $LTPROOT ]]
     LTPBIN=$BIN
 fi
 
-if [[ -z $TMP ]]
+if [ -z "$TMP" ]
 then
     TMP=/tmp
 fi

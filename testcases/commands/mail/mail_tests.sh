@@ -215,7 +215,7 @@ else
     RC1=$(awk '/^>N/ {print match($3, "Mailer-Daemon")}' $LTPTMP/tst_mail.res)
     RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
         $LTPTMP/tst_mail.res)
-    if [[ -z $RC1 && -z $RC2 ]]
+    if [ -z "$RC1" ] && [ -z "$RC2" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \ 
         "Test #2: No new mail for root. Reason:"

@@ -6,10 +6,10 @@ for the_file in `echo 10K_file 100K_file 1000K_file`
 do
   if [ -e $the_file ]; then continue; fi
   echo "Creating $the_file"
-  while [[ $COUNT -le 10 ]]
+  while [ $COUNT -le 10 ]
   do
     cat $FILE >> $the_file
-    (( COUNT = COUNT + 1 ))
+    COUNT=$(( $COUNT + 1 ))
   done
   COUNT=0
   FILE=$the_file

@@ -40,7 +40,7 @@ else
 	LTPTMP=$TMPBASE
 fi
 
-if [[ -z $LTPBIN && -z $LTPROOT ]]
+if [ -z "$LTPBIN" ] && [ -z "$LTPROOT" ]
 then
     LTPBIN=./bin
 else
