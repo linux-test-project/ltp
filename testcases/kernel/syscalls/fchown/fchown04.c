@@ -225,8 +225,9 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+//changed by prashant yendigeri because the temp directory creating and deletinI// are with different uids, so this test case will fail in most of the scenario. 
 	/* Make a temp dir and cd to it */
-	tst_tmpdir();
+//	tst_tmpdir();
 
         /* Get the current working directory of the process */
         if (getcwd(test_home, sizeof(test_home)) == NULL) {
@@ -250,6 +251,9 @@ setup()
                          ltpuser->pw_uid);
                 perror("seteuid");
          }
+//prashant yendigeri added the below line
+	/* Make a temp dir and cd to it */
+	tst_tmpdir();
 
 
 	/* call individual setup functions */
