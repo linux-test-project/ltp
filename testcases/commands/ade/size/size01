@@ -39,7 +39,7 @@ TCtmp=${TCtmp:-/tmp/size01-$$}
 do_setup()
 {
   SIZE=/usr/bin/size
-
+  mkdir $TCtmp
   $SIZE $TCsrc/test > $TCtmp/er_size
   $SIZE -V $TCsrc/test > $TCtmp/er_size_V
   $SIZE -o $TCsrc/test > $TCtmp/er_size_o
