@@ -179,7 +179,7 @@ main(int ac, char **av)
 			}
 			
 			/* Test the system call */
-			TEST(clone(child_fn, child_stack,
+			TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE,
 				   test_cases[i].flags, NULL));
 
 			/* check return code */
@@ -238,9 +238,12 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	/* Create temporary directory and 'cd' to it. */
+	tst_tmpdir();
 	
 	/* Get unique file name for each child process */
-	if ((sprintf(file_name, "/tmp/parent_file_%d", getpid())) <= 0 ) {
+	if ((sprintf(file_name, "parent_file_%d", getpid())) <= 0 ) {
 		tst_brkm(TBROK, cleanup, "sprintf() failed");
 	}
 
@@ -265,6 +268,7 @@ cleanup()
 	if ((unlink(file_name)) == -1 ) {
 		tst_resm(TWARN, "Couldn't delete file, %s", file_name);
 	}
+	tst_rmdir();	
 
 	/* exit with return code appropriate for results */
 	tst_exit();
