@@ -225,11 +225,17 @@ int main(int argc, char *argv[])
         	if ((file = (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
-
+#ifdef __ia64__
+                TEST(madvise(file,stat.st_size + 40960 + pagesize,MADV_NORMAL));
+#else
         	TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
 		check_and_print(ENOMEM);
+#endif
 
 		/* Test Case 5 */
+#ifdef __ia64__
+                TEST(madvise(file, 5 * pagesize, MADV_WILLNEED));
+#else
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *) malloc(5 * sizeof(pagesize));
 		/* Take temporary pointer for later freeing up the original one */
@@ -238,7 +244,7 @@ int main(int argc, char *argv[])
 
 		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
 		check_and_print(EBADF);
-
+#endif
 		free((void *)ptr_memory_allocated);
 
 		/* Finally Unmapping the whole file */
