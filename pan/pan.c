@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pan.c,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
+/* $Id: pan.c,v 1.3 2000/09/22 19:52:17 nstraz Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -676,7 +676,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
 	do {
 	    sprintf(active->output, "%s/%s.%ld",
 		    test_out_dir, colle->name, cmdno++);
-	    c_stdout = open(active->output, O_CREAT | O_RDWR | O_EXCL, 0666);
+	    c_stdout = open(active->output, O_CREAT | O_RDWR | O_EXCL | O_SYNC, 0666);
 	} while (c_stdout < 0 && errno == EEXIST);
 	if (c_stdout < 0) {
 	    fprintf(stderr,
@@ -810,6 +810,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active)
     }
 
     close(errpipe[0]);
+    if (capturing)
+	close(c_stdout);
 	
     if (!test_out_dir) 
 	write_test_start(active, "ok");
