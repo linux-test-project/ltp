@@ -86,7 +86,7 @@
 #include "usctest.h"
 
 #define MODE_RWX 	S_IRWXU | S_IRWXG | S_IRWXO
-#define PERMS		03777
+#define PERMS		043777
 #define TESTDIR		"testdir"
 
 int fd;				/* file descriptor for test directory */
@@ -148,10 +148,7 @@ main(int ac, char **av)
 					  TESTDIR, TEST_ERRNO);
 			}
 			dir_mode = stat_buf.st_mode;
-
-			/* Verify SETGID BIT NOT set on directory */
-			if (((dir_mode & S_ISGID) == S_ISGID) ||
-			    ((PERMS & ~S_ISGID) != (dir_mode & 01777))) {
+			if (PERMS != dir_mode) {
 				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 					 "Expected 0%03o",
 					 TESTDIR, PERMS, MODE_RWX);
