@@ -13,11 +13,6 @@
 #include    "netpipe.h"
 #include    <pvm3.h>
 
-#ifndef lint
-static const char rcsid[] =
-	"$Id: PVM.c,v 1.1 2003/02/05 15:44:54 robbiew Exp $";
-#endif
-
 /**********************************************************************/
 /* Set up the communcations system.                                   */
 /*    In pvm, this means to join the parallel machine                 */

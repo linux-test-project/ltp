@@ -22,11 +22,6 @@
 
 extern char *optarg;
 
-#ifndef lint
-static const char rcsid[] =
-	"$Id: netpipe.c,v 1.4 2003/03/24 19:59:51 robbiew Exp $";
-#endif
-
 int
 main(int argc, char *argv[])
 {

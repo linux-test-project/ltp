@@ -1,6 +1,5 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.8 2003/03/24 19:59:50 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler

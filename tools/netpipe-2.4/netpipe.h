@@ -11,8 +11,6 @@
 /*     * netpipe.h          ---- General include file                        */
 /*****************************************************************************/
 
-/* $Id: netpipe.h,v 1.2 2003/03/14 16:34:27 robbiew Exp $ */
-
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>

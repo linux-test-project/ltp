@@ -1,7 +1,5 @@
 /*
   Define the protocol structure to be used by NetPIPE for PVM.
-
-  $Id: PVM.h,v 1.1 2003/02/05 15:44:54 robbiew Exp $
   */
 
 typedef struct protocolstruct ProtocolStruct;
