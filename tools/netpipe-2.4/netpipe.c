@@ -24,7 +24,7 @@ extern char *optarg;
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: netpipe.c,v 1.3 2003/03/21 17:00:33 robbiew Exp $";
+	"$Id: netpipe.c,v 1.4 2003/03/24 19:59:51 robbiew Exp $";
 #endif
 
 int
@@ -250,7 +250,7 @@ main(int argc, char *argv[])
     }
     if (args.tr && printopt)
     {
-        fprintf(stderr,"Latency: %lf\n", latency);
+        fprintf(stderr,"Latency: %.7f\n", latency);
         fprintf(stderr,"Now starting main loop\n");
     }
     tlast = latency;
@@ -457,11 +457,11 @@ main(int argc, char *argv[])
             
             if (args.tr)
 	    {
-		fprintf(out, "%lf %lf %d %d %lf", bwdata[n].t, bwdata[n].bps,
+		fprintf(out, "%.7f %.7f %d %d %.7f", bwdata[n].t, bwdata[n].bps,
 			bwdata[n].bits, bwdata[n].bits / 8,
 			bwdata[n].variance);
 #ifdef HAVE_GETRUSAGE
-		fprintf(out, " %lf %lf %lf %lf", ut1 / (double) TRIALS,
+		fprintf(out, " %.7f %.7f %.7f %.7f", ut1 / (double) TRIALS,
 			st1 / (double) TRIALS, ut_var, st_var);
 #endif
 		fprintf(out, "\n");
@@ -473,15 +473,15 @@ main(int argc, char *argv[])
 
             if (args.tr && printopt)
 	    {
-        	fprintf(stderr," %6.2lf Mbps in %lf sec", bwdata[n].bps,
+        	fprintf(stderr," %6.2f Mbps in %.7f sec", bwdata[n].bps,
 			tlast);
 #ifdef HAVE_GETRUSAGE
-		fprintf(stderr, ", avg utime=%lf avg stime=%lf, ",
+		fprintf(stderr, ", avg utime=%.7f avg stime=%.7f, ",
 			ut1 / (double) TRIALS,
 			st1 / (double) TRIALS);
-		fprintf(stderr, "min utime=%lf stime=%lf, ", best_utime,
+		fprintf(stderr, "min utime=%.7f stime=%.7f, ", best_utime,
 			best_stime);
-		fprintf(stderr, "utime var=%lf stime var=%lf", ut_var, st_var);
+		fprintf(stderr, "utime var=%.7f stime var=%.7f", ut_var, st_var);
 #endif
 		fprintf(stderr, "\n");
 	    }
@@ -493,6 +493,7 @@ main(int argc, char *argv[])
        fclose(out);
          
     CleanUp(&args);
+    return(0);
 }
 
 
