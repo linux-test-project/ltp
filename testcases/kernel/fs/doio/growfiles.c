@@ -375,12 +375,16 @@ int no_file_check = 0;		/* if set, no whole file checking will be done */
 int num;
 int fd;				/* file descriptor */
 int stop = 0;			/* loop stopper if set */
+
+long unsigned curr_size = 0;			/* BUG:14136 (keep track of file size) */
+const long unsigned ext2_limit = 2147483647;	/* BUG:14136 (2GB ext2 filesize limit) */
+
 int tmp;
 char chr;
 int ret;
 int pre_alloc_space = 0;
 #ifndef linux
-int total_grow_value;		/* used in pre-allocations */
+long total_grow_value;		/* used in pre-allocations */
 #endif
 int backgrnd = 1;		/* return control to user */
 struct stat statbuf;
@@ -1379,7 +1383,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 				exit(2);
 			}
 			if ( Debug > 1 ) {
-				printf("%s: %d DEBUG2 %s/%d: pre_allocated %d for file %s\n",
+				printf("%s: %d DEBUG2 %s/%d: pre_allocated %ld for file %s\n",
 				    Progname, Pid, __FILE__, __LINE__, total_grow_value, filename);
 			}
 			lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
@@ -1396,7 +1400,16 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 * if we are dealing with a FIFO file.
 		 */
 
-		if (growfile(fd, filename, grow_incr, Buffer) != 0 ) {
+		/* BUG:14136 (don't go past ext2's filesize limit) */
+		if (curr_size+grow_incr>=ext2_limit) {
+			lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
+			close(fd);
+			sprintf(reason, "Reached %ld filesize which is almost %ld limit.",curr_size, ext2_limit);
+			stop=1;
+			continue;
+		}
+
+		if (growfile(fd, filename, grow_incr, Buffer, &curr_size) != 0 ) { /* BUG:14136 */
 			handle_error();
 			lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
 			close(fd);
@@ -1508,6 +1521,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
     }
 
 	exit(0);
+	return 0;	/* to keep compiler happy */
 }
 
 /***********************************************************************
@@ -1832,11 +1846,12 @@ prt_examples(FILE *stream)
  * Grow_incr will be set to the size of the write or lseek write.
  ***********************************************************************/
 int
-growfile(fd, file, grow_incr, buf)
+growfile(fd, file, grow_incr, buf, curr_size_ptr)	/* BUG:14136 */
 int fd;
 char *file;
 int grow_incr;
 char *buf;
+long *curr_size_ptr;	/* BUG:14136 */
 {
    off_t noffset;
    int ret;
@@ -2105,6 +2120,7 @@ char *buf;
 #endif
 #endif
 		}
+		*curr_size_ptr=tmp;	/* BUG:14136 */
 
 		lkfile(fd, LOCK_UN, LKLVL0);	
 
@@ -2805,9 +2821,7 @@ lkfile(int fd, int operation, int lklevel)
  *
  ***********************************************************************/
 int
-pre_alloc(fd, size)
-int fd;
-int size;
+pre_alloc(int fd, long size)
 {
 
 #ifdef CRAY
