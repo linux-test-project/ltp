@@ -59,7 +59,7 @@
  *
  * Restrictions
  * 	This test must be ran as root.
- *	nobody and adm must be valid users.
+ *	nobody, bin, and daemon must be valid users.
  */
 
 
@@ -73,11 +73,11 @@
 extern int Tst_count;
 
 char *TCID = "setreuid02";
-uid_t nobody_pw_uid, root_pw_uid, adm_pw_uid, bin_pw_uid;
+uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;
 int neg_one = -1;
 int exp_enos[]={0};
 
-struct passwd nobody, adm, root, bin;
+struct passwd nobody, daemonpw, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -94,7 +94,7 @@ struct test_data_t {
 	{ &neg_one, &neg_one, &root, &root, "After setreuid(-1, -1)," },
 	{ &nobody_pw_uid, &neg_one, &nobody, &root, "After setreuid(nobody, -1)" },
 	{ &root_pw_uid, &neg_one, &root, &root, "After setreuid(root,-1)," },
-	{ &neg_one, &adm_pw_uid, &root, &adm, "After setreuid(-1, adm)" },
+	{ &neg_one, &daemon_pw_uid, &root, &daemonpw, "After setreuid(-1, daemon)" },
 	{ &neg_one, &root_pw_uid, &root, &root, "After setreuid(-1,root)," },
 	{ &bin_pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)" },
 	{ &root_pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)" },
@@ -174,8 +174,8 @@ setup(void)
 		/*NOTREACHED*/
 	}
 
-	if (getpwnam("adm") == NULL) {
-		tst_brkm(TBROK, NULL, "adm must be a valid user.");
+	if (getpwnam("daemon") == NULL) {
+		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
 		tst_exit();
 		/*NOTREACHED*/
 	}
@@ -195,8 +195,8 @@ setup(void)
 	nobody = *( getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	adm = *(getpwnam("adm"));
-	adm_pw_uid = adm.pw_uid;
+	daemonpw = *(getpwnam("daemon"));
+	daemon_pw_uid = daemonpw.pw_uid;
 
 	bin = *(getpwnam("bin"));
 	bin_pw_uid = bin.pw_uid;
