@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.5 2001/12/14 14:42:35 plars Exp $ */
+/* $Id: usctest.h,v 1.6 2002/04/11 15:03:03 plars Exp $ */
 
 /**********************************************************
  * 
@@ -224,7 +224,7 @@ extern void STD_opts_help();
  * errors.
  *
  ***********************************************************************/
-#define TEST_VOID(SCALL)  SCALL; TEST_ERRNO=errno;
+#define TEST_VOID(SCALL)  errno=0; SCALL; TEST_ERRNO=errno;
 
 /***********************************************************************
  * TEST_CLEANUP: print system call timing stats and errno log entries
