@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.8 2003/11/25 16:04:28 robbiew Exp $ */
+/* $Id: tst_sig.c,v 1.9 2004/05/19 20:44:50 robbiew Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -143,11 +143,15 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 		case __SIGRTMIN+13:
 		case __SIGRTMIN+14:
 		case __SIGRTMIN+15:
+/* __SIGRTMIN is 37 on HPPA rather than 32 *
+ * as on i386, etc.                        */
+#if !defined(__hppa__)
 		case __SIGRTMAX-15:
 		case __SIGRTMAX-14:
 		case __SIGRTMAX-13:
 		case __SIGRTMAX-12:
 		case __SIGRTMAX-11:
+#endif
 		case __SIGRTMAX-10:
 		case __SIGRTMAX-9:
 		case __SIGRTMAX-8:
