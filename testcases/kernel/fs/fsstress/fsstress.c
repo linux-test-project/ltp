@@ -281,11 +281,15 @@ int main(int argc, char **argv)
 	char		*dirname = NULL;
 	int		fd;
 	int		i;
+#ifndef NO_XFS
 	int		j;
+#endif
 	char		*p;
 	int		stat;
 	struct timeval	t;
+#ifndef NO_XFS
 	ptrdiff_t	srval;
+#endif
         int             nousage=0;
 #ifndef NO_XFS		
 	xfs_error_injection_t	err_inj;
