@@ -13,7 +13,7 @@ CURSES := -lncurses
 
 LDFLAGS += -Wl,-warn-common
 
-CFLAGS += -w -D_GNU_SOURCE -O2 -g3 -fno-common -ffast-math -I proc \
+CFLAGS += -I/usr/include -w -D_GNU_SOURCE -O2 -g3 -fno-common -ffast-math -I proc \
   -W -Wall -Wshadow -Wcast-align -Wredundant-decls \
   -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return \
 #  -Wpadded -Wunreachable-code -Wdisabled-optimization \
