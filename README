@@ -50,7 +50,7 @@ networktests.sh
 
 doc/*
 	Documentation for the project including man pages for some of the
-	tools and library functions.
+	tools & library functions, as well as descriptions of every test.
 
 
 include/*
