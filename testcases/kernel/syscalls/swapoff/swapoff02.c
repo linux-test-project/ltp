@@ -94,7 +94,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-static char *path[] = {"./abcd", "/dev/mouse", "./swapfile01"};
+static char *path[] = {"./abcd", "/dev/tty", "./swapfile01"};
 
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
 
