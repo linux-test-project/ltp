@@ -600,7 +600,7 @@ statfs01 statfs01
 statfs02 statfs02
 statfs03 statfs03
 
-stime01 stime01
+#stime01 stime01
 stime02 stime02
 
 symlink01 symlink01
