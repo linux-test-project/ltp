@@ -93,6 +93,9 @@ char *TCID="fchmod05"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 void setup();			/* Main setup function for test */
 void cleanup();			/* Main cleanup function for test */
 
@@ -188,30 +191,25 @@ setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is not super/root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-super/root for this test!");
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
 		tst_exit();
 	}
 
-	/* Get the TESTHOME env */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, NULL, "Fail to get TESTHOME env. variable!");
-		tst_exit();
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "fchmod"))) {
-		strcat(test_home, "/fchmod");
-	}
+	test_home = get_current_dir_name();
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp directory and cd to it */
+	ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
+
 	tst_tmpdir();
 
 	/*
