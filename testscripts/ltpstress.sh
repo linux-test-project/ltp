@@ -51,8 +51,8 @@ usage()
 	cat <<-END >&2
 	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [ [-S]|[-T] ]
 
-    -d datafile     Data file for 'sar' to log to. Default is "/tmp/ltpstress.data".
-    -i # (in sec)   Interval that 'sar' should take snapshots. Default is 10 seconds.
+    -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
+    -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is 64Mb.
     -S              Use 'sar' to measure data. 
