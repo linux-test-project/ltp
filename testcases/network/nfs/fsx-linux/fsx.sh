@@ -132,10 +132,6 @@ $trace_logic
 		end_testcase "Errors have resulted from this test"
 	fi
 
-        cd $HOME
-    	echo "Unmounting $TCtmp"
-	sleep 2
-        umount $TCtmp || error "Cannot umount $TCtmp"
     done
 }
 
@@ -156,9 +152,10 @@ $trace_logic
 	cd \
 	
 	echo "Cleaning up testcase"
-
-        mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || echo "Cannot mount $TCtmp"
-        /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
+        cd $HOME
+    	echo "Unmounting $TCtmp"
+	sleep 2
+        umount $TCtmp || error "Cannot umount $TCtmp"
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
         rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/fsx$PID.testdir"
 	rsh -n $RHOST "rm -rf /mnt/fsx$PID.testdir"
