@@ -41,7 +41,7 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TC=sendfile
+TC=sendfile01
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
@@ -164,7 +164,7 @@ end_testcase()
 #=============================================================================
 # MAIN PROCEDURE
 #=============================================================================
-export TCID="sendfile"
+export TCID="sendfile01"
 export TST_TOTAL=1
 export TST_COUNT=1
 exists "rsh diff awk grep"
