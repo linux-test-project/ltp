@@ -129,7 +129,7 @@ fi
 
 if [ "$FS_TYPE" = "reiserfs" ]
 then
-	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE -f $REM_DISK_PART 2>&1 > /dev/null"
+	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE --format 3.6 -f $REM_DISK_PART 2>&1 > /dev/null"
 else
 	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE $REM_DISK_PART 2>&1 > /dev/null"
 	if [ $? != 0 ]
