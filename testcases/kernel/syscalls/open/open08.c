@@ -24,7 +24,7 @@
  *	4. Attempt to open() a filename which is more than VFS_MAXNAMLEN, and
  *	   check for errno to be ENAMETOOLONG.
  *
- *	5. Attempt to open this test executable in WRONLY mode,
+ *	5. Attempt to open a test executable in WRONLY mode,
  *	   open(2) should fail with EACCES.
  *
  *	6. Attempt to pass an invalid pathname with an address pointing outside
@@ -68,7 +68,7 @@ struct passwd *ltpuser;
 int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0};
 
 char filename[40] = "";
-char fname[40];
+char fname[] = "/usr/bin/test";		/* test executable to open */
 char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 struct test_case_t {
@@ -140,7 +140,6 @@ main(int ac, char **av)
 void
 setup(void)
 {
-	char *testdir = NULL;
 	int fildes;
 
 	/* capture signals */
@@ -169,13 +168,6 @@ setup(void)
                 perror("setuid");
         }
 
-
-	if ((testdir = getcwd(testdir, 0)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Could not get current directory");
-	}
-
-	/* give fname the absolute pathname of this test program */
-	sprintf(fname, "%s/%s", testdir, TCID);
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
