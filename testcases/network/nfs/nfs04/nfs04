@@ -126,8 +126,8 @@ $trace_logic
   tst_resm TINFO "Test Started"
   while [ $loopcount -lt $LOOPS ]
     do
-	cp /tmp/nfs04$PID.testfile $TCtmp	
-	diff /tmp/nfs04$PID.testfile $TCtmp
+	cp /tmp/nfs04$PID.testfile $TCtmp/nfs04$PID.testfile$loopcount	
+	diff /tmp/nfs04$PID.testfile$loopcount $TCtmp/nfs04$PID.testfile$loopcount
 	retval=$?
 	if [ "$retval" != 0 ]; then
 		end_testcase "Error in loop $loopcount: Diff FAILED"
@@ -156,7 +156,7 @@ $trace_logic
 	rm -rf $TCtmp || tst_resm TBROK "Cannot remove $TCtmp"
         rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs04$PID.testdir"
 	rsh -n $RHOST "rm -rf /mnt/nfs04$PID.testdir"
-	rm -f /tmp/nfs04$PID.testfile
+	rm -f /tmp/nfs04$PID.testfile*
     fi
 
     [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
