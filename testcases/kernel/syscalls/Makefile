@@ -44,7 +44,7 @@ SUBDIR= \
 	mremap msync munlock munlockall munmap nanosleep nftw nice open \
 	pathconf pause personality pipe poll prctl\
 	pread ptrace pwrite query_module read readdir \
-	readlink readv recv recvfrom recvmsg rename \
+	readlink readv reboot recv recvfrom recvmsg rename \
 	rmdir sbrk sched_get_priority_max sched_get_priority_min \
 	sched_getparam sched_setparam sched_getscheduler \
 	sched_rr_get_interval sched_setscheduler sched_yield select \
