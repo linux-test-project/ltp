@@ -42,18 +42,21 @@ PROC_NUM=0
 leftover_memsize=0
 duration=86400
 datafile="/tmp/ltpstress.data"
+iofile="/tmp/ltpstress.iodata"
 interval=10
 Sar=0
 Top=0
+Iostat=0
 
 usage()
 {
 
 	cat <<-END >&2
-	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [ [-S]|[-T] ]
+	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [ [-S]|[-T] ]
 
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
+    -I iofile       Log results of 'iostat' to a file every interval. Default is "/tmp/ltpstress.iodata".
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
     -S              Use 'sar' to measure data. 
@@ -84,7 +87,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-while getopts d:hi:l:STt:m:n\? arg
+while getopts d:hi:I:l:STt:m:n\? arg
 do  case $arg in
 
 	d)	datafile="$OPTARG";;
@@ -93,6 +96,9 @@ do  case $arg in
 		usage;;
 
 	i)	interval=$OPTARG;;
+
+	I)	Iostat=1
+		iofile=$OPTARG;;
 
         l)      logfile="-l $OPTARG";;
 
@@ -215,6 +221,12 @@ fi
 if [ $Top -eq 1 ]; then
   screen -d -m $LTPROOT/testcases/bin/top -o $datafile -d $interval &
   SCREEN_PID=$(ps -e | grep screen | awk {'print $1'})
+fi
+
+sleep 2
+
+if [ $Iostat -eq 1 ]; then
+  while [ 0 = 0 ];do iostat -dt >> $iofile; sleep $interval;done &
 fi
 
 sleep 2
