@@ -22,6 +22,7 @@ all: libltp.a
 
 install: all
 	@$(MAKE) -C testcases install
+	@$(MAKE) -C tools install
 	./IDcheck.sh
 
 libltp.a:
