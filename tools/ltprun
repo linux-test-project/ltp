@@ -21,10 +21,7 @@ LTP_LOGFILE=ltp-logfile
 LTP_RUN_OUTPUT=ltprun.out
 SAR_OUTFILE=sar.data
 
-#This script relies upon the -l ~/ltp/ltp-logfile pan option in runalltests.sh
-#We want to also include in the output tarfile a system_info file 
-#   need to determine what goes in that, maybe just modify ver_linux
-#   to report this info
+#This script passes the -l ~/ltp/ltp-logfile option to runalltests.sh
 
 if [ -z $1 ]; then
    SHORT_HOSTNAME=`hostname | perl -e 'while(<>){ m/(\w+)[.\\$]?/ && print $1;}'`
@@ -87,7 +84,7 @@ run_ltp()
    echo "Trying to start sar"
    sar -o $SAR_OUTFILE 60 0 &
    echo "Running LTP testsuite"
-   ./runalltests.sh &> $LTP_RUNALL_OUT 
+   ./runalltests.sh -l ~/ltp/$LTP_LOGFILE &> $LTP_RUNALL_OUT
    echo "Done running tests"
    killall -9 sadc
    echo "Killing sar if it is running"
