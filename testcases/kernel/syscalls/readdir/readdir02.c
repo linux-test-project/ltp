@@ -165,8 +165,7 @@ main(int ac, char **av)
 void
 sigsegv_handler(int sig)
 {
-        tst_resm(TCONF, "This system's implementation of closedir() will not allow this test 
-			 execute properly.");
+        tst_resm(TCONF, "This system's implementation of closedir() will not allow this test to execute properly.");
 	cleanup();
 }
 
