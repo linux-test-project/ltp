@@ -255,6 +255,7 @@ main()
 {
 	tst_resm(TPASS, "LSB v1.3 does not specify iopl() for this architecture.");
 	tst_exit();
+	return(0);
 }
 
 #endif /* __i386__ */

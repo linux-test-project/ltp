@@ -227,7 +227,7 @@ run_ptest()
 	}
 
 	/* Set local modes. */
-	termio.c_lflag = ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH;
+	termio.c_lflag = ((unsigned short)(ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH));
 
 	/* Set input modes. */
 	termio.c_iflag = BRKINT|IGNPAR|INPCK|ISTRIP|ICRNL|IUCLC|IXON|
