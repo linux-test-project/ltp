@@ -1,0 +1,17 @@
+Manoj Iyer, IBM Austin TX, manjo@austin.ibm.com.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To run these tests run ./testall
+On completion you will see a lot of sem and shm id's created (ipcs), run the 
+script ./cleanup to remove them from your system.
+
+You can manually remove the ids by doing the following 
+
+IDS=`ipcs | cut -f 2 -d " "`
+
+ipcrm sem $IDS
+ipcrm shm $IDS
+ipcrm msg $IDS
+
+The signal tests are not garunteed to work on 64 bit machines.
+
