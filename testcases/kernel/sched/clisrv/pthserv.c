@@ -168,7 +168,7 @@ main(int argc, char *argv[])
 	    }
 	    else /* create thread to handle client request */
 	    {
-	        if (pthread_create(&th, &newattr, (void *)new_thread, (void *)newsockfd))
+	        if (pthread_create(&th, &newattr, (void *)&new_thread, (void *)&newsockfd))
 		    printf("failure to create thread\n");
 #ifndef _LINUX
 	        yield();
