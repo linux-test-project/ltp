@@ -106,7 +106,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ 0, NULL, 0, no_setup }
 };
 
-char *test_home;		/* variable to hold TESTHOME env */
+char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
 char *TCID="fchown04";           /* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
@@ -221,7 +221,11 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	test_home = (char*)get_current_dir_name();
+        /* Get the current working directory of the process */
+        if (getcwd(test_home, sizeof(test_home)) == NULL) {
+                tst_brkm(TBROK, cleanup,
+                         "getcwd(3) fails to get working directory of process");
+        }
 	
 	/* Switch to bin user for correct error code collection */
         if (geteuid() != 0) {
