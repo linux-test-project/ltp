@@ -1,0 +1,204 @@
+#! /bin/sh
+unset LIBPATH
+#
+#   Copyright (c) International Business Machines  Corp., 2000
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE             : mc_member
+#
+#  TEST DESCRIPTION : To verify that two of the new options for level IPPROTO_IP
+#                     Service Interface allow the list of host group memberships
+#                     to be updated properly in response to the JoinHostGroup and
+#                     LeaveHostGroup requests. To test boundary conditions while 
+#                     exercising IP Multicast JoinHostGroup and LeaveHostGroup
+#                     Service Interfaces.
+#
+#  HISTORY:
+#    03/26/01 Robbie Williamson (robbiew@us.ibm.com)
+#      -Ported
+#
+#******************************************************************************
+#Uncomment the line below for debug output
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+TC=mc_member
+TCsrc=${TCsrc:-`pwd`}
+TCtmp=${TCtmp:-$TCsrc}
+CLEANUP=${CLEANUP:-ON}
+
+EXECUTABLES=${EXECUTABLES:-"member"}
+NUMLOOPS=${NUMLOOPS:-2}
+INTERFACE=${INTERFACE:-$(host `hostname`|awk '{ print $4 }'|cut -d\, -f1)}
+GLIST=${GLIST:-$TCsrc/ManyGroups}
+TooManyGLIST=${TooManyGLIST:-$TCsrc/TooManyGroups}
+ERRFILE=${ERRFILE:-$TCtmp/errors}
+
+this_file=${0##*/}
+trap "interrupt_test" 2
+
+#******************************************************************************
+#
+# FUNCTION:  do_test
+# PURPOSE:   Executes the testcases.
+# INPUT:     Number of iterations
+# OUTPUT:    Error messages are logged when any verification test
+#            fails.
+#
+#-----------------------------------------------------------------------
+
+do_test()
+{
+   $trace_logic
+   echo "$this_file: doing $0."
+
+   COUNT=1
+   while [ $COUNT -le $NUMLOOPS ]
+   do
+      # Run setsockopt test with bogus network
+
+      echo "Running mc_member_e on 3.3.3.3"
+      $TCtmp/$EXECUTABLES -j -g $GLIST -s 30 -i 3.3.3.3 >/dev/null 2>&1
+
+      # Run setsockopt/getsockopt test
+
+      $TCtmp/$EXECUTABLES -g $GLIST -s 80 -i $INTERFACE > $ERRFILE 2>&1 &
+
+      # Join twice and leave once and see if the groups are still joined on
+      # all specified interfaces.
+
+      for agroup in `cat $GLIST`
+      do
+         echo "Running (1st) member on $INTERFACE"
+         $TCtmp/$EXECUTABLES -j -g $GLIST -s 30 -i $INTERFACE > $ERRFILE 2>&1 &
+         sleep 5
+         grep "cannot join group" $ERRFILE
+         [ $? = 0 ] && end_testcase "MC group could NOT join $INTERFACE"
+
+         echo "Running (2nd) member on  $INTERFACE"
+         $TCtmp/$EXECUTABLES -g $GLIST -s 60 -i $INTERFACE > $ERRFILE 2>&1 &
+         sleep 5
+         grep "cannot join group" $ERRFILE
+         [ $? = 0 ] && end_testcase "MC group could NOT join $INTERFACE"
+      done 
+
+      # See if the groups are joined
+
+      for agroup in `cat $GLIST`
+      do
+	 netstat -gn | grep $agroup
+         [ $? = 0 ] || end_testcase "$agroup NOT joined to $INTERFACE"
+
+         # See if they respond to a ping.
+	 ping -c 3 -I $INTERFACE $agroup
+	 [ $? != 0 ] && { echo "Error - $TC: $agroup NOT responding over $INTERFACE" ;}
+   
+      done
+
+      echo "Waiting 60 seconds! Do not interrupt!"
+      sleep 60 # Make sure the first process has stopped
+
+      for agroup in `cat $GLIST`
+      do
+	netstat -gn | grep $agroup
+        if [ $? != 1 ]; then 
+	   end_testcase "$agroup still joined on $INTERFACE"
+	fi
+      done
+      
+      # Test the membership boundaries
+
+      echo "Running member on too many groups over $INTERFACE"
+      $TCtmp/$EXECUTABLES -j -g $TooManyGLIST -i $INTERFACE > $ERRFILE 2>&1 &
+
+      count=`grep 105 $ERRFILE | wc -l`
+
+      [ $count -gt 3 ] && end_testcase "Could not join members!"
+
+      (( COUNT = COUNT + 1 ))
+
+   done   # end of while numloop
+}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:     do_cleanup
+# PURPOSE:      Called when the testcase is interrupted by the user
+#               or by interrupt_testcase() when time limit expired
+# INPUT:        None.
+# OUTPUT:       None.
+#
+#-----------------------------------------------------------------------
+
+do_cleanup()
+{
+   $trace_logic
+   echo "$this_file: doing $0."
+
+   rm -rf $ERRFILE
+}
+
+#=============================================================================
+# FUNCTION NAME:        end_testcase
+#
+# FUNCTION DESCRIPTION: Clean up
+#
+# PARAMETERS:           string, IF AND ONLY IF the testcase fails
+#
+# RETURNS:              None.
+#=============================================================================
+
+end_testcase()
+{
+   $trace_logic
+   echo "$this_file: doing $0."
+
+   # Call other cleanup functions
+   [ $CLEANUP = "ON" ] && do_cleanup
+
+   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
+   echo "Test Failed: $@"
+   exit 1
+}
+
+#******************************************************************************
+#
+# FUNCTION:  interrupt_test
+# PURPOSE:   Handle process interrupts set by trap.
+# INPUT:     none
+# OUTPUT:    none
+#
+#******************************************************************************
+
+interrupt_test()
+{
+   echo "test interrupted"
+   end_testcase
+}
+
+#******************************************************************************
+#
+# FUNCTION:  MAIN
+# PURPOSE:   To invoke functions that perform the tasks as described in
+#            the design in the prolog above.
+# INPUT:     See SETUP in the prolog above.
+# OUTPUT:    Logged run results written to testcase run log
+#
+#******************************************************************************
+do_test
+end_testcase

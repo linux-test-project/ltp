@@ -1,0 +1,267 @@
+#!/bin/sh
+#
+#
+#   Copyright (c) International Business Machines  Corp., 2001
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : stress_floppy
+#
+#  PURPOSE : Tests the reading/writing/formatting on a floppy drive
+#
+#  HISTORY:
+#    06/01 Robbie Williamson (robbiew@us.ibm.com)
+#     -Ported
+#
+#
+#---------------------------------------------------------------------------
+#Uncomment line below for debug output
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+
+#SET VARIABLES
+
+TCtmp=${TCtmp:-/tmp}
+TCdat=${TCdat:-`pwd`}
+
+
+test_for_device() {
+$trace_logic
+  cat /proc/devices | grep fd
+  if [ $? = 0 ]; then
+   num_device=`ls /dev | grep fd0 | wc -l`
+   if [ $num_device = 0 ]; then
+    echo "No floppy diskette drive available!"
+    exit 1
+   else
+    echo "Floppy diskette drive fd0 available."
+   fi
+  fi
+}
+
+test_format() {
+$trace_logic
+echo "Testing format..."
+fdformat  /dev/fd0H1440 
+  if [ $? -ne 0 ]; then
+    echo "Format failed!"
+    exit 1
+  else
+    echo "Format successful."
+  fi
+}
+
+test_tar() {
+$trace_logic
+for the_file in `echo 1K_file 10K_file 100K_file 1000K_file`
+do
+  echo "Testing $the_file tar..."
+  cd $TCdat
+  tar -cvf /dev/fd0 $the_file
+  if [ $? -ne 0 ]; then
+    echo "$the_file Tar write failed!"
+    exit 1
+  else
+    echo "$the_file Tar write passed."
+  fi
+  cd $TCtmp
+  if [ $? -ne 0 ]; then
+    echo "Could not change to /tmp directory!"
+    exit 1
+  fi
+  tar -xvf /dev/fd0
+  if [ $? -ne 0 ]; then
+    echo "$the_file Tar read failed!"
+    exit 1
+  else
+    echo "$the_file Tar read passed."
+  fi
+  diff $TCdat/$the_file $TCtmp/$the_file 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Diff of the $the_file tar files failed!"
+    exit 1
+  else
+    echo "Diff of the $the_file tar files passed."
+  fi
+  rm -f $TCtmp/$the_file
+done
+}
+
+test_dump() {
+$trace_logic
+echo "Testing dump/restore..."
+cp -r $TCdat/dumpdir $TCtmp
+if [ $? -ne 0 ]; then
+  echo "Could not create dumpdir directory in $TCtmp"
+  exit 1
+fi
+
+cd $TCtmp
+if [ $? -ne 0 ]; then
+  echo "Could not change to $TCtmp directory!"
+  exit 1
+fi
+
+dump -f /dev/fd0 dumpdir 
+if [ $? -ne 0 ]; then
+  echo "$the_file dump write failed!"
+  exit 1
+else
+  echo "$the_file dump write passed."
+fi
+
+restore -v -r -f /dev/fd0 2>/dev/null
+if [ $? -ne 0 ]; then
+  echo "$the_file restore read failed!"
+  exit 1
+else
+  echo "$the_file restore read passed."
+fi
+
+for the_file in `echo 1K_file 10K_file 100K_file`
+do
+  diff $TCtmp/dumpdir/$the_file /$TCtmp/$TCtmp/dumpdir/$the_file 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Diff of the $the_file backup files failed!"
+    exit 1
+  else
+    echo "Diff of the $the_file backup files passed."
+  fi
+done
+rm -rf $TCtmp/dumpdir
+rm -rf $TCtmp/$TCtmp
+rm -f restoresymtable
+}
+
+test_cpio() {
+$trace_logic
+for the_file in `echo 1K_file 10K_file 100K_file 1000K_file`
+do
+  echo "Testing $the_file cpio..."
+  cd $TCdat
+  echo $the_file | cpio -o > /dev/fd0
+  if [ $? -ne 0 ]; then
+    echo "$the_file cpio write failed!"
+    exit 1
+  else
+    echo "$the_file cpio write passed."
+  fi
+  cd $TCtmp
+  if [ $? -ne 0 ]; then
+    echo "Could not change to $TCtmp directory!"
+    exit 1
+  fi
+  cpio -i < /dev/fd0
+  if [ $? -ne 0 ]; then
+    echo "$the_file cpio read failed!"
+    exit 1
+  else
+    echo "$the_file cpio read passed."
+  fi
+  diff $TCdat/$the_file $TCtmp/$the_file 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Diff of the $the_file cpio files failed!"
+    exit 1
+  else
+    echo "Diff of the $the_file cpio files passed."
+  fi
+  rm -f $TCtmp/$the_file
+done
+}
+
+test_dd() {
+$trace_logic
+for the_file in `echo dd_file`
+do
+  echo "Testing $the_file dd..."
+  cd $TCdat
+  if [ $? -ne 0 ]; then
+    echo "Data file directory not found!"
+    exit 1
+  fi
+  dd if=$the_file of=/dev/fd0 ibs=1b obs=90b conv=sync
+  if [ $? -ne 0 ]; then
+    echo "$the_file dd write failed!"
+    exit 1
+  else
+    echo "$the_file dd write passed."
+  fi
+  cd $TCtmp
+  if [ $? -ne 0 ]; then
+    echo "Could not change to $TCtmp directory!"
+    exit 1
+  fi
+  dd if=/dev/fd0 of=$the_file ibs=90b obs=1b conv=sync
+  if [ $? -ne 0 ]; then
+    echo "$the_file dd read failed!"
+    exit 1
+  else
+    echo "$the_file dd read passed."
+  fi
+  diff $TCdat/$the_file $TCtmp/$the_file 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Diff of the $the_file dd files failed!"
+    exit 1
+  else
+    echo "Diff of the $the_file dd files passed."
+  fi
+  rm -f $TCtmp/$the_file
+done
+}
+
+test_linuxformat() 
+{
+$trace_logic
+echo Testing mkdosfs....
+mkfs -v /dev/fd0 
+  if [ $? -ne 0 ]; then
+    echo "Linux (ext2) format failed!"
+    exit 1
+  else
+    echo "Linux (ext2) successful."
+  fi
+}
+
+test_dosformat() 
+{
+$trace_logic
+echo Testing mkdosfs....
+mkdosfs -v /dev/fd0 
+  if [ $? -ne 0 ]; then
+    echo "Dosformat failed!"
+    exit 1
+  else
+    echo "Dosformat successful."
+  fi
+}
+
+
+test_for_device
+
+test_format
+test_tar
+test_dump
+test_cpio
+test_dd
+test_linuxformat
+test_dosformat
+
+#If we made it this far, all tests passed.
+echo ""
+echo "stress_format: PASS"
+exit 0

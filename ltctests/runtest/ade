@@ -1,0 +1,5 @@
+ar export TCdat=$LTPROOT/ltctests/ade/ar; ar01
+ld export TCdat=$LTPROOT/ltctests/ade/ld; ld01
+ldd export TCdat=$LTPROOT/ltctests/ade/ldd; ldd01
+nm export TCdat=$LTPROOT/ltctests/ade/nm; nm01 
+objdump export TCsrc=$LTPROOT/ltctests/ade/objdump; objdump01

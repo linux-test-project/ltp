@@ -1,0 +1,2 @@
+stress_floppy export TCdat=$LTPROOT/ltctests/io/stress_floppy; stress_floppy
+stress_cd stress_cd

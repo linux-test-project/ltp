@@ -1,0 +1,64 @@
+Readme file for linktest.pl
+
+License:
+
+    Copyright (c) International Business Machines  Corp., 2001
+
+    This program is free software;  you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 2 of
+    the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be 
+    useful, but WITHOUT ANY WARRANTY;  without even the implied 
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    PURPOSE.  See the GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public 
+    License along with this program;  if not, write to the Free 
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+    MA 02111-1307 USA
+
+
+Overview: 
+    Name:           linktest.pl
+    Description:    A regression test for links per file.
+                    Linktest.pl is a simple test that attempts
+                    to create a given number of hard links and 
+                    symbolic links to a single file.
+                        
+Files:
+    linktest.pl
+    README 
+                        
+Availability:
+    Currently only available via internal IBM websites pending 
+    legal review:
+    http://cvs.opensource.ibm.com/cgi-bin/cvsweb.cgi/testcases/fs/fs_perms/?cvsroot=ltp
+
+Installation:
+    N/A                    
+
+Use:
+    ./linktest.pl <number of symbolic links> <number of hard links>
+
+    ex:  ./linktest.pl 1000 1000 would create 1000 symlinks and 1000
+         hardlinks
+
+Warning(s):
+    If execution is terminated, the hlink and slink subdirectories will
+    have to be manually removed (along with any links or files in them).
+
+ToDo:
+    I'll think of something.
+
+ChangeLog:
+    Date      Version       Author                  Reason
+    05/07/01    .99         martinjn@us.ibm.com     Needed a quick regression test to
+                                                    identify link limitations.
+
+
+Jeff Martin
+Software Engineer
+IBM Linux Technology Center-Test Team
+martinjn@us.ibm.com
