@@ -133,9 +133,7 @@ int main (int argc, char **argv)
 	float	elapsed_time;
 	struct tms timer_info;		/* time accounting info */
 
-        if (getenv("KERNEL"))
-            sprintf(filename, "%s", getenv("KERNEL"));
-        else
+	if ((filename=getenv("KERNEL"))==NULL)
         {
             errno = ENODATA;
             sys_error("environment variable KERNEL not set",__FILE__, __LINE__);

@@ -129,9 +129,7 @@ int main (int argc, char **argv)
 	long	start_time;      /* time at start of testcase */
 	int	i;
 
-        if (getenv("KERNEL"))
-            sprintf(filename, "%s", getenv("KERNEL"));
-        else
+	if ((filename=getenv("KERNEL"))==NULL)
         {
             errno = ENODATA;
             sys_error("environment variable KERNEL not set",__FILE__, __LINE__);
