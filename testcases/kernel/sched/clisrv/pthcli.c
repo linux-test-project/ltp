@@ -30,7 +30,16 @@
  *
  *****************************************************************************/
 
-/******************************************************************************//* File:        pthcli.c                                                      *//*                                                                            *//* Description: Read contents of data file. Write each line to socket, then   *//*              ead line back from socket and write to standard output.       *//*                                                                            *//*                                                                            *//* Usage:       pthcli [port number]                                          *//*                                                                            *//******************************************************************************/
+/******************************************************************************/
+/* File:        pthcli.c                                                      */
+/*                                                                            */
+/* Description: Read contents of data file. Write each line to socket, then   */
+/*              ead line back from socket and write to standard output.       */
+/*                                                                            */
+/*                                                                            */
+/* Usage:       pthcli [port number]                                          */
+/*                                                                            */
+/******************************************************************************/
 
 /* client using TCP */
 
