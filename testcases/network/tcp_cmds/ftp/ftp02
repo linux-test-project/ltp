@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+#   Copyright (c) International Business Machines  Corp., 2003
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : ftp
+#
+#  PURPOSE: Test to see if ftp rejects a user with an invalid password 
+#
+#  HISTORY:
+#     03/03  Jerone Young (jeroney@us.ibm.com)
+#
+#  NOTE:
+#       This version is intended for EAL certification, it will need modification
+#       to conform with LTP standards in the offical LTP tree.
+
+export RHOST="localhost"
+export TEST_USER="ftpuser2"
+export TEST_USER_PASSWD="eal"
+export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
+export TEST_USER_HOMEDIR="/home/$TEST_USER"
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_setup
+#-----------------------------------------------------------------------
+
+do_setup(){
+	#erase user if he may exist , so we can have a clean env
+        rm -rf /home/$TEST_USER
+        userdel $TEST_USER 
+        sleep 1
+
+        useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER 
+        if [ $? != 0 ]
+        then {
+                echo "Could not add test user $TEST_USER to system $RHOST."
+                exit 1
+        }
+        fi
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_cleanup
+#-----------------------------------------------------------------------
+
+do_cleanup(){
+        rm -rf /home/$TEST_USER
+        userdel $TEST_USER
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  MAIN
+#
+# DESCRIPTION: Create Test User
+#              Call upon script to make sure test user cannont log in with invalid password
+#	       Cleanup Test User from system
+#              Exit with exit code of script called upon
+#-----------------------------------------------------------------------
+do_setup
+ftp02_s1
+EXIT_CODE=$?
+do_cleanup
+exit $EXIT_CODE
+

@@ -1,0 +1,104 @@
+#!/bin/sh
+#
+#   Copyright (c) International Business Machines  Corp., 2003
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this pronram;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : ftp
+#
+#  PURPOSE: Tests to see if ftp rejects a 'root' login attempt.
+#
+#  SETUP: The program `/usr/bin/expect' MUST be installed.
+#
+#  HISTORY:
+#   03/04/03 Jerone Young (jeroney@us.ibm.com)
+#
+
+
+RHOST=localhost
+TEST_USER=root
+
+if [ $ROOT_PASSWORD ]
+then
+	TEST_USER_PASSWORD=$ROOT_PASSWORD
+else	
+	echo "YOU MUST EXPORT ROOT_PASSWORD VARIABLE"
+	exit 1
+fi
+
+
+EXIT_CODE=0
+
+#-----------------------------------------------------------------------
+# FUNCTION:  verify_user_is_in_ftpusers_db
+#-----------------------------------------------------------------------
+                                                                               
+verify_user_is_in_ftpusers_db(){
+        echo "Verifying test user $TEST_USER is in /etc/ftpusers database..."
+        FTPUSERS=`grep $TEST_USER /etc/ftpusers`
+        if [ "x$FTPUSERS" == "x" ]
+        then {
+            echo "Test user $TEST_USER not found in /etc/ftpusers unable to run TEST, exiting 0 ..."
+			exit 0
+         }
+		 fi
+	
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION:  do_test
+#-----------------------------------------------------------------------
+do_test() {
+
+		echo "TEST: Ftp should reject $TEST_USER from loging in successfully"
+        expect -c "
+                   spawn ftp $RHOST
+                   sleep 1
+                   expect -re \": \"
+                   send \"$TEST_USER\r\"
+                   expect -re \"Password:\"
+                   send \"$TEST_USER_PASSWD\r\"
+                   expect {
+                     # 230 - Login successful
+                           \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
+                     # 530 - Login failed
+                           \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
+                   }
+                   expect \"ftp> \"
+                   send \"quit\r\"
+        "
+
+    if [ $? != 0 ]
+        then {
+        EXIT_CODE=1
+        }
+    fi
+
+}
+
+#----------------------------------------------------------------------
+# FUNCTION: MAIN
+#----------------------------------------------------------------------
+verify_user_is_in_ftpusers_db
+do_test
+exit $EXIT_CODE
+
+
+
+
+
+

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+grep -v "local_enable" /etc/vsftpd.conf > /tmp/vsftpd.conf
+mv -f /tmp/vsftpd.conf /etc/vsftpd.conf
+echo "local_enable=YES" >> /etc/vsftpd.conf
