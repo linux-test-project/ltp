@@ -296,6 +296,8 @@ cleanup()
 	/*
 	 * print timing stats if that option was specified.
 	 */
+    close(fildes);
+
 	TEST_CLEANUP;
 
 	/* Free the memory allocated for dummy string */

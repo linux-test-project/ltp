@@ -225,6 +225,8 @@ cleanup()
 	/*
 	 * print errno log if that option was specified.
 	 */
+    close(fildes);
+
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files in it */

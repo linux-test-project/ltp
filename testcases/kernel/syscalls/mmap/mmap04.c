@@ -274,6 +274,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fildes);
+
 	TEST_CLEANUP;
 
 	/* Free the memory space allocated for dummy variable */
