@@ -1,7 +1,6 @@
 /*
   Define the protocol structure to be used by NetPIPE for TCP.
 
-  $Id: TCP.h,v 1.1 2003/03/28 18:14:44 robbiew Exp $
   2002/03/18 --- Modified for IPv6 - Robbie Williamson (robbiew@us.ibm.com)
   */
 

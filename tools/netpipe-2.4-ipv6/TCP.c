@@ -14,10 +14,6 @@
 /*****************************************************************************/
 #include    "netpipe.h"
 
-#ifndef lint
-static const char rcsid[] =
-	"$Id: TCP.c,v 1.1 2003/03/28 18:14:44 robbiew Exp $";
-#endif
 
 int Setup(ArgStruct *p)
 {
