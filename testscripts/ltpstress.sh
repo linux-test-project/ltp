@@ -244,4 +244,10 @@ killall -9 NPtcp >/dev/null 2>&1
 
 rm -rf ${TMP}
 echo "Testing done"
+grep FAIL $logfile >/dev/null 2>&1
+if [ $? -eq 1 ]; then
+  echo "All Tests PASSED!"
+else
+  echo "Testing yielded failures. See logfile: $logfile"
+fi
 
