@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: test.h,v 1.3 2002/05/21 13:01:00 plars Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -38,6 +38,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define TPASS    0    /* Test passed flag */
 #define TFAIL    1    /* Test failed flag */
