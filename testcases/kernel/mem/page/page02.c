@@ -39,6 +39,7 @@ CALLS:	malloc(3)
 
 #include <stdio.h>
 #include <signal.h>
+#include <errno.h>
 
 #ifdef LINUX
 #include <stdlib.h>
@@ -56,7 +57,6 @@ CALLS:	malloc(3)
 
 int local_flag = PASSED;
 int block_number;
-extern int errno;
 
 char *TCID="page02";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

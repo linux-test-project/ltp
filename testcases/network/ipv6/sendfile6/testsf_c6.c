@@ -12,8 +12,7 @@
 #include <sys/file.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-
-extern int errno;
+#include <errno.h>
 
 main(argc, argv)
 int argc;

@@ -38,6 +38,7 @@ CALLS:	malloc(3)
 
 #include <stdio.h>
 #include <wait.h>
+#include <errno.h>
 
 #ifdef LINUX
 #include <stdlib.h>
@@ -63,7 +64,6 @@ int instress(void);
 
 int local_flag = PASSED;
 int block_number;
-extern int errno;
 FILE *temp;
 
 char *TCID="page01";           /* Test program identifier.    */

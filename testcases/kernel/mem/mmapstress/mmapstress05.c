@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
+#include <errno.h>
 /* #include <sys/pte.h> */
 
 /*****	LTP Port	*****/
@@ -74,7 +75,6 @@ void ok_exit();
 
 extern time_t	time(time_t *);
 extern char	*ctime(const time_t *);
-extern int errno;
 extern void exit(int);
 
 static int fd;

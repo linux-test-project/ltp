@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <errno.h>
 
 #ifdef LINUX
 #include <sys/wait.h>
@@ -40,8 +41,6 @@
 #include <malloc.h>
 #include <string.h>
 #endif
-
-extern  int     errno;
 
 /** LTP Port **/
 #include "test.h"

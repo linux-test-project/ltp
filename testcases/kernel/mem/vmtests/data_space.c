@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <errno.h>
 
 #ifdef LINUX
 #include <sys/wait.h>
@@ -44,8 +45,6 @@
 #include <string.h>
 void (*sigset(int, void(*)(int)))(int);
 #endif
-
-extern	int	errno;
 
 /** LTP Port **/
 #include "test.h"

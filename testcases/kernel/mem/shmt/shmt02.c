@@ -38,12 +38,11 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <errno.h>
 
 /** LTP Port **/
 #include "test.h"
 #include "usctest.h"
-
-extern int errno;
 
 char *TCID="shmt02";            /* Test program identifier.    */
 int TST_TOTAL=3;                /* Total number of test cases. */
