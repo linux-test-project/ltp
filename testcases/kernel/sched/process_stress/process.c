@@ -313,13 +313,13 @@ void rm_semseg(void)
 
 	/* remove sem_lock semaphore id */
 	semarg.val = 0; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-	if (semctl(sem_lock, IPC_RMID, semarg.val) && errno != EINVAL) {
+	if (semctl(sem_lock, 0, IPC_RMID, semarg.val) && errno != EINVAL) {
 		fprintf(errfp, "semctl failed: errno %d\n", errno);
 		perror("semctl failed");
 	}
 	/* remove sem_count semaphore id. */
 	semarg.val = 0; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-	if (semctl(sem_count, IPC_RMID, semarg.val) && errno != EINVAL) {
+	if (semctl(sem_count, 0, IPC_RMID, semarg.val) && errno != EINVAL) {
 		fprintf(errfp, "semctl failed: errno %d\n", errno);
 		perror("semctl failed");
 	}
