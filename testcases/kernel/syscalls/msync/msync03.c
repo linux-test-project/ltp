@@ -65,6 +65,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -147,7 +148,7 @@ main(int ac, char **av)
 void 
 setup()
 {
-	long brkval;		/* variable to hold max. break val */
+		 struct rlimit brkval;		 /* variable to hold max. break val */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -161,11 +162,11 @@ setup()
 			 "getpagesize() failed to get system page size");
 	}
 
-	/* call ulimit function to get the maxmimum possible break value */
-	brkval = ulimit(3);
+		 /* call getrlimit function to get the maximum possible break value */
+		 getrlimit(RLIMIT_DATA, &brkval);
 
-	/* Set the virtual memory address to max. break value */
-	addr = (char *)brkval;
+		 /* Set the virtual memory address to maximum break value */
+		 addr = (char *) brkval.rlim_max;
 }
 
 /*

@@ -68,8 +68,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -161,7 +162,7 @@ main(int ac, char **av)
 void 
 setup()
 {
-	long brkval;		/* variable to hold max. break val */
+		 struct rlimit brkval;		 /* variable to hold max. break val */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -169,8 +170,8 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* call ulimit function to get the maxmimum possible break value */
-	brkval = ulimit(3);
+		 /* call getrlimit function to get the maximum possible break value */
+		 getrlimit(RLIMIT_DATA, &brkval);
 
 	/* Get the system page size */
 	if ((page_sz = getpagesize()) < 0) {
@@ -228,7 +229,7 @@ setup()
 	}
 
 	/* convert the MAX. possible break value */
-	addr = (char *)brkval;
+		 addr = (char *) brkval.rlim_max;
 }
 
 /*

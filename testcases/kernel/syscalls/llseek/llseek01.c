@@ -73,6 +73,7 @@
 #include <fcntl.h>
 #include <utime.h>
 #include <string.h>
+#include <sys/resource.h>
 #include <sys/stat.h>
 #include <signal.h>
 
@@ -193,13 +194,13 @@ main(int ac, char **av)
  *	     Setup signal handler to ignore SIGXFSZ signal.
  *	     Create a temporary directory and change directory to it.
  *	     Create a test file under temporary directory.
- *	     Set the file size limit using ulimit.
+ *		      Set the file size limit using setrlimit.
  */
 void 
 setup()
 {
 	struct sigaction act;		/* struct. to hold signal */
-	long rlp;			/* file size limit */
+		 struct rlimit rlp;		 		 /* resource for file size limit */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -217,12 +218,12 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	/* Set limit low, argument is in # of 512 byte blocks */
-	rlp = 2 * (BUFSIZ / 512);
+		 /* Set limit low, argument is # bytes */
+		 rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
 
-	if (ulimit(2, rlp) == -1) {
+		 if (setrlimit(RLIMIT_FSIZE, &rlp) == -1) {
 		tst_brkm(TBROK, cleanup,
-			 "Cannot set max. file size using ulimit");
+		 		 		  "Cannot set max. file size using setrlimit");
 	}
 
 	/* Creat/open a temporary file under above directory */
