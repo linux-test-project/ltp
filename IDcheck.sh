@@ -56,7 +56,7 @@ if [ $? != "0" ]; then
  DAEMON_ID=1
 fi
 
-id -g nobody > /dev/null
+id -gn nobody | grep "nobody" > /dev/null
 if [ $? != "0" ]; then
  NOBODY_GRP=1
 fi
