@@ -30,9 +30,6 @@ Files:
     maimparts
     README 
                         
-Availability:
-    Currently only available via internal IBM websites pending legal review:
-
 Installation:      Untar. 
                         
 Use:               maimparts <device like hda, sda, etc.> <iterations> <fstype like jfs, ext3, etc>
