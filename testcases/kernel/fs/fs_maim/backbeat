@@ -45,7 +45,7 @@ chdir "../$part2" || die "Can't cd to ../$part2: $!\n";
 
 chdir ".." || die "Can't cd to ..: $!\n";
 
-$tmp = `diff $part3/sbin $part1/sbin`;
+$tmp = `diff -r $part3/sbin $part1/sbin`;
 
 if ($tmp) {
         print $tmp;
