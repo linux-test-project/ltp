@@ -22,8 +22,7 @@
  *	dup201.c
  * 
  * DESCRIPTION
- *	Negative tests for dup2() with bad fd (EBADF), and for "too many
- *	open files" (EMFILE)
+ *	Negative tests for dup2() with bad fd (EBADF)
  * 
  * ALGORITHM
  * 	Setup:
@@ -36,8 +35,6 @@
  * 	c.	Execute dup2() system call
  *	d.	Check return code, if system call failed (return=-1), test
  *		for EBADF.
- *	e.	Attempt to open OPEN_MAX files, and then attempts to dup2()
- *		any new file, would return EMFILE.
  * 
  * 	Cleanup:
  * 	a.	Print errno log and/or timing stats if options given
@@ -53,6 +50,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	01/2002 Removed EMFILE test - Paul Larson
  *
  * RESTRICTIONS
  * 	NONE
@@ -69,11 +67,10 @@
 #include <usctest.h>
 
 void setup(void);
-void setup2(void);
 void cleanup(void);
 
 char *TCID = "dup201";			/* Test program identifier.    */
-int TST_TOTAL = 5;			/* Total number of test cases. */
+int TST_TOTAL = 4;			/* Total number of test cases. */
 extern int Tst_count;			/* Test counter for tst_* routines */
 
 int maxfd;
@@ -84,7 +81,7 @@ int fd, fd1;
 int mypid;
 char fname[20];
 
-int exp_enos[]={EBADF, EMFILE, 0};
+int exp_enos[]={EBADF, 0};
 
 struct test_case_t {
         int *ofd;
@@ -103,9 +100,6 @@ struct test_case_t {
 
 	/* Second fd argument is getdtablesize() - EBADF */
         { &mystdout, &maxfd, EBADF, NULL},
-
-	/* The maximum number of open files already exist - EMFILE */
-        { &mystdout, &goodfd, EMFILE, setup2 }
 };
 
 main(int ac, char **av)
@@ -140,16 +134,11 @@ main(int ac, char **av)
 
 			TEST(dup2(*TC[i].ofd, *TC[i].nfd));
 
-			/*
-			 * For some reason, the return value from dup2()
-			 * is a positive value and not -1 when an EMFILE
-			 * error occurs.
-			 */
 			fprintf(stderr, "call returned %d and ERRNO = %s\n", 
 				TEST_RETURN, (TEST_ERRNO == 0)?"no error":
 				(TEST_ERRNO == EBADF)? "EBADF":
-				(TEST_ERRNO == EMFILE)? "EMFILE": "unknown error");
-                        if (TEST_RETURN != -1 && TEST_ERRNO != EMFILE) {
+				"unknown error");
+                        if (TEST_RETURN != -1) {
                                 tst_resm(TFAIL, "call succeeded unexpectedly");
                                 continue;
                         }
@@ -176,39 +165,6 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-}
-
-/*
- * setup2() - creat(e) the maximum number of open files
- */
-void 
-setup2()
-{
-	sprintf(fname, "dup201.%d", mypid);
-
-	if ((fd1 = creat(fname, 0666)) == -1) {
-		perror("creat");
-		tst_brkm(TBROK, cleanup, "Cannot open first file");
-	}
-
-	/* fd1 is the starting point to clean up things after the test */
-	fd = fd1;
-
-	/* close and unlink the first file as it was just used to get fd1 */
-	if (close(fd1) == -1) {
-		tst_brkm(TBROK, cleanup, "couldn't close file");
-	}
-
-	if (unlink(fname) == -1) {
-		tst_brkm(TBROK, cleanup, "couldn't unlink file");
-	}
-
-	/* now create the maximum number of allowed open files */
-	while (fd != -1) {
-		sprintf(fname, "dup201.%d.%d", fd, mypid);
-		fd = creat(fname, 0666);
-	}
-	perror("creat");
 }
 
 /*
