@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fchown01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fchown01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -195,6 +195,9 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* make a tempdir and change to it */
     tst_tmpdir();
 
@@ -204,9 +207,6 @@ setup()
 	tst_brkm(TBROK, cleanup,
 		 "Unable to open %s for read/write.  Error:%d, %s",
 		 fname, errno, strerror(errno));	/* this exits */
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 }	/* End setup() */
 
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: lseek01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -215,11 +215,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
 
     sprintf(Fname, "tfile_%d",getpid());
     if ((Fd = open(Fname,O_RDWR|O_CREAT,0700)) == -1) {

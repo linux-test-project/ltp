@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.4 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: select01.c,v 1.5 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -222,6 +222,9 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* create a temporary directory and go to it */
     tst_tmpdir();
 
@@ -238,9 +241,6 @@ setup()
 
     FD_ZERO(&Readfds);
     FD_SET(Fd, &Readfds);
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 }	/* End setup() */
 
 

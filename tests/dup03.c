@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup03.c,v 1.5 2001/03/02 21:17:39 nstraz Exp $ */
+/* $Id: dup03.c,v 1.6 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -218,11 +218,11 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
 
     /*
      * open the file as many times as it takes to use up all fds

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mkdir01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: mkdir01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -235,11 +235,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Create a temporary directory and make it current. */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* Create a temporary directory and make it current. */
+    tst_tmpdir();
 }	/* End setup() */
 
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl10.c,v 1.4 2000/09/08 15:00:15 alaffin Exp $ */
+/* $Id: fcntl10.c,v 1.5 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -234,11 +234,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
 
     sprintf(fname,"tfile_%d",getpid());
     if ((fd=creat(fname, 02644)) == -1) {

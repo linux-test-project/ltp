@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fork01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -290,11 +290,11 @@ void
 {
   /* capture signals */
   tst_sig(FORK, DEF_HANDLER, cleanup);
-  
-  tst_tmpdir();
 
   /* Pause if that option was specified */
   TEST_PAUSE;
+  
+  tst_tmpdir();
 }	/* End setup() */
 
 

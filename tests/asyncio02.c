@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: asyncio02.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -320,14 +320,14 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* create a temporary directory and go to it */
     tst_tmpdir();
 
     /* Indicate which errnos are expected */
     TEST_EXP_ENOS(exp_enos);
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 
     /*
      *	Attempt to get some memory to work with.

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: read01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -220,11 +220,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
     
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-    
     /* Pause if that option was specified */
     TEST_PAUSE;
+    
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
     
     if ((s = malloc(READ_BLOCK_SIZE)) == NULL) {
 	tst_brkm(TBROK, cleanup,

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: sigrelse01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -843,6 +843,9 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* create a temporary directory and go to it */
     tst_tmpdir();
 
@@ -879,9 +882,6 @@ setup()
         tst_brkm(TBROK, cleanup,
             "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed: errno=%d",
             errno);
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 }       /* End setup() */
 
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal03.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: signal03.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -579,11 +579,11 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* make and change to a temporary directory */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make and change to a temporary directory */
+    tst_tmpdir();
 
 }       /* End setup() */
 

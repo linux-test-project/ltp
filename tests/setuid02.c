@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setuid02.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: setuid02.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -205,15 +205,15 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* make a temp dir and cd to it */
     tst_tmpdir();
 
     /* must be root */
     if ( geteuid() != 0 )
 	tst_brkm(TBROK, cleanup, "Must be root for this test!");
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 }	/* End setup() */
 
 

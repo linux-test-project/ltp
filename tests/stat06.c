@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.1 2001/03/01 23:11:40 nstraz Exp $ */
+/* $Id: stat06.c,v 1.2 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -271,11 +271,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp directory and cd to it */
+    tst_tmpdir();
 
     for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
 	Test_cases[ind].setupfunc();

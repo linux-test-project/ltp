@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.3 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: access01.c,v 1.4 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -237,6 +237,9 @@ setup()
 
     umask(0);	/* reset umask avoid it affects on modes */
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
@@ -245,9 +248,6 @@ setup()
      * to us.
      */
     chown(".", -1, getgid());
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 
     sprintf(Fname,"accessfile");
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: rmdir05.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -384,6 +384,9 @@ void setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* Create a temporary directory and make it current. */
     tst_tmpdir();
 
@@ -408,9 +411,6 @@ void setup()
 
     /* Create a unique directory name. */
     sprintf(dir_name,"./dir_%d",getpid());
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 
 }	/* End setup() */
 

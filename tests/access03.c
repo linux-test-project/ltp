@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: access03.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -479,11 +479,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make and change to a temporary directory */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make and change to a temporary directory */
+    tst_tmpdir();
 }	/* End setup() */
 
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.2 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: select03.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -228,9 +228,11 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* create a temporary directory and go to it */
     tst_tmpdir();
-
 
     /* make and open FIFO */
     if ( mkfifo(FILENAME, 0777) == -1 ) {
@@ -252,9 +254,6 @@ setup()
     FD_ZERO(&saved_Writefds);
     FD_SET(Fd, &saved_Readfds);
     FD_SET(Fd, &saved_Writefds);
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 
 }	/* End setup() */
 

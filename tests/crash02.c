@@ -113,9 +113,9 @@ void setup()
 	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	tst_tmpdir();
-
 	TEST_PAUSE;
+
+	tst_tmpdir();
 }
 
 void help()

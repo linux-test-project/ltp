@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setregid01.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: setregid01.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -307,11 +307,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make a temp dir and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp dir and cd to it */
+    tst_tmpdir();
 }	/* End setup() */
 
 

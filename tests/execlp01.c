@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execlp01.c,v 1.3 2001/02/28 17:42:00 nstraz Exp $ */
+/* $Id: execlp01.c,v 1.4 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -216,9 +216,6 @@ setup()
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* make a temp dir and cd to it */
-    tst_tmpdir();
-    
     /*
      * Send out info message that timing and errnolog info is not
      * available because of the use of a child process for each exec
@@ -231,6 +228,9 @@ The TEST macro is NOT used.");
 
     /* Pause if that option was specified */
     TEST_PAUSE;
+    
+    /* make a temp dir and cd to it */
+    tst_tmpdir();
 }	/* End setup() */
 
 

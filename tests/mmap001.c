@@ -63,9 +63,9 @@ void setup()
    */
   tst_sig(FORK, DEF_HANDLER, cleanup);
 
-  tst_tmpdir();
-
   TEST_PAUSE;
+
+  tst_tmpdir();
 
   snprintf(buf,1024,"testfile.%d",getpid());
 

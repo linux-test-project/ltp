@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07B.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fcntl07B.c,v 1.3 2001/06/06 19:24:24 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -288,6 +288,9 @@ setup(char *path)
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
 
+    /* Pause if that option was specified */
+    TEST_PAUSE;
+
     /* create a temporary directory and go to it */
     tst_tmpdir();
 
@@ -299,9 +302,6 @@ setup(char *path)
     if((npipe_fd=open(FIFONAME, O_RDWR, 0666)) == -1) {
 	tst_brkm(TBROK, cleanup, "Open of named pipe %s failed errno %d (%s)\n", File1, errno, strerror(errno));
     }
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
 }	/* End setup() */
 
 

@@ -150,11 +150,11 @@ setup()
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* make a temp dir and cd to it */
-    tst_tmpdir();
-
     /* Pause if that option was specified */
     TEST_PAUSE;
+
+    /* make a temp dir and cd to it */
+    tst_tmpdir();
 }	/* End setup() */
 
 
