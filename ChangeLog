@@ -1,3 +1,77 @@
+LTP-20030306
+
+- Changed IDcheck.sh to only prompt for id	  ( Robbie Williamson )
+  creation if the user is root.
+- Added LVM test execution scripts.		  ( Marty Ridgeway )
+- Added system stress execution script.		  ( Robbie Williamson )
+- Added tst_kvercmp() API to allow test		  ( Paul Larson )
+  creators to query the kernel version.
+- Removed all external int declarations of	  ( Anton Blanchard,
+  "errno" and replaced with includes of errno.h     Susanne Wintenberger,
+						    Robbie Williamson )
+- Replaced usage of sigaction() with signal()	  ( Nathan Straz )
+  in `pan`.
+- Ported and merged all tests from the Open	  ( Robbie Williamson ) 
+  POSIX* Testsuite:
+    pthreads
+    semaphores
+    timers
+    clock()
+    nanosleep()
+    raise()
+    sigsetops
+- Added flock06 test.				  ( Matthew Wilcox )
+- Added ipchains and dhcpd (server) tests.	  ( Manoj Iyer )
+- Patched Makefiles to stop execution on errors.  ( Vasan Sundar )
+- Patched Makefiles to allow non-root users to	  ( Robbie Williamson )
+  run 'make install'.  
+- Fixed 'ar' test to use CC defintion in 	  ( Anton Blanchard )
+  Makefile.
+- Corrected typos in install section of 	  ( Manoj Iyer )
+  commands/fileutils/<test> Makefiles.
+- Added tests for gzip/gunzip.			  ( Manoj Iyer )
+- Added tests for unzip.			  ( Manoj Iyer )
+- Applied patch to fsstress's Makefile to	  ( Anton Blanchard )
+  define _GNU_SOURCE to allow O_DIRECT. 
+- Applied changes to allow testcases to be	  ( Susanne Wintenberger )
+  GCC 3.3 compliant.
+- Fixed semaphore initialization bug in sem02.    ( Jacky Malcles )
+- Applied patch to mem/mtest07/shm_test.c to	  ( Chris Dearman )
+  correct character buffer variable: buff.
+- Fixed hangup01 to initialize variable,	  ( Robbie Williamson )
+  usrstr.len, to avoid junk data storage.
+- Applied patch to clone01 to allow test to	  ( Andi Kleen )
+  be more architecture independent.
+- Added kernel checking code to module tests.	  ( Paul Larson )
+- Applied 31bit emulation s390x patch to 	  ( Susanne Wintenberger )
+  delete_module02 and query_module03.
+- Fixed cleanup section of ftruncate01.		  ( Robbie Williamson )
+- Applied patch to gettimeofday01 to not allow	  ( Andi Kleen )
+  execution on x86_64 architectures.
+- Added x86_64 as valid architecture for ioperm() ( Andi Kleen )
+  and iopl() tests.
+- Applied patch to semctl() tests to correctly 	  ( Anton Blanchard )
+  test the ipc call.
+- Removed unspecified/undocumented case from      ( Anton Blanchard )
+  munlock01.    
+- Fixed personality02 test.			  ( Paul Larson )
+- Applied MIPS specific architecture patch to     ( Chris Dearman )
+  profil01.
+- Removed unspecified/undocumented case from      ( Robbie Williamson )
+  sendmsg01.
+- Applied patch to swapoff() and swapon() 	  ( Jacky Malcles )
+  testcases to allow correct execution on IA64
+- Applied patch to sysfs01 to allow execution on  ( Susanne Wintenberger )
+  64bit machines.
+- Added test for ustat().			  ( Aniruddha Marathe )
+- Patched float_ tests to generate datafiles      ( Robbie Williamson )
+  during execution.
+- Added test for iproute.			  ( Manoj Iyer )
+- Added test for xinetd.			  ( Manoj Iyer )
+- Added test for traceroute.			  ( Manoj Iyer )
+ 
+
+
 LTP-20030206
 
 - Applied cross-compiler patch for top-level      ( V.R. Sundar ) 
