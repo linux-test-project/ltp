@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.3 2001/03/13 21:54:05 nstraz Exp $ */
+/* $Id: tst_tmpdir.c,v 1.4 2001/03/15 21:21:46 nstraz Exp $ */
 
 /**********************************************************
  *
@@ -163,18 +163,20 @@ tst_tmpdir()
 		/*
 		 * Make the temporary directory in one shot using mkdtemp()
 		 */
-		if ( (TESTDIR = mkdtemp(template)) == NULL )
+		if (mkdtemp(template) == NULL)
 			tst_brkm(TBROK, tmpdir_cleanup, 
 							"%s: mkdtemp(%s) failed; errno = %d: %s",
 						   	FN_NAME, template, errno, strerror(errno));
+		TESTDIR = strdup(template);
 #else 
 		/*
 		 * Make the template name, then the directory
 		 */
-		if ((TESTDIR = mktemp(template)) == NULL)
+		if (mktemp(template) == NULL)
 			tst_brkm(TBROK, tmpdir_cleanup,
 							"%s: mktemp(%s) failed; errno = %d: %s",
 							FN_NAME, template, errno, strerror(errno));
+		TESTDIR = strdup(template);
 		if (mkdir(TESTDIR, DIR_MODE)) {
 			/* If we start failing with EEXIST, wrap this section in 
 			 * a loop so we can try again.
