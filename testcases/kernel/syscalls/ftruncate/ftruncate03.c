@@ -144,6 +144,9 @@ TEST3: //invalid socket descriptor should fail w/ EBADF
    }
    else { printf("Test failed as Expected!\n"); }
 
+/* Remove tmp dir and all files in it */
+   tst_rmdir();
+
 //Done Testing
    return 0;
 }
