@@ -41,7 +41,7 @@ SUBDIR= \
 	ioctl ipc kill lchown link \
 	listen llseek lseek lstat \
 	mkdir mknod mlock mlockall mmap modify_ldt mount mprotect \
-	mremap msync munmap nanosleep nice open \
+	mremap msync munlock munmap nanosleep nice open \
 	pathconf pause personality pipe poll \
 	pread pwrite read readdir \
 	readlink readv recv recvfrom recvmsg rename \
