@@ -287,11 +287,14 @@ int main (int argc, char **argv)
 
 		for (i=0; i<num_children; i++) {
 			try_write_ETXN_again:
-			if ((n = write (p2child [i][WRITE], &packet, sizeof (packet))) < 0)
-				if (non_blocking_flag && errno == EAGAIN)
+			if ((n = write (p2child [i][WRITE], &packet,
+					sizeof (packet))) < 0) {
+				if (non_blocking_flag && errno == EAGAIN) {
 					goto try_write_ETXN_again;
-				else
+				} else {
 					sys_error ("write failed", __LINE__);
+				}
+			}
 		}
 	}
 
@@ -319,11 +322,13 @@ int main (int argc, char **argv)
 	printf ("\n\tParent: done sending packets & waiting for children to complete!\n");
 	for (i=0; i<num_children; i++) {
 		try_read_again:
-		if (write (p2child [i][WRITE], &packet, sizeof (packet)) < 0)
-			if (non_blocking_flag && errno == EAGAIN)
+		if (write (p2child [i][WRITE], &packet, sizeof (packet)) < 0) {
+			if (non_blocking_flag && errno == EAGAIN) {
 				goto try_read_again;
-			else
+			} else {
 				sys_error ("write failed", __LINE__);
+			}
+		}
 		if (close (p2child [i][WRITE]) < 0)
 			sys_error ("close failed", __LINE__);
 		

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.2 2002/10/31 15:57:48 nstraz Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.3 2002/12/04 18:42:53 robbiew Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -42,7 +42,7 @@
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include <time.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>

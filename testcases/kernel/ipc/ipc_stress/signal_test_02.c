@@ -75,6 +75,7 @@
 #define SIGMAX 64 /* What should this number really be? _NSIG from bits/signum.h maybe? */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>

@@ -78,6 +78,7 @@
 #include <unistd.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 #include <sys/errno.h>
 
 #ifdef _LINUX_

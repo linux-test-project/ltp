@@ -87,6 +87,7 @@
 #  define __USE_XOPEN
 #endif
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
 #include <sys/errno.h>
