@@ -47,14 +47,14 @@
  *	04/2004 - Updated By Robbie Williamson
  *
  * RESTRICTIONS
- *	Must be ran as non-root
+ *	Must be ran as root
  */
 
 #include "ipcshm.h"
 #include <pwd.h>
 
 char *TCID = "hugeshmat02";
-int TST_TOTAL = 3;
+int TST_TOTAL = 2;
 extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -86,8 +86,6 @@ struct test_case_t {
 	/* EINVAL - the address is not page aligned and SHM_RND is not given */
 	{&shm_id_2, (void *)NADDR, EINVAL},
 
-	/* EACCES - the shared memory resource has no read/write permission */
-	{&shm_id_3, 0, EACCES}
 };
 
 int main(int ac, char **av)
@@ -151,18 +149,6 @@ int main(int ac, char **av)
 void
 setup(void)
 {
-	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
