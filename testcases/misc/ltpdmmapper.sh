@@ -16,7 +16,7 @@ usage()
 	defaults:
 	part1=$part1
 	part2=$part2
-	ltproot=$TPROOT
+	ltproot=$LTPROOT
 	tmpdir=$TMPBASE
 
 	example: ${0##*/} -a hdc1 -b hdc2 
