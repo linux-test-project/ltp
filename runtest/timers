@@ -2,11 +2,22 @@
 clock_getcpuclockid01 cd $LTPROOT/testcases/bin;clock_getcpuclockid01
 clock_getres01 cd $LTPROOT/testcases/bin;clock_getres01
 clock_gettime01 cd $LTPROOT/testcases/bin;clock_gettime01
+clock_gettime02 clock_gettime02
+clock_gettime03 clock_gettime03
 clock_nanosleep01 cd $LTPROOT/testcases/bin;clock_nanosleep01
 clock_settime01 cd $LTPROOT/testcases/bin;clock_settime01
+clock_settime02 clock_settime02
+clock_settime03 clock_settime03
 nanosleep06 cd $LTPROOT/testcases/bin;nanosleep06
 timer_create01 cd $LTPROOT/testcases/bin;timer_create01
+timer_create02 timer_create02
+timer_create03 timer_create03
+timer_create04 timer_create04
 timer_delete01 cd $LTPROOT/testcases/bin;timer_delete01
+timer_delete02 timer_delete02
+timer_delete03 timer_delete03
 timer_getoverrun01 cd $LTPROOT/testcases/bin;timer_getoverrun01
 timer_gettime01 cd $LTPROOT/testcases/bin;timer_gettime01
 timer_settime01 cd $LTPROOT/testcases/bin;timer_settime01
+timer_settime02 timer_settime02
+timer_settime03 timer_settime03
