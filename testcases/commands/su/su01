@@ -1,6 +1,6 @@
 #!/bin/sh 
 #*********************************************************************
-#   Copyright (c) International Business Machines  Corp., 2003
+#   Copyright (c) International Business Machines  Corp., 2003, 2004
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
 #   along with this pronram;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#
-#
 #  FILE   : su
 #
 #  PURPOSE: Tests the basic functionality of `su`.
@@ -25,8 +23,9 @@
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
 #
 #  HISTORY:
-#    03/03 Dustin Kirkland (dkirklan@us.ibm.com)
-#	 03/03 Jerone Young	 (jeroney@us.ibm.com)
+#    03/03    Dustin Kirkland (dkirklan@us.ibm.com)
+#    03/03    Jerone Young    (jeroney@us.ibm.com)
+#    10/01/04 Kris Wilson     Port to Red Hat
 #
 #*********************************************************************
 
@@ -40,11 +39,18 @@ export TEST_USER1="su_usr1"
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
+# need to export tvar for su01_s1
+export tvar
+echo "Machine type is: $tvar \n"
+
 if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+# Need to also set group for TEST_USER2
 then
 export TEST_USER1_GROUP="wheel"
+export TEST_USER2_GROUP="wheel"
 else
 export TEST_USER1_GROUP="trusted"
+export TEST_USER2_GROUP="trusted"
 fi
 export TEST_USER1_PASSWD="eal"
 export TEST_USER1_ENCRYPTED_PASSWD="42VmxaOByKwlA"
@@ -52,7 +58,8 @@ export TEST_USER1_NEW_PASSWD="a_very_good_and_long_password"
 export TEST_USER1_HOMEDIR="/home/$TEST_USER1"
 
 export TEST_USER2="su_usr2"
-export TEST_USER2_GROUP="trusted"
+# Group needs to be trusted for Red Hat.
+#export TEST_USER2_GROUP="trusted"
 export TEST_USER2_PASSWD="eal"
 export TEST_USER2_ENCRYPTED_PASSWD="42VmxaOByKwlA"
 export TEST_USER2_HOMEDIR="/home/$TEST_USER2"
@@ -90,11 +97,16 @@ rm -f $TEST_ENV_FILE &> /dev/null
 		
 		usermod -G users,$TEST_USER1_GROUP $TEST_USER1
 
-	#create users home diretory (SLES 8 does not do this, even when specified in adduser)
-        USER_UID=`id -u $TEST_USER1`
-        USER_GID=`id -g $TEST_USER1`
-        mkdir $TEST_USER1_HOMEDIR
-        chown -R $USER_UID.$USER_GID $TEST_USER1_HOMEDIR
+	#create users home directory (SLES 8 does not do this, even when specified in adduser)
+# Only do this if not RH; RH creates the directory.
+	if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]
+	then {
+          USER_UID=`id -u $TEST_USER1`
+          USER_GID=`id -g $TEST_USER1`
+          mkdir $TEST_USER1_HOMEDIR
+          chown -R $USER_UID.$USER_GID $TEST_USER1_HOMEDIR
+	}
+	fi
 
         usermod -p $TEST_USER1_ENCRYPTED_PASSWD $TEST_USER1 &> /dev/null
         if [ $? != 0 ]
@@ -122,10 +134,15 @@ rm -f $TEST_ENV_FILE &> /dev/null
 		usermod -G users,$TEST_USER2_GROUP $TEST_USER2
 	
 	#create users home diretory (SLES 8 does not do this, even when specified in adduser)
-        USER_UID=`id -u $TEST_USER2`
-        USER_GID=`id -g $TEST_USER2`
-        mkdir $TEST_USER2_HOMEDIR
-        chown -R $USER_UID.$USER_GID $TEST_USER2_HOMEDIR
+# Only do this if not RH; RH creates the directory.
+        if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]
+        then {
+          USER_UID=`id -u $TEST_USER2`
+          USER_GID=`id -g $TEST_USER2`
+          mkdir $TEST_USER2_HOMEDIR
+          chown -R $USER_UID.$USER_GID $TEST_USER2_HOMEDIR
+	}
+	fi
 
         usermod -p $TEST_USER2_ENCRYPTED_PASSWD $TEST_USER2 &> /dev/null
         if [ $? != 0 ]

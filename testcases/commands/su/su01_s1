@@ -1,6 +1,6 @@
 #! /usr/bin/expect -f
 #*********************************************************************
-#   Copyright (c) International Business Machines  Corp., 2003
+#   Copyright (c) International Business Machines  Corp., 2003, 2004
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
 #   along with this pronram;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#
-#
 #  FILE   : su
 #
 #  PURPOSE: Tests the basic functionality of `su`.
@@ -27,8 +25,10 @@
 #     	  The PASSWD variable should be set prior to execution
 #
 #  HISTORY:
-#    03/03 Dustin Kirkland (dkirklan@us.ibm.com)
-#	 03/03 Jerone Young	(jeroney@us.ibm.com)
+#     03/03     Dustin Kirkland (dkirklan@us.ibm.com)
+#     03/03     Jerone Young    (jeroney@us.ibm.com)
+#     10/01/04  Kris Wilson     Skip test 7 if RedHat; no -e option.
+########################################################################
 
 # The root user cannot succesfully execute su test because the root user
 # is able to become anyone without entering passwords
@@ -49,8 +49,16 @@ if [info exists env(PASSWD)] {
 if [info exists env(TEST_USER2)] {
   set USER1 $env(TEST_USER2)
 } else {
-  	send_user "YOU MUST SET ENVIORMENT VARIABLE TEST_USER2"
+  	send_user "YOU MUST SET ENVIRONMENT VARIABLE TEST_USER2"
   	exit 1
+}
+
+# Need the release type from su01
+if [info exists env(tvar)] {
+  set distro $env(tvar)
+} else {
+        send_user "YOU MUST SET ENVIORMENT VARIABLE tvar"
+        exit 1
 }
 
 if [info exists env(TEST_USER2_PASSWD)] {
@@ -408,8 +416,10 @@ if { ($displayed_error==1) && ($exit_code!=0) && ($pid>0) } {
 
 # Become root and expire $USER1 password
 
-if { $test_one_passed==1} {
+#  Skip this if Red Hat; -e option not supported.
+if { $distro != "redhat" && $distro != "redhat-linux" } {
 
+if { $test_one_passed==1} {
 send_user "TEST:  su to user1 with the user1 password expired.\n"
 
 spawn /bin/su -l root -c "passwd -e $USER1"
@@ -417,9 +427,9 @@ sleep 1
 expect {
   "Password:" {
     send "$PASSWD\r"
-	sleep 1
+sleep 1
     expect {
-      "Password expiry information changed." {}
+      "Password changed." {}
     }
   }
 }
@@ -482,5 +492,8 @@ close
 	send_user "This test cannot be run because the first test to su as root failed\n"
 
 }
-
+# If RH let the tester know why only 6 tests were run.
+} else {
+  send_user "TEST 7 skipped if running on Red Hat; -e not supported \n"
+}
 exit  $script_exit_code
