@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.12 2001/10/12 20:21:49 robbiew Exp $
+$Id: INSTALL,v 1.13 2001/10/12 20:51:55 robbiew Exp $
 
 Quick Start
 -----------
@@ -8,8 +8,10 @@ Quick Start
 3> make
 4> ./runalltests.sh
 
-*NOTE: The LTP assumes the existence of the nobody, bin, and daemon user/groups.  If these
-do not exist, certain tests will fail.
+*NOTE: The LTP assumes the existence of the nobody, bin, and daemon users and their groups.  
+If these ids do not exist, certain tests will fail. The users and groups IDs should be the 
+same, i.e. if user "nobody" is 99, then it's group should also be "99". The names of the 
+groups are irrelevant.  
 
 
 Detailed Installation
