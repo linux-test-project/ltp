@@ -10,8 +10,8 @@ all: $(TARGETS)
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
 install: all
-        @for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
-        @for i in $(TARGETS); do ln -f $$i ../../bin/$$i; done
+	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	@for i in $(TARGETS); do ln -f $$i ../../bin/$$i; done
 
 clean: 
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
