@@ -20,7 +20,7 @@
 # name of file	: Makefile						#
 # description	: make(1) description file                           	#
 #########################################################################
-CFLAGS+=-I../../../../../include -g -Wall
+CFLAGS+=-I../../../../../include -g -Wall -m64
 LOADLIBES+=-L../../../../lib -lltp
 TESTS=hugeshmget hugeshmat
 
