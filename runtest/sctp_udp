@@ -1,0 +1,10 @@
+bind01-sctp-udp	bind01-sctp-udp
+listen01-sctp-udp listen01-sctp-udp
+recv01-sctp-udp recv01-sctp-udp
+recvfrom01-sctp-udp recvfrom01-sctp-udp
+recvmsg01-sctp-udp recvmsg01-sctp-udp
+send01-sctp-udp send01-sctp-udp
+sendmsg01-sctp-udp sendmsg01-sctp-udp
+sendto01-sctp-udp sendto01-sctp-udp
+setsockopt01-sctp-udp setsockopt01-sctp-udp
+socket01-sctp-udp socket01-sctp-udp
