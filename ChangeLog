@@ -1,3 +1,22 @@
+LTP-20020709
+-----------
+Change Log
+----------
+* New Additions
+---------------
+- New testcases fcntl22, link06, link07,
+  mknod09                                        ( Bull Group         )
+- New sctp tests                                 ( Robert Williamson  )
+- New direct IO tests                            ( Narasimha Sharoff  )
+- mlock01 and mlock02 tests                      ( Paul Larson        )
+
+* Fixes
+----------------
+- MIPS fixes; write01                            ( Shaobo Li          )
+- patches for 64bit and warnings                 ( Ihno Krumreich     )
+- fixes for ftruncate02, fchown03                ( Robert Williamson  )
+  - updates to LTP scripts                         ( Nathan Straz       )
+
 LTP-20020607
 ------------
 
