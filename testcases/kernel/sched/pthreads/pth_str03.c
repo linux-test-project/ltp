@@ -72,6 +72,16 @@ int num_nodes(int, int);
 int synchronize_children(c_info *) ;
 void *doit(void *);
 
+void testexit(int value)
+{
+      if (value == 0)
+          printf("pth_str03:  Test Passed\n");
+      else
+          printf("pth_str03:  Test Failed\n");
+
+      exit(value);
+}
+
 /*--------------------------------------------------------------------------------*
  * parse_args
  *
@@ -132,7 +142,7 @@ static void parse_args( int argc, char *argv[] )
 		fprintf( stderr, "\t-d <num>\tdepth of child nodes\n" );
 		fprintf( stderr, "\t-t <num>\ttimeout for child communication (in minutes)\n" );
 		fprintf( stderr, "\t-D\tdebug mode\n" );
-		exit( 1 );
+		testexit( 1 );
 	}
 
 }
@@ -267,7 +277,7 @@ int synchronize_children( c_info *parent )
 	      &timer))) {
 		fprintf( stderr, "pthread_cond_timedwait (sync) %d: %s\n",
 		    my_index, strerror(rc) );
-		exit( 2 );
+		testexit( 2 );
 	    }
 
 	    if ( debug ) {
@@ -358,7 +368,7 @@ void *doit( void *param )
 		if ((rc = pthread_create(&(info_p->threads[child]), &attr, doit, (void *) info_p))) {
 		    fprintf( stderr, "pthread_create (doit): %s\n",
 		      strerror(rc) );
-		    exit( 3 );
+		    testexit( 3 );
 		} else {
 		    if ( debug ) {
 			printf( "pthread_create made thread %p\n",
@@ -388,7 +398,7 @@ void *doit( void *param )
 			  my_index, status, strerror(rc) );
 			fflush( stderr );
 		    }
-		    exit( 4 );
+		    testexit( 4 );
 		} else {
 		    if ( debug ) {
 			printf( "thread %d joined child %d ok\n", my_index, child );
@@ -431,7 +441,7 @@ void *doit( void *param )
 			      &parent->child_ptrs[child]->talk_condvar))) {
 				fprintf( stderr, "pthread_cond_broadcast: %s\n",
 				  strerror(rc) );
-				exit( 5 );
+				testexit( 5 );
 			    }
 			}
 			if ( debug ) {
@@ -460,7 +470,7 @@ void *doit( void *param )
 			fprintf( stderr,
 			  "pthread_cond_timedwait (leaf) %d: %s\n",
 			  my_index, strerror(rc) );
-			exit( 6 );
+			testexit( 6 );
 		    }
 		}
 		pthread_mutex_unlock( &info_p->talk_mutex );
@@ -493,27 +503,27 @@ int main( int argc, char *argv[] )
 	if ((rc = pthread_mutex_init(&node_mutex, NULL))) {
 		fprintf( stderr, "pthread_mutex_init(node_mutex): %s\n",
 		    strerror(rc) );
-		exit( 7 );
+		testexit( 7 );
 	}
 
 	/* Initialize node condition variable.  */
 	if ((rc = pthread_cond_init(&node_condvar, NULL))) {
 		fprintf( stderr, "pthread_cond_init(node_condvar): %s\n",
 		    strerror(rc) );
-		exit( 8 );
+		testexit( 8 );
 	}
 
 	/* Allocate pthread info structure array.  */
 	if ( (total = num_nodes( breadth, depth )) > MAXTHREADS ) {
 		fprintf( stderr, "Can't create %d threads; max is %d.\n",
 		    total, MAXTHREADS );
-		exit( 9 );
+		testexit( 9 );
 	}
 	printf( "Allocating %d nodes.\n", total );
 	fflush( stdout );
 	if ( (child_info = (c_info *)malloc( total * sizeof(c_info) )) == NULL ) {
 		perror( "malloc child_info" );
-		exit( 10 );
+		testexit( 10 );
 	}
 	bzero( child_info, total * sizeof(c_info) );
 
@@ -528,14 +538,14 @@ int main( int argc, char *argv[] )
 		if ( (child_info[ind].threads =
 		    (pthread_t *)malloc( breadth * sizeof(pthread_t) )) == NULL ) {
 			perror( "malloc threads" );
-			exit( 11 );
+			testexit( 11 );
 		}
 		bzero( child_info[ind].threads, breadth * sizeof(pthread_t) );
 		
 		if ( (child_info[ind].child_ptrs =
 		    (c_info **)malloc( breadth * sizeof(c_info *) )) == NULL ) {
 			perror( "malloc child_ptrs" );
-			exit( 12 );
+			testexit( 12 );
 		}
 		bzero( child_info[ind].child_ptrs,
 		    breadth * sizeof(c_info *) );
@@ -543,26 +553,26 @@ int main( int argc, char *argv[] )
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex, NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
 			    strerror(rc) );
-			exit( 13 );
+			testexit( 13 );
 		}
 
 		if ((rc = pthread_mutex_init(&child_info[ind].talk_mutex, NULL))) {
 			fprintf( stderr, "pthread_mutex_init talk_mutex: %s\n",
 			    strerror(rc) );
-			exit( 14 );
+			testexit( 14 );
 		}
 		
 		if ((rc = pthread_cond_init(&child_info[ind].child_condvar, NULL))) {
 			fprintf( stderr,
 			    "pthread_cond_init child_condvar: %s\n",
 			    strerror(rc) );
-			exit( 15 );
+			testexit( 15 );
 		}
 
 		if ((rc = pthread_cond_init(&child_info[ind].talk_condvar, NULL))) {
 			fprintf( stderr, "pthread_cond_init talk_condvar: %s\n",
 			    strerror(rc) );
-			exit( 16 );
+			testexit( 16 );
 		}
 
 		if ( debug ) {
@@ -577,7 +587,7 @@ int main( int argc, char *argv[] )
 
 	if ((rc = pthread_attr_init(&attr))) {
 		fprintf( stderr, "pthread_attr_init: %s\n", strerror(rc) );
-		exit( 17 );
+		testexit( 17 );
 	}
 
 	/* Make sure that all the thread children we create have the
@@ -586,7 +596,7 @@ int main( int argc, char *argv[] )
 	if ((rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))) {
 		fprintf( stderr, "pthread_attr_setdetachstate: %s\n",
 		    strerror(rc) );
-		exit( 18 );
+		testexit( 18 );
 	}
 
 	printf( "Creating root thread via pthread_create.\n" );
@@ -594,7 +604,7 @@ int main( int argc, char *argv[] )
 
 	if ((rc = pthread_create(&root_thread, &attr, doit, NULL))) {
 		fprintf( stderr, "pthread_create: %s\n", strerror(rc) );
-		exit( 19 );
+		testexit( 19 );
 	}
 
 	if ( debug ) {
@@ -605,7 +615,7 @@ int main( int argc, char *argv[] )
 	/* Wait for the root child to exit.  */
 	if ((rc = pthread_join(root_thread, NULL))) {
 		fprintf( stderr, "pthread_join: %s\n", strerror(rc) );
-		exit( 20 );
+		testexit( 20 );
 	}
 
 	if ( debug ) {
@@ -615,5 +625,7 @@ int main( int argc, char *argv[] )
 
 	printf("\n\nThe sum of tree (breadth %d, depth %d) is %ld\n",
 		breadth, depth, child_info[0].sum);
-	exit( 0 );
+	testexit( 0 );
+
+	exit(0);
 }
