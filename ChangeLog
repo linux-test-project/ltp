@@ -1,3 +1,65 @@
+LTP-20030206
+
+- Applied cross-compiler patch for top-level      ( V.R. Sundar ) 
+  Makefile.
+- Added additional runtime options to the         ( Manoj Iyer &
+  "runalltests.sh" script.     	          	    Robbie Williamson )
+- Corrected runalltests.sh -l option to require   ( Paul Larson )
+  an absolute path.
+- Added additional runtime and ouput options      ( Manoj Iyer )
+  to `pan`.
+- Added hyperthreading tests.  			  ( Sonic Zhang )
+- Added ftruncate04 tests.			  ( Robbie Williamson )
+- Changed top-level Makefiles to not require      ( Robbie Williamson )
+  updating everytime a directory is added.
+- Applied s390/64-bit enablement patch.		  ( Susanne Wintenberger )
+- Applied 64bit patch to stress_cd.		  ( Jay Turner )
+- Applied optimization patches (-O2).	  	  ( Mikael Starvik &
+						    V.R. Sundar )
+- Added mmapstress testsuite.			  ( Ananda Venkataraman )
+- Added new testcases to test shared library      ( Manoj Iyer )
+  libmm.
+- Applied patch to mem01 to allow test to run     ( Jacky Malcles )
+  on 2.4 and 2.5 kernels.
+- Changed sched_stress testsuite from using	  ( Robbie Williamson )
+  the bootfile, to generating its' own
+  datafile.
+- Corrected cleanup section of abort01 test.      ( Robbie Williamson )
+- Added code to acct(2) tests to check for        ( Robbie Williamson )
+  BSD accounting before execution.
+- Corrected description of flock03.    	   	  ( Robbie Williamson )
+- Added code to handle formatting issues with     ( Robbie Williamson )
+  gtehostid01 test.
+- Applied patch to ioperm(2) & iopl(2) tests to	  ( V.R. Sundar ) 
+  check for IA32 architecture before executing.
+- Added code to msgctl08 and msgctl09 to ensure   ( Robbie Williamson )
+  correct and better execution with respect to
+  message queue limits.
+- Fix recvfrom01 & recvmsg01 to test for the      ( Paul Larson )
+  correct expected errors and their associated 
+  returns.
+- Applied patch to sendfile02 to allow the test   ( V.R. Sundar )
+  to function correctly and keep track of its' 
+  children.  
+- Applied patch to setrlimit01 to test for        ( V.R. Sundar )
+  SIGXFSZ
+- Applied patch to swapoff02 and swapon02 to      ( Susanne Wintenberger )
+  allow the test to use /dev/tty, instead of
+  /dev/mouse.
+- Applied buffer overflow patch to swapon02.      ( Chris Dearman )
+- Added code to fptest03 to check endianess       ( Robbie Williamson )
+  before defining unions.
+- Added testsuite for multi-threaded core dump    ( Guo Min )
+  kernel patch.
+- Added netpipe as a network traffic generator    ( Robbie Williamson )
+  tool.
+- Added `cpio` command test.			  ( Manoj Iyer )
+- Added `ln` command test.			  ( Manoj Iyer )
+- Added `cp` command test.			  ( Manoj Iyer )
+- Added `mkdir` command test.			  ( Manoj Iyer )
+- Added `mv` command test.			  ( Manoj Iyer )
+- 
+
 LTP-20030110
 
 - Added New test case to test 'file' command.     ( Manoj Iyer )
