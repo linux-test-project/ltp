@@ -47,7 +47,7 @@
 /* and this test to function correctly.                        */
 #ifndef MSG_CMSG_COMPAT
 
-#if defined (__powerpc64__) || defined (__x86_64__) || defined (__sparc64__)
+#if defined (__powerpc64__) || defined (__x86_64__) || defined (__sparc64__) || define (__ia64__)
 #define MSG_CMSG_COMPAT 0x80000000
 #else
 #define MSG_CMSG_COMPAT 0
