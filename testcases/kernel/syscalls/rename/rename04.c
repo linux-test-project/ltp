@@ -74,7 +74,7 @@ char *TCID="rename04";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={ENOTEMPTY, 0};     /* List must end with 0 */
+int exp_enos[]={ENOTEMPTY, EEXIST, 0};     /* List must end with 0 */
 
 int fd;
 char tstfile[40];
@@ -125,11 +125,13 @@ main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		if (errno != ENOTEMPTY) {
-			tst_resm(TFAIL, "Expected ENOTEMPTY got %d",
-				 TEST_ERRNO);
+		if (TEST_ERRNO == ENOTEMPTY) {
+		    	tst_resm(TPASS, "rename() returned ENOTEMPTY");
+		} else if (TEST_ERRNO == EEXIST) {
+		    	tst_resm(TPASS, "rename() returned EEXIST");
 		} else {
-			tst_resm(TPASS, "rename() returned ENOTEMPTY");
+			tst_resm(TFAIL, "Expected ENOTEMPTY or EEXIST got %d",
+				 TEST_ERRNO);
 		}
 
 	}   /* End for TEST_LOOPING */
