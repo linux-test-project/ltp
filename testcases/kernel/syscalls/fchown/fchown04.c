@@ -272,6 +272,7 @@ setup1()
 {
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
+	char *change_owner_path;
 	
 	/* Create a testfile under temporary directory */
 	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
@@ -289,8 +290,9 @@ setup1()
 	strcat(Path_name, "/"TEST_FILE1);
 
 	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, (const char *)"/change_owner ");
+	change_owner_path = getenv("change_owner");
+	strcpy((char *)Cmd_buffer, (const char *)change_owner_path);
+	strcat((char *)Cmd_buffer, " ");
 	strcat((char *)Cmd_buffer, TCID);
 	strcat((char *)Cmd_buffer, " ");
 	strcat((char *)Cmd_buffer, Path_name);
