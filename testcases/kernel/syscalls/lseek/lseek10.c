@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: lseek05
+ * Test Name: lseek10
  *
  * Test Description:
  *  Verify that,
@@ -54,7 +54,7 @@
  *   Delete the temporary directory(s)/file(s) created.
  *
  * Usage:  <for command-line>
- *  lseek05 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
+ *  lseek10 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
@@ -90,7 +90,7 @@
 #define PIPE_MODE	S_IFIFO | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define SEEK_TOP	10
 
-char *TCID="lseek05";		/* Test program identifier.    */
+char *TCID="lseek10";		/* Test program identifier.    */
 int TST_TOTAL=3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={ESPIPE, EINVAL, EBADF, 0};

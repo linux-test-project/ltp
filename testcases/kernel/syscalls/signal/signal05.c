@@ -19,10 +19,10 @@
 
 /*
  * NAME
- *	signal01.c
+ *	signal05.c
  *
  * DESCRIPTION
- *	signal01 - set the signal handler to our own function
+ *	signal05 - set the signal handler to our own function
  *
  * ALGORITHM
  *	loop if that option was specified
@@ -39,7 +39,7 @@
  *	call cleanup
  *
  * USAGE:  <for command-line>
- *  signal01 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
+ *  signal05 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -65,7 +65,7 @@ void cleanup(void);
 void setup(void);
 void sighandler(int);
 
-char *TCID= "signal01()";
+char *TCID= "signal05()";
 int TST_TOTAL = 31;
 extern int Tst_count;
 

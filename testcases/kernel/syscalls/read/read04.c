@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	read01.c
+ *	read04.c
  *
  * DESCRIPTION
  *	Testcase to check if read returns the number of bytes read correctly.
@@ -31,7 +31,7 @@
  *	same as the write buffer.
  *
  * USAGE:  <for command-line>
- *  read01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  read04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -54,7 +54,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID = "read01";
+char *TCID = "read04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

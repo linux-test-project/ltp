@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fork05.c
+ * 	fork11.c
  *
  * DESCRIPTION
  *	Test that parent gets a pid from each child when doing wait
@@ -28,7 +28,7 @@
  *	Fork NUMFORKS children that do nothing.
  *
  * USAGE
- * 	fork05
+ * 	fork11
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -42,7 +42,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "fork05";
+char *TCID = "fork11";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

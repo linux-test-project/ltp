@@ -31,7 +31,7 @@
  * 	Test unlocking sections around a write lock
  *
  * USAGE
- * 	fcntl08
+ * 	fcntl19
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -68,7 +68,7 @@ void catch_child();
 char *str_type();
 int do_lock(int, short, short, int , int);
 
-char *TCID = "fcntl08";
+char *TCID = "fcntl19";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

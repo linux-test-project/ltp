@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	fsync01.c
+ *	fsync03.c
  *
  * DESCRIPTION
  *	Testcase to check that fsync(2) sets errno correctly.
@@ -29,7 +29,7 @@
  *	2. Call fsync() on a pipe(fd), and expect EINVAL.
  *
  * USAGE:  <for command-line>
- *  fsync01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  fsync03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -69,7 +69,7 @@ struct test_case_t {
         { &pfd, EINVAL}
 };
 
-char *TCID = "fsync01";
+char *TCID = "fsync03";
 int TST_TOTAL = 2;
 extern int Tst_count;
 

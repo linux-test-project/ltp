@@ -30,12 +30,12 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lstat01.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: lstat01.c,v 1.2 2002/05/14 16:50:07 nstraz Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
  * 
- *    TEST IDENTIFIER	: lstat02
+ *    TEST IDENTIFIER	: lstat01
  * 
  *    EXECUTED BY	: anyone
  * 
@@ -123,7 +123,7 @@ extern void cleanup();
 
 
 
-char *TCID="lstat02"; 		/* Test program identifier.    */
+char *TCID="lstat01"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: sync01
+ * Test Name: sync02
  *
  * Test Description:
  *  Open a file for write; modify the file, then do a sync().
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  sync01 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
+ *  sync02 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-f   : Turn off functionality Testing.
  *		-i n : Execute test n times.
@@ -81,7 +81,7 @@
 #define TEMP_FILE	"temp_file"
 #define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="sync01";		/* Test program identifier.    */
+char *TCID="sync02";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char write_buffer[BUFSIZ];	/* buffer used to write data to file*/

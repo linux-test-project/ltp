@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: fchown01
+ * Test Name: fchown05
  *
  * Test Description:
  *  Verify that, fchown(2) succeeds to change the owner and group of a file
@@ -51,7 +51,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  fchown01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  fchown05 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -82,7 +82,7 @@
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for the test file */
-char *TCID="fchown01";		/* Test program identifier.    */
+char *TCID="fchown05";		/* Test program identifier.    */
 int TST_TOTAL=5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	getuid01.c
+ * 	getuid03.c
  *
  * DESCRIPTION
  *	Testcase to check the basic functionality of the getuid() system call.
  *
  * USAGE:  <for command-line>
- *  getuid01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  getuid03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -45,7 +45,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "getuid01";
+char *TCID = "getuid03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name : symlink02
+ * Test Name : symlink05
  *
  * Test Description :
  *  Verify that, symlink will succeed to creat a symbolic link of an
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  symlink02 [-c n] [-e] [-f] [-i n] [-I x] [-p x] [-t]
+ *  symlink05 [-c n] [-e] [-f] [-i n] [-I x] [-p x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-e   : Turn on errno logging.
  *		-f   : Turn off functionality Testing.
@@ -82,7 +82,7 @@
 #define  TESTFILE	"testfile"
 #define  SYMFILE	"slink_file"
 
-char *TCID="symlink02";		/* Test program identifier.    */
+char *TCID="symlink05";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};

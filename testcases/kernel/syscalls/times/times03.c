@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	times01.c
+ *	times03.c
  *
  * DESCRIPTION
  *	Testcase to check the basic functionality of the times() system call.
@@ -31,7 +31,7 @@
  *	cpu time/sleep time, and other statistics.
  *
  * USAGE:  <for command-line>
- *	times01 [-c n] [-f] [-P x] [-t]
+ *	times03 [-c n] [-f] [-P x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-f   : Turn off functionality Testing.
  *		-P x : Pause for x seconds between iterations.
@@ -52,7 +52,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "times01";
+char *TCID = "times03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 int exp_enos[]={0};

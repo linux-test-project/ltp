@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	setuid01.c
+ * 	setuid03.c
  *
  * DESCRIPTION
  * 	Test to check the error and trivial conditions in setuid
  *
  * USAGE:  <for command-line>
- *  setuid01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  setuid03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -48,7 +48,7 @@
 
 #define ROOT_USER	0
 
-char *TCID = "setuid01";
+char *TCID = "setuid03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 char nobody_uid[] = "nobody";

@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: getpid01
+ * Test Name: getpid02
  *
  * Test Description:
  *  Verify that getpid() system call gets the process ID of the of the
@@ -47,7 +47,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  getpid01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  getpid02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -76,7 +76,7 @@
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-char *TCID="getpid01";		/* Test program identifier.    */
+char *TCID="getpid02";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: alarm03
+ * Test Name: alarm07
  *
  * Test Description:
  *  Check the functionality of the alarm() when the time input
@@ -47,7 +47,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  alarm03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  alarm07 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -73,7 +73,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="alarm03";		/* Test program identifier.    */
+char *TCID="alarm07";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int almreceived = 0;		/* flag to indicate SIGALRM received or not */

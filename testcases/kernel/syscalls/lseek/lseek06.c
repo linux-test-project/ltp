@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: lseek01
+ * Test Name: lseek06
  *
  * Test Description:
  *  Verify that, lseek() call succeeds to set the file pointer position 
@@ -51,7 +51,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  lseek01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  lseek06 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -83,7 +83,7 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="lseek01";		/* Test program identifier.    */
+char *TCID="lseek06";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fildes;			/* file handle for temp file */

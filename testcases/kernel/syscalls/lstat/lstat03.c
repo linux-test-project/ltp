@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: lstat01
+ * Test Name: lstat03
  *
  * Test Description:
  *  Verify that, lstat(2) succeeds to get the status of a file pointed to by
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  lstat01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  lstat03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -84,7 +84,7 @@
 #define BUF_SIZE	256
 #define PERMS		0644
 
-char *TCID="lstat01"; 		/* Test program identifier.    */
+char *TCID="lstat03"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t User_id;			/* user id/group id of test process */

@@ -54,7 +54,7 @@
 void setup(void);
 void cleanup(void);
 
-char *TCID = "getpgid01";
+char *TCID = "getpgid02";
 int TST_TOTAL = 2;
 extern int Tst_count;
 

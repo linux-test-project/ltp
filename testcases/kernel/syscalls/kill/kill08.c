@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	kill02.c
+ *	kill08.c
  *
  * DESCRIPTION
  *	Test case to check the basic functionality of kill() when kill an
@@ -41,7 +41,7 @@
  *	call cleanup
  *
  * USAGE
- *  kill02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  kill08 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -66,7 +66,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "kill02()";
+char *TCID= "kill08()";
 int TST_TOTAL = 1;
 
 extern int Tst_count;

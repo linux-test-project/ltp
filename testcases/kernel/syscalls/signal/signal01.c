@@ -30,12 +30,12 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: signal01.c,v 1.2 2002/05/14 16:50:07 nstraz Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
  * 
- * TEST IDENTIFIER :  signal03  Boundary value and other invalid value checking
+ * TEST IDENTIFIER :  signal01  Boundary value and other invalid value checking
  * 				 of signal setup and signal sending.
  * 
  * PARENT DOCUMENT :  sgntds01  Signal System Call
@@ -209,7 +209,7 @@ struct ipc_t {
     struct tblock timings;
 } Ipc_info;
 
-char *TCID = "signal03";
+char *TCID = "signal01";
 int TST_TOTAL = 5;
 extern int Tst_count;           /* count of test items completed */
 

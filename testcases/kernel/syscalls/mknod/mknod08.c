@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: mknod01
+ * Test Name: mknod08
  *
  * Test Description:
  *  Verify that mknod(2) succeeds when used to create a filesystem 
@@ -52,7 +52,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  mknod01 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
+ *  mknod08 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -f   : Turn off functionality Testing.
@@ -90,7 +90,7 @@
 struct stat buf;		/* struct. to hold stat(2) o/p contents */
 struct passwd *user1;		/* struct. to hold getpwnam(3) o/p contents */
 
-char *TCID="mknod01";           /* Test program identifier.    */
+char *TCID="mknod08";           /* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 char node_name[PATH_MAX];	/* buffer to hold node name created */
 extern int Tst_count;           /* Test Case counter for tst_* routines */

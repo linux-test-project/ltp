@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	mkdir01
+ *	mkdir05
  *
  * DESCRIPTION
  *	This test will verify the mkdir(2) syscall basic functionality
@@ -48,7 +48,7 @@
  *		Print errno log and/or timing stats if options given
  *		Delete the temporary directory created
  * USAGE
- *	mkdir01 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
+ *	mkdir05 [-c n] [-f] [-i n] [-I x] [-p x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-f   : Turn off functionality Testing.
  *		-i n : Execute test n times.
@@ -79,7 +79,7 @@ void cleanup();
 
 #define PERMS		0777
 
-char *TCID="mkdir01";           /* Test program identifier.    */
+char *TCID="mkdir05";           /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 

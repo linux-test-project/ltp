@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: chmod02
+ * Test Name: chmod07
  *
  * Test Description:
  *  Verify that, chmod(2) will succeed to change the mode of a file/directory
@@ -54,7 +54,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  chmod02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  chmod07 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -92,7 +92,7 @@
 				 */
 #define TESTFILE	"testfile"
 
-char *TCID="chmod02"; 		/* Test program identifier.    */
+char *TCID="chmod07"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

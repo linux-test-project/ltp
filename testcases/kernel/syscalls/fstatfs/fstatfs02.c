@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	fstatfs01.c
+ *	fstatfs02.c
  *
  * DESCRIPTION
  *	Testcase to check fstatfs() sets errno correctly.
@@ -30,7 +30,7 @@
  *	   as the buf paramter of fstatfs(), and expect EFAULT.
  *
  * USAGE:  <for command-line>
- *  fstatfs01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  fstatfs02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -55,7 +55,7 @@
 void setup(void);
 void cleanup(void);
 
-char *TCID = "fstatfs01";
+char *TCID = "fstatfs02";
 int TST_TOTAL = 2;
 extern int Tst_count;
 

@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: setgroups01
+ * Test Name: setgroups02
  *
  * Test Description:
  *  Verify that, only root process can invoke setgroups() system call to
@@ -49,7 +49,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  setgroups01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  setgroups02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -74,7 +74,7 @@
 
 #define TESTUSER	"nobody"
 
-char *TCID="setgroups01";	/* Test program identifier.    */
+char *TCID="setgroups02";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */

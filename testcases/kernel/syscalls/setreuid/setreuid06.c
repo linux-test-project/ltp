@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	setreuid01.c
+ * 	setreuid06.c
  *
  * DESCRIPTION
  * 	Test that EPERM is set when setreuid is given an invalid user id.
  *
  * USAGE:  <for command-line>
- *	setreuid01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *	setreuid06 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-e   : Turn on errno logging.
  *		-i n : Execute test n times.
@@ -53,7 +53,7 @@
 
 #define INVAL_USER	999999	
 
-char *TCID = "setreuid01";
+char *TCID = "setreuid06";
 int TST_TOTAL = 1;
 int exp_enos[]={EPERM, 0};
 extern int Tst_count;

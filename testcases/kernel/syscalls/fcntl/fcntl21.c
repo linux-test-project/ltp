@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fcntl10.c
+ * 	fcntl21.c
  *
  * DESCRIPTION
  * 	Check locking of regions of a file
@@ -28,7 +28,7 @@
  * 	Test changing lock sections around a read lock
  *
  * USAGE
- * 	fcntl10
+ * 	fcntl21
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -65,7 +65,7 @@ void catch_child();
 char *str_type();
 int do_lock(int, short, short, int, int);
 
-char *TCID = "fcntl10";
+char *TCID = "fcntl21";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

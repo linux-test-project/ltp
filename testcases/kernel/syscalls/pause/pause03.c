@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: pause01
+ * Test Name: pause03
  *
  * Test Description:
  *  Verify that a process is no longer accessible on receipt of SIGKILL 
@@ -48,7 +48,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  pause01 [-c n] [-i n] [-I x] [-P x] [-t]
+ *  pause03 [-c n] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
@@ -73,7 +73,7 @@
 int cflag;			/* flag to indicate child process status */
 pid_t cpid;			/* child process id */
 
-char *TCID="pause01";		/* Test program identifier.    */
+char *TCID="pause03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

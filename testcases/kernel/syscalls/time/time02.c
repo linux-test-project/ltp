@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: time01
+ * Test Name: time02
  *
  * Test Description:
  *  Verify that time(2) returns the value of time in seconds since
@@ -49,7 +49,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  time01 [-c n] [-e] [-f] [-i n] [-I x] [-p x] [-t]
+ *  time02 [-c n] [-e] [-f] [-i n] [-I x] [-p x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-e   : Turn on errno logging.
  *		-f   : Turn off functionality Testing.
@@ -80,7 +80,7 @@
 extern void setup();		/* setup function for the test */
 extern void cleanup();		/* cleanup function for the test */
 
-char *TCID="time01";		/* Test program identifier.    */
+char *TCID="time02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};

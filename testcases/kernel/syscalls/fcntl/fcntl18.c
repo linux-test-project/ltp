@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	fcntl07.c
+ * 	fcntl18.c
  *
  * DESCRIPTION
  * 	Test to check the error conditions in fcntl system call
  *
  * USAGE
- * 	fcntl07
+ * 	fcntl18
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -50,7 +50,7 @@
 int fd;
 char string[40] = "";
 
-char *TCID = "fcntl07";
+char *TCID = "fcntl18";
 int TST_TOTAL = 1;
 extern int Tst_count;
 struct passwd *pass;
@@ -174,7 +174,7 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	sprintf(string, "./fcntl07.%d.1", getpid());
+	sprintf(string, "./fcntl18.%d.1", getpid());
 	unlink(string);
 }
 

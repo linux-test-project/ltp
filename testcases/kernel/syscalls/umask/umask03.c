@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	umask01.c
+ *	umask03.c
  *
  * DESCRIPTION
  *	Check that umask changes the mask, and that the previous
@@ -30,7 +30,7 @@
  *	corresponds to the previous value set.
  *
  * USAGE:  <for command-line>
- *		umask01 [-c n] [-i n] [-I x] [-P x] [-t]
+ *		umask03 [-c n] [-i n] [-I x] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
  *			-i n : Execute test n times.
  *			-I x : Execute test for x seconds.
@@ -51,7 +51,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-char *TCID = "umask01";
+char *TCID = "umask03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

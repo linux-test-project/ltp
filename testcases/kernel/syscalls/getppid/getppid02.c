@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	getppid01.c
+ * 	getppid02.c
  *
  * DESCRIPTION
  * 	Testcase to check the basic functionality of the getppid() syscall.
  *
  * USAGE:  <for command-line>
- *  getppid01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  getppid02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -44,7 +44,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "getppid01";
+char *TCID = "getppid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fork04.c
+ * 	fork10.c
  *
  * DESCRIPTION
  *	Check inheritance of file descriptor by children, they
@@ -31,7 +31,7 @@
  *	that location
  *
  * USAGE
- * 	fork04
+ * 	fork10
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -45,7 +45,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "fork04";
+char *TCID = "fork10";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -187,7 +187,7 @@ setup()
 	 */
 	tst_tmpdir();
 	
-	strcpy(fnamebuf, "fork04.");
+	strcpy(fnamebuf, "fork10.");
 	sprintf(pidbuf, "%d", getpid());
 	strcat(fnamebuf, pidbuf);
 }

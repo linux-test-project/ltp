@@ -18,13 +18,13 @@
  */
 
 /*
- * Test Name: recvfrom01-sctp-tcp
+ * Test Name: recvfrom01-sctp-udp
  *
  * Test Description:
  *  Verify that recvfrom() returns the proper errno for various failure cases
  *
  * Usage:  <for command-line>
- *  recvfrom01-sctp-tcp [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  recvfrom01-sctp-udp [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
@@ -55,7 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="recvfrom01-sctp-tcp";		/* Test program identifier.    */
+char *TCID="recvfrom01-sctp-udp";		/* Test program identifier.    */
 int testno;
 
 char	buf[1024];

@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fcntl04.c
+ * 	fcntl16.c
  *
  * DESCRIPTION
  * 	Additional file locking test cases for checking proper notifictaion
@@ -32,7 +32,7 @@
  * 	properly when boundaries change
  *
  * USAGE
- *	fcntl04
+ *	fcntl16
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -280,7 +280,7 @@ extern	void	catch_usr2();		/* signal catching subroutine */
 extern	void	catch_int();		/* signal catching subroutine */
 extern	void	catch_alarm();		/* signal catching subroutine */
 
-char *TCID = "fcntl04";
+char *TCID = "fcntl16";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

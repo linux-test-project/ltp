@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	fcntl02.c
+ * 	fcntl14.c
  *
  * DESCRIPTION
  * 	File locking test cases for fcntl. In Linux, S_ENFMT is not implemented
@@ -31,7 +31,7 @@
  * 	locking, with mandatory locking and mandatory locking with NOBLOCK
  *
  * USAGE
- *	fcntl02
+ *	fcntl14
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -537,7 +537,7 @@ static	char	tmpname[40];
 extern	void	catch1();		/* signal catching subroutine */
 extern	void	catch_alarm();
 
-char *TCID = "fcntl02";		/* Test program identifier */
+char *TCID = "fcntl14";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;		/* Test case counter */
 

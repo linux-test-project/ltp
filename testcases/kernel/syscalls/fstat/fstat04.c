@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: fstat01
+ * Test Name: fstat04
  *
  * Test Description:
  *  Verify that, fstat(2) succeeds to get the status of a file pointed by
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  fstat01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  fstat04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -82,7 +82,7 @@
 #define BUF_SIZE	256
 #define MASK		0777
 
-char *TCID="fstat01"; 		/* Test program identifier.    */
+char *TCID="fstat04"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t User_id;			/* user id/group id of test process */

@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: getgroups02
+ * Test Name: getgroups04
  *
  * Test Description:
  *  Verify that,
@@ -48,7 +48,7 @@
  *   Print errno log and/or timing stats if options given
  *
  * Usage:  <for command-line>
- *  getgroups02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  getgroups04 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
@@ -76,7 +76,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="getgroups02";	/* Test program identifier.    */
+char *TCID="getgroups04";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EINVAL, 0};

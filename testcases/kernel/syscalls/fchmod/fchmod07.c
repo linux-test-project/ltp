@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: fchmod01
+ * Test Name: fchmod07
  *
  * Test Description:
  *  Verify that, fchmod(2) succeeds when used to change the mode permissions
@@ -50,7 +50,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  fchmod01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  fchmod07 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -80,7 +80,7 @@
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor for testfile */
-char *TCID="fchmod01";		/* Test program identifier.    */
+char *TCID="fchmod07";		/* Test program identifier.    */
 int TST_TOTAL=8;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

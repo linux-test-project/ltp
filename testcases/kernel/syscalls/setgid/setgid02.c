@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	setgid01.c
+ * 	setgid02.c
  *
  * DESCRIPTION
  * 	Testcase to ensure that the setgid() system call sets errno to EPERM
@@ -29,7 +29,7 @@
  *	ltpuser1, and expect to get EPERM
  *
  * USAGE:  <for command-line>
- *  setgid01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  setgid02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -48,7 +48,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID = "setgid01";
+char *TCID = "setgid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	write01.c
+ * 	write05.c
  *
  * DESCRIPTION
  *	Check the return value, and errnos of write(2)
@@ -34,7 +34,7 @@
  * 	end, check for -1.
  *
  * USAGE:  <for command-line>
- *      write01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *      write05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *      where,  -c n : Run n copies concurrently.
  *              -e   : Turn on errno logging.
  *              -i n : Execute test n times.
@@ -63,7 +63,7 @@ void cleanup(void);
 /* 0 terminated list of expected errnos */
 int exp_enos[] = {9,14,32,0};
 
-char *TCID = "write01";			/* Test program identifier */
+char *TCID = "write05";			/* Test program identifier */
 int TST_TOTAL = 1;			/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
@@ -202,7 +202,7 @@ setup(void)
 	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
-	sprintf(filename, "write01.%d", getpid());
+	sprintf(filename, "write05.%d", getpid());
 }
 
 /*

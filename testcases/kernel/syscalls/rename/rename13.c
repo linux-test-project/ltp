@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	rename02
+ *	rename13
  *
  * DESCRIPTION
  *	Verify rename() return successfully and performs no other action
@@ -44,7 +44,7 @@
  *		Delete the temporary directory created.
  *
  * USAGE
- *	rename02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *	rename13 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *	where,  -c n : Run n copies concurrently.
  *		-f   : Turn off functionality Testing.
  *		-i n : Execute test n times.
@@ -71,7 +71,7 @@ void setup();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID="rename02";		/* Test program identifier.    */
+char *TCID="rename13";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	statfs01.c
+ *	statfs02.c
  *
  * DESCRIPTION
  *	Testcase to check that statfs(2) sets errno correctly.
@@ -36,7 +36,7 @@
  *		of the process, and expect EFAULT.
  *
  * USAGE:  <for command-line>
- *  statfs01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  statfs02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -59,7 +59,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "statfs01";
+char *TCID = "statfs02";
 int TST_TOTAL = 5;
 extern int Tst_count;
 

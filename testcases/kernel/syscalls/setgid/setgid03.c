@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	setgid02.c
+ * 	setgid03.c
  *
  * CALLS
  * 	setgid(1) getgid(2)
@@ -28,7 +28,7 @@
  * 	As root sets the current group id to ltpuser1, verify the results
  *
  * USAGE:  <for command-line>
- *  setgid02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  setgid03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -47,7 +47,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "setgid02";
+char *TCID = "setgid03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 

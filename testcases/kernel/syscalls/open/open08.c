@@ -1,6 +1,6 @@
 /*
  * NAME
- * 	open03.c
+ * 	open08.c
  *
  * DESCRIPTION
  *	Check for the following errors:
@@ -32,7 +32,7 @@
  *	   expect to get EFAULT.
  *
  * USAGE:  <for command-line>
- *  open03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *  open08 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -i n : Execute test n times.
@@ -58,7 +58,7 @@
 void setup(void);
 void cleanup(void);
 
-char *TCID = "open03";
+char *TCID = "open08";
 int TST_TOTAL = 6;
 extern int Tst_count;
 
