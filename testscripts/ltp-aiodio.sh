@@ -222,11 +222,11 @@ nextTest=$(($nextTest+1))
 runTest=$(($runTest+1))
 
 mkdir /test/aiodio/junkdir
-cp $file1 /test/aiodio/junkfile
-cp $file1 /test/aiodio/fff
-cp $file1 /test/aiodio/ff1
-cp $file1 /test/aiodio/ff2
-cp $file1 /test/aiodio/ff3
+dd if=$file1 of=/test/aiodio/junkfile bs=4096 conv=block,sync
+dd if=$file1 of=/test/aiodio/fff      bs=4096 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff1      bs=4096 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff2      bs=4096 conv=block,sync 
+dd if=$file1 of=/test/aiodio/ff3      bs=4096 conv=block,sync 
 
 date
 echo "************ Running aio-stress tests " 
@@ -333,15 +333,14 @@ done
 #done
 
 echo "Running ltp-diorh"
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file3 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file4 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file5 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file6 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file7 &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file8 &
+var0=1
+while [ "$var0" -lt "$LIMIT" ]
+do
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2
 date
+  var0=$(($var0+1))
+done
 
 
 rm -f /test/aiodio/fff
