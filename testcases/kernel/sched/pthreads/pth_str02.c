@@ -127,7 +127,7 @@ void *thread (void *parm)
 			sys_error ("pthread_attr_init failed", __LINE__);
 		if (pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE))
 			sys_error ("pthread_attr_setdetachstate failed", __LINE__);
-		if (pthread_create (&th, &attr, thread, (void *) num + 1)) {
+		if (pthread_create (&th, &attr, thread, (void *)(num + 1))) {
 			if (test_limit) {
 			   printf ("Testing pthread limit, %d pthreads created.\n", num);
 			   pthread_exit(0);
@@ -163,7 +163,6 @@ static void parse_args (int argc, char **argv)
 	int	i;
 	int	errflag = 0;
 	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "dln:?")) != EOF) {
 		switch (i) {

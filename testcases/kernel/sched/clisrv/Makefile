@@ -1,4 +1,4 @@
-CFLAGS+= -W -O -D_LINUX
+CFLAGS+= -Wall -O -D_LINUX
 CFILES=pthcli.c pthserv.c readline.c writen.c
 OFILES=$(CFILES:.c=.o)
 TESTS = pthcli pthserv

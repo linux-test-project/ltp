@@ -48,6 +48,10 @@ pthread_mutex_t	node_mutex;		/* mutex for the node_count */
 pthread_cond_t	node_condvar;		/* condition variable for node_count */
 pthread_attr_t	attr;			/* attributes for created threads */
 
+int num_nodes(int, int);
+int synchronize_children(c_info *);
+int doit(c_info *);
+
 /*
  * parse_args
  *
@@ -58,7 +62,6 @@ static void	parse_args( int argc, char *argv[] )
 {
 	int		opt, errflag = 0;
 	int		bflag = 0, dflag = 0, tflag = 0;
-	extern char	*optarg;
 
 	while ( (opt = getopt( argc, argv, "b:d:t:Dh?" )) != EOF ) {
 	    switch ( opt ) {
@@ -502,7 +505,7 @@ int	doit( c_info *parent ) {
  * main
  */
 int	main( int argc, char *argv[] ) {
-	int		rc, index, total;
+	int		rc, ind, total;
 	pthread_t	root_thread;
 
 	parse_args( argc, argv );
@@ -546,39 +549,39 @@ int	main( int argc, char *argv[] ) {
 	/*
 	 * Allocate array of pthreads descriptors and initialize variables.
 	 */
-	for ( index = 0; index < total; index++ ) {
+	for ( ind = 0; ind < total; ind++ ) {
 
-		if ( (child_info[index].threads =
+		if ( (child_info[ind].threads =
 		    (pthread_t *)malloc( breadth * sizeof(pthread_t) ))
 		    == NULL ) {
 			perror( "malloc threads" );
 			exit( 11 );
 		}
-		bzero( child_info[index].threads, breadth * sizeof(pthread_t) );
+		bzero( child_info[ind].threads, breadth * sizeof(pthread_t) );
 		
-		if ( (child_info[index].child_ptrs =
+		if ( (child_info[ind].child_ptrs =
 		    (c_info **)malloc( breadth * sizeof(c_info *) )) == NULL ) {
 			perror( "malloc child_ptrs" );
 			exit( 12 );
 		}
-		bzero( child_info[index].child_ptrs,
+		bzero( child_info[ind].child_ptrs,
 		    breadth * sizeof(c_info *) );
 		
-		if ((rc = pthread_mutex_init(&child_info[index].child_mutex,
+		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex,
 		    NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
 			    sys_errlist[rc] );
 			exit( 13 );
 		}
 
-		if ((rc = pthread_mutex_init(&child_info[index].talk_mutex,
+		if ((rc = pthread_mutex_init(&child_info[ind].talk_mutex,
 		    NULL))) {
 			fprintf( stderr, "pthread_mutex_init talk_mutex: %s\n",
 			    sys_errlist[rc] );
 			exit( 14 );
 		}
 		
-		if ((rc = pthread_cond_init(&child_info[index].child_condvar,
+		if ((rc = pthread_cond_init(&child_info[ind].child_condvar,
 		    NULL))) {
 			fprintf( stderr,
 			    "pthread_cond_init child_condvar: %s\n",
@@ -586,7 +589,7 @@ int	main( int argc, char *argv[] ) {
 			exit( 15 );
 		}
 
-		if ((rc = pthread_cond_init(&child_info[index].talk_condvar,
+		if ((rc = pthread_cond_init(&child_info[ind].talk_condvar,
 		    NULL))) {
 			fprintf( stderr, "pthread_cond_init talk_condvar: %s\n",
 			    sys_errlist[rc] );
@@ -594,7 +597,7 @@ int	main( int argc, char *argv[] ) {
 		}
 
 		if ( debug ) {
-			printf( "Successfully initialized child %d.\n", index );
+			printf( "Successfully initialized child %d.\n", ind );
 			fflush( stdout );
 		}
 
