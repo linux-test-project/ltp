@@ -68,7 +68,6 @@
  *		-Ported
  *
  * Restrictions:
- *  This test should be run by 'non-super-user' only.
  *
  */
 
@@ -81,6 +80,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -93,6 +93,9 @@ char *TCID="utime05";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 struct utimbuf times;		/* struct. buffer for utime() */
 
@@ -195,11 +198,18 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is non-super/root  */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-super/root for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+         ltpuser = getpwnam(nobody_uid);
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+		
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
