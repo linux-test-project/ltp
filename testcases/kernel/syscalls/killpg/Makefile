@@ -3,7 +3,7 @@ LDLIBS := -L ../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
-TEST=kill01
+TEST=killpg01
 
 all: $(TARGETS)
 
