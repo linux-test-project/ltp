@@ -1,5 +1,6 @@
-ar export TCdat=$LTPROOT/testcases/commands/ade/ar; ar01
-ld export TCdat=$LTPROOT/testcases/commands/ade/ld; ld01
-ldd export TCdat=$LTPROOT/testcases/commands/ade/ldd; ldd01
-nm export TCdat=$LTPROOT/testcases/commands/ade/nm; nm01 
-objdump export TCsrc=$LTPROOT/testcases/commands/ade/objdump; objdump01
+ar ar01
+ld ld01
+ldd ldd01
+nm nm01 
+objdump objdump01
+
