@@ -22,7 +22,7 @@ int process_domain_eventlog(SaHpiSessionIdT session_id)
 	int 			ret = HPI_TEST_PASS;
 
 	val = saHpiEventLogClear(session_id, SAHPI_DOMAIN_CONTROLLER_ID);
-	if (val != SA_OK && val != SA_ERR_HPI_INVALID_CMD) {
+	if (val != SA_OK) {
 		printf("  Does not conform the expected behaviors!\n");
 		printf("  Clear the specified event log failed!(Domain)\n");
 		printf("  Return value: %s\n", get_error_string(val));
@@ -40,7 +40,7 @@ int process_resource(SaHpiSessionIdT session_id, SaHpiRptEntryT rpt_entry, callb
 
 	if (rpt_entry.ResourceCapabilities & SAHPI_CAPABILITY_SEL) {
 		val = saHpiEventLogClear(session_id, resource_id);
-		if (val != SA_OK && val != SA_ERR_HPI_INVALID_CMD) {
+		if (val != SA_OK) {
 			printf("  Does not conform the expected behaviors!\n");
 			printf("  Clear the specified event log failed!(Resource)\n");
 			printf("  Return value: %s\n", get_error_string(val));

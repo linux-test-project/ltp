@@ -11,10 +11,20 @@
  *
  * Authors:
  *     Kevin Gao <kevin.gao@intel.com>
+ *     David Judkovics <djudkovi@us.ibm.com>
  */
 
 #include <stdio.h>
 #include <hpitest.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+void times_up(int i) 
+{
+	printf("  No event generated, timeout!\n");
+	exit(HPI_TEST_FAIL);
+}
 
 int main()
 {
@@ -61,7 +71,10 @@ int main()
 		ret = HPI_TEST_FAIL;
 		goto out2;
 	}
-	
+
+	signal(SIGALRM, times_up);  /* register times_up() with SIGALRM */ 
+	alarm(5);  	            /* alarm signals in 5 seconds */
+
 	val = saHpiEventGet(session_id, SAHPI_TIMEOUT_BLOCK, 
 			&event, &rdr, &rpt_entry);
 	if (val != SA_OK) {
