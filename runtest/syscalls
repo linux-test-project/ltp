@@ -517,6 +517,8 @@ semctl02 semctl02
 semctl03 semctl03
 semctl04 semctl04
 semctl05 semctl05
+semctl06 semctl06
+semctl07 semctl07
 
 semget01 semget01
 semget02 semget02
