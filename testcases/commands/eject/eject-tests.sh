@@ -27,6 +27,13 @@
 # History:      Jan 01 2003 - Created - Manoj Iyer.
 #                           - Added - Test #2.
 #               Jan 03 2003 - Added - Test #3.
+#               Jan 06 2003 - Modified - Test #3.
+#                           - Changed tst_brk to use correct parameters.
+#                           - Check if $LTPTMP/cdrom directory exists before 
+#                             creating it.
+#                           - Corrected code to check if return code is not 0
+#                             which indicated failure.
+#                           - fixed code to add $LTPTMP/cdrom to /etc/fstab
 #
 #! /bin/sh
 
@@ -121,16 +128,35 @@ $LTPBIN/tst_resm TINFO "Test #3: device and also unmount the device if it"
 $LTPBIN/tst_resm TINFO "Test #3: is currently mounted."
 
 cp /etc/fstab $LTPTMP/fstab.bak &>/dev/null
-mkdir $LTPTMP/cdrom &>/dev/null
 
-echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" \
-    >> /etc/fstab 2>/dev/null
+if [ -d $LTPTMP/cdrom ]
+then
+	$LTPBIN/tst_resm TINFO \
+        "Test #3: test cdrom mount point $LTPTMP/cdrom exists. Skip creation" 
+else
+	mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+	if [ $RC -ne 0 ]
+	then
+		$LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+			"Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
+		TFAILCNT=$((TFAILCNT+1))
+	fi
+fi
+
+echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
+if [ $RC -ne 0 ]
+then
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+        "Test #3: failed adding $LTPTMP/cdrom to /etc/fstab. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
+fi
 
 mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
-if [ $RC -eq 0 ]
+if [ $RC -ne 0 ]
 then
     echo ".Failed to mount $LTPTMP/cdrom." >> $LTPTMP/tst_eject.out 2>/dev/null
-    $LTPBIN/tst_brk TBROK tst_eject.out "Test #3: mount failed. Reason:"
+    $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
+             "Test #3: mount failed. Reason:"
     TFAILCNT=$((TFAILCNT+1))
 else
     eject &>$LTPTMP/tst_eject.out || RC=$?
