@@ -96,7 +96,7 @@ extern int Tst_count;
 
 #define MODSIZE 10000			/* Arbitrarily selected MODSIZE */
 #define NULLMODNAME ""
-#define MAXMODSIZE  0xffffffff		/* Max size of size_t */
+#define MAXMODSIZE  0xffffffffffffffff	/* Max size of size_t */
 #define SMALLMODSIZE  1			/* Arbitrarily selected SMALLMODSIZE */
 #define BASEMODNAME "dummy"
 #define LONGMODNAMECHAR 'm'		/* Arbitrarily selected the alphabet */
