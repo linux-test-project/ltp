@@ -1,10 +1,9 @@
-SUBDIRS = cp
+SUBDIRS = cp mv
 
 all:
-	
 
 install:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
 
 clean:
-	
+
