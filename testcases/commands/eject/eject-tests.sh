@@ -25,6 +25,7 @@
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # History:      Jan 01 2003 - Created - Manoj Iyer.
+#                           - Added - Test #2.
 #
 #! /bin/sh
 
@@ -50,11 +51,13 @@ fi
 
 TFAILCNT=0
 RC=0
+RC1=0
+RC2=0
 
 # Test #1
 # Test that eject -d lists the default device. 
 
-export TCID=logrotate01
+export TCID=eject01
 export TST_COUNT=1
 
 $LTPBIN/tst_resm TINFO "Test #1: eject -d will list the default device."
@@ -63,8 +66,10 @@ eject -d &>$LTPTMP/tst_eject.res || RC=$?
 if [ $RC -eq 0 ]
 then
     grep "eject: default device:" $LTPTMP/tst_eject.res \
-        &>$LTPTMP/tst_eject.out || RC=$?
-    if [ $RC -eq 0 ]
+        &>$LTPTMP/tst_eject.out || RC1=$?
+    grep "cdrom" $LTPTMP/tst_eject.res \
+        2>&1 1>>$LTPTMP/tst_eject.out  || RC2=$?
+    if [[ $RC1 -eq 0 && $RC2 -eq 0 ]]
     then 
         $LTPBIN/tst_resm TPASS  "Test #1: eject -d lists the default device"
     else
@@ -79,8 +84,29 @@ else
 fi
 
 
+# Test #2
+# Test that eject -d lists the default device. 
+
+export TCID=eject02
+export TST_COUNT=1
+
+$LTPBIN/tst_resm TINFO "Test #1: eject commad with no options"
+$LTPBIN/tst_resm TINFO "Test #1: will eject the default cdrom device."
+
+eject &>$LTPTMP/tst_eject.res || RC=$?
+if [ $RC -eq 0 ]
+then
+    $LTPBIN/tst_resm TPASS  "Test #1: eject succeded"
+else
+    echo "Error code returned by eject: $RC" >> $LTPTMP/tst_eject.res \
+        2&/dev/null
+    $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res \
+        "Test #1: eject failed. Reason:"
+    TFAILCNT=$((TFAILCNT+1))
+fi
+
+
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
 rm -f $LTPTMP/tst_eject*
-
 exit $TFAILCNT
