@@ -1,3 +1,11 @@
+LTP-20040804
+- Corrected TCbin definition.
+- Changes to check for RedHat install when setting up environment variables
+- Changed ROOT_PASSWORD to PASSWD to match other testcases.
+- Change to check and exclude test if running on a 390 system since test is invalid on that platform
+- Fix build errors in modify_ldt01 and modify_ldt02
+- Additional security testcases
+
 LTP-20040707
 - Added a new test for bind() written by Dan Jones.
 - Jacky Malcles added support for ext3 and some cleanup code.
