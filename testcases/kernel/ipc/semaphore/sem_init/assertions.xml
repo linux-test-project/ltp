@@ -1,0 +1,46 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38795:38796">
+sem_init test case make sure that it establish initialize the unnamed 
+semaphore referred by sem.  
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:38797:38798">
+sem_init is used in subsequence of sem_wait, sem_trywait, sem_post, 
+sem_destroy, and the semaphore should be usable until the its destroyed.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38799:38801">
+The semaphore is shared between processes when the pshared value is non-zero.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38795:38798">
+The semaphore is shared between threads of process when the pshared value 
+is zero. any thread in this process can us sem for performing sem_wait, 
+sem_trywait, ...
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:38810:38811">
+sem_init should initialize the semaphore in sem, otherwise it shall return -1
+and set to errno.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:38814:38814">
+EINVAL: the value argument exceeds SEM_VALUE_MAX
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:38815:38816">
+ENOSPC: a resouce required to initialize the semaphroe has been exhausted, or
+number of sems {SEM_NSEMS_MAX} has been reached.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:38817:38817">
+EPERM: the process lacks the appropriate privilage to initialize the semaphore.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:38802:38803">
+Only sem can be used for performing synchronization.  The result
+of referring to copies of sem in calls to sem_wait, sem_post, sem_trywait
+and sem_destroy is undefined.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:38806:38807">
+When teh pshared argument is zero, then the semaphore is shared between
+the threads of the process, and not by the threads other than those created
+in the same process. (Undefined).
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:38808:38808">
+Attempting to initialize an already initialized semaphore results in
+undefined behavior.
+  </assertion>
+</assertions>
