@@ -31,7 +31,7 @@ int main()
 	int unresolved=0, failure=0;
 	struct mq_attr attr;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_send_2-1_%d", getpid());
 
 	attr.mq_msgsize = MSGSIZE;
 	attr.mq_maxmsg  = MSGSIZE;

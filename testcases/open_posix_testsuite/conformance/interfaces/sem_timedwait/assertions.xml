@@ -41,4 +41,9 @@ EDEADLK Error: A deadlock condition was detected.
 The sem_timedout function may fail with:
 EINTR Error: A signal interrupted this function.
   </assertion>
-
+  <assertion id="10" tag="ref:XSH6:39003:39006 pt:SEM pt:TMR">
+If the Timers option is supported, the timeout shall be based on the CLOCK_REALTIME clock. If the Timers option is not supported, the timeout shall be based on the system clock as returned by the time() function. The resolution of the timeout shall be the resolution of the clock on which it is based.
+  <assertion id="11" tag="ref:XSH6:39007:39009 pt:SEM pt:TMR">
+Under no circumstance shall the function fail with a timeout if the semaphore can be locked immediately. The validity of the abs_timeout need not be checked if the semaphore can be locked immediately.
+  </assertion>
+</assertion>

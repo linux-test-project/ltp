@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,31 +51,32 @@ int child_process() {
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 	if(fd == -1) {
 		perror("An error occurs when calling shm_open()");
+		kill(getppid(), SIGUSR1);
 		return PTS_UNRESOLVED;
 	}
 
 	if(ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
+		kill(getppid(), SIGUSR1);
 		return PTS_UNRESOLVED;	
 	}
 
 	buf = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
 	if( buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
+		kill(getppid(), SIGUSR1);
 		return PTS_UNRESOLVED;	
 	}	
 
 	strcpy(buf, str);
 
-	kill(getppid(), SIGUSR1);      
 	return PTS_PASS;
 }
 
 
 int main() {
-	int fd, sig, child_pid;
+	int fd, child_pid;
 	char *buf;
-	sigset_t sigset;
 
 	child_pid = fork();
 	if(child_pid == -1) {
@@ -82,19 +85,8 @@ int main() {
 	} else if(child_pid == 0) {
 		return child_process();
 	}
-
-	if(sigemptyset(&sigset) != 0) {
-		perror("An error occurs when calling sigemptyset()");
-		exit(1);
-	}
-	if(sigaddset(&sigset,SIGUSR1) != 0) {
-		perror("An error occurs when calling sigaddset()");
-		exit(1);
-	}	
-	if(sigwait(&sigset, &sig) != 0) {
-		perror("An error occurs when calling sigwait()");
-		exit(1);
-	}
+	
+	wait(NULL);
 
 	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR|S_IWUSR);
 	if(fd == -1) {

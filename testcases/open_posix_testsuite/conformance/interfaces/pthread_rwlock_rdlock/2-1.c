@@ -80,7 +80,7 @@ static void* fn_rd(void *arg)
 	int priority;
 	rd_thread_state = ENTERED_THREAD;
 	
-	priority = (int)arg;
+	priority = (long)arg;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
 	printf("rd_thread: attempt read lock\n");
@@ -113,7 +113,7 @@ static void* fn_wr(void *arg)
 	int priority;
 	wr_thread_state = ENTERED_THREAD;
 	
-	priority = (int)arg;
+	priority = (long)arg;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
 	printf("wr_thread: attempt write lock\n");
@@ -173,7 +173,7 @@ int main()
 	wr_thread_state = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY) + 1;
 	printf("main: create wr_thread, with priority: %d\n", priority);
-	if(pthread_create(&wr_thread, NULL, fn_wr, (void*)priority) != 0)
+	if(pthread_create(&wr_thread, NULL, fn_wr, (void*)(long)priority) != 0)
 	{
 		printf("main: Error at 1st pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -202,7 +202,7 @@ int main()
 	rd_thread_state = 1;
 	priority = sched_get_priority_min(TRD_POLICY);
 	printf("main: create rd_thread, with priority: %d\n", priority);
-	if(pthread_create(&rd_thread, NULL, fn_rd, (void*)priority) != 0)
+	if(pthread_create(&rd_thread, NULL, fn_rd, (void*)(long)priority) != 0)
 	{
 		printf("main: failed at creating rd_thread\n");
 		return PTS_UNRESOLVED;

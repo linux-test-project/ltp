@@ -77,7 +77,7 @@ void *a_thread_func()
 		sigaction(SIGUSR1, &act, 0);
 
 		/* Set up mq */
-        	sprintf(gqname, "/msgqueue_%d", getpid());
+        	sprintf(gqname, "/mq_timedsend_12-1_%d", getpid());
 
 		attr.mq_maxmsg = MAXMSG;
 		attr.mq_msgsize = BUFFER;
@@ -99,8 +99,13 @@ void *a_thread_func()
         		if (mq_timedsend(gqueue, msgptr, 
 					strlen(msgptr), 1, &ts) == -1) {
 				if (errno == EINTR) {
-				printf("thread: mq_timedsend interrupted by signal and correctly set errno to EINTR\n");
-				errno_eintr=1;
+					if (mq_unlink(gqname) != 0) {
+                				perror("mq_unlink() did not return success");
+						pthread_exit((void*)PTS_UNRESOLVED);
+                				return NULL;
+					}
+					printf("thread: mq_timedsend interrupted by signal and correctly set errno to EINTR\n");
+					errno_eintr=1;
 					pthread_exit((void*)PTS_PASS);
 					return NULL;
 				} else {

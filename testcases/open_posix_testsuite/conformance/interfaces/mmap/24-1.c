@@ -79,7 +79,7 @@ int main()
     {
       printf ("Test Pass: " TNAME " Get ENOMEM: %s\n", 
               strerror(errno));    
-      printf ("Total mapped size is %u bytes\n", mapped_size);
+      printf ("Total mapped size is %lu bytes\n", (unsigned long)mapped_size);
       exit(PTS_PASS);
     }
   

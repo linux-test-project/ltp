@@ -39,13 +39,9 @@ int main(int argc, char *argv[])
 	for (i=0; i<NUMINVALIDTESTS;i++) {
 		tssleep.tv_nsec=invalid_tests[i];
 		printf("sleep %d\n", invalid_tests[i]);
-		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) == -1) {
-			if (EINVAL != errno) {
-				printf("errno != EINVAL\n");
-				failure = 1;
-			}
-		} else {
-			printf("clock_nanosleep() did not return -1 \n");
+		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) != 
+			EINVAL) {
+			printf("errno != EINVAL\n");
 			failure = 1;
 		}
 	}

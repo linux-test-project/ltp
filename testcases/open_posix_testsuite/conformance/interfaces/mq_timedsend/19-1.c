@@ -44,7 +44,7 @@ int main()
 	struct mq_attr attr;
 	int failure=0, i, maxreached=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_timedsend_19-1_%d", getpid());
 
 	attr.mq_maxmsg = MAXMSG;
 	attr.mq_msgsize = BUFFER;

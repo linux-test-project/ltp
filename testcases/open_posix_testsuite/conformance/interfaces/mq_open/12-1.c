@@ -34,7 +34,7 @@ int main()
         mqd_t queue;
 	struct mq_attr attr;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_12-1_%d", getpid());
 
         queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
         if (queue == (mqd_t)-1) {

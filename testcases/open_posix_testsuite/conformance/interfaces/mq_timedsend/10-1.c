@@ -38,7 +38,7 @@ int main()
         mqd_t queue;
 	int unresolved=0, failure=0, i, maxreached=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_timedsend_10-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;

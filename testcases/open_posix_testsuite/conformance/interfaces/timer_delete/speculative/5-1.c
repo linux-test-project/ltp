@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
 	timer_t tid;
 
-	tid = BOGUSTIMERID;
+	tid = (timer_t) BOGUSTIMERID;
 
 	if (timer_delete(tid) == -1) {
 		if (errno==EINVAL) {

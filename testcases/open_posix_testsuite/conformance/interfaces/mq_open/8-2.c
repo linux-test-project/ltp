@@ -44,7 +44,7 @@ int main()
         const char *msgptr = MSGSTR;
 	int pid;
 
-       	sprintf(qname, "/msgqueue_%d", getpid());
+       	sprintf(qname, "/mq_open_8-2_%d", getpid());
 
 	if ((pid = fork()) == 0) {
         	mqd_t woqueue;

@@ -38,7 +38,7 @@ int main()
 	int unresolved=0, failure=0, i;
 	struct mq_attr attr;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_send_14-1_%d", getpid());
 
 	for (i=0; i<NUMINVALID; i++) {
 		attr.mq_msgsize = messagesize[i];

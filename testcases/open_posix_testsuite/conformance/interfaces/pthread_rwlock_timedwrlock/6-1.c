@@ -34,6 +34,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 static pthread_t sig_thread;
@@ -41,7 +42,7 @@ static pthread_rwlock_t rwlock;
 
 static int thread_state;
 static int handler_called;
-static time_t before_wait, after_wait;
+static struct timeval before_wait, after_wait;
 
 
 /* thread_state indicates child thread state: 
@@ -88,9 +89,9 @@ static void * th_fn(void *arg)
 	sigfillset(&act.sa_mask);
 	sigaction(SIGUSR1, &act, 0);
 	
-	before_wait = time(NULL);
-	abs_timeout.tv_sec = before_wait + TIMEOUT;
-	abs_timeout.tv_nsec = 0;
+	gettimeofday(&before_wait, NULL);
+	abs_timeout.tv_sec = before_wait.tv_sec + TIMEOUT;
+	abs_timeout.tv_nsec = before_wait.tv_usec * 1000;
 	
 	printf("thread: attempt timed write lock, %d seconds\n", TIMEOUT);
 	thread_state = ENTERED_THREAD;
@@ -101,7 +102,7 @@ static void * th_fn(void *arg)
 		exit(PTS_FAIL);
 	}
  	printf("thread: timer correctly expired\n");
-	after_wait = time(NULL);
+	gettimeofday(&after_wait, NULL);
 
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
@@ -111,6 +112,7 @@ static void * th_fn(void *arg)
 int main()
 {
 	int cnt;
+	struct timeval time_diff;
 
 	if(pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
@@ -173,10 +175,17 @@ int main()
 	}	
 	
 	/* Test that the thread block for the correct TIMOUT time */
-	if((after_wait - before_wait) != TIMEOUT)
+	time_diff.tv_sec = after_wait.tv_sec - before_wait.tv_sec;
+	time_diff.tv_usec = after_wait.tv_usec - before_wait.tv_usec;
+	if (time_diff.tv_usec < 0)
 	{
-		printf("Test FAILED: Timeout was for %d seconds, but waited for %d seconds instead\n",
-			TIMEOUT, (int)(after_wait - before_wait));
+		--time_diff.tv_sec;
+		time_diff.tv_usec += 1000000;
+	}
+	if(time_diff.tv_sec < TIMEOUT)
+	{
+		printf("Test FAILED: Timeout was for %d seconds, but waited for %ld.%06ld seconds instead\n",
+			TIMEOUT, (long)time_diff.tv_sec, (long)time_diff.tv_usec);
 		exit(PTS_FAIL);
 	}
 

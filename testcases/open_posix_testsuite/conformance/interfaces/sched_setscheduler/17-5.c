@@ -23,12 +23,16 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-/* There is no chance that a scheduling policy has such a value */
-#define INVALID_POLICY -27367
-
 int main(){
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;
+	int invalid_policy;
+
+	invalid_policy = 0;
+	while(invalid_policy == SCHED_OTHER || 
+		invalid_policy == SCHED_FIFO ||
+		invalid_policy == SCHED_RR)
+	invalid_policy--;
 
 	if(sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
@@ -42,10 +46,10 @@ int main(){
 		return PTS_UNRESOLVED;
 	}
 
-	sched_setscheduler(0, INVALID_POLICY, &param);
+	sched_setscheduler(0, invalid_policy, &param);
 
 	if(errno == 0) {
-		printf("No error occurs, could %i be a valid value for the scheduling policy ???\n", INVALID_POLICY);
+		printf("No error occurs, could %i be a valid value for the scheduling policy ???\n", invalid_policy);
 		return PTS_UNRESOLVED;
 	}
 

@@ -44,7 +44,7 @@ int main()
 	childqueue = (mqd_t)-1;
 	queue = (mqd_t)-1;
 
-       	sprintf(qname, "/msgqueue_%d", getpid());
+       	sprintf(qname, "/mq_open_16-1_%d", getpid());
 
 	if ((pid = fork()) == 0) {
 		sigset_t mask;

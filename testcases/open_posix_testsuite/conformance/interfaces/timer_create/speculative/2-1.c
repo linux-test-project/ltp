@@ -11,6 +11,7 @@
  * will be used.
  */
 
+#include <errno.h>
 #include <time.h>
 #include <signal.h>
 #include <stdio.h>
@@ -33,25 +34,38 @@ int main(int argc, char *argv[])
 {
 	struct sigevent ev;
 	timer_t tid;
-	timer_t tids[TIMER_MAX];
+	timer_t *tids;
 	size_t i;
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGALRM;
 
-#ifdef DEBUG
+#if defined DEBUG && defined TIMER_MAX
 	printf("Max timers is %ld\n", (long) TIMER_MAX);
+	int max = TIMER_MAX;
+#else
+	int max = 256;
 #endif
+	tids = (timer_t *) malloc (max * sizeof (timer_t));
+	if (tids == NULL)
+	{
+		perror("malloc failed\n");
+		return PTS_UNRESOLVED;
+	}
 
-	for (i=0; i<TIMER_MAX;i++) {
+	for (i=0; i<max;i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
+#ifndef TIMER_MAX
+			if (errno == EAGAIN)
+				break;
+#endif
 			perror("timer_create() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 
 		tids[i] = tid;
 		if (lfind(&tid, tids, &i, sizeof(timer_t), compare) != NULL) {
-			printf("Duplicate tid found %d\n", tid);
+			printf("Duplicate tid found %ld\n", (long)tid);
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

@@ -40,7 +40,7 @@ int main()
 	int unresolved=0, failure=0, i;
 	struct mq_attr attr;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_timedsend_14-1_%d", getpid());
 
 	ts.tv_sec=time(NULL);
 	ts.tv_nsec=0;

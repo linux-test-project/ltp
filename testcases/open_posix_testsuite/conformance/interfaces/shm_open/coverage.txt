@@ -37,14 +37,15 @@ Assertions     Tested ?	   Remarks
 30	       YES
 31	       YES
 32	       YES
-33	       YES
+33	       NO	   Not easy to test. It is somewhat implementation
+specific.
 34	       YES
 35	       YES
 36	       YES
 37	       YES
 38	       YES
 39	       YES
-40	       YES
+40	       NO	   Cannot find a proper way to test.
 41	       YES
 42	       YES
 

@@ -32,13 +32,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 #define TIMEOUT 3
 
 static pthread_rwlock_t rwlock;
 static int thread_state; 
-static int currsec1, currsec2;
+static struct timeval currsec1, currsec2;
 static int expired;
 
 /* thread_state indicates child thread state: 
@@ -57,11 +58,11 @@ static void* fn_wr(void *arg)
 	int rc;
 	thread_state = ENTERED_THREAD;
 
-	currsec1 = time(NULL);
+	gettimeofday(&currsec1, NULL);
 
 	/* Absolute time, not relative. */
-	timeout.tv_sec = currsec1 + TIMEOUT;
-	timeout.tv_nsec = 0;	
+	timeout.tv_sec = currsec1.tv_sec + TIMEOUT;
+	timeout.tv_nsec = currsec1.tv_usec * 1000;	
 	
 	printf("thread: attempt timed write lock, %d secs\n", TIMEOUT);	
 	rc = pthread_rwlock_timedwrlock(&rwlock, &timeout);
@@ -88,7 +89,7 @@ static void* fn_wr(void *arg)
 	}
 	
 	/* Get time after the mutex timed out in locking. */
-	currsec2 = time(NULL);
+	gettimeofday(&currsec2, NULL);
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
@@ -178,9 +179,17 @@ int main()
 	if(thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time interval */
-		if((currsec2 - currsec1) != TIMEOUT)
+		struct timeval time_diff;
+		time_diff.tv_sec = currsec2.tv_sec - currsec1.tv_sec;
+		time_diff.tv_usec = currsec2.tv_usec - currsec1.tv_usec;
+		if (time_diff.tv_usec < 0)
 		{
-			printf("Test FAILED: the timer expired and blocking was terminated, but the timeout is not correct: expected to wait for %d, but waited for %d\n", TIMEOUT, (int)(currsec2 - currsec1));
+			--time_diff.tv_sec;
+			time_diff.tv_usec += 1000000;
+		}
+		if(time_diff.tv_sec < TIMEOUT)
+		{
+			printf("Test FAILED: the timer expired and blocking was terminated, but the timeout is not correct: expected to wait for %d, but waited for %ld.%06ld\n", TIMEOUT, (long)time_diff.tv_sec, (long)time_diff.tv_usec);
 			exit(PTS_FAIL);
 		}
 		else
@@ -235,7 +244,15 @@ int main()
 	if(thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time interval */
-		if((currsec2 - currsec1) != TIMEOUT)
+		struct timeval time_diff;
+		time_diff.tv_sec = currsec2.tv_sec - currsec1.tv_sec;
+		time_diff.tv_usec = currsec2.tv_usec - currsec1.tv_usec;
+		if (time_diff.tv_usec < 0)
+		{
+			--time_diff.tv_sec;
+			time_diff.tv_usec += 1000000;
+		}
+		if(time_diff.tv_sec < TIMEOUT)
 		{
 			printf("Test FAILED: for thread 2, the timer expired and waiter terminated, but the timeout is not correct\n");
 			exit(PTS_FAIL);

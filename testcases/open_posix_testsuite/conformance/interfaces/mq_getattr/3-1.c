@@ -10,6 +10,9 @@
  *  mq_getattr gets mq_maxmsg, mq_msgsize, which are set when message queue 
  *  was opened.
  *  
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
+ *  
  */
 
 #include <stdio.h>
@@ -34,6 +37,8 @@ int main()
 	char mqname[NAMESIZE];
 	mqd_t mqdes;
 	struct mq_attr mqstat, nmqstat;
+	int unresolved = 0;
+	int failure = 0;
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -48,13 +53,27 @@ int main()
 	memset(&nmqstat,0,sizeof(nmqstat));
 	if (mq_getattr(mqdes, &nmqstat) != 0) {
 		perror(ERROR_PREFIX "mq_getattr");
-		return PTS_UNRESOLVED;
+		unresolved = 1;
 	}
-	if ((mqstat.mq_maxmsg != nmqstat.mq_maxmsg) || (mqstat.mq_msgsize != nmqstat.mq_msgsize)) {
-		printf("FAIL: mq_getattr didn't get the correct mq_maxmsg, mq_msgsize set by mq_open\n");
-		printf("Test FAILED \n");
-		return PTS_FAIL;
+	if ((mqstat.mq_maxmsg != nmqstat.mq_maxmsg) || 
+            (mqstat.mq_msgsize != nmqstat.mq_msgsize)) {
+		printf("FAIL: mq_getattr didn't get the correct mq_maxmsg, "
+                       "mq_msgsize set by mq_open\n");
+		failure = 1;
 	}
+
+	mq_close(mqdes);
+	mq_unlink(mqname);
+
+	if (failure == 1) {
+                printf("Test FAILED\n");
+                return PTS_FAIL;
+        }
+	if (unresolved == 1) {
+                printf("Test UNRESOLVED\n");
+                return PTS_UNRESOLVED;
+        }
+
 	printf("Test PASSED \n");
 	return PTS_PASS;
 }

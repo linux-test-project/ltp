@@ -14,14 +14,15 @@
  *  until the message queue is actually removed. 
  *  Steps:
  *  1. Create 2 pipes to communicate with parent and child processes.
- *  2. Parent uses sem_open to create a new mq and tell child to open it using pipe.
+ *  2. Parent uses mq_open to create a new mq and tell child to open it using pipe.
  *  3. Child open the mq and tell Parent, so mq has 2 reference now.
- *  4. Parent mq_link the mq and tell Child to close this mq. 
+ *  4. Parent mq_unlink the mq and tell Child to close this mq. 
  *  5. Child close the mq and tell parent.
  *  6. Parent recreate the mq using mq_open, if the mq is actually removed, this operation 
  *     will succeed, if not, it may fail.
  */
 
+#include <signal.h>
 #include <stdio.h>
 #include <errno.h>
 #include <mqueue.h>
@@ -49,6 +50,12 @@ int main()
 	int to_parent[2];
         int to_child[2];
 	int rval;
+	struct sigaction sa;
+
+	sa.sa_handler = SIG_IGN;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGCHLD, &sa, NULL);
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 	rval = pipe(to_parent);
@@ -110,7 +117,11 @@ int parent_process(char *mqname, int read_pipe, int write_pipe, int child_pid)
 		        printf(ERROR_PREFIX "send_receive: " "expected a 'd'\n");
 	                return PTS_UNRESOLVED;
 	        }
-		if (mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0) == 0) {
+		if (mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0) != -1) {
+			if (mq_unlink(mqname) != 0) {
+		        	perror(ERROR_PREFIX "mq_unlink(2)");
+	                	return PTS_UNRESOLVED;
+			}
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}

@@ -58,7 +58,7 @@ int main()
 	struct mq_attr attr;
 	struct sigaction act;
 
-        sprintf(gqname, "/msgqueue_%d", getpid());
+        sprintf(gqname, "/mq_send_12-1_%d", getpid());
 
 	attr.mq_maxmsg = MAXMSG;
 	attr.mq_msgsize = BUFFER;
@@ -109,13 +109,17 @@ int main()
 				break;
 			}
 		}
+		mq_close(gqueue);
+		if (mq_unlink(gqname) != 0) {
+			perror("mq_unlink()");
+			return PTS_UNRESOLVED;
+		}
 
 		if (wait(&k) == -1) {
 			perror("Error waiting for child to exit\n");
 			kill(pid, SIGKILL); //kill child if not gone
 			return PTS_UNRESOLVED;
 		}
-
 		if (!WIFEXITED(k) || !WEXITSTATUS(k)) {
 			printf("Test FAILED\n");
 			return PTS_FAIL;

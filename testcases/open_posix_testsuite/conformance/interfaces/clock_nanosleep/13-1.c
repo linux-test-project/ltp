@@ -24,17 +24,12 @@ int main(int argc, char *argv[])
 	tssleep.tv_sec=SLEEPSEC;
 	tssleep.tv_nsec=0;
 
-	if (clock_nanosleep(BOGUSCLOCKID, 0, &tssleep, NULL) == -1) {
-		if (EINVAL == errno) {
-			printf("Test PASSED\n");
-			return PTS_PASS;
-		} else {
-			printf("errno != EINVAL\n");
-			return PTS_FAIL;
-		}
+	if (clock_nanosleep(BOGUSCLOCKID, 0, &tssleep, NULL) == EINVAL) {
+		printf("Test PASSED\n");
+		return PTS_PASS;
 	} else {
-		printf("clock_nanosleep() did not return -1 \n");
-		return PTS_UNRESOLVED;
+		printf("errno != EINVAL\n");
+		return PTS_FAIL;
 	}
 
 	printf("This code should not be executed\n");

@@ -14,6 +14,9 @@
  *
  *  4/11/2003 	change sa_flags from SA_RESTART to 0 to avoid compile 
  *  		error. 
+ *
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
  */
 
 #include <stdio.h>
@@ -39,6 +42,12 @@ void msg_handler()
         enter_handler = 1;
 }
 
+void mqclean(mqd_t queue, const char *qname)
+{
+	mq_close(queue);
+	mq_unlink(qname);
+}
+
 int main()
 {
 	char mqname[NAMESIZE];
@@ -61,23 +70,32 @@ int main()
         sigaction(SIGUSR1, &sa, NULL);
         if (mq_notify(mqdes, &notification) != 0) {
                 perror(ERROR_PREFIX "mq_notify");
+		mqclean(mqdes, mqname);
                 return PTS_UNRESOLVED;
         }
 	if (mq_notify(mqdes, NULL) != 0 ) {
 		printf("Test FAILED \n");
+		mqclean(mqdes, mqname);
 		return PTS_FAIL;
 	}
         if (mq_send(mqdes, s_msg_ptr, MSG_SIZE, prio) == -1) {
-               perror(ERROR_PREFIX "mq_send");
-               return PTS_UNRESOLVED;
+        	perror(ERROR_PREFIX "mq_send");
+		mqclean(mqdes, mqname);
+        	return PTS_UNRESOLVED;
         }
 	sleep(1);
+	if (mq_unlink(mqname) != 0) {
+               perror(ERROR_PREFIX "mq_unlink");
+               return PTS_UNRESOLVED;
+	}
         if (!enter_handler) {
 		printf("Test PASSED \n");
+		mqclean(mqdes, mqname);
 		return PTS_PASS;
 	}
 	else {
 		printf("Test FAILED \n");
+		mqclean(mqdes, mqname);
 		return PTS_FAIL;
 	}
 }

@@ -21,7 +21,7 @@ This document lists the items that will be tested for POSIX timers.
 // Function		Complete?	Priority
 // =================================================
 clock			YES		MED
-//clock_getcpuclockid	NO*		LOW
+clock_getcpuclockid	YES		LOW
 clock_getres		YES		MED
 clock_gettime		YES*		MED
 clock_settime		YES*		MED
@@ -49,9 +49,6 @@ with HRT 2.5.54bk6 and below and RH7.3 was to include
 /usr/src/linux/Documentation/high-res-timers/lib/posix_time.h
 and turn on -D_POSIX_TIMERS.
 
-In RH8.0, I just used the #define of CLOCK_MONOTONIC from this file
-directly in the test because of conflicts of redefines.
-
 Testing BIN List
 ================
 Items which I'd like to test more in the future (possibly in functional or
@@ -72,14 +69,12 @@ document.
 
 POSIX Timers Implementations
 ============================
-
+glibc Timers in user-space - http://ftp.gnu.org/gnu/glibc/
 High Res Timers            - http://high-res-timers.sourceforge.net
 Alternate High Res Timers  - http://high-res-timers.sourceforge.net (look
                              on mailing list for Jim Houston's alternate
                              implementation -- patch that goes on top
                              of George Anzinger's HRT)
-glibc Timers in user-space - http://ftp.gnu.org/gnu/glibc/
-                             Take the glibc-linuxthreads patch.
 */
 
 Maintainer: Julie Fleischer

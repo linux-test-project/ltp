@@ -34,6 +34,13 @@
  * 3.  If SIGSEGV was not caught in 10 seconds, the test times out and fails.  If the signal
  *     was caught, but the thread start routine was called at some point, the test also fails.
  *
+ *
+ * - adam.li@intel.com: 2004-04-30
+ * This case will end with segmentation fault. 
+ * I happened to find on NPTL pthread_create() can fail is 
+ * pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_INHERIT), while
+ * does not call pthread_attr_setschedparam() to set the prority. (since
+ * by default the priority will be 0. But this is implementation specific.
  */
 
 #include <pthread.h>
@@ -92,7 +99,7 @@ int main()
 	/* Inializing flags. */
 	segfault_flag = 1;
 	created_thread = 0;
-	
+
 	/* Set signal handler for SIGSEGV (seg fault) */
 	act.sa_handler = sig_handler;
 	act.sa_flags = 0;

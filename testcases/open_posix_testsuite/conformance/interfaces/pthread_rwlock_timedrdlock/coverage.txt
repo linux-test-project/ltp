@@ -3,7 +3,7 @@ This document defines the coverage for the pthread_rwlock_timerdlock() function:
 Assertion	Tested?
 1		YES
 2		YES
-3		NO: Timers option
+3		YES
 4		YES
 5		YES
 6		YES

@@ -44,7 +44,7 @@ int main()
 			return PTS_UNRESOLVED;
 		}
 
-		if(pthread_setspecific(keys[i], (void*)(KEY_VALUE + i)) != 0)
+		if(pthread_setspecific(keys[i], (void*)(long)(KEY_VALUE + i)) != 0)
 		{
 			printf("Error: pthread_setspecific failed\n");
 			return PTS_UNRESOLVED;

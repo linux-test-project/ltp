@@ -8,9 +8,9 @@ Assertion	Tested?
 5		YES
 6		NO - won't test.
 7		YES
-8		NO
+8		YES
 9	 	NO
-10		NO
+10		YES
 11		YES
 12		YES
 13		YES

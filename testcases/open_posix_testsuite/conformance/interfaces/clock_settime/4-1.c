@@ -19,6 +19,9 @@
  * - ensure that:  T2 >= T1 and (T2-T1) <= ACCEPTABLEDELTA
  *
  * signal SIGTOTEST is used.
+ * 
+ * adam.li: I think should check that (abs(T2-T1) <= ACCEPTABLEDELTA)  
+ * 2004-04-30 
  */
 #include <stdio.h>
 #include <time.h>
@@ -49,7 +52,7 @@ int main(int argc, char *argv[])
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if(getuid() != 0)
 	{
-		printf("Run this test as ROOT, not as a Regular User");
+		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
 
@@ -117,7 +120,8 @@ int main(int argc, char *argv[])
 	// add back time waited to reset value and reset time
 	tpreset.tv_sec += tpT2.tv_sec - tpT0.tv_sec;
 	setBackTime(tpreset);
-
+	
+	printf("delta: %d\n", delta);
 	if ( (delta <= ACCEPTABLEDELTA) && (delta >= 0) ) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

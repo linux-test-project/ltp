@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 /* thread_state indicates child thread state: 
@@ -52,7 +53,7 @@ static pthread_rwlock_t rwlock;
 static int thread_state;
 static int handler_state;
 static int expired;
-static time_t before_wait, after_wait;
+static struct timeval before_wait, after_wait;
 
 static void sig_handler() {
 
@@ -95,9 +96,9 @@ static void * th_fn(void *arg)
 	sigfillset(&act.sa_mask);
 	sigaction(SIGUSR1, &act, 0);
 	
-	before_wait = time(NULL);
-	abs_timeout.tv_sec = before_wait + TIMEOUT;
-	abs_timeout.tv_nsec = 0;
+	gettimeofday(&before_wait, NULL);
+	abs_timeout.tv_sec = before_wait.tv_sec + TIMEOUT;
+	abs_timeout.tv_nsec = before_wait.tv_usec * 1000;
 	
 	thread_state = ENTERED_THREAD;
 	
@@ -115,11 +116,11 @@ static void * th_fn(void *arg)
 	}
 	else
 	{
-		printf("Error at pthread_rwlock_timedwrlock()");
+		printf("Error %d at pthread_rwlock_timedwrlock()\n", rc);
 		exit(PTS_UNRESOLVED);
 	}
 
-	after_wait = time(NULL);
+	gettimeofday(&after_wait, NULL);
 
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);

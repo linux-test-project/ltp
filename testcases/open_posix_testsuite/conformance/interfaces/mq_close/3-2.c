@@ -8,7 +8,7 @@
 
 /*
   mq_close test plan:
-  Attempt to close a null descriptor and verify that returns
+  Attempt to close a invalid descriptor and verify that returns
   the correct error.
  */
 
@@ -19,14 +19,14 @@
 
 int main()
 {
-	if (mq_close((mqd_t)0) != -1) {
-		printf("mq_close() did not return -1 on null descriptor\n");
+	if (mq_close((mqd_t)-1) != -1) {
+		printf("mq_close() did not return -1 on invalid descriptor\n");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	if (errno != EBADF) {
-		printf("errno != EBADF on null descriptor\n");
+		printf("errno != EBADF on invalid descriptor\n");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

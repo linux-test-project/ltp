@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -58,7 +59,7 @@ int main()
 	struct mq_attr attr;
         const char *msgptr = MSGSTR;
 
-        sprintf(gqname, "/msgqueue_%d", getpid());
+        sprintf(gqname, "/mq_timedsend_5-3_%d", getpid());
 
 	attr.mq_maxmsg = MAXMSG;
 	attr.mq_msgsize = BUFFER;

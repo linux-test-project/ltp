@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -57,7 +58,7 @@ int main()
 	time_t currsec;
 	int maxreached=0, i;
 
-        sprintf(gqname, "/msgqueue_%d", getpid());
+        sprintf(gqname, "/mq_timedsend_15-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;

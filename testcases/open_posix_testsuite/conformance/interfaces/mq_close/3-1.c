@@ -42,6 +42,12 @@ int main()
 
 	if (mq_close(queue) == -1) {
 		perror(ERROR_PREFIX "mq_close");
+		mq_unlink(qname);
+		return PTS_UNRESOLVED;
+	}
+
+	if (mq_unlink(qname) != 0) {
+		perror("mq_unlink() did not return success");
 		return PTS_UNRESOLVED;
 	}
 
@@ -53,11 +59,6 @@ int main()
 	if (errno != EBADF) {
 		printf("errno != EBADF\n");
 		return PTS_FAIL;
-	}
-
-	if (mq_unlink(qname) != 0) {
-		perror("mq_unlink() did not return success");
-		return PTS_UNRESOLVED;
 	}
 
 	printf("Test PASSED\n");

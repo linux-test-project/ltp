@@ -32,9 +32,8 @@ char *shm_name[] = {
 	/* some file or directory which should exist */
 	"..",           				       
 	"/", 
-	"/bin/sh",
-	/* a unprobable directory */
-	"/bin/sh/abc",
+	"//",
+	"/abc",
 	NULL};
 
 int main() {

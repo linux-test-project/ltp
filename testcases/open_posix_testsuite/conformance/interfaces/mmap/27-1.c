@@ -42,23 +42,23 @@ int main()
   int fd;
   off_t off = 0;
 #ifdef MAP_FIXED
-  printf("Test Unresolved: MAP_FIXED defined\n");
-  exit(PTS_UNRESOLVED);
+  printf("Test Untested: MAP_FIXED defined\n");
+  exit(PTS_UNTESTED);
 #endif
 
 #ifdef MAP_SHARED
-  printf("Test Unresolved: MAP_SHARED defined\n");
-  exit(PTS_UNRESOLVED);
+  printf("Test Untested: MAP_SHARED defined\n");
+  exit(PTS_UNTESTED);
 #endif
   
 #ifdef PROT_WRITE
-  printf("Test Unresolved: PROT_WRITE defined\n");
-  exit(PTS_UNRESOLVED);
+  printf("Test Untested: PROT_WRITE defined\n");
+  exit(PTS_UNTESTED);
 #endif
 
 #ifdef PROT_READ
-  printf("Test Unresolved: PROT_READ defined\n");
-  exit(PTS_UNRESOLVED);
+  printf("Test Untested: PROT_READ defined\n");
+  exit(PTS_UNTESTED);
 #endif
 
   data = (char *) malloc(total_size); 

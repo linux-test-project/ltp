@@ -12,6 +12,7 @@
  */
 
 #include <stdio.h>
+#include <limits.h>
 #include <mqueue.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -37,7 +38,7 @@ int main()
         mqd_t queue;
 	int unresolved=0, failure=0, i;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_send_13-1_%d", getpid());
 
         queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
         if (queue == (mqd_t)-1) {

@@ -28,7 +28,7 @@ int main()
         char qname[NAMESIZE];
         mqd_t queue;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_29-1_%d", getpid());
 
         queue = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, NULL);
         if (queue != (mqd_t)-1) {

@@ -16,40 +16,40 @@ This document lists the items that will be tested for POSIX threads.
 ==========================================================
 */
 
-// Function		Complete?	Priority
+// Function			Complete?	Priority
 // =================================================
-pthread_attr_destroy	YES		HIGH
-pthread_attr_getdetachstate	YES	HIGH
+pthread_attr_destroy		YES		HIGH
+pthread_attr_getdetachstate	YES		HIGH
 pthread_attr_init		YES		HIGH
 pthread_attr_setdetachstate	YES		HIGH
-pthread_cancel		YES		HIGH
-pthread_cond_broadcast	YES		MED
-pthread_cond_destroy	YES		MED
-pthread_cond_init	YES		MED
-pthread_cond_signal	YES		MED
-pthread_cond_timedwait	YES		MED
-pthread_cond_wait	YES		MED
+pthread_cancel			YES		HIGH
+pthread_cond_broadcast		YES		MED
+pthread_cond_destroy		YES		MED
+pthread_cond_init		YES		MED
+pthread_cond_signal		YES		MED
+pthread_cond_timedwait		YES		MED
+pthread_cond_wait		YES		MED
 pthread_condattr_destroy	YES		LOW
-pthread_condattr_init	YES		LOW
+pthread_condattr_init		YES		LOW
 pthread_condattr_getpshared	YES		LOW
 pthread_condattr_setpshared	YES		LOW
-pthread_create		YES		HIGH
-pthread_detach		YES		HIGH
-pthread_equal		YES		HIGH
-pthread_exit		YES		HIGH
-pthread_join		YES		HIGH
-pthread_mutex_destroy	YES		HIGH
-pthread_mutex_init	YES		HIGH
-pthread_mutex_lock	YES		HIGH
-pthread_mutex_trylock	YES		HIGH
-pthread_mutex_unlock	YES		HIGH
+pthread_create			YES		HIGH
+pthread_detach			YES		HIGH
+pthread_equal			YES		HIGH
+pthread_exit			YES		HIGH
+pthread_join			YES		HIGH
+pthread_mutex_destroy		YES		HIGH
+pthread_mutex_init		YES		HIGH
+pthread_mutex_lock		YES		HIGH
+pthread_mutex_trylock		YES		HIGH
+pthread_mutex_unlock		YES		HIGH
 pthread_mutexattr_destroy	YES		HIGH
 pthread_mutexattr_init		YES		HIGH
-pthread_once		YES		HIGH
+pthread_once			YES		HIGH
 pthread_self			YES		HIGH
-pthread_setcancelstate	YES		HIGH
-pthread_setcanceltype 	YES		HIGH
-pthread_testcancel	YES		HIGH
+pthread_setcancelstate		YES		HIGH
+pthread_setcanceltype 		YES		HIGH
+pthread_testcancel		YES		HIGH
 // ===================================================
 
 /*
@@ -65,28 +65,30 @@ different implementations on Linux.
 NON-HIGH PRIORITY FUNCTIONS
 =============================
 
-pthread_atfork		NO		LOW
-pthread_attr_getschedparam	NO		MED
-pthread_attr_setschedparam	NO		MED
-pthread_cleanup_push	NO		MED
-pthread_cleanup_pop	NO		MED
-pthread_getspecific	NO		MED
-pthread_key_create	NO		MED
-pthread_key_delete	NO		MED
-pthread_mutexattr_getpshared	NO		LOW
-pthread_mutexattr_setpshared	NO		LOW
-pthread_rwlock_destory	NO		LOW
-pthread_rwlock_init	NO		LOW
-pthread_rwlock_rdlock	NO		LOW
-pthread_rwlock_timedrdlock	NO		LOW
-pthread_rwlock_timedwrlock	NO		LOW
-pthread_rwlock_tryrdlock	NO		LOW
-pthread_rwlock_trywrlock	NO		LOW
-pthread_rwlock_unlock		NO		LOW
-pthread_rwlock_wrlock		NO		LOW
-pthread_rwlockattr_destory	NO		LOW
-pthread_rwlockattr_getpshared	NO		LOW
-pthread_setspecific		NO		MED
+// Function			Complete?	Priority
+// =================================================
+pthread_atfork			YES		LOW
+pthread_attr_getschedparam	YES		MED
+pthread_attr_setschedparam	YES		MED
+pthread_cleanup_push		YES		MED
+pthread_cleanup_pop		YES		MED
+pthread_getspecific		YES		MED
+pthread_key_create		YES		MED
+pthread_key_delete		YES		MED
+pthread_mutexattr_getpshared	YES		LOW
+pthread_mutexattr_setpshared	YES		LOW
+pthread_rwlock_destory		YES		LOW
+pthread_rwlock_init		YES		LOW
+pthread_rwlock_rdlock		YES		LOW
+pthread_rwlock_timedrdlock	YES		LOW
+pthread_rwlock_timedwrlock	YES		LOW
+pthread_rwlock_tryrdlock	YES		LOW
+pthread_rwlock_trywrlock	YES		LOW
+pthread_rwlock_unlock		YES		LOW
+pthread_rwlock_wrlock		YES		LOW
+pthread_rwlockattr_destory	YES		LOW
+pthread_rwlockattr_getpshared	YES		LOW
+pthread_setspecific		YES		MED
 */
 
 Maintainer: Rolla Selbak

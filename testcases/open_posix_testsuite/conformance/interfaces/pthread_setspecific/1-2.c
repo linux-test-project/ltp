@@ -88,13 +88,13 @@ int main()
 	 * thread, they should be different. */
 	if(rc1 != (void *)(KEY_VALUE_1))
 	{
-		printf("Test FAILED: Incorrect value bound to key, expected %d, got %d\n", KEY_VALUE_1, (int)rc1);
+		printf("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n", KEY_VALUE_1, (long)rc1);
 		return PTS_FAIL;
 	}
 
 	if(rc2 != (void *)(KEY_VALUE_2))
 	{
-		printf("Test FAILED: Incorrect value bound to key, expected %d, got %d\n", KEY_VALUE_2, (int)rc2);
+		printf("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n", KEY_VALUE_2, (long)rc2);
 		return PTS_FAIL;
 	}
 

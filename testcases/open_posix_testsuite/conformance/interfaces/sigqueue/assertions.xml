@@ -41,11 +41,11 @@
 	sigqueue() shall return a value of -1 and set errno to [EINVAL] if the value of the signo
         argument is an invalid or unsupported signal number.
   </assertion>
-  <assertion id="11" tag="ref:XSH6:42318:42319 pt:RTS">
+  <assertion id="12" tag="ref:XSH6:42318:42319 pt:RTS">
 	sigqueue() shall return a value of -1 and set errno to [EPERM] if the process does not have the 
         appropriate privilege to send the signal to the receiving process.
   </assertion>
-  <assertion id="12" tag="ref:XSH6:42320:42320 pt:RTS">
+  <assertion id="11" tag="ref:XSH6:42320:42320 pt:RTS">
 	sigqueue() shall return a value of -1 and set errno to [ESRCH] if the process pid does not exist.
   </assertion>
 </assertions>

@@ -15,6 +15,7 @@
  *            Test needed to do something as opposed to idle sleep to
  *            get the CPU time to increase.
  */
+#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
         return PTS_UNSUPPORTED;
 #else
 	clockid_t clockid;
-	struct timespec tp1;
+	struct timespec tp1 = {.tv_sec = 0, .tv_nsec = 0};
 
 	dosomething();
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Verify that it returned a valid clockid_t that can be used in other functions */
-	if (clock_settime(clockid, &tp1) != 0) {
+	if (clock_gettime(clockid, &tp1) != 0) {
 		printf("clock_getcpuclockid() returned an invalid clockid_t: %d\n", clockid);
 		return PTS_FAIL;
 	}

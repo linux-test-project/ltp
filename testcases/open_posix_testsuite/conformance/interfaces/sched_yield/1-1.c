@@ -121,7 +121,8 @@ int main() {
 	int i, ncpu;
 	int *child_pid; 
 	pthread_t tid, tid_runner;
-	int *tmpresult, result;
+	void *tmpresult;
+	int result;
 	pthread_attr_t attr;
         struct sched_param param;
 
@@ -176,11 +177,11 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_join(tid_runner, (void**) &tmpresult) != 0) {
+	if(pthread_join(tid_runner, &tmpresult) != 0) {
 		perror("An error occurs when calling pthread_join()");
 		return PTS_UNRESOLVED;
 	}
-	result = *tmpresult;
+	result = *(int *)tmpresult;
 
 	if(result){
 		printf("A thread does not relinquish the processor.\n");

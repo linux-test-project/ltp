@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <limits.h>
 #include <mqueue.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -44,7 +45,7 @@ int main()
 	struct mq_attr attr;
 	int unresolved=0, failure=0, spri=1, pri, i, maxreached=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_send_7-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;

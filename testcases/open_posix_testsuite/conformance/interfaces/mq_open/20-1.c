@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -40,7 +41,7 @@ int main()
 	struct sigaction act;
 	int failure=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_20-1_%d", getpid());
 
         queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
         if (queue == (mqd_t)-1) {

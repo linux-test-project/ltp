@@ -47,16 +47,11 @@ int main(int argc, char *argv[])
 		}
 		tssleep.tv_sec=SLEEPSEC;
 		tssleep.tv_nsec=0;
-		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) == -1) {
-			if (errno == EINTR) {
+		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) == EINTR) {
 				return CHILDPASS;
-			} else {
+		} else {
 				printf("errno != EINTR\n");
 				return CHILDFAIL;
-			}
-		} else {
-			printf("clock_nanosleep() was not interrupted\n");
-			return CHILDFAIL;
 		}
 	} else {
 		/* parent here */

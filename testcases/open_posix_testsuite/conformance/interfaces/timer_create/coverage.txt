@@ -10,8 +10,8 @@ Assertion	Tested?
 7		YES
 8		YES
 9		YES
-10		NO *Skipping CPT, TCT for now
-11		NO *Skipping CPT, TCT for now
+10		YES
+11		YES
 12		NO *Skipping CPT, TCT for now
 13		YES
 14		YES

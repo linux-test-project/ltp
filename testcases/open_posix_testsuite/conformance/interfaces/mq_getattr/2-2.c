@@ -9,6 +9,9 @@
  *  mq_getattr() test plan:
  *  mq_getattr gets mq_flags value, which is set by mq_setattr.
  *  
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
+ *  
  */
 
 #include <stdio.h>
@@ -32,6 +35,8 @@ int main()
 	char mqname[NAMESIZE];
 	mqd_t mqdes;
 	struct mq_attr mqstat, nmqstat;
+	int unresolved = 0;
+	int failure = 0;
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -44,23 +49,35 @@ int main()
 	memset(&nmqstat,0,sizeof(nmqstat));
 	if (mq_getattr(mqdes, &mqstat) == -1) {
 		perror(ERROR_PREFIX "mq_getattr");
-		return PTS_UNRESOLVED;
+		unresolved = 1;
 	}
 	mqstat.mq_flags |= MQFLAGS;
 	if (mq_setattr(mqdes, &mqstat, NULL) == -1)	{
 		perror(ERROR_PREFIX "mq_setattr");
-		printf("Test FAILED \n");
-		return PTS_FAIL;
+		failure = 1;
 	}
 	if (mq_getattr(mqdes, &nmqstat) != 0)	 {
 	        perror(ERROR_PREFIX "mq_getattr");
-       	        return PTS_UNRESOLVED;	       
+		unresolved = 1;
 	}
 	if (nmqstat.mq_flags != mqstat.mq_flags)  {
-		printf("FAIL: mq_getattr didn't get the correct mq_flags set by mq_setattr \n");
-		printf("Test FAILED \n");
-		return PTS_FAIL;
-	}
+		printf("FAIL: mq_getattr didn't get the correct mq_flags "
+                       "set by mq_setattr \n");
+		failure = 1;
+	}	
+
+	mq_close(mqdes);
+	mq_unlink(mqname);
+
+	if (failure == 1) {
+                printf("Test FAILED\n");
+                return PTS_FAIL;
+        }
+	if (unresolved == 1) {
+                printf("Test UNRESOLVED\n");
+                return PTS_UNRESOLVED;
+        }
+
 	printf("Test PASSED \n");
 	return PTS_PASS;
 }

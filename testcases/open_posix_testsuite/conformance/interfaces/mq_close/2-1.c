@@ -18,6 +18,7 @@
   7. Parent reports result
 */
 
+#include <signal.h>
 #include <stdio.h>
 #include <mqueue.h>
 #include <sys/types.h>
@@ -46,6 +47,7 @@ int main()
 	int rval;
 	int to_parent[2];
 	int to_child[2];
+	struct sigaction sa;
 
 	sprintf(qname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -60,6 +62,11 @@ int main()
 		perror(ERROR_PREFIX "pipe (2)");
 		return PTS_UNRESOLVED;
 	}
+
+	sa.sa_handler = SIG_IGN;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGCHLD, &sa, NULL);
 
 	pid = fork();
 	if (pid == -1) {
@@ -98,30 +105,38 @@ int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid)
 	}
 
 	se.sigev_notify = SIGEV_SIGNAL;
+	se.sigev_signo = SIGUSR1;
+
 	if (mq_notify(queue, &se)) {
 		perror(ERROR_PREFIX "mq_notify (1)");
+		mq_close(queue);
+		mq_unlink(qname);
 		return PTS_UNRESOLVED;
 	}
 
 	// send 'a' - signal child to verify it can't call notify
 	rval = send_receive(read_pipe, write_pipe, 'a', &reply);
 	if (rval) {
+		mq_close(queue);
+		mq_unlink(qname);
 		return rval;
 	}
 
 	if (reply != 'b') {
 		puts(ERROR_PREFIX "send_receive: "
 		     "expected a 'b'");
+		mq_close(queue);
+		mq_unlink(qname);
 		return PTS_UNRESOLVED;
 	}
 
 	// close the queue to perform test
 	rval = mq_close(queue);
+	mq_unlink(qname);
 	if (rval) {
 		perror(ERROR_PREFIX "mq_close:");
 		return PTS_UNRESOLVED;
 	}
-
 	// send 'c' - signal child to verify it can call notify
 	rval = send_receive(read_pipe, write_pipe, 'c', &reply);
 	if (rval) {
@@ -187,6 +202,7 @@ int child_process(char *qname, int read_pipe, int write_pipe)
 
 	// try notify after parent closed queue - should succeed
 	se.sigev_notify = SIGEV_SIGNAL;
+	se.sigev_signo = 0;
 	rval = mq_notify(queue, &se);
 
 	// send 'd' for success and 'e' for failure

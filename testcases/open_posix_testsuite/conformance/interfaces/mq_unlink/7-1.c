@@ -27,7 +27,7 @@
 
 int main()
 {
-	char mqname[50];
+	char mqname[50] = "/something-which-does-not-exit";
 
 	mq_unlink(mqname);
 	if (ENOENT == errno) {

@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "posixtest.h"
 
 #define SLEEPSEC 30
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
 		tssleep.tv_sec=SLEEPSEC;
 		tssleep.tv_nsec=0;
 		if (clock_nanosleep(CLOCK_REALTIME, 0, 
-					&tssleep, &tsremain) == -1) {
+					&tssleep, &tsremain) == EINTR) {
 			if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 				perror("clock_gettime() failed\n");
 				return CHILDFAIL;
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 
 			return CHILDFAIL;
 		} else {
-			printf("clock_nanosleep() did not return -1\n");
+			printf("clock_nanosleep() did not return EINTR\n");
 			return CHILDFAIL;
 		}
 	} else {

@@ -28,6 +28,7 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef TIMER_MAX
 	struct sigevent ev;
 	timer_t tid;
 	int i;
@@ -53,4 +54,7 @@ int main(int argc, char *argv[])
 	printf("timer_create() with > TIMER_MAX timers created\n");
 	printf("Test INCONCLUSIVE - mark as PASS\n");
 	return PTS_PASS;
+#else
+	return PTS_PASS;
+#endif
 }

@@ -14,7 +14,7 @@
  *  until the message queue is actually removed. 
  *  Steps:
  *  1. Create 2 pipes to communicate with parent and child processes.
- *  2. Parent uses sem_open to create a new mq and tell child to open it using pipe.
+ *  2. Parent uses mq_open to create a new mq and tell child to open it using pipe.
  *  3. Child open the mq and tell parent, so mq has 2 reference now.
  *  4. Parent want to mq_unlink the mq, since Child does not close the mq, 
  *     mq_unlink will postpone. At this time, if using mq_open to create 
@@ -25,6 +25,7 @@
  *     		    must fail.
  */
 
+#include <signal.h>
 #include <stdio.h>
 #include <errno.h>
 #include <mqueue.h>
@@ -54,6 +55,12 @@ int main()
 	int to_parent[2];
         int to_child[2];
 	int rval;
+	struct sigaction sa;
+
+	sa.sa_handler = SIG_IGN;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGCHLD, &sa, NULL);
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 	rval = pipe(to_parent);
@@ -113,6 +120,10 @@ int parent_process(char *mqname, int read_pipe, int write_pipe, int child_pid)
 			return PTS_PASS;
 		}
 		else {
+			if (mq_unlink(mqname) != 0) {
+	        		printf(ERROR_PREFIX "mq_unlink(2)");
+                		return PTS_UNRESOLVED;
+			}
 			printf("mq_open to recreate the message	mqueue may succeed even if the references to the message queue have not been closed or the message queue is not actually removed. \n");
 			printf("Test PASSED\n");
 			return PTS_PASS;

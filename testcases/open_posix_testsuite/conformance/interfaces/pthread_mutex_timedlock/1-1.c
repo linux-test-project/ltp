@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 #define TIMEOUT 3					/* 3 seconds of timeout time for
@@ -37,8 +38,8 @@
 void *f1(void *parm);
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-time_t currsec1, currsec2;				/* Variables for saving time before 
-						           and afer locking the mutex using
+struct timeval currsec1, currsec2;			/* Variables for saving time before 
+						           and after locking the mutex using
 							   pthread_mutex_timedlock(). */	   
 /****************************
  *
@@ -48,6 +49,7 @@ time_t currsec1, currsec2;				/* Variables for saving time before
 int main()
 {
 	pthread_t new_th;
+	struct timeval time_diff;
 
 	/* Lock the mutex. */
 	if(pthread_mutex_lock(&mutex) != 0)
@@ -83,17 +85,17 @@ int main()
 	}
 
 	/* Compare time before the mutex locked and after the mutex lock timed out. */
-	if((currsec1 + TIMEOUT) < currsec2)
+	time_diff.tv_sec = currsec2.tv_sec - currsec1.tv_sec;
+	time_diff.tv_usec = currsec2.tv_usec - currsec1.tv_usec;
+	if (time_diff.tv_usec < 0)
+	{
+		--time_diff.tv_sec;
+		time_diff.tv_usec += 1000000;
+	}
+	if(time_diff.tv_sec < TIMEOUT)
 	{
 		printf("Test FAILED: Timed lock did not wait long enough. (%d secs.)\n", TIMEOUT);
-		printf("time before mutex locked: %d, time after mutex timed out: %d.\n", (int)currsec1, (int)currsec2);
-		return PTS_FAIL;
-	}
-
-	if((currsec1 + TIMEOUT) > currsec2)
-	{
-		printf("Test FAILED: Timed lock did not wait long enough (%d secs.).\n", TIMEOUT);
-		printf("time before mutex locked: %d, time after mutex timed out: %d.\n", (int)currsec1, (int)currsec2);
+		printf("time before mutex locked: %ld.%06ld, time after mutex timed out: %ld.%06ld.\n", (long)currsec1.tv_sec, (long)currsec1.tv_usec, (long)currsec2.tv_sec, (long)currsec2.tv_usec);
 		return PTS_FAIL;
 	}
 
@@ -112,13 +114,13 @@ void *f1(void *parm)
 	struct timespec timeout;
 
 	/* Get the current time before the mutex locked. */
-	currsec1 = time(NULL);
+	gettimeofday(&currsec1, NULL);
 
 	/* Absolute time, not relative. */
-	timeout.tv_sec = currsec1 + TIMEOUT;
-	timeout.tv_nsec = 0;	
+	timeout.tv_sec = currsec1.tv_sec + TIMEOUT;
+	timeout.tv_nsec = currsec1.tv_usec * 1000;	
 
-	printf("Timed mutex lock will block for %d seconds starting from: %d\n", TIMEOUT, (int)time(NULL));
+	printf("Timed mutex lock will block for %d seconds starting from: %ld.%06ld\n", TIMEOUT, (long)currsec1.tv_sec, (long)currsec1.tv_usec);
 	if(pthread_mutex_timedlock(&mutex, &timeout) != ETIMEDOUT)
 	{
 		perror("Error in pthread_mutex_timedlock().\n");
@@ -127,7 +129,7 @@ void *f1(void *parm)
 	}
 
 	/* Get time after the mutex timed out in locking. */
-	currsec2 = time(NULL);
+	gettimeofday(&currsec2, NULL);
 
   	pthread_exit(0);
   	return (void*)(0);

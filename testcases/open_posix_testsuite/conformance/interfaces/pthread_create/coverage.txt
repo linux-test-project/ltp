@@ -12,7 +12,7 @@ Assertion	Tested?
 9 		NO - Skipping. (Floating point environment?)
 10		YES - Peculiar behavior of passing the test and then freezing on the
 			linuxthreads implementation.
-11		NO - Skipping TCT tag for now.
+11		YES
 12		YES
 13		YES
 

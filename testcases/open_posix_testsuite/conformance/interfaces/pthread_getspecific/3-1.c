@@ -37,7 +37,7 @@ int main()
 	rc = pthread_getspecific(key);
 	if(rc != NULL)
 	{
-		printf("Test FAILED: Did not return correct value, expected NULL, but got %d\n", (int)rc);
+		printf("Test FAILED: Did not return correct value, expected NULL, but got %ld\n", (long)rc);
 		return PTS_FAIL;
 	}
 		

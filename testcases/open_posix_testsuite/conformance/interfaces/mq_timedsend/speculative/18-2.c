@@ -47,6 +47,8 @@ int main()
 	ts.tv_nsec=-1;
         if (mq_timedsend(queue, msgptr, strlen(msgptr), 1, &ts) == -1) {
 		printf("mq_timedsend() did fail on invalid abs_time\n");
+		mq_close(queue);
+		mq_unlink(qname);
 		return PTS_PASS;
         }
 

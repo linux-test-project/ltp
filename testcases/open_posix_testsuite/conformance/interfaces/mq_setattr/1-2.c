@@ -9,6 +9,9 @@
  *  mq_setattr test plan: 
  *  Test that the values of mq_maxmsg, mq_msgsize, mq_curmsgs members of 
  *  the mq_attr structure will be ignored by mq_setattr().
+ *  
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
  */
 
 #include <stdio.h>
@@ -33,6 +36,8 @@ int main()
 	char mqname[NAMESIZE];
 	mqd_t mqdes;
 	struct mq_attr mqstat, nmqstat;
+	int unresolved = 0;
+	int failure = 0;
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -46,7 +51,7 @@ int main()
 
 	if (mq_getattr(mqdes, &mqstat) == -1) {
 		perror(ERROR_PREFIX "mq_getattr");
-		return PTS_UNRESOLVED;
+		unresolved = 1;
 	}
 	mqstat.mq_maxmsg = mqstat.mq_maxmsg + 1;
 	mqstat.mq_msgsize = mqstat.mq_msgsize + 1;
@@ -54,16 +59,30 @@ int main()
 
 	if (mq_setattr(mqdes, &mqstat, NULL) != 0)	{
 		perror(ERROR_PREFIX "mq_setattr()");
-		return PTS_FAIL;
+		failure = 1;
 	}
 	if (mq_getattr(mqdes, &nmqstat) == -1)	{
-	       perror(ERROR_PREFIX "mq_getattr()");
-       	       return PTS_UNRESOLVED;	       
+		perror(ERROR_PREFIX "mq_getattr()");
+		unresolved = 1;
 	}
-	if ((nmqstat.mq_maxmsg == mqstat.mq_maxmsg)||(nmqstat.mq_msgsize == mqstat.mq_msgsize)||(nmqstat.mq_curmsgs == mqstat.mq_curmsgs))  {
-		printf("Test FAILED \n");
-		return PTS_FAIL;
+	if ((nmqstat.mq_maxmsg == mqstat.mq_maxmsg)||
+	    (nmqstat.mq_msgsize == mqstat.mq_msgsize)||
+            (nmqstat.mq_curmsgs == mqstat.mq_curmsgs)) {
+		failure = 1;
 	}
+
+	mq_close(mqdes);
+	mq_unlink(mqname);
+
+	if (failure == 1) {
+                printf("Test FAILED\n");
+                return PTS_FAIL;
+        }
+	if (unresolved == 1) {
+                printf("Test UNRESOLVED\n");
+                return PTS_UNRESOLVED;
+        }
+
 	printf("Test PASSED \n");
 	return PTS_PASS;
 }

@@ -29,7 +29,7 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t queue;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_18-1_%d", getpid());
 
         queue = mq_open(qname, O_CREAT |O_RDWR | O_NONBLOCK, 
 			S_IRUSR | S_IWUSR, NULL);

@@ -11,11 +11,45 @@
  * Test that sched_getparam() sets errno == EPERM if the requesting process
  * does not have permission.
  */
+#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sched.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <string.h>
 #include "posixtest.h"
+
+
+/** Set the euid of this process to a non-root uid */
+int set_nonroot()
+{
+	struct passwd *pw;
+	setpwent();
+	/* search for the first user which is non root */ 
+	while((pw = getpwent()) != NULL)
+		if(strcmp(pw->pw_name, "root"))
+			break;
+	endpwent();
+	if(pw == NULL) {
+		printf("There is no other user than current and root.\n");
+		return 1;
+	}
+
+	if(setuid(pw->pw_uid) != 0) {
+		if(errno == EPERM) {
+			printf("You don't have permission to change your UID.\n");
+			return 1;
+		}
+		perror("An error occurs when calling seteuid()");
+		return 1;
+	}
+	
+	printf("Testing with user '%s' (euid: %d)(uid: %d)\n",
+	       pw->pw_name, (int)geteuid(), (int)getuid());
+	return 0;
+}
 
 int main(int argc, char **argv)
 {	       
@@ -27,8 +61,10 @@ int main(int argc, char **argv)
 	/* and can only be accessed by root */ 
 	/* This test should be run under standard user permissions */
 	if (getuid() == 0) {
-		puts("Run this test case as a Regular User, but not ROOT");
-		return PTS_UNTESTED;
+                if (set_nonroot() != 0) {
+			printf("Cannot run this test as non-root user\n");	
+			return PTS_UNTESTED;
+		}
 	}
 
 	result = sched_getparam( 1, &param);
@@ -39,7 +75,7 @@ int main(int argc, char **argv)
 	}
 	if(result == 0) {
 		printf("The function sched_getparam has successed.\n");
-		return PTS_UNRESOLVED;
+		return PTS_FAIL;
 	}
 	if(errno != EPERM ) {
 		perror("errno is not EPERM");

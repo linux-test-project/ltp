@@ -31,7 +31,7 @@ int main()
         mqd_t queue;
 	int unresolved=0, failure=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_send_11-2_%d", getpid());
 
         queue = mq_open(qname, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR, NULL);
         if (queue == (mqd_t)-1) {

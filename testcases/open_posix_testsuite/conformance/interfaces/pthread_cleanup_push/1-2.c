@@ -42,7 +42,7 @@ int cleanup_flag;
 /* The cleanup handler */
 void a_cleanup_func(void *flag_val)	
 {
-	cleanup_flag = (int)flag_val;
+	cleanup_flag = (long)flag_val;
 	sem1 = INMAIN;
 	return;
 }
@@ -114,7 +114,7 @@ int main()
 	}
 	
 	/* Make sure cancellation happened correctly */
-	if((int)value_ptr == PTS_UNRESOLVED)
+	if((long)value_ptr == PTS_UNRESOLVED)
 	{
 		printf("Error: cancellation not correctly handled\n");
 		return PTS_UNRESOLVED;

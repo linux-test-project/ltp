@@ -31,7 +31,7 @@ int main()
         mqd_t queue;
 	int i;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_27-1_%d", getpid());
 
 	//Ensures queue name will have > NAME_MAX chars
 	for(i=0;i<NAME_MAX;i++) {

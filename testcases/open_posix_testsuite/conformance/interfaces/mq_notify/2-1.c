@@ -12,6 +12,9 @@
  *  If the calling process or other process has already registered for the 
  *  notification, subsequent attempts to register for that message queue 
  *  will fail. 
+ *  
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
  */
 
 #include <stdio.h>
@@ -28,6 +31,12 @@
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 #define NAMESIZE 50
+
+void mqclean(mqd_t queue, const char *qname)
+{
+	mq_close(queue);
+	mq_unlink(qname);
+}
 
 int main()
 {
@@ -49,11 +58,13 @@ int main()
 	notification.sigev_signo = SIGUSR1;
 	if (mq_notify(mqdes, &notification) != 0) {
 		printf("Test FAILED \n");
+		mqclean(mqdes, mqname);
 		return PTS_FAIL;
 	}
 	pid = fork();
         if (pid == -1) {
                 perror(ERROR_PREFIX "fork");
+		mqclean(mqdes, mqname);
                 return PTS_UNRESOLVED;
         }
         if (pid == 0) {
@@ -70,7 +81,7 @@ int main()
 	else {
 		/* parent process */
 		wait(&status);
+		mqclean(mqdes, mqname);
 		return status;
 	}
-	return PTS_UNRESOLVED;
 }

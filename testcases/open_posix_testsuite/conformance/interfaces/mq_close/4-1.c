@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <signal.h>
 #include "posixtest.h"
 
 #define TEST "4-1"
@@ -44,6 +45,8 @@ int main()
 	}
 
 	se.sigev_notify = SIGEV_SIGNAL;
+	se.sigev_signo = SIGUSR1;
+
 	if (mq_notify(queue, &se) != -1) {
 		printf("mq_notify() did not fail as expected\n");
 		printf("Test FAILED\n");

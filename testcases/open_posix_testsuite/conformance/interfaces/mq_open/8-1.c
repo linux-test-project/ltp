@@ -37,7 +37,7 @@ int main()
 	struct mq_attr attr;
 	int pri;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_8-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;

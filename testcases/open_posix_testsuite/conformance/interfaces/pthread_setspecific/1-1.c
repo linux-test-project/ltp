@@ -42,7 +42,7 @@ int main()
 			return PTS_UNRESOLVED;
 		} else
 		{
-			if(pthread_setspecific(keys[i], (void *)(i + KEY_VALUE)) != 0)
+			if(pthread_setspecific(keys[i], (void *)(long)(i + KEY_VALUE)) != 0)
 			{
 				printf("Test FAILED: Could not set the value of the key to %d\n", (i + KEY_VALUE));
 				return PTS_FAIL;
@@ -54,9 +54,9 @@ int main()
 	for(i = 0;i<NUM_OF_KEYS;++i)
 	{
 		rc = pthread_getspecific(keys[i]);
-		if(rc != (void *)(i + KEY_VALUE))
+		if(rc != (void *)(long)(i + KEY_VALUE))
 		{
-			printf("Test FAILED: Did not return correct value of thread-specific key, expected %d, but got %d\n", (i + KEY_VALUE), (int)rc);
+			printf("Test FAILED: Did not return correct value of thread-specific key, expected %ld, but got %ld\n", (long)(i + KEY_VALUE), (long)rc);
 			return PTS_FAIL;
 		} else
 		{

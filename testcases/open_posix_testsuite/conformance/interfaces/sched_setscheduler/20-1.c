@@ -16,12 +16,46 @@
  * Atempt to change the policy of the process whose ID is 1 which is generally
  * belongs to root. This test can not be run by root.
  */
-#include <sched.h>
+
+#define _XOPEN_SOURCE 600
 #include <stdio.h>
+#include <sched.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <string.h>
 #include "posixtest.h"
 
+
+/** Set the euid of this process to a non-root uid */
+int set_nonroot()
+{
+	struct passwd *pw;
+	setpwent();
+	/* search for the first user which is non root */ 
+	while((pw = getpwent()) != NULL)
+		if(strcmp(pw->pw_name, "root"))
+			break;
+	endpwent();
+	if(pw == NULL) {
+		printf("There is no other user than current and root.\n");
+		return 1;
+	}
+
+	if(setuid(pw->pw_uid) != 0) {
+		if(errno == EPERM) {
+			printf("You don't have permission to change your UID.\n");
+			return 1;
+		}
+		perror("An error occurs when calling seteuid()");
+		return 1;
+	}
+	
+	printf("Testing with user '%s' (euid: %d)(uid: %d)\n",
+	       pw->pw_name, (int)geteuid(), (int)getuid());
+	return 0;
+}
 
 
 int main(){
@@ -32,8 +66,10 @@ int main(){
         /* and can only be accessed by root */ 
         /* This test should be run under standard user permissions */
         if (getuid() == 0) {
-                puts("Run this test case as a Regular User, but not ROOT");
-                return PTS_UNTESTED;
+                if (set_nonroot() != 0) {
+			printf("Cannot run this test as non-root user\n");	
+			return PTS_UNTESTED;
+		}
         }
 	
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);

@@ -47,7 +47,7 @@ int main()
         const char *msgptr = MSGSTR;
 	int pid, ret;
 
-       	sprintf(qname, "/msgqueue_%d", getpid());
+       	sprintf(qname, "/mq_open_2-1_%d", getpid());
 
 	if ((pid = fork()) == 0) {
         	mqd_t childqueue;

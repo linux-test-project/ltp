@@ -10,7 +10,7 @@
  * mq_getattr test plan:
  * mq_getattr gets mq_curmsgs value, which will be returned as 
  * the number of the message currently on the queue.
- *
+ *  
  */
 
 #include <stdio.h>
@@ -53,7 +53,7 @@ int main()
 	for (i = 0; i < MSG_NUM; i++) {
         	if (mq_send(mqdes, msgptr, strlen(msgptr), 1) == -1) {
                 	perror(ERROR_PREFIX "mq_send()");
-			unresolved=1;
+			unresolved = 1;
         	}
 	}
 	memset(&mqstat,0,sizeof(mqstat));
@@ -63,19 +63,14 @@ int main()
 	}
 	else {
 		if (mqstat.mq_curmsgs != MSG_NUM) {
-			printf("mq_getattr didn't get the correct mq_curmsgs \n");
+			printf("mq_getattr didn't get the correct "
+			       "mq_curmsgs \n");
 			failure = 1;
 		}
 	}
-        if (mq_close(mqdes) != 0) {
-		perror(ERROR_PREFIX "mq_close()");
-		unresolved=1;
-        }
 
-        if (mq_unlink(mqname) != 0) {
-		perror(ERROR_PREFIX "mq_unlink()");
-		unresolved=1;
-        }
+	mq_close(mqdes);
+	mq_unlink(mqname);
 
 	if (failure==1) {
 		printf("Test FAILED\n");

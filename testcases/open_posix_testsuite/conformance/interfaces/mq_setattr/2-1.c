@@ -11,6 +11,9 @@
  * location referenced by omqstat, the previous message queue attributes and 
  * the current queue status. These values will be the same as would be 
  * returned by a call to mq_getattr() at that point.
+ *  
+ *  2/17/2004   call mq_close and mq_unlink before exit to release mq 
+ *		resources
  */
 
 #include <stdio.h>
@@ -35,6 +38,8 @@ int main()
 	char mqname[NAMESIZE];
 	mqd_t mqdes;
 	struct mq_attr omqstat, mqstat, nmqstat;
+	int unresolved = 0;
+	int failure = 0;
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -48,7 +53,11 @@ int main()
 	memset(&nmqstat,0,sizeof(nmqstat));
 
 	if (mq_getattr(mqdes, &omqstat) == -1)	{
-	       perror("mq_getattr() did not return success");
+		perror("mq_getattr() did not return success");
+		unresolved = 1;
+	}
+	if (mq_unlink(mqname) != 0) {
+	       perror("mq_unlink()");
        	       return PTS_UNRESOLVED;	       
 	}
 	nmqstat.mq_flags = MQFLAGS;
@@ -57,13 +66,27 @@ int main()
 	nmqstat.mq_curmsgs = MQCURMSGS;
 
 	if (mq_setattr(mqdes, &nmqstat, &mqstat) != 0)	{
-		printf("Test FAILED \n");
-		return PTS_FAIL;
+		failure = 1;
 	}
-	if ((omqstat.mq_flags != mqstat.mq_flags)||(omqstat.mq_maxmsg != mqstat.mq_maxmsg)||(omqstat.mq_msgsize != mqstat.mq_msgsize)||(omqstat.mq_curmsgs != mqstat.mq_curmsgs))  {
-		printf("Test FAILED \n");
-		return PTS_FAIL;
+	if ((omqstat.mq_flags != mqstat.mq_flags)||
+	    (omqstat.mq_maxmsg != mqstat.mq_maxmsg)||
+	    (omqstat.mq_msgsize != mqstat.mq_msgsize)||
+            (omqstat.mq_curmsgs != mqstat.mq_curmsgs))  {
+		failure = 1;
 	}
+
+	mq_close(mqdes);
+	mq_unlink(mqname);
+
+	if (failure == 1) {
+                printf("Test FAILED\n");
+                return PTS_FAIL;
+        }
+	if (unresolved == 1) {
+                printf("Test UNRESOLVED\n");
+                return PTS_UNRESOLVED;
+        }
+
 	printf("Test PASSED \n");
 	return PTS_PASS;
 }

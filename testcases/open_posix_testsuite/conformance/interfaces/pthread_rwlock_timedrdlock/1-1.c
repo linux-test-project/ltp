@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 /* thread_state indicates child thread state: 
@@ -45,7 +46,7 @@
 
 static pthread_rwlock_t rwlock;
 static int thread_state; 
-static int currsec1, currsec2;
+static struct timeval currsec1, currsec2;
 
 static void* fn_rd(void *arg)
 { 
@@ -54,11 +55,11 @@ static void* fn_rd(void *arg)
 	struct timespec timeout;
 	int rc;
 
-	currsec1 = time(NULL);
+	gettimeofday(&currsec1, NULL);
 
 	/* Absolute time, not relative. */
-	timeout.tv_sec = currsec1 + TIMEOUT;
-	timeout.tv_nsec = 0;	
+	timeout.tv_sec = currsec1.tv_sec + TIMEOUT;
+	timeout.tv_nsec = currsec1.tv_usec * 1000;	
 	
 	printf("thread: attempt timed read lock, %d secs\n", TIMEOUT);	
 	rc = pthread_rwlock_timedrdlock(&rwlock, &timeout);
@@ -80,7 +81,7 @@ static void* fn_rd(void *arg)
 	}
 	
 	/* Get time after the pthread_rwlock_timedrdlock() call. */
-	currsec2 = time(NULL);
+	gettimeofday(&currsec2, NULL);
 	thread_state = EXITING_THREAD;
 	pthread_exit(0);
 	return NULL;
@@ -173,9 +174,17 @@ int main()
 	if(thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time interval */
-		if((currsec2 - currsec1) != TIMEOUT)
+		struct timeval time_diff;
+		time_diff.tv_sec = currsec2.tv_sec - currsec1.tv_sec;
+		time_diff.tv_usec = currsec2.tv_usec - currsec1.tv_usec;
+		if (time_diff.tv_usec < 0)
 		{
-			printf("Test FAILED: the timer expired and thread terminated, but the timeout is not correct: start time %d, end time %d\n", currsec1, currsec2);
+			--time_diff.tv_sec;
+			time_diff.tv_usec += 1000000;
+		}
+		if(time_diff.tv_sec < TIMEOUT)
+		{
+			printf("Test FAILED: the timer expired and thread terminated, but the timeout is not correct: start time %ld.%06ld, end time %ld.%06ld\n", (long) currsec1.tv_sec, (long) currsec1.tv_usec, (long) currsec2.tv_sec, (long) currsec2.tv_usec);
 			exit(PTS_FAIL);
 		} else
 			printf("thread: read lock correctly timed out\n");

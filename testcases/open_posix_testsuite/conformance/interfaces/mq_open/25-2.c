@@ -36,7 +36,7 @@ int main()
 	struct mq_attr attr;
 	int i, failed=0;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_25-1_%d", getpid());
 
 	// First, test for invalid maxmsg
 	attr.mq_msgsize = VALIDVAL;

@@ -39,7 +39,7 @@ int cleanup_flag;
 /* Cleanup handler */
 void a_cleanup_func(void *flag_val)	
 {
-	cleanup_flag = (int)flag_val;
+	cleanup_flag = (long)flag_val;
 	return;
 }
 

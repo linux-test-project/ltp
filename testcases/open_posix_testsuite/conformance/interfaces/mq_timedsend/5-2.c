@@ -56,7 +56,7 @@ int main()
 	struct mq_attr attr;
 	struct sigaction act;
 
-        sprintf(gqname, "/msgqueue_%d", getpid());
+        sprintf(gqname, "/mq_timedsend_5-2_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
@@ -117,6 +117,14 @@ int main()
 		if (blocking!=1) {
 			printf("Signal never blocked\n");
 			kill(pid, SIGKILL); //kill child if not gone
+			mq_close(gqueue);
+			mq_unlink(gqname);
+			return PTS_UNRESOLVED;
+		}
+		mq_close(gqueue);
+		if (mq_unlink(gqname) != 0) {
+			perror("mq_unlink()");
+			kill(pid, SIGKILL); //kill child if not gone
 			return PTS_UNRESOLVED;
 		}
 
@@ -125,7 +133,7 @@ int main()
 			kill(pid, SIGKILL); //kill child if not gone
 			return PTS_UNRESOLVED;
 		}
-
+		
 		if (!WIFEXITED(k) || !WEXITSTATUS(k)) {
 			printf("Test FAILED\n");
 			return PTS_FAIL;

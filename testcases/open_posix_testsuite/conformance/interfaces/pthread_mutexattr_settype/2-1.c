@@ -18,8 +18,8 @@
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2   Set the 'type' of the mutexattr object to PTHREAD_MUTEX_NORMAL.
  * 3.  Create a mutex with that mutexattr object.
- * 4.  Attempt to unlock the mutex without first locking it.  It shouldn't return an error.
- * 
+ * 4.  Lock the mutex, then relock it. Expect dead lock. Timer will be use
+ *     to interrupt the deadlock.
  */
 
 #define _XOPEN_SOURCE 600
@@ -27,7 +27,17 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include "posixtest.h"
+
+void alarm_handler(int signo)
+{
+	printf("Got SIGALRM after 1 second\n");
+	printf("Test PASSED\n");
+	exit(PTS_PASS);
+}
 
 int main()
 {
@@ -56,15 +66,20 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Attempt to unlock the mutex without first locking it.  It shouldn't return 
-	 * an error. */
-	ret=pthread_mutex_unlock(&mutex);
+	ret=pthread_mutex_lock(&mutex);
 	if(ret != 0)
 	{
-		printf("Test FAILED: returned error on deadlock, error code %d\n", ret);
-		return PTS_FAIL;
+		printf("Test Unresolved: Error at pthread_mutex_lock, "
+			"error code %d\n", ret);
+		return PTS_UNRESOLVED;
 	}
-	
-	printf("Test PASSED\n");
-	return PTS_PASS;
+
+	signal(SIGALRM, alarm_handler);
+	alarm(1);
+	/* This lock will cause deadlock */
+	ret=pthread_mutex_lock(&mutex);
+	/* We should not get here */
+	printf("Relock the mutex did not get deadlock\n");	
+	printf("Test FAILED\n");
+	return PTS_FAIL;
 }

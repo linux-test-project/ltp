@@ -30,7 +30,7 @@ int main()
         char qname[NAMESIZE];
         mqd_t roqueue, roqueue2;
 
-        sprintf(qname, "/msgqueue_%d", getpid());
+        sprintf(qname, "/mq_open_7-3_%d", getpid());
 
         roqueue = mq_open(qname, O_CREAT |O_RDONLY, S_IRUSR | S_IWUSR, NULL);
         if (roqueue == (mqd_t)-1) {
