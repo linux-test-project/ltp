@@ -268,10 +268,10 @@ setup()
 	 * Initialize addr to align with the first page boundary above the
 	 * break address of the process.
 	 */
-	addr = (void *) (((int)sbrk(0) + (page_sz - 1)) & ~(page_sz - 1));
+	addr = (void *) (((intptr_t)sbrk(0) + (page_sz - 1)) & ~(page_sz - 1));
 
 	/* Increase the break address of the process by 2 page size bytes */
-	if ((int)sbrk(2 * page_sz) == -1) {
+	if ((intptr_t)sbrk(2 * page_sz) == -1) {
 		tst_brkm(TFAIL, cleanup, "sbrk(2 * page_sz) failed");
 	}
 
