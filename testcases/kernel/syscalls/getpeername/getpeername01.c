@@ -150,6 +150,7 @@ main(int argc, char *argv[])
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }	/* End main */
 
 void
@@ -197,7 +198,7 @@ setup1(void)
 		tst_brkm(TBROK, cleanup, "socket setup failed for getpeername"
 			": %s", testno, strerror(errno));
 	}
-	if (bind(s, &sin0, sizeof(sin0)) < 0) {
+	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket bind failed for getpeername "
 			"test %d: %s", testno, strerror(errno));
 	}
