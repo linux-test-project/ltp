@@ -139,7 +139,8 @@ main(int argc, char *argv[])
 	}
 	cleanup();
 
-	return -1;	/* NOTREACHED */
+	/* NOTREACHED */
+	return(0);
 }	/* End main */
 
 pid_t pid;
