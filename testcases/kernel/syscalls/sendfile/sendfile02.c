@@ -111,6 +111,8 @@ do_sendfile(off_t offset, int i)
 {
 	int in_fd;
 	struct stat sb;
+	int wait_status;
+	int * wait_stat;
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
@@ -138,6 +140,8 @@ do_sendfile(off_t offset, int i)
 	}
 
 	close(in_fd);
+
+        wait_status = waitpid(-1, wait_stat, 0);
 }
 
 /*
