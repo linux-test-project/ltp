@@ -40,14 +40,6 @@ const TH_FUNC th_func[] = {
 
 #define NB_FUNC  (sizeof(th_func)/sizeof(TH_FUNC))
 
-int generate(char *datadir)
-{
- char *cmdline;
- char *string1 = "cd ";
- char *string2 = "; ./genbessel";
- sprintf(cmdline,"%s%s%s",string1,datadir,string2); 
- system(cmdline);
- return(0);
-}
+#define GENERATOR "genbessel"
 #include "main.c"
 #include "thread_code.c"

@@ -57,7 +57,17 @@ const double EPS=  0.1e-300;
 
 const int nb_func = NB_FUNC;
 
-extern int generate(char*);
+int generate(char *datadir)
+{
+ char *fmt = "cd %s; ./%s";
+ char *cmdline = malloc (strlen(fmt) + strlen(datadir) + strlen(GENERATOR));
+ if (cmdline == NULL)
+     return(1);
+ sprintf(cmdline,fmt,datadir,GENERATOR);
+ system(cmdline);
+ free(cmdline);
+ return(0);
+}
 
 int main(int argc, char *argv[])
 {
@@ -106,8 +116,9 @@ int main(int argc, char *argv[])
         }
 	}
 	pid=fork();
-        if ( pid == 0 )                     /*Child*/
-		generate((char*)&datadir);           
+        if ( pid == 0 ){                    /*Child*/
+		generate((char*)&datadir);          
+		return(0);} 
 	else                                /*Parent*/
 		waitpid(pid,NULL,0);
 
@@ -220,7 +231,7 @@ finished:
 		}
 		else if (debug) {
 			printf ("thread %d (%s) terminated successfully %d loops.\n",
-				th_num, pcom->th_func.fident, pcom->th_nloop);
+				th_num, pcom->th_func.fident, pcom->th_nloop-1);
 		}
 
 	}
