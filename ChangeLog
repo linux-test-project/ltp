@@ -1,9 +1,17 @@
+LTP-00000000
+------------
+o	Testcases have been organized into categories in a directory 
+	structure under the testcases subdirectory
+o	About 400 new testcases added covering various system calls
+o	Andreas Jaeger got confirmation from the glibc people that the
+	ulimit test was broken as a result of some changes made in 
+	glibc2.2.5.  Since it's the test that's broken, Nate Straz 
+	removed the offending testcase.
+o	Updated README and INSTALL files
+o	Descriptions of the testcases have been added to the doc 
+	directory and are organized by type (syscalls.txt, fs.txt, etc.)
 
-2001-09-25 Robbie Williamson <robbiew@us.ibm.com>
-
-  Reorganized all tests into the /testcases structure.  Each test
-  has been categorized and it's description documented.
-
+------------
 2000-09-18 Juan J. Quintela <quintela@fi.udc.es>
            Aaron Laffin <alaffin@sgi.com>
 
