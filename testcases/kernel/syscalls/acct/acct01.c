@@ -91,9 +91,11 @@ int main (argc, argv)
 
 	/* now try to use the tty device, and it should fail
 	*/
-	if( acct( "/dev/tty0" ) != -1 ) {
-		tst_resm(TFAIL, "%s - attempting to assign acct file to '/dev/tty0': expected failure but got okay return\n");
-		tst_exit();
+	if (acct( "/dev/tty0" ) == -1) {
+		if ( (errno==ENODEV) && (acct("/dev/tty") != -1) ) {
+			tst_resm(TFAIL, "%s - attempting to assign acct file to tty: expected failure but got okay return\n");
+			tst_exit();
+		}
 	} else tst_resm(TPASS,"Received expected error: -1");
 
 
