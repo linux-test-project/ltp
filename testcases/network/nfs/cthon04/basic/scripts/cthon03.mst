@@ -1,0 +1,428 @@
+'******************************* CTHON03.MST *********************************
+' @(#)cthon03.mst	1.1	98/10/26 Connectathon Testsuite
+'
+'Description: This test suite contains a set of test cases and scenarios that
+'             are used to test Directory Caching. It is the same as CTHON01,
+'             except that it uses the MS-Test SHELL command instead of RUN.
+'             This allows it to work properly with Win95.
+'
+'******************************************************************************
+
+'********************************* HISTORY ************************************
+' Date           DVE                     Comments
+' 3/01/94        Jack Morrison           Initial version
+'******************************************************************************
+'
+'******************************************************************************
+'* Include Files
+'******************************************************************************
+
+'$INCLUDE 'DECLARES.INC'
+
+Const APPL_ABBR$   = "CTHON"
+
+'$INCLUDE 'NFSCOMM.INC'
+'$INCLUDE 'NFSSUBS.INC'
+
+'******************************************************************************
+' Subroutines and Functions Declarations
+'******************************************************************************
+
+Declare Sub CTHONTest12a ()
+Declare Sub CTHONTest12b ()
+Declare Sub CTHONTest12c ()
+
+Declare Sub CTHONTest03 ()
+Declare Sub CTHONTest04 ()
+Declare Sub CTHONTest05 ()
+Declare Sub CTHONTest06 ()
+Declare Sub CTHONTest07 ()
+Declare Sub CTHONTest09 ()
+
+'******************************************************************************
+'* Initialize Variables
+'******************************************************************************
+Const  Failed = "err"
+'******************************************************************************
+'* Main prorgram code
+'******************************************************************************
+On Error Goto ErrorTrap
+
+QueSetSpeed 75
+
+Setup
+
+FOR C = 1 TO MaxDrive%
+
+rtn = Connect(NetHost(C), NetDrive(C), NetPath(C), "") 'user$ passwd$
+
+If rtn <> PASS Then EXIT FOR
+If EXISTS (NetDrive(C)+":\testlog.*") Then KILL NetDrive(C)+":\testlog.*"
+
+NEXT C
+
+If C >= Maxdrive% Then
+
+' *** Execute the tests
+
+CTHONTest12a
+CTHONTest12b
+CTHONTest12c
+
+CTHONTest03
+CTHONTest04
+CTHONTest05
+CTHONTest06
+CTHONTest07
+CTHONTest09
+
+Else
+    WriteLogFile "Drive Could Not Be Connected. Test Aborted !"
+    failure_Occurred = TRUE
+End If
+
+FOR D = 1 TO Maxdrive%
+
+rtn = Disconnect (NetDrive(D))
+
+NEXT D
+
+Cleanup
+CheckExit
+
+End
+
+'******************************************************************************
+'Subroutines
+'******************************************************************************
+
+'******************************************************************************
+'SUB CTHONTest12a
+'******************************************************************************
+Sub CTHONTest12a() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest12A"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.12"
+CreateDir$ = ""
+
+FOR L = 1 To 7
+
+levels$ = STR$(L)
+files$  = "1"
+dirs$   = "1"
+
+If EXISTS ("testdir.12","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 1a In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+STATUSBOX "CTHON03 SubTest 2a In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+NEXT L
+CheckLog "testlog.12", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest12A"+"  "+DateTime$
+
+End Sub
+
+'******************************************************************************
+'SUB CTHONTest12b
+'******************************************************************************
+Sub CTHONTest12b() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest12B"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.12"
+CreateDir$ = ""
+
+levels$ = "1"
+files$  = "999"
+dirs$   = "1"
+
+If EXISTS ("testdir.12","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 1b In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+STATUSBOX "CTHON03 SubTest 2b In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+CheckLog "testlog.12", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest12B"+"  "+DateTime$
+
+End Sub
+
+
+'******************************************************************************
+'SUB CTHONTest12c
+'******************************************************************************
+Sub CTHONTest12c() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest12C"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.12"
+CreateDir$ = ""
+
+levels$ = "4"
+files$  = "10"
+dirs$   = "5"
+
+If EXISTS ("testdir.12","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 1c In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+STATUSBOX "CTHON03 SubTest 2c In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+CheckLog "testlog.12", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest12C"+"  "+DateTime$
+
+End Sub
+
+'******************************************************************************
+'SUB CTHONTest03
+'******************************************************************************
+Sub CTHONTest03() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest  3"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.3"
+CreateDir$ = ""
+
+FOR C = 1 TO 1000 STEP 10
+
+count$ = STR$(C)
+
+If EXISTS ("testdir.3","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 3 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test3 testdir.3 testlog.3 "+CreateDir$+" "+count$
+SHELL Execute$
+
+NEXT C
+CheckLog "testlog.3", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  3"+"  "+DateTime$
+
+End Sub
+
+'******************************************************************************
+'SUB CTHONTest04
+'******************************************************************************
+Sub CTHONTest04() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest  4"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.4"
+CreateDir$ = ""
+
+FOR F = 1 TO 500 STEP 100
+
+files$ = STR$(F)
+count$ = "10"
+
+If EXISTS ("testdir.4","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 4 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test4 testdir.4 testlog.4 "+CreateDir$+" "+files$+" "+count$
+SHELL Execute$
+
+NEXT F
+CheckLog "testlog.4", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  4"+"  "+DateTime$
+
+End Sub
+
+
+'******************************************************************************
+'SUB CTHONTest06
+'******************************************************************************
+Sub CTHONTest06() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest  6"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.6"
+CreateDir$ = ""
+
+FOR F = 1 TO 512 STEP 256
+
+files$ = STR$(F)
+count$ = "1"
+
+If EXISTS ("testdir.6","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 6 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test6 testdir.6 testlog.6 "+CreateDir$+" "+files$+" "+count$
+SHELL Execute$
+
+NEXT F
+CheckLog "testlog.6", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  6"+"  "+DateTime$
+
+End Sub
+
+
+'******************************************************************************
+'SUB CTHONTest09
+'******************************************************************************
+Sub CTHONTest09() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest  9"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.9"
+CreateDir$ = ""
+
+FOR C = 1 TO 1000 STEP 10
+
+count$ = STR$(C)
+
+If EXISTS ("testdir.9","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 9 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test9 testdir.9 testlog.9 "+CreateDir$+" "+count$
+SHELL Execute$
+
+NEXT C
+CheckLog "testlog.9", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  9"+"  "+DateTime$
+
+End Sub
+
+
+'******************************************************************************
+'SUB CTHONTest05
+'******************************************************************************
+Sub CTHONTest05() Static
+
+'  initialize - open logs and start CTHON (this is the longest test)
+
+StartSubTest "                              CTHON SubTest  5"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.5"
+CreateDir$ = ""
+fname$ = ""
+
+FOR N = 1 TO 8 STEP 1
+fname$ = fname$+"x"
+
+FOR C = 1 TO 10 STEP 1
+count$ = STR$(C)
+
+FOR S = 512 TO 8192 STEP 512
+size$  = STR$(s)
+
+If EXISTS ("testdir.5","+d") Then CreateDir$ = "-n"
+
+
+STATUSBOX "CTHON03 SubTest 5 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test5 testdir.5 testlog.5 "+CreateDir$+" "+size$+" "+count$+" "+fname$
+SHELL Execute$
+
+NEXT S
+NEXT C
+NEXT N
+CheckLog "testlog.5", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  5"+"  "+DateTime$
+
+End Sub
+
+
+'******************************************************************************
+'SUB CTHONTest07
+'******************************************************************************
+Sub CTHONTest07() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON SubTest  7"+"  "+DateTime$
+
+FOR I = 1 TO MaxDrive%
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.7"
+CreateDir$ = ""
+sfname$ = ""
+
+FOR S = 1 TO 8
+sfname$ = sfname$ + "a"
+efname$ = ""
+
+FOR E = 1 TO 8
+efname$ = efname$ + "z"
+
+If EXISTS ("testdir.7","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON03 SubTest 7 In Progess", 0,0,0,0, TRUE, TRUE
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test7 testdir.7 testlog.7 "+CreateDir$+" 1 1 "+sfname$+" "+efname$
+SHELL Execute$
+
+NEXT E
+NEXT S
+CheckLog "testlog.7", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON SubTest  7"+"  "+DateTime$
+
+End Sub
+

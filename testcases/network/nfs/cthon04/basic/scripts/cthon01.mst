@@ -1,0 +1,436 @@
+'******************************* CTHON01.MST *********************************
+' @(#)cthon01.mst	1.1	98/10/26 Connectathon Testsuite
+'
+'Description: This test suite contains a set of test cases and scenarios that
+'             are used to test Directory Caching.
+'
+'
+'
+'******************************************************************************
+
+'********************************* HISTORY ************************************
+' Date           DVE                     Comments
+' 3/01/94        Jack Morrison           Initial version
+'******************************************************************************
+
+'Test cases:
+'
+'******************************************************************************
+'* Include Files
+'******************************************************************************
+
+'$INCLUDE 'DECLARES.INC'
+
+Const APPL_ABBR$   = "CTHON"
+
+'$INCLUDE 'NFSCOMM.INC'
+'$INCLUDE 'NFSSUBS.INC'
+
+'******************************************************************************
+' Subroutines and Functions Declarations
+'******************************************************************************
+
+Declare Sub CthonTest12a ()
+Declare Sub CthonTest12b ()
+Declare Sub CthonTest12c ()
+
+Declare Sub CthonTest03 ()
+Declare Sub CthonTest04 ()
+Declare Sub CthonTest05 ()
+Declare Sub CthonTest06 ()
+Declare Sub CthonTest07 ()
+Declare Sub CthonTest09 ()
+
+'******************************************************************************
+'* Initialize Variables
+'******************************************************************************
+Global NumDrives AS INTEGER
+'******************************************************************************
+'* Main prorgram code
+'******************************************************************************
+On Error Goto ErrorTrap
+
+QueSetSpeed 75
+
+Setup
+
+ret = Connect (NetHost(1), NetDrive(1), NetPath(1), "") 'user$ passwd$
+ret = Connect (NetHost(2), NetDrive(2), NetPath(2), "") 'user$ passwd$
+ret = Connect (NetHost(3), NetDrive(3), NetPath(3), "") 'user$ passwd$
+
+' At some point set NumDrives% = MaxDrive% because the
+' way it is now it will run thru the same drive every time
+NumDrives% = MaxDrive%
+
+FOR I = 1 TO MaxDrive%
+   If EXISTS (NetDrive(I)+":\testlog.*") Then
+      KILL    NetDrive(I)+":\testlog.*"
+   End If
+
+'*** Execute the tests
+
+CthonTest12a
+CthonTest12b
+CthonTest12c
+
+CthonTest03
+CthonTest04
+CthonTest05
+CthonTest06
+CthonTest07
+CthonTest09
+
+
+ret = Disconnect (NetDrive(1))
+ret = Disconnect (NetDrive(2))
+ret = Disconnect (NetDrive(3))
+
+NEXT I
+
+Cleanup
+
+End
+
+'******************************************************************************
+' Subroutines and Functions
+'******************************************************************************
+'******************************************************************************
+'Subroutines
+'******************************************************************************
+
+'******************************************************************************
+'SUB CthonTest12a
+'******************************************************************************
+Sub CthonTest12a() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+FOR L = 1 To 7
+
+levels$ = STR$(L)
+files$  = "1"
+dirs$   = "1"
+
+CHDRIVE NetDrive(I)
+
+If NOT EXISTS ("testdir.12") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test12.dir not deleted"
+End If
+
+NEXT L
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+'******************************************************************************
+'SUB CthonTest12b
+'******************************************************************************
+Sub CthonTest12b() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+levels$ = "1"
+files$  = "999"
+dirs$   = "1"
+
+CHDRIVE NetDrive(I)
+
+If NOT EXISTS ("testdir.12") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test12.dir not deleted"
+End If
+
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+
+'******************************************************************************
+'SUB CthonTest12c
+'******************************************************************************
+Sub CthonTest12c() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+levels$ = "4"
+files$  = "10"
+dirs$   = "5"
+
+CHDRIVE NetDrive(I)
+
+If NOT EXISTS ("testdir.12") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+levels$+" "+files$+" "+dirs$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test12.dir not deleted"
+End If
+
+
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+'******************************************************************************
+'SUB CthonTest03
+'******************************************************************************
+Sub CthonTest03() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+
+FOR C = 1 TO 1000 STEP 10
+
+count$ = STR$(C)
+
+If NOT EXISTS ("testdir.3") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test3 testdir.3 testlog.3 "+count$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test3.dir not deleted"
+End If
+
+NEXT C
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+'******************************************************************************
+'SUB CthonTest04
+'******************************************************************************
+Sub CthonTest04() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+
+FOR F = 1 TO 500 STEP 100
+
+files$ = STR$(F)
+count$ = "10"
+
+If NOT EXISTS ("testdir.4") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test4 testdir.4 testlog.4 "+files$+" "+count$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test4.dir not deleted"
+End If
+
+NEXT F
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+
+'******************************************************************************
+'SUB CthonTest06
+'******************************************************************************
+Sub CthonTest06() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+
+FOR F = 1 TO 512 STEP 256
+
+files$ = STR$(F)
+count$ = "1"
+
+If NOT EXISTS ("testdir.6") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test6 testdir.6 testlog.6 "+files$+" "+count$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test6.dir not deleted"
+End If
+
+NEXT F
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+
+'******************************************************************************
+'SUB CthonTest09
+'******************************************************************************
+Sub CthonTest09() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+
+FOR C = 1 TO 1000 STEP 10
+
+count$ = STR$(C)
+
+If NOT EXISTS ("testdir.9") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test9 testdir.9 testlog.9 "+count$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test9.dir not deleted"
+End If
+
+NEXT C
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+
+'******************************************************************************
+'SUB CthonTest05
+'******************************************************************************
+Sub CthonTest05() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+fname$ = ""
+
+FOR N = 1 TO 8 STEP 1
+fname$ = fname$+"x"
+
+FOR C = 1 TO 10 STEP 1
+count$ = STR$(C)
+
+FOR S = 512 TO 8192 STEP 512
+size$  = STR$(s)
+
+If NOT EXISTS ("testdir.5") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test5 testdir.5 testlog.5 "+size$+" "+count$+" "+fname$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test5.dir not deleted"
+End If
+
+NEXT S
+NEXT C
+NEXT N
+NEXT I
+
+EndSubTest ""
+
+End Sub
+
+
+'******************************************************************************
+'SUB CthonTest07
+'******************************************************************************
+Sub CthonTest07() Static
+
+'  initialize - open logs and start Cthon
+
+StartSubTest ""
+
+FOR I = 1 TO NumDrives%
+
+CHDRIVE NetDrive(I)
+sfname$ = ""
+
+FOR S = 1 TO 8
+sfname$ = sfname$ + "a"
+efname$ = ""
+
+FOR E = 1 TO 8
+efname$ = efname$ + "z"
+
+If NOT EXISTS ("testdir.7") Then
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test7 testdir.7 testlog.7 1 1 "+sfname$+" "+efname$
+Run Execute$, ,SW_HIDE
+
+Else
+failure_Occurred = True
+WriteLogFile "Previous test directory test7.dir not deleted"
+End If
+
+NEXT E
+NEXT S
+NEXT I
+
+EndSubTest ""
+
+End Sub
+

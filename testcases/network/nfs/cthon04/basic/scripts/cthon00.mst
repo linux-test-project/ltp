@@ -1,0 +1,126 @@
+'******************************* CTHON00.MST *********************************
+' @(#)cthon00.mst	1.1	98/10/26 Connectathon Testsuite
+'
+'Description: This test suite contains a set of test cases and scenarios that
+'             are used to test Directory Caching. It is the same as CTHON01,
+'             except that it uses the MS-Test SHELL command instead of RUN.
+'             This allows it to work properly with Win95.
+'
+'******************************************************************************
+
+'********************************* HISTORY ************************************
+' Date           DVE                     Comments
+' 3/01/94        Jack Morrison           Initial version
+'******************************************************************************
+'
+'******************************************************************************
+'* Include Files
+'******************************************************************************
+
+'$INCLUDE 'DECLARES.INC'
+
+Const APPL_ABBR$   = "CTHON"
+
+'$INCLUDE 'NFSCOMM.INC'
+'$INCLUDE 'NFSSUBS.INC'
+
+'******************************************************************************
+' Subroutines and Functions Declarations
+'******************************************************************************
+
+Declare Sub CTHONTest12a ()
+Declare Sub CTHONTest12b ()
+Declare Sub CTHONTest12c ()
+
+Declare Sub CTHONTest03 ()
+Declare Sub CTHONTest04 ()
+Declare Sub CTHONTest05 ()
+Declare Sub CTHONTest06 ()
+Declare Sub CTHONTest07 ()
+Declare Sub CTHONTest09 ()
+
+'******************************************************************************
+'* Initialize Variables
+'******************************************************************************
+Const  Failed = "err"
+Const  Drives = 3
+'******************************************************************************
+'* Main prorgram code
+'******************************************************************************
+On Error Goto ErrorTrap
+
+QueSetSpeed 75
+
+Setup
+
+FOR C = 1 TO Drives
+
+rtn = Connect(NetHost(C), NetDrive(C), NetPath(C), "") 'user$ passwd$
+
+If rtn <> PASS Then EXIT FOR
+If EXISTS (NetDrive(C)+":\testlog.*") Then KILL NetDrive(C)+":\testlog.*"
+
+NEXT C
+
+If C >= Drives Then
+
+' *** Execute the tests
+
+CTHONTest12a
+
+Else
+    WriteLogFile "Drive Could Not Be Connected. Test Aborted !"
+    failure_Occurred = TRUE
+End If
+
+FOR D = 1 TO Drives
+
+rtn = Disconnect (NetDrive(D))
+
+NEXT D
+
+Cleanup
+CheckExit
+
+End
+
+'******************************************************************************
+'Subroutines
+'******************************************************************************
+
+'******************************************************************************
+'SUB CTHONTest12a
+'******************************************************************************
+Sub CTHONTest12a() Static
+
+'  initialize - open logs and start CTHON
+
+StartSubTest "                              CTHON Acceptance Test"+"  "+DateTime$
+
+FOR I = 1 TO Drives
+
+CHDRIVE NetDrive(I)
+SHELL "deltree /y *.12"
+CreateDir$ = ""
+
+levels$ = "1"
+files$  = "1"
+dirs$   = "1"
+
+If EXISTS ("testdir.12","+d") Then CreateDir$ = "-n"
+
+STATUSBOX "CTHON Acceptance Test In Progess", 0,0,0,0, TRUE, TRUE
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test1 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+Execute$ = ProgramPath$+"cthon.bat "+ProgramPath$+" test2 testdir.12 testlog.12 "+CreateDir$+" "+levels$+" "+files$+" "+dirs$
+SHELL Execute$
+
+CheckLog "testlog.12", Failed$, False
+NEXT I
+
+EndSubTest "                              CTHON Acceptance Test"+"  "+DateTime$
+
+End Sub
+

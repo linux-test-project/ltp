@@ -1,0 +1,7 @@
+:
+#! /bin/sh
+#
+#       @(#)rmdummy	1.2 97/01/03 Connectathon Testsuite
+#
+
+rm -rf dummy*

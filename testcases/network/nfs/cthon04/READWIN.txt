@@ -1,0 +1,32 @@
+@(#)READWIN.txt	1.4	2002/12/24 Connectathon Testsuite
+
+Notes for DOS/Windows.
+
+The basic tests and some of the special tests have been ported to run
+under DOS and Windows.  Each set of tests has "console", "dos", and
+"scripts" subdirectories.
+
+The "console" and "dos" subdirectories have batch files and makefiles
+for building the 32-bit and 16-bit executables, respectively.
+
+The makefiles can be imported into Visual C++ as "external" makefiles.
+Alternatively, a batch file is provided to build the tests using the
+nmake command line utility.
+
+The "scripts" subdirectory has scripts for running the tests (some
+batch files, some MS-Test 2.0 .mst files, and some Perl scripts)
+
+The tests have not been rebuilt in a DOS or Windows environment since
+they were last edited, and the version of Visual C++ that was used is
+known to be pretty old.  If you need to make changes to build the
+tests under your environment, please send your changes to the person
+named in the README file, and we will incorporate them into the master
+distribution.
+
+If you port additional tests to DOS/Windows, please send your changes
+to the person named in the README file, so that we can incorporate
+your changes into the master distribution.
+
+Note that we keep a single set of sources for DOS, Windows, and
+assorted Unix variants, so please isolate DOS-specific or
+Windows-specific code with appropriate ifdefs.
