@@ -5,7 +5,7 @@
 /* DECWRL Header: host.c,v 1.1 89/04/05 15:41:12 vixie Locked $ */
 
 #ifndef lint
-static char RcsId[] = "$Id: gethost.c,v 1.1 2002/01/23 19:30:57 robbiew Exp $";
+static char RcsId[] = "$Id: gethost.c,v 1.2 2002/03/27 22:54:09 robbiew Exp $";
 #endif
 
 #include <sys/param.h>
@@ -18,11 +18,14 @@ static char RcsId[] = "$Id: gethost.c,v 1.1 2002/01/23 19:30:57 robbiew Exp $";
 #include <resolv.h>
 #include <netdb.h>
 #include <syslog.h>
+#include <string.h>
+#include <stdlib.h>
 
 #ifndef LOG_PERROR
 #define LOG_PERROR 0
 #endif
 
+int
 main(argc, argv)
 	int argc;
 	char **argv;
@@ -104,4 +107,5 @@ main(argc, argv)
 		}
 		printf("\n");
 	}
+exit(0);
 }
