@@ -59,6 +59,8 @@
 |    0.1     050689  CTU   Initial version                             |
 |    0.2     111993  DJK   Modify for AIX version 4.1                  |
 |    1.2     021494  DJK   Moved to "prod" directory                   |
+|    1.3     Jan-28-02 	Manoj Iyer, IBM Austin, TX.manjo@austin.ibm.com|
+|			Modified - Ported to work on PPC64.            |
 |                                                                      |
 +---------------------------------------------------------------------*/
 
@@ -94,17 +96,11 @@
  *
  * SEMOP_TABLE: macro for printing attempted semop command combinations
  */
-#ifdef _LINUX_
 # define MAX_SEMAPHORES	        32
 # define MAX_CHILDREN		200
 # define DEFAULT_NUM_SEMAPHORES	16
 # define DEFAULT_NUM_CHILDREN	0
-#else
-# define MAX_SEMAPHORES		65553 
-# define MAX_CHILDREN		400
-# define DEFAULT_NUM_SEMAPHORES	1000
-# define DEFAULT_NUM_CHILDREN	0
-#endif
+
 #define USAGE	"\nUsage: %s [-s nsems] [-p nproc]\n\n" \
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
 		"\t-p nproc  number of child processes to spawn\n\n"
@@ -251,7 +247,7 @@ static void test_commands (pid_t proc_pid)
 	gid_t	gid = getgid ();	/* Misc group id */
 	uid_t	uid = getuid ();	/* Misc user id */
 	mode_t	mode = 0666;		/* Misc mode bits */
-	ushort	array [MAX_SEMAPHORES];	/* Misc array of semaphore values */
+	// ushort	array [MAX_SEMAPHORES];	/* Misc array of semaphore values */
 	struct semid_ds	*buf;		/* Misc buff for semaphore info */
 	struct sembuf semoparray [MAX_SEMAPHORES];
 
@@ -268,39 +264,39 @@ static void test_commands (pid_t proc_pid)
 	 */
 	if (proc_pid == parent_pid)
 		printf ("\n\tSetting semaphore uid, gid and mode ... semid = %d\n", semid);
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	buf->sem_perm.uid = uid;
-	buf->sem_perm.gid = gid;
-	buf->sem_perm.mode = mode;
-	if (semctl (semid, 0, IPC_SET, buf) < 0)
+	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	arg.buf->sem_perm.uid = uid;
+	arg.buf->sem_perm.gid = gid;
+	arg.buf->sem_perm.mode = mode;
+	if (semctl (semid, 0, IPC_SET, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
-	free (buf);
 
 	/*
 	 * Verify that semaphore uid, gid and mode were set correctly
 	 */
 	if (proc_pid == parent_pid)
 		printf ("\n\tVerifying semaphore info ...\n");
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	if (semctl (semid, 0, IPC_STAT, buf) < 0)
+	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	if (semctl (semid, 0, IPC_STAT, arg) < 0)
 		sys_error ("semctl (IPC_STAT) failed", __LINE__);
-	if (buf->sem_perm.uid != uid)
+	if (arg.buf->sem_perm.uid != uid)
 		error ("semctl: uid was not set", __LINE__);
-	if (buf->sem_perm.gid != gid)
+	if (arg.buf->sem_perm.gid != gid)
 		error ("semctl: gid was not set", __LINE__);
-	if ((buf->sem_perm.mode & 0777) != mode) 
+	if ((arg.buf->sem_perm.mode & 0777) != mode) 
 		error ("semctl: mode was not set", __LINE__);
-	if (buf->sem_nsems != nsems) 
+	if (arg.buf->sem_nsems != nsems) 
 		error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
-	free (buf);
+
 
 	/*
 	 * Set the value of each semaphore in the set to 2.
 	 */
+        arg.array = malloc(sizeof(int) * nsems);
 	for (i = 0; i < nsems; i++)
-		array [i] = 2;
-	if (semctl (semid, 0, SETALL, array) < 0)
+		arg.array [i] = 2;
+	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
 
 	/* ------------------------------------------------------------------ */
@@ -390,10 +386,11 @@ static void test_commands (pid_t proc_pid)
 	/*           THE FOLLOWING SHOULD SHOW semval = 6                     */
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(5, 1, "0", "Return resource");
+        arg.array = malloc(sizeof(int) * nsems);
 	for (i = 0; i < nsems; i++) {
-		array [i] = 5;
+		arg.array [i] = 5;
 	}
-	if (semctl (semid, 0, SETALL, array) < 0)
+	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
 
 	for (i = 0; i < nsems; i++) {
@@ -518,7 +515,8 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETNCNT, array))
+        arg.array = malloc(sizeof(int) * nsems);
+        while (!semctl (semid, 0, GETNCNT, arg))
                 sleep (1);
 
 	if (semop (semid, semoparray, 1) < 0)
@@ -566,7 +564,8 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 1, GETNCNT, array))
+	arg.array = malloc(sizeof(int) * nsems);
+        while (!semctl (semid, 1, GETNCNT, arg))
                 sleep (1);
 
 	kill (pid, SIGUSR1);
@@ -613,7 +612,8 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETNCNT, array))
+        arg.array = malloc(sizeof(int) * nsems);         
+        while (!semctl (semid, 0, GETNCNT, arg))
                 sleep (1);
 
 	semoparray [0].sem_num = 0;
@@ -670,7 +670,8 @@ static void test_commands (pid_t proc_pid)
 	 * Wait for child process's semaphore request before deleting the
 	 * semaphores...
 	 */
-        while (!semctl (semid, 2, GETNCNT, array))
+        //arg.array = malloc(sizeof(int) * nsems);
+        while (!semctl (semid, 2, GETNCNT, arg))
 	  sleep (1);
 
 	arg.val = 0;
@@ -694,34 +695,33 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Set the semaphore uid, gid and mode
 	 */
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	buf->sem_perm.uid = uid;
-	buf->sem_perm.gid = gid;
-	buf->sem_perm.mode = mode;
-	if (semctl (semid, 0, IPC_SET, buf) < 0)
+	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	arg.buf->sem_perm.uid = uid;
+	arg.buf->sem_perm.gid = gid;
+	arg.buf->sem_perm.mode = mode;
+	if (semctl (semid, 0, IPC_SET, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
-	free (buf);
 
 	/*
 	 * Verify that semaphore uid, gid and mode were set correctly
 	 */
-	buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	if (semctl (semid, 0, IPC_STAT, buf) < 0)
+	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	if (semctl (semid, 0, IPC_STAT, arg) < 0)
 		sys_error ("semctl (IPC_STAT) failed", __LINE__);
-	if (buf->sem_perm.uid != uid)
+	if (arg.buf->sem_perm.uid != uid)
 		error ("semctl: uid was not set", __LINE__);
-	if (buf->sem_perm.gid != gid)
+	if (arg.buf->sem_perm.gid != gid)
 		error ("semctl: gid was not set", __LINE__);
-	if ((buf->sem_perm.mode & 0777) != mode) 
+	if ((arg.buf->sem_perm.mode & 0777) != mode) 
 		error ("semctl: mode was not set", __LINE__);
-	if (buf->sem_nsems != nsems) 
+	if (arg.buf->sem_nsems != nsems) 
 		error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
-	free (buf);
 
+        arg.array = malloc(sizeof(int) * nsems);
 	for (i = 0; i < nsems; i++)
-		array [i] = 9;
-	if (semctl (semid, 0, SETALL, array) < 0)
+		arg.array [i] = 9;
+	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
 
 
@@ -772,10 +772,10 @@ static void test_commands (pid_t proc_pid)
 			error ("incorrect semaphore value", __LINE__);
 	}
 
-
+        arg.array = malloc(sizeof(int) * nsems);
 	for (i = 0; i < nsems; i++)
-		array [i] = 9;
-	if (semctl (semid, 0, SETALL, array) < 0)
+		arg.array [i] = 9;
+	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
 
 	/* ------------------------------------------------------------------ */
@@ -808,7 +808,7 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETZCNT, array))
+        while (!semctl (semid, 0, GETZCNT, arg))
                 sleep (1);
 
 	kill (pid, SIGUSR1);
@@ -850,7 +850,8 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETZCNT, array))
+	arg.array = malloc(sizeof(int) * nsems);
+        while (!semctl (semid, 0, GETZCNT, arg))
                 sleep (1);
 
 	semoparray [0].sem_num = 0;
@@ -905,7 +906,8 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 4, GETNCNT, array))
+        arg.array = malloc(sizeof(int) * nsems);
+        while (!semctl (semid, 4, GETNCNT, arg))
                 sleep (1);
 
 	arg.val = 0;
