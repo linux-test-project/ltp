@@ -1,4 +1,4 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g | grep -v cthon04"`
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
 
