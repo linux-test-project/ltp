@@ -59,7 +59,7 @@
  *
  * Restrictions
  * 	This test must be ran as root.
- *	nobody, sys and bin must be valid groups.
+ *	users, sys and bin must be valid groups.
  */
 
 
@@ -79,13 +79,13 @@ int fail = -1;
 int pass = 0;
 int neg_one = -1;
 int exp_enos[]={0};
-gid_t nobody_gr_gid, root_gr_gid, sys_gr_gid, bin_gr_gid;
+gid_t users_gr_gid, root_gr_gid, sys_gr_gid, bin_gr_gid;
 uid_t adm_pw_uid;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
 
-struct group nobody, sys, root, bin;
+struct group users, sys, root, bin;
 struct passwd adm;
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -253,8 +253,8 @@ setup(void)
 	root = *(getgrnam("root"));
 	root_gr_gid = root.gr_gid;
 
-	nobody = *( getgrnam("nobody"));
-	nobody_gr_gid = nobody.gr_gid;
+	users = *( getgrnam("users"));
+	users_gr_gid = users.gr_gid;
 
 	sys = *(getgrnam("sys"));
 	sys_gr_gid = sys.gr_gid;

@@ -73,11 +73,11 @@
 extern int Tst_count;
 
 char *TCID = "setregid01";
-gid_t nobody_gr_gid, root_gr_gid, adm_gr_gid, bin_gr_gid;
+gid_t users_gr_gid, root_gr_gid, adm_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={0};
 
-struct group nobody, adm, root, bin;
+struct group users, adm, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -92,14 +92,14 @@ struct test_data_t {
 	char *	test_msg;
 } test_data[] = {
 	{ &root_gr_gid, &root_gr_gid, &root, &root, "After setregid(root, root)," },
-	{ &nobody_gr_gid, &neg_one, &nobody, &root, "After setregid(nobody, -1)" },
+	{ &users_gr_gid, &neg_one, &users, &root, "After setregid(users, -1)" },
 	{ &root_gr_gid, &neg_one, &root, &root, "After setregid(root,-1)," },
 	{ &neg_one, &neg_one, &root, &root, "After setregid(-1, -1)," },
 	{ &neg_one, &root_gr_gid, &root, &root, "After setregid(-1, root)" },
 	{ &root_gr_gid, &neg_one,  &root, &root, "After setregid(root, -1)," },
-	{ &adm_gr_gid, &nobody_gr_gid, &adm, &nobody, "After setregid(adm, nobody)" },
-	{ &neg_one, &neg_one, &adm, &nobody, "After setregid(-1, -1)" },
-	{ &neg_one, &nobody_gr_gid, &adm, &nobody, "After setregid(-1, nobody)" },
+	{ &adm_gr_gid, &users_gr_gid, &adm, &users, "After setregid(adm, users)" },
+	{ &neg_one, &neg_one, &adm, &users, "After setregid(-1, -1)" },
+	{ &neg_one, &users_gr_gid, &adm, &users, "After setregid(-1, users)" },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
@@ -182,8 +182,8 @@ setup(void)
 	root = *(getgrnam("root"));
 	root_gr_gid = root.gr_gid;
 
-	nobody = *( getgrnam("nobody"));
-	nobody_gr_gid = nobody.gr_gid;
+	users = *( getgrnam("users"));
+	users_gr_gid = users.gr_gid;
 
 	adm = *(getgrnam("adm"));
 	adm_gr_gid = adm.gr_gid;

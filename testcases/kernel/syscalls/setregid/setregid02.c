@@ -61,7 +61,7 @@
  *
  * Restrictions
  * 	This test must be ran as root.
- *	nobody must be a valid group.
+ *	users must be a valid group.
  */
 
 
@@ -76,7 +76,7 @@
 extern int Tst_count;
 
 char *TCID = "setregid02";
-gid_t nobody_gr_gid, root_gr_gid, bin_gr_gid;
+gid_t users_gr_gid, root_gr_gid, bin_gr_gid;
 int neg_one = -1;
 int exp_enos[]={EPERM, 0};
 int inval_user = 999999;
@@ -84,7 +84,7 @@ char adm_uid[] = "adm";
 struct passwd *ltpuser;
 
 
-struct group nobody, root, bin;
+struct group users, root, bin;
 struct passwd adm;
 
 /*
@@ -100,14 +100,14 @@ struct test_data_t {
 	struct group* exp_eff_usr;
 	char *	test_msg;
 } test_data[] = {
-	{ &neg_one, &root_gr_gid, EPERM, &nobody, &nobody, "After setregid(-1, root)," },
-	{ &neg_one, &bin_gr_gid, EPERM, &nobody, &nobody, "After setregid(-1, bin)" },
-	{ &root_gr_gid, &neg_one, EPERM, &nobody, &nobody, "After setregid(root,-1)," },
-	{ &bin_gr_gid, &neg_one, EPERM, &nobody, &nobody, "After setregid(bin, -1)," },
-	{ &root_gr_gid, &bin_gr_gid, EPERM, &nobody, &nobody, "After setregid(root, bin)" },
-	{ &bin_gr_gid, &root_gr_gid, EPERM, &nobody, &nobody, "After setregid(bin, root)," },
-	{ &inval_user, &neg_one, EPERM, &nobody, &nobody, "After setregid(-1, invalid user)," },
-	{ &neg_one, &inval_user, EPERM, &nobody, &nobody, "After setregid(-1, invalid user)," },
+	{ &neg_one, &root_gr_gid, EPERM, &users, &users, "After setregid(-1, root)," },
+	{ &neg_one, &bin_gr_gid, EPERM, &users, &users, "After setregid(-1, bin)" },
+	{ &root_gr_gid, &neg_one, EPERM, &users, &users, "After setregid(root,-1)," },
+	{ &bin_gr_gid, &neg_one, EPERM, &users, &users, "After setregid(bin, -1)," },
+	{ &root_gr_gid, &bin_gr_gid, EPERM, &users, &users, "After setregid(root, bin)" },
+	{ &bin_gr_gid, &root_gr_gid, EPERM, &users, &users, "After setregid(bin, root)," },
+	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(-1, invalid user)," },
+	{ &neg_one, &inval_user, EPERM, &users, &users, "After setregid(-1, invalid user)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
@@ -226,8 +226,8 @@ setup(void)
 	root = *(getgrnam("root"));
 	root_gr_gid = root.gr_gid;
 
-	nobody = *( getgrnam("nobody"));
-	nobody_gr_gid = nobody.gr_gid;
+	users = *( getgrnam("users"));
+	users_gr_gid = users.gr_gid;
 
 	bin = *(getgrnam("bin"));
 	bin_gr_gid = bin.gr_gid;
