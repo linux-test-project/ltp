@@ -1,4 +1,4 @@
-SUBDIRS = crash f00f math syslog
+SUBDIRS = crash f00f math 
 
 all:
 	@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
