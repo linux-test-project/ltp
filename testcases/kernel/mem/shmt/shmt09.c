@@ -42,7 +42,6 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <sys/utsname.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -58,8 +57,6 @@ int TST_TOTAL=4;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-struct utsname uval;
-char *kmachine;
 
 int rm_shm(int);
 
@@ -68,12 +65,10 @@ int main()
 	char	*c1=NULL, *c2=NULL, *c3=NULL;
 	void	*vp;
 	int	shmid;
+#ifdef __ia64__
 	int     increment;
+#endif
 	key_t	key;
-
-	/* are we doing with ia64 arch */
-	uname(&uval);
-	kmachine = uval.machine;
 
 
 	key = (key_t)getpid() ;
@@ -163,8 +158,7 @@ int main()
 	tst_resm(TPASS,"sbrk, shmat");
 
 /*--------------------------------------------------------*/
-
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__
 		increment=8388608;	 /* 8Mb */
 		while ((vp = sbrk(increment)) != (void *)-1);
 		if (errno != ENOMEM) {
@@ -172,16 +166,15 @@ int main()
                 	"Error: sbrk failed, errno = %d\n", errno) ;
 			rm_shm(shmid);
 			tst_exit();
-		}
-	} else {
+#else
 	if ((vp = sbrk(16000)) != (void *)-1) {
 		  tst_resm(TFAIL,
 		  "Error: sbrk succeeded!  ret = 0x%08x, curbrk = 0x%08x, ",
 		  vp, sbrk(0));
 		  rm_shm(shmid);
 		  tst_exit();
-		}
 	}
+#endif
 
 	tst_resm(TPASS,"sbrk");
 
