@@ -341,7 +341,7 @@ setup03()
 		 		 /*prepare the path string for dd command and dd command*/
 		if ((strncmp(kmachine, "ia64", 4)) == 0) {
 		 		 if(sprintf(cmd_buffer, "dd if=/dev/zero of=%s  bs=1024"
-		 		 		 		 " count=65536 > tmpfile 2>&1", filename) < 0) {
+		 		 		 		 " count=1024 > tmpfile 2>&1", filename) < 0) {
 		 		 		 tst_resm(TWARN, "dd command failed to create file");
 		 		 		 exit(1);
 		 		 }
@@ -388,7 +388,7 @@ setup03()
 		   waitpid(pid,status,0);
 		 /*create extra swapfile for testing*/
 	if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		 if(system("dd if=/dev/zero of=swapfilenext bs=1024 count=65536 >tmpfile"
+		 if(system("dd if=/dev/zero of=swapfilenext bs=1024 count=1024 >tmpfile"
 		 		 		 		 " 2>&1") != 0) {
 		 		 tst_resm(TWARN, "Failed to create extra file for swap");
 		 		 exit(1);
@@ -456,7 +456,7 @@ setup()
 
   /*create file*/
   if ((strncmp(kmachine, "ia64", 4)) == 0) {
-    if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
+    if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=1024 > tmpfile"
 	     " 2>&1") != 0) {
      tst_brkm(TBROK, cleanup, "Failed to create file for swap");
     }
