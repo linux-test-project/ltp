@@ -43,6 +43,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <limits.h>
 /*****	LTP Port	*****/
 #include <stdlib.h>
 #include <unistd.h>
@@ -101,17 +102,16 @@ int main (argc, argv)
 #ifdef __mips__
 	extern int __start;
 	int lotext = (int)&__start;
-#elif defined __powerpc64__
+#elif __WORDSIZE == 64
 	extern long int _start;
-	long int *lotextptr = (long*)&_start;
-	long int lotext = *lotextptr;
+	long int lotext = (long)&_start;
 #else
 	extern int _start;
 	int lotext = (int)&_start;
 #endif
 
 	bsize = (long int) &etext;
-	bsize -= lotext & ~ 4096;
+	bsize -= lotext & ~4096;
 
 	count = loc = 0;
 
@@ -135,7 +135,7 @@ int main (argc, argv)
 
 /*--------------------------------------------------------------*/
 	blenter();
-
+	
 	if ((pbuf = (short *) malloc(bsize*(sizeof(short))) ) == (short *) 0) {
 		fprintf(temp, "\tcannot malloc buffer.\n");
 		fail_exit();
