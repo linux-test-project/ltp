@@ -62,7 +62,12 @@ char *TCID = "sysctl03";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
+#if defined(__ia64__)
+#define _sysctl(arg1) syscall(__NR__sysctl, arg1)
+#else
 _syscall1(int, _sysctl, struct __sysctl_args *, args);
+#endif
+
 int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
            void *newval, size_t newlen)
 {
