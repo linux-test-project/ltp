@@ -402,8 +402,8 @@ int dotest(testers, me, fd)
 					tst_exit();
 				}
 				if (memcmp(buf, zero_buf, csize)) {
-					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d 
-						count %d xfr %d file_max 0x%x, should be %d.\n",
+					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d " 
+						"count %d xfr %d file_max 0x%x, should be %d.\n",
 						me, CHUNK(chunk), val, count, xfr, file_max, 
 						zero_buf[0]);
 					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.\n",
@@ -426,8 +426,8 @@ int dotest(testers, me, fd)
 				}
 				++collide;
 				if (memcmp(buf, val_buf, csize)) {
-					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d 
-							count %d xfr %d file_max 0x%x.\n",
+					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d "
+							"count %d xfr %d file_max 0x%x.\n",
 						me, CHUNK(chunk), val, count, xfr, file_max);
 					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.\n",
 						me, last_trunc);
