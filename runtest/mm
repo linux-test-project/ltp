@@ -10,3 +10,6 @@ mm02 mmap001
 
 mtest01 mtest01 -p80
 mtest01w mtest01 -p80 -w
+
+#test for race conditions
+mmstress
