@@ -1,4 +1,45 @@
-/* Check if gettimeofday is monotonous */
+
+/*
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ * NAME
+ *	gettimeofday02.c
+ *	
+ * DESCRIPTION
+ *	Check if gettimeofday is monotonous
+ *
+ * ALGORITHM
+ *	Call gettimeofday() to get a t1 (fist value)
+ *	call it again to get t2, see if t2 < t1, set t2 = t1, repeat for 30 sec
+ *
+ * USAGE:  <for command-line>
+ *  gettimeofday02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
+ *     where,  -c n : Run n copies concurrently.
+ *             -e   : Turn on errno logging.
+ *             -i n : Execute test n times.
+ *             -I x : Execute test for x seconds.
+ *             -P x : Pause for x seconds between iterations.
+ *             -t   : Turn on syscall timing.
+ *             -T   : Seconds to test gettimeofday (default 30)
+ *
+ * HISTORY
+ *	05/2002 Written by Andi Kleen
+ *
+ */
 
 #include <stdio.h>
 #include <sys/time.h>
