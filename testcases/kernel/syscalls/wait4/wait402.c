@@ -59,6 +59,8 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * See the Makefile for comments about the following preprocessor code.
@@ -78,6 +80,7 @@ extern int Tst_count;
 
 int exp_enos[] = {10, 0};
 
+int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */

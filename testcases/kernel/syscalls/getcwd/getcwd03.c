@@ -58,6 +58,9 @@
 #include <test.h>
 #include <usctest.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <stdlib.h>
 #define FAILED 1
 
 int flag;
@@ -69,6 +72,7 @@ void cleanup(void);
 void setup(void);
 char *getpwd();
 
+int
 main(int ac, char **av)
 {
 	char dir1[BUFSIZ], dir2[BUFSIZ];
