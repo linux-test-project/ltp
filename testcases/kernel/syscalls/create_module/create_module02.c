@@ -22,7 +22,7 @@
  * 
  *    TEST TITLE        : Checking error conditions for create_module(2)
  * 
- *    TEST CASE TOTAL   : 7
+ *    TEST CASE TOTAL   : 8
  * 
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
  * 
@@ -35,16 +35,18 @@
  *      1. create_module(2) returns -1 and sets errno to EPERM, if effective
  *         user id of the caller is not superuser.
  *      2. create_module(2) returns -1 and sets errno to EFAULT, if module 
+ *         name is outside the  program's  accessible  address space.
+ *      3. create_module(2) returns -1 and sets errno to EFAULT, if module 
  *         name parameter is NULL.
- *      3. create_module(2) returns -1 and sets errno to EINVAL, if module
+ *      4. create_module(2) returns -1 and sets errno to EINVAL, if module
  *         name parameter is null terminated (zero length) string.
- *      4. create_module(2) returns -1 and sets errno to EEXIST, if module 
+ *      5. create_module(2) returns -1 and sets errno to EEXIST, if module 
  *         entry with the same name already exists.
- *      5. create_module(2) returns -1 and sets errno to EINVAL, if module 
+ *      6. create_module(2) returns -1 and sets errno to EINVAL, if module 
  *         size parameter is too small.
- *      6. create_module(2) returns -1 and sets errno to ENAMETOOLONG, if 
+ *      7. create_module(2) returns -1 and sets errno to ENAMETOOLONG, if 
  *         module name parameter is too long.
- *      7. create_module(2) returns -1 and sets errno to ENOMEM, if module 
+ *      8. create_module(2) returns -1 and sets errno to ENOMEM, if module 
  *         size parameter is too large.
  * 
  *      Setup:
@@ -127,25 +129,26 @@ static void cleanup2(void);
 
 static struct test_case_t  tdat[] = {
 	{ modname, MODSIZE, (caddr_t)-1, EPERM,
-		"Expected failure for non-superuser", setup1, cleanup1},
+		"non-superuser", setup1, cleanup1},
+	{ (char *)-1, MODSIZE, (caddr_t)-1, EFAULT,
+		"module name outside the  program's  accessible  address space",	 NULL, NULL},
 	{ NULL, MODSIZE, (caddr_t)-1, EFAULT,
-		"Expected failure for NULL module name", NULL, NULL},
+		"NULL module name", NULL, NULL},
 	{ NULLMODNAME, MODSIZE, (caddr_t)-1, EINVAL,
-		"Expected failure for null terminated module name", NULL, NULL},
+		"null terminated module name", NULL, NULL},
 	{ modname, MODSIZE, (caddr_t)-1, EEXIST,
-		"Expected failure for already existing module",
-		setup2, cleanup2},
+		"already existing module", setup2, cleanup2},
 	{ modname, SMALLMODSIZE, (caddr_t)-1, EINVAL,
-		"Expected failure for insufficient module size", NULL, NULL},
+		"insufficient module size", NULL, NULL},
 	{ longmodname, MODSIZE, (caddr_t)-1, ENAMETOOLONG,
-		"Expected failure for long module name", NULL, NULL},
+		"long module name", NULL, NULL},
 
 	/*
 	 *This test case is giving segmentation fault on
 	 * 2.4.* series, but works as expected with 2.5.* series of kernel.
 	 */
 	{ modname, MAXMODSIZE, (caddr_t)-1, ENOMEM,
-		"Expected failure for large module size", NULL, NULL},
+		"large module size", NULL, NULL},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
@@ -180,12 +183,13 @@ main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ( (TEST_RETURN == (int) tdat[testno].retval) &&
 				(TEST_ERRNO == tdat[testno].experrno) ) {
-				tst_resm(TPASS, "%s, errno: %d",
+				tst_resm(TPASS, "Expected results for %s, "
+					"errno: %d",
 					tdat[testno].desc, TEST_ERRNO);
 			} else {
-				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
+				tst_resm(TFAIL, "Unexpected results for %s ; "
+					"returned %d (expected %d), errno %d "
+					"(expected %d)", tdat[testno].desc,
 					TEST_RETURN, tdat[testno].retval,
 					TEST_ERRNO, tdat[testno].experrno);
 			}
