@@ -80,8 +80,6 @@ char *TCID = "ioperm02";	/* Test program identifier.    */
 #include "test.h"
 #include "usctest.h"
 
-#define INVALID_ADDR 0x3ff		/* Invalid port address */
-#define VALID_ADDR 0x378		/* Valid port address */
 #define NUM_BYTES 3
 #define TURN_ON 1
 #define TURN_OFF 0
@@ -104,19 +102,13 @@ struct test_cases_t {
 	int	turn_on;
 	char	*desc;		/* test case description */
 	int 	exp_errno;	/* expected error number */
-} test_cases[] = {
-	{ INVALID_ADDR, NUM_BYTES, TURN_ON, "Invalid I/O address",
-					 EINVAL },
-	{ VALID_ADDR, NUM_BYTES, TURN_ON, "Non super-user",
-					 EPERM }
-};
+}; 
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
+int TST_TOTAL = 2;
+struct test_cases_t* test_cases;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -169,6 +161,7 @@ main(int ac, char **av)
 			if (i == 1) {
 				/* revert back to super user */
 				cleanup1();
+			} else {
 			}
 		} 
 
@@ -195,7 +188,7 @@ setup1(void)
 	return 0;
 }
 
-/* cleanup1() - reset to super user for first test case */
+/* cleanup1() - reset to super user for second test case */
 void
 cleanup1()
 {
@@ -221,6 +214,35 @@ setup()
 	/* Check if "nobody" user id exists */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "\"nobody\" user id doesn't exist");
+	}
+
+	/*
+	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed 
+	 * from kernel 2.6.8 to permit 16-bits (65536) ioperm
+	 *
+	 * Ricky Ng-Adam, rngadam@yahoo.com
+	 * */
+	test_cases = (struct test_cases_t*) malloc(sizeof(struct test_cases_t)*2);
+	test_cases[0].num = NUM_BYTES;
+	test_cases[0].turn_on = TURN_ON;
+	test_cases[0].desc = "Invalid I/O address";
+	test_cases[0].exp_errno = EINVAL;
+	test_cases[1].num = NUM_BYTES;
+	test_cases[1].turn_on = TURN_ON;
+	test_cases[1].desc = "Non super-user";
+	test_cases[1].exp_errno = EPERM;
+	if (tst_kvercmp(2,6,8) < 0) {
+		/*try invalid ioperm on 1022, 1023, 1024*/
+		test_cases[0].from = (0x400 - NUM_BYTES) + 1; 
+
+		/*try get valid ioperm on 1021, 1022, 1023*/
+		test_cases[1].from = 0x400 - NUM_BYTES;
+	}  else {
+		/*try invalid ioperm on 65534, 65535, 65536*/
+		test_cases[0].from = (0x10000 - NUM_BYTES) + 1;
+
+		/*try valid ioperm on 65533, 65534, 65535*/
+		test_cases[1].from = 0x10000 - NUM_BYTES;
 	}
 
 	/* Set up the expected error numbers for -e option */

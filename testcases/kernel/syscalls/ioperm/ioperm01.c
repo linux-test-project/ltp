@@ -74,7 +74,7 @@ char *TCID = "ioperm01";	/* Test program identifier.    */
 #include "test.h"
 #include "usctest.h"
 
-#define IO_ADDR 0x378		/* Starting port address */
+int io_addr;     /*kernel version dependant io start address*/
 #define NUM_BYTES 3		/* number of bytes from start address */
 #define TURN_ON 1		
 #define TURN_OFF 0
@@ -101,6 +101,7 @@ main(int ac, char **av)
 	/* perform global setup for test */
 	setup();
 
+
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -110,16 +111,16 @@ main(int ac, char **av)
 		/*
 		 * Test the system call.
 		 */
-		TEST(ioperm(IO_ADDR, NUM_BYTES, TURN_ON));
+		TEST(ioperm(io_addr, NUM_BYTES, TURN_ON));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "ioperm() failed for port address "
-				 "%l,  errno=%d : %s", IO_ADDR,
+				 "%l,  errno=%d : %s", io_addr,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "ioperm() passed for port "
 				 "address %ld, returned %d",
-				  IO_ADDR, TEST_RETURN);
+				  io_addr, TEST_RETURN);
 		} 
 	}	/* End for TEST_LOOPING */
 
@@ -145,6 +146,20 @@ setup()
 		/*NOTREACHED*/
 	}
 
+	/*
+	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed 
+	 * from kernel 2.6.8 to permit 16-bits ioperm
+	 *
+	 * Ricky Ng-Adam, rngadam@yahoo.com
+	 * */
+	if (tst_kvercmp(2,6,8) < 0) {
+		/*get ioperm on 1021, 1022, 1023*/
+		io_addr = 0x400 - NUM_BYTES;
+	} else {
+		/*get ioperm on 65533, 65534, 65535*/
+		io_addr = 0x10000 - NUM_BYTES;
+	}
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -162,7 +177,7 @@ cleanup()
 	/*
 	 * Reset I/O privileges for the specified port.
 	 */
-	if ((ioperm(IO_ADDR, NUM_BYTES, TURN_OFF)) == -1) {
+	if ((ioperm(io_addr, NUM_BYTES, TURN_OFF)) == -1) {
 		tst_brkm(TBROK, tst_exit, "ioperm() cleanup failed");
 	}
 	
