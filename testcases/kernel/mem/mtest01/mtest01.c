@@ -23,12 +23,17 @@
  *  HISTORY:
  *    04/10/2001 Paul Larson (plars@us.ibm.com)
  *      written
+ *    11/09/2001 Manoj Iyer (manjo@austin.ibm.com)
+ *    Modified.
+ *    - Removed compile warnings.
+ *    - Added header file #include <unistd.h> definition for getopt()
  *
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/sysinfo.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
   char* mem;
