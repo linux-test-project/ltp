@@ -104,8 +104,8 @@ struct test_data_t {
 	{ &nobody_pw_uid, &neg_one, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(root, -1, -1)," },
 	{ &neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
 	{ &neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-	{ &neg_one, &neg_one, &inval_user, EINVAL, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-	{ &neg_one, &inval_user, &neg_one, EINVAL, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &neg_one, &inval_user, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
+	{ &neg_one, &inval_user, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
 };
 
 int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]); 
