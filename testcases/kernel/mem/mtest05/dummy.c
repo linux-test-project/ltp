@@ -25,7 +25,10 @@
 /* Description:	dummy program required by mmstress program.		      */
 /*								              */
 /******************************************************************************/
-main()
+
+#include <stdio.h>
+int
+main(void)
 {
     printf("U are running Linux Memory Management Stress Tests.\n");
     exit(0);

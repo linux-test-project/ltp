@@ -407,7 +407,7 @@ map_and_thread(char  *tmpfile,	      /* name of temporary file to be created */
             {
                 fprintf(stderr,
                         "thread [%d] - process exited with errors\n",
-			    pthread_ids[thrd_ndx]);
+			   (long)pthread_ids[thrd_ndx]);
                 free(empty_buf);                          
                 remove_files(tmpfile);
                 close(fd);
@@ -677,9 +677,10 @@ main(int   argc,    /* number of command line parameters		      */
 
     static struct signal_info
     {
-        int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
-                   {
-                        SIGHUP,"SIGHUP",
+        int  signum;    /* signal number that hasto be handled                */        
+	char *signame;  /* name of the signal to be handled.                  */    
+    } 
+    sig_info[] =  {     SIGHUP,"SIGHUP",
                         SIGINT,"SIGINT",
                         SIGQUIT,"SIGQUIT",
                         SIGABRT,"SIGABRT",

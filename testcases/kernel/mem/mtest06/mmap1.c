@@ -608,7 +608,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
         else
         {
-            fprintf(stdout, "%s: created thread[%d]\n",
+            fprintf(stdout, "%s: created thread[%ld]\n",
 				argv[0], thid[0]);
         }
         sched_yield();
@@ -619,7 +619,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
         else
         {
-            fprintf(stdout, "%s: created thread[%d]\n",
+            fprintf(stdout, "%s: created thread[%ld]\n",
 				argv[0], thid[1]);
         }
         sched_yield();
