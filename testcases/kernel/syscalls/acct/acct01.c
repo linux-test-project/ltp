@@ -77,7 +77,7 @@ int main (argc, argv)
 
 	/* turn off acct, so we are in a known state
 	*/
-	if( acct( (char*) 0 ) == -1 ) {
+	if( acct( NULL ) == -1 ) {
 		tst_resm(TBROK, "Attempting to disable acct, but got= %d\n",
 			 errno );
 		tst_exit();
@@ -154,7 +154,7 @@ int main (argc, argv)
 	} else tst_resm(TPASS,"Received expected error: ENOENT");
 
 	/* now disable accting */
-	if( acct( (char*) 0 ) == -1 ) {
+	if( acct( NULL ) == -1 ) {
 		tst_resm(TBROK, "Attempt to do final disable of acct failed, errno= %d\n", errno );
 		tst_exit();
 	}

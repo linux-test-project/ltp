@@ -82,7 +82,7 @@ int main (argc, argv)
 
 	/* turn off acct, so we are in a known state
 	*/
-	if( acct( (char*) 0 ) != -1 ) {
+	if( acct( NULL ) != -1 ) {
 		tst_resm(TBROK, "Non-root attempting to disable acct: didn't fail\n", errno );
 		tst_exit();
 	}
