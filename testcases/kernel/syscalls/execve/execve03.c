@@ -69,10 +69,14 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <pwd.h>
 
 char *TCID = "execve03";
 int TST_TOTAL = 6;
 extern int Tst_count;
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 void setup(void);
 void cleanup(void);
@@ -174,6 +178,21 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	ltpuser = getpwnam(nobody_uid);
+         if (setgid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setgid failed to "
+                         "to set the gid to %d",
+                         ltpuser->pw_uid);
+                perror("setgid");
+         }
+         if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+         }
+
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
