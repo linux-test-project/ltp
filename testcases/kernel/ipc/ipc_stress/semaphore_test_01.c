@@ -79,6 +79,20 @@
 # include <sys/stat.h>
 #endif
 
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+/* union semun is defined by including <sys/sem.h> */
+#else
+/* according to X/OPEN we have to define it ourselves */
+union semun {
+  int val;                  /* value for SETVAL */
+  struct semid_ds *buf;     /* buffer for IPC_STAT, IPC_SET */
+  unsigned short *array;    /* array for GETALL, SETALL */
+                            /* Linux specific part: */
+  struct seminfo *__buf;    /* buffer for IPC_INFO */
+};
+#endif
+
+
 /* Defines
  *
  * NUM_SEMAPHORES: number of semaphores to create
@@ -113,7 +127,12 @@ int main (int argc, char **argv)
 	int semid;			/* Unique semaphore id */
 	int nsems = NUM_SEMAPHORES;	/* Number of semaphores to create */
 	struct semid_ds exp_semdata;	/* Expected semaphore values */
+	union semun exp_semdatap;
 	struct semid_ds act_semdata;	/* Actual semaphore values */
+	union semun act_semdatap;
+
+	exp_semdatap.buf = &exp_semdata;
+	act_semdatap.buf = &act_semdata;
 
 	umask (0000);
 
@@ -134,10 +153,10 @@ int main (int argc, char **argv)
 	if ( (semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|0666)) < 0)
 		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
 
-	if (semctl (semid, nsems, IPC_SET, &exp_semdata) < 0)
+	if (semctl (semid, nsems, IPC_SET, exp_semdatap) < 0)
 		sys_error ("semctl (IPC_SET) failed", __LINE__);
 
-	if (semctl (semid, nsems, IPC_STAT, &act_semdata) < 0)
+	if (semctl (semid, nsems, IPC_STAT, act_semdatap) < 0)
 		sys_error ("semctl (IPC_STAT) failed", __LINE__);
 
 	/*
