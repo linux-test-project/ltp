@@ -65,7 +65,12 @@ usage()
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r ltproot      Fully qualified path where testsuite is installed.
-    -t duration     Execute the testsuite for given duration in hours.
+    -t duration     Execute the testsuite for given duration. Examples:
+                      -t 60s = 60 seconds
+                      -t 45m = 45 minutes
+                      -t 24h = 24 hours
+                      -t 2d  = 2 days
+                     
     -x instances    Run multiple instances of this testsuite.
 
     example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
