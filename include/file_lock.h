@@ -37,4 +37,10 @@ extern char Fl_syscall_str[128];
 int file_lock( int , int, char ** );
 int record_lock( int , int , int , int , char ** );
 
+#if defined(__sun) || defined(__hpux)
+#define LOCK_NB 0x0001
+#define LOCK_UN 0x0002
+#define LOCK_EX 0x0004
+#define LOCK_SH 0x0008
+#endif
 #endif /* _FILE_LOCK_H_ */

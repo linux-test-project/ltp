@@ -105,17 +105,13 @@ struct wlog_rec {
  */
 
 struct wlog_rec_disk {
-#ifdef sgi	/* sgi is pissy about fields > 32 bit, even cc -mips3 */
-    uint    w_offset    : 32;	    /* file offset  	    	    */
-    uint    w_extra0    : 32;       /* EXTRA BITS IN WORD 0         */
-#endif
-#ifdef linux
-    uint    w_offset    : 32;	    /* file offset  	    	    */
-    uint    w_extra0    : 32;       /* EXTRA BITS IN WORD 0         */
-#endif
 #ifdef CRAY
     uint    w_offset    : 44;	    /* file offset  	    	    */
     uint    w_extra0    : 20;       /* EXTRA BITS IN WORD 0         */
+#else
+    /* NB: sgi is pissy about fields > 32 bit, even cc -mips3 */
+    uint    w_offset    : 32;	    /* file offset  	    	    */
+    uint    w_extra0    : 32;       /* EXTRA BITS IN WORD 0         */
 #endif
 
     uint    w_nbytes    : 32;	    /* # bytes written	    	    */
