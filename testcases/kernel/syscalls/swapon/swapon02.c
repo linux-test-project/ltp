@@ -72,8 +72,9 @@
  * -c option can't be used.
  *
  *CHANGES:
- *  01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM error 
- *            for hitting MAX_SWAPFILES is hit. -Robbie Williamson <robbiew@us.ibm.com>
+ * 01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM
+ * error for hitting MAX_SWAPFILES is hit. 
+ * -Robbie Williamson <robbiew@us.ibm.com>
  *****************************************************************************/
 
 #include <unistd.h>
@@ -92,14 +93,13 @@
 #include "test.h"
 #include "usctest.h"
 
-/* The value below should be defined in /linux/swap.h.  However, if using glibc 2.2.5, you should remove 
- * the include of /linux/swap.h and use the definition instead...due to compile problems with 2.2.5.
- *
+/* The value below should be defined in /linux/swap.h.  However, if using 
+ * glibc 2.2.5, you should remove the include of /linux/swap.h and use the 
+ * definition instead...due to compile problems with 2.2.5.
  * Kernel > 2.4.6
- *#define MAX_SWAPFILES 32 
- *
+ * #define MAX_SWAPFILES 32 
  * Kernel < 2.4.6
- *#define MAX_SWAPFILES 8 
+ * #define MAX_SWAPFILES 8 
 */
 
 static void setup();
@@ -138,13 +138,11 @@ static struct test_case_t {
 	{"Permission denied", EPERM, "EPERM ", setup01, cleanup01}
 };
 
-
 int
 main(int ac, char **av)
 {
-
-	int lc, i;	   /* loop counter */
-	char *msg;	   /* message returned from parse_opts */
+	int lc, i;	/* loop counter */
+	char *msg;	/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
@@ -285,21 +283,21 @@ setup03()
 	if(system("cat /proc/swaps | wc -l > ./linecount") != 0) {
 		tst_resm(TWARN, "Failed to find out existing number of swap"
 				" files");
-		return -1;
+		exit(1);
 	}
 
 	/*open linecount file to know the number of entries*/
 	if((fd = open("./linecount", O_RDONLY)) == -1) {
 		tst_resm(TWARN, "Failed to find out existing number of swap"
 				" files");
-		return -1;
+		exit(1);
 	}
 
 	/* 6th and 7th character in the file contains output of wc -l*/
 	if( read(fd, temp, 7) != 7) {
 		tst_resm(TWARN, "Failed to find out existing number of swap"
 				" files");
-		return -1;
+		exit(1);
 	}
 
 	/*check if number of lines are less than 10 in /proc/swaps*/
@@ -315,7 +313,7 @@ setup03()
 
 	if(swapfile < 0) {
 		tst_resm(TWARN, "Failed to find existing number of swapfiles");
-		return -1;
+		exit(1);
 	}
 
 	/* Determine how many more files are to be created*/
@@ -329,32 +327,32 @@ setup03()
 		/*prepare filename for the iteration*/
 		if(sprintf(filename, "swapfile%d%d", (j+2)/10, (j+2)) < 0) {
 			tst_resm(TWARN, "sprintf() failed to create filename");
-			return -1;
+			exit(1);
 		}
 		
 		/*prepare the path string for dd command and dd command*/
 		if(sprintf(cmd_buffer, "dd if=/dev/zero of=%s  bs=1048"
 				" count=40 > tmpfile 2>&1", filename) < 0) {
 			tst_resm(TWARN, "dd command failed to create file");
-			return -1;
+			exit(1);
 		}
 
 		if(system(cmd_buffer) != 0) {
 			tst_resm(TWARN, "sprintf() failed to create swapfiles");
-			return -1;
+			exit(1);
 		}
 
 		/* make the file swapfile*/
 		if(sprintf(cmd_buffer, "mkswap %s > tmpfile 2>&1", filename)
 				< 0) {
 			tst_resm(TWARN, "Failed to make swap %s", filename);
-			return -1;
+			exit(1);
 		}
 
 		if(system(cmd_buffer) != 0) {
 			tst_resm(TWARN, "failed to make swap file %s",
 					filename); 
-			return -1;
+			exit(1);
 		}
 
 		/* turn on the swap file*/
@@ -363,7 +361,7 @@ setup03()
 					"returned %d", filename);
 			/* must cleanup already swapon files */
 			cleanup03();
-			return -1;
+			exit(1);
 		}
 	  }
 	  tst_exit();
@@ -374,12 +372,12 @@ setup03()
 	if(system("dd if=/dev/zero of=swapfilenext bs=1048 count=40 > tmpfile"
 				" 2>&1") != 0) {
 		tst_resm(TWARN, "Failed to create extra file for swap");
-		return -1;
+		exit(1);
 	}
 
 	if(system("mkswap ./swapfilenext > tmpfle 2>&1") != 0) {
 		tst_resm(TWARN, "Failed to make extra swapfile");
-		return -1;
+		exit(1);
 	}
 
 	return 0;
