@@ -157,6 +157,8 @@ fcntl18 fcntl18
 fcntl19 fcntl19
 fcntl20 fcntl20
 fcntl21 fcntl21
+fcntl22 fcntl22
+fcntl23 fcntl23
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
