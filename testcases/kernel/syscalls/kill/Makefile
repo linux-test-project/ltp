@@ -24,11 +24,12 @@ LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite -L../ipc -lipc
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TESTS=kill13
 
 all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TESTS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
