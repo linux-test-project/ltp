@@ -1,4 +1,0 @@
-The tests within this directory require POSIX compliant high resolution timers, so
-it is not automatically built by "make all".  Please refer to: 
-	<http://high-res-timers.sourceforge.net> 
-for more infomtion and kernel patches about Linux high resolution timers.
