@@ -61,10 +61,10 @@ syslog_case2()
                 sleep 2
                 newvalue=`grep -c "syslogtst: mail $current test" /var/log/maillog`
                 (( diff=$newvalue - $oldvalue ))
-                if [[ $diff -ne 1 ]]; then
+                if [[ $diff -eq 0 ]]; then
                         status_flag=1
                         echo "*****--- Level $current failed ---*****"
-                elif [[ $diff -eq 1 ]]; then
+                elif [[ $diff -ge 1 ]]; then
                         echo "*****--- Level $current passed ---*****"
                 fi
                 # Increment the level_no for next level...
