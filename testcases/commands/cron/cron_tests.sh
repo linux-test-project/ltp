@@ -102,7 +102,7 @@ if [ $RC -ne 0 ]
 then
 	$LTPBIN/tst_brk TBROK $LTPTMP/cron_tst2n1.out NULL 
 		"Test #1: crontab Broke while installing cronjob. Reason:"
-	TFAILCNT=$((TFAILCN+1))
+		 TFAILCNT=$(( $TFAILCN+1 ))
 else
 	$LTPBIN/tst_resm TINFO "Test #1: Cronjob installed successfully"
 fi
@@ -115,7 +115,7 @@ if [ $RC -ne 0 ]
 then
 	$LTPBIN/tst_resm TFAIL \
 		"Test #1: crontab activity not recorded in var/log/messages."
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 else
 	$LTPBIN/tst_resm TINFO \
 		"Test #1: cron activity logged in /var/log/messages"
@@ -141,7 +141,7 @@ do
 	then
 		TS_MIN1=00
 	else
-		TS_MIN1=$((TS_MIN1+1))
+		 		 TS_MIN1=$(( $TS_MIN1+1 ))
 	fi
 		
 
@@ -157,7 +157,7 @@ do
 	then
 		# if the value of the minute field did not advance by 1
 		# flag as failure.
-		FAILCNT=$((FAILCNT+1))
+		 		 FAILCNT=$(( $FAILCNT+1 ))
 		echo "\n\t\tExpected $TS_MIN2 \n Received $TS_MIN1" \
 			> $LTPTMP/tst1_cron.log
 		$LTPBIN/tst_res TFAIL $LTPTMP/tst1_cron.log \
@@ -170,7 +170,7 @@ do
 		$LTPBIN/tst_res TINFO $LTPTMP/tst1_cron.log \
 			"Test #1: Values are good: "
 	fi
-	LOOP_CNTR=$((LOOP_CNTR-1))
+		 LOOP_CNTR=$(( $LOOP_CNTR-1 ))
 done
 
 if [ $FAILCNT -eq 0 ]
@@ -184,12 +184,12 @@ then
 	else
 		$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
 			"Test #1: Test failed. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst1.out \
 		"Test #1: Cron did not execute every minute"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 #remove the cron job that was installed.
@@ -225,7 +225,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/cron_tst2n1.out NULL
         "Test #2: crontab Broke while installing cronjob. Reason:"
-    TFAILCNT=$((TFAILCN+1))
+    TFAILCNT=$(( $TFAILCN+1 ))
 fi
 
 sleep 10s
@@ -236,7 +236,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_resm TFAIL \
         "Test #2: crontab activity not recorded in var/log/messages."
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 $LTPBIN/tst_resm TINFO "Test #2: uninstalling crontab file."
@@ -247,7 +247,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/cron_tst2n1.out NULL
         "Test #2: crontab Broke while installing cronjob. Reason:"
-    TFAILCNT=$((TFAILCN+1))
+    TFAILCNT=$(( $TFAILCN+1 ))
 else
 	tail -n 10 /var/log/messages | grep DELETE &>$LTPTMP/cron_tst2n1.out \
 		|| RC=$?
@@ -255,7 +255,7 @@ else
 	then
 		$LTPBIN/tst_resm TFAIL \
 			"Test #2: crontab activity not recorded in var/log/messages."
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	else
 		$LTPBIN/tst_resm TPASS "Test #2: crontab removed the cronjob"
 	fi
@@ -289,7 +289,7 @@ if [ $? -ne 0 ]
 then
     $LTPBIN/tst_brkm TBROK NULL \
 		"Test #3: crontab failed while installing cronjob"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     $LTPBIN/tst_resm TINFO "Test #3: Cron job installed."
 fi
@@ -299,7 +299,7 @@ if [ $RC -ne 0 ]
 then	
 	$LTPBIN/tst_brkm TBROK NULL \
 		"Test #3: crontab failed while listing cronjobs installed"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 else
 	$LTPBIN/tst_resm TINFO \
 		"Test #3: crontab -l listed cronjob tst2_cronprg.sh"
@@ -311,7 +311,7 @@ crontab -r &>/dev/null || RC=$?
 if [ $RC -ne 0 ]
 then	
 	$LTPBIN/tst_brkm TBROK NULL "Test #3: crontab failed while removing cronjob"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 crontab -l &>$LTPTMP/cron_tst2.out || RC=$?
@@ -323,7 +323,7 @@ then
 	then
 		$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
 			"Test #3: crontab failed removing cronjob. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_resm TINFO "crontab uninstalled all jobs for user"

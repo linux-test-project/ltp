@@ -186,7 +186,7 @@ test01()
 	do
 		echo "This a dummy log file used to test logrotate command." >> \
 			/var/log/tst_logfile 
-		count=$((count+1))
+		 		 count=$(( $count+1 ))
 	done
 
 	# remove all old-n-stale logfiles.
@@ -300,7 +300,7 @@ then
     echo "Exit status of crontab command: $RC" >> tst_logrotate.out 2>/dev/null
     tst_brk TBROK $LTPTMP/tst_logrotate.out NULL \
         "Test #2: crontab Broke while installing cronjob. Reason:"
-    TFAILCNT=$((TFAILCN+1))
+    TFAILCNT=$(( $TFAILCN+1 ))
 else
     tst_resm TINFO "Test #2: Cronjob installed successfully"
 fi
@@ -318,7 +318,7 @@ then
     echo "Exit status of crontab command: $RC" >> tst_logrotate.out 2>/dev/null
     tst_brk TBROK $LTPTMP/tst_logrotate.out NULL \
         "Test #2: crontab Broke while installing cronjob. Reason:"
-    TFAILCNT=$((TFAILCN+1))
+    TFAILCNT=$(( $TFAILCN+1 ))
 else
     tst_resm TINFO "Test #2: Cronjob installed successfully"
 fi
@@ -362,7 +362,7 @@ then
 else
     tst_res TFAIL  $LTPTMP/tst_logrotate.out \
         "Test #1: Failed to create /var/log/tst_largelogfile.1.gz. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 }

@@ -332,4 +332,4 @@ then
 	TFAILCNT=$(($TFAILCNT+1))
 fi
 
-exit $((TFAILCNT))
+exit $TFAILCNT

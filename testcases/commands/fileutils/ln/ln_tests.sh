@@ -261,4 +261,4 @@ fi
 
 rm -fr $LTPTMP/tst_ln.*
 
-exit $((TFAILCNT))
+exit $TFAILCNT

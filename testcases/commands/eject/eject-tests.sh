@@ -85,7 +85,7 @@ then
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out \
             "Test #1: eject -d failed to list. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 else
     echo "return code from eject = $RC" > $LTPTMP/tst_eject.out 2>/dev/null
@@ -123,7 +123,7 @@ else
         2&/dev/null
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res \
         "Test #2: eject failed. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 
@@ -151,7 +151,7 @@ else
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
             "Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -160,7 +160,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #3: failed adding $LTPTMP/cdrom to /etc/fstab. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
@@ -169,7 +169,7 @@ then
     echo ".Failed to mount $LTPTMP/cdrom." >> $LTPTMP/tst_eject.out 2>/dev/null
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
              "Test #3: mount failed. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     eject &>$LTPTMP/tst_eject.out || RC=$?
     if [ $RC -eq 0 ]
@@ -183,12 +183,12 @@ else
         else
             $LTPBIN/tst_resm TFAIL \
                 "Test #3: eject failed to unmount /dev/cdrom."
-            TFAILCNT=$((TFAILCNT+1))
+            TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out \
            "Test #3: eject failed. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -225,7 +225,7 @@ else
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
             "Test #3: failed to make directory $LTPTMP/cdrom. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -243,7 +243,7 @@ else
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #4: failed adding $LTPTMP/cdrom to /etc/fstab. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -256,7 +256,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 eject -a 1 &>$LTPTMP/tst_eject.out || RC=$?
@@ -264,7 +264,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
         "Test #4: eject command failed setting auto-eject mode on. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 # check if the tray is still closed and not open.
@@ -275,7 +275,7 @@ if [ $RC -eq 2 ]
 then
     $LTPBIN/tst_brkm TBROK NULL \
         "Test #4: /dev/cdrom is mounted but the tray is open!"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 # closing the device i.e unmounting $LTPTMP/cdrom should now open the tray
@@ -286,7 +286,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #4: unmounting the cdrom failed. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     $LTPBIN/check_tray || RC=$?
     if [ $RC -eq 2 ]
@@ -304,7 +304,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
         "Test #4: eject command failed setting auto-eject mode on. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     $LTPBIN/tst_resm TINFO "Test #4: auto-eject feature disabled"
 fi
@@ -316,7 +316,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res NULL \
         "Test #4: eject command to close the tray. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     grep "closing tray" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out || RC=$?    
     if [ $RC -eq 0 ]
@@ -326,7 +326,7 @@ else
         then 
             $LTPBIN/tst_brkm TBROK NULL \
                 "Test #4: eject -t reported tray closed, but tray is open"
-            TFAILCNT=$((TFAILCNT+1)) 
+            TFAILCNT=$(( $TFAILCNT+1 )) 
         fi
     fi
 fi
@@ -336,7 +336,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 umount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
@@ -344,7 +344,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
         "Test #4: failed mounting $LTPTMP/cdrom. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 $LTPBIN/check_tray || RC=$?
@@ -352,7 +352,7 @@ if [ $RC -eq 2 ]
 then
     $LTPBIN/tst_resm TFAIL \
         "Test #4: closing the device opened the tray, but, auto-eject = off"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     $LTPBIN/tst_resm TPASS "Test #4: eject can enable and disable auto-eject"
 fi

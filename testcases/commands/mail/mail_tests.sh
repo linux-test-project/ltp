@@ -108,7 +108,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #1: mail command failed. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     # check if root received a new email with Test as subject
     # but wait for the mail to arrive.
@@ -123,7 +123,7 @@ else
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
             "Test #1: Mail send to root, but was not received"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -153,7 +153,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #2: mail command failed. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     # check if Mailer-Deamon reported any delivery failure.    
     # but wait for the mail to arrive first, sleep 5s.
@@ -166,7 +166,7 @@ else
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \ 
         "Test #2: No new mail for root. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     else
         if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
         then
@@ -175,7 +175,7 @@ else
         else
             $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
             "Test #2: Mailer-Deamon failed to report delivery failure. Reason:"
-            TFAILCNT=$((TFAILCNT+1))
+            TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     fi
 fi
@@ -206,7 +206,7 @@ if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #3: mail command failed. Reason: "
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     # check if Mailer-Deamon reported any delivery failure.    
     # but wait for the mail to arrive first, sleep 5s.
@@ -219,7 +219,7 @@ else
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \ 
         "Test #2: No new mail for root. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     else
         if [ $RC1 -ne 0 ] && [ $RC2 -ne 0 ]
         then
@@ -228,7 +228,7 @@ else
         else
             $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
             "Test #3: Mailer-Deamon failed to report delivery failure. Reason:"
-            TFAILCNT=$((TFAILCNT+1))
+            TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     fi
 fi
@@ -250,7 +250,7 @@ if [ $RC -ne 0 ]
 then
      $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #4: mail command failed. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
@@ -266,7 +266,7 @@ else
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
             "Test #4: mail failed to carbon copy user mail_test. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
 
@@ -288,7 +288,7 @@ if [ $RC -ne 0 ]
 then
      $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
         "Test #5: mail command failed. Reason:"
-    TFAILCNT=$((TFAILCNT+1))
+    TFAILCNT=$(( $TFAILCNT+1 ))
 else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
@@ -304,7 +304,7 @@ else
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
             "Test #5: mail failed to carbon copy user mail_testi. Reason:"
-        TFAILCNT=$((TFAILCNT+1))
+        TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
     

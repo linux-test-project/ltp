@@ -166,7 +166,7 @@ if [ $RC -eq 0 ]
 then
 	$LTPBIN/tst_resm TPASS "Test #1: cpio created an archive"
 else
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 clean				# clean up before returning

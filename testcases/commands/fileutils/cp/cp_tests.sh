@@ -255,4 +255,4 @@ fi
 
 rm -fr $LTPTMP/tst_cp.*
 
-exit $((TFAILCNT))
+exit $TFAILCNT

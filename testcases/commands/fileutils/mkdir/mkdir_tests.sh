@@ -219,4 +219,4 @@ fi
 
 rm -fr $LTPTMP/tst_mkdir.*
 
-exit $((TFAILCNT))
+exit $TFAILCNT

@@ -81,12 +81,12 @@ then
 	else
 		$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
 			"tar: cvf option failed to create archive.  Reason"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
 		"tar: command failed. Reason:"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 
@@ -115,12 +115,12 @@ else
 		else
 			$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 				"tar: cvf option failed to create archive.  Reason"
-			TFAILCNT=$((TFAILCNT+1))
+		 		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 		fi
 	else
 		$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
 			"tar: command failed. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 fi
 
@@ -138,7 +138,7 @@ then
 	else
 		$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
                 "tar: failed to list all the files in the archive. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 fi
 
@@ -171,17 +171,17 @@ then
 		else
 			$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
              "tar: zcvf option failed to create a compressed tar file. Reason:"
-			TFAILCNT=$((TFAILCNT+1))
+		 		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 		fi
 	else
 		$LTPBIN/tst_brok TBROK $LTPTMP/tar_tst.out \
 			"tar: cvf option failed to create compressed archive.  Reason"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
 		"tar: command failed while creating compressed archive. Reason:"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 
@@ -211,12 +211,12 @@ else
 		else
 			$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 				"tar: cvf option failed to create archive.  Reason"
-			TFAILCNT=$((TFAILCNT+1))
+		 		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 		fi
 	else
 		$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
 			"tar: command failed. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 fi
 
@@ -230,12 +230,12 @@ then
 	else
 		$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
 			"tar: xvf option failed to extract. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 		"tar: command failed while extracting files. Reason"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 rm -fr $LOCTMP
@@ -273,17 +273,17 @@ else
 			else
 				$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 				 "tar: zcvf option failed to create a compressed tar file. Reason:"
-				TFAILCNT=$((TFAILCNT+1))
+		 		 		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 			fi
 		else
 			$LTPBIN/tst_brok TBROK $LTPTMP/tar_tst.out \
 				"tar: cvf option failed to create compressed archive.  Reason"
-			TFAILCNT=$((TFAILCNT+1))
+		 		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 		fi
 	else
 		$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
 			"tar: command failed while creating compressed archive. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 fi
 
@@ -298,12 +298,12 @@ then
 	else
 		$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
 			"tar: zxvf option failed to extract compressed archive. Reason:"
-		TFAILCNT=$((TFAILCNT+1))
+		 		 TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
 else
 	$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 		"tar: command failed while extracting compressed archive files. Reason"
-	TFAILCNT=$((TFAILCNT+1))
+		 TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 rm -fr $LOCTMP
