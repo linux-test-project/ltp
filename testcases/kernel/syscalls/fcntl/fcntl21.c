@@ -98,7 +98,10 @@ setup()
 	pipe(parent_pipe);
 	pipe(child_pipe);
 	parent_pid = getpid();
-	snprintf(template, PATH_MAX, "fcntl06XXXXXX");
+
+	tst_tmpdir();	
+
+	snprintf(template, PATH_MAX, "fcntl21XXXXXX");
 
 	if ((fd = mkstemp(template)) < 0) {
                 tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
@@ -129,6 +132,8 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
+
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();

@@ -98,6 +98,8 @@ setup()
 	pipe(parent_pipe);
 	pipe(child_pipe);
 	parent_pid = getpid();
+
+	tst_tmpdir();
 	snprintf(template, PATH_MAX, "fcntl20XXXXXX");
 
 	if ((fd = mkstemp(template)) < 0) {
@@ -129,7 +131,7 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-
+	tst_rmdir();
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
