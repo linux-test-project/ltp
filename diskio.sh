@@ -17,7 +17,7 @@ export TMPDIR=/tmp
 mkdir /tmp/diskiopan-$$
 cd /tmp/diskiopan-$$
 
-export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/ltctests/bin"
+export PATH="${PATH}:${LTPROOT}/testcases/bin"
  
 ${LTPROOT}/pan/pan -e -l /tmp/diskiopan.log -S -a ltpdiskio -n ltpdiskio -f ${LTPROOT}/ltctests/runtest/io
 

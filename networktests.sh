@@ -12,15 +12,15 @@ export PASSWD=
 
 export TMPDIR=/tmp
 
-cat  ${LTPROOT}/ltctests/runtest/tcp_cmds > $TMPDIR/network.tests
-cat  ${LTPROOT}/ltctests/runtest/multicast >> $TMPDIR/network.tests
-cat  ${LTPROOT}/ltctests/runtest/rpc >> $TMPDIR/network.tests
-cat  ${LTPROOT}/ltctests/runtest/nfs >> $TMPDIR/network.tests
+cat  ${LTPROOT}/runtest/tcp_cmds > $TMPDIR/network.tests
+cat  ${LTPROOT}/runtest/multicast >> $TMPDIR/network.tests
+cat  ${LTPROOT}/runtest/rpc >> $TMPDIR/network.tests
+cat  ${LTPROOT}/runtest/nfs >> $TMPDIR/network.tests
 
 mkdir /tmp/netpan-$$
 cd /tmp/netpan-$$
 
-export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/ltctests/bin"
+export PATH="${PATH}:${LTPROOT}/testcases/bin"
  
 ${LTPROOT}/pan/pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f ${TMPDIR}/network.tests
 
