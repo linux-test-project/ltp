@@ -142,10 +142,14 @@ setup()
 	
 	/* create a test file */
         sprintf(fname, "%s.%d", fname, getpid());
-        if ((fileHandle = creat(fname, 0444)) == -1) {
-                tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
-        }
-        sprintf(path, "%s", fname);
+	if (mkdir(fname, 0444) == -1) {
+		tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
+	} else {
+		sprintf(path, "%s/%s", fname, fname);
+		if ((fileHandle = creat(path, 0444)) == -1) {
+			tst_resm(TFAIL, "creat (2) FAILED to creat temp file");
+		}
+	}
 
 
         /* Switch to nobody user for correct error code collection */
