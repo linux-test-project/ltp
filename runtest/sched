@@ -2,5 +2,5 @@ pth_str01 pth_str01
 pth_str02 pth_str02 -n1000
 pth_str03 pth_str03
 
-process_stress process -b 50 -d 50 -t 1
+process_stress process -d 8 -b 2 -t 1
 sched_stress sched_driver -s 0.9 -v
