@@ -87,14 +87,26 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
+/*
+ * Define here the "rem" precision in microseconds,
+ * Various implementations will provide different
+ * precisions. The -aa tree provides up to usec precision.
+ * NOTE: all the trees that don't provide a precision of
+ * the order of the microseconds are subject to an userspace
+ * live lock condition with glibc under a flood of signals,
+ * the "rem" field would never change without the increased
+ * usec precision in the -aa tree.
+ */
+ #define USEC_PRECISION 100 
+
 int
 main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
-	time_t otime;		/* time before child execution suspended */
-	time_t ntime;		/* time after child resumes execution */
+		 struct timeval otime;		 /* time before child execution suspended */
+		 struct timeval ntime;		 /* time after child resumes execution */
 	int status;		/* child exit status */
     
 	/* Parse standard options given to run the test. */
@@ -122,8 +134,10 @@ main(int ac, char **av)
 		}
 
 		if (cpid == 0) {		/* Child process */
+		 		 		 unsigned long req, rem, before, after, elapsed; /* usec */
+
 			/* Note down the current time */
-			time(&otime);
+		 		 		 gettimeofday(&otime, NULL);
 			/* 
 			 * Call nanosleep() to suspend child process
 			 * for specified time 'tv_sec'.
@@ -134,7 +148,7 @@ main(int ac, char **av)
 			TEST(nanosleep(&timereq, &timerem));
 
 			/* time after child resumes execution */
-			time(&ntime);
+		 		 		 gettimeofday(&ntime, NULL);
 
 			/*
 			 * Check whether the remaining sleep of child updated
@@ -142,16 +156,21 @@ main(int ac, char **av)
 			 * The time remaining should be equal to the
 			 * Total time for sleep - time spent on sleep bfr signal
 			 */
-			if (timerem.tv_sec != (timereq.tv_sec
-					       - (ntime - otime))) {
-				tst_resm(TFAIL, "Remaining sleep time doesn't "
-					 "match with the expected %d time",
-					 (timereq.tv_sec - (ntime - otime)));
+		 		 		 req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+		 		 		 rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
+		 		 		 before = otime.tv_sec * 1000000 + otime.tv_usec;
+		 		 		 after = ntime.tv_sec * 1000000 + ntime.tv_usec;
+		 		 		 elapsed = after - before;
+
+		 		 		 if (rem - (req - elapsed) > USEC_PRECISION) {
+		 		 		 		 tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
+		 		 		 		 		  "match with the expected %lu usec time",
+		 		 		 		 		  rem, (req - elapsed));
 				exit(1);
 			}
 
 			/* Record the time before suspension */
-			time(&otime);
+		 		 		 gettimeofday(&otime, NULL);
 
 			/*
 			 * Invoke nanosleep() again to suspend child
@@ -161,7 +180,7 @@ main(int ac, char **av)
 			TEST(nanosleep(&timereq, &timerem));
 			
 			/* Record the time after suspension */
-			time(&ntime);
+		 		 		 gettimeofday(&ntime, NULL);
 
 			/* check return code of nanosleep() */
 			if (TEST_RETURN == -1) {
@@ -182,7 +201,7 @@ main(int ac, char **av)
 				 * sleep time specified by 'timerem'
 				 * structure.
 				 */
-				if ((ntime - otime) != timereq.tv_sec) {
+		 		 		 		 if ((ntime.tv_sec - otime.tv_sec) != timereq.tv_sec) {
 					tst_resm(TFAIL, "Child execution not "
 						 "suspended for %d seconds",
 						 timereq.tv_sec);
