@@ -50,6 +50,7 @@
 #include "test.h"
 #include "usctest.h"
 #include <wait.h>
+#include "ipcsem.h"
 
 int local_flag=1;
 extern int errno;
@@ -187,6 +188,7 @@ dotest(key_t key)
 	int id, pid, status;
 	int count, child, nwait;
 	short i;
+		 union semun get_arr;
 
 	nwait = 0;
 	srand(getpid());
@@ -245,7 +247,8 @@ dotest(key_t key)
 		local_flag = FAILED;
 	}
 
-	if (semctl(id, 0, GETALL, semvals) < 0) {
+		 get_arr.array = semvals;
+		 if (semctl(id, 0, GETALL, get_arr) < 0) {
                 tst_resm(TFAIL, "\terror on GETALL\n");
 		tst_resm(TFAIL, "\tsemctl() failed errno %d\n", errno);
 	}
