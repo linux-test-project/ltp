@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.4 2003/05/07 15:46:32 robbiew Exp $ */
+/* $Id: fork05.c,v 1.5 2005/01/05 21:21:27 mridge Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -140,8 +140,11 @@ struct modify_ldt_ldt_s
   unsigned int empty:25;
 };
 
+int a = 42;
+
 void modify_ldt(int, struct modify_ldt_ldt_s *, int);
-asm("	.type modify_ldt,@function \n\
+asm("	.text\n\
+	.type modify_ldt,@function \n\
 modify_ldt: \n\
 	push   %ebx \n\
 	mov    0x10(%esp,1),%edx \n\
@@ -152,7 +155,7 @@ modify_ldt: \n\
 	pop    %ebx \n\
 	ret");
 
-int a = 42;
+
 
 int
 main ()
