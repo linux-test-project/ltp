@@ -32,9 +32,9 @@
 #ifndef _FORKER_H_
 #define _FORKER_H_
 
-#define MAX_PIDS	4098
+#define FORKER_MAX_PIDS	4098
 
-extern int Forker_pids[MAX_PIDS];      /* holds pids of forked processes */
+extern int Forker_pids[FORKER_MAX_PIDS];      /* holds pids of forked processes */
 extern int Forker_npids;               /* number of entries in Forker_pids */
 
 /*

@@ -118,7 +118,7 @@
 
 extern int errno;
 
-int Forker_pids[MAX_PIDS];      /* holds pids of forked processes */
+int Forker_pids[FORKER_MAX_PIDS];      /* holds pids of forked processes */
 int Forker_npids=0;             /* number of entries in Forker_pids */
 
 /***********************************************************************
@@ -186,12 +186,12 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	    switch (pid ) {
             case 0:     /* child - continues the forking */
 	        
-		if ( Forker_npids < MAX_PIDS )
+		if ( Forker_npids < FORKER_MAX_PIDS )
                     Forker_pids[Forker_npids-1]=getpid();
                 break;
 
             default:    /* parent - stop the forking */
-		if ( Forker_npids < MAX_PIDS )
+		if ( Forker_npids < FORKER_MAX_PIDS )
                     Forker_pids[Forker_npids-1]=pid;
                 return cnt-1;      
             }
@@ -209,12 +209,12 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	    
 	    switch (pid ) {
 	    case 0:	/* child - stops the forking */
-		if ( Forker_npids < MAX_PIDS )
+		if ( Forker_npids < FORKER_MAX_PIDS )
                     Forker_pids[Forker_npids-1]=getpid();
 	        return cnt;	
 
 	    default:	/* parent - continues the forking */
-		if ( Forker_npids < MAX_PIDS )
+		if ( Forker_npids < FORKER_MAX_PIDS )
                     Forker_pids[Forker_npids-1]=pid;
                 break;
             }
@@ -222,7 +222,7 @@ char *prefix;   /* if ! NULL, an message will be printed to stderr */
 	}
     }
 
-    if ( Forker_npids < MAX_PIDS )
+    if ( Forker_npids < FORKER_MAX_PIDS )
         Forker_pids[Forker_npids]=0;
     return cnt-1;
 
