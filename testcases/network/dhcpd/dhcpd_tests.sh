@@ -95,7 +95,7 @@ init()
 	tst_resm TINFO "INIT: Inititalizing tests."
 
 	ps -ef &>$LTPTMP/tst_dhcpd.out || RC=$?
-	if [ $RC -ne ]
+	if [ $RC -ne 0 ]
 	then
 		tst_res TBROK $LTPTMP/tst_dhcpd.out NULL \
 			"INIT: ps command failed. Reason:"
