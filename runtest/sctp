@@ -1,0 +1,28 @@
+#DESCRIPTION:Stream Control Transmission Protocol (SCTP) Tests
+#
+timetolive_v6 test_timetolive_v6
+timetolive test_timetolive
+tcp_style_v6 test_tcp_style_v6
+tcp_style test_tcp_style 
+sockopt_v6 test_sockopt_v6
+sockopt test_sockopt
+sendmsg_v6 test_sendmsg_v6
+sctp_recvmsg_v6 test_sctp_recvmsg_v6
+sctp_recvmsg test_sctp_recvmsg
+recvmsg test_recvmsg
+peeloff_v6 test_peeloff_v6
+peeloff test_peeloff
+inaddr_any_v6 test_inaddr_any_v6
+inaddr_any test_inaddr_any
+getname_v6 test_getname_v6
+getname test_getname
+fragments_v6 test_fragments_v6
+fragments test_fragments
+connect test_connect
+basic_v6 test_basic_v6
+basic test_basic
+autoclose test_autoclose
+assoc_shutdown test_assoc_shutdown
+assoc_abort test_assoc_abort
+sctp_sendrecvmsg test_sctp_sendrecvmsg
+sctp_sendrecvmsg_v6 test_sctp_sendrecvmsg_v6
