@@ -40,7 +40,7 @@ TC=sine
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
-TCtmp=${TCtmp:-$TCsrc}
+TCtmp=${TCtmp:-$TCsrc/echo$$}
 CLEANUP=${CLEANUP:-ON}
 CREATFILE=createfile
 ECHOES=echoes
@@ -64,9 +64,9 @@ NUMPROCESSES=${NUMPROCESSES:-10}
 do_test() 
 {
    $trace_logic
-
+   mkdir $TCtmp 
    echo  "Creating echo file $ECHOFILE"
-   $TCtmp/$CREATFILE $ECHOSIZE $TCtmp/$ECHOFILE
+   $TCbin/$CREATFILE $ECHOSIZE $TCtmp/$ECHOFILE
    [[ $? = 0 ]] || end_testcase "$ECHOFILE not created"
 
    echo "Compute the checksum of this file"
@@ -76,7 +76,7 @@ do_test()
    COUNT=1
    while [[ $COUNT -le $NUMLOOPS ]]
    do
-      $TCtmp/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
+      $TCbin/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
       [[ $? = 0 ]] || end_testcase "Error in $ECHOES test in loop $COUNT"
 
       NUM=0
