@@ -99,9 +99,14 @@ int main(int ac, char **av)
 		 * Try to access an invalid process.
 		 * This should give an ESRCH error.
 		 */
-	
+
 		/* call the system call with the TEST() macro */
+#ifdef PID_MAX_LIMIT
+		TEST(setpriority(PRIO_PROCESS, PID_MAX_LIMIT + 1, new_val));
+#elif defined(PID_MAX)
 		TEST(setpriority(PRIO_PROCESS, PID_MAX + 1, new_val));
+#endif
+	
 	
 		if (TEST_RETURN == 0) {
 	                tst_resm(TFAIL, "call failed to produce expected error "
