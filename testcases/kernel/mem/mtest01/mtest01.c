@@ -151,7 +151,22 @@ int main(int argc, char* argv[]) {
     pid_cntr++;
     pid_list[i]=pid;
 
-#if __WORDSIZE==32
+#if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
+  while( (pid!=0) && (maxbytes > 500*1024*1024) )
+  {
+    i++;
+    maxbytes=maxbytes-(500*1024*1024);
+    pid=fork();
+    if (pid != 0)
+      pid_cntr++;
+      pid_list[i]=pid;
+  }
+  if( maxbytes > 500*1024*1024 )
+    alloc_bytes=500*1024*1024;
+  else
+    alloc_bytes=(unsigned long)maxbytes;
+
+#elif __WORDSIZE==32
   while( (pid!=0) && (maxbytes > 1024*1024*1024) )
   {
     i++;
@@ -165,6 +180,7 @@ int main(int argc, char* argv[]) {
     alloc_bytes=1024*1024*1024;
   else
     alloc_bytes=(unsigned long)maxbytes;
+
 #elif __WORDSIZE==64
   while( (pid!=0) && (maxbytes > (unsigned long long)3*1024*1024*1024) )
   {

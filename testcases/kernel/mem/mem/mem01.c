@@ -217,7 +217,10 @@ size_t get_memsize()
   res=res+freeswap;
 
   printf("Total Free:\t%llu Mb\n",res/1024/1024);
-#if __WORDSIZE == 32
+#if defined (__s390__) 
+  if ( res > 1*1024*1024*1024 )
+    res = 500*1024*1024;  /* s390's unique 31bit architecture needs smaller default */
+#elif __WORDSIZE == 32
   if ( res > 1*1024*1024*1024 )
     res = 1*1024*1024*1024;
 #elif __WORDSIZE == 64
