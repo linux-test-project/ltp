@@ -1838,14 +1838,14 @@ char *file;
 int grow_incr;
 char *buf;
 {
-   int noffset;
+   off_t noffset;
    int ret;
    int cur_offset;
    char *errmsg;
-   int fsize;		/* current size of file */
+   off_t fsize;		/* current size of file */
    int size_grew;	/* size the file grew */
    struct stat stbuf;
-   int tmp = 0;
+   off_t tmp = 0;
 
         /*
          * Do a stat on the open file.
