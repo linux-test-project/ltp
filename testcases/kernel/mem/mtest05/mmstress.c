@@ -34,6 +34,8 @@
 /* Oct-25-2001  Modified.						      */
 /*		- Fixed bug in usage()				              */
 /*		- malloc'ed pointer for pthread return value.                 */
+/*		- changed scheme. If no options are specified, all the tests  */
+/*		  will be run once.                                           */
 /*								              */
 /* Purpose:	Performing General Stress with Race conditions        	      */
 /* 									      */
@@ -131,7 +133,8 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
 static void 
 usage(char *progname)		/* name of this program                       */
 {
-    fprintf(stderr, "usage:%s -n test -t time -v [-V]\n", progname);
+    fprintf(stderr, "usage:%s -h -n test -t time -v [-V]\n", progname);
+    fprintf(stderr, "\t-h displays all options\n");
     fprintf(stderr, "\t-n the test number, if no test number\n"
 		    "\t   is specified all the tests will be run\n");
     fprintf(stderr, "\t-t specify the time in hours\n");
@@ -665,6 +668,8 @@ test6()
 /* 								              */
 /* Desciption:	This is the main function of mmstress program. It processes   */
 /*		all command line options and flags and runs the tests.        */
+/*		If no specific tests are chosen, all tests will be run one    */
+/*		time by default.			                      */
 /*									      */
 /* Input:	argc - number of command line parameters		      */
 /*		argv - pointer to the array of the command line parameters.   */
@@ -688,6 +693,7 @@ main(int   argc,    /* number of command line parameters		      */
     int   test_num  = 0;	/* test number that is to be run              */
     int   test_time = 0;	/* duration for which test is to be run       */
     int   sig_ndx;              /* index into signal handler structure.       */
+    int	  run_once = TRUE;	/* test/tests are run once by default.        */
     char *prog_name = argv[0]; 	/* name of this program			      */
     int   rc = 0;		/* return value from the tests.	0 - success   */
     int   version_flag = FALSE; /* printf the program version		      */
@@ -713,47 +719,48 @@ main(int   argc,    /* number of command line parameters		      */
     opterr = 0;
 
     if (argc < 2)
+	fprintf(stderr, "\nINFO: run %s -h for all options\n\n", argv[0]);
+
+    while ((ch = getopt(argc, argv, "hn:t:vV")) != -1)
     {
-        usage(argv[0]);
-    }
-    if (*argv[1] == '-')
-    {
-        while ((ch = getopt(argc, argv, "n:t:vV")) != -1)
+        switch(ch)
 	{
-	    switch(ch)
-	    {
-		case 'n': if (optarg) 
-		              test_num = atoi(optarg);
-			  else
-		              OPT_MISSING(prog_name, optopt);
-	                  break;
-		case 't': if (optarg)
-			      printf("Test is scheduld to run for %d hours\n",
-			           test_time = atoi(optarg));
-		          else
-			      OPT_MISSING(prog_name, optopt); 	          
-			  break;
-                case 'v': verbose_print = TRUE;
-		          break;
-		case 'V': if (!version_flag)
-		          {
-			      version_flag = TRUE;
-			      fprintf(stderr, "%s: %s\n", prog_name,
-			              version_info);
-			  }
-		          break;
-                case '?': if (argc < optind)
-			      OPT_MISSING(prog_name, optopt);
-			  else
-			      fprintf(stderr, 
-			         "%s: unknown option - %c ignored\n", prog_name,
-			         optopt);
-		          break;
-		default: fprintf(stderr, "%s: getopt() failed!!!\n", prog_name);
-			 exit(2);
-            }
-        }
+	    case 'h': usage(argv[0]);
+	              break;
+	    case 'n': if (optarg) 
+	                  test_num = atoi(optarg);
+		      else
+		          OPT_MISSING(prog_name, optopt);
+	              break;
+	    case 't': if (optarg)
+		      {
+		          printf("Test is scheduld to run for %d hours\n",
+		          test_time = atoi(optarg));
+		          run_once = FALSE;
+                       }
+		       else
+		           OPT_MISSING(prog_name, optopt); 	          
+		       break;
+            case 'v': verbose_print = TRUE;
+	              break;
+	    case 'V': if (!version_flag)
+		      {
+		          version_flag = TRUE;
+		          fprintf(stderr, "%s: %s\n", prog_name,
+			      version_info);
+		      }
+		      break;
+	    case '?': if (argc < optind)
+		          OPT_MISSING(prog_name, optopt);
+		      else
+		          fprintf(stderr, 
+			     "%s: unknown option - %c ignored\n", prog_name,
+			     optopt);
+		      break;
+	    default: fprintf(stderr, "%s: getopt() failed!!!\n", prog_name);
+		     exit(2);
     }
+}
 
     /* duration for which the tests have to be run. test_time is converted to */
     /* corresponding seconds and the tests are run as long as the current time*/
@@ -795,6 +802,6 @@ main(int   argc,    /* number of command line parameters		      */
         if (rc != SUCCESS)
             exit(rc);
     }
-    while (TRUE);
+    while ((TRUE) && (!run_once));
     exit(rc);
 }
