@@ -60,9 +60,6 @@ int TST_TOTAL=2;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
-struct utsname uval;
-char *kmachine;
-
 int child();
 int rm_shm(int);
 
@@ -71,10 +68,6 @@ int main()
 	char	*cp=NULL;
 	int	shmid, pid, status;
 	key_t 	key;
-
-	/* are we doing with ia64 arch */
-	uname(&uval);
-	kmachine = uval.machine;
 
 	key = (key_t) getpid() ;
 
@@ -89,11 +82,13 @@ int main()
 		tst_exit() ;
 	}
 
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__	
 	  cp = (char *) shmat(shmid, ADDR_IA, 0);
-	} else {
+#elif defined(__ARM_ARCH_4T__)
+	  cp = (char *) shmat(shmid, (void *) NULL, 0);
+#else
 	  cp = (char *) shmat(shmid, ADDR, 0);
-	}
+#endif
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,

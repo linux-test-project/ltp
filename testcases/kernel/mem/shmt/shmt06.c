@@ -65,8 +65,6 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 key_t	key;
 sigset_t sigset;
-struct utsname uval;
-char *kmachine;
 
 int child();
 int rm_shm(int);
@@ -77,10 +75,6 @@ int main()
 	int	pid, pid1, shmid;
 	int	status;
 	
-	/* are we doing with ia64 arch */
-	uname(&uval);
-	kmachine = uval.machine;
-
 	key = (key_t)getpid() ;
 
 	sigemptyset(&sigset);
@@ -109,11 +103,13 @@ int main()
 		(void)kill(pid, SIGINT);
 	}
 	else {
-		if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__
 		  cp = (char *) shmat(shmid, ADDR_IA, 0);
-		} else {
+#elif defined(__ARM_ARCH_4T__)
+		  cp = (char *) shmat(shmid, (void*) NULL, 0);
+#else
 		  cp = (char *) shmat(shmid, ADDR, 0);
-		}
+#endif	
 		if (cp == (char *)-1) {
 			perror("shmat") ;
 			tst_resm(TFAIL,
@@ -181,11 +177,13 @@ int child()
 		errno, shmid, chld_pid);
 	}
 	else {
-		if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__	
 		  cp = (char *) shmat(shmid, ADDR1_IA, 0);
-		} else {
+#elif defined(__ARM_ARCH_4T__)	
+		  cp = (char *) shmat(shmid, (void *) NULL, 0);
+#else
 		  cp = (char *) shmat(shmid, ADDR1, 0);
-		}
+#endif
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,

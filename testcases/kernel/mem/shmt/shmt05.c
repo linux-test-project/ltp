@@ -54,8 +54,6 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 /**************/
 
 key_t		 key[2];
-struct utsname uval;
-char *kmachine;
 
 #define		 ADDR		 (void *)0x80000
 #define		 ADDR1		 (void *)0x80010
@@ -71,10 +69,6 @@ int main()
  int		 shmid, shmid1;
  char		 *cp, *cp1;
 
- /* are we doing with ia64 arch */
- uname(&uval);
- kmachine = uval.machine;
-
  srand48((getpid() << 16) + (unsigned)time((time_t *)NULL));
 
  key[0] = (key_t) lrand48();
@@ -89,11 +83,13 @@ int main()
   "Error: shmget: shmid = %d, errno = %d\n",
   shmid, errno) ;
  } else {
-  if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__ 
   cp = (char *) shmat(shmid, ADDR_IA, 0);
-  } else {
+#elif defined(__ARM_ARCH_4T__)
+  cp = (char *) shmat(shmid, (void *)NULL, 0);
+#else
   cp = (char *) shmat(shmid, ADDR, 0);
-  }
+#endif
   if (cp == (char *)-1) {
    tst_resm(TFAIL,"shmat");
    rm_shm(shmid) ;
@@ -111,11 +107,13 @@ int main()
   "Error: shmget: shmid1 = %d, errno = %d\n",
   shmid1, errno) ;
  } else {
-  if ((strncmp(kmachine, "ia64", 4)) == 0) {
+#ifdef __ia64__
    cp1 = (char *) shmat(shmid1, ADDR1_IA, 0);
-  } else {
+#elif defined(__ARM_ARCH_4T__)
+   cp1 = (char *) shmat(shmid1, (void *)NULL, 0);
+#else
    cp1 = (char *) shmat(shmid1, ADDR1, 0);
-  }
+#endif
   if (cp1 != (char *)-1) {
    perror("shmat");
    tst_resm(TFAIL,

@@ -49,8 +49,6 @@ char *TCID="shmt02";            /* Test program identifier.    */
 int TST_TOTAL=3;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
-struct utsname uval;
-char *kmachine;
 
 /**************/
 
@@ -82,14 +80,12 @@ int main()
 /*----------------------------------------------------------------*/
 
 
-		 /* are we doing with ia64 arch */
-		 uname(&uval);
-		 kmachine = uval.machine;
-		 if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		 		 cp = (char *) shmat(shmid, 0, 0);
-		 } else {
-		 		 cp = (char *) shmat(shmid, (void *)0x80000, 0);
-		 }
+		 /* are we doing with ia64 or arm_arch_4t arch */
+#if defined (__ia64__) || defined (__ARM_ARCH_4T__)
+		 cp = (char *) shmat(shmid, (void *)NULL, 0);
+#else		
+ 		 cp = (char *) shmat(shmid, (void *)0x80000, 0);
+#endif
 		 if (cp == (char *)-1) {
 		 		 perror("shmat");
 		 		 tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
