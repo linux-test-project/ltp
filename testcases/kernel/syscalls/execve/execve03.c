@@ -94,9 +94,9 @@ int exp_enos[]={ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, ENOEXEC, 0};
 
 char long_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 char no_dir[] = "testdir";
-char test_name3[100];
-char test_name5[100];
-char test_name6[100];
+char test_name3[1000];
+char test_name5[1000];
+char test_name6[1000];
 
 struct test_case_t {
 	char *tname;		/* the command name to pass to execve() */

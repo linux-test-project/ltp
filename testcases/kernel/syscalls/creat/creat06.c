@@ -85,7 +85,7 @@ int exp_enos[] = {EISDIR, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, 0};
 
 #define	MODE1	0444
 #define	MODE2	0666
-#define NSIZE	40
+#define NSIZE	1000
 
 char long_name[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
