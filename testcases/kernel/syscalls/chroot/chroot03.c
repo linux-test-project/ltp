@@ -71,7 +71,7 @@ char *TCID = "chroot03";
 int TST_TOTAL = 4;
 extern int Tst_count;
 
-int fd;
+int fd = 0;
 char fname[255];
 char good_dir[100] = "/tmp/testdir";
 char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
@@ -212,6 +212,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fd);
+
 	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */

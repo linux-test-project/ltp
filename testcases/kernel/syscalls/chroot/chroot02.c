@@ -56,6 +56,7 @@
 
 char *TCID = "chroot02";
 int TST_TOTAL = 1;
+int fileHandle = 0;
 extern int Tst_count;
 extern char *TESTDIR;
 
@@ -143,7 +144,7 @@ setup()
 	 */
 	tst_tmpdir();
 	sprintf(tmpbuf, "%s%s", TESTDIR, "/chroot02_testfile");
-	if (creat(tmpbuf, 0777) == -1)
+	if ((fileHandle = creat(tmpbuf, 0777)) == -1)
 		 tst_brkm(TBROK, cleanup, "failed to create tmporary file %s", 
 				 tmpbuf);
 	if (stat(tmpbuf, &buf) != 0) {
@@ -169,6 +170,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
+    close(fileHandle);
+
 	TEST_CLEANUP;
 	tst_rmdir();
 
