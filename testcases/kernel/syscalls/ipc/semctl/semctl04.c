@@ -127,6 +127,7 @@ do_child()
 	int lc;				/* loop counter */
 	int i;
 	union semun arg;
+	struct semid_ds perm; 
 
 	/* The following loop checks looping state if -i option given */
 
@@ -135,7 +136,16 @@ do_child()
 		Tst_count = 0;
 
 		for (i=0; i<TST_TOTAL; i++) {
-	
+
+			if (TC[i] == IPC_SET)  {
+				arg.buf =  &perm;
+				memset(&perm, 0, sizeof perm); 
+				perm.sem_perm.uid = getuid() + 1;
+				perm.sem_perm.gid = getgid() + 1; 
+				perm.sem_perm.mode = 0666; 
+			}
+
+
 			TEST(semctl(sem_id_1, 0, TC[i], arg.buf));
 	
 			if (TEST_RETURN != -1) {
