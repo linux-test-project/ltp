@@ -515,7 +515,7 @@ setreuid05 setreuid05
 setreuid06 setreuid06
 
 setrlimit01 setrlimit01
-#setrlimit02 setrlimit02
+setrlimit02 setrlimit02
 setrlimit03 setrlimit03
 
 setsid01 setsid01
@@ -538,7 +538,7 @@ shmctl02 shmctl02
 shmctl03 shmctl03
 
 shmdt01 shmdt01
-#shmdt02 shmdt02
+shmdt02 shmdt02
 
 shmget01 shmget01
 shmget02 shmget02
