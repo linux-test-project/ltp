@@ -1,4 +1,4 @@
-SUBDIRS =  tools echo6 finger6 perf_lan6 ping6 sendfile6 tcpdump6
+SUBDIRS =  echo6 finger6 perf_lan6 ping6 sendfile6 tcpdump6
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
