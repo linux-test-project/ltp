@@ -44,6 +44,7 @@ chown05 chown05
 chroot01 chroot01
 chroot02 chroot02
 chroot03 chroot03
+chroot04 chroot04
 
 close01 close01
 close02 close02
@@ -88,6 +89,7 @@ exit02 exit02
 
 fchdir01 fchdir01
 fchdir02 fchdir02
+fchdir03 fchdir03
 
 fchmod01 fchmod01
 fchmod02 fchmod02
@@ -144,6 +146,7 @@ fstat01 fstat01
 fstat02 fstat02
 fstat03 fstat03
 fstat04 fstat04
+fstat05 fstat05
 
 fstatfs01 fstatfs01
 fstatfs02 fstatfs02
@@ -383,9 +386,11 @@ poll01 poll01
 
 pread01 pread01
 pread02 pread02
+pread03 pread03
 
 pwrite01 pwrite01
 pwrite02 pwrite02
+pwrite03 pwrite03
 
 read01 read01
 read02 read02
@@ -393,6 +398,7 @@ read03 read03
 read04 read04
 
 readdir01 readdir01
+readdir02 readdir02
 
 readlink01A symlink01 -T readlink01
 readlink01 readlink01
