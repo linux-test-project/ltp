@@ -30,7 +30,6 @@
 #include <sys/fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
-#include <sys/stropts.h>
 
 /** LTP Port **/
 #include "test.h"
@@ -62,24 +61,18 @@ int
 parent(int masterfd, int childpid)
 {
 	char buf[BUFSZ];
-	int flag;
 	struct pollfd pollfds[1];
-	struct strbuf usrstr;
 	int hangupcount = 0;
 	int datacount = 0;
 	int status;
 	int i;
+	int len = strlen(MESSAGE1);
 
 	pollfds[0].fd = masterfd;
 	pollfds[0].events = POLLIN;
-	usrstr.maxlen = BUFSZ;
-	usrstr.buf = buf;
-	usrstr.len = strlen(buf);
 
 	while ((i = poll(pollfds, 1, -1)) == 1) {
-		flag = 0;
-		getmsg(masterfd, (struct strbuf *)0, &usrstr, &flag);
-		if (usrstr.len == 0) {
+		if (read(masterfd, buf, len) == -1) {
 			++hangupcount;
 #ifdef DEBUG
 			tst_resm(TINFO,"hangup %d", hangupcount);
@@ -91,21 +84,23 @@ parent(int masterfd, int childpid)
 			++datacount;
 			switch (datacount) {
 			case 1:
-				if (strncmp(usrstr.buf, MESSAGE1,
+				if (strncmp(buf, MESSAGE1,
 				    strlen(MESSAGE1)) != 0) {
 					tst_resm(TFAIL, "unexpected message 1");
 					tst_exit();
 				}
+				len = strlen(MESSAGE2);
 				break;
 			case 2:
-				if (strncmp(usrstr.buf, MESSAGE2,
+				if (strncmp(buf, MESSAGE2,
 				    strlen(MESSAGE2)) != 0) {
 					tst_resm(TFAIL, "unexpected message 2");
 					tst_exit();
 				}
+				len = strlen(MESSAGE3);
 				break;
 			case 3:
-				if (strncmp(usrstr.buf, MESSAGE3,
+				if (strncmp(buf, MESSAGE3,
 				    strlen(MESSAGE3)) != 0) {
 					tst_resm(TFAIL, "unexpected message 3");
 					tst_exit();
