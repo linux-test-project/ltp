@@ -49,7 +49,7 @@ rwho01
 
 	test the basic functionality of the rwhod daemon using the
 
-sendfile
+sendfile01
 
 	 Copy files from server to client using the sendfile()
          function.
