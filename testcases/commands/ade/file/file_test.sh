@@ -33,19 +33,26 @@
 #                          - Added.   - exit status, if any test fails the test
 #                            exits with non-zero value if all tests pass test
 #                            exits with zero.
+#              Dec 18 2002 - Added.   - Code to read environment variable
+#                            LTPROOT and TMPBASE and set LTPTMP and LTPBIN
+#                            accordingly.
 #! /bin/sh
 
 
 export TST_TOTAL=10                # Number of tests in this testcase
 
-if [ -z $LTPTMP ]
+if [[ -z $LTPTMP && -z $TMPBASE ]]
 then 
-    LTPTMP=/tmp
+    LTPTMP=/tmp/
+else
+	LTPTMP=$TMPBASE
 fi
 
-if [ -z $LTPBIN ]
+if [[ -z $LTPBIN && -z LTPROOT ]]
 then
     LTPBIN=./
+else
+	LTPBIN=$LTPROOT/testcases/bin/
 fi
 
 # set return code RC variable to 0, it will be set with a non-zero return code 
