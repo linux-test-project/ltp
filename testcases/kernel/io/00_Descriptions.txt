@@ -1,0 +1,7 @@
+stress_cd
+
+	Creates multiple read threads on the cdrom device.
+
+stress_floppy
+
+	Tests the reading/writing/formatting on a floppy drive.
