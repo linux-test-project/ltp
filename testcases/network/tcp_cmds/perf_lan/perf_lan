@@ -42,7 +42,7 @@ TC=slan
 RHOST=${RHOST:-`hostname`}
 TCbin=${TCbin:-`pwd`}
 TCsrc=${TCsrc:-$TCbin}
-TCtmp=${TCtmp:-$TCsrc}
+TCtmp=${TCtmp:-$TCsrc/perf_lan$$}
 CLEANUP=${CLEANUP:-ON}
 
 PACKETSIZE=${PACKETSIZE:-512}
@@ -51,6 +51,11 @@ NUMLOOPS=${NUMLOOPS:-10}
 EXECUTABLES="pingpong"
 
 trap "interrupt_testcase" 2 15 16 30
+
+do_setup()
+{
+  mkdir -p $TCtmp
+}
 
 #-----------------------------------------------------------------------
 #
@@ -70,7 +75,7 @@ do_test()
    [[ $NUMLOOPS -gt 0 ]] || TLOOP=$NUMLOOPS
    while [[ $TLOOP -le $NUMLOOPS ]]
    do
-      $TCtmp/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
+      $TCbin/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
       RETVALUE=$?
 
       case "$RETVALUE" in
@@ -162,5 +167,6 @@ interrupt_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
+do_setup
 do_test
 end_testcase
