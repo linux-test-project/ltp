@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: tst_sig.c,v 1.3 2000/09/07 14:34:44 alaffin Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -67,10 +67,6 @@
 
 ***************************************************************************/
 
-#ifndef CRAY
-#define _BSD_SIGNALS	1	/* Specify that we are using BSD signal interface */
-#endif
-
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -82,6 +78,7 @@ void (*T_cleanup)();		/* pointer to cleanup function */
 
 extern int errno;
 static void def_handler();		/* default signal handler */
+static void (*tst_setup_signal( int, void (*)(int)))(int);
 
 /****************************************************************************
  * tst_sig() : set-up to catch unexpected signals.  fork_flag is set to NOFORK
@@ -158,7 +155,7 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 		        continue;
 
 	        default:
-		    if (signal(sig, handler) == SIG_ERR) {
+		    if (tst_setup_signal(sig, handler) == SIG_ERR) {
 		        (void) sprintf(mesg,
 			    "signal() failed for signal %d. error:%d %s.",
 			    sig, errno, strerror(errno));
@@ -185,24 +182,11 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 static void
 def_handler(int sig)
 {
-	char mesg[MAXMESG];		/* holds tst_res message */
-
-	/* first reset trap for this signal (except SIGCLD - its weird) */
-	if ((sig != SIGCLD) && (sig != SIGSTOP) && (sig != SIGCONT)) {
-		if (signal(sig, def_handler) == SIG_ERR) {
-			(void) sprintf(mesg,
-				"def_handler: signal() failed for signal %d. error:%d %s.",
-				sig, errno, strerror(errno));
-			tst_resm(TWARN, mesg);
-		}
-	}
-
-	(void) sprintf(mesg, "Unexpected signal %d received.", sig);
 
 	/*
          * Break remaining test cases, do any cleanup, then exit
 	 */
-	tst_brkm(TBROK, 0, mesg);
+	tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
 
 	/* now cleanup and exit */
 	if (T_cleanup) {
@@ -211,3 +195,25 @@ def_handler(int sig)
 
 	tst_exit();
 }
+
+/*
+ * tst_setup_signal - A function like signal(), but we have
+ *                    control over its personality.
+ */
+static void (*tst_setup_signal( int sig, void (*handler)(int)))(int)
+{ 
+  struct sigaction my_act,old_act;
+  int ret;
+
+  my_act.sa_handler = handler;
+  my_act.sa_flags = SA_RESTART;
+  sigemptyset(&my_act.sa_mask);
+
+  ret = sigaction(sig, &my_act, &old_act);
+
+  if ( ret == 0 )
+    return( old_act.sa_handler );
+  else
+    return( SIG_ERR );
+}
+
