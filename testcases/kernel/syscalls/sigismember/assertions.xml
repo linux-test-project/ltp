@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42056:42057">
+sigismember() tests whether the specified signal signo is in the 
+specified set.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42059:42062">
+If an object is not initialized by sigemptyset() or sigfillset() before 
+being supplied to sigismember(), then the result of sigismember is 
+undefined.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42064:42065">
+sigismember() returns 1 if specified member exists in specified set
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:42064:42065">
+sigismember() returns 0 if specified member does not exist in specified 
+set
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42064:42065">
+sigismember() returns -1 and sets errno to indicate the error in case of
+unsuccessful completion.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42067:42069">
+sigismember() sets errno to [EINVAL] incase the signo 
+argument is not a valid signal number.
+  </assertion>
+</assertions>

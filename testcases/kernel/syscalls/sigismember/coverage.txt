@@ -1,0 +1,9 @@
+This document defines the coverage for function sigemptyset().
+
+Assertion	Covered?
+1		IMPLICITLY tested by assertions 3 and 4.
+2		WON'T test because spec doesn't define behaviour of sigismember() function if neither of sigempyset() or sigfillset() is called. 
+3		YES
+4		YES
+5		YES
+6		IMPLICITLY tested by assertion 5
