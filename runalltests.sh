@@ -1,7 +1,11 @@
 #!/bin/sh
 
 # 
-#  7/10/02 martinjn@us.ibm.com added instance and time command line options
+#  07/10/02 - Jeff Martin - martinjn@us.ibm.com: Added instance and 
+#                           time command line options
+#
+#  12/15/02 - Manoj Iyer  - manjo@mail.utexas.edu: Added options to run 
+#                           LTP under CPU, IO and MM load.
 #
 
 cd `dirname $0`
@@ -11,32 +15,57 @@ export TMPBASE="/tmp"
 usage() 
 {
 	cat <<-END >&2
-	usage: ${0##*/} [ -t duration ] [ -x instances ] [ -l logfile ]
-                [ -r ltproot ] [ -d tmpdir ]
+	usage: ${0##*/} -c [-d tmpdir] -i [ -l logfile ] -m [ -r ltproot ] 
+                    [ -t duration ] [ -x instances ]
+                
+    -c 				Run LTP under CPU load.
+    -d tmpdir       Directory where temporary files will be created.
+    -i				Run LTP under heavy IO load.
+    -l logfile      Log results of test in a logfile.
+    -m				Run LTP under heavy memory load.
+    -r ltproot      Fully qualified path where testsuite is installed.
     -t duration     Execute the testsuite for given duration in hours.
     -x instances    Run multiple instances of this testsuite.
-    -l logfile      Log results of test in a logfile.
-    -r ltproot      Fully qualified path where testsuite is installed.
-    -d tmpdir       Directory where temporary files will be created.
 
 	example: ${0##*/} -t 2h -x3 -l /tmp/ltplog.$$ -d ${PWD}
 	END
 exit
 }
 
-while getopts :t:x:l:r:d: arg
-do      case $arg in
-                t)      # In case you want to specify the time to run from the command line 
+
+# while getopts :t:x:l:r:d:mic arg
+while getopts cd:il:mr:t:x arg
+do  case $arg in
+	c)
+			$LTPROOT/testcases/bin/genload --cpu 10 2>&1 1>/dev/null & ;;
+				
+	d)      # append $$ to TMP, as it is recursively 
+			# removed at end of script.
+			TMPBASE=$OPTARG;;
+	
+	i)		
+			$LTPROOT/testcases/bin/genload --io 10 2>&1 1>/dev/null &
+			$LTPROOT/testcases/bin/genload --hdd 10 --hdd-files \
+			2>&1 1>/dev/null & ;;
+
+	l)      logfile="-l $OPTARG";;
+
+	m)		
+			$LTPROOT/testcases/bin/genload --vm 10 --vm-chunks 10 \
+			2>&1 1>/dev/null & ;;
+
+	r)      LTPROOT=$OPTARG;;
+
+	t)      # In case you want to specify the time 
+			# to run from the command line 
 			# (2m = two minutes, 2h = two hours, etc)
 			duration="-t $OPTARG" ;;
-                x)      # number of ltp's to run
+
+	x)      # number of ltp's to run
 			instances="-x $OPTARG";;
-                l)      logfile="-l $OPTARG";;
-                r)      LTPROOT=$OPTARG;;
-                d)      # append $$ to TMP, as it is recursively removed at end of script.
-			TMPBASE=$OPTARG;;
-                \?)     usage;;
-        esac
+
+	\?)     usage;;
+	esac
 done
 
 export TMP="${TMPBASE}/runalltests-$$"
