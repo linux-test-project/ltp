@@ -190,7 +190,9 @@ readgroups(gid_t groups[NGROUPS])
 	struct group *grp;              /* To hold the group entry */
 	int ngrps = 0;			/* No of groups */
 	int i;
-
+	int found;
+	gid_t g;
+	
 	setgrent();
 
 	while ((grp = getgrent()) != 0) {
@@ -201,6 +203,23 @@ readgroups(gid_t groups[NGROUPS])
 		}
 	}
 
+	/* The getgroups specification says:
+	   It is unspecified whether the effective group ID of the
+	   calling process is included in the returned list.  (Thus,
+	   an application should also call getegid(2) and add or
+	   remove the resulting value.).  So, add the value here if
+	   it's not in.  */
+	      
+	found = 0;
+	g = getegid ();
+
+	for (i = 0; i < ngrps; i++) {
+	  if (groups [i] == g)
+	    found = 1;
+	}
+	if (found == 0)
+	  groups [ngrps++] = g;
+	
 	endgrent();
 	return(ngrps);
 }
