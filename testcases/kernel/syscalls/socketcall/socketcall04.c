@@ -69,6 +69,10 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 
+#ifndef _syscall2
+#include <linux/unistd.h>
+#endif
+
 #include "test.h"
 #include "usctest.h"
 

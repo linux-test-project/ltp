@@ -70,6 +70,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <linux/net.h>
+
+#ifndef _syscall2
+#include <linux/unistd.h>
+#endif
+
 #include "test.h"
 #include "usctest.h"
 

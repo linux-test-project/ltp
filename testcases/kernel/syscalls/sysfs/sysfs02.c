@@ -70,6 +70,10 @@
 #include <unistd.h>
 #include <syscall.h>
 
+#ifndef _syscall2
+#include <linux/unistd.h>
+#endif
+
 static void setup();
 static void cleanup();
 
