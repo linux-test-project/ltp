@@ -71,7 +71,7 @@
 
 char *TCID = "iopl02";		/* Test program identifier.    */
 
-#ifdef __i386__	  /* iopl() is i386 specific */
+#if defined __i386__ || defined(__x86_64__)
 
 #include <errno.h>
 #include <unistd.h>
