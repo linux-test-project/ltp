@@ -339,14 +339,17 @@ done
 #done
 
 echo "Running ltp-diorh"
-var0=1
-while [ "$var0" -lt "$LIMIT" ]
-do
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file   &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file3  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file4  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file5  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file6  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file7  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file8  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file9  &
+testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file0  &
 date
-  var0=$(($var0+1))
-done
 
 
 rm -f /test/aiodio/fff
