@@ -74,7 +74,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be executed by 'non-super-user' only.
  */
 
 #include <stdio.h>
@@ -105,6 +104,7 @@ int setup2();			/* setup function to test chmod for EACCES */
 int setup3();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
 
+char *test_home;		/* variable to hold TESTHOME env. */
 char Longpathname[PATH_MAX+2];
 char High_address_node[64];
 
@@ -115,7 +115,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ TEST_FILE1, "Process is not owner/root", FILE_MODE, EPERM, setup1 },
+	{ TEST_FILE1, "Process is not owner/root", FILE_MODE, EACCES, setup1 },
 	{ TEST_FILE2,  "No Search permissions to process", FILE_MODE, EACCES, setup2 },
 	{ High_address_node, "Address beyond address space", FILE_MODE, EFAULT, no_setup },
 	{ (char *)-1, "Negative address", FILE_MODE, EFAULT, no_setup },
@@ -142,6 +142,8 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 	int mode;		/* creation mode for the node created */
+	char nobody_uid[] = "nobody";
+	struct passwd *ltpuser;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -159,6 +161,7 @@ main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
+
 	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
@@ -171,6 +174,19 @@ main(int ac, char **av)
 
 			if (file_name == High_address_node) {
 				file_name = (char *)get_high_address();
+			}
+			if (ind < 2) {
+			 /* Switch to nobody user for correct error code collection */
+			        ltpuser = getpwnam(nobody_uid);
+         			if (seteuid(ltpuser->pw_uid) == -1) {
+                			tst_resm(TINFO, "seteuid failed to "
+                         			"to set the effective uid to %d",
+                         			ltpuser->pw_uid);
+                			perror("seteuid");
+         			}
+			}
+			if (ind >= 2) {
+				seteuid(0);
 			}
 
 			/*
@@ -226,11 +242,13 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	test_home = get_current_dir_name();
+
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+         }
+
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -269,25 +287,10 @@ int
 setup1()
 {
 	int fd;
-	char *test_home;		/* variable to hold TESTHOME env. */
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
-	
-	/* Get the TESTHOME env. variable */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to get TESTHOME env. variable");
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "chmod"))) {
-		strcat(test_home, "/chmod");
-	}
 
+	
 	/* open/creat a test file and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
