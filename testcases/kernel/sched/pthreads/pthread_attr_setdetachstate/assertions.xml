@@ -1,0 +1,29 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31221:31230">
+   The function
+
+   int pthread_attr_setdetachstate(const pthread_attr_t *attr, int *detachstate)
+  
+  sets the detachstate attribute in the 'attr' object.  
+  The detach state can be either PTHREAD_CREATE_DETACHED or 
+  PTHEAD_CREATE_JOINABLE.  
+  
+  A value of PTHREAD_CREATE_DETACHED causes all threads created with 'attr'  
+  to be in a detached state, and using a value of PTHREAD_CREATE_JOINABLE
+  causes threads created with 'attr' to be in the joinable state.
+  The default value of the detachstate attribute is
+  PTHREAD_CREATE_JOINABLE. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31219:31220">
+  If the thread is created detached, then use of the ID of the newly created 
+  thread by the pthread_detach() or pthread_join() function will producer an 
+  error.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:31232:31233">
+  If success, it returns 0.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:31232:31233">
+  It shall fail if:
+  -[EINVAL]  The value of detachstate was invalid
+  </assertion>
+</assertions>
