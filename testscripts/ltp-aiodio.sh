@@ -129,9 +129,9 @@ if [ "$run0" -eq 0 ]; then
 fi
 
 umount -f $part1
-mkdir /test  2&>1 > /dev/nul
-mkdir /test/aiodio  2&>1 > /dev/nul 
-mkdir /test/aiodio2  2&>1 > /dev/nul 
+mkdir /test  > /dev/nul 2>&1 
+mkdir /test/aiodio > /dev/nul  2>&1 
+mkdir /test/aiodio2 > /dev/nul  2>&1 
 
 while [ "$runTest" -lt "$run0" ]
 do

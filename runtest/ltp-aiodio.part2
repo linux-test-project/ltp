@@ -78,4 +78,3 @@ ADS076 testcases/kernel/io/ltp-aiodio/dio_sparse  -a 8k -r 32k -w 8192k -s 8192k
 ADS077 testcases/kernel/io/ltp-aiodio/dio_sparse  -a 8k -r 8k -w 518192k -s 18192k -n 128
 ADS078 testcases/kernel/io/ltp-aiodio/dio_sparse  -a 8k -r 8k -w 518192k -s 518192k -n 512
 ADS079 testcases/kernel/io/ltp-aiodio/dio_sparse  -a 8k -r 64k -w 518192k -s 518192k -n 1000
-
