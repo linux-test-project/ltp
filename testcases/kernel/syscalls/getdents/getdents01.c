@@ -174,7 +174,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s call succeeded", TCID);
 			} else {
 				tst_resm(TFAIL, "%s call failed - "
-					 "unexpected directory name", TCID);
+					 "unexpected directory name: %s", TCID, dirp->d_name);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
