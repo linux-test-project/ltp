@@ -300,3 +300,5 @@ else
 fi
 
 rm -fr $LOCTMP
+
+exit TFAILCNT
