@@ -28,6 +28,8 @@
 #         the fingerd daemon active (see inetd or xinetd config file). 
 #
 #  HISTORY:
+#    06/06/03 Manoj Iyer - manjo@mail.utexas.edu
+#      - Ported tests to use test macro
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 #
@@ -44,6 +46,27 @@ SLEEPTIME=${SLEEPTIME:-1}
 LUSER=`id | tr -s '()' '  ' | awk '{print $2}'`
 
 this_file=${0##*/}
+
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  exists
+#
+#-----------------------------------------------------------------------
+
+exists()
+{
+   for cmd in $1
+   do
+       which $cmd 2>&1 1>/dev/null
+	   if [ $? -ne 0 ]
+	   then
+	       tst_resm TBROK "Test broke: command $cmd not found"
+		   exit 1
+       fi
+   done
+}
+
+
 #-----------------------------------------------------------------------
 #
 # FUNCTION:  do_setup
@@ -55,6 +78,12 @@ do_setup ()
    $trace_logic
 
    # Start fingerd locally and remotely.
+
+   export TCID="finger01"
+   export TST_TOTAL=3
+   export TST_COUNT=1
+
+   exists "finger netstat awk rsh"
 
    [ "$LUSER" = "root" ] || end_testcase "MUST BE root to run the test!"
 
@@ -79,21 +108,22 @@ do_setup ()
 do_test1()
 {
    $trace_logic
+   TCID="finger01"
+   TST_COUNT=1
+   tst_resm TINFO "finger: do_test1 started"
 
-   echo "finger: do_test1 started"
-
-   finger @$LHOST 
+   finger @$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger @$LHOST"
-   finger @$RHOST 
+   finger @$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger @$RHOST"
 	
    # Testing finger command with user argument
 
-   finger $LUSER 
+   finger $LUSER  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger $LUSER"
-   finger $LUSER@$LHOST 
+   finger $LUSER@$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger $LUSER@$LHOST"
-   finger $RUSER@$RHOST
+   finger $RUSER@$RHOST 2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger @$RUSER"
 }
 
@@ -109,20 +139,22 @@ do_test2()
 {
    $trace_logic
 
-   echo "do_test2 $TC finger -bad flag"
+   TCID="finger02"
+   TST_COUNT=2
+   tst_resm TINFO "do_test2 $TC finger -bad flag"
    BADUSER="uuuu"
    BADHOST="xxxx"
 
-   echo "finger -badflag default "
-   finger -x
+   tst_resm TINFO "finger -badflag default "
+   finger -x 2>&1 1>/dev/null
    [ $? = 0 ] && end_testcase "finger -x should fail"
 
-   echo "finger -bad user "
-   finger $BADUSER
+   tst_resm TINFO "finger -bad user "
+   finger $BADUSER 2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger $BADUSER "
-   finger @$BADHOST
+   finger @$BADHOST 2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger @$BADHOST"
-   finger $BADUSER@$BADHOST
+   finger $BADUSER@$BADHOST 2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger $BADUSER@$BADHOST"
 }
 
@@ -138,62 +170,64 @@ do_test3()
 {
    $trace_logic
 
-   echo "do_test3 $TC finger -f flag"
+   TCID="finger03"
+   TST_COUNT=3
+   tst_resm TINFO "do_test3 $TC finger -f flag"
 
-   echo "finger -l : gives a long listing"
-   finger -l 
+   tst_resm TINFO "finger -l : gives a long listing"
+   finger -l  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l"
-   finger -l $LUSER 
+   finger -l $LUSER  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l $LUSER "
-   finger -l @$LHOST 
+   finger -l @$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l @$LHOST"
-   finger -l $LUSER@$LHOST 
+   finger -l $LUSER@$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l $LUSER@$LHOST"
-   finger -l @$RHOST 
+   finger -l @$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l @$RHOST"
-   finger -l $RUSER@$RHOST 
+   finger -l $RUSER@$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -l $RUSER@$RHOST"
 
-   echo "finger -m : assures that user is a user ID discretionary"
-   finger -m 
+   tst_resm TINFO "finger -m : assures that user is a user ID discretionary"
+   finger -m  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m"
-   finger -m $LUSER 
+   finger -m $LUSER  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m $LUSER "
-   finger -m @$LHOST 
+   finger -m @$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m @$LHOST"
-   finger -m $LUSER@$LHOST 
+   finger -m $LUSER@$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m $LUSER@$LHOST"
-   finger -m @$RHOST 
+   finger -m @$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m @$RHOST"
-   finger -m $RUSER@$RHOST 
+   finger -m $RUSER@$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -m $RUSER@$RHOST"
 
-   echo "finger -p:suppresses printing of .plan files on long and brief long formats"
-   finger -p 
+   tst_resm TINFO "finger -p:suppresses printing of .plan files on long and brief long formats"
+   finger -p  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p"
-   finger -p $LUSER 
+   finger -p $LUSER  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p $LUSER "
-   finger -p @$LHOST 
+   finger -p @$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p @$LHOST"
-   finger -p $LUSER@$LHOST 
+   finger -p $LUSER@$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p $LUSER@$LHOST"
-   finger -p @$RHOST 
+   finger -p @$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p @$RHOST"
-   finger -p $RUSER@$RHOST 
+   finger -p $RUSER@$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -p $RUSER@$RHOST"
 
-   echo "finger -s : gives a short format list"
-   finger -s 
+   tst_resm TINFO "finger -s : gives a short format list"
+   finger -s  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s"
-   finger -s $LUSER 
+   finger -s $LUSER  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s $LUSER "
-   finger -s @$LHOST 
+   finger -s @$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s @$LHOST"
-   finger -s $LUSER@$LHOST 
+   finger -s $LUSER@$LHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s $LUSER@$LHOST"
-   finger -s @$RHOST 
+   finger -s @$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s @$RHOST"
-   finger -s $RUSER@$RHOST 
+   finger -s $RUSER@$RHOST  2>&1 1>/dev/null
    [ $? = 0 ] || end_testcase "finger -s $RUSER@$RHOST"
 
 }
@@ -211,10 +245,10 @@ do_test3()
 end_testcase()
 {
    $trace_logic
-   echo "$this_file: doing $0."
+   tst_resm TINFO "$this_file: doing $0."
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   echo "test failed: $@"
+   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "test failed: $@"
    exit 1
 }
 
