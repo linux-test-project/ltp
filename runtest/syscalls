@@ -721,17 +721,17 @@ shmget05 shmget05
 
 sigaction01 sigaction01
 sigaction02 sigaction02
-sigaction03 sigaction03
+sigaction03 cd $LTPROOT/testcases/bin;sigaction03
 # The following test hangs
-# sigaction04 sigaction04
-sigaction05 sigaction05
+# sigaction04 cd $LTPROOT/testcases/bin;sigaction04
+sigaction05 cd $LTPROOT/testcases/bin;sigaction05
 # The following test was removed by the posixtestsuite for inaccurate assumptions
-# sigaction06 sigaction06
-sigaction07 sigaction07
-sigaction08 sigaction08
-sigaction09 sigaction09
-sigaction10 sigaction10
-sigaction11 sigaction11
+# sigaction06 cd $LTPROOT/testcases/bin;sigaction06
+sigaction07 cd $LTPROOT/testcases/bin;sigaction07
+sigaction08 cd $LTPROOT/testcases/bin;sigaction08
+sigaction09 cd $LTPROOT/testcases/bin;sigaction09
+sigaction10 cd $LTPROOT/testcases/bin;sigaction10
+sigaction11 cd $LTPROOT/testcases/bin;sigaction11
 
 sigaddset01 cd $LTPROOT/testcases/bin;sigaddset01
 sigaddset02 cd $LTPROOT/testcases/bin;sigaddset02
@@ -748,9 +748,9 @@ sigemptyset01 cd $LTPROOT/testcases/bin;sigemptyset01
 
 sigfillset01 cd $LTPROOT/testcases/bin;sigfillset01
 
-sighold01 sighold01
+sighold01 cd $LTPROOT/testcases/bin;sighold01
 sighold02 sighold02
-sighold03 sighold03
+sighold03 cd $LTPROOT/testcases/bin;sighold03
 
 sigismember01 cd $LTPROOT/testcases/bin;sigismember01
 sigismember02 cd $LTPROOT/testcases/bin;sigismember02
