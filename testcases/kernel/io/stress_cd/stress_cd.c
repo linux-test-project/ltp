@@ -23,6 +23,13 @@
  *  HISTORY:
  *    06/20/2001 Robbie Williamson (robbiew@us.ibm.com)
  *      -Ported
+ *    11/08/2001 Manoj Iyer (manjo@austin.ibm.com)
+ *      - Modified.
+ *	- removed compiler warnings.
+ *	- Added #include <sys/types.h>, #include <unistd.h> and 
+ *	  #include <string.h>
+ *	- print unsigned long correctly in printf() use "lx" instead of "x"
+ *	- added missing parameter in usage message.
  *
 +--------------------------------------------------------------------+
 |                                                                    |
@@ -44,6 +51,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
 
 
 /* Defines
@@ -99,7 +109,7 @@ int main (int argc, char **argv)
 	/* Read data from CDROM & compute checksum */
 	read_data (0, checksum);
 	if (debug) 
-	   printf("Thread [main] checksum: %-#12x \n", checksum);
+	   printf("Thread [main] checksum: %-#12lx \n", checksum);
 
 	if (pthread_attr_init (&attr))
 	   sys_error ("pthread_attr_init failed", __LINE__);
@@ -223,13 +233,13 @@ int read_data (int num, unsigned long cksum)
 	      cksum += *p;
 
 	   if (debug)
-              printf("\tThread [%d] bytes read: %5d checksum: %-#12x\n",
+              printf("\tThread [%d] bytes read: %5d checksum: %-#12lx\n",
 		     num, bytes_read, cksum);
 	}
 	free(buffer);
 
 	if (debug) 
-	   printf("\tThread [%d] bytes read: %5d checksum: %-#12x\n",
+	   printf("\tThread [%d] bytes read: %5d checksum: %-#12lx\n",
 		  num, bytes_read, cksum);
 
 	if (close (fd) < 0) 
@@ -302,7 +312,8 @@ static void parse_args (int argc, char **argv)
 		   "\t-f file  File to read from\n"
 		   "\t-m xx    Number of MB to read\n" 
 		   "\t-b xx    Number of bytes to read\n" 
-		   "\t-d       Debug option\n", program_name);
+		   "\t-d       Debug option\n", program_name, 
+			       DEFAULT_NUM_THREADS);
 	   exit (2);
 	}
 }
@@ -319,7 +330,7 @@ static void sys_error (const char *msg, int line)
 {
 	char syserr_msg [256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
+	sprintf (syserr_msg, "%s: %s\n", msg, strerror(errno));
 	error (syserr_msg, line);
 }
 
