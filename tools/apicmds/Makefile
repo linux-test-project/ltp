@@ -8,14 +8,14 @@ CMDLIST=tst_brk tst_brkm tst_res tst_resm tst_exit tst_flush tst_brkloop tst_brk
 all: $(TARGETS)
 
 install:
-	@ln -fs $(TARGETS) ../testcases/bin/brk
-	@ln -fs $(TARGETS) ../testcases/bin/brkm 
-	@ln -f $(TARGETS) ../testcases/bin/res
-	@ln -f $(TARGETS) ../testcases/bin/resm
-	@ln -f $(TARGETS) ../testcases/bin/exit
-	@ln -f $(TARGETS) ../testcases/bin/flush
-	@ln -f $(TARGETS) ../testcases/bin/brkloop
-	@ln -f $(TARGETS) ../testcases/bin/brkloopm
+	@ln -f $(TARGETS) ../../testcases/bin/tst_brk
+	@ln -f $(TARGETS) ../../testcases/bin/tst_brkm 
+	@ln -f $(TARGETS) ../../testcases/bin/tst_res
+	@ln -f $(TARGETS) ../../testcases/bin/tst_resm
+	@ln -f $(TARGETS) ../../testcases/bin/tst_exit
+	@ln -f $(TARGETS) ../../testcases/bin/tst_flush
+	@ln -f $(TARGETS) ../../testcases/bin/tst_brkloop
+	@ln -f $(TARGETS) ../../testcases/bin/tst_brkloopm
 
 clean:
 	rm -f $(TARGETS) $(CMDLIST)
