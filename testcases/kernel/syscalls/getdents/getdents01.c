@@ -155,7 +155,7 @@ int main(int ac, char **av)
 	
 		if (rval == 0) {	/* call returned end of directory */
 			tst_resm(TFAIL, "%s call failed - returned "
-				 "end of directory");
+				 "end of directory", TCID);
 			continue;
 		}
 
@@ -174,7 +174,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s call succeeded", TCID);
 			} else {
 				tst_resm(TFAIL, "%s call failed - "
-					 "unexpected directory name");
+					 "unexpected directory name", TCID);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
