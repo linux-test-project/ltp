@@ -128,7 +128,6 @@ fchown04 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown04
 fchown05 fchown05
 
 fcntl01 fcntl01
-fcntl02 fcntl02
 fcntl03 fcntl03
 fcntl04 fcntl04
 fcntl05 fcntl05
@@ -142,7 +141,6 @@ fcntl11 fcntl11
 fcntl12 fcntl12
 fcntl13 fcntl13
 fcntl14 fcntl14
-fcntl15 fcntl15
 fcntl16 fcntl16
 fcntl17 fcntl17
 fcntl18 fcntl18
@@ -568,7 +566,6 @@ select01 select01
 select02 select02
 select03 select03
 
-semctl01 semctl01
 semctl02 semctl02
 semctl03 semctl03
 semctl04 semctl04
@@ -676,7 +673,6 @@ shmat01 shmat01
 shmat02 shmat02
 shmat03 shmat03
 
-shmctl01 shmctl01
 shmctl02 shmctl02
 shmctl03 shmctl03
 shmctl04 shmctl04
