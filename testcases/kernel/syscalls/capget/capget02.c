@@ -71,15 +71,15 @@
  *				-t   : Turn on syscall timing.
  *
  ****************************************************************/
-#undef _POSIX_SOURCE
 
 #include <errno.h>
-#include <linux/capability.h> 
 #include "test.h"
 #include "usctest.h"
+#include <linux/capability.h> 
 
 #define INVALID_PID 999999
 
+extern int capget(cap_user_header_t, cap_user_data_t);
 static void setup();
 static void cleanup();
 static void test_setup(int);
