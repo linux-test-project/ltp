@@ -19,16 +19,17 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
+CFLAGS+=	-I../../../../include -D_GNU_SOURCE
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
+TESTS=sighold01 sighold02
 
 all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(TESTS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)

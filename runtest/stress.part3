@@ -718,6 +718,16 @@ shmget05 shmget05
 
 sigaction01 sigaction01
 sigaction02 sigaction02
+sigaction03 sigaction03
+# The following test hangs
+# sigaction04 sigaction04
+sigaction05 sigaction05
+sigaction06 sigaction06
+sigaction07 sigaction07
+sigaction08 sigaction08
+sigaction09 sigaction09
+sigaction10 sigaction10
+sigaction11 sigaction11
 
 sigaddset01 cd $LTPROOT/testcases/bin;sigaddset01
 sigaddset02 cd $LTPROOT/testcases/bin;sigaddset02
