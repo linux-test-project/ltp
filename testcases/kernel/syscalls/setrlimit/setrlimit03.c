@@ -44,13 +44,14 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
-#include <linux/fs.h>
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "setrlimit03";
 int TST_TOTAL = 1;
 extern int Tst_count;
+
+long NR_OPEN;
 
 void setup();
 void cleanup();
@@ -116,6 +117,9 @@ setup()
 		tst_brkm(TBROK, tst_exit, "must run test as root");
 	}
 
+        /* Define NR_OPEN */
+        NR_OPEN = 1024*1024; //Taken from definition in /usr/include/linux/fs.h
+ 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
