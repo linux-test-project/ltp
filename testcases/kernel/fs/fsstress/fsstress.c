@@ -281,6 +281,10 @@ int main(int argc, char **argv)
 	char		*dirname = NULL;
 	int		fd;
 	int		i;
+	int		cleanup = 0;
+	int		loops = 1;
+	int		loopcntr = 1;
+	char		cmd[256];
 #ifndef NO_XFS
 	int		j;
 #endif
@@ -300,8 +304,12 @@ int main(int argc, char **argv)
 	nops = sizeof(ops) / sizeof(ops[0]);
 	ops_end = &ops[nops];
 	myprog = argv[0];
-	while ((c = getopt(argc, argv, "d:e:f:i:n:p:rs:vwzHSX")) != -1) {
+	while ((c = getopt(argc, argv, "cd:e:f:i:l:n:p:rs:vwzHSX")) != -1) {
 		switch (c) {
+		case 'c':
+			/*Don't cleanup*/
+			cleanup=1;  
+			break;
 		case 'd':
 			dirname = optarg;
 			break;
@@ -325,6 +333,9 @@ int main(int argc, char **argv)
 		case 'i':
 			ilist = realloc(ilist, ++ilistlen * sizeof(*ilist));
 			ilist[ilistlen - 1] = strtol(optarg, &p, 16);
+			break;
+		case 'l':
+			loops = atoi(optarg);
 			break;
 		case 'n':
 			operations = atoi(optarg);
@@ -364,116 +375,123 @@ int main(int argc, char **argv)
 			break; 
 		}
 	}
+        while ( (loopcntr <= loops) || (loops == 0) ) 
+        {
+		if (no_xfs && errtag) { 
+			fprintf(stderr, "error injection only works on XFS\n");
+			exit(1); 
+		} 
 
-	if (no_xfs && errtag) { 
-		fprintf(stderr, "error injection only works on XFS\n");
-		exit(1); 
-	} 
-
-	if (no_xfs) { 
-		int i;
-		for (i = 0; ops+i < ops_end; ++i) { 
-			if (ops[i].isxfs) 
-				ops[i].freq = 0; 
+		if (no_xfs) { 
+			int i;
+			for (i = 0; ops+i < ops_end; ++i) { 
+				if (ops[i].isxfs) 
+					ops[i].freq = 0; 
+			}
+		} 
+       	 
+       	 	if (!dirname) {
+       	     	/* no directory specified */
+    	        	if (!nousage) usage();
+           	 exit(1);
+        	}
+        
+		(void)mkdir(dirname, 0777);
+		if (chdir(dirname) < 0) {
+			perror(dirname);
+			exit(1);
 		}
-	} 
-        
-        if (!dirname) {
-            /* no directory specified */
-            if (!nousage) usage();
-            exit(1);
-        }
-        
-	(void)mkdir(dirname, 0777);
-	if (chdir(dirname) < 0) {
-		perror(dirname);
-		exit(1);
-	}
-	sprintf(buf, "fss%x", getpid());
-	fd = creat(buf, 0666);
-	if (lseek64(fd, (off64_t)(MAXFSIZE32 + 1ULL), SEEK_SET) < 0)
-		maxfsize = (off64_t)MAXFSIZE32;
-	else
-		maxfsize = (off64_t)MAXFSIZE;
-	make_freq_table();
-	dcache_init();
-	setlinebuf(stdout);
-	if (!seed) {
-		gettimeofday(&t, (void *)NULL);
-		seed = (int)t.tv_sec ^ (int)t.tv_usec;
-		printf("seed = %ld\n", seed);
-	}
+		sprintf(buf, "fss%x", getpid());
+		fd = creat(buf, 0666);
+		if (lseek64(fd, (off64_t)(MAXFSIZE32 + 1ULL), SEEK_SET) < 0)
+			maxfsize = (off64_t)MAXFSIZE32;
+		else
+			maxfsize = (off64_t)MAXFSIZE;
+		make_freq_table();
+		dcache_init();
+		setlinebuf(stdout);
+		if (!seed) {
+			gettimeofday(&t, (void *)NULL);
+			seed = (int)t.tv_sec ^ (int)t.tv_usec;
+			printf("seed = %ld\n", seed);
+		}
 #ifndef NO_XFS	
-	if (!no_xfs) { 
-	i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
-	if (i >= 0 && geom.rtblocks)
-		rtpct = MIN(MAX(geom.rtblocks * 100 /
-				(geom.rtblocks + geom.datablocks), 1), 99);
-	else
-		rtpct = 0;
-	}
-	if (errtag != 0) {
-		if (errrange == 0) {
-			if (errtag <= 0) {
+		if (!no_xfs) { 
+		i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
+		if (i >= 0 && geom.rtblocks)
+			rtpct = MIN(MAX(geom.rtblocks * 100 /
+					(geom.rtblocks + geom.datablocks), 1), 99);
+		else
+			rtpct = 0;
+		}
+		if (errtag != 0) {
+			if (errrange == 0) {
+				if (errtag <= 0) {
+					srandom(seed);
+					j = random() % 100;
+
+					for (i = 0; i < j; i++)
+						(void) random();
+
+					errtag = (random() % (XFS_ERRTAG_MAX-1)) + 1;
+				}
+			} else {
 				srandom(seed);
 				j = random() % 100;
 
 				for (i = 0; i < j; i++)
 					(void) random();
 
-				errtag = (random() % (XFS_ERRTAG_MAX-1)) + 1;
+				errtag += (random() % (XFS_ERRTAG_MAX - errtag));
 			}
-		} else {
-			srandom(seed);
-			j = random() % 100;
-
-			for (i = 0; i < j; i++)
-				(void) random();
-
-			errtag += (random() % (XFS_ERRTAG_MAX - errtag));
-		}
-		printf("Injecting failure on tag #%d\n", errtag);
-		err_inj.errtag = errtag;
-		err_inj.fd = fd;
-		srval = ioctl(fd, XFS_IOC_ERROR_INJECTION, &err_inj);
-		if (srval < -1) {
-			perror("fsstress - XFS_SYSSGI error injection call");
-			close(fd);
-			unlink(buf);
-			exit(1);
-		}
-	} else
+			printf("Injecting failure on tag #%d\n", errtag);
+			err_inj.errtag = errtag;
+			err_inj.fd = fd;
+			srval = ioctl(fd, XFS_IOC_ERROR_INJECTION, &err_inj);
+			if (srval < -1) {
+				perror("fsstress - XFS_SYSSGI error injection call");
+				close(fd);
+				unlink(buf);
+				exit(1);
+			}
+		} else
 #endif	
-		close(fd);
-	unlink(buf);
-	if (nproc == 1) { 
-		procid = 0; 
-		doproc();
-	} else { 
-		for (i = 0; i < nproc; i++) {
-			if (fork() == 0) {
-				procid = i;
-				doproc();
-				return 0;
+			close(fd);
+		unlink(buf);
+		if (nproc == 1) { 
+			procid = 0; 
+			doproc();
+		} else { 
+			for (i = 0; i < nproc; i++) {
+				if (fork() == 0) {
+					procid = i;
+					doproc();
+					return 0;
+				}
 			}
+			while (wait(&stat) > 0)
+				continue;
 		}
-		while (wait(&stat) > 0)
-			continue;
-	}
 #ifndef NO_XFS		
-	if (errtag != 0) {
-		err_inj.errtag = 0;
-		err_inj.fd = fd;
-		if((srval = ioctl(fd, XFS_IOC_ERROR_CLEARALL, &err_inj)) != 0) {
-			fprintf(stderr, "Bad ej clear on %d (%d).\n", fd, errno);
-			perror("fsstress - XFS_SYSSGI clear error injection call");
+		if (errtag != 0) {
+			err_inj.errtag = 0;
+			err_inj.fd = fd;
+			if((srval = ioctl(fd, XFS_IOC_ERROR_CLEARALL, &err_inj)) != 0) {
+				fprintf(stderr, "Bad ej clear on %d (%d).\n", fd, errno);
+				perror("fsstress - XFS_SYSSGI clear error injection call");
+				close(fd);
+				exit(1);
+			}
 			close(fd);
-			exit(1);
 		}
-		close(fd);
+#endif
+	if (cleanup == 0)
+	{
+	  sprintf(cmd,"rm -rf %s",dirname);
+	  system(cmd);
+	}	
+        loopcntr++;
 	}
-#endif	
-
 	return 0;
 }
 
@@ -1319,15 +1337,18 @@ void
 usage(void)
 {
 	printf("Usage: %s -H   or\n", myprog);
-	printf("       %s [-d dir][-e errtg][-f op_name=freq][-n nops]\n",
+	printf("       %s [-c][-d dir][-e errtg][-f op_name=freq][-l loops][-n nops]\n",
 		myprog);
 	printf("          [-p nproc][-r len][-s seed][-v][-w][-z][-S]\n");
 	printf("where\n");
+	printf("   -c               specifies not to remove files(cleanup) after execution\n");
 	printf("   -d dir           specifies the base directory for operations\n");
 	printf("   -e errtg         specifies error injection stuff\n");
 	printf("   -f op_name=freq  changes the frequency of option name to freq\n");
 	printf("                    the valid operation names are:\n");
 	show_ops(-1, "                        ");
+	printf("   -l loops         specifies the no. of times the testrun should loop.\n");
+	printf("                     *use 0 for infinite (default 1)\n");
 	printf("   -n nops          specifies the no. of operations per process (default 1)\n");
 	printf("   -p nproc         specifies the no. of processes (default 1)\n");
 	printf("   -r               specifies random name padding\n");
@@ -1796,7 +1817,7 @@ dread_f(int opno, long r)
 	len -= (len % align);
 	if (len <= 0)
 		len = align;
-	else if ( len > diob.d_maxiosz) 
+	else if (len > diob.d_maxiosz) 
 		len = diob.d_maxiosz;
 	buf = memalign(diob.d_mem, len);
 	e = read(fd, buf, len) < 0 ? errno : 0;
