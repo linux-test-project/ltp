@@ -144,9 +144,12 @@ test2:
 						 "error");
 				}
 			}
+
+			cleanup();
+	
 		} else {			/* parent */
-			/* let the child carry on */
-			exit(0);
+			/* wait for the child to finish */
+			wait(&status);
 		}
 
 		/* set process ID back to root */
