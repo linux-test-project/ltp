@@ -46,6 +46,9 @@ Files=""
 Remove_Test_Files=""
 Files_To_Remove=""
 MPPrun=""
+export TCID="rwtest"
+export TST_TOTAL=1
+export TST_COUNT=1
 
 usage()
 {
@@ -113,6 +116,13 @@ cleanup_and_exit()
 		fi
 	fi
 
+	if [ $1 -ne 0 ]
+	then
+	    tst_resm TFAIL "Test failed"
+	else
+	    tst_resm TPASS "Test passed"
+	fi
+
 	exit $1
 }
 
@@ -144,6 +154,7 @@ do	case $1 in
 		;;
 
 	-N)	Name="($2)"
+		TCID=$2
 		iOpts="$iOpts -N $2"
 		dOpts="$dOpts -N $2"
 		shift
@@ -193,6 +204,7 @@ do	case $1 in
 
 	\? | -*)
 		echo "$Prog:  Illegal option $1" >&2
+		tst_resm TBROK "Illegal option $1"
 		exit 1
 		;;
 
@@ -374,6 +386,7 @@ else
 	  if [ $r -ne 0 ]
 	  then
 		echo "$Prog$Name : iogen reported errors (r=$r)" >&2
+		tst_resm TFAIL "iogen reported errors (r=$r)"
 		kill -HUP $$
 	  fi
 	) | $MPPrun ${LTPROOT}/testcases/bin/doio ${dOpts}
@@ -381,6 +394,7 @@ else
 	if [ $r -ne 0 ]
 	then
 		echo "$Prog$Name : doio reported errors (r=$r)" >&2
+		tst_resm TFAIL "doio reported errors (r=$r)"
 	fi
 
 	cleanup_and_exit $r
