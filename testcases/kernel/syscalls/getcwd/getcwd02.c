@@ -130,6 +130,7 @@ int main(int ac, char **av)
    }
    cleanup();
    /*NOTREACHED*/
+   return(0);
 }
 
 void do_block1() //valid cwd[]: -> Should work fine

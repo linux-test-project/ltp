@@ -73,7 +73,7 @@ int main()
 
    tst_tmpdir();
 
-TEST1: //ftruncate on a socket is not valid, should fail w/ EINVAL
+//TEST1: ftruncate on a socket is not valid, should fail w/ EINVAL
 
    printf("Starting test1\n");
    wjh_f = socket(PF_INET, SOCK_STREAM, 0);
@@ -90,7 +90,7 @@ TEST1: //ftruncate on a socket is not valid, should fail w/ EINVAL
    }
    close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1; 
 
-TEST2: //ftruncate on fd not open for writing should be EINVAL
+//TEST2: ftruncate on fd not open for writing should be EINVAL
 
    printf("\nStarting test2\n");
    //create a file and fill it so we can truncate it in ReadOnly mode
@@ -129,7 +129,7 @@ TEST2: //ftruncate on fd not open for writing should be EINVAL
    }
    close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1; 
 
-TEST3: //invalid socket descriptor should fail w/ EBADF
+//TEST3: invalid socket descriptor should fail w/ EBADF
 
    printf("\nStarting test3\n");
    wjh_f = -999999; //should be a bad file descriptor

@@ -56,13 +56,14 @@
  *	a mount option.  This option allows the use of mandatory locks. 	
  *
  */
-#include <sys/types.h>
 #include <signal.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
+#include <wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -93,127 +94,21 @@ extern char *optarg;
 extern int optind, opterr;
 int 	local_flag;
 
-usr1hndlr()
+void usr1hndlr()
 {
 	usrcnt++;
 }
 
-main(ac, av)
-int ac;
-char **av;
+void cleanup()
 {
-	int fd, i;
-	int tlen = 0;
-	struct sigaction act, oact;
-	int usr1hndlr();
-	int lc;                 /* loop counter */
-	char *msg;              /* message returned from parse_opts */
-
-	/*
-	 * parse standard options
-	 */
-	 if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-	                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-			tst_exit();
-	               /*NOTREACHED*/
-	 }
-
-	local_flag = PASSED;
-	tst_tmpdir();
-	if (system("mount | grep `df . | grep -v Filesystem | awk {'print $1'}` | grep mand >/dev/null") != 0){
-		tst_resm(TCONF,"The filesystem where /tmp is mounted does"
-			       " not support mandatory locks. Cannot run this test.");
-		tst_rmdir();
-		tst_exit();
-		/*NOTREACHED*/
-	}
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		setvbuf(stdin, 0, _IOLBF, BUFSIZ);
-		setvbuf(stdout, 0, _IOLBF, BUFSIZ);
-		setvbuf(stderr, 0, _IOLBF, BUFSIZ);
-		ppid = getpid();
-		srand(ppid);
-		sigemptyset(&set);
-		act.sa_handler = (void(*)())usr1hndlr;
-		act.sa_mask = set;
-		act.sa_flags = 0;
-		if (sigaction(SIGUSR1, &act, 0)) {
-			tst_resm(TBROK,"Sigaction for SIGUSR1 failed\n");
-			tst_rmdir();
-			tst_exit();
-		} /* end if */
-		if( sigaddset(&set, SIGUSR1))
-		{
-			tst_resm(TBROK,"sigaddset for SIGUSR1 failed\n");
-			tst_rmdir();
-			tst_exit();
-		}
-		if( sigprocmask(SIG_SETMASK, &set, 0))
-		{
-			tst_resm(TBROK,"sigprocmask for SIGUSR1 failed");
-			tst_rmdir();
-			tst_exit();
-		}
-		for (i = 0; i < iterations; i++) {
-			sprintf(filename, "%s.%d.%d\n", progname, ppid, i);
-			if ((fd = open(filename, O_CREAT|O_RDWR, 02666)) < 0) {
-				tst_resm(TBROK, "parent error opening/creating %s\n",
-				filename);
-				cleanup();
-			} /* end if */
-			if( chown(filename, geteuid(), getegid())  == -1 ) {
-				tst_resm(TBROK, "parent error chowning %s\n",
-					filename);
-				cleanup();
-			} /* end if */
-			if( chmod(filename, 02666 )  == -1 ) {
-				tst_resm(TBROK, "parent error chmoding %s\n",
-					filename);
-				cleanup();
-			} /* end if */
-			do {
-				if (write(fd, buffer, BUFSIZE) < 0) {
-					tst_resm(TBROK, "parent write failed to %s\n",
-						filename);
-					cleanup();
-				}
-				tlen += BUFSIZE;
-			} while(tlen < len);
-			close(fd);
-			reclen = RECLEN;
-			/*
-		 	 * want at least RECLEN bytes BEFORE AND AFTER the
-			 * record lock.
-			 */
-			recstart = RECLEN + rand()%(len - 3*RECLEN);
-			if ((cpid = fork()) < 0) {
-				unlink(filename);
-				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-				                        " etc are likely to fail.\n");
-				tst_resm(TBROK, "Test broken due to inability of fork.\n");
-				tst_rmdir();
-				tst_exit();
-			}
-			if (cpid == 0) {
-				dochild();
-				/* never returns */
-			}
-			doparent();
-			/* child should already be dead */
-			unlink(filename);
-		}
-		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed.\n");
-		} else {
-		        tst_resm(TFAIL, "Test failed.\n");
-		}
-		tst_rmdir();
-		tst_exit();
-	} /* end for */
+	kill(cpid, SIGKILL);
+	unlink(filename);
+	tst_rmdir();
+	tst_exit();
 }
 
-doparent()
+
+void  doparent()
 {
 	int fd;
 	struct stat sb;
@@ -339,7 +234,7 @@ doparent()
 	close(fd);
 }
 
-dochild()
+void dochild()
 {
 	int fd;
 	struct flock flocks;
@@ -366,11 +261,117 @@ dochild()
 	tst_exit();
 }
 
-cleanup()
+int main(ac, av)
+int ac;
+char **av;
 {
-	kill(cpid, SIGKILL);
-	unlink(filename);
-	tst_rmdir();
-	tst_exit();
-}
+	int fd, i;
+	int tlen = 0;
+	struct sigaction act;
+	int lc;                 /* loop counter */
+	char *msg;              /* message returned from parse_opts */
 
+	/*
+	 * parse standard options
+	 */
+	 if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
+			tst_exit();
+	               /*NOTREACHED*/
+	 }
+
+	local_flag = PASSED;
+	tst_tmpdir();
+	if (system("mount | grep `df . | grep -v Filesystem | awk {'print $1'}` | grep mand >/dev/null") != 0){
+		tst_resm(TCONF,"The filesystem where /tmp is mounted does"
+			       " not support mandatory locks. Cannot run this test.");
+		tst_rmdir();
+		tst_exit();
+		/*NOTREACHED*/
+	}
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		setvbuf(stdin, 0, _IOLBF, BUFSIZ);
+		setvbuf(stdout, 0, _IOLBF, BUFSIZ);
+		setvbuf(stderr, 0, _IOLBF, BUFSIZ);
+		ppid = getpid();
+		srand(ppid);
+		sigemptyset(&set);
+		act.sa_handler = (void(*)())usr1hndlr;
+		act.sa_mask = set;
+		act.sa_flags = 0;
+		if (sigaction(SIGUSR1, &act, 0)) {
+			tst_resm(TBROK,"Sigaction for SIGUSR1 failed\n");
+			tst_rmdir();
+			tst_exit();
+		} /* end if */
+		if( sigaddset(&set, SIGUSR1))
+		{
+			tst_resm(TBROK,"sigaddset for SIGUSR1 failed\n");
+			tst_rmdir();
+			tst_exit();
+		}
+		if( sigprocmask(SIG_SETMASK, &set, 0))
+		{
+			tst_resm(TBROK,"sigprocmask for SIGUSR1 failed");
+			tst_rmdir();
+			tst_exit();
+		}
+		for (i = 0; i < iterations; i++) {
+			sprintf(filename, "%s.%d.%d\n", progname, ppid, i);
+			if ((fd = open(filename, O_CREAT|O_RDWR, 02666)) < 0) {
+				tst_resm(TBROK, "parent error opening/creating %s\n",
+				filename);
+				cleanup();
+			} /* end if */
+			if( chown(filename, geteuid(), getegid())  == -1 ) {
+				tst_resm(TBROK, "parent error chowning %s\n",
+					filename);
+				cleanup();
+			} /* end if */
+			if( chmod(filename, 02666 )  == -1 ) {
+				tst_resm(TBROK, "parent error chmoding %s\n",
+					filename);
+				cleanup();
+			} /* end if */
+			do {
+				if (write(fd, buffer, BUFSIZE) < 0) {
+					tst_resm(TBROK, "parent write failed to %s\n",
+						filename);
+					cleanup();
+				}
+				tlen += BUFSIZE;
+			} while(tlen < len);
+			close(fd);
+			reclen = RECLEN;
+			/*
+		 	 * want at least RECLEN bytes BEFORE AND AFTER the
+			 * record lock.
+			 */
+			recstart = RECLEN + rand()%(len - 3*RECLEN);
+			if ((cpid = fork()) < 0) {
+				unlink(filename);
+				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
+				                        " etc are likely to fail.\n");
+				tst_resm(TBROK, "Test broken due to inability of fork.\n");
+				tst_rmdir();
+				tst_exit();
+			}
+			if (cpid == 0) {
+				dochild();
+				/* never returns */
+			}
+			doparent();
+			/* child should already be dead */
+			unlink(filename);
+		}
+		if (local_flag == PASSED) {
+		        tst_resm(TPASS, "Test passed.\n");
+		} else {
+		        tst_resm(TFAIL, "Test failed.\n");
+		}
+		tst_rmdir();
+		tst_exit();
+	} /* end for */
+	return(0);
+}
