@@ -274,7 +274,7 @@ setup03()
 	int j, fd;		/*j is loop counter, fd is file descriptor*/
 	int pid;	   	/* used for fork */
 	int *status=NULL;	/* used for fork */
-	char cmd_buffer[55];	/* array to hold command line*/
+	char cmd_buffer[65];	/* array to hold command line*/
 	char filename[15];	/* array to store new filename*/
 	char decimal[3];	/* array for digits at end of filename*/
 	char temp[7];		/* to store wc -l output*/
@@ -325,7 +325,7 @@ setup03()
 	  for(j = 0; j < swapfile; j++) {
 
 		/*prepare filename for the iteration*/
-		if(sprintf(filename, "swapfile%d%d", (j+2)/10, (j+2)) < 0) {
+		if(sprintf(filename, "swapfile%02d", j+2) < 0) {
 			tst_resm(TWARN, "sprintf() failed to create filename");
 			exit(1);
 		}
@@ -393,7 +393,7 @@ cleanup03()
 	char filename[15];
 
 	for(j = 0; j < swapfile; j++) {
-		if( sprintf(filename, "swapfile%d%d", (j+2)/10, (j+2)) < 0) {
+		if( sprintf(filename, "swapfile%02d", j+2) < 0) {
 			tst_resm(TWARN, "sprintf() failed to create filename");
 			tst_resm(TWARN, "Failed to turn off swap files. System"
 					" reboot after execution of LTP test"
