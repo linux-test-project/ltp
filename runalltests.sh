@@ -92,7 +92,7 @@ do  case $arg in
 					logfile="-l $LTPROOT/results/$OPTARG"
 				else
 					mkdir -p $LTPROOT/results
-					if [ $? -eq 0 ]
+					if [ $? -ne 0 ]
 					then
 						echo "ERROR: failed to create $LTPROOT/results"
 						exit 1
