@@ -70,7 +70,6 @@
  *			-t   : Turn on syscall timing.
  * 
  ****************************************************************/
-
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -235,8 +234,8 @@ setup(void)
 	nobody = *passwd_p;
 	nobody_gid = nobody.pw_gid;
 
-	/* Set effective group id by setegid, since root, sets saved gid also */
-	if (setegid(nobody_gid) == -1) {
+	/* Set effective group id by setregid, since root, sets saved gid also */
+	if (setregid(-1,nobody_gid) == -1) {
 		tst_brkm(TBROK, tst_exit, "setegid failed");
 		/* NOTREACHED */
 	}
