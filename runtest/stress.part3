@@ -86,13 +86,6 @@ creat07 creat07 -F $LTPROOT/testcases/bin/test1
 creat08 creat08
 creat09 creat09
 
-create_module01 create_module01
-create_module02 create_module02
-
-delete_module01 delete_module01
-delete_module02 delete_module02
-delete_module03 delete_module03
-
 dup01 dup01
 dup02 dup02
 dup03 dup03
@@ -513,10 +506,6 @@ pwrite01 pwrite01
 pwrite02 pwrite02
 pwrite03 pwrite03
 pwrite04 pwrite04
-
-query_module01 query_module01
-query_module02 query_module02
-query_module03 query_module03
 
 raise01 cd $LTPROOT/testcases/bin;raise01
 
