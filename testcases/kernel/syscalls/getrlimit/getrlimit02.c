@@ -74,6 +74,8 @@
 #include "test.h"
 #include "usctest.h"
 
+#define RLIMIT_TOO_HIGH 1000
+
 extern int Tst_count;
 
 char *TCID = "getrlimit02";
@@ -91,7 +93,7 @@ static struct test_case_t {
 	
 } testcases[] = {
 	{ EFAULT, "EFAULT", (void *)-1, RLIMIT_NOFILE },
-	{ EINVAL, "EINVAL", &rlim, RLIM_NLIMITS }
+	{ EINVAL, "EINVAL", &rlim, RLIMIT_TOO_HIGH }
 };
 
 static int exp_enos[] = {EFAULT, EINVAL, 0};
