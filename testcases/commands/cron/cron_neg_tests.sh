@@ -5,6 +5,8 @@
 #
 #    10/01/04  Kris Wilson    RHEL4 only allows super user 
 #                               to use crontab.
+#                               to use crontab.
+#    12/03/04  Marty Ridgeway Pull RHEl4 tests out from script
 ########################################################
 
 iam=`whoami`
@@ -35,20 +37,14 @@ rc=$?
 
 if [ $rc = "0" ]; then
 	echo root has now an interesting cron job
-	echo "Part 1 crontab has a severe security breach (FAIL)"
+	echo "crontab has a severe security breach (FAIL)"
 	echo
 	finalrc=1
 else
-	echo "Part 1 Editing a crontab of another user failed successfully (PASS)"
+	echo "Editing a crontab of another user failed successfully (PASS)"
 	echo
 fi
 
-# Red Hat only allows superuser to use crontab. Check if this is Red Hat
-tvar=${MACHTYPE%-*}
-tvar=${tvar#*-}
-echo "Distro type is: $tvar \n"
-
-if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]; then
 
 #
 # 2. write some illegal crontabs
@@ -104,7 +100,7 @@ EOF
 chmod 755 /tmp/$tmpscript
 
 #
-cronline=`date '+%M %H' | gawk '{print $1+2" "$2" * * * "}'`
+cronline=`date '+%M' | gawk '{print ($1+2)%60 " * * * * "}'`
 (echo "$cronline /tmp/$tmpscript >> /tmp/$tmpscript.out 2>> /tmp/$tmpscript.out" ; \
  echo "$cronline /tmp/$tmpscript >> /$tmpscript.out 2>> /$tmpscript.out") \
  | crontab -
@@ -140,28 +136,6 @@ if [ "$savedcrontab" = "1" ]; then
 	echo "Restoring crontab..."
 	cat /tmp/save-crontab-`whoami` | grep '^[^#]' | crontab -
 	# rm -r /tmp/save-crontab-`whoami`
-fi
-
-# If this is Red Hat, just confirm the non-superuser cannot use crontab.
-else 
-  crontab -r 2>&1 | tee /tmp/file.log
-  grep "are not allowed to use this program (crontab)" /tmp/file.log
-  if [ "$?" != "0" ]; then
-     echo "cron02 test part 2 allowed non-super user to remove crontab (FAIL)"
-        finalrc=1
-  else
-    echo "cron02 test part 2 successfully failed (PASS)"
-  fi
-
-crontab -u - 2>&1 | tee /tmp/file.log
-  grep "must be privileged to use" /tmp/file.log
-  if [ "$?" != "0" ]; then
-     echo "cron02 test part 3 allowed non-super user to use crontab -u (FAIL)"
-        finalrc=1
-  else
-    echo "cron02 test part 3 successfully failed (PASS)"
-  fi
-  rm /tmp/file.log
 fi
 
 exit $finalrc
