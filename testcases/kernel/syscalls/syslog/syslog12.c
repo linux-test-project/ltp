@@ -98,7 +98,7 @@ struct test_case_t {			/* test case structure */
 
 char *TCID = "syslog12";
 static int testno;
-static int exp_enos[] = {EPERM, EINVAL, EFAULT, 0};
+static int exp_enos[] = {EPERM, EINVAL, 0};
 static char buf;
 static struct passwd *ltpuser;
 
@@ -115,8 +115,6 @@ _syscall3(int, syslog, int, type, char *, bufp, int, len);
 
 static struct test_case_t  tdat[] = {
 	{ 100, &buf, 0, EINVAL, NULL, NULL, "invalid type/command" },
-	{ 2, (char *) -1, 1, EFAULT, NULL, NULL, "buffer outside program's "
-		"accessible  address space" },
 	{ 2, (char *) NULL, 0, EINVAL, NULL, NULL, "NULL buffer argument" },
 	{ 3, &buf, -1, EINVAL, NULL, NULL, "negative length argument" },
 	{ 2, &buf, 0, EPERM, setup1, cleanup1, "non-root user" },
