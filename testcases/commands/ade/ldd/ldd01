@@ -42,6 +42,7 @@ rm -rf $TCtmp
 
 do_setup()
 {
+mkdir $TCtmp
 ld -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
 ld -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
 ld -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
