@@ -1,6 +1,6 @@
 #!/bin/sh
 #*********************************************************************
-#   Copyright (C) International Business Machines  Corp., 2000, 2004
+#   Copyright (c) International Business Machines  Corp., 2000
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,28 +16,18 @@
 #   along with this pronram;  if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
-#  FILE   : crond
+#  FILE   : cron02 
 #
-#  PURPOSE: Test a bad (negative) cron job
-#			- try to edit the crontab of root
-#   		- try to set illegal or nondefined execution times
-#      	 	  Here the script uses file illegal_cron_lines which contains two
-#      		  fields per line: the cron line to be tested (without script name),
-#      		  and the description of this test. The description is written to
-#      		  stdout during execution of the test.
-#    		- try to do things you aren't allowed as non-root (cron runs as root)
-
+#  PURPOSE: Test a postive cron job
+#			- add new job
+#   		- check correct execution of job
+#   		- delete job
 #
 #  HISTORY:
-# FLAG    BUG#    DATE   ORIGINATOR   DESCRIPTION
-# ----    ----    ----   ----------   -----------
-#                                     SUSE
-#            06/03/04  Kris Wilson  RH has /etc/init.d/crond, not cron
+#     	SUSE
 #
 
-
-
-TEST_USER="c02_user"
+TEST_USER="c01_user"
 TEST_USER_GROUP="users"
 TEST_USER_HOMEDIR="/home/$TEST_USER"
 
@@ -46,10 +36,12 @@ TEST_USER_HOMEDIR="/home/$TEST_USER"
 #-----------------------------------------------------------------------
 
 do_setup(){
+	#erase any data from potential defunt cron test
+	rm -rf /tmp/crontest &> /dev/null
 
     #erase user if he may exist , so we can have a clean env
         rm -rf /home/$TEST_USER
-        userdel $TEST_USER 
+        userdel $TEST_USER
 	sleep 1
 
         useradd -m -g $TEST_USER_GROUP $TEST_USER 
@@ -59,10 +51,19 @@ do_setup(){
                 exit 1
         }
         fi
-        # restart cron daemon
-#  RH has crond, not cron 6/3/04 KEW
-#       /etc/init.d/cron restart
-        /etc/init.d/crond restart
+
+	# restart cron daemon
+# Red Hat uses crond, SuSE/Other uses cron. Check if this is Red Hat/SuSE/Other
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+echo "Distro type is: $tvar \n"
+
+if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]; then
+
+	/etc/init.d/cron restart
+else
+	/etc/init.d/crond restart
+fi
 }
 
 #-----------------------------------------------------------------------
@@ -78,7 +79,7 @@ do_cleanup(){
 # FUNCTION:  MAIN
 #-----------------------------------------------------------------------
 do_setup
-cron_neg_tests.sh $TEST_USER
+cron_pos_tests.sh $TEST_USER
 EXIT_CODE=$?
 do_cleanup
 exit $EXIT_CODE

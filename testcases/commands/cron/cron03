@@ -56,7 +56,17 @@ do_setup(){
         }
         fi
         # restart cron daemon
-        /etc/init.d/cron restart
+# Red Hat uses crond, SuSE/Other uses cron. Check if this is Red Hat/SuSE/Other
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+echo "Distro type is: $tvar \n"
+
+if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]; then
+
+	/etc/init.d/cron restart
+else
+	/etc/init.d/crond restart
+fi
 }
 
 #-----------------------------------------------------------------------
