@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# generated-tests/changesy.6.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 2291
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+define(`test', `TEST')
+changesyntax(`L<', `R>')
+<test>
+`test>
+changequote(<[>, `]')
+<test>
+[test]
+EOF
+
+cat <<\EOF >ok
+
+
+test
+test
+
+<TEST>
+test
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

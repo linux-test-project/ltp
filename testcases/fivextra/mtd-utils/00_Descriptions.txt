@@ -1,0 +1,3 @@
+mtd-utils.sh:
+	Test suite to test the mtd-utils
+	Gong Jie <gongjie@cn.ibm.com> 

@@ -1,0 +1,188 @@
+# This file is a Tcl script to test out the procedures in tkWinFont.c. 
+# It is organized in the standard fashion for Tcl tests.
+#
+# Many of these tests are visually oriented and cannot be checked
+# programmatically (such as "does an underlined font appear to be
+# underlined?"); these tests attempt to exercise the code in question,
+# but there are no results that can be checked.  
+#
+# Copyright (c) 1996-1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: winFont.test,v 1.1 2005/03/22 17:52:21 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+catch {destroy .b}
+catch {font delete xyz}
+
+toplevel .b
+wm geometry .b +0+0
+update idletasks
+
+set courier {Courier 14}
+set cx [font measure $courier 0]
+
+label .b.l -padx 0 -pady 0 -bd 0 -highlightthickness 0 -justify left -text "0" -font systemfixed
+pack .b.l
+canvas .b.c -closeenough 0
+
+set t [.b.c create text 0 0 -anchor nw -just left -font $courier]
+pack .b.c
+update
+
+set ax [winfo reqwidth .b.l]
+set ay [winfo reqheight .b.l]
+proc getsize {} {
+    update
+    return "[winfo reqwidth .b.l] [winfo reqheight .b.l]"
+}
+
+test winfont-1.1 {TkpGetNativeFont procedure: not native} {pcOnly} {
+    list [catch {font measure {} xyz} msg] $msg
+} {1 {font "" doesn't exist}}
+test winfont-1.2 {TkpGetNativeFont procedure: native} {pcOnly} {
+    font measure ansifixed 0
+    font measure ansi 0
+    font measure device 0
+    font measure oemfixed 0
+    font measure systemfixed 0
+    font measure system 0
+    set x {}
+} {}
+
+test winfont-2.1 {TkpGetFontFromAttributes procedure: pointsize} {pcOnly} {
+    expr [font actual {-size -10} -size]>0
+} {1}
+test winfont-2.2 {TkpGetFontFromAttributes procedure: pointsize} {pcOnly} {
+    expr [font actual {-family Arial} -size]>0
+} {1}
+test winfont-2.3 {TkpGetFontFromAttributes procedure: normal weight} {pcOnly} {
+    font actual {-weight normal} -weight
+} {normal}
+test winfont-2.4 {TkpGetFontFromAttributes procedure: bold weight} {pcOnly} {
+    font actual {-weight bold} -weight
+} {bold}
+test winfont-2.5 {TkpGetFontFromAttributes procedure: no family} {pcOnly} {
+    catch {expr {[font actual {-size 10} -size]}}
+} 0
+test winfont-2.6 {TkpGetFontFromAttributes procedure: family} {pcOnly} {
+    font actual {-family Arial} -family
+} {Arial}
+test winfont-2.7 {TkpGetFontFromAttributes procedure: Times fonts} {pcOnly} {
+    set x {}
+    lappend x [font actual {-family "Times"} -family]
+    lappend x [font actual {-family "New York"} -family]
+    lappend x [font actual {-family "Times New Roman"} -family]
+} {{Times New Roman} {Times New Roman} {Times New Roman}}
+test winfont-2.8 {TkpGetFontFromAttributes procedure: Courier fonts} {pcOnly} {
+    set x {}
+    lappend x [font actual {-family "Courier"} -family]
+    lappend x [font actual {-family "Monaco"} -family]
+    lappend x [font actual {-family "Courier New"} -family]
+} {{Courier New} {Courier New} {Courier New}}
+test winfont-2.9 {TkpGetFontFromAttributes procedure: Helvetica fonts} {pcOnly} {
+    set x {}
+    lappend x [font actual {-family "Helvetica"} -family]
+    lappend x [font actual {-family "Geneva"} -family]
+    lappend x [font actual {-family "Arial"} -family]
+} {Arial Arial Arial}
+test winfont-2.10 {TkpGetFontFromAttributes procedure: fallback} {pcOnly} {
+    # No way to get it to fail! Any font name is acceptable.
+} {}
+
+test winfont-3.1 {TkpDeleteFont procedure} {pcOnly} {
+    font actual {-family xyz}
+    set x {}
+} {}
+
+test winfont-4.1 {TkpGetFontFamilies procedure} {pcOnly} {
+    font families
+    set x {}
+} {}
+
+test winfont-5.1 {Tk_MeasureChars procedure: unbounded right margin} {pcOnly} {
+    .b.l config -wrap 0 -text "000000"
+    getsize
+} "[expr $ax*6] $ay"
+test winfont-5.2 {Tk_MeasureChars procedure: static width buffer exceeded} {pcOnly} {
+    .b.l config -wrap 100000 -text "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    getsize
+} "[expr $ax*256] $ay"
+test winfont-5.3 {Tk_MeasureChars procedure: all chars did fit} {pcOnly} {
+    .b.l config -wrap [expr $ax*10] -text "00000000"
+    getsize
+} "[expr $ax*8] $ay"
+test winfont-5.4 {Tk_MeasureChars procedure: not all chars fit} {pcOnly} {
+    .b.l config -wrap [expr $ax*6] -text "00000000"
+    getsize
+} "[expr $ax*6] [expr $ay*2]"
+test winfont-5.5 {Tk_MeasureChars procedure: include last partial char} {pcOnly} {
+    .b.c dchars $t 0 end
+    .b.c insert $t 0 "0000"
+    .b.c index $t @[expr int($cx*2.5)],1
+} {2}
+test winfont-5.6 {Tk_MeasureChars procedure: at least one char on line} {pcOnly} { 
+    .b.l config -text "000000" -wrap 1
+    getsize
+} "$ax [expr $ay*6]"
+test winfont-5.7 {Tk_MeasureChars procedure: whole words} {pcOnly} {
+    .b.l config -wrap [expr $ax*8] -text "000000 0000"
+    getsize
+} "[expr $ax*6] [expr $ay*2]"
+test winfont-5.8 {Tk_MeasureChars procedure: already saw space in line} {pcOnly} {
+    .b.l config -wrap [expr $ax*12] -text "000000    0000000"
+    getsize
+} "[expr $ax*7] [expr $ay*2]"
+test winfont-5.9 {Tk_MeasureChars procedure: internal spaces significant} {pcOnly} {
+    .b.l config -wrap [expr $ax*12] -text "000  00   00000"
+    getsize
+} "[expr $ax*7] [expr $ay*2]"
+test winfont-5.10 {Tk_MeasureChars procedure: make first part of word fit} {pcOnly} {
+    .b.l config -wrap [expr $ax*12] -text "0000000000000000"
+    getsize
+} "[expr $ax*12] [expr $ay*2]"
+test winfont-5.10 {Tk_MeasureChars procedure: check for kerning} \
+	{pcOnly nonPortable} {
+    set font [.b.l cget -font]
+    .b.l config -font {{MS Sans Serif} 8} -text "W"
+    set width [winfo reqwidth .b.l]
+    .b.l config -text "XaYoYaKaWx"
+    set x [lindex [getsize] 0]
+    .b.l config -font $font
+    expr $x < ($width*10)
+} 1
+test winfont-6.1 {Tk_DrawChars procedure: loop test} {pcOnly} {
+    .b.l config -text "a"
+    update
+} {}
+
+test winfont-7.1 {AllocFont procedure: use old font} {pcOnly} {
+    font create xyz
+    catch {destroy .c}
+    button .c -font xyz
+    font configure xyz -family times
+    update
+    destroy .c
+    font delete xyz
+} {}
+test winfont-7.2 {AllocFont procedure: extract info from logfont} {pcOnly} {
+    font actual {arial 10 bold italic underline overstrike}
+} {-family Arial -size 10 -weight bold -slant italic -underline 1 -overstrike 1}
+test winfont-7.3 {AllocFont procedure: extract info from textmetric} {pcOnly} {
+    font metric {arial 10 bold italic underline overstrike} -fixed
+} {0}
+test winfont-7.4 {AllocFont procedure: extract info from textmetric} {pcOnly} {
+    font metric systemfixed -fixed
+} {1}
+
+# cleanup
+destroy .b
+::tcltest::cleanupTests
+return

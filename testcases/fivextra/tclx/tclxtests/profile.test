@@ -1,0 +1,806 @@
+#
+# profile.test
+#
+# Tests for the profile command and profrep procedure.
+#------------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: profile.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+# Make sure we that real time is not zero.  If so, suggest compiling with a
+# different parameter.  However, its always zero on windows
+
+proc ProcA1 {} {sleep 1}
+profile on
+ProcA1
+profile off profData
+foreach idx [array names profData] {
+    if {[string match "::ProcA1 *" $idx]} break
+}
+
+if {([lindex $profData($idx) 1] == 0) && \
+        ![cequal $tcl_platform(platform) windows]} {
+    puts "*** The profile command is returning real time values of"
+    puts "*** zero.  This suggests that your `times' system call does"
+    puts "*** not return elapsed real time.  The configure script"
+    puts "*** did not properly detect this.  Try undefining the flag"
+    puts "*** TIMES_RETS_REAL_TIME in unix/Common.mk and reporting"
+    puts "*** this to the maintainers\n"
+}
+
+#
+# Test error cases.
+#
+test profile-1.1 {profile error tests} {
+    list [catch {profile off} msg] $msg
+} {1 {wrong # args: profile ?-commands? ?-eval? on|off arrayVar}}
+
+test profile-1.2 {profile error tests} {
+    list [catch {profile baz} msg] $msg
+} {1 {expected one of "on" or "off", got "baz"}}
+
+test profile-1.3 {profile error tests} {
+    list [catch {profile -comman on} msg] $msg
+} {1 {expected one of "-commands", or "-eval", got "-comman"}}
+
+test profile-1.4 {profile error tests} {
+    list [catch {profile -commands off} msg] $msg
+} {1 {wrong # args: profile ?-commands? ?-eval? on|off arrayVar}}
+
+test profile-1.5 {profile error tests} {
+    list [catch {profile -commands} msg] $msg
+} {1 {wrong # args: profile ?-commands? ?-eval? on|off arrayVar}}
+
+test profile-1.6 {profile error tests} {
+    list [catch {profile -commands on foo} msg] $msg
+} {1 {wrong # args: profile ?-commands? ?-eval? on|off arrayVar}}
+
+test profile-1.7 {profile error tests} {
+    list [catch {profile -commands off foo} msg] $msg
+} {1 {option "-command" not valid when turning off profiling}}
+
+test profile-1.8 {profile error tests} {
+    list [catch {profile -eval off foo} msg] $msg
+} {1 {option "-eval" not valid when turning off profiling}}
+
+test profile-1.9 {profile error tests} {
+    list [catch {profile -commands -eval off foo} msg] $msg
+} {1 {option "-command" not valid when turning off profiling}}
+
+test profile-1.10 {profile error tests} {
+    list [catch {profile off foo} msg] $msg
+} {1 {profiling is not currently enabled}}
+
+test profile-1.11 {profile error tests} {
+    profile on
+    list [catch {profile on} msg] $msg
+} {1 {profiling is already enabled}}
+profile off foo
+
+#
+# Filter elements from a procedure call stack so that the "Test" procedure
+# entry upto but not including the "<global>" entry are dropped from each
+# record.  This allows for consistent results even if the tests are sourced
+# from a procedure.  If the empty list is returned, the stack entry should be
+# dropped.  This eliminates duplicate stack entries.
+#
+#proc FilterProfStack stack {
+#    # If "Test" is at the top, throw this out, or we end up with two
+#    # global.
+#    if [cequal [lindex $stack 0] Test] {
+#	return {}
+#    }
+#
+#    # Delete elements Test upto <global> .
+#    set newStack {}
+#    set foundTest 0
+#    set foundGlobal 0 ;# Used we catch garbage after global
+#    foreach elem $stack {
+#	if {$foundGlobal || [cequal $elem {<global>}]} {
+#	    set foundGlobal 1
+#	    lappend newStack $elem
+#	} elseif {!$foundTest} {
+#	    if {[cequal $elem test]} {
+#		set foundTest 1
+#	    } else {
+#		lappend newStack $elem
+#	    }
+#	}
+#    }
+#    return $newStack
+#}
+
+proc FilterProfStack stack {
+    # If "Test" is at the top, throw this out, or we end up with two
+    # global.
+    
+    if [cequal [lindex $stack 0] Test] {
+	return {}
+    }
+
+    # Delete elements Test upto <global> .
+    set newStack {}
+    set foundTest 0
+    set elemIndex 0
+    set foundtcltest 0
+    set foundGlobal 0 ;# Used we catch garbage after global
+    foreach elem $stack {
+
+	if {$foundGlobal || [cequal $elem {<global>}]} {
+	    set foundGlobal 1
+	    if { !$foundtcltest } {
+	    lappend newStack $elem
+	    }
+	} elseif {!$foundTest} {
+	    if {[cequal $elem test]} {
+		set foundTest 1
+	    } elseif { [ cequal $elem {::tcltest::Eval}]} {
+		if {!$elemIndex} {
+	    	set foundtcltest 1
+	    }
+	    } elseif { [ cequal $elem {::tcltest::RunTest} ]} {
+	    if {!$elemIndex} {
+	    	set foundtcltest 1
+	    }
+	    } else {
+		lappend newStack $elem
+		}
+	    
+	}
+	set elemIndex [expr $elemIndex+1]
+    }
+    return $newStack
+}
+
+#
+# Function to build a list from the profile output data with each entry
+# contain the call stack and call count.  The list is returned sorted by
+# call stack.  Elements from the "Test" procedure entry upto but not including
+# the "<global>" entry are dropped from each record.  This allows for
+# consistent results even if the tests are sourced from a procedure.x
+#
+proc SumCntData {profDataVar} {
+    upvar $profDataVar profData
+    set sumData {}
+    foreach stack [array names profData] {
+	set newStack [FilterProfStack $stack]
+	if ![lempty $newStack] {
+	    lappend sumData [list $newStack [lindex $profData($stack) 0]]
+	}
+    }
+    return [lsort $sumData]
+}
+
+#
+# Test of normal procedure calls.
+#
+proc ProcA2 {} {ProcB2; set j 1; incr j; set k 1}
+proc ProcB2 {} {ProcC2; concat a b; ProcC2; list a b; list c d}
+proc ProcC2 {} {expr 1+1}
+
+test profile-2.1 {profile count tests} {
+   profile on
+   ProcA2
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA2 <global>} 1} \
+	{{::ProcB2 ::ProcA2 <global>} 1} \
+	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2}]
+
+test profile-2.2 {profile count tests} {
+    profile -commands on
+    ProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA2 <global>} 1} \
+	{{::ProcB2 ::ProcA2 <global>} 1} \
+	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2} \
+	{{::concat ::ProcB2 ::ProcA2 <global>} 1} \
+	{{::profile <global>} 1}] 
+
+#} [list {<global> 1} {<global> 1} \
+#	{{::ProcA2 <global>} 1} \
+#	{{::ProcB2 ::ProcA2 <global>} 1} \
+#	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2} \
+#	{{::concat ::ProcB2 ::ProcA2 <global>} 1} \
+#	{{::list ::ProcB2 ::ProcA2 <global>} 2} \
+#	{{::profile <global>} 1}]
+
+test profile-2.3 {profile count tests} {
+    profile -eval on
+    ProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA2 <global>} 1} \
+	{{::ProcB2 ::ProcA2 <global>} 1} \
+	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2}]
+
+test profile-2.4 {profile count tests} {
+    profile -commands -eval on
+    ProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA2 <global>} 1} \
+	{{::ProcB2 ::ProcA2 <global>} 1} \
+	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2} \
+	{{::concat ::ProcB2 ::ProcA2 <global>} 1} \
+	{{::profile <global>} 1}]
+
+#} [list {<global> 1} {<global> 1} \
+#	{{::ProcA2 <global>} 1} \
+#	{{::ProcB2 ::ProcA2 <global>} 1} \
+#	{{::ProcC2 ::ProcB2 ::ProcA2 <global>} 2} \
+#	{{::concat ::ProcB2 ::ProcA2 <global>} 1} \
+#	{{::list ::ProcB2 ::ProcA2 <global>} 2} \
+#	{{::profile <global>} 1}]
+#
+
+#
+# Test of uplevel.
+#
+proc ProcA3 {} {ProcB3}
+proc ProcB3 {} {ProcC3}
+proc ProcC3 {} {uplevel ProcD3; ProcD3}
+proc ProcD3 {} {set a 1; incr a; concat a b}
+
+test profile-3.1 {profile count tests} {
+    profile on
+    ProcA3
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA3 <global>} 1} \
+	{{::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1}]
+
+test profile-3.2 {profile count tests} {
+    profile -commands on
+    ProcA3
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA3 <global>} 1} \
+	{{::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::concat ::ProcD3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::concat ::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::profile <global>} 1} \
+	{{::uplevel ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1}]
+
+test profile-3.3 {profile count tests} {
+    profile -eval on
+    ::ProcA3
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA3 <global>} 1} \
+	{{::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 2}]
+
+test profile-3.4 {profile count tests} {
+    profile -eval -commands on
+    ProcA3
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA3 <global>} 1} \
+	{{::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::ProcD3 ::uplevel ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::concat ::ProcD3 ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::concat ::ProcD3 ::uplevel ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1} \
+	{{::profile <global>} 1} \
+	{{::uplevel ::ProcC3 ::ProcB3 ::ProcA3 <global>} 1}]
+
+#
+# Test of error unwind.
+#
+proc ProcA4 {} {ProcB4}
+proc ProcB4 {} {catch {ProcC4}; ProcE4}
+proc ProcC4 {} {ProcD4}
+proc ProcD4 {} {error baz}
+proc ProcE4 {} {}
+
+test profile-4.1 {profile count tests} {
+   profile on
+   ProcA4
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA4 <global>} 1} \
+	{{::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcE4 ::ProcB4 ::ProcA4 <global>} 1}]
+
+test profile-4.2 {profile count tests} {
+   profile -commands on
+   ProcA4
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA4 <global>} 1} \
+	{{::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcE4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::error ::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::profile <global>} 1}]
+
+test profile-4.3 {profile count tests} {
+   profile -eval on
+   ProcA4
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA4 <global>} 1} \
+	{{::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcE4 ::ProcB4 ::ProcA4 <global>} 1}]
+
+test profile-4.4 {profile count tests} {
+   profile -commands -eval on
+   ProcA4
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA4 <global>} 1} \
+	{{::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::ProcE4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::error ::ProcD4 ::ProcC4 ::ProcB4 ::ProcA4 <global>} 1} \
+	{{::profile <global>} 1}]
+
+#
+# Test of a command that calls procedures from different levels.
+#
+set ::tcltest::testConstraints(tclx_test_eval) \
+	[llength [info commands tclx_test_eval]]
+
+proc ProcA5 {} {ProcB5}
+proc ProcB5 {} {tclx_test_eval 0 ProcC5a #0 ProcC5b 0 ProcC5c 1 ProcC5d }
+proc ProcC5a {} {ProcD5}
+proc ProcC5b {} {ProcD5}
+proc ProcC5c {} {ProcD5}
+proc ProcC5d {} {ProcD5}
+proc ProcD5 {} {concat a b; list c d}
+
+test profile-5.1 {profile count tests} {tclx_test_eval} {
+    profile on
+    ProcA5
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA5 <global>} 1} \
+	{{::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5a ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5b <global>} 1} \
+	{{::ProcC5c ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5d ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5a ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5b <global>} 1} \
+	{{::ProcD5 ::ProcC5c ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5d ::ProcA5 <global>} 1}]
+
+test profile-5.2 {profile count tests} {tclx_test_eval} {
+    profile -commands on
+    ProcA5
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA5 <global>} 1} \
+	{{::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5b <global>} 1} \
+	{{::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5d ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5b <global>} 1} \
+	{{::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5d ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5b <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5d ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5b <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5d ::ProcA5 <global>} 1} \
+	{{::profile <global>} 1} \
+	{{::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1}]
+
+test profile-5.3 {profile count tests} {tclx_test_eval} {
+    profile -eval on
+    ProcA5
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA5 <global>} 1} \
+	{{::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5a ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5b ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5c ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5d ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5a ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5b ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5c ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5d ::ProcB5 ::ProcA5 <global>} 1}]
+
+test profile-5.4 {profile count tests} {tclx_test_eval} {
+    profile -eval -commands on
+    ::ProcA5
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA5 <global>} 1} \
+	{{::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5b ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcC5d ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5b ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::ProcD5 ::ProcC5d ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5b ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::concat ::ProcD5 ::ProcC5d ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5a ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5b ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5c ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::list ::ProcD5 ::ProcC5d ::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1} \
+	{{::profile <global>} 1} \
+	{{::tclx_test_eval ::ProcB5 ::ProcA5 <global>} 1}]
+
+#
+# Test evaling from other commands.
+#
+proc ProcA6 {} {
+    if {[string compare "y" "x"]} {
+	set foo [ProcB6]
+	set bar [ProcC6]
+    }
+}
+proc ProcB6 {} {
+    set t 0
+    for {set i 1} {$i < 1000} {incr i} {
+        incr t $i
+    }
+    return $t
+}
+
+proc ProcC6 {} {
+    set t 0
+    for {set i 1} {$i < 2000} {incr i} {
+        incr t $i
+    }
+    return $t
+}
+
+test profile-6.1 {profile count tests} {
+   profile on
+   ProcA6
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA6 <global>} 1} \
+	{{::ProcB6 ::ProcA6 <global>} 1} \
+	{{::ProcC6 ::ProcA6 <global>} 1}]
+
+test profile-6.2 {profile count tests} {
+   profile -commands on
+   ProcA6
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA6 <global>} 1} \
+	{{::ProcB6 ::ProcA6 <global>} 1} \
+	{{::ProcC6 ::ProcA6 <global>} 1} \
+	{{::profile <global>} 1}]
+#	{{::profile <global>} 1} \
+#	{{::return ::ProcB6 ::ProcA6 <global>} 1} \
+#	{{::return ::ProcC6 ::ProcA6 <global>} 1} \
+#	{{::string ::ProcA6 <global>} 1}]
+
+test profile-6.3 {profile count tests} {
+   profile -eval on
+   ProcA6
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA6 <global>} 1} \
+	{{::ProcB6 ::ProcA6 <global>} 1} \
+	{{::ProcC6 ::ProcA6 <global>} 1}]
+
+
+test profile-6.4 {profile count tests} {
+   profile -eval -commands on
+   ProcA6
+   profile off profData
+   SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::ProcA6 <global>} 1} \
+	{{::ProcB6 ::ProcA6 <global>} 1} \
+	{{::ProcC6 ::ProcA6 <global>} 1} \
+	{{::profile <global>} 1}]
+#	{{::profile <global>} 1} \
+#	{{::return ::ProcB6 ::ProcA6 <global>} 1} \
+#	{{::return ::ProcC6 ::ProcA6 <global>} 1} \
+#	{{::string ::ProcA6 <global>} 1}]
+
+#
+# Function to build a list from the profile output data with each entry
+# contain the call stack and call count.  The list is returned sorted by
+# CPU time.  CPU time is not included in the return, since it can't be
+# verified exactly, only approximately.  CPU time testing is not done
+# for Windows as there is no way to determine it.
+#
+
+proc SumCpuData {profDataVar} {
+    upvar $profDataVar profData
+    set sumData {}
+    foreach stack [array names profData] {
+        set newStack [FilterProfStack $stack]
+        if ![lempty $newStack] {
+            lappend sumData [list [format %032d [lindex $profData($stack) 2]] \
+                    $newStack [lindex $profData($stack) 0]]
+        }
+    }
+    set retData {}
+    foreach entry $sumData {
+        lappend retData [lrange $entry 1 end]
+    }
+    return [lsort $retData]
+}
+
+
+proc EatTime {amount} {
+    set start [lindex [times] 0]
+    set end   [expr $start+$amount]
+    set cnt 0
+    while {[lindex [times] 0] < $end} {
+        format %d 100  ;# kind of slow command.
+        incr cnt
+        if {($cnt > 10000) && ([lindex [times] 0] == $start)} {
+            error "User CPU time does not appear to be accumulating"
+        }
+    }    
+}
+
+proc ProcA10 {} {ProcB10;ProcC10;ProcD10}
+proc ProcB10 {} {EatTime 1}
+proc ProcC10 {} {EatTime 100}
+proc ProcD10 {} {uplevel EatTime 1000}
+
+test profile-10.1 {profile CPU time tests} {unixOnly} {
+   profile on
+   ProcA10
+   profile off profData
+   SumCpuData profData
+} [list {<global> 1} {<global> 1} \
+	{{::EatTime ::ProcA10 <global>} 1} \
+	{{::EatTime ::ProcB10 ::ProcA10 <global>} 1} \
+	{{::EatTime ::ProcC10 ::ProcA10 <global>} 1} \
+	{{::ProcA10 <global>} 1} \
+	{{::ProcB10 ::ProcA10 <global>} 1} \
+	{{::ProcC10 ::ProcA10 <global>} 1} \
+	{{::ProcD10 ::ProcA10 <global>} 1}]
+
+test profile-10.2 {profile CPU time tests} {unixOnly} {
+   profile -eval on
+   ::ProcA10
+   profile off profData
+   SumCpuData profData
+} [list {<global> 1} {<global> 1} \
+	{{::EatTime ::ProcB10 ::ProcA10 <global>} 1} \
+	{{::EatTime ::ProcC10 ::ProcA10 <global>} 1} \
+	{{::EatTime ::ProcD10 ::ProcA10 <global>} 1} \
+	{{::ProcA10 <global>} 1} {{::ProcB10 ::ProcA10 <global>} 1} \
+	{{::ProcC10 ::ProcA10 <global>} 1} \
+	{{::ProcD10 ::ProcA10 <global>} 1}]
+
+proc ProcA1 {} {ProcB1;set a 1;incr a}
+proc ProcB1 {} {ProcC1;ProcC1}
+proc ProcC1 {} {set a 1;incr a}
+
+#
+# Set up some dummy profile data for the report tests.  The data is not
+# realistic, but designed so that no two numbers that are sorted on are the
+# same.
+#
+catch {unset profData}
+set baz {::EatTime ::ProcB10 ::ProcA10}
+set profData($baz) {4 800 10}
+set baz {::ProcC10 ::ProcA10}
+set profData($baz) {3 1000 101}
+set baz {::EatTime ::ProcC10 ::ProcA10}
+set profData($baz) {2 1001 100}
+set baz {::ProcD10 ::ProcA10}
+set profData($baz) {1 100 1071}
+set baz ::ProcA10
+set profData($baz) {5 1250 1180}
+set baz {::EatTime ::ProcD10 ::ProcA10}
+set profData($baz) {6 1070 1070}
+set baz {::ProcB10 ::ProcA10}
+set profData($baz) {7 80 11}
+
+#
+# Read the profile report into memory and purge the file
+#
+proc GetProfRep {fileName} {
+    set fh [open $fileName]
+    set data [read $fh]
+    close $fh
+    file delete $fileName
+    return $data
+}
+
+test profile-11.1 {profrep tests} {
+    profrep profData calls prof.tmp "Profile Test 11.1"
+    GetProfRep prof.tmp
+} {---------------------------------------------------------
+Profile Test 11.1
+---------------------------------------------------------
+Procedure Call Stack          Calls  Real Time   CPU Time
+---------------------------------------------------------
+ProcB10                           7        880         21
+    ProcA10
+EatTime                           6       1070       1070
+    ProcD10
+    ProcA10
+ProcA10                           5       5301       3543
+EatTime                           4        800         10
+    ProcB10
+    ProcA10
+ProcC10                           3       2001        201
+    ProcA10
+EatTime                           2       1001        100
+    ProcC10
+    ProcA10
+ProcD10                           1       1170       2141
+    ProcA10
+}
+
+test profile-11.2 {profrep tests} {
+    profrep profData real prof.tmp "Profile Test 11.2"
+    GetProfRep prof.tmp
+} {---------------------------------------------------------
+Profile Test 11.2
+---------------------------------------------------------
+Procedure Call Stack          Calls  Real Time   CPU Time
+---------------------------------------------------------
+ProcA10                           5       5301       3543
+ProcC10                           3       2001        201
+    ProcA10
+ProcD10                           1       1170       2141
+    ProcA10
+EatTime                           6       1070       1070
+    ProcD10
+    ProcA10
+EatTime                           2       1001        100
+    ProcC10
+    ProcA10
+ProcB10                           7        880         21
+    ProcA10
+EatTime                           4        800         10
+    ProcB10
+    ProcA10
+}
+
+test profile-11.3 {profrep tests} {
+    profrep profData cpu prof.tmp "Profile Test 11.3"
+    GetProfRep prof.tmp
+} {---------------------------------------------------------
+Profile Test 11.3
+---------------------------------------------------------
+Procedure Call Stack          Calls  Real Time   CPU Time
+---------------------------------------------------------
+ProcA10                           5       5301       3543
+ProcD10                           1       1170       2141
+    ProcA10
+EatTime                           6       1070       1070
+    ProcD10
+    ProcA10
+ProcC10                           3       2001        201
+    ProcA10
+EatTime                           2       1001        100
+    ProcC10
+    ProcA10
+ProcB10                           7        880         21
+    ProcA10
+EatTime                           4        800         10
+    ProcB10
+    ProcA10
+}
+
+#
+# Test of namespaces procedure calls.
+#
+namespace eval Prof {
+    proc NSProcA2 {} {NSProcB2; set j 1; incr j; set k 1}
+    proc NSProcB2 {} {NSProcC2; concat a b; NSProcC2; list a b; list c d}
+    proc NSProcC2 {} {expr 1+1}
+}
+
+test profile-12.1 {profile namespace tests} {
+    profile on
+    Prof::NSProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcC2 ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2}]
+
+test profile-12.2 {profile namespace tests} {
+    profile -commands on
+    Prof::NSProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcC2 ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2} \
+	{{::concat ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::profile <global>} 1}]
+#	{{::list ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2} \
+#	{{::profile <global>} 1}]
+
+test profile-12.3 {profile namespace tests} {
+    profile -eval on
+    Prof::NSProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcC2 ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2}]
+
+test profile-12.4 {profile namespace tests} {
+    profile -commands -eval on
+    Prof::NSProcA2
+    profile off profData
+    SumCntData profData
+} [list {<global> 1} {<global> 1} \
+	{{::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::Prof::NSProcC2 ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2} \
+	{{::concat ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 1} \
+	{{::profile <global>} 1}]
+#	{{::list ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2} \
+#	{{::profile <global>} 1}]
+
+namespace delete Prof
+
+unset foo
+
+# cleanup
+::tcltest::cleanupTests
+return

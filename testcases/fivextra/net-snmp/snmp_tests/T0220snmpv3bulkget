@@ -1,0 +1,37 @@
+#!/bin/sh
+
+. ../eval_tools.sh
+
+HEADER SNMPv3 bulkget of system
+
+#
+# Begin test
+#
+
+# standard V3 configuration: 
+. ./Sv3config
+
+STARTAGENT
+
+CAPTURE "snmpbulkget $SNMP_FLAGS -v3 -On -Cn1 -Cr2 -a MD5 -A initial_test_pass_auth -l anp -u initial  udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.4 .1.3.6.1.2.1.1"
+
+STOPAGENT
+
+CHECKORDIE ".1.3.6.1.2.1.1.4.0 = STRING:"
+CHECKORDIE ".1.3.6.1.2.1.1.1.0 = STRING:"
+CHECKORDIE ".1.3.6.1.2.1.1.2.0 = OID:"
+
+CHECK ".1.3.6.1.2.1.1.3.0"
+if [ "$snmp_last_test_result" != 0 ] ; then
+    return_value=1
+    FINISHED
+fi
+
+CHECK ".1.3.6.1.2.1.1.5.0"
+EXPECTRESULT 0
+if [ "$snmp_last_test_result" != 0 ] ; then
+    return_value=1
+    FINISHED
+fi
+
+FINISHED

@@ -1,0 +1,9 @@
+dn: cn=Barbara Jensen,dc=example,dc=com
+objectClass: person
+cn: Barbara Jensen
+cn: Babs Jensen
+sn: Jensen
+title: the world's most famous mythical manager
+mail: bjensen@example.com
+uid: bjensen
+

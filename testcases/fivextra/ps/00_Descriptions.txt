@@ -1,0 +1,2 @@
+ps.sh
+	Tested the functionality of the ps command and other commands in the ps.rpm

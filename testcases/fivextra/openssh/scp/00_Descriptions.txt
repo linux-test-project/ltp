@@ -1,0 +1,2 @@
+scp.sh  
+	Test the basic functionality of scp - secure copy (remote file copy program).

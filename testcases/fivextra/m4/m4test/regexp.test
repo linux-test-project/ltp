@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# regexp.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/regexp.m4 >in
+
+cat <<\EOF >ok
+>>hej med dig<<
+>>hej<<
+>>hej med dig<<
+>>med<<
+>>med dig<< >>ed dig<<
+
+0
+0
+0
+4
+4
+EOF
+
+cat <<\EOF >okerr
+m4: in: 2: WARNING: \0 will disappear, use \& instead in replacements
+m4trace: -1- regexp(`hej med dig', `.*', `>>\0<<') -> `>>hej med dig<<'
+m4trace: -1- regexp(`hej med dig', `\w*', `>>\0<<') -> `>>hej<<'
+m4trace: -1- regexp(`hej med dig', `.+', `>>\0<<') -> `>>hej med dig<<'
+m4trace: -1- regexp(`hej med dig', `m\w+', `>>\0<<') -> `>>med<<'
+m4trace: -1- regexp(`hej med dig', `m\(.*\)', `>>\0<< >>\1<<') -> `>>med dig<< >>ed dig<<'
+m4trace: -1- regexp(`hej med dig', `.*') -> `0'
+m4trace: -1- regexp(`hej med dig', `\w*') -> `0'
+m4trace: -1- regexp(`hej med dig', `.+') -> `0'
+m4trace: -1- regexp(`hej med dig', `m\w+') -> `4'
+m4trace: -1- regexp(`hej med dig', `m\(.*\)') -> `4'
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s,$M4: ,m4: ," err >sederr && mv sederr err
+$CMP -s out ok && $CMP -s err okerr

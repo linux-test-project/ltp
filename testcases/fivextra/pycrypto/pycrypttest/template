@@ -1,0 +1,24 @@
+#
+# Test script for Crypto.XXX
+#
+
+from sancho.unittest import TestScenario, parse_args, run_scenarios
+
+tested_modules = [ "Crypto.XXX" ]
+
+class XXXTest (TestScenario):
+
+    def setup (self):
+	pass
+
+    def shutdown (self):
+	pass
+
+    def check_ (self):
+        ""
+        pass
+
+
+if __name__ == "__main__":
+    (scenarios, options) = parse_args()
+    run_scenarios(scenarios, options)

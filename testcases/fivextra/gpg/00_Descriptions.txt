@@ -1,0 +1,2 @@
+gpg.sh
+	Testcase to the gpg package.

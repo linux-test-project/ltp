@@ -1,0 +1,14 @@
+serial-port
+
+	Test data xfer on serial port. THIS IS JUST A PROOF OF CONCEPT SO
+	FAR! NEEDS TO BE TURNED INTO A REAL TESTCASE.
+
+	To run this, set up a serial link between two serial ports. These
+	may be on the same system. The cable needs to be a "null modem"
+	cable. Start serial-sever.sh and then serial-client.sh. Once
+	serial-server.sh is running it will keep ruining until canceled.
+	This can be done with Ctrl-C. serial-client runs once than quites.
+	It can be started over again.
+
+	TODO: Need to detemine the serial port settings used by the end
+	customer and try to work with those.

@@ -1,0 +1,156 @@
+#
+# Tests for chaining methods and procs
+# ----------------------------------------------------------------------
+#   AUTHOR:  Michael J. McLennan
+#            Bell Labs Innovations for Lucent Technologies
+#            mmclennan@lucent.com
+#            http://www.tcltk.com/itcl
+#
+#      RCS:  $Id: chain.test,v 1.1 2005/03/22 17:51:25 mridge Exp $
+# ----------------------------------------------------------------------
+#            Copyright (c) 1993-1998  Lucent Technologies, Inc.
+# ======================================================================
+# See the file "license.terms" for information on usage and
+# redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+package require tcltest
+namespace import -force ::tcltest::*
+
+if {[string compare test [info procs test]] == 1} then {source defs}
+
+package require Itcl
+
+# ----------------------------------------------------------------------
+#  Chaining methods and procs
+# ----------------------------------------------------------------------
+test chain-1.1 {define simple classes with inheritance} {
+    itcl::class test_chain_a {
+        constructor {args} {
+            eval chain $args
+        } {
+            global ::test_chain_status
+            lappend test_chain_status "a::constructor $args"
+        }
+        method show {mesg} {
+            chain $mesg
+            global ::test_chain_status
+            lappend test_chain_status "a::show $mesg"
+        }
+        proc tell {mesg} {
+            global ::test_chain_status
+            lappend test_chain_status "a::tell $mesg"
+            chain $mesg
+        }
+    }
+    itcl::class test_chain_b {
+        constructor {args} {
+            eval chain $args
+        } {
+            global ::test_chain_status
+            lappend test_chain_status "b::constructor $args"
+        }
+        method show {mesg} {
+            chain $mesg
+            global ::test_chain_status
+            lappend test_chain_status "b::show $mesg"
+        }
+        proc tell {mesg} {
+            global ::test_chain_status
+            lappend test_chain_status "b::tell $mesg"
+            chain $mesg
+        }
+    }
+    itcl::class test_chain_c {
+        inherit test_chain_a test_chain_b
+        constructor {args} {
+            eval chain $args
+        } {
+            global ::test_chain_status
+            lappend test_chain_status "c::constructor $args"
+        }
+        proc tell {mesg} {
+            global ::test_chain_status
+            lappend test_chain_status "c::tell $mesg"
+            chain $mesg
+        }
+    }
+    itcl::class test_chain_d {
+        inherit test_chain_c
+        constructor {args} {
+            eval chain $args
+        } {
+            global ::test_chain_status
+            lappend test_chain_status "d::constructor $args"
+        }
+        method show {mesg} {
+            chain $mesg
+            global ::test_chain_status
+            lappend test_chain_status "d::show $mesg"
+        }
+        proc tell {mesg} {
+            global ::test_chain_status
+            lappend test_chain_status "d::tell $mesg"
+            chain $mesg
+        }
+    }
+} ""
+
+test chain-1.2 {create a test object} {
+    set test_chain_status ""
+    set testobj [test_chain_d #auto 1 2 3]
+    set test_chain_status
+} {{b::constructor 1 2 3} {a::constructor 1 2 3} {c::constructor 1 2 3} {d::constructor 1 2 3}}
+
+test chain-1.3 {invoke a chained method} {
+    set test_chain_status ""
+    $testobj show "hello there"
+    set test_chain_status
+} {{b::show hello there} {a::show hello there} {d::show hello there}}
+
+test chain-1.4 {invoke a chained method with a specific name} {
+    set test_chain_status ""
+    $testobj test_chain_d::show "hello there"
+    set test_chain_status
+} {{b::show hello there} {a::show hello there} {d::show hello there}}
+
+test chain-1.5 {chained methods can cross multiple-inheritance branches} {
+    set test_chain_status ""
+    $testobj test_chain_a::show "hello there"
+    set test_chain_status
+} {{b::show hello there} {a::show hello there}}
+
+test chain-1.6 {invoke a chained proc} {
+    set test_chain_status ""
+    test_chain_d::tell "testing 1 2 3"
+    set test_chain_status
+} {{d::tell testing 1 2 3} {c::tell testing 1 2 3} {a::tell testing 1 2 3}}
+
+test chain-1.7 {invoke a chained proc} {
+    set test_chain_status ""
+    test_chain_c::tell "testing 1 2 3"
+    set test_chain_status
+} {{c::tell testing 1 2 3} {a::tell testing 1 2 3}}
+
+test chain-2.1 {create a test object in a base class} {
+    set test_chain_status ""
+    set testobj [test_chain_c #auto 4 5 6]
+    set test_chain_status
+} {{b::constructor 4 5 6} {a::constructor 4 5 6} {c::constructor 4 5 6}}
+
+test chain-2.2 {invoke a chained method} {
+    set test_chain_status ""
+    $testobj show "hello there"
+    set test_chain_status
+} {{b::show hello there} {a::show hello there}}
+
+test chain-3.0 {invoke "chain" outside of a class} {
+    list [catch {itcl::builtin::chain 1 2 3} err] $err
+} {1 {cannot chain functions outside of a class context}}
+
+# ----------------------------------------------------------------------
+#  Clean up
+# ----------------------------------------------------------------------
+itcl::delete class test_chain_d test_chain_c test_chain_b test_chain_a
+
+::tcltest::cleanupTests
+return

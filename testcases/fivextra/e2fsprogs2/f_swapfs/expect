@@ -1,0 +1,133 @@
+Swapfs test
+e2fsck -yf -N test_filesys
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+test_filesys: 25/256 files (0.0% non-contiguous), 418/1024 blocks
+Exit status is 0
+e2fsck -Sy -N test_filesys
+Pass 0: Doing byte-swap of filesystem
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+test_filesys: 25/256 files (0.0% non-contiguous), 418/1024 blocks
+Exit status is 0
+Running debugfs....
+debugfs: ls
+ 2  (12) .    2  (12) ..    11  (20) lost+found    12  (16) fluff   
+ 13  (28) indirect-fluff-test    14  (28) double-indirect-test   
+ 15  (20) sym    16  (24) long-sym-test    17  (864) dir-test   
+debugfs: stat sym
+Inode: 15   Type: symlink    Mode:  0777   Flags: 0x0   Generation: 1
+User:     0   Group:     0   Size: 5
+File ACL: 0    Directory ACL: 0
+Links: 1   Blockcount: 0
+Fragment:  Address: 0    Number: 0    Size: 0
+ctime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+atime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+mtime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+Fast_link_dest: fluff
+debugfs: stat double-indirect-test
+Inode: 14   Type: regular    Mode:  0644   Flags: 0x0   Generation: 1
+User:     0   Group:     0   Size: 348960
+File ACL: 0    Directory ACL: 0
+Links: 1   Blockcount: 688
+Fragment:  Address: 0    Number: 0    Size: 0
+ctime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+atime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+mtime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+BLOCKS:
+(0-11):70-81, (IND):82, (12-267):83-338, (DIND):339, (IND):340, (268-340):341-413
+TOTAL: 344
+
+debugfs: cat fluff
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+
+debugfs: quit
+Exit status is 0
+e2fsck -yf -N test_filesys
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+test_filesys: 25/256 files (0.0% non-contiguous), 418/1024 blocks
+Exit status is 0
+e2fsck -sy -N test_filesys
+Pass 0: Doing byte-swap of filesystem
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+test_filesys: 25/256 files (0.0% non-contiguous), 418/1024 blocks
+Exit status is 0
+Running debugfs....
+debugfs: ls
+ 2  (12) .    2  (12) ..    11  (20) lost+found    12  (16) fluff   
+ 13  (28) indirect-fluff-test    14  (28) double-indirect-test   
+ 15  (20) sym    16  (24) long-sym-test    17  (864) dir-test   
+debugfs: stat sym
+Inode: 15   Type: symlink    Mode:  0777   Flags: 0x0   Generation: 1
+User:     0   Group:     0   Size: 5
+File ACL: 0    Directory ACL: 0
+Links: 1   Blockcount: 0
+Fragment:  Address: 0    Number: 0    Size: 0
+ctime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+atime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+mtime: 0x322737e2 -- Fri Aug 30 18:50:10 1996
+Fast_link_dest: fluff
+debugfs: stat double-indirect-test
+Inode: 14   Type: regular    Mode:  0644   Flags: 0x0   Generation: 1
+User:     0   Group:     0   Size: 348960
+File ACL: 0    Directory ACL: 0
+Links: 1   Blockcount: 688
+Fragment:  Address: 0    Number: 0    Size: 0
+ctime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+atime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+mtime: 0x322488cf -- Wed Aug 28 17:58:39 1996
+BLOCKS:
+(0-11):70-81, (IND):82, (12-267):83-338, (DIND):339, (IND):340, (268-340):341-413
+TOTAL: 344
+
+debugfs: cat fluff
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+yabba dabba doo.  cocka doodle doo.  yabba dabba doo.  cocka doodle doo. yipyip
+
+debugfs: quit
+Exit status is 0
+e2fsck -yf -N test_filesys
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+test_filesys: 25/256 files (0.0% non-contiguous), 418/1024 blocks
+Exit status is 0

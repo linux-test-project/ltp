@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# This is an example script for using netperf. Feel free to modify it 
+# as necessary, but I would suggest that you copy this one first.
+
+SCRIPTNAME=tcp_stream
+
+if [ $# -ne 1 ]; then
+  echo "usage: tcp_stream remote_hostname" 
+  exit 1
+fi
+
+# where the programs are
+NETHOME=.
+
+# at what port will netserver be waiting? If you decide to run
+# netserver at a differnet port than the default of 12865, then set
+# the value of PORT apropriately
+#PORT="-p some_other_portnum"
+PORT=""
+
+# The test length in seconds
+TEST_TIME=60
+
+# How accurate we want the estimate of performance: 
+#      maximum and minimum test iterations (-i)
+#      confidence level (99 or 95) and interval (percent)
+STATS_STUFF="-i 30,15 -I 99,5"
+
+# The socket sizes that we will be testing
+SOCKET_SIZES="65535 65535 65535 65535 65535 65535 65535 65535 65535"
+
+# The send sizes that we will be using
+SEND_SIZES="420 420 420 420 420 420 420 420 420 420 420 420 420 420"
+
+# Remote Host
+REM_HOST=$1
+
+# this will disable headers
+#NO_HDR="-P 0"
+
+for SOCKET_SIZE in $SOCKET_SIZES
+  do
+  for SEND_SIZE in $SEND_SIZES
+    do
+    # we echo the command line for cut and paste 
+    echo $NETHOME/netperf $PORT -l $TEST_TIME -H $REM_HOST -t TCP_STREAM\
+         $REM_CPU $REM_RATE $STATS_STUFF --\
+         -m $SEND_SIZE -s $SOCKET_SIZE -S $SOCKET_SIZE 
+
+    echo
+    # since we have the confidence interval stuff, we do not
+    # need to repeat a test multiple times from the shell
+    $NETHOME/netperf -d $PORT -l $TEST_TIME -H $REM_HOST -t TCP_STREAM\
+    $LOC_CPU $LOC_RATE $REM_CPU $REM_RATE $STATS_STUFF --\
+    -m $SEND_SIZE -s $SOCKET_SIZE -S $SOCKET_SIZE 
+
+    done
+  done

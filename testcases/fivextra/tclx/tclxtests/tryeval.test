@@ -1,0 +1,210 @@
+#
+# tryeval.test
+#
+# Tests for the try_eval command.
+#---------------------------------------------------------------------------
+# Copyright 1997-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: tryeval.test,v 1.1 2005/03/22 17:52:15 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+#
+# Use a proc to do some tests to see if errorInfo and errorCode are preserved
+# and imported correctly.
+#
+proc test_try_eval {code catch {finally {}}} {
+    try_eval $code $catch $finally
+}
+
+proc test_try_eval_results {code catch {finally {}}} {
+    set code [catch {test_try_eval $code $catch $finally} result]
+    global errorInfo errorCode
+    return [list $code $result $errorInfo $errorCode]
+}
+
+proc init_error_vars {errorInfoVal errorCodeVal} {
+    global errorInfo errorCode
+    set errorInfo $errorInfoVal
+    set errorCode $errorCodeVal
+}
+
+test try_eval-1.1 {try_eval argument checking} {
+    list [catch {try_eval} msg] $msg
+} {1 {wrong # args: try_eval code catch ?finally?}}
+
+test try_eval-1.2 {try_eval argument checking} {
+    list [catch {try_eval badcommand} msg] $msg
+} {1 {wrong # args: try_eval code catch ?finally?}}
+
+test try_eval-1.3 {try_eval argument checking} {
+    list [catch {try_eval badcommand badcommand2 badcommand3 badcommand4} msg]\
+	    $msg
+} {1 {wrong # args: try_eval code catch ?finally?}}
+
+test try_eval-2.1 {try_eval ok result} {
+    init_error_vars "errorInfo-2.1" "errorCode-2.1"
+    set result [test_try_eval_results {
+        concat "try_eval result 2.1"
+    } {
+        error "error should not execute"
+    } {
+        global final
+        set final "finally-2.1"
+        concat "finally result should not be returned"
+    }]
+    global final
+    concat $result $final
+} {0 {try_eval result 2.1} errorInfo-2.1 errorCode-2.1 finally-2.1}
+
+test try_eval-2.2 {try_eval ok result} {
+    init_error_vars "errorInfo-2.2" "errorCode-2.2"
+    set result [test_try_eval_results {
+        concat "try_eval result 2.2"
+    } {
+        error "error should not execute"
+    }
+    ]
+    list $result
+} {{0 {try_eval result 2.2} errorInfo-2.2 errorCode-2.2}}
+
+
+test try_eval-2.3 {try_eval ok result} {
+    init_error_vars "errorInfo-2.3" "errorCode-2.3"
+    set result [test_try_eval_results {
+        concat "try_eval result 2.3"
+    } {} {
+        global final
+        set final "finally-2.3"
+        concat "finally result should not be returned"
+    }
+    ]
+    global final
+    concat $result $final
+} {0 {try_eval result 2.3} errorInfo-2.3 errorCode-2.3 finally-2.3}
+
+test try_eval-3.1 {try_eval error result} {
+    init_error_vars "errorInfo-3.1" "errorCode-3.1"
+    set result [test_try_eval_results {
+        error "try_eval error 3.1" errorInfo-error-3.1 errorCode-error-3.1
+    } {
+        error "cont: $errorResult" "cont: $errorInfo" "cont: $errorCode"
+    } {
+        catch {error bow wow arf} ;# Hose errorInfo/Code
+        global final
+        set final "finally-3.1"
+        concat "finally result should not be returned"
+    }
+    ]
+    global final
+    concat $result $final
+} {1 {cont: try_eval error 3.1} {cont: errorInfo-error-3.1
+    invoked from within
+"try_eval $code $catch $finally"
+    (procedure "test_try_eval" line 2)
+    invoked from within
+"test_try_eval $code $catch $finally"} {cont: errorCode-error-3.1} finally-3.1}
+
+
+test try_eval-3.2 {try_eval error result} {
+    init_error_vars "errorInfo-3.2" "errorCode-3.2"
+    set result [test_try_eval_results {
+        error "try_eval error 3.2" errorInfo-error-3.2 errorCode-error-3.2
+    } {
+        error "cont: $errorResult" "cont: $errorInfo" "cont: $errorCode"
+    }
+    ]
+    list $result
+} {{1 {cont: try_eval error 3.2} {cont: errorInfo-error-3.2
+    invoked from within
+"try_eval $code $catch $finally"
+    (procedure "test_try_eval" line 2)
+    invoked from within
+"test_try_eval $code $catch $finally"} {cont: errorCode-error-3.2}}}
+
+
+test try_eval-3.3 {try_eval error result} {
+    init_error_vars "errorInfo-3.3" "errorCode-3.3"
+    set result [test_try_eval_results {
+        error "try_eval error 3.3" errorInfo-error-3.3 errorCode-error-3.3
+    } {} {
+        catch {error bow wow arf} ;# Hose errorInfo/Code
+        global final
+        set final "finally-3.3"
+        concat "finally result should not be returned"
+    }
+    ]
+    global final
+    concat $result $final
+} {1 {try_eval error 3.3} {errorInfo-error-3.3
+    invoked from within
+"try_eval $code $catch $finally"
+    (procedure "test_try_eval" line 2)
+    invoked from within
+"test_try_eval $code $catch $finally"} errorCode-error-3.3 finally-3.3}
+
+test try_eval-3.4 {try_eval error result} {
+    init_error_vars "errorInfo-3.4" "errorCode-3.4"
+    set result [test_try_eval_results {
+        error "try_eval error 3.4" errorInfo-error-3.4 errorCode-error-3.4
+    } {} {
+        catch {error bow wow arf} ;# Hose errorInfo/Code
+        global final
+        set final "finally-3.4"
+        concat "finally result should not be returned"
+    }
+    ]
+    global final
+    list $result $final
+} {{1 {try_eval error 3.4} {errorInfo-error-3.4
+    invoked from within
+"try_eval $code $catch $finally"
+    (procedure "test_try_eval" line 2)
+    invoked from within
+"test_try_eval $code $catch $finally"} errorCode-error-3.4} finally-3.4}
+
+
+test try_eval-3.5 {try_eval error result} {
+    init_error_vars "errorInfo-3.5" "errorCode-3.5"
+    set result [test_try_eval_results {
+        error "try_eval error 3.5" errorInfo-error-3.5 errorCode-error-3.5
+    } {
+        concat "Ok now 3.5"
+    } {
+        catch {error bow wow arf} ;# Hose errorInfo/Code
+        global final
+        set final "finally-3.5"
+        concat "finally result should not be returned"
+    }
+    ]
+    global final
+    concat $result $final
+} {0 {Ok now 3.5} errorInfo-error-3.5 errorCode-error-3.5 finally-3.5}
+
+test try_eval-3.6 {try_eval error result} {
+    init_error_vars "errorInfo-3.6" "errorCode-3.6"
+    set result [test_try_eval_results {
+        error "try_eval error 3.6" errorInfo-error-3.6 errorCode-error-3.6
+    } {
+        concat "Ok now 3.6"
+    }
+    ]
+    list $result
+} {{0 {Ok now 3.6} errorInfo-error-3.6 errorCode-error-3.6}}
+
+
+# cleanup
+::tcltest::cleanupTests
+return

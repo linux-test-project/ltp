@@ -1,0 +1,289 @@
+#
+# cmdtrace.test
+#
+# Tests for the cmdtrace command.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: cmdtrace.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+#
+# Proc to do something to trace.
+#
+proc DoStuff {} {
+    set foo [replicate "-TheString-" 10]
+    set baz $foo
+    set wap 1
+    if {$wap} {
+        set wap 0
+    } else {
+        set wap 1
+    }
+}
+proc DoStuff1 {} {DoStuff}
+proc DoStuff2 {} {DoStuff1}
+proc DoStuff3 {} {DoStuff2}
+proc DoStuff4 {} {DoStuff3}
+
+#
+# Proc to retrieve the output of a trace.  It determines the level of the first
+# line.  This is used to strip off level number and identation from each line.
+# so that all lines will be indented the same amount.  It also closes the
+# trace file.
+
+proc GetTrace {cmdtraceFH} {
+    set result {}
+    seek $cmdtraceFH 0 start
+    if {([gets $cmdtraceFH line] < 2) ||
+            ([scan $line "%d" level] != 1)} {
+        error "*Incorrect format for first line of the trace*"
+    }
+    set nuke [expr ($level*2)+3]
+    seek $cmdtraceFH 0 start
+    while {[gets $cmdtraceFH line] >= 0} {
+        set linelen [clength $line]
+        if {$linelen == 0} {
+            continue}
+        if {$linelen < $nuke} {
+            error "invalid trace line: `$line'"}
+        append result "[crange $line $nuke end]\n"
+    }
+    close $cmdtraceFH
+    return $result
+}
+
+Test cmdtrace-1.1 {command trace: evaluated, truncated} {
+    set cmdtraceFH [open CMDTRACE.OUT w+]
+    cmdtrace on $cmdtraceFH
+    DoStuff4
+    cmdtrace off
+    GetTrace $cmdtraceFH
+} 0 {DoStuff4
+  DoStuff3
+    DoStuff2
+      DoStuff1
+        DoStuff
+          replicate -TheString- 10
+          set foo -TheString--TheString--TheString--TheStr...
+          set baz -TheString--TheString--TheString--TheStr...
+          set wap 1
+          if $wap {\n        set wap 0\n    } else {\n        set wap 1\n    }
+            set wap 0
+cmdtrace off
+}
+
+Test cmdtrace-1.2 {command trace: not evaluated, truncated} {
+    set cmdtraceFH [open CMDTRACE.OUT w+]
+    cmdtrace on $cmdtraceFH noeval
+    DoStuff4
+    cmdtrace off
+    GetTrace $cmdtraceFH
+} 0 "DoStuff4\\n
+  DoStuff3
+    DoStuff2
+      DoStuff1
+        DoStuff
+          replicate \"-TheString-\" 10
+          set foo \[replicate \"-TheString-\" 10\]
+          set baz \$foo
+          set wap 1
+          if {\$wap} {\\n        set wap 0\\n    } else \{\\n        set wap 1...
+            set wap 0
+cmdtrace off\\n
+"
+# ##  Modified by CSDL ##
+#} 0 "    DoStuff4\\n
+#  DoStuff3
+#    DoStuff2
+#      DoStuff1
+#        DoStuff
+#          replicate \"-TheString-\" 10
+#          set foo \[replicate \"-TheString-\" 10\]
+#          set baz \$foo
+#          set wap 1
+#          if {\$wap} {\\n        set wap 0\\n    } else \{\\n        set wap 1...
+#            set wap 0
+#    cmdtrace off\\n
+#"
+
+Test cmdtrace-1.3 {command trace: evaluated, not truncated} {
+    set cmdtraceFH [open CMDTRACE.OUT w+]
+    cmdtrace on $cmdtraceFH notruncate
+    DoStuff4
+    cmdtrace off
+    GetTrace $cmdtraceFH
+} 0 {DoStuff4
+  DoStuff3
+    DoStuff2
+      DoStuff1
+        DoStuff
+          replicate -TheString- 10
+          set foo -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-
+          set baz -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-
+          set wap 1
+          if $wap {\n        set wap 0\n    } else {\n        set wap 1\n    }
+            set wap 0
+cmdtrace off
+}
+
+Test cmdtrace-1.4 {command trace: not evaluated, not truncated} {
+    set cmdtraceFH [open CMDTRACE.OUT w+]
+    cmdtrace on $cmdtraceFH notruncate noeval
+    DoStuff4
+    cmdtrace off
+    GetTrace $cmdtraceFH
+} 0 {DoStuff4\n
+  DoStuff3
+    DoStuff2
+      DoStuff1
+        DoStuff
+          replicate "-TheString-" 10
+          set foo [replicate "-TheString-" 10]
+          set baz $foo
+          set wap 1
+          if {$wap} {\n        set wap 0\n    } else {\n        set wap 1\n    }
+            set wap 0
+cmdtrace off\n
+}
+# ## Modified by CSDL ##
+#} 0 {    DoStuff4\n
+#  DoStuff3
+#    DoStuff2
+#      DoStuff1
+#        DoStuff
+#          replicate "-TheString-" 10
+#          set foo [replicate "-TheString-" 10]
+#          set baz $foo
+#          set wap 1
+#          if {$wap} {\n        set wap 0\n    } else {\n        set wap 1\n    }
+#            set wap 0
+#    cmdtrace off\n
+#}
+
+Test cmdtrace-2.1 {command trace argument error checking} {
+    cmdtrace foo
+} 1 {expected integer but got "foo"}
+
+Test cmdtrace-2.2 {command trace argument error checking} {
+    cmdtrace on foo
+} 1 {invalid option: expected one of "noeval", "notruncate", "procs", "command", or a file id}
+
+Test cmdtrace-2.3 {command trace argument error checking} {
+    catch {close file20}
+    cmdtrace on file20
+} 1 {can not find channel named "file20"}
+
+Test cmdtrace-2.5 {command trace argument error checking} {
+    cmdtrace on command
+} 1 {command option requires an argument}
+
+Test cmdtrace-2.6 {command trace argument error checking} {
+    cmdtrace on file20 command arf
+} 1 {can not specify both the command option and a file handle}
+
+
+# cmdtrace callback.  Can't log level as it might change depending on how
+# the test is run.
+
+set traceout {}
+proc ctcallback {clientdata command argv evalLevel procLevel args} {
+    global traceout
+    expr $evalLevel+1  ;# Error if not a number
+    expr $procLevel+1
+    lappend traceout [list $clientdata $command $argv $args]
+    catch {badcommand}
+}
+
+Test cmdtrace-3.1 {command trace argument error checking} {
+    set errorInfo ERRORINFO
+    set errorCode ERRORCODE
+    cmdtrace on command "ctcallback CD"
+    DoStuff4
+    cmdtrace off
+    lappend traceout $errorInfo $errorCode
+    set traceout
+} 0 [list {CD {{DoStuff4
+}} DoStuff4 {}} \
+{CD DoStuff3 DoStuff3 {}} \
+{CD DoStuff2 DoStuff2 {}} \
+{CD DoStuff1 DoStuff1 {}} \
+{CD DoStuff DoStuff {}} \
+{CD {{replicate "-TheString-" 10}} {{replicate -TheString- 10}} {}} \
+{CD {{set foo [replicate "-TheString-" 10]}} {{set foo -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-}} {}} \
+{CD {{set baz $foo}} {{set baz -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-}} {}} \
+{CD {{set wap 1}} {{set wap 1}} {}} \
+{CD {{if {$wap} {
+        set wap 0
+    } else {
+        set wap 1
+    }}} {{if {$wap} {
+        set wap 0
+    } else {
+        set wap 1
+    }}} {}} \
+{CD {{set wap 0}} {{set wap 0}} {}} \
+{CD {{cmdtrace off
+}} {{cmdtrace off}} {}}\
+ERRORINFO \
+ERRORCODE]
+# ## Modified by CSDL ##
+#}} DoStuff4 {}} \
+#{CD DoStuff3 DoStuff3 {}} \
+#{CD DoStuff2 DoStuff2 {}} \
+#{CD DoStuff1 DoStuff1 {}} \
+#{CD DoStuff DoStuff {}} \
+#{CD {{replicate "-TheString-" 10}} {{replicate -TheString- 10}} {}} \
+#{CD {{set foo [replicate "-TheString-" 10]}} {{set foo -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-}} {}} \
+#{CD {{set baz $foo}} {{set baz -TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString--TheString-}} {}} \
+#{CD {{set wap 1}} {{set wap 1}} {}} \
+#{CD {{if {$wap} {
+#        set wap 0
+#    } else {
+#        set wap 1
+#    }}} {{if {$wap} {
+#        set wap 0
+#    } else {
+#        set wap 1
+#    }}} {}} \
+#{CD {{set wap 0}} {{set wap 0}} {}} \
+#{CD {{    cmdtrace off
+#}} {{cmdtrace off}} {}}\
+#ERRORINFO \
+#ERRORCODE]
+
+test cmdtrace-3.2 {command trace argument error checking} {
+    removeFile script
+    makeFile {
+	package require Tclx
+        puts [list [catch {
+	    cmdtrace on command {foo $NOTDEFINED}
+	    info globals
+	} msg] $msg $errorInfo]
+    } {script}
+    exec $::tcltest::tcltest script
+} {1 {can't read "NOTDEFINED": no such variable} {can't read "NOTDEFINED": no such variable
+    while executing
+"foo $NOTDEFINED {{info globals}} {{info globals}} 2 0"
+    ("cmdtrace" callback command)
+    invoked from within
+"info globals"}}
+
+TestRemove CMDTRACE.OUT
+
+# cleanup
+::tcltest::cleanupTests
+return

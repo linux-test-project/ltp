@@ -1,0 +1,88 @@
+#
+# lmatch.test
+#
+# Tests for the lmatch command.
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+set x {abcd bbcd 123 234 345 445}
+
+Test lmatch-1.1 {lmatch command} {
+    lmatch $x 123
+} 0 "123"
+
+Test lmatch-1.2 {lmatch command} {
+    lmatch $x 3456
+} 0 ""
+
+Test lmatch-1.3 {lmatch command} {
+    lmatch $x *5
+} 0 "345 445"
+
+Test lmatch-1.4 {lmatch command} {
+    lmatch $x *bc*
+} 0 "abcd bbcd"
+
+Test lmatch-1.5 {lmatch command} {
+    lmatch {} *bc*
+} 0 {}
+
+Test lmatch-2.1 {search modes} {
+    lmatch -exact {xyz bbcc *bc*} *bc*
+} 0 {*bc*}
+
+Test lmatch-2.2 {search modes} {
+    lmatch -exact {b.x ^bc xy bcx ^bc} ^bc
+} 0 {^bc ^bc}
+
+Test lmatch-2.2.1 {search modes} {
+    lmatch -exact [list a\0A a b\0a a\0A] a\0A
+} 0 [list a\0A  a\0A]
+
+Test lmatch-2.3 {search modes} {
+    lmatch -regexp {xyz bbcc *bc*} *bc*
+} 1 {couldn't compile regular expression pattern: quantifier operand invalid}
+
+Test lmatch-2.4 {search modes} {
+    lmatch -regexp {b.x ^bc xy bcx bca} ^bc
+} 0 {bcx bca}
+
+Test lmatch-2.5 {search modes} {
+    lmatch -glob {xyz bbcc *bc* abcd} *bc*
+} 0 {bbcc *bc* abcd}
+
+Test lmatch-2.6 {search modes} {
+    lmatch -glob {b.x ^bc xy bcx} ^bc
+} 0 {^bc}
+
+Test lmatch-2.7 {search modes} {
+    lmatch -glib {b.x bx xy bcx} b.x
+} 1 {bad search mode "-glib": must be -exact, -glob, or -regexp}
+
+Test lmatch-3.1 {lmatch errors} {
+    lmatch
+} 1 {wrong # args: lmatch ?mode? list pattern}
+
+Test lmatch-3.2 {lmatch errors} {
+    lmatch a
+} 1 {wrong # args: lmatch ?mode? list pattern}
+
+Test lmatch-3.3 {lmatch errors} {
+    lmatch a b c
+} 1 {bad search mode "a": must be -exact, -glob, or -regexp}
+
+Test lmatch-3.4 {lmatch errors} {
+    lmatch a b c d
+} 1 {wrong # args: lmatch ?mode? list pattern}
+
+Test lmatch-3.5 {lmatch errors} {
+    lmatch "\{" b
+} 1 {unmatched open brace in list}
+
+
+# cleanup
+::tcltest::cleanupTests
+return

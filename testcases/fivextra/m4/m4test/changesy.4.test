@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# generated-tests/changesy.4.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 2238
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+define(`foo', `bar')
+changesyntax(`@@')
+foo
+@foo
+@changesyntax(`@\', `O@')
+foo
+@foo
+\foo
+define(`#', `No comment')
+\define(`#', `No comment')
+\# \foo # Comment \foo
+EOF
+
+cat <<\EOF >ok
+
+
+foo
+bar
+
+foo
+@foo
+bar
+define(#, No comment)
+
+No comment bar # Comment \foo
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

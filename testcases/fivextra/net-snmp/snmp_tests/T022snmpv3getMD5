@@ -1,0 +1,22 @@
+#!/bin/sh
+
+. ../eval_tools.sh
+
+HEADER SNMPv3 get using initial/MD5 of .1.3.6.1.2.1.1.3.0
+
+#
+# Begin test
+#
+
+# standard V3 configuration for initial user
+. ./Sv3config
+
+STARTAGENT
+
+CAPTURE "snmpget -On $SNMP_FLAGS -v 3 -a MD5 -A initial_test_pass_auth -l anp -u initial udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.3.0"
+
+STOPAGENT
+
+CHECK ".1.3.6.1.2.1.1.3.0 = Timeticks:"
+
+FINISHED

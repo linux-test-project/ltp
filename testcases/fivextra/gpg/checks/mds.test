@@ -1,0 +1,40 @@
+#!/bin/bash
+
+
+. $srcdir/defs.inc || exit 3
+
+
+test_one () {
+   if [ "`grep $1 y | sed -e 's/.*=[ ]\(.*\)/\1/' -e 's/ //g'`" != "$2" ]; then
+	failed="$failed $1"
+   fi
+}
+
+failed=""
+
+#info Checking message digests
+cat /dev/null | $srcdir/run-gpg -v --print-mds >y
+test_one "MD5"    "D41D8CD98F00B204E9800998ECF8427E"
+test_one "SHA1"   "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
+test_one "RMD160" "9C1185A5C5E9FC54612808977EE8F548B2258D31"
+if have_hash_algo "TIGER"; then
+  test_one "TIGER"  "24F0130C63AC933216166E76B1BB925FF373DE2D49584E7A"
+else
+  echo "Hash algorithm TIGER/192 is not installed"
+fi
+
+[ "$failed" != "" ] && error "$failed failed for empty string"
+
+echo_n "abcdefghijklmnopqrstuvwxyz" | $srcdir/run-gpg --print-mds >y
+test_one "MD5"    "C3FCD3D76192E4007DFB496CCA67E13B"
+test_one "SHA1"   "32D10C7B8CF96570CA04CE37F2A19D84240D3A89"
+test_one "RMD160" "F71C27109C692C1B56BBDCEB5B9D2865B3708DBC"
+if have_hash_algo "TIGER"; then
+  test_one "TIGER"  "307DE5EE72A414172A0355CCBF120404E9EE7BF32F60110B"
+fi
+
+
+[ "$failed" != "" ] && error "$failed failed for a..z"
+
+exit 0
+

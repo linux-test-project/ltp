@@ -1,0 +1,74 @@
+#
+# id.test
+#
+# Tests for the id command.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: id.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+# FIX: These are very basic tests.  Better are needed.
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+if [cequal $tcl_platform(platform) windows] {
+    echo "    * The id command tests have not been ported to Win32" 
+    return
+}
+
+Test id-1.1 {id arg checking} {
+    id
+} 1 {wrong # args: id arg ?arg...?}
+
+Test id-1.2 {id arg checking} {
+    id x
+} 1 {second arg must be one of "convert", "effective", "process", "user", "userid", "group", "groupid", "groups", "groupids", or "host"}
+
+
+Test id-2.1 {id convert arg checking} {
+    id convert x
+} 1 {wrong # args: id convert type value}
+
+Test id-2.2 {id convert arg checking} {
+    id convert x y
+} 1 {third arg must be "user", "userid", "group" or "groupid", got "x"}
+
+Test id-3.1 {id convert} {
+    id convert user root
+} 0 {0}
+
+Test id-4.2 {id convert} {
+    id convert userid 0
+} 0 {root}
+
+# FIX: Add  "group" or "groupid"
+
+# FIX: ADD:
+#     effective
+#     process
+#     user
+#     userid
+#     group
+#     groupid
+#     groups
+#     groupids
+#     host
+
+# FIX: Make sure this doesn't core dump./
+id groups
+
+# cleanup
+::tcltest::cleanupTests
+return

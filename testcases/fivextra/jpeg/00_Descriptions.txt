@@ -1,0 +1,3 @@
+jpeg
+
+	Test the jpeg package

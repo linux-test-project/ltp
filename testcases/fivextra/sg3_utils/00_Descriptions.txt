@@ -1,0 +1,11 @@
+-------------------------------------
+IBM CSDL testsuite for sg3_utils.sh
+------------------------------------
+Refer to the README file of the sourcecode, CSDL add this sg3_utils.sh to
+test the commands  
+
+Before run the sg3_utils.sh
+1. Be root user
+2. already install the sg3_utils package 
+3. installed sg device on test host 
+4. testcase need "line" "cut"  commands

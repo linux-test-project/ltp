@@ -1,0 +1,64 @@
+# This file is a Tcl script to test out Tk's "bell" command.
+# It is organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1994 The Regents of the University of California.
+# Copyright (c) 1998-2000 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: bell.test,v 1.1 2005/03/22 17:52:19 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test bell-1.1 {bell command} {
+    list [catch {bell a} msg] $msg
+} {1 {bad option "a": must be -displayof or -nice}}
+test bell-1.2 {bell command} {
+    list [catch {bell a b} msg] $msg
+} {1 {bad option "a": must be -displayof or -nice}}
+test bell-1.3 {bell command} {
+    list [catch {bell -displayof gorp} msg] $msg
+} {1 {bad window path name "gorp"}}
+test bell-1.4 {bell command} {
+    list [catch {bell -nice -displayof} msg] $msg
+} {1 {wrong # args: should be "bell ?-displayof window? ?-nice?"}}
+test bell-1.5 {bell command} {
+    list [catch {bell -nice -nice -nice} msg] $msg
+} {0 {}}
+test bell-1.6 {bell command} {
+    list [catch {bell -displayof . -nice} msg] $msg
+} {0 {}}
+test bell-1.7 {bell command} {
+    list [catch {bell -nice -displayof . -nice} msg] $msg
+} {1 {wrong # args: should be "bell ?-displayof window? ?-nice?"}}
+test bell-1.8 {bell command} {
+    puts "Bell should ring now ..."
+    flush stdout
+    after 200
+    bell -displayof .
+    after 200
+    bell -nice
+    after 200
+    bell
+} {}
+
+# cleanup
+::tcltest::cleanupTests
+return
+
+
+
+
+
+
+
+
+
+
+
+
+

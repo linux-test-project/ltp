@@ -1,0 +1,67 @@
+#! /bin/sh
+# $OpenLDAP: pkg/ldap/tests/scripts/test001-slapadd,v 1.19.2.4 2000/07/29 01:53:18 kurt Exp $
+
+if test $# -eq 0 ; then
+	SRCDIR="."
+else
+	SRCDIR=$1; shift
+fi
+if test $# -eq 1 ; then
+	BACKEND=$1; shift
+fi
+
+echo "running defines.sh $SRCDIR $BACKEND"
+
+. $SRCDIR/scripts/defines.sh
+
+echo "Datadir is $DATADIR"
+
+echo "Cleaning up in $DBDIR..."
+
+rm -f $DBDIR/[!C]*
+
+echo "Running slapadd to build slapd database..."
+$SLAPADD -f $CONF -l $LDIF
+RC=$?
+if test $RC != 0 ; then
+	echo "slapadd failed ($RC)!"
+	exit $RC
+fi
+
+echo "Starting slapd on TCP/IP port $PORT..."
+$SLAPD -f $CONF -h $MASTERURI -d $LVL $TIMING > $MASTERLOG 2>&1 &
+PID=$!
+
+echo "Using ldapsearch to retrieve all the entries..."
+for i in 0 1 2 3 4 5; do
+	$LDAPSEARCH -S "" -b "$BASEDN" -h localhost:$PORT > $SEARCHOUT 2>&1
+	RC=$?
+	if test $RC = 1 ; then
+		echo "Waiting 5 seconds for slapd to start..."
+		sleep 5
+	fi
+done
+
+kill -HUP $PID
+
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	exit $RC
+fi
+
+echo "Filtering ldapsearch results..."
+. $SRCDIR/scripts/acfilter.sh < $SEARCHOUT > $SEARCHFLT
+echo "Filtering original ldif used to create database..."
+. $SRCDIR/scripts/acfilter.sh < $LDIF > $LDIFFLT
+echo "Comparing filter output..."
+$CMP $SEARCHFLT $LDIFFLT > $CMPOUT
+
+if test $? != 0 ; then
+	echo "comparison failed - database was not created correctly"
+	exit 1
+fi
+
+echo ">>>>> Test succeeded"
+
+
+exit 0

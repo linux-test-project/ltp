@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# trace.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/trace.m4 >in
+
+cat <<\EOF >ok
+
+# Debugmode t
+
+Move one disk from source to auxilliary.
+Move one disk from source to destination.
+Move one disk from auxilliary to destination.
+
+
+# Debugmode taeq
+
+Move one disk from source to auxilliary.
+Move one disk from source to destination.
+Move one disk from auxilliary to destination.
+
+
+# Debugmode OFF
+
+Move one disk from source to auxilliary.
+Move one disk from source to destination.
+Move one disk from auxilliary to destination.
+
+
+# Debugmode ae
+
+
+Move one disk from source to auxilliary.
+Move one disk from source to destination.
+Move one disk from auxilliary to destination.
+
+EOF
+
+cat <<\EOF >okerr
+m4trace: -1- hanoi
+m4trace: -1- _hanoi
+m4trace: -2- eval
+m4trace: -1- ifelse
+m4trace: -2- decr
+m4trace: -1- _hanoi
+m4trace: -2- eval
+m4trace: -1- ifelse
+m4trace: -1- move
+m4trace: -1- move
+m4trace: -2- decr
+m4trace: -1- _hanoi
+m4trace: -2- eval
+m4trace: -1- ifelse
+m4trace: -1- move
+
+m4trace: -1- hanoi(`2') -> `_hanoi(`2', source, destination, auxilliary)'
+m4trace: -1- _hanoi(`2', `source', `destination', `auxilliary') -> `ifelse(eval(`2'<=1), 1, `move(source, destination)',
+`_hanoi(decr(2), source, auxilliary, destination)move(source, destination)_hanoi(decr(2), auxilliary, destination, source)')'
+m4trace: -2- eval(`2<=1') -> `0'
+m4trace: -1- ifelse(`0', `1', `move(source, destination)', `_hanoi(decr(2), source, auxilliary, destination)move(source, destination)_hanoi(decr(2), auxilliary, destination, source)') -> `_hanoi(decr(2), source, auxilliary, destination)move(source, destination)_hanoi(decr(2), auxilliary, destination, source)'
+m4trace: -2- decr(`2') -> `1'
+m4trace: -1- _hanoi(`1', `source', `auxilliary', `destination') -> `ifelse(eval(`1'<=1), 1, `move(source, auxilliary)',
+`_hanoi(decr(1), source, destination, auxilliary)move(source, auxilliary)_hanoi(decr(1), destination, auxilliary, source)')'
+m4trace: -2- eval(`1<=1') -> `1'
+m4trace: -1- ifelse(`1', `1', `move(source, auxilliary)', `_hanoi(decr(1), source, destination, auxilliary)move(source, auxilliary)_hanoi(decr(1), destination, auxilliary, source)') -> `move(source, auxilliary)'
+m4trace: -1- move(`source', `auxilliary') -> `Move one disk from `source' to `auxilliary'.
+'
+m4trace: -1- move(`source', `destination') -> `Move one disk from `source' to `destination'.
+'
+m4trace: -2- decr(`2') -> `1'
+m4trace: -1- _hanoi(`1', `auxilliary', `destination', `source') -> `ifelse(eval(`1'<=1), 1, `move(auxilliary, destination)',
+`_hanoi(decr(1), auxilliary, source, destination)move(auxilliary, destination)_hanoi(decr(1), source, destination, auxilliary)')'
+m4trace: -2- eval(`1<=1') -> `1'
+m4trace: -1- ifelse(`1', `1', `move(auxilliary, destination)', `_hanoi(decr(1), auxilliary, source, destination)move(auxilliary, destination)_hanoi(decr(1), source, destination, auxilliary)') -> `move(auxilliary, destination)'
+m4trace: -1- move(`auxilliary', `destination') -> `Move one disk from `auxilliary' to `destination'.
+'
+m4trace: -1- debugmode
+m4trace: -1- _hanoi(2, source, destination, auxilliary) -> ifelse(eval(`2'<=1), 1, `move(source, destination)',
+`_hanoi(decr(2), source, auxilliary, destination)move(source, destination)_hanoi(decr(2), auxilliary, destination, source)')
+m4trace: -1- _hanoi(1, source, auxilliary, destination) -> ifelse(eval(`1'<=1), 1, `move(source, auxilliary)',
+`_hanoi(decr(1), source, destination, auxilliary)move(source, auxilliary)_hanoi(decr(1), destination, auxilliary, source)')
+m4trace: -1- move(source, auxilliary) -> Move one disk from `source' to `auxilliary'.
+
+m4trace: -1- move(source, destination) -> Move one disk from `source' to `destination'.
+
+m4trace: -1- _hanoi(1, auxilliary, destination, source) -> ifelse(eval(`1'<=1), 1, `move(auxilliary, destination)',
+`_hanoi(decr(1), auxilliary, source, destination)move(auxilliary, destination)_hanoi(decr(1), source, destination, auxilliary)')
+m4trace: -1- move(auxilliary, destination) -> Move one disk from `auxilliary' to `destination'.
+
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok && $CMP -s err okerr

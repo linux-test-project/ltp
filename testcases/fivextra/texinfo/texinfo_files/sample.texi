@@ -1,0 +1,49 @@
+\input texinfo
+@c --------------------------
+@c -*-texinfo-*-
+@c %**start of header
+@setfilename sample.info
+@settitle sample texi format document
+@c %**end of header
+@c --------------------------
+
+@node Top
+@top sample texi format document
+
+@c --------------------------
+@menu
+* First Chapter::    The first chapter is the
+only chapter in this sample.
+* Index::            Complete index.
+@end menu
+@c --------------------------
+
+@c --------------------------
+@node First Chapter
+@chapter First Chapter
+
+@cindex chapter, first
+
+This is the first chapter.
+@cindex index entry, another
+
+Here is a numbered list.
+
+@enumerate
+@item
+This is the first item.
+
+@item
+This is the second item.
+@end enumerate
+@c --------------------------
+
+@c --------------------------
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye
+@c --------------------------
+

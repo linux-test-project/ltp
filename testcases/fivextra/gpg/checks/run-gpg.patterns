@@ -1,0 +1,20 @@
+gpg: Good signature from
+gpg:                 aka "
+gpg: Signature made
+gpg: ./trustdb.gpg: trustdb created
+gpg: NOTE: cipher algorithm 3 not found in preferences
+gpg: NOTE: cipher algorithm 4 not found in preferences
+gpg: NOTE: secret key 2E5FA4F4 is NOT protected.
+gpg: NOTE: secret key 439F02CA is NOT protected.
+gpg: WARNING: using insecure random number generator
+gpg: NOTE: signature key expired
+NOTE: this is a development version!
+gpg: encrypted with 
+"test two (no pp) <two@test.nowhere.nil>"
+"Test one (pp=def) <one@test.nowhere.nil>"
+"pgp5 test <pgp5@dev.null>"
+gpg: using secondary key
+secret key 9D266E0F expired at
+: expired at
+gpg: Note: This key has expired!
+gpg: Fingerprint: 0826 1CB7 C976 5344 E207  4184 3C6B BBE6 9D26 6E0F

@@ -1,0 +1,11 @@
+-------------------------------------
+IBM CSDL testsuite for libraw1394
+------------------------------------
+Refer to the sourcecode, CSDL add this libraw1394.sh to
+test the libraw1394 
+  libraw1394 is the only supported interface to the kernel side raw1394 of the Linux IEEE-1394 subsystem, which provides direct access to the connected 1394 buses to user space.  Through libraw1394/raw1394, applications can directly send to and receive from other nodes without requiring a kernel driver for the
+protocol in question.
+
+Before run the dmidecode_test.sh:
+1. Be root user
+2. already install the libraw1394 package, include command "testlibraw"

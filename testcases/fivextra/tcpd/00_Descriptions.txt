@@ -1,0 +1,2 @@
+tcpd_test01
+	check basic functionality of tcpd (tcp wrappers) check if adding entry or deleting entry from hosts.deny file will actuall deny or grant access to ssh

@@ -1,0 +1,2 @@
+rdate.sh
+	testcase for the rdate package.

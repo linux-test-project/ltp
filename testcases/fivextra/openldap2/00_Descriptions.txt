@@ -1,0 +1,2 @@
+openldap2.sh
+	testcase for the openldap2 package.

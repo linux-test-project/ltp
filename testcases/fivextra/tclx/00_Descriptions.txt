@@ -1,0 +1,6 @@
+tclx  
+	Test the functionality of tclx.
+
+Note:
+1. In fcntl.test and compact/server.test, there is socket tests that need the aid of echo server. To run these tests, you need to modify inetd/xinetd's configuratation and set echo server to work, otherwise these tests will simply be skipped.
+2. Because lack of file "/usr/lib/tclx8.4/buildidx.tcl", tcllib.test and compact/server.test will show some error. It seems to be a bug of Tclx source package's Makefile.  

@@ -1,0 +1,3 @@
+sysconfig
+
+	test the ifuser utility from the sysconfig package

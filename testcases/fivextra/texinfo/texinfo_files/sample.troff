@@ -1,0 +1,146 @@
+x T ps
+x res 72000 1 1
+x init
+p1
+x font 5 TR
+f5
+s10000
+V84000
+H99500
+tsample
+wh2500
+tte
+H137400
+txi
+wh2500
+tformat
+wh2500
+tdocument
+n12000 0
+V768000
+H504000
+n12000 0
+V792000
+p2
+x font 5 TR
+f5
+s10000
+V48000
+H72000
+t2
+h310220
+tsample
+h2500
+tte
+H425120
+txi
+h2500
+tformat
+h2500
+tdocument
+n12000 0
+x font 6 TB
+f6
+V84000
+H72000
+t1.
+wh5000
+tFirst
+h2500
+tChapter
+wh2500
+n12000 0
+f5
+V103200
+H97000
+tThis
+wh2500
+tis
+wh2500
+tthe
+wh2500
+Cfi
+h5560
+trst
+wh2500
+tchapter
+H188110
+t.
+n12000 0
+V118800
+H97000
+tHere
+wh2500
+tis
+wh2500
+ta
+wh2500
+tnumbered
+wh2500
+tlist.
+n12000 0
+V138000
+H72000
+t1.
+h17500
+tThis
+wh2500
+tis
+wh2500
+tthe
+wh2500
+Cfi
+h5560
+trst
+wh2500
+titem.
+n12000 0
+V157200
+H72000
+t2.
+h17500
+tThis
+wh2500
+tis
+wh2500
+tthe
+wh2500
+tsecond
+wh2500
+titem.
+n12000 0
+V768000
+H504000
+n12000 0
+V792000
+p3
+x font 5 TR
+f5
+s10000
+V48000
+H72000
+tsample
+h2500
+tte
+H109900
+txi
+h2500
+tformat
+h2500
+tdocument
+h310220
+t3
+n12000 0
+x font 6 TB
+f6
+V84000
+H72000
+tIndex
+wh2500
+n12000 0
+V768000
+H504000
+n12000 0
+x trailer
+V792000
+x stop

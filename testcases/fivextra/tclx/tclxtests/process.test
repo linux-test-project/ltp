@@ -1,0 +1,208 @@
+#
+# process.test
+#
+# Tests for the fork, execl and  wait commands.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: process.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+test process-1.1.pc {fork, execl, wait tests} {pcOnly} {
+    removeFile script
+    makeFile {after 1000;update;exit 12} script
+    set newPid [execl $::tcltest::tcltest script]
+    lrange [wait $newPid] 1 end
+} {EXIT 12}
+
+if {[cequal $tcl_platform(platform) windows]} { ;# WIN32???
+    echo process win32 work not completed, tests skipped.
+    return
+}
+
+#
+# Fork without exec will not work under Tk, skip this test
+#
+if {[info exists tk_version]} {
+    puts "*************************************************************"
+    puts "Process tests are constructed in a way that does not work"
+    puts "under Tk.  Test skipped."
+    puts "*************************************************************"
+    return
+}
+
+# Test fork, execl, and wait commands.
+
+test process-1.1.unix {fork, execl, wait tests} {unixOnly} {
+    set newPid [fork]
+    if {$newPid == 0} {
+	removeFile script
+	makeFile {after 1000;update;exit 12} script
+        catch {execl $::tcltest::tcltest script} msg
+        puts stderr "execl failed 1.1: $msg"
+        exit 1
+    }
+    lrange [wait $newPid] 1 end
+} {EXIT 12}
+
+test process-1.2 {fork, execl, wait tests} {
+    set newPid [ForkLoopingChild]
+    sleep 1
+
+    kill $newPid
+    lrange [wait $newPid] 1 end
+} {SIG SIGTERM}
+
+set newPid1 [ForkLoopingChild]
+set newPid2 [ForkLoopingChild]
+
+test process-1.3 {fork, execl, wait tests} {
+    sleep 3 ;# Give em a chance to get going.
+
+    kill [list $newPid1 $newPid2]
+    list [wait $newPid1] [wait $newPid2]
+} [list "$newPid1 SIG SIGTERM" "$newPid2 SIG SIGTERM"]
+
+test process-1.4 {fork, execl, wait tests} {
+    list [catch {fork foo} msg] $msg
+} {1 {wrong # args: fork}}
+
+test process-1.5 {fork, execl, wait tests} {
+    list [catch {wait baz} msg] $msg
+} {1 {invalid pid or process group id "baz"}}
+
+test process-1.6 {fork, execl, wait tests} {
+    set testPid [ForkLoopingChild]
+    kill $testPid
+    set result [wait $testPid]
+    lrange $result 1 end
+} {SIG SIGTERM}
+
+test process-1.7 {fork, execl, wait tests} {unixOnly} {
+    set newPid [fork]
+    if {$newPid == 0} {
+	set script "sleep 1; if test \"\$0\" = \"FOOPROC\"; then\n\
+		exit 10;\nfi\nexit 18;"
+        catch [list execl -argv0 FOOPROC /bin/sh [list -c $script]] msg
+        puts stderr "execl failed 1.7: $msg"
+        exit 1
+    }
+    lrange [wait $newPid] 1 end
+} {EXIT 10}
+
+# Try execl in various wrong ways.  We try it in a separate process, first,
+# in case by error we exec something.
+
+Test process-1.8 {fork, execl, wait tests} {
+    set newPid [fork]
+    if {$newPid == 0} {
+	catch {execl -argv0 FOOPROC}
+	exit 24
+    }
+    if {[lrange [wait $newPid] 1 end] == {EXIT 24}} {
+	execl -argv0 FOOPROC
+    } else {
+        concat "appears to have exec-ed something"
+    }
+} 1 {wrong # args: execl ?-argv0 argv0? prog ?argList?}
+
+Test process-1.9 {fork, execl, wait tests} {
+    removeFile script
+    makeFile {exit 0} {script}
+    set newPid [fork]
+    if {$newPid == 0} {
+	catch {execl -argv0 FOOPROC $::tcltest::tcltest script badarg}
+	exit 23
+    }
+    if {[lrange [wait $newPid] 1 end] == {EXIT 23}} {
+	execl -argv0 FOOPROC $::tcltest::tcltest script badarg
+    } else {
+        concat "appears to have exec-ed something"
+    }
+} 1 {wrong # args: execl ?-argv0 argv0? prog ?argList?}
+
+Test process-1.10 {fork, execl, wait tests} {
+    removeFile script
+    makeFile {exit 0} {script}
+    set newPid [fork]
+    if {$newPid == 0} {
+	catch {execl $::tcltest::tcltest script badarg}
+	exit 24
+    }
+    sleep 1
+    if {[lrange [wait $newPid] 1 end] == {EXIT 24}} {
+	execl $::tcltest::tcltest script badarg
+    }
+} 1 {wrong # args: execl ?-argv0 argv0? prog ?argList?}
+
+Test process-1.11 {fork, execl, wait tests} {
+    set newPid [fork]
+    if {$newPid == 0} {
+	catch {execl}
+	exit 24
+    }
+    sleep 1
+    if {[lrange [wait $newPid] 1 end] == {EXIT 24}} {
+	execl
+    } else {
+        concat "appears to have exec-ed something"
+    }
+} 1 {wrong # args: execl ?-argv0 argv0? prog ?argList?}
+
+Test process-1.12 {fork, execl, wait tests} {
+    set newPid [fork]
+    if {$newPid == 0} {
+	catch {execl -argv0}
+	exit 24
+    }
+    sleep 1
+    if {[lrange [wait $newPid] 1 end] == {EXIT 24}} {
+	execl -argv0
+    } else {
+        concat "appears to have exec-ed something"
+    }
+} 1 {wrong # args: execl ?-argv0 argv0? prog ?argList?}
+
+# Test extended wait functionality, if available.
+
+test process-2.1 {fork, execl, wait tests} {need_waitpid} {
+    set testPid [ForkLoopingChild]
+    set result1 [wait -nohang $testPid]
+    kill $testPid
+    set result2 [wait $testPid]
+    list $result1 [lrange $result2 1 end]
+} {{} {SIG SIGTERM}}
+
+test process-2.2 {fork, execl, wait tests} {need_waitpid} {
+    set testPid [ForkLoopingChild 1]
+    set result1 [wait -nohang -pgroup $testPid]
+    kill $testPid
+    set result2 [wait -pgroup $testPid]
+    list $result1 [lrange $result2 1 end]
+} {{} {SIG SIGTERM}}
+
+test process-2.3 {fork, execl, wait tests} {need_waitpid} {
+    set testPid [ForkLoopingChild 1]
+    set result1 [wait -nohang -pgroup -untraced $testPid]
+    kill $testPid
+    set result2 [wait -pgroup -untraced $testPid]
+    list $result1 [lrange $result2 1 end]
+} {{} {SIG SIGTERM}}
+
+
+# cleanup
+::tcltest::cleanupTests
+return

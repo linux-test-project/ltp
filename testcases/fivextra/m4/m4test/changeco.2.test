@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# generated-tests/changeco.2.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 2028
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+define(`comment', `COMMENT')
+changecom
+# Not a comment anymore
+EOF
+
+cat <<\EOF >ok
+
+
+# Not a COMMENT anymore
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

@@ -1,0 +1,28 @@
+dn: o=University of Michigan, c=US
+objectclass: top
+objectclass: organization
+o: University of Michigan
+
+dn: cn=md5, o=University of Michigan, c=US
+objectclass: top
+objectclass: person
+cn: md5
+userpassword:: e01ENX1YcjRpbE96UTRQQ09xM2FRMHFidWFRPT0=
+
+dn: cn=smd5, o=University of Michigan, c=US
+objectclass: top
+objectclass: person
+cn: smd5
+userpassword: secret
+
+dn: cn=sha, o=University of Michigan, c=US
+objectclass: top
+objectclass: person
+cn: sha
+userpassword:: e1NIQX01ZW42RzZNZXpScm9UM1hLcWtkUE9tWS9CZlE9
+
+dn: cn=ssha, o=University of Michigan, c=US
+objectclass: top
+objectclass: person
+cn: ssha
+userpassword: secret

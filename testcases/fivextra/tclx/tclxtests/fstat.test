@@ -1,0 +1,188 @@
+#
+# fstat.test
+#
+# Tests for the fstat command.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: fstat.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+TestRemove gorp.file
+set gorpFH [open gorp.file w]
+puts $gorpFH "Test string"
+close $gorpFH
+if ![cequal $tcl_platform(platform) windows] { ;# WIN32???
+    chmod 0765 gorp.file
+}
+
+set gorpFH [open gorp.file r+]
+
+test fstat-1.1 {array return} {
+    catch {unset stat}
+    fstat $gorpFH stat stat
+    lsort [array names stat]
+} {atime ctime dev gid ino mode mtime nlink size tty type uid}
+
+if [cequal $tcl_platform(platform) windows] {
+    set expect {1 13 0 file 0}
+} else {
+    set expect {1 12 501 file 0}
+}
+test fstat-1.2 {array return} {
+    catch {unset stat}
+    fstat $gorpFH stat stat
+    list $stat(nlink) $stat(size) [expr $stat(mode)&0777] $stat(type) \
+	    $stat(tty)
+} $expect
+
+if [cequal $tcl_platform(platform) windows] {
+    set expect {0 0 13}
+} else {
+    set expect {1 1 12}
+}
+test fstat-1.3 {array return} {
+    catch {unset stat}
+    fstat $gorpFH stat stat
+    list [expr {[file mtime gorp.file] == $stat(mtime)}] \
+	    [expr {[file atime gorp.file] == $stat(atime)}] $stat(size)
+} $expect
+
+test fstat-2.1 {keyed list returns} {
+    catch {unset stat}
+    set stat [fstat $gorpFH]
+    lsort [keylkeys stat]
+} {atime ctime dev gid ino mode mtime nlink size tty type uid}
+
+if [cequal $tcl_platform(platform) windows] {
+    set expect {1 13 0 file}
+} else {
+    set expect {1 12 501 file}
+}
+test fstat-2.2 {keyed list returns} {
+    set stat [fstat $gorpFH]
+    list [keylget stat nlink] [keylget stat size] \
+         [expr [keylget stat mode ]&0777] [keylget stat type]
+} $expect
+
+if [cequal $tcl_platform(platform) windows] {
+    set expect {0 0 13}  ;# Can't get times on open file.
+} else {
+    set expect {1 1 12}
+}
+test fstat-2.3 {keyed list returns} {
+    set stat [fstat $gorpFH]
+    list [expr {[file mtime gorp.file] == [keylget stat mtime]}] \
+	    [expr {[file atime gorp.file] == [keylget stat atime]}] \
+            [keylget stat size]
+} $expect
+
+test fstat-3.1 {individual item returns} unixOnly {
+    set old [fstat $gorpFH mtime]
+    sleep 2
+    puts $gorpFH "More text"
+    flush $gorpFH
+    set new [fstat $gorpFH mtime]
+    if {($new > $old) && ($new <= ($old+5))} {
+        concat OK
+    } else {
+        error "Bad mtimes: old = $old, new = $new"
+    }
+} {OK}
+
+test fstat-3.2 {individual item returns} {unixOnly} {
+    # Windows doen't really write to disk till end
+    set oldsize [fstat $gorpFH size]
+    puts $gorpFH "More text"
+    flush $gorpFH
+    expr {[fstat $gorpFH size] - $oldsize}
+} 8
+
+if [cequal $tcl_platform(platform) windows] {
+    set expect 11
+} else {
+    set expect 10
+}
+test fstat-3.3 {individual item returns} {
+    set fh [open fstat.tmp w]
+    set oldsize [fstat $fh size]
+    puts $fh "More text"
+    close $fh
+    set fh [open fstat.tmp]
+    set diff [expr {[fstat $fh size] - $oldsize}]
+    close $fh
+    set diff
+} $expect
+
+test fstat-4.1 {type return} {unixOnly} {
+    set fh [open .]
+    set type [fstat $fh type]
+    close $fh
+    set type
+} directory
+
+test fstat-4.2 {type return} {
+    fstat $gorpFH type
+} file
+
+#
+# Check to see that the values that are returned are at least numeric where
+# expected
+#
+test fstat-4.3 {type return} {
+    set dataList {}
+    foreach type {dev ino mode nlink uid gid size atime mtime ctime tty
+                  type} {
+        set data [fstat $gorpFH $type]
+        if [string match "-*" $data] {
+            set data [csubstr $data 1 end]
+        }
+        lappend dataList [ctype digit $data]
+    }
+    set dataList
+} {1 1 1 1 1 1 1 1 1 1 1 0}
+
+test fstat-5.1 {error handling} {
+    list [catch {fstat} msg] $msg
+} {1 {wrong # args: fstat fileId ?item?|?stat arrayVar?}}
+
+test fstat-5.2 {error handling} {
+    list [catch {fstat foo} msg] $msg
+} {1 {can not find channel named "foo"}}
+
+test fstat-5.3 {error handling} {
+    list [catch {fstat $gorpFH foo} msg] $msg
+} {1 {Got "foo", expected one of "atime", "ctime", "dev", "gid", "ino", "mode", "mtime", "nlink", "size", "tty", "type", "uid", "remotehost", or "localhost"}}
+
+test fstat-5.4 {error handling} {
+    catch {unset foo}
+    list [catch {fstat $gorpFH foo foo} msg] $msg
+} {1 {expected item name of "stat" when using array name}}
+
+test fstat-5.5 {error handling} {
+    catch {unset foo}
+    list [catch {fstat $gorpFH stat foo baz} msg] $msg
+} {1 {wrong # args: fstat fileId ?item?|?stat arrayVar?}}
+
+# FIX: Need localhost/remotehost tests.
+
+catch {close $gorpFH}
+TestRemove gorp.file fstat.tmp
+
+
+# cleanup
+::tcltest::cleanupTests
+return

@@ -1,0 +1,23 @@
+e2fsprogs.sh
+	Test suite to exercise e2fsprogs
+	Robb Romans <robb@austin.ibm.com>
+
+d_loaddump : debugfs load/dump test
+f_bad_local_jnl : test for corrupt local journal
+f_baddir : test fixing corrupted directory entries
+f_baddotdir : test fixing bad '.' and '..' entries
+f_badprimary : test fixing bad blocks in the primary superblock and group descriptors
+f_bitmaps : test fixing corrupted inode and block bitmaps
+f_dirlink : test fixing directory hard links
+f_end-bitmap : test fixing corruption at end of block bitmap
+f_ext_journal : test fixing extended journal
+f_holedir : test fixing directory with holes and illegal blocks
+f_journal : test recovering journal
+f_okgroup : test fixing 8193 block long filesystem
+f_orphan : test clearing orphan inodes
+f_preen : test that preen shouldn't destroy backup superblocks
+f_reconnect : test fixing simple disconnected file inode
+f_swapfs : checking the e2fsck swapfs functionality
+f_zero_group : test fallback for damaged group descriptors
+f_zero_super : test fallback for damaged superblock
+

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# forloop.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/forloop.m4 >in
+
+cat <<\EOF >ok
+
+2**1 = 2
+2**2 = 4
+2**3 = 8
+2**4 = 16
+2**5 = 32
+2**6 = 64
+2**7 = 128
+2**8 = 256
+2**9 = 512
+2**10 = 1024
+
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok

@@ -1,0 +1,9 @@
+krb5-server
+
+	Test a few KDC service things, include create service database,
+	start/stop kdc and kadmin service.
+
+Invoke ./krb5-server.sh to start the test, for detail message read
+	detail description README
+
+TODO:

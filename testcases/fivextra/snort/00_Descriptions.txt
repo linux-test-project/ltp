@@ -1,0 +1,6 @@
+snort.sh:
+	Test suite to test the snort package.
+	Requires expect.
+	Requires godzilla.ltc.austin.ibm.com.
+	Robb Romans <robb@austin.ibm.com>
+

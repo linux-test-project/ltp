@@ -1,0 +1,563 @@
+#
+# keylist.test
+#
+# Tests for the keylget, keylkeys, keylset, and keyldel commands.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: keylist.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+#
+# Some pre-build keyed lists to test with.
+#
+
+set list1 {{keyA valueA} {keyB valueB} {keyD valueD}}
+set list2 {{keyA valueA} {keyB {{keyB1 valueB1} {keyB2 valueB2}}}
+           {keyD valueD}}
+set list3 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}}
+           {B {{BA ba} {BB bb} {BC {{BBB bbb}}}}}}
+set list4 [list [list keyA "value\0A"] [list keyB value\0\1\0B] \
+        [list keyD \0value\0D]]
+
+Test keylist-1.1 {keylget tests} {
+    keylget list1 keyA
+} 0 {valueA}
+
+Test keylist-1.2 {keylget tests} {
+    list [keylget list1 keyA value] $value
+} 0 {1 valueA}
+
+Test keylist-1.3 {keylget tests} {
+    keylget list2 keyD
+} 0 {valueD}
+
+Test keylist-1.4 {keylget tests} {
+    list [keylget list2 keyD value] $value
+} 0 {1 valueD}
+
+Test keylist-1.6 {keylget tests} {
+    keylget list2 keyC value
+} 0 {0}
+
+Test keylist-1.7 {keylget tests} {
+    keylget list2 keyB
+} 0 {{keyB1 valueB1} {keyB2 valueB2}}
+
+Test keylist-1.8 {keylget tests} {
+    keylget list2
+} 0 {keyA keyB keyD}
+
+Test keylist-1.9 {keylget tests} {
+    set keyedlist {}
+    keylget keyedlist keyC value
+} 0 {0}
+
+Test keylist-1.10 {keylget tests} {
+    set keyedlist {}
+    keylget keyedlist
+} 0 {}
+
+Test keylist-1.11 {keylget tests} {
+    set keyedlist $list2
+    keylget keyedlist keyB.keyB1
+} 0 {valueB1}
+
+Test keylist-1.12 {keylget tests} {
+    set keyedlist $list2
+    keylget keyedlist keyB.keyB2
+} 0 {valueB2}
+
+Test keylist-1.13 {keylget tests} {
+    set keyedlist $list3
+    keylget keyedlist C
+} 0 {{CC {{CCC ccc}}}}
+
+Test keylist-1.14 {keylget tests} {
+    set keyedlist $list3
+    keylget keyedlist C.CC
+} 0 {{CCC ccc}}
+
+Test keylist-1.15 {keylget tests} {
+    set keyedlist $list3
+    keylget keyedlist C.CC.CCC
+} 0 {ccc}
+
+Test keylist-1.16 {keylget tests} {
+    set keyedlist $list3
+    keylget keyedlist A.AB
+} 0 {ab}
+
+Test keylist-1.17 {keylget tests} {
+    set keyedlist $list3
+    keylget keyedlist B.BC
+} 0 {{BBB bbb}}
+
+Test keylist-1.18 {keylget tests} {
+    keylget list2 keyC
+} 1 {key "keyC" not found in keyed list}
+
+Test keylist-1.19 {keylget tests} {
+    set keyedlist {{} {keyB valueB} {keyD valueD}}
+    keylget keyedlist keyB
+} 1 {keyed list entry must be a two element list, found ""}
+
+Test keylist-1.20 {keylget tests} {
+    set keyedlist {keyA {keyB valueB} {keyD valueD}}
+    keylget keyedlist keyB
+} 1 {keyed list entry must be a two element list, found "keyA"}
+
+Test keylist-1.21 {keylget tests} {
+    set keyedlist {{{} valueA} {keyB valueB} {keyD valueD}}
+    keylget keyedlist keyB
+} 1 {keyed list key may not be an empty string}
+
+Test keylist-1.21 {keylget tests} {
+    set keyedlist {{{} valueA} {keyB valueB} {keyD valueD}}
+    keylget keyedlist keyB
+} 1 {keyed list key may not be an empty string}
+
+Test keylist-1.24 {keylget tests} {
+    set keyedlist {{{key.A} valueA} {keyB valueB} {keyD valueD}}
+    keylget keyedlist keyB
+} 1 {keyed list key may not contain a "."; it is used as a separator in key paths}
+
+Test keylist-1.25 {keylget tests} {
+    keylget
+} 1 {wrong # args: keylget listvar ?key? ?retvar | {}?}
+
+Test keylist-1.26 {keylget tests} {
+    unset keyedlist
+    keylset keyedlist keyA aaa"bbb
+    keylget keyedlist keyA
+} 0 {aaa"bbb}
+
+Test keylist-1.27 {keylget tests} {
+    keylget list4 keyA
+} 0 "value\0A"
+
+Test keylist-1.28 {keylget tests} {
+    keylget list4 keyB
+} 0 "value\0\1\0B"
+
+Test keylist-1.29 {keylget tests} {
+    keylget list4 keyD
+} 0 "\0value\0D"
+
+
+
+Test keylist-2.1 {keylkeys tests} {
+    keylkeys list1
+} 0 {keyA keyB keyD}
+
+Test keylist-2.2 {keylkeys tests} {
+    keylkeys list2
+} 0 {keyA keyB keyD}
+
+Test keylist-2.3 {keylkeys tests} {
+    keylkeys list2 keyB
+} 0 {keyB1 keyB2}
+
+Test keylist-2.4 {keylkeys tests} {
+    set keyedlist $list3
+    keylkeys keyedlist
+} 0 {C A B}
+
+Test keylist-2.5 {keylkeys tests} {
+    set keyedlist $list3
+    keylkeys keyedlist C
+} 0 {CC}
+
+Test keylist-2.6 {keylkeys tests} {
+    set keyedlist $list3
+    keylkeys keyedlist C.CC
+} 0 {CCC}
+
+Test keylist-2.7 {keylkeys tests} {
+    set keyedlist $list3
+    keylkeys keyedlist B.BC
+} 0 {BBB}
+
+Test keylist-2.8 {keylkeys tests} {
+    keylkeys
+} 1 {wrong # args: keylkeys listvar ?key?}
+
+Test keylist-2.9 {keylkeys tests} {
+    keylkeys list4
+} 0 {keyA keyB keyD}
+
+Test keylist-3.1 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA valueA
+    set keyedlist
+} 0 {{keyA valueA}}
+
+Test keylist-3.2 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA valueA
+    keylset keyedlist keyB valueB
+    set keyedlist
+} 0 {{keyA valueA} {keyB valueB}}
+
+Test keylist-3.3 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA valueA
+    keylset keyedlist keyB valueB keyB valueB2
+    set keyedlist
+} 0 {{keyA valueA} {keyB valueB2}}
+
+Test keylist-3.3.1 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA value\0A
+    keylset keyedlist keyB \0valueB keyB \0value\0\1\0B2
+    set keyedlist
+} 0 [list [list keyA value\0A] [list keyB \0value\0\1\0B2]]
+
+Test keylist-3.4 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA valueA
+    keylset keyedlist keyB valueB
+    keylset keyedlist keyA valueA2 keyB valueB2 keyC valueC
+    set keyedlist
+} 0 {{keyA valueA2} {keyB valueB2} {keyC valueC}}
+
+Test keylist-3.5 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA
+} 1 {wrong # args: keylset listvar key value ?key value...?}
+
+Test keylist-3.6 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist keyA valueA keyB
+} 1 {wrong # args: keylset listvar key value ?key value...?}
+
+Test keylist-3.7 {keylset tests} {
+    catch {unset keyedlist}
+    set keyedlist(foo) 1
+    keylset keyedlist keyA valueA
+} 1 {can't set "keyedlist": variable is array}
+
+Test keylist-3.8 {keylset tests} {
+    catch {unset keyedlist}
+    set keyedlist {{keyA valueA valueBad} {keyB valueB}}
+    keylset keyedlist keyA valueA
+} 1 {keyed list entry must be a two element list, found "keyA valueA valueBad"}
+
+Test keylist-3.8.1 {keylset tests} {
+    catch {unset keyedlist}
+    keylset keyedlist {} valueA
+} 1 {keyed list key may not be an empty string}
+
+Test keylist-3.9 {keylset tests} {
+    set keyedlist {}    
+    keylset keyedlist C.CC.CCC ccc
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}}}
+
+Test keylist-3.10 {keylset tests} {
+    keylset keyedlist A.AA aa
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa}}}}
+
+Test keylist-3.11 {keylset tests} {
+    keylset keyedlist A.AB ab
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}}}
+
+Test keylist-3.12 {keylset tests} {
+    keylset keyedlist B.BA ba
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}} {B {{BA ba}}}}
+
+Test keylist-3.13 {keylset tests} {
+    keylset keyedlist B.BB bb
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}} {B {{BA ba} {BB bb}}}}
+
+Test keylist-3.14 {keylset tests} {
+    keylset keyedlist B.BC.BBB bbb
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}} {B {{BA ba} {BB bb} {BC {{BBB bbb}}}}}}
+
+Test keylist-3.15 {keylset tests} {
+    set keyedlist {}
+    keylset keyedlist ABCDEF value1
+    keylset keyedlist A.SUB  value2
+    list $keyedlist [keylkeys keyedlist]
+} 0 {{{ABCDEF value1} {A {{SUB value2}}}} {ABCDEF A}}
+
+Test keylist-3.16 {keylset tests} {
+    set keyedlist {}
+    keylset keyedlist A.SUB  value1
+    keylset keyedlist ABCDEF value2
+    list $keyedlist [keylkeys keyedlist]
+} 0 {{{A {{SUB value1}}} {ABCDEF value2}} {A ABCDEF}}
+
+Test keylist-4.1 {keyldel tests} {
+    set keyedlist {{keyA valueA} {keyB valueB} {keyD valueD}}
+    keyldel keyedlist keyB
+    set keyedlist
+} 0 {{keyA valueA} {keyD valueD}}
+
+Test keylist-4.2 {keyldel tests} {
+    set keyedlist {{keyA valueA} {keyB valueB} {keyD valueD}}
+    keyldel keyedlist keyB
+    keyldel keyedlist keyA
+    set keyedlist
+} 0 {{keyD valueD}}
+
+Test keylist-4.3 {keyldel tests} {
+    set keyedlist {{keyA valueA} {keyB valueB} {keyD valueD}}
+    keyldel keyedlist keyD
+    keyldel keyedlist keyB
+    keyldel keyedlist keyA
+    set keyedlist
+} 0 {}
+
+Test keylist-4.4 {keyldel tests} {
+    set keyedlist {{keyA valueA} {keyB valueB} {keyD valueD}}
+    keyldel keyedlist keyC
+} 1 {key not found: "keyC"}
+
+Test keylist-4.5 {keyldel tests} {
+    keyldel keyedlist
+} 1 {wrong # args: keyldel listvar key ?key ...?}
+
+Test keylist-4.6 {keyldel tests} {
+    set keyedlist $list3
+    keyldel keyedlist B.BA
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}} {B {{BB bb} {BC {{BBB bbb}}}}}}
+
+Test keylist-4.7 {keyldel tests} {
+    keyldel keyedlist A.AA
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AB ab}}} {B {{BB bb} {BC {{BBB bbb}}}}}}
+
+Test keylist-4.8 {keyldel tests} {
+    keyldel keyedlist C.CC.CCC
+    set keyedlist
+} 0 {{A {{AB ab}}} {B {{BB bb} {BC {{BBB bbb}}}}}}
+
+Test keylist-4.9 {keyldel tests} {
+    keyldel keyedlist A.AB
+    set keyedlist
+} 0 {{B {{BB bb} {BC {{BBB bbb}}}}}}
+
+Test keylist-4.10 {keyldel tests} {
+    keyldel keyedlist B.BC.BBB
+    set keyedlist
+} 0 {{B {{BB bb}}}}
+
+Test keylist-4.11 {keyldel tests} {
+    keyldel keyedlist B.BB
+    set keyedlist
+} 0 {}
+
+Test keylist-4.12 {keyldel tests} {
+    set keyedlist $list3
+    keyldel keyedlist B
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}} {A {{AA aa} {AB ab}}}}
+
+Test keylist-4.13 {keyldel tests} {
+    keyldel keyedlist A
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}}}
+
+Test keylist-4.14 {keyldel tests} {
+    keyldel keyedlist C
+    set keyedlist
+} 0 {}
+
+Test keylist-4.15 {keyldel tests} {
+    set keyedlist $list3
+    keyldel keyedlist B A
+    set keyedlist
+} 0 {{C {{CC {{CCC ccc}}}}}}
+
+# Handling of empty lists.
+
+set keyedlist {}
+
+Test keylist-5.1 {empty keyed list tests} {
+    keylget keyedlist
+} 0 {}
+
+Test keylist-5.2 {empty keyed list tests} {
+    keylkeys keyedlist
+} 0 {}
+
+Test keylist-5.3 {empty keyed list tests} {
+    keylget keyedlist A
+} 1 {key "A" not found in keyed list}
+
+set keyedlist { 	 }
+
+Test keylist-5.4 {empty keyed list tests} {
+    keylget keyedlist
+} 0 {}
+
+Test keylist-5.5 {empty keyed list tests} {
+    keylkeys keyedlist
+} 0 {}
+
+Test keylist-5.6 {empty keyed list tests} {
+    keylget keyedlist A
+} 1 {key "A" not found in keyed list}
+
+
+#
+# Some stress cases. Cause table expansions, etc.
+#
+
+#
+# Proc to recurse through generated keyed list name space and execute
+# commands.  Variables `keyedList', `key' and `depth' maybe use in the
+# commands.
+#
+proc PoundKeyedList {klVar depth field entrySizes leafCmd branchCmd} {
+    upvar $klVar keyedList
+    
+    if [lempty $field] {
+        set separ ""
+    } else {
+        set separ .
+    }
+    set keybase [ctype char [expr [ctype ord A]+$depth]]
+    for {set keyIdx 0} {$keyIdx < [lindex $entrySizes 0]} {incr keyIdx} {
+        set key "${field}${separ}${keybase}_${keyIdx}"
+        if {[llength $entrySizes] > 1} {
+            eval $branchCmd
+            PoundKeyedList keyedList [expr $depth + 1] $key \
+                    [lrange $entrySizes 1 end] $leafCmd $branchCmd
+        } else {
+            eval $leafCmd
+        }
+    }
+}
+
+#
+# Build, access and delete elements from a keyed list which is wide at the top.
+#
+Test keylist-6.0 {large list tests} {
+    set keyedList {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        keylset keyedList $key VAL_$key
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if ![cequal [keylget keyedList $key] VAL_$key] {
+            error "got value of \"[keylget keyedList $key]\", \
+                    expected \"VAL_$key\""
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        keyldel keyedList $key
+    } {}
+    set keyedList
+} 0 {}
+
+#
+# Build, access and delete elements from a keyed list which is wide at the top.
+# Do it with odd keys then even keys, reverse order of access, then again for
+# delete.
+#
+Test keylist-6.1 {large list tests} {
+    set keyedList {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 0} {
+            keylset keyedList $key VAL_$key
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 1} {
+            keylset keyedList $key VAL_$key
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 1} {
+            if ![cequal [keylget keyedList $key] VAL_$key] {
+                error "got value of \"[keylget keyedList $key]\", \
+                        expected \"VAL_$key\""
+            }
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 0} {
+            if ![cequal [keylget keyedList $key] VAL_$key] {
+                error "got value of \"[keylget keyedList $key]\", \
+                        expected \"VAL_$key\""
+            }
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 0} {
+            keyldel keyedList $key
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {50 2 3} {
+        if {($keyIdx % 2) == 1} {
+            keyldel keyedList $key
+        }
+    } {}
+    set keyedList
+} 0 {}
+
+#
+# Build, access and delete elements from a keyed list which is wide in the
+# middle.
+#
+Test keylist-6.2 {large list tests} {
+    set keyedList {}
+    PoundKeyedList keyedList 0 "" {10 30 5} {
+        keylset keyedList $key VAL_$key
+    } {}
+    PoundKeyedList keyedList 0 "" {10 30 5} {
+        if ![cequal [keylget keyedList $key] VAL_$key] {
+            error "got value of \"[keylget keyedList $key]\", \
+                    expected \"VAL_$key\""
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {10 30 5} {
+        keyldel keyedList $key
+    } {}
+    set keyedList
+} 0 {}
+
+#
+# Build, access and delete elements from a keyed list which is deep.
+#
+Test keylist-6.3 {large list tests} {
+    set keyedList {}
+    PoundKeyedList keyedList 0 "" {3 3 3 3 3 3} {
+        keylset keyedList $key VAL_$key
+    } {}
+    PoundKeyedList keyedList 0 "" {3 3 3 3 3 3} {
+        if ![cequal [keylget keyedList $key] VAL_$key] {
+            error "got value of \"[keylget keyedList $key]\", \
+                    expected \"VAL_$key\""
+        }
+    } {}
+    PoundKeyedList keyedList 0 "" {3 3 3 3 3 3} {
+        keyldel keyedList $key
+    } {}
+    set keyedList
+} 0 {}
+
+
+# cleanup
+::tcltest::cleanupTests
+return

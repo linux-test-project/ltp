@@ -1,0 +1,3 @@
+mod_php
+
+	See that the php module for apache can serve up a php web page

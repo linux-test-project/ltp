@@ -1,0 +1,661 @@
+# This file is a Tcl script to test out the "photo" image type and the
+# other procedures in the file tkImgPhoto.c.  It is organized in the
+# standard fashion for Tcl tests.
+#
+# Copyright (c) 1994 The Australian National University
+# Copyright (c) 1994-1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# Author: Paul Mackerras (paulus@cs.anu.edu.au)
+#
+# RCS: @(#) $Id: imgPhoto.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+namespace import -force tcltest::makeFile
+namespace import -force tcltest::removeFile
+
+eval image delete [image names]
+
+canvas .c
+pack .c
+update
+
+set README [makeFile {
+README -- Tk test suite design document.
+} README-imgPhotot]
+
+# find the teapot.ppm file for use in these tests
+# first look in $tk_library/demos/images/teapot.ppm
+# then look in <this file>/../../library/demos/images/teapot.ppm
+testConstraint hasTeapotPhoto 1
+set teapotPhotoFile [file join $tk_library demos images teapot.ppm]
+if {![file exists $teapotPhotoFile]} {
+    set newLib [file dirname [testsDirectory]]
+    set teapotPhotoFile [file join $newLib library demos images teapot.ppm]
+    if {![file exists $teapotPhotoFile]} {
+	testConstraint hasTeapotPhoto
+    }
+}
+
+test imgPhoto-1.1 {options for photo images} {
+    image create photo p1 -width 79 -height 83
+    list [lindex [p1 configure -width] 4] [lindex [p1 configure -height] 4] \
+	[image width p1] [image height p1]
+} {79 83 79 83}
+test imgPhoto-1.2 {options for photo images} {
+    list [catch {image create photo p1 -file no.such.file} err] \
+	[string tolower $err]
+} {1 {couldn't open "no.such.file": no such file or directory}}
+test imgPhoto-1.3 {options for photo images} hasTeapotPhoto {
+    list [catch {image create photo p1 -file $teapotPhotoFile \
+	    -format no.such.format} err] $err
+} {1 {image file format "no.such.format" is not supported}}
+test imgPhoto-1.4 {options for photo images} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile
+    list [image width p1] [image height p1]
+} {256 256}
+test imgPhoto-1.5 {options for photo images} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile \
+	    -format ppm -width 79 -height 83
+    list [image width p1] [image height p1] \
+	[lindex [p1 configure -file] 4] [lindex [p1 configure -format] 4]
+} [list 79 83 $teapotPhotoFile ppm]
+test imgPhoto-1.6 {options for photo images} {
+    image create photo p1 -palette 2/2/2 -gamma 2.2
+    list [format %.1f [lindex [p1 configure -gamma] 4]] \
+	    [lindex [p1 configure -palette] 4]
+} {2.2 2/2/2}
+test imgPhoto-1.7 {options for photo images} {
+    list [catch {image create photo p1 -file $README} err] $err
+} [subst {1 {couldn't recognize data in image file "$README"}}]
+test imgPhoto-1.8 {options for photo images} {
+    list [catch {image create photo -blah blah} err] $err
+} {1 {unknown option "-blah"}}
+
+test imgPhoto-2.1 {ImgPhotoCreate procedure} {
+    eval image delete [image names]
+    catch {image create photo -blah blah}
+    image names
+} {}
+test imgPhoto-2.2 {ImgPhotoCreate procedure} {
+    eval image delete [image names]
+    image create photo image1
+    list [info commands image1] [image names] \
+	    [image width image1] [image height image1]
+} {image1 image1 0 0}
+# test imgPhoto-2.3 {ImgPhotoCreate procedure: creation failure} {
+#     image create photo p1
+#     image create photo p2 -width 10 -height 10
+#     catch {image create photo p2 -file bogus.img} msg
+#     p1 copy p2
+#     set msg
+# } {couldn't open "bogus.img": no such file or directory}
+
+test imgPhoto-3.1 {ImgPhotoConfigureMaster procedure} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile
+    p1 configure -file $teapotPhotoFile
+} {}
+test imgPhoto-3.2 {ImgPhotoConfigureMaster procedure} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile
+    list [catch {p1 configure -file bogus} err] [string tolower $err] \
+	[image width p1] [image height p1]
+} {1 {couldn't open "bogus": no such file or directory} 256 256}
+test imgPhoto-3.3 {ImgPhotoConfigureMaster procedure} hasTeapotPhoto {
+    image create photo p1
+    .c create image 10 10 -image p1 -tags p1.1 -anchor nw
+    .c create image 300 10 -image p1 -tags p1.2 -anchor nw
+    update
+    p1 configure -file $teapotPhotoFile
+    update
+    list [image width p1] [image height p1] [.c bbox p1.1] [.c bbox p1.2]
+} {256 256 {10 10 266 266} {300 10 556 266}}
+
+eval image delete [image names]
+image create photo p1
+.c create image 10 10 -image p1
+update
+
+test imgPhoto-4.1 {ImgPhotoCmd procedure} {
+    list [catch {p1} err] $err
+} {1 {wrong # args: should be "p1 option ?arg arg ...?"}}
+test imgPhoto-4.2 {ImgPhotoCmd procedure} {
+    list [catch {p1 blah} err] $err
+} {1 {bad option "blah": must be blank, cget, configure, copy, data, get, put, read, redither, transparency, or write}}
+test imgPhoto-4.3 {ImgPhotoCmd procedure: blank option} {
+    p1 blank
+    list [catch {p1 blank x} err] $err
+} {1 {wrong # args: should be "p1 blank"}}
+test imgPhoto-4.4 {ImgPhotoCmd procedure: cget option} {
+    list [catch {p1 cget} msg] $msg
+} {1 {wrong # args: should be "p1 cget option"}}
+test imgPhoto-4.5 {ImgPhotoCmd procedure: cget option} {
+    image create photo p2 -width 25 -height 30
+    list [p2 cget -width] [p2 cget -height]
+} {25 30}
+test imgPhoto-4.6 {ImgPhotoCmd procedure: configure option} {
+    llength [p1 configure]
+} {7}
+test imgPhoto-4.7 {ImgPhotoCmd procedure: configure option} {
+    p1 conf -palette 3/4/2
+    p1 configure -palette
+} {-palette {} {} {} 3/4/2}
+test imgPhoto-4.8 {ImgPhotoCmd procedure: configure option} {
+    list [catch {p1 configure -blah} msg] $msg
+} {1 {unknown option "-blah"}}
+test imgPhoto-4.9 {ImgPhotoCmd procedure: configure option} {
+    list [catch {p1 configure -palette {} -gamma} msg] $msg
+} {1 {value for "-gamma" missing}}
+test imgPhoto-4.10 {ImgPhotoCmd procedure: copy option} hasTeapotPhoto {
+    image create photo p2 -file $teapotPhotoFile
+    p1 configure -width 0 -height 0 -palette {} -gamma 1
+    p1 copy p2
+    list [image width p1] [image height p1] [p1 get 100 100]
+} {256 256 {169 117 90}}
+test imgPhoto-4.11 {ImgPhotoCmd procedure: copy option} {
+    list [catch {p1 copy} msg] $msg
+} {1 {wrong # args: should be "p1 copy source-image ?-compositingrule rule? ?-from x1 y1 x2 y2? ?-to x1 y1 x2 y2? ?-zoom x y? ?-subsample x y?"}}
+test imgPhoto-4.12 {ImgPhotoCmd procedure: copy option} {
+    list [catch {p1 copy blah} msg] $msg
+} {1 {image "blah" doesn't exist or is not a photo image}}
+test imgPhoto-4.13 {ImgPhotoCmd procedure: copy option} {
+    list [catch {p1 copy p2 -blah} msg] $msg
+} {1 {unrecognized option "-blah": must be -compositingrule, -from, -shrink, -subsample, -to, or -zoom}}
+test imgPhoto-4.14 {ImgPhotoCmd procedure: copy option} {
+    list [catch {p1 copy p2 -from -to} msg] $msg
+} {1 {the "-from" option requires one to four integer values}}
+test imgPhoto-4.15 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2
+    p1 copy p2 -from 0 70 60 120 -shrink
+    list [image width p1] [image height p1] [p1 get 20 10]
+} {60 50 {215 154 120}}
+test imgPhoto-4.16 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2 -from 60 120 0 70 -to 20 50
+    list [image width p1] [image height p1] [p1 get 40 80]
+} {80 100 {19 92 192}}
+test imgPhoto-4.17 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2 -from 0 120 60 70 -to 0 0 100 100
+    list [image width p1] [image height p1] [p1 get 80 60]
+} {100 100 {215 154 120}}
+test imgPhoto-4.18 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2 -from 60 70 0 120 -zoom 2
+    list [image width p1] [image height p1] [p1 get 100 50]
+} {120 100 {169 99 47}}
+test imgPhoto-4.19 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2 -from 0 70 60 120
+    list [image width p1] [image height p1] [p1 get 100 50]
+} {120 100 {169 99 47}}
+test imgPhoto-4.20 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2 -from 20 20 200 180 -subsample 2 -shrink
+    list [image width p1] [image height p1] [p1 get 50 30]
+} {90 80 {207 146 112}}
+test imgPhoto-4.21 {ImgPhotoCmd procedure: copy option} {
+    p1 copy p2
+    set result [list [image width p1] [image height p1]]
+    p1 conf -width 49 -height 51
+    lappend result [image width p1] [image height p1]
+    p1 copy p2
+    lappend result [image width p1] [image height p1]
+    p1 copy p2 -from 0 0 10 10 -shrink
+    lappend result [image width p1] [image height p1]
+    p1 conf -width 0
+    p1 copy p2 -from 0 0 10 10 -shrink
+    lappend result [image width p1] [image height p1]
+    p1 conf -height 0
+    p1 copy p2 -from 0 0 10 10 -shrink
+    lappend result [image width p1] [image height p1]
+} {256 256 49 51 49 51 49 51 10 51 10 10}
+test imgPhoto-4.22 {ImgPhotoCmd procedure: get option} hasTeapotPhoto {
+    p1 read $teapotPhotoFile
+    list [p1 get 100 100] [p1 get 150 100] [p1 get 100 150]
+} {{169 117 90} {172 115 84} {35 35 35}}
+test imgPhoto-4.23 {ImgPhotoCmd procedure: get option} {
+    list [catch {p1 get 256 0} err] $err
+} {1 {p1 get: coordinates out of range}}
+test imgPhoto-4.24 {ImgPhotoCmd procedure: get option} {
+    list [catch {p1 get 0 -1} err] $err
+} {1 {p1 get: coordinates out of range}}
+test imgPhoto-4.25 {ImgPhotoCmd procedure: get option} {
+    list [catch {p1 get} err] $err
+} {1 {wrong # args: should be "p1 get x y"}}
+test imgPhoto-4.26 {ImgPhotoCmd procedure: put option} {
+    list [catch {p1 put} err] $err
+} {1 {wrong # args: should be "p1 put data ?options?"}}
+test imgPhoto-4.27 {ImgPhotoCmd procedure: put option} {
+    list [catch {p1 put {{white} {white white}}} err] $err
+} {1 {all elements of color list must have the same number of elements}}
+test imgPhoto-4.28 {ImgPhotoCmd procedure: put option} {
+    list [catch {p1 put {{blahgle}}} err] $err
+} {1 {can't parse color "blahgle"}}
+test imgPhoto-4.29 {ImgPhotoCmd procedure: put option} {
+    p1 put -to 10 10 20 20 {{white}}
+    p1 get 19 19
+} {255 255 255}
+test imgPhoto-4.30 {ImgPhotoCmd procedure: read option} {
+    list [catch {p1 read} err] $err
+} {1 {wrong # args: should be "p1 read fileName ?options?"}}
+test imgPhoto-4.31 {ImgPhotoCmd procedure: read option} hasTeapotPhoto {
+    list [catch {p1 read $teapotPhotoFile -zoom 2} err] $err
+} {1 {unrecognized option "-zoom": must be -format, -from, -shrink, or -to}}
+test imgPhoto-4.32 {ImgPhotoCmd procedure: read option} {
+    list [catch {p1 read bogus} err] [string tolower $err]
+} {1 {couldn't open "bogus": no such file or directory}}
+test imgPhoto-4.33 {ImgPhotoCmd procedure: read option} hasTeapotPhoto {
+    list [catch {p1 read $teapotPhotoFile -format bogus} err] $err
+} {1 {image file format "bogus" is not supported}}
+test imgPhoto-4.34 {ImgPhotoCmd procedure: read option} {
+    list [catch {p1 read $README} err] $err
+} [subst {1 {couldn't recognize data in image file "$README"}}]
+test imgPhoto-4.35 {ImgPhotoCmd procedure: read option} hasTeapotPhoto {
+    p1 read $teapotPhotoFile
+    list [image width p1] [image height p1] [p1 get 120 120]
+} {256 256 {161 109 82}}
+test imgPhoto-4.36 {ImgPhotoCmd procedure: read option} hasTeapotPhoto {
+    p1 read $teapotPhotoFile -from 0 70 60 120 -to 10 10 -shrink
+    list [image width p1] [image height p1] [p1 get 29 19]
+} {70 60 {244 180 144}}
+test imgPhoto-4.37 {ImgPhotoCmd procedure: redither option} {
+    p1 redither
+    list [catch {p1 redither x} err] $err
+} {1 {wrong # args: should be "p1 redither"}}
+test imgPhoto-4.38 {ImgPhotoCmd procedure: write option} {
+    list [catch {p1 write} err] $err
+} {1 {wrong # args: should be "p1 write fileName ?options?"}}
+test imgPhoto-4.39 {ImgPhotoCmd procedure: write option} {
+    list [catch {p1 write teapot.tmp -format bogus} err] $err
+} {1 {image file format "bogus" is unknown}}
+eval image delete [image names]
+image create photo p1
+test imgPhoto-4.40 {ImgPhotoCmd procedure: transparency option} {
+    list [catch {p1 transparency} err] $err
+} {1 {wrong # args: should be "p1 transparency option ?arg arg ...?"}}
+test imgPhoto-4.41 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get} err] $err
+} {1 {wrong # args: should be "p1 transparency get x y"}}
+test imgPhoto-4.42 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 0} err] $err
+} {1 {wrong # args: should be "p1 transparency get x y"}}
+test imgPhoto-4.43 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 0 0 0} err] $err
+} {1 {wrong # args: should be "p1 transparency get x y"}}
+test imgPhoto-4.44 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get bogus 0} err] $err
+} {1 {expected integer but got "bogus"}}
+test imgPhoto-4.45 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 0 bogus} err] $err
+} {1 {expected integer but got "bogus"}}
+test imgPhoto-4.46 {ImgPhotoCmd procedure: transparency get option} {
+    p1 put white
+    p1 transparency get 0 0
+} 0
+test imgPhoto-4.47 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 1 0} err] $err
+} {1 {p1 transparency get: coordinates out of range}}
+test imgPhoto-4.48 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get -1 0} err] $err
+} {1 {p1 transparency get: coordinates out of range}}
+test imgPhoto-4.49 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 0 1} err] $err
+} {1 {p1 transparency get: coordinates out of range}}
+test imgPhoto-4.50 {ImgPhotoCmd procedure: transparency get option} {
+    list [catch {p1 transparency get 0 -1} err] $err
+} {1 {p1 transparency get: coordinates out of range}}
+test imgPhoto-4.51 {ImgPhotoCmd procedure: transparency get option} {
+    p1 blank
+    p1 transparency get 0 0
+} 1
+test imgPhoto-4.52 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set} err] $err
+} {1 {wrong # args: should be "p1 transparency set x y boolean"}}
+test imgPhoto-4.53 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0} err] $err
+} {1 {wrong # args: should be "p1 transparency set x y boolean"}}
+test imgPhoto-4.54 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 0} err] $err
+} {1 {wrong # args: should be "p1 transparency set x y boolean"}}
+test imgPhoto-4.55 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 0 0 0} err] $err
+} {1 {wrong # args: should be "p1 transparency set x y boolean"}}
+test imgPhoto-4.56 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set bogus 0 0} err] $err
+} {1 {expected integer but got "bogus"}}
+test imgPhoto-4.57 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 bogus 0} err] $err
+} {1 {expected integer but got "bogus"}}
+test imgPhoto-4.58 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 0 bogus} err] $err
+} {1 {expected boolean value but got "bogus"}}
+test imgPhoto-4.59 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 1 0 0} err] $err
+} {1 {p1 transparency set: coordinates out of range}}
+test imgPhoto-4.60 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set -1 0 0} err] $err
+} {1 {p1 transparency set: coordinates out of range}}
+test imgPhoto-4.61 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 1 0} err] $err
+} {1 {p1 transparency set: coordinates out of range}}
+test imgPhoto-4.62 {ImgPhotoCmd procedure: transparency set option} {
+    list [catch {p1 transparency set 0 -1 0} err] $err
+} {1 {p1 transparency set: coordinates out of range}}
+test imgPhoto-4.63 {ImgPhotoCmd procedure: transparency set option} {
+    p1 transparency set 0 0 false
+    p1 transparency get 0 0
+} 0
+test imgPhoto-4.64 {ImgPhotoCmd procedure: transparency set option} {
+    p1 transparency set 0 0 true
+    p1 transparency get 0 0
+} 1
+# Now for some heftier testing, checking that setting and resetting of
+# pixels' transparency status doesn't "leak" with any one-off errors.
+proc checkImgTrans {img width height} {
+    set result {}
+    for {set x 0} {$x<$width} {incr x} {
+	for {set y 0} {$y<$height} {incr y} {
+	    if {[$img transparency get $x $y]} {
+		lappend result $x $y
+	    }
+	}
+    }
+    return $result
+}
+test imgPhoto-4.65 {ImgPhotoCmd procedure: transparency get option} {
+    p1 put white -to 0 0 3 3
+    checkImgTrans p1 3 3
+} {}
+test imgPhoto-4.66 {ImgPhotoCmd procedure: transparency get option} {
+    p1 blank
+    checkImgTrans p1 3 3
+} {0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2}
+proc checkImgTransLoopSetReset {img width height} {
+    set result {}
+    for {set x 0} {$x<$width} {incr x} {
+	for {set y 0} {$y<$height} {incr y} {
+	    $img put white -to 0 0 3 3
+	    $img transparency set $x $y 1
+	    set result [concat $result [checkImgTrans $img $width $height]]
+	    lappend result ,
+	    $img transparency set $x $y 0
+	    set result [concat $result [checkImgTrans $img $width $height]]
+	    lappend result .
+	}
+    }
+    return $result
+}
+test imgPhoto-4.67 {ImgPhotoCmd procedure: transparency set option} {
+    checkImgTransLoopSetReset p1 3 3
+} {0 0 , . 0 1 , . 0 2 , . 1 0 , . 1 1 , . 1 2 , . 2 0 , . 2 1 , . 2 2 , .}
+proc checkImgTransLoopResetSet {img width height} {
+    set result {}
+    for {set x 0} {$x<$width} {incr x} {
+	for {set y 0} {$y<$height} {incr y} {
+	    $img blank
+	    $img transparency set $x $y 0
+	    set result [concat $result [checkImgTrans $img $width $height]]
+	    lappend result ,
+	    $img transparency set $x $y 1
+	    set result [concat $result [checkImgTrans $img $width $height]]
+	    lappend result .
+	}
+    }
+    return $result
+}
+test imgPhoto-4.68 {ImgPhotoCmd procedure: transparency set option} {
+    checkImgTransLoopResetSet p1 3 3
+} {0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 2 1 0 1 1 1 2 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 1 0 1 1 1 2 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 1 1 2 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 0 1 2 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 0 1 1 2 0 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 0 1 1 1 2 2 1 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 2 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 . 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 , 0 0 0 1 0 2 1 0 1 1 1 2 2 0 2 1 2 2 .}
+catch {rename checkImgTransLoopSetReset {}}
+catch {rename checkImgTransLoopResetSet {}}
+# Test the compositing rules for copying images
+image create photo p1 -width 3 -height 3
+image create photo p2 -width 2 -height 2
+test imgPhoto-4.68 {ImgPhotoCmd procedure: copy with -compositingrule} {
+    list [catch {p1 copy p2 -to 1 1 -compositingrule} msg] $msg
+} {1 {the "-compositingrule" option requires a value}}
+test imgPhoto-4.69 {ImgPhotoCmd procedure: copy with -compositingrule} {
+    list [catch {p1 copy p2 -to 1 1 -compositingrule BAD} msg] $msg
+} {1 {bad compositing rule "BAD": must be overlay or set}}
+test imgPhoto-4.70 {ImgPhotoCmd procedure: copy with -compositingrule} {
+    # Tests default compositing rule
+    p1 blank
+    p2 blank
+    p1 put white -to 0 0 2 2
+    p2 put white -to 0 0 2 2
+    p2 transparency set 0 0 true
+    p1 copy p2 -to 1 1
+    checkImgTrans p1 3 3
+} {0 2 2 0}
+test imgPhoto-4.71 {ImgPhotoCmd procedure: copy with -compositingrule} {
+    p1 blank
+    p2 blank
+    p1 put white -to 0 0 2 2
+    p2 put white -to 0 0 2 2
+    p2 transparency set 0 0 true
+    p1 copy p2 -to 1 1 -compositingrule overlay
+    checkImgTrans p1 3 3
+} {0 2 2 0}
+test imgPhoto-4.72 {ImgPhotoCmd procedure: copy with -compositingrule} {
+    p1 blank
+    p2 blank
+    p1 put white -to 0 0 2 2
+    p2 put white -to 0 0 2 2
+    p2 transparency set 0 0 true
+    p1 copy p2 -to 1 1 -compositingrule set
+    checkImgTrans p1 3 3
+} {0 2 1 1 2 0}
+catch {rename checkImgTrans {}}
+
+test imgPhoto-5.1 {ImgPhotoGet/Free procedures, shared instances} hasTeapotPhoto {
+    eval image delete [image names]
+    .c delete all
+    image create photo p1 -file $teapotPhotoFile
+    .c create image 0 0 -image p1 -tags p1.1
+    .c create image 256 0 -image p1 -tags p1.2
+    .c create image 0 256 -image p1 -tags p1.3
+    update
+    .c delete i1.1
+    p1 configure -width 1
+    update
+    .c delete i1.2
+    p1 configure -height 1
+    update
+    image delete p1
+} {}
+
+test imgPhoto-6.1 {ImgPhotoDisplay procedure, blank display} {
+    .c delete all
+    image create photo p1 -width 10 -height 10
+    p1 blank
+    .c create image 10 10 -image p1
+    update
+} {}
+
+test imgPhoto-7.1 {ImgPhotoFree procedure, resource freeing} hasTeapotPhoto {
+    eval image delete [image names]
+    .c delete all
+    image create photo p1 -file $teapotPhotoFile
+    .c create image 0 0 -image p1 -anchor nw
+    update
+    .c delete all
+    image delete p1
+} {}
+test imgPhoto-7.2 {ImgPhotoFree procedures, unlinking} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile
+    .c create image 10 10 -image p1 -anchor nw
+    button .b1 -image p1
+    button .b2 -image p1
+    button .b3 -image p1
+    pack .b1 .b2 .b3
+    update
+    destroy .b2
+    update
+    destroy .b3
+    update
+    destroy .b1
+    update
+    .c delete all
+} {}
+test imgPhoto-7.3 {ImgPhotoFree procedures, multiple visuals} hasTeapotPhoto {
+    image create photo p1 -file $teapotPhotoFile
+    button .b1 -image p1
+    frame .f -visual best
+    button .f.b2 -image p1
+    pack .f.b2
+    pack .b1 .f
+    update
+    destroy .b1
+    update
+    .f.b2 configure -image {}
+    update
+    destroy .f
+    image delete p1
+} {}
+
+test imgPhoto-8.1 {ImgPhotoDelete procedure} hasTeapotPhoto {
+    image create photo p2 -file $teapotPhotoFile
+    image delete p2
+} {}
+test imagePhoto-8.2 {ImgPhotoDelete procedure} hasTeapotPhoto {
+    image create photo p2 -file $teapotPhotoFile
+    rename p2 newp2
+    set x [list [info command p2] [info command new*] [newp2 cget -file]]
+    image delete p2
+    append x [info command new*]
+} [list {} newp2 $teapotPhotoFile]
+test imagePhoto-8.3 {ImgPhotoDelete procedure, name cleanup} {
+    image create photo p1
+    image create photo p2 -width 10 -height 10
+    image delete p2
+    list [catch {p1 copy p2} msg] $msg
+} {1 {image "p2" doesn't exist or is not a photo image}}
+
+test imagePhoto-9.1 {ImgPhotoCmdDeletedProc procedure} hasTeapotPhoto {
+    image create photo p2 -file $teapotPhotoFile
+    rename p2 {}
+    list [lsearch -exact [image names] p2] [catch {p2 foo} msg] $msg
+} {-1 1 {invalid command name "p2"}}
+
+test imgPhoto-10.1 {Tk_ImgPhotoPutBlock procedure} {
+    eval image delete [image names]
+    image create photo p1
+    p1 put {{#ff0000 #ff0000 #ff0000 #ff0000 #ff0000 #ff0000 #ff0000 #ff0000}} -to 0 0
+    p1 put {{#00ff00 #00ff00}} -to 2 0
+    list [p1 get 2 0] [p1 get 3 0] [p1 get 4 0]
+} {{0 255 0} {0 255 0} {255 0 0}}
+
+test imgPhoto-11.1 {Tk_FindPhoto} {
+    eval image delete [image names]
+    image create bitmap i1
+    image create photo p1
+    list [catch {p1 copy i1} msg] $msg
+} {1 {image "i1" doesn't exist or is not a photo image}}
+
+test imgPhoto-12.1 {Tk_PhotoPutZoomedBlock} hasTeapotPhoto {
+    image create photo p3 -file $teapotPhotoFile
+    set result [list [p3 get 50 50] [p3 get 100 100]]
+    p3 copy p3 -zoom 2
+    lappend result [image width p3] [image height p3] [p3 get 100 100]
+    image delete p3
+    set result
+} {{19 92 192} {169 117 90} 512 512 {19 92 192}}
+
+test imgPhoto-13.1 {check separation of images in different interpreters} {
+    eval image delete [image names]
+    set data {
+	R0lGODlhQgBkAPUAANbWxs7Wxs7OxsbOxsbGxsbGvb3Gvca9vcDAwL21vbW1vbW1tbWtta2t
+	ta2ltaWltaWlraWctaWcrZycrZyUrZSUrZSMrZSMpYyMrYyMpYyEpYSEpYR7pYR7nHp7pYRz
+	pYRynHtzpXtznHtrnHNrnHNjnGtjnGtjlGtalGNalGNSlGNSjFpSlFpKlFpKjFJKjFJCjFI5
+	jEo5jEo5hEoxhEIxhDkphDkhhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAQgBkAAAG
+	/kCEcEgsGo/IpHLJbDqf0Kh0Sq1ar9isdsvter/gsHhMLpvP6LR6zW673/C4fE6v2+/4vH7P
+	7/v/gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmOBZxXnAQEnKIIBUQJCguoDKkIBgWhpUev
+	CA4TDwgEUpwKERUaHCIiJCQjIiEUQhwqKiwqLjDQMCwoIha3oUO5ESMuLSwtLSIMsU4Tzi4o
+	JBwWFA8ODQoMCkIMq6sNDQ4UFhwlzC4qSGhgkMvCsAoM6E0oAWMCOSUFGrgQcauAgAACSqGa
+	l6SAK1EaJXBA0SIDBw0KBiCg8EtEBgEWYCxoooAigFwIJGgQYQIF/goTAjk6sXhxAwwFnHRO
+	mEmAwoQAIUo8lCWhRgoOElJVkJBQFCwhCRqkYlUE1QMKHEywoBCrQaeIMCgQeOCi3AkYMmRI
+	S5EuxEkN7OApkGDhF4fDxoSVMAFUBAWkRxI0a+XghVAkBSqMsFCBwj4OI0igSKGCdLN0wYKd
+	zGDBwUYhn6YOKUCioQECGk7INpIArQgUKkr87TyhAYIDQxQgLkYsRIcQIDjcgi2Lw8RYKaAz
+	MXCgAs8UJrZGmOA5AkeQBlqRKsIpvYMQDx4S4NCCxIJSKJpFYMIgnPlSF2ygAQWuCUHAAp6x
+	E4EEE5BXQQUWYLABBySoAIMLHBSBWwso/jxwIAoyzMAWEw3AEEJCt6nUwAQagCDCYcCQwJcK
+	6QD3DDQxwNDCCSg9NIAGKpwwgQAOtDADDBbsdkQDIPhkwosDPgDPAg1EAME++1jTnhAKdAnb
+	VAR04EIJFAhwwQs0sBDfE7cZwEAE++yU2joOtDcKE7GUcoIKH6RSmwwnQCZFKAo8cE2es7my
+	HnuxKTDgAA6owEEBjoL3wqRUNDBCCnyRYMFMRSDoWYPvyBPPA738lt1KKTxgpjolrDDiFAWU
+	cAMKE+CipAMRZMDTCSSUQMIJPQHLwWOcrDKBCBpokAIJgmYqQgosxIAOCS8iJEQD7HR2QbMh
+	WCCEK7Ck90Cz/oAFu+YVigpTwTsLyJOcBJ6N6plxRihA3E4cOKTkFCU6FMoAA7wiygAZgURA
+	ekYsEJYFGTSATRccQEMjti8eZsEFFuA7z2WkEJAAl7iEQekEhQHGzgQR4INUKLB8pYAFJaQA
+	KhleKdwAByEkFswHIoxQQn4AcYBvGRosisDICCjQAIMJGnZYBsUd4JEZBIhQwgPzKFwAwggL
+	IHbOQzCtxZ1NL0BlKmmhIOwwHGTg2YMUEBdtKzBfbQWlhMHoHIXBnvABBGE9UMKNMKhgQgnG
+	nNQO0wVQoI4FEohFyr9GzDIYaaPxxWy0rCjKQJUMQvxBaMOgNMQChcU4DAkZ6PoV/hIUoP4i
+	Z7g/YHZHIPXeyWyONgsaCi4AOoLjXP8uhAAvPpCQ2Akr38UpXW60Ij8yPkMmwwj8KAI8QWtQ
+	+eXSixEb37WhcHQBERz2rdZ8leCBBcXNY3XevQ8VG/6+F5CACDYgATlmYYD27aRmLngBNADC
+	GGxxQEAWUJDzqpcctc2DARN4kNRgtJxhnKAFV0kIEhYAJ34IQwUhqkENYFCCE5BmGf9wwWmA
+	5UGgXAAVtfCFMIgRLMbFLQIPYFACcMI7TjQoH2eJQIs2poEMYMAp5XGAvFrBCYS9ImzQG1vT
+	arGTEQhIhE7QjLA+MKDOxClGwuoJtWi0uBIUIxjDSE2wQ4iHl7ywQDjGwZws/NcAlgBjaKQJ
+	JDVuoQBeUeACoFkMcFqgQL1IgxpRSsjsqHA/gy0tHvmAx2z2BxIupaJrnVxCEAAAOw==
+    }
+    interp create x1
+    interp create x2
+    x1 eval {load {} Tk}
+    x2 eval {load {} Tk}
+    x1 eval [list image create photo T1_data -data $data]
+    x2 eval [list image create photo T1_data -data $data]
+    unset data
+    interp delete x1
+    interp delete x2
+} {}
+
+
+test imgPhoto-14.1 {GIF writes work correctly} {
+    set data "R0lGODlhYwA5APcAAAAAAIAAAACAAICAAAAAgIAAgACAgICAgAysnGy8hKzM
+hASs3MTcjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwP8AAAD/
+AP//AAAA//8A/wD//////ywAAAAAYwA5AAAI/wAZCBxIsKDBgwgTKlzIsKHD
+hxAjSpxIsaLFixgzatzIsaPHjyBDihxJsqTJkyhTqlzJsqXLlzBjypxJs6bN
+mzhz6tzJs6fPn0CDCh1KtKhRiwoSKEXAtGlTpUqPGkyagOmCq1edNsWalWkC
+BUSXIuDqFepBqFWtZv3KU+zYrkrBSqT6dgECtjOTbu16NwFHvV3lshRLti/J
+qlgRCE6ZuO9ik4Dt+k0ZVyZiyVIvXr77ODPEy5g9T4zMWfTEzXdNz1VbWvXn
+uqldP1TAOrbshqBb314Y2W7n3Qdpv7UNPCHpycUVbv6dnODy5sqzQldIe8H0
+hciva9/Ovbv37+BzBgEEADs=
+"
+    set photo [image create photo -data $data]
+    set filename [makeFile {} imgPhoto-14.1.gif]
+    removeFile imgPhoto-14.1.gif
+    $photo write $filename -format gif
+    set photo2 [image create photo -file $filename]
+    set result [string equal [$photo data] [$photo2 data]]
+    image delete $photo $photo2
+    catch {file delete -force $filename}
+    set result
+} 1
+
+test imgPhoto-15.1 {photo images can fail to allocate memory gracefully} \
+	{nonPortable} {
+    # This is not portable to very large machines with more around
+    # 3GB of free memory available...
+    list [catch {image create photo -width 32000 -height 32000} msg] $msg
+} {1 {not enough free memory for image buffer}}
+
+destroy .c
+eval image delete [image names]
+
+# cleanup
+removeFile README-imgPhoto
+::tcltest::cleanupTests
+return

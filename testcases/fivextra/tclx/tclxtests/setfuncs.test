@@ -1,0 +1,164 @@
+#
+# setfuncs.test
+#
+# Tests for tcl.tlib set functions.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: setfuncs.test,v 1.1 2005/03/22 17:52:15 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+
+Test setfuncs-1.1 {union command} {
+    union "" ""
+} 0 ""
+
+Test setfuncs-1.2 {union command} {
+    union a ""
+} 0 "a"
+
+Test setfuncs-1.3 {union command} {
+    union "a b" "b c"
+} 0 "a b c"
+
+Test setfuncs-1.4 {union command} {
+    union "a b c d" "a b c d"
+} 0 "a b c d"
+
+Test setfuncs-1.5 {union command} {
+    union "a d c d b" "b d c a a b d a b c d"
+} 0 "a b c d"
+
+Test setfuncs-1.6 {union command} {
+    union "d c b a e f" ""
+} 0 "a b c d e f"
+
+Test setfuncs-1.7 {union command} {
+    union "" "f e d c b a"
+} 0 "a b c d e f"
+
+Test setfuncs-1.8 {union command} {
+    union "{n p}" "f e d c b a"
+} 0 "a b c d e f {n p}"
+
+Test setfuncs-1.9 {union command} {
+    union "{n p}" "f e d c {n p} b a"
+} 0 "a b c d e f {n p}"
+
+Test setfuncs-1.10 {union command} {
+    union "{n p} z {n p} z" "f e d c {n p} b a"
+} 0 "a b c d e f {n p} z"
+
+Test setfuncs-2.1 {intersect command} {
+    intersect "" ""
+} 0 ""
+
+Test setfuncs-2.2 {intersect command} {
+    intersect "a b c" ""
+} 0 ""
+
+Test setfuncs-2.3 {intersect command} {
+    intersect "" "a b c"
+} 0 ""
+
+Test setfuncs-2.4 {intersect command} {
+    intersect "d f b" "a b c"
+} 0 "b"
+
+Test setfuncs-2.5 {intersect command} {
+    intersect "a p q d v m b n o z t d f b" "a b c"
+} 0 "a b"
+
+Test setfuncs-2.6 {intersect command} {
+    intersect "d c b a e f" "{n p}"
+} 0 ""
+
+Test setfuncs-2.7 {intersect command} {
+    intersect "d c" "f e d c b a"
+} 0 "c d"
+
+Test setfuncs-2.8 {intersect command} {
+    intersect "a f {n p} e" "f e d c b a"
+} 0 "a e f"
+
+Test setfuncs-2.9 {intersect command} {
+    intersect "{n p} f d" "f e d c {n p} b a"
+} 0 "d f {n p}"
+
+Test setfuncs-2.10 {intersect command} {
+    intersect "{n p} z {n p} z" "f e d c {n p} b a"
+} 0 "{n p}"
+
+Test setfuncs-3.1 {intersect3 command} {
+    intersect3 "" ""
+} 0 "{} {} {}"
+
+Test setfuncs-3.2 {intersect3 command} {
+    intersect3 "a b c" ""
+} 0 "{a b c} {} {}"
+
+Test setfuncs-3.3 {intersect3 command} {
+    intersect3 "" "a b c"
+} 0 "{} {} {a b c}"
+
+Test setfuncs-3.4 {intersect3 command} {
+    intersect3 "d f b" "a b c"
+} 0 "{d f} b {a c}"
+
+Test setfuncs-3.5 {intersect3 command} {
+    intersect3 "a p q d v m b n o z t d f b" "a b c"
+} 0 "{d f m n o p q t v z} {a b} c"
+
+# Multiple elements in a list.
+Test setfuncs-3.6 {intersect3 command} {
+    intersect3  {aa bb cc dd ee ff} {aa bb cc dd aa bb ee ff}
+} 0 {{} {aa bb cc dd ee ff} {}}
+
+Test setfuncs-3.7 {intersect3 command} {
+    intersect3  {aa bb cc dd aa bb ee ff} {aa bb cc dd ee ff}
+} 0 {{} {aa bb cc dd ee ff} {}}
+
+Test setfuncs-3.8 {intersect3 command} {
+    intersect3 {aa XX bb cc dd aa bb ee ff} {aa YY bb cc ZZ dd ee ff}
+} 0 {XX {aa bb cc dd ee ff} {YY ZZ}}
+
+Test setfuncs-3.9 {intersect3 command} {
+    intersect3 {aa YY bb cc ZZ dd ee ff} {aa XX bb cc dd aa bb ee ff}
+} 0 {{YY ZZ} {aa bb cc dd ee ff} XX}
+
+Test setfuncs-4.1 {lrmdups command} {
+    lrmdups {a d b c eee b d 1}
+} 0 {1 a b c d eee}
+
+Test setfuncs-4.2 {lrmdups command} {
+    lrmdups {aaa aaa aaaa aaa aaa }
+} 0 {aaa aaaa}
+
+Test setfuncs-4.3 {lrmdups command} {
+    lrmdups {{} aaa {} aaa aaa }
+} 0 {{} aaa}
+
+Test setfuncs-4.4 {lrmdups command} {
+    lrmdups {aaa}
+} 0 {aaa}
+
+Test setfuncs-4.5 {lrmdups command} {
+    lrmdups [list {ma mb} {mc md} {ma mb}]
+} 0 {{ma mb} {mc md}}
+
+# cleanup
+::tcltest::cleanupTests
+return

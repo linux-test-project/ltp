@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# capitalize.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/capitalize.m4 >in
+
+cat <<\EOF >ok
+
+
+CONVERT TO UPPER CASE
+convert to lower case
+
+
+This Sentence Should Be Capitalized
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok

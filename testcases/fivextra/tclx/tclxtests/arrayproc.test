@@ -1,0 +1,85 @@
+#
+# arrayproc.test
+#
+# Tests for tcl.tlib array routines.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: arrayproc.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest
+    namespace import ::tcltest::*
+}
+
+package require Tclx 8.4
+
+set testArray(foo) bar
+set testArray(snap) frammistan
+set testArray(0) zero
+set testArray(william) dafoe
+
+test for_array_keys-1.1 {for_array_keys command} {
+    for_array_keys key testArray {
+        lappend result $key
+    }
+    lsort $result
+} "0 foo snap william"
+
+test for_array_keys-1.2 {errors in for_array_keys command} {
+    list [catch {
+        for_array_keys key testArray {
+            error fakeResult fakeInfo fakeCode
+        }
+    } msg] $msg [crange $errorInfo 0 7] $errorCode
+} {1 fakeResult fakeInfo fakeCode}
+
+test for_array_keys-1.3 {break in for_array_keys command} {
+    set cnt 0
+    list [catch {
+        for_array_keys key testArray {
+            incr cnt
+            break
+        }
+    } msg] $msg $cnt
+} {0 {} 1}
+
+test for_array_keys-1.4 {break in for_array_keys command} {
+    set cnt 0
+    list [catch {
+        for_array_keys key testArray {
+            incr cnt
+            continue
+            incr cnt 20
+        }
+    } msg] $msg $cnt
+} {0 {} 4}
+
+test for_array_keys-1.5 {return in for_array_keys command} {
+    proc for_array_keys_test {testArrayVar cntVar} {
+        upvar $testArrayVar testArray $cntVar cnt
+        for_array_keys key testArray {
+            incr cnt
+            return abcd
+        }
+    }
+    set cnt 0
+    list [catch {for_array_keys_test testArray cnt} msg] $msg $cnt
+} {0 abcd 1}
+rename for_array_keys_test {}
+
+unset testArray
+unset result
+
+# cleanup
+::tcltest::cleanupTests
+return

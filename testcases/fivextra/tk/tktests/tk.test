@@ -1,0 +1,137 @@
+# This file is a Tcl script to test the tk command.
+# It is organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# Copyright (c) 2002 ActiveState Corporation.
+#
+# RCS: @(#) $Id: tk.test,v 1.1 2005/03/22 17:52:21 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test tk-1.1 {tk command: general} {
+    list [catch {tk} msg] $msg
+} {1 {wrong # args: should be "tk option ?arg?"}}
+test tk-1.2 {tk command: general} {
+    list [catch {tk xyz} msg] $msg
+} {1 {bad option "xyz": must be appname, caret, scaling, useinputmethods, or windowingsystem}}
+
+set appname [tk appname]
+test tk-2.1 {tk command: appname} {
+    list [catch {tk appname xyz abc} msg] $msg
+} {1 {wrong # args: should be "tk appname ?newName?"}}
+test tk-2.2 {tk command: appname} {
+    tk appname foobazgarply
+} {foobazgarply}
+test tk-2.3 {tk command: appname} {unixOnly} {
+    tk appname bazfoogarply
+    expr {[lsearch -exact [winfo interps] [tk appname]] >= 0}
+} {1}
+test tk-2.4 {tk command: appname} {
+    tk appname $appname
+} $appname
+tk appname $appname
+
+set scaling [tk scaling]
+test tk-3.1 {tk command: scaling} {
+    list [catch {tk scaling -displayof} msg] $msg
+} {1 {value for "-displayof" missing}}
+test tk-3.2 {tk command: scaling: get current} {
+    tk scaling 1
+    format %.2g [tk scaling]
+} 1
+test tk-3.3 {tk command: scaling: get current} {
+    tk scaling -displayof . 1.25
+    format %.3g [tk scaling]
+} 1.25
+test tk-3.4 {tk command: scaling: set new} {
+    list [catch {tk scaling xyz} msg] $msg
+} {1 {expected floating-point number but got "xyz"}}
+test tk-3.5 {tk command: scaling: set new} {
+    list [catch {tk scaling -displayof . xyz} msg] $msg
+} {1 {expected floating-point number but got "xyz"}}
+test tk-3.6 {tk command: scaling: set new} {
+    tk scaling 1
+    format %.2g [tk scaling]
+} 1
+test tk-3.7 {tk command: scaling: set new} {
+    tk scaling -displayof . 1.25
+    format %.3g [tk scaling]
+} 1.25
+test tk-3.8 {tk command: scaling: negative} {
+    tk scaling -1
+    expr {[tk scaling] > 0}
+} {1}
+test tk-3.9 {tk command: scaling: too big} {
+    tk scaling 1000000
+    expr {[tk scaling] < 10000}
+} {1}    
+test tk-3.10 {tk command: scaling: widthmm} {
+    tk scaling 1.25
+    expr {int((25.4*[winfo screenwidth .])/(72*1.25)+0.5)-[winfo screenmmwidth .]}
+} {0}
+test tk-3.11 {tk command: scaling: heightmm} {
+    tk scaling 1.25
+    expr {int((25.4*[winfo screenheight .])/(72*1.25)+0.5)-[winfo screenmmheight .]}
+} {0}
+tk scaling $scaling
+
+set useim [tk useinputmethods]
+test tk-4.1 {tk command: useinputmethods} {
+    list [catch {tk useinputmethods -displayof} msg] $msg
+} {1 {value for "-displayof" missing}}
+test tk-4.2 {tk command: useinputmethods: get current} {
+    tk useinputmethods no
+} 0
+test tk-4.3 {tk command: useinputmethods: get current} {
+    tk useinputmethods -displayof .
+} 0
+test tk-4.4 {tk command: useinputmethods: set new} {
+    list [catch {tk useinputmethods xyz} msg] $msg
+} {1 {expected boolean value but got "xyz"}}
+test tk-4.5 {tk command: useinputmethods: set new} {
+    list [catch {tk useinputmethods -displayof . xyz} msg] $msg
+} {1 {expected boolean value but got "xyz"}}
+test tk-4.6 {tk command: useinputmethods: set new} {unixOnly} {
+    # This isn't really a test, but more of a check...
+    # The answer is what was given, because we may be on a Unix
+    # system that doesn't have the XIM stuff
+    if {[tk useinputmethods 1] == 0} {
+	puts "this wish doesn't have XIM (X Input Methods) support"
+    }
+    set useim
+} $useim
+test tk-4.7 {tk command: useinputmethods: set new} {macOrPc} {
+    # Mac and Windows don't have X Input Methods, so this should
+    # always return 0
+    tk useinputmethods 1
+} 0
+tk useinputmethods $useim
+
+test tk-5.1 {tk caret} {
+    list [catch {tk caret} msg] $msg
+} {1 {wrong # args: should be "tk caret window ?-x x? ?-y y? ?-height height?"}}
+test tk-5.2 {tk caret} {
+    list [catch {tk caret bogus} msg] $msg
+} {1 {bad window path name "bogus"}}
+test tk-5.3 {tk caret} {
+    list [catch {tk caret . -foo} msg] $msg
+} {1 {bad caret option "-foo": must be -x, -y, or -height}}
+test tk-5.4 {tk caret} {
+    list [catch {tk caret . -x 0 -y} msg] $msg
+} {1 {wrong # args: should be "tk caret window ?-x x? ?-y y? ?-height height?"}}
+test tk-5.5 {tk caret} {
+    list [catch {tk caret . -x 10 -y 11 -h 12; tk caret .} msg] $msg
+} {0 {-height 12 -x 10 -y 11}}
+test tk-5.6 {tk caret} {
+    list [catch {tk caret . -x 20 -y 25 -h 30; tk caret . -hei} msg] $msg
+} {0 30}
+
+# cleanup
+::tcltest::cleanupTests
+return

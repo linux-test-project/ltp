@@ -1,0 +1,3 @@
+procinfo
+
+	Tests that procinfo returns reasonbable data.	

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# exp.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/exp.m4 >in
+
+cat <<\EOF >ok
+7
+6
+5
+4
+3
+2
+1
+0
+Done
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok

@@ -1,0 +1,53 @@
+-------------------------------------
+IBM CSDL testsuite for gcc
+------------------------------------
+Fall back to seperated *.x files in March 18, 2004
+And I add "gcc-test/mcp-gcc-exclude.x"  
+istestcase "gcc.c-torture/compile/920521-1.c" && istaget "i[3-6]86" &&
+continue
+
+This file is created and sourced for various gcc/mcp version. 
+
+******************************************** Newly Changelog: Mar. 17, 2004
+Based on Bob's suggestion, I add a file in gcc-test/gcc.c-torture/gcc.permfail
+to replace original *.x --- It means we gather all of xfail information in
+gcc.permfail!
+
+Another modification: we use "gcc -dumpversion" to get gcc version,
+and use "gcc -dumpmachine" to determine the gcc target machine.
+We use "$gccversion" in $PERMFAIL file.
+
+******************************************** Mar. 10, 2004
+In this version I add some feature, 
+Firstly the gcc.sh can add a parameter to test alternative gcc, like this
+	gcc.sh /opt/cross/bin/powerpc64-linux-gcc 
+Secondly, I set up a framework to determine the XFAIL mode(expected fail) and additional compiler options.
+	A testcase named testfile.c , the additional options or XFAIL mode is set in testfile.x.
+Example to add compiler option :
+==> 20010518-2.x <==
+additional_flags="-S"
+
+Example to XFAIL 
+==> 981022-1.x <==
+torture_compile_xfail="*"
+
+
+Example to conditionally XFAIL on powerpc :
+==> 20021123-3.x <==
+ istarget "powerpc"  &&  torture_compile_xfail="O1 O2 O3 Os"
+
+
+The testfile.x will be "source" in the gcc.sh to make the properly actions.
+I add two functions in gcc.sh istarget() and isXFAIL()
+
+In 20021123-3.x , it means that the 20021123-3.c will expected FAIL when we use -O1 or -O2 or -O3 or -Os on powerpc's gcc.
+
+Execution test 
+
+	Add "torture_execute_xfail" in the ****.x files to determine the XFAIL status of execution fail. 
+	We can use:
+	istarget "powerpc" && torture_execute_xfail="O1 Os" 
+The line means expected fail on powerpc when compiler CFLAGS matches "O1" "Os".
+
+
+

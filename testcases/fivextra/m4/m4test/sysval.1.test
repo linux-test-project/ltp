@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# generated-tests/sysval.1.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 3454
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+syscmd(`false')
+ifelse(sysval, 0, zero, nonzero)
+syscmd(`true')
+sysval
+EOF
+
+cat <<\EOF >ok
+
+nonzero
+
+0
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

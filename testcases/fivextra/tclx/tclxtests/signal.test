@@ -1,0 +1,364 @@
+#
+# signal.test
+#
+# Tests for the signal and kill commands.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: signal.test,v 1.1 2005/03/22 17:52:15 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+if [cequal $tcl_platform(platform) windows] {
+    echo "    * The signal tests have not been ported to Win32" 
+    return
+}
+
+#
+# Fork without exec will not work under Tk, skip this test
+#
+if ![lempty [info commands button]] {
+    puts "*************************************************************"
+    puts "Signal tests are constructed in a way that does not work"
+    puts "under Tk.  Test skipped."
+    puts "*************************************************************"
+    puts ""
+    return
+}
+
+Test signal-1.1 {signal tests} {
+    signal ignore SIGHUP
+    kill HUP [id process]
+} 0 {}
+
+Test signal-1.2 {signal tests} {
+    global errorInfo
+    set errorInfo {}
+    signal error HUP
+    proc KillMe3 {} {kill SIGHUP [id process]}
+    proc KillMe2 {} {KillMe3}
+    proc KillMe1 {} {KillMe2}
+    list [catch {KillMe1} msg] $msg $errorInfo
+} 0 {1 {SIGHUP signal received} {SIGHUP signal received
+    while executing
+"kill SIGHUP [id process]"
+    (procedure "KillMe3" line 1)
+    invoked from within
+"KillMe3"
+    (procedure "KillMe2" line 1)
+    invoked from within
+"KillMe2"
+    (procedure "KillMe1" line 1)
+    invoked from within
+"KillMe1"}}
+
+Test signal-1.3 {signal tests} {
+    signal error {HUP SIGTERM}
+    set one [list [catch {kill HUP  [id process]} msg] $msg]
+    set two [list [catch {kill TERM [id process]} msg] $msg]
+    list $one $two
+} 0 {{1 {SIGHUP signal received}} {1 {SIGTERM signal received}}}
+
+Test signal-1.4 {signal tests} {
+    set signalWeGot {}
+    signal trap 1 {set signalWeGot %S}
+    kill SIGHUP [id process]
+    signal default 1
+    set signalWeGot
+} 0 {SIGHUP}
+
+Test signal-1.41 {signal tests} {
+    set signalWeGot {}
+    set signalTrash {}
+    signal trap 1 {set signalWeGot %S; set signalTrash "%%"}
+    kill SIGHUP [id process]
+    signal default 1
+    list $signalWeGot $signalTrash
+} 0 {SIGHUP %%}
+
+Test signal-1.42 {signal tests} {
+    signal trap 1 {set signalWeGot %s; set signalTrash "%%"}
+    kill SIGHUP [id process]
+} 1 {bad signal trap command formatting specification "%s", expected one of "%%" or "%S"}
+signal default SIGHUP
+
+Test signal-1.5 {signal tests} {
+    signal default {SIGHUP SIGINT}
+    signal get {SIGHUP SIGINT}
+} 0 {{SIGHUP {default 0 {} 0}} {SIGINT {default 0 {} 0}}}
+
+Test signal-1.6 {signal tests} {
+    signal default SIGHUP
+    signal ignore  SIGINT
+    signal get {SIGHUP SIGINT}
+} 0 {{SIGHUP {default 0 {} 0}} {SIGINT {ignore 0 {} 0}}}
+
+Test signal-1.7 {signal tests} {
+    signal trap {SIGHUP SIGINT} {error "Should not get this signal"}
+    signal get {SIGHUP SIGINT}
+} 0 [list {SIGHUP {trap 0 {error "Should not get this signal"} 0}} \
+          {SIGINT {trap 0 {error "Should not get this signal"} 0}} ]
+
+Test signal-1.8 {signal tests} {
+    signal error {SIGHUP SIGINT}
+    signal get {SIGHUP SIGINT}
+} 0 {{SIGHUP {error 0 {} 0}} {SIGINT {error 0 {} 0}}}
+
+Test signal-1.8.1 {signal tests} {
+    signal error {SIGHUP SIGINT}
+    set sigkl [signal get *]
+    list [keylget sigkl SIGHUP]  [keylget sigkl SIGINT]
+} 0 {{error 0 {} 0} {error 0 {} 0}}
+
+Test signal-1.8.2 {signal tests} {
+    set sigkl [signal get *]
+    list [keylget sigkl SIGALRM {}] [keylget sigkl SIGPIPE {}] \
+        [keylget sigkl SIGINT {}]
+} 0 {1 1 1}
+
+Test signal-1.8.3 {signal tests} {
+    signal error {SIGHUP SIGINT}
+    set sigkl [signal get *]
+    signal default {SIGHUP SIGINT}
+    signal set $sigkl
+    signal get {SIGHUP SIGINT}
+} 0 {{SIGHUP {error 0 {} 0}} {SIGINT {error 0 {} 0}}}
+
+if [infox have_signal_restart] {
+    Test signal-1.8.4 {signal tests} {
+        signal -restart error {SIGHUP SIGINT}
+        signal get {SIGHUP SIGINT}
+    } 0 {{SIGHUP {error 0 {} 1}} {SIGINT {error 0 {} 1}}}
+}
+
+Test signal-1.9 {signal tests} {
+    global errorInfo
+    set errorInfo {}
+    proc KillMe3 {} {kill SIGHUP [id process]}
+    proc KillMe2 {} {KillMe3}
+    proc KillMe1 {} {KillMe2}
+    signal trap SIGHUP {error "Blew it in the trap code"}
+    list [catch {KillMe1} msg ] $msg $errorInfo
+} 0 {1 {Blew it in the trap code} {Blew it in the trap code
+    while executing
+"error "Blew it in the trap code""
+    while executing signal trap code for SIGHUP signal
+    invoked from within
+"kill SIGHUP [id process]"
+    (procedure "KillMe3" line 1)
+    invoked from within
+"KillMe3"
+    (procedure "KillMe2" line 1)
+    invoked from within
+"KillMe2"
+    (procedure "KillMe1" line 1)
+    invoked from within
+"KillMe1"}}
+
+Test signal-1.10 {signal tests} {
+    signal
+} 1 {wrong # args: signal ?-restart? action signalList ?command?}
+
+Test signal-1.11 {signal tests} {
+    signal ignore foo
+} 1 {invalid signal "foo"}
+
+Test signal-1.12 {signal tests} {
+    signal ignore sigint "echo foo"
+} 1 {command may not be specified for "ignore" action}
+
+Test signal-1.13 {signal tests} {
+    signal baz sigint
+} 1 {invalid signal action specified: baz: expected one of "default", "ignore", "error", "trap", "get", "set", "block", or "unblock"}
+
+#
+# Complex test for the death of a child.
+#
+
+proc PollSigChld {} {
+    global G_gotChild
+    set sleepCnt 0
+    while {!$G_gotChild} {
+        incr sleepCnt
+        if {$sleepCnt > 90} {
+            error "signal-1.14: SIGCHLD lost"
+        }
+        sleep 1
+    }
+}
+
+
+proc ForkChild {exitCode} {
+    flush stdout  ;# Not going to exec, must clean up the buffers.
+    flush stderr
+    set childPid [fork]
+    if {$childPid == 0} {
+        exit $exitCode
+    }
+    return $childPid
+}
+
+if [infox have_posix_signals] {
+    set expect {123 {{SIGCHLD {trap 0 {global G_gotChild;set G_gotChild 1;sleep 1} 0}}}}
+} else {
+    set expect {123 {{SIGCHLD {default 0 {} 0}}}}
+}
+set expect 
+Test signal-1.15 {signal tests} {
+    global G_gotChild
+    set G_gotChild 0
+    signal trap SIGCHLD {global G_gotChild;set G_gotChild 1;sleep 1}
+    set pid1 [ForkChild 123] 
+    PollSigChld
+    set status1 [wait $pid1]
+    list [lindex $status1 2] [signal get SIGCHLD]
+} 0 $expect
+
+signal default SIGCHLD
+
+#
+# Check that the signals are left in the correct state after receiving
+# a signal (on SIGCHLD is different if we have Posix signals).
+#
+
+Test signal-1.16 {signal tests} {
+    global G_gotChild
+    set G_gotChild 0
+    signal trap SIGCHLD {global G_gotChild;set G_gotChild 1}
+    kill SIGCHLD [id process]
+    set gotChild1 $G_gotChild
+    set G_gotChild 0
+    kill SIGCHLD [id process]
+    set gotChild2 $G_gotChild
+    set G_gotChild 0
+    signal trap SIGCHLD {global G_gotChild;set G_gotChild 1}
+    kill SIGCHLD [id process]
+    set gotChild3 $G_gotChild
+    signal default SIGCHLD
+    list $gotChild1 $gotChild2 $gotChild3
+} 0 [list 1 [infox have_posix_signals] 1]
+
+
+Test signal-1.17 {signal tests} {
+    global G_gotPipe
+    set G_gotPipe 0
+    signal trap SIGPIPE {global G_gotPipe;set G_gotPipe 1}
+    kill SIGPIPE [id process]
+    set gotPipe1 $G_gotPipe
+    set G_gotPipe 0
+    kill SIGPIPE [id process]
+    set gotPipe2 $G_gotPipe
+    signal default SIGPIPE
+    list $gotPipe1 $gotPipe2
+} 0 {1 1}
+
+if [infox have_posix_signals] {
+    Test signal-1.18 {signal tests} {
+        signal error SIGHUP
+        signal block SIGHUP
+        signal get SIGHUP
+    } 0 {{SIGHUP {error 1 {} 0}}}
+
+    Test signal-1.19 {signal tests} {
+        signal unblock SIGHUP
+        signal get SIGHUP
+    } 0 {{SIGHUP {error 0 {} 0}}}
+
+    Test signal-1.18 {signal tests} {
+        signal block SIGHUP
+        signal error SIGHUP
+        signal get SIGHUP
+    } 0 {{SIGHUP {error 1 {} 0}}}
+
+    signal unblock SIGHUP
+    signal default SIGHUP
+}
+
+
+Test signal-2.1 {kill tests} {
+    kill
+} 1 {wrong # args: kill ?-pgroup? ?signal? idlist}
+
+signal error SIGINT
+
+Test signal-2.2 {kill tests} {
+    kill 2 [id process]
+} 1 {SIGINT signal received}
+
+Test signal-2.3 {kill tests} {
+    kill INT [id process]
+} 1 {SIGINT signal received}
+
+Test signal-2.4 {kill tests} {
+    kill SIGINT [id process]
+} 1 {SIGINT signal received}
+
+Test signal-2.5 {kill tests} {
+    kill 10000 [id process]
+} 1 {invalid signal "10000"}
+
+Test signal-2.6 {kill tests} {
+    kill SIGFOO [id process]
+} 1 {invalid signal "SIGFOO"}
+
+test signal-2.7 {kill tests} {
+    kill 0 [id process]
+} {}
+
+if [infox have_posix_signals] {
+    test signal-2.8 {kill tests} {
+        set pgrp [ForkLoopingChild 1]
+        kill -pgroup SIGKILL $pgrp
+        lrange [wait -pgroup $pgrp] 1 2
+    } {SIG SIGKILL}
+}
+
+# Check -restart
+if ![infox have_signal_restart] {
+    echo Notice: restarting of interrupted system calls is not available on this system.
+} else {
+    test signal-3.0 {kill tests} {
+        # Start program on a pipe, but don't doing anything until we send it
+        # something to make timing issues smaller.
+        set fh [open sigprog.tmp w]
+        puts $fh "gets stdin; after 5000; update; puts HELLO; flush stdout"
+        close $fh
+
+        set sp [open "|[list $::tcltest::tcltest sigprog.tmp]" r+]
+        try_eval {
+            set resp BYE
+            fconfigure $sp -buffering none
+            set gotAlarm 0
+            signal -restart trap SIGALRM {set ::gotAlarm 1}
+            alarm 1
+            puts $sp "GO"
+            set resp [gets $sp]
+        } {} {
+            catch {close $sp}
+            alarm 0
+        }
+        list $resp $gotAlarm
+
+        # Note this this is somewhat timing dependent and might fail
+        # on a heavly loaded system.
+    } {HELLO 1}
+}
+
+file delete sigprog.tmp
+
+
+# cleanup
+::tcltest::cleanupTests
+return

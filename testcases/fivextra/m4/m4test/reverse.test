@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# reverse.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/reverse.m4 >in
+
+cat <<\EOF >ok
+
+`' => 
+`hej' => hej
+`hej, med, dig' => dig, med, hej
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok

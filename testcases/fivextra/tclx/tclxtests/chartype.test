@@ -1,0 +1,260 @@
+#
+# chartype.test
+#
+# Tests for the ctype command.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: chartype.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx 8.4
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest
+    namespace import ::tcltest::*
+}
+
+
+# Use format to convert number to character.
+proc numToChar num {
+    return [format %c $num]
+}
+
+# Use scan to convert character to number.
+proc charToNum str {
+    scan $str %c num
+    return $num
+}
+
+
+test chartype-1.1 {ctype tests} {
+    ctype digit 01234567
+} 1
+
+test chartype-1.2 {ctype tests} {
+    ctype digit abc123cd
+} 0
+
+test chartype-1.3 {ctype tests} {
+    ctype xdigit 01234567abcdefABCDEF
+} 1
+
+test chartype-1.4 {ctype tests} {
+    ctype xdigit XMc123cd
+} 0
+
+test chartype-1.4.1 {ctype tests} {
+    list [ctype -failindex failIdx xdigit XMc123cd] $failIdx
+} {0 0}
+
+test chartype-1.5 {ctype tests} {
+    ctype lower abcdefgh
+} 1
+
+test chartype-1.6 {ctype tests} {
+    ctype lower abcDeFgh
+} 0
+
+test chartype-1.6.1 {ctype tests} {
+    list [ctype -failindex failIdx lower abcDeFgh] $failIdx
+} {0 3}
+
+test chartype-1.7 {ctype tests} {
+    ctype upper ABCDEFGH
+} 1
+
+test chartype-1.8 {ctype tests} {
+    ctype upper abcDeFgh
+} 0
+
+test chartype-1.8.1 {ctype tests} {
+    list [ctype -failindex failIdx upper DabcDeFgh] $failIdx
+} {0 1}
+
+test chartype-1.9 {ctype tests} {
+    ctype alpha abcdXYZ
+} 1
+
+test chartype-1.10 {ctype tests} {
+    ctype alpha abc123cd
+} 0
+
+test chartype-1.10.1 {ctype tests} {
+    list [ctype -failindex failIdx alpha abc123cd] $failIdx
+} {0 3}
+
+test chartype-1.11 {ctype tests} {
+    ctype alnum 0123ABC7
+} 1
+
+test chartype-1.12 {ctype tests} {
+    ctype alnum ab.%23cd
+} 0
+
+test chartype-1.12.1 {ctype tests} {
+    list [ctype -failindex failIdx alnum ab.%23cd] $failIdx
+} {0 2}
+
+test chartype-1.13 {ctype tests} {
+    ctype space " \t\n "
+} 1
+
+test chartype-1.14 {ctype tests} {
+    ctype space "ab \t z"
+} 0
+
+test chartype-1.14.1 {ctype tests} {
+    list [ctype -failindex failIdx space "ab \t z"] $failIdx
+} {0 0}
+
+test chartype-1.15 {ctype tests} {
+    ctype cntrl "[ctype char 7][ctype char 15][ctype char 20]"
+} 1
+
+test chartype-1.16 {ctype tests} {
+    ctype cntrl "[ctype char 7]abcd"
+} 0
+
+test chartype-1.16,1 {ctype tests} {
+    list [ctype -failindex failIdx cntrl "[ctype char 7]abcd"] $failIdx
+} {0 1}
+
+test chartype-1.17 {ctype tests} {
+    ctype punct ".,:;"
+} 1
+
+test chartype-1.18 {ctype tests} {
+    ctype punct ".,:;ab"
+} 0
+
+test chartype-1.18.1 {ctype tests} {
+    list [ctype -failindex failIdx punct ".,:;ab"] $failIdx
+} {0 4}
+
+test chartype-1.19 {ctype tests} {
+    ctype print "01 :;.567"
+} 1
+
+test chartype-1.20 {ctype tests} {
+    ctype print "[ctype char 7][ctype char 15]abc"
+} 0
+
+test chartype-1.20.1 {ctype tests} {
+    list [ctype -failindex failIdx print "[ctype char 7][ctype char 15]abc"] $failIdx
+} {0 0}
+
+test chartype-1.21 {ctype tests} {
+    ctype graph "ab.zxy"
+} 1
+
+test chartype-1.22 {ctype tests} {
+    ctype graph "abc 3cd"
+} 0
+
+test chartype-1.22.1 {ctype tests} {
+    list [ctype -failindex failIdx graph "abc 3cd"] $failIdx
+} {0 3}
+
+test chartype-1.23 {ctype tests} {
+    ctype ascii 01234567
+} 1
+
+test chartype-1.24 {ctype tests} {
+    ctype ascii "[ctype char 220][ctype char 126]123cd"
+} 0
+
+test chartype-1.24.1 {ctype tests} {
+    list [ctype -failindex failIdx ascii "[ctype char 220][ctype char 126]123cd"] $failIdx
+} {0 0}
+
+test chartype-1.25 {ctype tests} {
+    list [catch {ctype ascii} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.25.1 {ctype tests} {
+    list [catch {ctype ascii string junk} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.25.2 {ctype tests} {
+    list [catch {ctype -failindex ascii} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.25.3 {ctype tests} {
+    list [catch {ctype -failindex failIdx ascii} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.25.4 {ctype tests} {
+    list [catch {ctype -failindex failIdx ascii string junk} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.26 {ctype tests} {
+    list [catch {ctype ascbb foo} msg] $msg
+} {1 {unrecognized class specification: "ascbb", expected one of: alnum, alpha, ascii, char, cntrl, digit, graph, lower, ord, print, punct, space, upper or xdigit}}
+
+test chartype-1.27 {ctype char tests} {
+    ctype char 65
+} [numToChar 65]
+
+test chartype-1.28 {ctype char tests} {
+    ctype char 97
+} [numToChar 97]
+
+test chartype-1.29 {ctype char tests} {
+    ctype char 57
+} [numToChar 57]
+
+test chartype-1.30 {ctype char tests} {
+    ctype char 35
+} [numToChar 35]
+
+test chartype-1.32 {ctype ord tests} {
+    ctype ord A
+} [charToNum A]
+
+test chartype-1.33 {ctype ord tests} {
+    ctype ord a
+} [charToNum a]
+
+test chartype-1.34 {ctype ord tests} {
+    ctype ord 9
+} [charToNum 9]
+
+test chartype-1.35 {ctype ord tests} {
+    ctype ord  "#"
+} [charToNum \#]
+
+test chartype-1.36 {ctype ord tests} {
+    list [catch {ctype ord} msg] $msg
+} {1 {wrong # args: ctype ?-failindex var? class string}}
+
+test chartype-1.37 {ctype ord tests} {
+    ctype ord ""
+} {0}
+
+test chartype-1.38 {ctype ord tests} {
+    ctype ord \377
+} [charToNum \377]
+
+test chartype-1.39 {ctype ord tests} {
+    ctype ord \277
+} [charToNum \277]
+
+test chartype-1.40 {ctype ord tests} {
+    ctype char 255
+} [numToChar 255]
+
+test chartype-1.41 {ctype ord tests} {
+    ctype char 1722
+} [numToChar 1722]
+
+# cleanup
+::tcltest::cleanupTests
+return

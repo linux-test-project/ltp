@@ -1,0 +1,2 @@
+perltest.sh
+	Testcase to exercise the Perl builtin tests.

@@ -1,0 +1,85 @@
+# This file is a Tcl script to test out Tk's Windows specific
+# clipboard code.  It is organized in the standard fashion for Tcl
+# tests.
+#
+# This file contains a collection of tests for one or more of the Tcl
+# built-in commands.  Sourcing this file into Tcl runs the tests and
+# generates output for errors.  No output means no errors were found.
+#
+# Copyright (c) 1997 by Sun Microsystems, Inc.
+# Copyright (c) 1998-2000 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: winClipboard.test,v 1.1 2005/03/22 17:52:21 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+namespace import -force tcltest::bytestring
+
+# Note that these tests may fail if another application is grabbing the
+# clipboard (e.g. an X server)
+
+testConstraint testclipboard [llength [info commands testclipboard]]
+
+test winClipboard-1.1 {TkSelGetSelection} {pcOnly} {
+    clipboard clear
+    catch {selection get -selection CLIPBOARD} msg
+    set msg
+} {CLIPBOARD selection doesn't exist or form "STRING" not defined}
+test winClipboard-1.2 {TkSelGetSelection} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append {}
+    catch {selection get -selection CLIPBOARD} r1
+    catch {testclipboard} r2
+    list $r1 $r2
+} {{} {}}
+test winClipboard-1.3 {TkSelGetSelection & TkWinClipboardRender} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append abcd
+    update
+    catch {selection get -selection CLIPBOARD} r1
+    catch {testclipboard} r2
+    list $r1 $r2
+} {abcd abcd}
+test winClipboard-1.4 {TkSelGetSelection & TkWinClipboardRender} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append "line 1\nline 2"
+    catch {selection get -selection CLIPBOARD} r1
+    catch {testclipboard} r2
+    list $r1 $r2
+} [list "line 1\nline 2" "line 1\r\nline 2"]
+test winClipboard-1.5 {TkSelGetSelection & TkWinClipboardRender} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append "line 1\u00c7\nline 2"
+    catch {selection get -selection CLIPBOARD} r1
+    catch {testclipboard} r2
+    list $r1 $r2
+} [list "line 1\u00c7\nline 2" [bytestring "line 1\u00c7\r\nline 2"]]
+
+test winClipboard-2.1 {TkSelUpdateClipboard reentrancy problem} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append -type OUR_ACTION "action data"
+    clipboard append "string data"
+    update
+    catch {selection get -selection CLIPBOARD -type OUR_ACTION} r1
+    catch {testclipboard} r2
+    list $r1 $r2
+} [list "action data" "string data"]
+test winClipboard-2.2 {TkSelUpdateClipboard reentrancy problem} {pcOnly testclipboard} {
+    clipboard clear
+    clipboard append -type OUR_ACTION "new data"
+    clipboard append "more data in string"
+    update
+    catch {testclipboard} r1
+    catch {selection get -selection CLIPBOARD -type OUR_ACTION} r2
+    list $r1 $r2
+} [list "more data in string" "new data"]
+
+# cleanup
+::tcltest::cleanupTests
+return

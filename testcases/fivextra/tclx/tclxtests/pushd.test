@@ -1,0 +1,105 @@
+#
+# pushd.test
+#
+# Tests for tcl.tlib directory directory stack routines.
+#
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: pushd.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+#
+# Get the directories we are going to be using.  Also the device for
+# windows.  Always get absolute paths via cd-ing and pwd, in case the directory
+# is symbolicly linked.
+#
+switch $tcl_platform(platform) {
+    unix {
+        set tmp /tmp
+    }
+    windows {
+        if [cequal $tcl_platform(os) {Windows NT}] {
+            set tmp {C:/Program Files}
+        } else {
+            set tmp C:/dos
+        }
+    }
+}
+if ![file isdirectory $tmp] {
+    puts "*************************************************************"
+    puts "Directory $tmp does not exist, pushd & popd tests"
+    puts "will be skipped"
+    puts "*************************************************************"
+    return
+}
+
+set CWD [pwd]
+set CWDROOT [lindex [file split $CWD] 0]
+cd $tmp
+set TMP [pwd]
+set TMPROOT [lindex [file split $TMP] 0]
+
+
+Test pushd-1.1 {pushd command} {
+    pushd
+} 1 {directory stack empty}
+
+Test pushd-1.2 {pushd command} {
+    pushd $TMP
+    set TCLXENV(dirPushList)
+} 0 [list $TMP]
+
+Test pushd-1.3 {pushd command} {
+    pushd $CWDROOT
+} 0 $CWDROOT
+
+Test pushd-1.4 {pushd command} {
+    pushd $TMP
+    set TCLXENV(dirPushList)
+} 0 [list $CWDROOT $TMP $TMP]
+
+Test pushd-1.5 {pushd command} {
+    dirs
+} 0 [list $TMP $CWDROOT $TMP $TMP]
+
+cd $CWD
+
+Test popd-1.1 {popd command} {
+    popd
+} 0 $CWDROOT
+
+Test popd-1.2 {popd command} {
+    dirs
+} 0 [list $CWDROOT $TMP $TMP]
+
+Test popd-1.3 {popd command} {
+    list [popd] [popd] [dirs]
+} 0 [list $TMP $TMP [list $TMP]]
+
+Test popd-1.4 {popd command} {
+    popd
+} 1 {directory stack empty}
+
+Test popd-1.4 {popd command} {
+    set TCLXENV(dirPushList)
+} 0 {}
+
+cd $CWD
+
+# cleanup
+::tcltest::cleanupTests
+return

@@ -1,0 +1,4 @@
+losetup.sh
+
+	Test losetup command as used to mount encrypted filesystem from a
+	file.

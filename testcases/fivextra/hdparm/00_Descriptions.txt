@@ -1,0 +1,4 @@
+hdparm.sh:
+	Test suite to test the hdparm package.
+	Robb Romans <robb@austin.ibm.com>
+

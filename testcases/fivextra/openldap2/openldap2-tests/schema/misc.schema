@@ -1,0 +1,66 @@
+# $OpenLDAP: pkg/ldap/servers/slapd/schema/misc.schema,v 1.2.8.11 2002/01/08 20:19:06 kurt Exp $
+#
+# Assorted definitions from several sources, including
+# ''works in progress''.  Contents of this file are
+# subject to change (including deletion) without notice.
+#
+# Not recommended for production use!
+# Use with extreme caution!
+
+#
+# draft-lachman-laser-ldap-mail-routing-02.txt !!!EXPIRED!!!
+#
+attributetype ( 2.16.840.1.113730.3.1.13
+	NAME 'mailLocalAddress'
+	DESC 'RFC822 email address of this recipient'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256} )
+
+attributetype ( 2.16.840.1.113730.3.1.18
+	NAME 'mailHost'
+	DESC 'FQDN of the SMTP/MTA of this recipient'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+	SINGLE-VALUE )
+
+attributetype ( 2.16.840.1.113730.3.1.47
+	NAME 'mailRoutingAddress'
+	DESC 'RFC822 routing address of this recipient'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+	SINGLE-VALUE )
+
+# OID needs to be determined
+#objectclass ( 2.16.840.1.113730.3.2.TBD
+#	NAME 'inetLocalMailRecipient'
+#	DESC 'Internet local mail recipient'
+#	SUP top AUXILIARY
+#	MAY	( mailLocalAddress $ mailHost $ mailRoutingAddress ) )
+
+# I-D leaves this OID TBD.
+# iPlanet uses 2.16.840.1.113.730.3.2.147 but that appears to be
+# an improperly delegated OID.  A typo is suspected.
+objectclass ( 2.16.840.1.113730.3.2.147
+	NAME 'inetLocalMailRecipient'
+	DESC 'Internet local mail recipient'
+	SUP top AUXILIARY
+	MAY	( mailLocalAddress $ mailHost $ mailRoutingAddress ) )
+
+#
+# draft-srivastava-ldap-mail-00.txt !!!EXPIRED!!!
+#
+attributetype ( 1.3.6.1.4.1.42.2.27.2.1.15
+	NAME 'rfc822MailMember'
+	DESC 'rfc822 mail address of group member(s)'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+# 
+# !!!no I-D!!!
+#
+objectclass ( 1.3.6.1.4.1.42.2.27.1.2.5
+	NAME 'nisMailAlias'
+	DESC 'NIS mail alias'
+	SUP top STRUCTURAL
+	MUST cn
+	MAY rfc822MailMember )

@@ -1,0 +1,4 @@
+lukemftp.sh:
+	Test suite to test the lukemftp package.
+	Robb Romans <robb@austin.ibm.com>
+

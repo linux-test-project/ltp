@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# generated-tests/defn.1.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 1248
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+define(`zap', defn(`undefine'))
+zap(`undefine')
+undefine(`zap')
+EOF
+
+cat <<\EOF >ok
+
+
+undefine(zap)
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

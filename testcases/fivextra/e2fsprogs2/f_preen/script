@@ -1,0 +1,4 @@
+FSCK_OPT=-pf
+SECOND_FSCK_OPT=-yfb8193
+
+. ./run_e2fsck

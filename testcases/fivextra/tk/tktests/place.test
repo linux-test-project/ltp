@@ -1,0 +1,374 @@
+# This file is a Tcl script to test out the "place" command.  It is
+# organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1995 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: place.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+# XXX - This test file is woefully incomplete.  At present, only a
+# few of the features are tested.
+
+toplevel .t -width 300 -height 200 -bd 0
+wm geom .t +0+0
+frame .t.f -width 154 -height 84 -bd 2 -relief raised
+place .t.f -x 48 -y 38
+frame .t.f2 -width 30 -height 60 -bd 2 -relief raised
+update
+
+test place-1.1 {Tk_PlaceCmd procedure, "info" option} {
+    place .t.f2 -x 0
+    place info .t.f2
+} {-x 0 -relx 0 -y 0 -rely 0 -width {} -relwidth {} -height {} -relheight {} -anchor nw}
+test place-1.2 {Tk_PlaceCmd procedure, "info" option} {
+    place .t.f2 -x 1 -y 2 -width 3 -height 4 -relx 0.1 -rely 0.2 \
+	    -relwidth 0.3 -relheight 0.4 -anchor se -in .t.f  \
+	    -bordermode outside
+    place info .t.f2
+} {-x 1 -relx 0.1 -y 2 -rely 0.2 -width 3 -relwidth 0.3 -height 4 -relheight 0.4 -anchor se -bordermode outside -in .t.f}
+
+test place-2.1 {ConfigureSlave procedure, -height option} {
+    list [catch {place .t.f2 -height abcd} msg] $msg
+} {1 {bad screen distance "abcd"}}
+test place-2.2 {ConfigureSlave procedure, -height option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -height 40
+    update
+    winfo height .t.f2
+} {40}
+test place-2.3 {ConfigureSlave procedure, -height option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -height 120
+    update
+    place .t.f2 -height {}
+    update
+    winfo height .t.f2
+} {60}
+
+test place-3.1 {ConfigureSlave procedure, -relheight option} {
+    list [catch {place .t.f2 -relheight abcd} msg] $msg
+} {1 {expected floating-point number but got "abcd"}}
+test place-3.2 {ConfigureSlave procedure, -relheight option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -relheight .5
+    update
+    winfo height .t.f2
+} {40}
+test place-3.3 {ConfigureSlave procedure, -relheight option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -relheight .8
+    update
+    place .t.f2 -relheight {}
+    update
+    winfo height .t.f2
+} {60}
+
+test place-4.1 {ConfigureSlave procedure, bad -in options} {
+    place forget .t.f2
+    list [catch {place .t.f2 -in .t.f2} msg] $msg
+} [list 1 "can't place .t.f2 relative to itself"]
+test place-4.2 {ConfigureSlave procedure, bad -in option} {
+    place forget .t.f2
+    list [catch {place .t.f2 -in .} msg] $msg
+} [list 1 "can't place .t.f2 relative to ."]
+
+test place-5.1 {ConfigureSlave procedure, -relwidth option} {
+    list [catch {place .t.f2 -relwidth abcd} msg] $msg
+} {1 {expected floating-point number but got "abcd"}}
+test place-5.2 {ConfigureSlave procedure, -relwidth option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -relwidth .5
+    update
+    winfo width .t.f2
+} {75}
+test place-5.3 {ConfigureSlave procedure, -relwidth option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -relwidth .8
+    update
+    place .t.f2 -relwidth {}
+    update
+    winfo width .t.f2
+} {30}
+
+test place-6.1 {ConfigureSlave procedure, -width option} {
+    list [catch {place .t.f2 -width abcd} msg] $msg
+} {1 {bad screen distance "abcd"}}
+test place-6.2 {ConfigureSlave procedure, -width option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -width 100
+    update
+    winfo width .t.f2
+} {100}
+test place-6.3 {ConfigureSlave procedure, -width option} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -width 120
+    update
+    place .t.f2 -width {}
+    update
+    winfo width .t.f2
+} {30}
+
+test place-7.1 {ReconfigurePlacement procedure, computing position} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -x -2 -relx .5 -y 3 -rely .4
+    update
+    winfo geometry .t.f2
+} {30x60+123+75}
+test place-7.2 {ReconfigurePlacement procedure, position rounding} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -x -1.4 -y -2.3
+    update
+    winfo geometry .t.f2
+} {30x60+49+38}
+test place-7.3 {ReconfigurePlacement procedure, position rounding} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -x 1.4 -y 2.3
+    update
+    winfo geometry .t.f2
+} {30x60+51+42}
+test place-7.4 {ReconfigurePlacement procedure, position rounding} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -x -1.6 -y -2.7
+    update
+    winfo geometry .t.f2
+} {30x60+48+37}
+test place-7.5 {ReconfigurePlacement procedure, position rounding} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -x 1.6 -y 2.7
+    update
+    winfo geometry .t.f2
+} {30x60+52+43}
+test place-7.6 {ReconfigurePlacement procedure, position rounding} {
+    frame .t.f3 -width 100 -height 100 -bg #f00000 -bd 0
+    place .t.f3 -x 0 -y 0
+    raise .t.f2
+    place forget .t.f2
+    place .t.f2 -in .t.f3 -relx .303 -rely .406 -relwidth .304 -relheight .206
+    update
+    winfo geometry .t.f2
+} {31x20+30+41}
+catch {destroy .t.f3}
+test place-7.7 {ReconfigurePlacement procedure, computing size} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -width 120 -height 89
+    update
+    list [winfo width .t.f2] [winfo height .t.f2]
+} {120 89}
+test place-7.8 {ReconfigurePlacement procedure, computing size} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -relwidth .4 -relheight .5
+    update
+    list [winfo width .t.f2] [winfo height .t.f2]
+} {60 40}
+test place-7.9 {ReconfigurePlacement procedure, computing size} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -width 10 -relwidth .4 -height -4 -relheight .5
+    update
+    list [winfo width .t.f2] [winfo height .t.f2]
+} {70 36}
+test place-7.10 {ReconfigurePlacement procedure, computing size} {
+    place forget .t.f2
+    place .t.f2 -in .t.f -width 10 -relwidth .4 -height -4 -relheight .5
+    place .t.f2 -width {} -relwidth {} -height {} -relheight {}
+    update
+    list [winfo width .t.f2] [winfo height .t.f2]
+} {30 60}
+
+
+test place-8.1 {MasterStructureProc, mapping and unmapping slaves} {
+    place forget .t.f2
+    place forget .t.f
+    place .t.f2 -relx 1.0 -rely 1.0 -anchor sw
+    update
+    set result [winfo ismapped .t.f2]
+    wm iconify .t
+    update
+    lappend result [winfo ismapped .t.f2]
+    place .t.f2 -x 40 -y 30 -relx 0 -rely 0 -anchor nw
+    update
+    lappend result [winfo x .t.f2] [winfo y .t.f2] [winfo ismapped .t.f2]
+    wm deiconify .t
+    update
+    lappend result [winfo ismapped .t.f2]
+} {1 0 40 30 0 1}
+test place-8.2 {MasterStructureProc, mapping and unmapping slaves} {
+    place forget .t.f2
+    place forget .t.f
+    place .t.f -x 0 -y 0 -width 200 -height 100
+    place .t.f2 -in .t.f -relx 1.0 -rely 1.0 -anchor sw -width 50 -height 20
+    update
+    set result [winfo ismapped .t.f2]
+    wm iconify .t
+    update
+    lappend result [winfo ismapped .t.f2]
+    place .t.f2 -x 40 -y 30 -relx 0 -rely 0 -anchor nw
+    update
+    lappend result [winfo x .t.f2] [winfo y .t.f2] [winfo ismapped .t.f2]
+    wm deiconify .t
+    update
+    lappend result [winfo ismapped .t.f2]
+} {1 0 42 32 0 1}
+
+test place-9.1 {PlaceObjCmd} {
+    list [catch {place} msg] $msg
+} [list 1 "wrong # args: should be \"place option|pathName args\""]
+test place-9.2 {PlaceObjCmd} {
+    list [catch {place foo} msg] $msg
+} [list 1 "wrong # args: should be \"place option|pathName args\""]
+test place-9.3 {PlaceObjCmd} {
+    catch {destroy .foo}
+    list [catch {place .foo bar} msg] $msg
+} [list 1 "bad window path name \".foo\""]
+test place-9.4 {PlaceObjCmd} {
+    catch {destroy .foo}
+    list [catch {place bar .foo} msg] $msg
+} [list 1 "bad window path name \".foo\""]
+test place-9.5 {PlaceObjCmd} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place badopt .foo} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "bad option \"badopt\": must be configure, forget, info, or slaves"]
+test place-9.6 {PlaceObjCmd, configure errors} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place configure .foo} msg] $msg]
+    destroy .foo
+    set res
+} [list 0 ""]
+test place-9.7 {PlaceObjCmd, configure errors} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place configure .foo bar} msg] $msg]
+    destroy .foo
+    set res
+} [list 0 ""]
+test place-9.8 {PlaceObjCmd, configure} {
+    catch {destroy .foo}
+    frame .foo
+    place .foo -x 0 -y 0
+    set res [place configure .foo]
+    destroy .foo
+    set res
+} [list {-anchor {} {} nw nw} {-bordermode {} {} inside inside} {-height {} {} {} {}} {-in {} {} {} .} {-relheight {} {} {} {}} {-relwidth {} {} {} {}} {-relx {} {} 0 0.0} {-rely {} {} 0 0.0} {-width {} {} {} {}} {-x {} {} 0 0} {-y {} {} 0 0}]
+test place-9.9 {PlaceObjCmd, configure} {
+    catch {destroy .foo}
+    frame .foo
+    place .foo -x 0 -y 0
+    set res [place configure .foo -x]
+    destroy .foo
+    set res
+} [list -x {} {} 0 0]
+test place-9.10 {PlaceObjCmd, forget errors} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place forget .foo bar} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "wrong # args: should be \"place forget pathName\""]
+test place-9.11 {PlaceObjCmd, info errors} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place info .foo bar} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "wrong # args: should be \"place info pathName\""]
+test place-9.12 {PlaceObjCmd, slaves errors} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place slaves .foo bar} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "wrong # args: should be \"place slaves pathName\""]
+    
+test place-10.1 {ConfigureSlave} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place .foo -badopt} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "unknown option \"-badopt\""]
+test place-10.2 {ConfigureSlave} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place .foo -anchor} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "value for \"-anchor\" missing"]
+test place-10.3 {ConfigureSlave} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place .foo -bordermode j} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "bad bordermode \"j\": must be inside, outside, or ignore"]
+test place-10.4 {ConfigureSlave} {
+    catch {destroy .foo}
+    frame .foo
+    set res [list [catch {place configure .foo -x 0 -y} msg] $msg]
+    destroy .foo
+    set res
+} [list 1 "value for \"-y\" missing"]
+	
+test place-11.1 {PlaceObjCmd, slaves command} {
+    catch {destroy .foo}
+    frame .foo
+    set res [place slaves .foo]
+    destroy .foo
+    set res
+} {}
+test place-11.2 {PlaceObjCmd, slaves command} {
+    catch {destroy .foo .bar}
+    frame .foo
+    frame .bar
+    place .bar -in .foo
+    set res [place slaves .foo]
+    destroy .foo
+    destroy .bar
+    set res
+} [list .bar]
+
+test place-12.1 {PlaceObjCmd, forget command} {
+    catch {destroy .foo}
+    frame .foo
+    place .foo -width 50 -height 50
+    update
+    set res [winfo ismapped .foo]
+    place forget .foo
+    update
+    lappend res [winfo ismapped .foo]
+    destroy .foo
+    set res
+} [list 1 0]
+
+test place-13.1 {test respect for internalborder} {
+    toplevel .pack
+    wm geometry .pack 200x200
+    frame .pack.l -width 15 -height 10
+    labelframe .pack.lf -labelwidget .pack.l
+    pack .pack.lf -fill both -expand 1
+    frame .pack.lf.f
+    place .pack.lf.f -x 0 -y 0 -relwidth 1.0 -relheight 1.0
+    update
+    set res [list [winfo geometry .pack.lf.f]]
+    .pack.lf configure -labelanchor e -padx 3 -pady 5
+    update
+    lappend res [winfo geometry .pack.lf.f]
+    destroy .pack
+    set res
+} {196x188+2+10 177x186+5+7}
+
+catch {destroy .t}
+
+# cleanup
+::tcltest::cleanupTests
+return

@@ -1,0 +1,175 @@
+
+set gdb_prompt "\[(\]gdb\[)\]"
+set true 1
+set false 0
+set decimal "\[0-9\]+"
+set hex "0x\[0-9A-Fa-f\]+"
+
+proc abort {} {
+	send_user "Fail\n"
+	exit 1
+		 }
+ proc pass { msg } {
+	send_user "PASS: '$msg' \n"
+		 }
+ proc fail { msg } {
+	send_user "Fail: '$msg' \n"
+	exit 1
+		 }
+
+proc gdb_test { args } {
+    set command [lindex $args 0]
+    set pattern [lindex $args 1]
+ if [llength $args]>2 then {
+        set message [lindex $args 2]
+    } else {
+        set message [lindex $args 0]
+    }
+    global gdb_prompt
+
+    send "$command \r"
+	expect {
+       	 -re "$pattern.*$gdb_prompt $" { send_user "PASS:$command \n" }
+       timeout  {
+       		send_user "FAIL:$message \n "
+		exit 1 }
+	}
+}
+
+proc gdb_start { } {
+global gdb_prompt
+                expect {
+                        timeout abort
+"$gdb_prompt"
+                }
+                sleep 1
+                send "set height 0\n"
+                send "set width 0\n"
+send "dir\n"
+                expect {
+                        timeout abort
+"Reinitialize source path to empty?"
+                }
+                sleep 1
+                send "y\n"
+                expect {
+                        timeout abort
+"$gdb_prompt $"
+                }
+sleep 1
+}
+
+# Many of the tests depend on setting breakpoints at various places and
+# running until that breakpoint is reached.  At times, we want to start
+# with a clean-slate with respect to breakpoints, so this utility proc 
+# lets us do this without duplicating this code everywhere.
+#
+
+proc delete_breakpoints {} {
+    global gdb_prompt
+
+    # we need a larger timeout value here or this thing just confuses
+    # itself.  May need a better implementation if possible. - guo
+    #
+    send "delete breakpoints\n"
+    expect {
+	 -re "Delete all breakpoints?.*y or n.*$" {
+	    send "y \n"
+	  send_user "y\n"
+	    exp_continue
+	}
+	 -re "$gdb_prompt $" { # This happens if there were no breakpoints
+	    }
+	 timeout { send_user "Delete all breakpoints in delete_breakpoints (timeout)" ; return }
+    }
+    send "info breakpoints\n"
+    expect {
+	 -re "No breakpoints or watchpoints..*$gdb_prompt $" {}
+	 -re "$gdb_prompt $" { send_user "breakpoints not deleted" ; return }
+	 -re "Delete all breakpoints.*or n.*$" {
+	    send "y\n";
+	    exp_continue
+	}
+	 timeout { send_user "info breakpoints (timeout)" ; return }
+    }
+}
+proc gdb_breakpoint { function } {
+    global gdb_prompt
+    global decimal
+
+    send "break $function\n"
+    # The first two regexps are what we get with -g, the third is without -g.
+    expect 30 {
+        -re "Breakpoint \[0-9\]* at .*: file .*, line $decimal.\r\n$gdb_prompt $" {}
+        -re "Breakpoint \[0-9\]*: file .*, line $decimal.\r\n$gdb_prompt $" {}
+        -re "Breakpoint \[0-9\]* at .*$gdb_prompt $" {}
+        -re "$gdb_prompt $" { fail "setting breakpoint at $function" ; return 0
+}
+        timeout { fail "setting breakpoint at $function (timeout)" ; return 0 }
+    }
+    return 1;
+}
+
+
+# Set breakpoint at function and run gdb until it breaks there.
+# Since this is the only breakpoint that will be set, if it stops
+# at a breakpoint, we will assume it is the one we want.  We can't
+# just compare to "function" because it might be a fully qualified,
+# single quoted C++ function specifier.
+
+proc runto { function } {
+    global gdb_prompt
+    global decimal
+
+    delete_breakpoints
+
+    if ![gdb_breakpoint $function] {
+	return 0;
+    }
+
+gdb_run_cmd
+    
+    # the "at foo.c:36" output we get with -g.
+    # the "in func" output we get without -g.
+    expect 30 {
+	-re "Break.* at .*:$decimal.*$gdb_prompt $" {
+	    return 1
+	}
+	-re "Breakpoint \[0-9\]*, \[0-9xa-f\]* in .*$gdb_prompt $" { 
+	    return 1
+	}
+	-re "$gdb_prompt $" { 
+	    fail "running to $function in runto"
+	    return 0
+	}
+	timeout { 
+	    fail "running to $function in runto (timeout)"
+	    return 0
+	}
+    }
+    return 1
+}
+
+proc gdb_run_cmd {args} {
+    global gdb_prompt
+
+    send "run $args\n"
+# This doesn't work quite right yet.
+    expect  {
+	-re "The program .* has been started already.*y or n. $" {
+	    send "y\n"
+	    exp_continue
+	}
+	-re "Starting program: \[^\r\n\]*" {}
+    }
+}
+
+proc gdb_continue_to_end {mssg} {
+    # Continue until we exit.  Should not stop again.
+    # Don't bother to check the output of the program, that may be
+    # extremely tough for some remote systems.
+    gdb_test "continue"\
+      "Continuing.\[\r\n0-9\]+Program exited normally\\..*"\
+      "continue until exit at $mssg"
+}
+

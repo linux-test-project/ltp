@@ -1,0 +1,51 @@
+# This file is a Tcl script to test out embedded Windows.
+#
+# Copyright (c) 1996-1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: embed.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test embed-1.1 {TkpUseWindow procedure, bad window identifier} {
+    deleteWindows
+    list [catch {toplevel .t -use xyz} msg] $msg
+} {1 {expected integer but got "xyz"}}
+
+test embed-1.2 {CreateFrame procedure, bad window identifier} {
+    deleteWindows
+    list [catch {toplevel .t -container xyz} msg] $msg
+} {1 {expected boolean value but got "xyz"}}
+
+test embed-1.3 {CreateFrame procedure, both -use and
+        -container is invalid } {
+    deleteWindows
+    toplevel .container -container 1
+    list [catch {toplevel .t -use [winfo id .container] \
+        -container 1} msg] $msg
+} {1 {A window cannot have both the -use and the -container option set.}}
+
+test embed-1.4 {TkpUseWindow procedure, -container must be set} {
+    deleteWindows
+    toplevel .container
+    list [catch {toplevel .embd -use [winfo id .container]} err] $err
+} {1 {window ".container" doesn't have -container option set}}
+
+test embed-1.5 {TkpUseWindow procedure, -container must be set} {
+    deleteWindows
+    frame .container
+    list [catch {toplevel .embd -use [winfo id .container]} err] $err
+} {1 {window ".container" doesn't have -container option set}}
+
+
+# FIXME: test cases common to unixEmbed.test and macEmbed.test should
+# be moved here.
+
+tcltest::cleanupTests
+return

@@ -1,0 +1,4 @@
+procmail
+
+   Test procmail's ability to be invoked by $HOME/.forward and to 
+   file mail based on sender's ID and on subject line.

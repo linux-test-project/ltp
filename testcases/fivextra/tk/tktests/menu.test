@@ -1,0 +1,2492 @@
+# This file is a Tcl script to test menus in Tk.  It is
+# organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1995-1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: menu.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test menu-1.1 {Tk_MenuCmd procedure} {
+    list [catch menu msg] $msg
+} {1 {wrong # args: should be "menu pathName ?options?"}}
+test menu-1.2 {Tk_MenuCmd procedure} {
+    list [catch "menu bogus" msg] $msg
+} {1 {bad window path name "bogus"}}
+test menu-1.3 {Tk_MenuCmd procedure} {
+    list [catch "menu .m1 foo" msg] $msg
+} {1 {unknown option "foo"}}
+test menu-1.4 {Tk_MenuCmd procedure} {
+    catch {destroy .m1}
+    list [catch {menu .m1} msg] $msg [destroy .m1]
+} {0 .m1 {}}
+test menu-1.5 {Tk_MenuCmd - creating menubar} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -label Test -menu ""
+    list [. configure -menu .m1] [. configure -menu ""] [destroy .m1]
+} {{} {} {}}
+test menu-1.6 {Tk_MenuCmd procedure menu ref no cascade} {
+    catch {destroy .t2}
+    catch {destroy .m1}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    list [catch {menu .m1} msg] $msg [destroy .m1 .t2]
+} {0 .m1 {}}
+test menu-1.7 {Tk_MenuCmd procedure one clone cascade} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {menu .m2} msg] $msg [destroy .t2 .m1 .m2]
+} {0 .m2 {}}
+test menu-1.8 {Tk_MenuCmd procedure two clone cascades} {
+    catch {destroy .m1}
+    catch {destroy .t2}
+    catch {destroy .t3}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add cascade -menu .m2
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {menu .m2} msg] $msg [destroy .t2 .t3 .m1 .m2]
+} {0 .m2 {}}
+test menu-1.9 {Tk_MenuCmd procedure two clone cascades different order} {
+    catch {destroy .t2}
+    catch {destroy .m1}
+    catch {destroy .t3}
+    catch {destroy .m2}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    menu .m1
+    .m1 add cascade -menu .m2
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {menu .m2} msg] $msg [destroy .t2 .t3 .m1 .m2]
+} {0 .m2 {}}
+test menu-1.10 {Tk_MenuCmd procedure two clone cascades menus last} {
+    catch {destroy .t2}
+    catch {destroy .t3}
+    catch {destroy .m1}
+    catch {destroy .m2}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {menu .m2} msg] $msg [destroy .t2 .t3 .m1 .m2]
+} {0 .m2 {}}
+test menu-1.11 {Tk_MenuCmd procedure three clones cascades} {
+    catch {destroy .t2}
+    catch {destroy .t3}
+    catch {destroy .t4}
+    catch {destroy .m1}
+    catch {destroy .m2}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    toplevel .t4 -menu .m1
+    wm geometry .t4 +0+0
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {menu .m2} msg] $msg [destroy .t2 .t3 .t4 .m1 .m2]
+} {0 .m2 {}}
+test menu-1.12 {Tk_MenuCmd procedure} {
+    catch {destroy .t2}
+    catch {destroy .m1}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    list [catch {menu .m1} msg] $msg [destroy .t2 .m1]
+} {0 .m1 {}}
+test menu-1.13 {Tk_MenuCmd procedure} {
+    catch {destroy .t2}
+    catch {destroy .t3}
+    catch {destroy .m1}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {menu .m1} msg] $msg [destroy .t2 .t3 .m1]
+} {0 .m1 {}}
+test menu-1.14 {Tk_MenuCmd procedure} {
+    catch {destroy .t2}
+    catch {destroy .t3}
+    catch {destroy .t4}
+    catch {destroy .m1}
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    toplevel .t4 -menu .m1
+    wm geometry .t4 +0+0
+    list [catch {menu .m1} msg] $msg [destroy .t2 .t3 .t4 .m1]
+} {0 .m1 {}}
+
+catch {destroy .m1}
+menu .m1
+set i 1
+foreach configTest {
+    {-activebackground #012345 #012345 non-existent
+	    {unknown color name "non-existent"}}
+    {-activeborderwidth 1.3 1.3 badValue {bad screen distance "badValue"}}
+    {-activeforeground #ff0000 #ff0000 non-existent
+	    {unknown color name "non-existent"}}
+    {-background #ff0000 #ff0000 non-existent
+	    {unknown color name "non-existent"}}
+    {-bg #110022 #110022 bogus {unknown color name "bogus"}}
+    {-borderwidth 1.3 1.3 badValue {bad screen distance "badValue"}}
+    {-cursor arrow arrow badValue {bad cursor spec "badValue"}}
+    {-disabledforeground #00ff00 #00ff00 xyzzy {unknown color name "xyzzy"}}
+    {-fg #110022 #110022 bogus {unknown color name "bogus"}}
+    {-font -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* 
+	    -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* {}
+	    {font "" doesn't exist}}
+    {-foreground #110022 #110022 bogus {unknown color name "bogus"}}
+    {-postcommand "any old string" "any old string" {} {}}
+    {-relief groove groove 1.5 {bad relief "1.5": must be flat, groove, raised, ridge, solid, or sunken}}
+    {-selectcolor #110022 #110022 bogus {unknown color name "bogus"}}
+    {-takefocus "any string" "any string" {} {}}
+    {-tearoff 0 0}
+    {-tearoff 1 1}
+    {-tearoffcommand "any old string" "any old string" {} {}}
+} {
+    set name [lindex $configTest 0]
+    set value [lindex $configTest 1]
+    set result [lindex $configTest 2]
+    test menu-2.$i [list configuration options $name $value $result] {
+	.m1 configure $name $value
+	lindex [.m1 configure $name] 4
+    } $result
+    incr i
+    if {[lindex $configTest 3] != ""} {
+	set value [lindex $configTest 3]
+	set result [lindex $configTest 4]
+	test menu-2.$i [list configuration options $name $value $result] {
+	    list [catch {.m1 configure $name $value} msg] $msg
+	} [list 1 $result]
+    }
+    .m1 configure $name [lindex [.m1 configure $name] 3]
+    incr i
+}
+destroy .m1
+
+# We need to test all of the options with all of the different types of
+# menu entries. The following code sets up .m1 with 6 items. It then
+# runs through the big table below it.
+# index 0 is tearoff, 1 command, 2 cascade, 3 separator, 4 checkbutton, 
+# 5 radiobutton
+
+menu .m1
+.m1 add command -label "command"
+menu .m2
+.m2 add command -label "test"
+.m1 add cascade -label "cascade" -menu .m2
+.m1 add separator
+.m1 add checkbutton -label "checkbutton" -variable check -onvalue on -offvalue off
+.m1 add radiobutton -label "radiobutton" -variable radio
+image create photo image1 -file [file join $tk_library demos images earth.gif]
+
+foreach configTest {
+    {-activebackground 
+        {{#012345 
+            {{unknown option "-activebackground"} #012345 #012345 
+            {unknown option "-activebackground"} #012345 #012345
+            }
+        }
+        {non-existent 
+            {{unknown option "-activebackground"} 
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown option "-activebackground"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    }
+	}}
+    }
+    {-activeforeground
+    	{{#ff0000 
+	    {{unknown option "-activeforeground"}
+	    #ff0000 #ff0000 {unknown option "-activeforeground"} #ff0000 #ff0000
+	    }
+	}
+	{non-existent
+	    {{unknown option "-activeforeground"} 
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown option "-activeforeground"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    }
+	}}
+    }
+    {-accelerator
+    	{{"Ctrl+S" 
+	    {{unknown option "-accelerator"}
+	    "Ctrl+S" "Ctrl+S" {unknown option "-accelerator"} 
+	    "Ctrl+S" "Ctrl+S"
+	    }
+	}}
+    }
+    {-background
+    	{{#ff0000 
+    	    {#ff0000 #ff0000 #ff0000 #ff0000 #ff0000 #ff0000
+	    }
+	}
+	{non-existent
+	    {{unknown color name "non-existent"} 
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    }
+	}}
+    }
+    {-bitmap
+    	{{questhead 
+	    {{unknown option "-bitmap"} questhead questhead 
+	    {unknown option "-bitmap"} questhead questhead
+	    }
+	}
+	{badValue
+	    {{unknown option "-bitmap"} 
+	    {bitmap "badValue" not defined}
+	    {bitmap "badValue" not defined}
+	    {unknown option "-bitmap"}
+	    {bitmap "badValue" not defined}
+	    {bitmap "badValue" not defined}
+	    }
+	}}
+    }
+    {-columnbreak
+	{{1
+	    {{unknown option "-columnbreak"} 1 1 
+	    {unknown option "-columnbreak"} 1 1}
+	}}
+    }
+    {-command
+    	{{beep 
+	    {{unknown option "-command"} beep beep 
+	    {unknown option "-command"} beep beep
+	    }
+	}}
+    }
+    {-font
+    	{{-Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* 
+	    {{unknown option "-font"}
+    	    -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-*
+    	    -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* 
+	    {unknown option "-font"} 
+    	    -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-*
+    	    -Adobe-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-*
+	    }
+	}
+	{{kill rock stars}
+	    {{unknown option "-font"}
+	    {expected integer but got "rock"}
+	    {expected integer but got "rock"}
+	    {unknown option "-font"}
+	    {expected integer but got "rock"}
+	    {expected integer but got "rock"}
+	    }
+	}}
+    }
+    {-foreground
+    	{{#110022 
+	    {{unknown option "-foreground"} #110022 #110022 
+	    {unknown option "-foreground"} #110022 #110022
+	    }
+	}
+	{non-existent
+	    {{unknown option "-foreground"} 
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    {unknown option "-foreground"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    }
+	}}
+    }
+    {-image
+    	{{image1 
+	    {{unknown option "-image"} image1 image1 
+	    {unknown option "-image"} image1 image1
+	    }
+	}
+	{bogus
+	    {{unknown option "-image"} 
+	    {image "bogus" doesn't exist}
+	    {image "bogus" doesn't exist}
+	    {unknown option "-image"}
+	    {image "bogus" doesn't exist}
+	    {image "bogus" doesn't exist}
+	    }
+	}
+	{""
+	    {{unknown option "-image"}
+	    {}
+	    {}
+	    {unknown option "-image"}
+	    {}
+	    {}
+	    }
+	}}
+    }
+    {-indicatoron
+    	{{1 
+	    {{unknown option "-indicatoron"}
+	    {unknown option "-indicatoron"}
+	    {unknown option "-indicatoron"} 
+	    {unknown option "-indicatoron"} 1 1
+	    }
+	}}
+    }
+    {-label
+    	{{test 
+	    {{unknown option "-label"} test test 
+	    {unknown option "-label"} test test
+	    }
+	}}
+    }
+    {-menu
+    	{{.m2 
+	    {{unknown option "-menu"}
+	    {unknown option "-menu"} .m2 
+	    {unknown option "-menu"}
+	    {unknown option "-menu"}
+	    {unknown option "-menu"}
+	    }
+	}}
+    }
+    {-offvalue
+    	{{off
+	    {{unknown option "-offvalue"} 
+	    {unknown option "-offvalue"}
+	    {unknown option "-offvalue"}
+	    {unknown option "-offvalue"}
+    	    off
+	    {unknown option "-offvalue"}
+	    }
+	}}
+    }
+    {-onvalue
+    	{{on
+	    {{unknown option "-onvalue"}
+	    {unknown option "-onvalue"}
+	    {unknown option "-onvalue"}
+	    {unknown option "-onvalue"}
+    	    on 
+	    {unknown option "-onvalue"}
+	    }
+	}}
+    }
+    {-selectcolor
+    	{{#110022 
+	    {{unknown option "-selectcolor"} 
+	    {unknown option "-selectcolor"}
+	    {unknown option "-selectcolor"} 
+	    {unknown option "-selectcolor"}
+    	    #110022
+    	    #110022
+	    }
+	}
+	{non-existent
+	    {{unknown option "-selectcolor"} 
+	    {unknown option "-selectcolor"}
+	    {unknown option "-selectcolor"}
+	    {unknown option "-selectcolor"}
+	    {unknown color name "non-existent"}
+	    {unknown color name "non-existent"}
+	    }
+	}}
+    }
+    {-selectimage
+    	{{image1 
+    	    {{unknown option "-selectimage"}
+    	    {unknown option "-selectimage"}
+    	    {unknown option "-selectimage"} 
+    	    {unknown option "-selectimage"} image1 image1
+	    }
+	}
+	{bogus
+	    {{unknown option "-selectimage"} 
+	    {unknown option "-selectimage"}
+	    {unknown option "-selectimage"}
+	    {unknown option "-selectimage"}
+	    {image "bogus" doesn't exist}
+	    {image "bogus" doesn't exist}
+	    }
+	}
+	{""
+	    {{unknown option "-selectimage"}
+	    {unknown option "-selectimage"}
+	    {unknown option "-selectimage"}
+	    {unknown option "-selectimage"}
+	    {}
+	    {}
+	    }
+	}}
+    }
+    {-state
+    	{{normal 
+    	    {normal normal normal {unknown option "-state"} normal normal
+	    }
+	}}
+    }
+    {-value
+    	{{"any string"
+    	    {{unknown option "-value"}
+    	    {unknown option "-value"}
+    	    {unknown option "-value"}
+    	    {unknown option "-value"}
+    	    {unknown option "-value"} "any string"
+	    }
+	}}
+    }
+    {-variable
+    	{{"any string"
+    	    {{unknown option "-variable"}
+    	    {unknown option "-variable"}
+    	    {unknown option "-variable"} 
+    	    {unknown option "-variable"}
+    	    "any string"
+    	    "any string"
+	    }
+	}}
+    }
+    {-underline
+    	{{0 
+    	    {{unknown option "-underline"} 0 0 
+    	    {unknown option "-underline"} 0 0
+	    }
+	}
+	{3p
+	    {{unknown option "-underline"} 
+	    {expected integer but got "3p"}
+	    {expected integer but got "3p"}
+	    {unknown option "-underline"}
+	    {expected integer but got "3p"}
+	    {expected integer but got "3p"}
+	    }
+	}}
+    }
+} {
+    set name [lindex $configTest 0]
+    foreach attempt [lindex $configTest 1] {
+    	set value [lindex $attempt 0]
+    	set options [lindex $attempt 1]
+    	foreach item {0 1 2 3 4 5} {
+    	    catch {unset msg}
+    	    test menu-2.$i [list entry configuration options $name $item $value [.m1 type $item]] {
+            	set result [catch {.m1 entryconfigure $item $name $value} msg]
+                if {$result == 1} {
+            	    set msg
+            	} else {
+            	    lindex [.m1 entryconfigure $item $name] 4
+            	}
+    	    } [lindex $options $item]
+    	    incr i
+    	}
+    }
+}
+
+image delete image1
+destroy .m1
+destroy .m2
+
+test menu-3.1 {MenuWidgetCmd procedure} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 option ?arg arg ...?"} {}}
+test menu-3.2 {MenuWidgetCmd, Tcl_Preserve and Tcl_Release} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    menu .m1 -postcommand "destroy .m1"
+    .m1 add command -label "menu-3.2: Hit Escape"
+    list [catch {.m1 post 40 40} msg] $msg
+} {0 {}}
+test menu-3.3 {MenuWidgetCmd procedure, "activate" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 activate} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 activate index"} {}}
+test menu-3.4 {MenuWidgetCmd procedure, "activate" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 activate "foo"} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.5 {MenuWidgetCmd procedure, "activate" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add separator
+    list [catch {.m1 activate 2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.6 {MenuWidgetCmd procedure, "activate" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 entryconfigure 1 -state disabled
+    list [catch {.m1 activate 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.7 {MenuWidgetCmd procedure, "activate" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 activate 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.8 {MenuWidgetCmd procedure, "add" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 add type ?options?"} {}}
+test menu-3.9 {MenuWidgetCmd procedure, "add" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry type "foo": must be cascade, checkbutton, command, radiobutton, or separator} {}}
+test menu-3.10 {MenuWidgetCmd procedure, "add" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add separator} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.11 {MenuWidgetCmd procedure, "cget" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 cget} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 cget option"} {}}
+test menu-3.12 {MenuWidgetCmd procedure, "cget" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 cget -gorp} msg] $msg [destroy .m1]
+} {1 {unknown option "-gorp"} {}}
+test menu-3.13 {MenuWidgetCmd procedure, "cget" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 configure -postcommand "Some string"
+    list [catch {.m1 cget -postcommand} msg] $msg [destroy .m1]
+} {0 {Some string} {}}
+test menu-3.14 {MenuWidgetCmd procedure, "clone" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 clone} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 clone newMenuName ?menuType?"} {}}
+test menu-3.15 {MenuWidgetCmd procedure, "clone" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 clone a b c d} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 clone newMenuName ?menuType?"} {}}
+test menu-3.16 {MenuWidgetCmd procedure, "clone" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 clone .m1.clone1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.17 {MenuWidgetCmd procedure, "clone" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 clone .m1.clone1 tearoff} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.18 {MenuWidgetCmd procedure, "configure" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {llength [.m1 configure]} msg] $msg [destroy .m1]
+} {0 20 {}}
+test menu-3.19 {MenuWidgetCmd procedure, "configure" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 configure -gorp} msg] $msg [destroy .m1]
+} {1 {unknown option "-gorp"} {}}
+test menu-3.20 {MenuWidgetCmd procedure, "configure" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 configure -postcommand "A random String"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.21 {MenuWidgetCmd procedure, "configure" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 configure -postcommand "Another string"
+    list [catch {lindex [.m1 configure -postcommand] 4} msg] $msg [destroy .m1]
+} {0 {Another string} {}}
+test menu-3.22 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 delete} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 delete first ?last?"} {}}
+test menu-3.23 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 delete foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.24 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 delete 0 "foo"} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.25 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 delete 0} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.26 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "foo"
+    list [catch {.m1 delete 1 0} msg] $msg [destroy .m1] 
+} {0 {} {}}
+test menu-3.27 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "1"
+    .m1 add command -label "2"
+    .m1 add command -label "3"
+    list [catch {.m1 delete 1 3} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.28 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "1"
+    .m1 add command -label "2"
+    .m1 add command -label "3"
+    .m1 activate 2
+    list [catch {.m1 delete 1 3} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.29 {MenuWidgetCmd procedure, "delete" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "1"
+    .m1 add command -label "2"
+    .m1 add command -label "3"
+    .m1 activate 3
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.30 {MenuWidgetCmd procedure, "entrycget" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 entrycget} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 entrycget index option"} {}}
+test menu-3.31 {MenuWidgetCmd procedure, "entrycget" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 entrycget index option foo} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 entrycget index option"} {}}
+test menu-3.32 {MenuWidgetCmd procedure, "entrycget" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 entrycget foo -label} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.33 {MenuWidgetCmd procedure, "entrycget" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 entrycget 1 -label} msg] $msg [destroy .m1]
+} {0 test {}}
+test menu-3.34 {MenuWidgetCmd procedure, "entryconfigure" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 entryconfigure} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 entryconfigure index ?option value ...?"} {}}
+test menu-3.35 {MenuWidgetCmd procedure, "entryconfigure" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 entryconfigure foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.36 {MenuWidgetCmd procedure, "entryconfigure" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {llength [.m1 entryconfigure 1]} msg] $msg [destroy .m1]
+} {0 15 {}}
+test menu-3.37 {MenuWidgetCmd procedure, "entryconfigure" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {lindex [.m1 entryconfigure 1 -label] 4} msg] $msg [destroy .m1]
+} {0 test {}}
+test menu-3.38 {MenuWidgetCmd procedure, "entryconfigure" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 entryconfigure 1 -label "changed"
+    list [catch {lindex [.m1 entryconfigure 1 -label] 4} msg] $msg [destroy .m1]
+} {0 changed {}}
+test menu-3.39 {MenuWidgetCmd procedure, "index" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 index} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 index string"} {}}
+test menu-3.40 {MenuWidgetCmd procedure, "index" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 index foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.41 {MenuWidgetCmd procedure, "index" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 index "test"} msg] $msg [destroy .m1]
+} {0 1 {}}
+test menu-3.42 {MenuWidgetCmd procedure, "insert" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 insert} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 insert index type ?options?"} {}}
+test menu-3.43 {MenuWidgetCmd procedure, "insert" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 insert 1 command -label "test"
+    list [catch {.m1 entrycget 1 -label} msg] $msg [destroy .m1]
+} {0 test {}}
+test menu-3.44 {MenuWidgetCmd procedure, "invoke" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 invoke} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 invoke index"} {}}
+test menu-3.45 {MenuWidgetCmd procedure, "invoke" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 invoke foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.46 {MenuWidgetCmd procedure, "invoke" option} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add command -label "set foo" -command "set foo hello"
+    list [catch {.m1 invoke 1} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 hello 0 hello 0 {} {}}
+test menu-3.47 {MenuWidgetCmd procedure, "post" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "On Windows, hit Escape to get this menu to go away"
+    list [catch {.m1 post} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 post x y"} {}}
+test menu-3.48 {MenuWidgetCmd procedure, "post" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 post foo 40} msg] $msg [destroy .m1]
+} {1 {expected integer but got "foo"} {}}
+test menu-3.49 {MenuWidgetCmd procedure, "post" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 post 40 bar} msg] $msg [destroy .m1]
+} {1 {expected integer but got "bar"} {}}
+test menu-3.50 {MenuWidgetCmd procedure, "post" option} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "menu-3.53: hit Escape" -command "puts hello"
+    list [catch {.m1 post 40 40} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.51 {MenuWidgetCmd procedure, "postcascade" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 postcascade} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 postcascade index"} {}}
+test menu-3.52 {MenuWidgetCmd procedure, "postcascade" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 postcascade foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.53 {MenuWidgetCmd procedure, "postcascade" option} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label "menu-3.56 - hit Escape"
+    menu .m2
+    .m1 post 40 40
+    .m1 add cascade -menu .m2
+    list [catch {.m1 postcascade 1} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-3.54 {MenuWidgetCmd procedure, "postcascade" option} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2 -label "menu-3.57 - hit Escape"
+    .m1 postcascade 1
+    list [catch {.m1 postcascade none} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-3.55 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 type} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 type index"} {}}
+test menu-3.56 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 type foo} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-3.57 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 type 1} msg] $msg [destroy .m1]
+} {0 command {}}
+test menu-3.58 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add separator
+    list [catch {.m1 type 1} msg] $msg [destroy .m1]
+} {0 separator {}}
+test menu-3.59 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add checkbutton -label "test"
+    list [catch {.m1 type 1} msg] $msg [destroy .m1]
+} {0 checkbutton {}}
+test menu-3.60 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add radiobutton -label "test"
+    list [catch {.m1 type 1} msg] $msg [destroy .m1]
+} {0 radiobutton {}}
+test menu-3.61 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -label "test"
+    list [catch {.m1 type 1} msg] $msg [destroy .m1]
+} {0 cascade {}}
+test menu-3.62 {MenuWidgetCmd procedure, "type" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 type 0} msg] $msg [destroy .m1]
+} {0 tearoff {}}
+test menu-3.63 {MenuWidgetCmd procedure, "unpost" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 unpost foo} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 unpost"} {}}
+test menu-3.64 {MenuWidgetCmd procedure, "unpost" option} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "menu-3.68 - hit Escape"
+    .m1 post 40 40 
+    list [catch {.m1 unpost} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-3.65 {MenuWidgetCmd procedure, "yposition" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 yposition} msg] $msg [destroy .m1]
+} {1 {wrong # args: should be ".m1 yposition index"} {}}
+test menu-3.66 {MenuWidgetCmd procedure, "yposition" option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 yposition 1}] [destroy .m1]
+} {0 {}}
+test menu-3.67 {MenuWidgetCmd procedure, bad option} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 foo} msg] $msg [destroy .m1]
+} {1 {bad option "foo": must be activate, add, cget, clone, configure, delete, entrycget, entryconfigure, index, insert, invoke, post, postcascade, type, unpost, or yposition} {}}
+test menu-3.68 {MenuWidgetCmd procedure, fix for bug#508988} {
+    set t .t
+    set m1 .t.m1
+    set c1 .t.c1
+    set c2 .t.c2
+    toplevel .t
+    menu $m1 -tearoff 1
+    menu $c1 -tearoff 1
+    $c1 add command -label c1
+    menu $c2 -tearoff 1
+    $c2 add command -label c2
+    $m1 add cascade -label c1 -menu $c1
+    $t configure -menu $m1
+    $m1 entryconfigure 1 -menu $c2 -label c2
+    $t configure -menu ""
+    set l [list [winfo exists $c1] [winfo exists $c2]]
+    destroy $t;
+    set l;
+} {1 1}
+
+test menu-4.1 {TkInvokeMenu: disabled} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -label "test" -variable foo -onvalue on -offvalue off \
+	-state disabled
+    list [catch {.m1 invoke 1} msg] [destroy .m1] $foo
+} {0 {} off}
+test menu-4.2 {TkInvokeMenu: tearoff} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 invoke 0} msg] [destroy .m1]
+} {0 {}}
+test menu-4.3 {TkInvokeMenu: checkbutton -on} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -label "test" -variable foo -onvalue on -offvalue off
+    list [catch {.m1 invoke 1} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 on 0 {} {}}
+test menu-4.4 {TkInvokeMenu: checkbutton -off} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -label "test" -variable foo -onvalue on -offvalue off
+    .m1 invoke 1
+    list [catch {.m1 invoke 1} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 off 0 {} {}}
+test menu-4.5 {TkInvokeMenu: checkbutton array element} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -label "test" -variable foo(1) -onvalue on 
+    list [catch {.m1 invoke 1} msg] $msg [catch {set foo(1)} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 on 0 {} {}}
+test menu-4.6 {TkInvokeMenu: radiobutton} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add radiobutton -label "1" -variable foo -value one
+    .m1 add radiobutton -label "2" -variable foo -value two
+    .m1 add radiobutton -label "3" -variable foo -value three
+    list [catch {.m1 invoke 1} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 one 0 {} {}}
+test menu-4.7 {TkInvokeMenu: radiobutton} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add radiobutton -label "1" -variable foo -value one
+    .m1 add radiobutton -label "2" -variable foo -value two
+    .m1 add radiobutton -label "3" -variable foo -value three
+    list [catch {.m1 invoke 2} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 two 0 {} {}}
+test menu-4.8 {TkInvokeMenu: radiobutton} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add radiobutton -label "1" -variable foo -value one
+    .m1 add radiobutton -label "2" -variable foo -value two
+    .m1 add radiobutton -label "3" -variable foo -value three
+    list [catch {.m1 invoke 3} msg] $msg [catch {set foo} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 three 0 {} {}}
+test menu-4.9 {TkInvokeMenu: radiobutton array element} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add radiobutton -label "1" -variable foo(2) -value one
+    .m1 add radiobutton -label "2" -variable foo(2) -value two
+    .m1 add radiobutton -label "3" -variable foo(2) -value three
+    list [catch {.m1 invoke 3} msg] $msg [catch {set foo(2)} msg2] $msg2 [catch {unset foo} msg3] $msg3 [destroy .m1]
+} {0 {} 0 three 0 {} {}}
+test menu-4.10 {TkInvokeMenu} {
+    catch {destroy .m1}
+    catch {unset menu_test}
+    menu .m1
+    .m1 add command -label "test" -command "set menu_test menu-4.8"
+    list [catch {.m1 invoke 1} msg] $msg [catch {set menu_test} msg2] $msg2 [catch {unset menu_test} msg3] $msg3 [destroy .m1]
+} {0 menu-4.8 0 menu-4.8 0 {} {}}
+test menu-4.11 {TkInvokeMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -label "test" -menu .m1.m2
+    list [catch {.m1 invoke 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-4.12 {TkInvokeMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test" -command ".m1 delete 1"
+    list [catch {.m1 invoke 1} msg] $msg [catch {.m1 type "test"} msg2] $msg2 [destroy .m1]
+} {0 {} 1 {bad menu entry index "test"} {}}
+
+test menu-5.1 {DestroyMenuInstance} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-5.2 {DestroyMenuInstance - cascade menu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add cascade -menu .m2
+    menu .m2
+    list [catch {destroy .m2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-5.3 {DestroyMenuInstance - multiple cascade parents} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 add cascade -menu .m3
+    menu .m2
+    .m2 add cascade -menu .m3
+    menu .m3
+    list [catch {destroy .m3} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-5.4 {DestroyMenuInstance - multiple cascade parents} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    .m1 add cascade -menu .m4
+    menu .m2
+    .m2 add cascade -menu .m4
+    menu .m3
+    .m3 add cascade -menu .m4
+    menu .m4
+    list [catch {destroy .m4} msg] $msg [destroy .m1 .m2 .m3]
+} {0 {} {}}
+test menu-5.5 {DestroyMenuInstance - cascades of cloned menus} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    . configure -menu .m1
+    list [catch {destroy .m2} msg] $msg [.m1 entrycget 1 -menu] [. configure -menu ""] [destroy .m1]
+} {0 {} .m2 {} {}}
+test menu-5.6 {DestroyMenuInstance - cascades of cloned menus} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    menu .m1
+    .m1 add cascade -menu .m2
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2
+    wm geometry .t2 +0+0
+    .t2 configure -menu .m1
+    list [catch {destroy .m2} msg] $msg [. configure -menu ""] [destroy .t2 .m1]
+} {0 {} {} {}}
+test menu-5.7 {DestroyMenuInstance - basic clones} {
+    catch {destroy .m1}
+    menu .m1
+    set tearoff [tk::TearOffMenu .m1]
+    list [catch {destroy $tearoff} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-5.8 {DestroyMenuInstance - multiple clones} {
+    catch {destroy .m1}
+    menu .m1
+    set tearoff1 [tk::TearOffMenu .m1]
+    set tearoff2 [tk::TearOffMenu .m1]
+    list [catch {destroy $tearoff1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-5.9 {DestroyMenuInstace - master menu} {
+    catch {destroy .m1}
+    menu .m1
+    tk::TearOffMenu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-5.10 {DestroyMenuInstance - freeing entries} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "foo"
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-5.11 {DestroyMenuInstace - no entries} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 configure -tearoff 0
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-5.12 {DestroyMenuInstance - platform data} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-5.13 {DestroyMenuInstance - clones when mismatched tearoffs} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    set tearoff [tk::TearOffMenu .m1 40 40]
+    list [destroy .m2] [destroy .m1]
+} {{} {}}
+
+test menu-6.1 {TkDestroyMenu} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-6.2 {TkDestroyMenu - reentrancy} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    bind .m1 <Destroy> {destroy .m1}
+    menu .m2
+    bind .m2 <Destroy> {destroy .m2}
+    list [catch {destroy .m1} msg] $msg [destroy .m2]
+} {0 {} {}}
+test menu-6.3 {TkDestroyMenu - reentrancy} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    bind .m1 <Destroy> {destroy .m2}
+    .m1 clone .m2
+    .m1 clone .m3
+    list [catch {destroy .m1} msg] $msg [winfo exists .m2]
+} {0 {} 0}
+test menu-6.4 {TkDestroyMenu - reentrancy - clones} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m1.m3
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-6.5 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2
+    destroy .m1
+    winfo exists .m2
+} {0}
+test menu-6.6 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2 tearoff
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-6.7 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2
+    destroy .m2
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-6.8 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    destroy .m1
+    list [winfo exists .m2] [winfo exists .m3]
+} {0 0}
+test menu-6.9 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    list [catch {destroy .m2} msg] $msg [catch {destroy .m3} msg2] $msg2 [catch {destroy .m1} msg3] $msg3
+} {0 {} 0 {} 0 {}}
+test menu-6.10 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    list [catch {destroy .m3} msg] $msg [catch {destroy .m1} msg2] $msg2
+} {0 {} 0 {}}
+test menu-6.11 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    .m1 clone .m4
+    list [catch {destroy .m2} msg1] $msg1 [catch {destroy .m1} msg2] $msg2
+} {0 {} 0 {}}
+test menu-6.12 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    .m1 clone .m4
+    list [catch {destroy .m3} msg1] $msg1 [catch {destroy .m1} msg2] $msg2
+} {0 {} 0 {}}
+test menu-6.13 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    .m1 clone .m2
+    .m1 clone .m3
+    .m1 clone .m4
+    list [catch {destroy .m4} msg1] $msg1 [catch {destroy .m1} msg2] $msg2
+} {0 {} 0 {}}
+test menu-6.14 {TkDestroyMenu} {
+    catch {destroy .m1}
+    menu .m1
+    . configure -menu .m1
+    list [catch {destroy .m1} msg] $msg [. configure -menu ""]
+} {0 {} {}}
+test menu-6.15 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .t2}
+    menu .m1
+    toplevel .t2
+    wm geometry .t2 +0+0
+    . configure -menu .m1
+    .t2 configure -menu .m1
+    list [catch {destroy .m1} msg] $msg [destroy .t2] [. configure -menu ""]
+} {0 {} {} {}}
+test menu-6.16 {TkDestroyMenu} {
+    catch {destroy .m1}
+    catch {destroy .t2}
+    catch {destroy .t3}
+    menu .m1
+    toplevel .t2
+    wm geometry .t2 +0+0
+    toplevel .t3
+    wm geometry .t3 +0+0
+    . configure -menu .m1
+    .t2 configure -menu .m1
+    .t3 configure -menu .m1
+    list [catch {destroy .m1} msg] $msg [destroy .t2] [destroy .t3] [. configure -menu ""]
+} {0 {} {} {} {}}
+
+test menu-7.1 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-7.2 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-7.3 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m2 add cascade -menu .cascade
+    .m1 add cascade -menu .cascade
+    list [catch {destroy .m1} msg] $msg [destroy .m2]
+} {0 {} {}}
+test menu-7.4 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .cascade
+    .m2 add cascade -menu .cascade
+    list [catch {destroy .m1} msg] $msg [destroy .m2]
+} {0 {} {}}
+test menu-7.5 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    menu .m2
+    menu .m3
+    .m1 add cascade -menu .cascade
+    .m2 add cascade -menu .cascade
+    .m3 add cascade -menu .cascade
+    list [catch {destroy .m1} msg] $msg [destroy .m2 .m3]
+} {0 {} {}}
+test menu-7.6 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    menu .m2
+    menu .m3
+    .m1 add cascade -menu .cascade
+    .m2 add cascade -menu .cascade
+    .m3 add cascade -menu .cascade
+    list [catch {destroy .m2} msg] $msg [destroy .m1 .m3]
+} {0 {} {}}
+test menu-7.7 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    menu .m2
+    menu .m3
+    .m1 add cascade -menu .cascade
+    .m2 add cascade -menu .cascade
+    .m3 add cascade -menu .cascade
+    list [catch {destroy .m3} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-7.8 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    list [catch {destroy .m1} msg] $msg [destroy .m2]
+} {0 {} {}}
+test menu-7.9 {UnhookCascadeEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    destroy .m1
+    list [catch {destroy .m2} msg] $msg
+} {0 {}}
+
+test menu-8.1 {DestroyMenuEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-8.2 {DestroyMenuEntry} {
+    catch {image delete image1a}
+    catch {destroy .m1}
+    image create photo image1a -file [file join $tk_library demos images earth.gif]
+    menu .m1
+    .m1 add command -image image1a
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1] [image delete image1a]
+} {0 {} {} {}}
+test menu-8.3 {DestroyMenuEntry} testImageType {
+    catch {eval image delete [image names]}
+    catch {destroy .m1}
+    image create test image1
+    image create test image2
+    menu .m1
+    .m1 add checkbutton -image image1 -selectimage image2
+    .m1 invoke 1
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1] [eval image delete [image names]]
+} {0 {} {} {}}
+test menu-8.4 {DestroyMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add checkbutton -variable foo
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1]
+} {0 {} {}} 
+test menu-8.5 {DestroyMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-8.6 {DestroyMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "one"
+    .m1 add command -label "two"
+    list [catch {.m1 delete 1} msg] $msg [.m1 entrycget 1 -label] [destroy .m1]
+} {0 {} two {}}
+test menu-8.7 {DestroyMenuEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label "one"
+    .m1 clone .m2 tearoff
+    list [catch {.m2 delete 0} msg] $msg [destroy .m1]
+} {0 {} {}}
+
+# test menu-9 - Can only change when fonts change on system, which cannot
+# be done from tcl.
+
+test menu-9.1 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 configure -postcommand "beep"} msg] $msg [.m1 cget -postcommand] [destroy .m1]    
+} {0 {} beep {}}
+test menu-9.2 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 configure -tearoff 0} msg] $msg [.m1 entrycget 1 -label] [destroy .m1]
+} {0 {} test {}}
+test menu-9.3 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 configure -postcommand "beep"} msg] $msg [.m1 cget -postcommand] [destroy .m1]
+} {0 {} beep {}}
+test menu-9.4 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 configure -fg red} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-9.5 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "two"
+    list [catch {.m1 configure -fg red} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-9.6 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "two"
+    .m1 add command -label "three"
+    list [catch {.m1 configure -fg red} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-9.7 {ConfigureMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2 tearoff
+    list [catch {.m1 configure -fg red} msg] $msg [.m2 cget -fg] [destroy .m1]
+} {0 {} red {}}
+test menu-9.8 {ConfigureMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2 tearoff
+    list [catch {.m2 configure -fg red} msg] $msg [.m1 cget -fg] [destroy .m1]
+} {0 {} red {}}
+test menu-9.9 {ConfigureMenu} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+
+test menu-10.1 {PostProcessEntry: array variable} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    set foo(1) on
+    .m1 add checkbutton -variable foo(1) -onvalue on -offvalue off -label "Nonsense"
+    list [catch {set foo(1)} msg] $msg [destroy .m1]
+} {0 on {}}
+test menu-10.2 {PostProcessEntry: array variable} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -variable foo(1) -onvalue on -offvalue off -label "Nonsense"
+    list [catch {set foo(1)} msg] $msg [destroy .m1]
+} {0 off {}}
+
+test menu-11.1 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    .m1 add checkbutton -variable foo -onvalue on -offvalue off -label "Nonsense"
+    list [catch {.m1 entryconfigure 1 -variable bar} msg] $msg [.m1 entrycget 1 -variable] [destroy .m1]
+} {0 {} bar {}}
+test menu-11.2 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 entryconfigure 1 -label ""} msg] $msg [.m1 entrycget 1 -label] [destroy .m1]
+} {0 {} {} {}}
+test menu-11.3 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command
+    list [catch {.m1 entryconfigure 1 -label "test"} cmd] $cmd [.m1 entrycget 1 -label] [destroy .m1]
+} {0 {} test {}}
+test menu-11.4 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1 
+    .m1 add command
+    list [catch {.m1 entryconfigure 1 -accel "S"} msg] $msg [.m1 entrycget 1 -accel] [destroy .m1]
+} {0 {} S {}}
+test menu-11.5 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command
+    list [catch {.m1 entryconfigure 1 -label "test"} msg] $msg [.m1 entrycget 1 -label] [destroy .m1]
+} {0 {} test {}}
+test menu-11.6 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command
+    list [catch {.m1 entryconfigure 1 -label "test"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.7 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m2
+    menu .m1
+    .m1 add cascade
+    list [catch {.m1 entryconfigure 1 -label "test" -menu .m2} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+test menu-11.8 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade
+    list [catch {.m1 entryconfigure 1 -label "test" -menu .m2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.9 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -menu .m3
+    list [catch {.m1 entryconfigure 1 -label "test" -menu .m2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.10 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade
+    list [catch {.m1 entryconfigure 1 -label "test" -menu .m2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.11 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {.m1 entryconfigure 1 -label "test" -menu .m2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.12 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    catch {destroy .m5}
+    menu .m1
+    menu .m2 
+    .m2 add cascade -menu .m1
+    menu .m3 
+    .m3 add cascade -menu .m1
+    menu .m4 
+    .m4 add cascade -menu .m1
+    menu .m5 
+    .m5 add cascade
+    list [catch {.m5 entryconfigure 1 -label "test" -menu .m1} msg] $msg [destroy .m1 .m2 .m3 .m4 .m5]
+} {0 {} {}}
+test menu-11.13 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    menu .m2 
+    .m2 add cascade -menu .m1
+    menu .m3 
+    .m3 add cascade -menu .m1
+    menu .m4 
+    .m4 add cascade -menu .m1
+    list [catch {.m3 entryconfigure 1 -label "test" -menu .m1} msg] $msg [destroy .m1 .m2 .m3 .m4]
+} {0 {} {}}
+test menu-11.14 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add checkbutton
+    list [catch {.m1 entryconfigure 1 -variable "test"} msg] $msg [.m1 entrycget 1 -variable] [destroy .m1]
+} {0 {} test {}}
+test menu-11.15 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add checkbutton -label "test"} msg] $msg [.m1 entrycget 1 -variable] [destroy .m1]
+} {0 {} test {}}
+test menu-11.16 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add radiobutton -label "test"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-11.17 {ConfigureMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add checkbutton
+    list [catch {.m1 entryconfigure 1 -onvalue "test"} msg] $msg [.m1 entrycget 1 -onvalue] [destroy .m1]
+} {0 {} test {}}
+test menu-11.18 {ConfigureMenuEntry} testImageType {
+    catch {destroy .m1}
+    catch {image delete image1}
+    menu .m1
+    .m1 add command
+    image create test image1
+    list [catch {.m1 entryconfigure 1 -image image1} msg] $msg [destroy .m1] [image delete image1]
+} {0 {} {} {}}
+test menu-11.19 {ConfigureMenuEntry} testImageType {
+    catch {destroy .m1}
+    catch {image delete image1}
+    catch {image delete image2}
+    image create test image1
+    image create photo image2 -file [file join $tk_library demos images earth.gif]
+    menu .m1
+    .m1 add command -image image1
+    list [catch {.m1 entryconfigure 1 -image image2} msg] $msg [destroy .m1] [image delete image1] [image delete image2]
+} {0 {} {} {} {}}
+test menu-11.20 {ConfigureMenuEntry} testImageType {
+    catch {destroy .m1}
+    catch {image delete image1}
+    catch {image delete image2}
+    image create photo image1 -file [file join $tk_library demos images earth.gif]
+    image create test image2
+    menu .m1
+    .m1 add checkbutton -image image1
+    list [catch {.m1 entryconfigure 1 -selectimage image2} msg] $msg [destroy .m1] [image delete image1] [image delete image2]
+} {0 {} {} {} {}}
+test menu-11.21 {ConfigureMenuEntry} testImageType {
+    catch {destroy .m1}
+    catch {image delete image1}
+    catch {image delete image2}
+    catch {image delete image3}
+    image create photo image1 -file [file join $tk_library demos images earth.gif]
+    image create test image2
+    image create test image3
+    menu .m1
+    .m1 add checkbutton -image image1 -selectimage image2
+    list [catch {.m1 entryconfigure 1 -selectimage image3} msg] $msg [destroy .m1] [image delete image1] [image delete image2] [image delete image3]
+} {0 {} {} {} {} {}}
+
+test menu-12.1 {ConfigureMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m2 configure -tearoff 0
+    .m1 clone .m3
+    .m1 add command -label "test"
+    .m1 add command -label "test2"
+    list [list [catch {.m1 entryconfigure 1 -gork "foo"} msg] $msg] [destroy .m1]
+} {{1 {unknown option "-gork"}} {}}
+test menu-12.2 {ConfigureMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    catch {destroy .m4}
+    menu .m1
+    .m1 clone .m2
+    menu .m3
+    .m1 add cascade -menu .m3
+    menu .m4
+    list [catch {.m1 entryconfigure 1 -menu .m4} msg] $msg [destroy .m1] [destroy .m3] [destroy .m4]
+} {0 {} {} {} {}}
+test menu-12.3 {ConfigureMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 clone .m2
+    .m1 add cascade -label dummy
+    list [catch {.m1 entryconfigure dummy -menu .m3} msg] $msg [destroy .m1]
+} {0 {} {}}
+
+test menu-12.4 {ConfigureMenuCloneEntries} {
+     catch {destroy .m1}
+     catch {destroy .m2}
+     menu .m1
+     .m1 add cascade -label File -menu .m1.foo
+     menu .m1.foo
+     .m1.foo add command -label bar
+     .m1 clone .m2
+     list [catch {.m1 entryconfigure File -state disabled} msg1] $msg1 [destroy .m1]
+} {0 {} {}}
+
+test menu-13.1 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "active"
+    .m1 add command -label "test2"
+    .m1 add command -label "test3"
+    .m1 activate 2
+    list [catch {.m1 entrycget active -label} msg] $msg [destroy .m1]
+} {0 test2 {}}
+test menu-13.2 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "last"
+    .m1 add command -label "test2"
+    .m1 add command -label "test3"
+    .m1 activate 2
+    list [catch {.m1 entrycget last -label} msg] $msg [destroy .m1]
+} {0 test3 {}}
+test menu-13.3 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "last"
+    .m1 add command -label "test2"
+    .m1 add command -label "test3"
+    .m1 activate 2
+    list [catch {.m1 entrycget end -label} msg] $msg [destroy .m1]
+} {0 test3 {}}
+test menu-13.4 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 insert last command -label "test2"} msg] $msg [.m1 entrycget last -label] [destroy .m1]
+} {0 {} test2 {}}
+test menu-13.5 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 insert end command -label "test2"} msg] $msg [.m1 entrycget end -label] [destroy .m1]
+} {0 {} test2 {}}
+test menu-13.6 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "active"
+    .m1 add command -label "test2"
+    .m1 add command -label "test3"
+    .m1 activate 2
+    list [catch {.m1 entrycget none -label} msg] $msg [destroy .m1]
+} {0 {} {}}
+#test menu-13.7 - Need to add @test here.
+test menu-13.7 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "active"
+    .m1 add command -label "test2"
+    .m1 add command -label "test3"
+    list [catch {.m1 entrycget 1 -label} msg] $msg [destroy .m1]
+} {0 active {}}
+test menu-13.8 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "active"
+    list [catch {.m1 entrycget -1 -label} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "-1"} {}}
+test menu-13.9 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "test2"
+    list [catch {.m1 entrycget 999 -label} msg] $msg [destroy .m1]
+} {0 test2 {}}
+test menu-13.10 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 insert 999 command -label "test"
+    list [catch {.m1 entrycget 1 -label} msg] $msg [destroy .m1]
+} {0 test {}}
+test menu-13.11 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "1test"
+    list [catch {.m1 entrycget 1test -label} msg] $msg [destroy .m1]
+} {0 1test {}}
+test menu-13.12 {TkGetMenuIndex} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "test2" -command "beep"
+    .m1 add command -label "test3"
+    list [catch {.m1 entrycget test2 -command} msg] $msg [destroy .m1]
+} {0 beep {}}
+
+test menu-14.1 {MenuCmdDeletedProc} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-14.2 {MenuCmdDeletedProc} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 clone .m2
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+
+test menu-15.1 {MenuNewEntry} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add command -label "test"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-15.2 {MenuNewEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "test3"
+    list [catch {.m1 insert 2 command -label "test2"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-15.3 {MenuNewEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 add command -label "test2"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-15.4 {MenuNewEntry} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add command -label "test"} msg] $msg [destroy .m1]
+} {0 {} {}}
+
+test menu-16.1 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 insert foo command -label "test"} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "foo"} {}}
+test menu-16.2 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 insert test command -label "foo"} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.3 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 insert -1 command -label "test"} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "-1"} {}}
+test menu-16.4 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 insert 0 command -label "test2"
+    list [catch {.m1 entrycget 1 -label} msg] $msg [destroy .m1]
+} {0 test2 {}}
+test menu-16.5 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add cascade} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.6 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add checkbutton} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.7 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add command} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.8 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add radiobutton} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.9 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add separator} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.10 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add blork} msg] $msg [destroy .m1]
+} {1 {bad menu entry type "blork": must be cascade, checkbutton, command, radiobutton, or separator} {}}
+test menu-16.11 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add command} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-16.12 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m2 clone .m3
+    list [catch {.m2 add command -label "test"} msg1] $msg1 [catch {.m1 entrycget 1 -label} msg2] $msg2 [catch {.m3 entrycget 1 -label} msg3] $msg3 [destroy .m1]
+} {0 {} 0 test 0 test {}}
+test menu-16.13 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    .m2 clone .m3
+    list [catch {.m3 add command -label "test"} msg1] $msg1 [catch {.m1 entrycget 1 -label} msg2] $msg2 [catch {.m2 entrycget 1 -label} msg3] $msg3 [destroy .m1]
+} {0 {} 0 test 0 test {}}
+test menu-16.14 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 add command -blork} msg] $msg [destroy .m1]
+} {1 {unknown option "-blork"} {}}
+test menu-16.15 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .container}
+    menu .m1
+    .m1 add command -label "File"
+    menu .container
+    . configure -menu .container
+    list [catch {.container add cascade -label "File" -menu .m1} msg] $msg [. configure -menu ""] [destroy .container .m1]
+} {0 {} {} {}}
+test menu-16.16 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    set tearoff [tk::TearOffMenu .m2]
+    list [catch {.m2 add cascade -menu .m1} msg] $msg [$tearoff unpost] [catch {destroy .m1} msg2] $msg2 [catch {destroy .m2} msg3] $msg3
+} {0 {} {} 0 {} 0 {}}
+test menu-16.17 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .container}
+    menu .m1
+    menu .container
+    . configure -menu .container
+    set tearoff [tk::TearOffMenu .container]
+    list [catch {.container add cascade -label "File" -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1 .container]
+} {0 {} {} {}}
+test menu-16.18 {MenuAddOrInsert} {
+    catch {destroy .m1}
+    catch {destroy .container}
+    menu .m1
+    menu .container
+    .container add cascade -menu .m1
+    . configure -menu .container
+    list [catch {.container add cascade -label "File" -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1 .container]
+} {0 {} {} {}}
+test menu-16.19 {MenuAddOrInsert - Insert a cascade deep into the tree} {
+    catch {destroy .menubar}
+    menu .menubar
+    menu .menubar.test -tearoff 0
+    .menubar add cascade -label Test -underline 0 -menu .menubar.test
+    menu .menubar.test.cascade -tearoff 0
+    .menubar.test.cascade add command -label SubItem -command "puts SubItemSelected"
+    . configure -menu .menubar
+    list [catch {.menubar.test add cascade -label SubMenu \
+	-menu .menubar.test.cascade} msg] \
+	[info commands .\#menubar.\#menubar\#test.\#menubar\#test\#cascade] \
+	[. configure -menu ""] [destroy .menubar]
+} {0 .#menubar.#menubar#test.#menubar#test#cascade {} {}}
+
+test menu-17.1 {MenuVarProc} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    set foo "hello"
+    list [catch {.m1 add checkbutton -variable foo -onvalue hello -offvalue goodbye} msg] $msg [catch {unset foo} msg2] $msg2 [destroy .m1]
+} {0 {} 0 {} {}}
+# menu-17.2 - Don't know how to generate the flags in the if
+test menu-17.2 {MenuVarProc} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    list [catch {.m1 add checkbutton -variable foo -onvalue hello -offvalue goodbye} msg] $msg [set foo ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-17.3 {MenuVarProc} {
+    catch {destroy .m1}
+    catch {unset foo}
+    menu .m1
+    set foo "hello"
+    list [catch {.m1 add checkbutton -variable foo -onvalue hello -offvalue goodbye} msg] $msg [set foo "hello"] [destroy .m1] [catch {unset foo} msg2] $msg2
+} {0 {} hello {} 0 {}}
+test menu-17.4 {MenuVarProc} {
+    catch {destroy .m1}
+    menu .m1
+    set foo "goodbye"
+    list [catch {.m1 add checkbutton -variable foo -onvalue hello -offvalue goodbye} msg] $msg [set foo "hello"] [destroy .m1] [catch {unset foo} msg2] $msg2
+} {0 {} hello {} 0 {}}
+test menu-17.5 {MenuVarProc} {
+    catch {destroy .m1}
+    menu .m1
+    set foo "hello"
+    list [catch {.m1 add checkbutton -variable foo -onvalue hello -offvalue goodbye} msg] $msg [set foo "goodbye"] [destroy .m1] [catch {unset foo} msg2] $msg2
+} {0 {} goodbye {} 0 {}}
+
+test menu-18.1 {TkActivateMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 activate 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-18.2 {TkActivateMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    list [catch {.m1 activate 0} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-18.3 {TkActivateMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "test2"
+    .m1 activate 1
+    list [catch {.m1 activate 2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-18.4 {TkActivateMenuEntry} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 add command -label "test2"
+    .m1 activate 1
+    list [catch {.m1 activate 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+
+test menu-19.1 {TkPostCommand} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    menu .m1 -postcommand "set menu_test menu-19.1"
+    .m1 add command -label "menu-19.1 - hit Escape"
+    list [catch {.m1 post 40 40} msg] $msg [.m1 unpost] [set menu_test] [destroy .m1]
+} {0 menu-19.1 {} menu-19.1 {}}
+test menu-19.2 {TkPostCommand} {nonUnixUserInteraction } {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "menu-19.2 - hit Escape"
+    list [catch {.m1 post 40 40} msg] $msg [.m1 unpost] [destroy .m1]
+} {0 {} {} {}}
+
+test menu-20.1 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2} msg1] $msg1 [destroy .m1]
+} {0 {} {}}
+test menu-20.2 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2 normal} msg1] $msg1 [destroy .m1]
+} {0 {} {}}
+test menu-20.3 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2 tearoff} msg1] $msg1 [destroy .m1]
+} {0 {} {}}
+test menu-20.4 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2 menubar} msg1] $msg1 [destroy .m1]
+} {0 {} {}}
+test menu-20.5 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2 foo} msg1] $msg1 [destroy .m1]
+} {1 {bad menu type "foo": must be normal, tearoff, or menubar} {}}
+test menu-20.6 {CloneMenu - hooking up bookeeping ptrs} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2} msg] $msg [destroy .m1]
+ } {0 {} {}}
+ test menu-20.7 {CloneMenu - hooking up bookeeping ptrs - multiple children} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    menu .m1
+    .m1 clone .m2
+    list [catch {.m1 clone .m3} msg] $msg [destroy .m1]
+ } {0 {} {}}
+ test menu-20.8 {CloneMenu - cascade entries} {
+    catch {destroy .m1}
+    catch {destroy .foo}
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {.m1 clone .foo} msg] $msg [destroy .m1]
+ } {0 {} {}}
+ test menu-20.9 {CloneMenu - cascades entries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .foo}
+    menu .m1
+    .m1 add cascade -menu .m2
+    menu .m2
+    list [catch {.m1 clone .foo} msg] $msg [destroy .m1 .m2]
+ } {0 {} {}}
+test menu-20.10 {CloneMenu - tearoff fields} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    list [catch {.m1 clone .m2 normal} msg1] $msg1 [catch {.m2 cget -tearoff} msg2] $msg2 [destroy .m1]
+} {0 {} 0 1 {}}
+test menu-20.11 {CloneMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    menu .m2
+    list [catch {.m1 clone .m2} msg] $msg [destroy .m1 .m2]
+} {1 {window name "m2" already exists in parent} {}}
+
+test menu-21.1 {MenuDoYPosition} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {.m1 yposition glorp} msg] $msg [destroy .m1]
+} {1 {bad menu entry index "glorp"} {}}
+test menu-21.2 {MenuDoYPosition} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "Test"
+    list [catch {.m1 yposition 1}] [destroy .m1]
+} {0 {}}
+
+test menu-22.1 {GetIndexFromCoords} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 configure -tearoff 0
+    list [catch {.m1 index @5} msg] $msg [destroy .m1]
+} {0 0 {}}
+test menu-22.2 {GetIndexFromCoords} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label "test"
+    .m1 configure -tearoff 0
+    list [catch {.m1 index @5,5} msg] $msg [destroy .m1]
+} {0 0 {}}
+
+test menu-23.1 {RecursivelyDeleteMenu} {
+    catch {destroy .m1}
+    menu .m1
+    . configure -menu .m1
+    list [catch {. configure -menu ""} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-23.2 {RecursivelyDeleteMenu} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m2
+    .m2 add command -label "test2"
+    menu .m1
+    .m1 add cascade -label "test1" -menu .m2
+    . configure -menu .m1
+    list [catch {. configure -menu ""} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+
+test menu-24.1 {TkNewMenuName} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-24.2 {TkNewMenuName} {
+    catch {destroy .m1}
+    catch {destroy .m1\#0}
+    menu .m1
+    menu .m1\#0
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-24.3 {TkNewMenuName} {
+    catch {destroy .#m}
+    menu .#m
+    rename .#m hideme
+    list [catch {. configure -menu [menu .m]} $msg] [. configure -menu ""] [destroy .#m] [destroy .m] [destroy hideme]
+} {0 {} {} {} {}}
+
+test menu-25.1 {TkSetWindowMenuBar} {
+    . configure -menu ""
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""]
+} {0 {} {}}
+test menu-25.2 {TkSetWindowMenuBar} {
+    . configure -menu ""
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""]
+} {0 {} {}}
+test menu-25.3 {TkSetWindowMenuBar} {
+    . configure -menu ""
+    catch {destroy .m1}
+    menu .m1
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-25.4 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    . configure -menu ""
+    menu .m1
+    . configure -menu .m1
+    menu .m2
+    list [catch {. configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .m1 .m2]
+} {0 {} {} {}}
+test menu-25.5 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    . configure -menu ""
+    menu .m1
+    . configure -menu .m1
+    .m1 clone .m2
+    menu .m3
+    list [catch {. configure -menu .m3} msg] $msg [. configure -menu ""] [destroy .m1 .m3]
+} {0 {} {} {}}
+test menu-25.6 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .m3}
+    . configure -menu ""
+    menu .m1
+    .m1 clone .m2
+    . configure -menu .m2
+    menu .m3
+    list [catch {. configure -menu .m3} msg] $msg [. configure -menu ""] [destroy .m1 .m3]
+} {0 {} {} {}}
+test menu-25.7 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2
+    .t2 configure -menu .m1
+    list [catch {.t2 configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .t2 .m1 .m2]
+} {0 {} {} {}}
+test menu-25.8 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2
+    wm geometry .t2 +0+0
+    .t2 configure -menu .m1
+    list [catch {. configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .t2 .m1 .m2]
+} {0 {} {} {}}
+test menu-25.9 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    catch {destroy .t3}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {.t3 configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .t2 .t3 .m1 .m2]
+} {0 {} {} {}}
+test menu-25.10 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    catch {destroy .t3}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {.t2 configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .t2 .t3 .m1 .m2]
+} {0 {} {} {}}
+test menu-25.11 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    catch {destroy .t2}
+    catch {destroy .t3}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    . configure -menu .m1
+    toplevel .t2 -menu .m1
+    wm geometry .t2 +0+0
+    toplevel .t3 -menu .m1
+    wm geometry .t3 +0+0
+    list [catch {. configure -menu .m2} msg] $msg [. configure -menu ""] [destroy .t2 .t3 .m1 .m2]
+} {0 {} {} {}}
+test menu-25.12 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    . configure -menu ""
+    menu .m1
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-25.13 {TkSetWindowMenuBar} {
+    . configure -menu ""
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""]
+} {0 {} {}}
+test menu-25.14 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    . configure -menu ""
+    menu .m1
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-25.15 {TkSetWindowMenuBar} {
+    . configure -menu ""
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""]
+} {0 {} {}}
+test menu-25.16 {TkSetWindowMenuBar} {
+    catch {destroy .m1}
+    . configure -menu ""
+    menu .m1
+    . configure -menu .m1
+    list [catch {toplevel .t2 -menu m1} msg] $msg [. configure -menu ""] [destroy .t2 .m1]
+} {0 .t2 {} {}}
+
+test menu-26.1 {DestroyMenuHashTable} {
+    catch {interp destroy testinterp}
+    interp create testinterp
+    load {} Tk testinterp
+    interp eval testinterp {menu .m1}
+    list [catch {interp delete testinterp} msg] $msg
+} {0 {}}
+
+test menu-27.1 {GetMenuHashTable} {
+    catch {interp destroy testinterp}
+    interp create testinterp
+    load {} Tk testinterp
+    list [catch {interp eval testinterp {menu .m1}} msg] $msg [interp delete testinterp]
+} {0 .m1 {}}
+
+test menu-28.1 {TkCreateMenuReferences - not there before} {
+    catch {destroy .m1}
+    list [catch {menu .m1} msg] $msg [destroy .m1]
+} {0 .m1 {}}
+test menu-28.2 {TkCreateMenuReferences - there already} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {menu .m2} msg] $msg [destroy .m1 .m2]
+} {0 .m2 {}}
+
+test menu-29.1 {TkFindMenuReferences - not there} {
+    catch {destroy .m1}
+    . configure -menu ""
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1]
+} {0 {} {} {}}
+test menu-30.1 {TkFindMenuReferences - there already} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    . configure -menu ""
+    menu .m1
+    menu .m2
+    .m1 add cascade -menu .m2
+    list [catch {. configure -menu .m1} msg] $msg [. configure -menu ""] [destroy .m1 .m2]
+} {0 {} {} {}}
+
+test menu-31.1 {TkFreeMenuReferences - menuPtr} {
+    catch {destroy .m1}
+    menu .m1
+    list [catch {destroy .m1} msg] $msg
+} {0 {}}
+test menu-31.2 {TkFreeMenuReferences - cascadePtr} {
+    catch {destroy .m1}
+    . configure -menu ""
+    menu .m1
+    .m1 add cascade -menu .m2
+    list [catch {.m1 entryconfigure 1 -menu .m3} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-31.3 {TkFreeMenuReferences - topLevelListPtr} {
+    . configure -menu .m1
+    list [catch {. configure -menu ""} msg] $msg
+} {0 {}}
+test menu-31.4 {TkFreeMenuReferences - not empty} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add cascade -menu .m3
+    menu .m2
+    .m2 add cascade -menu .m3
+    list [catch {.m2 entryconfigure 1 -menu ".foo"} msg] $msg [destroy .m1 .m2]
+} {0 {} {}}
+
+test menu-32.1 {DeleteMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label foo
+    .m1 clone .m2
+    list [catch {.m1 delete 1} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.2 {DeleteMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label one
+    .m1 add command -label two
+    .m1 add command -label three
+    .m1 add command -label four
+    .m1 clone .m2
+    list [catch {.m1 delete 2 3} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.3 {DeleteMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1 -tearoff 0
+    .m1 add command -label one
+    .m1 add command -label two
+    .m1 add command -label three
+    .m1 add command -label four
+    .m1 clone .m2
+    .m2 configure -tearoff 1
+    list [catch {.m1 delete 1 2} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.4 {DeleteMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label one
+    .m1 add command -label two
+    .m1 add command -label three
+    .m1 add command -label four
+    .m1 clone .m2
+    .m2 configure -tearoff 0
+    list [catch {.m1 delete 2 3} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.5 {DeleteMenuCloneEntries} {
+    catch {destroy .m1}
+    catch {destroy .m2}
+    menu .m1
+    .m1 add command -label one
+    .m1 add command -label two
+    .m1 clone .m2
+    .m1 activate one
+    list [catch {.m1 delete one} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.6 {DeleteMenuCloneEntries - reentrancy - crashes tk8.0} {
+    catch {destroy .m1}
+    menu .m1
+    .m1 add command -label test -command ".m1 delete test ; .m1 add command -label test -command \".m1 delete test\"; .m1 delete test"
+    list [catch {.m1 invoke test} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.7 {DeleteMenuCloneEntries - one entry} {
+    catch {destroy .m1}
+    menu .m1 -tearoff 0
+    .m1 add command -label Hello
+    list [catch {.m1 delete Hello} msg] $msg [destroy .m1]
+} {0 {} {}}
+test menu-32.8 {Ensure all menu clone commands are deleted} {knownBug} {
+    # SF bug #465324
+    catch {destroy .menubar}
+    catch {destroy .menubar.test}
+    menu .menubar
+    . configure -menu .menubar
+    menu .menubar.test
+    .menubar.test add command -label "hi"
+    for {set i 0} {$i < 10} {incr i} {
+	.menubar add cascade -menu .menubar.test -label "Test"
+	.menubar delete Test
+    }
+
+    info commands .#menubar*test*
+} {}
+test menu-32.9 {Ensure deleting of clones doesn't corrupt menu refs} {
+    catch {destroy .menubar}
+    catch {destroy .menubar.test}
+    
+    menu .menubar
+    . configure -menu .menubar
+    menu .menubar.test
+    .menubar add cascade -menu .menubar.test -label "Test"
+    menu .menubar.cascade
+
+    .menubar.test add cascade -menu .menubar.cascade -label "Cascade"
+    set res {}
+    lappend res [.menubar.test entrycget 1 -menu]
+    lappend res [.#menubar.#menubar#test entrycget 1 -menu]
+    destroy .menubar.test
+    menu .menubar.test
+    .menubar.test add cascade -menu .menubar.cascade -label "Cascade"
+    lappend res [.menubar.test entrycget 1 -menu]
+    lappend res [.#menubar.#menubar#test entrycget 1 -menu]
+    set res
+} {.menubar.cascade .#menubar.#menubar#test.#menubar#cascade .menubar.cascade .#menubar.#menubar#test.#menubar#cascade}
+
+set l [interp hidden]
+deleteWindows
+
+test menu-33.1 {menu vs command hiding} {
+    catch {destroy .m}
+    menu .m
+    interp hide {} .m
+    destroy .m
+    list [winfo children .] [interp hidden]
+} [list {} $l]
+
+# menu-34 MenuInit only called at boot time
+
+# creating menus on two different screens then deleting the
+# menu from the first screen crashes Tk8.3.1
+#
+test menu-35.1 {menus on multiple screens - crashes tk8.3.1, Bug 5454} \
+	{altDisplay} {
+    toplevel .one
+    menu .one.m
+    toplevel .two -screen $::env(TK_ALT_DISPLAY)
+    menu .two.m
+    destroy .one
+    destroy .two
+} {}
+
+# cleanup
+deleteWindows
+::tcltest::cleanupTests
+return

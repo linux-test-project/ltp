@@ -1,0 +1,3 @@
+time
+
+	test the time command

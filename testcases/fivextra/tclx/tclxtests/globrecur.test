@@ -1,0 +1,190 @@
+#
+# globrecur.test
+#
+# Tests for recursive_glob and for_recursive_globs procedures.
+#
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: globrecur.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+TestRemove GLOBTESTDIR
+
+TestTouch GLOBTESTDIR/file1
+TestTouch GLOBTESTDIR/dir1/file1
+TestTouch GLOBTESTDIR/dir1/file2
+TestTouch GLOBTESTDIR/dir1/file3.c
+TestTouch GLOBTESTDIR/dir2/file1
+TestTouch GLOBTESTDIR/dir2/file2.c
+TestTouch GLOBTESTDIR/dir2/file3
+TestTouch GLOBTESTDIR/file2
+TestTouch GLOBTESTDIR/dir2/dir3/file1.c
+TestTouch GLOBTESTDIR/dir2/dir3/file2.c
+TestTouch GLOBTESTDIR/dir2/dir3/file3
+
+set expectedResult1 [list GLOBTESTDIR/dir1 \
+                          GLOBTESTDIR/dir1/file1 \
+                          GLOBTESTDIR/dir1/file2 \
+                          GLOBTESTDIR/dir1/file3.c \
+                          GLOBTESTDIR/dir2 \
+                          GLOBTESTDIR/dir2/dir3 \
+                          GLOBTESTDIR/dir2/dir3/file1.c\
+                          GLOBTESTDIR/dir2/dir3/file2.c \
+                          GLOBTESTDIR/dir2/dir3/file3 \
+                          GLOBTESTDIR/dir2/file1 \
+                          GLOBTESTDIR/dir2/file2.c \
+                          GLOBTESTDIR/dir2/file3 \
+                          GLOBTESTDIR/file1 \
+                          GLOBTESTDIR/file2]
+
+set expectedResult2 [list GLOBTESTDIR/dir1/file3.c \
+                          GLOBTESTDIR/dir2/dir3/file1.c \
+                          GLOBTESTDIR/dir2/dir3/file2.c \
+                          GLOBTESTDIR/dir2/file2.c]
+
+set expectedResult3 [list GLOBTESTDIR/dir1/file3.c \
+                          GLOBTESTDIR/dir2/dir3 \
+                          GLOBTESTDIR/dir2/dir3/file1.c \
+                          GLOBTESTDIR/dir2/dir3/file2.c \
+                          GLOBTESTDIR/dir2/dir3/file3 \
+                          GLOBTESTDIR/dir2/file2.c \
+                          GLOBTESTDIR/dir2/file3]
+
+Test recursive_glob-1.1 {recursive_glob command} {
+    lsort [recursive_glob GLOBTESTDIR *]
+} 0 $expectedResult1
+
+Test recursive_glob-1.2 {recursive_glob command} {
+    lsort [recursive_glob GLOBTESTDIR {*.c}]
+} 0 $expectedResult2
+
+Test recursive_glob-1.3 {recursive_glob command} {
+    lsort [recursive_glob GLOBTESTDIR {*.c *3}]
+} 0 $expectedResult3
+
+Test recursive_glob-1.4 {for_recursive_glob command} {
+    recursive_glob GLOBTESTDIR/file1 {*.c *3}
+} 1 {"GLOBTESTDIR/file1" is not a directory}
+
+Test recursive_glob-2.1 {for_recursive_glob command} {
+    set result {}
+    for_recursive_glob file GLOBTESTDIR * {
+        lappend result $file
+    }
+    lsort $result
+} 0 $expectedResult1
+
+Test recursive_glob-2.2 {for_recursive_glob command} {
+    set result {}
+    for_recursive_glob file GLOBTESTDIR {*.c} {
+        lappend result $file
+    }
+    lsort $result
+} 0 $expectedResult2
+
+Test recursive_glob-2.3 {for_recursive_glob command} {
+    set result {}
+    for_recursive_glob file GLOBTESTDIR {*.c *3} {
+        lappend result $file
+    }
+    lsort $result
+} 0 $expectedResult3
+
+Test recursive_glob-2.4 {errors in for_recursive_glob command} {
+    for_recursive_glob file GLOBTESTDIR/file1 {*.c *3} {
+        error "should not execute"
+    }
+} 1 {"GLOBTESTDIR/file1" is not a directory}
+
+
+Test recursive_glob-2.5 {errors in for_recursive_glob command} {
+    list [catch {
+        for_recursive_glob file GLOBTESTDIR {*.c *3} {
+            error "should not execute" FAKE-INFO FAKE-CODE
+        }
+    } msg] $msg [crange $errorInfo 0 8] $errorCode
+} 0 {1 {should not execute} FAKE-INFO FAKE-CODE}
+
+Test recursive_glob-2.6 {break in for_recursive_glob command} {
+    set cnt 0
+    list [catch {
+        for_recursive_glob file GLOBTESTDIR {*.c *3} {
+            incr cnt
+            break
+        }
+    } msg] $msg $cnt
+} 0 {0 {} 1}
+
+Test recursive_glob-2.7 {break in for_recursive_glob command} {
+    set cnt 0
+    list [catch {
+        for_recursive_glob file GLOBTESTDIR {*.c *1} {
+            incr cnt
+            if [string match GLOBTESTDIR/dir2/* $file] {
+                break
+            }
+        }
+    } msg] $msg $cnt
+} 0 {0 {} 5}
+
+Test recursive_glob-2.8 {continue in for_recursive_glob command} {
+    set cnt 0
+    list [catch {
+        for_recursive_glob file GLOBTESTDIR {*.c *3} {
+            incr cnt
+            continue
+            incr cnt
+        }
+    } msg] $msg $cnt
+} 0 {0 {} 7}
+
+Test recursive_glob-2.9 {return in for_recursive_glob command} {
+    proc for_recursive_glob_test cntVar {
+        upvar $cntVar cnt
+        for_recursive_glob file GLOBTESTDIR {*.c *3} {
+            incr cnt
+            return ABCDE
+        }
+    }
+    set cnt 0
+    list [catch {for_recursive_glob_test cnt} msg] $msg $cnt
+} 0 {0 ABCDE 1}
+rename for_recursive_glob_test {}
+
+Test recursive_glob-2.10 {return in for_recursive_glob command} {
+    proc for_recursive_glob_test cntVar {
+        upvar $cntVar cnt
+        for_recursive_glob file GLOBTESTDIR {*.c *1} {
+            incr cnt
+            if [string match GLOBTESTDIR/dir2/* $file] {
+                return ABCDE
+            }
+        }
+    }
+    set cnt 0
+    list [catch {for_recursive_glob_test cnt} msg] $msg $cnt
+} 0 {0 ABCDE 5}
+rename for_recursive_glob_test {}
+
+TestRemove GLOBTESTDIR
+
+unset expectedResult1 expectedResult2 expectedResult3
+
+
+# cleanup
+::tcltest::cleanupTests
+return

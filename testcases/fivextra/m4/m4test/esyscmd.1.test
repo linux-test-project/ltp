@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# generated-tests/esyscmd.1.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 3423
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+define(`vice', `esyscmd(grep Vice m4test/Makefile.in)')
+vice
+EOF
+
+cat <<\EOF >ok
+
+#  Ty Coon, President of Vice
+
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

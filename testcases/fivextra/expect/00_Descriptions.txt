@@ -1,0 +1,2 @@
+expect.sh  
+	Test the basic functionality of expect program.

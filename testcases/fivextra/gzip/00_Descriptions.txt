@@ -1,0 +1,6 @@
+gzip01  
+	Test that gzip -r will travel directories and compress all the files available.
+
+gunzip01
+	Test that gunzip -r will travel directories and uncompress all the files available.
+  

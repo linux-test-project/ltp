@@ -1,0 +1,10 @@
+Description
+	Test the functionality of texinfo
+
+Invoke 
+	invoke ./texinfo.sh to start the test.
+	there is a warn when texi2roff, it doesn't matter.
+
+TODO:
+	texi to DVI not implemented due to bug #9556
+	texi to PDF not implemented due to bug #9556

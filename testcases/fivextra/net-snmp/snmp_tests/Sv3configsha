@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CONFIGAGENT createUser initial SHA initial_test_pass_auth
+CONFIGAGENT createUser templateMD5 SHA templateMD5_test_pass_auth
+CONFIGAGENT rwuser initial
+CONFIGAGENT rwuser newtestuser

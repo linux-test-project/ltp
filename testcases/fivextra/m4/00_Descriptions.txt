@@ -1,0 +1,6 @@
+m4
+	Tested the functionality of the m4 command
+	./m4test.sh for the execution.
+
+change log:
+	Add some testcases with the source m4 input file.

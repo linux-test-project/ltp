@@ -1,0 +1,5 @@
+This is a test file for testing upload capabilities of the
+ncftp program. You may safely delete this file from your
+incoming directory.
+
+

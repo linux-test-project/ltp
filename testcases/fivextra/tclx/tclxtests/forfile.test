@@ -1,0 +1,96 @@
+#
+# forfile.test
+#
+# Tests for tcl.tlib for_file routine.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: forfile.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+set outfp [open FORFILE.TMP w]
+puts $outfp line1
+puts $outfp line2
+puts $outfp line3
+close $outfp
+unset outfp
+
+catch {unset result}
+Test for_file-1.1 {for_file command} {
+    set ret [for_file line FORFILE.TMP {lappend result $line}]
+    list $result $ret
+} 0 {{line1 line2 line3} {line1 line2 line3}}
+
+Test for_file-1.2 {errors in for_file command} {
+    string tolower [list [catch {
+        for_file line _non_existent_ {
+            echo $line
+        }
+    } msg] $msg $errorCode]
+} 0 [list 1 {couldn't open "_non_existent_": no such file or directory} \
+            {posix enoent {no such file or directory}}]
+
+Test for_file-1.3 {errors in for_file command} {
+    list [catch {
+        for_file line FORFILE.TMP {
+            error fakeResult fakeInfo fakeCode
+        }
+    } msg] $msg [crange $errorInfo 0 7] $errorCode
+} 0 [list 1 fakeResult fakeInfo fakeCode]
+
+Test for_file-1.4 {break in for_file command} {
+    set cnt 0
+    list [catch {
+        for_file line FORFILE.TMP {
+            incr cnt
+            break
+        }
+    } msg] $msg $cnt
+} 0 {0 {} 1}
+
+Test for_file-1.5 {continue in for_file command} {
+    set cnt 0
+    list [catch {
+        for_file line FORFILE.TMP {
+            incr cnt
+            continue
+            incr cnt 20
+        }
+    } msg] $msg $cnt
+} 0 {0 {} 3}
+
+Test for_file-1.6 {return in for_file command} {
+    proc for_file_test {cntVar} {
+        upvar $cntVar cnt
+        for_file line FORFILE.TMP {
+            incr cnt
+            return abcd
+        }
+    }
+    set cnt 0
+    list [catch {for_file_test cnt} msg] $msg $cnt
+} 0 {0 abcd 1}
+rename for_file_test {}
+
+TestRemove FORFILE.TMP
+
+unset result
+
+
+# cleanup
+::tcltest::cleanupTests
+return

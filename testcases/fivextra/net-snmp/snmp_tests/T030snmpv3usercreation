@@ -1,0 +1,48 @@
+#!/bin/sh
+
+. ../eval_tools.sh
+
+HEADER SNMPv3 user creation and usage using snmpusm
+SKIPIFNOT USE_OPENSSL
+
+#
+# Begin test
+#
+
+# standard V3 configuration for initial user
+. ./Sv3config
+
+STARTAGENT
+
+CAPTURE "snmpusm $SNMP_FLAGS -v 3 -a MD5 -A initial_test_pass_auth -l anp -u initial udp:localhost:$SNMP_SNMPD_PORT create newtestuser templateMD5"
+CHECKORDIE "User successfully created"
+
+CAPTURE "snmpusm $SNMP_FLAGS -Cx -v 3 -a MD5 -A templateMD5_test_pass_auth -l anp -u newtestuser udp:localhost:$SNMP_SNMPD_PORT passwd templateMD5_test_pass_auth newtestpass"
+CHECKORDIE "SNMPv3 Key(s) successfully changed"
+
+CAPTURE "snmpusm $SNMP_FLAGS -Ca -v 3 -a MD5 -A templateMD5_test_pass_auth -l anp -u newtestuser udp:localhost:$SNMP_SNMPD_PORT passwd templateMD5_test_pass_auth newtestpass"
+CHECKORDIE "SNMPv3 Key(s) successfully changed"
+
+CAPTURE "snmpget -On $SNMP_FLAGS -v 3 -a MD5 -A newtestpass -l anp -u newtestuser udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.3.0"
+CHECKORDIE ".1.3.6.1.2.1.1.3.0 = Timeticks:"
+
+# auth
+CAPTURE "snmpget -On $SNMP_FLAGS -v 3 -a MD5 -A newtestpass -l anp -u newtestuser udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.3.0"
+CHECKORDIE ".1.3.6.1.2.1.1.3.0 = Timeticks:"
+
+# auth & encr
+CAPTURE "snmpget -On $SNMP_FLAGS -v 3 -a MD5 -A newtestpass -x DES -X newtestpass -l ap -u newtestuser udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.3.0"
+CHECKORDIE ".1.3.6.1.2.1.1.3.0 = Timeticks:"
+
+# change both keys at once
+CAPTURE "snmpusm $SNMP_FLAGS -v 3 -a MD5 -A newtestpass -l anp -u newtestuser udp:localhost:$SNMP_SNMPD_PORT passwd newtestpass myotherpass"
+CHECKORDIE "SNMPv3 Key(s) successfully changed"
+
+# auth & encr
+CAPTURE "snmpget -On $SNMP_FLAGS -v 3 -a MD5 -A myotherpass -x DES -X myotherpass -l ap -u newtestuser udp:localhost:$SNMP_SNMPD_PORT .1.3.6.1.2.1.1.3.0"
+CHECKORDIE ".1.3.6.1.2.1.1.3.0 = Timeticks:"
+
+STOPAGENT
+
+
+FINISHED

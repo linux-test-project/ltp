@@ -1,0 +1,15 @@
+tftp  
+	Test the functionality of tftp and tftpd.
+
+usage:
+        ./tftp_test.sh [-r host] [-h]
+
+        ./tftp_test.sh  -r : Set the remote tftp server. If not set, will use localhost.
+        ./tftp_test.sh  -h : Print this help text.
+
+Note:
+	This test can use tftp server on localhost or on a remote machine.
+	When use tftp server on localhost, there are four tests : ascii/binary mode of put and ascii/binary mode of get.
+	When use a remote tftp server, there is only two tests : ascii/binary mode of get. And you should do some preparations:
+	1) Copy the two data file test.bin and test.txt in tftp-data directory to the tftp server's root directory on remote host.
+	2)Correctly start the tftp server, standalone mode or from inetd/xinetd. 

@@ -1,0 +1,125 @@
+# This file is a Tcl script to test out the "message" command
+# of Tk.  It is organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1994 The Regents of the University of California.
+# Copyright (c) 1994-1996 Sun Microsystems, Inc.
+# Copyright (c) 1998-2000 by Ajuba Solutions.
+# All rights reserved.
+#
+# RCS: @(#) $Id: message.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+option add *Message.borderWidth 2
+option add *Message.highlightThickness 2
+option add *Message.font {Helvetica -12 bold}
+
+message .m
+pack .m
+update
+set i 0
+foreach test {
+    {-anchor w w bogus {bad anchor "bogus": must be n, ne, e, se, s, sw, w, nw, or center}}
+    {-aspect 3 3 bogus {expected integer but got "bogus"}}
+    {-background #ff0000 #ff0000 non-existent
+	    {unknown color name "non-existent"}}
+    {-bd 4 4 badValue {bad screen distance "badValue"}}
+    {-bg #ff0000 #ff0000 non-existent
+	    {unknown color name "non-existent"}}
+    {-borderwidth 1.3 1 badValue {bad screen distance "badValue"}}
+    {-cursor arrow arrow badValue {bad cursor spec "badValue"}}
+    {-fg #00ff00 #00ff00 badValue {unknown color name "badValue"}}
+    {-font fixed fixed {} {font "" doesn't exist}}
+    {-foreground green green badValue {unknown color name "badValue"}}
+    {-highlightbackground #112233 #112233 ugly {unknown color name "ugly"}}
+    {-highlightcolor #123456 #123456 non-existent
+	    {unknown color name "non-existent"}}
+    {-highlightthickness 2 2 badValue {bad screen distance "badValue"}}
+    {-justify right right bogus {bad justification "bogus": must be left, right, or center}}
+    {-padx 12m 12m 420x {bad screen distance "420x"}}
+    {-pady 12m 12m 420x {bad screen distance "420x"}}
+    {-relief ridge ridge badValue {bad relief "badValue": must be flat, groove, raised, ridge, solid, or sunken}}
+    {-text "Sample text" {Sample text} {} {} {1 1 1 1}}
+    {-textvariable i i {} {} {1 1 1 1}}
+    {-width 32 32 badValue {bad screen distance "badValue"}}
+} {
+    set name [lindex $test 0]
+    test message-1.$i {configuration options} {
+	.m configure $name [lindex $test 1]
+	lindex [.m configure $name] 4
+    } [lindex $test 2]
+    incr i
+    if {[lindex $test 3] != ""} {
+	test message-1.$i {configuration options} {
+	    list [catch {.m configure $name [lindex $test 3]} msg] $msg
+	} [list 1 [lindex $test 4]]
+    }
+    .m configure $name [lindex [.m configure $name] 3]
+    incr i
+}
+destroy .m
+
+test message-2.1 {Tk_MessageObjCmd procedure} {
+    list [catch {message} msg] $msg
+} {1 {wrong # args: should be "message pathName ?options?"}}
+test message-2.2 {Tk_MessageObjCmd procedure} {
+    list [catch {message foo} msg] $msg [winfo child .]
+} {1 {bad window path name "foo"} {}}
+test message-2.3 {Tk_MessageObjCmd procedure} {
+    list [catch {message .s -gorp dumb} msg] $msg [winfo child .]
+} {1 {unknown option "-gorp"} {}}
+
+test message-3.1 {MessageWidgetObjCmd procedure} {
+    message .m
+    set result [list [catch {.m} msg] $msg]
+    destroy .m
+    set result
+} {1 {wrong # args: should be ".m option ?arg arg ...?"}}
+test message-3.2 {MessageWidgetObjCmd procedure, "cget"} {
+    message .m
+    set result [list [catch {.m cget} msg] $msg]
+    destroy .m
+    set result
+} {1 {wrong # args: should be ".m cget option"}}
+test message-3.3 {MessageWidgetObjCmd procedure, "cget"} {
+    message .m
+    set result [list [catch {.m cget -gorp} msg] $msg]
+    destroy .m
+    set result
+} {1 {unknown option "-gorp"}}
+test message-3.4 {MessageWidgetObjCmd procedure, "cget"} {
+    message .m
+    .m configure -text foobar
+    set result [.m cget -text]
+    destroy .m
+    set result
+} "foobar"
+test message-3.5 {MessageWidgetObjCmd procedure, "configure"} {
+    message .m
+    set result [llength [.m configure]]
+    destroy .m
+    set result
+} 21
+test message-3.6 {MessageWidgetObjCmd procedure, "configure"} {
+    message .m
+    set result [list [catch {.m configure -foo} msg] $msg]
+    destroy .m
+    set result
+} {1 {unknown option "-foo"}}
+test message-3.7 {MessageWidgetObjCmd procedure, "configure"} {
+    message .m
+    .m configure -bd 4
+    .m configure -bg #ffffff
+    set result [lindex [.m configure -bd] 4]
+    destroy .m
+    set result
+} {4}
+
+# cleanup
+::tcltest::cleanupTests
+return

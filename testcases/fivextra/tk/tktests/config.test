@@ -1,0 +1,897 @@
+# This file is a Tcl script to test the procedures in tkConfig.c,
+# which comprise the new new option configuration system.  It is
+# organized in the standard "white-box" fashion for Tcl tests.
+#
+# Copyright (c) 1997 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: config.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+testConstraint testobjconfig [llength [info commands testobjconfig]]
+
+proc killTables {} {
+    # Note: it's important to delete chain2 before chain1, because
+    # chain2 depends on chain1.  If chain1 is deleted first, the
+    # delete of chain2 will crash.
+
+    foreach t {alltypes chain2 chain1 configerror internal new notenoughparams
+	    twowindows} {
+	while {[testobjconfig info $t] != ""} {
+	    testobjconfig delete $t
+	}
+    }
+}
+
+if {[testConstraint testobjconfig]} {
+    killTables
+}
+
+test config-1.1 {Tk_CreateOptionTable - reference counts} testobjconfig {
+    deleteWindows
+    killTables
+    set x {}
+    testobjconfig alltypes .a
+    lappend x [testobjconfig info alltypes]
+    testobjconfig alltypes .b
+    lappend x [testobjconfig info alltypes]
+    deleteWindows
+    set x
+} {{1 16 -boolean} {2 16 -boolean}}
+test config-1.2 {Tk_CreateOptionTable - synonym initialization} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a -synonym green
+    .a cget -color
+} {green}
+test config-1.3 {Tk_CreateOptionTable - option database initialization} testobjconfig {
+    deleteWindows
+    option clear
+    testobjconfig alltypes .a
+    option add *b.string different
+    testobjconfig alltypes .b
+    list [.a cget -string] [.b cget -string]
+} {foo different}
+test config-1.4 {Tk_CreateOptionTable - option database initialization} testobjconfig {
+    deleteWindows
+    option clear
+    testobjconfig alltypes .a
+    option add *b.String bar
+    testobjconfig alltypes .b
+    list [.a cget -string] [.b cget -string]
+} {foo bar}
+test config-1.5 {Tk_CreateOptionTable - default initialization} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a
+    .a cget -relief
+} {raised}
+test config-1.6 {Tk_CreateOptionTable - chained tables} testobjconfig {
+    deleteWindows
+    killTables
+    testobjconfig chain1 .a
+    testobjconfig chain2 .b
+    testobjconfig info chain2
+} {1 4 -three 2 2 -one}
+test config-1.7 {Tk_CreateOptionTable - chained tables} testobjconfig {
+    deleteWindows
+    killTables
+    testobjconfig chain2 .b
+    testobjconfig chain1 .a
+    testobjconfig info chain2
+} {1 4 -three 2 2 -one}
+test config-1.8 {Tk_CreateOptionTable - chained tables} testobjconfig {
+    deleteWindows
+    testobjconfig chain1 .a
+    testobjconfig chain2 .b
+    list [catch {.a cget -four} msg] $msg [.a cget -one] \
+	    [.b cget -four] [.b cget -one]
+} {1 {unknown option "-four"} one four one}
+
+test config-2.1 {Tk_DeleteOptionTable - reference counts} testobjconfig {
+    deleteWindows
+    killTables
+    testobjconfig chain1 .a
+    testobjconfig chain2 .b
+    testobjconfig chain2 .c
+    deleteWindows
+    set x {}
+    testobjconfig delete chain2
+    lappend x [testobjconfig info chain2] [testobjconfig info chain1]
+    testobjconfig delete chain2
+    lappend x [testobjconfig info chain2] [testobjconfig info chain1]
+} {{1 4 -three 2 2 -one} {2 2 -one} {} {1 2 -one}}
+
+# No tests for DestroyOptionHashTable; couldn't figure out how to test.
+
+test config-3.1 {Tk_InitOptions - priority of chained tables} testobjconfig {
+    deleteWindows
+    testobjconfig chain1 .a
+    testobjconfig chain2 .b
+    list [.a cget -two] [.b cget -two]
+} {two {two and a half}}
+test config-3.2 {Tk_InitOptions - initialize from database} testobjconfig {
+    deleteWindows
+    option clear
+    option add *a.color blue
+    testobjconfig alltypes .a
+    list [.a cget -color]
+} {blue}
+test config-3.3 {Tk_InitOptions - initialize from database} testobjconfig {
+    deleteWindows
+    option clear
+    option add *a.justify bogus
+    testobjconfig alltypes .a
+    list [.a cget -justify]
+} {left}
+test config-3.4 {Tk_InitOptions - initialize from widget class} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a
+    list [.a cget -color]
+} {red}
+test config-3.5 {Tk_InitOptions - no initial value} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a
+    .a cget -anchor
+} {}
+test config-3.6 {Tk_InitOptions - bad initial value} testobjconfig {
+    deleteWindows
+    option clear
+    option add *a.color non-existent
+    list [catch {testobjconfig alltypes .a} msg] $msg $errorInfo
+} {1 {unknown color name "non-existent"} {unknown color name "non-existent"
+    (database entry for "-color" in widget ".a")
+    invoked from within
+"testobjconfig alltypes .a"}}
+option clear
+test config-3.7 {Tk_InitOptions - bad initial value} testobjconfig {
+    deleteWindows
+    list [catch {testobjconfig configerror} msg] $msg $errorInfo
+} {1 {expected integer but got "bogus"} {expected integer but got "bogus"
+    (default value for "-int")
+    invoked from within
+"testobjconfig configerror"}}
+option clear
+
+test config-4.1 {DoObjConfig - boolean} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -boolean 0} msg] $msg [catch {.foo cget -boolean} result] $result [catch {rename .foo {}}]
+} {0 .foo 0 0 0}
+test config-4.2 {DoObjConfig - boolean} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -boolean 1} msg] $msg [catch {.foo cget -boolean} result] $result [catch {rename .foo {}}]
+} {0 .foo 0 1 0}
+test config-4.3 {DoObjConfig - invalid boolean} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -boolean {}} msg] $msg
+} {1 {expected boolean value but got ""}}
+test config-4.4 {DoObjConfig - boolean internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -boolean 0
+    .foo cget -boolean
+} {0}
+test config-4.5 {DoObjConfig - integer} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -integer 3} msg] $msg [catch {.foo cget -integer} result] $result [catch {rename .foo {}}]
+} {0 .foo 0 3 0}
+test config-4.6 {DoObjConfig - invalid integer} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -integer bar} msg] $msg
+} {1 {expected integer but got "bar"}}
+test config-4.7 {DoObjConfig - integer internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -integer 421
+    .foo cget -integer
+} {421}
+test config-4.8 {DoObjConfig - double} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -double 3.14} msg] $msg [catch {.foo cget -double} result] $result [catch {rename .foo {}}]
+} {0 .foo 0 3.14 0}
+test config-4.9 {DoObjConfig - invalid double} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -double bar} msg] $msg
+} {1 {expected floating-point number but got "bar"}}
+test config-4.10 {DoObjConfig - double internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -double 62.75
+    .foo cget -double
+} {62.75}
+test config-4.11 {DoObjConfig - string} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -string test} msg] $msg [catch {.foo cget -string} result] $result [destroy .foo]
+} {0 .foo 0 test {}}
+test config-4.12 {DoObjConfig - null string} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -string {}} msg] $msg [catch {.foo cget -string} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.13 {DoObjConfig - string internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -string "this is a test"
+    .foo cget -string
+} {this is a test}
+test config-4.14 {DoObjConfig - string table} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -stringtable two} msg] $msg [catch {.foo cget -stringtable} result] $result [destroy .foo]
+} {0 .foo 0 two {}}
+test config-4.15 {DoObjConfig - invalid string table} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -stringtable foo} msg] $msg
+} {1 {bad stringtable "foo": must be one, two, three, or four}}
+test config-4.16 {DoObjConfig - new string table} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -stringtable two
+    list [catch {.foo configure -stringtable three} msg] $msg [catch {.foo cget -stringtable} result] $result [destroy .foo]
+} {0 16 0 three {}}
+test config-4.17 {DoObjConfig - stringtable internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -stringtable "four"
+    .foo cget -stringtable
+} {four}
+test config-4.18 {DoObjConfig - color} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -color blue} msg] $msg [catch {.foo cget -color} result] $result [destroy .foo]
+} {0 .foo 0 blue {}}
+test config-4.19 {DoObjConfig - invalid color} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -color xxx} msg] $msg
+} {1 {unknown color name "xxx"}}
+test config-4.20 {DoObjConfig - color internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -color purple
+    .foo cget -color
+} {purple}
+test config-4.21 {DoObjConfig - null color} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -color {}} msg] $msg [catch {.foo cget -color} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.22 {DoObjConfig - getting rid of old color} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -color #333333
+    list [catch {.foo configure -color #444444} msg] $msg [catch {.foo cget -color} result] $result [destroy .foo]
+} {0 32 0 #444444 {}}
+test config-4.23 {DoObjConfig - font} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -font {Helvetica 72}} msg] $msg [catch {.foo cget -font} result] $result [destroy .foo]
+} {0 .foo 0 {Helvetica 72} {}}
+test config-4.24 {DoObjConfig - new font} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig alltypes .foo -font {Courier 12}
+    list [catch {.foo configure -font {Helvetica 72}} msg] $msg [catch {.foo cget -font} result] $result [destroy .foo]
+} {0 64 0 {Helvetica 72} {}}
+test config-4.25 {DoObjConfig - invalid font} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -font {Helvetica 12 foo}} msg] $msg
+} {1 {unknown font style "foo"}}
+test config-4.26 {DoObjConfig - null font} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -font {}} msg] $msg [catch {.foo cget -font} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.27 {DoObjConfig - font internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -font {Times 16}
+    .foo cget -font
+} {Times 16}
+test config-4.28 {DoObjConfig - bitmap} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -bitmap gray75} msg] $msg [catch {.foo cget -bitmap} result] $result [destroy .foo]
+} {0 .foo 0 gray75 {}}
+test config-4.29 {DoObjConfig - new bitmap} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -bitmap gray75
+    list [catch {.foo configure -bitmap gray50} msg] $msg [catch {.foo cget -bitmap} result] $result [destroy .foo]
+} {0 128 0 gray50 {}}
+test config-4.30 {DoObjConfig - invalid bitmap} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -bitmap foo} msg] $msg
+} {1 {bitmap "foo" not defined}}
+test config-4.31 {DoObjConfig - null bitmap} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -bitmap {}} msg] $msg [catch {.foo cget -bitmap} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.32 {DoObjConfig - bitmap internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -bitmap gray25
+    .foo cget -bitmap
+} {gray25}
+test config-4.33 {DoObjConfig - border} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -border green} msg] $msg [catch {.foo cget -border} result] $result [destroy .foo]
+} {0 .foo 0 green {}}
+test config-4.34 {DoObjConfig - invalid border} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -border xxx} msg] $msg
+} {1 {unknown color name "xxx"}}
+test config-4.35 {DoObjConfig - null border} testobjconfig {
+    catch {rename .foo {}}
+    list [catch {testobjconfig alltypes .foo -border {}} msg] $msg [catch {.foo cget -border} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.36 {DoObjConfig - border internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -border #123456
+    .foo cget -border
+} {#123456}
+test config-4.37 {DoObjConfig - getting rid of old border} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -border #333333
+    list [catch {.foo configure -border #444444} msg] $msg [catch {.foo cget -border} result] $result [destroy .foo]
+} {0 256 0 #444444 {}}
+test config-4.38 {DoObjConfig - relief} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -relief flat} msg] $msg [catch {.foo cget -relief} result] $result [destroy .foo]
+} {0 .foo 0 flat {}}
+test config-4.39 {DoObjConfig - invalid relief} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -relief foo} msg] $msg
+} {1 {bad relief "foo": must be flat, groove, raised, ridge, solid, or sunken}}
+test config-4.40 {DoObjConfig - new relief} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -relief raised
+    list [catch {.foo configure -relief flat} msg] $msg [catch {.foo cget -relief} result] $result [destroy .foo]
+} {0 512 0 flat {}}
+test config-4.41 {DoObjConfig - relief internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -relief ridge
+    .foo cget -relief
+} {ridge}
+test config-4.42 {DoObjConfig - cursor} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -cursor arrow} msg] $msg [catch {.foo cget -cursor} result] $result [destroy .foo]
+} {0 .foo 0 arrow {}}
+test config-4.43 {DoObjConfig - invalid cursor} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -cursor foo} msg] $msg
+} {1 {bad cursor spec "foo"}}
+test config-4.44 {DoObjConfig - null cursor} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -cursor {}} msg] $msg [catch {.foo cget -cursor} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.45 {DoObjConfig - new cursor} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -cursor xterm
+    list [catch {.foo configure -cursor arrow} msg] $msg [catch {.foo cget -cursor} result] $result [destroy .foo]
+} {0 1024 0 arrow {}}
+test config-4.46 {DoObjConfig - cursor internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -cursor watch
+    .foo cget -cursor
+} {watch}
+test config-4.47 {DoObjConfig - justify} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -justify center} msg] $msg [catch {.foo cget -justify} result] $result [destroy .foo]
+} {0 .foo 0 center {}}
+test config-4.48 {DoObjConfig - invalid justify} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -justify foo} msg] $msg
+} {1 {bad justification "foo": must be left, right, or center}}
+test config-4.49 {DoObjConfig - new justify} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -justify left
+    list [catch {.foo configure -justify right} msg] $msg [catch {.foo cget -justify} result] $result [destroy .foo]
+} {0 2048 0 right {}}
+test config-4.50 {DoObjConfig - justify internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -justify center
+    .foo cget -justify
+} {center}
+test config-4.51 {DoObjConfig - anchor} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -anchor center} msg] $msg [catch {.foo cget -anchor} result] $result [destroy .foo]
+} {0 .foo 0 center {}}
+test config-4.52 {DoObjConfig - invalid anchor} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -anchor foo} msg] $msg
+} {1 {bad anchor "foo": must be n, ne, e, se, s, sw, w, nw, or center}}
+test config-4.53 {DoObjConfig - new anchor} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -anchor e
+    list [catch {.foo configure -anchor n} msg] $msg [catch {.foo cget -anchor} result] $result [destroy .foo]
+} {0 4096 0 n {}}
+test config-4.54 {DoObjConfig - anchor internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -anchor sw
+    .foo cget -anchor
+} {sw}
+test config-4.55 {DoObjConfig - pixel} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -pixel 42} msg] $msg [catch {.foo cget -pixel} result] $result [destroy .foo]
+} {0 .foo 0 42 {}}
+test config-4.56 {DoObjConfig - invalid pixel} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -pixel foo} msg] $msg
+} {1 {bad screen distance "foo"}}
+test config-4.57 {DoObjConfig - new pixel} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -pixel 42m
+    list [catch {.foo configure -pixel 3c} msg] $msg [catch {.foo cget -pixel} result] $result [destroy .foo]
+} {0 8192 0 3c {}}
+test config-4.58 {DoObjConfig - pixel internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -pixel [winfo screenmmwidth .]m
+    .foo cget -pixel
+} [winfo screenwidth .]
+test config-4.59 {DoObjConfig - window} testobjconfig {
+    catch {destroy .foo}
+    catch {destroy .bar}
+    toplevel .bar
+    list [catch {testobjconfig twowindows .foo -window .bar} msg] $msg [catch {.foo cget -window} result] $result [destroy .foo] [destroy .bar]
+} {0 .foo 0 .bar {} {}}
+test config-4.60 {DoObjConfig - invalid window} testobjconfig {
+    catch {destroy .foo}
+    toplevel .bar
+    list [catch {testobjconfig twowindows .foo -window foo} msg] $msg [destroy .bar]
+} {1 {bad window path name "foo"} {}}
+test config-4.61 {DoObjConfig - null window} testobjconfig {
+    catch {destroy .foo}
+    catch {destroy .bar}
+    toplevel .bar
+    list [catch {testobjconfig twowindows .foo -window {}} msg] $msg [catch {.foo cget -window} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.62 {DoObjConfig - new window} testobjconfig {
+    catch {destroy .foo}
+    catch {destroy .bar}
+    catch {destroy .blamph}
+    toplevel .bar
+    toplevel .blamph
+    testobjconfig twowindows .foo -window .bar
+    list [catch {.foo configure -window .blamph} msg] $msg [catch {.foo cget -window} result] $result [destroy .foo] [destroy .bar] [destroy .blamph]
+} {0 0 0 .blamph {} {} {}}
+test config-4.63 {DoObjConfig - window internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -window .
+    .foo cget -window
+} {.}
+test config-4.64 {DoObjConfig - releasing old values} testobjconfig {
+    # This test doesn't generate a useful value to check; if an
+    # error occurs, it will be detected only by memory checking software
+    # such as Purify or Tcl's built-in checker.
+
+    catch {rename .foo {}}
+    testobjconfig alltypes .foo -string {Test string} -color yellow \
+	    -font {Courier 18} -bitmap questhead -border green -cursor cross \
+	    -custom foobar
+    .foo configure -string {new string} -color brown \
+	    -font {Times 8} -bitmap gray75 -border pink -cursor watch \
+	    -custom barbaz
+    concat {}
+} {}
+test config-4.65 {DoObjConfig - releasing old values} testobjconfig {
+    # This test doesn't generate a useful value to check; if an
+    # error occurs, it will be detected only by memory checking software
+    # such as Purify or Tcl's built-in checker.
+
+    catch {rename .foo {}}
+    testobjconfig internal .foo -string {Test string} -color yellow \
+	    -font {Courier 18} -bitmap questhead -border green -cursor cross \
+	    -custom foobar
+    .foo configure -string {new string} -color brown \
+	    -font {Times 8} -bitmap gray75 -border pink -cursor watch \
+	    -custom barbaz
+    concat {}
+} {}
+test config-4.66 {DoObjConfig - custom} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -custom test} msg] $msg [catch {.foo cget -custom} result] $result [destroy .foo]
+} {0 .foo 0 TEST {}}
+test config-4.67 {DoObjConfig - null custom} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -custom {}} msg] $msg [catch {.foo cget -custom} result] $result [destroy .foo]
+} {0 .foo 0 {} {}}
+test config-4.68 {DoObjConfig - custom internal value} testobjconfig {
+    catch {rename .foo {}}
+    testobjconfig internal .foo -custom "this is a test"
+    .foo cget -custom
+} {THIS IS A TEST}
+
+test config-5.1 {ObjectIsEmpty - object is already string} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -color [format ""]
+    .foo cget -color
+} {}
+test config-5.2 {ObjectIsEmpty - object is already string} testobjconfig {
+    catch {destroy .foo}
+    list [catch {testobjconfig alltypes .foo -color [format " "]} msg] $msg
+} {1 {unknown color name " "}}
+test config-5.3 {ObjectIsEmpty - must convert back to string} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -color [list]
+    .foo cget -color
+} {}
+
+deleteWindows
+if {[testConstraint testobjconfig]} {
+    testobjconfig chain2 .a
+    testobjconfig alltypes .b
+}
+test config-6.1 {GetOptionFromObj - cached answer} testobjconfig {
+    list [.a cget -three] [.a cget -three]
+} {three three}
+test config-6.2 {GetOptionFromObj - exact match} testobjconfig {
+    .a cget -one
+} {one}
+test config-6.3 {GetOptionFromObj - abbreviation} testobjconfig {
+    .a cget -fo
+} {four}
+test config-6.4 {GetOptionFromObj - ambiguous abbreviation} testobjconfig {
+    list [catch {.a cget -on} msg] $msg
+} {1 {unknown option "-on"}}
+test config-6.5 {GetOptionFromObj - duplicate options in different tables} testobjconfig {
+    .a cget -tw
+} {two and a half}
+test config-6.6 {GetOptionFromObj - synonym} testobjconfig {
+    .b cget -synonym
+} {red}
+
+deleteWindows
+if {[testConstraint testobjconfig]} {
+    testobjconfig alltypes .a
+}
+test config-7.1 {Tk_SetOptions - basics} testobjconfig {
+    .a configure -color green -rel sunken
+     list [.a cget -color] [.a cget -relief]
+} {green sunken}
+test config-7.2 {Tk_SetOptions - bogus option name} testobjconfig {
+    list [catch {.a configure -bogus} msg] $msg
+} {1 {unknown option "-bogus"}}
+test config-7.3 {Tk_SetOptions - synonym} testobjconfig {
+    .a configure -synonym blue
+    .a cget -color
+} {blue}
+test config-7.4 {Tk_SetOptions - missing value} testobjconfig {
+    list [catch {.a configure -color green -relief} msg] $msg [.a cget -color]
+} {1 {value for "-relief" missing} green}
+test config-7.5 {Tk_SetOptions - saving old values} testobjconfig {
+    .a configure -color red -int 7 -relief raised -double 3.14159
+    list [catch {.a csave -color green -int 432 -relief sunken \
+	    -double 2.0 -color bogus} msg] $msg [.a cget -color] \
+	    [.a cget -int] [.a cget -relief] [.a cget -double]
+} {1 {unknown color name "bogus"} red 7 raised 3.14159}
+test config-7.6 {Tk_SetOptions - error in DoObjConfig call} testobjconfig {
+    list [catch {.a configure -color bogus} msg] $msg $errorInfo
+} {1 {unknown color name "bogus"} {unknown color name "bogus"
+    (processing "-color" option)
+    invoked from within
+".a configure -color bogus"}}
+test config-7.7 {Tk_SetOptions - synonym name in error message} testobjconfig {
+    list [catch {.a configure -synonym bogus} msg] $msg $errorInfo
+} {1 {unknown color name "bogus"} {unknown color name "bogus"
+    (processing "-synonym" option)
+    invoked from within
+".a configure -synonym bogus"}}
+test config-7.8 {Tk_SetOptions - returning mask} testobjconfig {
+    format %x [.a configure -color red -int 7 -relief raised -double 3.14159]
+} {226}
+test config-7.9 {Tk_SetOptions - error in DoObjConfig with custom option} testobjconfig {
+    list [catch {.a configure -custom bad} msg] $msg $errorInfo
+} {1 {expected good value, got "BAD"} {expected good value, got "BAD"
+    (processing "-custom" option)
+    invoked from within
+".a configure -custom bad"}}
+
+test config-8.1 {Tk_RestoreSavedOptions - restore in proper order} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a
+    list [catch {.a csave -color green -color black -color blue \
+	    -color #ffff00 -color #ff00ff -color bogus} msg] $msg \
+	    [.a cget -color]
+} {1 {unknown color name "bogus"} red}
+test config-8.2 {Tk_RestoreSavedOptions - freeing object memory} testobjconfig {
+    deleteWindows
+    testobjconfig alltypes .a
+    .a csave -color green -color black -color blue -color #ffff00 \
+	    -color #ff00ff
+} {32}
+test config-8.3 {Tk_RestoreSavedOptions - boolean internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -boolean 0 -color bogus}] [.a cget -boolean]
+} {1 1}
+test config-8.4 {Tk_RestoreSavedOptions - integer internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -integer 24 -color bogus}] [.a cget -integer]
+} {1 148962237}
+test config-8.5 {Tk_RestoreSavedOptions - double internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -double 62.4 -color bogus}] [.a cget -double]
+} {1 3.14159}
+test config-8.6 {Tk_RestoreSavedOptions - string internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -string "A long string" -color bogus}] \
+	    [.a cget -string]
+} {1 foo}
+test config-8.7 {Tk_RestoreSavedOptions - string table internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -stringtable three -color bogus}] \
+	    [.a cget -stringtable]
+} {1 one}
+test config-8.8 {Tk_RestoreSavedOptions - color internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -color green -color bogus}] [.a cget -color]
+} {1 red}
+test config-8.9 {Tk_RestoreSavedOptions - font internal form} {testobjconfig nonPortable} {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -font {Times 12} -color bogus}] [.a cget -font]
+} {1 {Helvetica 12}}
+test config-8.10 {Tk_RestoreSavedOptions - bitmap internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -bitmap questhead -color bogus}] [.a cget -bitmap]
+} {1 gray50}
+test config-8.11 {Tk_RestoreSavedOptions - border internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -border brown -color bogus}] [.a cget -border]
+} {1 blue}
+test config-8.12 {Tk_RestoreSavedOptions - relief internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -relief sunken -color bogus}] [.a cget -relief]
+} {1 raised}
+test config-8.13 {Tk_RestoreSavedOptions - cursor internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -cursor watch -color bogus}] [.a cget -cursor]
+} {1 xterm}
+test config-8.14 {Tk_RestoreSavedOptions - justify internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -justify right -color bogus}] [.a cget -justify]
+} {1 left}
+test config-8.15 {Tk_RestoreSavedOptions - anchor internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a
+    list [catch {.a csave -anchor center -color bogus}] [.a cget -anchor]
+} {1 n}
+test config-8.16 {Tk_RestoreSavedOptions - window internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a -window .a
+    list [catch {.a csave -window .a -color bogus}] [.a cget -window]
+} {1 .a}
+test config-8.17 {Tk_RestoreSavedOptions - custom internal form} testobjconfig {
+    deleteWindows
+    testobjconfig internal .a -custom "foobar"
+    list [catch {.a csave -custom "barbaz" -color bogus}] [.a cget -custom]
+} {1 FOOBAR}
+
+# Most of the tests below will cause memory leakage if there is a
+# problem.  This may not be evident unless the tests are run in
+# conjunction with a memory usage analyzer such as Purify.
+
+test config-9.1 {Tk_FreeConfigOptions/FreeResources - string internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -string "two words"
+    destroy .foo
+} {}
+test config-9.2 {Tk_FreeConfigOptions/FreeResources - color internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -color yellow
+    destroy .foo
+} {}
+test config-9.3 {Tk_FreeConfigOptions/FreeResources - color} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -color [format blue]
+    destroy .foo
+} {}
+test config-9.4 {Tk_FreeConfigOptions/FreeResources - font internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -font {Courier 20}
+    destroy .foo
+} {}
+test config-9.5 {Tk_FreeConfigOptions/FreeResources - font} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -font [format {Courier 24}]
+    destroy .foo
+} {}
+test config-9.6 {Tk_FreeConfigOptions/FreeResources - bitmap internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -bitmap gray75
+    destroy .foo
+} {}
+test config-9.7 {Tk_FreeConfigOptions/FreeResources - bitmap} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -bitmap [format gray75]
+    destroy .foo
+} {}
+test config-9.8 {Tk_FreeConfigOptions/FreeResources - border internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -border orange
+    destroy .foo
+} {}
+test config-9.9 {Tk_FreeConfigOptions/FreeResources - border} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -border [format blue]
+    destroy .foo
+} {}
+test config-9.10 {Tk_FreeConfigOptions/FreeResources - cursor internal form} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig internal .foo
+    .foo configure -cursor cross
+    destroy .foo
+} {}
+test config-9.11 {Tk_FreeConfigOptions/FreeResources - cursor} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -cursor [format watch]
+    destroy .foo
+} {}
+test config-9.12 {Tk_FreeConfigOptions/FreeResources - not special} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -integer [format 27]
+    destroy .foo
+} {}
+test config-9.13 {Tk_FreeConfigOptions/FreeResources - custom internal form} testobjconfig {
+    catch {destroy .fpp}
+    testobjconfig internal .foo
+    .foo configure -custom "foobar"
+    destroy .foo
+} {}
+
+test config-10.1 {Tk_GetOptionInfo - one item} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -relief groove
+    .foo configure -relief
+} {-relief relief Relief raised groove}
+test config-10.2 {Tk_GetOptionInfo - one item, synonym} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo
+    .foo configure -color black
+    .foo configure -synonym
+} {-color color Color red black}
+test config-10.3 {Tk_GetOptionInfo - all items} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig alltypes .foo -font {Helvetica 18} -integer 13563
+    .foo configure
+} {{-boolean boolean Boolean 1 1} {-integer integer Integer 7 13563} {-double double Double 3.14159 3.14159} {-string string String foo foo} {-stringtable StringTable stringTable one one} {-color color Color red red} {-font font Font {Helvetica 12} {Helvetica 18}} {-bitmap bitmap Bitmap gray50 gray50} {-border border Border blue blue} {-relief relief Relief raised raised} {-cursor cursor Cursor xterm xterm} {-justify {} {} left left} {-anchor anchor Anchor {} {}} {-pixel pixel Pixel 1 1} {-custom {} {} {} {}} {-synonym -color}}
+test config-10.4 {Tk_GetOptionInfo - chaining through tables} testobjconfig {
+    catch {destroy .foo}
+    testobjconfig chain2 .foo -one asdf -three xyzzy
+    .foo configure
+} {{-three three Three three xyzzy} {-four four Four four four} {-two two Two {two and a half} {two and a half}} {-oneAgain oneAgain OneAgain {one again} {one again}} {-one one One one asdf} {-two two Two two {two and a half}}}
+
+deleteWindows
+if {[testConstraint testobjconfig]} {
+    testobjconfig alltypes .a
+}
+test config-11.1 {GetConfigList - synonym} testobjconfig {
+    lindex [.a configure] end
+} {-synonym -color}
+test config-11.2 {GetConfigList - null database names} testobjconfig {
+    .a configure -justify
+} {-justify {} {} left left}
+test config-11.3 {GetConfigList - null default and current value} testobjconfig {
+    .a configure -anchor
+} {-anchor anchor Anchor {} {}}
+
+deleteWindows
+if {[testConstraint testobjconfig]} {
+    testobjconfig internal .a
+}
+test config-12.1 {GetObjectForOption - boolean} testobjconfig {
+    .a configure -boolean 0
+    .a cget -boolean
+} {0}
+test config-12.2 {GetObjectForOption - integer} testobjconfig {
+    .a configure -integer 1247
+    .a cget -integer
+} {1247}
+test config-12.3 {GetObjectForOption - double} testobjconfig {
+    .a configure -double -88.82
+    .a cget -double
+} {-88.82}
+test config-12.4 {GetObjectForOption - string} testobjconfig {
+    .a configure -string "test value"
+    .a cget -string
+} {test value}
+test config-12.5 {GetObjectForOption - stringTable} testobjconfig {
+    .a configure -stringtable "two"
+    .a cget -stringtable
+} {two}
+test config-12.6 {GetObjectForOption - color} testobjconfig {
+    .a configure -color "green"
+    .a cget -color
+} {green}
+test config-12.7 {GetObjectForOption - font} testobjconfig {
+    .a configure -font {Times 36}
+    .a cget -font
+} {Times 36}
+test config-12.8 {GetObjectForOption - bitmap} testobjconfig {
+    .a configure -bitmap "questhead"
+    .a cget -bitmap
+} {questhead}
+test config-12.9 {GetObjectForOption - border} testobjconfig {
+    .a configure -border #33217c
+    .a cget -border
+} {#33217c}
+test config-12.10 {GetObjectForOption - relief} testobjconfig {
+    .a configure -relief groove
+    .a cget -relief
+} {groove}
+test config-12.11 {GetObjectForOption - cursor} testobjconfig {
+    .a configure -cursor watch
+    .a cget -cursor
+} {watch}
+test config-12.12 {GetObjectForOption - justify} testobjconfig {
+    .a configure -justify right
+    .a cget -justify
+} {right}
+test config-12.13 {GetObjectForOption - anchor} testobjconfig {
+    .a configure -anchor e
+    .a cget -anchor
+} {e}
+test config-12.14 {GetObjectForOption - pixels} testobjconfig {
+    .a configure -pixel 193.2
+    .a cget -pixel
+} {193}
+test config-12.15 {GetObjectForOption - window} testobjconfig {
+    .a configure -window .a
+    .a cget -window
+} {.a}
+test config-12.16 {GetObjectForOption -custom} testobjconfig {
+    .a configure -custom foobar
+    .a cget -custom
+} {FOOBAR}
+test config-12.17 {GetObjectForOption - null values} testobjconfig {
+    .a configure -string {} -color {} -font {} -bitmap {} -border {} \
+	    -cursor {} -window {} -custom {}
+    list [.a cget -string] [.a cget -color] [.a cget -font] \
+	    [.a cget -bitmap] [.a cget -border] [.a cget -cursor] \
+	    [.a cget -window] [.a cget -custom]
+} {{} {} {} {} {} {} {} {}}
+
+test config-13.1 {proper cleanup of options with widget destroy} {
+    foreach type {
+	button canvas entry frame listbox menu menubutton message
+	scale scrollbar text radiobutton checkbutton
+    } {
+	destroy .w
+	$type .w -cursor crosshair
+	destroy .w
+    }
+} {}
+
+deleteWindows
+
+test config-14.1 {Tk_CreateOptionTable - use with namespace import} {
+    namespace export -clear *
+    foreach type {
+	button canvas entry frame listbox menu menubutton message
+	scale scrollbar spinbox text radiobutton checkbutton
+    } {
+	namespace eval ::foo [subst {
+	    namespace import -force ::$type
+	    ::foo::$type .a
+	    ::foo::$type .b
+	}
+	]
+	destroy .a .b
+    }
+} {}
+
+# cleanup
+deleteWindows
+if {[testConstraint testobjconfig]} {
+    killTables
+}
+::tcltest::cleanupTests
+return

@@ -1,0 +1,2 @@
+traceroute01
+	execute traceroute on hostname, expected number of hops is 1.

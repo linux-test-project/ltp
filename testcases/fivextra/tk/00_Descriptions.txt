@@ -1,0 +1,7 @@
+tk  
+	Test the functionality of tk,
+	You must run this test under X.
+
+	We have found some tests in question, sometimes it fails for different X server, e.g. XFree86 or Xfbdev,
+	and different window manager, e.g. fluxbox, mwm. We have listed those test cases in "notes.txt"
+

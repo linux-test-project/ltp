@@ -1,0 +1,52 @@
+# This file contains tests for the tkMain.c file.
+#
+# This file contains a collection of tests for one or more of the Tcl
+# built-in commands.  Sourcing this file into Tcl runs the tests and
+# generates output for errors.  No output means no errors were found.
+#
+# Copyright (c) 1997 by Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: main.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+namespace import -force tcltest::interpreter
+namespace import -force tcltest::makeFile
+namespace import -force tcltest::removeFile
+
+test main-1.1 {StdinProc} {unix} {
+    set script [makeFile {
+	close stdin; exit
+    } script]
+    if {[catch {exec [interpreter] <$script} msg]} {
+	set error 1
+    } else {
+	set error 0
+    }
+    removeFile script
+    list $error $msg
+} {0 {}}
+
+# cleanup
+::tcltest::cleanupTests
+return
+
+
+
+
+
+
+
+
+
+
+
+
+

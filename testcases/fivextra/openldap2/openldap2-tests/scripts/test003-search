@@ -1,0 +1,114 @@
+#! /bin/sh
+# $OpenLDAP: pkg/ldap/tests/scripts/test003-search,v 1.14.2.5 2000/07/29 01:53:18 kurt Exp $
+
+if test $# -eq 0 ; then
+	SRCDIR="."
+else
+	SRCDIR=$1; shift
+fi
+if test $# -eq 1 ; then
+	BACKEND=$1; shift
+fi
+
+echo "running defines.sh $SRCDIR $BACKEND"
+. $SRCDIR/scripts/defines.sh
+
+echo "Cleaning up in $DBDIR..."
+
+rm -f $DBDIR/[!C]*
+
+echo "Running slapadd to build slapd database..."
+$SLAPADD -f $MCONF -l $LDIF
+RC=$?
+if test $RC != 0 ; then
+	echo "slapadd failed ($RC)!"
+	exit $RC
+fi
+
+echo "Running slapindex to index slapd database..."
+$SLAPINDEX -f $CONF
+RC=$?
+if test $RC != 0 ; then
+	echo "slapindex failed ($RC)!"
+	exit $RC
+fi
+
+echo "Starting slapd on TCP/IP port $PORT..."
+$SLAPD -f $CONF -h $MASTERURI -d $LVL $TIMING > $MASTERLOG 2>&1 &
+PID=$!
+
+echo "Testing slapd searching..."
+for i in 0 1 2 3 4 5; do
+	$LDAPSEARCH -s base -b "$MONITOR" -h localhost -p $PORT \
+		'objectclass=*' > /dev/null 2>&1
+	RC=$?
+	if test $RC = 1 ; then
+		echo "Waiting 5 seconds for slapd to start..."
+		sleep 5
+	fi
+done
+
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+cat /dev/null > $SEARCHOUT
+
+echo "Testing exact searching..."
+$LDAPSEARCH -S "" -b "$BASEDN" -h localhost -p $PORT \
+	'sn=jensen' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+echo "Testing OR searching..."
+$LDAPSEARCH -S "" -b "$BASEDN" -h localhost -p $PORT \
+	'(|(objectclass=groupofnames)(sn=jones))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+echo "Testing AND matching and ends-with searching..."
+$LDAPSEARCH -S "" -b "$BASEDN" -h localhost -p $PORT \
+	'(&(objectclass=groupofnames)(cn=A*))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+echo "Testing NOT searching..."
+$LDAPSEARCH -S "" -b "$BASEDN" -h localhost -p $PORT \
+	'(!(objectclass=person))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+kill -HUP $PID
+
+LDIF=$SEARCHOUTMASTER
+
+echo "Filtering ldapsearch results..."
+. $SRCDIR/scripts/acfilter.sh < $SEARCHOUT > $SEARCHFLT
+echo "Filtering original ldif used to create database..."
+. $SRCDIR/scripts/acfilter.sh < $LDIF > $LDIFFLT
+echo "Comparing filter output..."
+$CMP $SEARCHFLT $LDIFFLT > $CMPOUT
+
+if test $? != 0 ; then
+	echo "Comparison failed"
+	exit 1
+fi
+
+echo ">>>>> Test succeeded"
+
+
+exit 0

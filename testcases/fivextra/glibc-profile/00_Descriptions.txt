@@ -1,0 +1,17 @@
+  
+   
+   CSDL glibc-profile testsuite (by Feng Miao Tao)
+
+
+	How to use this case 
+
+		1.   run "./glibc-profile.sh"
+
+
+	NOTE:
+		This is a DevKit package that cannot be run on MCP base   
+
+		Command "gcc" and "gprof" is needed by this testsuite. 
+         
+
+        

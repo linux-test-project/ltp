@@ -1,0 +1,58 @@
+#
+# showproc.test
+#
+# Tests for tcl.tlib showproc routines.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: showproc.test,v 1.1 2005/03/22 17:52:15 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+set testProcVar {proc testproc testVar {
+    return 1
+}}
+
+eval $testProcVar
+
+set testProcVar2 {proc testproc2 {testVar {baz 10}} {
+    return 60
+}}
+
+eval $testProcVar2
+
+Test showproc-1.1 {showproc command} {
+    showproc testproc
+} 0 "$testProcVar\n"
+
+Test showproc-1.2 {showproc command} {
+    showproc testproc testproc2
+} 0 "$testProcVar\n$testProcVar2\n"
+
+
+Test showproc-1.3 {showproc command} {
+    set result ""
+
+    foreach line [split [showproc] "\n"] {
+	if [regexp {^proc ([^ ]+) } $line {} pname] {
+	    lappend result $pname
+	}
+    }
+    lsort $result
+} 0 [lsort [info procs]]
+
+# cleanup
+::tcltest::cleanupTests
+return

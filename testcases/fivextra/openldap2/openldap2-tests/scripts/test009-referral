@@ -1,0 +1,126 @@
+#! /bin/sh
+# $OpenLDAP: pkg/ldap/tests/scripts/test009-referral,v 1.3.2.6 2000/07/29 01:53:18 kurt Exp $
+
+#
+# Test default referral
+#
+
+if test $# -eq 0 ; then
+	SRCDIR="."
+else
+	SRCDIR=$1; shift
+fi
+if test $# -eq 1 ; then
+	BACKEND=$1; shift
+fi
+
+echo "running defines.sh $SRCDIR $BACKEND"
+. $SRCDIR/scripts/defines.sh
+
+echo "Cleaning up in $DBDIR and $REPLDIR ..."
+
+rm -f $DBDIR/[!C]*
+rm -f $REPLDIR/[!C]*
+
+echo "Running slapadd to build slapd database..."
+$SLAPADD -f $CONF -l $LDIF
+RC=$?
+if test $RC != 0 ; then
+	echo "slapadd failed ($RC)!"
+	exit $RC
+fi
+
+echo "Starting master slapd on TCP/IP port $PORT..."
+$SLAPD -n master -f $CONF -h $MASTERURI -d $LVL $TIMING > $MASTERLOG 2>&1 &
+PID=$!
+
+echo "Starting slave slapd on TCP/IP port $SLAVEPORT..."
+$SLAPD -n slave -f $REFSLAVECONF -h $SLAVEURI -d $LVL $TIMING > $SLAVELOG 2>&1 &
+SLAVEPID=$!
+
+echo "Testing for master slapd..."
+for i in 0 1 2 3 4 5; do
+	$LDAPSEARCH -s base -b "$MONITOR" -h localhost -p $PORT \
+		'objectclass=*' > /dev/null 2>&1
+	RC=$?
+	if test $RC = 1 ; then
+		echo "Waiting 5 seconds for slapd to start..."
+		sleep 5
+	fi
+done
+
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID
+	exit $RC
+fi
+
+echo "Testing for slave slapd..."
+for i in 0 1 2 3 4 5; do
+	$LDAPSEARCH -s base -b "$MONITOR" -h localhost -p $SLAVEPORT \
+		'objectclass=*' > /dev/null 2>&1
+	RC=$?
+	if test $RC = 1 ; then
+		echo "Waiting 5 seconds for slapd to start..."
+		sleep 5
+	fi
+done
+
+cat /dev/null > $SEARCHOUT
+
+echo "Testing exact searching..."
+$LDAPSEARCH -C -S "" -b "$BASEDN" -h localhost -p $SLAVEPORT \
+	'sn=jensen' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID $SLAVEPID
+	exit $RC
+fi
+
+echo "Testing OR searching..."
+$LDAPSEARCH -C -S "" -b "$BASEDN" -h localhost -p $SLAVEPORT \
+	'(|(objectclass=groupofnames)(sn=jones))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID $SLAVEPID
+	exit $RC
+fi
+
+echo "Testing AND matching and ends-with searching..."
+$LDAPSEARCH -C -S "" -b "$BASEDN" -h localhost -p $SLAVEPORT \
+	'(&(objectclass=groupofnames)(cn=A*))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID $SLAVEPID
+	exit $RC
+fi
+
+echo "Testing NOT searching..."
+$LDAPSEARCH -C -S "" -b "$BASEDN" -h localhost -p $SLAVEPORT \
+	'(!(objectclass=person))' >> $SEARCHOUT 2>&1
+if test $RC != 0 ; then
+	echo "ldapsearch failed ($RC)!"
+	kill -HUP $PID $SLAVEPID
+	exit $RC
+fi
+
+kill -HUP $PID $SLAVEPID
+
+LDIF=$SEARCHOUTMASTER
+
+echo "Filtering ldapsearch results..."
+. $SRCDIR/scripts/acfilter.sh < $SEARCHOUT > $SEARCHFLT
+echo "Filtering original ldif used to create database..."
+. $SRCDIR/scripts/acfilter.sh < $LDIF > $LDIFFLT
+echo "Comparing filter output..."
+$CMP $SEARCHFLT $LDIFFLT > $CMPOUT
+
+if test $? != 0 ; then
+	echo "Comparison failed"
+	exit 1
+fi
+
+echo ">>>>> Test succeeded"
+
+
+exit 0

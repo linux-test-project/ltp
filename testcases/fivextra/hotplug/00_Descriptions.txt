@@ -1,0 +1,6 @@
+hotplug
+
+	Passes "hotplug" events to "agents" which are simply executables,
+	typically shell scripts, in /etc/hotplug/*.agent. This testcase
+	simulates a hotplug event programmatically and sees that the correct
+	agent is invoked.

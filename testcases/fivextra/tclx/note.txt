@@ -1,0 +1,28 @@
+1.
+convlib.test,tcllib.test   lack of file :/usr/lib/tclx8.4/buildidx.tcl
+	This missing of file, is caused by the Makefile.
+	The RUNTIME_SOURCES define in the Makefile does not include buildidx.tcl.
+	
+RUNTIME_SOURCES = \
+        tclx.tcl        autoload.tcl    \
+        arrayprocs.tcl  compat.tcl      convlib.tcl     edprocs.tcl \
+        events.tcl      forfile.tcl     globrecur.tcl   help.tcl \
+        profrep.tcl     pushd.tcl       setfuncs.tcl    showproc.tcl \
+        stringfile.tcl  tcllib.tcl      fmath.tcl       buildhelp.tcl
+	
+2.
+fcntl.test ,compact/server.test : to test the socket server, you need to setup the echo server to work in inetd/xinetd's configuratation.
+
+3.
+help.test  removed : No help pages
+
+4.
+(
+profile.test have errors
+  profile-2.2 profile count tests FAILED :  no "::list ::ProcB2 ::ProcA2 <global> "
+  profile-2.4 profile count tests FAILED :  ...
+  profile-6.2 profile count tests FAILED :  no "{{::return ::ProcB6 ::ProcA6 <global>} 1} {{::return ::ProcC6 ::ProcA6 <global>} 1} {{::string ::ProcA6 <global>} 1}"
+  profile-6.4 profile count tests FAILED :  no "{{::return ::ProcB6 ::ProcA6 <global>} 1} {{::return ::ProcC6 ::ProcA6 <global>} 1} {{::string ::ProcA6 <global>} 1}"
+  profile-12.2 profile namespace tests FAILED : no "{{::list ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2}"
+  profile-12.4 profile namespace tests FAILED : no "{{::list ::Prof::NSProcB2 ::Prof::NSProcA2 <global>} 2}"
+)

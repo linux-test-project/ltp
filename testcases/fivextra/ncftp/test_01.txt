@@ -1,0 +1,3 @@
+cd pub
+get MIRRORS.TXT
+quit

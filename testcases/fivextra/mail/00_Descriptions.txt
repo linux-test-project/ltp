@@ -1,0 +1,13 @@
+mail01
+	Test that mail user@domain will send a mail to that user at that domain.
+mail02
+	Test that mail user@bad-domain will result in a warning from the mailer deamon that the domain does not exist.
+
+mail03
+	Test that mail non_existant_user@localhost will result in delivery failure.  Mailer-Deamon will report this failure.
+
+mail04
+	Test that mail -c user@domain option will carbon copy that user.
+
+mail05
+	Test that mail -b user@domain option will blind carbon copy that user.

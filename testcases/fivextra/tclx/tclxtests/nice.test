@@ -1,0 +1,118 @@
+#
+# nice.test
+#
+# Tests for the nice command.
+#---------------------------------------------------------------------------
+# Copyright 1993-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: 
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+if [cequal $tcl_platform(platform) windows] {
+    echo "    * The nice command has not been ported to Win32" 
+    return
+}
+
+#
+# Fork without exec will not work under Tk, skip this test
+#
+if {[info exists tk_version]} {
+    puts "*************************************************************"
+    puts "Nice tests are constructed in a way that does not work"
+    puts "under Tk.  Test skipped."
+    puts "*************************************************************"
+    return
+}
+
+#
+# Right now, we depend on the base priority being zero.
+#
+if {[nice] != 0} {
+    puts "*************************************************************"
+    puts "Nice priority is [nice], not zero.  May cause some failures."
+    puts "(but everything is probably ok)"
+    puts "*************************************************************"
+}
+
+set niceBase [nice]
+
+test nice-1.1 {nice tests} {
+    list [catch {nice 0 1} msg] $msg
+} {1 {wrong # args: nice ?priorityincr?}}
+
+test nice-1.2 {nice tests} {
+    nice 0
+} $niceBase
+
+#
+# Since you can't nice back up unless you're root, we spawn a child process 
+# to run the nice tests.  
+#
+
+flush stdout
+flush stderr
+set pid [fork]
+
+#
+# Parent waits for child to complete.
+#
+if {$pid > 0} {
+    wait $pid
+
+    # cleanup
+    ::tcltest::cleanupTests
+    return
+}
+
+test nice-1.4 {nice tests} {
+    list [nice 3] [nice]
+} [list [expr $niceBase+3] [expr $niceBase+3]]
+
+test nice-1.5 {nice tests} {
+    list [nice 4] [nice]
+} [list [expr $niceBase+3+4] [expr $niceBase+3+4]]
+
+test nice-1.7 {nice tests} {isNotRoot} {
+    set errList {{not owner} {permission denied} {not privileged}
+    {no permission match} {invalid argument}}
+    set stat [catch {nice -1} msg]
+    set msg [string tolower $msg]
+    if {![regexp {^failed to increment priority: (.*)$} $msg {} errmsg] || \
+	    ([lsearch $errList $errmsg] < 0)} {
+	set stat [list $stat $msg]
+    }
+    set stat
+} 1
+
+test nice-1.8 {nice tests} {isRoot} {
+    list [nice -1] [nice]
+} [list [expr $niceBase+3+4-1] [expr $niceBase+3+4-1]]
+
+test nice-1.10 {nice tests} {isRoot} {
+    list [nice -9] [nice]
+} [list [expr $niceBase+3+4-1-9] [expr $niceBase+3+4-1-9]]
+
+test nice-1.11 {nice tests} {isRoot} {
+    list [nice -10] [nice]
+} [list [expr $niceBase+3+4-1-9-10] [expr $niceBase+3+4-1-9-10]]
+
+test nice-1.12 {nice tests} {isRoot} {
+    list [nice -1] [nice]
+} [list [expr $niceBase+3+4-1-9-10-1] [expr $niceBase+3+4-1-9-10-1]]
+
+# cleanup
+::tcltest::cleanupTests
+exit

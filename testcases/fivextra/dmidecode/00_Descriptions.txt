@@ -1,0 +1,11 @@
+-------------------------------------
+IBM CSDL testsuite for dmidecode
+------------------------------------
+Refer to the README file of the sourcecode, CSDL add this dmidecode_test.sh to
+test the dmidecode biosdecode vpddecode.
+"ownership" seems to be no result in common machine, so we just skipped it.
+
+Before run the dmidecode_test.sh:
+1. Be root user
+2. already install the dmidecode package on x86/ia64, testcase will bypass on
+other architecture.

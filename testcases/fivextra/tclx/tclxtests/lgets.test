@@ -1,0 +1,300 @@
+#
+# lgets.test
+#
+# Tests for the lgets command.
+#---------------------------------------------------------------------------
+# Copyright 1992-1999 Karl Lehenbauer and Mark Diekhans.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Karl Lehenbauer and
+# Mark Diekhans make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without express or
+# implied warranty.
+#------------------------------------------------------------------------------
+# $Id: lgets.test,v 1.1 2005/03/22 17:52:14 mridge Exp $
+#------------------------------------------------------------------------------
+#
+package require Tclx
+
+if {[cequal [info procs Test] {}]} {
+    source [file join [file dirname [info script]] testlib.tcl]
+}
+
+test lgets-1.1 {lgets command} {
+    list [catch {lgets} msg] $msg
+} {1 {wrong # args: lgets fileId ?varName?}}
+
+test lgets-1.2 {lgets command} {
+    list [catch {lgets a b c} msg] $msg
+} {1 {wrong # args: lgets fileId ?varName?}}
+
+test lgets-1.3 {lgets command} {
+    list [catch {lgets a} msg] $msg
+} {1 {can not find channel named "a"}}
+
+set f [open test2.tmp w]
+test lgets-1.4 {lgets command} {
+    list [catch {lgets $f} msg] $msg
+} [list 1 "channel \"$f\" wasn't opened for reading"]
+catch {close $f}
+
+set test2data \
+        [replicate abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 100]
+set f [open test2.tmp w]
+puts $f $test2data
+close $f
+
+test lgets-1.5 {lgets command with long line} {
+    set f [open test2.tmp]
+    set x [lgets $f]
+    close $f
+    set x
+} $test2data
+
+test lgets-1.6 {lgets command with long line} {
+    set f [open test2.tmp]
+    set x [lgets $f y]
+    close $f
+    list $x $y
+} [list [clength $test2data] $test2data]
+
+test lgets-1.7 {lgets command with EOF in list element} {
+    set f [open test2.tmp w]
+    puts $f "Test1  \{Test2 " nonewline
+    close $f
+    set f [open test2.tmp]
+    list [catch {lgets $f} msg] $msg
+} {1 {EOF encountered before newline while reading list from channel}}
+
+catch {close $f}
+
+test lgets-1.8 {lgets command with EOF in list} {
+    set f [open test2.tmp w]
+    puts $f "Test1\nTest2" nonewline
+    close $f
+    set f [open test2.tmp]
+    set x {}
+    set y {}
+    lappend x [lgets $f y] $y
+    set y {}
+    lappend x [catch {lgets $f y} r] $r $y
+    close $f
+    set x
+} {5 Test1 1 {EOF encountered before newline while reading list from channel} Test2}
+
+test lgets-2.1 {lgets command} {
+    catch {unset data}
+    set data(0) [list aaa b cccc]
+    set data(1) [list aaaa \" ccc]
+    set data(2) [list aaaaa \" cc]
+    set data(3) [list aaaaa \"\" \} \{ \n c]
+    set data(4) [list bcad \n defg \n nypq]
+    set data(5) [list {BCAD  {AAA
+BBB
+CCC}
+defg
+nypq}]
+    set data(6) [list [replicate ABD 200]  "\n" [replicate XYZ 100]]
+    set data(7) [list [replicate ABD 255]  "\n" [replicate XYZ 100]]
+    set data(8) [list [replicate ABD 256]  "\n" [replicate XYZ 100]]
+    set data(9) [list [replicate "AAA\n \{B \"BB" 100]]
+
+    set fh [open test1.tmp w]
+    foreach idx [lsort -integer [array names data]] {
+        puts $fh $data($idx)
+    }
+    close $fh
+    set fh [open test1.tmp]
+    concat {}
+} {}
+
+test lgets-2.2 {lgets command} {
+    lgets $fh
+} $data(0)
+
+test lgets-2.3 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(1)
+
+test lgets-2.4 {lgets command} {
+    lgets $fh
+} $data(2)
+
+test lgets-2.5 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(3)
+
+test lgets-2.6 {lgets command} {
+    lgets $fh
+} $data(4)
+
+test lgets-2.7 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(5)
+
+test lgets-2.8 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(6)
+
+test lgets-2.9 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(7)
+
+test lgets-2.10 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(8)
+
+test lgets-2.11 {lgets command} {
+    lgets $fh retvar
+    set retvar
+} $data(9)
+
+catch {close $fh}
+unset data
+
+# Make sure odd lists work.
+set data [list ERR_REQUEST_PROCESSOR_FAILURE " {sc ...\""]
+
+test lgets-3.1 {lgets command} {
+    set fh [open test1.tmp w+]
+    puts $fh $data
+    seek $fh 0
+    lgets $fh
+} $data
+
+catch {close $fh}
+
+# Easy test to make sure basic non-blocked channel works, even though we
+# don't actually test the no-data case.
+
+# FIX: Doesn't work right on Win32.
+if [cequal $tcl_platform(platform) windows] {
+    echo "    * lgets tests not completely ported to Win32, some tests skipped"
+    TestRemove test1.tmp test2.tmp
+    return
+}
+
+pipe rpipe wpipe
+fconfigure $rpipe -blocking 0
+
+test lgets-4.1 {lgets on non-blocked channel} {tempNotPc} {
+    puts $wpipe $data
+    flush $wpipe
+    list [catch {lgets $rpipe} msg] $msg
+} {1 {channel is non-blocking; not currently supported by the lgets command}}
+
+test lgets-4.2 {lgets on non-blocked channel} {tempNotPc} {
+    puts $wpipe $data
+    flush $wpipe
+    catch {unset x}
+    list [catch {lgets $rpipe x} msg] $msg
+} {1 {channel is non-blocking; not currently supported by the lgets command}}
+
+catch {close $rpipe}
+catch {close $wpipe}
+unset data
+
+
+#
+# Binary data 
+#
+
+test lgets-5.1 {lgets with binary data} {
+    catch {unset data}
+    set data(0) [list aaa b cc\0cc]
+    set data(1) [list aaaa \" \0\0  ccc]
+    set data(2) [list aaaaa \" cc]
+    set data(3) [list aaaaa \"\" \} [replicate \0\1\0 5] \{ \n c]
+    set data(4) [list bcad \n defg \n nypq]
+    set data(5) [list BCAD  "AAA
+\0
+BBB
+CCC" "
+defg
+\0\0\0" nypq]
+    set data(6) [list [replicate ABD 200]  "\n" [replicate XYZ 100]]
+    set data(7) [list [replicate ABD 255]  "\n" [replicate XYZ 100]]
+    set data(8) [list [replicate ABD 256]  "\n" [replicate XYZ 100]]
+    set data(9) [list [replicate "AAA\n \{B \"BB" 100]]
+
+    set fh [open test1.tmp w]
+    foreach idx [lsort -integer [array names data]] {
+        puts $fh $data($idx)
+    }
+    close $fh
+    set fh [open test1.tmp]
+    concat {}
+} {}
+
+test lgets-5.2 {lgets with binary data} {
+    lgets $fh
+} $data(0)
+
+test lgets-5.3 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(1)
+
+test lgets-5.4 {lgets with binary data} {
+    lgets $fh
+} $data(2)
+
+test lgets-5.5 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(3)
+
+test lgets-5.6 {lgets with binary data} {
+    lgets $fh
+} $data(4)
+
+test lgets-5.7 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(5)
+
+test lgets-5.8 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(6)
+
+test lgets-5.9 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(7)
+
+test lgets-5.10 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(8)
+
+test lgets-5.11 {lgets with binary data} {
+    lgets $fh retvar
+    set retvar
+} $data(9)
+
+catch {close $fh}
+unset data
+
+test lgets-6.0 {lgets corner cases} {
+    set fh [open test2.tmp w+]
+    puts $fh [list {\\server} {\home} {foo\}}]
+    seek $fh 0
+    lgets $fh inlist
+    close $fh
+    set inlist
+} [list {\\server} {\home} {foo\}}]
+
+
+TestRemove test1.tmp test2.tmp
+
+# cleanup
+::tcltest::cleanupTests
+return

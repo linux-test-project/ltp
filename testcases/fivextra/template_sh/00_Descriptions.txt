@@ -1,0 +1,4 @@
+template_sh
+
+	A simple template showing how to structure a testcase written as a
+	shell script.

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# generated-tests/changequ.1.test is part of the GNU m4 testsuite
+# generated from example in m4.texinfo line 1938
+
+#. ${srcdir}/defs
+
+cat <<\EOF >in
+changequote([, ])
+define([foo], [Macro [foo].])
+foo
+EOF
+
+cat <<\EOF >ok
+
+
+Macro foo.
+EOF
+
+$M4 -d in >out
+
+$CMP -s out ok
+

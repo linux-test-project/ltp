@@ -1,0 +1,20 @@
+#@package: convlib.tmp/tmp3 LoadProc3A LoadProc3B
+
+proc LoadProc3A {} {return @LoadProc3A@}
+proc LoadProc3B {} {return @LoadProc3B@}
+#@package: convlib.tmp/tmp0 LoadProc0A LoadProc0B
+
+proc LoadProc0A {} {return @LoadProc0A@}
+proc LoadProc0B {} {return @LoadProc0B@}
+#@package: convlib.tmp/tmp4 LoadProc4A LoadProc4B
+
+proc LoadProc4A {} {return @LoadProc4A@}
+proc LoadProc4B {} {return @LoadProc4B@}
+#@package: convlib.tmp/tmp1 LoadProc1A LoadProc1B
+
+proc LoadProc1A {} {return @LoadProc1A@}
+proc LoadProc1B {} {return @LoadProc1B@}
+#@package: convlib.tmp/tmp2 LoadProc2B LoadProc2A
+
+proc LoadProc2A {} {return @LoadProc2A@}
+proc LoadProc2B {} {return @LoadProc2B@}

@@ -1,0 +1,620 @@
+# vi: set ts=8 sw=8 autoindent noexpandtab :
+################################################################################
+##									      ##
+## (C) Copyright IBM Corp. 2003						      ##
+##									      ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or	      ##
+## (at your option) any later version.					      ##
+##									      ##
+## This program is distributed in the hope that it will be useful, but	      ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.							      ##
+##									      ##
+## You should have received a copy of the GNU General Public License	      ##
+## along with this program;  if not, write to the Free Software		      ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##									      ##
+################################################################################
+#
+# File :	tc_utils.source
+#
+# Description:	Utility functions to be used by shell script testcases.
+#		Shell script testcases should source this file near the
+#		beginning of the file. This should be done as follows:
+#
+#		cd `dirname $0`
+#		LTPBIN=${PWD%%/testcases/*}/testcases/bin
+#		source $LTPBIN/tc_utils.source
+#
+# Author:	Robert Paulsen, rpaulsen@us.ibm.com
+#
+# History:	Feb 27 2003 - Created. Robert Paulsen. rpaulsen@us.ibm.com
+#		Mar 05 2003 - Added "maybefail".
+#		Mar 14 2003 - Added ability to create multiple temp users and
+#			groups.
+#		Mar 14 2003 - Improved the "executes" test to use "type"
+#			instead of "which". This makes it work for builtins
+#			when invoked from a script (as it is intended to be).
+#		Mar 21 2003 - Break rest of testcases if TST_COUNT != TST_TOTAL
+#			upon final exit.
+#		Mar 31 2003 - Now includes rc and stdout in failure output.
+#		May 13 2003 - Added "busyboxsh" function.
+#		Nov 04 2003 - VERSION 2: based in utility.source. Renamed
+#				functions to be more consitant.
+#		Dec 09 2003 - Added "local" in several places
+#				allow invoker of tc_add_group_or_break to
+#				specify groupname
+#		Jan 13 2004 - (rcp) added tc_exists
+#		May 05 2004 - (rcp) determine new user's home directory
+
+################################################################################
+# global variables
+################################################################################
+
+# interface to the PAN test harness. Must be exported so tst_ APIs can see them.
+declare -i TST_TOTAL TST_COUNT
+export TST_TOTAL
+export TST_COUNT=0	# Current testcases's sequence number
+export TCID=${0##*/}	# Name of executable containing the testcases.
+[ "$TST_TOTAL" ] || TST_TOTAL=1	# Total number of testcases in file
+
+# used to pass info to/from testcases and these utility functions
+TCNAME="" 		# set by tc_register. Used in output
+temp_user=""		# set by tc_add_user when a temp user is created
+temp_group=""		# set by tc_add_group when a temp group is created
+stdout=""		# testcases can put stdout in this file (set in setup)
+stderr=""		# testcases can put stderr in this file (set in setup)
+TCTMP=""		# subdir for use by the testcase (a subdir of MYTMP)
+
+# track temp users and groups
+declare -i u_ndx=0	# count temp users
+declare -i g_ndx=0	# count temp groups
+t_users=""		# hplds all temp users
+t_groups=""		# holds all temp groups
+
+# final exit code. set by passfail. returned by tc_internal_cleanup.
+declare -i final_result=0	# will be count of failures
+
+# if final exit code (above) is zero, will return this BROK code,
+declare -i brok_result=0	# 0 and -1 are only allowed values.
+
+MYTMP=""		# if setup creates the temp dir, remember it here for
+			# tc_internal_cleanup to delete.
+
+################################################################################
+# internal utility functions
+#	NOTE: functions named tc_internal_* are intended for use ONLY by other
+#	functions in this file and should NOT be used directly by testcases.
+################################################################################
+
+#
+# tc_internal_dump	Helper function for tc_pass_or_fail and tc_break_if_bad
+#
+function tc_internal_dump()
+{
+	local rc=$1
+	shift;
+	for m in "$@" ; do
+		tc_info "$m"
+	done
+	[ $rc -ne 0 ] && tc_info "rc=$rc"
+	if [ -s $stdout ] ; then
+		tc_info "================== stdout follows =================="
+		cat $stdout
+		echo ""
+		tc_info "=================== stdout above ==================="
+		cat /dev/null > $stdout
+	fi
+	if [ -s $stderr ] ; then
+		[ $rc -eq 0 ] && rc=255		# show break/fail due to stderr
+		tc_info "================== stderr follows =================="
+		cat $stderr
+		echo ""
+		tc_info "=================== stderr above ==================="
+		cat /dev/null > $stderr
+	fi
+	return $rc
+}
+
+#
+# tc_internal_cleanup	testcase cleanup (reached via trap 0)
+#
+#	input:	None.
+#
+#	output:	If passfail has registered any failure(s), exits with count of
+#		failures (which will be in $final_result).  If no failure
+#		occured perhaps there was a BROK. If so exit with $brok_result.
+#		Otherwise exit with 0.
+#
+function tc_internal_cleanup()
+{
+	TCNAME=tc_local_cleanup
+	tc_local_cleanup			# call testcase's cleanup, if any
+	TCNAME=tc_internal_cleanup
+	tc_del_user_or_break
+	tc_del_group_or_break
+	[ -d "$MYTMP" ] && rm -rf $MYTMP	# supplied by setup so delete it
+	[ "$TST_COUNT" -lt "$TST_TOTAL" ]  && {
+		let TST_COUNT+=1
+		tst_brkm TBROK NULL "Remaining cases broken"
+	}
+	[ $final_result -ne 0 ] && exit $final_result
+	[ $brok_result -ne 0 ] && exit $brok_result
+	exit 0
+}
+
+################################################################################
+# utility functions for use by testcases
+################################################################################
+
+#
+# tc_info	Put out informational message(s)
+#
+#		Each command line argument is printed as a message.
+#
+function tc_info()
+{
+	local m
+	for m in "$@" ; do
+		tst_resm TINFO "$TST_COUNT: $m"
+	done
+}
+
+#
+# tc_warn	Put out warning message(s)
+#
+#		Each command line argument is printed as a message.
+#
+function tc_warn()
+{
+	local m
+	for m in "$@" ; do
+		tst_resm TWARN "$TST_COUNT: $m"
+	done
+}
+
+#
+# tc_executes	Check for executable(s)
+#
+#	returns 0 if true
+#	returns 1 if not
+#
+function tc_executes()
+{
+	local cmd all_ok="yes"
+	for cmd in "$@" ; do
+		if ! type $cmd &>/dev/null ; then
+			tc_info "command \"$cmd\" not found"
+			all_ok="no"
+		fi
+	done
+	[ "$all_ok" = "yes" ]
+}
+
+#
+# tc_exec_or_break	Check for required executables.
+#
+#	Breaks testcase if commands listed on command line do not exist.
+#
+#	If this returns 1, the invoker MUST abort the testcase.
+#
+#	returns 0 if true
+#	returns 1 if not (and breaks the testcase)
+#
+function tc_exec_or_break()
+{
+	tc_executes "$@"
+	tc_break_if_bad $? "above listed required command(s) not found" || return
+	return 0
+}
+
+#
+# tc_exists
+#
+#	returns 0 if all files/directories exist
+#	returns 1 if not (and breaks testcase)
+#	
+function tc_exists()
+{
+	local f all_ok="yes"
+	for f in "$@" ; do
+		if [ ! -e "$f" ] ; then
+			tc_info "file \"$f\" not found"
+			all_ok="no"
+		fi
+	done
+	[ "$all_ok" = "yes" ]
+}
+
+#
+# tc_exist_or_break
+#
+#	Breaks testcase if files or directories listed on command line
+#	do not exist.
+#
+#	If this returns 1, the invoker MUST abort the testcase.
+#
+#	returns 0 if all files/directories exist
+#	returns 1 if not (and breaks testcase)
+#	
+function tc_exist_or_break()
+{
+	tc_exists "$@"
+	tc_break_if_bad $? "above listed required files(s) not found" || return
+	return 0
+}
+
+#
+# tc_root_or_break
+#
+#	Breaks the testcase if not running as root.
+#
+#	If this returns 1, the invoker MUST abort the testcase.
+#
+#	returns 0 if running as root
+#	returns 1 if not (and breaks testcase)
+#
+function tc_root_or_break()
+{
+	[ $UID -eq 0 ]
+	tc_break_if_bad $? "Must be run by UID=0. Actual UID=$UID"
+}
+
+#
+# tc_is_busybox		Are we using a busybox version of some command?
+#
+#	$1	Command to check to see if it is a busybox version
+#
+#	returns 0 if true
+#	returns 1 if not (does NOT break testcase)
+#
+function tc_is_busybox()
+{
+	local bbcmd=$('ls' -l `which $1`)	# quoted ls in case of alias
+	[ "${bbcmd##*/}" = "busybox" ]
+}
+
+#
+# tc_is_fstype	Check to see if a given path is mounted on a given
+#		filesystem type
+#
+#	$1	fully-qualified path
+#	$2	the filesystem type
+#
+#	returns 0 if true
+#	returns 1 if not (does NOT break testcase)
+#
+#	Example:	path_is_fstype $TCTMP nfs
+#
+#			This returns true if $TCTMP is on an NFS-mounted
+#			filesystem
+#
+function tc_is_fstype()
+{
+        local path=$1
+        local fstype=$2
+        while [ $path ] ; do
+		local line
+                while read line ; do
+                        set $line
+                        local procpath=$2
+                        local proctype=$3
+                        [ "$proctype" = "$fstype" ] || continue
+                        [ "$path" = "$procpath" ] && return
+                done < /proc/mounts
+                [ "$path" = "/" ] && break
+                path=${path%/*}
+                [ "$path" ] || path="/"
+        done
+        return 1
+}
+
+#
+# tc_add_user_or_break	Create a temporary user.
+#
+#		This function will generate a unique name for the temp user
+#		unless the username is passed as $1. In either case, the
+#		username is placed in global variable $temp_user.
+#
+#		The user's password is set to "password".
+#
+#		Careful! If you call this more than once $temp_user will
+#		be reused. You may need to save a copy.
+#
+#		del_tempuser w/o arguments will delete all of them.
+#
+#	returns 0 if successful
+#	returns 1 if not (also breaks testcase)
+#
+function tc_add_user_or_break()
+{
+	tc_exist_or_break /etc/passwd || return
+	local u
+	if [ "$1" ] ; then		# attempt to use supplied username
+		u=$1
+	else				# create unique username
+		let u_ndx+=1		# count uniquely created usernames
+		[ $u_ndx -le 99 ]
+		tc_break_if_bad $? "too many temp users: $u_ndx" || return
+		local nn="00$u_ndx"
+		local -i off=-2		# negative offsets must be in variable (why?)
+		local nn=${nn:off:2}	# two digits, 00 -> 99
+		u="u$$00000"		# at least 6 digits
+		u=${u:0:6}$nn		# 8-char name from pid and temp user count
+	fi
+	useradd -p .RkDISPQTFoMA -m $u &>$stderr
+	tc_break_if_bad $? "failed to add temp user $u" || return
+	t_users="$t_users $u"		# remember all created temp users
+	tc_info "created temp user $u."
+	temp_user=$u			# global var for passing back to testcase
+	local saved_IFS=$IFS ; IFS=:	# /etc/passwd field separator
+	while read line ; do
+		set $line
+		[ "$1" = "temp_user" ] && temp_user_home=$6 && break
+	done < /etc/passwd	
+	IFS=$saved_IFS
+	return 0
+}
+
+#
+# tc_del_user_or_break	Remove temporary user(s).
+#
+#	$1	The user to delete. If $1 not supplied, all temp users are
+#		deleted.  If $1 was not created by add_tempuser it will not
+#		be deleted.
+#
+#	return	0 id OK
+#		non-zero if failure
+#
+function tc_del_user_or_break()
+{
+	local remaining=""
+	local u
+	for u in $t_users ; do
+		if [ "$1" ] && [ "$1" != "$u" ] ; then
+			# $1 specified so don't delete others
+			local remaining="$remaining $u"
+			continue
+		fi
+		userdel -r $u
+		tc_break_if_bad $? "failed to remove temp user $u" || return
+		tc_info "removed temp user $u."
+	done
+	t_users="$remaining"
+}
+
+#
+# tc_add_group_or_break	Create a temporary group.
+#
+# 		The group name is put into the global variable $temp_group.
+#		Careful! If you call this more than once $temp_group will
+#		be reused. You may need to save a copy.
+#
+#		del_tempgroup w/o arguments will delete all of them.
+#
+#	returns 0 if successful
+#	returns 1 if not (and breaks testcase)
+#
+function tc_add_group_or_break()
+{
+	local g
+	if [ "$1" ] ; then		# attempt to use supplied groupname
+		g=$1
+	else				# create unique username
+		let g_ndx+=1		# count temp users
+		[ $g_ndx -le 99 ]
+		tc_break_if_bad $? "too many temp groups: $g_ndx" || return
+		local nn="00$g_ndx"
+		local -i off=-2		# negative offsets must be in variable (?)
+		nn=${nn:off:2}		# two digits, 00 -> 99
+		local g="g$$00000"	# at least 6 digits
+		g=${g:0:6}$nn		# 8-char name from pid and temp group count
+	fi
+	groupadd $g
+	tc_break_if_bad $? "failed to add temp group $g" || return
+	t_groups="$t_groups $g"	# remember all created temp groups
+	tc_info "created temp group $g."
+	temp_group=$g	# global variable for passing back to testcase
+	return 0
+}
+
+#
+# tc_del_group_or_break		Remove temporary group(s).
+#
+#	$1	The group to delete. If $1 not supplied, all temp groups are
+#		deleted.  If $1 was not created by add_tempgroup it will not
+#		be deleted.
+#
+#	return	0 id OK
+#		non-zero if failure
+#
+function tc_del_group_or_break()
+{
+	local remaining=""
+	local g
+	for g in $t_groups ; do 
+		if [ "$1" ] && [ "$1" != "$g" ] ; then
+			# $1 specified so don't delete others
+			remaining="$remaining $g"
+			continue
+		fi
+		groupdel $g
+		tc_break_if_bad $? "failed to remove temp group $g" || return
+		tc_info "removed temp group $g."
+	done
+	t_groups="$remaining"
+}
+
+#
+# tc_break_if_bad	Break testcase if $1 has bad RC or if $stderr is not empty.
+#
+#		Incoming $1 is returned unless it is 0 and $stderr is not null
+#		-- in which case 255 is returned to indiacate that it was
+#		stderr that caused the failure.
+#
+#		If there is a failure ...
+#		- Failure info (the remaining cmd-line args) is printed.
+#		- $stdout is printed if not null.
+#		- $stderr is printed if not null.
+#
+#	$1	0 (pass) or non-zero (fail)
+#	$2+	Remaining arguments printed only if the testcase fails
+#
+function tc_break_if_bad()
+{
+	local -i rc=$1
+
+	# ignore if no problems
+	[ "$rc" -eq 0 ] && [ ! -s $stderr ] && return 0
+
+	# BROK
+	brok_result=-1
+	tst_resm TBROK "$TST_COUNT: $TCNAME: $2"
+
+	shift ; shift			# get to args $3+
+	tc_internal_dump $rc "$@"
+	# returns rc as modified by tc_internal_dump
+}
+
+#
+# tc_pass_or_fail	Pass or fail based on true/false input in $1.
+#
+#		Incoming $1 is returned unless it is 0 and $stderr is not null
+#		-- in which case 255 is returned to indiacate that it was
+#		stderr that caused the failure.
+#
+#		If there is a failure ...
+#		- Failure info (the remaining cmd-line args) is printed.
+#		- $stdout is printed if not null.
+#		- $stderr is printed if not null.
+#
+#	$1	0 (pass) or non-zero (fail)
+#	$2	Printed only if the testcase fails
+#	$3+	Others also printed on failure
+#
+function tc_pass_or_fail()
+{
+	local -i rc=$1
+
+	# PASS if no problems
+	if [ "$rc" -eq 0 ] && [ ! -s $stderr ] ; then
+		tst_resm TPASS "$TST_COUNT: $TCNAME"
+		return 0
+	fi
+
+	# FAIL
+	let final_result+=1		# count failures for summary output
+	tst_resm TFAIL "$TST_COUNT: $TCNAME: $2"
+
+	shift ; shift			# get to args $3+
+	tc_internal_dump $rc "$@"
+	# returns rc as modified by tc_internal_dump
+}
+
+#
+# tc_fail_if_bad	Fail If $1 is non-zero or if $stderr file is not empty.
+#			Otherwise simply return (with rc=0)
+#
+#	$@	Command line args are as described for tc_pass_or_fail
+#
+function tc_fail_if_bad()
+{
+	if [ "$1" -ne 0 ] || [ -s $stderr ] ; then
+		tc_pass_or_fail "$@"
+		return		# Pass along rc from passfail.
+	fi
+	return 0		# pass along original rc of 0
+}
+
+#
+# tc_register	Register a testcase.
+#
+#		Each testcase should start with this.
+#
+#	$1	TCNAME
+#
+#	No specific return code.
+#
+function tc_register()
+{
+	TCNAME="$1"
+	let TST_COUNT+=1
+	cat /dev/null > $stdout
+	cat /dev/null > $stderr
+}
+
+#
+# tc_local_setup	For individual testcases to override
+#
+function tc_local_setup()
+{
+	return 0
+}
+
+#
+# tc_setup		testcase setup
+#
+#	input: none
+#
+#	output:	returns 0 on success.
+#		exits (not returns) with 1 on failure
+#
+function tc_setup()
+{
+	TCNAME=tc_setup
+
+	# Establish LTPBIN path.  This is also a handy place to have support
+	# files copied to by "make install", making them readily available to
+	# the testcase. ASSUMES: $PWD is beneath LTP's "testcases" directory.
+	LTPBIN=${PWD%%/testcases/*}/testcases/bin
+	export PATH=$LTPBIN:$PATH
+
+	# See that we have access to the API utilities
+	if [ -z "`type tst_resm 2>/dev/null`" ] ; then
+		>&2 echo "tst_* utilities not found in path: $PATH"
+		exit 1
+	fi
+
+	# Trap exit for tc_internal_cleanup function.
+	trap "tc_internal_cleanup" 0
+
+	# Ensure required utilities are present
+	tc_executes cat mkdir umask || exit 1
+
+	# PAN harness messes this up - fix it
+	umask 022
+
+	# Establish temp directory if not supplied by harness
+	if ! [ -d "$TMP" ] ; then
+		MYTMP=/tmp/tmp$$
+		mkdir -p $MYTMP		# create it
+		TMP=$MYTMP
+	fi
+
+	# tmp subdirectory just for this executable
+	TCTMP=$TMP/$TCID$$
+	rm -rf $TCTMP		# ensure empty in case of multiple invocations
+	mkdir -p $TCTMP
+
+	# Where stdout and stderr can be redirected
+	stdout="$TCTMP/stdout"
+	cat /dev/null > $stdout
+	stderr="$TCTMP/stderr"
+	cat /dev/null > $stderr
+
+	tc_info "$TCNAME: complete"
+
+	TCNAME=tc_local_setup
+	tc_local_setup || exit	# call testcase's setup, if any
+}
+
+#
+# tc_local_cleanup		For individual testcases to override
+#
+function tc_local_cleanup()
+{
+	return 0
+}

@@ -1,0 +1,2 @@
+minicom
+	Test the functionality of minicom.

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# hanoi.test is part of the GNU m4 testsuite
+
+#. ${srcdir}/defs
+
+cat ${srcdir}/hanoi.m4 >in
+
+cat <<\EOF >ok
+
+Move one disk from source to destination.
+Move one disk from source to auxilliary.
+Move one disk from destination to auxilliary.
+Move one disk from source to destination.
+Move one disk from auxilliary to source.
+Move one disk from auxilliary to destination.
+Move one disk from source to destination.
+
+EOF
+
+M4PATH=$srcdir:$srcdir/../tests $M4 -d in >out 2>err
+sed -e "s, $M4:, m4:," err >sederr && mv sederr err
+$CMP -s out ok

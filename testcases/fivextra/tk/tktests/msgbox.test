@@ -1,0 +1,185 @@
+# This file is a Tcl script to test out Tk's "tk_messageBox" command.
+# It is organized in the standard fashion for Tcl tests.
+#
+# Copyright (c) 1996 Sun Microsystems, Inc.
+# Copyright (c) 1998-1999 by Scriptics Corporation.
+# All rights reserved.
+#
+# RCS: @(#) $Id: msgbox.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+#
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test msgbox-1.1 {tk_messageBox command} {
+    list [catch {tk_messageBox -foo} msg] $msg
+} {1 {bad option "-foo": must be -default, -icon, -message, -parent, -title, or -type}}
+test msgbox-1.2 {tk_messageBox command} {
+    list [catch {tk_messageBox -foo bar} msg] $msg
+} {1 {bad option "-foo": must be -default, -icon, -message, -parent, -title, or -type}}
+
+catch {tk_messageBox -foo bar} msg
+regsub -all ,      $msg "" options
+regsub \"-foo\" $options "" options
+
+foreach option $options {
+    if {[string index $option 0] == "-"} {
+	test msgbox-1.3 {tk_messageBox command} {
+	    list [catch {tk_messageBox $option} msg] $msg
+	} [list 1 "value for \"$option\" missing"]
+    }
+}
+
+test msgbox-1.4 {tk_messageBox command} {
+    list [catch {tk_messageBox -default} msg] $msg
+} {1 {value for "-default" missing}}
+
+test msgbox-1.5 {tk_messageBox command} {
+    list [catch {tk_messageBox -type foo} msg] $msg
+} {1 {bad -type value "foo": must be abortretryignore, ok, okcancel, retrycancel, yesno, or yesnocancel}}
+
+proc createPlatformMsg {val} {
+    global tcl_platform
+    if {$tcl_platform(platform) == "unix"} {
+	return "invalid default button \"$val\""
+    }
+    return "bad -default value \"$val\": must be abort, retry, ignore, ok, cancel, no, or yes"
+}
+
+test msgbox-1.6 {tk_messageBox command} {
+    list [catch {tk_messageBox -default 1.1} msg] $msg
+} [list 1 [createPlatformMsg "1.1"]]
+
+test msgbox-1.7 {tk_messageBox command} {
+    list [catch {tk_messageBox -default foo} msg] $msg
+} [list 1 [createPlatformMsg "foo"]]
+
+test msgbox-1.8 {tk_messageBox command} {
+    list [catch {tk_messageBox -type yesno -default 3} msg] $msg
+} [list 1 [createPlatformMsg "3"]]
+
+test msgbox-1.9 {tk_messageBox command} {
+    list [catch {tk_messageBox -icon foo} msg] $msg
+} {1 {bad -icon value "foo": must be error, info, question, or warning}}
+
+test msgbox-1.10 {tk_messageBox command} {
+    list [catch {tk_messageBox -parent foo.bar} msg] $msg
+} {1 {bad window path name "foo.bar"}}
+
+if {[info commands tk::MessageBox] == ""} {
+    set isNative 1
+} else {
+    set isNative 0
+}
+
+proc ChooseMsg {parent btn} {
+    global isNative
+    if {!$isNative} {
+	after 100 SendEventToMsg $parent $btn mouse
+    }
+}
+
+proc ChooseMsgByKey {parent btn} {
+    global isNative
+    if {!$isNative} {
+	after 100 SendEventToMsg $parent $btn key
+    }
+}
+
+proc PressButton {btn} {
+    event generate $btn <Enter>
+    event generate $btn <ButtonPress-1> -x 5 -y 5
+    event generate $btn <ButtonRelease-1> -x 5 -y 5
+}
+
+proc SendEventToMsg {parent btn type} {
+    if {$parent != "."} {
+	set w $parent.__tk__messagebox
+    } else {
+	set w .__tk__messagebox
+    }
+    if ![winfo ismapped $w.$btn] {
+	update
+    }
+    if {$type == "mouse"} {
+	PressButton $w.$btn
+    } else {
+	event generate $w <Enter>
+	focus $w
+	event generate $w.$btn <Enter>
+	event generate $w <KeyPress> -keysym Return
+    }
+}
+
+set parent .
+
+set specs {
+    {"abortretryignore"  MB_ABORTRETRYIGNORE  3  {"abort"  "retry"  "ignore"}} 
+    {"ok"  		 MB_OK  	      1  {"ok"                      }} 
+    {"okcancel" 	 MB_OKCANCEL 	      2  {"ok"     "cancel"         }} 
+    {"retrycancel" 	 MB_RETRYCANCEL       2  {"retry"  "cancel"         }} 
+    {"yesno" 		 MB_YESNO 	      2  {"yes"    "no"             }} 
+    {"yesnocancel" 	 MB_YESNOCANCEL       3  {"yes"    "no"     "cancel"}}
+}
+
+#
+# Try out all combinations of (type) x (default button) and
+# (type) x (icon).
+#
+set count 1
+foreach spec $specs {
+    set type [lindex $spec 0]
+    set buttons [lindex $spec 3]
+
+    set button [lindex $buttons 0]
+    test msgbox-2.$count {tk_messageBox command} {nonUnixUserInteraction} {
+	ChooseMsg $parent $button
+	tk_messageBox -title Hi -message "Please press $button" \
+	    -type $type
+    } $button
+    incr count
+
+    foreach icon {warning error info question} {
+	test msgbox-2.$count {tk_messageBox command -icon option} \
+		{nonUnixUserInteraction} {
+	    ChooseMsg $parent $button
+	    tk_messageBox -title Hi -message "Please press $button" \
+		-type $type -icon $icon
+	} $button
+        incr count
+    }
+
+    foreach button $buttons {
+	test msgbox-2.$count {tk_messageBox command} {nonUnixUserInteraction} {
+	    ChooseMsg $parent $button
+	    tk_messageBox -title Hi -message "Please press $button" \
+		-type $type -default $button
+	} "$button"
+        incr count
+    }
+}
+
+# These tests will hang your test suite if they fail.
+test msgbox-3.1 {tk_messageBox handles withdrawn parent} {nonUnixUserInteraction} {
+    wm withdraw .
+    ChooseMsg . "ok"
+    tk_messageBox -title Hi -message "Please press ok" \
+	    -type ok -default ok
+} "ok"
+wm deiconify .
+
+test msgbox-3.2 {tk_messageBox handles iconified parent} {nonUnixUserInteraction} {
+    wm iconify .
+    ChooseMsg . "ok"
+    tk_messageBox -title Hi -message "Please press ok" \
+	    -type ok -default ok
+} "ok"
+wm deiconify .    
+
+# cleanup
+::tcltest::cleanupTests
+return

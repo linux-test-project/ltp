@@ -1,0 +1,2 @@
+textutils.sh
+	Tested the functionality of the commands in the textutils.rpm

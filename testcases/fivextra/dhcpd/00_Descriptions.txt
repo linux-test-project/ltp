@@ -1,0 +1,2 @@
+dhcpd01
+	start DHCP server using dhcp.conf file, and stop service if that succedes.

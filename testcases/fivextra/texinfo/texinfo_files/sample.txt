@@ -1,0 +1,21 @@
+sample texi format document
+***************************
+
+First Chapter
+*************
+
+   This is the first chapter.
+
+   Here is a numbered list.
+
+  1. This is the first item.
+
+  2. This is the second item.
+
+Index
+*****
+
+chapter, first:
+          See ``First Chapter''.
+index entry, another:
+          See ``First Chapter''.

@@ -1,0 +1,14 @@
+goahead-webserver
+
+	Check to see that the goahead web server can serve up a web page.
+
+
+        GoAhead WebServer is a embedded Web server, and it has no config file , so you should change the sourcecode if you want
+        change the default setting.
+
+        NOTE:
+
+        You should be in the directory which contains the command "webs" in order to run webserver. The reason is that
+        the web server find the default doc directory by path "../web".
+   
+

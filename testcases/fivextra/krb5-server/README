@@ -1,0 +1,104 @@
+DESCRIPTION
+This testcase "krb5-server" work with testcase "krb5-workstation" to test
+kerberos services, you should start the case "krb5-server" at first, and
+then run "krb5-workstation" to test package krb5-workstation.
+
+"krb5-server" testcase could run seperately without "krb5-workstation",
+however, "krb5-workstation" case couldn't run properly without "krb5-server"
+running to provide KDC and AS services.
+
+REQUIREMENTS
+
+You need to have your network set up and dns server in test domain runs 
+properly, and had better use ntp(Network Time Proposal) to synchronize 
+your test machines.
+
+On KDC server side, you should install krb5-libs, krb5-workstation and 
+krb5-server packages; on kerberos application side, you should install 
+install krb5-libs, krb5-workstation packages. You could use KDC server
+machine as you client of course.
+
+TESTCASE DESCRIPTION
+
+There are two shell script testcase to test kerberos packages krb5-libs, 
+krb5-workstation and krb5-server. As you know, use krb5-workstation.sh to
+test krb5-workstation package, and use krb5-server.sh to test krb5-server
+package, and krb5-libs was called during server and client testcases's
+running period.
+
+You could run the tow both testcases in the same machine, as well as you
+could run then in server/client mode.
+
+RUN TEST
+
+(1)kdc side: start kdc testcase at first
+	command>./krb5-server.sh <enter>
+
+(2)kdc side: wait a moment to backup original kerberos service, and then
+             create a new one, start kdc and kadmin service later, if the
+             case runs correctly, it will promp a message bellow, remember
+             dont's quit if you do not really want to quit especially you
+             want to test client side, quit will stop kdc and kadmin service
+
+	output>
+	krb5-server.sh    0  INFO  :  0: tc_setup: complete
+	krb5-server.sh    1  PASS  :  0: tc_local_setup
+	krb5-server.sh    0  INFO  :  0: Stopping currently running kadmin
+	krb5-server.sh    0  INFO  :  0: Stopping currently running kdc
+	krb5-server.sh    0  INFO  :  0: Saving original kerberose configuration and state
+	krb5-server.sh    1  PASS  :  1: create kdb
+	krb5-server.sh    2  PASS  :  2: add admin principal
+	krb5-server.sh    3  PASS  :  3: start kdc
+	krb5-server.sh    4  PASS  :  4: start kadmin
+	input command "quit" to quit
+	<wait inputting...>
+
+(3)app side: after you run krb5-server.sh properlly, you could start workstation
+             testcase, you should specify the kdc machine name in the command line
+
+	command>./krb5-workstation.sh kdc_servername <enter>
+
+note: the argument kdc_servername must be the kerberos KDC name, and provide kdc
+      service now!
+      if you only want to test krb5-server, you could skip this and next step!
+
+(4)app side: wait a moment to test kerberos application, here's the successful output
+
+	output>
+	krb5-workstation.sh    0  INFO  :  0: tc_setup: complete
+	krb5-workstation.sh    1  PASS  :  0: tc_local_setup
+	krb5-workstation.sh    0  INFO  :  0: created temp user u3145301.
+	krb5-workstation.sh    0  INFO  :  0: created temp user u3145302.
+	krb5-workstation.sh    0  INFO  :  0: Stopping currently running xinetd
+	krb5-workstation.sh    1  PASS  :  1: create keytab
+	krb5-workstation.sh    2  PASS  :  2: add client principal
+	krb5-workstation.sh    3  PASS  :  3: ksu
+	krb5-workstation.sh    4  PASS  :  4: ktutil
+	krb5-workstation.sh    5  PASS  :  5: kinit
+	krb5-workstation.sh    6  PASS  :  6: klist
+	krb5-workstation.sh    7  PASS  :  7: rlogin
+	krb5-workstation.sh    8  PASS  :  8: telnet
+	krb5-workstation.sh    9  PASS  :  9: rsh
+	krb5-workstation.sh   10  PASS  :  10: rcp
+	krb5-workstation.sh   11  PASS  :  11: ftp
+	krb5-workstation.sh   12  PASS  :  12: kpasswd
+	krb5-workstation.sh   13  PASS  :  13: kvno
+	krb5-workstation.sh    0  INFO  :  13: removed temp user u3145301.
+	krb5-workstation.sh    0  INFO  :  13: removed temp user u3145302.
+	Starting INET services. (xinetd)                                     done
+
+note: if you only want to test krb5-server, you could skip this and next step!
+
+
+(5)kdc side: after you finish your workstation testcase, or you do not want to
+             to do client test at all, you could stop server test now, simply
+             input "quit" to continue and exit
+	output>
+	input command "quit" to quit
+	quit <enter>
+	output>
+	krb5-server.sh    5  PASS  :  5: stop kadmin
+	krb5-server.sh    6  PASS  :  6: stop kdc
+	krb5-server.sh    0  INFO  :  6: Restoring original kerberose configuration and state
+	Starting Kerberos 5 KDC:                                             done
+	Starting Kerberos 5 Admin Server:                                    done

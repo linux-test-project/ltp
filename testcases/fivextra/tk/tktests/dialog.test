@@ -1,0 +1,64 @@
+# This file is a Tcl script to test out Tk's "tk_dialog" command.
+# It is organized in the standard fashion for Tcl tests.
+#
+# RCS: @(#) $Id: dialog.test,v 1.1 2005/03/22 17:52:20 mridge Exp $
+#
+
+package require tcltest 2.1
+namespace import -force tcltest::configure
+namespace import -force tcltest::testsDirectory
+configure -testdir [file join [pwd] [file dirname [info script]]]
+configure -loadfile [file join [testsDirectory] constraints.tcl]
+tcltest::loadTestedCommands
+
+test dialog-1.1 {tk_dialog command} {
+    list [catch {tk_dialog} msg] $msg
+} {1 {wrong # args: should be "tk_dialog w title text bitmap default args"}}
+test dialog-1.2 {tk_dialog command} {
+    list [catch {tk_dialog foo foo foo foo foo} msg] $msg
+} {1 {bad window path name "foo"}}
+test dialog-1.3 {tk_dialog command} {
+    set res [list [catch {tk_dialog .d foo foo foo foo} msg] $msg]
+    destroy .d
+    set res
+} {1 {bitmap "foo" not defined}}
+
+proc PressButton {btn} {
+    if {![winfo ismapped $btn]} {
+	update
+    }
+    event generate $btn <Enter>
+    event generate $btn <1> -x 5 -y 5
+    event generate $btn <ButtonRelease-1> -x 5 -y 5
+}
+
+proc HitReturn {w} {
+    event generate $w <Enter>
+    focus -force $w
+    event generate $w <KeyPress> -keysym Return
+}
+
+test dialog-2.0 {tk_dialog operation} {
+    set x [after 5000 [list set tk::Priv(button) "no response"]]
+    after 100 PressButton .d.button0
+    set res [tk_dialog .d foo foo info 0 click]
+    after cancel $x
+    set res
+} {0}
+test dialog-2.1 {tk_dialog operation} {
+    set x [after 5000 [list set tk::Priv(button) "no response"]]
+    after 100 HitReturn .d
+    set res [tk_dialog .d foo foo info 1 click default]
+    after cancel $x
+    set res
+} {1}
+test dialog-2.2 {tk_dialog operation} {
+    set x [after 5000 [list set tk::Priv(button) "no response"]]
+    after 100 destroy .d
+    set res [tk_dialog .d foo foo info 0 click]
+    after cancel $x
+    set res
+} {-1}
+
+tcltest::cleanupTests
+return

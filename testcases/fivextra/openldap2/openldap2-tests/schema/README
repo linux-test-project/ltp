@@ -1,0 +1,21 @@
+This directory contains schema definitions for use with slapd(5).
+
+File                    Description
+----                    -----------
+corba.schema            Corba Object (RFC 2714) schema
+core.schema             OpenLDAP "core" (required)
+cosine.schema           COSINE Pilot schema (recommended)
+inetorgperson.schema    InetOrgPerson schema (recommended)
+java.schema             Java Object (RFC 2713) schema
+krb5-kdc.schema         Kerberos V KDC schema
+misc.schema             misc. experimental schema
+nis.schema              Network Information Service schema
+openldap.schema         OpenLDAP Project schema
+
+Additional schema definitions can be submitted using the OpenLDAP
+Issue Tracking System <http://www.openldap.org/its/>.  Such
+submissions should include a reference (e.g. a URL) to a stable,
+mature specification (e.g., an RFC) of the schema.
+
+---
+$OpenLDAP: pkg/ldap/servers/slapd/schema/README,v 1.1.2.7 2002/01/09 16:49:09 kurt Exp $

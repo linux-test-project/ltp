@@ -1,0 +1,13 @@
+pegasus
+	Author: CSDL James He, hejianj@cn.ibm.com
+
+	Tested the functionality of the pegasus
+	./pegasus_test.sh for the execution.
+
+
+
+Chglog
+	1. 1/July/2004 Add cimconfig, cimserver test cases.
+	2. 2/July/2004 Add cimuser, cimprovider test cases.
+
+

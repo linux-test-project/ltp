@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# generically set up the community "testcommunity" for various snmp
+# version access to the agent.
+
+if [ "x$snmp_version" = "x" ]; then
+  snmp_version="any"
+fi
+
+CONFIGAGENT com2sec testcommunitysec  default testcommunity
+CONFIGAGENT group   testcommunitygroup  $snmp_version     testcommunitysec
+CONFIGAGENT view    all     included .1 80
+CONFIGAGENT 'access  testcommunitygroup  "" any noauth exact all none none'
