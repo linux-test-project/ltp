@@ -134,7 +134,7 @@ main(int argc, char *argv[])
 	startoffset = atoi(argv[2]);
 #endif /* LARGE_FILE */
 	if (startoffset % pagesize != 0) {
-		fprintf(stderr, "pagesize=%d\n", pagesize);
+		fprintf(stderr, "pagesize=%ld\n", (long)pagesize);
 		fprintf(stderr, "startoffset must be a pagesize multiple\n");
 		anyfail();  //LTP Port
 	}
