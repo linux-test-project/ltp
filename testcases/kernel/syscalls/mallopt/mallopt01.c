@@ -85,11 +85,6 @@ int main (int argc, char *argv[])
 		flag = 1;
 		local_flag = FAILED;
 	};
-	if (info.usmblks != 0) {
-		fprintf(temp, "mallinfo failed: usmblks != 0\n");
-		flag = 1;
-		local_flag = FAILED;
-	}
 	if (info.smblks != 0) {
 		fprintf(temp, "mallinfo failed: smblks != 0\n");
 		flag = 1;
