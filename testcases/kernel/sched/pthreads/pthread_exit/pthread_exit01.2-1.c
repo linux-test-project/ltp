@@ -57,11 +57,17 @@ void a_cleanup_func3()
 /* Thread's function. */
 void *a_thread_func()
 {
+	int i;
+
 	/* Set up 3 cleanup handlers */
 	pthread_cleanup_push(a_cleanup_func1,NULL);
 	pthread_cleanup_push(a_cleanup_func2,NULL);
 	pthread_cleanup_push(a_cleanup_func3,NULL);
 	
+	for(i=0;i<10;i++) {
+		sleep(1);
+		pthread_testcancel();
+	}
 	pthread_exit(0);
 	
 	/* Need these here for it to compile nicely.  We never reach here though. */
