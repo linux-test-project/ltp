@@ -1,6 +1,0 @@
-This document defines the coverage for the pthread_equal() function:
-
-Assertion	Tested?
-1		YES
-
-NOTE:

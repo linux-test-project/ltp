@@ -1,2 +1,0 @@
-Currently, this function will not be covered over the one test case
-written as it is not known where code exists that defines this function.
