@@ -260,6 +260,9 @@ getresuid01 getresuid01
 getresuid02 getresuid02
 getresuid03 getresuid03
 
+getrlimit01 getrlimit01
+getrlimit02 getrlimit02
+
 getrusage01 getrusage01
 getrusage02 getrusage02
 
