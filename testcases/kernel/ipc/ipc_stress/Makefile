@@ -1,5 +1,5 @@
-CFLAGS += -O -g -D_LINUX_ -Wall
-LOADLIBS += -lpthread
+CFLAGS += -O -g -D_LINUX_ -Wall 
+LOADLIBES += -lpthread
 
 SRCS=$(wildcard *.c)
 
