@@ -89,6 +89,8 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 char write_buff[BUFSIZ];	/* buffer to hold data */
 int fildes;			/* file handle for temp file */
 
+struct rlimit rlp_orig;		/* resource for original file size limit */
+
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
@@ -200,7 +202,7 @@ void
 setup()
 {
 	struct sigaction act;		/* struct. to hold signal */
-		 struct rlimit rlp;		 		 /* resource for file size limit */
+	struct rlimit rlp; 		/* resource for file size limit */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -218,12 +220,18 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-		 /* Set limit low, argument is # bytes */
-		 rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
-
-		 if (setrlimit(RLIMIT_FSIZE, &rlp) == -1) {
+	/* Store the original rlimit */
+	if (getrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
 		tst_brkm(TBROK, cleanup,
-		 		 		  "Cannot set max. file size using setrlimit");
+	 	  "Cannot get max. file size using getrlimit");
+	}
+	
+	/* Set limit low, argument is # bytes */
+	rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
+
+	if (setrlimit(RLIMIT_FSIZE, &rlp) == -1) {
+		tst_brkm(TBROK, cleanup,
+	 	  "Cannot set max. file size using setrlimit");
 	}
 
 	/* Creat/open a temporary file under above directory */
@@ -263,6 +271,13 @@ cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
+
+	/* Reset the file size limit */
+	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
+		tst_brkm(TBROK, cleanup,
+	 	  "Cannot reset max. file size using setrlimit");
+	}
+
 
 	/* exit with return code appropriate for results */
 	tst_exit();
