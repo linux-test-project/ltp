@@ -50,7 +50,7 @@ REMOTE_EXEC="testsf_s"
 
 FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
 
-IPADDR=$(host $RHOST|awk '{print $4}'|cut -d\, -f1)
+IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
 
 #=============================================================================
 # FUNCTION NAME:        do_test
