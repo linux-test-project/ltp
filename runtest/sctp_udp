@@ -19,6 +19,7 @@ send01-sctp-udp send01-sctp-udp
 send01-sctp-udp-ipv4 send01-sctp-udp-ipv4
 sendmsg01-sctp-udp sendmsg01-sctp-udp
 sendto01-sctp-udp sendto01-sctp-udp
+sendto02-sctp-udp sendto02-sctp-udp
 setsockopt01-sctp-udp setsockopt01-sctp-udp
 socket01-sctp socket01-sctp
 socket01-sctp-udp socket01-sctp-udp
