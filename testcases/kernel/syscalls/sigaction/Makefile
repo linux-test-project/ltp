@@ -20,15 +20,12 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -DGLIBC_SIGACTION_BUG=1
-LDFLAGS+=	-lpthread -L../../../../lib -lltp
+LOADLIBES+=	-lpthread -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
-
-$(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
 install:
 	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

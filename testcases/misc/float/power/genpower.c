@@ -68,25 +68,32 @@ int create_file(char *func_name, int NbVal)
 int main(int argc, char *argv[])
 {
 	char *funct;
+	pid_t  child;
 
 	
 	funct = "./genceil";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./genfabs";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./genfloor";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./genfmod";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 		
 	funct = "./genpow";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./gensqrt";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	return 0;
 }

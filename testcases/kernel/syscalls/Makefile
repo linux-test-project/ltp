@@ -26,7 +26,7 @@
 DEBUG_CFLAGS=-O
 DEBUG_LDFLAGS=-s
 CFLAGS+=-I../../include -g
-LDFLAGS+=-L../../lib -lltp -L.. -ltestsuite
+LOADLIBES+=
 
 SUBDIR= \
 	accept access alarm asyncio bind brk \

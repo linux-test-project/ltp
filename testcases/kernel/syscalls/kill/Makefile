@@ -20,15 +20,12 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include
-LDFLAGS+=	-L../../../../lib -lltp -L.. -ltestsuite -L../ipc -lipc
+LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite -L../ipc -lipc
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
-
-$(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
 
 install:
 	@for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

@@ -1,3 +1,22 @@
+LTP-20020207
+------------
+o       added support for cross-compiling (Todd Inglett)
+o       added LKML's cache_leak testcase to ltp/scratch (Nate Straz)
+o       added IPv6 support (Robbie Williamson)
+o       added "gethost" to /tools (Robbie Williamson)
+o	fixed the race conditions in the float tests and removed 
+	the sleeps (Robbie Williamson)
+o       enabled non-root make authority (Paul Larson)
+o       seperated compilation into "make" and "make install" (Paul Larson)
+o       added ipc_stress test (Manoj Iyer)
+o       added pthreads_stress test (Manoj Iyer)
+o       made changes to support architecture independence (Manoj Iyer & Paul Larson)
+o	closed the following bugs: 
+	504960, 505108, 504613, 504616, 491283, 506689, 508055, 506692, 508074
+	491289, 506662, 511383, 511391, 511427, 511494, 504649, 514050
+	(Manoj Iyer, Paul Larson, and Robbie Williamson)	
+
+
 LTP-20020108
 ------------
 o	fixed IDcheck.sh to work with bash1 (Nate Straz)

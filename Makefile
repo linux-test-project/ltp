@@ -1,6 +1,15 @@
 
+# To cross compile set vars like this and be sure to always build
+# from the top level...
+
+#CROSS_COMPILER=/opt/ppc64/powerpc64-linux/bin/
+#CC=$(CROSS_COMPILER)gcc
+#AR=$(CROSS_COMPILER)ar
 CFLAGS+= -Wall
-LDFLAGS+=
+#LDFLAGS+= -static
+#LOADLIBES+= -lpthread -lc -lnss_dns -lnss_files -lresolv -lnss_dns -lnss_files -lm -lc
+export CC AR LDFLAGS LOADLIBES
+
 
 all: libltp.a 
 	@$(MAKE) -C pan $@

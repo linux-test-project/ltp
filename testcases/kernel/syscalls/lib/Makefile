@@ -30,7 +30,7 @@ MAINS=../libtestsuite.a
 all: ../libtestsuite.a
 
 ../libtestsuite.a: $(OBJS)
-	ar -rv $@ $(OBJS)
+	$(AR) -rv $@ $(OBJS)
 
 install:
 

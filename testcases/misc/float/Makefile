@@ -1,5 +1,5 @@
-CFLAGS := -Wall -O -g
-LDFLAGS := -lpthread -lm
+CFLAGS+= -Wall -O -g
+LOADLIBES+= -lpthread -lm
 
 SRCS=$(wildcard float*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

@@ -26,15 +26,15 @@ LDFLAGS+=	-L../../../../lib -lltp
 SRCS=$(wildcard lchown*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: create_link $(TARGETS)
+all: create_link.mode $(TARGETS)
 
-create_link: 
-	$(CC) -o create_link create_link.c $(CFLAGS) $(LDFLAGS)
+create_link.mode: create_link
 	chown root create_link
 	chmod 04755 create_link 
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)
+
 
 install:
 	@for i in create_link $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
@@ -42,4 +42,5 @@ install:
 clean:
 	rm -f $(TARGETS) create_link
 
+.PHONY: create_link.mode
 

@@ -1,13 +1,9 @@
 
-CFLAGS = -lm -lpthread
+LOADLIBES += -lm -lpthread
 BIN = gensinh gencosh gentanh geniperb
 DATA = dsinh rsinh dcosh rcosh dtanh rtanh
 
-all:
-	$(CC) $(CFLAGS) gensinh.c -o gensinh
-	$(CC) $(CFLAGS) gencosh.c -o gencosh
-	$(CC) $(CFLAGS) gentanh.c -o gentanh
-	$(CC) $(CFLAGS) geniperb.c -o geniperb
+all:	$(BIN)
 	./geniperb
 
 clean:
@@ -17,5 +13,4 @@ clean:
 	@for i in $(DATA); do rm -f ../../../bin/$$i ; done
 
 install:
-	sleep 10
 	@for i in $(DATA); do ln -f $$i ../../../bin/$$i ; done ;

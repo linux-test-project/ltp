@@ -68,16 +68,19 @@ int create_file(char *func_name, int NbVal)
 int main(int argc, char *argv[])
 {
 	char *funct;
-
+	pid_t child;
 	
 	funct = "./gencosh";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./gensinh";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	funct = "./gentanh";
-	create_file(funct, 0);
+	child=create_file(funct, 0);
+	waitpid(child,NULL,0);
 
 	return 0;
 }

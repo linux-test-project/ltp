@@ -26,10 +26,9 @@ LDFLAGS+=	-L../../../../lib -lltp
 SRCS=$(wildcard chown*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
-all: change_owner $(TARGETS)
+all: change_owner.mode $(TARGETS)
 
-change_owner: 
-	$(CC) -o change_owner change_owner.c $(CFLAGS) $(LDFLAGS)
+change_owner.mode: change_owner
 	chown root change_owner
 	chmod 04755 change_owner 
 
@@ -42,4 +41,5 @@ install:
 clean:
 	rm -f $(TARGETS) change_owner
 
+.PHONY: change_owner.mode
 

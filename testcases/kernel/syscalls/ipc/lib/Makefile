@@ -29,7 +29,7 @@ LTP_CFLAGS=-I../../../../../include -g
 all: ../libipc.a
 
 ../libipc.a: $(OBJS)
-	ar -rv $@ $(OBJS)
+	$(AR) -rv $@ $(OBJS)
 
 $(OBJS):
 	$(CC) -c $(SRCS) $(LTP_CFLAGS)
