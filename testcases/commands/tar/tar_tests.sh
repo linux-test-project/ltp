@@ -37,7 +37,7 @@ fi
 
 if [ -z $LTPBIN ]
 then
-    LTPBIN=../../bin
+    LTPBIN=./bin
 fi
 
 # set return code RC variable to 0, it will be set with a non-zero return code
