@@ -1676,8 +1676,8 @@ creat_f(int opno, long r)
 			esz = a.fsx_estsize;
 			
 		}
-		add_to_flist(type, id, parid);
 #endif		
+		 		 add_to_flist(type, id, parid);
 		close(fd);
 	}
 	if (v)
