@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
         void *exit_value;
         pthread_attr_t newattr;
         pthread_t sig_hand;
+        size_t          stacksize = 2093056;
         int th_num;
         int retvalend = 0;
         int retval = 0;
@@ -163,6 +164,9 @@ int main(int argc, char *argv[])
 	retval = pthread_attr_init(&newattr);
 	if (retval != 0)
 		sys_error("main : attr_init(&newattr) FAILED",__LINE__);
+
+        if (pthread_attr_setstacksize (&newattr, stacksize))
+       	        sys_error ("main: pthread_attr_setstacksize failed", __LINE__);
 
 	retval = pthread_attr_setdetachstate(&newattr,
                                              PTHREAD_CREATE_JOINABLE);
