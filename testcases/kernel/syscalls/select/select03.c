@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: select03.c,v 1.2 2004/08/25 16:21:16 mridge Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -269,6 +269,8 @@ cleanup()
      * print timing stats if that option was specified.
      * print errno log if that option was specified.
      */
+    close(Fd);
+
     TEST_CLEANUP;
 
     /* remove temporary directory and all files in it. */
