@@ -19,6 +19,7 @@
 ##                                                                            ##
 ################################################################################
 
+## DESCRIPTION:
 ## This test creates 20 files (0 thru 19) and then shuffles them around,
 ## deletes, and recreates them as fast as possible.  This is all done in
 ## an effort to test for race conditions in the filesystem code. This test
