@@ -10,10 +10,10 @@ int main()
 
 		if ( i %2 )
 
-			printf(" IBM \n ");
+			printf(" Hello \n ");
 
 		else
-			printf("Monterey \n");
+			printf("World \n");
 
 	}
 
