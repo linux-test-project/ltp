@@ -74,6 +74,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -86,6 +87,8 @@
 char *TCID="access04";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -168,11 +171,17 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
