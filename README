@@ -49,9 +49,8 @@ doc/
 	  codes.
 
 runtest/
-	  The runtest directory contains a simple test harness that Aaron
-	  Laffin hacked up in Python.  It runs tests from a file in sequential
-	  order.  It is meant to be an example of a simple test harness.
+    This directory should be removed.  Currently it houses command lists that
+    are used by pan for automated runtime.
 pan/
 	  The pan directory contains a simple, lightweight test harness.  pan
 	  has the ability to run tests randomly and in parallel.  See pan's man
