@@ -2,15 +2,10 @@ LTP-20020307
 ------------
 o	fixed IDcheck.sh to prompt for IDs only when missing (Jay Huie)
 o	added time duration option to pan (Jay Huie)
-o	fixed bug [ #516577 ] ftruncate03 test (Jay Huie)
 o	added 4 more cases to getcwd02 test (Jay Huie)
 o	added time-schedule tool by Richard Gooch under sched test
 	section (Manoj Iyer)
 o	added trace_sched tool under sched test section (Manoj Iyer)
-o	fixed bug [ #511427 ] pread02 test (Paul Larson)
-o	fixed bug [ #523055 ] sched_getscheduler test (Paul Larson)
-o	fixed bug [ #523137 ] sched_setscheduler02 test (Paul Larson)
-o	fixed bug [ #525688 ] sendfile01 (Paul Larson)
 o	added sigpending02 test to syscalls section (Paul Larson)
 o       created a KNOWN-FAILURES file to document known 
         test failures (Robbie Williamson)
@@ -19,7 +14,15 @@ o	added SCTP section to network tests (Robbie Williamson)
 o	fixed bug [ #505515 ] perf_lan6 test (Robbie Williamson)
 o	added disktest by Brent Yardley to io section (Robbie Williamson)
 o	closed the following bugs:
-	491285, 491286, 506536, 514408 (Paul Larson and Robbie Williamson)
+	[ #491285 ] recvfrom01 test (Paul Larson)
+	[ #491286 ] recvmsg01 test (Robbie Williamson)
+	[ #506536 ] recv01 test (Robbie Williamson)
+	[ #514408 ] chown05 (Dave Engebretsen)
+	[ #511427 ] pread02 test (Paul Larson)
+	[ #516577 ] ftruncate03 test (Jay Huie)
+	[ #523055 ] sched_getscheduler test (Paul Larson)
+	[ #523137 ] sched_setscheduler02 test (Paul Larson)
+	[ #525688 ] sendfile01 (Paul Larson)
 
 
 LTP-20020207
