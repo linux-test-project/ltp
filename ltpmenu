@@ -38,6 +38,10 @@
 #                              to pull the test descriptions from the scenario files.
 #                            Robbie Williamson - robbiew@us.ibm.com
 #
+#	       April 17 2003 - Added menu selection to list contents of selected
+#			       scenario file.
+#			     Robbie Williamson - robbiew@us.ibm.com
+#
 #! /bin/bash
 
 # Function:    cleanup
@@ -345,6 +349,42 @@ about_ltpcc()
                      Manoj Iyer <manjo@mail.utexas.edu>"
     return
 }
+
+
+# Function:    ltp_scenarios
+#
+# Description: This function displays a list of scenario files located 
+#              in /runtest.  Users can list the contents of each file.
+#
+# Input:       Files from /runtest
+#
+# Output:      1) Menu selection containing each file as an option to list.
+#              2) Contents of selected scenario.
+ltp_scenarios()
+{
+
+RC=0
+SCENARIOS=$(for i in `ls -1 -A -I "CVS" runtest`;do echo -n "$i <- "; done)
+
+while [ $RC -ne "1" ] 
+do
+  dialog --clear
+  dialog --backtitle "Linux Test Project Control Centre" \
+         --title "LTP Scenario Files" \
+         --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 8 \
+                $SCENARIOS \
+                2>/tmp/runltp.scenario.$$ || RC=$?
+  scenario_item=$(cat /tmp/runltp.scenario.$$)
+  if ! [ -z $scenario_item ];then
+    dialog --clear
+    dialog --backtitle "Linux Test Project Control Centre" \
+           --title "LTP Scenario Files" \
+           --textbox runtest/$scenario_item 17 70
+  fi
+done	        
+}
+
+
                  
 # Function:    main
 #
@@ -378,9 +418,10 @@ do
     dialog --clear
     dialog --backtitle "Linux Test Project Control Centre" \
            --title "Main Menu" \
-           --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 4 \
+           --menu "Move using[UP] [DOWN], Select using [ENTER]" 15 70 5 \
                   About        "About LTP Control Centre" \
                   Compile      "Compile LTP testsuite" \
+		  Details      "Details of scenario files" \
                   Execute      "Execute LTP testsuite" \
                   Results      "Display a summary of test results" \
                   2>/tmp/runltp.mainmenu.$$ || RC=$?
@@ -392,6 +433,7 @@ do
            case $mmenu_item in
                 About)        about_ltpcc    ;;
                 Compile)      compile_ltp    ;;
+		Details)      ltp_scenarios  ;;
                 Execute)      execute_ltp    ;;
                 Results)      disp_ltpres    ;;
            esac ;;
