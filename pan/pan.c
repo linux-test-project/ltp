@@ -40,7 +40,7 @@
  *			   - added code to print system information
  *
  */
-/* $Id: pan.c,v 1.15 2003/01/28 19:44:34 iyermanoj Exp $ */
+/* $Id: pan.c,v 1.16 2003/01/28 22:33:34 iyermanoj Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -538,14 +538,17 @@ main(int argc, char **argv)
 	++exit_stat;
     }
     fclose(zoofile);
-	if (uname(&unamebuf) == -1)
-		fprintf(stderr, "ERROR: uname(): %s\n", strerror(errno));
-	fprintf(logfile, "\n-----------------------------------\n");
-	fprintf(logfile, "Total Tests: %d\n", coll->cnt);
-	fprintf(logfile, "Total Failures: %d\n", failcnt);
-	fprintf(logfile, "Kernel Version: %s\n", unamebuf.release);
-	fprintf(logfile, "Machine Architecture: %s\n", unamebuf.machine);
-	fprintf(logfile, "Hostname: %s\n\n", unamebuf.nodename);
+	if (fmt_print)
+	{
+		if (uname(&unamebuf) == -1)
+			fprintf(stderr, "ERROR: uname(): %s\n", strerror(errno));
+		fprintf(logfile, "\n-----------------------------------\n");
+		fprintf(logfile, "Total Tests: %d\n", coll->cnt);
+		fprintf(logfile, "Total Failures: %d\n", failcnt);
+		fprintf(logfile, "Kernel Version: %s\n", unamebuf.release);
+		fprintf(logfile, "Machine Architecture: %s\n", unamebuf.machine);
+		fprintf(logfile, "Hostname: %s\n\n", unamebuf.nodename);
+	}
     if (logfile && (logfile != stdout))
 	fclose(logfile);
 
