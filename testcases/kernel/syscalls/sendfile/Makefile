@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the sendfile(2) tests.	  #
 ###########################################################################
-CFLAGS+=        -I../../../../include
+CFLAGS+=        -I../../../../include -Wall
 LDLIBS+=       -L../../../../lib -lltp
 
 DIR=sendfile

@@ -81,35 +81,7 @@ struct test_case_t {
 	{ "Test sendfile(2) with offset in the middle of file", 6, 20 }
 };
 
-main(int ac, char **av)
-{
-	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
-
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
-	setup();
-
-	/*
-	 * The following loop checks looping state if -c option given
-	 */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; ++i) {
-			do_sendfile(testcases[i].offset, i);
-		}
-	}
-	cleanup();
-
-	/*NOTREACHED*/
-}
-
-do_sendfile(off_t offset, int i)
+void do_sendfile(off_t offset, int i)
 {
 	int in_fd;
 	struct stat sb;
@@ -256,3 +228,33 @@ int create_server(void) {
 	return s;
 
 }
+
+int main(int ac, char **av)
+{
+	int i;
+	int lc;				/* loop counter */
+	char *msg;			/* parse_opts() return message */
+
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		/*NOTREACHED*/
+	}
+
+	setup();
+
+	/*
+	 * The following loop checks looping state if -c option given
+	 */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		Tst_count = 0;
+
+		for (i = 0; i < TST_TOTAL; ++i) {
+			do_sendfile(testcases[i].offset, i);
+		}
+	}
+	cleanup();
+
+	/*NOTREACHED*/
+	return(0);
+}
+

@@ -83,7 +83,7 @@ struct test_case_t {
 
 int exp_enos[] = {EBADF, 0};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i;
 	int lc;				/* loop counter */
@@ -133,6 +133,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

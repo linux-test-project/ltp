@@ -125,7 +125,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-test1:		
+//test1:		
 		/* 
 		 * attempt to rmdir a file whose parent directory has 
 		 * the sticky bit set without the root right
@@ -206,7 +206,7 @@ test1:
 		}
 		/* Parent */
 
-test2:		
+//test2:		
 		/* create the a directory with 0700 permits */
 		if (mkdir(tstdir3, 0700) == -1) {
 		       	 tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
@@ -290,6 +290,9 @@ test2:
 	cleanup();
 	
 	/*NOTREACHED*/
+
+  return(0);
+
 }       /* End main */
 
 /*
