@@ -35,7 +35,6 @@
  *	by the test hanging and not completing execution.
  *
  ****************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -197,6 +196,7 @@ void create_child_thread(char* buf, size_t buf_len)
 
 int main(int argc, char** argv)
 {
+#ifdef USING_NPTL
     char buf[1024];
     int i;
 
@@ -235,6 +235,10 @@ int main(int argc, char** argv)
     tst_resm(TPASS,"Test completed successfully!");
     cleanup();
 
+#else
+    tst_resm(TCONF,"Skipping Execution - This system is not using NPTL");
+    tst_exit();
+#endif
     /* NOT REACHED */
     return(1);
 }
