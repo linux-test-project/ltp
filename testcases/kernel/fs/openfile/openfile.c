@@ -86,12 +86,12 @@ int main(int argc, char *argv[])
             case 'h':
             default:
               printf("Usage: openfile [-d] -f FILES -t THREADS\n");
-       	      exit(1);
+       	      _exit(1);
           }
         }
         if(badopts) {
           printf("Usage: openfile [-d] -f FILES -t THREADS\n");
-       	  exit(1);
+       	  _exit(1);
         }
 
     	/* Check if numthreads is less than MAXFILES */
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	/* Create files */
 	if ((fd=fopen(filename,"w")) == NULL){	
 		perror ("FAIL - Could not create file");
-		exit(1);
+		_exit(1);
 	}
 	fclose(fd);
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 		perror("FAIL - failed to grab mutex lock");
 		fclose(fd);
 		unlink(filename);
-		exit(1);
+		_exit(1);
 	}
 
 	printf("Creating Reading Threads\n");
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 			perror("FAIL - failed creating a pthread; increase limits");
 			fclose(fd);
 			unlink(filename);
-			exit(1);
+			_exit(1);
 		}
 
 	/* Sleep until all threads are created */
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 			perror("FAIL - error while waiting for reading threads");
 			fclose(fd);
 			unlink(filename);
-			exit(1);
+			_exit(1);
 		}
 
 	/* Wake up all threads */
@@ -154,15 +154,14 @@ int main(int argc, char *argv[])
 		perror("FAIL - failed trying to wake up reading threads");
 		fclose(fd);
 		unlink(filename);
-		exit(1);
+		_exit(1);
 	}
-
 	/* Release mutex lock */
 	if (pthread_mutex_unlock(&c.m)) {
 		perror("FAIL - failed to release mutex lock");
 		fclose(fd);
 		unlink(filename);
-		exit(1);
+		_exit(1);
 	}
 
         printf("PASS - Threads are done reading\n");
@@ -170,7 +169,7 @@ int main(int argc, char *argv[])
     	printf("%s", msg);
 	fclose(fd);
 	unlink(filename);
-	exit(0);
+	_exit(0);
 }
 
 
@@ -194,7 +193,7 @@ void * threads(int thread_id)
           		sprintf(errmsg,"FAIL - Couldn't open file #%d",i);
           		perror(errmsg);
 			unlink(filename);
-			exit(1);
+			pthread_exit((void*)1);
        		}
     	}
 
@@ -203,7 +202,7 @@ void * threads(int thread_id)
 		perror("FAIL - failed to grab mutex lock");
        		fclose(fd);
 		unlink(filename);
-		exit(1);
+		pthread_exit((void*)1);
 	}
 	
 	/* Check if you should wake up main thread */
@@ -212,7 +211,7 @@ void * threads(int thread_id)
 			perror("FAIL - failed to signal main thread");
        			fclose(fd);
 			unlink(filename);
-			exit(1);
+			pthread_exit((void*)1);
 		}
 
 	/* Sleep until woken up */
@@ -220,7 +219,7 @@ void * threads(int thread_id)
 		perror("FAIL - failed to wake up correctly");
        		fclose(fd);
 		unlink(filename);
-		exit(1);
+		pthread_exit((void*)1);
 	}
 
 	/* Release mutex lock */
@@ -228,13 +227,13 @@ void * threads(int thread_id)
 		perror("FAIL - failed to release mutex lock");
        		fclose(fd);
 		unlink(filename);
-		exit(1);
+		pthread_exit((void*)1);
 	}
 
 	/* Close file and exit */
        	fclose(fd);
 	unlink(filename);
-        pthread_exit(NULL);
+        pthread_exit((void*)0);
 }
 
 
