@@ -8,7 +8,6 @@ all: $(TARGETS)
 
 install:
 	cp nfs01 ../../bin
-	mkdir tmp
 
 clean:
 	rm -f $(TARGETS)
