@@ -95,8 +95,8 @@ block1:
 		 */
 		tst_resm(TINFO, "Enter block 1");
 		flag = 0;
-
-		func = 2;
+		ptr=(void *)malloc(10);
+		func = 100;
 		retval = modify_ldt(func, ptr, sizeof(ptr));
 		if (retval < 0) {
 			if (errno != ENOSYS) {
@@ -117,6 +117,7 @@ block1:
 			tst_resm(TINFO, "block 1 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 1");
+		free(ptr);
 
 block2:
 		/*
