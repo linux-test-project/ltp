@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl09.c,v 1.2 2000/08/30 18:43:38 nstraz Exp $ */
+/* $Id: fcntl09.c,v 1.3 2000/09/04 17:25:22 alaffin Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -234,7 +234,7 @@ setup()
     TEST_PAUSE;
 
     sprintf(fname,"./file_%d",getpid());
-    if (creat(fname, 02644) == -1) {
+    if ((fd=creat(fname, 02644)) == -1) {
        tst_brkm(TBROK, cleanup, "creat(%s, 02644) Failed, errno=%d : %s", fname, errno, strerror(errno));
     } else if (close(fd) == -1) {
        tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
