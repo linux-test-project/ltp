@@ -98,6 +98,7 @@ mkdir /test/growfiles/msdos   >/dev/null 2>&1
 mkdir /test/growfiles/reiser  >/dev/null 2>&1  
 mkdir /test/growfiles/minix   >/dev/null 2>&1  
 mkdir /test/growfiles/nfs     >/dev/null 2>&1  
+mkdir /test/growfiles/jfs     >/dev/null 2>&1  
 mkdir /test/growfiles/ramdisk >/dev/null 2>&1  
 
 vgscan
@@ -149,6 +150,8 @@ ${LTPROOT}/../pan/pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/
 
 wait $!
 
+
+
 umount -v -t nfs $nfsmount            
 umount -v /dev/ltp_test_vg1/ltp_test_lv1
 umount -v /dev/ltp_test_vg1/ltp_test_lv2
@@ -165,3 +168,21 @@ lvscan -v
 vgchange -a n
 vgremove -v /dev/ltp_test_vg1
 vgremove -v /dev/ltp_test_vg2
+
+mkfs -V -t ext3     /dev/$part4
+mkfs -V -t jfs /dev/$part1  <yesenter.txt
+
+mount -v -t ext3   /dev/$part4         /test/growfiles/ext3
+mount -v -t jfs    /dev/hdc1           /test/growfiles/jfs
+
+echo "************ Running EXT3 & JFS tests...  " 
+${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part2 > ${TMPBASE}/lvm.part2
+
+${LTPROOT}/../pan/pan -e -S -a lvmpart2 -n lvmpart2 -l lvmlogfile -f ${TMPBASE}/lvm.part2 &
+
+wait $!
+
+umount -v /dev/$part1                      
+umount -v /dev/$part4                      
+
+
