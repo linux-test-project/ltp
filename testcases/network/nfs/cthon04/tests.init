@@ -13,8 +13,8 @@ MNTPOINT="/mnt"
 # Use this mount command if using:
 #	SVR4
 #	Solaris 2.x
-MOUNTCMD='./domount -F nfs -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
-CFSMOUNTCMD='./domount -F cachefs -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
+#MOUNTCMD='./domount -F nfs -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
+#CFSMOUNTCMD='./domount -F cachefs -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
 
 # Use this mount command if using:
 #	BSD
@@ -26,8 +26,8 @@ CFSMOUNTCMD='./domount -F cachefs -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
 #	Mac OS X
 # At least some BSD systems don't recognize "hard" (since that's the
 # default), so you might also want to use this definition of MNTOPTIONS.
-#MNTOPTIONS="rw,intr"
-#MOUNTCMD='./domount -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
+MNTOPTIONS="rw,intr"
+MOUNTCMD='./domount -o $MNTOPTIONS $SERVER\:$SERVPATH $MNTPOINT'
 
 # Use this mount command if using:
 #	DG/UX
@@ -40,8 +40,8 @@ UMOUNTCMD='./domount -u $MNTPOINT'
 #	SVR4
 #	Solaris 2.x
 #	HPUX
-DASHN=
-BLC=\\c
+#DASHN=
+#BLC=\\c
 
 # Use the next two lines if using:
 #	BSD
@@ -49,12 +49,12 @@ BLC=\\c
 #	Linux
 #	Tru64 UNIX
 #	Mac OS X
-#DASHN=-n
-#BLC=
+DASHN=-n
+BLC=
 
 # Use this path for:
 #	Solaris 2.x
-PATH=/opt/SUNWspro/bin:/usr/ccs/bin:/sbin:/bin:/usr/bin:/usr/ucb:/etc:.
+#PATH=/opt/SUNWspro/bin:/usr/ccs/bin:/sbin:/bin:/usr/bin:/usr/ucb:/etc:.
 
 # Use this path for:
 #	Solaris 2.x with GCC
@@ -73,7 +73,7 @@ PATH=/opt/SUNWspro/bin:/usr/ccs/bin:/sbin:/bin:/usr/bin:/usr/ucb:/etc:.
 #	Tru64 UNIX
 #	SVR4
 #	Linux
-#PATH=/bin:/usr/bin:/usr/ucb:/usr/ccs/bin:/sbin:/usr/sbin:.
+PATH=/bin:/usr/bin:/usr/ucb:/usr/ccs/bin:/sbin:/usr/sbin:.
 
 # Use this path for:
 #	DG/UX
@@ -130,12 +130,12 @@ LOCKTESTS=tlock
 
 # Use with Solaris 2.x systems.  Need the 5.0 C compiler (or later)
 # for 64-bit mode.
-CC=/opt/SUNWspro/bin/cc
+#CC=/opt/SUNWspro/bin/cc
 # Use this with GCC
 #CC=/opt/gnu/bin/gcc
 # Use this through Solaris 2.6.  For Solaris 2.7 and later, use
 # this for 32-bit mode applications.
-CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG`
+#CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG`
 # Use this with gcc (32-bit binaries):
 #CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG -mcpu=ultrasparc`
 # For Solaris 2.7 and later, use this for 64-bit mode applications
@@ -143,11 +143,11 @@ CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG`
 #CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG -xO0 -xarch=v9 -dalign -Xt -L/usr/lib/sparcv9`
 # Use this to make 64-bit binaries with gcc (3.1 or later; untested): 
 #CFLAGS=`echo -DSVR4 -DMMAP -DSOLARIS2X -DSTDARG -m64`
-LIBS=`echo -lsocket -lnsl`
+#LIBS=`echo -lsocket -lnsl`
 # Use this through Solaris 2.5.1.
 #LOCKTESTS=`echo tlock`
 # Use with 2.6 and later systems, 32-bit mode.
-LOCKTESTS=`echo tlocklfs tlock64`
+#LOCKTESTS=`echo tlocklfs tlock64`
 # Use with 2.7 and later, 64-bit mode.
 #LOCKTESTS=`echo tlocklfs`
 
@@ -204,11 +204,11 @@ LOCKTESTS=`echo tlocklfs tlock64`
 #UMOUNT=/bin/umount
 
 # Use with Linux 2.4 / GNU libc 2.2
-#CFLAGS=`echo -DLINUX -DGLIBC=22 -DMMAP -DSTDARG -fwritable-strings`
-#LIBS=`echo -lnsl`
-#MOUNT=/bin/mount
-#UMOUNT=/bin/umount
-#LOCKTESTS=`echo tlocklfs tlock64`
+CFLAGS=`echo -DLINUX -DGLIBC=22 -DMMAP -DSTDARG -fwritable-strings`
+LIBS=`echo -lnsl`
+MOUNT=/bin/mount
+UMOUNT=/bin/umount
+LOCKTESTS=`echo tlocklfs tlock64`
 
 # Use with Linux if your distro doesn't provide a "cc".
 #CC=gcc
