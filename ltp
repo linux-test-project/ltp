@@ -89,6 +89,7 @@ kernel()
     read SCRATCHDEV
     export SCRATCHDEV
     cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests
+   fi
   fi
 
   echo -n "Do you want to run the memory managment tests (Y/N)? >> "
