@@ -40,6 +40,8 @@ DAEMON_ID=0
 NOBODY_GRP=0
 BIN_GRP=0
 DAEMON_GRP=0
+USERS_GRP=0
+SYS_GRP=0
 I_AM_ROOT=0
 
 id nobody > /dev/null
@@ -72,12 +74,22 @@ if [ $? != "0" ]; then
  DAEMON_GRP=1
 fi
 
+grep users /etc/group | cut -d: -f1 | grep users > /dev/null
+if [ $? != "0" ]; then
+ USERS_GRP=1
+fi
+
+grep sys /etc/group | cut -d: -f1 | grep sys > /dev/null
+if [ $? != "0" ]; then
+ SYS_GRP=1
+fi
+
 whoami | grep root > /dev/null
 if [ $? == "0" ]; then
  I_AM_ROOT=1
 fi
 
-if [ $NOBODY_ID != "0" ] || [ $BIN_ID != "0" ] || [ $DAEMON_ID != "0" ] || [ $NOBODY_GRP != "0" ] || [ $BIN_GRP != "0" ] || [ $DAEMON_GRP != "0" ] && [ $I_AM_ROOT != "0" ];
+if [ $NOBODY_ID != "0" ] || [ $BIN_ID != "0" ] || [ $DAEMON_ID != "0" ] || [ $NOBODY_GRP != "0" ] || [ $BIN_GRP != "0" ] || [ $DAEMON_GRP != "0" ] || [ $USERS_GRP != "0" ] || [ $SYS_GRP != "0" ] && [ $I_AM_ROOT != "0" ];
 then
    echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
    read ans
@@ -124,6 +136,22 @@ else
   fi
 fi
 
+if [ $USERS_GRP -ne "1" ]; then
+  echo "Users group exists."
+else
+  if [ $CREATE -eq "1" ]; then
+    echo users:x:100: >> /etc/group
+  fi
+fi
+
+if [ $SYS_GRP -ne "1" ]; then
+  echo "Sys group exists."
+else
+  if [ $CREATE -eq "1" ]; then
+    echo sys:x:3: >> /etc/group
+  fi
+fi
+
 id nobody > /dev/null
 if [ $? -eq "0" ]; then
   id bin > /dev/null
@@ -136,8 +164,14 @@ if [ $? -eq "0" ]; then
         if [ $? -eq "0" ]; then
           id -g daemon > /dev/null
           if [ $? -eq "0" ]; then
-            echo "Required users/groups exist."
-            exit 0
+            grep users /etc/group | cut -d: -f1 | grep users > /dev/null
+            if [ $? -eq "0" ]; then
+              grep sys /etc/group | cut -d: -f1 | grep sys > /dev/null
+              if [ $? -eq "0" ]; then
+               echo "Required users/groups exist."
+               exit 0
+              fi
+            fi
           fi
         fi
       fi

@@ -201,6 +201,9 @@ if [ -n "$SCRATCHDEV" ]; then
   cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests
 fi
 
+# check for required users and groups
+${LTPROOT}/IDcheck.sh
+
 # display versions of installed software
 ${LTPROOT}/ver_linux
 
