@@ -90,11 +90,6 @@ usage(char *progname)           /* name of this program                       */
 void *
 alloc_mem(void * args)
 {
-    static int	fib1       = 0;	/* first number in the fibannoci series       */
-    static int  fib2       = 1;	/* second number in the fibanocci series      */
-    static int  fib3       = 1;	/* third number in the fibanocci series       */
-    int  num_alloc  = 0;	/* number of memory chunks allocated          */
-    int  index      = 0;        /* num of and frees to perform                */
     int  loop       = 0;        /* number of times to repeat alloc and free   */
     long **memptr;		/* array of pointers to the memory allocated  */
     long **anchor;		/* save this pointer in anchor                */
@@ -104,10 +99,14 @@ alloc_mem(void * args)
 
     for (loop = 0; loop < (int)locargptr[0]; loop++)
     {
-        fib1 = 0;
-        fib2 = 1;
-        fib3 = 1;
+        int  fib1       = 0;	/* first number in the fibannoci series       */
+        int  fib2       = 1;	/* second number in the fibanocci series      */
+        int  fib3       = 1;	/* third number in the fibanocci series       */
+        int  num_alloc  = 0;	/* number of memory chunks allocated          */
+        int  index      = 0;    /* num of and frees to perform                */
  
+        dprt("pid[%d]: In for loop = %d times\n", getpid(), loop);
+
         if ((anchor = malloc(sizeof(int *))) == NULL)
         {
             perror("do_malloc(): allocating space for anchor malloc()");
@@ -116,23 +115,29 @@ alloc_mem(void * args)
 
         dprt("pid[%d]: loop = %d anchor = %#x\n", getpid(), loop, anchor);
 
-        //while ((*memptr = (int *)malloc(fib3)) != NULL)
         while(FOREVER)
         {
+            dprt("pid[%d]: In for loop = %d\n", getpid(), loop); 
+            dprt("pid[%d]: In while loop = %d\n", getpid(), num_alloc);
             memptr = anchor + num_alloc;
-            if ((*memptr = (int *)malloc(fib3)) != NULL)
+            if ((*memptr = (int *)malloc(fib3)) == NULL)
+            {
+                perror("alloc_mem(): malloc()");
+                fprintf(stdout, "pid[%d]: malloc failed on size %d\n", getpid(),
+			    fib3);
                 break;
-            dprt("pid[%d]: memptr = %#x\n", getpid(), anchor, memptr);
+            }
+
+            dprt("pid[%d]: memptr = %#x\n", getpid(), *memptr);
 
             fib3 = fib2 + fib1;
             fib1 = fib2;
             fib2 = fib3;
 
-            dprt("pid[%d]: fib3 = %d\n", getpid(), fib3);
-       
             num_alloc++;
             **memptr = num_alloc;
             
+            dprt("pid[%d]: malloc size = %d\n", getpid(), fib3);
             dprt("pid[%d]: content of memptr = %d\n", getpid(), **memptr);
             dprt("pid[%d]: number of allocations = %d\n", getpid(), num_alloc);
 
@@ -143,17 +148,23 @@ alloc_mem(void * args)
                 perror("do_malloc(): reallocating space for anchor malloc()");
                 PTHREAD_EXIT(-1);
             }
+            usleep(0);
             dprt("pid[%d]: remalloced anchor = %#x\n", getpid(), anchor);
         }
+
         for (index = 0; index < num_alloc; index++)
         {
-            dprt("pid[%d]: freeing %#x\n", *memptr);
+            dprt("pid[%d]: freeing *memptr %#x\n", getpid(), *memptr);
             free(*memptr);
             memptr--;
+            usleep(0);
         }
 
+        dprt("pid[%d]: freeing anchor %#x\n", getpid(), anchor);
         free(anchor);
+        usleep(0);
     }   
+    fprintf(stdout, "pid[%d]: exiting sucessfully\n", getpid());
     PTHREAD_EXIT(0);
 }
 
@@ -233,7 +244,7 @@ main(int	argc,		/* number of input parameters		      */
         }
     }
     
-    sync();
+    usleep(0);
     th_status = malloc(sizeof(int *));
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
@@ -248,12 +259,13 @@ main(int	argc,		/* number of input parameters		      */
             if ((int)*th_status == -1)
             {
                 fprintf(stderr,
-                        "thread [%d] - process exited with errors\n",
+                        "main(): thread [%d] - process exited with errors\n",
                             thrdid[thrd_ndx]);
                 exit(-1);
             }
-            dprt("thread[%d]: exiting without errors\n", thrd_ndx);
+            dprt("main(): thread[%d]: exiting without errors\n", thrd_ndx);
         }
+        usleep(0);
     }
     exit(0);
 }
