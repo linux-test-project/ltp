@@ -91,7 +91,7 @@ $trace_logic
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
-    echo "Setting up remote machine: $RHOST"
+    tst_resm TINFO "Setting up remote machine: $RHOST"
     rsh -n $RHOST "mkdir -p /mnt/nfs04$PID.testdir"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
     rsh -n $RHOST "touch /mnt/nfs04$PID.testdir/testfile"
@@ -99,8 +99,8 @@ $trace_logic
     rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/mnt/nfs04$PID.testdir"
     [ $? = 0 ] || end_testcase "Could export remote directory"
 
-    echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $SOCKET_TYPE$OPTS"
-    mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
+    tst_resm TINFO "Mounting NFS filesystem"
+    mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp" 
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 }
 
@@ -118,9 +118,13 @@ do_test()
 {
 $trace_logic
   loopcount=0
+  tst_resm TINFO "Test Started"
   while [ $loopcount -lt $LOOPS ]
     do
-	create_file $FILESIZE /tmp/nfs04$PID.testfile 
+	create_file $FILESIZE /tmp/nfs04$PID.testfile >/dev/null
+	if [ $? != 0 ]; then
+		end_testcase "Could not create testfile"
+	fi
 	cp /tmp/nfs04$PID.testfile $TCtmp	
 	diff /tmp/nfs04$PID.testfile $TCtmp
 	retval=$?
@@ -145,14 +149,9 @@ end_testcase()
 {
 $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
-	cd \
-	
-	echo "Cleaning up testcase"
-        cd $HOME
-    	echo "Unmounting $TCtmp"
 	sleep 2
-        umount $TCtmp || error "Cannot umount $TCtmp"
-	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
+        umount $TCtmp || tst_resm TBROK "Cannot umount $TCtmp"
+	rm -rf $TCtmp || tst_resm TBROK "Cannot remove $TCtmp"
         rsh -n $RHOST "/usr/sbin/exportfs -u *:/mnt/nfs04$PID.testdir"
 	rsh -n $RHOST "rm -rf /mnt/nfs04$PID.testdir"
 	rm -f /tmp/nfs04$PID.testfile
