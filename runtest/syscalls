@@ -524,6 +524,10 @@ sched_getparam01 sched_getparam01
 sched_getparam02 sched_getparam02
 sched_getparam03 sched_getparam03
 
+sched_rr_get_interval01 sched_rr_get_interval01
+sched_rr_get_interval02 sched_rr_get_interval02
+sched_rr_get_interval03 sched_rr_get_interval03
+
 sched_setparam01 sched_setparam01
 sched_setparam02 sched_setparam02
 sched_setparam03 sched_setparam03
