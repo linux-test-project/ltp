@@ -23,7 +23,8 @@
 #  USAGE       : sysfs.sh [ -k <kernel_module> ]
 #
 #  DESCRIPTION : A script that will test sysfs on Linux system.
-#  REQUIREMENTS:
+#  REQUIREMENTS: CONFIG_DUMMY must have been used to build kernel, and the 
+#		 dummy network module must exist.
 #
 #  HISTORY     :
 #      06/24/2003 Prakash Narayana (prakashn@us.ibm.com)
