@@ -21,12 +21,17 @@
 
 /******************************************************************************/
 /*			                                                      */
-/* History:	Feb - 21 - 2001 Created - Manoj Iyer, IBM Austin TX.          */
-/*				          email: manjo@austin.ibm.com         */
+/* History:	Feb - 21 - 2002 Created - Manoj Iyer, IBM Austin TX.          */
+/*				          email: manjo@austin.ibm.com.        */
 /*			                                                      */
-/* 		Feb - 25 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
-/*		                - Added structure thread_sched_t              */
-/*				- Added logic to specify scheduling policy    */
+/* 		Feb - 25 - 2002 Modified - Manoj Iyer, IBM Austin TX.         */
+/*		                - Added structure thread_sched_t.             */
+/*				- Added logic to specify scheduling policy.   */
+/*			                                                      */
+/*		Feb - 25 - 2002 Modified - Manoj Iyer, IBM Austin TX.         */
+/*				- Added header file string.h.	              */
+/*				- Removed dead variable ppid from thread_func.*/
+/*				- Fixed date from 2001 to 2002 in History.    */
 /*			                                                      */
 /* File:	trace_sched.c						      */
 /*			                                                      */
