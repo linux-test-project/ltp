@@ -18,7 +18,7 @@
  */
 
 /* 
- * Test Name: chown01
+ * Test Name: chown05
  *
  * Test Description:
  *  Verify that, chown(2) succeeds to change the owner and group of a file
@@ -51,7 +51,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  chown01 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
+ *  chown05 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -e   : Turn on errno logging.
  *             -f   : Turn off functionality Testing.
@@ -81,7 +81,7 @@
 #define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
 
-char *TCID="chown01";		/* Test program identifier.    */
+char *TCID="chown05";		/* Test program identifier.    */
 int TST_TOTAL=5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
