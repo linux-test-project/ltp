@@ -54,6 +54,7 @@
 #include <fcntl.h>
 #include <test.h>
 #include <usctest.h>
+#include <sys/wait.h>
 
 #define	DATA	"ABCDEFGHIJ"
 #define	DUP	0
@@ -69,67 +70,232 @@ static	int	parent_flag, child_flag;
 static	char	tmpname[40];
 struct	flock	flock;
 
-void	child_sig(), parent_sig(), alarm_sig();
-void setup(void);
-void cleanup(void);
-
-main(int ac, char **av)
+/*
+ * cleanup() - performs all ONE TIME cleanup for this test at
+ *	       completion or premature exit.
+ */
+void
+cleanup()
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-	int fail = 0;
+	/* exit with return code appropriate for results */
+	tst_exit();
+}
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+void
+alarm_sig()
+{
+	signal(SIGALRM, (void (*)())alarm_sig);
+	if ((getpid()) == parent) {
+		tst_resm(TINFO, "Alarm caught by parent");
+	} else {
+		tst_resm(TINFO, "Alarm caught by child");
+	}
+}
+
+void
+child_sig()
+{
+	signal(SIGUSR1, (void (*)())child_sig);
+	child_flag++;
+}
+
+void
+parent_sig()
+{
+	signal(SIGUSR2, (void (*)())parent_sig);
+	parent_flag++;
+}
+
+int dochild1(int file_flag, int file_mode)
+{
+	int fd_B;
+
+	if ((fd_B = open(tmpname, file_flag, file_mode)) < 0) {
+		perror("open on child1 file failed");
+		exit(1);
 	}
 
-	setup();
+	/* initialize lock structure for second 5 bytes of file */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = 0;
+	flock.l_start = 5L;
+	flock.l_len = 5L;
 
-	/* Check for looping state if -i option is given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+	/* set lock on child file descriptor */
+	if ((fcntl(fd_B, F_SETLK, &flock)) < 0) {
+		perror("child lock failed should have succeeded");
+		exit(1);
+	}
 
-		/* Set up to catch alarm signal */
-		if ((signal(SIGALRM, alarm_sig)) == SIG_ERR) {
-			perror("SIGALRM signal set up failed");
+	/*
+	 * send signal to parent here to tell parent we have locked the
+	 * file, thus allowing parent to proceed
+	 */
+	if ((kill(parent, SIGUSR1)) < 0) {
+		perror("child1 signal to parent failed");
+		exit(1);
+	}
+
+	/*
+	 * set alarm to break pause if parent fails to signal then spin till
+	 * parent ready
+	 */
+	if (parent_flag == 0) {
+		alarm(60);
+		pause();
+		alarm((unsigned)0);
+		if (parent_flag != 1) {
+			perror("pause in child1 terminated without "
+			       "SIGUSR2 signal from parent");
 			exit(1);
 		}
-
-block1:
-		tst_resm(TINFO, "Entering block 1");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, DUP)) {
-			tst_resm(TINFO, "Test 1: test with \"dup\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 1: test with \"dup\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 1");
-
-block2:
-		tst_resm(TINFO, "Entering block 2");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, OPEN)) {
-			tst_resm(TINFO, "Test 2: test with \"open\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 2: test with \"open\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 2");
-
-block3:
-		tst_resm(TINFO, "Entering block 3");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, FORK_)) {
-			tst_resm(TINFO, "Test 3: test with \"fork\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 3: test with \"fork\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 3");
 	}
-	cleanup();
+	/* wait for child2 to complete then cleanup */
+	sleep(10);
+	close(fd_B);
+	exit(0);
 }
+
+int dofork(int file_flag, int file_mode)
+{
+	/* create child process */
+	if ((child1 = fork()) < 0) {
+		perror("Fork failure");
+		return(1);
+	}
+
+	/* child1 */
+	if (child1 == 0) {
+		dochild1(file_flag, file_mode);
+	} else {
+		/*
+		 * need to wait for child1 to open, and lock the area of the
+		 * file prior to continuing on from here
+		 */
+		if (child_flag == 0) {
+			alarm(60);
+			pause();
+			alarm((unsigned)0);
+			if (child_flag == 0) {
+				perror("parent paused without SIGUSR1 "
+				       "from child");
+				return(1);
+			}
+			child_flag = 0;	/* reset the child flag for child2 */
+		}
+	}
+	return(0);
+}
+
+int dochild2(int file_flag, int file_mode, int dup_flag)
+{
+	int fd_C;
+
+	if ((fd_C = open(tmpname, file_flag, file_mode)) < 0) {
+		perror("open on child2 file failed");
+		exit(1);
+	}
+
+	/* initialize lock structure for first 5 bytes of file */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = 0;
+	flock.l_start = 0L;
+	flock.l_len = 5L;
+
+	/* Set lock on child file descriptor */
+	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
+		tst_resm(TFAIL, "First child2 lock succeeded should "
+			 "have failed");
+		exit(1);
+	}
+
+	/* initialize lock structure for second 5 bytes of file */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = 0;
+	flock.l_start = 5L;
+	flock.l_len = 5L;
+
+	/* set lock on child file descriptor */
+	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
+		tst_resm(TFAIL, "second child2 lock succeeded should have "
+			 "failed");
+		exit(1);
+	}
+
+	/* send signal to parent */
+	if ((kill(parent, SIGUSR1)) < 0) {
+		perror("signal to parent failed");
+		exit(1);
+	}
+
+	/* spin until parent signals or alarm runs out */
+	if (parent_flag == 0) {
+		alarm(60);
+		pause();
+		alarm((unsigned)0);
+		if (parent_flag != 1) {
+			tst_resm(TFAIL, "pause in child2 terminated "
+				 "without signal from parent");
+			exit(1);
+		}
+	}
+
+	/* initialize lock structure for first 5 bytes of file */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = 0;
+	flock.l_start = 0L;
+	flock.l_len = 5L;
+
+	/* set lock on child file descriptor */
+	if ((fcntl(fd_C, F_SETLK, &flock)) < 0) {
+		tst_resm(TFAIL, "third child2 lock failed should have "
+			 "succeeded");
+		exit(1);
+	}
+
+	/* Initialize lock structure for second 5 bytes of file */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = 0;
+	flock.l_start = 5L;
+	flock.l_len = 5L;
+
+	/* set lock on child file descriptor */
+	if (dup_flag == FORK_) {
+		if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
+			tst_resm(TFAIL, "fourth child2 lock succeeded "
+				 "should have failed");
+			exit(1);
+		}
+	} else {
+		if ((fcntl(fd_C, F_SETLK, &flock)) < 0) {
+			tst_resm(TFAIL, "fourth child2 lock failed "
+				 "should have succeeded");
+			exit(1);
+		}
+	}
+	close(fd_C);
+	exit(0);
+}
+
+/*
+ * setup() - performs all ONE TIME setup for this test.
+ */
+void
+setup()
+{
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}
+
 
 int
 run_test(int file_flag, int file_mode, int dup_flag)
@@ -272,229 +438,61 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	return(0);
 }
 
-void
-alarm_sig()
+int main(int ac, char **av)
 {
-	signal(SIGALRM, (void (*)())alarm_sig);
-	if ((getpid()) == parent) {
-		tst_resm(TINFO, "Alarm caught by parent");
-	} else {
-		tst_resm(TINFO, "Alarm caught by child");
-	}
-}
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
 
-void
-child_sig()
-{
-	signal(SIGUSR1, (void (*)())child_sig);
-	child_flag++;
-}
+	int fail = 0;
 
-void
-parent_sig()
-{
-	signal(SIGUSR2, (void (*)())parent_sig);
-	parent_flag++;
-}
-
-dofork(int file_flag, int file_mode)
-{
-	/* create child process */
-	if ((child1 = fork()) < 0) {
-		perror("Fork failure");
-		return(1);
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	/* child1 */
-	if (child1 == 0) {
-		dochild1(file_flag, file_mode);
-	} else {
-		/*
-		 * need to wait for child1 to open, and lock the area of the
-		 * file prior to continuing on from here
-		 */
-		if (child_flag == 0) {
-			alarm(60);
-			pause();
-			alarm((unsigned)0);
-			if (child_flag == 0) {
-				perror("parent paused without SIGUSR1 "
-				       "from child");
-				return(1);
-			}
-			child_flag = 0;	/* reset the child flag for child2 */
-		}
-	}
-}
+	setup();
 
-dochild1(int file_flag, int file_mode)
-{
-	int fd_B;
+	/* Check for looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
-	if ((fd_B = open(tmpname, file_flag, file_mode)) < 0) {
-		perror("open on child1 file failed");
-		exit(1);
-	}
-
-	/* initialize lock structure for second 5 bytes of file */
-	flock.l_type = F_WRLCK;
-	flock.l_whence = 0;
-	flock.l_start = 5L;
-	flock.l_len = 5L;
-
-	/* set lock on child file descriptor */
-	if ((fcntl(fd_B, F_SETLK, &flock)) < 0) {
-		perror("child lock failed should have succeeded");
-		exit(1);
-	}
-
-	/*
-	 * send signal to parent here to tell parent we have locked the
-	 * file, thus allowing parent to proceed
-	 */
-	if ((kill(parent, SIGUSR1)) < 0) {
-		perror("child1 signal to parent failed");
-		exit(1);
-	}
-
-	/*
-	 * set alarm to break pause if parent fails to signal then spin till
-	 * parent ready
-	 */
-	if (parent_flag == 0) {
-		alarm(60);
-		pause();
-		alarm((unsigned)0);
-		if (parent_flag != 1) {
-			perror("pause in child1 terminated without "
-			       "SIGUSR2 signal from parent");
+		/* Set up to catch alarm signal */
+		if ((signal(SIGALRM, alarm_sig)) == SIG_ERR) {
+			perror("SIGALRM signal set up failed");
 			exit(1);
 		}
-	}
-	/* wait for child2 to complete then cleanup */
-	sleep(10);
-	close(fd_B);
-	exit(0);
-}
 
-dochild2(int file_flag, int file_mode, int dup_flag)
-{
-	int fd_C;
-
-	if ((fd_C = open(tmpname, file_flag, file_mode)) < 0) {
-		perror("open on child2 file failed");
-		exit(1);
-	}
-
-	/* initialize lock structure for first 5 bytes of file */
-	flock.l_type = F_WRLCK;
-	flock.l_whence = 0;
-	flock.l_start = 0L;
-	flock.l_len = 5L;
-
-	/* Set lock on child file descriptor */
-	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
-		tst_resm(TFAIL, "First child2 lock succeeded should "
-			 "have failed");
-		exit(1);
-	}
-
-	/* initialize lock structure for second 5 bytes of file */
-	flock.l_type = F_WRLCK;
-	flock.l_whence = 0;
-	flock.l_start = 5L;
-	flock.l_len = 5L;
-
-	/* set lock on child file descriptor */
-	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
-		tst_resm(TFAIL, "second child2 lock succeeded should have "
-			 "failed");
-		exit(1);
-	}
-
-	/* send signal to parent */
-	if ((kill(parent, SIGUSR1)) < 0) {
-		perror("signal to parent failed");
-		exit(1);
-	}
-
-	/* spin until parent signals or alarm runs out */
-	if (parent_flag == 0) {
-		alarm(60);
-		pause();
-		alarm((unsigned)0);
-		if (parent_flag != 1) {
-			tst_resm(TFAIL, "pause in child2 terminated "
-				 "without signal from parent");
-			exit(1);
+//block1:
+		tst_resm(TINFO, "Entering block 1");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, DUP)) {
+			tst_resm(TINFO, "Test 1: test with \"dup\" FAILED");
+			fail = 1;
+		} else {
+			tst_resm(TINFO, "Test 1: test with \"dup\" PASSED");
 		}
-	}
+		tst_resm(TINFO, "Exiting block 1");
 
-	/* initialize lock structure for first 5 bytes of file */
-	flock.l_type = F_WRLCK;
-	flock.l_whence = 0;
-	flock.l_start = 0L;
-	flock.l_len = 5L;
-
-	/* set lock on child file descriptor */
-	if ((fcntl(fd_C, F_SETLK, &flock)) < 0) {
-		tst_resm(TFAIL, "third child2 lock failed should have "
-			 "succeeded");
-		exit(1);
-	}
-
-	/* Initialize lock structure for second 5 bytes of file */
-	flock.l_type = F_WRLCK;
-	flock.l_whence = 0;
-	flock.l_start = 5L;
-	flock.l_len = 5L;
-
-	/* set lock on child file descriptor */
-	if (dup_flag == FORK_) {
-		if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
-			tst_resm(TFAIL, "fourth child2 lock succeeded "
-				 "should have failed");
-			exit(1);
+//block2:
+		tst_resm(TINFO, "Entering block 2");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, OPEN)) {
+			tst_resm(TINFO, "Test 2: test with \"open\" FAILED");
+			fail = 1;
+		} else {
+			tst_resm(TINFO, "Test 2: test with \"open\" PASSED");
 		}
-	} else {
-		if ((fcntl(fd_C, F_SETLK, &flock)) < 0) {
-			tst_resm(TFAIL, "fourth child2 lock failed "
-				 "should have succeeded");
-			exit(1);
+		tst_resm(TINFO, "Exiting block 2");
+
+//block3:
+		tst_resm(TINFO, "Entering block 3");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, FORK_)) {
+			tst_resm(TINFO, "Test 3: test with \"fork\" FAILED");
+			fail = 1;
+		} else {
+			tst_resm(TINFO, "Test 3: test with \"fork\" PASSED");
 		}
+		tst_resm(TINFO, "Exiting block 3");
 	}
-	close(fd_C);
-	exit(0);
+	cleanup();
+	return(0);
 }
-
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void
-setup()
-{
-	/* capture signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Pause if that option was specified */
-	TEST_PAUSE;
-}
-
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void
-cleanup()
-{
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}
-

@@ -541,9 +541,6 @@ char *TCID = "fcntl14";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;		/* Test case counter */
 
-void setup(void);
-void cleanup(void);
-
 
 /*
  * cleanup()
