@@ -60,14 +60,24 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
+ *      11/09/2001 Manoj Iyer (manjo@austin.ibm.com)
+ *      Modified.
+ *      - #include <linux/mman.h> should not be included as per man page for
+ *        mremap, #include <sys/mman.h> alone should do the job. But inorder
+ *        to include definition of MREMAP_MAYMOVE defined in bits/mman.h
+ *        (included by sys/mman.h) __USE_GNU needs to be defined.
+ *        There may be a more elegant way of doing this...
+ *
+ *
  * RESTRICTIONS:
  *  None.
  */
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#define __USE_GNU
 #include <sys/mman.h>
-#include <linux/mman.h>
+#undef __USE_GNU
 
 #include "test.h"
 #include "usctest.h"
