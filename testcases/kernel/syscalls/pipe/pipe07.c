@@ -84,8 +84,7 @@ int main(int ac, char **av)
         /* Get the currently used number of file descriptors */
 	mypid=getpid();
 	cmdstring=malloc(sizeof(cmdstring));
-	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l > current_fd_count",mypid);
-	sleep(1); /* Added this line to avoid compiler bug */
+	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'}> current_fd_count",mypid);
 	if (system(cmdstring) == 0)
 	{
 		f = fopen("./current_fd_count", "r");	
