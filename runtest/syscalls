@@ -632,8 +632,12 @@ setdomainname02	setdomainname02
 setdomainname03	setdomainname03
 
 setfsgid01 setfsgid01
+setfsgid02 setfsgid02
+setfsgid03 setfsgid03
 
 setfsuid01 setfsuid01
+setfsuid02 setfsuid02
+setfsuid03 setfsuid03
 
 setgid01 setgid01
 setgid02 setgid02
