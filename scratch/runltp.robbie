@@ -239,8 +239,8 @@ execute_ltp()
     then 
 	display_info_msg "Executing LTP testcases" \
 	    "The testcases must to be compiled inorder\
-	     to execute them. Returning to main menu. \
-	     Please select the Compile option." 
+       to execute them. Returning to main menu. \
+       Please select the Compile option." 
 	return
     fi 
 
