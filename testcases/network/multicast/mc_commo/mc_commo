@@ -48,7 +48,7 @@ PORT=3333
 RHOST=${RHOST:-`hostname`}
 OUTFILE=$TCtmp/mc_commo_out
 NUMLOOPS=${NUMLOOPS:-2}
-INTERFACE=${INTERFACE:-$(host `hostname`|awk '{ print $4 }'|cut -d\, -f1)}
+INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')}
 
 this_file=${0##*/}
 trap "interrupt_test" 2
