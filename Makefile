@@ -26,13 +26,7 @@
 # in the commandline and in the Makefiles use a dummy variable like in
 # CFLAGS
 
-NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),)
 export CFLAGS+= -Wall $(CROSS_CFLAGS)
-else
-export CFLAGS+= -Wall $(CROSS_CFLAGS) -DUSE_NPTL
-endif
-
 
 all: libltp.a 
 	@$(MAKE) -C pan $@
