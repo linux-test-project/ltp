@@ -1,0 +1,285 @@
+/******************************************************************************/
+/*                                                                            */
+/* Copyright (c) International Business Machines  Corp., 2001                 */
+/*                                                                            */
+/* This program is free software;  you can redistribute it and/or modify      */
+/* it under the terms of the GNU General Public License as published by       */
+/* the Free Software Foundation; either version 2 of the License, or          */
+/* (at your option) any later version.                                        */
+/*                                                                            */
+/* This program is distributed in the hope that it will be useful,            */
+/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
+/* the GNU General Public License for more details.                           */
+/*                                                                            */
+/* You should have received a copy of the GNU General Public License          */
+/* along with this program;  if not, write to the Free Software               */
+/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
+/*                                                                            */
+/******************************************************************************/
+
+/*
+ * File:        ltpapicmd.c
+ *
+ * Description: This program impliments a command line version of some of the 
+ *              LTP harness API's. This will enable tests written in shell and 
+ *              other scripts to report problems and log results in the LTP 
+ *              harness format. The intent is to have a common format in which
+ *              the C tests and tests written in scripts report results in
+ *              a common format.
+ *
+ *              The following LTP API's are available currently in command line
+ *              form:
+ *              tst_brk   - Print result message and break remaining test cases 
+ *              tst_brkm  - Print result message, including file contents, and
+ *                          break remaining test cases 
+ *              tst_res   - Print result message, including file contents
+ *              tst_resm  - Print result message 
+ *              tst_flush - Print any messages pending because of CONDENSE mode,
+ *                          and flush output stream 
+ *              tst_exit - Exit test with a meaningful exit value 
+ *
+ *              These are the minimum set of functions or commands required to
+ *              report results.
+ *
+ * Exit:        All commands exit with 
+ *               0   - on success
+ *              -1  - on failure
+ *
+ * History
+ * Dec 10 2002 - Created - Manoj Iyer manjo@mail.utexas.edu
+ */
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "test.h"
+#include "usctest.h"
+
+char *TCID;             /* Name of the testcase                               */
+int TST_TOTAL;          /* Total number of testcases                          */
+extern int Tst_count;   /* running cnt of num test results reported so far    */
+
+/*
+ * Function: Cleanup
+ *
+ * Description: dummy does nothing
+ */
+void
+cleanup()
+{
+}
+
+
+/*
+ * Function:    ident_ttype - Return test result type.
+ *
+ * Description: This function will return the test result type, it actually
+ *              the string that is entered by the user to an integer value that
+ *              is understood by the API's.
+ *
+ * Return:      test type TPASS, TFAIL, TBROK, TCONF, TRETR, TWARN, or TINFO 
+ *              on success
+ *              -1 on failure
+ */
+int 
+ident_ttype(char *tstype)   /* test result type one of TPASS, TFAIL, etc      */
+{
+    if (strcmp(tstype, "TBROK") == 0)
+        return TBROK;
+    else
+        if (strcmp(tstype, "TFAIL") == 0)
+            return TFAIL;
+    else
+        if (strcmp(tstype, "TPASS") == 0)
+            return TPASS;
+    else
+        if (strcmp(tstype, "TCONF") == 0)
+            return TCONF;
+    else
+        if (strcmp(tstype, "TRETR") == 0)
+            return TRETR;
+    else
+        if (strcmp(tstype, "TWARN") == 0)
+            return TWARN;
+    else
+        if (strcmp(tstype, "TINFO") == 0)
+            return TINFO;
+    else
+            return -1;
+}
+
+
+/*
+ * Function:    main - entry point of this program
+ *
+ * Description: Parses the arguments to each command. Most commands have in
+ *              common atlest 2 arguments, type of test result, which is one of
+ *              TPASS, TFAIL, TBROK, TCONF, etc, and a message that describes
+ *              the result. Other arguments are a file, the contents of which
+ *              are printed after the type of test result and associated message
+ *              is printed, also a cleanup function that will be executed.
+ *              Currently this function name is ignored but MUST be provided 
+ *              for compatability reasons. 
+ *
+ *              The different commands are actually a hard link to this program
+ *              the program invokes the appropriate function based on the
+ *              command name with which it was invoked.
+ *              
+ * Exit:        0 on success
+ *              -1 on failure
+ */
+main( int argc,
+      char *argv[])
+{
+    int trestype;
+    char *arg_fmt;
+    char *cmd_name;
+    char *testdir;
+    char *tst_total;
+    char *file_name;
+
+    arg_fmt = malloc(1024);
+    cmd_name = malloc(1024);
+    testdir = malloc(1024);
+
+    if ((TCID = getenv("TCID")) == NULL)
+    {
+        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+        exit(-1);
+    }
+        
+    if ((tst_total = getenv("TST_TOTAL")) == NULL)
+    {
+         fprintf(stderr, "Variable TST_TOTAL not set, TST_TOTAL=<num tests>\n");
+         exit(-1);
+    }
+
+    TST_TOTAL = atoi(tst_total);
+
+    if (strcmp(TCID, " ") == 0)
+    {
+        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+        exit(-1);
+    }
+    if (TST_TOTAL == 0)
+    {
+        fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+        exit(-1);
+    }
+
+    strcpy(cmd_name, (char *)basename(argv++[0]));
+
+    if (strcmp((char *)cmd_name, "tst_brk") == 0)
+    {
+        if (argc < 5)
+        {
+            fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tFNAME  - Print contents of this file after the message\n"
+            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        file_name = argv++[0];
+        argv++;
+        strcpy(arg_fmt, *argv);
+        tst_brk(trestype, file_name, cleanup, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_res") == 0)
+    {
+        if (argc < 4)
+        {
+            fprintf(stderr, "Usage: %s TTYPE FNAME STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tFNAME  - Print contents of this file after the message\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        file_name = argv++[0];
+        strcpy(arg_fmt, *argv);
+        tst_res(trestype, file_name, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_brkloop") == 0)
+    {
+        if (argc < 5)
+        {
+            fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tFNAME  - Print contents of this file after the message\n"
+            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        file_name = argv++[0];
+        argv++;
+        strcpy(arg_fmt, *argv);
+        tst_brkloop(trestype, file_name, cleanup, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_brkm") == 0)
+    {
+        if (argc < 4)
+        {
+            fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        argv++;
+        strcpy(arg_fmt, *argv);
+        tst_brkm(trestype, cleanup, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_resm") == 0)
+    {
+        if (argc < 3)
+        {
+            fprintf(stderr, "Usage: %s TTYPE STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        strcpy(arg_fmt, *argv);
+        tst_resm(trestype, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_brkloopm") == 0)
+    {
+        if (argc < 4)
+        {
+            fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
+            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
+            "and  TRETR.\n"
+            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+            "\tSTRING - Message explaining the test result\n", cmd_name);
+            exit (-1);
+        }
+        trestype = ident_ttype(argv++[0]);
+        argv++;
+        strcpy(arg_fmt, *argv);
+        tst_brkloopm(trestype, cleanup, arg_fmt);
+    }
+    else
+    if (strcmp((char *)cmd_name, "tst_exit") == 0)
+        tst_exit();
+    else
+    if (strcmp((char *)cmd_name, "tst_flush") == 0)
+        tst_flush();
+
+    exit(0);
+}
