@@ -121,7 +121,7 @@ main(int argc, char **argv)
 		 }
 
 		 /* Load first kernel module */
-        if( sprintf(cmd, "/sbin/insmod %s.ko", DUMMY_MOD) <= 0) {
+        if( sprintf(cmd, "/sbin/insmod/tmp/%s.ko", DUMMY_MOD) <= 0) {
                 tst_resm(TBROK, "sprintf failed");
                 return 1;
         }
@@ -131,7 +131,7 @@ main(int argc, char **argv)
         }
 
 		 /* Load dependant kernel module */
-        if( sprintf(cmd, "/sbin/insmod %s.ko", DUMMY_MOD_DEP) <= 0) {
+        if( sprintf(cmd, "/sbin/insmod/tmp/%s.ko", DUMMY_MOD_DEP) <= 0) {
                 tst_resm(TBROK, "sprintf failed");
                 goto END;
         }

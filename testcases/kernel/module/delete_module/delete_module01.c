@@ -104,7 +104,7 @@ main(int argc, char **argv)
 		 		 Tst_count = 0;
 
 		 		 // Execute system call
-		 		 sprintf(cmd, "/sbin/insmod %s.ko", module_name);
+		 		 sprintf(cmd, "/sbin/insmod/tmp/%s.ko", module_name);
                                                                               
 		 		 // Insmod the module
 		 		 if ( (system( cmd )) != 0 ) {

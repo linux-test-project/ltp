@@ -24,6 +24,7 @@ LOADLIBES+=		 -L../../../../lib -lltp
 
 obj-m := dummy_del_mod.o dummy_del_mod_dep.o
 TARGETS=delete_module01 delete_module02 delete_module03
+MODULES=dummy_del_mod.ko dummy_del_mod_dep.ko
 
 all: $(TARGETS)
 		 make -C $(MODCFLAGS) SUBDIRS=`pwd` modules
@@ -40,10 +41,12 @@ delete_module03: delete_module03.c
 
 install:
 		 @set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+		 @set -e; for i in $(MODULES); do ln -f $$i /tmp/$$i ; done
 
 clean:
 		 rm -f $(TARGETS)
 		 rm -rf .tmp_versions
+		 rm -f /tmp/dummy*.ko
 		 rm -f .dummy*
 		 rm -f *.o
 		 rm -f *.ko
