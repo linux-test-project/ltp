@@ -747,6 +747,8 @@ symlink05 symlink05
 sync01 sync01
 sync02 sync02
 
+syscall01 syscall01
+
 sysconf01 sysconf01
 
 sysctl01 sysctl01
