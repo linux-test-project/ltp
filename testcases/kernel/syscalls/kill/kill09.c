@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill09.c,v 1.2 2003/09/24 14:41:10 robbiew Exp $ */
+/* $Id: kill09.c,v 1.3 2003/10/01 15:31:32 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -226,6 +226,9 @@ setup()
 {
     /* capture signals */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+    /* Change SIGCHLD to SIG_IGN to remove possible race condition */
+    (void) signal(SIGCHLD, SIG_IGN);
 
     /* Pause if that option was specified */
     TEST_PAUSE;
