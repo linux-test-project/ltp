@@ -262,7 +262,11 @@ dotest(key_t key)
 	}
 	tst_resm(TINFO, "\tmaxvals checked\n");
 
-	if (semctl(id, 0, IPC_RMID, 0) < 0) {
+	/* 4th arg must either be missing, or must be of type 'union semun'.
+	 * CANNOT just be an int, else it crashes on ppc.
+	 */
+	get_arr.val = 0;
+	if (semctl(id, 0, IPC_RMID, get_arr) < 0) {
 		tst_resm(TFAIL, "\tsemctl(IPC_RMID) failed errno %d\n", errno);
 		local_flag = FAILED;
 	}
@@ -322,7 +326,12 @@ term(int sig)
 	}
 
 	if (procstat == 1) {
-		(void)semctl(tid, 0, IPC_RMID, 0);
+		/* 4th arg must either be missing, or must be of type 'union semun'.
+		 * CANNOT just be an int, else it crashes on ppc.
+		 */
+		union semun arg;
+		arg.val = 0;
+		(void)semctl(tid, 0, IPC_RMID, arg);
 		exit(1);
 	}
 
