@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # Prompt user if ids/groups should be created
+clear
+echo "Checking for required user/group ids"
+echo ""
 echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
 read ans
 case $ans in
