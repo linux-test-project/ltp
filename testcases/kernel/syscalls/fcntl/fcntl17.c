@@ -44,8 +44,11 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
-#include <test.h>
-#include <usctest.h>
+#include <wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include "test.h"
+#include "usctest.h"
 
 char *TCID = "fcntl17";
 int TST_TOTAL = 1;
@@ -88,178 +91,7 @@ void catch_child();
 void catch_alarm();
 char *str_type();
 
-main(int ac, char **av)
-{
-	int ans;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int fail = 0;
-
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
-
-	if (setup()) {			/* global testup */
-		tst_resm(TINFO, "setup failed");
-		cleanup();
-		/*NOTREACHED*/
-	}
-
-	/* check for looping state if -i option is given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-preparation:
-		tst_resm(TINFO, "Enter preparation phase");
-		if ((child_pid1 = fork()) == 0) {	/* first child */
-			do_child1();
-		} else if (child_pid1 < 0) {
-			perror("Fork failed: child 1");
-			cleanup();
-			/*NOTREACHED*/
-		}
-
-		/* parent */
-
-		if ((child_pid2 = fork()) == 0) {	/* second child */
-			do_child2();
-		} else if (child_pid2 < 0) {
-			perror("Fork failed: child 2");
-			if ((kill(child_pid1, SIGKILL)) < 0) {
-				tst_resm(TFAIL, "Attempt to signal child "
-					 "1 failed");
-			}
-			cleanup();
-			/*NOTREACHED*/
-		}
-
-		/* parent */
-
-		if ((child_pid3 = fork()) == 0) {	/* third child */
-			do_child3();
-		} else if (child_pid3 < 0) {
-			perror("Fork failed: child 3");
-			if ((kill(child_pid1, SIGKILL)) < 0) {
-				tst_resm(TFAIL, "Attempt to signal child "
-					 "1 failed");
-			}
-			if ((kill(child_pid2, SIGKILL)) < 0) {
-				tst_resm(TFAIL, "Attempt to signal child 2 "
-					 "failed");
-			}
-			cleanup();
-			/*NOTREACHED*/
-		}
-		/* parent */
-
-		close(parent_pipe[1]);
-		close(child_pipe1[0]);
-		close(child_pipe2[0]);
-		close(child_pipe3[0]);
-		tst_resm(TINFO, "Exit preparation phase");
-
-block1:
-		tst_resm(TINFO, "Enter block 1");
-		fail = 0;
-		/*
-		 * child 1 puts first lock (bytes 2-7)
-		 */
-		child_free(child_pipe1[1], 0);
-		if (parent_wait()) {
-			tst_resm(TFAIL, "didn't set first child's lock, "
-				 "errno: %d", errno);
-		}
-		if (do_test(&lock1, child_pid1)) {
-			tst_resm(TINFO, "do_test failed child 1");
-			fail = 1;
-		}
-
-		/*
-		 * child 2 puts second lock (bytes 9-14)
-		 */
-		child_free(child_pipe2[1], 0);
-		if (parent_wait()) {
-			tst_resm(TINFO, "didn't set second child's lock, "
-				 "errno: %d", errno);
-			fail = 1;
-		}
-		if (do_test(&lock2, child_pid2)) {
-			tst_resm(TINFO, "do_test failed child 2");
-			fail = 1;
-		}
-
-		/*
-		 * child 3 puts third lock (bytes 17-22)
-		 */
-		child_free(child_pipe3[1], 0);
-		if (parent_wait()) {
-			tst_resm(TFAIL, "didn't set third child's lock, "
-				 "errno: %d", errno);
-			fail = 1;
-		}
-		if (do_test(&lock3, child_pid3)) {
-			tst_resm(TINFO, "do_test failed child 3");
-			fail = 1;
-		}
-
-		/*
-		 * child 2 tries to lock same range as
-		 * child 3's first lock.
-		 */
-		child_free(child_pipe2[1], 0);
-
-		/*
-		 * child 3 tries to lock same range as
-		 * child 1 and child 2's first locks.
-		 */
-		child_free(child_pipe3[1], 0);
-
-		/*
-		 * Tell child 1 to release its lock. This should cause a
-		 * delayed deadlock between child 2 and child 3.
-		 */
-		child_free(child_pipe1[1], 0);
-
-		/*
-		 * Setup an alarm to go off in case the deadlock is not
-		 * detected
-		 */
-		alarm(TIME_OUT);
-
-		/*
-		 * should get a message from child 3 telling that its
-		 * second lock EDEADLOCK
-		 */
-		if ((ans = parent_wait()) != EDEADLK) {
-			tst_resm(TFAIL, "child 2 didn't deadlock, "
-				 "returned: %d", ans);
-			fail = 1;
-		}
-
-		/*
-		 * Double check that lock 2 and lock 3 are still right
-		 */
-		do_test(&lock2, child_pid2);
-		do_test(&lock3, child_pid3);
-
-		stop_children();
-		close(file_fd);
-		if (fail) {
-			tst_resm(TINFO, "Block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "Block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
-	}
-	waitpid(child_pid1, &child_stat, 0);
-	waitpid(child_pid2, &child_stat, 0);
-	waitpid(child_pid3, &child_stat, 0);
-	cleanup();
-}
-
-setup()
+int setup()
 {
 	char *buf = STRING;
 
@@ -326,8 +158,6 @@ cleanup()
 void
 do_child1()
 {
-	struct flock fl;
-
 	close(parent_pipe[0]);
 	close(child_pipe1[1]);
 	close(child_pipe2[0]);
@@ -352,8 +182,6 @@ do_child1()
 void
 do_child2()
 {
-	struct flock fl;
-
 	close(parent_pipe[0]);
 	close(child_pipe1[0]);
 	close(child_pipe1[1]);
@@ -482,7 +310,7 @@ parent_free(int arg)
 	}
 }
 
-parent_wait()
+int parent_wait()
 {
 	int arg;
 
@@ -553,3 +381,175 @@ catch_alarm()
 	cleanup();
 	/*NOTREACHED*/
 }
+
+int main(int ac, char **av)
+{
+	int ans;
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
+	int fail = 0;
+
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	if (setup()) {			/* global testup */
+		tst_resm(TINFO, "setup failed");
+		cleanup();
+		/*NOTREACHED*/
+	}
+
+	/* check for looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+		tst_resm(TINFO, "Enter preparation phase");
+		if ((child_pid1 = fork()) == 0) {	/* first child */
+			do_child1();
+		} else if (child_pid1 < 0) {
+			perror("Fork failed: child 1");
+			cleanup();
+			/*NOTREACHED*/
+		}
+
+		/* parent */
+
+		if ((child_pid2 = fork()) == 0) {	/* second child */
+			do_child2();
+		} else if (child_pid2 < 0) {
+			perror("Fork failed: child 2");
+			if ((kill(child_pid1, SIGKILL)) < 0) {
+				tst_resm(TFAIL, "Attempt to signal child "
+					 "1 failed");
+			}
+			cleanup();
+			/*NOTREACHED*/
+		}
+
+		/* parent */
+
+		if ((child_pid3 = fork()) == 0) {	/* third child */
+			do_child3();
+		} else if (child_pid3 < 0) {
+			perror("Fork failed: child 3");
+			if ((kill(child_pid1, SIGKILL)) < 0) {
+				tst_resm(TFAIL, "Attempt to signal child "
+					 "1 failed");
+			}
+			if ((kill(child_pid2, SIGKILL)) < 0) {
+				tst_resm(TFAIL, "Attempt to signal child 2 "
+					 "failed");
+			}
+			cleanup();
+			/*NOTREACHED*/
+		}
+		/* parent */
+
+		close(parent_pipe[1]);
+		close(child_pipe1[0]);
+		close(child_pipe2[0]);
+		close(child_pipe3[0]);
+		tst_resm(TINFO, "Exit preparation phase");
+
+//block1:
+		tst_resm(TINFO, "Enter block 1");
+		fail = 0;
+		/*
+		 * child 1 puts first lock (bytes 2-7)
+		 */
+		child_free(child_pipe1[1], 0);
+		if (parent_wait()) {
+			tst_resm(TFAIL, "didn't set first child's lock, "
+				 "errno: %d", errno);
+		}
+		if (do_test(&lock1, child_pid1)) {
+			tst_resm(TINFO, "do_test failed child 1");
+			fail = 1;
+		}
+
+		/*
+		 * child 2 puts second lock (bytes 9-14)
+		 */
+		child_free(child_pipe2[1], 0);
+		if (parent_wait()) {
+			tst_resm(TINFO, "didn't set second child's lock, "
+				 "errno: %d", errno);
+			fail = 1;
+		}
+		if (do_test(&lock2, child_pid2)) {
+			tst_resm(TINFO, "do_test failed child 2");
+			fail = 1;
+		}
+
+		/*
+		 * child 3 puts third lock (bytes 17-22)
+		 */
+		child_free(child_pipe3[1], 0);
+		if (parent_wait()) {
+			tst_resm(TFAIL, "didn't set third child's lock, "
+				 "errno: %d", errno);
+			fail = 1;
+		}
+		if (do_test(&lock3, child_pid3)) {
+			tst_resm(TINFO, "do_test failed child 3");
+			fail = 1;
+		}
+
+		/*
+		 * child 2 tries to lock same range as
+		 * child 3's first lock.
+		 */
+		child_free(child_pipe2[1], 0);
+
+		/*
+		 * child 3 tries to lock same range as
+		 * child 1 and child 2's first locks.
+		 */
+		child_free(child_pipe3[1], 0);
+
+		/*
+		 * Tell child 1 to release its lock. This should cause a
+		 * delayed deadlock between child 2 and child 3.
+		 */
+		child_free(child_pipe1[1], 0);
+
+		/*
+		 * Setup an alarm to go off in case the deadlock is not
+		 * detected
+		 */
+		alarm(TIME_OUT);
+
+		/*
+		 * should get a message from child 3 telling that its
+		 * second lock EDEADLOCK
+		 */
+		if ((ans = parent_wait()) != EDEADLK) {
+			tst_resm(TFAIL, "child 2 didn't deadlock, "
+				 "returned: %d", ans);
+			fail = 1;
+		}
+
+		/*
+		 * Double check that lock 2 and lock 3 are still right
+		 */
+		do_test(&lock2, child_pid2);
+		do_test(&lock3, child_pid3);
+
+		stop_children();
+		close(file_fd);
+		if (fail) {
+			tst_resm(TINFO, "Block 1 FAILED");
+		} else {
+			tst_resm(TINFO, "Block 1 PASSED");
+		}
+		tst_resm(TINFO, "Exit block 1");
+	}
+	waitpid(child_pid1, &child_stat, 0);
+	waitpid(child_pid2, &child_stat, 0);
+	waitpid(child_pid3, &child_stat, 0);
+	cleanup();
+	return(0);
+}
+

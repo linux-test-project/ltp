@@ -34,15 +34,16 @@
  * 	NONE
  */
 
-#include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
-#include <sys/param.h>
-#include <sys/fcntl.h>
 #include <wait.h>
 #include <pwd.h>
-#include <test.h>
-#include <usctest.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <sys/fcntl.h>
+#include "test.h"
+#include "usctest.h"
 
 #define INVAL_FLAG	-1
 #define INVAL_MIN	(-2147483647L-1L)
@@ -59,13 +60,12 @@ void setup(void);
 void cleanup(void);
 int fail;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int retval;
 	struct flock fl;
 	int pid, status;
 
-	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -75,7 +75,7 @@ main(int ac, char **av)
 
 	setup();			/* global setup */
 
-block1:
+//block1:
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 	if ((fd = open("temp.dat", O_CREAT|O_RDWR)) < 0) {
@@ -98,7 +98,7 @@ block1:
 	}
 	tst_resm(TINFO, "Exit block 1");
 
-block2:
+//block2:
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 	/* Error condition if address is bad */
@@ -116,7 +116,7 @@ block2:
 	}
 	tst_resm(TINFO, "Exit block 2");
 
-block3:
+//block3:
 	tst_resm(TINFO, "Enter block 3");
 	fail = 0;
 	if ((pid = fork()) == 0) {		/* child */
@@ -154,6 +154,7 @@ block3:
 	tst_resm(TINFO, "Exit block 3");
 
 	cleanup();
+	return(0);
 }
 
 /*

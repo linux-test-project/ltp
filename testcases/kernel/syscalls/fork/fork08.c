@@ -172,6 +172,7 @@ forkone:
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 	
 /*

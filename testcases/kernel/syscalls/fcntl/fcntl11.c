@@ -42,7 +42,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#include <wait.h>
 #include "test.h"
 #include "usctest.h"
 

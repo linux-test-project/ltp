@@ -75,7 +75,7 @@ struct test_case_t {
         {1, (void *)-1, EFAULT}
 };
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	int i;
@@ -123,6 +123,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

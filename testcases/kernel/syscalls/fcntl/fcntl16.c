@@ -43,13 +43,13 @@
  */
 
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-#include <sys/types.h>
 #include <test.h>
 #include <usctest.h>
-#include <sys/wait.h>
+#include <wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define	SKIP	0, 0, 0L, 0L, 0
 
@@ -284,75 +284,140 @@ char *TCID = "fcntl16";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-void setup(void);
-void cleanup(void);
-
-main(int ac, char **av)
+/*
+ * cleanup - performs all the ONE TIME cleanup for this test at completion or
+ * 	premature exit
+ */
+void
+cleanup(void)
 {
+	TEST_CLEANUP;
+
+	tst_rmdir();
+
+	tst_exit();
+}
+
+
+void dochild(int kid)
+{
+	/* child process */
+	(void)signal(SIGUSR1, catch_int);
+
+	/* Lock should succeed after blocking and parent releases lock */
+	if (kid) {
+		if ((kill(parent, SIGUSR2)) < 0) {
+			tst_resm(TFAIL, "Attempt to send signal to parent "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, child %d, errno = %d",
+				 test + 1, kid, errno);
+			exit(1);
+		}
+	} else {
+		if ((kill(parent, SIGUSR1)) < 0) {
+			tst_resm(TFAIL, "Attempt to send signal to parent "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, child %d, errno = %d",
+				 test + 1, kid, errno);
+			exit(1);
+		}
+	}
+
+	if ((fcntl(fd, F_SETLKW, thislock)) < 0) {
+		if (errno == EINTR && parent_flag) {
+			/*
+			 * signal received is waiting for lock to clear,
+			 * this is expected if flag = WILLBLOCK
+			 */
+			exit(1);
+		} else {
+			tst_resm(TFAIL, "Attempt to set child BLOCKING lock "
+				 "failed");
+			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
+				 errno);
+			exit(2);
+		}
+	}
+	exit(0);
+}					/* end of child process */
+
+void
+catch_alarm()
+{
+	alarm_flag = 1;
+}
+
+void
+catch_usr1()				/* invoked on catching SIGUSR1 */
+{
+	/*
+	 * Set flag to let parent know that child #1 is ready to have the
+	 * lock removed
+	 */
+	child_flag1 = 1;
+}
+
+void
+catch_usr2()				/* invoked on catching SIGUSR2 */
+{
+	/*
+	 * Set flag to let parent know that child #2 is ready to have the
+	 * lock removed
+	 */
+	child_flag2 = 1;
+}
+
+void
+catch_int()				/* invoked on child catching SIGUSR1 */
+{
+	/*
+	 * Set flag to interrupt fcntl call in child and force a controlled
+	 * exit
+	 */
+	parent_flag = 1;
+}
+
+void child_sig(int sig, int nkids)
+{
+	int i;
+
+	for (i = 0; i < nkids; i++) {
+		if (kill(child_pid[i], 0) == 0) {
+			if ((kill(child_pid[i], sig)) < 0) {
+				tst_resm(TFAIL, "Attempt to signal child %d, "
+					 "failed", i + 1);
+			}
+		}
+	}
+}
+
+/*
+ * setup - performs all ONE TIME steup for this test
+ */
+void
+setup(void)
+{
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	umask(0);
+
+	/* Pause if option was specified */
+	TEST_PAUSE;
+
+	parent = getpid();
+
+	tst_tmpdir();
 	
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	/* set up temp filename */
+	sprintf(tmpname, "fcntl4.%d", parent);
 
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	}
-
-	setup();			/* global setup */
-
-	/* check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
-
-block1:
-		/* 
-		 * Check file locks on an ordinary file without
-		 * mandatory locking
-		 */
-		tst_resm(TINFO, "Entering block 1");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 11)) {
-			tst_resm(TINFO, "Test case 1: without mandatory "
-				 "locking FAILED");
-		} else {
-			tst_resm(TINFO, "Test case 1: without manadatory "
-				 "locking PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 1");
-
-block2:
-		/*
-		 * Check the file locks on a file with mandatory record
-		 * locking
-		 */
-		tst_resm(TINFO, "Entering block 2");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, S_ISGID |
-			     S_IRUSR | S_IWUSR, 0, 11)) {
-			tst_resm(TINFO, "Test case 2: with mandatory record "
-				 "locking FAILED");
-		} else {
-			tst_resm(TINFO, "Test case 2: with mandatory record "
-				 "locking PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 2");
-
-block3:
-		/*
-		 * Check file locks on a file with mandatory record locking
-		 * and no delay
-		 */
-		tst_resm(TINFO, "Entering block 3");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC | O_NDELAY,
-			     S_ISGID | S_IRUSR | S_IWUSR, 0, 11)) {
-			tst_resm(TINFO, "Test case 3: mandatory locking with "
-				 "NODELAY FAILED");
-		} else {
-			tst_resm(TINFO, "Test case 3: mandatory locking with "
-				 "NODELAY PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 3");
-	}
-	cleanup();
+	/*
+	 * Set up signal handling functions
+	 */
+	(void)signal(SIGUSR1, catch_usr1);
+	(void)signal(SIGUSR2, catch_usr2);
+	(void)signal(SIGALRM, catch_alarm);
 }
 
 int
@@ -552,139 +617,75 @@ run_test(int file_flag, int file_mode, int start, int end)
 	} else {
 		return(0);
 	}
+	return(0);
 }
 
-dochild(int kid)
+int main(int ac, char **av)
 {
-	/* child process */
-	(void)signal(SIGUSR1, catch_int);
-
-	/* Lock should succeed after blocking and parent releases lock */
-	if (kid) {
-		if ((kill(parent, SIGUSR2)) < 0) {
-			tst_resm(TFAIL, "Attempt to send signal to parent "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, child %d, errno = %d",
-				 test + 1, kid, errno);
-			exit(1);
-		}
-	} else {
-		if ((kill(parent, SIGUSR1)) < 0) {
-			tst_resm(TFAIL, "Attempt to send signal to parent "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, child %d, errno = %d",
-				 test + 1, kid, errno);
-			exit(1);
-		}
-	}
-
-	if ((fcntl(fd, F_SETLKW, thislock)) < 0) {
-		if (errno == EINTR && parent_flag) {
-			/*
-			 * signal received is waiting for lock to clear,
-			 * this is expected if flag = WILLBLOCK
-			 */
-			exit(1);
-		} else {
-			tst_resm(TFAIL, "Attempt to set child BLOCKING lock "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			exit(2);
-		}
-	}
-	exit(0);
-}					/* end of child process */
-
-void
-catch_alarm()
-{
-	alarm_flag = 1;
-}
-
-void
-catch_usr1()				/* invoked on catching SIGUSR1 */
-{
-	/*
-	 * Set flag to let parent know that child #1 is ready to have the
-	 * lock removed
-	 */
-	child_flag1 = 1;
-}
-
-void
-catch_usr2()				/* invoked on catching SIGUSR2 */
-{
-	/*
-	 * Set flag to let parent know that child #2 is ready to have the
-	 * lock removed
-	 */
-	child_flag2 = 1;
-}
-
-void
-catch_int()				/* invoked on child catching SIGUSR1 */
-{
-	/*
-	 * Set flag to interrupt fcntl call in child and force a controlled
-	 * exit
-	 */
-	parent_flag = 1;
-}
-
-child_sig(int sig, int nkids)
-{
-	int i;
-
-	for (i = 0; i < nkids; i++) {
-		if (kill(child_pid[i], 0) == 0) {
-			if ((kill(child_pid[i], sig)) < 0) {
-				tst_resm(TFAIL, "Attempt to signal child %d, "
-					 "failed", i + 1);
-			}
-		}
-	}
-}
-
-/*
- * setup - performs all ONE TIME steup for this test
- */
-void
-setup(void)
-{
-	/* capture signals */
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	umask(0);
-
-	/* Pause if option was specified */
-	TEST_PAUSE;
-
-	parent = getpid();
-
-	tst_tmpdir();
 	
-	/* set up temp filename */
-	sprintf(tmpname, "fcntl4.%d", parent);
+	int lc;				/* loop counter */
+	char *msg;			/* message returned from parse_opts */
 
-	/*
-	 * Set up signal handling functions
-	 */
-	(void)signal(SIGUSR1, catch_usr1);
-	(void)signal(SIGUSR2, catch_usr2);
-	(void)signal(SIGALRM, catch_alarm);
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	setup();			/* global setup */
+
+	/* check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
+
+//block1:
+		/* 
+		 * Check file locks on an ordinary file without
+		 * mandatory locking
+		 */
+		tst_resm(TINFO, "Entering block 1");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 11)) {
+			tst_resm(TINFO, "Test case 1: without mandatory "
+				 "locking FAILED");
+		} else {
+			tst_resm(TINFO, "Test case 1: without manadatory "
+				 "locking PASSED");
+		}
+		tst_resm(TINFO, "Exiting block 1");
+
+//block2:
+		/*
+		 * Check the file locks on a file with mandatory record
+		 * locking
+		 */
+		tst_resm(TINFO, "Entering block 2");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, S_ISGID |
+			     S_IRUSR | S_IWUSR, 0, 11)) {
+			tst_resm(TINFO, "Test case 2: with mandatory record "
+				 "locking FAILED");
+		} else {
+			tst_resm(TINFO, "Test case 2: with mandatory record "
+				 "locking PASSED");
+		}
+		tst_resm(TINFO, "Exiting block 2");
+
+//block3:
+		/*
+		 * Check file locks on a file with mandatory record locking
+		 * and no delay
+		 */
+		tst_resm(TINFO, "Entering block 3");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC | O_NDELAY,
+			     S_ISGID | S_IRUSR | S_IWUSR, 0, 11)) {
+			tst_resm(TINFO, "Test case 3: mandatory locking with "
+				 "NODELAY FAILED");
+		} else {
+			tst_resm(TINFO, "Test case 3: mandatory locking with "
+				 "NODELAY PASSED");
+		}
+		tst_resm(TINFO, "Exiting block 3");
+	}
+	cleanup();
+	return(0);
 }
 
-/*
- * cleanup - performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
- */
-void
-cleanup(void)
-{
-	TEST_CLEANUP;
-
-	tst_rmdir();
-
-	tst_exit();
-}

@@ -54,7 +54,7 @@
 #include <fcntl.h>
 #include <test.h>
 #include <usctest.h>
-#include <sys/wait.h>
+#include <wait.h>
 
 #define	DATA	"ABCDEFGHIJ"
 #define	DUP	0
