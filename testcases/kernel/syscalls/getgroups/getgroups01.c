@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: getgroups01.c,v 1.2 2002/08/09 19:07:59 robbiew Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -80,6 +80,7 @@ BUGS:
 #include <string.h>
 #include <errno.h>
 #include <sys/param.h>
+#include <sys/types.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -110,6 +111,8 @@ main(int ac, char **av)
     int errors = 0;
     char msg[500];
 
+    /* Initialize the group access list */
+    initgroups("root",0);
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
@@ -200,7 +203,7 @@ main(int ac, char **av)
 	 * Check to see that is -1 is returned and errno is set to EINVAL when
 	 * ngroups is not big enough to hold all groups.
 	 */
-
+	
 	if ( ret <= 1 ) {
 	    sprintf(msg, "getgroups(0,gidset) returned %d, Unable to test that\nusing ngrps >=1 but less than number of grps", ret);
 	    tst_resm(TCONF, msg);
