@@ -158,7 +158,11 @@ void setup()
 
 void setup1()
 {
+#ifdef __ia64__
+	TC[0].len = getpagesize() + 1;
+#else
 	addr1 = NULL;
+#endif
 }
 
 /***************************************************************
@@ -172,3 +176,4 @@ void cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
