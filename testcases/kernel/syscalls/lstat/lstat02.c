@@ -83,6 +83,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -122,6 +123,10 @@ char *TCID="lstat02";           /* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
+
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
@@ -215,11 +220,17 @@ setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check that the test process id is not root/super-user */
-	if (geteuid() == 0) {
-		tst_brkm(TBROK, NULL, "Must be non-root/super for this test!");
-		tst_exit();
-	}
+	/* Switch to nobody user for correct error code collection */
+        if (geteuid() != 0) {
+                tst_brkm(TBROK, tst_exit, "Test must be run as root");
+        }
+        ltpuser = getpwnam(nobody_uid);
+        if (setuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setuid");
+        }
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
