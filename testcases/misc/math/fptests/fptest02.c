@@ -21,7 +21,7 @@
 /* 11/20/2002            Port to LTP             robbiew@us.ibm.com */
 /*                                               jacky.malcles@bull.net */
 /* IBM Corporation */
-/* 06/30/2001		 Port to Linux		 nsharoff@us.ibm.com */
+/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
 /*
  * fptest02.c -- Floating point test.
@@ -44,9 +44,9 @@
 #include <fcntl.h>
 #include <time.h>
 
-#define MAGIC		 0.777807
-#define DIFF		 0.001
-#define EVENTMX		 256
+#define MAGIC	0.777807
+#define DIFF	0.001
+#define EVENTMX	256
 #define BIG 1.e50
 #define FALSE 0
 #define TRUE  1
@@ -77,23 +77,23 @@ void gaussinit();
 double gauss();
 
 struct event {
-		 int proc;
-		 int type;
-		 double time;
-		 };
+	int proc;
+	int type;
+	double time;
+	};
 
 struct event eventtab[EVENTMX];
 struct event rtrevent;
-int waiting[EVENTMX];		 	 /* array of waiting processors */
-int nwaiting;		 		 /* number of waiting processors */
-double sgtime;		 		 /* global clock */
-double lsttime;		 		 /* time used for editing */
-double dtc, dts, alpha;		 	 /* timing parameters */
-int nproc;		 		 /* number of processors */
-int barcnt;		 		 /* number of processors ATBARRIER */
-int ncycle;		 		 /* number of cycles completed */
-int ncycmax;		 		 /* number of cycles to run */
-int critfree;		 		 /* TRUE if critical section not occupied */
+int waiting[EVENTMX];		 /* array of waiting processors */
+int nwaiting;		/* number of waiting processors */
+double sgtime;		/* global clock */
+double lsttime;		/* time used for editing */
+double dtc, dts, alpha;		 /* timing parameters */
+int nproc;		/* number of processors */
+int barcnt;		/* number of processors ATBARRIER */
+int ncycle;		/* number of cycles completed */
+int ncycmax;		/* number of cycles to run */
+int critfree;		/* TRUE if critical section not occupied */
 
 struct event *nextevent();
 
@@ -102,230 +102,230 @@ main(argc,argv)
 int argc;
 char *argv[];
 {
-		 struct event *ev;
+	struct event *ev;
 
-		 nproc = 128;
-		 ncycmax = 10;
-		 dtc = 0.01;
-		 dts = 0.0;
-		 alpha = 0.1;
+	nproc = 128;
+	ncycmax = 10;
+	dtc = 0.01;
+	dts = 0.0;
+	alpha = 0.1;
 
-		 init();
+	init();
 
-		 while ( (ev=nextevent()) != (struct event *)NULL) {
-		 		 doevent(ev);
-		 }
+	while ( (ev=nextevent()) != (struct event *)NULL) {
+		doevent(ev);
+	}
 
-		 term();
-		 tst_resm(TPASS,"PASS");
-		 tst_exit();
+	term();
+	tst_resm(TPASS,"PASS");
+	tst_exit();
 
-		 /**NOT REACHED**/
+	/**NOT REACHED**/
                  return(0);
 
 }
 
 /*
-		 initialize all processes to "entering work section"
+	initialize all processes to "entering work section"
 */
 int
 init()
 {
-		 int p;
-		 double dtw, dtwsig;
+	int p;
+	double dtw, dtwsig;
 
-		 ncycle=0;
-		 sgtime=0;
-		 lsttime=0;
-		 barcnt=0;
-		 nwaiting=0;
-		 critfree=TRUE;
+	ncycle=0;
+	sgtime=0;
+	lsttime=0;
+	barcnt=0;
+	nwaiting=0;
+	critfree=TRUE;
 
-		 dtw=1./nproc;		 		 /* mean process work time */
-		 dtwsig=dtw*alpha;		 /* std deviation of work time */
-		 gaussinit(dtw,dtwsig,time(0));
+	dtw=1./nproc;		/* mean process work time */
+	dtwsig=dtw*alpha;	/* std deviation of work time */
+	gaussinit(dtw,dtwsig,time(0));
 
-		 for (p=1; p<=nproc; p++) {
-		 		 eventtab[p].type = NULLEVENT;
-		 		 }
+	for (p=1; p<=nproc; p++) {
+		eventtab[p].type = NULLEVENT;
+		}
 
-		 for (p=1; p<=nproc; p++) {
-		 		 addevent(ENTERWORK,p,sgtime);
-		 		 }
+	for (p=1; p<=nproc; p++) {
+		addevent(ENTERWORK,p,sgtime);
+		}
 
-		 return(0);
+	return(0);
 }
 /*
-		 print edit quantities
+	print edit quantities
 */
 int
 term()
 {
-		 double avgspd;
-		 double v;
+	double avgspd;
+	double v;
 
-		 avgspd=ncycle/sgtime;
-		 v = avgspd - MAGIC;
-		 if (v < 0.0)
-		 		 v *= -1.0;
-		 if (v > DIFF) {
-		 		 tst_resm(TFAIL,"FAIL");
-		 		 v = avgspd - MAGIC;
-		 		 tst_resm(TINFO,"avgspd = %.15f\n", avgspd);
-		 		 tst_resm(TINFO,"expected %.15f\n", MAGIC);
-		 		 tst_resm(TINFO,"diff = %.15f\n", v);
-		 		 tst_exit();
-		 }
-		 return(0);
+	avgspd=ncycle/sgtime;
+	v = avgspd - MAGIC;
+	if (v < 0.0)
+		v *= -1.0;
+	if (v > DIFF) {
+		tst_resm(TFAIL,"FAIL");
+		v = avgspd - MAGIC;
+		tst_resm(TINFO,"avgspd = %.15f\n", avgspd);
+		tst_resm(TINFO,"expected %.15f\n", MAGIC);
+		tst_resm(TINFO,"diff = %.15f\n", v);
+		tst_exit();
+	}
+	return(0);
 }
 /*
-		 add an event to the event queue
+	add an event to the event queue
 */
 int
 addevent(type,proc,t)
 int type, proc;
 double t;
 {
-		 int i;
-		 int ok=FALSE;
+	int i;
+	int ok=FALSE;
 
-		 for (i=1; i<=nproc; i++) {
-		 		 if (eventtab[i].type==NULLEVENT) {
-		 		 		 eventtab[i].type=type;
-		 		 		 eventtab[i].proc=proc;
-		 		 		 eventtab[i].time=t;
-		 		 		 ok=TRUE;
-		 		 		 break;
-		 		 		 }
-		 		 }
-		 if (ok) 
-		 		 return(0);
-		 else{
+	for (i=1; i<=nproc; i++) {
+		if (eventtab[i].type==NULLEVENT) {
+			eventtab[i].type=type;
+			eventtab[i].proc=proc;
+			eventtab[i].time=t;
+			ok=TRUE;
+			break;
+			}
+		}
+	if (ok) 
+		return(0);
+	else{
                                  tst_resm(TBROK,"No room for event");
                                  tst_exit();
                  }
 
-		 return(0);
+	return(0);
 }
 /*
-		 get earliest event in event queue
+	get earliest event in event queue
 */
 struct event *nextevent()
 {
-		 double mintime=BIG;
-		 int imin=0;
-		 int i;
+	double mintime=BIG;
+	int imin=0;
+	int i;
 
-		 for (i=1; i<=nproc; i++) {
+	for (i=1; i<=nproc; i++) {
           if ((eventtab[i].type!=NULLEVENT) && (eventtab[i].time<mintime) ) {
-		 		 imin=i;
-		 		 mintime=eventtab[i].time;
-		 		 }
-		   }
-		 
-		 if (imin) {
-		 		 rtrevent.type = eventtab[imin].type;
-		 		 rtrevent.proc = eventtab[imin].proc;
-		 		 rtrevent.time = eventtab[imin].time;
-		 		 eventtab[imin].type=NULLEVENT;
-		 		 return(&rtrevent);
-		 		 }
-		 else
-		 		 return((struct event *)NULL);
+		imin=i;
+		mintime=eventtab[i].time;
+		}
+	  }
+	
+	if (imin) {
+		rtrevent.type = eventtab[imin].type;
+		rtrevent.proc = eventtab[imin].proc;
+		rtrevent.time = eventtab[imin].time;
+		eventtab[imin].type=NULLEVENT;
+		return(&rtrevent);
+		}
+	else
+		return((struct event *)NULL);
 }
 /*
-		 add a processor to the waiting queue
+	add a processor to the waiting queue
 */
 int
 addwaiting(p)
 int p;
 {
-		 waiting[++nwaiting]=p;
-		 return(0);
+	waiting[++nwaiting]=p;
+	return(0);
 }
 /*
-		 remove the next processor from the waiting queue
+	remove the next processor from the waiting queue
 */
 int
 getwaiting()
 {
-		 if (nwaiting)
-		 		 return(waiting[nwaiting--]);
-		 else
-		 		 return(0);
+	if (nwaiting)
+		return(waiting[nwaiting--]);
+	else
+		return(0);
 }
 double dtcrit()
 {
-		 return(dtc);
+	return(dtc);
 }
 double dtspinoff()
 {
-		 return(dts);
+	return(dts);
 }
 double dtwork()
 {
-		 return(gauss());
+	return(gauss());
 }
 /*
-		 take the action prescribed by 'ev', update the clock, and
-		 generate any subsequent events
+	take the action prescribed by 'ev', update the clock, and
+	generate any subsequent events
 */
 int
 doevent(ev)
 struct event *ev;
 {
-		 double nxttime;
-		 int i, p, proc;
+	double nxttime;
+	int i, p, proc;
 
-		 sgtime = ev->time;
-		 proc = ev->proc;
+	sgtime = ev->time;
+	proc = ev->proc;
 
-		 switch (ev->type) {
-		 		 case TRYCRIT :
-		 		 		 if (critfree==TRUE) 
-		 		 		 		 addevent(ENTERCRIT,proc,sgtime);
-		 		 		 else
-		 		 		 		 addwaiting(proc);
-		 		 		 break;
-		 		 case ENTERCRIT :
-		 		 		 critfree = FALSE;
-		 		 		 nxttime=sgtime+dtcrit();
-		 		 		 addevent(LEAVECRIT,proc,nxttime);
-		 		 		 break;
-		 		 case LEAVECRIT :
-		 		 		 critfree = TRUE;
-		 		 		 addevent(ATBARRIER,proc,sgtime);
-		 		 		 if ((p=getwaiting())!=0) {
-		 		 		 		 nxttime=sgtime;
-		 		 		 		 addevent(ENTERCRIT,p,nxttime);
-		 		 		 		 }
-		 		 		 break;
-		 		 case ATBARRIER :
-		 		 		 barcnt++;
-		 		 		 if (barcnt==nproc) {
-		 		 		 		 nxttime=sgtime;
-		 		 		 		 for (i=1; i<=nproc; i++) {
-		 		 		 		 		 nxttime+=dtspinoff();
-		 		 		 		 		 addevent(ENTERWORK,i,nxttime);
-		 		 		 		 		 }
-		 		 		 		 barcnt=0;
-		 		 		 		 ncycle++;
-		 		 		 		 }
-		 		 		 break;
-		 		 case ENTERWORK :
-		 		 		 nxttime=sgtime+dtwork();
-		 		 		 if (ncycle<ncycmax)
-		 		 		 		 addevent(LEAVEWORK,proc,nxttime);
-		 		 		 break;
-		 		 case LEAVEWORK :
-		 		 		 addevent(TRYCRIT,proc,sgtime);
-		 		 		 break;
-		 		 default:
-						 tst_resm(TBROK,"Illegal event");
-						 tst_exit();
-		 		 		 break;
-		 		 }
-		 return(0);
+	switch (ev->type) {
+		case TRYCRIT :
+			if (critfree==TRUE) 
+				addevent(ENTERCRIT,proc,sgtime);
+			else
+				addwaiting(proc);
+			break;
+		case ENTERCRIT :
+			critfree = FALSE;
+			nxttime=sgtime+dtcrit();
+			addevent(LEAVECRIT,proc,nxttime);
+			break;
+		case LEAVECRIT :
+			critfree = TRUE;
+			addevent(ATBARRIER,proc,sgtime);
+			if ((p=getwaiting())!=0) {
+				nxttime=sgtime;
+				addevent(ENTERCRIT,p,nxttime);
+				}
+			break;
+		case ATBARRIER :
+			barcnt++;
+			if (barcnt==nproc) {
+				nxttime=sgtime;
+				for (i=1; i<=nproc; i++) {
+					nxttime+=dtspinoff();
+					addevent(ENTERWORK,i,nxttime);
+					}
+				barcnt=0;
+				ncycle++;
+				}
+			break;
+		case ENTERWORK :
+			nxttime=sgtime+dtwork();
+			if (ncycle<ncycmax)
+				addevent(LEAVEWORK,proc,nxttime);
+			break;
+		case LEAVEWORK :
+			addevent(TRYCRIT,proc,sgtime);
+			break;
+		default:
+					tst_resm(TBROK,"Illegal event");
+					tst_exit();
+			break;
+		}
+	return(0);
 }
 
 static int alternator=1;
@@ -339,28 +339,28 @@ void gaussinit(m,s,seed)
 double m,s;
 int seed;
 {
-		 srand48(seed);
-		 mean=m;
-		 stdev=s;
-		 twopi=2.*acos((double)-1.0);
-		 return;
+	srand48(seed);
+	mean=m;
+	stdev=s;
+	twopi=2.*acos((double)-1.0);
+	return;
 }
-		 
+	
 double gauss()
 {
-		 double x1,x2;
+	double x1,x2;
 
-		 if (alternator==1) {
-		 		 alternator = -1;
-		 		 u1 = lrand48()/rnorm;
-		 		 u2 = lrand48()/rnorm;
-		 		 x1 = sqrt(-2.0*log(u1))*cos(twopi*u2);
-		 		 return(mean + stdev*x1);
-		 		 }
-		 else {
-		 		 alternator = 1;
-		 		 x2 = sqrt(-2.0*log(u1))*sin(twopi*u2);
-		 		 return(mean + stdev*x2);
-		 		 }
+	if (alternator==1) {
+		alternator = -1;
+		u1 = lrand48()/rnorm;
+		u2 = lrand48()/rnorm;
+		x1 = sqrt(-2.0*log(u1))*cos(twopi*u2);
+		return(mean + stdev*x1);
+		}
+	else {
+		alternator = 1;
+		x2 = sqrt(-2.0*log(u1))*sin(twopi*u2);
+		return(mean + stdev*x2);
+		}
 }
 
