@@ -46,8 +46,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <wait.h>
-#include <test.h>
-#include <usctest.h>
+#include <string.h>
+#include "test.h"
+#include "usctest.h"
 
 char *TCID = "pipe10";
 int TST_TOTAL = 1;

@@ -48,6 +48,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -71,7 +72,6 @@ int main(int ac, char **av)
 	char wbuf[BUFSIZ], rbuf[BUFSIZ];
 	int len, rlen;
 	int rval = 0;
-	char *strcpy();
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 

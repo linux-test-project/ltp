@@ -58,7 +58,6 @@ char *av[];
 	int		ifile ;
     	char	pfilname[40] ;
     	int		min;
-    	char 	*strcpy();
     	int		serrno;
 
         int lc;                 /* loop counter */

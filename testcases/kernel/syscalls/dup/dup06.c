@@ -55,7 +55,6 @@ char *av[];
 	int		ifile ;
 	char	pfilname[40] ;
 	int		min;
-	char 	*strcpy();
 
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
