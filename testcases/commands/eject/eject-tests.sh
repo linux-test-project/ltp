@@ -184,11 +184,12 @@ if [ -f $LTPTMP/fstab.bak ]
 then
     cp $LTPTMP/fstab.bak /etc/fstab &>/dev/null
 else
-    $LTPBIN/tst_res TINFO "Test #3: Could not restore /etc/fstab coz"
-    $LTPBIN/tst_res TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
+    $LTPBIN/tst_resm TINFO "Test #3: Could not restore /etc/fstab coz"
+    $LTPBIN/tst_resm TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
 fi
 
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
-rm -f $LTPTMP/tst_eject*
+rm -fr $LTPTMP/tst_eject* $LTPTMP/cdrom
+
 exit $TFAILCNT
