@@ -272,7 +272,7 @@ flags_prompt()
 
 # Function:    exectest_screenout
 # 
-# Description: Execute tests by calling runalltests.sh, display test status 
+# Description: Execute tests by calling runltp, display test status 
 #              in a window.
 #
 # Input:       none
@@ -284,8 +284,8 @@ exectest_screenout()
 
     RESULTS_FILE=$(date +%Y-%m-%d.%H.%M.%S).$$
 
-    # execute runalltests.sh with user defined command file.
-    ./runalltests.sh -q -p $RUNALL_FLAGS -l results.$RESULTS_FILE \
+    # execute runltp with user defined command file.
+    ./runltp -q -p $RUNALL_FLAGS -l results.$RESULTS_FILE \
 	-f /tmp/runltp.test.list.$$  
     
     sleep 2
@@ -307,7 +307,7 @@ exectest_screenout()
 #              an info message window will notify the user that LTP needs to
 #              be compiled before tests can be executed.
 #              This function creates the senatrio file based on the users
-#              choice of testcases and uses the runalltests.sh script to 
+#              choice of testcases and uses the runltp script to 
 #              execute these tests.
 #              The messages printed by the testcases are displayed on this 
 #              terminal.
