@@ -42,3 +42,8 @@ linker01 linktest.pl
 openfile01 openfile -f10 -t10
 inode01 inode01
 inode02 inode02
+stream01 stream01
+stream02 stream02
+stream03 stream03
+stream04 stream04
+stream05 stream05
