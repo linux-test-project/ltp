@@ -34,6 +34,9 @@
  * Expected Result:
  *  mmap() should succeed returning the address of the mapped region,
  *  and the mapped region should contain the contents of the mapped file.
+ *  but with ia64,
+ *  an attempt to access the contents of the mapped region should give
+ *  rise to the signal SIGSEGV.
  *
  * Algorithm:
  *  Setup:
@@ -82,6 +85,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <setjmp.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -95,9 +99,12 @@ size_t page_sz;			/* system page size */
 char *addr;			/* addr of memory mapped region */
 char *dummy;			/* dummy variable to hold temp file contents */
 int fildes;			/* file descriptor for temporary file */
+volatile int pass=0;            /* pass flag perhaps set to 1 in sig_handler */
+sigjmp_buf env;                 /* environment for sigsetjmp/siglongjmp */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
+void sig_handler();             /* signal handler to catch SIGSEGV */
 
 int
 main(int ac, char **av)
@@ -150,14 +157,30 @@ main(int ac, char **av)
 			/*
 			 * Check whether the mapped memory region
 			 * has the file contents.
-			 */
-			if (memcmp(dummy, addr, page_sz)) {
+			 *
+			 * with ia64, This should
+                         * generate a SIGSEGV which will be caught below.
+                         *
+                         */
+
+			if (sigsetjmp(env, 1) == 0) {	
+			   if (memcmp(dummy, addr, page_sz)) {
 				tst_resm(TFAIL, "mapped memory region contains "
 					 "invalid data");
-			} else {
+			   } else {
 				tst_resm(TPASS, 
 					 "Functionality of mmap() successful");
+			   }
 			}
+#ifdef __ia64__
+		        if (pass) {
+                                tst_resm(TPASS, "Got SIGSEGV as expected");
+                        } else {
+                                tst_resm(TFAIL, "Mapped memory region with NO "
+                                         "access is accessible");
+                        }
+#endif
+
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
@@ -168,6 +191,7 @@ main(int ac, char **av)
 			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
+		pass = 0;
 
 	}	/* End for TEST_LOOPING */
 
@@ -192,7 +216,7 @@ setup()
 	char *tst_buff;			/* test buffer to hold known data */
 
 	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(NOFORK, sig_handler, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -262,6 +286,25 @@ setup()
 }
 
 /*
+ * sig_handler() - Signal Cathing function.
+ *   This function gets executed when the test process receives
+ *   the signal SIGSEGV while trying to access the contents of memory which
+ *   is not accessible.
+ */
+void
+sig_handler(sig)
+{
+        if (sig == SIGSEGV) {
+                /* set the global variable and jump back */
+                pass = 1;
+                siglongjmp(env, 1);
+        } else {
+                tst_brkm(TBROK, cleanup, "received an unexpected signal");
+        }
+}
+
+
+/*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
 	       Free the memory allocated to dummy variable.
@@ -286,3 +329,4 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
