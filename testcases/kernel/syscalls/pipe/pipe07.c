@@ -85,11 +85,15 @@ int main(int ac, char **av)
 	mypid=getpid();
 	cmdstring=malloc(sizeof(cmdstring));
 	sprintf(cmdstring,"ls -A -1 /proc/%d/fd | wc -l > current_fd_count",mypid);
-	system(cmdstring);
-	f = fopen("./current_fd_count", "r");	
-	fscanf(f,"%d",&usedfds);	
-	fclose(f);
-	unlink("current_fd_count");
+	sleep(1); /* Added this line to avoid compiler bug */
+	if (system(cmdstring) == 0)
+	{
+		f = fopen("./current_fd_count", "r");	
+		fscanf(f,"%d",&usedfds);	
+		fclose(f);
+		unlink("current_fd_count");
+	}else
+		usedfds=3;   /* Could not get processes used fds, so assume 3 */
 
 	TEST_EXP_ENOS(exp_enos);
 
