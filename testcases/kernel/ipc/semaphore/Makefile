@@ -1,12 +1,14 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+CFLAGS += -Wall -I ../../../../include -I ../include
+LDLIBS := -L ../../../../lib -lpthread -lltp
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; ln -fs ../chmod.sh $$i/chmod.sh; done
+SRCS=$(wildcard *.c)
+TARGETS=$(patsubst %.c,%,$(SRCS))
+
+all: $(TARGETS)
+
 
 install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; rm -f $$i/chmod.sh; done
-
-
+	rm -f $(TARGETS)
