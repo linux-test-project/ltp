@@ -18,11 +18,10 @@
  */
 
 /*
- * Test Name :	sysinfo01
+ * Test Name :	sysinfo02
  *
  * Test description
- *  Verify that sysinfo() succeeds to get the system information and fills
- *  the structure passed.
+ *  Verify that sysinfo() returns the correct error for an invalid address structure. 
  * 
  * Expected Result :
  *  sysinfo() returns value 0 on success and the sysinfo structure should
