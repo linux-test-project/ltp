@@ -18,7 +18,7 @@
 ##                                                                            ##
 ################################################################################
 #
-# File :        cp_test.sh
+# File :        mv_test.sh
 #
 # Description:  Test basic functionality of mv command
 #				- Test #1:  mv <dir1> <dir2> will move dir1 to dir2 and all its
