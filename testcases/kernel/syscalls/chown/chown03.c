@@ -66,7 +66,6 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  This test should be run by 'non-super-user' only.
  *
  */
 
@@ -91,6 +90,8 @@
 char *TCID="chown03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -103,7 +104,9 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	uid_t User_id;		/* Owner id of the test file. */
 	gid_t Group_id;		/* Group id of the test file. */
-    
+
+	STD_FUNCTIONAL_TEST=0;
+ 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -124,9 +127,12 @@ main(int ac, char **av)
 		Group_id = getegid();
 
 		/* 
-		 * Call chwon(2) with different user id and
+		 * Call chown(2) with different user id and
 		 * group id (numeric values) to set it on testfile.
 		 */
+
+		seteuid(0);
+		setegid(0);
 		TEST(chown(TESTFILE, -1, Group_id));
 
 		/* check return code of chown(2) */
@@ -155,8 +161,8 @@ main(int ac, char **av)
 			if ((stat_buf.st_uid != User_id) ||
 				    (stat_buf.st_gid != Group_id)) {
 				tst_brkm(TFAIL, cleanup, "%s: Incorrect "
-					 "ownership set, Expected %d %d",
-					 TESTFILE, User_id, Group_id);
+					 "ownership set to %d %d, Expected %d %d",
+					 TESTFILE, stat_buf.st_uid, stat_buf.st_gid, User_id, Group_id);
 			}
 
 			/*
@@ -201,31 +207,35 @@ setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is super/root  */
-	if (geteuid() == 0) {
+	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL,
-			 "Must be non-super/root for this test!");
+			 "Must be super/root for this test!");
 		tst_exit();
 	}
 
-	/* Get the TESTHOME env */
-	if ((test_home = getenv("TESTHOME")) == NULL) {
-		tst_brkm(TBROK, NULL, "Fail to get TESTHOME env. variable!");
-	}
-	/*
-	 * Currently ltpdriver doesn't seem to set TESTHOME to that of
-	 * directory under test while executing. Hence, following if {}
-	 * clause required to set TESTHOME. Once, this problem fixed
-	 * in driver, this portion of code can be removed!!!!
-	 */
-	if (!(strstr((const char *)test_home, "chown"))) {
-		strcat(test_home, "/chown");
-	}
+	ltpuser = getpwnam(nobody_uid);
+         if (setegid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "setegid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("setegid");
+         }
+         if (seteuid(ltpuser->pw_uid) == -1) {
+                tst_resm(TINFO, "seteuid failed to "
+                         "to set the effective uid to %d",
+                         ltpuser->pw_uid);
+                perror("seteuid");
+         }
+
+
+	test_home = get_current_dir_name();
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
+
 
 	/* Create a test file under temporary directory */
 	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
@@ -240,6 +250,7 @@ setup()
 			 TESTFILE, errno, strerror(errno));
 	}
 
+
 	/*
 	 * Change mode permissions on testfile such that 
 	 * setuid/setgid bits are set on the testfile.
@@ -249,6 +260,7 @@ setup()
 			 "chmod(2) on %s Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
 	}
+
 
 	/* Get the current working directory of the process */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
@@ -264,6 +276,8 @@ setup()
 	strcat((char *)Cmd_buffer, TCID);
 	strcat((char *)Cmd_buffer, " ");
 	strcat((char *)Cmd_buffer, Path_name);
+
+	
 
 	if (system((const char *)Cmd_buffer) != 0) {
 		tst_brkm(TBROK, cleanup,
