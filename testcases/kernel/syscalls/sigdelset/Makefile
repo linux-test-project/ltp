@@ -9,7 +9,7 @@ all: $(TARGETS)
 
 install:
 	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../bin/$$i ; done ;
-	@chmod 755 $(TEST)
+	@for i in $(TEST); do /bin/sh ./chmod.sh $$i; done
 
 clean:
 	rm -f $(TARGETS)

@@ -28,8 +28,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 change_owner.mode: 
-	chown root change_owner
-	chmod 04755 change_owner 
+	@/bin/sh ./change_owner.mode.sh
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)

@@ -27,8 +27,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 setuid_test.mode:
-	chown root:root setuid_test
-	chmod 04511 setuid_test
+	@/bin/sh ./setuid_test.mode.sh
 
 $(TARGETS): $(SRCS)
 	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS)

@@ -30,8 +30,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 change_owner.mode: 
-	chown root create_link
-	chmod 04755 create_link 
+	@/bin/sh ./create_link.mode.sh
 
 install: all change_owner.mode
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

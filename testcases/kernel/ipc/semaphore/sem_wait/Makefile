@@ -8,7 +8,7 @@ TEST=`ls | grep 01 | grep -v '\.'`
 all: $(TARGETS)
 
 install:
-	@chmod 755 $(TEST)
+	@/bin/sh ./chmod.sh $(TEST)
 	set -e; for i in $(TARGETS) $(TEST) ; do ln -f $$i ../../../../bin/$$i ; done ;
 
 clean:
