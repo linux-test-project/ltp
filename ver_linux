@@ -26,7 +26,7 @@ mount --version | awk -F\- '{print "mount                 ", $NF}'
 
 insmod -V  2>&1 | awk 'NR==1 {print "modutils              ",$NF}'
 
-tune2fs 2>&1 | grep tune2fs | sed 's/,//' |  awk \
+tune2fs 2>&1 | grep "^tune2fs" | sed 's/,//' |  awk \
 'NR==1 {print "e2fsprogs             ", $2}'
 
 reiserfsck 2>&1 | grep reiserfsprogs | awk \
@@ -66,5 +66,7 @@ loadkeys -V 2>&1 | awk \
 
 expr --v 2>&1 | awk 'NR==1{print "Sh-utils              ", $NF}'
 
-X=`cat /proc/modules | sed -e "s/ .*$//"`
-echo "Modules Loaded         "$X
+if [ -e /proc/modules ]; then
+    X=`cat /proc/modules | sed -e "s/ .*$//"`
+    echo "Modules Loaded         "$X
+fi
