@@ -7,7 +7,7 @@ do
   while [[ $COUNT -le 10 ]]
   do
     cat $FILE >> $the_file
-    (( COUNT = COUNT + 1 ))
+    COUNT=$[ COUNT + 1 ]
   done
   COUNT=0
   FILE=$the_file

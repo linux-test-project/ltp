@@ -36,9 +36,9 @@ do
   while [ $COUNT -le $LIMIT ]
   do
     echo -n "AAAAAAAAAA" >> dat/$the_file
-    (( COUNT = COUNT + 1 ))
+    COUNT=$[ COUNT + 1 ] 
   done
-  (( LIMIT = LIMIT * 12 ))
+  LIMIT=$[ LIMIT * 12 ]
   COUNT=0
   cat dat/$the_file > tmpfile
   cat tmpfile >> dat/$the_file
