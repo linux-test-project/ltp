@@ -67,6 +67,7 @@ main(int ac, char **av)
 	int red, written;		/* no of chars read and */ 
 					/* written to pipe */
 	int length, greater, forkstat;
+	int retval=0, status, e_code;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -84,6 +85,7 @@ main(int ac, char **av)
 		TEST(pipe(fd));
 
 		if (TEST_RETURN == -1) {
+			retval = 1;
 			tst_resm(TFAIL, "pipe creation failed");
 			continue;
 		}
@@ -124,12 +126,19 @@ main(int ac, char **av)
 			if (greater == 0) {
 				tst_resm(TPASS, "functionality is correct");
 			} else {
+				retval = 1;
 				tst_resm(TFAIL, "read & write strings do "
 					 "not match");
 			}
+			exit(retval);
 		} else {	/* parent */
-			/* let the child carry on */
-			exit(0);
+                        /* wait for the child to finish */
+                        wait(&status);
+                        /* make sure the child returned a good exit status */
+                        e_code = status >> 8;
+                        if (e_code != 0) {
+                                tst_resm(TFAIL, "Failures reported above");
+                        }
 		}
 	}
 	cleanup();
