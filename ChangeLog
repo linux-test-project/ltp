@@ -1,3 +1,31 @@
+LTP-20031106
+- Fixed bugs in runalltests.sh with creating	( Manoj Iyer ) 
+  the results directory and locating 'pan'.
+- Created new NFS test, nfs04, which tests	( Robbie Williamson )
+  file integrity when copying across mounts.
+- Updated the SCTP testcases.			( Marty Ridgeway )
+- Fixed bugs in 'tar' shell tests.		( Glen Foster )
+- Applied patch to 'doio' for machines that	( Jun Sun )
+  have virtually indexed cache and cache 
+  aliasing problems
+- Updated mem01 and mtest01 to execute on s390  ( Robbie Williamson )
+  better.
+- Added missing parenthesis to mmstress.	( Manoj Iyer )
+- Added code to chown03 & fchown04 to set the   ( Robbie Williamson )
+  environment variable, "change_owner", if it
+  is not already set.
+- Set the clone stack size to 16384 for all	( Robbie Williamson )
+  clone() tests.
+- Applied IA64 specific patch to clone04.	( Jacky Malcles )
+- Removed test8 from stat06 b/c it was not	( Robbie Williamson )
+  valid under the SUSv3.
+- Added some extra documentation to swapon02    ( Robbie Williamson )
+  on how to handle glibc 2.2.5.
+- Resolved bug #834027 with sync02.		( Robbie Williamson )
+- Added option to log 'iostat' data during	( Robbie Williamson )
+  testing using "ltpstress.sh".			
+
+
 LTP-20031002
 - Enabled better binary compatibility between	( Robbie Williamson )
   executions on NPTL and Linuxthreads.
