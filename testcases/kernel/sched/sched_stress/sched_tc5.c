@@ -84,7 +84,7 @@
 #define DEFAULT_LOGFILE		"sched_tc5.log"
 #define TIMES			20
 #define MATRIX_SIZE    		50
-#define USAGE "Usage:  sched_tc5  [-l log] [-t type] [-p priority] [-v] [-d]\n" \
+#define USAGE "Usage:  %s  [-l log] [-t type] [-p priority] [-v] [-d]\n" \
               "        -l log      log file                             \n" \
               "        -t type     priority type 'variable' or 'fixed'  \n" \
               "        -p priority priority value                       \n" \

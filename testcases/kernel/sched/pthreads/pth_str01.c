@@ -364,7 +364,7 @@ int	doit( c_info *parent ) {
 	    for ( child = 0; child < breadth; child++ ) {
 		if ( debug ) {
 		    printf( "thread %d making child %d, ptr=%p\n", my_index,
-		      child, (unsigned int)&(info_p->threads[child]) );
+		 		       child, &(info_p->threads[child]) );
 		    fflush( stdout );
 		}
 		if ((rc = pthread_create(&(info_p->threads[child]), &attr,
@@ -374,7 +374,7 @@ int	doit( c_info *parent ) {
 		    exit( 3 );
 		} else {
 		    if ( debug ) {
-			printf( "pthread_create made thread %lx\n",
+		 		 		 printf( "pthread_create made thread %p\n",
 			  &(info_p->threads[child]) );
 			fflush( stdout );
 		    }

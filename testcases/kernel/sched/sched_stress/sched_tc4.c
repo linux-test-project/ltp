@@ -83,7 +83,7 @@
 #define DEFAULT_LOGFILE		"sched_tc4.log"
 #define BLOCK_SIZE		512
 #define TIMES			5000
-#define USAGE "Usage:  sched_tc4  [-l log] [-t type] [-p priority] [-v] [-d]\n" \
+#define USAGE "Usage:  %s  [-l log] [-t type] [-p priority] [-v] [-d]\n" \
               "        -l log      log file                             \n" \
               "        -t type     priority type 'variable' or 'fixed'  \n" \
               "        -p priority priority value                       \n" \

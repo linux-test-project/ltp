@@ -81,7 +81,7 @@
 #define DEFAULT_PRIORITY_TYPE	"variable"
 #define DEFAULT_EXECUTION_TIME	1800
 #define MATRIX_SIZE		100
-#define USAGE "Usage:  sched_tc2  [-p priority] [-t sec] [-v] [-d]      \n" \
+#define USAGE "Usage:  %s  [-p priority] [-t sec] [-v] [-d]      \n" \
               "        -t sec      execution time (default 1800 sec)    \n" \
               "        -p priority priority (default variable)          \n" \
               "        -v          verbose                              \n" \

@@ -138,9 +138,9 @@ main(int ac, char **av)
 				printf("load1 %lu\n", sys_buf->loads[0]);
 				printf("load2 %lu\n", sys_buf->loads[1]);
 				printf("load3 %lu\n", sys_buf->loads[2]);
-				printf("l1 %d\n", l1_up);
-				printf("l2 %d\n", l2_up);
-				printf("l3 %d\n", l3_up);
+		 		 		 		 printf("l1 %lu\n", l1_up);
+		 		 		 		 printf("l2 %lu\n", l2_up);
+		 		 		 		 printf("l3 %lu\n", l3_up);
 				printf("totalram %lu\n", sys_buf->totalram);
 				printf("freeram  %lu\n", sys_buf->freeram);
 				printf("sharedram %lu\n", sys_buf->sharedram);
@@ -148,7 +148,7 @@ main(int ac, char **av)
 				printf("totalswap %lu\n",
 					sys_buf->totalswap/(1024*1024));
 				printf("freeswap %lu\n", sys_buf->freeswap);
-				printf("procs %lu\n", sys_buf->procs);
+		 		 		 		 printf("procs %lu\n", (unsigned long)sys_buf->procs);
 			}
 			else {
 				tst_resm(TPASS, "Test to check the return code",

@@ -33,6 +33,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <errno.h>
+#include <string.h>
 
 #define LTPUSER		"bin"
 #define LTPGRP		"bin"

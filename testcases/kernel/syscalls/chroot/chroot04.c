@@ -125,7 +125,7 @@ setup()
                 tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
         }
 
-		 sprintf(test_dir, "%s.%d\0", cur_dir, getpid());
+		 		  sprintf(test_dir, "%s.%d", cur_dir, getpid());
 
         /*
          * create a temporary directory 

@@ -85,6 +85,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pwd.h>
+#include <time.h>
 #include "sched.h"
 
 /*
@@ -113,7 +114,7 @@
 #define DEFAULT_STRESS_PERCENTAGE	0.5
 #define DEFAULT_PROCESS_SLOTS		16
 #define DEFAULT_TIME			1.00
-#define USAGE "Usage:  sched  [-s n] [-p n] [-t n] [-d] [-v]              \n" \
+#define USAGE "Usage:  %s  [-s n] [-p n] [-t n] [-d] [-v]              \n" \
               "        -s n   stress percentage [0.0<n<1.0] (default 0.5) \n" \
               "        -p n   process slots (default 16)                  \n" \
               "        -t n   execution time in hours (default 1.0 hrs)   \n" \
@@ -207,7 +208,7 @@ int main (int argc, char **argv)
 		printf ("workslots available:  %d\n", workslots);
 		printf ("stress_percent:       %f\n", stress_percent); 
 		printf ("run-hours:            %f (hrs)\n", execution_time); 
-		printf ("runseconds:           %d (sec)\n", runseconds); 
+		 		 printf ("runseconds:           %ld (sec)\n", runseconds); 
 	}
 
 	/* 

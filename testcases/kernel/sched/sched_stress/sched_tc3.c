@@ -60,6 +60,7 @@
 |                                                                      |
 +---------------------------------------------------------------------*/
 
+#include <stdlib.h>
 #include   <signal.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -81,7 +82,7 @@
 #define DEFAULT_PRIORITY_TYPE	"variable"
 #define DEFAULT_EXECUTION_TIME	1800
 #define MATRIX_SIZE		100
-#define USAGE "Usage:  sched_tc3  [-p priority] [-v] [-d]               \n" \
+#define USAGE "Usage:  %s  [-p priority] [-v] [-d]               \n" \
               "        -p priority priority (default variable)          \n" \
               "        -v          verbose                              \n" \
               "        -d          enable debugging messages            \n"

@@ -77,7 +77,7 @@
  *
  */
 #define DEFAULT_PRIORITY_TYPE	"variable"
-#define USAGE "Usage:  sched_tc1  [-p priority] [-v] [-d]               \n" \
+#define USAGE "Usage:  %s  [-p priority] [-v] [-d]               \n" \
               "        -p priority priority (default variable)          \n" \
               "        -v          verbose                              \n" \
               "        -d          enable debugging messages            \n"

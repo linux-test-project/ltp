@@ -216,7 +216,7 @@ setup4()
 	struct stat statbuf;
 
 	/* Initialize the test directory name */
-	sprintf(tstdir, "tstdir4.d", getpid());
+		 sprintf(tstdir, "tstdir4.%d", getpid());
 	sprintf(tstdir4, "%s/tst", tstdir);
 /*
 	sprintf(tstdir4, "%s/tst", tstdir4);

@@ -96,7 +96,7 @@
 #define NAPTIME			1
 #define REAL_TIME		"1"
 #define NO_FORK			"0"
-#define USAGE "Usage:  sched_tc6  [-l log] [-t type] [-p priority] [-f] [-v] [-d]\n" \
+#define USAGE "Usage:  %s  [-l log] [-t type] [-p priority] [-f] [-v] [-d]\n" \
               "        -l log      log file                             \n" \
               "        -t type     priority type 'variable' or 'fixed'  \n" \
               "        -p priority priority value                       \n" \
@@ -341,7 +341,7 @@ int read_file (int fd, char *filename)
 {
 	int bytes_read;
 	int loop_count;
-	int total_bytes;
+		 long total_bytes;
 	off_t lseek();
 	off_t file_offset = 0;
 	int whence = 0;
