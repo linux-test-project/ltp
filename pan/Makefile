@@ -1,5 +1,4 @@
 
-CC = gcc
 LDFLAGS = -lm
 
 all: pan bump

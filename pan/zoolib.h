@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.h,v 1.1 2000/09/14 21:54:44 nstraz Exp $ */
+/* $Id: zoolib.h,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
 #ifndef ZOOLIB_H
 #define ZOOLIB_H
 
@@ -41,20 +41,8 @@
 #include <fcntl.h>
 #include <sys/signal.h>
 
-#ifdef NANNY
-#define EXTERN
-#else
-#define EXTERN extern
-#endif
-
-EXTERN int rec_signal;	/* received signal */
-EXTERN int send_signal;	/* signal to send */
-
-extern int errno;
-#ifndef linux
-extern char *sys_errlist[];
-#endif
-#define SYSERR sys_errlist[errno]
+int rec_signal;	/* received signal */
+int send_signal;	/* signal to send */
 
 int lock_file( FILE *fp, short ltype, char **errmsg );
 FILE *open_file( char *file, char *mode, char **errmsg );

@@ -30,13 +30,12 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: bump.c,v 1.1 2000/09/14 21:54:44 nstraz Exp $ */
+/* $Id: bump.c,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/signal.h>
 #include <string.h>
 
-#define NANNY /* not really */
 #include "zoolib.h"
 
 pid_t

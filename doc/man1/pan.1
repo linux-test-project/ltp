@@ -1,5 +1,5 @@
 .\"
-.\" $Id: pan.1,v 1.1 2000/09/14 21:54:44 nstraz Exp $
+.\" $Id: pan.1,v 1.2 2000/09/21 20:42:31 nstraz Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -34,7 +34,7 @@
 .SH NAME
 pan \- A light-weight driver to run tests and clean up their pgrps
 .SH SYNOPSIS
-\fBpan -n tagname [-SyAeh] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [cmd]
+\fBpan -n tagname [-SyAeh] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
 .SH DESCRIPTION
 
 Pan will run a command, as specified on the commandline, or collection of
@@ -106,6 +106,15 @@ tools or other pan processes.
 \fB-n \fItagname\fB
 The tagname by which this pan process will be known by the zoo tools.  This
 is a required argument.
+.TP 1i
+\fB-o \fIoutput_file\fB
+The file to which all test output will be saved.  Normally all test output is sent to standard output.  This includes each test's standard output and standard error.
+.TP 1i
+\fB-O \fIbuffer_directory\fB
+A directory where pan can place temporary files to capture test output.  This will prevent output from several tests mixing together in the output file.
+.TP 1i
+\fB-r \fIreport_type\fB
+This controls the type of output that pan will produce.  Supported formats are \fIrts\fP and \fInone\fP.  The default is \fIrts\fP.
 .TP 1i
 \fB-S\fP
 Causes pan to run commands (tags) sequentially, as they are listed in the

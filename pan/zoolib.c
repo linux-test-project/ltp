@@ -30,8 +30,9 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.1 2000/09/14 21:54:44 nstraz Exp $ */
+/* $Id: zoolib.c,v 1.2 2000/09/21 20:42:31 nstraz Exp $ */
 #include <stdlib.h> /* for getenv */
+#include <string.h>
 #include "zoolib.h"
 
 #define A_BUF_SZ 100
@@ -69,7 +70,7 @@ open_file( char *file, char *mode, char **errmsg )
 		/* make sure there's a file */
 		if( (fp = fopen( file, "a" )) == NULL ){
 			sprintf(Errmsg, "Unable to create file '%s'.  %s/%d  errno:%d  %s\n",
-				file, __FILE__, __LINE__, errno, SYSERR );
+				file, __FILE__, __LINE__, errno, strerror(errno));
 			return(NULL);
 		}
 		else
@@ -79,7 +80,7 @@ open_file( char *file, char *mode, char **errmsg )
 
 	if( (fp = fopen( file, mode )) == NULL ){
 		sprintf(Errmsg, "Unable to open(%s,%s).  %s/%d  errno:%d  %s\n",
-			file, mode, __FILE__, __LINE__, errno, SYSERR );
+			file, mode, __FILE__, __LINE__, errno, strerror(errno));
 		return(NULL);
 	}
 	return fp;
@@ -101,7 +102,7 @@ seek_file( FILE *fp, long int offset, int whence, char **errmsg )
 			offset,
 			whence == SEEK_SET ? "SEEK_SET" : "SEEK_END",
 			__FILE__, __LINE__,
-			errno, SYSERR );
+			errno, strerror(errno));
 		return(-1);
 	}
 	return whence;
@@ -134,7 +135,7 @@ lock_file( FILE *fp, short ltype, char **errmsg )
 		sprintf(Errmsg, "fcntl(%s) failed. %s/%d  errno:%d  %s\n",
 			ltype == F_WRLCK ? "F_WRLCK" : "F_UNLCK",
 			__FILE__, __LINE__,
-			errno, SYSERR );
+			errno, strerror(errno));
 		ret=-1;
 	}
 	sigrelse(SIGINT);
@@ -150,7 +151,6 @@ int
 write_active( FILE *fp, char *name, char **errmsg )
 {
 	pid_t pid = getpid();
-	struct flock flk;
 	char *emsg;
 
 	if( fp == NULL )
@@ -185,7 +185,6 @@ int
 write_active_args( FILE *fp, pid_t pid, char *name, int argc,
 		  char **argv, char **errmsg )
 {
-	struct flock flk;
 	char *args, *cat_args();
 	char active[81];		/* max length.. */
 	int len, l2, found;
