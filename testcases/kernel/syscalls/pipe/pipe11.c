@@ -160,6 +160,7 @@ refork:
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

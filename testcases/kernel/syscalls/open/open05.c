@@ -139,6 +139,7 @@ int main(int ac, char **av)
 	}
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

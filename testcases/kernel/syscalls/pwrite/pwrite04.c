@@ -83,7 +83,7 @@ int main(int ac, char *av[])
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
                          tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                  tst_exit();
-                 /*NOTREACHED*/
+                 return(0);
          }
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

@@ -122,7 +122,8 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
+	/*NOTREACHED*/	
+	return(0);
 }
 
 /*

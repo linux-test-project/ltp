@@ -78,8 +78,29 @@ int     local_flag;
 char progname[]= "open10()";
 
 
+int issu() {
+
+        int uid;
+
+        uid = (-1);
+        uid = geteuid();
+
+        if (uid == (-1)) {
+                fprintf(stderr,"geteuid: failed in issu()");
+                return(-1);
+        }
+
+        if ( uid == 0) {
+                return(0);
+        } else {
+                fprintf(stderr,"*** NOT SUPERUSER must be root  %s\n",progname);
+                return(uid);
+        }
+	return(0);
+}
+
 /*--------------------------------------------------------------*/
-main (int ac, char *av[])
+int main (int ac, char *av[])
 {
 	int ret;
 	struct stat buf;
@@ -148,7 +169,7 @@ main (int ac, char *av[])
 		/*--------------------------------------------------------------*/
 		/* Block0: Set up the parent directories			*/
 		/*--------------------------------------------------------------*/
-		block0:
+		//block0:
 
 		/*
 		 * Create a directory with group id the same as this process
@@ -235,9 +256,9 @@ main (int ac, char *av[])
 	/*         bit set in the creation modes and the other without. */
 	/*	   Both should inherit the group ID of the process and  */
 	/*	   maintain the setgid bit as specified in the creation */
-	/*	   modes.
+	/*	   modes.						*/
 	/*--------------------------------------------------------------*/
-	block1: 
+	//block1: 
 
 		/*
 		 * Now become user1, group1 
@@ -316,11 +337,11 @@ main (int ac, char *av[])
 	/*--------------------------------------------------------------*/
 	/* Block2: Create two files in testdir.B, one with the setgid   */
 	/*         bit set in the creation modes and the other without. */
-	/*	   Both should inherit the group ID of the parent       I/
-	/*	   directory, group2. Either file should have the segid*/
+	/*	   Both should inherit the group ID of the parent       */
+	/*	   directory, group2. Either file should have the segid */
 	/*	   bit set in the modes.				*/
 	/*--------------------------------------------------------------*/
-	block2: 
+	//block2: 
 
 		/* 
 		 * Create the file with setgid not set 
@@ -391,7 +412,7 @@ main (int ac, char *av[])
 	/*	   should inherit the group ID of the parent directory, */
 	/*	   group2 and should have the setgid bit set.		*/
 	/*--------------------------------------------------------------*/
-	block3: 
+	//block3: 
 
 		/* Become root again */
 		if ((ret = setreuid(-1, save_myuid)) < 0) {
@@ -435,7 +456,7 @@ main (int ac, char *av[])
 
 	/*--------------------------------------------------------------*/
 	/* Clean up any files created by test before call to anyfail.   */
-	/* Remove the directories.
+	/* Remove the directories.					*/
 	/*--------------------------------------------------------------*/
 		if ((ret = unlink(setgid_A)) < 0) {
 			tst_resm(TINFO, "Warning: %s not removed", setgid_A);
@@ -468,25 +489,6 @@ main (int ac, char *av[])
 
 	}
 	tst_exit();
-}
-
-issu() {
-
-        int uid;
-
-        uid = (-1);
-        uid = geteuid();
-
-        if (uid == (-1)) {
-                fprintf(stderr,"geteuid: failed in issu()");
-                return(-1);
-        }
-
-        if ( uid == 0) {
-                return(0);
-        } else {
-                fprintf(stderr,"*** NOT SUPERUSER must be root  %s\n",progname);
-                return(uid);
-        }
+	return(0);
 }
 

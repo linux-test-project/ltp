@@ -68,6 +68,8 @@
 #include <linux/personality.h>
 #undef personality
 
+extern int personality(unsigned long);
+
 void cleanup(void);
 void setup(void);
 
@@ -77,11 +79,10 @@ extern int Tst_count;
 
 #define	PER_BAD	0x00dd		/* A non-existent personality type */
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i, rval;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -119,6 +120,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*

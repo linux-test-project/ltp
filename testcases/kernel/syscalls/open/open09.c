@@ -30,7 +30,10 @@
 >AUTHOR:< PERENNIAL
 ======================================================================*/
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
+#include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -46,7 +49,7 @@ char progname[] = "open09()" ;
 char tempfile[40]="";
 
 /*--------------------------------------------------------------------*/
-main(int ac, char *av[])
+int main(int ac, char *av[])
 {
 	int	fildes ;
 	int	ret = 0 ;
@@ -71,7 +74,7 @@ main(int ac, char *av[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		local_flag = PASSED;
 
-	block0:	
+	//block0:	
 		if( (fildes = creat(tempfile,0600)) == -1) {
 			tst_resm(TBROK,"\t\t\tcan't create '%s'\n", tempfile);
 			tst_exit();
@@ -98,7 +101,7 @@ main(int ac, char *av[])
 
                 local_flag = PASSED;
 	/*--------------------------------------------------------------------*/
-	block1:	
+	//block1:	
 		if( (fildes = open( tempfile, 0 )) == -1 ) {
 			tst_resm( TFAIL, "\t\t\topen failed\n" ) ;
 			local_flag = FAILED ;
@@ -127,4 +130,5 @@ main(int ac, char *av[])
 		        tst_resm(TFAIL, "Test failed due to above failures.\n");
 		}
 	} /* end for */
+	return(0);
 }

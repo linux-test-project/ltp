@@ -61,6 +61,8 @@
 #include <linux/personality.h>
 #undef personality
 
+extern int personality(unsigned long);
+
 void cleanup(void);
 void setup(void);
 
@@ -72,11 +74,11 @@ int pers[] = {PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
 		PER_WYSEV386, PER_ISCR4, PER_BSD, PER_XENIX, PER_LINUX32,
 		PER_IRIX32, PER_IRIXN32, PER_IRIX64};
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int i, rval;
+	int i;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -136,6 +138,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return(0);
 }
 
 /*
