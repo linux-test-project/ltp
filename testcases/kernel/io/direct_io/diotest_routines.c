@@ -87,7 +87,7 @@ bufcmp(char *b1, char *b2, int bsize)
 	int i;
 
 	for (i = 0; i < bsize; i++){
-		if (strncmp(&b1[i], &b2[i], i)){
+		if (strncmp(&b1[i], &b2[i], 1)){
 			fprintf(stderr, "bufcmp: offset %d: Expected: 0x%x, got 0x%x\n",
 				i, b1[i], b2[i]);
 			return(-1);
