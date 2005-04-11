@@ -217,10 +217,16 @@ $trace_logic
 	cmp $TCtmp/testfile ${TESTFS}/${FILEPATH}/testfile
 	retval=$?
 	if [ "$retval" != 0 ]; then
-		end_testcase "Error in loop $loopcount: cmp FAILED"
+		end_testcase "Error in loop $loopcount: cmp after write FAILED"
+	fi
+	cp ${TESTFS}/${FILEPATH}/testfile $TCtmp/testfile_copy
+	cmp $TCtmp/testfile $TCtmp/testfile_copy
+	retval=$?
+	if [ "$retval" != 0 ]; then
+		end_testcase "Error in loop $loopcount: cmp after read FAILED"
 	fi
 	rm -rf ${TESTFS}/${FILEPATH}
-	rm -f $TCtmp/testfile
+	rm -f $TCtmp/testfile*
 	loopcount=$(( $loopcount + 1 ))
 	tst_resm TINFO "Completed Loop $loopcount"
     done
