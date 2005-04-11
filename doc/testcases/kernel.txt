@@ -31,6 +31,9 @@ doio
 
 		iogen - a tool for generating file/sds io for a doio process
 
+fs_di
+	A FileSystem Data Integrity test.
+
 fs_inod
 
 	Rapidly creates and deletes files through
