@@ -1,0 +1,229 @@
+#! /bin/sh
+#
+#   Copyright (c) International Business Machines  Corp., 2005
+#
+#   This program is free software;  you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY;  without even the implie; warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#   the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program;  if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+#
+#  FILE   : fs_di 
+#
+#  PURPOSE: FileSystem Data Integrity
+#	    Creates a data file of specified or random size and copies 
+#           the file to a random directory depth on a specified filesystem
+#	    The two files are compared and checked for differences. 
+#	    If the files differ, then the test fails. By default, this 
+#	    test creates a 30Mb file and runs for ten loops.
+#	               
+#
+#  SETUP: None
+#
+#
+#  HISTORY:
+#    04/11/05 Robbie Williamson (robbiew@us.ibm.com)
+#      -Written
+#
+#***********************************************************************
+
+#Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+
+$trace_logic
+
+#-----------------------------------------------------------------------
+# Initialize local variables
+#-----------------------------------------------------------------------
+TC=${TC:=fs_di}
+TCbin=${TCbin:=`pwd`}
+TCtmp=${TCtmp:=/tmp/$TC$$}
+export PATH=$PATH:$TCbin:../../../bin
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
+
+# If CLEANUP is not set; set it to "ON"
+CLEANUP=${CLEANUP:="ON"}
+usage()
+{
+    cat <<-EOF >&2
+
+    usage: ./${0##*/} -d TMPDIR [-h] [-l # of LOOPS ] [-s SIZE in Mb]
+
+    -d TMPDIR       Directory where temporary files will be created.
+    -h              Help. Prints all available options.
+    -l # of LOOPS   The number of times to run the test. Default=10.
+    -s SIZE in Mb   The size of the data file to create. Default=30Mb. A "0" means random sizes from 10-100Mb.
+    -v 		    Verbose output.
+
+    example: ./${0##*/} -d /mnt/cifsmount -l 20 -s 100
+
+
+	EOF
+exit 0
+}
+
+#=============================================================================
+# FUNCTION NAME:        end_testcase
+#
+# FUNCTION DESCRIPTION: Clean up
+#
+# PARAMETERS:   	None.
+#
+# RETURNS:      	None.
+#=============================================================================
+end_testcase()
+{
+$trace_logic
+    if [ "$CLEANUP" = "ON" ]; then
+	rm -rf $TCtmp
+	rm -rf ${TESTFS}
+    fi
+
+    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+    tst_resm TFAIL "Test Failed: $@"
+    exit 1
+}
+
+#=============================================================================
+# FUNCTION NAME:        setup_testcase
+#
+# FUNCTION DESCRIPTION: Perform the setup function for the testcase.
+#
+# PARAMETERS:   	None.
+#
+# RETURNS:      	None.
+#=============================================================================
+$trace_logic
+    TMPBASE=0
+    LOOPS=10
+    SIZE=30
+    RANDOM_SIZE=0
+    while getopts d:hl:s:v arg
+    do  
+	case $arg in
+
+        d)  # append $$ to TMP, as it is recursively
+            # removed at end of script.
+            TMPBASE=$OPTARG
+            TMP="${TMPBASE}/fs_di-$$"
+            export TESTFS="$TMP";;
+
+        h)  usage
+	    exit 0;;
+   
+        l)  # Execute user defined number of loops.
+            LOOPS=$OPTARG;;
+
+        s)  # Size of data file to create
+            SIZE=$OPTARG
+	    if [ $SIZE -eq 0 ]; then
+              RANDOM_SIZE=1
+	    fi;;	
+
+	v)  # Verbose
+	    trace_logic=${trace_logic:-"set -x"};;
+	
+       \?) usage
+	   exit 0;;
+       esac
+    done
+    if [ $TMPBASE == "0" ]; then
+      tst_resm TBROK "You must specify the target directory [-d]"
+      exit 1
+    fi 
+    export TST_COUNT=$LOOPS
+
+    echo ""
+    echo "Test Options:"
+    echo " Tested Filesystem: $TESTFS"
+    echo "             Loops: $LOOPS"
+    if [ $RANDOM_SIZE -eq 0 ];then
+	    echo "    Data File Size: $SIZE"
+    else
+	    echo "    Data File Size: Random"
+    fi
+    sleep 5
+
+    $trace_logic
+    mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
+    chmod 777 $TCtmp
+    mkdir -p $TESTFS || end_testcase "Could not create $TESTFS"
+    chmod 777 $TESTFS
+
+
+#=============================================================================
+# FUNCTION NAME:        main
+#
+# FUNCTION DESCRIPTION: Perform the test
+#
+# PARAMETERS:   	None.
+#
+# RETURNS:      	None.
+#=============================================================================
+  loopcount=0
+  tst_resm TINFO "Test Started"
+  while [ $loopcount -lt $LOOPS ]
+    do
+	if [ $RANDOM_SIZE -eq 1 ]; then
+  	  SIZE=$RANDOM
+	  let "SIZE %= 100"
+	  while [ $SIZE -lt 10 ]
+	    do
+              SIZE=$RANDOM
+              let "SIZE %= 100"
+ 	    done
+        fi
+  	create_datafile $SIZE $TCtmp/testfile >/dev/null
+	  if [ $? != 0 ]; then
+		end_testcase "Could not create testfile of size ${SIZE}Mb"
+	  fi
+	RANDOM_DEPTH=$RANDOM 
+	let "RANDOM_DEPTH %= 500"
+
+	RANDOM_LENGTH=$RANDOM
+	let "RANDOM_LENGTH %= 500"
+	RANDOM_LENGTH=$(( $RANDOM_LENGTH / 10 ))
+
+	NameCount=0
+	DepthCount=0
+	FILEPATH=""
+	while [ $DepthCount -lt $RANDOM_DEPTH ]
+	  do
+	      if [ $NameCount -lt $RANDOM_LENGTH ]; then
+		 FILEPATH=${FILEPATH}X
+		 NameCount=$(( $NameCount + 1 ))
+	      else
+		 FILEPATH=${FILEPATH}/
+		 NameCount=0
+	      fi
+	      DepthCount=$(( $DepthCount + 1 ))
+	  done
+	mkdir -p ${TESTFS}/${FILEPATH} || end_testcase "Could not create ${TESTFS}/${FILEPATH}"
+	chmod -R 777 $TESTFS
+
+	cp $TCtmp/testfile ${TESTFS}/${FILEPATH}
+	cmp $TCtmp/testfile ${TESTFS}/${FILEPATH}/testfile
+	retval=$?
+	if [ "$retval" != 0 ]; then
+		end_testcase "Error in loop $loopcount: cmp FAILED"
+	fi
+	rm -rf ${TESTFS}/${FILEPATH}
+	rm -f $TCtmp/testfile
+	loopcount=$(( $loopcount + 1 ))
+	tst_resm TINFO "Completed Loop $loopcount"
+    done
+  end_testcase
+
+
