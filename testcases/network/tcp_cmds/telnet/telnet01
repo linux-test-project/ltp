@@ -93,7 +93,7 @@ while {$count < $LOOPCOUNT} {
       expect -re "#"
 
       # Run passwd command - and respond to its prompts
-      send "ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r" 
+      send "LC_ALL=C ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r" 
       # When shell prompt comes back, logout
 
       expect -re "#"
