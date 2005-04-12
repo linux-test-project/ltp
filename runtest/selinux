@@ -1,3 +1,4 @@
+#DESCRIPTION:Security-Enhanced Linux
 SELinux01	selinux_capable_file.sh
 SELinux02	selinux_capable_net.sh
 SELinux03	selinux_capable_sys.sh
