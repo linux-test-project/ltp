@@ -94,6 +94,7 @@ do_setup()
    cd $TCtmp
 
    rsh -n -l root $RHOST mkdir -p $TCtmp
+   rsh -n -l root $RHOST chown -R ${RUSER} $TCtmp
    [ $? = 0 ] || echo "Check .rhosts file on remote machine."
 }
 
