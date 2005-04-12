@@ -237,6 +237,8 @@ getitimer01 getitimer01
 getitimer02 getitimer02
 getitimer03 getitimer03
 
+getpagesize01 getpagesize01
+
 getpeername01 getpeername01
 
 getpgid01 getpgid01
