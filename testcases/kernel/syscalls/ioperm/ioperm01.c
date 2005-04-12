@@ -115,7 +115,7 @@ main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "ioperm() failed for port address "
-				 "%l,  errno=%d : %s", io_addr,
+				 "%ld,  errno=%d : %s", io_addr,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "ioperm() passed for port "
