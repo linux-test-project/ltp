@@ -64,11 +64,12 @@ test02()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #2: fdreceive passed."
-		return 0
+		RC=0
 	else
 		echo "Test #2: fdreceive failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test03()
@@ -86,11 +87,12 @@ test03()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #3: fdreceive passed."
-		return 0
+		RC=0
 	else
 		echo "Test #3: fdreceive failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 cleanup()
@@ -111,7 +113,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC

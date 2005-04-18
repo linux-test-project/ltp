@@ -51,11 +51,12 @@ test02()
 	if [ $RC -ne 0 ]
         then
                 echo "Test #2: exectrace passed."
-		return 0
+		RC=0
         else
                 echo "Test #2: exectrace failed."
-		return 1
+		RC=1
         fi
+	return $RC
 }
 
 cleanup()

@@ -80,11 +80,11 @@ test03()
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
 		echo "Test #3: capable_file failed."
-		return 1
+		RC=1
 	else
 		echo "Test #3: capable_file passed."
-		return 0 
 	fi
+	return $RC
 }
 
 test04()
@@ -140,11 +140,12 @@ test06()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #6: capable_file passed."
-		return 0
+		RC=0
 	else
 		echo "Test #6: capable_file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 	
 test07()
@@ -160,11 +161,12 @@ test07()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #7: capable_file passed."
-		return 0
+		RC=0
 	else
 		echo "Test #7: capable_file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test08()
@@ -182,11 +184,11 @@ test08()
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
 		echo "Test #8: capable_file passed."
-		return 0
 	else
 		echo "Test #8: capable_file failed."
-	 	return 1	
+	 	RC=1	
 	fi 
+	return $RC
 }
 
 test09()
@@ -201,11 +203,12 @@ test09()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #9: capable_file passed."
-		return 0
+		RC=0
 	else
 		echo "Test #9: capable_file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test10()
@@ -220,11 +223,12 @@ test10()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #10: capable_file passed."
-		return 0
+		RC=0
 	else
 		echo "Test #10: capable_file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 cleanup()
@@ -242,7 +246,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC

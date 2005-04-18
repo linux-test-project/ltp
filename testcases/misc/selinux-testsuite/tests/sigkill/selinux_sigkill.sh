@@ -18,6 +18,7 @@ setup()
 	# Start the process that will receive the signal.
 	runcon -t test_kill_server_t selinux_sigkill_server &
 	PID=$!
+
 	sleep 1; # Give it a moment to initialize.
 }
 
@@ -33,11 +34,12 @@ test01()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #1: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #1: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test02()
@@ -52,11 +54,12 @@ test02()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #2: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #2: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test03()
@@ -71,11 +74,12 @@ test03()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #3: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #3: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test04()
@@ -90,11 +94,12 @@ test04()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #4: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #4: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test05()
@@ -109,11 +114,12 @@ test05()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #5: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #5: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test06()
@@ -128,11 +134,12 @@ test06()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #6: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #6: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test07()
@@ -147,11 +154,12 @@ test07()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #7: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #7: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test08()
@@ -166,11 +174,12 @@ test08()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #8: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #8: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test09()
@@ -185,11 +194,12 @@ test09()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #9: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #9: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test10()
@@ -204,11 +214,12 @@ test10()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #10: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #10: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test11()
@@ -223,11 +234,12 @@ test11()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #11: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #11: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test12()
@@ -242,11 +254,12 @@ test12()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #12: sigkill passed."
-		return 0
+		RC=0
 	else
 		echo "Test #12: sigkill failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test13()
@@ -336,7 +349,7 @@ test16()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC

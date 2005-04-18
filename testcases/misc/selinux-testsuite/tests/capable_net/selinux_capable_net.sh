@@ -95,11 +95,12 @@ test04()
         if [ $RC -ne 0 ]
         then
                 echo "Test #4: capable_net passed."
-		return 0
+		RC=0
         else
                 echo "Test #4: capable_net failed."
-		return 1
+		RC=1
         fi
+	return $RC
 }
 
 # CAP_NET_BIND_SERVICE; included in can_network by fedora policy
@@ -117,11 +118,12 @@ test05()
         if [ $RC -ne 0 ]
         then
                 echo "Test #5: capable_net passed."
-		return 0
+		RC=0
         else
                 echo "Test #5: capable_net failed."
-		return 1
+		RC=1
         fi
+	return $RC
 }
 
 
@@ -134,7 +136,7 @@ test05()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC

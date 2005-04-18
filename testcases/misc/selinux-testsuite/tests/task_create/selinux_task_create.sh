@@ -40,11 +40,12 @@ test02()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #2: task_create passed."
-		return 0
+		RC=0
 	else
 		echo "Test #2: task_create failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 # Function:     main

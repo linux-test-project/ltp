@@ -12,6 +12,7 @@
 #  Basic Message Queue Test Cases                                   #
 # ================================================================= #
 
+set -x
 # First time should just get the resource
 test01()
 {
@@ -99,18 +100,20 @@ test04()
 	if [ ! $ipcid2 ]
 	then
 		echo "Test#4:msg failed:Invalid output from selinux_msgget."
-		return 1
+		RC=1
+		return $RC 
 	fi
 	
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
 		echo "Test #4: msg passed"
-		return 0
+		RC=0
 	else
 		echo "Test #4: msg failed"
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test05()
@@ -143,11 +146,12 @@ test06()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #6: msg passed."
-		return 0 
+		RC=0 
 	else
 		echo "Test #6: msg failed."
-		return 1 
+		RC=1 
 	fi
+	return $RC
 }
 
 # ================================================================= #
@@ -172,11 +176,12 @@ test07()
 	if [ $result = "-$number" ]
 	then
 		echo "Test #7: msg passed."
-		return 0 
+		RC=0 
 	else
 		echo "Test #7: msg failed."
-		return 1 
+		RC=1 
 	fi
+	return $RC
 }	
 
 test08()
@@ -197,11 +202,12 @@ test08()
 	if [ $result = 0 ]
 	then
 		echo "Test #8: msg passed."
-		return 0 
+		RC=0 
 	else
 		echo "Test #8: msg failed."
-		return 1 
+		RC=1 
 	fi
+	return $RC
 }
 
 # ================================================================= #
@@ -230,7 +236,8 @@ test09()
 	if [ ! $ipcid ]
 	then
 		echo "Test #9:msg failed:Invalid output from selinux_msgget."
-		return 1
+		RC=1
+		return $RC
 	fi
 
 	runcon -t test_ipc_base_t ipcrm msg $ipcid
@@ -282,11 +289,12 @@ test11()
 	if [ $RC -ne 0 ]	#write denied
 	then
 		echo "Test #11: msg passed."
-		return 0
+		RC=0
 	else
 		echo "Test #11: msg failed."
-		return 1
+		RC=1
 	fi	
+	return $RC
 }
 
 test12()
@@ -352,11 +360,12 @@ test15()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #15: msg passed."
-		return 0
+		RC=0
 	else
 		echo "Test #15: msg failed."
-		return 1
+		RC=1
 	fi	
+	return $RC
 }
 
 cleanup()

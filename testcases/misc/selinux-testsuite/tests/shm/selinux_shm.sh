@@ -116,11 +116,12 @@ test05()
 	if [ $ipcid2 = $ipcid ]
 	then
 		echo "Test #5: shm passed."
-		return 0
+		RC=0
 	else
 		echo "Test #5: shm failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test06()
@@ -135,11 +136,12 @@ test06()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #6: shm passed."
-		return 0
+		RC=0
 	else
 		echo "Test #6: shm failed."
-		return 1
+		RC=1	
 	fi
+	return $RC
 }
 
 # ================================================================= #
@@ -167,11 +169,12 @@ test07()
         if [ $result = "-$number" ]
         then
                 echo "Test #7: shm passed."
-                return 0
+                RC=0
         else
                 echo "Test #7: shm failed."
-                return 1
+                RC=1
         fi
+	return $RC
 }
 
 test08()
@@ -192,11 +195,12 @@ test08()
         if [ $result = 0 ]
         then
                 echo "Test #8: shm passed."
-                return 0
+                RC=0
         else
                 echo "Test #8: shm failed."
-                return 1
+                RC=1
         fi
+	return $RC
 }
 
 # ================================================================= #
@@ -232,11 +236,12 @@ test10()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #10: shm passed."
-		return 0
+		RC=0
 	else
 		echo "Test #10: shm failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 	
 

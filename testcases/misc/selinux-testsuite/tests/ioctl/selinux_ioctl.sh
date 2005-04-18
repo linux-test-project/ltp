@@ -77,7 +77,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 cleanup

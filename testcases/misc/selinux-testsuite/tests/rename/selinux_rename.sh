@@ -111,11 +111,12 @@ test04()
         if [ $RC -ne 0 ]
         then
                 echo "Test #4: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #4: rename failed."
-		return 1
+		RC=1
         fi
+	return $RC
 }
 
 test05()
@@ -131,11 +132,12 @@ test05()
         if [ $RC -ne 0 ]
         then
                 echo "Test #5: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #5: rename failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test06()
@@ -151,11 +153,12 @@ test06()
         if [ $RC -ne 0 ]
         then
                 echo "Test #6: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #6: rename failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test07()
@@ -175,11 +178,12 @@ test07()
         if [ $RC -ne 0 ]
         then
                 echo "Test #7: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #7: rename failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test08()
@@ -196,11 +200,12 @@ test08()
         if [ $RC -ne 0 ]
         then
                 echo "Test #8: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #8: rename failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test09()
@@ -216,11 +221,12 @@ test09()
         if [ $RC -ne 0 ]
         then
                 echo "Test #9: rename passed."
-		return 0
+		RC=0
         else
                 echo "Test #9: rename failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 cleanup()
@@ -238,7 +244,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC

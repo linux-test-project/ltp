@@ -22,11 +22,12 @@ test01()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #1: domain_trans passed."
-		return 0
+		RC=0
 	else
 		echo "Test #1: domain_trans failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test02()

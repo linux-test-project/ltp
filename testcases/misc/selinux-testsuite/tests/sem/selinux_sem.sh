@@ -67,11 +67,12 @@ test03()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #3: sem passed."
-		return 0 
+		RC=0 
 	else
 		echo "Test #3: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test04()
@@ -152,11 +153,12 @@ test07()
 	if [ $ipcid = $ipcid2 ]
 	then
 		echo "Test #7: sem passed."
-		return 0
+		RC=0
 	else
 		echo "Test #7: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test08()
@@ -195,11 +197,12 @@ test09()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #9: sem passed."
-		return 0
+		RC=0
 	else
 		echo "Test #9: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 # ================================================================= #
@@ -224,11 +227,12 @@ test10()
 	if [ $result = "-$number" ]
 	then
 		echo "Test #10: sem passed."
-		return 0
+		RC=0
 	else
 		echo "Test #10: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test11()
@@ -249,11 +253,12 @@ test11()
 	if [ $result = 0 ]
 	then
 		echo "Test #11: sem passed."
-		return 0
+		RC=0
 	else
 		echo "Test #11: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 # ================================================================= #
@@ -288,11 +293,12 @@ test13()
 	if [ $RC -ne 0 ]
 	then
 		echo "Test #13: sem passed."
-		return 0
+		RC=0
 	else
 		echo "Test #13: sem failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 cleanup()

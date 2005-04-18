@@ -32,11 +32,12 @@ test01()
         if [ $RC -ne 0 ]
         then
 		echo "Test #1: entrypoint passed."
-		return 0
+		RC=0
 	else
 		echo "Test #1: entrypoint failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test02()
@@ -75,7 +76,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup 
 test01 || exit $RC
 test02 || exit $RC
 cleanup

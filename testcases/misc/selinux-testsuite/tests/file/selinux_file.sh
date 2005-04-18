@@ -208,11 +208,12 @@ test08()
         if [ $RC -ne 0 ]
         then
                 echo "Test #8: file passed."
-		return 0
+		RC=0
         else
                 echo "Test #8: file failed."
-		return 1
+		RC=1
         fi
+	return $RC
 }
 
 #
@@ -253,11 +254,12 @@ test10()
         if [ $RC -ne 0 ]
         then
                 echo "Test #10: file passed."
-		return 0
+		RC=0
         else
                 echo "Test #10: file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 test11()
 {
@@ -271,11 +273,12 @@ test11()
         if [ $RC -ne 0 ]
         then
                 echo "Test #11: file passed."
-		return 0
+		RC=0
         else
                 echo "Test #11: file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test12()
@@ -290,11 +293,12 @@ test12()
         if [ $RC -ne 0 ]
         then
                 echo "Test #12: file passed."
-		return 0
+		RC=0
         else
                 echo "Test #12: file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 test13()
@@ -334,11 +338,12 @@ test14()
         if [ $RC -ne 0 ]
         then
                 echo "Test #14: file passed."
-		return 0
+		RC=0
         else
                 echo "Test #14: file failed."
-		return 1
+		RC=1
 	fi
+	return $RC
 }
 
 cleanup()
@@ -361,7 +366,7 @@ cleanup()
 #
 RC=0    # Return value from setup, and test functions.
 
-setup  || exit $RC
+setup  
 test01 || exit $RC
 test02 || exit $RC
 test03 || exit $RC
