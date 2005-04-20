@@ -1,0 +1,48 @@
+These testcases test the SELinux Security Module.
+
+A kernel with SELinux configured, and SELinux policy and userspace
+tools installed, are required to build and run the SELinux testsuite. 
+Also, /usr/sbin should be included in PATH to ensure SELinux utilities
+such as getenforce are found. The test_selinux.sh script adds /usr/sbin
+to the PATH. 
+
+You must first do a top-level 'make' and 'make install' to build and
+install the LTP test harness, libraries and tools.
+From the top of your LTP directory, i.e. .../ltp-full-<version>,
+execute the following,
+	make
+	make install (must be root)
+
+To build the testsuite, you must first compile the testcases and then 
+install them. Thus, change into the selinux-testsuite directory
+and from the command line execute the following,
+	make 
+	make install (must be root)
+
+To run the testsuite, change to the top level directory within
+the LTP tree. From the top level directory cd to the testscripts
+directory and from the command line execute,
+	./test_selinux.sh
+
+to start the test_selinux.sh script. This script builds the test policy 
+in the selinux-testsuite/policy directory and runs the testsuite.
+After the testcases have completed, the test policy will be removed and
+the original policy will be restored. Thus, if the test_selinux.sh
+script is not allowed to complete, you will manually have to restore
+your system's original policy. This can be done by changing
+to the the selinux-testsuite/policy directory and from
+the commandline, issue a "make cleanup" to remove the test policy
+and restore the original policy.
+
+Results of the test run can be found in the results directory,
+which resides in the top-level LTP directory.
+Currently, 3 files should exist in the results directory after 
+the selinux-testsuite has been run,
+	selinux   
+	selinux.logfile
+	selinux.outfile
+
+The 'selinux' file is known as the active-file.
+It contains tgas, pids, and commands being run.
+The 'selinux.logfile' contains exit information for each command run.
+The 'selinux.outfile' contains all test output. 
