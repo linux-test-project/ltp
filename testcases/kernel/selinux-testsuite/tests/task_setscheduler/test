@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+use Test;
+BEGIN { plan tests => 2}
+
+$basedir = $0;  $basedir =~ s|(.*)/[^/]*|$1|;
+
+# Start the process that will have its priority and scheduling changed.
+if ( ($pid = fork()) == 0 ) {
+	exec "runcon -t test_setsched_target_t $basedir/target";
+}
+
+sleep 1; # Give it a second to start
+
+# Verify that test_setsched_yes_t can change the scheduling.
+# SCHED_OTHER	0	priority must == 0
+# SCHED_FIFO	1	priority 1..99
+# SCHED_RR	2	priority 1..99
+$result = system "runcon -t test_setsched_yes_t -- $basedir/source $pid 2 1 2>&1";
+ok($result, 0); 
+
+# Verify that test_setsched_no_t cannot change the scheduling.
+$result = system "runcon -t test_setsched_no_t -- $basedir/source $pid 2 1 2>&1";
+ok($result, 256); 
+
+# Kill the target
+kill KILL, $pid;
+
+exit;
