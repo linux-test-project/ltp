@@ -91,7 +91,12 @@ int main (argc, argv)
 
 	/* now try to use the tty device, and it should fail
 	*/
-	if (acct( "/dev/tty0" ) == -1) {
+ /* if platform is s390 or s390x then use device ttyS0 */
+#if defined (__s390__) || (__s390x__)
+	if (acct( "/dev/ttyS0" ) == -1) {
+#else
+	if (acct( "/dev/tty1" ) == -1) {
+#endif
 		if ( (errno==ENODEV) && (acct("/dev/tty") != -1) ) {
 			tst_resm(TFAIL, "%s - attempting to assign acct file to tty: expected failure but got okay return\n");
 			tst_exit();
@@ -101,13 +106,8 @@ int main (argc, argv)
 
 	/* check the errno, for EACCESS */
 	if( errno != EACCES ) {
- /* if platform is s390 or s390x then the device tty0 does not exist and we should not check */
-#if defined (__s390__) || (__s390x__)
-                tst_resm(TPASS,"EACCES test for tty0 is not valid on s390/s390x\n");
-#else
                 tst_resm(TFAIL,"Attempt to use non-ordinary file didn't receive EACCESS error - received %d\n",errno);
                 tst_exit();
-#endif
 	} else tst_resm(TPASS,"Received expected error: EACCESS");
 
 
