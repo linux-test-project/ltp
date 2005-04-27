@@ -46,6 +46,8 @@
 #include "test.h"
 #include "usctest.h"
 
+#define MAXTIME 300		/* Maximum # of secs to wait before failing */
+
 char *TCID="nptl01";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
@@ -196,11 +198,18 @@ void create_child_thread(char* buf, size_t buf_len)
     }
 }
 
+void trap_alarm(int sig) {
+    tst_brkm(TFAIL, cleanup, "Test hang longer than %d sec detected", MAXTIME);
+}
+
 int main(int argc, char** argv)
 {
 #ifdef USING_NPTL
     char buf[1024];
     int i;
+
+    signal(SIGALRM, trap_alarm);
+    alarm(MAXTIME);
 
     call_mutex_init(&req, buf, sizeof(buf));
     call_mutex_init(&ack, buf, sizeof(buf));
@@ -234,6 +243,7 @@ int main(int argc, char** argv)
 	call_mutex_lock(&ack, buf, sizeof(buf));
     }
 
+    alarm(0);
     tst_resm(TPASS,"Test completed successfully!");
     cleanup();
 
