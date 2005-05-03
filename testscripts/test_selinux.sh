@@ -28,7 +28,7 @@ fi
 
 # set the PATH to include testcase/bin
 
-export PATH=$PATH:$LTPROOT/testcases/bin
+export PATH=$PATH:/usr/sbin:$LTPROOT/testcases/bin
 export LTPBIN=$LTPROOT/testcases/bin
 
 # We will store the logfiles in $LTPROOT/results, so make sure
@@ -62,8 +62,8 @@ fi
 # build and install the test policy...
 echo "building and installing test policy..."
 
-cd $LTPROOT/testcases/misc/selinux-testsuite/policy
-make load > /dev/null
+cd $LTPROOT/testcases/kernel/security/selinux-testsuite/policy
+make load 
 if [ $? != 0 ]; then
   echo "Failed to build test policy, therefore aborting test run."
   exit 1
@@ -80,13 +80,15 @@ echo "Running the SELinux testsuite..."
 # it needs to have the test_file_t for testcases to run successfully. 
 # Each component of path needs this type. 
 # Save and restore /tmp's type.
-SAVETMPTYPE=`ls -Zd /tmp | awk -F: '{ print $3 }'`
+SAVETMPTYPE=`ls -Zd /tmp | awk '{ print $4 }' | awk -F: '{ print $3 }'`
 chcon -t test_file_t /tmp
 
 mkdir /tmp/selinux > /dev/null 2>&1
 chcon -t test_file_t /tmp/selinux
 
 # The ../testcases/bin directory needs to have the test_file_t type.
+# Save and restore later.
+SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
 chcon -R -t test_file_t $LTPROOT/testcases/bin
 
 $LTPROOT/pan/pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/results/selinux.logfile -o $LTPROOT/results/selinux.outfile -p -f $LTPROOT/runtest/selinux  
@@ -97,8 +99,11 @@ $LTPROOT/pan/pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/resul
 chcon -t $SAVETMPTYPE /tmp
 rm -rf /tmp/selinux
 
+# Restore type of .../testcases/bin directory
+chcon -R -t $SAVEBINTYPE $LTPROOT/testcases/bin
+
 echo "Removing test policy and reloading original policy..."
-cd $LTPROOT/testcases/misc/selinux-testsuite/policy
+cd $LTPROOT/testcases/kernel/security/selinux-testsuite/policy
 make cleanup > /dev/null
 if [ $? != 0 ]; then
   echo "Failed to reload original policy."
