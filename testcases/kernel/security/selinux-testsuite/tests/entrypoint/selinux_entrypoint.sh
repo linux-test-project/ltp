@@ -27,7 +27,7 @@ test01()
 
 	# Verify that test_entrypoint_t cannot be entered 
 	# via an ordinary program.
-	runcon -t test_entrypoint_t $LTPTMP/true 2>&1
+	runcon -t test_entrypoint_t true 2>&1
 	RC=$?   # this should fail
         if [ $RC -ne 0 ]
         then
