@@ -22,10 +22,30 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: childmain.c,v 1.4 2005/05/04 17:52:09 mridge Exp $
 * $Log: childmain.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:52:09  mridge
+* Update to version 1.2.8
+*
+* Revision 1.16  2005/05/03 16:24:38  yardleyb
+* Added needed code changes to support windows
+*
+* Revision 1.15  2005/04/28 21:25:17  yardleyb
+* Fixed up some issues with AIX compilation due to the change made
+* in endian support in Linux.
+*
+* Revision 1.14  2004/12/18 06:13:03  yardleyb
+* Updated timer schema to more accurately use the time options.  Added
+* fsync on write option to -If.
+*
+* Revision 1.13  2004/12/17 06:34:56  yardleyb
+* removed -mf -ml.  These mark options cause to may issues when using
+* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
+* false data misscompare during multiple cycles.
+*
+* Revision 1.12  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.11  2003/09/12 21:23:01  yardleyb
 * The following isses have been fixed:
@@ -139,6 +159,7 @@
 #include <ctype.h>
 
 #include "defs.h"
+#include "globals.h"
 #include "main.h"
 #include "sfunc.h"
 #include "threading.h"
@@ -146,15 +167,13 @@
 #include "io.h"
 #include "dump.h"
 
-action_t get_next_action(child_args_t *args, const OFF_T mask)
+action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 {
-	extern void *shared_mem;		/* global pointer to shared memory */
-	extern time_t global_end_time;	/* overall end time of test */
-	extern stats_t cycle_stats;		/* per cycle statistics */
+/*	extern time_t global_end_time; */			/* overall end time of test */
 	
-	OFF_T *pVal1 = (OFF_T *)shared_mem;
+	OFF_T *pVal1 = (OFF_T *)env->shared_mem;
 	OFF_T *tmpLBA;
-	unsigned char *wbitmap = (unsigned char *)shared_mem + BMP_OFFSET;
+	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
 
 	short blk_written = 1;
 	unsigned long i;
@@ -165,11 +184,12 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 
 	/* pick an operation */
 	if(args->flags & CLD_FLG_RANDOM) {
-		if((((cycle_stats.wcount)*100)/(((cycle_stats.rcount)+1)+(cycle_stats.wcount))) >= (args->wperc)) {
+		if((((env->cycle_stats.wcount)*100)/(((env->cycle_stats.rcount)+1)+(env->cycle_stats.wcount))) >= (args->wperc)) {
 			args->test_state = SET_OPER_R(args->test_state);
 		} else {
 			args->test_state = SET_OPER_W(args->test_state);
 		}
+		PDBG5(DEBUG, args, "W:%.2f%% R:%.2f%%\n",  100*((double)(env->cycle_stats.wcount)/((double)env->cycle_stats.rcount+(double)env->cycle_stats.wcount)), 100*((double)(env->cycle_stats.rcount)/((double)env->cycle_stats.wcount+(double)env->cycle_stats.rcount)));
 	} else if((args->flags & CLD_FLG_NTRLVD) && !TST_wFST_TIME(args->test_state)) {
 		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W))
 			args->test_state = CNG_OPER(args->test_state);
@@ -185,10 +205,10 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 		} else {
 			do {
 				target.trsiz = (rand()&0xFF) + args->ltrsiz;
-				if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
+				if((args->flags & CLD_FLG_SKS) && (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks))
 					break;
-				if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
-					break;
+/*				if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time)) */
+/*					break; */
 			} while(target.trsiz > args->htrsiz);
 			last_trsiz = target.trsiz;
 		}
@@ -227,10 +247,10 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 		target.lba = *(tmpLBA);
 	} else if (args->flags & CLD_FLG_RANDOM) {
 		do {
-			if((args->flags & CLD_FLG_SKS) && (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks))
+			if((args->flags & CLD_FLG_SKS) && (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks))
 				break;
-			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
-				break;
+/*			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time)) */
+/*				break; */
 			target.lba = (Rand64()&mask) + args->start_lba;
 			target.lba = ALIGN(target.lba, target.trsiz);
 		} while((target.lba+target.trsiz) > args->stop_lba);
@@ -241,7 +261,7 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 		 * a cycle has been completed.
 		 */
 		if(!(args->flags & (CLD_FLG_TMD|CLD_FLG_SKS)) && (args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_R) &&
-			(((cycle_stats.rcount*100)/(args->seeks+1)) >= 80)) {
+			(((env->cycle_stats.rcount*100)/(args->seeks+1)) >= 80)) {
 				target.oper = NONE;
 		}
 	}
@@ -250,21 +270,21 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 		&& !(args->flags & CLD_FLG_RANDOM)
 		&& (args->flags & CLD_FLG_W)
 		&& (args->flags & CLD_FLG_R)) {
-			if(((target.oper == WRITER) ? cycle_stats.wcount : cycle_stats.rcount) >= (args->seeks/2)) {
+			if(((target.oper == WRITER) ? env->cycle_stats.wcount : env->cycle_stats.rcount) >= (args->seeks/2)) {
 				target.oper = NONE;
 			}
 	}
 
 	/* get out if exceeded one of the following */
 	if((args->flags & CLD_FLG_SKS)
-		&& (((cycle_stats.wcount)+(cycle_stats.rcount)) >= args->seeks)) {
+		&& (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks)) {
 			target.oper = NONE;
 	}
 
-	if((args->flags & CLD_FLG_TMD)
-		&& (time(NULL) >= global_end_time)) {
-			target.oper = NONE;
-	}
+/*	if((args->flags & CLD_FLG_TMD) */
+/*		&& (time(NULL) >= global_end_time)) { */
+/*			target.oper = NONE; */
+/*	} */
 
 	if((target.oper == READER) && (args->flags & CLD_FLG_CMPR) && (args->flags & CLD_FLG_W)) {
 		for(i=0;i<target.trsiz;i++) {
@@ -293,46 +313,43 @@ action_t get_next_action(child_args_t *args, const OFF_T mask)
 	}
 
 #ifdef WINDOWS
-	PDBG5(DEBUG, "%I64d, %I64d, %I64d, %I64d\n", cycle_stats.wcount, cycle_stats.rcount, args->seeks, args->stop_lba);
+	PDBG5(DEBUG, args, "%I64d, %I64d, %I64d, %I64d\n", env->cycle_stats.wcount, env->cycle_stats.rcount, args->seeks, args->stop_lba);
 #else
-	PDBG5(DEBUG, "%lld, %lld, %lld, %lld\n", cycle_stats.wcount, cycle_stats.rcount, args->seeks, args->stop_lba);
+	PDBG5(DEBUG, args, "%lld, %lld, %lld, %lld\n", env->cycle_stats.wcount, env->cycle_stats.rcount, args->seeks, args->stop_lba);
 #endif
 
 	if(target.oper == WRITER) {
-		(cycle_stats.wcount)++;
+		(env->cycle_stats.wcount)++;
 		if((args->flags & CLD_FLG_LUND))
 			*(pVal1+OFF_RLBA) = *(pVal1+OFF_WLBA);
 		*(pVal1+OFF_WLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
 		if(TST_wFST_TIME(args->test_state)) args->test_state = CLR_wFST_TIME(args->test_state);
 	}
 	if(target.oper == READER) {
-		(cycle_stats.rcount)++;
+		(env->cycle_stats.rcount)++;
 		*(pVal1+OFF_RLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
 		if(TST_rFST_TIME(args->test_state)) args->test_state = CLR_rFST_TIME(args->test_state);
 	}
 	return target;
 }
 
-void miscompare_dump(const unsigned char *expected, const unsigned char *actual, const size_t buf_len, OFF_T tPosition)
+void miscompare_dump(child_args_t *args, const unsigned char *expected, const unsigned char *actual, const size_t buf_len, OFF_T tPosition)
 {
 	FILE *fpDumpFile;
-	pid_t my_pid;
 	char obuff[80];
 
-	my_pid = GETPID();
-
 	obuff[0] = 0;
-	sprintf(obuff, "dump_%d.dat", my_pid);
+	sprintf(obuff, "dump_%d.dat", args->pid);
 	fpDumpFile = fopen(obuff, "a");
 
 	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n");
-    pMsg(ERR, DMSTR, tPosition, tPosition);
+    pMsg(ERR, args, DMSTR, tPosition, tPosition);
 	if(fpDumpFile) fprintf(fpDumpFile, DMSTR, tPosition, tPosition);
-	pMsg(ERR, "EXPECTED:\n");
+	pMsg(ERR, args, "EXPECTED:\n");
 	if(fpDumpFile) fprintf(fpDumpFile, "********** EXPECTED: **********\n\n\n");
 	dump_data(stdout, expected, 16, 16, FMT_STR);
 	if(fpDumpFile) dump_data(fpDumpFile, expected, buf_len, 16, FMT_STR);
-	pMsg(ERR, "ACTUAL:\n");
+	pMsg(ERR, args, "ACTUAL:\n");
 	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n********** ACTUAL: **********\n\n\n\n");
 	dump_data(stdout, actual, 16, 16, FMT_STR);
 	if(fpDumpFile) dump_data(fpDumpFile, actual, buf_len, 16, FMT_STR);
@@ -345,20 +362,21 @@ void miscompare_dump(const unsigned char *expected, const unsigned char *actual,
 * were 'main' for that thread.
 */
 #ifdef WINDOWS
-DWORD WINAPI ChildMain(child_args_t *args)
+DWORD WINAPI ChildMain(test_ll_t *test)
 #else
-void *ChildMain(void *vargs)
+void *ChildMain(void *vtest)
 #endif
 {
-	extern void *shared_mem;			/* global pointer to shared memory */
-	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
-	extern OFF_T pass_count;			/* current pass */
-	extern unsigned char *data_buffer;	/* global pointer to shared memory */
-	extern stats_t cycle_stats;		/* per cycle statistics */
+#ifndef WINDOWS
+	test_ll_t *test = (test_ll_t *)vtest;
+#endif
+
+	child_args_t *args = test->args;
+	test_env_t *env = test->env;
 
 	unsigned char *buf1 = NULL, *buffer1 = NULL; /* 'buf' is the aligned 'buffer' */
 	unsigned char *buf2 = NULL, *buffer2 = NULL; /* 'buf' is the aligned 'buffer' */
-	unsigned char *wbitmap = (unsigned char *)shared_mem + BMP_OFFSET;
+	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
 	unsigned long ulLastError;
 
 	action_t target = { NONE, -1, 0};
@@ -373,27 +391,26 @@ void *ChildMain(void *vargs)
 	HANDLE MutexGBL, MutexDATA;
 
 	if((MutexGBL = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
-		pMsg(ERR, "Failed to open semaphore, error = %u\n", GetLastError());
+		pMsg(ERR, args, "Failed to open semaphore, error = %u\n", GetLastError());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		TEXIT(GETLASTERROR());
 	}
 	if((MutexDATA = OpenMutex(SYNCHRONIZE, TRUE, "data")) == NULL) {
-		pMsg(ERR, "Failed to open semaphore, error = %u\n", GetLastError());
+		pMsg(ERR, args, "Failed to open semaphore, error = %u\n", GetLastError());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		TEXIT(GETLASTERROR());
 	}
 #else
 	static pthread_mutex_t MutexGBL = PTHREAD_MUTEX_INITIALIZER;
 	static pthread_mutex_t MutexDATA = PTHREAD_MUTEX_INITIALIZER;
-	child_args_t *args = (child_args_t *) vargs;
 #endif
 
 	strncpy(filespec, args->device, DEV_NAME_LEN);
 
 	fd = Open(filespec, args->flags);
 	if(INVALID_FD(fd)) {
-		pMsg(ERR, "Error = %u\n",GETLASTERROR());
-		pMsg(ERR, "could not open %s.\n",args->device);
+		pMsg(ERR, args, "Error = %u\n",GETLASTERROR());
+		pMsg(ERR, args, "could not open %s.\n",args->device);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		TEXIT(GETLASTERROR());
 	}
@@ -403,7 +420,7 @@ void *ChildMain(void *vargs)
 		perror("allocation failed, buffer1");
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(errno);
+		TEXIT(GETLASTERROR());
 	}
 	buf1 = (unsigned char *) BUFALIGN(buffer1);
 
@@ -412,7 +429,7 @@ void *ChildMain(void *vargs)
 		FREE(buffer1);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(errno);
+		TEXIT(GETLASTERROR());
 	}
 	buf2 = (unsigned char *) BUFALIGN(buffer2);
 
@@ -420,27 +437,29 @@ void *ChildMain(void *vargs)
 	while(mask <= (args->stop_lba - args->start_lba)) { mask = mask<<1; }
 	mask -= 1;
 
-	while(bContinue) {
+	while(env->bContinue) {
 		LOCK(MutexGBL);
-		target = get_next_action(args, mask);
+		target = get_next_action(args, env, mask);
 #ifdef WINDOWS
-		PDBG5(DEBUG, "%s, %I64d, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
+		PDBG5(DEBUG, args, "%s, %I64d, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
 #else
-		PDBG5(DEBUG, "%s, %lld, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
+		PDBG5(DEBUG, args, "%s, %lld, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
 #endif
 		UNLOCK(MutexGBL);
 
 		if(target.oper == NONE) {
-			bContinue = FALSE;
+			PDBG4(DEBUG, args, "Setting bContinue to FALSE, oper is NONE\n");
+			env->bContinue = FALSE;
             break;
 		}
 
 		TargetBytePos=(OFF_T) (target.lba*BLK_SIZE);
 		ActualBytePos=Seek(fd, TargetBytePos);
 		if(ActualBytePos != TargetBytePos) {
-			pMsg(ERR, SFSTR,(target.oper == WRITER) ? (cycle_stats.wcount) : (cycle_stats.rcount),target.lba,TargetBytePos,ActualBytePos);
+			pMsg(ERR, args, SFSTR,(target.oper == WRITER) ? (env->cycle_stats.wcount) : (env->cycle_stats.rcount),target.lba,TargetBytePos,ActualBytePos);
 			args->test_state = SET_STS_FAIL(args->test_state);
-			if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
+			if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
+			PDBG4(DEBUG, args, "Setting bContinue to FALSE, oper is seek failed\n");
 			exit_code = SEEK_FAILURE;
 			continue;
 		}
@@ -449,21 +468,30 @@ void *ChildMain(void *vargs)
 			if(args->flags & CLD_FLG_LPTYPE) {
 				fill_buffer(buf2, target.trsiz, &(target.lba), sizeof(OFF_T), CLD_FLG_LPTYPE);
 			} else {
-				memcpy(buf2, data_buffer, target.trsiz*BLK_SIZE);
+				memcpy(buf2, env->data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
-				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), pass_count, args->mrk_flag);
+				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), env->pass_count, args->mrk_flag);
 			}
 			tcnt = Write(fd, buf2, target.trsiz*BLK_SIZE);
+			if((args->flags & CLD_FLG_FILE) && (args->flags & CLD_FLG_WFSYNC)) {
+				if(Sync(fd) < 0) {
+					exit_code = GETLASTERROR();
+					pMsg(ERR, args, "fsync error = %d\n", exit_code);
+					if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
+					PDBG4(DEBUG, args, "Setting bContinue to FALSE, fsync error\n");
+				}
+			}
 		}
 		if(target.oper == READER) {
 			tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
 		}
 		if(tcnt != (long) target.trsiz*BLK_SIZE) {
 			ulLastError = GETLASTERROR();
-			pMsg(ERR, AFSTR, (target.oper) ? "Read" : "Write", (target.oper) ? (cycle_stats.rcount) : (cycle_stats.wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
+			pMsg(ERR, args, AFSTR, (target.oper) ? "Read" : "Write", (target.oper) ? (env->cycle_stats.rcount) : (env->cycle_stats.wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
 			args->test_state = SET_STS_FAIL(args->test_state);
-			if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
+			if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
+			PDBG4(DEBUG, args, "Setting bContinue to FALSE, transfer failed\n");
 			exit_code = ACCESS_FAILURE;
 			continue;
 		}
@@ -471,12 +499,12 @@ void *ChildMain(void *vargs)
 		/* update bytes transfered and bitmap */
 		LOCK(MutexDATA);
 		if(target.oper == WRITER) {
-			(cycle_stats.wbytes) += target.trsiz*BLK_SIZE;
+			(env->cycle_stats.wbytes) += target.trsiz*BLK_SIZE;
 			for(i=0;i<target.trsiz;i++) {
 				*(wbitmap+(((target.lba-args->start_lba)+i)/8)) |= 0x80>>(((target.lba-args->start_lba)+i)%8);
 			}
 		} else {
-			(cycle_stats.rbytes) += target.trsiz*BLK_SIZE;
+			(env->cycle_stats.rbytes) += target.trsiz*BLK_SIZE;
 		}
 		UNLOCK(MutexDATA);
 
@@ -489,26 +517,44 @@ void *ChildMain(void *vargs)
 			if(args->flags & CLD_FLG_LPTYPE) {
 				fill_buffer(buf2, target.trsiz, &(target.lba), sizeof(OFF_T), CLD_FLG_LPTYPE);
 			} else {
-				memcpy(buf2, data_buffer, target.trsiz*BLK_SIZE);
+				memcpy(buf2, env->data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
-				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), pass_count, args->mrk_flag);
+				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), env->pass_count, args->mrk_flag);
 			}
 			if(memcmp(buf2, buf1, args->cmp_lng) != 0) {
 				/* data miscompare !!! */
 				LOCK(MutexGBL);
-				miscompare_dump(buf2, buf1, args->htrsiz*BLK_SIZE, target.lba);
+				miscompare_dump(args, buf2, buf1, args->htrsiz*BLK_SIZE, target.lba);
 				args->test_state = SET_STS_FAIL(args->test_state);
-				if(args->flags & CLD_FLG_ALLDIE) bContinue = FALSE;
+				if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
 				UNLOCK(MutexGBL);
+				PDBG4(DEBUG, test->args, "Setting bContinue to FALSE, misscompare\n");
 				exit_code = DATA_MISCOMPARE;
 				continue;
 			}
 		}
 	}
 
+#ifdef DEBUG_PRINTMAP
+	LOCK(MutexGBL);
+	for(i=0;i<(env->bmp_siz-1);i++) {
+		printf("%02x",*(wbitmap+i));
+	}
+	printf("\n");
+	UNLOCK(MutexGBL);
+#endif
+
 	FREE(buffer1);
 	FREE(buffer2);
+
+	if((args->flags & CLD_FLG_FILE) && (args->flags & CLD_FLG_W)) {
+		if(Sync(fd) < 0) {
+			exit_code = GETLASTERROR();
+			pMsg(ERR, args, "fsync error = %d\n", exit_code);
+		}
+	}
+
 	CLOSE(fd);
 	TEXIT(exit_code);
 }

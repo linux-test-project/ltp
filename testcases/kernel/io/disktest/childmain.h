@@ -22,10 +22,14 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: childmain.h,v 1.4 2005/05/04 17:52:09 mridge Exp $
 * $Log: childmain.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:52:09  mridge
+* Update to version 1.2.8
+*
+* Revision 1.4  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.3  2002/03/30 01:32:14  yardleyb
 * Major Changes:
@@ -76,7 +80,7 @@ typedef struct action {
 #define DMSTR "Data miscompare at lba %I64d (0x%I64X)\n"
 #define AFSTR "%s failed: seek %I64u, lba %I64u (0x%I64X), got = %ld, asked for = %ld\n"
 #define SFSTR "seek failed seek %I64d, lba = %I64d, request pos = %I64d, seek pos = %I64d\n"
-DWORD WINAPI ChildMain(child_args_t *);
+DWORD WINAPI ChildMain(test_ll_t *);
 #else
 #define DMSTR "Data miscompare at lba %lld (0x%llX)\n"
 #define AFSTR "%s failed: seek %llu, lba %lld (0x%llX), got = %ld, asked for = %ld\n"
