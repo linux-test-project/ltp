@@ -22,42 +22,15 @@
 *
 *  Project Website:  TBD
 *
-*
-* $Id: Getopt.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
-* $Log: Getopt.h,v $
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.3  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.2  2002/02/21 21:32:19  yardleyb
-* Added more unix compatability
-* ifdef'd function out when
-* compiling for unix env. that
-* have getopt
-*
-* Revision 1.1  2001/12/04 18:57:36  yardleyb
-* This source add for windows compatability only.
-*
 */
+
+#ifndef _TIMER_H_ /* _TIMER_H */
+#define _TIMER_H_
+
 #ifdef WINDOWS
-int getopt(int argc, char** argv, char* pszValidOpts);
-#endif /* defined WINDOWS */
+DWORD WINAPI ChildTimer(test_ll_t *);
+#else
+void *ChildTimer(void *);
+#endif
+
+#endif /* _TIMER_H */

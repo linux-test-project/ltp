@@ -22,10 +22,18 @@
 *
 *  Project Website:  TBD
 *
-* $Id: globals.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: globals.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: globals.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.9  2004/12/18 06:13:03  yardleyb
+* Updated timer schema to more accurately use the time options.  Added
+* fsync on write option to -If.
+*
+* Revision 1.8  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.7  2002/03/30 01:32:14  yardleyb
 * Major Changes:
@@ -98,59 +106,43 @@
 #include "sfunc.h"
 
 /* Globals */
-unsigned int gbl_dbg_lvl;
-unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
-unsigned short kids;		/* global number of current child processes */
-void *shared_mem;			/* global pointer to shared memory */
-unsigned char *data_buffer;	/* global pointer to shared memory */
-char *devname;				/* global pointer to device name */
-size_t bmp_siz;				/* size of bitmask */
-thread_struct_t *pThreads;	/* Global List of child processes */
-BOOL bContinue;				/* global that when set to false will force exit of all threads */
-OFF_T pass_count;			/* hit counters */
-time_t global_start_time;	/* overall start time of test */
-time_t global_end_time;		/* overall end time of test */
-stats_t global_stats;		/* overall statistics for test */
-stats_t cycle_stats;		/* per cycle statistics */
+time_t global_start_time;	/*	overall start time of test	*/
+time_t global_end_time;		/*	overall end time of test	*/
+unsigned int gbl_dbg_lvl;	/*	the global debugging level	*/
+unsigned long glb_flags;    /*	global flags GLB_FLG_xxx	*/
 
-void init_gbl_data(void)
+void init_gbl_data(test_env_t *env)
 {
-	glb_flags = 0;
-	kids = 0;
-	shared_mem = NULL;
-	data_buffer = NULL;
-	devname = "No Device";
-	bmp_siz = 0;
-	pThreads = NULL;
-	bContinue = TRUE;
-	pass_count = 1;
-	global_start_time = time(NULL);
-	global_end_time = 0;
-	memset(&global_stats, 0, sizeof(global_stats));
-	memset(&cycle_stats, 0, sizeof(cycle_stats));
+	env->kids = 0;
+	env->shared_mem = NULL;
+	env->data_buffer = NULL;
+	env->bmp_siz = 0;
+	env->pThreads = NULL;
+	env->bContinue = TRUE;
+	env->pass_count = 0;
+	memset(&env->global_stats, 0, sizeof(stats_t));
+	memset(&env->cycle_stats, 0, sizeof(stats_t));
 }
 
-void update_gbl_stats(void)
+void update_gbl_stats(test_env_t *env)
 {
-	extern stats_t global_stats;		/* overall statistics for test */
-	extern stats_t cycle_stats;			/* per cycle statistics */
+	env->global_stats.wcount += env->cycle_stats.wcount;
+	env->global_stats.rcount += env->cycle_stats.rcount;
+	env->global_stats.wbytes += env->cycle_stats.wbytes;
+	env->global_stats.rbytes += env->cycle_stats.rbytes;
+	env->global_stats.wtime += env->cycle_stats.wtime;
+	env->global_stats.rtime += env->cycle_stats.rtime;
 
-	global_stats.wcount += cycle_stats.wcount;
-	global_stats.rcount += cycle_stats.rcount;
-	global_stats.wbytes += cycle_stats.wbytes;
-	global_stats.rbytes += cycle_stats.rbytes;
-	global_stats.wtime += cycle_stats.wtime;
-	global_stats.rtime += cycle_stats.rtime;
-
-	cycle_stats.wcount = 0;
-	cycle_stats.rcount = 0;
-	cycle_stats.wbytes = 0;
-	cycle_stats.rbytes = 0;
-	cycle_stats.wtime = 0;
-	cycle_stats.rtime = 0;
+	env->cycle_stats.wcount = 0;
+	env->cycle_stats.rcount = 0;
+	env->cycle_stats.wbytes = 0;
+	env->cycle_stats.rbytes = 0;
+	env->cycle_stats.wtime = 0;
+	env->cycle_stats.rtime = 0;
 }
 
 #ifdef WINDOWS
+/*
 void PrintLastSystemError(unsigned long ulErrorNum)
 {
 	LPVOID lpMsgBuf;
@@ -168,6 +160,7 @@ void PrintLastSystemError(unsigned long ulErrorNum)
 	pMsg(INFO,"%s",lpMsgBuf);
 	LocalFree(lpMsgBuf);
 }
+*/
 
 void GetSystemErrorString(unsigned long ulErrorNum, void *buffer)
 {

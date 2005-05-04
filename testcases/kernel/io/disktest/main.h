@@ -23,10 +23,37 @@
 *  Project Website:  TBD
 *
 *
-* $Id: main.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: main.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: main.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.21  2005/01/08 21:18:34  yardleyb
+* Update performance output and usage.  Fixed pass count check
+*
+* Revision 1.20  2004/12/18 06:13:03  yardleyb
+* Updated timer schema to more accurately use the time options.  Added
+* fsync on write option to -If.
+*
+* Revision 1.19  2004/12/17 06:34:56  yardleyb
+* removed -mf -ml.  These mark options cause to may issues when using
+* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
+* false data misscompare during multiple cycles.
+*
+* Revision 1.18  2004/11/20 04:43:42  yardleyb
+* Minor code fixes.  Checking for alloc errors.
+*
+* Revision 1.17  2004/11/19 21:45:12  yardleyb
+* Fixed issue with code added for -F option.  Cased disktest
+* to SEG FAULT when cleaning up threads.
+*
+* Revision 1.16  2004/11/19 03:47:45  yardleyb
+* Fixed issue were args data was not being copied from a
+* clean source.
+*
+* Revision 1.15  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.14  2003/09/12 21:23:01  yardleyb
 * The following isses have been fixed:
@@ -211,10 +238,9 @@
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
-#include <fcntl.h>
 #include "defs.h"
 
-#define VER_STR "v1.1.12"
+#define VER_STR "v1.2.8"
 #define BLKGETSIZE _IO(0x12,96)
 #define BLKSSZGET  _IO(0x12,104)
 
@@ -259,54 +285,59 @@
 #define SET_OPER_W(x)	(x & ~0x10)
 #define CNG_OPER(x)		(x & 0x10) ? (x & ~0x10) : (x | 0x10)
 
-#define CLD_FLG_CMPR	0x000000001	/* will cause readers to compare data read */
-#define CLD_FLG_MBLK	0x000000002	/* will add header info to fist block, fc lun, lba, etc */
-#define CLD_FLG_SQNCE	0x000000004	/* forces IOs to be queued one at a time */
-#define CLD_FLG_RTRSIZ	0x000000008	/* Ignore weither a block has been written */
+#define CLD_FLG_CMPR	0x000000001ULL	/* will cause readers to compare data read */
+#define CLD_FLG_MBLK	0x000000002ULL	/* will add header info to fist block, fc lun, lba, etc */
+#define CLD_FLG_SQNCE	0x000000004ULL	/* forces IOs to be queued one at a time */
+#define CLD_FLG_RTRSIZ	0x000000008ULL	/* Ignore weither a block has been written */
 
 /* Perforamnce Flags */
-#define CLD_FLG_XFERS	0x000000010	/* reports # of transfers */
-#define CLD_FLG_TPUTS	0x000000020	/* reports calculated throughtput */
-#define CLD_FLG_RUNT	0x000000040	/* reports run time */
-#define CLD_FLG_PRFTYPS	(CLD_FLG_XFERS|CLD_FLG_TPUTS|CLD_FLG_RUNT)
+#define CLD_FLG_XFERS	0x000000010ULL	/* reports # of transfers */
+#define CLD_FLG_TPUTS	0x000000020ULL	/* reports calculated throughtput */
+#define CLD_FLG_RUNT	0x000000040ULL	/* reports run time */
+#define CLD_FLG_PCYC	0x000000080ULL	/* report cycle data */
+#define CLD_FLG_PRFTYPS	(CLD_FLG_XFERS|CLD_FLG_TPUTS|CLD_FLG_RUNT|CLD_FLG_PCYC)
 
 /* Seek Flags */
-#define CLD_FLG_RANDOM	0x000000100	/* child seeks are random */
-#define CLD_FLG_LINEAR	0x000000200	/* child seeks are linear */
-#define CLD_FLG_NTRLVD	0x000000400	/* reads and writes are mixed during sequential IO */
+#define CLD_FLG_RANDOM	0x000000100ULL	/* child seeks are random */
+#define CLD_FLG_LINEAR	0x000000200ULL	/* child seeks are linear */
+#define CLD_FLG_NTRLVD	0x000000400ULL	/* reads and writes are mixed during sequential IO */
 #define CLD_FLG_SKTYPS	(CLD_FLG_RANDOM|CLD_FLG_LINEAR)
 
-#define CLD_FLG_VSIZ	0x000000800	/* Volume size specified on cli */
+#define CLD_FLG_VSIZ	0x000000800ULL	/* Volume size specified on cli */
 
 /* IO Type Flags */
-#define CLD_FLG_RAW		0x000001000	/* child IO is to a RAW device */
-#define CLD_FLG_BLK		0x000002000	/* child IO is to a BLOCK device */
-#define CLD_FLG_FILE	0x000004000	/* child IO is to a file */
-#define CLD_FLG_DIRECT	0x000008000	/* child IO has direct disk access */
+#define CLD_FLG_RAW		0x000001000ULL	/* child IO is to a RAW device */
+#define CLD_FLG_BLK		0x000002000ULL	/* child IO is to a BLOCK device */
+#define CLD_FLG_FILE	0x000004000ULL	/* child IO is to a file */
+#define CLD_FLG_DIRECT	0x000008000ULL	/* child IO has direct disk access */
 #define CLD_FLG_IOTYPS	(CLD_FLG_RAW|CLD_FLG_BLK|CLD_FLG_FILE|CLD_FLG_DIRECT)
 
 /* Pattern Flags */
-#define CLD_FLG_RPTYPE	0x000010000	/* random pattern */
-#define CLD_FLG_FPTYPE	0x000020000	/* fixed pattern */
-#define CLD_FLG_CPTYPE	0x000040000	/* counting pattern */
-#define CLD_FLG_LPTYPE	0x000080000	/* lba pattern */
+#define CLD_FLG_RPTYPE	0x000010000ULL	/* random pattern */
+#define CLD_FLG_FPTYPE	0x000020000ULL	/* fixed pattern */
+#define CLD_FLG_CPTYPE	0x000040000ULL	/* counting pattern */
+#define CLD_FLG_LPTYPE	0x000080000ULL	/* lba pattern */
 #define CLD_FLG_PTYPS	(CLD_FLG_RPTYPE|CLD_FLG_FPTYPE|CLD_FLG_CPTYPE|CLD_FLG_LPTYPE)
 
 /* Duration Flags */
-#define CLD_FLG_TMD		0x000100000	/* set if using time */
-#define CLD_FLG_SKS		0x000200000	/* set if seeks are used */
-#define CLD_FLG_CYC		0x000400000	/* set if cycles are used */
-#define CLD_FLG_DUTY	0x000800000	/* set if a duty cycle is used while running */
+#define CLD_FLG_TMD		0x000100000ULL	/* set if using time */
+#define CLD_FLG_SKS		0x000200000ULL	/* set if seeks are used */
+#define CLD_FLG_CYC		0x000400000ULL	/* set if cycles are used */
+#define CLD_FLG_DUTY	0x000800000ULL	/* set if a duty cycle is used while running */
 
-#define CLD_FLG_LBA_RNG	0x001000000	/* write multipule read multipule, must define multiple */
-#define CLD_FLG_BLK_RNG	0x002000000	/* write once read multiple, must define multiple */
-#define CLD_FLG_ALLDIE	0x004000000	/* will force all children to die on any error if set */
-#define CLD_FLG_DUMP	0x008000000	/* will dump formatted data */
+#define CLD_FLG_LBA_RNG	0x001000000ULL	/* write multipule read multipule, must define multiple */
+#define CLD_FLG_BLK_RNG	0x002000000ULL	/* write once read multiple, must define multiple */
+#define CLD_FLG_ALLDIE	0x004000000ULL	/* will force all children to die on any error if set */
+#define CLD_FLG_DUMP	0x008000000ULL	/* will dump formatted data */
 
-#define CLD_FLG_LUNU	0x010000000	/* seek start/end and then start/end */
-#define CLD_FLG_LUND	0x020000000	/* seek start/end and then end/start */
-#define CLD_FLG_W		0x040000000	/* there are child writers */
-#define CLD_FLG_R		0x080000000	/* there are child readers */
+#define CLD_FLG_LUNU	0x010000000ULL	/* seek start/end and then start/end */
+#define CLD_FLG_LUND	0x020000000ULL	/* seek start/end and then end/start */
+#define CLD_FLG_W		0x040000000ULL	/* there are child writers */
+#define CLD_FLG_R		0x080000000ULL	/* there are child readers */
+
+#define CLD_FLG_FSLIST	0x100000000ULL	/* the filespec is a list of targets */
+#define CLD_FLG_HBEAT	0x200000000ULL	/* if performance heartbeat is being used */
+#define CLD_FLG_WFSYNC	0x400000000ULL	/* do an fsync on every write for file IO */
 
 /* startup defaults */
 #define TRSIZ	1		/* default transfer size in blocks */
@@ -314,64 +345,78 @@
 #define SEEKS	1000	/* default seeks */
 #define KIDS	4		/* default number of children */
 
+#ifdef WINDOWS
+typedef HANDLE hThread_t;
+#else
+typedef pthread_t hThread_t;
+#endif
+
 typedef enum op {
-	WRITER,READER,NONE,ALL
+	WRITER,READER,NONE
 } op_t;
 
+typedef struct thread_struct {
+	hThread_t hThread;
+	BOOL bCanBeJoined;
+	struct thread_struct *next; /* pointer to next thread */
+} thread_struct_t;
+
+typedef struct stats {
+	OFF_T wcount;
+	OFF_T rcount;
+	OFF_T wbytes;
+	OFF_T rbytes;
+	time_t wtime;
+	time_t rtime;
+} stats_t;
+
 typedef struct child_args {
-	char device[DEV_NAME_LEN];			/* pointer to device name */
-	OFF_T vsiz;				/* volume size in blocks */
-	unsigned long ltrsiz;	/* low bound of transfer size in blocks */
-	unsigned long htrsiz;	/* high bound of transfer size in blocks */
-	unsigned long offset;	/* lba offset */
-	OFF_T pattern;			/* pattern data */
-	time_t run_time;		/* run time in seconds */
-	OFF_T seeks;			/* number of seeks */
-	unsigned long cycles;	/* number of cycles */
-	OFF_T start_blk;		/* starting transfer block */
-	OFF_T stop_blk;			/* ending transfer block */
-	OFF_T start_lba;		/* starting LBA */
-	OFF_T stop_lba;			/* ending LBA */
-	unsigned int retries;	/* number of retries */
-	time_t hbeat;			/* Statistics will be reported every hbeats seconds */
-	OFF_T flags;			/* common flags that a child uses */
-	unsigned long rcount;	/* number of reads a child should perform, 0 is unbound  */
-	unsigned long wcount;	/* number of writes a child should perform, 0 is unbound  */
-	short rperc;			/* percent of IO that should be reads */
-	short wperc;			/* percent of IO that should be write */
-	unsigned short t_kids;	/* total children, max is 64k */
-	unsigned int cmp_lng;	/* how much of the data should be compared */
-	short mrk_flag;			/* how the tranfsers should be marked */
-	OFF_T test_state;		/* current test state */
-	unsigned int seed;		/* test seed */
+	char device[DEV_NAME_LEN];	/* device name */
+	char argstr[MAX_ARG_LEN];	/* human readable argument string /w assumtions */
+	OFF_T vsiz;					/* volume size in blocks */
+	unsigned long ltrsiz;		/* low bound of transfer size in blocks */
+	unsigned long htrsiz;		/* high bound of transfer size in blocks */
+	unsigned long offset;		/* lba offset */
+	OFF_T pattern;				/* pattern data */
+	time_t run_time;			/* run time in seconds */
+	OFF_T seeks;				/* number of seeks */
+	unsigned long cycles;		/* number of cycles */
+	OFF_T start_blk;			/* starting transfer block */
+	OFF_T stop_blk;				/* ending transfer block */
+	OFF_T start_lba;			/* starting LBA */
+	OFF_T stop_lba;				/* ending LBA */
+	unsigned int retries;		/* number of retries */
+	time_t hbeat;				/* Statistics will be reported every hbeats seconds */
+	unsigned long long flags;	/* common flags that a child uses */
+	unsigned long rcount;		/* number of reads a child should perform, 0 is unbound  */
+	unsigned long wcount;		/* number of writes a child should perform, 0 is unbound  */
+	short rperc;				/* percent of IO that should be reads */
+	short wperc;				/* percent of IO that should be write */
+	unsigned short t_kids;		/* total children, max is 64k */
+	unsigned int cmp_lng;		/* how much of the data should be compared */
+	short mrk_flag;				/* how the tranfsers should be marked */
+	OFF_T test_state;			/* current test state */
+	unsigned int seed;			/* test seed */
+	pid_t pid;					/* the process_id used for this environment */
 } child_args_t;
 
-#ifdef WINDOWS
-#define CTRSTR "%I64d;Rbytes;%I64d;Rxfers;"
-#define CTWSTR "%I64d;Wbytes;%I64d;Wxfers;"
-#define TCTRSTR "%I64d;TRbytes;%I64d;TRxfers;"
-#define TCTWSTR "%I64d;TWbytes;%I64d;TWxfers;"
-#define RTSTR "%I64d bytes read in %I64d transfers.\n"
-#define WTSTR "%I64d bytes written in %I64d transfers.\n"
-#define TRTSTR "Total bytes read in %I64d transfers: %I64d\n"
-#define TWTSTR "Total bytes written in %I64d transfers: %I64d\n"
-#else
-#define CTRSTR "%lld;Rbytes;%lld;Rxfers;"
-#define CTWSTR "%lld;Wbytes;%lld;Wxfers;"
-#define TCTRSTR "%lld;TRbytes;%lld;TRxfers;"
-#define TCTWSTR "%lld;TWbytes;%lld;TWxfers;"
-#define RTSTR "%lld bytes read in %lld transfers.\n"
-#define WTSTR "%lld bytes written in %lld transfers.\n"
-#define TRTSTR "Total bytes read in %lld transfers: %lld\n"
-#define TWTSTR "Total bytes written in %lld transfers: %lld\n"
-#endif
-#define RTHSTR "Read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
-#define WTHSTR "Write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
-#define TRTHSTR "Total read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
-#define TWTHSTR "Total write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
-#define CTRRSTR "%.1f;RB/s;%.1f;RIOPS;"
-#define CTRWSTR "%.1f;WB/s;%.1f;WIOPS;"
-#define TCTRRSTR "%.1f;TRB/s;%.1f;TRIOPS;"
-#define TCTRWSTR "%.1f;TWB/s;%.1f;TWIOPS;"
+typedef struct test_env {
+	void *shared_mem;           /* global pointer to shared memory */
+	unsigned char *data_buffer; /* global data buffer */
+	size_t bmp_siz;             /* size of bitmask */
+	BOOL bContinue;             /* global that when set to false will force exit of all threads */
+	OFF_T pass_count;           /* hit counters */
+	stats_t cycle_stats;        /* per cycle statistics */
+	unsigned short kids;		/* number of test child processes */
+	thread_struct_t *pThreads;  /* List of child test processes */
+	stats_t global_stats;       /* overall statistics for test */
+} test_env_t;
+
+typedef struct test_ll {
+	test_env_t *env;			/* pointer to the environment structure */
+	child_args_t *args;			/* pointer to the argument structure */
+	hThread_t hThread;
+	struct test_ll *next;		/* pointer to the next test */
+} test_ll_t;
 
 #endif /* _DISKTEST_H */

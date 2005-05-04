@@ -22,10 +22,14 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.c,v 1.2 2003/09/17 17:15:28 robbiew Exp $
+* $Id: dump.c,v 1.3 2005/05/04 17:54:00 mridge Exp $
 * $Log: dump.c,v $
-* Revision 1.2  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.3  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.5  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.4  2003/09/12 18:10:08  yardleyb
 * Updated to version 1.11
@@ -210,14 +214,14 @@ int do_dump(child_args_t *args)
 
 	fd = Open(args->device, args->flags | CLD_FLG_R);
 	if(INVALID_FD(fd)) {
-		pMsg(ERR, "could not open %s.\n",args->device);
-		pMsg(ERR, "%s: Error = %u\n",args->device, GETLASTERROR());
+		pMsg(ERR, args, "could not open %s.\n",args->device);
+		pMsg(ERR, args, "%s: Error = %u\n",args->device, GETLASTERROR());
 		return(-1);
 	}
 
 	TargetLBA = Seek(fd, args->start_lba*BLK_SIZE);
 	if(TargetLBA != (args->start_lba * (OFF_T) BLK_SIZE)) {
-		pMsg(ERR, "Could not seek to start position.\n");
+		pMsg(ERR, args, "Could not seek to start position.\n");
 		CLOSE(fd);
 		return(-1);
 	}
@@ -225,8 +229,8 @@ int do_dump(child_args_t *args)
 	do {
 		NumBytes = Read(fd, buff, 512);
 		if((NumBytes > 512) || (NumBytes < 0)) {
-			pMsg(ERR, "Failure reading %s\n", args->device);
-			pMsg(ERR, "Last Error was %lu\n", GETLASTERROR());
+			pMsg(ERR, args, "Failure reading %s\n", args->device);
+			pMsg(ERR, args, "Last Error was %lu\n", GETLASTERROR());
 			break;
 		}
 		dump_data(stdout, buff, NumBytes, 16, FMT_STR);

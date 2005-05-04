@@ -38,10 +38,51 @@
 *	non-distructive: will read lba/write lba with XOR/bit inverted read data/then read lba to verify
 *
 *
-* $Id: main.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: main.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: main.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.26  2005/05/03 16:24:38  yardleyb
+* Added needed code changes to support windows
+*
+* Revision 1.25  2005/04/28 21:25:17  yardleyb
+* Fixed up some issues with AIX compilation due to the change made
+* in endian support in Linux.
+*
+* Revision 1.24  2005/01/12 02:40:11  yardleyb
+* Fixed regression issue in the -h option
+*
+* Revision 1.23  2005/01/08 22:29:56  yardleyb
+* Changed 'exit()' in threaded code to macro TEXIT
+* to fix a possible seg fault
+*
+* Revision 1.22  2005/01/08 21:18:34  yardleyb
+* Update performance output and usage.  Fixed pass count check
+*
+* Revision 1.21  2004/12/18 06:13:03  yardleyb
+* Updated timer schema to more accurately use the time options.  Added
+* fsync on write option to -If.
+*
+* Revision 1.20  2004/12/17 06:34:56  yardleyb
+* removed -mf -ml.  These mark options cause to may issues when using
+* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
+* false data misscompare during multiple cycles.
+*
+* Revision 1.19  2004/11/20 04:43:42  yardleyb
+* Minor code fixes.  Checking for alloc errors.
+*
+* Revision 1.18  2004/11/19 21:45:12  yardleyb
+* Fixed issue with code added for -F option.  Cased disktest
+* to SEG FAULT when cleaning up threads.
+*
+* Revision 1.17  2004/11/19 03:47:45  yardleyb
+* Fixed issue were args data was not being copied from a
+* clean source.
+*
+* Revision 1.16  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.15  2003/09/12 21:23:01  yardleyb
 * The following isses have been fixed:
@@ -244,484 +285,374 @@
 #include "childmain.h"
 #include "threading.h"
 #include "dump.h"
+#include "timer.h"
+#include "stats.h"
 
-void print_stats(child_args_t *args, op_t operation)
+/* global */
+child_args_t cleanArgs;
+test_env_t cleanEnv;
+
+void linear_read_write_test(test_ll_t *test)
 {
-	extern unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
-	extern time_t global_start_time;/* global pointer to overall start */
-	extern stats_t cycle_stats;		/* per cycle statistics */
-	extern stats_t global_stats;	/* per cycle statistics */
-
-	time_t curr_time = 0, write_time = 0, read_time = 0, gw_time = 0, gr_time = 0;
-	fmt_time_t time_struct;
-
-	curr_time = time(NULL);
-
-	if((curr_time - global_start_time) == 0) curr_time++;
-
-	if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
-		read_time = cycle_stats.rtime;
-		write_time = cycle_stats.wtime;
-		gr_time = global_stats.rtime;
-		gw_time = global_stats.wtime;
-	} else {
-		read_time = ((cycle_stats.rtime * args->rperc) / 100);
-		write_time = ((cycle_stats.wtime * args->wperc) / 100);
-		gr_time = (time_t) ((global_stats.rtime * args->rperc) / 100);
-		gw_time = (time_t) ((global_stats.wtime * args->wperc) / 100);
-	}
-
-	/* if one second really has not passed, then make it at least one second */
-	if(read_time == 0) read_time++;
-	if(write_time == 0) write_time++;
-	if(gr_time == 0) gr_time++;
-	if(gw_time == 0) gw_time++;
-
-	if(glb_flags & GLB_FLG_PERFP) {
-		printf("%s;", args->device);
-		if(operation == ALL) {
-			if((args->flags & CLD_FLG_XFERS)) {
-				printf(TCTRSTR, (global_stats.rbytes), (global_stats.rcount));
-				printf(TCTWSTR, (global_stats.wbytes), (global_stats.wcount));
-			}
-			if((args->flags & CLD_FLG_TPUTS)) {
-				printf(TCTRRSTR, (double) ((global_stats.rbytes) / (gr_time)), (double) ((global_stats.rcount) / (gr_time)));
-				printf(TCTRWSTR, (double) ((global_stats.wbytes) / (gw_time)), (double) ((global_stats.wcount) / (gw_time)));
-			}
-			if((args->flags & CLD_FLG_RUNT)) {
-				printf("%lu;secs;",(curr_time - global_start_time));
-			}
-			printf("\n");
-		} else {
-			if((args->flags & CLD_FLG_XFERS)) {
-				printf(CTRSTR, (cycle_stats.rbytes), (cycle_stats.rcount));
-				printf(CTWSTR, (cycle_stats.wbytes), (cycle_stats.wcount));
-			}
-			if((args->flags & CLD_FLG_TPUTS)) {
-				printf(CTRRSTR, (double) ((cycle_stats.rbytes) / (read_time)), (double) ((cycle_stats.rcount) / (read_time)));
-				printf(CTRWSTR, (double) ((cycle_stats.wbytes) / (write_time)), (double) ((cycle_stats.wcount) / (write_time)));
-			}
-			if((args->flags & CLD_FLG_RUNT)) {
-				printf("%lu;Rsecs;%lu;Wsecs;",read_time, write_time);
-			}
-			printf("\n");
-		}
-	} else {
-		if((args->flags & CLD_FLG_XFERS)) {
-			switch(operation) {
-				case READER: /* only display current read stats */
-					PDBG1(STAT, RTSTR, (cycle_stats.rbytes), (cycle_stats.rcount));
-					break;
-				case WRITER:  /* only display current write stats */
-					PDBG1(STAT, WTSTR, (cycle_stats.wbytes), (cycle_stats.wcount));
-					break;
-				case ALL: /* display total read and write stats */
-					if(args->flags & CLD_FLG_R) {
-						pMsg(STAT, TRTSTR, (global_stats.rcount), (global_stats.rbytes));
-					}
-					if(args->flags & CLD_FLG_W) {
-						pMsg(STAT, TWTSTR, (global_stats.wcount), (global_stats.wbytes));
-					}
-					break;
-				default:
-					pMsg(ERR, "Unknown stats display type.\n");
-			}
-		}
-
-		if((args->flags & CLD_FLG_TPUTS)) {
-			switch(operation) {
-				case READER: /* only display current read stats */
-					PDBG1(STAT, RTHSTR,
-						((double) cycle_stats.rbytes / (double) (read_time)),
-						(((double) cycle_stats.rbytes / (double) read_time) / (double) 1048576.),
-						((double) cycle_stats.rcount / (double) (read_time)));
-					break;
-				case WRITER:  /* only display current write stats */
-					PDBG1(STAT, WTHSTR,
-						((double) cycle_stats.wbytes / (double) write_time),
-						(((double) cycle_stats.wbytes / (double) write_time) / (double) 1048576.),
-						((double) cycle_stats.wcount / (double) write_time));
-					break;
-				case ALL: /* display total read and write stats */
-					if(args->flags & CLD_FLG_R) {
-						pMsg(STAT, TRTHSTR,
-							((double) global_stats.rbytes / (double) gr_time),
-							(((double) global_stats.rbytes / (double) gr_time) / (double) 1048576.),
-							((double) global_stats.rcount / (double) gr_time));
-					}
-					if(args->flags & CLD_FLG_W) {
-						pMsg(STAT, TWTHSTR,
-							((double) global_stats.wbytes / (double) gw_time),
-							(((double) global_stats.wbytes / (double) gw_time) / (double) 1048576.),
-							((double) global_stats.wcount / (double) gw_time));
-					}
-					break;
-				default:
-					pMsg(ERR, "Unknown stats display type.\n");
-			}
-		}
-		if(args->flags & CLD_FLG_RUNT) {
-			switch(operation) {
-				case READER: /* only display current read stats */
-					time_struct = format_time(read_time);
-					PDBG1(STAT,"Read Time: %u seconds (%luh%lum%lus)\n", read_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
-					break;
-				case WRITER:
-					time_struct = format_time(write_time);
-					PDBG1(STAT,"Write Time: %u seconds (%luh%lum%lus)\n", write_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
-					break;
-				case ALL:
-					if(args->flags & CLD_FLG_R) {
-						time_struct = format_time(gr_time);
-						pMsg(STAT,"Total Read Time: %u seconds (%luh%lum%lus)\n", gr_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
-					}
-					if(args->flags & CLD_FLG_W) {
-						time_struct = format_time(gw_time);
-						pMsg(STAT,"Total Write Time: %u seconds (%luh%lum%lus)\n", gw_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
-					}
-					time_struct = format_time((curr_time - global_start_time));
-					pMsg(STAT,"Total overall runtime: %u seconds (%luh%lum%lus)\n", (curr_time - global_start_time), time_struct.hours, time_struct.minutes, time_struct.seconds);
-					break;
-				default:
-					pMsg(ERR, "Unknown stats display type.\n");
-			}
-		}
-	}
-}
-
-#ifdef WINDOWS
-DWORD WINAPI ChildPS(child_args_t *args)
-#else
-void *ChildPS(void *vargs)
-#endif
-{
-	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
-	extern unsigned int gbl_dbg_lvl;	/* global flags GLB_FLG_xxx */
-	extern stats_t cycle_stats;
-
-	unsigned long exit_code = 0;
-	time_t seconds = 0;
-
-#ifndef WINDOWS
-	child_args_t *args = (child_args_t *) vargs;
-#endif
-
-	if(gbl_dbg_lvl < 1) gbl_dbg_lvl++;
-
-	do {
-		Sleep(1000);
-		seconds++;
-		if(seconds == args->hbeat) {
-			if(args->flags & CLD_FLG_W) {
-				if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
-					if(TST_OPER(args->test_state) == WRITER) {
-						cycle_stats.wtime += (time_t) args->hbeat;
-						print_stats(args, WRITER);
-					}
-				} else {
-					cycle_stats.wtime += (time_t) args->hbeat;
-					print_stats(args, WRITER);
-				}
-			} 
-			if(args->flags & CLD_FLG_R) {
-				if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
-					if(TST_OPER(args->test_state) == READER) {
-						cycle_stats.rtime += (time_t) args->hbeat;
-						print_stats(args, READER);
-					}
-				} else {
-					cycle_stats.rtime += (time_t) args->hbeat;
-					print_stats(args, READER);
-				}
-			}
-			seconds = 0;
-		}
-		/* If test failed don't continue to report stats */
-		if(!(TST_STS(args->test_state))) { break; }
-	} while(bContinue);
-	TEXIT(exit_code);
-}
-
-void linear_read_write_test(child_args_t *args)
-{
-	extern void *shared_mem;
-	extern OFF_T pass_count;
-	extern stats_t cycle_stats;
-	extern BOOL bContinue;				/* global that when set to false will force exit of all threads */
-
-	OFF_T *pVal1 = (OFF_T *)shared_mem;
-	time_t start_time;
+	OFF_T *pVal1 = (OFF_T *)test->env->shared_mem;
 	int i;
 
-	if(args->flags & CLD_FLG_W) {
-		bContinue = TRUE;
-		*(pVal1 + OFF_WLBA) = args->start_lba;
-		args->test_state = DIRCT_INC(args->test_state);
-		args->test_state = SET_wFST_TIME(args->test_state);
-		srand(args->seed);	/* reseed so we can re create the same random transfers */
-		if(args->flags & CLD_FLG_CYC)
-			pMsg(INFO,"Starting write pass %lu of %lu\n", (unsigned long) pass_count, args->cycles);
-		else
-			pMsg(INFO,"Starting write pass\n");
-		args->test_state = SET_OPER_W(args->test_state);
-		start_time = time(NULL);
-		/*
-		 * If we are using a heartbeat to print stats
-		 * create a thread to do it for us.
-		 */
-		if(args->hbeat > 0) CreateChild(ChildPS, args);
-
-		for(i=0;i<args->t_kids;i++) {
-			CreateChild(ChildMain, args);
+	if(test->args->flags & CLD_FLG_W) {
+		test->env->bContinue = TRUE;
+		*(pVal1 + OFF_WLBA) = test->args->start_lba;
+		test->args->test_state = DIRCT_INC(test->args->test_state);
+		test->args->test_state = SET_OPER_W(test->args->test_state);
+		test->args->test_state = SET_wFST_TIME(test->args->test_state);
+		srand(test->args->seed);	/* reseed so we can re create the same random transfers */
+		if(test->args->flags & CLD_FLG_CYC)
+			if(test->args->cycles == 0) {
+				pMsg(INFO,test->args, "Starting write pass, cycle %lu\n", (unsigned long) test->env->pass_count);
+			} else {
+				pMsg(INFO,test->args, "Starting write pass, cycle %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
+			}
+		else {
+			pMsg(INFO,test->args, "Starting write pass\n");
+		}
+		CreateTestChild(ChildTimer, test);
+		for(i=0;i<test->args->t_kids;i++) {
+			CreateTestChild(ChildMain, test);
 		}
 		/* Wait for the writers to finish */
-		clean_up();
-
-		cycle_stats.wtime = time(NULL) - start_time;
-		if(args->hbeat == 0) print_stats(args, WRITER);
+		cleanUpTestChildren(test);
 	}
 
 	/* If the write test failed don't start the read test */
-	if(!(TST_STS(args->test_state))) { return; }
+	if(!(TST_STS(test->args->test_state))) { return; }
 
-	if(args->flags & CLD_FLG_R) {
-		bContinue = TRUE;
-		*(pVal1 + OFF_RLBA) = args->start_lba;
-		args->test_state = DIRCT_INC(args->test_state);
-		args->test_state = SET_rFST_TIME(args->test_state);
-		srand(args->seed);	/* reseed so we can re create the same random transfers */
-		if(args->flags & CLD_FLG_CYC)
-			pMsg(INFO,"Starting read pass %lu of %lu\n", (unsigned long) pass_count, args->cycles);
-		else
-			pMsg(INFO,"Starting read pass\n");
-		args->test_state = SET_OPER_R(args->test_state);
-		start_time = time(NULL);
-		/*
-		 * If we are using a heartbeat to print stats
-		 * create a thread to do it for us.
-		 */
-		if(args->hbeat > 0) CreateChild(ChildPS, args);
-
-		for(i=0;i<args->t_kids;i++) {
-			CreateChild(ChildMain, args);
+	if(test->args->flags & CLD_FLG_R) {
+		test->env->bContinue = TRUE;
+		*(pVal1 + OFF_RLBA) = test->args->start_lba;
+		test->args->test_state = DIRCT_INC(test->args->test_state);
+		test->args->test_state = SET_OPER_R(test->args->test_state);
+		test->args->test_state = SET_rFST_TIME(test->args->test_state);
+		srand(test->args->seed);	/* reseed so we can re create the same random transfers */
+		if(test->args->flags & CLD_FLG_CYC)
+			if(test->args->cycles == 0) {
+				pMsg(INFO,test->args, "Starting read pass, cycle %lu\n", (unsigned long) test->env->pass_count);
+			} else {
+				pMsg(INFO,test->args, "Starting read pass, cycle %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
+			}
+		else {
+			pMsg(INFO,test->args, "Starting read pass\n");
 		}
-		/* Wait for the writers to finish */
-		clean_up();
-
-		cycle_stats.rtime = time(NULL) - start_time;
-		if(args->hbeat == 0) print_stats(args, READER);
+		CreateTestChild(ChildTimer, test);
+		for(i=0;i<test->args->t_kids;i++) {
+			CreateTestChild(ChildMain, test);
+		}
+		/* Wait for the readers to finish */
+		cleanUpTestChildren(test);
 	}
 }
 
-unsigned long init_data(child_args_t *args, unsigned char **data_buffer_unaligned)
+unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 {
-	extern void *shared_mem;			/* global pointer to shared memory */
-	extern unsigned char *data_buffer;	/* global pointer to shared memory */
-	extern size_t bmp_siz;				/* size of bitmask */
 	extern time_t global_start_time;	/* overall start time of test */
 	extern time_t global_end_time;		/* overall end time of test */
 
 	int i;
 	OFF_T *pVal1;
-	pid_t my_pid;
 
 	unsigned long data_buffer_size;
 
-	my_pid = GETPID();
-	if(args->seed == 0) args->seed = my_pid;
-	srand(args->seed);
+	if(test->args->seed == 0) test->args->seed = test->args->pid;
+	srand(test->args->seed);
 
 	/* create bitmap to hold write/read context: each bit is an LBA */
 	/* the stuff before BMP_OFFSET is the data for child/thread shared context */
-	bmp_siz = (((((size_t)args->vsiz))/8) == 0) ? 1 : ((((size_t)args->vsiz))/8);
-	if ((args->vsiz/8) != 0) bmp_siz += 1;	/* account for rounding error */
+	test->env->bmp_siz = (((((size_t)test->args->vsiz))/8) == 0) ? 1 : ((((size_t)test->args->vsiz))/8);
+	if ((test->args->vsiz/8) != 0) test->env->bmp_siz += 1;	/* account for rounding error */
 
 	/* We use that same data buffer for static data, so alloc here. */
-	data_buffer_size = ((args->htrsiz*BLK_SIZE)*2);
+	data_buffer_size = ((test->args->htrsiz*BLK_SIZE)*2);
 	if((*data_buffer_unaligned = (unsigned char *) ALLOC(data_buffer_size+ALIGNSIZE)) == NULL) {
-		pMsg(ERR, "Failed to allocate static data buffer memory.\n");
+		pMsg(ERR,test->args,  "Failed to allocate static data buffer memory.\n");
 		return(-1);
 	}
-	data_buffer = (unsigned char *) BUFALIGN(*data_buffer_unaligned);
+	test->env->data_buffer = (unsigned char *) BUFALIGN(*data_buffer_unaligned);
 
-	if((shared_mem = (void *) ALLOC(bmp_siz+BMP_OFFSET)) == NULL) {
-		pMsg(ERR, "Failed to allocate bitmap memory\n");
+	if((test->env->shared_mem = (void *) ALLOC(test->env->bmp_siz+BMP_OFFSET)) == NULL) {
+		pMsg(ERR, test->args, "Failed to allocate bitmap memory\n");
 		return(-1);
 	}
 #ifdef WINDOWS
 	if(CreateMutex(NULL, FALSE, "gbl") == NULL) {
-		pMsg(ERR, "Failed to create semaphore, error = %u\n", GetLastError());
+		pMsg(ERR, test->args, "Failed to create semaphore, error = %u\n", GetLastError());
 		return(GetLastError());
 	}
 	if(CreateMutex(NULL, FALSE, "data") == NULL) {
-		pMsg(ERR, "Failed to create semaphore, error = %u\n", GetLastError());
+		pMsg(ERR, test->args, "Failed to create semaphore, error = %u\n", GetLastError());
 		return(GetLastError());
 	}
 #endif
 
-	memset((char *)shared_mem,0,bmp_siz+BMP_OFFSET);
-	memset((unsigned char *)data_buffer,0,data_buffer_size);
+	memset(test->env->shared_mem,0,test->env->bmp_siz+BMP_OFFSET);
+	memset(test->env->data_buffer,0,data_buffer_size);
 
-	pVal1 = (OFF_T *)shared_mem;
-	*(pVal1 + OFF_WLBA) = args->start_lba;
-	*(pVal1 + OFF_RLBA) = args->start_lba;
-	args->test_state = SET_STS_PASS(args->test_state);
-	args->test_state = SET_wFST_TIME(args->test_state);
-	args->test_state = SET_rFST_TIME(args->test_state);
-	args->test_state = DIRCT_INC(args->test_state);
-	if(args->flags & CLD_FLG_W)
-		args->test_state = SET_OPER_W(args->test_state);
+	pVal1 = (OFF_T *)test->env->shared_mem;
+	*(pVal1 + OFF_WLBA) = test->args->start_lba;
+	*(pVal1 + OFF_RLBA) = test->args->start_lba;
+	test->args->test_state = SET_STS_PASS(test->args->test_state);
+	test->args->test_state = SET_wFST_TIME(test->args->test_state);
+	test->args->test_state = SET_rFST_TIME(test->args->test_state);
+	test->args->test_state = DIRCT_INC(test->args->test_state);
+	if(test->args->flags & CLD_FLG_W)
+		test->args->test_state = SET_OPER_W(test->args->test_state);
 	else
-		args->test_state = SET_OPER_R(args->test_state);
+		test->args->test_state = SET_OPER_R(test->args->test_state);
 
 	/* prefill the data buffer with data for compares and writes */
-	switch(args->flags & CLD_FLG_PTYPS) {
+	switch(test->args->flags & CLD_FLG_PTYPS) {
 		case CLD_FLG_FPTYPE :
-			for(i=0;i<sizeof(args->pattern);i++) {
-				if((args->pattern & (((OFF_T) 0xff) << (((sizeof(args->pattern)-1)-i)*8))) != 0) break;
+			for(i=0;i<sizeof(test->args->pattern);i++) {
+				if((test->args->pattern & (((OFF_T) 0xff) << (((sizeof(test->args->pattern)-1)-i)*8))) != 0) break;
 			}
 			/* special case for pattern = 0 */
-			if(i == sizeof(args->pattern)) i = 0;
-			fill_buffer(data_buffer, data_buffer_size, &args->pattern, sizeof(args->pattern)-i, CLD_FLG_FPTYPE);
+			if(i == sizeof(test->args->pattern)) i = 0;
+			fill_buffer(test->env->data_buffer, data_buffer_size, &test->args->pattern, sizeof(test->args->pattern)-i, CLD_FLG_FPTYPE);
 			break;
 		case CLD_FLG_RPTYPE :
-			fill_buffer(data_buffer, data_buffer_size, NULL, 0, CLD_FLG_RPTYPE);
+			fill_buffer(test->env->data_buffer, data_buffer_size, NULL, 0, CLD_FLG_RPTYPE);
 			break;
 		case CLD_FLG_CPTYPE :
-			fill_buffer(data_buffer, data_buffer_size, 0, 0, CLD_FLG_CPTYPE);
+			fill_buffer(test->env->data_buffer, data_buffer_size, 0, 0, CLD_FLG_CPTYPE);
 		case CLD_FLG_LPTYPE :
 			break;
 		default :
-			pMsg(WARN, "Unknown fill pattern\n");
+			pMsg(WARN, test->args, "Unknown fill pattern\n");
 			return(-1);
 	}
 
-	if(args->flags & CLD_FLG_TMD) {
-		global_end_time = global_start_time + args->run_time;
+	if(test->args->flags & CLD_FLG_TMD) {
+		global_end_time = global_start_time + test->args->run_time;
 	}
 
 	return(0);
 }
 
-int main(int argc, char **argv)
+#ifdef WINDOWS
+DWORD WINAPI threadedMain(test_ll_t *test)
+#else
+void *threadedMain(void *vtest)
+#endif
 {
-	extern void *shared_mem;		/* global pointer to shared memory */
-	extern size_t bmp_siz;			/* size of bitmask */
-	extern OFF_T pass_count;		/* current pass */
-	extern stats_t cycle_stats;		/* per cycle statistics */
-	extern stats_t global_stats;	/* global statistics */
-	extern time_t global_end_time;	/* overall end time of test */
-	extern BOOL bContinue;			/* global that when set to false will force exit of all threads */
-	extern unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
+#ifndef WINDOWS
+	test_ll_t *test = (test_ll_t *) vtest;
+#endif
 
-	time_t start_time;
+	extern time_t global_end_time;
+
 	OFF_T *pVal1;
 	unsigned char *data_buffer_unaligned = NULL;
 	unsigned long ulRV;
-	child_args_t args;
-	char argstr[MAX_ARG_LEN];
 	int i;
-	
-	init_gbl_data();
-	
-	memset(&args,0,sizeof(child_args_t));
-	memset(argstr, 0, MAX_ARG_LEN);
+	unsigned char *sharedMem;
 
-	args.stop_lba = -1;
-	args.stop_blk = -1;
-	args.flags |= CLD_FLG_ALLDIE;
+	test->args->pid = GETPID();
 
-	for(i=1;i<argc-1;i++) {
-		strncat(argstr, argv[i], (MAX_ARG_LEN-1)-strlen(argstr));
-		strncat(argstr, " ", (MAX_ARG_LEN-1)-strlen(argstr));
-	}
+	init_gbl_data(test->env);
 
-	if(fill_cld_args(argc, argv, &args) < 0) exit(1);
-	if(make_assumptions(&args, argstr) < 0) exit(1);
-	if(check_conclusions(&args) < 0) exit(1);
-	if(args.flags & CLD_FLG_DUMP) {
+	if(make_assumptions(test->args) < 0) { TEXIT(GETLASTERROR()); }
+	if(check_conclusions(test->args) < 0) { TEXIT(GETLASTERROR()); }
+	if(test->args->flags & CLD_FLG_DUMP) {
 		/*
 		 * All we are doing is dumping filespec data to STDOUT, so
 		 * we will do this here and be done.
 		 */
-		do_dump(&args);
-		exit(0);
+		do_dump(test->args);
+		TEXIT(GETLASTERROR());
 	} else {
-		ulRV = init_data(&args, &data_buffer_unaligned);
-		if(ulRV != 0) exit(ulRV);
-		pVal1 = (OFF_T *)shared_mem;
+		ulRV = init_data(test, &data_buffer_unaligned);
+		if(ulRV != 0) { TEXIT(ulRV); }
+		pVal1 = (OFF_T *)test->env->shared_mem;
 	}
 
-	pMsg(START, "Start args: %s\n", argstr);
+	pMsg(START, test->args, "Start args: %s\n", test->args->argstr);
 
 	/*
 	 * This loop takes care of passes
 	 */
 	do {
-		if((args.flags & CLD_FLG_LINEAR) && !(args.flags & CLD_FLG_NTRLVD)) {
-			linear_read_write_test(&args);
+		test->env->pass_count++;
+		sharedMem = test->env->shared_mem;
+		memset(sharedMem+BMP_OFFSET,0,test->env->bmp_siz);
+		if((test->args->flags & CLD_FLG_LINEAR) && !(test->args->flags & CLD_FLG_NTRLVD)) {
+			linear_read_write_test(test);
 		} else {
-			bContinue = TRUE;
-			*(pVal1 + OFF_WLBA) = args.start_lba;
-			args.test_state = DIRCT_INC(args.test_state);
-			args.test_state = SET_wFST_TIME(args.test_state);
-			args.test_state = SET_rFST_TIME(args.test_state);
+			test->env->bContinue = TRUE;
+			*(pVal1 + OFF_WLBA) = test->args->start_lba;
+			test->args->test_state = DIRCT_INC(test->args->test_state);
+			test->args->test_state = SET_wFST_TIME(test->args->test_state);
+			test->args->test_state = SET_rFST_TIME(test->args->test_state);
 
-			if(args.flags & CLD_FLG_CYC)
-				pMsg(INFO,"Starting pass %lu of %lu\n", (unsigned long) pass_count, args.cycles);
-			else
-				pMsg(INFO,"Starting pass\n");
+			if(test->args->flags & CLD_FLG_CYC)
+				if(test->args->cycles == 0) {
+					pMsg(INFO,test->args, "Starting pass %lu\n", (unsigned long) test->env->pass_count);
+				} else {
+					pMsg(INFO,test->args, "Starting pass %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
+				}
+			else {
+				pMsg(INFO,test->args, "Starting pass\n");
+			}
 
-			start_time = time(NULL);
-			/*
-			 * If we are using a heartbeat to print stats
-			 * create a thread to do it for us.
-			 */
-			if(args.hbeat > 0) CreateChild(ChildPS, &args);
-
-			for(i=0;i<args.t_kids;i++) {
-				CreateChild(ChildMain, &args);
+			CreateTestChild(ChildTimer, test);
+			for(i=0;i<test->args->t_kids;i++) {
+				CreateTestChild(ChildMain, test);
 			}
 			/* Wait for the children to finish */
-			clean_up();
-			cycle_stats.wtime = time(NULL) - start_time;
-			cycle_stats.rtime = time(NULL) - start_time;
-			if(!(glb_flags & GLB_FLG_PERFP)) {
-				if(args.hbeat == 0) print_stats(&args, READER);
-				if(args.hbeat == 0) print_stats(&args, WRITER);
-			}
+			cleanUpTestChildren(test);
 		}
-		/* 
-		 * Reset all the start conditions in case
-		 * we are doing more passes.
-		 */
-		memset((char *)shared_mem+BMP_OFFSET,0,bmp_siz);
-		pass_count++;
-		update_gbl_stats();
-		if((args.flags & CLD_FLG_CYC) && (pass_count > args.cycles) && (args.cycles != 0))
+		if((test->args->hbeat == 0) || ((test->args->hbeat > 0) &&
+		  ((test->env->cycle_stats.wtime % test->args->hbeat) || (test->env->cycle_stats.rtime % test->args->hbeat)) != 0)) {
+			print_stats(test->args, test->env, CYCLE);
+		}
+		update_gbl_stats(test->env);
+		print_stats(test->args, test->env, TOTAL);
+		if((test->args->flags & CLD_FLG_CYC) && (test->env->pass_count >= test->args->cycles) && (test->args->cycles != 0)) {
 			break;
-		if((args.flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time))
+		}
+		if((test->args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time)) {
 			break;
-		if(!(args.flags & CLD_FLG_CYC) && !(args.flags & CLD_FLG_TMD)
-			&& (args.flags & CLD_FLG_SKS)
-			&& ((global_stats.rcount+global_stats.wcount) >= args.seeks))
+		}
+		if(!(test->args->flags & CLD_FLG_CYC) && !(test->args->flags & CLD_FLG_TMD)
+			&& (test->args->flags & CLD_FLG_SKS)
+			&& ((test->env->global_stats.rcount+test->env->global_stats.wcount) >= test->args->seeks)) {
 			break;
-	} while(TST_STS(args.test_state));
-
-	print_stats(&args, ALL);
+		}
+	} while(TST_STS(test->args->test_state));
 
 	FREE(data_buffer_unaligned);
-	FREE(shared_mem);
+	FREE(test->env->shared_mem);
 #ifdef WINDOWS
 	CloseHandle(OpenMutex(SYNCHRONIZE, TRUE, "gbl"));
 	CloseHandle(OpenMutex(SYNCHRONIZE, TRUE, "data"));
 #endif
 
-	if(TST_STS(args.test_state)) {
-		pMsg(END, "Test Done (Passed)\n");
-		exit(0);
+	if(TST_STS(test->args->test_state)) {
+		pMsg(END, test->args, "Test Done (Passed)\n");
 	} else {
-		pMsg(END, "Test Done (Failed)\n");
-		exit(1);
+		pMsg(END, test->args, "Test Done (Failed)\n");
 	}
+	TEXIT(GETLASTERROR());
+}
+
+/*
+ * Creates a new test structure and adds it to the list of
+ * test structures already available.  Allocate all memory
+ * needed my the new test.
+ *
+ * Returns the newly created test structure
+ */
+test_ll_t *getNewTest(test_ll_t *testList) {
+	test_ll_t *pNewTest;
+
+	if((pNewTest = (test_ll_t *)ALLOC(sizeof(test_ll_t))) == NULL) {
+		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
+		return NULL;
+	}
+
+	memset(pNewTest, 0, sizeof(test_ll_t));
+
+	if((pNewTest->args = (child_args_t *)ALLOC(sizeof(child_args_t))) == NULL) {
+		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
+		FREE(pNewTest);
+		return NULL;
+	}
+	if((pNewTest->env = (test_env_t *)ALLOC(sizeof(test_env_t))) == NULL) {
+		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
+		FREE(pNewTest->args);
+		FREE(pNewTest);
+		return NULL;
+	}
+	memcpy(pNewTest->args, &cleanArgs, sizeof(child_args_t));
+	memcpy(pNewTest->env, &cleanEnv, sizeof(test_env_t));
+
+	pNewTest->next = testList;
+	testList = pNewTest;
+	return pNewTest;
+}
+
+test_ll_t *run() {
+	test_ll_t *newTest = NULL, *lastTest = NULL;
+	
+	if(cleanArgs.flags & CLD_FLG_FSLIST) {
+		char *filespec = cleanArgs.device;
+		char *aFilespec = NULL; 
+		FILE *file = NULL;
+
+		if((aFilespec = (char *)ALLOC(80)) == NULL) {
+			pMsg(ERR, &cleanArgs, "Could not allocate memory to read file");
+			return newTest;
+		}
+
+		file = fopen(filespec, "r");
+			if(file == NULL) {
+				pMsg(
+					ERR,
+					&cleanArgs,
+					"%s is not a regular file, could not be opened for reading, or was not found.",
+					filespec);
+
+				return newTest;
+			}
+
+		while(!feof(file)) {
+			memset(aFilespec, 0, 80);
+			fscanf(file, "%79s", aFilespec);
+			if(aFilespec[0] != 0) { /* if we read something useful */
+				lastTest = newTest;
+				newTest = getNewTest(lastTest);
+				if(newTest != lastTest) {
+					memset(newTest->args->device, 0, DEV_NAME_LEN);
+					strncpy(newTest->args->device, aFilespec, strlen(aFilespec));
+					createChild(threadedMain, newTest);
+				} else {
+					newTest = lastTest;
+					break;
+				}
+			}
+		}
+	
+		fclose(file);
+		FREE(aFilespec);
+	} else {
+		newTest = getNewTest(newTest);
+		if(newTest != NULL) {
+			createChild(threadedMain, newTest);
+		}
+	}
+
+	return newTest;
+}
+
+int main(int argc, char **argv)
+{
+	extern time_t global_start_time;
+	extern time_t global_end_time;
+	extern unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
+	int i;
+
+	global_start_time = time(NULL);
+	global_end_time	= 0;
+	glb_flags = 0;
+
+	strncpy(cleanArgs.device, "No filespec", strlen("No filespec"));
+	cleanArgs.stop_lba = -1;
+	cleanArgs.stop_blk = -1;
+	cleanArgs.flags |= CLD_FLG_ALLDIE;
+
+	for(i=1;i<argc-1;i++) {
+		strncat(cleanArgs.argstr, argv[i], (MAX_ARG_LEN-1)-strlen(cleanArgs.argstr));
+		strncat(cleanArgs.argstr, " ", (MAX_ARG_LEN-1)-strlen(cleanArgs.argstr));
+	}
+
+	if(fill_cld_args(argc, argv, &cleanArgs) < 0) exit(1);
+
+	cleanUp(run());
+
+	return 0;
 }

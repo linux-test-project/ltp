@@ -23,10 +23,10 @@
 *  Project Website:  TBD
 *
 *
-* $Id: usage.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: usage.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: usage.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
 *
 * Revision 1.2  2001/10/10 00:17:14  yardleyb
 * Added Copyright and GPL license text.

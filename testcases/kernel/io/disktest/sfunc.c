@@ -23,10 +23,34 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: sfunc.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: sfunc.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.25  2005/05/03 16:24:38  yardleyb
+* Added needed code changes to support windows
+*
+* Revision 1.24  2005/04/28 21:25:18  yardleyb
+* Fixed up some issues with AIX compilation due to the change made
+* in endian support in Linux.
+*
+* Revision 1.23  2005/01/08 21:18:34  yardleyb
+* Update performance output and usage.  Fixed pass count check
+*
+* Revision 1.22  2004/12/17 06:34:56  yardleyb
+* removed -mf -ml.  These mark options cause to may issues when using
+* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
+* false data misscompare during multiple cycles.
+*
+* Revision 1.21  2004/11/20 05:05:58  yardleyb
+* added more command line checking
+*
+* Revision 1.20  2004/11/20 04:43:42  yardleyb
+* Minor code fixes.  Checking for alloc errors.
+*
+* Revision 1.19  2004/11/02 21:12:21  yardleyb
+* Added PPC ifdef for ioctl BLKGETSIZE
 *
 * Revision 1.17  2003/09/12 21:23:01  yardleyb
 * The following isses have been fixed:
@@ -150,7 +174,7 @@
 #include <winbase.h>
 #include <winioctl.h>
 #else
-#if AIX
+#ifdef AIX
 #include <sys/ioctl.h>
 #include <sys/devinfo.h>
 #endif
@@ -162,11 +186,15 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#ifdef LINUX
+#include <endian.h>
+#endif
 
 #include "main.h"
 #include "sfunc.h"
 #include "defs.h"
 #include "globals.h"
+#include "io.h"
 
 /*
  * Generates a random 32bit number.
@@ -258,7 +286,7 @@ OFF_T my_strtofft(const char *pStr)
 /*
 * prints messages to stdout. with added formating
 */
-int pMsg(lvl_t level, char *Msg,...)
+int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
 {
 #define FORMAT "| %s | %s | %d | %s | %s | %s"
 #define TIME_FORMAT "%04d/%02d/%02d-%02d:%02d:%02d"
@@ -270,15 +298,8 @@ int pMsg(lvl_t level, char *Msg,...)
 	char levelStr[10];
 	struct tm *pstruct_time;
 	char time_str[TIME_FMT_LEN];
-	extern char *devname;
 	extern unsigned long glb_flags;
 	
-
-#ifdef WINDOWS
-	pid_t my_pid = _getpid();
-#else
-	pid_t my_pid = getpid();
-#endif
 	time_t my_time = time(NULL);
 	pstruct_time = localtime(&my_time);
 
@@ -330,7 +351,7 @@ int pMsg(lvl_t level, char *Msg,...)
 	len += strlen(levelStr);
 	len += sizeof(pid_t)*8 + 1;
 	len += strlen(VER_STR);
-	len += strlen(devname);
+	len += strlen(args->device);
 	len += strlen(Msg);
 
 	if((cpTheMsg = (char *)ALLOC(len)) == NULL) {
@@ -342,7 +363,7 @@ int pMsg(lvl_t level, char *Msg,...)
 
 
 	memset(cpTheMsg, 0, len);
-	sprintf(cpTheMsg, FORMAT, time_str, levelStr, my_pid, VER_STR, devname, Msg);
+	sprintf(cpTheMsg, FORMAT, time_str, levelStr, args->pid, VER_STR, args->device, Msg);
 
 	rv = vprintf(cpTheMsg,l);
 	FREE(cpTheMsg);
@@ -358,53 +379,66 @@ void mark_buffer(void *buf, const size_t buf_len, void *lba, const OFF_T pass_co
 	OFF_T local_lba = *plocal_lba;
 	OFF_T *off_tbuf = buf;
 	OFF_T off_tpat = 0, off_tpat2 = 0;
-	size_t i, j;
+	size_t i = 0, j = 0;
 
+#ifdef WINDOWS
 	ucharpattern = (unsigned char *) &pass_count;
 	for(i=0;i<sizeof(OFF_T);i++) {
 		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
 	}
+#endif
+#ifdef AIX
+	off_tpat2 = pass_count;
+#endif
+#ifdef LINUX
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+	ucharpattern = (unsigned char *) &pass_count;
+	for(i=0;i<sizeof(OFF_T);i++) {
+		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
+	}
+#else
+	off_tpat2 = pass_count;
+#endif
+#endif
 
 	ucharpattern = (unsigned char *) &local_lba;
-
 	switch(mark_type) {
 		case MARK_FIRST :
-			for(i=0;i<sizeof(OFF_T);i++) {
-				off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
-			}
-			
-			/* fill first 8 bytes with lba number */
-			*(off_tbuf) = off_tpat;
-			/* fill second 8 bytes with pass_count */
-			*(off_tbuf+1) = off_tpat2;
-			break;
+			printf("Depricated mark function please use -ma\n");
+			exit(1);
 		case MARK_LAST :
-			local_lba += (buf_len-BLK_SIZE);
-			for(i=0;i<sizeof(OFF_T);i++) {
-				off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
-			}
-
-			/* fill second to last 8 bytes with lba number */
-			*(off_tbuf+((buf_len-BLK_SIZE)/sizeof(OFF_T))) = off_tpat;
-			/* fill last 8 bytes with pass_count */
-			*(off_tbuf+((buf_len-BLK_SIZE)/sizeof(OFF_T))+1) = off_tpat2;
-			break;
+			printf("Depricated mark function please use -ma\n");
+			exit(1);
 		case MARK_ALL :
 			for(i=0;i<buf_len;i=i+BLK_SIZE) {
+#ifdef WINDOWS
+				off_tpat = 0;
 				for(j=0;j<sizeof(OFF_T);j++) {
 					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
 				}
-
+#endif
+#ifdef AIX
+				off_tpat = local_lba;
+#endif
+#ifdef LINUX
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+				off_tpat = 0;
+				for(j=0;j<sizeof(OFF_T);j++) {
+					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
+				}
+#else
+				off_tpat = local_lba;
+#endif
+#endif
 				/* fill first 8 bytes with lba number */
 				*(off_tbuf+(i/sizeof(OFF_T))) = off_tpat;
 				/* fill second 8 bytes with pass_count */
 				*(off_tbuf+(i/sizeof(OFF_T))+1) = off_tpat2;
 				local_lba++;
-				off_tpat = 0;
 			}
 			break;
 		default :
-			pMsg(WARN,"Unknown mark type\n");
+			printf("Unknown mark type\n");
 			exit(1);
 	}
 }
@@ -436,7 +470,19 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 			off_tpat = 0;
 			for(j=0;j<(sizeof(OFF_T)/pattern_len);j++)
 				for(i=0;i<pattern_len;++i)
+#ifdef WINDOWS
 					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-((j*pattern_len)+i)));
+#endif
+#ifdef AIX
+					off_tpat |= (((OFF_T)(ucharpattern[(8-pattern_len)+i])) << 8*(7-((j*pattern_len)+i)));
+#endif
+#ifdef LINUX
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-((j*pattern_len)+i)));
+#else
+					off_tpat |= (((OFF_T)(ucharpattern[(8-pattern_len)+i])) << 8*(7-((j*pattern_len)+i)));
+#endif
+#endif
 
 			/* fill buffer with fixed pattern */
 			for(i=0;i<len/8;i++)
@@ -445,12 +491,23 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 		case CLD_FLG_LPTYPE :
 			off_tpat2 = *poff_tpattern;
 			for(j=0;j<len;j++) {
-				off_tpat = 0;
 				/* arrange data to go on the wire correctly */
 				ucharpattern = (unsigned char *) &off_tpat2;
-				for(i=0;i<pattern_len;i++) {
+				off_tpat = 0;
+				for(i=0;i<pattern_len;i++)
+#ifdef WINDOWS
 					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-i));
-				}
+#endif
+#ifdef AIX
+					off_tpat |= (((OFF_T)(ucharpattern[(8-pattern_len)+i])) << 8*(7-i));
+#endif
+#ifdef LINUX
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-i));
+#else
+					off_tpat |= (((OFF_T)(ucharpattern[(8-pattern_len)+i])) << 8*(7-i));
+#endif
+#endif
 
 				/* fill buffer with lba number */
 				for(i=0;i<BLK_SIZE/8;i++) {
@@ -471,7 +528,6 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 
 			for(i=BLK_SIZE;i<len;i+=BLK_SIZE)
 				memcpy((ucharbuf+i), ucharbuf, BLK_SIZE);
-//			for(i=0;i<len/sizeof(OFF_T);i++) *(off_tbuf+i) = Rand64();
 			break;
 		default :
 			printf("Unknown fill pattern\n");
@@ -484,8 +540,16 @@ void normalize_percs(child_args_t *args)
 	int i, j;
 
 	if((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) {
+		if((args->flags & CLD_FLG_DUTY) && (args->rperc < 100)) {
+			pMsg(WARN, args, "Read specified w/o write, ignoring -D, forcing read only...\n");
+		}
 		args->rperc = 100;
+		args->wperc = 0;
 	} else if((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R)) {
+		if((args->flags & CLD_FLG_DUTY) && (args->wperc < 100)) {
+			pMsg(WARN, args, "Write specified w/o read, ignoring -D, forcing write only...\n");
+		}
+		args->rperc = 0;
 		args->wperc = 100;
 	} else { /* must be reading and writing */
 		if (args->rperc == 0 && args->wperc == 0) {
@@ -499,7 +563,7 @@ void normalize_percs(child_args_t *args)
 	}
 
 	if (args->rperc + args->wperc != 100) {
-		pMsg(INFO, "Balancing percentage between reads and writes\n");
+		pMsg(INFO, args, "Balancing percentage between reads and writes\n");
 		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
 			i = 100 - (args->rperc + args->wperc);
 			j = i / 2;
@@ -509,8 +573,8 @@ void normalize_percs(child_args_t *args)
 	}
 }
 
-char *strupr(char *String)
-{
+#ifndef WINDOWS
+char *strupr(char *String) {
 	unsigned int i;
 
 	for(i=0;i<strlen(String);i++) {
@@ -519,8 +583,7 @@ char *strupr(char *String)
 	return(String);
 }
 
-char *strlwr(char *String)
-{
+char *strlwr(char *String) {
 	unsigned int i;
 
 	for(i=0;i<strlen(String);i++) {
@@ -528,11 +591,45 @@ char *strlwr(char *String)
 	}
 	return(String);
 }
+#endif
 
-
-OFF_T get_vsiz(char *device)
-{
+OFF_T get_file_size(char *device) {
 	OFF_T size = 0;
+	fd_t fd;
+
+#ifdef WINDOWS
+	SetLastError(0);
+
+	fd = CreateFile(device, 
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		0,
+		NULL);
+#else
+	fd = open(device, 0);
+#endif
+
+	if(INVALID_FD(fd)) {
+		return size;
+	}
+
+	size = SeekEnd(fd);
+	size /= BLK_SIZE;
+
+	CLOSE(fd);
+	return size;
+}
+
+
+OFF_T get_vsiz(const char *device)
+{
+#ifdef PPC
+	unsigned long size = 0;
+#else
+	OFF_T size = 0;
+#endif
 
 #ifdef WINDOWS
 	HANDLE hFileHandle;
@@ -550,8 +647,6 @@ OFF_T get_vsiz(char *device)
 		NULL);
 
 	if(hFileHandle == INVALID_HANDLE_VALUE) {
-		pMsg(ERR, "could not open %s.\n",device);
-		pMsg(ERR, "Error = %u\n",GetLastError());
 		return(GetLastError());
 	}
 
@@ -583,8 +678,7 @@ OFF_T get_vsiz(char *device)
 			size *= (OFF_T) DiskGeom.TracksPerCylinder;
 			size *= (OFF_T) DiskGeom.SectorsPerTrack;
 		} else {
-			size = -1;
-			PDBG4(DEBUG, "get_vsiz failed: %d, %lu, %lu\n", bRV, GetLastError(), dwLength);
+			size = 0;
 		}
 	}
 	CloseHandle(hFileHandle);
@@ -595,17 +689,16 @@ OFF_T get_vsiz(char *device)
 #endif
 
 	if((fd = open(device, 0)) < 0) {
-		pMsg(ERR,"Cannot open %s\n", device);
-		exit(1);
+		return 0;
 	}
 
 #if AIX
-	my_devinfo = (struct devinfo*) malloc(sizeof(struct devinfo));
+	my_devinfo = (struct devinfo*) ALLOC(sizeof(struct devinfo));
 	if(my_devinfo != NULL) {
 		memset(my_devinfo, 0, sizeof(struct devinfo));
 		if(ioctl(fd, IOCINFO, my_devinfo) == -1) size = -1;
 		else size = (OFF_T)(my_devinfo->un.scdk.numblks) - (OFF_T)1;
-		free(my_devinfo);
+		FREE(my_devinfo);
 	}
 #else
 	if(ioctl(fd, BLKGETSIZE, &size) == -1) size = -1;
@@ -614,7 +707,12 @@ OFF_T get_vsiz(char *device)
 
 	close(fd);
 #endif
+
+#ifdef PPC
+	return((OFF_T)size);
+#else
 	return(size);
+#endif
 }
 
 #ifndef WINDOWS
@@ -628,7 +726,8 @@ fmt_time_t format_time(time_t seconds)
 {
 	fmt_time_t time_struct;
 
-	time_struct.hours = seconds/3600;
+	time_struct.days    = seconds/86400;
+	time_struct.hours   = (seconds%86400)/3600;
 	time_struct.minutes = (seconds%3600)/60;
 	time_struct.seconds = seconds%60;
 

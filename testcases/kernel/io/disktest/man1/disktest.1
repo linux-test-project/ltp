@@ -26,10 +26,21 @@
 .\" Process this file with
 .\" groff -man -Tascii disktest.1
 .\"
-.\" $Id: disktest.1,v 1.3 2003/09/17 17:15:05 robbiew Exp $
+.\" $Id: disktest.1,v 1.4 2005/05/04 17:54:00 mridge Exp $
 .\" $Log: disktest.1,v $
-.\" Revision 1.3  2003/09/17 17:15:05  robbiew
-.\" Update to 1.1.12
+.\" Revision 1.4  2005/05/04 17:54:00  mridge
+.\" Update to version 1.2.8
+.\"
+.\" Revision 1.18  2005/01/08 21:18:48  yardleyb
+.\" Update performance output and usage.  Fixed pass count check
+.\"
+.\" Revision 1.17  2004/12/18 06:13:09  yardleyb
+.\" Updated timer schema to more accurately use the time options.  Added
+.\" fsync on write option to -If.
+.\"
+.\" Revision 1.16  2004/11/02 20:47:25  yardleyb
+.\" Added -F functions.
+.\" lots of minor fixes. see README
 .\"
 .\" Revision 1.15  2002/04/02 00:00:31  yardleyb
 .\" Fixed spelling errors
@@ -84,11 +95,11 @@
 .\"
 .\"
 
-.TH DISKTEST 1 "March 2002" OS "Diag Tools"
+.TH DISKTEST 1 "September 2004" OS "Diag Tools"
 .SH NAME
 disktest \- Tool for testing disk devices
 .SH SYNOPSIS
-.B disktest [-q] [-r] [-w] [-E
+.B disktest [-q] [-Q] [-r] [-w] [-E
 .I cmp_length
 .B ] [-a
 .I seed
@@ -100,7 +111,7 @@ disktest \- Tool for testing disk devices
 .I cycles
 .B ] [-d ] [-D
 .I r%:w%
-.B ] [-h
+.B ] [-F] [-h
 .I heartbeat
 .B ] [-K
 .I threads
@@ -109,10 +120,6 @@ disktest \- Tool for testing disk devices
 .B ] [-P
 .I TXPRA
 .B ] [ -m
-f
-.B |
-l
-.B |
 a
 .B ] [-N
 .I sectors
@@ -130,6 +137,7 @@ l
 u
 .B |
 d
+.B ]
 .B ] |
 L
 .B [
@@ -144,6 +152,9 @@ r
 b
 .B |
 f
+.B [
+s
+.B ]
 .B ]
 .I filespec
 .SH DESCRIPTION
@@ -227,6 +238,14 @@ is 0 then the block size is used as the compare length. By default, data read is
 Use a data pattern consisting of a fixed value.
 .I fixed_pattern
 can be entered using decimal, any number not starting with a 0, octel, any number staring with a 0, or hexadecimal, any number and [A-F] starting with 0x. The value can be no greater +/- 2^63, in size.
+.IP -F
+used to specify that the
+.I filespec
+is actually a file listing the targets that
+.B disktest
+should operate on.  This allows
+.B disktest
+to run to multiple targets using the same options from a single command-line.
 .IP "-h heartbeat"
 Performance data will be sent to stdout every
 .I heartbeat
@@ -250,7 +269,9 @@ will align it's buffers correctly to support raw devices.  The
 .B O_CREAT
 in
 .B open(2)
-for more details. Access to the file is performed through the file system that the file is stored on.  Adding 
+for more details. Access to the file is performed through the file system that the file is stored on. Adding an S modifier to the F (file) type opertaions will force an
+.B fsync(2)
+to occur on every write.  Adding 
 .B D
 will open with the O_DIRECT flag set.  If this option is used, then I/O is limited to being aligned to the file systems block size.  When transferring to a block device w/o a file system, then alignment is to 1k.  These limits have been verified with the 2.4.9 kernel and the o_direct patch from AA.
 .B Disktest
@@ -266,15 +287,11 @@ Total number of seeks to occur during testing.  This option specifies the exact 
 .B disktest
 will calculate the number of seeks by taking the difference between the start block and the stop block.  If the difference is 0 then the default is 1000 seeks.
 .IP "-m mark_options"
-This option will add a the lba and pass count to the data before any IO operation occurs.  The
+This option will add the lba and pass count to the data before any IO operation occurs.  The
 .I mark_options
 are
-.B f
-which will mark the first LBA of the transfer with the starting LBA number and current pass count,
-.B l
-which will mark the last LBA of the transfer with the starting LBA number and current pass count and
 .B a
-which will mark each LBA with its LBA number and current pass count.  The mark replaces the first 16 bytes of data in the specified LBA.
+which will mark each LBA with its LBA number and current pass count.  The mark replaces the first 16 bytes of data in each LBA.
 .IP -n
 Use a data pattern that consists of the the lba number.  An lba value of up to a 32b can be stored.  The 32b value is repeated to fill the transfer buffer.
 .IP "-N sectors"
@@ -316,7 +333,11 @@ Record performance statistic to stdout. Perf_opts is a string of characters repr
 .RE
 .RE
 .IP -q
-This option supresses all the 'INFO' level messages that are send to stdout.  This includes all the assumption messages the disktest will print as it finds that the option was not specified in the command line arguments.
+Sepress all the 'INFO' level messages that are send to stdout.  This includes all the assumption messages the
+.B disktest
+will print as it finds that the option was not specified in the command line arguments.
+.IP -Q
+Sepress header data from messages that are send to stdout.
 .IP -r
 Read from
 .I filespec.
@@ -360,11 +381,21 @@ seconds have elapsed.
 .I Runtime
 must always be greater than zero.  -T, -L, -C are exclusive to one another.
 .IP -v
-The version information will be displayed and disktest will exit normally.
+The version information will be displayed and
+.B disktest
+will exit normally.
 .IP -w
 Write to 
 .I filespec.
 Data will be written as fast as possible and not read back to check for data corruption. can be combined with -r option to do read/write testing and -E to perform data integrity checking.
+.IP -z
+Use a randomly generated data pattern based on the seed for the bytes within to each block.  The data pattern is random for the first 512 bytes, one LBA.  The pattern is then repeated for each LBA after creating a pseudo random data pattern across the given
+.I filespec.
+This is done for two reasons.  One, it saves on the memory foot print size need and time required to generate the data, and two, an LBA is the smallest unit of work
+.B disktest
+operates on.  Therefore,
+.B disktest
+can maintain the ability to do data checking, random block size transfers, and random block offsets when using random data.
 .SH FILES
 .I ./disktest
 .SH ENVIRONMENT
@@ -445,6 +476,15 @@ disktest -d -B 1k -s25 /dev/sddz
 
 .RE
 This will dump 1024 bytes of data to stdout starting at LBA 25.
+
+.RE
+File I/O
+.RS
+Distest can be used to perform filesystem IO testing.  There is some setup required for this however.  Disktest will not automatically create a file on the filesystem.  Therefore, a file must be initialized.  This is only required for read only testing.  Write and read/write testing will create the file if not already created.  Also note, that when creating a file using random I/O, all the LBAs in the file may not be written.  This can cause disktest to show an error if a request is made to a file to an LBA that has not been previously written.  The follwing is an example to initialize a file for filesystem IO testing.
+
+disktest -w -pl -N200000 -B128k test.fil
+
+This will create a ~97MB file named test.fil in the current directory writing at 131072B per transfer.  Once this completes any type of IO test can be performed to this file.
 
 .RE
 .SH TODO

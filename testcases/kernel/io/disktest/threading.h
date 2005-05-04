@@ -22,10 +22,21 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: threading.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: threading.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.8  2004/11/20 04:43:42  yardleyb
+* Minor code fixes.  Checking for alloc errors.
+*
+* Revision 1.7  2004/11/19 21:45:12  yardleyb
+* Fixed issue with code added for -F option.  Cased disktest
+* to SEG FAULT when cleaning up threads.
+*
+* Revision 1.6  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.5  2002/03/30 01:32:14  yardleyb
 * Major Changes:
@@ -86,9 +97,7 @@
 #endif
 
 #include "defs.h"
-#include "globals.h"
 #include "main.h"
-#include "threading.h"
 
 #define MAX_THREADS 65536		/* max number of threads, reader/writer, per test */
 
@@ -96,6 +105,7 @@
 #define LOCK(Mutex) WaitForSingleObject((void *) Mutex, INFINITE)
 #define UNLOCK(Mutex) ReleaseMutex((void *) Mutex)
 #define TEXIT(errno) ExitThread(errno); return(errno)
+#define ISTHREADVALID(thread) (thread != NULL)
 #else
 #define LOCK(Mutex) \
 		pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &Mutex); \
@@ -104,19 +114,14 @@
 		pthread_mutex_unlock(&Mutex); \
 		pthread_cleanup_pop(0)
 #define TEXIT(errno) pthread_exit(&errno)
+#define ISTHREADVALID(thread) (thread != 0)
 #endif
 
-typedef struct thread_struct {
-#ifdef WINDOWS
-	HANDLE hThread;				/* handle to thread */
-#else
-	pthread_t hThread;			/* thread */
-	BOOL bCanBeJoined;
-#endif
-	struct thread_struct *next;	/* pointer to next thread */
-} thread_struct_t;
-
-void clean_up(void);
-void CreateChild(void *, child_args_t *);
+void cleanUpTestChildren(test_ll_t *);
+void CreateTestChild(void *, test_ll_t *);
+hThread_t spawnThread(void *, void *);
+void closeThread(hThread_t);
+void createChild(void *, test_ll_t *);
+void cleanUp(test_ll_t *);
 
 #endif /* THREADING_H */

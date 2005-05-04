@@ -23,10 +23,10 @@
 *  Project Website:  TBD
 *
 *
-* $Id: Getopt.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: Getopt.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: Getopt.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
 *
 * Revision 1.4  2002/03/30 01:32:14  yardleyb
 * Major Changes:

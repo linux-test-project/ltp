@@ -22,13 +22,17 @@
 *
 *  Project Website:  TBD
 *
-* $Id: io.c,v 1.4 2003/10/07 14:31:22 robbiew Exp $
+* $Id: io.c,v 1.5 2005/05/04 17:54:00 mridge Exp $
 * $Log: io.c,v $
-* Revision 1.4  2003/10/07 14:31:22  robbiew
-* Added check for O_DIRECT support.
+* Revision 1.5  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
 *
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.8  2005/05/03 16:24:38  yardleyb
+* Added needed code changes to support windows
+*
+* Revision 1.7  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.6  2002/05/31 18:47:59  yardleyb
 * Updates to -pl -pL options.
@@ -85,6 +89,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <fcntl.h>
 #endif
 
 #include "defs.h"
@@ -134,6 +139,18 @@ OFF_T FileSeek64(HANDLE hf, OFF_T distance, DWORD MoveMethod)
    return li.QuadPart;
 }
 #endif
+
+OFF_T SeekEnd(fd_t fd)
+{
+	OFF_T return_lba;
+
+#ifdef WINDOWS
+	return_lba=(OFF_T) FileSeek64(fd, 0, FILE_END);
+#else
+	return_lba=(OFF_T) lseek64(fd, 0, SEEK_END);
+#endif
+	return(return_lba);
+}
 
 OFF_T Seek(fd_t fd, OFF_T lba)
 {
@@ -198,12 +215,21 @@ fd_t Open(const char *filespec, const OFF_T flags)
 	if(flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
 #endif
 #ifdef CLD_FLG_DIRECT
-#ifdef O_DIRECT
 	if(flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
-#endif
 #endif
 	fd = open(filespec,OPEN_MASK,00600);
 #endif
 	return(fd);
+}
+
+int Sync (fd_t fd) {
+#ifdef WINDOWS
+	if(FlushFileBuffers(fd) != TRUE) {
+		return -1;
+	}
+	return 0;
+#else
+	return fsync(fd);
+#endif
 }
 

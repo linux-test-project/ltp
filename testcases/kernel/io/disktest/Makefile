@@ -23,10 +23,37 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.5 2003/04/17 15:21:55 robbiew Exp $
+# $Id: Makefile,v 1.6 2005/05/04 17:54:00 mridge Exp $
 # $Log: Makefile,v $
-# Revision 1.5  2003/04/17 15:21:55  robbiew
-# Updated to v1.1.10
+# Revision 1.6  2005/05/04 17:54:00  mridge
+# Update to version 1.2.8
+#
+# Revision 1.26  2004/12/18 06:13:03  yardleyb
+# Updated timer schema to more accurately use the time options.  Added
+# fsync on write option to -If.
+#
+# Revision 1.25  2004/12/17 06:34:56  yardleyb
+# removed -mf -ml.  These mark options cause to may issues when using
+# random block size transfers.  Fixed -ma option for endian-ness.  Fixed
+# false data misscompare during multiple cycles.
+#
+# Revision 1.24  2004/11/20 04:43:42  yardleyb
+# Minor code fixes.  Checking for alloc errors.
+#
+# Revision 1.23  2004/11/19 21:45:12  yardleyb
+# Fixed issue with code added for -F option.  Cased disktest
+# to SEG FAULT when cleaning up threads.
+#
+# Revision 1.22  2004/11/19 03:47:45  yardleyb
+# Fixed issue were args data was not being copied from a
+# clean source.
+#
+# Revision 1.21  2004/11/02 20:47:13  yardleyb
+# Added -F functions.
+# lots of minor fixes. see README
+#
+# Revision 1.20  2003/09/12 21:23:56  yardleyb
+# Updated version to 1.12
 #
 # Revision 1.19  2003/01/13 21:33:31  yardleyb
 # Added code to detect AIX volume size.
@@ -115,13 +142,19 @@
 
 # -D "_LARGE_FILES" is used in AIX to support 64bit functions and data types
 # -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" is used in Linux to support 64bit functions and data types. -D"_GNU_SOURCE" is to support Linux O_DIRECT
+# These are typically taken from rpm, but, if not, defined here.
+bindir=/usr/bin
+libdir=/usr/lib
+sysconfdir=/etc
+mandir=/usr/share/man
 
+VER=`grep VER_STR main.h | awk -F\" '{print $$2}'`
 GBLHDRS=main.h globals.h defs.h
 ALLHDRS=$(wildcard *.h)
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-CFLAGS+= -Wall -O -D"LINUX" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS= -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 
 all: $(OBJS) disktest
 
@@ -138,9 +171,31 @@ usage.o: usage.c usage.h
 Getopt.o: Getopt.c Getopt.h
 io.o: io.c io.h $(GBLHDRS)
 dump.o: dump.c dump.h $(GBLHDRS)
+timer.o: timer.c timer.h $(GBLHDRS)
+stats.o: stats.c stats.h $(GBLHDRS)
+
+install: disktest
+	cp disktest $(bindir)
+	cp man1/disktest.1.gz $(mandir)/man1
+
+uninstall: disktest
+	rm -f $(bindir)/disktest
+	rm -f $(mandir)/man1/disktest.1
+	rm -f $(mandir)/man1/disktest.1.gz
 
 clean:
-	rm -f *~ *.o disktest 
+	rm -f disktest $(OBJS)
 
-install:
-	ln -f disktest ../../../bin
+all-clean: clean
+	rm -f *~ *tar* *zip*
+
+distro: all-clean
+	mkdir disktest.$(VER)
+	mkdir disktest.$(VER)/man1
+	cp ./Makefile* ./*.[ch] ./LICENSE ./README disktest.$(VER)
+	cp ./man1/disktest.1 disktest.$(VER)/man1
+	chmod 444 disktest.$(VER)/man1/disktest.1
+	gzip disktest.$(VER)/man1/disktest.1
+	tar cvf ./disktest.$(VER).tar disktest.$(VER)
+	rm -rf disktest.$(VER)
+	gzip ./disktest.$(VER).tar

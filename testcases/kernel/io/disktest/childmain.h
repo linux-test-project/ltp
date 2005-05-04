@@ -22,9 +22,9 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.h,v 1.4 2005/05/04 17:52:09 mridge Exp $
+* $Id: childmain.h,v 1.5 2005/05/04 17:54:00 mridge Exp $
 * $Log: childmain.h,v $
-* Revision 1.4  2005/05/04 17:52:09  mridge
+* Revision 1.5  2005/05/04 17:54:00  mridge
 * Update to version 1.2.8
 *
 * Revision 1.4  2004/11/02 20:47:13  yardleyb

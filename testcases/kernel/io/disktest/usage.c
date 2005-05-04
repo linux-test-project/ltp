@@ -23,10 +23,17 @@
 *  Project Website:  TBD
 *
 *
-* $Id: usage.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: usage.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: usage.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.13  2005/01/08 21:18:34  yardleyb
+* Update performance output and usage.  Fixed pass count check
+*
+* Revision 1.12  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.11  2002/03/07 03:33:11  yardleyb
 * More cleanup to usage text.
@@ -98,10 +105,12 @@ void usage(void)
 	printf("\t-p seek_pattern\tSet the pattern of disk seeks.\n");
 	printf("\t-P perf_opts\tDisplays performance statistic.\n");
 	printf("\t-q\t\tSepress INFO level messages.\n");
+	printf("\t-Q\t\tSepress header information on messages.\n");
 	printf("\t-r\t\tRead data from disk.\n");
 	printf("\t-s sLBA[:eLBA]\tSet the start [and stop] test LBA.\n");
 	printf("\t-S sblk[:eblk]\tSet the start [and stop] test block.\n");
 	printf("\t-T runtime\tRun until <runtime> seconds have elapsed.\n");
 	printf("\t-w\t\tWrite data to disk.\n");
 	printf("\t-v\t\tDisplay version information and exit.\n");
+	printf("\t-z\t\tUse randomly generated data as the data pattern.\n");
 }

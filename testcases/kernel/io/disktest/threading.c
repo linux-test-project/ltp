@@ -22,10 +22,21 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.c,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: threading.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: threading.c,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.10  2004/11/20 04:43:42  yardleyb
+* Minor code fixes.  Checking for alloc errors.
+*
+* Revision 1.9  2004/11/19 21:45:12  yardleyb
+* Fixed issue with code added for -F option.  Cased disktest
+* to SEG FAULT when cleaning up threads.
+*
+* Revision 1.8  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.7  2002/04/24 01:45:31  yardleyb
 * Minor Fixes:
@@ -96,46 +107,29 @@
 #endif
 
 #include "defs.h"
-#include "globals.h"
 #include "sfunc.h"
 #include "main.h"
 #include "childmain.h"
 #include "threading.h"
 
 /*
- * This routine will sit waiting for
- * all threads to exit.  In unix, this
- * is done through pthread_join.  In
- * Windows we use a sleeping loop.
+ * This routine will sit waiting for all threads to exit.  In
+ * unix, this is done through pthread_join.  In Windows we
+ * use a sleeping loop.
  */
-void clean_up(void)
+void cleanUpTestChildren(test_ll_t *test)
 {
-	extern thread_struct_t *pThreads;	/* Global List of child processes */
-	extern unsigned short kids;			/* global number of current child processes */
 	thread_struct_t *pTmpThread = NULL, *pTmpThreadLast = NULL;
  
-#ifdef WINDOWS
-	DWORD dwExitCode = 0;
-#endif
+	while(test->env->pThreads) {
+		pTmpThread = test->env->pThreads->next;
+		pTmpThreadLast = test->env->pThreads;
 
-	while(pThreads) {
-		pTmpThread = pThreads->next;
-		pTmpThreadLast = pThreads;
-#ifdef WINDOWS
-		do {
-			GetExitCodeThread(pThreads->hThread, &dwExitCode);
-			/*
-			 * Sleep(0) will force this thread to
-			 * relinquish the remainder of its time slice
-			 */
-			if(dwExitCode == STILL_ACTIVE) Sleep(0);
-		} while(dwExitCode == STILL_ACTIVE); 
-#else
-		pthread_join(pThreads->hThread, NULL);
-#endif
-		pThreads = pTmpThread;
+		closeThread(pTmpThreadLast->hThread);
+
+		test->env->pThreads = pTmpThread;
 		FREE(pTmpThreadLast);
-		kids--;
+		test->env->kids--;
 	}
 }
 
@@ -144,37 +138,83 @@ void clean_up(void)
  * during the call.  if we cannot create a child, we fail and exit with
  * errno as the exit status.
  */
-void CreateChild(void *function, child_args_t *args)
+void CreateTestChild(void *function, test_ll_t *test)
 {
-	extern thread_struct_t *pThreads;	/* Global List of child processes */
-	extern unsigned short kids;			/* global number of current child processes */
 	thread_struct_t *pNewThread;
-#ifdef WINDOWS
-	HANDLE hTmpThread;
-#else
-	pthread_t hTmpThread;
-#endif
+	hThread_t hTmpThread;
 
-	kids++;
-#ifdef WINDOWS
-	if((hTmpThread = CreateThread(NULL, 0, function, args, 0, NULL)) == NULL) {
-		kids--;
-		pMsg(ERR, "Failed trying to create thread with error code %u\n", GetLastError());
-		pMsg(INFO, "Total Number of Threads created was %u\n", kids);
-		exit(GetLastError());
+	hTmpThread = spawnThread(function, test);
+
+	if(ISTHREADVALID(hTmpThread)) {
+		if((pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t))) == NULL) {
+			pMsg(ERR, test->args, "%d : Could not allocate memory for child thread...\n", GETLASTERROR());
+			exit(GETLASTERROR());
+		}
+		test->env->kids++;
+		memset(pNewThread, 0, sizeof(thread_struct_t));
+		pNewThread->next = test->env->pThreads;
+		test->env->pThreads = pNewThread;
+		test->env->pThreads->hThread = hTmpThread;
+	} else {
+		pMsg(ERR, test->args, "%d : Could not create all child threads.\n", GETLASTERROR());
+		pMsg(INFO, test->args, "Total Number of Threads created was %u\n", test->env->kids);
+		exit(GETLASTERROR());
 	}
-#else
-	if(pthread_create(&hTmpThread, NULL, function, args) != 0) {
-		kids--;
-		pMsg(ERR, "Could not create child thread...\n");
-		pMsg(INFO, "Total Number of Threads created was %u\n", kids);
-		exit(errno);
-	}
-#endif
-	pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t));
-	memset(pNewThread, 0, sizeof(thread_struct_t));
-	pNewThread->next = pThreads;
-	pThreads = pNewThread;
-	pThreads->hThread = hTmpThread;
 }
 
+void createChild(void *function, test_ll_t *test) {
+	hThread_t hTmpThread;
+
+	hTmpThread = spawnThread(function, test);
+
+	if(ISTHREADVALID(hTmpThread)) {
+		test->hThread = hTmpThread;
+	} else {
+		pMsg(ERR, test->args, "%d : Could not create child thread...\n", GETLASTERROR());
+		exit(GETLASTERROR());
+	}
+}
+
+void cleanUp(test_ll_t *test) {
+	test_ll_t *pTmpTest = test;
+	test_ll_t *pLastTest;
+	while (pTmpTest != NULL) {
+		pLastTest = pTmpTest;
+		pTmpTest = pTmpTest->next;
+		closeThread(pLastTest->hThread);
+		FREE(pLastTest->args);
+		FREE(pLastTest->env);
+		FREE(pLastTest);
+	}
+}
+
+hThread_t spawnThread(void *function, void *param) {
+	hThread_t hTmpThread;
+
+#ifdef WINDOWS
+	hTmpThread = CreateThread(NULL, 0, function, param, 0, NULL);
+#else
+	if(pthread_create(&hTmpThread, NULL, function, param) != 0) {
+		hTmpThread = 0;
+	}
+#endif
+	
+	return hTmpThread;
+}
+
+void closeThread(hThread_t hThread) {
+#ifdef WINDOWS
+	DWORD dwExitCode = 0;
+
+	do {
+		GetExitCodeThread(hThread, &dwExitCode);
+		/*
+		 * Sleep(0) will force this thread to
+		 * relinquish the remainder of its time slice
+		 */
+		if(dwExitCode == STILL_ACTIVE) Sleep(0);
+	} while(dwExitCode == STILL_ACTIVE);
+#else
+	pthread_join(hThread, NULL);
+#endif
+}

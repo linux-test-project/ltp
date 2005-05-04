@@ -22,10 +22,14 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: parse.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: parse.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.6  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.5  2002/04/24 01:45:31  yardleyb
 * Minor Fixes:
@@ -107,7 +111,7 @@
 #endif
 
 int fill_cld_args(int, char **, child_args_t *);
-int make_assumptions(child_args_t *, char *);
+int make_assumptions(child_args_t *);
 int check_conclusions(child_args_t *);
 
 #endif

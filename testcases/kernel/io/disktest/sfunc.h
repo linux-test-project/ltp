@@ -23,10 +23,20 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.h,v 1.3 2003/09/17 17:15:28 robbiew Exp $
+* $Id: sfunc.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
 * $Log: sfunc.h,v $
-* Revision 1.3  2003/09/17 17:15:28  robbiew
-* Update to 1.1.12
+* Revision 1.4  2005/05/04 17:54:00  mridge
+* Update to version 1.2.8
+*
+* Revision 1.12  2005/05/03 16:24:38  yardleyb
+* Added needed code changes to support windows
+*
+* Revision 1.11  2005/01/08 21:18:34  yardleyb
+* Update performance output and usage.  Fixed pass count check
+*
+* Revision 1.10  2004/11/02 20:47:13  yardleyb
+* Added -F functions.
+* lots of minor fixes. see README
 *
 * Revision 1.9  2002/03/30 01:32:14  yardleyb
 * Major Changes:
@@ -101,23 +111,25 @@ typedef enum lvl {
 } lvl_t;
 
 typedef struct fmt_time {
+	time_t days;
 	time_t hours;
 	time_t minutes;
 	time_t seconds;
 } fmt_time_t;
 
 OFF_T my_strtofft(const char *pStr);
-int pMsg(lvl_t level, char *Msg,...);
+int pMsg(lvl_t level, child_args_t *, char *Msg,...);
 void fill_buffer(void *, size_t, void *, size_t, const unsigned int);
 void mark_buffer(void *, const size_t, void *, const OFF_T, const unsigned short);
-void normalize_percs(child_args_t *args);
+void normalize_percs(child_args_t *);
 #ifndef WINDOWS
 void Sleep(unsigned int);
+char *strupr(char *);
+char *strlwr(char *);
 #endif
-OFF_T get_vsiz(char *device);
+OFF_T get_vsiz(const char *);
+OFF_T get_file_size(char *);
 OFF_T Rand64(void);
-char *strupr(char *String);
-char *strlwr(char *String);
 fmt_time_t format_time(time_t);
 
 #endif /* _SFUNC_H */
