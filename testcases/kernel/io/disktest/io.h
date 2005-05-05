@@ -22,23 +22,20 @@
 *
 *  Project Website:  TBD
 *
-* $Id: io.h,v 1.3 2005/05/04 17:54:00 mridge Exp $
+* $Id: io.h,v 1.4 2005/05/05 19:46:55 mridge Exp $
 * $Log: io.h,v $
-* Revision 1.3  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
+* Revision 1.4  2005/05/05 19:46:55  mridge
+* upgrade to 1.2.8
 *
 * Revision 1.8  2005/05/03 16:24:38  yardleyb
 * Added needed code changes to support windows
 *
-* Revision 1.7  2004/11/02 20:47:13  yardleyb
+* Revision 1.7  2004/11/03 22:50:23  yardleyb
+* Added O_DIRECT ifdef for Linux on Power
+*
+* Revision 1.6  2004/11/02 20:47:13  yardleyb
 * Added -F functions.
 * lots of minor fixes. see README
-*
-* Revision 1.6  2002/05/31 18:47:59  yardleyb
-* Updates to -pl -pL options.
-* Fixed test status to fail on
-* failure to open filespec.
-* Version set to 1.1.9
 *
 * Revision 1.5  2002/04/24 01:45:31  yardleyb
 * Minor Fixes:
@@ -80,156 +77,37 @@
 * Initial Checkin
 *
 */
+#ifndef IO_H_
+#define IO_H_ 1
 
 #ifdef WINDOWS
-#include <windows.h>
-#include <winioctl.h>
-#include <io.h>
-#else
-#include <sys/types.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <fcntl.h>
+#include <windows.h> /* HANDLE */
 #endif
 
 #include "defs.h"
-#include "main.h"
-#include "io.h"
 
-long Write(fd_t fd, const void *buf, const unsigned long trsiz)
-{
-	long tcnt;
+#ifdef PPC
+#ifdef LINUX
+// for linux on power O_DIRECT is only defined in asm/fcntl.h
+#define O_DIRECT 0400000
+#endif
+#endif
+
 #ifdef WINDOWS
-	WriteFile(fd, buf, trsiz, &tcnt, NULL);
+#define CLOSE(fd) CloseHandle(fd)
+typedef HANDLE fd_t;
 #else
-	tcnt = write(fd, buf, trsiz);
-#endif
-	return(tcnt);
-}
-
-long Read(fd_t fd, void *buf, const unsigned long trsiz)
-{
-	long tcnt;
-#ifdef WINDOWS
-		ReadFile(fd, buf, trsiz, &tcnt, NULL);
-#else
-		tcnt = read(fd, buf, trsiz);
-#endif
-	return(tcnt);
-}
-
-#ifdef WINDOWS
-/*
- * wrapper for file seeking in WINDOWS API to hind the ugle 32 bit
- * interface of SetFile Pointer
- */
-OFF_T FileSeek64(HANDLE hf, OFF_T distance, DWORD MoveMethod)
-{
-   LARGE_INTEGER li;
-
-   li.QuadPart = distance;
-
-   li.LowPart = SetFilePointer(hf, li.LowPart, &li.HighPart, MoveMethod);
-
-   if (li.LowPart == 0xFFFFFFFF && GetLastError() != NO_ERROR)
-   {
-      li.QuadPart = -1;
-   }
-
-   return li.QuadPart;
-}
+#include <stdio.h>
+#define CLOSE(fd) close(fd)
+typedef int fd_t;
 #endif
 
-OFF_T SeekEnd(fd_t fd)
-{
-	OFF_T return_lba;
+fd_t Open(const char *, const OFF_T);
+OFF_T Seek(fd_t, OFF_T);
+OFF_T SeekEnd(fd_t);
+long Write(fd_t, const void *, const unsigned long);
+long Read(fd_t, void *, const unsigned long);
+int Sync (fd_t);
 
-#ifdef WINDOWS
-	return_lba=(OFF_T) FileSeek64(fd, 0, FILE_END);
-#else
-	return_lba=(OFF_T) lseek64(fd, 0, SEEK_END);
-#endif
-	return(return_lba);
-}
-
-OFF_T Seek(fd_t fd, OFF_T lba)
-{
-	OFF_T return_lba;
-
-#ifdef WINDOWS
-	return_lba=(OFF_T) FileSeek64(fd, lba, FILE_BEGIN);
-#else
-	return_lba=(OFF_T) lseek64(fd,lba,SEEK_SET);
-#endif
-	return(return_lba);
-}
-
-fd_t Open(const char *filespec, const OFF_T flags)
-{
-	fd_t fd;
-#ifdef WINDOWS
-	unsigned long OPEN_FLAGS = 0, OPEN_DISPO = 0, OPEN_READ_WRITE = 0, OPEN_SHARE = 0;
-
-	if((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) {
-		OPEN_READ_WRITE |= GENERIC_READ;
-		OPEN_SHARE |= FILE_SHARE_READ;
-	} else if(!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) {
-		OPEN_READ_WRITE |= GENERIC_WRITE;
-		OPEN_SHARE |= FILE_SHARE_WRITE;
-	} else {
-		OPEN_READ_WRITE |= (GENERIC_READ | GENERIC_WRITE);
-		OPEN_SHARE |= (FILE_SHARE_READ | FILE_SHARE_WRITE);
-	}
-
-#ifdef CLD_FLG_DIRECT
-	if(flags & CLD_FLG_DIRECT) OPEN_FLAGS = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
-#endif
-	OPEN_DISPO = OPEN_EXISTING;
-
-#ifdef CLD_FLG_RANDOM
-	if(flags & CLD_FLG_RANDOM) OPEN_FLAGS |= FILE_FLAG_RANDOM_ACCESS;
-#endif
-#ifdef CLD_FLG_LINEAR
-	if(flags & CLD_FLG_LINEAR) OPEN_FLAGS |= FILE_FLAG_SEQUENTIAL_SCAN;
-#endif
-#ifdef CLD_FLG_FILE
-	if(flags & CLD_FLG_FILE) {
-		OPEN_FLAGS |= FILE_ATTRIBUTE_ARCHIVE;
-		if(flags & CLD_FLG_W)
-			OPEN_DISPO = OPEN_ALWAYS;
-	}
-#endif
-	fd = CreateFile(filespec,
-		OPEN_READ_WRITE,
-		OPEN_SHARE,
-		NULL,
-		OPEN_DISPO,
-		OPEN_FLAGS,
-		NULL);
-#else
-	int OPEN_MASK = O_LARGEFILE;
-	if((flags & CLD_FLG_R) && !(flags & CLD_FLG_W)) OPEN_MASK |= O_RDONLY;
-	else if(!(flags & CLD_FLG_R) && (flags & CLD_FLG_W)) OPEN_MASK |= O_WRONLY;
-	else OPEN_MASK |= O_RDWR;
-#ifdef CLD_FLG_FILE
-	if(flags & CLD_FLG_FILE) OPEN_MASK |= O_CREAT;
-#endif
-#ifdef CLD_FLG_DIRECT
-	if(flags & CLD_FLG_DIRECT) OPEN_MASK |= O_DIRECT;
-#endif
-	fd = open(filespec,OPEN_MASK,00600);
-#endif
-	return(fd);
-}
-
-int Sync (fd_t fd) {
-#ifdef WINDOWS
-	if(FlushFileBuffers(fd) != TRUE) {
-		return -1;
-	}
-	return 0;
-#else
-	return fsync(fd);
-#endif
-}
+#endif /* IO_H_ */
 
