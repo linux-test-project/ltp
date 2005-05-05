@@ -1,3 +1,21 @@
+LTP-20050505
+- Added DBAT testsuite, limited LTP tests for build verification - runltplite
+- fix the bug on test table selinux when run the ltpmenu.
+- Added new getpagesize() test.
+- New test creates a data file of specified or random size and copies
+  the file to a random directory depth on a designated filesystem.
+  The two files are compared and checked for differences.
+- Make nptl01 timeout and report failure rather than just hanging in the event of a fail.
+- Moved SELinux testsuite from misc to the kernel/security directory.
+- acct01 - Updated test to allow for execution on zSeries machines.
+- ioperm01 - Fixed bug will cause ioperm01 receive SEGV and report "BROK" instead of "FAIL" when this test failed.
+- nfs04 - use 'cmp' instead of 'diff' because I think byte comparison is better for the type of file created for this test.
+- Fixed ftp01 and telnet01 seems designed to run with non-root user connection
+  when the user name is set to RUSER environment variable.
+  However, it is incomplete.ftp01 creates a directory whose permission is root.
+  So, non-root user cannot write in the directory.
+  telnet01 always consider the prompt is '#'
+
 LTP-20050405
 - Fixed '-d' option to runltp.sh
 - Added optional ltp (fivextra) extended testsuite
