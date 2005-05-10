@@ -160,6 +160,10 @@ fcntl20 fcntl20
 fcntl21 fcntl21
 fcntl22 fcntl22
 fcntl23 fcntl23
+fcntl24 fcntl24
+fcntl25 fcntl25
+fcntl26 fcntl26
+fcntl27 fcntl27
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
