@@ -64,7 +64,7 @@ usage()
     -d TMPDIR       Directory where temporary files will be created.
     -h              Help. Prints all available options.
     -l # of LOOPS   The number of times to run the test. Default=10.
-    -s SIZE in Mb   The size of the data file to create. Default=30Mb. A "0" means random sizes from 10-100Mb.
+    -s SIZE in Mb   The size of the data file to create. Default=30Mb. A "0" means random sizes from 10-500Mb.
     -v 		    Verbose output.
 
     example: ./${0##*/} -d /mnt/cifsmount -l 20 -s 100
@@ -178,11 +178,11 @@ $trace_logic
     do
 	if [ $RANDOM_SIZE -eq 1 ]; then
   	  SIZE=$RANDOM
-	  let "SIZE %= 100"
+	  let "SIZE %= 500"
 	  while [ $SIZE -lt 10 ]
 	    do
               SIZE=$RANDOM
-              let "SIZE %= 100"
+              let "SIZE %= 500"
  	    done
         fi
   	create_datafile $SIZE $TCtmp/testfile >/dev/null
