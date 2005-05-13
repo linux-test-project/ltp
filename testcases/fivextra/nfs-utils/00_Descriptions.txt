@@ -1,3 +1,0 @@
-template_sh
-
-	Tests for the nfs-utils package

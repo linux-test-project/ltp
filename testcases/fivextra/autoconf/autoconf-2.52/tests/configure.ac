@@ -1,7 +1,0 @@
-m4_define([active], [ACTIVE])
-m4_define([TRACE1], [TRACE2(m4_shift($@))])
-m4_define([TRACE2], [[$2], $1])
-TRACE1(foo, bar, baz)
-TRACE1(foo, TRACE1(bar, baz))
-TRACE1(foo, active, baz)
-TRACE1(foo, [active], TRACE1(active, [active]))

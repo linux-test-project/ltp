@@ -1,7 +1,0 @@
--------------------------------------
-IBM CSDL testsuite for sudo
-------------------------------------
-Before run the sudo_test.sh:
-1. Be root user
-2. already install the sudo package 
-3. run "make" to compile the sudotest.c

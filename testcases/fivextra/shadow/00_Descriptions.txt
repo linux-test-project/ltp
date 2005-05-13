@@ -1,3 +1,0 @@
-shadow
-
-	Checks that the shadpow password package is working.

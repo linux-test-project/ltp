@@ -1,4 +1,0 @@
-ipchains01
-	ipchains -L will list all rules in the selected
-ipchains02
-	Test ipchains deny packets from perticular IP.

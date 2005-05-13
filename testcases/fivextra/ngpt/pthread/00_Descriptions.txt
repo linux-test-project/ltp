@@ -1,2 +1,0 @@
-ngpt
-	A simple utility to test NGPT THreading library

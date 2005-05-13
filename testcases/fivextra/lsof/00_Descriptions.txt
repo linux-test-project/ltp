@@ -1,2 +1,0 @@
-lsof.sh
-	Testcase to check the lsof (list open files) command.

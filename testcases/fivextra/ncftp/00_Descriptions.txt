@@ -1,5 +1,0 @@
-ncftp.sh:
-	Test suite to test the nftp package.
-	There is also a manual test in the manual directory.
-	Robb Romans <robb@austin.ibm.com>
-

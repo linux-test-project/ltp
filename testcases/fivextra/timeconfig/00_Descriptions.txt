@@ -1,3 +1,0 @@
-timeconfig.sh
-
-	A test of the timeconfig program. 

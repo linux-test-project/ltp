@@ -1,3 +1,0 @@
-test_socket_ssl.py
-test_socket.py
-test_socketserver.py

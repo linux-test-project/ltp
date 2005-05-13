@@ -1,2 +1,0 @@
-pdksh.sh
-	testcase for the pdksh package.

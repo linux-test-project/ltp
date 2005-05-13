@@ -1,3 +1,0 @@
-sh-utils
-
-	Several shell utility programs. Checks them out.

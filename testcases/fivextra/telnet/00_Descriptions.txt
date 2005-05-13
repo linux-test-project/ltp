@@ -1,2 +1,0 @@
-telnet
-	Test the functionality of telnet.

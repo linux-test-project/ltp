@@ -1,9 +1,0 @@
-krb5-workstation
-
-	Test a few kerberos applications, include telnet, ftp, rcp and so on.
-
-Invoke ./krb5-workstation.sh kdc_server
-	to start the test, for detail message read detail description README
-
-TODO:
-	ksu failed, need to be solved!

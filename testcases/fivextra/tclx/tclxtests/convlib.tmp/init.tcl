@@ -1,1 +1,0 @@
-proc InitTcl {} {return @InitTcl@}

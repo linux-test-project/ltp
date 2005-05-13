@@ -1,2 +1,0 @@
-tcpdump	
-	Test the functionality of tcpdump and libpcap.

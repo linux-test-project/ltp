@@ -1,4 +1,0 @@
-gawk.sh:
-	Test suite to exercise gawk "make test" tests.
-	Robb Romans <robb@austin.ibm.com>
-

@@ -1,2 +1,0 @@
-raidtools
-	Test the functionality of raidtools.

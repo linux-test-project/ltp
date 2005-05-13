@@ -1,2 +1,0 @@
-ppp.sh
-	Testcase to check the ppp package.

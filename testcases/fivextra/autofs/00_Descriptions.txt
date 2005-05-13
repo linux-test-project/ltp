@@ -1,2 +1,0 @@
-autofs
-	Test the functionality of autofs.

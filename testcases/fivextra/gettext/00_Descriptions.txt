@@ -1,2 +1,0 @@
-gettext.sh
-	Testcase to check the gettext package.

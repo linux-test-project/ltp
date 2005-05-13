@@ -1,3 +1,0 @@
-ksymoops
-
-	test the ksymoops utility

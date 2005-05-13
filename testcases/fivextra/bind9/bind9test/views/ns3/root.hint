@@ -1,5 +1,0 @@
-
-
-$TTL 999999
-.			 IN NS	a.root-servers.nil.
-a.root-servers.nil.	 IN A	10.53.0.1

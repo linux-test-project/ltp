@@ -1,2 +1,0 @@
-util-linux.sh
-	Tested functionality of commands in the util-linux rpm.

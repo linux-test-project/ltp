@@ -1,4 +1,0 @@
-lprng
-
-	Test the lprng print system by printing to a file.
-	lpc holdall and release are also tested.

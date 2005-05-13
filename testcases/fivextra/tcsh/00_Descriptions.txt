@@ -1,3 +1,0 @@
-tcsh
-
-	Checks that the tcsh shell starts and executes a simple command.

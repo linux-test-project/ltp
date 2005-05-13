@@ -1,4 +1,0 @@
-fortune.sh:
-	Test suite to test the fortume-mod package.
-	Robb Romans <robb@austin.ibm.com>
-

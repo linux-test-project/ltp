@@ -1,2 +1,0 @@
-bash_test.sh
-	Testcase to check for required files in bash.rpm.

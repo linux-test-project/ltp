@@ -1,3 +1,0 @@
-dhcp-server
-
-	Tests that the dhcpd server can start and is listening.

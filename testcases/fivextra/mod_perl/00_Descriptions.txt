@@ -1,6 +1,0 @@
-mod_perl
-
-	See that the perl module (mod_perl) for Apache can serve up a web
-	page.  This is checked both for "registry" and "handler" perl
-	scripts.  Works on Apache 1.x by default (or by "./mod_perl 1") and
-	works on Apache 2.x as "./mod_perl 2".

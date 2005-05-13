@@ -1,3 +1,0 @@
-db
-
-	The Berkeley database. This tests access to the database system.

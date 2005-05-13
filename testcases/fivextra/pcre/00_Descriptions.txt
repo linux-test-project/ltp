@@ -1,4 +1,0 @@
-test_pcre.sh:
-	Test suite to test the PCRE package.
-	Robb Romans <robb@austin.ibm.com>
-

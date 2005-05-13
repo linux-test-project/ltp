@@ -1,4 +1,0 @@
-wu-ftpd.sh:
-	Test suite to test the wu-ftpd package.
-	Robb Romans <robb@austin.ibm.com>
-

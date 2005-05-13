@@ -1,3 +1,0 @@
-pax.sh
-
-	test the pax program

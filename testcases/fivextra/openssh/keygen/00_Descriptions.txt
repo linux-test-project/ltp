@@ -1,2 +1,0 @@
-keygen.sh  
-	Test the basic functionality of OpenSSH ssh-keygen command.

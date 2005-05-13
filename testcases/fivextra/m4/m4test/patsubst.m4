@@ -1,8 +1,0 @@
-# traceon(`patsubst')
-patsubst(`GNUs not Unix', `^', `OBS: ')
-patsubst(`GNUs not Unix', `\<', `OBS: ')
-patsubst(`GNUs not Unix', `\<\w', `\0=')
-patsubst(`GNUs not Unix', `\w*', `(\0)')
-patsubst(`GNUs not Unix', `\w+', `(\0)')
-patsubst(`GNUs not Unix', `\w+')
-patsubst(`GNUs	 not  	 Unix', `[ 	]+', ` ')

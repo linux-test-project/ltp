@@ -1,3 +1,0 @@
-sed
-
-	test the stream editor (sed).

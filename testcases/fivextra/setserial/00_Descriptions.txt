@@ -1,3 +1,0 @@
-etserial
-
-	Test setserial's ability to display serial info for/dev/ttyyS0

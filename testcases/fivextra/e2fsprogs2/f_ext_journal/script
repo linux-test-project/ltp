@@ -1,8 +1,0 @@
-FSCK_OPT="-fy -j journal.img"
-SECOND_FSCK_OPT="-fy -j journal.img"
-
-gunzip < $test_dir/journal.gz > journal.img
-
-. ./run_e2fsck
-
-rm -f journal.img

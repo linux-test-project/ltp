@@ -1,3 +1,0 @@
-amtu_test.sh
-	FIV testcase for amtu(Abstract Machine Test Utility)
-

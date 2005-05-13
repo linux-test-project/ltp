@@ -1,2 +1,0 @@
-unix2dos
-	Test the functionality of unix2dos.

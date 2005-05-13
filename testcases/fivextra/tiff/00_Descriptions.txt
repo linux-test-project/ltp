@@ -1,2 +1,0 @@
-tiff
-	Test the functionality of tiff

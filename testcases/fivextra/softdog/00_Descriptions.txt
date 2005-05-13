@@ -1,2 +1,0 @@
-softdog.sh  
-	Test the software watchdog driver for the Linux System.

@@ -1,2 +1,0 @@
-rpm.sh
-	Tested functionality of the rpm command and other commands in the rpm.rpm

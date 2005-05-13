@@ -1,3 +1,0 @@
-grep
-
-	Test grep with self-tests ported from grep distribution.

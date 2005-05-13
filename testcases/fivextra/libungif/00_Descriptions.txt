@@ -1,2 +1,0 @@
-libungif
-	Test the functionality of libungif.

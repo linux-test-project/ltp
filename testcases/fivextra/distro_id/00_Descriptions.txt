@@ -1,3 +1,0 @@
-distro_id
-
-	Test the distro_id command. Unique to MCP 3.0 (and up?)

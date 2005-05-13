@@ -1,8 +1,0 @@
-/bin/addgroup
-/bin/delgroup
-/bin/adduser
-/bin/login
-/bin/su
-/sbin/getty
-/usr/bin/passwd
-/bin/deluser

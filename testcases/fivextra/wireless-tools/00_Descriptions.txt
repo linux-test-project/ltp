@@ -1,4 +1,0 @@
-wireless.sh:
-	Test suite to test the wireless-tools package.
-	Robb Romans <robb@austin.ibm.com>
-
