@@ -228,7 +228,13 @@ int main(int argc, char *argv[])
 #ifdef __ia64__
                 TEST(madvise(file,stat.st_size + 5 * pagesize,MADV_NORMAL));
 #else
-        	TEST(madvise(file,stat.st_size + 40960,MADV_NORMAL));
+
+/*
+ *        	TEST(madvise(file,stat.st_size + stat.st_size ,MADV_NORMAL));
+ *	prashant yendigeri added the below line because with above line ENOMEM was not generated 
+ *		under most test conditions. 
+*/
+        	TEST(madvise(file,stat.st_size * pagesize,MADV_NORMAL));
 #endif
 		check_and_print(ENOMEM);
 
