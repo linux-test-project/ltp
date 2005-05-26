@@ -209,6 +209,8 @@ ftruncate02 ftruncate02
 ftruncate03 ftruncate03
 ftruncate04 ftruncate04
 
+getcontext01 getcontext01
+
 getcwd01 getcwd01
 getcwd02 getcwd02
 getcwd03 getcwd03
