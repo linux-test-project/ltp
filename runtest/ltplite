@@ -278,6 +278,8 @@ getdents04 getdents04
 
 getdomainname01 getdomainname01
 
+getdtablesize01 getdtablesize01
+
 getegid01 getegid01
 
 geteuid01 geteuid01
