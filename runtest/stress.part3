@@ -344,6 +344,7 @@ memcpy01 memcpy01
 
 mlockall01 mlockall01
 mlockall02 mlockall02
+mlockall03 mlockall03
 
 mkdir01 mkdir01
 mkdir02 mkdir02
