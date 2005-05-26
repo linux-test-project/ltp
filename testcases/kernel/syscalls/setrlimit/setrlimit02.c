@@ -43,7 +43,6 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
-#include <linux/fs.h>
 #include <pwd.h>
 #include "test.h"
 #include "usctest.h"
@@ -158,7 +157,8 @@ setup()
 
 
 	/* set an illegal value for a non-root user - test #3 - EPERM */
-	rlim.rlim_max = NR_OPEN + 1;
+	getrlimit(RLIMIT_NOFILE, &rlim);
+	rlim.rlim_max ++;
 }
 
 /*
