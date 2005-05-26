@@ -85,22 +85,23 @@ char *TCID="setgroups03";	/* Test program identifier.    */
 int TST_TOTAL=2;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 int exp_enos[] = {EINVAL, EPERM, 0};
 
+gid_t *groups_list; 		/* Array to hold gids for getgroups() */
+	
 int setup1();			/* setup function to test error EPERM */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
-	size_t gsize;
+	size_t gsize_add;
 	int list;
 	char *desc;
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{NGROUPS_MAX+1, 1, "Size is > NGROUPS", EINVAL, NULL},
-	{NGROUPS, 2, "Permission denied, not super-user", EPERM, setup1}
+	{1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL},
+	{0, 2, "Permission denied, not super-user", EPERM, setup1}
 };
 
 int
@@ -111,11 +112,18 @@ main(int ac, char **av)
 	int gidsetsize;		/* total no. of groups */
 	int i;			/* counter to test different test conditions */
 	char *test_desc;        /* test specific error message */
-	
+	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
+	
+	groups_list = malloc(ngroups_max * sizeof(gid_t));
+	if (groups_list == NULL) {
+		tst_brkm(TBROK, NULL, "malloc failed to alloc %d errno "
+			 " %d ", ngroups_max * sizeof(gid_t), errno);
 	}
 
 	/* Perform global setup for test */
@@ -135,7 +143,7 @@ main(int ac, char **av)
 				Test_cases[i].setupfunc();
 			}
 
-			gidsetsize = Test_cases[i].gsize;
+			gidsetsize = ngroups_max + Test_cases[i].gsize_add;
 			test_desc = Test_cases[i].desc;
 			
 			/*
