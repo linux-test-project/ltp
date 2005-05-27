@@ -120,7 +120,7 @@ main()
           tv.tv_sec = total_sec;
           tv.tv_usec =  total_usec * 1000000;
 
-  tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d secs",tv.tv_usec);
+  tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d micro secs",tv.tv_usec);
   start = time(&t);
    retval = pselect(NULL, &readfds, NULL, NULL, &tv,NULL);
   end = time(&t);
