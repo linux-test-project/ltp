@@ -187,6 +187,8 @@
 #include <sys/mount.h>
 #include <linux/limits.h>
 #include <errno.h>
+#include <linux/unistd.h>
+_syscall0(pid_t,gettid)
 
 #ifdef DEBUG
 #define dprt	printf
