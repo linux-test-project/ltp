@@ -78,8 +78,9 @@ int io_addr;     /*kernel version dependant io start address */
 #define NUM_BYTES 3		/* number of bytes from start address */
 #define TURN_ON 1		
 #define TURN_OFF 0
-#define OLD_KERN_ADDR 0x400
-#define NEW_KERN_ADDR 0x10000
+#ifndef IO_BITMAP_BITS
+#define IO_BITMAP_BITS 1024
+#endif
 
 static void setup();
 static void cleanup();
@@ -114,14 +115,6 @@ main(int ac, char **av)
 		 * Test the system call.
 		 */
 		TEST(ioperm(io_addr, NUM_BYTES, TURN_ON));
-
-        /* Even though 2.6.9 and later kernels support higher port addresses */
-        /* older hardware does not, in that case, set the port address to the older supported value */
-
-        if (errno == EINVAL) {
-            io_addr = OLD_KERN_ADDR - NUM_BYTES;
-            TEST(ioperm(io_addr, NUM_BYTES, TURN_ON));
-        }
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "ioperm() failed for port address "
@@ -164,10 +157,10 @@ setup()
 	 * */
 	if (tst_kvercmp(2,6,8) < 0) {
 		/*get ioperm on 1021, 1022, 1023*/
-		io_addr = OLD_KERN_ADDR - NUM_BYTES;
+		io_addr = IO_BITMAP_BITS - NUM_BYTES;
 	} else {
 		/*get ioperm on 65533, 65534, 65535*/
-		io_addr = NEW_KERN_ADDR - NUM_BYTES;
+		io_addr = IO_BITMAP_BITS - NUM_BYTES;
 	}
 
 	/* Pause if that option was specified */

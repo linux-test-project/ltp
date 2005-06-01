@@ -84,6 +84,9 @@ char *TCID = "ioperm02";	/* Test program identifier.    */
 #define TURN_ON 1
 #define TURN_OFF 0
 #define EXP_RET_VAL -1
+#ifndef IO_BITMAP_BITS
+#define IO_BITMAP_BITS 1024  /* set to default value since some H/W may not support 0x10000 even with a 2.6.8 kernel */
+#endif
 
 static void setup();
 static int  setup1(void);
@@ -233,16 +236,16 @@ setup()
 	test_cases[1].exp_errno = EPERM;
 	if (tst_kvercmp(2,6,8) < 0) {
 		/*try invalid ioperm on 1022, 1023, 1024*/
-		test_cases[0].from = (0x400 - NUM_BYTES) + 1; 
+		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1; 
 
 		/*try get valid ioperm on 1021, 1022, 1023*/
-		test_cases[1].from = 0x400 - NUM_BYTES;
+		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;
 	}  else {
 		/*try invalid ioperm on 65534, 65535, 65536*/
-		test_cases[0].from = (0x10000 - NUM_BYTES) + 1;
+		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1;
 
 		/*try valid ioperm on 65533, 65534, 65535*/
-		test_cases[1].from = 0x10000 - NUM_BYTES;
+		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;
 	}
 
 	/* Set up the expected error numbers for -e option */
