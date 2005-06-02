@@ -120,7 +120,7 @@ main(int ac, char **av)
 
 		/*
 		 * Call Second alarm() with zero time parameter
-		 * 'time_sec2' to send SIGALRM to the calling process.
+		 * which should cancel our existing alarm.
 		 */
 		TEST(alarm(time_sec2));
 		ret_val2 = TEST_RETURN;
