@@ -1,0 +1,9 @@
+This file defines the coverage for function timer_gettime().
+
+Assertion	Coverage
+1		YES
+2		YES
+3		YES
+4		YES
+5		YES
+6		YES

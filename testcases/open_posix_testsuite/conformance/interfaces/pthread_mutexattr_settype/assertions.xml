@@ -1,0 +1,50 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34497:34499">
+   The function
+
+   int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
+
+  Sets the mutex 'type' attribute.  This attribute is set in the 'type' parameter to 
+  these functions.  The default value is PTHREAD_MUTEX_DEFAULT.
+
+  </assertion>  
+  <assertion id="2" tag="ref:XSH6:34503:34506">
+  PTHREAD_MUTEX_NORMAL
+
+  This type of mutex doesn't detect deadlock.  So a thread attempting to relock this mutex
+  without unlocking it first will deadllock.  Attempting to unlock a mutex locked by a
+  different thread results in undefined behavior.  Attemping to unlock an unlocked mutex
+  results in undefined behavior. 
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34507:i34511">
+  PTHREAD_MUTEX_ERRORCHECK
+
+  Provides errorchecking.  A thread attempting to relock this mutex without unlocking it 
+  first will return with an error.  A thread attempting to unlock a mutex which another
+  thread has locked will return with an error.  A thread attempting to unlock an unlocked
+  mutex will return with an error.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:34520:34525">
+  PTHREAD_MUTEX_DEFAULT
+
+  Attempting to recursively lock a mutex of this type will result in undefined behavior.
+  Attempting to unlock a mutex of this type which was not locked by the calling thread
+  results in undefined behavior.  Attempting to unlock a mutex of this type which is 
+  locked results in undefined behavior.  An implementation may map this mutex to one of 
+  the other mutex types.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:34526:34529">
+  It returns 0 upon success.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:34532:34537">
+  It shall fail if:
+
+  [EINVAL] - The value 'type' is invalid.
+
+  It may fail if:
+
+  [EINVAL] - The value specified by 'attr' is invalid.
+
+  It shall not return an error code of [EINTR].
+  </assertion>
+</assertions>

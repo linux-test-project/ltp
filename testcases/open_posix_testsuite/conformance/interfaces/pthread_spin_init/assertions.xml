@@ -1,0 +1,43 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35477:35478">
+  The function  
+
+  int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
+ 
+  shall allocate any resources required to use the spin lock
+  referenced by lock and initialize the lock to an unlocked state.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35479:35487 pt:TSH">
+  If the Thread Process-Shared Synchronization option is supported and the value of pshared is
+  PTHREAD_PROCESS_SHARED, the implementation shall permit the spin lock to be operated
+  upon by any thread that has access to the memory where the spin lock is allocated, even if it 
+  is allocated in memory that is shared by multiple processes.
+  If the Thread Process-Shared Synchronization option is supported and the value of pshared is
+  PTHREAD_PROCESS_PRIVATE, or if the option is not supported, the spin lock shall only be
+  operated upon by threads created within the same process as the thread that initialized the 
+  spinlock. If threads of differing processes attempt to operate on such a spin lock, the 
+  behavior is undefined.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35496:35497">
+  Upon successful completion, these functions shall return zero; otherwise, an error number shall
+  be returned to indicate the error.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6:35499:35502">  
+  This function may fail if:
+  -[EBUSY] The implementation has detected an attempt to initialize or destroy a spin
+  lock while it is in use (for example, while being used in a pthread_spin_lock( )
+  by another thread.
+  -[EINVAL] The value specified by lock is invalid.
+
+  It shall fail if:
+  -[EAGAIN] The system lacks the necessary resources to initialize another spin lock.
+  -[ENOMEM] Insufficient memory exists to initialize the lock.
+
+  These functions shall not return an error code of EINTR.
+ </assertion>
+ 
+</assertions>
+

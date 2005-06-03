@@ -1,0 +1,80 @@
+Coverage-Area: Clocks and Timers (TMR)
+Area-Code: tmr
+
+/*
+COVERAGE DOCUMENT FOR TIMERS
+============================
+
+This document lists the items that will be tested for POSIX timers.
+
+	Item to Test		Status
+==========================================================
+||	Definitions		DONE			||
+||	Behavior		DONE with TMR and CS    ||
+||				tags planned.		||
+||				see table below		||
+||	Functionality		STOPPED FOR NOW		||
+||	Stress			STOPPED FOR NOW		||
+==========================================================
+*/
+
+// Function		Complete?	Priority
+// =================================================
+clock			YES		MED
+clock_getcpuclockid	YES		LOW
+clock_getres		YES		MED
+clock_gettime		YES*		MED
+clock_settime		YES*		MED
+clock_nanosleep		YES*		HIGH
+nanosleep		YES		HIGH
+timer_create		YES*		HIGH
+timer_delete		YES		MED
+timer_getoverrun	YES		HIGH
+timer_gettime		YES		MED
+timer_settime		YES		MED
+// ===================================================
+
+// *Incomplete because process time clocks functionality not in current version
+// under test.
+
+/*
+NOTES
+=====
+See the BUILD file in the main directory for the most up-to-date
+information on how to compile tests from within the framework.
+
+Some additional notes:
+If you want to get CLOCK_MONOTONIC, though, one option that worked 
+with HRT 2.5.54bk6 and below and RH7.3 was to include
+/usr/src/linux/Documentation/high-res-timers/lib/posix_time.h
+and turn on -D_POSIX_TIMERS.
+
+Testing BIN List
+================
+Items which I'd like to test more in the future (possibly in functional or
+stress tests).
+
+- Absolute timers and clock changes:
+  - test setting the time for a timer where the interval is large
+  - also, test where the delta between old and new clock time is large
+    => forces division of large numbers, could have inaccuracies (would
+       probably? be a stress test)
+
+- test clock_nanosleep() or nanosleep() with a variety of different signals
+  being sent to interrupt it (esp. if they have no user-handler)
+  -> probably also stress
+
+- Also, there may be some ideas for stress tests in the Base Definitions
+document.
+
+POSIX Timers Implementations
+============================
+glibc Timers in user-space - http://ftp.gnu.org/gnu/glibc/
+High Res Timers            - http://high-res-timers.sourceforge.net
+Alternate High Res Timers  - http://high-res-timers.sourceforge.net (look
+                             on mailing list for Jim Houston's alternate
+                             implementation -- patch that goes on top
+                             of George Anzinger's HRT)
+*/
+
+Maintainer: Julie Fleischer

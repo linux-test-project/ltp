@@ -1,0 +1,10 @@
+This document defines the coverage for the pthread_mutex_lock function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+			3-1.c: Test [EINTR]
+4		YES
+5		YES
+NOTE:

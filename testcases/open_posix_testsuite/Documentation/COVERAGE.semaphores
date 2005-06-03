@@ -1,0 +1,51 @@
+Coverage-Area: Semaphores (SEM)
+
+/*
+COVERAGE DOCUMENT FOR SEMAPHORES
+============================
+
+This document lists the items that will be tested for POSIX semaphore.
+
+	Item to Test		Status
+==========================================================
+||	Definitions		NOT STARTED		||
+||	Behavior		IN PROGRESS		||
+||	Functionality		NOT STARTED		||
+||	Stress			NOT STARTED		||
+==========================================================
+*/
+
+// Function		Complete?	Priority
+// =================================================
+sem_close		YES		HIGH
+sem_destroy		YES		HIGH
+sem_getvalue		YES		MED
+sem_init		YES		HIGH
+sem_open		YES		HIGH
+sem_post		YES		HIGH
+sem_timedwait		YES		MED
+sem_trywait		YES		HIGH
+sem_wait		YES		HIGH
+sem_unlink		YES		HIGH
+// ===================================================
+/*
+
+Compile:
+========
+See the BUILD file in the main directory for the most up-to-date
+information on how to compile tests from within the framework.
+
+The way I'm compiling these test individually by:
+
+	root# gcc 1-1.c -o 1-1 /usr/lib/libposix1b.a
+
+
+
+Clean up:
+=========
+file: cln.sh is a file to clean any open semaphores on the system if they remain
+open after running such test. 
+
+
+*/
+Maintainer: Majid Awad

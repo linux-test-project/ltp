@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33250:33262">
+   The function
+    void *pthread_getspecific(pthread_key_t key)
+  
+  shall return the value currently bound to the specified key on behalf of the calling thread.
+  Calling pthread_getspecific() with a key value not obtained from pthread_key_create() or
+  after key has been deleted with pthread_key_delete() is undefined. 
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:33263:33266">
+  pthread_getspecific can be called from a thread-specific data destructor function.
+  A call to pthread_getspecific() for the thread-specific data key being destroyed shall
+  return the value NULL, unless the value is changed (after the destructor starts) by a call
+  to pthread_setspecific(). 
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:33271:33273">
+  It shall return the thread-specific data value associated with the given 'key'.  If no
+  thread-specific data value is associated with 'key, then the value NULL shall be returned.
+   
+  It does not return any errors.
+  </assertion>
+</assertions>

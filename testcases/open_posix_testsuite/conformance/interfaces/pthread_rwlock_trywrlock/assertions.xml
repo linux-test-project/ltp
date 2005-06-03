@@ -1,0 +1,28 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34974:34976">
+	pthread_rwlock_trywrlock( ) function shall apply a write lock like the 
+	pthread_rwlock_wrlock( ) function, with the exception that the function 
+	shall fail if any thread currently holds rwlock (for reading or writing)
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:34798:34800">
+	The pthread_rwlock_trywrlock( ) function shall return zero if the lock for writing on 
+	the read-write lock object referenced by rwlock is acquired. Otherwise, an error number 
+	shall be returned to indicate the error.  
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:34802:34804">  
+	The pthread_rwlock_trywrlock( ) function shall fail if:
+	
+	[EBUSY] The read-write lock could not be acquired for writing because a writer holds
+	the lock or a writer with the appropriate priority was blocked on it.
+	
+	It may fail if:
+	[EINVAL] rwlock does not refer to an intialized read-write lock object
+	
+	It shall not return EINTR.
+   </assertion>
+    
+</assertions>
+
+

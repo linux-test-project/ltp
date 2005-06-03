@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:46888:46889 pt:TMR">
+   timer_gettime() places in itimerspec the amount of time until timer,
+   timerid, expires (in itimerspec.it_value) and the reload value of
+   the timer (in itimerspec.it_interval).
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:46890:46891 pt:TMR">
+   itimerspec.it_value contains 0 if the timer was disarmed.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:46891:46892 pt:TMR">
+   itimerspec.it_value returns a relative time amount, even if the timer
+   was absolute.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:46935:46935 pt:TMR">
+   timer_gettime() returns 0 on success
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:46936:46936 pt:TMR">
+   timer_gettime() returns -1 on failure
+  </assertion>
+  <assertion id="6" tag="ref:XSH6TC2:46940:46941 pt:TMR">
+   If timer ID does not correspond to a valid timer ID (i.e., one created 
+   using timer_create() but not yet deleted with timer_delete()), 
+   timer_gettime() may return errno==EINVAL.
+  </assertion>
+</assertions>

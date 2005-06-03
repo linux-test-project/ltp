@@ -1,0 +1,58 @@
+Coverage-Area: Message Queues (MSG)
+Area-Code: msg
+
+/*
+COVERAGE DOCUMENT FOR MESSAGE QUEUES
+====================================
+
+This document lists the items that will be tested for POSIX message queues.
+
+	Item to Test		Status
+==========================================================
+||	Definitions		WON'T DO (for now)	||
+||	Behavior		DONE			||
+||	Functionality		WON'T DO (for now)	||
+||	Stress			WON'T DO (for now)	||
+||	Performance		WON'T DO (for now)	||
+==========================================================
+*/
+
+// Function		Complete?		Priority	Est. Completion
+// ============================================================================
+mq_close		YES			HIGH		DONE
+mq_getattr		YES			MED		DONE
+mq_notify		YES			LOW		DONE
+mq_open			YES			HIGH		DONE
+mq_receive		YES			HIGH		DONE
+mq_send			YES			HIGH		DONE
+mq_setattr		YES			MED		DONE
+mq_timedreceive		YES			LOW		DONE
+mq_timedsend		YES			LOW		DONE
+mq_unlink		YES			MED		DONE
+//msgctl		NO			LOW		WON'T
+//msgget		NO			LOW		WON'T
+//msgrcv		NO			LOW		WON'T
+//msgsnd		NO			LOW		WON'T
+// ===================================================
+
+/*
+ Notes:
+ msgclt, msgget, msgrcv, msgsnd will not be tested at this time as they do
+ not apply to the MSG tag (apply to XSI).
+
+ BUILD INFO
+ ==========
+
+ posix1b - See information in BUILD file (under Semaphores).  You will
+           also need to add -I/usr/include/posix1b/ to LDFLAGS.
+
+ http://www.mat.uni.torun.pl/~wrona/posix_ipc/
+	- Install patches and compile/install binary.
+	- Add -lmqueue to LDFLAGS
+	- Create the mqueue FS:
+		mkdir /dev/mqueue
+		mount -t mqueue none /dev/mqueue
+							
+*/
+Maintainer: Julie Fleischer
+Contributor:  Crystal Xiong

@@ -1,0 +1,19 @@
+This document defines the coverage for the pthread_create function:
+
+Assertion	Tested?
+1		YES - Also, need to test 'attr' values.
+2		YES
+3		YES
+4 		YES
+5		YES
+6		NO - Skipping.
+7		NO - Skipping.
+8		YES
+9 		NO - Skipping. (Floating point environment?)
+10		YES - Peculiar behavior of passing the test and then freezing on the
+			linuxthreads implementation.
+11		YES
+12		YES
+13		YES
+
+Note: 

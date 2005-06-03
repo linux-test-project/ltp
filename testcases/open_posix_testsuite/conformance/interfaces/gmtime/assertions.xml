@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6:18938:18963 pt:CX">
+	The names in the broken-down tm structure should correspond to its values.
+	</assertion>
+	<assertion id="2" tag="ref:XSH6:18969:18969 pt:CX">
+	The gmtime function shall return a pointer to a struct tm.
+	</assertion>
+</assertions>

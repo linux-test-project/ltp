@@ -1,0 +1,7 @@
+this file defines the coverage for the aio_return() function testing.
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES

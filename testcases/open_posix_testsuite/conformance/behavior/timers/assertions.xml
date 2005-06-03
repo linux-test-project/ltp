@@ -1,0 +1,9 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD6:8774:8775">
+   TIMER_MAX in limits.h defines the maximum number of processes that
+   the implementation supports
+  </assertion>
+  <assertion id="2" tag="ref:XBD6:8776:8776">
+   TIMER_MAX must be &gt;= _POSIX_TIMER_MAX
+  </assertion>
+</assertions>

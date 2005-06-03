@@ -1,0 +1,18 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32718:32722">
+   The function
+    int pthread_condattr_getclock(pthread_condattr_t *restrict attr, 
+	clockid_t *restrict clock_id);
+   shall get the 'clock' attribute from an attributes object referenced by 
+   'attr'. It will store the value of the clock attribute into clock_id and return 0.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32729:32737">
+  It returns 0 upon success, and an error code if it fails:
+
+  It may fail if:
+
+  [EINVAL] - the 'attr' value is invalid
+  
+  </assertion>
+</assertions>

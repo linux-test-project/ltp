@@ -1,0 +1,20 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35574:355575">
+  The pthread_spin_unlock( ) function shall release the spin lock referenced by lock which was
+  locked via the pthread_spin_lock( ) or pthread_spin_trylock( ) functions.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35581:35582">
+  Upon successful completion, the pthread_spin_unlock( ) function shall return zero; otherwise, 
+  an error number shall be returned to indicate the error.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35584:35587">
+	The pthread_spin_unlock( ) function may fail if:
+	[EINVAL] An invalid argument was specified.
+	[EPERM] The calling thread does not hold the lock.
+
+  	These functions shall not return an error code of EINTR.
+  </assertion>
+</assertions>
+

@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34097:34100">
+   The function
+
+   int pthread_mutexattr_init(pthread_mutexattr_t *attr)
+ 
+   initializes a mutex attributes object 'attr' with the default
+   value for all of the attributes defined by the implementation.  Results
+   are undefined if it is called specifying an already initialized 'attr'
+   attributes object.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:34101:34103">
+  After a mutex attributes object has been used to initialize one or more
+  mutexes, any function affecting the attributes object (including destruction)
+  shall not affect any previously initialized mutexes.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34105:34105">
+  Upon success it returns 0.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:34108:34109">
+  If it fails, an error number shall be returned:
+  [ENOMEM] - Insufficient memory exists to initialize the mutex attributes 
+  object.
+  </assertion>
+</assertions>

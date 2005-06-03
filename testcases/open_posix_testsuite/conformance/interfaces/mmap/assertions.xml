@@ -1,0 +1,223 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:25180:25190">
+mmap( ) function shall establish a mapping between the address space of 
+the process at an address pa for len bytes to the memory object represented 
+by the file descriptor fildes at offset off for len bytes.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:25191:25196">
+If fildes represents a typed memory object opened with either the
+POSIX_TYPED_MEM_ALLOCATE flag or the POSIX_TYPED_MEM_ALLOCATE_CONTIG
+flag, the memory object to be mapped shall be that portion of the typed memory object allocated.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:25197:25199">
+mapping established by mmap( ) shall replace any previous mappings for 
+those whole pages containing any part of the address space.
+  </assertion>
+
+  <assertion id="4" tag="ref:XSH6:25203:25204">
+TYM The mmap( ) function shall be supported for regular files, shared memory objects, and typed
+memory objects. Support for any other type of file is unspecified.
+  </assertion>
+  
+  
+<assertion id="5" tag="ref:XSH6:25206:25216">
+The prot shall be either PROT_NONE or the bitwise-
+inclusive OR of one or more of the other flags in the following table
+ PROT_READ Data can be read.
+ PROT_WRITE Data can be written.
+ PROT_EXEC Data can be executed.
+ PROT_NONE Data cannot be accessed. 
+</assertion>
+  
+    <assertion id="6" tag="ref:XSH6:25217:25226">
+An implementation may permit accesses other than those specified by prot; however, if the
+Memory Protection option is supported, the implementation shall not permit a write to succeed
+where PROT_WRITE has not been set or shall not permit any access where PROT_NONE alone
+has been set. The implementation shall support at least the following values of prot:
+PROT_NONE, PROT_READ, PROT_WRITE, and the bitwise-inclusive OR of PROT_READ and
+PROT_WRITE. If the Memory Protection option is not supported, the result of any access that
+conflicts with the specified protection is undefined. The file descriptor fildes shall have been
+opened with read permission, regardless of the protection options specified. If PROT_WRITE is
+specified, the application shall ensure that it has opened the file descriptor fildes with write
+permission unless MAP_PRIVATE is specified in the flags parameter as described below.
+  </assertion>
+  
+    <assertion id="7" tag="ref:XSH6:25236:25244">
+It is implementation-defined whether MAP_FIXED shall be supported. MAP_FIXED shall be
+supported on XSI-conformant systems.
+MAP_SHARED and MAP_PRIVATE describe the disposition of write references to the memory
+object. If MAP_SHARED is specified, write references shall change the underlying object. If
+MAP_PRIVATE is specified, modifications to the mapped data by the calling process shall be
+visible only to the calling process and shall not change the underlying object. It is unspecified
+whether modifications to the underlying object done after the MAP_PRIVATE mapping is
+established are visible through the MAP_PRIVATE mapping. Either MAP_SHARED or
+MAP_PRIVATE can be specified, but not both. The mapping type is retained across fork( ).
+  </assertion>
+  
+    <assertion id="8" tag="ref:XSH6:25245:25260">
+When fildes represents a typed memory object opened with either the
+POSIX_TYPED_MEM_ALLOCATE flag or the POSIX_TYPED_MEM_ALLOCATE_CONTIG
+flag, mmap( ) shall, if there are enough resources available, map len bytes allocated from the
+corresponding typed memory object which were not previously allocated to any process in any
+processor that may access that typed memory object. 
+  </assertion>
+  
+    <assertion id="9" tag="ref:XSH6:25261:25264">
+When MAP_FIXED is set in the flags argument, the implementation is informed that the value of
+pa shall be addr, exactly. If MAP_FIXED is set, mmap( ) may returnMAP_FAILED and set errno to
+[EINVAL]. If a MAP_FIXED request is successful, the mapping established by mmap( ) replaces
+any previous mappings for the process' pages in the range [pa,pa+len).
+  </assertion>
+  
+    <assertion id="10" tag="ref:XSH6:25265:25271">
+When MAP_FIXED is not set, the implementation uses addr in an implementation-defined
+manner to arrive at pa. The pa so chosen shall be an area of the address space that the
+implementation deems suitable for a mapping of len bytes to the file. All implementations
+interpret an addr value of 0 as granting the implementation complete freedom in selecting pa,
+subject to constraints described below. A non-zero value of addr is taken to be a suggestion of a
+process address near which the mapping should be placed. When the implementation selects a
+value for pa, it never places a mapping at address 0, nor does it replace any extant mapping.
+  </assertion>
+  
+    <assertion id="11" tag="ref:XSH6:25272:25281">
+The off argument is constrained to be aligned and sized according to the value returned by
+sysconf( ) when passed _SC_PAGESIZE or _SC_PAGE_SIZE. When MAP_FIXED is specified, the
+ application shall ensure that the argument addr also meets these constraints. The
+implementation performs mapping operations over whole pages. Thus, while the argument len
+need not meet a size or alignment constraint, the implementation shall include, in any mapping
+operation, any partial page specified by the range [pa,pa+len).
+The system shall always zero-fill any partial page at the end of an object. Further, the system
+shall never write out any modified portions of the last page of an object which are beyond its
+MPR end. References within the address range starting at pa and continuing for len bytes to whole
+pages following the end of an object shall result in delivery of a SIGBUS signal.
+  </assertion>
+  
+    <assertion id="12" tag="ref:XSH6:25284:25286">
+The mmap( ) function shall add an extra reference to the file associated with the file descriptor
+fildes which is not removed by a subsequent close( ) on that file descriptor. This reference shall be
+removed when there are no more mappings to the file.
+  </assertion>
+  
+      <assertion id="13" tag="ref:XSH6:25287:25290">
+The st_atime field of the mapped file may be marked for update at any time between the mmap( )
+call and the corresponding munmap( ) call. The initial read or write reference to a mapped region
+shall cause the file's st_atime field to be marked for update if it has not already been marked for
+update.
+  </assertion>
+  
+      <assertion id="14" tag="ref:XSH6:25291:25296">
+The st_ctime and st_mtime fields of a file that is mapped with MAP_SHARED and PROT_WRITE
+shall be marked for update at some point in the interval between a write reference to the
+mapped region and the next call to msync( ) with MS_ASYNC or MS_SYNC for that portion of
+the file by any process. 
+  </assertion>
+  
+      <assertion id="15" tag="ref:XSH6:25301:25303">
+If mmap( ) fails for reasons other than [EBADF], [EINVAL], or [ENOTSUP], some of the
+mappings in the address range starting at addr and continuing for len bytes may have been
+unmapped.
+  </assertion>
+
+  
+      <assertion id="16" tag="ref:XSH6:25305:25308">
+Upon successful completion, the mmap( ) function shall return the address at which the mapping
+was placed (pa); otherwise, it shall return a value of MAP_FAILED and set errno to indicate the
+error. The symbol MAP_FAILED is defined in the sys/mman.h header. No successful return
+from mmap( ) shall return the value MAP_FAILED.
+      </assertion>
+  
+      <assertion id="17" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EACCES] The fildes argument is not open for read, regardless of the protection specified,
+or fildes is not open for write and PROT_WRITE was specified for a
+MAP_SHARED type mapping.
+	  </assertion>
+      
+      <assertion id="18" tag="ref:XSH6:25310:25315">
+The mmap( ) function shall fail if:
+ML [EAGAIN] The mapping could not be locked in memory, if required by mlockall ( ), due to
+a lack of resources.
+      </assertion>
+      
+      <assertion id="19" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EBADF] The fildes argument is not a valid open file descriptor.
+      </assertion>
+      
+      <assertion id="20" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EINVAL] The addr argument (if MAP_FIXED was specified) or off is not a multiple of
+the page size as returned by sysconf( ), or is considered invalid by the
+implementation.
+      </assertion>
+
+      <assertion id="21" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EINVAL] The value of flags is invalid (neither MAP_PRIVATE nor MAP_SHARED is
+set).
+      </assertion>
+
+      <assertion id="22" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EMFILE] The number of mapped regions would exceed an implementation-defined
+limit (per process or per system).
+      </assertion>
+
+      <assertion id="23" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[ENODEV] The fildes argument refers to a file whose type is not supported by mmap( ).
+	  </assertion>
+
+      <assertion id="24" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[ENOMEM] MAP_FIXED was specified, and the range [addr,addr+len) exceeds that allowed
+for the address space of a process; or, if MAP_FIXED was not specified and
+there is insufficient room in the address space to effect the mapping.
+      </assertion>
+
+      <assertion id="25" tag="ref:XSH6:25310:25342">
+ mmap( ) function shall fail if:
+ [ENOMEM] The mapping could not be locked in memory, if required by mlockall ( ),
+because it would require more space than the system is able to supply.
+      </assertion>
+      
+      <assertion id="26" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+ [ENOMEM] Not enough unallocated memory resources remain in the typed memory
+object designated by fildes to allocate len bytes.
+      </assertion>
+
+      <assertion id="27" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+ [ENOTSUP] MAP_FIXED or MAP_PRIVATE was specified in the flags argument and the
+ implementation does not support this functionality.
+ The implementation does not support the combination of accesses requested
+ in the prot argument.
+     </assertion>
+
+      <assertion id="28" tag="ref:XSH6:25310:25342">
+ The mmap( ) function shall fail if:
+ [ENXIO] Addresses in the range [off,off+len) are invalid for the object specified by fildes.
+      </assertion>
+     
+      <assertion id="29" tag="ref:XSH6:25310:25342">
+ The mmap( ) function shall fail if:
+ [ENXIO] MAP_FIXED was specified in flags and the combination of addr, len, and off is
+ invalid for the object specified by fildes.
+	  </assertion>
+
+      <assertion id="30" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+ [ENXIO] The fildes argument refers to a typed memory object that is not accessible from
+the calling process.
+      </assertion>
+      
+      <assertion id="31" tag="ref:XSH6:25310:25342">
+The mmap( ) function shall fail if:
+[EOVERFLOW] The file is a regular file and the value of off plus len exceeds the offset
+maximum established in the open file description associated with fildes.
+      </assertion>
+</assertions>
+

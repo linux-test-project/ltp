@@ -1,0 +1,41 @@
+This document defines the coverage for
+conformance/definitions/time_h
+testing
+
+
+Assertion #	Covered?
+1		YES
+2		YES
+3		YES
+4		YES - Assigns uninitialized values, but works.
+5		YES - Assigns uninitialized values, but works.
+6		YES - 6.3 fails on current test impl. b/c no MON implemented
+7		YES - 7.1 fails on my impl -- BUG?
+8		YES
+9		YES
+10		YES
+11		YES - Fails on current test impl b/c no CPT implemented
+12		YES
+13		YES
+14		YES - Fails on current test impl b/c no CS implemented
+15		YES
+16		YES
+17		YES
+18		YES
+19		YES - Fails on current test impl b/c no XSI implemented
+20		YES
+21		YES
+22		YES
+23		YES
+24		YES
+25		YES
+26		YES
+27		YES - Fails on current test impl b/c no XSI implemented
+28		YES
+29		YES
+30		YES
+31		YES
+32		YES
+33		YES
+34		YES
+35		YES - Not 100% sure that I declared the vars correctly in 35-3

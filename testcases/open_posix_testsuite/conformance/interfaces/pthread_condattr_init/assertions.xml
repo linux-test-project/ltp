@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32665:32667">
+   The function
+    int pthread_condattr_init(pthread_condattr_t *attr);
+  shall initialize a condition variable attributes object attr with
+  the default value for all of the attributes defined by the implementation.  
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32674:32676">
+  After a condition variable attributes object has been used to initialize one or more condition
+  variables, any function affecting the attributes object (including destruction) shall not affect any
+  previously initialized condition variables.  
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32682:32683">
+  If successful, it shall return zero;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32687:32688">
+  The pthread_condattr_init() function shall fail if:
+    [ENOMEM] Insufficient memory exists to initialize the condition variable attributes object. 
+  </assertion> 
+  
+</assertions>

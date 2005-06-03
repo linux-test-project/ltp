@@ -1,0 +1,25 @@
+This document defines the coverage for the timer_settime() function.
+
+Assertion	Covered?
+1		YES
+2		YES
+3		YES
+4		YES
+5		YES
+6		YES
+7		WON'T*
+8		YES
+9		YES
+10		YES
+11		YES
+12		YES
+13		YES
+
+*Decided against testing this assertion as it would be quite difficult
+to get an accurate test.
+
+Possible other items to test:
+assertion 6 - What happens if it_interval < it_value? - Would be easy to 
+use code from 6-1 and replace numbers to test this.
+
+May also want to run canned boundary tests on tid values.

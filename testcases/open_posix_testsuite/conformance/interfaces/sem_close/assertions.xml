@@ -1,0 +1,17 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38671:38673">
+sem_close will return zero after successful completion.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:38674:38676">
+sem_close will deallocate system resources allocated by sem_open for the
+same semaphore.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38677:38679">
+sem_close will have no effect on the state of the semaphore if sem_unlink
+has not been called on this semaphore.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38685:38687">
+Calling sem_close with an invalid semaphore descriptor may result in a
+sem_close returning -1 and errno being set to EINVAL.
+  </assertion>
+</assertions>

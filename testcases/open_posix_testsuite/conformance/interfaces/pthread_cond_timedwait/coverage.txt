@@ -1,0 +1,12 @@
+This document defines the coverage for the pthread_cond_timedwait function:
+
+Assertion	Tested?
+1		YES
+2		YES *2-2 and 2-3 seem to pass but hang on nptl 0.36
+3		YES
+4		YES * When it specifies it 'may' fail and not 'shall' fail,
+		      it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+		    * Tested EINVAL when abs time spec is invalid
+		    * Tested EINTR
+NOTE:

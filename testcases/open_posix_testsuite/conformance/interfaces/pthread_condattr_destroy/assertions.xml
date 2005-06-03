@@ -1,0 +1,24 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32665:32667">
+   The function
+    int pthread_condattr_destroy(pthread_condattr_t *attr);
+  shall destroy a condition variable attributes object; the object becomes,
+  in effect, uninitialized. An implementation may cause pthread_condattr_destroy()
+  to set the object referenced by attr to an invalid value.  
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32667:32669">
+  A destroyed attr attributes object can be reinitialized using pthread_condattr_init(); 
+  the results of otherwise referencing the object after it has been destroyed are undefined.
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32682:32683">
+  If successful, it shall return zero;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32685:32686">
+  The pthread_condattr_destroy() function may fail if:
+    [EINVAL] The value specified by attr is invalid.
+  </assertion> 
+  
+</assertions>

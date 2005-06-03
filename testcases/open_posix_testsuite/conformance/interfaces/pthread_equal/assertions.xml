@@ -1,0 +1,14 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32990:32994">
+   The function
+
+   int pthread_equal(pthread_t t1, pthread_t t2)
+  
+  compares the thread ids t1 and t2.  It returns a non-zero
+  value if t1 and t2 are equal, othersise it returns zero.  
+  No errors are defined.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6TC2:33834:33834">
+   The function must not return EINTR
+  </assertion>
+</assertions>

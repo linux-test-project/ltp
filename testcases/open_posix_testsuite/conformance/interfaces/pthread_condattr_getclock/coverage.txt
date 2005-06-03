@@ -1,0 +1,7 @@
+This document defines the coverage for the pthread_condattr_getclock function:
+
+Assertion	Tested?
+1		YES
+2		YES
+
+NOTE:

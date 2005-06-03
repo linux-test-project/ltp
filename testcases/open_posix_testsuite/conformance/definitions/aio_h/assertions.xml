@@ -1,0 +1,40 @@
+<assertions>
+	<assertion id="1" tag="ref:BD6TC2:7287:7287">
+	An AIO control block structure aiocb is used in many asynchronous I/O
+	functions. It is defined in &lt;aio.h&gt;
+	</assertion>
+	<assertion id="2" tag="ref:BD6TC2:7287:7295">
+	The AIO control block structure aiocb has following members:
+		int aio_fildes
+		off_t aio_offset
+		volatile void* aio_buf
+		size_t aio_nbytes
+		int aio_reqprio
+		struct sigevent aio_sigevent
+		int aio_lio_opcode
+	</assertion>
+	<assertion id="3" tag="ref:BD6TC2:7297:7312">
+	The header &lt;aio.h&gt; shakk include following constants:
+		AIO_ALLDONE
+		AIO_CANCELED
+		AIO_NOTCANCELED
+		LIO_NOP
+		LIO_NOWAIT
+		LIO_READ
+		LIO_WAIT
+		LIO_WRITE
+	</assertion>
+	<assertion id="4" tag="ref:BD6TC2:7313:7324">
+	The header &lt;aio.h&gt; shall defines following functions or macros:
+		int aio_cancel(int, struct aiocb *);
+		int aio_error(const struct aiocb *);
+		int aio_fsync(int, struct aiocb *);
+		int aio_read(struct aiocb *);
+		ssize_t aio_return(struct aiocb *);
+		int aio_suspend(const struct aiocb *const[], int, 
+				const struct timespec *);
+		int aio_write(struct aiocb *);
+		int lio_listio(int, struct aiocb *restrict const[restrict], 
+			       int, struct sigevent *restrict);
+	</assertion>
+</assertions>

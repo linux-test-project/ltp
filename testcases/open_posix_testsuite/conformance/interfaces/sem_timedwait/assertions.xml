@@ -1,0 +1,50 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38995:38996">
+sem_timedwait will lock the unlocked semaphore.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:38996:38998">
+if the sempahore can't be locked without waiting for another process 
+or thread to unlock the semaphore by performing sem_post function.  This
+wait shall be terminated when the specified timout expires.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38999:39002">
+The timeout shall expire when the absolute time specified by abs_timeout
+passes, as measured by the clock on which timeouts are based, or if the
+absolute time specified by abs_timeout has already been passed at the
+time of the call.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:39010:39014">
+sem_timedwait function shall return zero if the calling process successfully
+performed the semaphore lock.  Return -1 if the call unsuccessful which shall
+keep the state of the semaphore unchanged.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:39017:39017">
+The sem_timedout function shall fail with:
+EINVAL Error: SEM argument doesn't refer to a valid semaphore.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:39018:39020">
+The sem_timedout function shall fail with:
+EINVAL Error: The process or thread would have blocked, and the abs_timeout
+parameter specified a nanoseconds field value less than zero or greater than 
+or equal to 1000 million.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:39017:39017">
+The sem_timedout function shall fail with:
+ETIMEDOUT Error: The semaphore could not be locked before the specified 
+timeout expired.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:39017:39017">
+The sem_timedout function may fail with:
+EDEADLK Error: A deadlock condition was detected.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:39017:39017">
+The sem_timedout function may fail with:
+EINTR Error: A signal interrupted this function.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:39003:39006 pt:SEM pt:TMR">
+If the Timers option is supported, the timeout shall be based on the CLOCK_REALTIME clock. If the Timers option is not supported, the timeout shall be based on the system clock as returned by the time() function. The resolution of the timeout shall be the resolution of the clock on which it is based.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:39007:39009 pt:SEM pt:TMR">
+Under no circumstance shall the function fail with a timeout if the semaphore can be locked immediately. The validity of the abs_timeout need not be checked if the semaphore can be locked immediately.
+  </assertion>
+</assertions>

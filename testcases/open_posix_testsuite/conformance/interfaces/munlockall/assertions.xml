@@ -1,0 +1,30 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:munlockall:DESCRIPTION}">
+   Any pages that become mapped into the address space of the process after a
+   call to munlockall() shall not be locked, unless there is an intervening
+   call to mlockall() specifying MCL_FUTURE or a subsequent call to mlockall()
+   specifying MCL_CURRENT
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:munlockall:DESCRIPTION}">
+   If pages mapped into the address space of the process are also mapped into
+   the address spaces of other processes and are locked by those processes, the
+   locks established by the other processes shall be unaffected by a call by
+   this process to munlockall()
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:munlockall:DESCRIPTION}">
+   Upon return from the munlockall() function, all currently mapped pages of
+   the process' address space shall be unlocked with respect to the process'
+   address space
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:munlockall:DESCRIPTION}">
+   The memory residency of unlocked pages is unspecified
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:munlockall:RETURN VALUE}">
+   If it is supported by the implementation, the munlockall() function shall
+   always return a value of zero
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:munlockall:RETURN VALUE}">
+   If it is not supported by the implementation, the munlockall() function
+   shall return a value of -1 and set errno to indicate the error
+  </assertion>
+</assertions>

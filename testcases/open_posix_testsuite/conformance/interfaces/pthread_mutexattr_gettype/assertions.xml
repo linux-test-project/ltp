@@ -1,0 +1,21 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34497:34499">
+   The function
+
+   int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *restrict type);
+
+  Gets the mutex 'type' attribute.  This attribute is set in the 'type' parameter to 
+  these functions.  The default value is PTHREAD_MUTEX_DEFAULT.
+
+  </assertion>  
+  <assertion id="2" tag="ref:XSH6:34526:34529">
+  It returns 0 upon success and stores the value of the type of the attribute object 'attr'
+  into the reference of the 'type' parameter.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34532:34537">
+  It shall fail if:
+
+  [EINVAL] - The value specified by 'attr' is invalid.
+
+  </assertion>
+</assertions>

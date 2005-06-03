@@ -1,0 +1,15 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+6 through 12 - Did not test RTS assertions.
+50 - This test case needs to be much larger.
+
+
+Other items I am currently investigating (as of 10/28/02):
+The assertions:
+19
+21
+45
+fail on the system I am testing on.
+These appear to be valid header file failures.

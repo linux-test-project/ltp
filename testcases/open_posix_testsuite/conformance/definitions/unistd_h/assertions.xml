@@ -1,0 +1,10 @@
+<assertions>
+  <assertion id="1" tag="pt:FSC ref:XSH6:14780:14781">
+  The function below is defined:
+    int fsync(int fildes);
+  </assertion>
+  <assertion id="2" tag="ref:XBD6TC2:14736:14736">
+  The function below is defined:
+    int ftruncate(int fildes, off_t length);
+  </assertion>
+</assertions>

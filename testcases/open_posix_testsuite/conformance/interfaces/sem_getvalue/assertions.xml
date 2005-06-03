@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38752:38756">
+sem_getvalue will update the location referenced by sval to have the value
+of the semaphore referenced by sem without effecting the state of the 
+semaphore.  The updated value represents an actual semaphore value that
+occured at some unspecifed time during the call.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6TC2:39749:39751">
+When semaphore is locked, then the value returned by sem_getvalue is zero or
+the number of blocked threads/processes.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38764:38765">
+sem_getvalue return EINVAL ERROR on invalid reference to a semaphore.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38760:38762">
+Upon successful completion of calling sem_getvalue, it shall return a value
+of zero.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:38752:38753">
+Ensure when calling sem_getvalue, doesn't change the state of the semaphore.
+  </assertion>
+</assertions>

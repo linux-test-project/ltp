@@ -1,0 +1,7 @@
+This document defines the coverage for the pthread_rwlockattr_init function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		NO
+Note: 

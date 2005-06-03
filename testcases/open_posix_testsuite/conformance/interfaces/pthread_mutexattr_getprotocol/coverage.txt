@@ -1,0 +1,13 @@
+This document defines the coverage for the pthread_mutexattr_getprotocol function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		NO
+4		NO
+5		No
+6		No
+7		NO
+8		NO
+9		NO
+NOTE:

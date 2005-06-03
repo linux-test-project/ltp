@@ -1,0 +1,19 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31437:31438">
+   The function
+     int pthread_attr_getschedpolicy(const pthread_attr_t *restrict attr,
+                                     int *restrict policy);
+
+   gets the schedpolicy attribute in the 'attr' argument.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:31439:31440">
+   The supported values of policy will include SCHED_FIFO, SCHED_RR, 
+   and SCHED_OTHER.
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:31443:31445">
+   If success, the function returns zero;
+   otherwise, an error number shall be returned indicating the error.
+  </assertion>
+</assertions>

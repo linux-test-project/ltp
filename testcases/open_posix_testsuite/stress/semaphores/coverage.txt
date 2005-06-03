@@ -1,0 +1,4 @@
+This file defines the coverage for Semaphore stress tests.  
+
+Assertion	Covered?
+1		YES

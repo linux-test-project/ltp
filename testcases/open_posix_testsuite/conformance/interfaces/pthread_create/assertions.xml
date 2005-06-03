@@ -1,0 +1,79 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32840:32842">
+   The 
+
+   int pthread_create(pthread_t *restrict thread, const pthread_attr_t 
+  	*restrict attr, void *(*start_routine) (void*), void *restrict arg);
+ 
+   creates a new thread, with attributes specified
+   by 'attr', within a process.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:32842:32842">
+   If 'attr' is NULL, the default attributes shall be used.
+   The attribute that will be tested is the detached state, because that is
+   the only state that has a default listed in the specification.
+
+   default: PTHREAD_CREATE_JOINABLE
+   Other valid values: PTHREAD_CREATE_DETACHED
+   
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:32842:32843">
+   If the attributes specified by 'attr' are modified later after the thread 
+   is create, the thread's attributes should not be affected.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:32843:32844">
+   If success, pthread_create() will store the ID of the
+   the created thread in the location referenced by 'thread'.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:32845:32845">
+   The thread is created executing 'start_routine' with 'arg' as its only
+   argument.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:32845:32848">
+  If the 'start_routine' returns, the effect shall be as if there was an
+  implicit call to pthread_exit() using the return value of 'start_routine'
+  as the exit status.  
+  NOTE: that the thread in which main() was originally invoked is different
+  from this
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:32848:32849">
+  When it returns from main(), the effect shall be as if there was an implicit
+  call to exit() using the return value of main() as the exit status.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:32850:32852">
+  The signal state of the new thread will be initialized as so:
+
+  - The signal mask shall be inherited from the created thread
+  - The set of signals pending for the new thread shall be empty.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:32853:32853">
+  The floating point environment shall be inherited from the created thread.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:32854:32855">
+  If pthread_create() fails, no new thread is created and the contents of the
+  location referenced by 'thread' is undefined.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:32856:32857 pt:TCT">
+  if _POSIX_THREAD_CPUTIME is defined, the new thread shall have a CPU-time
+  clock accessible, and the initial value of this clock shall be set to 0.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:32859:32859">
+  If success, pthread_create() returns zero.  
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:32859:32860">
+  If pthread_create() fails, an error number is returned:
+
+  - [EAGAIN]	The system lacked the resources to create another thread,
+               	or the system-imposed limit on the total number of threads
+		in a process {PTHREAD_THREADS_MAX} would be exceeded.
+  - [EINVAL]	The value specified by 'attr' is invalid.
+  - [EPERM]	The caller does not have the appropriate permission to set
+		the required scheduling parameters or scheduling policy.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6TC2:33694:33694">
+  [EINTR] must not be returned.
+  </assertion>
+  <assertion id="15" tag="ref:XSH6TC2:33676:33676 pt:XSI">
+  If the current thread uses an alternate stack, the new thread does not inherit this stack.
+  </assertion>
+</assertions>

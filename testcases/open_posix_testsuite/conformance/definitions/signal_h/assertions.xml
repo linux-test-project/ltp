@@ -1,0 +1,302 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD6:10713:10996">
+    The signal.h header file exists
+  </assertion>
+  <assertion id="2" tag="ref:XBD6:10722:10729">
+    The signal.h header defines the symbols SIG_DFL, SIG_ERR, SIG_HOLD
+    and SIG_IGN as 'void (*) int'.
+  </assertion>
+  <assertion id="3" tag="ref:XBD6:10730:10732">
+    The signal.h header defines sig_atomic_t.
+  </assertion>
+  <assertion id="4" tag="ref:XBD6:10733:10733">
+    The signal.h header defines sigset_t.
+  </assertion>
+  <assertion id="5" tag="ref:XBD6:10734:10734">
+    The sys/types.h header defines pid_t.
+  </assertion>
+  <assertion id="6" tag="ref:XBD6:10735:10741 pt:RTS">
+    The signal.h header defines a structure named sigevent which has at least:
+    int sigev_notify 
+    int sigev_signo 
+    union sigval sigev_value 
+    void(*)(union sigval) sigev_notify_function 
+    (pthread_attr_t *) sigev_notify_attributes 
+  </assertion>
+  <assertion id="7" tag="ref:XBD6:10742:10747 pt:RTS">
+    For sigev_notify (assertion 6), the following values are defined:
+    SIGEV_NONE
+    SIGEV_SIGNAL
+    SIGEV_THREAD
+  </assertion>
+  <assertion id="8" tag="ref:XBD6:10748:10750 pt:RTS">
+    The sigval union (assertion 6) is defined as:
+    int sival_int 
+    void *sival_ptr
+  </assertion>
+  <assertion id="9" tag="ref:XBD6:10751:10753 pt:RTS">
+    The signal.h header declares SIGRTMIN and SIGRTMAX.  These are macros
+    that evaluate to integer expressions for the minimum and maximum signal
+    numbers reserved for realtime signals.
+  </assertion>
+  <assertion id="10" tag="ref:XBD6:10754:10755 pt:RTS">
+    The range SIGRTMIN-SIGRTMAX doesn't overlap pre-defined signals (see
+    below).
+  </assertion>
+  <assertion id="11" tag="ref:XBD6:10756:10757 pt:RTS">
+    The SIGRTMIN-SIGRTMAX range includes at least {RTSIG_MAX} signal
+    numbers.
+  </assertion>
+  <assertion id="12" tag="ref:XBD6:10758:10758 pt:RTS">
+    Realtime signal behavior may or may not be supported for non-realtime
+    signals.  This is defined by the implementation.
+  </assertion>
+  <assertion id="13" tag="ref:XBD6:10761:10762">
+    The value 0 is not used in any signals, but is reserved as the null signal.
+  </assertion>
+  <assertion id="14" tag="ref:XBD6:10765:10797">
+    The following signals are always (on all implementations) supported:
+    SIGABRT 
+    SIGALRM 
+    SIGBUS 
+    SIGCHLD
+    SIGCONT
+    SIGFPE 
+    SIGHUP 
+    SIGILL
+    SIGINT
+    SIGKILL
+    SIGPIPE
+    SIGQUIT
+    SIGSEGV
+    SIGSTOP
+    SIGTERM
+    SIGTSTP
+    SIGTTIN
+    SIGTTOU
+    SIGUSR1
+    SIGUSR2
+    SIGPOLL
+    SIGPROF
+    SIGSYS 
+    SIGTRAP
+    SIGURG 
+    SIGVTALRM
+    SIGXCPU 
+    SIGXFSZ
+  </assertion>
+  <assertion id="15" tag="ref:XBD6:10808:10817">
+   The signal.h header declares the struct sigaction which has, at a minimum,
+   the following members:
+    void (*sa_handler)(int) 
+    sigset_t sa_mask
+    int sa_flags 
+    void (*)(int, siginfo_t *, void *) sa_sigaction
+  </assertion>
+  <assertion id="16" tag="ref:XBD6:10820:10839">
+   The constants below are declared:
+   SA_NOCLDSTOP
+   SIG_BLOCK
+   SIG_UNBLOCK 
+   SIG_SETMASK
+   SA_ONSTACK 
+   SA_RESETHAND
+   SA_RESTART
+   SA_SIGINFO
+   SA_NOCLDWAIT
+   SA_NODEFER 
+   SS_ONSTACK
+   SS_DISABLE 
+   MINSIGSTKSZ
+   SIGSTKSZ 
+  </assertion>
+  <assertion id="17" tag="ref:XBD6:10840:10840">
+    The ucontext.h header shall define ucontext_t.
+  </assertion>
+  <assertion id="18" tag="ref:XBD6:10841:10841">
+    The ucontext.h header shall define mcontext_t.
+  </assertion>
+  <assertion id="19" tag="ref:XBD6:10842:10846">
+   The signal.h header defines the structure stack_t which includes the
+   following, at a minimum: 
+   void   *ss_sp
+   size_t ss_size
+   int    ss_flags
+  </assertion>
+  <assertion id="20" tag="ref:XBD6:10847:10850">
+   The signal.h header defines the structure sigstack which includes the
+   following, at a minimum: 
+   int  ss_onstack
+   void *ss_sp
+  </assertion>
+  <assertion id="21" tag="ref:XBD6:10852:10864">
+   The signal.h header defines the structure siginfo_t which includes the
+   following, at a minimum: 
+   int si_signo
+   int si_errno 
+   int si_code
+   pid_t si_pid
+   uid_t si_uid 
+   void *si_addr
+   int si_status 
+   long si_band 
+   union sigval si_value
+  </assertion>
+  <assertion id="22" tag="ref:XBD6:10867:10910">
+   The following macros are defined:
+   ILL_ILLOPC
+   ILL_ILLOPN
+   ILL_ILLADR
+   ILL_ILLTRP
+   ILL_PRVOPC
+   ILL_PRVREG
+   ILL_COPROC
+   ILL_BADSTK
+   FPE_INTDIV
+   FPE_INTOVF
+   FPE_FLTDIV
+   FPE_FLTOVF
+   FPE_FLTUND
+   FPE_FLTRES
+   FPE_FLTINV
+   FPE_FLTSUB
+   SEGV_MAPERR
+   SEGV_ACCERR
+   BUS_ADRALN
+   BUS_ADRERR
+   BUS_OBJERR
+   TRAP_BRKPT
+   TRAP_TRACE
+   CLD_EXITED
+   CLD_KILLED
+   CLD_DUMPED
+   CLD_TRAPPED
+   CLD_STOPPED
+   CLD_CONTINUED
+   POLL_IN
+   POLL_OUT
+   POLL_MSG
+   POLL_ERR
+   POLL_PRI
+   POLL_HUP
+   SI_USER
+   SI_QUEUE
+   SI_TIMER
+   SI_ASYNCIO
+   SI_MESGQ
+  </assertion>
+  <assertion id="23" tag="ref:XBD6:10929:10929 pt:XSI">
+   The function below is declared:
+   void (*bsd_signal(int, void (*)(int)))(int);
+  </assertion>
+  <assertion id="24" tag="ref:XBD6:10930:10930 pt:CX">
+   The function below is declared:
+   int kill(pid_t, int);
+  </assertion>
+  <assertion id="25" tag="ref:XBD6:10931:10931 pt:XSI">
+   The function below is declared:
+   int killpg(pid_t, int);
+  </assertion>
+  <assertion id="26" tag="ref:XBD6:10932:10932 pt:THR">
+   The function below is declared:
+   int pthread_kill(pthread_t, int);
+  </assertion>
+  <assertion id="27" tag="ref:XBD6:10933:10933">
+   The function below is declared:
+   int pthread_sigmask(int, const sigset_t *, sigset_t *);
+  </assertion>
+  <assertion id="28" tag="ref:XBD6:10934:10934">
+   The function below is declared:
+   int raise(int);
+  </assertion>
+  <assertion id="29" tag="ref:XBD6:10935:10936 pt:CX">
+   The function below is declared:
+   int sigaction(int, const struct sigaction *restrict,
+   struct sigaction *restrict);
+  </assertion>
+  <assertion id="30" tag="ref:XBD6:10937:10937">
+   The function below is declared:
+   int sigaddset(sigset_t *, int);
+  </assertion>
+  <assertion id="31" tag="ref:XBD6:10938:10938 pt:XSI">
+   The function below is declared:
+   int sigaltstack(const stack_t *restrict, stack_t *restrict);
+  </assertion>
+  <assertion id="32" tag="ref:XBD6:10939:10939 pt:CX">
+   The function below is declared:
+   int sigdelset(sigset_t *, int);
+  </assertion>
+  <assertion id="33" tag="ref:XBD6:10940:10940">
+   The function below is declared:
+   int sigemptyset(sigset_t *);
+  </assertion>
+  <assertion id="34" tag="ref:XBD6:10941:10941">
+   The function below is declared:
+   int sigfillset(sigset_t *);
+  </assertion>
+  <assertion id="35" tag="ref:XBD6:10942:10942 pt:XSI">
+   The function below is declared:
+   int sighold(int);
+  </assertion>
+  <assertion id="36" tag="ref:XBD6:10943:10943 pt:XSI">
+   The function below is declared:
+   int sigignore(int);
+  </assertion>
+  <assertion id="37" tag="ref:XBD6:10944:10944">
+   The function below is declared:
+   int siginterrupt(int, int);
+  </assertion>
+  <assertion id="38" tag="ref:XBD6:10945:10945 pt:CX">
+   The function below is declared:
+   int sigismember(const sigset_t *, int);
+  </assertion>
+  <assertion id="39" tag="ref:XBD6:10946:10946">
+   The function below is declared:
+   void (*signal(int, void (*)(int)))(int);
+  </assertion>
+  <assertion id="40" tag="ref:XBD6:10947:10947 pt:XSI">
+   The function below is declared:
+   int sigpause(int);
+  </assertion>
+  <assertion id="41" tag="ref:XBD6:10948:10948 pt:CX">
+   The function below is declared:
+   int sigpending(sigset_t *);
+  </assertion>
+  <assertion id="42" tag="ref:XBD6:10949:10949">
+   The function below is declared:
+   int sigprocmask(int, const sigset_t *restrict, sigset_t *restrict);
+  </assertion>
+  <assertion id="43" tag="ref:XBD6:10950:10950 pt:RTS">
+   The function below is declared:
+   int sigqueue(pid_t, int, const union sigval);
+  </assertion>
+  <assertion id="44" tag="ref:XBD6:10951:10951 pt:XSI">
+   The function below is declared:
+   int sigrelse(int);
+  </assertion>
+  <assertion id="45" tag="ref:XBD6:10952:10952">
+   The function below is declared:
+   void (*sigset(int, void (*)(int)))(int);
+  </assertion>
+  <assertion id="46" tag="ref:XBD6:10953:10953 pt:CX">
+   The function below is declared:
+   int sigsuspend(const sigset_t *);
+  </assertion>
+  <assertion id="47" tag="ref:XBD6:10954:10955">
+   The function below is declared:
+   int sigtimedwait(const sigset_t *restrict, siginfo_t *restrict,
+   const struct timespec *restrict);
+  </assertion>
+  <assertion id="48" tag="ref:XBD6:10956:10956 pt:CX">
+   The function below is declared:
+   int sigwait(const sigset_t *restrict, int *restrict);
+  </assertion>
+  <assertion id="49" tag="ref:XBD6:10957:10957 pt:RTS">
+   The function below is declared:
+   int sigwaitinfo(const sigset_t *restrict, siginfo_t *restrict);
+  </assertion>
+  <assertion id="50" tag="ref:XBD6:10959:10959">
+   Inclusion of the signal.h header may make visible all symbols from 
+   the time.h header.
+  </assertion>
+</assertions>

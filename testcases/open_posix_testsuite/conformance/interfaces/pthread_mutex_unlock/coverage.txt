@@ -1,0 +1,15 @@
+This document defines the coverage for the pthread_mutex_unlock function:
+
+Assertion	Tested?
+1		YES
+2		YES * Because the default scheduling policy is implementation 
+		      dependent, the case only will only demo the scheduling 
+		      sequence instead of testing it.
+3		YES
+4		NO  * The related error codes are all implementation dependent
+		    * Keeping in mind it 'may' fail and not 'shall' fail,
+		      so it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+5               YES
+
+NOTE:

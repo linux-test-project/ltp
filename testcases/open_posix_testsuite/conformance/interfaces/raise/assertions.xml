@@ -1,0 +1,34 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:36082:36082 pt:CX">
+   The raise() function sends signal sig to the thread or process currently
+   executing.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:36082:36083 pt:CX">
+   If the signal causes a signal handler to be called, the raise() function
+   will wait for the signal handler to return before it returns.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:36084:36086 pt:THR">
+   If the implementation supports Threads, then raise() is equivalent to:
+   pthread_kill(pthread_self(), sig);
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:36088:36089">
+   If the implementation does not support threads, then raise() is
+   equivalent to:
+   kill(getpid(), sig);
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:36092:36092">
+   Upon successful completion, raise() returns 0.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:36092:36093">
+   Upon unsuccessful completion, raise() returns a non-zero value.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:36093:36096">
+   Upon unsuccessful completion, raise() sets errno to indicate the
+   error.  The only defined value of errno for raise() is EINVAL if the 
+   value of the sig argument is an invalid signal number.
+  </assertion>
+  <assertion id="10000" tag="ref:XSH6:36082:36096">
+   Multiple assertions tested.
+  </assertion>
+</assertions>
+

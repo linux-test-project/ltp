@@ -1,0 +1,14 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42248:42250">
+sigpending() stores the set of signals blocked from delivery to the calling
+thread and that are pending on the process or calling thread in set.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42252:42252">
+sigpending() returns 0 on success.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42252:42255">
+sigpending() returns -1 when not successful.  It also sets errno to
+indicate the error.  [There is no value of errno defined for sigpending.]
+  </assertion>
+</assertions>
+

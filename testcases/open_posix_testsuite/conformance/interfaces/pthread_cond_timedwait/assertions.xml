@@ -1,0 +1,33 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32467:32469">
+   The function
+     int pthread_cond_timedwait(pthread_cond_t *restrict cond,
+                           pthread_mutex_t *restrict mutex);
+                           const struct timespec *restrict abstime);
+   shall block on a condition variable. It shall be called with mutex locked
+   by the calling thread or undefined behavior results.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32499:32502">
+  The pthread_cond_timedwait() function shall be equivalent to pthread_cond_wait(), except that an
+  error is returned if the absolute time specified by abstime passes (that is, system time equals or
+  exceeds abstime) before the condition cond is signaled or broadcasted, or if the absolute time
+  specified by abstime has already been passed at the time of the call. 
+   </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32516:32516">
+  Upon successful completion, a value of zero shall be returned;
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32521:32526">
+  The pthread_cond_timedwait() function shall fail if:
+    [ETIMEDOUT]  The time specified by 'abstime' has passed.
+  The pthread_cond_timedwait() function may fail if:
+    [EINVAL] The value specified by cond, mutex,or abstime is invalid.
+    [EINVAL] Different mutexes were supplied for concurrent pthread_cond_timedwait() or
+             pthread_cond_wait() operations on the same condition variable.
+    [EPERM] The mutex was not owned by the current thread at the time of the call.
+  These functions shall not return an error code of [EINTR].
+  </assertion> 
+  
+</assertions>

@@ -1,0 +1,29 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42137:42138">
+    Default handling for that signal shall occur, if the value of func is SIG_DFL.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42138:42138">
+    The signal shall be ingnored if the value of func is SIG_IGN.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42142:42148">
+    When a signal occurs, and func points to a function, the equivalent of:  (*func)(sig);
+    is executed.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:42150:42153">
+    If and when the signal handler returns, the program shall resume execution at the
+    point it was interrupted.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42166:42167">
+    If the handler is called, signal() shall return the value of 
+    func of the last call to signal() that pertains to the 
+    specified signal sig.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42170:42172 pt:CX">
+    The signal( ) function shall return SIG_ERR, and set errno to EINVAL if the sig argument
+    passed to signal() is not a valid signal number
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:42170:42172 pt:CX">
+    if an attempt is made to catch a
+    signal that cannot be caught or ignore a signal that cannot be ignored.
+  </assertion>
+</assertions>

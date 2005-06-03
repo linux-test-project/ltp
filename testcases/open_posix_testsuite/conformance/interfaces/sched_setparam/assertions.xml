@@ -1,0 +1,120 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   sched_setparam() sets the scheduling parameters to the parameters specified
+   in the sched_param structure pointed to by param
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   Higher numerical values for the priority represent higher priorities  
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If pid is negative, the behavior of sched_setparam() is unspecified
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If a process specified by pid exists, and if the calling process has
+   permission, the scheduling parameters shall be set for the process whose
+   process ID is equal to pid
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If pid is zero, the scheduling parameters shall be set for the calling
+   process
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   The conditions under which one process has permission to change the
+   scheduling parameters of another process are implementation-defined
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   Implementations may require the requesting process to have the appropriate
+   privilege to set its own scheduling parameters or those of another process
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   The target process, whether it is running or not running, shall be moved to
+   the tail of the thread list for its priority
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If the priority of the process specified by the pid argument is set higher
+   than that of the lowest priority running process and if the specified
+   process is ready to run, the process specified by the pid argument shall
+   preempt a lowest priority running process
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If the process calling sched_setparam() sets its own priority lower than
+   that of one or more other non-empty process lists, then the process that is
+   the head of the highest priority list shall preempt the calling process
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   The originating process might not receive notification of the completion of
+   the requested priority change until the higher priority process has
+   executed
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
+   The sched_ss_repl_period and sched_ss_init_budget members of the param
+   argument shall represent the time parameters to be used by the sporadic
+   server scheduling policy for the target process 
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
+   The sched_ss_max_repl member of the param argument shall represent the
+   maximum number of replenishments that are allowed to be pending
+   simultaneously for the process scheduled under the SCHED_SPORADIC policy
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
+   If the scheduling policy of the target process is either SCHED_FIFO or
+   SCHED_RR, the sched_ss_low_priority, sched_ss_repl_period, and
+   sched_ss_init_budget members of the param argument shall have no effect on
+   the scheduling behavior
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION} pt:SS">
+   If the scheduling policy of the target process is not SCHED_FIFO, SCHED_RR,
+   or SCHED_SPORADIC, the effects of the sched_ss_low_priority,
+   sched_ss_repl_period, and sched_ss_init_budget members are
+   implementation-defined (this case includes the SCHED_OTHER policy)
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   If the current scheduling policy for the process specified by pid is not
+   SCHED_FIFO, SCHED_RR or SCHED_SPORADIC, the result is
+   implementation-defined; this case includes the SCHED_OTHER policy
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   For threads with system scheduling contention scope, this function shall have no effect on their scheduling
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   For threads with process scheduling contention scope, the threads' scheduling policy and associated parameters shall not be affected
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   The underlying kernel-scheduled entities for the system contention scope threads shall not be affected by this function
+  </assertion>
+  <assertion id="20" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   The underlying kernel-scheduled entities for the process contention scope
+   threads shall have their scheduling parameters changed to the value
+   specified in param
+  </assertion>
+  <assertion id="21" tag="ref:XSH6:{System Interfaces:sched_setparam:DESCRIPTION}">
+   Kernel-scheduled entities for use by process contention scope threads that
+   are created after this call completes shall inherit their scheduling policy
+   and associated scheduling parameters from the process
+  </assertion>
+  <assertion id="22" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">
+   If successful, the sched_setparam() function shall return zero
+  </assertion>
+  <assertion id="23" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE}">   
+   If the call to sched_setparam() is unsuccessful, the priority shall remain
+   unchanged
+  </assertion>
+  <assertion id="24" tag="ref:XSH6:{System Interfaces:sched_setparam:RETURN VALUE">
+   If the call to sched_setparam() is unsuccessful, the function shall return a
+   value of -1
+  </assertion>
+  <assertion id="25" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
+   sched_setparam() sets errno == EINVAL when one or more of the requested
+   scheduling parameters is outside the range defined for the scheduling policy
+   of the specified pid 
+  </assertion>
+  <assertion id="26" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
+   sched_setparam() sets errno == EPERM when the requesting process does not
+   have permission to set the scheduling parameters for the specified process,
+   or does not have the appropriate privilege to invoke schedparam()
+  </assertion>
+  <assertion id="27" tag="ref:XSH6:{System Interfaces:sched_setparam:ERRORS}">
+   sched_setparam() sets errno == ESRCH when no process can be found
+   corresponding to that specified by pid 
+  </assertion>
+</assertions>

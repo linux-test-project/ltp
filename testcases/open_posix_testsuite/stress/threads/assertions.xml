@@ -1,0 +1,75 @@
+<assertions>
+  <assertion id="1" files="pthread_mutex_init/stress.c" tag="pt:THR">
+Mutex initialization and destruction duration does not depend on the number of mutex in use in the system -- for any type of mutex. 
+  </assertion>
+  <assertion id="2" files="pthread_mutex_init/s-c.c" tag="pt:THR">
+Mutex initialization then destruction does not consume any system resource (memory leak, ...) -- for any type of mutex. 
+  </assertion>
+  <assertion id="3" files="pthread_mutex_lock/stress.c" tag="pt:THR">
+With a large amount of threads contending for some mutexes (of several types) with pthread_mutex_lock, pthread_mutex_trylock and pthread_mutex_timedlock, there is never more than one thread owning the same mutex at the same time. 
+  </assertion>
+  <assertion id="4" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
+There is no limit on the number of threads waiting to own the same mutex. 
+  </assertion>
+  <assertion id="5" files="pthread_mutex_lock/s-c1.c" tag="pt:THR">
+There is no limit on the number of different mutex having threads contending, at the same time. 
+  </assertion>
+  <assertion id="6" files="pthread_cond_init/s-c.c" tag="pt:THR">
+Condvar initialization then destruction does not consume any system resource -- for any kind of condvar. 
+  </assertion>
+  <assertion id="7" files="pthread_cond_init/stress.c" tag="pt:THR">
+Condvar Initialization and destruction duration does not depend on the number of condvars in use in the system -- for any kind of condvar. 
+  </assertion>
+  <assertion id="8" files="pthread_cond_timedwait/s-c.c" tag="pt:THR">
+Latency between pthread_cond_timedwait timeout parameter and function actual return does not depend on the number of threads waiting on the condvar -- whatever kind of condvar.
+  </assertion>
+  <assertion id="9" files="pthread_cond_timedwait/stress1.c,pthread_cond_wait/stress1.c" tag="pt:THR">
+When inside the function, the thread releases the mutex before waiting for the conditionnal variable. Those two operations are atomic in the mean that no other thread can gain access to the mutex then signal (or broadcast) the condition without the blocked thread behaving as if this signal (or broadcast) had happened after it blocked on the conditionnal variable.
+  </assertion>
+  <assertion id="10" files="pthread_cond_timedwait/stress2.c,pthread_cond_wait/stress2.c" tag="pt:THR">
+When a cancel request unblocks the thread, it must not consume any pending condition signal request.
+  </assertion>
+  <assertion id="10" files="pthread_cond_wait/stress.c" tag="pt:THR">
+No condition signaling (signal or broadcast) are lost (i.e. not received by at least one (wait) or all (broadcast) waiting threads).
+  </assertion>
+  <assertion id="11" files="pthread_create/s-c1.c" tag="pt:THR">
+The thread creation time does not depend on the number of threads already created in the process.
+  </assertion>
+  <assertion id="12" files="pthread_mutex_trylock/stress.c" tag="pt:THR">
+pthread_mutex_trylock never locks the mutex when it returns EBUSY.
+  </assertion>
+  <assertion id="13" files="pthread_exit/stress.c" tag="pt:THR">
+pthread_exit() frees the thread resources.
+  </assertion>
+  <assertion id="14" files="pthread_self/stress.c" tag="pt:THR">
+pthread_self() returns the thread ID.
+  </assertion>
+  <assertion id="15" files="fork/s-c1.c" tag="pt:THR">
+The process creation time in a fork() does not depend on the number of processes already created in the system.
+  </assertion>
+  <assertion id="16" files="pthread_once/stress.c" tag="pt:THR">
+The init_routine argument of pthread_once is never called 
+more or less than once.
+  </assertion>
+  <assertion id="17" files="pthread_getschedparam/stress.c" tag="pt:THR">
+pthread_getschedparam() always returns the scheduling parameters of the queried thread.
+  </assertion>
+  <assertion id="18" files="pthread_kill/stress.c" tag="pt:THR">
+Heavy signal delivery with pthread_kill() does not break the system, and no unpending signal get lost.
+  </assertion>
+  <assertion id="19" files="pthread_cancel/stress.c" tag="pt:THR">
+Heavy cancelation does not break the system or the application. 
+  </assertion>
+  <assertion id="20" files="sem_open/s-c1.c" tag="pt:SEM">
+The sem_open and sem_close duration does not depend on the number of opened
+named semaphores.
+  </assertion>
+  <assertion id="21" files="sem_init/s-c1.c" tag="pt:SEM">
+The sem_init and sem_destroy duration does not depend on the number of opened
+unnamed semaphores.
+  </assertion>
+  <assertion id="22" files="sem_getvalue/stress.c" tag="pt:SEM">
+The sem_getvalue always returns the value of the semaphore at a given time 
+during the call into the sval argument.
+  </assertion>
+</assertions>

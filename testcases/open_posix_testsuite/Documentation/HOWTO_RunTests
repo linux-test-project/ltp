@@ -1,0 +1,98 @@
+
+SECTIONS:
+1. Overview
+2. Framework Functionality
+3. Building and Running the Tests
+
+
+1. Overview
+------------
+This document describes how to run the tests in the POSIX Test Suite.
+
+Our framework currently has the ability to build and run conformance,
+functional, and stress tests.  Only conformance and functional tests are
+built when a user tries to "make all" as stress tests leave the system
+in an indeterminate state and should generally be run manually.
+
+2. Framework Functionality
+----------------------------------------------------
+
+  * Conformance Tests
+The build and execution process varies per conformance tests.
+
+For definitions tests, the build and execution process is the same since
+the "test" is that the file compiles.  A definitions test will be compiled,
+not linked, by the compiler.
+
+For all other tests, they will have one test for the compile, one for the
+link, and one for the execution of the test.  Successfull tests return
+PTS_PASS, which the compiler interprets as success.  All other return
+values are failures.  [For more info, see HOWTO_ResultCodes.]
+
+  * Functional/Stress Tests
+Functional and stress tests have their own Makefile and method for running,
+and the framework merely calls these mechanisms.  To build functional and
+stress tests, the framework calls the main Makefile for each functional
+area.  To run these tests, the framework calls the run.sh file for each
+functional area.
+
+3. Building and Running the Tests
+----------------------------------
+
+**See the BUILD file for info on how to set up the build for the specific
+area you are testing (threads, mqs, semaphores, etc.)
+
+To build and run the tests, you should be in the main posixtestsuite/
+directory.  
+
+From there, execute:
+# make
+
+This will build and run all conformance and functional tests [See above
+for why stress tests are not built.].
+
+If you'd like to build and run conformance tests for a specific area (threads,
+timers, semaphores, message queues, signals), use the script run_tests and
+run:
+# ./run_tests [SIG|SEM|THR|TMR|MSG]
+ the argument is the 3 letter POSIX abbreviation for area
+
+  * Conformance-specific items
+To run conformance tests for a specific directory, first export the
+POSIX_TARGET variable to the directory desired.
+Ex.
+# export POSIX_TARGET=conformance/definitions/time_h
+
+  * Linking in a library
+To link in a library or add any other flags at build or link time,
+modify file LDFLAGS with the -L... -l... or -D... lines you would like
+added.
+
+To just build conformance tests, run:
+# make build-tests
+
+To just run conformance tests, run:
+# make run-tests
+
+  * Functional/Stress-specific items
+To run only functional tests, run:
+# make functional-tests
+
+To run only stress tests, run:
+# make stress-tests
+
+To make only functional tests, run:
+# make functional-make
+
+To make only stress tests, run:
+# make stress-make
+
+To only run functional tests, run:
+# make functional-run
+
+To only run stress tests, run:
+# make stress-run
+
+Contributors:	rusty.lynch REMOVE-THIS AT intel DOT com
+		julie.n.fleischer REMOVE-THIS AT intel DOT com
+		rolla.n.selbak REMOVE-THIS AT intel DOT com

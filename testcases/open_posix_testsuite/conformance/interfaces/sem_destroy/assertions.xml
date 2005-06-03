@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38713:38715">
+sem_destroy shall destroy the unamed semaphore indicated by sem.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38717:38717">
+sem_destroy shall destroy an initialized semaphore upon which no threads
+are currently blocked.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38720:38721">
+sem_destroy return 0 on successful completion, otherwise, -1 returned 
+with errno set.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:38723:38724">
+EINVAL: the sem argument is not valid semaphore.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:38725:38726">
+EBUSY: there are currently processes blocked on the semaphore.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:38714:38715">
+The effect of calling sem_destroy on named semaphore is undefined.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:38718:38718">
+The effect of destroying a semaphore upon which other threads are
+currently blocked is undefined.
+  </assertion>
+</assertions>

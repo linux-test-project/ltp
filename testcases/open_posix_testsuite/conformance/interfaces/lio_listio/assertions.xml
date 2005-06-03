@@ -1,0 +1,106 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6TC2:23043:23044">
+	If mode is LIO_WAIT, lio_listio() shall wait until all I/O is
+	complete and the sig argument shall be ignored.
+	</assertion>
+	<assertion id="2" tag="ref:XSH6TC2:23045:23045">
+	If mode is LIO_NOWAIT, lio_listio() shall return immediately.
+	</assertion>
+	<assertion id="3" tag="ref:XSH6TC2:23046:23049">
+	If mode is LIO_NOWAIT, and sig is not NULL, asynchronous notification
+	shall occurs when all I/O operations complete.
+	</assertion>
+	<assertion id="4" tag="ref:XSH6TC2:23052:23052">
+	The list array may contain NULL elements which shall be ignored.
+	</assertion>
+	<assertion id="5" tag="ref:XSH6TC2:23059:23060">
+	supported operation for aio_lio_opcode shall be one of LIO_READ,
+	LIO_WRITE or LIO_NOP.
+	</assertion>
+	<assertion id="6" tag="ref:XSH6TC2:23060:23061">
+	LIO_READ, LIO_WRITE and LIO_NOP are defined in &lt;aio.h&gt;.
+	</assertion>
+	<assertion id="7" tag="ref:XSH6TC2:23061:23061">
+	LIO_NOP causes the entry to be ignored.
+	</assertion>
+	<assertion id="8" tag="ref:XSH6TC2:23061:23063">
+	LIO_READ causes the entry to be submited as if by a call to aio_read().
+	</assertion>
+	<assertion id="9" tag="ref:XSH6TC2:23063:23065">
+	LIO_WRITE causes the entry to be submited as if by a call to 
+	aio_write().
+	</assertion>
+	<assertion id="10" tag="ref:XSH6TC2:23083:23084">
+	if mode is LIO_NOWAIT, lio_listio() shall return the value zero if 
+	operation is successfuly queued.
+	</assertion>
+	<assertion id="11" tag="ref:XSH6TC2:23084:23085">
+	if mode is LIO_NOWAIT, lio_listio() shall return the value -1 and set 
+	errno to indicate error if the operation is not succesfully queued.
+	</assertion>
+	<assertion id="12" tag="ref:XSH6TC2:23086:23087">
+	if mode is LIO_WAIT, lio_listio() shall return the value zero when 
+	all I/O has completed successfully.
+	</assertion>
+	<assertion id="13" tag="ref:XSH6TC2:23084:23085">
+	if mode is LIO_WAIT, lio_listio() shall return the value -1 and set 
+	errno to indicate error if all operation has not successfully
+	completed.
+	</assertion>
+	<assertion id="14" tag="ref:XSH6TC2:23091:23092">
+	Failure of an individual request does not prevend completion of any 
+	other individual request.
+	</assertion>
+	<assertion id="15" tag="ref:XSH6TC2:23093:23094">
+	The error statuses returned are identical to those returned as the 
+	result of an aio_read() or aio_write().
+	</assertion>
+	<assertion id="16" tag="ref:XSH6TC2:23097:23094">
+	lio_listio() shall fail if:
+	[EAGAIN] The resource necessary to queue all the I/O request were not
+	available.
+	</assertion>
+	<assertion id="17" tag="ref:XSH6TC2:23100:23101">
+	lio_listio() shall fail if:
+	[EAGAIN] the number of entries indicated by nent would cause the 
+	system-wide limit {AIO_MAX} to be exceeded.
+	</assertion>
+	<assertion id="18" tag="ref:XSH6TC2:23102:23103">
+	lio_listio() shall fail if:
+	[EINVAL] mode is not LIO_NOWAIT or LIO_WAIT, or nent is greater than
+	{AIO_LISTIO_MAX}
+	</assertion>
+	<assertion id="19" tag="ref:XSH6TC2:23104:23104">
+	[EINTR] A signal was delivered while waiting for all I/O requests
+	to complete during an LIO_WAIT operation.
+	</assertion>
+	<assertion id="20" tag="ref:XSH6TC2:23116:23117">
+	if lio_listio() fails with an error other than [EAGAIN], [EINTR] or
+	[EIO] no operations from the list shall be initiated.
+	</assertion>
+	<assertion id="21" tag="ref:XSH6TC2:23122:23122">
+	The error status of the operation shall be:
+	[EAGAIN] The requested I/O was not queued due to resource limitations.
+	</assertion>
+	<assertion id="22" tag="ref:XSH6TC2:23123:23124">
+	The error status of the operation shall be:
+	[ECANCELED] The requested I/O was canceled before the I/O completed
+	due to an explicit aio_cancel() request.
+	</assertion>
+	<assertion id="23" tag="ref:XSH6TC2:23125:23128">
+	The error status of the operation shall be:
+	[EFBIG] aio_lio_opcode is LIO_WRITE, aio_nbytes is greater than 0,
+	and aio_offset is before the EOF and is greater or equal to the offset
+	maximum associated with aio_fildes.
+	</assertion>
+	<assertion id="24" tag="ref:XSH6TC2:23129:23129">
+	The error status of the operation shall be:
+	[EINPROGRESS] The requested I/O is in progress
+	</assertion>
+	<assertion id="25" tag="ref:XSH6TC2:23130:23133">
+	The error status of the operation shall be:
+	[EOVERFLOW] aio_lio_opcode is LIO_READ, aio_nbytes is greater than 0,
+	and aio_offset is before the EOF and is greater or equal to the offset
+	maximum associated with aio_fildes.
+	</assertion>
+</assertions>

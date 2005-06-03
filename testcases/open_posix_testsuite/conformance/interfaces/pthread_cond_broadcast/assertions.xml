@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32242:32243">
+  The function
+    int pthread_cond_broadcast(pthread_cond_t *cond);
+  shall unblock all threads currently blocked on the specified condition 
+  variable cond.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32247:32250">
+  When each thread unblocked as a result of a
+  pthread_cond_broadcast() returns from its call to pthread_cond_wait() or
+  pthread_cond_timedwait(), the thread shall own the mutex with which it called
+  pthread_cond_wait() or pthread_cond_timedwait().
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:32258:32259">
+  The pthread_cond_broadcast() functions shall have no effect if there are
+  no threads currently blocked on cond.
+  </assertion> 
+
+  <assertion id="4" tag="ref:XSH6:32261:32261">
+  If successful, the pthread_cond_broadcast() function shall return zero;
+  </assertion> 
+
+  <assertion id="5" tag="ref:XSH6:32264:32266">
+  The pthread_cond_broadcast() function may fail if:
+  [EINVAL] The value cond does not refer to an initialized condition variable.
+  These functions shall not return an error code of [EINTR].
+  </assertion> 
+
+</assertions>

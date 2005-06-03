@@ -1,0 +1,34 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6TC2:40112:40112">
+sem_unlink shall remove the created named semaphore and return zero on
+success.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6TC2:40114:40116">
+Destruction of the semaphore is postponed until all process which were using the semaphore have called sem_close, _exit or exec.
+</assertion>
+<assertion id="3" tag="ref:XSH6TC2:40126:40126">
+The function returns -1 and sets errno to EACCESS when the process has 
+insufficient priviledge to unlink the semaphore.
+</assertion>
+  <assertion id="4" tag="ref:XSH6TC2:40130:40130">
+ERROR: ENOENT: Trying to unlink a named semaphore which doesn't exist. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH6TC2:40127:40129">
+ERROR: ENAMETOOLONG: The semaphore name length is greater than PATH_MAX or 
+a patch component length is greater than NAME_MAX.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:39105:39106">
+Calls to sem_open to recreate/reconnect the semaphore actually refer to a new
+semaphore after sem_unlink has been called.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:39107:39108">
+Calls to sem_unlink are not blocking.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:39110:39112">
+Calls to sem_unlink should return 0 on success and -1 on failure.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6TC2:40112:40114">
+When the semaphore is referenced by other processes, the function has no
+effect on the state of the semaphore.
+  </assertion>
+</assertions>

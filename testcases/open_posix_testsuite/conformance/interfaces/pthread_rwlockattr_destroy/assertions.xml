@@ -1,0 +1,19 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35098:35099">
+  The function
+    int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr)
+  destroys a read write attributes objects.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:35098:35099">
+  A destroyed 'attr' attributes object can be reinitialized using 
+  pthread_rwlockattr_init();
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:35110:35111">
+  If success, it returns 0.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:35113:35117">
+  An error number may be returned if:
+  [EINVAL]  The value specified by 'attr' is invalid
+  This function shall not return an error ecode of [EINTR]
+  </assertion>
+</assertions>

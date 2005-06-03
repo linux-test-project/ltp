@@ -1,0 +1,14 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41954:41954 pt:XSI">
+The sigrelse () function removes a signal sig from the signal mask of 
+the calling process.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41970:41971 pt:XSI">
+sigrelse will return 0 upon successful completion.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41973:41974 pt:XSI">
+If the function is passed an illegal signal number, then errno will be set 
+to [EINVAL], and sigrelse() will 
+return -1.
+  </assertion>
+</assertions>

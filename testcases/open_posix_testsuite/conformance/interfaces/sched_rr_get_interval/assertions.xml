@@ -1,0 +1,17 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_rr_get_interval:DESCRIPTION}">
+   When pid = 0, the current execution time limit is returned for the calling process
+  </assertion>	
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_rr_get_interval:RETURN VALUE}">
+   sched_rr_get_interval() returns 0 on success
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_rr_get_interval:RETURN VALUE}">
+   sched_rr_get_interval() returns -1 on failure
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:sched_rr_get_interval:ERRORS}">
+   sched_rr_get_interval() sets errno == ESRCH if the pid cannot be found
+  </assertion>
+  <assertion id="5" tag="oth:">
+   sched_rr_get_interval() returns an error if *interval argument points to NULL
+  </assertion>		
+</assertions>

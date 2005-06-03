@@ -1,0 +1,32 @@
+<assertions>
+  <assertion id="1" tag="pt:MSG ct:B:9674:9681">
+A valid mq_attr structure is defined.
+  </assertion>
+  <assertion id="2" tag="pt:MSG">
+A valid mq_close function is defined.
+  </assertion>
+  <assertion id="3" tag="pt:MSG">
+A valid mq_getattr function is defined.
+  </assertion>
+  <assertion id="4" tag="pt:MSG">
+A valid mq_notify function is defined.
+  </assertion>
+  <assertion id="5" tag="pt:MSG">
+A valid mq_open function is defined.
+  </assertion>
+  <assertion id="6" tag="pt:MSG">
+A valid mq_receive function is defined.
+  </assertion>
+  <assertion id="7" tag="pt:MSG">
+A valid mq_send function is defined.
+  </assertion>
+  <assertion id="8" tag="pt:MSG">
+A valid mq_setattr function is defined.
+  </assertion>
+  <assertion id="9" tag="pt:MSG">
+A valid mq_timedreceive function is defined.
+  </assertion>
+  <assertion id="10" tag="pt:MSG">
+A valid mq_timedsend function is defined.
+  </assertion>
+</assertions>

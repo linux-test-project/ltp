@@ -1,0 +1,75 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34360:34361">
+   The function
+
+   int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *restrict attr, 
+	int *restrict protocol);
+
+  Gets the protocol attribute of a mutexattr object (which was prev. created
+  by the function pthread_mutexattr_init()).
+  </assertion>  
+  <assertion id="2" tag="ref:XSH6:34402:34405">
+  Upon success, it returns 0.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34406:34412">
+  It MAY fail if:
+
+  [EINVAL] - 'attr' or 'protocol' is invalid.
+  [EPERM] - The caller doesn't have the privilege to perform the operation.
+
+  Shall not return error code of [EINTR].
+  </assertion>
+
+  <assertion id="4" tag="ref:XSH6:34376:34377">
+	When a thread owns a mutex with the PTHREAD_PRIO_NONE protocol attribute, 
+	its priority and scheduling shall not be affected by its mutex ownership.
+  </assertion>
+
+  <assertion id="5" tag="ref:XSH6:34378:34381">
+	When a thread is blocking higher priority threads because of owning one or 
+	more mutexes with the PTHREAD_PRIO_INHERIT protocol attribute, it shall 
+	execute at the higher of its priority or the priority of the highest priority 
+	thread waiting on any of the mutexes owned by this thread and initialized 
+	with this protocol.
+  </assertion>
+
+  <assertion id="6" tag="ref:XSH6:34382:34385">
+	When a thread owns one or more mutexes initialized with the PTHREAD_PRIO_PROTECT
+	protocol, it shall execute at the higher of its priority or the highest of the 
+	priority ceilings of all the mutexes owned by this thread and initialized with 
+	this attribute, regardless of whether other threads are blocked on any of these 
+	mutexes or not.
+  </assertion>
+	
+ 
+  <assertion id="7" tag="ref:XSH6:34386:34392">
+	While a thread is holding a mutex which has been initialized with the
+	PTHREAD_PRIO_INHERIT or PTHREAD_PRIO_PROTECT protocol attributes, it shall 
+	not be	subject to being moved to the tail of the scheduling queue at its 
+	priority in the event that its original priority is changed, such as by a call 
+	to sched_setparam( ). Likewise, when a thread unlocks a mutex that has been 
+	initialized with the PTHREAD_PRIO_INHERIT or PTHREAD_PRIO_PROTECT protocol 
+	attributes, it shall not be subject to being moved to the tail of the scheduling 
+	queue at its priority in the event that its original priority is changed. 
+  </assertion>
+	
+
+  <assertion id="8" tag="ref:XSH6:34393:34394">
+	If a thread simultaneously owns several mutexes initialized with different 
+	protocols, it shall execute at the highest of the priorities that it would 
+	have obtained by each of these protocols.
+  </assertion>
+
+  
+  <assertion id="9" tag="ref:XSH6:34395:34401">
+	When a thread makes a call to pthread_mutex_lock( ), the mutex was initialized 
+	with the protocol attribute having the value PTHREAD_PRIO_INHERIT, when the 
+	calling thread is blocked because the mutex is owned by another thread, that 
+	owner thread shall inherit the priority level of the calling thread as long as 
+	it continues to own the mutex. The implementation shall update its execution 
+	priority to the maximum of its assigned priority and all its inherited priorities.
+	Furthermore, if this owner thread itself becomes blocked on another mutex, 
+	the same priority inheritance effect shall be propagated to this other owner 
+	thread, in a recursive manner
+ </assertion>
+</assertions> 

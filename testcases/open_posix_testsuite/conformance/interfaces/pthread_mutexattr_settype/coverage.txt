@@ -1,0 +1,13 @@
+This document defines the coverage for the pthread_mutexattr_settype function:
+
+Assertion	Tested?
+1		YES
+2               YES
+3		YES
+4		NO  **Removed, since duplicate with assertion
+                    **in pthread_mutex_lock:4 and pthread_mutex_unlock:5
+5		NO  **Will not test because all behavior is undefined.
+6		YES
+7 		YES
+
+NOTE:

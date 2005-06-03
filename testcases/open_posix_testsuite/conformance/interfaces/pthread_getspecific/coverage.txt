@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_getspecific function:
+
+Assertion	Tested?
+1		YES
+2		NO *Will not test
+3		YES
+
+NOTE:

@@ -1,0 +1,20 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32718:32722">
+   The function
+    int pthread_condattr_setclock(pthread_condattr_t *attr, clockid_t clock_id);
+   shall set the 'clock' attribute in an initialized attributes object referenced by 
+   'attr'. 
+   If it is called with a clock_id argument that refers to a CPU-time clock, the call
+   shall fail.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32729:32737">
+  It returns 0 upon success, and an error code if it fails:
+
+  It may fail if:
+
+  [EINVAL] - the 'attr' value is invalid
+  [EINVAL] - 'clock_id' doesn't refer to a known clock or is a CPU-time clock.
+  
+  </assertion>
+</assertions>

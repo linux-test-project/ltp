@@ -1,0 +1,10 @@
+This document defines the coverage for the pthread_attr_setschedparam function:
+
+Assertion	Tested?
+1	        YES	
+2		YES
+3		YES ** Keeping in mind it 'may' fail and not 'shall' fail,
+		      so it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+		    ** EINTR NOT tested
+NOTE:

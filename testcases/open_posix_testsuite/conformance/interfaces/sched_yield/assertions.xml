@@ -1,0 +1,12 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_yield:DESCRIPTION}">
+   The sched_yield() function shall force the running thread to relinquish the
+   processor until it again becomes the head of its thread list. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_yield:RETURN VALUE}">
+   sched_yield() returns 0 on success
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_yield:RETURN VALUE}">
+   sched_yield() returns -1 on failure
+  </assertion>
+</assertions>

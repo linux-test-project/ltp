@@ -1,0 +1,19 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41956:41957 pt:XSI">
+    The sigpause() function shall remove sig from the signal mask of 
+    the calling process and suspend the calling process until it
+    receives a signal
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41957:41958 pt:XSI">
+    The sigpause() function shall restore the signal
+    mask of the calling process to its original state before it returns.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41968:41969 pt:XSI">
+    Execution shall be suspended by sigpause() function until 
+    a signal is received, after which it shall return -1 and set errno to 
+    [EINTR].
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41974:41974 pt:XSI">
+    If the sig argument is an illegal signal number, then errno will be set to [EINVAL].
+  </assertion>
+</assertions>

@@ -1,0 +1,16 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:32048:32049">
+   The function
+
+   void pthread_cleanup_pop(int execute); 
+
+  Shall remove the routine at the top of the calling thread's cancelation cleanup stack and
+  optionally invoke it (if execute is non-zero).
+
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:32066:32069">
+  It will not return a value, or an error code of [EINTR]
+  </assertion>
+
+</assertions>

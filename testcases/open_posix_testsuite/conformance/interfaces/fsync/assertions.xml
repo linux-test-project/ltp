@@ -1,0 +1,51 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:14784:14786">
+  The fsync( ) function shall request that all data for the open file descriptor named by 
+  fildes is to be transferred to the storage device associated with the file described by 
+  fildes in an implementation-defined manner. 
+  </assertion>
+  
+   <assertion id="2" tag="ref:XSH6:14786:14787">
+  The fsync( ) function shall not return until the system has
+  completed that action or until an error is detected. 
+    </assertion>
+
+   <assertion id="3" tag="ref:XSH6:14788:14791">
+   SIO If _POSIX_SYNCHRONIZED_IO is defined, the fsync( ) function shall force all currently 
+   queuee I/O operations associated with the file indicated by file descriptor fildes to the 
+   synchronized I/O completion state. All I/O operations shall be completed as defined for 
+   synchronized I/O file integrity completion.
+     </assertion>
+  
+   <assertion id="4" tag="ref:XSH6:14793:14787">
+   Upon successful completion, fsync( ) shall return 0. Otherwise, .1 shall be returned and 
+   errno set to indicate the error. If the fsync( ) function fails, outstanding I/O operations 
+   are not guaranteed to have been completed.
+     </assertion>
+     
+   <assertion id="5" tag="ref:XSH6:14797:14798">
+   The fsync( ) function shall fail if:
+   [EBADF] The fildes argument is not a valid descriptor.
+     </assertion>
+     
+   <assertion id="6" tag="ref:XSH6:14797:14799">
+   The fsync( ) function shall fail if:
+   [EINTR] The fsync( ) function was interrupted by a signal.
+     </assertion>
+     
+   <assertion id="7" tag="ref:XSH6:1497:14800">
+    The fsync( ) function shall fail if:
+    [EINVAL] The fildes argument does not refer to a file on which this operation is possible.   
+    </assertion>
+        
+   <assertion id="8" tag="ref:XSH6:14797:14801">
+   The fsync( ) function shall fail if:
+   [EIO] An I/O error occurred while reading from or writing to the file system.
+    </assertion>
+ 
+    <assertion id="9" tag="ref:XSH6:14797:14803">   
+    In the event that any of the queued I/O operations fail, fsync( ) shall return the error 
+    conditions defined for read( ) and write( ).
+   </assertion>
+</assertions>
+

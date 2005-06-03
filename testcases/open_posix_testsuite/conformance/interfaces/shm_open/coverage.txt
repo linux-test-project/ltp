@@ -1,0 +1,51 @@
+This document explains why certain assertions were not tested.
+
+Assertions not listed here should be covered by the tests in this directory.
+
+
+Assertions     Tested ?	   Remarks
+1	       YES
+2	       YES	   Implementation of file description not specified.
+3	       YES	   Unspecified.
+4	       YES
+5	       YES
+6	       YES	   Implementation defined.
+7	       YES	   Implementation defined.
+8	       YES
+9	       YES	   Implementation of file description not specified.
+10	       YES	   Unspecified.
+11	       YES
+12	       YES	   No error specified.
+13	       YES
+14	       YES
+15	       YES
+16	       YES
+17	       YES
+18	       YES
+19	       YES	   Unspecified.
+20	       YES
+21	       YES
+22	       YES	
+23	       YES	   The test never pass. For a conforming
+			   implementation, the test is unresolved.
+24	       YES	   Undefined.
+25	       YES
+26	       YES	   
+27	       YES	   Undefined.
+28	       YES
+29	       YES	   Unspecified, need to reboot.
+30	       YES
+31	       YES
+32	       YES
+33	       NO	   Not easy to test. It is somewhat implementation
+specific.
+34	       YES
+35	       YES
+36	       YES
+37	       YES
+38	       YES
+39	       YES
+40	       NO	   Cannot find a proper way to test.
+41	       YES
+42	       YES
+

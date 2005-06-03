@@ -1,0 +1,52 @@
+<assertions>
+  <assertion id="1" tag="def:S:42626:42627 pt:CX">
+The sigwait() function shall select a pending signal from 'set', automatically
+clear it from the system's pending signals, and return that signal number in 
+the location represendted by 'sig'.
+  </assertion>
+  <assertion id="2" tag="def:S:42627:42632 pt:CX">
+If prior to the call to sigwait() there are multiple pending instances of a 
+single signal number (and it is implementation-defined that the signal number 
+supports queued signals), then the first such queued signal shall cause a 
+return from sigwait() and the remainder shall remain queued.
+  </assertion>
+  <assertion id="3" tag="def:S:42627:42632 pt:CX">
+If prior to the call to sigwait() there are multiple pending instances of a 
+single signal number (and it is implementation-defined that the signal number 
+DOES NOT support queued signals), then there should be no remaining pending
+signals for that signal number.
+  </assertion>
+  <assertion id="4" tag="def:S:42632:42633 pt:CX">
+If no signal in 'set' is pending at the time of the call, the thread shall
+be suspended until one or more becomes pending.
+  </assertion>
+  <assertion id="5" tag="def:S:42633:42635 pt:CX">
+The signals defined by 'set' should have been blocked at the time of the call
+to sigwait(); otherwise the behavior is undefined.  The effect of sigwait() on 
+the signal actions for the signals in 'set' is unspecified.
+  </assertion>
+  <assertion id="6" tag="def:S:42636:42638 pt:CX">
+If more than one thread is using sigwait() to wait for the same signal, no more
+than one of these threads shall return from sigwait() with the signal number.
+Which thread returns from sigwait() is unspecified if the signal is generated 
+for the process; otherwise only the target thread of the signal can receive the 
+signal.
+  </assertion>
+  <assertion id="7" tag="def:S:42639:42641 pt:RTS">
+Should any of the multiple pending signals in the range SIGRTMIN to SIGRTMAX be
+selected, it shall be the lowest numbered one.  The selection order between real
+time and non-realtime signals, or between multiple pending non-realtime signals is unspecified.
+  </assertion>
+  <assertion id="8" tag="def:S:42642:42645 pt:CX">
+Upon successful completion, sigwait() shall store the signal number of the 
+received signal at the location referenced by 'sig' and return zero.
+  </assertion>
+  <assertion id="9" tag="def:S:42642:42645 pt:CX">
+Upon unsuccess, sigwait() will return with a non-zero error number to indicate 
+the error.
+  </assertion>
+  <assertion id="10" tag="def:S:42646:42648 pt:CX">
+The sigwait() function fails if the 'set' argument contains an invalid
+or unsupported signal number.
+  </assertion>
+</assertions>

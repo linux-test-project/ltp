@@ -1,0 +1,13 @@
+This document defines the coverage for the pthread_once function:
+
+Assertion	Tested?
+1		YES
+2		NO
+3		YES
+4		YES
+5		NO
+6		NO ** Keeping in mind it 'may' fail and not 'shall' fail,
+		      so it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+
+NOTE:

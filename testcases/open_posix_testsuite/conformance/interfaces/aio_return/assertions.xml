@@ -1,0 +1,17 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6TC2:4220:4221">
+	aio_return() shall return the status associated with aiocbp.
+	</assertion>
+	<assertion id="2" tag="ref:XSH6TC2:4224:4226">
+	aio_return() may be called exactly once to retrieve the return status.
+	</assertion>
+	<assertion id="3" tag="ref:XSH6TC2:4226:4228">
+	If the aiocbp is used to submit another asynchronous operation,
+	then aio_return may be successfully used to retrieve the return status.
+	</assertion>
+	<assertion id="4" tag="ref:XSH6TC2:4235:4236">
+	aio_return() may fail with EINVAL]:
+        if the aiocbp does not refer to an operation whose return status 
+	has not yet been retrieved.
+	</assertion>
+</assertions>

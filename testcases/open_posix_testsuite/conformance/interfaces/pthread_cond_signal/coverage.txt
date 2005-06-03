@@ -1,0 +1,11 @@
+This document defines the coverage for the pthread_cond_signal function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		NO  
+4		YES
+5		NO  * When it specifies it 'may' fail and not 'shall' fail,
+		      it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+NOTE:

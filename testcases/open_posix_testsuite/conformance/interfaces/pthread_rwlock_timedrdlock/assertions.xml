@@ -1,0 +1,50 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34849:34852">
+   	The function shall apply a read lock to the read-write lock referenced by
+   	rwlock as in the pthread_rwlock_rdlock(). However, if the lock cannot be
+   	acquired wither out waiting for other threads to unlock the lock, this wait
+   	shall be terminated when the specified timeout expires.
+  </assertion> 
+
+  <assertion id="2" tag="ref:XSH6:34852:34855">
+	The timeout shall expire when the absolute time specified by abs_timeout passes, 
+	as measured by the clock on which timeouts are based (that is, when the
+	value of that clock equals or exceeds abs_timeout), or if the absolute time 
+	specified by abs_timeout has already been passed at the time of the call.
+  </assertion> 
+
+  <assertion id="3" tag="ref:XSH6:34856:34856">
+ 	If the Timers option is supported, the timeout shall be based on the 
+	CLOCK_REALTIME clock.
+  </assertion> 
+  
+  <assertion id="4" tag="ref:XSH6:34856:34859">
+	If the Timers option is not supported, the timeout shall be based on the 
+	system clock as returned by the time( ) function. The resolution of the timeout 
+	shall be the resolution of the clock on which it is based. The timespec data type 
+	is defined in the 'time.h' header.
+  </assertion> 
+  
+  <assertion id="5" tag="ref:XSH6:34859:34861">
+	Under no circumstances shall the function fail with a timeout if the lock can be 
+	acquired immediately. The abs_timeout parameter need not be checked if the lock 
+	can be immediately acquired.
+  </assertion>
+ 
+  <assertion id="6" tag="ref:XSH6:34862:34864">
+	If a signal that causes a signal handler to be executed is delivered to 
+	a thread blocked on a read-write lock via a call to pthread_rwlock_timedwrlock( ),
+	upon return from the signal handler the thread shall resume waiting for the lock 
+	as if it was not interrupted.
+  </assertion> 
+
+  <assertion id="7" tag="ref:XSH6:34868:34870">
+	Shall return zero if the lock for writing on the read-write lock object 
+	referenced by rwlock is acquired. Otherwise, an error number shall be returned
+	to indicate the error
+	pthread_rwlock_timedwrlock( ) function shall fail if:
+	[ETIMEDOUT] The lock could not be acquired before the specified timeout expired.
+	The function shall not return an error code of [EINTR].
+  </assertion> 
+
+</assertions>

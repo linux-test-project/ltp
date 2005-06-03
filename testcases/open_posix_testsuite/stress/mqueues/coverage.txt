@@ -1,0 +1,5 @@
+This file defines the coverage for Message Queue stress tests.  
+
+Assertion	Covered?
+1		YES
+2		YES

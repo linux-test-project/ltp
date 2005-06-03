@@ -1,0 +1,26 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:sched_getscheduler:DESCRIPTION}">
+   When pid = 0, the scheduling policy is returned for the calling process
+  </assertion>	
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:sched_getscheduler:DESCRIPTION}">
+   If pid is negative, the behavior is unspecified
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:sched_getscheduler:DESCRIPTION}">
+   The values that can be returned by sched_getscheduler() are defined in the 
+   sched.h header
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:sched_getscheduler:RETURN VALUE}">
+   sched_getscheduler() returns the scheduling policy of the specified process
+   on success
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:sched_getscheduler:RETURN VALUE}">
+   sched_getscheduler() returns -1 on failure
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:sched_getscheduler:ERRORS}">
+   sched_getscheduler() sets errno == ESRCH if the pid cannot be found
+  </assertion>		
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:sched_getscheduler:ERRORS}">
+   sched_getscheduler() sets errno == EPERM if the requesting process does not
+   have permission
+  </assertion>			
+</assertions>

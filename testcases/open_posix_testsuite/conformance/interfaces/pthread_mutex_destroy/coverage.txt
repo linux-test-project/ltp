@@ -1,0 +1,12 @@
+This document defines the coverage for the pthread_mutex_destroy function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		NO ** Keeping in mind it 'may' fail and not 'shall' fail,
+		      so it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+		   ** EBUSY is tested
+5		YES
+NOTE:

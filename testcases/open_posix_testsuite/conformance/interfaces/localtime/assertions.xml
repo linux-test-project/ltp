@@ -1,0 +1,7 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:23004:23037 pt:CX">
+  locatime function shall return a pointer to the tm structure when converting
+  a time value to a broken down local time.
+  </assertion>
+</assertions>
+

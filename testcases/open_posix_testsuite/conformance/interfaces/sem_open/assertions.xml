@@ -1,0 +1,63 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:38847:38852">
+   sem_open test cases make sure that it establish connection between the 
+   Semaphore and the process.  There are checks for return values of the 
+   address, increament, decrement, and close.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:38855:38874">
+   sem_open attempts to open an existing semaphore,
+   which it should fail when both O_CREAT and O_EXCL name exist during the 
+   opening of a Semaphore.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:38897:38899">
+   errno return EACCESS: sem_open exist and the permissions of Oflag are denied.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:38900:38901">
+   errno return EEXIST: sem_open exist and O_CREAT and O_EXCL are set.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:38902:38903">
+   errno return EINVAL: Create a semaphore with a value of SEM_VALUE_MAX.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:38902:38903">
+   errno return ENOENT: O_CREAT is not set and the semaphore doesn't exist.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:38906:38908">
+   errno return ENAMETOOLONG: This test case tries to creat a named semaphore
+   that is longer than max limit.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:38848:38850">
+   After sem_open() is called, the process can use the sem_t address returned
+   to reference teh semaphore in calls to sem_wait(), sem_trywait(), sem_post(),
+   and sem_close().
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:38851:38852">
+   Until sem_close(), _exit(), or exec*() is called, the semaphore can be used
+   in the process.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:38855:38856">
+  If O_CREAT is set and a semaphore already exists, O_CREAT has no effect.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:38855:38856">
+  If O_CREAT flag is used, sem_open has two additional args: mode_t which
+  sets the permission bits and unsigned value which sets the initial value
+  of the semaphore.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:38860:38861">
+  The initial value for the semaphore should be less than or equal to 
+  SEM_VALUE_MAX.  Any other initial value is invalid.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:38862:38864">
+  The effective user ID of the process == the user ID of the semaphore.  The
+  system default group ID of the effective group ID of the process == the
+  group ID of the semaphore.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6:38868:38870">
+  After sem_open has created semaphore "name", other process can use "name"
+  to connect to that semaphore.
+  </assertion>
+  <assertion id="15" tag="ref:XSH6TC2:39883:39886">
+If a process calls sem_open several times with the same name, the same adress
+must be returned as long as the semaphore has not been unlinked or closed as 
+many times as opened.
+  </assertion>
+</assertions>

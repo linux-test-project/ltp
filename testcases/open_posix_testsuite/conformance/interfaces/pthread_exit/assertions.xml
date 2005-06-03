@@ -1,0 +1,38 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33023:33024">
+   The function
+
+   void pthread_exit(void *value_ptr); 
+  
+  terminates the calling thread and makes the value 'value_ptr' available
+  to any successful join with the terminating thread. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:33024:33026">  
+  Any cancelation cleanup handlers that have been pushed and not yet popped
+  shall be popped and executed in the reverse order that they were pushed.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:33026:33028">
+  After all cancelation cleanup handlers have been executed, if the thread
+  has any thread-specific data, appriopriate destructor functions shall
+  be called in an unspecified order. 
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:33028:33030">
+  Thread termination does not release any application visible process 
+  resources include, but not limited to, mutexes and file descriptors, nor
+  does it perform any process-level cleanup actions, including but not
+  limited to, calling any atexit() routines that may exist.
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:33031:33033">
+  An implicit call to pthread_exit() is made when a thread other than the 
+  thread in which main() was first invoked returns from the start routine that
+  was used to create it.  The function's return value shall serve as the 
+  thread's exit status.
+  </assertion> 
+  <assertion id="6" tag="ref:XSH6:33040:33042">  
+  The process shall exit with an exit status of 0 after the last thread has
+  been terminated.  The behavior shall be as if the implemenation called exit()
+  with a zero argument at thread termination time.
+
+  The pthread_exit() function cannot return to its called.
+  </assertion> 
+</assertions>

@@ -1,0 +1,34 @@
+HOWTO Release a Package of the POSIX Test Suite
+===============================================
+
+This document describes the procedure for releasing files for the POSIX
+Test Suite.  These actions should be taken to verify the integrity of the
+released files.
+
+=======================================================================
+
+1.  Pull all code on the developer tag and tag with the release tag (See
+    the HOWTO_Tagging document for more information on how to do this.).
+
+2.  Create a posixtestsuite-<major>.<minor>.<rev>.tar.gz file containing
+    everything with the release tag.
+    Note:  Follow guidelines on:  
+    http://en.tldp.org/HOWTO/Software-Release-Practice-HOWTO/distpractice.html
+
+3.  Use the SF admin interface to add this file to the project.
+
+4.  Download the *.tar.gz file from the SF interface and untar it in
+    a sandbox.
+
+5.  Run "make" to try to build and execute all files in the release, and
+    ensure that they all build and execute correctly.
+
+6.  Craft a release message and send to:  posixtest-announce.
+
+7.  Send a copy of that release message to:  LKML, cc:  posixtest-discuss.
+    [This ensures discussions happen on the discuss mailing list, not
+    the announce mailing list.]
+
+8.  Update sourceforge homepage and project page with this information.
+
+9.  Update freshmeat.net with this information.

@@ -1,0 +1,48 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
+   The shm_unlink() function shall remove the name of the shared memory object
+   named by the string pointed to by name
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
+   If one or more references to the shared memory object exist when the object
+   is unlinked, the name shall be removed before shm_unlink() returns
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
+   If one or more references to the shared memory object exist when the object
+   is unlinked, the removal of the memory object contents shall be postponed
+   until all open and map references to the shared memory object have been
+   removed
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
+   Even if the object continues to exist after the last shm_unlink(), reuse of
+   the name shall subsequently cause shm_open() to fail if O_CREAT is not set
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:shm_unlink:DESCRIPTION}">
+   Even if the object continues to exist after the last shm_unlink(), reuse of
+   the name shall subsequently cause shm_open() to create a new shared memory
+   object if O_CREAT is set
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:shm_unlink:RETURN VALUE}">
+   Upon successful completion, the shm_unlink() function shall return zero
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:shm_unlink:RETURN VALUE}">
+   Upon unsuccessful completion, the shm_unlink() function shall return -1
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:shm_unlink:RETURN VALUE}">
+   If -1 is returned, the named shared memory object shall not be changed by
+   this function call
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:shm_unlink:ERRORS}">
+   The shm_unlink() function sets errno = EACCES if permission is denied to
+   unlink the named shared memory object 
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:shm_unlink:ERRORS}">
+   The shm_unlink() function sets errno = ENAMETOOLONG if the length of the
+   name argument exceeds PATH_MAX or a pathname component is longer than
+   NAME_MAX
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:shm_unlink:ERRORS}">
+   The shm_unlink() function sets errno = ENOENT if the named shared memory
+   object does not exist
+  </assertion>
+</assertions>

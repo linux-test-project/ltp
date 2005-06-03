@@ -1,0 +1,40 @@
+<assertions>
+
+  <assertion id="1" tag="ref:XSH6:33172:33182">
+  The pthread_getschedparam( ) function shall retrieve the scheduling 
+  policy and scheduling parameters for the thread whose thread ID is 
+  given by thread and shall store those values in
+  policy and param, respectively. The priority value returned from 
+  pthread_getschedparam( ) shall be
+  the value specified by the most recent pthread_setschedparam( ), 
+  pthread_setschedprio( ), or pthread_create( ) call affecting the 
+  target thread. It shall not reflect any temporary adjustments to
+  its priority as a result of any priority inheritance or ceiling functions. 
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:33189:33199">
+  TSP If _POSIX_THREAD_SPORADIC_SERVER is defined, then the policy argument may have the
+  value SCHED_SPORADIC, with the exception for the pthread_setschedparam( ) function 
+  that if the scheduling policy was not SCHED_SPORADIC at the time of the call, 
+  it is implementation-defined whether the function is supported; in other words, 
+  the implementation need not allow the application to dynamically change the 
+  scheduling policy to SCHED_SPORADIC. The sporadic server scheduling policy 
+  has the associated parameters sched_ss_low_priority, sched_ss_repl_period, 
+  sched_ss_init_budget, sched_priority, and sched_ss_max_repl. The specified
+  sched_ss_repl_period shall be greater than or equal to the specified 
+  sched_ss_init_budget for the function to succeed; if it is not, then the function 
+  shall fail. The value of sched_ss_max_repl shall be within the inclusive 
+  range [1,{SS_REPL_MAX}] for the function to succeed; if not, the function
+  shall fail.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:33203:33204">
+  If successful, the pthread_getschedparam( ) and pthread_setschedparam( ) 
+  functions shall return zero; otherwise, an error number shall be returned 
+  to indicate the error.
+  </assertion>
+  
+  <assertion id="4" tag="ref:XSH6TC2:34057:34057">
+  The function never returns EINTR.
+  </assertion>
+</assertions>

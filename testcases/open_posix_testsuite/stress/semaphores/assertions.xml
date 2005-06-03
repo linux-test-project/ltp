@@ -1,0 +1,6 @@
+<assertions>
+  <assertion id="1" tag="pt:SEM">
+  This is a test about multiple producers and consumers. Producers send data 
+  to a buffer. Consumers keeps reading data from the buffer.
+  </assertion>
+</assertions>

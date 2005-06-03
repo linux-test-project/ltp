@@ -1,0 +1,22 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:26031:26038 pt:MSG">
+The mq_setattr() will set attributes associated with the open message queue description referenced by the message queue descriptor specified by mqdes.
+The following members of mq_attr will be set to the specified value:
+  mq_flags is the bitwise-logical OR of zero or more of O_NONBLOCK an
+d any implementation-defined flags.
+  mq_maxmsg, mq_msgsize, and mq_curmsgs memebers of the mq_attr stru
+cture shall be ignored by mq_setattr().
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:26039:26041 pt:MSG">
+If omqstat is non-NULL, mq_setattr() will store the previous message queue attributes and the current queue status in the location referenced by omqstat. These values will be the same as would be returned by a call to mq_getattr() at that point.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:26043:26044 pt:MSG">
+If mq_setattr() is successful, it will return a value of zero and the attributes of the message queue will change as specified.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:26045:26046 pt:MSG">
+If mq_setattr() is not successful, the message queue attributes will be unchanged, and the function will return a value of -1 and set errno to indicate the error.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:26048:26049 pt:MSG">
+mq_setattr() fails with EBADF if mqdes argument is not a valid message descriptor.
+  </assertion>
+</assertions>

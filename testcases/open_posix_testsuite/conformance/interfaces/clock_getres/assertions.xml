@@ -1,0 +1,44 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:6588:6591">
+   clock_getres() returns the resolution of clock clock_id in res if res != NULL
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:6598:6599">
+   clock_getres() supports a clock_id of CLOCK_REALTIME
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:6615:6616 pt:MON">
+   clock_getres() supports a clock_id of CLOCK_MONOTONIC (if pt:MON)
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:6652:6652">
+   clock_getres() returns 0 on success
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:6652:6652">
+   clock_getres returns -1 on failure
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:6656:6656">
+   clock_getres() sets errno=EINVAL if clock_id does not refer to a known
+   clock
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:6633:6641">
+CPT If _POSIX_CPUTIME is defined, implementations shall support 
+clock ID values obtained by invoking clock_getcpuclockid( ), 
+which represent the CPU-time clock of a given process.
+Implementations shall also support the special clockid_t value
+CLOCK_PROCESS_CPUTIME_ID, which represents the CPU-time clock of 
+the calling process when invoking one of the clock_*( ) or timer_*( ) 
+functions. For these clock IDs, the values returned by 
+clock_gettime( ) and specified by clock_settime( ) represent 
+the amount of execution time of the process associated with the clock. 
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:6642:6650">
+If _POSIX_THREAD_CPUTIME is defined, implementations shall support 
+clock ID values obtained by invoking pthread_getcpuclockid( ), 
+which represent the CPU-time clock of a given
+thread. Implementations shall also support the special clockid_t value
+CLOCK_THREAD_CPUTIME_ID, which represents the CPU-time clock of the 
+calling thread when invoking one of the clock_*( ) or timer_*( ) 
+functions. For these clock IDs, the values
+returned by clock_gettime( ) and specified by clock_settime( ) 
+shall represent the amount of
+execution time of the thread associated with the clock. 
+  </assertion>
+</assertions>

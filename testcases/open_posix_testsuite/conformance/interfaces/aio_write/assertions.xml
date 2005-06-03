@@ -1,0 +1,59 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:4319:4321">
+	The aio_write() function shall write aio_nbytes to the files associated
+	with aio_fildes from the buffer pointer to by aio_buf.
+	</assertion>
+	<assertion id="2" tag="ref:XSH6TC2:4332:4337">
+	If O_APPEND is set for the file descripton, write operations append to
+	the file in the same order as the calls were made.
+	</assertion>
+	<assertion id="3" tag="ref:XSH6TC2:4338:4338">
+	aio_lio_opcode shall be ignored.
+	</assertion>
+	<assertion id="4" tag="ref:XSH6TC2:4345:4346">
+	For regular files, no data transfer shall occur past the offset
+	maximum established in the open file description associated with
+	aio_fildes.
+	</assertion>
+	<assertion id="5" tag="ref:XSH6TC2:4348:4349">
+	The aio_write() function shall return the value zero if operation is
+	successfuly queued.
+	</assertion>
+	<assertion id="6" tag="ref:XSH6TC2:4348:4349">
+	The aio_write() function shall return the value -1 and set errno to
+	indicate error if the operation is not succesfully queued.
+	</assertion>
+	<assertion id="7" tag="ref:XSH6TC2:4352:4353">
+	aio_write() shall fail with [EAGAIN] if:
+	The requested AIO operation was not queued to the system due to system
+	resource limitations.
+	</assertion>
+	<assertion id="8" tag="ref:XSH6TC2:4360:4360">
+	aio_write() shall fail or the error status of the operation shall be [EBADF] if:
+	aio_fildes argument is not a valid file descriptor open for writing.
+	</assertion>
+	<assertion id="9"  tag="ref:XSH6TC2:4361:4363">
+	aio_write() shall fail or the error status of the operation shall be [EINVAL] if:
+	aio_offset would be invalid, or aio_reqprio is not a valid value, or
+	aio_nbytes is an invalid value.
+	</assertion>
+	<assertion id="10" tag="ref:XSH6TC2:4369:4369">
+	The error status of a succesfully queued  operation shall be:
+	[EBADF] if the aio_fildes argument is not a valid file descriptor open for
+	writing.
+	</assertion>
+	<assertion id="11"  tag="ref:XSH6TC2:4370:4370">
+	The error status of a succesfully queued  operation shall be:
+	[EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
+	value, or aio_nbytes is an invalid value.
+	</assertion>
+	<assertion id="12" tag="ref:XSH6TC2:4371:4372">
+	The error status of a succesfully queued  operation shall be:
+	[ECANCELED] The requested I/O was canceled before the I/O completed.
+	</assertion>
+	<assertion id="13" tag="ref:XSH6TC2:4374:4376">
+	aio_write() shall fail or the error status of the operation shall be [EFBIG]:
+	if aio_nbytes is greater than 0 and aio_offset is at or beyond the
+	offset maximum of aio_fildes.
+	</assertion>
+</assertions>

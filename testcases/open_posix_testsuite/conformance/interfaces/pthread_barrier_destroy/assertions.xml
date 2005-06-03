@@ -1,0 +1,23 @@
+ <assertions>
+  <assertion id="1" tag="ref:XSH6:31763:31764">
+  The pthread_barrier_destroy( ) function shall destroy the barrier referenced by barrier and 
+  release any resources used by the barrier.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31789:31793">
+  The pthread_barrier_destroy( ) function may fail if:
+  [EBUSY] The implementation has detected an attempt to destroy a barrier while it is in
+  use (for example, while being used in a pthread_barrier_wait( ) call) by another
+  thread.
+  [EINVAL] The value specified by barrier is invalid.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:31786:31787">
+  Upon successful completion, these functions shall return zero; otherwise, an error number shall
+  be returned to indicate the error.
+
+  These functions shall not return an error code of EINTR.
+  </assertion>
+
+</assertions>
+

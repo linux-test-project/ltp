@@ -1,0 +1,12 @@
+This document defines the coverage for the pthread_join function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		NO ** Skipping for now.
+5		YES
+6		YES ** When it specifies 'may' fail and not 'shall' fail,
+		      it will always return PASS, but will return a 
+		      PASS and print out a warning if it fails.
+NOTE:

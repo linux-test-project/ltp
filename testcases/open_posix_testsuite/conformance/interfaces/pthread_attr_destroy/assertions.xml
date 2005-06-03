@@ -1,0 +1,19 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:31112:31113">
+   The function
+
+   int pthread_attr_destroy(pthread_attr_t *attr)
+   
+  destorys a thread attributes object.  An implementation may cause
+  pthread_attr_destroy() to set 'attr' to an implementation-defined invalid
+  value.  
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:31114:31115">
+  A destroyed 'attr' attributes object can be reinitialized using
+  pthread_attr_init(); undefined results referencing the object
+  after it has been destroyed.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:31123:31124">
+  If success, pthread_attr_destroy() shall return a 0.
+  </assertion>
+</assertions>

@@ -1,0 +1,40 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34694:34695">
+	pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, 
+	const pthread_rwlockattr_t *restrict attr);
+	
+	pthread_rwlock_init( ) function shall allocate any resources 
+	required to use the read-write lock referenced by rwlock and 
+	initializes the lock to an unlocked state with attributes referenced
+	by attr.
+  </assertion> 
+  <assertion id="2" tag="ref:XSH6:34696:34697">
+	If attr is NULL, the default read-write lock attributes shall be used; 
+	the effect is the same as passing the address of a default read-write 
+	lock attributes object.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34697:34698">
+	Once initialized, the lock can be used any number of times without being 
+	reinitialized.
+  </assertion> 
+  
+  <assertion id="4" tag="ref:XSH6:34708:34709">
+	If successful, the pthread_rwlock_init( ) function shall return zero;
+	otherwise, an error number shall be returned to indicate the error.
+  </assertion> 
+
+  <assertion id="5" tag="ref:XSH6:34718:34722">
+  ptread_rwlock_init( ) function shall fail if:
+  [EAGAIN] The system lacked the necessary resources (other than memory) to initialize
+  another read-write lock.
+  [ENOMEM] Insufficient memory exists to initialize the read-write lock.
+  [EPERM] The caller does not have the privilege to perform the operation.
+  </assertion> 
+  <assertion id="6" tag="ref:XSH6:34723:34728">
+  pthread_rwlock_init( ) may fail if:
+	[EBUSY] The implementation has detected an attempt to reinitialize the object
+	referenced by rwlock, a previously initialized but not yet destroyed read-write
+	lock.
+	[EINVAL] The value specified by attr is invalid.
+  </assertion>
+</assertions>

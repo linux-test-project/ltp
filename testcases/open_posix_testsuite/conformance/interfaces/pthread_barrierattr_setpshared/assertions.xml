@@ -1,0 +1,23 @@
+<assertions>
+  
+  <assertion id="1" tag="ref:XSH6:31925:31926">
+  The pthread_barrierattr_setpshared( ) function shall
+  set the process-shared attribute in an initialized attributes object referenced by attr.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:31946:31948">
+  The pthread_barrierattr_setpshared( ) function may fail if:
+
+  [EINVAL] The new value specified for the process-shared attribute is not one of the legal
+  values PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE.
+
+  These functions shall not return an error code of [EINTR].
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:31941:31942">  
+  If successful, the pthread_barrierattr_setpshared( ) function shall return zero; otherwise, 
+  an error number shall be returned to indicate the error.
+  </assertion>
+  
+</assertions>
+

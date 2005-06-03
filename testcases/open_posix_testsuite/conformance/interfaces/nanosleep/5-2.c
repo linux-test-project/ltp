@@ -1,0 +1,83 @@
+/*   
+ * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this 
+ * source tree.
+
+ * Test that nanosleep() returns -1 if interrupted.
+ * Test by sending a signal to a child doing nanosleep().  If nanosleep
+ * returns -1, return success from the child.
+ */
+#include <stdio.h>
+#include <time.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include "posixtest.h"
+
+#define CHILDSUCCESS 1
+#define CHILDFAILURE 0
+
+void handler(int signo)
+{
+	printf("In handler\n");
+}
+
+
+int main(int argc, char *argv[])
+{
+	struct timespec tssleepfor, tsstorage;
+	int sleepsec = 30;
+	int pid;
+	struct sigaction act;
+
+	if ((pid = fork()) == 0) {
+		/* child here */
+
+		act.sa_handler=handler;
+		act.sa_flags=0;
+		if (sigemptyset(&act.sa_mask) == -1) {
+			perror("Error calling sigemptyset\n");
+			return CHILDFAILURE;
+		}
+		if (sigaction(SIGABRT, &act, 0) == -1) {
+			perror("Error calling sigaction\n");
+			return CHILDFAILURE;
+		}
+		tssleepfor.tv_sec=sleepsec;
+		tssleepfor.tv_nsec=0;
+		if (nanosleep(&tssleepfor, &tsstorage) == -1) {
+			return CHILDSUCCESS;
+		} else {
+			return CHILDFAILURE;
+		}
+
+		return CHILDFAILURE;
+	} else {
+		/* parent here */
+		int i;
+
+		sleep(1);
+
+		if (kill(pid, SIGABRT) != 0) {
+			printf("Could not raise signal being tested\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (wait(&i) == -1) {
+			perror("Error waiting for child to exit\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (WIFEXITED(i) && WEXITSTATUS(i)) {
+			printf("Test PASSED\n");
+			return PTS_PASS;
+		} else {
+			printf("Child did not exit normally.\n");
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		}
+	}
+	return PTS_UNRESOLVED;
+}

@@ -1,0 +1,25 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33250:33262">
+   The function
+    void *pthread_setspecific(pthread_key_t key)
+  shall acssociate a thread-specific value with a key obtained via a previouse call to 
+  pthread_key_create.  Different threads may bind different values to the same key.  
+  Calling pthread_setspecific with a key value not obtiained from pthread_key_create of after
+  the key has been deleted with pthread_key_delete is undefined.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:33263:33266">
+  pthread_setspecific may be called from a thread-specific data destructor function.
+  A call to pthread_getspecific() from a thread-specific data destructor routine may result
+  either in lost storage or in an infinite loop.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:33271:33273">
+  It returns 0 upon success, and an error number otherwise:
+
+  Shall fail if:
+  [ENOMEM] - Insufficient memory exists to associate the value with the key
+  May fail if:
+  [EINVAL] - The key value is invalid 
+  </assertion>
+</assertions>

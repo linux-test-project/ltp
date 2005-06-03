@@ -1,0 +1,19 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34447:34449">
+   The function
+
+   int pthread_mutexattr_getpshared(const pthread_mutexattr_t *restrict attr, 
+	int *restrict pshared);
+
+   It shall obtain the value of the process-shared attribute from 'attr'.
+  </assertion>  
+  <assertion id="2" tag="ref:XSH6:34460:34462">
+  Upon success, it returns 0, and stores the value of the process-shared attribute of 'attr'
+  into 'pshared'.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34467:34468">
+  It MAY fail if:
+
+  [EINVAL] - 'attr' is invalid.
+  </assertion>
+</assertions>

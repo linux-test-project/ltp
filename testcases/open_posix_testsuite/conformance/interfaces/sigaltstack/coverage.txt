@@ -1,0 +1,17 @@
+This file defines the coverage for the sigaltstack() function testing.
+
+Assertion	Status
+1		DONE
+2		DONE
+3		DONE
+4		IMPLICITLY tested by assertion 1.
+5		DONE
+6		DONE
+7		DONE
+8		DONE
+9		DONE
+10		DONE
+11		DONE
+12		DONE
+13		NOT YET
+

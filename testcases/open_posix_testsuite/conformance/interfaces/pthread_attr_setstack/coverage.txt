@@ -1,0 +1,15 @@
+This document defines the coverage for the pthread_attr_setstack function:
+
+Assertion	Tested?
+1		YES
+2		YES (The test uses a Non-POSIX-Compliant API 
+                     pthread_getattr_np to get attr in a created thread)
+3		YES
+4		YES
+5		YES
+6		YES
+7		YES
+8		NO
+9		won't test
+
+Note: 

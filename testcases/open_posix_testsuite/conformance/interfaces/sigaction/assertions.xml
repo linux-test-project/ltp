@@ -1,0 +1,145 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:41442:41443 pt:CX">
+If the argument "act" is not a null pointer, it points to a structure
+specifying the action to be associated with the specified signal.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:41443:41444 pt:CX">
+If the argument "oact" is not a null pointer, the action previously 
+associated with the signal is stored in the location pointed to by 
+the argument "oact".
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:41444:41445 pt:CX">
+If the argument "act" is a null pointer, signal handling is unchanged.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:41446:41447 pt:CX">
+The SIGKILL and SIGSTOP signals shall not be added to the signal mask
+using sigaction(), but will not result in sigaction reporting a failure.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:41449:41450 pt:CX">
+If the SA_SIGINFO flag is cleared in the sa_flags field of the sigaction 
+structure, the sa_handler field indentifies the action to be associated
+with the specified signal.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:41450:41453 pt:XSI,RTS">
+If the SA_SIGINFO flag is set in the sa_flags field, and the implementation 
+supports the Realtime Signals Extension option or the XSI Extension option,
+the sa_sigaction field specifies a signal catching function.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:41453:41455 pt:CX">
+If the SA_SIGINFO bit is cleared and the sa_handler field specifies a
+signal catching function, or if the SA_SIGINFO bit is set, the sa_mask
+field indentifies a set of signals that shall be added to the signal mask
+of the thread before the signal-catching function is invoked.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:41455:41458 pt:CX">
+If the sa_handler field specifies a signal-catching function, the sa_mask
+field indentifies a set of signals that shall be added to the process'
+signal mask before the signal-catching function is invoked.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:41461:41462 pt:CX">
+If the SA_NOCLDSTOP bit is set in the sa_flags field when calling sigaction
+on SIGCHLD, then the SIGCHLD signal will not be generated when children stop 
+or stopped children continue.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:41463:41466 pt:CX">
+If sig is SIGCHLD and the SA_NOCLDSTOP flag is not set in sa_flags, and the
+implementation supports the SIGCHLD signal, then a SIGCHLD signal shall be
+generated for the calling process whenever any of its child processes
+stop.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:41463:41465 pt:XSI">
+Not setting the SA_NOCLDSTOP flag on the SIGCHLD signal will result in a 
+SIGCHLD signal being generated for the parent process whenever any of it's 
+stopped children are continued.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:41470:41471 pt:XSI">
+If the SA_ONSTACK flag is set in sa_flags, and an alternate signal stack has 
+been declared with sigaltstack(), the signal shall be delivered to the calling 
+process on the stack.  Otherwise, the signal shall be delivered on the current 
+stack.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6:41471:41472 pt:XSI">
+If the SA_ONSTACK flag is not set in sa_flags, the signal shall be delivered
+on the current stack.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6TC2:42543:42550 pt:XSI">
+If the SA_RESETHAND flag is set in sa_flags, then the disposition of the signal
+shall be reset to SIG_DFL and the SA_SIGINFO flag shall be cleared on entry 
+to the signal handler. The routine behaves as if SA_NODEFER was also set.
+  </assertion>
+  <assertion id="15" tag="ref:XSH6:41477:41480 pt:XSI">
+If the SA_RESETHAND flag is not set in sa_flags, the disposition of the signal
+shall not be modified on entry to the signal handler.
+  </assertion>
+  <assertion id="16" tag="ref:XSH6:41481:41486 pt:XSI">
+Interruptable functions (functions specified to fail with errno set to [EINTR] 
+when interrupted by a signal) shall restart and shall not fail with [EINTR] 
+if the SA_RESTART flag is set in sa_flags.
+  </assertion>
+  <assertion id="17" tag="ref:XSH6:41481:41486 pt:CX">
+If the SA_RESTART flag is not set in sa_flags, then interruptable functions
+will fail with with errno set to [EINTR]. 
+  </assertion>
+  <assertion id="18" tag="ref:XSH6:41494:41495 pt:XSI">
+If the SA_SIGINFO flag is not set for a signal and the signal is caught then
+the signal-catching function shall be entered as "void func(int signo);".
+  </assertion>
+  <assertion id="19" tag="ref:XSH6:41487:41488 pt:CX">
+If the SA_SIGINFO flag is set for a signal and the signal is caught then
+the signal -catching function shall be entered as 
+"void func(int signo, siginfo_t *info, void *context);"
+  </assertion>
+  <assertion id="20" tag="ref:XSH6:41515:41522 pt:XSI">
+If the SA_NOCLDWAIT flag is set and sig equals SIGCHLD, then child processes
+of the calling process shall not be trasformed into zombie processes when
+they terminate.  
+  </assertion>
+  <assertion id="21" tag="ref:XSH6:41515:41522 pt:XSI">
+If a process has set the SA_NOCLDWAIT flag on SIGCHLD and subseqeunetly waits 
+for a its children, and the process has not unwaited-for children that were 
+trasformed into zombie processes, it shall block until all of its children 
+terminate, and wait(), waitid(), and waitpid() shall fail and set errno to 
+[ECHILD].
+  </assertion>
+  <assertion id="22" tag="ref:XSH6:41523:41526 pt:XSI">
+If the SA_NODEFER flag is set for a signal and the signal is caught, the signal
+shall not be added to the process' signal mask on entry to the signal handler
+unless it is included in sa_mask.
+  </assertion>
+  <assertion id="23" tag="ref:XSH6:41523:41526 pt:XSI">
+If the SA_NODEFER flag is not set for a signal and the signal is caught, the
+signal shall be added to the process' signal mask on entry to the signal
+handler.
+  </assertion>
+  <assertion id="24" tag="ref:XSH6:41527:41529 pt:CX">
+When a signal-catching function installed by sigaction() is entered, a new 
+signal mask is calculated and installed for the duration of the signal-catching
+function (or until a call to either sigprocmask() or sigsuspend() is made.)
+  </assertion>
+  <assertion id="25" tag="ref:XSH6:41527:41532 pt:CX">
+The new signal mask installed on entry to a signal-catching function installed
+by sigaction shall be calculated as the union of the current signal mask
+and the value of sa_mask for the signal being delivered (unless SA_NODEFER
+or SA_RESETHAND is set) and then including the signal being delivered.
+  </assertion>
+  <assertion id="26" tag="ref:XSH6:41527:41532 pt:CX">
+If and when the user's signal handler returns normally, the original signal 
+mask is restored.
+  </assertion>
+  <assertion id="27" tag="ref:XSH6:41541:41541 pt:CX">
+If sigaction fails, no new signal handler is installed.
+  </assertion>
+  <assertion id="28" tag="ref:XSH6TC2:42606:42610 pt:CX">
+If the signal action was set with the signal() function, getting it into oact
+then reinstalling it with act must be valid.
+  </assertion>
+  <assertion id="29" tag="ref:XSH6TC2:42616:42622 pt:RTS">
+If SA_SIGINFO is set and realtime signals extension is supported, queueable
+signals generated by sigqueue or some other functions are delivered in FIFO 
+order.
+  </assertion>
+  <assertion id="30" tag="ref:XSH6TC2:42630:42631 pt:CX">
+sigaction returns -1 and errno is set to EINVAL if signal number is invalid 
+or an attempt to do an operation which is not allowed is made.
+  </assertion>
+</assertions>

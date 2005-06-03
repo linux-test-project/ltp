@@ -1,0 +1,32 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33935:33935">
+  The function
+     int pthread_mutex_unlock(pthread_mutex_t *mutex);
+
+  releases the mutex object 'mutex'.
+  </assertion>
+  
+  <assertion id="2" tag="ref:XSH6:33936:33939">
+  If there are threads blocked on the mutex object referenced by 'mutex' when
+  pthread_mutex_unlock() is called, resulting in the mutex becoming available,
+  the scheduling policy shall determine which thread shall acquire the mutex.
+  </assertion>
+  
+  <assertion id="3" tag="ref:XSH6:33945:33945">
+  Upon success, it returns 0.
+  </assertion> 
+  
+  <assertion id="4" tag="ref:XSH6:33950:33965">
+  Upon failure, it may return:
+  -[EINVAL] 'mutex' does not refer to an initialized mutex object
+  -[EPERM]  The current thread does not own 'mutex'
+
+  It shall not return [EINTR].
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:33919:33929">
+  If the mutex type is PTHREAD_MUTEX_RECURSIVE:
+     1. If a thread attempts to unlock a mutex that it does not own
+     2. or an unlocked mutex, 
+  an error is returned.
+  </assertion> 
+</assertions>

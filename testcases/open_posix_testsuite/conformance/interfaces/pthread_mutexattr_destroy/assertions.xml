@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:34092:34094">
+  The function
+    int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)
+
+  destroys a mutex attributes object; the object becomes, in effect, 
+  uninitialized. An implementation may cause pthread_mutexattr_destroy()
+  to set the object referenced by 'attr' to an invalid value.
+  
+  *NOTE: What the last sentence states is implementation specific, thus 
+  it will not be covered.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:34094:34096">
+  A destroyed 'attr' attributes object can be reinitialized using 
+  pthread_mutexattr_init(); the results of referencing an 'attr'  object 
+  after it has been destroyed are undefined.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:34105:34105">
+  If success, it returns 0.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:34108:34109">
+  An error number may be returned if:
+
+  [EINVAL]  The value specified by 'attr' is invalid
+  </assertion>
+</assertions>

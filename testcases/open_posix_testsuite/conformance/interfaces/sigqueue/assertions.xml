@@ -1,0 +1,51 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:42290:42291 pt:RTS">
+        The signal specified by signo shall be sent with the value specified by value to the
+        process specified by pid, when the sigqueue( ) function is called.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:42291:42293 pt:RTS">
+        Error checking is performed but no signal is actually sent, if signo is zero (the null signal).
+        Using the null signal can be used to check the the validity of pid.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:42294:42295 pt:RTS">
+	For a process to have permission to queue a signal to another process
+	the conditions required are the same as for the kill( ) function.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:42296:42298 pt:RTS">
+        The signal shall be queued and sent to the receiving process, if SA_SIGINFO is set for signo and
+        if the resources were available to queue the signal.
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:42299:42300 pt:RTS">
+	signo shall be sent at least once to the receiving process, if SA_SIGINFO is not set for signo;
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:42301:42304 pt:RTS">
+	Either signo or at least the pending, unblocked signal shall be delivered to the calling thread before
+	the sigqueue( ) function returns, if the value of pid causes signo to be generated for the sending process,
+	and if signo is not blocked for the calling thread and if no other thread has signo unblocked or is waiting
+	in a sigwait( ) function for signo.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:42304:42305 pt:RTS">
+	The lowest numbered signal shall be selected for delivery, if there are any multiple pending signals in the
+	range SIGRTMIN to SIGRTMAX.
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:42309:42310 pt:RTS">
+	The specified signal shall have been queued, and the sigqueue( ) function shall return a value of zero,
+	upon successful completion.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:42314:42315 pt:RTS">
+	sigqueue() shall return a value of -1 and set errno to [EAGAIN] if no resources are available
+        to queue the signal. In other words, the process has already queued {SIGQUEUE_MAX} signals
+        that are still pending at the receiver(s), or a system-wide resource limit has been exceeded.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:42317:42317 pt:RTS">
+	sigqueue() shall return a value of -1 and set errno to [EINVAL] if the value of the signo
+        argument is an invalid or unsupported signal number.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:42318:42319 pt:RTS">
+	sigqueue() shall return a value of -1 and set errno to [EPERM] if the process does not have the 
+        appropriate privilege to send the signal to the receiving process.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:42320:42320 pt:RTS">
+	sigqueue() shall return a value of -1 and set errno to [ESRCH] if the process pid does not exist.
+  </assertion>
+</assertions>

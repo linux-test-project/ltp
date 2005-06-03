@@ -1,0 +1,29 @@
+RELEASE DATES:
+---------------
+
+-June 03, 2005 Version 1.5.1 Released
+PTS-1.5.1 has a plenty of AIO interface test additions and bug-fixes by Sebastien Decugis. Also there are a lot of bug fixes by other people. Thanks to Sebastien Decugis and other people for continued support and contributions.
+This release has been tested on glibc-2.3.3 and kernel 2.6.10 with libposix-aio-0.3. The test result for this release can be found here: http://posixtest.sourceforge.net/testpass/PTS_1.5.1-2.6.10-PAIO_ia32.htm 
+
+
+-December 17, 2004 Version 1.5.0 Released 
+A much anticipated release with plenty of interface test additions and bug-fixes. Added AIO test suite by Laurent Vivier. Special thanks to Sebastien Decugis and Ulrich Drepper for continued support and contributions. Also exciting news about OSDL and Bull integrating PTS into OSDL's Scalable Test Platform (STP).
+
+-July 06, 2004 Version 1.4.3 Released
+Here goes posixtest-1.3. Besides many bug fixes, this release includes new pthread test cases (conformance, functional, stress) by Sebastien Decugis and Abhijeet Bisain. Special thanks goes to people who made contributions. And we are glad that PTS is helping kernel, library and application developers and OSDs on their POSIX related work. Please see the release page for downloads and more information.
+
+-May 27, 2004 Version 1.4.2 Released
+Posixtestsuite-1.4.2 adds several pthread test cases by Sebastien Decugis. Also there are a lot of bug fixes by Ulrich Drepper and other people. This suite has been run on latest glibc and linux kernel 2.6.5. All the failed cases has been analyzed. Please see the release page for downloads and more information. 
+
+-May 01, 2004 Version 1.4.1 Released
+posixtestsuite-1.4.1 fixes a bunch of bugs in 1.4.0 version. This release has been tested on glibc-2004-04-29 cvs pull (NPTL enabled) and linux-2.6.5-mm6 kernel.It is noted that "POSIX Message Queues" has been integrated into linux kernel and glibc. Please see the release page for downloads and more information. The test result for this release can be found here: test results - PTS 1.4.1, Kernel 2.6.5-mm6, ia32 . 
+
+-April 15, 2004 Version 1.4.0 Released
+POSIX Test Suite 1.4.0 includes more pthread conformance test cases. Now we have test cases covering almost all pthread APIs. Conformance test cases for options like CPT, TCT, TMR are also added. There are also a lot of bug fixes made from the previous 1.3.0 version (thanks for Ulrich Drepper's patches and to everyone who made contributions). Please see the release page for downloads and more information. 
+
+-March 11, 2004 Test Pass Results - (CVS pull 3-04-04)
+POSIX Test Suite test pass results available for [CVS pull 3-04-04, Kernel 2.6.1, libc-2004-02-15 and message queue 4.17 patch on IA64 platform]. The results can be found here: test results - cvs 3-04-04, Kernel 2.6.1, ia64 . 
+
+-March 1, 2004 Test Pass Results - (CVS pull 2-20-04)
+POSIX Test Suite test pass results available for [CVS pull 2-20-04, Kernel 2.6.1, libc-2004-02-01 and message queue 4.17 patch on IA32 platform]. We are currently in the process of setting up a main test results page, but until then, the results can be found here: test results - cvs 2-20-04, Kernel 2.6.1 . 
+

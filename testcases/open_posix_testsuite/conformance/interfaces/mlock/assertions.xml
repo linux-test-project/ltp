@@ -1,0 +1,51 @@
+<assertions> 
+  <assertion id="1" tag="ref:XSH6:{System Interfaces:mlock:DESCRIPTION}">
+   The mlock() function shall cause those whole pages containing any part of
+   the address space of the process starting at address addr and continuing for
+   len bytes to be memory-resident until unlocked or until the process exits or
+   execs another process image
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:{System Interfaces:mlock:DESCRIPTION}">
+   The implementation may require that addr be a multiple of {PAGESIZE}
+  </assertion>
+  <assertion id="3" tag="ref:XSH6:{System Interfaces:mlock:DESCRIPTION}">
+   Upon successful return from mlock(), pages in the specified range shall be
+   locked and memory-resident
+  </assertion>
+  <assertion id="4" tag="ref:XSH6:{System Interfaces:mlock:DESCRIPTION}">
+   The appropriate privilege is required to lock process memory with mlock()
+  </assertion>
+  <assertion id="5" tag="ref:XSH6:{System Interfaces:mlock:RETURN VALUE}">
+   Upon successful completion, the mlock() function shall return a value of
+   zero
+  </assertion>
+  <assertion id="6" tag="ref:XSH6:{System Interfaces:mlock:RETURN VALUE}">
+   Upon unsuccessful completion, no change is made to any locks in the address
+   space of the process
+  </assertion>
+  <assertion id="7" tag="ref:XSH6:{System Interfaces:mlock:RETURN VALUE}">
+   Upon unsuccessful completion, the function shall return a value of -1
+  </assertion>
+  <assertion id="8" tag="ref:XSH6:{System Interfaces:mlock:ERRORS}">
+   The mlock() function shall set errno = ENOMEM if some or all of the address
+   range specified by the addr and len arguments does not correspond to valid
+   mapped pages in the address space of the process
+  </assertion>
+  <assertion id="9" tag="ref:XSH6:{System Interfaces:mlock:ERRORS}">
+   The mlock() function shall set errno = EAGAIN if some or all of the memory
+   identified by the operation could not be locked when the call was made
+  </assertion>
+  <assertion id="10" tag="ref:XSH6:{System Interfaces:mlock:ERRORS}">
+   The mlock() function may set errno = EINVAL if the addr argument is not a
+   multiple of {PAGESIZE}
+  </assertion>
+  <assertion id="11" tag="ref:XSH6:{System Interfaces:mlock:ERRORS}">
+   The mlock() function may set errno = ENOMEM if locking the pages mapped by
+   the specified range would exceed an implementation-defined limit on the
+   amount of memory that the process may lock
+  </assertion>
+  <assertion id="12" tag="ref:XSH6:{System Interfaces:mlock:ERRORS}">
+   The mlock() function may set errno = EPERM if the calling process does not
+   have the appropriate privilege to perform the requested operation
+  </assertion>
+</assertions>

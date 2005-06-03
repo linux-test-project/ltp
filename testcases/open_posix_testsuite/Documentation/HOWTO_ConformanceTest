@@ -1,0 +1,93 @@
+Conformance Test:  Definition and Structure
+===========================================
+
+This document describes what conformance tests are, how they are created,
+and the structure they follow in CVS.
+
+Conformance Test Definition
+---------------------------
+
+Conformance tests test conformance to the POSIX* specification.  They test
+both that the header files are correct and that the behavior defined in
+the specification is implemented.
+
+Directory Structure
+-------------------
+
+The directory structure for conformance tests is as follows.
+
+All tests are located in the conformance/ directory off of posixtestsuite/.
+
+Within this directory, there are the following three subdirectories:
+
+definitions/ - This directory contains tests for each *.h file in the POSIX 
+spec.  Tests are taken from the Base Definitions document.
+
+interfaces/ - This directory contains tests for each function listed in the 
+POSIX spec.  Tests are taken from the System Interfaces document.
+
+behavior/ - This directory contains tests from any document that do not 
+directly correlate to functions (as in interfaces/) or header files 
+(as in definitions/).
+
+The breakdown of these subdirectories is as follows:
+
+definitions/
+-----------
+The definitions/ directory contains one subdirectory per *.h file.  Each
+subdirectory should have the name *_h (i.e., the *.h file name with "_"
+replacing ".").
+
+interfaces/
+----------
+The interfaces directory contains one subdirectory per function listed
+in the System Interfaces document.
+
+behavior/
+--------
+This directory is broken down by functional area in a manner similar to
+functional and stress tests (see HOWTO_<TBD> - for now, see email discussions
+on functional/stress test structure).
+
+Writing Tests
+-------------
+
+Within each lowest level directory (definitions/*_h for definitions, 
+interfaces/<function> for interfaces, and behavior/<functional area> for
+behavior), an assertions.xml file is used to describe the tests, and tests
+have the structure M-N.c or M-N.sh.  More details are below.
+
+Speculative Tests
+-----------------
+Tests which the POSIX spec uses the words "may" or "implementation-defined"
+to define are considered speculative by PTS and are created in a
+speculative/ directory off of the functional area directory.  (For
+example, mq_timedsend/speculative.)
+These tests attempt to determine which of the implementation-defined
+alternatives the current implementation implements.  PTS_PASS is always
+returned if the test is able to finish.
+
+assertions.xml
+--------------
+This file contains a list of assertions to be tested, an ID for each
+assertion, and descriptive attributes to be used in categorizing
+assertions.  For more information on creating and using these files,
+see HOWTO_Assertions.
+
+Test Cases
+----------
+Test cases are numbered M-N.c or M-N.sh where M corresponds to the
+assertion ID of the assertion being tested, and N is an ID for the specific
+tests.  (ex.  assertion 8 may have test cases 8-1.c 8-2.c and 8-3.sh)
+Generally, *.sh scripts are only used when the test case is trivial.
+
+The following documents may be helpful in test case creation:
+
+- HOWTO_DefinitionsTest - describes how to create definitions tests
+- HOWTO_ResultCodes - describes the result codes test cases should return
+- HOWTO_BoundaryTest - describes how to create boundary tests for functions
+
+* POSIX (R) is a registered trademark of the IEEE
+
+Contributors:	rusty.lynch REMOVE-THIS AT intel DOT com
+		julie.n.fleischer REMOVE-THIS AT intel DOT com

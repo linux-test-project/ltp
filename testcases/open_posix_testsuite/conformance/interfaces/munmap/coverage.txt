@@ -1,0 +1,15 @@
+This document defines the coverage for the munmap() function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		YES
+5		NO **Not sure how to test whether certain page is locked
+6		NO ** Typed Memory object
+7		YES
+8		NO: ** Typed Memory object
+9		YES
+10		YES
+
+NOTE:

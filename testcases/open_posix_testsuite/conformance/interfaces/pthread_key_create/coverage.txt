@@ -1,0 +1,10 @@
+This document defines the coverage for the pthread_key_create function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		NO *Will not test
+5		NO *Will not test
+
+NOTE:

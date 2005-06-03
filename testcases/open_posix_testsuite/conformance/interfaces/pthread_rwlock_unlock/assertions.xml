@@ -1,0 +1,37 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35032:35033">
+  	pthread_rwlock_unlock( ) function shall release a lock held on the 
+	read-write lock objectreferenced by rwlock
+	If this function is called to release a read lock from the read-write lock object 
+	and there are other read locks currently held on this read-write lock object, 
+	the read-write lock object remains in the read locked state. 
+	If this function releases the last read lock for this read-write lock object, 
+	the read-write lock object shall be put in the unlocked state with no owners.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35039:35040">
+	If this function is called to release a write lock for this read-write 
+	lock object, the read-write lock object shall be put in the unlocked state.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35041:35046 pt:TPS">
+  	If there are threads blocked on the lock when it becomes available, 
+	the scheduling policy shall determine which thread(s) shall acquire the lock. 
+	If the Thread Execution Scheduling option is supported, when threads executing 
+	with the scheduling policies SCHED_FIFO, SCHED_RR, or SCHED_SPORADIC are waiting 
+	on the lock, they shall acquire the lock in priority order when the lock 
+	becomes available. For equal priority threads, write locks shall take precedence 
+	over read locks.
+  </assertion>
+
+  <assertion id="4" tag="ref:XSH6:35050:35051">
+	If successful, the pthread_rwlock_unlock( ) function shall return zero; 
+	otherwise, an error number shall be returned to indicate the error.
+
+	[EINVAL]  rwlock doesn't refer to an intialized read-write lock
+	[EPERM]  the current thread doesn't hold the lock on the rwlock
+
+	The pthread_rwlock_unlock( ) function shall not return an error code of [EINTR].
+  </assertion>
+	
+</assertions>

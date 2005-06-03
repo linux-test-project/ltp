@@ -1,0 +1,26 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35472:35473">
+	pthread_spin_destroy( ) function shall destroy the spin lock 
+	referenced by lock and release any resources used by the lock.
+  </assertion>
+
+  <assertion id="2" tag="ref:XSH6:35496:35507">
+	Upon successful completion, these functions shall return zero; 
+	otherwise, an error number shall be returned to indicate the error.
+  </assertion>
+
+  <assertion id="3" tag="ref:XSH6:35496:35507">
+
+	The functions may fail if:
+	[EBUSY] The implementation has detected an attempt to 
+	initialize or destroy a spin lock while it is in use 
+	(for example, while being used in a pthread_spin_lock( )
+	call) by another thread.
+	
+	[EINVAL] The value specified by lock is invalid.
+
+  	These functions shall not return an error code of EINTR.
+
+  </assertion>
+</assertions>
+

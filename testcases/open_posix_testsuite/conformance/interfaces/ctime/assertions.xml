@@ -1,0 +1,6 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6:7995:8020 pt:CX">
+The ctime function return value is not NULL after converting the time 
+value to a date and time string.
+	</assertion>
+</assertions>

@@ -1,0 +1,10 @@
+<assertions>
+  <assertion id="1" tag="pt:MSG" files="mqueues/multi_send_rev_1.c">
+  Test whether message queue can work correctly under lots of usage. 
+  Many threads sending/receiving on different message queues.
+  </assertion>
+  <assertion id="2" tag="pt:MSG" files="mqueues/multi_send_rev_2.c">
+  Test whether message queue can work correctly under lots of usage. 
+  Many threads sending/receiving on the same message queue.
+  </assertion>
+</assertions>

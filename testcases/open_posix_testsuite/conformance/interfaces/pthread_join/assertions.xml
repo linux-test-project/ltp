@@ -1,0 +1,40 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:33309:33310">
+   The function
+
+   int pthread_join(pthread_t thread, void **value_ptr); 
+  
+  shall suspend the execution of the calling thread until the target
+  'thread' terminates, unless 'thread' has already terminated. 
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:33310:33312">  
+  On return from a successful pthread_join() call with a non-NULL 'value_ptr'
+  argument, the value passed to pthread_exit() by the terminating thread shall
+  be made available in the location referenced by 'value_ptr'.
+  </assertion> 
+  <assertion id="3" tag="ref:XSH6:33312:33313">
+  When pthread_join() returns successfully, the target thread has been
+  terminated.
+  </assertion> 
+  <assertion id="4" tag="ref:XSH6:33314:33315"> 
+  If the thread calling pthread_join() is canceled, then the target thread
+  shall not be detached.
+  </assertion> 
+  <assertion id="5" tag="ref:XSH6:33319:33320"> 
+  Upon successful completion, it returns 0;
+  </assertion> 
+  <assertion id="6" tag="ref:XSH6:33322:33329">
+  pthread_join() SHALL fail if:
+
+  -[ESRCH] No thread could be found corresponding to that thread ID  
+ 
+  pthread_join() MAY fail if:
+
+  -[EINVAL] The implementation has detected that the value specified by
+   'thread' does not refer to a joinable thread.
+  -[EDEADLK] A deadlock was detected or the value of 'thread' specifies the 
+   calling thread.
+  
+  It shall not return an error code of [EINTR]
+  </assertion> 
+</assertions>

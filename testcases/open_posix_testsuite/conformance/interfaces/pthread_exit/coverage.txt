@@ -1,0 +1,11 @@
+This document defines the coverage for the pthread_exit function:
+
+Assertion	Tested?
+1		YES
+2		YES
+3		YES
+4		NO ** Skipping for now.
+5		NO ** Skipping for now.
+6		NO ** Skipping for now.
+
+NOTE:

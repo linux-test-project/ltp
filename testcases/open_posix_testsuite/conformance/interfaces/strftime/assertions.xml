@@ -1,0 +1,15 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH6:43988:44059 pt:CX">
+This test case will cover all the conversion specifiers that are supported
+in strftime().
+	</assertion>
+	<assertion id="2" tag="ref:XSH6:44060:44102 pt:CX">
+It covers the conversions specifiers that can be modified by the E or O 
+indicate that an alternative format or specification should be used rather 
+than the one normally used by the unmodified conversion specifier (1-1.c).
+	</assertion>
+	<assertion id="3" tag="ref:XSH6:44103:44107 pt:CX">
+strftime shall return the number of bytes placed into the array.
+Otherwise, it should return 0.
+	</assertion>
+</assertions>

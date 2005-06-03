@@ -1,0 +1,16 @@
+#This file contains all lines needed for linking the test suites.
+#These may be on one line or multiple lines.
+#
+#Place the -l, -L, or -D piece before the item to link.
+#Lines beginning with # are comments.
+#
+#For example,
+#-lpthread -D_GNU_SOURCE
+#
+#Recommended flags:
+#-D_XOPEN_SOURCE=600 -lpthread -lrt -lm
+#
+# For use with Linux, you may try the following flags to
+# allow for the NPTL-specific compilation (used in some test cases)
+# Note: this sometimes require the package nptl-devel.*.rpm to be installed.
+#-I /usr/include/nptl -L /usr/lib/nptl -D_XOPEN_SOURCE=600 -lpthread -lrt -lm

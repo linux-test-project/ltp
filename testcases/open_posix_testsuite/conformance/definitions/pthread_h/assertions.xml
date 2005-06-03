@@ -1,0 +1,118 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD6:10174:10176 pt:THR">
+  The pthread.h file exists and can be included.
+  </assertion>
+  <assertion id="2" tag="ref:XBD6:10179:10202">
+  pthread.h header shall define the following symbols
+  
+  PTHREAD_BARRIER_SERIAL_THREAD  BAR
+  PTHREAD_CANCEL_ASYNCHRONOUS  
+  PTHREAD_CANCEL_ENABLE
+  PTHREAD_CANCEL_DEFERRED
+  PTHREAD_CANCEL_DISABLE
+  PTHREAD_CANCELED
+  PTHREAD_COND_INITIALIZER
+  PTHREAD_CREATE_DETACHED
+  PTHREAD_CREATE_JOINABLE
+  PTHREAD_EXPLICIT_SCHED
+  PTHREAD_INHERIT_SCHED
+  PTHREAD_MUTEX_DEFAULT  XSI
+  PTHREAD_MUTEX_ERRORCHECK  XSI
+  PTHREAD_MUTEX_INITIALIZER
+  PTHREAD_MUTEX_NORMAL  XSI
+  PTHREAD_MUTEX_RECURSIVE  XSI
+  PTHREAD_ONCE_INIT
+  PTHREAD_PRIO_INHERIT  TPP|TPI
+  PTHREAD_PRIO_NONE  TPP|TPI
+  PTHREAD_PRIO_PROTECT  TPP|TPI
+  PTHREAD_PROCESS_SHARED
+  PTHREAD_PROCESS_PRIVATE
+  PTHREAD_SCOPE_PROCESS  TPS
+  PTHREAD_SCOPE_SYSTEM  TPS
+  </assertion>
+  <assertion id="3" tag="ref:XBD:10205:10217">
+  Type 'pthread_attr_t' shall be defined as described in sys/types.h
+  Type 'pthread_barrier_t' shall be defined as described in sys/types.h
+  Type 'pthread_barrierattr_t' shall be defined as described in sys/types.h
+  Type 'pthread_cond_t' shall be defined as described in sys/types.h
+  Type 'pthread_condattr_t' shall be defined as described in sys/types.h
+  Type 'pthread_key_t' shall be defined as described in sys/types.h
+  Type 'pthread_mutex_t' shall be defined as described in sys/types.h
+  Type 'pthread_mutexattr_t' shall be defined as described in sys/types.h
+  Type 'pthread_once_t' shall be defined as described in sys/types.h
+  Type 'pthread_rwlock_t' shall be defined as described in sys/types.h
+  Type 'pthread_rwlockattr_t' shall be defined as described in sys/types.h
+  Type 'pthread_spinlock_t' shall be defined as described in sys/types.h
+  Type 'pthread_t' shall be defined as described in sys/types.h
+  </assertion>
+  <assertion id="4" tag="ref:XBD:10280:10280">
+  This function is defined:
+  pthread_create(pthread_t *restrict, const pthread_attr_t *restrict,
+ 	void *(*)(void *), void *restrict);
+  </assertion>
+  <assertion id="5" tag="ref:XBD:10284:10284">
+  This function is defined:
+  void pthread_exit(void *);
+  </assertion>
+  <assertion id="6" tag="ref:XBD:10338:10338">
+  This function is defined:
+  pthread_t pthread_self(void);
+  </assertion>
+  <assertion id="7" tag="ref:XBD:10283:10283">
+  This function is defined:
+  int pthread_equal(pthread_t, pthread_t);
+  </assertion>
+  <assertion id="8" tag="ref:XBD:10290:10290">
+  This function is defined:
+  int pthread_join(pthread_t, void **);
+  </assertion>
+  <assertion id="9" tag="ref:XBD:10282:10282">
+  This function is defined:
+  int pthread_detach(pthread_t);
+  </assertion>
+  <assertion id="10" tag="ref:XBD:10240:10240">
+  This function is defined:
+  int pthread_attr_init(pthread_attr_t *);
+  </assertion>
+  <assertion id="11" tag="ref:XBD:10222:10222">
+  This function is defined:
+  int pthread_attr_destroy(pthread_attr_t *);
+  </assertion>
+  <assertion id="12" tag="ref:XBD:10223:10223">
+  This function is defined:
+  int pthread_attr_getdetachstate(const pthread_attr_t *, int *);
+  </assertion>
+  <assertion id="13" tag="ref:XBD:10241:10241">
+  This function is defined:
+  int pthread_attr_setdetachstate(pthread_attr_t *, int);
+  </assertion>
+  <assertion id="14" tag="ref:XBD:10296:10297">
+  This function is defined:
+  int pthread_mutex_init(pthread_mutex_t *restrict, const pthread_mutexattr_t
+	*restrict);
+  </assertion>
+  <assertion id="15" tag="ref:XBD:10293:10293">
+  This function is defined:
+  int pthread_mutex_destroy(pthread_mutex_t *);
+  </assertion>
+  <assertion id="16" tag="ref:XBD:10298:10298">
+  This function is defined:
+  int pthread_mutex_lock(pthread_mutex_t *);
+  </assertion>
+  <assertion id="17" tag="ref:XBD:10303:10303">
+  This function is defined:
+  int pthread_mutex_trylock(pthread_mutex_t *);
+  </assertion>
+  <assertion id="18" tag="ref:XBD:10304:10304">
+  This function is defined:
+  int pthread_mutex_unlock(pthread_mutex_t *);
+  </assertion>
+  <assertion id="19" tag="ref:XBD:10314:10314">
+  This function is defined:
+  int pthread_mutexattr_init(pthread_mutexattr_t *);
+  </assertion>
+  <assertion id="20" tag="ref:XBD:10305:10305">
+  This function is defined:
+  int pthread_mutexattr_destroy(pthread_mutexattr_t *);
+  </assertion>
+</assertions>

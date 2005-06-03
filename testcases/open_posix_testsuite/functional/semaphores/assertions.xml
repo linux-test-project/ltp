@@ -1,0 +1,17 @@
+<assertions>
+  <assertion id="1" tag="pt:SEM">
+Using semaphore to protect critical section
+  </assertion>
+  <assertion id="2" tag="pt:SEM">
+Using semaphore to implement producer and consumer mechanism
+  </assertion>
+  <assertion id="3" tag="pt:SEM">
+Using semaphore to implement reader and writer problem
+  </assertion>
+  <assertion id="4" tag="pt:SEM">
+Using semaphore to implement philosopher problem 
+  </assertion>
+  <assertion id="5" tag="pt:SEM">
+Using semaphore to implement sleeping Barber problem 
+  </assertion>
+</assertions>

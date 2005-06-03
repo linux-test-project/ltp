@@ -1,0 +1,56 @@
+This file contains various information.
+
+Please refer to http://nptl.bullopensource.org/phpBB/ for general information
+and questions. Feel free to post your questions there.
+
+----------------------------------- COMPILATION -----------------------------------
+We are doing our best to ensure the test case will be very portable.
+Please report any problems on the forum (see on top of this file)
+
+
+ * Flags
+You may want to add -DVERBOSE=2 to have verbose tests,
+or -DVERBOSE=0 to have silent tests (for batchs for example).
+
+You may add -DWITHOUT_XOPEN to disable the XSI features
+from the tests. Some of the tests won't work with this option.
+
+You may want to add -DSCALABILITY_FACTOR=X, where X is an integer,
+to change the stress programs load (default is 1).
+
+
+ * Commands
+Compilation under linux:
+gcc -o <bin> -lpthread <source>
+   where <bin> is the executable you want to build and <source> is the source file.
+
+Compilation under AIX5L
+cc -o <bin> -lpthread <source>
+  same comment as above
+  
+Compilation under Solaris 9 (gcc: http://www.sunfreeware.com)
+gcc -std=gnu99 -lpthread -lrt  -o <bin> <source>
+  same comment as above.
+  Note: the -lrt is necessary for test cases using semaphore feature.
+
+ * Execution
+
+Please consider the following:
+-> I am sizing the tests to fit on a bi-xeon IA32 machine, with 2GB RAM.
+You can change the SCALABILITY_FACTOR value to 2 or 3 to be more
+resources consuming on a bigger system. This will create more threads,
+etc... according to each case.
+
+-> Stress tests will run until they are killed with SIGUSR1 (or they
+fail). Currently, I do 
+$> ./stress &
+and then after a while
+$> kill -USR1 <pid> 
+or
+$> for PR in `ps o pid --no-headers -Cstress`; \
+   do echo Sending SIGUSR1 to pid $PR...; \
+       kill -USR1 $PR; \
+   done;
+Some cases will keep on executing ~ 1 minute after they receive the
+signal; it is normal (time for stopping all threads).
+

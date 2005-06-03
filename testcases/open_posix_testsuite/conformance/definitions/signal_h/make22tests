@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Make the tests for assertion 22.
+# Not named *.sh because then it would be executed during build time.
+
+declare -i i
+i=1
+for sigmacro in `cat sigmacrolist.txt`
+do
+	echo "  /*" >> 22-$i.c 2>&1
+	echo "  Test that the $sigmacro macro is defined." >> 22-$i.c 2>&1
+	echo "  */" >> 22-$i.c 2>&1
+	echo "" >> 22-$i.c 2>&1
+	echo "#include <signal.h>" >> 22-$i.c 2>&1
+	echo "" >> 22-$i.c 2>&1
+	echo "#ifndef $sigmacro" >> 22-$i.c 2>&1
+	echo "#error $sigmacro not defined" >> 22-$i.c 2>&1
+	echo "#endif" >> 22-$i.c 2>&1
+	i=$i+1
+done

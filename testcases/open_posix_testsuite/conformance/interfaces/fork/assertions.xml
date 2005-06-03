@@ -1,0 +1,93 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6TC2:12992:12992">
+    fork() creates a new process.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6TC2:12992:12993">
+    The new process is a copy of the original process 
+  -- unless specified otherwise below.
+  </assertion>
+  <assertion id="3" tag="ref:XSH6TC2:12994:12995">
+    The new process' ID does not match any existing 
+   process or group ID.
+  </assertion>
+  <assertion id="4" tag="ref:XSH6TC2:12996:12997">
+    The parent process ID (ppid) of the child process
+   is the process ID (pid) of the parent process
+   (caller of fork()).
+  </assertion>
+  <assertion id="5" tag="ref:XSH6TC2:12998:13000">
+    The opened file descriptors are copied to the child process
+   and refer to the same object.
+  </assertion>
+  <assertion id="6" tag="ref:XSH6TC2:13001:13003">
+    The opened directory streams are copied to the child process.
+   Positioning information may be shared between both processes.
+  </assertion>
+  <assertion id="7" tag="ref:XSH6TC2:13004:13004 pt:XSI">
+    The child process gets a copy of the parent message catalog descriptor. 
+  </assertion>
+  <assertion id="8" tag="ref:XSH6TC2:13005:13005">
+    tms_utime, tms_stime, tms_cutime, and tms_cstime values 
+   are set to 0 in the child process.
+  </assertion>
+  <assertion id="9" tag="ref:XSH6TC2:13006:13007">
+    The time left until an alarm clock signal is reset to zero,
+   and the alarm, if any, is canceled.
+  </assertion>
+  <assertion id="10" tag="ref:XSH6TC2:13008:13008 pt:XSI">
+    semadj values are cleared.
+  </assertion>
+  <assertion id="11" tag="ref:XSH6TC2:13009:13009">
+    The file locks are not inherited by the child process.
+  </assertion>
+  <assertion id="12" tag="ref:XSH6TC2:13010:13010">
+    The child process is created with no pending signals.
+  </assertion>
+  <assertion id="13" tag="ref:XSH6TC2:13011:13011 pt:XSI">
+    Interval timers are reset in the child process.
+  </assertion>
+  <assertion id="14" tag="ref:XSH6TC2:13012:13012 pt:SEM">
+    The opened semaphores are inherited in the child process.
+  </assertion>
+  <assertion id="15" tag="ref:XSH6TC2:13013:13014 pt:ML">
+    The child process does not inherit memory locks set by
+   the parent process with mlock or mlockall.
+  </assertion>
+  <assertion id="16" tag="ref:XSH6TC2:13015:13021 pt:MF|SHM">
+    Memory mappings created in the parent are retained in the
+   child process. If the mapping is MAP_PRIVATE, any modification
+   done after the fork() is visible only to the process doing the 
+   modification.
+  </assertion>
+  <assertion id="17" tag="ref:XSH6TC2:13022:13024 pt:PS">
+    For the SCHED_RR and SCHED_FIFO scheduling policies, the child
+   process inherits the policy and priority settings of the parent
+   process during the fork() execution.
+  </assertion>
+  <assertion id="18" tag="ref:XSH6TC2:13025:13025 pt:TMR">
+    The per-process timers are not inherited.
+  </assertion>
+  <assertion id="19" tag="ref:XSH6TC2:13026:13028 pt:MSG">
+    The opened message queue descriptors are copied to the child
+   process and refer to the same object.
+  </assertion>
+  <assertion id="20" tag="ref:XSH6TC2:13029:13030 pt:AIO">
+    Asynchronous IO operations are not inherited by the child.
+  </assertion>
+  <assertion id="21" tag="ref:XSH6TC2:13031:13036 pt:THR">
+    The new process has only one thread.
+  </assertion>
+  <assertion id="22" tag="ref:XSH6TC2:13052:13053 pt:CPT_TCT">
+    The CPU-time clocks of the new process/ new process' thread
+   are initialized to 0.
+  </assertion>
+  <assertion id="23" tag="ref:XSH6TC2:13060:13062">
+    fork() returns 0 to the child and the child PID to the parent process when 
+   succesful.
+  </assertion>
+  <assertion id="24" tag="ref:XSH6TC2:13063:13069">
+    fork() returns -1, errno is set to EAGAIN, and no child process
+   is created if the system lacks a resource to create the new process
+   or CHILD_MAX process are already running.
+  </assertion>
+</assertions>

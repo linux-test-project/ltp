@@ -1,0 +1,12 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH6:35264:35265">
+   The function
+
+   void pthread_testcancel(void); 
+  
+  It will create a cancelation point in the calling thread.
+  </assertion>
+  <assertion id="2" tag="ref:XSH6:35264:35265">
+  It will have no affect on the calling thread if cancelability is disabled.
+  </assertion> 
+</assertions>
