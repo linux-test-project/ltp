@@ -1,6 +1,0 @@
-<assertions>
-  <assertion id="1" tag="pt:FSC ref:XSH6:14780:14781">
-  The function below is defined:
-    int fsync(int fildes);
-  </assertion>
-</assertions>

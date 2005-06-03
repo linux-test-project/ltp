@@ -1,7 +1,0 @@
-This document defines the coverage for the pthread_attr_getschedparam function:
-
-Assertion	Tested?
-1		YES
-2		YES
-
-NOTE:

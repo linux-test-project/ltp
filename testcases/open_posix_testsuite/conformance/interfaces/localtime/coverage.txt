@@ -1,4 +1,0 @@
-This file defines the coverage for the localtime() function testing.
-
-Assertion	Status
-1		YES

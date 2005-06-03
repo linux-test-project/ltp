@@ -1,8 +1,0 @@
-This document defines the coverage for the pthread_spin_destroy() function:
-
-Assertion	Tested?
-1		YES
-2		YES
-3		YES
-
-NOTE:

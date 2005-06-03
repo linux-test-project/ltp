@@ -1,6 +1,0 @@
-<assertions>
-  <assertion id="1" tag="ref:XSH6:8201:8202 pt:CX">
-The asctime() function shall convert the broken-down time in the structure pointed to by timeptr into a string in the form: Sun Sep 16 01:03:52 1973\n\0
-</assertion>
-</assertions>
-

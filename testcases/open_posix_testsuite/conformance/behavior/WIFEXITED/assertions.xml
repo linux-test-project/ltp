@@ -1,7 +1,0 @@
-<assertions>
-  <assertion id="1" type="ct:S:48708:48710">
-Evaluates to a non-zero value if status was returned for a child process
-that terminated normally.
-  </assertion>
-</assertions>
-

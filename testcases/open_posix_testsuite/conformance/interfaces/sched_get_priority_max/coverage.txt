@@ -1,9 +1,0 @@
-This document explains why certain assertions were not tested.
-
-Assertions not listed here should be covered by the tests in this directory.
-
-
-Assertions     Tested ?	   Remarks
-1	       YES
-2	       YES
-3	       YES

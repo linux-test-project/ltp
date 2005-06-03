@@ -1,8 +1,0 @@
-This document defines the coverage for the pthread_mutexattr_setprioceiling function:
-
-Assertion	Tested?
-1		YES
-2		YES
-3		YES
-
-NOTE:
