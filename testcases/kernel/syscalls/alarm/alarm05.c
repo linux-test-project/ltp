@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) International Business Machines  Corp., 2001,2005
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
  *	       -t   : Turn on syscall timing.
  *
  * HISTORY
+ *	06/2005 Test for alarm cleanup by Amos Waterland
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
@@ -92,6 +93,7 @@ main(int ac, char **av)
 	int time_sec1 = 10;	/* time for which 1st alarm is set */
 	int time_sec2 = 5;	/* time for which 2st alarm is set */
 	int ret_val1, ret_val2;	/* return values for alarm() calls */
+	int ret_val3;
 	int sleep_time1 = 3;	/* waiting time for the signal */
 	int sleep_time2 = 6;	/* waiting time for the signal */
     
@@ -139,8 +141,23 @@ main(int ac, char **av)
 		if (STD_FUNCTIONAL_TEST) {
 			if ((almreceived == 1) &&
 			    (ret_val2 == (time_sec1 - sleep_time1))) {
-				tst_resm(TPASS, "Functionality of alarm(%u) "
-					 "successful", time_sec2);
+
+				/* 
+				 *  Make sure the system cleaned up the alarm 
+				 *  after it delivered it.
+				 */
+				TEST(alarm(0));
+				ret_val3 = TEST_RETURN;
+
+				if (ret_val3 != 0) {
+					tst_resm(TFAIL, "System did not "
+							"clean up delivered "
+							"alarm");
+				} else {
+					tst_resm(TPASS, "Functionality of "
+							"alarm(%u) successful",
+							time_sec2);
+				}
 			} else {
 				tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
 					 "almreceived:%d",
