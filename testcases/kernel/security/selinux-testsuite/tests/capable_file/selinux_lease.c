@@ -11,6 +11,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/types.h>
+#include<linux/posix_types.h>
 #include<linux/fcntl.h>
 
 /*

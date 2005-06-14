@@ -16,7 +16,7 @@
 
 int main(int argc, char **argv)
 {
-	char ch;
+	int ch;
 	int num = 1;
 	int key = 0x8888;
 	int id;
