@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.2 2003/03/04 18:34:05 robbiew Exp $ */
+/* $Id: kill02.c,v 1.3 2005/06/15 15:47:04 robbiew Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -785,6 +785,8 @@ void notify_timeout()
 void par_kill()
 {
 	char mesg[MAXMESG];	/*Used to buffer messages for tst_res.	*/
+	int status;
+
   /*
    *  Indicate to child1 that it can remove it's children and itself now.
    */
@@ -801,6 +803,7 @@ void par_kill()
    if (kill(pid2,SIGKILL) == -1 && errno != ESRCH)
 	tst_resm(TWARN,"Child2 may still be alive.");
 
+   wait(&status);
   return;
 	
 } /*End of par_kill*/
