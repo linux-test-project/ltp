@@ -188,7 +188,8 @@
 #include <linux/limits.h>
 #include <errno.h>
 #include <linux/unistd.h>
-_syscall0(pid_t,gettid)
+
+#define gettid() syscall(__NR_gettid)
 
 #ifdef DEBUG
 #define dprt	printf
