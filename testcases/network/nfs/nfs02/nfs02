@@ -46,12 +46,15 @@ TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin/dat}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
+
+PID=$$
+
 RHOST=${RHOST:=`hostname`}
 VERSION=${VERSION:=2}
 SOCKET_TYPE=${SOCKET_TYPE:=udp}
-TESTDIR=${TESTDIR:=/tmp/$TC$$}
+TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
 CLEANUP=${CLEANUP:="ON"}
-
+NFS_TYPE=${NFS_TYPE:=nfs}
 
 #---------------------------------------------------------------------#
 # FUNCTION: do_setup
@@ -65,14 +68,36 @@ $trace_logic
 
    echo "do_setup $TC"
 
+   echo ""
+   echo "Test Options:"
+   echo " VERSION: $VERSION"
+   echo " RHOST: $RHOST"
+   echo " SOCKET_TYPE: $SOCKET_TYPE"
+   echo " NFS_TYPE: $NFS_TYPE"
+   echo " TESTDIR: $TESTDIR"
+
+   if [ "x$NFS_TYPE" != "xnfs4" ]; then
+      OPTS="-o vers=$VERSION,proto=$SOCKET_TYPE"
+   fi
+
    IAM=${IAM:=`whoami`}
    [ $IAM = "root" ] || end_testcase "Must be root user"
    
    #Setup and Export the data directory on RHOST
    rsh -n $RHOST "mkdir -p $TESTDIR"
    [ $? -eq 0 ] || end_testcase "Could not create $TESTDIR from $RHOST"
-   rsh -n $RHOST "/usr/sbin/exportfs -i *:$TESTDIR -o rw,no_root_squash "
-   [ $? -eq 0 ] || end_testcase "Could not export $TESTDIR from $RHOST"
+
+   if [ "x$NFS_TYPE" == "xnfs4" ]; then
+      rsh -n $RHOST "mkdir -p /export$TESTDIR"
+      [ $? = 0 ] || end_testcase "Could not create /export$TESTDIR on server"
+      rsh -n $RHOST "mount --bind $TESTDIR /export$TESTDIR"
+      [ $? = 0 ] || end_testcase "Could notbind $TESTDIR to /export"
+      rsh -n $RHOST "/usr/sbin/exportfs -o no_root_squash,rw,nohide,insecure,no_subtree_check *:$TESTDIR"
+      [ $? = 0 ] || end_testcase "Could not export remote directory"
+   else
+      rsh -n $RHOST "/usr/sbin/exportfs -i *:$TESTDIR -o rw,no_root_squash "
+      [ $? -eq 0 ] || end_testcase "Could not export $TESTDIR from $RHOST"
+   fi
 
    #Verify export
    /usr/sbin/showmount -e $RHOST | grep $TESTDIR
@@ -83,7 +108,7 @@ $trace_logic
    [ $? -eq 0 ] || end_testcase "Could not create $TCtmp"
 
    #Mount $TCdat from RHOST.
-   mount -o vers=$VERSION,proto=$SOCKET_TYPE $RHOST:$TESTDIR $TCtmp
+   mount -t $NFS_TYPE $OPTS $RHOST:$TESTDIR $TCtmp
    [ $? -eq 0 ] || end_testcase "Could not mount from $RHOST"
 
 }

@@ -50,9 +50,13 @@ TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
 RHOST=${RHOST:=`hostname | awk {'print $1'}`}
 
+PID=$$
+
 # Setting the NFS to version 2 by default
 VERSION=${VERSION:=2}
 SOCKET_TYPE=${SOCKET_TYPE:=udp}
+TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
+NFS_TYPE=${NFS_TYPE:=nfs}
 
 # If CLEANUP is not set; set it to "ON"
 CLEANUP=${CLEANUP:="ON"}
@@ -66,7 +70,7 @@ FILE_NUM=${FILE_NUM:= 100}
 THREAD_NUM=${THREAD_NUM:=1}
 
 #============================================================================
-# FUNCITON NAME:        fs_inod
+# FUNCTION NAME:        fs_inod
 #
 # FUNCTION DESCRIPTION: Filesystems test from LTP.
 # 
@@ -310,7 +314,9 @@ $trace_logic
     echo "Test Options:"
     echo " VERSION: $VERSION"
     echo " SOCKET_TYPE: $SOCKET_TYPE"
+    echo " TESTDIR: $TESTDIR"
     echo " RHOST: $RHOST"
+    echo " NFS_TYPE: $NFS_TYPE"
     echo ""
     echo "Test Parameters:"
     echo " Number of Directories: $DIR_NUM"
@@ -318,22 +324,33 @@ $trace_logic
     echo " Number of nfsds tested: $THREAD_NUM"
     echo ""
     
-    sleep 5
+    if [ "x$NFS_TYPE" != "xnfs4" ]; then
+        OPTS=${OPTS:="-o vers=$VERSION,proto=$SOCKET_TYPE "}
+    fi
 
-    PID=$$
-    OPTS=${OPTS:="vers=$VERSION,proto=$SOCKET_TYPE "}
-    REMOTE_DIR=${RHOST}:/tmp/nfs03$PID.testdir
+    REMOTE_DIR=${RHOST}:$TESTDIR
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /tmp/nfs03$PID.testdir"
+    rsh -n $RHOST "mkdir -p $TESTDIR"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/tmp/nfs03$PID.testdir"
-    [ $? = 0 ] || end_testcase "Could export remote directory"
 
-    echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $OPTS"
-    mount -o $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
+    if [ "x$NFS_TYPE" == "xnfs4" ]; then
+        rsh -n $RHOST "mkdir -p /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not create /export$TESTDIR on server"
+        echo "rsh -n $RHOST 'mount --bind $TESTDIR /export$TESTDIR'"
+        rsh -n $RHOST "mount --bind $TESTDIR /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not bind $TESTDIR to /export"
+        rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    else
+        rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    fi
+
+    echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with options '$OPTS'"
+    mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
     
     echo "Setting server side nfsd count to $THREAD_NUM"
@@ -388,8 +405,8 @@ $trace_logic
         /bin/umount $TCtmp || echo "Cannot umount $TCtmp"
 	sleep 2
 	rmdir $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/tmp/nfs03$PID.testdir"
-	rsh -n $RHOST "rm -rf /tmp/nfs03$PID.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
+		 rsh -n $RHOST "rm -rf $TESTDIR"
 	rsh -n $RHOST "/usr/sbin/rpc.nfsd $ORIG_NFSD"
 
     fi

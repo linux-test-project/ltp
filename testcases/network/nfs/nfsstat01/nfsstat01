@@ -39,13 +39,20 @@ $trace_logic
 # Initialize local variables
 #-----------------------------------------------------------------------
 
+PID=$$
+
 TC=nfsstat01
 TCbin=${TCbin:=`pwd`}
-EXPORTDIR=/tmp/$TC$$
+EXPORTDIR=${EXPORTDIR:=/tmp/$TC$PID}
 HOST=`hostname`
-MOUNTDIR=${MOUNTDIR:=/tmp/$TC$$Mount}
 CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=2}
+TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
+NFS_TYPE=${NFS_TYPE:nfs}
+
+if [ "x$NFS_TYPE" != "xnfs4" ]; then
+    OPTS=${OPTS:="-o vers=$VERSION "}
+fi
 
 #---------------------------------------------------------------------#
 # FUNCTION: do_setup
@@ -77,19 +84,28 @@ $trace_logic
    [ $? -eq 0 ] || end_testcase "Could not create $EXPORTDIR"
 
    #Export the data directory on HOST
-   /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
-   [ $? -eq 0 ] || end_testcase "Could not export $EXPORTDIR on $HOST"
+   if [ "x$NFS_TYPE" == "xnfs4" ]; then
+        mkdir -p /export$EXPORTDIR
+        [ $? = 0 ] || end_testcase "Could not create /export$EXPORTDIR locally"
+        mount --bind $EXPORTDIR /export$EXPORTDIR
+        [ $? = 0 ] || end_testcase "Could not bind $EXPORTDIR to /export"
+        /usr/sbin/exportfs -o no_root_squash,rw,nohide,insecure,no_subtree_check $HOST:$EXPORTDIR > /dev/null
+        [ $? = 0 ] || end_testcase "Could not export $EXPORTDIR on $HOST"
+    else
+       /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
+       [ $? -eq 0 ] || end_testcase "Could not export $EXPORTDIR on $HOST"
+   fi
 
    #Verify export
    /usr/sbin/showmount -e $HOST | grep $EXPORTDIR > /dev/null
    [ $? -eq 0 ] || end_testcase "$EXPORTDIR not exported"
 
    #Create mount point
-   mkdir $MOUNTDIR
-   [ $? -eq 0 ] || end_testcase "Could not create $MOUNTDIR"
+   mkdir -p $TESTDIR
+   [ $? -eq 0 ] || end_testcase "Could not create $TESTDIR"
 
    #Mount from HOST.
-   mount -o vers=$VERSION $HOST:$EXPORTDIR $MOUNTDIR
+   mount -t $NFS_TYPE $OPTS $HOST:$EXPORTDIR $TESTDIR
    [ $? -eq 0 ] || end_testcase "Could not mount from $HOST"
 
 }
@@ -119,7 +135,7 @@ $trace_logic
  
   
   echo "Checking for tracking of RPC calls for server and client"
-  cat /proc/cpuinfo > $MOUNTDIR/nfsstat01.tmp
+  cat /proc/cpuinfo > $TESTDIR/nfsstat01.tmp
   NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep rpc | awk '{print $2}'`
   [ $NEW_SERVER_CALLS -gt $SERVER_CALLS ] || end_testcase "Server RPC calls not increased"
   NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep rpc | awk '{print $2}'`
@@ -154,7 +170,7 @@ $trace_logic
   
   echo "Checking for tracking of NFS calls for server and client"
   
-  rm -f $MOUNTDIR/nfsstat01.tmp
+  rm -f $TESTDIR/nfsstat01.tmp
   if [ "$VERSION" = "2" ]; then
    NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
   else
@@ -187,13 +203,21 @@ do_cleanup()
 {
 $trace_logic
    echo "do_cleanup $TC "
-   umount $MOUNTDIR
+
+   echo "Unmounting TESTDIR"
+   umount $TESTDIR
    sleep 3
-   rm -rf $MOUNTDIR
+   rm -rf $TESTDIR
    sleep 3
+
+   echo "Unmounting EXPORTDIR"
    /usr/sbin/exportfs -u $HOST:$EXPORTDIR 
+   umount $EXPORTDIR
+   sleep 3
    rm -rf $EXPORTDIR
-   
+   if [ "x$NFS_TYPE" == "xnfs4" ]; then
+       rm -rf /export$EXPORTDIR
+   fi
 }
 
 #=============================================================================
@@ -212,7 +236,7 @@ $trace_logic
        do_cleanup
     fi
 
-    [ $# = 0 ] && { echo "Test PASS"; exit 0; }
+    [ $? = 0 ] && { echo "Test PASS"; exit 0; }
     echo "Test FAIL: $@"
     exit 1
 }

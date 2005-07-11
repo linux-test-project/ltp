@@ -72,11 +72,15 @@ EXECUTABLES=${EXECUTABLES:="fsx-linux"}
 setup_testcase()
 {
 $trace_logic
+
+    PID=$$
    
     VERSION=${VERSION:=2}
     RHOST=${RHOST:=`hostname`}
     ITERATIONS=${ITERATIONS:=50000}
     SOCKET_TYPE=${SOCKET_TYPE:=udp}
+    TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
+    NFS_TYPE=${NFS_TYPE:=nfs}
 
     echo ""
     echo "Test Options:"
@@ -84,25 +88,37 @@ $trace_logic
     echo " RHOST: $RHOST"
     echo " ITERATIONS: $ITERATIONS"
     echo " SOCKET_TYPE: $SOCKET_TYPE"
-    sleep 5
+    echo " NFS_TYPE: $NFS_TYPE"
 
-    OPTS=${OPTS:=",vers=$VERSION "}
-    PID=$$
-    REMOTE_DIR=${RHOST}:/tmp/fsx$PID.testdir
+    if [ "x$NFS_TYPE" != "xnfs4" ]; then
+        OPTS=${OPTS:="-o proto=$SOCKET_TYPE,vers=$VERSION "}
+    fi
+
+    REMOTE_DIR=${RHOST}:${TESTDIR}
     LUSER=${LUSER:=root}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     echo "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir /tmp/fsx$PID.testdir"
+    rsh -n $RHOST "mkdir $TESTDIR"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "touch /tmp/fsx$PID.testdir/testfile"
+    rsh -n $RHOST "touch $TESTDIR/testfile"
     [ $? = 0 ] || end_testcase "Could not create testfile in remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/tmp/fsx$PID.testdir"
-    [ $? = 0 ] || end_testcase "Could export remote directory"
 
-    echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with parameters $SOCKET_TYPE$OPTS"
-    mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
+    if [ "x$NFS_TYPE" == "xnfs4" ]; then
+        rsh -n $RHOST "mkdir -p /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not create /export$TESTDIR on server"
+        rsh -n $RHOST "mount --bind $TESTDIR /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not bind $TESTDIR to export on server"
+        rsh -n $RHOST "/usr/sbin/exportfs -o no_root_squash,rw,nohide,insecure,no_subtree_check *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    else
+        rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    fi
+
+    echo "Mounting NFS filesystem $REMOTE_DIR on $TCtmp with options '$OPTS'"
+    mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp"
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 }
 
@@ -157,8 +173,8 @@ $trace_logic
 	sleep 2
         umount $TCtmp || error "Cannot umount $TCtmp"
 	rm -rf $TCtmp || echo "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/tmp/fsx$PID.testdir"
-	rsh -n $RHOST "rm -rf /tmp/fsx$PID.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
+ rsh -n $RHOST "rm -rf $TESTDIR"
     fi
 
     [ $# = 0 ] && { echo "Test Successful"; exit 0; }

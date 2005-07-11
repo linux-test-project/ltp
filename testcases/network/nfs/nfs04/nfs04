@@ -69,10 +69,14 @@ setup_testcase()
 {
 $trace_logic
    
+    PID=$$
+
     VERSION=${VERSION:=2}
     RHOST=${RHOST:=`hostname`}
     FILESIZE=${FILESIZE:=10}
     SOCKET_TYPE=${SOCKET_TYPE:=udp}
+    TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
+    NFS_TYPE=${NFS_TYPE:=nfs}
     LOOPS=${LOOPS:=1}
     export TST_COUNT=$LOOPS
 
@@ -82,26 +86,39 @@ $trace_logic
     echo " RHOST: $RHOST"
     echo " FILESIZE: $FILESIZE"
     echo " SOCKET_TYPE: $SOCKET_TYPE"
+    echo " TESTDIR: $TESTDIR"
+    echo " NFS_TYPE: $NFS_TYPE"
     echo " LOOPS: $LOOPS"
-    sleep 5
 
-    OPTS=${OPTS:=",vers=$VERSION "}
-    PID=$$
-    REMOTE_DIR=${RHOST}:/tmp/nfs04$PID.testdir
+    if [ "x$NFS_TYPE" != "xnfs4" ]; then
+        OPTS=${OPTS:="-o proto=$SOCKET_TYPE,vers=$VERSION "}
+    fi
+
+    REMOTE_DIR=${RHOST}:$TESTDIR
     LUSER=${LUSER:=root}
     mkdir -p $TCtmp || end_testcase "Could not create $TCtmp"
     chmod 777 $TCtmp
 
     tst_resm TINFO "Setting up remote machine: $RHOST"
-    rsh -n $RHOST "mkdir -p /tmp/nfs04$PID.testdir"
+    rsh -n $RHOST "mkdir -p $TESTDIR"
     [ $? = 0 ] || end_testcase "Could not create remote directory"
-    rsh -n $RHOST "touch /tmp/nfs04$PID.testdir/testfile"
+    rsh -n $RHOST "touch $TESTDIR/testfile"
     [ $? = 0 ] || end_testcase "Could not create testfile in remote directory"
-    rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:/tmp/nfs04$PID.testdir"
-    [ $? = 0 ] || end_testcase "Could export remote directory"
+
+    if [ "x$NFS_TYPE" == "xnfs4" ]; then
+        rsh -n $RHOST "mkdir -p /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not create /export$TESTDIR on server"
+        rsh -n $RHOST "mount --bind $TESTDIR /export$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not bind $TESTDIR to /export"
+        rsh -n $RHOST "/usr/sbin/exportfs -o no_root_squash,rw,nohide,insecure,no_subtree_check *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    else
+        rsh -n $RHOST "/usr/sbin/exportfs -i -o no_root_squash,rw *:$TESTDIR"
+        [ $? = 0 ] || end_testcase "Could not export remote directory"
+    fi
 
     tst_resm TINFO "Mounting NFS filesystem"
-    mount -o proto=$SOCKET_TYPE$OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp" 
+    mount -t $NFS_TYPE $OPTS $REMOTE_DIR $TCtmp || end_testcase "Cannot mount $TCtmp" 
     [ $? = 0 ] || end_testcase "Could not mount $REMOTE_DIR"
 }
 
@@ -161,8 +178,8 @@ $trace_logic
 	sleep 2
         umount $TCtmp || tst_resm TBROK "Cannot umount $TCtmp"
 	rm -rf $TCtmp || tst_resm TBROK "Cannot remove $TCtmp"
-        rsh -n $RHOST "/usr/sbin/exportfs -u *:/tmp/nfs04$PID.testdir"
-	rsh -n $RHOST "rm -rf /tmp/nfs04$PID.testdir"
+        rsh -n $RHOST "/usr/sbin/exportfs -u *:$TESTDIR"
+		 rsh -n $RHOST "rm -rf $TESTDIR"
 	rm -f /tmp/nfs04$PID.testfile*
     fi
 
