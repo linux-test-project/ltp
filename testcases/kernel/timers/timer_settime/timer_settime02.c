@@ -70,6 +70,10 @@
 #include <syscall.h>
 #include <time.h>
 
+#ifndef _syscall2
+#include <linux/unistd.h>
+#endif
+
 
 #ifndef __NR_timer_create
 #if defined(__i386__)
