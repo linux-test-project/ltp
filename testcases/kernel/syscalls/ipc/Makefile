@@ -21,7 +21,9 @@
 # description	: make(1) description file for ipc(2) test directory.	#
 #########################################################################
 CFLAGS+=-I../../../../../include -g -Wall
+CFLAGS+=$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=-L../../../../../lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
 
 all: $& $(IPCTESTS)

@@ -31,7 +31,9 @@ CFLAGS+=	-I$(TOP)/include -D_GNU_SOURCE
 ifeq ($(shell uname -s),Linux)
 CFLAGS+= -Wall
 endif
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L$(TOP)/lib/$(CCPU) -L$(TOP)/lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

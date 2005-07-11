@@ -93,6 +93,8 @@ char *TCID = "mlockall03";		/* Test program identifier.    */
 int TST_TOTAL = 3;			/* Total number of test cases. */
 extern int Tst_count;			/* TestCase counter for tst_* routine */
 
+#if !defined(UCLINUX)
+
 char *ref_release = "2.6.8\0";
 int exp_enos[] = { ENOMEM, EPERM, EINVAL, 0 };
 
@@ -305,6 +307,16 @@ void cleanup_test(int i)
 
 	}
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mlockall03 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX)
 
 
 /*

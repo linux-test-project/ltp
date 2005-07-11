@@ -101,7 +101,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "first fork failed");
 		}
 
@@ -119,7 +119,7 @@ int main(int ac, char **av)
 		}
 		wait(&status);
 
-		if ((pid1 = fork()) < 0) {
+		if ((pid1 = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "second fork failed");
 		}
 

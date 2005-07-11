@@ -16,6 +16,7 @@
 
 LINT =		lint
 CFLAGS+=        -Wall -g -ansi -O -DLINUX -D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -I../../../../include 
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 SRCS1 =		nftw.c tools.c test_func.c test.c lib.c
 OBJS1 =		nftw.o tools.o test_func.o test.o lib.o 
 SRCS2 =		nftw64.c tools64.c test_func64.c test64.c lib64.c

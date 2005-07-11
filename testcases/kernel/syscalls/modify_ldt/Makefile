@@ -27,8 +27,10 @@ CFLAGS+=-I../../../../include -g -Wall
 else
 CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
 endif
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 LOADLIBES+=	-L../../../../lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

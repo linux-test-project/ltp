@@ -24,7 +24,9 @@ MAINS=shmat01 shmat02 shmat03
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 CFLAGS+=-I../lib -I../../../../../include -g
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 all: $& $(MAINS)
 

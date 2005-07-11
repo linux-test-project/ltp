@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 		nobody = my_getpwnam(user1name);
 
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork failed");
 			/*NOTREACHED*/
 		} else if (pid > 0) {	/* parent */

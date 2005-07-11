@@ -112,7 +112,7 @@ int main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
@@ -142,7 +142,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN != -1) {
 			if (STD_FUNCTIONAL_TEST) {
-				if ((pid = fork()) == -1) {
+				if ((pid = FORK_OR_VFORK()) == -1) {
 					tst_brkm(TBROK, cleanup,
 						 "fork() #2 failed");
 				}

@@ -79,6 +79,8 @@ struct test_case_t {
 	{&addr1, 1024 * 1024 * 10, setup1}
 };
 
+#if !defined(UCLINUX)
+
 /***********************************************************************
  * Main
  ***********************************************************************/
@@ -140,6 +142,16 @@ int main(int ac, char **av)
 
 	return 0;
 }				/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mlock01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

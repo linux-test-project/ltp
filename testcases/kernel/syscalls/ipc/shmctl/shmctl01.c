@@ -62,7 +62,11 @@
 #include "ipcshm.h"
 
 char *TCID = "shmctl01";
+#ifndef UCLINUX
 int TST_TOTAL = 4;
+#else
+int TST_TOTAL = 3;
+#endif
 extern int Tst_count;
 
 int shm_id_1 = -1;
@@ -96,6 +100,9 @@ void set_setup(void), func_set(void);
 /* Check routine for IPC_RMID */
 void func_rmid(void);
 
+/* Child function */
+void do_child(void);
+
 struct test_case_t {
 	int cmd;		/* the command to test */
 	void (*func_test)();	/* the test function */
@@ -104,7 +111,11 @@ struct test_case_t {
 
 	{IPC_STAT, func_stat, stat_setup},
 
+#ifndef UCLINUX
+	/* The second test is not applicable to uClinux; shared memory segments
+	   are detached on exec(), so cannot be passed to uClinux children. */
 	{IPC_STAT, func_stat, stat_setup},
+#endif
 
 	{IPC_SET, func_set, set_setup},
 
@@ -112,6 +123,12 @@ struct test_case_t {
 };
 
 #define NEWMODE	0066
+
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
+static int stat_i;	/* Shared between do_child and stat_setup */
 
 int main(int ac, char **av)
 {
@@ -124,6 +141,11 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+	maybe_run_child(do_child, "ddd", &stat_i, &stat_time, &shm_id_1);
+#endif
 
 	setup();			/* global setup */
 
@@ -227,8 +249,7 @@ set_shmat()
 void
 stat_setup()
 {
-	int i, rval;
-	void *test, *set_shmat();
+	void *set_shmat();
 	pid_t pid;
 
 	/*
@@ -245,38 +266,56 @@ stat_setup()
 		set_shared = set_shmat();
 	}
 
-	for (i=0; i<N_ATTACH; i++) {
+	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
 		if ((pid = fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 
 		if (pid == 0) {		/* child */
-
-			if (stat_time == FIRST) {
-				test = set_shmat();
-			} else {
-				test = set_shared;
+#ifdef UCLINUX
+			if (self_exec(argv0, "ddd", stat_i, stat_time,
+				      shm_id_1) < 0) {
+				tst_brkm(TBROK, cleanup, "could not self_exec");
 			}
-
-			/* do an assignement for fun */
-			*(int *)test = i;
-
-			/* pause until we get a signal from stat_cleanup() */
-			rval = pause();
-
-			/* now we're back - detach the memory and exit */
-			if (shmdt(test) == -1) {
-				tst_resm(TBROK, "shmdt() failed - %d", errno);
-			}
-			tst_exit();
+#else
+			do_child();
+#endif
 
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
-			pid_arr[i] = pid;
+			pid_arr[stat_i] = pid;
 		}
 	}
 	/* sleep briefly to ensure correct execution order */
 	usleep(250000);
+}
+
+/*
+ * do_child
+ */
+void
+do_child()
+{
+	int rval;
+	void *test;
+
+	if (stat_time == FIRST) {
+		test = set_shmat();
+	} else {
+		test = set_shared;
+	}
+	
+	/* do an assignement for fun */
+	*(int *)test = stat_i;
+	
+	/* pause until we get a signal from stat_cleanup() */
+	rval = pause();
+	
+	/* now we're back - detach the memory and exit */
+	if (shmdt(test) == -1) {
+		tst_resm(TBROK, "shmdt() failed - %d", errno);
+	}
+	tst_exit();
 }
 
 /*

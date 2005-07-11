@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.2 2002/07/23 13:11:18 plars Exp $ */
+/* $Id: access03.c,v 1.3 2005/07/11 22:28:11 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -121,6 +121,8 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EFAULT, 0};  /* List must end with 0 */
 
 char * bad_addr = 0;
+
+#if !defined(UCLINUX)
 
 int main(int ac, char **av)
 {
@@ -473,6 +475,16 @@ int main(int ac, char **av)
     return 0;
 }	/* End main */
 
+#else
+
+int main()
+{
+	tst_resm(TINFO,"access03 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
@@ -488,7 +500,8 @@ setup()
     /* make and change to a temporary directory */
     tst_tmpdir();
 
-    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS,
+		    0, 0);
     if (bad_addr <= 0) {
         tst_brkm(TBROK, cleanup, "mmap failed");
     }

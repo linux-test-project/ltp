@@ -102,7 +102,7 @@ int main(int ac, char **av)
 			}
 		}
 
-		if (fork() == 0) {
+		if (FORK_OR_VFORK() == 0) {
 			exit(0);
 		}
 		pid = 1;

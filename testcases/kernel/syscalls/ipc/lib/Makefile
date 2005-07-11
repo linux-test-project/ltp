@@ -25,6 +25,7 @@ SRCS=libipc.c
 OBJS=$(SRCS:.c=.o)
 MAINS=../libipc.a
 CFLAGS+=-I../../../../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 all: ../libipc.a
 

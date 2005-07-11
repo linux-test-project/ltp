@@ -115,7 +115,7 @@ main(int ac, char **av)
    * time specified by timespec struct element
    * time_t tv_sec.
    */
-  cpid = fork();
+  cpid = FORK_OR_VFORK();
   if (cpid == -1) {
    tst_brkm(TBROK, cleanup, "fork() failed");
   }

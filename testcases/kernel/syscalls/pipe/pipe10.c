@@ -116,7 +116,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "write to pipe failed");
 		}
 
-		forkstat = fork();
+		forkstat = FORK_OR_VFORK();
 
 		if (forkstat == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");

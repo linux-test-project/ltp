@@ -20,7 +20,9 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -DGLIBC_SIGACTION_BUG=1 -Wall -D_GNU_SOURCE
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

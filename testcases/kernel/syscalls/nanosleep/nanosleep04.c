@@ -111,7 +111,7 @@ main(int ac, char **av)
 		 * Creat a child process and suspend its
 		 * execution using nanosleep()
 		 */
-		if ((cpid = fork()) == -1) {
+		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "fork() fails to create child process");
 		}

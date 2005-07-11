@@ -62,6 +62,7 @@
 #include <test.h>
 #include <usctest.h>
 
+void do_child(int);
 void setup(void);
 void cleanup(void);
 
@@ -71,6 +72,11 @@ extern int Tst_count;
 
 int flag;
 #define	FAILED	1
+
+#ifdef UCLINUX
+void do_child_uclinux(void);
+static int sig_uclinux;
+#endif
 
 int main(int ac, char **av)
 {
@@ -86,6 +92,10 @@ int main(int ac, char **av)
 		tst_exit();
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "d", &sig_uclinux);
+#endif
 
 	setup();
 
@@ -111,15 +121,16 @@ int main(int ac, char **av)
 			}
                         /*Initialize signal to its default action*/
                         signal(sig,SIG_DFL);
-			pid = fork();
+			pid = FORK_OR_VFORK();
 
 			if (pid == 0) {
-				pid = getpid();
-				if (kill(pid, sig) == -1) {
-					tst_resm(TFAIL, "kill error: kill "
-						 "unsuccessful");
-					exit(exno);
-				}
+#ifdef UCLINUX
+				self_exec(av[0], "d", sig);
+				/* No fork() error check is done so don't */
+				/* do an error check here */
+#else
+				do_child(sig);
+#endif
 			} else {
 				errno = 0;
 				while (((npid = waitpid(pid, &status, 0)) !=
@@ -209,6 +220,33 @@ int main(int ac, char **av)
   return(0);
 
 }
+
+/*
+ * do_child()
+ */
+void
+do_child(int sig)
+{
+	int exno = 1;
+	int pid = getpid();
+
+	if (kill(pid, sig) == -1) {
+		tst_resm(TFAIL, "kill error: kill unsuccessful");
+		exit(exno);
+	}
+}
+
+#ifdef UCLINUX
+/*
+ * do_child_uclinux()
+ *	run do_child with the appropriate sig variable
+ */
+void
+do_child_uclinux()
+{
+	do_child(sig_uclinux);
+} 
+#endif
 
 /*
  * setup()

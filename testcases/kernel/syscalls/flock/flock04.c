@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		TEST(flock(fd,LOCK_SH));	
 		if(TEST_RETURN == 0){
 	
-			pid = fork();
+			pid = FORK_OR_VFORK();
 			if(pid == 0){
 			fd1 = open(filename, O_RDONLY);	
 			retval= flock(fd1,LOCK_SH|LOCK_NB);
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 				tst_resm(TPASS, "flock() PASSED in acquiring shared lock on "
 						"Share Locked file");
 			}
-			return 0;
+			exit(0);
 		}
 		else{
 			/* parent waiting */
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 
 		/* Testing Exclusive lock on a Share Locked file */
 		
-		pid = fork();
+		pid = FORK_OR_VFORK();
 	
 		if(pid == 0){
 			fd1 = open(filename, O_RDWR);	
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "flock() unexpectedly passed in acquiring exclusive lock on "
 						"Share Locked file");
 			}
-			return 0;
+			exit(0);
 		}
 		else{
 			/* parent waiting */

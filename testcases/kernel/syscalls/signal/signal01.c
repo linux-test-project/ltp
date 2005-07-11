@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.4 2003/03/04 18:34:09 robbiew Exp $ */
+/* $Id: signal01.c,v 1.5 2005/07/11 22:29:05 robbiew Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -172,8 +172,12 @@
 void setup();
 void cleanup();
 void do_test();
+void do_child();
 void sigdfl_test();
 void update_timings();
+void p_timeout_handler();
+void c_timeout_handler();
+void catchsig();
 
 #if defined(linux) 
 # define SIG_PF sig_t  /* This might need to be sighandler_t on some systems */
@@ -211,10 +215,18 @@ int TST_TOTAL = 5;
 extern int Tst_count;           /* count of test items completed */
 
 int Pid;		/* Return value from fork.			 */
+static int fd1[2];	/* ipc fd, shared between do_test and do_child */
 
 typedef void (*sighandler_t)(int);
 
 sighandler_t	Tret;
+
+#ifdef UCLINUX
+static char* argv0;
+
+void do_child_uclinux();
+static int test_case_uclinux;
+#endif
 
 /***********************************************************************
  *   M A I N
@@ -234,6 +246,11 @@ char **argv;
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
+
+#ifdef UCLINUX
+    argv0 = argv[0];
+    maybe_run_child(&do_child_uclinux, "dd", &test_case_uclinux, &fd1[1]);
+#endif
 
     /***************************************************************
      * perform global setup for test
@@ -282,12 +299,7 @@ int tst_count;
 {
   int term_stat;	/* Termination status of the child returned to	 */
 			/* the parent.					 */
-  char string[30];
-  int fd1[2];		/* ipc */
   int rd_sz;		/* size of read */
-  void p_timeout_handler();
-  void c_timeout_handler();
-  void catchsig();
 
   Tst_count = tst_count;
 
@@ -318,7 +330,7 @@ int tst_count;
 	return;
   }
 
-  if ((Pid = fork()) > 0) {	/* parent */
+  if ((Pid = FORK_OR_VFORK()) > 0) {	/* parent */
 
 	signal(SIGALRM, p_timeout_handler);
 
@@ -445,70 +457,19 @@ int tst_count;
 	 * This is the child.
 	 * Set up to ignore/catch SIGKILL and check the return values.
 	 */
-	errno=0;
-	if ( test_case == IGNORE_TEST ) {
-	    exit_val = SIG_IGNORED;
-	    strcpy(string, "signal(SIGKILL, SIG_IGN)");
-
-	    Tret=signal(SIGKILL, SIG_IGN);
-	    TEST_ERRNO=errno;
+#ifdef UCLINUX
+	if (self_exec(argv0, "dd", test_case, fd1[1]) < 0) {
+	    sprintf(mesg, "self_exec failed.");
+	    tst_resm(TBROK,mesg);
+	    tst_resm(TBROK,mesg);
+	    close(fd1[0]);
+	    close(fd1[1]);
+	    return;
 	}
-	else {
-	    exit_val = SIG_NOT_CAUGHT;
-	    strcpy(string, "signal(SIGKILL, catchsig)");
-	    Tret=signal(SIGKILL, catchsig);
-	    TEST_ERRNO=errno;
-	}
-	Ipc_info.timings=tblock;	
-
-	if ( Tret == SIG_ERR  ) {
-	    if ( TEST_ERRNO == EINVAL ) {
-	        sprintf(Ipc_info.mesg, "%s ret:%p SIG_ERR (%ld) as expected",
-		    string, Tret, (long)SIG_ERR);
-		Ipc_info.status = PASS_FLAG;
-	    }
-	    else {
-	        sprintf(Ipc_info.mesg,
-		    "%s ret:%p, errno:%d expected ret:%ld, errno:%d",
-		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
-		Ipc_info.status = FAIL_FLAG;
-	    }
-		
-	    write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
-	}
-	else {
-	    /*
-	     * The child was not allowed to set the signal to 
-	     * be ignored and errno was correct.
-	     */
-	    sprintf(Ipc_info.mesg,
-		"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
-		string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
-	    Ipc_info.status = FAIL_FLAG;
-	    write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
-	}
-
-	/*
-	 * tell parent we are ready - setup by child is done
-	 */
-	Ipc_info.status = GO_FLAG;
-	write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
-
-	/*
-	 * Set the alarm to wake up from the pause below if
-	 * the parents signal is ignored.
-	 */
-	signal(SIGALRM, p_timeout_handler);
-	alarm(TIMEOUT);
-
-	/*
-	 * Pause until the parent sends a signal or until alarm is received.
-	 */
-	pause();
-
-	exit(exit_val);
-
-
+#else
+	do_child(test_case);
+#endif
+    
     }	/* End of child. */
     else {
 	/*
@@ -523,8 +484,91 @@ int tst_count;
          close(fd1[1]);
 	 return;
     }
-
 } /* End of do_test. */
+
+/***********************************************************************
+ * do_child()
+ ***********************************************************************/
+void
+do_child(test_case)
+int test_case;
+{
+    char string[30];
+
+    errno=0;
+    if ( test_case == IGNORE_TEST ) {
+	exit_val = SIG_IGNORED;
+	strcpy(string, "signal(SIGKILL, SIG_IGN)");
+	
+	Tret=signal(SIGKILL, SIG_IGN);
+	TEST_ERRNO=errno;
+    }
+    else {
+	exit_val = SIG_NOT_CAUGHT;
+	strcpy(string, "signal(SIGKILL, catchsig)");
+	Tret=signal(SIGKILL, catchsig);
+	TEST_ERRNO=errno;
+    }
+    Ipc_info.timings=tblock;	
+
+    if ( Tret == SIG_ERR  ) {
+	if ( TEST_ERRNO == EINVAL ) {
+	    sprintf(Ipc_info.mesg, "%s ret:%p SIG_ERR (%ld) as expected",
+		    string, Tret, (long)SIG_ERR);
+	    Ipc_info.status = PASS_FLAG;
+	}
+	else {
+	    sprintf(Ipc_info.mesg,
+		    "%s ret:%p, errno:%d expected ret:%ld, errno:%d",
+		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
+	    Ipc_info.status = FAIL_FLAG;
+	}
+		
+	write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
+    }
+    else {
+	/*
+	 * The child was not allowed to set the signal to 
+	 * be ignored and errno was correct.
+	 */
+	sprintf(Ipc_info.mesg,
+		"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
+		string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
+	Ipc_info.status = FAIL_FLAG;
+	write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
+    }
+
+    /*
+     * tell parent we are ready - setup by child is done
+     */
+    Ipc_info.status = GO_FLAG;
+    write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
+
+    /*
+     * Set the alarm to wake up from the pause below if
+     * the parents signal is ignored.
+     */
+    signal(SIGALRM, p_timeout_handler);
+    alarm(TIMEOUT);
+
+    /*
+     * Pause until the parent sends a signal or until alarm is received.
+     */
+    pause();
+
+    exit(exit_val);
+} /* End of do_child */
+
+#ifdef UCLINUX
+/***********************************************************************
+ * do_child_uclinux(): call do_child with the global used to store test_case
+ ***********************************************************************/
+void
+do_child_uclinux()
+{
+    do_child(test_case_uclinux);
+} /* End of do_child_uclinux */
+#endif
 
 /***********************************************************************
  * sigdfl_test - test for attempt to set SIGKILL to default 

@@ -120,7 +120,7 @@ int main(int ac, char **av)
 /* //block3: */
 	tst_resm(TINFO, "Enter block 3");
 	fail = 0;
-	if ((pid = fork()) == 0) {		/* child */
+	if ((pid = FORK_OR_VFORK()) == 0) {		/* child */
 		fail = 0;
 		pass = getpwnam("nobody");
 		retval = setreuid(-1, pass->pw_uid);

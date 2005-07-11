@@ -78,6 +78,8 @@ void gval_setup(void), func_gval(int);
 void sall_setup(void), func_sall(void);
 void func_sval(void);
 void func_rmid(void);
+void child_cnt(void);
+void child_pid(void);
 
 struct semid_ds buf;
 unsigned short array[PSEMS];
@@ -91,6 +93,10 @@ struct sembuf sops;
 #define ONE	1
 
 int pid_arr[NCHILD];
+
+#ifdef UCLINUX
+static char *argv0;
+#endif
 
 struct test_case_t {
 	int semnum;		/* the primitive semaphore to use */
@@ -130,6 +136,12 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+	maybe_run_child(&child_pid, "nd", 1, &sem_id_1);
+	maybe_run_child(&child_cnt, "ndd", 2, &sem_id_1, &sops.sem_op);
+#endif
 
 	setup();			/* global setup */
 
@@ -322,22 +334,20 @@ cnt_setup(int opval)
 
 	for (i=0; i<NCHILD; i++) {
 		/* fork five children to wait */
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed in cnt_setup");
 		}
 	
 		if (pid == 0) {		/* child */
-			/*
-			 * Do a semop that will cause the child to sleep.
-			 * The child process will be killed in the func_ncnt
-			 * routine which should cause an error to be return
-			 * by the semop() call.
-			 */
-			if (semop(sem_id_1, &sops, 1) != -1) {
-				tst_resm(TBROK, "semop succeeded - cnt_setup");
+#ifdef UCLINUX
+			if (self_exec(argv0, "ndd", 2, sem_id_1,
+				      sops.sem_op) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed "
+					 "in cnt_setup");
 			}
-			exit(0);
-
+#else
+			child_cnt();
+#endif
 		} else {		/* parent */
 			/* take a quick nap so that commands execute orderly */
 			usleep(50000);
@@ -346,6 +356,24 @@ cnt_setup(int opval)
 			pid_arr[i] = pid;
 		}
 	}
+}
+
+void
+child_cnt()
+{
+	sops.sem_num = SEM4;
+	sops.sem_flg = 0;
+
+	/*
+	 * Do a semop that will cause the child to sleep.
+	 * The child process will be killed in the func_ncnt
+	 * routine which should cause an error to be return
+	 * by the semop() call.
+	 */
+	if (semop(sem_id_1, &sops, 1) != -1) {
+		tst_resm(TBROK, "semop succeeded - cnt_setup");
+	}
+	exit(0);
 }
 
 /*
@@ -371,33 +399,44 @@ pid_setup()
 {
 	int pid;
 
-	sops.sem_num = SEM2;	/* semaphore to change */
-	sops.sem_op = ONE;	/* operation is to increment semaphore */
-	sops.sem_flg = 0;
-
 	/*
 	 * Fork a child to do a semop that will pass. 
 	 */
-	if ((pid = fork()) == -1) {
+	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork failed in pid_setup()");
 	}
-	
+
 	if (pid == 0) {		/* child */
-
-		/*
-		 * Do a semop that will increment the semaphore.
-		 */
-		if (semop(sem_id_1, &sops, 1) == -1) {
-			tst_resm(TBROK, "semop failed - pid_setup");
+#ifdef UCLINUX
+		if (self_exec(argv0, "nd", 1, sem_id_1) < 0) {
+			tst_brkm(TBROK, cleanup, "self_exec failed "
+				 "in pid_setup()");
 		}
-		exit(0);
-
+#else
+		child_pid();
+#endif
 	} else {		/* parent */
 		/* take a quick nap so that commands execute orderly */
 		usleep(50000);
 
 		pid_arr[SEM2] = pid;
 	}
+}
+
+void
+child_pid()
+{
+	sops.sem_num = SEM2;	/* semaphore to change */
+	sops.sem_op = ONE;	/* operation is to increment semaphore */
+	sops.sem_flg = 0;
+
+	/*
+	 * Do a semop that will increment the semaphore.
+	 */
+	if (semop(sem_id_1, &sops, 1) == -1) {
+		tst_resm(TBROK, "semop failed - pid_setup");
+	}
+	exit(0);
 }
 
 /*

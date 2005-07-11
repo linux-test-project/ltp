@@ -100,7 +100,9 @@
 #include <string.h>  /* bzero */
 #endif
 #if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#ifndef UCLINUX
 #include <aio.h>
+#endif
 #endif
 #include <stdlib.h> /* atoi, abs */
 

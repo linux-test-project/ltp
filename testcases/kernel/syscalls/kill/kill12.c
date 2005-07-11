@@ -64,6 +64,7 @@ int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;
+static int sig;
 
 int anyfail();
 int blenter();
@@ -73,6 +74,7 @@ void terror();
 void fail_exit();
 void ok_exit();
 int forkfail();
+void do_child();
 
 /*****  **      **      *****/
 
@@ -81,13 +83,24 @@ int forkfail();
 int chflag;
 
 /*--------------------------------------------------------------------*/
-int main()					/***** BEGINNING OF MAIN. *****/
+int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 {
 	int pid, npid;
-        int sig, nsig, exno, nexno, status;
+        int nsig, exno, nexno, status;
 	int ret_val = 0;
 	int core;
 	void chsig();
+
+#ifdef UCLINUX
+	char *msg;
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	maybe_run_child(&do_child, "dd", &temp, &sig);
+#endif
 
 	setup();
 	//tempdir();		/* move to new directory */ 12/20/2003
@@ -105,18 +118,22 @@ int main()					/***** BEGINNING OF MAIN. *****/
 		fflush(temp);
 		chflag = 0;
 
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0) {
 			forkfail();
 		}
 
 		if (pid == 0) {
-			sigset(sig, SIG_IGN);		/* set to ignore signal */
-			kill(getppid(), SIGCLD);	/* tell parent we are ready */
-			while (!chflag)
-				sleep(1);		/* wait for parent */
-
-			exit(exno);
+#ifdef UCLINUX
+			if (self_exec(argv[0], "dd", temp, sig) < 0) {
+				tst_resm(TBROK, "self_exec FAILED - "
+					 "terminating test.");
+				tst_exit();
+				return(0);
+			}
+#else
+			do_child();
+#endif
 		} else {
 			//fprintf(temp, "Testing signal %d\n", sig);
 
@@ -212,6 +229,25 @@ int anyfail()
   return(0);
 }
 
+void
+do_child()
+{
+	int exno = 1;
+
+#ifdef UCLINUX
+	if (sigset(SIGCLD, chsig) == SIG_ERR) {
+		fprintf(temp, "\tsigset failed, errno = %d\n", errno);
+		fail_exit();
+	}
+#endif
+
+	sigset(sig, SIG_IGN);		/* set to ignore signal */
+	kill(getppid(), SIGCLD);	/* tell parent we are ready */
+	while (!chflag)
+		sleep(1);		/* wait for parent */
+	
+	exit(exno);
+}
 
 void setup()
 {

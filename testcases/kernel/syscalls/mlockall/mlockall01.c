@@ -79,6 +79,7 @@ extern int Tst_count;			/* Testcase counter for tst_* routine */
 
 int exp_enos[] = { 0 };
 
+#if !defined(UCLINUX)
 
 struct test_case_t {
 	int flag;
@@ -137,6 +138,16 @@ int main(int ac, char **av)
 
 	return 0;
 }				/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mlockall01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif
 
 /*
  * setup() - performs all ONE TIME setup for this test.

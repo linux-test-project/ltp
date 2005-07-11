@@ -77,7 +77,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		ppid = getpid();
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}

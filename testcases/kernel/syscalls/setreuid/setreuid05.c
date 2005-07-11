@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed");
 			/*NOTREACHED*/
 		} else if (pid == 0) {          /* child */

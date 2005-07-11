@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 		exno = 1;
 		sig = 14;
 
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "Fork Failed");
 		} else if (pid == 0) {
 			alarm(2);

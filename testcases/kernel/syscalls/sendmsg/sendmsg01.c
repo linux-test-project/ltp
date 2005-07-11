@@ -89,10 +89,13 @@ char	cbuf[4096];	/* control message buffer */
 struct cmsghdr *control = 0;
 int controllen = 0;
 struct iovec iov[1];
+static int sfd; /* shared between do_child and start_server */
+static int ufd; /* shared between do_child and start_server */
 
 void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
 	setup4(void), setup5(void), setup6(void), setup7(void), setup8(void),
-	cleanup(void), cleanup0(void), cleanup1(void), cleanup4(void);
+	cleanup(void), cleanup0(void), cleanup1(void), cleanup4(void),
+	do_child(void);
 
 struct test_case_t {		/* test case structure */
 	int	domain;	/* PF_INET, PF_UNIX, ... */
@@ -185,6 +188,10 @@ int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, 
 
 extern int Tst_count;
 
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
 int
 main(int argc, char *argv[])
 {
@@ -197,6 +204,12 @@ main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
+
+#ifdef UCLINUX
+	argv0 = argv[0];
+	maybe_run_child(&do_child, "dd", &sfd, &ufd);
+#endif
+
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
@@ -248,11 +261,8 @@ main(int argc, char *argv[])
 pid_t
 start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 {
-	struct sockaddr_in sin1 = *sin0, fsin;
-	struct sockaddr_un fsun;
-	fd_set	afds, rfds;
+	struct sockaddr_in sin1 = *sin0;
 	pid_t	pid;
-	int	sfd, nfds, cc, fd, ufd;
 
 	/* set up inet socket */
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -284,8 +294,15 @@ start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 		return -1;
 	}
 
-	switch ((pid = fork())) {
+	switch ((pid = FORK_OR_VFORK())) {
 	case 0:	/* child */
+#ifdef UCLINUX
+		if (self_exec(argv0, "dd", sfd, ufd) < 0) {
+			tst_brkm(TBROK, cleanup, "server self_exec failed");
+		}
+#else
+		do_child();
+#endif
 		break;
 	case -1:
 		tst_brkm(TBROK, cleanup, "server fork failed: %s",
@@ -296,6 +313,18 @@ start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 		(void) close(ufd);
 		return pid;
 	}
+
+	/*NOTREACHED*/
+	exit(1);
+}
+
+void
+do_child()
+{
+	struct sockaddr_in fsin;
+	struct sockaddr_un fsun;
+	fd_set	afds, rfds;
+	int	nfds, cc, fd;
 
 	FD_ZERO(&afds);
 	FD_SET(sfd, &afds);

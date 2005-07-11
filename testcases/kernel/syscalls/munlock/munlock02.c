@@ -96,6 +96,8 @@ struct test_case_t {
 	{NULL, 0, ENOMEM, "address range out of address space" },
 };
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc, i;		/* loop counter */
@@ -166,7 +168,8 @@ void setup()
 	TEST_EXP_ENOS(exp_enos);
 
 	TC[0].len = 8 * getpagesize();
-	address = mmap(0, TC[0].len, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	address = mmap(0, TC[0].len, PROT_READ|PROT_WRITE,
+		       MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (address == MAP_FAILED)
 	  tst_brkm(TFAIL, cleanup, "mmap_failed");
 	memset(address, 0x20, TC[0].len);
@@ -189,6 +192,16 @@ void setup()
 
 	return;
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"munlock02 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at

@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.5 2003/08/25 15:13:13 plars Exp $ */
+/* $Id: alarm03.c,v 1.6 2005/07/11 22:28:11 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -141,7 +141,7 @@ main(int ac, char **av)
 	 */
 	TEST(alarm(100));
 	
-        switch ( fork()) {
+        switch ( FORK_OR_VFORK()) {
 	case -1:
 		tst_brkm(TBROK, cleanup, "fork failed, errno:%d %s",
 			errno, strerror(errno));

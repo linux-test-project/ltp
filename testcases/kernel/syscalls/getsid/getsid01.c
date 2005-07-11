@@ -106,7 +106,7 @@ int main(int ac, char **av)
 			/* save the return value in a global variable */
 			p_sid = TEST_RETURN;
 
-			if ((pid = fork()) == -1) {
+			if ((pid = FORK_OR_VFORK()) == -1) {
 				tst_brkm(TBROK, cleanup, "could not fork");
 			}
 

@@ -115,7 +115,7 @@ main(int ac, char **av)
 				 "test file");
 		}
 
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 

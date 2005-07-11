@@ -65,6 +65,7 @@
 
 void cleanup(void);
 void setup(void);
+void do_child(void);
 
 char *TCID= "kill08";
 int TST_TOTAL = 1;
@@ -85,6 +86,10 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
 	setup();                        /* global setup */
 
 	/* The following loop checks looping state if -i option given */
@@ -98,7 +103,7 @@ int main(int ac, char **av)
 		/* Fork a process and set the process group so that */
 		/* it is different from this one.  Fork 5 more children. */
 
-		pid1 = fork();
+		pid1 = FORK_OR_VFORK();
 		if (pid1 < 0) {
 			tst_brkm(TBROK, cleanup, "Fork of first child failed");
 		} else if (pid1 == 0) {
@@ -108,9 +113,15 @@ int main(int ac, char **av)
 				if (pid2 < 0) {
 					tst_brkm(TBROK, cleanup, "Fork failed");
 				} else if (pid2 == 0) {
-					pause();
-					/*NOTREACHED*/
-					exit(exno);
+#ifdef UCLINUX
+					if (self_exec(av[0], "") < 0) {
+						tst_brkm(TBROK, cleanup,
+							 "self_exec of "
+							 "child failed");
+					}
+#else
+					do_child();
+#endif
 				}
 			}
 			/* Kill all processes in this process group */
@@ -150,6 +161,18 @@ int main(int ac, char **av)
 	return(0);
 }
 
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	int exno = 1;
+
+	pause();
+	/*NOTREACHED*/
+	exit(exno);
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test

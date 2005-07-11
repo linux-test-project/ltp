@@ -45,6 +45,23 @@ install: all
 libltp.a:
 	@$(MAKE) -C lib $@
 
+uclinux: uclinux_libltp.a
+	#@$(MAKE) -C pan all
+	@$(MAKE) -C testcases uclinux
+	@$(MAKE) -C tools all
+	@echo
+	@echo "*******************************************************"
+	@echo "** You now need to do a make uclinux_install as root **"
+	@echo "*******************************************************"
+
+uclinux_install: uclinux
+	@$(MAKE) -C testcases uclinux_install
+	@$(MAKE) -C tools install
+	@./IDcheck.sh
+
+uclinux_libltp.a:
+	@$(MAKE) -C lib UCLINUX=1 libltp.a
+
 menuconfig:
 	@./ltpmenu
 

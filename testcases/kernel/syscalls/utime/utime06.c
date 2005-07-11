@@ -148,7 +148,7 @@ main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	pid = fork();
+	pid = FORK_OR_VFORK();
 
 	if (pid == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");

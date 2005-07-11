@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mkdir01.c,v 1.2 2002/07/23 13:11:18 plars Exp $ */
+/* $Id: mkdir01.c,v 1.3 2005/07/11 22:28:47 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -117,7 +117,9 @@ void setup();
 void cleanup();
 
 
+#if !defined(UCLINUX)
 char *get_high_address();
+#endif
 
 char *TCID="mkdir01";		/* Test program identifier.    */
 int TST_TOTAL=2;		/* Total number of test cases. */
@@ -187,7 +189,7 @@ main(int ac, char **av)
 	  }
 	} 
 	
-
+#if !defined(UCLINUX)
 	/* 
 	 * TEST CASE: 2
 	 * mkdir() call with pointer above allocated address space.
@@ -218,6 +220,7 @@ main(int ac, char **av)
 
 	  }
 	} 
+#endif /* if !defined(UCLINUX) */
 
     }	/* End for TEST_LOOPING */
 
@@ -244,7 +247,8 @@ setup()
     /* Create a temporary directory and make it current. */
     tst_tmpdir();
 
-    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    bad_addr = mmap(0, 1, PROT_NONE,
+		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr <= 0) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }

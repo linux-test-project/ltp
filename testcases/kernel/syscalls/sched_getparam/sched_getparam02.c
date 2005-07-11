@@ -110,7 +110,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 	
-		switch(child_pid = fork()) {
+		switch(child_pid = FORK_OR_VFORK()) {
 
 		case -1:
 			/* fork() failed */

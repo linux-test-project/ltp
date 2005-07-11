@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 				fail=1;
 			}
 
-			pid2 = fork();
+			pid2 = FORK_OR_VFORK();
 			if (pid2 < 0) {
 				tst_brkm(TFAIL, cleanup, "Fork failed");
 				/*NOTREACHED*/

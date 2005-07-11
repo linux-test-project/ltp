@@ -63,6 +63,7 @@
 
 void cleanup(void);
 void setup(void);
+void do_child(void);
 
 char *TCID = "msgsnd06";
 int TST_TOTAL = 1;
@@ -78,13 +79,17 @@ int main(int ac, char **av)
     int lc;			/* loop counter */
     char *msg;			/* message returned from parse_opts */
     pid_t c_pid;
-    int retval = 0, status, e_code;
+    int status, e_code;
 
     /* parse standard options */
     if ((msg =
 	 parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
     }
+
+#ifdef UCLINUX
+    maybe_run_child(&do_child, "d", &msg_q_1);
+#endif
 
     setup();			/* global setup */
 
@@ -114,41 +119,18 @@ int main(int ac, char **av)
 	 * fork a child that will attempt to write a message
 	 * to the queue without IPC_NOWAIT
 	 */
-	if ((c_pid = fork()) == -1) {
+	if ((c_pid = FORK_OR_VFORK()) == -1) {
 	    tst_brkm(TBROK, cleanup, "could not fork");
 	}
 
 	if (c_pid == 0) {	/* child */
-	    /*
-	     * Attempt to write another message to the full queue.
-	     * Without the IPC_NOWAIT flag, the child sleeps
-	     */
-	    TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
-	    if (TEST_RETURN != -1) {
-		retval = 1;
-		tst_resm(TFAIL, "call succeeded when error expected");
-		continue;
+#ifdef UCLINUX
+	    if (self_exec(av[0], "d", msg_q_1) < 0) {
+		tst_brkm(TBROK, cleanup, "could not self_exec");
 	    }
-
-	    TEST_ERROR_LOG(TEST_ERRNO);
-
-	    switch (TEST_ERRNO) {
-	    case EIDRM:
-		tst_resm(TPASS, "expected failure - errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-
-		/* mark the queue as invalid as it was removed */
-		msg_q_1 = -1;
-		break;
-	    default:
-		retval = 1;
-		tst_resm(TFAIL, "call failed with an "
-			 "unexpected error - %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		break;
-	    }
-	    exit(retval);
+#else
+	    do_child();
+#endif
 	} else {		/* parent */
 	    sleep(1);
 	    /* remove the queue */
@@ -168,6 +150,50 @@ int main(int ac, char **av)
 
  /*NOTREACHED*/
  return(0);
+}
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+    int retval = 0;
+
+#ifdef UCLINUX
+    /* initialize the message buffer */
+    init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+#endif
+
+    /*
+     * Attempt to write another message to the full queue.
+     * Without the IPC_NOWAIT flag, the child sleeps
+     */
+    TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
+
+    if (TEST_RETURN != -1) {
+	retval = 1;
+	tst_resm(TFAIL, "call succeeded when error expected");
+	exit(retval);
+    }
+
+    TEST_ERROR_LOG(TEST_ERRNO);
+
+    switch (TEST_ERRNO) {
+    case EIDRM:
+	tst_resm(TPASS, "expected failure - errno = %d : %s",
+		 TEST_ERRNO, strerror(TEST_ERRNO));
+
+	/* mark the queue as invalid as it was removed */
+	msg_q_1 = -1;
+	break;
+    default:
+	retval = 1;
+	tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
+		 TEST_ERRNO, strerror(TEST_ERRNO));
+	break;
+    }
+    exit(retval);
 }
 
 /*

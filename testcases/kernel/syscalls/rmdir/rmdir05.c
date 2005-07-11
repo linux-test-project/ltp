@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.2 2002/07/23 13:11:19 plars Exp $ */
+/* $Id: rmdir05.c,v 1.3 2005/07/11 22:28:56 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -107,10 +107,14 @@ void setup();
 void cleanup();
 
 
+#if !defined(UCLINUX)
 extern char *get_high_address();
+int TST_TOTAL=6;
+#else
+int TST_TOTAL=5;
+#endif
 
 char *TCID="rmdir05";		/* Test program identifier.    */
-int TST_TOTAL=6;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines. */
 struct stat stat_buf;   	/* Stat buffer used for verification. */
 char dir_name[256];		/* Array to hold directory name. */
@@ -304,7 +308,8 @@ main(int argc, char **argv)
 	    tst_resm(TFAIL,"rmdir() - path argument points below the minimum allocated address space succeeded unexpectedly.");
 	  }
 	} 
-	
+
+#if !defined(UCLINUX)	
 	/* 
 	 * TEST CASE: 5
 	 * path argument points above the maximum allocated address space
@@ -333,7 +338,8 @@ main(int argc, char **argv)
 	  } else {
 	    tst_resm(TFAIL,"rmdir() - path argument points above the maximum allocated address space succeeded unexpectedly.");
 	  }
-	} 
+	}
+#endif
 
 	/* 
 	 * TEST CASE: 6
@@ -414,7 +420,8 @@ void setup()
     /* Create a unique directory name. */
     sprintf(dir_name,"./dir_%d",getpid());
 
-    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    bad_addr = mmap(0, 1, PROT_NONE,
+		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr <= 0) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }

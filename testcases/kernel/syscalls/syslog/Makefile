@@ -20,7 +20,9 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-I../../../../include  -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 LDFLAGS=
 
 SRCS=$(wildcard *.c)

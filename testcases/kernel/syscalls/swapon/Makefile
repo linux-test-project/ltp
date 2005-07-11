@@ -25,8 +25,10 @@ export CFLAGS+=-I../../../../include -g -Wall
 else
 export CFLAGS+=-I../../../../include -g -Wall -DOLDER_DISTRO_RELEASE
 endif
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 LOADLIBES+=	-L../../../../lib -lltp 
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

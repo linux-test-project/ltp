@@ -178,7 +178,8 @@ setup()
 
 	sprintf(good_dir, "%s.statfs.%d", good_dir, getpid());
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}

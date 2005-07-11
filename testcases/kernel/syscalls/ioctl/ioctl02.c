@@ -91,6 +91,9 @@ int chk_tty_parms();
 void setup(void);
 void cleanup(void);
 void help(void);
+void do_child(void);
+void do_child_uclinux(void);
+void sigterm_handler();
 
 int Devflag = 0;
 char *devname;
@@ -100,6 +103,8 @@ option_t options[] = {
 	{"D:", &Devflag, &devname},
 	{NULL, NULL, NULL}
 };
+
+void hack();
 
 int main(int ac, char **av)
 {
@@ -111,6 +116,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "dS", &parentpid, &childtty);
+#endif
 
 	if (!Devflag) {
 		tst_resm(TWARN, "You must specify a tty device with "
@@ -132,17 +141,19 @@ int main(int ac, char **av)
 
 		parentpid = getpid();
 
-		if ((childpid = fork()) < 0) {
+		if ((childpid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 			/*NOTREACHED*/
 		}
 
 		if (childpid == 0) {		/* child */
-			if ((childfd = do_child_setup()) < 0) {
-				_exit(1);
+#ifdef UCLINUX
+			if (self_exec(av[0], "dS", parentpid, childtty) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-			run_ctest();
-			_exit(0);
+#else
+			do_child();
+#endif
 		}
 
 		/* parent */
@@ -200,6 +211,29 @@ int main(int ac, char **av)
 
 	/*NOTREACHED*/
 	return(0);
+}
+
+void
+do_child() {
+	if ((childfd = do_child_setup()) < 0) {
+		_exit(1);
+	}
+	run_ctest();
+	_exit(0);
+}
+
+void
+do_child_uclinux()
+{
+	struct sigaction act;
+
+	/* Set up the signal handlers again */
+	act.sa_handler = (void *)sigterm_handler;
+	act.sa_flags = 0;
+	(void)sigaction(SIGTERM, &act, 0);
+	
+	/* Run the normal child */
+	do_child();
 }
 
 /*
@@ -260,7 +294,6 @@ run_ptest()
 int
 run_ctest()
 {
-
 	/*
 	 * Wait till the parent has finished testing.
 	 */

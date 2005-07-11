@@ -64,6 +64,11 @@
  *
  ****************************************************************/
 
+#if defined UCLINUX && !__THROW
+/* workaround for libc bug causing failure in sys/timex.h */
+#define __THROW
+#endif
+
 #include <errno.h>
 #include <sys/timex.h>
 #include "test.h"

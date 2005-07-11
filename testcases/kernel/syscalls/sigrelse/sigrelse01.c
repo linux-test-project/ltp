@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.5 2004/01/20 07:07:12 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.6 2005/07/11 22:29:05 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -201,6 +201,10 @@ main(int argc, char **argv)
 	tst_exit();
     }
 
+#ifdef UCLINUX
+    maybe_run_child(&child, "dd", &pipe_fd[1], &pipe_fd2[0]);
+#endif
+
     /*
      * perform global setup for test
      */
@@ -226,7 +230,14 @@ main(int argc, char **argv)
 	    parent();
 
 	} else {
+#ifdef UCLINUX
+	    if (self_exec(argv[0], "dd", pipe_fd[1], pipe_fd2[0]) < 0) {
+		(void) sprintf(mesg, "self_exec failed");
+		tst_brkm(TBROK, cleanup, mesg);
+	    }
+#else
 	    child();
+#endif
 	}
 
     }   /* End for TEST_LOOPING */

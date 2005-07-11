@@ -57,6 +57,8 @@ volatile int ready;
 
 void setup();
 void cleanup();
+void do_child_1();
+void do_child_2();
 
 /*
  *  *  *  * These globals must be defined in the test.
@@ -66,6 +68,14 @@ char *TCID="msgctl07";           /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
+/* Used by main() and do_child_1(): */
+static int msqid;
+struct my_msgbuf {
+	long type;
+	char text[BYTES];
+} p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
+
+
 /*--------------------------------------------------------------*/
 
 int main(argc, argv)
@@ -73,13 +83,23 @@ int argc;
 char *argv[];
 {
 	key_t key;
-	int msqid, pid, size, status;
+	int pid, status;
 	int i, j, k;
-	struct my_msgbuf {
-		long type;
-		char text[BYTES];
-	} p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
 	sighandler_t alrm();
+
+#ifdef UCLINUX
+	char *msg;
+
+        /* parse standard options */
+        if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+							(char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+        }
+
+	maybe_run_child(&do_child_1, "ndd", 1, &msqid, &c1_msgp.type);
+	maybe_run_child(&do_child_2, "ndddd", 2, &msqid, &c1_msgp.type,
+			&c2_msgp.type, &c3_msgp.type);
+#endif
 
 	key = 2 * K;
 	if ((msqid = msgget(key, IPC_CREAT)) == -1) 
@@ -89,30 +109,21 @@ char *argv[];
 
 	}
 
-	pid = fork();
+	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
                 tst_exit();
 	}
 	else if (pid == 0) {
-		if ((size = msgrcv(msqid, &c1_msgp, BYTES, 0, 0)) == -1)
-	        {
-        	        tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
-                	tst_exit();
+#ifdef UCLINUX
+		if (self_exec(argv[0], "ndd", 1, msqid, c1_msgp.type) < 0) {
+			tst_resm(TFAIL, "\tself_exec failed");
+			tst_exit();
 		}
-		if (size != BYTES) 
-		{
-        	        tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
-                	tst_exit();
-		}
-		for (i=0; i<BYTES; i++) 
-			if (c1_msgp.text[i] != 'i') 
-			{
-        	        	tst_resm(TFAIL, "error: corrup message\n");
-               		 	tst_exit();
-			}
-		exit(0);
+#else
+		do_child_1();
+#endif
 	}
 	else {
 		struct sigaction act;
@@ -148,54 +159,22 @@ char *argv[];
                	tst_exit();
 	}
 	
-	pid = fork();
+	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
 		tst_exit();
 	}
 	else if (pid == 0) {
-		if ((size = msgrcv(msqid, &c3_msgp, BYTES, 3, 0)) == -1) {
-	                tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
-        	        tst_exit();
+#ifdef UCLINUX
+		if (self_exec(argv[0], "ndddd", 1, msqid, c1_msgp.type,
+			      c2_msgp.type, c3_msgp.type) < 0) {
+			tst_resm(TFAIL, "\tself_exec failed");
+			tst_exit();
 		}
-		if (size != BYTES) {
-	                tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
-        	        tst_exit();
-		}
-		for (k=0; k<BYTES; k++) 
-			if (c3_msgp.text[k] != 'k') {
-	                	tst_resm(TFAIL, "error: corrupt message\n");
-	        	        tst_exit();
-			}
-		if ((size = msgrcv(msqid, &c2_msgp, BYTES, 2, 0)) == -1) {
-	                tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
-        	        tst_exit();
-		}
-		if (size != BYTES) {
-	                tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
-        	        tst_exit();
-		}
-		for (j=0; j<BYTES; j++) 
-			if (c2_msgp.text[j] != 'j') {
-	                	tst_resm(TFAIL, "error: corrupt message\n");
-	        	        tst_exit();
-			}
-		if ((size = msgrcv(msqid, &c1_msgp, BYTES, 1, 0)) == -1) {
-	                tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
-        	        tst_exit();
-		}
-		if (size != BYTES) {
-	                tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
-        	        tst_exit();
-		}
-		for (i=0; i<BYTES; i++) 
-			if (c1_msgp.text[i] != 'i') {
-	                	tst_resm(TFAIL, "error: corrupt message\n");
-	        	        tst_exit();
-			}
-
-		exit(0);
+#else
+		do_child_2();
+#endif
 	}
 	else {
 		struct sigaction act;
@@ -278,6 +257,81 @@ int sig;
 	return(0);
 }
 /*--------------------------------------------------------------*/
+
+void
+do_child_1()
+{	
+	int i;
+	int size;
+
+	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 0, 0)) == -1)
+	{
+		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_exit();
+	}
+	if (size != BYTES) 
+	{
+		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_exit();
+	}
+	for (i=0; i<BYTES; i++) 
+		if (c1_msgp.text[i] != 'i') 
+		{
+			tst_resm(TFAIL, "error: corrup message\n");
+			tst_exit();
+		}
+	exit(0);
+}
+
+void
+do_child_2()
+{
+	int i, j, k;
+	int size;
+
+	if ((size = msgrcv(msqid, &c3_msgp, BYTES, 3, 0)) == -1) {
+		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_exit();
+	}
+	if (size != BYTES) {
+		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_exit();
+	}
+	for (k=0; k<BYTES; k++) 
+		if (c3_msgp.text[k] != 'k') {
+			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_exit();
+		}
+	if ((size = msgrcv(msqid, &c2_msgp, BYTES, 2, 0)) == -1) {
+		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_exit();
+	}
+	if (size != BYTES) {
+		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_exit();
+	}
+	for (j=0; j<BYTES; j++) 
+		if (c2_msgp.text[j] != 'j') {
+			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_exit();
+		}
+	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 1, 0)) == -1) {
+		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_exit();
+	}
+	if (size != BYTES) {
+		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_exit();
+	}
+	for (i=0; i<BYTES; i++) 
+		if (c1_msgp.text[i] != 'i') {
+			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_exit();
+		}
+	
+	exit(0);
+}
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ****************************************************************/

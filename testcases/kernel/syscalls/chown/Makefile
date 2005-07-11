@@ -20,7 +20,9 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+= -Wall -I../../../../include
+CFLAGS+= $(if $(UCLINUX),-DUCLINUX)
 LDLIBS+= -L../../../../lib -lltp
+LDLIBS+= $(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard chown*.c) change_owner.c
 TARGETS=$(patsubst %.c,%,$(SRCS))

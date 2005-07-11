@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07B.c,v 1.5 2005/02/07 19:40:14 robbiew Exp $ */
+/* $Id: fcntl07B.c,v 1.6 2005/07/11 22:28:18 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -377,7 +377,7 @@ do_exec(char *prog, int fd, char *tcd)
     printf("%s: fd = %d rc = %d status= %d, errno= %d\n", tcd, fd, rc, status, errno);
 #endif
 
-    switch(pid=fork()) {
+    switch(pid=FORK_OR_VFORK()) {
     case -1:
 	return(-1);
     case 0:				/* child */

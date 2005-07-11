@@ -38,7 +38,9 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <stdio.h>
+#if !defined(UCLINUX)
 #include <fmtmsg.h>			/* interface definition */
+#endif
 #include <string.h>
 
 /*****	LTP Port	*****/
@@ -79,6 +81,8 @@ void clearbuf()
 	for (i=0; i<80; i++)
 		buf[i] = (char)NULL;
 }
+
+#if !defined(UCLINUX)
 
 /*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
@@ -254,6 +258,16 @@ int blexit()
    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
    return(0);
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"fmtmsg01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 
 /*****	**	**	*****/

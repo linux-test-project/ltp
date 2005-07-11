@@ -83,6 +83,8 @@ static int exp_enos[] = {EPERM ,0};
 static char nobody_uid[]="nobody";
 struct passwd *ltpuser;
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc;		/* loop counter */
@@ -157,6 +159,16 @@ void setup()
 
 	TEST_PAUSE;
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"munlockall02 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at

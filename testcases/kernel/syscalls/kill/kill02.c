@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.3 2005/06/15 15:47:04 robbiew Exp $ */
+/* $Id: kill02.c,v 1.4 2005/07/11 22:28:29 robbiew Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -210,6 +210,12 @@ extern int Tst_nobuf;           /* var. used to turn off tst_res buffering */
 
 int exp_enos[]={0};             /* Array of expected errnos */
 
+#ifdef UCLINUX
+static char *argv0;
+void childA_rout_uclinux();
+void childB_rout_uclinux();
+#endif
+
 /***********************************************************************
  * MAIN
  ***********************************************************************/
@@ -232,6 +238,19 @@ main(int ac, char **av)
         tst_exit();
     }
 
+#ifdef UCLINUX
+    /***************************************************************
+     * Save av[0], run child if needed
+     ***************************************************************/
+    argv0 = av[0];
+
+    maybe_run_child(&childA_rout_uclinux, "nd", 1, &pipeA_fd[1]);
+    maybe_run_child(&childB_rout_uclinux, "nd", 2, &pipeB_fd[1]);
+    maybe_run_child(&child1_rout, "ndddddd", 3, &pipe1_fd[1], &pipe2_fd[1],
+		    &pipeA_fd[0], &pipeA_fd[1], &pipeB_fd[0], &pipeB_fd[1]);
+    maybe_run_child(&child2_rout, "nd", 4, &pipe2_fd[1]);
+#endif
+
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
@@ -245,12 +264,12 @@ main(int ac, char **av)
         /* reset Tst_count in case we are looping. */
         Tst_count=0;
 
-	if ((pid1 = fork()) > 0)
+	if ((pid1 = FORK_OR_VFORK()) > 0)
 	{
 	    /*
 	     *  This is the parent, fork again to create child 2.
 	     */
-	     if ((pid2 = fork()) > 0) {
+	     if ((pid2 = FORK_OR_VFORK()) > 0) {
 		/*
 		 *  This is the parent.
 		 */
@@ -260,7 +279,17 @@ main(int ac, char **av)
 		/*
 		 *  This is child 2.
 		 */
+#ifdef UCLINUX
+		 if (self_exec(argv0, "nd", 4, pipe2_fd[1]) < 0) {
+			 if (kill(pid1,SIGKILL) == -1 && errno != ESRCH) {
+				 tst_resm(TWARN,"Child process may not have been killed.");
+			 }
+			 (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno));
+			 tst_brkm(TBROK,cleanup,mesg);
+		 }
+#else
 		 (void) child2_rout();
+#endif
 	     }
 	     else {
 		/*
@@ -278,7 +307,15 @@ main(int ac, char **av)
 	    /*
 	     *  This is child 1.
 	     */
+#ifdef UCLINUX
+	     if (self_exec(argv0, "ndddddd", 3, pipe1_fd[1], pipe2_fd[1],
+			   pipeA_fd[0], pipeA_fd[1], pipeB_fd[0], pipeB_fd[1]) < 0) {
+		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno, strerror(errno)); 
+		     tst_brkm(TBROK,cleanup,mesg);
+	     }
+#else
 	     (void) child1_rout();
+#endif
 	}
 	else {
 	    /*
@@ -467,17 +504,25 @@ void child1_rout()
 	(void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
 	exit(0);
    }
-
   /*
    *  Create children A & B.
    */
-   if ((pidA = fork()) > 0) {
+   if ((pidA = FORK_OR_VFORK()) > 0) {
 	/*
 	 *  This is the parent(child1), fork again to create child B.
 	 */
-	 if ((pidB = fork()) == 0) {
+	 if ((pidB = FORK_OR_VFORK()) == 0) {
 	     /* This is child B. */
+#ifdef UCLINUX
+	     if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {
+		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno)); 
+		     tst_brkm(TBROK,NULL,mesg);
+		     (void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
+		     exit(0);
+	     }
+#else
 	     (void) childB_rout();
+#endif
 	 }
 
 	 else if (pidB == -1) {
@@ -495,7 +540,16 @@ void child1_rout()
 
    else if (pidA == 0) {
 	/* This is child A. */
+#ifdef UCLINUX
+	if (self_exec(argv0, "nd", 1, pipeA_fd[1]) < 0) {
+		(void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno)); 
+		tst_brkm(TBROK,NULL,mesg);
+		(void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
+		exit(0);
+	}
+#else
 	(void) childA_rout();
+#endif
 
    }
 
@@ -625,6 +679,24 @@ void childA_rout()
    exit(0);
 } /*End of childA_rout*/
 
+#ifdef UCLINUX
+/*******************************************************************************
+ *  This is the routine for child A after self_exec
+ ******************************************************************************/
+void childA_rout_uclinux()
+{
+   /* Setup the signal handler again */
+   if (signal(SIGUSR1,usr1_rout) == SIG_ERR)
+   {
+	tst_brkm(TBROK,NULL,"Could not set to catch the childrens signal.");
+	(void) write(pipeA_fd[1],CHAR_SET_FAILED,1);
+	exit(0);
+   }
+
+   childA_rout();
+}
+#endif
+
 /*******************************************************************************
  *  This is the routine for child B, which should not receive the parents signal.
  ******************************************************************************/
@@ -648,6 +720,25 @@ void childB_rout()
 
   exit(0);
 }
+
+#ifdef UCLINUX
+/*******************************************************************************
+ *  This is the routine for child B after self_exec
+ ******************************************************************************/
+void childB_rout_uclinux()
+{
+   /* Setup the signal handler again */
+   if (signal(SIGUSR1,usr1_rout) == SIG_ERR)
+   {
+	tst_brkm(TBROK,NULL,"Could not set to catch the childrens signal.");
+	(void) write(pipeB_fd[1],CHAR_SET_FAILED,1);
+	exit(0);
+   }
+
+   childB_rout();
+}
+#endif
+
 
 /*******************************************************************************
  *  This routine sets up the interprocess communication pipes, signal handling,

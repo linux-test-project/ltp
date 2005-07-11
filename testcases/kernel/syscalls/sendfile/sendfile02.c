@@ -66,8 +66,10 @@ char out_file[100];
 int out_fd;
 pid_t child_pid;
 static int sockfd, s;
+static struct sockaddr_in sin1; /* shared between do_child and create_server */
 
 void cleanup(void);
+void do_child(void);
 void setup(void);
 int create_server(void);
 
@@ -81,6 +83,10 @@ struct test_case_t {
 	{ "Test sendfile(2) with offset in the middle of file", 4, 22 },
 	{ "Test sendfile(2) with offset in the middle of file", 6, 20 }
 };
+
+#ifdef UCLINUX
+static char* argv0;
+#endif
 
 void do_sendfile(off_t offset, int i)
 {
@@ -131,6 +137,23 @@ void do_sendfile(off_t offset, int i)
 
 	close(in_fd);
 
+}
+
+/*
+ * do_child
+ */
+void
+do_child()
+{
+	int lc;
+	int length;
+	char rbuf[4096];
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		length = sizeof(sin1);
+		recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, &length);
+	}
+	exit(0);
 }
 
 /*
@@ -187,10 +210,6 @@ cleanup()
 }
 
 int create_server(void) {
-	int lc;
-	int length;
-	char rbuf[4096];
-	struct sockaddr_in sin1;
 	static int count=0;
 
 	sockfd = socket(PF_INET, SOCK_DGRAM, 0);
@@ -207,18 +226,22 @@ int create_server(void) {
 			strerror(errno));
 		return -1;
 	}
-	child_pid = fork();
+	child_pid = FORK_OR_VFORK();
 	if(child_pid < 0) {
 		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
 			strerror(errno));
 		return -1;
 	}
-	if(!child_pid) { 
-		for (lc = 0; TEST_LOOPING(lc); lc++) {
-			length = sizeof(sin1);
-			recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, &length);
+	if(!child_pid) { /* child */
+#ifdef UCLINUX
+		if(self_exec(argv0, "") < 0) {
+			tst_brkm(TBROK, cleanup, "self_exec failed");
+			return -1;
+			
 		}
-		exit(0);
+#else
+		do_child();
+#endif
 	}
 
 	s = socket(PF_INET, SOCK_DGRAM, 0);
@@ -246,6 +269,11 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+	maybe_run_child(&do_child, "");
+#endif
 
 	setup();
 

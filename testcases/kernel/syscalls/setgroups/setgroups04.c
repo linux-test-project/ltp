@@ -80,6 +80,8 @@ int exp_enos[] = {EFAULT, 0};
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 { 
@@ -144,6 +146,16 @@ main(int ac, char **av)
 	/*NOTREACHED*/
 	return(0);
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"setgroups04 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX)
 
 /*
  * setup()

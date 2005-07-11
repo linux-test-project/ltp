@@ -146,7 +146,7 @@ main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		if ((pid = fork()) == 0) {
+		if ((pid = FORK_OR_VFORK()) == 0) {
 			val = read_segment(0);
 			exit(1);
 		}

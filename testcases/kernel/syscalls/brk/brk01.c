@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: brk01.c,v 1.2 2005/07/11 22:28:12 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -127,6 +127,9 @@ long Beg_brk_val;
 /***********************************************************************
  * MAIN
  ***********************************************************************/
+
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 {
@@ -324,6 +327,16 @@ setup()
 
 }	/* End setup() */
 
+#else
+
+int main()
+{
+        tst_resm(TINFO,"brk01 test is not available on UCLINUX");
+        return 0;
+}
+
+
+#endif /* if !defined(UCLINUX) */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at

@@ -90,6 +90,8 @@ void init_buffers();		/* function to initialize/allocate buffers */
 
 int exp_enos[] = {EFAULT,0};
 
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 {
@@ -157,6 +159,16 @@ main(int ac, char **av)
 	
 	return(0);
 }	/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"pwrite03 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 
 /*

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.7 2005/01/04 21:00:29 mridge Exp $ */
+/* $Id: parse_opts.c,v 1.8 2005/07/11 22:28:09 robbiew Exp $ */
 
 /**********************************************************
  * 
@@ -154,6 +154,10 @@ struct std_option_t {
     { "p" , "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL}, 
     { "P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
     { "t" , "  -t      Turn on syscall timing\n", NULL, NULL},
+#ifdef UCLINUX
+    { "C:", "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
+      NULL, NULL},
+#endif
     {NULL, NULL, NULL, NULL}};
 
 void print_help(void (*user_help)());
@@ -189,6 +193,10 @@ static void usc_recressive_func();
 #define  OPT_delay		010
 #define  OPT_copies		020
 
+#ifdef UCLINUX
+/* Allocated and used in self_exec.c: */
+extern char *child_args;	/* Arguments to child when -C is used */
+#endif
 
 /**********************************************************************
  * parse_opts: 
@@ -297,6 +305,11 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 			print_help(uhf);
 			exit(0);
 			break;
+#ifdef UCLINUX
+		case 'C': /* Run child */
+			child_args = optarg;
+			break;
+#endif
 		default:
 			
             /* Check all the user specified options */
@@ -494,6 +507,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
         }
     }
 
+#if !defined(UCLINUX)
     if ( (ptr=getenv("USC_LP_SBRK")) != NULL ) {
         if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
             STD_LP_sbrk=k;
@@ -502,6 +516,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 		    STD_LP_sbrk);
         }
     }
+#endif /* if !defined(UCLINUX) */
 
     if ( (ptr=getenv("USC_LP_RECFUN")) != NULL ) {
         if ( sscanf(ptr, "%i", &k) == 1 && k >= 0 ) {
@@ -586,6 +601,7 @@ void STD_go(int sig)
 int
 usc_global_setup_hook()
 {
+#ifndef UCLINUX
     int cnt;
     /* temp variable to store old signal action to be restored after pause */
     int (*_TMP_FUNC)(void);
@@ -617,6 +633,7 @@ usc_global_setup_hook()
         signal(SIGUSR1, (void (*)())_TMP_FUNC);          
     }
 
+#if !defined(UCLINUX)
 
     if ( STD_TP_sbrk || STD_LP_sbrk) {
 	STD_start_break=sbrk(0);	/* get original sbreak size */
@@ -627,6 +644,9 @@ usc_global_setup_hook()
 	if ( Debug ) 
 	    printf("after sbrk(%d)\n", STD_TP_sbrk);
     }
+
+#endif /* if !defined(UCLINUX) */
+#endif
     return 0;
 }
 
@@ -766,11 +786,14 @@ int counter;
 	usc_recressive_func(0, STD_LP_recfun, &STD_bigstack);
     }
 
+#if !defined(UCLINUX)
+
     if ( STD_LP_sbrk ) {
 	if ( Debug )
 	    printf("about to do sbrk(%d)\n", STD_LP_sbrk);
 	sbrk(STD_LP_sbrk);
     }
+#endif
 
 
     if ( keepgoing )

@@ -113,7 +113,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ TEST_FILE1,  "No Search permissions to process", EACCES, setup1 },
+#if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
+#endif
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
@@ -122,9 +124,17 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 };
 
 char *TCID="stat03";           /* Test program identifier.    */
+#if !defined(UCLINUX)
 int TST_TOTAL = 6;		/* Total number of test cases. */
+#else
+int TST_TOTAL = 5;
+#endif
 extern int Tst_count;           /* Test Case counter for tst_* routines */
+#if !defined(UCLINUX)
 int exp_enos[]={EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+#else
+int exp_enos[]={EACCES, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+#endif
 
 char * bad_addr = 0;
 
@@ -167,9 +177,11 @@ main(int ac, char **av)
 			file_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
 
+#if !defined(UCLINUX)
 			if (file_name == High_address_node) {
 				file_name = (char *)get_high_address();
 			}
+#endif
 
 			/*
 			 * Call stat(2) to test different test conditions.
@@ -250,7 +262,8 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}

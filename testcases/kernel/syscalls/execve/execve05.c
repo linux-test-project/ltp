@@ -60,6 +60,8 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 void help(void);
+void do_child_1(void);
+void do_child_2(void);
 
 int exp_enos[] = {ETXTBSY, 0};
 
@@ -77,7 +79,6 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int fildes;
 	pid_t pid, pid1;
 	int e_code, status, retval=0;
 	char *argv[1], *env[1];
@@ -86,6 +87,10 @@ main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_1, "nS", 1, &test_name);
+#endif
 
 	if (!Fflag) {
 		tst_resm(TWARN, "You must specify an executable file with "
@@ -109,20 +114,21 @@ main(int ac, char **av)
 		 * child process attempts to execve the executable opened
 		 * by the first child process
 		 */
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
 		}
 
 		if (pid == 0) {		/* first child */
-			if ((fildes = open(test_name, O_WRONLY)) == -1) {
-				tst_brkm(TBROK, NULL, "open(2) failed");
-				exit(1);	
+#ifdef UCLINUX
+			if (self_exec(av[0], "nS", 1, test_name) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-			sleep(10);	/* let other child execve same file */
-			exit(0);
+#else
+			do_child_1();
+#endif
 		}
 
-		if ((pid1 = fork()) == -1) {
+		if ((pid1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
 		}
 
@@ -203,4 +209,20 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
+}
+
+/*
+ * do_child_1()
+ */
+void
+do_child_1()
+{
+	int fildes;
+
+	if ((fildes = open(test_name, O_WRONLY)) == -1) {
+		tst_brkm(TBROK, NULL, "open(2) failed");
+		exit(1);	
+	}
+	sleep(10);	/* let other child execve same file */
+	exit(0);
 }

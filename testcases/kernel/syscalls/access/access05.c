@@ -105,10 +105,12 @@ int setup3();			/* setup() to test access() for EACCES */
 int setup4();			/* setup() to test access() for EINVAL */
 int longpath_setup();	/* setup function to test access() for ENAMETOOLONG */
 
+#if !defined(UCLINUX)
 char *get_high_address();	/* function from ltp-lib	*/
+char High_address_node[64];
+#endif
 
 char Longpathname[PATH_MAX+2];
-char High_address_node[64];
 
 struct test_case_t {		/* test case structure */
 	char *pathname;
@@ -121,7 +123,9 @@ struct test_case_t {		/* test case structure */
 	{ TEST_FILE2, W_OK, "Write Access denied on file", EACCES, setup2 },
 	{ TEST_FILE3, X_OK, "Execute Access denied on file", EACCES, setup3 },
 	{ TEST_FILE4, INV_OK, "Access mode invalid", EINVAL, setup4 },
+#if !defined(UCLINUX)
 	{ High_address_node, R_OK, "Address beyond address space", EFAULT, no_setup },
+#endif
 	{ (char *)-1, R_OK, "Negative address", EFAULT, no_setup },
 	{ "", W_OK, "Pathname is empty", ENOENT, no_setup },
 	{ Longpathname, R_OK, "Pathname too long", ENAMETOOLONG, longpath_setup },
@@ -174,9 +178,11 @@ main(int ac, char **av)
 			access_mode = Test_cases[ind].a_mode;
 			test_desc = Test_cases[ind].desc;
 
+#if !defined(UCLINUX)
 			if (file_name == High_address_node) {
 				file_name = get_high_address();
 			}
+#endif
 
 			/* 
 			 * Call access(2) to test different test conditions.
@@ -249,7 +255,8 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX| MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}

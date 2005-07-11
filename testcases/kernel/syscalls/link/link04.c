@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link04.c,v 1.2 2002/07/23 13:11:18 plars Exp $ */
+/* $Id: link04.c,v 1.3 2005/07/11 22:28:30 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -140,7 +140,9 @@ int no_setup();
 int filepath_setup();
 int filepath2_setup();
 char Longpathname[PATH_MAX+2];
+#if !defined(UCLINUX)
 char High_address[64];
+#endif
 int dir_setup();
 
 struct test_case_t {
@@ -171,9 +173,10 @@ struct test_case_t {
 
     { Longpathname, "pathname too long", "nefile", "nefile",
 	ENAMETOOLONG, longpath_setup, no_setup },
-
+#if !defined(UCLINUX)
     { High_address, "address beyond address space", "nefile", "nefile",
 	EFAULT, no_setup, no_setup },
+#endif
 
     { (char *)-1, "negative address", "nefile", "nefile",
 	EFAULT, no_setup, no_setup },
@@ -191,10 +194,10 @@ struct test_case_t {
 
     { "regfile", "regfile", Longpathname, "pathname too long",
 	ENAMETOOLONG, no_setup, longpath_setup },
-
+#if !defined(UCLINUX)
     { "regfile", "regfile", High_address, "address beyond address space",
 	EFAULT, no_setup, no_setup },
-
+#endif
     { "regfile", "regfile", (char *)-1, "negative address",
 	EFAULT, no_setup, no_setup},
 
@@ -247,11 +250,13 @@ main(int ac, char **av)
             fname2 = Test_cases[ind].file2;
             desc2 = Test_cases[ind].desc2;
 
+#if !defined(UCLINUX)
 	    if ( fname1 == High_address )
 		fname1 = get_high_address();
 
 	    if ( fname2 == High_address )
 		fname2 = get_high_address();
+#endif
 
             /*
              *  Call link(2)
@@ -306,7 +311,8 @@ setup()
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
-    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    bad_addr = mmap(0, 1, PROT_NONE,
+		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr <= 0) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }

@@ -41,6 +41,11 @@
 
 #define DEBUG 0
 
+#ifdef UCLINUX
+#define _GNU_SOURCE /* for asprintf */
+#include <stdio.h>
+#endif
+
 #include <sys/types.h>		/* needed for test		*/
 #include <sys/ipc.h>		/* needed for test		*/
 #include <sys/sem.h>		/* needed for test		*/
@@ -93,6 +98,13 @@ static void term(int sig);
 static void dosemas(int id);
 static void dotest(key_t key);
 
+#ifdef UCLINUX
+static char *argv0;
+
+void do_child();
+static int id_uclinux;
+static char *maxsemstring;
+#endif
 
 /*--------------------------------------------------------------*/
 /*ARGSUSED*/
@@ -101,6 +113,16 @@ main(int argc, char **argv)
 {
 	register int i, j, ok, pid;
 	int count, child, status, nwait;
+
+#ifdef UCLINUX
+	char *msg;
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	argv0 = argv[0];
+	maybe_run_child(&do_child, "dS", &id_uclinux, &maxsemstring);
+#endif
 
 	prog = argv[0];
 	nwait = 0;
@@ -133,7 +155,7 @@ main(int argc, char **argv)
 	}
 
 	for (i = 0; i <  NPROCS; i++) {
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
                         tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
                         tst_exit();
 		}
@@ -211,11 +233,28 @@ dotest(key_t key)
 	}
 			
 	for (i = 0; i < NKIDS; i++) {
-		if ((pid = fork()) < 0) {
-		tst_resm(TFAIL, "\tfork failed");
+		if ((pid = FORK_OR_VFORK()) < 0) {
+			tst_resm(TFAIL, "\tfork failed");
 		}
 		if (pid == 0) {
+#ifdef UCLINUX
+			int j;
+			maxsemstring = "";
+			for (j = 0; j < NSEMS; j++) {
+				if (asprintf(&maxsemstring, "%s%s%d",
+					     maxsemstring, (j ? ":" : ""),
+					     maxsemvals[j]) < 0) {
+					tst_resm(TBROK, "Could not serialize "
+						 "maxsemvals");
+					tst_exit();
+				}
+			}
+			if (self_exec(argv0, "dS", id, maxsemstring) < 0) {
+				tst_resm(TFAIL, "\tself_exec failed");
+			}
+#else
 			dosemas(id);
+#endif
 		}
 		if (pid > 0) {
 			kidarray[i] = pid;
@@ -277,6 +316,32 @@ dotest(key_t key)
 		exit(1);
 }
 
+#ifdef UCLINUX
+void
+do_child()
+{
+	int i;
+	char *tok;
+	char *endptr;
+
+	tok = strtok(maxsemstring, ":");
+	for (i = 0; i < NSEMS; i++) {
+		if (strlen(tok) == 0) {
+			tst_resm(TBROK, "Invalid argument to -C option");
+			tst_exit();
+		}
+
+		maxsemvals[i] = strtol(tok, &endptr, 10);
+		if (*endptr != '\0') {
+			tst_resm(TBROK, "Invalid argument to -C option");
+			tst_exit();
+                }
+		tok = strtok(NULL, ":");
+	}
+
+	dosemas(id_uclinux);
+}
+#endif
 
 static void
 dosemas(int id)
@@ -286,6 +351,9 @@ dosemas(int id)
 	srand(getpid());
 	for (i = 0; i < NREPS; i++) {
 		for (j = 0; j < NSEMS; j++) {
+			semops[j].sem_num = j;
+			semops[j].sem_flg = SEM_UNDO;
+
 			do {
 				semops[j].sem_op = 
 					( - /*CASTOK*/(short)(rand() % (maxsemvals[j]/2)));

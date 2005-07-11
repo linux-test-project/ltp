@@ -125,7 +125,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "malloc() failed");
 		}
 	
-		pid = fork();
+		pid = FORK_OR_VFORK();
 	
 		if (pid == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");

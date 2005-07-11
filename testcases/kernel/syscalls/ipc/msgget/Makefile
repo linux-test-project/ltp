@@ -24,7 +24,9 @@ MAINS=msgget01 msgget02 msgget03 msgget04
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 CFLAGS+=-I../lib -I../../../../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 all: $& $(MAINS)
 

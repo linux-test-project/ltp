@@ -26,12 +26,15 @@
 DEBUG_CFLAGS=-O
 DEBUG_LDFLAGS=-s
 CFLAGS+=-I../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 EXCLUDE_DIR=epoll
 #
 # Commented this out since there are directories here we don't want built by default
 #
 SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -v epoll` 
+UCLINUX_SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -vE "^fork|epoll|capget|capset|chmod|chown|llseek|nftw|clone|profil"` 
 
 all:  
 	@set -e; for i in lib $(SUBDIR); do \
@@ -41,6 +44,16 @@ all:
 install:
 	@set -e; for i in lib $(SUBDIR); do \
 		$(MAKE) -C $$i  install; \
+	done
+
+uclinux:  
+	@set -e; for i in lib $(UCLINUX_SUBDIR); do \
+		$(MAKE) -C $$i UCLINUX=1 all; \
+	done
+
+uclinux_install:
+	@set -e; for i in lib $(UCLINUX_SUBDIR); do \
+		$(MAKE) -C $$i UCLINUX=1 all; \
 	done
 
 clean:

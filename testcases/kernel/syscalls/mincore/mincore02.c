@@ -75,6 +75,8 @@ static int p_size;		/* page size obtained via getpagesize() */
 static int num_pages = 4;	/* four pages are used in this test */
 static char * vec=NULL;
 
+#if !defined(UCLINUX)
+
 static char tmpfilename[] = "fooXXXXXX";
 
 /* Extern Global Functions */
@@ -200,3 +202,13 @@ int main(int argc, char **argv)
 	cleanup();
 	return 0;
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mincore02 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */

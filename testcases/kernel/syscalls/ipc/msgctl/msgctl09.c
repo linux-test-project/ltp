@@ -93,6 +93,21 @@ int 	tid;
 int 	nprocs, nreps, nkids, MSGMNI;
 int 	procstat;
 void 	term(int);
+#ifdef UCLINUX
+static char *argv0;
+
+void do_child_1_uclinux();
+static key_t key_uclinux;
+static int i_uclinux;
+
+void do_child_2_uclinux();
+static int pid_uclinux;
+static int child_process_uclinux;
+
+void do_child_3_uclinux();
+static int rkid_uclinux;
+#endif
+void cleanup_msgqueue(int i, int tid);
 
 /*-----------------------------------------------------------------*/
 int main(argc, argv)
@@ -101,6 +116,24 @@ char	*argv[];
 {
 	register int i, j, ok, pid;
 	int count, status;
+
+#ifdef UCLINUX
+	char *msg;			/* message returned from parse_opts */
+
+	argv0 = argv[0];
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL)
+	{
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+	
+	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux, &i_uclinux);
+	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &key_uclinux,
+			&pid_uclinux, &child_process_uclinux);
+	maybe_run_child(&do_child_3_uclinux, "nddd", 3, &key_uclinux,
+			&rkid_uclinux, &child_process_uclinux);
+#endif
 
 	setup();
 
@@ -194,16 +227,24 @@ char	*argv[];
 	for (i = 0; i <  nprocs; i++) 
 	{
 		fflush(stdout);
-		if ((pid = fork()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0) 
 		{
-                        tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
-                        tst_exit();
+	                tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
+        	        tst_exit();
 		}
 		/* Child does this */
 		if (pid == 0) 
 		{
+#ifdef UCLINUX
+			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0)
+			{
+				tst_resm(TFAIL, "\tself_exec failed");
+				tst_exit();
+			}
+#else
 			procstat = 1;
 			exit( dotest(keyarray[i], i) );
+#endif
 		}
 		pidarray[i] = pid;
 	}
@@ -249,6 +290,53 @@ char	*argv[];
 }
 /*--------------------------------------------------------------------*/
 
+#ifdef UCLINUX
+void
+do_child_1_uclinux()
+{
+	procstat = 1;
+	exit(dotest(key_uclinux, i_uclinux));
+}
+
+void
+do_child_2_uclinux()
+{
+	procstat = 2;
+	exit(doreader(key_uclinux, pid_uclinux, child_process_uclinux));
+}
+
+void
+do_child_3_uclinux()
+{
+	procstat = 2;
+	exit(dowriter(key_uclinux, rkid_uclinux, child_process_uclinux));
+}
+#endif
+
+void
+cleanup_msgqueue(int i, int tid)
+{
+	/*
+	 * Decrease the value of i by 1 because it
+	 * is getting incremented even if the fork
+	 * is failing.
+	 */
+
+	i--;
+	/*
+	 * Kill all children & free message queue.
+	 */
+	for (; i >= 0; i--) {
+		(void)kill(rkidarray[i], SIGKILL);
+		(void)kill(wkidarray[i], SIGKILL);
+	}
+
+	if (msgctl(tid, IPC_RMID, 0) < 0) {
+		tst_resm(TFAIL, "\tMsgctl error in cleanup, errno = %d\n", errno);
+		tst_exit();
+	}
+}
+
 int dotest(key, child_process)
 key_t 	key;
 int	child_process;
@@ -270,41 +358,30 @@ int	child_process;
 	for (i=0; i < nkids; i++)
 	{
 		fflush(stdout);
-		if ((pid = fork()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0) 
 		{
 	                tst_resm(TWARN, "\tFork failure in first child of child group %d \n", child_process);
-
-			/*
-			 * Decrease the value of i by 1 because it
-			 * is getting incremented even if the fork
-			 * is failing.
-			 */
-
-			i--;
-			/*
-			 * Kill all children & free message queue.
-			 */
-			for (; i >= 0; i--) {
-				(void)kill(rkidarray[i], SIGKILL);
-				(void)kill(wkidarray[i], SIGKILL);
-			}
-
-			if (msgctl(tid, IPC_RMID, 0) < 0) {
-		                tst_resm(TFAIL, "\tMsgctl error in cleanup, errno = %d\n", errno);
-                		tst_exit();
-			}
-               		tst_exit();
-
+			cleanup_msgqueue(i, tid);
+			tst_exit();
 		}
 		/* First child does this */
 		if (pid == 0) 
 		{
+#ifdef UCLINUX
+			if (self_exec(argv0, "nddd", 2, key, getpid(),
+				      child_process) < 0) {
+				tst_resm(TWARN, "self_exec failed");
+				cleanup_msgqueue(i, tid);
+				tst_exit();
+			}
+#else
 			procstat = 2;
 			exit( doreader( key, getpid(), child_process) );
+#endif
 		}
 		rkidarray[i] = pid;
 		fflush(stdout);
-		if ((pid = fork()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0) 
 		{
 	                tst_resm(TWARN, "\tFork failure in first child of child group %d \n", child_process);
 			/*
@@ -312,32 +389,29 @@ int	child_process;
 			 */
 			(void)kill(rkidarray[i], SIGKILL);
 
-			/*
-			 * Decrease the value of i by 1 because it
-			 * is getting incremented even if the fork
-			 * is failing.
-			 */
-
-			i--;
-			/*
-			 * Kill all children & free message queue.
-			 */
-			for (; i >= 0; i--) {
-				(void)kill(rkidarray[i], SIGKILL);
-				(void)kill(wkidarray[i], SIGKILL);
-			}
-			if (msgctl(tid, IPC_RMID, 0) < 0) {
-		                tst_resm(TFAIL, "\tMsgctl error in cleanup, errno = %d\n", errno);
-                		tst_exit();
-			}
+			cleanup_msgqueue(i, tid);
                		tst_exit();
-
 		}
 		/* Second child does this */
 		if (pid == 0) 
 		{
+#ifdef UCLINUX
+			if (self_exec(argv0, "nddd", 3, key, rkidarray[i],
+				      child_process) < 0) {
+				tst_resm(TWARN, "\tFork failure in first child "
+					 "of child group %d \n", child_process);
+				/*
+				 * Kill the reader child process
+				 */
+				(void)kill(rkidarray[i], SIGKILL);
+
+				cleanup_msgqueue(i, tid);
+				tst_exit();
+			}
+#else
 			procstat = 2;
 			exit( dowriter( key, rkidarray[i], child_process) );
+#endif
 		}
 		wkidarray[i] = pid;
 	}

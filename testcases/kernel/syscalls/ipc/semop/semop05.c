@@ -92,6 +92,11 @@ struct test_case_t {
 	{{0}, -1, 0, 5, EINTR}
 };
 
+#ifdef UCLINUX
+void do_child_uclinux();
+static int i_uclinux;
+#endif
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -104,6 +109,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "dd", &i_uclinux, &sem_id_1);
+#endif
 
 	setup();			/* global setup */
 
@@ -131,7 +140,14 @@ int main(int ac, char **av)
 			}
 
 			if (pid == 0) {		/* child */
+#ifdef UCLINUX
+				if (self_exec(av[0], "dd", i, sem_id_1) < 0) {
+					tst_brkm(TBROK, cleanup,
+						 "could not self_exec");
+				}
+#else
 				do_child(i);
+#endif
 			} else {		/* parent */
 				usleep(250000);
 
@@ -153,7 +169,6 @@ int main(int ac, char **av)
 
 				/* let the child carry on */
 				waitpid(pid,NULL,0);
-				exit(0);
 			}
 
 			/*
@@ -191,18 +206,43 @@ do_child(int i)
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "call succeeded when error expected");
-		return;
+		exit(-1);
 	}
 	
 	TEST_ERROR_LOG(TEST_ERRNO);
 
 	if (TEST_ERRNO == TC[i].error) {
-		tst_resm(TPASS, "expected failure - errno = %d"						 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TPASS, "expected failure - errno = %d"
+			 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
 		tst_resm(TFAIL, "unexpected error - "
 			 "%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
 	}
+
+	exit(0);
 }
+
+#ifdef UCLINUX
+/*
+ * do_child_uclinux() - capture signals, re-initialize s_buf then call do_child
+ *                      with the appropriate argument
+ */
+void
+do_child_uclinux()
+{
+	int i = i_uclinux;
+
+	/* capture signals */
+	tst_sig(FORK, sighandler, cleanup);
+
+	/* initialize the s_buf buffer */
+	s_buf.sem_op = TC[i].op;
+	s_buf.sem_flg = TC[i].flg;
+	s_buf.sem_num = TC[i].num;
+
+	do_child(i);
+}
+#endif
 
 /*
  * sighandler() - handle signals

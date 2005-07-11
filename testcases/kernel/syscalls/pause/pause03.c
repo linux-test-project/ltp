@@ -77,6 +77,7 @@ char *TCID="pause03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
+void do_child();		/* Function to run in child process */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handle(int sig);	/* signal handler for SIGCLD */
@@ -95,6 +96,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
 	/* Perform global setup for test */
 	setup();
 
@@ -110,14 +115,13 @@ main(int ac, char **av)
 		}
 
 		if (cpid == 0) {		/* Child process */
-			/* Suspend the child using pause() */
-			TEST(pause());
-
-			/* print the message if pause() returned */
-			tst_resm(TFAIL, "Unexpected return from pause()");
-			/* Loop infinitely */
-			while (1)
-			;
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
+			}
+#else
+			do_child();
+#endif
 		}
 
 		/* Parent process */
@@ -183,6 +187,22 @@ main(int ac, char **av)
 
 	return(0);
 }	/* End main */
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	/* Suspend the child using pause() */
+	TEST(pause());
+	
+	/* print the message if pause() returned */
+	tst_resm(TFAIL, "Unexpected return from pause()");
+	/* Loop infinitely */
+	while (1)
+	;
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

@@ -100,6 +100,14 @@ int runtest();
 void setup();
 void cleanup();
 
+#ifdef UCLINUX
+static char *argv0;
+void dochild1_uclinux();
+void dochild2_uclinux();
+void dochild3_uclinux();
+static int group_uclinux;
+#endif
+
 /*--------------------------------------------------------------*/
 /*--------------------------------------------------------------*/
 /*--------------------------------------------------------------*/
@@ -108,6 +116,20 @@ int  argc;
 char *argv[];
 {
 	int c;
+
+#ifdef UCLINUX
+	char *msg;
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	argv0 = argv[0];
+	maybe_run_child(&dochild1_uclinux, "nd", 1, &nfiles);
+	maybe_run_child(&dochild2_uclinux, "n", 2);
+	maybe_run_child(&dochild3_uclinux, "nd", 3, &group_uclinux);
+#endif
 
 	setup();
 
@@ -329,7 +351,7 @@ int group, child, children;
 {
 	int pid;
 
-	pid = fork();
+	pid = FORK_OR_VFORK();
 
 	if (pid < 0) 
 	{
@@ -343,13 +365,37 @@ int group, child, children;
 		switch(children%NCHILD) 
 		{
 		case 0:
+#ifdef UCLINUX
+			if (self_exec(argv0, "nd", 1, nfiles) < 0) {
+				massmurder();
+				tst_brkm(TBROK, cleanup, "\tself_exec failed");
+				tst_exit();
+			}
+#else
 			dochild1();   /* create existing directories */
+#endif
 			break;        /* so lint won't complain */
 		case 1:
+#ifdef UCLINUX
+			if (self_exec(argv0, "n", 2) < 0) {
+				massmurder();
+				tst_brkm(TBROK, cleanup, "\tself_exec failed");
+				tst_exit();
+			}
+#else
 			dochild2();   /* remove nonexistant directories */
+#endif
 			break;
 		case 2:
+#ifdef UCLINUX
+			if (self_exec(argv0, "nd", 3, group) < 0) {
+				massmurder();
+				tst_brkm(TBROK, cleanup, "\tself_exec failed");
+				tst_exit();
+			}
+#else
 			dochild3(group);   /* create/delete directories */
+#endif
 			break;
 		default:
 			tst_brkm(TFAIL, cleanup, "\tTest not inplemented for child %d .\n", child);
@@ -427,6 +473,21 @@ int dochild1()
 	exit(0);
 }
 
+#ifdef UCLINUX
+void dochild1_uclinux()
+{
+	/* Set up to catch SIGTERM signal */
+        if (signal(SIGTERM, term) == SIG_ERR)
+        {
+		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+			 errno);
+        	tst_exit();
+	}
+
+	dochild1();
+}
+#endif
+
 int dochild2()
 {
 	/* Child routine which attempts to remove directories from the
@@ -463,6 +524,21 @@ int dochild2()
 	exit(0);
 	return(0);
 }
+
+#ifdef UCLINUX
+void dochild2_uclinux()
+{
+	/* Set up to catch SIGTERM signal */
+        if (signal(SIGTERM, term) == SIG_ERR)
+        {
+		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+			 errno);
+        	tst_exit();
+	}
+
+	dochild2();
+}
+#endif
 
 int dochild3(group)
 int group;
@@ -510,6 +586,22 @@ int group;
 	}
 	exit(0);
 }
+
+#ifdef UCLINUX
+void dochild3_uclinux()
+{
+	/* Set up to catch SIGTERM signal */
+        if (signal(SIGTERM, term) == SIG_ERR)
+        {
+		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+			 errno);
+        	tst_exit();
+	}
+
+	dochild3(group_uclinux);
+}
+#endif
+
 int massmurder()
 {
         register int j;

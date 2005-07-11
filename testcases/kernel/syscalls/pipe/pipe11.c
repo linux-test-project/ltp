@@ -58,6 +58,8 @@ char *TCID = "pipe11";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+void do_child(void);
+void do_child_uclinux(void);
 void setup(void);
 void cleanup(void);
 
@@ -70,6 +72,7 @@ int ncperchild;			/* no of chars child should read */
 int szcharbuf;			/* size of char buf */
 int pipewrcnt;			/* chars written to pipe */
 char *wrbuf, *rdbuf;
+int fd[2];			/* fds for pipe read/write */
 
 ssize_t safe_read(int fd, void *buf, size_t count)
 {
@@ -87,16 +90,20 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
-	int fd[2];			/* fds for pipe read/write */
 	int i;
 	int fork_ret, status;
-	int nread, written;		/* no of chars read and written */
+	int written;			/* no of chars read and written */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "ddddd", &fd[0], &fd[1], &kidid,
+			&ncperchild, &szcharbuf);
+#endif
 
 	setup();
 
@@ -124,7 +131,7 @@ int main(int ac, char **av)
 
 refork:
 		++kidid;
-		fork_ret = fork();
+		fork_ret = FORK_OR_VFORK();
 
 		if (fork_ret < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
@@ -136,22 +143,15 @@ refork:
 		}
 
 		if (fork_ret == 0) {		/* child */
-			if (close(fd[1])) {
-				tst_resm(TINFO, "child %d " "could not close "
-					 "pipe", kidid);
-				exit(0);
+#ifdef UCLINUX
+			if (self_exec(av[0], "ddddd", fd[0], fd[1], kidid,
+				      ncperchild, szcharbuf) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
+				/*NOTREACHED*/
 			}
-			nread = safe_read(fd[0], rdbuf, ncperchild);
-			if (nread == ncperchild) {
-				tst_resm(TINFO, "child %d " "got %d chars",
-					 kidid, nread);
-				exit(0);
-			} else {
-				tst_resm(TFAIL, "child %d did not receive "
-					 "expected no of characters, got %d "
-					 "characters", kidid, nread);
-				exit(1);
-			}
+#else
+			do_child();
+#endif
 		}
 
 		/* parent */
@@ -173,6 +173,44 @@ refork:
 	/*NOTREACHED*/
 	return(0);
 }
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	int nread;
+
+	if (close(fd[1])) {
+		tst_resm(TINFO, "child %d " "could not close pipe", kidid);
+		exit(0);
+	}
+	nread = safe_read(fd[0], rdbuf, ncperchild);
+	if (nread == ncperchild) {
+		tst_resm(TINFO, "child %d " "got %d chars", kidid, nread);
+		exit(0);
+	} else {
+		tst_resm(TFAIL, "child %d did not receive expected no of "
+			 "characters, got %d characters", kidid, nread);
+		exit(1);
+	}
+}
+
+/* 
+ * do_child_uclinux() - as above, but mallocs rdbuf first
+ */
+void
+do_child_uclinux()
+{
+	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
+		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
+		/*NOTREACHED*/
+	}
+
+	do_child();
+}
+
 
 /*
  * setup() - performs all ONE TIME setup for this test.

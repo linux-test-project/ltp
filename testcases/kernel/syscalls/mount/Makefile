@@ -19,7 +19,9 @@
 # description	: make(1) description file for the mount(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -D_GNU_SOURCE -Wall -g
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LDLIBS+=	-L../../../../lib -lltp
+LDLIBS+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard mount*.c) setuid_test.c
 TARGETS=$(patsubst %.c,%,$(SRCS))

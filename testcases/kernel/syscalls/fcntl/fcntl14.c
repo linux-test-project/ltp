@@ -546,6 +546,9 @@ char *TCID = "fcntl14";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;		/* Test case counter */
 
+#ifdef UCLINUX
+static char *argv0;		/* Set by main(), passed to self_exec() */
+#endif
 
 /*
  * cleanup()
@@ -618,6 +621,13 @@ wake_parent(void)
 			fail = 1;
                     }
 }
+
+void do_usleep_child() {
+	usleep(100000); /* XXX how long is long enough? */
+	wake_parent();
+	exit(0);
+}
+
 
 void dochild()
 {					/* child process */
@@ -744,14 +754,20 @@ void dochild()
                  * need some way to have fcntl() atomically unblock a
                  * signal and wait for the lock.)
 		 */
-                pid = fork();
+                pid = FORK_OR_VFORK();
                 switch (pid) {
                   case -1:
                     tst_resm(TFAIL, "Fork failed");
                     break;
                   case 0: /* child */
-                    usleep(100000); /* XXX how long is long enough? */
-                    wake_parent();
+#ifdef UCLINUX
+		    if (self_exec(argv0, "n", 1) < 0) {
+		      tst_resm(TFAIL, "self_exec failed");
+		      break;
+		    }
+#else
+		    do_usleep_child();
+#endif
                     break;
 
                   default:
@@ -849,8 +865,19 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		fflush(stdout);
 
 		/* spawn a child process */
-		if ((child = fork()) == 0) {
+		if ((child = FORK_OR_VFORK()) == 0) {
+#ifdef UCLINUX
+			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
+				      thiscase->c_whence, thiscase->c_start,
+				      thiscase->c_len, thiscase->c_flag,
+				      thiscase->a_type, fd, test, parent) < 0) {
+				tst_resm(TFAIL, "self_exec failed");
+				cleanup();
+				/*NOTREACHED*/
+			}
+#else
 			dochild();
+#endif
 		}
 		if (child < 0) {
 			tst_resm(TFAIL, "Fork failed");
@@ -956,6 +983,18 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+
+	maybe_run_child(&do_usleep_child, "n", 1);
+	thiscase = malloc(sizeof(testcase));
+
+	maybe_run_child(&dochild, "nddddddddd", 2, &thiscase->c_type,
+			&thiscase->c_whence, &thiscase->c_start,
+			&thiscase->c_len, &thiscase->c_flag, &thiscase->a_type,
+			&fd, &test, &parent);
+#endif
 
 	setup();			/* global setup */
 
@@ -1119,7 +1158,18 @@ int main(int ac, char **av)
 
 		/* spawn a child process */
 		if ((child = fork()) == 0) {
+#ifdef UCLINUX
+			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
+				      thiscase->c_whence, thiscase->c_start,
+				      thiscase->c_len, thiscase->c_flag,
+				      thiscase->a_type, fd, test, parent) < 0) {
+				tst_resm(TFAIL, "self_exec failed");
+				cleanup();
+				/*NOTREACHED*/
+			}
+#else
 			dochild();
+#endif
 		}
 		if (child < 0) {
 			tst_resm(TFAIL, "Fork failed");

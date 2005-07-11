@@ -77,6 +77,7 @@ extern void rm_shm(int);
 
 void cleanup(void);
 void setup(void);
+void do_child(void);
 
 char *TCID= "kill05";
 int TST_TOTAL = 1;
@@ -95,7 +96,7 @@ int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
-	pid_t pid1, my_pid;
+	pid_t pid1;
 	int status;
 
 	char user1name[] = "nobody";
@@ -109,6 +110,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
 
 	setup();                        /* global setup */
 
@@ -130,7 +135,7 @@ int main(int ac, char **av)
 		 * different from this one.
 		 */
 
-		pid1 = fork();
+		pid1 = FORK_OR_VFORK();
 
 		if (pid1 < 0) {
 			tst_brkm(TBROK, cleanup, "Fork failed");
@@ -140,14 +145,13 @@ int main(int ac, char **av)
 			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1){
 				tst_resm(TWARN, "setreuid failed in child");
 			}
-			my_pid = getpid();
-			while(1) {
-				if (*flag == 1) {
-					exit(0);
-				} else {
-					sleep (1);
-				}
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec of child failed");
 			}
+#else
+			do_child();
+#endif
 		} else {			/* parent */
 			if (setreuid(ltpuser2->pw_uid,ltpuser2->pw_uid) == -1) {
 				tst_resm(TWARN, "seteuid failed in child");
@@ -192,6 +196,23 @@ int main(int ac, char **av)
 	return(0);
 }
 
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	pid_t my_pid;
+
+	my_pid = getpid();
+	while(1) {
+		if (*flag == 1) {
+			exit(0);
+		} else {
+			sleep (1);
+		}
+	}
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test

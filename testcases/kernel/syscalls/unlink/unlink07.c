@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: unlink07.c,v 1.2 2002/07/23 13:11:22 plars Exp $ */
+/* $Id: unlink07.c,v 1.3 2005/07/11 22:29:11 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -151,10 +151,14 @@ struct test_case_t {
     { "", "path is empty string", ENOENT, no_setup},
     { "nefile/file", "path contains a non-existent file",
 		ENOENT, no_setup },
+#if !defined(UCLINUX)
     { High_address, "address beyond address space", EFAULT, no_setup },
+#endif
     { "file/file", "path contains a regular file",
 		ENOTDIR, filepath_setup },
+#if !defined(UCLINUX)
     { High_address, "address beyond address space", EFAULT, no_setup },
+#endif
     { Longpathname, "pathname too long", ENAMETOOLONG, longpath_setup },
     { (char *)-1, "negative address", EFAULT, no_setup },
     { NULL, NULL, 0, no_setup }
@@ -203,9 +207,10 @@ main(int ac, char **av)
 	    fname = Test_cases[ind].pathname;
 	    desc = Test_cases[ind].desc;
 
+#if !defined(UCLINUX)
 	    if ( fname == High_address )
 		fname = get_high_address();
-       
+#endif       
             /*
 	     *  Call unlink(2)
 	     */

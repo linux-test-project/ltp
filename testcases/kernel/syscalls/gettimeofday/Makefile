@@ -21,7 +21,9 @@
 # description	: make(1) description file for the gettimeofday(2) tests. #
 ###########################################################################
 CFLAGS+=	-I../../../../include -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

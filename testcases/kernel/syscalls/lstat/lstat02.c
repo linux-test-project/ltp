@@ -103,7 +103,10 @@ int setup2();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
 
 char Longpathname[PATH_MAX+2];
+
+#if !defined(UCLINUX)
 char High_address_node[64];
+#endif /* if !defined(UCLINUX) */
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	char *pathname;
@@ -112,7 +115,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ SFILE1,  "No Search permissions to process", EACCES, setup1 },
+#if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
+#endif
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
@@ -168,9 +173,11 @@ main(int ac, char **av)
 			file_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
 
+#if !defined(UCLINUX)
 			if (file_name == High_address_node) {
 				file_name = (char *)get_high_address();
 			}
+#endif
 
 			/*
 			 * Call lstat(2) to test different test conditions.
@@ -241,7 +248,8 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: wait02.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: wait02.c,v 1.2 2005/07/11 22:29:12 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -161,7 +161,7 @@ main(int ac, char **av)
 	Tst_count=0;
 	
 	/* create a child to wait for */
-        if ((fork_pid=fork()) == -1) {
+        if ((fork_pid=FORK_OR_VFORK()) == -1) {
 	    tst_brkm(TBROK, cleanup, "fork() Failure. errno=%d : %s", errno, strerror(errno));
         } else if (fork_pid == 0) {
 	    /* Child, sleep a second then exit */

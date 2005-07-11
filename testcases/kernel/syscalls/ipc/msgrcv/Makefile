@@ -24,7 +24,9 @@ MAINS=msgrcv01 msgrcv02 msgrcv03 msgrcv04 msgrcv05 msgrcv06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 CFLAGS+=-I../lib -I../../../../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 all: $& $(MAINS)
 

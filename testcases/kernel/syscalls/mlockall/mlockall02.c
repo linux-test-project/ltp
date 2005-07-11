@@ -102,6 +102,8 @@ struct test_case_t {
 	{0, EINVAL, "Unknown flag" }
 };
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc, i;		/* loop counter */
@@ -260,3 +262,13 @@ void cleanup()
 
 	return;
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mlockall02 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */

@@ -21,7 +21,9 @@
 # description	: make(1) description file for the sendfile(2) tests.	  #
 ###########################################################################
 CFLAGS+=        -I../../../../include -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LDLIBS+=       -L../../../../lib -lltp
+LDLIBS+=	$(if $(UCLINUX),-lc)
 
 DIR=sendfile
 MAINS=sendfile02 sendfile03

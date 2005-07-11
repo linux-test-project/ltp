@@ -84,6 +84,8 @@ struct msghdr msgdat;
 struct cmsghdr *control = 0;
 int	controllen = 0;
 struct iovec iov[1];
+static int sfd; /* shared between do_child and start_server */
+static int ufd; /* shared between do_child and start_server */
 
 void setup(void);
 void setup0(void);
@@ -95,6 +97,7 @@ void cleanup(void);
 void cleanup0(void);
 void cleanup1(void);
 void cleanup2(void);
+void do_child(void);
 
 void sender(int);
 pid_t start_server(struct sockaddr_in *, struct sockaddr_un *);
@@ -169,6 +172,10 @@ int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EINVAL, 0};
 
 extern int Tst_count;
 
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
 int
 main(int argc, char *argv[])
 {
@@ -180,6 +187,11 @@ main(int argc, char *argv[])
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	argv0 = argv[0];
+	maybe_run_child(&do_child, "dd", &sfd, &ufd);
+#endif
 
 	setup();
 
@@ -364,11 +376,7 @@ cleanup2(void)
 pid_t
 start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 {
-	struct sockaddr_in fsin;
-	struct sockaddr_un fsun;
-	fd_set	afds, rfds;
 	pid_t	pid;
-	int	sfd, nfds, cc, fd, ufd;
 
 	/* set up inet socket */
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -407,6 +415,13 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 
 	switch ((pid = fork())) {
 	case 0:	/* child */
+#ifdef UCLINUX
+		if (self_exec(argv0, "dd", sfd, ufd) < 0) {
+			tst_brkm(TBROK, cleanup, "server self_exec failed");
+		}
+#else
+		do_child();
+#endif
 		break;
 	case -1:
 		tst_brkm(TBROK, cleanup, "server fork failed: %s",
@@ -417,6 +432,18 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 		(void) close(ufd);
 		return pid;
 	}
+	/*NOTREACHED*/
+	exit(1);
+}
+
+void
+do_child()
+{
+	struct sockaddr_in fsin;
+	struct sockaddr_un fsun;
+	fd_set	afds, rfds;
+	int nfds, cc, fd;
+
 
 	FD_ZERO(&afds);
 	FD_SET(sfd, &afds);

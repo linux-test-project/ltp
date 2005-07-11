@@ -75,6 +75,10 @@ static	volatile sig_atomic_t 	parent_flag, child_flag, alarm_flag;
 static	char	tmpname[40];
 struct	flock	flock;
 
+#ifdef UCLINUX
+static char* argv0;	/* set by main, passed to self_exec */
+#endif
+
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
@@ -185,6 +189,15 @@ int dochild1(int file_flag, int file_mode)
 	exit(0);
 }
 
+#ifdef UCLINUX
+int uc_file_flag, uc_file_mode;
+
+void dochild1_uc()
+{
+	dochild1(uc_file_flag, uc_file_mode);
+}
+#endif
+
 int dofork(int file_flag, int file_mode)
 {
 	/* create child process */
@@ -195,7 +208,15 @@ int dofork(int file_flag, int file_mode)
 
 	/* child1 */
 	if (child1 == 0) {
+#ifdef UCLINUX
+		if (self_exec(argv0, "nddds", 1, file_flag, file_mode,
+			      parent, tmpname) < 0) {
+			perror("self_exec failure");
+			return(1);
+		}
+#else
 		dochild1(file_flag, file_mode);
+#endif
 	} else {
 		/*
 		 * need to wait for child1 to open, and lock the area of the
@@ -263,7 +284,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 	flock.l_whence = 0;
 	flock.l_start = 5L;
 	flock.l_len = 5L;
-
+	
 	/* set lock on child file descriptor */
 	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
 		tst_resm(TFAIL, "second child2 lock succeeded should have "
@@ -532,6 +553,12 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&dochild1_uc, "nddds", 1, &uc_file_flag,
+			&uc_file_mode, &parent, tmpname);
+	argv0 = av[0];
+#endif
 
 	setup();
 

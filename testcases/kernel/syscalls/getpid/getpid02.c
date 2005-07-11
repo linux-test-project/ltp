@@ -120,7 +120,7 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/* Fork a child now */
-			if ((pid = fork()) < 0) {
+			if ((pid = FORK_OR_VFORK()) < 0) {
 				tst_resm(TFAIL, "fork() failed to create child,"
 					 " error=%d", TEST_ERRNO);
 			} else if (pid == 0) {	/* Child process */

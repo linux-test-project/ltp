@@ -61,6 +61,7 @@ extern int Tst_count;
 
 int usrsig;
 
+void do_child(void);
 void setup(void);
 void cleanup(void);
 void catch_usr2(int);
@@ -76,11 +77,12 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 	return n;
 }
 
+int pp[2];			/* pipe descriptor */
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int pp[2];			/* pipe descriptor */
 	char rbuf[BUFSIZ], wbuf[BUFSIZ];
 	int pid, ret, len, rlen, status;
 	int sig = 0;
@@ -92,6 +94,10 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "dd", &pp[0], &pp[1]);
+#endif
 
 	setup();
 
@@ -108,24 +114,19 @@ int main(int ac, char **av)
 		strcpy(wbuf, "abcd\0");
 		len = strlen(wbuf);
 
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 					errno);
 		if (pid == 0) {
 			/* CHILD */
-			if (signal(SIGUSR2, catch_usr2) == SIG_ERR)
-				tst_resm(TWARN, "signal setup for SIGUSR2 "
-						"failed");
-			if (signal(SIGPIPE, SIG_DFL) == SIG_ERR)
-				tst_resm(TWARN, "signal setup for SIGPIPE "
-						"failed");
-			close(pp[0]);	/* close read end of pipe */
-			write(pp[1], wbuf, len);
-			while(!usrsig)
-				sleep(1);
-			write(pp[1], wbuf, len);
-			exit(1);
+#ifdef UCLINUX
+			if (self_exec(av[0], "dd", pp[0], pp[1]) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
+			}
+#else
+			do_child();
+#endif
 		} else {
 			/* PARENT */
 			close(pp[1]);	/* close write end of pipe */
@@ -156,6 +157,32 @@ int main(int ac, char **av)
 
 void catch_usr2(int sig) {
 	usrsig = 1;
+}
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	char wbuf[BUFSIZ];
+	int len;
+
+	strcpy(wbuf, "abcd\0");
+	len = strlen(wbuf);
+
+	if (signal(SIGUSR2, catch_usr2) == SIG_ERR)
+		tst_resm(TWARN, "signal setup for SIGUSR2 "
+			 "failed");
+	if (signal(SIGPIPE, SIG_DFL) == SIG_ERR)
+		tst_resm(TWARN, "signal setup for SIGPIPE "
+			 "failed");
+	close(pp[0]);	/* close read end of pipe */
+	write(pp[1], wbuf, len);
+	while(!usrsig)
+		sleep(1);
+	write(pp[1], wbuf, len);
+	exit(1);
 }
 
 /*

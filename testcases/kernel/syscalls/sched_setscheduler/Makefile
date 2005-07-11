@@ -21,7 +21,9 @@
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
 CFLAGS+=	-I../../../../include -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

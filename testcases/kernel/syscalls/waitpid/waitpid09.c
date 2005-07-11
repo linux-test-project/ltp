@@ -77,7 +77,10 @@ void setup(void);
 void cleanup(void);
 void inthandlr();
 void do_exit();
-
+void setup_sigint();
+#ifdef UCLINUX
+void do_exit_uclinux();
+#endif
 
 int main(int argc, char **argv)
 {
@@ -94,9 +97,13 @@ int main(int argc, char **argv)
 		/*NOTREACHED*/
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_exit_uclinux, "");
+#endif
+
 	setup();
 
-	if ((pid = fork()) < 0) {
+	if ((pid = FORK_OR_VFORK()) < 0) {
 		tst_brkm(TFAIL, cleanup, "Fork Failed");
 		/*NOTREACHED*/
 	} else if (pid == 0) {
@@ -105,11 +112,7 @@ int main(int argc, char **argv)
 		 * Set up to catch SIGINT.  The kids will wait till a
 		 * SIGINT has been received before they proceed.
 		 */
-		if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
-			tst_brkm(TFAIL, cleanup, "signal SIGINT failed,"
-				" errno = %d", errno);
-			/*NOTREACHED*/
-		}
+		setup_sigint();
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -119,11 +122,18 @@ int main(int argc, char **argv)
 		intintr = 0;
 
 		fail = 0;
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "Fork failed.");
 			/*NOTREACHED*/
 		} else if (pid == 0) {		 /* child */
+#ifdef UCLINUX
+			if (self_exec(argv[0], "") < 0) {
+				tst_brkm(TFAIL, cleanup, "self_exec failed");
+				/*NOTREACHED*/
+			}
+#else
 			do_exit();
+#endif
 		} else {			/* parent */	
 		
 			/*
@@ -139,6 +149,12 @@ int main(int argc, char **argv)
 					ret);
 				fail = 1;
 			}
+#ifdef UCLINUX
+			/* Give the kids a chance to setup SIGINT again, since
+			 * this is cleared by exec().
+			 */
+			sleep(3);
+#endif
 
 			/* send SIGINT to child to tell it to proceed */
 			if (kill(pid, SIGINT) < 0) {
@@ -169,7 +185,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "Second fork failed.");
 			/*NOTREACHED*/
 		} else if (pid == 0) {		/* child */
@@ -256,6 +272,21 @@ int main(int argc, char **argv)
 }
 
 /*
+ * setup_sigint()
+ *	sets up a SIGINT handler
+ */
+void
+setup_sigint(void)
+{
+	if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
+		tst_brkm(TFAIL, cleanup, "signal SIGINT failed, errno = %d",
+			 errno);
+		tst_exit();
+		/*NOTREACHED*/
+	}
+}
+
+/*
  * setup()
  *	performs all ONE TIME setup for this test
  */
@@ -310,3 +341,16 @@ do_exit()
 	wait_for_parent();
 	exit(0);
 }
+
+#ifdef UCLINUX
+/*
+ * do_exit_uclinux()
+ *	Sets up SIGINT handler again, then calls do_exit
+ */
+void
+do_exit_uclinux()
+{
+	setup_sigint();
+	do_exit();
+}
+#endif

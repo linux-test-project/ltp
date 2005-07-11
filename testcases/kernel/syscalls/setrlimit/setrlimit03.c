@@ -51,7 +51,9 @@ char *TCID = "setrlimit03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+#if !defined(NR_OPEN)
 long NR_OPEN;
+#endif
 
 void setup();
 void cleanup();
@@ -117,8 +119,10 @@ setup()
 		tst_brkm(TBROK, tst_exit, "must run test as root");
 	}
 
+#if !defined(NR_OPEN)
         /* Define NR_OPEN */
         NR_OPEN = 1024*1024; //Taken from definition in /usr/include/linux/fs.h
+#endif
  
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);

@@ -71,6 +71,7 @@
 void cleanup(void);
 void setup(void);
 void sighandler(int sig);
+void do_child(void);
 
 char *TCID= "kill07";
 int TST_TOTAL = 1;
@@ -96,6 +97,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
 
 	setup();                        /* global setup */
 
@@ -126,15 +131,17 @@ int main(int ac, char **av)
 		/* setup the signal handler */
 		ret = sigaction(TEST_SIG, &my_act, &old_act);
 
-
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "Fork of child failed");
 		} else if (pid == 0) {
-			sleep(300);
-			/*NOTREACHED*/
-			tst_resm(TINFO, "Child never recieved a signal");
-			exit(exno);
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec of child failed");
+			}
+#else
+			do_child();
+#endif
 		} else {
 			/* sighandler should not catch this signal */
 			/* if it does flag will be set to 1 */
@@ -193,6 +200,20 @@ sighandler(int sig)
 	/* do nothing */
 	*flag = 1;
 	return;
+}
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	int exno = 1;
+
+	sleep(300);
+	/*NOTREACHED*/
+	tst_resm(TINFO, "Child never recieved a signal");
+	exit(exno);
 }
 
 /*

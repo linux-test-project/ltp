@@ -125,7 +125,7 @@ int main(int ac, char **av)
         Tst_count = 0;
 		 		 
         /* duplicate process */
-        if ((child_pid = fork()) == 0) {
+        if ((child_pid = FORK_OR_VFORK()) == 0) {
             /* child */
             /* 
              * Call fcntl(2) with F_SETLK   argument on file

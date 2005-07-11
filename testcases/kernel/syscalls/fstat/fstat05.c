@@ -129,6 +129,8 @@ SIGUNUSED
 
 int SIG_SEEN = sizeof(siglist)/sizeof(int);
 
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 {
@@ -195,6 +197,16 @@ main(int ac, char **av)
 	/*NOTREACHED*/
 	return(0);
 }	/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"fstat05 test not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * void 

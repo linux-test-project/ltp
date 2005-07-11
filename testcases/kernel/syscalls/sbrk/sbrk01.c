@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.2 2002/06/12 17:43:17 plars Exp $ */
+/* $Id: sbrk01.c,v 1.3 2005/07/11 22:28:56 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -129,6 +129,8 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int Increment;		/* Amount to make change size by */
 
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 {
@@ -222,6 +224,16 @@ main(int ac, char **av)
 
     return 0;
 }	/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"sbrk01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

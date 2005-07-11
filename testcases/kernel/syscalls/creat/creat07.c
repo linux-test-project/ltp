@@ -109,7 +109,7 @@ main(int ac, char **av)
 		 * made to creat() an executable which is running.
 		 */
 
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
@@ -120,7 +120,7 @@ main(int ac, char **av)
 			exit(1);
 		}
 
-		if ((pid2 = fork()) == -1) {
+		if ((pid2 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
 		}
 

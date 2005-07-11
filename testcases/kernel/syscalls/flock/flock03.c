@@ -76,6 +76,12 @@ void setup(void);
 void cleanup(void);
 void childfunc(int);
 
+#ifdef UCLINUX
+static int fd_uc;
+void childfunc_uc() {
+	childfunc(fd_uc);
+}
+#endif
 
 char *TCID = "flock03";			/* Test program identifier */
 int TST_TOTAL = 3;			/* Total number of test cases */
@@ -98,6 +104,10 @@ int main(int argc, char **argv)
 		/*NOTREACHED*/
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&childfunc_uc, "ds", &fd_uc, filename);
+#endif
+
 	setup();
 
 	/* The following loop checks looping state if -i option given */
@@ -117,13 +127,20 @@ int main(int argc, char **argv)
 		if(pid == -1)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 					errno);
-		if(pid == 0)
+		if(pid == 0) {
+#ifdef UCLINUX
+			if (self_exec(argv[0], "ds", fd, filename) < 0)
+				tst_brkm(TFAIL, cleanup, "self_exec failed, "
+					 "errno &d", errno);
+#else
 			childfunc(fd);
+#endif
+		}
 
 		TEST(flock(fd, LOCK_EX | LOCK_NB));
 		if(TEST_RETURN != 0)
 			tst_resm(TFAIL, "Parent: Initial attempt to flock() failed, "
-					"errno %d",TEST_ERRNO); 
+				 "errno %d",TEST_ERRNO); 
 		else
 			tst_resm(TPASS, "Parent: Initial attempt to flock() passed");
 

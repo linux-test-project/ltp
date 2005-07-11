@@ -20,7 +20,9 @@
 # name of file	: Makefile						  #
 ###########################################################################
 CFLAGS+=	-Wall -I../../../../include -D _GNU_SOURCE
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LDLIBS+=		 -L../../../../lib -lltp
+LDLIBS+=		$(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

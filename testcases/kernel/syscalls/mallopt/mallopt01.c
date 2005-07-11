@@ -57,6 +57,8 @@ void printinfo();
 /*****	*	*	*****/
 struct mallinfo info;
 
+#if !defined(UCLINUX)
+
 /*--------------------------------------------------------------*/
 int main (int argc, char *argv[])
 {
@@ -134,6 +136,14 @@ void printinfo()
 	fprintf(temp, "mallinfo.keepcost = %d\n", info.keepcost);
 }
 
+#else
 
+int main()
+{
+	tst_resm(TINFO,"mallopt01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 

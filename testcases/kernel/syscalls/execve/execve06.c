@@ -138,7 +138,7 @@ main(int ac, char **av)
 
 		sprintf(iter, "%d", iterations);
 		for (i = 0; i < count; i++) {
-			pid = fork();
+			pid = FORK_OR_VFORK();
 			if (pid < 0) {
 				perror("Fork failed");
 				exit(1);
@@ -158,7 +158,7 @@ main(int ac, char **av)
 #ifdef DEBUG
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
-			pid = fork();
+			pid = FORK_OR_VFORK();
 			if (pid < 0) {
 				perror("Fork failed");
 				exit(1);

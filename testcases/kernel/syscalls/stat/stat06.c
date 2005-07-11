@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.3 2003/10/30 22:03:42 robbiew Exp $ */
+/* $Id: stat06.c,v 1.4 2005/07/11 22:29:06 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -134,12 +134,14 @@ int exp_enos[]={0, 0};
 
 char * bad_addr = 0;
 
+#if !defined(UCLINUX)
 int high_address_setup();
+char High_address[64];
+#endif
 int longpath_setup();
 int no_setup();
 int filepath_setup();
 char Longpathname[PATH_MAX+2];
-char High_address[64];
 struct stat statbuf;
 jmp_buf sig11_recover;
 void sig11_handler(int sig);
@@ -158,7 +160,9 @@ struct test_case_t {
     { "file/file", &statbuf, "path contains a regular file",
 		ENOTDIR, filepath_setup },
     { Longpathname, &statbuf, "pathname too long", ENAMETOOLONG, longpath_setup },
+#if !defined(UCLINUX)
     { High_address, &statbuf, "address beyond address space", EFAULT, high_address_setup },
+#endif
     { (char *)-1, &statbuf, "negative address", EFAULT, no_setup },
     { NULL, NULL, NULL, 0, no_setup }
 };
@@ -279,7 +283,8 @@ setup()
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
-    bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+    bad_addr = mmap(0, 1, PROT_NONE,
+		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr <= 0) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }
@@ -323,6 +328,8 @@ no_setup()
     return 0;
 }
 
+#if !defined(UCLINUX)
+
 /******************************************************************
  * high_address_setup() - generates an address that should cause a segfault
  ******************************************************************/
@@ -341,6 +348,7 @@ high_address_setup()
     return 0;
 
 }
+#endif
 
 /******************************************************************
  * longpath_setup() - creates a filename that is too long

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.4 2003/09/25 15:44:20 robbiew Exp $ */
+/* $Id: sighold02.c,v 1.5 2005/07/11 22:29:05 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -143,6 +143,7 @@ struct pipe_packet {
     struct tblock rtimes;
 } p_p;
 
+void do_child();
 void setup();
 void cleanup();
 static void getout();
@@ -163,12 +164,9 @@ int
 main(int ac, char **av)
 {
     int term_stat;	/* child return status */
-    int rv;		/* function return value */
     int sig;		/* current signal */
     int lc;             /* loop counter */
     char *msg;          /* message returned from parse_opts */
-    int cnt;
-
 
     /***************************************************************
      * parse standard options, and exit if there is an error
@@ -177,6 +175,10 @@ main(int ac, char **av)
         tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
         tst_exit();
     }
+
+#ifdef UCLINUX
+    maybe_run_child(&do_child, "dd", &CHILDSWRITEFD, &CHILDSREADFD);
+#endif
 
     /***************************************************************
      * perform global setup for test
@@ -196,7 +198,7 @@ main(int ac, char **av)
 	/*
 	 * fork off a child process
 	 */
-	if ((pid = fork()) < 0) {
+	if ((pid = FORK_OR_VFORK()) < 0) {
 	    (void) sprintf(mesg, "fork() failed. error:%d %s.",
 		errno, strerror(errno));
 	    tst_brkm(TBROK, cleanup, mesg);
@@ -315,95 +317,116 @@ main(int ac, char **av)
 	     * CHILD PROCESS - set up to catch signals.
 	     */
 
-	    p_p.result=TPASS;
-
-	    /* set up signal handlers for the signals */
-	    if (setup_sigs() < 0) {
-		p_p.result=TBROK;
-		strcpy(p_p.mesg, mesg);
-
-	    } else {
-		/* all set up to catch signals, now hold them */
-
-		for (cnt=0, sig = 1; sig < NUMSIGS; sig++) {
-                    if ((sig == 41) && !CRAYT3E && !SGI) {
-                        sig = 42;  /* skip over SIGPEFAILURE for non-CRAYT3E systems */
-                    }
-		    if ((sig != SIGCLD) && (sig != SIGKILL) &&
-			(sig != SIGALRM) && (sig != SIGSTOP)
-#ifdef SIGNOBDM
-			&& (sig != SIGNOBDM )
+#ifdef UCLINUX
+	    if (self_exec(av[0], "dd", CHILDSWRITEFD, CHILDSREADFD) < 0) {
+		(void) sprintf(mesg, "self_exec failed");
+		tst_brkm(TBROK, cleanup, mesg);
+	    }
+#else
+	    do_child();
 #endif
-			&& (sig != SIGCANCEL) && (sig != SIGTIMER)
-			) {
-
-			cnt++;
-			TEST( sighold(sig) );
-			rv = TEST_RETURN;
-			if (rv != 0) {
-			    /* THEY say sighold ALWAYS returns 0 */
-			    p_p.result=TFAIL;
-			    (void) sprintf(p_p.mesg,
-				"sighold(%d) failed, rv:%d, errno:%d",
-				sig, rv, errno);
-			    break;
-			}
-		    }
-		}
-		if ( STD_TIMING_ON ) {
-                    p_p.rtimes = tblock;
-                }
-		if ( p_p.result == TPASS ) {
-		    sprintf(p_p.mesg,
-			"Sighold called without error for %d of %d signals",
-			cnt, NUMSIGS-1);
-		}
-	    }
-
-	    /*
-	     * write to parent (if not READY, parent will BROK) and
-	     * wait for parent to send signals.  The timeout clock is set so
-	     * that we will not wait forever - if sighold() did its job, we
-	     * will not receive the signals.  If sighold() blew it we will
-	     * catch a signal and the interrupt handler will exit(1).
-	     */
-#if debug
-printf("child: %d writing to parent fd:%d\n", getpid(), CHILDSWRITEFD);
-#endif
-	    if (write_pipe(CHILDSWRITEFD) < 0 || p_p.result != TPASS ) {
-		exit(2);
-	    }
-
-	    /*
- 	     * Read pipe from parent, that will tell us that all signals were sent
- 	     */
-	    if ( read_pipe(CHILDSREADFD, 0) != 0 ) {
-		p_p.result = TBROK;
-		strcpy(p_p.mesg, mesg);
-	    }
-	    else if ( signals_received[0] == '\0' ) {
-		p_p.result = TPASS;
-	        strcpy(p_p.mesg, "No signals trapped after being sent by parent");
-	    }
-	    else {
-		p_p.result = TFAIL;
-	        sprintf(p_p.mesg, "signals received: %s", signals_received);
-	    }
-		
-	    if (write_pipe(CHILDSWRITEFD) < 0 ) {
-		exit(2);
-	    }
-
-	    /* exit back to parent */
-	    if ( p_p.result == TPASS )
-	        exit(0);
-	    else
-		exit(1);
 	}
     }
     cleanup();
 
     return 0;
+}
+
+/*****************************************************************************
+ *  do_child()
+ ****************************************************************************/
+
+void
+do_child()
+{
+    int rv;		/* function return value */
+    int sig;		/* current signal */
+    int cnt;
+
+    p_p.result=TPASS;
+	
+    /* set up signal handlers for the signals */
+    if (setup_sigs() < 0) {
+	p_p.result=TBROK;
+	strcpy(p_p.mesg, mesg);
+
+    } else {
+	/* all set up to catch signals, now hold them */
+
+	for (cnt=0, sig = 1; sig < NUMSIGS; sig++) {
+	    if ((sig == 41) && !CRAYT3E && !SGI) {
+		sig = 42;  /* skip over SIGPEFAILURE for non-CRAYT3E systems */
+	    }
+	    if ((sig != SIGCLD) && (sig != SIGKILL) &&
+		(sig != SIGALRM) && (sig != SIGSTOP)
+#ifdef SIGNOBDM
+		&& (sig != SIGNOBDM )
+#endif
+		&& (sig != SIGCANCEL) && (sig != SIGTIMER)
+		) {
+
+		cnt++;
+		TEST( sighold(sig) );
+		rv = TEST_RETURN;
+		if (rv != 0) {
+		    /* THEY say sighold ALWAYS returns 0 */
+		    p_p.result=TFAIL;
+		    (void) sprintf(p_p.mesg,
+				   "sighold(%d) failed, rv:%d, errno:%d",
+				   sig, rv, errno);
+		    break;
+		}
+	    }
+	}
+	if ( STD_TIMING_ON ) {
+	    p_p.rtimes = tblock;
+	}
+	if ( p_p.result == TPASS ) {
+	    sprintf(p_p.mesg,
+		    "Sighold called without error for %d of %d signals",
+		    cnt, NUMSIGS-1);
+	}
+    }
+
+    /*
+     * write to parent (if not READY, parent will BROK) and
+     * wait for parent to send signals.  The timeout clock is set so
+     * that we will not wait forever - if sighold() did its job, we
+     * will not receive the signals.  If sighold() blew it we will
+     * catch a signal and the interrupt handler will exit(1).
+     */
+#if debug
+    printf("child: %d writing to parent fd:%d\n", getpid(), CHILDSWRITEFD);
+#endif
+    if (write_pipe(CHILDSWRITEFD) < 0 || p_p.result != TPASS ) {
+	exit(2);
+    }
+
+    /*
+     * Read pipe from parent, that will tell us that all signals were sent
+     */
+    if ( read_pipe(CHILDSREADFD, 0) != 0 ) {
+	p_p.result = TBROK;
+	strcpy(p_p.mesg, mesg);
+    }
+    else if ( signals_received[0] == '\0' ) {
+	p_p.result = TPASS;
+	strcpy(p_p.mesg, "No signals trapped after being sent by parent");
+    }
+    else {
+	p_p.result = TFAIL;
+	sprintf(p_p.mesg, "signals received: %s", signals_received);
+    }
+		
+    if (write_pipe(CHILDSWRITEFD) < 0 ) {
+	exit(2);
+    }
+
+    /* exit back to parent */
+    if ( p_p.result == TPASS )
+	exit(0);
+    else
+	exit(1);
 }
 
 /*****************************************************************************

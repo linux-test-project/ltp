@@ -23,7 +23,9 @@
 SRCS=$(wildcard *.c)
 MAINS=$(patsubst %.c,%,$(SRCS))
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 CFLAGS+=-I../lib -I../../../../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 all: $& $(MAINS)
 

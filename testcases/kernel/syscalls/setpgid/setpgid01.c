@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setpgid01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: setpgid01.c,v 1.2 2005/07/11 22:29:01 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -208,7 +208,7 @@ setup()
     pid=getpid();
 
     if (pgid == pid) {
-	if ((pid = fork()) == -1) {
+	if ((pid = FORK_OR_VFORK()) == -1) {
 	    tst_brkm(TBROK, cleanup, "fork() in setup() failed - errno %d",
 		     errno);
 	}

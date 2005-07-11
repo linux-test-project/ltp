@@ -60,6 +60,10 @@ void cleanup(void);
 void inthandlr();
 void wait_for_parent();
 void do_exit();
+void setup_sigint();
+#ifdef UCLINUX
+void do_exit_uclinux();
+#endif
 
 int fail;
 
@@ -82,6 +86,10 @@ int main(int ac, char **av)
 		/*NOTREACHED*/
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_exit_uclinux, "");
+#endif
+
 	setup();
 
 	/* check for looping state if -i option is given */
@@ -95,7 +103,7 @@ int main(int ac, char **av)
 		 * test to be a session leader and setpgrp fails.
 		 */
 
-		if ((pid = fork()) != 0) {
+		if ((pid = FORK_OR_VFORK()) != 0) {
 			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
@@ -118,12 +126,7 @@ int main(int ac, char **av)
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
 		 * has been received before they proceed.
 		 */
-		if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
-			tst_resm(TFAIL, "signal SIGINT failed, errno = %d",
-				 errno);
-			tst_exit();
-			/*NOTREACHED*/
-		}
+		setup_sigint();
 
 		group1 = getpgrp();
 
@@ -135,7 +138,16 @@ int main(int ac, char **av)
 			intintr = 0;
 			ret_val = fork();
 			if (ret_val == 0) {
+#ifdef UCLINUX
+				if (self_exec(av[0], "") < 0) {
+					tst_resm(TFAIL, "self_exec kid %d "
+						 "failed", kid_count);
+					tst_exit();
+					/*NOTREACHED*/
+				}
+#else
 				do_exit();
+#endif
 				/*NOTREACHED*/
 			}
 
@@ -149,6 +161,13 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count] = ret_val;
 		}
+
+#ifdef UCLINUX
+		/* Give the kids a chance to setup SIGINT again, since this is
+		 * cleared by exec().
+		 */
+		sleep(3);
+#endif
 		
 		/* Now send all the kids a SIGINT to tell them to proceed */
 		for (i = 0; i < MAXKIDS; i++) {
@@ -298,6 +317,21 @@ int main(int ac, char **av)
 }
 
 /*
+ * setup_sigint()
+ *	sets up a SIGINT handler
+ */
+void
+setup_sigint(void)
+{
+	if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
+		tst_resm(TFAIL, "signal SIGINT failed, errno = %d",
+			 errno);
+		tst_exit();
+		/*NOTREACHED*/
+	}
+}
+
+/*
  * setup()
  *	performs all ONE TIME setup for this test
  */
@@ -350,3 +384,16 @@ do_exit()
 	wait_for_parent();
 	exit(3);
 }
+
+#ifdef UCLINUX
+/*
+ * do_exit_uclinux()
+ *	Sets up SIGINT handler again, then calls do_exit
+ */
+void
+do_exit_uclinux()
+{
+	setup_sigint();
+	do_exit();
+}
+#endif

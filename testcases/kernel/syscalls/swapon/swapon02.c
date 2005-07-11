@@ -325,7 +325,7 @@ setup03()
         count = 40;
     }
 
-    pid=fork();
+    pid=FORK_OR_VFORK();
     if (pid == 0) {
         /*create and turn on remaining swapfiles*/
         for (j = 0; j < swapfiles; j++) {

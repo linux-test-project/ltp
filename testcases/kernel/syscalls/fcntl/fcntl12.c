@@ -81,7 +81,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Test for errno EMFILE");
 		fail = 0;
 
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();

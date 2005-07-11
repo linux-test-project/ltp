@@ -86,6 +86,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 struct timespec timereq;	/* time struct. buffer for nanosleep() */
 struct timespec timerem;	/* time struct. buffer for nanosleep() */
 
+void do_child();		/* Child process */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
@@ -108,8 +109,6 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
-		 struct timeval otime;		 /* time before child execution suspended */
-		 struct timeval ntime;		 /* time after child resumes execution */
 	int status;		/* child exit status */
     
 	/* Parse standard options given to run the test. */
@@ -117,6 +116,11 @@ main(int ac, char **av)
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "dddd", &timereq.tv_sec, &timereq.tv_nsec,
+			&timerem.tv_sec, &timerem.tv_nsec);
+#endif
 
 	/* Perform global setup for test */
 	setup();
@@ -131,89 +135,21 @@ main(int ac, char **av)
 		 * Creat a child process and suspend its
 		 * execution using nanosleep()
 		 */
-		if ((cpid = fork()) == -1) {
+		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "fork() failed to create child process");
 		}
 
 		if (cpid == 0) {		/* Child process */
-		 		 		 unsigned long req, rem, before, after, elapsed; /* usec */
-
-			/* Note down the current time */
-		 		 		 gettimeofday(&otime, NULL);
-			/* 
-			 * Call nanosleep() to suspend child process
-			 * for specified time 'tv_sec'.
-			 * Call should return before suspending execution
-			 * for the specified time due to receipt of signal
-			 * from Parent.
-			 */
-			TEST(nanosleep(&timereq, &timerem));
-
-			/* time after child resumes execution */
-		 		 		 gettimeofday(&ntime, NULL);
-
-			/*
-			 * Check whether the remaining sleep of child updated
-			 * in 'timerem' structure.
-			 * The time remaining should be equal to the
-			 * Total time for sleep - time spent on sleep bfr signal
-			 */
-		 		 		 req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-		 		 		 rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
-		 		 		 before = otime.tv_sec * 1000000 + otime.tv_usec;
-		 		 		 after = ntime.tv_sec * 1000000 + ntime.tv_usec;
-		 		 		 elapsed = after - before;
-
-		 		 		 if (rem - (req - elapsed) > USEC_PRECISION) {
-		 		 		 		 tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
-		 		 		 		 		  "match with the expected %lu usec time",
-		 		 		 		 		  rem, (req - elapsed));
-				exit(1);
+#ifdef UCLINUX
+			if (self_exec(av[0], "dddd",
+				      timereq.tv_sec, timereq.tv_nsec,
+				      timerem.tv_sec, timerem.tv_nsec) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-
-			/* Record the time before suspension */
-		 		 		 gettimeofday(&otime, NULL);
-
-			/*
-			 * Invoke nanosleep() again to suspend child
-			 * for the specified sleep time specified by
-			 * 'timereq' structure.
-			 */
-			TEST(nanosleep(&timereq, &timerem));
-			
-			/* Record the time after suspension */
-		 		 		 gettimeofday(&ntime, NULL);
-
-			/* check return code of nanosleep() */
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "nanosleep() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-				exit(1);
-			}
-
-			/*
-		 	 * Perform functional verification if test
-		 	 * executed without (-f) option.
-		 	 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Verify whether child execution was 
-				 * actually suspended for the remaining
-				 * sleep time specified by 'timerem'
-				 * structure.
-				 */
-		 		 		 		 if ((ntime.tv_sec - otime.tv_sec) != timereq.tv_sec) {
-					tst_resm(TFAIL, "Child execution not "
-						 "suspended for %d seconds",
-						 timereq.tv_sec);
-					exit(1);
-				}
-			} else {
-				tst_resm(TPASS, "call succeeded");
-				exit(0);
-			}
+#else
+			do_child();
+#endif
 		}
 
 		/* wait for child to time slot for execution */
@@ -242,6 +178,92 @@ main(int ac, char **av)
 	return(0);
 
 }	/* End main */
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	unsigned long req, rem, before, after, elapsed; /* usec */
+	struct timeval otime;		 /* time before child execution suspended */
+	struct timeval ntime;		 /* time after child resumes execution */
+
+	/* Note down the current time */
+	gettimeofday(&otime, NULL);
+	/* 
+	 * Call nanosleep() to suspend child process
+	 * for specified time 'tv_sec'.
+	 * Call should return before suspending execution
+	 * for the specified time due to receipt of signal
+	 * from Parent.
+	 */
+	TEST(nanosleep(&timereq, &timerem));
+	/* time after child resumes execution */
+	gettimeofday(&ntime, NULL);
+
+	/*
+	 * Check whether the remaining sleep of child updated
+	 * in 'timerem' structure.
+	 * The time remaining should be equal to the
+	 * Total time for sleep - time spent on sleep bfr signal
+	 */
+	req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+	rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
+	before = otime.tv_sec * 1000000 + otime.tv_usec;
+	after = ntime.tv_sec * 1000000 + ntime.tv_usec;
+	elapsed = after - before;
+
+	if (rem - (req - elapsed) > USEC_PRECISION) {
+		tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
+			 "match with the expected %lu usec time",
+			 rem, (req - elapsed));
+		exit(1);
+	}
+
+	/* Record the time before suspension */
+	gettimeofday(&otime, NULL);
+
+	/*
+	 * Invoke nanosleep() again to suspend child
+	 * for the specified sleep time specified by
+	 * 'timereq' structure.
+	 */
+	TEST(nanosleep(&timereq, &timerem));
+			
+	/* Record the time after suspension */
+	gettimeofday(&ntime, NULL);
+
+	/* check return code of nanosleep() */
+	if (TEST_RETURN == -1) {
+		tst_resm(TFAIL,
+			 "nanosleep() Failed, errno=%d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+		exit(1);
+	}
+
+	/*
+	 * Perform functional verification if test
+	 * executed without (-f) option.
+	 */
+	if (STD_FUNCTIONAL_TEST) {
+		/*
+		 * Verify whether child execution was 
+		 * actually suspended for the remaining
+		 * sleep time specified by 'timerem'
+		 * structure.
+		 */
+		if ((ntime.tv_sec - otime.tv_sec) != timereq.tv_sec) {
+			tst_resm(TFAIL, "Child execution not "
+				 "suspended for %d seconds",
+				 timereq.tv_sec);
+			exit(1);
+		}
+	} else {
+		tst_resm(TPASS, "call succeeded");
+		exit(0);
+	}
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

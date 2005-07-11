@@ -64,6 +64,7 @@
 
 void cleanup(void);
 void setup(void);
+void do_child(void);
 
 char *TCID= "kill04";
 int TST_TOTAL = 1;
@@ -86,6 +87,10 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
 	setup();                        /* global setup */
 
 	TEST_EXP_ENOS(exp_enos);
@@ -97,21 +102,30 @@ int main(int ac, char **av)
 		Tst_count = 0;
 		status = 1;
 		exno = 1;
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "Fork failed");
 		} else if (pid == 0) {
-			pause();
-			/*NOTREACHED*/
-			exit(exno);
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec of child failed");
+			}
+#else
+			do_child();
+#endif
 		} else {
-			fake_pid = fork();
+			fake_pid = FORK_OR_VFORK();
 			if (fake_pid < 0) {
 				tst_brkm(TBROK, cleanup, "Second fork failed");
 			} else if (fake_pid == 0) {
-				pause();
-				/*NOTREACHED*/
-				exit(exno);
+#ifdef UCLINUX
+				if (self_exec(av[0], "") < 0) {
+					tst_brkm(TBROK, cleanup, "second self_exec "
+						 "of child failed");
+				}
+#else
+				do_child();
+#endif
 			}
 			kill(fake_pid, TEST_SIG);
 			waitpid(fake_pid, &fake_status, 0);
@@ -152,6 +166,18 @@ int main(int ac, char **av)
 	return(0);
 }
 
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	int exno = 1;
+	
+	pause();
+	/*NOTREACHED*/
+	exit(exno);
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test

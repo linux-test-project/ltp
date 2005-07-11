@@ -81,6 +81,7 @@ int exp_enos[] = {ENOMEM, 0};
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
+#if !defined(UCLINUX)
 int
 main(int ac, char **av)
 {
@@ -187,3 +188,13 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"msync05 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */

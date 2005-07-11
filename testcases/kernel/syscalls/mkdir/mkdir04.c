@@ -135,7 +135,7 @@ main(int ac, char **av)
 		sprintf(tstdir1, "tstdir1.%d", getpid());
 		ltpuser1 = my_getpwnam(user1name);
 
-		if ((pid = fork()) < 0) {
+		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
 			/*NOTREACHED*/
 		}
@@ -172,7 +172,7 @@ main(int ac, char **av)
 		sprintf(tstdir2, "%s/tst",tstdir1);
 		ltpuser2 = my_getpwnam(user2name);
 
-		if ((pid1 = fork()) < 0) {
+		if ((pid1 = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
 			/*NOTREACHED*/
 		}

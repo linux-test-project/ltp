@@ -51,13 +51,19 @@ char *TCID = "setsid01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
+void do_child_1(void);
+void do_child_2(void);
 void setup(void);
 void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int pid;
-	int retval, fail = 0;
+	int fail = 0;
 	int ret, status;
 	int exno = 0;
 
@@ -69,6 +75,13 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+
+	maybe_run_child(&do_child_1, "n", 1);
+	maybe_run_child(&do_child_2, "n", 2);
+#endif
 
 	/*
 	 * perform global setup for the test
@@ -86,61 +99,22 @@ int main(int ac, char **av)
 		 * and then it attached itself to another process
 		 * group and tries to setsid
 		 */
-		pid = fork();
+		pid = FORK_OR_VFORK();
 
 		if (pid == 0) {
-			if ((pid = fork()) == -1) {
+			if ((pid = FORK_OR_VFORK()) == -1) {
 				tst_resm(TFAIL, "Fork failed");
 				tst_exit();
 			}
 			if (pid == 0) {
-				sleep(1);
-				exno = 0;
-
-				if (setpgid(0, 0) < 0) {
-					perror("setpgid");
-					exno = 1;
-				}
-
-				if ((pid = fork()) == -1) {
-					tst_resm(TFAIL, "Fork failed");
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 1) < 0) {
+					tst_resm(TFAIL, "self_exec failed");
 					tst_exit();
 				}
-				if (pid == 0) {
-					for (;;);
-				} else {
-					retval = setpgid(0, getppid());
-					if (retval < 0) {
-						tst_resm(TFAIL, "setpgid "
-							 "failed, errno :%d",
-							 errno);
-						exno = 2;
-					}
-
-					retval = setsid();
-
-					if (errno == EPERM) {
-						tst_resm(TPASS, "setsid "
-							 "SUCCESS to set "
-							 "errno to EPERM");
-					} else {
-						tst_resm(TFAIL, "setsid "
-							 "failed, expected %d,"
-							 "return %d", -1,
-							 errno);
-						exno = 3;
-					}
-					kill(pid, SIGKILL);
-					if ((ret = wait(&status)) > 0) {
-						tst_resm(TINFO, "Test {%d} "
-							 "exited status 0x%-x",
-							 ret, status);
-						if (status != 9) {
-							exno = 4;
-						}
-					}
-				}
-				exit(exno);
+#else
+				do_child_1();
+#endif
 			} else {
 				if (setpgid(0, 0) < 0)  {
 					perror("setpgid(parent) failed");
@@ -175,6 +149,74 @@ int main(int ac, char **av)
 	cleanup();
 	/*NOTREACHED*/
 	return(0);
+}
+
+/*
+ * do_child_1()
+ */
+void
+do_child_1()
+{
+	int exno = 0;
+	int retval, ret, status;
+	int pid;
+
+	sleep(1);
+	
+	if (setpgid(0, 0) < 0) {
+		perror("setpgid");
+		exno = 1;
+	}
+	
+	if ((pid = FORK_OR_VFORK()) == -1) {
+		tst_resm(TFAIL, "Fork failed");
+		tst_exit();
+	}
+	if (pid == 0) {
+#ifdef UCLINUX
+		if (self_exec(argv0, "n", 2) < 0) {
+			tst_resm(TFAIL, "self_exec failed");
+			tst_exit();
+		}
+#else
+		do_child_2();
+#endif
+	} else {
+		retval = setpgid(0, getppid());
+		if (retval < 0) {
+			tst_resm(TFAIL, "setpgid failed, errno :%d", errno);
+			exno = 2;
+		}
+		
+		retval = setsid();
+		
+		if (errno == EPERM) {
+			tst_resm(TPASS, "setsid SUCCESS to set "
+				 "errno to EPERM");
+		} else {
+			tst_resm(TFAIL, "setsid failed, expected %d,"
+				 "return %d", -1, errno);
+			exno = 3;
+		}
+		kill(pid, SIGKILL);
+		if ((ret = wait(&status)) > 0) {
+			tst_resm(TINFO, "Test {%d} exited status 0x%-x",
+				 ret, status);
+			if (status != 9) {
+				exno = 4;
+			}
+		}
+	}
+	exit(exno);
+}
+
+/*
+ * do_child_2()
+ */
+void
+do_child_2()
+{
+	for (;;);
 }
 
 /*

@@ -289,6 +289,10 @@ char *TCID = "fcntl16";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
 /*
  * cleanup - performs all the ONE TIME cleanup for this test at completion or
  * 	premature exit
@@ -348,6 +352,16 @@ void dochild(int kid)
 	}
 	exit(0);
 }					/* end of child process */
+
+#ifdef UCLINUX
+static int kid_uc;
+
+void
+dochild_uc()
+{
+	dochild(kid_uc);
+}
+#endif
 
 void
 catch_alarm()
@@ -504,8 +518,16 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
 			if (thislock->type != IGNORED) {
-				if ((child = fork()) == 0) {
+				if ((child = FORK_OR_VFORK()) == 0) {
+#ifdef UCLINUX
+					if (self_exec(argv0, "ddddd", i, parent,
+						      test, thislock, fd) < 0) {
+						perror("self_exec failed");
+						return(1);
+					}
+#else
 					dochild(i);
+#endif
 				}
 				if (child < 0) {
 					perror("Fork failed");
@@ -655,6 +677,12 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(dochild_uc, "ddddd", &kid_uc, &parent, &test,
+			&thislock, &fd);
+	argv0 = av[0];
+#endif
 
 	setup();			/* global setup */
 

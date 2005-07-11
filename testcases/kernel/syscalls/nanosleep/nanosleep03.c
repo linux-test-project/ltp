@@ -75,9 +75,12 @@ int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct timespec timereq;	/* time struct. buffer for nanosleep() */
+struct timespec timerem;	/* time struct. buffer for nanosleep() */
+
 
 int exp_enos[]={EINTR, 0};
 
+void do_child();		/* Child process */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
@@ -85,7 +88,6 @@ void sig_handler();		/* signal catching function */
 int
 main(int ac, char **av)
 {
-	struct timespec timerem;/* time struct. buffer for nanosleep() */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
@@ -96,6 +98,11 @@ main(int ac, char **av)
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "dddd", &timereq.tv_sec, &timereq.tv_nsec,
+			&timerem.tv_sec, &timerem.tv_nsec);
+#endif
 
 	/* Perform global setup for test */
 	setup();
@@ -117,36 +124,15 @@ main(int ac, char **av)
 		}
 
 		if (cpid == 0) {		/* Child process */
-			/* 
-			 * Call nanosleep() to suspend child process
-			 * for specified time 'tv_sec'.
-			 * Call should return before suspending execution
-			 * for the specified time due to receipt of signal
-			 * from Parent.
-			 */
-			TEST(nanosleep(&timereq, &timerem));
-
-			/* check return code of nanosleep() */
-			if (TEST_RETURN == -1) {
-
-				TEST_ERROR_LOG(TEST_ERRNO);
-
-				/* Check for expected errno is set */
-				if (TEST_ERRNO != EINTR) {
-					tst_resm(TFAIL, "nanosleep() failed, "
-						 "got errno:%d, expected errno"
-						 ":%d", TEST_ERRNO, EINTR);
-					exit(1);
-				}
-			} else {
-				tst_resm(TFAIL, "nanosleep() returns %d, "
-					 "expected -1, errno:%d",
-					 TEST_RETURN, EINTR);
-				exit(1);
+#ifdef UCLINUX
+			if (self_exec(av[0], "dddd",
+				      timereq.tv_sec, timereq.tv_nsec,
+				      timerem.tv_sec, timerem.tv_nsec) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-
-			/* Everything is fine, exit normally */
-			exit(0);
+#else
+			do_child();
+#endif
 		}
 
 		/* wait for child to time slot for execution */
@@ -175,6 +161,44 @@ main(int ac, char **av)
 	return(0);
 
 }	/* End main */
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	/* 
+	 * Call nanosleep() to suspend child process
+	 * for specified time 'tv_sec'.
+	 * Call should return before suspending execution
+	 * for the specified time due to receipt of signal
+	 * from Parent.
+	 */
+	TEST(nanosleep(&timereq, &timerem));
+
+	/* check return code of nanosleep() */
+	if (TEST_RETURN == -1) {
+
+		TEST_ERROR_LOG(TEST_ERRNO);
+
+		/* Check for expected errno is set */
+		if (TEST_ERRNO != EINTR) {
+			tst_resm(TFAIL, "nanosleep() failed, "
+				 "got errno:%d, expected errno"
+				 ":%d", TEST_ERRNO, EINTR);
+			exit(1);
+		}
+	} else {
+		tst_resm(TFAIL, "nanosleep() returns %d, "
+			 "expected -1, errno:%d",
+			 TEST_RETURN, EINTR);
+		exit(1);
+	}
+
+	/* Everything is fine, exit normally */
+	exit(0);
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

@@ -280,6 +280,10 @@ char **av;
 	               /*NOTREACHED*/
 	 }
 
+#ifdef UCLINUX
+	 maybe_run_child(&dochild, "dddd", filename, &recstart, &reclen, &ppid);
+#endif
+
 	local_flag = PASSED;
 	tst_tmpdir();
 	if (system("mount | grep `df . | grep -v Filesystem | awk {'print $1'}` | grep mand >/dev/null") != 0){
@@ -349,7 +353,7 @@ char **av;
 			 * record lock.
 			 */
 			recstart = RECLEN + rand()%(len - 3*RECLEN);
-			if ((cpid = fork()) < 0) {
+			if ((cpid = FORK_OR_VFORK()) < 0) {
 				unlink(filename);
 				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
 				                        " etc are likely to fail.\n");
@@ -358,7 +362,17 @@ char **av;
 				tst_exit();
 			}
 			if (cpid == 0) {
+#ifdef UCLINUX
+				if (self_exec(av[0], "dddd", filename, recstart,
+					      reclen, ppid) < -1) {
+					unlink(filename);
+					tst_resm(TBROK, "self_exec failed.\n");
+					tst_rmdir();
+					tst_exit();
+				}
+#else
 				dochild();
+#endif
 				/* never returns */
 			}
 			doparent();

@@ -207,6 +207,7 @@ int main(int argc, char *argv[])
 		TEST(madvise(file,stat.st_size,1212));
 		check_and_print(EINVAL);
 
+#if !defined(UCLINUX)
 		/* Test Case 3 */
 		if(mlock((void *)file,stat.st_size)<0) {
 			tst_brkm(TBROK, cleanup, "Error in getting memory "
@@ -220,6 +221,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
 				errno, strerror(errno));
         	}
+#endif /* if !defined(UCLINUX) */
 
         	/* Test Case 4 */
         	if ((file = (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {

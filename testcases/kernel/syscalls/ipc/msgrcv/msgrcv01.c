@@ -67,6 +67,7 @@
 
 void cleanup(void);
 void setup(void);
+void do_child(void);
 
 char *TCID = "msgrcv01";
 int TST_TOTAL = 1;
@@ -82,13 +83,17 @@ int main(int ac, char **av)
     int lc;			/* loop counter */
     char *msg;			/* message returned from parse_opts */
     void check_functionality(void);
-    int retval = 0, status, e_code;
+    int status, e_code;
 
     /* parse standard options */
     if ((msg =
 	 parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
 	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
     }
+
+#ifdef UCLINUX
+    maybe_run_child(&do_child, "d", &msg_q_1);
+#endif
 
     setup();			/* global setup */
 
@@ -102,38 +107,18 @@ int main(int ac, char **av)
 	 * fork a child to read from the queue while the parent
 	 * enqueues the message to be read.
 	 */
-	if ((c_pid = fork()) == -1) {
+	if ((c_pid = FORK_OR_VFORK()) == -1) {
 	    tst_brkm(TBROK, cleanup, "could not fork");
 	}
 
 	if (c_pid == 0) {	/* child */
-	    TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
-
-	    if (TEST_RETURN == -1) {
-		retval = 1;
-		tst_resm(TFAIL, "%s call failed - errno = %d : %s",
-			 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-	    } else {
-		if (STD_FUNCTIONAL_TEST) {
-		    /*
-		     * Build a new message and compare it
-		     * with the one received.
-		     */
-		    init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
-
-		    if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
-			tst_resm(TPASS,
-				 "message received = " "message sent");
-		    } else {
-			retval = 1;
-			tst_resm(TFAIL,
-				 "message received != " "message sent");
-		    }
-		} else {
-		    tst_resm(TPASS, "call succeeded");
-		}
+#ifdef UCLINUX
+	    if (self_exec(av[0], "d", msg_q_1) < 0) {
+		tst_brkm(TBROK, cleanup, "could not self_exec");
 	    }
-	    exit(retval);
+#else
+	    do_child();
+#endif
 	} else {		/* parent */
 	    /* put the message on the queue */
 	    if (msgsnd(msg_q_1, &snd_buf, MSGSIZE, 0) == -1) {
@@ -155,6 +140,43 @@ int main(int ac, char **av)
     /** NOT REACHED **/
     return(0);
 
+}
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+    int retval = 0;
+
+    TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
+    
+    if (TEST_RETURN == -1) {
+	retval = 1;
+	tst_resm(TFAIL, "%s call failed - errno = %d : %s",
+		 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+    } else {
+	if (STD_FUNCTIONAL_TEST) {
+	    /*
+	     * Build a new message and compare it
+	     * with the one received.
+	     */
+	    init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
+	    
+	    if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
+		tst_resm(TPASS,
+			 "message received = " "message sent");
+	    } else {
+		retval = 1;
+		tst_resm(TFAIL,
+			 "message received != " "message sent");
+	    }
+	} else {
+	    tst_resm(TPASS, "call succeeded");
+	}
+    }
+    exit(retval);
 }
 
 /*

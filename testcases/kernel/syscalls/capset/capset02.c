@@ -100,7 +100,8 @@ extern int capset(cap_user_header_t, const cap_user_data_t);
 
 static void setup();
 static void cleanup();
-static void test_setup(int);
+static void test_setup(int, char *);
+static void child_func();
 
 static pid_t child_pid = -1;
 
@@ -138,6 +139,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&child_func, "");
+#endif
+
 	/* perform global setup for test */
 	setup();
 
@@ -149,7 +154,7 @@ main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			test_setup(i);
+			test_setup(i, av[0]);
 			TEST(capset(test_cases[i].headerp,
 				    test_cases[i].datap));
 
@@ -226,7 +231,7 @@ void child_func()
 }
 
 void
-test_setup(int i)
+test_setup(int i, char *argv0)
 {
 	switch (i) {
 
@@ -255,14 +260,22 @@ test_setup(int i)
 		 * Note: this seems to have changed with recent kernels
 		 * => create a child and try to set its capabilities
 		 */
-		child_pid = fork();
+		child_pid = FORK_OR_VFORK();
 		switch(child_pid) {
 		case -1:
 			tst_resm(TBROK,"fork() failed: %s\n",strerror(errno));
 			cleanup();
 			break;
 		case 0:
+#ifdef UCLINUX
+			if (self_exec(argv0, "") < 0) {
+				tst_resm(TBROK,"self_exec() failed\n");
+				cleanup();
+				break;
+			}
+#else
 			child_func();
+#endif
 			break;
 		default:
 			signal(SIGCHLD,SIG_IGN);

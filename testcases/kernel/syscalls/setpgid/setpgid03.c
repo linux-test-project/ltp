@@ -48,6 +48,7 @@ char *TCID = "setpgid03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+void do_child(void);
 void setup(void);
 void cleanup(void);
 
@@ -67,6 +68,10 @@ int main(int ac, char **av)
 		/*NOTREACHED*/
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
 	/*
 	 * perform global setup for the test
 	 */
@@ -80,19 +85,18 @@ int main(int ac, char **av)
 
 //test1:
 		/* sid of the calling process is not same */
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
 		if (pid == 0) {			/* child */
-			exno = 0;
-			if (setsid() < 0) {
-				tst_resm(TFAIL, "setsid failed, errno "
-					 ":%d", errno);
-				exno = 1;
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-			sleep(2);
-			exit(exno);
+#else
+			do_child();
+#endif
 		} else {			/* parent */
 			sleep(1);
 			rval = setpgid(pid, getppid());
@@ -129,7 +133,7 @@ int main(int ac, char **av)
 		 * Value of pid matches the pid of the child process and
 		 * the child process has exec successfully. Error
 		 */
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_resm(TFAIL, "Fork failed");
 			tst_exit();
 		}
@@ -161,6 +165,22 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	return(0);
+}
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	int exno = 0;
+
+	if (setsid() < 0) {
+		tst_resm(TFAIL, "setsid failed, errno :%d", errno);
+		exno = 1;
+	}
+	sleep(2);
+	exit(exno);
 }
 
 /*

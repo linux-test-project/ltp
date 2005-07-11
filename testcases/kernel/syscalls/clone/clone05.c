@@ -65,6 +65,11 @@
  *				-t   : Turn on syscall timing.
  ****************************************************************/
 
+#if defined UCLINUX && !__THROW
+/* workaround for libc bug */
+#define __THROW
+#endif
+
 #include <errno.h>
 #include <sched.h>
 #include <sys/wait.h>

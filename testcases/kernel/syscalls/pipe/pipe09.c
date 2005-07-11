@@ -110,7 +110,7 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if ((fork_1 = fork()) == -1) {
+		if ((fork_1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 			/*NOTREACHED*/
 		}
@@ -139,7 +139,7 @@ int main(int ac, char **av)
 				 "wait status %d, errno = %d", wtstatus, errno);
 		}
 
-		if ((fork_2 = fork()) == -1) {
+		if ((fork_2 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
 			/*NOTREACHED*/
 		}

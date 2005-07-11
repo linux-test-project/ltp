@@ -56,6 +56,7 @@
 #include <test.h>
 #include <usctest.h>
 
+void do_child(int);
 void setup(void);
 void cleanup(void);
 
@@ -67,6 +68,11 @@ extern int Tst_count;
 
 int flag, condition_number;
 #define	FAILED	1
+
+#ifdef UCLINUX
+void do_child_uclinux(void);
+static int ikids_uclinux;
+#endif
 
 int main(int argc, char **argv)
 {
@@ -82,6 +88,10 @@ int main(int argc, char **argv)
 		tst_exit();
 		/*NOTREACHED*/
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "d", &ikids_uclinux);
+#endif
 
 	setup();
 
@@ -102,17 +112,21 @@ int main(int argc, char **argv)
 		}
 
 		while (++ikids < MAXUPRC) {
-			if ((pid[ikids] = fork()) > 0) {
+			if ((pid[ikids] = FORK_OR_VFORK()) > 0) {
 				if (DEBUG)
 					tst_resm(TINFO, "child # %d", ikids);
 			} else if (pid[ikids] == -1) {
 				tst_resm(TFAIL, "cannot open fork #%d",
 					 ikids);
 			} else {
-				if (DEBUG)
-					tst_resm(TINFO, "child:%d", ikids);
-				pause();
-				exit(0);
+#ifdef UCLINUX
+				if (self_exec(argv[0], "d", ikids) < 0) {
+					tst_resm(TFAIL, "cannot self_exec #%d",
+						 ikids);
+				}
+#else
+				do_child(ikids);
+#endif
 			}
 		}
 
@@ -153,6 +167,30 @@ int main(int argc, char **argv)
   return(0);
 
 }
+
+/*
+ * do_child()
+ */
+void
+do_child(int ikids)
+{
+	if (DEBUG)
+		tst_resm(TINFO, "child:%d", ikids);
+	pause();
+	exit(0);
+}
+
+#ifdef UCLINUX
+/*
+ * do_child_uclinux()
+ *	run do_child with the appropriate ikids variable
+ */
+void
+do_child_uclinux()
+{
+	do_child(ikids_uclinux);
+}
+#endif
 
 /*
  * setup()

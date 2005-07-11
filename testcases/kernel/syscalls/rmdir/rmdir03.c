@@ -74,6 +74,8 @@
 #include "test.h" 
 #include "usctest.h"
 
+void dochild1();
+void dochild2();
 void setup();
 void cleanup();
 extern struct passwd * my_getpwnam(char *);
@@ -99,9 +101,8 @@ main(int ac, char **av)
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
 	pid_t pid;
-	struct passwd *nobody;
 	struct stat buf1;
-	int retval=0, e_code, status, status2;
+	int e_code, status, status2;
 
 	/*
 	 * parse standard options
@@ -109,6 +110,11 @@ main(int ac, char **av)
 	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&dochild1, "ns", 1, tstdir2);
+	maybe_run_child(&dochild2, "ns", 2, tstdir4);
+#endif
 
 	/*
 	 * perform global setup for test
@@ -163,47 +169,19 @@ main(int ac, char **av)
 				 "Could not create directory %s", tstdir2);
 		}
 
-		nobody = my_getpwnam(user1name);
-
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 			/*NOTREACHED*/
 		}
 
 		if (pid == 0) {		/* first child */
-			/* set to nobody */
-			if (seteuid(nobody->pw_uid) == -1) {
-				retval=1;
-				tst_brkm(TBROK, cleanup, "setreuid failed to "
-					 "set effective uid to %d",
-					 nobody->pw_uid);
-				/*NOTREACHED*/
-			}		  
-
-			/* rmdir tstdir2 */
-			TEST(rmdir(tstdir2));
-
-			if (TEST_ERRNO) {
-				TEST_ERROR_LOG(TEST_ERRNO);
+#ifdef UCLINUX
+			if (self_exec(av[0], "ns", 1, tstdir2) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-
-			if (TEST_RETURN != -1) {
-				retval=1;
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-			} else if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
-				retval=1;
-				tst_resm(TFAIL, "Expected EPERM or EACCES, got %d",
-					 TEST_ERRNO);
-			} else {
-				tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
-			}
-
-			if (seteuid(0) == -1) {
-				retval=1;
-				tst_brkm(TBROK, cleanup, "seteuid(0) failed");
-			}
-			exit(retval);
-			/* END of child 1 (test1) */
+#else
+			dochild1();
+#endif
 		}
 		/* Parent */
 
@@ -227,38 +205,13 @@ main(int ac, char **av)
 		}
 
 		if (pid == 0) {		/* child */
-			/* set to nobody */
-			if (seteuid(nobody->pw_uid) == -1) {
-				retval = 1;
-				tst_brkm(TBROK, cleanup, "setreuid failed to "
-					 "set effective uid to %d",
-					 nobody->pw_uid);
-				/*NOTREACHED*/
+#ifdef UCLINUX
+			if (self_exec(av[0], "ns", 2, tstdir4) < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-
-			/* rmdir tstdir4*/
-			TEST(rmdir(tstdir4));
-
-			if (TEST_ERRNO) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-			}
-
-			if (TEST_RETURN != -1) {
-				retval = 1;
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-			} else if (TEST_ERRNO != EACCES) {
-				retval = 1;
-				tst_resm(TFAIL, "Expected EACCES got %d",
-					 TEST_ERRNO);
-			} else {
-				tst_resm(TPASS, "rmdir() produced EACCES");
-			}
-			
-			if (seteuid(0) == -1) {
-				retval = 1;
-				tst_brkm(TBROK, cleanup, "seteuid(0) failed");
-			}
-			exit(retval);
+#else
+			dochild2();
+#endif
 		} else {		/* parent */
                         /* wait for the child to finish */
                         wait(&status);
@@ -295,6 +248,89 @@ main(int ac, char **av)
   return(0);
 
 }       /* End main */
+
+/*
+ * dochild1()
+ */
+void
+dochild1()
+{
+	int retval = 0;
+	struct passwd *nobody = my_getpwnam(user1name);
+
+	/* set to nobody */
+	if (seteuid(nobody->pw_uid) == -1) {
+		retval=1;
+		tst_brkm(TBROK, cleanup, "setreuid failed to "
+			 "set effective uid to %d", nobody->pw_uid);
+		/*NOTREACHED*/
+	}		  
+	
+	/* rmdir tstdir2 */
+	TEST(rmdir(tstdir2));
+	
+	if (TEST_ERRNO) {
+		TEST_ERROR_LOG(TEST_ERRNO);
+	}
+	
+	if (TEST_RETURN != -1) {
+		retval=1;
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	} else if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
+		retval=1;
+		tst_resm(TFAIL, "Expected EPERM or EACCES, got %d", TEST_ERRNO);
+	} else {
+		tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
+	}
+	
+	if (seteuid(0) == -1) {
+		retval=1;
+		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
+	}
+	exit(retval);
+	/* END of child 1 (test1) */
+}
+
+/*
+ * dochild1()
+ */
+void
+dochild2()
+{
+	int retval = 0;
+	struct passwd *nobody = my_getpwnam(user1name);
+
+	/* set to nobody */
+	if (seteuid(nobody->pw_uid) == -1) {
+		retval = 1;
+		tst_brkm(TBROK, cleanup, "setreuid failed to "
+			 "set effective uid to %d", nobody->pw_uid);
+		/*NOTREACHED*/
+	}
+	
+	/* rmdir tstdir4*/
+	TEST(rmdir(tstdir4));
+	
+	if (TEST_ERRNO) {
+		TEST_ERROR_LOG(TEST_ERRNO);
+	}
+	
+	if (TEST_RETURN != -1) {
+		retval = 1;
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	} else if (TEST_ERRNO != EACCES) {
+		retval = 1;
+		tst_resm(TFAIL, "Expected EACCES got %d", TEST_ERRNO);
+	} else {
+		tst_resm(TPASS, "rmdir() produced EACCES");
+	}
+	
+	if (seteuid(0) == -1) {
+		retval = 1;
+		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
+	}
+	exit(retval);
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

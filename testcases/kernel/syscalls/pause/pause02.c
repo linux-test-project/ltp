@@ -77,10 +77,15 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EINTR, 0};
 pid_t cpid;			/* child process id */
 
+void do_child();		/* Function to run in child process */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handle(int sig);	/* signal handler for SIGINT */
 void kill_handle(int sig);	/* sends SIGKILL for child */
+
+#ifdef UCLINUX
+void do_child_uclinux();	/* Setup SIGINT handler then do_child() */
+#endif
 
 int
 main(int ac, char **av)
@@ -95,6 +100,10 @@ main(int ac, char **av)
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "");
+#endif
 
 	/* Perform global setup for test */
 	setup();
@@ -114,27 +123,13 @@ main(int ac, char **av)
 		}
 
 		if (cpid == 0) {		/* Child process */
-			/* Suspend the child using pause() */
-			TEST(pause());
-
-			/*
-			 * Child resumes execution after receipt of
-			 * interrupt signal sent by the parent.
-			 */
-			TEST_ERROR_LOG(TEST_ERRNO);
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == EINTR)) {
-				/* pause returned */
-				tst_resm(TPASS, "Functionality of pause() "
-					 "is correct");
-			} else {
-				tst_resm(TFAIL, "pause() returned %d, error=%d",
-					 TEST_RETURN, TEST_ERRNO);
+#ifdef UCLINUX
+			if (self_exec(av[0], "") < 0) {
+				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
-			if (TEST_RETURN == -1) {
-				exit(TEST_ERRNO);
-			} else {
-				exit(-1);
-			}
+#else
+			do_child();
+#endif
 		}
 
 		/* Parent process */
@@ -186,6 +181,50 @@ main(int ac, char **av)
 
 	return(0);
 }	/* End main */
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	/* Suspend the child using pause() */
+	TEST(pause());
+
+	/*
+	 * Child resumes execution after receipt of
+	 * interrupt signal sent by the parent.
+	 */
+	TEST_ERROR_LOG(TEST_ERRNO);
+	if ((TEST_RETURN == -1) && (TEST_ERRNO == EINTR)) {
+		/* pause returned */
+		tst_resm(TPASS, "Functionality of pause() "
+			 "is correct");
+	} else {
+		tst_resm(TFAIL, "pause() returned %d, error=%d",
+			 TEST_RETURN, TEST_ERRNO);
+	}
+	if (TEST_RETURN == -1) {
+		exit(TEST_ERRNO);
+	} else {
+		exit(-1);
+	}
+}
+
+/*
+ * do_child_uclinux()
+ */
+void
+do_child_uclinux()
+{
+	/* Catch SIGINT */
+	if (signal(SIGINT, sig_handle) == SIG_ERR) {
+		tst_brkm(TBROK, cleanup,
+			 "signal() fails to catch SIGINT");
+	}
+	
+	do_child();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

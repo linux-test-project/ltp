@@ -71,6 +71,7 @@ void terror();
 void fail_exit();
 void ok_exit();
 int forkfail();
+void do_child();
 
 /*****	**	**	*****/
 
@@ -80,16 +81,32 @@ int main (int argc, char *argv[])
 	register int i;
 	int status, count, child, kidpid;
 	int core, sig, ex;
+	char *msg;
+
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
 
 	setup();		/* temp file is now open	*/
 /*--------------------------------------------------------------*/
 
 	for (i=0; i < ITER; i++) {
 
-		if ((kidpid = fork()) == 0) {
-			abort();
-			fprintf(temp, "\tchild - abort failed.\n");
-			exit(0);
+		if ((kidpid = FORK_OR_VFORK()) == 0) {
+#ifdef UCLINUX
+			if (self_exec(argv[0], "")) {
+				terror("self_exec failed (may be OK if under stress)");
+				if (instress())
+					ok_exit();
+				forkfail();
+			}
+#else
+			do_child();
+#endif
 		}
 		if (kidpid < 0) {
 			terror("Fork failed (may be OK if under stress)");
@@ -147,6 +164,12 @@ int main (int argc, char *argv[])
   return(0);
 }
 /*--------------------------------------------------------------*/
+
+void do_child() {
+	abort();
+	fprintf(temp, "\tchild - abort failed.\n");
+	exit(0);
+}
 
 /******	LTP Port	*****/
 int anyfail()

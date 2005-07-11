@@ -31,13 +31,13 @@
  *	loop if that option was specified
  *	fork a child process
  *	child attempts to enqueue a message to the full queue and sleeps
- *	parent sends a SIGHUP to the child then exits
+ *	parent sends a SIGHUP to the child then waits for the child to complete
  *	child get a return from msgsnd()
  *	check the errno value
  *	  issue a PASS message if we get EINTR
  *	otherwise, the tests fails
  *	  issue a FAIL message
- *	call cleanup
+ *	child exits, parent calls cleanup
  *
  * USAGE:  <for command-line>
  *  msgsnd05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -60,9 +60,16 @@
 
 #include "ipcmsg.h"
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
+void do_child(void);
 void cleanup(void);
 void setup(void);
 void sighandler(int);
+#ifdef UCLINUX
+void do_child_uclinux(void);
+#endif
 
 char *TCID = "msgsnd05";
 int TST_TOTAL = 1;
@@ -84,6 +91,10 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child_uclinux, "d", &msg_q_1);
+#endif
+
 	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
@@ -96,7 +107,7 @@ int main(int ac, char **av)
 		 * fork a child that will attempt to write a message
 		 * to the queue without IPC_NOWAIT
 		 */
-		if ((c_pid = fork()) == -1) {
+		if ((c_pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 
@@ -105,8 +116,13 @@ int main(int ac, char **av)
 			 * Attempt to write another message to the full queue.
 			 * Without the IPC_NOWAIT flag, the child sleeps
 			 */
-			TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
+#ifdef UCLINUX
+			if (self_exec(av[0], "d", msg_q_1) < 0) {
+				tst_brkm(TBROK, cleanup, "could not self_exec");
+			}
+#else
+			do_child();
+#endif
 		} else {		/* parent */
 			usleep(250000);
 
@@ -115,27 +131,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "kill failed");
 			}
 
-			/* let the child carry on */
-			exit(0);
-		}
-			
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
-			continue;
-		}
-	
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		switch(TEST_ERRNO) {
-		case EINTR:
-			tst_resm(TPASS, "expected failure - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "call failed with an "
-				 "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
+			waitpid(c_pid, NULL, 0);
 		}
 	}
 
@@ -144,6 +140,51 @@ int main(int ac, char **av)
 	/*NOTREACHED*/
 	return(0);
 }
+
+/*
+ * do_child()
+ */
+void
+do_child()
+{
+	TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
+
+	if (TEST_RETURN != -1) {
+		tst_resm(TFAIL, "call succeeded when error expected");
+		exit(-1);
+	}
+	
+	TEST_ERROR_LOG(TEST_ERRNO);
+	
+	switch(TEST_ERRNO) {
+	case EINTR:
+		tst_resm(TPASS, "expected failure - errno = %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+		break;
+	default:
+		tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+		break;
+	}
+
+	exit(0);
+}
+
+#ifdef UCLINUX
+/*
+ * do_child_uclinux() - capture signals, initialize buffer, then run do_child()
+ */
+void
+do_child_uclinux()
+{
+	/* initialize the message buffer */
+	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+
+	tst_sig(FORK, sighandler, cleanup);
+
+	do_child();
+}
+#endif
 
 /*
  * sighandler() - handle signals

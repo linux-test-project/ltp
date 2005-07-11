@@ -236,7 +236,7 @@ setup()
 	cargv[2] = symfile_path;
 	cargv[3] = NULL;
 
-	if ((pid = fork()) == -1) {
+	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork failed");
 	}
 

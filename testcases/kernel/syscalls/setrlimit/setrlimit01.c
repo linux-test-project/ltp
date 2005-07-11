@@ -170,7 +170,7 @@ test2()
 	 * output will be saved to the logfile (instead of stdout)
 	 * when the testcase (parent) is run from the driver.
 	 */
-	if ((pid = fork()) == -1) {
+	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");
 	}
 
@@ -253,7 +253,7 @@ test3()
 	}
 
 	for (i = 0; i < 20; i++) {
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			if (errno != EAGAIN) {
 				tst_resm(TWARN, "Expected EAGAIN got %d",
 					 errno);
@@ -292,7 +292,7 @@ test4()
 		return;
 	}
 
-	if ((pid = fork()) == -1) {
+	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");
 	}
 

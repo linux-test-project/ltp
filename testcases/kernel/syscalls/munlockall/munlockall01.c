@@ -74,6 +74,8 @@ int TST_TOTAL = 1;			/* Total number of test cases. */
 extern int Tst_count;			/* TestCase counter for tst_* routine */
 int exp_enos[] = { 0 };
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc;		 		/* loop counter */
@@ -114,6 +116,16 @@ int main(int ac, char **av)
 	
 	return 0;
 }				/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"munlockall01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 
 /* setup() - performs all ONE TIME setup for this test. */

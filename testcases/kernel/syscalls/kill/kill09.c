@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill09.c,v 1.3 2003/10/01 15:31:32 robbiew Exp $ */
+/* $Id: kill09.c,v 1.4 2005/07/11 22:28:29 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -122,8 +122,7 @@
 void setup();
 void cleanup();
 void alarm_handler(int sig);
-
-
+void do_child();
 
 
 char *TCID="kill09"; 		/* Test program identifier.    */
@@ -147,6 +146,10 @@ main(int ac, char **av)
 	tst_exit();
     }
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
@@ -163,7 +166,7 @@ main(int ac, char **av)
 
 	/* make a child process so we can kill it */
 	/* If we cannot fork => we cannot test kill, so break and exit */
-        if ((fork_pid=fork()) == -1) {
+        if ((fork_pid=FORK_OR_VFORK()) == -1) {
            tst_brkm(TBROK, cleanup,
 		    "fork() Failure. errno=%d : %s",
 		    errno, strerror(errno));
@@ -171,14 +174,13 @@ main(int ac, char **av)
 
 	if (fork_pid == 0) {
 	    /* CHILD */
-	    /*
-	     * Setup alarm signal if we don't get the signal to prevent this process
-	     * from hanging around forever.
-	     */
-	    signal(SIGALRM, alarm_handler);
-	    alarm(20);
-            pause();
-            exit(1);
+#ifdef UCLINUX
+	    if (self_exec(av[0], "") < 0) {
+		tst_brkm(TBROK, cleanup, "self_exec of child failed");
+	    }
+#else
+	    do_child();
+#endif
         }
 
 	/* PARENT */
@@ -217,6 +219,22 @@ main(int ac, char **av)
 
     return 0;
 }	/* End main */
+
+/***************************************************************
+ * do_child()
+ ***************************************************************/
+void
+do_child()
+{
+    /*
+     * Setup alarm signal if we don't get the signal to prevent this process
+     * from hanging around forever.
+     */
+    signal(SIGALRM, alarm_handler);
+    alarm(20);
+    pause();
+    exit(1);
+}
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

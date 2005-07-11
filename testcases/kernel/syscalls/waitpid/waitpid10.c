@@ -86,6 +86,10 @@ void do_mkdir();
 
 int fail;
 
+#ifdef UCLINUX
+static char *argv0;
+#endif
+
 int main(int ac, char **av)
 {
 	int kid_count, ret_val, status, nkids;
@@ -101,6 +105,16 @@ int main(int ac, char **av)
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	argv0 = av[0];
+
+	maybe_run_child(&do_exit, "n", 1);
+	maybe_run_child(&do_compute, "n", 2);
+	maybe_run_child(&do_fork, "n", 3);
+	maybe_run_child(&do_sleep, "n", 4);
+	maybe_run_child(&do_mkdir, "n", 5);
+#endif
 	
 	/*
 	 * process the arg -- If there is one arg, it is the
@@ -165,10 +179,17 @@ int main(int ac, char **av)
 		* So that we may not miss any signals !
 		*/
 			intintr = 0;
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 0 */
 			//    	intintr = 0;  
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 1) < 0) {
+					tst_resm(TFAIL, "self_exec 0 failed");
+					tst_exit();
+				}
+#else
 				do_exit();
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 0 failed. errno = "
@@ -179,10 +200,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 1 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 1) < 0) {
+					tst_resm(TFAIL, "self_exec 1 failed");
+					tst_exit();
+				}
+#else
 				do_exit();
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 1 failed. errno = " 
@@ -193,11 +221,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 2 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 2) < 0) {
+					tst_resm(TFAIL, "self_exec 2 failed");
+					tst_exit();
+				}
+#else
 				do_compute();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 2 failed. errno = "
@@ -208,11 +242,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 3 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 2) < 0) {
+					tst_resm(TFAIL, "self_exec 3 failed");
+					tst_exit();
+				}
+#else
 				do_compute();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 3 failed. errno = "
@@ -223,11 +263,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 4 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 3) < 0) {
+					tst_resm(TFAIL, "self_exec 4 failed");
+					tst_exit();
+				}
+#else
 				do_fork();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 4 failed. errno = "
@@ -238,11 +284,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 5 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 3) < 0) {
+					tst_resm(TFAIL, "self_exec 5 failed");
+					tst_exit();
+				}
+#else
 				do_fork();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 5 failed. errno = "
@@ -253,11 +305,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 6 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 4) < 0) {
+					tst_resm(TFAIL, "self_exec 6 failed");
+					tst_exit();
+				}
+#else
 				do_sleep();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 6 failed. errno = "
@@ -268,11 +326,17 @@ int main(int ac, char **av)
 			/* parent */
 			fork_kid_pid[kid_count++] = ret_val;
 
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 7 */
 			//	intintr = 0;
+#ifdef UCLINUX
+				if (self_exec(argv0, "n", 4) < 0) {
+					tst_resm(TFAIL, "self_exec 7 failed");
+					tst_exit();
+				}
+#else
 				do_sleep();
-				exit(4);
+#endif
 			}
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid 7 failed. errno = "
@@ -448,6 +512,8 @@ do_compute()
 	for (i = 0; i < 100000; i++);
 	for (i = 0; i < 100000; i++);
 	for (i = 0; i < 100000; i++);
+
+	exit(4);
 }
 
 void
@@ -464,14 +530,20 @@ do_fork()
 	 * sure they are the same.
 	 */
 	for (i = 0; i < 50; i++) {
-		fork_pid = fork();
+		fork_pid = FORK_OR_VFORK();
 		if (fork_pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			tst_exit();
 		}
 		if (fork_pid == 0) {
+#ifdef UCLINUX
+			if (self_exec(argv0, "n", 5) < 0) {
+				tst_resm(TFAIL, "do_fork self_exec failed");
+				tst_exit();
+			}
+#else
 			do_mkdir();
-			exit(4);
+#endif
 		}
 
 		errno = 0;
@@ -491,6 +563,8 @@ do_fork()
 			}
 		}
 	}
+
+	exit(4);
 }
 
 void
@@ -499,6 +573,8 @@ do_sleep()
 	wait_for_parent();
 	sleep(1);
 	sleep(1);
+
+	exit(4);
 }
 
 void
@@ -511,4 +587,6 @@ do_mkdir()
 	 * part of the test.
 	 */
 	ret_val = mkdir("waitpid14.ttt.ttt", 0777);
+
+	exit(4);
 }

@@ -1,4 +1,5 @@
 SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open`
+UCLINUX_SUBDIRS = kernel
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
@@ -6,6 +7,14 @@ all:
 install:
 	mkdir -p bin
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+
+uclinux:
+	@set -e; for i in $(UCLINUX_SUBDIRS); do $(MAKE) -C $$i uclinux; done
+
+uclinux_install:
+	mkdir -p bin
+	@set -e; for i in $(UCLINUX_SUBDIRS); \
+		do $(MAKE) -C $$i uclinux_install ; done
 
 clean:
 	rm -rf bin/

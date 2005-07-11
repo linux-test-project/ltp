@@ -89,6 +89,8 @@ static char* global_vec = NULL;
 static int global_len = 0;
 static int file_desc = 0;
 
+#if !defined(UCLINUX)
+
 static struct test_case_t {
         char *addr;
         int len;
@@ -276,3 +278,13 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO,"mincore01 test is not available on UCLINUX");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */

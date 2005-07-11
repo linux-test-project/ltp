@@ -112,7 +112,7 @@ main(int ac, char **av)
 		TEST(alarm(time_sec));
 
 		/* Now, fork a child process */
-		cpid = fork();
+		cpid = FORK_OR_VFORK();
 		if (cpid < 0) {
 			tst_resm(TFAIL, "fork() fails to create child, "
 				 "errno:%d", errno);

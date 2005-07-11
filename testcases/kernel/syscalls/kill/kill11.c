@@ -58,6 +58,7 @@ int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;
+static int sig;
 
 int anyfail();
 int blenter();
@@ -65,6 +66,7 @@ void setup();
 void terror();
 void fail_exit();
 int forkfail();
+void do_child();
 
 /*****  **      **      *****/
 
@@ -74,12 +76,11 @@ int forkfail();
 
 
 /*--------------------------------------------------------------------*/
-int main()					/***** BEGINNING OF MAIN. *****/
+int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 {
-	register int i;
 	int core;
 	int pid, npid;
-        int sig, nsig, exno, nexno, status;
+        int nsig, exno, nexno, status;
 	/*SIGIOT is 6, but since linux doesn't have SIGEMT, just using
 		SIGIOT for place filling */
 	int signum[14];
@@ -90,6 +91,19 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	signum[7]=SIGIOT;	signum[8]=SIGFPE;	signum[9]=SIGKILL;
 	signum[10]=SIGBUS;	signum[11]=SIGSEGV;	signum[12]=SIGSYS;
 	signum[13]=SIGPIPE;	signum[14]=SIGALRM;
+
+#ifdef UCLINUX
+	char *msg;
+
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	maybe_run_child(&do_child, "dd", &temp, &sig);
+#endif
+
+
 	setup();
 	// tempdir();		/* move to new directory */
 /*--------------------------------------------------------------------*/
@@ -111,7 +125,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 				fail_exit();
 			}
 		fflush(temp);
-		pid = fork();
+		pid = FORK_OR_VFORK();
 
 		if (pid < 0) {
 			forkfail();
@@ -122,11 +136,16 @@ int main()					/***** BEGINNING OF MAIN. *****/
 		 * parent process a chance to kill it.
 		 */
 		if (pid == 0) {
-			for (i=0; i < 180; i++)
-				sleep(1);
-			fprintf(temp, "\tChild missed sig %d\n", sig);
-			fflush(temp);
-			_exit(exno);
+#ifdef UCLINUX
+			if (self_exec(argv[0], "dd", temp, sig) < 0) {
+				tst_resm(TBROK, "self_exec FAILED - "
+					 "terminating test.");
+				tst_exit();
+				return(0);
+			}
+#else
+			do_child();
+#endif
 		}
 
 		/*
@@ -216,8 +235,18 @@ int anyfail()
   return(0);
 }
 
-
-
+void
+do_child()
+{
+	register int i;
+	int exno = 1;
+	
+	for (i=0; i < 180; i++)
+		sleep(1);
+	fprintf(temp, "\tChild missed sig %d\n", sig);
+	fflush(temp);
+	_exit(exno);
+}
 
 void setup()
 {

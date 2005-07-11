@@ -1,4 +1,5 @@
 CFLAGS+= -Wall -O -g -I../../../../include 
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
 
 
@@ -14,6 +15,7 @@ else
 LDLIBS+= -L../../../../lib -lltp 
 endif
 
+LDLIBS+= $(if $(UCLINUX),-lc)
 
 
 TARGETS=CheckVer epoll-ltp

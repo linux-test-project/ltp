@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.8 2005/01/17 22:10:09 robbiew Exp $ */
+/* $Id: test.h,v 1.9 2005/07/11 22:28:09 robbiew Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -189,6 +189,21 @@ extern void tst_clear_error();
 #define USC_LOOP_DELAY		"USC_LOOP_DELAY"
 
 /*
+ * fork() can't be used on uClinux systems, so use FORK_OR_VFORK instead,
+ * which will run vfork() on uClinux.
+ * mmap() doesn't support MAP_PRIVATE on uClinux systems, so use
+ * MAP_PRIVATE_EXCEPT_UCLINUX instead, which will skip the option on uClinux.
+ * If MAP_PRIVATE really is required, the test can not be run on uClinux.
+ */
+#ifdef UCLINUX
+#define FORK_OR_VFORK			vfork
+#define MAP_PRIVATE_EXCEPT_UCLINUX	0	
+#else
+#define FORK_OR_VFORK			fork
+#define MAP_PRIVATE_EXCEPT_UCLINUX	MAP_PRIVATE
+#endif
+
+/*
  * The following prototypes are needed to remove compile errors
  * on IRIX systems when compiled with -n32 and -64.
  */
@@ -222,5 +237,9 @@ extern int tst_kvercmp(int, int, int);
 
 extern int tst_is_cwd_tmpfs();
 extern int tst_cwd_has_free(int required_kib);
+
+/* self_exec.c functions */
+void maybe_run_child(void (*child)(), char *fmt, ...);
+int self_exec(char *argv0, char *fmt, ...);
 
 #endif	/* end of __TEST_H__ */

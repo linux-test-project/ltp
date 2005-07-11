@@ -103,7 +103,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ "tnode_1",  "Specified node already exists", EEXIST, setup1 },
+#if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
+#endif
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ "testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
@@ -115,8 +117,12 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 char *TCID="mknod06";           /* Test program identifier.    */
 int TST_TOTAL = 7;		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
+#if !defined(UCLINUX)
 extern char *get_high_address();
 int exp_enos[]={EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0};
+#else
+int exp_enos[]={EEXIST, ENOENT, ENAMETOOLONG, ENOTDIR, 0};
+#endif
 
 char * bad_addr = 0;
 
@@ -157,9 +163,11 @@ main(int ac, char **av)
 			node_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
 
+#if !defined(UCLINUX)
 			if (node_name == High_address_node) {
 				node_name = get_high_address();
 			}
+#endif
 
 			/*
 			 * Call mknod(2) to test different test conditions.
@@ -228,7 +236,8 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}

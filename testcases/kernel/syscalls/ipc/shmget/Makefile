@@ -24,7 +24,9 @@ MAINS=shmget01 shmget02 shmget03 shmget04 shmget05
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 CFLAGS+=-I../lib -I../../../../../include -g -Wall
+CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 all: $& $(MAINS)
 

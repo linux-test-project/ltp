@@ -9,6 +9,7 @@ endif
 ifeq ($(shell uname -s),HP-UX)
 CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
 endif
+CFLAGS+=$(if $(UCLINUX),-DUCLINUX)
 LDFLAGS+=
 TARGET=libltp.a
 SRCS=$(wildcard *.c)

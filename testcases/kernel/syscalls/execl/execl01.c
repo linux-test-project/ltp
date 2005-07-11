@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execl01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: execl01.c,v 1.2 2005/07/11 22:28:15 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -172,7 +172,7 @@ main(int ac, char **av)
 	 * TEST CASE:
 	 *   fork, then call execl from child 
 	 */
-	switch(pid=fork()) {
+	switch(pid=FORK_OR_VFORK()) {
 	case 0: 	/* CHILD - Call execl(2) */
 	    execl("test", "test", NULL);
 	    /* should not get here!! if we do, the parent will fail the Test Case */

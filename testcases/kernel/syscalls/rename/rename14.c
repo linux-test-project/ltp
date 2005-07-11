@@ -76,6 +76,18 @@ int main (argc, argv)
 	void dochild1();
 	void dochild2();
 
+#ifdef UCLINUX
+	char *msg;		/* message returned from parse_opts */
+
+	/* Parse standard options given to run the test. */
+	msg = parse_opts(argc, argv, (option_t *)NULL, NULL);
+	if (msg != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
+
+	maybe_run_child(&dochild1, "n", 1);
+	maybe_run_child(&dochild2, "n", 2);
+#endif
 	sigemptyset(&set);
 	act.sa_handler = (void(*)())term;
 	act.sa_mask = set;
@@ -97,17 +109,22 @@ int main (argc, argv)
 	tst_tmpdir();
 /*--------------------------------------------------------------*/
 
-	pid = fork();
+	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		tst_resm(TBROK,"fork() returned %d\n", pid);
 		tst_exit();	
 	}
 	if (pid == 0) {
+#ifdef UCLINUX
+		if (self_exec(argv[0], "n", 1) < 0) {
+			tst_resm(TBROK,"self_exec failed");
+		}
+#else
 		dochild1();
-		exit(0);
+#endif
 	}
 	kidpid[0] = pid;
-	pid = fork();
+	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");
@@ -115,8 +132,13 @@ int main (argc, argv)
 		tst_exit();	
 	}
 	if (pid == 0) {
+#ifdef UCLINUX
+		if (self_exec(argv[0], "n", 1) < 0) {
+			tst_resm(TBROK,"self_exec failed");
+		}
+#else
 		dochild2();
-		exit(0);
+#endif
 	}
 	kidpid[1] = pid;
 

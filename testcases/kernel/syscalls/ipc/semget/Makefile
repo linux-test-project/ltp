@@ -24,7 +24,9 @@ MAINS=semget01 semget02 semget03 semget05 semget06
 SRCS=$(MAINS:=.c)
 OBJS=$(MAINS:=.o)
 CFLAGS+=-I../../../../../include -Wall -g
+CFLAGS+=$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=-L../../../../../lib -lltp -L.. -lipc
+LOADLIBES+=	$(if $(UCLINUX),-lc)
 
 
 all: $& $(MAINS)

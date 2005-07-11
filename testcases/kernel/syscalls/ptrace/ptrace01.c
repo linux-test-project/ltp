@@ -95,6 +95,7 @@
 #include "test.h"
 #include "usctest.h"
 
+static void do_child(void);
 static void setup(void);
 static void cleanup(void);
 static void child_handler();
@@ -104,6 +105,7 @@ static int got_signal = 0;
 
 char *TCID = "ptrace01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+static int i;		/* loop test case counter, shared with do_child */
 
 int TST_TOTAL = 2;
 
@@ -111,18 +113,21 @@ int
 main(int ac, char **av)
 {
 
-	int lc, i;		/* loop counter */
+	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t child_pid;
 	int status;
 	struct sigaction parent_act;
-	struct sigaction child_act;
     
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
+
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "d", &i);
+#endif
 
 	/* perform global setup for test */
 	setup();
@@ -149,7 +154,7 @@ main(int ac, char **av)
 				}
 			}
 
-			switch (child_pid = fork()) {
+			switch (child_pid = FORK_OR_VFORK()) {
 	
 			case -1:
 				/* fork() failed */
@@ -158,35 +163,15 @@ main(int ac, char **av)
 
 			case 0:
 				/* Child */
+#ifdef UCLINUX
+				if (self_exec(av[0], "d", i) < 0) {
+					tst_resm(TFAIL, "self_exec failed");
+					continue;
+				}
+#else
+				do_child();
+#endif
 
-				/* Setup signal handler for child */
-				if (i == 0) {
-					child_act.sa_handler = SIG_IGN;
-				} else {
-					child_act.sa_handler = child_handler;
-				}
-				child_act.sa_flags = SA_RESTART;
-
-				if ((sigaction(SIGUSR2, &child_act, NULL))
-				    == -1) {
-					tst_resm(TWARN, "sigaction() failed"
-						" in child");
-					exit(1);
-				}
-
-				if ((ptrace(PTRACE_TRACEME, 0, 0 ,0)) == -1) {
-					tst_resm(TWARN, "ptrace() failed in"
-						 " child");
-					exit(1);
-				}
-				/* ensure that child bypasses signal handler */
-				if ((kill(getpid(), SIGUSR2)) == -1) {
-					tst_resm(TWARN, "kill() failed in"
-						 " child");
-					exit(1);
-				}
-				exit(1);
-		
 			default:
 				/* Parent */
 				if ((waitpid(child_pid, &status, 0)) < 0) {
@@ -240,6 +225,37 @@ main(int ac, char **av)
 
 }/* End main */
 
+/* do_child() */
+void
+do_child()
+{
+	struct sigaction child_act;
+
+	/* Setup signal handler for child */
+	if (i == 0) {
+		child_act.sa_handler = SIG_IGN;
+	} else {
+		child_act.sa_handler = child_handler;
+	}
+	child_act.sa_flags = SA_RESTART;
+	
+	if ((sigaction(SIGUSR2, &child_act, NULL)) == -1) {
+		tst_resm(TWARN, "sigaction() failed in child");
+		exit(1);
+	}
+	
+	if ((ptrace(PTRACE_TRACEME, 0, 0 ,0)) == -1) {
+		tst_resm(TWARN, "ptrace() failed in child");
+		exit(1);
+	}
+	/* ensure that child bypasses signal handler */
+	if ((kill(getpid(), SIGUSR2)) == -1) {
+		tst_resm(TWARN, "kill() failed in child");
+		exit(1);
+	}
+	exit(1);
+}
+		
 /* setup() - performs all ONE TIME setup for this test */
 void
 setup()

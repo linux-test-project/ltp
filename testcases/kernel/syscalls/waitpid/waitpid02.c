@@ -57,6 +57,7 @@
 #include <test.h>
 #include <usctest.h>
 
+void do_child(void);
 void setup(void);
 void cleanup(void);
 
@@ -81,6 +82,10 @@ int main(int argc, char **argv)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "");
+#endif
+
 	setup();
 
 	/* check for looping state if -i option is given */
@@ -91,13 +96,15 @@ int main(int argc, char **argv)
 		exno = 1;
 		sig = SIGFPE;
 
-		pid = fork();
+		pid = FORK_OR_VFORK();
 
 		if (pid == 0) {
-			while(1)
-				usleep(10);
-
-			exit(exno);
+#ifdef UCLINUX
+			self_exec(argv[0], "");
+			/* No fork() error check is done so don't check here */
+#else
+			do_child();
+#endif
 		} else {
 			kill(pid, sig);
 			errno = 0;
@@ -153,6 +160,20 @@ int main(int argc, char **argv)
 
   return(0);
 
+}
+
+/*
+ * do_child() 
+ */
+void
+do_child()
+{
+	int exno = 1;
+
+	while(1)
+		usleep(10);
+	
+	exit(exno);
 }
 
 /*
