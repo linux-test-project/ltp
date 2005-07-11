@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.6 2002/04/11 15:03:03 plars Exp $ */
+/* $Id: usctest.h,v 1.7 2005/07/11 18:56:53 robbiew Exp $ */
 
 /**********************************************************
  * 
@@ -159,8 +159,8 @@ struct usc_errno_t {
  **********************************************************************/
 #ifdef  _USC_LIB_
 
-extern int TEST_RETURN;
-extern int TEST_ERRNO;
+extern long TEST_RETURN;
+extern long TEST_ERRNO;
 
 #else
 /***********************************************************************
@@ -173,8 +173,8 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
  * Globals for returning the return code and errno from the system call
  * test macros.
  ***********************************************************************/
-int TEST_RETURN;
-int TEST_ERRNO;
+long TEST_RETURN;
+long TEST_ERRNO;
 
 /***********************************************************************
  * temporary variables for determining max and min times in TEST macro
