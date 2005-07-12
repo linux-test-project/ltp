@@ -1,3 +1,14 @@
+LTP-20050707
+- Applied fixes by Paul J.Y. Lahaie to implement support for UCLinux
+- suppresses the warning  "head: `-1' option is obsolete; use `-n 1'..."
+- Updated the TEST() macro to return long, instead of int for use with 64bit architectures.
+- Removed umount04.
+- Security updates for ppc and 390 systems
+- The K42 open source operating system bug fix for panic when alarm is cancelled.
+- Applied some zSeries specific patches.
+- Applied patches to allow NFSv4 testing:
+- Define gettid() to syscall(__NR_gettid).
+
 LTP-20050608
 - Added test for getcontext()
 - Added additional test for mlockall().
