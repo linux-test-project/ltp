@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.3 2003/01/24 17:55:00 robbiew Exp $ */
+/* $Id: gethostid01.c,v 1.4 2005/07/12 17:09:52 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -172,7 +172,7 @@ main(int ac, char **av)
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 	    continue;	/* next loop for MTKERNEL */
 	}
-	sprintf(hostid, "%x", TEST_RETURN);
+	sprintf(hostid, "%lx", TEST_RETURN);
 
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
