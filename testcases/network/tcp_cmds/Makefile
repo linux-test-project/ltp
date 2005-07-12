@@ -1,4 +1,4 @@
-SUBDIRS = arp echo finger ftp host netstat perf_lan ping rcp rdist rlogin rsh rwho sendfile tcpdump telnet
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
