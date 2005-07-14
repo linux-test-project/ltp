@@ -14,6 +14,7 @@ setup()
 	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
+	export TST_TOTAL=2
 
 	# Start the target process.
 	runcon -t test_getsid_target_t selinux_task_getsid_target &
@@ -33,9 +34,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #1: task_getsid passed."
+		tst_resm TPASS "Test #1: task_getsid passed."
 	else
-		echo "Test #1: task_getsid failed."
+		tst_resm TFAIL "Test #1: task_getsid failed."
 	fi
 	return $RC
 }
@@ -51,10 +52,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #2: task_getsid passed."
+		tst_resm TPASS "Test #2: task_getsid passed."
 		RC=0
 	else
-		echo "Test #2: task_getsid failed."
+		tst_resm TFAIL "Test #2: task_getsid failed."
 		RC=1
 	fi
 	return $RC
@@ -74,9 +75,10 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

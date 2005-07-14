@@ -16,6 +16,7 @@ setup()
 {
         export TCID="setup"
         export TST_COUNT=0
+	export TST_TOTAL=5
 }
 
 #
@@ -33,9 +34,9 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #1: capable_net failed."
+                tst_resm TFAIL "Test #1: capable_net failed."
         else
-                echo "Test #1: capable_net passed."
+                tst_resm TPASS "Test #1: capable_net passed."
         fi
         return $RC
 }	
@@ -51,9 +52,9 @@ test02()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #2: capable_net failed."
+                tst_resm TFAIL "Test #2: capable_net failed."
         else
-                echo "Test #2: capable_net passed."
+                tst_resm TPASS "Test #2: capable_net passed."
         fi
         return $RC
 }
@@ -72,9 +73,9 @@ test03()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #3: capable_net failed."
+                tst_resm TFAIL "Test #3: capable_net failed."
         else
-                echo "Test #3: capable_net passed."
+                tst_resm TPASS "Test #3: capable_net passed."
         fi
         return $RC
 }
@@ -94,10 +95,10 @@ test04()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #4: capable_net passed."
+                tst_resm TPASS "Test #4: capable_net passed."
 		RC=0
         else
-                echo "Test #4: capable_net failed."
+                tst_resm TFAIL "Test #4: capable_net failed."
 		RC=1
         fi
 	return $RC
@@ -117,10 +118,10 @@ test05()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #5: capable_net passed."
+                tst_resm TPASS "Test #5: capable_net passed."
 		RC=0
         else
-                echo "Test #5: capable_net failed."
+                tst_resm TFAIL "Test #5: capable_net failed."
 		RC=1
         fi
 	return $RC
@@ -135,11 +136,12 @@ test05()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
-exit 0
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
+exit $EXIT_VAL 

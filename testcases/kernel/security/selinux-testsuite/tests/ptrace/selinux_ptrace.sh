@@ -14,7 +14,9 @@ setup()
 	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
+	export TST_TOTAL=2
 
+	# run tests in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
 	cd $LTPROOT/testcases/bin
 	CURRENTDIR=.
@@ -40,10 +42,10 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #1: ptrace passed."
+                tst_resm TPASS "Test #1: ptrace passed."
 		RC=0
         else
-                echo "Test #1: ptrace failed."
+                tst_resm TFAIL "Test #1: ptrace failed."
 		RC=1
         fi
 	return $RC
@@ -60,9 +62,9 @@ test02()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "Test #2: ptrace passed."
+                tst_resm TPASS "Test #2: ptrace passed."
         else
-                echo "Test #2: ptrace failed."
+                tst_resm TFAIL "Test #2: ptrace failed."
         fi
 	return $RC
 }
@@ -71,6 +73,8 @@ cleanup()
 {
 	# Kill the process.
 	kill -s KILL $PID
+
+	# return to $LTPROOT directory
 	cd $SAVEPWD
 }
 
@@ -82,9 +86,10 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

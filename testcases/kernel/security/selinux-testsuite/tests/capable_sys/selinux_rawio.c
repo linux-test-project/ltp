@@ -8,10 +8,11 @@
  *
  */
 
-#include<stdio.h>
-#include<fcntl.h>
-#include<sys/ioctl.h>
-#include<linux/fs.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/fs.h>
 
 /*
  * Test the FIBMAP ioctl() call on a file whose name is given as the first 

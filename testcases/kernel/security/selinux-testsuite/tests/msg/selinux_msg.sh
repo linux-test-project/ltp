@@ -12,6 +12,14 @@
 #  Basic Message Queue Test Cases                                   #
 # ================================================================= #
 
+setup()
+{
+	LTPTMP="/tmp/selinux"
+	export TCID="setup"
+	export TST_COUNT=0
+	export TST_TOTAL=15
+}
+
 # First time should just get the resource
 test01()
 {
@@ -23,9 +31,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #1: msg passed."
+		tst_resm TPASS "Test #1: msg passed."
 	else
-		echo "Test #1: msg failed."
+		tst_resm TFAIL "Test #1: msg failed."
 	fi
 	return $RC
 }
@@ -39,7 +47,7 @@ test02()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		echo "Test #2:msg failed:Invalid output from selinux_msgget."
+		tst_brk TBROK "Test #2:msg failed:Invalid output from selinux_msgget."
 		return 1
 	fi
 
@@ -48,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #2: msg passed."
+		tst_resm TPASS "Test #2: msg passed."
 	else
-		echo "Test #2: msg failed."
+		tst_resm TFAIL "Test #2: msg failed."
 	fi
 	return $RC
 }
@@ -66,9 +74,9 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #3: msg passed."
+		tst_resm TPASS "Test #3: msg passed."
 	else
-		echo "Test #3: msg failed."
+		tst_resm TFAIL "Test #3: msg failed."
 	fi
 	return $RC
 }
@@ -82,7 +90,7 @@ test04()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		echo "Test #4:msg failed:Invalid output from selinux_msgget."
+		tst_brk TBROK "Test #4:msg failed:Invalid output from selinux_msgget."
 		return 1
 	fi
 
@@ -91,14 +99,14 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #4: msg failed."
+		tst_resm TFAIL "Test #4: msg failed."
 		return $RC
 	fi
 
 	ipcid2=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid2 ]
 	then
-		echo "Test#4:msg failed:Invalid output from selinux_msgget."
+		tst_brk TBROK "Test#4:msg failed:Invalid output from selinux_msgget."
 		RC=1
 		return $RC 
 	fi
@@ -106,10 +114,10 @@ test04()
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
-		echo "Test #4: msg passed"
+		tst_resm TPASS "Test #4: msg passed"
 		RC=0
 	else
-		echo "Test #4: msg failed"
+		tst_resm TFAIL "Test #4: msg failed"
 		RC=1
 	fi
 	return $RC
@@ -126,9 +134,9 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #5: msg passed."
+		tst_resm TPASS "Test #5: msg passed."
 	else
-		echo "Test #5: msg failed."
+		tst_resm TFAIL "Test #5: msg failed."
 	fi
 	return $RC
 }
@@ -144,10 +152,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #6: msg passed."
+		tst_resm TPASS "Test #6: msg passed."
 		RC=0 
 	else
-		echo "Test #6: msg failed."
+		tst_resm TFAIL "Test #6: msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -174,10 +182,10 @@ test07()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = "-$number" ]
 	then
-		echo "Test #7: msg passed."
+		tst_resm TPASS "Test #7: msg passed."
 		RC=0 
 	else
-		echo "Test #7: msg failed."
+		tst_resm TFAIL "Test #7: msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -200,10 +208,10 @@ test08()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = 0 ]
 	then
-		echo "Test #8: msg passed."
+		tst_resm TPASS "Test #8: msg passed."
 		RC=0 
 	else
-		echo "Test #8: msg failed."
+		tst_resm TFAIL "Test #8: msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -225,7 +233,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #9: msg failed."
+		tst_resm TFAIL "Test #9: msg failed."
 		return $RC
 	fi
 
@@ -234,7 +242,7 @@ test09()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		echo "Test #9:msg failed:Invalid output from selinux_msgget."
+		tst_brk TBROK "Test #9:msg failed:Invalid output from selinux_msgget."
 		RC=1
 		return $RC
 	fi
@@ -243,7 +251,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #9: msg failed."
+		tst_resm TFAIL "Test #9: msg failed."
 		return $RC
 	fi	
 
@@ -252,9 +260,9 @@ test09()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #9: msg passed."
+		tst_resm TPASS "Test #9: msg passed."
 	else
-		echo "Test #9: msg failed."
+		tst_resm TFAIL "Test #9: msg failed."
 	fi	
 	return $RC
 }
@@ -269,9 +277,9 @@ test10()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #10: msg passed."
+		tst_resm TPASS "Test #10: msg passed."
 	else
-		echo "Test #10: msg failed."
+		tst_resm TFAIL "Test #10: msg failed."
 	fi	
 	return $RC
 }
@@ -287,10 +295,10 @@ test11()
 	RC=$?
 	if [ $RC -ne 0 ]	#write denied
 	then
-		echo "Test #11: msg passed."
+		tst_resm TPASS "Test #11: msg passed."
 		RC=0
 	else
-		echo "Test #11: msg failed."
+		tst_resm TFAIL "Test #11: msg failed."
 		RC=1
 	fi	
 	return $RC
@@ -306,9 +314,9 @@ test12()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #12: msg passed."
+		tst_resm TPASS "Test #12: msg passed."
 	else
-		echo "Test #12: msg failed."
+		tst_resm TFAIL "Test #12: msg failed."
 	fi	
 	return $RC
 }
@@ -323,9 +331,9 @@ test13()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #13: msg passed."
+		tst_resm TPASS "Test #13: msg passed."
 	else
-		echo "Test #13: msg failed."
+		tst_resm TFAIL "Test #13: msg failed."
 	fi	
 	return $RC
 }
@@ -341,9 +349,9 @@ test14()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #14: msg passed."
+		tst_resm TPASS "Test #14: msg passed."
 	else
-		echo "Test #14: msg failed."
+		tst_resm TFAIL "Test #14: msg failed."
 	fi	
 	return $RC
 }
@@ -358,10 +366,10 @@ test15()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #15: msg passed."
+		tst_resm TPASS "Test #15: msg passed."
 		RC=0
 	else
-		echo "Test #15: msg failed."
+		tst_resm TFAIL "Test #15: msg failed."
 		RC=1
 	fi	
 	return $RC
@@ -374,7 +382,7 @@ cleanup()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		echo "cleanup in msg failed:Invalid output from selinux_msgget."
+		tst_brk TBROK "cleanup in msg failed:Invalid output from selinux_msgget."
 		return
 	fi
 
@@ -389,21 +397,23 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
-test06 || exit $RC
-test07 || exit $RC
-test08 || exit $RC
-test09 || exit $RC
-test10 || exit $RC
-test11 || exit $RC
-test12 || exit $RC
-test13 || exit $RC
-test14 || exit $RC
-test15 || exit $RC
+setup
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
+test06 || EXIT_VAL=$RC
+test07 || EXIT_VAL=$RC
+test08 || EXIT_VAL=$RC
+test09 || EXIT_VAL=$RC
+test10 || EXIT_VAL=$RC
+test11 || EXIT_VAL=$RC
+test12 || EXIT_VAL=$RC
+test13 || EXIT_VAL=$RC
+test14 || EXIT_VAL=$RC
+test15 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL 

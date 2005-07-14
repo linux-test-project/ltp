@@ -9,6 +9,14 @@
 # any later version.
 #
 
+setup() 
+{
+	LTPTMP="/tmp/selinux"
+	export TCID="setup"
+	export TST_COUNT=0
+	export TST_TOTAL=2
+}
+
 test01()
 {
 	TCID="test01"
@@ -20,9 +28,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #1: task_create passed."
+		tst_resm TPASS "Test #1: task_create passed."
 	else
-		echo "Test #1: task_create failed."
+		tst_resm TFAIL "Test #1: task_create failed."
 	fi
 	return $RC
 }
@@ -39,10 +47,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #2: task_create passed."
+		tst_resm TPASS "Test #2: task_create passed."
 		RC=0
 	else
-		echo "Test #2: task_create failed."
+		tst_resm TFAIL "Test #2: task_create failed."
 		RC=1
 	fi
 	return $RC
@@ -56,7 +64,9 @@ test02()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
-test01 || exit $RC
-test02 || exit $RC
-exit 0
+setup
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+exit $EXIT_VAL

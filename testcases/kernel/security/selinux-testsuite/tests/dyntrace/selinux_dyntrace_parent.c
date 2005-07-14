@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <selinux/selinux.h>
 #include <selinux/context.h>
+#include <string.h>
 
 int main(int argc, char **argv)
 {

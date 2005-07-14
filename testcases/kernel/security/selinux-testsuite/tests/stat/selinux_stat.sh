@@ -13,7 +13,8 @@ setup()
 {
 	LTPTMP="/tmp/selinux"
 	export TCID="setup"
-	export T_COUNT=0 
+	export TST_COUNT=0 
+	export TST_TOTAL=2
 
 	# Remove any leftover test file from prior failed runs.
 	rm -rf $LTPTMP/test_file
@@ -35,9 +36,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "Test #1: stat passed."
+                tst_resm TPASS "Test #1: stat passed."
         else
-                echo "Test #1: stat failed."
+                tst_resm TFAIL "Test #1: stat failed."
         fi
         return $RC
 }
@@ -53,10 +54,10 @@ test02()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #2: stat passed."
+                tst_resm TPASS "Test #2: stat passed."
 		RC=0
         else
-                echo "Test #2: stat failed."
+                tst_resm TFAIL "Test #2: stat failed."
 		RC=1
         fi
 	return $RC
@@ -76,9 +77,10 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

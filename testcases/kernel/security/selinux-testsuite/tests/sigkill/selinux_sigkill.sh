@@ -14,6 +14,7 @@ setup()
 	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
+	export TST_TOTAL=16
 
 	# Start the process that will receive the signal.
 	runcon -t test_kill_server_t selinux_sigkill_server &
@@ -33,10 +34,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #1: sigkill passed."
+		tst_resm TPASS "Test #1: sigkill passed."
 		RC=0
 	else
-		echo "Test #1: sigkill failed."
+		tst_resm TFAIL "Test #1: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -53,10 +54,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #2: sigkill passed."
+		tst_resm TPASS "Test #2: sigkill passed."
 		RC=0
 	else
-		echo "Test #2: sigkill failed."
+		tst_resm TFAIL "Test #2: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -73,10 +74,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #3: sigkill passed."
+		tst_resm TPASS "Test #3: sigkill passed."
 		RC=0
 	else
-		echo "Test #3: sigkill failed."
+		tst_resm TFAIL "Test #3: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -93,10 +94,10 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #4: sigkill passed."
+		tst_resm TPASS "Test #4: sigkill passed."
 		RC=0
 	else
-		echo "Test #4: sigkill failed."
+		tst_resm TFAIL "Test #4: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -113,10 +114,10 @@ test05()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #5: sigkill passed."
+		tst_resm TPASS "Test #5: sigkill passed."
 		RC=0
 	else
-		echo "Test #5: sigkill failed."
+		tst_resm TFAIL "Test #5: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -133,10 +134,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #6: sigkill passed."
+		tst_resm TPASS "Test #6: sigkill passed."
 		RC=0
 	else
-		echo "Test #6: sigkill failed."
+		tst_resm TFAIL "Test #6: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -153,10 +154,10 @@ test07()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #7: sigkill passed."
+		tst_resm TPASS "Test #7: sigkill passed."
 		RC=0
 	else
-		echo "Test #7: sigkill failed."
+		tst_resm TFAIL "Test #7: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -173,10 +174,10 @@ test08()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #8: sigkill passed."
+		tst_resm TPASS "Test #8: sigkill passed."
 		RC=0
 	else
-		echo "Test #8: sigkill failed."
+		tst_resm TFAIL "Test #8: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -193,10 +194,10 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #9: sigkill passed."
+		tst_resm TPASS "Test #9: sigkill passed."
 		RC=0
 	else
-		echo "Test #9: sigkill failed."
+		tst_resm TFAIL "Test #9: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -213,10 +214,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #10: sigkill passed."
+		tst_resm TPASS "Test #10: sigkill passed."
 		RC=0
 	else
-		echo "Test #10: sigkill failed."
+		tst_resm TFAIL "Test #10: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -233,10 +234,10 @@ test11()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #11: sigkill passed."
+		tst_resm TPASS "Test #11: sigkill passed."
 		RC=0
 	else
-		echo "Test #11: sigkill failed."
+		tst_resm TFAIL "Test #11: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -253,10 +254,10 @@ test12()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #12: sigkill passed."
+		tst_resm TPASS "Test #12: sigkill passed."
 		RC=0
 	else
-		echo "Test #12: sigkill failed."
+		tst_resm TFAIL "Test #12: sigkill failed."
 		RC=1
 	fi
 	return $RC
@@ -273,9 +274,9 @@ test13()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #13: sigkill passed."
+		tst_resm TPASS "Test #13: sigkill passed."
 	else
-		echo "Test #13: sigkill failed."
+		tst_resm TFAIL "Test #13: sigkill failed."
 	fi
 	return $RC
 }
@@ -292,9 +293,9 @@ test14()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #14: sigkill passed."
+		tst_resm TPASS "Test #14: sigkill passed."
 	else
-		echo "Test #14: sigkill failed."
+		tst_resm TFAIL "Test #14: sigkill failed."
 	fi
 	return $RC
 }
@@ -311,9 +312,9 @@ test15()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #15: sigkill passed."
+		tst_resm TPASS "Test #15: sigkill passed."
 	else
-		echo "Test #15: sigkill failed."
+		tst_resm TFAIL "Test #15: sigkill failed."
 	fi
 	return $RC
 }
@@ -333,9 +334,9 @@ test16()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #16: sigkill passed."
+		tst_resm TPASS "Test #16: sigkill passed."
 	else
-		echo "Test #16: sigkill failed."
+		tst_resm TFAIL "Test #16: sigkill failed."
 	fi
 	return $RC
 }
@@ -348,22 +349,23 @@ test16()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
-test06 || exit $RC
-test07 || exit $RC
-test08 || exit $RC
-test09 || exit $RC
-test10 || exit $RC
-test11 || exit $RC
-test12 || exit $RC
-test13 || exit $RC
-test14 || exit $RC
-test15 || exit $RC
-test16 || exit $RC
-exit 0
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
+test06 || EXIT_VAL=$RC
+test07 || EXIT_VAL=$RC
+test08 || EXIT_VAL=$RC
+test09 || EXIT_VAL=$RC
+test10 || EXIT_VAL=$RC
+test11 || EXIT_VAL=$RC
+test12 || EXIT_VAL=$RC
+test13 || EXIT_VAL=$RC
+test14 || EXIT_VAL=$RC
+test15 || EXIT_VAL=$RC
+test16 || EXIT_VAL=$RC
+exit $EXIT_VAL

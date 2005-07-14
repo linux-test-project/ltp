@@ -14,6 +14,7 @@ setup()
         LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
+	export TST_TOTAL=5
 
 	# Remove any leftover test directory from prior failed runs.
 	rm -rf $LTPTMP/test_dir
@@ -26,27 +27,27 @@ setup()
 
 test01()
 {
-        TCID="test01"
-        TST_COUNT=1
-        RC=0
+	TCID="test01"
+	TST_COUNT=1
+	RC=0
 
 	# Verify that test_addname_t can create a subdirectory.
 	runcon -t test_addname_t mkdir $LTPTMP/test_dir/test1 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #1: mkdir passed."
+		tst_resm TPASS "Test #1: mkdir passed."
 	else
-		echo "Test #1: mkdir failed."
+		tst_resm TFAIL "Test #1: mkdir failed."
 	fi
 	return $RC
 }
 
 test02()
 {
-        TCID="test02"
-        TST_COUNT=2
-        RC=0
+	TCID="test02"
+	TST_COUNT=2
+	RC=0
 
 	# Verify that test_noaddname_t cannot create a subdirectory.
 	# Should fail on the add_name permission check to the test directory.
@@ -54,10 +55,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #2: mkdir passed."
+		tst_resm TPASS "Test #2: mkdir passed."
 		RC=0
 	else
-		echo "Test #2: mkdir failed."
+		tst_resm TFAIL "Test #2: mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -65,9 +66,9 @@ test02()
 
 test03()
 {
-        TCID="test03"
-        TST_COUNT=3
-        RC=0
+	TCID="test03"
+	TST_COUNT=3
+	RC=0
 
 	# Verify that test_nosearch_t cannot create a subdirectory.
 	# Should fail on the search permission check to the test directory.
@@ -75,10 +76,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #3: mkdir passed."
+		tst_resm TPASS "Test #3: mkdir passed."
 		RC=0
 	else
-		echo "Test #3: mkdir failed."
+		tst_resm TFAIL "Test #3: mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -86,6 +87,10 @@ test03()
 
 test04()
 {
+	TCID="test04"
+	TST_COUNT=4
+	RC=0
+
 	# Verify that test_create_t can create a subdirectory
 	# with a different type.
 	# This requires add_name to test_mkdir_dir_t and create
@@ -94,15 +99,19 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #4: mkdir passed."
+		tst_resm TPASS "Test #4: mkdir passed."
 	else
-		echo "Test #4: mkdir failed."
+		tst_resm TFAIL "Test #4: mkdir failed."
 	fi
 	return $RC
 }
 
 test05()
 {
+	TCID="test05"
+	TST_COUNT=5
+	RC=0
+
 	# Verify that test_nocreate_t cannot create 
 	# a subdirectory with a different type.
 	# Should fail on create check to the new type.
@@ -110,10 +119,10 @@ test05()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #5: mkdir passed."
+		tst_resm TPASS "Test #5: mkdir passed."
 		RC=0
 	else
-		echo "Test #5: mkdir failed."
+		tst_resm TFAIL "Test #5: mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -133,12 +142,13 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL 

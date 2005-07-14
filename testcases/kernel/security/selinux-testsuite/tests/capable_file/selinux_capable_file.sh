@@ -16,6 +16,7 @@ setup()
 	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
+	export TST_TOTAL=10
 
 	# Clean up from a previous run
 	rm -f $LTPTMP/temp_file 2>&1
@@ -38,9 +39,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "Test #1: capable_file passed."
+		tst_resm TPASS "Test #1: capable_file passed."
 	else
-		echo "Test #1: capable_file failed."
+		tst_resm TFAIL "Test #1: capable_file failed."
 	fi
 	return $RC
 }
@@ -55,11 +56,11 @@ test02()
 	chown daemon.tty $LTPTMP/temp_file 2>&1
 	runcon -t test_fcap_t -- chmod 0400 $LTPTMP/temp_file 2>&1
 	RC=$?
-	if [ $RC -ne 0 ]
-	then
-		echo "Test #2: capable_file failed."
+	if [ $RC -eq 0 ]
+	then 
+		tst_resm TPASS "Test #2: capable_file passed."
 	else
-		echo  "Test #2: capable_file passed."
+		tst_resm TFAIL "Test #2: capable_file failed."
 	fi
 	return $RC
 }
@@ -79,10 +80,10 @@ test03()
 	# prior mode should not be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		echo "Test #3: capable_file failed."
+		tst_resm TFAIL "Test #3: capable_file failed."
 		RC=1
 	else
-		echo "Test #3: capable_file passed."
+		tst_resm TPASS "Test #3: capable_file passed."
 	fi
 	return $RC
 }
@@ -96,11 +97,11 @@ test04()
 	# CAP_LEASE
 	runcon -t test_fcap_t --  selinux_lease $LTPTMP/temp_file 2>&1
 	RC=$?
-	if [ $RC -ne 0 ]
+	if [ $RC -eq 0 ]
 	then
-		echo "Test #4: capable_file failed."
+		tst_resm TPASS "Test #4: capable_file passed."
 	else
-		echo "Test #4: capable_file passed."
+		tst_resm TFAIL "Test #4: capable_file failed."
 	fi
 	return $RC
 }
@@ -115,11 +116,11 @@ test05()
 	# CAP_MKNOD
 	runcon -t test_fcap_t -- mknod $LTPTMP/temp_file2 c 5 5 2>&1
 	RC=$?
-	if [ $RC -ne 0 ]
+	if [ $RC -eq 0 ]
 	then
-		echo "Test #5: capable_file failed."
+		tst_resm TPASS "Test #5: capable_file passed."
 	else
-		echo "Test #5: capable_file passed."
+		tst_resm TFAIL "Test #5: capable_file failed."
 	fi
 	return $RC
 }
@@ -139,10 +140,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #6: capable_file passed."
+		tst_resm TPASS "Test #6: capable_file passed."
 		RC=0
 	else
-		echo "Test #6: capable_file failed."
+		tst_resm TFAIL "Test #6: capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -160,10 +161,10 @@ test07()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #7: capable_file passed."
+		tst_resm TPASS "Test #7: capable_file passed."
 		RC=0
 	else
-		echo "Test #7: capable_file failed."
+		tst_resm TFAIL "Test #7: capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -183,9 +184,9 @@ test08()
 	# prior mode should be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		echo "Test #8: capable_file passed."
+		tst_resm TPASS "Test #8: capable_file passed."
 	else
-		echo "Test #8: capable_file failed."
+		tst_resm TFAIL "Test #8: capable_file failed."
 	 	RC=1	
 	fi 
 	return $RC
@@ -202,10 +203,10 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #9: capable_file passed."
+		tst_resm TPASS "Test #9: capable_file passed."
 		RC=0
 	else
-		echo "Test #9: capable_file failed."
+		tst_resm TFAIL "Test #9: capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -222,10 +223,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "Test #10: capable_file passed."
+		tst_resm TPASS "Test #10: capable_file passed."
 		RC=0
 	else
-		echo "Test #10: capable_file failed."
+		tst_resm FAIL "Test #10: capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -245,18 +246,19 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
 cleanup
-test06 || exit $RC
-test07 || exit $RC
-test08 || exit $RC
-test09 || exit $RC
-test10 || exit $RC
+test06 || EXIT_VAL=$RC
+test07 || EXIT_VAL=$RC
+test08 || EXIT_VAL=$RC
+test09 || EXIT_VAL=$RC
+test10 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

@@ -13,9 +13,10 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
-        export TCID="setup"
-        export T_COUNT=0
+	LTPTMP="/tmp/selinux"
+	export TCID="setup"
+	export TST_COUNT=0
+	export TST_TOTAL=2
 
 	# Create a temporary file for testing
 	rm -f $LTPTMP/temp_file 2>&1
@@ -32,14 +33,14 @@ test01()
 	# Attempt to perform the ioctls on the temproary
 	# file as the good domain
 	runcon -t test_ioctl_t -- selinux_ioctl $LTPTMP/temp_file 2>&1
-        RC=$?
-        if [ $RC -eq 0 ]
-        then
-                echo "Test #1: ioctl passed."
-        else
-                echo "Test #1: ioctl failed."
-        fi
-        return $RC
+	RC=$?
+	if [ $RC -eq 0 ]
+	then
+		tst_resm TPASS "Test #1: ioctl passed."
+	else
+		tst_resm TFAIL "Test #1: ioctl failed."
+	fi
+	return $RC
 }
 
 
@@ -53,14 +54,14 @@ test02()
 	# The test program, test_noioctl.c, determines success/failure for the
 	# individual calls, so we expect success always from that program.
 	runcon -t test_noioctl_t -- selinux_noioctl $LTPTMP/temp_file 2>&1
-        RC=$?
-        if [ $RC -eq 0 ]
-        then
-                echo "Test #2: ioctl passed."
-        else
-                echo "Test #2: ioctl failed."
-        fi
-        return $RC
+	RC=$?
+	if [ $RC -eq 0 ]
+	then
+		tst_resm TPASS "Test #2: ioctl passed."
+	else
+		tst_resm TFAIL "Test #2: ioctl failed."
+	fi
+	return $RC
 }
 
 cleanup()
@@ -76,9 +77,10 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

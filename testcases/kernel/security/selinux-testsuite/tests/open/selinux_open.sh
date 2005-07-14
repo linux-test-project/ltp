@@ -14,6 +14,7 @@ setup()
         LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
+	export TST_TOTAL=8
 
 	# Remove any leftover test directories from prior failed runs.
 	rm -rf $LTPTMP/test_file
@@ -34,9 +35,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "Test #1: open passed."
+                tst_resm TPASS "Test #1: open passed."
         else
-                echo "Test #1: open failed."
+                tst_resm TFAIL "Test #1: open failed."
         fi
         return $RC
 }
@@ -53,10 +54,10 @@ test02()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #2: open passed."
+                tst_resm TPASS "Test #2: open passed."
 		RC=0
         else
-                echo "Test #2: open failed."
+                tst_resm TFAIL "Test #2: open failed."
 		RC=1
         fi
 	return $RC
@@ -71,10 +72,10 @@ test03()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #3: open passed."
+                tst_resm TPASS "Test #3: open passed."
 		RC=0
         else
-                echo "Test #3: open failed."
+                tst_resm TFAIL "Test #3: open failed."
 		RC=1
         fi
 	return $RC
@@ -90,10 +91,10 @@ test04()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #4: open passed."
+                tst_resm TPASS "Test #4: open passed."
 		RC=0
         else
-                echo "Test #4: open failed."
+                tst_resm TFAIL "Test #4: open failed."
 		RC=1
         fi
 	return $RC
@@ -111,10 +112,10 @@ test05()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #5: open passed."
+                tst_resm TPASS "Test #5: open passed."
 		RC=0
         else
-                echo "Test #5: open failed."
+                tst_resm TFAIL "Test #5: open failed."
 		RC=1
         fi
 	return $RC
@@ -131,9 +132,9 @@ test06()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "Test #6: open passed."
+                tst_resm TPASS "Test #6: open passed."
         else
-                echo "Test #6: open failed."
+                tst_resm TFAIL "Test #6: open failed."
         fi
 	return $RC
 }
@@ -150,10 +151,10 @@ test07()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "Test #7: open passed."
+                tst_resm TPASS "Test #7: open passed."
 		RC=0
         else
-                echo "Test #7: open failed."
+                tst_resm TFAIL "Test #7: open failed."
 		RC=1
         fi
 	return $RC
@@ -171,9 +172,9 @@ test08()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "Test #8: open passed."
+                tst_resm TPASS "Test #8: open passed."
         else
-                echo "Test #8: open failed."
+                tst_resm TFAIL "Test #8: open failed."
         fi
 	return $RC
 }
@@ -192,15 +193,16 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
-test03 || exit $RC
-test04 || exit $RC
-test05 || exit $RC
-test06 || exit $RC
-test07 || exit $RC
-test08 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
+test03 || EXIT_VAL=$RC
+test04 || EXIT_VAL=$RC
+test05 || EXIT_VAL=$RC
+test06 || EXIT_VAL=$RC
+test07 || EXIT_VAL=$RC
+test08 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL

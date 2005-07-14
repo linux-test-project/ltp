@@ -14,6 +14,7 @@ setup()
         LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
+	export TST_TOTAL=2
 
         # Clean up from a previous run
         rm -f $LTPTMP/true 2>&1
@@ -31,10 +32,10 @@ test01()
 	RC=$?   # this should fail
         if [ $RC -ne 0 ]
         then
-		echo "Test #1: entrypoint passed."
+		tst_resm TPASS "Test #1: entrypoint passed."
 		RC=0
 	else
-		echo "Test #1: entrypoint failed."
+		tst_resm TFAIL "Test #1: entrypoint failed."
 		RC=1
 	fi
 	return $RC
@@ -54,9 +55,9 @@ test02()
 	runcon -t test_entrypoint_t $LTPTMP/true
         if [ $RC -ne 0 ]
         then
-		echo "Test #2: entrypoint failed."
+		tst_resm TFAIL "Test #2: entrypoint failed."
 	else
-		echo "Test #2: entrypoint passed."
+		tst_resm TPASS "Test #2: entrypoint passed."
 	fi
 	return $RC
 }
@@ -75,9 +76,10 @@ cleanup()
 #               - non-zero on failure.
 #
 RC=0    # Return value from setup, and test functions.
+EXIT_VAL=0
 
 setup 
-test01 || exit $RC
-test02 || exit $RC
+test01 || EXIT_VAL=$RC
+test02 || EXIT_VAL=$RC
 cleanup
-exit 0
+exit $EXIT_VAL 

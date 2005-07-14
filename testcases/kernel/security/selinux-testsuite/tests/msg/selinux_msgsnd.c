@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <sys/msg.h>
+#include <string.h>
 
 #define MSGMAX 1024
 

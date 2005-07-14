@@ -16,6 +16,7 @@
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 char my_path[1024];
 #define CLEANUP_AND_EXIT do { unlink(my_path); exit(1); } while (0)
@@ -70,7 +71,7 @@ int main(int argc, char **argv)
 	
 	while (1) {
 		sunlen = sizeof(struct sockaddr_un);
-		ctrl = accept(s, (struct sockaddr*)&sun, &sunlen);
+		ctrl = accept(s, (struct sockaddr*)&sun, (socklen_t *)&sunlen);
 		if (ctrl < 0) {
 			perror("accept_secure");
 			CLEANUP_AND_EXIT;
