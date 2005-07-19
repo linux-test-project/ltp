@@ -37,12 +37,13 @@
  **********************************************************/
 
 #include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <linux/fs.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -55,24 +56,30 @@ extern int Tst_count;      	  /* Test Case counter for tst_* routines */
 
 main()
 {
- int table_size,loop,fd,count = 0,cnt = 0;
+ 	int table_size,loop,fd,count = 0,cnt = 0;
+	int max_val_opfiles;
+  struct rlimit rlp;
+
 
  setup();
  table_size = getdtablesize();
+	getrlimit(RLIMIT_NOFILE,&rlp);
+	max_val_opfiles = (rlim_t)rlp.rlim_cur;
+
 
  tst_resm(TINFO,"Maximum number of files a process can have opened is %d",table_size);
- tst_resm(TINFO,"Checking with the value set in fs.h....INR_OPEN");
+ tst_resm(TINFO,"Checking with the value returned by getrlimit...RLIMIT_NOFILE");
 
- if (table_size == INR_OPEN)
- tst_resm(TPASS,"got correct dtablesize, value is %d",INR_OPEN);
+ if (table_size == max_val_opfiles)
+ tst_resm(TPASS,"got correct dtablesize, value is %d",max_val_opfiles);
  else
  {
-   tst_resm(TFAIL,"got incorrect table size, value is %d",INR_OPEN);
+   tst_resm(TFAIL,"got incorrect table size, value is %d",max_val_opfiles);
    cleanup();
  }
 
- tst_resm(TINFO,"Checking Max num of files that can be opened by a process. Should get INR_OPEN-1");
- for(loop=1;loop<=INR_OPEN;loop++)
+ tst_resm(TINFO,"Checking Max num of files that can be opened by a process.Should be: RLIMIT_NOFILE - 1");
+ for(loop=1;loop<=max_val_opfiles;loop++)
  {
   fd = open("/etc/hosts",O_RDONLY);
 #ifdef DEBUG
@@ -84,12 +91,12 @@ main()
   count = fd;
  }
 
-//Now the max files opened should be 1024 - 1 = 1023 , why ? read getdtablesize man page
+//Now the max files opened should be RLIMIT_NOFILE - 1 = 1023 , why ? read getdtablesize man page
 
- if(count == (INR_OPEN - 1) )
- tst_resm(TPASS,"%d = %d",count, (INR_OPEN - 1));
+ if(count == (max_val_opfiles -1) )
+ tst_resm(TPASS,"%d = %d",count, (max_val_opfiles - 1));
  else
- tst_resm(TFAIL,"%d != %d",count, (INR_OPEN - 1));
+ tst_resm(TFAIL,"%d != %d",count, (max_val_opfiles - 1));
  cleanup();
 }
 /***************************************************************
