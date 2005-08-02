@@ -31,7 +31,7 @@ MAINS=libsctp.a
 all: libsctp.a
 
 libsctp.a: $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(AR) -rc $@ $(OBJS)
 
 $(OBJS): $(SRCS) ../include/netinet/sctp.h 
 	$(CC) -c $(SRCS) $(CFLAGS)

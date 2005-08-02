@@ -33,7 +33,7 @@ MAINS=libsctputil.a
 all: libsctputil.a
 
 libsctputil.a: $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(AR) -rc $@ $(OBJS)
 
 $(OBJS): $(SRCS) ../include/netinet/sctp.h
 	$(CC) -c $(SRCS) $(CFLAGS)

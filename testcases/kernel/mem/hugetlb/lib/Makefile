@@ -29,7 +29,7 @@ CFLAGS+=-I../../../../../include -g -Wall
 all: libipc.a
 
 libipc.a: $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(AR) -rc $@ $(OBJS)
 
 $(OBJS):
 	$(CC) -c $(SRCS) $(CFLAGS)
