@@ -23,8 +23,14 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.6 2005/05/04 17:54:00 mridge Exp $
+# $Id: Makefile,v 1.7 2005/08/02 16:15:52 robbiew Exp $
 # $Log: Makefile,v $
+# Revision 1.7  2005/08/02 16:15:52  robbiew
+# Applied patch from Mike Frysinger:
+# find attached a patch to fix up the install target in disktest to match the
+# install targets of everything else
+# -mike
+#
 # Revision 1.6  2005/05/04 17:54:00  mridge
 # Update to version 1.2.8
 #
@@ -175,13 +181,7 @@ timer.o: timer.c timer.h $(GBLHDRS)
 stats.o: stats.c stats.h $(GBLHDRS)
 
 install: disktest
-	cp disktest $(bindir)
-	cp man1/disktest.1.gz $(mandir)/man1
-
-uninstall: disktest
-	rm -f $(bindir)/disktest
-	rm -f $(mandir)/man1/disktest.1
-	rm -f $(mandir)/man1/disktest.1.gz
+	ln -f disktest ../../../bin
 
 clean:
 	rm -f disktest $(OBJS)
