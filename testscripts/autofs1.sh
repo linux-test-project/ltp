@@ -29,6 +29,11 @@
 #
 #  HISTORY     :
 #      06/11/2003 Prakash Narayana (prakashn@us.ibm.com)
+#      08/01/2005 Michael Reed (mreed10@us.ibm.com)
+#      - Added an check to see if a directory exists
+#      - This prevents unnessary failures
+#      - Correction to an echo statement
+#      - Added an additional error message if a floppy disk is not present
 #
 #  CODE COVERAGE:
 #                41.46% - fs/autofs/dirhash.c
@@ -106,7 +111,8 @@ then
 	if [ $? != 0 ]
 	then
 		echo "FAILED: mkfs -t ext2 $floppy_dev failed"
-		exit 1
+		echo "Insert a disk into the floppy drive"
+		exit 1 
 	fi
 fi
 
@@ -191,7 +197,7 @@ fi
 #
 ##############################################################
 
-Echo "forcing error paths and conditions..."
+echo "forcing error paths and conditions..."
 
 mkdir /AUTOFS/MEDIA/mydir 2>&1 > /dev/null 
 rm -rf /AUTOFS 2>&1 > /dev/null 
@@ -225,26 +231,27 @@ sync; sync
 echo "Resuming test, please wait..."
 sleep 60
 
-cd /AUTOFS/DISK/disk/test 
-umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
-if [ $? = 0 ]
-then
+
+if [ -e  /AUTOFS/DISK/disk/test ]; then
+  cd /AUTOFS/DISK/disk/test 
+  umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
+  if [ $? = 0 ]
+    then
 	/etc/init.d/autofs stop 
 	rm -rf /etc/auto.master /etc/auto.media /etc/auto.disk /AUTOFS
 	echo "FAILED: unmounted a busy file system!"
 	exit 1
-fi
-cd 
-
-umount /AUTOFS/DISK/disk/ 
+  fi
+  cd 
+  umount /AUTOFS/DISK/disk/ 
 if [ $? != 0 ]
-then
+  then
 	/etc/init.d/autofs stop 
 	rm -rf /etc/auto.master /etc/auto.media /etc/auto.disk /AUTOFS
 	echo "FAILED: Could not unmount automounted file system"
 	exit 1
+  fi
 fi
-
 #
 # Mount the disk partition somewhere else and then reference automount
 # point for disk partition.
