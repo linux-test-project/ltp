@@ -97,7 +97,7 @@ static void error (const char *, int);
  * log_filename: Name of log file
  */
 int	verbose	= 0;
-int	log	= 0;
+int	logit	= 0;
 FILE	*logfile;
 char	*log_filename = NULL;
 
@@ -126,7 +126,7 @@ int main (int argc, char **argv)
 	 * Parse command line options
 	 */
 	parse_args (argc, argv);
-	if (log) {
+	if (logit) {
 		if ((logfile = fopen (log_filename, "w")) == NULL)
 			sys_error ("msgget failed", __LINE__);
 	}
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 	 * Print out program header
 	 */
 	printf ("%s: IPC Message Queue TestSuite program\n\n", *argv);
-	if (log)
+	if (logit)
 		fprintf (logfile, "%s: IPC Message Queue TestSuite program\n\n", *argv);
 
 	/*
@@ -146,7 +146,7 @@ int main (int argc, char **argv)
 
 	if (verbose)
 		printf ("\tCreated message queue: %d\n\n", msqid);
-	if (log)
+	if (logit)
 		fprintf (logfile, "\tCreated message queue: %d\n\n", msqid);
 
 
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 		printf ("\tMax messages per queue:      %d\n",  MAX_MSGS);
 		printf ("\tCorresponding message size:  %ld\n\n", (long)msg_size);
 	}
-	if (log) {
+	if (logit) {
 		fprintf (logfile, "\tMax num of bytes per queue:  %ld\n",  (long)max_bytes);
 		fprintf (logfile, "\tMax messages per queue:      %d\n",  MAX_MSGS);
 		fprintf (logfile, "\tCorresponding message size:  %ld\n\n", (long)msg_size);
@@ -201,7 +201,7 @@ int main (int argc, char **argv)
 		  }
 	}
 	if (verbose) puts ("\n");
-	if (log) fprintf (logfile, "\tBytes sent: %ld\n", (long)bytes_sent);
+	if (logit) fprintf (logfile, "\tBytes sent: %ld\n", (long)bytes_sent);
 	//free (buf);
 
 	/*
@@ -211,12 +211,12 @@ int main (int argc, char **argv)
 		sys_error ("msgctl (IPC_RMID) failed", __LINE__);
 	if (verbose)
 		printf ("\n\tRemoved message queue: %d\n", msqid);
-	if (log)
+	if (logit)
 		fprintf (logfile, "\n\tRemoved message queue: %d\n", msqid);
 
 	/* Program completed successfully -- exit */
 	printf ("\nsuccessful!\n");
-	if (log) {
+	if (logit) {
 		fprintf (logfile, "\nsuccessful!\n");
 		fclose (logfile);
 	}
@@ -256,7 +256,7 @@ static void parse_args (int argc, char **argv)
 				verbose++;
 				break;
 			case 'l':	/* log file */
-				log++;
+				logit++;
 				log_filename = optarg;
 				break;
 			default:
@@ -297,7 +297,7 @@ static void sys_error (const char *msg, int line)
 static void error (const char *msg, int line)
 {
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	if (log)
+	if (logit)
 		fprintf (logfile, "ERROR [line: %d] %s\n", line, msg);
 	exit (-1);
 }
