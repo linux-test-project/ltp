@@ -3,6 +3,11 @@
 # to run Ballista. 
 # If the correct RPMs are installed ballista will be uncompressed and complied
 
+if (system("rpm -h") == -1)
+{
+	print("Your system lacks rpm, please double check ballista requirements\n");
+	exit 0;
+}
 
 @libs = ("'gcc version 3.3.3'","libg++-2.8.1-2","libg++-devel-2.8.1-2","libstdc++5-3.3.1-2mdk","libstdc++5-devel-3.3.1-2mdk","libstdc++5-static-devel-3.3.1-2mdk");
 my @notfound;
