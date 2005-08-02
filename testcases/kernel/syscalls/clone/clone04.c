@@ -154,10 +154,10 @@ main(int ac, char **av)
 						 test_cases[ind].err_desc);
 			} else {
 				tst_resm(TFAIL, "Call failed to produce "
-					"expected error;  Expected errno: %d "
-					"Got : %d, %s",
+					"expected error;  Expected errno/result: %d / -1 "
+					"Got : %d, %s / %d",
 					test_cases[ind].exp_errno,
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					TEST_ERRNO, strerror(TEST_ERRNO), TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
