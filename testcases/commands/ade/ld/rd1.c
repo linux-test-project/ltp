@@ -1,4 +1,3 @@
-#include <printf.h>
 #include <stdio.h>
 
 extern int d1;
