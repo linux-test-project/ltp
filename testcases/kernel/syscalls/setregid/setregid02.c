@@ -153,16 +153,19 @@ int main(int ac, char **av)
 						*test_data[i].eff_gid);
 				} else {
 					tst_resm(TFAIL, "setregid(%d, %d) "
-						"failed but did not set the "
-						"expected errno.",
+						"failed (%d) but did not set the "
+						"expected errno (%d).",
 						*test_data[i].real_gid,
-						*test_data[i].eff_gid);
+						*test_data[i].eff_gid,
+						TEST_ERRNO,
+						test_data[i].exp_errno);
 				}
 			} else {
 				tst_resm(TFAIL, "setregid(%d, %d) "
-					"did not fail as expected.",
+					"did not fail (ret: %d) as expected (ret: -1).",
 					*test_data[i].real_gid,
-					*test_data[i].eff_gid);
+					*test_data[i].eff_gid,
+					TEST_RETURN);
 			}
 			/*
 			 * Perform functional verification if test
