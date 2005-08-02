@@ -61,19 +61,14 @@ char *TCID = "msgget03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-/*
- * The following define for MAXMSGS is somewhat arbitrary.  The currently
- * defined maximum number of message queues is set at 128.  There is a
- * dynamic way to query the max nubmer of queues.  This is refered to
- * in the msgctl(2) man page.  However, this method doesn't appear to
- * be very portable.
- */
-#define	MAXMSGS	1024
+int maxmsgs = 0;
 
 int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
 
-int msg_q_arr[MAXMSGS];		/* hold the id's that we create */
+int *msg_q_arr = NULL;		/* hold the id's that we create */
 int num_queue = 0;		/* count the queues created */
+
+static int get_max_msgqueues();
 
 int main(int ac, char **av)
 {
@@ -126,6 +121,24 @@ int main(int ac, char **av)
 	return(0);
 }
 
+/** Get the max number of message queues allowed on system */
+int get_max_msgqueues()
+{
+        FILE *f;
+        char buff[512];
+
+        /* Get the max number of message queues allowed on system */
+        f = fopen("/proc/sys/kernel/msgmni", "r");
+        if (!f){
+                tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/msgmni");
+        }
+        if (!fgets(buff, 512, f)) {
+                tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/msgmni");
+        }
+        fclose(f);
+        return atoi(buff);
+}
+
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
@@ -152,17 +165,26 @@ setup(void)
 
 	msgkey = getipckey();
 
+	maxmsgs = get_max_msgqueues();
+
+	msg_q_arr = (int *)calloc(maxmsgs, sizeof (int));
+	if (msg_q_arr == NULL) {
+		tst_brkm(TBROK, cleanup, "Couldn't allocate memory "
+				"for msg_q_arr: calloc() failed");
+	}
+
 	/*
 	 * Use a while loop to create the maximum number of queues.
 	 * When we get an error, check for ENOSPC.
 	 */
 	while((msg_q = msgget(msgkey + num_queue, IPC_CREAT|IPC_EXCL)) != -1) {
-		msg_q_arr[num_queue++] = msg_q;
-		if (num_queue == MAXMSGS) {
-			tst_brkm(TBROK, cleanup, "The maximum number of message"
-				 " queues has been\n\t reached.  Please"
-				 " increase the MAXMSGS value in the test.");
+		msg_q_arr[num_queue] = msg_q;
+		if (num_queue == maxmsgs) {
+			tst_resm(TINFO, "The maximum number of message"
+				 " queues (%d) has been reached", maxmsgs);
+			break;
 		}
+		num_queue++;
 	}
 
 	/*
@@ -189,8 +211,11 @@ cleanup(void)
 	 * remove the message queues if they were created
 	 */
 
-	for (i=0; i<num_queue; i++) {
-		rm_queue(msg_q_arr[i]);
+	if (msg_q_arr != NULL) {
+		for (i=0; i<num_queue; i++) {
+			rm_queue(msg_q_arr[i]);
+		}
+		(void) free(msg_q_arr);
 	}
 
 	/* Remove the temporary directory */
