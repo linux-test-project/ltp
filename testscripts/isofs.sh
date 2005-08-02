@@ -20,13 +20,24 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 #  FILE        : isofs.sh
-#  USAGE       : isofs.sh
+#  USAGE       : isofs.sh <optional> -n (no clean up)
 #
 #  DESCRIPTION : A script that will test isofs on Linux system.
+#                It makes ISO9660 file system with different options and also
+#                mounts the ISO9660 file system with different mount options.
+#
 #  REQUIREMENTS:
 #
 #  HISTORY     :
 #      06/27/2003 Prakash Narayana (prakashn@us.ibm.com)
+#      07/28/2005 Michael Reed (mreed10@us.ibm.com)
+#      - Changed the directory where the filesytems were being created
+#        from /etc to copying /etc to /tmp/for_isofs_test/etc and 
+#        creating the file systems there
+#      - Added the -n option to not remove the directories created for
+#        debugging purposes
+#      - Added -d option to specify a different directory to copy to /tmp
+#        to make the file system
 #
 #  CODE COVERAGE: 40.5% - fs/isofs (Total Coverage)
 #
@@ -39,10 +50,41 @@
 #
 ##############################################################
 
-
-MNT_POINT="/tmp/isofs_$$"
-
 USAGE="$0"
+NO_CLEANUP=""
+
+  usage()
+  {
+    echo "USAGE: $USAGE <optional> -n -h -d [directory name]"
+    exit
+  }
+
+#Initialize directory variables
+    MNT_POINT="/tmp/isofs_$$"
+    COPY_DIR="/etc/"
+    TEMP_DIR="/tmp/for_isofs_test"
+    MAKE_FILE_SYS_DIR=$TEMP_DIR$COPY_DIR
+
+   while getopts :hnd: arg
+      do  case $arg in
+	  d)
+             COPY_DIR=$OPTARG
+    	     MAKE_FILE_SYS_DIR="/tmp/for_isofs_test"$COPY_DIR
+	    ;;
+	  h)
+	    echo ""
+            echo "n - The directories created will not be removed"
+            echo "d - Specify a directory to copy into /tmp"
+	    echo "h - Help options"
+	    echo ""
+	    usage
+	    echo ""
+	    ;;
+	  n)
+	    NO_CLEANUP="no"
+	    ;;
+        esac
+    done
 
 
 ##############################################################
@@ -58,7 +100,21 @@ then
 	exit 1
 fi
 
-mkdir -p -m 777 $MNT_POINT
+
+      mkdir -p -m 777 $MNT_POINT
+      mkdir -p $MAKE_FILE_SYS_DIR
+
+
+	if [ -e "$COPY_DIR" ]; then
+   		cp -rf $COPY_DIR* $MAKE_FILE_SYS_DIR
+	else
+    		echo "$COPY_DIR not found"
+    		echo "use the -d option to copy a different directory into"
+    		echo "/tmp to makethe ISO9660 file system with different"
+                echo "options"
+    		usage
+	fi
+
 
 
 # Make ISO9660 file system with different options.
@@ -73,12 +129,12 @@ for mkisofs_opt in \
 	"-f -l -D -J -L -R" \
 	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
 do
-        echo "Running mkisofs -o isofs.iso -quiet $mkisofs_opt /etc  Command"
-	mkisofs -o isofs.iso -quiet $mkisofs_opt /etc 
+        echo "Running mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR  Command"
+	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR 
 	if [ $? != 0 ]
 	then
 		rm -rf isofs.iso $MNT_POINT
-		echo "FAILED: mkisofs -o isofs.iso $mkisofs_opt /etc failed"
+		echo "FAILED: mkisofs -o isofs.iso $mkisofs_opt $MAKE_FILE_SYS_DIR failed"
 		exit 1
 	fi
 	for mount_opt in \
@@ -117,6 +173,14 @@ done
 #
 #######################################################
 
-rm -rf $MNT_POINT
+  if [ "$NO_CLEANUP" == "no" ]; then
+     echo "$MAKE_FILE_SYS_DIR and $MNT_POINT were not removed"
+     echo "These directories will have to be removed manually"
+  else
+    rm -rf $TEMP_DIR
+    rm -rf $MNT_POINT
+  fi
+
+
 echo "PASSED: $0 passed!"
 exit 0
