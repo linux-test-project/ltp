@@ -316,7 +316,7 @@ int main()
 	return 0;
 }
 
-#endif /* if !defined(UCLINUX)
+#endif /* if !defined(UCLINUX) */
 
 
 /*
