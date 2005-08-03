@@ -180,7 +180,7 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 	 */
         for (num_alloc=0; num_alloc < MAXPTRS; num_alloc++)
         {
-            size_t  newsize;
+            size_t  newsize = 0;
 
             dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n", 
 		getpid(), loop, repeat, num_alloc, size));
