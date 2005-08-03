@@ -1,4 +1,9 @@
-#!/usr/local/bin/perl5
+: # use perl                            -*- mode: Perl; -*-
+        eval 'exec perl -S $0 "$@"'
+        if $running_under_some_shell;
+
+use 5;
+
 # dataClimber: extract the dataTypes required to Ballista test a function
 # Copyright (C) 1998-2001  Carnegie Mellon University
 #

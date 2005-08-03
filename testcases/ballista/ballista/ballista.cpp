@@ -813,7 +813,6 @@ int main(int argc,char *argv[])
     char *function_name;
     int timeout;
     int numParam=0;
-    ifstream is;
     int numP=0;
 
     double sample=100.0;        //random sampling vs exhaustive
@@ -989,6 +988,7 @@ int main(int argc,char *argv[])
     numArg = argc-startArg;
     for (int i=startArg;i<argc;i++) 
     {
+		 ifstream is;
         is.open(argv[i]);
         if(is.bad()) 
         {

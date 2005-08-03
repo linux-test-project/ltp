@@ -223,7 +223,7 @@
 
 	target-CC	   [CC = g++]
 	target-CFLAGS	   [CFLAGS = ${BFLAGS} -DPOSIX_NO_REALTIME -w -O -fPIC -DB_HANDLE_EXCEPTIONS]
-        target-LDFLAGS     [LDFLAGS = -shared ${BFLAGS} -lm]
+        target-LDFLAGS     [LDFLAGS = -shared ${BFLAGS} -lm -lrt]
 	target-MISC_VARS   []
 	target-MUT_O       [MUT_O = -o mut.o]
 	target-MUNCH       [MUNCH = mv mut.o mut.out]

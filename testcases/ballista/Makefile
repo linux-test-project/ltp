@@ -4,10 +4,10 @@ install:
 	./do_nothing.sh
 
 create:
-	./create.sh
+		 cd ballista ; ./configure
 
 bal: create
 	$(MAKE) -i -C ballista
 
 clean:
-	$(MAKE) -C ballista clean
+		 $(MAKE) -C ballista clean

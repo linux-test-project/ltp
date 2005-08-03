@@ -1,4 +1,9 @@
-#!/usr/local/bin/perl5
+: # use perl                            -*- mode: Perl; -*-
+        eval 'exec perl -S $0 "$@"'
+        if $running_under_some_shell;
+
+use 5;
+
 # batchcode: sort output results and generate simple statistics
 # Copyright (C) 1998-2001  Carnegie Mellon University
 #

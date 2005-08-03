@@ -1,6 +1,9 @@
-#!/usr/local/bin/perl -w
+: # use perl                            -*- mode: Perl; -*-
+        eval 'exec perl -S $0 "$@"'
+        if $running_under_some_shell;
+
 #
-# $Id: Debug.pm,v 1.1 2004/10/18 17:57:54 mridge Exp $
+# $Id: Debug.pm,v 1.2 2005/08/03 20:20:11 robbiew Exp $
 #
 package LWP::Debug;
 

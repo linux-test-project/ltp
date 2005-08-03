@@ -79,25 +79,6 @@ if ($found_headers != 1)
   exit(1);
 }
 
-# set symbolic links to perl path
-
-$perl_realpath = `which perl`;
-chomp ($perl_realpath);
-$find_perllink = `ls /usr/local/bin/perl5`;
-chomp($find_perllink);
-if($find_perllink !~ "/usr/local/bin/perl5")
-{
-	system("ln -s $perl_realpath /usr/local/bin/perl5");
-}
-$find_perllink = `ls /usr/local/bin/perl5`;
-if($find_perllink !~ "/usr/local/bin/perl5")
-{
-	print "\nCannot automatically link to your perl path.  Please create a symbolic link to /usr/local/bin/perl5 \n";
-        print "and try again (i.e., \"ln -s $perl_realpath /usr/local/bin/perl5\").  If you do not have appropriate \n";
-        print "permissions to do this, check with your administrator.\n";
-	exit(1);
-}
-
 # Determine user's operating system
 $os_string = `uname -rsv`;
 @OSID = split(/ /, $os_string);

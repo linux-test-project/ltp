@@ -1,4 +1,9 @@
-#!/usr/local/bin/perl5
+: # use perl                            -*- mode: Perl; -*-
+        eval 'exec perl -S $0 "$@"'
+        if $running_under_some_shell;
+
+use 5;
+
 # create_code.pl: produces C++ code that reproduces a Ballista test case - bug reports
 # Copyright (C) 1998-2001  Carnegie Mellon University
 #
