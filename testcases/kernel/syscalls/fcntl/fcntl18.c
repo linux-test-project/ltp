@@ -100,7 +100,7 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "Exit block 1");
 
 /* //block2: */
-	tst_resm(TINFO, "Enter block 1");
+	tst_resm(TINFO, "Enter block 2");
 	fail = 0;
 	/* Error condition if address is bad */
 	retval = fcntl(fd, F_GETLK64, (struct flock *)INVAL_FLAG);
