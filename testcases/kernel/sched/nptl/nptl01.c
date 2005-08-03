@@ -47,6 +47,7 @@
 #include "usctest.h"
 
 #define MAXTIME 300		/* Maximum # of secs to wait before failing */
+#define NUMLOOPS 100000		/* # of loops */
 
 char *TCID="nptl01";            /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
@@ -222,7 +223,7 @@ int main(int argc, char** argv)
     create_child_thread(buf, sizeof(buf));
 
     tst_resm(TINFO,"Starting test, please wait.");
-    for (i = 0; i < 1000000; i++) {
+    for (i = 0; i < NUMLOOPS; i++) {
 	while (idle_count == 0) {
 	    call_cond_wait(&parent, &ack, buf, sizeof(buf));
 	};
@@ -237,8 +238,8 @@ int main(int argc, char** argv)
 #ifdef DEBUG
 	tst_resm(TINFO,"Success in loop %d",i);
 #else
-	if (((i % 100000) == 0) && (i != 0))
-	  tst_resm(TINFO,"Success thru loop %d of 1000000",i);
+	if (((i % NUMLOOPS) == 0) && (i != 0))
+	  tst_resm(TINFO,"Success thru loop %d of %d", NUMLOOPS);
 #endif
 	call_mutex_lock(&ack, buf, sizeof(buf));
     }
