@@ -1,3 +1,31 @@
+LTP-20050804
+- Applied fix from Greg Edwards for 64bit execution.
+- self_exec magic required to run child functions on uClinux
+- Applied patch from Mike Frysinger:trying to do a build on uClibc will abort in lib/tlibio.c because we dont
+  provide aio.h find attached a patch which updates the check to include UCLIBC alongside
+  UCLINUX
+- remove call to create.sh script that checks for obscure c++ rpms
+- remove all references to and creation of non-std /usr/local/bin/perl5
+- fix ballista.cpp to not core dump with std c++ lib
+- fix to add librt to MakefileTarget for running aio_suspend test:missing clock_gettime on linux
+- remove printf.h and stdio.h from testcases/commands/ade/ld/rd1.c.
+- Change to fix the addition of 2 minutes without going over 60 for the seconds
+- patch to fix up the install target in disktest to match the install targets of everything else
+- patch to fix writetest Makefile to not always rebuild the writetest binary 
+  regardless of whether you ran `make` or `make install` or whatever
+- newer toolchains complain about redefining 'log' since it's a math function
+  provided by the libc find attached a simple patch to rename the 'log' variable in
+  testcases/kernel/ipc/ipc_stress/message_queue_test_04.c to 'logit'
+- when running make in silent mode (make -s) the verbose mode of AR 'gets in the
+  way' attached patch drops the -v and adds -c so that ar wont display the 'ar:
+  creating blah.a' message either
+- the current mallocstress.c emits a warning about newsize being used
+  uninitialized because gcc doesnt detect the abort(0) path 
+  find attached a simple patch to prevent the warning from being issued
+- Running nptl01 can fail if the test lasts longer than 300 seconds, patch to lower interations to 100000.
+- Fixed clone04 to return correct failure code.
+
+
 LTP-20050707
 - Applied fixes by Paul J.Y. Lahaie to implement support for UCLinux
 - suppresses the warning  "head: `-1' option is obsolete; use `-n 1'..."
