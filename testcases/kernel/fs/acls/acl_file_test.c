@@ -52,7 +52,12 @@ int main(int argc, char *argv[]){
 	}
 
 	//s = syscall(237, fd,tok); //fremovexattr
-        s = syscall(__NR_fremovexattr, fd,tok); //fremovexattr
+#ifdef __NR_fremovexattr
+	s = syscall(__NR_fremovexattr, fd,tok); //fremovexattr
+#else
+	s = -1;
+	errno = ENOSYS;
+#endif
 	if (s == -1) {
                 printf ("User unable to remove extended attributes file %s !\n", argv[1]);
                 printf("errno = %i\n", errno);
