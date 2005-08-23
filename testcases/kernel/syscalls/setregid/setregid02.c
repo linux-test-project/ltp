@@ -106,7 +106,7 @@ struct test_data_t {
 	{ &bin_gr_gid, &neg_one, EPERM, &users, &users, "After setregid(bin, -1)," },
 	{ &root_gr_gid, &bin_gr_gid, EPERM, &users, &users, "After setregid(root, bin)" },
 	{ &bin_gr_gid, &root_gr_gid, EPERM, &users, &users, "After setregid(bin, root)," },
-	{ &inval_user, &neg_one, EINVAL, &users, &users, "After setregid(invalid group, -1)," },
+	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(invalid group, -1)," },
 	{ &neg_one, &inval_user, EINVAL, &users, &users, "After setregid(-1, invalid group)," },
 };
 
@@ -147,6 +147,11 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == test_data[i].exp_errno) {
+					tst_resm(TPASS, "setregid(%d, %d) "
+						"failed as expected.",
+						*test_data[i].real_gid,
+						*test_data[i].eff_gid);
+				} else if (TEST_ERRNO == test_data[0].exp_errno) {
 					tst_resm(TPASS, "setregid(%d, %d) "
 						"failed as expected.",
 						*test_data[i].real_gid,
