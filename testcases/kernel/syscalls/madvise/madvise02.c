@@ -315,8 +315,9 @@ void check_and_print(int expected_errno)
             		tst_resm(TPASS, "expected failure - errno = %d : %s",
 				TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-           		tst_resm(TFAIL, "got errno = %d : %s",
-				EINVAL, TEST_ERRNO, strerror(TEST_ERRNO));
+           		tst_resm(TFAIL, "got errno = %d : %s; expected error = %d : %s",
+				TEST_ERRNO, strerror(TEST_ERRNO),
+				expected_errno, strerror(expected_errno));
 		}
 	} else {
 		tst_resm(TFAIL, "madvise failed, expected "
