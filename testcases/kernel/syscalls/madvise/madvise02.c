@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
 		ptr_memory_allocated = (char *) malloc(5 * sizeof(pagesize));
 		/* Take temporary pointer for later freeing up the original one */
 		tmp_memory_allocated = ptr_memory_allocated;
-		tmp_memory_allocated = (char *)(((int) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
+		tmp_memory_allocated = (char *)(((unsigned long) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
 
 		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
 #endif
