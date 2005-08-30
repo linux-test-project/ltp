@@ -45,8 +45,10 @@
  */
 
 #include <sys/types.h>
-#include <signal.h>
 #include <sys/uio.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <memory.h>
 #include <errno.h>
@@ -61,6 +63,7 @@
 #define	DATA_FILE	"writev_data_file"
 
 char	buf1[K_1], buf2[K_1], buf3[K_1];
+char*	bad_addr = 0;
 
 struct iovec wr_iovec[MAX_IOVEC] = {
 	/* testcase #1 */
@@ -292,7 +295,12 @@ setup(void)
 
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
-
+	
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	if (bad_addr <= 0) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	wr_iovec[1].iov_base = bad_addr;
 	tst_tmpdir();
 }
 
