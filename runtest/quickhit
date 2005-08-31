@@ -258,6 +258,8 @@ stat06 stat06
 # Negative tests for stat(2)
 statfs01 statfs01
 # Basic test for statfs(2) mounted filesys
+statvfs01 statvfs01
+# Basic test for statvfs(2) mounted filesys
 sync01 sync01
 # Basic test for sync(2) 
 time01 time01
