@@ -138,6 +138,7 @@ main(int ac, char **av)
 		 /* reset Tst_count in case we are looping. */
 		 Tst_count=0;
 
+#ifdef F_SETLEASE
 		 /* 
 		  * Call fcntl(2) with F_SETLEASE & F_RDLCK argument on fname
 		  */
@@ -166,7 +167,7 @@ main(int ac, char **av)
 		 		 }  
 		     } 
 		 }
-
+#endif
     }		 /* End for TEST_LOOPING */
 
     /***************************************************************

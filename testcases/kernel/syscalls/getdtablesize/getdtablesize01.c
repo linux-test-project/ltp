@@ -54,9 +54,9 @@ char *TCID="getdtablesize01";     /* Test program identifier.    */
 int TST_TOTAL=1;          	  /* Total number of test cases. */
 extern int Tst_count;      	  /* Test Case counter for tst_* routines */
 
-main()
+int main()
 {
- 	int table_size,loop,fd,count = 0,cnt = 0;
+ 	int table_size,loop,fd,count = 0;
 	int max_val_opfiles;
   struct rlimit rlp;
 
@@ -98,6 +98,8 @@ main()
  else
  tst_resm(TFAIL,"%d != %d",count, (max_val_opfiles - 1));
  cleanup();
+
+ return EXIT_SUCCESS;
 }
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

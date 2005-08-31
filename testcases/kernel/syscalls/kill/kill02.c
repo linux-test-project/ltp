@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.4 2005/07/11 22:28:29 robbiew Exp $ */
+/* $Id: kill02.c,v 1.5 2005/08/31 20:27:15 robbiew Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -131,6 +131,7 @@
 ******************************************************************************/
 #include <sys/param.h>
 #include <signal.h>
+#include <sys/wait.h>
 #include <errno.h>   
 #include <fcntl.h>
 #include <string.h>

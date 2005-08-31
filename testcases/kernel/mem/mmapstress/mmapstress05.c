@@ -133,8 +133,8 @@ main(int argc, char *argv[])
 	-- sreeni
 	*/
 
-	if (!(fd  = mkstemp(tmpname))) {
-		ERROR("tempnam failed");
+	if (!(fd = mkstemp(tmpname))) {
+		ERROR("mkstemp failed");
 		anyfail();
 	}
 	sa.sa_handler = cleanup;

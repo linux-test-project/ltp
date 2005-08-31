@@ -25,17 +25,17 @@ LOADLIBES+=-L../../../../lib -lltp
 TESTS=hugeshmget hugeshmat hugeshmdt hugeshmctl hugemmap
 
 all: $& $(TESTS)
-	set -e; for i in lib $(TESTS); do \
+	@set -e; for i in lib $(TESTS); do \
 		$(MAKE) -C $$i  all; \
 	done
 
 clean:
-	set -e; for i in lib $(TESTS); do \
+	@set -e; for i in lib $(TESTS); do \
 		$(MAKE) -C $$i  clean; \
 	done
 
 install:
-	set -e; for i in lib $(TESTS); do \
+	@set -e; for i in lib $(TESTS); do \
 		$(MAKE) -C $$i  install; \
 	done
 

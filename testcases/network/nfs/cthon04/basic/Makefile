@@ -18,7 +18,7 @@ INCLUDES=../tests.h
 include ../tests.init
 
 all: origtests auxtests
-	if test ! -x runtests; then chmod a+x runtests; fi
+	@chmod a+x runtests
 
 origtests: $(TESTS)
 auxtests: $(AUXTESTS)

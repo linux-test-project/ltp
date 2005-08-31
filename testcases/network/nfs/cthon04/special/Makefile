@@ -19,7 +19,7 @@ DEPS=$(INCLUDES) $(SUBRS)
 include ../tests.init
 
 all: $(TESTS)
-	if test ! -x runtests; then chmod a+x runtests; fi
+	@chmod a+x runtests
 
 ../basic/subr.o:
 	cd ../basic; make subr.o

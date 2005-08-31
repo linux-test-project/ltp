@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.5 2005/07/11 22:29:05 robbiew Exp $ */
+/* $Id: sighold02.c,v 1.6 2005/08/31 20:27:16 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -505,8 +505,6 @@ int fd;
 static int
 set_timeout()
 {
-    void timeout();
-
     if (signal(SIGALRM, timeout) == SIG_ERR) {
 	(void) sprintf(mesg, "signal() failed for signal %d. error:%d %s.",
 		SIGALRM, errno, strerror(errno));

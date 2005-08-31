@@ -27,21 +27,21 @@ LOADLIBES+=	$(if $(UCLINUX),-lc)
 IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
 
 all: $& $(IPCTESTS)
-	set -e; for i in lib $(IPCTESTS); do \
+	@set -e; for i in lib $(IPCTESTS); do \
 		$(MAKE) -C $$i  all; \
 	done
 
 clean:
-	set -e; for i in lib $(IPCTESTS); do \
+	@set -e; for i in lib $(IPCTESTS); do \
 		$(MAKE) -C $$i  clean; \
 	done
 
 install:
-	set -e; for i in lib $(IPCTESTS); do \
+	@set -e; for i in lib $(IPCTESTS); do \
 		$(MAKE) -C $$i  install; \
 	done
 
 strip_bin:
-	set -e; for i in $(IPCTESTS); do \
+	@set -e; for i in $(IPCTESTS); do \
 		$(MAKE) -C $$i  strip_bin; \
 	done

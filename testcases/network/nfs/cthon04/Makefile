@@ -6,6 +6,7 @@
 # 'make copy DESTDIR=path'	copies test programs to path
 # 'make dist DESTDIR=path'	copies sources to path
 
+SUBDIRS=basic general special tools lock
 DESTDIR=/no/such/path
 COPYFILES=runtests tests.init server domount.c README READWIN.txt Testitems \
 	getopt.c tests.h unixdos.h
@@ -13,20 +14,13 @@ COPYFILES=runtests tests.init server domount.c README READWIN.txt Testitems \
 include tests.init
 
 all: domount getopt
-	cd basic; $(MAKE)
-	cd general; $(MAKE)
-	cd special; $(MAKE)
-	cd tools; $(MAKE)
-	cd lock; $(MAKE)
-	if test ! -x runtests; then chmod a+x runtests; fi
+	@set -e; for i in $(SUBDIRS) ; do $(MAKE) -C $$i all ; done
+	@chmod a+x runtests
 
 install:
 
 lint:
-	cd basic; $(MAKE) lint
-	cd special; $(MAKE) lint
-	cd tools; $(MAKE) lint
-	cd lock; $(MAKE) lint
+	@set -e; for i in $(SUBDIRS) ; do $(MAKE) -C $$i lint ; done
 
 domount: domount.c
 	$(CC) $(CFLAGS) -o $@ $@.c
@@ -37,30 +31,22 @@ getopt: getopt.c
 
 clean:
 	rm -f domount getopt
-	cd basic; $(MAKE) clean
-	cd general; $(MAKE) clean
-	cd special; $(MAKE) clean
-	cd tools; $(MAKE) clean
-	cd lock; $(MAKE) clean
+	@set -e; for i in $(SUBDIRS) ; do $(MAKE) -C $$i clean ; done
 
 copy: mknewdirs
 	cp -f domount $(COPYFILES) $(DESTDIR)
-	cd basic; $(MAKE) copy DESTDIR=$(DESTDIR)/basic
-	cd general; $(MAKE) copy DESTDIR=$(DESTDIR)/general
-	cd special; $(MAKE) copy DESTDIR=$(DESTDIR)/special
-	cd tools; $(MAKE) copy DESTDIR=$(DESTDIR)/tools
-	cd lock; $(MAKE) copy DESTDIR=$(DESTDIR)/lock
+	@set -e; for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i copy DESTDIR=$(DESTDIR)/$$i ; \
+	done
 
 dist: mknewdirs
 	cp -f Makefile $(COPYFILES) $(DESTDIR)
-	cd basic; $(MAKE) dist DESTDIR=$(DESTDIR)/basic
-	cd general; $(MAKE) dist DESTDIR=$(DESTDIR)/general
-	cd special; $(MAKE) dist DESTDIR=$(DESTDIR)/special
-	cd tools; $(MAKE) dist DESTDIR=$(DESTDIR)/tools
-	cd lock; $(MAKE) dist DESTDIR=$(DESTDIR)/lock
+	@set -e; for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i copy DESTDIR=$(DESTDIR)/$$i ; \
+	done
 	chmod u+w $(DESTDIR)/tests.init
 	chmod a+x $(DESTDIR)/server
 
 mknewdirs:
-	-mkdir $(DESTDIR)/basic $(DESTDIR)/general $(DESTDIR)/special \
+	-mkdir -p $(DESTDIR)/basic $(DESTDIR)/general $(DESTDIR)/special \
 	       $(DESTDIR)/tools $(DESTDIR)/lock

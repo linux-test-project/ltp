@@ -78,8 +78,7 @@ int rc;
 
 void try_bind(){
 	struct sockaddr_in servaddr;
-    	int sockfd, n, r_value;
-	int r_code=0;
+	int sockfd, r_value;
 
 	// Set effective user/group
         if ((rc = setegid(gid)) == -1) {
@@ -130,9 +129,6 @@ void try_bind(){
 }
 
 int main(int argc,char *argv[]){
-
-	uid_t uid_nobody;
-   	gid_t gid_nobody;
 
 	if (argc != 2) {
           tst_resm(TINFO,"Defaulting to user nobody");

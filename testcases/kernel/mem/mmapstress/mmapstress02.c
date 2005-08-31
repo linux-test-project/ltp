@@ -102,7 +102,7 @@ main(int argc, char *argv[]) {
 	}
 	(void)time(&t);
 	if (!(fd = mkstemp(tmpname))) {
-		ERROR("tempnam failed");
+		ERROR("mkstemp failed");
 		anyfail();
 	}
         sa.sa_handler = cleanup;

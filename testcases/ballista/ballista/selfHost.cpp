@@ -42,7 +42,6 @@ extern "C" int execute_test_case (char *marshalled_parameters);
 //from unistd.h
 
 extern "C" int usleep(unsigned int useconds);
-extern char *sys_errlist[ ];    //bug in aix and sunos errno.h ( at least )
 #endif
 
 #define TEMP_BUF_SIZE 1024
@@ -304,7 +303,7 @@ int Selfhost_test_manager::manage_test(MARSHAL_DATA_TYPE arguments,
       }
       if (*call_ret >= 0) {
         // Copy error message string for reporting. added 11/16/99
-        safe_strncpy(sys_err, sys_errlist[*call_ret], max_sys_err);
+        safe_strncpy(sys_err, strerror(*call_ret), max_sys_err);
       }
     }
     else if (WIFSTOPPED(status)) {

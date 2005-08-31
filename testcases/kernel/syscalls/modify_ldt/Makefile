@@ -21,7 +21,17 @@
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
 
-NEEDSPECIAL:=$(shell cat /usr/include/asm/ldt.h | grep user_desc; echo $?)
+SRCS=$(wildcard *.c)
+TARGETS=$(patsubst %.c,%,$(SRCS))
+
+check_header = $(shell \
+	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
+	then echo yes ; \
+	else echo no ; fi)
+
+ifeq ($(call check_header,asm/ldt.h),yes)
+
+NEEDSPECIAL:=$(shell echo "\#include <asm/ldt.h>" | $(CC) -E - 2>&1 | grep user_desc)
 ifeq ($(strip $(NEEDSPECIAL)),)
 CFLAGS+=-I../../../../include -g -Wall
 else
@@ -32,15 +42,16 @@ CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
 LOADLIBES+=	$(if $(UCLINUX),-lc)
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-
 all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
+else ### does not have asm/ldt.h ###
+
+all install:
+
+endif
+
 clean:
 	rm -f $(TARGETS)
-
-

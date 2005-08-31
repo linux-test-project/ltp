@@ -1,8 +1,10 @@
-all:
+all: cron_dirs_check
+
+cron_dirs_check:
 	$(CC) -o cron_dirs_check cron_dirs_check.c
-	chmod 755 cron_tests.sh
 
 install:
+	chmod 755 cron_tests.sh
 	@ln -f cron_tests.sh ../../bin/cron_tests.sh
 	@ln -f cron02  ../../bin/cron02
 	@ln -f cron03  ../../bin/cron03

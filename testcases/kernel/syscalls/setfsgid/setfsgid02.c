@@ -46,9 +46,13 @@
  */
 #include <stdio.h>
 #include <unistd.h>
+#include <grp.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <errno.h>
+#ifdef __GLIBC__
+#include <sys/fsuid.h>
+#endif
 #include "test.h"
 #include "usctest.h"
 
@@ -59,7 +63,7 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -107,6 +111,7 @@ main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
+	return EXIT_SUCCESS;
 }
 
 /*

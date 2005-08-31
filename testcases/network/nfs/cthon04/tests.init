@@ -211,7 +211,7 @@ LOCKTESTS=tlock
 #LOCKTESTS=`echo tlocklfs tlock64`
 
 # Use with Linux / GNU libc 2.3
-CFLAGS=`echo -DLINUX -DMMAP -DSTDARG`
+CFLAGS=`echo -DLINUX -DMMAP -DSTDARG -DHAVE_SOCKLEN_T`
 LIBS=`echo -lnsl`
 MOUNT=/bin/mount
 UMOUNT=/bin/umount

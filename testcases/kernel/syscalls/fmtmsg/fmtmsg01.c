@@ -38,7 +38,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <stdio.h>
-#if !defined(UCLINUX)
+#if !defined(UCLINUX) && !defined(__UCLIBC__)
 #include <fmtmsg.h>			/* interface definition */
 #endif
 #include <string.h>
@@ -82,7 +82,7 @@ void clearbuf()
 		buf[i] = (char)NULL;
 }
 
-#if !defined(UCLINUX)
+#if !defined(UCLINUX) && !defined(__UCLIBC__)
 
 /*--------------------------------------------------------------*/
 int main(int argc, char *argv[])

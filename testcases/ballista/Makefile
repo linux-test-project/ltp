@@ -3,11 +3,13 @@ all: bal
 install:
 	./do_nothing.sh
 
-create:
-		 cd ballista ; ./configure
+.configured:
+	cd ballista ; ./configure
+	touch .configured
 
-bal: create
+bal: .configured
 	$(MAKE) -i -C ballista
 
 clean:
-		 $(MAKE) -C ballista clean
+	$(MAKE) -C ballista clean
+	rm -f create

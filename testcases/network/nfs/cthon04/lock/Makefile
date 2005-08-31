@@ -13,7 +13,7 @@ LIBS = -lm
 
 all:
 	@make $(LOCKTESTS)
-	if test ! -x runtests; then chmod a+x runtests; fi
+	@chmod a+x runtests
 
 # Native file offsets (32- or 64-bit), pre-Large File Summit semantics.
 tlock:	tlock.c

@@ -44,6 +44,11 @@ main(int argc, char **argv)
 	char *test_name;		/* test specific name */
 	char *path_name;		/* name of test directory/file */
 
+	if (argc != 3) {
+		fprintf(stderr, "This is a helper binary meant for internal LTP usage only\n");
+		exit(1);
+	}
+
 	test_name = argv[1];
 	path_name = argv[2];
 
