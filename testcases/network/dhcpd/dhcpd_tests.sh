@@ -102,7 +102,7 @@ init()
 		return $RC
 	fi
 
-	grep "dhcpd" $LTPTMP/tst_dhcpd.out &>$LTPTMP/tst_dhcpd.err || RC=$?
+	grep "dhcpd[[:blank:]]" $LTPTMP/tst_dhcpd.out &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -eq 0 ]
 	then
 		tst_resm TPASS "INIT: dhcpd is already running. Declaring success"
@@ -134,6 +134,7 @@ init()
 		domain-name
 		"dhcptest.net";
 	}
+	ddns-update-style ad-hoc;
 	EOF
 	if [ $RC -ne 0 ]
 	then
@@ -148,7 +149,7 @@ init()
 		mv /etc/dhcpd.conf $LTPTMP/dhcpd.conf &>$LTPTMP/tst_dhcpd.err || RC=$?
 		mv $LTPTMP/tst_dhcpd.conf /etc/dhcpd.conf &>$LTPTMP/tst_dhcpd.err \
 			|| RC1=$?
-		if [ $RC -ne 0 || $RC1 -ne 0 ]
+		if [ $RC -ne 0 -o $RC1 -ne 0 ]
 		then
 			tst_brkm TBROK NULL \
 				"INIT: Failed to create dhcpd.conf file."
@@ -238,8 +239,6 @@ test01()
 	fi
 
 	cat > $LTPTMP/tst_dhcpd.exp <<-EOF || RC=$?
-	Listening on LPF/eth0/$hwaddr/10.1.1.0
-	Sending on   LPF/eth0/$hwaddr/10.1.1.0
 	Sending on   Socket/fallback/fallback-net
 	EOF
 	if [ $RC -ne 0 ]
@@ -256,7 +255,7 @@ test01()
 			"Test #1: Failed to start dhcp. Reason: "
 		return $RC
 	else
-		cat $LTPTMP/tst_dhcpd.err | tail -n 3 &>$LTPTMP/tst_dhcpd.out || RC=$?
+		cat $LTPTMP/tst_dhcpd.err | tail -n 1 &>$LTPTMP/tst_dhcpd.out || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_brkm TBROK NULL \
@@ -275,7 +274,7 @@ test01()
 	else
 		tst_res TINFO $LTPTMP/tst_dhcpd.out "Test #1 DHCP server statistics:"
 		tst_resm TINFO "Test #1: stoping dhcp server"
-		/etc/init.d/dhcp stop &>$LTPTMP/tst_dhcpd.err || RC=$?
+		killall dhcpd &>$LTPTMP/tst_dhcpd.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_brk TBROK $LTPTMP/tst_dhcpd.err NULL \

@@ -194,8 +194,8 @@ test01()
 			"Test #1: ip command failed. Reason: "
 		return $RC
 	else
-		MTUSZ=`ifconfig eth0:1 | grep -i MTU | awk '{print $5}'`
-		if [ $MTUSZ == "MTU:300" ]
+		MTUSZ=`ifconfig eth0:1 | grep -i MTU | sed "s/^.*MTU://" | awk '{print $5}'`
+		if [ $MTUSZ -eq 300 ]
 		then
 			tst_resm TPASS "Test #1: changing mtu size success"
 		else
@@ -357,7 +357,7 @@ test04()
 		127.0.0.1 dev lo lladdr 00:00:00:00:00:00 nud reachable
 		EOF
 
-		ip neigh show | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
+		ip neigh show 127.0.0.1 | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -384,7 +384,7 @@ test04()
 				"Test #4: ip neigh del command failed return = $RC. Reason: "
 			return $RC
 		else
-			ip neigh show | grep 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+			ip neigh show | grep 127.0.0.1 grep -v "nud failed$" &>$LTPTMP/tst_ip.err || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \

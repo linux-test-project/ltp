@@ -143,7 +143,7 @@ test01()
     tst_resm TINFO "Test #1: traceroute returns the path taken by IP packet"
     tst_resm TINFO "Test #1: to that host."
 
-    traceroute `hostname` &>$LTPTMP/tst_traceroute.out || RC=$?
+    traceroute `hostname` 38 &>$LTPTMP/tst_traceroute.out || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_traceroute.out \
@@ -161,7 +161,7 @@ test01()
         return $RC
     else
         # Only one hop is required to get to hostname. 
-        nhops=$(cat $LTPTMP/tst_traceroute.out | head -n 2 | awk '{print $1}')
+        nhops=$(cat $LTPTMP/tst_traceroute.out | tail -n 1 | awk '{print $1}')
         if [ $nhops -ne 1 ]
         then
             tst_resm TFAIL "Test #1: $hops number of hops unexpected" 
