@@ -20,7 +20,7 @@
 #   DESCRIPTION : A script that will stress your system using the LTP testsuite.
 #   REQUIREMENTS: 
 #                 1) The 'rsh' daemon must be running and NFS (versions 2 &3) must be
-#                    configured into the kernel and installed.
+#                    configured into the kernel and installed for networking tests.
 #		  2) The 'sar' application must be installed to use the "-S" option
 #   HISTORY     :
 #       02/11/2003 Robbie Williamson (robbiew@austin.ibm.com)
@@ -48,18 +48,20 @@ Sar=0
 Top=0
 Iostat=0
 LOGGING=0
+NO_NETWORK=0
 
 usage()
 {
 
 	cat <<-END >&2
-	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -t duration ] [ [-S]|[-T] ]
+	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -n ] [ -t duration ] [ [-S]|[-T] ]
 
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
     -I iofile       Log results of 'iostat' to a file every interval. Default is "/tmp/ltpstress.iodata".
     -l logfile      Log results of test in a logfile.
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
+    -n              Disable networking stress.
     -S              Use 'sar' to measure data. 
     -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
@@ -107,6 +109,8 @@ do  case $arg in
         m)	memsize=$(($OPTARG * 1024))
 		check_memsize;;	
 
+	n)	NO_NETWORK=1;;
+
         S)      if [ $Top -eq 0 ]; then
                   Sar=1
                 else
@@ -135,60 +139,62 @@ do  case $arg in
         esac
 done
 
-# Networking setup
-echo `hostname` >> /root/.rhosts
-chmod 644 /root/.rhosts
+if [ $NO_NETWORK -eq 0 ];then
+  # Networking setup
+  echo `hostname` >> /root/.rhosts
+  chmod 644 /root/.rhosts
 
-netstat -an | grep 514
-if [ $? -eq 1 ];then
-  echo "Error: 'rsh' daemon not active on this machine."
-  exit 1
-fi
+  netstat -an | grep 514
+  if [ $? -eq 1 ];then
+    echo "Error: 'rsh' daemon not active on this machine."
+    exit 1
+  fi
 
-ps -ef | grep portmap | grep -v grep
-if [ $? -eq 1 ];then
-  /sbin/portmap &
-fi
-sleep 1
-ps -ef | grep portmap | grep -v grep
-if [ $? -eq 1 ];then
-  echo "Error: Could not start portmap daemon."
-  exit 1
-fi
+  ps -ef | grep portmap | grep -v grep
+  if [ $? -eq 1 ];then
+    /sbin/portmap &
+  fi
+  sleep 1
+  ps -ef | grep portmap | grep -v grep
+  if [ $? -eq 1 ];then
+    echo "Error: Could not start portmap daemon."
+    exit 1
+  fi
 
-rpcinfo -p | grep nfs 
-if [ $? -eq 1 ];then
-  /usr/sbin/rpc.nfsd 
-fi
-sleep 1
-rpcinfo -p | grep nfs 
-if [ $? -eq 1 ];then
-  echo "Error: Could not start nfs server daemon."
-  exit 1
-fi
+  rpcinfo -p | grep nfs 
+  if [ $? -eq 1 ];then
+    /usr/sbin/rpc.nfsd 
+  fi
+  sleep 1
+  rpcinfo -p | grep nfs 
+  if [ $? -eq 1 ];then
+    echo "Error: Could not start nfs server daemon."
+    exit 1
+  fi
 
-rpcinfo -p | grep status 
-if [ $? -eq 1 ];then
-  /sbin/rpc.statd 
-fi
-sleep 1
-rpcinfo -p | grep status 
-if [ $? -eq 1 ];then
-  echo "Error: Could not start statd daemon."
-  exit 1
-fi
+  rpcinfo -p | grep status 
+  if [ $? -eq 1 ];then
+    /sbin/rpc.statd 
+  fi
+  sleep 1
+  rpcinfo -p | grep status 
+  if [ $? -eq 1 ];then
+    echo "Error: Could not start statd daemon."
+    exit 1
+  fi
 
-rpcinfo -p | grep mount 
-if [ $? -eq 1 ];then
-  /usr/sbin/rpc.mountd 
+  rpcinfo -p | grep mount 
+  if [ $? -eq 1 ];then
+    /usr/sbin/rpc.mountd 
+  fi
+  sleep 1
+  rpcinfo -p | grep mount 
+  if [ $? -eq 1 ];then
+    echo "Error: Could not start mountd daemon."
+    exit 1
+  fi
+  # End of network setup
 fi
-sleep 1
-rpcinfo -p | grep mount 
-if [ $? -eq 1 ];then
-  echo "Error: Could not start mountd daemon."
-  exit 1
-fi
-# End of network setup
 
 #If -m not set, use all the RAM + 1/2 swapspace
 if [ $memsize -eq 0 ]; then
@@ -211,8 +217,9 @@ if [ $leftover_memsize -gt 0 ];then
   genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) 2>&1 1>/dev/null & 
 fi
 
-netpipe.sh >/dev/null 2>/dev/null &
-
+if [ $NO_NETWORK -eq 0 ];then
+ netpipe.sh >/dev/null 2>/dev/null &
+fi
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part1 > ${TMP}/stress.part1
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part2 > ${TMP}/stress.part2
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/stress.part3 > ${TMP}/stress.part3
@@ -263,8 +270,10 @@ if [ $Top -eq 1 ]; then
 fi
 killall -9 pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
-killall -9 netpipe.sh >/dev/null 2>&1
-killall -9 NPtcp >/dev/null 2>&1
+if [ $NO_NETWORK -eq 0 ];then
+  killall -9 netpipe.sh >/dev/null 2>&1
+  killall -9 NPtcp >/dev/null 2>&1
+fi
 if [ $Iostat -eq 1 ];then
   kill -9 $Iostat_PID >/dev/null 2>&1
 fi
@@ -276,6 +285,9 @@ if [ $LOGGING -eq 1 ];then
     echo "All Tests PASSED!"
   else
     echo "Testing yielded failures. See logfile: $logfile"
+    if [ $NO_NETWORK -eq 1 ];then
+      echo "The NFS related tests should fail because network stress was disabled"
+    fi
   fi
 fi
 
