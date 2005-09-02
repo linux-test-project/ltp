@@ -153,7 +153,7 @@ int main(int ac, char **av)
 			} else {
 				if (i <= 1)
                                         tst_resm(TCONF,
-                                                 "mlockall02 did not FAIL as expected."
+                                                 "mlockall02 did not BEHAVE as expected."
                                                  "This may be okay if you are running Red Hat"
 						 " Enterprise Linux 3 (RHEL)");
                                 else
