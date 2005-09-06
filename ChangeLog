@@ -1,3 +1,19 @@
+LTP-20050907
+- Added test for statvfs()
+- Applied a load of patches submitted to the mailing list by Gentoo's Mike Frysinger
+- Applied patch from Erik Andersee:
+  if __NR_fremovexattr isnt defined by the current linux headers,
+  acl_file_test.c will fail to build
+- Relocated getcontext() test from getcontext01 to just getcontext.  
+  Also added the directory to the list of tests not ran on uclinux.
+- Applied patch to madvise02 for tmp memory
+- Applied patch to mallopt01 to fix logging error.
+- fix for defect 17723, change sleep to an at least vs an exact amount
+- Correct testcase return on RHEL 3 & 4 2.6.13-rc6-mm1
+- Applied IA64 patch received from Jacky Malcles to write03-04
+- Added -n option to allow disabling networking stress to ltp-stress
+
+
 LTP-20050804
 - Applied fix from Greg Edwards for 64bit execution.
 - self_exec magic required to run child functions on uClinux
