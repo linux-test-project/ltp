@@ -1,0 +1,4 @@
+test01
+	tpm_selftest executes selftest and reports result
+test02
+	tpm_selftest -r reports result of last selftest

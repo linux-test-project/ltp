@@ -1,0 +1,8 @@
+test01
+	tpmtoken_setpasswd change user password
+test02
+	tpmtoken_setpasswd change security officer password
+test03
+	tpmtoken_setpasswd reset user password
+test04
+	tpmtoken_setpasswd reset security officer password

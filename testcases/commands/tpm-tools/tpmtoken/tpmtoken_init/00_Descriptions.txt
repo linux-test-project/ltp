@@ -1,0 +1,6 @@
+test01
+	tpmtoken_init initializes the PKCS#11 store
+test02
+	tpmtoken_init re-initializes the PKCS#11 store
+test03
+	tpmtoken_init re-initializes the PKCS#11 store with -y flag

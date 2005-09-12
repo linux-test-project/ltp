@@ -1,0 +1,6 @@
+test01
+	tpm_changeownerauth changes the current owner password
+test02
+	tpm_changeownerauth changes the current SRK password
+test03
+	tpm_changeownerauth resets the owner and SRK password

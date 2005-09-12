@@ -1,0 +1,4 @@
+test01
+	tpmtoken_objects display public and private objects
+test02
+	tpmtoken_objects display only public objects

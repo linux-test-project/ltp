@@ -1,0 +1,2 @@
+test01
+	tpm_takeownership takes ownership of the TPM

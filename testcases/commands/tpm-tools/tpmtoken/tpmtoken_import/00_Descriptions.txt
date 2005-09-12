@@ -1,0 +1,20 @@
+test01
+	tpmtoken_import import a certificate and key
+test02
+	tpmtoken_import import a certificate and key
+test03
+	tpmtoken_import import a certificate and key with -y option
+test04
+	tpmtoken_import import a public certificate and key
+test05
+	tpmtoken_import import a public certificate and key
+test06
+	tpmtoken_import import a public certificate and key with -y option
+test07
+	tpmtoken_import import a certificate
+test08
+	tpmtoken_import import a key
+test09
+	tpmtoken_import attempt to import a certificate from a key file
+test10
+	tpmtoken_import attempt to import a key from a certificate file

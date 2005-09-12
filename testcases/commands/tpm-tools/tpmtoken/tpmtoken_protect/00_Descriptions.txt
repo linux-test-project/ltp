@@ -1,0 +1,4 @@
+test01
+	tpmtoken_protect encrypt a file
+test02
+	tpmtoken_protect decrypt a file

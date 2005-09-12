@@ -1,0 +1,6 @@
+test01
+	tpm_restrictpubek restricts the reading of the pubek
+test02
+	tpm_restrictpubek checks the current setting
+test03
+	tpm_getpubek requires owner authorization to read the pubek
