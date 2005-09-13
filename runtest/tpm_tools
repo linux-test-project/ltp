@@ -1,0 +1,13 @@
+#DESCRIPTION:TPM Management Tools
+tpm01		tpm_selftest_tests.sh
+tpm02		tpm_version_tests.sh
+tpm03		tpm_getpubek_tests.sh
+tpm04		tpm_takeownership_tests.sh
+tpm05		tpm_restrictpubek_tests.sh
+tpm06		tpm_changeauth_tests.sh
+tpmtoken01	tpmtoken_init_tests.sh
+tpmtoken02	tpmtoken_setpasswd_tests.sh
+tpmtoken03	tpmtoken_import_tests.sh
+tpmtoken04	tpmtoken_protect_tests.sh
+tpmtoken05	tpmtoken_objects_tests.sh
+tpm07		tpm_clear_tests.sh
