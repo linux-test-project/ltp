@@ -101,7 +101,7 @@ void sig_handler();		/* signal catching function */
  * the "rem" field would never change without the increased
  * usec precision in the -aa tree.
  */
- #define USEC_PRECISION 2200  /* Originally set at 100 max but this compiler bug has been around for years. */
+#define MSEC_PRECISION 250      /* Error margin allowed in milliseconds */
 
 int
 main(int ac, char **av)
@@ -185,7 +185,7 @@ main(int ac, char **av)
 void
 do_child()
 {
-	unsigned long req, rem, before, after, elapsed; /* usec */
+	unsigned long req, rem, before, after, elapsed; /* msec */
 	struct timeval otime;		 /* time before child execution suspended */
 	struct timeval ntime;		 /* time after child resumes execution */
 
@@ -208,15 +208,15 @@ do_child()
 	 * The time remaining should be equal to the
 	 * Total time for sleep - time spent on sleep bfr signal
 	 */
-	req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-	rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
-	before = otime.tv_sec * 1000000 + otime.tv_usec;
-	after = ntime.tv_sec * 1000000 + ntime.tv_usec;
+	req = timereq.tv_sec * 1000 + timereq.tv_nsec / 1000000;
+	rem = timerem.tv_sec * 1000 + timerem.tv_nsec / 1000000;
+	before = otime.tv_sec * 1000 + otime.tv_usec/1000;
+	after = ntime.tv_sec * 1000 + ntime.tv_usec/1000;
 	elapsed = after - before;
 
-	if (rem - (req - elapsed) > USEC_PRECISION) {
-		tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
-			 "match with the expected %lu usec time",
+	if (rem - (req - elapsed) > MSEC_PRECISION) {
+		tst_resm(TFAIL, "Remaining sleep time %lu msec doesn't "
+			 "match with the expected %lu msec time",
 			 rem, (req - elapsed));
 		exit(1);
 	}
