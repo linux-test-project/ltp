@@ -124,8 +124,10 @@ main()
   start = time(&t);
    retval = pselect(NULL, &readfds, NULL, NULL, &tv,NULL);
   end = time(&t);
-  
-  if(total_sec == (end - start))
+ 
+  /* Changed total_sec compare to an at least vs an exact compare */
+ 
+  if(total_sec >= (end - start))
   tst_resm(TPASS,"Sleep time was correct");
   else
   tst_resm(TFAIL,"Sleep time was incorrect:%d != %d",total_sec,(end - start));
