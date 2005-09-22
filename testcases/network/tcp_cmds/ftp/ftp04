@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Copyright (c) International Business Machines  Corp., 2003
+#   Copyright (c) International Business Machines  Corp., 2003, 2005
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #
 #  HISTORY:
 #   03/04/03 Jerone Young (jeroney@us.ibm.com)
-#
+#   09/21/05 Kris Wilson (krisw@us.ibm.com) Check if vsftpd is on system.
 
 
 RHOST=localhost
@@ -54,6 +54,16 @@ tvar=${tvar#*-}
 
        if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
        then
+         # Check if vsftpd is on system.
+         which vsftpd
+         if [ $? != 0 ]
+         then { 
+            echo "vsftpd not found.  Possible cause: does not exist on WS."
+            echo "Test ftp04 FAIL."
+            EXIT_CODE=1
+            exit 1
+       } 
+       fi
         echo "Verifying test user $TEST_USER is in /etc/vsftpd.ftpusers database..."
         FTPUSERS=`grep $TEST_USER /etc/vsftpd.ftpusers`
        else

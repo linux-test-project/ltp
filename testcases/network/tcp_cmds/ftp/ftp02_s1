@@ -1,6 +1,6 @@
 #! /usr/bin/expect -f
 #*********************************************************************
-#   Copyright (c) International Business Machines  Corp., 2000
+#   Copyright (c) International Business Machines  Corp., 2003, 2005
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@
 #
 #  HISTORY:
 # 	03/04/03 Jerone Young (jeroney@us.ibm.com)
-#
+#       09/21/05 Kris Wilson (krisw@us.ibm.com) Check for connection failure.
+#                (If WS system, no vsftpd; connection will fail.)
 
 set RHOST $env(RHOST)
 set TEST_USER $env(TEST_USER) 
@@ -44,7 +45,12 @@ set timeout 90
 #ftp to host
 spawn ftp $RHOST
 sleep 1
-expect -re "Name"
+# Check if connection succeeded.
+expect {
+   "Name" {}
+   timeout {send_user "\nConnection failed\n Test FAILED \n";exit 1}
+}
+
 send "$RUSER\r"
 sleep 1
 expect -re "Password:"

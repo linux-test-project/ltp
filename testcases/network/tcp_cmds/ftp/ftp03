@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Copyright (c) International Business Machines  Corp., 2003
+#   Copyright (c) International Business Machines  Corp., 2003, 2005
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #  HISTORY:
 #     03/03  Jerone Young (jeroney@us.ibm.com) 
 #     04/03  Dustin Kirkland (k1rkland@us.ibm.com)
+#     09/05  Kris Wilson (krisw@us.ibm.com) Check if vsftpd.conf was found.
 #
 #  NOTE:
 #	This version is intended for EAL certification, it will need modification 
@@ -40,6 +41,15 @@ tvar=${tvar#*-}
 
 if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
 then
+ls /etc/vsftpd/vsftpd.conf
+ if [ $? != 0 ]
+      then { 
+         echo "vsftpd.conf not found.  Possible cause: does not exist on WS."
+         echo "Test ftp03 FAIL."
+         EXIT_CODE=1
+         exit 1
+      } 
+ fi
 LOCAL_ENABLE=`cat /etc/vsftpd/vsftpd.conf | grep "^local_enable=" | awk -F= '{print $2}'`
 else
 LOCAL_ENABLE=`cat /etc/vsftpd.conf | grep "^local_enable=" | awk -F= '{print $2}'`
