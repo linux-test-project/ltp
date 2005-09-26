@@ -219,7 +219,15 @@ int main(int ac, char **av)
 					fail = 1;
 				}
 			}
-			wait_kid_pid[kid_count++] = ret_val;
+			found = 0;
+			for ( j = 0 ; j < kid_count; j++ ) {
+				if ( ret_val == wait_kid_pid[j] )  {
+					found = 1;
+					break;
+				}
+			}
+			if ( !found)
+				wait_kid_pid[kid_count++] = ret_val;
 		}
 
 		/*
@@ -251,7 +259,7 @@ int main(int ac, char **av)
 			}
 		}
 
-		if (kid_count != MAXKIDS) {
+		if (kid_count != (MAXKIDS/2)) {
 			tst_resm(TFAIL, "Wrong number of children waited on "
 				 "for pid = 0");
 			tst_resm(TFAIL, "Expected %d got %d", MAXKIDS,
@@ -291,7 +299,15 @@ int main(int ac, char **av)
 					fail = 1;
 				}
 			}
-			wait_kid_pid[kid_count++] = ret_val;
+			found = 0;
+			for ( j = 0 ; j < kid_count; j++ ) {
+				if ( ret_val == wait_kid_pid[j] ) {
+					found = 1;
+					break;
+				}
+			}
+			if ( !found)
+				wait_kid_pid[kid_count++] = ret_val;
 		}
 
 		/*
@@ -322,7 +338,7 @@ int main(int ac, char **av)
 				fail = 1;
 			}
 		}
-		if (kid_count != MAXKIDS) {
+		if (kid_count != (MAXKIDS/2)) {
 			tst_resm(TFAIL, "Wrong number of children waited on "
 				 "for pid = 0");
 			tst_resm(TFAIL, "Expected %d got %d", MAXKIDS,
