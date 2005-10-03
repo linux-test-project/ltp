@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <errno.h>
@@ -23,7 +24,7 @@ char *TCID="sendfile";
 int TST_TOTAL=1;
 extern int Tst_count;
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 
@@ -31,7 +32,6 @@ char *argv[];
   struct sockaddr_in sa;
   int s, fd;
   char *lp, *sp;
-  int i;
   int nbyte;
   char *clnt_fname;
   char rbuf[PATH_MAX];
@@ -44,7 +44,7 @@ char *argv[];
 	exit(1);
   }
 
-  clnt_fname = argv[3]; /* filename to create/
+  clnt_fname = argv[3]; /* filename to create */
   
   /* prepare to copy file from server to local machine */
   if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {

@@ -10,8 +10,11 @@
 #include <errno.h>
 #include <sys/signal.h>
 #include <sys/types.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/sendfile.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -27,7 +30,7 @@ int TST_TOTAL=1;
 extern int Tst_count;
 
 
-void *
+void 
 test_sig(sig)
 int sig;
 {
@@ -40,7 +43,7 @@ int sig;
 }
 
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 
@@ -50,8 +53,7 @@ char *argv[];
   int s, fd, as, rc;
   char *lp;
   char *number;
-  int i, clen, pid;
-  int flags, nonblocking;
+  int clen, pid;
   int nbytes, flen,count;
   char rbuf[PATH_MAX];
   int chunks=0;
@@ -167,7 +169,7 @@ char *argv[];
 
 	close(as); /* close connection */
 	close(fd); /* close requested file */
-	exit(0);
+	return(0);
 
   }
   close(s); /* close parent socket (never reached because of the while(1)) */
