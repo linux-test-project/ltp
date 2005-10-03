@@ -42,6 +42,8 @@
 #include <sys/file.h>
 #include <sys/signal.h>
 
+#include <arpa/inet.h>
+
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -87,20 +89,20 @@ char *TCID = "perf_lan";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-
+u_short in_cksum(u_short *, int);
+int ck_packet(char *, int, struct sockaddr_in *);
+int echopkt(int, int);
 
 
 /*
  * 			M A I N
  */
-main(argc, argv)
+int main(argc, argv)
 char *argv[];
 {
 	struct sockaddr_in from;
 	char **av = argv;
-	int nrcv;
 	struct sockaddr_in *to = (struct sockaddr_in *) &whereto;
-	int on = 1;
 	int rc = 0;
 	struct protoent *proto;
 
@@ -213,9 +215,10 @@ char *argv[];
 			} 
 		}
 	}
+	return 0;
 }
 
-echopkt(datalen,npackets)
+int echopkt(datalen,npackets)
 int datalen;
 int npackets;
 {
@@ -253,7 +256,7 @@ int npackets;
 	}
 
 	/* Compute ICMP checksum here */
-	icp->icmp_cksum = in_cksum( icp, cc );
+	icp->icmp_cksum = in_cksum( (ushort *)icp, cc );
 
 	/* cc = sendto(s, msg, len, flags, to, tolen) */
 	ntransmitted=0;
@@ -281,7 +284,7 @@ int npackets;
  * Checksum routine for Internet Protocol family headers (C Version)
  *
  */
-in_cksum(u_short *addr, int len)
+u_short in_cksum(u_short *addr, int len)
 {
     register int nleft = len;
     register u_short *w = addr, tmp;
@@ -346,7 +349,7 @@ void finish(int n)
  * Checks contents of packet to verify information did not get destroyed
  */
 
-ck_packet (buf, cc, from)
+int ck_packet (buf, cc, from)
 char 	*buf;			/* pointer to start of IP header */
 int	cc;			/* total size of received packet */
 struct sockaddr_in *from; 	/* address of sender */
@@ -355,7 +358,6 @@ struct sockaddr_in *from; 	/* address of sender */
 	int 	iphdrlen;
 	struct 	ip *ip = (struct ip *) buf;          /* pointer to IP header */
 	register struct	icmp *icp;                   /* ptr to ICMP */
-	struct timeval *tp = (struct timeval *) &buf[8];
   	u_char *datap ;
 	
 	from->sin_addr.s_addr = ntohl(from->sin_addr.s_addr);
