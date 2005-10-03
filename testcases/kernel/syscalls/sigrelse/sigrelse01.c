@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.6 2005/07/11 22:29:05 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.7 2005/10/03 19:04:37 robbiew Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -104,6 +104,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -187,7 +188,6 @@ main(int argc, char **argv)
 {
     int lc;             /* loop counter */
     char *msg;          /* message returned from parse_opts */
-    void parent(), child();
 
     /* gcc -Wall complains about sig_caught not being ref'd because of the
        external declarations. */
@@ -265,8 +265,6 @@ parent()
     int *array;			/* pointer to sig_array returned from child */
     int fail = FALSE;	/* flag indicating test item failure */
     char big_mesg[MAXMESG*6];	/* storage for big failure message */
-    char *read_pipe();
-    void getout();
     int caught_sigs;
 
     /* wait for "ready" message from child */
@@ -420,8 +418,6 @@ child()
     int sig;			/* signal value */
     int exit_val;		/* exit value to send to parent */
     char note[MAXMESG];		/* message buffer for pipe */
-    int setup_sigs(), write_pipe(), set_timeout();
-    void handler(), wait_a_while(), clear_timeout();
     char *str;
 
     phase = 1;	/* tell handler that we do not want to catch signals */
@@ -568,7 +564,6 @@ static int
 setup_sigs()
 {
     int sig;
-    void handler();
 
     /* set up signal handler routine */
     for (sig = 1; sig < NUMSIGS; sig++) {
@@ -639,8 +634,6 @@ read_pipe(fd)
 int fd;
 {
     static char buf[MAXMESG];	/* buffer for pipe read */
-    int set_timeout();
-    void clear_timeout();
     int ret;
 
 #if DEBUG > 0
@@ -706,8 +699,6 @@ char *msg;		/* expected message from pipe */
 static int
 set_timeout()
 {
-    void timeout();
-
     if (signal(SIGALRM, timeout) == SIG_ERR) {
 	(void) sprintf(mesg, "signal() failed for signal %d. error:%d %s.",
 	    SIGALRM, errno, strerror(errno));
@@ -749,7 +740,7 @@ timeout()
 static void
 wait_a_while()
 {
-    long btime, time();
+    long btime;
 
     btime = time((long *) 0);
     while (time((long *) 0) - btime < (long) TIMEOUT) {
