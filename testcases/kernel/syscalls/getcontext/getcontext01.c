@@ -33,6 +33,9 @@
  *
  **********************************************************/
 
+#include <features.h>
+#if !defined(__UCLIBC__)
+
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -142,3 +145,9 @@ cleanup()
     tst_exit();
 }       /* End cleanup() */
 
+#else /* systems that dont support obsolete getcontext */
+int main()
+{
+ return 0;
+}
+#endif
