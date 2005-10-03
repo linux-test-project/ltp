@@ -8,26 +8,28 @@
 @! # SPEC. EXEC. REQS:  This  program is used by ctatcdt3.c and ctatcet3.c
 */
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
-main (int argc,char *argv[]) 
+#include <unistd.h>
+int main (int argc,char *argv[]) 
 {
 int	fd;
 int	fsize;
 int	count=0;
 int	n,remain;
 static	char buf[BUFSIZ];
-	for ( fsize=0;fsize<BUFSIZ;fsize) {
+	for ( fsize=0;fsize<BUFSIZ;) {
 		buf[fsize++]='U';
 		buf[fsize++]='\n';
 	}
 
 	fsize=atoi(argv[1]);
-	if ((fd=creat(argv[2],0644)) == -1 )
+	if ((fd=creat(argv[2],0644)) == -1)
 		perror("createfile");
 	if (fsize >= BUFSIZ) {
 		count=fsize/BUFSIZ;
 		remain=fsize%BUFSIZ; 
-		}
+	}
 	else remain=fsize;
 	while (count-- !=0) 
 		if((n=write(fd,buf,BUFSIZ)) != BUFSIZ) 
@@ -35,4 +37,5 @@ static	char buf[BUFSIZ];
 	if ((n=write(fd,buf,remain)) != remain)
 		perror("createfile");
 	close(fd);
+	return 0;
 }

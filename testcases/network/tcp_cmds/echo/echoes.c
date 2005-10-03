@@ -15,17 +15,29 @@
 @! # 			echoes <REMOTE HOST> <echofile> <number of process>
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
 
-main (int argc,char *argv[],char *env[])
+void echofile (struct servent *, struct hostent *, char *, char *);
+void getfilename(char *, char*, int);
+int checkfile(char *, char *);
+void itoa(int, char []);
+void reverse(char []);
+void cleanup(int);
+
+
+int main (int argc,char *argv[],char *env[])
 {
 
 	int	i,j,k,wait_stat,pid,finish;
@@ -91,7 +103,7 @@ main (int argc,char *argv[],char *env[])
 	exit(0);
 }
 
-echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfile)
+void echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfile)
 {
 	int	n;
 	int	port;
@@ -246,7 +258,7 @@ echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfil
 	exit(0);
 }
 
-getfilename(char *strptr, char* filename, int j)
+void getfilename(char *strptr, char* filename, int j)
 {
 	int 	i;
 	char	s[10],*sptr=&s[0];
@@ -256,7 +268,7 @@ getfilename(char *strptr, char* filename, int j)
 	strcat(filename,s);
 }
 
-checkfile(char *file1, char *file2)
+int checkfile(char *file1, char *file2)
 {
 	int	n;
 	struct	stat buffer,*bufptr=&buffer;
@@ -276,7 +288,7 @@ checkfile(char *file1, char *file2)
 	else return(FALSE);
 }
 
-itoa(int n, char s[])
+void itoa(int n, char s[])
 {
 	int i, sign;
 
@@ -292,7 +304,7 @@ itoa(int n, char s[])
 	reverse(s);
 }
 
-reverse(char s[])
+void reverse(char s[])
 {
 	int c, i, j;
 
@@ -302,7 +314,8 @@ reverse(char s[])
 		s[j] = c;
 	}
 }
-cleanup(int s) 
+
+void cleanup(int s) 
 {
-close(s);
+	close(s);
 }
