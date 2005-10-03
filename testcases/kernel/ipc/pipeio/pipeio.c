@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.5 2004/03/01 22:36:39 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.6 2005/10/03 17:13:35 robbiew Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -137,8 +137,8 @@ char *av[];
 	char *blk_type;		/* blocking i/o or not */
 	char *pipe_type;	/* type of pipe under test */
 	int fds[2];		/* un-named pipe fds */
-	int read_fd;
-	int write_fd;
+	int read_fd = 0;
+	int write_fd = 0;
 	int empty_read = 0;	/* counter for the number of empty reads */
 	time_t stime, ctime, dtime;	/* start time, current time, diff of times */
 	int *count_word;	/* holds address where to write writers count */
@@ -700,7 +700,7 @@ output:
 			unlink(pname);
 	}
 
-	exit (error);
+	return (error);
 }
 
 void
@@ -755,7 +755,7 @@ prt_buf(long addr, char * buf, int length, int format)
 	int i;
 	int num_words = length/NBPW;  /* given length in bytes, get length in words */
 	int width;		/* number of columns */
-	int extra_words;	/* odd or even number of words */
+	int extra_words = 0;	/* odd or even number of words */
 	char *a = buf;
 	char b[NBPW];
 	char c[NBPW*2];
