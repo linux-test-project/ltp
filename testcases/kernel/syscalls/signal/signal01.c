@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.5 2005/07/11 22:29:05 robbiew Exp $ */
+/* $Id: signal01.c,v 1.6 2005/10/03 20:40:36 robbiew Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -519,7 +519,7 @@ int test_case;
 	}
 	else {
 	    sprintf(Ipc_info.mesg,
-		    "%s ret:%p, errno:%d expected ret:%ld, errno:%d",
+		    "%s ret:%p, errno:%ld expected ret:%ld, errno:%d",
 		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 	    Ipc_info.status = FAIL_FLAG;
 	}
@@ -589,13 +589,13 @@ sigdfl_test()
 	if ( STD_FUNCTIONAL_TEST ) {
 	    if ( TEST_ERRNO != EINVAL ) {
 	        sprintf(mesg,
-	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
+	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld expected ret:-1, errno:%d",
 	            Tret, TEST_ERRNO, EINVAL);
 	        tst_resm(TFAIL, mesg);
 	    }
 	    else {
 	        sprintf(mesg,
-	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d as expected.",
+	            "signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld as expected.",
 	            Tret, TEST_ERRNO);
 	        tst_resm(TPASS, mesg);
 	    }
@@ -605,7 +605,7 @@ sigdfl_test()
     }
     else {
 	sprintf(mesg,
-	    "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
+	    "signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld expected ret:-1, errno:%d",
 	    Tret, TEST_ERRNO, EINVAL);
 	tst_resm(TFAIL, mesg);
     }
