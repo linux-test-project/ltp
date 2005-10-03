@@ -6,10 +6,16 @@
 
 #include "nfs_flock.h"
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #define BYTES 64
 #define LINES 16384
 
+int lock_reg(int, int, int, int, int, int);
+
+int 
 main(argc, argv)
    int argc;
    char **argv;

@@ -1,4 +1,9 @@
+#include <stdlib.h>
+#include <unistd.h>
+                                                                                                                        
 #include "nfs_flock.h"
+
+int
 lock_reg(fd, type, offset, whence, len, cmd)
    int fd, type, offset;
    int whence, len, cmd;

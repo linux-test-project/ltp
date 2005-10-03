@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -1055,10 +1056,10 @@ main(int argc, char **argv)
 		if (written != maxfilelen) {
 			if (written == -1) {
 				prterr(fname);
-		 		 		 		 fprintf(stderr, "main: error on write");
+				fprintf(stderr, "main: error on write");
 			} else
-		 		 		 		 fprintf(stderr, "main: short write, 0x%x bytes instead of 0x%x\n",
-				     (unsigned)written, maxfilelen);
+				fprintf(stderr, "main: short write, 0x%x bytes instead of 0x%lx\n",
+					(unsigned)written, maxfilelen);
 			exit(98);
 		}
 	} else 

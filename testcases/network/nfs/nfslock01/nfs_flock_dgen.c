@@ -3,8 +3,10 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
@@ -52,6 +54,6 @@ char **argv;
    }
 
    fclose(fp);
-   exit(0);
+   return(0);
 }
 

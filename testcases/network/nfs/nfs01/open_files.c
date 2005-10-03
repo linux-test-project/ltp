@@ -1,16 +1,23 @@
 #include <stdio.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/param.h>
 #include <sys/wait.h>
 #include <dirent.h>
 #include <sys/stat.h>
-
+#include <unistd.h>
 
 #define TEMPLATE "ltpXXXXXX"
 
-main(argc,argv)
+int write_something(int);
+void delete_files(void);
+void abortx(char *fmt, ...);
+
+
+int main(argc,argv)
 int argc;
 char *argv[];
 {
@@ -41,7 +48,7 @@ char *argv[];
 		abortx("open() error: file = \"%s\", errno = %d",
 		      filename, errno);
 	    else {
-		if (cid = fork()) {
+		if ((cid = fork())) {
 		    if(cid == -1)
 			abortx("Error forking child");
 		    else {
@@ -74,7 +81,7 @@ char *argv[];
 }
 
 
-write_something(fd)
+int write_something(int fd)
 {
     int rc;
 
@@ -87,7 +94,7 @@ write_something(fd)
 }
 
 
-delete_files()
+void delete_files(void)
 {
     DIR *dirp;
     struct dirent *entp;
@@ -107,11 +114,13 @@ delete_files()
 }
 
 
-abortx(str, arg1, arg2)
-char *str;
-caddr_t arg1, arg2;
+void abortx(char *fmt, ...)
 {
-    fprintf(stderr, str, arg1, arg2);
+    va_list args;
+                                                                                                                            
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
     fprintf(stderr, "\n");
     exit(1);
 }

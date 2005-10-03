@@ -192,9 +192,9 @@
 #define gettid() syscall(__NR_gettid)
 
 #ifdef DEBUG
-#define dprt	printf
+#define dprt(fmt, args...)	printf(fmt, ## args)
 #else
-#define dprt
+#define dprt(fmt, args...)
 #endif
 
 #define MAKE_EXE	1	/* initate a make			      */
@@ -281,7 +281,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
 
     what_todo ? sprintf(command, "make -s") : sprintf(command, "make -s clean");
     
-    sprintf(dirname, "%s/%s.%d", base_dir, hname, gettid());
+    sprintf(dirname, "%s/%s.%ld", base_dir, hname, gettid());
 
     if (chdir(dirname) == -1)
     {
@@ -349,7 +349,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
 /* Description: This function removes the .c files makefiles and directories. */
 /*		First removes the files in the files in the last directory    */
 /*		first then removes the last directory, then cycles through    */
-/*		each subdirectory and does the same.
+/*		each subdirectory and does the same.			      */
 /*									      */
 /* Return:	exits with 1 on error, 0 on success      		      */
 /*									      */
@@ -392,8 +392,8 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         /* get the name of the last directory created. */
         for (dircnt = 0; dircnt < sindex; dircnt++)
             (dircnt == 0) ? 
-	       sprintf(dirname, "%s/%s.%d", base_dir, hname, gettid()) :
-               sprintf(dirname, "%s/%d.%d", dirname, gettid(), dircnt);
+	       sprintf(dirname, "%s/%s.%ld", base_dir, hname, gettid()) :
+               sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
 
         dprt("pid[%d]: cd'ing to last created dir: %s\n", gettid(), dirname);
 
@@ -402,7 +402,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         /* remove all the ".c" files and makefile in this directory */
         for (filecnt = 0; filecnt < numfiles; filecnt++)
         {
-            sprintf(filename, "%s/%d.%d.%d.c", dirname, gettid(), dircnt - 1, 
+            sprintf(filename, "%s/%ld.%d.%d.c", dirname, gettid(), dircnt - 1, 
 		filecnt);
             dprt("pid[%d]: removing file: %s\n", gettid(), filename);
 
@@ -437,7 +437,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         if (dircnt < numsdir)
         {
             /* remove the sub directory */
-            sprintf(subdir, "%s/%d.%d", dirname, gettid(), dircnt);
+            sprintf(subdir, "%s/%ld.%d", dirname, gettid(), dircnt);
             dprt("pid[%d]: removing subdirectory: %s\n", gettid(), subdir);
             if (rmdir(subdir) == -1)
             {
@@ -479,12 +479,10 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
 static void *
 crte_mk_rm(void *args)
 {
-    pid_t 	pid;		/* process id of the current process          */
     int 	dircnt;		/* index to the number of subdirectories      */
     int		fd;		/* file discriptor of the files genetated     */
     int		filecnt;	/* index to the number of ".c" files created  */
     int		numchar[2];	/* number of characters written to buffer     */
-    int		status;		/* exit status of make command	              */
     char 	*dirname;	/* name of the directory/idirectory tree      */
     char	*cfilename;     /* name of the ".c" file created	      */
     char	*mkfilename;	/* name of the makefile - which is "makefile" */
@@ -495,7 +493,6 @@ crte_mk_rm(void *args)
     long	*locargptr =	/* local pointer to arguments                 */
                              (long *)args; 
     volatile int exit_val = 0;  /* exit value of the pthreads		      */
-    char *buf_cmd = malloc(1024);
 
     if ((dirname = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
     {
@@ -551,8 +548,8 @@ crte_mk_rm(void *args)
     {
         /* First create the base directory, then create the subdirectories   */
         (dircnt == 0) ?
-	    sprintf(dirname, "%s.%d", hostname, gettid()):
-            sprintf(dirname, "%s/%d.%d", dirname, gettid(), dircnt);
+	    sprintf(dirname, "%s.%ld", hostname, gettid()):
+            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
           
         dprt("pid[%d] creating directory: %s\n", gettid(), dirname); 
         if (mkdir(dirname, 0777) == -1)
@@ -567,8 +564,8 @@ crte_mk_rm(void *args)
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
         (dircnt == 0) ?
-	    sprintf(dirname, "%s/%s.%d", pwd, hostname, gettid()):
-            sprintf(dirname, "%s/%d.%d", dirname, gettid(), dircnt);
+	    sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid()):
+            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
         if ((make_buf = malloc(sizeof(char) * 4096)) == NULL)
         {
             perror("crte_mk_rm(): make_buf malloc()");
@@ -586,9 +583,9 @@ crte_mk_rm(void *args)
             {
                 numchar[1] = sprintf(make_buf,
                 "CFLAGS := -O -w -g\n"
-                "SUBDIRS = %d.%d\n"
+                "SUBDIRS = %ld.%d\n"
                 "SRCS=$(wildcard *.c)\n"
-                "TARGETS=$(patsubst %%%s,\%,$(SRCS))\n"
+                "TARGETS=$(patsubst %%%s,\%%,$(SRCS))\n"
                 "all:\t $(TARGETS)\n"
                 "clean:\n"
                 "\trm -f $(TARGETS)\n",
@@ -598,9 +595,9 @@ crte_mk_rm(void *args)
             {
 	        numchar[1] = sprintf(make_buf,
 	        "CFLAGS := -O -w -g\n"
-	        "SUBDIRS = %d.%d\n"
+	        "SUBDIRS = %ld.%d\n"
 	        "SRCS=$(wildcard *.c)\n"
-	        "TARGETS=$(patsubst %%%s,\%,$(SRCS))\n\n\n"
+	        "TARGETS=$(patsubst %%%s,\%%,$(SRCS))\n\n\n"
 	        "all:\t $(TARGETS)\n"
                 "\t@for i in $(SUBDIRS); do $(MAKE) -C $$i ; done\n\n"
 	        "clean:\n"
@@ -645,12 +642,12 @@ crte_mk_rm(void *args)
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
         (dircnt == 0) ?
-	    sprintf(dirname, "%s/%s.%d", pwd, hostname, gettid()):
-            sprintf(dirname, "%s/%d.%d", dirname, gettid(), dircnt);
+	    sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid()):
+            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
         /* In each directory create N ".c" files and a makefile. */
         for (filecnt = 0; filecnt < (int)locargptr[1]; filecnt++)
         {
-            sprintf(cfilename, "%s/%d.%d.%d.c", dirname, gettid(), 
+            sprintf(cfilename, "%s/%ld.%d.%d.c", dirname, gettid(), 
 			dircnt, filecnt);
 	    dprt("pid[%d]: creating file: %s\n", gettid(), cfilename);
             if ((fd = open(cfilename, O_CREAT|O_RDWR, 
@@ -724,6 +721,7 @@ crte_mk_rm(void *args)
 /*		 0 on success						      */
 /*									      */
 /******************************************************************************/
+int
 main(int	argc,		/* number of input parameters		      */
      char	**argv)		/* pointer to the command line arguments.     */
 {
@@ -735,7 +733,6 @@ main(int	argc,		/* number of input parameters		      */
     int		th_status[1];	/* exit status of LWP's	                      */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[3];   /* arguments to the thread function           */
-    extern char* optargs;	/* pointer to arguments for each option flag  */
     extern int	 optopt;	/* options to the program		      */
 
     while ((c =  getopt(argc, argv, "d:f:ht:")) != -1)
@@ -811,12 +808,12 @@ main(int	argc,		/* number of input parameters		      */
             if (*th_status == -1)
             {
                 fprintf(stderr,
-                        "thread [%d] - process exited with errors\n",
+                        "thread [%ld] - process exited with errors\n",
                             thrdid[thrd_ndx]);
                 exit(-1);
             }
         }
     }
-    exit(0);
+    return(0);
 }
 
