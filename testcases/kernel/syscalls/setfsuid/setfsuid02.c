@@ -49,6 +49,10 @@
  */
 #include <stdio.h>
 #include <unistd.h>
+#include <pwd.h>
+#ifdef __GLIBC__
+#include <sys/fsuid.h>
+#endif
 #include <sys/types.h>
 #include <errno.h>
 #include "test.h"
@@ -61,7 +65,7 @@ char *TCID = "setfsuid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */

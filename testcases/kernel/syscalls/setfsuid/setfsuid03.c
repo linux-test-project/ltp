@@ -48,6 +48,9 @@
  */
 #include <stdio.h>
 #include <unistd.h>
+#ifdef __GLIBC__
+#include <sys/fsuid.h>
+#endif
 #include <sys/types.h>
 #include <errno.h>
 #include "test.h"
@@ -63,7 +66,7 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
