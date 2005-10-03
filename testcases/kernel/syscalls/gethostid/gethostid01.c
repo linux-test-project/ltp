@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.4 2005/07/12 17:09:52 robbiew Exp $ */
+/* $Id: gethostid01.c,v 1.5 2005/10/03 16:20:28 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -136,8 +136,10 @@ int
 main(int ac, char **av)
 {
     int lc,i;		/* loop counters */
+    int bit_64;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
     char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hex[2]="0x";
+    char hex_64[1]="f";
     FILE *fp;
 
     /***************************************************************
@@ -210,10 +212,21 @@ main(int ac, char **av)
 		       		tst_resm(TFAIL, "Hostid command reports hostid is %s, "
 		  		  		"but gethostid() reports %s", 
 				    		 name2, hostid);
-		} else
-		    	tst_resm(TFAIL, "Hostid command reports hostid is %s, "
+		} else {
+			for (i=0;i<8;i++){
+				if (name[i]==hex_64[0])
+					bit_64=1;
+				else
+					bit_64=0;
+			}
+			if ((bit_64==1) && (strcmp(name2, hostid) == 0))
+				tst_resm(TPASS, "Hostid command and gethostid both report hostid "
+                                                "is %s", hostid);
+			else
+		    		tst_resm(TFAIL, "Hostid command reports hostid is %s, "
 		  		        "but gethostid() reports %s", 
 				         name, hostid);
+		}
             }
 	} 
     }	/* End for TEST_LOOPING */
