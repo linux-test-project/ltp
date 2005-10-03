@@ -1,8 +1,11 @@
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <netdb.h>
 #include <unistd.h>
 
@@ -10,15 +13,18 @@ char *prog;
 int errors=0;
 int ttl_no=255;
 
-main(argc, argv)
+int join_group (int, char *, struct ip_mreq *);
+int leave_group (int, char *, struct ip_mreq *);
+void usage(void);
+
+int main(argc, argv)
 int argc;
 char *argv[];
 { 
-	struct sockaddr_in mcast_in;
         int s;
         struct ip_mreq imr;
 
-        char *group_list, *interface;
+        char *group_list=NULL, *interface=NULL;
         unsigned i1, i2, i3, i4;
         struct hostent *hp, *gethostbyname();
 	int c, n;
@@ -73,7 +79,7 @@ char *argv[];
             exit(1);
         }
 
-        if(hp = gethostbyname(interface)) {
+        if((hp = gethostbyname(interface))) {
            bcopy(hp->h_addr, &imr.imr_interface.s_addr, hp->h_length);
         } else 
            if((n = sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
@@ -103,10 +109,10 @@ char *argv[];
         close (s);
         if (errors)
            exit (1);
-        exit (0);
+        return (0);
 }
 
-join_group (int s, char *glist, struct ip_mreq *imr)
+int join_group (int s, char *glist, struct ip_mreq *imr)
 {
         char buf[40];
         unsigned g1, g2, g3, g4;
@@ -138,7 +144,7 @@ join_group (int s, char *glist, struct ip_mreq *imr)
         return (0);
 }
 
-leave_group (int s, char *glist, struct ip_mreq *imr)
+int leave_group (int s, char *glist, struct ip_mreq *imr)
 {
         char buf[40];
         unsigned g1, g2, g3, g4;
@@ -170,7 +176,7 @@ leave_group (int s, char *glist, struct ip_mreq *imr)
         return (0);
 }
 
-usage()
+void usage()
 {
            fprintf(stderr,
               "usage: %s [ -j -l ] -g group_list [-s time_to_sleep] -i interface_name (or i.i.i.i)\n",prog);
