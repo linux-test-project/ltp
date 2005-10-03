@@ -1,6 +1,9 @@
-all:
+generate:
+	./generate.sh
 
-install:
+all: generate
+
+install: 
 	ln -f ftp01 ../../../bin
 	ln -f ftp02 ../../../bin
 	ln -f ftp02_s1 ../../../bin
@@ -11,3 +14,4 @@ install:
 	ln -f ftp_setup_vsftp_conf ../../../bin
 
 clean:
+	rm -rf datafiles
