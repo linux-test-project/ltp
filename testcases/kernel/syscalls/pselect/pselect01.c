@@ -41,6 +41,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -57,7 +58,7 @@ extern int Tst_count;      /* Test Case counter for tst_* routines */
 #define FILENAME "pselect01_test"
 #define LOOP_COUNT 4
 
-main()
+int main()
 {
  int ret_pselect,total_sec,fd,total_usec;
  fd_set readfds;
@@ -79,7 +80,7 @@ main()
         tv.tv_sec = 0;
         tv.tv_usec =  0;
 
- ret_pselect = pselect(fd, &readfds, 0, 0, &tv,NULL);
+ ret_pselect = pselect(fd, &readfds, 0, 0, (struct timespec *)&tv,NULL);
  if( ret_pselect >= 0)
  {
   tst_resm(TPASS,"Basic pselect syscall testing....OK");
@@ -100,7 +101,7 @@ main()
 
   tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d secs",tv.tv_sec);
   start = time(&t);
-   retval = pselect(NULL, &readfds, NULL, NULL, &tv,NULL);
+   retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
   end = time(&t);
   
   if(total_sec >= (end - start))
@@ -122,7 +123,7 @@ main()
 
   tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d micro secs",tv.tv_usec);
   start = time(&t);
-   retval = pselect(NULL, &readfds, NULL, NULL, &tv,NULL);
+   retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
   end = time(&t);
  
   /* Changed total_sec compare to an at least vs an exact compare */
@@ -133,6 +134,7 @@ main()
   tst_resm(TFAIL,"Sleep time was incorrect:%d != %d",total_sec,(end - start));
  }
  cleanup();
+return 0;
 }
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.

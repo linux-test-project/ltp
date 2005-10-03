@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the pselect(2) test.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
+CFLAGS+=	-I../../../../include -D_GNU_SOURCE
 LOADLIBES+=	-L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
