@@ -18,6 +18,7 @@
  */
 
 
+#include <ctype.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -67,10 +68,10 @@
 #if defined _LINUX && defined DEBUG
 #define prtln()	printf("At line number: %d\n", __LINE__); \
 		fflush(NULL)
-#define dprt printf
+#define dprt(fmt, args...) printf(fmt, args...)
 #else
 #define prtln()
-#define dprt 
+#define dprt(fmt, args...) 
 #endif
 
 
@@ -118,12 +119,12 @@ struct envstruct {
 		int  *vint;
 	} eval;
 } envdata[] = {
-	"AUSDBG",	"0",
-	"BVAL",		"3",
-	"DVAL",		"2",
-	"FORCE",	"0",
-	"TVAL",		"1",
-	"",			""
+	{"AUSDBG",	{"0"}},
+	{"BVAL",	{"3"}},
+	{"DVAL",	{"2"}},
+	{"FORCE",	{"0"}},
+	{"TVAL",	{"1"}},
+	{"",		{""}}
 };
 
 char *errfile;				/* pointer to errfile name */
@@ -484,6 +485,7 @@ int notify(int slot)
 			}
 		}
 	}
+	return 0;
 }
 
 /*
@@ -765,16 +767,17 @@ void set_signals(void *sighandler())
 		int signum;
 		char *signame;
 	} siginfo[] = {
-		SIGHUP,"SIGHUP",
-	    SIGINT,"SIGINT",
-	    SIGQUIT,"SIGQUIT",
-	    SIGABRT,"SIGABRT",
-		SIGBUS,"SIGBUS",
-		SIGSEGV,"SIGSEGV",         
-		SIGALRM, "SIGALRM",
-	    SIGUSR1,"SIGUSR1",
-	    SIGUSR2,"SIGUSR2",
-		-1,	"ENDSIG"};
+	    {SIGHUP,	"SIGHUP"},
+	    {SIGINT,	"SIGINT"},
+	    {SIGQUIT,	"SIGQUIT"},
+	    {SIGABRT,	"SIGABRT"},
+	    {SIGBUS,	"SIGBUS"},
+	    {SIGSEGV,	"SIGSEGV"},         
+	    {SIGALRM,	"SIGALRM"},
+	    {SIGUSR1,	"SIGUSR1"},
+	    {SIGUSR2,	"SIGUSR2"},
+	    {-1,	"ENDSIG"}
+	};
 
 	char tmpstr[1024];
 
@@ -842,7 +845,7 @@ void set_timer(void)
 
 void set_timer(void)
 {
-	struct itimerval    itimer, old_itimer;
+	struct itimerval itimer;
 	
 	memset(&itimer, 0, sizeof(struct itimerval));
 	/*
@@ -994,6 +997,7 @@ int getenv_val(void)
 			strcpy(envd->eval.chptr, val.chptr);
 		}
 	}
+	return 0;
 }
 
 /*
@@ -1171,7 +1175,7 @@ void doit(void)
 }
 
 /* main */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	extern Pinfo *shmaddr;	/* start address of shared memory */
 
@@ -1217,5 +1221,6 @@ dprt("value of nodesum is initiallized to: %d\n", nodesum);
 
 	doit(); 		/* spawn off processes */
 	prtln();
+	return 0;
 	/* NOTREACHED */
 }
