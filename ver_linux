@@ -18,7 +18,7 @@ fi
 uname -a
 echo ' '
 
-echo "Gnu C                 " `gcc --version`
+echo "Gnu C                 " `gcc --version 2>/dev/null | head -n 1`
 
 make --version 2>&1 | awk -F, '{print $1}' | awk \
       '/GNU Make/{print "Gnu make              ",$NF}'
@@ -26,9 +26,9 @@ make --version 2>&1 | awk -F, '{print $1}' | awk \
 ld -v 2>&1 | awk -F\) '{print $1}' | awk \
       '/BFD/{print "binutils              ",$NF}'
 
-fdformat --version | awk -F\- '{print "util-linux            ", $NF}'
+fdformat --version 2>&1 | awk -F\- '{print "util-linux            ", $NF}'
 
-mount --version | awk -F\- '{print "mount                 ", $NF}'
+mount --version 2>&1 | awk -F\- '{print "mount                 ", $NF}'
 
 insmod -V  2>&1 | awk 'NR==1 {print "modutils              ",$NF}'
 
