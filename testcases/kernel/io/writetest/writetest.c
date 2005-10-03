@@ -100,7 +100,7 @@ int write_file(off_t num_blocks, const char *filename)
     }
     for(block=0; block<num_blocks; block++) {
         int rv;
-        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", block, num_blocks, block*100/num_blocks);
+        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf);
         rv = write(fd, buf, BLOCKSIZE);
         if( rv != BLOCKSIZE ) {
@@ -108,7 +108,7 @@ int write_file(off_t num_blocks, const char *filename)
             break;
         }
     }
-    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", block, num_blocks, block*100/num_blocks);
+    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
     verbose(3, "\n");
     close(fd);
     return(ret);
@@ -130,7 +130,7 @@ int verify_file(off_t num_blocks, const char *filename)
     for(block=0; block<num_blocks; block++) {
         int rv;
         int n;
-        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", block, num_blocks, block*100/num_blocks);
+        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf_actual);
         rv = read(fd, buf_read, BLOCKSIZE);
         if( rv != BLOCKSIZE ) {
@@ -143,14 +143,14 @@ int verify_file(off_t num_blocks, const char *filename)
             br = buf_read[n] & 0xff;
             if( ba != br ) {
                 verbose(1, "Mismatch: block=%lld +%d bytes offset=%lld read: %02xh actual: %02xh\n",
-                    block, n, (block*BLOCKSIZE)+n, br, ba);
+                    (long long int)block, n, (long long int)((block*BLOCKSIZE)+n), br, ba);
                 ret++;
             }
         }
     }
     close(fd);
 
-    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", block, num_blocks, block*100/num_blocks);
+    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
     verbose(3, "\n");
     return(ret);
 }
@@ -212,11 +212,11 @@ int main(int argc, char *argv[])
 
     DefaultSeed = time(NULL);
     parse_args(argc, argv);
-    verbose(2, "Blocks:       %lld\n", NumBlocks);
+    verbose(2, "Blocks:       %lld\n", (long long int)NumBlocks);
     verbose(2, "Seed:         %d\n", DefaultSeed);
     verbose(2, "Output file: '%s'\n", Filename);
 
-    verbose(1, "Writing %lld blocks of %d bytes to '%s'\n", NumBlocks, BLOCKSIZE, Filename);
+    verbose(1, "Writing %lld blocks of %d bytes to '%s'\n", (long long int)NumBlocks, BLOCKSIZE, Filename);
     buf_init();
     rv = write_file(NumBlocks, Filename);
     if( rv == 0 ) {
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
         verbose(1, "Write: Failure\n");
     }
 
-    verbose(1, "Verifing %lld blocks in '%s'\n", NumBlocks, Filename);
+    verbose(1, "Verifing %lld blocks in '%s'\n", (long long int)NumBlocks, Filename);
     buf_init();
     rv = verify_file(NumBlocks, Filename);
     if( rv == 0 ) {
