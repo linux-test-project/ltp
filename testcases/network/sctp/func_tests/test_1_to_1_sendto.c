@@ -50,7 +50,6 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
-#include <linux/socket.h>
 #include <sctputil.h>
 
 char *TCID = __FILE__;

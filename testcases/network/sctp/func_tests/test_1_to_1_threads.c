@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
-#include <linux/socket.h>
 #include <sctputil.h>
 
 #define THREADS 10    /* FIXME should be 500 instead of 10 */

@@ -51,7 +51,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <linux/socket.h>
 #include <netinet/in.h>         /* for sockaddr_in */
 #include <arpa/inet.h>
 #include <sys/errno.h>
