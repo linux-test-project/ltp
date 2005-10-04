@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
                 TEST(madvise(file, 5 * pagesize, MADV_WILLNEED));
 #else
 		/* Create one memory segment using malloc */
-		ptr_memory_allocated = (char *) malloc(5 * sizeof(pagesize));
+		ptr_memory_allocated = (char *) malloc(5 * pagesize);
 		/* Take temporary pointer for later freeing up the original one */
 		tmp_memory_allocated = ptr_memory_allocated;
 		tmp_memory_allocated = (char *)(((unsigned long) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
