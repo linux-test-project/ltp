@@ -1,27 +1,4 @@
 /*
- * Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
- *               2004 Open Source Development Lab
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Module: .c
- */
-
-/*
- * Change History:
- *
- *
  * version of copy command using async i/o
  * From:	Stephen Hemminger <shemminger@osdl.org>
  * Modified by Daniel McNeil <daniel@osdl.org> for testing aio.
@@ -33,7 +10,6 @@
  *	- added -n (num aio) option 
  *	- added -z (zero dest) opton (writes zeros to dest only)
  *	- added -D delay_ms option
- *  - 2/2004  Marty Ridgeway (mridge@us.ibm.com) Changes to adapt to LTP
  *
  * Copy file by using a async I/O state machine.
  * 1. Start read request
@@ -46,7 +22,7 @@
  */
 
 #define _GNU_SOURCE
-//#define DEBUG 1
+
 
 #include <unistd.h>
 #include <stdio.h>
@@ -69,7 +45,9 @@ static int aio_maxio = AIO_MAXIO;
 static int busy = 0;		// # of I/O's in flight
 static int tocopy = 0;		// # of blocks left to copy
 static int srcfd;		// source fd
+static int srcfd2;		// source fd - end of file non-sector
 static int dstfd = -1;		// destination file descriptor
+static int dstfd2 = -1;		// Handle end of file for non-sector size
 static const char *dstname = NULL;
 static const char *srcname = NULL;
 static int source_open_flag = O_RDONLY;	/* open flags on source file */
@@ -147,8 +125,12 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 	 */
 	for (ep = events; n-- > 0; ep++) {
 		io_callback_t cb = (io_callback_t)ep->data;
-		struct iocb *iocb = (struct iocb *)ep->obj;
+		struct iocb *iocb = ep->obj;
 
+		if (debug > 1) {
+			fprintf(stderr, "ev:%p iocb:%p res:%ld res2:%ld\n",
+				ep, iocb, ep->res, ep->res2);
+		}
 		cb(ctx, iocb, ep->res, ep->res2);
 	}
 	return ret;
@@ -182,7 +164,7 @@ static void wr_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 	}
 	if (res != iocb->u.c.nbytes) {
 		fprintf(stderr, "write missed bytes expect %lu got %ld\n",
-			iocb->u.c.nbytes, res2);
+			iocb->u.c.nbytes, res);
 		exit(1);
 	}
 	--tocopy;
@@ -218,7 +200,12 @@ static void rd_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 		--busy;
 		free_iocb(iocb);
 	} else {
-		io_prep_pwrite(iocb, dstfd, buf, iosize, offset);
+		int fd;
+		if (iocb->aio_fildes == srcfd)
+			fd = dstfd;
+		else
+			fd = dstfd2;
+		io_prep_pwrite(iocb, fd, buf, iosize, offset);
 		io_set_callback(iocb, wr_done);
 		if (1 != (res = io_submit(ctx, 1, &iocb)))
 			io_error("io_submit write", res);
@@ -272,6 +259,7 @@ int main(int argc, char *const *argv)
 {
 	struct stat st;
 	off_t length = 0, offset = 0;
+	off_t leftover = 0;
 	io_context_t myctx;
 	int c;
 	extern char *optarg;
@@ -339,24 +327,11 @@ int main(int argc, char *const *argv)
 	argc -= optind;
 	argv += optind;
 	
-#ifndef DEBUG
 	if (argc < 1) {
 		usage();
 	}
-#else
-    source_open_flag |= O_DIRECT;
-    dest_open_flag |= O_DIRECT;
-    aio_blksize = 1;
-    aio_maxio=1;
-    srcname = "junkdata";
-    dstname = "ff2";
-#endif
 	if (!zero) {
-#ifndef DEBUG
 	       	if ((srcfd = open(srcname = *argv, source_open_flag)) < 0) {
-#else
-                if ((srcfd = open(srcname, source_open_flag)) < 0) {
-#endif
 			perror(srcname);
 			exit(1);
 		}
@@ -374,14 +349,10 @@ int main(int argc, char *const *argv)
 		/*
 		 * We are either copying or writing zeros to dstname
 		 */
-#ifndef DEBUG
 		if (argc < 1) {
 			usage();
 		}
 		if ((dstfd = open(dstname = *argv, dest_open_flag, 0666)) < 0) {
-#else
-            if ((dstfd = open(dstname, dest_open_flag, 0666)) < 0) {
-#endif
 			perror(dstname);
 			exit(1);
 		}
@@ -396,6 +367,34 @@ int main(int argc, char *const *argv)
 			}
 			if (length == 0)
 				length = st.st_size;
+		}
+	}
+	/*
+	 * O_DIRECT cannot handle non-sector sizes
+	 */
+	if (dest_open_flag & O_DIRECT) {
+		leftover = length % 512;
+		if (leftover) {
+			int flag;
+
+			length -= leftover;
+			if (!zero) {
+				flag = source_open_flag & ~O_DIRECT;
+				srcfd2 = open(srcname, flag);
+				if (srcfd2 < 0) {
+					perror(srcname);
+					exit(1);
+				}
+			}
+			if (!no_write) {
+				flag = (O_SYNC|dest_open_flag) &
+						~(O_DIRECT|O_CREAT);
+				dstfd2 = open(dstname, flag);
+				if (dstfd2 < 0) {
+					perror(dstname);
+					exit(1);
+				}
+			}
 		}
 	}
 
@@ -464,6 +463,31 @@ int main(int argc, char *const *argv)
 			printf("busy:%d aio_maxio:%d tocopy:%d\n",
 					busy, aio_maxio, tocopy);
 		}
+	}
+
+	if (leftover) {
+		/* non-sector size end of file */
+		struct iocb *io = alloc_iocb();
+		int rc;
+		if (zero) {
+			/*
+			 * We are writing zero's to dstfd2
+			 */
+			io_prep_pwrite(io, dstfd2, io->u.c.buf,
+					leftover, offset);
+			io_set_callback(io, wr_done);
+		} else {
+			io_prep_pread(io, srcfd2, io->u.c.buf,
+					leftover, offset);
+			io_set_callback(io, rd_done);
+		}
+		rc = io_submit(myctx, 1, &io);
+		if (rc < 0)
+			io_error("io_submit", rc);
+		count_io_q_waits++;
+		rc = io_wait_run(myctx, 0);
+		if (rc < 0)
+			io_error("io_wait_run", rc);
 	}
 
 	if (srcfd != -1)
