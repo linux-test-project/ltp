@@ -1,3 +1,45 @@
+LTP-20051004
+- this patch touchs up the output of ver_linux if gcc, fdformat, or mount is missing
+- New testcases for tpm
+- Fix compile error with strsep on some systems.
+- Add a missing include file and corrects an fprintf
+  format type to eliminate warning messages.  It also performs some minor
+  whitespace cleanup.
+- patch attached fixes it so writetest is rebuilt whenever writetest.c is updated
+- patch typecasts in writetest - the values given to printf to (long long int)
+- patch initializes some uninitialized variables and adds a
+  return statement (non-void function) to eliminate warning messages.
+- patch process.c adds a missing include file, function return types
+  and returns, cleans up structure initializations, and removes unused
+  variables to eliminate warning messages.  The debug print macro is also
+  modified to handle a variable number of arguments.
+- patch basically stubs out the GetContext function for uClibc and allows for any
+  other system to be added accordingly since uClibc doesn't provide the function 
+  on later builds.
+- Added code to check whether or not "ffffffff" is returned on some 64bit
+  machines.
+- Fix for defect 17215 in nanosleep02
+- patch adds a missing include file, function return types
+  and returns, and typecasts some variables to eliminate warning messages.
+  GNU_SOURCE is also added to CFLAGS in the makefile, since otherwise
+  the 'pselect' declaration is not found in some build environments.
+- Fix for defect 17723 pTrace01.c
+- patch adds missing include files and declares return types
+  to eliminate warning messages for setfsuidxx.c
+- TEST_ERRNO fix to display as a long int.
+- Change sigrelse01 tests to eliminate duplicate function prototypes.
+- Change to sigrelse01 to use time.h vs define in program.
+- Fix for defect 17974, Strace/Ptrace hangs
+- patch adds missing include files, function prototypes and
+  returns, and removes unused variables to eliminate warning messages.
+  It also corrects some sprintf format warnings and replaces 'abortx' with
+  a version that accepts a variable number of arguments.
+- The "generate.sh" script was mistakenly removed...added it back.
+- Updates to check for connection failure vs unauthorized access fail in ftp02_s1, ftp03, ftp04, ftp05
+- Cleanup - Removed the datafile directory, because this is created using the generate.sh
+  script..which is called in the Makefile
+
+
 LTP-20050907
 - Added test for statvfs()
 - Applied a load of patches submitted to the mailing list by Gentoo's Mike Frysinger
