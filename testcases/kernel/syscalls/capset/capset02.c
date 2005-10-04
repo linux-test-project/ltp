@@ -233,6 +233,9 @@ void child_func()
 void
 test_setup(int i, char *argv0)
 {
+	char nobody_uid[] = "nobody";
+	struct passwd *ltpuser;
+
 	switch (i) {
 
 	case 0 :
@@ -280,6 +283,12 @@ test_setup(int i, char *argv0)
 		default:
 			signal(SIGCHLD,SIG_IGN);
 			header.pid = child_pid;
+			ltpuser = getpwnam(nobody_uid);
+			if (seteuid(ltpuser->pw_uid) == -1) {
+				tst_resm(TBROK,"seteuid() failed: %s\n",strerror(errno));
+			cleanup();
+			}
+
 			break;
 		}
 		break;
