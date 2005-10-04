@@ -241,7 +241,7 @@ main(int argc, char **argv)
 		CLEANERROR("couldn't lseek to begining to verify contents");
 		anyfail(); /* LTP Port */
 	}
-	if (munmap(mapaddr, holesize + 3*pagesize) == -1) {
+	if (munmap(mapaddr, holesize + 2*pagesize) == -1) {
 		CLEANERROR("munmap of tmp file failed");
 		anyfail(); /* LTP Port */
 	}
