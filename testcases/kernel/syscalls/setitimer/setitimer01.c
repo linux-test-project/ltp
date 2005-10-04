@@ -130,7 +130,7 @@ int main(int ac, char **av)
 					 "call failed");
 			}
 
-			if (ovalue->it_value.tv_sec == SEC1) {
+			if (ovalue->it_value.tv_sec <= SEC1) {
 				tst_resm(TPASS, "functionality is correct");
 			} else {
 				tst_brkm(TFAIL, cleanup, "old timer value is "
