@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.6 2005/10/04 15:54:53 robbiew Exp $ */
+/* $Id: gethostid01.c,v 1.7 2005/10/05 18:01:00 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -135,7 +135,7 @@ int exp_enos[]={0};		/* must be a 0 terminated list */
 int
 main(int ac, char **av)
 {
-    int lc,i;		/* loop counters */
+    int lc,i,j;		/* loop counters */
     int bit_64;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
     char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hostid2[HOSTIDLEN], hex[2]="0x";
