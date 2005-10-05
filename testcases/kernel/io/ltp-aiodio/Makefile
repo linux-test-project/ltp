@@ -41,7 +41,7 @@ aio-stress: aio-stress.o
 		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS) -lpthread
 
 install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../bin/$$i ; done ;
+	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:
 	rm -f $(OBJS) $(TARGETS)

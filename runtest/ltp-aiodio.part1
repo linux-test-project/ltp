@@ -210,7 +210,7 @@ AD210 time testcases/kernel/io/ltp-aiodio/aiocp -b 512k -n 32 -f DIRECT -f SYNC 
 AD211 time testcases/kernel/io/ltp-aiodio/aiocp -b 512k -n 64 -f DIRECT /test/aiodio/junkfile /test/aiodio/ff2
 AD212 time testcases/kernel/io/ltp-aiodio/aiocp -b 512k -n 64 -f SYNC /test/aiodio/junkfile /test/aiodio/ff2
 AD213 time testcases/kernel/io/ltp-aiodio/aiocp -b 512k -n 64 -f DIRECT -f SYNC /test/aiodio/junkfile /test/aiodio/ff2
-AD301 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT /test/aiodio/fff /test/aiodio/junkdir/fff
-AD302 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT /test/aiodio/ff1 /test/aiodio/junkdir/ff1
+AD301 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT fff /test/aiodio/junkdir/fff
+AD302 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT ff1 /test/aiodio/junkdir/ff1
 AD303 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT /test/aiodio/ff2 /test/aiodio/junkdir/ff2
-AD304 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT /test/aiodio/ff3 /test/aiodio/junkdir/ff3
+AD304 testcases/kernel/io/ltp-aiodio/aiocp -b 128k -n 32 -f CREAT -f DIRECT ff3 /test/aiodio/junkdir/ff3

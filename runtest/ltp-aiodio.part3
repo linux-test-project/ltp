@@ -1,111 +1,83 @@
-#DESCRIPTION:ltp A-sync IO and Direct IO tests
-# 
-# usage: fsx [-dnqALOWZ] [-b opnum] [-c Prob] [-l flen] [-m start:end] [-o oplen] [-p progressinterval] [-r readbdy] [-s style] [-t truncbdy] [-w writebdy] [-D startingop] [-N numops] [-P dirpath] [-S seed] fname
-#       -b opnum: beginning operation number (default 1)
-#       -c P: 1 in P chance of file close+open at each op (default infinity)
-#       -d: debug output for all operations
-#       -l flen: the upper bound on file size (default 262144)
-#       -m startop:endop: monitor (print debug output) specified byte range (default 0:infinity)
-#       -n: no verifications of file size
-#       -o oplen: the upper bound on operation size (default 65536)
-#       -p progressinterval: debug output at specified operation interval
-#       -q: quieter operation
-#       -r readbdy: 4096 would make reads page aligned (default 1)
-#       -s style: 1 gives smaller truncates (default 0)
-#       -t truncbdy: 4096 would make truncates page aligned (default 1)
-#       -w writebdy: 4096 would make writes page aligned (default 1)
-#       -A: Use the AIO system calls
-#       -D startingop: debug output starting at specified operation
-#       -L: fsxLite - no file creations & no file size changes
-#       -N numops: total # operations to do (default infinity)
-#       -O: use oplen (see -o flag) for every op (default random)
-#       -P: save .fsxlog and .fsxgood files in dirpath (default ./)
-#       -S seed: for random # generator (default 1) 0 gets timestamp
-#       -W: mapped write operations DISabled
-#       -R: read() system calls only (mapped reads disabled)
-#       -Z: O_DIRECT (use -R, -W, -r and -w too)
 #       fname: this filename is REQUIRED (no default)
 #
 #
-FSX000 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile
-FSX001 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX002 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX003 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX004 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX005 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX006 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX007 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX008 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX009 testcases/kernel/io/ltp-aiodio/fsx-linux -n -N 10000 /test/aiodio/junkfile 
-FSX010 testcases/kernel/io/ltp-aiodio/fsx-linux -r 4096 -N 10000 /test/aiodio/junkfile 
-FSX011 testcases/kernel/io/ltp-aiodio/fsx-linux -r 2048 -N 10000 /test/aiodio/junkfile 
-FSX012 testcases/kernel/io/ltp-aiodio/fsx-linux -b 1000 -N 10000 /test/aiodio/junkfile 
-FSX013 testcases/kernel/io/ltp-aiodio/fsx-linux -s 1 -N 10000 /test/aiodio/junkfile 
-FSX014 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -N 10000 /test/aiodio/junkfile 
-FSX015 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 2048 -N 10000 /test/aiodio/junkfile 
-FSX016 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096  -t 4096 -N 10000 /test/aiodio/junkfile 
-FSX017 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 2048  -t 2048 -N 10000 /test/aiodio/junkfile 
-FSX018 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -N 10000 /test/aiodio/junkfile 
-FSX019 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -N 10000 /test/aiodio/junkfile 
-FSX020 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096  -A -N 10000 /test/aiodio/junkfile 
-FSX021 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048  -A -N 10000 /test/aiodio/junkfile 
-FSX022 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -A -O -N 10000 /test/aiodio/junkfile 
-FSX023 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -A -O -N 10000 /test/aiodio/junkfile 
-FSX024 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -A -S 0 -N 10000 /test/aiodio/junkfile 
-FSX025 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -A -S 2000 -N 10000 /test/aiodio/junkfile 
-FSX026 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -W -N 10000 /test/aiodio/junkfile 
-FSX027 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -W -N 10000 /test/aiodio/junkfile 
-FSX028 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -W -A -N 10000 /test/aiodio/junkfile 
-FSX029 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -W -A -N 10000 /test/aiodio/junkfile 
-FSX030 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -A -R -N 10000 /test/aiodio/junkfile 
-FSX031 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -A -R -N 10000 /test/aiodio/junkfile 
-FSX032 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W -N 10000 /test/aiodio/junkfile 
-FSX033 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -Z -R -W -N 10000 /test/aiodio/junkfile 
-FSX034 testcases/kernel/io/ltp-aiodio/fsx-linux -l 500000 -r 4096 -w 4096 -Z -R -W -A  -N 10000 /test/aiodio/junkfile 
-FSX035 testcases/kernel/io/ltp-aiodio/fsx-linux -A -N 10000 /test/aiodio/junkfile 
-FSX036 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 /test/aiodio/junkfile 
-FSX037 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 /test/aiodio/junkfile 
-FSX038 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 /test/aiodio/junkfile 
-FSX039 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 /test/aiodio/junkfile 
-FSX040 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 1024 /test/aiodio/junkfile 
-FSX041 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 2048 /test/aiodio/junkfile 
-FSX042 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 4096 /test/aiodio/junkfile 
-FSX043 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 8192 /test/aiodio/junkfile 
-FSX044 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 16384 /test/aiodio/junkfile 
-FSX045 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 32768 /test/aiodio/junkfile 
-FSX046 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 128000 /test/aiodio/junkfile 
-FSX047 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 1024 -A  /test/aiodio/junkfile 
-FSX048 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 2048 -A  /test/aiodio/junkfile 
-FSX049 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 4096 -A  /test/aiodio/junkfile 
-FSX050 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 8192 -A /test/aiodio/junkfile 
-FSX051 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 16384 -A /test/aiodio/junkfile 
-FSX052 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 32768 -A /test/aiodio/junkfile 
-FSX053 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 128000 -A /test/aiodio/junkfile 
-FSX054 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 1024 -A  -l 500000 -r 2048 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile 
-FSX055 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 2048 -A  -l 500000 -r 512 -t 2048 -w 4096 -Z -R -W /test/aiodio/junkfile 
-FSX056 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 4096 -A  -l 500000 -r 512 -t 4096 -w 2048 -Z -R -W /test/aiodio/junkfile 
-FSX057 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 8192 -A  -l 500000 -r 1024 -t 2048 -w 2048 -Z -R -W /test/aiodio/junkfile 
-FSX058 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 2048 -Z -R -W /test/aiodio/junkfile 
-FSX059 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 32768 -A -l 500000 -r 2048 -t 2048 -w 2048 -Z -R -W /test/aiodio/junkfile 
-FSX060 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 128000 -A -l 500000 -r 512 -t 4096 -w 1024 -Z -R -W /test/aiodio/junkfile 
-FSX061 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 32768 -r 4096 -w 2048 -Z -R -W /test/aiodio/junkfile
-FSX062 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000 -o 128000 -r 2048 -w 4096 -Z -R -W /test/aiodio/junkfile
-FSX063 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 1024 -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile   
-FSX064 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 2048 -l 500000 -r 4096 -t 2048 -w 2048 -Z -R -W /test/aiodio/junkfile   
-FSX065 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 4096 -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile   
-FSX066 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 8192 -l 500000 -r 4096 -t 2048 -w 2048 -Z -R -W /test/aiodio/junkfile    
-FSX067 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 16384 -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile   
-FSX068 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 32768 -l 500000 -r 4096 -t 2048 -w 2048 -Z -R -W /test/aiodio/junkfile   
-FSX069 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 128000 -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile  
-FSX070 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 128000 -l 500000 -r 4096 -t 4096 -w 4096 -Z -R -W /test/aiodio/junkfile   
-FSX071 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 4096   /test/aiodio/junkfile1
-FSX072 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 32768 -A -l 500000 -r 4096 -t 2048 -w 2048   /test/aiodio/junkfile2
-FSX073 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 128000 -A  -l 500000 -r 4096 -t 4096 -w 4096 /test/aiodio/junkfile3
-FSX074 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 4096   /test/aiodio/junkfile4
-FSX075 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 32768 -A -l 500000 -r 4096 -t 2048 -w 2048   /test/aiodio/junkfile5
-FSX076 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 128000 -A  -l 500000 -r 4096 -t 4096 -w 4096 /test/aiodio/junkfile6
-FSX077 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000   -A /test/aiodio/junkfile7
-FSX078 testcases/kernel/io/ltp-aiodio/fsx-linux -N 100000  -A /test/aiodio/junkfile8
-FSX079 testcases/kernel/io/ltp-aiodio/fsx-linux -N 100000  -A /test/aiodio/junkfile9
-FSX080 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 8192 -A  -l 500000 -r 1024 -t 2048 -w 1024 -Z -R -W /test/aiodio/junkfile 
-FSX081 testcases/kernel/io/ltp-aiodio/fsx-linux -N 10000  -o 16384 -A -l 500000 -r 2048 -t 4096 -w 1024 -Z -R -W /test/aiodio/junkfile 
+FSX000 fsx-linux -dn -N 10000 /test/aiodio/junkfile
+FSX001 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX002 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX003 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX004 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX005 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX006 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX007 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX008 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX009 fsx-linux -dn -N 10000 /test/aiodio/junkfile 
+FSX010 fsx-linux -d -r 4096 -N 10000 /test/aiodio/junkfile 
+FSX011 fsx-linux -d -r 2048 -N 10000 /test/aiodio/junkfile 
+FSX012 fsx-linux -d -b 1000 -N 10000 /test/aiodio/junkfile 
+FSX013 fsx-linux -d -s 1 -N 10000 /test/aiodio/junkfile 
+FSX014 fsx-linux -d -l 500000 -r 4096 -N 10000 /test/aiodio/junkfile 
+FSX015 fsx-linux -d -l 500000 -r 2048 -N 10000 /test/aiodio/junkfile 
+FSX016 fsx-linux -d -l 500000 -r 4096  -t 4096 -N 10000 /test/aiodio/junkfile 
+FSX017 fsx-linux -d -l 500000 -r 2048  -t 2048 -N 10000 /test/aiodio/junkfile 
+FSX018 fsx-linux -d -l 500000 -r 4096 -t 4096 -w 4096 -N 10000 /test/aiodio/junkfile 
+FSX019 fsx-linux -d -l 500000 -r 4096 -t 2048 -w 2048 -N 10000 /test/aiodio/junkfile 
+FSX020 fsx-linux -d -l 500000 -r 4096 -t 4096 -w 4096  -A -N 10000 /test/aiodio/junkfile 
+FSX021 fsx-linux -d -l 500000 -r 4096 -t 2048 -w 2048  -A -N 10000 /test/aiodio/junkfile 
+FSX022 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -A -O -N 10000 /test/aiodio/junkfile 
+FSX023 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -A -O -N 10000 /test/aiodio/junkfile 
+FSX024 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -A -S 0 -N 10000 /test/aiodio/junkfile 
+FSX025 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -A -S 2000 -N 10000 /test/aiodio/junkfile 
+FSX026 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -W -N 10000 /test/aiodio/junkfile 
+FSX027 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -W -N 10000 /test/aiodio/junkfile 
+FSX028 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -W -A -N 10000 /test/aiodio/junkfile 
+FSX029 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -W -A -N 10000 /test/aiodio/junkfile 
+FSX030 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -A -R -N 10000 /test/aiodio/junkfile 
+FSX031 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -A -R -N 10000 /test/aiodio/junkfile 
+FSX032 fsx-linux -d  -l 500000 -r 4096 -t 4096 -w 4096 -Z -N 10000 /test/aiodio/junkfile 
+FSX033 fsx-linux -d  -l 500000 -r 4096 -t 2048 -w 2048 -Z -N 10000 /test/aiodio/junkfile 
+FSX034 fsx-linux -d  -l 500000 -r 4096 -Z -A  -N 10000 /test/aiodio/junkfile 
+FSX035 fsx-linux -d  -A -N 10000 /test/aiodio/junkfile 
+FSX036 fsx-linux -d  -N 10000 /test/aiodio/junkfile 
+FSX037 fsx-linux -d  -N 10000 /test/aiodio/junkfile 
+FSX038 fsx-linux -d  -N 10000 /test/aiodio/junkfile 
+FSX039 fsx-linux -d  -N 10000 /test/aiodio/junkfile 
+FSX040 fsx-linux -N 10000 -o 1024 /test/aiodio/junkfile 
+FSX041 fsx-linux -N 10000 -o 2048 /test/aiodio/junkfile 
+FSX042 fsx-linux -N 10000 -o 4096 /test/aiodio/junkfile 
+FSX043 fsx-linux -N 10000 -o 8192 /test/aiodio/junkfile 
+FSX044 fsx-linux -N 10000 -o 16384 /test/aiodio/junkfile 
+FSX045 fsx-linux -N 10000 -o 32768 /test/aiodio/junkfile 
+FSX046 fsx-linux -N 10000 -o 128000 /test/aiodio/junkfile 
+FSX047 fsx-linux -N 10000 -o 1024 -A  /test/aiodio/junkfile 
+FSX048 fsx-linux -N 10000 -o 2048 -A  /test/aiodio/junkfile 
+FSX049 fsx-linux -N 10000 -o 4096 -A  /test/aiodio/junkfile 
+FSX050 fsx-linux -N 10000 -o 8192 -A /test/aiodio/junkfile 
+FSX051 fsx-linux -N 10000 -o 16384 -A /test/aiodio/junkfile 
+FSX052 fsx-linux -N 10000 -o 32768 -A /test/aiodio/junkfile 
+FSX053 fsx-linux -N 10000 -o 128000 -A /test/aiodio/junkfile 
+FSX054 fsx-linux -N 10000  -o 1024 -A  -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile 
+FSX055 fsx-linux -N 10000  -o 2048 -A  -l 500000 -r 4096 -t 2048 -w 2048 -Z  /test/aiodio/junkfile 
+FSX056 fsx-linux -N 10000  -o 4096 -A  -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile 
+FSX057 fsx-linux -N 10000  -o 8192 -A  -l 500000 -r 4096 -t 2048 -w 2048 -Z /test/aiodio/junkfile 
+FSX058 fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile 
+FSX059 fsx-linux -N 10000  -o 32768 -A -l 500000 -r 4096 -t 2048 -w 2048 -Z  /test/aiodio/junkfile 
+FSX060 fsx-linux -N 10000  -o 128000 -A  -l 500000 -r 4096 -t 4096 -w 4096 -Z /test/aiodio/junkfile 
+FSX061 fsx-linux -N 10000 -o 32768 -Z /test/aiodio/junkfile                                          
+FSX062 fsx-linux -N 10000 -o 128000 -Z /test/aiodio/junkfile                                         
+FSX063 fsx-linux -N 10000  -o 1024  -Z -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile   
+FSX064 fsx-linux -N 10000  -o 2048 -Z  -l 500000 -r 4096 -t 2048 -w 2048 -Z  /test/aiodio/junkfile   
+FSX065 fsx-linux -N 10000  -o 4096 -Z  -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile   
+FSX066 fsx-linux -N 10000  -o 8192  -Z -l 500000 -r 4096 -t 2048 -w 2048 -Z /test/aiodio/junkfile    
+FSX067 fsx-linux -N 10000  -o 16384 -Z -l 500000 -r 4096 -t 4096 -w 4096 -Z  /test/aiodio/junkfile   
+FSX068 fsx-linux -N 10000  -o 32768 -Z -l 500000 -r 4096 -t 2048 -w 2048 -Z  /test/aiodio/junkfile   
+FSX069 fsx-linux -N 10000  -o 128000 -Z  -l 500000 -r 4096 -t 4096 -w 4096 -Z /test/aiodio/junkfile  
+FSX070 fsx-linux -N 10000  -o 128000 -Z  -l 500000 -r 4096 -t 4096 -w 4096 -Z /test/aiodio/junkfile   
+FSX071 fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 4096   /test/aiodio/junkfile1 &
+FSX072 fsx-linux -N 10000  -o 32768 -A -l 500000 -r 4096 -t 2048 -w 2048   /test/aiodio/junkfile2 &
+FSX073 fsx-linux -N 10000  -o 128000 -A  -l 500000 -r 4096 -t 4096 -w 4096 /test/aiodio/junkfile3 &
+FSX074 fsx-linux -N 10000  -o 16384 -A -l 500000 -r 4096 -t 4096 -w 4096   /test/aiodio/junkfile4 &
+FSX075 fsx-linux -N 10000  -o 32768 -A -l 500000 -r 4096 -t 2048 -w 2048   /test/aiodio/junkfile5 &
+FSX076 fsx-linux -N 10000  -o 128000 -A  -l 500000 -r 4096 -t 4096 -w 4096 /test/aiodio/junkfile6 &
+FSX077 fsx-linux -N 10000   -A /test/aiodio/junkfile7 &
+FSX078 fsx-linux -N 100000  -A /test/aiodio/junkfile8 &
+FSX079 fsx-linux -N 100000  -A /test/aiodio/junkfile9 &
