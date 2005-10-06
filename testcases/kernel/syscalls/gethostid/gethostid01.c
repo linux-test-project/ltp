@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.7 2005/10/05 18:01:00 mridge Exp $ */
+/* $Id: gethostid01.c,v 1.8 2005/10/06 14:50:56 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -222,9 +222,9 @@ main(int ac, char **av)
 			if (bit_64 == 1){
 				for (j=0;j<8;j++)
 					hostid2[j]=hostid[j+8];
-				if (strcmp(name2, hostid) == 0)
+				if (strcmp(name2, hostid2) == 0)
 					tst_resm(TPASS, "Hostid command and gethostid both report hostid "
-                                        	        "is %s", hostid);
+                                        	        "is %s", hostid2);
 			}
 			else
 		    		tst_resm(TFAIL, "Hostid command reports hostid is %s, "
