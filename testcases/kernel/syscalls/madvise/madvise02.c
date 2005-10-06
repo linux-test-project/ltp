@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
  *	prashant yendigeri added the below line because with above line ENOMEM was not generated 
  *		under most test conditions. 
 */
-        	TEST(madvise(file,stat.st_size * pagesize,MADV_NORMAL));
+        	TEST(madvise(file,stat.st_size + 5 * pagesize,MADV_NORMAL));
 #endif
 		check_and_print(ENOMEM);
 
