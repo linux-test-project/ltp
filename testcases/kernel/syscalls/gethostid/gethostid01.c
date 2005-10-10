@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.8 2005/10/06 14:50:56 robbiew Exp $ */
+/* $Id: gethostid01.c,v 1.9 2005/10/10 14:43:55 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -139,7 +139,7 @@ main(int ac, char **av)
     int bit_64;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
     char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hostid2[HOSTIDLEN], hex[2]="0x";
-    char hex_64[1]="f";
+    char hex_64[8]="ffffffff";
     FILE *fp;
 
     /***************************************************************
@@ -205,34 +205,31 @@ main(int ac, char **av)
 	        if((name[0]==hex[0]) && (name[1]==hex[1])){
 			for (i=0;i<38;i++)
 		        	name2[i]=name[i+2];
-	          	if (strcmp(name2, hostid) == 0) 
-	    	       		tst_resm(TPASS, "Hostid command and gethostid both report hostid "
-		  	        		"is %s", hostid);
-                  	else  
-		       		tst_resm(TFAIL, "Hostid command reports hostid is %s, "
-		  		  		"but gethostid() reports %s", 
-				    		 name2, hostid);
 		} else {
-			for (i=0;i<8;i++){
-				if (hostid[i]==hex_64[0])
-					bit_64=1;
-				else
-					bit_64=0;
-			}
-			if (bit_64 == 1){
-				for (j=0;j<8;j++)
-					hostid2[j]=hostid[j+8];
-				if (strcmp(name2, hostid2) == 0)
-					tst_resm(TPASS, "Hostid command and gethostid both report hostid "
-                                        	        "is %s", hostid2);
-			}
-			else
-		    		tst_resm(TFAIL, "Hostid command reports hostid is %s, "
-		  		        "but gethostid() reports %s", 
-				         name, hostid);
+			strncpy(name2, name, HOSTIDLEN);
 		}
-            }
-	} 
+
+		bit_64= (0 == strncmp(hostid, hex_64, 8)) ? 1 : 0;
+		//printf("bit_64=%d\n", bit_64);
+
+		if (bit_64 == 1){
+			for (j=0;j<8;j++)
+				hostid2[j]=hostid[j+8];
+		} else {
+			strncpy(hostid2, hostid, strlen(hostid)+1);
+		}
+
+		if (strcmp(name2, hostid2) == 0){
+			tst_resm(TPASS, "Hostid command reports hostid is %s, "
+				"and gethostid reports %s",
+				name, hostid);
+		} else {
+			tst_resm(TFAIL, "Hostid command reports hostid is %s, "
+				"but gethostid() reports %s", 
+				 name, hostid);
+		}
+            }	/* End if first strcmp */
+	}	/* End if STD_FUNCTIONAL_TEST */ 
     }	/* End for TEST_LOOPING */
 
     /***************************************************************
