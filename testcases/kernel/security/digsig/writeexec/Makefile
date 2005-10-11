@@ -1,26 +1,21 @@
 LIBS= -ldl
 CC=gcc
-SRCS= example.c
-OBJECTS=$(SRCS:.c=.o)
-CFLAGS=-O9 -rdynamic
 
-all: example shared.so wetest
+all: shared.so libwritetest
 	@bsign=`which bsign`; \
 	if test -n $$bsign; then \
 		echo "running bsign"; \
-		$$bsign -s -P "--homedir=../twiddlebit" wetest shared.so example; \
+		$$bsign -s -P "--homedir=../twiddlebit" libwritetest shared.so; \
+		cp shared.so shared.so.signed; \
 	else \
 		echo "No bsign found"; \
 	fi;
 
-example: $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LIBS)
+libwritetest: libwritetest.c
+	$(CC) -o $@ libwritetest.c $(LIBS)
 
 shared.so: shared.o
 	ld -shared shared.o -o shared.so
 
 clean:
-	rm -f *.o core y.tab.h lang.c example *.so weoutput wetest wetest2
-
-spotless: clean
-	rm -f example *.so
+	rm -f *.o core *.so weoutput libwritetest shared.so.signed execlog writelog

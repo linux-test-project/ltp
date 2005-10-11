@@ -19,6 +19,13 @@
 
 (cd digsig-latest; ./digsig.init start ../twiddlebit/test_pub_key)
 
+echo "Running writeexec test"
+cd writeexec
+./libwritetest > weoutput 2>&1
+cp shared.so.signed shared.so # in case people want to run multiple times
+
+cd ..
+
 echo "Running digsigtest"
 cd twiddlebit
 if [ ! -e hw ]; then
@@ -26,12 +33,6 @@ if [ ! -e hw ]; then
 else
 	./digsigtest.sh > digsigoutput 2>&1
 fi
-cd ..
-
-echo "Running writeexec test"
-cd writeexec
-./wetest > weoutput 2>&1
-
 cd ..
 
 (cd digsig-latest; ./digsig.init stop)
