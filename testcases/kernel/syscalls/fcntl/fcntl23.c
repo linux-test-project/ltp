@@ -196,9 +196,9 @@ setup()
     tst_tmpdir();
 
     sprintf(fname,"tfile_%d",getpid());
-    if ((fd = open(fname,O_RDWR|O_CREAT,0777)) == -1) {
+    if ((fd = open(fname,O_RDONLY|O_CREAT,0777)) == -1) {
        tst_brkm(TBROK, cleanup,
-		"open(%s, O_RDWR|O_CREAT,0777) Failed, errno=%d : %s",
+		"open(%s, O_RDONLY|O_CREAT,0777) Failed, errno=%d : %s",
 		fname, errno, strerror(errno));
     }
 }	/* End setup() */
