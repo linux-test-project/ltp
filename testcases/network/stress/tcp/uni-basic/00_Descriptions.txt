@@ -1,0 +1,124 @@
+Verify that the kernel is not crashed by a TCP connection
+
+tcp4-uni-basic01
+	IPv4
+
+tcp4-uni-basic02
+	IPv4
+	IPsec [ AH / transport ]
+
+tcp4-uni-basic03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+tcp4-uni-basic04
+	IPv4
+	IPsec [ ESP / transport ]
+
+tcp4-uni-basic05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+tcp4-uni-basic06
+	IPv4
+	IPcomp [ transport ]
+
+tcp4-uni-basic07
+	IPv4
+	IPcomp [ tunnel ]
+
+tcp4-uni-basic08
+	IPv4
+	Network is delayed
+
+tcp4-uni-basic09
+	IPv4
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp4-uni-basic10
+	IPv4
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp4-uni-basic11
+	IPv4
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp4-uni-basic12
+	IPv4
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp4-uni-basic13
+	IPv4
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp4-uni-basic14
+	IPv4
+	IPcomp [ tunnel ]
+	Network is delayed
+
+
+tcp6-uni-basic01
+	IPv6
+
+tcp6-uni-basic02
+	IPv6
+	IPsec [ AH / transport ]
+
+tcp6-uni-basic03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+tcp6-uni-basic04
+	IPv6
+	IPsec [ ESP / transport ]
+
+tcp6-uni-basic05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+tcp6-uni-basic06
+	IPv6
+	IPcomp [ transport ]
+
+tcp6-uni-basic07
+	IPv6
+	IPcomp [ tunnel ]
+
+tcp6-uni-basic08
+	IPv6
+	Network is delayed
+
+tcp6-uni-basic09
+	IPv6
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp6-uni-basic10
+	IPv6
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp6-uni-basic11
+	IPv6
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp6-uni-basic12
+	IPv6
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp6-uni-basic13
+	IPv6
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp6-uni-basic14
+	IPv6
+	IPcomp [ tunnel ]
+	Network is delayed

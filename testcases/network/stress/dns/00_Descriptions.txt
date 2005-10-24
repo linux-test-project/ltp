@@ -1,0 +1,16 @@
+dns4-stress01
+	Verify the dns server or the kernel is not down after handling
+	many name lookup querys
+	
+dns4-stress02
+	Verify the dns server or the kernel is not down after handling
+	many reverse lookup querys
+
+
+dns6-stress01
+	 Verify the dns server or the kernel is not down after handling
+	 many name lookup querys
+
+dns6-stress02
+	Verify the dns server or the kernel is not down after handling
+	many reverse lookup querys

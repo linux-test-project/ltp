@@ -1,0 +1,125 @@
+Verify that the kernel is not crashed with multiple connection to the
+different ports
+
+tcp4-multi-diffport01
+	IPv4
+
+tcp4-multi-diffport02
+	IPv4
+	IPsec [ AH / transport ]
+
+tcp4-multi-diffport03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+tcp4-multi-diffport04
+	IPv4
+	IPsec [ ESP / transport ]
+
+tcp4-multi-diffport05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+tcp4-multi-diffport06
+	IPv4
+	IPcomp [ transport ]
+
+tcp4-multi-diffport07
+	IPv4
+	IPcomp [ tunnel ]
+
+tcp4-multi-diffport08
+	IPv4
+	Network is delayed
+
+tcp4-multi-diffport09
+	IPv4
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp4-multi-diffport10
+	IPv4
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp4-multi-diffport11
+	IPv4
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp4-multi-diffport12
+	IPv4
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp4-multi-diffport13
+	IPv4
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp4-multi-diffport14
+	IPv4
+	IPcomp [ tunnel ]
+	Network is delayed
+
+
+tcp6-multi-diffport01
+	IPv6
+
+tcp6-multi-diffport02
+	IPv6
+	IPsec [ AH / transport ]
+
+tcp6-multi-diffport03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+tcp6-multi-diffport04
+	IPv6
+	IPsec [ ESP / transport ]
+
+tcp6-multi-diffport05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+tcp6-multi-diffport06
+	IPv6
+	IPcomp [ transport ]
+
+tcp6-multi-diffport07
+	IPv6
+	IPcomp [ tunnel ]
+
+tcp6-multi-diffport08
+	IPv6
+	Network is delayed
+
+tcp6-multi-diffport09
+	IPv6
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp6-multi-diffport10
+	IPv6
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp6-multi-diffport11
+	IPv6
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp6-multi-diffport12
+	IPv6
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp6-multi-diffport13
+	IPv6
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp6-multi-diffport14
+	IPv6
+	IPcomp [ tunnel ]
+	Network is delayed

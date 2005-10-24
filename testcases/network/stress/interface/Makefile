@@ -1,0 +1,18 @@
+SCRIPTS = if4-updown \
+	  if4-addr-change \
+	  if4-alias-adddel if4-alias-addlarge \
+	  if4-route-adddel if4-route-addlarge \
+	  if4-mtu-change \
+	  if6-updown \
+	  if6-addr-adddel if6-addr-addlarge \
+	  if6-route-adddel if6-route-addlarge \
+	  if6-mtu-change
+
+all:
+	@chmod +x $(SCRIPTS)
+
+install:
+	@set -e; for i in $(SCRIPTS); do ln -f $$i ../../../bin ; done
+
+clean:
+	@set -e; for i in $(SCRIPTS); do rm -f ../../../bin/$$i ; done

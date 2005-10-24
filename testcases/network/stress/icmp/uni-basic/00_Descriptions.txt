@@ -1,0 +1,56 @@
+Verify that the kernel is not crashed with receiving and sending various size
+of ICMP message
+
+icmp4-uni-basic01
+	IPv4
+
+icmp4-uni-basic02
+	IPv4
+	IPsec [ AH / transport ]
+
+icmp4-uni-basic03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+icmp4-uni-basic04
+	IPv4
+	IPsec [ ESP / transport ]
+
+icmp4-uni-basic05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+icmp4-uni-basic06
+	IPv4
+	IPcomp [ transport ]
+
+icmp4-uni-basic07
+	IPv4
+	IPcomp [ tunnel ]
+
+icmp6-uni-basic01
+	IPv6
+
+icmp6-uni-basic02
+	IPv6
+	IPsec [ AH / transport ]
+
+icmp6-uni-basic03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+icmp6-uni-basic04
+	IPv6
+	IPsec [ ESP / transport ]
+
+icmp6-uni-basic05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+icmp6-uni-basic06
+	IPv6
+	IPcomp [ transport ]
+
+icmp6-uni-basic07
+	IPv6
+	IPcomp [ tunnel ]

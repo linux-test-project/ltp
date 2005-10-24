@@ -1,0 +1,114 @@
+#!/bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2005                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+##                                                                            ##
+################################################################################
+#
+# File:
+#   ssh-stress01-rmt
+#
+# Description:
+#   This is the remote script for ssh-ipv${IP_VER}-stress01
+#
+# Author:
+#   Mitsuru Chinen <mitch@jp.ibm.com>
+#
+# Arguments:
+#   $1: version of IP
+#   $2: IP address log into
+#   $3: ssh_config file
+#   $4: quantity of connection
+#
+# Exit Value:
+#    0: Success
+#   >0: Fail
+#
+# History:
+#	Oct 19 2005 - Created (Mitsuru Chinen)
+#
+#-----------------------------------------------------------------------
+# Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+# Check the arguments
+if [ $# -ne 4 ]; then
+    echo "Usage: $0 IP_version server_addr config_dir connect_quantity"
+    exit 1
+fi
+ip_ver="$1"
+server_ipaddr="$2"
+ssh_config="$3"
+connect_quontity="$4"
+
+# Unset the maximum number of processes
+ulimit -u unlimited
+
+# Specify the option of ssh accoring to the version of IP
+case $ip_ver in
+    4)
+    ver_opt="-4"
+    ;;
+    6)
+    ver_opt="-6"
+    ;;
+    *)
+    echo "$ver_opt is unknown IP version"
+    exit 1
+    ;;
+esac
+    
+# Check the connectivity first
+if [ ! -f $ssh_config ]; then
+    echo "$ssh_config is something wrong."
+    exit 1
+fi
+ssh $ver_opt -F $ssh_config $server_ipaddr "true </dev/null >/dev/null 2>&1" >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Failed to connect $server_ipaddr"
+    exit 1
+fi
+
+#
+# Make ssh connections
+#
+num=0
+while [ $num -lt $connect_quontity ]; do
+    ssh $ver_opt -f -N -F $ssh_config $server_ipaddr
+    if [ $? -ne 0 ]; then
+	echo "$num seems the maximun number of ssh connection." >&2
+	break
+    fi
+    num=`expr $num + 1`
+done
+
+# Disconnect all ssh connection
+for ssh_pid in `ps auxw | fgrep -v grep | grep "ssh[[:blank:]].*${ssh_config}" | awk '{print $2}'` ; do
+    kill $ssh_pid 
+done
+
+# Check the connectivity again
+ssh $ver_opt -F $ssh_config $server_ipaddr "true </dev/null >/dev/null 2>&1" >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Failed to connect $server_ipaddr. ssh connectivity is lost."
+    exit 1
+fi
+
+exit 0

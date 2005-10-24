@@ -1,0 +1,120 @@
+if4-updown01
+	Verify the IPv4 connectivity is not broken when ifconfig command ups,
+	then downs an interface many times
+
+if4-updown02
+	Verify the IPv4 connectivity is not broken when ip command ups, then
+	downs an interface many times
+
+
+if4-addr-change01
+	Verify the IPv4 connectivity is not broken when the ifconfig command
+	changes the IPv4 address many times
+
+
+if4-alias-adddel01
+	Verify the IPv4 connectivity is not broken when 'ifconfig add' adds,
+	then deletes an IPv4 alias many times
+	
+if4-alias-adddel02
+	Verify the IPv4 connectivity is not broken when 'ifconfig ethn:n' adds,
+	then deletes an IPv4 alias many times
+
+if4-alias-adddel03
+	Verify the IPv4 connectivity is not broken when ip command adds, then
+	deletes an IPv4 alias many times
+
+
+if4-alias-addlarge01
+	Verify the IPv4 connectivity is not broken when 'ifconifg add' creates
+	many IPv4-aliases.
+
+if4-alias-addlarge02
+	Verify the IPv4 connectivity is not broken when 'ifconfig ethn:n'
+	creates many IPv4-aliases'
+
+if4-alias-addlarge03
+	Verify the IPv4 connectivity is not broken when ip command creates
+	many IPv4-aliases
+
+
+if4-route-adddel01
+	Verify the IPv4 connectivity is not broken when the route command adds,
+	then and deletes an IPv4 route many times
+
+if4-route-adddel02
+	Verify the IPv4 connectivity is not broken when the ip command adds,
+	then and deletes an IPv4 route many times
+
+
+if4-route-addlarge01
+	Verify the IPv4 connectivity is not broken when the route command
+	adds many IPv4 routes
+
+if4-route-addlarge02
+	Verify the IPv4 connectivity is not broken when the ip command adds
+	many IPv4 routes
+	
+
+if4-mtu-change01
+	Verify the IPv4 connectivity is not broken when ifconfig command
+	changes MTU many times every 5 seconds
+
+if4-mtu-change02
+	Verify the IPv4 connectivity is not broken when ip command changes
+	MTU many times every 5 seconds
+
+
+
+if6-updown01
+	Verify the IPv6 connectivity is not broken when the ifconfig command
+	ups, then downs an interface many times
+
+if6-updown02
+	Verify the IPv6 connectivity is not broken when the ip command ups,
+	then downs an interface many times
+
+
+if6-addr-adddel01
+	Verify the IPv6 connectivty is not broken when the ifconfig command
+	adds, then deletes an IPv6 address many times
+
+if6-addr-adddel02
+	Verify the IPv6 connectivty is not broken when the ip command adds,
+	then deletes an IPv6 address many times
+
+
+if6-addr-addlarge01
+	Verify the IPv6 connectivity is not broken when the ifconfig command
+	adds many IPv6 addresses
+
+if6-addr-addlarge02
+	Verify the IPv6 connectivity is not broken when the ip command adds
+	many IPv6 addresses
+
+
+if6-route-adddel01
+	Verify the IPv6 connectivity is not broken when the route command adds,
+	then deletes an IPv6 route many times
+
+if6-route-adddel02
+	Verify the IPv6 connectivity is not broken when the ip command adds,
+	then deletes an IPv6 route many times
+
+
+f6-route-addlarge01
+	Verify the IPv6 connectivity is not broken when the route command adds
+	many IPv6 routes
+
+if6-route-addlarge02
+	Verify the IPv6 connectivity is not broken when the ip command adds
+	many IPv6 routes
+
+
+if6-mtu-change01
+	Verify the IPv6 connectivity is not broken when the ifconfig command
+	changes MTU many times every 5 seconds
+	
+if6-mtu-change02
+	Verify the IPv6 connectivity is not broken when the ip command changes
+	MTU many times every 5 seconds

@@ -1,0 +1,56 @@
+Verify that the kernel is not crashed with receiving and sending various
+size of ICMP message at differnt NIC simultaneously
+
+icmp4-multi-diffnic01
+	IPv4
+
+icmp4-multi-diffnic02
+	IPv4
+	IPsec [ AH / transport ]
+
+icmp4-multi-diffnic03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+icmp4-multi-diffnic04
+	IPv4
+	IPsec [ ESP / transport ]
+
+icmp4-multi-diffnic05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+icmp4-multi-diffnic06
+	IPv4
+	IPcomp [ transport ]
+
+icmp4-multi-diffnic07
+	IPv4
+	IPcomp [ tunnel ]
+
+icmp6-multi-diffnic01
+	IPv6
+
+icmp6-multi-diffnic02
+	IPv6
+	IPsec [ AH / transport ]
+
+icmp6-multi-diffnic03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+icmp6-multi-diffnic04
+	IPv6
+	IPsec [ ESP / transport ]
+
+icmp6-multi-diffnic05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+icmp6-multi-diffnic06
+	IPv6
+	IPcomp [ transport ]
+
+icmp6-multi-diffnic07
+	IPv6
+	IPcomp [ tunnel ]

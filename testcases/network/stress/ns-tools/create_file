@@ -1,0 +1,70 @@
+#!/bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2005                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+##                                                                            ##
+################################################################################
+#
+# File:
+#   create_file
+#
+# Description:
+#   Create a file in the specified size
+#
+# Arguments:
+#   $1: filename
+#   $2: filesize
+#
+# Returns:
+#   0: Success
+#   1: Fail
+#
+# Author:
+#   Mitsuru Chinen <mitch@jp.ibm.com>
+#
+# History:
+#   Oct 19 2005 - Created (Mitsuru Chinen) 
+#
+#-----------------------------------------------------------------------
+#Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+# Check argument
+if [ $# -ne 2 ] ; then
+    echo "Usage: create_file filename filesize" >&2
+    exit 1
+fi
+filename=$1
+filesize=$2
+
+if [ $filesize -le 0 ]; then
+    echo "The filesize should be bigger than 0" >&2
+    exit 1
+fi
+
+echo -n "A" > $filename 2>/dev/null
+echo -n "Z" | dd of=$filename bs=1 seek=`expr $filesize - 1` >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Failed to create $filename" >&2
+    exit 1
+fi
+chmod 644 $filename
+
+exit 0

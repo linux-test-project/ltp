@@ -1,0 +1,349 @@
+#!/bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2005                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+##                                                                            ##
+################################################################################
+#
+# File:
+#   ftp4-download-stress
+#
+# Description:
+#   Stress test for ftp over IPv4
+#
+#   test01 - Verify the ftp server or the kernel is not down after
+#            a ftp client requests large data
+#   test02 - Verify the ftp server or the kernel is not down after
+#            many ftp clients request data asynchronously for a long time
+#
+# Author:
+#   Mitsuru Chinen <mitch@jp.ibm.com>
+#
+# History:
+#	Oct 19 2005 - Created (Mitsuru Chinen)
+#
+#-----------------------------------------------------------------------
+# Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+# Make sure the value of LTPROOT
+LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
+export LTPROOT
+
+# Total number of the test case
+TST_TOTAL=2
+export TST_TOTAL
+
+# The version of IP
+IP_VER=${IP_VER:-4}
+
+# Default of the test case ID and the test case count
+TCID=ftp${IP_VER}-download-stress
+TST_COUNT=0
+export TCID
+export TST_COUNT
+
+# Check the environmanet variable
+source check_envval || exit $TST_TOTAL
+
+# Dulation of the test [sec]
+NS_DURATION=${NS_DURATION:-3600}      # 1 hour
+
+# Quantity of the connection for multi connection test
+CONNECTION_TOTAL=${CONNECTION_TOTAL:-4000}
+
+# Big file size to upload/download in ftp tests (byte)
+DOWNLOAD_BIGFILESIZE=${DOWNLOAD_BIGFILESIZE:-2147483647}        # 2GB - 1byte
+
+# Regular file size to upload/download in ftp tests (byte)
+DOWNLOAD_REGFILESIZE=${DOWNLOAD_REGFILESIZE:-1048576}        # 1MB
+
+# The number of the test link where tests run
+LINK_NUM=${LINK_NUM:-0}
+
+# Network portion of the IPv4 address
+IPV4_NETWORK="10.0.0"
+
+# Host portion of the IPv4 address on the local host
+LHOST_IPV4_HOST="2"
+
+# Host portion of the IPv4 address on the remote host
+RHOST_IPV4_HOST="1"
+
+# Network portion of the IPv6 address
+IPV6_NETWORK="fd00:1:1:1"
+
+# Host portion of the IPv6 address of the local host
+LHOST_IPV6_HOST=":2"
+
+# Host portion of the IPv6 address of the remote host
+RHOST_IPV6_HOST=":1"
+
+# The test file name for downloading
+TESTFILE="ftp-download-stress.txt"
+
+#-----------------------------------------------------------------------
+#
+# Function:
+#   do_cleanup
+#
+# Description:
+#   Clean up after running ftp stress test
+#
+#-----------------------------------------------------------------------
+do_cleanup()
+{
+    # Delete the test file
+    rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
+
+    # Make sure to delete the temporary files
+    rm -f $message_file
+
+    # Initialize the interface
+    initialize_if lhost ${LINK_NUM}
+    initialize_if rhost ${LINK_NUM}
+}
+
+
+#-----------------------------------------------------------------------
+#
+# Function:
+#   do_setup
+#
+# Description:
+#   Setup for the ftp stress tests
+#   - Assign IP address to the interfaces belong to the specified Link
+#   - Run a ftpd daemon for testing
+#   - Create keys for password-less login
+#
+# Set Values:
+#   lhost_addr:   IP address of the local host
+#   rhost_addr:   IP address of the remote host
+#   rhost_config: ftp_config at the remote host
+#
+#-----------------------------------------------------------------------
+do_setup()
+{
+    trap do_cleanup 0
+
+    # Check the environment variable FTP_DOWNLOAD_DIR is set
+    if [ x$FTP_DOWNLOAD_DIR = x ]; then
+	tst_resm TINFO "*) At this ftp stress test, the ftp server program does not run automatically. Please start the server manually and set the document root directory in the environment variable, FTP_DOWNLOAD_DIR."
+	tst_resm TBROK "The environment variable FTP_DOWNLOAD_DIR is not set"
+	exit 1
+    fi
+
+    # Initialize the interface
+    initialize_if lhost ${LINK_NUM}
+    initialize_if rhost ${LINK_NUM}
+
+    # Get the Interface name
+    lhost_ifname=`get_ifname lhost ${LINK_NUM}`
+    if [ $? -ne 0 ]; then
+	tst_resm TBROK "Failed to get the interface name at the local host"
+	exit $TST_TOTAL
+    fi
+
+    case $IP_VER in
+	4)
+	# Set IPv4 address to the interfaces
+	set_ipv4addr lhost $LINK_NUM ${IPV4_NETWORK} ${LHOST_IPV4_HOST}
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to add any IP address at the local host"
+	    exit 1
+	fi
+	set_ipv4addr rhost $LINK_NUM ${IPV4_NETWORK} ${RHOST_IPV4_HOST}
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to add any IP address at the remote host"
+	    exit 1
+	fi
+
+	lhost_addr="${IPV4_NETWORK}.${LHOST_IPV4_HOST}"
+	rhost_addr="${IPV4_NETWORK}.${RHOST_IPV4_HOST}"
+	check_icmpv4_connectivity $lhost_ifname $rhost_addr
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to ping to $rhost_addr"
+	    exit 1
+	fi
+	;;
+
+	6)
+	# Set IPv6 address to the interfaces
+	add_ipv6addr lhost $LINK_NUM ${IPV6_NETWORK} ${LHOST_IPV6_HOST}
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to add any IP address at the local host"
+	    exit 1
+	fi
+	add_ipv6addr rhost $LINK_NUM ${IPV6_NETWORK} ${RHOST_IPV6_HOST}
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to add any IP address at the remote host"
+	    exit 1
+	fi
+
+	lhost_addr="${IPV6_NETWORK}:${LHOST_IPV6_HOST}"
+	rhost_addr="${IPV6_NETWORK}:${RHOST_IPV6_HOST}"
+	check_icmpv6_connectivity $lhost_ifname $rhost_addr
+	if [ $? -ne 0 ]; then
+	    tst_resm TBROK "Failed to ping to $rhost_addr"
+	    exit 1
+	fi
+	;;
+
+	*)
+	tst_resm TBROK "Unknown IP version: $IP_VER"
+	exit 1
+	;;
+    esac
+}
+
+
+#-----------------------------------------------------------------------
+#
+# Function:
+#   test01
+#
+# Description:
+#   Verify the ftp server or the kernel is not down after a ftp
+#   client requests large data
+#
+#-----------------------------------------------------------------------
+test01()
+{
+    TCID=ftp${IP_VER}-download-stress01
+    TST_COUNT=1
+    tst_resm TINFO "Verify the ftp server or the kernel is not down after a ftp client requests data whose size is $DOWNLOAD_BIGFILESIZE byte via IPv${IP_VER}"
+
+    # Create a test file for download
+    rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
+    create_file $FTP_DOWNLOAD_DIR/$TESTFILE $DOWNLOAD_BIGFILESIZE
+    if [ $? -ne 0 ]; then
+      tst_resm TBROK "Failed to create $FTP_DOWNLOAD_DIR/$TESTFILE"
+    fi
+
+    # Script name at the remote host
+    rmtscript="ftp-download-stress01-rmt"
+
+    # Run the script at the remote host
+    message_file=`mktemp -p $TMPDIR`
+    not_run_rmtscript=true
+    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
+	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
+	if [ $ret -eq 0 ]; then
+	    not_run_rmtscript=false
+	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} $lhost_addr $TESTFILE" > $message_file
+	    break
+	fi
+    done
+
+    rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
+    
+    if $not_run_rmtscript ; then
+	tst_resm TBROK "Failed to run the test script at the remote host"
+	rm -f $message_file
+	exit 1
+    fi
+
+    if [ -s $message_file ]; then
+	tst_resm TFAIL "`cat $message_file`"
+	rm -f $message_file
+	return 1
+    else
+	tst_resm TPASS "Test is finished successfully."
+	rm -f $message_file
+	return 0
+    fi
+}
+
+
+#-----------------------------------------------------------------------
+#
+# Function:
+#   test02
+#
+# Description:
+#   Verify the ftp server or the kernel is not down after many ftp
+#   clients request data asynchronously for a long time
+#
+#-----------------------------------------------------------------------
+test02()
+{
+    TCID=ftp${IP_VER}-download-stress02
+    TST_COUNT=2
+    tst_resm TINFO "Verify the ftp server or the kernel is not down after many ftp clients request data over IPv${IP_VER} asynchronously in ${NS_DURATION}[sec]"
+    tst_resm TINFO "The number of client is not over $CONNECTION_TOTAL"
+
+    # Create a test file for download
+    rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
+    create_file $FTP_DOWNLOAD_DIR/$TESTFILE $DOWNLOAD_REGFILESIZE
+    if [ $? -ne 0 ]; then
+      tst_resm TBROK "Failed to create $FTP_DOWNLOAD_DIR/$TESTFILE"
+    fi
+
+    # Script name at the remote host
+    rmtscript="ftp-download-stress02-rmt"
+
+    # Run the script at the remote host
+    message_file=`mktemp -p $TMPDIR`
+    not_run_rmtscript=true
+    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
+	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
+	if [ $ret -eq 0 ]; then
+	    not_run_rmtscript=false
+	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} $lhost_addr $TESTFILE $NS_DURATION $CONNECTION_TOTAL" > $message_file 2>/dev/null
+	    retval=$?
+	    break
+	fi
+    done
+
+    rm -f $FTP_DOWNLOAD_DIR/$TESTFILE
+
+    if $not_run_rmtscript ; then
+	tst_resm TBROK "Failed to run the test script at the remote host"
+	rm -f $message_file
+	exit 1
+    fi
+
+    if [ -s $message_file ]; then
+	tst_resm TFAIL "`cat $message_file`"
+	rm -f $message_file
+	return 1
+    else
+	tst_resm TPASS "Test is finished successfully."
+	rm -f $message_file
+	return 0
+    fi
+}
+
+
+#-----------------------------------------------------------------------
+#
+# Main
+#
+# Exit Value:
+#   The number of the failure
+#
+#-----------------------------------------------------------------------
+
+RC=0
+do_setup
+test01 || RC=`expr $RC + 1`
+test02 || RC=`expr $RC + 1`
+
+exit $RC

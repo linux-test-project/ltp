@@ -1,0 +1,125 @@
+Verify that the kernel is not crashed by a TCP connection on an unreliable
+network (Namely, some of the packets are lost, some of them is duplicated.)
+
+tcp4-uni-pktlossdup01
+	IPv4
+
+tcp4-uni-pktlossdup02
+	IPv4
+	IPsec [ AH / transport ]
+
+tcp4-uni-pktlossdup03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+tcp4-uni-pktlossdup04
+	IPv4
+	IPsec [ ESP / transport ]
+
+tcp4-uni-pktlossdup05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+tcp4-uni-pktlossdup06
+	IPv4
+	IPcomp [ transport ]
+
+tcp4-uni-pktlossdup07
+	IPv4
+	IPcomp [ tunnel ]
+
+tcp4-uni-pktlossdup08
+	IPv4
+	Network is delayed
+
+tcp4-uni-pktlossdup09
+	IPv4
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp4-uni-pktlossdup10
+	IPv4
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp4-uni-pktlossdup11
+	IPv4
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp4-uni-pktlossdup12
+	IPv4
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp4-uni-pktlossdup13
+	IPv4
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp4-uni-pktlossdup14
+	IPv4
+	IPcomp [ tunnel ]
+	Network is delayed
+
+
+tcp6-uni-pktlossdup01
+	IPv6
+
+tcp6-uni-pktlossdup02
+	IPv6
+	IPsec [ AH / transport ]
+
+tcp6-uni-pktlossdup03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+tcp6-uni-pktlossdup04
+	IPv6
+	IPsec [ ESP / transport ]
+
+tcp6-uni-pktlossdup05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+tcp6-uni-pktlossdup06
+	IPv6
+	IPcomp [ transport ]
+
+tcp6-uni-pktlossdup07
+	IPv6
+	IPcomp [ tunnel ]
+
+tcp6-uni-pktlossdup08
+	IPv6
+	Network is delayed
+
+tcp6-uni-pktlossdup09
+	IPv6
+	IPsec [ AH / transport ]
+	Network is delayed
+
+tcp6-uni-pktlossdup10
+	IPv6
+	IPsec [ AH / tunnel ]
+	Network is delayed
+
+tcp6-uni-pktlossdup11
+	IPv6
+	IPsec [ ESP / transport ]
+	Network is delayed
+
+tcp6-uni-pktlossdup12
+	IPv6
+	IPsec [ ESP / tunnel ]
+	Network is delayed
+
+tcp6-uni-pktlossdup13
+	IPv6
+	IPcomp [ transport ]
+	Network is delayed
+
+tcp6-uni-pktlossdup14
+	IPv6
+	IPcomp [ tunnel ]
+	Network is delayed

@@ -1,0 +1,56 @@
+Verify that the kernel is not crashed with receiving and sending various
+size of ICMP message at the different IP address(alias) simultaneously
+
+icmp4-multi-diffip01
+	IPv4
+
+icmp4-multi-diffip02
+	IPv4
+	IPsec [ AH / transport ]
+
+icmp4-multi-diffip03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+icmp4-multi-diffip04
+	IPv4
+	IPsec [ ESP / transport ]
+
+icmp4-multi-diffip05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+icmp4-multi-diffip06
+	IPv4
+	IPcomp [ transport ]
+
+icmp4-multi-diffip07
+	IPv4
+	IPcomp [ tunnel ]
+
+icmp6-multi-diffip01
+	IPv6
+
+icmp6-multi-diffip02
+	IPv6
+	IPsec [ AH / transport ]
+
+icmp6-multi-diffip03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+icmp6-multi-diffip04
+	IPv6
+	IPsec [ ESP / transport ]
+
+icmp6-multi-diffip05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+icmp6-multi-diffip06
+	IPv6
+	IPcomp [ transport ]
+
+icmp6-multi-diffip07
+	IPv6
+	IPcomp [ tunnel ]

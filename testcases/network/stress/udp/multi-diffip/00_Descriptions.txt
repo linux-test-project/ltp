@@ -1,0 +1,56 @@
+Verify that the kernel is not crashed with receiving and sending UDP datagram
+at the different IP addresses(aliases)
+
+udp4-multi-diffip01
+	IPv4
+
+udp4-multi-diffip02
+	IPv4
+	IPsec [ AH / transport ]
+
+udp4-multi-diffip03
+	IPv4
+	IPsec [ AH / tunnel ]
+
+udp4-multi-diffip04
+	IPv4
+	IPsec [ ESP / transport ]
+
+udp4-multi-diffip05
+	IPv4
+	IPsec [ ESP / tunnel ]
+
+udp4-multi-diffip06
+	IPv4
+	IPcomp [ transport ]
+
+udp4-multi-diffip07
+	IPv4
+	IPcomp [ tunnel ]
+
+udp6-multi-diffip01
+	IPv6
+
+udp6-multi-diffip02
+	IPv6
+	IPsec [ AH / transport ]
+
+udp6-multi-diffip03
+	IPv6
+	IPsec [ AH / tunnel ]
+
+udp6-multi-diffip04
+	IPv6
+	IPsec [ ESP / transport ]
+
+udp6-multi-diffip05
+	IPv6
+	IPsec [ ESP / tunnel ]
+
+udp6-multi-diffip06
+	IPv6
+	IPcomp [ transport ]
+
+udp6-multi-diffip07
+	IPv6
+	IPcomp [ tunnel ]

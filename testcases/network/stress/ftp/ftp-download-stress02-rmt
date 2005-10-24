@@ -1,0 +1,105 @@
+#!/bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2005                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+##                                                                            ##
+################################################################################
+#
+# File:
+#   ftp-download-stress02-rmt
+#
+# Description:
+#   This is the remote script for ftp-download-ipv${IP_VER}-stress02
+#
+# Author:
+#   Mitsuru Chinen <mitch@jp.ibm.com>
+#
+# Arguments:
+#   $1: ip address of the server
+#   $2: filename to download
+#   $3: duration
+#   $4: connect quantity
+#
+# Exit Value:
+#    0: Success
+#   >0: Fail
+#
+# History:
+#	Oct 19 2005 - Created (Mitsuru Chinen)
+#
+#-----------------------------------------------------------------------
+# Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+# Check the arguments
+if [ $# -ne 4 ]; then
+    echo "Usage: $0 server_addr filename duration connect_quantity"
+    exit 1
+fi
+server_ipaddr="$1"
+filename="$2"
+duration="$3"
+connect_quantity="$4"
+
+echo $server_ipaddr | fgrep ':' >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    server_ipaddr='['$server_ipaddr']'
+fi
+
+# Unset the maximum number of processes
+ulimit -u unlimited
+
+#
+# Main loop
+#
+start_epoc=`date +%s`
+while true ; do
+    # Exit when the specified seconds have passed.
+    current_epoc=`date +%s`
+    elapse_epoc=`expr $current_epoc - $start_epoc`
+    if [ $elapse_epoc -ge $duration ]; then
+	break
+    fi
+
+    # Do not request the file over the specified quontity
+    ftp_num=`ps auxw | grep -v grep | grep -- "curl -g.*$filename" | wc -l`
+    if [ $ftp_num -ge $connect_quantity ]; then
+	sleep 1
+	continue;
+    fi
+
+    # Login to the server
+    curl -g "ftp://${server_ipaddr}/${filename}" -o /dev/null >/dev/null 2>&1 &
+done
+
+# kill the curl command
+killall -SIGINT curl >/dev/null 2>&1
+sleep 3
+killall -SIGKILL curl >/dev/null 2>&1
+wait
+
+# Check the test file is abole to be downloaded
+curl -g "ftp://${server_ipaddr}/${filename}" -o /dev/null >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Failed to download the file from ftp://${server_ipaddr}/${filename}"
+    exit 1
+fi
+
+exit 0

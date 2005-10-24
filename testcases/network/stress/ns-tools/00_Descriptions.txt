@@ -1,0 +1,72 @@
+This directory stores the utilities for the network stress tests
+
+====
+
+check_envval
+	Check the environment variable for the network stress test
+
+get_ifname
+	Get the interface name which belongs to the specified test link
+
+initialize_if
+	Initialize the interface which belongs to the specified test link
+
+set_ipv4addr
+	Set an IPv4 address to the interface which belongs to the specified
+	test link
+
+add_ipv6addr
+	Add an IPv6 address to the interface which belongs to the specified
+	test link
+
+check_icmpv4_connectivity
+	Check the ICMPv4 connectivity from a interface to an IPv4 address
+
+check_icmpv6_connectivity
+	Check the ICMPv6 connectivity from a interface to a IPv6 address
+
+check_netem
+	Check the remote host has netem functionality
+
+check_setkey
+	Check the local/remote host has setkey command
+
+create_file
+	Create a file in the specified size
+
+find_portbundle
+	Find a bundle of consecutive ports
+
+bg_tcp_traffic
+	Control the background TCP traffic
+
+killall_icmp_traffic
+	Kill all of the icmp traffic utilities (ping or ping6)
+
+killall_udp_traffic
+	Kill all of the udp traffic utilities (ns-udpserver, ns-udpclient)
+
+killall_tcp_traffic
+	Kill all of the tcp traffic utilities (ns-tcpserver, ns-tcpclient)
+
+output_ipsec_conf
+	Output IPsec configuration
+
+ns-echoclient
+	Send various kind of echo request
+
+ns-udpserver (binary)
+	UDP traffic server.
+	Receive UDP datagram from a client, then send it to the client
+
+ns-udpclient (binary)
+	UDP traffic client
+	Send UDP datagram to a server, then receive datagram from it
+
+ns-tcpserver (binary)
+	TCP traffic server.
+	Accept connections from the clients, then send tcp segments to it
+
+ns-tcpclient (binary)
+	TCP traffic client
+	Request connections to the server, then receive tcp segments
