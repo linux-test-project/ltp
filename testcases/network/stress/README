@@ -1,0 +1,223 @@
+
+NOTE:
+
+Physical Topology
+=================
+
+These tests require two machines. And each machine needs to have 2 or more 
+interfaces. These tests assume that they run on the following topology.
+
+                              Control Link 
+                +------------------------------------+
+                |                                    |
+        +-------+-------+                    +-------+-------+
+        |               +---- Test Link 0 ---+               |
+        |  Local Host   +          :         +  Remote Host  |
+        |               +---- Test Link n ---+               |
+        +---------------+                    +---------------+
+
+Control Link is used by the local host to control the remote host.
+`control' means, for example, changing the setting of the interfaces that are
+connected to the test links. The setting of the interfaces connected to the
+control link is never changed.
+
+Test Links are the place where the stress tests run. For example, test packets
+flow those links. The number of test links must be at least 1. The setting of
+the interfaces connectted to the test links would be changed by the tests.
+Therefore, each test link should not belong to any external network. It is
+recommended to connect each pair of interfaces with the ether cross cables.
+
+Currently, different NIC testcases for ICMP/UDP/TCP require plural test links.
+Other testcases uses only 1 test link. (Test Link 0)
+
+  
+
+Installation
+============
+
+Like the other network tests, the remote host must have the LTP installed
+in the same exact location as the local host have. Please refer the `Detailed
+Installation 6.' section in ltp-yyyymmdd/INSTALL.
+
+
+
+Execution
+=========
+
+To run the network stress testcases, networkstress.sh is prepared in 
+ltp-yyyymmdd/testscripts directory. Some envrionment variables have to be
+set for the stress testcases. Please fill the environment variable in
+networkstress.sh.
+
+Like the other network stress tests, the remote host must be setup to allow
+the local host connection using rsh. Please refer the `Detailed
+Installation 6.' section in ltp-yyyymmdd/INSTALL.
+Instead of rsh, you can use ssh to set the environment variable LTP_RSH.
+Please refer the `Environment Variable' section of this document.
+
+Two command lists is prepared in ltp-yyyymmdd/runtest directory.
+
+  network_stress.whole	  : 42 kinds 455 tests
+  network_stress.selected : 33 kinds 103 tests
+
+Running the tests using network_stress.whole takes about 18days. Therefore, 
+network_stress.selected is prepared. However, it takes 3 days using
+network_stress.selected. If you reduce the time, you should choose the
+testcase and prepare your own command lists. The detail of testcases
+are written in ltp-yyyymmdd/doc/testcases/network_stress.txt.  Or you can
+reduce the time by configuring the test behavior with the environment
+variable (See `Environment Variable' section)
+
+
+
+Attention for HTTP/FTP stress tests
+===================================
+
+When you run http or ftp stress tests, you have to start http or ftp server
+before running the tests.
+About ssh and dns tests, you don't need to run the ssh or dns server.  Each
+test runs named or sshd automatically.
+
+Those tests requires that the remote host has `curl' command in order to
+upload/download files to/from the local host.
+
+When you run the ftp upload tests, please make sure the local host have
+enough disk space to upload somes files. The size of file is able to
+specify the environment variable (See `Environment Variable' section).
+
+
+Environment Variable
+====================
+
+The nestwork stress testcases require the following environment variables:
+
+  RHOST
+  LHOST_HWADDRS
+  RHOST_HWADDRS
+  HTTP_DOWNLOAD_DIR	(for http stress test)
+  FTP_DOWNLOAD_DIR	(for ftp stress test)
+  FTP_UPLOAD_DIR	(for ftp stress test)
+  FTP_UPLOAD_URLDIR	(for ftp stress test)
+
+You are able to configure the behavior of the testcases with the following
+environment variables:
+
+  LTP_RSH
+  NS_DURATION		(for the continual test)
+  NS_TIMES		(for the repetition test)
+  CONNECTION_TOTAL	(for creating a large number of connection test)
+  IP_TOTAL		(for adding large number of IP address test)
+  IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
+  ROUTE_TOTAL		(for adding large number of route test)
+  MTU_CHANGE_TIMES	(for changing mtu test)
+  IF_UPDOWN_TIMES	(for interface up/down test)
+  DOWNLOAD_BIGFILESIZE	(for http/ftp downloading stress test)
+  DOWNLOAD_REGFILESIZE	(for http/ftp downloading stress test)
+  UPLOAD_BIGFILESIZE	(for ftp uploading stress test)
+  UPLOAD_REGFILESIZE	(for ftp uploading stress test)
+
+In these value, NS_DURATION is important if you'd like to reduce the test time.
+
+Required environment variables
+------------------------------
+
+ o RHOST
+   The host name of the remote host to access it via the control link.
+
+ o LHOST_HWADDRS
+   The blank-separated hardware address list of the interfaces which are
+   connectted to a test link at the local host.
+   This value have to have at least one address. The sequence of the hardware
+   address have to be same to the test link sequence.
+
+ o RHOST_HWADDRS
+   The blank-separated hardware address list of the interfaces which are
+   connectted to a test link at the remote host.
+   This value have to have at least one address. The sequence of the hardware
+   address have to be same to the test link sequence.
+
+ o HTTP_DOWNLOAD_DIR (for http stress test)
+   The directory out of which the http server will serve the documents.
+   In the apache case, the value of this variable is same as DocumentRoot
+   value in httpd.conf
+
+ o FTP_DOWNLOAD_DIR (for ftp stress test)
+   The directory out of which the ftp server will serve the files.
+
+ o FTP_UPLOAD_DIR (for ftp stress test)
+   The directory which the ftp server will store the uploaded files.
+  
+ o FTP_UPLOAD_URLDIR (for ftp stress test)
+   The directory part of URL where the client specifys to upload.
+   Namely, when the URL to upload is ftp://ltp.sourceforge.net/upload ,
+   /upload is the value to set the environment variable.
+
+
+Optional environment variables
+------------------------------
+
+ o LTP_RSH
+   The name of the remote shell command, namely rsh or ssh.
+   In ether case, the remote host must accept the login from the local host
+   without password.
+
+ o NS_DURATION (for the continual test)
+   The duration of the continual test. The time unit is `second'.
+   This variable affects all icmp/tcp/udp tests. The number of the testcase
+   in them is big. Therefore, the test time is reduced when you set small
+   value to the this variable.
+   Except icmp/tcp/udp tests, this variable affects ssh, ftp and http tests.
+
+ o NS_TIMES (for the repetition test)
+   The number of repetition times for the repetition tests.
+   This value affects IP adress add/del testcase, IP address change testcase
+   route add/del testcase and dns query tests.
+
+ o CONNECTION_TOTAL (for creating a large number of connection test)
+   The total number of connection when the testcase requires plural connection.
+   This value affects udp/tcp multi-connection to the same/different port
+   testcases, ftp and http testcases.
+
+ o IP_TOTAL		(for adding large number of IP address test)
+   The total number of IP address to add an interface.
+   This value affect interface tests to add large number of IP address.
+
+ o IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
+   The total number of IP address to add an interface for TCP/IP testcases.
+   This value affects udp/tcp multi-connection to the different IP
+   address/alias testcases.
+
+ o ROUTE_TOTAL		(for adding large number of route test)
+   The total number of route to add an interface.
+   This value affect interface tests to add large number of route.
+
+ o MTU_CHANGE_TIMES	(for changing mtu test)
+   The times of change the mtu value of an interface. The interval of
+   changing mtu is 5 seconds. Therefore, mtu changing tests requires
+   5 x MTU_CHANGE_TIMES [sec].
+   This value affect interface tests of changing mtu.
+
+ o IF_UPDOWN_TIMES	(for interface up/down test)
+   The up/down times of the interface tests. To up/down an interface takes 
+   time. If you specify 10,000 into this value, it takes 6 hours.
+   This value affect interface tests of upping/down the interface.
+
+ o DOWNLOAD_BIGFILESIZE	(for http/ftp downloading stress test)
+   The file size of the downloading large size file tests.
+   This value affects ftp download and http tests.
+
+ o DOWNLOAD_REGFILESIZE	(for http/ftp downloading stress test)
+   The file size of the downloading file by many clients.
+   This value affects ftp download and http tests.
+
+ o UPLOAD_BIGFILESIZE	(for ftp uploading stress test)
+   The file size of the uploading large size file tests.
+   The server must have UPLOAD_BIGFILESIZE as free disk space.
+   This value affects ftp upload tests.
+
+ o UPLOAD_REGFILESIZE	(for ftp uploading stress test)
+   The file size of the downloading file by many clients.
+   The server must have UPLOAD_REGFILESIZE x CONNECTION_NUM as free disk space.
+   This value affects ftp download and http tests.
+
+--- Mitsuru Chinen <mitch@jp.ibm.com>
