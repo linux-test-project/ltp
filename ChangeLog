@@ -1,3 +1,20 @@
+LTP-20051103
+- fix from Bryce Harrington to corect a Makefile and path problem on some systems
+- Updated aiocp to the latest level. See  http://developer.osdl.org/daniel/AIO/
+- Corrected a logical typo in the mmapstress test found by John Clemens:
+- Changes for cleanup of digsig testcases
+- Applied patch from Jacky Malcles to allow the test to execute correctly with
+  the new 2.6 kernel.
+- Fix for defect failure in fcntl23.c to lock readonly file, changed to open file RDONLY
+- Fix gethostid01 to return correct code in 64 bit mode
+- fix madvise01 testcase error where it may not run out of memory
+- Applied patch [ ltp-Bugs-1168107 ] from Shyam Chandrasekaran:
+- Fix bug in settimer01.c
+- Fix write04.c to work on ia64
+- Cleanup to not include redundant sys/socket.h after linux/socket.h
+- Add NetworkStress testcases from IBM Japan
+
+
 LTP-20051004
 - this patch touchs up the output of ver_linux if gcc, fdformat, or mount is missing
 - New testcases for tpm
