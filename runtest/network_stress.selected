@@ -1,0 +1,133 @@
+# 
+# This command list is the selected network stress testcases
+# `network_stress.whole' has the whole list of network stress testcasses
+#
+
+#
+# Stress test for interface
+#
+
+if4-updown  if4-updown
+if4-addr-change if4-addr-change
+if4-alias-adddel  if4-alias-adddel
+if4-alias-addlarge  if4-alias-addlarge
+if4-route-adddel  if4-route-adddel
+if4-route-addlarge  if4-route-addlarge
+if4-mtu-change	if4-mtu-change
+
+if6-updown  if6-updown
+if6-addr-adddel	if6-addr-adddel
+if6-addr-addlarge if6-addr-addlarge
+if6-route-adddel  if6-route-adddel
+if6-route-addlarge if6-route-addlarge
+if6-mtu-change	if6-mtu-change
+
+
+#
+# Stress test for TCP/IP protocol stack (icmp, udp, tcp)
+#
+
+# ICMP
+icmp4-uni-basic01 icmp4-uni-basic01
+icmp4-uni-basic02 icmp4-uni-basic02
+icmp4-uni-basic03 icmp4-uni-basic03
+icmp4-uni-basic04 icmp4-uni-basic04
+icmp4-uni-basic05 icmp4-uni-basic05
+icmp4-uni-basic06 icmp4-uni-basic06
+icmp4-uni-basic07 icmp4-uni-basic07
+
+icmp6-uni-basic01 icmp6-uni-basic01
+icmp6-uni-basic02 icmp6-uni-basic02
+icmp6-uni-basic03 icmp6-uni-basic03
+icmp6-uni-basic04 icmp6-uni-basic04
+icmp6-uni-basic05 icmp6-uni-basic05
+icmp6-uni-basic06 icmp6-uni-basic06
+icmp6-uni-basic07 icmp6-uni-basic07
+
+# UDP
+udp4-uni-basic01 udp4-uni-basic01
+
+udp6-uni-basic01 udp6-uni-basic01
+
+udp4-multi-diffport01 udp4-multi-diffport01
+
+udp6-multi-diffport01 udp6-multi-diffport01
+
+# TCP
+tcp4-uni-basic01 tcp4-uni-basic01
+tcp4-uni-basic08 tcp4-uni-basic08
+
+tcp6-uni-basic01 tcp6-uni-basic01
+tcp6-uni-basic08 tcp6-uni-basic08
+
+tcp4-uni-smallsend01 tcp4-uni-smallsend01
+tcp4-uni-smallsend08 tcp4-uni-smallsend08
+
+tcp6-uni-smallsend01 tcp6-uni-smallsend01
+tcp6-uni-smallsend08 tcp6-uni-smallsend08
+
+tcp4-uni-winscale01 tcp4-uni-winscale01
+tcp4-uni-winscale08 tcp4-uni-winscale08
+
+tcp6-uni-winscale01 tcp6-uni-winscale01
+tcp6-uni-winscale08 tcp6-uni-winscale08
+
+tcp4-uni-tso01 tcp4-uni-tso01
+tcp4-uni-tso08 tcp4-uni-tso08
+
+tcp6-uni-tso01 tcp6-uni-tso01
+tcp6-uni-tso08 tcp6-uni-tso08
+
+tcp4-uni-pktlossdup01 tcp4-uni-pktlossdup01
+tcp4-uni-pktlossdup08 tcp4-uni-pktlossdup08
+
+tcp6-uni-pktlossdup01 tcp6-uni-pktlossdup01
+tcp6-uni-pktlossdup08 tcp6-uni-pktlossdup08
+
+tcp4-uni-dsackoff01 tcp4-uni-dsackoff01
+tcp4-uni-dsackoff08 tcp4-uni-dsackoff08
+
+tcp6-uni-dsackoff01 tcp6-uni-dsackoff01
+tcp6-uni-dsackoff08 tcp6-uni-dsackoff08
+
+tcp4-uni-sackoff01 tcp4-uni-sackoff01
+tcp4-uni-sackoff08 tcp4-uni-sackoff08
+
+tcp6-uni-sackoff01 tcp6-uni-sackoff01
+tcp6-uni-sackoff08 tcp6-uni-sackoff08
+
+tcp4-multi-sameport01 tcp4-multi-sameport01
+tcp4-multi-sameport08 tcp4-multi-sameport08
+
+tcp6-multi-sameport01 tcp6-multi-sameport01
+tcp6-multi-sameport08 tcp6-multi-sameport08
+
+tcp4-multi-diffport01 tcp4-multi-diffport01
+tcp4-multi-diffport08 tcp4-multi-diffport08
+
+tcp6-multi-diffport01 tcp6-multi-diffport01
+tcp6-multi-diffport08 tcp6-multi-diffport08
+
+
+#
+# Stress test for major application protocol (ssh, dns, http, ftp)
+#
+
+# ssh
+ssh4-stress ssh4-stress
+ssh6-stress ssh6-stress
+
+# dns
+dns4-stress dns4-stress
+dns6-stress dns6-stress
+
+# http
+http4-stress http4-stress
+http6-stress http6-stress
+
+# ftp
+ftp4-download-stress ftp4-download-stress
+ftp6-download-stress ftp6-download-stress
+
+ftp4-upload-stress ftp4-upload-stress
+ftp6-upload-stress ftp6-upload-stress

@@ -1,0 +1,296 @@
+interface
+---------
+if4-updown
+	Verify the IPv4 connectivity is not broken when the interface is
+	upped and downed many times
+		test01 - by ifconfig command
+		test02 - by ip command
+
+if4-addr-change
+	Verify the IPv4 connectivity is not broken when the IPv4 address
+	is changed many times
+		test01 - by ifconfig command
+
+if4-alias-adddel01
+	Verify the IPv4 connectivity is not broken when an IPv4 alias is
+	added, then deleted many times
+		test01 - by `ifconfig add' command
+		test02 - by `ifconfig ethn:n' command
+		test03 - by ip command
+
+if4-alias-addlarge01
+	Verify the IPv4 connectivity is not broken when a large number of
+	IPv4 alias is created
+		test01 - by `ifconfig add' command
+		test02 - by `ifconfig ethn:n' command
+		test03 - by ip command
+
+if4-route-adddel01
+	Verify the IPv4 connectivity is not broken when an IPv4 route is
+	added, then deleted many times
+		test01 - by route command
+		test02 - by ip command
+
+if4-route-addlarge01
+	Verify the IPv4 connectivity is not broken when a large number of
+	IPv6 route is created
+		test01 - by route command
+		test02 - by ip command
+
+if4-mtu-change01
+	Verify the IPv4 connectivity is not broken when the mtu of interface
+	is changed many times every 5 seconds
+		test01 - by ifconfig command
+		test02 - by ip command
+
+if6-updown
+	Verify the IPv6 connectivity is not broken when the interface is
+	upped and downed many times
+		test01 - by ifconfig command
+		test02 - by ip command
+
+if6-alias-adddel01
+	Verify the IPv6 connectivity is not broken when an IPv6 alias is
+	added, then deleted many times
+		test01 - by ifconfig command
+		test02 - by ip command
+
+if6-alias-addlarge01
+	Verify the IPv6 connectivity is not broken when a large number of
+	IPv6 alias is created
+		test01 - by ifconfig command
+		test02 - by ip command
+
+if6-route-adddel01
+	Verify the IPv6 connectivity is not broken when an IPv6 route is
+	added, then deleted many times
+		test01 - by route command
+		test02 - by ip command
+
+if6-route-addlarge01
+	Verify the IPv6 connectivity is not broken when a large number of
+	IPv6 route is created
+		test01 - by route command
+		test02 - by ip command
+
+if6-mtu-change01
+	Verify the IPv6 connectivity is not broken when the mtu of interface
+	is changed many times every 5 seconds
+		test01 - by ifconfig command
+		test02 - by ip command
+
+
+icmp
+----
+uni-basic
+	Verify that the kernel is not crashed with receiving and sending various
+	size of ICMP message
+
+multi-diffip
+	Verify that the kernel is not crashed with receiving and sending various
+	size of ICMP message at the different IP address(alias) simultaneously
+
+multi-diffnic
+	Verify that the kernel is not crashed with receiving and sending various
+	size of ICMP message at differnt NIC simultaneously
+
+    *) Each section have 7 testcases for IPv4 and 7 testcases for IPv6
+	    test01 - without IPsec / IPComp
+	    test02 - IPsec [ AH / transport ]
+	    test03 - IPsec [ AH / tunnel ]
+	    test04 - IPsec [ ESP / transport ]
+	    test05 - IPsec [ ESP / tunnel ]
+	    test06 - IPComp [ transport ]
+	    test07 - IPComp [ tunnel ]
+
+
+udp
+---
+uni-basic
+	Verify that the kernel is not crashed with receiving and sending UDP
+	datagram with the following conditions
+
+multi-diffip
+	Verify that the kernel is not crashed with receiving and sending UDP
+	datagram at the different IP addresses(aliases)
+
+multi-diffnic
+	Verify that the kernel is not crashed with receiving and sending UDP
+	datagram at the differnt NICs with the following conditions
+
+multi-diffport
+	Verify that the kernel is not crashed with receiving and sending UDP
+	datagram at many different ports with the following conditions
+
+    *) Each section have 7 testcases for IPv4 and 7 testcases for IPv6
+	    test01 - without IPsec / IPComp
+	    test02 - IPsec [ AH / transport ]
+	    test03 - IPsec [ AH / tunnel ]
+	    test04 - IPsec [ ESP / transport ]
+	    test05 - IPsec [ ESP / tunnel ]
+	    test06 - IPComp [ transport ]
+	    test07 - IPComp [ tunnel ]
+
+
+tcp
+---
+uni-basic
+	Verify that the kernel is not crashed by a TCP connection
+
+uni-smallsend
+	Verify that the kernel is not crashed by a connection disabling
+	NAGLE algorithm
+
+uni-winscale
+	Verify that the kernel is not crashed by a connection enabling TCP
+	window scaling
+
+uni-tso
+	Verify that the kernel, whose NIC supports TCP Segmentation Offload,
+	is not crashed by a connection enabling TCP window scaling
+
+uni-pktlossdup
+	Verify that the kernel is not crashed by a TCP connection on an
+	unreliable network (Namely, some of the packets are lost, some of
+	them is duplicated.)
+
+uni-dsackoff
+	Verify that the kernel, when the Duplicate SACK support is off, is not
+	crashed by a TCP connection on an unreliable network (Namely, some of
+	the packet is lost, some of them is duplicated).
+	
+uni-sackoff
+	Verify that the kernel, when both SACK and Duplicate SACK supports are
+	off, is not crashed by a TCP connection on an unreliable network
+	(Namely, some of the packet is lost, some of them is duplicated).
+
+multi-sameport
+	Verify that the kernel is not crashed with multiple connection to the
+	same ports
+
+multi-diffport
+	Verify that the kernel is not crashed with multiple connection to the
+	different ports
+
+multi-diffip
+	Verify that the kernel is not crashed with multiple connection to the
+	different IP address(alias)
+
+multi-diffnic
+	Verify that the kernel is not crashed with multiple connection to the
+	different NIC
+
+    *) Each section have 14 testcases for IPv4 and 14 testcases for IPv6
+	    test01 - without IPsec / IPComp
+	    test02 - IPsec [ AH / transport ]
+	    test03 - IPsec [ AH / tunnel ]
+	    test04 - IPsec [ ESP / transport ]
+	    test05 - IPsec [ ESP / tunnel ]
+	    test06 - IPComp [ transport ]
+	    test07 - IPComp [ tunnel ]
+	    test08 - delayed network - without IPsec / IPComp 
+	    test09 - delayed network - IPsec [ AH / transport ] 
+	    test10 - delayed network - IPsec [ AH / tunnel ]
+	    test11 - delayed network - IPsec [ ESP / transport ]
+	    test12 - delayed network - IPsec [ ESP / tunnel ]
+	    test13 - delayed network - IPComp [ transport ]
+	    test14 - delayed network - IPComp [ tunnel ]
+
+ssh
+---
+ssh4-stress01
+        Verify the ssh connectivity over IPv4 is not broken after creating
+	many ssh sessions
+
+ssh4-stress02
+	Verify the ssh connectivity over IPv4 is not broken after logged
+	in/out by many clients asynchronously for a long time
+
+ssh4-stress03
+	Verify the ssh connectivity over IPv4 is not broken after forwarding
+	TCP traffic for a long time
+
+ssh6-stress01
+	Verify the ssh connectivity over IPv6 is not broken after creating
+	many ssh sessions
+
+ssh6-stress02
+	Verify the ssh connectivity over IPv6 is not broken after logged
+	in/out by many clients asynchronously for a long time
+
+ssh6-stress03
+	Verify the ssh connectivity over IPv6 is not broken after forwarding
+	TCP traffic for a long time
+
+
+dns
+---
+dns4-stress01
+        Verify the dns server or the kernel is not down after handling
+	many name lookup querys
+
+dns4-stress02
+	Verify the dns server or the kernel is not down after handling
+	many reverse lookup querys
+
+dns6-stress01
+	Verify the dns server or the kernel is not down after handling
+	many name lookup querys
+
+dns6-stress02
+	Verify the dns server or the kernel is not down after handling
+	many reverse lookup querys
+
+
+http
+----
+http4-stress01
+        Verify the http server or the kernel is not down after a http client
+	requests large data via IPv4
+
+http4-stress02
+	Verify the http server or the kernel is not down after many http
+	clients request data over IPv4 asynchronously for a long time
+
+http6-stress01
+	Verify the http server or the kernel is not down after a http client
+	requests large data via IPv6
+
+http6-stress02
+	Verify the http server or the kernel is not down after many http
+	clients request data over IPv6 asynchronously for a long time
+
+
+ftp
+---
+ftp4-download-stress01
+	Verify the ftp server or the kernel is not down after a ftp client
+	requests large data via IPv4
+
+ftp4-download-stress02
+	Verify the ftp server or the kernel is not down after many ftp
+	clients request data over IPv4 asynchronously for a long time
+
+ftp6-download-stress01
+	Verify the ftp server or the kernel is not down after a ftp client
+	requests large data via IPv6
+
+ftp6-download-stress02
+	Verify the ftp server or the kernel is not down after many ftp
+	clients request data over IPv6 asynchronously for a long time
+
+ftp4-upload-stress01
+	Verify the ftp server or the kernel is not down after a ftp client
+	uploads a large data via IPv4
+
+ftp4-upload-stress02
+	Verify the ftp server or the kernel is not down after many ftp clients
+	uploads data over IPv4 asynchronously for a long time
+
+ftp6-upload-stress01
+	Verify the ftp server or the kernel is not down after a ftp client
+	uploads a large data via IPv6
+
+ftp6-upload-stress02
+	Verify the ftp server or the kernel is not down after many ftp clients
+	uploads data over IPv6 asynchronously for a long time
