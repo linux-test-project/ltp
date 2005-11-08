@@ -15,7 +15,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=13
@@ -32,16 +31,16 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #1: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		return $RC
 	fi
 
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #1: Invalid output from selinux_semget."
+		echo  "$TCID: Invalid output from selinux_semget."
 	fi
 	return $RC
 }
@@ -57,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #2: sem failed."
+		echo "$TCID   FAIL : sem failed."
 	fi
 	return $RC
 }
@@ -74,10 +73,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0 
 	else
-		tst_resm TFAIL "Test #3: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -94,9 +93,9 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #4: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #4: sem failed."
+		echo "$TCID   FAIL : sem failed."
 	fi
 	return $RC
 }
@@ -112,16 +111,16 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #5: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #5: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		return $RC
 	fi
 
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #5: Invalid output from selinux_semget."
+		echo "$TCID: Invalid output from selinux_semget."
 	fi
 	return $RC	
 }
@@ -137,16 +136,16 @@ test06()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #6: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #6: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		return $RC
 	fi
 
 	ipcid2=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid2 ]
 	then
-		tst_brk TBROK "Test #6: Invalid output from selinux_semget."
+		echo "$TCID: Invalid output from selinux_semget."
 	fi
 	return $RC
 }
@@ -160,10 +159,10 @@ test07()
 	# Make sure they match
 	if [ $ipcid = $ipcid2 ]
 	then
-		tst_resm TPASS "Test #7: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #7: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -180,15 +179,15 @@ test08()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #8: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #8: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		return $RC
 	fi
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #8: Invalid output from selinux_semget."
+		echo "$TCID: Invalid output from selinux_semget."
 	fi
 	return $RC	
 }
@@ -204,10 +203,10 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #9: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #9: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -234,10 +233,10 @@ test10()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = "-$number" ]
 	then
-		tst_resm TPASS "Test #10: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #10: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -260,10 +259,10 @@ test11()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = 0 ]
 	then
-		tst_resm TPASS "Test #11: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #11: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -283,9 +282,9 @@ test12()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #12: sem passed."
+		echo "$TCID   PASS : sem passed."
 	else
-		tst_resm TFAIL "Test #12: sem failed."
+		echo "$TCID   FAIL : sem failed."
 	fi
 	return $RC
 }
@@ -300,10 +299,10 @@ test13()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #13: sem passed."
+		echo "$TCID   PASS : sem passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #13: sem failed."
+		echo "$TCID   FAIL : sem failed."
 		RC=1
 	fi
 	return $RC
@@ -317,7 +316,7 @@ cleanup()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "cleanup: Invalid output from selinux_semget."
+		echo "cleanup: Invalid output from selinux_semget."
 	fi
 	runcon -t test_ipc_base_t ipcrm sem $ipcid
 }

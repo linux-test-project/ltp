@@ -31,8 +31,8 @@ int main(int argc, char **argv)
 	struct msgbuf msgp;
 	size_t msgsz;
 
-	while ((ch = getopt(argc, argv, "k:")) != EOF) {
-		switch (ch) {
+	while ((ch = getopt(argc, argv, "k:")) != -1) {
+		switch ((char)ch) {
 		case 'k':
 			key = atoi(optarg);
 			break;

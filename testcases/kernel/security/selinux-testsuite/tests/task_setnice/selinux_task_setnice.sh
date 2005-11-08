@@ -11,7 +11,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=4
@@ -33,9 +32,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: task_setnice passed."
+		echo "$TCID   PASS : task_setnice passed."
         else
-		tst_resm TFAIL "Test #1: task_setnice failed."
+		echo "$TCID   FAIL : task_setnice failed."
         fi
         return $RC
 }
@@ -52,9 +51,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: task_setnice passed."
+		echo "$TCID   PASS : task_setnice passed."
         else
-		tst_resm TFAIL "Test #2: task_setnice failed."
+		echo "$TCID   FAIL : task_setnice failed."
         fi
         return $RC
 }
@@ -71,10 +70,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: task_setnice passed."
+		echo "$TCID   PASS : task_setnice passed."
 		RC=0
         else
-		tst_resm TFAIL "Test #3: task_setnice failed."
+		echo "$TCID   FAIL : task_setnice failed."
 		RC=1
         fi
 	return $RC
@@ -90,10 +89,10 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #4: task_setnice passed."
+		echo "$TCID   PASS : task_setnice passed."
 		RC=0
         else
-		tst_resm TFAIL "Test #4: task_setnice failed."
+		echo "$TCID   FAIL : task_setnice failed."
 		RC=1
         fi
 	return $RC

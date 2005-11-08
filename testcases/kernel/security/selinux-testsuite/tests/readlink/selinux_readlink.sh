@@ -11,21 +11,20 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=3
 
 	# Remove any leftover test files from prior failed runs.
-	rm -rf $LTPTMP/test_file $LTPTMP/test_symlink
+	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_symlink
 
 	# Create a test file.  
-	touch $LTPTMP/test_file 2>&1
-	chcon -t test_readlink_file_t $LTPTMP/test_file 2>&1
+	touch $SELINUXTMPDIR/test_file 2>&1
+	chcon -t test_readlink_file_t $SELINUXTMPDIR/test_file 2>&1
 
 	# Create a test symbolic link to the test file.
-	ln -sf test_file $LTPTMP/test_symlink 2>&1
-	chcon -h -t test_readlink_link_t $LTPTMP/test_symlink 2>&1
+	ln -sf test_file $SELINUXTMPDIR/test_symlink 2>&1
+	chcon -h -t test_readlink_link_t $SELINUXTMPDIR/test_symlink 2>&1
 }
 
 test01()
@@ -35,13 +34,13 @@ test01()
 	RC=0
 
 	# Verify that test_readlink_t can read and follow this link.
-	runcon -t test_readlink_t -- ls -Ll $LTPTMP/test_symlink
+	runcon -t test_readlink_t -- ls -Ll $SELINUXTMPDIR/test_symlink
 	RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #1: readlink passed."
+                echo "$TCID   PASS : readlink passed."
         else
-                tst_resm TFAIL "Test #1: readlink failed."
+                echo "$TCID   FAIL : readlink failed."
         fi
         return $RC
 }
@@ -53,14 +52,14 @@ test02()
 	RC=0
 
 	# Verify that test_noreadlink_t cannot read or follow this link.
-	runcon -t test_noreadlink_t -- ls -l $LTPTMP/test_symlink 2>&1
+	runcon -t test_noreadlink_t -- ls -l $SELINUXTMPDIR/test_symlink 2>&1
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #2: readlink passed."
+                echo "$TCID   PASS : readlink passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: readlink failed."
+                echo "$TCID   FAIL : readlink failed."
 		RC=1
         fi
 	return $RC
@@ -72,14 +71,14 @@ test03()
 	TST_COUNT=3
 	RC=0
 
-	runcon -t test_noreadlink_t -- ls -Ll $LTPTMP/test_symlink 2>&1
+	runcon -t test_noreadlink_t -- ls -Ll $SELINUXTMPDIR/test_symlink 2>&1
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #3: readlink passed."
+                echo "$TCID   PASS : readlink passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #3: readlink failed."
+                echo "$TCID   FAIL : readlink failed."
 		RC=1
         fi
 	return $RC
@@ -88,7 +87,7 @@ test03()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_file $LTPTMP/test_symlink
+	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_symlink
 }
 
 # Function:     main

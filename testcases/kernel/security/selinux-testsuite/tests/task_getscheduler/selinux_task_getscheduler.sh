@@ -11,7 +11,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
@@ -36,9 +35,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: task_getscheduler passed."
+		echo "$TCID   PASS : task_getscheduler passed."
 	else
-		tst_resm TFAIL "Test #1: task_getscheduler failed."
+		echo "$TCID   FAIL : task_getscheduler failed."
 	fi
 	return $RC
 }
@@ -54,10 +53,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #2: task_getscheduler passed."
+		echo "$TCID   PASS : task_getscheduler passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #2: task_getscheduler failed."
+		echo "$TCID   FAIL : task_getscheduler failed."
 		RC=1
 	fi
 	return $RC

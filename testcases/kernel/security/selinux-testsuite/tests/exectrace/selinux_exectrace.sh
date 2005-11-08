@@ -17,7 +17,7 @@ setup()
 
 	# run tests in $LTPROOT/testcases/bin directory
         SAVEPWD=${PWD}
-        cd ${LTPROOT}/testcases/bin
+        cd ${LTPBIN}
         CURRENTDIR="."
 }
 
@@ -33,9 +33,9 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
         then
-                tst_resm TFAIL "Test #1: exectrace failed."
+                echo "$TCID   FAIL : exectrace failed."
         else
-                tst_resm TPASS "Test #1: exectrace passed."
+                echo "$TCID   PASS : exectrace passed."
         fi
         return $RC
 }
@@ -53,10 +53,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #2: exectrace passed."
+                echo "$TCID   PASS : exectrace passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: exectrace failed."
+                echo "$TCID   FAIL : exectrace failed."
 		RC=1
         fi
 	return $RC

@@ -11,21 +11,20 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=3
 
 	# Remove any leftover test file from prior failed runs.
-	rm -rf $LTPTMP/test_file $LTPTMP/test_file2 $LTPTMP/test_sock
+	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2 $SELINUXTMPDIR/test_sock
 
 	# Create and label the test files.
-	touch $LTPTMP/test_file $LTPTMP/test_file2
-	chcon -t test_fdreceive_file_t $LTPTMP/test_file
-	chcon -t test_fdreceive_file2_t $LTPTMP/test_file2
+	touch $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2
+	chcon -t test_fdreceive_file_t $SELINUXTMPDIR/test_file
+	chcon -t test_fdreceive_file2_t $SELINUXTMPDIR/test_file2
 
 	# Start server process in test_fdreceive_server_t.
-	runcon -t test_fdreceive_server_t selinux_fdreceive_server $LTPTMP/test_sock &
+	runcon -t test_fdreceive_server_t selinux_fdreceive_server $SELINUXTMPDIR/test_sock &
 	PID=$!
 	sleep 1; # Give it a moment to initialize.
 }
@@ -39,13 +38,13 @@ test01()
 
 	# Verify that test_fdreceive_server_t can receive a rw fd to
 	# the test_file from test_fdreceive_client_t.
-	runcon -t test_fdreceive_client_t -- selinux_fdreceive_client $LTPTMP/test_file $LTPTMP/test_sock
+	runcon -t test_fdreceive_client_t -- selinux_fdreceive_client $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_sock
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: fdreceive passed."
+		echo "$TCID   PASS : fdreceive passed."
 	else
-		tst_resm TFAIL "Test #1: fdreceive failed."
+		echo "$TCID   FAIL : fdreceive failed."
 	fi
 	return $RC
 }
@@ -60,14 +59,14 @@ test02()
 	# a rw fd to test_file2. Should fail on file permissions 
 	# to test_file2.
 
-	runcon -t test_fdreceive_client_t -- selinux_fdreceive_client $LTPTMP/test_file2 $LTPTMP/test_sock
+	runcon -t test_fdreceive_client_t -- selinux_fdreceive_client $SELINUXTMPDIR/test_file2 $SELINUXTMPDIR/test_sock
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #2: fdreceive passed."
+		echo "$TCID   PASS : fdreceive passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #2: fdreceive failed."
+		echo "$TCID   FAIL : fdreceive failed."
 		RC=1
 	fi
 	return $RC
@@ -83,14 +82,14 @@ test03()
 	# a fd created by test_fdreceive_client2_t.
 	# Should fail on fd use permission.
 
-	runcon -t test_fdreceive_client2_t -- selinux_fdreceive_client $LTPTMP/test_file $LTPTMP/test_sock
+	runcon -t test_fdreceive_client2_t -- selinux_fdreceive_client $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_sock
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: fdreceive passed."
+		echo "$TCID   PASS : fdreceive passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #3: fdreceive failed."
+		echo "$TCID   FAIL : fdreceive failed."
 		RC=1
 	fi
 	return $RC
@@ -102,7 +101,7 @@ cleanup()
 	kill -s TERM $PID
 
 	# Cleanup.
-	rm -rf $LTPTMP/test_file $LTPTMP/test_file2 $LTPTMP/test_sock
+	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2 $SELINUXTMPDIR/test_sock
 }
 
 # Function:     main

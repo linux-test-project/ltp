@@ -11,17 +11,16 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=8
 
 	# Remove any leftover test directories from prior failed runs.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 
 	# Create a test file.
-	touch $LTPTMP/test_file
-	chcon -t test_open_file_t $LTPTMP/test_file
+	touch $SELINUXTMPDIR/test_file
+	chcon -t test_open_file_t $SELINUXTMPDIR/test_file
 }
 
 test01()
@@ -31,13 +30,13 @@ test01()
         RC=0
 
 	# Verify that test_open_t can open the file for reading and writing.
-	runcon -t test_open_t selinux_fopen $LTPTMP/test_file r+ 2>&1
+	runcon -t test_open_t selinux_fopen $SELINUXTMPDIR/test_file r+ 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #1: open passed."
+                echo "$TCID   PASS : open passed."
         else
-                tst_resm TFAIL "Test #1: open failed."
+                echo "$TCID   FAIL : open failed."
         fi
         return $RC
 }
@@ -50,14 +49,14 @@ test02()
 
 	# Verify that test_noopen_t cannot open the
 	# file for reading or writing.
-	runcon -t test_noopen_t selinux_fopen $LTPTMP/test_file r 2>&1
+	runcon -t test_noopen_t selinux_fopen $SELINUXTMPDIR/test_file r 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #2: open passed."
+                echo "$TCID   PASS : open passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: open failed."
+                echo "$TCID   FAIL : open failed."
 		RC=1
         fi
 	return $RC
@@ -68,14 +67,14 @@ test03()
         TCID="test03"
         TST_COUNT=3
         RC=0
-	runcon -t test_noopen_t selinux_fopen $LTPTMP/test_file w 2>&1
+	runcon -t test_noopen_t selinux_fopen $SELINUXTMPDIR/test_file w 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #3: open passed."
+                echo "$TCID   PASS : open passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #3: open failed."
+                echo "$TCID   FAIL : open failed."
 		RC=1
         fi
 	return $RC
@@ -87,14 +86,14 @@ test04()
         TST_COUNT=4
         RC=0
 
-	runcon -t test_noopen_t selinux_fopen $LTPTMP/test_file r+ 2>&1
+	runcon -t test_noopen_t selinux_fopen $SELINUXTMPDIR/test_file r+ 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #4: open passed."
+                echo "$TCID   PASS : open passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #4: open failed."
+                echo "$TCID   FAIL : open failed."
 		RC=1
         fi
 	return $RC
@@ -108,14 +107,14 @@ test05()
         RC=0
 
 	# Verify that test_append_t cannot open the file for writing.
-	runcon -t test_append_t selinux_fopen $LTPTMP/test_file w 2>&1
+	runcon -t test_append_t selinux_fopen $SELINUXTMPDIR/test_file w 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #5: open passed."
+                echo "$TCID   PASS : open passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #5: open failed."
+                echo "$TCID   FAIL : open failed."
 		RC=1
         fi
 	return $RC
@@ -128,13 +127,13 @@ test06()
         RC=0
 
 	# Verify that test_append_t can open the file for appending.
-	runcon -t test_append_t selinux_fopen $LTPTMP/test_file a 2>&1
+	runcon -t test_append_t selinux_fopen $SELINUXTMPDIR/test_file a 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #6: open passed."
+                echo "$TCID   PASS : open passed."
         else
-                tst_resm TFAIL "Test #6: open failed."
+                echo "$TCID   FAIL : open failed."
         fi
 	return $RC
 }
@@ -147,14 +146,14 @@ test07()
 
 	# Verify that test_append_t cannot open the file 
 	# for appending and then clear the o_append flag.
-	runcon -t test_append_t selinux_append2write $LTPTMP/test_file 2>&1
+	runcon -t test_append_t selinux_append2write $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #7: open passed."
+                echo "$TCID   PASS : open passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #7: open failed."
+                echo "$TCID   FAIL : open failed."
 		RC=1
         fi
 	return $RC
@@ -168,13 +167,13 @@ test08()
 
 	# Verify that test_open_t can open the file for appending
 	# and then clear the o_append flag.
-	runcon -t test_open_t selinux_append2write $LTPTMP/test_file 2>&1
+	runcon -t test_open_t selinux_append2write $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #8: open passed."
+                echo "$TCID   PASS : open passed."
         else
-                tst_resm TFAIL "Test #8: open failed."
+                echo "$TCID   FAIL : open failed."
         fi
 	return $RC
 }
@@ -182,7 +181,7 @@ test08()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 }
 
 # Function:     main

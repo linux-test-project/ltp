@@ -18,12 +18,12 @@ fi
 
 # set the LTPROOT directory
 cd `dirname $0`
-export LTPROOT=${PWD}
+LTPROOT=${PWD}
 echo $LTPROOT | grep testscripts > /dev/null 2>&1
 if [ $? -eq 0 ] 
 then
 	cd ..
-	export LTPROOT=${PWD}
+	LTPROOT=${PWD}
 fi
 
 # set the PATH to include testcase/bin
@@ -76,20 +76,18 @@ cd $LTPROOT
 
 echo "Running the SELinux testsuite..."
 
-# /tmp/selinux directory is used by this testsuite. However, 
-# it needs to have the test_file_t for testcases to run successfully. 
-# Each component of path needs this type. 
-# Save and restore /tmp's type.
+# Save and later restore /tmp's type.
 SAVETMPTYPE=`ls -Zd /tmp | awk '{ print $4 }' | awk -F: '{ print $3 }'`
 chcon -t test_file_t /tmp
 
 mkdir /tmp/selinux > /dev/null 2>&1
 chcon -t test_file_t /tmp/selinux
+export SELINUXTMPDIR=/tmp/selinux
 
 # The ../testcases/bin directory needs to have the test_file_t type.
 # Save and restore later.
 SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
-chcon -R -t test_file_t $LTPROOT/testcases/bin
+chcon -t test_file_t $LTPROOT/testcases/bin
 
 $LTPROOT/pan/pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/results/selinux.logfile -o $LTPROOT/results/selinux.outfile -p -f $LTPROOT/runtest/selinux  
 
@@ -100,7 +98,7 @@ chcon -t $SAVETMPTYPE /tmp
 rm -rf /tmp/selinux
 
 # Restore type of .../testcases/bin directory
-chcon -R -t $SAVEBINTYPE $LTPROOT/testcases/bin
+chcon -t $SAVEBINTYPE $LTPROOT/testcases/bin
 
 echo "Removing test policy and reloading original policy..."
 cd $LTPROOT/testcases/kernel/security/selinux-testsuite/policy

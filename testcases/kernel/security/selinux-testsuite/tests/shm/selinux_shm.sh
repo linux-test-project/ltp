@@ -15,7 +15,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=10
@@ -32,16 +31,16 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: shm passed."
+		echo "$TCID   PASS : shm passed."
 	else
-		tst_resm TFAIL "Test #1: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		return $RC
 	fi
 
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #1: Invalid output from selinux_shmget."
+		echo "$TCID: Invalid output from selinux_shmget."
 	fi
 	return $RC
 }
@@ -57,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: shm passed."
+		echo "$TCID   PASS : shm passed."
 	else
-		tst_resm TFAIL "Test #2: shm failed."
+		echo "$TCID   FAIL : shm failed."
 	fi
 	return $RC
 }
@@ -75,16 +74,16 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #3: shm passed."
+		echo "$TCID   PASS : shm passed."
 	else
-		tst_resm TFAIL "Test #3: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		return $RC
 	fi
 
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #3: Invalid output from selinux_shmget."
+		echo "$TCID: Invalid output from selinux_shmget."
 	fi
 	return $RC
 }
@@ -100,16 +99,16 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #4: shm passed."
+		echo "$TCID   PASS : shm passed."
 	else
-		tst_resm TFAIL "Test #4: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		return $RC
 	fi
 
 	ipcid2=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid2 ]
 	then
-		tst_brk TBROK "Test #4: Invalid output from selinux_shmget."
+		echo "$TCID: Invalid output from selinux_shmget."
 	fi
 	return $RC
 }
@@ -123,10 +122,10 @@ test05()
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
-		tst_resm TPASS "Test #5: shm passed."
+		echo "$TCID   PASS : shm passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #5: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		RC=1
 	fi
 	return $RC
@@ -143,10 +142,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #6: shm passed."
+		echo "$TCID   PASS : shm passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #6: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		RC=1	
 	fi
 	return $RC
@@ -176,10 +175,10 @@ test07()
 
         if [ $result = "-$number" ]
         then
-                tst_resm TPASS "Test #7: shm passed."
+                echo "$TCID   PASS : shm passed."
                 RC=0
         else
-                tst_resm TFAIL "Test #7: shm failed."
+                echo "$TCID   FAIL : shm failed."
                 RC=1
         fi
 	return $RC
@@ -202,10 +201,10 @@ test08()
         # Change this if there is a better way to do this check in shell.
         if [ $result = 0 ]
         then
-                tst_resm TPASS "Test #8: shm passed."
+                echo "$TCID   PASS : shm passed."
                 RC=0
         else
-                tst_resm TFAIL "Test #8: shm failed."
+                echo "$TCID   FAIL : shm failed."
                 RC=1
         fi
 	return $RC
@@ -226,9 +225,9 @@ test09()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #9: shm passed."
+		echo "$TCID   PASS : shm passed."
 	else
-		tst_resm TFAIL "Test #9: shm failed."
+		echo "$TCID   FAIL : shm failed."
 	fi
 	return $RC
 }
@@ -243,10 +242,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #10: shm passed."
+		echo "$TCID   PASS : shm passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #10: shm failed."
+		echo "$TCID   FAIL : shm failed."
 		RC=1
 	fi
 	return $RC
@@ -260,7 +259,7 @@ cleanup()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_resm TINFO "cleanup: Invalid output from selinux_shmget."
+		echo "cleanup: Invalid output from selinux_shmget."
 	fi
 	runcon -t test_ipc_base_t ipcrm shm $ipcid
 }

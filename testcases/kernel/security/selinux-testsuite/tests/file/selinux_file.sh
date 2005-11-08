@@ -13,39 +13,38 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=14
 
 	# Clean up from a previous run
-	rm -f $LTPTMP/temp_file 2>&1
-	rm -f $LTPTMP/temp_file2 2>&1
-	rm -f $LTPTMP/temp_file3 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file2 2>&1
+	rm -f $SELINUXTMPDIR/temp_file3 2>&1
 
 	#
 	# Create the temp files
 	#
-	dd if=/dev/zero of=$LTPTMP/temp_file count=2 ibs=1024 2>&1 > /dev/null
-	dd if=/dev/zero of=$LTPTMP/temp_file2 count=2 ibs=1024 2>&1 > /dev/null
-	dd if=/dev/zero of=$LTPTMP/temp_file3 count=2 ibs=1024 2>&1 > /dev/null
-	chmod 775 $LTPTMP/temp_file 2>&1 > /dev/null
-	chmod 775 $LTPTMP/temp_file2 2>&1 > /dev/null
+	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file count=2 ibs=1024 2>&1 > /dev/null
+	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file2 count=2 ibs=1024 2>&1 > /dev/null
+	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file3 count=2 ibs=1024 2>&1 > /dev/null
+	chmod 775 $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
+	chmod 775 $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
 
 	#
 	# Change the context for the file the good domain only has access to.
 	#
-	chcon -t fileop_file_t $LTPTMP/temp_file 2>&1 > /dev/null
+	chcon -t fileop_file_t $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
 
 	#
 	# Change the context for the r/w file for the bad domain
 	#
-	chcon -t nofileop_rw_file_t $LTPTMP/temp_file2 2>&1 > /dev/null
+	chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
 
 	#
 	# Change the context for the read-only access file for the bad domain
 	#
-	chcon -t nofileop_ra_file_t $LTPTMP/temp_file3 2>&1 > /dev/null
+	chcon -t nofileop_ra_file_t $SELINUXTMPDIR/temp_file3 2>&1 > /dev/null
 
 	# 
 	# Change the context of the test executable
@@ -69,13 +68,13 @@ test01()
 	# The first test hits basic permissions, while the remaining 
 	# tests hit specific hooks.
 	#
-	runcon -t test_fileop_t -- touch $LTPTMP/temp_file 2>&1
+	runcon -t test_fileop_t -- touch $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #1: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #1: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -86,13 +85,13 @@ test02()
 	TST_COUNT=2
 	RC=0
 
-	runcon -t test_fileop_t -- selinux_seek $LTPTMP/temp_file 2>&1
+	runcon -t test_fileop_t -- selinux_seek $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #2: file failed."
+		echo "$TCID   FAIL : file failed."
         else
-		tst_resm TPASS "Test #2: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -103,13 +102,13 @@ test03()
 	TST_COUNT=3
 	RC=0
 
-	runcon -t test_fileop_t -- selinux_mmap $LTPTMP/temp_file $good_file_sid 2>&1
+	runcon -t test_fileop_t -- selinux_mmap $SELINUXTMPDIR/temp_file $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #3: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #3: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -120,13 +119,13 @@ test04()
 	TST_COUNT=4
 	RC=0
 
-	runcon -t test_fileop_t -- selinux_mprotect $LTPTMP/temp_file $good_file_sid 2>&1
+	runcon -t test_fileop_t -- selinux_mprotect $SELINUXTMPDIR/temp_file $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #4: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #4: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -137,13 +136,13 @@ test05()
 	TST_COUNT=5
 	RC=0
 
-	runcon -t test_fileop_t -- selinux_lock $LTPTMP/temp_file $good_file_sid 2>&1
+	runcon -t test_fileop_t -- selinux_lock $SELINUXTMPDIR/temp_file $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #5: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #5: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -154,13 +153,13 @@ test06()
 	TST_COUNT=6
 	RC=0
 
-	runcon -t test_fileop_t -- selinux_fcntl $LTPTMP/temp_file 2>&1
+	runcon -t test_fileop_t -- selinux_fcntl $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #6: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #6: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -177,16 +176,16 @@ test07()
 
 	# Run testcase in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
-	cd ${LTPROOT}/testcases/bin
+	cd ${LTPBIN}
 	CURRENTDIR="."
 
 	runcon -t test_fileop_t -- $CURRENTDIR/selinux_sigiotask 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #7: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #7: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	
 	# return to $LTPROOT directory
@@ -206,14 +205,14 @@ test08()
 	# The first test hits basic permissions, while the remaining 
 	# tests hit specific hooks.
 	#
-	runcon -t test_nofileop_t -- touch $LTPTMP/temp_file 2>&1
+	runcon -t test_nofileop_t -- touch $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #8: file passed."
+		echo "$TCID   PASS : file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #8: file failed."
+		echo "$TCID   FAIL : file failed."
 		RC=1
 	fi
 	return $RC
@@ -235,13 +234,13 @@ test09()
 	# between the time that the file was opened and the seek took place. 
 	# So, for now, we just test the basic access which should succeed.
 
-	runcon -t test_nofileop_t -- selinux_seek $LTPTMP/temp_file2 2>&1
+	runcon -t test_nofileop_t -- selinux_seek $SELINUXTMPDIR/temp_file2 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #9: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #9: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -252,14 +251,14 @@ test10()
 	TST_COUNT=10
 	RC=0
 
-	runcon -t test_nofileop_t -- selinux_mmap $LTPTMP/temp_file2 $good_file_sid 2>&1
+	runcon -t test_nofileop_t -- selinux_mmap $SELINUXTMPDIR/temp_file2 $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #10: file passed."
+		echo "$TCID   PASS : file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #10: file failed."
+		echo "$TCID   FAIL : file failed."
 		RC=1
 	fi
 	return $RC
@@ -271,15 +270,15 @@ test11()
 	TST_COUNT=11
 	RC=0
 
-	chcon -t nofileop_rw_file_t $LTPTMP/temp_file2 2>&1 > /dev/null
-	runcon -t test_nofileop_t -- selinux_mprotect $LTPTMP/temp_file2 $good_file_sid 2>&1
+	chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
+	runcon -t test_nofileop_t -- selinux_mprotect $SELINUXTMPDIR/temp_file2 $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #11: file passed."
+		echo "$TCID   PASS : file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #11: file failed."
+		echo "$TCID   FAIL : file failed."
 		RC=1
 	fi
 	return $RC
@@ -291,15 +290,15 @@ test12()
 	TST_COUNT=12
 	RC=0
 
-	chcon -t nofileop_rw_file_t $LTPTMP/temp_file2 2>&1 > /dev/null
-	runcon -t test_nofileop_t -- selinux_lock $LTPTMP/temp_file2 $good_file_sid 2>&1
+	chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
+	runcon -t test_nofileop_t -- selinux_lock $SELINUXTMPDIR/temp_file2 $good_file_sid 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #12: file passed."
+		echo "$TCID   PASS : file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #12: file failed."
+		echo "$TCID   FAIL : file failed."
 		RC=1
 	fi
 	return $RC
@@ -311,19 +310,19 @@ test13()
 	TST_COUNT=13
 	RC=0
 
-	chcon -t nofileop_rw_file_t $LTPTMP/temp_file2 2>&1 > /dev/null
+	chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
 
 	#
 	# Check the fcntl for the bad domain.
 	# This uses the read-only accessable file.
 	#
-	runcon -t test_nofileop_t -- selinux_nofcntl $LTPTMP/temp_file3 2>&1
+	runcon -t test_nofileop_t -- selinux_nofcntl $SELINUXTMPDIR/temp_file3 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #13: file failed."
+		echo "$TCID   FAIL : file failed."
 	else
-		tst_resm TPASS "Test #13: file passed."
+		echo "$TCID   PASS : file passed."
 	fi
 	return $RC
 }
@@ -341,10 +340,10 @@ test14()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #14: file passed."
+		echo "$TCID   PASS : file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #14: file failed."
+		echo "$TCID   FAIL : file failed."
 		RC=1
 	fi
 	return $RC

@@ -14,7 +14,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=15
@@ -31,9 +30,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #1: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi
 	return $RC
 }
@@ -47,7 +46,7 @@ test02()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #2:msg failed:Invalid output from selinux_msgget."
+		echo "$TCID:msg failed:Invalid output from selinux_msgget."
 		return 1
 	fi
 
@@ -56,9 +55,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #2: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi
 	return $RC
 }
@@ -74,9 +73,9 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #3: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #3: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi
 	return $RC
 }
@@ -90,7 +89,7 @@ test04()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #4:msg failed:Invalid output from selinux_msgget."
+		echo  "$TCID:msg failed:Invalid output from selinux_msgget."
 		return 1
 	fi
 
@@ -99,14 +98,14 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #4: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		return $RC
 	fi
 
 	ipcid2=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid2 ]
 	then
-		tst_brk TBROK "Test#4:msg failed:Invalid output from selinux_msgget."
+		echo "$TCID:msg failed:Invalid output from selinux_msgget."
 		RC=1
 		return $RC 
 	fi
@@ -114,10 +113,10 @@ test04()
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
-		tst_resm TPASS "Test #4: msg passed"
+		echo "$TCID   PASS : msg passed"
 		RC=0
 	else
-		tst_resm TFAIL "Test #4: msg failed"
+		echo "$TCID   FAIL : msg failed"
 		RC=1
 	fi
 	return $RC
@@ -134,9 +133,9 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #5: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #5: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi
 	return $RC
 }
@@ -152,10 +151,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #6: msg passed."
+		echo "$TCID   PASS : msg passed."
 		RC=0 
 	else
-		tst_resm TFAIL "Test #6: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -182,10 +181,10 @@ test07()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = "-$number" ]
 	then
-		tst_resm TPASS "Test #7: msg passed."
+		echo "$TCID   PASS : msg passed."
 		RC=0 
 	else
-		tst_resm TFAIL "Test #7: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -208,10 +207,10 @@ test08()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = 0 ]
 	then
-		tst_resm TPASS "Test #8: msg passed."
+		echo "$TCID   PASS : msg passed."
 		RC=0 
 	else
-		tst_resm TFAIL "Test #8: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -233,7 +232,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #9: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		return $RC
 	fi
 
@@ -242,7 +241,7 @@ test09()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "Test #9:msg failed:Invalid output from selinux_msgget."
+		echo "$TCID:msg failed:Invalid output from selinux_msgget."
 		RC=1
 		return $RC
 	fi
@@ -251,7 +250,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #9: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		return $RC
 	fi	
 
@@ -260,9 +259,9 @@ test09()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #9: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #9: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi	
 	return $RC
 }
@@ -277,9 +276,9 @@ test10()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #10: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #10: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi	
 	return $RC
 }
@@ -295,10 +294,10 @@ test11()
 	RC=$?
 	if [ $RC -ne 0 ]	#write denied
 	then
-		tst_resm TPASS "Test #11: msg passed."
+		echo "$TCID   PASS : msg passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #11: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		RC=1
 	fi	
 	return $RC
@@ -314,9 +313,9 @@ test12()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #12: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #12: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi	
 	return $RC
 }
@@ -331,9 +330,9 @@ test13()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #13: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #13: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi	
 	return $RC
 }
@@ -349,9 +348,9 @@ test14()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #14: msg passed."
+		echo "$TCID   PASS : msg passed."
 	else
-		tst_resm TFAIL "Test #14: msg failed."
+		echo "$TCID   FAIL : msg failed."
 	fi	
 	return $RC
 }
@@ -366,10 +365,10 @@ test15()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #15: msg passed."
+		echo "$TCID   PASS : msg passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #15: msg failed."
+		echo "$TCID   FAIL : msg failed."
 		RC=1
 	fi	
 	return $RC
@@ -382,7 +381,7 @@ cleanup()
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
 	if [ ! $ipcid ]
 	then
-		tst_brk TBROK "cleanup in msg failed:Invalid output from selinux_msgget."
+		echo "cleanup in msg failed:Invalid output from selinux_msgget."
 		return
 	fi
 

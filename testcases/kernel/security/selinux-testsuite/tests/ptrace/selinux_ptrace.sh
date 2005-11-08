@@ -11,14 +11,13 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
 
 	# run tests in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
-	cd $LTPROOT/testcases/bin
+	cd ${LTPBIN}
 	CURRENTDIR=.
 
 	# Start the process to be traced.
@@ -42,10 +41,10 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #1: ptrace passed."
+                echo "$TCID   PASS : ptrace passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #1: ptrace failed."
+                echo "$TCID   FAIL : ptrace failed."
 		RC=1
         fi
 	return $RC
@@ -62,9 +61,9 @@ test02()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #2: ptrace passed."
+                echo "$TCID   PASS : ptrace passed."
         else
-                tst_resm TFAIL "Test #2: ptrace failed."
+                echo "$TCID   FAIL : ptrace failed."
         fi
 	return $RC
 }

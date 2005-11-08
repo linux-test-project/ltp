@@ -11,18 +11,17 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=3
 
 	# Remove any leftover test file from prior failed runs.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 
 	# Create a test file with the test_relabel_oldtype_t
 	# type for use in the tests.
-	touch $LTPTMP/test_file
-	chcon -t test_relabel_oldtype_t $LTPTMP/test_file
+	touch $SELINUXTMPDIR/test_file
+	chcon -t test_relabel_oldtype_t $SELINUXTMPDIR/test_file
 }
 
 test01()
@@ -32,13 +31,13 @@ test01()
 	RC=0
 
 	# Verify that test_relabel_t can relabel the file.
-	runcon -t test_relabel_t chcon system_u:object_r:test_relabel_newtype_t $LTPTMP/test_file 2>&1
+	runcon -t test_relabel_t chcon system_u:object_r:test_relabel_newtype_t $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #1: relabel passed."
+                echo "$TCID   PASS : relabel passed."
         else
-                tst_resm TFAIL "Test #1: relabel failed."
+                echo "$TCID   FAIL : relabel failed."
         fi
         return $RC
 }
@@ -50,18 +49,18 @@ test02()
 	RC=0
 
 	# Revert.
-	chcon -t test_relabel_oldtype_t $LTPTMP/test_file
+	chcon -t test_relabel_oldtype_t $SELINUXTMPDIR/test_file
 
 	# Verify that test_norelabelfrom_t cannot relabel the file.
 	# Should fail on the relabelfrom permission check to the original type.
-	runcon -t test_norelabelfrom_t -- chcon -t test_relabel_newtype_t $LTPTMP/test_file 2>&1
+	runcon -t test_norelabelfrom_t -- chcon -t test_relabel_newtype_t $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #2: relabel passed."
+                echo "$TCID   PASS : relabel passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: relabel failed."
+                echo "$TCID   FAIL : relabel failed."
 		RC=1
         fi
 	return $RC
@@ -76,14 +75,14 @@ test03()
 	# Verify that test_norelabelto_t cannot relabel
 	# the file to the new type.
 	# Should fail on the relabelto permission check to the new type.
-	runcon -t test_norelabelto_t -- chcon -t test_relabel_newtype_t $LTPTMP/test_file 2>&1
+	runcon -t test_norelabelto_t -- chcon -t test_relabel_newtype_t $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #3: relabel passed."
+                echo "$TCID   PASS : relabel passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #3: relabel failed."
+                echo "$TCID   FAIL : relabel failed."
 		RC=1
         fi
 	return $RC
@@ -92,7 +91,7 @@ test03()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 }
 
 # Function:     main

@@ -11,7 +11,6 @@
 # any later version.
 #
 
-
 setup()
 {
         export TCID="setup"
@@ -34,9 +33,9 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TFAIL "Test #1: capable_net failed."
+                echo "$TCID   FAIL : capable_net failed."
         else
-                tst_resm TPASS "Test #1: capable_net passed."
+                echo "$TCID   PASS : capable_net passed."
         fi
         return $RC
 }	
@@ -52,9 +51,9 @@ test02()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TFAIL "Test #2: capable_net failed."
+                echo "$TCID   FAIL : capable_net failed."
         else
-                tst_resm TPASS "Test #2: capable_net passed."
+                echo "$TCID   PASS : capable_net passed."
         fi
         return $RC
 }
@@ -73,9 +72,9 @@ test03()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TFAIL "Test #3: capable_net failed."
+                echo "$TCID   FAIL : capable_net failed."
         else
-                tst_resm TPASS "Test #3: capable_net passed."
+                echo "$TCID   PASS : capable_net passed."
         fi
         return $RC
 }
@@ -95,10 +94,10 @@ test04()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #4: capable_net passed."
+                echo "$TCID   PASS : capable_net passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #4: capable_net failed."
+                echo "$TCID    FAIL : capable_net failed."
 		RC=1
         fi
 	return $RC
@@ -118,10 +117,10 @@ test05()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #5: capable_net passed."
+                echo "$TCID   PASS : capable_net passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #5: capable_net failed."
+                echo "$TCID   FAIL : capable_net failed."
 		RC=1
         fi
 	return $RC

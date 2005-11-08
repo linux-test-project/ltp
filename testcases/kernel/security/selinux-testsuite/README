@@ -6,6 +6,13 @@ Also, /usr/sbin should be included in PATH to ensure SELinux utilities
 such as getenforce are found. The test_selinux.sh script adds /usr/sbin
 to the PATH. 
 
+There are two ways to run the SELinux testcases:
+	1. testsuite - all testcases
+	2. individual testcases
+
+ 
+Run as a Testsuite
+--------------------	
 You must first do a top-level 'make' and 'make install' to build and
 install the LTP test harness, libraries and tools.
 From the top of your LTP directory, i.e. .../ltp-full-<version>,
@@ -13,29 +20,30 @@ execute the following,
 	make
 	make install (must be root)
 
-To build the testsuite, you must first compile the testcases and then 
-install them. Thus, change into the selinux-testsuite directory
+Now build the SELinux testsuite. First compile the testcases and then 
+install them. Do this by changing into the selinux-testsuite directory
+(cd to $LTPROOT/testcases/kernel/security/selinux-testsuite/tests)
 and from the command line execute the following,
 	make 
 	make install (must be root)
 
 To run the testsuite, change to the top level directory within
-the LTP tree. From the top level directory cd to the testscripts
-directory and from the command line execute,
+the LTP tree (cd to $LTPROOT). From the top level directory cd 
+to the testscripts directory and from the command line execute,
 	./test_selinux.sh
 
-to start the test_selinux.sh script. This script builds the test policy 
-in the selinux-testsuite/policy directory and runs the testsuite.
-After the testcases have completed, the test policy will be removed and
-the original policy will be restored. Thus, if the test_selinux.sh
-script is not allowed to complete, you will manually have to restore
-your system's original policy. This can be done by changing
-to the the selinux-testsuite/policy directory and from
-the commandline, issue a "make cleanup" to remove the test policy
-and restore the original policy.
+This script builds the test policy in the selinux-testsuite/policy 
+directory and runs the testsuite. After the testcases have completed, 
+the test policy will be removed and the original policy will be 
+restored. Thus, if the test_selinux.sh script is not allowed 
+to complete, you may manually have to restore your system's 
+original policy. This can be done by changing to the the 
+selinux-testsuite/policy directory and from the commandline, 
+issue a "make cleanup" to remove the test policy and restore the 
+original policy.
 
 Results of the test run can be found in the results directory,
-which resides in the top-level LTP directory.
+which resides in the top-level LTP directory (cd to $LTPROOT/results).
 Currently, 3 files should exist in the results directory after 
 the selinux-testsuite has been run,
 	selinux   
@@ -43,6 +51,47 @@ the selinux-testsuite has been run,
 	selinux.outfile
 
 The 'selinux' file is known as the active-file.
-It contains tgas, pids, and commands being run.
-The 'selinux.logfile' contains exit information for each command run.
-The 'selinux.outfile' contains all test output. 
+It contains tags, pids, and commands being run.
+The 'selinux.logfile' contains exit information for each testcase.
+View this file if you want to know which SELinux testcases
+passed or failed.
+The 'selinux.outfile' contains all test output. View this file
+if you want more detailed information about each testcase's execution.
+
+
+Run Individual Testcases
+--------------------------
+First build the test policy manually. Do this by first changing 
+to the selinux-testsuite policy directory (cd to 
+$LTPROOT/testcases/kernel/security/selinux-testsuite/policy)
+and build the policy by doing a, 
+	make load
+
+This will build and install the test policy files. Once the 
+policy has been installed, individuall testcases can be run. 
+To run an individual selinux testcase, change to the tests directory 
+(cd to $LTPROOT/testcases/kernel/security/selinux-testsuite/tests)
+and execute,
+	runtest.sh <testcase>
+	<testcase> - names one of the directories off of the
+	selinux-testsuite/tests diretcory. For example, 
+				runtest.sh capable_file
+				runtest.sh capable_net
+				runtest.sh entrypoint
+				runtest.sh task_create
+
+Most output, errors, and whether testcases have failed or succeeded 
+will be sent to standard output for viewing.
+
+To debug a test and get more detailed information,
+a "set -x" can be added to the top of the *.sh file in the 
+testcase directory of the testcase being debugged.	
+
+To remove the test policy and restore original policy,
+cd to selinux-testsuite/policy directory and execute,
+	make cleanup
+
+Remember to remove test policy and restore original policy after
+running/debugging individual testcases and it is desired to restore
+system policy. None of the testscripts will do this for you when 
+running in "individual" mode.

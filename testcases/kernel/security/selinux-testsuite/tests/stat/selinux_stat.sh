@@ -11,18 +11,17 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0 
 	export TST_TOTAL=2
 
 	# Remove any leftover test file from prior failed runs.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 
 	# Create a test file with the test_stat_file_t type
 	# for use in the tests.
-	touch $LTPTMP/test_file
-	chcon -t test_stat_file_t $LTPTMP/test_file
+	touch $SELINUXTMPDIR/test_file
+	chcon -t test_stat_file_t $SELINUXTMPDIR/test_file
 }
 
 test01()
@@ -32,13 +31,13 @@ test01()
 	RC=0
 
 	# Verify that test_stat_t can get attributes on the file.
-	runcon -t test_stat_t -- ls -l $LTPTMP/test_file 2>&1
+	runcon -t test_stat_t -- ls -l $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
-                tst_resm TPASS "Test #1: stat passed."
+                echo "$TCID   PASS : stat passed."
         else
-                tst_resm TFAIL "Test #1: stat failed."
+                echo "$TCID   FAIL : stat failed."
         fi
         return $RC
 }
@@ -50,14 +49,14 @@ test02()
 	RC=0
 
 	# Verify that test_nostat_t cannot get attributes on the file.
-	runcon -t test_nostat_t -- ls -l $LTPTMP/test_file 2>&1
+	runcon -t test_nostat_t -- ls -l $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
-                tst_resm TPASS "Test #2: stat passed."
+		echo "$TCID   PASS : stat passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: stat failed."
+		echo "$TCID   FAIL : stat failed."
 		RC=1
         fi
 	return $RC
@@ -66,7 +65,7 @@ test02()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_file
+	rm -rf $SELINUXTMPDIR/test_file
 }
 
 # Function:     main

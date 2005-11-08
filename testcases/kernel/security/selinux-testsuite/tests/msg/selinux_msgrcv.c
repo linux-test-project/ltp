@@ -8,6 +8,7 @@
  *
  */
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,15 +24,15 @@ struct msgbuf {
 
 int main(int argc, char **argv)
 {
-	char ch;
+	int opt;
 	int key = 0x8888;
 	int id;
 	int error;
 	struct msgbuf msgp;
 	size_t msgsz;
 
-	while ((ch = getopt(argc, argv, "k:")) != EOF) {
-		switch (ch) {
+	while ((opt = getopt(argc, argv, "k:")) != -1) {
+		switch ((char)opt) {
 		case 'k':
 			key = atoi(optarg);
 			break;

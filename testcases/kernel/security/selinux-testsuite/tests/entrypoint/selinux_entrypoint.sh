@@ -11,13 +11,12 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=2
 
         # Clean up from a previous run
-        rm -f $LTPTMP/true 2>&1
+        rm -f $SELINUXTMPDIR/true 2>&1
 }
 
 test01()
@@ -32,10 +31,10 @@ test01()
 	RC=$?   # this should fail
         if [ $RC -ne 0 ]
         then
-		tst_resm TPASS "Test #1: entrypoint passed."
+		echo "$TCID   PASS : entrypoint passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #1: entrypoint failed."
+		echo "$TCID   FAIL : entrypoint failed."
 		RC=1
 	fi
 	return $RC
@@ -48,16 +47,16 @@ test02()
         RC=0
 
 	# Set up a program with the entrypoint type for this domain.
-	cp /bin/true $LTPTMP/true
-	chcon -t test_entrypoint_execute_t $LTPTMP/true
+	cp /bin/true $SELINUXTMPDIR/true
+	chcon -t test_entrypoint_execute_t $SELINUXTMPDIR/true
 
 	# Verify that test_entrypoint_t can be entered via this program.
-	runcon -t test_entrypoint_t $LTPTMP/true
+	runcon -t test_entrypoint_t $SELINUXTMPDIR/true
         if [ $RC -ne 0 ]
         then
-		tst_resm TFAIL "Test #2: entrypoint failed."
+		echo "$TCID   FAIL : entrypoint failed."
 	else
-		tst_resm TPASS "Test #2: entrypoint passed."
+		echo "$TCID   PASS : entrypoint passed."
 	fi
 	return $RC
 }
@@ -65,7 +64,7 @@ test02()
 cleanup()
 {
 	# Cleanup.
-	rm -f $LTPTMP/true
+	rm -f $SELINUXTMPDIR/true
 }
 
 # Function:     main

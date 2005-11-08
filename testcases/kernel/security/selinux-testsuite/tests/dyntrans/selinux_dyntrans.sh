@@ -11,7 +11,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
@@ -29,10 +28,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]	# we expect this to fail
 	then
-		tst_resm TPASS "Test #1: dyntrans passed."
+		echo "$TCID   PASS : dyntrans passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #1: dynstrans failed."
+		echo "$TCID   FAIL : dynstrans failed."
 		RC=1
 	fi
 	return $RC
@@ -49,9 +48,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: dyntrans passed."
+		echo "$TCID   PASS : dyntrans passed."
 	else
-		tst_resm TFAIL "Test #2: dynstrans failed."
+		echo "$TCID   FAIL : dynstrans failed."
 	fi
 	return $RC
 }

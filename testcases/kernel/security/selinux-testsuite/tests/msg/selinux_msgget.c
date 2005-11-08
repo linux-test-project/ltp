@@ -21,8 +21,8 @@ int main(int argc, char **argv)
 	int id;
 	int perms = 0444;
 
-	while ((ch = getopt(argc, argv, "k:p:")) != EOF) {
-		switch (ch) {
+	while ((ch = getopt(argc, argv, "k:p:")) != -1) {
+		switch ((char)ch) {
 		case 'k':
 			key = atoi(optarg);
 			break;

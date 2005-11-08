@@ -11,14 +11,13 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
 
 	# run tests in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
-	cd ${LTPROOT}/testcases/bin
+	cd ${LTPBIN}
 	CURRENTDIR="."
 }
 
@@ -34,9 +33,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: dyntrace passed."
+		echo "$TCID  PASS : dyntrace passed."
         else
-                tst_resm TFAIL "Test #1: dyntrace failed."
+                echo "$TCID   FAIL : dyntrace failed."
         fi
         return $RC
 }
@@ -55,10 +54,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #2: dyntrace passed."
+		echo "$TCID   PASS : dyntrace passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #2: dyntrace failed."
+                echo "$TCID   FAIL : dyntrace failed."
 		RC=1
         fi
 	return $RC

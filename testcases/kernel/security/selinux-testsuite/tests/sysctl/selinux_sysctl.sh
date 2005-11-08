@@ -11,7 +11,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=4
@@ -31,9 +30,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: sysctl passed."
+		echo "$TCID   PASS : sysctl passed."
 	else
-		tst_resm TFAIL "Test #1: sysctl failed."
+		echo "$TCID   FAIL : sysctl failed."
 	fi
 	return $RC
 }
@@ -49,9 +48,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: sysctl passed."
+		echo "$TCID   PASS : sysctl passed."
 	else
-		tst_resm TFAIL "Test #2: sysctl failed."
+		echo "$TCID   FAIL : sysctl failed."
 	fi
 	return $RC
 }
@@ -66,10 +65,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: sysctl passed."
+		echo "$TCID   PASS : sysctl passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #3: sysctl failed."
+		echo "$TCID   FAIL : sysctl failed."
 		RC=1
 	fi
 	return $RC
@@ -85,10 +84,10 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #4: sysctl passed."
+		echo "$TCID   PASS : sysctl passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #4: sysctl failed."
+		echo "$TCID   FAIL : sysctl failed."
 		RC=1
 	fi
 	return $RC

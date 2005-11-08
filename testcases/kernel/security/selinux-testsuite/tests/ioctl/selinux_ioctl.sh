@@ -13,15 +13,14 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
 
 	# Create a temporary file for testing
-	rm -f $LTPTMP/temp_file 2>&1
-	touch $LTPTMP/temp_file 2>&1
-	chcon -t test_ioctl_file_t $LTPTMP/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	touch $SELINUXTMPDIR/temp_file 2>&1
+	chcon -t test_ioctl_file_t $SELINUXTMPDIR/temp_file 2>&1
 }
 
 test01()
@@ -32,13 +31,13 @@ test01()
 
 	# Attempt to perform the ioctls on the temproary
 	# file as the good domain
-	runcon -t test_ioctl_t -- selinux_ioctl $LTPTMP/temp_file 2>&1
+	runcon -t test_ioctl_t -- selinux_ioctl $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: ioctl passed."
+		echo "$TCID   PASS : ioctl passed."
 	else
-		tst_resm TFAIL "Test #1: ioctl failed."
+		echo "$TCID   FAIL : ioctl failed."
 	fi
 	return $RC
 }
@@ -53,20 +52,20 @@ test02()
 	# Attempt to perform the ioctls on the temproary file as the bad domain
 	# The test program, test_noioctl.c, determines success/failure for the
 	# individual calls, so we expect success always from that program.
-	runcon -t test_noioctl_t -- selinux_noioctl $LTPTMP/temp_file 2>&1
+	runcon -t test_noioctl_t -- selinux_noioctl $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #2: ioctl passed."
+		echo "$TCID   PASS : ioctl passed."
 	else
-		tst_resm TFAIL "Test #2: ioctl failed."
+		echo "$TCID   FAIL : ioctl failed."
 	fi
 	return $RC
 }
 
 cleanup()
 {
-	rm -f $LTPTMP/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
 }
 
 # Function:     main

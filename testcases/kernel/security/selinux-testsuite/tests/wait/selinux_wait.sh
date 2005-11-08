@@ -11,14 +11,13 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=2
 
 	# run tests in $LTPROOT/testcases/bin directory
         SAVEPWD=${PWD}
-        cd ${LTPROOT}/testcases/bin
+        cd ${LTPBIN}
         CURRENTDIR="."
 }
 
@@ -33,9 +32,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: wait passed."
+		echo "$TCID   PASS : wait passed."
 	else
-		tst_resm TFAIL "Test #1: wait failed."
+		echo "$TCID   FAIL : wait failed."
 	fi
 	return $RC
 }
@@ -51,10 +50,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #1: wait passed."
+		echo "$TCID   PASS : wait passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #1: wait failed."
+		echo "$TCID   FAIL : wait failed."
 		RC=1
 	fi
 	return $RC

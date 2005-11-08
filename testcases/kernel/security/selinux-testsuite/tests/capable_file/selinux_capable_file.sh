@@ -13,14 +13,13 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=10
 
 	# Clean up from a previous run
-	rm -f $LTPTMP/temp_file 2>&1
-	rm -f $LTPTMP/temp_file2 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file2 2>&1
 }
 
 #
@@ -34,14 +33,14 @@ test01()
 	RC=0
 
 	# CAP_CHOWN
-	touch $LTPTMP/temp_file 2>&1
-	runcon -t test_fcap_t -- chown daemon $LTPTMP/temp_file 2>&1
+	touch $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_fcap_t -- chown daemon $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	else
-		tst_resm TFAIL "Test #1: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 	fi
 	return $RC
 }
@@ -53,14 +52,14 @@ test02()
 	RC=0
 
 	# CAP_FOWNER
-	chown daemon.tty $LTPTMP/temp_file 2>&1
-	runcon -t test_fcap_t -- chmod 0400 $LTPTMP/temp_file 2>&1
+	chown daemon.tty $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_fcap_t -- chmod 0400 $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then 
-		tst_resm TPASS "Test #2: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	else
-		tst_resm TFAIL "Test #2: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 	fi
 	return $RC
 }
@@ -73,17 +72,17 @@ test03()
 	RC=0
 
 	# CAP_FSETID
-	MODE_BEFORE=`stat --format %a $LTPTMP/temp_file` 
-	runcon -t test_fcap_t -- chmod g+rs $LTPTMP/temp_file 2>&1
-	MODE_AFTER=`stat --format %a $LTPTMP/temp_file`
+	MODE_BEFORE=`stat --format %a $SELINUXTMPDIR/temp_file` 
+	runcon -t test_fcap_t -- chmod g+rs $SELINUXTMPDIR/temp_file 2>&1
+	MODE_AFTER=`stat --format %a $SELINUXTMPDIR/temp_file`
 
 	# prior mode should not be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		tst_resm TFAIL "Test #3: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 		RC=1
 	else
-		tst_resm TPASS "Test #3: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	fi
 	return $RC
 }
@@ -95,13 +94,13 @@ test04()
 	RC=0
 
 	# CAP_LEASE
-	runcon -t test_fcap_t --  selinux_lease $LTPTMP/temp_file 2>&1
+	runcon -t test_fcap_t --  selinux_lease $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #4: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	else
-		tst_resm TFAIL "Test #4: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 	fi
 	return $RC
 }
@@ -114,13 +113,13 @@ test05()
 	RC=0
 
 	# CAP_MKNOD
-	runcon -t test_fcap_t -- mknod $LTPTMP/temp_file2 c 5 5 2>&1
+	runcon -t test_fcap_t -- mknod $SELINUXTMPDIR/temp_file2 c 5 5 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #5: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	else
-		tst_resm TFAIL "Test #5: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 	fi
 	return $RC
 }
@@ -135,15 +134,15 @@ test06()
 	RC=0
 
 	# CAP_CHOWN
-	touch $LTPTMP/temp_file 2>&1
-	runcon -t test_nofcap_t -- chown daemon $LTPTMP/temp_file 2>&1
+	touch $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_nofcap_t -- chown daemon $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #6: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #6: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -156,15 +155,15 @@ test07()
 	RC=0
 
 	# CAP_FOWNER
-	chown daemon.tty $LTPTMP/temp_file 2>&1
-	runcon -t test_nofcap_t -- chmod 0400 $LTPTMP/temp_file 2>&1
+	chown daemon.tty $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_nofcap_t -- chmod 0400 $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #7: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #7: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -177,16 +176,16 @@ test08()
 	RC=0
 
 	# CAP_FSETID - Domain needs CAP_FOWNER
-	MODE_BEFORE=`stat --format %a $LTPTMP/temp_file`
-	runcon -t test_resfcap_t -- chmod g+rs $LTPTMP/temp_file 2>&1
+	MODE_BEFORE=`stat --format %a $SELINUXTMPDIR/temp_file`
+	runcon -t test_resfcap_t -- chmod g+rs $SELINUXTMPDIR/temp_file 2>&1
 
-	MODE_AFTER=`stat --format %a $LTPTMP/temp_file`
+	MODE_AFTER=`stat --format %a $SELINUXTMPDIR/temp_file`
 	# prior mode should be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		tst_resm TPASS "Test #8: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 	else
-		tst_resm TFAIL "Test #8: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 	 	RC=1	
 	fi 
 	return $RC
@@ -199,14 +198,14 @@ test09()
 	RC=0
 
 	# CAP_LEASE - Needs DAC_OVERRIDE
-	runcon -t test_resfcap_t --  selinux_lease $LTPTMP/temp_file 2>&1
+	runcon -t test_resfcap_t --  selinux_lease $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #9: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #9: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -219,14 +218,14 @@ test10()
 	RC=0
 
 	# CAP_MKNOD - Domain needs CAP_DAC_OVERRIDE
-	runcon -t test_resfcap_t -- mknod $LTPTMP/temp_file2 c 5 5 2>&1
+	runcon -t test_resfcap_t -- mknod $SELINUXTMPDIR/temp_file2 c 5 5 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #10: capable_file passed."
+		echo "$TCID   PASS : capable_file passed."
 		RC=0
 	else
-		tst_resm FAIL "Test #10: capable_file failed."
+		echo "$TCID   FAIL : capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -234,8 +233,8 @@ test10()
 
 cleanup()
 {
-	rm -f $LTPTMP/temp_file 2>&1
-	rm -f $LTPTMP/temp_file2 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file2 2>&1
 }
 
 # Function:     main

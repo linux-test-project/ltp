@@ -17,7 +17,7 @@ allow capabledomain reserved_port_t:tcp_socket name_bind;
 
 # Allow all of these domains to be entered from admin via certain utils.
 domain_trans(sysadm_t, sbin_t, capabledomain)
-ifdef(`targeted_policy', `', `
+ifdef(`targeted_policy', `
 domain_trans(sysadm_t, ifconfig_exec_t, capabledomain)
 ')
 

@@ -13,13 +13,12 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=8
 
         # Clean up from a previous run
-        rm -f $LTPTMP/temp_file 2>&1
+        rm -f $SELINUXTMPDIR/temp_file 2>&1
 }
 
 #
@@ -32,14 +31,14 @@ test01()
         RC=0
 
 	# CAP_SYS_RAWIO
-	touch $LTPTMP/temp_file 2>&1
-	runcon -t test_scap_t -- selinux_rawio $LTPTMP/temp_file 2>&1
+	touch $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_scap_t -- selinux_rawio $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #1: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 	else
-		tst_resm TPASS "Test #1: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 	fi
 	return $RC
 }
@@ -51,13 +50,13 @@ test02()
         RC=0
 
 	# CAP_SYS_CHROOT
-	runcon -t test_scap_t -- selinux_chroot $LTPTMP/ 2>&1
+	runcon -t test_scap_t -- selinux_chroot $SELINUXTMPDIR/ 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #2: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 	else
-		tst_resm TPASS "Test #2: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 	fi
 	return $RC
 }
@@ -76,9 +75,9 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #3: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 	else
-		tst_resm TPASS "Test #3: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 	fi
 	return $RC
 }
@@ -96,9 +95,9 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #4: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 	else
-		tst_resm TPASS "Test #4: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 	fi
 	return $RC
 }
@@ -120,15 +119,15 @@ test05()
         RC=0
 
 	# CAP_SYS_RAWIO
-	touch $LTPTMP/temp_file 2>&1
-	runcon -t test_noscap_t -- selinux_rawio $LTPTMP/temp_file 2>&1
+	touch $SELINUXTMPDIR/temp_file 2>&1
+	runcon -t test_noscap_t -- selinux_rawio $SELINUXTMPDIR/temp_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #5: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #5: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -141,14 +140,14 @@ test06()
         RC=0
 
 	# CAP_SYS_CHROOT
-	runcon -t test_noscap_t -- selinux_chroot $LTPTMP/ 2>&1
+	runcon -t test_noscap_t -- selinux_chroot $SELINUXTMPDIR/ 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #6: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #6: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -165,10 +164,10 @@ test07()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #7: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #7: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -185,10 +184,10 @@ test08()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #8: capable_sys passed."
+		echo "$TCID   PASS : capable_sys passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #8: capable_sys failed."
+		echo "$TCID   FAIL : capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -197,7 +196,7 @@ test08()
 cleanup()
 {
 	# Remove files
-	rm -f $LTPTMP/temp_file 2>&1
+	rm -f $SELINUXTMPDIR/temp_file 2>&1
 }
 
 # Function:     main

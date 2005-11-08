@@ -11,7 +11,6 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 #include <sys/sem.h>
 
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)

@@ -11,22 +11,21 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=6
 
 	# Clean up from a previous run
-	rm -f $LTPTMP/test_dir 2>&1
+	rm -f $SELINUXTMPDIR/test_dir 2>&1
 
 	# Create a test directory with the test_addname_dir_t type 
 	# for use in the tests.
-	mkdir $LTPTMP/test_dir 2>&1
-	chcon -t test_link_dir_t $LTPTMP/test_dir
+	mkdir $SELINUXTMPDIR/test_dir 2>&1
+	chcon -t test_link_dir_t $SELINUXTMPDIR/test_dir
 
 	# Create a test file with the test_link_file_t type.
-	touch $LTPTMP/test_dir/test_file
-	chcon -t test_link_file_t $LTPTMP/test_dir/test_file
+	touch $SELINUXTMPDIR/test_dir/test_file
+	chcon -t test_link_file_t $SELINUXTMPDIR/test_dir/test_file
 }
 
 test01()
@@ -38,13 +37,13 @@ test01()
 	# Verify that test_link_t can create another hard link 
 	# to the test file in the test directory.
 
-	runcon -t test_link_t ln $LTPTMP/test_dir/test_file $LTPTMP/test_dir/test_link 2>&1
+	runcon -t test_link_t ln $SELINUXTMPDIR/test_dir/test_file $SELINUXTMPDIR/test_dir/test_link 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: link passed."
+		echo "$TCID   PASS : link passed."
 	else
-		tst_resm TFAIL "Test #1: link failed."
+		echo "$TCID   FAIL : link failed."
 	fi
 	return $RC
 }
@@ -58,14 +57,14 @@ test02()
 	# Verify that test_nolink_t cannot create a hard link
 	# to the test file.
 	# Should fail on the link permission check.
-	runcon -t test_nolink_t ln $LTPTMP/test_dir/test_file $LTPTMP/test_dir/test_link2 2>&1
+	runcon -t test_nolink_t ln $SELINUXTMPDIR/test_dir/test_file $SELINUXTMPDIR/test_dir/test_link2 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #2: link passed."
+		echo "$TCID   PASS : link passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #2: link failed."
+		echo "$TCID   FAIL : link failed."
 		RC=1
 	fi
 	return $RC
@@ -80,14 +79,14 @@ test03()
 	# Verify that test_nolink2_t cannot create a hard link in 
 	# the test directory.
 	# Should fail on the add_name permission check.
-	runcon -t test_nolink2_t ln $LTPTMP/test_dir/test_file $LTPTMP/test_dir/test_link3 2>&1
+	runcon -t test_nolink2_t ln $SELINUXTMPDIR/test_dir/test_file $SELINUXTMPDIR/test_dir/test_link3 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: link passed."
+		echo "$TCID   PASS : link passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #3: link failed."
+		echo "$TCID   FAIL : link failed."
 		RC=1
 	fi
 	return $RC
@@ -101,13 +100,13 @@ test04()
 
 	# Verify that test_unlink_t can remove a hard link 
 	# to the test file.
-	runcon -t test_unlink_t -- rm -f $LTPTMP/test_dir/test_link 2>&1
+	runcon -t test_unlink_t -- rm -f $SELINUXTMPDIR/test_dir/test_link 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #4: link passed."
+		echo "$TCID   PASS : link passed."
 	else
-		tst_resm TFAIL "Test #4: link failed."
+		echo "$TCID   FAIL : link failed."
 	fi
 	return $RC
 }
@@ -121,14 +120,14 @@ test05()
 	# Verify that test_nounlink_t cannot remove a 
 	# hard link to the test file.
 	# Should fail on the unlink permission check.
-	runcon -t test_nounlink_t -- rm -f $LTPTMP/test_dir/test_file 2>&1
+	runcon -t test_nounlink_t -- rm -f $SELINUXTMPDIR/test_dir/test_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #5: link passed."
+		echo "$TCID   PASS : link passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #5: link failed."
+		echo "$TCID   FAIL : link failed."
 		RC=1
 	fi
 	return $RC
@@ -143,14 +142,14 @@ test06()
 	# Verify that test_nounlink2_t cannot remove 
 	# a hard link in the test directory.
 	# Should fail on the remove_name permission check.
-	runcon -t test_nounlink2_t -- rm -f $LTPTMP/test_dir/test_file 2>&1
+	runcon -t test_nounlink2_t -- rm -f $SELINUXTMPDIR/test_dir/test_file 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #6: link passed."
+		echo "$TCID   PASS : link passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #6: link failed."
+		echo "$TCID   FAIL : link failed."
 		RC=1
 	fi
 	return $RC
@@ -159,7 +158,7 @@ test06()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_dir
+	rm -rf $SELINUXTMPDIR/test_dir
 }
 
 # Function:     main

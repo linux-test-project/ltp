@@ -11,18 +11,17 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=5
 
 	# Remove any leftover test directory from prior failed runs.
-	rm -rf $LTPTMP/test_dir
+	rm -rf $SELINUXTMPDIR/test_dir
 
 	# Create a test directory with the test_mkdir_dir_t type 
 	# for use in the tests.
-	mkdir $LTPTMP/test_dir 2>&1
-	chcon -t test_mkdir_dir_t $LTPTMP/test_dir
+	mkdir $SELINUXTMPDIR/test_dir 2>&1
+	chcon -t test_mkdir_dir_t $SELINUXTMPDIR/test_dir
 }
 
 test01()
@@ -32,13 +31,13 @@ test01()
 	RC=0
 
 	# Verify that test_addname_t can create a subdirectory.
-	runcon -t test_addname_t mkdir $LTPTMP/test_dir/test1 2>&1
+	runcon -t test_addname_t mkdir $SELINUXTMPDIR/test_dir/test1 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #1: mkdir passed."
+		echo "$TCID   PASS : mkdir passed."
 	else
-		tst_resm TFAIL "Test #1: mkdir failed."
+		echo "$TCID   FAIL : mkdir failed."
 	fi
 	return $RC
 }
@@ -51,14 +50,14 @@ test02()
 
 	# Verify that test_noaddname_t cannot create a subdirectory.
 	# Should fail on the add_name permission check to the test directory.
-	runcon -t test_noaddname_t mkdir $LTPTMP/test_dir/test2 2>&1
+	runcon -t test_noaddname_t mkdir $SELINUXTMPDIR/test_dir/test2 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #2: mkdir passed."
+		echo "$TCID   PASS : mkdir passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #2: mkdir failed."
+		echo "$TCID   FAIL : mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -72,14 +71,14 @@ test03()
 
 	# Verify that test_nosearch_t cannot create a subdirectory.
 	# Should fail on the search permission check to the test directory.
-	runcon -t test_nosearch_t mkdir $LTPTMP/test_dir/test2 2>&1
+	runcon -t test_nosearch_t mkdir $SELINUXTMPDIR/test_dir/test2 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #3: mkdir passed."
+		echo "$TCID   PASS : mkdir passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #3: mkdir failed."
+		echo "$TCID   FAIL : mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -95,13 +94,13 @@ test04()
 	# with a different type.
 	# This requires add_name to test_mkdir_dir_t and create
 	# to test_create_dir_t.
-	runcon -t test_create_t -- mkdir --context=system_u:object_r:test_create_dir_t $LTPTMP/test_dir/test3 2>&1
+	runcon -t test_create_t -- mkdir --context=system_u:object_r:test_create_dir_t $SELINUXTMPDIR/test_dir/test3 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		tst_resm TPASS "Test #4: mkdir passed."
+		echo "$TCID   PASS : mkdir passed."
 	else
-		tst_resm TFAIL "Test #4: mkdir failed."
+		echo "$TCID   FAIL : mkdir failed."
 	fi
 	return $RC
 }
@@ -115,14 +114,14 @@ test05()
 	# Verify that test_nocreate_t cannot create 
 	# a subdirectory with a different type.
 	# Should fail on create check to the new type.
-	runcon -t test_nocreate_t -- mkdir --context=system_u:object_r:test_create_dir_t $LTPTMP/test_dir/test4 2>&1
+	runcon -t test_nocreate_t -- mkdir --context=system_u:object_r:test_create_dir_t $SELINUXTMPDIR/test_dir/test4 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #5: mkdir passed."
+		echo "$TCID   PASS : mkdir passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #5: mkdir failed."
+		echo "$TCID   FAIL : mkdir failed."
 		RC=1
 	fi
 	return $RC
@@ -131,7 +130,7 @@ test05()
 cleanup()
 {
 	# Cleanup.
-	rm -rf $LTPTMP/test_dir
+	rm -rf $SELINUXTMPDIR/test_dir
 }
 
 # Function:     main

@@ -36,8 +36,8 @@ int main(int argc, char **argv)
 	union semun arg;
 	struct semid_ds semid_buf;
 
-	while ((ch = getopt(argc, argv, "k:-n:")) != EOF) {
-		switch (ch) {
+	while ((ch = getopt(argc, argv, "k:-n:")) != -1) {
+		switch ((char)ch) {
 		case 'k':
 			key = atoi(optarg);
 			break;

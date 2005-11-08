@@ -11,13 +11,12 @@
 
 setup()
 {
-        LTPTMP="/tmp/selinux"
         export TCID="setup"
         export TST_COUNT=0
 	export TST_TOTAL=2
 
         # Clean up from a previous run
-        rm -f $LTPTMP/true 2>&1
+        rm -f $SELINUXTMPDIR/true 2>&1
 }
 
 test01()
@@ -27,18 +26,18 @@ test01()
         RC=0
 
 	# Set up a program with the denied type for this domain.
-	cp /bin/true $LTPTMP/true
-	chcon -t test_execute_notrans_denied_t $LTPTMP/true
+	cp /bin/true $SELINUXTMPDIR/true
+	chcon -t test_execute_notrans_denied_t $SELINUXTMPDIR/true
 
 	# Verify that test_execute_notrans_t cannot execute the denied type.
-	runcon -t test_execute_notrans_t -- bash -c $LTPTMP/true 2>&1
+	runcon -t test_execute_notrans_t -- bash -c $SELINUXTMPDIR/true 2>&1
 	RC=$?		# this should fail
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #1: execute_no_trans passed."
+		echo "$TCID   PASS : execute_no_trans passed."
 		RC=0
         else
-                tst_resm TFAIL "Test #1: execute_no_trans failed."
+                echo "$TCID   FAIL : execute_no_trans failed."
 		RC=1
         fi
 	return $RC
@@ -51,16 +50,16 @@ test02()
         RC=0
 
 	# Set up a program with the allowed type for this domain.
-	chcon -t test_execute_notrans_allowed_t $LTPTMP/true
+	chcon -t test_execute_notrans_allowed_t $SELINUXTMPDIR/true
 
 	# Verify that test_execute_notrans_t can execute the allowed type.
-	runcon -t test_execute_notrans_t -- bash -c $LTPTMP/true 2>&1
+	runcon -t test_execute_notrans_t -- bash -c $SELINUXTMPDIR/true 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #2: execute_no_trans failed."
+		echo "$TCID   FAIL : execute_no_trans failed."
         else
-                tst_resm TPASS "Test #2: execute_no_trans passed."
+                echo "$TCID   PASS : execute_no_trans passed."
         fi
 	return $RC
 }
@@ -68,7 +67,7 @@ test02()
 cleanup()
 {
 	# Cleanup.
-	rm -f $LTPTMP/true
+	rm -f $SELINUXTMPDIR/true
 }
 
 # Function:     main

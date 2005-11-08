@@ -11,7 +11,6 @@
 
 setup()
 {
-	LTPTMP="/tmp/selinux"
 	export TCID="setup"
 	export TST_COUNT=0
 	export TST_TOTAL=2
@@ -29,10 +28,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TPASS "Test #1: domain_trans passed."
+		echo "$TCID   PASS : domain_trans passed."
 		RC=0
 	else
-		tst_resm TFAIL "Test #1: domain_trans failed."
+		echo "$TCID   FAIL : domain_trans failed."
 		RC=1
 	fi
 	return $RC
@@ -49,9 +48,9 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_resm TFAIL "Test #2: domain_trans failed."
+		echo "$TCID   FAIL : domain_trans failed."
 	else
-		tst_resm TPASS "Test #2: domain_trans passed."
+		echo "$TCID   PASS : domain_trans passed."
 	fi
 	return $RC
 }
