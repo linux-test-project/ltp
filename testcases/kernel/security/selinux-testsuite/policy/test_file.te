@@ -33,8 +33,9 @@ domain_trans(sysadm_t, bin_t, fileopdomain)
 domain_trans(sysadm_t, sbin_t, fileopdomain)
 domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)
 domain_auto_trans(test_nofileop_t, fileop_exec_t, fileop_t)
-ifdef(`targeted_policy', `', `
+ifdef(`fsadm.te', `
 domain_trans(sysadm_t, fsadm_exec_t, fileopdomain)
+', `
 ')
 
 # Allow the sysadm domain to create/remove a temporary file. 

@@ -23,8 +23,9 @@ can_exec_any(capabledomain)
 # Allow all of these domains to be entered from admin roles.
 domain_trans(sysadm_t, test_file_t, capabledomain)
 domain_trans(sysadm_t, bin_t, capabledomain)
-ifdef(`targeted_policy', `', `
+ifdef(`su.te', `
 domain_trans(sysadm_t, su_exec_t, capabledomain)
+', `
 ')
 
 # Allow these domains to create a temporay file.

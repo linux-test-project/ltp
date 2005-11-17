@@ -51,3 +51,4 @@ allow testdomain locale_t:{ file lnk_file } r_file_perms;
 allow testdomain privfd:fd use;
 
 r_dir_file(testdomain, selinux_config_t)
+can_getsecurity(testdomain)

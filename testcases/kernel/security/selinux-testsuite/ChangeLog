@@ -1,0 +1,5 @@
+11-07-2005	Joy Latten	<latten@austin.ibm.com>
+ -Fixed bugs found on Pseries.
+ -Modified test_selinux.sh and added runtest.sh script to enable
+  individual testcases to be run
+ -Added this ChangeLog.	

@@ -18,12 +18,3 @@ domain_trans(test_transition_fromdomain_t,bin_t,test_transition_todomain_t)
 # Allow all of these domains to be entered from the sysadm domain.
 domain_trans(sysadm_t, bin_t, transitiondomain)
 
-# Allow both domains access to selinuxfs, so runcon will work in testscript
-allow test_transition_fromdomain_t security_t:dir { read search getattr };
-allow test_transition_fromdomain_t security_t:file { getattr read write };
-allow test_transition_fromdomain_t security_t: security { check_context compute_av compute_create compute_relabel compute_user };
-allow test_transition_fromdomain_t security_t:security *;
-allow test_transition_notfromdomain_t security_t:dir { read search getattr };
-allow test_transition_notfromdomain_t security_t:file { getattr read write };
-allow test_transition_notfromdomain_t security_t: security { check_context compute_av compute_create compute_relabel compute_user };
-allow test_transition_notfromdomain_t security_t:security *;
