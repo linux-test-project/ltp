@@ -1,3 +1,7 @@
+11-15-2005	Changes by Stephen Smalley submitted by Joy Latten
+ -Applied several changes to fix policy in the test policy files as 
+  indicated by Stephen Smalley.
+
 11-07-2005	Joy Latten	<latten@austin.ibm.com>
  -Fixed bugs found on Pseries.
  -Modified test_selinux.sh and added runtest.sh script to enable
