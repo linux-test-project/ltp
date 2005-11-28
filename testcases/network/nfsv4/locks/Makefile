@@ -4,4 +4,4 @@ All:
 install:
 
 clean:
-	rm -f locktests
+	rm -f locktests; rm -f test*; rm -f locktests.c~
