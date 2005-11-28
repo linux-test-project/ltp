@@ -543,6 +543,14 @@ void maitre(struct donneesPub *dp)
                 a=CLEAN;
                 for(i=0; i<clnt; i++)
                     write(dp->lclnt[i][1], &a, sizeof(int));
+                /* Get CLEAN AcK from slaves */
+                for(i=0; i<clnt; i++){
+                    if(read(reception, &a,sizeof(int))<0){
+                        perror("Can't read master pipe");
+                        exit(1);
+                    }
+                } 
+                
                 /* close and open file */
                 close(dp->fd);
                 initTest(dp);
@@ -749,6 +757,11 @@ void * esclave(void *donnees)
 
             case CLEAN:
                 close(ftest);
+                /* Send CLEAN Ack */
+                if(write(maitre,&resultat,sizeof(int))<0){
+                    P("Slave num %d\n", df->dpr->whoami);
+                    perror("Slave\n");
+                }
                 etat=SYNC;
                 continue;
             
