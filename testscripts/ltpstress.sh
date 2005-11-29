@@ -252,7 +252,7 @@ ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 -o $output2 &
 ${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 -o $output3 &
 
-echo "Running LTP Stress for $hours hour(s) using $TESTMEM Mb"
+echo "Running LTP Stress for $hours hour(s) using $memsize Mb"
 echo ""
 echo "Test output recorded in:"
 echo "        $output1"
