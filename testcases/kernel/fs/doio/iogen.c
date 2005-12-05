@@ -79,7 +79,7 @@
 
 #define RAW_IO(_flags_)	((_flags_) & (O_RAW | O_SSD))
 
-#ifndef linux
+#ifndef __linux__
 extern char 	*sys_errlist[];
 #endif
 #define SYSERR	strerror(errno)

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fstatfs01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: fstatfs01.c,v 1.2 2005/12/05 19:15:20 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -162,7 +162,7 @@ main(int ac, char **av)
 	/* 
 	 * Call fstatfs(2) 
 	 */
-#ifdef linux
+#ifdef __linux__
 #define FSTATFSCALL fstatfs(fd, &stats)
 #else
 #define FSTATFSCALL fstatfs(fd, &stats, sizeof(struct statfs), 0)

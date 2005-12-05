@@ -396,7 +396,7 @@ int forker_mode=0;
 int reexec=REXEC_INIT;		/* reexec info */
 char *exec_path=NULL;
 
-char *strrchr();
+/*char *strrchr();*/
 
 char *filename;                 /* name of file specified by user */
 char *cptr;			/* temp char pointer */

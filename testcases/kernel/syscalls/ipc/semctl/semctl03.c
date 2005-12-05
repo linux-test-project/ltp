@@ -52,9 +52,21 @@
 
 #include "ipcsem.h"
 
+#ifdef _XLC_COMPILER
+#define SEMUN_CAST
+#else
+#define SEMUN_CAST (union semun)
+#endif
+
 char *TCID = "semctl03";
 int TST_TOTAL = 4;
 extern int Tst_count;
+
+#ifdef _XLC_COMPILER
+#define SEMUN_CAST 
+#else
+#define SEMUN_CAST (union semun)
+#endif
 
 int exp_enos[] = {EINVAL, EFAULT, 0};
 
@@ -70,17 +82,17 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - the IPC command is not valid */
-	{&sem_id_1, -1, (union semun)&sem_ds, EINVAL},
+	{&sem_id_1, -1, SEMUN_CAST &sem_ds, EINVAL},
 
 	/* EINVAL - the semaphore ID is not valid */
-	{&bad_id, IPC_STAT, (union semun)&sem_ds, EINVAL},
+	{&bad_id, IPC_STAT, SEMUN_CAST &sem_ds, EINVAL},
 
 	/* EFAULT - the union arg is invalid when expecting "ushort *array" */
-	{&sem_id_1, GETALL, (union semun)-1, EFAULT},
+	{&sem_id_1, GETALL, SEMUN_CAST -1, EFAULT},
 
 	/* EFAULT - the union arg is invalid when expecting */
 	/* "struct semid_ds *buf */
-	{&sem_id_1, IPC_SET, (union semun)-1, EFAULT}
+	{&sem_id_1, IPC_SET, SEMUN_CAST -1, EFAULT}
 };
 
 int main(int ac, char **av)

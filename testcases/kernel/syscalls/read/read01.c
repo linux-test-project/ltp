@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.2 2004/05/18 15:58:51 robbiew Exp $ */
+/* $Id: read01.c,v 1.3 2005/12/05 19:15:20 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -121,7 +121,7 @@
 /*
  * Set READ_BLOCK_SIZE to the block size of the system.
  */
-#ifdef linux
+#ifdef __linux__
 #define READ_BLOCK_SIZE DEV_BSIZE
 #else
 #define READ_BLOCK_SIZE BSIZE

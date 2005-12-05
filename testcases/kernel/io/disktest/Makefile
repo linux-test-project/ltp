@@ -23,8 +23,11 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.7 2005/08/02 16:15:52 robbiew Exp $
+# $Id: Makefile,v 1.8 2005/12/05 19:15:19 mridge Exp $
 # $Log: Makefile,v $
+# Revision 1.8  2005/12/05 19:15:19  mridge
+# Updates from Jennifer Monk to enable compiling w/o errors using XLC
+#
 # Revision 1.7  2005/08/02 16:15:52  robbiew
 # Applied patch from Mike Frysinger:
 # find attached a patch to fix up the install target in disktest to match the
@@ -165,7 +168,7 @@ CFLAGS= -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" 
 all: $(OBJS) disktest
 
 disktest: $(OBJS) $(SRCS) $(ALLHDRS)
-	$(CC) $(CFLAGS) -lpthread -odisktest $(OBJS)
+	$(CC) $(CFLAGS) -lpthread -o disktest $(OBJS)
 
 main.o: main.c $(ALLHDRS)
 sfunc.o: sfunc.c sfunc.h $(GBLHDRS)

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek03.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: lseek03.c,v 1.2 2005/12/05 19:15:20 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -198,7 +198,7 @@ and SIGSYS signal was received.",
 But SIGSYS signal was NOT received.",
 		            fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));
 		    }
-#elif defined(linux)
+#elif defined(__linux__)
 	            tst_resm(TPASS,
 			    "lseek(%s, 1, %d) Failed, errno=%d : %s",
 		            fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));

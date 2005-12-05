@@ -3223,7 +3223,7 @@ do_rw(req)
 		/*
 		 * If the syscall was async, wait for I/O to complete
 		 */
-#ifndef linux
+#ifndef __linux__
 		if(sy->sy_flags & SY_ASYNC) {
 			for(i=0; i < nents; i++) {
 				aio_wait(s->aioid[i]);
@@ -3756,11 +3756,11 @@ int nbytes;
 	static int	mturn = 0;	/* which memory type to use */
 	struct memalloc	*M;
 	char		filename[255];
-#ifdef linux
+#ifdef __linux__
 	struct shmid_ds shm_ds;
 #endif
 
-#ifdef linux
+#ifdef __linux__
 	bzero( &shm_ds, sizeof(struct shmid_ds) );
 #endif
 
@@ -4655,7 +4655,7 @@ int	aio_id;
 	return 0;
 }
 
-#ifndef linux
+#ifndef __linux__
 int
 aio_wait(aio_id)
 int	aio_id;

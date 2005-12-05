@@ -91,6 +91,17 @@ struct sembuf sops;
 #define SEM2	2	/* semaphore to use for GETPID and GETVAL */
 #define SEM4	4	/* semaphore to use for GETNCNT and GETZCNT */
 #define ONE	1
+#ifdef _XLC_COMPILER
+#define SEMUN_CAST 
+#else
+#define SEMUN_CAST (union semun)
+#endif
+
+#ifdef _XLC_COMPILER
+#define SEMUN_CAST
+#else
+#define SEMUN_CAST (union semun)
+#endif
 
 int pid_arr[NCHILD];
 
@@ -105,25 +116,25 @@ struct test_case_t {
 	union semun arg;
 	void (*func_setup)();	/* the setup function if necessary */
 } TC[] = {
-	{0, IPC_STAT, func_stat, (union semun)&buf, NULL},
+	{0, IPC_STAT, func_stat, SEMUN_CAST &buf, NULL},
 
-	{0, IPC_SET, func_set, (union semun)&buf, set_setup},
+	{0, IPC_SET, func_set, SEMUN_CAST &buf, set_setup},
 
-	{0, GETALL, func_gall, (union semun)array, NULL},
+	{0, GETALL, func_gall, SEMUN_CAST array, NULL},
 
-	{SEM4, GETNCNT, func_cnt, (union semun)&buf, cnt_setup},
+	{SEM4, GETNCNT, func_cnt, SEMUN_CAST &buf, cnt_setup},
 
-	{SEM2, GETPID, func_pid, (union semun)&buf, pid_setup},
+	{SEM2, GETPID, func_pid, SEMUN_CAST &buf, pid_setup},
 
-	{SEM2, GETVAL, func_gval, (union semun)&buf, NULL},
+	{SEM2, GETVAL, func_gval, SEMUN_CAST &buf, NULL},
 
-	{SEM4, GETZCNT, func_cnt, (union semun)&buf, cnt_setup},
+	{SEM4, GETZCNT, func_cnt, SEMUN_CAST &buf, cnt_setup},
 
-	{0, SETALL, func_sall, (union semun)array, sall_setup},
+	{0, SETALL, func_sall, SEMUN_CAST array, sall_setup},
 
-	{SEM4, SETVAL, func_sval, (union semun)INCVAL, NULL},
+	{SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL},
 
-	{0, IPC_RMID, func_rmid, (union semun)&buf, NULL}
+	{0, IPC_RMID, func_rmid, SEMUN_CAST &buf, NULL}
 };
 
 int main(int ac, char **av)

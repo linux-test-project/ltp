@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.2 2005/07/11 22:28:12 robbiew Exp $ */
+/* $Id: brk01.c,v 1.3 2005/12/05 19:15:20 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -287,7 +287,7 @@ setup()
 #endif
 
 
-#ifdef linux
+#ifdef __linux__
 #define _SC_NPROC_ONLN _SC_NPROCESSORS_ONLN
 #endif
     if ((ncpus=sysconf(_SC_NPROC_ONLN)) == -1)

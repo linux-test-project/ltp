@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.6 2005/10/03 17:13:35 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.7 2005/12/05 19:15:19 mridge Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -69,7 +69,7 @@ myexit (int x)
   tst_exit();
 }
 
-#if defined(linux)
+#if defined(__linux__)
 # define NBPW sizeof(int)
 #endif
 

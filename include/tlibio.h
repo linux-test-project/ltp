@@ -41,7 +41,7 @@
 #define LIO_IO_ATYPES           00077   /* all io types */
 #define LIO_IO_TYPES            00061   /* all io types, non-async */
 #endif /* sgi */
-#if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
 #define LIO_IO_TYPES            00021   /* all io types */
 #endif /* linux */
 #ifdef CRAY
@@ -59,7 +59,7 @@
 #define LIO_WAIT_ATYPES         01760000 /* all async wait types, except nowait */
 #define LIO_WAIT_TYPES          00020000 /* all sync wait types (sorta) */
 #endif /* sgi */
-#if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
 #define LIO_WAIT_TYPES          00300000 /* all wait types, except nowait */
 #endif /* linux */
 #ifdef CRAY
@@ -77,7 +77,7 @@
 /* all aio_{read,write} or lio_listio */
 #define LIO_IO_ASYNC_TYPES	(LIO_IO_ASYNC|LIO_IO_SLISTIO|LIO_IO_ALISTIO)
 #endif /* sgi */
-#if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
 /* all signal wait types */
 #define LIO_WAIT_SIGTYPES	(LIO_WAIT_SIGPAUSE)
 #endif /* linux */

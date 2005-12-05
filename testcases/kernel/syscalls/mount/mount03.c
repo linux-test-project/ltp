@@ -424,6 +424,7 @@ void
 setup_uid()
 {
 	int pid, status;
+    char command[MAX_PATH_LEN];
 
 	switch (pid = fork()) {
 		case -1:
@@ -435,7 +436,17 @@ setup_uid()
 			Cmd_buffer[0] = cmd;
 			Cmd_buffer[1] = testhome_path;
 			Cmd_buffer[2] = Path_name;
-			execve("/bin/cp", Cmd_buffer, environ); 
+
+            /* Put command into string */
+            sprintf("command, :%s %s %s", cmd, testhome_path, Path_name);
+
+            /*Run command to cp file to right spot */
+            system (command);
+
+            /* Must kill child */
+            execve(file, NULL, NULL);
+
+			/* execve("/bin/cp", Cmd_buffer, environ); */
  			exit(errno);
 		default:
 			waitpid(pid, &status, 0);

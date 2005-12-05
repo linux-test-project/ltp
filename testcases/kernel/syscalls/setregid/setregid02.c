@@ -106,7 +106,7 @@ struct test_data_t {
 	{ &bin_gr_gid, &neg_one, EPERM, &users, &users, "After setregid(bin, -1)," },
 	{ &root_gr_gid, &bin_gr_gid, EPERM, &users, &users, "After setregid(root, bin)" },
 	{ &bin_gr_gid, &root_gr_gid, EPERM, &users, &users, "After setregid(bin, root)," },
-	{ &inval_user, &neg_one, EPERM, &users, &users, "After setregid(invalid group, -1)," },
+	{ &inval_user, &neg_one, EINVAL, &users, &users, "After setregid(invalid group, -1)," },
 	{ &neg_one, &inval_user, EINVAL, &users, &users, "After setregid(-1, invalid group)," },
 };
 

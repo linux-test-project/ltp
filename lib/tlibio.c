@@ -99,7 +99,7 @@
 #include <sys/uio.h> /* readv(2)/writev(2) */
 #include <string.h>  /* bzero */
 #endif
-#if defined(linux) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
 #if !defined(UCLINUX) && !defined(__UCLIBC__)
 #include <aio.h>
 #endif
@@ -121,7 +121,7 @@
 #endif
 
 
-#ifndef linux
+#ifndef __linux__
 static void lio_async_signal_handler();
 #endif
 #ifdef sgi
@@ -412,7 +412,7 @@ lio_help2(char *prefix)
     return;
 }
 
-#ifndef linux
+#ifndef __linux__
 /***********************************************************************
  * This is an internal signal handler.
  * If the handler is called, it will increment the Received_signal
@@ -534,7 +534,7 @@ long wrd;	/* to allow future features, use zero for now */
 {
     int ret = 0;	/* syscall return or used to get random method */
     char *io_type;		/* Holds string of type of io */
-#ifndef linux
+#ifndef __linux__
     int omethod = method;
     int listio_cmd;		/* Holds the listio/lio_listio cmd */
 #endif
@@ -1053,7 +1053,7 @@ long wrd;	/* to allow future features, use zero for now */
 {
     int ret = 0;	/* syscall return or used to get random method */
     char *io_type;		/* Holds string of type of io */
-#ifndef linux
+#ifndef __linux__
     int listio_cmd;		/* Holds the listio/lio_listio cmd */
     int omethod = method;
 #endif
@@ -1520,7 +1520,7 @@ long wrd;	/* to allow future features, use zero for now */
 }	/* end of lio_read_buffer */
 
 
-#if !defined(linux) && !defined(__sun) && !defined(__hpux) && !defined(_AIX)
+#if !defined(__linux__) && !defined(__sun) && !defined(__hpux) && !defined(_AIX)
 /***********************************************************************
  * This function will check that async io was successful.
  * It can also be used to check sync listio since it uses the

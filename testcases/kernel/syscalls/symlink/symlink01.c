@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.3 2004/10/28 18:53:39 robbiew Exp $ */
+/* $Id: symlink01.c,v 1.4 2005/12/05 19:15:20 mridge Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -491,7 +491,7 @@ char test_msg[BUFMAX];
 char full_path[PATH_MAX+1];
 extern int Tst_count;
 extern char *TESTDIR;
-extern char *strrchr();
+/*extern char *strrchr();*/
 
 struct stat asymlink, statter;
 char Buffer[1024];
