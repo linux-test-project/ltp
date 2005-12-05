@@ -424,7 +424,7 @@ void
 setup_uid()
 {
 	int pid, status;
-    char command[MAX_PATH_LEN];
+    char command[PATH_MAX];
 
 	switch (pid = fork()) {
 		case -1:
