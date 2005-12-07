@@ -1076,6 +1076,8 @@ main(int argc, char **argv)
 	}
 	prt("All operations completed A-OK!\n");
 
-	exit(0);
+	free(original_buf);
+	free(good_buf);
+	free(temp_buf);
 	return 0;
 }
