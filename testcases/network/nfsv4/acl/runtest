@@ -1,0 +1,70 @@
+#!/bin/sh
+#
+#       @(#)runtests	
+#
+# runtests script for ACL testing 
+REMOTEHOST=nfsserver
+MAXLENGTH=30 # maximum ACL length - NB: the current NFSv4 acl implementation does not allow ACL greater than one page (about 35 entries with 6 character user name length and 10 character domain name)
+NFSMNTDIR=/mnt/nfs-acl
+echo "Test on NFS server $RHOST"
+ACLTESTDIR=testdir
+ACLTESTFILE=testfile
+
+USER_NB=20 # total number of users to create
+GRP_NB=20 # total number of groups to create
+FILE_NB=10 # total number of files for the test
+
+# creation of users on the local machine
+for i in 1 2 3 4 5
+do
+	groupadd -g 60$i grp$i
+	useradd -u60$i  user$i
+done
+
+#  creation of users on the remote machine (removed only at the end of the tests)
+rsh -n $REMOTEHOST python $PWD/create_users.py -u 50 -g 50
+
+echo "Starting ACL testing"
+
+echo "Starting BASIC tests "
+
+echo "Creating testing file and directory "
+touch $NFSMNTDIR/$ACLTESTFILE 
+mkdir $NFSMNTDIR/$ACLTESTDIR
+if test ! -d $NFSMNTDIR/$ACLTESTDIR
+then
+	echo "Can't make directory $ACLTESTDIR"
+	exit 1
+fi
+
+# File and Directory tree creation test
+echo "Execute acl1 $NFSMNTDIR/$ACLTESTFILE $NFSMNTDIR/$ACLTESTDIR"
+./acl1 $NFSMNTDIR/$ACLTESTFILE $NFSMNTDIR/$ACLTESTDIR
+#./stress $ACLTESTFILE
+for i in 1 2 3 4 5
+    do
+        userdel user$i
+        groupdel grp$i
+    done
+               
+echo "Basic tests finished"
+
+echo "LONG ACL TEST"
+echo "creating necessary users and groups"
+python create_users.py -u 50 -g 50
+echo "creating necessary users and groups on the remote host"
+mkdir $NFSMNTDIR/lacl-testdir
+python test_long_acl.py -l $MAXLENGTH -p $NFSMNTDIR/lacl-testdir
+rm -rf $NFSMNTDIR/lacl-testdir
+echo "Long ACL test OK with $MAXLENGTH entries"
+echo "ACL STRESSING TEST"
+python setacl_stress.py -n 100 -u $USER_NB -g $GRP_NB -f $FILE_NB -p $NFSMNTDIR
+
+# remove local an remote users
+python cleanusers.py
+python cleangroups.py
+rsh -n $REMOTEHOST python $PWD/cleanusers.py
+
+echo "Test OK"
+
+exit 0

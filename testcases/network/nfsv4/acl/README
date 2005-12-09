@@ -1,0 +1,21 @@
+ACL testing
+Aurélien Charbon - Bull SA
+
+# GOAL :
+Testing ACL conformance, ACL limits, and ACL robustness
+
+# REQUIREMENTS :
+ACL support must be present on the remote host
+attr and acl packages must be install for the stestsuite to build/run.
+This testsuite is not built by the default make in the LTP root directory
+
+acl1: verify the conformance ok access regarding the ACL of files and directory.
+stress: multiprocess application to stress the ACL
+
+setacl_stress.py: python script that does lots of setfacl function
+
+test_long_acl.py: try to "build" ACLs of different length. Stop when the specified maximum length is reached.
+
+To run the test:
+make (builds the binaries)
+./runtest (executes the sequence of tests)
