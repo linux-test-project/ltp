@@ -13,9 +13,9 @@ BINS=ns-tcpserver ns-tcpclient ns-udpserver ns-udpclient
 
 TARGETS=$(SCRIPTS) $(BINS)
 
-CC=gcc
+#CC=gcc
 #CFLAGS=-g -Wall
-CFLAGS=-O2
+#CFLAGS=-O2
 
 all:	scripts $(BINS)
 
