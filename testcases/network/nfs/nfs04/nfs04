@@ -136,7 +136,7 @@ do_test()
 {
 $trace_logic
   loopcount=0
-  create_file $FILESIZE /tmp/nfs04$PID.testfile >/dev/null
+  nfs04_create_file $FILESIZE /tmp/nfs04$PID.testfile >/dev/null
   if [ $? != 0 ]; then
 	end_testcase "Could not create testfile"
   fi
