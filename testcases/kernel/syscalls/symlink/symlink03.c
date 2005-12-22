@@ -266,8 +266,9 @@ setup()
 	if (bad_addr <= 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	Test_cases[3].link = bad_addr;
-
+#endif
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
