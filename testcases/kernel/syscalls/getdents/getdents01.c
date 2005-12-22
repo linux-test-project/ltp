@@ -82,6 +82,20 @@ int main(int ac, char **av)
 	char *dir_name = NULL;
 	struct dirent *dirp;
 
+	 /*
+	  * Here's a case where invoking the system call directly
+	  * doesn't seem to work.  getdents.h has an assembly
+	  * macro to do the job.
+	  *
+	  * equivalent to  - getdents(fd, dirp, count);
+	  * if we could call getdents that way.
+	  */
+
+#if defined(__ia64__)
+#define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
+#else
+	 _syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
+#endif
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -121,21 +135,7 @@ int main(int ac, char **av)
 		if ((fd = open(dir_name, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 		}
-	
-		/*
-		 * Here's a case where invoking the system call directly
-		 * doesn't seem to work.  getdents.h has an assembly 
-		 * macro to do the job.
-		 *
-		 * equivalent to  - getdents(fd, dirp, count);
-		 * if we could call getdents that way.
-		 */
-		
-#if defined(__ia64__)
-#define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
-#else	
-	  	_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);
-#endif	
+
 		rval = getdents(fd, dirp, count);
 		if (rval < 0) {		/* call returned an error */
 	

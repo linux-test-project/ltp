@@ -35,6 +35,7 @@
  *	rm_shm()
  */
 
+#define LIBIPC
 #include "ipcmsg.h"
 #include "ipcsem.h"
 

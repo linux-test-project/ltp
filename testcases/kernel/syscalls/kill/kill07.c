@@ -76,7 +76,11 @@ void do_child(void);
 char *TCID= "kill07";
 int TST_TOTAL = 1;
 int shmid1;
+#ifndef CONFIG_COLDFIRE
 key_t semkey;
+#else
+extern key_t semkey;
+#endif
 int *flag;
 
 extern int Tst_count;

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rename02.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: rename02.c,v 1.2 2005/12/22 20:18:24 robbiew Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -119,8 +119,6 @@
 
 extern void setup();
 extern void cleanup();
-void do_file_setup();
-
 
 
 char *TCID="rename02"; 		/* Test program identifier.    */
@@ -180,7 +178,7 @@ main(int ac, char **av)
 	    if (unlink(mname) == -1) {
 		tst_resm(TWARN, "unlink(%s) Failed, errno=%d : %s", mname, errno, strerror(errno));
 	    }
-	    do_file_setup();
+	     do_file_setup(fname);
 	}
     }	/* End for TEST_LOOPING */
 
@@ -209,7 +207,7 @@ setup()
 
     sprintf(fname,"./tfile_%d",getpid());
     sprintf(mname,"./rnfile_%d",getpid());
-    do_file_setup();
+    do_file_setup(fname);
 
 }	/* End setup() */
 
@@ -234,18 +232,3 @@ cleanup()
     tst_exit();
 
 }	/* End cleanup() */
-
-void
-do_file_setup()
-{
-    if ((fd=open(fname,O_RDWR|O_CREAT,0700)) == -1) {
-       tst_brkm(TBROK, cleanup,
-		"open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-		fname, errno, strerror(errno));
-    }
-
-    if (close(fd) == -1 )
-       tst_resm(TWARN, "close(%s) Failed on file create, errno=%d : %s", 
-		fname, errno, strerror(errno));
-
-}

@@ -22,7 +22,7 @@
 CFLAGS+=	-I../../../../include -DGLIBC_SIGACTION_BUG=1 -Wall -D_GNU_SOURCE
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+LOADLIBES2=	 $(if $(UCLINUX),-lc)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -30,7 +30,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 sigaction01:
-	$(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread
+	 $(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread $(LOADLIBES2)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

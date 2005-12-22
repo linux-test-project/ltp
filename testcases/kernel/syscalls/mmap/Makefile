@@ -25,7 +25,8 @@ CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
 LOADLIBES+=	$(if $(UCLINUX),-lc)
 
-SRCS=$(wildcard *.c)
+COLDFIRE_SKIP = $(if ($CONFIG_COLDFIRE),|grep -v mmap01)
+SRCS=$(shell ls *.c $(COLDFIRE_SKIP))
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)

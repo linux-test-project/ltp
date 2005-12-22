@@ -86,6 +86,9 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 	int signum[14];
 	int j;
 	int ret_val = 0;
+#ifdef UCLINUX
+	 char *msg;
+#endif
 	signum[1]=SIGHUP;	signum[2]=SIGINT;	signum[3]=SIGQUIT;
 	signum[4]=SIGILL;	signum[5]=SIGTRAP;	signum[6]=SIGABRT;
 	signum[7]=SIGIOT;	signum[8]=SIGFPE;	signum[9]=SIGKILL;
@@ -93,8 +96,6 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 	signum[13]=SIGPIPE;	signum[14]=SIGALRM;
 
 #ifdef UCLINUX
-	char *msg;
-
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

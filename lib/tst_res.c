@@ -31,7 +31,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.2 2005/07/11 22:28:09 robbiew Exp $ */
+/* $Id: tst_res.c,v 1.3 2005/12/22 20:18:22 robbiew Exp $ */
 
 /**********************************************************
  *
@@ -567,7 +567,7 @@ tst_exit()
 int
 tst_environ()
 {
-#if defined UCLINUX && EMBED
+#if defined UCLINUX && EMBED && CONFIG_BLACKFIN
    FILE *fdopen;
 #else
    FILE *fdopen();

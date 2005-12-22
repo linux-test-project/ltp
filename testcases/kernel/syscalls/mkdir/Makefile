@@ -22,6 +22,7 @@
 ###########################################################################
 CFLAGS+=	-I../../../../include -Wall
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
+CFLAGS+=	 $(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
 LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite
 LOADLIBES+=	$(if $(UCLINUX),-lc)
 

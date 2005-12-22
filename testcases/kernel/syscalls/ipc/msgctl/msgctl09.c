@@ -51,7 +51,11 @@
 #include "usctest.h"
 
 #define MAXNREPS	1000
-#define MAXNPROCS       1000000  /* This value is set to an arbitrary high limit. */
+#ifndef CONFIG_COLDFIRE
+#define MAXNPROCS	 1000000  /* This value is set to an arbitrary high limit. */
+#else
+#define MAXNPROCS	 100000   /* Coldfire can't deal with 1000000 */
+#endif
 #define MAXNKIDS	10
 #define FAIL		1
 #define PASS		0

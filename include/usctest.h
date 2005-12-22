@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.8 2005/07/12 17:08:32 robbiew Exp $ */
+/* $Id: usctest.h,v 1.9 2005/12/22 20:18:22 robbiew Exp $ */
 
 /**********************************************************
  * 
@@ -161,6 +161,8 @@ struct usc_errno_t {
 
 extern long TEST_RETURN;
 extern long TEST_ERRNO;
+extern struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
+extern long btime, etime, tmptime;
 
 #else
 /***********************************************************************

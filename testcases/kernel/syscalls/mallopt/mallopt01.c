@@ -34,6 +34,9 @@
  */
 
 #include <stdio.h>		/* needed by testhead.h		*/
+#ifdef CONFIG_COLDFIRE
+#define __MALLOC_STANDARD__
+#endif
 #include <malloc.h>
 #include <errno.h>
 
