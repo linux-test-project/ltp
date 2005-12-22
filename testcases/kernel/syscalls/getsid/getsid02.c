@@ -54,6 +54,14 @@
  */
 #define _GNU_SOURCE 1
 
+/* 
+ * When attempting to build on SUSE 10, the make fails trying to compile
+ * because CONFIG_BASE_SMALL is undefined.
+ */
+#ifndef CONFIG_BASE_SMALL
+#define CONFIG_BASE_SMALL 0
+#endif
+
 #include "test.h"
 #include "usctest.h"
 

@@ -63,6 +63,14 @@
 #include <string.h>
 
 /*
+ *  * When attempting to build on SUSE 10, the make fails trying to compile
+ *   * because CONFIG_BASE_SMALL is undefined.
+ *    */
+#ifndef CONFIG_BASE_SMALL
+#define CONFIG_BASE_SMALL 0
+#endif
+
+/*
  * See the Makefile for comments about the following preprocessor code.
  */
 #ifndef _LTP_TASKS_H
