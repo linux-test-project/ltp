@@ -236,7 +236,7 @@ int lockfile=0;			/* if set, do file locking */
 				/* and reads. */
 				/* 2 = write lock around all file operations */
 
-int Woffset=0;			/* offset before last write */
+off_t Woffset=0;		/* offset before last write */
 int Grow_incr=4096;		/* sz of last write */
 int Mode=0;			/* bitmask of write/trunc mode */
 				/* also knows if dealing with fifo */
@@ -379,7 +379,7 @@ int stop = 0;			/* loop stopper if set */
 long unsigned curr_size = 0;			/* BUG:14136 (keep track of file size) */
 const long unsigned ext2_limit = 2147483647;	/* BUG:14136 (2GB ext2 filesize limit) */
 
-int tmp;
+off_t tmp;
 char chr;
 int ret;
 int pre_alloc_space = 0;
@@ -1145,7 +1145,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    unlink_inter=random_range(tmp, unlink_inter_ran, 1, NULL);
 
 	    if ( Debug > 2 )
-		printf("%s: %d DEBUG3 Unlink interval is %d (random %d - %d)\n",
+		printf("%s: %d DEBUG3 Unlink interval is %d (random %ld - %d)\n",
 		    Progname, Pid, unlink_inter, tmp, unlink_inter_ran);
 	}
 
@@ -1917,7 +1917,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 	if ( Mode & MODE_GROW_BY_LSEEK ) {
                 Woffset=fsize;
 		if ( Debug > 2 ) {
-		    printf("%s: %d DEBUG3 %s/%d: Current size of file is %d\n", Progname,
+		    printf("%s: %d DEBUG3 %s/%d: Current size of file is %ld\n", Progname,
 			Pid, __FILE__, __LINE__, Woffset);
 		    printf("%s: %d DEBUG3 %s/%d: lseeking to %d byte with SEEK_END\n", Progname,
 			Pid, __FILE__, __LINE__, grow_incr-1);
@@ -2015,12 +2015,12 @@ long *curr_size_ptr;	/* BUG:14136 */
                    }
 
 		   if ((Woffset=lseek(fd, noffset, SEEK_SET)) == -1 ) {
-                        fprintf(stderr, "%s%s: %d %s/%d: lseek(%d, %d, SEEK_SET) l2 failed: %s\n",
+                        fprintf(stderr, "%s%s: %d %s/%d: lseek(%d, %ld, SEEK_SET) l2 failed: %s\n",
                                 Progname, TagName, Pid, __FILE__, __LINE__, fd, noffset, strerror(errno));
                         return -1;
 		   }
                    else if ( Debug > 2 )
-                        printf("%s: %d DEBUG3 %s/%d: lseeked to random offset %d (fsz:%d)\n",
+                        printf("%s: %d DEBUG3 %s/%d: lseeked to random offset %ld (fsz:%d)\n",
                             Progname, Pid, __FILE__, __LINE__, Woffset,
 			    (int)stbuf.st_size);
 
@@ -2036,7 +2036,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 			return -1;
 		    }
                     else if ( Debug > 2 )
-                        printf("%s: %d DEBUG3 %s/%d: lseeked to end of file, offset %d\n",
+                        printf("%s: %d DEBUG3 %s/%d: lseeked to end of file, offset %ld\n",
                             Progname, Pid, __FILE__, __LINE__, Woffset);
 		}
 
@@ -2149,13 +2149,13 @@ long *curr_size_ptr;	/* BUG:14136 */
 		     * The pattern written to the file will be considered corrupted.
 		     */
 		    if ( Debug > 0 && lockfile ) {
-		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%d) not as exp(%d+%d=%d)\n", 	
+		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n", 	
 			    Progname, TagName, Pid, __FILE__, __LINE__, tmp, Woffset, grow_incr, Woffset+grow_incr);
-			printf("%s%s: %d DEBUG1 %s/%d: %d Assuming file changed by another process, resetting offset:%d (expect pattern mismatch)\n",
+			printf("%s%s: %d DEBUG1 %s/%d: %d Assuming file changed by another process, resetting offset:%ld (expect pattern mismatch)\n",
 				Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, tmp-grow_incr);
 		    }
 		    if( Debug > 4 ){
-			printf("%s: %d DEBUG5 %s/%d: about to chop Woffset.  tmp=%d, grow_incr=%d, Woffset was %d\n",
+			printf("%s: %d DEBUG5 %s/%d: about to chop Woffset.  tmp=%ld, grow_incr=%d, Woffset was %ld\n",
 			       Progname, Pid, __FILE__, __LINE__, tmp, grow_incr, Woffset);
 		    }
 		    Woffset=tmp-grow_incr;
@@ -2179,10 +2179,10 @@ long *curr_size_ptr;	/* BUG:14136 */
 	     }
 
 	     else if ( size_grew > 0 )
-		printf("%s: %d DEBUG2 %s/%d: %d wrote %d bytes(off:%d), grew file by %d bytes\n",
+		printf("%s: %d DEBUG2 %s/%d: %d wrote %d bytes(off:%ld), grew file by %d bytes\n",
                         Progname, Pid, __FILE__, __LINE__, Iter_cnt, Grow_incr, Woffset, size_grew);
 	     else
-		printf("%s: %d DEBUG2 %s/%d: %d wrote %d bytes(off:%d), did not grow file\n",
+		printf("%s: %d DEBUG2 %s/%d: %d wrote %d bytes(off:%ld), did not grow file\n",
                         Progname, Pid, __FILE__, __LINE__, Iter_cnt, Grow_incr, Woffset);
 	}
 
@@ -2353,7 +2353,7 @@ int mode;       /* write mode */
 
     if ( Grow_incr <= 0 ) {
         if ( Debug > 3 )
-	    printf("%s: %d DEBUG4 %s/%d: No write validation,  Grow_incr = %d, offset = %d\n",
+	    printf("%s: %d DEBUG4 %s/%d: No write validation,  Grow_incr = %d, offset = %ld\n",
 	        Progname, Pid, __FILE__, __LINE__, Grow_incr, Woffset);
         return 0;	/* no check */
     }
@@ -2376,7 +2376,7 @@ int mode;       /* write mode */
 	 * The contents of our last write is totally gone, no check.
 	 */
 	if ( Debug > 1 )
-	    printf("%s%s: %d DEBUG2 %s/%d: %d File size (%d) smaller than where last wrote (%d)- no write validation\n",
+	    printf("%s%s: %d DEBUG2 %s/%d: %d File size (%d) smaller than where last wrote (%ld)- no write validation\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, fsize, Woffset);
         lkfile(fd, LOCK_UN, LKLVL0);
         return 0;	/* no validation, but not an error */
@@ -2393,24 +2393,24 @@ int mode;       /* write mode */
 
 	if ( Debug > 1 )  {
 
-	    printf("%s%s: %d DEBUG2 %s/%d: %d fsz:%d, lost(%d)of wrt(off:%d, sz:%d), adj=%d\n",
+	    printf("%s%s: %d DEBUG2 %s/%d: %d fsz:%d, lost(%d)of wrt(off:%ld, sz:%d), adj=%d\n",
 	    Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, fsize, tmp-Grow_incr, Woffset, tmp, Grow_incr);
 	}
 
     }
 
     if ( Debug > 2 )
-        printf("%s: %d DEBUG3 %s/%d: about to do write validation, offset = %d, size = %d\n",
+        printf("%s: %d DEBUG3 %s/%d: about to do write validation, offset = %ld, size = %d\n",
 	    Progname, Pid, __FILE__, __LINE__, Woffset, Grow_incr);
 
     if ( ! (mode & MODE_FIFO)  ) {
 
         if ( lseek(fd, Woffset, 0) == -1 ) {
-            fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, %d, 0) failed: %s\n",
+            fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, %ld, 0) failed: %s\n",
 	        Progname, TagName, Pid, __FILE__, __LINE__, Woffset, strerror(errno));
         }
         if ( Debug > 3 )
-	    printf("%s: %d DEBUG4 %s/%d: lseeked to offset:%d\n",
+	    printf("%s: %d DEBUG4 %s/%d: lseeked to offset:%ld\n",
 	        Progname, Pid, __FILE__, __LINE__, Woffset);
     }
 
@@ -2499,7 +2499,7 @@ int mode;       /* write mode */
 		Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, errmsg, filename);
 
 	if ( Debug > 0 )
-	    printf("%s%s: %d DEBUG1 %s/%d: **fd:%d, lk:%d, offset:%d, sz:%d open flags:%#o %s\n",
+	    printf("%s%s: %d DEBUG1 %s/%d: **fd:%d, lk:%d, offset:%ld, sz:%d open flags:%#o %s\n",
 		Progname, TagName, Pid, __FILE__, __LINE__, fd, lockfile, 
 		Woffset, Grow_incr, Fileinfo.openflags, openflags2symbols(Fileinfo.openflags, ",", NULL));
 
@@ -2508,7 +2508,7 @@ int mode;       /* write mode */
     }
 
     if ( Debug > 6 )
-        printf("%s: %d DEBUG7 %s/%d: No corruption detected on write validation , offset = %d, size = %d\n",
+        printf("%s: %d DEBUG7 %s/%d: No corruption detected on write validation , offset = %ld, size = %d\n",
             Progname, Pid, __FILE__, __LINE__, Woffset, Grow_incr);
 
     return 0;	/* all is well */
