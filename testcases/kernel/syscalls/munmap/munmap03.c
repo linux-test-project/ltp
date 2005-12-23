@@ -220,8 +220,14 @@ setup()
 	 * into the calling process's address space at the system choosen
 	 * with read/write permissions to the the mapped region.
 	 */
+#ifdef UCLINUX
+	/* MAP_SHARED not implemented on uClinux */
+	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
+		    MAP_FILE | MAP_PRIVATE, fildes, 0);
+#else
 	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
 		    MAP_FILE | MAP_SHARED, fildes, 0);
+#endif
 
 	/* check for the return value of mmap system call */
 	if (faddr == (char *)MAP_FAILED) {

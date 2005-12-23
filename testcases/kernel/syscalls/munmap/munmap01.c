@@ -124,6 +124,13 @@ main(int ac, char **av)
 			continue;
 		}
 
+#ifdef UCLINUX
+		/*
+		 * No SIGSEGV on uClinux since
+		 * MMU not implemented on uClinux
+		 */
+		tst_resm(TPASS, "call succedded");
+#else
 		/*
 		 * Perform functional verification if test
 		 * executed without (-f) option.
@@ -143,6 +150,7 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
+#endif
 
 		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
@@ -227,8 +235,14 @@ setup()
 	 * into the calling process's address space at the system choosen
 	 * with read/write permissions to the the mapped region.
 	 */
+#ifdef UCLINUX
+	/* MAP_SHARED is not implemented on uClinux */
+	addr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
+		    MAP_FILE | MAP_PRIVATE, fildes, 0);
+#else
 	addr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
 		    MAP_FILE | MAP_SHARED, fildes, 0);
+#endif
 
 	/* check for the return value of mmap system call */
 	if (addr == (char *)MAP_FAILED) {
