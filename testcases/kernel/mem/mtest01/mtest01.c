@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
   act.sa_handler = handler;
   act.sa_flags = 0;
   sigemptyset(&act.sa_mask);
-  sigaction(SIGUSR1,  &act, 0);
+  sigaction(SIGRTMIN,  &act, 0);
 
   for (i=0;i<1000;i++)
    pid_list[i]=(pid_t)0;
@@ -217,7 +217,7 @@ int main(int argc, char* argv[]) {
       printf("... %lu bytes allocated and used.\n",bytecount);
     else
       printf("... %lu bytes allocated only.\n",bytecount);
-    kill(getppid(),SIGUSR1);
+    kill(getppid(),SIGRTMIN);
     while(1)
       sleep(1);
   }
