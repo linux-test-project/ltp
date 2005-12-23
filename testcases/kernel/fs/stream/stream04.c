@@ -78,10 +78,6 @@ int main(int ac, char *av[])
 		sprintf(tempfile1, "stream04.%d", getpid());
 	/*--------------------------------------------------------------------*/
 	//block0:	
-		if(creat(tempfile1,0666) < 0) {
-			tst_resm(TFAIL,"\tcreat failed\n");
-			tst_exit();
-		}
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"\tfopen a+ failed\n");
 			tst_exit();

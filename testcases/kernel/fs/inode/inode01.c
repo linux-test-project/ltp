@@ -235,6 +235,13 @@ int main()
 		local_flag = FAILED;
 	}
 
+        status = fclose(list_stream);
+        if (status != 0) {
+                fprintf(temp,"Failed to close list_stream: ret=%d errno=%d (%s)\n",
+                        status, errno, strerror(errno));
+                local_flag = FAILED;
+        }
+
 	blexit();
 
 
