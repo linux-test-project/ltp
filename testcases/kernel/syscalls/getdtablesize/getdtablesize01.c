@@ -93,6 +93,8 @@ int main()
 
 //Now the max files opened should be RLIMIT_NOFILE - 1 , why ? read getdtablesize man page
 
+ if (count > 0)
+   close(count);
  if(count == (max_val_opfiles -1) )
  tst_resm(TPASS,"%d = %d",count, (max_val_opfiles - 1));
  else

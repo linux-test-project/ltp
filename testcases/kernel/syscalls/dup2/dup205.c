@@ -119,6 +119,8 @@ char *av[];
     		}
 /*--------------------------------------------------------------------*/
     		unlink(pfilname) ;
+		if (ifile > 0)
+			close(fildes[ifile-1]);
 		if (local_flag == PASSED) {
        		         tst_resm(TPASS, "Test passed.\n");
         	} else {
