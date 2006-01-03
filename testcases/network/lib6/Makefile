@@ -21,17 +21,19 @@
 # description	: make(1) description file for lib6 tests.	  	  #
 ###########################################################################
 CFLAGS+=	-I../../../include -g
-LOADLIBES+=	-L../../../lib -lltp
+LOADLIBES+=	-L../../../lib runcc.a -lltp -lpthread
 
 SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+TARGETS= asapi_01 asapi_02 asapi_03 asapi_04 asapi_05 asapi_06 asapi_07 \
+	getaddrinfo_01 in6_01 in6_02
 
-all: $(TARGETS)
+all: runcc.a $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) *.a *.o
 
-
+runcc.a: runcc.o
+	ar cr runcc.a runcc.o
