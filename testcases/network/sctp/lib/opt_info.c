@@ -3,7 +3,7 @@
  * opt_info.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- * ./COPYING.
+ *    http://www.gnu.org/copyleft/lesser.txt 
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -11,7 +11,7 @@
  * application to interface with the SCTP in kernel.
  *
  * This implementation is based on the Socket API Extensions for SCTP
- * defined in <draft-ietf-tsvwg-sctpsocket-05.txt.
+ * defined in <draft-ietf-tsvwg-sctpsocket-10.txt.
  *
  * (C) Copyright IBM Corp. 2003
  * Copyright (c) 2002 Intel Corporation.

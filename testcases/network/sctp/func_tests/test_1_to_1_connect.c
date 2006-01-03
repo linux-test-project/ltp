@@ -51,6 +51,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <linux/socket.h>
 #include <netinet/in.h>         /* for sockaddr_in */
 #include <arpa/inet.h>
 #include <sys/errno.h>
@@ -67,7 +68,8 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int error,len,i;
+        int error,i;
+	socklen_t len;
 	int sk,lstn_sk,clnt_sk[SK_MAX],acpt_sk[SK_MAX],pf_class;
 	int sk1,clnt2_sk;
 
@@ -105,7 +107,7 @@ main(int argc, char *argv[])
 	test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
 
 	/*Listening the socket*/
-	test_listen(lstn_sk, SK_MAX);
+	test_listen(lstn_sk, SK_MAX-1);
 
 
 	/*connect () TEST1: Bad socket descriptor, EBADF Expected error*/

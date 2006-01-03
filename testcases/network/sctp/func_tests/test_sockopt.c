@@ -76,7 +76,7 @@ main(void)
 	struct cmsghdr *cmsg;
 	struct sctp_sndrcvinfo *sinfo;
         struct iovec out_iov;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
         int error;
 	int pf_class, af_family;
 	uint32_t ppid;
@@ -95,7 +95,7 @@ main(void)
 	struct sctp_sndrcvinfo get_peeloff_assoc_dflt_param; 
 	struct sctp_sndrcvinfo get_accept_assoc_dflt_param; 
 	struct sctp_paddrinfo pinfo;
-	int optlen, addrlen;
+	socklen_t optlen, addrlen;
 	struct sctp_status status;
 
         /* Rather than fflush() throughout the code, set stdout to
@@ -543,7 +543,7 @@ main(void)
 	memset(&set_udp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
 	set_udp_sk_dflt_param.sinfo_ppid = 1000;
        	/* Invalid assoc id */
-	set_udp_sk_dflt_param.sinfo_assoc_id = (void *)1234;
+	set_udp_sk_dflt_param.sinfo_assoc_id = 1234;
         error = setsockopt(udp_clt_sk, SOL_SCTP, SCTP_DEFAULT_SEND_PARAM,
 			   &set_udp_sk_dflt_param,
 			   sizeof(set_udp_sk_dflt_param));
@@ -668,7 +668,7 @@ main(void)
 	memset(&set_tcp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
 	set_tcp_sk_dflt_param.sinfo_ppid = 2000;
 	/* Invalid assoc id, ignored on a TCP-style socket. */
-	set_tcp_sk_dflt_param.sinfo_assoc_id = (void *)1234;
+	set_tcp_sk_dflt_param.sinfo_assoc_id = 1234;
 	test_setsockopt(tcp_svr_sk, SCTP_DEFAULT_SEND_PARAM,
 			&set_tcp_sk_dflt_param,
 			sizeof(set_tcp_sk_dflt_param));
@@ -677,7 +677,7 @@ main(void)
 	memset(&set_tcp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
 	set_tcp_sk_dflt_param.sinfo_ppid = 2000;
 	/* Invalid assoc id, ignored on a TCP-style socket. */
-	set_tcp_sk_dflt_param.sinfo_assoc_id = (void *)1234;
+	set_tcp_sk_dflt_param.sinfo_assoc_id = 1234;
 	test_setsockopt(tcp_clt_sk, SCTP_DEFAULT_SEND_PARAM,
 			&set_tcp_sk_dflt_param,
 			sizeof(set_tcp_sk_dflt_param));
@@ -797,7 +797,7 @@ main(void)
 	tst_resm(TPASS, "getsockopt(SCTP_DEFAULT_SEND_PARAM) - "
 		 "one-to-one style accepted socket");
 
-	/* TEST #5: SCTP_GET_PEER_ADDR_INFO socket option. */
+	/* TEST #6: SCTP_GET_PEER_ADDR_INFO socket option. */
 	/* Try 0 associd and 0 addr */
 	memset(&pinfo, 0, sizeof(pinfo));
 	optlen = sizeof(pinfo);

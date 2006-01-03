@@ -73,9 +73,15 @@ char *TCID = __FILE__;
 int TST_TOTAL = 6;
 int TST_CNT = 0;
 
-#define SMALL_RCVBUF 800
+/* This is the size of our RCVBUF */
+#define SMALL_RCVBUF 3000
+
+/* MAX segment size */
 #define SMALL_MAXSEG 100
-static char fillmsg[SMALL_RCVBUF*3] = {0};
+
+/* RWND_SLOP is the extra data that fills up the rwnd */
+#define RWND_SLOP 100
+static char *fillmsg = NULL;
 static char *ttlmsg = "This should time out!\n";
 static char *nottlmsg = "This should NOT time out!\n";
 static char ttlfrag[SMALL_MAXSEG*3] = {0};
@@ -104,6 +110,9 @@ int main(int argc, char *argv[])
 	char *big_buffer;
 	int offset;
 	struct sctp_send_failed *ssf;
+	int len; /* Really becomes 2xlen when set. */
+	int orig_len; 
+	struct sctp_status gstatus;
 
         /* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
@@ -139,6 +148,12 @@ int main(int argc, char *argv[])
         sk1 = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
         sk2 = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 
+	len = sizeof(int);
+	error = getsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &orig_len,
+			   &len);
+	if (error)
+		tst_brkm(TBROK, tst_exit, "can't get rcvbuf size: %s",
+			strerror(errno));
 	/* Set the MAXSEG to something smallish. */
 	{
 		int val = SMALL_MAXSEG;
@@ -156,16 +171,21 @@ int main(int argc, char *argv[])
         test_bind(sk1, &loop1.sa, sizeof(loop1));
         test_bind(sk2, &loop2.sa, sizeof(loop2));
 
-	/* Set the RECVBUF small so we can fill it up easily. */
-	{
-		int len = 800; /* Really becomes 2xlen when set. */
-
-		error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &len,
-				   sizeof(len));
-		if (error)
-			tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
-				 strerror(errno));
-	}
+	/*
+	 * This code sets the associations RWND very small so we can
+	 * fill it.  It does this by manipulating the rcvbuf as follows:
+	 * 1) Reduce the rcvbuf size on the socket
+	 * 2) create an association so that we advertize rcvbuf/2 as
+	 *    our initial rwnd
+	 * 3) raise the rcvbuf value so that we don't drop data wile 
+	 *    receiving later data
+	 */
+	len = SMALL_RCVBUF;
+	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &len,
+			   sizeof(len));
+	if (error)
+		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+			 strerror(errno));
 
        /* Mark sk2 as being able to accept new associations.  */
 	test_listen(sk2, 1);
@@ -220,11 +240,32 @@ int main(int argc, char *argv[])
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	associd1 = sac->sac_assoc_id;
 
+	/* restore the rcvbuffer size for the receiving socket */
+	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &orig_len,
+			   sizeof(orig_len));
+
+	if (error)
+		tst_brkm(TBROK, tst_exit, "setsockopt(SO_RCVBUF): %s",
+			strerror(errno));
+
         /* Get the first data message which was sent.  */
         inmessage.msg_controllen = sizeof(incmsg);
         error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
         test_check_msg_data(&inmessage, error, strlen(message) + 1,
 			    MSG_EOR, stream, ppid);
+
+	/* Figure out how big to make our fillmsg */
+	len = sizeof(struct sctp_status);
+	memset(&gstatus,0,sizeof(struct sctp_status));
+	gstatus.sstat_assoc_id = associd1;
+	error = getsockopt(sk1, IPPROTO_SCTP, SCTP_STATUS, &gstatus, &len);
+	
+	if (error)
+		tst_brkm(TBROK, tst_exit, "can't get rwnd size: %s",
+			strerror(errno));
+	tst_resm(TINFO, "Creating fillmsg of size %d",
+		 gstatus.sstat_rwnd+RWND_SLOP);
+	fillmsg = malloc(gstatus.sstat_rwnd+RWND_SLOP);	
 
 	/* Send a fillmsg */
         outmessage.msg_controllen = sizeof(outcmsg);
@@ -240,15 +281,16 @@ int main(int argc, char *argv[])
 	stream++;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
-	memset(fillmsg, 'X', sizeof(fillmsg));
-	fillmsg[sizeof(fillmsg)-1] = '\0';
+	memset(fillmsg, 'X', gstatus.sstat_rwnd+RWND_SLOP);
+	fillmsg[gstatus.sstat_rwnd+RWND_SLOP-1] = '\0';
 	outmessage.msg_iov->iov_base = fillmsg;
-        outmessage.msg_iov->iov_len = sizeof(fillmsg);
+	outmessage.msg_iov->iov_len = gstatus.sstat_rwnd+RWND_SLOP;
 	outmessage.msg_name = NULL;
 	outmessage.msg_namelen = 0;
 	sinfo->sinfo_assoc_id = associd1;
 	sinfo->sinfo_timetolive = 0;
-	test_sendmsg(sk1, &outmessage, MSG_NOSIGNAL, sizeof(fillmsg));
+	test_sendmsg(sk1, &outmessage, MSG_NOSIGNAL,
+			 gstatus.sstat_rwnd+RWND_SLOP);
 
 	/* Now send the message with timeout. */
 	sinfo->sinfo_ppid = ppid;
@@ -321,7 +363,7 @@ int main(int argc, char *argv[])
 							strlen(ttlmsg) + 1,
 				    SCTP_SEND_FAILED, 0);
 	ssf = (struct sctp_send_failed *)iov.iov_base;
-	if (0 != strncmp(ttlmsg, ssf->ssf_data, strlen(ttlmsg) + 1))
+	if (0 != strncmp(ttlmsg, (char *)ssf->ssf_data, strlen(ttlmsg) + 1))
 		tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
 
 	tst_resm(TPASS, "Receive SEND_FAILED for message with timeout");
@@ -338,7 +380,8 @@ int main(int argc, char *argv[])
 								  SMALL_MAXSEG,
 					    SCTP_SEND_FAILED, 0);
 		ssf = (struct sctp_send_failed *)iov.iov_base;
-		if (0 != strncmp(&ttlfrag[offset], ssf->ssf_data, SMALL_MAXSEG))
+		if (0 != strncmp(&ttlfrag[offset], (char *)ssf->ssf_data,
+				 SMALL_MAXSEG))
 			tst_brkm(TBROK, tst_exit, "SEND_FAILED data mismatch");
 		offset += SMALL_MAXSEG;
 	} while (!(ssf->ssf_info.sinfo_flags & 0x01)); /* LAST_FRAG */

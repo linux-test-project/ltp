@@ -2,8 +2,8 @@
  *
  * peeloff.c
  *
- * Distributed under the terms of the GPL v2.0 as described in
- * ./COPYING. 
+ * Distributed under the terms of the LGPL v2.1 as described in
+ *    http://www.gnu.org/copyleft/lesser.txt 
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -11,7 +11,7 @@
  * application to interface with the SCTP in kernel.
  *
  * This implementation is based on the Socket API Extensions for SCTP
- * defined in <draft-ietf-tsvwg-sctpsocket-07.txt.
+ * defined in <draft-ietf-tsvwg-sctpsocket-10.txt.
  *
  * (C) Copyright IBM Corp. 2001, 2003
  * 
@@ -31,7 +31,7 @@ int
 sctp_peeloff(int fd, sctp_assoc_t associd)
 {
 	sctp_peeloff_arg_t peeloff;
-	int peeloff_size = sizeof(peeloff);
+	socklen_t peeloff_size = sizeof(peeloff);
 	int err;
 
 	peeloff.associd = associd;

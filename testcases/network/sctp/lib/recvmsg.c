@@ -3,7 +3,7 @@
  * sctp_recvmsg.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- * ./COPYING.
+ *    http://www.gnu.org/copyleft/lesser.txt 
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -11,7 +11,7 @@
  * application to interface with the SCTP in kernel.
  *
  * This implementation is based on the Socket API Extensions for SCTP
- * defined in <draft-ietf-tsvwg-sctpsocket-07.txt>
+ * defined in <draft-ietf-tsvwg-sctpsocket-10.txt>
  *
  * Copyright (c) 2003 International Business Machines, Corp.
  *
@@ -28,7 +28,7 @@
  * 
  * int sctp_recvmsg(int s,
  *		    void *msg,
- *		    size_t *len,
+ *		    size_t len,
  *		    struct sockaddr *from,
  *		    socklen_t *fromlen,
  *		    struct sctp_sndrcvinfo *sinfo,
@@ -52,7 +52,7 @@
 #include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
 #include <netinet/sctp.h>
 
-int sctp_recvmsg(int s, void *msg, size_t *len, struct sockaddr *from,
+int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 		 socklen_t *fromlen, struct sctp_sndrcvinfo *sinfo,
 		 int *msg_flags)
 {
@@ -65,10 +65,10 @@ int sctp_recvmsg(int s, void *msg, size_t *len, struct sockaddr *from,
 	memset(&inmsg, 0, sizeof (inmsg));
 
 	iov.iov_base = msg;
-	iov.iov_len = *len;
+	iov.iov_len = len;
 
 	inmsg.msg_name = from;
-	inmsg.msg_namelen = *fromlen;
+	inmsg.msg_namelen = fromlen ? *fromlen : 0;
 	inmsg.msg_iov = &iov;
 	inmsg.msg_iovlen = 1;
 	inmsg.msg_control = incmsg;
@@ -78,9 +78,10 @@ int sctp_recvmsg(int s, void *msg, size_t *len, struct sockaddr *from,
 	if (error < 0)
 		return error;
 
-	*len = error;
-	*fromlen = inmsg.msg_namelen;
-	*msg_flags = inmsg.msg_flags;
+	if (fromlen)
+		*fromlen = inmsg.msg_namelen;
+	if (msg_flags)
+		*msg_flags = inmsg.msg_flags;
 
 	if (!sinfo)
 		return error;

@@ -81,6 +81,7 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 		printf("   sinfo_context %x\n",	data->sndrcv.sinfo_context);
 		printf("   sinfo_tsn     %u\n",    data->sndrcv.sinfo_tsn);
 		printf("   sinfo_cumtsn  %u\n",    data->sndrcv.sinfo_cumtsn);
+		printf("   sinfo_assoc_id  %u\n", data->sndrcv.sinfo_assoc_id);
 		
 		break;
 		
@@ -247,7 +248,7 @@ test_check_buf_data(void *buf, int datalen, int msg_flags,
 			 "length:%d, expected length:%d", datalen,
 			 expected_datalen);
 
-	if (msg_flags != expected_msg_flags)
+	if ((msg_flags & ~0x80000000) != expected_msg_flags)
 		tst_brkm(TBROK, tst_exit, "Unexpected msg_flags:0x%x "
 			 "expecting:0x%x", msg_flags, expected_msg_flags);
 
@@ -337,4 +338,81 @@ void test_enable_assoc_change(int fd)
 	subscribe.sctp_association_event = 1;
 	test_setsockopt(fd, SCTP_EVENTS, (char *)&subscribe,
 		        sizeof(subscribe));
+}
+
+static int cmp_addr(sockaddr_storage_t *addr1, sockaddr_storage_t *addr2)
+{
+	if (addr1->sa.sa_family != addr2->sa.sa_family)
+		return 0;
+	switch (addr1->sa.sa_family) {
+	case AF_INET6:
+		if (addr1->v6.sin6_port != addr2->v6.sin6_port)
+			return -1;
+		return memcmp(&addr1->v6.sin6_addr, &addr2->v6.sin6_addr,
+			      sizeof(addr1->v6.sin6_addr));
+	case AF_INET:
+		if (addr1->v4.sin_port != addr2->v4.sin_port)
+			return 0;
+		return memcmp(&addr1->v4.sin_addr, &addr2->v4.sin_addr,
+			      sizeof(addr1->v4.sin_addr));
+	default:
+		tst_brkm(TBROK, tst_exit, "invalid address type %d",
+			 addr1->sa.sa_family);
+		return -1;
+	}
+}
+
+/* Test peer addresses for association. */
+int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int count)
+{
+	struct sockaddr *addrs;
+	int error, i, j;
+	struct sockaddr *sa_addr;
+	socklen_t addrs_size = 0;
+	void *addrbuf;
+	char *found = (char *) malloc(count);
+	memset(found, 0, count);
+
+	error = sctp_getpaddrs(sk, asoc, &addrs);
+	if (-1 == error) {
+		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs: %s", strerror(errno));
+		return error;
+	}
+	if (error != count) {
+		sctp_freepaddrs(addrs);
+		tst_brkm(TBROK, tst_exit, "peer count %d mismatch, expected %d",
+			 error, count);
+	}
+	addrbuf = addrs;
+	for (i = 0; i < count; i++) {
+		sa_addr = (struct sockaddr *)addrbuf;
+		switch (sa_addr->sa_family) {
+		case AF_INET:
+			addrs_size += sizeof(struct sockaddr_in);
+			addrbuf += sizeof(struct sockaddr_in);
+			break;
+		case AF_INET6:
+			addrs_size += sizeof(struct sockaddr_in6);
+			addrbuf += sizeof(struct sockaddr_in6);
+			break;
+		default:
+			errno = EINVAL;
+			sctp_freepaddrs(addrs);
+			tst_brkm(TBROK, tst_exit, "sctp_getpaddrs: %s", strerror(errno));
+			return -1;
+		}
+		for (j = 0; j < count; j++) {
+			if (cmp_addr((sockaddr_storage_t *)sa_addr,
+				     &peers[j]) == 0) {
+				found[j] = 1;
+			}
+		}
+	}
+	for (j = 0; j < count; j++) {
+		if (found[j] == 0) {
+			tst_brkm(TBROK, tst_exit, "peer address %d not found", j);
+		}
+	}
+	sctp_freepaddrs(addrs);
+	return 0;
 }

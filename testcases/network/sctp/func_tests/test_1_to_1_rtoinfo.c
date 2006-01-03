@@ -45,6 +45,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <linux/socket.h>
 #include <linux/in.h>         /* for sockaddr_in */
 #include <linux/in6.h>         /* for sockaddr_in6 */
 #include <sys/errno.h>
@@ -60,16 +61,17 @@ int
 main(void) 
 {
 	
-	int sd, i, ret;
+	int sd, ret;
+	socklen_t len;
 	struct sctp_rtoinfo srtoinfo; /*setting the variables*/
 	struct sctp_rtoinfo grtoinfo; /*Getting the variables*/
 
 	sd = test_socket (PF_INET, SOCK_STREAM, IPPROTO_SCTP);
 
-	i = sizeof(struct sctp_rtoinfo);
+	len = sizeof(struct sctp_rtoinfo);
 	
 	/*TEST1 Getting the default values using getsockopt()*/
-	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &i);
+	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &len);
 	if (ret < 0)
 		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);
@@ -91,7 +93,7 @@ main(void)
 	tst_resm(TPASS, "setsockopt() SCTP_RTOINFO - SUCCESS");
 
 	/*Getting the values which are set using setsockopt()*/
-	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &i);
+	ret = getsockopt(sd, IPPROTO_SCTP, SCTP_RTOINFO, &grtoinfo, &len);
 	if (ret < 0)
 		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_RTOINFO "
 			 "ret:%d, errno:%d", ret, errno);

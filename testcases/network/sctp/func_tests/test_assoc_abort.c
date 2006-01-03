@@ -80,7 +80,7 @@ main(int argc, char *argv[])
 	struct sctp_assoc_change *sac;
 	char *big_buffer;
 	int i;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
 	struct sctp_status status;
 	socklen_t status_len;
 
@@ -192,7 +192,7 @@ main(int argc, char *argv[])
 	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-	sinfo->sinfo_flags |= MSG_ABORT;
+	sinfo->sinfo_flags |= SCTP_ABORT;
 
 	/* Shutdown all the associations of the server socket in a loop.  */
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -237,7 +237,7 @@ main(int argc, char *argv[])
 		close(clt_sk[i]);
 	}
 
-	tst_resm(TPASS, "ABORT an association using MSG_ABORT"); 
+	tst_resm(TPASS, "ABORT an association using SCTP_ABORT"); 
 
         /* Indicate successful completion.  */
         return 0;

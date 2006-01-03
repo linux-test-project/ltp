@@ -78,7 +78,7 @@ main(int argc, char *argv[])
 	struct sctp_assoc_change *sac;
 	char *big_buffer;
 	int i;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
 	int pf_class;
 
         /* Rather than fflush() throughout the code, set stdout to 

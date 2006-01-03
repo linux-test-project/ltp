@@ -55,7 +55,8 @@ int TST_CNT = 0;
 int 
 main (int argc, char **argv)
 {
-	int len, sk1, sk2, sk3, pf_class;
+	int sk1, sk2, sk3, pf_class;
+	socklen_t len;
 	struct sockaddr_in lstn_addr, acpt_addr;
 	struct sockaddr_in conn_addr;
 	char * buffer_rcv;

@@ -3,7 +3,7 @@
  * sendmsg.c
  *
  * Distributed under the terms of the LGPL v2.1 as described in
- * ./COPYING.
+ *    http://www.gnu.org/copyleft/lesser.txt 
  *
  * This file is part of the user library that offers support for the
  * SCTP kernel reference Implementation. The main purpose of this
@@ -11,7 +11,7 @@
  * application to interface with the SCTP in kernel.
  *
  * This implementation is based on the Socket API Extensions for SCTP
- * defined in <draft-ietf-tsvwg-sctpsocket-07.txt>
+ * defined in <draft-ietf-tsvwg-sctpsocket-10.txt>
  *
  * Copyright (c) 2003 Intel Corp.
  *
@@ -65,4 +65,42 @@ sctp_sendmsg(int s, const void *msg, size_t len, struct sockaddr *to,
 	sinfo->sinfo_context = context;
 
 	return sendmsg(s, &outmsg, 0);
+}
+
+/* This library function assist the user with sending a message without
+ * dealing directly with the CMSG header.
+ */
+int
+sctp_send(int s, const void *msg, size_t len,
+          const struct sctp_sndrcvinfo *sinfo, int flags)
+{
+	struct msghdr outmsg;
+	struct iovec iov;
+
+	outmsg.msg_name = NULL;
+	outmsg.msg_namelen = 0;
+	outmsg.msg_iov = &iov;
+	iov.iov_base = (void *)msg;
+	iov.iov_len = len;
+	outmsg.msg_iovlen = 1;
+	outmsg.msg_controllen = 0;
+
+	if (sinfo) {	
+		char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
+		struct cmsghdr *cmsg;
+
+		outmsg.msg_control = outcmsg;
+		outmsg.msg_controllen = sizeof(outcmsg);
+		outmsg.msg_flags = 0;
+
+		cmsg = CMSG_FIRSTHDR(&outmsg);
+		cmsg->cmsg_level = IPPROTO_SCTP;
+		cmsg->cmsg_type = SCTP_SNDRCV;
+		cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
+
+		outmsg.msg_controllen = cmsg->cmsg_len;
+		memcpy(CMSG_DATA(cmsg), sinfo, sizeof(struct sctp_sndrcvinfo));
+	}
+
+	return sendmsg(s, &outmsg, flags);
 }

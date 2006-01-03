@@ -82,7 +82,8 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int sk,pf_class,error;
+        int sk,pf_class;
+	int error = 0;
 	int uid;
 
         struct sockaddr_in bind_addr;

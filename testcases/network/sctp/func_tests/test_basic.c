@@ -75,9 +75,9 @@ int main(void)
 	struct cmsghdr *cmsg;
 	struct sctp_sndrcvinfo *sinfo;
         struct iovec out_iov;
-        u_int8_t *message = "hello, world!\n";
-        u_int8_t *telephone = "Watson, come here!  I need you!\n";
-        u_int8_t *telephone_resp = "I already brought your coffee...\n";
+        char *message = "hello, world!\n";
+        char *telephone = "Watson, come here!  I need you!\n";
+        char *telephone_resp = "I already brought your coffee...\n";
         int error, bytes_sent;
 	int pf_class;
 	uint32_t ppid;
@@ -355,14 +355,16 @@ int main(void)
 		sa_addr = (struct sockaddr *)addr_buf;
 		if (AF_INET == sa_addr->sa_family) {
 			in_addr = (struct sockaddr_in *)sa_addr;
-			tst_resm(TINFO, "LOCAL ADDR %d.%d.%d.%d",
-				 NIPQUAD(in_addr->sin_addr));
+			tst_resm(TINFO, "LOCAL ADDR %d.%d.%d.%d PORT %d",
+				 NIPQUAD(in_addr->sin_addr),
+				 ntohs(in_addr->sin_port));
 			addr_buf += sizeof(struct sockaddr_in);
 		} else {
 			in6_addr = (struct sockaddr_in6 *)sa_addr;
 			tst_resm(TINFO,
-		 "LOCAL ADDR %04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x",
-			       NIP6(in6_addr->sin6_addr));
+		 "LOCAL ADDR %04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x PORT %d",
+			       NIP6(in6_addr->sin6_addr),
+			       ntohs(in6_addr->sin6_port));
 			addr_buf += sizeof(struct sockaddr_in6);
 		}
 	}
@@ -383,14 +385,16 @@ int main(void)
 		sa_addr = (struct sockaddr *)addr_buf;
 		if (AF_INET == sa_addr->sa_family) {
 			in_addr = (struct sockaddr_in *)sa_addr;
-			tst_resm(TINFO, "PEER ADDR %d.%d.%d.%d",
-				 NIPQUAD(in_addr->sin_addr));
+			tst_resm(TINFO, "PEER ADDR %d.%d.%d.%d PORT %d",
+				 NIPQUAD(in_addr->sin_addr),
+				 ntohs(in_addr->sin_port));
 			addr_buf += sizeof(struct sockaddr_in);
 		} else {
 			in6_addr = (struct sockaddr_in6 *)sa_addr;
 			tst_resm(TINFO,
-		 "PEER ADDR %04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x",
-			       NIP6(in6_addr->sin6_addr));
+		 "PEER ADDR %04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x PORT %d",
+			       NIP6(in6_addr->sin6_addr),
+			       ntohs(in6_addr->sin6_port));
 			addr_buf += sizeof(struct sockaddr_in6);
 		}
 	}

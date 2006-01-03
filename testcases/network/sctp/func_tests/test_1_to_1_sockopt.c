@@ -28,6 +28,8 @@
  * TEST18: getsockopt: SO_SNDBUF
  * TEST19: getsockopt: SCTP_PRIMARY_ADDR
  * TEST20: setsockopt: SCTP_PRIMARY_ADDR
+ * TEST21: getsockopt: SCTP_ASSOCINFO
+ * TEST22: setsockopt: SCTP_ASSOCINFO
  *
  * The SCTP reference implementation is free software;
  * you can redistribute it and/or modify it under the terms of
@@ -72,13 +74,14 @@
 #include <sctputil.h>
 
 char *TCID = __FILE__;
-int TST_TOTAL = 20;
+int TST_TOTAL = 22;
 int TST_CNT = 0;
 
 int
 main(void)
 {
-	int error,len;
+	int error;
+	socklen_t len;
 	int sk, sk1, sk2, acpt_sk, pf_class;
 	struct sctp_rtoinfo grtinfo;
 	struct sockaddr_in lstn_addr, conn_addr;
@@ -93,6 +96,8 @@ main(void)
 	int sndbuf_val_get, sndbuf_val_set;/*get and set var for SO_SNDBUF*/
 	struct sctp_prim gprimaddr;/*SCTP_PRIMARY_ADDR get*/
 	struct sctp_prim sprimaddr;/*SCTP_PRIMARY_ADDR set*/
+	struct sctp_assocparams sassocparams;  /* SCTP_ASSOCPARAMS set */
+	struct sctp_assocparams gassocparams;  /* SCTP_ASSOCPARAMS get */
 
 	/* Rather than fflush() throughout the code, set stdout to
          * be unbuffered.
@@ -293,11 +298,6 @@ main(void)
 
 	tst_resm(TPASS, "getsockopt() SCTP_STATUS - SUCCESS");
 
-	if (gstatus.sstat_rwnd != rcvbuf_val_get)
-		tst_brkm(TBROK, tst_exit, "Value Mismatch for rwnd obtained "
-			 "from SCTP_STATUS val=%d and SO_RCVBUF val=%d ",
-			 rcvbuf_val_get,gstatus.sstat_rwnd);
-
 	/* Reducing the SO_RCVBUF value using setsockopt() */
 	/*Minimum value is 128 and hence I am using it*/
 	len = sizeof(int);
@@ -371,6 +371,40 @@ main(void)
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() SCTP_PRIMARY_ADDR - SUCCESS");
+
+	/* TEST21: Test case for getsockopt SCTP_PRIMARY_ADDR */
+	/* Getting the association info using SCTP_ASSOCINFO */
+        len = sizeof(struct sctp_assocparams);
+	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_ASSOCINFO, &gassocparams,
+			   &len);
+	if (error < 0)
+		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_ASSOCINFO "
+                         "error:%d, errno:%d", error, errno);
+
+	tst_resm(TPASS, "getsockopt() SCTP_ASSOCINFO - SUCCESS");
+
+	/* TEST21: Test case for setsockopt SCTP_ASSOCINFO */
+	memcpy(&sassocparams, &gassocparams, sizeof(struct sctp_assocparams));
+	sassocparams.sasoc_asocmaxrxt += 5;
+	sassocparams.sasoc_cookie_life += 10;
+
+	error = setsockopt(sk2, IPPROTO_SCTP, SCTP_ASSOCINFO, &sassocparams,
+			   len);
+	if (error < 0)
+		tst_brkm(TBROK, tst_exit, "setsockopt SCTP_ASSOCINFO "
+                         "error:%d, errno:%d", error, errno);
+
+	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_ASSOCINFO, &gassocparams,
+			   &len);
+	if (error < 0)
+		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_ASSOCINFO "
+                         "error:%d, errno:%d", error, errno);
+
+	if (sassocparams.sasoc_asocmaxrxt != gassocparams.sasoc_asocmaxrxt ||
+	    sassocparams.sasoc_cookie_life != gassocparams.sasoc_cookie_life)
+		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_ASSOCINFO value "
+			 "mismatch");
+	tst_resm(TPASS, "setsockopt() SCTP_ASSOCINFO - SUCCESS");
 
 	close(sk2);
 	close(sk1);

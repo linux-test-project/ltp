@@ -24,7 +24,7 @@
 INCLUDES+=-I../include
 
 CFLAGS += -g $(INCLUDES)
-SRCS=addrs.c bindx.c opt_info.c peeloff.c recvmsg.c sendmsg.c
+SRCS=addrs.c bindx.c opt_info.c peeloff.c recvmsg.c sendmsg.c connectx.c
 OBJS=$(SRCS:.c=.o)
 MAINS=libsctp.a
 

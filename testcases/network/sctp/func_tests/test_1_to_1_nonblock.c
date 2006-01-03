@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
+#include <linux/socket.h>
 #include <sctputil.h>
 
 char *TCID = __FILE__;
@@ -62,11 +63,12 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int error,len,msg_count;
-	int sk,sk1,pf_class,lstn_sk,acpt_sk,flag,cflag,sflag;
+        int error,msg_count;
+	socklen_t len;
+	int sk,pf_class,lstn_sk,acpt_sk,flag,cflag,sflag;
 	struct msghdr outmessage;
 	struct msghdr inmessage;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
         struct iovec iov;
         struct iovec iov_rcv;
 	struct sctp_sndrcvinfo *sinfo;
@@ -209,7 +211,6 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "non-blocking recvmsg() when data is available - "
 		 "SUCCESS");
 
-	close(sk1);
 	close(lstn_sk);
 	close(acpt_sk);
 	return 0;

@@ -58,7 +58,6 @@ int TST_TOTAL = 1;
 int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
-#define MSG_EOF 0x200
 
 int
 main(int argc, char *argv[])
@@ -80,7 +79,7 @@ main(int argc, char *argv[])
 	struct sctp_assoc_change *sac;
 	char *big_buffer;
 	int i;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
 	struct sctp_status status;
 	socklen_t status_len;
 
@@ -194,7 +193,7 @@ main(int argc, char *argv[])
 	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-	sinfo->sinfo_flags |= MSG_EOF;
+	sinfo->sinfo_flags |= SCTP_EOF;
 
 	/* Shutdown all the associations of the server socket in a loop.  */
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -240,7 +239,7 @@ main(int argc, char *argv[])
 		close(clt_sk[i]);
 	}
 
-	tst_resm(TPASS, "Graceful shutdown of associations using MSG_EOF"); 
+	tst_resm(TPASS, "Graceful shutdown of associations using SCTP_EOF"); 
 
         /* Indicate successful completion.  */
         return 0;

@@ -46,7 +46,7 @@
 #include <string.h>
 
 char *TCID = __FILE__;
-int TST_TOTAL = 3;
+int TST_TOTAL = 4;
 int TST_CNT = 0;
 
 int
@@ -58,12 +58,13 @@ main(int argc, char *argv[])
 	struct msghdr inmessage, outmessage;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
-	int error, len;
+	int error;
+	socklen_t len;
 	char *big_buffer;
 	struct sctp_event_subscribe event;
 	struct cmsghdr *cmsg;
 	struct sctp_sndrcvinfo *sinfo;
-	u_int8_t *message = "hello, world!\n";
+	char *message = "hello, world!\n";
 	uint32_t ppid;
 	uint32_t stream;
 
@@ -93,6 +94,7 @@ main(int argc, char *argv[])
 
 	event.sctp_data_io_event = 1;
 	event.sctp_association_event = 1;
+	event.sctp_shutdown_event = 1;
 	len = sizeof(struct sctp_event_subscribe);
 	test_setsockopt(svr_sk, SCTP_EVENTS, &event, len);
 	test_setsockopt(clt_sk, SCTP_EVENTS, &event, len);
@@ -172,8 +174,16 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "Data message on server socket - SUCCESS");
 
-	close(svr_sk);
 	close(clt_sk);
+	error = test_recvmsg(acpt_sk, &inmessage, MSG_WAITALL);
+	test_check_msg_notification(&inmessage,
+                                    error,
+                                    sizeof(struct sctp_shutdown_event),
+                                    SCTP_SHUTDOWN_EVENT,
+                                    0);
+
+	tst_resm(TPASS, "SHUTDOWN notification on accepted socket - SUCCESS");
+	close(svr_sk);
 	close(acpt_sk);
 
 	return 0;

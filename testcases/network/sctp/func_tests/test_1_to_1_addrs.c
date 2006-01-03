@@ -77,11 +77,12 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int error,len;
+        int error;
+	socklen_t len;
 	int sk,lstn_sk,clnt_sk,acpt_sk,pf_class,sk1;
 	struct msghdr outmessage;
         struct msghdr inmessage;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
         struct iovec iov;
         struct iovec iov_rcv;
         struct sctp_sndrcvinfo *sinfo;

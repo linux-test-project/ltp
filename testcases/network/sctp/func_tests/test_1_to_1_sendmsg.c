@@ -11,8 +11,8 @@
  * TEST5: Invalid iovec length
  * TEST6: Invalid msghdr pointer
  * TEST7: Invalid sinfo flags
- * TEST8: MSG_EOF flag set
- * TEST9: MSG_ABORT flag set
+ * TEST8: SCTP_EOF flag set
+ * TEST9: SCTP_ABORT flag set
  * TEST10: On a closed association
  *
  * TEST11: Sending data from server socket to client socket
@@ -61,9 +61,8 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
+#include <linux/socket.h>
 #include <sctputil.h>
-
-#define MSG_EOF 0x200
 
 char *TCID = __FILE__;
 int TST_TOTAL = 14;
@@ -72,10 +71,11 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int len, msg_count;
+        socklen_t len;
+	int msg_count;
 	int sk,sk1,pf_class,lstn_sk,acpt_sk,acpt1_sk, flag;
 	struct msghdr outmessage;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
         struct iovec iov;
 	struct sctp_sndrcvinfo *sinfo;
         int count;
@@ -213,23 +213,23 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "sendmsg() with invalid sinfo flags - EINVAL");
 
-	/*sendmsg () TEST8: MSG_EOF flag EINVAL, Expected error*/
-	sinfo->sinfo_flags = MSG_EOF;
+	/*sendmsg () TEST8: SCTP_EOF flag EINVAL, Expected error*/
+	sinfo->sinfo_flags = SCTP_EOF;
 	count = sendmsg(sk, &outmessage, flag);
 	if (count != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "sendmsg with MSG_EOF flag "
+		tst_brkm(TBROK, tst_exit, "sendmsg with SCTP_EOF flag "
 			 "count:%d, errno:%d", count, errno);
 
-	tst_resm(TPASS, "sendmsg() with MSG_EOF flag - EINVAL");
+	tst_resm(TPASS, "sendmsg() with SCTP_EOF flag - EINVAL");
 
-	/*sendmsg () TEST9: MSG_ABORT flag EINVAL, Expected error*/
-	sinfo->sinfo_flags = MSG_ABORT;
+	/*sendmsg () TEST9: SCTP_ABORT flag EINVAL, Expected error*/
+	sinfo->sinfo_flags = SCTP_ABORT;
 	count = sendmsg(sk, &outmessage, flag);
 	if (count != -1 || errno != EINVAL)
-		tst_brkm(TBROK, tst_exit, "sendmsg with MSG_ABORT flag "
+		tst_brkm(TBROK, tst_exit, "sendmsg with SCTP_ABORT flag "
 			 "count:%d, errno:%d", count, errno);
 
-	tst_resm(TPASS, "sendmsg() with MSG_ABORT flag - EINVAL");
+	tst_resm(TPASS, "sendmsg() with SCTP_ABORT flag - EINVAL");
 
 	sinfo->sinfo_flags = 0; 
 	

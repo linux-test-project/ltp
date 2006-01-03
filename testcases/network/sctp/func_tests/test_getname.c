@@ -63,7 +63,8 @@ main(int argc, char *argv[])
 	sockaddr_storage_t svr_loop, accept_loop;
 	sockaddr_storage_t svr_local_addr, svr_peer_addr;
 	sockaddr_storage_t clt_local_addr, clt_peer_addr;
-	int len, error;
+	socklen_t len;
+	int error;
 	int pf_class;
 
         /* Rather than fflush() throughout the code, set stdout to 

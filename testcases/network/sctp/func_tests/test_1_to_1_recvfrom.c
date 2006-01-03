@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
+#include <linux/socket.h>
 #include <sctputil.h>
 
 char *TCID = __FILE__;
@@ -62,7 +63,8 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int ret,len,msg_count;
+        int ret, msg_count;
+	socklen_t len;
 	int sk,pf_class,lstn_sk,acpt_sk, flag;
         char *message = "hello, world!\n";
 	char *message_rcv;

@@ -1,36 +1,21 @@
-/* SCTP kernel reference Implementation
- * (C) Copyright IBM Corp. 2001, 2003
- * Copyright (c) 1999-2000 Cisco, Inc.
- * Copyright (c) 1999-2001 Motorola, Inc.
+/* SCTP kernel reference Implementation: User API extensions.
  *
- * This file is part of the SCTP kernel reference Implementation
+ * sctp.h
+ *
+ * Distributed under the terms of the LGPL v2.1 as described in
+ *    http://www.gnu.org/copyleft/lesser.txt 
+ *
+ * This file is part of the user library that offers support for the
+ * SCTP kernel reference Implementation. The main purpose of this
+ * code is to provide the SCTP Socket API mappings for user
+ * application to interface with SCTP in kernel.
  *
  * This header represents the structures and constants needed to support
  * the SCTP Extension to the Sockets API.
  *
- * The SCTP reference implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * The SCTP reference implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
+ * (C) Copyright IBM Corp. 2001, 2004
+ * Copyright (c) 1999-2000 Cisco, Inc.
+ * Copyright (c) 1999-2001 Motorola, Inc.
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll    <piggy@acm.org>
@@ -42,9 +27,6 @@
  *    Daisy Chang              <daisyc@us.ibm.com>
  *    Inaky Perez-Gonzalez     <inaky.gonzalez@intel.com>
  *    Sridhar Samudrala        <sri@us.ibm.com>
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
  */
 
 #ifndef __linux_sctp_h__
@@ -54,7 +36,9 @@
 #include <linux/types.h>
 #include <sys/socket.h>
 
-typedef void * sctp_assoc_t;
+__BEGIN_DECLS
+
+typedef __s32 sctp_assoc_t;
 
 /* Socket option layer for SCTP */
 #ifndef SOL_SCTP
@@ -70,6 +54,9 @@ typedef void * sctp_assoc_t;
 #define HAVE_KERNEL_SCTP
 #define HAVE_SCTP_MULTIBUF
 #define HAVE_SCTP_NOCONNECT
+#define HAVE_SCTP_PRSCTP
+#define HAVE_SCTP_ADDIP
+#define HAVE_SCTP_CANSET_PRIMARY
 
 /* The following symbols come from the Sockets API Extensions for
  * SCTP <draft-ietf-tsvwg-sctpsocket-07.txt>.
@@ -117,14 +104,20 @@ enum sctp_optname {
 #define SCTP_SOCKOPT_BINDX_REM	SCTP_SOCKOPT_BINDX_REM
 	SCTP_SOCKOPT_PEELOFF, 	/* peel off association. */
 #define SCTP_SOCKOPT_PEELOFF	SCTP_SOCKOPT_PEELOFF
-	SCTP_GET_PEER_ADDRS_NUM, 	/* Get number of peer addresss. */
-#define SCTP_GET_PEER_ADDRS_NUM	SCTP_GET_PEER_ADDRS_NUM
-	SCTP_GET_PEER_ADDRS, 	/* Get all peer addresss. */
-#define SCTP_GET_PEER_ADDRS	SCTP_GET_PEER_ADDRS
-	SCTP_GET_LOCAL_ADDRS_NUM, 	/* Get number of local addresss. */
-#define SCTP_GET_LOCAL_ADDRS_NUM	SCTP_GET_LOCAL_ADDRS_NUM
-	SCTP_GET_LOCAL_ADDRS, 	/* Get all local addresss. */
-#define SCTP_GET_LOCAL_ADDRS	SCTP_GET_LOCAL_ADDRS
+	SCTP_GET_PEER_ADDRS_NUM_OLD, 	/* Get number of peer addresss. */
+#define SCTP_GET_PEER_ADDRS_NUM_OLD	SCTP_GET_PEER_ADDRS_NUM_OLD
+	SCTP_GET_PEER_ADDRS_OLD, 	/* Get all peer addresss. */
+#define SCTP_GET_PEER_ADDRS_OLD	SCTP_GET_PEER_ADDRS_OLD
+	SCTP_GET_LOCAL_ADDRS_NUM_OLD, 	/* Get number of local addresss. */
+#define SCTP_GET_LOCAL_ADDRS_NUM_OLD	SCTP_GET_LOCAL_ADDRS_NUM_OLD
+	SCTP_GET_LOCAL_ADDRS_OLD, 	/* Get all local addresss. */
+#define SCTP_GET_LOCAL_ADDRS_OLD	SCTP_GET_LOCAL_ADDRS_OLD
+	SCTP_SOCKOPT_CONNECTX, /* CONNECTX requests. */
+#define SCTP_SOCKOPT_CONNECTX	SCTP_SOCKOPT_CONNECTX
+	SCTP_GET_PEER_ADDRS,    /* Get all peer addresss. */
+#define SCTP_GET_PEER_ADDRS     SCTP_GET_PEER_ADDRS
+	SCTP_GET_LOCAL_ADDRS,   /* Get all local addresss. */
+#define SCTP_GET_LOCAL_ADDRS    SCTP_GET_LOCAL_ADDRS
 };
 
 /*
@@ -179,10 +172,10 @@ struct sctp_sndrcvinfo {
  */
 
 enum sctp_sinfo_flags {
-	MSG_UNORDERED = 1,  /* Send/receive message unordered. */
-	MSG_ADDR_OVER = 2,  /* Override the primary destination. */
-	MSG_ABORT=4,        /* Send an ABORT message to the peer. */
-	/* MSG_EOF is already defined per socket.h */
+	SCTP_UNORDERED = 1,  /* Send/receive message unordered. */
+	SCTP_ADDR_OVER = 2,  /* Override the primary destination. */
+	SCTP_ABORT=4,        /* Send an ABORT message to the peer. */
+	SCTP_EOF=MSG_FIN,    /* Initiate graceful shutdown process. */ 
 };
 
 
@@ -251,7 +244,7 @@ struct sctp_paddr_change {
 	int spc_state;
 	int spc_error;
 	sctp_assoc_t spc_assoc_id;
-};
+} __attribute__((packed, aligned(4)));
 
 /*
  *    spc_state:  32 bits (signed integer)
@@ -260,7 +253,7 @@ struct sctp_paddr_change {
  *   event that happened to the address.  They include:
  */
 enum sctp_spc_state {
-	SCTP_ADDR_REACHABLE,
+	SCTP_ADDR_AVAILABLE,
 	SCTP_ADDR_UNREACHABLE,
 	SCTP_ADDR_REMOVED,
 	SCTP_ADDR_ADDED,
@@ -476,7 +469,7 @@ struct sctp_assocparams {
 struct sctp_setpeerprim {
 	sctp_assoc_t            sspp_assoc_id;
 	struct sockaddr_storage sspp_addr;
-};
+} __attribute__((packed, aligned(4)));
 
 /*
  * 7.1.10 Set Primary Address (SCTP_PRIMARY_ADDR)
@@ -489,7 +482,7 @@ struct sctp_setpeerprim {
 struct sctp_prim {
 	sctp_assoc_t            ssp_assoc_id;
 	struct sockaddr_storage ssp_addr;
-};
+} __attribute__((packed, aligned(4)));
 
 /*
  * 7.1.11 Set Adaption Layer Indicator (SCTP_ADAPTION_LAYER)
@@ -516,7 +509,7 @@ struct sctp_paddrparams {
 	struct sockaddr_storage	spp_address;
 	__u32			spp_hbinterval;
 	__u16			spp_pathmaxrxt;
-};
+} __attribute__((packed, aligned(4)));
 
 /*
  * 7.2.2 Peer Address Information
@@ -535,7 +528,7 @@ struct sctp_paddrinfo {
 	__u32			spinfo_srtt;
 	__u32			spinfo_rto;
 	__u32			spinfo_mtu;
-};
+} __attribute__((packed, aligned(4)));
 
 /* Peer addresses's state. */
 enum sctp_spinfo_state {
@@ -564,14 +557,34 @@ struct sctp_status {
 	struct sctp_paddrinfo	sstat_primary;
 };
 
+/* Association states.  */
+enum sctp_sstat_state {
+	SCTP_EMPTY                = 0,
+	SCTP_CLOSED               = 1,
+	SCTP_COOKIE_WAIT          = 2,
+	SCTP_COOKIE_ECHOED        = 3,
+	SCTP_ESTABLISHED          = 4,
+	SCTP_SHUTDOWN_PENDING     = 5,
+	SCTP_SHUTDOWN_SENT        = 6,
+	SCTP_SHUTDOWN_RECEIVED    = 7,
+	SCTP_SHUTDOWN_ACK_SENT    = 8,
+};
+
 /*
- * 8.3, 8.5 get all peer/local addresses on a socket
- * This parameter struct is for getsockopt
+ * 8.3, 8.5 get all peer/local addresses in an association. 
+ * This parameter struct is used by SCTP_GET_PEER_ADDRS and
+ * SCTP_GET_LOCAL_ADDRS socket options used internally to implement
+ * sctp_getpaddrs() and sctp_getladdrs() API. 
  */
-struct sctp_getaddrs {
+struct sctp_getaddrs_old {
 	sctp_assoc_t            assoc_id;
 	int			addr_num;
 	struct sockaddr		*addrs;
+};
+struct sctp_getaddrs {
+	sctp_assoc_t            assoc_id; /*input*/
+	__u32                   addr_num; /*output*/
+	__u8                    addrs[0]; /*output, variable size*/
 };
 
 /* These are bit fields for msghdr->msg_flags.  See section 5.1.  */
@@ -600,6 +613,8 @@ typedef struct {
 
 
 int sctp_bindx(int sd, struct sockaddr *addrs, int addrcnt, int flags);
+
+int sctp_connectx(int sd, struct sockaddr *addrs, int addrcnt);
 
 int sctp_peeloff(int sd, sctp_assoc_t assoc_id);
 
@@ -639,13 +654,21 @@ int sctp_sendmsg(int s, const void *msg, size_t len, struct sockaddr *to,
 		 socklen_t tolen, uint32_t ppid, uint32_t flags,
 		 uint16_t stream_no, uint32_t timetolive, uint32_t context);
 
+/* This library function assist the user with sending a message without
+ * dealing directly with the CMSG header.
+ */
+int sctp_send(int s, const void *msg, size_t len,
+              const struct sctp_sndrcvinfo *sinfo, int flags);
+
 /* This library function assists the user with the advanced features
  * of SCTP.  This is a new SCTP API described in the section 8.8 of the
  * Sockets API Extensions for SCTP. This is implemented using the
  * recvmsg() interface.
  */
-int sctp_recvmsg(int s, void *msg, size_t *len, struct sockaddr *from,
+int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 		 socklen_t *fromlen, struct sctp_sndrcvinfo *sinfo,
 		 int *msg_flags);
+
+__END_DECLS
 
 #endif /* __linux_sctp_h__ */

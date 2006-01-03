@@ -54,9 +54,8 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
+#include <linux/socket.h>
 #include <sctputil.h>
-
-#define MSG_EOF 0x200
 
 char *TCID = __FILE__;
 int TST_TOTAL = 8;
@@ -65,10 +64,12 @@ int TST_CNT = 0;
 int
 main(int argc, char *argv[])
 {
-        int ret,len;
-	int sk,pf_class,lstn_sk,acpt_sk, flag;
+        socklen_t len;
+	int ret;
+	int sk,pf_class,lstn_sk,acpt_sk;
+	int flag = 0;
 	struct msghdr inmessage;
-        u_int8_t *message = "hello, world!\n";
+        char *message = "hello, world!\n";
 	struct iovec iov_rcv;
         int count;
 	char * buffer_rcv;

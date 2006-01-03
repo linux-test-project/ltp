@@ -67,7 +67,7 @@ main(int argc, char *argv[])
 	struct iovec iov, out_iov;
 	int error, bytes_sent;
 	char *big_buffer;
-	u_int8_t *message = "hello, world!\n";
+	char *message = "hello, world!\n";
 	uint32_t autoclose;
 
 	/* Rather than fflush() throughout the code, set stdout to 

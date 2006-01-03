@@ -53,6 +53,8 @@
 #include <usctest.h>
 #endif
 
+#include <string.h>
+
 typedef union {
 	struct sockaddr_in v4;	
 	struct sockaddr_in6 v6;
@@ -144,6 +146,14 @@ static inline int test_bind(int sk, struct sockaddr *addr, socklen_t addrlen)
 	return error;
 }
 
+static inline int test_bindx_add(int sk, struct sockaddr *addr, int count)
+{
+	int error = sctp_bindx(sk, addr, count, SCTP_BINDX_ADD_ADDR);
+        if (-1 == error)
+                tst_brkm(TBROK, tst_exit, "bindx (add): %s", strerror(errno));
+	return error;
+}
+
 static inline int test_listen(int sk, int backlog)
 {
 	int error = listen(sk, backlog);
@@ -157,6 +167,14 @@ static inline int test_connect(int sk, struct sockaddr *addr, socklen_t addrlen)
 	int error = connect(sk, addr, addrlen);
         if (-1 == error)
                 tst_brkm(TBROK, tst_exit, "connect: %s", strerror(errno));
+	return error;
+}
+
+static inline int test_connectx(int sk, struct sockaddr *addr, int count)
+{
+	int error = sctp_connectx(sk, addr, count);
+        if (-1 == error)
+                tst_brkm(TBROK, tst_exit, "connectx: %s", strerror(errno));
 	return error;
 }
 
@@ -263,7 +281,18 @@ static inline int test_sctp_sendmsg(int s, const void *msg, size_t len,
 	return error;			
 }
 
-static inline int test_sctp_recvmsg(int sk, void *msg, size_t *len,
+static inline int test_sctp_send(int s, const void *msg, size_t len,
+				 const struct sctp_sndrcvinfo *sinfo, 
+				 int flags)
+{
+	int error = sctp_send(s, msg, len, sinfo, flags);
+	if (len != error)
+		tst_brkm(TBROK, tst_exit, "sctp_send: error:%d errno:%d",
+			 error, errno);
+	return error;			
+}
+
+static inline int test_sctp_recvmsg(int sk, void *msg, size_t len,
 				    struct sockaddr *from, socklen_t *fromlen,
 				    struct sctp_sndrcvinfo *sinfo,
 				    int *msg_flags)
@@ -290,5 +319,6 @@ void test_check_buf_data(void *, int, int, struct sctp_sndrcvinfo *, int, int,
 void *test_build_msg(int);
 void test_enable_assoc_change(int);
 void test_print_message(int sk, struct msghdr *msg, size_t msg_len);
+int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int count);
 
 #endif /* __sctputil_h__ */

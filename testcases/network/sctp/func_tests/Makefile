@@ -24,7 +24,7 @@ LIBS += -L../../../../lib -L../lib -L../testlib
 
 CFLAGS += -g $(INCLUDES) -DLTP
 
-LOADLIBES += $(LIBS) -lltp -lsctp -lsctputil -lpthread
+LOADLIBES += $(LIBS) -lltp -lsctputil -lsctp -lpthread
 
 V6FLAGS = -DTEST_V6=1 $(CFLAGS)
 
@@ -39,7 +39,8 @@ V4_TARGETS = test_1_to_1_accept_close test_1_to_1_addrs test_1_to_1_connect \
              test_1_to_1_threads test_assoc_abort test_assoc_shutdown \
              test_autoclose test_basic test_connect test_fragments \
              test_getname test_inaddr_any test_peeloff test_recvmsg \
-             test_sctp_sendrecvmsg test_sockopt test_tcp_style test_timetolive 
+             test_sctp_sendrecvmsg test_sockopt test_tcp_style \
+             test_timetolive test_1_to_1_connectx test_connectx
 
 V6_TARGETS = test_basic_v6 test_fragments_v6 test_getname_v6 \
              test_inaddr_any_v6 test_peeloff_v6 test_sctp_sendrecvmsg_v6 \
@@ -86,6 +87,8 @@ test_tcp_style: test_tcp_style.c
 test_tcp_style_v6: test_tcp_style_v6.o
 test_timetolive: test_timetolive.c
 test_timetolive_v6: test_timetolive_v6.o
+test_1_to_1_connectx: test_1_to_1_connectx.c
+test_connectx: test_connectx.c
 
 test_basic_v6.o: test_basic.c
 	$(CC) -c $(V6FLAGS) -o $@ $^
