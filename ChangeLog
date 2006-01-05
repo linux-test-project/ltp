@@ -1,3 +1,48 @@
+LTP-20060105
+- Updates from Jennifer Monk to enable compiling w/o errors using XLC
+- Applied Coldfire patch from Jody McIntyre:
+ - Make the fdopen workaround blackfin-specific (not needed on Coldfire.)
+ - getdents01: gcc 2.95 does not like declarations in the middle
+   of functions, so move getdents to the top.
+ - Add LDFLAGS to the following Makefiles:
+ - Add -D_USC_LIB_ for Coldfire builds to the following Makefiles: creat,
+   execve, fchdir, kill, mkdir, open, rename, rmdir, sched_setscheduler,
+   vhangup, ipc/lib.  This avoids symbol conflicts reported by gcc 2.95.
+ - Skip the following syscall tests on Coldfire: madvise, mlock, munlock.
+   These system calls are not implemented.
+ - IPC: Modify the headers and Makefiles to avoid duplicate definitions of
+   msgkey on Coldfire.
+ - msgctl08, msgctl09: Lower MAXNPROCS to a value that will fit in the
+   Coldfire's memory.
+ - mallopt01: Define __MALLOC_STANDARD__ on Coldfire.
+ - Skip mmap01 on Coldfire since it requires sbrk(), which is not available.
+ - rename02: Remove private do_file_setup and use the library version to avoid
+   symbol conflicts.
+ - kill07: Declare semkey as extern on Coldfire to avoid symbol conflicts.
+ - kill11: Move *msg declaration since gcc 2.95 does not understand C99.
+ - sigaction01: Move -lc in the Makefile after -lpthread.
+- Applied changes suggest by Jacky Malcles to keep gf18 from running longer than it needs.
+- Applied a suggested solution from Jacky Malcles to allow growfiles to run correctly in 64bits.
+- Applied a memory leak fix to fsx-linux tests.
+- Applied patch from Marc Unangst to resolve issues with leaking file descriptors in inode01.c
+- Update aio-stress.c tests from Chris Mason
+- Applied patch from Bibo,Mao to use RT signal instead of SIGUSR1 to inform parent process that 
+  the child process has finished memory allocation.
+- New security tests from Michael Harlow
+- Applied patch from David Marlin to close the last file descriptor created in order to 
+  make one file descriptor available for loading a needed library.
+- Added one line to gethostid, if 'hostid' includes fffffff, then we ignore.
+- Applied fix for Sourceforge bug ID 1332508 in getsid02
+- Appliec changes from Jane Lv for uClinux.
+- Applied patch from Mark Ver to allow proper execution on s390x platform.
+- Updates to ASAPI tests from David Stephens for new glibc and RFC 3542
+- Renamed create_file.c to nfs04_create_file.c to resolve duplicate name problem with network stress tests.
+- Updates to Makefile for acl testsuite
+- Initial add of acl testsuite from Bull
+- Updates from sridhar to sctp testsuite
+- Comment out CFLAGS overrides in network-stress Makefile, it was causing build breaks in 64bit compiles
+
+
 LTP-20051205
 - New networkStress testcase files
 - Security test updates for cleanup and testcase improvements
