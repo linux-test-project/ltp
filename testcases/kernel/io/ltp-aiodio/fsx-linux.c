@@ -1188,11 +1188,15 @@ main(int argc, char **argv)
 	for (i = 0; i < maxfilelen; i++)
 		original_buf[i] = random() % 256;
 	good_buf = (char *) malloc(maxfilelen + writebdy);
+	char *good_buf_old = good_buf;			
 	good_buf = round_up(good_buf, writebdy, 0);
+	
 	bzero(good_buf, maxfilelen);
 	temp_buf = (char *) malloc(maxoplen + readbdy);
+	char * temp_buf_old = temp_buf;		
 	temp_buf = round_up(temp_buf, readbdy, 0);
 	bzero(temp_buf, maxoplen);
+	
 	if (lite) {	/* zero entire existing file */
 		ssize_t written;
 
@@ -1211,15 +1215,25 @@ main(int argc, char **argv)
 	} else 
 		check_trunc_hack();
 
+
 	while (numops == -1 || numops--)
 		test();
-
+	
 	if (close(fd)) {
 		prterr("close");
 		report_failure(99);
 	}
+	
+	
+	free(original_buf);	
+	free(good_buf_old);
+	free(temp_buf_old);
+
+
 	prt("All operations completed A-OK!\n");
 
 	exit(0);
 	return 0;
 }
+
+
