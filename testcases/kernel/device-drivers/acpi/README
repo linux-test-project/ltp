@@ -5,3 +5,43 @@
         These tests are currently ONLY supported on the 2.5 kernels. 2.4 kernels probably won't even build much 
         less run.
         run ltpacpi.sh -r run  to execute the tests
+
+3.a. A function "acpi_get_object_info" has been added to the LtpAcpiCmds.c file of LTP project.
+        (\ltp\testcases\kernel\device-drivers\acpi\LtpAcpiCmds.c)
+         This function returns information about an object as seen from the namespace node.
+
+3.b. A function "acpi_install_fixed_event_handler" has been added to the LtpAcpiCmds.c file of LTP project.
+        This function saves the pointer to the handler function and then enables the event.
+
+3.c. A function "acpi_remove_fixed_event_handler" has been added to the LtpAcpiCmds.c file.
+        Disables the event and unregisters the event handler.
+
+3.d. A function "acpi_acquire_global_lock" has been added to LtpAcpiCmds.c file.
+        Acquire the ACPI Global Lock
+
+3.e. A function "acpi_release_global_lock" has been added to LtpAcpiCmds.c file.
+        Release the ACPI Global Lock
+
+3.f. A function "acpi_bus_find_driver" has been added to LtpAcpiCmds.c file.
+        Parses the list of registered drivers looking for a driver applicable for the specified device.
+
+3.g. A function "acpi_bus_get_power" has been added to LtpAcpiCmds.c file.
+        Get the device's power state either directly (via _PSC) or indirectly (via power resources).
+
+3.h. A function "acpi_evaluate_integer" has been added to LtpAcpiCmds.c file.
+        Looks for _GPE object (an integer). If _GPE evaluates to an integer,
+the value is the bit assignment of the SCI interrupt within the GPEx_STS register of a GPE
+block described in the FADT that the embedded controller will trigger.
+
+4. Including ACPI support into the kernel
+
+ By default, the kernel may not enable ACPI feature. A kernel configuration option must be selected
+ to enable ACPI support.
+
+5. FAQ
+
+Q.5.1. Are there any limitations on using this patch?
+
+A.5.1. If the device supports ACPI feature and the ACPI feature is enabled in the kernel,
+then only a user will be able to use these scripts.
+

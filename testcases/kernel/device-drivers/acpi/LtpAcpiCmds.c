@@ -1,3 +1,31 @@
+/*
+ *
+ *   Copyright (c) International Business Machines  Corp., 2001
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+/*
+ *  FILE        : LtpAcpiCmds.c
+ *  DESCRIPTION : 
+ *  HISTORY:
+ *    06/09/2003 Initial creation mridge@us.ibm.com
+ *      -Ported
+ *  updated - 01/09/2005 Updates from Intel to add functionality
+ *
+ */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -14,6 +42,8 @@
 static int     ltpdev_open( struct inode *inode, struct file *pfile);
 static int     ltpdev_release( struct inode *inode, struct file *pfile);
 static int     ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg );
+static int	ltp_test_sleep_button_ev_handler (void	*context);
+static int	ltp_test_power_button_ev_handler (void	*context);
 static void acpi_bus_notify (acpi_handle             handle, u32 type, void *data);
 static void acpi_ec_gpe_handler (void			*data);
 static acpi_status ltp_get_dev_callback (acpi_handle obj, u32 depth, void *context, void **ret);
@@ -56,6 +86,8 @@ MODULE_AUTHOR("Martin Ridgeway <mridge@us.ibm.com>");
 MODULE_DESCRIPTION(ACPI_LTP_TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
+
+
 /*
  * Device operations for the virtual ACPI devices
  */
@@ -77,6 +109,18 @@ static int ltpdev_release (struct inode *pinode, struct file *pfile)
 
     printk(KERN_ALERT "ltpdev_release \n");
     return 0;
+}
+
+static int ltp_test_power_button_ev_handler (void *context)
+{
+	printk(KERN_ALERT "ltp_test_power_button_ev_handler \n");
+	return 1;
+}
+
+static int ltp_test_sleep_button_ev_handler (void *context)
+{
+	printk(KERN_ALERT "ltp_test_sleep_button_ev_handler \n");
+	return 1;
 }
 
 static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg )
@@ -102,6 +146,8 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
     u32                 start_ticks, stop_ticks, total_ticks, i, bm_status;
     u8                  type_a, type_b;
+    u32			global_lock = 0;
+    int 		state = 0;
 
     /*****************************************************************************/
 
@@ -122,6 +168,10 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
         printk(KERN_ALERT "TEST -- acpi_get_handle \n");
 
         status = acpi_get_handle (0, ACPI_NS_SYSTEM_BUS, &parent_handle);
+
+	printk(KERN_ALERT "TEST -- acpi_get_object_info \n");
+
+	status = acpi_get_object_info (parent_handle, &buffer);
 
         printk(KERN_ALERT "TEST -- acpi_get_next_object \n");
 
@@ -159,9 +209,43 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         status = acpi_remove_notify_handler(ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY, &acpi_bus_notify);
 
+	printk(KERN_ALERT "TEST -- acpi_install_fixed_event_handler \n");
+	status = acpi_install_fixed_event_handler(ACPI_EVENT_POWER_BUTTON, ltp_test_power_button_ev_handler, NULL);
+	if(status)
+		printk(KERN_ALERT "Failed installing fixed event handler \n");
+
+	printk(KERN_ALERT "TEST -- acpi_remove_fixed_event_handler \n");
+	status = acpi_remove_fixed_event_handler(ACPI_EVENT_POWER_BUTTON, ltp_test_power_button_ev_handler);
+	if(status)
+		printk(KERN_ALERT "Failed removing fixed event handler \n");
+
+	printk(KERN_ALERT "TEST -- acpi_install_fixed_event_handler \n");
+	status = acpi_install_fixed_event_handler(ACPI_EVENT_SLEEP_BUTTON, ltp_test_sleep_button_ev_handler, NULL);
+	if(status)
+		printk(KERN_ALERT "Failed installing fixed event handler \n");
+
+	printk(KERN_ALERT "TEST -- acpi_remove_fixed_event_handler \n");
+	status = acpi_remove_fixed_event_handler(ACPI_EVENT_SLEEP_BUTTON, ltp_test_sleep_button_ev_handler);
+	if(status)
+		printk(KERN_ALERT "Failed removing fixed event handler \n");
+
+	printk(KERN_ALERT "TEST -- acpi_acquire_global_lock \n");
+	status = acpi_acquire_global_lock(ACPI_EC_UDELAY_GLK, &global_lock);
+
+	printk(KERN_ALERT "TEST -- acpi_release_global_lock \n");
+	status = acpi_release_global_lock(global_lock);
+
         printk(KERN_ALERT "TEST -- acpi_bus_get_device \n");
 
         status = acpi_bus_get_device(next_child_handle, &device);
+
+	printk(KERN_ALERT "TEST -- acpi_bus_find_driver \n");
+	status = acpi_bus_find_driver(device);
+
+	printk(KERN_ALERT "TEST -- acpi_bus_get_power \n");
+	status = acpi_bus_get_power(next_child_handle, &state);
+	if(status)
+	printk(KERN_ALERT "Error reading power state \n");
 
         printk(KERN_ALERT "TEST -- acpi_driver_data \n");
 
@@ -213,6 +297,11 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
         if (status) {
             printk(KERN_ALERT "Failed walk_resources %d\n",status);
         }
+
+	printk(KERN_ALERT "TEST -- acpi_evaluate_integer \n");
+	status = acpi_evaluate_integer(ec->handle, "_GPE", NULL, &ec->gpe_bit);
+	if(status)
+	printk(KERN_ALERT "Error obtaining GPE bit assignment\n");
 
         printk(KERN_ALERT "TEST -- acpi_get_timer \n");
         status = acpi_get_timer(&total_ticks);
