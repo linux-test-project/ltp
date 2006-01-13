@@ -389,7 +389,7 @@ main(argc, argv)
 	testacl = test_acl_grp_create();
 	result = acl_set_file(argv[1], ACL_TYPE_ACCESS, testacl);
 	if (result == -1)
-		printf("setting acl on file %s failed\n");
+		printf("setting acl on file %s failed\n",argv[1]);
 
 	testgrp1(argv[1]);
 	testgrp2(argv[1]);

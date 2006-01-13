@@ -6,7 +6,7 @@
 REMOTEHOST=nfsserver
 MAXLENGTH=30 # maximum ACL length - NB: the current NFSv4 acl implementation does not allow ACL greater than one page (about 35 entries with 6 character user name length and 10 character domain name)
 NFSMNTDIR=/mnt/nfs-acl
-echo "Test on NFS server $RHOST"
+echo "Test on NFS server $REMOTEHOST"
 ACLTESTDIR=testdir
 ACLTESTFILE=testfile
 
@@ -18,7 +18,7 @@ FILE_NB=10 # total number of files for the test
 for i in 1 2 3 4 5
 do
 	groupadd -g 60$i grp$i
-	useradd -u60$i  user$i
+	useradd -u 60$i  user$i
 done
 
 #  creation of users on the remote machine (removed only at the end of the tests)
@@ -26,9 +26,9 @@ rsh -n $REMOTEHOST python $PWD/create_users.py -u 50 -g 50
 
 echo "Starting ACL testing"
 
-echo "Starting BASIC tests "
+echo "Starting BASIC tests"
 
-echo "Creating testing file and directory "
+echo "Creating testing file and directory"
 touch $NFSMNTDIR/$ACLTESTFILE 
 mkdir $NFSMNTDIR/$ACLTESTDIR
 if test ! -d $NFSMNTDIR/$ACLTESTDIR

@@ -7,8 +7,8 @@ from random_gen import *
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option("-u", "--users", dest="nu",type="int",help="number of group to create")
-parser.add_option("-g", "--group",dest="ng",type="int",help="number of user to create")
+parser.add_option("-u", "--users", dest="nu",type="int",help="number of users to create")
+parser.add_option("-g", "--group",dest="ng",type="int",help="number of groups to create")
 
 (options, args) = parser.parse_args()
 

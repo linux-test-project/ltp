@@ -25,7 +25,7 @@ def test_longacl(l,path):
 		test.getUserList()
 		testfile = 'testfile' + str(i)
 		u = commands.getoutput('touch ' + path + "/" + testfile)
-		print "setfacl with " + str(i) + "entries\n " + u
+		print "setfacl with " + str(i) + " entries\n " + u
 		for j in range(i):
 			user = test.uList.pop()
 			mode = test.createRandomMode()
