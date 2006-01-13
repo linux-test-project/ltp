@@ -105,7 +105,7 @@ char *TCID="fcntl27"; 		 		 /* Test program identifier.    */
 int TST_TOTAL=1;    		 		 /* Total number of test cases. */
 extern int Tst_count;		 		 /* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[]={EAGAIN, 0};
 
 char fname[255];
 int fd;
@@ -147,26 +147,22 @@ main(int ac, char **av)
 		 /* check return code */
 		 if ( TEST_RETURN == -1 ) {
 		     TEST_ERROR_LOG(TEST_ERRNO);
-		     tst_resm(TFAIL, "fcntl(%s, F_SETLEASE,F_RDLCK) Failed, errno=%d : %s", fname,
-		 		      TEST_ERRNO, strerror(TEST_ERRNO));
-		 } else {
-		     
-		     /***************************************************************
-		      * only perform functional verification if flag set (-f not given)
-		      ***************************************************************/
-		     if ( STD_FUNCTIONAL_TEST ) {
-		 		 TEST(fcntl(fd, F_GETLEASE));
-		 		 if ( TEST_RETURN != F_RDLCK )
-		 		   tst_resm(TFAIL, "fcntl(%s, F_GETLEASE) did not return F_RDLCK, returned %d",fname, TEST_RETURN);
-		 		 else{
-		 		   TEST(fcntl(fd, F_SETLEASE, F_UNLCK));
-		 		   if ( TEST_RETURN != 0 )
-		 		     tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_UNLCK) did not return 0, returned %d",fname, TEST_RETURN);
-		 		   else
-		 		     tst_resm(TPASS, "fcntl(%s, F_SETLEASE,F_RDLCK)", fname);
-		 		 }  
-		     } 
-		 }
+                       if (TEST_ERRNO != exp_enos[0]) {
+                        tst_resm(TFAIL,
+                                "fcntl(%s, F_SETLEASE,F_RDLCK)"
+                                " Failed, errno=%d : %s",
+                                fname, TEST_ERRNO, strerror(TEST_ERRNO));
+                        } else {
+                        tst_resm(TPASS,
+                                "expected failure - errno "
+                                "= %d : %s",
+                                TEST_ERRNO, strerror(TEST_ERRNO));
+                        }
+                } else {
+                        tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"
+                                " did not return -1, returned %d",
+                                fname, TEST_RETURN);
+                       }
 #endif
     }		 /* End for TEST_LOOPING */
 
@@ -194,9 +190,9 @@ setup()
     tst_tmpdir();
 
     sprintf(fname,"tfile_%d",getpid());
-    if ((fd = open(fname,O_RDONLY|O_CREAT,0777)) == -1) {
+    if ((fd = open(fname,O_RDWR|O_CREAT,0777)) == -1) {
        tst_brkm(TBROK, cleanup,
-		 		 "open(%s, O_RDONLY|O_CREAT,0777) Failed, errno=%d : %s",
+		 		 "open(%s, O_RDWR|O_CREAT,0777) Failed, errno=%d : %s",
 		 		 fname, errno, strerror(errno));
     }
 }		 /* End setup() */
