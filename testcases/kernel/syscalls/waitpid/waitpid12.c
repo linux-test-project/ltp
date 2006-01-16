@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 		errno = 0;
 		while (((ret_val = waitpid(-(group1), &status, WNOHANG)) !=
 			-1) || (errno == EINTR)) {
-			if (ret_val == -1) {
+			if (ret_val == -1 || ret_val == 0) {
 				continue;
 			}
 			if (!WIFEXITED(status)) {
