@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill10.c,v 1.2 2005/02/09 16:11:53 robbiew Exp $ */
+/* $Id: kill10.c,v 1.3 2006/01/16 16:54:23 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -561,16 +561,19 @@ manager(int num_procs)
 
     /* set up the signal handling the children will use */
 
-    /* ignore ALRM and HUP */
+    /* ignore HUP */
     sa.sa_handler = SIG_IGN;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     if (debug_flag  >= 4)
-        printf("%d: setting SIGALRM -> SIG_IGN\n", mypid);
-    k_sigaction(SIGALRM, &sa, 0);
-    if (debug_flag  >= 4)
         printf("%d: setting SIGHUP -> SIG_IGN\n", mypid);
     k_sigaction(SIGHUP, &sa, 0);
+    
+    /* We use ALRM to make sure that we don't miss the signal effects ! */
+    sa.sa_handler = wakeup;
+    if (debug_flag  >= 4)
+        printf("%d: setting SIGALRM -> wakeup\n", mypid);
+    k_sigaction(SIGALRM, &sa, 0);
 
     /* exit on QUIT */
     sa.sa_handler = graceful_exit;
@@ -755,8 +758,10 @@ fork_procs(int procs_left)
                              * If we have already recieved the signal, we dont 
 			      * want to pause for it !
                              */
-		  	    if(!signal_parents_flag)
+		  	    while(!signal_parents_flag) {
+                                alarm(2);
                                 pause(); 
+			    }
                             
                             /* if we started, call mama */
                             while (signal_parents_flag) {
