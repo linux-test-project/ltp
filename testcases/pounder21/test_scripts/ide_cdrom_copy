@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Validate the CD/DVD devices in the system by progressively mounting them,
+# copying the CDs to the hard disk, and then diffing the results.
+# Note that this test also examines SCSI CD drives, making the "ide" part a
+# misnomer that's maintained solely because it's familiar to the users.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+. "$POUNDER_SRCDIR/libidecd.sh"
+
+DEFAULT_MOUNT="$POUNDER_TMPDIR/cdmount"
+DESTINATION="$POUNDER_TMPDIR/cddata"
+
+# Ensure that our default mountpoint and destination dirs exist.
+mkdir -p "$DEFAULT_MOUNT"
+
+# Scoop up the old error count.
+LOGFILE=/proc/$$/fd/1
+OLD_ERRORS=`egrep -ic "(err|fail|invalid|cannot|denied)" $LOGFILE`
+OLD_DIFFS=`egrep -ic "^---" $LOGFILE`
+
+# Trap a SIGABRT which signifies an aborted test...
+trap 'exit 255' SIGABRT
+
+# Now, mount each disc and do the test.
+find_discs_with_media | while read DEV USE_FSTAB; do
+	# Are there no CDs at all?
+	if [ "$DEV" == "NONE" ]; then
+		echo "No CD/DVD drives found.  Aborting."
+		kill -SIGABRT $$
+	fi
+
+	# Mount the disc.
+	echo "Mounting $DEV."
+	if [ $USE_FSTAB -gt 0 ]; then
+		MOUNTPOINT=`grep "^$DEV[ 	]" /etc/fstab | awk -F " " '{print $2}'`
+		mount "$DEV"
+	else
+		MOUNTPOINT="$DEFAULT_MOUNT"
+		mount "$DEV" "$MOUNTPOINT" -t auto
+	fi
+
+	# Create destination and set up auto-removal
+	trap 'echo Cleaning up...; rm -rf $DESTINATION; umount $MOUNTPOINT; echo Clean.; exit 0' 1 2 15
+	mkdir -p "$DESTINATION"
+
+	# Copy the CD
+	echo "Copying $DEV."
+	cp -pRdu "$MOUNTPOINT" "$DESTINATION"
+
+	# Diff the copy
+	echo "Comparing $DEV to $DESTINATION."
+	diff -rq "$MOUNTPOINT" "$DESTINATION/`basename $MOUNTPOINT`"
+
+	# Unmount
+	echo "Done with $DEV."
+	umount "$DEV"
+
+	# Remove the copy
+	rm -rf "$DESTINATION"
+done
+
+# Look for new errors.
+NEW_ERRORS=`egrep -ic "(err|fail|invalid|cannot|denied)" $LOGFILE`
+NEW_DIFFS=`egrep -ic "^---" $LOGFILE`
+
+ERRORS=$(( NEW_ERRORS - OLD_ERRORS ))
+DIFFS=$(( NEW_DIFFS - OLD_DIFFS ))
+WRONG=$(( ERRORS + DIFFS ))
+if [ $WRONG -eq 255 ]; then
+	WRONG=254
+fi
+
+exit $WRONG

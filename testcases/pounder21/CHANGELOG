@@ -1,0 +1,167 @@
+This is a log of changes to pounder21.
+
+pounder21-2006-01-24:
+- Establish all files in the tarball as originating from IBM LTC.
+- License all files under the GNU Public License (GPL) v2.
+- Install: Make USE_CACHE=0 if the pounder cache dir is not set.
+- Makefile: distclean -> mrclean for more GNUness.
+- nfs_logging: Clarify some of the documentation, and use TCP NFS mounts.
+- 00checklatest: Handle leading zeroes in date components.
+- build_kernel: Update to kernel 2.6.15.
+- ltp: Update to 20060105 release.
+- memtest: Update to kernel 2.6.15.
+- cpufreq: Report the return code in the log, and kill cpufreq programs
+  when it's time to terminate.
+- randasyscall: Add -Wall to CFLAGS and fix warnings.  Also add -d option
+  to log every call made.  NOTE: That may affect race conditions exposed
+  by this program!
+- drift_test: Only set system time from NTP source if -s option is passed
+  (John Stultz)
+- inconsistency_check: Use CLOCK_MONOTONIC if available (John Stultz)
+- nfs test: Use TCP NFS connections.
+- copytree: Diff source and dest before deletion.
+
+pounder21-2005-12-02:
+- Make CHANGELOG reflect the CVS history.
+- pounder: Make the -d switch (total test duration) work again.
+- check_cdrom_presence: Remove unnecessary variable.
+- build_kernel: Update kernel to 2.6.14.3.
+- libidecd.sh: Grep for "^$DEV[<space><tab>]" so that we ONLY look for
+  full device names in the first columns.  Also update documentation to
+  reflect the code intent better.
+- memtest: Update kernel to 2.6.14.3.
+- time_tests: New code from John:
+  o Use CLOCK_MONOTONIC (calls to settimeofday won't affect this)
+  o Takes an argument to run for a set number of seconds(nothing or -1 ==
+    run forever)
+  o Exits if any time inconsistency is found.
+  o Outputs the delta size of the inconsistency found
+- mem_alloc: Only run every 15min.  Constantly being OOM is annoying.
+- nfs: Better status printing during cleanup.
+- random_syscall: Put the program in /tmp again.
+
+pounder21-2005-11-18:
+- Install: Check for g++ and lex.
+- statslogging: Copy README to the log dir to capture version and
+  relevant notes.
+- randasys: Use $POUNDER_TMPDIR, not /tmp, and use quotes with
+  variable expansions.  Also forbid calling settimeofday(2).
+- checklatest: Be more intelligent about figuring out the version
+  number--if what we're running is newer than what's on the server,
+  that's fine.  We're probably just running a development version.
+- cpufreq: This is a new test that detects the presence of speedstep,
+  powernow, or whatever other CPU frequency changing mechanisms are
+  in place.  If present, it will cycle the CPUs through all power
+  state changes in arbitrary order.  It's also clever enough to find
+  and ignore CPUs whose frequency is tied to another processor.
+- pounder: Fix argument passing so that -l switch works.  Added -s
+  switch to disable NFS logging.
+- nfs_logging: Move variable definitions into libpounder.sh and flatten
+  the function calls into a more procedural script.
+- ide_cdrom_copy: Total rewrite of this script: The old script did not
+  detect SCSI CD-ROM drives at all unless /dev/cdrom was set up properly
+  (this is not the case if you netinstall RHEL4 on a blade with the
+  media tray disconnected) and it did not deal with multiple optical
+  drives at all.  This new one creates a list of potential CD/DVD
+  devices and tries to mount each of them; each drive that has a disc
+  inserted is then queued up for testing.  Also, the actual device
+  detection code is in src/libidecd.sh so that the 00check_cdrom script
+  can take advantage of it.
+- 00check_cdrom: Rewritten to use libidecd.sh; if no discs are found,
+  all drive trays are ejected.
+- default/fast-tests.tar.gz: Updated to incorporate cpufreq test.
+- libpounder.sh: Added and rearranged variables as required for NFS
+  logging support.
+
+pounder21-2005-11-03:
+- fast-tests: Run mem_alloc
+- statslogging: Start the logfile tail.
+
+pounder21-2005-11-01:
+- README: pounder 2005-10-31
+- nfs_logging: Put log files in /crash/pounder-logs, not /crash.  Also use
+  uname-arch as a key, not just uname.
+- pounder: Add help() func and -r flag to remount log storage.
+
+
+pounder21-2005-10-28:
+- Sarunya's NFS logging support.
+- Sarunya's memory allocation stress test.
+- NFS test only removes what it copies (it was deleting
+  the per-host directory too).
+- IDE CDROM copy test only probes the first CDROM device
+  found in fstab... rather than grabbing both entries and
+  breaking.
+
+pounder21-2005-10-11:
+- Check CDROM presence when installing pounder. (patch by Sarunya)
+- Fix NFS test's diff failure detection. (patch by Darrick)
+- Clamp ramsnake so that it won't use more than 1/4 of the
+  address space so that i386-bigsmp boxes won't fail. (found by
+  Russ, patch by Darrick)
+
+pounder21-2005-09-20:
+- README: pounder 2005-09-20 release.
+- get_hw_info: Add missing '-l' to list partitions.
+- nfs: $SHORTHOST needs to extract from $HOSTNAME, not $SHORTHOST.  This was
+  causing nfs failures.
+- xterm_stress: Remove old log files before starting X server, copy the log
+  file if the X server failed to start, and kill the X server
+  if there's a failure to start.
+
+pounder21-2005-09-19:
+- get_hw_info: Record partition layout.
+- ramsnake: Kill program after 300s, not thirty!
+
+pounder21-2005-09-09:
+- checklatest: Download tarball to $POUNDER_HOME/../ so that untar goes in
+  the right place.
+- xterm_stress: Make script use kill -9 on X servers that ignore -4 after
+  180s and abort the script if it's still not dead after 360.
+
+pounder21-2005-08-31:
+- nfs: Strip domain bits (".ibm.com", ".west.foo.com", etc) out of the
+  $HOSTNAME, put that into $SHORTHOST, and use that on the NFS
+  server so that we cut down on the number of bogus dirs and crud
+  on that filesystem.
+
+pounder21-2005-08-26:
+- xbonkers: Program to make windows in an X session move all over the screen.
+  Add this to xterm_stress so that our poor window placement doesn't
+  much matter anymore.
+- xterm_stress: We're allowed 1 fatal error at the end because killing X
+  is a fatal error.
+- time_consistency: We're NOT allowed to excuse any errors.
+
+pounder21-2005-08-17:
+- More fixes to make sure the xterm_stress test dies when it should, an LTP refresh,
+  and a couple of patches designed to make pounder work better with the
+  mainline testing rig.  I haven't seen any problems with it, so I'm
+  pushing it out to the group to find more error cases.  :) 
+
+pounder21-2005-08-16:
+- README: Add warning that changing the first line is a bad idea.
+- Install: Build helpers after building tests, so that the 00checklatest
+  script runs immediately.
+- checklatest: Compares this pounder's version (as defined as the sixth
+  column in README) against what's on the server.  If there's
+  a mismatch, ask the user if he wants to download the new one.
+- libpounder.sh: Add a $POUNDER_VERSION variable and location of
+  $POUNDER_HEAD.
+
+pounder21-2005-08-15:
+- NFS test: diff whatever it is we copy.  Hope that nobody's changing /usr...
+- X test: Use `startx' to start X with the appropriate KDE/GNOME session,
+  and start some OpenGL tests too.
+
+pounder21-2005-07-13:
+- Modify build scripts to use a download_from_sourceforge fxn that will retry
+  failed downloads with other SF mirrors.
+
+pounder21-2005-04-04:
+- No more bluebench.
+
+pounder21-2005-02-25:
+- Fix install failure on SLES8.
+- New test to stress concurrent memory access on shared memory
+  on numa-ish systems.  Well, any system with shared memory...

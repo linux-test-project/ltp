@@ -1,0 +1,120 @@
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_connect.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_connect.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_connect.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_connect.c	2005-08-15 22:45:58.000000000 -0700
+@@ -51,7 +51,7 @@
+ #include <string.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+-#include <linux/socket.h>
++
+ #include <netinet/in.h>         /* for sockaddr_in */
+ #include <arpa/inet.h>
+ #include <sys/errno.h>
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_nonblock.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_nonblock.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_nonblock.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_nonblock.c	2005-08-15 22:45:58.000000000 -0700
+@@ -53,7 +53,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ char *TCID = __FILE__;
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvfrom.c	2005-08-15 22:45:58.000000000 -0700
+@@ -53,7 +53,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ char *TCID = __FILE__;
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_recvmsg.c	2005-08-15 22:45:58.000000000 -0700
+@@ -54,7 +54,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ #define MSG_EOF 0x200
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_rtoinfo.c	2005-08-15 22:45:58.000000000 -0700
+@@ -45,7 +45,7 @@
+ #include <string.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+-#include <linux/socket.h>
++
+ #include <linux/in.h>         /* for sockaddr_in */
+ #include <linux/in6.h>         /* for sockaddr_in6 */
+ #include <sys/errno.h>
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_send.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_send.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_send.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_send.c	2005-08-15 22:45:58.000000000 -0700
+@@ -54,7 +54,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ char *TCID = __FILE__;
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendmsg.c	2005-08-15 22:45:58.000000000 -0700
+@@ -61,7 +61,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ #define MSG_EOF 0x200
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendto.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendto.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_sendto.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_sendto.c	2005-08-15 22:45:58.000000000 -0700
+@@ -50,7 +50,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ char *TCID = __FILE__;
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_shutdown.c	2005-08-15 22:45:58.000000000 -0700
+@@ -45,7 +45,7 @@
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+-#include <linux/socket.h>
++
+ #include <netinet/sctp.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+diff -Naur ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_threads.c ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_threads.c
+--- ltp-full-20050804/testcases/network/sctp/func_tests/test_1_to_1_threads.c	2005-08-04 13:33:05.000000000 -0700
++++ ltp-full-20050804-new/testcases/network/sctp/func_tests/test_1_to_1_threads.c	2005-08-15 22:45:58.000000000 -0700
+@@ -47,7 +47,7 @@
+ #include <errno.h>
+ #include <netinet/sctp.h>
+ #include <sys/uio.h>
+-#include <linux/socket.h>
++
+ #include <sctputil.h>
+ 
+ #define THREADS 10    /* FIXME should be 500 instead of 10 */

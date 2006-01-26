@@ -1,0 +1,57 @@
+#!/bin/bash -f
+
+# Build lowmem exhaustion/corruption tester
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+cd "$POUNDER_OPTDIR"
+
+# Download a script and parse out the junk we don't want.
+if [ ! -f "memtest.sh" ]; then
+	if [ $USE_CACHE -eq 1 ]; then
+		wget "${POUNDER_CACHE}memtest.html"
+	fi
+	if [ ! -f "memtest.html" ]; then
+		wget "http://people.redhat.com/dledford/memtest.html"
+	fi
+	IN_BLOCK=0
+
+	if [ ! -f "memtest.html" ]; then
+		echo "Could not download memtest.html.  Aborting!"
+		exit -1
+	fi
+	
+	(cat memtest.html | while read f; do
+		echo "$f" | grep -q BLOCKQUOTE
+		if [ "$?" -eq 0 ]; then
+			if [ "$IN_BLOCK" -eq 0 ]; then
+				IN_BLOCK=1
+			else	
+				IN_BLOCK=0
+			fi
+		else
+			if [ "$IN_BLOCK" -eq 1 ]; then
+				echo "$f"
+			fi
+		fi
+	done) | sed -e 's/\/bin\/bash2/\/bin\/bash/g' > memtest.sh
+	chmod a+x memtest.sh
+	patch -p0 < "$POUNDER_SRCDIR/memtest.patch"
+	rm -rf memtest.html
+fi

@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# Download pounder components and build them.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+source libpounder.sh
+
+export USE_CACHE=1
+
+# do we actually _have_ a cache server?
+if [ -z "$POUNDER_CACHE" ]; then
+	export USE_CACHE=0
+fi
+
+#check utilities needed to run the tests before getting started. 
+#If you test uses something else or a build fails add
+#the command to the list manually. 
+COMMANDS="make g++ lex gcc python wget sudo diff patch egrep rm echo test which cp mkdir"
+MISSING_TOOLS=""
+echo -en "Looking for tools..."
+for cmd in $COMMANDS
+do
+	echo -en "$cmd "
+	if which $cmd > /dev/null
+	then
+		true;
+	else
+		MISSING_TOOLS="$cmd $MISSING_TOOLS"
+	fi
+done
+
+echo .
+
+if [ -n "$MISSING_TOOLS" ]; then
+	echo "Please install these tools: $MISSING_TOOLS."
+	exit 1
+fi
+
+echo "All tools were found."
+
+# Parse arguments
+while getopts n? o
+do
+	case "$o" in
+		n) echo "Not using tarball cache."; export USE_CACHE=0;;
+	esac
+done
+
+# Set up optdir
+mkdir -p "$POUNDER_OPTDIR"
+if [ ! -d "$POUNDER_OPTDIR" ]; then
+	echo "Could not create $POUNDER_OPTDIR; aborting." > /dev/tty
+	exit 1
+fi
+
+UNPACKED=0
+
+while [ "$UNPACKED" -lt 1 ]; do
+	# Unpack default test configuration?
+	echo -en "Which test scheduler setup do you want to unpack? [$DEFAULT_SCHEDPACK or \"NONE\"] "
+	read f
+	if [ -z "$f" ]; then
+		SCHEDPACK="$DEFAULT_SCHEDPACK"
+	else
+		SCHEDPACK="$f"
+	fi
+
+	if [ "$f" != "NONE" ]; then
+		rm -rf tests/*
+
+		tar -xzvf "$SCHEDPACK-tests.tar.gz"
+
+		if [ "$?" -ne 0 ]; then
+			echo "Unable to untar $SCHEDPACK-tests.tar.gz; please try again."
+		else
+			echo "Untarred $SCHEDPACK-tests.tar.gz successfully."
+			UNPACKED=1
+		fi
+	else
+		UNPACKED=1
+	fi
+done
+
+# start builds...
+for i in $BUILDS
+do
+	if [ "$i" = "CVS" ]; then
+		continue
+	fi
+	if [ -x "build_scripts/$i" ]; then
+		echo "Building $i..."
+		"build_scripts/$i" $*
+		if [ "$?" -ne 0 ]; then
+			exit 1
+		fi
+	fi
+done
+
+# build our little helper program
+make helpers
+
+echo Pounder is done building. ENJOY!

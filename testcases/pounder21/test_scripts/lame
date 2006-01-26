@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# MP3-encode something
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+# Try to find the program on the system
+PROGRAM=lame
+PROGFILE=`which $PROGRAM 2> /dev/null`
+
+if [ -z "$PROGFILE" ]; then
+	PROGFILE=`ls $POUNDER_OPTDIR/$PROGRAM*/frontend/$PROGRAM`
+	if [ -z "$PROGFILE" ]; then
+		echo "Cannot find $PROGRAM; did you run Install?"
+		exit -1
+	fi
+fi
+
+# Can we set processor affinities?
+TASKSET=`which taskset 2> /dev/null`
+if [ -z "$TASKSET" ]; then
+	TASKSET=`ls $POUNDER_OPTDIR/schedutils*/taskset`
+fi
+
+# Attach a process to each CPU
+for ((k=0; k < $NR_CPUS; k++))
+do
+	dd if=/dev/urandom bs=1024k count=200 | "$TASKSET" `echo -en "obase=16\n$((1 << k))\n" | bc` "$PROGFILE" - /dev/null &
+done
+
+# Wait for children (even though they won't die...)
+wait
+
+# If we don't crash the system, we're ok.
+# We actually don't care about the output. (mp3 encoded garbage?)
+exit 0

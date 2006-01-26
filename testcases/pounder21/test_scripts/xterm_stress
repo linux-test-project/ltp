@@ -1,0 +1,176 @@
+#!/bin/bash -x
+
+# Start an X session, fire up some xterms and GL apps, then bounce them
+# all over the screen.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+# X11 testing -- this is a daemon test!
+# Run for 20m
+TEST_DURATION=1200
+
+# Always start X.
+NEED_TO_START_X=1
+#if [ -z "$DISPLAY" ]; then
+#	NEED_TO_START_X=1
+#fi
+
+# Kill test if we don't want it.
+if [ "$DO_X_TESTS" -eq 0 ]; then
+	echo "X11 testing is off."
+	exit -1
+fi
+
+# Can we find the startx script?
+RAW_X_SERVER=0
+XSERVER_FILE=`which startx 2> /dev/null`
+if [ -z "$XSERVER_FILE" -o ! -x "$XSERVER_FILE" ]; then
+	RAW_X_SERVER=1
+	XSERVER_FILE=`which X 2> /dev/null`
+	if [ -z "$XSERVER_FILE" -o ! -x "$XSERVER_FILE" ]; then
+		echo "startx script not found."
+		exit -1
+	fi
+fi
+
+# Count X servers
+OLD_XSERVERS=`pgrep -l X | grep -v Xprt | wc -l`
+
+# Start X server
+if [ $NEED_TO_START_X -eq 1 ]; then
+	echo "xterm_stress: Starting X..."
+
+	rm -rf /var/log/Xorg.2.log /var/log/XFree86.2.log
+
+	export DISPLAY=:2
+	if [ $RAW_X_SERVER -eq 0 ]; then
+		$XSERVER_FILE -- $DISPLAY -ac vt9 &
+	else
+		$POUNDER_HOME/timed_loop $TEST_DURATION $XSERVER_FILE $DISPLAY -ac vt9 &
+	fi
+
+	while true; do
+		NEW_XSERVERS=`pgrep -l X | grep -v Xprt | wc -l`
+		if [ $NEW_XSERVERS -gt $OLD_XSERVERS ]; then
+			export XPID=`pgrep -l X -n | grep -v Xprt | awk -F " " '{print $1}'`
+			echo -n " -$XPID" >> $POUNDER_PIDFILE
+			break
+		fi
+	done
+fi
+
+trap 'kill -4 $XPID' 15
+
+# Did we see any failures?
+LOGFILE=`ls /var/log/X*.2.log`
+ERRORS=`egrep -ic "(fatal)" $LOGFILE`
+if [ $ERRORS -gt 0 ]; then
+	if [ $ERRORS -eq 255 ]; then
+		ERRORS=254
+	fi
+	cp $LOGFILE $POUNDER_TMPDIR/x-log-$XPID
+	kill -4 $XPID
+	exit $ERRORS
+fi
+
+# Now start the window manager if we couldn't find startx.
+if [ $NEED_TO_START_X -eq 1 -a $RAW_X_SERVER -eq 1 ]; then
+	sleep 5
+	echo "xterm_stress: Starting twm - 5s"
+	twm &
+fi
+
+# Sleep a little more so that the session can start before
+# we start flooding X with crud.
+sleep 15
+
+# sets the list delimiter to :
+IFS=: 
+# Add some screensavers to the path (OpenGL testing)
+export PATH=$PATH:/usr/lib/xscreensaver:/usr/X11R6/lib/xscreensaver
+
+# command list
+cmd="dmesg:ls -l:cat /var/log/messages:dmesg:ls -l:cat /var/log/messages"
+xcmd="sproingies -fps -delay 0:flyingtoasters -fps -delay 0:glmatrix -fps -delay 0"
+
+# Begin logging
+xterm -geom 80x25+0+0 -e "bash -c $POUNDER_SRCDIR/dump_xserver_statm" &
+
+#start text-based programs
+for i in $cmd
+do 
+	exe="while true; do $i; done"
+	xterm -geometry 80x25`$POUNDER_SRCDIR/randacoords/coords 600 400` -e "bash -c '$exe'" &
+	sleep 1
+done
+
+#start gui programs
+for i in $xcmd
+do 
+	bash -c "$i" &
+	sleep 1
+done
+
+# Put up a top window for top monitoring.
+xterm -geom 100x9+0+0 -e top &
+echo "xterm_stress: Test started"
+
+# Now make the windows go bonkers!
+$POUNDER_SRCDIR/xbonkers/xbonkers -i 500 -s 10000 &
+
+# If we started X via startx, we need to wait 1200s and then
+# kill $XPID.
+if [ $RAW_X_SERVER -eq 0 ]; then
+	sleep $TEST_DURATION
+	kill -4 $XPID
+fi
+
+# Track the number of times we wait for X server to die.
+DIE_TIMEOUT_LOOPS=0
+
+# Loop until the X server goes away
+while true; do
+	XSERVERS=`pgrep -l X | grep -v Xprt | wc -l`
+	if [ $XSERVERS -lt $OLD_XSERVERS ]; then
+		# Did we see any failures?
+		LOGFILE=`ls /var/log/X*.2.log`
+		ERRORS=`egrep -ic "(fatal)" $LOGFILE`
+
+		# There will always be one fatal error--we killed X.
+		exit $((ERRORS - 1))
+	fi
+	if [ $DIE_TIMEOUT_LOOPS -gt 180 ]; then
+		# Three minutes; try something stronger.
+		echo "First attempt to kill X server failed; trying -9."
+		kill -9 $XPID
+	fi
+	if [ $DIE_TIMEOUT_LOOPS -gt 360 ]; then
+		# Six minutes.  Still not dead?  Abort script.
+		echo "Second attempt to kill X server failed.  Aborting."
+		exit -1
+	fi
+
+	OLD_XSERVERS=$XSERVERS
+	DIE_TIMEOUT_LOOPS=$((DIE_TIMEOUT_LOOPS + 1))
+	sleep 1
+done
+
+echo "ERROR: Jumped to somewhere where we should never be."
+# We're not supposed to get here.
+exit 254

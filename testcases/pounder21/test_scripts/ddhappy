@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Each CPU reads every block off a block device...twice.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+BLKDEVS=$(cat /proc/partitions | grep [sh]d.[0-9] | awk '{if ($3 > 10000)  print $4}')
+WORK=$((NR_CPUS * 2))
+
+echo "Running dd's on these devices:"
+echo "$BLKDEVS"
+echo "using $WORK dd's per device."
+
+# Did we see any failures?
+LOGFILE=/proc/$$/fd/1
+OLD_ERRORS=`egrep -ic "(error|fail|invalid|denied|cannot)" $LOGFILE`
+
+for ((k=1; k < $WORK; k++))
+do 
+for i in $BLKDEVS 
+	do
+		dd if=/dev/$i of=/dev/null bs=2k > /dev/null &
+	done
+done 
+
+# Wait for children
+wait
+
+# Did we see any failures?
+NEW_ERRORS=`egrep -ic "(error|fail|invalid|denied|cannot)" $LOGFILE`
+ERRORS=$(( NEW_ERRORS - OLD_ERRORS ))
+if [ $ERRORS -eq 255 ]; then
+	ERRORS=254
+fi
+exit $ERRORS

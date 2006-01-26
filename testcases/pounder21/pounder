@@ -1,0 +1,173 @@
+#!/bin/bash
+
+# Main pounder control script.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+# By default, pounder runs forever.  Howver, the -k option can be used to stop
+# all the tests.  Our process ID (which is the process-group ID of all our
+# children) is saved in a file called pounder_pgrp in the POUNDER_HOME
+# directory.  A negative sign is prepended to the PID so that a simple
+# "kill -TERM `cat $POUNDER_HOME/pounder_pgrp`" will stop all the tests.
+#
+# Howver, if a test starts an xterm, then all its sub-processes will run under
+# a new process-group, which requires that the test regester its own PID (with
+# a negative sign prepended) to the pounder_pgrp file.  See the testtime script
+# for an example of this.
+#
+# To schedule pounder to run for a limited length of time, use the -d option
+# to set a duration in hours for the run.  A process will be spawned that will
+# sleep the allotted time and then kill the process group(s) in pounder_pgrp.
+# If you decide to stop the tests, pounder -k will kill the sleeping process as
+# well.
+#
+# It should also be noted that in order to clean up completly, some tests may
+# need to trap interrupts and do some cleanup.  See the testnet script for an
+# example of this.
+#
+# Author: Darrick Wong <djwong@us.ibm.com> and John Stultz <johnstul@us.ibm.com>
+
+source libpounder.sh
+
+# This function kills off pounder and related subprocesses.
+function dokill() {
+	echo "Killing off pounder(s)..."
+	kill -INT `cat $POUNDER_PIDFILE`;
+	rm -rf $POUNDER_PIDFILE
+	#killall -9 randasys 2> /dev/null	# These run as user 'daemon' and have to be killed manually.
+}
+
+# Main function follows
+
+function help() {
+	cat << ENDL
+Usage: $0 [-l logdir] [-x] [-d duration] [-n ipaddr] [-f] [-u|-r|-k] [-s]
+
+-x	Enable X stress tests.
+-d	Run pounder for duration seconds.
+-n	Use ipaddr for NFS tests.
+-f	Remove pounder pid file before running.
+-u	Unmount NFS log storage.
+-r	Remount NFS log storage.
+-l	Use logdir as the log directory. (You probably want -s too.)
+-s	Store logs locally.
+-k	Kill pounder.
+ENDL
+}
+
+# process options: -x to run in xterms, -k to kill tests, -d to set duration,
+# -f to remove bogus pounder.pid files.
+while getopts d:kn:l:xurs? o
+do
+	case "$o" in
+	   d) export DURATION="$OPTARG";;
+	   k) dokill; exit;;
+	   n) export NFS_SERVER="$OPTARG";;
+	   l) export POUNDER_LOGDIR="$OPTARG";;
+	   x) export DO_X_TESTS=1;;
+	   f) rm -rf "$POUNDER_PIDFILE";;
+	   u) umount $POUNDER_HOME/log 2> /dev/null; exit;;
+	   s) export NFS_LOGGING=0;;
+	   r) ./nfs_logging; exit;;
+	   '?') help $0; exit 1;;
+	esac
+done
+
+# Did user ask for X tests when DISPLAY is set?
+# Probably _not_ what the user wants.
+if [ $DO_X_TESTS -eq 1 ] && [ ! -z "$DISPLAY" ]; then
+	echo "WARNING: X tests are enabled and DISPLAY is set.  xterms will appear on this desktop!"
+	echo "WARNING: Kill pounder NOW if this is not what you intended."
+fi
+
+# Get set up to read arguments, even though there aren't any...
+shift `expr $OPTIND - 1`
+
+# Are we already running?
+if [ -f "$POUNDER_PIDFILE" ]; then
+	echo "File $POUNDER_PIDFILE exists; pounder may already be running." > /dev/tty
+	echo "Either run 'pounder -k' to stop all tests, or remove it." > /dev/tty
+	exit 1
+fi
+
+# Did the user run Install?
+if [ ! -x run-helper -o ! -x timed_loop -o ! -x infinite_loop ]; then
+	echo "Could not find run-helper, infinite_loop or timed_loop.  Did you run Install?"
+	exit -1
+fi
+
+# Try to mount NFS log store.
+if [ -z "$NFS_LOGSERVER" ]; then
+	echo "NFS logging disabled because NFS_LOGSERVER is not set."
+	export NFS_LOGGING=0
+else
+	if [ $NFS_LOGGING -gt 0 ]; then
+		./nfs_logging
+	fi
+fi
+
+# Set up log directory
+mkdir -p "$POUNDER_LOGDIR" 2> /dev/null
+if [ ! -d "$POUNDER_LOGDIR" ]; then
+	echo "Could not create $POUNDER_LOGDIR; aborting." > /dev/tty
+	exit 1
+fi
+
+# Set up dir for optional components
+mkdir -p "$POUNDER_OPTDIR"
+if [ ! -d "$POUNDER_OPTDIR" ]; then
+	echo "Could not create $POUNDER_OPTDIR; aborting." > /dev/tty
+	exit 1
+fi
+
+# Set up tmpdir
+mkdir -p "$POUNDER_TMPDIR"
+if [ ! -d "$POUNDER_TMPDIR" ]; then
+	echo "Could not create $POUNDER_TMPDIR; aborting." > /dev/tty
+	exit 1
+fi
+
+TEST_HEAD="$1"
+if [ -z $TEST_HEAD ]; then
+	TEST_HEAD=tests
+fi
+
+# needs to be a separate check in case there is no tests/ dir...
+if [ ! -d "$TEST_HEAD" -a ! -f "$TEST_HEAD" ]; then
+	echo "$TEST_HEAD does not exist!"
+	exit 1
+fi
+
+
+# Dump environment variables...
+export > "$POUNDER_LOGDIR/environment"
+
+echo "STARTING TESTS." > /dev/tty
+echo "To kill all tests, run 'pounder -k' or press ^C."> /dev/tty
+
+# Handle the duration thing...
+function kill_after {
+	sleep $DURATION
+	./pounder -k
+}
+if [ ! -z "$DURATION" -a "$DURATION" -gt 0 ]; then
+	kill_after &
+fi
+
+# Now run the tests
+./run-helper $TEST_HEAD --leader

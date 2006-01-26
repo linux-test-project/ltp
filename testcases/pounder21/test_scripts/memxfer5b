@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Flood memory bus by pounding on the CPU...
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+# Try to find memxfer5b on the system
+MEMXFER5B=`ls $POUNDER_SRCDIR/memxfer5b/memxfer5b`
+if [ -z "$MEMXFER5B" ]; then
+	echo "Cannot find memxfer5b; did you run Install?"
+	exit -1
+fi
+
+# How much RAM do we have?
+RAM=`cat /proc/meminfo | grep MemTotal | awk -F " " '{print $2}'`
+MEM_BLOB=`expr $RAM \* 32` # convert to KB and then divide by 32
+
+# Run this test ten times.
+TIMES=0
+while [ $TIMES -lt 2 ]; do
+	"$MEMXFER5B" -s -p $MEM_BLOB 10 0 1 2 3 4 5 6
+	TIMES=$((TIMES + 1))
+done
+
+# No output; if system stays up, we pass.
+exit 0

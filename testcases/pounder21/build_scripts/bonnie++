@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Builds bonnie++
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+PKGNAME=bonnie++-1.03a
+TARNAME="$PKGNAME.tgz"
+PROGNAME=bonnie++
+
+# Is it already installed?
+PROG=`which $PROGNAME`
+if [ ! -z "$PROG" ]; then
+	exit 0
+fi
+
+# Retrieve binary, if necessary
+cd "$POUNDER_OPTDIR"
+if [ ! -f "$TARNAME" ]; then
+	if [ $USE_CACHE -eq 1 ]; then
+		wget "${POUNDER_CACHE}${TARNAME}"
+	fi
+	if [ ! -f "$TARNAME" ]; then
+		wget "http://www.coker.com.au/bonnie++/$TARNAME"
+	fi
+fi
+
+# Unpack if req'd
+if [ ! -d "$PKGNAME" ]; then
+	tar -xzf "$TARNAME"
+fi
+
+# Build
+cd "$PKGNAME"
+./configure
+make $*

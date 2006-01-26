@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# Cycle the CPUs through various frequencies.
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+# Do any CPU support cpufreq?
+CPUFREQ_ENABLED_CPUS=`/bin/ls -lad /sys/devices/system/cpu/cpu*/cpufreq 2> /dev/null | wc -l`
+
+if [ "$CPUFREQ_ENABLED_CPUS" -lt 1 ]; then
+	echo "None of your CPUs support cpufreq.  Bye."
+	exit 255
+fi
+
+# Turn on acpi_pstate_strict to ensure that state transitions actually happen...
+if [ -f /sys/module/acpi_cpufreq/parameters/acpi_pstate_strict ]; then
+	echo 1 > /sys/module/acpi_cpufreq/parameters/acpi_pstate_strict
+fi
+if [ -f /sys/module/acpi/parameters/acpi_pstate_strict ]; then
+	echo 1 > /sys/module/acpi/parameters/acpi_pstate_strict
+fi
+
+# First, knock off any powersaving daemons...
+for i in `ls /etc/init.d/*powernow /etc/init.d/*cpuspeed* /etc/init.d/*powersave* 2> /dev/null`; do
+	"$i" stop
+done
+
+# Ensure that we have the userspace governor running
+for i in /sys/devices/system/cpu/cpu*; do
+	echo userspace > "$i/cpufreq/scaling_governor"
+done
+
+# Trap ^C
+trap 'kill -9 `pgrep -P $$` `pgrep cpufreq.bin` 2> /dev/null; exit 0' 1 2 15
+
+# Did we see any failures?
+LOGFILE=/proc/$$/fd/1
+OLD_ERRORS=`egrep -ic "(error|fail|invalid|denied|cannot)" $LOGFILE`
+
+# For all CPUs with cpufreq: remove CPUs that are locked with another.
+function find_cpufreq_cpus() {
+	for cpu in `ls -d /sys/devices/system/cpu/cpu*/cpufreq 2> /dev/null`; do
+		# Locked CPUs are done with symlinks in 2.6.14.
+		if [ -L "$cpu" ]; then
+			continue;
+		fi
+
+		CPU_NUM=`dirname $cpu | sed -e 's/.*cpu//g'`
+		MATCHES=`(cat /sys/devices/system/cpu/cpu*/cpufreq/affected_cpus /dev/null 2> /dev/null | while read car cdr; do echo $cdr; done) | grep "^$CPU_NUM$" -c`
+		if [ $MATCHES -eq 0 ]; then
+			echo $CPU_NUM
+		fi
+	done
+}
+
+# Find the frequencies for a given CPU
+function find_cpu_frequencies() {
+	i="/sys/devices/system/cpu/cpu$1"
+
+	if [ -f "$i/cpufreq/scaling_available_frequencies" ]; then
+		cat "$i/cpufreq/scaling_available_frequencies"
+	else
+		cat "$i/cpufreq/scaling_min_freq" "$i/cpufreq/scaling_max_freq"
+	fi
+}
+
+# Figure out which CPUs have cpufreq support.
+find_cpufreq_cpus | while read f; do
+	echo Starting CPU frequency testing on CPU $f
+	i=/sys/devices/system/cpu/cpu$f
+
+	# Does this CPU have cpufreq?
+	if [ ! -d "$i/cpufreq/" ]; then
+		continue;
+	fi
+
+	# Kick off the test.
+	"$POUNDER_HOME/timed_loop" 900 "$POUNDER_SRCDIR/cpufreq/cpufreq.bin" "$i/cpufreq/scaling_setspeed" 10000 $f `find_cpu_frequencies $f` &
+done
+
+# Wait for this to finish
+while [ `pgrep cpufreq.bin | wc -l` -gt 0 ]; do
+	sleep 5
+done
+
+# Did we see any failures?
+NEW_ERRORS=`egrep -ic "(error|fail|invalid|denied|cannot)" $LOGFILE`
+ERRORS=$(( NEW_ERRORS - OLD_ERRORS ))
+if [ $ERRORS -eq 255 ]; then
+	ERRORS=254
+fi
+
+# Failures will show up in the test output.  Or better yet,
+# panic/oops/BUG the machine.
+exit $ERRORS

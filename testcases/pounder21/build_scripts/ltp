@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Builds ltp
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+source "$POUNDER_HOME/libpounder.sh"
+
+PKGNAME=ltp-full-20060105
+TARNAME="$PKGNAME.tgz"
+
+# Retrieve binary, if necessary
+cd "$POUNDER_OPTDIR"
+if [ ! -f "$TARNAME" ]; then
+	if [ $USE_CACHE -eq 1 ]; then
+		wget "${POUNDER_CACHE}${TARNAME}"
+	fi
+	if [ ! -f "$TARNAME" ]; then
+		get_from_sourceforge ltp $TARNAME
+	fi
+fi
+
+# Unpack if needed
+if [ ! -d "$PKGNAME" ]; then
+	tar -xzf "$TARNAME"
+
+	# Apply a patch if this is Debian/Ubuntu.
+	if [ -f /etc/debian_version ]; then
+		cd $PKGNAME
+		echo "Debian/Ubuntu detected; applying build fixes..."
+		patch -p1 < $POUNDER_SRCDIR/ltp-debian-build.patch
+		RESULT=$?
+		cd -
+		if [ $RESULT -ne 0 ]; then
+			echo Patching failed.
+			exit 1
+		fi
+	fi
+
+	# NAK the setregid EPERM -> EINVAL patch, because it's
+	# broken on 2.6!  May be fixed some time after 20050804 release.
+	cd $PKGNAME
+	echo "Patching some holes in ltp..."
+	patch -p1 < $POUNDER_SRCDIR/ltp-setregid-fix.patch
+	RESULT=$?
+	cd -
+	if [ $RESULT -ne 0 ]; then
+		echo Patching failed.
+		exit 1
+	fi
+fi
+
+# Build
+cd "$PKGNAME"
+make -j$NR_CPUS
+MK_RET=$?
+
+if [ $MK_RET -eq 0 ]; then
+	make install
+	MK_RET=$?
+fi
+
+exit $MK_RET
