@@ -1,0 +1,6 @@
+drop database IF EXISTS TESTDB;
+create database TESTDB;
+GRANT all privileges on TESTDB.* TO dots@"localhost" identified by "passwd";
+GRANT all privileges on TESTDB.* TO dots@"localhost.localdomain" identified by "passwd";
+GRANT all privileges on TESTDB.* TO dots@"%" identified by "passwd";
+flush privileges;

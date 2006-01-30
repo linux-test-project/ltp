@@ -1,0 +1,19 @@
+db2 connect to testdb
+db2 update bufferpool ibmdefaultbp size 32768 dbheap 65536
+db2 update db cfg for TESTDB using applheapsz 16384
+db2 update dbm cfg using java_heap_sz 4096 
+db2 update dbm cfg using fcm_num_buffers 10000
+db2 update dbm cfg using fcm_num_rqb 4096
+db2 update dbm cfg using intra_parallel yes
+db2 update db cfg for TESTDB using maxappls 1024
+db2 update db cfg for TESTDB using avg_appls 512
+db2 update db cfg for TESTDB using maxlocks 100
+db2 update db cfg for TESTDB using CHNGPGS_THRESH 99
+db2 update dbm cfg using maxagents 800
+db2 update db cfg for testdb using locklist 1000
+db2 update db cfg for testdb using  num_iocleaners 255
+db2 update db cfg for TESTDB using  NUM_IOSERVERS 8
+db2 update db cfg for testdb using  maxfilop 1024
+db2 update db cfg for testdb using sortheap 1024
+db2 update db cfg for testdb using logprimary 60
+db2 update db cfg for testdb using logsecond 40

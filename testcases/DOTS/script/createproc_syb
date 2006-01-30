@@ -1,0 +1,27 @@
+set -x
+isql -Usa -Ppassword -Ssybase  <<EOI
+
+use testdb
+go
+
+drop procedure QUERY_PROC
+go
+drop procedure UPDATE_PROC
+go
+create proc QUERY_PROC @condition int, @count int output as
+SELECT *  
+FROM BASIC1, BASIC2, BASIC3 
+WHERE BASIC1.ID_1 = BASIC3.ID_1 
+and BASIC2.ID_2 = BASIC3.ID_2 
+and BASIC3.RND_INT > @condition
+order by BASIC3.RND_INT
+SELECT @count = count(*)  
+FROM BASIC1, BASIC2, BASIC3 
+WHERE BASIC1.ID_1 = BASIC3.ID_1 
+and BASIC2.ID_2 = BASIC3.ID_2 
+and BASIC3.RND_INT > @condition
+go
+
+create proc UPDATE_PROC @VALUE int, @CONDITION char(15) as update BASIC2 set RND_INTEGER=@VALUE where BASIC2.ID_2 like @CONDITION
+go
+EOI

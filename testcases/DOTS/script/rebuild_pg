@@ -1,0 +1,5 @@
+#!/bin/sh
+set -x
+createdb_pg
+createtable_pg
+createproc_pg

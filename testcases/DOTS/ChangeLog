@@ -1,0 +1,20 @@
+	
+2003.02.19 - Version 1.1.1
+		Modified PerfReader.java to enable the DOTS to accommodate changes in the /proc/stat format and thus function independent of Linux kerenel version.
+		Modified the DOTSHowTo.
+
+
+
+
+2002.10.8  - Version 1.1.0
+		Added support for MySQL databases
+		Linux Test Project (ltp.sourceforge.net)
+
+		Added support of PostgreSQL 7.1.3 to Dots
+        	--  by lining@xteamlinux.com.cn( or sosoln@yahoo.com)
+		. Scripts for creating database, tables and stored functions
+		. BLOB/CLOB support, we must use setAutoCommit(false) before prepareStatement clause, and call setAutoCommit(true) after that.
+		. As of stored functions, we must use select clause.
+		. Don't execute unimplemented SQL function, such as getColumnClassName()
+		. Adding shell scripts for convenience.
+	

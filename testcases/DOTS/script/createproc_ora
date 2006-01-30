@@ -1,0 +1,37 @@
+set -x
+svrmgrl  <<EOI
+connect scott/tiger@testdb
+
+create or replace procedure update_proc (value in integer, condition in char) as
+   begin
+     update basic2 set rnd_Integer = value  where basic2.ID_2 like condition;
+   end;
+   /
+show errors; 
+ 
+create or replace procedure query_proc (condition in integer, count out integer) as
+   begin
+     SELECT count(*) into count FROM BASIC1, BASIC2, BASIC3 WHERE BASIC1.ID_1 = BASIC3.ID_1 and BASIC2.ID_2 = BASIC3.ID_2 and  basic3.rnd_int > CONDITION;
+   end;
+   /
+   
+show errors;
+EOI
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,21 @@
+set -x
+psql TESTDB <<EOI
+drop table BASIC1;
+drop table BASIC2;
+drop table BASIC3;
+drop table BASIC4;
+drop table BASIC5;
+drop table BASIC6;
+drop table BID;
+drop table ITEM;
+drop table REGISTRY;
+create table BASIC1 (ID_1 char(15) not null, RND_CHAR varchar(15), RND_FLOAT float, primary key(ID_1));
+create table BASIC2 (ID_2 char(15) not null, RND_INTEGER integer, RND_TIME time, RND_DATE date, primary key(ID_2));
+create table BASIC3 (ID_1 char(15) not null, ID_2 char(15) not null, RND_TIMESTAMP timestamp, RND_INT integer, primary key(ID_1, ID_2));
+create table BASIC4 (ID_4 char(15) not null, NAME varchar(30), AGE integer, SALARY float, HIREDATE date, DEPTNO integer, primary key(ID_4));
+create table BASIC5 (ID_5 char(15) not null, NAME varchar(30), AGE integer, SALARY float, DOC oid, primary key(ID_5));
+create table BASIC6 (ID_6 char(15) not null, NAME varchar(30), AGE integer, SALARY float, PHOTO oid, primary key(ID_6));
+create table REGISTRY (USERID char(15) not null, PASSWD varchar(30), ADDRESS char(200), EMAIL char(40), PHONE char(15),primary key(USERID));
+create table ITEM (ITEMID char(15) not null, SELLERID char(15) not null, DESCRIPTION varchar(500), BID_PRICE float, START_TIME date, END_TIME date, BID_COUNT integer, primary key(ITEMID));
+create table BID (ITEMID char(15) not null, BIDERID char(15) not null, BID_PRICE float, BID_TIME date, foreign key(ITEMID) references ITEM(ITEMID));
+EOI
