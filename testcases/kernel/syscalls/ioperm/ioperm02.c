@@ -86,6 +86,7 @@ char *TCID = "ioperm02";	/* Test program identifier.    */
 #define EXP_RET_VAL -1
 #ifndef IO_BITMAP_BITS
 #define IO_BITMAP_BITS 1024  /* set to default value since some H/W may not support 0x10000 even with a 2.6.8 kernel */
+#define IO_BITMAP_BITS_16 65536
 #endif
 
 static void setup();
@@ -242,10 +243,10 @@ setup()
 		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;
 	}  else {
 		/*try invalid ioperm on 65534, 65535, 65536*/
-		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1;
+		test_cases[0].from = (IO_BITMAP_BITS_16 - NUM_BYTES) + 1;
 
 		/*try valid ioperm on 65533, 65534, 65535*/
-		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;
+		test_cases[1].from = IO_BITMAP_BITS_16 - NUM_BYTES;
 	}
 
 	/* Set up the expected error numbers for -e option */
