@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.10 2005/12/22 20:42:02 robbiew Exp $ */
+/* $Id: gethostid01.c,v 1.11 2006/01/30 22:35:31 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -211,7 +211,7 @@ main(int ac, char **av)
 
 		/* This code handles situations where ffffffff is appended */
 		bit_64= (0 == strncmp(hostid, hex_64, 8)) ? 1 : 0;
-		bit_64= (0 == strncmp(name, hex_64, 8)) ? 0 : 1;
+		bit_64= (0 == strncmp(name, hex_64, 8)) ? 1 : 0;
 
 		//printf("bit_64=%d\n", bit_64);
 
