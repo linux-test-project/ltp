@@ -1,4 +1,4 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder | grep -v DOTS`
 UCLINUX_SUBDIRS = kernel
 
 all:
