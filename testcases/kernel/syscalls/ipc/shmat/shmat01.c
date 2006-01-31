@@ -69,12 +69,10 @@ extern int Tst_count;
 #elif defined __XTENSA__               /* SHMLBA which defaults to 0x8048e8b */
 /* TASK_SIZE on Xtensa is only 0x40000000 */
 #define UNALIGNED      0x28ffeeee
+#elif defined __arm__
+#define UNALIGNED      0x28ffeeee
 #else
 #define UNALIGNED      0x5fffeeee
-#endif
-
-#ifdef __arm__
-#define UNALIGNED      0x28ffeeee
 #endif
 
 int shm_id_1 = -1;
