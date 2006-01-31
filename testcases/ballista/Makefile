@@ -1,7 +1,16 @@
+ifeq ($(shell perl -v &> /dev/null && echo yes),yes)
+
 all: bal
 
 install:
 	./do_nothing.sh
+
+else
+
+all install:
+	@echo "WARNING: No perl detected; skipping ballista tests"
+
+endif
 
 .configured:
 	cd ballista ; ./configure
@@ -12,4 +21,4 @@ bal: .configured
 
 clean:
 	$(MAKE) -C ballista clean
-	rm -f create
+	rm -f .configured
