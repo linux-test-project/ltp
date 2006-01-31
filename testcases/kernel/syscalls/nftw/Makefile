@@ -26,10 +26,10 @@ BINS= 		nftw01  nftw6401
 all:		nftw01 nftw6401
 
 nftw01:	$(&)	nftw.h $(OBJS1) ../../../../include/test.h ../../../../include/usctest.h ../../../../lib/libltp.a
-		$(CC) $(CFLAGS) -o nftw01 $(OBJS1) ../../../../lib/libltp.a
+	$(CC) $(CFLAGS) -o nftw01 $(OBJS1) $(LDFLAGS) ../../../../lib/libltp.a
 
 nftw6401:$(&)	nftw64.h $(OBJS2) ../../../../include/test.h ../../../../include/usctest.h ../../../../lib/libltp.a
-		$(CC) $(CFLAGS) -o nftw6401 $(OBJS2) ../../../../lib/libltp.a
+	$(CC) $(CFLAGS) -o nftw6401 $(OBJS2) $(LDFLAGS) ../../../../lib/libltp.a
 
 remove_bin:
 	rm -f $(BINS) $(OBJS1) $(OBJS2)

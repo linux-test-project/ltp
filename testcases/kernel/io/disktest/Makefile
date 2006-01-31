@@ -23,8 +23,11 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.8 2005/12/05 19:15:19 mridge Exp $
+# $Id: Makefile,v 1.9 2006/01/31 15:12:47 robbiew Exp $
 # $Log: Makefile,v $
+# Revision 1.9  2006/01/31 15:12:47  robbiew
+# Applied patch from Mike Frysinger to ensure Makefile properly respect CFLAGS/LDFLAGS
+#
 # Revision 1.8  2005/12/05 19:15:19  mridge
 # Updates from Jennifer Monk to enable compiling w/o errors using XLC
 #
@@ -163,7 +166,7 @@ ALLHDRS=$(wildcard *.h)
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-CFLAGS= -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 
 all: $(OBJS) disktest
 

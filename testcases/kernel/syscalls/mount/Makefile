@@ -32,7 +32,7 @@ setuid_test.mode:
 	@/bin/sh ./setuid_test.mode.sh
 
 $(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 install: setuid_test.mode
 	@set -e; for i in $(TARGETS) setuid_test; do ln -f $$i ../../../bin/$$i ; done

@@ -1,7 +1,7 @@
 all: cron_dirs_check
 
 cron_dirs_check:
-	$(CC) -o cron_dirs_check cron_dirs_check.c
+	$(CC) $(CROSS_CFLAGS) $(LDFLAGS) -o cron_dirs_check cron_dirs_check.c
 
 install:
 	chmod 755 cron_tests.sh

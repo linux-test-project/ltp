@@ -31,7 +31,7 @@ CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LOADLIBES)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)

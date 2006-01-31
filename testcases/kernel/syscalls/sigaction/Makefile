@@ -30,7 +30,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 sigaction01:
-	 $(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LOADLIBES) -lpthread $(LOADLIBES2)
+	$(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES) -lpthread $(LOADLIBES2)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

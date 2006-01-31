@@ -33,7 +33,7 @@ change_owner.mode:
 	@/bin/sh ./change_owner.mode.sh
 
 $(TARGETS): $(SRCS)
-		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 
 install: change_owner.mode

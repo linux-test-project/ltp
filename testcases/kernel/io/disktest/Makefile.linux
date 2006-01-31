@@ -23,8 +23,11 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile.linux,v 1.2 2005/05/04 17:54:00 mridge Exp $
+# $Id: Makefile.linux,v 1.3 2006/01/31 15:12:47 robbiew Exp $
 # $Log: Makefile.linux,v $
+# Revision 1.3  2006/01/31 15:12:47  robbiew
+# Applied patch from Mike Frysinger to ensure Makefile properly respect CFLAGS/LDFLAGS
+#
 # Revision 1.2  2005/05/04 17:54:00  mridge
 # Update to version 1.2.8
 #
@@ -154,7 +157,7 @@ ALLHDRS=$(wildcard *.h)
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-CFLAGS= -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
 
 all: $(OBJS) disktest
 

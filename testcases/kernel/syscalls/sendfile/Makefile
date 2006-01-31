@@ -33,7 +33,7 @@ OBJS=$(MAINS:=.o)
 all: $& $(MAINS)
 
 $(MAINS): $(SRCS)
-		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
+	 $(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 clean:
 	/bin/rm -rf $(OBJS) $(MAINS)

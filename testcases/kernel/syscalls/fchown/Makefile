@@ -34,7 +34,7 @@ change_owner.mode:
 
 
 $(TARGETS): $(SRCS)
-		 $(CC) -o $@ $@.c $(CFLAGS) $(LDLIBS)
+	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 
 install: change_owner.mode
