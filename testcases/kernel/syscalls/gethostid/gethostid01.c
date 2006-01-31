@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.11 2006/01/30 22:35:31 mridge Exp $ */
+/* $Id: gethostid01.c,v 1.12 2006/01/31 15:50:11 mridge Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -111,6 +111,10 @@
  *        01/2003 Robbie Williamson - Added code to handle 
  *              distros that add "0x" to beginning of `hostid`
  *              output. 
+ *
+ *   01/31/2006  Marty Ridgeway - Corrected 64 bit check so 
+ *              the second 64 bit check doesn't clobber the first 64 bit
+ *              check
  * 
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
@@ -122,6 +126,9 @@
 #include "usctest.h"
 
 #define HOSTIDLEN 40
+/* Bitmasks for the 64 bit operating system checks */
+#define FIRST_64_CHKBIT  0x01
+#define SECOND_64_CHKBIT 0x02
 
 extern void setup();
 extern void cleanup();
@@ -136,7 +143,7 @@ int
 main(int ac, char **av)
 {
     int lc,i,j;		/* loop counters */
-    int bit_64;          /* used when compiled 64bit on some 64bit machines */
+    int bit_64 = 0;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
     char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hostid2[HOSTIDLEN], hex[2]="0x";
     char hex_64[8]="ffffffff";
@@ -210,12 +217,17 @@ main(int ac, char **av)
 		}
 
 		/* This code handles situations where ffffffff is appended */
-		bit_64= (0 == strncmp(hostid, hex_64, 8)) ? 1 : 0;
-		bit_64= (0 == strncmp(name, hex_64, 8)) ? 1 : 0;
+        /* Fixed to not clobber the first check with the 2nd check MR */
+
+		if (0 == strncmp(hostid, hex_64, 8))
+            bit_64 |= FIRST_64_CHKBIT;
+
+		if (0 == strncmp(name, hex_64, 8))
+            bit_64 |= SECOND_64_CHKBIT;
 
 		//printf("bit_64=%d\n", bit_64);
 
-		if (bit_64 == 1){
+		if ((bit_64 & FIRST_64_CHKBIT) || (bit_64 & SECOND_64_CHKBIT)){
 			for (j=0;j<8;j++)
 				hostid2[j]=hostid[j+8];
 		} else {
