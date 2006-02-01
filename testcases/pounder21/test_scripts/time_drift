@@ -19,6 +19,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+if [ -z "$NTP_SERVER" ]; then
+	echo "NTP server is not configured."
+	exit 255
+fi
 
 # NTP server is set in libpounder.sh
 # Check NTP server every 15 seconds.  Evil, I know.

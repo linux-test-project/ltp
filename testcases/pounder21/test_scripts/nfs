@@ -19,6 +19,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+if [ -z "$NFS_SERVER" ]; then
+	echo "NFS server not configured."
+	exit 255
+fi
+
 SHORTHOST=`echo "$HOSTNAME" | sed -e 's/\..*//g'`
 
 # set up to delete nfs data and unmount nfs when we die
@@ -28,8 +33,6 @@ trap 'echo Cleaning up...; mv $NFSLOCAL/$SHORTHOST/testnet $NFSLOCAL/$SHORTHOST/
 
 [ ! -x $NFSLOCAL ] && mkdir $NFSLOCAL
 echo "Mounting remote storage via NFS..."
-
-# Note: $NFS_SERVER is _always_ set!
 
 echo Mounting $NFS_SERVER:$NFSMOUNT on $NFSLOCAL...
 

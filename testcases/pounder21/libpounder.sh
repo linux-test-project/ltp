@@ -31,18 +31,13 @@ export POUNDER_TMPDIR="$POUNDER_HOME/tmp/"
 export POUNDER_OPTDIR="$POUNDER_HOME/opt/"
 export POUNDER_SRCDIR="$POUNDER_HOME/src/"
 export POUNDER_CFGDIR="$POUNDER_HOME/config/"
-export DO_X_TESTS=0
-export DURATION=0
-export NFS_SERVER=9.47.66.39	# elm3a39
-export NTP_SERVER=9.47.67.50	# tux1
-export NR_CPUS=`getconf _NPROCESSORS_ONLN` #grep processor /proc/cpuinfo | wc -l | awk -F " " '{print $1}'`
-export POUNDER_HEAD=http://tux1.beaverton.ibm.com/~djwong/pounder2/
-export POUNDER_CACHE=http://tux1.beaverton.ibm.com/~djwong/pounder2-cache/
 export POUNDER_VERSION=`head -1 "$POUNDER_HOME/README" | awk -F " " '{print $6}' | sed -e 's/\.//g'`
-export NFS_LOGGING=1
-export NFS_LOGSERVER=9.47.66.39
-export NFS_LOGDIR=/crash/pounder-logs
+export NR_CPUS=`getconf _NPROCESSORS_ONLN`
 export NFS_LOGLOCAL="`echo "$HOSTNAME" | sed -e 's/\..*//g'`/`uname -r`-`uname -m`"
+
+if [ -e "$POUNDER_HOME/config" ]; then
+	source "$POUNDER_HOME/config"
+fi
 
 function get_from_sourceforge {
 	PROGNAME=$1

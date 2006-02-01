@@ -18,7 +18,7 @@
 # 02111-1307, USA.
 
 # Quickie makefile to do pounder stuff.
-NAME=pounder21
+NAME=ltpounder
 CFLAGS=-O3 -Wall -g
 CC=gcc
 HELPERS=timed_loop infinite_loop run-helper fancy_timed_loop
@@ -41,24 +41,26 @@ run-helper: run.c debug.o proclist.o
 	$(CC) $(CFLAGS) -o run-helper run.c debug.o proclist.o
 
 srctar:;
-	cd ..; tar -cvzf $(NAME)-`date '+%Y-%m-%d'`.src.tar.gz `find $(NAME) -type f | egrep -v '(\/CVS\/|\/tests\/)'`
+	cd ../../../; make clean; tar -cvzf $(NAME)-`date '+%Y-%m-%d'`.src.tar.gz --exclude '*CVS*' $(NAME)
 
 bintar:;
 	echo "Making binary tarball for" `uname -m` "platform."
 	./Install
-	cd ..; tar -czf $(NAME)-`date '+%Y-%m-%d'`.`uname -m`.tar.gz $(NAME) --exclude='*CVS*'
+	cd ../../../; tar -czf $(NAME)-`date '+%Y-%m-%d'`.`uname -m`.tar.gz $(NAME) --exclude='*CVS*'
 
 helpers_clean:;
 	rm -rf $(HELPERS) *.o
 
 # Clean out all cruft from a pounder run
 clean: helpers_clean
+	./pounder -u
 	if [ -d opt ]; then cd opt; for i in *; do if [ -d $$i ]; then cd $$i; make clean; cd -; fi; done; fi;
 	cd src; for i in *; do if [ -d $$i ]; then cd $$i; make clean; cd -; fi; done;
 	rm -rf tmp pounder.pid
 
 # Put everything back as it was when this tarball was unpacked.
 mrclean: helpers_clean;
+	./pounder -u
 	rm -rf opt log run-helper infinite_loop timed_loop debug.o tmp proclist.o
 	find src/ -name Makefile | while read f; do cd `dirname $$f`; $(MAKE) clean; cd -; done;
 	rm -rf `find tests/* 2>/dev/null | grep -v CVS`

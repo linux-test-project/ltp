@@ -81,7 +81,7 @@ do
 	   l) export POUNDER_LOGDIR="$OPTARG";;
 	   x) export DO_X_TESTS=1;;
 	   f) rm -rf "$POUNDER_PIDFILE";;
-	   u) umount $POUNDER_HOME/log 2> /dev/null; exit;;
+	   u) umount $POUNDER_HOME/log 2> /dev/null; exit 0;;
 	   s) export NFS_LOGGING=0;;
 	   r) ./nfs_logging; exit;;
 	   '?') help $0; exit 1;;
@@ -112,8 +112,8 @@ if [ ! -x run-helper -o ! -x timed_loop -o ! -x infinite_loop ]; then
 fi
 
 # Try to mount NFS log store.
-if [ -z "$NFS_LOGSERVER" ]; then
-	echo "NFS logging disabled because NFS_LOGSERVER is not set."
+if [ -z "$NFS_LOGSERVER" -o -z "$NFS_LOGDIR" ]; then
+	echo "NFS logging disabled because NFS_LOGSERVER or NFS_LOGDIR are not set."
 	export NFS_LOGGING=0
 else
 	if [ $NFS_LOGGING -gt 0 ]; then

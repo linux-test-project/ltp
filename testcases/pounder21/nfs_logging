@@ -33,6 +33,11 @@
 #       mounted to the local machine.
 # ASSUMPTION  : Already imported global variables from "libpounder.sh"
 
+if [ -z "$NFS_LOGSERVER" -o -z "$NFS_LOGDIR" ]; then
+	echo "NFS log server not configured."
+	exit 0
+fi
+
 # Path construction:
 
 #nfsserv:/crash/pounder-logs/testbox/2.6.14-i686/somedate/
