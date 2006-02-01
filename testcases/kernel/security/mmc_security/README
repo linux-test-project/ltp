@@ -1,0 +1,61 @@
+MMC Password Protection Reference UI
+------------------------------------
+
+This is a simple text-mode reference UI for the MMC password protection
+support, written in shell script. It's very simple and does not hash nor cache
+passwords.
+
+It's composed of the following files:
+
+- ask_password.sh: get the password from userspace. It's called when unlocking
+  the card or assigning a new password to an unlocked card.
+- change_password.sh: used to change the password from a unlocked card.
+- forced_erase.sh: used to force-erase a card, usually when the user has forgot
+  the password and wants to unlock the card. NOTE: all the card's contents are
+  lost when using this option! It only works for _locked_ cards.
+- remove_password.sh: used to remove the passwor from a card previously unlocked.
+
+Setting up
+----------
+
+1) Install the keyutils package available from http://people.redhat.com/~dhowells/keyutils/
+2) Install this package:
+
+
+2) Add the following lines to /etc/request-key.conf (remember to remove any
+previous mmc lines):
+
+create   mmc   mmc:key   unlock   /usr/share/keyutils/ask_password.sh %k %S
+create   mmc   mmc:key   assign   /usr/share/keyutils/assign_password.sh %k %S
+
+Using it
+--------
+
+1) Unlocking a card:
+
+keyctl request2 mmc mmc:key unlock
+
+2) Assigning a password to an unlocked card:
+
+keyctl request2 mmc mmc:key assign
+
+3) Changing the password (card must be unlocked first):
+
+/usr/share/keyutils/change_password.sh
+
+4) Removing the password (card must be unlocked first):
+
+/usr/share/keyutils/remove_password.sh
+
+5) Force erase card (card must be LOCKED):
+
+/usr/share/keyutils/force_erase.sh
+
+Contact Info
+------------
+
+Any comments or suggestions regarding these scripts should be sent to:
+
+Anderson Briglia <anderson.briglia@indt.org.br>
+Anderson Lizardo <anderson.lizardo@indt.org.br>
+Carlos Eduardo Aguiar <carlos.aguiar@indt.org.br>
