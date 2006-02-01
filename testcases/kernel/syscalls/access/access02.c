@@ -299,6 +299,7 @@ int
 setup3()
 {
 	int fd3;		/* File handle for test file */
+	char exechead[] = "#!/bin/sh\n";
 
 	/* Creat a test file under temporary directory */
 	if ((fd3 = open(TEST_FILE3, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
@@ -306,6 +307,13 @@ setup3()
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEST_FILE3, FILE_MODE, errno, strerror(errno));
 	}
+
+#ifdef UCLINUX
+	if (write(fd3, exechead, sizeof(exechead)) < 0) {
+		tst_brkm(TBROK, cleanup, "write(%s) Failed, errno=%d : %s",
+		TEST_FILE3, errno, strerror(errno));
+	}
+#endif
 
 	/* Close the test file created above */
 	if (close(fd3) == -1) {
