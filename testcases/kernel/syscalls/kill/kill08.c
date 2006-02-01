@@ -109,7 +109,7 @@ int main(int ac, char **av)
 		} else if (pid1 == 0) {
 			setpgrp();
 			for (i = 0; i < 5; i++) {
-				pid2 = fork();
+				pid2 = FORK_OR_VFORK();
 				if (pid2 < 0) {
 					tst_brkm(TBROK, cleanup, "Fork failed");
 				} else if (pid2 == 0) {
