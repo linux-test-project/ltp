@@ -93,6 +93,8 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
+#ifndef UCLINUX
+
 int
 main(int ac, char **av)
 {
@@ -159,6 +161,16 @@ main(int ac, char **av)
 	return(0);
 
 }	/* End main */
+
+#else
+
+int main()
+{
+	tst_resm(TINFO, "munmap02 test is not available on uClinux");
+	return 0;
+}
+
+#endif /* ifndef UCLINUX */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
