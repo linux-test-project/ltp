@@ -1,5 +1,5 @@
-SUBDIRS = fs io ipc mem pty sched syscalls 
-UCLINUX_SUBDIRS = syscalls 
+SUBDIRS = fs io ipc mem pty sched security syscalls
+UCLINUX_SUBDIRS = syscalls
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
