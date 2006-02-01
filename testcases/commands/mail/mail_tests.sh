@@ -167,9 +167,16 @@ else
 #####
 # Some mailers (e.g., Red Hat's sendmail) print different messages 
 #####
-    [ -z "$RC2" -o "X$RC2" = "X0" ] && \
-	RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
-		$LTPTMP/tst_mail.res)
+if [ -f /etc/redhat-release ] 
+then 
+     [ -z "$RC2" -o "X$RC2" = "X0" ] && \ 
+        RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \ 
+                $LTPTMP/tst_mail.res) 
+else 
+     [ -z "$RC2" -o "X$RC2" = "X0" ] && \ 
+        RC2=$(awk '/^>N/ {print match($9 $10 $11, "UndeliveredMailReturned")}' \ 
+                $LTPTMP/tst_mail.res) 
+fi 
     if [ -z "$RC1" -a -z "$RC2" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
@@ -227,9 +234,16 @@ else
 #####
 # Some mailers (e.g., Red Hat's sendmail) print different messages 
 #####
-    [ -z "$RC2" -o "X$RC2" = "X0" ] && \
-	RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
-		$LTPTMP/tst_mail.res)
+if [ -f /etc/redhat-release ] 
+then 
+     [ -z "$RC2" -o "X$RC2" = "X0" ] && \ 
+        RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \ 
+                $LTPTMP/tst_mail.res) 
+else 
+     [ -z "$RC2" -o "X$RC2" = "X0" ] && \ 
+        RC2=$(awk '/^>N/ {print match($9 $10 $11, "UndeliveredMailReturned")}' \ 
+                $LTPTMP/tst_mail.res) 
+fi 
     if [ -z "$RC1" -a -z "$RC2" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
