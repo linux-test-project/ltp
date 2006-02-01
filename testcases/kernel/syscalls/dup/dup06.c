@@ -31,6 +31,8 @@
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -47,6 +49,17 @@ int     local_flag;
 
 
 /*--------------------------------------------------------------------*/
+int cnt_free_fds(int maxfd)
+{
+ int freefds = 0;
+
+ for (maxfd--;maxfd>=0;maxfd--)
+	if(fcntl(maxfd, F_GETFD) == -1 && errno==EBADF)
+		freefds++;
+
+ return(freefds);
+}
+
 int main(ac, av)
 int ac;
 char *av[];
@@ -55,7 +68,7 @@ char *av[];
 	int		ifile ;
 	char	pfilname[40] ;
 	int		min;
-
+	int 		freefds;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 
@@ -71,6 +84,7 @@ char *av[];
 
 	/* pick up the nofiles */
 	min = getdtablesize();
+	freefds = cnt_free_fds(min);
 	fildes = (int *)malloc((min+5) * sizeof(int));
 	local_flag = PASSED;
 
@@ -86,16 +100,16 @@ char *av[];
 			tst_resm(TFAIL, "Cannot open first file\n" );
 			local_flag = FAILED ;
 		} else {
-		    	for( ifile = fildes[0] + 1 ; ifile < min+5 ; ifile++ ) {
+		    	for( ifile = 1 ; ifile < min+5 ; ifile++ ) {
 				if( (fildes[ifile] = dup( fildes[ifile-1] )) == -1 ) {
 					break ;
 				} 
 		
 			} /* end for */
-			if( ifile < min ) {
+			if( ifile < freefds ) {
 				tst_resm(TFAIL, "Not enough files duped");
 				local_flag = FAILED ;
-			} else if ( ifile > min ) {
+			} else if ( ifile > freefds ) {
 				tst_resm(TFAIL, "Too many files duped");
 				local_flag = FAILED ;
 			}
