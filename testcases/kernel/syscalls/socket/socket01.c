@@ -112,9 +112,9 @@ main(int argc, char *argv[])
 			}
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN < 0 &&
-			     TEST_ERRNO != tdat[testno].experrno)) {
-				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
+			     (TEST_ERRNO != tdat[testno].experrno && TEST_ERRNO != EPROTONOSUPPORT))) { /* Change for defect 21065 for kernel change */
+				tst_resm(TFAIL, "%s ; returned"						/* of return code for this test but don't want */
+					" %d (expected %d), errno %d (expected"				/* to break on older kernels */
 					" %d)", tdat[testno].desc,
 					s, tdat[testno].retval,
 					TEST_ERRNO, tdat[testno].experrno);

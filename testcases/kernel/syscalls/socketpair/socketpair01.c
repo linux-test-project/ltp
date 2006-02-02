@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 			}
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN &&
-			     TEST_ERRNO != tdat[testno].experrno)) {
+			     (TEST_ERRNO != tdat[testno].experrno && TEST_ERRNO != EPROTONOSUPPORT))) {
 				tst_resm(TFAIL, "%s ; returned"
 					" %d (expected %d), errno %d (expected"
 					" %d)", tdat[testno].desc,
