@@ -235,8 +235,11 @@ int main(int argc, char *argv[])
  *        	TEST(madvise(file,stat.st_size + stat.st_size ,MADV_NORMAL));
  *	prashant yendigeri added the below line because with above line ENOMEM was not generated 
  *		under most test conditions. 
+ * 		Changed multiplier from 5 to 30, newer version of gcc links library code
+ *		which itself takes 28 pages causing the TC to PASS when it should FAIL ENOMEM
+ *		This is bugzilla defect 21046	
 */
-        	TEST(madvise(file,stat.st_size + 5 * pagesize,MADV_NORMAL));
+        	TEST(madvise(file,stat.st_size + 30 * pagesize,MADV_NORMAL));
 #endif
 		check_and_print(ENOMEM);
 
