@@ -9,13 +9,13 @@ OBJS=$(patsubst %.c,%.o,$(SRCS))
 all: $(TARGETS)
 
 doio: doio.o
-		 $(CC) -o $@ $^ -I. $(CFLAGS) $(LDLIBS)
+		 $(CC) -o $@ $^ -I. $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 growfiles: growfiles.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
+		 $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 iogen: iogen.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
+		 $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 rwtest: rwtest.sh doio iogen
 	cp rwtest.sh rwtest
