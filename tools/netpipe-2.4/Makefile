@@ -21,7 +21,7 @@ MPI_DEVICE = ch_p4
 PVM_HOME   = /home/pvm3
 PVM_ARCH   = SUN4SOL2
 # Any extra libraries needed
-EXTRA_LIBS = 
+EXTRA_LIBS = $(LDFLAGS)
 #EXTRA_LIBS = -lgcc
 
 targets:    $(TARGETS)

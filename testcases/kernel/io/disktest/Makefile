@@ -23,8 +23,11 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.9 2006/01/31 15:12:47 robbiew Exp $
+# $Id: Makefile,v 1.10 2006/02/08 21:08:44 robbiew Exp $
 # $Log: Makefile,v $
+# Revision 1.10  2006/02/08 21:08:44  robbiew
+# Applied LDFLAGS cleanup patch from Mike Frysinger.
+#
 # Revision 1.9  2006/01/31 15:12:47  robbiew
 # Applied patch from Mike Frysinger to ensure Makefile properly respect CFLAGS/LDFLAGS
 #
@@ -171,7 +174,7 @@ CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES
 all: $(OBJS) disktest
 
 disktest: $(OBJS) $(SRCS) $(ALLHDRS)
-	$(CC) $(CFLAGS) -lpthread -o disktest $(OBJS)
+	$(CC) $(CFLAGS) -o disktest $(OBJS) $(LDFLAGS) -lpthread
 
 main.o: main.c $(ALLHDRS)
 sfunc.o: sfunc.c sfunc.h $(GBLHDRS)

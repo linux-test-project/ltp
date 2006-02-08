@@ -1,6 +1,6 @@
 #
 # Makefile for NetPIPE
-# $Id: Makefile,v 1.4 2003/06/10 20:20:06 robbiew Exp $
+# $Id: Makefile,v 1.5 2006/02/08 21:08:44 robbiew Exp $
 #
 
 # Default C compiler: must be an ANSI C compiler
@@ -22,7 +22,7 @@ MPI_DEVICE = ch_p4
 PVM_HOME   = /home/pvm3
 PVM_ARCH   = SUN4SOL2
 # Any extra libraries needed
-EXTRA_LIBS = 
+EXTRA_LIBS = $(LDFLAGS)
 #EXTRA_LIBS = -lgcc
 
 targets:    $(TARGETS)
