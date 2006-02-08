@@ -89,18 +89,22 @@ if [ $? == "0" ]; then
  I_AM_ROOT=1
 fi
 
-if [ $NOBODY_ID != "0" ] || [ $BIN_ID != "0" ] || [ $DAEMON_ID != "0" ] || [ $NOBODY_GRP != "0" ] || [ $BIN_GRP != "0" ] || [ $DAEMON_GRP != "0" ] || [ $USERS_GRP != "0" ] || [ $SYS_GRP != "0" ] && [ $I_AM_ROOT != "0" ];
-then
-   echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
-   read ans
-   case $ans in
-       Y*|y*)
-           CREATE=1
-           ;;
-       *)
-           CREATE=0 
-           ;;
-   esac
+if [ -n "$CREATE" ]; then
+  echo "CREATE variable set to $CREATE ..."
+else
+  if [ $NOBODY_ID != "0" ] || [ $BIN_ID != "0" ] || [ $DAEMON_ID != "0" ] || [ $NOBODY_GRP != "0" ] || [ $BIN_GRP != "0" ] || [ $DAEMON_GRP != "0" ] || [ $USERS_GRP != "0" ] || [ $SYS_GRP != "0" ] && [ $I_AM_ROOT != "0" ];
+  then
+     echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
+     read ans
+     case $ans in
+         Y*|y*)
+             CREATE=1
+             ;;
+         *)
+             CREATE=0 
+             ;;
+     esac
+  fi
 fi
 
 if [ $NOBODY_ID != "1" ] && [ $NOBODY_GRP != "1" ]; then
