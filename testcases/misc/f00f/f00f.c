@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: f00f.c,v 1.3 2004/08/17 16:54:27 plars Exp $ */
+/* $Id: f00f.c,v 1.4 2006/02/11 05:00:32 vapier Exp $ */
 /*
  * This is a simple test for handling of the pentium f00f bug.
  * It is an example of a catistrophic test case.  If the system
@@ -85,6 +85,7 @@ main ()
 {
   tst_resm(TCONF, "f00f bug test only for i386");
   tst_exit();
+  return 0;
 }
 
 #endif /* __i386__ */
