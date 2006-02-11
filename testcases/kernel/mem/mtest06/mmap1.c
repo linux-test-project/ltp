@@ -491,8 +491,6 @@ main(int  argc,		/* number of input parameters.			      */
 {
 
     extern char *optarg;/* getopt() function global variables         */
-    extern int   optind;
-    extern int   opterr;
     extern int   optopt;
 
     int 	 c;		/* command line options			      */
