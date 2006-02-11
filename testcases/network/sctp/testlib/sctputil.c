@@ -114,7 +114,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 		/* Make sure that everything is printable and that we
 		 * are NUL terminated...
 		 */
-		printf("DATA(%d):  ", msg_len);
+		printf("DATA(%zi):  ", msg_len);
 		while ( msg_len > 0 ) {
 			char *text;
 			int len;
