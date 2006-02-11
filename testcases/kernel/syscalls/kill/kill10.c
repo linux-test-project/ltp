@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill10.c,v 1.3 2006/01/16 16:54:23 mridge Exp $ */
+/* $Id: kill10.c,v 1.4 2006/02/11 04:34:37 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -380,7 +380,8 @@ setup()
     fork_pgrps(num_pgrps);
 
     /* wait for all pgrps to report in */
-    printf("Master: %d\n", mypid);
+    if (debug_flag)
+        printf("Master: %d\n", mypid);
     while (pgrps_ready < num_pgrps) { 
         if (debug_flag  >= 3) 
             printf("%d: Master pausing for Managers to check in (%d/%d)\n", 
@@ -397,9 +398,11 @@ setup()
         pause(); 
     }
     checklist_reset(0x03);
-    printf("Managers: \n");
-    for (i = 0; i < num_pgrps; i++) { printf("%d ", child_checklist[i].pid); }
-    printf("\n");
+    if (debug_flag) {
+        printf("Managers: \n");
+        for (i = 0; i < num_pgrps; i++) { printf("%d ", child_checklist[i].pid); }
+        printf("\n");
+    }
 
     /* set up my signal processing */
     /* continue on ALRM */

@@ -99,6 +99,8 @@
 #include "test.h"
 #include "usctest.h"
 
+#define DEBUG 0
+
 #define MODE_RWX 	(mode_t)(S_IRWXU | S_IRWXG | S_IRWXO)
 #define DIR_MODE	(mode_t)(S_ISVTX | S_ISGID | S_IFDIR)
 #define PERMS		(mode_t)(MODE_RWX | DIR_MODE)
@@ -166,11 +168,12 @@ int main(int ac, char **av)
             TESTDIR, TEST_ERRNO);
          }
          dir_mode = stat_buf.st_mode;
+#if DEBUG
          printf("DIR_MODE = 0%03o\n", DIR_MODE);
          printf("MODE_RWX = 0%03o\n", MODE_RWX);
          printf("PERMS = 0%03o\n", PERMS);
 	 printf("dir_mode = 0%03o\n", dir_mode);
-	 
+#endif
          if ( PERMS != dir_mode) 
          {
             tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "

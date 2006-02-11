@@ -134,10 +134,6 @@ int main(int ac, char **av)
 
 			TEST(dup2(*TC[i].ofd, *TC[i].nfd));
 
-			fprintf(stderr, "call returned %d and ERRNO = %s\n", 
-				TEST_RETURN, (TEST_ERRNO == 0)?"no error":
-				(TEST_ERRNO == EBADF)? "EBADF":
-				"unknown error");
                         if (TEST_RETURN != -1) {
                                 tst_resm(TFAIL, "call succeeded unexpectedly");
                                 continue;

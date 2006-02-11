@@ -109,7 +109,7 @@ main(int ac, char **av)
 		TEST(execve(test_name, NULL, NULL));
 
 		if (TEST_ERRNO != EMFILE) {
-			tst_resm(TFAIL, "Expected EMFILE got %d", TEST_ERRNO);
+			tst_resm(TFAIL, "Expected EMFILE(%d) got %d", EMFILE, TEST_ERRNO);
 			continue;
 		}
 
@@ -162,8 +162,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Could not get current directory");
 	}
 	/*sprintf(test_name, "%s/%s", pname, fname1);*/
-	sprintf(test_name, "%s/%s", pname, fname1);
-	printf("test_name is %s\n",test_name);
+	/*printf("test_name is %s\n",test_name);*/
 	
 	/* make temp dir and cd to it */
 	tst_tmpdir();
