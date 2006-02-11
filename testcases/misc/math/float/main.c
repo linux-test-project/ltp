@@ -95,7 +95,6 @@ int main(int argc, char *argv[])
 {
         int             opt = 0;
         pid_t           pid;
-        extern int      optind;
         extern char     *optarg;
 
         void *exit_value;
