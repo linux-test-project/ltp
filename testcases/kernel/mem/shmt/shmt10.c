@@ -79,7 +79,6 @@ char *argv[];
 	int iter = 500;
 	int c;
 	extern char *optarg;
-	extern int optind;
 
 	key = (key_t)getpid();
 	signal(SIGTERM, fini);
