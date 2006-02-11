@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rename02.c,v 1.2 2005/12/22 20:18:24 robbiew Exp $ */
+/* $Id: rename02.c,v 1.3 2006/02/11 04:59:55 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -119,7 +119,7 @@
 
 extern void setup();
 extern void cleanup();
-
+extern void do_file_setup(char *);
 
 char *TCID="rename02"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
