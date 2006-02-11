@@ -140,7 +140,7 @@ main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "fork() failed");
 	} else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
-			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd\n",
+			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd",
 			LTPUSER1);
 		}
 
@@ -318,7 +318,7 @@ setup()
         }
 
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd\n",
+		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 			LTPUSER2);
 		/*NOTREACHED*/
 	}
@@ -332,7 +332,7 @@ setup()
          * pathname to that of user_uid and group_gid.
          */
         if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d\n",
+		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
 			TEMP_FILE, errno);
 		/*NOTREACHED*/
 	}

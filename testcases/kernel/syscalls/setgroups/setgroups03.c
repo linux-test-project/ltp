@@ -151,13 +151,12 @@ main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */ 
-			 printf("gidsetsize=%d\n",gidsetsize);
 			 TEST(setgroups(gidsetsize, groups_list));
 	
 			/* check return code of setgroups(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "setgroups() returned %d, "
-					 "expected -1, errno=%d", TEST_RETURN,
+				tst_resm(TFAIL, "setgroups(%d) returned %d, "
+					 "expected -1, errno=%d", gidsetsize, TEST_RETURN,
 					 Test_cases[i].exp_errno);
 				continue;
 			}
@@ -166,11 +165,11 @@ main(int ac, char **av)
 
 			if (TEST_ERRNO == Test_cases[i].exp_errno) {
 				tst_resm(TPASS,
-					 "setgroups() fails, %s, errno=%d",
+					 "setgroups(%d) fails, %s, errno=%d", gidsetsize,
 					 test_desc, TEST_ERRNO);
 			} else {
-				tst_resm(TFAIL, "setgroups() fails, %s, "
-					 "errno=%d, expected errno=%d",
+				tst_resm(TFAIL, "setgroups(%d) fails, %s, "
+					 "errno=%d, expected errno=%d", gidsetsize,
 					 test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
 			}

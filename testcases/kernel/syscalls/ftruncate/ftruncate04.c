@@ -117,43 +117,43 @@ void  doparent()
 	sigemptyset(&set);
 	sigsuspend(&set);
 	if ((fd = open(filename, O_RDWR | O_NONBLOCK)) < 0) {
-		tst_resm(TBROK,"parent open1 failed\n");
+		tst_resm(TBROK,"parent open1 failed");
 		cleanup();
 	}/*  end if */
 	lseek(fd, 0, SEEK_SET);
 
 	/* first delete BEFORE lock, expect failure */
 	if (ftruncate(fd, RECLEN) >= 0) {
-		tst_resm(TFAIL, "unexpected ftruncate success case 1\n");
+		tst_resm(TFAIL, "unexpected ftruncate success case 1");
 		local_flag = FAILED;
 		cleanup();
 	}
 	if (errno != EAGAIN) {
-		tst_resm(TFAIL,"bad ftruncate errno case 1\n");
+		tst_resm(TFAIL,"bad ftruncate errno case 1");
 		local_flag = FAILED;
 		cleanup();
 	}
 
 	/* delete IN the lock, expect failure */
 	if (ftruncate(fd, recstart+(RECLEN/2)) >= 0) {
-		tst_resm(TFAIL, "unexpected ftruncate success case 2\n");
+		tst_resm(TFAIL, "unexpected ftruncate success case 2");
 		local_flag = FAILED;
 		cleanup();
 	}
 	if (errno != EAGAIN) {
-		tst_resm(TFAIL,"bad ftruncate errno case 2\n");
+		tst_resm(TFAIL,"bad ftruncate errno case 2");
 		local_flag = FAILED;
 		cleanup();
 	}
 
 	/* delete AFTER lock, expect success */
         if (ftruncate(fd, recstart+RECLEN) != 0) {
-                tst_resm(TFAIL, "unexpected ftruncate success case 3\n");
+                tst_resm(TFAIL, "unexpected ftruncate success case 3");
                 local_flag = FAILED;
                 cleanup();
         }
         if (errno != EAGAIN) {
-                tst_resm(TFAIL,"bad ftruncate errno case 3\n");
+                tst_resm(TFAIL,"bad ftruncate errno case 3");
                 local_flag = FAILED;
                 cleanup();
         }
@@ -184,8 +184,8 @@ void  doparent()
 		cleanup();
 	}
         if(sb.st_size != recstart+(RECLEN/2)) {
-                tst_resm(TFAIL, "unexpected ftruncate failure case 4\n");
-                tst_resm(TFAIL, "expected size of %d, got size of %d\n", recstart+(RECLEN/2), sb.st_size);
+                tst_resm(TFAIL, "unexpected ftruncate failure case 4");
+                tst_resm(TFAIL, "expected size of %d, got size of %d", recstart+(RECLEN/2), sb.st_size);
                 local_flag = FAILED;
                 cleanup();
         }
@@ -207,8 +207,8 @@ void  doparent()
 	        cleanup();
 	}
 	if(sb.st_size != RECLEN) {
-	        tst_resm(TFAIL, "unexpected ftruncate failure case 5\n");
-	        tst_resm(TFAIL, "expected size of %d, got size of %d\n", RECLEN, sb.st_size);
+	        tst_resm(TFAIL, "unexpected ftruncate failure case 5");
+	        tst_resm(TFAIL, "expected size of %d, got size of %d", RECLEN, sb.st_size);
 	        local_flag = FAILED;
 	        cleanup();
 	}
@@ -225,8 +225,8 @@ void  doparent()
                 cleanup();
         }
         if(sb.st_size != (2 * len)) {
-                tst_resm(TFAIL, "unexpected ftruncate failure case 6\n");
-                tst_resm(TFAIL, "expected size of %d, got size of %d\n", (2 * len), sb.st_size);
+                tst_resm(TFAIL, "unexpected ftruncate failure case 6");
+                tst_resm(TFAIL, "expected size of %d, got size of %d", (2 * len), sb.st_size);
                 local_flag = FAILED;
                 cleanup();
         }
@@ -305,13 +305,13 @@ char **av;
 		act.sa_mask = set;
 		act.sa_flags = 0;
 		if (sigaction(SIGUSR1, &act, 0)) {
-			tst_resm(TBROK,"Sigaction for SIGUSR1 failed\n");
+			tst_resm(TBROK,"Sigaction for SIGUSR1 failed");
 			tst_rmdir();
 			tst_exit();
 		} /* end if */
 		if( sigaddset(&set, SIGUSR1))
 		{
-			tst_resm(TBROK,"sigaddset for SIGUSR1 failed\n");
+			tst_resm(TBROK,"sigaddset for SIGUSR1 failed");
 			tst_rmdir();
 			tst_exit();
 		}
@@ -324,23 +324,23 @@ char **av;
 		for (i = 0; i < iterations; i++) {
 			sprintf(filename, "%s.%d.%d\n", progname, ppid, i);
 			if ((fd = open(filename, O_CREAT|O_RDWR, 02666)) < 0) {
-				tst_resm(TBROK, "parent error opening/creating %s\n",
+				tst_resm(TBROK, "parent error opening/creating %s",
 				filename);
 				cleanup();
 			} /* end if */
 			if( chown(filename, geteuid(), getegid())  == -1 ) {
-				tst_resm(TBROK, "parent error chowning %s\n",
+				tst_resm(TBROK, "parent error chowning %s",
 					filename);
 				cleanup();
 			} /* end if */
 			if( chmod(filename, 02666 )  == -1 ) {
-				tst_resm(TBROK, "parent error chmoding %s\n",
+				tst_resm(TBROK, "parent error chmoding %s",
 					filename);
 				cleanup();
 			} /* end if */
 			do {
 				if (write(fd, buffer, BUFSIZE) < 0) {
-					tst_resm(TBROK, "parent write failed to %s\n",
+					tst_resm(TBROK, "parent write failed to %s",
 						filename);
 					cleanup();
 				}
@@ -356,8 +356,8 @@ char **av;
 			if ((cpid = FORK_OR_VFORK()) < 0) {
 				unlink(filename);
 				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-				                        " etc are likely to fail.\n");
-				tst_resm(TBROK, "Test broken due to inability of fork.\n");
+				                        " etc are likely to fail.");
+				tst_resm(TBROK, "Test broken due to inability of fork.");
 				tst_rmdir();
 				tst_exit();
 			}
@@ -366,7 +366,7 @@ char **av;
 				if (self_exec(av[0], "dddd", filename, recstart,
 					      reclen, ppid) < -1) {
 					unlink(filename);
-					tst_resm(TBROK, "self_exec failed.\n");
+					tst_resm(TBROK, "self_exec failed.");
 					tst_rmdir();
 					tst_exit();
 				}
@@ -380,9 +380,9 @@ char **av;
 			unlink(filename);
 		}
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed.\n");
+		        tst_resm(TPASS, "Test passed.");
 		} else {
-		        tst_resm(TFAIL, "Test failed.\n");
+		        tst_resm(TFAIL, "Test failed.");
 		}
 		tst_rmdir();
 		tst_exit();

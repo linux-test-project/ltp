@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
 	flag = 0;
 
 	if ((buf = malloc(20480)) == NULL) {
-		tst_resm(TBROK, "Reason: Malloc failed! %s\n", strerror(errno));
+		tst_resm(TBROK, "Reason: Malloc failed! %s", strerror(errno));
         	tst_exit();
 	}
 
@@ -107,13 +107,13 @@ int main (int argc, char *argv[])
 	mallopt(M_MXFAST, 2048);
 	mallopt(M_NLBLKS, 50);
 	if ((buf = malloc(1024)) == NULL) {
-		tst_resm(TBROK, "Reason:Malloc failed. %s\n", strerror(errno));
+		tst_resm(TBROK, "Reason:Malloc failed. %s", strerror(errno));
 		tst_exit();
 	}
 
 	free(buf);
 
-  	(local_flag == PASSED ) ? tst_resm(TPASS, "Test passed\n") : tst_resm(TFAIL, "Test failed\n");
+  	(local_flag == PASSED ) ? tst_resm(TPASS, "Test passed") : tst_resm(TFAIL, "Test failed");
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 

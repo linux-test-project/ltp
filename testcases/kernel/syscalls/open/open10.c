@@ -129,7 +129,7 @@ int main (int ac, char *av[])
 
 
 	if (issu() != 0) {
-		tst_resm(TINFO, "\nMust be root to run this test.\n");
+		tst_resm(TINFO, "Must be root to run this test.");
 		tst_exit();
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -148,7 +148,7 @@ int main (int ac, char *av[])
 
 		/* Get the uid of user1 */
 		if ((user1 = getpwnam("nobody")) == NULL) {
-			tst_resm(TBROK, "nobody not in /etc/passwd\n");
+			tst_resm(TBROK, "nobody not in /etc/passwd");
 			tst_exit();
 		}
 		user1_uid = user1->pw_uid;
@@ -157,12 +157,12 @@ int main (int ac, char *av[])
 		 * Get the group IDs of group1 and group2. 
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
-			tst_resm(TBROK, "nobody not in /etc/group\n");
+			tst_resm(TBROK, "nobody not in /etc/group");
 			tst_exit();
 		}
 		group1_gid = group->gr_gid;
 		if ((group = getgrnam("bin")) == NULL) {
-			tst_resm(TBROK, "bin not in /etc/group\n");
+			tst_resm(TBROK, "bin not in /etc/group");
 		}
 		group2_gid = group->gr_gid;
 
@@ -186,13 +186,13 @@ int main (int ac, char *av[])
 		}
 
 		if ((ret = stat(DIR_A, &buf)) < 0) {
-			tst_resm(TFAIL,"Stat of %s failed\n",DIR_A);
+			tst_resm(TFAIL,"Stat of %s failed",DIR_A);
 			local_flag = FAILED;
 		}
 
 		/* Verify modes */
 		if (buf.st_mode & S_ISGID) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit set", 
 				DIR_A);
 			local_flag = FAILED;
 		}
@@ -200,7 +200,7 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_A);
-			tst_resm(TINFO,"got %ld and %ld\n",buf.st_gid, group2_gid);
+			tst_resm(TINFO,"got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -230,7 +230,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
 				DIR_B);
 			local_flag = FAILED;
 		}
@@ -238,14 +238,14 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_B);
-			tst_resm(TINFO, "got %ld and %ld\n",buf.st_gid, group2_gid); 
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, group2_gid); 
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block0.\n");
+		        tst_resm(TPASS, "Test passed in block0.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block0.\n");
+		        tst_resm(TFAIL, "Test failed in block0.");
 	                fail_count++;
 	        }
 
@@ -294,7 +294,7 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
 			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_A);
-			tst_resm(TINFO, "got %ld and %ld\n",buf.st_gid, mygid);
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
 
@@ -313,7 +313,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
 				setgid_A);
 			local_flag = FAILED;
 		}
@@ -321,14 +321,14 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_A);
-			tst_resm(TINFO, "got %ld and %ld\n",buf.st_gid, mygid);
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block1.\n");
+		        tst_resm(TPASS, "Test passed in block1.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block1.\n");
+		        tst_resm(TFAIL, "Test failed in block1.");
 	                fail_count++;
 	        }
 
@@ -358,7 +358,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (buf.st_mode & S_ISGID) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit should be set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit should be set", 
 				nosetgid_B);
 			local_flag = FAILED;
 		}
@@ -366,7 +366,7 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_B);
-			tst_resm(TINFO, "got %ld and %ld\n",buf.st_gid, group2_gid);
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -386,21 +386,21 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_B);
-			tst_resm(TINFO,"got %ld and %ld\n",buf.st_gid, group2_gid);
+			tst_resm(TINFO,"got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
 				setgid_B);
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block2.\n");
+		        tst_resm(TPASS, "Test passed in block2.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block2.\n");
+		        tst_resm(TFAIL, "Test failed in block2.");
 	                fail_count++;
 	        }
 
@@ -434,7 +434,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set\n", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
 				root_setgid_B);
 			local_flag = FAILED;
 		}
@@ -442,14 +442,14 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", root_setgid_B);
-			tst_resm(TINFO, "got %ld and %ld\n",buf.st_gid, group2_gid);
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block3.\n");
+		        tst_resm(TPASS, "Test passed in block3.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block3.\n");
+		        tst_resm(TFAIL, "Test failed in block3.");
 	                fail_count++;
 	        }
 
@@ -482,9 +482,9 @@ int main (int ac, char *av[])
 			printf("errno is %d\n", errno);
 		}
 		if (fail_count == 0 ) {
-		        tst_resm(TPASS, "Test passed.\n");
+		        tst_resm(TPASS, "Test passed.");
 		} else {
-		        tst_resm(TFAIL, "Test failed because of above failures.\n");
+		        tst_resm(TFAIL, "Test failed because of above failures.");
 		}
 
 	}

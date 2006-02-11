@@ -86,12 +86,12 @@ char *argv[];
 /*--------------------------------------------------------------*/
 	key = nsems = 1;
 	if ((semid = semget(key, nsems, SEM_RA|IPC_CREAT)) == -1) {
-		tst_resm(TFAIL, "semget() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semget() failed errno = %d", errno);
 		tst_exit();
 	}
 	arg.buf = &buf_ds;
 	if ((status = semctl(semid, 0, IPC_STAT, arg)) == -1) {
-		tst_resm(TFAIL, "semctl() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl() failed errno = %d", errno);
 		semctl(semid, 1, IPC_RMID, arg);
 		tst_exit();
 	}
@@ -101,66 +101,66 @@ char *argv[];
 	 */
 
 	if (arg.buf->sem_nsems != nsems) {
-		tst_resm(TFAIL, "error: unexpected number of sems. %d\n", arg.buf->sem_nsems);
+		tst_resm(TFAIL, "error: unexpected number of sems %d", arg.buf->sem_nsems);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.uid != getuid()) {
-		tst_resm(TFAIL, "error: unexpected uid %d\n", arg.buf->sem_perm.uid);
+		tst_resm(TFAIL, "error: unexpected uid %d", arg.buf->sem_perm.uid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.gid != getgid()) {
-		tst_resm(TFAIL, "error: unexpected gid %d\n", arg.buf->sem_perm.gid);
+		tst_resm(TFAIL, "error: unexpected gid %d", arg.buf->sem_perm.gid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.cuid != getuid()) {
-		tst_resm(TFAIL, "error: unexpected cuid %d\n", arg.buf->sem_perm.cuid);
+		tst_resm(TFAIL, "error: unexpected cuid %d", arg.buf->sem_perm.cuid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.cgid != getgid()) {
-		tst_resm(TFAIL, "error: unexpected cgid %d\n", arg.buf->sem_perm.cgid);
+		tst_resm(TFAIL, "error: unexpected cgid %d", arg.buf->sem_perm.cgid);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETVAL, arg)) == -1) {
-		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d", errno);
 		tst_exit();
 	}
 	arg.val = 1;
 	if ((status = semctl(semid, 0, SETVAL, arg)) == -1) {
-		tst_resm(TFAIL, "SEMCTL(SETVAL) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "SEMCTL(SETVAL) failed errno = %d", errno);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETVAL, arg)) == -1) {
-		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl(GETVAL) failed errno = %d", errno);
 		tst_exit();
 	}
 	if (status != arg.val) {
-		tst_resm(TFAIL, "error: unexpected value %d\n", status);
+		tst_resm(TFAIL, "error: unexpected value %d", status);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETPID, arg)) == -1) {
-		tst_resm(TFAIL, "semctl(GETPID) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl(GETPID) failed errno = %d", errno);
 		tst_exit();
 	}
 	status = getpid();
 	if (status == 0) 
 	{
-		tst_resm(TFAIL, "error: unexpected pid %d\n", status);
+		tst_resm(TFAIL, "error: unexpected pid %d", status);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETNCNT, arg)) == -1) {
-		tst_resm(TFAIL, "semctl(GETNCNT) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl(GETNCNT) failed errno = %d", errno);
 		tst_exit();
 	}
 	if (status != 0) {
-		tst_resm(TFAIL, "error: unexpected semncnt %d\n", status);
+		tst_resm(TFAIL, "error: unexpected semncnt %d", status);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETZCNT, arg)) == -1) {
-		tst_resm(TFAIL, "semctl(GETZCNT) failed errno = %d\n", errno);
+		tst_resm(TFAIL, "semctl(GETZCNT) failed errno = %d", errno);
 		tst_exit();
 	}
 	if (status != 0) {
-		tst_resm(TFAIL, "error: unexpected semzcnt %d\n", status);
+		tst_resm(TFAIL, "error: unexpected semzcnt %d", status);
 		tst_exit();
 	}
 		

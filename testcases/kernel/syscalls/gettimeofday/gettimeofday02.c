@@ -88,7 +88,7 @@ int main(int ac, char **av)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 	
-	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss\n",tlen); 
+	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss",tlen); 
 	signal(SIGALRM, breakout); 
 	alarm(atoi(tlen));  
 
@@ -105,7 +105,7 @@ int main(int ac, char **av)
 		tv1=tv2;
 	}
 
-	tst_resm(TPASS, "gettimeofday monotonous in %s seconds\n", tlen);
+	tst_resm(TPASS, "gettimeofday monotonous in %s seconds", tlen);
 
 	cleanup();
 	exit(0);

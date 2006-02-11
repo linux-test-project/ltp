@@ -153,7 +153,7 @@ do { \
      } else { /* Must have been signaled */ \
 	    (result) = (errval); \
         if (WIFSIGNALED(kid_status)) \
-           tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)\n", \
+           tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)", \
 			        WTERMSIG(kid_status), strsignal(WTERMSIG(kid_status))); \
      } \
   } \
@@ -183,7 +183,7 @@ do { \
      } else { /* Must have been signaled */ \
 	    kid_status = (errval); \
         if (WIFSIGNALED(kid_status)) \
-           tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)\n", \
+           tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)", \
 			        WTERMSIG(kid_status), strsignal(WTERMSIG(kid_status))); \
      } \
   } \
@@ -289,7 +289,7 @@ int test_epoll_create (unsigned int num_rand_attempts)
 	}
   }
 
-  tst_resm(TINFO, "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).\n", num_epoll_create_test_calls, num_epoll_create_test_fails, 
+  tst_resm(TINFO, "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).", num_epoll_create_test_calls, num_epoll_create_test_fails, 
 		   ((float)(num_epoll_create_test_calls - num_epoll_create_test_fails) * 100.0f / (float)num_epoll_create_test_calls));
   /* Return 0 on success. */
 
@@ -622,7 +622,7 @@ int test_epoll_ctl (int epoll_fd)
 	close(epoll_fd);
   }
 
-  tst_resm(TINFO, "Summary: Of %d tests, epoll_ctl failed %d (%3.0f%% passed).\n", num_epoll_ctl_test_calls, num_epoll_ctl_test_fails, 
+  tst_resm(TINFO, "Summary: Of %d tests, epoll_ctl failed %d (%3.0f%% passed).", num_epoll_ctl_test_calls, num_epoll_ctl_test_fails, 
 		   ((float)(num_epoll_ctl_test_calls - num_epoll_ctl_test_fails) * 100.0f / (float)num_epoll_ctl_test_calls));
   return (num_epoll_ctl_test_fails / num_epoll_ctl_test_calls);
 }
@@ -633,19 +633,19 @@ int main (int argc, char** argv)
   struct timeval tv;
   int last_result;
   
-  tst_resm(TINFO, "testing if epoll() system call works\n");
+  tst_resm(TINFO, "testing if epoll() system call works");
 
   /* Get the current time */
   if (gettimeofday(&tv, NULL) != 0){
-	tst_brkm(TBROK, cleanup, "gettimeofday failed\n");
+	tst_brkm(TBROK, cleanup, "gettimeofday failed");
 	tst_exit();
   } else {
-	tst_resm(TINFO, "gettimeofday() works\n");
+	tst_resm(TINFO, "gettimeofday() works");
   }
 
   /* Set up RNG */
   srand(tv.tv_usec);
-  tst_resm(TINFO, "random number seeded with gettimeofday() [seed = %d] works\n", tv.tv_usec);
+  tst_resm(TINFO, "random number seeded with gettimeofday() [seed = %d] works", tv.tv_usec);
 
   tst_resm(TINFO, "Testing epoll_create");
   /* Testing epoll_create with some different sizes */

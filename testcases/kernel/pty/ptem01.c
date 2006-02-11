@@ -217,7 +217,7 @@ test2(void)
 	if (wsz.ws_row != wsz1.ws_row || wsz.ws_col != wsz1.ws_col ||
 	    wsz.ws_xpixel != wsz1.ws_xpixel ||
 	    wsz.ws_ypixel != wsz1.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned\n");
+		tst_resm(TFAIL, "unexpected window size returned");
 		tst_exit();
 	}
 
@@ -234,7 +234,7 @@ test2(void)
 	if (wsz.ws_row != wsz2.ws_row || wsz.ws_col != wsz2.ws_col ||
 	    wsz.ws_xpixel != wsz2.ws_xpixel ||
 	    wsz.ws_ypixel != wsz2.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned\n");
+		tst_resm(TFAIL, "unexpected window size returned");
 		tst_exit();
 	}
 
@@ -246,7 +246,7 @@ test2(void)
 	if (wsz.ws_row == wsz2.ws_row || wsz.ws_col == wsz2.ws_col ||
 	    wsz.ws_xpixel == wsz2.ws_xpixel ||
 	    wsz.ws_ypixel == wsz2.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned\n");
+		tst_resm(TFAIL, "unexpected window size returned");
 		tst_exit();
 	}
 

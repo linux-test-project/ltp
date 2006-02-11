@@ -249,7 +249,7 @@ getpwd()
 
 	buf = (char *)malloc(BUFSIZ);
 	if ((fin = popen(pwd, "r")) == NULL) {
-		tst_resm(TINFO, "%s: can't run %s\n", TCID, pwd);
+		tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 		tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
 		/*NOTREACHED*/
 	}

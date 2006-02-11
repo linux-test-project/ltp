@@ -92,7 +92,7 @@ int main(int ac, char *av[])
 		local_flag = PASSED;
 
 		if ((fd = open(fname, O_RDWR | O_CREAT, 0666)) < 0) {
-                        tst_resm(TBROK, "open failed: fname = %s, errno = %d\n",
+                        tst_resm(TBROK, "open failed: fname = %s, errno = %d",
                                         fname, errno);
                         tst_exit();
                 }
@@ -100,7 +100,7 @@ int main(int ac, char *av[])
                  * pwrite() K1 of data (0's) at offset 0.
                  */
                 if ((nbytes = pwrite(fd, wbuf[0], K1, 0)) != K1) {
-                        tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d\n",
+                        tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
                         tst_exit();
                 }
@@ -119,7 +119,7 @@ int main(int ac, char *av[])
                  * pwrite() K1 of data (2's) at offset K2.
                  */
                 if ((nbytes = pwrite(fd, wbuf[2], K1, K2)) != K1) {
-                        tst_resm(TFAIL, "pwrite at K2 failed: nbytes=%d, errno=%d\n",
+                        tst_resm(TFAIL, "pwrite at K2 failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
                         tst_exit() ;
                 }
@@ -139,7 +139,7 @@ int main(int ac, char *av[])
                  * take place at an offset of K3, moving the file pointer to K4.
                  */
                 if ((nbytes = write(fd, wbuf[3], K1)) != K1) {
-                        tst_resm(TFAIL, "write failed: nbytes=%d, errno=%d\n",
+                        tst_resm(TFAIL, "write failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
                         tst_exit();
                 }
@@ -153,7 +153,7 @@ int main(int ac, char *av[])
                  * pwrite() K1 of data (1's) at offset K1.
                  */
                 if ((nbytes = pwrite(fd, wbuf[1], K1, K1)) != K1) {
-                        tst_resm(TFAIL, "pwrite failed: nbytes=%d, errno=%d\n",
+                        tst_resm(TFAIL, "pwrite failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
                         tst_exit() ;
                 }
@@ -169,16 +169,16 @@ int main(int ac, char *av[])
 		 */
 		close(fd);
 		if ((fd = open(fname, O_RDWR | O_APPEND, 0666)) < 0) {
-			tst_resm(TBROK, "open failed: fname = %s, errno = %d\n",
+			tst_resm(TBROK, "open failed: fname = %s, errno = %d",
 					fname, errno);
 			tst_exit();
 		}
 		if (fstat(fd, &statbuf) == -1) {
-			tst_resm(TFAIL, "fstat failed: errno = %d\n", errno);
+			tst_resm(TFAIL, "fstat failed: errno = %d", errno);
 			tst_exit();
 		}
 		if (statbuf.st_size != K4) {
-			tst_resm(TFAIL, "file size is %ld != K4\n", statbuf.st_size);
+			tst_resm(TFAIL, "file size is %ld != K4", statbuf.st_size);
 			tst_exit();
 		}
 		l_seek(fd, K2, SEEK_SET, K2);
@@ -191,20 +191,20 @@ int main(int ac, char *av[])
 		 *	 of the file (O_APPEND) and should be K5 in size.
 		 */	
 		if ((nbytes = pwrite(fd, wbuf[0], K1, 0)) != K1) {
-			tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d\n",
+			tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d",
 					nbytes, errno) ;
 			tst_exit();
 		}
 		l_seek(fd, 0, SEEK_CUR, K2);
 		if (fstat(fd, &statbuf) == -1) {
-			tst_resm(TFAIL, "fstat failed: errno = %d\n", errno);
+			tst_resm(TFAIL, "fstat failed: errno = %d", errno);
 			tst_exit();
 		}
 		if (statbuf.st_size != K5) {
-			tst_resm(TFAIL, "file size is %ld != K4\n", statbuf.st_size);
+			tst_resm(TFAIL, "file size is %ld != K4", statbuf.st_size);
 			tst_exit();
 		}
-	        tst_resm(TPASS, "O_APPEND test passed.\n");
+	        tst_resm(TPASS, "O_APPEND test passed.");
 
 
 	/*------------------------------------------------------------------------*/
@@ -231,7 +231,7 @@ void init_buffers(char *wbuf[])
 	for (i = 0; i < NBUFS; i++)  {
 		wbuf[i] = (char *)malloc(K1);
 		if (wbuf[i] == NULL) {
-			tst_resm(TBROK, "ib: malloc failed: errno=%d\n", errno);
+			tst_resm(TBROK, "ib: malloc failed: errno=%d", errno);
 			tst_exit();
 		}
 		memset(wbuf[i], i, K1);
@@ -249,7 +249,7 @@ l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 	off_t offloc;
 
 	if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
-		tst_resm(TFAIL, "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d\n",
+		tst_resm(TFAIL, "(%ld = lseek(%d, %ld, %d)) != %ld) errno = %d",
 				offloc, fdesc, offset, whence, checkoff, errno);
 		tst_exit();
 	}

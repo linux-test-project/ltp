@@ -103,7 +103,7 @@ int  main(int ac, char **av)
          ***************************************************************/
         if ( STD_FUNCTIONAL_TEST ) {
 	  size = getpagesize();
-	  tst_resm(TINFO,"Page Size is %d\n",size);
+	  tst_resm(TINFO,"Page Size is %d",size);
 	  ret_sysconf = sysconf(_SC_PAGESIZE);
 #ifdef DEBUG
 	  tst_resm(TINFO,"Checking whether getpagesize returned same as sysconf");

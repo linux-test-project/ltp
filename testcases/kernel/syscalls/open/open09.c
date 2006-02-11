@@ -76,26 +76,26 @@ int main(int ac, char *av[])
 
 	//block0:	
 		if( (fildes = creat(tempfile,0600)) == -1) {
-			tst_resm(TBROK,"\t\t\tcan't create '%s'\n", tempfile);
+			tst_resm(TBROK,"\t\t\tcan't create '%s'", tempfile);
 			tst_exit();
 		} else {
 			close(fildes);
 			if( (fildes = open( tempfile,1 )) == -1 ) {
-				tst_resm(TFAIL, "\t\t\topen failed\n" ) ;
+				tst_resm(TFAIL, "\t\t\topen failed" ) ;
 				tst_exit();
 			}
 		}
 		ret = read(fildes, pbuf , 1 ) ;
 		if( ret != -1 ) {
-			tst_resm(TFAIL , "read should not succeed\n") ;
+			tst_resm(TFAIL , "read should not succeed") ;
 			local_flag = FAILED ;
 		}
 		close(fildes);
 
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block0.\n");
+		        tst_resm(TPASS, "Test passed in block0.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block0.\n");
+		        tst_resm(TFAIL, "Test failed in block0.");
 		        fail_count++;
 		}
 
@@ -103,21 +103,21 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block1:	
 		if( (fildes = open( tempfile, 0 )) == -1 ) {
-			tst_resm( TFAIL, "\t\t\topen failed\n" ) ;
+			tst_resm( TFAIL, "\t\t\topen failed" ) ;
 			local_flag = FAILED ;
 		} else {
 			ret = write( fildes, pbuf , 1 ) ;
 			if( ret != -1 )
 			{
-				tst_resm( TFAIL, "writeshould not succeed\n") ;
+				tst_resm( TFAIL, "writeshould not succeed") ;
 				local_flag = FAILED ;
 			}
 		}
 		close(fildes);
 		if (local_flag == PASSED) {
-		        tst_resm(TPASS, "Test passed in block1.\n");
+		        tst_resm(TPASS, "Test passed in block1.");
 		} else {
-		        tst_resm(TFAIL, "Test failed in block1.\n");
+		        tst_resm(TFAIL, "Test failed in block1.");
 		        fail_count++;
 		}
 	/*--------------------------------------------------------------------*/
@@ -125,9 +125,9 @@ int main(int ac, char *av[])
 		tst_rmdir();
 
 		if (fail_count == 0) {
-		        tst_resm(TPASS, "Test passed.\n");
+		        tst_resm(TPASS, "Test passed.");
 		} else {
-		        tst_resm(TFAIL, "Test failed due to above failures.\n");
+		        tst_resm(TFAIL, "Test failed due to above failures.");
 		}
 	} /* end for */
 	return(0);

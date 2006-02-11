@@ -117,12 +117,12 @@ int main(int argc, char *argv[])
 #endif
 		if (status == 0) {
 #ifdef DEBUG
-			tst_resm(TINFO,"/var/log/messages is moved to /var/log/messages.tmp...\n");
+			tst_resm(TINFO,"/var/log/messages is moved to /var/log/messages.tmp...");
 #endif
 			flag3 = 1;
 		}
 		else {
-			tst_resm(TFAIL, "Cannot move /var/log/messages. Setup failed...exiting...\n");
+			tst_resm(TFAIL, "Cannot move /var/log/messages. Setup failed...exiting...");
 			tst_exit();
 		}
 		sleep(10);
@@ -140,12 +140,12 @@ int main(int argc, char *argv[])
         status = 0;
 #endif
 			if (status != 0) {
-				tst_resm(TFAIL, "Restoring /var/log/messages failed...\n");
+				tst_resm(TFAIL, "Restoring /var/log/messages failed...");
 				tst_exit();
 			}
 #ifdef DEBUG
 			else
-				tst_resm(TINFO, "/var/log/messages restored..\n");
+				tst_resm(TINFO, "/var/log/messages restored..");
 #endif
 		}
 		closelog();
@@ -154,15 +154,15 @@ int main(int argc, char *argv[])
 		openlog("without log_ndelay", LOG_PID, LOG_USER);
 		fd = open("/etc/syslog.conf", O_RDONLY);
 #ifdef DEBUG
-		tst_resm(TINFO, "openlog() without LOG_NDELAY option...\n");
+		tst_resm(TINFO, "openlog() without LOG_NDELAY option...");
 #endif
 		if (fd >= 3) {
 #ifdef DEBUG
-			tst_resm(TINFO, "open() has returned the expected fd: %d\n", fd);
+			tst_resm(TINFO, "open() has returned the expected fd: %d", fd);
 #endif
 		}
 		else {
-			tst_resm(TFAIL, "open() has returned unexpected fd: %d\n", fd);
+			tst_resm(TFAIL, "open() has returned unexpected fd: %d", fd);
 			exit_flag = 1;
 			close(fd);
 			closelog();
@@ -174,17 +174,17 @@ int main(int argc, char *argv[])
 		openlog("with log_ndelay", LOG_NDELAY, LOG_USER);
 		fd = open("/etc/syslog.conf", O_RDONLY);
 #ifdef DEBUG
-		tst_resm(TINFO, "openlog() with LOG_NDELAY option...\n");
+		tst_resm(TINFO, "openlog() with LOG_NDELAY option...");
 #endif
 		if (fd <= 3) {
-			tst_resm(TFAIL, "open() returned unexpected fd: %d\n", fd);
+			tst_resm(TFAIL, "open() returned unexpected fd: %d", fd);
 			exit_flag = 1;
 			close(fd);
 			closelog();
 			break;
 		}
 #ifdef DEBUG
-		else tst_resm(TINFO, "open() has returned expected fd: %d\n", fd);
+		else tst_resm(TINFO, "open() has returned expected fd: %d", fd);
 #endif
 		close(fd);
 		closelog();
@@ -250,32 +250,32 @@ void sig_handler(int signal)
 	switch(signal) {
 	case SIGINT:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGINT is received.\n");
+		tst_resm(TINFO, "SIGINT is received.");
 #endif
 		break;
 	case SIGTERM:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGTERM is received.\n");
+		tst_resm(TINFO, "SIGTERM is received.");
 #endif
 		break;
 	case SIGHUP:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGHUP is received.\n");
+		tst_resm(TINFO, "SIGHUP is received.");
 #endif
 		break;
 	case SIGABRT:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGABRT is received.\n");
+		tst_resm(TINFO, "SIGABRT is received.");
 #endif
 		break;
 	case SIGSEGV:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGSEGV is received.\n");
+		tst_resm(TINFO, "SIGSEGV is received.");
 #endif
 		break;
 	case SIGQUIT:
 #ifdef DEBUG
-		tst_resm(TINFO, "SIGQUIT is received.\n");
+		tst_resm(TINFO, "SIGQUIT is received.");
 #endif
 		break;
 	}

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07B.c,v 1.6 2005/07/11 22:28:18 robbiew Exp $ */
+/* $Id: fcntl07B.c,v 1.7 2006/02/11 04:46:34 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -301,11 +301,11 @@ setup(char *path)
 
     /* set up a named pipe (write side gets CLOSE-ON-EXEC) */
     if(mkfifo(FIFONAME, 0666) == -1) {
-	tst_brkm(TBROK, cleanup, "mkfifo of named pipe %s failed errno %d (%s)\n", FIFONAME, errno, strerror(errno));
+	tst_brkm(TBROK, cleanup, "mkfifo of named pipe %s failed errno %d (%s)", FIFONAME, errno, strerror(errno));
     }
 
     if((npipe_fd=open(FIFONAME, O_RDWR, 0666)) == -1) {
-	tst_brkm(TBROK, cleanup, "Open of named pipe %s failed errno %d (%s)\n", File1, errno, strerror(errno));
+	tst_brkm(TBROK, cleanup, "Open of named pipe %s failed errno %d (%s)", File1, errno, strerror(errno));
     }
 }	/* End setup() */
 

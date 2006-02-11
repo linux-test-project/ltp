@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		sigaddset(&sigptr.sa_mask, SIGALRM);
 		if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1)
 		{
-			tst_resm(TBROK, "sigaction(): Failed\n");
+			tst_resm(TBROK, "sigaction(): Failed");
 			cleanup();
 		}   
 

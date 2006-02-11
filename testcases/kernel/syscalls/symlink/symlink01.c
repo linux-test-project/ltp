@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.4 2005/12/05 19:15:20 mridge Exp $ */
+/* $Id: symlink01.c,v 1.5 2006/02/11 04:46:38 vapier Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -1623,7 +1623,7 @@ struct all_test_cases *tc_ptr;
     struct stat stbuf;
 
     if (link(tc_ptr->fn_arg[1], "nick") == -1) {
-        tst_resm(TFAIL, "%slink(%s, \"nick\") failed, errno: %d\n%s %s",
+        tst_resm(TFAIL, "%slink(%s, \"nick\") failed, errno: %d: %s %s",
 	    Buffer, tc_ptr->fn_arg[1], errno,
 	    "link of new file to object file via symbolic link file failed",
 	    "when expected not to");

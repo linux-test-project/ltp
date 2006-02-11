@@ -82,7 +82,7 @@ char *av[];
 
 		fildes = (int*) malloc( (min+10)*sizeof(int) );
     		if( fildes == (int*) 0 )  {
-			tst_resm(TBROK,"malloc error\n");
+			tst_resm(TBROK,"malloc error");
 			tst_exit();
     		}
 	
@@ -90,7 +90,7 @@ char *av[];
     		unlink(pfilname) ;
 	    	serrno = 0;
     		if( (fildes[0] = creat( pfilname, 0666 )) == -1 ) {
-    			tst_resm(TBROK, "Cannot open first file\n" );
+    			tst_resm(TBROK, "Cannot open first file" );
 			tst_exit();
     		} else {
 			fildes[fildes[0]] = fildes[0];
@@ -122,9 +122,9 @@ char *av[];
 		if (ifile > 0)
 			close(fildes[ifile-1]);
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed.\n");
+       		         tst_resm(TPASS, "Test passed.");
         	} else {
-               		 tst_resm(TFAIL, "Test failed.\n");
+               		 tst_resm(TFAIL, "Test failed.");
         	}
 
 	} /* end for */

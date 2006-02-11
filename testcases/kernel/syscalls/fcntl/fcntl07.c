@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.6 2005/07/11 22:28:18 robbiew Exp $ */
+/* $Id: fcntl07.c,v 1.7 2006/02/11 04:46:34 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -303,7 +303,7 @@ setup(char *path)
 
     /* set up a regular file */
     if((file_fd=open(File1, O_CREAT|O_RDWR, 0666)) == -1) {
-	tst_brkm(TBROK, cleanup, "Open of file %s failed errno %d (%s)\n", File1, errno, strerror(errno));
+	tst_brkm(TBROK, cleanup, "Open of file %s failed errno %d (%s)", File1, errno, strerror(errno));
     }
 
     /* set up a system pipe (write side gets CLOSE-ON-EXEC) */

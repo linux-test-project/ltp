@@ -136,14 +136,14 @@ char *argv[];
 	/* Set up to catch SIGTERM signal */
         if (signal(SIGTERM, term) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n", errno);
+		tst_brkm(TFAIL, cleanup, "Error setting up SIGTERM signal, ERRNO = %d", errno);
         	tst_exit();
 	}
 
 	/* Set up to catch SIGCLD signal */
 	if (signal(SIGCLD, chld) == SIG_ERR)
 	{
-		tst_brkm(TFAIL, cleanup, "\tError setting up SIGCLD signal, ERRNO = %d\n", errno);
+		tst_brkm(TFAIL, cleanup, "Error setting up SIGCLD signal, ERRNO = %d", errno);
         	tst_exit();
 	}
 
@@ -177,8 +177,8 @@ char *argv[];
 	}
 	if (errflg) 
 	{
-		tst_resm(TINFO, "USAGE : mkdir09 -c #child_groups -t#test_time -d#directories\n");
-		tst_resm(TINFO, "Bad argument count. \n");
+		tst_resm(TINFO, "USAGE : mkdir09 -c #child_groups -t#test_time -d#directories");
+		tst_resm(TINFO, "Bad argument count.");
 		tst_exit();
 	}
 
@@ -205,14 +205,14 @@ int runtest()
 
 		if (TEST_RETURN < 0)
 		{
-			tst_brkm(TFAIL, cleanup, "\tError creating permanent directories, ERRNO = %d \n", TEST_ERRNO);
+			tst_brkm(TFAIL, cleanup, "Error creating permanent directories, ERRNO = %d", TEST_ERRNO);
 	        	tst_exit();
 		}
 		if ((j%NCHILD) != 0) 
 		{
 			if(rmdir(tmpdir) < 0) 
 			{
-				tst_brkm(TFAIL, cleanup, "\tError removing directory, ERRNO = %d \n", errno);
+				tst_brkm(TFAIL, cleanup, "Error removing directory, ERRNO = %d", errno);
 	        		tst_exit();
 			}
 		}
@@ -266,12 +266,12 @@ int runtest()
 
         if (signal(SIGTERM, SIG_IGN) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError resetting SIGTERM signal, ERRNO = %d\n", errno);
+		tst_brkm(TFAIL, cleanup, "Error resetting SIGTERM signal, ERRNO = %d", errno);
         	tst_exit();
         }
         if (signal(SIGCLD, SIG_DFL) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError resetting SIGCLD signal, ERRNO =%d\n", errno);
+		tst_brkm(TFAIL, cleanup, "Error resetting SIGCLD signal, ERRNO = %d", errno);
         	tst_exit();
         }
 
@@ -294,7 +294,7 @@ int runtest()
 		{
 			if (status != 0) 
 			{
-			tst_resm(TWARN, "\tChild{%d} exited status = %0x\n", child, status);
+			tst_resm(TWARN, "\tChild{%d} exited status = %0x", child, status);
 			tst_exit();
 			}
 			count++;
@@ -305,7 +305,7 @@ int runtest()
 			{
 				break;
 			}
-			tst_resm(TINFO, "\tSignal detected during wait \n");
+			tst_resm(TINFO, "\tSignal detected during wait");
 		}
 	}
 
@@ -315,8 +315,8 @@ int runtest()
 
 	if (count != child_count) 
 	{
-		tst_resm(TWARN, "\tWrong number of children waited on! \n");
-		tst_resm(TWARN, "\tSaw %d, expected %d \n", count, NCHILD);
+		tst_resm(TWARN, "\tWrong number of children waited on!");
+		tst_resm(TWARN, "\tSaw %d, expected %d", count, NCHILD);
 		tst_exit();
 	}
 
@@ -324,7 +324,7 @@ int runtest()
 
 	if (access("core", 0) == 0) 
 	{
-		tst_resm(TWARN, "\tCore file found in test directory.\n");
+		tst_resm(TWARN, "\tCore file found in test directory.");
 		tst_exit();
 	}
 
@@ -335,7 +335,7 @@ int runtest()
 		sprintf(tmpdir, DIR_NAME, j);
 		if (rmdir(tmpdir) < 0) 
 		{
-			tst_resm(TWARN, "\tError removing expected directory, ERRNO = %d \n", errno);
+			tst_resm(TWARN, "\tError removing expected directory, ERRNO = %d", errno);
 			tst_exit();
 		}
 	}
@@ -398,7 +398,7 @@ int group, child, children;
 #endif
 			break;
 		default:
-			tst_brkm(TFAIL, cleanup, "\tTest not inplemented for child %d .\n", child);
+			tst_brkm(TFAIL, cleanup, "Test not inplemented for child %d", child);
 			exit(1);
 			break;
 		}
@@ -414,7 +414,7 @@ void term()
 
 	if (parent_pid == getpid()) 
 	{
-		tst_resm(TWARN, "\tsignal SIGTERM received by parent.\n");
+		tst_resm(TWARN, "\tsignal SIGTERM received by parent.");
 		tst_exit();
 	}
 	sigterm++;
@@ -458,14 +458,13 @@ int dochild1()
 
 				if ( TEST_ERRNO != EEXIST)
 				{
-					tst_brkm(TFAIL, cleanup, "\tMKDIR %s, errno = %d\n", tmpdir, TEST_ERRNO);
-					tst_brkm(TFAIL, cleanup, "\tWrong error detected.\n");
+					tst_brkm(TFAIL, cleanup, "MKDIR %s, errno = %d; Wrong error detected.", tmpdir, TEST_ERRNO);
 					exit(1);
 				}
 			}
 			else
 			{
-				tst_brkm(TFAIL, cleanup, "\tMKDIR %s succeded when it shoud have failed.\n",tmpdir);
+				tst_brkm(TFAIL, cleanup, "MKDIR %s succeded when it shoud have failed.",tmpdir);
 				exit(1);
 			}
 		}
@@ -479,7 +478,7 @@ void dochild1_uclinux()
 	/* Set up to catch SIGTERM signal */
         if (signal(SIGTERM, term) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+		tst_brkm(TFAIL, cleanup, "Error setting up SIGTERM signal, ERRNO = %d",
 			 errno);
         	tst_exit();
 	}
@@ -509,14 +508,13 @@ int dochild2()
 			{
 				if (errno != ENOENT) 
 				{
-					tst_brkm(TFAIL, cleanup, "\tRMDIR %s, errno = %d\n", tmpdir, errno);
-					tst_brkm(TFAIL, cleanup, "\tWrong error detected.\n");
+					tst_brkm(TFAIL, cleanup, "RMDIR %s, errno = %d; Wrong error detected.", tmpdir, errno);
 					exit(1);
 				} 
 			}
 			else 
 			{
-				tst_brkm(TFAIL, cleanup, "\tRMDIR %s succeded when it should have failed.\n", tmpdir);
+				tst_brkm(TFAIL, cleanup, "RMDIR %s succeded when it should have failed.", tmpdir);
 				exit(1);
 			}
 		}
@@ -531,7 +529,7 @@ void dochild2_uclinux()
 	/* Set up to catch SIGTERM signal */
         if (signal(SIGTERM, term) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+		tst_brkm(TFAIL, cleanup, "Error setting up SIGTERM signal, ERRNO = %d",
 			 errno);
         	tst_exit();
 	}
@@ -566,8 +564,7 @@ int group;
 
 			if (TEST_RETURN < 0)
 			{
-				tst_brkm(TFAIL, cleanup, "\tMKDIR %s, errno = %d\n", tmpdir, TEST_ERRNO);
-				tst_brkm(TFAIL, cleanup, "\tWrong error detected.\n");
+				tst_brkm(TFAIL, cleanup, "MKDIR %s, errno = %d; Wrong error detected.", tmpdir, TEST_ERRNO);
 				exit(1);
 			}
 		}
@@ -578,8 +575,7 @@ int group;
 			sprintf(tmpdir, tmp, j, group);
 			if (rmdir(tmpdir) < 0) 
 			{
-				tst_brkm(TFAIL, cleanup, "\tRMDIR %s, errno = %d\n", tmpdir, errno);
-				tst_brkm(TFAIL, cleanup, "\tWrong error detected.\n");
+				tst_brkm(TFAIL, cleanup, "RMDIR %s, errno = %d; Wrong error detected.", tmpdir, errno);
 				exit(1);
 			}
 		}
@@ -593,7 +589,7 @@ void dochild3_uclinux()
 	/* Set up to catch SIGTERM signal */
         if (signal(SIGTERM, term) == SIG_ERR)
         {
-		tst_brkm(TFAIL, cleanup, "\tError setting up SIGTERM signal, ERRNO = %d\n",
+		tst_brkm(TFAIL, cleanup, "Error setting up SIGTERM signal, ERRNO = %d",
 			 errno);
         	tst_exit();
 	}
@@ -611,7 +607,7 @@ int massmurder()
                 {
 			if (kill(pidlist[j], SIGTERM) < 0)
 		        {
-				tst_brkm(TFAIL, cleanup, "\tError killing child %d, ERRNO = %d\n", j, errno);
+				tst_brkm(TFAIL, cleanup, "Error killing child %d, ERRNO = %d", j, errno);
 				tst_exit();
 			}
 		}

@@ -133,7 +133,7 @@ check_functionality()
 {
 	/* stat the shared memory segment */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_resm(TINFO, "error = %d : %s\n", errno, strerror(errno));
+		tst_resm(TINFO, "error = %d : %s", errno, strerror(errno));
 		tst_brkm(TBROK, cleanup, "could not stat in signal handler");
 	}
 

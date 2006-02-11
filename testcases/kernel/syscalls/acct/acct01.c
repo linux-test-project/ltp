@@ -81,7 +81,7 @@ int main (argc, argv)
 			tst_resm(TCONF,"Test will not run.");
 			tst_exit();
 		}else{
-			tst_resm(TBROK, "Attempting to disable acct, but got= %d\n",
+			tst_resm(TBROK, "Attempting to disable acct, but got= %d",
 				 errno );
 			tst_exit();
 		}
@@ -98,7 +98,7 @@ int main (argc, argv)
 	if (acct( "/dev/tty1" ) == -1) {
 #endif
 		if ( (errno==ENODEV) && (acct("/dev/tty") != -1) ) {
-			tst_resm(TFAIL, "%s - attempting to assign acct file to tty: expected failure but got okay return\n");
+			tst_resm(TFAIL, "%s - attempting to assign acct file to tty: expected failure but got okay return");
 			tst_exit();
 		}
 	} else tst_resm(TPASS,"Received expected error: -1");
@@ -106,7 +106,7 @@ int main (argc, argv)
 
 	/* check the errno, for EACCESS */
 	if( errno != EACCES ) {
-                tst_resm(TFAIL,"Attempt to use non-ordinary file didn't receive EACCESS error - received %d\n",errno);
+                tst_resm(TFAIL,"Attempt to use non-ordinary file didn't receive EACCESS error - received %d",errno);
                 tst_exit();
 	} else tst_resm(TPASS,"Received expected error: EACCESS");
 
@@ -117,13 +117,13 @@ int main (argc, argv)
 	unlink( tmpbuf );
 
 	if( acct( tmpbuf ) != -1 ) {
-		tst_resm(TBROK,"%s - attempt to set acct to non-existent file didn't fail as it should\n");
+		tst_resm(TBROK,"%s - attempt to set acct to non-existent file didn't fail as it should");
 		tst_exit();
 	}
 
 	/* check the errno */
 	if( errno != ENOENT ) {
-		tst_resm(TFAIL, "Attempt to set acct to non-existent file failed as expected but errno= %d\n", errno );
+		tst_resm(TFAIL, "Attempt to set acct to non-existent file failed as expected but errno= %d", errno );
 	} else tst_resm(TPASS,"Received expected error: ENOENT");
 
 
@@ -132,7 +132,7 @@ int main (argc, argv)
 	sprintf(tmpbuf, "./%s.%d", TCID, getpid() );
 	
 	if( (i=creat( tmpbuf, 0777)) == -1) {
-		tst_resm(TBROK,"Failure %d on opening %s\n", 
+		tst_resm(TBROK,"Failure %d on opening %s", 
 			errno, tmpbuf );
 		tst_exit();
 	}
@@ -140,7 +140,7 @@ int main (argc, argv)
 	close(i);
 
 	if( acct( tmpbuf ) == -1 ) {
-		tst_resm(TBROK,"Failure %d on enabling acct file= %d\n",
+		tst_resm(TBROK,"Failure %d on enabling acct file= %d",
 			errno, tmpbuf );
 		tst_exit();
 	} 
@@ -152,7 +152,7 @@ int main (argc, argv)
 	sprintf( tmpbuf2, "./%s.%d.2", TCID, getpid() );
 
 	if( acct( tmpbuf2 ) != -1 ) {
-		tst_resm(TBROK, "Second try on enabling acct did not fail as it should\n");
+		tst_resm(TBROK, "Second try on enabling acct did not fail as it should");
 		tst_exit();
 	}
 
@@ -161,13 +161,13 @@ int main (argc, argv)
 	 * In the above case, file doesn't exist and should get ENOENT.
          */
 	if( errno != ENOENT ) {
-		tst_resm(TFAIL, "Second try on enabling acct failed but with errno= %d expected= %d\n", errno, ENOENT );
+		tst_resm(TFAIL, "Second try on enabling acct failed but with errno= %d expected= %d", errno, ENOENT );
 		tst_exit();
 	} else tst_resm(TPASS,"Received expected error: ENOENT");
 
 	/* now disable accting */
 	if( acct( NULL ) == -1 ) {
-		tst_resm(TBROK, "Attempt to do final disable of acct failed, errno= %d\n", errno );
+		tst_resm(TBROK, "Attempt to do final disable of acct failed, errno= %d", errno );
 		tst_exit();
 	}
 

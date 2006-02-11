@@ -104,7 +104,7 @@ char *argv[];
 	key = 2 * K;
 	if ((msqid = msgget(key, IPC_CREAT)) == -1) 
         {
-                tst_resm(TFAIL, "msgget() failed errno = %d\n", errno);
+                tst_resm(TFAIL, "msgget() failed errno = %d", errno);
                 tst_exit();
 
 	}
@@ -135,7 +135,7 @@ char *argv[];
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
                 	tst_exit();
 		}
 		ready = 0;
@@ -148,14 +148,14 @@ char *argv[];
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		wait(&status);
 	}
 	if ((status >> 8) == 1)
 	{
-       	        tst_resm(TFAIL, "test failed. status = %d\n", (status >> 8));
+       	        tst_resm(TFAIL, "test failed. status = %d", (status >> 8));
                	tst_exit();
 	}
 	
@@ -186,7 +186,7 @@ char *argv[];
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "signal failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
                 	tst_exit();
 		}
 		ready = 0;
@@ -199,7 +199,7 @@ char *argv[];
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		for (j=0; j<BYTES; j++) 
@@ -208,7 +208,7 @@ char *argv[];
 		if (msgsnd(msqid, &p2_msgp, BYTES, 0) == -1) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		for (k=0; k<BYTES; k++) 
@@ -217,28 +217,28 @@ char *argv[];
 		if (msgsnd(msqid, &p3_msgp, BYTES, 0) == -1) {
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d\n", errno);
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		wait(&status);
 	}
 	if ((status >> 8) == 1)
 	{
-       	        tst_resm(TFAIL, "test failed. status = %d\n", (status >> 8));
+       	        tst_resm(TFAIL, "test failed. status = %d", (status >> 8));
                	tst_exit();
 	}
         /*
 	 * Remove the message queue from the system
 	 */
 #ifdef DEBUG
-        tst_resm(TINFO,"Removing the message queue\n");
+        tst_resm(TINFO,"Removing the message queue");
 #endif
         fflush (stdout);
         (void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
         if ((status = msgctl(msqid, IPC_STAT, (struct msqid_ds *)NULL)) != -1)
         {
                 (void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-                tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed\n");
+                tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
                 tst_exit();
 
         }
@@ -266,18 +266,18 @@ do_child_1()
 
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 0, 0)) == -1)
 	{
-		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "msgrcv() failed errno = %d", errno);
 		tst_exit();
 	}
 	if (size != BYTES) 
 	{
-		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
 	for (i=0; i<BYTES; i++) 
 		if (c1_msgp.text[i] != 'i') 
 		{
-			tst_resm(TFAIL, "error: corrup message\n");
+			tst_resm(TFAIL, "error: corrup message");
 			tst_exit();
 		}
 	exit(0);
@@ -290,42 +290,42 @@ do_child_2()
 	int size;
 
 	if ((size = msgrcv(msqid, &c3_msgp, BYTES, 3, 0)) == -1) {
-		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "msgrcv() failed errno = %d", errno);
 		tst_exit();
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
 	for (k=0; k<BYTES; k++) 
 		if (c3_msgp.text[k] != 'k') {
-			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
 		}
 	if ((size = msgrcv(msqid, &c2_msgp, BYTES, 2, 0)) == -1) {
-		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "msgrcv() failed errno = %d", errno);
 		tst_exit();
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
 	for (j=0; j<BYTES; j++) 
 		if (c2_msgp.text[j] != 'j') {
-			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
 		}
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 1, 0)) == -1) {
-		tst_resm(TFAIL, "msgrcv() failed errno = %d\n", errno);
+		tst_resm(TFAIL, "msgrcv() failed errno = %d", errno);
 		tst_exit();
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d\n", size, BYTES);
+		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
 	for (i=0; i<BYTES; i++) 
 		if (c1_msgp.text[i] != 'i') {
-			tst_resm(TFAIL, "error: corrupt message\n");
+			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
 		}
 	

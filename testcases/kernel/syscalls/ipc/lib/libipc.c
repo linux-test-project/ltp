@@ -198,6 +198,6 @@ rm_shm(int shm_id)
 	if (shmctl(shm_id, IPC_RMID, NULL) == -1) {
 		tst_resm(TINFO, "WARNING: shared memory deletion failed.");
 		tst_resm(TINFO, "This could lead to IPC resource problems.");
-		tst_resm(TINFO, "id = %d\n", shm_id);
+		tst_resm(TINFO, "id = %d", shm_id);
 	}
 }

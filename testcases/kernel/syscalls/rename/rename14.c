@@ -111,7 +111,7 @@ int main (argc, argv)
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
-		tst_resm(TBROK,"fork() returned %d\n", pid);
+		tst_resm(TBROK,"fork() returned %d", pid);
 		tst_exit();	
 	}
 	if (pid == 0) {
@@ -128,7 +128,7 @@ int main (argc, argv)
 	if (pid < 0) {
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");
-		tst_resm(TBROK,"fork() returned %d\n", pid);
+		tst_resm(TBROK,"fork() returned %d", pid);
 		tst_exit();	
 	}
 	if (pid == 0) {

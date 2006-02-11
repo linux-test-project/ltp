@@ -266,13 +266,13 @@ test_setup(int i, char *argv0)
 		child_pid = FORK_OR_VFORK();
 		switch(child_pid) {
 		case -1:
-			tst_resm(TBROK,"fork() failed: %s\n",strerror(errno));
+			tst_resm(TBROK,"fork() failed: %s",strerror(errno));
 			cleanup();
 			break;
 		case 0:
 #ifdef UCLINUX
 			if (self_exec(argv0, "") < 0) {
-				tst_resm(TBROK,"self_exec() failed\n");
+				tst_resm(TBROK,"self_exec() failed");
 				cleanup();
 				break;
 			}
@@ -285,7 +285,7 @@ test_setup(int i, char *argv0)
 			header.pid = child_pid;
 			ltpuser = getpwnam(nobody_uid);
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TBROK,"seteuid() failed: %s\n",strerror(errno));
+				tst_resm(TBROK,"seteuid() failed: %s",strerror(errno));
 			cleanup();
 			}
 

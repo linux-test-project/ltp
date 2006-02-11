@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed\n"): tst_resm(TPASS, "Test passed\n");
+  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
   tst_rmdir();
   tst_exit();
   return(0);
@@ -247,15 +247,15 @@ void setup()
 
 int blenter()
 {
-   //tst_resm(TINFO, "Enter block %d\n", block_number);
+   //tst_resm(TINFO, "Enter block %d", block_number);
    local_flag = PASSED;
    return(0);
 }
 
 int blexit()
 {
-   //tst_resm(TINFO, "Exitng test\n");
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
+   //tst_resm(TINFO, "Exitng test");
+   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
    return(0);
 }
 

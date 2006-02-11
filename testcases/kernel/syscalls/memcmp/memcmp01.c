@@ -245,7 +245,7 @@ int blenter()
 
 int blexit()
 {
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
+   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
    return(0);
 }
 

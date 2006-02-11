@@ -174,7 +174,7 @@ void do_child() {
 /******	LTP Port	*****/
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed\n"): tst_resm(TPASS, "Test passed\n");
+  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
   tst_rmdir();
   tst_exit();
   return(0);
@@ -190,13 +190,13 @@ void setup()
 
 int instress()
 {
-  tst_resm(TINFO, "System resources may be too low; fork(), select() etc are likely to fail.\n");
+  tst_resm(TINFO, "System resources may be too low; fork(), select() etc are likely to fail.");
   return(1);
 }
 
 void terror(char * message)
 {
-  tst_resm(TBROK, "Reason: %s:%s\n", message, strerror(errno));
+  tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
 }
 
 void fail_exit()
@@ -209,7 +209,7 @@ void fail_exit()
 void ok_exit()
 {
         local_flag = PASSED;
-        tst_resm(TINFO, "Test passed\n");
+        tst_resm(TINFO, "Test passed");
 }
 
 int forkfail()

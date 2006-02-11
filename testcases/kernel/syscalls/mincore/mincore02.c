@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 	setup();
 
         if( -1 == mincore((void *)position,num_pages*p_size,vec) ) {
-               tst_brkm(TBROK, cleanup, "Unable to execute mincore system call: %s\n",strerror(errno)); 
+               tst_brkm(TBROK, cleanup, "Unable to execute mincore system call: %s",strerror(errno)); 
         }
 		
 	/* check status of pages */

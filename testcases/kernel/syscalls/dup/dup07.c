@@ -79,83 +79,83 @@ struct	stat	dupbuf ;
 
 		sprintf(testfile, "dup07.%d", getpid());
 		if( (rdoret = creat(testfile,  0444 )) == -1 ) {
-    			tst_resm(TFAIL, "Unable to creat file '%s'\n", testfile) ;
+    			tst_resm(TFAIL, "Unable to creat file '%s'", testfile) ;
     			local_flag = FAILED ;
 		} else {
     			if( (duprdo = dup( rdoret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'\n", testfile ) ;
+    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
     				local_flag = FAILED ;
     			} else {
     				fstat( rdoret, &retbuf ) ;
     				fstat( duprdo, &dupbuf ) ;
     				if( retbuf.st_mode != dupbuf.st_mode )
     				{
-    					tst_resm(TFAIL, "rdonly and dup do not match\n" ) ;
+    					tst_resm(TFAIL, "rdonly and dup do not match" ) ;
 					local_flag = FAILED ;
 				}
 			}
     		}
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed in read mode.\n");
+       		         tst_resm(TPASS, "Test passed in read mode.");
 	        } else {
-       		         tst_resm(TFAIL, "Test failed in read mode.\n");
+       		         tst_resm(TFAIL, "Test failed in read mode.");
         	}
 
 /*--------------------------------------------------------------------*/
 
 		unlink(testfile);
 		if( (wroret = creat( testfile, 0222 )) == -1 ) {
-		    	tst_resm(TFAIL, "Unable to creat file '%s'\n", testfile ) ;
+		    	tst_resm(TFAIL, "Unable to creat file '%s'", testfile ) ;
     			local_flag = FAILED ;
     		} else {
     			if( (dupwro = dup( wroret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'\n", testfile ) ;
+    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
     				local_flag = FAILED ;
     			} else {
     				fstat( wroret, &retbuf ) ;
     				fstat( dupwro, &dupbuf ) ;
     				if( retbuf.st_mode != dupbuf.st_mode ) {
-    					tst_resm(TFAIL, "wronly and dup do not match\n" ) ;
+    					tst_resm(TFAIL, "wronly and dup do not match" ) ;
 					local_flag = FAILED ;
 				}
 			}
     		}
 	
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed in write mode.\n");
+       		         tst_resm(TPASS, "Test passed in write mode.");
 	        } else {
-       		         tst_resm(TFAIL, "Test failed in write mode.\n");
+       		         tst_resm(TFAIL, "Test failed in write mode.");
         	}
 /*--------------------------------------------------------------------*/
 		unlink(testfile);
 		if( (rdwret = creat(testfile, 0666 )) == -1 ) {
-    			tst_resm(TFAIL, "Unable to creat file '%s'\n", testfile ) ;
+    			tst_resm(TFAIL, "Unable to creat file '%s'", testfile ) ;
     			local_flag = FAILED ;
 		} else {
     			if( (duprdwr = dup( rdwret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'\n", testfile ) ;
+    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
     				local_flag = FAILED ;
     			} else {
     				fstat( rdwret, &retbuf ) ;
     				fstat( duprdwr, &dupbuf ) ;
     				if( retbuf.st_mode != dupbuf.st_mode ) {
-    					tst_resm(TFAIL, "rdwr and dup do not match\n" ) ;
+    					tst_resm(TFAIL, "rdwr and dup do not match" ) ;
 					local_flag = FAILED ;
 				}
 			}
     		}
 		if (local_flag == PASSED) {
-	       	         tst_resm(TPASS, "Test passed in read/write mode.\n");
+	       	         tst_resm(TPASS, "Test passed in read/write mode.");
        		 } else {
-               		 tst_resm(TFAIL, "Test failed in read/write mode.\n");
+               		 tst_resm(TFAIL, "Test failed in read/write mode.");
        		 }
 /*--------------------------------------------------------------------*/
 	    	unlink(testfile);
 
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed\n");
+       		         tst_resm(TPASS, "Test passed");
         	} else {
-               		 tst_resm(TFAIL, "Test failed\n");
+               		 tst_resm(TFAIL, "Test failed");
         	}
 
 		tst_exit();

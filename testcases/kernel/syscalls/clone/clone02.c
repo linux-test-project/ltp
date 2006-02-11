@@ -343,7 +343,7 @@ test_setup()
 	def_act.sa_flags = SA_RESTART;
 
 	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
-		tst_resm(TWARN, "sigaction() failed in test_setup()\n");
+		tst_resm(TWARN, "sigaction() failed in test_setup()");
 		return 0;
 	}
 	
@@ -549,7 +549,7 @@ modified_FS()
 	char cwd[FILENAME_MAX];
 	
 	if ((getcwd(cwd, sizeof(cwd))) == NULL) {
-		tst_resm(TWARN, "getcwd() failed \n");
+		tst_resm(TWARN, "getcwd() failed");
 	}
 	
 	if ( !(strcmp(cwd, cwd_parent) )) {

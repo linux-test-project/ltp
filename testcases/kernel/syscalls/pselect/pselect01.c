@@ -86,7 +86,7 @@ int main()
   tst_resm(TPASS,"Basic pselect syscall testing....OK");
  }
  else
-  tst_resm(TFAIL,"Basic pselect syscall testing....FAILED, err %d\n",errno);
+  tst_resm(TFAIL,"Basic pselect syscall testing....FAILED, err %d",errno);
  close(fd);
  remove(FILENAME);
 
@@ -171,6 +171,3 @@ cleanup()
     /* exit with return code appropriate for results */
     tst_exit();
 }       /* End cleanup() */
-
-
-

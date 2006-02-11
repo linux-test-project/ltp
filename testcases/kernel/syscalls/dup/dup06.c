@@ -97,7 +97,7 @@ char *av[];
 		sprintf(pfilname, "dup06.%d\n", getpid());
 		unlink(pfilname) ;
 		if( (fildes[0] = creat( pfilname, 0666 )) == -1 ) {
-			tst_resm(TFAIL, "Cannot open first file\n" );
+			tst_resm(TFAIL, "Cannot open first file" );
 			local_flag = FAILED ;
 		} else {
 		    	for( ifile = 1 ; ifile < min+5 ; ifile++ ) {
@@ -121,9 +121,9 @@ char *av[];
 			close(fildes[ifile-1]);
 
 		if (local_flag == PASSED) {
-       	        	tst_resm(TPASS, "Test passed.\n");
+       	        	tst_resm(TPASS, "Test passed.");
        		 } else {
-               		tst_resm(TFAIL, "Test failed.\n");
+               		tst_resm(TFAIL, "Test failed.");
         	}
 
 	} /* end for */

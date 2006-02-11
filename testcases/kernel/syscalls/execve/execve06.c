@@ -66,7 +66,7 @@ void
 usage(void)
 {
 	tst_resm(TBROK, "usage: %s <iters> <fname1> <fname2> <count>", TCID);
-	tst_resm(TINFO, "example: %s 20 test1 test2 4\n", TCID);
+	tst_resm(TINFO, "example: %s 20 test1 test2 4", TCID);
 	tst_exit();
 }
 

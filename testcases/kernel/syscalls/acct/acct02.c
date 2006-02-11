@@ -67,7 +67,7 @@ int main (argc, argv)
 
 	/* Get the user id "nobody" */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
-        tst_resm(TBROK,"nobody not found in /etc/passwd\n");
+        tst_resm(TBROK,"nobody not found in /etc/passwd");
         tst_exit();
     	}
 
@@ -80,7 +80,7 @@ int main (argc, argv)
 	/* Attempt to turn off acct as non-root
 	*/
 	if( acct( NULL ) != -1 ) {
-		tst_resm(TBROK, "Non-root attempting to disable acct: didn't fail\n", errno );
+		tst_resm(TBROK, "Non-root attempting to disable acct: didn't fail", errno );
 		tst_exit();
 	}
 
@@ -90,7 +90,7 @@ int main (argc, argv)
                         tst_resm(TCONF,"Test will not run.");
                         tst_exit();
                 }else{
-			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d\n", 
+			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d", 
 					EPERM, errno );
 			tst_exit();
                 }
@@ -98,12 +98,12 @@ int main (argc, argv)
 
 //-------------------------------------------------
 	if( acct( "/anystring" ) != -1 ) {
-		tst_resm(TBROK, "Non-root attempting to enable acct: didn't fail\n", errno );
+		tst_resm(TBROK, "Non-root attempting to enable acct: didn't fail", errno );
 		tst_exit();
 	}
 		
 	if( errno != EPERM ) {
-		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d\n", 
+		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d", 
 				EPERM, errno );
 		tst_exit();
 	} else tst_resm(TPASS, "Received expected error: EPERM");

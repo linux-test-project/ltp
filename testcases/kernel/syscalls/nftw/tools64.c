@@ -274,7 +274,7 @@ do_info(const char *path_name)
 void
 fail_exit()
 {
-        tst_resm(TFAIL, "Test failed\n");
+        tst_resm(TFAIL, "Test failed");
         tst_exit();
 }
 /**************/

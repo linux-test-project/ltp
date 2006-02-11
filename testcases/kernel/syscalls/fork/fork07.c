@@ -177,9 +177,9 @@ main(int ac, char **av)
 			tst_resm(TPASS, "%d/%d children read correctly from an inheritted fd", c_pass, Nforks);
 		    }
 		} else if (forks > 0) {
-		    tst_brkm(TBROK, cleanup, "There should be %d more children to collect!\n", forks);
+		    tst_brkm(TBROK, cleanup, "There should be %d more children to collect!", forks);
 		} else /* forks < 0 */ {
-		    tst_brkm(TBROK, cleanup, "Collected %d more children then I should have!\n", abs(forks));
+		    tst_brkm(TBROK, cleanup, "Collected %d more children then I should have!", abs(forks));
 		}
 	}
 	cleanup();

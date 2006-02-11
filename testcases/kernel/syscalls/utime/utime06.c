@@ -155,7 +155,7 @@ main(int ac, char **av)
 		/*NOTREACHED*/
 	} else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
-			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd\n",
+			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd",
 				LTPUSER1);
 			/*NOTREACHED*/
 		}
@@ -295,7 +295,7 @@ setup1()
 	}
 
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd\n",
+		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 				LTPUSER2);
 		/*NOTREACHED*/
 	}
@@ -305,7 +305,7 @@ setup1()
 	group_gid = ltpuser->pw_gid;
 
 	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d\n",
+		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
 			TEMP_FILE, errno);
 		/*NOTREACHED*/
 	}

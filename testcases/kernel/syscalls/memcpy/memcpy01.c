@@ -232,7 +232,7 @@ int checkit(char *str)
 
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed\n"): tst_resm(TPASS, "Test passed\n");
+  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
   tst_exit();
   return(0);
 }
@@ -250,7 +250,7 @@ int blenter()
 
 int blexit()
 {
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");
+   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
    return(0);
 }
 

@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.2 2002/09/04 13:34:31 plars Exp $ */
+/* $Id: access01.c,v 1.3 2006/02/11 04:46:33 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -264,7 +264,7 @@ setup()
      * force the mode to be set to 6777
      */
     if (chmod(Fname, 06777) == -1 ) {
-	tst_brkm(TBROK, cleanup, "chmod(%s, 06777) failed, errno:%d %s\n",
+	tst_brkm(TBROK, cleanup, "chmod(%s, 06777) failed, errno:%d %s",
 	    Fname, errno, strerror(errno));
     }
 

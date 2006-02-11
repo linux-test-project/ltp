@@ -88,7 +88,7 @@ char *argv[];
 	msqid = TEST_RETURN;
 	if (TEST_RETURN == -1)
 	{
-                tst_resm(TFAIL, "msgget() failed errno = %d\n", errno);
+                tst_resm(TFAIL, "msgget() failed errno = %d", errno);
 	        tst_exit();
 	}
 	TEST(msgctl(msqid, IPC_STAT, &buf));
@@ -96,7 +96,7 @@ char *argv[];
 	if (TEST_RETURN == -1)
 	{
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-                tst_resm(TFAIL, "msgctl(msqid, IPC_STAT, &buf) failed errno = %d\n", errno);
+                tst_resm(TFAIL, "msgctl(msqid, IPC_STAT, &buf) failed errno = %d", errno);
 	        tst_exit();
 	}
 
@@ -106,27 +106,27 @@ char *argv[];
 
 	if (buf.msg_qnum != 0) 
 	{
-                tst_resm(TFAIL, "error: unexpected nbr of messages %d\n", buf.msg_qnum);
+                tst_resm(TFAIL, "error: unexpected nbr of messages %d", buf.msg_qnum);
 	        tst_exit();
 	}
 	if (buf.msg_perm.uid != getuid()) 
 	{
-                tst_resm(TFAIL, "error: unexpected uid %d\n", buf.msg_perm.uid);
+                tst_resm(TFAIL, "error: unexpected uid %d", buf.msg_perm.uid);
 	        tst_exit();
 	}
 	if (buf.msg_perm.gid != getgid())
 	{
-                tst_resm(TFAIL, "error: unexpected gid %d\n", buf.msg_perm.gid);
+                tst_resm(TFAIL, "error: unexpected gid %d", buf.msg_perm.gid);
 	        tst_exit();
 	}
 	if (buf.msg_perm.cuid != getuid())
 	{
-                tst_resm(TFAIL, "error: unexpected cuid %d\n", buf.msg_perm.cuid);
+                tst_resm(TFAIL, "error: unexpected cuid %d", buf.msg_perm.cuid);
 	        tst_exit();
 	}
 	if (buf.msg_perm.cgid != getgid())
 	{
-                tst_resm(TFAIL, "error: unexpected cgid %d\n", buf.msg_perm.cgid);
+                tst_resm(TFAIL, "error: unexpected cgid %d", buf.msg_perm.cgid);
 	        tst_exit();
 	}
 
@@ -179,14 +179,14 @@ cleanup()
          * Remove the message queue from the system
          */
 #ifdef DEBUG
-	tst_resm(TINFO,"Remove the message queue\n");
+	tst_resm(TINFO,"Remove the message queue");
 #endif
 	fflush (stdout);
 	(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
 	if ((status = msgctl(msqid, IPC_STAT, &buf)) != -1)
 	{
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-                tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed\n");
+                tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
 	        tst_exit();
 		
 	}
