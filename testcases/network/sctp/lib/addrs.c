@@ -21,6 +21,7 @@
  *  Sridhar Samudrala <sri@us.ibm.com>
  */
 
+#include <string.h>
 #include <malloc.h>
 #include <netinet/in.h>
 #include <netinet/sctp.h>
