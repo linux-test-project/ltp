@@ -786,7 +786,6 @@ blexit()
 void
 anyfail()
 {
-    tst_resm(TINFO, "Exiting test");
     (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
            : tst_resm(TPASS, "Test passed");
     tst_rmdir();

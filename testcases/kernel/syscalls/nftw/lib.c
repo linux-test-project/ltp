@@ -68,25 +68,25 @@ get_long_name_buffer(size_t *length, size_t extra)
 
         temp = stderr;
 	if ((path_length = pathconf(tmp_path, _PC_PATH_MAX)) == -1) {
-		perror("pathconf");
+		tst_resm(TFAIL, "pathconf(_PC_PATH_MAX) failed: %s", strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
 
 	if ((name_length = pathconf(tmp_path, _PC_NAME_MAX)) == -1) {
-		perror("pathconf");
+		tst_resm(TFAIL, "pathconf(_PC_NAME_MAX) failed: %s", strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
 
 	if ((strlen(tmp_path) + name_length + extra) > path_length) {
-		fprintf(temp, "ERROR: pathconf(_PC_NAME_MAX) too large relative to pathconf(_PC_PATH_MAX)");
+		tst_resm(TFAIL, "pathconf(_PC_NAME_MAX)[=%zi] too large relative to pathconf(_PC_PATH_MAX)[=%zi]", name_length, path_length);
 		cleanup_function();
 		fail_exit();
 	}
 
 	if ((buffer = (char *)malloc(path_length + extra)) == NULL) {
-		perror("malloc");
+		tst_resm(TFAIL, "malloc(%zi) failed: %s", path_length + extra, strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
@@ -110,19 +110,17 @@ execute_function(char *name, int (*callback)(const char *), char *buffer,
 
 	/*callback found an error, fail*/
 	if (result == -752) {
+		tst_resm(TFAIL, "%s callback did not work correctly", name);
 		cleanup_function();
 		fail_exit();
 	}
 	if (result != expected) {
-		fprintf(temp, "ERROR: %s did not return value as expected\n", 
-			name);
-		fprintf(temp, "       Expected: %d  Received: %d\n", 
-			expected, result);
+		tst_resm(TFAIL, "%s did not return value as expected; Expected=%d Received=%d", name, expected, result);
 		cleanup_function();
 		fail_exit();
 	}
 	if (errno != ENAMETOOLONG) {
-		perror(name);
+		tst_resm(TFAIL, "%s failed: errno should be %i but is %i", name, ENAMETOOLONG, errno);
 		cleanup_function();
 		fail_exit();
 	}
@@ -185,7 +183,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 
         temp = stderr;
 	if ((pcPathMax = pathconf(tmp_path, _PC_PATH_MAX)) == -1) {
-		perror("pathconf");
+		tst_resm(TFAIL, "pathconf(_PC_PATH_MAX) failed: %s", strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
@@ -195,7 +193,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 #endif
 
 	if ((path = (char *)malloc(pcPathMax + 2)) == NULL) {
-		perror("malloc for path");
+		tst_resm(TFAIL, "malloc(%i) for path failed: %s", pcPathMax + 2, strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
@@ -225,7 +223,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 
 	pathLength = (int) strlen(path);
 	if (pathLength != pcPathMax + 1) {
-		fprintf(temp, "ERROR: test logic failure, path length is %d, should be %lu\n", pathLength, (long unsigned int)pcPathMax + 1);
+		tst_resm(TFAIL, "test logic failure, path length is %d, should be %lu", pathLength, (long unsigned int)pcPathMax + 1);
 		free(path);
 		cleanup_function();
 		fail_exit();
@@ -260,14 +258,12 @@ test_ENOENT_empty(char *name, int (*callback)(const char *), int expected)
 
 	if ((s2 = (*callback)(empty_string)) == expected) {
 		if (errno != ENOENT) {
-			perror(name);
+			tst_resm(TFAIL, "%s failed: errno should be %i but is %i", name, ENOENT, errno);
 			cleanup_function();
 			fail_exit();
 		}
 	} else {
-		fprintf(temp, "ERROR: %s did not return correct value\n", name);
-		fprintf(temp, "       Expected: %d  Received: %d\n", 
-			expected, s2); 
+		tst_resm(TFAIL, "%s did not return correct value; Expected=%d Received=%d", name, expected, s2);
 		cleanup_function(); 
 		fail_exit(); 
 	} 
@@ -279,16 +275,15 @@ test_ENOTDIR(char *name, int (*callback)(const char *), int expected)
 {
 	int	fd;
 
-        temp = stderr;
 	if ((fd = creat(is_a_file, (mode_t)(S_IRWXU | S_IRWXG |
 			S_IRWXO))) == -1) {
-		perror("creat");
+		tst_resm(TFAIL, "creat(%s) failed: %s", is_a_file, strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}
 
 	if (close(fd) == -1) {
-		perror("close");
+		tst_resm(TFAIL, "close(%i) failed: %s", fd, strerror(errno));
 		remove_test_ENOTDIR_files();
 		cleanup_function();
 		fail_exit();
@@ -296,6 +291,7 @@ test_ENOTDIR(char *name, int (*callback)(const char *), int expected)
 
 	errno = 0;
 
+	temp = stderr;
 #ifdef DEBUG
 	fprintf(temp, "TEST: ENOTDIR when a component is not a directory\n");
 #endif
@@ -309,14 +305,12 @@ test_ENOTDIR(char *name, int (*callback)(const char *), int expected)
 	}
 	if (s2 == expected) {
 		if (errno != ENOTDIR) {
-			perror(name);
+			tst_resm(TFAIL, "%s failed: errno should be %i but is %i", name, ENOTDIR, errno);
 			cleanup_function();
 			fail_exit();
 		}
 	} else {
-		fprintf(temp, "ERROR: %s did not return correct value\n", name);
-		fprintf(temp, "       Expected: %d  Received: %d\n", 
-			expected, s2); 
+		tst_resm(TFAIL, "%s did not return correct value; Expected=%d Received=%d", name, expected, s2);
 		cleanup_function();
 		fail_exit();
 	}
@@ -338,14 +332,12 @@ test_ENOENT_nofile(char *name, int (*callback)(const char *), int expected)
 
 	if ((s2 = (*callback)(no_file)) == expected) {
 		if (errno != ENOENT) {
-			perror(name);
+			tst_resm(TFAIL, "%s failed: errno should be %i but is %i", name, ENOENT, errno);
 			cleanup_function();
 			fail_exit();
 		}
 	} else {
-		fprintf(temp, "ERROR: %s did not return correct value\n", name);
-		fprintf(temp, "       Expected: %d  Received: %d\n", 
-			expected, s2);
+		tst_resm(TFAIL, "%s did not return correct value; Expected=%d Received=%d", name, expected, s2);
 		cleanup_function();
 		fail_exit();
 	}
