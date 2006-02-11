@@ -354,7 +354,6 @@ char **argv;
 {
 extern char *optarg;            /* used by getopt */
 extern int optind;
-extern int opterr;
 
 int ind;
 int first_file_ind = 0;
