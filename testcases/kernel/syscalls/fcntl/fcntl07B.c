@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07B.c,v 1.7 2006/02/11 04:46:34 vapier Exp $ */
+/* $Id: fcntl07B.c,v 1.8 2006/02/11 04:58:19 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -408,9 +408,6 @@ test_open(char *arg)
     int fd, rc;
     int status;
     
-    extern char *optarg;
-    extern int optind;
-
     fd = atoi(arg);
 
     rc = fcntl(fd, F_GETFD, &status);
