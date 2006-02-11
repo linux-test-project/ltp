@@ -299,7 +299,9 @@ int
 setup3()
 {
 	int fd3;		/* File handle for test file */
+#ifdef UCLINUX
 	char exechead[] = "#!/bin/sh\n";
+#endif
 
 	/* Creat a test file under temporary directory */
 	if ((fd3 = open(TEST_FILE3, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
