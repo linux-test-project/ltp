@@ -1,5 +1,7 @@
-All:
-	gcc -Wall locktests.c -o locktests -lpthread
+all: locktests
+
+locktests: locktests.c
+	$(CC) -Wall $(CFLAGS) $(LDFLAGS) $^ -o $@ -lpthread
 
 install:
 

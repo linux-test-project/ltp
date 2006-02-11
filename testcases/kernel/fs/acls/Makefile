@@ -7,9 +7,9 @@ ifeq ($(call check_header,sys/xattr.h),yes)
 
 all: acl_file_test acl_link_test
 
-acl_file_test:
+acl_file_test: acl_file_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o acl_file_test acl_file_test.c
-acl_link_test:
+acl_link_test: acl_link_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o acl_link_test acl_link_test.c
 
 install:
