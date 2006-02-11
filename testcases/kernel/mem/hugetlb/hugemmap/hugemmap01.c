@@ -92,6 +92,11 @@ void setup();			/* Main setup function of test */
 int getfreehugepages();		/* Reads free huge pages */
 void cleanup();			/* cleanup function for the test */
 
+void help()
+{
+	printf("  -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs \n");
+}
+
 int
 main(int ac, char **av)
 {
@@ -104,11 +109,6 @@ main(int ac, char **av)
             	{ NULL, NULL, NULL }          /* NULL required to end array */
        	};
 
-       	void help()
-       	{
-        	printf("  -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs \n");
-       	}
-	
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, options, &help);
 	if (msg != (char *) NULL) {
