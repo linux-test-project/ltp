@@ -60,19 +60,19 @@ do
           shift;
           ;;
       "--fmake")
-          find functional/ -type f -maxdepth 2 -mindepth 2 -name "Makefile" -exec dirname '{}' ';'
+          find functional/ -maxdepth 2 -mindepth 2 -type f -name "Makefile" -exec dirname '{}' ';'
           exit 0;
           ;;
       "--frun")
-          find functional/ -type f -maxdepth 2 -mindepth 2 -name "run.sh" -exec dirname '{}' ';' 
+          find functional/ -maxdepth 2 -mindepth 2 -type f -name "run.sh" -exec dirname '{}' ';' 
           exit 0;
           ;;
       "--smake")
-          find stress/ -type f -maxdepth 2 -mindepth 2 -name "Makefile" -exec dirname '{}' ';'
+          find stress/ -maxdepth 2 -mindepth 2 -type f -name "Makefile" -exec dirname '{}' ';'
           exit 0;
           ;;
       "--srun")
-          find stress/ -type f -maxdepth 2 -mindepth 2 -name "run.sh" -exec dirname '{}' ';'
+          find stress/ -maxdepth 2 -mindepth 2 -type f -name "run.sh" -exec dirname '{}' ';'
           exit 0;
           ;;
       "--help")
