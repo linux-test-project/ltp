@@ -65,7 +65,7 @@ INCLUDE = -Iinclude
 
 # FIXME: exaust cmd line length
 clean:
-	@rm -f $(LOGFILE)
+	@rm -f $(LOGFILE)*
 # Timeout helper files
 	@rm -f $(top_builddir)/t0{,.val}
 # Built runnable tests
