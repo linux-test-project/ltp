@@ -66,11 +66,12 @@
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <sys/sysinfo.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
 
-#define INVALID_ADDRESS 0xffffffffffffffff;
+#define INVALID_ADDRESS ((uintptr_t)-1)
 
 void setup();
 void cleanup();
