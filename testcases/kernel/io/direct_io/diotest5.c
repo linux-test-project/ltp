@@ -92,16 +92,16 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 
 	/* Allocate for buffers and data pointers */
 	if ((iov1 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
-		fprintf(stderr, "valloc buf1 failed:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() buf1 failed: %s", strerror(errno));
 		return(-1);
 	}
 	if ((iov2 = (struct iovec *)valloc(sizeof(struct iovec)*nvector)) == NULL) {
-		fprintf(stderr, "valloc buf2 failed:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc buf2 failed: %s", strerror(errno));
 		return(-1);
 	}
 	for (i = 0, iovp = iov1; i < nvector; iovp++, i++) {
 		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
-			fprintf(stderr, "valloc for iovp->iov_base:%s\n",
+			tst_resm(TFAIL, "valloc for iovp->iov_base: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -109,7 +109,7 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
         }
 	for (i = 0, iovp = iov2; i < nvector; iovp++, i++) {
 		if ((iovp->iov_base = valloc(bufsize)) == NULL) {
-			fprintf(stderr, "valloc, iov2 for iovp->iov_base:%s\n",
+			tst_resm(TFAIL, "valloc, iov2 for iovp->iov_base: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -121,25 +121,25 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 		vfillbuf(iov1, nvector, i);
 		vfillbuf(iov2, nvector, i+1);
 		if (lseek(fd_w, offset, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before writev failed: %s\n",
+			tst_resm(TFAIL, "lseek before writev failed: %s",
 				strerror(errno));
 			return(-1);
 		}
 		if (writev(fd_w, iov1, nvector) < 0) {
-			fprintf(stderr, "writev failed: %s\n", strerror(errno));
+			tst_resm(TFAIL, "writev failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (lseek(fd_r, offset, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before readv failed: %s\n",
+			tst_resm(TFAIL, "lseek before readv failed: %s",
 				strerror(errno));
 			return(-1);
 		}
 		if (readv(fd_r, iov2, nvector) < 0) {
-			fprintf(stderr, "readv failed: %s\n", strerror(errno));
+			tst_resm(TFAIL, "readv failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (vbufcmp(iov1, iov2, nvector) != 0) {
-			fprintf(stderr, "readv/writev comparision failed\n");
+			tst_resm(TFAIL, "readv/writev comparision failed");
 			return(-1);
 		}
 	}
@@ -223,20 +223,17 @@ main(int argc, char *argv[])
 	/* Testblock-1: Read with Direct IO, Write without */
 	action = READ_DIRECT;
 	if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[1] fd_w open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w open failed");
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[1] fd_r open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
 			filename, strerror(errno));
 		close(fd_w);
-		tst_resm (TFAIL, "fd_r open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[1] Read Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Read with Direct IO, Write without");
@@ -252,20 +249,17 @@ main(int argc, char *argv[])
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[2] fd_w open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w open failed");
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_RDONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[2] fd_r open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
 			filename, strerror(errno));
 		close (fd_w);
-		tst_resm (TFAIL, "fd_r open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[2] Write Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Write with Direct IO, Read without");
@@ -280,20 +274,17 @@ main(int argc, char *argv[])
 	/* Testblock-3: Read, Write with Direct IO */
 	action = RDWR_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[3] fd_w open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w open failed");
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[3] fd_r open failed for %s:%s\n", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
 			filename, strerror(errno));
 		close (fd_w);
-		tst_resm (TFAIL, "fd_r open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[3] Read Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Read, Write with Direct IO");
@@ -306,10 +297,10 @@ main(int argc, char *argv[])
 	total++;
 
 	if (failed)
-		fprintf(stderr, "diotest5: %d/%d testblocks failed\n",
+		tst_resm(TINFO, "%d/%d testblocks failed",
 			fail_count, total);
 	else
-		fprintf(stdout, "diotest5: %d testblocks %d iterations with %d vector array completed\n",
+		tst_resm(TINFO, "%d testblocks %d iterations with %d vector array completed",
 			total, iter, nvector);
 
 	tst_exit();

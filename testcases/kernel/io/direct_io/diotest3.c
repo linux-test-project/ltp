@@ -103,11 +103,11 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 	/* Allocate for buffers */
 	seekoff = offset+bufsize * childnum;
 	if ((buf1 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf1:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() buf1 failed: %s", strerror(errno));
 		return(-1);
 	}
 	if ((buf2 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf2:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() buf2 failed: %s", strerror(errno));
 		return(-1);
 	}
 
@@ -115,33 +115,33 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, childnum+i);
 		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before write failed:%s\n", 
+			tst_resm(TFAIL, "lseek before write failed: %s", 
 				strerror(errno));
 			return(-1);
 		}
 		if (write(fd_w, buf1, bufsize) < bufsize) {
-			fprintf(stderr, "write failed:%s\n", strerror(errno));
+			tst_resm(TFAIL, "write failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (action == READ_DIRECT) {
 			/* Make sure data is on to disk before read */
 			if (fsync(fd_w) < 0) {
-				fprintf(stderr, "fsync failed:%s\n",
+				tst_resm(TFAIL, "fsync failed: %s",
 					strerror(errno));
 				return(-1);
 			}
 		}
 		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before read failed:%s\n", 
+			tst_resm(TFAIL, "lseek before read failed: %s", 
 				strerror(errno));
 			return(-1);
 		}
 		if (read(fd_r, buf2, bufsize) < bufsize) {
-			fprintf(stderr, "read failed:%s\n", strerror(errno));
+			tst_resm(TFAIL, "read failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			fprintf(stderr, "comparsion failed. Child=%d offset=%d\n", 
+			tst_resm(TFAIL, "comparsion failed. Child=%d offset=%d", 
 				childnum, (int)seekoff);
 			return(-1);
 		}
@@ -160,18 +160,18 @@ child_function(int childnum, int action)
 	switch(action) {
 	 case READ_DIRECT:
 		if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0) {
-			fprintf(stderr, "[1] fd_w open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_w open failed for %s: %s",
 				filename, strerror(errno));
 			return(-1);
 		}
 		if ((fd_r = open(filename, O_DIRECT|O_RDONLY, 0666)) < 0) {
-			fprintf(stderr, "[1] fd_r open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_r open failed for %s: %s",
 				filename, strerror(errno));
 			close(fd_w);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
-			fprintf(stderr, "[1] Read Direct-child %d failed\n",
+			tst_resm(TFAIL, "Read Direct-child %d failed",
 				childnum);
 			close(fd_w);
 			close(fd_r);
@@ -180,18 +180,18 @@ child_function(int childnum, int action)
 		break;
 	 case WRITE_DIRECT:
 		if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-			fprintf(stderr, "[2] fd_w open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_w open failed for %s: %s",
 				filename, strerror(errno));
 			return(-1);
 		}
 		if ((fd_r = open(filename, O_RDONLY, 0666)) < 0) {
-			fprintf(stderr, "[2] fd_r open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_r open failed for %s: %s",
 				filename, strerror(errno));
 			close(fd_w);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
-			fprintf(stderr, "[2] Write Direct-child %d failed\n",
+			tst_resm(TFAIL, "Write Direct-child %d failed",
 				childnum);
 			close(fd_w);
 			close(fd_r);
@@ -200,18 +200,18 @@ child_function(int childnum, int action)
 		break;
 	 case RDWR_DIRECT:
 		if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-			fprintf(stderr, "[3] fd_w open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_w open failed for %s: %s",
 				filename, strerror(errno));
 			return(-1);
 		}
 		if ((fd_r = open(filename, O_DIRECT|O_RDONLY, 0666)) < 0) {
-			fprintf(stderr, "[3] fd_r open failed for %s: %s\n",
+			tst_resm(TFAIL, "fd_r open failed for %s: %s",
 				filename, strerror(errno));
 			close(fd_w);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
-			fprintf(stderr, "[3] RDWR Direct-child %d failed\n",
+			tst_resm(TFAIL, "RDWR Direct-child %d failed",
 				childnum);
 			close(fd_w);
 			close(fd_r);
@@ -344,11 +344,11 @@ main(int argc, char *argv[])
 	total++;
 
 	if (failed) {
-		fprintf(stdout, "diotest3: %d/%d testblocks failed\n", 
+		tst_resm(TINFO, "%d/%d testblocks failed", 
 			fail_count, total);
 		tst_exit();
 	}
-	fprintf(stdout, "diotest3: %d testblocks %d iterations with %d children completed\n", 
+	tst_resm(TINFO, "%d testblocks %d iterations with %d children completed", 
 			total, iter, numchild);
 	tst_exit();
 	return 0;

@@ -141,29 +141,26 @@ main(int argc, char *argv[])
 
 	/* Open files */
 	if ((fd1 = open(infile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "open infile: %s\n", strerror(errno));
-		tst_resm(TFAIL, "open failed");
+		tst_resm(TFAIL, "open infile failed: %s", strerror(errno));
 		tst_exit();
 	}
 
 	if ((fd2 = open(outfile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "open outfile: %s\n", strerror(errno));
 		close(fd1);
 		unlink(infile);
-		tst_resm(TFAIL,"open failed");
+		tst_resm(TFAIL,"open outfile failed: %s", strerror(errno));
 		tst_exit();
 	}
 
 	/* Allocate for buf, Create input file */
 	if ((buf = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf: %s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() failed: %s", strerror(errno));
 		fail_clean(fd1, fd2, infile, outfile);
 	}
 	for (i = 0; i < numblks; i++) {
 		fillbuf(buf, bufsize, (char)(i % 256));
 		if (write(fd1, buf, bufsize) < 0) { 
-			fprintf(stderr, "write infile failed: %s\n", 
-				strerror(errno));
+			tst_resm(TFAIL, "write infile failed: %s", strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 	}
@@ -171,32 +168,31 @@ main(int argc, char *argv[])
 	/* Copy infile to outfile using direct read and direct write */
 	offset = 0;
 	if (lseek(fd1, offset, SEEK_SET) < 0) {
-		fprintf(stderr, "lseek infd:%s\n", strerror(errno));
+		tst_resm(TFAIL, "lseek(infd) failed: %s", strerror(errno));
 		fail_clean(fd1, fd2, infile, outfile);
 	}
 	while ((n = read(fd1, buf, bufsize)) > 0) {
 		if (lseek(fd2, offset, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek outfd:%s\n", strerror(errno));
+			tst_resm(TFAIL, "lseek(outfd) failed: %s", strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 		if (write(fd2, buf, n) < n) {
-			fprintf(stderr, "write failed:%s\n", strerror(errno));
+			tst_resm(TFAIL, "write(outfd) failed: %s", strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 		offset += n;
 		if (lseek(fd1, offset, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek infd:%s\n", strerror(errno));
+			tst_resm(TFAIL, "lseek(infd) failed: %s", strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 	}
 
 	/* Verify */
 	if(filecmp(infile, outfile) != 0) {
-		fprintf(stderr,"diotest1: file compare failed for %s and %s\n",
+		tst_resm(TFAIL,"file compare failed for %s and %s",
 			infile, outfile);
 		fail_clean(fd1, fd2, infile, outfile);
 	}
-	fprintf(stdout, "diotest1: 1 testblock completed\n");
 
 	/* Cleanup */
 	close(fd1);
@@ -212,8 +208,7 @@ main(int argc, char *argv[])
 
 int
 main() {
-
-		 tst_resm(TCONF,"O_DIRECT is not defined.");
-		 tst_exit(); 
+	tst_resm(TCONF,"O_DIRECT is not defined.");
+	tst_exit(); 
 }
 #endif /* O_DIRECT */

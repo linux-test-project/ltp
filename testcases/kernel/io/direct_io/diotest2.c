@@ -85,11 +85,11 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 
 	/* Allocate for buffers */
 	if ((buf1 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf1:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() buf1 failed: %s", strerror(errno));
 		return(-1);
 	}
 	if ((buf2 = valloc(bufsize)) == 0) {
-		fprintf(stderr, "valloc buf2:%s\n", strerror(errno));
+		tst_resm(TFAIL, "valloc() buf2 failed: %s", strerror(errno));
 		return(-1);
 	}
 
@@ -97,25 +97,25 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, i);
 		if (lseek(fd_w, offset+iter*bufsize, SEEK_SET) < 0)  {
-			fprintf(stderr, "lseek before write failed:%s\n", 
+			tst_resm(TFAIL, "lseek before write failed: %s", 
 				strerror(errno));
 			return(-1);
 		}
 		if (write(fd_w, buf1, bufsize) < bufsize) {
-			fprintf(stderr, "write failed:%s\n", strerror(errno));
+			tst_resm(TFAIL, "write failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (lseek(fd_r, offset+iter*bufsize, SEEK_SET) < 0) {
-			fprintf(stderr, "lseek before read failed:%s\n", 
+			tst_resm(TFAIL, "lseek before read failed: %s", 
 				strerror(errno));
 			return(-1);
 		}
 		if (read(fd_r, buf2, bufsize) < bufsize) {
-			fprintf(stderr, "read failed:%s\n", strerror(errno));
+			tst_resm(TFAIL, "read failed: %s", strerror(errno));
 			return(-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			fprintf(stderr, "read/write comparision failed\n");
+			tst_resm(TFAIL, "read/write comparision failed");
 			return(-1);
 		}
 	}
@@ -189,21 +189,18 @@ main(int argc, char *argv[])
 	/* Testblock-1: Read with Direct IO, Write without */
 	action = READ_DIRECT;
 	if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[1] fd_w,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_w,open failed for %s: %s",
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w,open failed");
 		tst_exit ();
 	}
 	if ((fd_r = open(filename, O_DIRECT|O_RDONLY, 0666)) < 0) {
-		fprintf(stderr, "[1] fd_r,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_r,open failed for %s: %s",
 			filename, strerror(errno));
 		close(fd_w);
 		unlink (filename);
-		tst_resm (TFAIL, "fd_r,open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[1] Read Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Read with Direct IO, Write without");
@@ -220,27 +217,24 @@ main(int argc, char *argv[])
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[2] fd_w,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_w,open failed for %s: %s",
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w,open failed");
 		tst_exit();
 	}
 	if ((fd_r = open(filename, O_RDONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[2] fd_r,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_r,open failed for %s: %s",
 			filename, strerror(errno));
 		close(fd_w);
 		unlink (filename);
-		tst_resm (TFAIL, "fd_r,open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[2] Write Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Write with Direct IO, Read without");
 	}
 	else
-	  tst_resm (TPASS, "rite with Direct IO, Read without");
+	  tst_resm (TPASS, "Write with Direct IO, Read without");
 	close(fd_w);
 	close(fd_r);
 	unlink(filename);
@@ -249,21 +243,18 @@ main(int argc, char *argv[])
 	/* Testblock-3: Read, Write with Direct IO. */
 	action = RDWR_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[3] fd_w,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_w,open failed for %s: %s",
 			filename, strerror(errno));
-		tst_resm (TFAIL, "fd_w,open failed");
 		tst_exit();
 	}
 	if ((fd_r = open(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) < 0) {
-		fprintf(stderr, "[3] fd_r,open failed for %s: %s\n",
+		tst_resm(TFAIL, "fd_r,open failed for %s: %s",
 			filename, strerror(errno));
 		close (fd_w);
 		unlink (filename);
-		tst_resm (TFAIL, "fd_r,open failed");
 		tst_exit();
 	}
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
-		fprintf(stderr, "[3] Read/Write Direct failed\n");
 		failed = TRUE;
 		fail_count++;
 		tst_resm (TFAIL, "Read, Write with Direct IO");
@@ -276,12 +267,12 @@ main(int argc, char *argv[])
 	total++;
 
 	if (failed) {
-		fprintf(stdout, "diotest2 %d/%d testblocks failed\n", 
+		tst_resm(TINFO, "%d/%d testblocks failed", 
 			fail_count, total);
-		tst_exit();
+	} else {
+		tst_resm(TINFO, "%d testblocks %d iterations completed", 
+			total, iter);
 	}
-	fprintf(stdout, "diotest2: %d testblocks %d iterations completed\n", 
-		total, iter);
 	tst_exit ();
 	return 0;
 }
