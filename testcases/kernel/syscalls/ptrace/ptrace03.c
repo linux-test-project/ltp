@@ -138,7 +138,7 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; ++i) {
 
 			/* fork() */
-			switch (child_pid = fork()) {
+			switch (child_pid = FORK_OR_VFORK()) {
 
 			case -1:
 				/* fork() failed */
