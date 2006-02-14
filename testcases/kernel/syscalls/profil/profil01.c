@@ -37,6 +37,9 @@
  * RESTRICTIONS
  */
 
+#include <features.h>
+#ifndef __UCLIBC__
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #endif
@@ -300,3 +303,11 @@ void fail_exit()
 }
 
 /*****	**	**	*****/
+
+#else
+int main(void)
+{
+	/* uClibc does not have profiling support */
+	return 0;
+}
+#endif
