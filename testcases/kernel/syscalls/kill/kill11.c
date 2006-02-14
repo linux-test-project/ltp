@@ -83,7 +83,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
         int nsig, exno, nexno, status;
 	/*SIGIOT is 6, but since linux doesn't have SIGEMT, just using
 		SIGIOT for place filling */
-	int signum[14];
+	int signum[15];
 	int j;
 	int ret_val = 0;
 #ifdef UCLINUX
@@ -114,7 +114,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 	exno = 1;
 	unlink("core");
 
-	for(j = 1; j < 14; j++) {
+	for(j = 1; j < 15; j++) {
 		sig=signum[j];
 		if (sig != SIGKILL )
 #ifndef BCS
