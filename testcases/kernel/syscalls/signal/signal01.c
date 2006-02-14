@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.6 2005/10/03 20:40:36 robbiew Exp $ */
+/* $Id: signal01.c,v 1.7 2006/02/14 02:53:01 vapier Exp $ */
 /***********************************************************************************
  * 
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -532,7 +532,7 @@ int test_case;
 	 * be ignored and errno was correct.
 	 */
 	sprintf(Ipc_info.mesg,
-		"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
+		"%s ret:%p, errno:%ld expected ret:%ld, errno:%d",
 		string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 	Ipc_info.status = FAIL_FLAG;
 	write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
