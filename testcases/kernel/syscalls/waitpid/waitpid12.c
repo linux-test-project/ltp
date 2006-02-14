@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 			}
 
 			intintr = 0;
-			ret_val = fork();
+			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {
 #ifdef UCLINUX
 				if (self_exec(argv[0], "") < 0) {
