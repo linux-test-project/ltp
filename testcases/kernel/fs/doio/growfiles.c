@@ -159,7 +159,7 @@ int pre_alloc();
 #define DEF_FILE	"gf"
 
 char *Progname;
-int Debug  = 1;
+int Debug  = 0;
 
 int Pid=0;
 
