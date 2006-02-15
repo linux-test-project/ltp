@@ -74,12 +74,12 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:	
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen a+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		fwrite("a",1,1,stream);
 		if((stream=freopen(tempfile2,"a+",stream)) == NULL) {
-			tst_resm(TFAIL,"\tfreopen a+ failed\n");
+			tst_resm(TFAIL,"freopen(%s) a+ failed: %s", tempfile2, strerror(errno));
 			tst_exit();
 		}
 		fwrite("a",1,1,stream);
@@ -87,35 +87,35 @@ int main(int ac, char *av[])
 
 		/* now check that a single "a" is in each file */
 		if((stream=fopen(tempfile1,"r")) == NULL) {
-			tst_resm(TFAIL,"\tfopen r failed\n");
+			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		else {
 			for(i=0; i<10; i++) buf[i]=0;
 			fread(buf,1,1,stream);
 			if((buf[0] != 'a') || (buf[1] != 0)) {
-				tst_resm(TFAIL,"\tbad contents in %s\n",tempfile1);
+				tst_resm(TFAIL,"bad contents in %s", tempfile1);
 				local_flag = FAILED;
 			}
 			fclose(stream);
 		}
 		if((stream=fopen(tempfile2,"r")) == NULL) {
-			tst_resm(TFAIL,"\tfopen r failed\n");
+			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile2, strerror(errno));
 			tst_exit();
 		}
 		else {
 			for(i=0; i<10; i++) buf[i]=0;
 			fread(buf,1,1,stream);
 			if((buf[0] != 'a') || (buf[1] != 0)) {
-				tst_resm(TFAIL,"\tbad contents in %s\n",tempfile2);
+				tst_resm(TFAIL,"bad contents in %s", tempfile2);
 				local_flag = FAILED;
 			}
 			fclose(stream);
 		}
 		 if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed.\n");
+			tst_resm(TPASS, "Test passed.");
 		 } else {
-			tst_resm(TFAIL, "Test failed.\n");
+			tst_resm(TFAIL, "Test failed.");
 		 }
 
 		 local_flag = PASSED;

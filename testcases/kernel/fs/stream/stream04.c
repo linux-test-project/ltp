@@ -79,42 +79,42 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:	
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen a+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		/* write something and check */
 		if((ret=fwrite(junk,sizeof(*junk),strlen(junk),stream)) == 0) {
-			tst_resm(TFAIL,"\tfwrite failed\n");
+			tst_resm(TFAIL,"fwrite failed: %s", strerror(errno));
 			tst_exit();
 		}
 
 		if((size_t)ret != strlen(junk)) {
-			tst_resm(TFAIL,"strlen(junk),return value from fwrite");
+			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fwrite = %zi", strlen(junk), ret);
 			local_flag = FAILED;
 		}
 
 		fclose(stream);
 		if((stream=fopen(tempfile1,"r+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen r+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) r+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		if ( (inbuf=(char *)malloc(strlen(junk))) == 0) {
-			tst_resm(TBROK, "test failed because of malloc\n");
+			tst_resm(TBROK, "test failed because of malloc: %s", strerror(errno));
 			tst_exit();
 		}
 		if((ret=fread(inbuf,sizeof(*junk),strlen(junk),stream)) == 0) {
-			tst_resm(TFAIL,"\tfread failed\n");
+			tst_resm(TFAIL,"fread failed: %s", strerror(errno));
 			tst_exit();
 		}
 		if((size_t)ret != strlen(junk)) {
-			tst_resm(TFAIL,"strlen(junk),return value from fread");
+			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fread = %zi", strlen(junk), ret);
 			local_flag = FAILED;
 		}
 		fclose(stream);
 		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed.\n");
+			tst_resm(TPASS, "Test passed.");
 		} else {
-			tst_resm(TFAIL, "Test failed.\n");
+			tst_resm(TFAIL, "Test failed.");
 		}
 	/*--------------------------------------------------------------------*/
 		unlink(tempfile1);

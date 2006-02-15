@@ -81,27 +81,27 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:	
 		if((stream=fopen(tempfile,"a+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen a+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		fprintf(stream,"a");
 		fclose(stream);
 
 		if((stream=fopen(tempfile,"r+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen r+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) r+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 
 		/* check that ferror returns zero */
 		if(ferror(stream) != 0) {
-			tst_resm(TFAIL, "\tferror did not return zero\n");
+			tst_resm(TFAIL, "ferror did not return zero: %s", strerror(errno));
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block0.\n");
+			tst_resm(TPASS, "Test passed in block0.");
 		} else {
-			tst_resm(TFAIL, "Test failed in block0.\n");
+			tst_resm(TFAIL, "Test failed in block0.");
 		}
 
 		local_flag = PASSED;
@@ -112,7 +112,7 @@ int main(int ac, char *av[])
 		/* check that fileno returns valid file descriptor */
 		fd=fileno(stream);
 		if((nr=read(fd,buf,1)) < 0) {
-			tst_resm(TFAIL, "\tread failed\n");
+			tst_resm(TFAIL, "read failed: %s", strerror(errno));
 			tst_exit();
 		}
 		if(nr != 1) {
@@ -120,13 +120,13 @@ int main(int ac, char *av[])
 			local_flag = FAILED;
 		}
 		if(buf[0] != 'a') {
-			tst_resm(TFAIL, "\tread returned bad values\n");
+			tst_resm(TFAIL, "read returned bad values");
 			local_flag = FAILED;
 		}
 		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block1.\n");
+			tst_resm(TPASS, "Test passed in block1.");
 		} else {
-			tst_resm(TFAIL, "Test failed in block1.\n");
+			tst_resm(TFAIL, "Test failed in block1.");
 		}
 
 		local_flag = PASSED;
@@ -137,23 +137,23 @@ int main(int ac, char *av[])
 		fclose(stream);
 
 		if((stream=fopen(tempfile,"r+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen r+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) r+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		if(feof(stream) != 0) {
-			tst_resm(TFAIL, "\tfeof returned non-zero when it should not\n");
+			tst_resm(TFAIL, "feof returned non-zero when it should not: %s", strerror(errno));
 			local_flag = FAILED;
 		}
 		fread(buf,1,2,stream);	/* read to EOF */
 		if(feof(stream) == 0) {
-			tst_resm(TFAIL, "\tfeof returned zero when it should not\n");
+			tst_resm(TFAIL, "feof returned zero when it should not: %s", strerror(errno));
 			local_flag = FAILED;
 		}
 
 		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block2.\n");
+			tst_resm(TPASS, "Test passed in block2.");
 		} else {
-			tst_resm(TFAIL, "Test failed in block2.\n");
+			tst_resm(TFAIL, "Test failed in block2.");
 		}
 
 		local_flag = PASSED;
@@ -162,13 +162,13 @@ int main(int ac, char *av[])
 		/* ensure clearerr works */
 		clearerr(stream);
 		if(feof(stream) != 0) {
-			tst_resm(TFAIL, "\tclearerr failed\n");
+			tst_resm(TFAIL, "clearerr failed: %s", strerror(errno));
 			local_flag = FAILED;
 		}
 		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block3.\n");
+			tst_resm(TPASS, "Test passed in block3.");
 		} else {
-			tst_resm(TFAIL, "Test failed in block3.\n");
+			tst_resm(TFAIL, "Test failed in block3.");
 		}
 
 		local_flag = PASSED;
@@ -179,42 +179,42 @@ int main(int ac, char *av[])
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "rb")) == NULL) {
-			tst_resm(TFAIL, "\tfopen rb failed\n");
+			tst_resm(TFAIL, "fopen(%s) rb failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "wb")) == NULL) {
-			tst_resm(TFAIL, "\tfopen wb failed\n");
+			tst_resm(TFAIL, "fopen(%s) wb failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "ab")) == NULL) {
-			tst_resm(TFAIL, "\tfopen ab failed\n");
+			tst_resm(TFAIL, "fopen(%s) ab failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "rb+")) == NULL) {
-			tst_resm(TFAIL, "\tfopen rb+ failed\n");
+			tst_resm(TFAIL, "fopen(%s) rb+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "wb+")) == NULL) {
-			tst_resm(TFAIL, "\tfopen wb+ failed\n");
+			tst_resm(TFAIL, "fopen(%s) wb+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
 		if ((stream = fopen(tempfile, "ab+")) == NULL) {
-			tst_resm(TFAIL, "\tfopen ab+ failed\n");
+			tst_resm(TFAIL, "fopen(%s) ab+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
 		}
 		(void) fclose(stream);
 
-		tst_resm(TPASS, "Test passed in block4.\n");
+		tst_resm(TPASS, "Test passed in block4.");
 	/*--------------------------------------------------------------------*/
 		unlink(tempfile);
 	} /* end for */

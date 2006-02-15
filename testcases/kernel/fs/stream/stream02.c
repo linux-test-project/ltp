@@ -73,27 +73,27 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:
 		if(mknod(tempfile1, (S_IFIFO|0666), 0) != 0) {
-			tst_resm(TFAIL,"\tmknod failed in block0\n");
+			tst_resm(TFAIL,"mknod failed in block0: %s", strerror(errno));
 			local_flag = FAILED;
 			goto block1;
 		}
 		if((stream=fopen(tempfile1,"w+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen w+ failed for pipe file\n");
+			tst_resm(TFAIL,"fopen(%s) w+ failed for pipe file: %s", tempfile1, strerror(errno));
 			local_flag = FAILED;
 		} else {
 			fclose(stream);
 		}
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen a+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			local_flag = FAILED;
 		} else {
 			fclose(stream);
 			unlink(tempfile1);
 		}
 		if (local_flag == PASSED) {
-		         tst_resm(TPASS, "Test passed in block0.\n");
+		         tst_resm(TPASS, "Test passed in block0.");
 		} else {
-		         tst_resm(TFAIL, "Test failed in block0.\n");
+		         tst_resm(TFAIL, "Test failed in block0.");
 	        }
 		local_flag = PASSED;
 
@@ -103,16 +103,16 @@ int main(int ac, char *av[])
 		{
 			close(fd);
 			if(( stream = fopen("/dev/tty","w"))==NULL) {
-				tst_resm(TFAIL,"\tfopen write  failed for /dev/tty\n");
+				tst_resm(TFAIL,"fopen(/dev/tty) write failed: %s", strerror(errno));
 				local_flag = FAILED;
 			} else {
 				fclose(stream);
 			}
 		}
 		if (local_flag == PASSED) {
-		         tst_resm(TPASS, "Test passed in block1.\n");
+		         tst_resm(TPASS, "Test passed in block1.");
 		} else {
-		         tst_resm(TFAIL, "Test failed in block1.\n");
+		         tst_resm(TFAIL, "Test failed in block1.");
 	        }
 			
 	/*--------------------------------------------------------------------*/

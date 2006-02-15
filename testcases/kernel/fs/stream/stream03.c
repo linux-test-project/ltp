@@ -77,7 +77,7 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block0:	
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TBROK,"\tfopen a+ failed\n");
+			tst_resm(TBROK,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		/* make sure offset of zero at start */
@@ -88,49 +88,49 @@ int main(int ac, char *av[])
 		}
 		/* write something and check */
 		if(fwrite(junk,sizeof(*junk),strlen(junk),stream) == 0) {
-			tst_resm(TFAIL,"\tfwrite failed\n");
+			tst_resm(TFAIL,"fwrite failed: %s", strerror(errno));
 			tst_exit();
 		}
 		pos=ftell(stream);
 		if ((size_t)pos != strlen(junk) ) {
-			tst_resm(TFAIL, "strlen(junk):file pointer descrepancy 2");
+			tst_resm(TFAIL, "strlen(junk)=%zi: file pointer descrepancy 2 (pos=%zi)", strlen(junk), pos);
 			local_flag = FAILED;
 		}
 		/* rewind and check */
 		rewind(stream);
 		pos=ftell(stream);
 		if ( pos != 0 ) {
-			tst_resm(TFAIL,0,"file pointer descrepancy 3");
+			tst_resm(TFAIL,0,"file pointer descrepancy 3 (pos=%zi, wanted pos=0)", pos);
 			local_flag = FAILED;
 		}
 		/* seek from current position and then check */
 		if (fseek(stream,strlen(junk),1) != 0) {
-			tst_resm(TFAIL,"\tfseek failed\n");
+			tst_resm(TFAIL,"fseek failed: %s", strerror(errno));
 			tst_exit();
 		}
 		pos=ftell(stream);
 		if ((size_t)pos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 4");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 4 (pos=%zi)", strlen(junk), pos);
 			local_flag = FAILED;
 		}
 		/* seek from end of file and then check */
 		if (fseek(stream,0,2) != 0) {
-			tst_resm(TFAIL,"\tfseek failed\n");
+			tst_resm(TFAIL,"fseek failed: %s", strerror(errno));
 			tst_exit();
 		}
 		pos=ftell(stream);
 		if ((size_t)pos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 5");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 5 (pos=%zi)", strlen(junk), pos);
 			local_flag = FAILED;
 		}
 		/* rewind with seek and then check */
 		if (fseek(stream,0,0) != 0) {
-			tst_resm(TFAIL,"\tfseek failed\n");
+			tst_resm(TFAIL,"fseek failed: %s", strerror(errno));
 			tst_exit();
 		}
 		pos=ftell(stream);
 		if (pos != 0 ) {
-			tst_resm(TFAIL,"file pointer descrepancy 6");
+			tst_resm(TFAIL,"file pointer descrepancy 6 (pos=%zi, wanted pos=0)", pos);
 			local_flag = FAILED;
 		}
 
@@ -140,14 +140,14 @@ int main(int ac, char *av[])
 		(void) getc(stream);
 		pos=ftell(stream);
 		if ((size_t)pos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 7");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 7 (pos=%zi)", strlen(junk), pos);
 			local_flag = FAILED;
 		}
 		fclose(stream);
 		if (local_flag == PASSED) {
-                        tst_resm(TPASS, "Test passed in block0.\n");
+                        tst_resm(TPASS, "Test passed in block0.");
                 } else {
-                        tst_resm(TFAIL, "Test failed in block0.\n");
+                        tst_resm(TFAIL, "Test failed in block0.");
                 }
 
                 local_flag = PASSED;
@@ -156,60 +156,60 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 	//block1:	
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"\tfopen a+ failed\n");
+			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		/* make sure offset of zero at start */
 		opos=ftello(stream);
 		if ( opos != 0 ) {
-			tst_resm(TFAIL,"file pointer descrepancy 1");
+			tst_resm(TFAIL,"file pointer descrepancy 1 (opos=%zi, wanted opos=0)", opos);
 			local_flag = FAILED;
 		}
 		/* write something and check */
 		if(fwrite(junk,sizeof(*junk),strlen(junk),stream) == 0) {
-			tst_resm(TFAIL,"\tfwrite failed\n");
+			tst_resm(TFAIL,"fwrite failed: %s", strerror(errno));
 			tst_exit();
 		}
 		opos=ftello(stream);
 		if ((size_t)opos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 2");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 2 (opos=%zi)", strlen(junk), opos);
 			local_flag = FAILED;
 		}
 		/* rewind and check */
 		rewind(stream);
 		opos=ftello(stream);
 		if ( opos != 0 ) {
-			tst_resm(TFAIL,"file pointer descrepancy 3");
+			tst_resm(TFAIL,"file pointer descrepancy 3 (opos=%zi, wanted opos=0)", opos);
 			local_flag = FAILED;
 		}
 		/* seek from current position and then check */
 		if (fseeko(stream, (off_t)strlen(junk), 1) != 0) {
-			tst_resm(TFAIL,"\tfseeko failed\n");
+			tst_resm(TFAIL,"fseeko failed: %s", strerror(errno));
 			tst_exit();
 		}
 		opos=ftello(stream);
 		if ((size_t)opos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 4");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 4 (opos=%zi)", strlen(junk), opos);
 			local_flag = FAILED;
 		}
 		/* seek from end of file and then check */
 		if (fseeko(stream, (off_t)0, 2) != 0) {
-			tst_resm(TFAIL,"\tfseeko failed\n");
+			tst_resm(TFAIL,"fseeko failed: %s", strerror(errno));
 			tst_exit();
 		}
 		opos=ftello(stream);
 		if ((size_t)opos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 5");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 5 (opos=%zi)", strlen(junk), opos);
 			local_flag = FAILED;
 		}
 		/* rewind with seek and then check */
 		if (fseeko(stream, (off_t)0, 0) != 0) {
-			tst_resm(TFAIL,"\tfseeko failed\n");
+			tst_resm(TFAIL,"fseeko failed: %s", strerror(errno));
 			tst_exit();
 		}
 		opos=ftello(stream);
 		if (opos != 0 ) {
-			tst_resm(TFAIL,"file pointer descrepancy 6");
+			tst_resm(TFAIL,"file pointer descrepancy 6 (opos=%zi, wanted opos=0)", opos);
 			local_flag = FAILED;
 		}
 
@@ -219,14 +219,14 @@ int main(int ac, char *av[])
 		(void) getc(stream);
 		opos=ftello(stream);
 		if ((size_t)opos != strlen(junk) ) {
-			tst_resm(TFAIL,"strlen(junk),file pointer descrepancy 7");
+			tst_resm(TFAIL,"strlen(junk)=%zi: file pointer descrepancy 7 (opos=%zi)", strlen(junk), opos);
 			local_flag = FAILED;
 		}
 		fclose(stream);
 		if (local_flag == PASSED) {
-                        tst_resm(TPASS, "Test passed in block1.\n");
+                        tst_resm(TPASS, "Test passed in block1.");
                 } else {
-                        tst_resm(TFAIL, "Test failed in block1.\n");
+                        tst_resm(TFAIL, "Test failed in block1.");
                 }
 	/*--------------------------------------------------------------------*/
 		unlink(tempfile1);
