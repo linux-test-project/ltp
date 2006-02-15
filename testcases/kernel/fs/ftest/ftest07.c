@@ -93,8 +93,6 @@ int dumpbits(char*, int);
 int orbits(char*, char*, int);
 int term();
 
-extern	int	errno;
-
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
 off64_t max_size;			/* max file size */

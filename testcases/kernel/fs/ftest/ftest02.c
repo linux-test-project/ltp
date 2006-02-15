@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *	ftest02.c -- test inode things (ported from SPIE section2, filesuite, by Airong Zhang)
@@ -79,7 +78,6 @@ int mkname(char*, int, int);
 int term();
 void cleanup(); 
 
-extern	int	errno;
 char	msg1[] = "Error on openning console.\n";
 char	msg2[] = "1st open not fd 0!\n";
 

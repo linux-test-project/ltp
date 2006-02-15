@@ -1,6 +1,7 @@
 /* random-access.c (GPL)*/
 /* Hironobu SUZUKI <hironobu@h2np.net> */
 #include <stdio.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -66,7 +67,6 @@ open_read_close(char *fname)
   int fd;
   char buf[BUFS];
   int c;
-  extern errno;
 
   if ( (fd=open(fname, O_RDONLY)) < 0 ) {
       openlog[FAIL]++;

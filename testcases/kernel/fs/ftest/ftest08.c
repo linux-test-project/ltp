@@ -78,8 +78,6 @@ int dumpbits(char*, int);
 int term();
 void cleanup(void);
 
-extern	int	errno;
-
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
 off64_t max_size;			/* max file size */

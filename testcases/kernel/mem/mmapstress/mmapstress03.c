@@ -68,7 +68,6 @@ void ok_exit();
 			errno)
 #define NEG1	(char *)-1
 
-extern int	errno;
 extern long	sysconf(int name);
 extern void	exit(int);
 extern time_t	time(time_t *);

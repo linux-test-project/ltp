@@ -59,8 +59,6 @@ int	verbose;
 int	count;
 u_char	packet[MAXPACKET];
 int	options;
-extern	int errno;
-
 int s;			/* Socket file descriptor */
 struct addrinfo *hp;	/* Pointer to host info */
 struct addrinfo hints;

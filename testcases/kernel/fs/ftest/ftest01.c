@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /*
  * NAME
  *	ftest01.c -- test file I/O (ported from SPIE section2, filesuite, by Airong Zhang)
@@ -83,8 +82,6 @@ void cleanup(void);
 #define K_4		4096
 
 char progname[]= "ftest1()";	/* replace ++ with test name	*/
-
-extern	int	errno;
 
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */

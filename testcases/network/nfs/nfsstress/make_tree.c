@@ -262,7 +262,6 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
               char *hname)		 /* hostname of the machine           */
 {
     int 	status;		/* return status of execve process            */
-    extern int  errno;	        /* waitpid on failure sets errno              */
     pid_t	pid;		/* pid of the process that does compile       */
     char	*dirname;	/* location where compile is initated         */
     char	*command;	/* make or make clean command.                */

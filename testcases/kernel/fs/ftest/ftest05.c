@@ -86,8 +86,6 @@ void cleanup(void);
 #define K_4		4096
 
 
-extern	int	errno;
-
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
 off64_t max_size;			/* max file size */

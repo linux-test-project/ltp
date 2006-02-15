@@ -88,8 +88,6 @@ int term();
 #define	MAXIOVCNT	16
 
 
-extern	int	errno;
-
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
 int	max_size;			/* max file size */
