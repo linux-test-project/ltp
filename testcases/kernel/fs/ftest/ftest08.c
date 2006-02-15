@@ -119,9 +119,9 @@ int main (ac, av)
 		runtest();
 
 		if (local_flag == PASSED) {
-                        tst_resm(TPASS, "Test passed.\n");
+                        tst_resm(TPASS, "Test passed.");
                 } else {
-                        tst_resm(TFAIL, "Test failed.\n");
+                        tst_resm(TFAIL, "Test failed.");
                 }
 
 	} /* end for */
@@ -145,7 +145,7 @@ void init()
 
 	fd = open(filename, O_RDWR|O_CREAT|O_TRUNC, 0666);
 	if (fd < 0) {
-		tst_resm(TBROK, "Error %d creating file %s\n", errno, filename);
+		tst_resm(TBROK, "Error %d creating file %s", errno, filename);
 		tst_exit();
 	}
 	close(fd);
@@ -183,7 +183,7 @@ int runtest()
 		if ((child = fork()) == 0) {		/* child */
 			fd = open(filename, O_RDWR);
 			if (fd < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: error %d openning %s.\n", errno, filename);
+				tst_resm(TFAIL, "\tTest[%d]: error %d openning %s.", errno, filename);
 				tst_exit();
 			}
 			dotest(nchild, i, fd);		/* do it! */
@@ -192,8 +192,8 @@ int runtest()
 		close(fd);
 		if (child < 0) {
 			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-		                            " etc are likely to fail.\n");
-		        tst_resm(TBROK, "Test broken due to inability of fork.\n");
+		                            " etc are likely to fail.");
+		        tst_resm(TBROK, "Test broken due to inability of fork.");
 		        tst_exit();
 
 		} else {
@@ -210,9 +210,9 @@ int runtest()
 	while((child = wait(&status)) != -1 || errno == EINTR) {
 		if (child > 0)
 		{
-			//tst_resm(TINFO, "\tTest{%d} exited status = 0x%x\n", child, status);
+			//tst_resm(TINFO, "\tTest{%d} exited status = 0x%x", child, status);
 			if (status) {
-				tst_resm(TFAIL, "\tExpected 0 exit status - failed.\n");
+				tst_resm(TFAIL, "\tExpected 0 exit status - failed.");
 				local_flag = FAILED;
 			}
 			++count;
@@ -224,7 +224,7 @@ int runtest()
 	 */
 
 	if (count != nwait) {
-		tst_resm(TFAIL, "\tWrong # children waited on, count = %d\n", count);
+		tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
 		local_flag = FAILED;
 	}
 
@@ -283,11 +283,11 @@ int dotest(testers, me, fd)
 
 	nchunks = max_size / (testers * csize);
 	if( (bits = (char*)malloc((nchunks+7)/8)) == 0) {
-		tst_resm(TBROK, "\tmalloc failed(bits)\n");
+		tst_resm(TBROK, "\tmalloc failed(bits)");
 		tst_exit();
 	}
 	if( (buf = (char*)(malloc(csize))) == 0) {
-		tst_resm(TBROK, "\tmalloc failed(buf)\n");
+		tst_resm(TBROK, "\tmalloc failed(buf)");
 		tst_exit();
 	}
 	
@@ -301,7 +301,7 @@ int dotest(testers, me, fd)
 
 	for (i = 0; i < MAXIOVCNT; i++) {
 		if( (r_iovec[i].iov_base = (char*)malloc(r_ioveclen)) == 0) {
-			tst_resm(TBROK, "\tmalloc failed(iov_base)\n");
+			tst_resm(TBROK, "\tmalloc failed(iov_base)");
 			tst_exit();
 		}
 		r_iovec[i].iov_len = r_ioveclen;
@@ -311,27 +311,27 @@ int dotest(testers, me, fd)
 		 */
 
 		if(malloc((i+1)*8) == 0) {
-			tst_resm(TBROK, "\tmalloc failed((i+1)*8)\n");
+			tst_resm(TBROK, "\tmalloc failed((i+1)*8)");
 			tst_exit();
 		}
 		if( (val0_iovec[i].iov_base = (char*)malloc(w_ioveclen)) == 0){
-			tst_resm(TBROK, "\tmalloc failed(val0_iovec)\n");
+			tst_resm(TBROK, "\tmalloc failed(val0_iovec)");
 			tst_exit();
 		}
 		val0_iovec[i].iov_len = w_ioveclen;
 		
 		if(malloc((i+1)*8) == 0) {
-			tst_resm(TBROK, "\tmalloc failed((i+1)*8)\n");
+			tst_resm(TBROK, "\tmalloc failed((i+1)*8)");
 			tst_exit();
 		}
 		if( (val_iovec[i].iov_base = (char*)malloc(w_ioveclen)) == 0){
-			tst_resm(TBROK, "\tmalloc failed(iov_base)\n");
+			tst_resm(TBROK, "\tmalloc failed(iov_base)");
 			tst_exit();
 		}
 		val_iovec[i].iov_len = w_ioveclen;
 
 		if(malloc((i+1)*8) == 0) {
-			tst_resm(TBROK, "\tmalloc failed(((i+1)*8)\n");
+			tst_resm(TBROK, "\tmalloc failed(((i+1)*8)");
 			tst_exit();
 		}
 	}
@@ -379,12 +379,12 @@ int dotest(testers, me, fd)
 			 * Read it.
 			 */
 			if (lseek64(fd, CHUNK(chunk), 0) < (off64_t)0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(0) fail at %Lx, errno = %d.\n",
+				tst_resm(TFAIL, "\tTest[%d]: lseek64(0) fail at %Lx, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
 			if ((xfr = readv(fd, &r_iovec[0], MAXIOVCNT)) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: readv fail at %Lx, errno = %d.\n",
+				tst_resm(TFAIL, "\tTest[%d]: readv fail at %Lx, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
@@ -397,13 +397,13 @@ int dotest(testers, me, fd)
 				bits[chunk/8] |= (1<<(chunk%8));
 			} else if ((bits[chunk/8] & (1<<(chunk%8))) == 0) {
 				if (xfr != csize) {
-					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, zero read.\n",
+					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, zero read.",
 						me, xfr, csize);
 					tst_exit();
 				}
 				for(i = 0; i < MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, val0_iovec[i].iov_base, r_iovec[i].iov_len)) {
-						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.\n",
+						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.",
 							me, CHUNK(chunk), val0, count, xfr);
 						dumpiov(&r_iovec[i]);
 						dumpbits(bits, (nchunks+7)/8);
@@ -414,14 +414,14 @@ int dotest(testers, me, fd)
 				++count;
 			} else {
 				if (xfr != csize) {
-					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, val read.\n",
+					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, val read.",
 						me, xfr, csize);
 					tst_exit();
 				}
 				++collide;
 				for(i = 0; i < MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, val_iovec[i].iov_base, r_iovec[i].iov_len)) {
-						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.\n",
+						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.",
 							me, CHUNK(chunk), val, count, xfr);
 						dumpiov(&r_iovec[i]);
 						dumpbits(bits, (nchunks+7)/8);
@@ -433,17 +433,17 @@ int dotest(testers, me, fd)
 			 * Write it.
 			 */
 			if (lseek64(fd, -((off64_t)xfr), 1) <  (off64_t)0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(1) fail at %Lx, errno = %d.\n",
+				tst_resm(TFAIL, "\tTest[%d]: lseek64(1) fail at %Lx, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
 			if ((xfr = writev(fd, &val_iovec[0], MAXIOVCNT)) < csize) {
 				if (errno == ENOSPC) {
-					tst_resm(TFAIL, "\tTest[%d]: no space, exiting.\n", me);
+					tst_resm(TFAIL, "\tTest[%d]: no space, exiting.", me);
 					fsync(fd);
 					tst_exit();
 				}
-				tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx xfr %d, errno = %d.\n",
+				tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx xfr %d, errno = %d.",
 					me, CHUNK(chunk), xfr, errno);
 				tst_exit();
 			}
@@ -463,17 +463,17 @@ int dotest(testers, me, fd)
 		 */
 
 		if (count < nchunks) {
-			//tst_resm(TINFO, "\tTest{%d} val %d stopping @ %d, collide = {%d}.\n",
+			//tst_resm(TINFO, "\tTest{%d} val %d stopping @ %d, collide = {%d}.",
 			//		me, val, count, collide);
 			for(i = 0; i < nchunks; i++) {
 				if ((bits[i/8] & (1<<(i%8))) == 0) {
 					if (lseek64(fd, CHUNK(i), 0) < (off64_t)0) {
-						tst_resm(TFAIL, "\tTest[%d]: lseek64 fail at %Lx, errno = %d.\n",
+						tst_resm(TFAIL, "\tTest[%d]: lseek64 fail at %Lx, errno = %d.",
 							me, CHUNK(i), errno);
 						tst_exit();
 					}
 					if (writev(fd, &val_iovec[0], MAXIOVCNT) != csize) {
-						tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx, errno = %d.\n",
+						tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx, errno = %d.",
 							me, CHUNK(i), errno);
 						tst_exit();
 					}
@@ -483,10 +483,10 @@ int dotest(testers, me, fd)
 
 		fsync(fd);
 		++misc_cnt[(int)m_fsync];
-		//tst_resm(TINFO, "\tTest[%d] val %d done, count = %d, collide = %d.\n",
+		//tst_resm(TINFO, "\tTest[%d] val %d done, count = %d, collide = %d.",
 		//		me, val, count, collide);
 		//for(i = 0; i < NMISC; i++)
-		//	tst_resm(TINFO, "\t\tTest[%d]: %d %s's.\n", me, misc_cnt[i], m_str[i]);
+		//	tst_resm(TINFO, "\t\tTest[%d]: %d %s's.", me, misc_cnt[i], m_str[i]);
 		val0 = val++;
 	}
 	return(0);
@@ -514,7 +514,7 @@ int domisc(me, fd, bits)
 	switch(type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
-			tst_resm(TFAIL, "\tTest[%d]: fsync error %d.\n", me, errno);
+			tst_resm(TFAIL, "\tTest[%d]: fsync error %d.", me, errno);
 			tst_exit();
 		}
 		break;
@@ -565,14 +565,14 @@ int dumpiov(iovptr)
 			++nout;
 		}
 		if (nout > 10) {
-			tst_resm(TINFO, "\t ... more\n");
+			tst_resm(TINFO, "\t ... more");
 			return(0);
 		}
 	}
 	if (i == idx+1)
-		tst_resm(TINFO, "\t%x\n", ((char *)iovptr->iov_base)[idx] & 0xff);
+		tst_resm(TINFO, "\t%x", ((char *)iovptr->iov_base)[idx] & 0xff);
 	else
-		tst_resm(TINFO, "\t%d*%x\n", i-idx, ((char *)iovptr->iov_base)[idx]);
+		tst_resm(TINFO, "\t%d*%x", i-idx, ((char *)iovptr->iov_base)[idx]);
 	return(0);
 }
 
@@ -591,7 +591,7 @@ int dumpbits(bits, size)
 	tst_resm(TINFO, "\tBits array:");
 	for(buf = bits; size > 0; --size, ++buf) {
 		if ((buf-bits) % 16 == 0)
-			tst_resm(TINFO, "\n\t%04x:\t", 8*(buf-bits));
+			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
 		tst_resm(TINFO, "%02x ", (int)*buf & 0xff);
 	}
 	printf("\n");
@@ -605,7 +605,7 @@ int term()
 {
 	register int i;
 
-	tst_resm(TINFO, "\tterm -[%d]- got sig term.\n", getpid());
+	tst_resm(TINFO, "\tterm -[%d]- got sig term.", getpid());
 
 	if (parent_pid == getpid()) {
 		for (i=0; i < nchild; i++)
