@@ -114,7 +114,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 	exno = 1;
 	unlink("core");
 
-	for(j = 1; j < 15; j++) {
+	for(j = 1; j < sizeof(signum)/sizeof(*signum); j++) {
 		sig=signum[j];
 		if (sig != SIGKILL )
 #ifndef BCS
