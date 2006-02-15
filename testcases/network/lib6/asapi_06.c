@@ -45,7 +45,6 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
-#include <sys/errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h>

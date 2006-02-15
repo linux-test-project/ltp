@@ -41,7 +41,7 @@
  */
 
 #include <stdio.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

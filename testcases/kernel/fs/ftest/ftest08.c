@@ -49,7 +49,7 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <signal.h>		/* DEM - added SIGTERM support */
 #include <unistd.h>
 #include "test.h"

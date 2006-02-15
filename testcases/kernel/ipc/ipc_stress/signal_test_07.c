@@ -68,7 +68,7 @@
 #include <unistd.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
-#include <sys/errno.h>
+#include <errno.h>
 
 #ifdef _LINUX_
 // bits/signum.h defines _NSIG as 64

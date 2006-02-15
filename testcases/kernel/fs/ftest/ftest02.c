@@ -52,7 +52,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/mount.h>
 #include <signal.h>		/* DEM - added SIGTERM support */
 #include <unistd.h>

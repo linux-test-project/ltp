@@ -45,7 +45,6 @@
 
 #include <sys/time.h>
 #include <netinet/in.h>
-#include <sys/errno.h>
 
 #include "test.h"
 #include "usctest.h"

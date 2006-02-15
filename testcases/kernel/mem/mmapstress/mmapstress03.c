@@ -39,7 +39,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/mman.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <unistd.h>
 #include <limits.h>
 

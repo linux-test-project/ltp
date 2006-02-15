@@ -48,7 +48,6 @@
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <netinet/in.h>
-#include <sys/errno.h>
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sctputil.h>

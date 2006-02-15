@@ -54,7 +54,7 @@
 #include <linux/socket.h>
 #include <netinet/in.h>         /* for sockaddr_in */
 #include <arpa/inet.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/uio.h>
 #include <netinet/sctp.h>
 #include "sctputil.h"

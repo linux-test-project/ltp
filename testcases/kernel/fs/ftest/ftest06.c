@@ -53,7 +53,7 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <signal.h>		/* DEM - added SIGTERM support */
 #include <unistd.h>
 #include "test.h"

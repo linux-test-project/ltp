@@ -61,7 +61,7 @@
 #include <sys/param.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <sys/uio.h>
 #include <fcntl.h>
 #include <signal.h>		/* DEM - added SIGTERM support */
