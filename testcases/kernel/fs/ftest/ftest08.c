@@ -90,8 +90,6 @@ int	pidlist[MAXCHILD];
 char	filename[128];
 char	*prog;
 
-char	msg1[] = "Error on openning console.\n";
-char	msg2[] = "1st open not fd 0!\n";
 int	local_flag;
 
 /*--------------------------------------------------------------*/

@@ -98,8 +98,6 @@ char	*prog;
 char	fuss[40] = "";		/* directory to do this in */
 char	homedir[200]= "";	/* where we started */
 
-char	msg1[] = "Error on openning console.\n";
-char	msg2[] = "1st open not fd 0!\n";
 int 	local_flag;
 
 /*--------------------------------------------------------------*/

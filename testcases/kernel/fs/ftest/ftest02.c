@@ -78,9 +78,6 @@ int mkname(char*, int, int);
 int term();
 void cleanup(); 
 
-char	msg1[] = "Error on openning console.\n";
-char	msg2[] = "1st open not fd 0!\n";
-
 /*--------------------------------------------------------------*/
 
 
