@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.h,v 1.3 2001/03/08 19:13:21 nstraz Exp $ */
+/* $Id: zoolib.h,v 1.4 2006/02/16 05:56:51 vapier Exp $ */
 #ifndef ZOOLIB_H
 #define ZOOLIB_H
 
@@ -40,9 +40,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/signal.h>
-
-int rec_signal; 	/* received signal */
-int send_signal;	/* signal to send */
 
 typedef FILE *zoo_t;
 #define ZELEN 512

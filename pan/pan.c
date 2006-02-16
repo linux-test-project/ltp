@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.21 2004/07/15 19:13:51 robbiew Exp $ */
+/* $Id: pan.c,v 1.22 2006/02/16 05:56:51 vapier Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -122,6 +122,10 @@ static char *panname = NULL;
 static char *test_out_dir = NULL;	/* dir to buffer output to */
 zoo_t zoofile;
 static char *reporttype = NULL;
+
+/* zoolib */
+int rec_signal; 	/* received signal */
+int send_signal;	/* signal to send */
 
 /* Debug Bits */
 int Debug = 0;
