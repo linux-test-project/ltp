@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		 	tst_brkm(TFAIL, cleanup, "parent failed to open the"
 						 "file, errno %d", errno);
 
-		pid = fork();
+		pid = FORK_OR_VFORK();
 		if(pid == -1)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 					errno);
