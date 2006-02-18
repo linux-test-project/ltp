@@ -44,6 +44,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
+#include <linux/fs.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -52,7 +53,8 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 #if !defined(NR_OPEN)
-long NR_OPEN;
+//Taken from definition in /usr/include/linux/fs.h
+# define NR_OPEN (1024*1024)
 #endif
 
 void setup();
@@ -119,11 +121,6 @@ setup()
 		tst_brkm(TBROK, tst_exit, "must run test as root");
 	}
 
-#if !defined(NR_OPEN)
-        /* Define NR_OPEN */
-        NR_OPEN = 1024*1024; //Taken from definition in /usr/include/linux/fs.h
-#endif
- 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
