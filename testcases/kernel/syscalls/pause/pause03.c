@@ -110,7 +110,7 @@ main(int ac, char **av)
 		Tst_count=0;
 
 		/* Creat a new process using fork() */
-		if ((cpid = fork()) == -1) {
+		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 

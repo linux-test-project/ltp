@@ -413,7 +413,7 @@ start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 		return -1;
 	}
 
-	switch ((pid = fork())) {
+	switch ((pid = FORK_OR_VFORK())) {
 	case 0:	/* child */
 #ifdef UCLINUX
 		if (self_exec(argv0, "dd", sfd, ufd) < 0) {
