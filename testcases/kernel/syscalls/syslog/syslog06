@@ -34,6 +34,12 @@ DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
 
+if ! [ -e /etc/init.d/syslog ]
+then
+	tst_resm TINFO "/etc/init.d/syslog is not installed"
+	exit 0
+fi
+
 cleanup()
 {
 if [ $status_flag -eq 0 ]
