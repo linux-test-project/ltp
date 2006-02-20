@@ -131,7 +131,8 @@ int i;		/* Loop Counters */
 int main(int argc, char *argv[])
 {
 	int lc, fd, pagesize;
-	char *file;
+	unsigned long len;
+	char *file,*low, *high;
 	struct stat stat;
 	char *ptr_memory_allocated = NULL;
 	char *tmp_memory_allocated = NULL;
@@ -171,9 +172,10 @@ int main(int argc, char *argv[])
 			filename);
 #endif
 
-		/* Writing 40 KB of random data into this file
-		   [32 * 1280 = 40960] */
-		for(i=0; i<1280; i++) {	
+		pagesize = getpagesize();
+
+		/* Writing 16 pages of random data into this file */
+		for(i=0; i < (pagesize/2); i++) {	
 			if(write(fd, str_for_file, strlen(str_for_file)) < 0) {
 				tst_brkm(TBROK, cleanup,
 					"Could not write data to file \"%s\"",
@@ -193,7 +195,6 @@ int main(int argc, char *argv[])
 				filename);
 		}
 
-		pagesize=getpagesize();
 
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "The Page size is %d", pagesize);
@@ -224,29 +225,53 @@ int main(int argc, char *argv[])
 #endif /* if !defined(UCLINUX) */
 
         	/* Test Case 4 */
-        	if ((file = (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
+
+		/* We cannot be sure, which region is mapped, which is not, at runtime.
+		 * So, we will create two maps(of the same file), unmap the map at higher address.
+		 * Now issue an madvise() on a region covering the region which we unmapped.
+		 */
+		
+        	if ((low = (char *) mmap (NULL, stat.st_size/2, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
+		
+        	if ((high = 
+			(char *) mmap (NULL, stat.st_size/2, PROT_READ, MAP_SHARED, fd, stat.st_size/2 )) == (char *)-1) {
+			tst_brkm(TBROK, cleanup, "Could not mmap file");
+        	}
+
+		/* Swap if necessary to make low < high */
+		if (low > high) {
+			char* tmp;
+			tmp = high; 
+			high = low;
+			low = tmp;
+		}
+
+		/* Choose a len to cover a region from low into the map @ high */
+		len = (high - low) + pagesize;
+
+		/* Now we have two maps. Unmap the map @ higher address (now @high) */
+		if(munmap(high,stat.st_size/2) < 0) 
+			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
+				        errno, strerror(errno));
+
 #ifdef __ia64__
-                TEST(madvise(file,stat.st_size + 5 * pagesize,MADV_NORMAL));
+                TEST(madvise(low,len,MADV_NORMAL));
 #else
 
-/*
- *        	TEST(madvise(file,stat.st_size + stat.st_size ,MADV_NORMAL));
- *	prashant yendigeri added the below line because with above line ENOMEM was not generated 
- *		under most test conditions. 
- * 		Changed multiplier from 5 to 30, newer version of gcc links library code
- *		which itself takes 28 pages causing the TC to PASS when it should FAIL ENOMEM
- *		This is bugzilla defect 21046	
-*/
-        	TEST(madvise(file,stat.st_size + 30 * pagesize,MADV_NORMAL));
+        	TEST(madvise(low,len,MADV_NORMAL));
 #endif
 		check_and_print(ENOMEM);
 
 		/* Test Case 5 */
 #ifdef __ia64__
-                TEST(madvise(file, 5 * pagesize, MADV_WILLNEED));
+                TEST(madvise(low, 5 * pagesize, MADV_WILLNEED));
 #else
+		/* Unmap the file map from low */
+		if(munmap(low,stat.st_size/2) < 0) 
+			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
+				        errno, strerror(errno));
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *) malloc(5 * pagesize);
 		/* Take temporary pointer for later freeing up the original one */
@@ -257,12 +282,6 @@ int main(int argc, char *argv[])
 #endif
 		check_and_print(EBADF);
 		free((void *)ptr_memory_allocated);
-
-		/* Finally Unmapping the whole file */
-		if(munmap(file,stat.st_size) < 0) {
-			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
-				errno, strerror(errno));
-        	}
 		
 		close(fd);
 	}
