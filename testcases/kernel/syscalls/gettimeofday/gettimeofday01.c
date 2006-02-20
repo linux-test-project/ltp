@@ -48,6 +48,10 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
 char *TCID = "gettimeofday01";
 #ifndef __x86_64__
