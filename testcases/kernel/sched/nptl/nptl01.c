@@ -46,7 +46,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define MAXTIME 300		/* Maximum # of secs to wait before failing */
+#define MAXTIME 72000		/* Maximum # of secs to wait before failing */
 #define NUMLOOPS 100000		/* # of loops */
 
 char *TCID="nptl01";            /* Test program identifier.    */
