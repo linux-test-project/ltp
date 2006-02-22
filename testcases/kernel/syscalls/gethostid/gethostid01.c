@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.12 2006/01/31 15:50:11 mridge Exp $ */
+/* $Id: gethostid01.c,v 1.13 2006/02/22 00:19:56 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -121,6 +121,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "test.h"
 #include "usctest.h"
