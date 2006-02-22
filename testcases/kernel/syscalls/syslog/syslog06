@@ -76,11 +76,18 @@ syslog_case6()
 
 
 	# check if syslogd command exits.
+	echo
+	# check if syslogd command exits. Check for both syslogd & syslogd-ng in SLES10
 	if [ -z $(which syslogd) ]
 	then
-		tst_resm TBROK "syslogd no such command"
+	if [ -z $(which syslog-ng) ]
+	then 
+		tst_resm TBROK "syslogd or syslog-ng  no such command"
 		status_flag=1
 		cleanup
+	fi
+	else 
+		echo "Running tests"
 	fi
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
