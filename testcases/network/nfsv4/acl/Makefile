@@ -3,22 +3,23 @@
 #
 # to make tests, use 'make'
 
+ifeq ($(shell echo | $(CC) $(CFLAGS) -E -include sys/acl.h - &>/dev/null && echo yes),yes)
+ACLTESTS := acl1 
+else
+ACLTESTS :=
+endif
+
 #include ../tests.init
-CFLAGS=-g
-LIBS = -lacl
-ACLTESTS=acl1 
+LIBS := -lacl
 
-all:
-	@make $(ACLTESTS)
-	if test ! -x runtest; then chmod a+x runtest; fi
+all: $(ACLTESTS)
+	@chmod a+x runtest
 
-# Basic acl tests
-acl1:	acl1.c
-	$(CC) $(CFLAGS) -o acl1 acl1.c $(LIBS)
+acl1: acl1.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o acl1 acl1.c $(LIBS)
 
-stress:	stress.c
-	$(CC) $(CFLAGS) -o stress stress.c $(LIBS)
+install: $(ACLTESTS)
+	@set -e; for i in $(ACLTESTS); do ln -f $$i ../../../bin ; done
 
-clean: acl1
-	rm -f acl1
-
+clean:
+	rm -f $(ACLTESTS)
