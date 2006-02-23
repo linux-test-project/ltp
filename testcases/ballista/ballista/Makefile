@@ -119,5 +119,6 @@ pause_harness : pause_harness.cpp ${OBJS}
 
 # clean up everything that we build
 clean :
+	$(MAKE) -C templates clean
 	rm -f *.o ballista callGen callGen_standAlone genCodeCreator replacer testmarshal
 
