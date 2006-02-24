@@ -23,11 +23,10 @@ CFLAGS+=	-I../../../../include  -Wall
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
 LOADLIBES+=	$(if $(UCLINUX),-lc)
-LDFLAGS=
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-SCRIPTS= syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
+SRCS:=$(wildcard *.c)
+TARGETS:=$(patsubst %.c,%,$(SRCS))
+SCRIPTS:= syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
 
 all: $(TARGETS) 
 

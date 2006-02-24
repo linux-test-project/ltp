@@ -1,8 +1,7 @@
 CFLAGS += -Wall
-LDFLAGS := 
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS:=$(wildcard *.c)
+TARGETS:=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
  
