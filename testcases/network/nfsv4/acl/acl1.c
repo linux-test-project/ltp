@@ -29,11 +29,6 @@
 #include <sys/acl.h>
 #include <errno.h>
 
-static int Tflag = 0;	/* print timing */
-static int Sflag = 0;	/* don't print non-error messages */
-static int Fflag = 0;	/* test function only;  set count to 1, negate -t */
-static int Nflag = 0;	/* Suppress directory operations */
-
 #define OP_READ 0x1
 #define OP_WRITE 0x2
 #define OP_EXEC 0x4
@@ -359,9 +354,6 @@ main(argc, argv)
 	char **argv;
 {
 	int result;
-	int grp,i;
-	gid_t *grouplist;
-	int def;
 	aclstat.ok=0;
 	aclstat.failed=0;
 	acl_t testacl;
