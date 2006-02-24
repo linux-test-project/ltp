@@ -4,8 +4,12 @@ check_header = $(shell \
 	else echo no ; fi)
 
 ifeq ($(call check_header,sys/xattr.h),yes)
+TARGETS := acl_file_test acl_link_test
+else
+TARGETS :=
+endif
 
-all: acl_file_test acl_link_test
+all: $(TARGETS)
 
 acl_file_test: acl_file_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o acl_file_test acl_file_test.c
@@ -13,15 +17,7 @@ acl_link_test: acl_link_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o acl_link_test acl_link_test.c
 
 install:
-	ln -f acl_file_test ../../../bin/
-	ln -f acl_link_test ../../../bin/
-	ln -f acl_test01 ../../../bin/
-
-else
-
-all install:
-	@echo File sys/xattr.h does not exist, attr tests cannot be build!
-endif
+	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/ ; done
 
 clean:
 	rm -f acl_file_test acl_link_test
