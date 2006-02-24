@@ -37,12 +37,12 @@
  * RESTRICTIONS
  */
 
-#include <features.h>
-#ifndef __UCLIBC__
-
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #endif
+
+#include <features.h>
+#ifndef __UCLIBC__
 
 #ifdef __arm__
 #define ADDRESS_OFFSET 0x8000
