@@ -5,8 +5,6 @@
 # $ CROSS_COMPILER=/opt/cegl-1.4/hardhat/devkit/ppc/405/bin/powerpc-linux-
 # $ make \
 #     CROSS_CFLAGS="-mcpu=403 -D__PPC405__" \
-#     CC=${CROSS_COMPILER}gcc \
-#     AR=${CROSS_COMPILER}ar \
 #     LDFLAGS=-static \
 #     LOADLIBES="-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc"
 #
@@ -14,12 +12,10 @@
 # following lines:
 #   CROSS_COMPILER=/opt/ppc64/powerpc64-linux/bin/powerpc64-linux-
 #   CROSS_CFLAGS= -mpowerpc64
-#   CC=$(CROSS_COMPILER)gcc
-#   AR=$(CROSS_COMPILER)ar 
 #   LDFLAGS=-static 
 #   LOADLIBES=-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc
 #   LIB_DIR=/lib64
-#   export CC AR LDFLAGS LOADLIBES LIB_DIR
+#   export LOADLIBES LIB_DIR
 #
 # Or, you can save all your settings into the local 'config.mk' file.
 # Just use the same syntax as above for the Makefile.
@@ -29,9 +25,18 @@
 # in the commandline and in the Makefiles use a dummy variable like in
 # CFLAGS
 
--include config.mk
+ifdef CROSS_COMPILE
+CROSS_COMPILER = $(CROSS_COMPILE)
+endif
+ifdef CROSS_COMPILER
+CC=$(CROSS_COMPILER)gcc
+AR=$(CROSS_COMPILER)ar
+endif
 
-export CFLAGS+= -Wall $(CROSS_CFLAGS)
+export CFLAGS += -Wall $(CROSS_CFLAGS)
+export CC AR LDFLAGS
+
+-include config.mk
 
 all: libltp.a 
 	@$(MAKE) -C pan $@
