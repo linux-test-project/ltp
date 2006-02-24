@@ -61,25 +61,25 @@
  * RESTRICTIONS
  * None
  *****************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
-#include <asm/unistd.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <linux/net.h>
 #include <sys/un.h>
 #include <netinet/in.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "socketcall03";		 		 /* Test program identifier.    */
+
 #ifdef __NR_socketcall
 
-_syscall2(int ,socketcall ,int ,call, unsigned long *, args);
+#define socketcall(call, args) syscall(__NR_socketcall, call, args)
 
 void setup();
 void cleanup();
