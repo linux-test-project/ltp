@@ -23,8 +23,11 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
+* $Id: sfunc.c,v 1.5 2006/02/24 02:13:40 vapier Exp $
 * $Log: sfunc.c,v $
+* Revision 1.5  2006/02/24 02:13:40  vapier
+* kill off warning about j being unused
+*
 * Revision 1.4  2005/05/04 17:54:00  mridge
 * Update to version 1.2.8
 *
@@ -379,26 +382,24 @@ void mark_buffer(void *buf, const size_t buf_len, void *lba, const OFF_T pass_co
 	OFF_T local_lba = *plocal_lba;
 	OFF_T *off_tbuf = buf;
 	OFF_T off_tpat = 0, off_tpat2 = 0;
-	size_t i = 0, j = 0;
+	size_t i = 0;
 
 #ifdef WINDOWS
 	ucharpattern = (unsigned char *) &pass_count;
 	for(i=0;i<sizeof(OFF_T);i++) {
 		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
 	}
-#endif
-#ifdef AIX
+#elif defined AIX
 	off_tpat2 = pass_count;
-#endif
-#ifdef LINUX
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#elif defined LINUX
+# if __BYTE_ORDER == __LITTLE_ENDIAN
 	ucharpattern = (unsigned char *) &pass_count;
 	for(i=0;i<sizeof(OFF_T);i++) {
 		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
 	}
-#else
+# else
 	off_tpat2 = pass_count;
-#endif
+# endif
 #endif
 
 	ucharpattern = (unsigned char *) &local_lba;
@@ -412,23 +413,23 @@ void mark_buffer(void *buf, const size_t buf_len, void *lba, const OFF_T pass_co
 		case MARK_ALL :
 			for(i=0;i<buf_len;i=i+BLK_SIZE) {
 #ifdef WINDOWS
+				size_t j;
 				off_tpat = 0;
 				for(j=0;j<sizeof(OFF_T);j++) {
 					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
 				}
-#endif
-#ifdef AIX
+#elif defined AIX
 				off_tpat = local_lba;
-#endif
-#ifdef LINUX
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#elif defined LINUX
+# if __BYTE_ORDER == __LITTLE_ENDIAN
+				size_t j;
 				off_tpat = 0;
 				for(j=0;j<sizeof(OFF_T);j++) {
 					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
 				}
-#else
+# else
 				off_tpat = local_lba;
-#endif
+# endif
 #endif
 				/* fill first 8 bytes with lba number */
 				*(off_tbuf+(i/sizeof(OFF_T))) = off_tpat;
