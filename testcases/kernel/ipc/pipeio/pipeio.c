@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.7 2005/12/05 19:15:19 mridge Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.8 2006/02/24 02:36:35 vapier Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -91,7 +91,6 @@ myexit (int x)
 void sig_handler(), help(), usage(), prt_buf(), prt_examples();
 void sig_child();
 
-char *Progname;
 int count = 0;
 int Nchildcomplete = 0;
 
@@ -155,11 +154,6 @@ char *av[];
 	dir[0] = '\0';
 	sprintf(pname,"%s.%d",PPATH,getpid());
 
-	if ((Progname = (char *)strrchr(av[0],'/')) == NULL)
-                Progname = av[0];
-        else
-                ++Progname;
-
 	if( (toutput=getenv("TOUTPUT")) != NULL ) {
 	    if( strcmp( toutput, "NOPASS") == 0 ) {
 		quiet=1;
@@ -191,20 +185,20 @@ char *av[];
 		case 'C':
 			fprintf(stderr,
 			    "%s: --C option not supported on this architecture\n",
-			    Progname);
+			    TCID);
 			exit(1);
 			break;
 		case 'c':	/* number childern */
 			if (sscanf(optarg, "%d", &num_wrters) != 1) {
 				fprintf(stderr,"%s: --c option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( num_wrters <= 0 ) {
 				fprintf(stderr,
 				    "%s: --c option must be greater than zero.\n",
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -212,14 +206,14 @@ char *av[];
 		case 'e':	/* exit on error # */
 			if (sscanf(optarg, "%d", &exit_error) != 1) {
 				fprintf(stderr,"%s: --e option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( exit_error < 0 ) {
 				fprintf(stderr,
 				    "%s: --e option must be greater than zero.\n",
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -254,7 +248,7 @@ char *av[];
 
 			default :
 				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				fprintf(stderr,
 				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
 				exit(1);
@@ -265,7 +259,7 @@ char *av[];
 			if ( *cp ) {
 			    if ( sscanf(cp, "%i", &format_size) != 1 ) {
 				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				fprintf(stderr,
 				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
 				exit(1);
@@ -278,7 +272,7 @@ char *av[];
      			if((iotype=lio_parse_io_arg1(optarg)) == -1 ) {
          		    fprintf(stderr,
              			"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
-             			Progname);
+             			TCID);
          		    exit(1);
      			}
 			break;
@@ -291,14 +285,14 @@ char *av[];
 		case 'n':	/* number writes per child */
 			if (sscanf(optarg, "%d", &num_writes) != 1) {
 				fprintf(stderr,"%s: --i/n option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( num_writes < 0 ) {
 				fprintf(stderr,
 				    "%s: --i/n option must be greater than equal to zero.\n", 
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -309,20 +303,20 @@ char *av[];
 			break;
 		case 'P':	/* panic flag */
 			fprintf(stderr, "%s: --P not supported on this architecture\n",
-			    Progname);
+			    TCID);
 			exit(1);
 			break;
 		case 'p':	/* ping */
 			if (sscanf(optarg, "%d", &num_rpt) != 1) {
 				fprintf(stderr,"%s: --p option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( num_rpt < 0 ) {
 				fprintf(stderr,
 					"%s: --p option must be greater than equal to zero.\n",
-					Progname);
+					TCID);
 				usage();
 				exit(1);
 			}
@@ -333,14 +327,14 @@ char *av[];
 		case 's':	/* size */
 			if (sscanf(optarg, "%d", &size) != 1) {
 				fprintf(stderr,"%s: --s option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( size <= 0 ) {
 				fprintf(stderr,
 				    "%s: --s option must be greater than zero.\n",
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -355,14 +349,14 @@ char *av[];
 			d = strtod(optarg, &cp);
 			if (*cp != '\0') {
 				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( d < 0 ) {
 				fprintf(stderr,
 				    "%s: --w option must be greater than zero.\n",
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -372,14 +366,14 @@ char *av[];
 			d = strtod(optarg, &cp);
 			if (*cp != '\0') {
 				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
-					Progname,optarg);
+					TCID,optarg);
 				usage();
 				exit(1);
 			}
 			else if ( d < 0 ) {
 				fprintf(stderr,
 				    "%s: --w option must be greater than zero.\n",
-				    Progname);
+				    TCID);
 				usage();
 				exit(1);
 			}
@@ -418,11 +412,11 @@ char *av[];
 		if ( (num_writes*size)%PIPE_BUF ) 
 		    j++;
 		num_writes=j;
-	        printf("%s: adjusting i/o size to %d, and # of writes to %d\n",
-		    Progname, PIPE_BUF, num_writes);
+	        tst_resm (TINFO, "adjusting i/o size to %d, and # of writes to %d",
+		    PIPE_BUF, num_writes);
 	    }
 	    else {
-		printf("%s: adjusting i/o size to %d\n", Progname, PIPE_BUF);
+		tst_resm (TINFO, "adjusting i/o size to %d", PIPE_BUF);
 	    }
 	    size=PIPE_BUF;
 	
@@ -430,7 +424,7 @@ char *av[];
 
 	if ((writebuf = (char *) malloc(size)) == NULL ||
 	    (readbuf = (char *) malloc(size)) == NULL) {
-		perror("malloc() failed:");
+		tst_resm (TFAIL, "malloc() failed: %s", strerror(errno));
 		
 		exit(1);
 	}
@@ -441,7 +435,7 @@ char *av[];
 
 	if ( background ) {
 	    if ( (n=fork() ) == -1 ) {
-		fprintf(stderr,"%s: fork failed, errno:%d\n", Progname, errno);
+		tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
 		exit(1);
 	    }
 	    else if ( n != 0 ) /* parent */
@@ -450,9 +444,7 @@ char *av[];
 
 	if ( unpipe ) {
 		if ( pipe(fds) == -1 ) {
-			fprintf(stderr,"%s: ERROR could not create un-named pipe\n",Progname);
-			perror("pipe");
-			fflush(stderr);
+			tst_resm (TFAIL, "pipe() failed to create un-named pipe: %s", strerror(errno));
 			exit(1);
 		}
 		read_fd = fds[0];
@@ -461,20 +453,14 @@ char *av[];
 		blk_type = UNNAMED_IO;
 	} else {
 		if (strlen(dir) && chdir(dir) == -1) {
-			fprintf(stderr, "%s:  ERROR could not chdir to %s",
-				Progname, dir);
-			perror("chdir");
-			fflush(stderr);
+			tst_resm (TFAIL, "chdir(%s) failed: %s", dir, strerror(errno));
 			exit(1);
 		}
 
 		if ( stat(pname, &stbuf) == -1 ) {
 
 		    if ( mkfifo(pname,0777) == -1 ) {
-			fprintf(stderr,"%s: ERROR could not create pipe %s\n",Progname,pname);
-			fprintf(stderr,"mkfifo(%s,0777) failed, errno:%d %s\n",
-			    pname, errno, strerror(errno));
-			fflush(stderr);
+			tst_resm (TFAIL, "mkfifo(%s,0777) failed: %s", pname, strerror(errno));
 			exit(1);
 		    }
 		}
@@ -489,8 +475,7 @@ printf("num_wrters = %d\n", num_wrters);
 
 	for (i=num_wrters; i > 0; --i) {
 		if ((c=fork()) < 0) {
-			fprintf(stderr,"%s: ERROR could not fork\n",Progname);
-			perror("fork() failed:");
+			tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
 			exit(1);
 		}
 		if (c == 0) break;	/* stop child from forking */
@@ -502,12 +487,7 @@ printf("child after fork pid = %d\n", getpid());
 		if ( ! unpipe ) {
 			if (ndelay) sleep(1);
 			if ((write_fd = open(pname,O_WRONLY|ndelay)) == -1) {
-				fprintf(stderr,"%s: ERROR child could not open pipe %s\n",
-					Progname,pname);
-				fprintf(stderr, "open(%s, %#o) failed, errno:%d %s\n",
-				    pname, O_WRONLY|ndelay, errno, 
-				    strerror(errno));
-				fflush(stderr);
+				tst_resm (TFAIL, "child pipe open(%s, %#o) failed: %s", pname, O_WRONLY|ndelay, strerror(errno));
 				exit(1);
 			}
 		}
@@ -537,8 +517,8 @@ printf("child after fork pid = %d\n", getpid());
 			
                         if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
                                                         SIGUSR1, &cp, 0)) == -1 ) {
-                                fprintf(stderr, "%s: cnt:%d %s\n", Progname, j, cp);
-                                fflush(stderr);
+                                tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed: %s",
+                                          j, cp, strerror(errno));
                                 exit(1);
                         }
 			if ( ndelay && nb == 0 ) {
@@ -549,19 +529,15 @@ printf("child after fork pid = %d\n", getpid());
 			 * the return will be -errno.
 			 */
 			else if (nb < 0 )
-				fprintf(stdout,
-					"%s: ERROR write count %d: %s\n",
-					Progname,j,cp);
+				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed; it returned %d", j, cp, nb);
 			else if (nb != size ) {
-				fprintf(stdout,
-					"%s: ERROR write count %d, wrote only wrote %d and expected %d.\n",
-					Progname,j,nb,size);
+				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed, write count %d, but expected to write %d",
+				          j, cp, nb, size);
 			}
 		        if (verbose)
-				fprintf(stdout,
-					"%s: %d write count %d,wrote %d bytes expected %d bytes\n",
-					Progname,getpid(),j,nb,size);
-			
+				tst_resm (TINFO, "pass %d: pid %d: wrote %d bytes, expected %d bytes",
+				          j, getpid(), nb, size);
+
 			if (chld_wait) {
                 		clock=time(0);
                			srand48(clock);
@@ -592,12 +568,7 @@ printf("child after fork pid = %d\n", getpid());
 
 		if ( ! unpipe ) {
 			if ((read_fd = open(pname,O_RDONLY|ndelay)) == -1) {
-				fprintf(stderr,"%s: ERROR parent could not open pipe %s\n",
-					Progname,pname);
-				fprintf(stderr, "open(%s, %#o) failed, errno:%d %s\n",
-				    pname, O_RDONLY|ndelay, errno, 
-				    strerror(errno));
-				fflush(stderr);
+				tst_resm (TFAIL, "parent pipe open(%s, %#o) failed: %s", pname, O_WRONLY|ndelay, strerror(errno));
 				exit(1);
 			}
 		}
@@ -618,9 +589,8 @@ printf("child after fork pid = %d\n", getpid());
 			++count;
 			if ((nb = lio_read_buffer(read_fd, iotype, readbuf, size,
                    					SIGUSR1, &cp, 0)) == -1 ) {
-				fprintf(stderr, "%s: cnt:%d %s\n", 
-				     Progname, count, cp);
-				fflush(stderr);
+				tst_resm (TFAIL, "pass %d, count %d: lio_read_buffer(%s) failed: %s",
+				          i, count, cp, strerror(errno));
 				exit(1);
 			}
                         /*
@@ -628,9 +598,7 @@ printf("child after fork pid = %d\n", getpid());
                          * the return will be -errno.
                          */
                         else if (nb < 0 ) {
-			    fprintf(stdout,
-					"%s: ERROR read count %d: %s\n",
-					Progname,i,cp);
+			    tst_resm (TFAIL, "pass %d: lio_read_buffer(%s) failed; it returned %d", i, cp, nb);
 			    ++i;
 			    count--;
 			    continue;
@@ -641,28 +609,22 @@ printf("child after fork pid = %d\n", getpid());
 /*
 					fprintf(stdout,
 						"%s: Nothing on the pipe (%d),read count %d (read not counted)\n",
-						Progname,empty_read,count);
+						TCID,empty_read,count);
  */
 					fflush(stdout);
 					++i;
 					count--;
 					continue;
 				} else if (nb < size && size <= PIPE_BUF) {
-					fprintf(stdout,
-						"%s: partial read from the pipe: read %d bytes, expected %d, read count %d\n",
-						Progname,nb, size, count);
-					fflush(stdout);
+					tst_resm (TFAIL, "pass %d: partial read from the pipe: read %d bytes, expected %d, read count %d",
+					          i, nb, size, count);
 					++error;
 				} else if (nb == size) {
 					for (j=2*NBPW;j < size; ++j) {
 						if (writebuf[j] != readbuf[j]) {
 							++error;
-							fprintf(stdout,"%s 1 FAIL data error on byte %d\n",
-								Progname,j);
-							fprintf(stdout,
-							"%s: rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
-							Progname,count,size,pipe_type,blk_type,
-							empty_read,error);
+							tst_resm (TFAIL, "1 FAIL data error on byte %d; rd# %d, sz= %d, %s %s empty_reads= %d, err= %d",
+							          j, count, size, pipe_type, blk_type, empty_read, error);
 							prt_buf(&readbuf,readbuf,format_size,format);
 							fflush(stdout);
 							if ( exit_error && exit_error == error )
@@ -676,25 +638,20 @@ printf("child after fork pid = %d\n", getpid());
 				if (verbose || (num_rpt && !(count % num_rpt))) {
 					ctime = time(0);
 					dtime = ctime - stime;	/* elapsed time */
-					fprintf(stdout,
-						"%s:(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
-						Progname,(int)dtime,count,size,pipe_type,
-						blk_type,empty_read,error);
+					tst_resm (TFAIL, "(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
+						(int)dtime,count,size,pipe_type,blk_type,empty_read,error);
 					fflush(stdout);
 				}
 			}
 		}
 output:
 		if (error)
-			fprintf(stdout,
-				"%s 1 FAIL %d data errors on pipe, read size = %d, %s %s\n",
-				Progname,error,size,pipe_type,blk_type);
+			tst_resm (TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
+			          error,size,pipe_type,blk_type);
 		else
 			if( !quiet )
-				fprintf(stdout,
-					"%s 1 PASS %d pipe reads complete, read size = %d, %s %s\n",
-					Progname,count+1,size,pipe_type,blk_type);
-		fflush(stdout);
+				tst_resm (TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
+				          count+1,size,pipe_type,blk_type);
 
 		if (!unpipe)
 			unlink(pname);
@@ -706,7 +663,7 @@ output:
 void
 usage ()
 {
-	fprintf(stderr, "Usage: %s [-BbCEv][-c #writers][-D pname][-d dir][-h][-e exit_num][-f fmt][-l][-i #writes][-n #writes][-p num_rpt]\n\t[-s size][-W max_wait][-w max_wait][-u]\n",Progname);
+	fprintf(stderr, "Usage: %s [-BbCEv][-c #writers][-D pname][-d dir][-h][-e exit_num][-f fmt][-l][-i #writes][-n #writes][-p num_rpt]\n\t[-s size][-W max_wait][-w max_wait][-u]\n",TCID);
 	fflush(stderr);
 
 }
@@ -840,9 +797,9 @@ prt_buf(long addr, char * buf, int length, int format)
 void
 prt_examples()
 {
-    printf("%s -c 5 -i 0 -s 4090 -b\n", Progname);
-    printf("%s -c 5 -i 0 -s 4090 -b -u \n", Progname);
-    printf("%s -c 5 -i 0 -s 4090 -b -W 3 -w 3 \n", Progname);
+    printf("%s -c 5 -i 0 -s 4090 -b\n", TCID);
+    printf("%s -c 5 -i 0 -s 4090 -b -u \n", TCID);
+    printf("%s -c 5 -i 0 -s 4090 -b -W 3 -w 3 \n", TCID);
 
 }
 
@@ -868,7 +825,7 @@ sig_handler(int sig)
 {
 #ifdef SIGRECOVERY
     if ( sig == SIGRECOVERY) {
-	printf("%s: received SIGRECOVERY, count = %d\n", Progname, count);
+	printf("%s: received SIGRECOVERY, count = %d\n", TCID, count);
         fflush(stdout);
 #ifdef linux
 	signal(sig, sig_handler);
@@ -878,7 +835,7 @@ sig_handler(int sig)
 	return;
     }
 #endif
-    printf("%s: received unexpected signal: %d\n", Progname, sig);
+    printf("%s: received unexpected signal: %d\n", TCID, sig);
     fflush(stdout);
     exit(3);
 
