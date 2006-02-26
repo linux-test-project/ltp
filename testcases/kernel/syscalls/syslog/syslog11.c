@@ -147,7 +147,7 @@ main(int argc, char **argv)
 
 			if (TEST_RETURN == UNEXP_RET_VAL) {
 				tst_resm(TFAIL, "syslog() failed for %s: errno "
-					"%d", tdat[testno].desc, TEST_ERRNO);
+					"%d (%s)", tdat[testno].desc, TEST_ERRNO, strerror(errno));
 			} else {
 				tst_resm(TPASS, "syslog() successful for %s", 
 					tdat[testno].desc);
