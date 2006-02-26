@@ -133,6 +133,7 @@ main(int argc, char **argv)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	struct sigaction sa;
+	int ret;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -167,7 +168,10 @@ main(int argc, char **argv)
 			alarm(0);
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if ( (TEST_RETURN == EXP_RET_VAL) &&
+			/* syslog returns an int, so we need to turn the long
+			 * TEST_RETURN into an int to test with */
+			ret = TEST_RETURN;
+			if ( (ret == EXP_RET_VAL) &&
 				(TEST_ERRNO == tdat[testno].exp_errno) ) {
 				tst_resm(TPASS, "syslog() failed as expected"
 					" for %s : errno %d", tdat[testno].desc,
@@ -177,7 +181,7 @@ main(int argc, char **argv)
 					"unexpected results for %s ; returned"
 					" %d (expected %d), errno %d (expected"
 					" %d)", tdat[testno].desc,
-					TEST_RETURN, EXP_RET_VAL, TEST_ERRNO,
+					ret, EXP_RET_VAL, TEST_ERRNO,
 					tdat[testno].exp_errno);
 			}
 
