@@ -109,7 +109,7 @@ main(int ac, char **av)
 		TEST(execve(test_name, NULL, NULL));
 
 		if (TEST_ERRNO != EMFILE) {
-			tst_resm(TFAIL, "Expected EMFILE(%d) got %d", EMFILE, TEST_ERRNO);
+			tst_resm(TFAIL, "Expected EMFILE(%d) got %d (%s)", EMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
 
