@@ -109,7 +109,8 @@ main(int ac, char **av)
 		TEST(execve(test_name, NULL, NULL));
 
 		if (TEST_ERRNO != EMFILE) {
-			tst_resm(TFAIL, "Expected EMFILE(%d) got %d (%s)", EMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL, "execve(%s) failed: expected EMFILE(%d), got %d (%s)",
+				test_name, EMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
 
@@ -133,7 +134,7 @@ main(int ac, char **av)
 void
 help()
 {
-	printf("  -F <test file> : for example, 'execve04 -F test1'\n");
+	puts("  -F <test file> : for example, 'execve04 -F test1'\n");
 }
 
 /*
@@ -174,22 +175,25 @@ setup()
 	unlink(fname);
 
 	if ((first = fd = creat(fname, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup, "Cannot open first file");
+		tst_brkm(TBROK, cleanup, "Cannot open first file: %s", strerror(errno));
 	}
 
 	close(fd);
 	unlink(fname);
-	tst_resm(TINFO, "first file is #%d", fd);
 
 	for (ifile = first; ifile <= nfile; ifile++) {
 		sprintf(fname, "execve04.%d.%d", ifile, mypid);
 		if ((fd = creat(fname, 0666)) == -1) {
-			tst_resm(TINFO, "couldn't creat file #%d, expected to "
-				 "create %d files", ifile + 1, nfile);
-			break;
+			if (errno == EMFILE) {
+				if (ifile != nfile)
+					tst_resm(TINFO, "couldn't creat file #%d, but this should be ok", ifile+1);
+				break;
+			}
+			tst_resm(TBROK, "couldn't creat file #%d, expected to "
+				 "create %d files: %s", ifile + 1, nfile, strerror(errno));
+			cleanup();
 		}
 	}
-
 }
 
 /*
