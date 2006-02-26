@@ -155,12 +155,17 @@ setup()
 	 * Get the current working directory and append to it the name
 	 * of the executable file specified with the -F option.
 	 * This way when we issue the execve() call later, we get the
-	 * correct path.
+	 * correct path.  But only do this if user did not provide the
+	 * full path to the executable file.
 	 */
-	if ((pname = getcwd(pname, 0)) == NULL) {
-		tst_brkm(TBROK, tst_exit, "Could not get current directory");
+	if (*fname1 != '/') {
+		if ((pname = getcwd(pname, 0)) == NULL) {
+			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+		}
+		snprintf(test_name, sizeof(test_name)-1, "%s/%s", pname, fname1);
+	} else {
+		strncpy(test_name, fname1, sizeof(test_name)-1);
 	}
-	sprintf(test_name, "%s/%s", pname, fname1);
 	
 	/* make temp dir and cd to it */
 	tst_tmpdir();
