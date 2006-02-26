@@ -35,12 +35,6 @@ DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
 
-if ! [ -e /etc/init.d/syslog ]
-then
-	tst_resm TINFO "/etc/init.d/syslog is not installed"
-	exit 0
-fi
-
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -190,6 +184,12 @@ syslog_case8()
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
+
+if ! [ -e /etc/init.d/syslog ]
+then
+	tst_resm TINFO "/etc/init.d/syslog is not installed"
+	exit 0
+fi
 
 RC=0
 status_flag=0
