@@ -117,7 +117,7 @@ int main(int ac, char **av)
 #endif
 			} else {
 				if (setpgid(0, 0) < 0)  {
-					perror("setpgid(parent) failed");
+					tst_resm(TFAIL, "setpgid(parent) failed: %s", strerror(errno));
 					fail = 1;
 				}
 
@@ -164,7 +164,7 @@ do_child_1()
 	sleep(1);
 	
 	if (setpgid(0, 0) < 0) {
-		perror("setpgid");
+		tst_resm(TFAIL, "setpgid(0,0) failed: %s", strerror(errno));
 		exno = 1;
 	}
 	
