@@ -118,8 +118,6 @@ main(int ac, char **av)
 
 		tst_resm(TPASS, "Expected failure - %d : %s", 
 			 TEST_ERRNO, strerror(TEST_ERRNO));
-
-		tst_resm(TINFO, "created %d files, %d allowed", ifile, nfile);
 	}
 	cleanup();
 
@@ -162,8 +160,7 @@ setup()
 	if ((pname = getcwd(pname, 0)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Could not get current directory");
 	}
-	/*sprintf(test_name, "%s/%s", pname, fname1);*/
-	/*printf("test_name is %s\n",test_name);*/
+	sprintf(test_name, "%s/%s", pname, fname1);
 	
 	/* make temp dir and cd to it */
 	tst_tmpdir();
