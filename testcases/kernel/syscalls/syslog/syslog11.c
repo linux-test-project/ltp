@@ -146,8 +146,13 @@ main(int argc, char **argv)
 					tdat[testno].len));
 
 			if (TEST_RETURN == UNEXP_RET_VAL) {
-				tst_resm(TFAIL, "syslog() failed for %s: errno "
-					"%d (%s)", tdat[testno].desc, TEST_ERRNO, strerror(errno));
+				if (TEST_ERRNO == EPERM && geteuid() != 0) {
+					tst_resm(TPASS, "syslog() passed for %s (non-root EPERM is OK)",
+						tdat[testno].desc);
+				} else {
+					tst_resm(TFAIL, "syslog() failed for %s: errno "
+						"%d (%s)", tdat[testno].desc, TEST_ERRNO, strerror(errno));
+				}
 			} else {
 				tst_resm(TPASS, "syslog() successful for %s", 
 					tdat[testno].desc);
