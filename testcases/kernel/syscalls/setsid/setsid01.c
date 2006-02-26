@@ -122,9 +122,9 @@ int main(int ac, char **av)
 				}
 
 				if ((ret = wait(&status)) > 0) {
-					tst_resm(TINFO, "Test {%d} exited "
-						 "status 0x%0x", ret, status);
 					if (status != 0) {
+						tst_resm(TFAIL, "Test {%d} exited "
+							 "status 0x%0x (wanted 0x0)", ret, status);
 						fail = 1;
 					}
 				}
@@ -132,18 +132,16 @@ int main(int ac, char **av)
 			exit(0);
 		} else {
 			if ((ret = wait(&status)) > 0) {
-				tst_resm(TINFO, "Test {%d} exited "
-					 "status 0x%0x", ret, status);
 				if (status != 0) {
+					tst_resm(TFAIL, "Test {%d} exited "
+						 "status 0x%0x (wanted 0x0)", ret, status);
 					fail = 1;
 				}
 			}
 		}
 
-		if (fail || exno) {
-			tst_resm(TINFO, "Test 1: FAILED");
-		} else {
-			tst_resm(TINFO, "Test 1: PASSED");
+		if (!(fail || exno)) {
+			tst_resm(TPASS, "all misc tests passed");
 		}
 	}
 	cleanup();
@@ -200,9 +198,9 @@ do_child_1()
 		}
 		kill(pid, SIGKILL);
 		if ((ret = wait(&status)) > 0) {
-			tst_resm(TINFO, "Test {%d} exited status 0x%-x",
-				 ret, status);
 			if (status != 9) {
+				tst_resm(TFAIL, "Test {%d} exited status 0x%-x (wanted 0x9)",
+					ret, status);
 				exno = 4;
 			}
 		}
