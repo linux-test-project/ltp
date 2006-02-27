@@ -1,8 +1,8 @@
-CFLAGS += -c -O -fPIC 
+CFLAGS += -c -O -fpic
 LDFLAGS += 
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%.o,$(SRCS))
+SRCS:=$(wildcard *.c)
+TARGETS:=$(patsubst %.c,%.o,$(SRCS))
 
 all: $(TARGETS)
 
@@ -12,5 +12,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-
