@@ -200,6 +200,8 @@ void do_block3()  //valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
 
 void do_block4() //invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FAULT
 {
+/* Skip since uClinux does not implement memory protection */
+#ifndef UCLINUX
    int flag = 0;
    tst_resm(TINFO, "Enter Block 4");
 
@@ -216,6 +218,9 @@ void do_block4() //invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FA
    { tst_resm(TFAIL, "Block 4 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 4 PASSED"); }
+#else
+	tst_resm(TINFO, "Skipping Block 4 on uClinux");
+#endif
 }
 
 void do_block5()  //buffer = NULL, and size = 0, should succeed
