@@ -80,6 +80,8 @@ char *TCID = "sysinfo02";	/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;		/* Test case counter for tst_* routines */
 
+#if !defined(UCLINUX)
+
 int
 main(int ac, char **av)
 {
@@ -124,6 +126,16 @@ main(int ac, char **av)
   return(0);
 
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()

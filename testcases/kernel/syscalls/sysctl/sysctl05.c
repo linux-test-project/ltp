@@ -100,6 +100,8 @@ struct testcases {
 		2, (void *)-1, &osnamelth, NULL, 0, NULL, -1, EFAULT }
 };
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -159,6 +161,16 @@ int main(int ac, char **av)
 	/*NOTREACHED*/
 	return(0);
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
