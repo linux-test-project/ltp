@@ -57,12 +57,14 @@
 #include <errno.h>
 #include <sys/time.h>
 
-void cleanup(void);
-void setup(void);
-
 char *TCID= "getitimer02";
 int TST_TOTAL = 1;
 extern int Tst_count;
+
+#if !defined(UCLINUX)
+
+void cleanup(void);
+void setup(void);
 
 int exp_enos[] = {EFAULT, 0};
 
@@ -152,3 +154,12 @@ cleanup(void)
 	tst_exit();
 }
 
+#else
+
+int main(void)
+{
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
