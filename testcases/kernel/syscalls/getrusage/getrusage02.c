@@ -94,7 +94,8 @@ struct test_cases_t {
 	{ RUSAGE_BOTH, &usage, EINVAL },
 	{ RUSAGE_SELF, (struct rusage*) -1, EFAULT }
 };
-int TST_TOTAL = 2;
+
+int TST_TOTAL = sizeof(test_cases)/sizeof(*test_cases);
 
 int
 main(int ac, char **av)

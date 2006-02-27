@@ -79,7 +79,6 @@
 extern int Tst_count;
 
 char *TCID = "getrlimit02";
-int TST_TOTAL = 2;
 
 static void cleanup(void);
 static void setup(void);
@@ -97,6 +96,8 @@ static struct test_case_t {
 };
 
 static int exp_enos[] = {EFAULT, EINVAL, 0};
+
+int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
 
 int
 main(int ac, char **av)

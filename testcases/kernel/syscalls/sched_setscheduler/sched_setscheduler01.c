@@ -62,7 +62,6 @@
 #define INVALID_PID	999999
 
 char *TCID = "sched_setscheduler01";
-int TST_TOTAL = 4;
 extern int Tst_count;
 
 struct sched_param param;
@@ -90,6 +89,8 @@ struct test_case_t {
 	/* The priority value in param invalid - EINVAL*/
 	{0, SCHED_OTHER, &param1, EINVAL}
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(*TC);
 
 int main(int ac, char **av)
 {

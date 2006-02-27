@@ -70,7 +70,6 @@ void cleanup(void);
 void setup(void);
 
 char *TCID = "read02";
-int TST_TOTAL = 3;
 extern int Tst_count;
 
 char file[BUFSIZ];
@@ -96,6 +95,8 @@ struct test_case_t {
 	/* the buffer is invalid - EFAULT */
 	{&fd3, (void *)-1, EFAULT}
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(*TC);
 
 char * bad_addr = 0;
 

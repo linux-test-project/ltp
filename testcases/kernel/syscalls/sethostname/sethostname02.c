@@ -92,7 +92,6 @@ static void cleanup(void);
 static void setup(void);
 
 char *TCID = "sethostname02";
-int TST_TOTAL = 3;
 static char hostname[MAX_LENGTH];
 static char hname[MAX_LENGTH];
 static char largehost[LARGE_LENGTH];
@@ -110,6 +109,8 @@ static struct test_case_t {
 };
 
 static int exp_enos[] = {EINVAL, EINVAL, EFAULT, 0};
+
+int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
 
 int
 main(int ac, char **av)

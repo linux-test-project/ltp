@@ -79,7 +79,6 @@ static void setup();
 static void cleanup();
 
 char *TCID = "ustat02"; 	/* Test program identifier.    */
-int TST_TOTAL = 2;       	/* Total number of test cases. */
 extern int Tst_count;    	/* Test Case counter for tst_* routines */
 
 static int exp_enos[] = {EINVAL, EFAULT, 0};
@@ -92,6 +91,8 @@ static struct test_case_t {
 	{"Invalid parameter", EINVAL, "EINVAL"},
 	{"Bad address", EFAULT, "EFAULT"}
 };
+
+int TST_TOTAL = sizeof(testcase)/sizeof(*testcase);	/* Total number of test cases. */
 
 dev_t dev_num[2];
 struct ustat *ubuf;

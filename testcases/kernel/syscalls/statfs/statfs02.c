@@ -62,7 +62,6 @@
 #include "usctest.h"
 
 char *TCID = "statfs02";
-int TST_TOTAL = 5;
 int fileHandle = 0;
 extern int Tst_count;
 
@@ -96,6 +95,8 @@ struct test_case_t {
 	/* buf is an invalid address - EFAULT */
 	{fname, (struct statfs *)-1, EFAULT}
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(*TC);
 
 void setup(void);
 void cleanup(void);

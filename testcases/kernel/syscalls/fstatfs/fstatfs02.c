@@ -56,7 +56,6 @@ void setup(void);
 void cleanup(void);
 
 char *TCID = "fstatfs02";
-int TST_TOTAL = 2;
 extern int Tst_count;
 
 int exp_enos[]={EBADF, EFAULT, 0};
@@ -74,6 +73,8 @@ struct test_case_t {
 	/* EFAULT - address for buf is invalid */
         {1, (void *)-1, EFAULT}
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(*TC);
 
 int main(int ac, char **av)
 {

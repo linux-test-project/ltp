@@ -57,7 +57,6 @@
 #include "usctest.h"
 
 char *TCID = "getcwd01";
-int TST_TOTAL = 4;
 extern int Tst_count;
 char buf[100];
 
@@ -80,6 +79,8 @@ struct test_case_t {
 };
 
 int exp_enos[] = {EFAULT, ENOMEM, EINVAL, ERANGE, 0};
+
+int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
 
 int main(int ac, char **av)
 {
