@@ -67,6 +67,8 @@ extern int Tst_count;
 
 int exp_enos[] = {EFAULT, 0};
 
+#if !defined(UCLINUX)
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -139,6 +141,16 @@ int main(int ac, char **av)
   return(0);
 
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * setup() - performs all the ONE TIME setup for this test.

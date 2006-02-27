@@ -76,6 +76,8 @@ extern int Tst_count;
 void setup(void);
 void cleanup(void);
 
+#if !defined(UCLINUX)
+
 int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */
@@ -145,6 +147,16 @@ int main(int argc, char **argv)
   return(0);
 
 }
+
+#else
+
+int main()
+{
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
+}
+
+#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()
