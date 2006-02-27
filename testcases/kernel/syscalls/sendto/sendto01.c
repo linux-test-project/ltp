@@ -86,18 +86,24 @@ struct test_case_t {		/* test case structure */
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
 	{ 0, 0, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_DGRAM, 0, (void *)-1, sizeof(buf), 0, &sin1,
 		sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid send buffer" },
+#endif
 	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin2, sizeof(sin2),
 		 0, EFAULT, setup1, cleanup1, "connected TCP" },
 	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
 		-1, EPIPE, setup3, cleanup1, "not connected TCP" },
 	{ PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0, &sin1, -1,
 		-1, EINVAL, setup1, cleanup1, "invalid to buffer length" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0, (struct sockaddr_in *)-1,
 		sizeof(sin1),
 		-1, EFAULT, setup1, cleanup1, "invalid to buffer" },
+#endif
 	{ PF_INET, SOCK_DGRAM, 0, bigbuf, sizeof(bigbuf), 0, &sin1,
 		sizeof(sin1),
 		-1, EMSGSIZE, setup1, cleanup1, "UDP message too big" },

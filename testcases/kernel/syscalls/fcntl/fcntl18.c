@@ -77,6 +77,8 @@ int main(int ac, char **av)
 	setup();			/* global setup */
 
 /* //block1: */
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 	if ((fd = open("temp.dat", O_CREAT|O_RDWR)) < 0) {
@@ -98,8 +100,13 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Block 1 PASSED");
 	}
 	tst_resm(TINFO, "Exit block 1");
+#else
+	tst_resm(TINFO, "Skip block 1 on uClinux");
+#endif
 
 /* //block2: */
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	tst_resm(TINFO, "Enter block 2");
 	fail = 0;
 	/* Error condition if address is bad */
@@ -116,6 +123,9 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Block 2 PASSED");
 	}
 	tst_resm(TINFO, "Exit block 2");
+#else
+	tst_resm(TINFO, "Skip block 2 on uClinux");
+#endif
 
 /* //block3: */
 	tst_resm(TINFO, "Enter block 3");

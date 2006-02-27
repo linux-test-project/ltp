@@ -92,8 +92,11 @@ struct test_case_t {
 	/* the file descriptor is a directory - EISDIR */
 	{&fd2, buf, EISDIR,},
 
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	/* the buffer is invalid - EFAULT */
 	{&fd3, (void *)-1, EFAULT}
+#endif
 };
 
 int TST_TOTAL = sizeof(TC)/sizeof(*TC);

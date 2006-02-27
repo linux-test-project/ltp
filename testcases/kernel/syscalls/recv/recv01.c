@@ -84,8 +84,11 @@ struct test_case_t {		/* test case structure */
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
 	{ 0, 0, 0, buf, sizeof(buf), 0,
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
 		-1, EFAULT, setup1, cleanup1, "invalid recv buffer" },
+#endif
 	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), -1,
 		-1, EINVAL, setup1, cleanup1, "invalid flags set" },
 };

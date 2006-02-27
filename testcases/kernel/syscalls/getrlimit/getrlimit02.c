@@ -91,7 +91,10 @@ static struct test_case_t {
 	int res_type;		/* resource type 		*/
 	
 } testcases[] = {
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ EFAULT, "EFAULT", (void *)-1, RLIMIT_NOFILE },
+#endif
 	{ EINVAL, "EINVAL", &rlim, RLIMIT_TOO_HIGH }
 };
 

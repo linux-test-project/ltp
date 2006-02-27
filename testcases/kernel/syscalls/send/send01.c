@@ -83,14 +83,20 @@ struct test_case_t {		/* test case structure */
 		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
 	{ 0, 0, 0, buf, sizeof(buf), 0,
 		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
 		-1, EFAULT, setup1, cleanup1, "invalid send buffer" },
+#endif
 	{ PF_INET, SOCK_DGRAM, 0, bigbuf, sizeof(bigbuf), 0,
 		-1, EMSGSIZE, setup1, cleanup1, "UDP message too big" },
 	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0,
 		-1, EPIPE, setup2, cleanup1, "local endpoint shutdown" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), -1,
 		-1, EFAULT, setup1, cleanup1, "invalid flags set" },
+#endif
 };
 
 int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */

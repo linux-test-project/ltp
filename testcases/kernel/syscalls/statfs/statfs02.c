@@ -89,11 +89,14 @@ struct test_case_t {
 	/* path is too long - ENAMETOOLONG */
 	{bad_file, &fsbuf, ENAMETOOLONG},
 
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	/* path is an invalid address - EFAULT */
 	{(char *)-1, &fsbuf, EFAULT},
 
 	/* buf is an invalid address - EFAULT */
 	{fname, (struct statfs *)-1, EFAULT}
+#endif
 };
 
 int TST_TOTAL = sizeof(TC)/sizeof(*TC);

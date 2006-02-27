@@ -90,6 +90,8 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 1");
 
 /* //block2: */
+#ifndef UCLINUX
+		/* Skip since uClinux does not implement memory protection */
 		tst_resm(TINFO, "Enter block 2");
 		tst_resm(TINFO, "Test for errno EFAULT");
 		fail = 0;
@@ -130,6 +132,9 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "block 2 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 2");
+#else
+		tst_resm(TINFO, "Skip block 2 on uClinux");
+#endif
 
 /* //block3: */
 		tst_resm(TINFO, "Enter block 3");

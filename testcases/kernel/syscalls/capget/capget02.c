@@ -107,8 +107,11 @@ struct test_case_t {
 	int exp_errno;
 	char *errdesc;
 } test_cases[] = {
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ (cap_user_header_t)-1, &data, EFAULT, "EFAULT" },
 	{ &header, (cap_user_data_t)-1, EFAULT, "EFAULT" },
+#endif
 	{ &header, &data, EINVAL, "EINVAL" },
 	{ &header, &data, EINVAL, "EINVAL" },
 	{ &header, &data, ESRCH, "ESRCH" }
@@ -200,6 +203,9 @@ cleanup()
 void
 test_setup(int i)
 {
+#ifdef UCLINUX
+	i = i+2;
+#endif
 	switch (i) {
 
 	case 0 :

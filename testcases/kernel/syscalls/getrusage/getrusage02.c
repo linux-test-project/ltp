@@ -92,7 +92,10 @@ struct test_cases_t {
 	int exp_errno;
 } test_cases[] ={
 	{ RUSAGE_BOTH, &usage, EINVAL },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ RUSAGE_SELF, (struct rusage*) -1, EFAULT }
+#endif
 };
 
 int TST_TOTAL = sizeof(test_cases)/sizeof(*test_cases);

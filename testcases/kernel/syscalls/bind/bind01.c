@@ -76,9 +76,12 @@ struct test_case_t {		/* test case structure */
 	void	(*cleanup)(void);
 	char *desc;
 } tdat[] = {
+#ifndef UCLINUX
+/* Skip since uClinux does not implement memory protection */
 	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
 		sizeof(struct sockaddr_in), -1, EFAULT, setup0, cleanup0,
 		"invalid sockaddr" },
+#endif
 	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
 		3, -1, EINVAL, setup0, cleanup0,
 		"invalid salen" },

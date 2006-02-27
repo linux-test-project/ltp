@@ -115,7 +115,10 @@ struct test_cases_t {
 	void (*cleanup)();
 	int exp_errno;
 } test_cases[] = {
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ (struct timex *) -1, NULL, NULL, EFAULT },
+#endif
 	{ &buff, setup2, NULL, EINVAL },
 	{ &buff, setup3, NULL, EINVAL },
 	{ &buff, setup4, NULL, EINVAL },

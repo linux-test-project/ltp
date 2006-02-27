@@ -83,8 +83,11 @@ struct test_case_t {
 	/* The policy is invalid - EINVAL */
 	{1, SCHED_INVALID, &param, EINVAL},
 
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	/* The param address is invalid - EFAULT */
 	{1, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
+#endif
 
 	/* The priority value in param invalid - EINVAL*/
 	{0, SCHED_OTHER, &param1, EINVAL}

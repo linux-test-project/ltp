@@ -75,8 +75,11 @@ struct test_case_t {		/* test case structure */
 	{ PF_INET, 75, 0, sv, -1, EINVAL, "invalid type" },
 	{ PF_UNIX, SOCK_DGRAM, 0, sv, 0, 0, "UNIX domain dgram" },
 	{ PF_INET, SOCK_RAW, 0, sv, -1, ESOCKTNOSUPPORT, "raw open as non-root" },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ PF_UNIX, SOCK_STREAM, 0, 0, -1, EFAULT, "bad pointer" },
 	{ PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT, "bad pointer" },
+#endif
 	{ PF_INET, SOCK_DGRAM, 17, sv, -1, EOPNOTSUPP, "UDP socket" },
 	{ PF_INET, SOCK_DGRAM, 6, sv, -1, ESOCKTNOSUPPORT, "TCP dgram" },
 	{ PF_INET, SOCK_STREAM, 6, sv, -1, EOPNOTSUPP, "TCP socket" },

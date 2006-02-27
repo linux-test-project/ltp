@@ -89,7 +89,10 @@ static struct test_case_t {
 	char *exp_errval;	/*Expected errorvalue string*/
 } testcase[] = {
 	{"Invalid parameter", EINVAL, "EINVAL"},
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{"Bad address", EFAULT, "EFAULT"}
+#endif
 };
 
 int TST_TOTAL = sizeof(testcase)/sizeof(*testcase);	/* Total number of test cases. */

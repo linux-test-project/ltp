@@ -105,7 +105,10 @@ static struct test_case_t {
 	{ "Length is -ve", EINVAL, "EINVAL", hostname, -1 },
 	{ "Length > max allowed size", EINVAL, "EINVAL", largehost, 
 		sizeof(largehost)},
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ "Invalid address ", EFAULT, "EFAULT", (void *)-1, sizeof(hostname)}
+#endif
 };
 
 static int exp_enos[] = {EINVAL, EINVAL, EFAULT, 0};

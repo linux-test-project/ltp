@@ -92,7 +92,10 @@ struct test_cases_t {
 } test_cases[] = {
 	{ -1, &tp, EINVAL },
 	{ PID_DONT_EXISTS, &tp, ESRCH },
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ 0, (struct timespec *)-1, EFAULT}
+#endif
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);

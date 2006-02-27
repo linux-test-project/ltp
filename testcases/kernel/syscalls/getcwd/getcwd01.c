@@ -72,7 +72,10 @@ struct test_case_t {
 	int exp_errno;
 	char *exp_retval;
 } testcases[] = {
+#ifndef UCLINUX
+	/* Skip since uClinux does not implement memory protection */
 	{ "Test for EFAULT", NULL, (void *)-1, BUFSIZ, EFAULT, NULL },
+#endif
 	{ "Test for ENOMEM", NULL,  NULL, -1, ENOMEM, NULL },
 	{ "Test for EINVAL", NULL, buf, 0, EINVAL, NULL },
 	{ "Test for ERANGE", (void *)setup_test4, buf, 1, ERANGE, NULL }
