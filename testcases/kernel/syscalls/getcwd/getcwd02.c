@@ -153,7 +153,7 @@ void do_block1() //valid cwd[]: -> Should work fine
    }
    tst_resm(TINFO, "Exit Block 1");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 1 FAILED"); } 
+   { tst_resm(TFAIL, "Block 1 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 1 PASSED"); }
 }
@@ -173,7 +173,7 @@ void do_block2()  //valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
    }
    tst_resm(TINFO, "Exit Block 2");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 2 FAILED"); } 
+   { tst_resm(TFAIL, "Block 2 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 2 PASSED"); }
 }
@@ -193,7 +193,7 @@ void do_block3()  //valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
    }
    tst_resm(TINFO, "Exit Block 3");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 3 FAILED"); } 
+   { tst_resm(TFAIL, "Block 3 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 3 PASSED"); }
 }
@@ -213,7 +213,7 @@ void do_block4() //invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FA
    }
    tst_resm(TINFO, "Exit Block 4");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 4 FAILED"); } 
+   { tst_resm(TFAIL, "Block 4 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 4 PASSED"); }
 }
@@ -238,7 +238,7 @@ void do_block5()  //buffer = NULL, and size = 0, should succeed
    }
    tst_resm(TINFO, "Exit Block 5");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 5 FAILED"); } 
+   { tst_resm(TFAIL, "Block 5 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 5 PASSED"); }
    free(buffer); buffer = NULL;
@@ -259,7 +259,7 @@ void do_block6()  //buffer = NULL, size = 1: -> return NULL, errno = ERANGE
    }
    tst_resm(TINFO, "Exit Block 6");
    if (flag == FAILED) 
-   { tst_resm(TINFO, "Block 6 FAILED"); } 
+   { tst_resm(TFAIL, "Block 6 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 6 PASSED"); }
 }
@@ -284,7 +284,7 @@ void do_block7() //buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
    }
    tst_resm(TINFO, "Exit Block 7");
    if (flag == FAILED)
-   { tst_resm(TINFO, "Block 7 FAILED"); } 
+   { tst_resm(TFAIL, "Block 7 FAILED"); } 
    else 
    { tst_resm(TPASS, "Block 7 PASSED"); }
    free(buffer); buffer = NULL;
