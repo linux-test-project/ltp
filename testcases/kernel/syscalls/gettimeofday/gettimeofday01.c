@@ -54,7 +54,7 @@
 #define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
 char *TCID = "gettimeofday01";
-#ifndef __x86_64__
+#if !defined __x86_64__ && !defined UCLINUX
 
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -139,7 +139,7 @@ int TST_TOTAL = 0;              /* Total number of test cases. */
 int
 main(void)
 {
-        tst_resm(TPASS, "vsyscall gettimeofday not EFAULT checked on x86-64");
+        tst_resm(TPASS, "vsyscall gettimeofday EFAULT check disabled on x86-64 and uClinux");
         tst_exit();
 	/*NOTREACHED*/
 	return 0;
