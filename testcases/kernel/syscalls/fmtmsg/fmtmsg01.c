@@ -263,7 +263,7 @@ int blexit()
 
 int main()
 {
-	tst_resm(TINFO,"fmtmsg01 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 

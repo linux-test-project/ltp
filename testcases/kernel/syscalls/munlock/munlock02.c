@@ -197,7 +197,7 @@ void setup()
 
 int main()
 {
-	tst_resm(TINFO,"munlock02 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 

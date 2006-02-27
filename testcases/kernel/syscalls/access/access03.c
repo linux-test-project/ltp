@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.3 2005/07/11 22:28:11 robbiew Exp $ */
+/* $Id: access03.c,v 1.4 2006/02/27 04:29:21 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -479,7 +479,7 @@ int main(int ac, char **av)
 
 int main()
 {
-	tst_resm(TINFO,"access03 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 

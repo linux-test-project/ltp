@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.3 2005/12/05 19:15:20 mridge Exp $ */
+/* $Id: brk01.c,v 1.4 2006/02/27 04:29:21 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -331,8 +331,8 @@ setup()
 
 int main()
 {
-        tst_resm(TINFO,"brk01 test is not available on UCLINUX");
-        return 0;
+	tst_resm(TINFO, "test is not available on uClinux");
+	return 0;
 }
 
 

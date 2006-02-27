@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.3 2005/07/11 22:28:56 robbiew Exp $ */
+/* $Id: sbrk01.c,v 1.4 2006/02/27 04:29:22 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -229,7 +229,7 @@ main(int ac, char **av)
 
 int main()
 {
-	tst_resm(TINFO,"sbrk01 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 
@@ -273,5 +273,3 @@ cleanup()
     /* exit with return code appropriate for results */
     tst_exit();
 }	/* End cleanup() */
-
-

@@ -312,7 +312,7 @@ void cleanup_test(int i)
 
 int main()
 {
-	tst_resm(TINFO,"mlockall03 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 
@@ -332,4 +332,3 @@ void cleanup()
 
 	return;
 }
-

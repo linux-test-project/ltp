@@ -143,7 +143,7 @@ int main(int ac, char **av)
 
 int main()
 {
-	tst_resm(TINFO,"mlockall01 test is not available on UCLINUX");
+	tst_resm(TINFO, "test is not available on uClinux");
 	return 0;
 }
 
