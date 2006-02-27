@@ -8,11 +8,11 @@
 DESTDIR = /no/such/path
 
 include ../tests.init
+LOCKTESTS := $(shell echo $(LOCKTESTS))
 
 LIBS = -lm
 
-all:
-	@make $(LOCKTESTS)
+all: $(LOCKTESTS)
 	@chmod a+x runtests
 
 # Native file offsets (32- or 64-bit), pre-Large File Summit semantics.
