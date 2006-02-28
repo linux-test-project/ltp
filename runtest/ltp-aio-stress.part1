@@ -40,8 +40,8 @@ ADS010 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r128 -t4  /test/
 ADS011 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r256 -t8  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
 ADS012 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -S -r512 -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
 ADS013 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
-ADS014 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r8     file1 /test/aiodio/file2            
-ADS015 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r16     file1 /test/aiodio/file2         
+ADS014 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r8         /test/aiodio/file1 /test/aiodio/file2            
+ADS015 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r16        /test/aiodio/file1 /test/aiodio/file2         
 ADS016 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r32   -t2  /test/aiodio/junkfile /test/aiodio/file2 
 ADS017 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o2 -O -r64   -t2  /test/aiodio/junkfile /test/aiodio/file2 
 ADS018 testcases/kernel/io/ltp-aiodio/aio-stress -I500  -o3 -O -r4    -t2  /test/aiodio/junkfile /test/aiodio/file2 
