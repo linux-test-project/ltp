@@ -54,7 +54,7 @@
 #define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
 char *TCID = "gettimeofday01";
-#if !defined __x86_64__ && !defined UCLINUX
+#if !defined UCLINUX
 
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -68,6 +68,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int ret;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -85,17 +86,22 @@ int main(int ac, char **av)
 
 		TEST(gettimeofday((void *)-1, (void *)-1));
 
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
+		/* gettimeofday returns an int, so we need to turn the long
+		 * TEST_RETURN into an int to test with */
+		ret = TEST_RETURN;
+		if (ret != -1) {
+			tst_resm(TFAIL, "call succeeded unexpectedly (got "
+				"back %i, wanted -1)", ret);
 			continue;
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == EFAULT) {
 			tst_resm(TPASS, "gettimeofday(2) set the errno "
-				 "EFAULT correctly");
+				"EFAULT correctly");
 		} else {
-			tst_resm(TFAIL, "gettimeofday(2) didn't set EFAULT");
+			tst_resm(TFAIL, "gettimeofday(2) didn't set errno "
+				"to EFAULT, errno=%i (%s)", errno, strerror(errno));
 		}
 	}
 	cleanup();
