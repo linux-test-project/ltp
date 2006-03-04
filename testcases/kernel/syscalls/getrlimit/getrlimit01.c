@@ -77,7 +77,6 @@ static void cleanup(void);
 static void setup(void);
 
 char *TCID = "getrlimit01";
-int TST_TOTAL = 11;
 
 static struct rlimit rlim;
 static struct test_t {
@@ -97,6 +96,7 @@ static struct test_t {
 	{ RLIMIT_LOCKS, 	"RLIMIT_LOCKS" }
 };
 
+int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
 
 int
 main(int ac, char **av)

@@ -48,7 +48,6 @@
 #include "usctest.h"
 
 char *TCID = "setrlimit02";
-int TST_TOTAL = 3;
 extern int Tst_count;
 
 char nobody_uid[] = "nobody";
@@ -75,6 +74,8 @@ struct test_case_t {
 	/* a non-root user attemps to increase the rlim_max value - EPERM */ 
 	{RLIMIT_NOFILE, &rlim, EPERM}
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(*TC);
 
 int main(int ac, char **av)
 {
