@@ -1,3 +1,43 @@
+LTP-20060306
+- Applied an update to allow people to automatically declare the CREATE variable in IDcheck.sh.
+- export a bunch of settings by default that since they are harmless
+- allow people to store custom settings in config.mk
+- move rec_signal/send_signal out of zoolib.h and into pan.c since only pan.c uses them and more than just pan.c includes zoolib.h
+- Fix from Jackie Malcles, no such file or directory error
+- make sure clean descends into the templates dir
+- cleanup CRLFs from end of lines, 
+- fix dependency tracking so targets arent rebuilt all the time
+- Applied LDFLAG cleanup patch from Mike Frysinger.
+- set default Debug level to off
+- fix warning: growfiles.c:357: warning: unused variable `opterr'
+- use errno.h instead of doing extern int errno
+- cut extraneous newlines from test output
+- kill off unused strings msg1 and msg2
+- cleanup test output by adding a lot more useful debug info
+- use proper test output routines rather than homebrewed printf statements
+- use proper tst_* functions for output
+- fix for defect 21622, insufficient timeout value
+- tighten up uClinux disabled messages
+- fixes by Jane Lv to disable EFAULT related tests on uClinux
+- cleanup debug output that shouldnt be shown at normal runtime
+- make the -F option a bit smarter
+- remove extraneous output and improve output when we do issue messages
+- Jane Lv writes: I have patched flock03.c and sched_setparam05.c to replace fork() by vfork() on uClinux.
+- calculate TST_TOTAL based upon the number of elements in the test array instead of hardcoding the value
+- use TFAIL instead of TINFO to report test failures in getcwd02
+- fix test on x86_64 and make error output a bit more helpful in gettimeofday
+- New Memory mapping testcases.
+- Jane Lv writes: use FORK_OR_VFORK() instead of fork() so this stuff works on uClinux
+- need to define _GNU_SOURCE before including features.h or sigset prototype is missed
+- patched flock03.c and sched_setparam05.c to replace fork() by vfork() on uClinux.
+- use syscall() instead of _syscall2() to improve portability
+- define INVALID_ADDRESS to get rid of warnings on 32bit hosts and make it more sane in general
+- Fix for defect 21134, look for syslog-ng instead of syslogd on some systems.
+- if a test failed as a non-root user and the reason was EPERM, then mark the test as PASS, not FAIL 
+  (security-minded kernels often restrict kernel buffer access for non-root users)
+- fix test on 64bit hosts in syslog12
+
+
 LTP-20060205
 - Added new fcntl() test contributed by Jacky Malcles to test opening with O_WRONLY
 - Fix typo in nfs run script, nfs03 ran twice instead nfs04
