@@ -101,7 +101,7 @@ char *TCID="fcntl28"; 		 		 /* Test program identifier.    */
 int TST_TOTAL=1;    		 		 /* Total number of test cases. */
 extern int Tst_count;		 		 /* Test Case counter for tst_* routines */
 
-int exp_enos[]={EAGAIN, 0};
+int exp_enos[]={0};
 
 char fname[255];
 int fd;
@@ -141,24 +141,17 @@ main(int ac, char **av)
 		 TEST(fcntl(fd, F_SETLEASE,F_RDLCK));
 		 
 		 /* check return code */
-		 if ( TEST_RETURN == -1 ) {
+		 if ( TEST_RETURN == 0 ) {
 		     TEST_ERROR_LOG(TEST_ERRNO);
-		 		 if (TEST_ERRNO != exp_enos[0]) {
-		 		 tst_resm(TFAIL, 
-		 		 		 "fcntl(%s, F_SETLEASE,F_RDLCK)"
-		 		 		 " Failed, errno=%d : %s", 
-		 		 		 fname, TEST_ERRNO, strerror(TEST_ERRNO));
-		 		 } else {
 		 		 tst_resm(TPASS,
-		 		 		 "expected failure - errno "
-		 		 		 "= %d : %s",
-		 		 		 TEST_ERRNO, strerror(TEST_ERRNO));
-		 		 }
-		 } else {
-		 		 tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"
-		 		 		 " did not return -1, returned %d",
-		 		 		 fname, TEST_RETURN);
-		 		 }  
+                                "fcntl(fd, F_SETLEASE,F_RDLCK) succeeded");
+                        }
+                 else {
+                        tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"
+                                " failed with errno %d : %s", TEST_ERRNO,
+                                 strerror(TEST_ERRNO));
+                       }
+ 
 #endif
     }		 /* End for TEST_LOOPING */
 
@@ -186,9 +179,9 @@ setup()
     tst_tmpdir();
 
     sprintf(fname,"tfile_%d",getpid());
-    if ((fd = open(fname,O_WRONLY|O_CREAT,0777)) == -1) {
+    if ((fd = open(fname,O_WRONLY|O_CREAT,0222)) == -1) {
        tst_brkm(TBROK, cleanup,
-		 		 "open(%s, O_WRONLY|O_CREAT,0777) Failed, errno=%d : %s",
+		 		 "open(%s, O_WRONLY|O_CREAT,0222) Failed, errno=%d : %s",
 		 		 fname, errno, strerror(errno));
     }
 }		 /* End setup() */
