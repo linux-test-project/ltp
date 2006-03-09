@@ -105,10 +105,10 @@ char *TCID="fcntl27"; 		 		 /* Test program identifier.    */
 int TST_TOTAL=1;    		 		 /* Total number of test cases. */
 extern int Tst_count;		 		 /* Test Case counter for tst_* routines */
 
-int exp_enos[]={EAGAIN, 0};
-
 char fname[255];
 int fd;
+
+int exp_enos[]={0};
 
 int
 main(int ac, char **av)
@@ -127,7 +127,6 @@ main(int ac, char **av)
      ***************************************************************/
     setup();
 
-    /* set the expected errnos... */
     TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
@@ -145,23 +144,15 @@ main(int ac, char **av)
 		 TEST(fcntl(fd, F_SETLEASE,F_RDLCK));
 		 
 		 /* check return code */
-		 if ( TEST_RETURN == -1 ) {
+		 if ( TEST_RETURN == 0 ) {
 		     TEST_ERROR_LOG(TEST_ERRNO);
-                       if (TEST_ERRNO != exp_enos[0]) {
-                        tst_resm(TFAIL,
-                                "fcntl(%s, F_SETLEASE,F_RDLCK)"
-                                " Failed, errno=%d : %s",
-                                fname, TEST_ERRNO, strerror(TEST_ERRNO));
-                        } else {
                         tst_resm(TPASS,
-                                "expected failure - errno "
-                                "= %d : %s",
-                                TEST_ERRNO, strerror(TEST_ERRNO));
+                                "fcntl(fd, F_SETLEASE,F_RDLCK) succeeded");
                         }
-                } else {
+                 else {
                         tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"
-                                " did not return -1, returned %d",
-                                fname, TEST_RETURN);
+                                " failed with errno %d : %s", TEST_ERRNO,
+                                 strerror(TEST_ERRNO));
                        }
 #endif
     }		 /* End for TEST_LOOPING */
