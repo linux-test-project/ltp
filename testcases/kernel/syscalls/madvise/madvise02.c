@@ -256,18 +256,11 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
 				        errno, strerror(errno));
 
-#ifdef __ia64__
-                TEST(madvise(low,len,MADV_NORMAL));
-#else
 
         	TEST(madvise(low,len,MADV_NORMAL));
-#endif
 		check_and_print(ENOMEM);
 
 		/* Test Case 5 */
-#ifdef __ia64__
-                TEST(madvise(low, 5 * pagesize, MADV_WILLNEED));
-#else
 		/* Unmap the file map from low */
 		if(munmap(low,stat.st_size/2) < 0) 
 			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
@@ -279,7 +272,6 @@ int main(int argc, char *argv[])
 		tmp_memory_allocated = (char *)(((unsigned long) tmp_memory_allocated + pagesize-1) & ~(pagesize-1));
 
 		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
-#endif
 		check_and_print(EBADF);
 		free((void *)ptr_memory_allocated);
 		
