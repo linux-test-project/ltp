@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -w /proc/sys/kernel/sysrq ]; then
+	echo 1 > /proc/sys/kernel/sysrq
+fi
+
+exit 0
