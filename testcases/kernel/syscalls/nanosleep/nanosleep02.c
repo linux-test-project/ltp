@@ -101,7 +101,7 @@ void sig_handler();		/* signal catching function */
  * the "rem" field would never change without the increased
  * usec precision in the -aa tree.
  */
-#define MSEC_PRECISION 250      /* Error margin allowed in milliseconds */
+#define USEC_PRECISION 250000      /* Error margin allowed in usec */
 
 int
 main(int ac, char **av)
@@ -185,7 +185,7 @@ main(int ac, char **av)
 void
 do_child()
 {
-	unsigned long req, rem, before, after, elapsed; /* msec */
+       unsigned long req, rem, elapsed; /* usec */
 	struct timeval otime;		 /* time before child execution suspended */
 	struct timeval ntime;		 /* time after child resumes execution */
 
@@ -207,16 +207,15 @@ do_child()
 	 * in 'timerem' structure.
 	 * The time remaining should be equal to the
 	 * Total time for sleep - time spent on sleep bfr signal
+         * Change precision from msec to usec.	
 	 */
-	req = timereq.tv_sec * 1000 + timereq.tv_nsec / 1000000;
-	rem = timerem.tv_sec * 1000 + timerem.tv_nsec / 1000000;
-	before = otime.tv_sec * 1000 + otime.tv_usec/1000;
-	after = ntime.tv_sec * 1000 + ntime.tv_usec/1000;
-	elapsed = after - before;
+       req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+       rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
+       elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
 
-	if (rem - (req - elapsed) > MSEC_PRECISION) {
-		tst_resm(TFAIL, "Remaining sleep time %lu msec doesn't "
-			 "match with the expected %lu msec time",
+       if (rem - (req - elapsed) > USEC_PRECISION) {
+               tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
+                        "match with the expected %lu usec time",
 			 rem, (req - elapsed));
 		exit(1);
 	}
@@ -253,11 +252,13 @@ do_child()
 		 * sleep time specified by 'timerem'
 		 * structure.
 		 */
-		if ((ntime.tv_sec - otime.tv_sec) != timereq.tv_sec) {
+               req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+               elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
+               if (elapsed - req > USEC_PRECISION) {
 			tst_resm(TFAIL, "Child execution not "
-				 "suspended for %d seconds",
-				 timereq.tv_sec);
-			exit(1);
+                                "suspended for %d seconds %lu nanoseconds",
+                                timereq.tv_sec, timereq.tv_nsec);
+				exit(1);
 		}
 	} else {
 		tst_resm(TPASS, "call succeeded");
