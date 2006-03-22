@@ -1,0 +1,1690 @@
+
+policy_module(test_policy,1.0.0)
+
+###############################################
+#
+# Declarations
+#
+attribute testdomain;
+
+# Authorize sysadm_r and system_r for the test domains.
+role sysadm_r types testdomain;
+role system_r types testdomain;
+
+# Allow the test domains to access the sysadm terminal.
+# This allows read and write sysadm ttys and ptys.
+userdom_use_sysadm_terms(testdomain)
+
+# Allow the test domains to access the test directory and files
+# even if they are not root owned.
+allow testdomain self:capability { dac_override dac_read_search };
+
+# Let sysadm_t use runcon to run the test programs in various domains.
+#allow sysadm_t self:process setexec;
+#selinux_get_fs_mount(sysadm_t)
+
+# Let all test domains read test directories and files.
+miscfiles_read_test_files(testdomain)
+
+# Let the test domains set their current, exec and fscreate contexts.
+#allow testdomain self:process setcurrent;
+# domain_dyntrans_type(testdomain)
+selinux_get_fs_mount(testdomain)
+allow testdomain self:process setexec;
+allow testdomain self:process setfscreate;
+
+# General permissions commonly required for test operation.
+# general_domain_access
+allow testdomain self:process ~{ptrace setcurrent setexec setfscreate setrlimit execmem execstack execheap};
+allow testdomain self:fd use;
+allow testdomain self:fifo_file rw_file_perms;
+allow testdomain self:unix_dgram_socket create_socket_perms;
+allow testdomain self:unix_stream_socket create_stream_socket_perms;
+allow testdomain self:unix_dgram_socket sendto;
+
+# permission to use shared library
+libs_use_ld_so(testdomain)
+libs_use_shared_libs(testdomain)
+
+allow testdomain proc_t:file { getattr read };
+files_list_var(testdomain)
+files_list_home(testdomain)
+dev_read_rand(testdomain)
+files_list_pids(testdomain)
+allow testdomain { root_t etc_t bin_t sbin_t lib_t usr_t devpts_t }:dir r_dir_perms;
+allow testdomain lib_t:{ file lnk_file } r_file_perms;
+allow testdomain etc_t:file r_file_perms;
+allow testdomain { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
+miscfiles_read_localization(testdomain)
+domain_use_wide_inherit_fd(testdomain)
+seutil_read_config(testdomain)
+
+# can getsecurity
+selinux_validate_context(testdomain)
+selinux_compute_access_vector(testdomain)
+selinux_compute_create_context(testdomain)
+selinux_compute_relabel_context(testdomain)
+selinux_compute_user_contexts(testdomain)
+#################################
+#
+# Policy for testing file related capabilities. This policy file is the
+# start of capable-related policies and will contain general as well as
+# file specific permissions.
+#
+
+# Declarations
+
+attribute capabledomain;
+
+# Type for processes that are allowed certain capabilities
+type test_fcap_t;
+typeattribute test_fcap_t capabledomain;
+typeattribute test_fcap_t testdomain;
+domain_type(test_fcap_t)
+
+# Domain for processes that have restricted capability
+type test_resfcap_t;
+typeattribute test_resfcap_t capabledomain;
+typeattribute test_resfcap_t testdomain;
+domain_type(test_resfcap_t)
+
+# Another domain for processes that have restricted capability
+type test_res2fcap_t;
+typeattribute test_res2fcap_t capabledomain;
+typeattribute test_res2fcap_t testdomain;
+domain_type(test_res2fcap_t)
+
+# Domain for process that has no capability
+type test_nofcap_t;
+typeattribute test_nofcap_t capabledomain;
+typeattribute test_nofcap_t testdomain;
+domain_type(test_nofcap_t)
+
+# Allow execution of helper programs.
+corecmd_exec_bin(capabledomain)
+corecmd_exec_sbin(capabledomain)
+domain_exec_all_entry_files(capabledomain)
+files_exec_etc_files(capabledomain)
+libs_use_ld_so(capabledomain)
+libs_use_shared_libs(capabledomain)
+libs_exec_ld_so(capabledomain)
+libs_exec_lib_files(capabledomain)
+
+# Allow test_file_t and bin_t to be entered from sysadm role
+miscfiles_domain_entry_test_files(capabledomain)
+userdom_sysadm_entry_spec_domtrans(capabledomain)
+corecmd_bin_entry_type(capabledomain)
+userdom_sysadm_spec_domtrans_bin(capabledomain)
+
+# Allow these domains to create a temporay file.
+allow capabledomain test_file_t:file { setattr rw_file_perms };
+allow capabledomain test_file_t:chr_file { create };
+allow capabledomain test_file_t:dir { setattr rw_dir_perms };
+
+# Permissions for the good domain
+allow test_fcap_t self:capability { dac_override chown fowner fsetid lease setuid mknod };
+
+# Permissions for the first restricted domain
+allow test_resfcap_t self:capability { dac_override fowner setuid };
+
+# Permissions for the second restricted domain
+allow test_res2fcap_t self:capability { dac_read_search };
+#################################
+#
+# Policy for testing network related capabilities. The test_capable_file.te
+# policy is a prequisite for this file.
+#
+
+# Type for process that is allowed certain capabilities
+type test_ncap_t;
+domain_type(test_ncap_t)
+typeattribute test_ncap_t capabledomain;
+typeattribute test_ncap_t testdomain;
+
+# Type for process that has restricted capability
+type test_resncap_t;
+domain_type(test_resncap_t)
+typeattribute test_resncap_t capabledomain;
+typeattribute test_resncap_t testdomain;
+
+# Allow access to the network - all permissions is fine, we're testing
+# capabilities here.
+allow capabledomain self:tcp_socket create_stream_socket_perms;
+allow capabledomain self:udp_socket create_socket_perms;
+corenet_tcp_sendrecv_generic_if(capabledomain)
+corenet_udp_sendrecv_generic_if(capabledomain)
+corenet_raw_sendrecv_generic_if(capabledomain)
+corenet_tcp_sendrecv_all_nodes(capabledomain)
+corenet_udp_sendrecv_all_nodes(capabledomain)
+corenet_raw_sendrecv_all_nodes(capabledomain)
+corenet_tcp_sendrecv_all_ports(capabledomain)
+corenet_udp_sendrecv_all_ports(capabledomain)
+corenet_non_ipsec_sendrecv(capabledomain)
+corenet_tcp_bind_all_nodes(capabledomain)
+corenet_udp_bind_all_nodes(capabledomain)
+sysnet_read_config(capabledomain)
+optional_policy(`mount', `
+	mount_send_nfs_client_request(capabledomain)
+')
+
+corenet_tcp_bind_reserved_port(capabledomain)
+
+# Allow sbin_t to be entered from admin via certain utils.
+corecmd_sbin_entry_type(capabledomain)
+userdom_sysadm_spec_domtrans_sbin(capabledomain)
+
+#TODO: Need ifconfig_exec_t to be an entrypoint in order for domain
+# transition to succeed. How to do this with refpolicy???
+#ifdef(`sysnetwork.te', `
+#	domain_trans(sysadm_t, ifconfig_exec_t, capabledomain)
+#')
+
+# Permissions for the good domain
+allow test_ncap_t self:capability { dac_override net_admin net_raw };
+allow test_ncap_t self:rawip_socket { create };
+
+# Permissions for the restricted domain
+allow test_resncap_t self:rawip_socket { create };
+#################################
+#
+# Policy for testing system related capabilities. The test_capable_file.te
+# policy is a prequisite for this file.
+#
+
+# Type for process that is allowed certain capabilities
+type test_scap_t;
+domain_type(test_scap_t)
+typeattribute test_scap_t capabledomain;
+typeattribute test_scap_t testdomain;
+
+# Domain for process that has no capability
+type test_noscap_t;
+domain_type(test_noscap_t)
+typeattribute test_noscap_t capabledomain;
+typeattribute test_noscap_t testdomain;
+
+# Permissions for the good domain
+allow test_scap_t self:capability { sys_rawio sys_chroot sys_admin sys_nice };
+#################################
+#
+# Policy for testing tracing across an dyn
+#
+
+attribute dyntracedomain;
+
+# Domain for parent process.
+type test_dyntrace_parent_t;
+domain_type(test_dyntrace_parent_t)
+typeattribute test_dyntrace_parent_t dyntracedomain;
+typeattribute test_dyntrace_parent_t testdomain;
+allow test_dyntrace_parent_t self:process ptrace;
+
+# Domain for child process that can be traced across a
+# dynamic trans by the parent.
+type test_dyntrace_child_t;
+domain_type(test_dyntrace_child_t)
+typeattribute test_dyntrace_child_t dyntracedomain;
+typeattribute test_dyntrace_child_t testdomain;
+
+# Domain for child process that cannot be traced across a
+# dynamic transition by the parent.
+type test_dyntrace_notchild_t;
+domain_type(test_dyntrace_notchild_t) 
+typeattribute test_dyntrace_notchild_t dyntracedomain;
+typeattribute test_dyntrace_notchild_t testdomain;
+
+# Allow test_files_t to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(dyntracedomain)
+userdom_sysadm_entry_spec_domtrans(dyntracedomain)
+miscfiles_exec_test_files(dyntracedomain)
+
+# Grant the necessary permissions for the child domain.
+allow test_dyntrace_parent_t test_dyntrace_child_t:process dyntransition;
+allow test_dyntrace_child_t test_dyntrace_parent_t:process sigchld;
+allow test_dyntrace_parent_t test_dyntrace_child_t:process { ptrace getattr };
+allow test_dyntrace_parent_t test_dyntrace_child_t:dir search;
+allow test_dyntrace_parent_t test_dyntrace_child_t:file read;
+allow test_dyntrace_parent_t test_dyntrace_child_t:file read;
+
+# Grant the notchild domain all the same permissions except for ptrace.
+allow test_dyntrace_parent_t test_dyntrace_notchild_t:process dyntransition;
+allow test_dyntrace_parent_t test_dyntrace_notchild_t:process getattr;
+allow test_dyntrace_parent_t test_dyntrace_notchild_t:dir search;
+allow test_dyntrace_parent_t test_dyntrace_notchild_t:file read;
+allow test_dyntrace_parent_t test_dyntrace_notchild_t:file read;
+
+#################################
+#
+# Policy for testing process dyntrans permission
+#
+ 
+attribute dyntransdomain;
+
+# Domain for process that is allowed to transition to the new domain.
+type test_dyntrans_fromdomain_t;
+domain_type(test_dyntrans_fromdomain_t)
+typeattribute test_dyntrans_fromdomain_t dyntransdomain;
+typeattribute test_dyntrans_fromdomain_t testdomain;
+
+# Domain for process that is not allowed to transition to the new domain.
+type test_dyntrans_notfromdomain_t;
+domain_type(test_dyntrans_notfromdomain_t)
+typeattribute test_dyntrans_notfromdomain_t dyntransdomain;
+typeattribute test_dyntrans_notfromdomain_t testdomain;
+
+# Allow the fromdomain to dyntrans to the new domain.
+type test_dyntrans_todomain_t;
+domain_type(test_dyntrans_todomain_t)
+typeattribute test_dyntrans_todomain_t dyntransdomain;
+typeattribute test_dyntrans_todomain_t testdomain;
+
+# Allow the fromdomain to dyntrans to the new domain.
+allow test_dyntrans_fromdomain_t test_dyntrans_todomain_t:process dyntransition;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(dyntransdomain)
+userdom_sysadm_entry_spec_domtrans(dyntransdomain)
+
+#################################
+#
+# Policy for testing entrypoint permission
+#
+
+# Type for the entrypoint program for the test domain.
+type test_entrypoint_execute_t;
+files_type(test_entrypoint_execute_t)
+
+# Test domain that can only be entered via the type above.
+type test_entrypoint_t;
+domain_type(test_entrypoint_t)
+typeattribute test_entrypoint_t testdomain;
+
+# Allow execution of true.
+corecmd_exec_bin(test_entrypoint_t)
+
+# Allow this domain to be entered via its entrypoint type.
+domain_entry_file(test_entrypoint_t, test_entrypoint_execute_t)
+userdom_sysadm_entry_spec_domtrans(test_entrypoint_t)
+
+#################################
+#
+# Policy for testing state sharing across an exec
+#
+ 
+attribute execsharedomain;
+
+# Domain for parent process.
+type test_execshare_parent_t;
+domain_type(test_execshare_parent_t)
+typeattribute test_execshare_parent_t execsharedomain;
+typeattribute test_execshare_parent_t testdomain;
+
+# Domain for child process that can share state with the parent across exec.
+type test_execshare_child_t;
+domain_type(test_execshare_child_t)
+typeattribute test_execshare_child_t execsharedomain;
+typeattribute test_execshare_child_t testdomain;
+
+# Domain for child process that cannot share state with the parent across exec.
+type test_execshare_notchild_t;
+domain_type(test_execshare_notchild_t);
+typeattribute test_execshare_notchild_t execsharedomain;
+typeattribute test_execshare_notchild_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(execsharedomain)
+userdom_sysadm_entry_spec_domtrans(execsharedomain)
+
+# Grant the necessary permissions for the child domain.
+domain_entry_file_spec_domtrans(test_execshare_parent_t, test_execshare_child_t)
+allow test_execshare_parent_t test_execshare_child_t:fd use;
+allow test_execshare_child_t test_execshare_parent_t:fd use;
+allow test_execshare_child_t test_execshare_parent_t:fifo_file rw_file_perms;
+allow test_execshare_child_t test_execshare_parent_t:process sigchld;
+allow test_execshare_parent_t test_execshare_child_t:process share;
+
+# Grant the notchild domain all the same permissions except for share.
+domain_entry_file_spec_domtrans(test_execshare_parent_t, test_execshare_notchild_t)
+allow test_execshare_parent_t test_execshare_notchild_t:fd use;
+allow test_execshare_notchild_t test_execshare_parent_t:fd use;
+allow test_execshare_notchild_t test_execshare_parent_t:fifo_file rw_file_perms;
+allow test_execshare_notchild_t test_execshare_parent_t:process sigchld;
+#################################
+#
+# Policy for testing tracing across an exec
+#
+
+attribute exectracedomain;
+
+# Domain for parent process.
+type test_exectrace_parent_t;
+domain_type(test_exectrace_parent_t)
+typeattribute test_exectrace_parent_t exectracedomain;
+typeattribute test_exectrace_parent_t testdomain;
+
+# Required for PTRACE_TRACEME.
+allow test_exectrace_parent_t self:process ptrace;
+
+# Domain for child process that can be traced across an exec by the parent.
+type test_exectrace_child_t;
+domain_type(test_exectrace_child_t)
+typeattribute test_exectrace_child_t exectracedomain;
+typeattribute test_exectrace_child_t testdomain;
+
+# Domain for child process that cannot be traced across an exec by the parent.
+type test_exectrace_notchild_t;
+domain_type(test_exectrace_notchild_t)
+typeattribute test_exectrace_notchild_t exectracedomain;
+typeattribute test_exectrace_notchild_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(exectracedomain)
+userdom_sysadm_entry_spec_domtrans(exectracedomain)
+
+# Grant the necessary permissions for the child domain.
+domain_entry_file_spec_domtrans(test_exectrace_parent_t, test_exectrace_child_t)
+allow test_exectrace_parent_t test_exectrace_child_t:fd use;
+allow test_exectrace_child_t test_exectrace_parent_t:fd use;
+allow test_exectrace_child_t test_exectrace_parent_t:fifo_file rw_file_perms;
+allow test_exectrace_child_t test_exectrace_parent_t:process sigchld;
+allow test_exectrace_parent_t test_exectrace_child_t:process { ptrace getattr };
+allow test_exectrace_parent_t test_exectrace_child_t:dir search;
+allow test_exectrace_parent_t test_exectrace_child_t:file read;
+
+# Grant the notchild domain all the same permissions except for ptrace.
+domain_entry_file_spec_domtrans(test_exectrace_parent_t, test_exectrace_notchild_t)
+allow test_exectrace_parent_t test_exectrace_notchild_t:fd use;
+allow test_exectrace_notchild_t test_exectrace_parent_t:fd use;
+allow test_exectrace_notchild_t test_exectrace_parent_t:fifo_file rw_file_perms;
+allow test_exectrace_notchild_t test_exectrace_parent_t:process sigchld;
+allow test_exectrace_parent_t test_exectrace_notchild_t:process getattr;
+allow test_exectrace_parent_t test_exectrace_notchild_t:dir search;
+allow test_exectrace_parent_t test_exectrace_notchild_t:file read;
+#################################
+#
+# Policy for testing execute_notrans permission
+#
+
+# Type for the execute_notrans program allowed to execute from the test domain.
+type test_execute_notrans_allowed_t;
+files_type(test_execute_notrans_allowed_t)
+
+# Type for the execute_notrans program not allowed to execute 
+# from the test domain.
+type test_execute_notrans_denied_t;
+files_type(test_execute_notrans_denied_t);
+
+# Test domain that can only be entered via the types above.
+type test_execute_notrans_t;
+domain_type(test_execute_notrans_t);
+typeattribute test_execute_notrans_t testdomain;
+
+# Allow this domain to be entered via the shell.
+corecmd_shell_entry_type(test_execute_notrans_t)
+userdom_sysadm_entry_spec_domtrans(test_execute_notrans_t)
+
+#Allow test_execute_notrans permissions to the allowed type
+can_exec(test_execute_notrans_t,test_execute_notrans_allowed_t)
+allow test_execute_notrans_t test_execute_notrans_denied_t:file rx_file_perms;
+#################################
+#
+# Policy for testing file descriptor transfer via socket IPC
+#
+
+attribute fdreceivedomain;
+
+# Type for test file.
+type test_fdreceive_file_t;
+files_type(test_fdreceive_file_t)
+
+# Type for second test file.
+type test_fdreceive_file2_t;
+files_type(test_fdreceive_file2_t)
+
+# Domain for client process.
+type test_fdreceive_client_t;
+domain_type(test_fdreceive_client_t)
+typeattribute test_fdreceive_client_t fdreceivedomain;
+typeattribute test_fdreceive_client_t testdomain;
+
+# Domain for second client process.
+type test_fdreceive_client2_t;
+domain_type(test_fdreceive_client2_t)
+typeattribute test_fdreceive_client2_t fdreceivedomain;
+typeattribute test_fdreceive_client2_t testdomain;
+
+# Domain for server process.
+# Can receive fds from client, not from client2.
+# Can access test file, not second test file.
+type test_fdreceive_server_t;
+domain_type(test_fdreceive_server_t);
+typeattribute test_fdreceive_server_t fdreceivedomain;
+typeattribute test_fdreceive_server_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(fdreceivedomain)
+userdom_sysadm_entry_spec_domtrans(fdreceivedomain)
+
+# Grant the necessary permissions for the server domain.
+## Create the Unix domain socket file.
+allow test_fdreceive_server_t test_file_t:dir rw_dir_perms;
+allow test_fdreceive_server_t test_file_t:sock_file create_file_perms;
+## Use fds created by the client domain.
+allow test_fdreceive_server_t test_fdreceive_client_t:fd use;
+## Access the test file.
+allow test_fdreceive_server_t test_fdreceive_file_t:file rw_file_perms;
+
+# Grant the necessary permissions for the client domain.
+## Open the test files.
+allow test_fdreceive_client_t test_fdreceive_file_t:file rw_file_perms;
+allow test_fdreceive_client_t test_fdreceive_file2_t:file rw_file_perms;
+## Access the Unix domain socket file.
+allow test_fdreceive_client_t test_file_t:sock_file rw_file_perms;
+## Connect to the server domain.
+allow test_fdreceive_client_t test_fdreceive_server_t:unix_stream_socket connectto;
+
+# Grant the necessary permissions for the client2 domain.
+## Open the test files.
+allow test_fdreceive_client2_t test_fdreceive_file_t:file rw_file_perms;
+allow test_fdreceive_client2_t test_fdreceive_file2_t:file rw_file_perms;
+## Access the Unix domain socket file.
+allow test_fdreceive_client2_t test_file_t:sock_file rw_file_perms;
+## Connect to the server domain.
+allow test_fdreceive_client2_t test_fdreceive_server_t:unix_stream_socket connectto;
+#################################
+#
+# Policy for testing file operations
+#
+
+attribute fileopdomain;
+
+# Domain for process that is allowed to perform operations.
+type test_fileop_t;
+domain_type(test_fileop_t)
+domain_obj_id_change_exemption(test_fileop_t)
+typeattribute test_fileop_t fileopdomain;
+typeattribute test_fileop_t testdomain;
+
+# Domain for process that is not allowed to perform all operations.
+type test_nofileop_t;
+domain_type(test_nofileop_t)
+domain_obj_id_change_exemption(test_nofileop_t)
+typeattribute test_nofileop_t fileopdomain;
+typeattribute test_nofileop_t testdomain;
+
+# Type for temp test files
+type fileop_file_t;
+files_type(fileop_file_t)
+
+# Type for executable test files
+type fileop_exec_t;
+files_type(fileop_exec_t)
+
+# Domain for running certain executables
+type fileop_t;
+domain_type(fileop_t)
+typeattribute fileop_t fileopdomain;
+typeattribute fileop_t testdomain;
+
+# Type for a temp file that the bad domain has read/write/append
+type nofileop_rw_file_t;
+files_type(nofileop_rw_file_t)
+
+# Type for a temp file that the bad domain has only read/append access
+type nofileop_ra_file_t;
+files_type(nofileop_ra_file_t)
+
+# Allow execution of helper programs.
+corecmd_exec_bin(fileopdomain)
+corecmd_exec_sbin(fileopdomain)
+domain_exec_all_entry_files(fileopdomain)
+libs_use_ld_so(fileopdomain)
+libs_use_shared_libs(fileopdomain)
+libs_exec_ld_so(fileopdomain)
+libs_exec_lib_files(fileopdomain)
+
+# Allow all of these domains to be entered from sysadm domain
+miscfiles_domain_entry_test_files(fileopdomain)
+userdom_sysadm_entry_spec_domtrans(fileopdomain)
+
+corecmd_bin_entry_type(fileopdomain)
+userdom_sysadm_spec_domtrans_bin(fileopdomain)
+
+corecmd_sbin_entry_type(fileopdomain)
+userdom_sysadm_spec_domtrans_sbin(fileopdomain)
+
+allow fileop_t fileop_exec_t:file entrypoint;
+domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)
+allow test_fileop_t fileop_t:fd use;
+allow fileop_t test_fileop_t:fd use;
+allow fileop_t test_fileop_t:fifo_file rw_file_perms;
+allow fileop_t test_fileop_t:process sigchld;
+
+domain_auto_trans(test_nofileop_t, fileop_exec_t, fileop_t)
+allow test_nofileop_t fileop_t:fd use;
+allow fileop_t test_nofileop_t:fd use;
+allow fileop_t test_nofileop_t:fifo_file rw_file_perms;
+allow fileop_t test_nofileop_t:process sigchld;
+
+#TODO May not need these in refpolicy framework...
+#ifdef(`fsadm.te', `
+#domain_trans(sysadm_t, fsadm_exec_t, fileopdomain)
+#')
+# Allow the sysadm domain to create/remove a temporary file.
+#allow sysadm_t fileop_file_t:file rw_file_perms;
+#allow sysadm_t fileop_file_t:file { unlink };
+#allow sysadm_t nofileop_rw_file_t:file rw_file_perms;
+#allow sysadm_t nofileop_rw_file_t:file { unlink };
+#allow sysadm_t nofileop_ra_file_t:file rw_file_perms;
+#allow sysadm_t nofileop_ra_file_t:file { unlink };
+#allow sysadm_t fileop_exec_t:file { unlink write };
+
+# Permissions for the 'good' domain...
+allow test_fileop_t fileop_file_t:file { setattr rw_file_perms};
+allow test_fileop_t fileop_file_t:file { execute relabelfrom relabelto };
+allow test_fileop_t fileop_t:process { signal };
+
+# Permissions for the 'bad' domain...
+allow test_nofileop_t nofileop_rw_file_t:file { read write append relabelfrom };
+allow test_nofileop_t nofileop_ra_file_t:file { read append };
+allow test_nofileop_t fileop_file_t:file { relabelto };
+#################################
+#
+# Policy for testing file descriptor inheritance
+#
+
+attribute inheritdomain;
+
+# Domain for parent process.
+type test_inherit_parent_t;
+domain_type(test_inherit_parent_t)
+typeattribute test_inherit_parent_t inheritdomain;
+typeattribute test_inherit_parent_t testdomain;
+
+# Type for test file opened by parent, inherited by child.
+type test_inherit_file_t;
+files_type(test_inherit_file_t)
+
+# Domain for child process that can inherit r/w fd to test file from parent.
+type test_inherit_child_t;
+domain_type(test_inherit_child_t)
+typeattribute test_inherit_child_t inheritdomain;
+typeattribute test_inherit_child_t testdomain;
+
+# Domain for child process that cannot inherit from parent due to lack
+# of fd use permission.
+type test_inherit_nouse_t;
+domain_type(test_inherit_nouse_t)
+typeattribute test_inherit_nouse_t inheritdomain;
+typeattribute test_inherit_nouse_t testdomain;
+
+# Domain for child process that cannot inherit r/w fd to test file
+# due to lack of file write permission.
+type test_inherit_nowrite_t;
+domain_type(test_inherit_nowrite_t)
+typeattribute test_inherit_nowrite_t inheritdomain;
+typeattribute test_inherit_nowrite_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(inheritdomain)
+userdom_sysadm_entry_spec_domtrans(inheritdomain)
+
+# Grant the necessary permissions for the parent domain.
+allow test_inherit_parent_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the necessary permissions for the child domain.
+domain_trans(test_inherit_parent_t, test_file_t, test_inherit_child_t)
+allow test_inherit_parent_t test_inherit_child_t:fd use;
+allow test_inherit_child_t test_inherit_parent_t:fd use;
+allow test_inherit_child_t test_inherit_parent_t:fifo_file rw_file_perms;
+allow test_inherit_child_t test_inherit_parent_t:process sigchld;
+allow test_inherit_child_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the nouse domain all of the same permissions except for fd use.
+allow test_inherit_parent_t test_inherit_nouse_t:process transition;
+allow test_inherit_nouse_t test_file_t:file { read getattr execute entrypoint };
+allow test_inherit_nouse_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the nowrite domain all of the same permissions except for file write.
+domain_trans(test_inherit_parent_t, test_file_t, test_inherit_nowrite_t)
+allow test_inherit_parent_t test_inherit_nowrite_t:fd use;
+allow test_inherit_nowrite_t test_inherit_parent_t:fd use;
+allow test_inherit_nowrite_t test_inherit_parent_t:fifo_file rw_file_perms;
+allow test_inherit_nowrite_t test_inherit_parent_t:process sigchld;
+allow test_inherit_nowrite_t test_inherit_file_t:file r_file_perms;
+#################################
+#
+# Policy for testing ioctl permission
+#
+
+attribute ioctldomain;
+
+# Domain for process that is allowed to perform ioctl.
+type test_ioctl_t;
+domain_type(test_ioctl_t)
+typeattribute test_ioctl_t ioctldomain;
+typeattribute test_ioctl_t testdomain;
+
+# Domain for process that is not allowed to perform ioctl.
+type test_noioctl_t;
+domain_type(test_noioctl_t)
+typeattribute test_noioctl_t ioctldomain;
+typeattribute test_noioctl_t testdomain;
+
+# Type for temp test files
+type test_ioctl_file_t;
+files_type(test_ioctl_file_t)
+
+# Allow execution of helper programs.
+corecmd_exec_bin(ioctldomain)
+corecmd_exec_sbin(ioctldomain)
+domain_exec_all_entry_files(ioctldomain)
+files_exec_etc_files(ioctldomain)
+libs_use_ld_so(ioctldomain)
+libs_use_shared_libs(ioctldomain)
+libs_exec_ld_so(ioctldomain)
+libs_exec_lib_files(ioctldomain)
+
+# Allow all of these domains to be entered from sysadm domain
+# via a shell script in the test directory or by....
+miscfiles_domain_entry_test_files(ioctldomain)
+userdom_sysadm_entry_spec_domtrans(ioctldomain)
+corecmd_bin_entry_type(ioctldomain)
+userdom_sysadm_spec_domtrans_bin(ioctldomain)
+
+# Allow the test domains some access to the temp file
+allow test_ioctl_t test_ioctl_file_t:file { read getattr setattr ioctl };
+allow test_noioctl_t test_ioctl_file_t:file { read };
+
+#################################
+#
+# Policy for testing ipc permissions
+#
+
+attribute ipcdomain;
+
+# Base domain for IPC tests, has all IPC permissions 
+type test_ipc_base_t;
+domain_type(test_ipc_base_t)
+typeattribute test_ipc_base_t ipcdomain;
+typeattribute test_ipc_base_t testdomain;
+allow test_ipc_base_t self:msgq create;
+
+# Domain that has read only access to IPC resources
+type test_ipc_read_t;
+domain_type(test_ipc_read_t)
+typeattribute test_ipc_read_t ipcdomain;
+typeattribute test_ipc_read_t testdomain;
+
+# Domain that can't create, associate, control, or use IPC resources
+type test_ipc_none_t;
+domain_type(test_ipc_none_t)
+typeattribute test_ipc_none_t ipcdomain;
+typeattribute test_ipc_none_t testdomain;
+
+# Domain that can associate, but not do anything else
+type test_ipc_associate_t;
+domain_type(test_ipc_associate_t)
+typeattribute test_ipc_associate_t ipcdomain;
+typeattribute test_ipc_associate_t testdomain;
+
+# Give IPC perms to self.
+allow ipcdomain self:msgq create_msgq_perms;
+allow ipcdomain self:msg  { send receive };
+
+# Give the read only domain basic access. The macro adds:
+# associate, getattr, read, unix_read perms
+allow test_ipc_read_t test_ipc_base_t:sem {unix_read unix_write};
+allow test_ipc_read_t test_ipc_base_t:sem r_sem_perms;
+allow test_ipc_read_t test_ipc_base_t:msgq r_msgq_perms;
+allow test_ipc_read_t test_ipc_base_t:shm r_shm_perms;
+allow test_ipc_read_t test_ipc_base_t:msg {receive};
+# Ok, not strictly a read-only domain, it needs unix_write (course
+# grain permission) in order to test some finer grained permissions
+allow test_ipc_read_t test_ipc_base_t:msgq {unix_write};
+
+# Allow the base domain to access just about everything
+# in the read-only domain
+allow test_ipc_base_t test_ipc_read_t:msg {send};
+allow test_ipc_base_t test_ipc_read_t:sem {unix_read unix_write};
+allow test_ipc_base_t test_ipc_read_t:sem rw_sem_perms;
+allow test_ipc_base_t test_ipc_read_t:msgq rw_msgq_perms;
+allow test_ipc_base_t test_ipc_read_t:shm rw_shm_perms;
+kernel_get_sysvipc_info(test_ipc_base_t)
+
+# allow the associate domain to only associate with
+# the base domain (with added course-grained permissions)
+allow test_ipc_associate_t test_ipc_base_t:sem {unix_read unix_write associate};
+allow test_ipc_associate_t test_ipc_base_t:shm {unix_read unix_write associate};
+allow test_ipc_associate_t test_ipc_base_t:msgq {unix_read unix_write associate};
+
+# allow to lock down an IPC region created by self
+allow test_ipc_base_t test_ipc_base_t:capability ipc_lock;
+
+# Needed for msgctl IPC_SET test
+allow test_ipc_associate_t test_ipc_associate_t:capability sys_resource;
+
+# Access tmpfs/shm file systems.
+fs_rw_tmpfs_files(ipcdomain)
+
+# Allow all of these domains to be entered from user domains.
+# via a shell script in the test directory or by another program.
+miscfiles_domain_entry_test_files(ipcdomain)
+userdom_sysadm_entry_spec_domtrans(ipcdomain)
+corecmd_bin_entry_type(ipcdomain)
+userdom_sysadm_spec_domtrans_bin(ipcdomain)
+
+allow test_ipc_base_t self:sem create_sem_perms;
+allow test_ipc_base_t self:shm create_sem_perms;
+allow test_ipc_base_t self:shm lock;
+# ipcrm needs this... 
+userdom_search_generic_user_home_dir(test_ipc_base_t)
+userdom_manage_generic_user_home_dirs(test_ipc_base_t)
+#################################
+#
+# Policy for testing link and unlink operations
+#
+
+attribute test_link_domain;
+
+# Type for top-level test directory in which the tests are performed.
+type test_link_dir_t;
+files_type(test_link_dir_t)
+
+# Type for file in the test directory to which links are created and removed.
+type test_link_file_t;
+files_type(test_link_file_t)
+
+# Domain for process that can create hard links to the file.
+type test_link_t;
+domain_type(test_link_t)
+typeattribute test_link_t test_link_domain;
+typeattribute test_link_t testdomain;
+
+allow test_link_t test_link_dir_t:dir { search getattr write add_name };
+allow test_link_t test_link_file_t:file { getattr link };
+
+# Domain for process that cannot create hard links to the file
+# because it lacks link permission to the file.
+type test_nolink_t;
+domain_type(test_nolink_t)
+typeattribute test_nolink_t test_link_domain;
+typeattribute test_nolink_t testdomain;
+allow test_nolink_t test_link_dir_t:dir { search getattr write add_name };
+allow test_nolink_t test_link_file_t:file getattr;
+
+# Domain for process that cannot create a hard link to the file
+# in the test directory because it lacks add_name permission to
+# the directory.
+type test_nolink2_t;
+domain_type(test_nolink2_t)
+typeattribute test_nolink2_t test_link_domain;
+typeattribute test_nolink2_t testdomain;
+allow test_nolink2_t test_link_dir_t:dir { search getattr write };
+allow test_nolink2_t test_link_file_t:file { getattr link };
+
+# Domain for process that can remove hard links to the file.
+type test_unlink_t;
+domain_type(test_unlink_t)
+typeattribute test_unlink_t test_link_domain;
+typeattribute test_unlink_t testdomain;
+allow test_unlink_t test_link_dir_t:dir { search getattr write remove_name };
+allow test_unlink_t test_link_file_t:file { getattr unlink };
+
+# Domain for process that cannot remove hard links to the file
+# because it lacks unlink permission to the file.
+type test_nounlink_t;
+domain_type(test_nounlink_t)
+typeattribute test_nounlink_t test_link_domain;
+typeattribute test_nounlink_t testdomain;
+allow test_nounlink_t test_link_dir_t:dir { search getattr write remove_name };
+allow test_nounlink_t test_link_file_t:file { getattr };
+
+# Domain for process that cannot remove hard links to the file from
+# the test directory because it lacks remove_name permission to the directory.
+type test_nounlink2_t;
+domain_type(test_nounlink2_t)
+typeattribute test_nounlink2_t test_link_domain;
+typeattribute test_nounlink2_t testdomain;
+allow test_nounlink2_t test_link_dir_t:dir { search getattr write };
+allow test_nounlink2_t test_link_file_t:file { getattr unlink };
+
+# Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_link_domain)
+userdom_sysadm_spec_domtrans_bin(test_link_domain)
+
+#################################
+#
+# Policy for testing mkdir operation
+#
+
+attribute test_mkdir_domain;
+
+# Type for top-level test directory in which the tests are performed.
+type test_mkdir_dir_t;
+files_type(test_mkdir_dir_t)
+
+# Domain for process that has add_name permission to the test directory.
+type test_addname_t;
+domain_type(test_addname_t)
+typeattribute test_addname_t test_mkdir_domain;
+typeattribute test_addname_t testdomain;
+allow test_addname_t test_mkdir_dir_t:dir { search getattr write add_name create };
+
+# Domain for process that lacks add_name permission to the test directory.
+type test_noaddname_t;
+domain_type(test_noaddname_t)
+typeattribute test_noaddname_t test_mkdir_domain;
+typeattribute test_noaddname_t testdomain;
+allow test_noaddname_t test_mkdir_dir_t:dir { search getattr write create };
+
+# Domain for process that lacks search permission to the test directory.
+type test_nosearch_t;
+domain_type(test_nosearch_t)
+typeattribute test_nosearch_t test_mkdir_domain;
+typeattribute test_nosearch_t testdomain;
+allow test_nosearch_t test_mkdir_dir_t:dir { getattr write add_name create };
+
+# Type for a newly created subdirectory of the top-level test directory.
+type test_create_dir_t;
+files_type(test_create_dir_t)
+
+# Domain for process that has add_name permission to the test directory and
+# create permission to the new type.
+type test_create_t;
+domain_type(test_create_t)
+typeattribute test_create_t test_mkdir_domain;
+typeattribute test_create_t testdomain;
+domain_obj_id_change_exemption(test_create_t)
+allow test_create_t test_mkdir_dir_t:dir { search getattr write add_name };
+allow test_create_t test_create_dir_t:dir { search getattr write create };
+
+# Domain for process that has add_name permission to the test directory but
+# lacks create permission to the new type.
+type test_nocreate_t;
+domain_type(test_nocreate_t)
+typeattribute test_nocreate_t test_mkdir_domain;
+typeattribute test_nocreate_t testdomain;
+domain_obj_id_change_exemption(test_nocreate_t)
+allow test_nocreate_t test_mkdir_dir_t:dir { search getattr write add_name };
+allow test_nocreate_t test_create_dir_t:dir { search getattr };
+
+# Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_mkdir_domain)
+userdom_sysadm_spec_domtrans_bin(test_mkdir_domain)
+#################################
+#
+# Policy for testing open operation
+#
+
+attribute test_open_domain;
+
+# Types for test file.
+type test_open_file_t;
+files_type(test_open_file_t)
+
+# Domain for process that can open the test file for reading and writing.
+type test_open_t;
+domain_type(test_open_t)
+typeattribute test_open_t test_open_domain;
+typeattribute test_open_t testdomain;
+allow test_open_t test_open_file_t:file { getattr read write append };
+
+# Domain for process that cannot open the test file for reading or writing.
+type test_noopen_t;
+domain_type(test_noopen_t)
+typeattribute test_noopen_t test_open_domain;
+typeattribute test_noopen_t testdomain;
+allow test_noopen_t test_open_file_t:file { getattr };
+
+# Domain for process that can open test file for writing with O_APPEND.
+type test_append_t;
+domain_type(test_append_t)
+typeattribute test_append_t test_open_domain;
+typeattribute test_append_t testdomain;
+allow test_append_t test_open_file_t:file { getattr append };
+
+# Allow all of these domains to be entered from sysadm domain
+miscfiles_domain_entry_test_files(test_open_domain)
+userdom_sysadm_entry_spec_domtrans(test_open_domain)
+#################################
+#
+# Policy for testing ptrace call
+#
+
+attribute ptracedomain;
+
+# Domain for process that is allowed to trace.
+type test_ptrace_tracer_t;
+domain_type(test_ptrace_tracer_t)
+typeattribute test_ptrace_tracer_t ptracedomain;
+typeattribute test_ptrace_tracer_t testdomain;
+allow test_ptrace_tracer_t self:capability sys_ptrace;
+
+# Domain for process that is not allowed to trace.
+type test_ptrace_nottracer_t;
+domain_type(test_ptrace_nottracer_t)
+typeattribute test_ptrace_nottracer_t ptracedomain;
+typeattribute test_ptrace_nottracer_t testdomain;
+allow test_ptrace_nottracer_t self:capability sys_ptrace;
+
+# Domain for process that is to be traced.
+type test_ptrace_traced_t;
+domain_type(test_ptrace_traced_t)
+typeattribute test_ptrace_traced_t ptracedomain;
+typeattribute test_ptrace_traced_t testdomain;
+
+# Allow the tracer domain to trace the traced domain.
+allow test_ptrace_tracer_t test_ptrace_traced_t:process ptrace;
+userdom_search_generic_user_home_dir(test_ptrace_traced_t)
+userdom_manage_generic_user_home_dirs(test_ptrace_traced_t)
+
+# Let the tracer wait on the traced domain.
+allow test_ptrace_traced_t test_ptrace_tracer_t:process sigchld;
+
+# Allow all of these domains to be entered from the sysadm domains.
+# via a program in the test directory.
+miscfiles_domain_entry_test_files(ptracedomain)
+userdom_sysadm_entry_spec_domtrans(ptracedomain)
+#################################
+#
+# Policy for testing readlink and follow_link operations
+#
+
+attribute test_readlink_domain;
+
+# Types for test file and test symbolic link.
+type test_readlink_file_t;
+type test_readlink_link_t;
+files_type(test_readlink_file_t)
+files_type(test_readlink_link_t)
+
+# Domain for process that can read and follow the symbolic link.
+type test_readlink_t;
+domain_type(test_readlink_t)
+typeattribute test_readlink_t test_readlink_domain;
+typeattribute test_readlink_t testdomain;
+allow test_readlink_t test_readlink_file_t:file { getattr read };
+allow test_readlink_t test_readlink_link_t:lnk_file { getattr read };
+
+# Domain for process that cannot read or follow the symbolic link.
+type test_noreadlink_t;
+domain_type(test_noreadlink_t)
+typeattribute test_noreadlink_t test_readlink_domain;
+typeattribute test_noreadlink_t testdomain;
+allow test_noreadlink_t test_readlink_file_t:file { getattr read };
+allow test_noreadlink_t test_readlink_link_t:lnk_file { getattr };
+
+# TODO: Needs to be translated into refpolicy... how?
+# Allow all of these domains to be entered from sysadm domain
+#domain_trans(sysadm_t, ls_exec_t, test_readlink_domain)
+#################################
+#
+# Policy for testing relabel (chsid) operations
+#
+
+attribute test_relabel_domain;
+
+# Original and new types for the test file.
+type test_relabel_oldtype_t;
+type test_relabel_newtype_t;
+files_type(test_relabel_oldtype_t)
+files_type(test_relabel_newtype_t)
+
+# Domain for process that can relabel the test file.
+type test_relabel_t;
+domain_type(test_relabel_t)
+domain_obj_id_change_exemption(test_relabel_t)
+typeattribute test_relabel_t test_relabel_domain;
+typeattribute test_relabel_t testdomain;
+allow test_relabel_t test_relabel_oldtype_t:file { getattr relabelfrom };
+allow test_relabel_t test_relabel_newtype_t:file { getattr relabelto };
+
+# Domain for process that lacks relabelfrom permission to the old type.
+type test_norelabelfrom_t;
+domain_type(test_norelabelfrom_t)
+domain_obj_id_change_exemption(test_norelabelfrom_t)
+typeattribute test_norelabelfrom_t test_relabel_domain;
+typeattribute test_norelabelfrom_t testdomain;
+allow test_norelabelfrom_t test_relabel_oldtype_t:file { getattr };
+allow test_norelabelfrom_t test_relabel_newtype_t:file { getattr relabelto };
+
+# Domain for process that lacks relabelto permission to the new type.
+type test_norelabelto_t;
+domain_type(test_norelabelto_t)
+domain_obj_id_change_exemption(test_norelabelto_t)
+typeattribute test_norelabelto_t test_relabel_domain;
+typeattribute test_norelabelto_t testdomain;
+allow test_norelabelto_t test_relabel_oldtype_t:file { getattr relabelfrom };
+allow test_norelabelto_t test_relabel_newtype_t:file { getattr };
+
+# Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_relabel_domain)
+userdom_sysadm_spec_domtrans_bin(test_relabel_domain)
+
+#################################
+#
+# Policy for testing rename operation
+#
+
+attribute test_rename_domain;
+
+# Types for source and destination directories for rename.
+type test_rename_src_dir_t;
+type test_rename_dst_dir_t;
+files_type(test_rename_src_dir_t)
+files_type(test_rename_dst_dir_t)
+
+# Types for test file and directory to be renamed.
+type test_rename_file_t;
+type test_rename_dir_t;
+files_type(test_rename_file_t)
+files_type(test_rename_dir_t)
+
+# Domain for process that can rename the test file and directory.
+type test_rename_t;
+domain_type(test_rename_t)
+typeattribute test_rename_t test_rename_domain;
+typeattribute test_rename_t testdomain;
+allow test_rename_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_rename_t test_rename_dst_dir_t:dir { search getattr write add_name };
+allow test_rename_t test_rename_file_t:file { getattr rename };
+allow test_rename_t test_rename_dir_t:dir { getattr rename write reparent };
+
+# Domain for process that can rename the test file over an existing file.
+type test_rename2_t;
+domain_type(test_rename2_t)
+typeattribute test_rename2_t test_rename_domain;
+typeattribute test_rename2_t testdomain;
+allow test_rename2_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_rename2_t test_rename_dst_dir_t:dir { search getattr write add_name remove_name };
+allow test_rename2_t test_rename_file_t:file { getattr rename };
+allow test_rename2_t test_rename_dst_dir_t:file { getattr unlink };
+
+# Domain for process that cannot rename the test file, because
+# it lacks rename permission to the file.
+type test_norename_t;
+domain_type(test_norename_t)
+typeattribute test_norename_t test_rename_domain;
+typeattribute test_norename_t testdomain;
+allow test_norename_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_norename_t test_rename_dst_dir_t:dir { search getattr write add_name };
+allow test_norename_t test_rename_file_t:file { getattr };
+
+# Domain for process that cannot rename the test file, because
+# it lacks remove_name permission to the src_dir.
+type test_norename2_t;
+domain_type(test_norename2_t)
+typeattribute test_norename2_t test_rename_domain;
+typeattribute test_norename2_t testdomain;
+allow test_norename2_t test_rename_src_dir_t:dir { search getattr write };
+allow test_norename2_t test_rename_dst_dir_t:dir { search getattr write add_name };
+allow test_norename2_t test_rename_file_t:file { getattr rename };
+
+# Domain for process that cannot rename the test file, because
+# it lacks add_name permission to the dst_dir.
+type test_norename3_t;
+domain_type(test_norename3_t)
+typeattribute test_norename3_t test_rename_domain;
+typeattribute test_norename3_t testdomain;
+allow test_norename3_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_norename3_t test_rename_dst_dir_t:dir { search getattr write };
+allow test_norename3_t test_rename_file_t:file { getattr rename };
+
+# Domain for process that cannot rename the test file over an
+# existing destination file, because it lacks remove_name permission to
+# the dst_dir.
+type test_norename4_t;
+domain_type(test_norename4_t)
+typeattribute test_norename4_t test_rename_domain;
+typeattribute test_norename4_t testdomain;
+allow test_norename4_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_norename4_t test_rename_dst_dir_t:dir { search getattr write add_name };
+allow test_norename4_t test_rename_file_t:file { getattr rename };
+allow test_norename4_t test_rename_dst_dir_t:file { getattr unlink };
+
+# Domain for process that cannot rename the test file over an
+# existing destination file, because it lacks unlink permission to
+# the destination file.
+type test_norename5_t;
+domain_type(test_norename5_t)
+typeattribute test_norename5_t test_rename_domain;
+typeattribute test_norename5_t testdomain;
+allow test_norename5_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_norename5_t test_rename_dst_dir_t:dir { search getattr write add_name remove_name };
+allow test_norename5_t test_rename_file_t:file { getattr rename };
+allow test_norename5_t test_rename_dst_dir_t:file { getattr };
+
+# Domain for process that cannot rename the test directory,
+# because it lacks reparent permission.
+type test_norename6_t;
+domain_type(test_norename6_t)
+typeattribute test_norename6_t test_rename_domain;
+typeattribute test_norename6_t testdomain;
+allow test_norename6_t test_rename_src_dir_t:dir { search getattr write remove_name };
+allow test_norename6_t test_rename_dst_dir_t:dir { search getattr write add_name };
+allow test_norename6_t test_rename_dir_t:dir { getattr rename write };
+
+# Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_rename_domain)
+userdom_sysadm_spec_domtrans_bin(test_rename_domain)
+
+#################################
+#
+# Policy for testing read and search access to a directory.
+#
+
+attribute test_rxdir_domain;
+
+# Type for top-level test directory in which the tests are performed.
+type test_rxdir_dir_t;
+files_type(test_rxdir_dir_t)
+
+# Domain for process that can read but not search the directory.
+type test_rdir_t;
+domain_type(test_rdir_t)
+typeattribute test_rdir_t test_rxdir_domain;
+typeattribute test_rdir_t testdomain;
+allow test_rdir_t test_rxdir_dir_t:dir { getattr read };
+allow test_rdir_t test_rxdir_dir_t:file { getattr };
+
+# Domain for process that can search but not read the directory.
+type test_xdir_t;
+domain_type(test_xdir_t)
+typeattribute test_xdir_t test_rxdir_domain;
+typeattribute test_xdir_t testdomain;
+allow test_xdir_t test_rxdir_dir_t:dir { getattr search };
+allow test_xdir_t test_rxdir_dir_t:file { getattr };
+
+# TODO: How to translate this into refpolicy????
+# Allow all of these domains to be entered from sysadm domain
+#domain_trans(sysadm_t, ls_exec_t, test_rxdir_domain)
+#################################
+#
+# Policy for testing setattr operations
+#
+
+attribute test_setattr_domain;
+
+# Types for test file.
+type test_setattr_file_t;
+files_type(test_setattr_file_t)
+
+# Domain for process that can set attributes on the test file.
+type test_setattr_t;
+domain_type(test_setattr_t)
+typeattribute test_setattr_t test_setattr_domain;
+typeattribute test_setattr_t testdomain;
+allow test_setattr_t self:capability chown;
+allow test_setattr_t test_setattr_file_t:file { getattr setattr write };
+
+# Domain for process that cannot set attributes on the test file.
+type test_nosetattr_t;
+domain_type(test_nosetattr_t)
+typeattribute test_nosetattr_t test_setattr_domain;
+typeattribute test_nosetattr_t testdomain;
+allow test_nosetattr_t self:capability chown;
+allow test_nosetattr_t test_setattr_file_t:file { getattr write };
+
+# Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_setattr_domain)
+userdom_sysadm_spec_domtrans_bin(test_setattr_domain)
+
+#################################
+#
+# Policy for testing setnice permission
+#
+
+attribute setnicedomain;
+
+# Domain for process whose nice can be set.
+type test_setnice_set_t;
+domain_type(test_setnice_set_t)
+typeattribute test_setnice_set_t setnicedomain;
+typeattribute test_setnice_set_t testdomain;
+
+# Domain for process whose nice cannot be set.
+type test_setnice_noset_t;
+domain_type(test_setnice_noset_t)
+typeattribute test_setnice_noset_t setnicedomain;
+typeattribute test_setnice_noset_t testdomain;
+
+# Domain for parent process.
+type test_setnice_change_t;
+domain_type(test_setnice_change_t)
+typeattribute test_setnice_change_t setnicedomain;
+typeattribute test_setnice_change_t testdomain;
+
+# Allow execution of helper programs.
+corecmd_exec_bin(setnicedomain)
+corecmd_exec_sbin(setnicedomain)
+domain_exec_all_entry_files(setnicedomain)
+files_exec_etc_files(setnicedomain)
+libs_use_ld_so(setnicedomain)
+libs_use_shared_libs(setnicedomain)
+libs_exec_ld_so(setnicedomain)
+libs_exec_lib_files(setnicedomain)
+
+# Allow all of these domains to be entered from sysadm domain
+# via a shell script in the test directory or by....
+miscfiles_domain_entry_test_files(setnicedomain)
+domain_trans(sysadm_t, test_file_t, setnicedomain)
+domain_trans(test_setnice_change_t, test_file_t, {test_setnice_set_t test_setnice_noset_t})
+allow test_setnice_change_t test_setnice_set_t:fd use;
+allow test_setnice_set_t test_setnice_change_t:fd use;
+allow test_setnice_set_t test_setnice_change_t:fifo_file rw_file_perms;
+allow test_setnice_set_t test_setnice_change_t:process sigchld;
+allow test_setnice_set_t test_setnice_change_t:file rw_file_perms;
+allow test_setnice_change_t test_setnice_noset_t:fd use;
+allow test_setnice_noset_t test_setnice_change_t:fd use;
+allow test_setnice_noset_t test_setnice_change_t:fifo_file rw_file_perms;
+allow test_setnice_noset_t test_setnice_change_t:process sigchld;
+allow test_setnice_noset_t test_setnice_change_t:file rw_file_perms;
+
+allow test_setnice_change_t test_setnice_set_t:process setsched;
+#################################
+#
+# Policy for testing the task_kill hook
+#
+
+attribute killdomain;
+
+# Domain for process that receives the signals.
+type test_kill_server_t;
+domain_type(test_kill_server_t)
+typeattribute test_kill_server_t killdomain;
+typeattribute test_kill_server_t testdomain;
+
+# Domain for process that is allowed to send sigkill.
+type test_kill_sigkill_t;
+domain_type(test_kill_sigkill_t)
+typeattribute test_kill_sigkill_t killdomain;
+typeattribute test_kill_sigkill_t testdomain;
+allow test_kill_sigkill_t test_kill_server_t:process sigkill;
+
+# Domain for process that is allowed to send sigstop.
+type test_kill_sigstop_t;
+domain_type(test_kill_sigstop_t)
+typeattribute test_kill_sigstop_t killdomain;
+typeattribute test_kill_sigstop_t testdomain;
+allow test_kill_sigstop_t test_kill_server_t:process sigstop;
+
+# Domain for process that is allowed to send sigchld.
+type test_kill_sigchld_t;
+domain_type(test_kill_sigchld_t)
+typeattribute test_kill_sigchld_t killdomain;
+typeattribute test_kill_sigchld_t testdomain;
+allow test_kill_sigchld_t test_kill_server_t:process sigchld;
+
+# Domain for process that is allowed to send other signals.
+type test_kill_signal_t;
+domain_type(test_kill_signal_t)
+typeattribute test_kill_signal_t killdomain;
+typeattribute test_kill_signal_t testdomain;
+
+allow test_kill_signal_t test_kill_server_t:process signal;
+
+# Allow all of these domains to be entered from the sysadm domains,
+# via kill or a program in the test directory.
+miscfiles_domain_entry_test_files(killdomain)
+userdom_sysadm_entry_spec_domtrans(killdomain)
+corecmd_bin_entry_type(killdomain)
+userdom_sysadm_spec_domtrans_bin(killdomain)
+
+#################################
+#
+# Policy for testing stat operations
+#
+
+attribute test_stat_domain;
+
+# Types for test file.
+type test_stat_file_t;
+files_type(test_stat_file_t)
+
+# Domain for process that can get attributes on the test file.
+type test_stat_t;
+domain_type(test_stat_t)
+typeattribute test_stat_t test_stat_domain;
+typeattribute test_stat_t testdomain;
+allow test_stat_t test_stat_file_t:file getattr;
+
+# Domain for process that cannot set attributes on the test file.
+type test_nostat_t;
+domain_type(test_nostat_t)
+typeattribute test_nostat_t test_stat_domain;
+typeattribute test_nostat_t testdomain;
+
+# TODO: what is a replacement for this in refpolicy???
+# Allow all of these domains to be entered from sysadm domain
+#domain_trans(sysadm_t, ls_exec_t, test_stat_domain)
+#################################
+#
+# Policy for testing sysctl permission
+#
+
+attribute sysctldomain;
+
+# Domain for process that is allowed to perform sysctl.
+type test_sysctl_t;
+domain_type(test_sysctl_t)
+typeattribute test_sysctl_t sysctldomain;
+typeattribute test_sysctl_t testdomain;
+
+# Domain for process that is not allowed to perform sysctl.
+type test_nosysctl_t;
+domain_type(test_nosysctl_t)
+typeattribute test_nosysctl_t sysctldomain;
+typeattribute test_nosysctl_t testdomain;
+
+# Allow all of these domains to be entered from sysadm domain
+# via /sbin/sysctl.
+corecmd_sbin_entry_type(sysctldomain)
+userdom_sysadm_spec_domtrans_sbin(sysctldomain)
+
+# Allow the first domain to perform sysctl operations.
+kernel_rw_all_sysctls(test_sysctl_t)
+
+# Allow the second domain to search /proc/sys/kernel, but nothing more.
+allow test_nosysctl_t sysctl_type:dir search;
+#########################################
+#
+# Policy for testing the selinux_task_create hook
+#
+
+attribute test_create_d;
+
+# Domain for process allowed to fork.
+type test_create_yes_t;
+domain_type(test_create_yes_t)
+typeattribute test_create_yes_t test_create_d;
+typeattribute test_create_yes_t testdomain;
+
+# Domain for process not allowed to fork.
+# The same permissions as test_create_yes_t, except process fork
+type test_create_no_t;
+domain_type(test_create_no_t)
+typeattribute test_create_no_t test_create_d;
+
+# TODO
+# In refpolicy, all types with "domain" attribute are allowed
+# process_fork. Something needs to be done such that test_create_no_t
+# does not have fork permissions, but all the other necessary
+# "domain" permissions.
+#allow test_create_no_t self:process ~fork;
+allow test_create_no_t proc_t:dir r_dir_perms;
+allow test_create_no_t proc_t:lnk_file read;
+allow test_create_no_t self:dir r_dir_perms;
+allow test_create_no_t self:notdevfile_class_set r_file_perms;
+
+libs_use_ld_so(test_create_no_t)
+libs_use_shared_libs(test_create_no_t)
+
+allow test_create_no_t self:process setexec;
+selinux_get_fs_mount(test_create_no_t)
+
+allow test_create_no_t { root_t bin_t sbin_t lib_t locale_t usr_t devpts_t home_root_t }:dir r_dir_perms;
+allow test_create_no_t lib_t:lnk_file r_file_perms;
+allow test_create_no_t { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
+allow test_create_no_t locale_t:dir r_dir_perms;
+allow test_create_no_t locale_t:{ file lnk_file } r_file_perms;
+allow test_create_no_t privfd:fd use;
+userdom_use_sysadm_ptys(test_create_no_t)
+userdom_use_sysadm_ttys(test_create_no_t)
+
+# General rules for the test_create_d
+
+# Allow domain to be entered from the sysadm domain.
+role sysadm_r types test_create_d;
+role system_r types test_create_d;
+miscfiles_domain_entry_test_files(test_create_d)
+userdom_sysadm_entry_spec_domtrans(test_create_d)
+#########################################
+#
+# Policy for testing the selinux_task_getpgid hook.
+#
+
+attribute test_getpgid_d;
+
+# Domain for the target process
+type test_getpgid_target_t;
+domain_type(test_getpgid_target_t)
+typeattribute test_getpgid_target_t test_getpgid_d;
+typeattribute test_getpgid_target_t testdomain;
+
+# Domain that can get the target's process group ID.
+type test_getpgid_yes_t;
+domain_type(test_getpgid_yes_t)
+typeattribute test_getpgid_yes_t test_getpgid_d;
+typeattribute test_getpgid_yes_t testdomain;
+
+# Domain that cannot get the target's process group ID.
+type test_getpgid_no_t;
+domain_type(test_getpgid_no_t)
+typeattribute test_getpgid_no_t test_getpgid_d;
+typeattribute test_getpgid_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain
+miscfiles_domain_entry_test_files(test_getpgid_d)
+userdom_sysadm_entry_spec_domtrans(test_getpgid_d)
+
+# Give test_getpgid_yes_t the permission needed.
+allow test_getpgid_yes_t test_getpgid_target_t:process getpgid;
+#########################################
+#
+# Policy for testing the selinux_task_getscheduler hook.
+#
+
+attribute test_getsched_d;
+
+# Domain for the target process
+type test_getsched_target_t;
+domain_type(test_getsched_target_t)
+typeattribute test_getsched_target_t test_getsched_d;
+typeattribute test_getsched_target_t testdomain;
+
+# Domain that can get the target's scheduling policy.
+type test_getsched_yes_t;
+domain_type(test_getsched_yes_t)
+typeattribute test_getsched_yes_t test_getsched_d;
+typeattribute test_getsched_yes_t testdomain;
+
+# Domain that cannot get the target's scheduling policy.
+type test_getsched_no_t;
+domain_type(test_getsched_no_t)
+typeattribute test_getsched_no_t test_getsched_d;
+typeattribute test_getsched_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(test_getsched_d)
+userdom_sysadm_entry_spec_domtrans(test_getsched_d)
+
+# Give test_getsched_yes_t the permission needed.
+allow test_getsched_yes_t test_getsched_target_t:process getsched;
+#########################################
+#
+# Policy for testing the selinux_task_getsid hook.
+#
+
+attribute test_getsid_d;
+
+# Domain for the target process
+type test_getsid_target_t;
+domain_type(test_getsid_target_t)
+typeattribute test_getsid_target_t test_getsid_d;
+typeattribute test_getsid_target_t testdomain;
+
+# Domain that can get the target's session ID.
+type test_getsid_yes_t;
+domain_type(test_getsid_yes_t)
+typeattribute test_getsid_yes_t test_getsid_d;
+typeattribute test_getsid_yes_t testdomain;
+
+# Domain that cannot get the target's session ID.
+type test_getsid_no_t;
+domain_type(test_getsid_no_t)
+typeattribute test_getsid_no_t test_getsid_d;
+typeattribute test_getsid_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(test_getsid_d)
+userdom_sysadm_entry_spec_domtrans(test_getsid_d)
+
+# Give test_getsid_yes_t the permission needed.
+allow test_getsid_yes_t test_getsid_target_t:process getsession;
+#########################################
+#
+# Policy for testing the selinux_task_setpgid hook
+#
+
+attribute test_setpgid_d;
+
+# Domain for process allowed to setpgid
+type test_setpgid_yes_t;
+domain_type(test_setpgid_yes_t)
+typeattribute test_setpgid_yes_t test_setpgid_d;
+typeattribute test_setpgid_yes_t testdomain;
+
+# Domain for process not allowed to setpgid.
+# The same permissions as test_setpgid_yes_t, except process setpgid
+type test_setpgid_no_t;
+domain_type(test_setpgid_no_t)
+typeattribute test_setpgid_no_t test_setpgid_d;
+
+allow test_setpgid_no_t self:process ~{ setpgid setcurrent };
+allow test_setpgid_no_t proc_t:dir r_dir_perms;
+allow test_setpgid_no_t proc_t:lnk_file read;
+allow test_setpgid_no_t self:dir r_dir_perms;
+allow test_setpgid_no_t self:notdevfile_class_set r_file_perms;
+
+libs_use_ld_so(test_setpgid_no_t)
+libs_use_shared_libs(test_setpgid_no_t)
+allow test_setpgid_no_t self:process setexec;
+selinux_get_fs_mount(test_setpgid_no_t)
+
+allow test_setpgid_no_t { root_t bin_t sbin_t lib_t locale_t usr_t devpts_t home_root_t }:dir r_dir_perms;
+allow test_setpgid_no_t lib_t:lnk_file r_file_perms;
+allow test_setpgid_no_t { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
+allow test_setpgid_no_t locale_t:dir r_dir_perms;
+allow test_setpgid_no_t locale_t:{ file lnk_file } r_file_perms;
+allow test_setpgid_no_t privfd:fd use;
+userdom_use_sysadm_ptys(test_setpgid_no_t)
+userdom_use_sysadm_ttys(test_setpgid_no_t)
+
+# Allow domain to be entered from the sysadm domain.
+role sysadm_r types test_setpgid_d;
+role system_r types test_setpgid_d;
+miscfiles_domain_entry_test_files(test_setpgid_d)
+userdom_sysadm_entry_spec_domtrans(test_setpgid_d)
+#########################################
+#
+# Policy for testing the selinux_task_setnice and
+# selinux_task_setscheduler hooks.
+#
+
+attribute test_setsched_d;
+
+# Domain for the target process
+type test_setsched_target_t;
+domain_type(test_setsched_target_t)
+typeattribute test_setsched_target_t test_setsched_d;
+typeattribute test_setsched_target_t testdomain;
+
+# Domain that can change the target's priority and scheduling policy.
+type test_setsched_yes_t;
+domain_type(test_setsched_yes_t)
+typeattribute test_setsched_yes_t test_setsched_d;
+typeattribute test_setsched_yes_t testdomain;
+
+# Domain that cannot change the target's priority or scheduling policy.
+type test_setsched_no_t;
+domain_type(test_setsched_no_t)
+typeattribute test_setsched_no_t test_setsched_d;
+typeattribute test_setsched_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(test_setsched_d)
+userdom_sysadm_entry_spec_domtrans(test_setsched_d)
+
+# Allow these domains to execute renice.
+corecmd_bin_entry_type(test_setsched_d)
+
+# Give these domains the capability needed to change the target.
+allow test_setsched_d self:capability sys_nice;
+
+# Give test_setsched_yes_t the permission needed to change the target.
+allow test_setsched_yes_t test_setsched_target_t:process setsched;
+#################################
+#
+# Policy for testing process transition permission
+#
+
+attribute transitiondomain;
+
+# Domain for process that is allowed to transition to the new domain.
+type test_transition_fromdomain_t;
+domain_type(test_transition_fromdomain_t)
+typeattribute test_transition_fromdomain_t transitiondomain;
+typeattribute test_transition_fromdomain_t testdomain;
+
+# Domain for process that is not allowed to transition to the new domain.
+type test_transition_notfromdomain_t;
+domain_type(test_transition_notfromdomain_t)
+typeattribute test_transition_notfromdomain_t transitiondomain;
+typeattribute test_transition_notfromdomain_t testdomain;
+
+# New domain for the process after the transition.
+type test_transition_todomain_t;
+domain_type(test_transition_todomain_t)
+typeattribute test_transition_todomain_t transitiondomain;
+typeattribute test_transition_todomain_t testdomain;
+
+# Allow the fromdomain to transition to the new domain.
+corecmd_bin_entry_type(transitiondomain)
+domain_trans(test_transition_fromdomain_t,bin_t,test_transition_todomain_t)
+allow test_transition_fromdomain_t test_transition_todomain_t:fd use;
+allow test_transition_todomain_t test_transition_fromdomain_t:fd use;
+
+# Allow all of these domains to be entered from the sysadm domain.
+userdom_sysadm_entry_spec_domtrans(transitiondomain)
+#################################
+#
+# Policy for testing the task_wait hook
+#
+
+attribute waitdomain;
+
+# Domain for parent process.
+type test_wait_parent_t;
+domain_type(test_wait_parent_t)
+typeattribute test_wait_parent_t waitdomain;
+typeattribute test_wait_parent_t testdomain;
+
+# Domain for child process that can be reaped by the parent.
+type test_wait_child_t;
+domain_type(test_wait_child_t)
+typeattribute test_wait_child_t waitdomain;
+typeattribute test_wait_child_t testdomain;
+
+# Domain for child process that cannot be reaped by the parent.
+type test_wait_notchild_t;
+domain_type(test_wait_notchild_t)
+typeattribute test_wait_notchild_t waitdomain;
+typeattribute test_wait_notchild_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(waitdomain)
+userdom_sysadm_entry_spec_domtrans(waitdomain)
+
+# Grant permissions for a domain transition from parent to child,
+# including the ability to wait on the child.
+domain_trans(test_wait_parent_t, test_file_t, test_wait_child_t)
+allow test_wait_parent_t test_wait_child_t:fd use;
+allow test_wait_child_t test_wait_parent_t:fd use;
+allow test_wait_child_t test_wait_parent_t:fifo_file rw_file_perms;
+allow test_wait_child_t test_wait_parent_t:process sigchld;
+
+# Permit the parent to transition to the notchild, but don't
+# grant the permission to wait on it.
+allow test_wait_parent_t test_wait_notchild_t:process transition;
+allow test_wait_notchild_t test_file_t:file entrypoint;
