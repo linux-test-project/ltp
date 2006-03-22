@@ -167,7 +167,7 @@ setup1()
 }
 
 /*
- * setup3() - sets up conditions for the third test. the vector points to an 
+ * setup2() - sets up conditions for the test 2. the vector points to an
  * invalid address.
  */
 void
@@ -187,7 +187,7 @@ setup2()
 }
 
 /*
- *  setup4() - performs the setup for test4(the starting address + length 
+ *  setup3() - performs the setup for test3(the starting address + length
  *  contained unmapped memory). we give the length of mapped file equal to 5 
  *  times the mapped file size.
  */
@@ -200,14 +200,20 @@ setup3()
 }
 
 /*
- * setup5() - performs the setup related to the test5
- * length contained memory is not part of file. The file size is 2 pages,
- * we give a offset of 2 pages as the starting address.
+ * setup4() - performs the setup related to the test4 -
+ * region contained memory which is not part of file.
+ * We pass an anonymously mapped address here.
  */
 void
 setup4()
 {	
-	TC[3].addr = global_pointer+2*global_len;
+       char *t;
+       /* Create pointer to invalid address */
+       if( MAP_FAILED == (t = mmap(0,global_len,PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,0,0)) ) {
+               tst_brkm(TBROK,cleanup,"mmaping anonymous memory failed: %s",strerror(errno));
+       }
+
+        TC[3].addr = t;	
 	TC[3].len = global_len;
 	TC[3].vector = global_vec;
 }
