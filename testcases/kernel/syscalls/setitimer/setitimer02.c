@@ -98,7 +98,8 @@ int main(int ac, char **av)
 	
 		value->it_value.tv_sec = 30;
 		value->it_value.tv_usec = 0;
-	
+	  	value->it_interval.tv_sec = 0;
+ 		value->it_interval.tv_usec = 0;	
 		/*
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
