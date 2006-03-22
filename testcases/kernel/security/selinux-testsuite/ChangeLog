@@ -7,3 +7,8 @@
  -Modified test_selinux.sh and added runtest.sh script to enable
   individual testcases to be run
  -Added this ChangeLog.	
+
+03-17-2006	Joy Latten	<laten@austin.ibm.com>
+ -Converted test policy to the new reference policy interface style.
+ -Created a TODO list as a few testcases still require some work to
+  work in refpolicy.
