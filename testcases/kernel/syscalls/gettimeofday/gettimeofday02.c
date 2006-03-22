@@ -47,6 +47,10 @@
 #include <stdlib.h>
 #include <test.h>
 #include <usctest.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
 char *TCID="gettimeofday02"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
