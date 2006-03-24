@@ -56,7 +56,7 @@ allow testdomain lib_t:{ file lnk_file } r_file_perms;
 allow testdomain etc_t:file r_file_perms;
 allow testdomain { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
 miscfiles_read_localization(testdomain)
-domain_use_wide_inherit_fd(testdomain)
+domain_use_interactive_fds(testdomain)
 seutil_read_config(testdomain)
 
 # can getsecurity

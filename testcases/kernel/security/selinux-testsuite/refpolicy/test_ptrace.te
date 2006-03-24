@@ -27,8 +27,7 @@ typeattribute test_ptrace_traced_t testdomain;
 
 # Allow the tracer domain to trace the traced domain.
 allow test_ptrace_tracer_t test_ptrace_traced_t:process ptrace;
-userdom_search_generic_user_home_dir(test_ptrace_traced_t)
-userdom_manage_generic_user_home_dirs(test_ptrace_traced_t)
+userdom_search_generic_user_home_dirs(test_ptrace_traced_t)
 
 # Let the tracer wait on the traced domain.
 allow test_ptrace_traced_t test_ptrace_tracer_t:process sigchld;

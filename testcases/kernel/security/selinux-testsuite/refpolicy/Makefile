@@ -1,4 +1,4 @@
-POLICYDEVEL = /usr/share/selinux/refpolicy
+POLICYDEVEL = /usr/share/selinux/devel
 SEMODULE = /usr/sbin/semodule
 
 TARGETS=test_global.te test_capable_file.te test_capable_net.te \
