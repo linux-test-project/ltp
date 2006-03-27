@@ -45,9 +45,9 @@ libs_exec_lib_files(capabledomain)
 
 # Allow test_file_t and bin_t to be entered from sysadm role
 miscfiles_domain_entry_test_files(capabledomain)
-userdom_sysadm_entry_spec_domtrans(capabledomain)
+userdom_sysadm_entry_spec_domtrans_to(capabledomain)
 corecmd_bin_entry_type(capabledomain)
-userdom_sysadm_spec_domtrans_bin(capabledomain)
+userdom_sysadm_bin_spec_domtrans_to(capabledomain)
 
 # Allow these domains to create a temporay file.
 allow capabledomain test_file_t:file { setattr rw_file_perms };

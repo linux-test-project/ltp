@@ -25,7 +25,7 @@ typeattribute test_getpgid_no_t testdomain;
 
 # Allow domain to be entered from the sysadm domain
 miscfiles_domain_entry_test_files(test_getpgid_d)
-userdom_sysadm_entry_spec_domtrans(test_getpgid_d)
+userdom_sysadm_entry_spec_domtrans_to(test_getpgid_d)
 
 # Give test_getpgid_yes_t the permission needed.
 allow test_getpgid_yes_t test_getpgid_target_t:process getpgid;

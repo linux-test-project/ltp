@@ -52,13 +52,13 @@ libs_exec_lib_files(fileopdomain)
 
 # Allow all of these domains to be entered from sysadm domain
 miscfiles_domain_entry_test_files(fileopdomain)
-userdom_sysadm_entry_spec_domtrans(fileopdomain)
+userdom_sysadm_entry_spec_domtrans_to(fileopdomain)
 
 corecmd_bin_entry_type(fileopdomain)
-userdom_sysadm_spec_domtrans_bin(fileopdomain)
+userdom_sysadm_bin_spec_domtrans_to(fileopdomain)
 
 corecmd_sbin_entry_type(fileopdomain)
-userdom_sysadm_spec_domtrans_sbin(fileopdomain)
+userdom_sysadm_sbin_spec_domtrans_to(fileopdomain)
 
 allow fileop_t fileop_exec_t:file entrypoint;
 domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)

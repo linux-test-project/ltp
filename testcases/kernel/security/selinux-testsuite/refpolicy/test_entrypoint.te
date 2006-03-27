@@ -17,5 +17,5 @@ corecmd_exec_bin(test_entrypoint_t)
 
 # Allow this domain to be entered via its entrypoint type.
 domain_entry_file(test_entrypoint_t, test_entrypoint_execute_t)
-userdom_sysadm_entry_spec_domtrans(test_entrypoint_t)
+userdom_sysadm_entry_spec_domtrans_to(test_entrypoint_t)
 

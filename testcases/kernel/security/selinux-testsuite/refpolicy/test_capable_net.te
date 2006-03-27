@@ -40,7 +40,7 @@ corenet_tcp_bind_reserved_port(capabledomain)
 
 # Allow sbin_t to be entered from admin via certain utils.
 corecmd_sbin_entry_type(capabledomain)
-userdom_sysadm_spec_domtrans_sbin(capabledomain)
+userdom_sysadm_sbin_spec_domtrans_to(capabledomain)
 
 #TODO: Need ifconfig_exec_t to be an entrypoint in order for domain
 # transition to succeed. How to do this with refpolicy???

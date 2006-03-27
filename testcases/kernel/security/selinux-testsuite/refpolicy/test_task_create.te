@@ -49,4 +49,4 @@ userdom_use_sysadm_ttys(test_create_no_t)
 role sysadm_r types test_create_d;
 role system_r types test_create_d;
 miscfiles_domain_entry_test_files(test_create_d)
-userdom_sysadm_entry_spec_domtrans(test_create_d)
+userdom_sysadm_entry_spec_domtrans_to(test_create_d)

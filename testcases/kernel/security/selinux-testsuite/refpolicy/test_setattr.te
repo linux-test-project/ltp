@@ -27,5 +27,5 @@ allow test_nosetattr_t test_setattr_file_t:file { getattr write };
 
 # Allow all of these domains to be entered from sysadm domain
 corecmd_bin_entry_type(test_setattr_domain)
-userdom_sysadm_spec_domtrans_bin(test_setattr_domain)
+userdom_sysadm_bin_spec_domtrans_to(test_setattr_domain)
 

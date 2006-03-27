@@ -23,5 +23,6 @@ load:
 	
 cleanup:
 	$(SEMODULE) -r test_policy
+	rm -f $(POLICYDEVEL)/test_policy.* 
 	rm -f test_policy.te 
 

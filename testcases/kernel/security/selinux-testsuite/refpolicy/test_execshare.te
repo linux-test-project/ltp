@@ -25,7 +25,7 @@ typeattribute test_execshare_notchild_t testdomain;
 
 # Allow all of these domains to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(execsharedomain)
-userdom_sysadm_entry_spec_domtrans(execsharedomain)
+userdom_sysadm_entry_spec_domtrans_to(execsharedomain)
 
 # Grant the necessary permissions for the child domain.
 domain_entry_file_spec_domtrans(test_execshare_parent_t, test_execshare_child_t)

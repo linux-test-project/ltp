@@ -41,4 +41,4 @@ userdom_use_sysadm_ttys(test_setpgid_no_t)
 role sysadm_r types test_setpgid_d;
 role system_r types test_setpgid_d;
 miscfiles_domain_entry_test_files(test_setpgid_d)
-userdom_sysadm_entry_spec_domtrans(test_setpgid_d)
+userdom_sysadm_entry_spec_domtrans_to(test_setpgid_d)
