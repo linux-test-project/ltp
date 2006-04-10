@@ -50,11 +50,12 @@ mkdir $TCtmp
 #CODE
 	echo "Assertion 1 .................."
 	/usr/bin/ld x.o y.o 2> $TCtmp/errmsg.out
-cat <<EOF > $TCtmp/errmsg.exp
-/usr/bin/ld: cannot open x.o: No such file or directory
-EOF
+#cat <<EOF > $TCtmp/errmsg.exp
+#/usr/bin/ld: cannot open x.o: No such file or directory
+#EOF
 
-diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+#diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+cat $TCtmp/errmsg.out |grep "/usr/bin/ld:" | grep [xy].o | grep -q "No such file or directory"
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -96,11 +97,12 @@ fi
 #CODE
 	echo "Assertion 3 .................."
 	/usr/bin/ld bad/x.o 2> $TCtmp/errmsg.out
-cat <<EOF > $TCtmp/errmsg.exp
-/usr/bin/ld: cannot open bad/x.o: No such file or directory
-EOF
+#cat <<EOF > $TCtmp/errmsg.exp
+#/usr/bin/ld: cannot open bad/x.o: No such file or directory
+#EOF
+cat $TCtmp/errmsg.out | grep "/usr/bin/ld:" | grep "bad/[xy].o:" | grep -q "No such file or directory"
 
-diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
+#diff -iw  $TCtmp/errmsg.out $TCtmp/errmsg.exp
 if [ $? -eq 0 ]
 then
 	echo  "-)"
@@ -160,7 +162,8 @@ fi
 ## when using a dynamically linked shared object
 ##
 echo "Assertion 6 .................."
- # Check for ppc64 architecture
+
+# Check for ppc64 architecture
  file f1.o | grep PowerPC | grep 64-bit >/dev/null 2>&1
  if [ $? -eq 0 ]; then
 	ld -m elf64ppc -Bdynamic -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/lola 2>$TCtmp/errmsg.out
@@ -169,16 +172,37 @@ echo "Assertion 6 .................."
 	ld -Bdynamic -shared $TCdat/f1.o $TCdat/d1.o -o $TCtmp/lola 2>$TCtmp/errmsg.out
 	ld -Bstatic  -L. $TCdat/ldmain.o $TCdat/rd1.o $TCtmp/lola -o $TCtmp/a.out 2> $TCtmp/errmsg.out
  fi
-nm $TCtmp/a.out | grep -q DYNAMIC
-if [ $? -eq 0 ]
-then
-	echo "-)"
-else
-	echo "FAIL - ld failed ignore the -Bstatic option with shared objects"
-	do_cleanup
-	exit 1
-fi
+#nm $TCtmp/a.out | grep -q DYNAMIC
+rc_code=$?
 
+	version_num=`ld --version | grep version | \
+	 awk -F ' ' '{ print $4 }' | cut -d '.' -f 1`
+
+	version_num_level2=`ld --version | grep version |\
+	 awk -F ' ' '{ print $4 }' | cut -d '.' -f 2`
+
+if [ "$version_num" -le "2"  -a "$version_num_level2" -le "15" ]; then
+	if [ $rc_code -eq 0 ]
+	then
+		echo "-)"
+	else
+		echo "FAIL - ld 9 failed ignore the -Bstatic option with \
+		      shared objects"
+		do_cleanup
+		exit 1
+	fi
+
+   else
+	if [ $rc_code -eq 0 ]
+	then
+		echo "FAIL - ld failed to  reject the -Bstatic option \
+		      with shared objects"
+		do_cleanup
+		exit 1
+	else
+		echo "-)"
+	fi
+   fi # end of checking for ld version less than 2.16
 	
 
 ##
@@ -187,23 +211,25 @@ fi
 ## when doing static linking try to link with a with and
 ## without -r*repeat with -r
 ##
+
+
 echo "Assertion 7 .................."
-	ld -Bstatic -r  $TCdat/ldmain.o $TCdat/rf1.o $TCtmp/lola -L/usr/lib/ 2> $TCtmp/errmsg.out
+ld -Bdynamic -shared $TCdat/ldmain.o $TCdat/f1.o $TCdat/rf1.o -o $TCtmp/lola -L/usr/lib/ 
+ld -Bstatic -r  $TCdat/ldmain.o $TCdat/f1.o $TCdat/rf1.o $TCtmp/lola -L/usr/lib/ 2> $TCtmp/errmsg.out
 cat <<EOF > $TCtmp/errmsg.exp
 $TCtmp/lola: could not read symbols: Invalid operation
 EOF
 
-diff -iw $TCtmp/errmsg.out $TCtmp/errmsg.exp
-if [ $? -eq 0 ]
-then
+grep -q  "could not read symbols: Invalid operation" $TCtmp/errmsg.out
+rc_grep=$?
+grep -q "ld: attempted static link of dynamic object" $TCtmp/errmsg.out
+if [ $rc_grep -eq 0  -o $? -eq 0 ]; then 
 	echo "-)"
 else
 	echo "FAIL - ld failed to give expected error msg"
 	do_cleanup
 	exit 1
 fi
-
-
 
 do_cleanup
 echo "ld: PASS"

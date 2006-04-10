@@ -29,7 +29,7 @@
 # declare all the environment variables needed by the target compiler
 CC = g++
 CFLAGS = ${BFLAGS} -DPOSIX_NO_REALTIME -w -O -fPIC -DB_HANDLE_EXCEPTIONS
-LDFLAGS = -shared ${BFLAGS} -lm
+LDFLAGS = -shared ${BFLAGS} -lm -lrt
 
 MUT_O = -o mut.o
 MUNCH = mv mut.o mut.out
