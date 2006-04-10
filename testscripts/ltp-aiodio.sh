@@ -34,8 +34,8 @@ usage()
         ext3=0
         jfs=0
         xfs=0
-
-	example: ${0##*/} -f MyLargeFile -b /dev/hdc1 [-o /dev/hdc2] [-a 1] or [-e 1] [-x 1] [-j 1] [-s 1]
+      example: ${0##*/} -f MyLargeFile -b /dev/hdc1 [-o /dev/hdc2] [-a 1] or
+[-e 1] [-x 1] [-j 1] [-t 1]
         -o = optional partition allows some of the tests to utilize multiple filesystems to further stress AIO/DIO
         -e = test ex2 filesystem.
         -t = test ext3 filesystem
@@ -223,10 +223,6 @@ runTest=$(($runTest+1))
 
 mkdir /test/aiodio/junkdir
 dd if=$file1 of=/test/aiodio/junkfile bs=8192 conv=block,sync
-dd if=$file1 of=/test/aiodio/fff      bs=4096 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff1      bs=2048 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff2      bs=1024 conv=block,sync 
-dd if=$file1 of=/test/aiodio/ff3      bs=512  conv=block,sync 
 
 date
 echo "************ Running aio-stress tests " 
@@ -237,6 +233,10 @@ ${LTPROOT}/pan/pan -e -S -a ltpaiostresspart1 -n ltp-aiostresspart1 -l ltpaiostr
 
 wait $!
 
+sync
+echo "************ End Running aio-stress tests "
+echo "
+
 if [ "$runExtendedStress" -eq 1 ];then
 echo "************ Running EXTENDED aio-stress tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part2 > ${TMPBASE}/ltp-aio-stress.part2
@@ -244,6 +244,7 @@ ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aio-stress.part2 > ${TMPBA
 ${LTPROOT}/pan/pan -e -S -a ltpaiostresspart2 -n ltp-aiostresspart2 -l ltpaiostress.logfile -o ltpaiostress.outfile -p -f ${TMPBASE}/ltp-aio-stress.part2 &
 
 wait $!
+sync
 fi
 
 dd if=$file1 of=/test/aiodio/junkfile bs=8192 conv=block,sync
@@ -255,10 +256,13 @@ dd if=$file1 of=/test/aiodio/ff3      bs=512  conv=block,sync
 echo "************ Running aiocp tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
 
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio.logfile -o ltpaiodio.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l
+ltpaiodio1.logfile -o ltpaiodio1.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
 
 wait $!
 sync
+echo "************ End Running aiocp tests "
+echo ""
 
 echo "************ Running aiodio_sparse tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part2 > ${TMPBASE}/ltp-aiodio.part2
@@ -266,91 +270,43 @@ ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part2 > ${TMPBASE}/
 ${LTPROOT}/pan/pan -e -S -a ltpaiodiopart2 -n ltp-aiodiopart2 -l ltpaiodio2.logfile -o ltpaiodio2.outfile -p -f ${TMPBASE}/ltp-aiodio.part2 &
 
 wait $!
+sync
+echo "************ End Running aiodio_sparse tests "
+echo ""
 
 
-echo "************ Running aiodio_sparse tests " 
+if [ "$runExtendedStress" -eq 1 ];then
+echo "************ Running fsx-linux tests "
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part3 > ${TMPBASE}/ltp-aiodio.part3
 
-${LTPROOT}/pan/pan -x 5 -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l ltpaiodio3.logfile -o ltpaiodio3.outfile -p -f ${TMPBASE}/ltp-aiodio.part3 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l
+ltpaiodio3.logfile -o ltpaiodio3.outfile -p -f ${TMPBASE}/ltp-aiodio.part3 &
+
+
 
 wait $!
+sync
+fi
+
+dd if=$file1 of=/test/aiodio/file2      bs=2048 conv=block,sync
+dd if=$file1 of=/test/aiodio/file3      bs=1024 conv=block,sync
+dd if=$file1 of=/test/aiodio/file4      bs=512  conv=block,sync
+dd if=$file1 of=/test/aiodio/file5      bs=4096 conv=block,sync
 
 
-#!/bin/bash
 
-LIMIT=10
-
-
-echo "Running dio_sparse"
  
-var0=1
-while [ "$var0" -lt "$LIMIT" ]
-do
-echo -n "$var0 iteration on dio_sparse"
-  testcases/kernel/io/ltp-aiodio/dirty
-  testcases/kernel/io/ltp-aiodio/dio_sparse
-  date
-  var0=$(($var0+1))
-done
+echo "************ Running dio_sparse & miscellaneous tests "
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part4 >
+${TMPBASE}/ltp-aiodio.part4
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart4 -n ltp-aiodiopart4 -l
+ltpaiodio4.logfile -o ltpaiodio4.outfile -p -f ${TMPBASE}/ltp-aiodio.part4 &
+wait $!
+sync
+echo "************ End Running dio_sparse & miscellaneous tests "
+echo ""
 
-var0=1
-while [ "$var0" -lt "$LIMIT" ]
-do
-echo -n "$var0 iteration on dio_sparse"
-  testcases/kernel/io/ltp-aiodio/dio_sparse
-  date
-  var0=$(($var0+1))
-done
-
-echo "Running aiodio_append"
-var0=1
-while [ "$var0" -lt "$LIMIT" ]
-do
-  testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-  date
-  var0=$(($var0+1))
-done
-
-echo "Running dio_append"
-var0=1
-while [ "$var0" -lt "$LIMIT" ]
-do
-testcases/kernel/io/ltp-aiodio/dio_append
-date
-  var0=$(($var0+1))
-done
-
-#echo "Running dio_truncate"
-#var0=1
-#while [ "$var0" -lt "$LIMIT" ]
-#do
-#testcases/kernel/io/ltp-aiodio/dio_truncate
-#date
-#  var0=$(($var0+1))
-#done
-
-#echo "Running read_checkzero"
-#var0=1
-#while [ "$var0" -lt "$LIMIT" ]
-#do
-#testcases/kernel/io/ltp-aiodio/read_checkzero
-#date
-#  var0=$(($var0+1))
-#done
-
-echo "Running ltp-diorh"
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file   &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file3  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file4  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file5  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file6  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file7  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file8  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file9  &
-testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file0  &
-date
-
+echo "************ Cleaning/Umounting 
 
 rm -f /test/aiodio/fff
 rm -f /test/aiodio/ff1
@@ -364,4 +320,4 @@ umount $part1
 
 done
 date
-echo "AIO/DIO test complete " date
+echo "AIO/DIO test complete "
