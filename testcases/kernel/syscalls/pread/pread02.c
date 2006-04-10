@@ -53,10 +53,10 @@
  * Usage:  <for command-line>
  *  pread02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ *             -i n : Execute test n times.
+ *             -I x : Execute test for x seconds.
+ *             -P x : Pause for x seconds between iterations.
+ *             -t   : Turn on syscall timing.
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -119,7 +119,7 @@ main(int ac, char **av)
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -149,7 +149,7 @@ main(int ac, char **av)
 			} else if (fildes == 2) {
 				fildes = fd1;
 			}
-				
+
 			/*
 			 * Call pread() with the specified file descriptor,
 			 * no. of bytes to be read from specified offset.
@@ -191,10 +191,10 @@ main(int ac, char **av)
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  	     Initialize/allocate write buffer.
- *  	     Call individual setup function.
+ *           Initialize/allocate write buffer.
+ *           Call individual setup function.
  */
-void 
+void
 setup()
 {
 	int i;		/* counter for setup functions */
@@ -225,7 +225,7 @@ no_setup()
 
 /*
  * setup1() - setup function for a test condition for which pread()
- *	      returns -ve value and sets errno to ESPIPE.
+ *            returns -ve value and sets errno to ESPIPE.
  *
  *  Create an unnamed pipe using pipe().
  *  Write some known data to the write end of the pipe.
@@ -251,7 +251,7 @@ setup1()
 
 /*
  * setup2 - setup function for a test condition for which pread()
- * 	    returns -ve value and sets errno to EINVAL.
+ *          returns -ve value and sets errno to EINVAL.
  *
  *  Create a temporary directory and a file under it.
  *  return 0.
@@ -305,7 +305,7 @@ init_buffers()
  *  Close the temporary file.
  *  Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	int count;		/* index for the loop */

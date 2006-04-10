@@ -24,7 +24,7 @@
  * Test Description:
  *  Verify that,
  *   1) pread() fails when fd refers to a directory.
- *   
+ *
  *
  * Expected Result:
  *   1) pread() should return -1 and set errno to EISDIR.
@@ -34,7 +34,7 @@
  *   Setup signal handling.
  *   Pause for SIGUSR1 if option specified.
  *   Create a temporary directory.
- *   Get the currect directory name	
+ *   Get the currect directory name
  *   Open temporary directory
  *
  *  Test:
@@ -55,10 +55,10 @@
  * Usage:  <for command-line>
  *  pread03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ *             -i n : Execute test n times.
+ *             -I x : Execute test for x seconds.
+ *             -P x : Pause for x seconds between iterations.
+ *             -t   : Turn on syscall timing.
  *
  * HISTORY
  *	04/2002 Ported by André Merlier
@@ -105,7 +105,7 @@ main(int ac, char **av)
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -114,20 +114,20 @@ main(int ac, char **av)
 
 	/* Perform global setup for test */
 	setup();
-	
+
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		
-        	test_desc = "EISDIR";
+
+		test_desc = "EISDIR";
 		nbytes = K1;
 		offset = 20;
-				
+
 		TEST(pread(fd1, read_buf[0], nbytes, offset));
-			
+
 		/* Check for the return code of pread() */
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "pread() returned "
@@ -135,9 +135,9 @@ main(int ac, char **av)
 				 TEST_RETURN,
 				 exp_enos);
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
-	
+
 		/*
 		 * Verify whether expected errno is set.
 		 */
@@ -149,48 +149,48 @@ main(int ac, char **av)
 				 TEST_ERRNO, exp_enos[0]);
 		}
 	}
-	
+
 	cleanup();
 
-	/*NOTREACHED*/		
+	/*NOTREACHED*/
 	return(0);
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  	     create temporary directory and open it
+ *           create temporary directory and open it
  */
-void 
+void
 setup()
 {
 	char *cur_dir = NULL;
-		
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
-	
+
 	/* get the currect directory name */
-        if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-                tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
-        }
-  
+	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
+		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
+	}
+
 		 sprintf(test_dir, "%s.%d", cur_dir, getpid());
-		
+
 	/*
-         * create a temporary directory 
-         */
-        if(mkdir(PREAD_TEMPDIR, 0777) != 0) {
-                tst_resm(TFAIL, "mkdir() failed to create"
-                                " test directory");
-                exit(1);
-                /* NOTREACHED */
-        }
-	
+	 * create a temporary directory
+	 */
+	if(mkdir(PREAD_TEMPDIR, 0777) != 0) {
+		tst_resm(TFAIL, "mkdir() failed to create"
+		                " test directory");
+		exit(1);
+		/* NOTREACHED */
+	}
+
 	/* open temporary directory used for test */
 	if ((fd1 = open(PREAD_TEMPDIR,O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
@@ -206,7 +206,7 @@ setup()
  *
  *  Close/Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

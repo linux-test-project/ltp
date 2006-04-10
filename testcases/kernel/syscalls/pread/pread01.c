@@ -23,7 +23,7 @@
  * Test Description:
  *  Verify the functionality of pread() by writing known data using pwrite()
  *  to the file at various specified offsets and later read from the file from
- *  various specified offsets, comparing the data read aganist the data 
+ *  various specified offsets, comparing the data read aganist the data
  *  written.
  *
  * Expected Result:
@@ -40,13 +40,13 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Issue a FAIL message.
+ *      Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *      Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *          Issue Functionality-Pass message.
  *      Otherwise,
- *		Issue Functionality-Fail message.
+ *          Issue Functionality-Fail message.
  *  Cleanup:
  *   Print errno log and/or timing stats if options given
  *   Delete the temporary directory created.
@@ -55,10 +55,10 @@
  *  pread01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ *             -i n : Execute test n times.
+ *             -I x : Execute test for x seconds.
+ *             -P x : Pause for x seconds between iterations.
+ *             -t   : Turn on syscall timing.
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -104,7 +104,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int nread;		/* no. of bytes read by pread() */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -120,10 +120,10 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call pread() of K1 data (should be 2's) at offset K2.
 		 */
-    		nread = pread(fildes, read_buf[2], K1, K2);
+		nread = pread(fildes, read_buf[2], K1, K2);
 
 		/* Check for the return value of pread() */
 		if (nread != K1) {
@@ -141,7 +141,7 @@ main(int ac, char **av)
 		l_seek(fildes, 0, SEEK_SET, 0);
 
 		/* pread() K1 of data (should be 3's) at offset K3. */
-    		nread = pread(fildes, read_buf[3], K1, K3);
+		nread = pread(fildes, read_buf[3], K1, K3);
 		if (nread != K1) {
 			tst_brkm(TFAIL, cleanup, "pread() at off. K3 failed: "
 				 "nread=%d, error:%d", nread, errno);
@@ -151,7 +151,7 @@ main(int ac, char **av)
 		l_seek(fildes, 0, SEEK_CUR, 0);
 
 		/*
-		 * Do a normal read() of K1 data (should be 0's) 
+		 * Do a normal read() of K1 data (should be 0's)
 		 * which should take place at offset 0 and move the
 		 * file pointer to an offset of K1.
 		 */
@@ -164,7 +164,7 @@ main(int ac, char **av)
 		l_seek(fildes, 0, SEEK_CUR, K1);
 
 		/* pread() of K1 data (should be 1's) at offset K1.*/
-    		nread = pread(fildes, read_buf[1], K1, K1);
+		nread = pread(fildes, read_buf[1], K1, K1);
 		if (nread != K1) {
 			tst_brkm(TFAIL, cleanup, "pread() at off. K1 failed: "
 				 "nread=%d, error:%d", nread, errno);
@@ -205,7 +205,7 @@ main(int ac, char **av)
  *  Create a temporary directory and a file under it and
  *  write know data at different offset positions.
  */
-void 
+void
 setup()
 {
 	int nwrite = 0;			/* no. of bytes written by pwrite() */
@@ -233,7 +233,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "pwrite() failed to write on %s, "
 			 "errno=%d : %s", TEMPFILE, errno, strerror(errno));
 	}
-	
+
 	/* We should still be at offset 0. */
 	l_seek(fildes, 0, SEEK_CUR, 0);
 
@@ -319,7 +319,7 @@ l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 
 /*
  * compare_bufers() - Compare the contents of read buffer aganist the
- *		      write buffer contents.
+ *                    write buffer contents.
  *
  *  The contents of the index of each buffer should be as follows:
  *  [0] has 0's, [1] has 1's, [2] has 2's, and [3] has 3's.
@@ -350,11 +350,11 @@ compare_bufers()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  *
- * 	       Deallocate the memory allocated to read/write buffers.
- * 	       Close the temporary file.
- * 	       Remove the temporary directory created.
+ *             Deallocate the memory allocated to read/write buffers.
+ *             Close the temporary file.
+ *             Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	int count;		/* index for the loop */
