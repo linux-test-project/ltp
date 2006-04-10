@@ -96,6 +96,7 @@ int exp_enos[] = {EISDIR,0};
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
+void init_buffers();		/* function to initialize/allocate buffers */
 
 int
 main(int ac, char **av)
@@ -171,6 +172,9 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+	/* Allocate the read buffer */
+	init_buffers();
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
@@ -179,7 +183,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
 	}
 
-		 sprintf(test_dir, "%s.%d", cur_dir, getpid());
+	sprintf(test_dir, "%s.%d", cur_dir, getpid());
 
 	/*
 	 * create a temporary directory
@@ -199,6 +203,26 @@ setup()
 
 }
 
+/*
+ * init_buffers() - allocate/Initialize write_buf array.
+ *
+ *  Allocate read buffer.
+ */
+void
+init_buffers()
+{
+	int count;		/* counter variable for loop */
+
+	/* Allocate and Initialize read buffer */
+	for (count = 0; count < NBUFS; count++) {
+		read_buf[count] = (char *)malloc(K1);
+
+		if (read_buf[count] == NULL) {
+			tst_brkm(TBROK, tst_exit,
+				 "malloc() failed on read buffers");
+		}
+	}
+}
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -209,11 +233,18 @@ setup()
 void
 cleanup()
 {
+	int count;		/* index for the loop */
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Free the memory allocated for the read buffer */
+	for (count = 0; count < NBUFS; count++) {
+		free(read_buf[count]);
+	}
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();
