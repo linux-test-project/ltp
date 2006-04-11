@@ -1,3 +1,23 @@
+LTP-20061106
+-Applied a patch by Jacky Malcles that added a fourth scenario for ltp-aiodio.sh
+-Fixed ld01 from failing on Assertions 1-7 for bug 22167
+-Applied a fix for Lin Feng Shen to eliminate white spaces that caused mail02 to fail
+- A fix created by Jacky Malcles that eliminates warning messages when complied on 64 bit platform
+-Applied a patch to re-enable writing on arm per by Joe Pearson / Nick Pollitt
+-Applied three patches by Joy Latten to the security test suite
+-Applied patches from Robert Williamson to fix fcntl127. This test
+should now  be positive test versus negative...based on the properties of
+ the open() call in the setup() 
+-Applied Patch from Robbie Williamson that fixed fcntl128.  This testcase was changed the test to expect no errors.  The fcntl() call should succeed regardless
+-Applied a patch from gettimeofday01 to gettimeofday02 to fix the occasional failure
+-Applied a fix to madvise02 by Jacky Malcles to eliminate the need for a special execution of the testcase for ia_64
+-Applied a patch fixes the test 4 of mincore01.c that failed in 32 bit on a 64 bit kernel.
+-Patches applied to pread02 to fix broken white spacing
+-Applied a patch from Jane Lv for pread03.c.  This fixed a missed step to initialize the read buffer array.
+-Applied Patches submitted by Thomas Gleixner to initialize interval values to prevent setitimer01 and 02 from failing
+-Applied updates from Darrick Wong for Pounder for Pounder21.  Documentation was  added to get pounder up and running quickly
+-Feature added to Pounder21 that enables the sysrq key at the beginning of every pounder run
+
 LTP-20060306
 - Applied an update to allow people to automatically declare the CREATE variable in IDcheck.sh.
 - export a bunch of settings by default that since they are harmless
