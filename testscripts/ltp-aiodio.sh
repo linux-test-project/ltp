@@ -6,7 +6,8 @@
 # 
 # 02/08/04 mridge@us.ibm.com 
 # 
-# 
+# 04/12/06 a Forth scenerio file has been added ltp-aiodio.part4
+#
 
 cd `dirname $0`
 export LTPROOT=${PWD}
@@ -235,7 +236,7 @@ wait $!
 
 sync
 echo "************ End Running aio-stress tests "
-echo "
+echo ""
 
 if [ "$runExtendedStress" -eq 1 ];then
 echo "************ Running EXTENDED aio-stress tests " 
@@ -256,8 +257,7 @@ dd if=$file1 of=/test/aiodio/ff3      bs=512  conv=block,sync
 echo "************ Running aiocp tests " 
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part1 > ${TMPBASE}/ltp-aiodio.part1
 
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l
-ltpaiodio1.logfile -o ltpaiodio1.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart1 -n ltp-aiodiopart1 -l ltpaiodio1.logfile -o ltpaiodio1.outfile -p -f ${TMPBASE}/ltp-aiodio.part1 &
 
 wait $!
 sync
@@ -279,8 +279,7 @@ if [ "$runExtendedStress" -eq 1 ];then
 echo "************ Running fsx-linux tests "
 ${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part3 > ${TMPBASE}/ltp-aiodio.part3
 
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l
-ltpaiodio3.logfile -o ltpaiodio3.outfile -p -f ${TMPBASE}/ltp-aiodio.part3 &
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart3 -n ltp-aiodiopart3 -l ltpaiodio3.logfile -o ltpaiodio3.outfile -p -f ${TMPBASE}/ltp-aiodio.part3 &
 
 
 
@@ -297,16 +296,15 @@ dd if=$file1 of=/test/aiodio/file5      bs=4096 conv=block,sync
 
  
 echo "************ Running dio_sparse & miscellaneous tests "
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part4 >
-${TMPBASE}/ltp-aiodio.part4
-${LTPROOT}/pan/pan -e -S -a ltpaiodiopart4 -n ltp-aiodiopart4 -l
-ltpaiodio4.logfile -o ltpaiodio4.outfile -p -f ${TMPBASE}/ltp-aiodio.part4 &
+${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltp-aiodio.part4 > ${TMPBASE}/ltp-aiodio.part4
+${LTPROOT}/pan/pan -e -S -a ltpaiodiopart4 -n ltp-aiodiopart4 -l ltpaiodio4.logfile -o ltpaiodio4.outfile -p -f ${TMPBASE}/ltp-aiodio.part4 &
+
 wait $!
 sync
 echo "************ End Running dio_sparse & miscellaneous tests "
 echo ""
 
-echo "************ Cleaning/Umounting 
+echo "************ Cleaning/Umounting" 
 
 rm -f /test/aiodio/fff
 rm -f /test/aiodio/ff1
