@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.9 2006/03/14 18:44:37 mreed10 Exp $ */
+/* $Id: parse_opts.c,v 1.10 2006/04/19 18:23:40 mreed10 Exp $ */
 
 /**********************************************************
  * 
@@ -761,18 +761,16 @@ int counter;
     }
 
     if ( STD_INFINITE ) {
-	keepgoing = 1;
+	keepgoing++;
     }
 
     if ( STD_LOOP_COUNT && counter < STD_LOOP_COUNT ) {
 	keepgoing++;
-    } else
-	keepgoing = 0;
+    }
 
     if ( STD_LOOP_DURATION != 0.0 && get_current_time() < stop_time ) {
 	keepgoing++;
-    } else
-	keepgoing = 0;
+    }
 
     if ( keepgoing == 0 )
 	return 0;
