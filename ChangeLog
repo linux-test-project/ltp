@@ -1,4 +1,5 @@
-LTP-20061106
+LTP-20060412
+-Removed a patch for parse_opts.c that caused many test cases to fail.  
 -Applied a patch by Jacky Malcles that added a fourth scenario for ltp-aiodio.sh
 -Fixed ld01 from failing on Assertions 1-7 for bug 22167
 -Applied a fix for Lin Feng Shen to eliminate white spaces that caused mail02 to fail
