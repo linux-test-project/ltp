@@ -148,8 +148,8 @@ main(int ac, char **av)
                         }
                  else {
                         tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"
-                                " failed with errno %d : %s", TEST_ERRNO,
-                                 strerror(TEST_ERRNO));
+                                " failed with errno %d : %s", fname,
+                                 TEST_ERRNO, strerror(TEST_ERRNO));
                        }
  
 #endif
