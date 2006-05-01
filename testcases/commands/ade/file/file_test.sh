@@ -386,8 +386,17 @@ if [ -f /etc/redhat-release ]; then
 	bCMD=rpmbuild
 else
 	bDIR=/usr/src/packages
-	bCMD=rpm
+	bCMD=rpmbuild
 fi
+
+rpmversion=`rpm --version | awk -F ' ' '{print $3}' | cut -d '.' -f1 `
+
+if [ "$rpmversion" -ge "4" ]; then
+ gpl="License: GPL"
+else
+ gpl="Copyright: GPL"
+fi
+
 
 cat > $LTPTMP/files.spec <<EOF
 
@@ -395,7 +404,7 @@ Summary: Dummy package used to test file command
 Name: cprog
 Version: 0.0.7
 Release: 3
-Copyright: GPL
+$gpl
 Group: LillB test case 
 Source: ./cprog.c
 BuildRoot: /var/tmp/%{name}-buildroot
@@ -449,7 +458,7 @@ then
     $LTPBIN/tst_brkm TBROK NULL "cat: failed to create test file cprog.c"
 fi
 
-$bCMD -bs $LTPTMP/files.spec &>$LTPTMP/file.out
+$bCMD -bs  $LTPTMP/files.spec &>$LTPTMP/file.out
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command brok. Reason:"
