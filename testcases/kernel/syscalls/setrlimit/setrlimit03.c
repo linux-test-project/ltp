@@ -44,9 +44,9 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include <errno.h>
-#include <linux/fs.h>
 #include "test.h"
 #include "usctest.h"
+#include <linux/fs.h>
 
 char *TCID = "setrlimit03";
 int TST_TOTAL = 1;
