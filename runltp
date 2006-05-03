@@ -63,6 +63,11 @@ setup()
     }
 }
 
+version_of_ltp()
+{
+head -n 1  $LTPROOT/ChangeLog
+exit 0
+}
 
 usage() 
 {
@@ -74,6 +79,7 @@ usage()
                 
     -c NUM_PROCS    Run LTP under additional background CPU load.
     -d TMPDIR       Directory where temporary files will be created.
+    -e              Prints the date of the current LTP release
     -f CMDFILE      Execute user defined list of testcases.
     -h              Help. Prints all available options.
     -i # (in Mb)    Run LTP with a _min_ IO load of # Mb in background.
@@ -120,8 +126,9 @@ main()
     local PRETTY_PRT=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
+    version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts c:d:f:hi:l:m:Nno:pqr:s:t:vx: arg
+    while getopts c:d:f:ehi:l:m:Nno:pqr:s:t:vx: arg
     do  case $arg in
         c)       
 	    NUM_PROCS=$(($OPTARG))
@@ -133,6 +140,9 @@ main()
             TMPBASE=$OPTARG
             TMP="${TMPBASE}/ltp-$$"
             export TMPDIR="$TMP";;
+        e)  # Print out the version of LTP
+            version_of_ltp
+	    ;;
         f)  # Execute user defined set of testcases.
             CMDFILE=$OPTARG;;
     
@@ -375,6 +385,8 @@ main()
       echo "INFO: pan reported some tests FAIL"
       VALUE=1
     fi
+    echo "LTP Version: $version_date"
+
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload ; }
@@ -388,7 +400,7 @@ main()
         
             Done executing testcases."
             result log is in the $LTPROOT/results directory"
-        
+            LTP Version:  $version_date
        ###############################################################"
        
 	EOF
