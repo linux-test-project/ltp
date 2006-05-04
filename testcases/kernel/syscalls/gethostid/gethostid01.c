@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.14 2006/02/28 00:42:10 vapier Exp $ */
+/* $Id: gethostid01.c,v 1.15 2006/05/04 19:23:06 mreed10 Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -143,10 +143,11 @@ int exp_enos[]={0};		/* must be a 0 terminated list */
 int
 main(int ac, char **av)
 {
-    int lc,i,j;		/* loop counters */
+    int lc,i,j,location;		/* loop counters */
     int bit_64 = 0;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
-    char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hostid2[HOSTIDLEN], hex[2]="0x";
+    char *result;
+    char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN], hostid2[HOSTIDLEN], *hostid3, hex[2]="0x";
     char hex_64[8]="ffffffff";
     FILE *fp;
 
@@ -235,14 +236,16 @@ main(int ac, char **av)
 			strncpy(hostid2, hostid, strlen(hostid)+1);
 		}
 
-		if (strcmp(name2, hostid2) == 0){
+		if ((result = strstr(hostid2,name2)) != NULL){
+ 		        hostid3 =strdup(name2);
+
 			tst_resm(TPASS, "Hostid command reports hostid is %s, "
 				"and gethostid reports %s",
-				name, hostid);
+				name2, hostid3);
 		} else {
 			tst_resm(TFAIL, "Hostid command reports hostid is %s, "
 				"but gethostid() reports %s", 
-				 name, hostid);
+				 name2, hostid2);
 		}
             }	/* End if first strcmp */
 	}	/* End if STD_FUNCTIONAL_TEST */ 
