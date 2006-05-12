@@ -254,7 +254,7 @@ setup(void)
 		 		 tst_brkm(TBROK, tst_exit, "Failed to initialize module name");
 		 }
         bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr <= 0) {
+        if (bad_addr == MAP_FAILED) {
                 tst_brkm(TBROK, cleanup, "mmap failed");
     		 }
 		 tdat[2].modname = bad_addr;

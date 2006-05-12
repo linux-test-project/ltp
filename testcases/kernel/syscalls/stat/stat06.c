@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.4 2005/07/11 22:29:06 robbiew Exp $ */
+/* $Id: stat06.c,v 1.5 2006/05/12 15:44:11 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -285,7 +285,7 @@ setup()
 
     bad_addr = mmap(0, 1, PROT_NONE,
 		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-    if (bad_addr <= 0) {
+    if (bad_addr == MAP_FAILED) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }
     Test_cases[6].pathname = bad_addr;
