@@ -1,3 +1,15 @@
+LTP-20060515
+-Added a -e option to print out the date of the ltp release.  Also
+ the date of the version of LTP will be printed in log files.	
+-A patch for parce_opts.c was removed because it caused several test cases to fail
+-Added a patch from Jacky Malcles to correct typos in ltp-aiodio.sh
+-Added a patch from Jacky Malcles to fix aiodio_append.c
+-Added a patch from Bibo Mao that fixes setrlimit03
+-Added a patch that fixes file_test.sh.  
+-Added a patch that fixes gethostid01
+-A problem that was  reported by Jane Lv, mmap() returns an unsigned value (MAP_FAILED) upon error, so checking with <= 0 will not work was fixed in link04.c, lstate02.c mkdir01, mkdir03, mknod06, open08 read02.c rmdir06.c stat03.c statfs03 symlink03.c sysfs06.c truncate03.c uplink07.c write03.c and writev01.c - writev05.c
+- Patches submitted by Thomas Gleixner to initialize interval values in setitimer03
+
 LTP-20060412
 -Removed a patch for parse_opts.c that caused many test cases to fail.  
 -Applied a patch by Jacky Malcles that added a fourth scenario for ltp-aiodio.sh
