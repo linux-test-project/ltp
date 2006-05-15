@@ -1,7 +1,7 @@
 LTP-20060515
 -Added a -e option to print out the date of the ltp release.  Also
  the date of the version of LTP will be printed in log files.	
--A patch for parce_opts.c was removed because it caused several test cases to fail
+-A patch for parse_opts.c was removed because it caused several test cases to fail
 -Added a patch from Jacky Malcles to correct typos in ltp-aiodio.sh
 -Added a patch from Jacky Malcles to fix aiodio_append.c
 -Added a patch from Bibo Mao that fixes setrlimit03
