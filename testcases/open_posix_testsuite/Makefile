@@ -66,8 +66,7 @@ endif
 
 # add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
 check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
-CFLAGS += $(call check_gcc,-std=c99,)
-CFLAGS += $(call check_gcc,-std=gnu99,)
+CFLAGS += $(call check_gcc,-std=gnu99,$(call check_gcc,-std=c99,))
 
 CPPFLAGS += -Iinclude
 
