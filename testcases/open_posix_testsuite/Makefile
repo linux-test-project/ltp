@@ -29,7 +29,7 @@ top_builddir = .
 
 LOGFILE = $(top_builddir)/logfile
 
-LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
+LDFLAGS := $(shell grep -sv '^\#' LDFLAGS)
 
 RUN_TESTS := $(shell $(top_builddir)/locate-test \
              --execs $(top_builddir)/$(POSIX_TARGET))
