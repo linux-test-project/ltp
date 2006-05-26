@@ -85,16 +85,17 @@ int main(int ac, char **av)
         /* Get the currently used number of file descriptors */
 	mypid=getpid();
 	cmdstring=malloc(BUFSIZ);
-	snprintf(cmdstring, BUFSIZ, "ls -A -1 /proc/%d/fd | "
-		"wc -l | awk {'print $1'}> pipe07.tmp", mypid);
+	snprintf(cmdstring, BUFSIZ, "test -d /proc/%d/fd || exit 1 ; "
+		"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'} > pipe07.tmp",
+		mypid, mypid);
 	if (system(cmdstring) == 0)
 	{
 		f = fopen("pipe07.tmp", "r");	
 		fscanf(f,"%d",&usedfds);	
 		fclose(f);
-		unlink("pipe07.tmp");
 	}else
 		usedfds=3;   /* Could not get processes used fds, so assume 3 */
+	unlink("pipe07.tmp");
 
 	TEST_EXP_ENOS(exp_enos);
 
