@@ -85,7 +85,7 @@ extern int Tst_count;
 
 static char file_name[] = "fooXXXXXX";
 static char* global_pointer = NULL;
-static char* global_vec = NULL;
+static unsigned char* global_vec = NULL;
 static int global_len = 0;
 static int file_desc = 0;
 
@@ -94,7 +94,7 @@ static int file_desc = 0;
 static struct test_case_t {
         char *addr;
         int len;
-	char *vector;
+	unsigned char *vector;
 	int exp_errno;
         void (*setupfunc)();
 } TC[] = {
@@ -173,7 +173,7 @@ setup1()
 void
 setup2()
 {
-	char *t;
+	unsigned char *t;
 	
 	/* Create pointer to invalid address */
 	if( MAP_FAILED == (t = mmap(0,global_len,PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,0,0)) ) {

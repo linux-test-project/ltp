@@ -73,7 +73,7 @@ static int file_desc=0;	/* this is for the file descriptor */
 static char *position=NULL;				
 static int p_size;		/* page size obtained via getpagesize() */
 static int num_pages = 4;	/* four pages are used in this test */
-static char * vec=NULL;
+static unsigned char * vec=NULL;
 
 #if !defined(UCLINUX)
 
