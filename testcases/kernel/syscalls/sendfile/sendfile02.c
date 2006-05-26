@@ -146,7 +146,7 @@ void
 do_child()
 {
 	int lc;
-	int length;
+	socklen_t length;
 	char rbuf[4096];
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

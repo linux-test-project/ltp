@@ -291,7 +291,7 @@ do_child()
 
 	/* accept connections until killed */
 	while (1) {
-		int	fromlen;
+		socklen_t	fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 

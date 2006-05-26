@@ -60,7 +60,8 @@ int testno;
 int	s;	/* socket descriptor */
 struct sockaddr_in sin0, fsin1;
 int	sinlen;
-int	optval, optlen;
+int	optval;
+socklen_t	optlen;
 
 void setup(void), setup0(void), setup1(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
@@ -72,7 +73,7 @@ struct test_case_t {		/* test case structure */
 	int	level;	/* IPPROTO_* */
 	int	optname;
 	void	*optval;
-	int	*optlen;
+	socklen_t	*optlen;
 	struct sockaddr	*sin;
 	int	salen;
 	int	retval;		/* syscall return value */

@@ -59,7 +59,7 @@ int testno;
 
 int	s;	/* socket descriptor */
 struct sockaddr_in sin0, fsin1;
-int	sinlen;
+socklen_t	sinlen;
 
 void setup(void), setup0(void), setup1(void), 
 	cleanup(void), cleanup0(void), cleanup1(void);
@@ -69,7 +69,7 @@ struct test_case_t {		/* test case structure */
 	int	type;		/* SOCK_STREAM, SOCK_DGRAM ... */
 	int	proto;		/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
-	int	*salen;		/* getsockname's 3rd argument */
+	socklen_t	*salen;		/* getsockname's 3rd argument */
 	int	retval;		/* syscall return value */
 	int	experrno;	/* expected errno */
 	void	(*setup)(void);
@@ -88,7 +88,7 @@ struct test_case_t {		/* test case structure */
 		&sinlen, -1, EFAULT, setup1, cleanup1,
 		"invalid socket buffer" },
 	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		(int *)1, -1, EFAULT, setup1, cleanup1,
+		(socklen_t *)1, -1, EFAULT, setup1, cleanup1,
 		"invalid salen" },
 #endif
 };
