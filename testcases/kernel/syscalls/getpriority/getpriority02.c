@@ -146,7 +146,6 @@ main(int ac, char **av)
 			 * 'which' and 'who' arguments and verify
 			 * that it fails with expected errno.
 			 */
-			errno = 0;
 			TEST(getpriority(which, who));
 
 			/* check return code from getpriority(2) */

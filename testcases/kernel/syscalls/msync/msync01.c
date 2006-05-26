@@ -115,7 +115,6 @@ main(int ac, char **av)
 		 * Call msync to synchronize the mapped region
 	 	 * with the specified file.
 		 */
-		errno = 0;
 		TEST(msync(addr, page_sz, MS_ASYNC));
 
 		/* Check for the return value of msync() */

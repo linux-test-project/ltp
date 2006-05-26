@@ -117,7 +117,6 @@ main(int ac, char **av)
 			 * Invoke getpriority with the specified
 			 * 'which' argument for the calling process.
 			 */
-			errno = 0;
 			TEST(getpriority(which, 0));
 
 			/* check return code of getpriority()*/
