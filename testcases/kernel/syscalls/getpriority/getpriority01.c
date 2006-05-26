@@ -121,13 +121,11 @@ main(int ac, char **av)
 			TEST(getpriority(which, 0));
 
 			/* check return code of getpriority()*/
-			if (TEST_RETURN < 0) {
-				if (TEST_ERRNO != 0) {
-					tst_resm(TFAIL, "getpriority(%d, 0) "
-						 "Failed, errno=%d : %s",
-						 which, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
+			if (TEST_RETURN < 0 && TEST_ERRNO != 0) {
+				tst_resm(TFAIL, "getpriority(%d, 0) "
+					 "Failed, errno=%d : %s",
+					 which, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "getpriority(%d, 0) returned "
 					 "%d priority value",
