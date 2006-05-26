@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.9 2005/12/22 20:18:22 robbiew Exp $ */
+/* $Id: usctest.h,v 1.10 2006/05/26 06:06:06 vapier Exp $ */
 
 /**********************************************************
  * 
@@ -212,7 +212,12 @@ extern void STD_opts_help();
  *	SCALL = system call and parameters to execute
  *
  ***********************************************************************/
-#define TEST(SCALL) errno=0; TEST_RETURN = SCALL;  TEST_ERRNO=errno;
+#define TEST(SCALL) \
+	do { \
+		errno = 0; \
+		TEST_RETURN = SCALL; \
+		TEST_ERRNO = errno; \
+	} while (0)
 
 /***********************************************************************
  * TEST_VOID: calls a system call
