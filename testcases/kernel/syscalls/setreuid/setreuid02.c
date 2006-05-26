@@ -74,7 +74,7 @@ extern int Tst_count;
 
 char *TCID = "setreuid02";
 uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;
-int neg_one = -1;
+uid_t neg_one = -1;
 int exp_enos[]={0};
 
 struct passwd nobody, daemonpw, root, bin;

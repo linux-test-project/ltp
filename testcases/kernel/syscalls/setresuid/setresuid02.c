@@ -71,7 +71,7 @@ extern int Tst_count;
 extern int getresuid(uid_t*, uid_t*, uid_t*);
 extern int setresuid(uid_t, uid_t, uid_t);
 
-int neg_one = -1;
+uid_t neg_one = -1;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;

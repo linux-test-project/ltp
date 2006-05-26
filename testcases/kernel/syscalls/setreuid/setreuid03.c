@@ -74,7 +74,7 @@ extern int Tst_count;
 
 int fail = -1;
 int pass = 0;
-int neg_one = -1;
+uid_t neg_one = -1;
 int exp_enos[]={EPERM,0};
 
 uid_t root_pw_uid, nobody_pw_uid, bin_pw_uid;

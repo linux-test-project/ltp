@@ -76,7 +76,7 @@ extern int setresuid(uid_t, uid_t, uid_t);
 char *TCID = "setresuid01";
 
 uid_t nobody_pw_uid, root_pw_uid, bin_pw_uid;
-int neg_one = -1;
+uid_t neg_one = -1;
 int exp_enos[]={0};
 
 struct passwd nobody, bin, root;

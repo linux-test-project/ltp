@@ -70,7 +70,7 @@
 char *TCID = "setreuid04";
 extern int Tst_count;
 
-int neg_one = -1;
+uid_t neg_one = -1;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
