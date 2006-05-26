@@ -74,6 +74,7 @@
  * Replaced setegid() by setresgid() in setup() 
  ****************************************************************/
 
+#define _GNU_SOURCE 1
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -82,9 +83,6 @@
 #include "usctest.h"
 
 #define EXP_RET_VAL	0
-
-extern int setresgid(gid_t, gid_t, gid_t);
-extern int getresgid(gid_t*, gid_t*, gid_t*);
 
 extern int Tst_count;
 

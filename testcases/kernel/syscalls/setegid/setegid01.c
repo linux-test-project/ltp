@@ -22,6 +22,8 @@
  * Test Description:
  *  Verify that setegid does not modify the saved gid or real gid.
  */
+
+#define _GNU_SOURCE 1
 #include <pwd.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -29,8 +31,6 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
-
-extern int getresgid(gid_t*, gid_t*, gid_t*);
 
 char *TCID = "setegid01";
 int TST_TOTAL = 1;          /* is this number right? */

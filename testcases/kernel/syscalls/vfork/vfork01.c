@@ -69,6 +69,7 @@
  *
  */
 
+#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -82,9 +83,6 @@
 
 #include "test.h"
 #include "usctest.h"
-
-extern int getresuid(uid_t*, uid_t*, uid_t*);
-extern int getresgid(gid_t*, gid_t*, gid_t*);
 
 char *TCID="vfork01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */

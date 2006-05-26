@@ -62,6 +62,7 @@
  *	nobody and bin must be a valid users.
  */
 
+#define _GNU_SOURCE 1
 #include <pwd.h>
 #include <malloc.h>
 #include <test.h>
@@ -72,8 +73,6 @@
 
 char *TCID = "setresuid03";
 extern int Tst_count;
-extern int getresuid(uid_t*, uid_t*, uid_t*);
-extern int setresuid(uid_t, uid_t, uid_t);
 
 uid_t neg_one = -1;
 uid_t inval_user = (USHRT_MAX-2);
