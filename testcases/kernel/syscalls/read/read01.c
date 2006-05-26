@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.3 2005/12/05 19:15:20 mridge Exp $ */
+/* $Id: read01.c,v 1.4 2006/05/26 06:26:40 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -127,8 +127,8 @@
 #define READ_BLOCK_SIZE BSIZE
 #endif
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 
 

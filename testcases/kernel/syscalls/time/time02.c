@@ -77,8 +77,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();		/* setup function for the test */
-extern void cleanup();		/* cleanup function for the test */
+void setup();		/* setup function for the test */
+void cleanup();		/* cleanup function for the test */
 
 char *TCID="time02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */

@@ -49,8 +49,8 @@
 #include <test.h>
 #include <usctest.h>
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID = "dup204"; 		/* Test program identifier.    */
 int TST_TOTAL = 2;    		/* Total number of test cases. */

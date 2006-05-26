@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: fork01.c,v 1.2 2006/05/26 06:26:39 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -126,8 +126,8 @@
 #include "usctest.h"
 
 #define	KIDEXIT	42
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 #define LINE_SZ	20		/* size of the line written/read to the file */
 #define FILENAME	"childpid"

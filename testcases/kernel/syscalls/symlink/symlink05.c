@@ -87,8 +87,8 @@ int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};
 
-extern void setup();		/* Setup function for the test */
-extern void cleanup();		/* Cleanup function for the test */
+void setup();		/* Setup function for the test */
+void cleanup();		/* Cleanup function for the test */
 
 int
 main(int ac, char **av)

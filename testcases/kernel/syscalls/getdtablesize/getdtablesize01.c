@@ -47,8 +47,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="getdtablesize01";     /* Test program identifier.    */
 int TST_TOTAL=1;          	  /* Total number of test cases. */

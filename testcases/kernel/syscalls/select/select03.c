@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.2 2004/08/25 16:21:16 mridge Exp $ */
+/* $Id: select03.c,v 1.3 2006/05/26 06:26:40 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -122,8 +122,8 @@
 
 #define FILENAME	"select03"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="select03";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */

@@ -95,8 +95,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 
 

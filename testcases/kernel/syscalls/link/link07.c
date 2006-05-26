@@ -95,8 +95,8 @@
 #define TEST_FILE2      "testdir_1/tfile_2"
 #define NEW_TEST_FILE2  "testdir_1/new_tfile_2"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="link07"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */

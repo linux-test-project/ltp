@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getuid01.c,v 1.2 2003/03/26 20:56:04 robbiew Exp $ */
+/* $Id: getuid01.c,v 1.3 2006/05/26 06:26:40 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -117,8 +117,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 
 

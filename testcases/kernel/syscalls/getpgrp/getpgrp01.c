@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getpgrp01.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: getpgrp01.c,v 1.2 2006/05/26 06:26:39 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -117,8 +117,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 
 

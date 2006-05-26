@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.15 2006/05/04 19:23:06 mreed10 Exp $ */
+/* $Id: gethostid01.c,v 1.16 2006/05/26 06:26:39 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -131,8 +131,8 @@
 #define FIRST_64_CHKBIT  0x01
 #define SECOND_64_CHKBIT 0x02
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="gethostid01";		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */

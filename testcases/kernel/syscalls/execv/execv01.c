@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execv01.c,v 1.2 2005/07/11 22:28:16 robbiew Exp $ */
+/* $Id: execv01.c,v 1.3 2006/05/26 06:26:38 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -120,8 +120,8 @@
 #include "test.h"
 #include "usctest.h"
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 
 

@@ -44,8 +44,8 @@
 
 #define TEST_PATH "/" /* Should be a mounted FS */
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="statvfs01";     /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */

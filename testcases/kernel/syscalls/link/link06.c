@@ -88,8 +88,8 @@
 #define NOBODY_USER	99
 #define MODE_TO S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IXOTH|S_IROTH
 
-extern void setup();
-extern void cleanup();
+void setup();
+void cleanup();
 
 char *TCID="link06"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */

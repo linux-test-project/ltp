@@ -126,8 +126,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ NULL, NULL, 0, 0, no_setup }
 };
 
-extern void setup();		/* Setup function for the test */
-extern void cleanup();		/* Cleanup function for the test */
+void setup();		/* Setup function for the test */
+void cleanup();		/* Cleanup function for the test */
 
 int
 main(int ac, char **av)
