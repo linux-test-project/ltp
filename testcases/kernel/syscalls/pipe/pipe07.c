@@ -77,23 +77,22 @@ int main(int ac, char **av)
 	FILE* f;			/* used for retrieving the used fds */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
 	setup();
-        /* Get the currently used number of file descriptors */
+	/* Get the currently used number of file descriptors */
 	mypid=getpid();
 	cmdstring=malloc(BUFSIZ);
 	snprintf(cmdstring, BUFSIZ, "test -d /proc/%d/fd || exit 1 ; "
 		"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'} > pipe07.tmp",
 		mypid, mypid);
-	if (system(cmdstring) == 0)
-	{
-		f = fopen("pipe07.tmp", "r");	
-		fscanf(f,"%d",&usedfds);	
+	if (system(cmdstring) == 0) {
+		f = fopen("pipe07.tmp", "r");
+		fscanf(f,"%d",&usedfds);
 		fclose(f);
-	}else
+	} else
 		usedfds=3;   /* Could not get processes used fds, so assume 3 */
 	unlink("pipe07.tmp");
 
@@ -104,8 +103,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		min = getdtablesize(); 
-		
+		min = getdtablesize();
+
 		/* subtract used fds */
 		min -= usedfds;
 
@@ -113,8 +112,8 @@ int main(int ac, char **av)
 			pipe_ret = pipe(pipes);
 			if (pipe_ret < 0) {
 				if (errno != EMFILE) {
-					tst_brkm(TFAIL, cleanup, 
-						"got unexpected error - %d", 
+					tst_brkm(TFAIL, cleanup,
+						"got unexpected error - %d",
 						errno);
 				}
 				break;
@@ -161,12 +160,11 @@ setup()
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
+ *             completion or premature exit.
  */
 void
 cleanup()
 {
-
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
