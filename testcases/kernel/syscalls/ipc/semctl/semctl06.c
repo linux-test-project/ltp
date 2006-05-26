@@ -80,7 +80,7 @@ static int		kidarray[NKIDS];
 static int		tid;
 static int		procstat;
 static char	       *prog;
-static short		semvals[NSEMS];
+static unsigned short		semvals[NSEMS];
 
 /*
  *  * These globals must be defined in the test.
