@@ -274,7 +274,7 @@ cleanup()
 
 	/* Reset the file size limit */
 	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
-		tst_brkm(TBROK, cleanup,
+		tst_brkm(TBROK, NULL,
 	 	  "Cannot reset max. file size using setrlimit");
 	}
 
