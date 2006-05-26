@@ -128,6 +128,7 @@ main(int ac, char **av)
 
 		/* fork off the children */
 		tst_resm(TINFO, "Forking %d children", Nforks);
+		tst_flush();
 		for (forks = 0; forks < Nforks; forks++) {
 		    if ((pid1 = fork()) == 0) { /* child */
 			ch_r_stat = getc(rea);
