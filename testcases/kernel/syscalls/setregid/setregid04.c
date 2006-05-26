@@ -74,7 +74,7 @@ extern int Tst_count;
 
 char *TCID = "setregid04";
 gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;
-int neg_one = -1;
+gid_t neg_one = -1;
 int exp_enos[]={0};
 
 struct group users, daemongr, root, bin;

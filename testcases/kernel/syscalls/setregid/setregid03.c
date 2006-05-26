@@ -77,7 +77,7 @@ extern int Tst_count;
 char *TCID = "setregid03";
 int fail = -1;
 int pass = 0;
-int neg_one = -1;
+gid_t neg_one = -1;
 int exp_enos[]={0};
 gid_t users_gr_gid, root_gr_gid, sys_gr_gid, bin_gr_gid;
 uid_t nobody_pw_uid;
