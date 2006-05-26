@@ -21,14 +21,14 @@
  * Test Name: llseek01
  *
  * Test Description:
- *  Verify that, llseek() call succeeds to set the file pointer position 
+ *  Verify that, llseek() call succeeds to set the file pointer position
  *  to an offset larger than file size. Also, verify that any attempt
  *  to write to this location fails.
  *
  * Expected result:
  *  llseek() should return the offset from the beginning of the file measured
  *  in bytes. Attempt to write to the location ( > file size) should fail.
- *   
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -101,8 +101,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	loff_t offset;		/* Ret value from llseek */
-	
-    
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -118,10 +117,10 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * set file size limit, seek to a file using llseek.
 		 */
-		 		 TEST(lseek64(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
+		TEST(lseek64(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
 
 		/* check return code of lseek(2) */
 		if (TEST_RETURN == (loff_t)-1) {
@@ -129,6 +128,7 @@ main(int ac, char **av)
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
+
 		/*
 		 * Perform functional verification if test
 		 * executed without (-f) option.
@@ -144,6 +144,7 @@ main(int ac, char **av)
 					 offset, BUFSIZ);
 				continue;
 			}
+
 			/*
 			 * llseek() successful.  Now attempt to write past
 			 * file size limit.
@@ -154,7 +155,7 @@ main(int ac, char **av)
 			}
 
 			/* Seeking to end of last valid write */
-		 		 		 offset = lseek64(fildes, (loff_t)BUFSIZ, SEEK_SET);
+			offset = lseek64(fildes, (loff_t)BUFSIZ, SEEK_SET);
 			if (offset != (loff_t)BUFSIZ) {
 				tst_brkm(TFAIL, cleanup,
 					 "llseek under file size limit");
@@ -169,7 +170,7 @@ main(int ac, char **av)
 					 "write to file size limit");
 			}
 
-			/* 
+			/*
 			 * Again, attempt to write past file size limit.
 			 */
 			if (write(fildes, write_buff, BUFSIZ) != -1) {
@@ -193,12 +194,12 @@ main(int ac, char **av)
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *	     Setup signal handler to ignore SIGXFSZ signal.
- *	     Create a temporary directory and change directory to it.
- *	     Create a test file under temporary directory.
- *		      Set the file size limit using setrlimit.
+ *           Setup signal handler to ignore SIGXFSZ signal.
+ *           Create a temporary directory and change directory to it.
+ *           Create a test file under temporary directory.
+ *           Set the file size limit using setrlimit.
  */
-void 
+void
 setup()
 {
 	struct sigaction act;		/* struct. to hold signal */
@@ -223,15 +224,15 @@ setup()
 	/* Store the original rlimit */
 	if (getrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
 		tst_brkm(TBROK, cleanup,
-	 	  "Cannot get max. file size using getrlimit");
+			 "Cannot get max. file size using getrlimit");
 	}
-	
+
 	/* Set limit low, argument is # bytes */
 	rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
 
 	if (setrlimit(RLIMIT_FSIZE, &rlp) == -1) {
 		tst_brkm(TBROK, cleanup,
-	 	  "Cannot set max. file size using setrlimit");
+			 "Cannot set max. file size using setrlimit");
 	}
 
 	/* Creat/open a temporary file under above directory */
@@ -242,7 +243,7 @@ setup()
 	}
 
 	/* Write data into temporary file */
-	if(write(fildes, write_buff, BUFSIZ) != BUFSIZ) {
+	if (write(fildes, write_buff, BUFSIZ) != BUFSIZ) {
 		tst_brkm(TBROK, cleanup, "write(2) on %s Failed, errno=%d : %s",
 			 TEMP_FILE, errno, strerror(errno));
 	}
@@ -251,10 +252,10 @@ setup()
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
- *	       Close the temporary file.
- *	       Remove the test directory and testfile created in the setup.
+ *             Close the temporary file.
+ *             Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*
@@ -275,9 +276,8 @@ cleanup()
 	/* Reset the file size limit */
 	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1) {
 		tst_brkm(TBROK, NULL,
-	 	  "Cannot reset max. file size using setrlimit");
+			 "Cannot reset max. file size using setrlimit");
 	}
-
 
 	/* exit with return code appropriate for results */
 	tst_exit();

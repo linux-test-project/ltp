@@ -122,7 +122,7 @@ main(int ac, char **av)
 	int whence;		/* position of file handle in the file */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
-    
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -145,7 +145,7 @@ main(int ac, char **av)
 			fildes = Test_cases[ind].fd;
 			test_desc = Test_cases[ind].desc;
 			whence = Test_cases[ind].Whence;
-	
+
 			/* Assign the 'fd' values appropriatly */
 			if (fildes == 1) {
 				fildes = fd1;
@@ -153,12 +153,12 @@ main(int ac, char **av)
 				fildes = fd2;
 			}
 
-			/* 
-		 	 * Invoke llseek(2) to test different test conditions.
-		 	 * Verify that it fails with -1 return value and
+			/*
+			 * Invoke llseek(2) to test different test conditions.
+			 * Verify that it fails with -1 return value and
 			 * sets appropriate errno.
-		 	 */
-		 		 		 TEST(lseek64(fildes, (loff_t)0, whence));
+			 */
+			TEST(lseek64(fildes, (loff_t)0, whence));
 
 			/* check return code of llseek(2) */
 			if (TEST_RETURN != (loff_t)-1) {
@@ -188,11 +188,11 @@ main(int ac, char **av)
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *	     Create a temporary directory and change directory to it.
- *	     Invoke individual test setup functions according to the order
- *	     set in test struct. definition.
+ *           Create a temporary directory and change directory to it.
+ *           Invoke individual test setup functions according to the order
+ *           set in test struct. definition.
  */
-void 
+void
 setup()
 {
 	int ind;			/* counter for test setup function */
@@ -223,10 +223,10 @@ no_setup()
 
 /*
  * setup1() - setup function for a test condition for which llseek(2)
- *	      returns -1 and sets errno to EINVAL.
- *	      Creat a temporary file for reading/writing and write some data
- *	      into it.
- *	      This function returns 0 on success.
+ *            returns -1 and sets errno to EINVAL.
+ *            Creat a temporary file for reading/writing and write some data
+ *            into it.
+ *            This function returns 0 on success.
  */
 int
 setup1()
@@ -244,7 +244,7 @@ setup1()
 	}
 
 	/* Write data into temporary file */
-	if(write(fd1, write_buff, sizeof(write_buff)) <= 0) {
+	if (write(fd1, write_buff, sizeof(write_buff)) <= 0) {
 		tst_brkm(TBROK, cleanup, "write(2) on %s Failed, errno=%d : %s",
 			 TEMP_FILE1, errno, strerror(errno));
 	}
@@ -254,9 +254,9 @@ setup1()
 
 /*
  * setup2() - setup function for a test condition for which llseek(2)
- *	      returns -1 and sets errno to EBADF.
- *	      Creat a temporary file for reading/writing and close it.
- *	      This function returns 0 on success.
+ *            returns -1 and sets errno to EBADF.
+ *            Creat a temporary file for reading/writing and close it.
+ *            This function returns 0 on success.
  */
 int
 setup2()
@@ -279,10 +279,10 @@ setup2()
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
- *	       Close the temporary file.
- *	       Remove the test directory and testfile created in the setup.
+ *             Close the temporary file.
+ *             Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*
