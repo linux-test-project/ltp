@@ -47,6 +47,7 @@
 #include <asm/ldt.h>
 #include <asm/unistd.h>
 #endif
+#include <string.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
@@ -146,6 +147,7 @@ main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
+		tst_flush();
 		if ((pid = FORK_OR_VFORK()) == 0) {
 			val = read_segment(0);
 			exit(1);
@@ -219,6 +221,9 @@ void
 setup(void)
 {
 	struct sigaction act;
+
+	memset(&act, 0, sizeof(act));
+	sigemptyset(&act.sa_mask);
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
