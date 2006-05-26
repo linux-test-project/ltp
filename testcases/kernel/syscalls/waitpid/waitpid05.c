@@ -267,8 +267,9 @@ setup(void)
 	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
-	newlimit.rlim_max=newlimit.rlim_cur=RLIM_INFINITY;
-	setrlimit(RLIMIT_CORE, &newlimit);
+	newlimit.rlim_max = newlimit.rlim_cur = RLIM_INFINITY;
+	if (setrlimit(RLIMIT_CORE, &newlimit) != 0)
+		tst_resm(TWARN, "setrlimit(RLIMIT_CORE,RLIM_INFINITY) failed; this may cause some false core-dump test failures");
 }
 
 /*
