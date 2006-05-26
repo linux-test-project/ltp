@@ -92,7 +92,7 @@ void fail_exit();
 /*****	**	**	*****/
 
 
-short *pbuf;
+u_short *pbuf;
 int stuff[11];
 int loops_completed;
 int ucount, scount;
@@ -148,7 +148,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 	
-	if ((pbuf = (short *) malloc(bsize*(sizeof(short))) ) == (short *) 0) {
+	if ((pbuf = (u_short *) malloc(bsize*(sizeof(u_short))) ) == (u_short *) 0) {
 		fprintf(temp, "\tcannot malloc buffer.\n");
 		fail_exit();
 	}
