@@ -223,11 +223,11 @@ main(int ac, char **av)
 					Psuid != Csuid || Psgid != Csgid  || \
 					Pruid != Cruid || Prgid != Crgid  || \
 					Pumask != Cumask) {
-					tst_resm(TFAIL, "Arribute values of "
+					tst_resm(TFAIL, "Attribute values of "
 						"parent and child don't match");
 					_exit(1);
 				} else {
-					tst_resm(TINFO, "Arribute values of "
+					tst_resm(TINFO, "Attribute values of "
 						"parent and child match");
 				}
 
