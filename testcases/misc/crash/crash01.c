@@ -492,6 +492,10 @@ void compute_block_badboy (int n)
 #else
     the_data[j] = (rand () >> 7) & 0xFF;
 #endif
+#ifdef __powerpc__
+    __asm__ __volatile__("dcbst 0,%0 ; icbi 0,%0 ; isync" : : "r"(&the_data[j]) );
+#endif
+
   }
 
   /* was (nbytes < 0) */
