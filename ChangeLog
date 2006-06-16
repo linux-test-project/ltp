@@ -1,4 +1,43 @@
 LTP-20060515
+-Added a patch from Darrick Wong to reduce the memory requirements of 
+ pounder's ramsnaketes
+-Test.h was moved to common headers to eliminate the need for every test file to
+ declare Tst_count extern
+-Usctest.h was changed to eliminate scope issues when actually using TEST()
+-Added a patch from Mike Gahangan to clean up a makefile with an extra build 
+ target variable.  
+-Added a patch from Issac Wilcox that can keeps the test from returning a false
+ failure
+-Made changes to setregid02, setregid03 and setregid04 to use gid_t instead 
+ of int where appropriate
+-Made changes to setresgid01, setresgid02,setresgid03, setresuid01,setresuid02,
+ and setresuid03  to pull the [gs]etre* prototypes from headers rather than 
+ defining them ourself
+-Made changes to setreuid01,setreuid02,setreuid03,setreuid04,and setreuid05
+ to use uid_t instead of int where appropriate
+- Added a change to getpriority01 to combine the TEST_RETURN and TEST_ERRNO 
+  if check so that we always display PASS or FAIL messages as pointed out 
+  by Isaac Wilcox
+- Added a patch to make the output of fork07 deterministic.
+  Specifically, make sure stdout is flushed before forking 100 times,
+  else you can get 101 copies of the output.  This only seems to happen
+  if glibc notices that stdout is a regular file, but in my test setup
+  stdout is always redirected to a file and compared with something.
+-Changed the declaration for setup and cleanup from extern in the 
+ following files:
+
+ alarm01,chdir02,chown01,close08,creat09,dup0,dup04,execl01,execle01,execlp01,
+ execv01,execve01,execvp01,fchmod01,fchown01,fcntl02,fcntl03,fcntl04,fcntl05,
+ fcntl09,fcntl10,fcntl23,fcntl24,fcntl25,fcntl26,fcntl27,fcntl28,fork01,
+ fpathconf01,fstat01,fstatfs01,fsync01,getcontext01,getdtablesize01,getegid01,
+ geteuid01,getgid01,getgroups02,gethostid01,gethostname01,getpagesize01,
+ getpgrp01,getpeername01,getpid01,getppid01,link07,lstat01,mkdir08,open03,
+ pause01,read01,readlink02, readlink03,rename02,rmdir04,select03,setgid01,
+ setpgid01,setpgid02,setregid01,setuid02,stat05,statfs01,statvfs01,symlink02,
+ symlink03,symlink04,symlink05,sync01,time01,time02,times01,umask01,uname01,
+ unlink05,wait02,write01,setreuid01,setreuid02,getuid01,link05,
+
+LTP-20060515
 -Added a -e option to print out the date of the ltp release.  Also
  the date of the version of LTP will be printed in log files.	
 -A patch for parse_opts.c was removed because it caused several test cases to fail
