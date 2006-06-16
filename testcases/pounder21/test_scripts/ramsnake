@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-
+# Kill anything in this process group
 trap 'kill -9 `pgrep -P $$` 2> /dev/null; exit 0' 1 2 15
 
 # Try to find ramsnake
@@ -29,11 +29,14 @@ if [ -z "$PROGRAM" ]; then
 	exit -1
 fi
 
-# We want enough nodes to consume 1/8 of the system RAM.
-# Note that the magic 128 is 1024B/KB divided 8.  We're also hoping
-# that the LONG_BIT config variable really _does_ refer to the size
-# of a pointer.
-NUM_NODES=$((`grep MemTotal /proc/meminfo | awk -F " " '{print $2}'` * 128 / $((`getconf LONG_BIT` / 8)) ))
+# We want enough nodes to consume 1/2 of whatever RAM isn't being used
+# for programs or buffers.  Note that we must divide again by the number
+# of CPUs in the system so that the _total_ memory used is 1/4.
+#
+# Does the LONG_BIT config variable really refer to the size
+# of a pointer?
+MEM_AVAIL=$(( `grep ^MemFree: /proc/meminfo | awk -F " " '{print $2}'` + `grep ^Cached: /proc/meminfo | awk -F " " '{print $2}'`))
+NUM_NODES=$(( (MEM_AVAIL * 1024 / (2 * NR_CPUS)) / $((`getconf LONG_BIT` / 8)) ))
 
 # Start up a bunch of ramsnakes in the background.
 for ((k=0; k < $NR_CPUS; k++))
@@ -45,7 +48,7 @@ LOGFILE=/proc/$$/fd/1
 OLD_ERRORS=0
 
 # Check for errors while snake runs.
-while [ `pgrep snake.exe | wc -l` -gt 0 ];
+while [ `pgrep -P $$ | wc -l` -gt 1 ];
 do
 	NEW_ERRORS=`egrep -ic "(segmentation|fault|error|illegal)" $LOGFILE`
 	ERRORS=$(( NEW_ERRORS - OLD_ERRORS ))
