@@ -1,6 +1,10 @@
 LTP-20060515
 -Added a patch from Darrick Wong to reduce the memory requirements of 
  pounder's ramsnaketes
+-Added a patch for crash01.c from Olof Johansson <olof@lixom.net>
+ POWER5 has coherent icache, but POWER4, PPC970 and some other processors
+ lack it. The standard dcbst/icbi/isync is needed to avoid using the not
+ so random (or stale) data instead.
 -Test.h was moved to common headers to eliminate the need for every test file to
  declare Tst_count extern
 -Usctest.h was changed to eliminate scope issues when actually using TEST()
