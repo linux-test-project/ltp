@@ -80,7 +80,7 @@ char *argv[];
         }
 
         if((hp = gethostbyname(interface))) {
-           bcopy(hp->h_addr, &imr.imr_interface.s_addr, hp->h_length);
+           memcpy(&imr.imr_interface.s_addr, hp->h_addr, hp->h_length);
         } else 
            if((n = sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
               fprintf(stderr, "bad group address\n" ); 
