@@ -20,6 +20,8 @@
 # Or, you can save all your settings into the local 'config.mk' file.
 # Just use the same syntax as above for the Makefile.
 #
+# uClinux Users: make sure you add -DUCLINUX to your CFLAGS
+#
 # Note: If you override a variable from the commandline all
 # assignments to it in the Makefiles will be ignored. To set it both 
 # in the commandline and in the Makefiles use a dummy variable like in
