@@ -85,7 +85,7 @@ int Setup(ArgStruct *p)
      }
 
      lsin1->sin_family = addr->h_addrtype;
-     bcopy(addr->h_addr, (char*) &(lsin1->sin_addr.s_addr), addr->h_length);
+     memcpy((char*) &(lsin1->sin_addr.s_addr), addr->h_addr, addr->h_length);
    }
 
    lsin1->sin_port = htons(p->port);

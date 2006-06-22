@@ -48,7 +48,7 @@ char *argv[];
         imr.imr_multiaddr.s_addr = htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
         if((hp = gethostbyname(argv[2]))) {
-           bcopy(hp->h_addr, &imr.imr_interface.s_addr, hp->h_length);
+           memcpy(&imr.imr_interface.s_addr, hp->h_addr, hp->h_length);
         } else 
            if((n = sscanf(argv[2], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
                fprintf (stderr,"Bad interface address\n");

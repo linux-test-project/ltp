@@ -34,6 +34,7 @@
 #define PS2
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -118,7 +119,7 @@ char *argv[];
 		hp = gethostbyname(av[1]);
 		if (hp) {
 			to->sin_family = hp->h_addrtype;
-			bcopy(hp->h_addr, (caddr_t)&to->sin_addr, hp->h_length);
+			memcpy((caddr_t)&to->sin_addr, hp->h_addr, hp->h_length);
 			hostname = hp->h_name;
 		} else {
             tst_resm (TINFO, "%s: unknown host, couldn't get address\n",argv[0]);

@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <string.h>
 
 int program = 2000333;
 int version = 10;
@@ -101,7 +102,7 @@ char *argv[];
     }
     bzero(&server_sin, sizeof(server_sin));
     server_sin.sin_family = AF_INET;
-    bcopy(hp->h_addr, (char *) &server_sin.sin_addr, sizeof(hp->h_addr));
+    memcpy((char *) &server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
 
     if (!file_name) {
 	fprintf(stderr, "file name not given\n");

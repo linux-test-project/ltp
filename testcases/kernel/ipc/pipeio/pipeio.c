@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.8 2006/02/24 02:36:35 vapier Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.9 2006/06/22 04:19:14 vapier Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -742,7 +742,7 @@ prt_buf(long addr, char * buf, int length, int format)
 			   /*
 			    * get the last 2 words printed 
 			    */
-				bcopy(a-(width*NBPW),c,width*NBPW);
+				memcpy(c,a-(width*NBPW),width*NBPW);
 				for (p = c; (p-c) < width*NBPW; ++p) {
 					if (*p < '!' || *p > '~')
 						*p = '.';
@@ -761,7 +761,7 @@ prt_buf(long addr, char * buf, int length, int format)
 				printf("%10.10ld ",*word);
 				break;
 			case ASCII:
-				bcopy(a,b,NBPW);
+				memcpy(b,a,NBPW);
 				for (p = b; (p-b) < NBPW; ++p) {
 					if (*p < '!' || *p > '~')
 						*p = '.';
@@ -780,7 +780,7 @@ prt_buf(long addr, char * buf, int length, int format)
 	   */
 		bzero(c,width*NBPW);
 		if (extra_words) width = extra_words; /* odd number of words */
-		bcopy(a-(width*NBPW),c,width*NBPW);
+		memcpy(c,a-(width*NBPW),width*NBPW);
 		for (p = c; (p-c) < width*NBPW; ++p) {
 			if (*p < '!' || *p > '~')
 				*p = '.';

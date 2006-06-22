@@ -133,7 +133,7 @@ void echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *o
 		exit(1);
 	}
 	port=sp->s_port;
-	bcopy(hp->h_addr_list[0],&hostaddr,sizeof(struct in_addr));
+	memcpy(&hostaddr,hp->h_addr_list[0],sizeof(struct in_addr));
 	bzero((char *)&sa,sizeof (sa));
 	sa.sin_port=port;
 	sa.sin_family=AF_INET;

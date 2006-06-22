@@ -67,7 +67,6 @@ void CLNT_DESTROY2(CLIENT *rh){
 #ifdef SUN
 
 #include <strings.h> 
-//includes bcopy proto
 
 #endif
 
@@ -118,7 +117,7 @@ Server_communication::Server_communication(const char *server_name)
       }
 
 
-    bcopy ((const char *)hp->h_addr,(char *)&(server_addr.sin_addr.s_addr),hp->h_length);
+    memcpy((char *)&(server_addr.sin_addr.s_addr),(const char *)hp->h_addr,hp->h_length);
 
 
     server_addr.sin_family = AF_INET;
