@@ -31,8 +31,8 @@ int Setup(ArgStruct *p)
  lsin1 = &(p->prot.sin1);
  lsin2 = &(p->prot.sin2);
 
- bzero((char *) lsin1, sizeof(*lsin1));
- bzero((char *) lsin2, sizeof(*lsin2));
+ memset((char *) lsin1, 0x00, sizeof(*lsin1));
+ memset((char *) lsin2, 0x00, sizeof(*lsin2));
 
  if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
    printf("NetPIPE: can't open stream socket! errno=%d\n", errno);
@@ -92,7 +92,7 @@ int Setup(ArgStruct *p)
 
  } else {                                 /* we are the receiver (server) */
    
-   bzero((char *) lsin1, sizeof(*lsin1));
+   memset((char *) lsin1, 0x00, sizeof(*lsin1));
    lsin1->sin_family      = AF_INET;
    lsin1->sin_addr.s_addr = htonl(INADDR_ANY);
    lsin1->sin_port        = htons(p->port);

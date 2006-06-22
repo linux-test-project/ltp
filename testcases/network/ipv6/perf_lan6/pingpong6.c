@@ -34,6 +34,7 @@
 #define PS2
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -105,7 +106,7 @@ char *argv[];
                 fprintf(stderr, "getaddrinfo failed");
 	strcpy(hnamebuf, av[1]);
         hostname = hnamebuf;
-	bzero( (char *)&whereto, sizeof(struct sockaddr) );
+	memset( (char *)&whereto, 0x00, sizeof(struct sockaddr) );
 	memcpy(&whereto, hp->ai_addr, hp->ai_addrlen);
         
 	/*  Determine Packet Size - either use what was passed in or default */

@@ -447,7 +447,7 @@ void my_signal (int sig, void (*func) ())
   struct sigaction act;
 
   act.sa_handler = func;
-  bzero (&act.sa_mask, sizeof (sigset_t));
+  memset (&act.sa_mask, 0x00, sizeof (sigset_t));
   act.sa_flags = SA_NOMASK|SA_RESTART;
   sigaction (sig, &act, 0);
 }

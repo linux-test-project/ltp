@@ -181,7 +181,7 @@ void install_signal_handlers(void) {
 	int x;
 	struct sigaction zig;
 
-	bzero(&zig, sizeof(zig));
+	memset(&zig, 0x00, sizeof(zig));
 	zig.sa_handler = bogus_signal_handler;
 	for (x = 0; x < 64; x++) {
 		sigaction(x, &zig, NULL);

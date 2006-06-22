@@ -571,17 +571,17 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
 
 #ifdef  CRAY
-    bzero(&status, sizeof(struct iosw));
-    bzero(&request, sizeof(struct listreq));
+    memset(&status, 0x00, sizeof(struct iosw));
+    memset(&request, 0x00, sizeof(struct listreq));
     statptr[0] = &status;
 #else
     /* for linux or sgi */
-    bzero(&iov, sizeof(struct iovec));
+    memset(&iov, 0x00, sizeof(struct iovec));
     iov.iov_base = buffer;
     iov.iov_len = size;
 #endif
 #ifdef sgi
-    bzero(&aiocbp, sizeof(aiocb_t));
+    memset(&aiocbp, 0x00, sizeof(aiocb_t));
     aiocbp.aio_fildes = fd;
     aiocbp.aio_nbytes = size;
     aiocbp.aio_buf = buffer;
@@ -1090,17 +1090,17 @@ long wrd;	/* to allow future features, use zero for now */
 #endif
 
 #ifdef  CRAY
-    bzero(&status, sizeof(struct iosw));
-    bzero(&request, sizeof(struct listreq));
+    memset(&status, 0x00, sizeof(struct iosw));
+    memset(&request, 0x00, sizeof(struct listreq));
     statptr[0] = &status;
 #else
     /* for linux or sgi */
-    bzero(&iov, sizeof(struct iovec));
+    memset(&iov, 0x00, sizeof(struct iovec));
     iov.iov_base = buffer;
     iov.iov_len = size;
 #endif
 #ifdef sgi
-    bzero(&aiocbp, sizeof(aiocb_t));
+    memset(&aiocbp, 0x00, sizeof(aiocb_t));
     aiocbp.aio_fildes = fd;
     aiocbp.aio_nbytes = size;
     aiocbp.aio_buf = buffer;

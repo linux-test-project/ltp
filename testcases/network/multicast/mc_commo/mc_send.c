@@ -58,8 +58,8 @@ char *argv[];
                                      htonl((i1<<24) | (i2<<16) | (i3<<8) | i4);
 
         /* Set up socket structure for sendto */
-        bzero(&mcast_out, sizeof(mcast_out));
-        bzero(&sin, sizeof(sin));
+        memset(&mcast_out, 0x00, sizeof(mcast_out));
+        memset(&sin, 0x00, sizeof(sin));
         mcast_out.sin_family = sin.sin_family = AF_INET;
         mcast_out.sin_port = sin.sin_port = htons(atoi(argv[3]));
 

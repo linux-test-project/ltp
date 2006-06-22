@@ -3565,8 +3565,8 @@ int	patshift;
 				/*
 				 * Fill in the expected and actual patterns
 				 */
-				bzero(expected, sizeof(expected));
-				bzero(actual, sizeof(actual));
+				memset(expected, 0x00, sizeof(expected));
+				memset(actual, 0x00, sizeof(actual));
 
 				for (i = 0; i < nb; i++) {
 					expected[i] = pattern[(pattern_index + i) % pattern_length];
@@ -3761,7 +3761,7 @@ int nbytes;
 #endif
 
 #ifdef __linux__
-	bzero( &shm_ds, sizeof(struct shmid_ds) );
+	memset( &shm_ds, 0x00, sizeof(struct shmid_ds) );
 #endif
 
 	/* nbytes = -1 means "free all allocated memory" */
@@ -4619,7 +4619,7 @@ int		sig;
 	aiop->strategy = strategy;
 	aiop->done = 0;
 #ifdef CRAY
-	bzero((char *)&aiop->iosw, sizeof(aiop->iosw));
+	memset((char *)&aiop->iosw, 0x00, sizeof(aiop->iosw));
 #endif
 
 	if (strategy == A_SIGNAL) {

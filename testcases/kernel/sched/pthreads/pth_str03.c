@@ -1,3 +1,5 @@
+/* TODO: proper output */
+
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
@@ -525,7 +527,7 @@ int main( int argc, char *argv[] )
 		perror( "malloc child_info" );
 		testexit( 10 );
 	}
-	bzero( child_info, total * sizeof(c_info) );
+	memset( child_info, 0x00, total * sizeof(c_info) );
 
 	if ( debug ) {
 		printf( "Initializing array for %d children\n", total );
@@ -540,14 +542,14 @@ int main( int argc, char *argv[] )
 			perror( "malloc threads" );
 			testexit( 11 );
 		}
-		bzero( child_info[ind].threads, breadth * sizeof(pthread_t) );
+		memset( child_info[ind].threads, 0x00, breadth * sizeof(pthread_t) );
 		
 		if ( (child_info[ind].child_ptrs =
 		    (c_info **)malloc( breadth * sizeof(c_info *) )) == NULL ) {
 			perror( "malloc child_ptrs" );
 			testexit( 12 );
 		}
-		bzero( child_info[ind].child_ptrs,
+		memset( child_info[ind].child_ptrs, 0x00, 
 		    breadth * sizeof(c_info *) );
 		
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex, NULL))) {

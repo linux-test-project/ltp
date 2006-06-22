@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <strings.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* Set up signals */
-	bzero(&zig, sizeof(zig));
+	memset(&zig, 0x00, sizeof(zig));
 	zig.sa_handler = alarm_func;
 	sigaction(SIGALRM, &zig, NULL);
 	zig.sa_handler = int_func;

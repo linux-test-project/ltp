@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.9 2006/06/22 04:19:14 vapier Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.10 2006/06/22 04:28:33 vapier Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -738,7 +738,7 @@ prt_buf(long addr, char * buf, int length, int format)
 		    	   * print the ascii equivalent of the data
 			   * before beginning the next line of output.
 			   */
-				bzero(c,width*NBPW);
+				memset(c,0x00,width*NBPW);
 			   /*
 			    * get the last 2 words printed 
 			    */
@@ -778,7 +778,7 @@ prt_buf(long addr, char * buf, int length, int format)
     	   * print the ascii equivalent of the last words in the buffer
 	   * before returning.
 	   */
-		bzero(c,width*NBPW);
+		memset(c,0x00,width*NBPW);
 		if (extra_words) width = extra_words; /* odd number of words */
 		memcpy(c,a-(width*NBPW),width*NBPW);
 		for (p = c; (p-c) < width*NBPW; ++p) {

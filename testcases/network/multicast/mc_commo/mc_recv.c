@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        bzero(&mcast_in, sizeof(mcast_in));
+        memset(&mcast_in, 0x00, sizeof(mcast_in));
         mcast_in.sin_family = AF_INET;
         mcast_in.sin_port = htons(atoi(argv[3]));
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         /* Receive datagrams */
         len = sizeof (from_in);
         for (;;) {
-            bzero(&from_in, sizeof(from_in));
+            memset(&from_in, 0x00, sizeof(from_in));
             if ((n = recvfrom(s, buf, sizeof(buf), 0, (struct sockaddr *) &from_in, &len)) < 0)
             {
                perror("recvfrom");

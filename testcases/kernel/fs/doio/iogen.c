@@ -1113,7 +1113,7 @@ int 	nbytes;
 	 *
 	 */
 	if(Orealtime != 0) {
-	    bzero(&xattr, sizeof(xattr));
+	    memset(&xattr, 0x00, sizeof(xattr));
 	    xattr.fsx_xflags = XFS_XFLAG_REALTIME;
 	    /*fprintf(stderr, "set: fsx_xflags = 0x%x\n", xattr.fsx_xflags);*/
 	    if( fcntl(fd, F_FSSETXATTR, &xattr) == -1 ) {

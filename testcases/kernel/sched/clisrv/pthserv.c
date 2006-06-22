@@ -121,7 +121,7 @@ main(int argc, char *argv[])
     dprt2(("%s: main(): Open inet stream socket sockfd = %d\n", __FILE__, sockfd));
 
     /* Bind local address for client to use */
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    memset((char *) &serv_addr, 0x00, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY) ;
     serv_addr.sin_port = htons(SERV_TCP_PORT);

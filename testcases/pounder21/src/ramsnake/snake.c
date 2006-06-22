@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sched.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -267,7 +268,7 @@ and %d seconds between adding children.\n",
 	if (!is_parent) {
 start_thread:
 		/* Set up the alarm handler to print speed info. */
-		bzero(&zig, sizeof(zig));
+		memset(&zig, 0x00, sizeof(zig));
 		zig.sa_handler = alarm_func;
 		sigaction(SIGALRM, &zig, NULL);
 		gettimeofday(&last, NULL);

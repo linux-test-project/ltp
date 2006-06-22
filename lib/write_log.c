@@ -431,7 +431,7 @@ char		*buf;
 	char			*file, *host, *pattern;
 	struct wlog_rec_disk	*wrecd;
 
-	bzero((char *)wrec, sizeof(struct wlog_rec));
+	memset((char *)wrec, 0x00, sizeof(struct wlog_rec));
 	wrecd = (struct wlog_rec_disk *)buf;
 
 	wrec->w_pid = wrecd->w_pid;

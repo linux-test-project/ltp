@@ -134,7 +134,7 @@ void echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *o
 	}
 	port=sp->s_port;
 	memcpy(&hostaddr,hp->h_addr_list[0],sizeof(struct in_addr));
-	bzero((char *)&sa,sizeof (sa));
+	memset((char *)&sa,0x00,sizeof (sa));
 	sa.sin_port=port;
 	sa.sin_family=AF_INET;
 	sa.sin_addr=hostaddr;

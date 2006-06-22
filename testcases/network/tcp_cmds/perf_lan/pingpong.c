@@ -109,7 +109,7 @@ char *argv[];
 
         /* Get Host net address */
         tst_resm (TINFO, "Get host net address for sending packets \n");
-	bzero( (char *)&whereto, sizeof(struct sockaddr) );
+	memset( (char *)&whereto, 0x00, sizeof(struct sockaddr) );
 	to->sin_family = AF_INET;
 	to->sin_addr.s_addr = inet_addr(av[1]);
 	if (to->sin_addr.s_addr != -1) {

@@ -60,6 +60,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <fcntl.h>
 #include <time.h>
 #include <stdlib.h>
@@ -493,7 +494,7 @@ setup4(void)
 			strerror(errno));
 	}
 	control = (struct cmsghdr *)cbuf;
-	bzero(cbuf, sizeof(cbuf));
+	memset(cbuf, 0x00, sizeof(cbuf));
 	control->cmsg_len = sizeof(struct cmsghdr)+4;
 	control->cmsg_level = SOL_SOCKET;
 	control->cmsg_type = SCM_RIGHTS;

@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 	progname = argv[0];
 
 	/* Set up signals */
-	bzero(&zig, sizeof(zig));
+	memset(&zig, 0x00, sizeof(zig));
 	zig.sa_handler = jump_out;
 	sigaction(SIGINT, &zig, NULL);
 	sigaction(SIGTERM, &zig, NULL);

@@ -100,7 +100,7 @@ char *argv[];
 	fprintf(stderr, "server %s unknown\n", server);
 	usage_error(argv[0]);
     }
-    bzero(&server_sin, sizeof(server_sin));
+    memset(&server_sin, 0x00, sizeof(server_sin));
     server_sin.sin_family = AF_INET;
     memcpy((char *) &server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
 

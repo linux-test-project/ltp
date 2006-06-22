@@ -1453,7 +1453,7 @@ attr_remove_f(int opno, long r)
 	if (!get_fname(FT_ANYm, r, &f, NULL, NULL, &v))
 		append_pathname(&f, ".");
 	total = 0;
-	bzero(&cursor, sizeof(cursor));
+	memset(&cursor, 0x00, sizeof(cursor));
 	do {
 		e = attr_list_path(&f, buf, sizeof(buf), ATTR_DONTFOLLOW,
 			&cursor);
@@ -1471,7 +1471,7 @@ attr_remove_f(int opno, long r)
 		return;
 	}
 	which = (int)(random() % total);
-	bzero(&cursor, sizeof(cursor));
+	memset(&cursor, 0x00, sizeof(cursor));
 	ent = 0;
 	aname = NULL;
 	do {

@@ -57,6 +57,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <errno.h>
 #include <fcntl.h>
 
@@ -516,11 +517,11 @@ sender(int fd)
 		return;
 	(void) unlink(tmpfn);
 
-	bzero(&mh, sizeof(mh));
+	memset(&mh, 0x00, sizeof(mh));
 
 	/* set up cmsghdr */
 	control = (struct cmsghdr *)snd_cbuf;
-	bzero(control, sizeof(struct cmsghdr));
+	memset(control, 0x00, sizeof(struct cmsghdr));
 	control->cmsg_len = sizeof(struct cmsghdr)+4;
 	control->cmsg_level = SOL_SOCKET;
 	control->cmsg_type = SCM_RIGHTS;
