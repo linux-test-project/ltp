@@ -81,7 +81,7 @@ char *TCID = "sysfs03";	/* Test program identifier.    */
 int TST_TOTAL = 1;	/* Total number of test cases. */
 extern int Tst_count;	/* Test Case counter for tst_* routines */
 
-#if defined(__ia64__)
+#if defined(__ia64__) || defined(__powerpc__)
 #define sysfs(arg1) syscall(__NR_sysfs, arg1)
 #else
 _syscall1(long, sysfs, int, option);
