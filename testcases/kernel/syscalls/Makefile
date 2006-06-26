@@ -34,7 +34,7 @@ EXCLUDE_DIR=epoll
 # Commented this out since there are directories here we don't want built by default
 #
 SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -v epoll` 
-COLDFIRE_SKIP = $(if ($CONFIG_COLDFIRE),|madvise|mlock|munlock)
+COLDFIRE_SKIP = $(if $(CONFIG_COLDFIRE),|madvise|mlock|munlock)
 UCLINUX_SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -vE "^fork|epoll|capget|capset|chmod|chown|llseek|nftw|clone|profil|getcontext$(COLDFIRE_SKIP)"`
 
 all:  
