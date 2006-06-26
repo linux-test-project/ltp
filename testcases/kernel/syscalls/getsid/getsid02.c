@@ -70,16 +70,16 @@
 /*
  * See the Makefile for comments about the following preprocessor code.
  */
-#ifndef _LTP_TASKS_H
-#include <linux/threads.h>		/* for PID_MAX - new */
-#else
-#include <linux/tasks.h>		/* for PID_MAX - old */
-#endif
+//#ifndef _LTP_TASKS_H
+//#include <linux/threads.h>		/* for PID_MAX - new */
+//#else
+//#include <linux/tasks.h>		/* for PID_MAX - old */
+//#endif
 
 /*
  * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
  */
-#ifdef __powerpc64__
+#if defined(__powerpc__) || defined(__powerpc64__)
 #define PID_MAX 0x8000
 #endif
 
