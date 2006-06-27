@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.h,v 1.4 2006/02/16 05:56:51 vapier Exp $ */
+/* $Id: zoolib.h,v 1.5 2006/06/27 09:37:34 vapier Exp $ */
 #ifndef ZOOLIB_H
 #define ZOOLIB_H
 
@@ -43,7 +43,7 @@
 
 typedef FILE *zoo_t;
 #define ZELEN 512
-char zoo_error[ZELEN];
+extern char zoo_error[ZELEN];
 #define BUFLEN 81
 
 int lock_file( FILE *fp, short ltype, char **errmsg );

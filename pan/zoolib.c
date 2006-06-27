@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.5 2002/05/28 16:26:16 robbiew Exp $ */
+/* $Id: zoolib.c,v 1.6 2006/06/27 09:37:34 vapier Exp $ */
 /* 
  * ZooLib
  *
@@ -52,6 +52,8 @@
 #include <stdlib.h> /* for getenv */
 #include <string.h>
 #include "zoolib.h"
+
+char zoo_error[ZELEN];
 
 #ifdef __linux__
 /* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
