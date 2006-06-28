@@ -26,7 +26,7 @@ OBJS=$(SRCS:.c=.o)
 MAINS=../libipc.a
 CFLAGS+=-I../../../../../include -g -Wall
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=	 $(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
+CFLAGS+=	 -D_USC_LIB_
 
 all: ../libipc.a
 
