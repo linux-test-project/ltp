@@ -25,6 +25,8 @@
  *	tools64.c - Supporting functions for nftw64.c 
  */
 
+#define _USC_LIB_
+
 #include "nftw64.h"
 
 extern pathdata pathdat[];
@@ -32,7 +34,7 @@ extern struct list mnem[];
 extern char ebuf[ERR_BUF_SIZ];
 extern int npathdats, ngoods, nbads, nmnem;
 void fail_exit(void);
-FILE *temp;
+extern FILE *temp;
 /*
  * Function: void cleanup_function(void)
  *

@@ -25,13 +25,15 @@
  *	tools.c - Supporting functions for nftw.c 
  */
 
+#define _USC_LIB_
+
 #include "nftw.h"
 
 extern pathdata pathdat[];
 extern struct list mnem[];
 extern char ebuf[ERR_BUF_SIZ];
 extern int npathdats, ngoods, nbads, nmnem;
-FILE *temp;
+extern FILE *temp;
 void fail_exit(void);
 
 /*

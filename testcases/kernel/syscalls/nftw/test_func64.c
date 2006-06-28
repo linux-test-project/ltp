@@ -25,6 +25,8 @@
  *	test_func64.c - nftw64() calls these functions. 
  */
 
+#define _USC_LIB_
+
 #include "nftw64.h"
 
 extern pathdata pathdat[];
@@ -32,7 +34,7 @@ extern struct list mnem[], badlist[];
 extern char *dirlist[NDIRLISTENTS];
 extern const char *rw_fs_name;
 extern int npathdats, ngoods, nbads, nmnem, visit, next_fd[4];
-FILE *temp;
+extern FILE *temp;
 
 /*
  * Calling function should free the dirlist array.

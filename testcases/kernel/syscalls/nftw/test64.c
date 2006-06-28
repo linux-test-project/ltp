@@ -25,6 +25,8 @@
  *      test64.c - Test functions for nftw64()
  */
 
+#define _USC_LIB_
+
 #include "nftw64.h"
 
 extern int callback(const char *path);
@@ -33,7 +35,7 @@ extern pathdata pathdat[];
 extern struct list mnem[], badlist[];
 extern char *dirlist[NDIRLISTENTS], *goodlist[];
 extern int npathdats, ngoods, nbads, nmnem, visit, s2, next_fd[4];
-FILE *temp;
+extern FILE *temp;
 /*
  *    void test1A()     - tests the assertion:
  *      A call to int nftw64(const char *path, int (*fn)(const char *, const

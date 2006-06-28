@@ -25,6 +25,7 @@
  *      lib64.c - This file contains code for common failure conditions 
  */
 
+#define _USC_LIB_
 
 #include "nftw64.h"
 
@@ -34,7 +35,7 @@ static char     	*tmp_path = "./tmp";
 static const char       *no_file = "./tmp/no_such_file";
 static const char       *is_a_file = "./tmp/is_a_file";
 
-FILE *temp;
+extern FILE *temp;
 /* 
  * Cleanup the ./tmp
  */
