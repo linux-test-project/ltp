@@ -24,7 +24,7 @@
 DIR=lib
 CFLAGS+=-I../../../../include -g
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=-D_USC_LIB_
+CFLAGS+=	$(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
 SRC=libtestsuite.c
 OBJS=$(SRC:.c=.o)
 MAINS=../libtestsuite.a

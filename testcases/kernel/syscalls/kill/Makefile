@@ -21,7 +21,7 @@
 ###########################################################################
 CFLAGS+=	-I../../../../include -Wall -D_GNU_SOURCE 
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=	 -D_USC_LIB_
+CFLAGS+=	$(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
 LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite -L../ipc -lipc
 LOADLIBES+=	$(if $(UCLINUX),-lc)
 
