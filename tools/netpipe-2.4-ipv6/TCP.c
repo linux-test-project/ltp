@@ -19,7 +19,7 @@ int Setup(ArgStruct *p)
 {
 
  int tr, one = 1;                 /* tr==1 if process is a transmitter */
- int sr = 0;                
+ int sr = 0;
  int sockfd;
  struct sockaddr *lsin1;
  char *host;
@@ -33,9 +33,9 @@ int Setup(ArgStruct *p)
  hints.ai_family = AF_INET6;
 
 
- host = p->host;                           /* copy ptr to hostname */ 
- server_host = p->server_host;             /* copy ptr to server */ 
- 
+ host = p->host;                           /* copy ptr to hostname */
+ server_host = p->server_host;             /* copy ptr to server */
+
  tr = p->tr;                               /* copy tr indicator */
  sr = p->sr;
 
@@ -64,13 +64,13 @@ int Setup(ArgStruct *p)
  if(p->prot.sndbufsz > 0)
  {
       printf("Send and Receive Buffers set to %d bytes\n", p->prot.sndbufsz);
-     if(setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz), 
+     if(setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
                                        sizeof(p->prot.sndbufsz)) < 0)
      {
           printf("NetPIPE: setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
           exit(556);
      }
-     if(setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz), 
+     if(setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
                                        sizeof(p->prot.rcvbufsz)) < 0)
      {
           printf("NetPIPE: setsockopt: SO_RCVBUF failed! errno=%d\n", errno);
@@ -80,7 +80,7 @@ int Setup(ArgStruct *p)
 
  if (tr){                                  /* if client i.e., Sender */
 
-   if (host) {                   
+   if (host) {
      getaddrinfo(host, NULL, &hints, &addr);
      memcpy(&p->prot.sin1, addr->ai_addr, addr->ai_addrlen);
    } else {
@@ -90,14 +90,14 @@ int Setup(ArgStruct *p)
    }
  }
    p->prot.sin1.sin6_port = htons(p->port);
- 
+
 } else {                                 /* we are the receiver (server) */
 
    memset(&p->prot.sin1, 0, sizeof(p->prot.sin1));
    if (sr==0){
      p->prot.sin1.sin6_addr = in6addr_any;
      p->prot.sin1.sin6_port = htons(p->port);
-     lsin1=(struct sockaddr*)&p->prot.sin1; 
+     lsin1=(struct sockaddr*)&p->prot.sin1;
      if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0){
        printf("NetPIPE: server: bind on local address failed! errno=%d", errno);
        exit(-6);
@@ -112,12 +112,12 @@ int Setup(ArgStruct *p)
        }
        memcpy(&p->prot.sin1, server_addr->ai_addr, server_addr->ai_addrlen);
        p->prot.sin1.sin6_port = htons(p->port);
-       lsin1=(struct sockaddr*)&p->prot.sin1; 
+       lsin1=(struct sockaddr*)&p->prot.sin1;
        if (bind(sockfd, (struct sockaddr*)lsin1, sizeof(p->prot.sin1)) < 0){
          printf("NetPIPE: server: bind on %s failed! errno=%d", server_host, errno);
          exit(-6);
        }
-   }     
+   }
  }
 
  if(tr)
@@ -126,8 +126,8 @@ int Setup(ArgStruct *p)
    p->servicefd = sockfd;
 
  return(0);
- 
-}   
+
+}
 
 static int
 readFully(int fd, void *obuf, int len)
@@ -344,24 +344,24 @@ int Establish(ArgStruct *p)
     {
       printf("Send and Receive Buffers on accepted socket set to %d bytes\n",
 	     p->prot.sndbufsz);
-      if(setsockopt(p->commfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz), 
+      if(setsockopt(p->commfd, SOL_SOCKET, SO_SNDBUF, &(p->prot.sndbufsz),
                                        sizeof(p->prot.sndbufsz)) < 0)
       {
 	printf("setsockopt: SO_SNDBUF failed! errno=%d\n", errno);
 	exit(556);
       }
-      if(setsockopt(p->commfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz), 
+      if(setsockopt(p->commfd, SOL_SOCKET, SO_RCVBUF, &(p->prot.rcvbufsz),
                                        sizeof(p->prot.rcvbufsz)) < 0)
       {
 	printf("setsockopt: SO_RCVBUF failed! errno=%d\n", errno);
 	exit(556);
       }
     }
-  } 
+  }
   return(0);
 }
 
-int  CleanUp(ArgStruct *p)
+int CleanUp(ArgStruct *p)
 {
  char *quit="QUIT";
  if (p->tr)
@@ -379,4 +379,3 @@ int  CleanUp(ArgStruct *p)
  }
  return(0);
 }
-
