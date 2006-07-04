@@ -284,7 +284,7 @@ void RecvRepeat(ArgStruct *p, int *rpt)
 
 int Establish(ArgStruct *p)
 {
- int clen;
+ socklen_t clen;
  int one = 1;
  struct protoent *proto;
 
