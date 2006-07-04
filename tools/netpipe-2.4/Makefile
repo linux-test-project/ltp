@@ -24,9 +24,7 @@ PVM_ARCH   = SUN4SOL2
 EXTRA_LIBS = $(LDFLAGS)
 #EXTRA_LIBS = -lgcc
 
-targets:    $(TARGETS)
-
-all:	targets
+all:	$(TARGETS)
 
 install:
 	@/bin/sh ./chmod.sh netpipe.sh
@@ -39,37 +37,37 @@ TCP:	NPtcp
 	@echo 'NPtcp has been built.'
 
 NPtcp:	NPtcp.o TCP.o
-	@set -e;$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp $(EXTRA_LIBS)
+	$(CC) $(CFLAGS) NPtcp.o TCP.o  -o NPtcp $(EXTRA_LIBS)
 
 NPtcp.o:	$(DRIV_SRC) $(INCLUDES)
-	@set -e;$(CC) $(CFLAGS) -DTCP -c -o NPtcp.o $(DRIV_SRC)
+	$(CC) $(CFLAGS) -DTCP -c -o NPtcp.o $(DRIV_SRC)
 
 TCP.o:	TCP.c TCP.h $(INCLUDES)
-	@set -e;$(CC) $(CFLAGS) -DTCP -c TCP.c
+	$(CC) $(CFLAGS) -DTCP -c TCP.c
 
 MPI:	NPmpi
 	@echo 'NPmpi has been built.'
 
 NPmpi:	NPmpi.o MPI.o
-	@set -e;$(CC) $(CFLAGS) NPmpi.o MPI.o -o NPmpi  -L $(MPI_HOME)/lib/$(MPI_ARCH)/$(MPI_DEVICE) -lmpi $(EXTRA_LIBS)
+	$(CC) $(CFLAGS) NPmpi.o MPI.o -o NPmpi  -L $(MPI_HOME)/lib/$(MPI_ARCH)/$(MPI_DEVICE) -lmpi $(EXTRA_LIBS)
 
 NPmpi.o:	$(DRIV_SRC) $(INCLUDES) 
-	@set -e;$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c -o NPmpi.o $(DRIV_SRC)
+	$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c -o NPmpi.o $(DRIV_SRC)
 
 MPI.o:	MPI.c MPI.h $(INCLUDES)
-	@set -e;$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c MPI.c
+	$(CC) $(CFLAGS) -DMPI -I$(MPI_HOME)/include -c MPI.c
 
 PVM:	NPpvm
 	@echo 'NPpvm has been built.'
 
 NPpvm:	NPpvm.o PVM.o
-	@set -e;$(CC) $(CFLAGS) NPpvm.o PVM.o -o NPpvm  -L$(PVM_HOME)/lib/$(PVM_ARCH)/ -lpvm3 $(EXTRA_LIBS)
+	$(CC) $(CFLAGS) NPpvm.o PVM.o -o NPpvm  -L$(PVM_HOME)/lib/$(PVM_ARCH)/ -lpvm3 $(EXTRA_LIBS)
 
 NPpvm.o:	$(DRIV_SRC) $(INCLUDES)
-	@set -e;$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c -o NPpvm.o $(DRIV_SRC)
+	$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c -o NPpvm.o $(DRIV_SRC)
 
 PVM.o:	PVM.c PVM.h $(INCLUDES)
-	@set -e;$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c PVM.c
+	$(CC) $(CFLAGS) -DPVM -I$(PVM_HOME)/include -c PVM.c
 
 clean:
 	rm -f $(TARGETS) *.o core a.out
