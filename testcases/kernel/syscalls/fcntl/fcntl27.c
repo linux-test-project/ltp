@@ -113,9 +113,11 @@ int exp_enos[]={0};
 int
 main(int ac, char **av)
 {
-    int lc;		 		 /* loop counter */
+  int lc,expected_result = -1;		 /* loop counter, expected */ 
+					 /* result from system call */ 
     char *msg;		 		 /* message returned from parse_opts */
-    
+    int results;                        /* Stores the result of the */
+                                         /* kernel comparison test */
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -128,6 +130,25 @@ main(int ac, char **av)
     setup();
 
     TEST_EXP_ENOS(exp_enos);
+
+    if( (results=tst_kvercmp(2,6,10)) >= 0)
+	  {
+	    expected_result = -1;
+	  }
+    else if( ((results=tst_kvercmp(2,4,0)) >= 0)&&\
+	     ((results=tst_kvercmp(2,6,0))< 0) )
+      {
+	    expected_result = 1;
+      }
+    else if( ((results=tst_kvercmp(2,6,0)) >= 0)&&\
+	 ((results=tst_kvercmp(2,6,10))< 0) )
+      {
+	    expected_result = 0;
+      }
+    else
+      {
+	     expected_result = -1;
+      }
 
     /***************************************************************
      * check looping state if -c option given
@@ -144,7 +165,7 @@ main(int ac, char **av)
 		 TEST(fcntl(fd, F_SETLEASE,F_RDLCK));
 		 
 		 /* check return code */
-		 if ( TEST_RETURN == 0 ) {
+		 if ( TEST_RETURN == expected_result ) {
 		     TEST_ERROR_LOG(TEST_ERRNO);
                         tst_resm(TPASS,
                                 "fcntl(fd, F_SETLEASE,F_RDLCK) succeeded");
