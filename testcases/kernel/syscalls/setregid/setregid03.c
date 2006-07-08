@@ -158,12 +158,14 @@ int main(int ac, char **av)
 			/*NOTREACHED*/
 		} else if (pid == 0) {          /* child */
 			for (i = 0; i < TST_TOTAL; i++) {
+				gid_t test_ret;
 				/* Set the real or effective group id */
 				TEST(setregid(*test_data[i].real_gid,
 					*test_data[i].eff_gid));
+				test_ret = TEST_RETURN;
 
-				if (TEST_RETURN == *test_data[i].exp_ret) {
-					if (TEST_RETURN == neg_one) {
+				if (test_ret == *test_data[i].exp_ret) {
+					if (test_ret == neg_one) {
 						if (TEST_ERRNO != EPERM) {
 							tst_resm(TFAIL,
 								"setregid(%d, %d) "
@@ -193,7 +195,7 @@ int main(int ac, char **av)
 						*test_data[i].eff_gid);
 					flag=-1;
 				}
-				if (TEST_RETURN == -1) {
+				if (test_ret == -1) {
 					TEST_ERROR_LOG(TEST_ERRNO);
 				}
 
