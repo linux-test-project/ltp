@@ -51,9 +51,6 @@ $trace_logic
 LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
 export LTPROOT
 
-# Check the environmanet variable for the test
-source check_envval || exit 1
-
 
 # Check argument
 if [ $# -ne 3 ] ; then
@@ -79,7 +76,7 @@ case $protocol in
 esac
 
 # Create the open port list
-port_list=`mktemp -p $TMPDIR`
+port_list=`mktemp`
 netstat -a -n ${proto_opt} \
     | tail -n +3 \
     | awk '{ print $4 }' \

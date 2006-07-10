@@ -19,8 +19,41 @@ if6-mtu-change	if6-mtu-change
 
 
 #
-# Stress test for TCP/IP protocol stack (icmp, udp, tcp)
+# Stress test for routing table
 #
+
+route4-change-dst route4-change-dst
+route4-change-gw route4-change-gw
+route4-change-if route4-change-if
+route4-redirect route4-redirect
+route4-ifdown route4-ifdown
+route4-rmmod route4-rmmod 
+
+route6-change-dst route6-change-dst
+route6-change-gw route6-change-gw
+route6-change-if route6-change-if
+route6-redirect route6-redirect
+route6-ifdown route6-ifdown
+route6-rmmod route6-rmmod
+
+
+#
+# Stress test for TCP/IP protocol stack
+#
+
+# Broken IP packet
+broken_ip4-version broken_ip4-version
+broken_ip4-ihl broken_ip4-ihl
+broken_ip4-totlen broken_ip4-totlen
+broken_ip4-fragment broken_ip4-fragment
+broken_ip4-protcol broken_ip4-protcol
+broken_ip4-checksum broken_ip4-checksum
+broken_ip4-dstaddr broken_ip4-dstaddr
+
+broken_ip6-dstaddr broken_ip6-dstaddr
+broken_ip6-nexthdr broken_ip6-nexthdr
+broken_ip6-plen broken_ip6-plen
+broken_ip6-version broken_ip6-version
 
 # ICMP
 icmp4-uni-basic01 icmp4-uni-basic01
@@ -466,6 +499,35 @@ tcp6-multi-diffnic11 tcp6-multi-diffnic11
 tcp6-multi-diffnic12 tcp6-multi-diffnic12
 tcp6-multi-diffnic13 tcp6-multi-diffnic13
 tcp6-multi-diffnic14 tcp6-multi-diffnic14
+
+
+# multicast
+mcast4-grpope01 mcast4-grpope01
+mcast4-grpope02 mcast4-grpope02
+mcast4-grpope03 mcast4-grpope03
+mcast4-grpope04 mcast4-grpope04
+mcast4-pktfld01 mcast4-pktfld01
+mcast4-pktfld02 mcast4-pktfld02
+mcast4-queryfld01 mcast4-queryfld01
+mcast4-queryfld02 mcast4-queryfld02
+mcast4-queryfld03 mcast4-queryfld03
+mcast4-queryfld04 mcast4-queryfld04
+mcast4-queryfld05 mcast4-queryfld05
+mcast4-queryfld06 mcast4-queryfld06
+
+mcast6-grpope01 mcast6-grpope01
+mcast6-grpope02 mcast6-grpope02
+mcast6-grpope03 mcast6-grpope03
+mcast6-grpope04 mcast6-grpope04
+mcast6-pktfld01 mcast6-pktfld01
+mcast6-pktfld02 mcast6-pktfld02
+mcast6-queryfld01 mcast6-queryfld01
+mcast6-queryfld02 mcast6-queryfld02
+mcast6-queryfld03 mcast6-queryfld03
+mcast6-queryfld04 mcast6-queryfld04
+mcast6-queryfld05 mcast6-queryfld05
+mcast6-queryfld06 mcast6-queryfld06
+
 
 #
 # Stress test for major application protocol (ssh, dns, http, ftp)

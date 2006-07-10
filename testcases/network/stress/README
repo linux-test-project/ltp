@@ -27,8 +27,8 @@ the interfaces connectted to the test links would be changed by the tests.
 Therefore, each test link should not belong to any external network. It is
 recommended to connect each pair of interfaces with the ether cross cables.
 
-Currently, different NIC testcases for ICMP/UDP/TCP require plural test links.
-Other testcases uses only 1 test link. (Test Link 0)
+Currently, different NIC testcases for ICMP/UDP/TCP/Multicast require plural
+test links.  Other testcases uses only 1 test link. (Test Link 0)
 
   
 
@@ -57,10 +57,18 @@ Please refer the `Environment Variable' section of this document.
 
 Two command lists is prepared in ltp-yyyymmdd/runtest directory.
 
-  network_stress.whole	  : 42 kinds 455 tests
-  network_stress.selected : 33 kinds 103 tests
+  network_stress.whole	   : 118 kinds 615 tests
+  network_stress.selected  :  33 kinds 103 tests
+  network_stress.interface :  13 kinds  27 tests
+  network_stress.route     :  12 kinds  22 tests
+  network_stress.broken_ip :  11 kinds  11 tests
+  network_stress.icmp      :   6 kinds  42 tests
+  network_stress.udp       :   8 kinds  56 tests
+  network_stress.tcp       :  22 kinds 308 tests
+  network_stress.multicast :  24 kinds  24 tests
+  network_stress.appl      :  22 kinds  22 tests
 
-Running the tests using network_stress.whole takes about 18days. Therefore, 
+Running the tests using network_stress.whole takes about 20 days. Therefore, 
 network_stress.selected is prepared. However, it takes 3 days using
 network_stress.selected. If you reduce the time, you should choose the
 testcase and prepare your own command lists. The detail of testcases
@@ -111,6 +119,8 @@ environment variables:
   ROUTE_TOTAL		(for adding large number of route test)
   MTU_CHANGE_TIMES	(for changing mtu test)
   IF_UPDOWN_TIMES	(for interface up/down test)
+  MCASTNUM_NORMAL	(for multicast test)
+  MCASTNUM_HEAVY	(for multicast test)
   DOWNLOAD_BIGFILESIZE	(for http/ftp downloading stress test)
   DOWNLOAD_REGFILESIZE	(for http/ftp downloading stress test)
   UPLOAD_BIGFILESIZE	(for ftp uploading stress test)
@@ -201,6 +211,16 @@ Optional environment variables
    The up/down times of the interface tests. To up/down an interface takes 
    time. If you specify 10,000 into this value, it takes 6 hours.
    This value affect interface tests of upping/down the interface.
+
+ o MCASTNUM_NORMAL	(for multicast tests)
+   The number of multicast group to join. This variable is used for
+   the stress test after joining some multicast groups. It is not the
+   main target for joining lots of multicast.
+
+ o MCASTNUM_HEAVY	(for multicast tests)
+   The number of multicast group to join. This variable is used for
+   the stress test for joining lots of multicast group. This value is the
+   limit of the joining multicast group.
 
  o DOWNLOAD_BIGFILESIZE	(for http/ftp downloading stress test)
    The file size of the downloading large size file tests.

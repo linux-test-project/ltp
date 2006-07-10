@@ -37,14 +37,19 @@ export FTP_UPLOAD_URLDIR=
 # export DOWNLOAD_REGFILESIZE=1048576		# 1M byte
 # export UPLOAD_BIGFILESIZE=2147483647		# 2G byte - 1byte
 # export UPLOAD_REGFILESIZE=1024		# 1K byte
+# export MCASTNUM_NORMAL=20
+# export MCASTNUM_HEAVY=40000
 # ---*********************************---
 
 
 export TMPDIR=/tmp/netst-$$
 mkdir $TMPDIR
 
-# The total number of the stress test is big.
-# You can choose network_stress.selected if reduce the number of test
+# The total number of the stress test is quite big.
+# If you'd like to reduce the number of the stress test, you can choose
+# network_stress.selected, or you can choose network_stress.<category> 
+# Of cource, you can use your custumized command file to run the tests
+# that you're interested in.
 cat ${LTPROOT}/runtest/network_stress.whole > $TMPDIR/network_stress.tests
 #cat ${LTPROOT}/runtest/network_stress.selected > $TMPDIR/network_stress.tests
 #cat (( cutimized command file location )) > $TMPDIR/network_stress.tests

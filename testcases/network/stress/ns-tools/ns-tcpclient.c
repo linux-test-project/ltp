@@ -155,7 +155,7 @@ main(int argc, char *argv[])
     time_t start_time;		/* time when the timer is start */
     double timeout = 0.0;	/* timeout */
     int background = 0;		/* If non-zero work in the background */
-    size_t window_scaling;	/* if non-zero, in the window scaling mode */
+    size_t window_scaling = 0;	/* if non-zero, in the window scaling mode */
 
     debug = 0;
 

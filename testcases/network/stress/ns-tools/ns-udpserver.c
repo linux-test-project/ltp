@@ -201,7 +201,7 @@ main(int argc, char *argv[])
     char *program_name = argv[0];
     int optc;			/* option */
     sa_family_t family;		/* protocol family */
-    char *portnum;			/* port number */
+    char *portnum = NULL;	/* port number */
     int sock_fd;		/* socket binded open ports */
     int background = 0;		/* work in the background if non-zero */
     fd_set read_fds;		/* list of file descriptor for reading */

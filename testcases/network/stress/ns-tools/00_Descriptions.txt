@@ -70,3 +70,29 @@ ns-tcpserver (binary)
 ns-tcpclient (binary)
 	TCP traffic client
 	Request connections to the server, then receive tcp segments
+
+ns-icmp_redirector (binary)
+	ICMPv4/ICMPv6 redirect message sender
+	The host under test assume the host where this utility run is a
+	gateway. When the utility receives the packet from the host
+	under test. This utility reply ICMP redirect message.
+
+ns-icmpv4_sender (binary)
+	ICMPv4 echo request sender.
+	This utility is also able to set illegal information in the IP header
+	
+ns-icmpv6_sender (binary)
+	ICMPv6 message (Echo request / MLDv2 query) sender.
+	This utility is also able to set illegal information in the IP header
+
+ns-igmp_querier (binary)
+	IGMP query message sender
+	
+ns-mcast_join (binary)
+	Assistant tool to join multicast groups
+
+ns-mcast_receiver (binary)
+	Multicast UDP datagram receiver
+
+ns-udpsender (binary)
+	UDP datagram sender (not only unicast but also multicast)

@@ -79,6 +79,125 @@ if6-mtu-change01
 		test01 - by ifconfig command
 		test02 - by ip command
 
+routing table
+-------------
+route4-change-dst
+	Verify the kernel is not crashed when the destination of an IPv4 route
+	is changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route4-change-gw
+	Verify the kernel is not crashed when the gateway of an IPv4 route is
+	changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route4-change-if
+	Verify the kernel is not crashed when the interface of an IPv4 route is
+	changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route4-redirect01
+	Verify the kernel is not crashed when the IPv4 route is modified by
+	ICMP Redirects frequently
+
+route4-ifdown
+	Verify the kernel is not crashed when IPv4 route is add then it is
+	deleted by the interface down
+		test01 - by route command and ifconfig command
+		test02 - by ip command
+
+route4-rmmod
+	Verify the kernel is not crashed when IPv4 route is add then it is
+	deleted by the removing network driver
+		test01 - by route command
+		test02 - by ip command
+
+route6-change-dst
+	Verify the kernel is not crashed when the destination of an IPv6 route
+	is changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route6-change-gw
+	Verify the kernel is not crashed when the gateway of an IPv6 route is
+	changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route6-change-if
+	Verify the kernel is not crashed when the interface of an IPv6 route is
+	changed frequently
+		test01 - by route command
+		test02 - by ip command
+
+route6-redirect01
+	Verify the kernel is not crashed when the IPv6 route is modified by
+	ICMP Redirects frequently
+
+route6-ifdown
+	Verify the kernel is not crashed when IPv6 route is add then it is
+	deleted by the interface down
+		test01 - by route command and ifconfig command
+		test02 - by ip command
+
+route6-rmmod
+	Verify the kernel is not crashed when IPv6 route is add then it is
+	deleted by the removing network driver
+		test01 - by route command
+		test02 - by ip command
+
+
+broken_ip
+---------
+broken_ip4-version01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong value in version field
+	
+broken_ip4-ihl01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong value in the header length field
+	
+broken_ip4-totlen01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong value in the total length field
+
+broken_ip4-fragment01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong fragment information
+
+broken_ip4-protcol01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong value in the protocol field
+	
+broken_ip4-checksum01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets that have wrong value in the checksum field
+	
+broken_ip4-dstaddr01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv4 packets whose destination address is wrong
+	(destination MAC address is correct)
+
+broken_ip6-version01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv6 packets that have wrong value in version field
+
+broken_ip6-plen01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv6 packets that have wrong value in the payload length field
+
+broken_ip6-nexthdr01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv6 packets that have wrong value in the next header field
+
+broken_ip6-dstaddr01
+	Verify that the kernel is not crashed with receiving a large number of
+	IPv6 packets whose destination address is wrong (destination MAC
+	address is correct)
+
 
 icmp
 ----
@@ -195,6 +314,122 @@ multi-diffnic
 	    test12 - delayed network - IPsec [ ESP / tunnel ]
 	    test13 - delayed network - IPComp [ transport ]
 	    test14 - delayed network - IPComp [ tunnel ]
+
+
+multicast
+---------
+mcast4-grpope01
+	Verify that the kernel is not crashed when joining lots of IPv4
+	multicast groups on a single socket
+
+mcast4-grpope02
+	Verify that the kernel is not crashed when joining lots of IPv4
+	multicast groups on lots of sockets
+
+mcast4-grpope03
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv4 multicast group on multiple sockets lots of times
+
+mcast4-grpope04
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv4 multicast group with the different source filter on multiple
+	sockets lots of times
+
+mcast4-pktfld01
+	Verify that the kernel is not crashed when joining a IPv4 multicast
+	group a single socket, then receiving a large number of UDP packets
+	at the socket
+
+mcast4-pktfld02
+	Verify that the kernel is not crashed when joining plural IPv4
+	multicast groups on separate sockets, then receiving a large number
+	of UDP packets at the each socket
+
+mcast4-queryfld01
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of General Query
+
+mcast4-queryfld02
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address Specific Query
+
+mcast4-queryfld03
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address and Source Specific Query
+
+mcast4-queryfld04
+	Verify that the kernel is not crashed when joining plural IPv4 multicast
+	groups on separate socket, then receiving a large number of General
+	Query
+
+mcast4-queryfld05
+	Verify that the kernel is not crashed when joining joining plural IPv4
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address Specific Query
+	
+mcast4-queryfld06
+	Verify that the kernel is not crashed when joining joining plural IPv4
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address and Source Specific Query
+
+mcast6-grpope01
+	Verify that the kernel is not crashed when joining lots of IPv6
+	multicast groups on a single socket
+
+mcast6-grpope02
+	Verify that the kernel is not crashed when joining lots of IPv6
+	multicast groups on lots of sockets
+
+mcast6-grpope03
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv6 multicast group on multiple sockets lots of times
+
+mcast6-grpope04
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv6 multicast group with the different source filter on multiple
+	sockets lots of times
+
+mcast6-pktfld01
+	Verify that the kernel is not crashed when joining a IPv6 multicast
+	group a single socket, then receiving a large number of UDP packets
+	at the socket
+
+mcast6-pktfld02
+	Verify that the kernel is not crashed when joining plural IPv6
+	multicast groups on separate sockets, then receiving a large number
+	of UDP packets at the each socket
+
+mcast6-queryfld01
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of General Query
+
+mcast6-queryfld02
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address Specific Query
+
+mcast6-queryfld03
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address and Source Specific Query
+
+mcast6-queryfld04
+	Verify that the kernel is not crashed when joining plural IPv6 multicast
+	groups on separate socket, then receiving a large number of General
+	Query
+
+mcast6-queryfld05
+	Verify that the kernel is not crashed when joining joining plural IPv6
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address Specific Query
+	
+mcast6-queryfld06
+	Verify that the kernel is not crashed when joining joining plural IPv6
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address and Source Specific Query
+
 
 ssh
 ---
