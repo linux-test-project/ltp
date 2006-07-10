@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.22 2006/02/16 05:56:51 vapier Exp $ */
+/* $Id: pan.c,v 1.23 2006/07/10 15:46:10 mreed10 Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -457,11 +457,10 @@ main(int argc, char **argv)
 	    }
 
 	    cpid = run_child(coll->ary[c], running + i, quiet_mode);
-	    if (cpid != -1) {
+	    if (cpid != -1)
 		++num_active;
-		if (starts > 0)
-		    --starts;
-	    }
+	    if ((cpid != -1 || sequential) && starts > 0)
+		--starts;
 
 	    if (sequential)
 		if (++c >= coll->cnt)
