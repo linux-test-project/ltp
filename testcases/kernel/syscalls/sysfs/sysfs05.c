@@ -81,7 +81,7 @@
 static void setup();
 static void cleanup();
 
-#if defined(__ia64__) || defined(__powerpc__)
+#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__)
 #define sysfs(arg1, arg2) syscall(__NR_sysfs, arg1, arg2)
 #else
 _syscall2(long, sysfs, int, option, const char*, fsname);

@@ -1,4 +1,4 @@
-LTP-20060515
+LTP-20060615
 -Added a patch from Darrick Wong to reduce the memory requirements of 
  pounder's ramsnaketes
 -Added a patch for crash01.c from Olof Johansson <olof@lixom.net>

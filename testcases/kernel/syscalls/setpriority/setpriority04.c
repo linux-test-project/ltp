@@ -69,8 +69,8 @@
 /*
  * See the Makefile for comments about the following preprocessor code.
  */
-#ifndef __powerpc__
- #ifndef _LTP_TASKS_H
+#if !defined (__powerpc__) && !defined(__s390__) && !defined (__s390x__) && !defined (__i386__) 
+#ifndef _LTP_TASKS_H
  #include <linux/threads.h>     /* for PID_MAX value - new */
  #else
  #include <linux/tasks.h>       /* for PID_MAX value - old */
