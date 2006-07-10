@@ -111,6 +111,11 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
+		/* Reset almreceived for every iteration, since it has
+		 * old values from previous iterations (if any) and not
+		 * a value of zero */
+		almreceived=0;
+
 		/* 
 		 * Call First alarm() with non-zero time parameter 
 		 * 'time_sec1' to send SIGALRM to the calling process.
