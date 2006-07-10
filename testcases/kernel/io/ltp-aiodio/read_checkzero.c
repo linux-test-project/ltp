@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
-#define NUM_CHILDREN 8
+
 
 
 
@@ -64,15 +64,20 @@ int read_eof(char *filename)
 	int r;
 	char buf[4096];
 
-	while ((fd = open(filename, O_RDONLY)) < 0) {
-		sleep(1);	/* wait for file to be created */
+       if ((fd = open(filename, O_RDWR)) < 0) {
+               fprintf(stderr, "can't open file %s \n",filename);
+               exit(1);
 	}
-
-	for (i = 0 ; i < 10000000; i++) {
+       
+	for (i = 0 ; i < 100000; i++) {
 		off_t offset;
 		char *bufoff;
 
-		offset = lseek(fd, SEEK_END, 0);
+               offset = lseek(fd, 4096, SEEK_END);
+               r = write(fd,"A",1);
+
+               offset = lseek(fd, offset - 4096 , SEEK_SET);
+
 		r = read(fd, buf, 4096);
 		if (r > 0) {
 			if ((bufoff = check_zero(buf, r))) {
