@@ -307,9 +307,10 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
         argv[2] = command;
         argv[3] = 0;
 
-        if (execve("/bin/sh", argv, envp) == -1)
+     
+	if (execv("/bin/sh", argv) == -1)
         {
-            perror("init_compile(): execve()");
+	  perror("init_compile(): execv()");
             return 1;
         }
     }
