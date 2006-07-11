@@ -206,6 +206,13 @@ close
 set codes [wait]
 set pid [lindex $codes 0]
 set exit_code [lindex $codes 3]
+
+#Added for arm architecture
+
+send_user "\ndisplayed_error=$displayed_error"           
+send_user "\nexit_code=$exit_code"                      
+send_user "\npid=$pid\n"                                
+
 if { ($displayed_error==1) && ($exit_code!=0) && ($pid>0) } {
   send_user "/bin/su with incorrect password ( PASSED )\n"
 } else {
