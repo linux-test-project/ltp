@@ -45,6 +45,9 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      07/2006 - Changes By Michael Reed
+ *                - Changed the value of MAXIDS for the specific machine by reading 
+ *                  the system limit for SEMMNI - The maximum number of sempahore sets    
  *
  * RESTRICTIONS
  *	none
@@ -58,26 +61,45 @@ extern int Tst_count;
 
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased
- * depending on the system being tested.
+ * depending on the system being tested.  
  */
-#define MAXIDS	2048
+
+int MAXIDS=2048;
 
 int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
-
-int sem_id_arr[MAXIDS];		/* hold the semaphore IDs that are created */
+int *sem_id_arr;
 int num_sems = 0;		/* count the semaphores created */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc,getmaxid;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	FILE *fp;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	/* Set the MAXIDS for the specific machine by reading the system limit
+           for SEMMNI - The maximum number of sempahore sets                  */
+	if((fp = fopen("/proc/sys/kernel/sem", "r")) != NULL) 
+	  {
+	    for(lc= 0; lc < 4; lc++)
+	      {
+		if(lc == 3)
+		  {
+		    if(getmaxid > MAXIDS)
+		      MAXIDS=getmaxid;
+		  }
+	      }
+
+	  }
+	fclose(fp);
+
+	sem_id_arr = (int*)malloc(sizeof(int)*MAXIDS);
+
+	setup();			/* global setup */	
 
 	/* The following loop checks looping state if -i option given */
 
@@ -89,7 +111,7 @@ int main(int ac, char **av)
 	
 		TEST(semget(semkey + num_sems, PSEMS,
 			    IPC_CREAT | IPC_EXCL | SEM_RA));
-
+		//	printf("rc = %ld \n",	TEST_RETURN);
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
@@ -159,6 +181,7 @@ setup(void)
 	/*
 	 * If the errno is other than ENOSPC, then something else is wrong.
 	 */
+
 	if (errno != ENOSPC) {
 		tst_brkm(TBROK, cleanup, "Didn't get ENOSPC in test setup"
 			 " - errno = %d : %s", errno, strerror(errno));
