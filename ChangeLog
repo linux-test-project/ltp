@@ -1,3 +1,58 @@
+LTP-20060717
+ - The tarball default-tests.tar.gz is a replacement for
+   testcases/pounder21/default-tests.tar.gz.  This new pounder config
+   enables the magic sysrq key when pounder starts.   
+ - A patch submitted by Derek Wong to reduce the memory requirements of
+   pounder's ramsnake test.
+ - A patch submitted by Will Newton that allows for compatibility changes
+   gcc 2.95.2 in th following files:
+     lib.c, lib64.c, test.c, test64.c, test_func.c, test_func64.c, tools.c
+ - Fixed ColdFire Makefile mistake in the syscall and syscalls/mmap directory
+ - Added a note for uClinux users in the top level Makefile
+ - A fix for failures in fcntl27 and fcntl28 for bugs 21614 and 23235.
+ - A fix submitted for make_tree.c by Jacky Malcles that fixes this
+   testcase by setting envp
+  - A fix submitted to Jacky Malcles that fixes read_checkzero.c.  The lseek
+   function allows the file offset to be set beyond the end of the existing
+   end-of-file of the file.  If data is later written at this point,
+   subsequent reads of the data is in the gap returns bytes of zeros until
+   data is actually written into the gap.
+ - In the testcase semget05.c the value of MAXIDS was changed for the specific
+   machine by reading the system limit for SEMMNI - The maximum number of
+   semaphore sets. This is a fix for bug 24745
+ - A fix submitted by Amit K. Amora that initializes the alarm received
+   code and allows the test to pass more than just once on 2.6.17-rc6
+   alarm05.c,
+ - A fix was submitted by Andy Echols for pan.c to fix an infinite
+   loop problem that occurs  in pan if runltp tries to run a test
+   that isn't present.
+ - A fix was submitted to cast TEST_RETURN to gid_t to avoid implicit casts
+   which tend to cause problems with the testcase  setregid03.c,
+ - A patch submitted by Jacky Malcles that fixes the problem where
+   i0_getevents() return value is not checked and may return 0 if
+   no events are available and may generate a SIGSEGV in the testcase
+   aiodio_append.c,
+ - Backed out the _USC_LIB change for several Makefiles because it was
+   breaking on the PowerPc platform on Fedora Core
+ - Added code to ignore looking for PID_MAX on powerpc, s390, and i386 to
+   fix build problems on newer kernel versions on the following files:
+    sysctl05.c, setpriority04.c sysfs01.c, sysfs02.c, sysfs03.c, sysfs04.c,
+    sysfs06. getdents01.c, sysctl03.c getsid02.c, sysctl01.c,wait402.c
+ - TCP.c was changed to delete broken whitespace and also the call for
+   accept(2) takes a socklen_t, not an int
+ - Changes were added to the following files to use memset() instead of
+   bzero():
+   tlibio.c, write_log.c, doio.c, iogen.c, fsstress.c, fsx-linux.c,
+   pthcli.c, pthserv.c, pth_str01.c, pth_str03.c, recvmsg01.c, sendmsg01.c,
+   crash01.c, crash02.c, pingpong6.c,test_getname.c,fancy_timed_loop.c, 
+   infinite_loop.c, run.c, timed_loop.c, snake.c, rpc1.c,pipeio.c, mc_recv.c
+ - Changes were added to the following files to use memcpy() instead of
+    bcopy():
+    serverCommunication.cpp, member.c, rpc1.c,pipeio.c,mc_recv.c
+-  A series of  patches created by Mitsuru Chinen that  created some addtional 
+   network stress tests. 
+-  A change submitted by Liang Shuang that fixes su01_su for the arm 
+   architecture
 LTP-20060615
 -Added a patch from Darrick Wong to reduce the memory requirements of 
  pounder's ramsnaketes
