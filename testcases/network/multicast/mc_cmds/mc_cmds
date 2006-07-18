@@ -69,16 +69,21 @@ do_test()
 #   [ $? = 0 ] || end_testcase "all-host-group for $IFNAME not joined"
 # Commented end
 
+#Finds the active ethernet interface
+for eth in $IFNAME
+    do
+         ifconfig $eth | grep -q $INTERFACE
+          if [ $? -eq 0 ]
+          then
+                INTERFACE_DEVICE=$eth
+		break
+           fi
+    done
+
 # Added for support for more adapters configured
     MulticastAdap=
     for eth in $IFNAME 
     do
-
-          ifconfig $eth | grep -q $INTERFACE
-          if [ $? -eq 0 ]
-          then
-                INTERFACE_DEVICE=$eth
-           fi
 
 	$trace_logic
 	ifconfig $eth | grep -q MULTICAST
