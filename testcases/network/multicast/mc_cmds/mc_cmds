@@ -73,6 +73,13 @@ do_test()
     MulticastAdap=
     for eth in $IFNAME 
     do
+
+          ifconfig $eth | grep -q $INTERFACE
+          if [ $? -eq 0 ]
+          then
+                INTERFACE_DEVICE=$eth
+           fi
+
 	$trace_logic
 	ifconfig $eth | grep -q MULTICAST
 	if [ $? -eq 0 ]
@@ -113,7 +120,13 @@ do_test()
 
    echo "Ping all-host-groups over specified interface"
    ping -c2 -I $INTERFACE 224.0.0.1 > $PING_OUT
+  if [ $? -ne 0 ]
+   then
+        echo "Trying to ping with $INTERFACE_DEVICE instead of IP address"
+        echo "with the -I option"
+        ping -c2 -I $INTERFACE_DEVICE 224.0.0.1 > $PING_OUT
    [ $? = 0 ] || end_testcase "No response from MC hosts to ping -c2 -I$INTERFACE 224.0.0.1"
+fi
    grep -q $INTERFACE $PING_OUT
    [ $? = 0 ] || end_testcase "Local host did not respond to ping -c2 -I$INTERFACE 224.0.0.1"
 
