@@ -91,7 +91,7 @@ int main(int ac, char **av)
 	  * if we could call getdents that way.
 	  */
 
-#if defined (__ia64__) || defined (__powerpc__) || defined (__i386__) || defined (__s390__) || defined (__s390x__)
+#if defined (__ia64__) || defined (__powerpc__) || defined (__i386__) || defined (__s390__) || defined (__s390x__) || defined (__x86_64__)
 #define getdents(arg1, arg2, arg3) syscall(__NR_getdents, arg1, arg2, arg3)
 #else
 	_syscall3(int, getdents, uint, fd, struct dirent *, dirp, uint, count);

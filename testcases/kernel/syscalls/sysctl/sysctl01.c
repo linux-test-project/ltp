@@ -56,7 +56,7 @@ char *TCID = "sysctl01";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
-#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__) 
+#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__)  || defined (__x86_64__)
 #define _sysctl(arg1) syscall(__NR__sysctl, arg1)
 #else
 _syscall1(int, _sysctl, struct __sysctl_args *, args);

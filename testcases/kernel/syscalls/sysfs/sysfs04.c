@@ -86,7 +86,7 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 static int exp_enos[] = {EINVAL, 0};
 
-#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__)
+#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__) || defined (__x86_64__)
 #define sysfs(arg1) syscall(__NR_sysfs, arg1)
 #else
 _syscall1(long, sysfs, int, option);
