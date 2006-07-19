@@ -115,10 +115,10 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ SFILE1,  "No Search permissions to process", EACCES, setup1 },
+	{ (char *)-1, "Negative address", EFAULT, no_setup },
 #if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
 #endif
-	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
 	{ SFILE2, "Path contains regular file", ENOTDIR, setup2 },
@@ -253,7 +253,7 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-	Test_cases[2].pathname = bad_addr;
+	Test_cases[1].pathname = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

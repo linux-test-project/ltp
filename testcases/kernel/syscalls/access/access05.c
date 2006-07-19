@@ -123,10 +123,10 @@ struct test_case_t {		/* test case structure */
 	{ TEST_FILE2, W_OK, "Write Access denied on file", EACCES, setup2 },
 	{ TEST_FILE3, X_OK, "Execute Access denied on file", EACCES, setup3 },
 	{ TEST_FILE4, INV_OK, "Access mode invalid", EINVAL, setup4 },
+	{ (char *)-1, R_OK, "Negative address", EFAULT, no_setup },
 #if !defined(UCLINUX)
 	{ High_address_node, R_OK, "Address beyond address space", EFAULT, no_setup },
 #endif
-	{ (char *)-1, R_OK, "Negative address", EFAULT, no_setup },
 	{ "", W_OK, "Pathname is empty", ENOENT, no_setup },
 	{ Longpathname, R_OK, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ NULL, 0, NULL, 0, no_setup }
@@ -260,7 +260,7 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-	Test_cases[5].pathname = bad_addr;
+	Test_cases[4].pathname = bad_addr;
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
