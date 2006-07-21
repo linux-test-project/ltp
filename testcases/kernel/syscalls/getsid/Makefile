@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -Wall
+CFLAGS+=	-I../../../../include -I-/usr/include/linux/threads.h -Wall
 CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 LOADLIBES+=	-L../../../../lib -lltp
 LOADLIBES+=	$(if $(UCLINUX),-lc)

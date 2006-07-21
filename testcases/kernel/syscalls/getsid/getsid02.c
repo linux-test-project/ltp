@@ -70,16 +70,15 @@
 /*
  * See the Makefile for comments about the following preprocessor code.
  */
-//#ifndef _LTP_TASKS_H
-//#include <linux/threads.h>		/* for PID_MAX - new */
-//#else
-//#include <linux/tasks.h>		/* for PID_MAX - old */
-//#endif
+
+#ifdef _LTP_TASKS_H
+#include <linux/tasks.h>		/* for PID_MAX - old */
+#endif
 
 /*
  * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
  */
-#if defined(__powerpc__) || defined(__powerpc64__)
+#if defined(__powerpc__) || defined(__powerpc64__) 
 #define PID_MAX 0x8000
 #endif
 
@@ -90,6 +89,7 @@ void setup(void);
 char *TCID= "getsid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
+int pid_max=32768;    /* Default value for PID_MAX  */
 
 int exp_enos[] = {ESRCH, 0};	/* 0 terminated list of expected errnos */
 
@@ -106,7 +106,6 @@ int main(int ac, char **av)
 	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -115,13 +114,10 @@ int main(int ac, char **av)
 		 * call the system call with the TEST() macro
 		 * with an illegal PID value
 		 */
-#ifdef PID_MAX_DEFAULT	
-		TEST(getsid(PID_MAX_DEFAULT + 1));
-#elif defined(PID_MAX)	
-		TEST(getsid(PID_MAX + 1));
-#endif
+
+		TEST(getsid(pid_max + 1));
 	
-		if (TEST_RETURN == 0) {
+  	        if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeed when failure expected");
 			continue;
 		}
@@ -153,6 +149,27 @@ int main(int ac, char **av)
 void
 setup(void)
 {
+FILE *fp;
+
+
+#ifdef PID_MAX_DEFAULT
+  pid_max = PID_MAX_DEFAULT;
+#elif defined(PID_MAX)
+  pid_max = PID_MAX;
+#else
+
+  system("cat /proc/sys/kernel/pid_max > /tmp/pid-max");
+    if((fp = fopen("/tmp/pid-max", "r")) != NULL)
+	{
+	  fscanf(fp,"%d",&pid_max);
+	  fclose(fp);
+	  system("rm /tmp/pid-max");
+ 	}
+    else
+        {
+	  puts("cannot open file /tmp/pid-max");
+	}
+#endif
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
