@@ -19,7 +19,10 @@
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
-
+# 07/27/05  Michael Reed  <mreedltp@vnet.ibm.com>
+#            Made changes to account for the replacement of syslogd 
+#            with syslog-ng
+#
 ##################################################################
 # case4: Test the logging option: LOG_PID                        #
 #                                                                #
@@ -29,6 +32,12 @@
 DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
+
+#configuration file for syslog or syslog-ng
+CONFIG_FILE=""
+
+#Command for syslog or syslog-ng
+syslog_cmd=""
 
 cleanup()
 {
@@ -40,11 +49,12 @@ else
 fi
 
 #Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+  mv $CONFIG_FILE.ltpback $CONFIG_FILE
 
 #Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null 
+  tst_resm TINFO "restart $syslog_cmd"
+  $syslog_cmd restart 2>&1 1>/dev/null
+
 sleep 2
 if [ $DEBIAN -eq 1 ];then
  rm -f /etc/init.d/syslog
@@ -63,20 +73,44 @@ syslog_case4()
 
 	tst_resm TINFO "syslog: Testing the log option: LOG_PID..."
 
-	# check if syslogd command exits.
-	echo
-	# check if syslogd command exits. Check for both syslogd & syslogd-ng in SLES10
-	if [ -z $(which syslogd) ]
+#check to see if syslogd or syslog-ng exists
+	if [ -e /sbin/syslogd  ]
 	then
-	if [ -z $(which syslog-ng) ]
-	then 
-		tst_resm TBROK "syslogd or syslog-ng  no such command"
-		status_flag=1
-		cleanup
+	    CONFIG_FILE="/etc/syslog.conf"
+	    syslog_cmd="/etc/init.d/syslog"
+	elif [ -e /sbin/syslog-ng ]
+        then
+	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
+            syslog_cmd="syslog-ng"
+	else
+	    tst_resm TBROK "syslogd or syslog-ng  no such command"
+	    status_flag=1
+	    cleanup	
 	fi
-	else 
-		echo "Running tests"
-	fi
+
+#Back up configuration file
+        if [ ! -e $CONFIG_FILE ]
+        then
+	   tst_resm TBROK  "$CONFIG_FILE not found!"
+        else
+#Pause if another LTP syslog test is running
+           while [ -e $CONFIG_FILE.ltpback ]  
+             do
+               if [ $(( wait_count-- )) -gt 0 ]
+               then
+                 sleep 1
+               else
+	        tst_resm TBROK "Another syslog test appears to be \
+                                stuck, could not run"
+                status_flag=1
+	         exit $status_flag
+               fi
+             done
+           cp $CONFIG_FILE $CONFIG_FILE.ltpback
+          fi
+
+         echo "Running tests"
+
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
         find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
@@ -98,11 +132,31 @@ syslog_case4()
 	fi
 	
 	# Create the configuration file specific to this test case.
+ if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
 	echo "user.info        /var/log/messages" > /etc/syslog.conf
+else
+        echo "source src{ internal(); unix-dgram("/dev/log"); \
+              udp(ip("0.0.0.0") port(514)); };" > $CONFIG_FILE
+        echo " " >> $CONFIG_FILE 
+        echo "filter f_syslog_user { level(info)      and facility(user); };"\
+              >> $CONFIG_FILE
+        echo "destination syslog_messages { file("/var/log/messages");};" \
+          >> $CONFIG_FILE
+        echo "log { source(src); filter(f_syslog_user); \
+              destination(syslog_messages);};"  >> $CONFIG_FILE
+fi
 
+
+
+      if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
 	#Restart syslog
 	tst_resm TINFO "Restart syslog daemon"
 	/etc/init.d/syslog restart 2>&1 1>/dev/null 
+
+      else
+         #re-start syslog-ng
+         $syslog_cmd restart 2>&1 1>/dev/null  
+      fi
 	sleep 2
 
 	# Run syslogtst in the background and get the process id.
@@ -149,26 +203,6 @@ status_flag=0
 tst_resm TINFO "case4: Test the logging option: LOG_PID"
 tst_resm TINFO "Do openlog() with LOG_PID option and see whether pid"
 tst_resm TINFO "is logged with message."
-
-#Back up /etc/syslog.conf
-if ! [ -a /etc/syslog.conf ]
-then
-        tst_resm TBROK "/etc/syslog.conf not found!"
-else
-    while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
-    do
-        if [ $(( wait_count-- )) -gt 0 ]
-        then
-          sleep 1
-        else
-          tst_resm TBROK "Another syslog test appears to be stuck, could not run"
-          status_flag=1
-          exit $status_flag
-        fi
-
-    done
-    cp /etc/syslog.conf /etc/syslog.conf.ltpbak
-fi
 
 syslog_case4
 cleanup

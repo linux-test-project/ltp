@@ -19,7 +19,10 @@
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
-
+# 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
+#           Made changes to account for the replacement of syslogd 
+#           with syslog-ng
+#
 ##################################################################
 # case2: Test if messages of all levels are logged.              #
 #        For each level, a seperate configuration file is        #
@@ -28,26 +31,34 @@
 DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
+#set -x
+#configuration file for syslog or syslog-ng
+CONFIG_FILE=""
+
+#Command for syslog or syslog-ng
+syslog_cmd=""
 
 cleanup()
 {
-if [ $status_flag -eq 0 ]
-then
+  if [ $status_flag -eq 0 ]
+  then
 	tst_resm TPASS "messages of all levels are logged"
-else
+  else
 	tst_resm TFAIL "failed to log messages of all levels."
-fi
+  fi
 
 #Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
+  mv $CONFIG_FILE.ltpback $CONFIG_FILE
 
 #Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null 
-sleep 2
-if [ $DEBIAN -eq 1 ];then
- rm -f /etc/init.d/syslog
-fi
+  tst_resm TINFO "restart $syslog_cmd"
+  $syslog_cmd restart 2>&1 1>/dev/null
+
+  sleep 2
+
+  if [ $DEBIAN -eq 1 ];then
+     rm -f /etc/init.d/syslog
+  fi
 exit $status_flag
 }
 
@@ -62,24 +73,49 @@ syslog_case2()
 
 	echo
 	tst_resm TINFO  "syslog: Testing the messages of all levels"
-
+       
 	level_no=0
 	level="emerg alert crit err warning notice info debug"
-
 	tst_resm TINFO  "syslog: Testing whether messages are logged into log file"
 	echo
-	# check if syslogd command exits. Check for both syslogd & syslogd-ng in SLES10
-	if [ -z $(which syslogd) ]
+
+#check to see if syslogd or syslog-ng exists
+	if [ -e /sbin/syslogd  ]
 	then
-	if [ -z $(which syslog-ng) ]
-	then 
-		tst_resm TBROK "syslogd or syslog-ng  no such command"
-		status_flag=1
-		cleanup
+	    CONFIG_FILE="/etc/syslog.conf"
+	    syslog_cmd="/etc/init.d/syslog"
+	elif [ -e /sbin/syslog-ng ]
+        then
+	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
+            syslog_cmd="syslog-ng"
+	else
+	    tst_resm TBROK "syslogd or syslog-ng  no such command"
+	    status_flag=1
+	    cleanup	
 	fi
-	else 
-		echo "Running tests"
+
+#Back up configuration file
+	if [ ! -e $CONFIG_FILE ]
+	    then
+	       tst_resm TBROK  "$CONFIG_FILE not found!"
+	else
+            #Pause if another LTP syslog test is running
+	    while [ -e $CONFIG_FILE.ltpback ]  
+              do
+                if [ $(( wait_count-- )) -gt 0 ]
+                then
+                  sleep 1
+                else
+	          tst_resm TBROK "Another syslog test appears to be stuck,\
+                                  could not run"
+		  status_flag=1
+		  exit $status_flag
+		fi
+	    done
+	    cp $CONFIG_FILE $CONFIG_FILE.ltpback
 	fi
+
+         echo "Running tests"
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
         find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
@@ -105,17 +141,29 @@ syslog_case2()
 	do
 		tst_resm TINFO "Doing level: $current..."
 
-		# Create the configuration file specific to this level
-		echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
 
-		#Restart syslog
-		tst_resm TINFO "restarting syslog daemon"
-		/etc/init.d/syslog restart 2>&1 1>/dev/null 
+	     if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+	     # Create the configuration file specific to this level
+		  echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
+	     else
+                 echo "source src{ internal(); unix-dgram("/dev/log"); \
+                       udp(ip("0.0.0.0") port(514)); };" > $CONFIG_FILE       
+                 echo "filter f_syslog_$current { level($current)      and \
+                       facility(mail); };"  >> $CONFIG_FILE
+		 echo "destination syslog-$current { file("/var/log/maillog");\
+                      };"  >> $CONFIG_FILE
+		 echo "log { source(src); filter(f_syslog_$current); \
+                      destination(syslog-$current); };"  >> $CONFIG_FILE
+	     fi
+
+	     if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+             #Restart syslog
+             $syslog_cmd restart 2>&1 1>/dev/null
+
 		sleep 2
 
 		# Grepping pattern is as follows:
 		# syslogtst: mail $current test.
-
 		# check if /var/log/maillog script exists
 		find /var/log/ |grep maillog 2>&1 1>/dev/null 
 		RC=$?
@@ -126,10 +174,23 @@ syslog_case2()
 	                cleanup
 
 		fi
+	     else
+             #re-start syslog-ng
+		 $syslog_cmd restart 2>&1 1>/dev/null
+	     fi	
 
-		oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
 
-		# syslogtst has to be called with additional level argument(0-7)
+	# Grepping pattern has to be changed whenever the executable name
+	# changes, ex: syslogtst executable.
+        # This check is neccessary for syslog-ng because /var/log/maillog is
+        # only created after syslogtst
+        if [ -e /var/log/maillog ]; then
+	   oldvalue=`grep -c "syslogtst: mail $current test." /var/log/maillog`
+	else
+	    oldvalue1=0
+	fi
+
+	# syslogtst has to be called with additional level argument(0-7)
 		syslogtst 2 $level_no 2>/dev/null
 		if [ $? -ne 0 ]; then
 				status_flag=1
@@ -177,25 +238,6 @@ tst_resm TINFO "Test if messages of all levels are logged."
 tst_resm TINFO "For each level, a separate configuration file is"
 tst_resm TINFO "created and that will be used as syslog.conf file."
 
-#Back up /etc/syslog.conf
-if ! [ -a /etc/syslog.conf ]
-then
-        tst_resm TBROK "/etc/syslog.conf not found!"
-else
-    while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
-    do
-        if [ $(( wait_count-- )) -gt 0 ]
-        then
-          sleep 1
-        else
-          tst_resm TBROK "Another syslog test appears to be stuck, could not run"
-          status_flag=1
-          exit $status_flag
-        fi
-
-    done
-    cp /etc/syslog.conf /etc/syslog.conf.ltpbak
-fi
 
 syslog_case2
 cleanup

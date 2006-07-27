@@ -19,7 +19,10 @@
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
-
+# 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
+#           Made changes to account for the replacement of syslogd 
+#           with syslog-ng
+#
 ##################################################################
 # case 8: Test all the facilities at a particular level.         #
 #                                                                #
@@ -35,6 +38,12 @@ DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
 
+#configuration file for syslog or syslog-ng
+CONFIG_FILE=""
+
+#Command for syslog or syslog-ng
+syslog_cmd=""
+
 cleanup()
 {
 if [ $status_flag -eq 0 ]
@@ -45,12 +54,12 @@ else
 fi
 
 #Restore syslog.conf
-mv /etc/syslog.conf.ltpbak /etc/syslog.conf
-
+  mv $CONFIG_FILE.ltpback $CONFIG_FILE
 
 #Restart syslog
-tst_resm TINFO "Restart syslog"
-/etc/init.d/syslog restart 2>&1 1>/dev/null 
+  tst_resm TINFO "restart $syslog_cmd"
+  $syslog_cmd restart 2>&1 1>/dev/null
+
 sleep 2
 if [ $DEBIAN -eq 1 ];then
  rm -f /etc/init.d/syslog
@@ -73,18 +82,43 @@ syslog_case8()
 
  	# check if syslogd command exits.
 	echo
-	# check if syslogd command exits. Check for both syslogd & syslogd-ng in SLES10
-	if [ -z $(which syslogd) ]
+
+	
+#check to see if syslogd or syslog-ng exists
+	if [ -e /sbin/syslogd  ]
 	then
-	if [ -z $(which syslog-ng) ]
-	then 
-		tst_resm TBROK "syslogd or syslog-ng  no such command"
-		status_flag=1
-		cleanup
+	    CONFIG_FILE="/etc/syslog.conf"
+	    syslog_cmd="/etc/init.d/syslog"
+	elif [ -e /sbin/syslog-ng ]
+        then
+	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
+            syslog_cmd="syslog-ng"
+	else
+	    tst_resm TBROK "syslogd or syslog-ng  no such command"
+	    status_flag=1
+	    cleanup	
 	fi
-	else 
-		echo "Running tests"
-	fi
+
+#Back up configuration file
+  if [ ! -e $CONFIG_FILE ]
+  then
+	tst_resm TBROK  "$CONFIG_FILE not found!"
+  else
+    #Pause if another LTP syslog test is running
+    while [ -e $CONFIG_FILE.ltpback ]  
+      do
+        if [ $(( wait_count-- )) -gt 0 ]
+        then
+          sleep 1
+        else
+	  tst_resm TBROK "Another syslog test appears to be stuck, could not run"
+          status_flag=1
+	  exit $status_flag
+        fi
+      done
+       cp $CONFIG_FILE $CONFIG_FILE.ltpback
+   fi
+
 
 	#Create symlink to /etc/init.d/sysklogd for Debian
         find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
@@ -113,33 +147,52 @@ syslog_case8()
 
 		# Create the configuration file specific to this facility
 		# Level is fixed at info.
+	   if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
 		echo "$current.info    /var/log/messages" > /etc/syslog.conf
 		echo "$current.info    /var/log/maillog" >> /etc/syslog.conf
-
+	   else
+	        echo "source src{ internal(); unix-dgram("/dev/log"); \
+                      udp(ip("0.0.0.0") port(514)); };" > $CONFIG_FILE
+	        echo "filter f_syslog-$current { level(info)      and \
+                      facility($current); };"  >> $CONFIG_FILE
+                echo "destination syslog-messages { file("/var/log/messages");\
+                      };"  >> $CONFIG_FILE
+                echo "destination syslog-mail { file("/var/log/maillog");};" \
+                      >> $CONFIG_FILE
+                echo "log { source(src); filter(f_syslog-$current); \
+                      destination(syslog-mail); };"  >> $CONFIG_FILE
+                echo "log { source(src); filter(f_syslog-$current); \
+                      destination(syslog-messages); };"  >> $CONFIG_FILE
+            fi
 		#Restart syslog
-		tst_resm TINFO "Restart syslog"
+		tst_resm TINFO "Restart $syslog_cmd"
 
-		/etc/init.d/syslog restart 2>&1 1>/dev/null 
-		sleep 2
+		if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+		    $syslog_cmd restart 2>&1 1>/dev/null
+		else
+                    #re-start syslog-ng
+		    $syslog_cmd restart 2>&1 1>/dev/null
+		fi
 
-		# Grepping pattern is as follows:
-		# syslogtst: $current info test.
-		# check if /var/log/maillog script exists
-		for logf in messages maillog
-		do
-			find /var/log/ |grep $logf 2>&1 1>/dev/null 
-			RC=$?
-			if [ $RC -ne 0 ]
-			then
-				tst_resm TBROK "/var/log/$logf no such log file"
-				status_flag=1
-				cleanup
-			fi
-		done
-		oldvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
-		old_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
+		sleep 2	
 
-		# syslogtst has to be called with one more additional facility argument(1-6)
+		if [ -e /var/log/messages ]; then
+		    oldvalue=`grep -c "syslogtst: $current info test." \
+                    /var/log/messages`
+		else
+		    oldvalue=0
+		fi
+
+
+	        if [ -e /var/log/maillog ]; then
+		     old_mail_check=`grep -c "syslogtst: $current info test." \
+                                     /var/log/maillog`
+		else
+	             old_mail_check=0
+	        fi
+
+		# syslogtst has to be called with one more 
+                # additional facility argument(1-6)
 		syslogtst 8 $facility_no 2>/dev/null
 		if [ $? -ne 0 ]; then
 				status_flag=1
@@ -158,23 +211,24 @@ syslog_case8()
 				cleanup
 			fi
 		done
-		new_mail_check=`grep -c "syslogtst: $current info test." /var/log/maillog`
-		newvalue=`grep -c "syslogtst: $current info test." /var/log/messages`
-
+		new_mail_check=`grep -c "syslogtst: $current info test."\
+                                /var/log/maillog`
+		newvalue=`grep -c "syslogtst: $current info test." \
+                          /var/log/messages`
 		diff=$(( $newvalue - $oldvalue ))
 		mail_check=$(( $new_mail_check - $old_mail_check ))
 		if [ $current = "mail" ]; then
 				if [ $mail_check -ne 1 ]; then
-						status_flag=1
-						tst_resm TINFO  " Facility $current failed"
+					  status_flag=1
+					  tst_resm TINFO  " Facility $current failed"
 				elif [ $mail_check -eq 1 ]; then
-						tst_resm TINFO  " Facility $current passed"
+					   tst_resm TINFO  " Facility $current passed"
 				fi
 		elif [ $diff -ne 1 ]; then
-						status_flag=1
-						tst_resm TINFO  " Facility $current failed"
+					   status_flag=1
+					   tst_resm TINFO  " Facility $current failed"
 				else
-						tst_resm TINFO  " Facility $current passed"
+					    tst_resm TINFO  " Facility $current passed"
 		fi
 		# Increment the facility_no for next...
 		facility_no=$(($facility_no+1))
@@ -201,25 +255,7 @@ tst_resm TINFO " Don't know how to send kernel messages from syslog()"
 tst_resm TINFO " o Create seperate entries in config file for each facility."
 tst_resm TINFO " o Send the message and grep for the entry in log file."
 
-#Back up /etc/syslog.conf
-if ! [ -a /etc/syslog.conf ]
-then
-        tst_resm TBROK "/etc/syslog.conf not found!"
-else
-    while [ -a /etc/syslog.conf.ltpbak ]  #Pause if another LTP syslog test is running
-    do
-        if [ $(( wait_count-- )) -gt 0 ]
-        then
-          sleep 1
-        else
-          tst_resm TBROK "Another syslog test appears to be stuck, could not run"
-          status_flag=1
-          exit $status_flag
-        fi
 
-    done
-    cp /etc/syslog.conf /etc/syslog.conf.ltpbak
-fi
 
 syslog_case8
 cleanup
