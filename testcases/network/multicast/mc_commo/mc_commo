@@ -28,6 +28,9 @@ unset LIBPATH
 #  HISTORY:
 #    03/26/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
+#    08/01/06 Michael Reed mreedltp@vnet.ibm.com
+#      - The pinging of a specific IP Multicast group has been bypassed
+#        for SLES
 #
 #******************************************************************************
 #Uncomment line below for debug output.
