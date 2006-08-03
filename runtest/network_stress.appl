@@ -1,0 +1,22 @@
+#
+# Stress test for major application protocol (ssh, dns, http, ftp)
+#
+
+# ssh
+ssh4-stress ssh4-stress
+ssh6-stress ssh6-stress
+
+# dns
+dns4-stress dns4-stress
+dns6-stress dns6-stress
+
+# http
+http4-stress http4-stress
+http6-stress http6-stress
+
+# ftp
+ftp4-download-stress ftp4-download-stress
+ftp6-download-stress ftp6-download-stress
+
+ftp4-upload-stress ftp4-upload-stress
+ftp6-upload-stress ftp6-upload-stress

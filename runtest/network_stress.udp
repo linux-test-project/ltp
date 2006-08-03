@@ -1,0 +1,67 @@
+#
+# Stress test for TCP/IP protocol stack (UDP)
+#
+
+udp4-uni-basic01 udp4-uni-basic01
+udp4-uni-basic02 udp4-uni-basic02
+udp4-uni-basic03 udp4-uni-basic03
+udp4-uni-basic04 udp4-uni-basic04
+udp4-uni-basic05 udp4-uni-basic05
+udp4-uni-basic06 udp4-uni-basic06
+udp4-uni-basic07 udp4-uni-basic07
+
+udp6-uni-basic01 udp6-uni-basic01
+udp6-uni-basic02 udp6-uni-basic02
+udp6-uni-basic03 udp6-uni-basic03
+udp6-uni-basic04 udp6-uni-basic04
+udp6-uni-basic05 udp6-uni-basic05
+udp6-uni-basic06 udp6-uni-basic06
+udp6-uni-basic07 udp6-uni-basic07
+
+udp4-multi-diffport01 udp4-multi-diffport01
+udp4-multi-diffport02 udp4-multi-diffport02
+udp4-multi-diffport03 udp4-multi-diffport03
+udp4-multi-diffport04 udp4-multi-diffport04
+udp4-multi-diffport05 udp4-multi-diffport05
+udp4-multi-diffport06 udp4-multi-diffport06
+udp4-multi-diffport07 udp4-multi-diffport07
+
+udp6-multi-diffport01 udp6-multi-diffport01
+udp6-multi-diffport02 udp6-multi-diffport02
+udp6-multi-diffport03 udp6-multi-diffport03
+udp6-multi-diffport04 udp6-multi-diffport04
+udp6-multi-diffport05 udp6-multi-diffport05
+udp6-multi-diffport06 udp6-multi-diffport06
+udp6-multi-diffport07 udp6-multi-diffport07
+
+udp4-multi-diffip01 udp4-multi-diffip01
+udp4-multi-diffip02 udp4-multi-diffip02
+udp4-multi-diffip03 udp4-multi-diffip03
+udp4-multi-diffip04 udp4-multi-diffip04
+udp4-multi-diffip05 udp4-multi-diffip05
+udp4-multi-diffip06 udp4-multi-diffip06
+udp4-multi-diffip07 udp4-multi-diffip07
+
+udp6-multi-diffip01 udp6-multi-diffip01
+udp6-multi-diffip02 udp6-multi-diffip02
+udp6-multi-diffip03 udp6-multi-diffip03
+udp6-multi-diffip04 udp6-multi-diffip04
+udp6-multi-diffip05 udp6-multi-diffip05
+udp6-multi-diffip06 udp6-multi-diffip06
+udp6-multi-diffip07 udp6-multi-diffip07
+
+udp4-multi-diffnic01 udp4-multi-diffnic01
+udp4-multi-diffnic02 udp4-multi-diffnic02
+udp4-multi-diffnic03 udp4-multi-diffnic03
+udp4-multi-diffnic04 udp4-multi-diffnic04
+udp4-multi-diffnic05 udp4-multi-diffnic05
+udp4-multi-diffnic06 udp4-multi-diffnic06
+udp4-multi-diffnic07 udp4-multi-diffnic07
+
+udp6-multi-diffnic01 udp6-multi-diffnic01
+udp6-multi-diffnic02 udp6-multi-diffnic02
+udp6-multi-diffnic03 udp6-multi-diffnic03
+udp6-multi-diffnic04 udp6-multi-diffnic04
+udp6-multi-diffnic05 udp6-multi-diffnic05
+udp6-multi-diffnic06 udp6-multi-diffnic06
+udp6-multi-diffnic07 udp6-multi-diffnic07

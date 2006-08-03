@@ -1,0 +1,29 @@
+#
+# Stress test for TCP/IP protocol stack (Multicast)
+#
+
+mcast4-grpope01 mcast4-grpope01
+mcast4-grpope02 mcast4-grpope02
+mcast4-grpope03 mcast4-grpope03
+mcast4-grpope04 mcast4-grpope04
+mcast4-pktfld01 mcast4-pktfld01
+mcast4-pktfld02 mcast4-pktfld02
+mcast4-queryfld01 mcast4-queryfld01
+mcast4-queryfld02 mcast4-queryfld02
+mcast4-queryfld03 mcast4-queryfld03
+mcast4-queryfld04 mcast4-queryfld04
+mcast4-queryfld05 mcast4-queryfld05
+mcast4-queryfld06 mcast4-queryfld06
+
+mcast6-grpope01 mcast6-grpope01
+mcast6-grpope02 mcast6-grpope02
+mcast6-grpope03 mcast6-grpope03
+mcast6-grpope04 mcast6-grpope04
+mcast6-pktfld01 mcast6-pktfld01
+mcast6-pktfld02 mcast6-pktfld02
+mcast6-queryfld01 mcast6-queryfld01
+mcast6-queryfld02 mcast6-queryfld02
+mcast6-queryfld03 mcast6-queryfld03
+mcast6-queryfld04 mcast6-queryfld04
+mcast6-queryfld05 mcast6-queryfld05
+mcast6-queryfld06 mcast6-queryfld06
