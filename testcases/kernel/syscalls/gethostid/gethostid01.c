@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.16 2006/05/26 06:26:39 vapier Exp $ */
+/* $Id: gethostid01.c,v 1.17 2006/08/03 05:21:24 mreed10 Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -183,6 +183,11 @@ main(int ac, char **av)
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 	    continue;	/* next loop for MTKERNEL */
 	}
+#ifdef UCLINUX
+	sprintf(hostid, "%lx", TEST_RETURN);
+#else
+ 	sprintf(hostid, "%0.8lx", TEST_RETURN);
+#endif
 	sprintf(hostid, "%0.8lx", TEST_RETURN);
 
 	/***************************************************************

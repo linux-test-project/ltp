@@ -65,9 +65,10 @@ struct test_case_t {
 	struct rlimit *rlim;
 	int error;
 } TC[] = {
+#if !defined(UCLINUX)
 	/* rlim points outside the process address space - EFAULT */
 	{RLIMIT_NOFILE, (void *)-1, EFAULT},
-
+#endif
 	/* the resource is invalid - EINVAL */
 	{-1, &rlim, EINVAL},
 

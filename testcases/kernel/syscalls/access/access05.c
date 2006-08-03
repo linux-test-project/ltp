@@ -260,7 +260,12 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+
+#if !defined(UCLINUX)
+	Test_cases[5].pathname = bad_addr;
+#else
 	Test_cases[4].pathname = bad_addr;
+#endif
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

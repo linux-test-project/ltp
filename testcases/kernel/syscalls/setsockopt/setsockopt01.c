@@ -89,9 +89,11 @@ struct test_case_t {		/* test case structure */
 	{ PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, &optval,
 		sizeof(optval), (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		ENOTSOCK, setup0, cleanup0, "bad file descriptor" },
+#if !defined(UCLINUX)
 	{ PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, 0,
 		sizeof(optval), (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		EFAULT, setup1, cleanup1, "invalid option buffer" },
+#endif
 	{ PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, &optval, 0,
 		(struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		EINVAL, setup1, cleanup1, "invalid optlen" },

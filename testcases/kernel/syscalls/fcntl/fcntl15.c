@@ -201,7 +201,7 @@ void dochild1_uc()
 int dofork(int file_flag, int file_mode)
 {
 	/* create child process */
-	if ((child1 = fork()) < 0) {
+	if ((child1 = FORK_OR_VFORK()) < 0) {
 		perror("Fork failure");
 		return(1);
 	}
@@ -466,7 +466,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	}
 
 	/* create child process */
-	if ((child2 = fork()) < 0) {
+	if ((child2 = FORK_OR_VFORK()) < 0) {	
 		perror("Fork failure");
 		tst_rmdir();
 		return(1);
