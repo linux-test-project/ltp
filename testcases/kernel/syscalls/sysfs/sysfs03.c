@@ -81,12 +81,6 @@ char *TCID = "sysfs03";	/* Test program identifier.    */
 int TST_TOTAL = 1;	/* Total number of test cases. */
 extern int Tst_count;	/* Test Case counter for tst_* routines */
 
-#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__) || defined (__x86_64__)
-#define sysfs(arg1) syscall(__NR_sysfs, arg1)
-#else
-_syscall1(long, sysfs, int, option);
-#endif
-
 int
 main(int ac, char **av)
 {
@@ -109,7 +103,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		TEST(sysfs(3));
+		TEST(syscall(__NR_sysfs, 3));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {

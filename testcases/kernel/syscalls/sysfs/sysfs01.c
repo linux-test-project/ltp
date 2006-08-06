@@ -83,12 +83,6 @@ char *TCID = "sysfs01";	/* Test program identifier.    */
 int TST_TOTAL = 1;	/* Total number of test cases. */
 extern int Tst_count;	/* Test Case counter for tst_* routines */
 
-#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__) || defined (__x86_64__)
-#define sysfs(arg1, arg2) syscall(__NR_sysfs, arg1, arg2)
-#else
-_syscall2(long, sysfs, int, option, const char*, fsname);
-#endif
-
 int
 main(int ac, char **av)
 {
@@ -112,7 +106,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*option 1, buf holds fs name */
-		TEST(sysfs(1, "ext2"));
+		TEST(syscall(__NR_sysfs, 1, "ext2"));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {

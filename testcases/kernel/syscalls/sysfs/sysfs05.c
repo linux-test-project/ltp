@@ -81,12 +81,6 @@
 static void setup();
 static void cleanup();
 
-#if defined(__ia64__) || defined(__powerpc__) || defined(__i386__) || defined(__s390__) || defined(__s390x__) || defined (__x86_64__)
-#define sysfs(arg1, arg2) syscall(__NR_sysfs, arg1, arg2)
-#else
-_syscall2(long, sysfs, int, option, const char*, fsname);
-#endif
-
 char *TCID = "sysfs05";		/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -127,7 +121,7 @@ main(int ac, char **av)
 
 			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
-			TEST(sysfs(option[i], fsname[i]));
+			TEST(syscall(__NR_sysfs, option[i], fsname[i]));
 
 			/* check return code */
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
