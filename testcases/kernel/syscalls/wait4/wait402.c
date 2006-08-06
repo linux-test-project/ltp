@@ -62,31 +62,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- *  * When attempting to build on SUSE 10, the make fails trying to compile
- *   * because CONFIG_BASE_SMALL is undefined.
- *    */
-#ifndef CONFIG_BASE_SMALL
-#define CONFIG_BASE_SMALL 0
-#endif
-
-/*
- * See the Makefile for comments about the following preprocessor code.
- */
-#if !defined (__powerpc__) && !defined(__i386__) && !defined(__s390__) && !defined(__s390x__) && !defined (__x86_64__)
-#ifndef _LTP_TASKS_H
- #include <linux/threads.h>	/* for PID_MAX value - new */
- #else
- #include <linux/tasks.h>	/* for PID_MAX value - old */
- #endif
-#endif
-/*
- * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
- */
-#ifndef PID_MAX
-#define PID_MAX 0x8000
-#endif
-
 void cleanup(void);
 void setup(void);
 
@@ -96,17 +71,31 @@ extern int Tst_count;
 
 int exp_enos[] = {10, 0};
 
+/* Get the max number of message queues allowed on system */
+static long get_pid_max()
+{
+	FILE *fp;
+	char buff[512];
+
+	/* Get the max number of message queues allowed on system */
+	fp = fopen("/proc/sys/kernel/pid_max", "r");
+	if (fp == NULL)
+		tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/pid_max");
+	if (!fgets(buff, sizeof(buff), fp))
+		tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/pid_max");
+	fclose(fp);
+
+	return atol(buff);
+}
+
+
 int
 main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid;
-#ifdef PID_MAX_DEFAULT
-	pid_t epid = PID_MAX_DEFAULT + 1;
-#elif defined(PID_MAX)
-	pid_t epid = PID_MAX + 1;
-#endif
+	pid_t epid = get_pid_max() + 1;
 
 	int status = 1;
 	struct rusage *rusage=NULL;
