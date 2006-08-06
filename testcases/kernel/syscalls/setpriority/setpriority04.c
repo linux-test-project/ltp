@@ -58,32 +58,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-/*
- *  * When attempting to build on SUSE 10, the make fails trying to compile
- *   * because CONFIG_BASE_SMALL is undefined.
- *    */
-#ifndef CONFIG_BASE_SMALL
-#define CONFIG_BASE_SMALL 0
-#endif
-
-/*
- * See the Makefile for comments about the following preprocessor code.
- */
-#if !defined (__powerpc__) && !defined(__s390__) && !defined (__s390x__) && !defined (__i386__) && !defined (__x86_64__) 
-#ifndef _LTP_TASKS_H
- #include <linux/threads.h>     /* for PID_MAX value - new */
- #else
- #include <linux/tasks.h>       /* for PID_MAX value - old */
- #endif
-#endif
-/*
- * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
- */
-#ifndef PID_MAX
-#define PID_MAX 0x8000
-#endif
-
-
 void cleanup(void);
 void setup(void);
 
@@ -93,11 +67,29 @@ extern int Tst_count;
 
 int exp_enos[] = {ESRCH, 0};
 
+/* Get the max number of message queues allowed on system */
+static long get_pid_max()
+{
+	FILE *fp;
+	char buff[512];
+
+	/* Get the max number of message queues allowed on system */
+	fp = fopen("/proc/sys/kernel/pid_max", "r");
+	if (fp == NULL)
+		tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/pid_max");
+	if (!fgets(buff, sizeof(buff), fp))
+		tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/pid_max");
+	fclose(fp);
+
+	return atol(buff);
+}
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int new_val = 2;
+	int pid_max = get_pid_max();
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -118,15 +110,10 @@ int main(int ac, char **av)
 		 */
 
 		/* call the system call with the TEST() macro */
-#ifdef PID_MAX_DEFAULT
-		TEST(setpriority(PRIO_PROCESS, PID_MAX_DEFAULT + 1, new_val));
-#elif defined(PID_MAX)
-		TEST(setpriority(PRIO_PROCESS, PID_MAX + 1, new_val));
-#endif
-	
+		TEST(setpriority(PRIO_PROCESS, pid_max + 1, new_val));
 	
 		if (TEST_RETURN == 0) {
-	                tst_resm(TFAIL, "call failed to produce expected error "
+			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
@@ -150,15 +137,13 @@ int main(int ac, char **av)
 
 	/*NOTREACHED*/
 
-  return(0);
-
+	return(0);
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -174,8 +159,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
