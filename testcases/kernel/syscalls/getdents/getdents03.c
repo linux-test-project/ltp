@@ -76,10 +76,10 @@ int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of expected errnos */
 #ifndef __i386__
 int main()
 {
-        tst_resm(TINFO, "This test includes x86 asm and will not work on "
-                        "this machine");
-        tst_exit();
-        return(0);
+	tst_resm(TINFO, "This test includes x86 asm and will not work on "
+	                "this machine");
+	tst_exit();
+	return(0);
 }
 #else
 
