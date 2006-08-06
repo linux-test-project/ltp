@@ -61,7 +61,6 @@ void setup(void);
 void cleanup(void);
 
 char *TCID = "open08";
-int TST_TOTAL = 6;
 extern int Tst_count;
 
 char nobody_uid[] = "nobody";
@@ -87,6 +86,8 @@ struct test_case_t {
 	{fname, O_WRONLY, EACCES},
 	{(char *)-1, O_CREAT, EFAULT}
 };
+
+int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
 int main(int ac, char **av)
 {

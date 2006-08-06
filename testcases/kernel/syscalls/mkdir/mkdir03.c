@@ -85,7 +85,6 @@ void setup5();
 #define NAMELEN		50
 
 char *TCID = "mkdir03";           /* Test program identifier.    */
-int TST_TOTAL = 5;                /* Total number of test cases. */
 int fileHandle = 0;
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
@@ -123,6 +122,8 @@ struct test_case_t {
 	 */
         { tstdir5, PERMS, ENOTDIR, setup5 }
 };
+
+int TST_TOTAL = sizeof(TC)/sizeof(TC[0]); 
 
 int
 main(int ac, char **av)
