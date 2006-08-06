@@ -85,7 +85,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/swap.h>
-#include <asm/page.h>
 #ifdef OLDER_DISTRO_RELEASE
 #include <linux/swap.h>
 #endif
