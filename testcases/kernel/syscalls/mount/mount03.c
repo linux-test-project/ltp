@@ -78,6 +78,10 @@
  *	syscall is not supposed to run in parallel.
  *****************************************************************************/
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
 #include <errno.h>
 #include <sys/mount.h>
 #include <sys/types.h>
@@ -85,6 +89,7 @@
 #include <sys/wait.h>
 #include <pwd.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
