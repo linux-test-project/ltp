@@ -23,10 +23,11 @@
  * However, I am not about to post a copy of anything licensed by AT&T.
  */
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*LINTLIBRARY*/
-#define NULL	0
-#define EOF	(-1)
 #define ERR(s, c)	if(opterr){\
 	extern int write();\
 	char errbuf[2];\
@@ -34,8 +35,6 @@
 	(void) write(2, argv[0], (unsigned)strlen(argv[0]));\
 	(void) write(2, s, (unsigned)strlen(s));\
 	(void) write(2, errbuf, 2);}
-
-#include <string.h>
 
 int	opterr = 1;
 int	optind = 1;
@@ -92,25 +91,20 @@ char	**argv, *opts;
 	return(c);
 }
 
-#include	<stdio.h>
-
-main(ac, av)
-char	**av;
+int main(int argc, char *argv[])
 {
 	register int	i;
 	int	first = 1;
 	char	buf[BUFSIZ];
 	char	line[BUFSIZ];
-	extern char	*optarg;
-	extern int	optind;
 
-	if (ac == 1) {
+	if (argc == 1) {
 		fprintf(stderr, "usage:  getopt legal-args $*\n");
 		exit(2);
 	}
 
 	line[0] = '\0';
-	while ((i = nfs_getopt(ac - 1, &av[1], av[1])) != EOF) {
+	while ((i = nfs_getopt(argc - 1, &argv[1], argv[1])) != EOF) {
 		if (i == '?')
 			exit(2);
 
@@ -133,8 +127,8 @@ char	**av;
 		strcat(line, " --");
 
 	optind++;
-	for (; optind < ac; optind++) {
-		sprintf(buf, " %s", av[optind]);
+	for (; optind < argc; optind++) {
+		sprintf(buf, " %s", argv[optind]);
 		strcat(line, buf);
 	}
 	printf("%s\n", line);

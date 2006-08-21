@@ -8,13 +8,12 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-main(argc, argv)
-	int argc;
-	char **argv;
+int main(int argc, char *argv[])
 {
 	char *comm;
-	extern char *getenv();
 
 	if (argc > 1 && strcmp(argv[1], "-u") == 0) {
 		if ((comm = getenv("UMOUNT")) != NULL)
@@ -28,10 +27,10 @@ main(argc, argv)
 			*argv = "/etc/mount";
 	}
 
-	(void)setuid(0);
+	setuid(0);
 
-	(void)execv(*argv, argv);
+	execv(*argv, argv);
 
-	exit(1);
+	return 1;
 	/* NOTREACHED */
 }
