@@ -115,8 +115,8 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EPERM) {
-				tst_resm(TFAIL, "Expected EPERM, got %d",
-					 TEST_ERRNO);
+				tst_resm(TFAIL, "Expected EPERM (%d), got %d: %s",
+					 EPERM, TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "Got expected EPERM error");
 			}
