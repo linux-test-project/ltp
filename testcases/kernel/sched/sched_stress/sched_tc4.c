@@ -150,7 +150,7 @@ int main (int argc, char **argv)
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority_type, "fixed")) {
-#ifndef _LINUX
+#ifndef __linux__
                 if (setpri (0, DEFAULT_PRIORITY) < 0)
                         sys_error ("setpri failed", __FILE__, __LINE__);
 #else
@@ -205,7 +205,7 @@ void read_raw_device()
 	int	fd;                        /* file descriptor */
 	int	i;                         /* loop counter */
 	int	blocks=0;                    /* number of blocks read */
-#ifndef _LINUX
+#ifndef __linux__
 	static char   raw_dev[16] = "/dev/hd2";  /* name of raw device file */
 #else
 	static char   raw_dev[16];		/* name of raw device file  */

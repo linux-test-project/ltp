@@ -146,7 +146,7 @@ int main (int argc, char **argv)
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority, "fixed")) {
-#ifndef _LINUX
+#ifndef __linux__
                 if (setpri (0, DEFAULT_PRIORITY) < 0)
                         sys_error ("setpri failed", __FILE__, __LINE__);
 #else

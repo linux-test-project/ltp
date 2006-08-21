@@ -156,7 +156,7 @@ int main (int argc, char **argv)
 	clock_t	start_time;		/* start & stop times */
 	clock_t	stop_time;
 	float	elapsed_time;
-#ifdef _LINUX
+#ifdef __linux__
 	time_t  timer_info;	
 #else
 	struct tms timer_info;		/* time accounting info */
@@ -180,7 +180,7 @@ int main (int argc, char **argv)
 
 	/* Adjust the priority of this process if the real time flag is set */
 	if (!strcmp (priority_type, "fixed")) {
-#ifndef _LINUX
+#ifndef __linux__
                 if (setpri (0, DEFAULT_PRIORITY) < 0)
                         sys_error ("setpri failed", __FILE__, __LINE__);
 #else
@@ -453,7 +453,7 @@ int lock_error (int fd, char *file)
 	{
 		case EACCES:                       /* access not allowed */
 			fcntl(fd,F_GETLK,flock_ptr);
-#ifndef _LINUX
+#ifndef __linux__
 			printf ("ERROR: lock exists - nid: %lX pid: %ld\n",
 				flock_ptr->l_sysid, flock_ptr->l_pid);
 #else
@@ -464,7 +464,7 @@ int lock_error (int fd, char *file)
 		/* 
 		 * This was a DS error code, and DS does not exist V3.1
 		 */
-#ifndef _LINUX
+#ifndef __linux__
 		case EDIST:	/* DS file server blocking requests */
 			printf ("ERROR: errno == EDIST\n");
 			printf ("The server has blocked new inbound requests\n");

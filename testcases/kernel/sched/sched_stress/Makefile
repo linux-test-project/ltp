@@ -1,4 +1,4 @@
-CFLAGS += -O -g -D_LINUX -Wall
+CFLAGS += -Wall
 
 SRCS=$(wildcard *_tc*.c)
 TARGETS=sched_driver sched_tc0 sched_tc1 sched_tc2 sched_tc3 sched_tc4 sched_tc5 sched_tc6 
