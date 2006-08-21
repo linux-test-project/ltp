@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/sh
 #
 #   Copyright (c) International Business Machines  Corp., 2001
 #
@@ -25,12 +25,22 @@
 #
 ############################################################################
 
-my $file = 'sched_datafile';
-my $size = 1200010;
+file=$1
+size=$2
 
-unless (-f $file) {
-	open(DATAFILE, ">$file") or die "$0: could not create $file: $!\n";
-	print DATAFILE 'A' x $size;
-	close(DATAFILE);
-	chmod 0666, $file;
-}
+if [ -z "$1" ] || [ -z "$2" ] ; then
+	echo "Usage: make-file.sh <file> <size in bytes>"
+	exit 1
+fi
+
+if [ -e $file ] ; then
+	exit 0
+fi
+
+if ! perl -e "print 'A' x $size" > $file 2> /dev/null ; then
+	if ! awk 'BEGIN { cnt='$size'; while (cnt--) printf "A" }' > $file 2> /dev/null ; then
+		( while ((size--)) ; do echo -n A ; done ) > $file
+	fi
+fi
+
+chmod 666 $file

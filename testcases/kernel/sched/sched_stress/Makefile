@@ -6,7 +6,7 @@ TARGETS=sched_driver sched_tc0 sched_tc1 sched_tc2 sched_tc3 sched_tc4 sched_tc5
 all: $(TARGETS) sched_datafile
 
 sched_datafile:
-	./generate.sh
+	../../../../tools/make-file.sh sched_datafile 1200010
 
 sched.o: sched.h sched.c
 
