@@ -1,4 +1,0 @@
-#!/bin/bash
-set -x
-cvs add `find . -type d` 
-cvs add `find . -not -type d | egrep -v cvs`
