@@ -181,7 +181,7 @@ int num_nodes( int b, int d )
  * Register the child with the parent and then wait for all of the children
  * at the same level to register also.  Return when everything is synched up.
  *--------------------------------------------------------------------------------*/
-int synchronize_children( c_info *parent ) 
+int synchronize_children( c_info *parent )
 {
 	int		  my_index, rc;
 	c_info		  *info_p;
@@ -314,7 +314,7 @@ int synchronize_children( c_info *parent )
  *
  * Do it.
  *--------------------------------------------------------------------------------*/
-void *doit( void *param ) 
+void *doit( void *param )
 {
         c_info *parent  = (c_info *) param;
 	int		rc, child, my_index;
@@ -357,8 +357,8 @@ void *doit( void *param )
 	    fflush( stdout );
 	}
 
-	if ( cdepth <= depth ) 
-	{ 
+	if ( cdepth <= depth )
+	{
 	    /* Since the tree is not yet complete (it is not yet tall enough),
 	     * we need to create another level of children.  */
 
@@ -494,7 +494,7 @@ void *doit( void *param )
 /*--------------------------------------------------------------------------------* 
  * main
  *--------------------------------------------------------------------------------*/
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 {
 	int		rc, ind, total;
 	pthread_t	root_thread;
@@ -543,15 +543,15 @@ int main( int argc, char *argv[] )
 			testexit( 11 );
 		}
 		memset( child_info[ind].threads, 0x00, breadth * sizeof(pthread_t) );
-		
+
 		if ( (child_info[ind].child_ptrs =
 		    (c_info **)malloc( breadth * sizeof(c_info *) )) == NULL ) {
 			perror( "malloc child_ptrs" );
 			testexit( 12 );
 		}
-		memset( child_info[ind].child_ptrs, 0x00, 
+		memset( child_info[ind].child_ptrs, 0x00,
 		    breadth * sizeof(c_info *) );
-		
+
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex, NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
 			    strerror(rc) );
@@ -563,7 +563,7 @@ int main( int argc, char *argv[] )
 			    strerror(rc) );
 			testexit( 14 );
 		}
-		
+
 		if ((rc = pthread_cond_init(&child_info[ind].child_condvar, NULL))) {
 			fprintf( stderr,
 			    "pthread_cond_init child_condvar: %s\n",

@@ -129,7 +129,7 @@ static void	parse_args( int argc, char *argv[] )
 	}
 
 }
-
+
 /*
  * num_nodes
  *
@@ -153,7 +153,7 @@ int	num_nodes( int b, int d )
 
 	return( sum );
 }
-
+
 /*
  * synchronize_children
  *
@@ -303,7 +303,7 @@ int	synchronize_children( c_info *parent ) {
 	return( my_index );
 
 }
-
+
 /*
  * doit
  *
@@ -356,7 +356,7 @@ int	doit( c_info *parent ) {
 	    fflush( stdout );
 	}
 
-	if ( cdepth <= depth ) { 
+	if ( cdepth <= depth ) {
 
 	    /*
 	     * Since the tree is not yet complete (it is not yet tall enough),
@@ -506,9 +506,9 @@ int	doit( c_info *parent ) {
 	fflush( stdout );
 
 	pthread_exit( 0 );
-		
+
 }
-
+
 /*
  * main
  */
@@ -566,15 +566,15 @@ int	main( int argc, char *argv[] ) {
 			testexit( 11 );
 		}
 		memset( child_info[ind].threads, 0x00, breadth * sizeof(pthread_t) );
-		
+
 		if ( (child_info[ind].child_ptrs =
 		    (c_info **)malloc( breadth * sizeof(c_info *) )) == NULL ) {
 			perror( "malloc child_ptrs" );
 			testexit( 12 );
 		}
-		memset( child_info[ind].child_ptrs, 0x00, 
+		memset( child_info[ind].child_ptrs, 0x00,
 		    breadth * sizeof(c_info *) );
-		
+
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex,
 		    NULL))) {
 			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
@@ -588,7 +588,7 @@ int	main( int argc, char *argv[] ) {
 			    strerror(rc) );
 			testexit( 14 );
 		}
-		
+
 		if ((rc = pthread_cond_init(&child_info[ind].child_condvar,
 		    NULL))) {
 			fprintf( stderr,

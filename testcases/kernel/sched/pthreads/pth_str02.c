@@ -89,7 +89,7 @@ int main (int argc, char **argv)
         } else {
 	  printf ("\n    Creating %d threads\n\n", num_threads);
         }
-	thread (0);	
+	thread (0);
 
 	/* 
 	 * Program completed successfully...
