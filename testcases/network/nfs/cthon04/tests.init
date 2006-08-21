@@ -1,4 +1,6 @@
-
+# Note: this file is used both in Makefiles and in shell scripts,
+#       so be careful how you set things
+#
 #
 #       @(#)tests.init	1.26 2003/12/30 Connectathon testsuite
 #
