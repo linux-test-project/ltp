@@ -8,7 +8,7 @@ TARGETS=$(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 generate:
-	./generate.sh
+	../../generate.sh
 
 install: generate
 	ln -f sendfile01 ../../../bin

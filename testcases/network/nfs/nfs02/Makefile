@@ -4,8 +4,8 @@ install: generate
 	ln -f nfs02 ../../../bin
 
 generate:
-	./generate.sh
+	../../generate.sh
 
 clean:
-	rm -rf dat
+	rm -rf datafiles
 	rm -f ../../../bin/nfs02

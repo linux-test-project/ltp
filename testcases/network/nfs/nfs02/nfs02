@@ -43,7 +43,7 @@ $trace_logic
 
 TC=nfs02
 TCbin=${TCbin:=`pwd`}
-TCdat=${TCdat:=$TCbin/dat}
+TCdat=${TCdat:=$TCbin/datafiles}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
 
@@ -124,11 +124,11 @@ do_test1()
 {
 $trace_logic 
   echo "do_test1 $TC "
-  cp $TCdat/maxsize.fil $TCtmp &
+  cp $TCdat/ascii.jmb $TCtmp &
   wait $!
-  echo "compare both maxsize.fils"
-  diff $TCtmp/maxsize.fil $TCdat/maxsize.fil 
-  [ $? -eq 0 ] || end_testcase "'diff' of maxsize.fil FAILED" 
+  echo "compare both ascii.jmbs"
+  diff $TCtmp/ascii.jmb $TCdat/ascii.jmb 
+  [ $? -eq 0 ] || end_testcase "'diff' of ascii.jmb FAILED" 
 
 }
 
@@ -142,30 +142,30 @@ do_test2()
 {
 $trace_logic
    echo "do_test2 $TC "
-   cp $TCdat/smallsize.fil $TCtmp &
+   cp $TCdat/ascii.sm $TCtmp &
    wait $!
-   cp $TCdat/medsize.fil $TCtmp &
+   cp $TCdat/ascii.med $TCtmp &
    wait $!
-   cp $TCdat/largesize.fil $TCtmp &
+   cp $TCdat/ascii.lg $TCtmp &
    wait $!
 
    #small file
-   cp $TCtmp/smallsize.fil $TCtmp/smallsize.filcp &
+   cp $TCtmp/ascii.sm $TCtmp/ascii.smcp &
    wait $!
-   diff $TCtmp/smallsize.filcp $TCdat/smallsize.fil
-   [ $? -eq 0 ] || end_testcase "'diff' of smallsize.fil FAILED" 
+   diff $TCtmp/ascii.smcp $TCdat/ascii.sm
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.sm FAILED" 
 
    #medium file
-   cp $TCtmp/medsize.fil $TCtmp/medsize.filcp &
+   cp $TCtmp/ascii.med $TCtmp/ascii.medcp &
    wait $!
-   diff $TCtmp/medsize.filcp $TCdat/medsize.fil
-   [ $? -eq 0 ] || end_testcase "'diff' of medsize.fil FAILED" 
+   diff $TCtmp/ascii.medcp $TCdat/ascii.med
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.med FAILED" 
 
    #large file
-   cp $TCtmp/largesize.fil $TCtmp/largesize.filcp &
+   cp $TCtmp/ascii.lg $TCtmp/ascii.lgcp &
    wait $!
-   diff $TCtmp/largesize.filcp $TCdat/largesize.fil
-   [ $? -eq 0 ] || end_testcase "'diff' of largesize.fil FAILED" 
+   diff $TCtmp/ascii.lgcp $TCdat/ascii.lg
+   [ $? -eq 0 ] || end_testcase "'diff' of ascii.lg FAILED" 
 
 }
 
@@ -179,11 +179,11 @@ do_test3()
 {
 $trace_logic
    echo "do_test3 $TC "
-   chmod a-w $TCtmp/smallsize.fil &
+   chmod a-w $TCtmp/ascii.sm &
    wait $!
-   ls -l $TCtmp/smallsize.fil | grep "r--" 
-   [ $? -eq 0 ] || end_testcase "Removal of write permissions not honored on smallsize.fil"
-   chmod a+w $TCtmp/smallsize.fil
+   ls -l $TCtmp/ascii.sm | grep "r--" 
+   [ $? -eq 0 ] || end_testcase "Removal of write permissions not honored on ascii.sm"
+   chmod a+w $TCtmp/ascii.sm
 }
 
 #---------------------------------------------------------------------#

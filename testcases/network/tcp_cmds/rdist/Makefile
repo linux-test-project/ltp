@@ -1,7 +1,7 @@
 all:
 
 generate:
-	./generate.sh
+	../../generate.sh
 
 install: generate
 	ln -f rdist01 ../../../bin

@@ -1,5 +1,5 @@
 generate:
-	./generate.sh
+	../../generate.sh
 
 all: generate
 

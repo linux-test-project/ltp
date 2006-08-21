@@ -1,7 +1,7 @@
 all:
 
 generate:
-	./generate.sh
+	../../generate.sh
 
 install: generate
 	ln -f rcp01 ../../../bin
