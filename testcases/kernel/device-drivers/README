@@ -1,18 +1,21 @@
 Device Driver Testcases:
 
-These tests should always be run individually and never concurently. Since these
-test will manipulate devices and may leave them in an unstable state, these tests
-should not be run when other important system tasks are being performed. These tests
-shouldn't be included in any system wide test scripts as they may corrupt the test data from those
-tests.
+These tests should always be run individually and never concurrently.  Since
+these test will manipulate devices and may leave them in an unstable state, 
+these tests should not be run when other important system tasks are being 
+performed.  These tests shouldn't be included in any system wide test scripts 
+as they may corrupt the test data from those tests.
 
 To build and execute these tests:
 
-1) change into each of the directories of the test you want to run and run "make".
-2) run the command "insmod on the .o file in the kernel space directory.
-Note: If the insmod command fails with a QM_MODULE error, the module functions are downlevel and need to be upgraded.
+1) change into each of the directories you want to test and run "make".
+2) run the command 'insmod' on the .o file in the kernel space directory.
+Note: If the insmod command fails with a QM_MODULE error, the module functions
+      are outdated and need to be upgraded.
 3) Run "lsmod" to make sure the modules is loaded.
-4) Change to the user space program directory and run the *.sh file or the program executable.
+4) Change to the user space program directory and run the *.sh file or the
+   program executable.
 5) The results should be output to the display.
-6) These tests will complete very quickly, usually in a few seconds so if the system doesn't return from the test it's probably 
-hung and a re-boot may be required.
+6) These tests will complete very quickly, usually in a few seconds so if the
+   system doesn't return from the test it's probably hung and a re-boot may be
+   required.
