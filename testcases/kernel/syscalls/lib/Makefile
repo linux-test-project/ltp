@@ -13,18 +13,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description files for compiling the		  #
-#		  testsuite library routines.				  #
-###########################################################################
 DIR=lib
-CFLAGS+=-I../../../../include -g
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=	$(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
+CFLAGS += -I../../../../include -Wall
 SRC=libtestsuite.c
 OBJS=$(SRC:.c=.o)
 MAINS=../libtestsuite.a
@@ -37,4 +30,4 @@ all: ../libtestsuite.a
 install:
 
 clean:
-	/bin/rm -rf $(OBJS) ../libtestsuite.a
+	rm -f $(OBJS) ../libtestsuite.a

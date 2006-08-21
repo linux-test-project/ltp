@@ -13,20 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-CFLAGS+=	-I../../../../include -Wall
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=	$(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
-LOADLIBES+=	-L../../../../lib -lltp -L.. -ltestsuite
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
+LDLIBS += -L.. -ltestsuite
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
@@ -35,5 +30,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-

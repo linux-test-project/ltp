@@ -13,25 +13,20 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
 NEEDSPECIAL:=$(shell echo MAX_SWAPFILES | $(CC) -E -xc -include linux/swap.h 2>/dev/null - | tail -n 1 | grep 32; echo $?)
 ifeq ($(strip $(NEEDSPECIAL)),)
 export CFLAGS+=-I../../../../include -g -Wall
 else
 export CFLAGS+=-I../../../../include -g -Wall -DOLDER_DISTRO_RELEASE
 endif
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
-LOADLIBES+=	-L../../../../lib -lltp 
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+LDLIBS+=	-L../../../../lib -lltp 
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
@@ -40,5 +35,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-

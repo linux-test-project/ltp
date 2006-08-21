@@ -13,29 +13,19 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-CFLAGS+=	-Wall -I../../../../include -D _GNU_SOURCE
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-LDLIBS+=		 -L../../../../lib -lltp
-LDLIBS+=		$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-$(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-
-install: all
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
+install:
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
-
-

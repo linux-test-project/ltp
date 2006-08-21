@@ -13,27 +13,20 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-CFLAGS+=	-I../../../../include  -Wall
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-LOADLIBES+=	-L../../../../lib -lltp
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-SRCS:=$(wildcard *.c)
-TARGETS:=$(patsubst %.c,%,$(SRCS))
-SCRIPTS:= syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
+SCRIPTS = syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
 
-all: $(TARGETS) 
+all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS) $(SCRIPTS) ; do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS) $(SCRIPTS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS) 
-
-
+	rm -f $(TARGETS)

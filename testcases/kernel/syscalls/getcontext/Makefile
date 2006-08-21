@@ -1,5 +1,5 @@
 #
-#  Copyright (c) International Business Machines  Corp., 2005
+#  Copyright (c) International Business Machines  Corp., 2001
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,18 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the getcontext(2) test.	  #
-###########################################################################
-CFLAGS+=	-I../../../../include
-LOADLIBES+=	-L../../../../lib -lltp
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 

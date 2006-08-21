@@ -13,33 +13,19 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the sendfile(2) tests.	  #
-###########################################################################
-CFLAGS+=        -I../../../../include -Wall
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-LDLIBS+=       -L../../../../lib -lltp
-LDLIBS+=	$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-DIR=sendfile
-MAINS=sendfile02 sendfile03
-SRCS=$(MAINS:=.c)
-OBJS=$(MAINS:=.o)
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
-all: $& $(MAINS)
-
-$(MAINS): $(SRCS)
-	 $(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-
-clean:
-	/bin/rm -rf $(OBJS) $(MAINS)
+all: $(TARGETS)
 
 install:
-	@set -e; for i in $(MAINS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
-strip_bin:
-	strip $(MAINS) > /dev/null 2>&1
+clean:
+	rm -f $(TARGETS)

@@ -13,33 +13,24 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-CFLAGS+=	-I../../../../include -D_GNU_SOURCE -Wall
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-LDLIBS+=		 -L../../../../lib -lltp
-LDLIBS+=		$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-SRCS=$(wildcard fchmod*.c) change_owner.c
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
-change_owner.mode: 
-	@/bin/sh ./change_owner.mode.sh
-
-$(TARGETS): $(SRCS)
-	$(CC) -o $@ $@.c $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-
-
 install: change_owner.mode
-	@set -e; for i in $(TARGETS) change_owner; do ln -f $$i ../../../bin/$$i ; done
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
-	rm -f $(TARGETS) change_owner
+	rm -f $(TARGETS)
+
+change_owner.mode: 
+	@/bin/sh ./change_owner.mode.sh
 
 .PHONY: change_owner.mode

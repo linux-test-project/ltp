@@ -13,31 +13,21 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-#########################################################################
-# name of file	: Makefile						#
-# description	: make(1) description file to build a library for the 	#
-#		  common routines in the ipc(2) tests.			#
-#########################################################################
-SRCS=libipc.c
-OBJS=$(SRCS:.c=.o)
-MAINS=../libipc.a
-CFLAGS+=-I../../../../../include -g -Wall
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-CFLAGS+=	$(if $(CONFIG_COLDFIRE),-D_USC_LIB_)
+SRCS   = libipc.c
+OBJS   = $(SRCS:.c=.o)
+LIBIPC = ../libipc.a
 
-all: ../libipc.a
+CFLAGS += -I../../../../../include -Wall
 
-../libipc.a: $(OBJS)
+all: $(LIBIPC)
+
+$(LIBIPC): $(OBJS)
 	$(AR) -rc $@ $(OBJS)
-
-$(OBJS):
-	$(CC) -c $(SRCS) $(CFLAGS)
 
 install:
 
 clean:
-	/bin/rm -rf $(OBJS) ../libipc.a
-
+	rm -f $(OBJS) $(LIBIPC)

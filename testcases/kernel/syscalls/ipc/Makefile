@@ -13,35 +13,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-#########################################################################
-# name of file	: Makefile						#
-# description	: make(1) description file for ipc(2) test directory.	#
-#########################################################################
-CFLAGS+=-I../../../../../include -g -Wall
-CFLAGS+=$(if $(UCLINUX),-DUCLINUX)
-LOADLIBES+=-L../../../../../lib -lltp
-LOADLIBES+=	$(if $(UCLINUX),-lc)
-IPCTESTS=msgctl msgget msgsnd msgrcv semget semctl semop shmat shmdt shmctl shmget
+SUBDIRS = $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
-all: $& $(IPCTESTS)
-	@set -e; for i in lib $(IPCTESTS); do \
-		$(MAKE) -C $$i  all; \
-	done
-
-clean:
-	@set -e; for i in lib $(IPCTESTS); do \
-		$(MAKE) -C $$i  clean; \
-	done
-
-install:
-	@set -e; for i in lib $(IPCTESTS); do \
-		$(MAKE) -C $$i  install; \
-	done
-
-strip_bin:
-	@set -e; for i in $(IPCTESTS); do \
-		$(MAKE) -C $$i  strip_bin; \
+all %::
+	@set -e; \
+	for i in $(SUBDIRS); do \
+		$(MAKE) -C $$i $@; \
 	done

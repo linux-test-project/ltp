@@ -13,16 +13,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
-###########################################################################
-
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 check_header = $(shell \
 	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
@@ -37,10 +32,8 @@ CFLAGS+=-I../../../../include -g -Wall
 else
 CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
 endif
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
 
-LOADLIBES+=	-L../../../../lib -lltp
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+LDLIBS += -L../../../../lib -lltp
 
 all: $(TARGETS)
 

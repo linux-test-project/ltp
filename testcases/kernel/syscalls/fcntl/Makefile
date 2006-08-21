@@ -13,30 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
-###########################################################################
-TOP=../../../..
-ifeq ($(shell uname -s),SunOS)
-CC=gcc -Wall
-endif
-ifeq ($(shell uname -s),HP-UX)
-CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
-endif
-CFLAGS+=	-I$(TOP)/include -D_GNU_SOURCE
-ifeq ($(shell uname -s),Linux)
-CFLAGS+= -Wall
-endif
-CFLAGS+=	$(if $(UCLINUX),-DUCLINUX)
-LOADLIBES+=	-L$(TOP)/lib/$(CCPU) -L$(TOP)/lib -lltp
-LOADLIBES+=	$(if $(UCLINUX),-lc)
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *.c)
+TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
@@ -45,5 +29,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-
