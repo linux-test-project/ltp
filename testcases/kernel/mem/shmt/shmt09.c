@@ -47,6 +47,9 @@
 
 #define K_1  1024
 
+#define SHMBYTES    (SHMLBA - 1)
+#define SHMALIGN(p) (((unsigned long)(p) + SHMBYTES) & ~SHMBYTES)
+
 /** LTP Port **/
 #include "test.h"
 #include "usctest.h"
@@ -144,13 +147,8 @@ int main()
 		tst_exit() ;
 	}
 
-#ifdef __mips__
-	vp = (void *) ((char *)sbrk(0) + 256 * K_1);
-#elif  __ia64__
-	vp = (void *) ((char *)sbrk(0) - 256 * K_1);
-#else
-	vp = (void *) ((char *)sbrk(0) + 4 * K_1);
-#endif
+	/* SHM_RND rounds vp on the nearest multiple of SHMLBA */
+	vp = (void *) SHMALIGN((char *)sbrk(0) + 1);
 	c3 = (char *) shmat(shmid, vp, SHM_RND);
 	if (c3 == (char *)-1) {
 		perror("shmat1");
