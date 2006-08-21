@@ -15,6 +15,8 @@ TESTS = tcp tcpd udp udpd dirdmp dirprt pmaptst pmapbrd
 #TESTS = tcp tcpd udp udpd dirprt pmaptst pmapbrd
 
 include ../tests.init
+CFLAGS := $(shell echo $(CFLAGS))
+LIBS := $(shell echo $(LIBS))
 
 all: $(TESTS)
 

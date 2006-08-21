@@ -8,6 +8,8 @@
 DESTDIR = /no/such/path
 
 include ../tests.init
+CFLAGS := $(shell echo $(CFLAGS))
+LIBS := $(shell echo $(LIBS))
 LOCKTESTS := $(shell echo $(LOCKTESTS))
 
 LIBS = -lm

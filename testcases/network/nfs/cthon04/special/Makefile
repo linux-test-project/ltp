@@ -17,6 +17,8 @@ SUBRS=../basic/subr.o
 DEPS=$(INCLUDES) $(SUBRS)
 
 include ../tests.init
+CFLAGS := $(shell echo $(CFLAGS))
+LIBS := $(shell echo $(LIBS))
 
 all: $(TESTS)
 	@chmod a+x runtests

@@ -16,6 +16,8 @@ DESTDIR = /no/such/path
 INCLUDES=../tests.h
 
 include ../tests.init
+CFLAGS := $(shell echo $(CFLAGS))
+LIBS := $(shell echo $(LIBS))
 
 all: origtests auxtests
 	@chmod a+x runtests

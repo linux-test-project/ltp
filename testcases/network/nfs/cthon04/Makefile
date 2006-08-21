@@ -12,6 +12,7 @@ COPYFILES=runtests tests.init server domount.c README READWIN.txt Testitems \
 	getopt.c tests.h unixdos.h
 
 include tests.init
+CFLAGS := $(shell echo $(CFLAGS))
 
 all: domount getopt
 	@set -e; for i in $(SUBDIRS) ; do $(MAKE) -C $$i all ; done
