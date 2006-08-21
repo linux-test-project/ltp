@@ -780,6 +780,10 @@ socketpair01 socketpair01
 
 sockioctl01 sockioctl01
 
+#splice test
+splice01 splice01
+tee01 tee01
+
 stat01 stat01
 stat02 stat02
 stat03 stat03
