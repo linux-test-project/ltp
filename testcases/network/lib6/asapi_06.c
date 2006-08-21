@@ -322,7 +322,7 @@ so_test(struct soent *psoe)
 		return;
 	}
 	valsize = psoe->so_valsize;
-	TEST(getsockopt(sr, SOL_IPV6, psoe->so_opt, &sobuf, &valsize))
+	TEST(getsockopt(sr, SOL_IPV6, psoe->so_opt, &sobuf, &valsize));
 	if (TEST_RETURN != 0) {
 		tst_resm(TBROK, "%s set-get: getsockopt: %s", psoe->so_tname,
 				strerror(errno));
