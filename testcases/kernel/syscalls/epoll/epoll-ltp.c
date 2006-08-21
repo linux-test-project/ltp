@@ -69,6 +69,11 @@
    Link against epoll and ltp (-lepoll -lltp)
 
 *******************************************************************************/
+
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -90,8 +95,11 @@
 #include <sys/select.h>
 #include <sys/wait.h>
 
-/* epoll-lib header */
-#include "epoll.h"
+#ifdef LTP_EPOLL_USE_LIB
+# include <epoll.h>
+#else
+# include <sys/epoll.h>
+#endif
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -419,14 +427,14 @@ int test_epoll_ctl (int epoll_fd)
 						   (EPOLLHUP * ((index & 0x10) >> 4)) |
 						   (EPOLLET  * ((index & 0x20) >> 5)));
   }
-  
+
   /* Get a pointer to an unaligned struct epoll_event */
   {
 	char* unalign_ptr = event_mem;
-	
-	unalign_ptr = unalign_ptr + ((((int)unalign_ptr) & 1)?0:1);
+
+	unalign_ptr = unalign_ptr + (((unsigned long)unalign_ptr & 1) ? 0 : 1);
 	unaligned_event_ptr = (struct epoll_event*)unalign_ptr;
-  }  
+  }
 
   /* One of the fds we want to test is the valid one */
   epoll_fds[0] = epoll_fd;
