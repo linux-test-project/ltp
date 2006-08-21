@@ -47,8 +47,8 @@ fi
 
 echo "****** Loading ACPI test module ******"
 
-/sbin/insmod ${LTPROOT}/LtpAcpiCmds.o
-/sbin/lsmod
+insmod ${LTPROOT}/LtpAcpiCmds.ko || insmod ${LTPROOT}/LtpAcpiCmds.o
+lsmod
 ${LTPROOT}/LtpAcpiMain
-/sbin/rmmod LtpAcpiCmds
+rmmod LtpAcpiCmds
   
