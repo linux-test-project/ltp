@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: clock_settime02 
- * 
+ *
+ *    TEST IDENTIFIER	: clock_settime02
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for clock_settime(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *     This is a Phase I test for the clock_settime(2) system call.
  *     It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Set the parameters of timespec struct
@@ -45,14 +45,14 @@
  *	 Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	 Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * clock_settime02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
- * 	-c n : Run n copies simultaneously. 
+ * 	-c n : Run n copies simultaneously.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -89,7 +89,7 @@ main(int ac, char **av)
 	struct timespec spec;	/* Used to specify time for test */
 
 	/* parse standard options */
-	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) != 
+	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -127,7 +127,7 @@ main(int ac, char **av)
 	/* Clean up and exit */
 	cleanup();
 
-	/* NOTREACHED */ 
+	/* NOTREACHED */
 	return 0;
 }
 

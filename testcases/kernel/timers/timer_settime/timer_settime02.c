@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: timer_settime02 
- * 
+ *
+ *    TEST IDENTIFIER	: timer_settime02
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for timer_settime(2)
- * 
+ *
  *    TEST CASE TOTAL	: 4
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *     This is a Phase I test for the timer_settime(2) system call.
  *     It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 setup individual test
@@ -45,14 +45,14 @@
  *	 Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	 Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * timer_settime02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
- * 	-c n : Run n copies simultaneously. 
+ * 	-c n : Run n copies simultaneously.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -91,7 +91,7 @@ main(int ac, char **av)
 	int lc, i;	/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != 
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -133,7 +133,7 @@ main(int ac, char **av)
 	/* Clean up and exit */
 	cleanup();
 
-	/* NOTREACHED */ 
+	/* NOTREACHED */
 	return 0;
 }
 
@@ -144,8 +144,8 @@ setup_test(int option)
 	struct timespec timenow;	/* Used to obtain current time */
 
 	switch (option) {
-		case 0: 
-			/* This is general initialization. 
+		case 0:
+			/* This is general initialization.
 			 * make old_setting NULL
 			 * make flags equal to zero
 			 * use one-shot timer
@@ -162,7 +162,7 @@ setup_test(int option)
 			 * This test case also takes care
 			 * of situation where the timerid is
 			 * already armed
-			 */  
+			 */
 			old_temp = &old_set;
 			break;
 		case 2:
@@ -171,9 +171,9 @@ setup_test(int option)
 		        new_set.it_value.tv_sec = 0;
 			break;
 		case 3:
-			/* Use TIMER_ABSTIME flag for setting 
+			/* Use TIMER_ABSTIME flag for setting
 			 * absolute time for timer
-			 */ 
+			 */
 			flag = TIMER_ABSTIME;
 			if (clock_gettime(CLOCK_REALTIME, &timenow) < 0) {
 				tst_resm(TWARN, "clock_gettime failed"

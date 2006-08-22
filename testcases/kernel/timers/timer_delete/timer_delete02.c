@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: timer_delete02 
- * 
+ *
+ *    TEST IDENTIFIER	: timer_delete02
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for timer_delete(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,26 +33,26 @@
  *    DESCRIPTION
  *     This is a Phase I test for the timer_delete(2) system call.
  *     It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Create a POSIX timer
- *	 Execute system call 
+ *	 Execute system call
  *	 Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	 Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * timer_delete02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
- * 	-c n : Run n copies simultaneously. 
+ * 	-c n : Run n copies simultaneously.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -88,7 +88,7 @@ main(int ac, char **av)
 	timer_t timer_id;
 
 	/* parse standard options */
-	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) != 
+	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -107,7 +107,7 @@ main(int ac, char **av)
 
 			/* If timer_create system call is not implemented
 			 * in the running kernel, this will fail with ENOSYS
-			 */ 
+			 */
 			Tst_count = TST_TOTAL;
 			perror("timer_create");
 			tst_brkm(TBROK, cleanup, "timer_delete can't be"
@@ -119,14 +119,14 @@ main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			/* If timer_delete system call is not implemented
 			 * in the running kernel, test will fail with ENOSYS
-			 */ 
+			 */
 			if (TEST_ERRNO == ENOSYS) {
 				Tst_count = TST_TOTAL;
 				perror("timer_delete");
 				tst_brkm(TBROK, cleanup, "");
-			}	
+			}
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "timer_delete(2) Failed and set errno" 
+			tst_resm(TFAIL, "timer_delete(2) Failed and set errno"
 					" to %d", TEST_ERRNO);
 		} else {
 			tst_resm(TPASS, "timer_delete(2) Passed");

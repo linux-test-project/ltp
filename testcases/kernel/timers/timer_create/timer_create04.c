@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: timer_create04 
- * 
+ *
+ *    TEST IDENTIFIER	: timer_create04
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions for
  *    			  timer_create(2)
- * 
+ *
  *    TEST CASE TOTAL	: 8
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,7 +38,7 @@
  * 	Setup:
  *	 Setup signal handling.
  *	 Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 For case 7 set event parameter as bad pointer
@@ -47,10 +47,10 @@
  *	 Check return code, if system call fails with errno == expected errno
  * 	 	Issue syscall passed with expected errno
  *	 Otherwise, Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	 Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * timer_create04 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
@@ -104,7 +104,7 @@ main(int ac, char **av)
 {
 	int lc, i;			/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	timer_t timer_id, *temp_id;	/* stores the returned timer_id */ 
+	timer_t timer_id, *temp_id;	/* stores the returned timer_id */
 	struct sigevent *temp_ev;	/* used for bad address test case */
 
 	clockid_t clocks[8] = {
@@ -141,7 +141,7 @@ main(int ac, char **av)
 
 			/* in 7th test case, make the timer_id bad pointer
 			 * in 8th test case, make the event bad pointer
-			 */ 
+			 */
 			if (i == 6) {
 				temp_id = (timer_t *) -1;
 			} else if (i == 7) {

@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: clock_gettime03 
- * 
+ *
+ *    TEST IDENTIFIER	: clock_gettime03
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions for
  *    			  clock_gettime(2)
- * 
+ *
  *    TEST CASE TOTAL	: 7
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,7 +38,7 @@
  * 	Setup:
  *	 Setup signal handling.
  *	 Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 If it is the first test case
@@ -48,10 +48,10 @@
  *	 Check return code, if system call fails with errno == expected errno
  * 	 	Issue syscall passed with expected errno
  *	 Otherwise, Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	 Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * clock_gettime03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
@@ -123,7 +123,7 @@ main(int ac, char **av)
 	}
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
-	
+
 	/* perform global setup for test */
 	setup();
 

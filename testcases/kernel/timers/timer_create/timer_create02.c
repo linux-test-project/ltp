@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: timer_create02 
- * 
+ *
+ *    TEST IDENTIFIER	: timer_create02
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for timer_create(2)
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *     This is a Phase I test for the timer_create(2) system call.
  *     It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Execute system call with different notification types for
@@ -45,14 +45,14 @@
  *	 Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	 Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * timer_create02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
- * 	-c n : Run n copies simultaneously. 
+ * 	-c n : Run n copies simultaneously.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -87,15 +87,15 @@ main(int ac, char **av)
 {
 	int lc, i;			/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	timer_t created_timer_id;	/* holds the returned timer_id */ 
+	timer_t created_timer_id;	/* holds the returned timer_id */
 	char *message[3] = {
-		"SIGEV_SIGNAL", 
-		"NULL", 
-		"SIGEV_NONE" 
+		"SIGEV_SIGNAL",
+		"NULL",
+		"SIGEV_NONE"
 	};
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != 
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
 			(char *) NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -112,7 +112,7 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			setup_test(i);
-			TEST(timer_create(CLOCK_REALTIME, &evp, 
+			TEST(timer_create(CLOCK_REALTIME, &evp,
 						&created_timer_id));
 
 			if (TEST_RETURN == -1) {
@@ -121,18 +121,18 @@ main(int ac, char **av)
 					 * 'remaining testcases broken' message
 					 * is not displayed even though we are
 					 * using tst_brkm function
-					 */ 
+					 */
 					Tst_count = TST_TOTAL;
 					perror("timer_create");
-					tst_brkm(TBROK, cleanup,""); 
+					tst_brkm(TBROK, cleanup,"");
 				}
 
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "timer_create(2) Failed and"
-						" set errno to %d", TEST_ERRNO);
+						" set errno to %d: %s", TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "timer_create(2) Passed for"
-						" notification type %s", 
+						" notification type %s",
 						message[i]);
 			}
 		}	/* End of TEST CASE LOOPING */
@@ -141,7 +141,7 @@ main(int ac, char **av)
 	/* Clean up and exit */
 	cleanup();
 
-	/* NOTREACHED */ 
+	/* NOTREACHED */
 	return 0;
 }
 

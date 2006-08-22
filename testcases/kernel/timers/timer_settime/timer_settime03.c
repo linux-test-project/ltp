@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: timer_settime03 
- * 
+ *
+ *    TEST IDENTIFIER	: timer_settime03
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions for
  *    			  timer_settime(2)
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,7 +38,7 @@
  * 	Setup:
  *	 Setup signal handling.
  *	 Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 setup the individual test.
@@ -46,10 +46,10 @@
  *	 Check return code, if system call fails with errno == expected errno
  * 	 	Issue syscall passed with expected errno
  *	 Otherwise, Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	 Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * timer_settime03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
@@ -125,7 +125,7 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* Set up individual tests */
-			setup_test(i); 
+			setup_test(i);
 			TEST(timer_settime(tim, 0, new_temp, old_temp));
 
 			if (TEST_ERRNO == ENOSYS) {

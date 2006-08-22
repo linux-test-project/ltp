@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: clock_settime03 
- * 
- *    EXECUTED BY	: root / superuser 
- * 
+ *
+ *    TEST IDENTIFIER	: clock_settime03
+ *
+ *    EXECUTED BY	: root / superuser
+ *
  *    TEST TITLE	: Test checking for basic error conditions for
  *    			  clock_settime(2)
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -39,22 +39,22 @@
  *	 Setup signal handling.
  *	 Pause for SIGUSR1 if option specified.
  *	 Setup the value for struct timespec variable
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 If it is the first test case
  *	 	make temp a bad pointer
  *	 If it is the last test case
- *	 	change the UID to non-previleged one.	
+ *	 	change the UID to non-previleged one.
  *	 Otherwise pass defined struct timespec variable to temp
  *	 Execute system call with invalid parameter
  *	 Check return code, if system call fails with errno == expected errno
  * 	 	Issue syscall passed with expected errno
  *	 Otherwise, Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	 Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * clock_settime03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
  * where:
@@ -94,7 +94,7 @@ static struct timespec spec, *temp, saved;
 clockid_t clocks[11] = {
 	CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID,
 	CLOCK_THREAD_CPUTIME_ID, CLOCK_REALTIME_HR, CLOCK_MONOTONIC_HR,
-	MAX_CLOCKS, MAX_CLOCKS + 1, CLOCK_REALTIME, CLOCK_REALTIME, 
+	MAX_CLOCKS, MAX_CLOCKS + 1, CLOCK_REALTIME, CLOCK_REALTIME,
 	CLOCK_REALTIME
 };
 
@@ -110,7 +110,7 @@ static struct test_case_t {
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* REALTIME_HR */
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* MONOTONIC_HR */
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS + 1 */ 
+	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS + 1 */
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* Invalid timespec */
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* NSEC_PER_SEC + 1 */
 	{"Operation not permitted", EPERM, "EPERM"}	/* non-root user */
@@ -199,7 +199,7 @@ main(int ac, char **av)
 	return 0;
 }
 
-/* This function sets up the individual test */ 
+/* This function sets up the individual test */
 int
 setup_test(int option)
 {
@@ -216,11 +216,11 @@ setup_test(int option)
 			/* Make the parameter of timespec invalid */
 			spec.tv_nsec = -1;
 			break;
-		case 9: 
+		case 9:
 			/* Make the parameter of timespec invalid */
 			spec.tv_nsec = NSEC_PER_SEC + 1;
-			break;	
-		case 10:	
+			break;
+		case 10:
 			/* change the User to non-root */
 			spec.tv_nsec = 0;
 			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -229,8 +229,8 @@ setup_test(int option)
 				return -1;
 			}
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN, "seteuid failed to set the" 
-						" effective uid to %d", 
+				tst_resm(TWARN, "seteuid failed to set the"
+						" effective uid to %d",
 						ltpuser->pw_uid);
 				perror("seteuid");
 				return -1;
