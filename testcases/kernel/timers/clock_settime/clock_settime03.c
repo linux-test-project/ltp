@@ -70,79 +70,14 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
 #include <errno.h>
-#include <syscall.h>
 #include <time.h>
 #include <pwd.h>
+#include <unistd.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_clock_settime
-#if defined(__i386__)
-#define __NR_clock_settime (__NR_timer_create + 5)
-#elif defined(__ppc__)
-#define __NR_clock_settime 245
-#elif defined(__powerpc64__)
-#define __NR_clock_settime 245
-#elif defined(__x86_64__)
-#define __NR_clock_settime 227
-#endif
-#endif
-
-#ifndef __NR_clock_gettime
-#if defined(__i386__)
-#define __NR_clock_gettime (__NR_timer_create + 6)
-#elif defined(__ppc__)
-#define __NR_clock_gettime 246
-#elif defined(__powerpc64__)
-#define __NR_clock_settime 246
-#elif defined(__x86_64__)
-#define __NR_clock_gettime 228
-#endif
-#endif
-
-#ifndef NSEC_PER_SEC
-#define NSEC_PER_SEC (1000000000L)
-#endif
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
-#ifndef CLOCK_THREAD_CPUTIME_ID
-#define CLOCK_THREAD_CPUTIME_ID 3
-#endif
-#ifndef CLOCK_REALTIME_HR
-#define CLOCK_REALTIME_HR 4
-#endif
-#ifndef CLOCK_MONOTONIC_HR
-#define CLOCK_MONOTONIC_HR 5
-#endif
-#ifndef MAX_CLOCKS
-#define MAX_CLOCKS 6
-#endif
-
-/* Weak symbols. In newer glibc versions, these functions should
- * be defined. Then, that definition will supersede the definition in this 
- * file with _syscall
- */ 
-#pragma weak clock_settime
-#pragma weak clock_gettime
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -162,11 +97,6 @@ clockid_t clocks[11] = {
 	MAX_CLOCKS, MAX_CLOCKS + 1, CLOCK_REALTIME, CLOCK_REALTIME, 
 	CLOCK_REALTIME
 };
-
-/* register clock_settime and clock_gettime as system calls */
-_syscall2(int, clock_settime, clockid_t, which_clock, const struct timespec *,
-		tp);
-_syscall2(int, clock_gettime, clockid_t, which_clock, struct timespec *, tp);
 
 static struct test_case_t {
 	char *err_desc;		/* error description */

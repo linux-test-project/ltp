@@ -64,38 +64,16 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
-#include <syscall.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <time.h>
 #include <signal.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#elif defined(__ppc__)
-#define __NR_timer_create 240
-#elif defined(__powerpc64__)
-#define __NR_timer_create 240
-#elif defined(__x86_64__)
-#define __NR_timer_create 222
-#endif
-#endif
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 #define ANYSIG SIGALRM	/* Any signal value works */
-
-/* we are making timer_create a weak symbol. In the glibc versions for 2.6,
- * timer_create function/ system call will be defined. There, this 
- * timer_create symbol will be strong and thus it will override our 
- * _syscall definition
- */ 
-#pragma weak timer_create
 
 static void setup();
 static void cleanup();
@@ -105,12 +83,6 @@ char *TCID = "timer_create02";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 static struct sigevent evp;
-
-/* syscall macro below is used to register timer_create function as a system
- * call 
- */ 
-_syscall3(int, timer_create, clockid_t, which_clock, struct sigevent *,
-	timer_event_spec, timer_t *, created_timer_id);
 
 int
 main(int ac, char **av)

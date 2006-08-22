@@ -66,53 +66,14 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
+#include <stdlib.h>
 #include <errno.h>
-#include <syscall.h>
 #include <time.h>
 #include <signal.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#elif defined(__ppc__)
-#define __NR_timer_create 240
-#elif defined(__powerpc64__)
-#define __NR_timer_create 240
-#elif defined(__x86_64__)
-#define __NR_timer_create 222
-#endif
-#endif
-
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
-#ifndef CLOCK_THREAD_CPUTIME_ID
-#define CLOCK_THREAD_CPUTIME_ID 3
-#endif
-#ifndef CLOCK_REALTIME_HR
-#define CLOCK_REALTIME_HR 4
-#endif
-#ifndef CLOCK_MONOTONIC_HR
-#define CLOCK_MONOTONIC_HR 5
-#endif
-#ifndef MAX_CLOCKS
-#define MAX_CLOCKS 6
-#endif
-
-/* weak symbol. In newer glibc, timer_create should be defined.
- * then, that definition will supersede the defintion in this code
- */ 
-#pragma weak timer_create
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -137,10 +98,6 @@ static struct test_case_t {
 	{"Bad address", EFAULT, "EFAULT"},		/* bad sigevent * */
 	{"Bad address", EFAULT, "EFAULT"}		/* bad timer_id * */
 };
-
-/* Register timer_create as system call */
-_syscall3(int, timer_create, clockid_t, which_clock, struct sigevent *,
-		        timer_event_spec, timer_t *, created_timer_id);
 
 int
 main(int ac, char **av)

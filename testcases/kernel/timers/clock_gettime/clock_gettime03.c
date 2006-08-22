@@ -67,58 +67,14 @@
  * None
  *****************************************************************************/
 
+#include <stdlib.h>
+#include <errno.h>
+#include <time.h>
+#include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <errno.h>
-#include <syscall.h>
-#include <time.h>
-
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_clock_gettime
-#if defined(__i386__)
-#define __NR_clock_gettime (__NR_timer_create + 6)
-#elif defined(__ppc__)
-#define __NR_clock_gettime 246
-#elif defined(__powerpc64__)
-#define __NR_clock_gettime 246
-#elif defined(__x86_64__)
-#define __NR_clock_gettime 228
-#endif
-#endif
-
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
-#ifndef CLOCK_THREAD_CPUTIME_ID
-#define CLOCK_THREAD_CPUTIME_ID 3
-#endif
-#ifndef CLOCK_REALTIME_HR
-#define CLOCK_REALTIME_HR 4
-#endif
-#ifndef CLOCK_MONOTONIC_HR
-#define CLOCK_MONOTONIC_HR 5
-#endif
-#ifndef MAX_CLOCKS
-#define MAX_CLOCKS 6
-#endif
-
-/* Weak symbol. Newer glibc should have definition for clock_gettime.
- * Then, it will supersede the definition in this code
- */ 
-#pragma weak clock_gettime
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -142,9 +98,6 @@ static struct test_case_t {
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS */
 	{"Invalid parameter", EINVAL, "EINVAL"}		/* MAX_CLOCKS + 1 */
 };
-
-/* register clock_gettime as system call */
-_syscall2(int, clock_gettime, clockid_t, which_clock, struct timespec *, tp);
 
 int
 main(int ac, char **av)

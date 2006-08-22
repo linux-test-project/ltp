@@ -64,42 +64,16 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
+#include <stdlib.h>
 #include <errno.h>
-#include <syscall.h>
 #include <time.h>
 #include <signal.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_timer_delete
-#if defined(__i386__)
-#define __NR_timer_delete (__NR_timer_create + 4)
-#elif defined(__ppc__)
-#define __NR_timer_delete 244
-#elif defined(__powerpc64__)
-#define __NR_timer_delete 244
-#elif defined(__x86_64__)
-#define __NR_timer_delete 226
-#endif
-#endif
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 #define INVALID_ID ((timer_t)-1)
-
-/* weak symbol. In newer glibc, there should be a definition of timer_delete
- * at that time, it will supersede the definition in this code
- */ 
-#pragma weak timer_delete
 
 static void setup();
 static void cleanup();
@@ -117,9 +91,6 @@ static struct test_case_t {
 } testcase[] = {
 	{"Invalid parameter", EINVAL, "EINVAL"} /* Invalid timer ID */
 };
-
-/* register timer_delete as system call */
-_syscall1(int, timer_delete, timer_t, timer_id);
 
 int
 main(int ac, char **av)

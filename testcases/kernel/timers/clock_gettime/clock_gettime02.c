@@ -63,45 +63,14 @@
  * None
  *****************************************************************************/
 
+#include <stdlib.h>
+#include <errno.h>
+#include <time.h>
+#include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <errno.h>
-#include <syscall.h>
-#include <time.h>
-
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_clock_gettime
-#if defined(__i386__)
-#define __NR_clock_gettime (__NR_timer_create + 6)
-#elif defined(__ppc__)
-#define __NR_clock_gettime 246
-#elif defined(__powerpc64__)
-#define __NR_clock_gettime 246
-#elif defined(__x86_64__)
-#define __NR_clock_gettime 228
-#endif
-#endif
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
-
-/* Weak symbol. In newer glibc, clock_gettime should be defined. Then
- * it will superseed the definition from this file
- */ 
-#pragma weak clock_gettime
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -109,9 +78,6 @@ static void cleanup();
 char *TCID = "clock_gettime02";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-
-/* register clock_gettime as system call */
-_syscall2(int, clock_gettime, clockid_t, which_clock, struct timespec *, tp);
 
 int
 main(int ac, char **av)

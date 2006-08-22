@@ -64,49 +64,14 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
+#include <stdlib.h>
 #include <errno.h>
-#include <syscall.h>
 #include <time.h>
 #include <signal.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#elif defined(__ppc__)
-#define __NR_timer_create 240
-#elif defined(__powerpc64__)
-#define __NR_timer_create 240
-#elif defined(__x86_64__)
-#define __NR_timer_create 222
-#endif
-#endif
-
-#ifndef __NR_timer_delete
-#if defined(__i386__)
-#define __NR_timer_delete (__NR_timer_create + 4)
-#elif defined(__ppc__)
-#define __NR_timer_delete 244
-#elif defined(__powerpc64__)
-#define __NR_timer_delete 244
-#elif defined(__x86_64__)
-#define __NR_timer_delete 226
-#endif
-#endif
-
-/* We are declaring timer_create and timer_delete as weak symbols thorugh
- * following definitions. In newer glibc versions, these functions
- * should be present. At that time, glibc definition will supersede the 
- * definition in this code which is done using _syscall macro
- */ 
-#pragma weak timer_create
-#pragma weak timer_delete
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -114,13 +79,6 @@ static void cleanup();
 char *TCID = "timer_delete02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-
-/* syscall macros are used to register timer_create and timer_delete functions
- * as system calls
- */ 
-_syscall3(int, timer_create, clockid_t, which_clock, struct sigevent *,
-	timer_event_spec, timer_t *, timer_id);
-_syscall1(int, timer_delete, timer_t, timer_id);
 
 int
 main(int ac, char **av)

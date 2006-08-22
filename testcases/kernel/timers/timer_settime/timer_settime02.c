@@ -64,54 +64,14 @@
  * None
  *****************************************************************************/
 
+#include <stdlib.h>
+#include <errno.h>
+#include <time.h>
+#include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <errno.h>
-#include <syscall.h>
-#include <time.h>
-
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_clock_gettime
-#if defined(__i386__)
-#define __NR_clock_gettime (__NR_timer_create + 6)
-#elif defined(__ppc__)
-#define __NR_clock_gettime 246
-#elif defined(__powerpc64__)
-#define __NR_clock_gettime 246
-#elif defined(__x86_64__)
-#define __NR_clock_gettime 228
-#endif
-#endif
-
-#ifndef __NR_timer_settime
-#if defined(__i386__)
-#define __NR_timer_settime (__NR_timer_create + 1)
-#elif defined(__ppc__)
-#define __NR_timer_settime 241
-#elif defined(__powerpc64__)
-#define __NR_timer_settime 241
-#elif defined(__x86_64__)
-#define __NR_timer_settime 223
-#endif
-#endif
-
-/* weak symbols. in newer glibc, timer_create, timer_settime, clock_gettime
- * should be defined. Then, those definitions will supersede the definition
- * in this code
- */ 
-#pragma weak timer_create
-#pragma weak timer_settime
-#pragma weak clock_gettime
+#include "common_timers.h"
 
 static void setup();
 static void cleanup();
@@ -124,15 +84,6 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 static struct itimerspec new_set, old_set, *old_temp;
 static timer_t timer;
 static int flag;
-
-/* register timer_create, timer_settime and clock_gettime as system calls */
-_syscall3(int, timer_create, clockid_t, which_clock, struct sigevent *,
-	timer_event_spec, timer_t *, created_timer_id);
-
-_syscall4(int, timer_settime, timer_t, timer_id, int, flags, const struct 
-		itimerspec *, new_setting, struct itimerspec *, old_setting);
-
-_syscall2(int, clock_gettime, clockid_t, which_clock, struct timespec *, tp);
 
 int
 main(int ac, char **av)

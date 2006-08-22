@@ -66,37 +66,12 @@
  *****************************************************************************/
 
 #include <errno.h>
-#include <syscall.h>
 #include <time.h>
 #include <unistd.h>
 
 #include "test.h"
 #include "usctest.h"
 #include "common_timers.h"
-
-#ifndef __NR_timer_create
-#if defined(__i386__)
-#define __NR_timer_create 259
-#endif
-#endif
-
-#ifndef __NR_timer_settime
-#if defined(__i386__)
-#define __NR_timer_settime (__NR_timer_create + 1)
-#elif defined(__ppc__)
-#define __NR_timer_settime 241
-#elif defined(__powerpc64__)
-#define __NR_timer_settime 241
-#elif defined(__x86_64__)
-#define __NR_timer_settime 223
-#endif
-#endif
-
-/* weak symbol. In newer glibc timer_create and timer_settime should be 
- * defined. Then, they will supersede the definitions done in this code
- */ 
-#pragma weak timer_create
-#pragma weak timer_settime
 
 static void setup();
 static void cleanup();
@@ -123,13 +98,6 @@ static struct test_case_t {
 	{"Bad address", EFAULT, "EFAULT"},		/* bad newsetting * */
 	{"Bad address", EFAULT, "EFAULT"}		/* bad oldsetting * */
 };
-
-/* register timer_create and timer_settime as system calls */
-_syscall3(int, timer_create, clockid_t, which_clock, struct sigevent *,
-		        timer_event_spec, timer_t *, created_timer_id);
-
-_syscall4(int, timer_settime, timer_t, timer_id, int, flags, const struct 
-		itimerspec *, new_setting, struct itimerspec *, old_setting);
 
 int
 main(int ac, char **av)
