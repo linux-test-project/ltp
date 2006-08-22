@@ -28,9 +28,28 @@
 #ifndef CLOCK_MONOTONIC_HR
 #define CLOCK_MONOTONIC_HR 5
 #endif
-#ifndef MAX_CLOCKS
-#define MAX_CLOCKS 6
-#endif
+clock_t clock_list[] = {
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID,
+	CLOCK_REALTIME_HR,
+	CLOCK_MONOTONIC_HR
+};
+#define MAX_CLOCKS (sizeof(clock_list) / sizeof(*clock_list))
+
+const char *get_clock_str(const int clock_id)
+{
+	switch(clock_id) {
+		case CLOCK_REALTIME:           return "CLOCK_REALTIME";
+		case CLOCK_MONOTONIC:          return "CLOCK_MONOTONIC";
+		case CLOCK_PROCESS_CPUTIME_ID: return "CLOCK_PROCESS_CPUTIME_ID";
+		case CLOCK_THREAD_CPUTIME_ID:  return "CLOCK_THREAD_CPUTIME_ID";
+		case CLOCK_REALTIME_HR:        return "CLOCK_REALTIME_HR";
+		case CLOCK_MONOTONIC_HR:       return "CLOCK_MONOTONIC_HR";
+		default:                       return "CLOCK_!?!?!?";
+	}
+}
 
 #ifndef __NR_timer_create
 # if defined(__i386__)
