@@ -94,7 +94,7 @@
 #endif
 #endif
 
-#define INVALID_ID -1
+#define INVALID_ID ((timer_t)-1)
 
 /* weak symbol. In newer glibc, there should be a definition of timer_delete
  * at that time, it will supersede the definition in this code

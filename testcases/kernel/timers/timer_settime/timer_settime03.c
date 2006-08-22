@@ -65,16 +65,14 @@
  * None
  *****************************************************************************/
 
-#include "test.h"
-#include "usctest.h"
 #include <errno.h>
 #include <syscall.h>
 #include <time.h>
+#include <unistd.h>
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
+#include "test.h"
+#include "usctest.h"
+#include "common_timers.h"
 
 #ifndef __NR_timer_create
 #if defined(__i386__)
@@ -92,10 +90,6 @@
 #elif defined(__x86_64__)
 #define __NR_timer_settime 223
 #endif
-#endif
-
-#ifndef NSEC_PER_SEC
-#define NSEC_PER_SEC (1000000000L)
 #endif
 
 /* weak symbol. In newer glibc timer_create and timer_settime should be 
@@ -225,7 +219,7 @@ setup_test(int option)
 			break;
 		case 3:
 			/* make timer_id invalid */
-			tim = -1;
+			tim = (timer_t)-1;
 			new_set.it_value.tv_nsec = 0;
 			break;
 		case 4:
