@@ -85,7 +85,7 @@ static struct sigevent evp;
 int
 main(int ac, char **av)
 {
-	int lc, i;			/* loop counter */
+	int lc, i, j;		/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	timer_t created_timer_id;	/* holds the returned timer_id */
 	char *message[3] = {
@@ -104,7 +104,7 @@ main(int ac, char **av)
 	setup();
 
 	/* check looping state if -i option given */
-	for (lc =0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
@@ -112,28 +112,32 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			setup_test(i);
-			TEST(timer_create(CLOCK_REALTIME, &evp,
-						&created_timer_id));
 
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == ENOSYS) {
-					/* Following statement ensures that
-					 * 'remaining testcases broken' message
-					 * is not displayed even though we are
-					 * using tst_brkm function
-					 */
-					Tst_count = TST_TOTAL;
-					perror("timer_create");
-					tst_brkm(TBROK, cleanup,"");
+			for (j = 0; j < MAX_CLOCKS; ++j) {
+				TEST(timer_create(clock_list[j], &evp,
+							&created_timer_id));
+
+				if (TEST_RETURN == -1) {
+					if (TEST_ERRNO == ENOSYS) {
+						/* Following statement ensures that
+						 * 'remaining testcases broken' message
+						 * is not displayed even though we are
+						 * using tst_brkm function
+						 */
+						Tst_count = TST_TOTAL;
+						perror("timer_create");
+						tst_brkm(TBROK, cleanup,"");
+					}
+
+					TEST_ERROR_LOG(TEST_ERRNO);
+					tst_resm(TFAIL, "%s with notification type %s"
+							" failed with errno %d: %s",
+							get_clock_str(clock_list[j]), message[i],
+							TEST_ERRNO, strerror(TEST_ERRNO));
+				} else {
+					tst_resm(TPASS, "%s with notification type %s",
+							get_clock_str(clock_list[j]), message[i]);
 				}
-
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "timer_create(2) Failed and"
-						" set errno to %d: %s", TEST_ERRNO, strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TPASS, "timer_create(2) Passed for"
-						" notification type %s",
-						message[i]);
 			}
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
