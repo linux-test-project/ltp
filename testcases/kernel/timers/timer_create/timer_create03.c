@@ -73,8 +73,6 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-#define ANYSIG SIGALRM	/* Any signal value works */
-
 static void setup();
 static void cleanup();
 static void setup_test(int option);
@@ -159,7 +157,7 @@ setup_test(int option)
 			break;
 		case 2:
 			evp.sigev_value =  (sigval_t) 0;
-			evp.sigev_signo = ANYSIG;
+			evp.sigev_signo = SIGALRM; /* any will do */
 			evp.sigev_notify = SIGEV_NONE;
 			break;
 	}
