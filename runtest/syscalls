@@ -202,6 +202,9 @@ fstat03 fstat03
 fstat04 fstat04
 fstat05 fstat05
 
+#fstatat64/newfstatat test cases
+fstatat01 fstatat01
+
 fstatfs01 fstatfs01
 fstatfs02 fstatfs02
 
