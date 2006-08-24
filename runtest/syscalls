@@ -493,6 +493,9 @@ open08 open08
 open09 open09
 open10 open10
 
+#openat test cases
+openat01 openat01
+
 mincore01 mincore01
 #mincore02 mincore02 currently hangs and does not exit correctly
 madvise01 madvise01
