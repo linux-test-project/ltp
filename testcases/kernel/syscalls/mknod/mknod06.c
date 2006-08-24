@@ -103,8 +103,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ "tnode_1",  "Specified node already exists", EEXIST, setup1 },
-	{ (char *)-1, "Negative address", EFAULT, no_setup },
 #if !defined(UCLINUX)
+	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
 #endif
 	{ "testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup },
@@ -115,7 +115,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 };
 
 char *TCID="mknod06";           /* Test program identifier.    */
-int TST_TOTAL = 7;		/* Total number of test cases. */
+int TST_TOTAL = (sizeof(Test_cases)/sizeof(*Test_cases));
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 #if !defined(UCLINUX)
 extern char *get_high_address();
@@ -243,8 +243,6 @@ setup()
 	}
 #if !defined(UCLINUX)
 	Test_cases[2].pathname = bad_addr;
-#else
-	Test_cases[1].pathname = bad_addr;
 #endif
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

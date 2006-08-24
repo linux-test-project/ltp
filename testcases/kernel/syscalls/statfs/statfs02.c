@@ -65,7 +65,12 @@ char *TCID = "statfs02";
 int fileHandle = 0;
 extern int Tst_count;
 
-int exp_enos[]={ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT, 0};
+int exp_enos[] = {
+	ENOTDIR, ENOENT, ENAMETOOLONG,
+#if !defined(UCLINUX)
+	EFAULT, 0
+#endif
+};
 
 char * bad_addr = 0;
 
@@ -187,7 +192,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[3].path = bad_addr;
+#endif
 }
 
 

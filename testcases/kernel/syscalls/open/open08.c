@@ -84,7 +84,9 @@ struct test_case_t {
 	{filename, O_DIRECTORY, ENOTDIR},
 	{bad_file, O_RDWR, ENAMETOOLONG},
 	{fname, O_WRONLY, EACCES},
+#if !defined(UCLINUX)
 	{(char *)-1, O_CREAT, EFAULT}
+#endif
 };
 
 int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
@@ -190,7 +192,9 @@ setup(void)
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[5].fname = bad_addr;
+#endif
 }
 
 /*

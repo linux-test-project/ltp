@@ -123,8 +123,8 @@ struct test_case_t {		/* test case structure */
 	{ TEST_FILE2, W_OK, "Write Access denied on file", EACCES, setup2 },
 	{ TEST_FILE3, X_OK, "Execute Access denied on file", EACCES, setup3 },
 	{ TEST_FILE4, INV_OK, "Access mode invalid", EINVAL, setup4 },
-	{ (char *)-1, R_OK, "Negative address", EFAULT, no_setup },
 #if !defined(UCLINUX)
+	{ (char *)-1, R_OK, "Negative address", EFAULT, no_setup },
 	{ High_address_node, R_OK, "Address beyond address space", EFAULT, no_setup },
 #endif
 	{ "", W_OK, "Pathname is empty", ENOENT, no_setup },
@@ -263,8 +263,6 @@ setup()
 
 #if !defined(UCLINUX)
 	Test_cases[5].pathname = bad_addr;
-#else
-	Test_cases[4].pathname = bad_addr;
 #endif
 
 	/* call individual setup functions */

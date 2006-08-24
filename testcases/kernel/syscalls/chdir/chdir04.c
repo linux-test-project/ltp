@@ -62,7 +62,6 @@
 #include <usctest.h>
 
 char *TCID = "chdir04";
-int TST_TOTAL = 3;
 extern int Tst_count;
 
 int exp_enos[] = {ENAMETOOLONG, ENOENT, EFAULT, 0};
@@ -87,12 +86,16 @@ struct test_case_t {
 	 */
 	{noexist_dir, ENOENT},
 
+#if !defined(UCLINUX)
 	/*
 	 * to test whether chdir() is setting EFAULT if the
 	 * directory is an invalid address.
 	 */
 	{(void *)-1, EFAULT}
+#endif
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int flag;
 #define	FAILED	1
@@ -173,7 +176,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[2].dname = bad_addr;
+#endif
 }
 
 

@@ -104,8 +104,10 @@ struct test_case_t {
         int error;
         void (*setupfunc)();
 } TC[] = {
+#if !defined(UCLINUX)
 	/* try to create a directory with an illegal name/address */
         { (void *)-1, PERMS, EFAULT, NULL },
+#endif
 
 	/* try to create a directory using a name that is too long */
         { long_dir, PERMS2, ENAMETOOLONG, NULL },
@@ -123,7 +125,7 @@ struct test_case_t {
         { tstdir5, PERMS, ENOTDIR, setup5 }
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(TC[0]); 
+int TST_TOTAL = sizeof(TC)/sizeof(TC[0]);
 
 int
 main(int ac, char **av)
@@ -265,7 +267,7 @@ setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -277,7 +279,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[0].dir = bad_addr;
+#endif
 }
 
 

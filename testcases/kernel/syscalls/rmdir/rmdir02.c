@@ -94,7 +94,6 @@ void do_file_setup(char *);
 #define PERMS		0777
 
 char *TCID="rmdir02";           /* Test program identifier.    */
-int TST_TOTAL=6;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0};
@@ -126,12 +125,15 @@ struct test_case_t {
 	/* The given argument is not a directory - ENOTDIR */
 	{tstdir3, ENOTDIR, set_condition},
 
+#if !defined(UCLINUX)
 	/* The argument is illegal - EFAULT */
 	{(char *)-1, EFAULT, NULL},
+#endif
 
 	/* The argument is illegal - EFAULT */
 	{NULL, EFAULT, NULL}
 };
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int
 main(int ac, char **av)
@@ -343,7 +345,7 @@ setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -355,7 +357,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[4].dir = bad_addr;
+#endif
 }
 
 /*

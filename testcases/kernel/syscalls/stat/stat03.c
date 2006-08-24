@@ -115,8 +115,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ TEST_FILE1,  "No Search permissions to process", EACCES, setup1 },
 #if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
-#endif
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
+#endif
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
 	{ TEST_FILE2, "Path contains regular file", ENOTDIR, setup2 },
@@ -124,17 +124,13 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 };
 
 char *TCID="stat03";           /* Test program identifier.    */
-#if !defined(UCLINUX)
-int TST_TOTAL = 6;		/* Total number of test cases. */
-#else
-int TST_TOTAL = 5;
-#endif
+int TST_TOTAL = (sizeof(Test_cases)/sizeof(*Test_cases));
 extern int Tst_count;           /* Test Case counter for tst_* routines */
+int exp_enos[]={EACCES,
 #if !defined(UCLINUX)
-int exp_enos[]={EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
-#else
-int exp_enos[]={EACCES, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+	EFAULT, ENAMETOOLONG,
 #endif
+	ENOENT, ENOTDIR, 0};
 
 char * bad_addr = 0;
 
@@ -269,8 +265,6 @@ setup()
 	}
 #if !defined(UCLINUX)
 	Test_cases[2].pathname = bad_addr;
-#else
-	Test_cases[1].pathname = bad_addr;
 #endif
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {

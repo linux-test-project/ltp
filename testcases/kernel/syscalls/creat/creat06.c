@@ -77,7 +77,6 @@ void cleanup(void);
 char user1name[] = "nobody";
 
 char *TCID = "creat06";
-int TST_TOTAL = 6;
 int fileHandle = 0;
 extern int Tst_count;
 
@@ -113,12 +112,16 @@ struct test_case_t {
 	/* a compent of the file's path is not a directory - ENOTDIR */
 	{not_dir, MODE1, ENOTDIR},
 
+#if !defined(UCLINUX)
 	/* The file address is bad - EFAULT */
 	{(char *)-1, MODE1, EFAULT},
+#endif
 
 	/* The directory lacks execute permission - EACCES */
 	{test6_file, MODE1, EACCES}
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 char * bad_addr = 0;
 
@@ -224,7 +227,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[4].fname = bad_addr;
+#endif
 
 	/* create a directory that will be used in test #6 */
 	if (mkdir("dir6", MODE2) == -1) {

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.7 2005/10/03 19:04:37 robbiew Exp $ */
+/* $Id: sigrelse01.c,v 1.8 2006/08/24 04:16:34 vapier Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -221,7 +221,7 @@ main(int argc, char **argv)
 	/*
 	 * fork off a child process
 	 */
-	if ((pid = fork()) < 0) {
+	if ((pid = FORK_OR_VFORK()) < 0) {
 	    (void) sprintf(mesg, "fork() failed. errno:%d %s.",
 		errno, strerror(errno));
 	    tst_brkm(TBROK, cleanup, mesg);

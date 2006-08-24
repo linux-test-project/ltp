@@ -78,7 +78,6 @@ void cleanup();
 extern void do_file_setup(char *);
 
 char *TCID="rename08";		/* Test program identifier.    */
-int TST_TOTAL=3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={EFAULT, 0};     /* List must end with 0 */
@@ -93,15 +92,18 @@ struct test_case_t {
 	char *fd2;
 	int error;
 } TC[] = {
+#if !defined(UCLINUX)
 	/* "new" file is invalid - EFAULT */
 	{fname, (char *)-1, EFAULT},
 
 	/* "old" file is invalid - EFAULT */
 	{(char *)-1, fname, EFAULT},
+#endif
 
 	/* both files are NULL - EFAULT */
 	{NULL, NULL, EFAULT}
 };
+int TST_TOTAL=(sizeof(TC) / sizeof(*TC));
 
 int
 main(int ac, char **av)
@@ -191,8 +193,10 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[0].fd2 = bad_addr;
 	TC[1].fd = bad_addr;
+#endif
 }
 
 /*

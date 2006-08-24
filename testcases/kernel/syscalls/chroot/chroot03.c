@@ -68,7 +68,6 @@
 #include <fcntl.h>
 
 char *TCID = "chroot03";
-int TST_TOTAL = 4;
 extern int Tst_count;
 
 int fd = 0;
@@ -100,12 +99,16 @@ struct test_case_t {
 	 */
         {good_dir, ENOENT},
 
+#if !defined(UCLINUX)
 	/*
 	 * attempt to chroot to a path pointing to an invalid address
 	 * and expect EFAULT as errno
 	 */
         {(char *)-1, EFAULT}
+#endif
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 char * bad_addr = 0;
 
@@ -198,7 +201,9 @@ setup()
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
+#if !defined(UCLINUX)
 	TC[3].dir = bad_addr;
+#endif
 }
 
 
