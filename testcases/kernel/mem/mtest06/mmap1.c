@@ -530,7 +530,7 @@ main(int  argc,		/* number of input parameters.			      */
     num_iter = 1000;
     exec_time = 24;
 
-    while ((c =  getopt(argc, argv, "h:l:s:x:")) != -1)
+    while ((c =  getopt(argc, argv, "h:l:s:vx:")) != -1)
     {
         switch(c)
 	{
