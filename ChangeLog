@@ -1,3 +1,53 @@
+LTP-20060822
+
+-Added files for Mitsuru's Chinen's nfs patch: 
+ns-mcast.h, ns-mcast_join.c, ns-mcast_receiver.c, network_stress.appl,
+ network_stress.broken_ip, network_stress.icmp, network_stress.interface, 
+network_stress.multicast, network_stress.route, network_stress.tcp, 
+network_stress.udp ns-icmp_redirector.c, ns-icmpv4_sender.c, 
+ns-icmpv6_sender.c, ns-igmp_querier.c
+	
+-Made changes to avoid hardcoding test count 
+mkdir03.c, open08.c
+
+-Changed the test to account for SLES 10.  Now the syslog tests will test 
+ syslog-ng or syslogd depending on which one is present.  The update was     
+ made for syslog01 - syslog10. 
+
+-Corrected the copyright information to reflect SGI, instead of Cray, which
+ was purchased by SGI years ago for files get_high_address.c, search_path.c
+
+-Removed the Ping test. The ping test is now skipped on SLES, but does not 
+  affect the execution of the rest of the test in mc_commo	
+
+-Using syscall() rather than _syscall#() macros for the following files:
+  sysfs01.c, sysfs02.c, sysfs03.c, sysfs04.c, sysfs05.c, sysfs06.c,  
+  sysctl01.c, sysctl03.c, sysctl04.c, sysctl05.c
+	
+-Added a fix to eliminate whitespaces in getdents02.c, getdents03.c, 
+getdents04.c	
+
+-Added a fix to re-order testcases a little to account for uclinux in 
+access05.c, lstat02.c, mknod06.c
+
+-A Correction was made to the name of the testcase in code...was incorrectly 
+called signal_test_03  and changed to signal_test_02.c
+
+-A fix to  get the max pid value at runtime rather than compile time hardcode 
+wait402.c, setpriority04.c,Makefile, getsid02.c
+
+-A fix to remove extraneous include 
+swapon02.c
+
+- mc_cmds had two fixes.  The test now uses [ae]th[01] in the ping command 
+using the -I option. Also the loop to determine which ethernet interface 
+is needed was moved to ensure that the correct ethernet interface was selected.
+
+-A patch was addded that allows the following files to get the PID_MAX value 
+from /proc/sys/kernel/pid-max: 
+access05.c, fcntl15.c, gethostid01.c, lstat02.c, mknod06.c, setrlimit02.c, 
+setsockopt01.c, stat03.c, truncate03.c	
+
 LTP-20060717
  - The tarball default-tests.tar.gz is a replacement for
    testcases/pounder21/default-tests.tar.gz.  This new pounder config
