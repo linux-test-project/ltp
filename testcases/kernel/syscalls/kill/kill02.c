@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.5 2005/08/31 20:27:15 robbiew Exp $ */
+/* $Id: kill02.c,v 1.6 2006/09/06 16:45:02 mreed10 Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -483,9 +483,16 @@ void parent_rout()
    }
 
    (void) par_kill();
+
+
+   (void) alarm(TIMEOUT);
+   while ((read(pipe1_fd[0],pipe_buf,1) != 1) && (alarm_flag == FALSE))
+  	strncpy(buf_tmp1,pipe_buf,1);
+
+
   return;	
 }  /*End of parent_rout*/
-
+
 /*******************************************************************************
  * This is child 1's routine.  It creates children A & B, checks their set up,
  * reports to the parent set up pass/fail info., then waits for
@@ -919,6 +926,10 @@ void chld1_kill()
 		errno,strerror(errno));
 	tst_resm(TWARN,mesg);
    }
+
+   (void) write(pipe1_fd[1],CHAR_SET_PASSED,1);
+
+
    if (kill(pidB,SIGKILL) == -1 && errno != ESRCH)
    {
 	(void) sprintf(mesg,
