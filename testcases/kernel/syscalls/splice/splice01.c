@@ -63,6 +63,11 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 char testfile1[256];
 char testfile2[256];
 
+/* Definitions are needed for kernel version under 2.6.17 */
+#ifndef __NR_splice 
+#define __NR_splice 0
+#endif
+
 static inline long splice(int fd_in, loff_t * off_in,
 			  int fd_out, loff_t * off_out,
 			  size_t len, unsigned int flags)
@@ -74,6 +79,17 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
+        int results;
+
+	/* Disable test if the version of the kernel is less than 2.6.17 */
+	if(((results=tst_kvercmp(2,6,17)) < 0))
+          {
+	     tst_resm(TINFO, "This test can only run on kernels that are ");
+	     tst_resm(TINFO, "2.6.17 and higher");
+	     exit(0);
+          }
+
+
 
 	/*
 	 * parse standard options

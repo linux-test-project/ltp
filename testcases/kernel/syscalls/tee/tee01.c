@@ -50,6 +50,13 @@
 #include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
+	
+/* Definitions are needed for kernel version under 2.6.17 */
+#if !defined(__NR_splice) || !defined(__NR_tee) 
+#define __NR_splice 0
+#define __NR_tee 0
+#endif
+
 
 #define SPLICE_TEST_BLOCK_SIZE 1024
 #define SPLICE_F_NONBLOCK (0x02)
@@ -80,7 +87,16 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
+        int results;
 
+	/* Disable test if the version of the kernel is less than 2.6.17 */
+	if(((results=tst_kvercmp(2,6,17)) < 0))
+          {
+	     tst_resm(TINFO, "This test can only run on kernels that are ");
+	     tst_resm(TINFO, "2.6.17 and higher");
+	     exit(0);
+          }
+  
 	/*
 	 * parse standard options
 	 */
