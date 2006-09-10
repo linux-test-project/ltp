@@ -596,6 +596,9 @@ rename12 rename12
 rename13 rename13
 rename14 rename14
 
+#renameat test cases
+renameat01 renameat01
+
 rmdir01 rmdir01
 rmdir02 rmdir02
 rmdir03 rmdir03
