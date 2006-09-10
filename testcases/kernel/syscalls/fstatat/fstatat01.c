@@ -55,41 +55,7 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
-
-#if defined(__powerpc__) || defined(__powerpc64__)
-#define __NR_openat             286
-#elif defined(__i386__)
-#define __NR_openat		295
-#elif defined(__sparc__) || defined(__sparc64__)
-#define __NR_openat		284
-#elif defined(__ia64__)
-#define	__NR_openat		1281
-#elif defined(__x86_64__)
-#define	__NR_openat		257
-#elif defined(__s390__) || defined(__s390x__)
-#define	__NR_openat		288
-#elif defined(__parisc__)
-#define	__NR_openat		275
-#else
-#error unsupported arch
-#endif
-
-#define __NR_mkdirat            (__NR_openat + 1)
-#define __NR_mknodat            (__NR_openat + 2)
-#define __NR_fchownat           (__NR_openat + 3)
-#define __NR_futimesat          (__NR_openat + 4)
-#if defined(__powerpc64__) || defined(__ia64__) || defined(__x86_64__) || defined(__parisc__) || defined(__s390x__)
-#define __NR_newfstatat         (__NR_openat + 5)
-#else
-#define __NR_fstatat64          (__NR_openat + 5)
-#endif
-#define __NR_unlinkat           (__NR_openat + 6)
-#define __NR_renameat           (__NR_openat + 7)
-#define __NR_linkat             (__NR_openat + 8)
-#define __NR_symlinkat          (__NR_openat + 9)
-#define __NR_readlinkat         (__NR_openat + 10)
-#define __NR_fchmodat           (__NR_openat + 11)
-#define __NR_faccessat          (__NR_openat + 12)
+#include "linux_syscall_numbers.h"
 
 #define TEST_CASES 6
 #ifndef AT_FDCWD

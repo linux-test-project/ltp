@@ -50,12 +50,7 @@
 #include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
-	
-/* Definitions are needed for kernel version under 2.6.17 */
-#if !defined(__NR_splice) || !defined(__NR_tee) 
-#define __NR_splice 0
-#define __NR_tee 0
-#endif
+#include "linux_syscall_numbers.h"
 
 
 #define SPLICE_TEST_BLOCK_SIZE 1024

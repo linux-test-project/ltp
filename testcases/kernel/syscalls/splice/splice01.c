@@ -50,6 +50,7 @@
 #include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
 #define SPLICE_TEST_BLOCK_SIZE 1024
 
@@ -62,11 +63,6 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char testfile1[256];
 char testfile2[256];
-
-/* Definitions are needed for kernel version under 2.6.17 */
-#ifndef __NR_splice 
-#define __NR_splice 0
-#endif
 
 static inline long splice(int fd_in, loff_t * off_in,
 			  int fd_out, loff_t * off_out,

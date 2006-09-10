@@ -51,75 +51,7 @@ const char *get_clock_str(const int clock_id)
 	}
 }
 
-#ifndef __NR_timer_create
-# if defined(__i386__)
-#  define __NR_timer_create 259
-# elif defined(__ppc__)
-#  define __NR_timer_create 240
-# elif defined(__powerpc64__)
-#  define __NR_timer_create 240
-# elif defined(__x86_64__)
-#  define __NR_timer_create 222
-# else
-#  error __NR_timer_create is not defined
-# endif
-#endif
-
-#ifndef __NR_timer_settime
-# if defined(__i386__)
-#  define __NR_timer_settime (__NR_timer_create + 1)
-# elif defined(__ppc__)
-#  define __NR_timer_settime 241
-# elif defined(__powerpc64__)
-#  define __NR_timer_settime 241
-# elif defined(__x86_64__)
-#  define __NR_timer_settime 223
-# else
-#  error __NR_timer_settime is not defined
-# endif
-#endif
-
-#ifndef __NR_timer_delete
-# if defined(__i386__)
-#  define __NR_timer_delete (__NR_timer_create + 4)
-# elif defined(__ppc__)
-#  define __NR_timer_delete 244
-# elif defined(__powerpc64__)
-#  define __NR_timer_delete 244
-# elif defined(__x86_64__)
-#  define __NR_timer_delete 226
-# else
-#  error __NR_timer_delete is not defined
-# endif
-#endif
-
-#ifndef __NR_clock_settime
-# if defined(__i386__)
-#  define __NR_clock_settime (__NR_timer_create + 5)
-# elif defined(__ppc__)
-#  define __NR_clock_settime 245
-# elif defined(__powerpc64__)
-#  define __NR_clock_settime 245
-# elif defined(__x86_64__)
-#  define __NR_clock_settime 227
-# else
-#  error __NR_clock_settime is not defined
-# endif
-#endif
-
-#ifndef __NR_clock_gettime
-# if defined(__i386__)
-#  define __NR_clock_gettime (__NR_timer_create + 6)
-# elif defined(__ppc__)
-#  define __NR_clock_gettime 246
-# elif defined(__powerpc64__)
-#  define __NR_clock_gettime 246
-# elif defined(__x86_64__)
-#  define __NR_clock_gettime 228
-# else
-#  error __NR_clock_gettime is not defined
-# endif
-#endif
+#include "linux_syscall_numbers.h"
 
 /* Weak symbols. In newer glibc, these funcs should be defined. Then
  * it will superseed the definition from this file
