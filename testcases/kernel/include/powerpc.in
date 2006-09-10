@@ -4,6 +4,8 @@ __NR_timer_delete 244
 __NR_clock_settime 245
 __NR_clock_gettime 246
 __NR_splice 283
+__NR_tee 284
+__NR_vmsplice 285
 __NR_openat 286
 __NR_mkdirat (__NR_openat + 1)
 __NR_mknodat (__NR_openat + 2)

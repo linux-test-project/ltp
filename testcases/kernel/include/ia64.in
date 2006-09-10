@@ -13,3 +13,5 @@ __NR_readlinkat (__NR_openat + 10)
 __NR_fchmodat  (__NR_openat + 11)
 __NR_faccessat (__NR_openat + 12)
 __NR_splice 1297
+__NR_tee 1301
+__NR_vmsplice 1302

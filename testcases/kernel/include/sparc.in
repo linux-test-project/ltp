@@ -1,4 +1,6 @@
+__NR_vmsplice 25
 __NR_splice 232
+__NR_tee 280
 __NR_openat 284
 __NR_mkdirat (__NR_openat + 1)
 __NR_mknodat (__NR_openat + 2)

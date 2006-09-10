@@ -72,6 +72,12 @@
 # ifndef __NR_splice
 #  define __NR_splice 313
 # endif
+# ifndef __NR_tee
+#  define __NR_tee 315
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 316
+# endif
 #endif
 
 
@@ -120,6 +126,12 @@
 # endif
 # ifndef __NR_splice
 #  define __NR_splice 1297
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 1301
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 1302
 # endif
 #endif
 
@@ -186,6 +198,15 @@
 # ifndef __NR_clock_gettime
 #  define __NR_clock_gettime 246
 # endif
+# ifndef __NR_splice
+#  define __NR_splice 283
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 284
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 285
+# endif
 # ifndef __NR_openat
 #  define __NR_openat 286
 # endif
@@ -249,6 +270,12 @@
 # endif
 # ifndef __NR_splice
 #  define __NR_splice 283
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 284
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 285
 # endif
 # ifndef __NR_openat
 #  define __NR_openat 286
@@ -387,12 +414,24 @@
 # ifndef __NR_splice
 #  define __NR_splice 306
 # endif
+# ifndef __NR_tee
+#  define __NR_tee 308
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 309
+# endif
 #endif
 
 
 #ifdef __sparc64__
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 25
+# endif
 # ifndef __NR_splice
 #  define __NR_splice 232
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 280
 # endif
 # ifndef __NR_openat
 #  define __NR_openat 284
@@ -440,8 +479,14 @@
 
 
 #ifdef __sparc__
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 25
+# endif
 # ifndef __NR_splice
 #  define __NR_splice 232
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 280
 # endif
 # ifndef __NR_openat
 #  define __NR_openat 284
@@ -549,6 +594,12 @@
 # ifndef __NR_splice
 #  define __NR_splice 275
 # endif
+# ifndef __NR_tee
+#  define __NR_tee 276
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 278
+# endif
 #endif
 
 
@@ -617,6 +668,9 @@
 # endif
 # ifndef __NR_unlinkat
 #  define __NR_unlinkat 0
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 0
 # endif
 
 
