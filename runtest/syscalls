@@ -839,6 +839,9 @@ symlink03 symlink03
 symlink04 symlink04
 symlink05 symlink05
 
+#symlinkat test cases
+symlinkat01 symlinkat01
+
 sync01 sync01
 sync02 sync02
 
