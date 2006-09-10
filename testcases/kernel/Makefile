@@ -1,4 +1,4 @@
-SUBDIRS = fs io ipc mem pty sched security syscalls
+SUBDIRS = include fs io ipc mem pty sched security syscalls
 UCLINUX_SUBDIRS = syscalls
 
 all:
@@ -15,4 +15,3 @@ uclinux_install:
 
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
-
