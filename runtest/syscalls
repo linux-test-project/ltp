@@ -571,6 +571,9 @@ readlink02 readlink02
 readlink03 readlink03
 readlink04 cp -f $LTPROOT/testcases/bin/creat_slink $TMP; readlink04
 
+#readlinkat test cases
+readlinkat01 readlinkat01
+
 readv01 readv01
 readv02 readv02
 readv03 readv03
