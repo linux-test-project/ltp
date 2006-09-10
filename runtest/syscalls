@@ -118,6 +118,9 @@ execvp01 execvp01
 exit01 exit01
 exit02 exit02
 
+#faccessat test cases
+faccessat01 faccessat01
+
 fchdir01 fchdir01
 fchdir02 fchdir02
 fchdir03 fchdir03
