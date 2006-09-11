@@ -1,0 +1,166 @@
+#!/bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2006                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+##                                                                            ##
+################################################################################
+#
+# File:
+#   broken_ip4-dstaddr
+#
+# Description:
+#   Verify that the kernel is not crashed with receiving a large number of
+#   IP packets whose destination address is wrong (destination MAC address
+#   is correct)
+#
+# Setup:
+#   See ltp-yyyymmdd/testcases/network/stress/README
+#
+# Author:
+#   Mitsuru Chinen <mitch@jp.ibm.com>
+#
+# History:
+#	Mar 08 2006 - Created (Mitsuru Chinen)
+#
+#-----------------------------------------------------------------------
+# Uncomment line below for debug output.
+#trace_logic=${trace_logic:-"set -x"}
+$trace_logic
+
+# The test case ID, the test case count and the total number of test case
+TCID=${TCID:-broken_ip4-dstaddr01}
+TST_TOTAL=1
+TST_COUNT=1
+export TCID
+export TST_COUNT
+export TST_TOTAL
+
+# Test description
+tst_resm TINFO "Verify that the kernel is not crashed with receiving a large number of IPv4 packets whose destination address is wrong (destination MAC address is correct)"
+
+# Make sure the value of LTPROOT
+LTPROOT=${LTPROOT:-`(cd ../../../.. ; pwd)`}
+export LTPROOT
+
+# Check the environmanet variable
+source check_envval || exit $TST_TOTAL
+
+# Dulation of the test [sec]
+NS_DURATION=${NS_DURATION:-3600}      # 1 hour
+
+# The number of the test link where tests run
+LINK_NUM=${LINK_NUM:-0}
+
+
+#-----------------------------------------------------------------------
+#
+# Function: do_cleanup
+#
+# Description:
+#   Recover the system configuration
+#
+#-----------------------------------------------------------------------
+do_cleanup()
+{
+    # Clean up each interface
+    initialize_if lhost ${LINK_NUM}
+    initialize_if rhost ${LINK_NUM}
+}
+
+
+#-----------------------------------------------------------------------
+#
+# Setup
+#
+
+# Output the informaion
+tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+
+# Get the MAC address of the interface at the local host
+field=`expr $LINK_NUM + 1` 
+lhost_hwaddr=`echo $LHOST_HWADDRS | cut -d ' ' -f $field`
+if [ x${lhost_hwaddr} = x ]; then
+    tst_resm TBROK "Failed to get the MAC address name at the local host"
+    exit $TST_TOTAL
+fi
+
+# Get the name of the interface at the remote host
+rhost_ifname=`get_ifname rhost $LINK_NUM`
+if [ $? -ne 0 ]; then
+    tst_resm TBROK "Failed to get the interface name at the remote host"
+    exit $TST_TOTAL
+fi
+
+# Initialize the system configuration
+do_cleanup
+
+# Call do_cleanup function before exit
+trap do_cleanup 0
+
+# Network portion of the IPv4 address
+network_part="10.0.0"
+
+# Netmask of the IPv4 network
+network_mask=24
+
+# Host portion of the IPv4 address
+lhost_host_part="2"     # local host
+rhost_host_part="1"     # remote host
+
+# Set IPv4 addresses to the interfaces
+set_ipv4addr lhost $LINK_NUM $network_part $lhost_host_part
+if [ $? -ne 0 ]; then
+    tst_resm TBROK "Failed to add any IP address at the local host"
+    exit 1
+fi
+
+set_ipv4addr rhost $LINK_NUM $network_part $rhost_host_part
+if [ $? -ne 0 ]; then
+    tst_resm TBROK "Failed to add any IP address at the remote host"
+    exit 1
+fi
+
+# IPv4 address of the local/remote host
+lhost_addr="${network_part}.${lhost_host_part}"
+rhost_addr="${network_part}.${rhost_host_part}"
+
+# Make sure the connectvity
+ret=`$LTP_RSH $RHOST ${LTPROOT}/testcases/bin/check_icmpv4_connectivity $rhost_ifname $lhost_addr' ; echo $?'`
+if [ $ret -ne 0 ]; then
+    tst_resm TBROK "There is no IPv4 connectivity."
+    exit 1
+fi
+
+
+#-----------------------------------------------------------------------
+#
+# Main
+#
+#
+
+# Run a client
+$LTP_RSH $RHOST "${LTPROOT}/testcases/bin/ns-icmpv4_sender -I $rhost_ifname -S $rhost_addr -M $lhost_hwaddr -D $lhost_addr -s 56 -t $NS_DURATION -i"
+
+#-----------------------------------------------------------------------
+#
+# Clean up
+#
+
+tst_resm TPASS "Test is finished successfully."
+exit 0

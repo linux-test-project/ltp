@@ -1,0 +1,14 @@
+SCRIPTS = broken_ip4-version broken_ip4-ihl broken_ip4-totlen \
+	  broken_ip4-fragment broken_ip4-protcol \
+	  broken_ip4-checksum broken_ip4-dstaddr \
+	  broken_ip6-version broken_ip6-plen \
+	  broken_ip6-nexthdr broken_ip6-dstaddr
+
+all:
+	@chmod +x $(SCRIPTS)
+
+install:
+	@set -e; for i in $(SCRIPTS); do ln -f $$i ../../../bin ; done
+
+clean:
+	@set -e; for i in $(SCRIPTS); do rm -f ../../../bin/$$i ; done

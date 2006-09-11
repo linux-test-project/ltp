@@ -1,0 +1,88 @@
+route4-change-dst01
+	Verify the kernel is not crashed when the destination of an IPv4 route
+	is changed frequently by route command
+
+route4-change-dst02
+	Verify the kernel is not crashed when the destination of an IPv4 route
+	is changed frequently by ip command
+
+route4-change-gw01
+	Verify the kernel is not crashed when the gateway of an IPv4 route is
+	changed frequently by route command
+
+route4-change-gw02
+	Verify the kernel is not crashed when the gateway of an IPv4 route is
+	changed frequently by ip command
+
+route4-change-if01
+	Verify the kernel is not crashed when the interface of an IPv4 route is
+	changed frequently by route command
+
+route4-change-if02
+	Verify the kernel is not crashed when the interface of an IPv4 route is
+	changed frequently by ip command
+
+route4-redirect01
+	Verify the kernel is not crashed when the IPv4 route is modified by
+	ICMP Redirects frequently
+
+route4-ifdown01
+	Verify the kernel is not crashed when IPv4 route is add by route command
+	then it is deleted by the interface down with ifconfig command
+
+route4-ifdown02
+	Verify the kernel is not crashed when IPv4 route is add by ip command
+	then it is deleted by the interface down with ip command
+
+route4-rmmod01
+	Verify the kernel is not crashed when IPv4 route is add by route command
+	then it is deleted by the removing network driver
+
+route4-rmmod02
+	Verify the kernel is not crashed when IPv4 route is add by ip command
+	then it is deleted by the removing network driver
+
+
+route6-change-dst01
+	Verify the kernel is not crashed when the destination of an IPv6 route
+	is changed frequently by route command
+
+route6-change-dst02
+	Verify the kernel is not crashed when the destination of an IPv6 route
+	is changed frequently by ip command
+
+route6-change-gw01
+	Verify the kernel is not crashed when the gateway of an IPv6 route is
+	changed frequently by route command
+
+route6-change-gw02
+	Verify the kernel is not crashed when the gateway of an IPv6 route is
+	changed frequently by ip command
+
+route6-change-if01
+	Verify the kernel is not crashed when the interface of an IPv6 route is
+	changed frequently by route command
+
+route6-change-if02
+	Verify the kernel is not crashed when the interface of an IPv6 route is
+	changed frequently by ip command
+
+route6-redirect01
+	Verify the kernel is not crashed when the IPv6 route is modified by
+	ICMP Redirects frequently
+
+route6-ifdown01
+	Verify the kernel is not crashed when IPv6 route is add by route command
+	then it is deleted by the interface down with ifconfig command
+
+route6-ifdown02
+	Verify the kernel is not crashed when IPv6 route is add by ip command
+	then it is deleted by the interface down with ip command
+
+route6-rmmod01
+	Verify the kernel is not crashed when IPv6 route is add by route command
+	then it is deleted by the removing network driver
+
+route6-rmmod02
+	Verify the kernel is not crashed when IPv6 route is add by ip command
+	then it is deleted by the removing network driver
