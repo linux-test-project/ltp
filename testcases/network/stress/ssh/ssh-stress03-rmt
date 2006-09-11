@@ -113,7 +113,7 @@ case $ip_ver in
     ;;
     6)
     localhost="::1"
-    ssh -6 -f -N -L ${local_port}/${server_ipaddr}/${remote_port} root@${server_ipaddr} -F $ssh_config
+    ssh -6 -f -N -L ${local_port}/[${server_ipaddr}]/${remote_port} root@${server_ipaddr} -F $ssh_config
     ;;
     *)
     echo "$ver_opt is unknown IP version"
