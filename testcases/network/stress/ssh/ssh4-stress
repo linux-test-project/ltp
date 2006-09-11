@@ -146,6 +146,13 @@ do_setup()
 {
     trap do_cleanup 0
 
+    # Get the sshd command with absolute path
+    SSHD=`which sshd`
+    if [ x"${SSHD}" = x ]; then
+	tst_resm TBROK "sshd daemon is not found"
+	exit $TST_TOTAL
+    fi
+
     # Kill the tcp traffic server
     killall_tcp_traffic
 
@@ -232,7 +239,8 @@ UseDNS no
 PidFile ${sshd_dir}/sshd.pid
 EOD
 
-    sshd -f ${sshd_dir}/sshd_config
+ 
+    SSHD -f ${sshd_dir}/sshd_config
     if [ $? -ne 0 ]; then
 	tst_resm TBROK "Failed to run sshd daemon."
 	exit 1
