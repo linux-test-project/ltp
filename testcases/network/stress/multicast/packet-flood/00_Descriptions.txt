@@ -1,0 +1,19 @@
+mcast4-pktfld01
+	Verify that the kernel is not crashed when joining a IPv4 multicast
+	group a single socket, then receiving a large number of UDP packets
+	at the socket
+
+mcast4-pktfld02
+	Verify that the kernel is not crashed when joining plural IPv4
+	multicast groups on separate sockets, then receiving a large number
+	of UDP packets at the each socket
+
+mcast6-pktfld01
+	Verify that the kernel is not crashed when joining a IPv6 multicast
+	group a single socket, then receiving a large number of UDP packets
+	at the socket
+
+mcast6-pktfld02
+	Verify that the kernel is not crashed when joining plural IPv6
+	multicast groups on separate sockets, then receiving a large number
+	of UDP packets at the each socket

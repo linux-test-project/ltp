@@ -1,0 +1,57 @@
+mcast4-queryfld01
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of General Query
+
+mcast4-queryfld02
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address Specific Query
+
+mcast4-queryfld03
+	Verify that the kernel is not crashed when joining an IPv4 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address and Source Specific Query
+
+mcast4-queryfld04
+	Verify that the kernel is not crashed when joining plural IPv4 multicast
+	groups on separate socket, then receiving a large number of General
+	Query
+
+mcast4-queryfld05
+	Verify that the kernel is not crashed when joining joining plural IPv4
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address Specific Query
+	
+mcast4-queryfld06
+	Verify that the kernel is not crashed when joining joining plural IPv4
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address and Source Specific Query
+
+mcast6-queryfld01
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of General Query
+
+mcast6-queryfld02
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address Specific Query
+
+mcast6-queryfld03
+	Verify that the kernel is not crashed when joining an IPv6 multicast
+	group on a single socket, then receiving a large number of Multicast
+	Address and Source Specific Query
+
+mcast6-queryfld04
+	Verify that the kernel is not crashed when joining plural IPv6 multicast
+	groups on separate socket, then receiving a large number of General
+	Query
+
+mcast6-queryfld05
+	Verify that the kernel is not crashed when joining joining plural IPv6
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address Specific Query
+	
+mcast6-queryfld06
+	Verify that the kernel is not crashed when joining joining plural IPv6
+	multicast groups on separate socket, then receiving a large number of
+	Multicast Address and Source Specific Query

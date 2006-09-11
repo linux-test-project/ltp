@@ -1,0 +1,33 @@
+mcast4-grpope01
+	Verify that the kernel is not crashed when joining lots of IPv4
+	multicast groups on a single socket
+
+mcast4-grpope02
+	Verify that the kernel is not crashed when joining lots of IPv4
+	multicast groups on lots of sockets
+
+mcast4-grpope03
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv4 multicast group on multiple sockets lots of times
+
+mcast4-grpope04
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv4 multicast group with the different source filter on multiple
+	sockets lots of times
+
+mcast6-grpope01
+	Verify that the kernel is not crashed when joining lots of IPv6
+	multicast groups on a single socket
+
+mcast6-grpope02
+	Verify that the kernel is not crashed when joining lots of IPv6
+	multicast groups on lots of sockets
+
+mcast6-grpope03
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv6 multicast group on multiple sockets lots of times
+
+mcast6-grpope04
+	Verify that the kernel is not crashed when joining and leaving the same
+	IPv6 multicast group with the different source filter on multiple
+	sockets lots of times
