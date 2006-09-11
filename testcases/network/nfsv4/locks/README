@@ -1,0 +1,169 @@
+COMPILE : make
+RUN LOCAL: ./locktests -n <number of concurent process> -f <test file> [-T]
+
+
+GOAL : This test is aimed at stressing the fcntl locking functions.
+A master process sets a lock on a file region (byte range locking).
+Several slave processes try to perform operations on this region, such
+as: read, write, set a new lock ...
+The expected results of these operations are known.
+If the operation's result is the same as the expected one, the test
+succeeds, otherwise it fails.
+
+
+HISTORY : This program was been written to stress NFSv4 locks.
+
+Slaves are concurrent processes or threads.
+-n <num>  : Number of threads to use (mandatory).
+-f <file> : Run the test on a test file defined by the -f option (mandatory).
+-T        : Use threads instead of processes (optional).
+
+
+
+* RUN NETWORK *
+
+Test server:
+./locktests -n <number of concurent processes> -f <test file> -c <number of clients>
+
+Test clients:
+./locktests --server <server host name>
+
+
+Multiple clients options
+_______________________
+
+These options have been developed to test NFSv4 locking when multiple
+clients try to use the same file.  It uses a test server and several test
+clients.
+
+				--------------
+				|            |
+				| NFS SERVER |
+				|            |
+				--------------
+				      |
+				      |
+		-----------------------------------------------
+		|		      |			      |
+		|		      |			      |
+	------------------    -------------------     ------------------
+	|  NFS Client 1  |    |  NFS Client 1   |     |  NFS Client 1  |
+	|    running     |    |    running      |     |    running     |
+	| a CLIENT TEST  |    | the SERVER TEST |     | a CLIENT TEST  |
+	------------------    -------------------     ------------------
+
+See the DEPLOY file to know how to configure client test on each client.
+
+Server options are:
+
+-n <num>  : Number of threads to use (mandatory).
+-f <file> : Run the test on given test file defined by the -f option (mandatory).
+-c <num>  : Number of clients to connect before starting the tests.
+
+
+Client options
+______________
+--server <server hostname>
+
+
+* EXAMPLES *
+============
+
+Local testing: 
+./locktests -n 50 -f /file/system/to/test
+
+Multiple clients:
+-on the test server (called host1):
+	./locktest -n 50 -f /network/file/system/to/test -c 3 
+	(Server waiting for 3 clients to be connected)
+
+-test clients:
+	./locktest --server host1
+
+
+HOW TO UNDERSTAND TEST RESULTS
+==============================
+Ten tests are performed:
+ 1. WRITE ON A READ  LOCK
+ 2. WRITE ON A WRITE LOCK
+ 3. READ  ON A READ  LOCK
+ 4. READ  ON A WRITE LOCK
+ 5. SET A READ  LOCK ON A READ  LOCK
+ 6. SET A WRITE LOCK ON A WRITE LOCK
+ 7. SET A WRITE LOCK ON A READ  LOCK
+ 8. SET A READ  LOCK ON A WRITE LOCK
+ 9. READ LOCK THE WHOLE FILE BYTE BY BYTE
+ 10. WRITE LOCK THE WHOLE FILE BYTE BY BYTE
+
+
+For each test, the MASTER process takes a lock (READ/WRITE LOCK) and
+the SLAVE processes try to perform the following operations on the
+locked section:
+
+ - WRITE
+ - READ
+ - SET A WRITE LOCK
+ - SET A WRITE LOCK
+
+If a slave process performs its test operation without error it prints
+"=", otherwise it prints "x".
+
+An operation performed "without error" means:
+
+ - The operation (write, read, fcntl ...) returns no error code, and
+ - errno is not changed.
+
+However, "the slave performs its test operation without error" does NOT
+mean the "result is correct".  For example, a slave process is NOT
+allowed to set a READ LOCK on an already-set WRITE LOCK.  When such
+operations are performed, the correct and expected result is that the
+tested function returns the EAGAIN error code.
+
+When all tests have been processed, the result of each process for each
+test is compared with the table of expected results, and a new table is
+displayed:
+
+For example:
+    200 processes of 200 successfully ran test : READ  ON A READ  LOCK
+    200 processes of 200 successfully ran test : SET A READ  LOCK ON A WRITE LOCK
+
+This result lists the process/thread both on local and remote machines.
+
+Note that the testing locks with thread on multiple clients is disabled
+because it does not make sense: 2 different clients obviously run at
+least 2 different processes (thread information cannot be shared
+between this thread over the network).
+
+EXPECTED RESULTS
+================
+Here is the table of expected results, depending on :
+ - Slave test operations (READ, WRITE, SET A WRITE LOCK ... )
+ - Master Operation (SET A READ/A WRITE LOCK )
+ - Slave types (Processes, threads)
+ - Locking profile (POSIX locking, Mandatory locking)
+
+
+================================================================================================
+                                   |                     Master  process/thread                |
+===================================|===========================================================|
+Slave type  |   Test operation     |  advisory         locking    |   mandatory      locking   |
+___________________________________|______________________________|____________________________|
+            |                      |  read lock       write lock  |   read lock     write lock |
+___________________________________|______________________________|____________________________|
+thread      |   set a read lock    |   Allowed         Allowed    |    Allowed       Allowed   |
+            |   set a write lock   |   Allowed         Allowed    |    Allowed       Allowed   |
+            |   read               |   Allowed         Allowed    |    Allowed       Allowed   |
+            |   write              |   Allowed         Allowed    |    Allowed       Allowed   |
+===================================+==============================+============================|
+process     |   set a read lock    |   Allowed         Denied     |    Allowed       Denied    |
+            |   set a write lock   |   Denied          Denied     |    Denied        Denied    |
+            |   read               |   Allowed         Allowed    |    Denied        Allowed   |
+            |   write              |   Allowed         Allowed    |    Denied        Denied    |
+================================================================================================
+
+
+**************
+Bull SA - 2006 - http://nfsv4.bullopensource.org
+Tony Reix: tony.reix@bull.net
+Aurélien Charbon: aurelien.charbon@ext bull.net
+**************

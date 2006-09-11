@@ -1,0 +1,37 @@
+locktest.py script aims to help deploying and running locktests over multiple NFS
+clients accessing the same server.
+
+The source code of NFS client test is in ./deploy/locktests-2.tar.gz
+
+Setting up lock test with several test machines.
+================================================
+./locktests.py --setup -c <machine1> [machine2 ...] -s <my_nfs_server>:</>
+
+--setup                    : Option to setup the test
+-c <machine> [...]         : Setup test on these clients
+-s <server>:<mountpoint>   : NFS server to use, followed by full directory to mount
+
+
+Example:
+./locktests.py --setup -c client1 client2 client3 -s NFS_Server:/exported/directory
+
+
+Running lock test over several test machines.
+=============================================
+Run test on already configured test machines.
+./locktests.py -n <pid> -f <file> -c <machine1> [machine2 ...]
+
+-n <process_id>     : Process number each test machine will lauch to perform the test
+-f <file>           : Test file. That must be the same on each machine
+-c <machine> [...]  : Clients. run tests from this clients
+
+
+Example:
+./locktests.py -n 50 -f /mnt/nfsv4/testfile -c testmachine1 testmachine2 
+
+
+
+_________________________________ 
+ Vincent ROQUETA - Bull SA - 2005 
+ vincent.roqueta@ext.bull.net
+
