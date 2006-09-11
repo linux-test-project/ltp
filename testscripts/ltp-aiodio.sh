@@ -129,7 +129,6 @@ if [ "$run0" -eq 0 ]; then
   usage;
 fi
 
-umount -f $part1
 mkdir /test  > /dev/nul 2>&1 
 mkdir /test/aiodio > /dev/nul  2>&1 
 mkdir /test/aiodio2 > /dev/nul  2>&1 
@@ -315,6 +314,11 @@ rm -f /test/aiodio/file*
 rm -rf /test/aiodio/junkdir
 
 umount $part1
+
+if [ "$runExtendedStress" -eq 1 ]; then
+      umount $part2
+fi
+
 
 done
 date
