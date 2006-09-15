@@ -270,7 +270,7 @@ setup03()
     int j, fd;              /*j is loop counter, fd is file descriptor*/
     int pid;                    /* used for fork */
     int *status=NULL;       /* used for fork */
-    int res = 0;
+    int res = 0, pagesize = getpagesize();
     int  bs, count;
     char cmd_buffer[100];       /* array to hold command line*/
     char filename[15];      /* array to store new filename*/
@@ -319,6 +319,9 @@ setup03()
     if ((strncmp(kmachine, "ia64", 4)) == 0) {
         bs = 1024;
         count = 1024;
+    } else if(pagesize ==65536) {
+	bs=1048;
+	count=655;
     } else {
         bs = 1048;
         count = 40;
@@ -379,7 +382,12 @@ setup03()
             tst_resm(TWARN, "Failed to create extra file for swap");
             exit(1);
         }
-    } else {
+    } else if (pagesize == 65536) {
+       if(system("dd if=/dev/zero of=swapfilenext  bs=1048  count=655 > tmpfile"
+             " 2>&1") != 0) {
+      tst_brkm(TBROK, cleanup, "Failed to create file for swap");
+      }
+     }else {
         if (system("dd if=/dev/zero of=swapfilenext bs=1048 count=40 > tmpfile"
                    " 2>&1") != 0) {
             tst_resm(TWARN, "Failed to create extra file for swap");
@@ -426,6 +434,8 @@ cleanup03()
 void
 setup()
 {
+
+int pagesize = getpagesize();
   /* capture signals */
   tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -451,7 +461,12 @@ setup()
 	     " 2>&1") != 0) {
      tst_brkm(TBROK, cleanup, "Failed to create file for swap");
     }
-  } else {
+  } else if (pagesize == 65536)
+     {
+      if(system("dd if=/dev/zero of=swapfile01 bs=1048  count=655 > tmpfile"              " 2>&1") != 0) {
+      tst_brkm(TBROK, cleanup, "Failed to create file for swap");
+    	}
+     }else {
     if(system("dd if=/dev/zero of=swapfile01 bs=1048  count=40 > tmpfile"
 	     " 2>&1") != 0) {
       tst_brkm(TBROK, cleanup, "Failed to create file for swap");
