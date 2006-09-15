@@ -147,8 +147,16 @@ int main()
 		tst_exit() ;
 	}
 
+#ifdef __mips__
+        vp = (void *) ((char *)sbrk(0) + 256 * K_1);
+#elif  defined(__ia64__) || defined(__powerpc__) || defined(__powerpc64__)
+        vp = (void *) ((char *)sbrk(0) + getpagesize());
+#else
 	/* SHM_RND rounds vp on the nearest multiple of SHMLBA */
-	vp = (void *) SHMALIGN((char *)sbrk(0) + 1);
+        vp = (void *) SHMALIGN((char *)sbrk(0) + 1);
+#endif
+
+
 	c3 = (char *) shmat(shmid, vp, SHM_RND);
 	if (c3 == (char *)-1) {
 		perror("shmat1");
@@ -181,7 +189,7 @@ int main()
 			tst_exit();
 	}
 #else
-	if ((vp = sbrk(16000)) != (void *)-1) {
+		if ((vp = sbrk(getpagesize())) != (void *)-1) {
 		  tst_resm(TFAIL,
 		  "Error: sbrk succeeded!  ret = 0x%08x, curbrk = 0x%08x, ",
 		  vp, sbrk(0));
