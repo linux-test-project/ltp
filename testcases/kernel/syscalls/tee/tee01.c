@@ -87,8 +87,8 @@ int main(int ac, char **av)
 	/* Disable test if the version of the kernel is less than 2.6.17 */
 	if(((results=tst_kvercmp(2,6,17)) < 0))
           {
-	     tst_resm(TINFO, "This test can only run on kernels that are ");
-	     tst_resm(TINFO, "2.6.17 and higher");
+	     tst_resm(TWARN, "This test can only run on kernels that are ");
+	     tst_resm(TWARN, "2.6.17 and higher");
 	     exit(0);
           }
   
