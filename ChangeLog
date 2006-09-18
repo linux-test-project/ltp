@@ -1,3 +1,179 @@
+LTP-20060918
+
+-Code was added to disable tests that will not run on kernels lower 
+ than 2.6.16
+ fstatat01.c, vmsplice01.c, unlinkat01.c, mkdirat01.c, mkdirat01.c, 
+ readlinkat01.c,futimesat01.c,renameat01.c,openat01.c, openat01.c, fchownat01.c
+ symlinkat01.c,faccessat01.c, timer_create02.c, fchmodat01.c, splice01.c, 
+ tee01.c, mknod01.c
+
+-The following new test cases for 2.6.16 kernels and above were created by
+ Yi CDL Yang
+ fstatat01.c, vmsplice01.c, unlinkat01.c, mkdirat01.c, mkdirat01.c, 
+ readlinkat01.c,futimesat01.c,renameat01.c,openat01.c, openat01.c, fchownat01.c
+ symlinkat01.c,faccessat01.c, timer_create02.c, fchmodat01.c, splice01.c, 
+ tee01.c, mknod01.c
+
+-Changes were made to several files to make them easier to read 
+ change_owner.mode.sh
+
+-Changes were made to remove  DOS ^M 
+ ltp-run-files.txt, self_exec.c, Makefile, load_tagp.sh, str_agp.h, tagp.h, 
+ Makefile, user_tagp.h, pci-exp-tests-HOWTO, Makefile, README, runtest_off.sh,
+ runtest_on.sh, README, Makefile, README, common.h, README.1ST, mem03.c, 
+ README, ltpClient.c, ltpServer.c
+
+-Changes made by Jacky Malcles that let ltp-aiodio.sh fun this scenario 
+ ltp-aiodio.part3
+
+-Changes made to  linux __NR_ logic here 
+ Makefile, i386.in, ia64.in, linux_syscall_numbers.h, order, parisc.in, 
+ powerpc.in, powerpc64.in, regen.sh, s390.in, s390x.in, sparc.in, sparc64.in, 
+ stub-list, x86_64.in
+
+-Changes were made to Define _GNU_SOURCE if not already defined 
+ chmod05.c, chmod06.c, fchmod05.c, fchmod06.c, fcntl17.c, llseek01.c, 
+ llseek02.c, mount03.c
+
+-Generate script into generic shell and make sure we still work even if host 
+ lacks perl 
+ Makefile, generate.sh
+
+-A patch by jiang guowei for mmap1.c.  It makes the option -v valid.Otherwise,
+ when you type mmap1 -v in command line,it will show:invalid option.More 
+ detail,please see bug 1541053. 
+ mmap1.c
+
+-Applied a patch to fix bug #14744 
+ kill02.c
+
+- Changed Makefile to standard LTP makefile and fixed a build problem with the
+  new lock tests 
+  ltp/testcase/network/nfsv4/lock/Makefile
+
+- Changes made to several Makefiles to force CFLAGS/LIBS to be evaluated 
+  once rather than everytime they are used 
+
+-Standardize makefiles (punt UCLINUX/COLDFIRE cruft, build everything with 
+  "-Wall" and user-optimizations, remove pointless targets in favor of 
+  implicit ones, etc...) Makefiles
+
+-Adding files for Mitsu's networking tests. 
+ 00_Descriptions.txt, Makefile, broken_ip4-checksum, broken_ip4-dstaddr, 
+ broken_ip4-fragment, broken_ip4-ihl, broken_ip4-protcol, broken_ip4-totlen, 
+ broken_ip4-version, broken_ip6-dstaddr, broken_ip6-nexthdr, broken_ip6-plen, 
+ broken_ip6-version, Makefile, 00_Descriptions.txt, Makefile,
+ route4-change-dst,route4-change-gw, route4-change-if, route4-ifdown, 
+ route4-redirect, route4-rmmod, route6-change-dst, route6-change-gw,
+ route6-change-if, route6-ifdown, route6-redirect, route6-rmmod
+
+-Add a common header for __NR defines 
+ fchownat01.c, fstatat01.c, futimesat01.c, mkdirat01.c, mknod01.c, 
+ openat01.c, splice01.c, tee01.c, common_timers.h
+
+-Added a patch by Mitsuru Chinen that added the Absolute path to execute sshd 
+ daemon ssh4-stress
+
+-This patch adds brackets because some versions of ssh requires square brackets
+ around the IPv6 address.
+ ssh-stress03-rmt
+
+-Changes are made to try to load .ko modules before .o as pointed out by HK 
+ ltpacpi.sh, load_tagp.sh, load_tbase.sh, load_tmod.sh, load_tdrm.sh, 
+ load_tbio.sh
+
+-Additional changes for  uClinux fixes from Jane Lv 
+ access05.c, chdir04.c, chroot03.c, creat06.c, mkdir03.c, mknod06.c, 
+ nanosleep03.c, open08.c, pause02.c, rename08.c, rmdir02.c, sigrelse01.c, 
+ sockioctl01.c, stat03.c, statfs02.c
+
+-Made changes to clean up the makefile, clean up source code warnings, and 
+ add better libc/libepoll detection 
+ CheckVer.c, Makefile, epoll-ltp.c
+
+- A fix by Jeff Bailey for my previous breakage of install target in Multiple 
+  Makefiles
+
+-A patch was created to make errno failure message more helpful 
+ sysctl03.c
+
+-A patch that sets the constant PAGE_SIZE to the kernel its running on 
+ fsx-linux.c
+
+-Changes were made to remove extraneous whitespace 
+ Makefile, pth_str01.c, pth_str02.c, pth_str03.c
+
+-A patch was created to move common defines/functions/etc... to one header 
+ file so we have to get it right just once 
+ clock_gettime02.c, clock_gettime03.c, clock_settime02.c, clock_settime03.c, 
+ common_timers.h, timer_create02.c, timer_create03.c, timer_create04.c, 
+ timer_delete02.c, timer_delete03.c, timer_settime02.c, timer_settime03.c
+
+-Adding files for Mitsuru's networking tests 
+ 00_Descriptions.txt, Makefile, mcast4-grpope01, mcast4-grpope02, 
+ mcast4-grpope03, mcast4-grpope04, mcast6-grpope01, mcast6-grpope02, 
+ mcast6-grpope03, mcast6-grpope04, 00_Descriptions.txt, Makefile, 
+ mcast4-pktfld01,mcast4-pktfld02, mcast6-pktfld01, mcast6-pktfld02, 
+ 00_Descriptions.txt, Makefile, mcast4-queryfld01, mcast4-queryfld02, 
+ cast4-queryfld03, mcast4-queryfld04, mcast4-queryfld05, mcast4-queryfld06, 
+ mcast6-queryfld01, mcast6-queryfld02, mcast6-queryfld03, mcast6-queryfld04, 
+ mcast6-queryfld05, mcast6-queryfld06
+
+-A change was made to use __linux__ preprocessor from toolchain itself rather 
+ than a local custom _LINUX 
+ Makefile, sched_tc0.c, sched_tc1.c, sched_tc2.c, sched_tc3.c, sched_tc4.c, 
+ sched_tc5.c, sched_tc6.c
+
+-A fix type of option_message 
+ reboot01.c
+
+-Changes were made to cleanup source code 
+ domount.c, getopt.c
+
+-A patch that adds new functionality into the NFSvf lock tests. -fixes bugs -
+ adds the capability to stress a server with multiple clients 
+ DEPLOY, Makefile, README, VERSION, locktests, locktests.c, locktests.h, 
+ locktests.py, netsync.c, locktests-2.tar.gz
+
+-Changes to shmt09 were made by Marc Tardiff.  Refer to the cvs log file 
+ for more details. Tested successfully on sparc and i386 architectures. 
+ 
+-Changes were made to shmt09 to account for ppc64
+
+-Added a warning to those who wish to edit it 
+tests.init
+
+-Changes were made to declare splice for new vmsplice test 
+ i386.in, ia64.in, linux_syscall_numbers.h, powerpc.in, powerpc64.in, 
+ s390.in, sparc.in, sparc64.in, stub-list, x86_64.in
+
+-Changes were made to add cast to silence warnings 
+ timer_delete03.c, timer_settime03.c
+
+-A fix was made to remove trailing whitespace 
+ clock_gettime02.c, clock_gettime03.c, clock_settime02.c, clock_settime03.c, 
+ timer_create02.c, timer_create03.c, timer_create04.c, timer_delete02.c, 
+ timer_delete03.c, timer_settime02.c, timer_settime03.c
+
+-Fixes taken from Yi CDL Yang and create a CLOCK list for people to use 
+ as well as a func to turn a clock value into a string 
+ common_timers.h
+
+-Changes were made to unify the generate.sh scripts and use the new top level 
+ make-files script 
+ generate.sh, Makefile, generate.sh, Makefile, generate.sh, nfs02, Makefile,  
+ generate.sh, Makefile, generate.sh, Makefile, generate.sh, Makefile, 
+ generate.sh
+
+-Patches were submitted Mitsuru Chinen writes: As an end-of-line semicolon 
+ is missing, compiling asapi_06.c is failed. 
+ asapi_06.c
+
+-Patches were submitted Mitsuru Chinen writes: It seems that the contents 
+ of runtest/ipv6_lib gets old. Currently, there is no test named lib6, 
+ but more tests are available in testcases/network/lib6 directory. 
+ ipv6_lib
+
 LTP-20060822
 
 -Added files for Mitsuru's Chinen's nfs patch: 
