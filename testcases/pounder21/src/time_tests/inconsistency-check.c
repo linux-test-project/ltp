@@ -27,7 +27,7 @@
 #include <sys/time.h>
 
 #define CALLS_PER_LOOP 64
-#define NSEC_PER_SEC 1000000000
+#define NSEC_PER_SEC 1000000000ULL
 
 /* returns 1 if a <= b, 0 otherwise */
 static inline int in_order(struct timespec a, struct timespec b)
