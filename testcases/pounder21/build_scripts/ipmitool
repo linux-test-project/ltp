@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Builds ipmitool
+
+# Copyright (C) 2003-2006 IBM
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+source "$POUNDER_HOME/libpounder.sh"
+
+#TODO: Move to config file variables
+Req_Maj=1
+Req_Min=8
+Req_Pat=7
+
+TESTCURRENTIPMI=0
+
+PKGNAME=ipmitool-1.8.8
+#end of stuff to move
+TARNAME="$PKGNAME.tar.gz"
+PROGNAME=ipmitool
+if [ $TESTCURRENTIPMI -ne 0 ]; then
+
+	# Is it already installed?
+	PROG=`which $PROGNAME`
+	if [ ! -z "$PROG" ]; then
+		Maj_ver=`ipmitool -V | cut -b 18- | awk -F "." '{print $1}'`
+		Min_ver=`ipmitool -V | cut -b 18- | awk -F "." '{print $2}'`
+		Pat_ver=`ipmitool -V | cut -b 18- | awk -F "." '{print $3}'`
+		if [ $Maj_ver -gt $Req_Maj ]; then
+			exit 0;
+		elif [[ $Maj_ver -eq $Req_Maj && $Min_ver -gt $Req_Min ]]; then
+			exit 0;
+		elif [[ $Maj_ver -eq $Req_Maj && $Min_ver -eq $Req_Min && $Pat_ver -ge $Req_Pat ]]; then
+			exit 0;
+		fi
+	fi
+
+	# Retrieve binary, if necessary
+	cd "$POUNDER_OPTDIR"
+	if [ ! -f "$TARNAME" ]; then
+		if [ $USE_CACHE -eq 1 ]; then
+			wget "${POUNDER_CACHE}${TARNAME}"
+		fi
+		if [ ! -f "$TARNAME" ]; then
+			get_from_sourceforge $PROGNAME $TARNAME
+		fi
+	fi
+	
+	# Unpack if req'd
+	if [ ! -d "$PKGNAME" ]; then
+		tar -xzf "$TARNAME"
+	fi
+	
+	# Build
+	cd "$PKGNAME"
+	./configure
+	make $*
+fi
