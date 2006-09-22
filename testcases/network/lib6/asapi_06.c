@@ -161,7 +161,7 @@ struct soent {
 	int		so_clear;	/* get fresh socket? */
 	union soval	so_clrval;
 	union soval	so_setval;
-	int		so_valsize;
+	socklen_t	so_valsize;
 } sotab[] = {
 /* RFC 3542, Section 4 */
 	{ "IPV6_RECVPKTINFO", IPV6_RECVPKTINFO, 1, IPV6_PKTINFO, 1,
@@ -221,8 +221,8 @@ struct cme {
 	int	cm_level;
 	int	cm_type;
 	union {
-		uint8_t	cmu_tclass;
-		uint8_t cmu_hops;
+	        uint32_t cmu_tclass;
+		uint32_t cmu_hops;
 	} cmu;
 } cmtab[] = {
 	{ sizeof(uint32_t), SOL_IPV6, IPV6_TCLASS, .cmu.cmu_tclass=0x12 },
@@ -282,7 +282,8 @@ so_test(struct soent *psoe)
 	struct sockaddr_in6 sin6;
 	struct soprot	*psop;
 	union soval	sobuf;
-	int onoff, valsize;
+	int onoff;
+        socklen_t valsize;
 	static int sr = -1;
 	int st;
 
