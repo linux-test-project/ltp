@@ -49,8 +49,8 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-        alarm(1);
 	sleep(1);
+        alarm(1);
 
 	if( sem_post(gsemp) == -1 ) {
 		perror(ERROR_PREFIX "sem_post");

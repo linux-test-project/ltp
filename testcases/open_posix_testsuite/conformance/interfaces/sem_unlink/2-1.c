@@ -22,7 +22,7 @@
 
 
 #define TEST "2-1"
-#define FUNCTION "sem_unlink"
+#define FUNCTION "sem_ulk"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 
