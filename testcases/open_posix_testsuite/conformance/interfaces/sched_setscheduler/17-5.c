@@ -23,6 +23,10 @@
 #include <unistd.h>
 #include "posixtest.h"
 
+#ifndef SCHED_BATCH
+#define SCHED_BATCH  3
+#endif
+
 int main(){
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;
@@ -32,7 +36,8 @@ int main(){
 	/* Linux does not treat minus value as invalid for policy */
 	while(invalid_policy == SCHED_OTHER || 
 		invalid_policy == SCHED_FIFO ||
-		invalid_policy == SCHED_RR)
+		invalid_policy == SCHED_RR ||
+		invalid_policy == SCHED_BATCH)
 	invalid_policy++;
 
 	if(sched_getparam(getpid(), &param) == -1) {
