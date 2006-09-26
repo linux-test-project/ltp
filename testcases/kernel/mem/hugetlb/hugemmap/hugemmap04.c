@@ -163,6 +163,8 @@ main(int ac, char **av)
 			continue;
 		} else {
 			tst_resm(TPASS, "Succeeded mapping file using %d pages",freepages);
+			/* force to allocate page and change HugePages_Free */
+			*(int*)addr = 0;
 		}
 		
 		/* Make sure the number of free huge pages AFTER testing decreased */
@@ -223,19 +225,18 @@ getfreehugepages()
 {
 	int hugefree;
 	FILE* f;
-	int retcode;
-	int counter=0;
+	int retcode=0;
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
 	if (!f) 	 
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
-	while( counter < 23 ){
-          fgets(buff,BUFFER_SIZE, f);
-	  counter++;
+
+	while(fgets(buff,BUFFER_SIZE, f) != NULL){
+		if((retcode = sscanf(buff, "HugePages_Free: %d ", &hugefree)) == 1)
+			break;
 	}
-	
-        retcode = fscanf(f, "HugePages_Free: %d ", &hugefree); 	 
+
         if (retcode != 1) { 	 
         	fclose(f); 	 
        		tst_brkm(TFAIL, cleanup, "Failed reading number of huge pages free.");
