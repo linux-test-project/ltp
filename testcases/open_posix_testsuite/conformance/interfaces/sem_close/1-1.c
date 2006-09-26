@@ -18,7 +18,7 @@
 #include <semaphore.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <posixtest.h>
+#include "posixtest.h"
 
 #define TEST "1-1"
 #define FUNCTION "sem_close"
