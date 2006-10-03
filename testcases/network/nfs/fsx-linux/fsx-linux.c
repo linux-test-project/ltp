@@ -29,6 +29,9 @@
  *
  *	Small changes to work under Linux -- davej.
  *
+ *	
+ *	Minor fixes to PAGE_SIZE handling -- Suzuki <suzuki@in.ibm.com>.
+ * 
  */
 
 #include <sys/types.h>
@@ -85,7 +88,7 @@ int			logcount = 0;	/* total ops */
 #define OP_SKIPPED	7
 
 #ifndef PAGE_SIZE
-#define PAGE_SIZE       4096
+#define PAGE_SIZE       pagesize 
 #endif
 #define PAGE_MASK       (PAGE_SIZE - 1)
 
@@ -125,7 +128,7 @@ int	fsxgoodfd = 0;
 FILE *	fsxlogf = NULL;
 int badoff = -1;
 int closeopen = 0;
-
+int pagesize = 0;
 
 void
 prt(char *fmt, ...)
@@ -478,7 +481,7 @@ domapread(unsigned offset, unsigned size)
 		    offset, offset + size - 1, size);
 
 	pg_offset = offset & PAGE_MASK;
-	map_size  = pg_offset + size;
+        map_size  = (pg_offset + size + PAGE_MASK) & ~PAGE_MASK;
 
 	if ((p = (char *)mmap(0, map_size, PROT_READ, MAP_SHARED, fd,
 			      (off_t)(offset - pg_offset))) == (char *)-1) {
@@ -609,7 +612,7 @@ domapwrite(unsigned offset, unsigned size)
 		}
 	}
 	pg_offset = offset & PAGE_MASK;
-	map_size  = pg_offset + size;
+        map_size  = (pg_offset + size + PAGE_MASK) & ~PAGE_MASK;
 
 	if ((p = (char *)mmap(0, map_size, PROT_READ | PROT_WRITE,
 			      MAP_FILE | MAP_SHARED, fd,
@@ -995,7 +998,7 @@ main(int argc, char **argv)
 	if (argc != 1)
 		usage();
 	fname = argv[0];
-
+        pagesize = getpagesize();
 
 	signal(SIGHUP,	cleanup);
 	signal(SIGINT,	cleanup);
