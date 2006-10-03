@@ -117,12 +117,12 @@ main(argc, argv)
 	system(buf);
 
 #ifndef DOSorWIN32
+	if (close(fd))
+		xxit("error on close");
 	if (unlink(tname) < 0) {
 		fprintf(stderr, "can't unlink %s", tname);
 		xxit(" ");
 	}
-	if (close(fd))
-		xxit("error on close");
 #else
 	/* 
 	 * For DOS you can't delete the file if it is RO, even if you
