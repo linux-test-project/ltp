@@ -181,8 +181,9 @@ int main( int argc,
         }
         if (TST_TOTAL == 0)
         {
-            fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
-            exit(-1);
+            fprintf(stderr, "Variable TST_TOTAL is set to 0, must be \
+                    greater than zero \n");
+	    exit(-1);
         }
     }
 
