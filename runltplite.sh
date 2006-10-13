@@ -114,7 +114,7 @@ main()
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
 
-    while getopts c:d:hi:l:m:No:pqr:v: arg
+    while getopts c:d:hi:l:m:No:pqr:v arg
     do  case $arg in
         c)       
 	    NUM_PROCS=$(($OPTARG))
