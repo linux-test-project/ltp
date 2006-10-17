@@ -14,4 +14,4 @@ uclinux_install:
 	@set -e; for i in $(UCLINUX_SUBDIRS); do $(MAKE) -C $$i uclinux_install ; done
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS) timers; do $(MAKE) -C $$i clean ; done
