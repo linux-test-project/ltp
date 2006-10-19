@@ -5,12 +5,12 @@
  
  # Remove any possible left over directories from a cancelled previous run
 -rm -fr linux linux.orig linux.pass.*
-+rm -fr linux-2.6.15 linux.orig linux.pass.*
++rm -fr linux-2.6.18 linux.orig linux.pass.*
  
  # Unpack the one copy of the source tree that we will be comparing against
  tar -xzf $SOURCE_FILE
 -mv linux linux.orig
-+mv linux-2.6.15 linux.orig
++mv linux-2.6.18 linux.orig
  
  i=0
  while [ "$i" -lt "$NR_PASSES" ]; do
@@ -18,11 +18,11 @@
  while [ "$j" -lt "$NR_SIMULTANEOUS" ]; do
  if [ $PARALLEL = "yes" ]; then
 -(mkdir $j; tar -xzf $SOURCE_FILE -C $j; mv $j/linux linux.pass.$j; rmdir $j) &
-+(mkdir $j; tar -xzf $SOURCE_FILE -C $j; mv $j/linux-2.6.15 linux.pass.$j; rmdir $j) &
++(mkdir $j; tar -xzf $SOURCE_FILE -C $j; mv $j/linux-2.6.18 linux.pass.$j; rmdir $j) &
  else
  tar -xzf $SOURCE_FILE
 -mv linux linux.pass.$j
-+mv linux-2.6.15 linux.pass.$j
++mv linux-2.6.18 linux.pass.$j
  fi
  j=`expr $j + 1`
  done
@@ -31,7 +31,7 @@
  
  # Clean up after ourselves
 -rm -fr linux linux.orig linux.pass.*
-+rm -fr linux-2.6.15 linux.orig linux.pass.*
++rm -fr linux-2.6.18 linux.orig linux.pass.*
  
  
  

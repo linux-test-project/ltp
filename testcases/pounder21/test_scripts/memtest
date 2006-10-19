@@ -46,7 +46,7 @@ OLD_ERRORS=`egrep -ic "(err|fail|invalid|cannot|denied|diff)" $LOGFILE`
 
 # Run the test
 cd "$POUNDER_OPTDIR"
-NR_PASSES=2 TEST_DIR="$MEMTESTDIR" SOURCE_FILE="$POUNDER_OPTDIR/linux-2.6.15.tar.gz" ./memtest.sh
+NR_PASSES=2 TEST_DIR="$MEMTESTDIR" SOURCE_FILE="$POUNDER_OPTDIR/linux-2.6.18.tar.gz" ./memtest.sh
 
 # Now clean up
 rm -rf "$POUNDER_TMPDIR/memtest/"
