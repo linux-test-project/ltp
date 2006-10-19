@@ -60,8 +60,8 @@ echo "IO Ports:"
 echo "========="
 cat /proc/ioports
 echo
-echo "PCI Device Tree:"
-echo "================"
+echo "PCI Device Tree via lspci:"
+echo "=========================="
 lspci -v
 echo
 echo "IDE Device/Driver Info:"
@@ -79,5 +79,9 @@ echo
 echo "Partition Layout:"
 echo "================="
 fdisk -l /dev/sd[a-z] /dev/hd[a-z]
+echo
+echo "sysfs Device Info:"
+echo "=================="
+find /sys -type f | while read f; do echo $f: `cat $f`; done
 
 exit 0
