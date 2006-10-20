@@ -428,7 +428,7 @@ int do_scsi_start_stop(char * device, int startstop);
 int do_scsi_read_write_buffer (char * device);
 int do_scsi_test_unit_ready(char * device);
 int show_scsi_info(char * device);
-void print_msg(int msg_num, char * msg);
+void print_msg(int msg_num, const char * msg);
 static void scan_dev_type(const char * leadin, int max_dev, int do_numeric,
                           int lin_dev_type, int last_sg_ind);
 
@@ -440,7 +440,7 @@ int sg3_inq(int sg_fd, unsigned char * inqBuff, int do_extra);
 static unsigned char inqCmdBlk [INQUIRY_CMDLEN] =
                                 {0x12, 0, 0, 0, INQ_REPLY_LEN, 0};
 
-void print_msg(int msg_num, char * msg)
+void print_msg(int msg_num, const char * msg)
 {
     switch(msg_num)
     {

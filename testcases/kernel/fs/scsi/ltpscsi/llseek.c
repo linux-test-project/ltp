@@ -13,6 +13,8 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <syscall.h>
+#include <linux/unistd.h>	/* for __NR_llseek */
 
 #if defined(__GNUC__) || defined(HAS_LONG_LONG)
 typedef long long       llse_loff_t;
@@ -24,37 +26,45 @@ extern llse_loff_t llse_llseek (unsigned int, llse_loff_t, unsigned int);
 
 #ifdef __linux__
 
-#ifdef HAVE_LLSEEK
-#include <syscall.h>
-
-#else	/* HAVE_LLSEEK */
 
 #if defined(__alpha__) || defined(__ia64__)
 
-#define my_llseek lseek
+#ifdef __NR_lseek
+static off_t my_lseek(int fd, off_t off, int whence)
+{
+	return syscall(__NR_lseek, fd, off, whence);
+}
+#else /* undefined __NR_lseek */
+static off_t my_lseek(int fd, off_t off, int whence)
+{
+	errno = ENOSYS;
+	return -1;
+}
+#endif /* __NR_lseek */
 
-#else
-#include <linux/unistd.h>	/* for __NR__llseek */
+#define my_llseek my_lseek
+
+#else /* !__alpha__ && !__ia64__ */
 
 static int _llseek (unsigned int, unsigned long,
 		   unsigned long, llse_loff_t *, unsigned int);
 
-#ifdef __NR__llseek
 
-static _syscall5(int,_llseek,unsigned int,fd,unsigned long,offset_high,
-		 unsigned long, offset_low,llse_loff_t *,result,
-		 unsigned int, origin)
-
-#else
-
-/* no __NR__llseek on compilation machine - might give it explicitly */
+#ifndef __NR_llseek
+/* no __NR_llseek on compilation machine - might give it explicitly */
 static int _llseek (unsigned int fd, unsigned long oh,
 		    unsigned long ol, llse_loff_t *result,
 		    unsigned int origin) {
 	errno = ENOSYS;
 	return -1;
 }
-
+#else
+static int _llseek (unsigned int fd, unsigned long oh,
+		    unsigned long ol, llse_loff_t *result,
+		    unsigned int origin)
+{
+	return syscall(__NR_llseek, fd, oh, ol, result, origin);
+}
 #endif
 
 static llse_loff_t my_llseek (unsigned int fd, llse_loff_t offset,
@@ -71,7 +81,6 @@ static llse_loff_t my_llseek (unsigned int fd, llse_loff_t offset,
 
 #endif /* __alpha__ */
 
-#endif	/* HAVE_LLSEEK */
 
 llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
 			 unsigned int origin)
