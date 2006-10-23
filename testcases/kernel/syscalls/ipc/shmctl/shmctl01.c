@@ -62,11 +62,6 @@
 #include "ipcshm.h"
 
 char *TCID = "shmctl01";
-#ifndef UCLINUX
-int TST_TOTAL = 4;
-#else
-int TST_TOTAL = 3;
-#endif
 extern int Tst_count;
 
 int shm_id_1 = -1;
@@ -121,6 +116,8 @@ struct test_case_t {
 
 	{IPC_RMID, func_rmid, NULL}
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 #define NEWMODE	0066
 

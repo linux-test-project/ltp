@@ -55,7 +55,6 @@
 #include <pwd.h>
 
 char *TCID = "shmctl02";
-int TST_TOTAL = 7;
 extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -95,6 +94,8 @@ struct test_case_t {
 	/* EPERM - the command is only valid for the super-user */
 	{&shm_id_2, SHM_UNLOCK, &buf, EPERM}
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int main(int ac, char **av)
 {

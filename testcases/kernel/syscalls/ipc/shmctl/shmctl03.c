@@ -62,7 +62,6 @@
 #include <sys/wait.h>
 
 char *TCID = "shmctl03";
-int TST_TOTAL = 3;
 extern int Tst_count;
 
 int exp_enos[] = {EACCES, EPERM, 0};	/* 0 terminated list of */
@@ -85,10 +84,12 @@ struct test_case_t {
 
 	/* EPERM - IPC_SET - child doesn't have permission to change segment */
 	{&shm_id_1, IPC_SET, &buf, EPERM},
-	
+
 	/* EPERM - IPC_RMID - child can not remove the segment */
 	{&shm_id_1, IPC_RMID, &buf, EPERM},
 };
+
+int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int main(int ac, char **av)
 {
