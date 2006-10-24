@@ -36,7 +36,15 @@ $trace_logic
 
 TC=mc_cmds
 PING_OUT=/tmp/${TC}_out
-LTPROOT=${LTPROOT:-../../../..}
+# Set the LTPROOT variable to the correct path
+# from the ltp/testcases/bin directory or the
+# /ltp/testcases/network/multicast directory
+pwd | grep -q bin
+if [ $? -eq 0 ]; then
+  LTPROOT=${LTPROOT:-../..}
+else
+  LTPROOT=${LTPROOT:-../../../..}
+fi
 HOSTNAME=`hostname`
 CLEANUP=${CLEANUP:-ON}
 #*******************************************************************************
