@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.3 2003/03/26 19:38:09 robbiew Exp $ */
+/* $Id: getgroups01.c,v 1.4 2006/10/30 16:16:07 vapier Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -92,6 +92,9 @@ char *TCID="getgroups01";          /* Test program identifier.    */
 int TST_TOTAL=4;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
+gid_t gidset[NGROUPS];	/* storage for all group ids */
+gid_t cmpset[NGROUPS];
+
 /***********************************************************************
  * MAIN
  ***********************************************************************/
@@ -105,8 +108,6 @@ main(int ac, char **av)
 	group,			/* return value from Getgid() call */
 	entries;		/* number of group entries */
 
-    gid_t gidset[NGROUPS];	/* storage for all group ids */
-    gid_t cmpset[NGROUPS];
     int ret;
     int ret2;
     int errors = 0;

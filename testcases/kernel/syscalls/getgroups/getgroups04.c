@@ -81,6 +81,8 @@ int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EINVAL, 0};
 
+gid_t groups_list[NGROUPS];	/* buffer to hold user group list */
+
 int no_setup();
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -102,10 +104,9 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
-	gid_t groups_list[NGROUPS];	/* buffer to hold user group list */
 	int ind;		/* counter to test different test conditions */
 	char *test_desc;        /* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
