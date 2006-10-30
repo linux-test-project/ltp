@@ -101,18 +101,18 @@ do_test ()
 # This eliminates the ping test but does not compromise the execution of the
 # test
 
-      distro_version=""
-      distro_name=""
-      distro_version=`cat /etc/issue | awk {'print $7'}`
-      distro_name=`cat /etc/issue | awk {'print $3'}`
+#      distro_version=""
+#      distro_name=""
+#      distro_version=`cat /etc/issue | awk {'print $7'}`
+#      distro_name=`cat /etc/issue | awk {'print $3'}`
 
-       if [ $distro_version -ge 9 -a $distro_name == SUSE ]; then
-          echo "Ping test skipped"
-       else
-           echo "Running ping to verify group can be reached "
-        ping -c5 -I $INTERFACE $GROUP_ADDR > /dev/null 
-        [ $? = 0 ] || end_testcase "failed: ping -c5 -I $INTERFACE $GROUP_ADDR"
-       fi
+#       if [ $distro_version -ge 9 -a $distro_name == SUSE ]; then
+#          echo "Ping test skipped"
+#       else
+#           echo "Running ping to verify group can be reached "
+#           ping -c5 -I $INTERFACE $GROUP_ADDR > /dev/null 
+#        [ $? = 0 ] || end_testcase "failed: ping -c5 -I $INTERFACE $GROUP_ADDR"
+#       fi
 
 
       # Flood the interface in an attempt to overload the sends and
