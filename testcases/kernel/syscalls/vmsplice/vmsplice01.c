@@ -90,11 +90,11 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-       /* Disable test if the version of the kernel is less than 2.6.16 */
-        if((tst_kvercmp(2,6,16)) < 0)
+       /* Disable test if the version of the kernel is less than 2.6.17 */
+        if((tst_kvercmp(2,6,17)) < 0)
           {
              tst_resm(TWARN, "This test can only run on kernels that are ");
-             tst_resm(TWARN, "2.6.16 and higher");
+             tst_resm(TWARN, "2.6.17 and higher");
              exit(0);
           }
 
