@@ -84,6 +84,7 @@
 
 #include <errno.h>
 #include <sys/timex.h>
+#include <unistd.h>
 #include <pwd.h> 
 #include "test.h"
 #include "usctest.h"
@@ -102,6 +103,8 @@ static void cleanup6();
 
 char *TCID = "adjtimex02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
+
+static int hz;			/* HZ from sysconf */
 
 static struct timex tim_save;
 static struct timex buff;
@@ -207,6 +210,12 @@ setup()
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
+	/* set the HZ from sysconf */
+	hz = sysconf(_SC_CLK_TCK);
+	if (hz == -1) {
+		tst_brkm(TBROK, tst_exit, "Failed to read the HZ from sysconf\n");
+	}
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -243,14 +252,14 @@ cleanup()
 int
 setup2()
 {
-	buff.tick = 900000/HZ - 1;
+	buff.tick = 900000/hz - 1;
 	return 0;
 }
 
 int
 setup3()
 {
-	buff.tick = 1100000/HZ + 1;
+	buff.tick = 1100000/hz + 1;
 	return 0;
 }
 
