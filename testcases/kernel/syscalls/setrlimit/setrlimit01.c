@@ -73,7 +73,6 @@ char filename[40] = "";
 struct rlimit save_rlim, rlim, rlim1;
 int nofiles, fd, bytes, i, status, fail = 0; 
 char *buf = "abcdefghijklmnopqrstuvwxyz";
-char *testbuf;
 pid_t pid;
 
 int main(int ac, char **av)
@@ -271,7 +270,8 @@ test3()
 }
 
 /*
- * test4() - Test for RLIMIT_CORE
+ * test4() - Test for RLIMIT_CORE by forking a child and
+ *           having it cause a segfault
  */
 void
 test4()
@@ -297,6 +297,7 @@ test4()
 	}
 
 	if (pid == 0) {			/* child */
+		char *testbuf = NULL;
 		strcpy(testbuf, "abcd");
 		exit(0);
 	}
