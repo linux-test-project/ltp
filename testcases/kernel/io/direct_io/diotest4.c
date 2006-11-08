@@ -280,7 +280,7 @@ main(int argc, char *argv[])
 	else
 		tst_resm (TPASS, "Odd count of read and write");
 	total++;
-
+	errno = 0;
 	/* Test-4: Read beyond the file size */
 	offset = BUFSIZE * (fblocks + 10);
 	count = bufsize;
