@@ -292,7 +292,7 @@ main(int argc, char *argv[])
 	}
 	else {
         	ret = read(fd, buf2, count);
-        	if (ret > 0 || errno != EINVAL) {   
+        	if (ret > 0) {   
                 	tst_resm(TFAIL,"allows read beyond file size. returns %d: %s",
 				ret, strerror(errno));
                 	failed = TRUE;
