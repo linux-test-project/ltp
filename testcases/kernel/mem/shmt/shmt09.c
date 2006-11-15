@@ -149,7 +149,7 @@ int main()
 
 #ifdef __mips__
         vp = (void *) ((char *)sbrk(0) + 256 * K_1);
-#elif  defined(__ia64__) || defined(__powerpc__) || defined(__powerpc64__)
+#elif  defined(__powerpc__) || defined(__powerpc64__)
         vp = (void *) ((char *)sbrk(0) + getpagesize());
 #else
 	/* SHM_RND rounds vp on the nearest multiple of SHMLBA */
