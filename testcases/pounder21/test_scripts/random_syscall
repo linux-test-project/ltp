@@ -50,6 +50,7 @@ dmesg > "$POUNDER_TMPDIR/randasys-before"
 for ((k=0; k < $NR_CPUS; k++))
 do
 	"$POUNDER_HOME/fancy_timed_loop" 900 $RANDASYS_UID $RANDASYS_GID 9 "$PROGRAM" &
+	"$POUNDER_HOME/fancy_timed_loop" 900 $RANDASYS_UID $RANDASYS_GID 9 "$PROGRAM" -z &
 done
 
 # Wait for this to finish (it won't)

@@ -30,9 +30,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <syscall.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-int callnum, args[6];
+unsigned long callnum, args[6];
 
 int seed_random(void) {
 	int fp;
@@ -53,6 +54,15 @@ int seed_random(void) {
 	srand(seed);
 
 	return 1;
+}
+
+void get_big_randnum(void *buf, unsigned int size) {
+	uint32_t *x = buf;
+	int i;
+
+	for (i = 0; i < size; i += 4, x++) {
+		*x = (unsigned long)((float)UINT_MAX * (rand() / (RAND_MAX + 1.0)));
+	}
 }
 
 unsigned long get_randnum(unsigned long min, unsigned long max) {
@@ -168,7 +178,7 @@ badcall:
 }
 
 void bogus_signal_handler(int signum) {
-	fprintf(stderr, "                                    Signal %d on syscall(%d, %d, %d, %d, %d, %d, %d).\n",
+	fprintf(stderr, "                                    Signal %d on syscall(%lu, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX).\n",
 			signum, callnum, args[0], args[1], args[2], args[3],
 			args[4], args[5]);
 }
@@ -193,43 +203,39 @@ void install_signal_handlers(void) {
 }
 
 int main(int argc, char *argv[]) {
-	int debug = 0;
+	int i;
+	int debug = 0, zero_mode = 0;
 	
 	if (!seed_random()) {
 		return 1;
 	}
 
-	if (argc > 1 && strcmp(argv[1], "-d") == 0) {
-		debug = 1;
+	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "-d"))
+			debug = 1;
+		else if(!strcmp(argv[i], "-z"))
+			zero_mode = 1;
 	}
 
-	/*
-	FILE *fp = fopen("/dev/tty", "w");
-	fprintf(fp, "randasys process group is %d\n", getpgrp());
-	fclose(fp);
-	*/
+	memset(args, 0, sizeof(unsigned long) * 6);
 
 	install_signal_handlers();
 
 	while(1) {
 		callnum = find_syscall();
-		args[0] = get_randnum(0, ULONG_MAX);
-		args[1] = get_randnum(0, ULONG_MAX);
-		args[2] = get_randnum(0, ULONG_MAX);
-		args[3] = get_randnum(0, ULONG_MAX);
-		args[4] = get_randnum(0, ULONG_MAX);
-		args[5] = get_randnum(0, ULONG_MAX);
+		if (!zero_mode)
+			get_big_randnum(&args[0], sizeof(unsigned long) * 6);
 
 		if (debug) {
-			printf("syscall(%d, 0x%X, 0x%X, 0x%X, 0x%X, 0x%X, 0x%X);       \r",
-				callnum, args[0], args[1], args[2], args[3], args[4],
-				args[5]);
+			printf("syscall(%lu, 0x%lX, 0x%lX, 0x%lX, 0x%lX, "
+			       "0x%lX, 0x%lX);       \n",
+				callnum, args[0], args[1], args[2], args[3],
+				args[4], args[5]);
 			fflush(stdout);
 		}
 
 		syscall(callnum, args[0], args[1], args[2],
 				args[3], args[4], args[5]);
-		
 	}
 
 	return 0;

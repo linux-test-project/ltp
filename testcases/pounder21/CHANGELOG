@@ -1,5 +1,20 @@
 This is a log of changes to pounder21.
 
+pounder21-2006-11-07:
+- Fix a bug in randasys on x86-64 where we had insufficient random bits and
+  would truncate whatever we got, leading to all 0 arguments by simply
+  generating enough random bytes to fill an unsigned long.  Also add a -z
+  switch to enable this zero-only mode because it found some bugs.  :) 
+
+pounder21-2006-10-12:
+- Include /sysfs contents in the hw inventory
+- Put 'lspci' into the PCI inventory for easy finding.
+
+pounder21-2006-09-23:
+- Various time test fixes from jstultz.
+- IPMI tests from James Simshaw/Carol Hebert.
+- Update kernel from 2.6.15 to 2.6.18.
+
 pounder21-2006-01-24:
 - Establish all files in the tarball as originating from IBM LTC.
 - License all files under the GNU Public License (GPL) v2.
