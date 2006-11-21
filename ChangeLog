@@ -1,3 +1,92 @@
+LTP-20061121
+
+-Removed an invalid errno value check. 
+ diotest4.c
+
+-Fixed the setting of LTPROOT for the bin directory, not just the 
+ ltp/testcase/network/multicast/mc_cmds directory for bug 25273 
+ mc_cmds
+
+-descend into timers subdir when cleaning 
+ Makefile
+
+-This patch amends pounder to build kernel 2.6.18 instead of 2.6.15. 
+ build_kernel, memtest.patch, build_kernel, memtest
+
+-dynamically calculate TST_TOTAL rather than hardcoding it 
+shmctl01.c, shmctl02.c, shmctl03.c
+
+-Fix from Jane Lv to move large arrays off the stack and into global 
+ data section:
+ getgroups01.c, getgroups04.c
+
+-This patch makes the pounder control program handle SIGHUP by killing children
+ when we're told that the tty closed, else you close the pounder window and 
+ various parts of it keep running. 
+ run.c
+
+-The readme file has been updated for nfs 
+ README
+
+-Disable this test case for kernels below 2.6.17 and not 2.6.16. 
+ vmsplice01.c
+
+-This is a patch that allows pounder to record the contents of sysfs when it 
+ starts, thus enabling us to take a better snapshot of the system state when
+ pounder starts.  It also adds "lspci" into the PCI Device Tree heading per 
+ user request. 
+ get_hw_info
+
+-Since 2.6.17, _syscall* isn't exported into the user space any more, so all 
+ the test cases using _syscall* will fail to be compiled This patch 
+ remove _syscall5 from llseek.c and convert to syscall provided by libc.It 
+ also includes some cleanups and makes the build cleaner and removes the 
+ warning for 
+ scsimain.c, llseek.c, scsimain.c
+
+-Backed out the "fix" in Bug 1592647, b/c I don't think the testcase is 
+ actually broken. 
+ diotest4.c
+
+-touchup code a little to make the expected behavior of test4 more obvious 
+ setrlimit01.c
+
+
+-The random syscall generator has a bug on x86-64 where it only generates 
+ random bits for the upper 32 bits of the syscall argument, and then truncates
+ the upper 32 bits anyway!  This patch replaces the rand() weirdness with a 
+ function that generates N bytes of random data instead. It also adds a -z 
+ flag in case one *wants* the zero-arguments behavior; Max Asbock and Russ 
+ Weight requested it because zero is a quick way to find kernel code paths
+ that don't check userland pointers. 
+ CHANGELOG, randasys.c, random_syscall
+
+-Applied fix for Bugs item #1592647 
+diotest4.c
+
+-A patch by Jacky Malcles  (The IA-64 architecture sets SHMLBA to 1MB and) The 
+ value of the pointer address passed to shmat being set in such a way that
+ rounding down to the nearest multiple of SHMLBA results above the current 
+ heap. 
+ shmt09.c
+
+
+-Made a change to a comment above the change for 1.11 
+ mc_cmds
+
+-Disabling the ping test for now.  The test can pass without this additional 
+ check and can cause failures on some distros. 
+ mc_commo
+
+
+-A patch by Suzuki Kp, that removed the definition of HZ from user space for 
+ Bug # 28023. 
+ adjtimex02.c
+
+
+-Comment out set -x to remove debug output 
+ nfsstat01
+
 LTP-20061017
 
 -A fix for Bug 23587 where the connectathon test failed on linux client with cifs mount to Windows2003 R2 server 
