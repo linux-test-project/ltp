@@ -38,13 +38,13 @@
 
 /* set write buffer size to whatever floats your boat.  I usually use 1M */
 #define BSIZE 1048576L
+char buf[BSIZE];
 
 int
 main(int argc, char *argv[])
 {
    off_t i;
    long bufnum;
-   char buf[BSIZE];
    off_t fd;
    time_t time1,time2;
    int writecnt=0, seekcnt=0, diff;
