@@ -355,7 +355,7 @@ check_buffers(unsigned offset, unsigned size)
 	unsigned op = 0;
 	unsigned bad = 0;
 
-	if (bcmp(good_buf + offset, temp_buf, size) != 0) {
+	if (memcmp(good_buf + offset, temp_buf, size) != 0) {
 		prt("READ BAD DATA: offset = 0x%x, size = 0x%x, fname = %s\n",
 		    offset, size, fname);
 		prt("OFFSET\tGOOD\tBAD\tRANGE\n");

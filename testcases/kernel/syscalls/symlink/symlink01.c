@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.6 2006/05/26 06:24:23 vapier Exp $ */
+/* $Id: symlink01.c,v 1.7 2006/12/04 16:44:15 vapier Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -904,7 +904,7 @@ char *path1, *path2, *path3;
 	   "stat(2) failed to return inode information for a regular object file");
        return(0);
     }
-    else if (bcmp((char *)&statter, (char *)&asymlink, sizeof(statter)) != 0) {
+    else if (memcmp((char *)&statter, (char *)&asymlink, sizeof(statter)) != 0) {
        TEST_RESULT=TFAIL;
        sprintf(test_msg,
 	   "lstat(2) and stat(2) do not return same inode information for an object file");
