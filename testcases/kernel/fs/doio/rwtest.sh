@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 # 
