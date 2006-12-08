@@ -54,11 +54,11 @@ prepare_dump()
 	#Recover the lipthread.so.0 lib to generate the correct
 	#core dump file
 	os_check
-	if [ $OSTYPE == "redhat" ];then
+	if [ $OSTYPE = "redhat" ];then
 		cd $PTHREAD_DIR
 		if [ -f libpthread.so.0.orig ];then
 			test=`ls -l libpthread.so.0.orig|awk '{print $11}'`
-			if [ $test == "libpthread-0.9.so"  ];then
+			if [ $test = "libpthread-0.9.so"  ];then
 				mv libpthread.so.0.orig libpthread.so.0
 			fi
 		fi
@@ -69,11 +69,11 @@ prepare_dump()
 prepare_gdb()
 {
 	os_check
-	if [ $OSTYPE == "redhat" ];then
+	if [ $OSTYPE = "redhat" ];then
 		cd $PTHREAD_DIR
 		if [ -f libpthread.so.0 ];then
 			test=`ls -l libpthread.so.0|awk '{print $11}'`
-			if [ $test == "libpthread-0.9.so"  ];then
+			if [ $test = "libpthread-0.9.so"  ];then
 				mv libpthread.so.0 libpthread.so.0.orig
 			fi
 		fi

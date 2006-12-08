@@ -39,7 +39,7 @@ TEST_USER_HOMEDIR="/home/$TEST_USER"
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
 then
 ls /etc/vsftpd/vsftpd.conf
  if [ $? != 0 ]
@@ -107,7 +107,7 @@ do_cleanup(){
 do_test(){
 	echo "TEST: Ftp into a remote host as a local user (other than root), LOCAL_ENABLE=$LOCAL_ENABLE"
 
-if [ "$LOCAL_ENABLE" == "YES" ]; then {
+if [ "$LOCAL_ENABLE" = "YES" ]; then {
 	expect -c "
                    spawn ftp $RHOST
                    sleep 1

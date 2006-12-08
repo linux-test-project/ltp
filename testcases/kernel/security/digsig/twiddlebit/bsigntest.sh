@@ -41,7 +41,7 @@ for count in `seq 0 $max`; do
 	./swapbit $tstf $dec_offset $count
 	bsign -V -P "--homedir=." ./$tstf
 	ret=$?
-	if [ $ret == 0 ]; then
+	if [ $ret = 0 ]; then
 		echo "Error at byte $count - return value $ret"
 	fi;
 	./swapbit -r $tstf $dec_offset $count

@@ -148,7 +148,7 @@ syslog_case1()
 
 	# Create the configuration file specific to this test case.
 
-  if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+  if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 	echo "*.crit		/var/log/messages" >  $CONFIG_FILE
 	echo "mail.info	/var/log/maillog" >>  $CONFIG_FILE
   else
@@ -171,7 +171,7 @@ syslog_case1()
            };"  >> $CONFIG_FILE
 fi
 
-if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
        #Restart syslog
        $syslog_cmd restart 2>&1 1>/dev/null
 	sleep 2

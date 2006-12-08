@@ -132,7 +132,7 @@ then
 			RC=1
 		else
 			P11DIR=`which pkcsslotd | sed s-/sbin/pkcsslotd--`
-			if [ "$P11DIR" == "/usr" ]
+			if [ "$P11DIR" = "/usr" ]
 			then
 				P11DIR=""
 			fi

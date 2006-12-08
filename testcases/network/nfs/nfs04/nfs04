@@ -105,7 +105,7 @@ $trace_logic
     rsh -n $RHOST "touch $TESTDIR/testfile"
     [ $? = 0 ] || end_testcase "Could not create testfile in remote directory"
 
-    if [ "x$NFS_TYPE" == "xnfs4" ]; then
+    if [ "x$NFS_TYPE" = "xnfs4" ]; then
         rsh -n $RHOST "mkdir -p /export$TESTDIR"
         [ $? = 0 ] || end_testcase "Could not create /export$TESTDIR on server"
         rsh -n $RHOST "mount --bind $TESTDIR /export$TESTDIR"

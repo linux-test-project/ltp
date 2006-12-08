@@ -30,7 +30,7 @@ for count in `seq 0 $max`; do
 	./swapbit $tstf 0 $count
 	./$tstf
 	ret=$?
-	if [ $ret == 0 ]; then
+	if [ $ret = 0 ]; then
 		echo "Error at byte $count - return value $ret"
 	fi;
 	./swapbit -r $tstf 0 $count

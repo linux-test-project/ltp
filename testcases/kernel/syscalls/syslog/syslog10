@@ -142,7 +142,7 @@ syslog_case10()
 	fi
 
 	# Create the configuration file specific to this test case.
-	if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+	if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 	    echo "user.debug       /var/log/messages" > /etc/syslog.conf
 	else
            echo "source src{ internal(); unix-dgram("/dev/log");\
@@ -155,7 +155,7 @@ syslog_case10()
                  destination(syslog_messages); };"  >> $CONFIG_FILE
 	fi
 
-if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
        #Restart syslog
        $syslog_cmd restart 2>&1 1>/dev/null
    

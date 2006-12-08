@@ -97,7 +97,7 @@ syslog_case5()
 	    cleanup	
 	fi
 
-      if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then	
+      if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then	
 	echo "user.info        /var/log/messages" > /etc/syslog.conf
       else
         echo "source src{ internal(); unix-dgram("/dev/log"); \

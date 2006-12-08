@@ -38,7 +38,7 @@ TEST_USER_PASSWD="noone@nowhere.com"
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ $tvar == "redhat" -o $tvar == "redhat-linux" ] 
+if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
 then
 
    # Check if vsftpd is on system.
@@ -71,7 +71,7 @@ EXIT_CODE=0
 do_test(){
 	echo "TEST: Ftp into a remote host as anonymous user, ANONYMOUS_ENABLE=$ANONYMOUS_ENABLE"
 
-if [ "$ANONYMOUS_ENABLE" == "YES" ]; then {
+if [ "$ANONYMOUS_ENABLE" = "YES" ]; then {
 	expect -c "
                    spawn ftp $RHOST
                    sleep 1

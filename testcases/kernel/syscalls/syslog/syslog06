@@ -143,7 +143,7 @@ syslog_case6()
 
 	# Create the configuration file specific to this test case.
 	# For this case, it's a dummy one. No use of it.
-  	if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then 
+  	if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then 
 	   echo "user.info        /var/log/messages" > /etc/syslog.conf
         else
              echo "source src{ internal(); unix-dgram("/dev/log"); \

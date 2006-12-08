@@ -106,7 +106,7 @@ do_test ()
 #      distro_version=`cat /etc/issue | awk {'print $7'}`
 #      distro_name=`cat /etc/issue | awk {'print $3'}`
 
-#       if [ $distro_version -ge 9 -a $distro_name == SUSE ]; then
+#       if [ $distro_version -ge 9 -a $distro_name = SUSE ]; then
 #          echo "Ping test skipped"
 #       else
 #           echo "Running ping to verify group can be reached "

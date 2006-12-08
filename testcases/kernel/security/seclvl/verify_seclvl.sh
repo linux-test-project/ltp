@@ -78,12 +78,12 @@ dd if=/dev/mem of=firstbytemem.dat bs=1 count=1
 
 # We need SHA1 to do our password work
 cat /proc/crypto | grep sha1
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
     /sbin/insmod /lib/modules/`uname -r`/kernel/crypto/sha1.ko
-    if [ $? == 0 ]
+    if [ $? = 0 ]
 	then
 	/bin/true
     else
@@ -118,7 +118,7 @@ else
     exit 1
 fi
 #  Value
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == -1
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = -1
 then
     /bin/true
 else
@@ -169,7 +169,7 @@ else
     exit 1
 fi
 # Value
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == 0
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = 0
 then
     /bin/true
 else
@@ -220,7 +220,7 @@ else
     exit 1
 fi
 # Value
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == 1
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = 1
 then
     /bin/true
 else
@@ -241,19 +241,19 @@ fi
 
 # Attempt to lower secure level
 echo "-1" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Success result when setting seclvl from 1 to -1"
     exit 1
 fi
 echo "0" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Success result when setting seclvl from 1 to 0"
     exit 1
 fi
 
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == 1
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = 1
 then
     /bin/true
 else
@@ -264,7 +264,7 @@ fi
 # The character devices /dev/mem and /dev/kmem cannot be written to
 echo "* \`\`Operation not permitted'' message is expected:"
 cat firstbytemem.dat > /dev/mem
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in writing to /dev/mem in seclvl 1"
     exit 1
@@ -272,7 +272,7 @@ fi
 
 echo "* \`\`Operation not permitted'' message is expected:"
 echo "*  " > /dev/kmem
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in writing to /dev/kmem in seclvl 1"
     exit 1
@@ -291,7 +291,7 @@ fi;
 echo "* \`\`Operation not permitted'' message is expected:"
 chattr +i answer.txt
 lsattr answer.txt | grep "\-\-\-\-i\-\-\-\-\-\-\-\-\-\-\-\- answer.txt"
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in setting the immutable flag on answer.txt"
     exit 1
@@ -299,7 +299,7 @@ fi
 echo "* \`\`Operation not permitted'' message is expected:"
 chattr +a answer.txt
 lsattr answer.txt | grep "\-\-\-\-\-a\-\-\-\-\-\-\-\-\-\-\- answer.txt"
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in setting the append flag on answer.txt"
     exit 1
@@ -318,7 +318,7 @@ else
 fi
 echo "* Return code [-1] expected:"
 ./ioperm
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in changing I/O permission level in seclvl 1"
     exit 1
@@ -332,7 +332,7 @@ else
 fi
 echo "* Return code [-1] expected:"
 ./iopl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in changing I/O permission level in seclvl 1"
     exit 1
@@ -341,7 +341,7 @@ fi
 # Mess with a network configuration option
 echo "* Ignore any FATAL errors:"
 /usr/sbin/iptables -F
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in flushing firewall rules via iptables in seclvl 1"
     exit 1
@@ -350,7 +350,7 @@ fi
 # Try setting the setuid bit on /bin/true
 echo "* \`\`Operation not permitted'' message is expected:"
 chmod u+s /bin/true
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in raising the setuid bit on /bin/true in seclvl 1"
     echo "* Lowering setuid bit on /bin/true..."
@@ -361,7 +361,7 @@ fi
 # Try setting the setgid bit on /bin/true
 echo "* \`\`Operation not permitted'' message is expected:"
 chmod g+s /bin/true
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Succeeded in raising the setgid bit on /bin/true in seclvl 1"
     echo "* Lowering setgid bit on /bin/true..."
@@ -374,7 +374,7 @@ echo "* Verifying that we can set the suid bit on a directory:"
 rmdir seclvl_suid_dir
 mkdir seclvl_suid_dir
 chmod 4777 seclvl_suid_dir
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -383,7 +383,7 @@ else
     exit 1
 fi
 chmod 2777 seclvl_suid_dir
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -396,7 +396,7 @@ rmdir seclvl_suid_dir
 echo "* Attempt to create suid file:"
 rm -f suid_file
 ./create_suid_file
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating suid file in seclvl 1"
     rm -f suid_file
@@ -408,7 +408,7 @@ fi
 echo "* Attempt to create guid file:"
 rm -f guid_file
 ./create_guid_file
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creatings guid file in seclvl 1"
     rm -f guid_file
@@ -420,7 +420,7 @@ fi
 echo "* Attempt to create suid node:"
 rm -f suid_node
 ./create_suid_node
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating suid node in seclvl 1"
     rm -f suid_node
@@ -432,7 +432,7 @@ fi
 echo "* Attempt to create guid node:"
 rm -f guid_node
 ./create_guid_node
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating guid node in seclvl 1"
     rm -f guid_node
@@ -446,7 +446,7 @@ echo "* TESTING SECLVL 2"
 
 # Raise the seclvl
 echo "2" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -464,7 +464,7 @@ else
     exit 1
 fi
 # Value
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == 2
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = 2
 then
     /bin/true
 else
@@ -485,25 +485,25 @@ fi
 
 # Attempt to lower secure level
 echo "-1" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Success result when setting seclvl from 2 to -1"
     exit 1
 fi
 echo "0" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Success result when setting seclvl from 2 to 0"
     exit 1
 fi
 echo "1" > /$(SYSFS_MOUNT_POINT)/seclvl/seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Success result when setting seclvl from 2 to 1"
     exit 1
 fi
 
-if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` == 2
+if test `cat /$(SYSFS_MOUNT_POINT)/seclvl/seclvl` = 2
 then
     /bin/true
 else
@@ -514,7 +514,7 @@ fi
 # The character devices /dev/mem and /dev/kmem cannot be written to
 echo "* \`\`Operation not permitted'' message is expected:"
 cat firstbytemem.dat > /dev/mem
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in writing to /dev/mem in seclvl 2"
     exit 1
@@ -522,7 +522,7 @@ fi
 
 echo "* \`\`Operation not permitted'' message is expected:"
 echo " " > /dev/kmem
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in writing to /dev/kmem in seclvl 2"
     exit 1
@@ -540,7 +540,7 @@ fi;
 echo "* \`\`Operation not permitted'' message is expected:"
 chattr +i answer.txt
 lsattr answer.txt | grep "\-\-\-\-i\-\-\-\-\-\-\-\-\-\-\-\- answer.txt"
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in setting the immutable flag on answer.txt"
     exit 1
@@ -548,7 +548,7 @@ fi
 echo "* \`\`Operation not permitted'' message is expected:"
 chattr +a answer.txt
 lsattr answer.txt | grep "\-\-\-\-\-a\-\-\-\-\-\-\-\-\-\-\- answer.txt"
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in setting the append flag on answer.txt"
     exit 1
@@ -566,7 +566,7 @@ else
 fi
 echo "* Return code [-1] expected:"
 ./ioperm
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in changing I/O permission level in seclvl 2"
     exit 1
@@ -580,7 +580,7 @@ else
 fi
 echo "* Return code [-1] expected:"
 ./iopl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in changing I/O permission level in seclvl 2"
     exit 1
@@ -589,7 +589,7 @@ fi
 # Mess with a network configuration option
 echo "* Ignore FATAL errors:"
 /usr/sbin/iptables -F
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in flushing firewall rules via iptables in seclvl 2"
     exit 1
@@ -598,7 +598,7 @@ fi
 # Try setting the setuid bit on /bin/true
 echo "* \`\`Operation not permitted'' message is expected:"
 chmod u+s /bin/true
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in raising the setuid bit on /bin/true in seclvl 2"
     echo "* Lowering setuid bit on /bin/true..."
@@ -609,7 +609,7 @@ fi
 # Try setting the setgid bit on /bin/true
 echo "* \`\`Operation not permitted'' message is expected:"
 chmod g+s /bin/true
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in raising the setgid bit on /bin/true in seclvl 1"
     echo "* Lowering setgid bit on /bin/true..."
@@ -622,7 +622,7 @@ echo "* Verifying that we can set the suid bit on a directory:"
 rmdir seclvl_suid_dir
 mkdir seclvl_suid_dir
 chmod 4777 seclvl_suid_dir
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -631,7 +631,7 @@ else
     exit 1
 fi
 chmod 2777 seclvl_suid_dir
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -644,7 +644,7 @@ rmdir seclvl_suid_dir
 echo "* Attempt to create suid file:"
 rm -f suid_file
 ./create_suid_file
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating suid file in seclvl 2"
     rm -f suid_file
@@ -656,7 +656,7 @@ fi
 echo "* Attempt to create guid file:"
 rm -f guid_file
 ./create_guid_file
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creatings guid file in seclvl 2"
     rm -f guid_file
@@ -668,7 +668,7 @@ fi
 echo "* Attempt to create suid node:"
 rm -f suid_node
 ./create_suid_node
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating suid node in seclvl 2"
     rm -f suid_node
@@ -680,7 +680,7 @@ fi
 echo "* Attempt to create guid node:"
 rm -f guid_node
 ./create_guid_node
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* ERROR: Success in creating guid node in seclvl 2"
     rm -f guid_node
@@ -693,7 +693,7 @@ fi
 # TODO: This is broken on 2/20/2004 @ 10:15am
 echo "* \`\`Operation not permitted'' message is expected:"
 echo "`date +%m%d%H%M%Y`-1" | bc | awk '{printf( "%.12d\n", $1 );}' | xargs date
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in setting the clock back one year in seclvl 2"
     echo "`date +%m%d%H%M%Y`+1" | bc | awk '{printf( "%.12d\n", $1 );}' | xargs date
@@ -704,7 +704,7 @@ fi
 # WARNING: If seclvl isn't working, this can bork your hard disk
 echo "* \`\`Operation not permitted'' message is expected:"
 cat firstbyteblock.dat > $(VALID_BLOCK_DEVICE)
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in writing directly to $(VALID_BLOCK_DEVICE) in seclvl 2"
     exit 1
@@ -715,7 +715,7 @@ fi
 echo "* The kernel says it's not mounted, but it's lying."
 echo "* It really is, but you don't have permission to unmount it:"
 umount mntseclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     echo "* Succeeded in unmounting previously mounted filesystem in seclvl 2"
     exit 1
@@ -726,7 +726,7 @@ echo "* Breaking seclvl via password"
 echo -n "secret" > /$(SYSFS_MOUNT_POINT)/seclvl/passwd
 echo "* Removing seclvl"
 /sbin/rmmod seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else
@@ -748,7 +748,7 @@ fi
 # Break seclvl via password
 echo "abracadabra" > /$(SYSFS_MOUNT_POINT)/seclvl/passwd
 rmmod seclvl
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
     /bin/true
 else

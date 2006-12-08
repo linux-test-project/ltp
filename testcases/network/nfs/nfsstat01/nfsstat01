@@ -69,7 +69,7 @@ $trace_logic
    echo "This test runs LOCALLY."
 
    IAM=${IAM:=`whoami`}
-   [ $IAM == "root" ] || end_testcase "Must be root user"
+   [ $IAM = "root" ] || end_testcase "Must be root user"
 
    #Check for mountd.
    rpcinfo -p | grep mountd
@@ -84,7 +84,7 @@ $trace_logic
    [ $? -eq 0 ] || end_testcase "Could not create $EXPORTDIR"
 
    #Export the data directory on HOST
-   if [ "x$NFS_TYPE" == "xnfs4" ]; then
+   if [ "x$NFS_TYPE" = "xnfs4" ]; then
         mkdir -p /export$EXPORTDIR
         [ $? = 0 ] || end_testcase "Could not create /export$EXPORTDIR locally"
         mount --bind $EXPORTDIR /export$EXPORTDIR
@@ -215,7 +215,7 @@ $trace_logic
    umount $EXPORTDIR
    sleep 3
    rm -rf $EXPORTDIR
-   if [ "x$NFS_TYPE" == "xnfs4" ]; then
+   if [ "x$NFS_TYPE" = "xnfs4" ]; then
        rm -rf /export$EXPORTDIR
    fi
 }

@@ -25,7 +25,7 @@ for count in `seq 0 511`; do
 	./swapbit $tstf $dec_offset $count
 	./$tstf
 	ret=$?
-	if [ $ret == 0 ]; then
+	if [ $ret = 0 ]; then
 		echo "Error at bit $count - return value $ret"
 #		exit 1
 	fi;

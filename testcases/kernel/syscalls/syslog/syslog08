@@ -147,7 +147,7 @@ syslog_case8()
 
 		# Create the configuration file specific to this facility
 		# Level is fixed at info.
-	   if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+	   if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 		echo "$current.info    /var/log/messages" > /etc/syslog.conf
 		echo "$current.info    /var/log/maillog" >> /etc/syslog.conf
 	   else
@@ -167,7 +167,7 @@ syslog_case8()
 		#Restart syslog
 		tst_resm TINFO "Restart $syslog_cmd"
 
-		if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+		if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 		    $syslog_cmd restart 2>&1 1>/dev/null
 		else
                     #re-start syslog-ng

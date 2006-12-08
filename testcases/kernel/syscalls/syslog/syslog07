@@ -105,7 +105,7 @@ syslog_case7()
 	fi
 
 # Adds some clarification of log message when syslog-ng is used
-        if [ $CONFIG_FILE == /etc/syslog.conf ]; then
+        if [ $CONFIG_FILE = /etc/syslog.conf ]; then
            explaination="Higher"
         else
            explaination="All"
@@ -160,7 +160,7 @@ fi
 
 
 	# Create the configuration file specific to this test case.
-        if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+        if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 	   echo "user.debug        /var/log/messages" > /etc/syslog.conf
         else
            echo "source src{ internal(); unix-dgram("/dev/log"); \ 
@@ -176,7 +176,7 @@ fi
    fi
 
 
-if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
        #Restart syslog
        $syslog_cmd restart 2>&1 1>/dev/null
 else

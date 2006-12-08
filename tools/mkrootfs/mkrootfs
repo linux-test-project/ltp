@@ -155,7 +155,7 @@ main()
     }
 
     # create the filesystem, EXT2 file system will be default.
-    if [ $FSTYPE == "ext2" ]; then
+    if [ $FSTYPE = "ext2" ]; then
         mke2fs -v -m 0 -N 2000 $TWDIR/ramdisk_fs 2>&1 >$TWDIR/crfs.out || \
         {
             echo "FAILED: unable to create EXT2 filesystem on block file."
@@ -163,7 +163,7 @@ main()
             exit 1
         } 
     else 
-        [ "$FSTYPE" == "reiserfs" ] && \
+        [ "$FSTYPE" = "reiserfs" ] && \
         { 
             FORCEREI="-f -f";
         }
@@ -307,7 +307,7 @@ main()
 
     # set up scsi or ide devices.
 
-    if [ "$HDDTYPE" == "scsi" ] || [ "$HDDTYPE" == "SCSI" ] 
+    if [ "$HDDTYPE" = "scsi" ] || [ "$HDDTYPE" = "SCSI" ] 
     then
         # set up SCSI cdrom drives.
         cp -dpR /dev/sr0 $TWDIR/mnt/dev 2>&1 >$TWDIR/crfs.out || \
@@ -324,7 +324,7 @@ main()
             echo "FAILED: `cat $TWDIR/crfs.out`"
             exit 1
         }
-    elif [ "$HDDTYPE" == "ide" ] || [ "$HDDTYPE" == "IDE" ] ; then
+    elif [ "$HDDTYPE" = "ide" ] || [ "$HDDTYPE" = "IDE" ] ; then
         # set up IDE cdrom drive.
         cp -dpR /dev/cdrom    $TWDIR/mnt/dev 2>&1 >$TWDIR/crfs.out || \
         {
@@ -348,7 +348,7 @@ main()
 
     # setting up busybox. 
 
-    if [ "$BBLOC" == "NONE" ]
+    if [ "$BBLOC" = "NONE" ]
     then
         echo "ÏNFO: downloading busybox from www.busybox.net"
         wget -q -c http://www.busybox.net/downloads/busybox-0.60.5.tar.gz \
@@ -490,7 +490,7 @@ main()
     if [ $CREATEFD -ne 0 ]
     then
         # creating filesystem on floppy 
-        if [ $FSTYPE == "ext2" ]; then
+        if [ "$FSTYPE" = "ext2" ]; then
             mke2fs -v -m 0 -N 24 /dev/fd0h1440 2>&1 >$TWDIR/crfs.out || \
             {
                 echo "FAILED: unable to create EXT2 filesystem on floppy"
@@ -500,7 +500,7 @@ main()
                 exit 1
             } 
         else 
-            [ "$FSTYPE" == "reiserfs" ] && \
+            [ "$FSTYPE" = "reiserfs" ] && \
             { 
                 FORCEREI="-f -f";
             }

@@ -139,7 +139,7 @@ syslog_case3()
 
 	
 	# Create the configuration file specific to this test case. 
-if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 	echo "daemon.info      /var/log/messages" > /etc/syslog.conf
 else
 
@@ -155,7 +155,7 @@ else
                    destination(syslog-messages);};"  >> $CONFIG_FILE
 fi
 
-       if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+       if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
            #Restart syslog
            $syslog_cmd restart 2>&1 1>/dev/null
        else

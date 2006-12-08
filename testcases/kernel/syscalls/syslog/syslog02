@@ -142,7 +142,7 @@ syslog_case2()
 		tst_resm TINFO "Doing level: $current..."
 
 
-	     if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+	     if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
 	     # Create the configuration file specific to this level
 		  echo "mail.$current    /var/log/maillog" >> /etc/syslog.conf
 	     else
@@ -156,7 +156,7 @@ syslog_case2()
                       destination(syslog-$current); };"  >> $CONFIG_FILE
 	     fi
 
-	     if [ $CONFIG_FILE == "/etc/syslog.conf" ]; then
+	     if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
              #Restart syslog
              $syslog_cmd restart 2>&1 1>/dev/null
 

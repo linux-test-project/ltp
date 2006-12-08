@@ -525,9 +525,9 @@ ar -ru $TCtmp/lib.a file0.in file2.in 2>&1 1>/dev/null
 File1time1=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d" "`
 File2time2=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d" "`
 
-if [ $File2time == $File2time2 ]
+if [ $File2time = $File2time2 ]
 then
-	if [ $File1time == $File1time1 ]
+	if [ $File1time = $File1time1 ]
 	then
     		TCRESULT=20
     		echo -e "FAIL - ar with -u flag failed"
@@ -553,7 +553,7 @@ Sysmonth=`date | cut -f2 -d" "`
 Month=`ar -tv $TCtmp/lib.a | grep "file2.in" | awk '{print $4}'`
 Count=`ar -tv $TCtmp/lib.a | wc -l`
 
-if [ $Sysmonth == $Month ] && [ $Count -eq 3 ]
+if [ $Sysmonth = $Month ] && [ $Count -eq 3 ]
 then
 		echo -e  "-)21"
 else

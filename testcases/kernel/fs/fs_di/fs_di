@@ -139,7 +139,7 @@ $trace_logic
 	   exit 0;;
        esac
     done
-    if [ $TMPBASE == "0" ]; then
+    if [ $TMPBASE = "0" ]; then
       tst_resm TBROK "You must specify the target directory [-d]"
       exit 1
     fi 

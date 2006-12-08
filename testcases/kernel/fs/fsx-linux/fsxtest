@@ -28,7 +28,7 @@
 
 #Uncomment line below for debugging
 #set -x
-if [ $2 == "jfs" ]; then
+if [ $2 = "jfs" ]; then
   mkfs -t $2 -q $1
 else
   mkfs -t $2 $1
