@@ -15,7 +15,6 @@
 #include "HTutils.h"
 #include <sys/syscall.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,8 +38,9 @@ len - length in bytes of the bitmask pointed to by user_mask_ptr.
 
 //Any application program can invoke these system call using sched_setaffinity() and sched_getaffinity(),
 //with the syntax mentioned in the previous section, after declaring the interface as:
-_syscall3(int, sched_setaffinity, pid_t , pid, unsigned int, len, unsigned long *, mask_ptr);
-_syscall3(int, sched_getaffinity, pid_t , pid, unsigned int, len, unsigned long *, mask_ptr);
+
+#define sched_setaffinity(pid, cpusetsize, mask) syscall(__NR_sched_setaffinity, pid, cpusetsize, mask)
+#define sched_getaffinity(pid, cpusetsize, mask) syscall(__NR_sched_getaffinity, pid, cpusetsize, mask)
 
 #define AFFINITY_NAME "affinity"
 #define PROCFS_PATH "/proc/"
