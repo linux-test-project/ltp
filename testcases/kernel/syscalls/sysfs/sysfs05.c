@@ -74,10 +74,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef _syscall2
-#include <linux/unistd.h>
-#endif
-
 static void setup();
 static void cleanup();
 
