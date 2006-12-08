@@ -54,7 +54,7 @@ $makeit $data_dir/$jumbo_file $jumbo_size
 
 if [ ! -e $data_dir/bin.sm ] ; then
 	cnt=6
-	while ((cnt--)) ; do
+	while [ $((cnt--)) -gt 0 ] ; do
 		gzip -1 -c datafiles/ascii.sm >> $data_dir/bin.sm
 	done
 fi
@@ -67,7 +67,7 @@ genfile() {
 		return 0
 	fi
 
-	while ((cnt--)) ; do
+	while [ $((cnt--)) -gt 0 ] ; do
 		cat $input >> $output
 	done
 }
