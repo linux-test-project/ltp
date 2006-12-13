@@ -45,7 +45,7 @@
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
  */
-/* $Id: pan.c,v 1.23 2006/07/10 15:46:10 mreed10 Exp $ */
+/* $Id: pan.c,v 1.24 2006/12/13 22:55:21 vapier Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -81,7 +81,7 @@ struct tag_pgrp
 {
     int pgrp;
     int stopping;
-    time_t stime;
+    time_t mystime;
     struct coll_entry *cmd;
     char output[PATH_MAX];
 };
@@ -699,8 +699,8 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 			if (!fmt_print)
 				fprintf(logfile,
 				 "tag=%s stime=%d dur=%d exit=%s stat=%d core=%s cu=%d cs=%d\n",
-					running[i].cmd->name, (int) (running[i].stime),
-					(int) (t - running[i].stime), status, w,
+					running[i].cmd->name, (int) (running[i].mystime),
+					(int) (t - running[i].mystime), status, w,
 					(stat_loc & 0200) ? "yes" : "no",
 					(int) (tms2.tms_cutime - tms1.tms_cutime),
 					(int) (tms2.tms_cstime - tms1.tms_cstime));
@@ -893,7 +893,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
     if (colle->pcnt_f) free(c_cmdline); 
 
     close(errpipe[1]);
-    time(&active->stime);
+    time(&active->mystime);
     active->cmd = colle;
 
     /* if the child couldn't go through with the exec, 
@@ -955,7 +955,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 
     if (Debug & Dstartup)
 	fprintf(stderr, "started %s cpid=%d at %s",
-		colle->name, cpid, ctime(&active->stime));
+		colle->name, cpid, ctime(&active->mystime));
 
     if (Debug & Dstart) {
 	fprintf(stderr, "Executing test = %s as %s", colle->name, colle->cmdline);
@@ -1184,7 +1184,7 @@ write_test_start(struct tag_pgrp *running, const char *init_status)
 
 	printf("%s\ntag=%s stime=%ld\ncmdline=\"%s\"\ncontacts=\"%s\"\nanalysis=%s\ninitiation_status=\"%s\"\n%s\n",
 			"<<<test_start>>>",
-			running->cmd->name, running->stime, running->cmd->cmdline, "",
+			running->cmd->name, running->mystime, running->cmd->cmdline, "",
 			"exit", init_status,
 			"<<<test_output>>>");
     }
@@ -1200,7 +1200,7 @@ write_test_end(struct tag_pgrp *running, time_t exit_time,
     if (!strcmp(reporttype, "rts")) {
 	printf("%s\nduration=%ld termination_type=%s termination_id=%d corefile=%s\ncutime=%d cstime=%d\n%s\n",
 		  	"<<<execution_status>>>", 
-			(long) (exit_time - running->stime),
+			(long) (exit_time - running->mystime),
 			term_type, term_id, (stat_loc & 0200) ? "yes" : "no",
 			(int) (tms2->tms_cutime - tms1->tms_cutime),
 			(int) (tms2->tms_cstime - tms1->tms_cstime),

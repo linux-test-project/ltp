@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
     short       port=DEFPORT;   /* Port number for connection                */
 #ifdef HAVE_GETRUSAGE
     struct rusage prev_rusage, curr_rusage; /* Resource usage                */
-    double	utime, stime;	/* User & system time used                   */
-    double	best_utime, best_stime; /* Total user & system time used     */
+    double	user_time, sys_time;	/* User & system time used                   */
+    double	best_user_time, best_sys_time; /* Total user & system time used     */
     double      ut1, ut2, st1, st2; /* User & system time ctrs for variance  */
     double	ut_var, st_var;	/* Variance in user & system time            */
 #endif
@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
                 t2 = t1 = 0;
 #ifdef HAVE_GETRUSAGE
 		ut1 = ut2 = st1 = st2 = 0.0;
-		best_utime = best_stime = LONGTIME;
+		best_user_time = best_sys_time = LONGTIME;
 #endif
                 for (i = 0; i < TRIALS; i++)
                 {
@@ -411,24 +411,24 @@ int main(int argc, char *argv[])
                     t = (When() - t0)/((1 + !streamopt) * nrepeat);
 #ifdef HAVE_GETRUSAGE
 		    getrusage(RUSAGE_SELF, &curr_rusage);
-		    utime = ((curr_rusage.ru_utime.tv_sec -
+		    user_time = ((curr_rusage.ru_utime.tv_sec -
 			      prev_rusage.ru_utime.tv_sec) + (double)
 			     (curr_rusage.ru_utime.tv_usec -
 			      prev_rusage.ru_utime.tv_usec) * 1.0E-6) /
 		      ((1 + !streamopt) * nrepeat);
-		    stime = ((curr_rusage.ru_stime.tv_sec -
+		    sys_time = ((curr_rusage.ru_stime.tv_sec -
 			      prev_rusage.ru_stime.tv_sec) + (double)
 			     (curr_rusage.ru_stime.tv_usec -
 			      prev_rusage.ru_stime.tv_usec) * 1.0E-6) /
 		      ((1 + !streamopt) * nrepeat);
-		    ut2 += utime * utime;
-		    st2 += stime * stime;
-		    ut1 += utime;
-		    st1 += stime;
-		    if ((utime + stime) < (best_utime + best_stime))
+		    ut2 += user_time * user_time;
+		    st2 += sys_time * sys_time;
+		    ut1 += user_time;
+		    st1 += sys_time;
+		    if ((user_time + sys_time) < (best_user_time + best_sys_time))
 		    {
-			best_utime = utime;
-			best_stime = stime;
+			best_user_time = user_time;
+			best_sys_time = sys_time;
 		    }
 #endif
 
@@ -527,8 +527,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, ", avg utime=%.7f avg stime=%.7f, ",
 			ut1 / (double) TRIALS,
 			st1 / (double) TRIALS);
-		fprintf(stderr, "min utime=%.7f stime=%.7f, ", best_utime,
-			best_stime);
+		fprintf(stderr, "min utime=%.7f stime=%.7f, ", best_user_time,
+			best_sys_time);
 		fprintf(stderr, "utime var=%.7f stime var=%.7f", ut_var, st_var);
 #endif
 		fprintf(stderr, "\n");

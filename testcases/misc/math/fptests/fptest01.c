@@ -84,7 +84,7 @@ struct event eventtab[EVENTMX];
 struct event rtrevent;
 int waiting[EVENTMX];	/* array of waiting processors */
 int nwaiting;		/* number of waiting processors */
-double stime;		/* global clock */
+double global_time;		/* global clock */
 double lsttime;		/* time used for editing */
 double dtc, dts, alpha;	/* timing parameters */
 int nproc;		/* number of processors */
@@ -133,7 +133,7 @@ init()
 	double dtw, dtwsig;
 
 	ncycle=0;
-	stime=0;
+	global_time=0;
 	lsttime=0;
 	barcnt=0;
 	nwaiting=0;
@@ -148,7 +148,7 @@ init()
 		}
 
 	for (p=1; p<=nproc; p++) {
-		addevent(ENTERWORK,p,stime);
+		addevent(ENTERWORK,p,global_time);
 		}
 
 	return(0);
@@ -167,7 +167,7 @@ term()
 	for (i=0; i < nproc; i++)
 		t_total += eventtab[i].time;
 
-	avgspd=ncycle/stime;
+	avgspd=ncycle/global_time;
 
 	v = t_total - MAGIC1;
 	if (v < 0.0)
@@ -294,33 +294,33 @@ struct event *ev;
 	double nxttime;
 	int i, p, proc;
 
-	stime = ev->time;
+	global_time = ev->time;
 	proc = ev->proc;
 
 	switch (ev->type) {
 		case TRYCRIT :
 			if (critfree==TRUE) 
-				addevent(ENTERCRIT,proc,stime);
+				addevent(ENTERCRIT,proc,global_time);
 			else
 				addwaiting(proc);
 			break;
 		case ENTERCRIT :
 			critfree = FALSE;
-			nxttime=stime+dtcrit();
+			nxttime=global_time+dtcrit();
 			addevent(LEAVECRIT,proc,nxttime);
 			break;
 		case LEAVECRIT :
 			critfree = TRUE;
-			addevent(ATBARRIER,proc,stime);
+			addevent(ATBARRIER,proc,global_time);
 			if ((p=getwaiting())!=0) {
-				nxttime=stime;
+				nxttime=global_time;
 				addevent(ENTERCRIT,p,nxttime);
 				}
 			break;
 		case ATBARRIER :
 			barcnt++;
 			if (barcnt==nproc) {
-				nxttime=stime;
+				nxttime=global_time;
 				for (i=1; i<=nproc; i++) {
 					nxttime+=dtspinoff();
 					addevent(ENTERWORK,i,nxttime);
@@ -330,12 +330,12 @@ struct event *ev;
 				}
 			break;
 		case ENTERWORK :
-			nxttime=stime+dtwork();
+			nxttime=global_time+dtwork();
 			if (ncycle<ncycmax)
 				addevent(LEAVEWORK,proc,nxttime);
 			break;
 		case LEAVEWORK :
-			addevent(TRYCRIT,proc,stime);
+			addevent(TRYCRIT,proc,global_time);
 			break;
 		default:
 			tst_resm(TBROK,"Illegal event");

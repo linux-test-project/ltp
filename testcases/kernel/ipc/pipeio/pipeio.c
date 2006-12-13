@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.10 2006/06/22 04:28:33 vapier Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.11 2006/12/13 22:55:22 vapier Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -139,7 +139,7 @@ char *av[];
 	int read_fd = 0;
 	int write_fd = 0;
 	int empty_read = 0;	/* counter for the number of empty reads */
-	time_t stime, ctime, dtime;	/* start time, current time, diff of times */
+	time_t start_time, current_time, diff_time;	/* start time, current time, diff of times */
 	int *count_word;	/* holds address where to write writers count */
 	int *pid_word;		/* holds address where to write writers pid */
 	int format;
@@ -467,7 +467,7 @@ char *av[];
 		pipe_type = PIPE_NAMED;
 	}
 
-	stime=time(0);
+	start_time=time(0);
 
 #if DEBUG
 printf("num_wrters = %d\n", num_wrters);
@@ -636,10 +636,10 @@ printf("child after fork pid = %d\n", getpid());
 					}
 				} 
 				if (verbose || (num_rpt && !(count % num_rpt))) {
-					ctime = time(0);
-					dtime = ctime - stime;	/* elapsed time */
+					current_time = time(0);
+					diff_time = current_time - start_time;	/* elapsed time */
 					tst_resm (TFAIL, "(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
-						(int)dtime,count,size,pipe_type,blk_type,empty_read,error);
+						(int)diff_time,count,size,pipe_type,blk_type,empty_read,error);
 					fflush(stdout);
 				}
 			}

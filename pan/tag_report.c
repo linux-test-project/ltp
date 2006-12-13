@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: tag_report.c,v 1.1 2000/09/21 21:35:06 alaffin Exp $ */
+/* $Id: tag_report.c,v 1.2 2006/12/13 22:55:22 vapier Exp $ */
 #include "tag_report.h"
 #include "debug.h"
 #include "reporter.h"
@@ -239,7 +239,7 @@ tag_report(alltags, ctag, keys)
     
     /* retrieved _keys values: initation status, start time, duration,
      * termination type, termination id, start line, end line.		*/
-    char *tag, *contact, *is, *stime, *duration, *tt, *ti, *sl, *el;
+    char *tag, *contact, *is, *mystime, *duration, *tt, *ti, *sl, *el;
     
     /* Check all driver-level status first */
     strcpy(key_get, "tag");
@@ -361,12 +361,12 @@ tag_report(alltags, ctag, keys)
 	}
 
 	strcpy(key_get, "stime");
-	if((stime = (char *)sym_get(keys, key_get)) == NULL) {
-	    stime = "No_stime";
+	if((mystime = (char *)sym_get(keys, key_get)) == NULL) {
+	    mystime = "No_stime";
 	}
 
 	printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n",
-	       tag, "!", "!", is, contact, stime, duration,
+	       tag, "!", "!", is, contact, mystime, duration,
 	       ti, tt, sl, el);
     }
 
