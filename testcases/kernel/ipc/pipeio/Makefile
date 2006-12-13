@@ -20,8 +20,10 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include
-LOADLIBES+=	-L../../../../lib -lltp
+CFLAGS   += -Wall
+CPPFLAGS += -I../../../../include
+LDFLAGS  += -L../../../../lib
+LDLIBS   += -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -33,5 +35,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-
