@@ -22,8 +22,7 @@
 ###########################################################################
 CFLAGS   += -Wall
 CPPFLAGS += -I../../../../include
-LDFLAGS  += -L../../../../lib
-LDLIBS   += -lltp
+LDLIBS   += -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
