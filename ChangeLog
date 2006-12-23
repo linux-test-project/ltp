@@ -1,3 +1,49 @@
+LTP-20061222
+
+-fix from Steven J. Hill use memset() instead of bzero() 
+netsync.c
+
+-cleanup style 
+lftest.c
+
+-fix by Will Newton to just use a normal anonymous mapping 
+mmap09.c
+
+-do not use variable names the same as system functions (like stime() or utime()) 
+pan.c, tag_report.c, pipeio.c, fptest01.c, netpipe.c
+
+-fix from Jane Lv: large buffers on the stack make uClinux cry 
+lftest.c
+
+-A fix for Bug 29489 that updates syslogtst.c for syslog-ng on SLES 10 
+syslogtst.c
+
+-Multiple Makefiles had clean up changes made 
+
+-scrub references to _syscall2 
+sysfs01.c, sysfs02.c, sysfs03.c, sysfs04.c, sysfs05.c, sysfs06.c
+
+-use = rather than == when testing for equality in portable shell scripts as the latter is not POSIX 
+ar01, cron_allow01, cron_deny01, su01, fs_di, fsxtest, bsigntest.sh, digsigtest.sh, twiddletest.sh, verify_seclvl.sh, syslog01, syslog02, syslog03, syslog04, syslog05, syslog06, syslog07, syslog08, syslog09, syslog10, tcore.sh, mc_commo, fsx.sh, nfs01, nfs02, nfs03, nfs04, nfsstat01, nfsstress, ftp03, ftp04, ftp05, rwho01, run.sh, run.sh, run.sh, run.sh, run.sh, tpm_tools.sh, mkrootfs
+
+-put -L path to ltp in LDLIBS for now (even though it is wrong) ... need to find out what LDFLAGS isnt properly being incremented 
+Makefile
+
+-this uses bashisms so make sure we require bash 
+rwtest.sh
+
+-use memcmp() instead of legacy bcmp() 
+fsx-linux.c, fsx-linux.c, symlink01.c, fsx-linux.c
+
+-use syscall() instead of _syscall#() 
+HTaffinity.c
+
+-Rename mknod01.c to mknodat01.c for bug # 30083 
+mknod01.c, mknodat01.c
+
+-tweak cnt decrement to be POSIX friendly 
+generate.sh
+
 LTP-20061121
 
 -Removed an invalid errno value check. 
