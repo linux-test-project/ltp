@@ -177,7 +177,7 @@ static int vmsplice_test(void)
 		return -1;
 	}
 
-	fd_out = open(testfile, O_WRONLY | O_CREAT | O_TRUNC);
+	fd_out = open(testfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_out < 0) {
 		close(pipes[0]);
 		close(pipes[1]);
