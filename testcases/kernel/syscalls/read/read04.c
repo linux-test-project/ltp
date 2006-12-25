@@ -105,7 +105,7 @@ int main(int ac, char **av)
 					 "expected %d", TEST_RETURN, TST_SIZE);
 				continue;
 			}
-			if (strcmp(palfa, prbuf) != 0) {
+			if (memcmp(palfa, prbuf, sizeof(palfa)) != 0) {
 				tst_resm(TFAIL, "read buffer not equal "
 					 "to write buffer");
 				continue;
