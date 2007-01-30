@@ -117,8 +117,8 @@ do_test()
          [ $? = 0 ] || end_testcase "$agroup NOT joined to $INTERFACE"
 
          # See if they respond to a ping.
-	 ping -c 3 -I $INTERFACE $agroup
-	 [ $? != 0 ] && { echo "Error - $TC: $agroup NOT responding over $INTERFACE" ;}
+	 #ping -c 3 -I $INTERFACE $agroup
+	 #[ $? != 0 ] && { echo "Error - $TC: $agroup NOT responding over $INTERFACE" ;}
    
       done
 
