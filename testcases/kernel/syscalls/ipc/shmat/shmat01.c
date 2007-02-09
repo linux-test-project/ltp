@@ -58,7 +58,6 @@
 #include "ipcshm.h"
 
 char *TCID = "shmat01";
-int TST_TOTAL = 3;
 extern int Tst_count;
 
 #define CASE0		10		/* values to write into the shared */
@@ -93,6 +92,7 @@ struct test_case_t {
 	/* a read only attach */
 	{&shm_id_1, 0, SHM_RDONLY}
 };
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
 int main(int ac, char **av)
 {

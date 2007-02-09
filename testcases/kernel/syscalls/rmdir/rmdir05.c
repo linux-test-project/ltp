@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.4 2006/05/12 15:44:11 vapier Exp $ */
+/* $Id: rmdir05.c,v 1.5 2007/02/09 20:48:23 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -111,7 +111,7 @@ void cleanup();
 extern char *get_high_address();
 int TST_TOTAL=6;
 #else
-int TST_TOTAL=5;
+int TST_TOTAL=4;
 #endif
 
 char *TCID="rmdir05";		/* Test program identifier.    */
@@ -285,6 +285,7 @@ main(int argc, char **argv)
 	 */
 
 
+#if !defined(UCLINUX)	
 	/* Call rmdir(2) */
 	TEST(rmdir(bad_addr));
 	
@@ -309,7 +310,6 @@ main(int argc, char **argv)
 	  }
 	} 
 
-#if !defined(UCLINUX)	
 	/* 
 	 * TEST CASE: 5
 	 * path argument points above the maximum allocated address space
@@ -420,12 +420,13 @@ void setup()
     /* Create a unique directory name. */
     sprintf(dir_name,"./dir_%d",getpid());
 
+#if !defined(UCLINUX)
     bad_addr = mmap(0, 1, PROT_NONE,
 		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr == MAP_FAILED) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }
-
+#endif
 }	/* End setup() */
 
 

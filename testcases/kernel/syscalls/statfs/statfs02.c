@@ -187,12 +187,12 @@ setup()
 
 	sprintf(good_dir, "%s.statfs.%d", good_dir, getpid());
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-#if !defined(UCLINUX)
 	TC[3].path = bad_addr;
 #endif
 }

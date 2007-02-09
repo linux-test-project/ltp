@@ -188,12 +188,12 @@ setup()
 
 	do_file_setup(fname);
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-#if !defined(UCLINUX)
 	TC[0].fd2 = bad_addr;
 	TC[1].fd = bad_addr;
 #endif

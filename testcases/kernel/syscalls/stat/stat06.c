@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.5 2006/05/12 15:44:11 vapier Exp $ */
+/* $Id: stat06.c,v 1.6 2007/02/09 20:48:24 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -127,7 +127,6 @@ void setup();
 void cleanup();
 
 char *TCID="stat06";		/* Test program identifier.    */
-int TST_TOTAL=7;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0, 0};
@@ -162,10 +161,11 @@ struct test_case_t {
     { Longpathname, &statbuf, "pathname too long", ENAMETOOLONG, longpath_setup },
 #if !defined(UCLINUX)
     { High_address, &statbuf, "address beyond address space", EFAULT, high_address_setup },
-#endif
     { (char *)-1, &statbuf, "negative address", EFAULT, no_setup },
+#endif
     { NULL, NULL, NULL, 0, no_setup }
 };
+int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 /***********************************************************************
  * Main
@@ -283,13 +283,14 @@ setup()
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
+#if !defined(UCLINUX)
     bad_addr = mmap(0, 1, PROT_NONE,
 		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr == MAP_FAILED) {
 	tst_brkm(TBROK, cleanup, "mmap failed");
     }
     Test_cases[6].pathname = bad_addr;
-    
+#endif
 
     for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
 	Test_cases[ind].setupfunc();

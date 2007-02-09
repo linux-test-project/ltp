@@ -186,12 +186,14 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
 	TC[2].buf = bad_addr;
+#endif
 }
 
 /*

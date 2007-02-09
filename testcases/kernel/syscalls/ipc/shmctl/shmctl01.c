@@ -265,7 +265,7 @@ stat_setup()
 
 	tst_flush();
 	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
-		if ((pid = fork()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 

@@ -115,8 +115,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ SFILE1,  "No Search permissions to process", EACCES, setup1 },
-	{ (char *)-1, "Negative address", EFAULT, no_setup },
 #if !defined(UCLINUX)
+	{ (char *)-1, "Negative address", EFAULT, no_setup },
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
 #endif
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
@@ -126,7 +126,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 };
 
 char *TCID="lstat02";           /* Test program identifier.    */
-int TST_TOTAL = 6;		/* Total number of test cases. */
+int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);		/* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
 
@@ -248,15 +248,13 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-#if !defined(UCLINUX)
 	Test_cases[2].pathname = bad_addr;
-#else
-	Test_cases[1].pathname = bad_addr;
 #endif
 
 	/* call individual setup functions */

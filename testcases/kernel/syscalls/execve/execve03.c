@@ -78,7 +78,6 @@
 
 
 char *TCID = "execve03";
-int TST_TOTAL = 6;
 int fileHandle = 0;
 extern int Tst_count;
 
@@ -111,8 +110,10 @@ struct test_case_t {
 	/* the path contains a directory name which doesn't exist - ENOTDIR */
 	{test_name3, ENOTDIR},
 
+#if !defined(UCLINUX)
 	/* the filename isn't part of the process address space - EFAULT */
 	{(char *)-1, EFAULT},
+#endif
 
 	/* the filename does not have execute permission - EACCES */
 	{test_name5, EACCES},
@@ -120,6 +121,8 @@ struct test_case_t {
 	/* the file is zero length with execute permissions - ENOEXEC */
 	{test_name6, ENOEXEC}
 };
+
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
 int
 main(int ac, char **av)
@@ -233,12 +236,14 @@ setup()
 		tst_brkm(TBROK, cleanup, "close() failed");
 	}
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
 	TC[3].tname = bad_addr;
+#endif
 }
 
 

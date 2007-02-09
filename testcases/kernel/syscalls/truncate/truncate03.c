@@ -107,7 +107,6 @@ int setup2();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();   /* setup function to test chmod for ENAMETOOLONG */
 
 char *TCID="truncate03";	/* Test program identifier.    */
-int TST_TOTAL=5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0};
 
@@ -126,12 +125,13 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ TEST_FILE2, "Path contains regular file", ENOTDIR, setup2 },
 #if !defined(UCLINUX)
 	{ High_address_node, "Address beyond address space", EFAULT, no_setup}, 
-#endif
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
+#endif
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
 	{ "", "Pathname is empty", ENOENT, no_setup },
 	{ NULL, NULL, 0, no_setup }
 };
+int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
@@ -290,17 +290,15 @@ setup()
 		/*NOTREACHED*/
 	}
 
+#if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
-
-#if !defined(UCLINUX)
 	Test_cases[3].pathname = bad_addr;
-#else
-	Test_cases[2].pathname = bad_addr;
 #endif
+
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();

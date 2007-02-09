@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link04.c,v 1.4 2006/05/12 15:44:11 vapier Exp $ */
+/* $Id: link04.c,v 1.5 2007/02/09 20:48:23 vapier Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -311,6 +311,7 @@ setup()
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
+#if !defined(UCLINUX)
     bad_addr = mmap(0, 1, PROT_NONE,
 		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
     if (bad_addr == MAP_FAILED) {
@@ -318,6 +319,7 @@ setup()
     }
     Test_cases[6].file1 = bad_addr;
     Test_cases[12].file2 = bad_addr;
+#endif
 
     for (ind=0; Test_cases[ind].desc1 != NULL; ind++ ) {
         Test_cases[ind].setupfunc1();
