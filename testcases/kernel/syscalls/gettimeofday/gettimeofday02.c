@@ -49,6 +49,9 @@
 #include <usctest.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include <time.h>
+#include <errno.h>
+
 
 #define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
@@ -82,6 +85,9 @@ void help()
 
 int main(int ac, char **av) 
 {
+	struct timespec interval, remainder; 
+	interval.tv_sec = 0; 
+	interval.tv_nsec = 5000; 
 	struct timeval tv1,tv2;
 	char *msg; 
 
@@ -96,8 +102,12 @@ int main(int ac, char **av)
 	signal(SIGALRM, breakout); 
 	alarm(atoi(tlen));  
 
-	gettimeofday(&tv1,NULL);
 	while (!done) {
+		gettimeofday(&tv1,NULL);
+		if (nanosleep(&interval, &remainder) == -1) {
+		    perror("nanosleep");
+		}
+
 		gettimeofday(&tv2,NULL);
 		if (	(tv2.tv_usec < tv1.tv_usec) &&
 			(tv2.tv_sec <= tv1.tv_sec)
@@ -106,7 +116,6 @@ int main(int ac, char **av)
 			cleanup();
 			exit(1);
 		}
-		tv1=tv2;
 	}
 
 	tst_resm(TPASS, "gettimeofday monotonous in %s seconds", tlen);
