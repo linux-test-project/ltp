@@ -246,6 +246,16 @@ fi
 # TEST #6
 # Test if file command can recognize ELF binay executables
 
+# Check ppc architecture
+  TEST_ARCH=LSB   # Assume the architecture is Intel
+  PPC_MATCH=""
+
+  grep -q -i power /proc/cpuinfo && PPC_MATCH="y"
+  grep -q -i ppc970 /proc/cpuinfo && PPC_MATCH="y"
+  if [ -n "$PPC_MATCH" ]; then
+     TEST_ARCH=MSB
+  fi
+
 export TCID=file06
 export TST_COUNT=6
 
@@ -269,7 +279,7 @@ file $LTPTMP/cprog &>$LTPTMP/file.out
 
 if [ $? -eq 0 ]
 then
-    grep "ELF .*-bit LSB executable, .*" $LTPTMP/file.out &>/dev/null
+    grep "ELF .*-bit $TEST_ARCH executable, .*" $LTPTMP/file.out &>/dev/null
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognized ELF binary executable"
@@ -311,7 +321,7 @@ file $LTPTMP/files.tar &>$LTPTMP/file.out
 
 if [ $? -eq 0 ]
 then
-    grep "GNU tar archive" $LTPTMP/file.out &>/dev/null
+    grep "tar archive" $LTPTMP/file.out &>/dev/null
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised tar files"
@@ -504,6 +514,7 @@ then
 # of different architectures...
 #####
     MATCHED=""
+    grep -i "$TEST_ARCH" $LTPTMP/file.out && MATCHED="y"
     grep -i "kernel" $LTPTMP/file.out && MATCHED="y"
     grep -i "compressed data" $LTPTMP/file.out && MATCHED="y"
     grep -i "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
