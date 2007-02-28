@@ -53,7 +53,7 @@
 #include "ipcshm.h"
 
 char *TCID = "shmget02";
-int TST_TOTAL = 5;
+int TST_TOTAL = 4;
 extern int Tst_count;
 
 int exp_enos[] = {ENOENT, EEXIST, EINVAL, 0};	/* 0 terminated list of */
@@ -73,7 +73,7 @@ struct test_case_t {
 	{&shmkey2, 0, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
 
 	/* EINVAL - size is negative */
-	{&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
+//	{&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
 	
 	/* EINVAL - size is larger than created segment */
 	{&shmkey, SHM_SIZE * 2, SHM_RW, EINVAL},
