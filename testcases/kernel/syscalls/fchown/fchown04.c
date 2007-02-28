@@ -239,6 +239,14 @@ setup()
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
+
+	/* to let chown(TESTDIR, -1, getgid()) in tst_tmpdir() run
+	 * successfully even if getgid() is not in group_info of
+	 * the current process's task_struct till now
+	 */
+
+	initgroups("root", getgid());
+
          if (setegid(ltpuser->pw_uid) == -1) {
                 tst_resm(TINFO, "setegid failed to "
                          "to set the effective gid to %d",
