@@ -46,7 +46,7 @@
 # Description:	- Check if command dhcpd is available.
 #				- Check if /etc/dhcpd.conf is available.
 #               - Create temporary config file, for dhcpd.
-#               - alias eth0 to eth0:1 with IP 10.1.1.12
+#               - alias ethX to ethX:1 with IP 10.1.1.12
 #
 # Return		- zero on success
 #               - non zero on failure. return value from commands ($RC)
@@ -161,18 +161,29 @@ init()
 		return $(($RC+1))
 	fi
 
-	# Aliasing eth0 to create private network.
-	/sbin/ifconfig eth0:1 10.1.1.12 &>$LTPTMP/tst_dhcpd.err || RC=$?
+  # Checking if exist a valid network interface
+  /sbin/ifconfig | grep -q "^eth" || RC=$?
+	if [ $RC -ne 0 ]
+  then
+		tst_brkm TBROK NULL "INIT: failed identifying a valid eth interface"
+    return $RC
+  fi
+
+  # Get the eth interface
+  ETH_INTERFACE=$(/sbin/ifconfig | grep -m 1 "^eth" | awk -F" " '{ print $1 }')
+
+	# Aliasing eth to create private network.
+	/sbin/ifconfig ${ETH_INTERFACE}:1 10.1.1.12 &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_brk TBROK "INIT: failed aliasing eth0:1 with IP 10.1.1.12"
+		tst_brkm TBROK NULL "INIT: failed aliasing ${ETH_INTERFACE}:1 with IP 10.1.1.12"
 		return $RC
 	else
-		/sbin/route add -host 10.1.1.12 dev eth0:1 &>$LTPTMP/tst_dhcpd.err \
+		/sbin/route add -host 10.1.1.12 dev ${ETH_INTERFACE}:1 &>$LTPTMP/tst_dhcpd.err \
 			|| RC=$?
 		if [ $RC -ne 0 ]
 		then
-			tst_brk TBROK "INIT: failed adding route to 10.1.1.12"
+			tst_brkm TBROK NULL "INIT: failed adding route to 10.1.1.12"
 			return $RC
 		fi
 	fi
@@ -198,11 +209,14 @@ cleanup()
 		mv $LTPTMP/dhcpd.conf /etc/dhcpd.conf &>$LTPTMP/tst_dhcpd.err
 	fi
 
-	/sbin/ifconfig | grep "eth0:1" &>$LTPTMP/tst_dhcpd.err || RC=$?
+	/sbin/ifconfig | grep "${ETH_INTERFACE}:1" &>$LTPTMP/tst_dhcpd.err || RC=$?
 	if [ $RC -eq 0 ]
 	then
-		/sbin/ifconfig eth0:1 down &>$LTPTMP/tst_dhcpd.err
+		/sbin/ifconfig ${ETH_INTERFACE}:1 down &>$LTPTMP/tst_dhcpd.err
 	fi
+
+  # Removing the added route
+  /sbin/route del 10.1.1.12 
 
 	rm -fr $LTPTMP
 	return $RC
@@ -214,7 +228,7 @@ cleanup()
 # Description	- Test basic functionality of dhcpd.
 #               - Test #1: dhcpd will serve IP addresses based on rules in 
 #                 /etc/dhcpd.conf file.
-#				- create dhcpd.conf file, server to listen to eth0/.../10.1.1.0
+#				- create dhcpd.conf file, server to listen to ethX/.../10.1.1.0
 #               - start dhcpd server
 #               - create expected output
 #               - compare expected output with actual output.
@@ -231,7 +245,7 @@ test01()
 	tst_resm TINFO \
 	 "Test #1: dhcpd will serve IPaddr, rules in /etc/dhcpd.conf file."
 
-	hwaddr=`ifconfig eth0 | grep HWaddr | awk '{print $5}'` || RC=$?
+	hwaddr=`ifconfig ${ETH_INTERFACE} | grep HWaddr | awk '{print $5}'` || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL "Test #1: Failed to get hardware address."
