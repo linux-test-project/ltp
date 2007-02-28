@@ -151,7 +151,7 @@ main()
         i)       
             BYTESIZE=$(($OPTARG * 1024 * 1024))
             $LTPROOT/testcases/bin/genload --io 1 >/dev/null 2>&1 &
-            $LTPROOT/testcases/bin/genload --hdd 0 --hdd-bytes $BYTESIZE \
+            $LTPROOT/testcases/bin/genload --hdd 1 --hdd-bytes $BYTESIZE \
             >/dev/null 2>&1 & 
             GENLOAD=1 ;;
     
