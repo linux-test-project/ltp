@@ -145,8 +145,9 @@ int main (argc, argv)
 	alarm(RUNTIME);
 
 	/* Collect child processes. */
-
-	(void) wait(&status);
+	/* Wait for timeout */
+	pause();
+ 
 	kill(kidpid[0], SIGTERM);
 	kill(kidpid[1], SIGTERM);
 
