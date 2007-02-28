@@ -20,7 +20,8 @@ IPMITOOL=`ls $POUNDER_OPTDIR/ipmitool*/src/ipmitool 2> /dev/null`
 if [ -z "$IPMITOOL" ]; then
 	IPMITOOL=`which ipmitool 2> /dev/null`
 	if [ -z "$IPMITOOL" ]; then
-		echo "Cannot find ipmitool; did you run Install?"
+		echo "Cannot find ipmitool; ipmitool utility not installed on system."
+		echo "Please install package containing ipmitool utility and re-run test."
 		exit -1
 	fi
 else
@@ -36,51 +37,86 @@ if [ $RETURN -ne 0 ]; then
 	exit $status
 fi
 
+echo
+echo "ipmitool utility version:  "
+runtest -V
+echo
+echo "OpenIPMI Driver version:  "
+dmesg |grep ipmi |grep -i -m 1 version
+echo
+
 runtest bmc info
 if [ $status -eq 0 ]; then
 	BMC2=`$IPMITOOL bmc info | grep "IPMI Version" | cut -b 29`
 	#possibly log this stuff here
 	if [ $BMC2 -ge 2 ]; then
 		runtest firewall info lun 0 netfn 0
-		runtest firewall info
-		runtest firewall disable lun 0 netfn 0 cmd 2
-		runtest firewall info lun 0 netfn 0
-		runtest firewall enable lun 0 netfn 0 cmd 2
-		#runtest firewall reset
-		runtest channel getciphers 1
+		 		 runtest firewall info lun 0 netfn 1
+		 		 runtest firewall info lun 0 netfn 4
+		 		 runtest firewall info lun 0 netfn 0 command 0
+		 		 runtest firewall info lun 0 netfn 0 command 1
+		 		 runtest firewall info lun 0 netfn 0 command 2
+		 		 runtest firewall info lun 0 netfn 1 command 0
+		 		 runtest firewall info lun 0 netfn 1 command 1
+		 		 runtest firewall info lun 0 netfn 1 command 2
+		 		 runtest firewall info lun 0 netfn 4 command 0
+		 		 runtest firewall info lun 0 netfn 4 command 1
+		 		 runtest firewall info lun 0 netfn 4 command 2
+	 		        runtest firewall disable lun 0 netfn 0 command 2
+		 		 runtest firewall enable lun 0 netfn 0 command 2
+		 		 runtest firewall info lun 0 netfn 0 command 2
+		 		 runtest channel getciphers ipmi 1
+		 		 runtest channel getciphers sol 1
+
 	else
 		echo "BMC is not 2.0 compatible; skipping firewall tests."	
 	fi
 fi
+runtest lan print
 runtest bmc getenables
+runtest channel info 0
+runtest channel info 1
+runtest channel info 2
+runtest channel info 14
+runtest channel info 15
 runtest channel authcap 1 1
 runtest channel authcap 1 2
 runtest channel authcap 1 3
 runtest channel authcap 1 4
-runtest channel authcap 1 5
+runtest channel getaccess 0x1
+runtest channel getaccess 0x2
 runtest chassis status
-runtest chassis poh
+runtest chassis identify
 runtest chassis restart_cause
 runtest chassis power status
-runtest fru print
 runtest pef info
 runtest pef status
-runtest pef policy
 runtest pef list
 runtest sdr info
 runtest sdr list all
+runtest sdr list full
+runtest sdr list compact
+runtest sdr list event
+runtest sdr list mcloc
+runtest sdr list fru
+runtest sdr list generic
+runtest sdr type list
+runtest sdr entity
+runtest sel
 runtest sel info
 runtest sel list
+runtest sel elist
 runtest sel list 5
 runtest sel time get
 runtest sel writeraw testing
 runtest sel readraw testing
 runtest sensor list
 runtest session info all
-runtest sol info
-runtest user summary
-runtest user list
-
+runtest session info active
+runtest user summary 0x1
+runtest user summary 0x2
+runtest user list 0x1
+runtest user list 0x2
 
 if [ $status -eq 255 ]; then
 	status=254
