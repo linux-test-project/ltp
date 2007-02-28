@@ -158,16 +158,15 @@ FILE *fp;
   pid_max = PID_MAX;
 #else
 
-  system("cat /proc/sys/kernel/pid_max > /tmp/pid-max");
-    if((fp = fopen("/tmp/pid-max", "r")) != NULL)
+    if((fp = fopen("/proc/sys/kernel/pid_max", "r")) != NULL)
 	{
 	  fscanf(fp,"%d",&pid_max);
 	  fclose(fp);
-	  system("rm /tmp/pid-max");
  	}
     else
         {
-	  puts("cannot open file /tmp/pid-max");
+         tst_resm(TFAIL, "Cannot open /proc/sys/kernel/pid_max");
+         exit(0);	
 	}
 #endif
 	/* capture signals */
