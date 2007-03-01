@@ -1,3 +1,41 @@
+LTP-20070228
+
+-Helge Deller writes: when calling open() with O_CREAT, the mode must be
+ specified.  vmsplice01.c
+
+-A patch from Yi Xu to add a nanosleep between the first gettimeofday and the 
+ next gettimeofday to make sure there has been a measurable time 
+ (for gettimeofday function) elapsed gettimeofday02.c
+
+-Corrected problem found by Thomas Schulz.  The syslog.conf file is now backed
+ up before any changes are made. syslog05
+
+-Cleaned up lines 161 - 171.  Reading the pid-max value from 
+ /proc/sys/kernel/pid_max. getsid02.c
+
+-Passing a 1 instead of 0 to genload with the -hdd option for the -i option.
+  This prevents a recursive loop. runltp
+
+-tweak CPPFLAGS so we can find all of our headers 
+ Makefile
+
+-The attached patch (from Carol Hebert) corrects some errors and adds some 
+ additional tests to the IPMI testcase in pounder2.  
+ ipmitool
+
+-Removing the Ping test portion of this test because it is unneeded and 
+ causes failures. mc_member
+
+-as pointed out by Helge Deller, make sure we only check the number of bytes 
+ that we wrote read04.c
+
+-random updates from Jane Lv for uClinux 
+ access05.c, chdir04.c, chroot03.c, creat06.c, execve03.c, semop05.c, 
+ shmat01.c,shmctl01.c, link04.c, lstat02.c, mkdir03.c, mknod06.c, open08.c, 
+ read02.c, rename08.c, rmdir02.c, rmdir03.c, rmdir05.c, stat03.c, stat06.c, 
+ statfs02.c, symlink03.c, truncate03.c
+
+	
 LTP-20061222
 
 -fix from Steven J. Hill use memset() instead of bzero() 
