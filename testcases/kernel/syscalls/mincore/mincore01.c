@@ -195,7 +195,8 @@ void
 setup3()
 {
 	TC[2].addr = global_pointer;
-	TC[2].len = global_len*5;
+	TC[2].len = global_len*2;
+        munmap(global_pointer+global_len, global_len);
 	TC[2].vector = global_vec;
 }
 
@@ -254,7 +255,7 @@ setup()
 	free(buf);
 	
 	/* map the file in memory */
-	if( MAP_FAILED == (global_pointer = (char *)mmap(NULL,global_len,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,0)) )
+	if( MAP_FAILED == (global_pointer = (char *)mmap(NULL,global_len*2,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,0)) )
 	{
 		tst_brkm(TBROK, cleanup, "Temporary file could not be mmapped: %s", strerror(errno));
 	}
