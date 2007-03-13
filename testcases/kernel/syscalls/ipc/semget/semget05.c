@@ -67,7 +67,7 @@ extern int Tst_count;
 int MAXIDS=2048;
 
 int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
-int *sem_id_arr;
+int *sem_id_arr = NULL;
 int num_sems = 0;		/* count the semaphores created */
 
 int main(int ac, char **av)
@@ -97,9 +97,11 @@ int main(int ac, char **av)
 	  }
 	fclose(fp);
 
-	sem_id_arr = (int*)malloc(sizeof(int)*MAXIDS);
+	sem_id_arr = malloc(sizeof(int)*MAXIDS);
+	if (sem_id_arr == NULL)
+		tst_brkm(TBROK, cleanup, "malloc failed");
 
-	setup();			/* global setup */	
+	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -201,6 +203,9 @@ cleanup(void)
 	for (i=0; i<num_sems; i++) {
 		rm_sema(sem_id_arr[i]);
 	}
+
+	/* free malloced memory */
+	free(sem_id_arr);
 
 	/* Remove the temporary directory */
 	tst_rmdir();
