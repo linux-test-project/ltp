@@ -35,7 +35,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -54,10 +53,9 @@
 #include "test.h"
 #include "usctest.h"
 
-
-char *TCID="shmt07";            /* Test program identifier.    */
-int TST_TOTAL=2;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "shmt07";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
 int child();
@@ -65,85 +63,82 @@ int rm_shm(int);
 
 int main()
 {
-	char	*cp=NULL;
-	int	shmid, pid, status;
-	key_t 	key;
+	char *cp = NULL;
+	int shmid, pid, status;
+	key_t key;
 
-	key = (key_t) getpid() ;
+	key = (key_t) getpid();
 
 /*---------------------------------------------------------*/
 
 	errno = 0;
 
-	if ((shmid = shmget(key, SIZE, IPC_CREAT|0666)) < 0) {
+	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
-		tst_resm(TFAIL,"Error: shmget: shmid = %d, errno = %d\n",
-		shmid, errno) ;
-		tst_exit() ;
+		tst_resm(TFAIL, "Error: shmget: shmid = %d, errno = %d\n",
+			 shmid, errno);
+		tst_exit();
 	}
-
-#ifdef __ia64__	
-	  cp = (char *) shmat(shmid, ADDR_IA, 0);
+#ifdef __ia64__
+	cp = (char *)shmat(shmid, ADDR_IA, 0);
 #elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
-	  cp = (char *) shmat(shmid, (void *) NULL, 0);
+	cp = (char *)shmat(shmid, (void *)NULL, 0);
 #else
-	  cp = (char *) shmat(shmid, ADDR, 0);
+	cp = (char *)shmat(shmid, ADDR, 0);
 #endif
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,
-		"Error: shmat: shmid = %d, errno = %d\n",
-		shmid, errno) ;
-		rm_shm(shmid) ;
-		tst_exit() ;
+			 "Error: shmat: shmid = %d, errno = %d\n",
+			 shmid, errno);
+		rm_shm(shmid);
+		tst_exit();
 	}
 
-	*cp 	= '1';
-	*(cp+1) = '2';
+	*cp = '1';
+	*(cp + 1) = '2';
 
-	tst_resm(TPASS,"shmget,shmat");
+	tst_resm(TPASS, "shmget,shmat");
 
 /*-------------------------------------------------------*/
 
-
-	pid = fork() ;
+	pid = fork();
 	switch (pid) {
-	    case -1 :
-			tst_resm(TBROK,"fork failed");
-       		        tst_exit() ;
-	
-           case 0  :  	
-			if (*cp != '1') {
-				tst_resm(TFAIL, "Error: not 1\n");
-			}
-			if (*(cp+1) != '2') {
-				tst_resm(TFAIL, "Error: not 2\n");
-			}
-			tst_exit() ;
+	case -1:
+		tst_resm(TBROK, "fork failed");
+		tst_exit();
+
+	case 0:
+		if (*cp != '1') {
+			tst_resm(TFAIL, "Error: not 1\n");
+		}
+		if (*(cp + 1) != '2') {
+			tst_resm(TFAIL, "Error: not 2\n");
+		}
+		tst_exit();
 	}
 
 	/* parent */
-	while( wait(&status) < 0 && errno == EINTR ) ;
+	while (wait(&status) < 0 && errno == EINTR) ;
 
-	tst_resm(TPASS,"cp & cp+1 correct") ;
+	tst_resm(TPASS, "cp & cp+1 correct");
 
 /*-----------------------------------------------------------*/
-	rm_shm(shmid) ;
-	tst_exit() ;
+	rm_shm(shmid);
+	tst_exit();
 /*-----------------------------------------------------------*/
-	return(0);
+	return (0);
 }
 
 int rm_shm(shmid)
-int shmid ;
+int shmid;
 {
-        if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-                perror("shmctl");
-                tst_resm(TFAIL,
-                "shmctl Failed to remove: shmid = %d, errno = %d\n",
-                shmid, errno) ;
-                tst_exit();
-        }
-        return(0);
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+		perror("shmctl");
+		tst_resm(TFAIL,
+			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 shmid, errno);
+		tst_exit();
+	}
+	return (0);
 }
-

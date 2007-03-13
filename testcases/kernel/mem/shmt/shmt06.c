@@ -31,7 +31,7 @@
  * Parent process forks a child. Child pauses until parent has created
  * a shared memory segment, attached to it and written to it too. At that
  * time child gets the shared memory segment id, attaches to it at a
- * different address than the parents and verifies that its contents are 
+ * different address than the parents and verifies that its contents are
  * the same as the contents of the parent attached segment.
  *
  */
@@ -61,13 +61,12 @@
 #include "test.h"
 #include "usctest.h"
 
-
-char *TCID="shmt06";            /* Test program identifier.    */
-int TST_TOTAL=2;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "shmt06";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
-key_t	key;
+key_t key;
 sigset_t sigset;
 
 int child();
@@ -75,162 +74,156 @@ int rm_shm(int);
 
 int main()
 {
-	char	*cp=NULL;
-	int	pid, pid1, shmid;
-	int	status;
-	
-	key = (key_t)getpid() ;
+	char *cp = NULL;
+	int pid, pid1, shmid;
+	int status;
+
+	key = (key_t) getpid();
 
 	sigemptyset(&sigset);
-	sigaddset(&sigset,SIGUSR1);
-	sigprocmask(SIG_BLOCK,&sigset,NULL);
+	sigaddset(&sigset, SIGUSR1);
+	sigprocmask(SIG_BLOCK, &sigset, NULL);
 
 	pid = fork();
 	switch (pid) {
 	case -1:
-		tst_resm(TBROK,"fork failed");
-                tst_exit() ;
+		tst_resm(TBROK, "fork failed");
+		tst_exit();
 	case 0:
 		child();
 	}
 
 /*------------------------------------------------------*/
 
-
-	if ((shmid = shmget(key, SIZE, IPC_CREAT|0666)) < 0) {
+	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
-		tst_resm(TFAIL,"Error: shmget: shmid = %d, errno = %d\n",
-		shmid, errno) ;
+		tst_resm(TFAIL, "Error: shmget: shmid = %d, errno = %d\n",
+			 shmid, errno);
 		/*
 		 * kill the child if parent failed to do the attach
 		 */
 		(void)kill(pid, SIGINT);
-	}
-	else {
+	} else {
 #ifdef __ia64__
-		  cp = (char *) shmat(shmid, ADDR_IA, 0);
+		cp = (char *)shmat(shmid, ADDR_IA, 0);
 #elif defined(__ARM_ARCH_4T__)
-		  cp = (char *) shmat(shmid, (void*) NULL, 0);
+		cp = (char *)shmat(shmid, (void *)NULL, 0);
 #elif defined(__mips__)
-		  cp = (char *) shmat(shmid, ADDR_MIPS, 0);
+		cp = (char *)shmat(shmid, ADDR_MIPS, 0);
 #elif defined(__hppa__)
-		  cp = (char *) shmat(shmid, ADDR_HPPA, 0);
+		cp = (char *)shmat(shmid, ADDR_HPPA, 0);
 #else
-		  cp = (char *) shmat(shmid, ADDR, 0);
-#endif	
+		cp = (char *)shmat(shmid, ADDR, 0);
+#endif
 		if (cp == (char *)-1) {
-			perror("shmat") ;
+			perror("shmat");
 			tst_resm(TFAIL,
-			"Error: shmat: shmid = %d, errno = %d\n",
-			shmid, errno) ;
+				 "Error: shmat: shmid = %d, errno = %d\n",
+				 shmid, errno);
 
-		/* kill the child if parent failed to do the attch */
+			/* kill the child if parent failed to do the attch */
 
-			kill(pid, SIGINT) ;   
+			kill(pid, SIGINT);
 
-		/* remove shared memory segment */
+			/* remove shared memory segment */
 
-			rm_shm(shmid) ;  
+			rm_shm(shmid);
 
-			tst_exit() ;
-		} 
-		*cp 	= 'A';
-		*(cp+1) = 'B';
-		*(cp+2) = 'C';
+			tst_exit();
+		}
+		*cp = 'A';
+		*(cp + 1) = 'B';
+		*(cp + 2) = 'C';
 
 		kill(pid, SIGUSR1);
-		while ( (pid1 = wait(&status)) < 0 && 
-			(errno == EINTR) ) ;
+		while ((pid1 = wait(&status)) < 0 && (errno == EINTR)) ;
 		if (pid1 != pid) {
-			tst_resm(TFAIL,"Waited on the wrong child") ;
+			tst_resm(TFAIL, "Waited on the wrong child");
 			tst_resm(TFAIL,
-			"Error: wait_status = %d, pid1= %d\n", status, pid1) ;
+				 "Error: wait_status = %d, pid1= %d\n", status,
+				 pid1);
 		}
 	}
 
-	tst_resm(TPASS,"shmget,shmat");
+	tst_resm(TPASS, "shmget,shmat");
 
 /*---------------------------------------------------------------*/
 
-
 	if (shmdt(cp) < 0) {
-		tst_resm(TFAIL,"shmdt");
+		tst_resm(TFAIL, "shmdt");
 	}
 
-	tst_resm(TPASS,"shmdt");
+	tst_resm(TPASS, "shmdt");
 
 /*-------------------------------------------------------------*/
 
-	rm_shm(shmid) ;
-	tst_exit() ;
+	rm_shm(shmid);
+	tst_exit();
 
 /*-----------------------------------------------------------*/
-	return(0);
+	return (0);
 }
 
 int child()
 {
-	int 	shmid ,
-		chld_pid ;
-	char 	*cp;
+	int shmid, chld_pid;
+	char *cp;
 	int sig;
 
 	sigwait(&sigset, &sig);
-	chld_pid = getpid() ;
-	
+	chld_pid = getpid();
+
 	if ((shmid = shmget(key, SIZE, 0)) < 0) {
 		perror("shmget:child process");
 		tst_resm(TFAIL,
-		"Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
-		errno, shmid, chld_pid);
-	}
-	else {
-#ifdef __ia64__	
-		  cp = (char *) shmat(shmid, ADDR1_IA, 0);
-#elif defined(__ARM_ARCH_4T__)	
-		  cp = (char *) shmat(shmid, (void *) NULL, 0);
-#elif defined(__mips__)	
-		  cp = (char *) shmat(shmid, ADDR1_MIPS, 0);
+			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
+			 errno, shmid, chld_pid);
+	} else {
+#ifdef __ia64__
+		cp = (char *)shmat(shmid, ADDR1_IA, 0);
+#elif defined(__ARM_ARCH_4T__)
+		cp = (char *)shmat(shmid, (void *)NULL, 0);
+#elif defined(__mips__)
+		cp = (char *)shmat(shmid, ADDR1_MIPS, 0);
 #elif defined(__hppa__)
-		  cp = (char *) shmat(shmid, ADDR1_HPPA, 0);
+		cp = (char *)shmat(shmid, ADDR1_HPPA, 0);
 #else
-		  cp = (char *) shmat(shmid, ADDR1, 0);
+		cp = (char *)shmat(shmid, ADDR1, 0);
 #endif
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,
-			"Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
-			errno, shmid, chld_pid);
+				 "Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
+				 errno, shmid, chld_pid);
 		} else {
 			if (*cp != 'A') {
-				tst_resm(TFAIL,"child: not A\n");
+				tst_resm(TFAIL, "child: not A\n");
 			}
-			if (*(cp+1) != 'B') {
-				tst_resm(TFAIL,"child: not B\n");
+			if (*(cp + 1) != 'B') {
+				tst_resm(TFAIL, "child: not B\n");
 			}
-			if (*(cp+2) != 'C') {
-				tst_resm(TFAIL,"child: not C\n");
+			if (*(cp + 2) != 'C') {
+				tst_resm(TFAIL, "child: not C\n");
 			}
-			if (*(cp+8192) != 0) {
-				tst_resm(TFAIL,"child: not 0\n");
+			if (*(cp + 8192) != 0) {
+				tst_resm(TFAIL, "child: not 0\n");
 			}
 		}
 
 	}
-	tst_exit() ;
-        return(0);
+	tst_exit();
+	return (0);
 }
 
 int rm_shm(shmid)
-int shmid ;
+int shmid;
 {
-        if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-                perror("shmctl");
-                tst_resm(TFAIL,
-                "shmctl Failed to remove: shmid = %d, errno = %d\n",
-                shmid, errno) ;
-                tst_exit();
-        }
-        return(0);
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+		perror("shmctl");
+		tst_resm(TFAIL,
+			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 shmid, errno);
+		tst_exit();
+	}
+	return (0);
 }
-

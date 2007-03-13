@@ -34,7 +34,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -47,13 +46,12 @@
 #include "test.h"
 #include "usctest.h"
 
-
-char *TCID="shmt05";            /* Test program identifier.    */
-int TST_TOTAL=2;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "shmt05";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
-key_t		 key[2];
+key_t key[2];
 
 #define		 ADDR		 (void *)0x80000
 #define		 ADDR1		 (void *)0x80010
@@ -66,86 +64,84 @@ int rm_shm(int);
 
 int main()
 {
- int		 shmid, shmid1;
- char		 *cp, *cp1;
+	int shmid, shmid1;
+	char *cp, *cp1;
 
- srand48((getpid() << 16) + (unsigned)time((time_t *)NULL));
+	srand48((getpid() << 16) + (unsigned)time((time_t *) NULL));
 
- key[0] = (key_t) lrand48();
- key[1] = (key_t) lrand48();
-
-/*--------------------------------------------------------*/
-
-
- if ((shmid = shmget(key[0], SIZE, IPC_CREAT|0666)) < 0) {
-  perror("shmget");
-  tst_resm(TFAIL,
-  "Error: shmget: shmid = %d, errno = %d\n",
-  shmid, errno) ;
- } else {
-#ifdef __ia64__ 
-  cp = (char *) shmat(shmid, ADDR_IA, 0);
-#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
-  cp = (char *) shmat(shmid, (void *)NULL, 0);
-#else
-  cp = (char *) shmat(shmid, ADDR, 0);
-#endif
-  if (cp == (char *)-1) {
-   tst_resm(TFAIL,"shmat");
-   rm_shm(shmid) ;
-  }
- }
-
- tst_resm(TPASS,"shmget & shmat");		 
+	key[0] = (key_t) lrand48();
+	key[1] = (key_t) lrand48();
 
 /*--------------------------------------------------------*/
 
-
- if ((shmid1 = shmget(key[1], SIZE, IPC_CREAT|0666)) < 0) {
-  perror("shmget2");
-  tst_resm(TFAIL,
-  "Error: shmget: shmid1 = %d, errno = %d\n",
-  shmid1, errno) ;
- } else {
+	if ((shmid = shmget(key[0], SIZE, IPC_CREAT | 0666)) < 0) {
+		perror("shmget");
+		tst_resm(TFAIL,
+			 "Error: shmget: shmid = %d, errno = %d\n",
+			 shmid, errno);
+	} else {
 #ifdef __ia64__
-   cp1 = (char *) shmat(shmid1, ADDR1_IA, 0);
-#elif defined(__ARM_ARCH_4T__)
-   cp1 = (char *) shmat(shmid1, (void *)NULL, 0);
-#elif defined(__hppa__)
-   cp1 = (char *) shmat(shmid1, cp+4096, 0);
+		cp = (char *)shmat(shmid, ADDR_IA, 0);
+#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
+		cp = (char *)shmat(shmid, (void *)NULL, 0);
 #else
-   cp1 = (char *) shmat(shmid1, ADDR1, 0);
+		cp = (char *)shmat(shmid, ADDR, 0);
 #endif
-  if (cp1 != (char *)-1) {
-   perror("shmat");
-   tst_resm(TFAIL,
-     "Error: shmat: shmid1 = %d, addr= %#x, errno = %d\n",
-     shmid1, cp1, errno);
-  }
- }
+		if (cp == (char *)-1) {
+			tst_resm(TFAIL, "shmat");
+			rm_shm(shmid);
+		}
+	}
 
- tst_resm(TPASS,"2nd shmget & shmat"); 
+	tst_resm(TPASS, "shmget & shmat");
+
+/*--------------------------------------------------------*/
+
+	if ((shmid1 = shmget(key[1], SIZE, IPC_CREAT | 0666)) < 0) {
+		perror("shmget2");
+		tst_resm(TFAIL,
+			 "Error: shmget: shmid1 = %d, errno = %d\n",
+			 shmid1, errno);
+	} else {
+#ifdef __ia64__
+		cp1 = (char *)shmat(shmid1, ADDR1_IA, 0);
+#elif defined(__ARM_ARCH_4T__)
+		cp1 = (char *)shmat(shmid1, (void *)NULL, 0);
+#elif defined(__hppa__)
+		cp1 = (char *)shmat(shmid1, cp + 4096, 0);
+#else
+		cp1 = (char *)shmat(shmid1, ADDR1, 0);
+#endif
+		if (cp1 != (char *)-1) {
+			perror("shmat");
+			tst_resm(TFAIL,
+				 "Error: shmat: shmid1 = %d, addr= %#x, errno = %d\n",
+				 shmid1, cp1, errno);
+		}
+	}
+
+	tst_resm(TPASS, "2nd shmget & shmat");
 
 /*------------------------------------------------------*/
 
- rm_shm(shmid) ;
- rm_shm(shmid1) ;
+	rm_shm(shmid);
+	rm_shm(shmid1);
 
- tst_exit() ;
+	tst_exit();
 
 /*-------------------------------------------------------*/
- return(0);
+	return (0);
 }
 
 int rm_shm(shmid)
-int shmid ;
+int shmid;
 {
-  if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-   perror("shmctl");
-   tst_resm(TFAIL,
-            "shmctl Failed to remove: shmid = %d, errno = %d\n",
-            shmid, errno) ;
-   tst_exit();
-  }
-  return(0);
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+		perror("shmctl");
+		tst_resm(TFAIL,
+			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 shmid, errno);
+		tst_exit();
+	}
+	return (0);
 }
