@@ -9,6 +9,9 @@ cat << EOF > ${output}
  * Here we stick all the ugly *fallback* logic for linux
  * system call numbers (those __NR_ thingies).
  *
+ * Note: this is a generated file !  Do not edit !
+ *       change your arch specific .in files instead.
+ *
  * Licensed under the GPLv2 or later, see the COPYING file.
  */
 
