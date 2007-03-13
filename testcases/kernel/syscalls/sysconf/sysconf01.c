@@ -17,31 +17,19 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 11/21/2002   Port to LTP     robbiew@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-
 /*
+ * http://www.opengroup.org/onlinepubs/009695399/functions/sysconf.html
+ *
  * NAME :
  * sysconf01 :  test for sysconf( get configurable system variables) sys call.
  *
  * USAGE :
- *      sysconf01 
+ *      sysconf01
  *
  * RESTRICTIONS
  * MUST RUN AS ROOT
- *
  */
 
-/*
- * Revision 1.2  2000/04/26  07:34:00  hegde
- * Added more test conditions for ssysconf(2) as it supports more config
- * variables due to unix98 changes.
- * PR#252257 scn:jgeorge11
- *
- * Revision 1.1  1996/05/14  22:01:18  vkohli
- * Initial revision
- *
-*/
 #define _GNU_SOURCE 1
 #include <stdio.h>
 #include <sys/types.h>
@@ -55,363 +43,112 @@
 #include "usctest.h"
 
 char *TCID="sysconf01";            /* Test program identifier.    */
-int TST_TOTAL=57;                /* Total number of test cases. */
+int TST_TOTAL = 56;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
-/**************/
 
+
+static void _test_sysconf(int name, const char *strname)
+{
+	long retval;
+
+	/* make sure we reset this as sysconf() will not */
+	errno = 0;
+	retval = sysconf(name);
+	if (errno != 0)
+		tst_resm(TFAIL, "sysconf(%s) failed, error=%d: %s\n",
+		         strname, errno, strerror(errno));
+	else
+		tst_resm(TPASS, "%s = %li", strname, retval);
+}
+#define test_sysconf(name) _test_sysconf(name, #name)
 
 int main()
 {
+	/* 1 - 5 */
+	test_sysconf(_SC_CLK_TCK);
+	test_sysconf(_SC_ARG_MAX);
+	test_sysconf(_SC_CHILD_MAX);
+	test_sysconf(_SC_OPEN_MAX);
+	test_sysconf(_SC_JOB_CONTROL);
+	/* 6 - 10 */
+	test_sysconf(_SC_SAVED_IDS);
+	test_sysconf(_SC_VERSION);
+	test_sysconf(_SC_PASS_MAX);
+	test_sysconf(_SC_LOGIN_NAME_MAX);
+	test_sysconf(_SC_XOPEN_VERSION);
+	/* 11 - 15 */
+	test_sysconf(_SC_TZNAME_MAX);
+	test_sysconf(_SC_STREAM_MAX);
+	test_sysconf(_SC_XOPEN_CRYPT);
+	test_sysconf(_SC_XOPEN_ENH_I18N);
+	test_sysconf(_SC_XOPEN_SHM);
+	/* 16 - 20 */
+	test_sysconf(_SC_XOPEN_XCU_VERSION);
+	test_sysconf(_SC_ATEXIT_MAX);
+	test_sysconf(_SC_2_C_BIND);
+	test_sysconf(_SC_2_C_DEV);
+	test_sysconf(_SC_2_C_VERSION);
+	/* 21 - 25 */
+	test_sysconf(_SC_2_CHAR_TERM);
+	test_sysconf(_SC_2_FORT_DEV);
+	test_sysconf(_SC_2_FORT_RUN);
+	test_sysconf(_SC_2_LOCALEDEF);
+	test_sysconf(_SC_2_SW_DEV);
+	/* 26 - 30 */
+	test_sysconf(_SC_2_UPE);
+	test_sysconf(_SC_2_VERSION);
+	test_sysconf(_SC_BC_BASE_MAX);
+	test_sysconf(_SC_BC_DIM_MAX);
+	test_sysconf(_SC_BC_SCALE_MAX);
+	/* 31 - 35 */
+	test_sysconf(_SC_BC_STRING_MAX);
+	test_sysconf(_SC_COLL_WEIGHTS_MAX);
+	test_sysconf(_SC_EXPR_NEST_MAX);
+	test_sysconf(_SC_LINE_MAX);
+	test_sysconf(_SC_RE_DUP_MAX);
+	/* 36 - 40 */
+	test_sysconf(_SC_XOPEN_UNIX);
+	test_sysconf(_SC_PAGESIZE);
+	test_sysconf(_SC_PHYS_PAGES);
+	test_sysconf(_SC_AVPHYS_PAGES);
+	test_sysconf(_SC_AIO_MAX);
+	/* 41 - 45 */
+	test_sysconf(_SC_AIO_PRIO_DELTA_MAX);
+	test_sysconf(_SC_SEMAPHORES);
+	test_sysconf(_SC_SEM_NSEMS_MAX);
+	test_sysconf(_SC_SEM_VALUE_MAX);
+	test_sysconf(_SC_MEMORY_PROTECTION);
+	/* 46 - 50 */
+	test_sysconf(_SC_FSYNC);
+	test_sysconf(_SC_MEMORY_PROTECTION);
+	test_sysconf(_SC_TIMERS);
+	test_sysconf(_SC_TIMER_MAX);
+	test_sysconf(_SC_MAPPED_FILES);
+	/* 51 - 55 */
+	test_sysconf(_SC_THREAD_PRIORITY_SCHEDULING);
+	test_sysconf(_SC_XOPEN_LEGACY);
+	test_sysconf(_SC_MEMLOCK);
+	test_sysconf(_SC_XBS5_ILP32_OFF32);
+	test_sysconf(_SC_XBS5_ILP32_OFFBIG);
 
-	int retval;
+	/* 56 */
+	{
+		int retval;
+		errno = 0;
+		retval = sysconf(INVAL_FLAG);
+		if (retval != -1)
+			tst_resm(TFAIL,
+				"sysconf succeeded for invalid flag (%i), retval=%d errno=%d: %s",
+				INVAL_FLAG, retval, errno, strerror(errno));
+		else if (errno != EINVAL)
+			tst_resm(TFAIL,
+				"sysconf correctly failed, but expected errno (%i) != actual (%i)\n",
+				EINVAL, errno);
+		else
+			tst_resm(TPASS, "using invalid name");
+	}
 
-
-/*--------------------------------------------------------------------------*/
-
-	retval = sysconf(_SC_CLK_TCK);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_CLK_TCK failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_ARG_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_ARG_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_CHILD_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_CHILD_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_OPEN_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_OPEN_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_JOB_CONTROL);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_JOB_CONTROL failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_SAVED_IDS);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_SAVED_IDS failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_VERSION);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_VERSION failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_PASS_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_PASS_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_LOGIN_NAME_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_LOGIN_NAME_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_XOPEN_VERSION);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_VERSION failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_TZNAME_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_TZNAME_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_STREAM_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_STREAM_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_XOPEN_CRYPT);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_CRYPT failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_XOPEN_ENH_I18N);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_ENH_I18N failed, error=%d",
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_XOPEN_SHM);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_SHM failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_XOPEN_XCU_VERSION);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_XCU_VERSION failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_ATEXIT_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_ATEXIT_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
- 
-	retval = sysconf(_SC_2_C_BIND);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_C_BIND failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_C_DEV);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_C_DEV failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_C_VERSION);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_C_VERSION failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_CHAR_TERM);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_CHAR_TERM failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_FORT_DEV);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_FORT_DEV failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_FORT_RUN);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_FORT_RUN failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_LOCALEDEF);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_LOCALEDEF failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_SW_DEV);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_SW_DEV failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_UPE);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_UPE  failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_2_VERSION);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_2_VERSION failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_BC_BASE_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_BC_BASE_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_BC_DIM_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_BC_DIM_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_BC_SCALE_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_BC_SCALE_MAXd failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_BC_STRING_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_BC_STRING_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_COLL_WEIGHTS_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_COLL_WEIGHTS_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_EXPR_NEST_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_EXPR_NEST_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_LINE_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_LINE_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_RE_DUP_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_RE_DUP_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_XOPEN_UNIX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_UNIX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_PAGESIZE);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_PAGESIZE failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_PHYS_PAGES);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_PHYS_PAGES failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_AVPHYS_PAGES);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_AVPHYS_PAGES failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_AIO_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_AIO_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_AIO_PRIO_DELTA_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL,
-			"sysconf _SC_AIO_PRIO_DELTA_MAX failed, error=%d",
-			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_SEMAPHORES);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_SEMAPHORES failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_SEM_NSEMS_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_SEM_NSEMS_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_SEM_VALUE_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_SEM_VALUE_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_MEMORY_PROTECTION);
-	if (errno != 0) {
-		tst_resm(TFAIL,
-			"sysconf _SC_MEMORY_PROTECTION failed, error=%d",
-			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_FSYNC);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_FSYNC failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_MEMORY_PROTECTION);
-	if (errno != 0) {
-		tst_resm(TFAIL,
-			"sysconf _SC_MEMORY_PROTECTION failed, error=%d",
-			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_TIMERS);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_TIMERS failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_TIMER_MAX);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_TIMER_MAX failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_MAPPED_FILES);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_MAPPED_FILES failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_THREAD_PRIORITY_SCHEDULING);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_THREAD_PRIORITY_SCHEDULING failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_XOPEN_LEGACY);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_XOPEN_LEGACY failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_MEMLOCK);
-	if (errno != 0) {
-		tst_resm(TFAIL, "sysconf _SC_MEMLOCK failed, error=%d", 
-						 errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_XBS5_ILP32_OFF32);
-	if (errno != 0) {
-		tst_resm(TFAIL,
-			"sysconf _SC_XBS5_ILP32_OFF32 failed, error=%d",
-			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(_SC_XBS5_ILP32_OFFBIG);
-	if (errno != 0) {
-		tst_resm(TFAIL,
-			"sysconf _SC_XBS5_ILP32_OFFBIG failed, error=%d", 
-			errno);
-	} else tst_resm(TPASS,"PASS");
-
-	retval = sysconf(INVAL_FLAG);
-	if ((retval != -1) && (errno != EINVAL)) {
-		tst_resm(TFAIL,
-			"sysconf succeeds for invalid flag value = %d, errno = %d",
-			retval, errno);
-	} else tst_resm(TPASS,"PASS");
-
-/*--------------------------------------------------------------------------*/
-	tst_exit() ;
+	tst_exit();
 
 	/**NOT REACHED**/
 	return(0);
