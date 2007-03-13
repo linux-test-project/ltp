@@ -2,6 +2,9 @@
  * Here we stick all the ugly *fallback* logic for linux
  * system call numbers (those __NR_ thingies).
  *
+ * Note: this is a generated file !  Do not edit !
+ *       change your arch specific .in files instead.
+ *
  * Licensed under the GPLv2 or later, see the COPYING file.
  */
 
@@ -9,6 +12,61 @@
 #define __LINUX_SYSCALL_NUMBERS_H__
 
 #include <sys/syscall.h>
+
+
+#ifdef __hppa__
+# ifndef __NR_openat
+#  define __NR_openat 275
+# endif
+# ifndef __NR_mkdirat
+#  define __NR_mkdirat (__NR_openat + 1)
+# endif
+# ifndef __NR_mknodat
+#  define __NR_mknodat (__NR_openat + 2)
+# endif
+# ifndef __NR_fchownat
+#  define __NR_fchownat (__NR_openat + 3)
+# endif
+# ifndef __NR_futimesat
+#  define __NR_futimesat (__NR_openat + 4)
+# endif
+# ifndef __NR_newfstatat
+#  define __NR_newfstatat (__NR_openat + 5)
+# endif
+# ifndef __NR_fstatat64
+#  define __NR_fstatat64 (__NR_openat + 5)
+# endif
+# ifndef __NR_unlinkat
+#  define __NR_unlinkat (__NR_openat + 6)
+# endif
+# ifndef __NR_renameat
+#  define __NR_renameat (__NR_openat + 7)
+# endif
+# ifndef __NR_linkat
+#  define __NR_linkat (__NR_openat + 8)
+# endif
+# ifndef __NR_symlinkat
+#  define __NR_symlinkat (__NR_openat + 9)
+# endif
+# ifndef __NR_readlinkat
+#  define __NR_readlinkat (__NR_openat + 10)
+# endif
+# ifndef __NR_fchmodat
+#  define __NR_fchmodat (__NR_openat + 11)
+# endif
+# ifndef __NR_faccessat
+#  define __NR_faccessat (__NR_openat + 12)
+# endif
+# ifndef __NR_splice
+#  define __NR_splice 291
+# endif
+# ifndef __NR_tee
+#  define __NR_tee 293
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice 294
+# endif
+#endif
 
 
 #ifdef __i386__
@@ -132,52 +190,6 @@
 # endif
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 1302
-# endif
-#endif
-
-
-#ifdef __parisc__
-# ifndef __NR_openat
-#  define __NR_openat 275
-# endif
-# ifndef __NR_mkdirat
-#  define __NR_mkdirat (__NR_openat + 1)
-# endif
-# ifndef __NR_mknodat
-#  define __NR_mknodat (__NR_openat + 2)
-# endif
-# ifndef __NR_fchownat
-#  define __NR_fchownat (__NR_openat + 3)
-# endif
-# ifndef __NR_futimesat
-#  define __NR_futimesat (__NR_openat + 4)
-# endif
-# ifndef __NR_newfstatat
-#  define __NR_newfstatat (__NR_openat + 5)
-# endif
-# ifndef __NR_fstatat64
-#  define __NR_fstatat64 (__NR_openat + 5)
-# endif
-# ifndef __NR_unlinkat
-#  define __NR_unlinkat (__NR_openat + 6)
-# endif
-# ifndef __NR_renameat
-#  define __NR_renameat (__NR_openat + 7)
-# endif
-# ifndef __NR_linkat
-#  define __NR_linkat (__NR_openat + 8)
-# endif
-# ifndef __NR_symlinkat
-#  define __NR_symlinkat (__NR_openat + 9)
-# endif
-# ifndef __NR_readlinkat
-#  define __NR_readlinkat (__NR_openat + 10)
-# endif
-# ifndef __NR_fchmodat
-#  define __NR_fchmodat (__NR_openat + 11)
-# endif
-# ifndef __NR_faccessat
-#  define __NR_faccessat (__NR_openat + 12)
 # endif
 #endif
 
