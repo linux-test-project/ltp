@@ -107,7 +107,7 @@ if ((shmid = shmget(key, SIZE, IPC_CREAT|0666)) < 0 ) {
 else {
 #ifdef __ia64__
   cp = (char *) shmat(shmid, ADDR1, 0);
-#elif defined(__ARM_ARCH_4T__)
+#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
   cp = (char *) shmat(shmid, NULL, 0);
 #else
   cp = (char *) shmat(shmid, ADDR, 0);
@@ -185,7 +185,7 @@ else
 {
 #ifdef __ia64__
   cp = (char *) shmat(shmid, ADDR1, 0);
-#elif defined(__ARM_ARCH_4T__)
+#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
   cp = (char *) shmat(shmid, NULL, 0);
 #else
   cp = (char *) shmat(shmid, ADDR, 0);

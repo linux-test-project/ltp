@@ -85,7 +85,7 @@ int main()
  } else {
 #ifdef __ia64__ 
   cp = (char *) shmat(shmid, ADDR_IA, 0);
-#elif defined(__ARM_ARCH_4T__)
+#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
   cp = (char *) shmat(shmid, (void *)NULL, 0);
 #else
   cp = (char *) shmat(shmid, ADDR, 0);
@@ -111,6 +111,8 @@ int main()
    cp1 = (char *) shmat(shmid1, ADDR1_IA, 0);
 #elif defined(__ARM_ARCH_4T__)
    cp1 = (char *) shmat(shmid1, (void *)NULL, 0);
+#elif defined(__hppa__)
+   cp1 = (char *) shmat(shmid1, cp+4096, 0);
 #else
    cp1 = (char *) shmat(shmid1, ADDR1, 0);
 #endif

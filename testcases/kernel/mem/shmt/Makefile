@@ -19,7 +19,7 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -O -g -Wall
+CFLAGS+=	-I../../../../include -Wall
 LOADLIBES+=	-L../../../../lib -lltp 
 
 SRCS=$(wildcard *.c)
@@ -32,5 +32,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-

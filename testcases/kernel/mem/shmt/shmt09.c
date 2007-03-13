@@ -68,7 +68,7 @@ int main()
 	char	*c1=NULL, *c2=NULL, *c3=NULL;
 	void	*vp;
 	int	shmid;
-#if defined(__ia64__) || defined(__mips__)
+#if defined(__ia64__) || defined(__mips__) || defined(__hppa__)
 	int     increment;
 #endif
 	key_t	key;
@@ -179,7 +179,7 @@ int main()
 			rm_shm(shmid);
 			tst_exit();
 	}
-#elif __mips__
+#elif defined(__mips__) || defined(__hppa__)
 		increment=262144;	 /* 256Kb */
 		while ((vp = sbrk(increment)) != (void *)-1);
 		if (errno != ENOMEM) {
