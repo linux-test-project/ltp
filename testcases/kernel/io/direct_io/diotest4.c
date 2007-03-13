@@ -81,6 +81,12 @@ int TST_TOTAL=17;		 		 /* Total number of test conditions */
 #define TRUE	1
 #define LEN	30
 
+#ifdef __GNUC__
+# define ADDRESS_OF_MAIN __builtin_return_address(0)
+#else
+# define ADDRESS_OF_MAIN main
+#endif
+
 
 /*
  * runtest_f: Do read, writes. Verify the error value obtained by
@@ -544,12 +550,8 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-#if defined(__powerpc64__)
-		ret = read(fd, (char*)(((ulong *)main)[0] & pagemask), count);
-#else
-		ret = read(fd, (char*)((ulong)main & pagemask), count);
-#endif
-		if (ret >= 0 || errno != EFAULT) {   
+		ret = read(fd, (char*)((ulong)ADDRESS_OF_MAIN & pagemask), count);
+		if (ret >= 0 || errno != EFAULT) {
 			tst_resm(TFAIL,"read to read-only space. returns %d: %s",
 				ret, strerror(errno));
 			l_fail = TRUE;
@@ -561,11 +563,7 @@ main(int argc, char *argv[])
 		l_fail = TRUE;
 	}
 	else {
-#if defined(__powerpc64__)
-		ret = write(fd, (char *)(((ulong *)main)[0] & pagemask), count);
-#else
-		ret = write(fd, (char *)((ulong)main & pagemask), count);
-#endif
+		ret = write(fd, (char *)((ulong)ADDRESS_OF_MAIN & pagemask), count);
 		if (ret < 0 ) {
 			tst_resm(TFAIL,"write to read-only space. returns %d: %s",
 				ret, strerror(errno));
