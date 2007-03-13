@@ -46,8 +46,8 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *      07/2006 - Changes By Michael Reed
- *                - Changed the value of MAXIDS for the specific machine by reading 
- *                  the system limit for SEMMNI - The maximum number of sempahore sets    
+ *                - Changed the value of MAXIDS for the specific machine by reading
+ *                  the system limit for SEMMNI - The maximum number of sempahore sets
  *
  * RESTRICTIONS
  *	none
@@ -61,47 +61,42 @@ extern int Tst_count;
 
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased
- * depending on the system being tested.  
+ * depending on the system being tested.
  */
 
-int MAXIDS=2048;
+int MAXIDS = 2048;
 
-int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOSPC, 0 };	/* 0 terminated list of expected errnos */
 int *sem_id_arr = NULL;
 int num_sems = 0;		/* count the semaphores created */
 
 int main(int ac, char **av)
 {
-	int lc,getmaxid;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	FILE *fp;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* Set the MAXIDS for the specific machine by reading the system limit
-           for SEMMNI - The maximum number of sempahore sets                  */
-	if((fp = fopen("/proc/sys/kernel/sem", "r")) != NULL) 
-	  {
-	    for(lc= 0; lc < 4; lc++)
-	      {
-		if(lc == 3)
-		  {
-		    if(getmaxid > MAXIDS)
-		      MAXIDS=getmaxid;
-		  }
-	      }
+	 * for SEMMNI - The maximum number of sempahore sets
+	 */
+	fp = fopen("/proc/sys/kernel/sem", "r");
+	if (fp != NULL) {
+		int getmaxid;
+		if (fscanf(fp, "%*d %*d %*d %d", &getmaxid) == 1)
+			MAXIDS = getmaxid + 1;
+		fclose(fp);
+	}
 
-	  }
-	fclose(fp);
-
-	sem_id_arr = malloc(sizeof(int)*MAXIDS);
+	sem_id_arr = malloc(sizeof(int) * MAXIDS);
 	if (sem_id_arr == NULL)
 		tst_brkm(TBROK, cleanup, "malloc failed");
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -110,18 +105,18 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* use the TEST macro to make the call */
-	
+
 		TEST(semget(semkey + num_sems, PSEMS,
 			    IPC_CREAT | IPC_EXCL | SEM_RA));
-		//	printf("rc = %ld \n",	TEST_RETURN);
+		//      printf("rc = %ld \n",   TEST_RETURN);
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		switch(TEST_ERRNO) {
+		switch (TEST_ERRNO) {
 		case ENOSPC:
 			tst_resm(TPASS, "expected failure - errno "
 				 "= %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
@@ -135,15 +130,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
+	 /*NOTREACHED*/ return (0);
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	int sem_q;
 
@@ -170,8 +163,8 @@ setup(void)
 	 * Use a while loop to create the maximum number of semaphore sets.
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
-	while((sem_q =
-		 semget(semkey + num_sems, PSEMS, IPC_CREAT|IPC_EXCL)) != -1) {
+	while ((sem_q =
+		semget(semkey + num_sems, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
 		sem_id_arr[num_sems++] = sem_q;
 		if (num_sems == MAXIDS) {
 			tst_brkm(TBROK, cleanup, "The maximum number of "
@@ -194,13 +187,12 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	int i;
 
 	/* remove the semaphore resources that were created */
-	for (i=0; i<num_sems; i++) {
+	for (i = 0; i < num_sems; i++) {
 		rm_sema(sem_id_arr[i]);
 	}
 
@@ -219,4 +211,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-
