@@ -3,7 +3,7 @@
 #
 # to make tests, use 'make'
 
-ifeq ($(shell echo | $(CC) $(CFLAGS) -E -include sys/acl.h - &>/dev/null && echo yes),yes)
+ifeq ($(shell echo | $(CC) $(CFLAGS) -E -include sys/acl.h - 1>/dev/null 2>/dev/null && echo yes),yes)
 ACLTESTS := acl1 
 else
 ACLTESTS :=
