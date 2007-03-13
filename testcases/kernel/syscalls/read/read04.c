@@ -61,8 +61,8 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 #define TST_SIZE	26		/* could also do strlen(palfa) */
-char    fname[255];
-char    palfa[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
+char fname[255];
+char palfa[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int fild;
 
 int main(int ac, char **av)
@@ -105,7 +105,7 @@ int main(int ac, char **av)
 					 "expected %d", TEST_RETURN, TST_SIZE);
 				continue;
 			}
-			if (memcmp(palfa, prbuf, sizeof(palfa)) != 0) {
+			if (memcmp(palfa, prbuf, TST_SIZE) != 0) {
 				tst_resm(TFAIL, "read buffer not equal "
 					 "to write buffer");
 				continue;
@@ -125,7 +125,7 @@ int main(int ac, char **av)
 }
 
 /*
- * setup() - performs all ONE TIME setup for this test 
+ * setup() - performs all ONE TIME setup for this test
  */
 void
 setup(void)
