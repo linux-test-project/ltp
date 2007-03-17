@@ -53,7 +53,7 @@
  *	03/2001  - Written by Wayne Boyer
  *	17/01/02 - Modified. Manoj Iyer, IBM Austin. TX. manjo@austin.ibm.com
  *	           4th argument to semctl() system call was modified according
- *	           to man pages. 
+ *	           to man pages.
  *	           In my opinion The test should not even have compiled but
  *	           it was working due to some mysterious reason.
  *
@@ -63,33 +63,31 @@
 
 #include "ipcsem.h"
 
-#define NSEMS	4	/* the number of primitive semaphores to test */
+#define NSEMS	4		/* the number of primitive semaphores to test */
 
 char *TCID = "semop01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
-
+int sem_id_1 = -1;		/* a semaphore set with read & alter permissions */
 
 struct sembuf sops[PSEMS];	/* an array of sembuf structures */
 
-
 int main(int ac, char **av)
 {
-        union semun get_arr;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	union semun get_arr;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	int fail = 0;
 
-        get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
+	get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -102,47 +100,40 @@ int main(int ac, char **av)
 		 */
 
 		TEST(semop(sem_id_1, sops, NSEMS));
-	
+
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "%s call failed - errno = %d "
-				 ": %s", TCID, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
+			         TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 
 				/* get the values and make sure they */
 				/* are the same as what was set      */
-				if (semctl(sem_id_1, 0, GETALL, get_arr) ==
-				    -1) {
-					tst_brkm(TBROK, cleanup, "semctl() "
-						 "failed in functional test");
+				if (semctl(sem_id_1, 0, GETALL, get_arr) == -1) {
+					tst_brkm(TBROK, cleanup, "semctl() failed in functional test");
 				}
 
-				for (i=0; i<NSEMS; i++) {
-					if (get_arr.array[i] != i*i) {
+				for (i = 0; i < NSEMS; i++) {
+					if (get_arr.array[i] != i * i) {
 						fail = 1;
 					}
 				}
-				if (fail) {
-					tst_resm(TFAIL, "semaphore values"
-						 " are not expected");
-				} else {
-					tst_resm(TPASS, "semaphore values"
-						 " are correct");
-				}
-		
+				if (fail)
+					tst_resm(TFAIL, "semaphore values are wrong");
+				else
+					tst_resm(TPASS, "semaphore values are correct");
+
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
 
-
 		/*
 		 * clean up things in case we are looping
 		 */
 		get_arr.val = 0;
-		for (i=0; i<NSEMS; i++) {
-			if(semctl(sem_id_1, i, SETVAL, get_arr) == -1) {
+		for (i = 0; i < NSEMS; i++) {
+			if (semctl(sem_id_1, i, SETVAL, get_arr) == -1) {
 				tst_brkm(TBROK, cleanup, "semctl failed");
 			}
 		}
@@ -150,15 +141,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
+	 /*NOTREACHED*/ return (0);
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	int i;
 
@@ -179,15 +168,14 @@ setup(void)
 	semkey = getipckey();
 
 	/* create a semaphore set with read and alter permissions */
-	if ((sem_id_1 =
-	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1) {
+	sem_id_1 = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+	if (sem_id_1 == -1)
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
-	}
-	
+
 	/* set up some values for the first four primitive semaphores */
-	for (i=0; i<NSEMS; i++){
+	for (i = 0; i < NSEMS; i++) {
 		sops[i].sem_num = i;
-		sops[i].sem_op = i*i;	/* 0, 1, 4, 9, */
+		sops[i].sem_op = i * i;	/* 0, 1, 4, 9, */
 		sops[i].sem_flg = SEM_UNDO;
 	}
 }
@@ -196,8 +184,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(sem_id_1);
@@ -214,4 +201,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-
