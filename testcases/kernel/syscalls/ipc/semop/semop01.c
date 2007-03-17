@@ -71,17 +71,16 @@ extern int Tst_count;
 
 int sem_id_1 = -1;		/* a semaphore set with read & alter permissions */
 
+union semun get_arr;
 struct sembuf sops[PSEMS];	/* an array of sembuf structures */
 
 int main(int ac, char **av)
 {
-	union semun get_arr;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
 	int fail = 0;
 
-	get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -164,6 +163,11 @@ void setup(void)
 	 */
 	tst_tmpdir();
 
+	/* allocate memory */
+	get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
+	if (get_arr.array == NULL)
+		tst_brkm(TBROK, cleanup, "malloc failed");
+
 	/* get an IPC resource key */
 	semkey = getipckey();
 
@@ -188,6 +192,9 @@ void cleanup(void)
 {
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(sem_id_1);
+
+	/* free malloced memory */
+	free(get_arr.array);
 
 	/* Remove the temporary directory */
 	tst_rmdir();
