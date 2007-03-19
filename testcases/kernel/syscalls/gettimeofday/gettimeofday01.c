@@ -20,7 +20,7 @@
 /*
  * NAME
  *	gettimeofday01.c
- *	
+ *
  * DESCRIPTION
  *	Testcase to check that gettimeofday(2) sets errno to EFAULT.
  *
@@ -59,19 +59,19 @@ char *TCID = "gettimeofday01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 void cleanup(void);
 void setup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int ret;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -90,30 +90,26 @@ int main(int ac, char **av)
 		 * TEST_RETURN into an int to test with */
 		ret = TEST_RETURN;
 		if (ret != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly (got "
-				"back %i, wanted -1)", ret);
+			tst_resm(TFAIL, "call succeeded unexpectedly (got back %i, wanted -1)", ret);
 			continue;
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-		if (TEST_ERRNO == EFAULT) {
-			tst_resm(TPASS, "gettimeofday(2) set the errno "
-				"EFAULT correctly");
-		} else {
-			tst_resm(TFAIL, "gettimeofday(2) didn't set errno "
-				"to EFAULT, errno=%i (%s)", errno, strerror(errno));
-		}
+		if (TEST_ERRNO == EFAULT)
+			tst_resm(TPASS, "gettimeofday(2) set the errno EFAULT correctly");
+		else
+			tst_resm(TFAIL, "gettimeofday(2) didn't set errno to EFAULT, errno=%i (%s)",
+				errno, strerror(errno));
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
+	 /*NOTREACHED*/ return (0);
 }
+
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -122,13 +118,11 @@ setup(void)
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -140,17 +134,14 @@ cleanup(void)
 	tst_exit();
 }
 #else
-int TST_TOTAL = 0;              /* Total number of test cases. */
 
-int
-main(void)
+int TST_TOTAL = 0;		/* Total number of test cases. */
+
+int main(void)
 {
-        tst_resm(TPASS, "vsyscall gettimeofday EFAULT check disabled on x86-64 and uClinux");
-        tst_exit();
-	/*NOTREACHED*/
+	tst_resm(TPASS, "gettimeofday EFAULT check disabled on uClinux");
+	tst_exit();
 	return 0;
 }
 
 #endif
-
-

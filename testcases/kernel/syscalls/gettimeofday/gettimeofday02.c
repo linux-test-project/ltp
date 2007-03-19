@@ -1,4 +1,3 @@
-
 /*
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,7 +17,7 @@
 /*
  * NAME
  *	gettimeofday02.c
- *	
+ *
  * DESCRIPTION
  *	Check if gettimeofday is monotonous
  *
@@ -52,74 +51,71 @@
 #include <time.h>
 #include <errno.h>
 
-
 #define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
-char *TCID="gettimeofday02"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "gettimeofday02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 
-int Tflag; 
-char *tlen = "30"; 
+int Tflag;
+char *tlen = "30";
 
 sig_atomic_t done;
 
-option_t opts[] = { { "T:", &Tflag, &tlen }, {} } ;
+option_t opts[] = { {"T:", &Tflag, &tlen}, {} };
 
-void breakout(int sig) 
-{ 
+void breakout(int sig)
+{
 	done = 1;
-} 
+}
 
 void cleanup(void)
 {
-	
 	TEST_CLEANUP;
-	
+
 	tst_exit();
 }
 
 void help()
 {
-	printf("  -T len  seconds to test gettimeofday (default %s)\n",tlen); 
+	printf("  -T len  seconds to test gettimeofday (default %s)\n", tlen);
 }
 
-int main(int ac, char **av) 
+int main(int ac, char **av)
 {
-	struct timespec interval, remainder; 
-	interval.tv_sec = 0; 
-	interval.tv_nsec = 5000; 
-	struct timeval tv1,tv2;
-	char *msg; 
+	struct timeval tv1, tv2;
+	char *msg;
 
 	if ((msg = parse_opts(ac, av, opts, help)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
-	
-	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss",tlen); 
-	signal(SIGALRM, breakout); 
-	alarm(atoi(tlen));  
 
+	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss", tlen);
+	signal(SIGALRM, breakout);
+	alarm(atoi(tlen));
+
+	if (gettimeofday(&tv1, NULL) != 0)
+		tst_brkm(TBROK, cleanup, "first gettimeofday() failed: %s\n", strerror(errno));
 	while (!done) {
-		gettimeofday(&tv1,NULL);
-		if (nanosleep(&interval, &remainder) == -1) {
-		    perror("nanosleep");
+		if (gettimeofday(&tv2, NULL) != 0)
+			tst_brkm(TBROK, cleanup, "loop gettimeofday() failed: %s\n", strerror(errno));
+
+		if (tv2.tv_sec < tv1.tv_sec ||
+		    (tv2.tv_sec == tv1.tv_sec && tv2.tv_usec < tv1.tv_usec)) {
+			tst_resm(TFAIL,
+				"Time is going backwards: old %d.%d vs new %d.%d!",
+				tv1.tv_sec, tv1.tv_usec, tv2.tv_sec, tv2.tv_usec);
+			cleanup();
+			return 1;
 		}
 
-		gettimeofday(&tv2,NULL);
-		if (	(tv2.tv_usec < tv1.tv_usec) &&
-			(tv2.tv_sec <= tv1.tv_sec)
-			) {
-			tst_resm(TFAIL, "Time is going backwards (old %d.%d vs new %d.%d!",tv1.tv_sec,tv1.tv_usec,tv2.tv_sec,tv2.tv_usec);
-			cleanup();
-			exit(1);
-		}
+		tv1 = tv2;
 	}
 
 	tst_resm(TPASS, "gettimeofday monotonous in %s seconds", tlen);
 
 	cleanup();
-	exit(0);
+	return 0;
 }
