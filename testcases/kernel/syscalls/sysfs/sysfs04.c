@@ -15,44 +15,44 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sysfs04
  *
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions
  *    				 for sysfs(2)
- * 
- *    TEST CASE TOTAL	: 1 
- * 
+ *
+ *    TEST CASE TOTAL	: 1
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *	This test case checks whether sysfs(2) system call  returns 
+ *	This test case checks whether sysfs(2) system call  returns
  *	appropriate error number for invalid
  *	option.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	  Loop if the proper options are given.
  *	  Execute system call with invaid  option parameter
- *	 
+ *
  *	  Check return code, if system call fails with errno == expected errno
  *		Issue syscall passed with expected errno
- *	  Otherwise, 
+ *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	   
+ *
  * USAGE:  <for command-line>
  * sysfs04  [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  * where:
@@ -63,7 +63,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *	
+ *
  *RESTRICTIONS:
  *No libc or glibc support
  *****************************************************************************/
@@ -77,23 +77,19 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sysfs04"; 	/* Test program identifier.    */
+char *TCID = "sysfs04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EINVAL, 0};
+static int exp_enos[] = { EINVAL, 0 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* perform global setup for test */
 	setup();
@@ -107,55 +103,48 @@ main(int ac, char **av)
 
 		/* check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
-				tst_resm(TPASS, "sysfs(2) expected failure;"
-						" Got errno - EINVAL :"
-						" Invalid option");
+			tst_resm(TPASS, "sysfs(2) expected failure;"
+				 " Got errno - EINVAL :" " Invalid option");
 		} else {
 			tst_resm(TFAIL, "sysfs(2) failed to produce"
-					" expected error; %d, errno"
-					" : EINVAL and got %d", 
-					EINVAL, TEST_ERRNO);
+				 " expected error; %d, errno"
+				 " : EINVAL and got %d", EINVAL, TEST_ERRNO);
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-	}	/* End of TEST_LOOPING*/
+	}			/* End of TEST_LOOPING */
 
-	/*Clean up and exit*/
+	/*Clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
 	return 0;
-}	/*End of main*/
+}				/*End of main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos*/
+	/*set the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void
-cleanup()
+void cleanup()
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
-
-
+}				/* End cleanup() */

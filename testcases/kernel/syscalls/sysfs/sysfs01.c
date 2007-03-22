@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: sysfs01 
- * 
+ *
+ *    TEST IDENTIFIER	: sysfs01
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for sysfs(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -34,22 +34,22 @@
  *    This is a Phase I test for the sysfs(2) system call.
  *    This test is carried out for option 1 for sysfs(2).
  *    It is intended to provide a limited exposure of the system call.
- *     
- * 
+ *
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * sysfs01 [-c n]  [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  *  where:
@@ -60,7 +60,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *	
+ *
  *RESTRICTIONS:
  *There is no glibc or libc support
  *Kernel should be compiled with ext2 filesystem support
@@ -75,22 +75,18 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sysfs01";	/* Test program identifier.    */
-int TST_TOTAL = 1;	/* Total number of test cases. */
-extern int Tst_count;	/* Test Case counter for tst_* routines */
+char *TCID = "sysfs01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
-		tst_brkm(TBROK, tst_exit,"OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 
 	/* perform global setup for test */
 	setup();
@@ -101,31 +97,27 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/*option 1, buf holds fs name */
+		/* option 1, buf holds fs name */
 		TEST(syscall(__NR_sysfs, 1, "ext2"));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "sysfs(2) Failed for "
-					"option 1 and set errno to %d", 
-					TEST_ERRNO);
+				 "option 1 and set errno to %d", TEST_ERRNO);
 		} else {
-			tst_resm(TPASS, "sysfs(2) Passed for "
-					"option 1");
+			tst_resm(TPASS, "sysfs(2) Passed for " "option 1");
 		}
-	}	/*End of TEST_LOOPING*/
+	}			/*End of TEST_LOOPING */
 
-	/*Clean up and exit*/
+	/*Clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
 	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -133,23 +125,21 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
 
-void
-cleanup()
+void cleanup()
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
-
+}				/* End cleanup() */
