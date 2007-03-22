@@ -116,7 +116,7 @@ int main(int ac, char **av)
 
 			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
-			TEST(syscall(__NR_sysfs, option[i], fsindex[i], (char)&bad_addr));
+			TEST(syscall(__NR_sysfs, option[i], fsindex[i], bad_addr));
 
 			/* check return code */
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].exp_errno)) {
