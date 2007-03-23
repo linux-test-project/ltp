@@ -252,7 +252,10 @@ cleanup()
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
-
+    unlink(file1);   /*Delete this tempfile created by this process*/
+    unlink(file2);   /*Delete this also, empties the following directory*/
+    rmdir(DIR_TEMP); /*Now go ahead and delete this empty temp directory, 
+                       this directory was chdir() from tst_tmpdir() routine in lib/tst_tmpdir.c*/
     /* Remove tmp dir and all files in it */
     tst_rmdir();
 

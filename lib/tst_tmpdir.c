@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.10 2005/01/04 21:00:35 mridge Exp $ */
+/* $Id: tst_tmpdir.c,v 1.11 2007/03/23 12:33:39 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -143,6 +143,9 @@ tst_tmpdir()
 		 * The TDIRECTORY env. variable is set, so no temp dir is created.
 		 * Also, no clean up will be done via tst_rmdir().
 		 */
+                mkdir(TESTDIR,DIR_MODE); /*Try to create the directory if it does not exist already, 
+                                           user might forget to create one before exporting TDIRECTORY,
+                                           Will fail if it already exists, no issues in that*/
 		no_cleanup++;
 #if UNIT_TEST
 		printf("TDIRECTORY env var is set\n");
