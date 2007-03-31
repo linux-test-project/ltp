@@ -1,3 +1,74 @@
+LTP-20070331
+
+-make sure people dont try and patch the generated file 
+regen.sh
+
+-use POSIX redirection as pointed out by Will Newton 
+Makefile
+
+-A fix for bug #29491.  Made more robust for use with the use of initgroups 
+fchown04.c
+
+-Fix for Bug no. [ 1671695 ] "Check return codes everywhere" as pointed out by "Markus Elfring" 
+write_log.c
+
+-Helge Deller writes: use TST_SIZE rather than sizeof(palfa) as sizeof() evaluates to 27 (+1 for the NUL byte) 
+read04.c
+
+-A fix for Bug #31162.  Passes the correct address location to the mincore call.
+mincore01.c
+
+-remove silly reliance on -DLINUX 
+Makefile, data_space.c, stack_space.c
+
+-cleanup 
+sysfs01.c, sysfs02.c, sysfs03.c, sysfs04.c, sysfs05.c, sysfs06.c
+
+-Riaz Rahaman writes: make sure the call to malloc() worked 
+semget05.c
+
+-Fix for Bug No. 1427780 (link07 fails) as pointed out correctly by 'Patrick Wyzorski' 
+tst_tmpdir.c, link07.c
+
+-A fix for Bug 29304.  The test has been adjusted to handle PPC.  Also in file07 a change was made to check for "tar archive" instead of "GNU tar archive" because sometimes a "POSIX tar archive" is created. 
+file_test.sh
+
+-Helge Deller writes: rename parisc to hppa and add tee/vmsplice/splice syscall numbers 
+hppa.in, linux_syscall_numbers.h, order, parisc.in
+
+-A patch by Ricardo Salveti De Araujo  that corrects the problem of a dhcpd test failsing when the eth0 device is not used 
+dhcpd_tests.sh
+
+-overhaul test case completely and make sure we reset errno as pointed out by Riaz Rahaman 
+sysconf01.c
+
+-Removing the size of negative 1 test.  This fixes bug # 28825 
+hugeshmget02.c, shmget02.c
+
+-A patch submitted by Raghuveer Raghavendra  to fix the problem of a Child process is waiting for the SIGTERM signal. 
+rename14.c
+
+-Henry Yei writes: Adds malloc check and frees memory during cleanup 
+semop01.c
+
+-cleanup tests, revert nanosleep() workaround for broken kernels, and fix time comparison as pointed out by Helge Deller 
+gettimeofday01.c, gettimeofday02.c
+
+-fixup /proc/sys/kernel/sem so it works properly as pointed out by Henry Yei 
+semget05.c
+
+-Carmelo AMOROSO writes: &bad_addr is passed to sysfs when in reality we want to pass bad_addr 
+sysfs06.c
+
+-Helge Deller writes: add support for hppa 
+Makefile, shmt02.c, shmt04.c, shmt05.c, shmt06.c, shmt07.c, shmt09.c
+
+-Helge Deller writes: use __builtin_return_address(0) rather than "main" to avoid arch-specific details 
+diotest4.c
+
+-cleanup code 
+shmt02.c, shmt03.c, shmt04.c, shmt05.c, shmt06.c, shmt07.c, shmt08.c, shmt09.c, shmt10.c, semop01.c
+
 LTP-20070228
 
 -Helge Deller writes: when calling open() with O_CREAT, the mode must be
