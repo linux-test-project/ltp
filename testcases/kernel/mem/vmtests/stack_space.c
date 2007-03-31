@@ -33,14 +33,10 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
-
-#ifdef LINUX
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <malloc.h>
 #include <string.h>
-#endif
 
 /** LTP Port **/
 #include "test.h"

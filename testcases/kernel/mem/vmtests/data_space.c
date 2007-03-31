@@ -26,25 +26,22 @@
  *
  * CALLS
  *	malloc (3)
- *	
+ *
  * ALGORITHM
  *	Test VM for set of data-space intensive programs
  *
  */
 
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <errno.h>
-
-#ifdef LINUX
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <malloc.h>
 #include <string.h>
-void (*sigset(int, void(*)(int)))(int);
-#endif
+//void (*sigset(int, void(*)(int)))(int);
 
 /** LTP Port **/
 #include "test.h"

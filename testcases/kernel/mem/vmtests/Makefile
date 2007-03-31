@@ -19,8 +19,8 @@
 ###########################################################################
 # name of file	: Makefile						  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -g -O -Wall -DLINUX
-LOADLIBES+=	-L../../../../lib -lltp 
+CFLAGS+=	-I../../../../include -Wall
+LDLIBS+=	-L../../../../lib -lltp 
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -33,4 +33,4 @@ install:
 clean:
 	rm -f $(TARGETS)
 
-
+.PHONY: all clean install
