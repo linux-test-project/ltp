@@ -130,9 +130,10 @@ int main(int ac, char **av)
 		/*
 		 * clean up things in case we are looping
 		 */
-		get_arr.val = 0;
+                union semun set_arr;
+		set_arr.val = 0;
 		for (i = 0; i < NSEMS; i++) {
-			if (semctl(sem_id_1, i, SETVAL, get_arr) == -1) {
+			if (semctl(sem_id_1, i, SETVAL, set_arr) == -1) {
 				tst_brkm(TBROK, cleanup, "semctl failed");
 			}
 		}
