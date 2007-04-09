@@ -95,3 +95,9 @@ URL: http://ltp.sf.net
 Questions and comments should be sent to the LTP mailing list located on the
 project page.
 
+Using KDUMP test automation suite
+---------------------------------
+
+For more information on how to use the kdump test automation suite please refer
+to file testcases/kdump/README.
+
