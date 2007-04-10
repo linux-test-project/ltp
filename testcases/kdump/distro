@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Copyright © IBM Corporation 2007
+#
+# Determine the distribution running on this system.		 
+#		  
+
+rm -f tools
+# Determine the distribution we are running on
+if [ -f /etc/redhat-release ]; then
+        ln -fs ./rhtools ./tools
+else if [ -f /etc/SuSE-release ]; then
+        ln -fs ./susetools ./tools
+else
+        echo "Unsupported distribution ... exiting"
+        exit
+fi
+fi
+
