@@ -32,7 +32,7 @@
 #                
 #               Oct 08 2003 - Modified - Manoj Iyer
 #               - fixed bug in creating results directory
-#               - all checks should be enlclosed in  " " to avoid bash error
+#               - all checks should be enlclosed in " " to avoid bash error
 #               - exit with error if pan is not found in pan directory
 
 
@@ -65,8 +65,8 @@ setup()
 
 version_of_ltp()
 {
-head -n 1  $LTPROOT/ChangeLog
-exit 0
+    head -n 1  $LTPROOT/ChangeLog
+    exit 0
 }
 
 usage() 
@@ -91,7 +91,7 @@ usage()
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
-    -s PATTERN       Only run test cases which match PATTERN.
+    -s PATTERN      Only run test cases which match PATTERN.
     -t DURATION     Execute the testsuite for given duration. Examples:
                       -t 60s = 60 seconds
                       -t 45m = 45 minutes
@@ -106,7 +106,6 @@ usage()
 	EOF
 exit 0
 }
-
 
 main()
 {
@@ -156,7 +155,6 @@ main()
             GENLOAD=1 ;;
     
         l)      
-
             echo "INFO: creating $LTPROOT/results directory"
             [ ! -d $LTPROOT/results ] && \
             {
@@ -227,8 +225,10 @@ main()
 	    exit 1
 	fi
     fi    
-        
-    mkdir -p $TMP || \
+
+    # Added -m 777 for tests that call tst_tmpdir() and try to 
+    #  write to it as user nobody
+    mkdir -m 777 -p $TMP || \
     {
         echo "FATAL: Unable to make temporary directory $TMP"
         exit 1
@@ -352,8 +352,6 @@ main()
         echo "WARNING: required users and groups not present"
         echo "WARNING: some test cases may fail"
     }
-    
-    
        
     # display versions of installed software
     [ -z "$QUIET_MODE" ] && \
