@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.10 2006/04/19 18:23:40 mreed10 Exp $ */
+/* $Id: parse_opts.c,v 1.11 2007/04/11 04:17:56 subrata_modak Exp $ */
 
 /**********************************************************
  * 
@@ -751,9 +751,9 @@ int counter;
 	     */
 	    if ( STD_LD_recfun ) {
 		if ( Debug )
-		    printf("calling usc_recressive_func(0, %d, &STD_bigstack)\n", 
+		    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n", 
 		        STD_LD_recfun);
-		usc_recressive_func(0, STD_LD_recfun, &STD_bigstack);
+		usc_recressive_func(0, STD_LD_recfun, *STD_bigstack);
 	    }
 
 	    ct=get_current_time();
@@ -781,9 +781,9 @@ int counter;
 
     if ( STD_LP_recfun ) {
 	if ( Debug )
-	    printf("calling usc_recressive_func(0, %d, &STD_bigstack)\n", 
+	    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n", 
 	        STD_LP_recfun);
-	usc_recressive_func(0, STD_LP_recfun, &STD_bigstack);
+	usc_recressive_func(0, STD_LP_recfun, *STD_bigstack);
     }
 
 #if !defined(UCLINUX)
