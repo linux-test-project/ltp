@@ -49,8 +49,8 @@ support copying of the dump to the local disk only).
 3.  Check if kernel has been booted with 'crashkernel=' parameter. If not, edit
 the appropriate bootloader configuration file and make the following changes:
 
-  * On i386 & x86_64, edit /boot/grub/menu.lst and add "crashkernel=64M@16M" to
-    the kernel boot parameters. This reserves 64MB of memory for the kdump 
+  * On i386 & x86_64, edit /boot/grub/menu.lst and add "crashkernel=128M@16M" to
+    the kernel boot parameters. This reserves 128MB of memory for the kdump 
     kernel starting at address 0x1000000.
   * On PPC64, edit /etc/yaboot.conf and add "crashkernel=128M@32M xmon=off" to 
     the kernel boot parameters. This reserves 128MB of memory for the kdump 

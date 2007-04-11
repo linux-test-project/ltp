@@ -13,7 +13,7 @@ declare -i DISTRO_RH=0
 # ARCH = 2 means it's ppc64 arch
 declare -i ARCH
 
-X86_CRASHKERNEL='crashkernel=64M@16M'
+X86_CRASHKERNEL='crashkernel=128M@16M'
 PPC_CRASHKERNEL='crashkernel=128M@32M'
 USE_CRASH="n"
 SCSI="n"
@@ -82,7 +82,7 @@ if [ $USE_CRASH = "y" ]; then
 		fi
 	fi
 fi
-echo "CRASH_FOUND=${CRASH_FOUND}" > $CONFIG_FILE
+echo "CRASH_FOUND=${CRASH_FOUND}" >> $CONFIG_FILE
 
 # How many times to iterate through the tests
 read -p "How many interations of the the test set do you want to run? (default is 1): " NUM_ITERATIONS
