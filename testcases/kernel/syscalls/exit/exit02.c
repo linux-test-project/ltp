@@ -168,7 +168,7 @@ int main(int ac, char **av)
 					tst_resm(TFAIL, "exit error: file "
 						 "buffer was not flushed");
 					rval = 1;
-				} else if (strcmp(rbuf, wbuf) != 0) {
+				} else if (strncmp(rbuf, wbuf, len) != 0) {
 					tst_resm(TFAIL, "exit error: file "
 						 "buffer was not flushed");
 					rval = 1;
