@@ -17,21 +17,21 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchown03
  *
  * Test Description:
  *  Verify that, fchown(2) succeeds to change the group of a file specified
  *  by path when called by non-root user with the following constraints,
- *	- euid of the process is equal to the owner of the file.	 
+ *	- euid of the process is equal to the owner of the file.
  *	- the intended gid is either egid, or one of the supplementary gids
  *	  of the process.
  *  Also, verify that fchown() clears the setuid/setgid bits set on the file.
  *
  * Expected Result:
- *  fchown(2) should return 0 and the ownership set on the file should match 
+ *  fchown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -44,7 +44,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -89,18 +89,16 @@
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for test file */
-char *TCID="fchown03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test conditions */
+char *TCID = "fchown03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -110,7 +108,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -127,7 +125,7 @@ main(int ac, char **av)
 		User_id = geteuid();
 		Group_id = getegid();
 
-		/* 
+		/*
 		 * Call fchwon(2) with different user id and
 		 * group id (numeric values) to set it on
 		 * testfile.
@@ -146,7 +144,7 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-		 	 * Get the testfile information using
+			 * Get the testfile information using
 			 * fstat(2).
 			 */
 			if (fstat(fildes, &stat_buf) < 0) {
@@ -160,7 +158,7 @@ main(int ac, char **av)
 			 * set on testfile.
 			 */
 			if ((stat_buf.st_uid != User_id) ||
-				    (stat_buf.st_gid != Group_id)) {
+			    (stat_buf.st_gid != Group_id)) {
 				tst_brkm(TFAIL, cleanup, "%s: Incorrect "
 					 "ownership set, Expected %d %d",
 					 TESTFILE, User_id, Group_id);
@@ -182,14 +180,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
-}	/* End main */
+	 /*NOTREACHED*/ return (0);
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -197,32 +194,30 @@ main(int ac, char **av)
  *	     Create a test file under temporary directory and close it
  *	     Change the ownership on testfile.
  */
-void 
-setup()
+void setup()
 {
 	char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
-	char Path_name[PATH_MAX];       /* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
+	char Path_name[PATH_MAX];	/* Buffer to hold command string */
+	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	if (getcwd(test_home, sizeof(test_home)) == NULL) {
-                tst_brkm(TBROK, cleanup,
-                         "getcwd(3) fails to get working directory of process");
-        }
+		tst_brkm(TBROK, cleanup,
+			 "getcwd(3) fails to get working directory of process");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -231,14 +226,14 @@ setup()
 	tst_tmpdir();
 
 	/* Create a test file under temporary directory */
-	if ((fildes = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
 
 	/*
-	 * Change mode permissions on testfile such that 
+	 * Change mode permissions on testfile such that
 	 * setuid/setgid bits are set on the testfile.
 	 */
 	if (chmod(TESTFILE, NEW_PERMS) < 0) {
@@ -252,7 +247,7 @@ setup()
 			 "getcwd(3) fails to get working directory of process");
 	}
 	/* Get the path of TESTFILE under temporary directory */
-	strcat(Path_name, "/"TESTFILE);
+	strcat(Path_name, "/" TESTFILE);
 
 	/* Get the command name to be executed as setuid to root */
 	strcpy((char *)Cmd_buffer, (const char *)test_home);
@@ -265,7 +260,7 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "Fail to modify Ownership of %s", TESTFILE);
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -273,8 +268,7 @@ setup()
  *	       Close the temporary file.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -292,4 +286,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

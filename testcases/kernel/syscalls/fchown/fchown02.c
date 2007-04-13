@@ -17,20 +17,20 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchown02
  *
  * Test Description:
  *  Verify that, when fchown(2) invoked by super-user to change the owner and
- *  group of a file specified by file descriptor to any numeric 
+ *  group of a file specified by file descriptor to any numeric
  *  owner(uid)/group(gid) values,
  *	- clears setuid and setgid bits set on an executable file.
  *	- preserves setgid bit set on a non-group-executable file.
  *
  * Expected Result:
- *  fchown(2) should return 0 and the ownership set on the file should match 
+ *  fchown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -43,7 +43,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -87,8 +87,8 @@
 #define TESTFILE1	"testfile1"
 #define TESTFILE2	"testfile2"
 
-char *TCID="fchown02";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test conditions */
+char *TCID = "fchown02";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test conditions */
 int Fd1;			/* File descriptor for testfile1 */
 int Fd2;			/* File descriptor for testfile2 */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -104,18 +104,18 @@ struct test_case_t {		/* test case struct. to for different tests */
 	uid_t user_id;
 	gid_t group_id;
 	int test_flag;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ 1, TESTFILE1, "Setuid/Setgid bits cleared", 700, 701, 1, setup1 },
-	{ 2, TESTFILE2, "Setgid bit not cleared", 700, 701, 2, setup2 },
-	{ 0, NULL, NULL, 0, 0, 0, no_setup }
+	{
+	1, TESTFILE1, "Setuid/Setgid bits cleared", 700, 701, 1, setup1}, {
+	2, TESTFILE2, "Setgid bit not cleared", 700, 701, 2, setup2}, {
+	0, NULL, NULL, 0, 0, 0, no_setup}
 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -127,10 +127,10 @@ main(int ac, char **av)
 	int test_flag;		/* test condition specific flag variable */
 	char *file_name;	/* ptr. for test file name */
 	char *test_desc;	/* test specific message */
-    
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -157,16 +157,16 @@ main(int ac, char **av)
 				fildes = Fd2;
 			}
 
-			/* 
+			/*
 			 * Call fchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * testfile.
-		 	 */
+			 */
 			TEST(fchown(fildes, User_id, Group_id));
 
 			/* check return code of fchown(2) */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, \
+				tst_resm(TFAIL,
 					 "fchown() Fails on %s, errno=%d",
 					 file_name, TEST_ERRNO);
 				continue;
@@ -177,7 +177,7 @@ main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/*
-			 	 * Get the testfile information using
+				 * Get the testfile information using
 				 * fstat(2).
 				 */
 				if (fstat(fildes, &stat_buf) < 0) {
@@ -204,42 +204,43 @@ main(int ac, char **av)
 				 * are cleared by chown().
 				 */
 				if ((test_flag == 1) && ((stat_buf.st_mode &
-				       (S_ISUID | S_ISGID)))) {
-					tst_resm(TFAIL, "%s: Incorrect mode "
+							  (S_ISUID | S_ISGID))))
+				{
+					tst_resm(TFAIL,
+						 "%s: Incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name, NEW_PERMS1,
 						 EXP_PERMS);
-				} else if ((test_flag == 2) &&
-					   (!(stat_buf.st_mode & S_ISGID))) {
-					tst_resm(TFAIL, "%s: Incorrect mode "
+				} else if ((test_flag == 2)
+					   && (!(stat_buf.st_mode & S_ISGID))) {
+					tst_resm(TFAIL,
+						 "%s: Incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name,
 						 stat_buf.st_mode, NEW_PERMS2);
 				} else {
 					tst_resm(TPASS,
-					 	 "fchown() on %s succeeds : %s",
+						 "fchown() on %s succeeds : %s",
 						 file_name, test_desc);
 				}
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
-}	/* End main */
+	 /*NOTREACHED*/ return (0);
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *	     Create a temporary directory and change directory to it.
  *	     Call test specific setup functions.
  */
-void 
-setup()
+void setup()
 {
 	int ind;
 
@@ -254,7 +255,7 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-		
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
@@ -262,18 +263,17 @@ setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * setup1() - Setup function for fchown(2) to verify setuid/setgid bits
  *	      set on an executable file will not be cleared.
  *	      Creat a testfile and set setuid/gid bits on it.
  */
-int
-setup1()
+int setup1()
 {
 	/* Creat a testfile under temporary directory */
-	if ((Fd1 = open(TESTFILE1, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((Fd1 = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE1, FILE_MODE, errno, strerror(errno));
@@ -285,18 +285,17 @@ setup1()
 			 TESTFILE1, errno, strerror(errno));
 	}
 	return 0;
-}	/* End setup1() */
+}				/* End setup1() */
 
 /*
  * setup2() - Setup function for fchown(2) to verify setgid bit set
  *	      set on non-group executable file will not be cleared.
  *	      Creat a testfile and set setgid bit on it.
  */
-int
-setup2()
+int setup2()
 {
 	/* Creat a testfile under temporary directory */
-	if ((Fd2 = open(TESTFILE2, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((Fd2 = open(TESTFILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE2, FILE_MODE, errno, strerror(errno));
@@ -315,8 +314,7 @@ setup2()
  *		Hence, this function just returns 0.
  *		This function simply returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -327,8 +325,7 @@ no_setup()
  *	       Close the temporary files.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -350,4 +347,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

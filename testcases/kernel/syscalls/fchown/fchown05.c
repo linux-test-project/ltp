@@ -17,18 +17,18 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchown05
  *
  * Test Description:
  *  Verify that, fchown(2) succeeds to change the owner and group of a file
- *  specified by file descriptor to any numeric owner(uid)/group(gid) values 
+ *  specified by file descriptor to any numeric owner(uid)/group(gid) values
  *  when invoked by super-user.
  *
  * Expected Result:
- *  fchown(2) should return 0 and the ownership set on the file should match 
+ *  fchown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -82,8 +82,8 @@
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for the test file */
-char *TCID="fchown05";		/* Test program identifier.    */
-int TST_TOTAL=5;		/* Total number of test conditions */
+char *TCID = "fchown05";	/* Test program identifier.    */
+int TST_TOTAL = 5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct test_case_t {		/* Struct. for for test case looping */
@@ -91,19 +91,19 @@ struct test_case_t {		/* Struct. for for test case looping */
 	uid_t user_id;
 	gid_t group_id;
 } Test_cases[] = {
-	{ "Change Owner/Group ids", 700, 701 },
-	{ "Change Owner id only", 702, -1 },
-	{ "Change Owner id only", 703, 701 },
-	{ "Change Group id only", -1, 704 },
-	{ "Change Group id only", 703, 705 },
-	{ NULL, 0, 0 }
+	{
+	"Change Owner/Group ids", 700, 701}, {
+	"Change Owner id only", 702, -1}, {
+	"Change Owner id only", 703, 701}, {
+	"Change Group id only", -1, 704}, {
+	"Change Group id only", 703, 705}, {
+	NULL, 0, 0}
 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -112,10 +112,10 @@ main(int ac, char **av)
 	uid_t User_id;		/* user id of the user set for testfile */
 	gid_t Group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
-    
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -133,11 +133,11 @@ main(int ac, char **av)
 			User_id = Test_cases[ind].user_id;
 			Group_id = Test_cases[ind].group_id;
 
-			/* 
+			/*
 			 * Call fchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * testfile.
-		 	 */
+			 */
 			TEST(fchown(fildes, User_id, Group_id));
 
 			/* check return code of fchown(2) */
@@ -153,7 +153,7 @@ main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/*
-			 	 * Get the testfile information using
+				 * Get the testfile information using
 				 * fstat(2).
 				 */
 				if (fstat(fildes, &stat_buf) < 0) {
@@ -178,30 +178,28 @@ main(int ac, char **av)
 						 "ship set, Expected %d %d",
 						 TESTFILE, User_id, Group_id);
 				} else {
-					tst_resm(TPASS, \
-					 	 "fchown() succeeds to %s of %s",
+					tst_resm(TPASS,
+						 "fchown() succeeds to %s of %s",
 						 test_desc, TESTFILE);
 				}
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return(0);
-}	/* End main */
+	 /*NOTREACHED*/ return (0);
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *	     Create a temporary directory and change directory to it.
  *	     Create a test file under temporary directory.
  */
-void 
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -215,17 +213,17 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-		
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if ((fildes = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -233,8 +231,7 @@ setup()
  *	       Close the testfile opened in the setup.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -252,4 +249,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
