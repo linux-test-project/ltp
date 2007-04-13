@@ -106,8 +106,8 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz\0");
-		length = strlen(wrbuf);
+		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz");
+		length = strlen(wrbuf) + 1 ;
 
 		written = write(fd[1], wrbuf, length);
 
