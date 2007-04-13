@@ -3,6 +3,7 @@
 CONFIG_FILE=./config
 CRONTAB_FILE=./crontab
 CONTROL_FILE=./control
+SYSCONFIG_FILE=/etc/sysconfig/kdump
 
 declare -i ERRORS=0
 declare -i NUM_ITERATIONS=1
@@ -52,15 +53,16 @@ fi
 # Determine the distribution we are running on
 if [ -f /etc/redhat-release ]; then
         DISTRO_RH=1
-        echo "DISTRO_RH=${DISTRO_RH}" > $CONFIG_FILE
 else if [ -f /etc/SuSE-release ]; then
         DISTRO_SUSE=1
-        echo "DISTRO_SUSE=${DISTRO_SUSE}" > $CONFIG_FILE
 else
         echo "Unsupported distribution ... exiting"
         exit
 fi
 fi
+
+echo "DISTRO_RH=${DISTRO_RH}" > $CONFIG_FILE
+echo "DISTRO_SUSE=${DISTRO_SUSE}" >> $CONFIG_FILE
 
 echo "Using the crash command and the kernel debug info during results"
 echo "verfication is optional. If you choose to do so, they must be"
@@ -110,6 +112,30 @@ if [ $DISTRO_RH -eq 1 ]; then
 		if [ $IDE = "y" ]; then
 			echo -e "KPIB\nKPIE\nKPIL\nKPIP" >> testfile
 		fi
+	else
+		ln -s testlists/crasher testfile
+	fi
+fi
+	
+if [ $DISTRO_SUSE -eq 1 ]; then
+	rm -f testfile
+	read -p "Use lkdtt or crasher module (1/2) :" USE_MOD
+	if [ $USE_MOD -eq 1 ]; then
+		if [ $arch = "i386" ]
+		then
+			cp -f testlists/i386-lkdtt testlists/lkdtt
+			ln -s testlists/lkdtt testfile
+		else if [ $arch = "x86_64" ]
+		then
+			cp -f testlists/x86_64-lkdtt testlists/lkdtt
+			ln -s testlists/lkdtt testfile
+		else if [ $arch = "ppc64" ]
+		then
+			cp -f testlists/ppc64-lkdtt testlists/lkdtt
+			ln -s testlists/lkdtt testfile
+		fi
+		fi
+		fi	
 	else
 		ln -s testlists/crasher testfile
 	fi
@@ -211,8 +237,7 @@ echo "SYSINFO_SCR=\$TEST_BASE_DIR/sysinfo" >> $CONFIG_FILE
 echo "CRASHER_MOD=\$TEST_BASE_DIR/tools/crasher_mod/crasher.ko" >> $CONFIG_FILE
 if [ $DISTRO_SUSE -eq 1 ]; then
 echo "TTUTILS_BIN=\$TEST_BASE_DIR/tools/dtt_tools/ttutils" >> $CONFIG_FILE
-echo "MEMDRAIN_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/memdrain" >> $CONFIG_F
-ILE
+echo "MEMDRAIN_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/memdrain" >> $CONFIG_FILE
 echo "SETUID_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/setuid" >> $CONFIG_FILE
 echo "ALARM_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/alarm" >> $CONFIG_FILE
 echo "BRK_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/brk" >> $CONFIG_FILE
