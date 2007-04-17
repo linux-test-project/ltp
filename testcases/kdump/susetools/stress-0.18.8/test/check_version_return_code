@@ -1,6 +1,0 @@
-# Test that the --version option is accepted and that stress returns 0
-
-set -e
-set -x
-
-../src/stress --version
