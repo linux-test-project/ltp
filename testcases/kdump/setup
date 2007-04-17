@@ -96,49 +96,23 @@ echo "NUM_ITERATIONS=${NUM_ITERATIONS}" >> $CONFIG_FILE
 # Create testfile with the commands to be run depending on the module to be 
 # used for testing
 
-if [ $DISTRO_RH -eq 1 ]; then
-	rm -f testfile
-	read -p "Use lkdtm or crasher module (1/2) :" USE_MOD
-	if [ $USE_MOD -eq 1 ]; then
-		cp -f testlists/lkdtm.orig testlists/lkdtm
-		ln -s testlists/lkdtm testfile
+rm -f testfile
+read -p "Use lkdtm or crasher module (1/2) :" USE_MOD
+if [ $USE_MOD -eq 1 ]; then
+	cp -f testlists/lkdtm.orig testlists/lkdtm
+	ln -s testlists/lkdtm testfile
 	
-		read -p "Are SCSI disks present (y/n) :" SCSI
-		if [ $SCSI = "y" ]; then
-			echo -e "KPSB\nKPSE\nKPSL\nKPSP" >> testfile
-		fi
+	read -p "Are SCSI disks present (y/n) :" SCSI
+	if [ $SCSI = "y" ]; then
+		echo -e "KPSB\nKPSE\nKPSL\nKPSP" >> testfile
+	fi
 
-		read -p "Are IDE disks present (y/n) :" IDE
-		if [ $IDE = "y" ]; then
-			echo -e "KPIB\nKPIE\nKPIL\nKPIP" >> testfile
-		fi
-	else
-		ln -s testlists/crasher testfile
+	read -p "Are IDE disks present (y/n) :" IDE
+	if [ $IDE = "y" ]; then
+		echo -e "KPIB\nKPIE\nKPIL\nKPIP" >> testfile
 	fi
-fi
-	
-if [ $DISTRO_SUSE -eq 1 ]; then
-	rm -f testfile
-	read -p "Use lkdtt or crasher module (1/2) :" USE_MOD
-	if [ $USE_MOD -eq 1 ]; then
-		if [ $arch = "i386" ]
-		then
-			cp -f testlists/i386-lkdtt testlists/lkdtt
-			ln -s testlists/lkdtt testfile
-		else if [ $arch = "x86_64" ]
-		then
-			cp -f testlists/x86_64-lkdtt testlists/lkdtt
-			ln -s testlists/lkdtt testfile
-		else if [ $arch = "ppc64" ]
-		then
-			cp -f testlists/ppc64-lkdtt testlists/lkdtt
-			ln -s testlists/lkdtt testfile
-		fi
-		fi
-		fi	
-	else
-		ln -s testlists/crasher testfile
-	fi
+else
+	ln -s testlists/crasher testfile
 fi
 	
 #
