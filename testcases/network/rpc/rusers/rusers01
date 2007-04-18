@@ -80,7 +80,8 @@ if [ $? -ne 0 ]; then
   echo "ruserd started on $RHOST"
 fi
 
-RHOST=`echo $RHOST | cut -d. -f1`
+#RHOST=`echo $RHOST | cut -d. -f1`   //The use is depriciated as it fails when RHOST is set to an IP address
+#                                    //Pointed out by "Ambar Seksena" <ambar.seksena@calsoftinc.com> 
 
 echo "Test rusers with defaults...please be patient"
 # rusers with no options broadcasts over the net and reports 
