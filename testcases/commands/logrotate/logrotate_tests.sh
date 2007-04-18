@@ -209,7 +209,7 @@ test01()
 			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
 		grep "forced from command line (5 rotations)" \
 			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
-		grep "compressing new log with" \
+		egrep "compressing new|log with" \
 			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
