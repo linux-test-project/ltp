@@ -68,7 +68,7 @@ int main (argc, argv)
 	int  argc;
 	char *argv[];
 {
-	int pid, status;
+	int pid;
 	sigset_t set;
 	struct sigaction act, oact;
 	int	term();

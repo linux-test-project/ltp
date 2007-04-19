@@ -243,7 +243,7 @@ long			offset;
     } else {
             if ( (lseek(wfile->w_rfd, offset, SEEK_SET)) == -1 ) {
                   sprintf(Wlog_Error_String,
-                          "Could not reposition file pointer - lseek(%s, %d, SEEK_SET) failed:  %s\n",
+                          "Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
                            wfile->w_file, offset, strerror(errno)); 
                   return -1;
             } else {
