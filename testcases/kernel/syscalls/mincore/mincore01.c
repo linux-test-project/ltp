@@ -27,17 +27,12 @@
  * ALGORITHM
  *	test1:
  *		Invoke mincore() when the start address is not multiple of page size.
- *      EINVAL
- *  test2: 
- *      Invoke mincore()when the length has a non-positive value. EINVAL
- *	test3:
+ *		EINVAL
+ *	test2:
  *		Invoke mincore() when the vector points to an invalid address. EFAULT
- *	test4:
+ *	test3:
  *		Invoke mincore() when the starting address + length contained unmapped 
  *		memory. ENOMEM
- *  test5:
- *		Invoke mincore() when the length contained memory is not part of file. 
- *      ENOMEM
  *
  * USAGE:  <for command-line>
  *  mincore01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -77,10 +72,9 @@ static void setup(void);
 static void setup1(void);
 static void setup2(void);
 static void setup3(void);
-static void setup4(void);
 
 char *TCID= "mincore01";
-int TST_TOTAL = 4;
+int TST_TOTAL = 3;
 extern int Tst_count;
 
 static char file_name[] = "fooXXXXXX";
@@ -101,7 +95,6 @@ static struct test_case_t {
 		  { NULL,0,NULL,EINVAL,setup1 },
 		  { NULL,0,NULL,EFAULT,setup2 },
 		  { NULL,0,NULL,ENOMEM,setup3 },
-		  { NULL,0,NULL,ENOMEM,setup4 }
 }; 
 
 int main(int ac, char **av)
@@ -198,25 +191,6 @@ setup3()
 	TC[2].len = global_len*2;
         munmap(global_pointer+global_len, global_len);
 	TC[2].vector = global_vec;
-}
-
-/*
- * setup4() - performs the setup related to the test4 -
- * region contained memory which is not part of file.
- * We pass an anonymously mapped address here.
- */
-void
-setup4()
-{	
-       char *t;
-       /* Create pointer to invalid address */
-       if( MAP_FAILED == (t = mmap(0,global_len,PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,0,0)) ) {
-               tst_brkm(TBROK,cleanup,"mmaping anonymous memory failed: %s",strerror(errno));
-       }
-
-        TC[3].addr = t;	
-	TC[3].len = global_len;
-	TC[3].vector = global_vec;
 }
 
 /*
