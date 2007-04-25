@@ -716,18 +716,13 @@ void setup_shm(void)
 	}
 
 	/* allocate shared memory */
-	shmad = (Pinfo *) shmat(shmid, (char *)shmad, 0);
 
-#ifdef __64BIT__
-	/* if ((unsigned long) shmad < 0) { */
-        if ((long) shmad < 0) {
-#else
-	if ((int) shmad < 0) {
-#endif
-		shmctl(shmid, IPC_RMID, NULL);
-		perror("shmat failed");
-		fprintf( stderr, " SEVERE : shmat failed: errno %d\n", errno);
+	if ((shmad = (Pinfo *)shmat(shmid, (char *)shmad, 0)) == -1 ) {
+		printf("SEVERE : shmat failed\n");
 		exit( 1 );
+	}
+	else {
+		shmctl(shmid, IPC_RMID, NULL);
 	}
 
 	/* set all fields in shared memory to -1 */
