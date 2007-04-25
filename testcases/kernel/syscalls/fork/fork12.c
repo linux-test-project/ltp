@@ -104,6 +104,7 @@ main(int ac, char **av)
 		tst_resm(TPASS, "fork() eventually failed with %d: %s",
 				fork_errno, strerror(fork_errno));
 		/* collect our kids */
+                sleep(3); //Introducing a sleep(3) to make sure all children are at pause() when SIGQUIT is sent to them
 		kill(0, SIGQUIT);
 		while (wait(&waitstatus) > 0);
 
