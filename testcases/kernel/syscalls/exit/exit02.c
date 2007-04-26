@@ -115,7 +115,6 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "write error");
 				exit(2);
 			}
-			close(filed);
 			exit(exno);
 		} else {		/* parent */
 			npid = wait(&status);
