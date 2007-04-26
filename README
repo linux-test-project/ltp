@@ -78,6 +78,12 @@ scratch/*
 	that we found but haven't integrated into LTP yet.  Feel free to suggest
 	new snippets to be added, or take one of these and finish it off.
 
+testcases/kernel/containers/*
+	Contains all the testcases related to container functionality ( e.g: utsname etc..)
+	For further information on the each of the container functionality refer
+	the following file: testcases/kernel/containers/README
+
+
 Warning!
 --------
 Be careful with these tests!

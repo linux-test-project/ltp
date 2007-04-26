@@ -1,4 +1,4 @@
-SUBDIRS = include fs io ipc mem pty sched security syscalls
+SUBDIRS = containers include fs io ipc mem pty sched security syscalls
 UCLINUX_SUBDIRS = syscalls
 
 all:
