@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.11 2007/03/23 12:33:39 subrata_modak Exp $ */
+/* $Id: tst_tmpdir.c,v 1.12 2007/04/27 10:12:01 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -171,7 +171,11 @@ tst_tmpdir()
 			tst_brkm(TBROK, tmpdir_cleanup, 
 				"%s: mkdtemp(%s) failed; errno = %d: %s", 
 				FN_NAME, template, errno, strerror(errno));
-		TESTDIR = strdup(template);
+                if ( (TESTDIR = strdup(template)) == NULL ) { //Error Handling for strdup()
+                        tst_brkm(TBROK, tmpdir_cleanup,
+                                "%s: strdup(%s) failed; errno = %d: %s",
+                                FN_NAME, template, errno, strerror(errno));
+                }
 #else 
 		/*
 		 * Make the template name, then the directory
@@ -180,9 +184,21 @@ tst_tmpdir()
 			tst_brkm(TBROK, tmpdir_cleanup, 
 				"%s: mkstemp(%s) failed; errno = %d: %s", 
 				FN_NAME, template, errno, strerror(errno));
-		close(tfd);
-		unlink(template);
-		TESTDIR = strdup(template);
+                if ( close(tfd) == -1 ) {
+                        tst_brkm(TBROK, tmpdir_cleanup,
+                                "%s: close() failed; errno = %d: %s",
+                                FN_NAME, errno, strerror(errno));
+                }
+                if ( unlink(template) == -1) {
+                        tst_brkm(TBROK, tmpdir_cleanup,
+                                "%s: unlink(%s) failed; errno = %d: %s",
+                                FN_NAME, template, errno, strerror(errno));
+                }
+                if ( (TESTDIR = strdup(template)) == NULL ) {
+                        tst_brkm(TBROK, tmpdir_cleanup,
+                                "%s: strdup(%s) failed; errno = %d: %s",
+                                FN_NAME, template, errno, strerror(errno));
+                }
 		if (mkdir(TESTDIR, DIR_MODE)) {
 			/* If we start failing with EEXIST, wrap this section in 
 			 * a loop so we can try again.
