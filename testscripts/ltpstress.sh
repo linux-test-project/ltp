@@ -43,6 +43,7 @@ leftover_memsize=0
 duration=86400
 datafile="/tmp/ltpstress.data"
 iofile="/tmp/ltpstress.iodata"
+logfile="/tmp/ltpstress.log"
 interval=10
 Sar=0
 Top=0
@@ -59,7 +60,7 @@ usage()
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
     -I iofile       Log results of 'iostat' to a file every interval. Default is "/tmp/ltpstress.iodata".
-    -l logfile      Log results of test in a logfile.
+    -l logfile      Log results of test in a logfile. Default is "/tmp/ltpstress.log"
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
     -n              Disable networking stress.
     -S              Use 'sar' to measure data. 
@@ -103,7 +104,7 @@ do  case $arg in
 	I)	Iostat=1
 		iofile=$OPTARG;;
 
-        l)      logfile="-l $OPTARG"
+        l)      logfile=$OPTARG
 		LOGGING=1;;
 
         m)	memsize=$(($OPTARG * 1024))
@@ -201,7 +202,12 @@ if [ $memsize -eq 0 ]; then
   TOTALRAM=$(free -m | grep Mem: | awk {'print $2'})
   TOTALSWAP=$(free -m | grep Swap: | awk {'print $2'})
   TESTSWAP=$(($TOTALSWAP / 2))
-  TESTMEM=$(($TESTSWAP + $TOTALRAM))
+  if [ $TESTSWAP -eq 0 ]; then
+       #if there is no swap in the system, use only the free RAM
+       TESTMEM=$(free -m | grep Mem: | awk {'print $4'})
+  else
+       TESTMEM=$(($TESTSWAP + $TOTALRAM))
+  fi
  #Convert to kilobytes
   memsize=$(($TESTMEM * 1024))
   check_memsize	
@@ -248,9 +254,9 @@ output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 $logfile -f ${TMP}/stress.part1 -o $output1 & 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 $logfile -f ${TMP}/stress.part2 -o $output2 &
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 $logfile -f ${TMP}/stress.part3 -o $output3 &
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
+${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
 
 echo "Running LTP Stress for $hours hour(s) using $memsize Mb"
 echo ""
