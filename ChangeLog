@@ -1,3 +1,143 @@
+LTP-20070430
+
+-Integration of UTS Namespace Testcases to LTP as submitted by <risrajak@linux.vnet.ibm.com>
+ltp/README
+ltp/runtest/containers
+ltp/runltp
+ltp/testcases/kernel/Makefile
+ltp/testcases/kernel/containers/Makefile
+ltp/testcases/kernel/containers/README
+ltp/testcases/kernel/containers/container_test.sh
+ltp/testcases/kernel/containers/libclone/Makefile
+ltp/testcases/kernel/containers/libclone/libclone.c
+ltp/testcases/kernel/containers/libclone/libclone.h
+ltp/testcases/kernel/containers/utsname/Makefile
+ltp/testcases/kernel/containers/utsname/README
+ltp/testcases/kernel/containers/utsname/check_utsns_enabled.c
+ltp/testcases/kernel/containers/utsname/runtests_noltp.sh
+ltp/testcases/kernel/containers/utsname/runutstest.sh
+ltp/testcases/kernel/containers/utsname/utstest.c
+ltp/testscripts/test_containers.sh
+
+-Integrating "KDUMP" testcases to LTP Test Suite as Submitted by <sachinp@linux.vnet.ibm.com>
+ltp/README
+ltp/testcases/Makefile
+ltp/testcases/kdump/README
+ltp/testcases/kdump/crash_cmds
+ltp/testcases/kdump/distro
+ltp/testcases/kdump/master
+ltp/testcases/kdump/setup
+ltp/testcases/kdump/sysinfo
+ltp/testcases/kdump/test
+ltp/testcases/kdump/tests
+ltp/testcases/kdump/verify
+ltp/testcases/kdump/rhtools/Makefile
+ltp/testcases/kdump/rhtools/OO_Descriptions.txt
+ltp/testcases/kdump/rhtools/crasher_mod/Makefile
+ltp/testcases/kdump/rhtools/crasher_mod/crasher.c
+ltp/testcases/kdump/rhtools/lkdtm_mod/Makefile
+ltp/testcases/kdump/rhtools/lkdtm_mod/lkdtm.c
+ltp/testcases/kdump/susetools/Makefile
+ltp/testcases/kdump/susetools/Attic/OO_Description.txt
+ltp/testcases/kdump/susetools/crasher_mod/Makefile
+ltp/testcases/kdump/susetools/crasher_mod/crasher.c
+ltp/testcases/kdump/testlists/crasher
+ltp/testcases/kdump/testlists/Attic/i386-basic
+ltp/testcases/kdump/testlists/Attic/i386-lkdtt
+ltp/testcases/kdump/testlists/Attic/i386-manual
+ltp/testcases/kdump/testlists/lkdtm.orig
+ltp/testcases/kdump/testlists/Attic/ppc64-basic
+ltp/testcases/kdump/testlists/Attic/ppc64-lkdtt
+ltp/testcases/kdump/testlists/Attic/ppc64-manual
+ltp/testcases/kdump/testlists/Attic/x86_64-basic
+ltp/testcases/kdump/testlists/Attic/x86_64-lkdtt
+ltp/testcases/kdump/testlists/Attic/x86_64-manual
+
+- <sachinp@in.ibm.com> removed unwanted files from ltp/testcases/kdump/testlists directory
+ltp/testcases/kdump/testlists/Attic/i386-basic
+ltp/testcases/kdump/testlists/Attic/ppc64-basic
+ltp/testcases/kdump/testlists/Attic/x86_64-basic
+
+-Patch Submitted by <sachinp@linux.vnet.ibm.com> which removes the lkdtt code and adds lkdtm code
+ltp/testcases/kdump/test
+ltp/testcases/kdump/susetools/Makefile
+ltp/testcases/kdump/susetools/Attic/OO_Description.txt
+ltp/testcases/kdump/susetools/OO_Descriptions.txt
+ltp/testcases/kdump/susetools/lkdtm_mod/Makefile
+ltp/testcases/kdump/susetools/lkdtm_mod/lkdtm.c
+ltp/testcases/kdump/testlists/Attic/i386-lkdtt
+ltp/testcases/kdump/testlists/Attic/i386-manual
+ltp/testcases/kdump/testlists/Attic/ppc64-lkdtt
+ltp/testcases/kdump/testlists/Attic/ppc64-manual
+ltp/testcases/kdump/testlists/Attic/x86_64-lkdtt
+ltp/testcases/kdump/testlists/Attic/x86_64-manual
+
+-Patch Submitted by <sachinp@linux.vnet.ibm.com> for some configuration settings as pointed out by <jburke@redhat.com>
+-<sachinp@in.ibm.com> added options to select/run crasher/lkdtt tests on SLES
+-Patch Submitted by <sachinp@linux.vnet.ibm.com> which removes the lkdtt code and adds lkdtm code
+ltp/testcases/kdump/setup
+
+- Patch Applied as submitted by <jburke@redhat.com> for 1)Changed the way runltp makes the temp directory, and 2) removing LOCTMP and adding in the LTPTMP in its place and clean up files when it is done
+ltp/runltp
+ltp/testcases/commands/tar/tar_tests.sh
+
+-Applied Patch submitted by "elliot_lee", against bug no. "[ 1697311 ] Compile error of 'lib/parse_opts.c' "
+ltp/lib/parse_opts.c
+
+-Fix for Bug no. 1671695, Check return codes everywhere, as pointed out by 'Markus Elfring'
+ltp/lib/tst_tmpdir.c
+
+-Modifications to prevent Warnings during compilation
+ltp/lib/write_log.c
+
+-Changes to include 'egrep' as pointed out by 'kmaffey' [LTP Bug no. 1701305, logrotate_tests.sh fails on CentOS 4.4]
+ltp/testcases/commands/logrotate/logrotate_tests.sh
+
+-Patch Submitted by <sachinp@linux.vnet.ibm.com> for some configuration settings as pointed out by <jburke@redhat.com>
+ltp/testcases/kdump/README
+
+-Fix for Bug No 1592647, incorrect testcase diotest4-4, as pointed out by "Vagin Andrey"
+ltp/testcases/kernel/io/direct_io/diotest4.c
+
+-remove silly reliance on -DLINUX
+ltp/testcases/kernel/mem/vmtests/Makefile
+ltp/testcases/kernel/mem/vmtests/data_space.c
+ltp/testcases/kernel/mem/vmtests/stack_space.c
+
+-Applied Patch to change the way shmat() operates, pointed out/submitted by YI XU<yxu@suse.de>
+ltp/testcases/kernel/sched/process_stress/process.c
+
+-Fix for BUG no. "[1607899]" exit02 uses strcmp() on unterminated string, as pointed out by "ndade"
+-Fixed Bug No. ['1607881', "exit02 child does close() when description says it does not"], as pointed out by <Nicolas Dade>
+ltp/testcases/kernel/syscalls/exit/exit02.c
+
+-Fix for Bug no. '1221744' (fork12 race condition), as pointed by "Carl van Schaik"
+ltp/testcases/kernel/syscalls/fork/fork12.c
+
+-Applied Patch as submitted by "creese123" for bug no. ["1694484", semop01 corrupting get_arr.array]
+ltp/testcases/kernel/syscalls/ipc/semop/semop01.c
+
+-Fix for Bug no. "1687908"(raised by 'bdubbs'), patch submitted by <doug.chapman@hp.com>
+ltp/testcases/kernel/syscalls/mincore/mincore01.c
+
+-Fix for BUG no. "[1608461]" pipe10 calls strcmp() on unterminated string, as pointed out by "ndade"
+ltp/testcases/kernel/syscalls/pipe/pipe10.c
+
+-Fix for BUG no. "[1608492]" read04 calls strcmp() on unterminated string as submitted by "ndade"
+ltp/testcases/kernel/syscalls/read/read04.c
+
+-Modifications to prevent Warnings during compilation
+ltp/testcases/kernel/syscalls/rename/rename14.c
+
+-Fixing 'sysfs01' testcase to make it ask for File System Index of 'proc' instead of 'ext2' as pointed out by <doug.chapman@hp.com>
+ltp/testcases/kernel/syscalls/sysfs/sysfs01.c
+
+-Addressing the Issue when RHOST can be an IP_ADDRESS, as pointed out by "Ambar Seksena" <ambar.seksena@calsoftinc.com>
+ltp/testcases/network/rpc/rusers/rusers01
+
+-Patch for S390-31/64 Architecture, submitted by "B. N. Poornima"<bnpoorni@in.ibm.com>
+ltp/testscripts/ltpstress.sh
+
 LTP-20070331
 
 -make sure people dont try and patch the generated file 
