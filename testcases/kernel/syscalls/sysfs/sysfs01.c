@@ -63,7 +63,7 @@
  *
  *RESTRICTIONS:
  *There is no glibc or libc support
- *Kernel should be compiled with ext2 filesystem support
+ *Kernel should be compiled with proc filesystem support
  ******************************************************************************/
 
 #include "test.h"
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* option 1, buf holds fs name */
-		TEST(syscall(__NR_sysfs, 1, "ext2"));
+		TEST(syscall(__NR_sysfs, 1, "proc"));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
