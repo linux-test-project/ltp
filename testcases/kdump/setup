@@ -209,17 +209,7 @@ echo "SYSINFO_SCR=\$TEST_BASE_DIR/sysinfo" >> $CONFIG_FILE
 
 # Tools
 echo "CRASHER_MOD=\$TEST_BASE_DIR/tools/crasher_mod/crasher.ko" >> $CONFIG_FILE
-if [ $DISTRO_SUSE -eq 1 ]; then
-echo "TTUTILS_BIN=\$TEST_BASE_DIR/tools/dtt_tools/ttutils" >> $CONFIG_FILE
-echo "MEMDRAIN_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/memdrain" >> $CONFIG_FILE
-echo "SETUID_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/setuid" >> $CONFIG_FILE
-echo "ALARM_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/alarm" >> $CONFIG_FILE
-echo "BRK_BIN=\$TEST_BASE_DIR/tools/dtt_tools/helper/brk" >> $CONFIG_FILE
-fi
-
-if [ $DISTRO_RH -eq 1 ]; then
 echo "LKDTM=\$TEST_BASE_DIR/tools/lkdtm_mod/lkdtm.ko" >> $CONFIG_FILE
-fi
 
 #
 # Create the control file

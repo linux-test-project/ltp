@@ -82,7 +82,7 @@ ltp/runltp
 ltp/testcases/commands/tar/tar_tests.sh
 
 -Applied Patch submitted by "elliot_lee", against bug no. "[ 1697311 ] Compile error of 'lib/parse_opts.c' "
-ltp/lib/parse_opts.c
+ltp/	
 
 -Fix for Bug no. 1671695, Check return codes everywhere, as pointed out by 'Markus Elfring'
 ltp/lib/tst_tmpdir.c
