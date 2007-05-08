@@ -26,7 +26,7 @@
 #define SYS_unshare 1296
 #elif __x86_64__
 #define SYS_unshare 272
-#elif __s390x__
+#elif __s390x__ || __s390__
 #define SYS_unshare 303
 #elif __powerpc__
 #define SYS_unshare 282
