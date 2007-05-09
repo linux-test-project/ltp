@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 	shmem_size = sizeof (unsigned long);
 	if ((long)(checksum = (unsigned long *) 
 		mmap (0, shmem_size, PROT_READ | PROT_WRITE, 
-		      MAP_ANON | MAP_SHARED, -1, 0)) < 0)
+		      MAP_ANON | MAP_SHARED, -1, 0)) == -1 )
 		sys_error ("mmap failed", __LINE__);
 
 	for (i=0; i < num_children; i++)
