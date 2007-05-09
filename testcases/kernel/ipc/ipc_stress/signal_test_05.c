@@ -182,7 +182,7 @@ void child (pid_t pid)
 	for (i=1; i< (SIGMAX + 1); i++) {
 
 		/* Cannot catch or ignore the following signals */
-		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT)
+		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT || i == SIGRTMIN )
 			continue;
 
 		/* Skip sigchild too */
