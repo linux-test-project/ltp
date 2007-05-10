@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.17 2006/08/03 05:21:24 mreed10 Exp $ */
+/* $Id: gethostid01.c,v 1.18 2007/05/10 06:16:35 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -229,17 +229,22 @@ main(int ac, char **av)
 		if (0 == strncmp(hostid, hex_64, 8))
             bit_64 |= FIRST_64_CHKBIT;
 
-		if (0 == strncmp(name, hex_64, 8))
+		if (0 == strncmp(name2, hex_64, 8))
             bit_64 |= SECOND_64_CHKBIT;
 
 		//printf("bit_64=%d\n", bit_64);
 
-		if ((bit_64 & FIRST_64_CHKBIT) || (bit_64 & SECOND_64_CHKBIT)){
+		if (bit_64 & FIRST_64_CHKBIT) {
 			for (j=0;j<8;j++)
 				hostid2[j]=hostid[j+8];
 		} else {
 			strncpy(hostid2, hostid, strlen(hostid)+1);
 		}
+
+                if (bit_64 & SECOND_64_CHKBIT){
+                        for (j=0;j<9;j++)
+                                name2[j]=name2[j+8];
+                }
 
 		if ((result = strstr(hostid2,name2)) != NULL){
  		        hostid3 =strdup(name2);
