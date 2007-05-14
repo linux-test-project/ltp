@@ -212,8 +212,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
                            getpid(), shmkey);
 
 	/* get shared memory segment */
-        if ((shmat_addr = shmat(shmkey, (void *)locargs[2], SHM_RND|SHMLBA))
-                        ==  (void *)-1)
+        if ((shmat_addr = shmat(shmkey, NULL, 0)) ==  (void *)-1)
         {
             rm_shared_mem(shmkey, shmat_addr, 0);
             fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n", 
@@ -236,8 +235,8 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
             {	
 	        dprt("pid[%d]: do_shmat_shmatd(): write_to_mem = %#x\n",
                     getpid(), write_to_mem);
-	        strncpy(write_to_mem, "Y", sizeof(char *));
-	        index += sizeof(char *);
+	        *write_to_mem = 'Y';
+	        index++;
 	        write_to_mem++;
 	        sched_yield();
             }
@@ -250,7 +249,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 	    while (index < (int)locargs[2])
             {
 	        buff = *read_from_mem;
-		index += sizeof(char *);
+		index++;
 		read_from_mem++;
 		sched_yield();
             }
@@ -300,7 +299,7 @@ main(int	argc,		/* number of input parameters		      */
     int		map_size;	/* size of the file mapped.                   */
     int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
-    long	chld_args[3];   /* arguments to the thread function           */
+    long	chld_args[4];   /* arguments to the thread function           */
     char        *map_address=NULL; 
 				/* address in memory of the mapped file       */
     extern int	 optopt;	/* options to the program		      */
