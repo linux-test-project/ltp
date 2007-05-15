@@ -236,7 +236,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 /*									      */
 /******************************************************************************/
 static void
-set_timer(int run_time)		/* period for which test is intended to run   */
+set_timer(double run_time)		/* period for which test is intended to run   */
 {
     struct itimerval timer;	/* timer structure, tv_sec is set to run_time */
 
@@ -244,7 +244,7 @@ set_timer(int run_time)		/* period for which test is intended to run   */
     timer.it_interval.tv_usec = 0;
     timer.it_interval.tv_sec = 0;
     timer.it_value.tv_usec = 0;
-    timer.it_value.tv_sec = (time_t)(run_time * 3600.0);
+    timer.it_value.tv_sec = (time_t)(run_time * 3600);
 
     if (setitimer(ITIMER_REAL, &timer, NULL))
     {
@@ -497,7 +497,7 @@ main(int  argc,		/* number of input parameters.			      */
     int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
     int		 file_size;	/* size of the file to be created.	      */
     int		 num_iter;	/* number of iteration to perform             */
-    int		 exec_time;	/* period for which the test is executed      */
+    double	 exec_time;	/* period for which the test is executed, changed to double to incorporate time in hours,minutes and seconds */
     int		 fd;		/* temporary file descriptor		      */
     int          status[2];     /* exit status for process X and Y	      */
     int          sig_ndx;      	/* index into signal handler structure.       */
@@ -552,8 +552,9 @@ main(int  argc,		/* number of input parameters.			      */
 	    case 'v':
 		verbose_print = TRUE;
 	    case 'x':
-		if ((exec_time = atoi(optarg)) == (int)NULL)
-		    exec_time = 24;
+                exec_time = atof(optarg);
+		if (exec_time == 0) 
+                    exec_time = 24;
                 else
 		    OPT_MISSING(argv[0], optopt);
 	        run_once = FALSE;
@@ -567,7 +568,7 @@ main(int  argc,		/* number of input parameters.			      */
     if (verbose_print)
         fprintf(stdout, "Input parameters to are\n"
                     "\tFile size:                     %d\n"
-                    "\tScheduled to run:              %d hours\n"
+                    "\tScheduled to run:              %lf hours\n"
                     "\tNumber of mmap/write/read:     %d\n",
 			file_size, exec_time, num_iter);
     set_timer(exec_time);
@@ -652,6 +653,6 @@ main(int  argc,		/* number of input parameters.			      */
             }
         }
         close(fd);
-    }while (TRUE && !run_once);
+    }while (TRUE);
     exit (0);
 }
