@@ -62,7 +62,11 @@ int main()
 
 	childstack = stack + getpagesize();
 
+#ifdef __ia64__
+	pid = clone2(dummy, childstack, getpagesize(), CLONE_NEWUTS, NULL, NULL, NULL, NULL);
+#else
 	pid = clone(dummy, childstack, CLONE_NEWUTS, NULL);
+#endif
 
 	if (pid == -1)
 		return 3;

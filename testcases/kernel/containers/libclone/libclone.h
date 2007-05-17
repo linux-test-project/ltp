@@ -35,6 +35,13 @@
 #endif
 #endif
 
+#ifdef __ia64__
+#define clone2 __clone2
+extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
+                size_t child_stack_size, int flags, void *arg,
+                pid_t *parent_tid, void *tls, pid_t *child_tid);
+#endif
+
 #ifndef CLONE_NEWUTS
 #define CLONE_NEWUTS		0x04000000
 #endif

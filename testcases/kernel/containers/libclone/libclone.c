@@ -16,7 +16,12 @@ int do_clone_tests(unsigned long clone_flags,
 
 	childstack = stack + getpagesize();
 
+#ifdef __ia64__
+	ret = clone2(fn1, childstack, getpagesize(), clone_flags | SIGCHLD, arg1, NULL, NULL, NULL);
+#else
 	ret = clone(fn1, childstack, clone_flags | SIGCHLD, arg1);
+#endif
+
 	if (ret == -1) {
 		perror("clone");
 		free(stack);
