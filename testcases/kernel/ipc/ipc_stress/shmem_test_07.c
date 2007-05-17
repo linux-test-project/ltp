@@ -138,6 +138,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -215,7 +216,7 @@ pthread_cond_t  cond_var[MAX_WRITER_NUMBER];
 
 int	 *read_count[MAX_WRITER_NUMBER];    /* Shared memory segment address */
 unsigned long *checksum[MAX_WRITER_NUMBER]; /* Shared memory segment address */
-char 	 *shmptr[MAX_WRITER_NUMBER];	    /* Shared memory segment address */
+unsigned char *shmptr[MAX_WRITER_NUMBER];   /* Shared memory segment address */
 unsigned long cksum[MAX_WRITER_NUMBER];     /* Shared memory segment checksum */
 
 int 	 shmem_size = DEFAULT_SHMEM_SIZE;
@@ -476,8 +477,8 @@ void *writer (void *parm)
 {
 	int num_w = (int) (long)parm;
 	unsigned long cksum_w = 0;	/* Shared memory regions checksum */
-        char    data = 0;       /* Value written into shared memory segment */
-        char    *ptr;           /* Misc pointer */
+        unsigned char data = 0; /* Value written into shared memory segment */
+        unsigned char *ptr;     /* Misc pointer */
 
         /*
          * Fill the "scratch" shared memory segment up with data and
@@ -488,7 +489,7 @@ void *writer (void *parm)
         data = num_w;
 
         for (ptr=shmptr[num_w]; ptr < (shmptr[num_w]+buffer_size); ptr++) {
-                *ptr = data++;
+                *ptr = (data++) % (UCHAR_MAX + 1);
                 cksum_w += *ptr;
         }
         if (pthread_mutex_lock (&cond_mutex[num_w]))
@@ -524,7 +525,7 @@ void *reader (void *parm)
 	int	i;			/* Misc index */
 	int	num_r;			/* Misc index */
 	int	num_w;			/* Misc index */
-	char	* ptr;			/* Misc pointer */
+	unsigned char * ptr;	  /* Misc pointer */
 	unsigned long *ulptr_r;   /* Misc pointer */
 	
 	/*

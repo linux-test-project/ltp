@@ -72,6 +72,7 @@
 +---------------------------------------------------------------------*/
 
 #include <errno.h>
+#include <limits.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -113,7 +114,7 @@ struct data {
 void cleanup ();
 void handler (int, int, struct sigcontext *);
 void setup_signal_handlers ();
-static void child (int, char *);
+static void child (int, unsigned char *);
 static int create_lock_file (char *);
 static void unlock_file (int);
 static void write_lock (int);
@@ -152,10 +153,10 @@ pid_t	pid [MAX_CHILDREN];
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	char	*shmptr,	/* Shared memory segment address */
+	unsigned char	*shmptr,	/* Shared memory segment address */
 		value = 0;	/* Value written into shared memory segment */
 	int	i;
-	char 	*ptr;
+	unsigned char 	*ptr;
 	int	status;
 	int	shmem_size;
 	unsigned long cksum;
@@ -176,10 +177,10 @@ int main (int argc, char **argv)
 	/*
 	 * Get chunk of shared memory for storing num_children checksum
 	 */
-	shmem_size = sizeof (unsigned long);
-	if ((long)(checksum = (unsigned long *) 
+	shmem_size = sizeof (unsigned long) * num_children;
+        if ((checksum = (unsigned long *)
 		mmap (0, shmem_size, PROT_READ | PROT_WRITE, 
-		      MAP_ANON | MAP_SHARED, -1, 0)) == -1 )
+		      MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED )
 		sys_error ("mmap failed", __LINE__);
 
 	for (i=0; i < num_children; i++)
@@ -203,7 +204,7 @@ int main (int argc, char **argv)
 	printf ("\n\tParent: calculate shared memory segment checksum\n");
 	write_lock (lockfd);
 	for (ptr=shmptr; ptr < (shmptr+buffer_size); ptr++) {
-		*ptr = value++;
+                *ptr = (value++) % (UCHAR_MAX + 1);
 		cksum += *ptr;
 	}
 	unlock_file (lockfd);
@@ -242,7 +243,7 @@ int main (int argc, char **argv)
 	return (0);
 }
 
-static void child (int num, char *shmptr)
+static void child (int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;
 	int	i;
@@ -252,7 +253,6 @@ static void child (int num, char *shmptr)
 		cksum += *shmptr++;
 	unlock_file (lockfd);
 
-	checksum [num] = cksum;
 	*(checksum + (sizeof (unsigned long) * num)) = cksum;
 	printf ("\t\tchild (%02d): checksum %08lx\n", num, 
 		*(checksum + (sizeof (unsigned long) * num)));

@@ -77,6 +77,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/file.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
@@ -119,7 +120,7 @@ static void unlock_resource (int);
 static void parse_args (int, char **);
 static void setup_signal_handlers ();
 static void handler (int, int, struct sigcontext *);
-static void child (int, char *);
+static void child (int, unsigned char *);
 static void sys_error (const char *, int);
 static void error (const char *, int);
 static void cleanup ();
@@ -168,9 +169,9 @@ int main (int argc, char **argv)
 	int	i; 		/* Misc loop index */
 	int	shmem_size;	/* Size (in bytes) of shared memory segment */
 	int	status;		/* Child processes exit status */
-	char 	*ptr;		/* Misc pointer */
-	char	data = 0;	/* Value written into shared memory segment */
-	char	*shmptr;	/* Shared memory segment address */
+	unsigned char *ptr;		/* Misc pointer */
+	unsigned char data = 0;	/* Value written into shared memory segment */
+	unsigned char *shmptr;	/* Shared memory segment address */
 	unsigned long cksum;	/* Shared memory segment checksum */
 
 	/*
@@ -272,7 +273,7 @@ int main (int argc, char **argv)
 	cksum = data = 0;
 
 	for (ptr=shmptr; ptr < (shmptr+buffer_size); ptr++) {
-		*ptr = data++;
+		*ptr = (data++) % (UCHAR_MAX + 1);
 		cksum += *ptr;
 	}
 	printf ("\t        shared memory checksum %08lx\n", cksum);
@@ -319,7 +320,7 @@ int main (int argc, char **argv)
 |                       computed by child processes                    |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void child (int num, char *shmptr)
+static void child (int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;	/* Shared memory regions checksum */
 	int	i;			/* Misc index */
