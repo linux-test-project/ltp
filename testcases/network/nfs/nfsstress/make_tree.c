@@ -203,7 +203,7 @@
 #define PTHREAD_EXIT(val)    do {\
 			exit_val = val; \
                         dprt("pid[%d]: exiting with %d\n", gettid(),exit_val); \
-			pthread_exit((void *)&exit_val); \
+			pthread_exit((void *)exit_val); \
 				} while (0)
 
 #define OPT_MISSING(prog, opt)   do{\

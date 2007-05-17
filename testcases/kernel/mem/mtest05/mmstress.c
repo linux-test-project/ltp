@@ -127,7 +127,7 @@
                           /* exit thread macro                                */
 #define PTHREAD_EXIT(val)      do {              \
             exit_val = val;                      \
-                pthread_exit((void *)&exit_val); \
+                pthread_exit((void *)exit_val); \
                                   } while (0)
 #define MAXTEST      7   /* total number of testcase in this program          */
 #define BRKSZ        512*1024 /* program data space allocation value          */

@@ -22,8 +22,11 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
+* $Id: threading.h,v 1.5 2007/05/17 11:03:24 subrata_modak Exp $
 * $Log: threading.h,v $
+* Revision 1.5  2007/05/17 11:03:24  subrata_modak
+* Applied Patch to fix the wrong usage of pthread_exit, pointed out by <carmelo.amoroso@st.com>
+*
 * Revision 1.4  2005/05/04 17:54:00  mridge
 * Update to version 1.2.8
 *
@@ -113,7 +116,7 @@
 #define UNLOCK(Mutex) \
 		pthread_mutex_unlock(&Mutex); \
 		pthread_cleanup_pop(0)
-#define TEXIT(errno) pthread_exit(&errno)
+#define TEXIT(errno) pthread_exit(errno)
 #define ISTHREADVALID(thread) (thread != 0)
 #endif
 
