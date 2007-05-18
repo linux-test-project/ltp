@@ -69,7 +69,7 @@ void noprintf(char* string, ...){
 #define PTHREAD_EXIT(val)    do {\
 			exit_val = val; \
                         dprt("pid[%d]: exiting with %d\n", getpid(),exit_val); \
-			pthread_exit((void *)&exit_val); \
+			pthread_exit((void *)exit_val); \
 				} while (0)
 
 #define OPT_MISSING(prog, opt)   do{\
@@ -182,7 +182,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
     int          shmndx   = 0;	/* index to the number of attach and detach   */
     int		 index    = 0;  /* index to the number of blocks touched      */
     int		 reader   = 0;  /* this thread is a reader thread if set to 1 */
-    key_t        shmkey   = 0;	/* shared memory id			      */
+    key_t        shm_id   = 0;	/* shared memory id			      */
     long         *locargs = 	/* local pointer to arguments		      */
 		            (long *)args;
     volatile int exit_val = 0;	/* exit value of the pthread 		      */
@@ -199,7 +199,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 	    getpid(), (int)locargs[1]);
 
 	/* get shared memory id */
-        if ((shmkey = shmget((int)locargs[1], (int)locargs[2], IPC_CREAT|0666)) 
+        if ((shm_id = shmget((int)locargs[1], (int)locargs[2], IPC_CREAT|0666)) 
 		    == -1)
         {
 	    dprt("pid[%d]: shmat_rd_wr(): shmget failed\n", getpid());
@@ -209,12 +209,12 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
         
         fprintf(stdout, "pid[%d]: shmat_rd_wr(): shmget():"
 			"success got segment id %d\n",
-                           getpid(), shmkey);
+                           getpid(), shm_id);
 
 	/* get shared memory segment */
-        if ((shmat_addr = shmat(shmkey, NULL, 0)) ==  (void *)-1)
+        if ((shmat_addr = (char *)shmat(shm_id, NULL, 0)) ==  (void *)-1)
         {
-            rm_shared_mem(shmkey, shmat_addr, 0);
+            rm_shared_mem(shm_id, shmat_addr, 0);
             fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n", 
 		 		 		 getpid(), (long)shmat_addr);
             perror("do_shmat_shmadt(): shmat()");
@@ -258,7 +258,7 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 	sched_yield();
 
 	/* remove the shared memory */
-	if (rm_shared_mem(shmkey, shmat_addr, 1) == -1)
+	if (rm_shared_mem(shm_id, shmat_addr, 1) == -1)
         {
             fprintf(stderr,
                 "pid[%d]: do_shmat_shmatd(): rm_shared_mem(): faild to rm id\n",
@@ -295,7 +295,7 @@ main(int	argc,		/* number of input parameters		      */
     int		num_thrd = MAXT;/* number of threads to create                */
     int		num_reps = MAXR;/* number of repatitions the test is run      */
     int		thrd_ndx;	/* index into the array of thread ids         */
-    int		*th_status;	/* exit status of LWP's	                      */
+    int		th_status;	/* exit status of LWP's	                      */
     int		map_size;	/* size of the file mapped.                   */
     int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
@@ -341,7 +341,7 @@ main(int	argc,		/* number of input parameters		      */
     
     chld_args[0] = num_reps;
 
-    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
+    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx+=2)
     {
         srand(time(NULL)%100);
         map_size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
@@ -362,7 +362,7 @@ main(int	argc,		/* number of input parameters		      */
 
         chld_args[3] = READER;
 
-        if (pthread_create(&thrdid[thrd_ndx], NULL, shmat_rd_wr, chld_args))
+        if (pthread_create(&thrdid[thrd_ndx+1], NULL, shmat_rd_wr, chld_args))
         {
             perror("shmat_rd_wr(): pthread_create()");
             exit(-1);
@@ -373,7 +373,7 @@ main(int	argc,		/* number of input parameters		      */
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_join(thrdid[thrd_ndx], (void **)&th_status) != 0)
+        if (pthread_join(thrdid[thrd_ndx], (void *)&th_status) != 0)
         {
             perror("shmat_rd_wr(): pthread_join()");
             exit(-1);
@@ -381,7 +381,7 @@ main(int	argc,		/* number of input parameters		      */
         else
         {
             dprt("WE ARE HERE %d\n", __LINE__);
-            if ((*th_status) == -1)
+            if (th_status == -1)
             {
                 fprintf(stderr,
                         "thread [%ld] - process exited with errors\n",
