@@ -116,6 +116,7 @@
 #define OPT_MISSING(prog, opt) do {\
                         fprintf(stderr, "%s: option -%c ", prog, opt); \
                         fprintf(stderr, "requires and argument\n");\
+						usage(prog); \
                             } while(0)
 
 
@@ -349,7 +350,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         {
             perror("map_write_unmap(): mmap()");
             exit_val = MWU_FAIL;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)exit_val);
         }
         
         if(verbose_print)
@@ -368,11 +369,11 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         {
 	    perror("map_write_unmap(): mmap()");
             exit_val = MWU_FAIL;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)exit_val);
         }
     }
     exit_val = M_SUCCESS;
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)exit_val);
 }
 
 
@@ -395,7 +396,6 @@ read_mem(void *args)		/* number of reads performed		      */
 {
     static int	 rd_index = 0;	/* index to the number of reads performed.    */
     long 	*rmargs = args;	/* local pointer to the arguments	      */
-    char        *mem_content;	/* content of memory read                     */
     volatile int exit_val = 0;  /* pthread exit value			      */
 
     if (verbose_print)
@@ -405,7 +405,6 @@ read_mem(void *args)		/* number of reads performed		      */
                 "read from address %p\n",
 		(int)rmargs[2], (long *)map_address);
 
-    mem_content = malloc(sizeof(char) * rd_index);
     while (rd_index++ < (int)rmargs[2])
     {
         fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
@@ -414,7 +413,6 @@ read_mem(void *args)		/* number of reads performed		      */
 	    fprintf(stdout, 
 	        "read_mem() in while loop  %d times to go %ld times\n", 
 		rd_index, rmargs[2]);
-        usleep(1);
         
         if (setjmp(jmpbuf) == 1)
         {
@@ -428,16 +426,17 @@ read_mem(void *args)		/* number of reads performed		      */
 	    if (verbose_print)
 	        fprintf(stdout, 
 		    "read_mem(): content of memory: %s\n", (char *)map_address);
-            if (strncmp(mem_content, "a", 1) != 0)
+            if (strncmp((char *)map_address, "a", 1) != 0)
             {
                 exit_val = -1;
-		pthread_exit((void *)&exit_val);    
+		pthread_exit((void *)exit_val);    
             }
+            usleep(1);
 	}        
             
     }
     exit_val = M_SUCCESS; 
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)exit_val);
 }
 
 
@@ -530,7 +529,7 @@ main(int  argc,		/* number of input parameters.			      */
     num_iter = 1000;
     exec_time = 24;
 
-    while ((c =  getopt(argc, argv, "h:l:s:vx:")) != -1)
+    while ((c =  getopt(argc, argv, "hvl:s:x:")) != -1)
     {
         switch(c)
 	{
@@ -539,9 +538,10 @@ main(int  argc,		/* number of input parameters.			      */
 		break;
 	    case 'l':
 		if ((num_iter = atoi(optarg)) == (int)NULL)
-		    num_iter = 1000;
+		OPT_MISSING(argv[0], optopt);
                 else
-		    OPT_MISSING(argv[0], optopt);
+	        if (num_iter < 0)
+				fprintf(stdout,"WARNING: bad argument. Using default %d\n", (num_iter = 1000));
 		break;
 	    case 's':
 		if ((file_size = atoi(optarg)) == 0)
@@ -551,13 +551,16 @@ main(int  argc,		/* number of input parameters.			      */
 		break;
 	    case 'v':
 		verbose_print = TRUE;
+                break;
 	    case 'x':
                 exec_time = atof(optarg);
 		if (exec_time == 0) 
-                    exec_time = 24;
-                else
-		    OPT_MISSING(argv[0], optopt);
-	        run_once = FALSE;
+	     	    OPT_MISSING(argv[0], optopt);
+		else
+	             if (exec_time < 0) {
+				fprintf(stdout,"WARNING: bad argument. Using default %d\n", (exec_time = 24));
+			} else			
+				run_once = FALSE;
 		break;
 	    default :
 		usage(argv[0]);
@@ -643,7 +646,7 @@ main(int  argc,		/* number of input parameters.			      */
             }
             else
             {
-                if (!status[thrd_ndx])
+                if (status[thrd_ndx])
                 {
                     fprintf(stderr, 
 			    "thread [%ld] - process exited with errors %d\n",
