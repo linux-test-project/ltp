@@ -86,7 +86,9 @@
 #define FALSE 0
 #endif
 #define prtln() printf(" I AM HERE ==> %s %d\n", __FILE__, __LINE__);
-
+#define STR_SHMAT  "  "
+#define STR_WRITER "    "
+#define STR_READER "      "
 
 /* Global Variables						              */
 void        *map_address;	/* pointer to file in memory	      	      */
@@ -267,7 +269,6 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 		       (long *)args;
     struct  shmid_ds *shmbuf    /* info about the segment pointed to by shmkey*/
 	    		= NULL;
-    volatile int exit_val = 0;  /* exit value of the pthread		      */
 
     while (shm_ndx++ < (int)locargs[0])
     {
@@ -281,13 +282,13 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         if (shmget(shmkey, fsize, IPC_CREAT | 0666 ) == -1)
         {
             perror("shmat_shmdt(): shmget()");
-            exit_val = -1;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)-1);
         }
         else
         {
-            fprintf(stdout, "shmget(): success, got segment of size %d\n",
-		     fsize);
+            fprintf(stdout,
+                     "%s[%#lx]: shmget(): success, got segment of size %d\n",
+		     STR_SHMAT, pthread_self(), fsize);
         }
 
         if ((map_address = shmat(shmkey, (void *)0, SHMLBA))
@@ -296,19 +297,24 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 	    fprintf(stderr, "shmat_shmat(): map address = %p\n", 
 		map_address);
             perror("shmat_shmdt(): shmat()");
-            exit_val = -1;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)-1);
         }
         else
         {
-	    /* Wake up the reader and writer threads.			      */
-            done_shmat = 1;
-	    usleep(0);
+			/* Wake up the reader and writer threads.			      */
+			/* Write 'X' into map_address. We are not sure about
+			reader/writer interleaving. So the reader may expect
+			to find 'X' or 'Y'
+			*/
+			memset(map_address, 'X', 1);
+			done_shmat = 1;
+			usleep(0);
         }
 
-        fprintf(stdout, 
-		"Map address = %p\nNum iter: [%d] Total Num Iter: [%d]\n",
-			 map_address, shm_ndx, (int)locargs[0]);
+        fprintf(stdout, "%s[%#lx]: Map address = %p\n",
+			 STR_SHMAT, pthread_self(), map_address);
+        fprintf(stdout, "%s[%#lx]: Num iter: [%d] Total Num Iter: [%d]\n",
+			 STR_SHMAT, pthread_self(), shm_ndx, (int)locargs[0]);
 	usleep(0);
 	sched_yield();
 	
@@ -317,18 +323,15 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         if (shmdt((void *)map_address) == -1)
         {
 	    perror("shmat_shmdt(): shmdt()");
-            exit_val = -1;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)-1);
         }
         if (shmctl(shmkey, IPC_RMID, shmbuf))
         {
             perror("shmat_shmdt(): shmctl()");
-	    exit_val = -1;
-	    pthread_exit((void *)&exit_val);
+	    pthread_exit((void *)-1);
         }
     }
-    exit_val = 0;
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)0);
 }
 
 
@@ -349,16 +352,15 @@ void *
 write_to_mem(void *args)
 {
     static   int write_ndx = 0;	/* index to the number of writes to perform   */
-    volatile int exit_val  = 0; /* exit value of the pthread                  */
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
 
-    /* wait for the thread to shmat, and dont sleep on the processor. */
-    while(!done_shmat)
-        usleep(0);
-
     while (write_ndx++ < (int)locargs[0])
     {
+	/* wait for the thread to shmat, and dont sleep on the processor. */
+        while(!done_shmat)
+        usleep(0);
+
         if (sigsetjmp(jmpbuf,0) == 1)
         {
             fprintf(stdout,
@@ -366,13 +368,13 @@ write_to_mem(void *args)
                         map_address);
         }
 
-	fprintf(stdout, "write_to_mem(): memory address: [%p]\n", 
-		map_address);
+	fprintf(stdout, "%s[%#lx]: write_to_mem(): memory address: [%p]\n",
+		STR_WRITER, pthread_self(), map_address);
         memset(map_address, 'Y', 1);
         usleep(1);
 	sched_yield();
     }
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)0);
 }
 
 
@@ -393,19 +395,18 @@ void *
 read_from_mem(void *args)
 {
     static   int read_ndx = 0;	/* index to the number of writes to perform   */
-    volatile int exit_val  = 0; /* exit value of the pthread                  */
     long         *locargs  =    /* local pointer to the arguments             */
                              (long *)args;
 
-    /* wait for the shmat to happen */
-    while(!done_shmat)
-        usleep(0);
-
     while (read_ndx++ < (int)locargs[0])
     {
-	fprintf(stdout, "read_from_mem():  memory address: [%p]\n", 
-		map_address);
-        
+	    /* wait for the shmat to happen */
+	while(!done_shmat)
+        usleep(0);
+
+	fprintf(stdout,
+		"%s[%#lx]: read_from_mem():  memory address: [%p]\n",
+		STR_READER, pthread_self(), map_address);
 	if (sigsetjmp(jmpbuf,0) == 1)
         {
             fprintf(stdout,
@@ -413,20 +414,20 @@ read_from_mem(void *args)
 			map_address);
         }
 
-        fprintf(stdout, "read_mem(): content of memory: %s\n", (char *)map_address);
+        fprintf(stdout, "%s[%#lx]: read_mem(): content of memory: %s\n",
+        STR_READER, pthread_self(), (char *)map_address);
 
         if (strncmp(map_address, "Y", 1) != 0)
         {
             if (strncmp(map_address, "X", 1) != 0)
             {
-                exit_val = -1;
-                pthread_exit((void *)&exit_val);
+                pthread_exit((void *)-1);
             }
         }
         usleep(1);
 	sched_yield();
     }
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)0);
 }
 
 
@@ -461,7 +462,9 @@ main(int  argc,		/* number of input parameters.			      */
     
     static struct signal_info
     {
-        int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
+       int  signum;    /* signal number that hasto be handled                */
+       char *signame;  /* name of the signal to be handled.                  */
+       } sig_info[] =
                    {
 			   {SIGHUP,"SIGHUP"},
 			   {SIGINT,"SIGINT"},
@@ -527,7 +530,7 @@ main(int  argc,		/* number of input parameters.			      */
 
     for (;;)
     {
-        /* create 3 threads threads. */
+        /* create 3 threads */
         if (pthread_create(&thid[0], NULL, shmat_shmdt, chld_args))
         {
             perror("main(): pthread_create()");
@@ -535,7 +538,8 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%ld], execs fn shmat_shmdt()\n",
+	    fprintf(stdout,
+		"created thread id[%#lx], execs fn shmat_shmdt()\n",
 		thid[0]);
         }
         sched_yield();
@@ -547,7 +551,8 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%ld], execs fn write_to_mem()\n",
+	    fprintf(stdout,
+		"created thread id[%#lx], execs fn write_to_mem()\n",
 		thid[1]);
         }
         sched_yield();
@@ -559,7 +564,8 @@ main(int  argc,		/* number of input parameters.			      */
         }
 	else
 	{
-	    fprintf(stdout, "created thread id[%ld], execs fn read_from_mem()\n",
+	    fprintf(stdout,
+		"created thread id[%#lx], execs fn read_from_mem()\n",
 		thid[2]);
         }
         sched_yield();
@@ -567,7 +573,7 @@ main(int  argc,		/* number of input parameters.			      */
         /* wait for the children to terminate */
         for (thrd_ndx = 0; thrd_ndx < 3; thrd_ndx++)
         {
-            if (pthread_join(thid[thrd_ndx], (void **)&status))
+            if (pthread_join(thid[thrd_ndx], (void *)status))
             {
                 perror("main(): pthread_create()");
 		exit (-1);
@@ -575,13 +581,12 @@ main(int  argc,		/* number of input parameters.			      */
             if (*status == -1)
             {
                 fprintf(stderr, 
-	              "thread [%ld] - process exited with errors %d\n",
+	              "thread [%#lx] - process exited with errors %d\n",
 		         thid[thrd_ndx], *status);
 	        exit (-1);
             }
         }
-	fprintf(stdout, "TEST PASSED\n");
-        exit (0);
     }
+	fprintf(stdout, "TEST PASSED\n");
     return 0;
 }
