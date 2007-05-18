@@ -121,7 +121,7 @@ mkfile(int  *size) 		/* size of the file to be generated in GB     */
     unlink(template);
 
     srand(time(NULL)%100);
-    *size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4069;
+    *size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
 
     /* fill the file with the character a */
     while (index < *size)
@@ -247,7 +247,6 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     int     map_type;		/* MAP_PRIVATE or MAP_SHARED	              */
     long    *mwuargs =          /* local pointer to arguments		      */
 		       (long *)args;
-    volatile int exit_val = 0;  /* exit value of the pthread		      */
 
     while (mwu_ndx++ < (int)mwuargs[0])
     {
@@ -255,8 +254,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         {
             fprintf(stderr,
             	"main(): mkfile(): Failed to create temp file.\n");
-	    exit_val = -1;
-	    pthread_exit((void *)&exit_val); 
+	    pthread_exit((void *)-1); 
         }
 
         if ((int)mwuargs[1])
@@ -268,8 +266,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 			 == (caddr_t *) -1)
         {
             perror("map_write_unmap(): mmap()");
-            exit_val = -1;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)-1);
         }
 
         memset(map_address, 'A', fsize);
@@ -281,13 +278,11 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         if (munmap(map_address, (size_t)fsize) == -1)
         {
 	    perror("map_write_unmap(): mmap()");
-            exit_val = -1;
-            pthread_exit((void *)&exit_val);
+            pthread_exit((void *)-1);
         }
         close (fd);
     }
-    exit_val = 0;
-    pthread_exit((void *)&exit_val);
+    pthread_exit((void *)0);
 }
 
 
@@ -314,7 +309,7 @@ main(int  argc,		/* number of input parameters.			      */
     int		 num_thrd;	/* number of threads to create                */
     int		 thrd_ndx;	/* index into the array of threads.	      */
     int		 exec_time;	/* period for which the test is executed      */
-    int          *status;       /* exit status for light weight process       */
+    int          status;       /* exit status for light weight process       */
     int          sig_ndx;      	/* index into signal handler structure.       */
     pthread_t    thid[1000];	/* pids of process that will map/write/unmap  */
     long         chld_args[3];	/* arguments to funcs execed by child process */
@@ -416,18 +411,18 @@ main(int  argc,		/* number of input parameters.			      */
         /* wait for the children to terminate */
         for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)
         {
-            if (pthread_join(thid[thrd_ndx], (void **)&status))
+            if (pthread_join(thid[thrd_ndx], (void *)&status))
             {
                 perror("main(): pthread_create()");
                 exit(-1);
             }
             else
             {
-                if (*status)
+                if (status)
                 {
                     fprintf(stderr, 
 			    "thread [%d] - process exited with errors %d\n",
-			        WEXITSTATUS(status[0]), *status);
+			        WEXITSTATUS(status), status);
 	            exit(-1);
                 }
             }
