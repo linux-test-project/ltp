@@ -6,14 +6,28 @@
 #		  
 
 rm -f tools
+DISTRO="Unsupported"
+
 # Determine the distribution we are running on
 if [ -f /etc/redhat-release ]; then
         ln -fs ./rhtools ./tools
+	DISTRO="RH"
 else if [ -f /etc/SuSE-release ]; then
         ln -fs ./susetools ./tools
+	DISTRO="SUSE"
 else
-        echo "Unsupported distribution ... exiting"
-        exit
+	read -p "Unsupported distribution. To countinue choose type RH(1) SUSE(2): " DISTRO
+	if [ $DISTRO -eq 1 ]; then
+		ln -fs ./rhtools ./tools
+		DISTRO="RH"
+	elif [ $DISTRO -eq 2 ]; then
+		ln -fs ./susetools ./tools
+		DISTRO="SUSE"
+	else
+		echo "Distribution have not beed chosen. Quit."
+		exit
+        fi
 fi
 fi
 
+echo $DISTRO

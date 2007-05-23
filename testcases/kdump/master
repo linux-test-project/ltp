@@ -38,7 +38,7 @@ run_test()
 	LAST_TEST=${#TESTS[*]}-1
 	
 	if [ $PREV_TEST -gt -1 ] ; then
-	   if [ $DISTRO_RH -eq 1 ]; then
+	   if [ $DISTRO == "RH" ]; then
 		#
 		# Verify results of previous test
 		#
@@ -71,7 +71,7 @@ run_test()
 			fi
 		fi
 	   fi
-	   if [ $DISTRO_SUSE -eq 1 ]; then
+	   if [ $DISTRO == "RH" ]; then
 	        #
                 # Verify results of previous test
                 #
@@ -103,12 +103,12 @@ run_test()
 		RESULTS_DIR=${RESULTS_DIR}/`hostname`.`date +%F-%T`
 		mkdir -p $RESULTS_DIR
                 echo "`date +%F-%T`: Starting test run" >> ${RESULTS_DIR}/status
-		if [ $DISTRO_SUSE -eq 1 ]; then
+		if [ $DISTRO == "RH" ]; then
 			cp /proc/config.gz ${RESULTS_DIR}
 		fi
 		echo "creating sysinfo"
 		$SYSINFO_SCR > ${RESULTS_DIR}/system.info
-		if [ $DISTRO_RH -eq 1 ]; then
+		if [ $DISTRO == "RH" ]; then
 			echo "emptying /var/crash/"
 			rm -rf /var/crash/*
 		fi

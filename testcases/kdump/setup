@@ -8,14 +8,11 @@ SYSCONFIG_FILE=/etc/sysconfig/kdump
 declare -i ERRORS=0
 declare -i NUM_ITERATIONS=1
 declare -i CRASH_FOUND=0
-declare -i DISTRO_SUSE=0
-declare -i DISTRO_RH=0
 # ARCH = 1 means it's ia32/x86_64 arch
 # ARCH = 2 means it's ppc64 arch
 declare -i ARCH
 
-X86_CRASHKERNEL='crashkernel=128M@16M'
-PPC_CRASHKERNEL='crashkernel=128M@32M'
+CRASHKERNEL='crashkernel=[0-9]\+M@[0-9]\+M'
 USE_CRASH="n"
 SCSI="n"
 IDE="n"
@@ -24,18 +21,16 @@ VMLINUX_DEBUG=""
 LINUX_2_6_16=2616
 
 # Determine architecture we're running on
-arch=$(uname -i)
-if [ $arch = "i386" ]
+arch= `uname -m`
+if [ `echo $arch |grep -e "i[3-6]86"` ]
 then
         CRASHKERNEL=$X86_CRASHKERNEL
         ARCH=1
-else if [ $arch = "x86_64" ]
+else if [ $arch == "x86_64" ]
 then
-        CRASHKERNEL=$X86_CRASHKERNEL
         ARCH=1
-else if [ $arch = "ppc64" ]
+else if [ $arch == "ppc64" ]
 then
-        CRASHKERNEL=$PPC_CRASHKERNEL
         ARCH=2
 else
         echo "Unsupported architecture... exiting"
@@ -51,18 +46,8 @@ if [ $KERNEL_VERSION -lt $LINUX_2_6_16 ]; then
 fi
 	
 # Determine the distribution we are running on
-if [ -f /etc/redhat-release ]; then
-        DISTRO_RH=1
-else if [ -f /etc/SuSE-release ]; then
-        DISTRO_SUSE=1
-else
-        echo "Unsupported distribution ... exiting"
-        exit
-fi
-fi
-
-echo "DISTRO_RH=${DISTRO_RH}" > $CONFIG_FILE
-echo "DISTRO_SUSE=${DISTRO_SUSE}" >> $CONFIG_FILE
+DISTRO=`./distro`
+echo "DISTRO=$DISTRO" > $CONFIG_FILE
 
 echo "Using the crash command and the kernel debug info during results"
 echo "verfication is optional. If you choose to do so, they must be"
@@ -121,7 +106,7 @@ fi
 echo "Checking other prerequisites..."
 
 # Check for kexec-tools
-if [ -f /sbin/kexec -a -f /etc/sysconfig/kdump ]; then
+if [ -f /sbin/kexec ]; then
 	echo "Found kexec-tools..."
 	echo " "
 else
@@ -132,29 +117,31 @@ else
 fi
 
 # Check for kdump kernel
-REQ_FOUND=$(rpm -qa | grep kernel-kdump 2>/dev/null)
-if [ $REQ_FOUND ]; then
-        echo "Found kernel-kdump..."
-	echo " "
-else
+if [ $DISTRO == "SUSE" ] || [ $DISTRO == "RH" ]; then 
+	REQ_FOUND=$(rpm -qa | grep kernel-kdump 2>/dev/null)
+	if [ $REQ_FOUND ]; then
+		echo "Found kernel-kdump..."
+		echo " "
+	else
 	# Currently PPC64 arch on RHEL5 doesnot support relocatable kernel.
 	# Hence a seperate rpm for kdump kernel is shipped.
 	# For SuSE all arch do not have relocatable support hence require
 	# kdump rpm to be shipped.
-
-	if [ $DISTRO_RH -eq 1 ] && [ $ARCH -eq 1 ]; then
-        	echo "Found kernel-kdump..."
-	else
-        	echo "kernel-kdump NOT FOUND..."
-		echo "Please install kernel-kdump rpm and run the setup"
-        	let "ERRORS++"
+		if [ $DISTRO == "RH" ] && [ $ARCH -eq 1 ]; then
+			echo "Found kernel-kdump..."
+		else
+			echo "kernel-kdump NOT FOUND..."
+			echo "Please install kernel-kdump rpm and run the setup"
+			let "ERRORS++"
+		fi
+		echo " "
 	fi
-	echo " "
 fi
 
 # Make sure kernel was booted with proper crashkernel values
-STR=$(cat /proc/cmdline | grep -c $CRASHKERNEL 2>/dev/null)
-if [ $STR -gt 0 ]; then
+cat /proc/cmdline | grep -e $CRASHKERNEL >/dev/null
+RET=$?
+if [ $RET -eq 0 ]; then
         echo "Kernel has reserved memory for kdump kernel..."
 	echo " "
 else
@@ -191,11 +178,10 @@ echo "CRASH_CMDS=\$TEST_BASE_DIR/crash_cmds" >> $CONFIG_FILE
 echo "VMLINUX_DEBUG=$VMLINUX_DEBUG" >> $CONFIG_FILE
 
 # Where to put vmcore
-if [ $DISTRO_RH -eq 1 ]; then
+if [ $DISTRO == "RH" ]; then
 echo "VMCORE=/var/crash" >> $CONFIG_FILE
 fi
-
-if [ $DISTRO_SUSE -eq 1 ]; then
+if [ $DISTRO == "SUSE" ]; then
 echo "VMCORE=\$TEST_BASE_DIR/vmcore" >> $CONFIG_FILE
 fi
 
@@ -229,7 +215,7 @@ echo "MAILTO=root" >> $CRONTAB_FILE
 echo "@reboot cd $TEST_BASE_DIR; ./master run" >> $CRONTAB_FILE
 crontab $CRONTAB_FILE
 
-if [ $DISTRO_SUSE -eq 1 ]; then
+if [ $DISTRO == "SUSE" ]; then
 #
 # Editing /etc/sysconfig/kdump
 #
@@ -248,18 +234,23 @@ fi
 
 # Make sure the kdump service is on and
 # the kdump kernel is loaded
-echo "Activating kdump service..."
-chkconfig kdump on
-echo "Making sure kdump kernel can be loaded..."
-service kdump restart
+if [ -f /bin/rpm ]; then
+	echo "Activating kdump service..."
+	chkconfig kdump on
+	echo "Making sure kdump kernel can be loaded..."
+	service kdump restart
 
-#echo "Activating cron..."
-if [ $DISTRO_SUSE -eq 1 ]; then
-chkconfig cron on
-service cron start
-fi
-
-if [ $DISTRO_RH -eq 1 ]; then
-chkconfig crond on
-service crond restart
+	echo "Activating cron..."
+	if [ $DISTRO == "SUSE" ]; then
+	chkconfig cron on
+	service cron start
+	fi
+	if [ $DISTRO == "RH" ]; then
+	chkconfig crond on
+	service crond restart
+	fi
+else
+	echo "There is no rpm on your machine."
+	echo "Please make sure that kdump and cron are enabled by
+		default."
 fi
