@@ -1,5 +1,6 @@
 #!/bin/sh
 
+oldhostname=`hostname`
 exit_code=0
 echo "unshare tests"
 for i in `seq 1 5`; do
@@ -17,4 +18,5 @@ for i in `seq 1 5`; do
 		exit_code=$?
 	fi
 done
+hostname "$oldhostname"
 exit $exit_code

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+oldhostname=`hostname`
 echo "unshare tests"
 for i in `seq 1 5`; do
 	echo "test $i (unshare)"
@@ -10,3 +11,4 @@ for i in `seq 1 5`; do
 	echo "test $i (clone)"
 	utstest clone $i
 done
+hostname "$oldhostname"

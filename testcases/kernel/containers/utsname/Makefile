@@ -4,8 +4,9 @@ CFLAGS += -I../../../../include -I../libclone -Wall
 LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
 
 SRCS    = $(wildcard *.c)
+NOLTPSRCS = utstest.c
 TARGETS = $(patsubst %.c,%,$(SRCS))
-NOLTP_TARGETS = $(patsubst %.c,%_noltp,$(SRCS))
+NOLTP_TARGETS = $(patsubst %.c,%_noltp,$(NOLTPSRCS))
 
 %_noltp : %.c
 	$(CC) -g -DNO_LTP -o $@ $< ../libclone/libclone.a
