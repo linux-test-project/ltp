@@ -1,0 +1,36 @@
+This contains two tests for the inotify subsytem.
+
+The  inotify  API  provides  a mechanism for monitoring file system events.  
+Inotify can be used to monitor individual files, or to monitor directories.  
+When a directory is monitored, inotify will return events for the directory 
+itself, and for files inside  the directory.
+
+The tests are intended to do the following:
+test 1:
+	initialize inotify for the test file
+	generate sequence events:
+		operation			expected event
+		-----------------------------------------
+		chmod file			IN_ATTRIB
+		open read-only			IN_OPEN
+		read				IN_ACCESS
+		close				IN_CLOSE_NOWRITE
+		open read-write			IN_OPEN
+		write				IN_MODIFY
+		close				IN_CLOSE_WRITE
+	check that all events have been received
+test 2:
+	initialize inotify for the test directory
+	generate sequence events:
+		operate				expected event
+		-----------------------------------------
+		chmod				IN_ISDIR | IN_ATTRIB
+		creat file			IN_CREATE
+						IN_OPEN
+		close				IN_CLOSE_WRITE
+		rename file			IN_MOVED_FROM
+						IN_MOVED_TO
+		unlink file			IN_DELETE
+		rename yourself			IN_MOVE_SELF
+		rename back			IN_MOVE_SELF
+	check that all events have been received
