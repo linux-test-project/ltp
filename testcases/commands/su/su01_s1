@@ -1,6 +1,6 @@
 #! /usr/bin/expect -f
 #*********************************************************************
-#   Copyright (c) International Business Machines  Corp., 2003, 2004
+#   Copyright (c) International Business Machines  Corp., 2003, 2004, 2007
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #     03/03     Dustin Kirkland (dkirklan@us.ibm.com)
 #     03/03     Jerone Young    (jeroney@us.ibm.com)
 #     10/01/04  Kris Wilson     Skip test 7 if RedHat; no -e option.
+#     05/23/07  Kris Wilson     Make test 7 work for SLES.
 ########################################################################
 
 # The root user cannot succesfully execute su test because the root user
@@ -436,7 +437,7 @@ expect {
     send "$PASSWD\r"
 sleep 1
     expect {
-      "Password changed." {}
+      "Password expiry information changed." {}
     }
   }
 }
@@ -448,9 +449,21 @@ sleep 1
 expect {
   "Password:" {
     send "$USER1_PASSWORD\r"
-	sleep 1
+	sleep 2
     expect {
-      "su: incorrect password" { set i_am_correct 1 }
+        "Old Password" {
+        send "wrong_$USER1_PASSWORD\r"
+	  sleep 2
+        expect {
+       	  "Old Password" {
+          send "wrong_$USER1_PASSWORD\r"
+          sleep 2
+            expect {
+              "su: incorrect password" { set i_am_correct 1 }
+            }
+          }
+        }
+      }
     }
   }
 }
