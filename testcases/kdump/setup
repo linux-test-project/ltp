@@ -21,7 +21,7 @@ VMLINUX_DEBUG=""
 LINUX_2_6_16=2616
 
 # Determine architecture we're running on
-arch= `uname -m`
+arch=`uname -m`
 if [ `echo $arch |grep -e "i[3-6]86"` ]
 then
         CRASHKERNEL=$X86_CRASHKERNEL

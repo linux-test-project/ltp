@@ -1,0 +1,37 @@
+#!/bin/bash
+
+. control
+
+TESTS=`cat ./testfile`
+total=0
+pass=0
+fail=0
+nottested=0
+
+echo "	RESULTS:"
+
+for TEST in $TESTS; do
+	total=`expr $total + 1`
+
+	LOG=`cat $RESULTS_DIR/\`ls $RESULTS_DIR/ |grep  $TEST\` 2>/dev/null`
+	if [ $? != 0 ]; then
+    		echo "$TEST:	NOT TESTED"
+    		nottested=`expr $nottested + 1`
+	else
+	# We think that test pass if elfread prints word Magic	
+		echo $LOG |grep "Magic" > /dev/null
+		if [ $? == 0 ]; then
+    			echo "$TEST:	PASS"
+    			pass=`expr $pass + 1`
+		else
+    			echo "$TEST:	FAIL"
+    			fail=`expr $fail + 1`
+		fi
+	fi
+done
+
+echo "------------------"
+echo "Total:	$total"
+echo "Pass:	$pass"
+echo "Fail:	$fail"
+echo "NT:	$nottested"
