@@ -13,7 +13,7 @@ echo "	RESULTS:"
 for TEST in $TESTS; do
 	total=`expr $total + 1`
 
-	LOG=`cat $RESULTS_DIR/\`ls $RESULTS_DIR/ |grep  $TEST\` 2>/dev/null`
+	LOG=`cat $RESULTS_DIR/\`ls $RESULTS_DIR/ >/dev/null|grep  $TEST\` 2>/dev/null`
 	if [ $? != 0 ]; then
     		echo "$TEST:	NOT TESTED"
     		nottested=`expr $nottested + 1`
