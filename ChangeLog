@@ -1,3 +1,110 @@
+LTP-20070531
+
+-Removing "alarm04.c" & "sig_rev.c" as they are no more valid, fixes Bug no."1236586", pointed by <Sharyathi Nagesh>
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/alarm/Attic/alarm04.c
+ltp/testcases/kernel/syscalls/alarm/Attic/sig_rev.c
+
+-<krisw@us.ibm.com> fixed problem with "expect" in "su01" testcase
+ltp/testcases/commands/su/su01_s1
+
+-<muvarov@gmail.com> modified to run kdump tests on non RH and SUSE machines
+ltp/testcases/kdump/distro
+ltp/testcases/kdump/master
+ltp/testcases/kdump/setup
+
+-<muvarov@gmail.com> added summary file for printing results table, and, added reboot command to test script
+ltp/testcases/kdump/setup
+ltp/testcases/kdump/summary
+ltp/testcases/kdump/test
+
+-Removing unwanted Config Variables from 'setup' script as submitted by <sachinp@in.ibm.com>
+ltp/testcases/kdump/setup
+
+-<muvarov@gmail.com> removed unnecessary info from summary script
+ltp/testcases/kdump/summary
+
+-<doug.chapman@hp.com> points that “clone2” should be used in case of IA64 for the Utsnamespace testcases
+ltp/testcases/kernel/containers/libclone/libclone.c
+ltp/testcases/kernel/containers/libclone/libclone.h
+ltp/testcases/kernel/containers/utsname/check_utsns_enabled.c
+
+-Patch for libclone.h for fixing compilation error on 32 bit Z-series machines, submitted by <amitarora@in.ibm.com>
+ltp/testcases/kernel/containers/libclone/libclone.h
+
+-Restoring Hostname to Original after "UTSTEST", fix by <serue@us.ibm.com>
+ltp/testcases/kernel/containers/utsname/Makefile
+ltp/testcases/kernel/containers/utsname/runtests_noltp.sh
+ltp/testcases/kernel/containers/utsname/runutstest.sh
+
+-Applied Patch to fix the wrong usage of pthread_exit, pointed out by <carmelo.amoroso@st.com>
+ltp/testcases/kernel/io/disktest/threading.h
+ltp/testcases/kernel/mem/mtest05/mmstress.c
+ltp/testcases/network/nfs/nfsstress/make_tree.c
+
+-Fix for Bug no. "1537172" => Improper condition decision of mmap(), as reported by <Kongh - bstqc-kh>
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_02.c
+
+-<Nadia Derbey> corrected the checksums for these testcases
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_02.c
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_03.c
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_07.c
+
+-Fix for Bug No. "1537169" => Doesn't handle the special Signal : 34, reported by <Kongh - bstqc-kh>
+ltp/testcases/kernel/ipc/ipc_stress/signal_test_05.c
+
+-Fix for Bug No. "1542453", default value of param x doesn't work in 'mmap1', pointed out by <bstqc-victor>
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+-<carmelo.amoroso@st.com> fixes -v option, thread handling, usage of OPT_MISSING macro, etc
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+-<carmelo.amoroso@st.com> fixed wrong use of "pthread_exit" input argument and the related "pthread_join"
+ltp/testcases/kernel/mem/mtest06/mmap3.c
+
+-<nadia.derbey@bull.net> fixed the use of shmid, exit(0) and readable output
+-<carmelo.amoroso@st.com> fixed wrong use of exit_value, shared memory region and pthread_join
+ltp/testcases/kernel/mem/mtest06/shmat1.c
+
+-Fix for some anomalies in 'shm_test" case as pointed out by 'Nadia Derbey <Nadia.Derbey@bull.net>'
+ltp/testcases/kernel/mem/mtest07/shm_test.c
+
+-<carmelo.amoroso@st.com> fixed ways by which Threads are handled
+ltp/testcases/kernel/mem/mtest07/shm_test.c
+
+-Fixing "gethostid01" to work fine on both 32-bit and 64-bit machines, pointed out by <brenohl@br.ibm.com>
+ltp/testcases/kernel/syscalls/gethostid/gethostid01.c
+
+-<avagin@sw.ru> submitted new Testcases for "inotify" syscall on both file(s) and folder(s)
+ltp/testcases/kernel/syscalls/inotify/Makefile
+ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+
+-<avagin@sw.ru> added README for "inotify" testcase
+ltp/testcases/kernel/syscalls/inotify/README
+
+-<rsalveti@linux.vnet.ibm.com> added proper indentation, EBUSY error and functions in correct place
+ltp/testcases/kernel/syscalls/swapon/swapon02.c
+
+-gcov-kernel: adding gcov-kernel patch for 2.6.18
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.18-gcov-arm-hack.patch,
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.18-gcov.patch
+
+-lcov: minor help text update
+/cvsroot/ltp/utils/analysis/lcov/bin/lcov
+
+-gcov-kernel: adding gcov-kernel patch for 2.6.19
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.19-gcov-arm-hack.patch,
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.19-gcov.patch
+
+-gcov-kernel: adding gcov-kernel patch for 2.6.20
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.20-gcov-arm-hack.patch,
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.20-gcov.patch
+
+gcov-kernel: adding gcov-kernel patch for 2.6.21
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.21-gcov-arm-hack.patch,
+/cvsroot/ltp/utils/analysis/gcov-kernel/linux-2.6.21-gcov.patch
+
 LTP-20070430
 
 -Integration of UTS Namespace Testcases to LTP as submitted by <risrajak@linux.vnet.ibm.com>
