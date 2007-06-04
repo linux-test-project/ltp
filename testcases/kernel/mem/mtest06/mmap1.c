@@ -545,9 +545,10 @@ main(int  argc,		/* number of input parameters.			      */
 		break;
 	    case 's':
 		if ((file_size = atoi(optarg)) == 0)
-		    file_size = 1024;        
-                else
 		    OPT_MISSING(argv[0], optopt);
+        else
+	        if (file_size < 0)
+				fprintf(stdout,"WARNING: bad argument. Using default %d\n", (file_size = 1024));
 		break;
 	    case 'v':
 		verbose_print = TRUE;
