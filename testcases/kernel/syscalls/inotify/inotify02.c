@@ -33,16 +33,24 @@
  * ALGORITHM
  *     Execute sequence file's operation and check return events
  *
+ * HISTORY
+ *     01/06/2007 - Fix to compile inotify test case with kernel that does 
+ *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
+ *
  * ***************************************************************************/
-#include <sys/inotify.h>
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/syscall.h>
 #include "test.h"
 #include "usctest.h"
+
+#ifdef __NR_inotify_init
+#include <linux/inotify.h>
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
@@ -53,8 +61,6 @@
 void setup();
 void cleanup();
 
-
-
 char *TCID="inotify02";         /* Test program identifier.    */
 int TST_TOTAL=9;            /* Total number of test cases. */
 extern int Tst_count;        /* Test Case counter for tst_* routines */
@@ -63,17 +69,32 @@ extern int Tst_count;        /* Test Case counter for tst_* routines */
 char fname1[BUF_SIZE], fname2[BUF_SIZE];
 char buf[BUF_SIZE];
 int fd, fd_notify;
-uint32_t wd;
+int wd;
 
 struct event_t {
         char name[BUF_SIZE];
-        uint32_t mask;
-        uint32_t len;
+        int mask;
+        int len;
 };
 #define FILE_NAME1 "test_file1"
 #define FILE_NAME2 "test_file2"
 
 struct event_t event_set [EVENT_MAX];
+
+static long myinotify_init()
+{
+    return syscall(__NR_inotify_init);
+}
+
+static long myinotify_add_watch(int fd, const char *pathname, int mask)
+{
+    return syscall(__NR_inotify_add_watch, fd, pathname, mask);
+}
+
+static long myinotify_rm_watch(int fd, int wd)
+{
+    return syscall(__NR_inotify_rm_watch, fd, wd);
+}
 
 int main(int ac, char **av){
     int lc;        /* loop counter */
@@ -271,7 +292,7 @@ void setup(){
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
-    if ((fd_notify = inotify_init ()) < 0) {
+    if ((fd_notify = myinotify_init ()) < 0) {
         if( errno == ENOSYS ){
             tst_resm(TCONF, "inotify is not configured in this kernel.");
             tst_resm(TCONF, "Test will not run.");
@@ -283,7 +304,7 @@ void setup(){
         }
     }
 
-    if ((wd = inotify_add_watch (fd_notify, ".", IN_ALL_EVENTS)) < 0){
+    if ((wd = myinotify_add_watch (fd_notify, ".", IN_ALL_EVENTS)) < 0){
         tst_brkm(TBROK, cleanup,
                 "inotify_add_watch (%d, \".\", IN_ALL_EVENTS)" 
                 "Failed, errno=%d : %s",
@@ -298,7 +319,7 @@ void setup(){
  *        completion or premature exit.
  */
 void cleanup(){
-    if (inotify_rm_watch(fd_notify, wd) < 0) {
+    if (myinotify_rm_watch(fd_notify, wd) < 0) {
         tst_resm(TWARN,    "inotify_rm_watch (%d, %d) Failed,"
                 "errno=%d : %s",
                 fd_notify, wd, errno, strerror(errno));
@@ -323,3 +344,19 @@ void cleanup(){
     /* exit with return code appropriate for results */
     tst_exit();
 }    /* End cleanup() */
+
+#else
+
+char *TCID="inotify02";         /* Test program identifier.    */
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+    tst_resm(TWARN, "This test needs a kernel that has inotify syscall.");
+    tst_resm(TWARN, "Inotify syscall can be found at kernel 2.6.13 or higher.");
+    tst_exit();
+    return 0;
+}
+
+#endif
