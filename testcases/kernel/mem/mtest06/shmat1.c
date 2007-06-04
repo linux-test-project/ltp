@@ -86,9 +86,11 @@
 #define FALSE 0
 #endif
 #define prtln() printf(" I AM HERE ==> %s %d\n", __FILE__, __LINE__);
+
 #define STR_SHMAT  "  "
 #define STR_WRITER "    "
 #define STR_READER "      "
+
 
 /* Global Variables						              */
 void        *map_address;	/* pointer to file in memory	      	      */
@@ -264,11 +266,10 @@ void *
 shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 {
     int     shm_ndx  = 0;	/* index to number of shmat/shmdt             */
-    key_t   shmkey   = 0;	/* shared memory id                           */
+    key_t   shmkey   = 0;	/* IPC_PRIVATE (key for shmget)               */
+    int     shmid;		/* shared memory id                           */
     long    *locargs =          /* local pointer to arguments		      */
 		       (long *)args;
-    struct  shmid_ds *shmbuf    /* info about the segment pointed to by shmkey*/
-	    		= NULL;
 
     while (shm_ndx++ < (int)locargs[0])
     {
@@ -279,7 +280,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         srand(time(NULL)%100);
         fsize = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
 
-        if (shmget(shmkey, fsize, IPC_CREAT | 0666 ) == -1)
+        if ((shmid = shmget(shmkey, fsize, IPC_CREAT | 0666)) == -1)
         {
             perror("shmat_shmdt(): shmget()");
             pthread_exit((void *)-1);
@@ -291,7 +292,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 		     STR_SHMAT, pthread_self(), fsize);
         }
 
-        if ((map_address = shmat(shmkey, (void *)0, SHMLBA))
+        if ((map_address = shmat(shmid, (void *)0, 0))
 			 ==  (void *)-1)
         {
 	    fprintf(stderr, "shmat_shmat(): map address = %p\n", 
@@ -325,7 +326,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 	    perror("shmat_shmdt(): shmdt()");
             pthread_exit((void *)-1);
         }
-        if (shmctl(shmkey, IPC_RMID, shmbuf))
+        if (shmctl(shmid, IPC_RMID, NULL))
         {
             perror("shmat_shmdt(): shmctl()");
 	    pthread_exit((void *)-1);
