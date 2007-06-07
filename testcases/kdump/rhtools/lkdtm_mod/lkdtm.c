@@ -281,36 +281,68 @@ int lkdtm_module_init(void)
 
 	switch (cpoint) {
 	case INT_HARDWARE_ENTRY:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".__do_IRQ";
+#else
 		lkdtm.kp.symbol_name = "__do_IRQ";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_do_irq;
 		break;
 	case INT_HW_IRQ_EN:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".handle_IRQ_event";
+#else
 		lkdtm.kp.symbol_name = "handle_IRQ_event";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_handle_irq_event;
 		break;
 	case INT_TASKLET_ENTRY:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".tasklet_action";
+#else
 		lkdtm.kp.symbol_name = "tasklet_action";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_tasklet_action;
 		break;
 	case FS_DEVRW:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".ll_rw_block";
+#else
 		lkdtm.kp.symbol_name = "ll_rw_block";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_ll_rw_block;
 		break;
 	case MEM_SWAPOUT:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".shrink_inactive_list";
+#else
 		lkdtm.kp.symbol_name = "shrink_inactive_list";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_shrink_page_list;
 		break;
 	case TIMERADD:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".hrtimer_start";
+#else
 		lkdtm.kp.symbol_name = "hrtimer_start";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_hrtimer_start;
 		break;
 	case SCSI_DISPATCH_CMD:
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".scsi_dispatch_cmd";
+#else
 		lkdtm.kp.symbol_name = "scsi_dispatch_cmd";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_scsi_dispatch_cmd;
 		break;
 	case IDE_CORE_CP:
 #ifdef CONFIG_IDE
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".generic_ide_ioctl";
+#else
 		lkdtm.kp.symbol_name = "generic_ide_ioctl";
+#endif
 		lkdtm.entry = (kprobe_opcode_t*) jp_generic_ide_ioctl;
 #else
 		printk(KERN_INFO "lkdtm : Crash point not available\n");
