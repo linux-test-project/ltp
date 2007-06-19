@@ -60,7 +60,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (execl("conformance/interfaces/sigaltstack/9-buildonly.test", NULL) == -1) {
+        if (execl("conformance/interfaces/sigaltstack/9-buildonly.test", NULL, (char *)NULL) == -1) {
 		perror("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}

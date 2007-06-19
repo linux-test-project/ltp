@@ -202,7 +202,7 @@ int main( int argc, char * argv[] )
 	if ( p3 == ( pid_t ) 0 )        /* child */
 	{
 		sem = common();
-		ret = execl( "/bin/ls", NULL );
+                ret = execl( "/bin/ls", NULL, (char *)NULL );
 		UNRESOLVED( errno, "Failed to exec" );
 	}
 
