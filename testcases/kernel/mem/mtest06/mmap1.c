@@ -63,6 +63,12 @@
 /*                               we are done with the test - Paul Larson      */
 /*                               email:plars@linuxtestproject.org             */
 /*								              */
+/*              Jun  - 12 - 2007 Modified - removing 'run_once', so the test  */
+/*                               can be run only with a time value (or the    */
+/*                               default one, 24 hours). Bug 1732287, pointed */
+/*                               by jerrywei.                                 */
+/*                               email:rsalveti@linux.vnet.ibm.com            */
+/*								              */
 /* File: 	mmap1.c							      */
 /*									      */
 /* Description:	Test the LINUX memory manager. The program is aimed at        */
@@ -398,6 +404,8 @@ read_mem(void *args)		/* number of reads performed		      */
     long 	*rmargs = args;	/* local pointer to the arguments	      */
     volatile int exit_val = 0;  /* pthread exit value			      */
 
+    fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
+           getpid(), map_address, rmargs[2]);
     if (verbose_print)
         fprintf(stdout, 
 		"read_mem()arguments are:\n"
@@ -407,8 +415,6 @@ read_mem(void *args)		/* number of reads performed		      */
 
     while (rd_index++ < (int)rmargs[2])
     {
-        fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
-               getpid(), map_address, rmargs[2]);
         if (verbose_print)
 	    fprintf(stdout, 
 	        "read_mem() in while loop  %d times to go %ld times\n", 
@@ -500,7 +506,6 @@ main(int  argc,		/* number of input parameters.			      */
     int		 fd;		/* temporary file descriptor		      */
     int          status[2];     /* exit status for process X and Y	      */
     int          sig_ndx;      	/* index into signal handler structure.       */
-    int		 run_once = TRUE;/* run the test once time. (dont repeat)     */
     pthread_t    thid[2];	/* pids of process X and Y		      */
     long         chld_args[3];	/* arguments to funcs execed by child process */
     extern  char *optarg;	/* arguments passed to each option	      */
@@ -558,10 +563,8 @@ main(int  argc,		/* number of input parameters.			      */
 		if (exec_time == 0) 
 	     	    OPT_MISSING(argv[0], optopt);
 		else
-	             if (exec_time < 0) {
+	             if (exec_time < 0)
 				fprintf(stdout,"WARNING: bad argument. Using default %d\n", (exec_time = 24));
-			} else			
-				run_once = FALSE;
 		break;
 	    default :
 		usage(argv[0]);
