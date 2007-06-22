@@ -37,6 +37,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include "test.h"
 #include "pth_str01.h"
 
 int	depth = 3;
@@ -55,12 +56,15 @@ int num_nodes(int, int);
 int synchronize_children(c_info *);
 int doit(c_info *);
 
+char *TCID = "pth_str01";
+int TST_TOTAL = 1;
+
 void testexit(int value)
 {
 	if (value == 0)
-		printf("pth_str01:  Test Passed\n");
+		tst_resm(TPASS, "Test passed");
 	else
-		printf("pth_str01:  Test Failed\n");
+		tst_resm(TFAIL, "Test failed");
 
 	exit(value);
 }
@@ -178,8 +182,7 @@ int	synchronize_children( c_info *parent ) {
 	pthread_mutex_lock( &node_mutex );
 	my_index = node_count++;
 
-	printf( "thread %d started\n", my_index );
-	fflush( stdout );
+	tst_resm( TINFO, "thread %d started", my_index );
 
 	/*
 	 * Get a pointer into the array of thread structures which will
@@ -269,7 +272,7 @@ int	synchronize_children( c_info *parent ) {
             timer.tv_nsec = (unsigned long)0;
 	    if ((rc = pthread_cond_timedwait(&node_condvar, &node_mutex,
 	      &timer))) {
-		fprintf( stderr, "pthread_cond_timedwait (sync) %d: %s\n",
+		tst_resm( TINFO, "pthread_cond_timedwait (sync) %d: %s\n",
 		    my_index, strerror(rc) );
 		testexit( 2 );
 	    }
@@ -363,8 +366,7 @@ int	doit( c_info *parent ) {
 	     * we need to create another level of children.
 	     */
 
-	    printf( "thread %d creating kids, cdepth=%d\n", my_index, cdepth );
-	    fflush( stdout );
+	    tst_resm( TINFO, "thread %d creating kids, cdepth=%d", my_index, cdepth );
 
 	    /*
 	     * Create breadth children.
@@ -377,7 +379,7 @@ int	doit( c_info *parent ) {
 		}
 		if ((rc = pthread_create(&(info_p->threads[child]), &attr,
 		  (void *)doit, (void *)info_p))) {
-		    fprintf( stderr, "pthread_create (doit): %s\n",
+		    tst_resm( TINFO, "pthread_create (doit): %s\n",
 		      strerror(rc) );
 		    testexit( 3 );
 		} else {
@@ -406,10 +408,10 @@ int	doit( c_info *parent ) {
 		}
 		if ((rc = pthread_join((info_p->threads[child]), &status))) {
 		    if ( debug ) {
-			fprintf( stderr,
+			printf(
 			  "join failed on thread %d, status addr=%p: %s\n",
 			  my_index, status, strerror(rc) );
-			fflush( stderr );
+			fflush( stdout );
 		    }
 		    testexit( 4 );
 		} else {
@@ -427,8 +429,7 @@ int	doit( c_info *parent ) {
 	     * This is the leaf node case.  These children don't create
 	     * any kids; they just talk amongst themselves.
 	     */
-	    printf( "thread %d is a leaf node, depth=%d\n", my_index, cdepth );
-	    fflush( stdout );
+	    tst_resm( TINFO, "thread %d is a leaf node, depth=%d", my_index, cdepth );
 
 	    /*
 	     * Talk to siblings (children of the same parent node).
@@ -455,7 +456,7 @@ int	doit( c_info *parent ) {
 			    }
 			    if ((rc = pthread_cond_broadcast(
 			      &parent->child_ptrs[child]->talk_condvar))) {
-				fprintf( stderr, "pthread_cond_broadcast: %s\n",
+				tst_resm( TINFO, "pthread_cond_broadcast: %s\n",
 				  strerror(rc) );
 				testexit( 5 );
 			    }
@@ -486,7 +487,7 @@ int	doit( c_info *parent ) {
 		    timer.tv_nsec = (unsigned long)0;
 		    if ((rc = pthread_cond_timedwait(&info_p->talk_condvar,
 		      &info_p->talk_mutex, &timer))) {
-			fprintf( stderr,
+			tst_resm( TINFO,
 			  "pthread_cond_timedwait (leaf) %d: %s\n",
 			  my_index, strerror(rc) );
 			testexit( 6 );
@@ -501,9 +502,8 @@ int	doit( c_info *parent ) {
 	/*
 	 * Our work is done.  We're outta here.
 	 */
-	printf( "thread %d exiting, depth=%d, status=%d, addr=%p\n", my_index,
+	tst_resm( TINFO, "thread %d exiting, depth=%d, status=%d, addr=%p", my_index,
 	  cdepth, info_p->status, info_p);
-	fflush( stdout );
 
 	pthread_exit( 0 );
 
@@ -522,7 +522,7 @@ int	main( int argc, char *argv[] ) {
 	 * Initialize node mutex.
 	 */
 	if ((rc = pthread_mutex_init(&node_mutex, NULL))) {
-		fprintf( stderr, "pthread_mutex_init(node_mutex): %s\n",
+		tst_resm( TINFO, "pthread_mutex_init(node_mutex): %s\n",
 		    strerror(rc) );
 		testexit( 7 );
 	}
@@ -531,7 +531,7 @@ int	main( int argc, char *argv[] ) {
 	 * Initialize node condition variable.
 	 */
 	if ((rc = pthread_cond_init(&node_condvar, NULL))) {
-		fprintf( stderr, "pthread_cond_init(node_condvar): %s\n",
+		tst_resm( TINFO, "pthread_cond_init(node_condvar): %s\n",
 		    strerror(rc) );
 		testexit( 8 );
 	}
@@ -540,8 +540,7 @@ int	main( int argc, char *argv[] ) {
 	 * Allocate pthread info structure array.
 	 */
 	total = num_nodes( breadth, depth );
-	printf( "Allocating %d nodes.\n", total );
-	fflush( stdout );
+	tst_resm( TINFO, "Allocating %d nodes.", total );
 	if ( (child_info = (c_info *)malloc( total * sizeof(c_info) ))
 	    == NULL ) {
 		perror( "malloc child_info" );
@@ -577,21 +576,21 @@ int	main( int argc, char *argv[] ) {
 
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex,
 		    NULL))) {
-			fprintf( stderr, "pthread_mutex_init child_mutex: %s\n",
+			tst_resm( TINFO, "pthread_mutex_init child_mutex: %s\n",
 			    strerror(rc) );
 			testexit( 13 );
 		}
 
 		if ((rc = pthread_mutex_init(&child_info[ind].talk_mutex,
 		    NULL))) {
-			fprintf( stderr, "pthread_mutex_init talk_mutex: %s\n",
+			tst_resm( TINFO, "pthread_mutex_init talk_mutex: %s\n",
 			    strerror(rc) );
 			testexit( 14 );
 		}
 
 		if ((rc = pthread_cond_init(&child_info[ind].child_condvar,
 		    NULL))) {
-			fprintf( stderr,
+			tst_resm( TINFO,
 			    "pthread_cond_init child_condvar: %s\n",
 			    strerror(rc) );
 			testexit( 15 );
@@ -599,7 +598,7 @@ int	main( int argc, char *argv[] ) {
 
 		if ((rc = pthread_cond_init(&child_info[ind].talk_condvar,
 		    NULL))) {
-			fprintf( stderr, "pthread_cond_init talk_condvar: %s\n",
+			tst_resm( TINFO, "pthread_cond_init talk_condvar: %s\n",
 			    strerror(rc) );
 			testexit( 16 );
 		}
@@ -611,11 +610,10 @@ int	main( int argc, char *argv[] ) {
 
 	}
 
-	printf( "Creating root thread attributes via pthread_attr_init.\n" );
-	fflush( stdout );
+	tst_resm( TINFO, "Creating root thread attributes via pthread_attr_init." );
 
 	if ((rc = pthread_attr_init(&attr))) {
-		fprintf( stderr, "pthread_attr_init: %s\n", strerror(rc) );
+		tst_resm( TINFO, "pthread_attr_init: %s\n", strerror(rc) );
 		testexit( 17 );
 	}
 
@@ -626,16 +624,15 @@ int	main( int argc, char *argv[] ) {
 	 */
 	if ((rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))
 	   ) {
-		fprintf( stderr, "pthread_attr_setdetachstate: %s\n",
+		tst_resm( TINFO, "pthread_attr_setdetachstate: %s\n",
 		    strerror(rc) );
 		testexit( 18 );
 	}
 
-	printf( "Creating root thread via pthread_create.\n" );
-	fflush( stdout );
+	tst_resm( TINFO, "Creating root thread via pthread_create." );
 
 	if ((rc = pthread_create(&root_thread, &attr, (void *)doit, NULL))) {
-		fprintf( stderr, "pthread_create: %s\n", strerror(rc) );
+		tst_resm( TINFO, "pthread_create: %s\n", strerror(rc) );
 		testexit( 19 );
 	}
 
@@ -648,7 +645,7 @@ int	main( int argc, char *argv[] ) {
 	 * Wait for the root child to exit.
 	 */
 	if (( rc = pthread_join(root_thread, NULL) )) {
-		fprintf( stderr, "pthread_join: %s\n", strerror(rc) );
+		tst_resm( TINFO, "pthread_join: %s\n", strerror(rc) );
 		testexit( 20 );
 	}
 

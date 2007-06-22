@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "test.h"
 
 
 /* Defines
@@ -69,6 +70,8 @@ int num_threads = DEFAULT_NUM_THREADS;
 int test_limit  = 0;
 int debug       = 0;
 
+char *TCID = "pth_str02";
+int TST_TOTAL = 1;
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -85,17 +88,16 @@ int main (int argc, char **argv)
 	parse_args (argc, argv);
 
         if(test_limit) {
-	  printf ("\n    Creating as many threads as possible\n\n");
+	  tst_resm (TINFO, "Creating as many threads as possible");
         } else {
-	  printf ("\n    Creating %d threads\n\n", num_threads);
+	  tst_resm (TINFO, "Creating %d threads", num_threads);
         }
 	thread (0);
 
 	/* 
 	 * Program completed successfully...
 	 */
-	printf ("pth_str02:  Test Passed\n");
-	fflush (stdout);
+	tst_resm(TPASS, "Test passed");
 	exit (0);
 }
 
@@ -136,11 +138,11 @@ void *thread (void *parm)
 		pcrterr = pthread_create (&th, &attr, thread, (void *)(num + 1));
 		if (pcrterr != 0) {
 			if (test_limit) {
-			   printf ("Testing pthread limit, %d pthreads created.\n", (int)num);
+			   tst_resm (TINFO, "Testing pthread limit, %d pthreads created.", (int)num);
 			   pthread_exit(0);
 			}
 			if (pcrterr == EAGAIN) {
-			    fprintf (stderr, "Thread [%d]: unable to create more threads!\n", (int)num);
+			    tst_resm (TINFO, "Thread [%d]: unable to create more threads!", (int)num);
 			    return NULL;
 			}
 			else 
@@ -221,6 +223,6 @@ static void sys_error (const char *msg, int line)
 static void error (const char *msg, int line)
 {
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	printf("pth_str02:  Test Failed\n");
+	tst_resm(TFAIL, "Test failed");
 	exit (-1);
 }
