@@ -5,6 +5,8 @@ The container test automation suite helps run the container functionality
 (e.g: utsname etc..) tests and report results. Please refer the following
 each functionality README file for detail:
 
+sysvipc/*
+	Contains all the testcases related to IPC NS tests.
 utsname/*
 	Contains all the testcases related to utsname tests.
 libclone/*

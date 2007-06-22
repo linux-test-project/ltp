@@ -79,7 +79,7 @@ scratch/*
 	new snippets to be added, or take one of these and finish it off.
 
 testcases/kernel/containers/*
-	Contains all the testcases related to container functionality ( e.g: utsname etc..)
+	Contains all the testcases related to container functionality ( e.g: sysvipc, utsname etc..)
 	For further information on the each of the container functionality refer
 	the following file: testcases/kernel/containers/README
 

@@ -39,3 +39,6 @@
 #else
 	#echo "User namespaces not enabled in kernel.  Not running userns tests."
 #fi
+
+runipcnstest.sh
+

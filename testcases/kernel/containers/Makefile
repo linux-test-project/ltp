@@ -1,4 +1,4 @@
-SUBDIRS = libclone utsname
+SUBDIRS = libclone utsname sysvipc
 
 all noltp noltp_check:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
