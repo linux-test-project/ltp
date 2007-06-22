@@ -23,16 +23,16 @@
 /* File:         mmstress.c                                                   */
 /*                                                                            */
 /* Description:  This is a test program that performs general stress with     */
-/*               memory race condtions. It contains seven testcases that      */
+/*               memory race conditions. It contains seven testcases that     */
 /*               will test race conditions between simultaneous read fault,   */
 /*               write fault, copy on write (COW) fault e.t.c.                */
-/*               This testcase is intented to execute on the Linux operating  */
+/*               This testcase is intended to execute on the Linux operating  */
 /*               system and can be easily ported to work on other operating   */
 /*               systems as well.                                             */
 /*                                                                            */
 /* Usage:        mmstress -h -n TEST NUMBER -t EXECUTION TIME -v -V           */
 /*                        -h                - Help                            */
-/*                        -n TEST NUMBER    - Execute a perticular testcase   */
+/*                        -n TEST NUMBER    - Execute a particular testcase   */
 /*                        -t EXECUTION TIME - Execute test for a certain time */
 /*                        -v                - Verbose output                  */
 /*                        -V                - Version of this program         */
@@ -70,13 +70,13 @@
 /*        - Added missing header file. #include <stdlib.h>                    */
 /*                                                                            */
 /* Oct-28-2003  Modified - Manoj Iyer                                         */
-/*        - missing paranthesis added.                                        */
+/*        - missing parenthesis added.                                        */
 /*        - formatting changes.                                               */
 /*        - increased NUMPAGES to 9999.                                       */
 /*                                                                            */
 /* Jan-30-2003  Modified - Gary Williams                                      */
 /*        - fixed a race condition between the two threads                    */
-/*        - made is so if any of the testcases fail the test will fail        */
+/*        - made it so if any of the testcases fail the test will fail        */
 /*        - fixed so status of child in test 6 is used to determine result    */
 /*        - fixed the use of the remove_files function in a conditional       */
 /*                                                                            */
@@ -89,10 +89,10 @@
 #include <sys/stat.h> /* definitions for open()                               */
 #include <fcntl.h>    /* definition of open()                                 */
 #include <unistd.h>   /* declaration of close()                               */
-#include <sys/mman.h> /* declariation of mmap()                               */
-#include <sys/wait.h> /* declariation for wait routine                        */
+#include <sys/mman.h> /* declaration of mmap()                                */
+#include <sys/wait.h> /* declaration for wait routine                         */
 #include <sys/time.h> /* definitions for the interval timer                   */
-#include <pthread.h>  /* declariation of pthread functions                    */
+#include <pthread.h>  /* declaration of pthread functions                     */
 #include <signal.h>   /* definitions for signals - required for SIGALRM       */
 #include <errno.h>    /* definitions for errors                               */
 #include <stdlib.h>   /* declaration for malloc                               */
@@ -121,7 +121,7 @@
                           /* prints error if no argument passed               */
 #define OPT_MISSING(prog, opt) do {                        \
             fprintf(stderr, "%s: option -%c ", prog, opt); \
-            fprintf(stderr, "requires and argument\n");    \
+            fprintf(stderr, "requires an argument\n");    \
                 } while(0)
 
                           /* exit thread macro                                */
@@ -129,7 +129,7 @@
             exit_val = val;                      \
                 pthread_exit((void *)exit_val); \
                                   } while (0)
-#define MAXTEST      7   /* total number of testcase in this program          */
+#define MAXTEST      6   /* total number of testcase in this program          */
 #define BRKSZ        512*1024 /* program data space allocation value          */
 
 /* GLOBAL VARIABLES                                                           */
@@ -148,13 +148,13 @@ static   int  verbose_print = FALSE; /* print more test information           */
 /* Function:    sig_handler                                                   */
 /*                                                                            */
 /* Description: handle SIGALRM raised by set_timer(), SIGALRM is raised when  */
-/*              the timer expires. If any other signal is recived exit the    */
+/*              the timer expires. If any other signal is received exit the   */
 /*              test.                                                         */
 /*                                                                            */
 /* Input:       signal - signal number, intrested in SIGALRM!                 */
 /*                                                                            */
-/* Return:      exit -1 if unexpected signal is recived                       */
-/*              exit 0 if SIGALRM is recieved                                 */
+/* Return:      exit -1 if unexpected signal is received                      */
+/*              exit 0 if SIGALRM is received                                 */
 /*                                                                            */
 /* Synopsis:    void signal_handler(int signal);                              */
 /*                                                                            */
@@ -271,7 +271,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
      *   of it before this routine had a chance to use the data.
      *   This flag stops the overwrite until this routine gets to
      *   here.  At this point, it is done initializing and it is
-     *   safe of the parent thread to continue (which will change
+     *   safe for the parent thread to continue (which will change
      *   args).
      */
     thread_begin = FALSE;
@@ -548,8 +548,8 @@ map_and_thread(
 /*              faults in the same address space.                             */
 /*                                                                            */
 /* Description: map a file into memory, create threads and execute a thread   */
-/*              function that will cause read faults by simulteniously reading*/
-/*              fom this memory space.                                        */
+/*              function that will cause read faults by simultaneously reading*/
+/*              from this memory space.                                       */
 /*                                                                            */
 /* Input:       NONE                                                          */
 /*                                                                            */
@@ -577,7 +577,7 @@ test1()
 /*              faults in the same address space.                             */
 /*                                                                            */
 /* Description: map a file into memory, create threads and execute a thread   */
-/*              function that will cause write faults by simulteniously       */
+/*              function that will cause write faults by simultaneously       */
 /*              writing to this memory space.                                 */
 /*                                                                            */
 /* Input:       NONE                                                          */
@@ -606,7 +606,7 @@ test2()
 /*              faults in the same address space.                             */
 /*                                                                            */
 /* Description: map a file into memory, create threads and execute a thread   */
-/*              function that will cause COW faults by simulteniously         */
+/*              function that will cause COW faults by simultaneously         */
 /*              writing to this memory space.                                 */
 /*                                                                            */
 /* Input:       NONE                                                          */
@@ -631,10 +631,10 @@ test3()
 /******************************************************************************/
 /*                                                                            */
 /* Test:        Test case tests the race condition between simultaneous READ  */
-/*              faults in the same address space. File maped is /dev/zero     */
+/*              faults in the same address space. File mapped is /dev/zero    */
 /*                                                                            */
 /* Description: Map a file into memory, create threads and execute a thread   */
-/*              function that will cause READ faults by simulteniously        */
+/*              function that will cause READ faults by simultaneously        */
 /*              writing to this memory space.                                 */
 /*                                                                            */
 /* Input:       NONE                                                          */
@@ -651,7 +651,7 @@ test4()
 
     printf("\ttest4: Test case tests the race condition between\n"
            "\t\tsimultaneous READ faults in the same address space.\n"
-           "\t\tThe file maped is /dev/zero\n");
+           "\t\tThe file mapped is /dev/zero\n");
     map_and_thread("/dev/zero", thread_fault, COW_FAULT, NUMTHREAD, &retval);
     return (retval.status);
 }
@@ -662,7 +662,7 @@ test4()
 /* Test:    Test case tests the race condition between simultaneous           */
 /*         fork - exit faults in the same address space.                      */
 /*                                                                            */
-/* Description: Initilize large data in the parent process, fork a child and  */
+/* Description: Initialize large data in the parent process, fork a child and */
 /*              and the parent waits for the child to complete execution.     */
 /*                                                                            */
 /* Input:       NONE                                                          */
@@ -693,7 +693,7 @@ test5()
    
     /* fork NUMTHREAD number of processes, assumption is on SMP each will get */
     /* a separate CPU if NRCPUS = NUMTHREAD. The child does nothing; exits    */
-    /* imideately, parent waits for child to complete execution.              */
+    /* immediately, parent waits for child to complete execution.             */
     do
     {
         if (!(pid = fork()))
@@ -723,7 +723,7 @@ test5()
 /* Test:        Test case tests the race condition between simultaneous       */
 /*              fork - exec - exit faults in the same address space.          */
 /*                                                                            */
-/* Description: Initilize large data in the parent process, fork a child and  */
+/* Description: Initialize large data in the parent process, fork a child and */
 /*              and the parent waits for the child to complete execution. The */
 /*              child program execs a dummy program.                          */
 /*                                                                            */
@@ -741,7 +741,7 @@ test6()
     int    fork_ndx = 0;   /* index to the number of processes forked         */
     pid_t  pid = 0;        /* process id, returned by fork system call.       */
     int    wait_status;    /* if status is not NULL store status information  */
-    char  *argv_init[2] =  /* parameter required for dummy fiunction to execvp*/
+    char  *argv_init[2] =  /* parameter required for dummy function to execvp */
                           {"arg1", NULL};
 
     printf("\ttest6: Test case tests the race condition between\n"
@@ -871,6 +871,9 @@ main(int   argc,     /* number of command line parameters                     */
                         {SIGENDSIG,"ENDSIG"}
                    };
     
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
     optarg = NULL;
     opterr = 0;
 
@@ -890,7 +893,7 @@ main(int   argc,     /* number of command line parameters                     */
                       break;
             case 't': if (optarg)
                       {
-                          printf("Test is scheduld to run for %d hours\n",
+                          printf("Test is scheduled to run for %d hours\n",
                           test_time = atoi(optarg));
                           run_once = FALSE;
                       }
@@ -951,9 +954,9 @@ main(int   argc,     /* number of command line parameters                     */
     {
         if(!test_num)
         {
-            int test_ndx = 0;  /* index into the array of tests               */
+            int test_ndx;  /* index into the array of tests               */
 
-            for (test_ndx = 1; test_ndx <= (MAXTEST - 1); test_ndx++) {
+            for (test_ndx = 1; test_ndx <= MAXTEST; test_ndx++) {
                 rc = test_ptr[test_ndx]();
                 if (rc == SUCCESS) {
                    printf("                TEST %d Passed\n", test_ndx);
@@ -965,10 +968,10 @@ main(int   argc,     /* number of command line parameters                     */
         }
         else
         {
-            global_rc = (test_num > MAXTEST) ? 
+            global_rc = (test_num > MAXTEST) ?
 		  fprintf(stderr, 
                             "Invalid test number, must be in range [1 - %d]\n",
-                             MAXTEST): 
+                             MAXTEST):
                   test_ptr[test_num]();
         }
 
