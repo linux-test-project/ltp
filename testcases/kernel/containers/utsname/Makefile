@@ -1,6 +1,5 @@
-CC=gcc
-
-CFLAGS += -I../../../../include -I../libclone -Wall
+CFLAGS += -Wall
+CPPFLAGS += -I../../../../include -I../libclone
 LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
 
 SRCS    = $(wildcard *.c)
