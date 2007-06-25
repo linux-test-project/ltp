@@ -1,0 +1,112 @@
+<refentry id="openhpi-SNMP-Utilities">
+<refmeta>
+<refentrytitle>SNMP Utilities</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>OPENHPI Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>SNMP Utilities</refname><refpurpose>SNMP Utility Wrapper Functions for NET-SNMP calls</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv><title>Synopsis</title>
+
+<synopsis>
+
+#include &lt;net-snmp/net-snmp-config.h&gt;
+#include &lt;net-snmp/net-snmp-includes.h&gt;
+
+
+#define     <link linkend="MAX-ASN-STR-LEN-CAPS">MAX_ASN_STR_LEN</link>
+int         <link linkend="snmp-get">snmp_get</link>                        (struct snmp_session *ss,
+                                             	const char *objid,
+                                             	struct snmp_value *value);
+int         <link linkend="snmp-set">snmp_set</link>                        (struct snmp_session *ss,
+                                             	char *objid,
+                                             	struct snmp_value value);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+<refsect1>
+<title>Description</title>
+<para>
+These SNMP wrapper utility functions where created to hide the more complex
+logic needed to use straight net-snmp calls from plugin developers.
+</para>
+</refsect1>
+
+<refsect1>
+<title>Details</title>
+<refsect2>
+<title><anchor id="MAX-ASN-STR-LEN-CAPS">MAX_ASN_STR_LEN</title>
+<programlisting>
+#define		MAX_ASN_STR_LEN 300
+</programlisting>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="snmp-get">snmp_get ()</title>
+<programlisting>
+int	snmp_get	(struct snmp_session *ss,
+			 const char *objid,
+			 struct snmp_value *value);
+</programlisting>
+<para>
+Gets a single value indicated by the objectid using snmp.
+In the case of multiple values being returned, the type in <parameter>value</parameter> will be
+ASN_NULL (0x05). Nothing else in <parameter>value</parameter> will be filled in.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>ss</parameter>&nbsp;:</term>
+<listitem><simpara> a handle to the snmp session needed to make an
+snmp transaction.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>objid</parameter>&nbsp;:</term>
+<listitem><simpara> string containing the OID entry.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>value</parameter>&nbsp;:</term>
+<listitem><simpara> the value received from snmp will be put in this union.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> 0 if successful, -1 if there was an error.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="snmp-set">snmp_set ()</title>
+<programlisting>
+int	snmp_set	(struct snmp_session *ss,
+			 char *objid,
+			 struct snmp_value value);
+</programlisting>
+<para>
+Sets a value where indicated by the objectid
+using snmp.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>ss</parameter>&nbsp;:</term>
+<listitem><simpara> a handle to the snmp session needed to make an snmp transaction.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>objid</parameter>&nbsp;:</term>
+<listitem><simpara> string containing the OID to set.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>value</parameter>&nbsp;:</term>
+<listitem><simpara> the value to set the oid with.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> 0 if Success, less than 0 if Failure.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

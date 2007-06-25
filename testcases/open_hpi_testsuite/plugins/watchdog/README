@@ -1,0 +1,17 @@
+################################################################################
+In order to use this plugin, you must have a machine with softdog compiled
+into the kernel.
+To insert softdog, do:
+ insmod softdog [soft_noboot=1]
+*Note:  The soft_noboot=1 is for testing so that the machine does not
+reboot.
+
+Also, create the watchdog module using:
+mknod /dev/watchdog c 10 130
+as root.
+
+To install this code:
+  make
+  make install (as root)
+
+Can be verified using program examples/list_resources (as root)
