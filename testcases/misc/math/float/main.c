@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
                         strncpy(datadir, optarg, PATH_MAX);
 			break;
                 default:
-                        fprintf (stderr, "Usage: %s [-n number_of_threads] [-v]", argv[0]);
-                        fprintf (stderr, "[-l number_of_loops]\n");
+                        fprintf (stderr, "Usage: %s [-n number_of_threads] [-v]\n", argv[0]);
+                        fprintf (stderr, "[-l number_of_loops] ");
                         fprintf (stderr, "[-D DATAs absolute path]\n");
                         exit (1);
                 }
@@ -151,13 +151,13 @@ int main(int argc, char *argv[])
 		waitpid(pid,NULL,0);
 
 	if(debug)
-		printf("%s: will run for %d loops\n", argv[0], num_loops);
+		tst_resm(TINFO, "%s: will run for %d loops", argv[0], num_loops);
 
 	if(debug)
-		printf("%s: using %s as data directory\n", argv[0], datadir);
+		tst_resm(TINFO, "%s: using %s as data directory", argv[0], datadir);
 
 	if(num_threads <= 0) {
-		printf("WARNING: num_threads undefined or incorrect, using \"1\"\n");
+		tst_resm(TWARN, "WARNING: num_threads undefined or incorrect, using \"1\"");
 		num_threads = 1;
 	}
 
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 			--num_threads;
 	}
 	if(debug)
-		printf("%s: will run %d functions, %d threads per function\n",
+		tst_resm(TINFO, "%s: will run %d functions, %d threads per function",
 			argv[0], nb_func, num_threads);
 
         retval = pthread_mutex_init (&sig_mutex, (pthread_mutexattr_t *)NULL);
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 
 finished:
 	if (debug) {
-		printf ("Initial thread: Waiting for %d threads to finish\n", indice);
+		tst_resm(TINFO, "Initial thread: Waiting for %d threads to finish", indice);
 	}
         tabcour = tabcom;
 
@@ -257,11 +257,11 @@ finished:
 		pcom = * tabcour++; 
 		if(pcom->th_result !=0 ) {
 	           error++;
-                   fprintf (stderr, "thread %d (%s) terminated unsuccessfully %d errors/%d loops\n", th_num,pcom->th_func.fident,pcom->th_nerror,pcom->th_nloop);
-                   fprintf (stderr, "%s", pcom->detail_data);
+                   tst_resm(TFAIL, "thread %d (%s) terminated unsuccessfully %d errors/%d loops", th_num,pcom->th_func.fident,pcom->th_nerror,pcom->th_nloop);
+                   tst_resm(TFAIL, "%s", pcom->detail_data);
 		}
 		else if (debug) {
-			printf ("thread %d (%s) terminated successfully %d loops.\n",
+			tst_resm(TINFO, "thread %d (%s) terminated successfully %d loops.",
 				th_num, pcom->th_func.fident, pcom->th_nloop-1);
 		}
 
@@ -291,7 +291,7 @@ static void *handle_signals (void *arg)
 	int	retvalsig = 0;
 
 	if (debug) {
-		printf ("signal handler %lu started\n", pthread_self());
+		tst_resm(TINFO, "signal handler %lu started", pthread_self());
 	}
 	/*
          * Set up the signals that we want to handle...
@@ -305,12 +305,12 @@ static void *handle_signals (void *arg)
 	do
 	{
 		if (debug) {
-			printf ("Signal handler starts waiting...\n");
+			tst_resm(TINFO, "Signal handler starts waiting...");
 		}
 
 		sigwait (&signals_set, &sig);
 		if (debug) {
-			printf ("Signal handler caught signal %d\n", sig);
+			tst_resm(TINFO, "Signal handler caught signal %d", sig);
 		}
 
 		switch (sig) {
@@ -318,7 +318,7 @@ static void *handle_signals (void *arg)
 		case SIGUSR1:
 		case SIGINT:
 			if (sig_cancel) {
-				printf ("Signal handler: Already finished, Ignoring signal\n");
+				tst_resm(TINFO, "Signal handler: Already finished, Ignoring signal");
 			}
 			else {
 				/*
@@ -339,7 +339,7 @@ static void *handle_signals (void *arg)
 		     	       	 */
 				for (thd = 0; thd < indice; thd++) {
 					if (debug) {
-						printf ("Signal handler: canceling thread  (%d of %d)\n", thd, indice);
+						tst_resm(TINFO, "Signal handler: canceling thread (%d of %d)", thd, indice);
 					}
 					retvalsig = pthread_cancel (threads[thd]);
 					if (retvalsig != 0)
@@ -348,10 +348,10 @@ static void *handle_signals (void *arg)
 			}
 			break;
 		case SIGQUIT:
-			printf ("Signal handler: Caught Quit, Doing nothing\n");
+			tst_resm(TINFO, "Signal handler: Caught Quit, Doing nothing");
 			break;
 		case SIGTERM:
-			printf ("Signal handler: Caught Termination, Doing nothing\n");
+			tst_resm(TINFO, "Signal handler: Caught Termination, Doing nothing");
 			break;
 		default:
 			exit (-1);
@@ -367,7 +367,7 @@ static void *handle_signals (void *arg)
 +---------------------------------------------------------------------*/
 static void error (const char *msg, int line)
 {
-        fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
+        tst_resm(TFAIL, "ERROR [line: %d] %s", line, msg);
         exit (-1);
 }
 
@@ -385,7 +385,7 @@ static void sys_error (const char *msg, int line)
 {
         char syserr_msg [256];
 
-        sprintf (syserr_msg, "%s: %s\n", msg, strerror(errno));
+        sprintf (syserr_msg, "%s: %s", msg, strerror(errno));
         error (syserr_msg, line);
 }
 

@@ -209,14 +209,14 @@ size_t get_memsize()
   } 
   
   freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;      
-  printf("Free Mem:\t%llu Mb\n",freeram/1024/1024);
+  tst_resm(TINFO, "Free Mem:\t%llu Mb", freeram/1024/1024);
   res=freeram; 
 
   freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;      
-  printf("Free Swap:\t%llu Mb\n",freeswap/1024/1024);
+  tst_resm(TINFO, "Free Swap:\t%llu Mb", freeswap/1024/1024);
   res=res+freeswap;
 
-  printf("Total Free:\t%llu Mb\n",res/1024/1024);
+  tst_resm(TINFO, "Total Free:\t%llu Mb", res/1024/1024);
 #if defined (__s390__) 
   if ( res > 1*1024*1024*1024 )
     res = 500*1024*1024;  /* s390's unique 31bit architecture needs smaller default */
@@ -228,7 +228,7 @@ size_t get_memsize()
     res = (unsigned long long)3*1024*1024*1024;
 #endif
 
-  printf("Total Tested:\t%llu Mb\n",res/1024/1024);
+  tst_resm(TINFO, "Total Tested:\t%llu Mb", res/1024/1024);
   return (size_t)res;
 }
 

@@ -42,6 +42,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "test.h"
+
+char *TCID = "mtest01";
+int TST_TOTAL = 1;
+
 int pid_count = 0;
 
 void handler(int signo)
@@ -83,10 +88,10 @@ int main(int argc, char* argv[]) {
       case 'p':
         maxpercent = atoi(optarg);
 	if (maxpercent <= 0){
-	  printf("ERROR: -p option requires number greater than 0\n");
+	  tst_resm(TFAIL, "ERROR: -p option requires number greater than 0");
 	  exit(1);}
 	if (maxpercent > 99){
-	  printf("ERROR: -p option cannot be greater than 99\n");
+	  tst_resm(TFAIL, "ERROR: -p option cannot be greater than 99");
 	  exit(1);}
         break;
       case 'w':
@@ -121,18 +126,18 @@ int main(int argc, char* argv[]) {
 
     /* Total memory used needed to reach maxpercent */
     D = percent*(sstats.mem_unit*total_ram);
-    printf("Total memory used needed to reach maxpercent = %llu kbytes\n",D/1024);
+    tst_resm(TINFO, "Total memory used needed to reach maxpercent = %llu kbytes", D/1024);
 
     /* Total memory already used */
     C = sstats.mem_unit*(total_ram-total_free);
-    printf("Total memory already used on system = %llu kbytes\n",C/1024);
+    tst_resm(TINFO, "Total memory already used on system = %llu kbytes", C/1024);
 
     /* Total Free Pre-Test RAM */
     pre_mem = sstats.mem_unit*total_free;
 
     /* Are we already using more than maxpercent? */
     if(C>D) {
-      printf("More memory than the maximum amount you specified is already being used\n");
+      tst_resm(TFAIL, "More memory than the maximum amount you specified is already being used");
       exit(1);
     }
     else
@@ -141,7 +146,7 @@ int main(int argc, char* argv[]) {
 
     /* set maxbytes to the extra amount we want to allocate */
     maxbytes = D-C;
-    printf("Filling up %d%% of ram which is %llu kbytes\n",maxpercent,maxbytes/1024);
+    tst_resm(TINFO, "Filling up %d%% of ram which is %llu kbytes", maxpercent, maxbytes/1024);
   }
   original_maxbytes=maxbytes;
   i=0;
@@ -202,21 +207,22 @@ int main(int argc, char* argv[]) {
     bytecount=chunksize;
     while(1) {
       if((mem = (char*)malloc(chunksize)) == NULL) {
-        printf("stopped at %lu bytes\n",bytecount);
+        tst_resm(TINFO, "stopped at %lu bytes", bytecount);
         exit(1);
       }
       if(dowrite)
         for(j=0; j<chunksize; j++)
           *(mem+j)='a';
-      if(verbose) printf("allocated %lu bytes chunksize is %d\n",bytecount,chunksize);
+      if(verbose)
+	tst_resm(TINFO, "allocated %lu bytes chunksize is %d", bytecount, chunksize);
       bytecount+=chunksize;
       if(alloc_bytes && (bytecount >= alloc_bytes))
         break;
     }
     if (dowrite)
-      printf("... %lu bytes allocated and used.\n",bytecount);
+      tst_resm(TINFO, "... %lu bytes allocated and used.", bytecount);
     else
-      printf("... %lu bytes allocated only.\n",bytecount);
+      tst_resm(TINFO, "... %lu bytes allocated only.", bytecount);
     kill(getppid(),SIGRTMIN);
     while(1)
       sleep(1);
@@ -248,9 +254,9 @@ int main(int argc, char* argv[]) {
       i++;
     }
     if (dowrite)
-      printf("PASS .. %llu kbytes allocated and used.\n",original_maxbytes/1024);
+      tst_resm(TPASS, "%llu kbytes allocated and used.", original_maxbytes/1024);
     else
-      printf("PASS .. %llu kbytes allocated only.\n",original_maxbytes/1024);
+      tst_resm(TPASS, "%llu kbytes allocated only.", original_maxbytes/1024);
   }
   exit(0);
 }
