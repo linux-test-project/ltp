@@ -1,7 +1,7 @@
 /*      -*- linux-c -*-
  *
  * Copyright (c) 2003 by Intel Corp.
- * (C) Copyright IBM Corp. 2003
+ * (C) Copyright IBM Corp. 2003, 2005
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,38 +13,27 @@
  * Authors:
  *     Louis Zhuang <louis.zhuang@linux.intel.com>
  */
-#include <config.h>
-#include <errno.h>
-#include <unistd.h>
-#include <openhpi.h>  
+#include <oh_lock.h>
 
-		 
+int oh_will_block = 0;
+int lockcount = 0;
+
 #ifdef HAVE_THREAD_SAFE
 /* multi-threading support, use Posix mutex for data access */
 /* initialize mutex used for data locking */
-static pthread_mutex_t data_access_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#include <glib/gthread.h>
 
-static int will_block = 0;
+GStaticRecMutex oh_main_lock = G_STATIC_REC_MUTEX_INIT;
 
-void data_access_lock(void) 
+int data_access_block_times(void)
 {
-	if (pthread_mutex_trylock(&data_access_mutex) == EBUSY) {
-		pthread_mutex_lock(&data_access_mutex);	
-	        will_block++;
-	}
+        return(oh_will_block);
 }
 
-void data_access_unlock(void)
-{
-        pthread_mutex_unlock(&data_access_mutex);    
-}
+#else
 
-int data_access_block_times(void) 
-{
-        return(will_block);
-}
-#else 
-void data_access_lock(void) {}
-void data_access_unlock(void){} 
+GStaticRecMutex oh_main_lock = NULL;
+
 int data_access_block_times(void){ return(0);}
+
 #endif/*HAVE_THREAD_SAFE*/

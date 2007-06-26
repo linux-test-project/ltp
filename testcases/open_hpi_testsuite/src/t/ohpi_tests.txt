@@ -1,0 +1,60 @@
+Unit Test plan for the OpenHPI API extensions
+---------------------------------------------
+
+Notes:
+Tests described here are numbered so that they correspond to the program where
+they are implemented (e.g. ohpi_<three-digit test number>.c).
+
+**Positive Tests** (expect a good return code.)
+
+SaErrorT oHpiHandlerCreate(GHashTable *config,
+                           oHpiHandlerIdT *id):
+        (007) Load 'libdummy' and 'libwatchdog', create two handlers on each.
+
+SaErrorT oHpiHandlerDestroy(oHpiHandlerIdT id):
+        (008) Same as previous, but destroy handlers and unload plugin.
+
+SaErrorT oHpiHandlerInfo(oHpiHandlerIdT id, oHpiHandlerInfoT *info):
+        (009) Load 'libdummy', create handler, get handler info and check for
+              expected information. Destroy handler, unload plugin.
+
+SaErrorT oHpiHandlerGetNext(oHpiHandlerIdT id, oHpiHandlerIdT *next_id):
+        (010) Load 'libdummy', create three handlers, iterate through them
+              making sure they match with the expected values.
+              Destroy handlers, unload plugin.
+              
+SaErrorT oHpiGlobalParamGet(oHpiGlobalParam *param):
+        (035) Set OPENHPI_CONF to valid file. Open session. Get parameter
+              that was set through config file comparing with known value.
+
+SaErrorT oHpiGlobalParamSet(oHpiGlobalParam *param):
+        (036) Set a paramter, get it, and compare values. Don't open a session.
+
+**Negative Tests** (expect a bad return code)
+
+SaErrorT oHpiHandlerCreate(GHashTable *config,
+                           oHpiHandlerIdT *id):
+        (024) Pass null as arguments (for each argument).
+        (025) Create handler for plugin that doesn't have a "plugin" key.
+        (026) Create handler for non-existant plugin.
+        
+SaErrorT oHpiHandlerDestroy(oHpiHandlerIdT id):
+        (027) Pass null as argument.
+        (028) Destroy bogus handler.
+        (029) Destroy handler twice.        
+        
+SaErrorT oHpiHandlerInfo(oHpiHandlerIdT id, oHpiHandlerInfoT *info):
+        (030) Pass null as argument.
+        (031) Pass bogus handler id.
+        
+SaErrorT oHpiHandlerGetNext(oHpiHandlerIdT id, oHpiHandlerIdT *next_id):
+        (032) Pass null as arguments (for each argument).
+        (033) Get next bogus handler.
+        (034) Create three handlers, destroy one, and get next that one.
+        
+SaErrorT oHpiGlobalParamGet(oHpiGlobalParam *param):
+        (037) Pass null as arguments.
+        (038) Get bogus parameter.
+
+SaErrorT oHpiGlobalParamSet(oHpiGlobalParam *param):
+        (039) Pass null as arguments.

@@ -1,7 +1,7 @@
 /*      -*- linux-c -*-
  *
  * Copyright (c) 2003 by Intel Corp.
- * (C) Copyright IBM Corp. 2003
+ * (C) Copyright IBM Corp. 2003-2006
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,239 +13,417 @@
  * Authors:
  *     Louis Zhuang <louis.zhuang@linux.intel.com>
  *     David Judkovics <djudkovi@us.ibm.com>
+ *     Sean Dague <http://dague.net/sean>
+ *     Renier Morales <renier@openhpi.org>
+ *     Racing Guo <racing.guo@intel.com>
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#include <SaHpi.h>
-#include <openhpi.h>
-#include <epath_utils.h>
-#include <uid_utils.h>
+#include <oh_event.h>
+#include <oh_config.h>
+#include <oh_handler.h>
+#include <oh_plugin.h>
+#include <oh_domain.h>
+#include <oh_session.h>
+#include <oh_alarm.h>
+#include <oh_utils.h>
+#include <oh_error.h>
 
-static int process_session_event(RPTable *rpt, struct oh_hpi_event *e)
-{
-        SaHpiRptEntryT *res;
-        GSList *i;
+struct _oh_evt_queue {
+        GAsyncQueue *q;
+};
+oh_evt_queue oh_process_q = { .q = NULL };
 
-        data_access_lock();
-        
-        res = oh_get_resource_by_id(rpt, e->parent);
-        if (res == NULL) {
-                dbg("No the resource");
-                data_access_unlock();
-                return -1;
-        }
-        
-        if (res->ResourceCapabilities & SAHPI_CAPABILITY_MANAGED_HOTSWAP 
-            && e->event.EventType == SAHPI_ET_HOTSWAP) {
-                hotswap_push_event(e);
-        }
-        
-        /* 
-           here is where we need to apply rules about what 
-           goes into the domain sel for this event.  Previous implementation
-           is commented out, but not yet deleted.
-        */
-        /*
-        g_slist_for_each(i, res->domain_list) {
-                SaHpiDomainIdT domain_id;
-                struct oh_domain *d;
-                GSList *j;
+extern GMutex *oh_event_thread_mutex;
 
-                domain_id = GPOINTER_TO_UINT(i->data);
-                d = get_domain_by_id(domain_id);
-                if (d) 
-                        dsel_add2(d, e);
-                else 
-                        dbg("Invalid domain");
-        */
-        
-        
-        g_slist_for_each(i, global_session_list) {
-                struct oh_session *s = i->data;
-                /* yes, we need to add real domain support later here */
-                if (s->domain_id == SAHPI_DEFAULT_DOMAIN_ID
-                    && s->event_state == OH_EVENT_SUBSCRIBE) {
-                        session_push_event(s, e);
-                }
-        }
-
-        data_access_unlock();
-        return 0;
-}
-
-static int process_resource_event(struct oh_handler *h, RPTable *rpt, struct oh_event *e) 
-{
-        int rv;
-        data_access_lock();
-
-        if (e->type == OH_ET_RESOURCE_DEL) {
-                rv = oh_remove_resource(rpt,e->u.res_del_event.resource_id);
-        } else {
-                struct oh_resource_data *rd = g_malloc0(sizeof(struct oh_resource_data));
-
-                if (!rd) {
-                        dbg("Couldn't allocate resource data");
-                        return SA_ERR_HPI_ERROR;
-                }
-
-                rd->handler = h;
-                rd->controlled = 0;
-                rd->auto_extract_timeout = get_default_hotswap_auto_extract_timeout();
-
-                rv = oh_add_resource(rpt,&(e->u.res_event.entry),rd,0);
-        }
-
-        data_access_unlock();
-        
-        return rv;
-}
 /*
-static void process_domain_event(struct oh_handler *h, struct oh_domain_event *e)
-{
-        struct oh_resource *res;
-        struct oh_domain *domain;
-
-        data_access_lock();
-
-        res = get_res_by_oid(e->res_id);
-        domain = get_domain_by_oid(e->domain_id);
-        
-        if (!res) {
-                dbg("Cannot find corresponding resource");
-                data_access_unlock();
-                return;
-        }               
-        if (!domain) {
-                dbg("Cannot find corresponding domain");
-                data_access_unlock();
-                return;
-        }               
-        res->domain_list = g_slist_append(res->domain_list, GUINT_TO_POINTER(domain->domain_id));
-        
-        data_access_unlock();
-
-}
-*/
-
-static int process_rdr_event(struct oh_handler *h, RPTable *rpt, struct oh_event *e)
-{
-        int rv;
-        SaHpiResourceIdT rid;
-
-        if (e->type == OH_ET_RDR_DEL) {
-                rid = oh_uid_lookup(&(e->u.rdr_del_event.parent_entity));
-                rv = (rid)? oh_remove_rdr(rpt,rid,e->u.rdr_del_event.record_id) : -1;
-        } else {
-                rid = oh_uid_lookup(&(e->u.rdr_event.rdr.Entity));
-                rv = (rid)? oh_add_rdr(rpt,rid,&(e->u.rdr_event.rdr),NULL,0) : -1;
-        }
-
-        if (rv) dbg("Could not process rdr event. Parent resource not found.");
-                
-        return rv;
-}
-/*
-static void process_rsel_event(struct oh_handler *h, struct oh_rsel_event *e)
-{
-        struct oh_resource *res;
-        
-        dbg("RSEL event! rsel->oid=%p", e->rsel.oid.ptr);
-        res = get_res_by_oid(e->rsel.parent);
-        if (!res) {
-                dbg("Cannot find corresponding resource");
-                return;
-        }
-        
-        TODO: address the rsel work later
-        rsel_add2(res, e);
-        
-}
-*/
-
-/**
- * get_handler_event:
- * @h: handler structure
- * 
- * get_handler_event pulls an event from a given handler.  It will normally
- * be called from get_events, which iterates across all handlers.
- * 
- * Return value: 1 if event exists, 0 if no more events, -1 on failure
- **/
-static int get_handler_event(struct oh_handler *h, RPTable *rpt)
-{
-        struct oh_event event;
-        struct timeval to = {0, 0};
-        int rv;                
-        rv = h->abi->get_event(h->hnd, &event, &to);
-        if(rv < 1) {
-                return rv;
-        } 
-        switch (event.type) {
-        case OH_ET_HPI:
-                /* add the event to session event list */
-                process_session_event(rpt, &event.u.hpi_event);
-                break;
-        case OH_ET_RESOURCE_DEL:        
-        case OH_ET_RESOURCE:
-                process_resource_event(h, rpt, &event);
-                break;                        
-/* Domain events are not supported, pull them out for now */
-/*                        case OH_ET_DOMAIN:
-                          process_domain_event(h, &event.u.domain_event);
-                          break;
-*/
-        case OH_ET_RDR_DEL:
-        case OH_ET_RDR:
-                process_rdr_event(h, rpt, &event);
-                break;        
-/* Resource System event logs will be handled by the plugins and
- * will not be bubbled up.
+ *  The following is required to set up the thread state for
+ *  the use of event async queues.  This is true even if we aren't
+ *  using live threads.
  */
-/*        case OH_ET_RSEL:
-                process_rsel_event(h, &event.u.rsel_event);
-                break;
-*/
-        default:
-                dbg("Error! Should not reach here!");
-                return -1;
+int oh_event_init()
+{
+        trace("Setting up event processing queue");
+        if (!oh_process_q.q) oh_process_q.q = g_async_queue_new();
+        if (oh_process_q.q) {
+                trace("Set up processing queue");
+                return 1;
+        } else {
+                dbg("Failed to allocate processing queue");
+                return 0;
         }
-        
-        data_access_unlock();
-
-        return 1;
 }
 
-/**
- * get_events:
- * @void: 
- * 
- * loops through all handlers, processes all outstanding events
- * 
- * Note: at some point we will probably have to pass it session info
- * to know which rpt to use
- *
- * Return value: 0 on success, < 0 on failure
- **/
-int get_events(void)
+void oh_evt_queue_push(oh_evt_queue *equeue, gpointer data)
 {
-        RPTable *rpt = default_rpt;
-        GSList *i;
-        int got_event = 0;
-        
-        data_access_lock();
+        g_async_queue_push(equeue->q, data);
+        return;
+}
 
-        g_slist_for_each(i, global_handler_list) {
-                do {
-                        got_event = get_handler_event(i->data, rpt);
-                } while (got_event > 0);
+void oh_event_free(struct oh_event *e, int only_rdrs)
+{
+	if (e) {
+		if (e->rdrs) {
+			GSList *node = NULL;
+			for (node = e->rdrs; node; node = node->next) {
+				g_free(node->data);
+			}
+			g_slist_free(e->rdrs);
+		}
+		if (!only_rdrs) g_free(e);
+	}
+}
 
-		process_hotswap_policy(i->data);
+struct oh_event *oh_dup_event(struct oh_event *old_event)
+{
+	GSList *node = NULL;
+	struct oh_event *e = NULL;
+
+	if (!old_event) return NULL;
+
+	e = (struct oh_event *)g_malloc0(sizeof(struct oh_event));
+	*e = *old_event;
+	e->rdrs = NULL;
+	for (node = old_event->rdrs; node; node = node->next) {
+		e->rdrs = g_slist_append(e->rdrs, g_memdup(node->data,
+							   sizeof(SaHpiRdrT)));
+	}
+
+	return e;
+}
+
+/*
+ *  Event processing is split up into 2 stages
+ *  1. Harvesting of the events
+ *  2. Processing of the events into: Domain Event Log, Alarm Table,
+ *  Session queues, Resource Precense Table.
+ *
+ */
+
+static SaErrorT harvest_events_for_handler(struct oh_handler *h)
+{
+        SaErrorT error = SA_OK;
+
+	if (!h->hnd) return SA_OK;
+
+        do {
+                error = h->abi->get_event(h->hnd);
+                if (error < 1) {
+                        trace("Handler is out of Events");
+                }
+        } while (error > 0);
+
+        return SA_OK;
+}
+
+SaErrorT oh_harvest_events()
+{
+        SaErrorT error = SA_ERR_HPI_ERROR;
+        unsigned int hid = 0, next_hid;
+        struct oh_handler *h = NULL;
+
+        oh_getnext_handler_id(hid, &next_hid);
+        while (next_hid) {
+                trace("harvesting for %d", next_hid);
+                hid = next_hid;
+
+                h = oh_get_handler(hid);
+                if (!h) {
+                        dbg("No such handler %d", hid);
+                        break;
+                }
+                /*
+                 * Here we want to record an error unless there is
+                 * at least one harvest_events_for_handler that
+                 * finished with SA_OK. (RM 1/6/2005)
+                 */
+                if (harvest_events_for_handler(h) == SA_OK && error)
+                        error = SA_OK;
+
+                oh_release_handler(h);
+
+                oh_getnext_handler_id(hid, &next_hid);
         }
-        
-        data_access_unlock();
+
+        return error;
+}
+
+static int oh_add_event_to_del(struct oh_domain *d, struct oh_event *e)
+{
+        struct oh_global_param param = { .type = OPENHPI_LOG_ON_SEV };
+        char del_filepath[SAHPI_MAX_TEXT_BUFFER_LENGTH*2];
+        int error = 0;
+
+        if (!d || !e) return -1;
+
+        oh_get_global_param(&param);
+
+        /* Events get logged in DEL if they are of high enough severity */
+        if (e->event.EventType == SAHPI_ET_USER ||
+            e->event.Severity <= param.u.log_on_sev) {
+                param.type = OPENHPI_DEL_SAVE;
+                oh_get_global_param(&param);
+		SaHpiEventLogInfoT elinfo;
+
+                SaHpiRdrT *rdr = (e->rdrs) ? (SaHpiRdrT *)e->rdrs->data : NULL;
+                SaHpiRptEntryT *rpte =
+                        (e->resource.ResourceCapabilities) ?
+                                &e->resource : NULL;
+		error = oh_el_info(d->del, &elinfo);
+		if (error == SA_OK && elinfo.Enabled) {
+                	error = oh_el_append(d->del, &e->event, rdr, rpte);
+		}
+
+                if (param.u.del_save) {
+                        param.type = OPENHPI_VARPATH;
+                        oh_get_global_param(&param);
+                        snprintf(del_filepath,
+                                 SAHPI_MAX_TEXT_BUFFER_LENGTH*2,
+                                 "%s/del.%u", param.u.varpath, d->id);
+                        oh_el_map_to_file(d->del, del_filepath);
+                }
+        }
+
+        return error;
+}
+
+static int process_hpi_event(struct oh_domain *d, struct oh_event *e)
+{
+        int i;
+        GArray *sessions = NULL;
+        SaHpiSessionIdT sid;
+        SaHpiEventT *event = NULL;
+        SaHpiRptEntryT *resource = NULL;
+        SaHpiRdrT *rdr = NULL;
+
+        if (!d || !e) return -1;
+
+        event = &e->event;
+        resource = &e->resource;
+        rdr = (e->rdrs) ? (SaHpiRdrT *)e->rdrs->data : NULL;
+
+        if (event->EventType == SAHPI_ET_USER) {
+                resource->ResourceCapabilities = 0;
+                if (rdr) rdr->RdrType = SAHPI_NO_RECORD;
+        }
+
+        oh_add_event_to_del(d, e);
+        trace("Added event to EL");
+
+        /*
+         * Here is the SESSION MULTIPLEXING code
+         */
+        sessions = oh_list_sessions(d->id);
+        if (!sessions) {
+                dbg("Error: Got an empty session list on domain id %u", d->id);
+                return -2;
+        }
+        trace("Got session list for domain %u", d->id);
+
+        /* Drop events if there are no sessions open to receive them.
+         */
+        if (sessions->len < 1) {
+                g_array_free(sessions, TRUE);
+                trace("No sessions open for event's domain %u. "
+                    "Dropping hpi_event", d->id);
+                return 0;
+        }
+
+        /* multiplex event to the appropriate sessions */
+        for (i = 0; i < sessions->len; i++) {
+                SaHpiBoolT is_subscribed = SAHPI_FALSE;
+                sid = g_array_index(sessions, SaHpiSessionIdT, i);
+                oh_get_session_subscription(sid, &is_subscribed);
+                if (is_subscribed) {
+                        oh_queue_session_event(sid, e);
+                }
+        }
+        g_array_free(sessions, TRUE);
+        trace("done multiplexing event into sessions");
 
         return 0;
 }
+
+static int process_resource_event(struct oh_domain *d, struct oh_event *e)
+{
+        RPTable *rpt = NULL;
+        SaHpiRptEntryT *exists = NULL;
+        unsigned int *hidp = NULL;
+        SaErrorT error = SA_OK;
+        SaHpiResourceEventTypeT *retype = NULL;
+        SaHpiHsStateT state = SAHPI_HS_STATE_NOT_PRESENT;
+        SaHpiBoolT process_hpi = TRUE;
+
+        if (!d || !e) return -1;
+
+	rpt = &(d->rpt);
+	exists = oh_get_resource_by_id(rpt, e->resource.ResourceId);
+
+	if (e->event.EventType == SAHPI_ET_RESOURCE) {
+		retype = &e->event.EventDataUnion.ResourceEvent.ResourceEventType;
+		if (*retype != SAHPI_RESE_RESOURCE_FAILURE) {
+			/* If previously failed, set EventT to RESTORED */
+			if (exists && exists->ResourceFailed) {
+				*retype = SAHPI_RESE_RESOURCE_RESTORED;
+			} else if (exists &&
+				   !exists->ResourceFailed) {
+				process_hpi = FALSE;
+			}
+			e->resource.ResourceFailed = SAHPI_FALSE;
+		} else {
+			e->resource.ResourceFailed = SAHPI_TRUE;
+		}
+	} else if (e->event.EventType == SAHPI_ET_HOTSWAP) {
+		state = e->event.EventDataUnion.HotSwapEvent.HotSwapState;
+		if (state == SAHPI_HS_STATE_NOT_PRESENT) {
+			oh_remove_resource(rpt, e->resource.ResourceId);
+		}
+	} else {
+		dbg("Expected a resource or hotswap event.");
+		return -1;
+	}
+
+	if (e->event.EventType == SAHPI_ET_RESOURCE ||
+	    (e->event.EventType == SAHPI_ET_HOTSWAP &&
+	     state != SAHPI_HS_STATE_NOT_PRESENT)) {
+        	hidp = g_malloc0(sizeof(unsigned int));
+		*hidp = e->hid;
+		error = oh_add_resource(rpt, &e->resource,
+					hidp, FREE_RPT_DATA);
+		if (error == SA_OK && !exists) {
+			GSList *node = NULL;
+			for (node = e->rdrs; node; node = node->next) {
+                                SaHpiRdrT *rdr = (SaHpiRdrT *)node->data;
+				oh_add_rdr(rpt, e->resource.ResourceId,
+					   rdr, NULL, 0);
+			}
+		}
+	}
+
+	if (process_hpi) process_hpi_event(d, e);
+
+        return 0;
+}
+
+static int process_event(SaHpiDomainIdT did,
+                         struct oh_event *e)
+{
+        struct oh_domain *d = NULL;
+
+        if (!e) {
+		dbg("Got NULL event");
+		return -1;
+	}
+
+        d = oh_get_domain(did);
+        if (!d) return -2;
+
+        trace("Processing event for domain %u", d->id);
+
+        switch (e->event.EventType) {
+        case SAHPI_ET_RESOURCE:
+                if (!e->hid) {
+                        dbg("Resource event with invalid handler id! Dropping.");
+                        break;
+                } else if (!(e->resource.ResourceCapabilities &
+                             SAHPI_CAPABILITY_RESOURCE)) {
+                        dbg("Resource event with invalid capabilities. Dropping.");
+                        break;
+                } else if (e->resource.ResourceCapabilities
+                           & SAHPI_CAPABILITY_FRU) {
+                        dbg("Invalid event. Resource in resource event "
+                                "has FRU capability. Dropping.");
+                } else {
+                        process_resource_event(d, e);
+                }
+                break;
+        case SAHPI_ET_HOTSWAP:
+                if (!e->hid) {
+                        dbg("Hotswap event with invalid handler id! Dropping.");
+                        break;
+                } else if (!(e->resource.ResourceCapabilities &
+                             SAHPI_CAPABILITY_RESOURCE)) {
+                        dbg("Hotswap event with invalid capabilities. Dropping.");
+                        break;
+                } else if (!(e->resource.ResourceCapabilities
+                             & SAHPI_CAPABILITY_FRU)) {
+                        dbg("Invalid event. Resource in hotswap event "
+                                "has no FRU capability. Dropping.");
+                } else {
+                        process_resource_event(d, e);
+                }
+                break;
+        case SAHPI_ET_SENSOR:
+        case SAHPI_ET_SENSOR_ENABLE_CHANGE:
+        case SAHPI_ET_WATCHDOG:
+        case SAHPI_ET_OEM:
+	case SAHPI_ET_DOMAIN:
+	case SAHPI_ET_USER:
+                process_hpi_event(d, e);
+                break;
+        default:
+		dbg("Don't know what to do for event type  %d", e->event.EventType);
+        }
+        oh_detect_event_alarm(d, e);
+        oh_release_domain(d);
+
+        return 0;
+}
+
+SaErrorT oh_process_events()
+{
+        struct oh_event *e;
+        GArray *domain_results = NULL;
+        SaHpiEntityPathT epath;
+        SaHpiDomainIdT tmp_did;
+        char *et;
+        int i;
+
+        domain_results = oh_query_domains();
+
+        while ((e = g_async_queue_pop(oh_process_q.q)) != NULL) {
+                et = oh_lookup_eventtype(e->event.EventType);
+                trace("Event Type = %s", (et) ? et : "<Unknown>");
+                
+                /* 1. Take care of special cases: user and domain type events */
+                if (e->event.EventType == SAHPI_ET_DOMAIN) {
+                        tmp_did = e->event.Source;
+                        e->event.Source = SAHPI_UNSPECIFIED_RESOURCE_ID;
+                        process_event(tmp_did, e);
+                        goto free_event;
+                } else if (e->event.EventType == SAHPI_ET_USER) {
+                        tmp_did = e->resource.ResourceId;
+                        e->resource.ResourceId = SAHPI_UNSPECIFIED_RESOURCE_ID;
+                        process_event(tmp_did, e);
+                        goto free_event;
+                } /* TODO: Include HPI_SW event type in special case */
+                
+                /* 2. Determine proper domains to handle this event */
+                if (!oh_entity_path_lookup(e->event.Source, &epath)) {
+                        /* Convert the event's source id to an entitypath */
+                        for (i = 0; i < domain_results->len; i++) {
+                                /* Process event in each domain matching
+                                 * the event's entity path.
+                                 */
+                                oh_domain_result dr =
+                                        g_array_index(domain_results, oh_domain_result, i);
+                                /* Skip default domain here. Will be processed there later. */
+                                if (dr.id == OH_DEFAULT_DOMAIN_ID) continue;
+
+                                if (oh_match_entitypath_pattern(&dr.entity_pattern, &epath))
+                                        process_event(dr.id, e);
+                        }
+                        
+                }
+                /* All events get processed in the default domain regardless. */
+                process_event(OH_DEFAULT_DOMAIN_ID, e);
+                
+free_event:
+                oh_event_free(e, FALSE);
+	}
+        /* Should never get here */
+        g_array_free(domain_results, TRUE);
+	return SA_ERR_HPI_INTERNAL_ERROR;
+}
+

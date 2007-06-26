@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2003
+ * (C) Copyright IBM Corp. 2003-2006
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,54 +11,78 @@
  *
  * Authors:
  *     Sean Dague <http://dague.net/sean>
+ *     Renier Morales <renier@openhpi.org>
  */
 
 #ifndef __OH_CONFIG_H
 #define __OH_CONFIG_H
 
-#include <glib.h>
-#include <SaHpi.h>
-#include <oh_plugin.h>
-
-/*
- * Eventually this will contain the definitions for parsing the config file
- *
- * For right now, this will just be static config stanzas
- *
- */
-
-/*
- * search path for plugins
- */
-#define OH_PLUGIN_PATH "/usr/lib/openhpi:/usr/local/lib/openhpi:/usr/local/lib"
-
-#define OH_DEFAULT_CONF "/etc/openhpi/openhpi.conf"
-
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
-/* oh_plugin_config, currently with only one item.  There are thoughts of
-   having explicit path to the plugin, but I'm not sure this is a good plan */
-struct oh_plugin_config {
-        char *name;
-        void *dl_handle; /* handle returned by lt_dlopenext or 0 for static plugins */
-        int refcount;
-        struct oh_abi_v2 *abi;
+#include <glib.h>
+#include <SaHpi.h>
+#include <oh_utils.h>
+	
+struct oh_parsed_config {
+        GSList *handler_configs;
+	GSList *domain_configs;
+        guint handlers_defined;
+        guint handlers_loaded;
+        guint domains_defined;
+        guint domains_loaded;
+        gboolean default_domain;
 };
 
-/*struct oh_handler_config {
-        char *plugin;
-        char *name;
-        char *addr;
-};*/
+typedef enum {
+        OPENHPI_ON_EP = 1,
+        OPENHPI_LOG_ON_SEV,
+        OPENHPI_EVT_QUEUE_LIMIT,
+        OPENHPI_DEL_SIZE_LIMIT,
+        OPENHPI_DEL_SAVE,
+        OPENHPI_DAT_SIZE_LIMIT,
+        OPENHPI_DAT_USER_LIMIT,
+	OPENHPI_DAT_SAVE,
+        //OPENHPI_DEBUG,
+        //OPENHPI_DEBUG_TRACE,
+        //OPENHPI_DEBUG_LOCK,
+        OPENHPI_PATH,
+        OPENHPI_VARPATH,
+        OPENHPI_CONF
+} oh_global_param_type;
 
-int oh_load_config(char *);
-void oh_unload_config(void);
+typedef union {
+        SaHpiEntityPathT on_ep;
+        SaHpiSeverityT log_on_sev;
+        SaHpiUint32T evt_queue_limit;
+        SaHpiUint32T del_size_limit;
+        SaHpiBoolT del_save;
+        SaHpiUint32T dat_size_limit;
+        SaHpiUint32T dat_user_limit;
+	SaHpiBoolT dat_save;
+        //unsigned char dbg; /* 1 = YES, 0 = NO */
+        //unsigned char dbg_trace; /* !0 = YES, 0 = NO */
+        //unsigned char dbg_lock; /* !0 = YES, 0 = NO */
+        char path[OH_MAX_TEXT_BUFFER_LENGTH];
+        char varpath[OH_MAX_TEXT_BUFFER_LENGTH];
+        char conf[OH_MAX_TEXT_BUFFER_LENGTH];
+} oh_global_param_union;
 
-int plugin_refcount (char *);
+struct oh_global_param {
+        oh_global_param_type type;
+        oh_global_param_union u;
+};
 
-struct oh_plugin_config * plugin_config (char *);
+/* Plugin configuration information prototypes */
+int oh_load_config(char *filename, struct oh_parsed_config *config);
+SaErrorT oh_process_config(struct oh_parsed_config *config);
+void oh_clean_config(struct oh_parsed_config *config);
+
+/* For handling global parameters */
+int oh_get_global_param(struct oh_global_param *param);
+int oh_set_global_param(struct oh_global_param *param);
+//unsigned char oh_get_global_bool(oh_global_param_type type);
 
 #ifdef __cplusplus
 }
