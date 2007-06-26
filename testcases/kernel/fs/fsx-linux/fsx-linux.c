@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 1991, NeXT Computer, Inc.  All Rights Reserverd.
  * Copyright (c) 1998-2001 Apple Computer, Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
