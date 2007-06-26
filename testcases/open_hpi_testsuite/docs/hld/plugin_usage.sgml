@@ -1,10 +1,13 @@
 <!-- ...................................................................... -->
-<!-- $Id: plugin_usage.sgml,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ........................................ -->
+<!-- $Id: plugin_usage.sgml,v 1.2 2007/06/26 09:06:38 subrata_modak Exp $ ........................................ -->
 <!-- 
         (C) Copyright IBM Corp. 2003
+        (C) Copyright FORCE Computers 2004
  
         Authors:
             Sean Dague
+            Thomas Kanngieser
+	    Renier Morales
 
         This material may be distributed only subject to the terms and 
         conditions set forth in the Open Publication License, v1.0 or later 
@@ -18,7 +21,7 @@
 -->
 
   <chapter>
-  <title>OpenHPI Plugin Usage</title>
+  <title>OpenHPI Plugin Usage<anchor id="plugin_usage"></title>
   <para>
     This chapter is an overview of the existing plugins for OpenHPI,
     and how one needs to configured them for usage.  It is expected
@@ -47,12 +50,14 @@ handler libdummy {
 plugin libsnmp_bc
 
 handler libsnmp_bc {
+	  version = "1"
           community = "mypass"
           host = "10.0.0.1"
           entity_root = "{ROOT,0}{SYSTEM_CHASSIS,0}"
 }
 
 handler libsnmp_bc {
+	  version = "1"
           community = "mypass"
           host = "10.0.0.21"
           entity_root = "{ROOT,0}{SYSTEM_CHASSIS,1}"
@@ -99,53 +104,72 @@ handler libsnmp_bc {
     </sect2>
   </sect1>
   <sect1>
-    <title>SNMP Blade Center Plugin</title>
+    <title>SNMP BladeCenter Plugin</title>
     <para>
-      The SNMP Blade Center plugin is an SNMP based interface to IBM's
-      Blade Center hardware.  Technical information about Blade Center
-      is best found at <ulink
+      The SNMP BladeCenter plugin is an SNMP based interface to IBM's
+      BladeCenter hardware.  Technical information about BladeCenter
+      can be found at <ulink
         url="http://www-1.ibm.com/servers/eserver/bladecenter/"
-        >the Blade Center Home 
-        Page</ulink>.
+        >the BladeCenter Home Page</ulink>.
       
     </para>
     <para>
-      This plugin is called <literal>snmp_bc</literal> in the OpenHPI tree, and will be
+      This plugin is called <literal>snmp_bc</literal> in the OpenHPI tree, and is
       referenced by the name <literal>libsnmp_bc</literal> in all
       OpenHPI configuration files.
     </para>
     <sect2>
       <title>Prerequisites</title>
       <para>
-        The snmp_bc plugin is not currently built by default in the
-        OpenHPI build process.  In order to enable the building of the
-        snmp_bc module one must add the configure flag
-        <literal>--enable-snmp_bc</literal> during the configure
+        The snmp_bc plugin is built by default in the
+        OpenHPI build process.  To disable the building of this plugin,
+        add the configure flag
+        <literal>--disable-snmp_bc</literal> during the configure
         process.
       </para>
       <para>
-        snmp_bc relies on Net-SNMP >= 5.0.  most testing has
-        been done with >= 5.0.7 so the latest version available for
+        snmp_bc relies on Net-SNMP >= 5.0.  Most testing has
+        been done with >= 5.0.7, so the latest version available for
         your distribution is recommended.
       </para>
       <para>
-        The Blade Center hardware must also be SNMP enabled to
-        interface with this plugin properly.  This requires that the
-        Management Module firmware be >= 1.0.4.  As of the time of
-        this writing 1.0.6 is available and can be found at
+        The BladeCenter's Management Module firmware is required 
+        to be at Version 1.08 or later. The latest version of the Management
+        Module's firmware can be found at IBM's
         <ulink
-          url="http://www-3.ibm.com/pc/support/site.wss/document.do?lndocid=MIGR-45487"
-          >the IBM Support Site</ulink>.
+          url="http://www-1.ibm.com/servers/eserver/support/xseries/index.html"
+          >XSeries Support Page</ulink> under the Downloads link.
         Instructions are included there for upgrading the firmware.
       </para>
       <para>
-        Once the firmware is updated, one must use the Management
-        Module web interface to enable SNMP access.  This is found
-        under the Networking options in the web interface.  There is a
-        field to both set the community string (i.e. password) and up
-        to 3 allowed hosts to connect to the Management Module.
-        Ensure that what host will be running OpenHPI is in that list
+        Once the firmware is updated, SNMP access must be enabled 
+        using the Management Module web interface. 
+	Details and up-to-date instruction on setting up BladeCenter SNMP agent can be found at IBM's
+        <ulink
+          url="http://www-1.ibm.com/servers/eserver/support/xseries/index.html"
+          >XSeries Support Page</ulink> under Redbooks link, search for BladeCenter.
+	Then look in 
+        <ulink
+          url="http://www.redbooks.ibm.com/redpapers/pdfs/redp3582.pdf"
+          >IBM eServer BladeCenter Systems Management, REDP-3582-00;</ulink> 
+	IBM  BladeCenter Management Module Web GUI.
+      </para>
+      <para>
+	SNMP v1 is supported in both BladeCenter Enterprise and BladeCenter Telco.
+        For SNMP v1, in the web interface, (a) set MM Control - General Settings.
+	(b) Set MM Control - Network Protocols,  there are fields to 
+        enable snmpv1, fields to  set the community string (i.e. password) and up
+        to 3 allowed hosts per community to connect to the Management Module.
+        Ensure that the host running OpenHPI is included in the list
         of allowed hosts.
+      </para>
+      <para>
+	SNMP v3 is supported in BladeCenter Telco.  SNMP v3 is <emphasis>currently not</emphasis> 
+	available in BladeCenter Enterprise.
+        For snmpv3, in the web interface, (a) set MM Control - General Settings.
+	(b) Set MM Control - Login Profiles, select a paticular userid then follow the link
+	at the end of user info page to Configure SNMPv3 User. 
+	(c) Set MM Control - Network Protocols,  there is field to enable SNMP v3.
       </para>
     </sect2>
     <sect2>
@@ -158,9 +182,68 @@ handler libsnmp_bc {
 plugin libsnmp_bc
 
 handler libsnmp_bc {
-          community = "myc0m"
-          host = "192.168.64.52"
-	  entity_root = "{ROOT,0}{SYSTEM_CHASSIS,0}"
+        entity_root = "{SYSTEM_CHASSIS,4}" # Required
+        host = "bc.ibm.com" # Required
+        community = "community" # Version 1 Required.
+        version = "1" # Required. SNMP protocol version (1|3)
+        security_name = "snmpv3_user" # Version 3 Required.
+        passphrase = "opensesame" # Version 3. Required for security_level authNoPriv or authPriv.
+        auth_type = "MD5" # Version 3. Passphrase encoding (MD5|SHA)
+        security_level = "noAuthNoPriv" # Version 3 (noAuthNoPriv|authNoPriv|authPriv)
+}
+            </programlisting>
+      </para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>SNMP RSA Plugin</title>
+    <para>
+      The SNMP RSA plugin is an SNMP based interface to IBM's
+      Remote Supervisor Adapter hardware.  Technical information about RSA
+      is best found at <ulink
+        url="http://www-1.ibm.com/support/docview.wss?rs=0&amp;q1=remote+supervisor+adapter&amp;uid=psg1MIGR-4UKSML&amp;loc=en_US&amp;cs=utf-8&amp;cc=us&amp;lang=en"
+        >the RSA Overview
+        Page</ulink>.
+      
+    </para>
+    <para>
+      This plugin is called <literal>snmp_rsa</literal> in the OpenHPI tree, and will be
+      referenced by the name <literal>libsnmp_rsa</literal> in all
+      OpenHPI configuration files.
+    </para>
+    <sect2>
+      <title>Prerequisites</title>
+      <para>
+        The snmp_rsa plugin is built by default in the
+        OpenHPI build process.  To disable the building of the
+        snmp_rsa module, add the configure flag
+        <literal>--disable-snmp_rsa</literal> during the configure
+        process.
+      </para>
+      <para>
+        snmp_rsa relies on Net-SNMP >= 5.0.  Most testing has
+        been done with >= 5.0.7 so the latest version available for
+        your distribution is recommended.
+      </para>
+      <para>
+        The snmp_rsa plugin is function complete with this release but has
+        not been fully unit tested. If you discover bugs please contact the
+        OpenHPI team.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Configuration</title>
+      <para>
+        Below is an example configuration stanza:
+      </para>
+      <para>
+        <programlisting role="config">
+plugin libsnmp_rsa
+
+handler libsnmp_rsa {
+          community = "x440public"
+          host = "10.0.0.130"
+	  entity_root = "{ROOT,0}{SYSTEM_CHASSIS,1}"
 }
             </programlisting>
       </para>
@@ -387,5 +470,130 @@ handler libipmi {
 	</para>
     </sect2>
 
+  </sect1>
+  <sect1>
+    <title>IPMI Direct Plugin</title>
+    <para>
+      The IPMI Direct plugin provides OpenHPI access to ATCA and
+      IPMI 1.5 systems. The plugin uses multiple threads to
+      communicate to the IPMI hardware. RMCP as well as SMI 
+      (access to IPMI divice driver) are supported for IPMI access.
+      The following features are supported:
+    </para>
+    <itemizedlist mark='opencircle'>
+      <listitem>
+        <para>
+          <emphasis>Sensors</emphasis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>FRU inventory data reading</emphasis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>ATCA hotswapping</emphasis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>System event log</emphasis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>Power and reset states for ATCA</emphasis>
+        </para>
+      </listitem>
+    </itemizedlist>
+    <sect2>
+      <title>Prerequisites</title>
+      <para>
+	The IPMI Direct plugin can be enabled using the <literal>--enable-ipmidirect</literal> flage 
+	to the <literal>./configure</literal> script. It is build by default.
+        A statical linked version of OpenHPI and IPMI Direct can be build with
+        <literal>--enable-ipmidirect=static</literal>.
+      </para>
+      <para>
+        For RMCP password cryption MD2 or MD5 OpenSSL is required.
+        OpenSSL is available at	<ulink url="http://www.openssl.org" </ulink>.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Configuration</title>
+      <para>
+	The IPMI Direct plugin supports <literal>"SMI"</literal>
+	and <literal>"LAN"</literal> access methods to IPMI or ATCA hardware.
+        Below is an example "SMI" configuration stanza:
+      </para>
+      <para>
+        <programlisting role="config">
+plugin libipmidirect
+
+handler libipmidirect {
+	entity_root = "{ROOT,0}{SYSTEM_CHASSIS,0}"
+	name="smi"
+	addr="0"
+}
+        </programlisting>
+      </para>
+      <para>
+	The parameter addr is the device number of the IPMI device.
+        For the above example the plugin checks /dev/ipmidev0,
+        /dev/ipmi/0 and /dev/ipmi0 for an IPMI device.
+      </para>
+      <para>
+	And this is an example "LAN" or RMCP configuration stanza:
+      </para>
+      <para>
+		<programlisting role="config">
+plugin libipmidirect
+
+handler libipmidirect {
+	entity_root = "{SYSTEM_CHASSIS,0}"
+	name = lan
+	addr = "IP.ADDRESS.HERE"
+	port = "IPMI LAN PORT NUMBER"
+	auth_type = "NONE STRAIGHT, MD2 or MD5"
+	auth_level= "USER, OPERATOR or ADMIN"
+	username = "YOUR_USER_NAME"
+	password = "YOUR_PASSWORD"
+	IpmiConnectionTimeout = "5000"
+	AtcaConnectionTimeout = "1000"
+	MaxOutstanding = "3"
+	MCC8= "initial_discover poll_alive poll_dead"
+	MCCA= "initial_discover poll_alive poll_dead"
+}
+		</programlisting>
+      </para>
+      <para>
+	ATCA systems are autodetected. The plugin uses different timeouts
+        for IPMI 1.5 and ATCA systems. IpmiConnectionTimeout and AtcaConnectionTimeout
+        are timouts in miliseconds.
+      </para>
+      <para>
+        The plugin uses one thread per Managment Controller (MC). The
+        maximum outstanding IPMI commands can be given by
+        MaxOutstanding. When the plugin has send MaxOutstanding IPMI commands
+        it will block until it receives a reply for an outstanding command
+        or a timeout happens. Then the next command is send.
+      </para>
+      <para>
+        The MCs in ATCA systems are automatic detected.
+        For IPMI 1.5 the plugin needs help by the configuration
+        file. Given the line MCCA="initial_discover poll_alive poll_dead"
+        the plugin checks for an MC at address CA (hexadecimal) at startup.
+        When an MC is found it is alive. poll_alive means that the MC is polled
+        once a second to check if the MC is already there. This is to
+        check for removal of a FRUs. poll_dead is to check insertion of
+        FRUs on IPMI 1.5 systems.
+      </para>
+      <para>
+        More than one handler sections for IPMI Direct plugin are
+        supported. The plugin is known to work on i386 and PPC platforms
+        under linux.
+      </para>
+    </sect2>
   </sect1>
 </chapter>

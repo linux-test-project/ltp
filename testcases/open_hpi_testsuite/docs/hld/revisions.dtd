@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: revisions.dtd,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ................................................... -->
+<!-- $Id: revisions.dtd,v 1.2 2007/06/26 09:06:38 subrata_modak Exp $ ................................................... -->
 <!-- 
         This material may be distributed only subject to the terms and 
         conditions set forth in the Open Publication License, v1.0 or later 
@@ -20,8 +20,17 @@
   <revremark>Initial outline revision</revremark>
 </revision>
 ">
+<!ENTITY openhpi-rev-0_2 "
+<revision>
+  <revnumber>0.2</revnumber>
+  <date>2004-2-18</date>
+  <authorinitials>tk</authorinitials>
+  <revremark>Added IPMI Direct section</revremark>
+</revision>
+">
 <!ENTITY openhpi-revisions "
 <revhistory>
   &openhpi-rev-0_1;
+  &openhpi-rev-0_2;
 </revhistory>
 ">

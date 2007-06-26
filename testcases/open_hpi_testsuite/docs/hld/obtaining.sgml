@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: obtaining.sgml,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ................................................ -->
+<!-- $Id: obtaining.sgml,v 1.2 2007/06/26 09:06:38 subrata_modak Exp $ ................................................ -->
 <!-- 
         This material may be distributed only subject to the terms and 
         conditions set forth in the Open Publication License, v1.0 or later 
@@ -59,15 +59,14 @@
 	<title>Configuring OpenHpi</title>
 	<para>
 	If you installed the RPMs, then the configuration file <literal>
-	/etc/openhpi/openhpi.con</literal> will be installed.  If you installed
+	/etc/openhpi/openhpi.conf</literal> will be installed.  If you installed
 	from the source using <literal>make install</literal> then you should
 	have copied the file manually by now.
 	</para>
 	<para>
 	Edit the <literal>/etc/openhpi.conf</literal> file to enable and configure
-	the plug-in you intend to use.  See the OpenHpi Manual secion<ulink
-	url="http://openhpi.sourceforge.net/manual/c287.html">
-	OpenHpie Plug-in Usage</ulink> for more info.
+	the plug-in you intend to use.  See the OpenHpi Manual secion<link linkend="plugin_usage">
+	OpenHpi Plug-in Usage</link> for more info.
 	</para>
     </sect1>
 </chapter>

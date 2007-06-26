@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: legal.dtd,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ....................................................... -->
+<!-- $Id: legal.dtd,v 1.2 2007/06/26 09:06:38 subrata_modak Exp $ ....................................................... -->
 <!-- 
         This material may be distributed only subject to the terms and 
         conditions set forth in the Open Publication License, v1.0 or later 
@@ -15,9 +15,11 @@
 <!-- Copyright Notices -->
 <!ENTITY intel-copyright "<YEAR>2003</YEAR><HOLDER>Intel Corporation</HOLDER>">
 <!ENTITY ibm-copyright "<YEAR>2003</YEAR><HOLDER>IBM Corporation</HOLDER>">
+<!ENTITY force-copyright "<YEAR>2004</YEAR><HOLDER>FORCE Computers</HOLDER>">
 <!ENTITY openhpi-copyrights "
 <copyright>&intel-copyright</copyright>
 <copyright>&ibm-copyright</copyright>
+<copyright>&force-copyright</copyright>
 ">
 
 <!-- License Notice -->

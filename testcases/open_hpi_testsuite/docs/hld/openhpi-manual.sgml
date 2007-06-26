@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: openhpi-manual.sgml,v 1.1 2004/02/11 16:54:15 robbiew Exp $ ................................................ -->
+<!-- $Id: openhpi-manual.sgml,v 1.2 2007/06/26 09:06:38 subrata_modak Exp $ ................................................ -->
 <!-- 
         Copyright (C) Intel Corp 2003
         Copyright (C) IBM Corp 2003
@@ -21,13 +21,13 @@
 
 <!doctype book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 
-<!ENTITY % legal PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "legal.dtd">
+<!ENTITY % legal SYSTEM "legal.dtd">
 %legal;
 
-<!ENTITY % authors PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "authors.dtd">
+<!ENTITY % authors SYSTEM "authors.dtd">
 %authors;
 
-<!ENTITY % revisions PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "revisions.dtd">
+<!ENTITY % revisions SYSTEM "revisions.dtd">
 %revisions;
 
 <!ENTITY chapter1 SYSTEM "bookinfo.sgml">
@@ -38,6 +38,10 @@
 <!ENTITY chapter6 SYSTEM "openhpi_structure.sgml">
 <!ENTITY chapter7 SYSTEM "plugin_usage.sgml">
 <!ENTITY chapter8 SYSTEM "plugin_guide.sgml">
+<!ENTITY snmp_util SYSTEM "snmp_util.sgml">
+<!ENTITY rpt_utils SYSTEM "rpt_utils.sgml">
+<!ENTITY epath_utils SYSTEM "epath_utils.sgml">
+<!ENTITY uid_utils SYSTEM "uid_utils.sgml">
 <!ENTITY appendix SYSTEM "appendix.sgml">
 ]>
 
