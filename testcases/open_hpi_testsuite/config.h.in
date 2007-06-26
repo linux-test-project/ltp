@@ -1,5 +1,11 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+#ifndef __OPENHPI_CONFIG_H
+#define __OPENHPI_CONFIG_H
+
+/* openhpi specific config path */
+#undef CONFPATH
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -24,17 +30,26 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
 /* Define to 1 if you have the <openssl/md2.h> header file. */
 #undef HAVE_OPENSSL_MD2_H
 
 /* Define to 1 if you have the <openssl/md5.h> header file. */
 #undef HAVE_OPENSSL_MD5_H
 
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strdup' function. */
+#undef HAVE_STRDUP
 
 /* Define to 1 if cpp supports the ANSI # stringizing operator. */
 #undef HAVE_STRINGIZE
@@ -63,8 +78,23 @@
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
+/* default client configfile */
+#undef OH_CLIENT_DEFAULT_CONF
+
+/* Build daemon and client libs */
+#undef OH_DAEMON_ENABLED
+
+/* Enables dynamic debug messages */
+#undef OH_DBG_MSGS
+
+/* default configfile */
+#undef OH_DEFAULT_CONF
+
 /* uid map */
 #undef OH_DEFAULT_UID_MAP
+
+/* openhpi plugin path */
+#undef OH_PLUGIN_PATH
 
 /* Name of package */
 #undef PACKAGE
@@ -92,3 +122,5 @@
 
 /* Version number of package */
 #undef VERSION
+
+#endif /* __OPENHPI_CONFIG_H */

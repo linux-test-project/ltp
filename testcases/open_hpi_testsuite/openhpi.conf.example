@@ -1,0 +1,218 @@
+### OpenHPI configuration example file ###
+
+#######
+## FIRST section: declaration of global parameters like the following.
+
+#OPENHPI_LOG_ON_SEV = "MINOR"
+#OPENHPI_ON_EP = "{SYSTEM_CHASSIS,1}"
+#OPENHPI_EVT_QUEUE_LIMIT = 10000
+#OPENHPI_DEL_SIZE_LIMIT = 10000
+#OPENHPI_DEL_SAVE = "NO"
+#OPENHPI_DAT_SIZE_LIMIT = 0
+#OPENHPI_DAT_USER_LIMIT = 0
+#OPENHPI_DAT_SAVE = "NO"
+#OPENHPI_PATH = "/usr/local/lib/openhpi:/usr/lib/openhpi"
+#OPENHPI_VARPATH = "/usr/local/var/lib/openhpi"
+
+## The default values for each have been selected in the example above (except
+## for OPENHPI_PATH and OPENHPI_CONF. See below).
+## No need to specify any one of them because the defaults is used
+## automatically. The library also looks for these as environment variables.
+## Environment variables found that match a global parameter override the
+## corresponding parameter set in this configuration file.
+##
+## OPENHPI_LOG_SEV sets the lowest severity level an event must meet to be
+## logged in the domain event log. Possible values are (highest to lowest):
+## "CRITICAL", "MAJOR", "MINOR", "INFORMATIONAL", "OK", and "DEBUG".
+## OPENHPI_ON_EP sets the entity path on which the application is running. This
+## entity path is returned when SaHpiResourceIdGet() is called.
+## OPENHPI_EVT_QUEUE_LIMIT sets the maximum number of events that are allowed
+## in the session's event queue. Default is 10000 events. Setting it to 0 means
+## unlimited.
+## OPENHPI_DEL_SIZE_LIMIT sets the maximum size (in number of event log entries)
+## for the domain event log. Default is 10000 log entries. Setting it to 0
+## means unlimited.
+## OPENHPI_DEL_SAVE sets whether the domain event log is persisted to disk or
+## not. The event log is written to OPENHPI_VARPATH value.
+## OPENHPI_DAT_SIZE_LIMIT sets the maximum size (in number of alarm entries) for
+## the alarm table. The default 0 means unlimited.
+## OPENHPI_DAT_USER_LIMIT sets the maximum number of user type alarm entries
+## allowed in the alarm table. The default 0 means unlimited.
+## OPENHPI_DAT_SAVE sets whether the domain alarm table is persisted to disk or
+## not. The alarm table is written to the directory where OPENHPI_VARPATH
+## points to.
+## OPENHPI_PATH is a colon (:) delimited list of directories specifying
+## the location of openhpi plugin libraries. The default is defined when the
+## library is configured.
+## OPENHPI_VARPATH is a directory to which certain openhpi data is saved to.
+## The DEL (Domain Event Log), DAT (Domain Alarm Table), and UID (Unique IDs
+## used for resources) mappings are saved to this directory. The default is set
+## at compile time through the ./configure options.
+#######
+
+#######
+## SECOND section: handler (instance) declaration with arguments understood by the plugin.
+
+#############################################################################
+##**CAUTION** System administrators have to make sure that entity paths are
+## unique in a domain. To avoid entity paths conflicting among handlers, make
+## sure the "entity_root" is unique for each handler definition, unless the
+## plugin documentation says otherwise.
+#############################################################################
+
+## Strings are enclosed by "", numbers are not.
+
+## Section for the simulator plugin
+## You can load multiple copies of the simulator plugin but each
+## copy must have a unique name.
+handler libsimulator {
+        entity_root = "{SYSTEM_CHASSIS,1}"
+        name = "simulator"
+}
+
+## Section for ipmi plugin using SMI -- local interface
+#handler libipmi        {
+#       entity_root = "{SYSTEM_CHASSIS,2}"
+#       name = "smi"
+#       addr = 0
+#}
+
+## Section for ipmi plugin based on OpenIPMI:
+#handler libipmi {
+#       entity_root = "{SYSTEM_CHASSIS,3}"
+#       name = "lan"
+#       addr = "x.x.x.x"        #ipaddress
+#       port = 999
+#       auth_type = "straight"
+#       auth_level= "user"
+#       username = "joe"
+#       password = "blow"
+#}
+
+## Section for BladeCenter snmp_bc plugin:
+#handler libsnmp_bc {
+#        entity_root = "{SYSTEM_CHASSIS,4}" # Required. BladeCenter chassis Entity Path.
+#        host = "192.168.70.125"            # Required. BladeCenter Management Module (MM) IP address.
+#        host_alternate = "192.168.70.127"  # Optional. BladeCenter Management Module 2nd IP address.
+                                            #           Some BladeCenter MM Firmware allows the 2 MMs,
+                                            #           active and standby, to have 2 different IP address.
+                                            #           If the targetted BladeCenter 2 MMs are configured 
+                                            #           with 2 IPs, use this key for the 2nd IP.
+#        version = "1"                      # Required. SNMP protocol version (1|3).
+#        community = "public"               # SNMP V1: Required. SNMP V1 community name.
+#        security_name = "snmpv3_user"      # SNMP V3: Required. SNMP V3 user Login ID.
+#        context_name  = ""                 # SNMP V3: Optional. Must match MM's "Context name" field, if defined.
+#        security_level = "noAuthNoPriv"    # SNMP V3: Required. Security level (noAuthNoPriv|authNoPriv|authPriv).
+#        passphrase = ""                    # SNMP V3: Authentication password. Required if security_level
+#                                           # is authNoPriv or authPriv.
+#        auth_type = ""                     # SNMP V3: Authentication password encoding (MD5|SHA). Required if 
+#                                           # security_level is authNoPriv or authPriv.
+#	 privacy_passwd = ""                # SNMP V3: Privacy password. Required if security_level is authPriv.
+#	 privacy_protocol = ""              # SNMP V3: Privacy password encoding (DES).
+#                                           # Required if security_level is authPriv.
+#                                           # If security_level is authPriv, DES encoding is assumed since there
+#                                           # currently is no other privacy password encoding choice.
+#        count_per_getbulk = "32"           # SNMP V3: Optional. SNMP_MSG_GETBULK commands can be used to increase
+#                                           # performance. This variable sets the maximum OIDs allowable per 
+#                                           # MSG_GETBULK command.
+#                                           # Positive values less than 16 default to "16", since values less than
+#                                           # 16 don't necessarily increase performance. Too high of a value (> 40)
+#                                           # can cause SNMP commands to BladeCenter to timeout. The default is "32".
+#                                           # A value of "0" disables the use of the SNMP_MSG_GETBULK SNMP command.
+#}
+
+## Section for static simulator plugin:
+## If openhpi configured with
+## configure --enable-simulator=static
+## the dummy plugin is compiled in.
+## It is possible to use simulator and libsimulator
+## at the same time.
+#handler simulator {
+#        entity_root = "{SYSTEMk_CHASSIS,5}"
+#        name = "test"
+#}
+
+## Section for ipmidirect plugin using SMI -- local interface
+#handler libipmidirect {
+#       entity_root = "{SYSTEM_CHASSIS,6}"
+#       name = "smi"
+#       addr = 0
+#}
+
+## Section for ipmidirect plugin using RMCP:
+#handler libipmidirect {
+#        entity_root = "{SYSTEM_CHASSIS,7}"
+#        name = "lan"         # RMCP
+#        addr = "localhost"   # Host name or IP address
+#        port = "623"         # RMCP port
+#        auth_type = "none"   # none, md2, md5 or straight
+#        auth_level = "admin" # operator or admin
+#        username = "arthur"
+#        password = "pieman"
+#        MultipleDomains = "no"  # "yes" creates a domain for this handler
+#        DomainTag = "Chassis 1" # Used if MultipleDomains="yes"
+#        logflags = ""      # logging off
+#        # logflags = "file stdout"
+#        # infos goes to logfile and stdout
+#        # the logfile are log00.log, log01.log ...
+#        logfile = "log"
+#        # if #logfile_max reached replace the oldest one
+#        logfile_max = "10"
+#}
+
+#######
+## THIRD Section: Domains (Optional).
+##
+## Events are processed in domains that match the entity path of said event
+## (see SaHpiEntityPathT in SaHpi.h). This is done by associating an entity
+## path pattern (below) to a domain declaration and using that to match
+## against the event's entity path.
+## All events are still processed in the default domain, regardless of
+## entitypath, unless the default domain is overriden here (with a domain
+## number/id of 0).
+##
+## The '.' in the entity path patterns can be placed anywhere you would
+## put an entity type or an entity location number in the entity path
+## (an entity path in canonical form looks like this:
+## "{GROUP,4}{RACK,1}{SYSTEM_CHASSIS,5}{SBC_BLADE,6}").
+## Depending on where you put the '.', it means any entity type or any entity
+## location number. You can also place a '*' where you would put a tuple (a
+## tuple is an entity type/entity location pair: {RACK,8}).
+## It means 0 or more tuples with any entity type and any location number.
+## NOTE: entity types come from the SaHpiEntityTypeT enum defined in SaHpi.h
+## without the SAHPI_ENT prefix.
+##
+## Example entity path patterns:
+##
+## {.,.} matches {RACK,4}, but not {RACK,4}{GROUP,2}
+##
+## {RACK,4}* matches {RACK,4}{GROUP,2} 
+##
+## {RACK,.}* matches {RACK,4}{GROUP,2} also.
+##
+## {RACK,.}{GROUP,.} matches {RACK,4}{GROUP,2} also.
+##
+## *{SBC_BLADE,1} does not match {SYSTEM_CHASSIS,4}{SBC_BLADE,4}
+##
+## * matches anything.
+##
+## Example domain declarations:
+#domain 1 {
+#	# Required if peer_of is not used.
+#	entity_pattern = "{SYSTEM_CHASSIS,1}*{SBC_BLADE,.}"
+#	tag = "Blades on first chassis" # Optional
+#	ai_timeout = 0 # Optional. -1 means BLOCK. 0 is the default.
+#	ai_readonly = 1 # Optional. 1 means yes (default), 0 means no.
+#}
+
+#domain 2 {
+#	entity_pattern = "*{SBC_BLADE,.}{FAN,.}"
+#	tag = "All Blade Fans" # Optional
+#	child_of = 1 # Optional. 0 means the default domain.
+#}
+
+#domain 3 {
+#	tag = "All Blade Fans (Peer)"
+#	peer_of = 2 # Optional. 0 means the default domain.
+#}
+

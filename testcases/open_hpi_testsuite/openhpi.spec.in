@@ -1,119 +1,266 @@
-%define prefix /usr
+%define _topdir @abs_top_srcdir@
+%define _tmpdir /tmp
+%define _rpmtopdir %{_topdir}/rpm
+%define _builddir %{_rpmtopdir}/BUILD
+%define _rpmdir %{_rpmtopdir}/RPMS
+%define _sourcedir %{_topdir}
+%define _specdir %{_topdir}
+%define _srcrpmdir %{_rpmtopdir}/SRPMS
+
+%define with_ipmi @WITH_IPMI@
+%define with_bladecenter @WITH_SNMP_BC@
+%define with_rtas @WITH_RTAS@
+%define with_sysfs @WITH_SYSFS@
+
 
 Name: @HPI_PKG@
-Summary: @HPI_PKG@ - implementation of SAForum Hardware Platform Interface 
 Version: @VERSION@
-Release: 1
-Copyright: BSD
-URL: http://openhpi.sourceforge.net
-Group: Utilities
+Release: 2
+#
+Summary: Open implementation of the SAF Hardware Platform Interface
+#
+License: BSD
+Group: System/Monitoring
+#
 Vendor: OpenHPI Project
-Packager: TariqX
-Source: @HPI_PKG@-@VERSION@.tar.gz
-Buildroot: /var/tmp/@HPI_PKG@-root
-BuildRequires: pkgconfig glib-devel
-BuildRequires: docbook-utils docbook-utils-pdf docbook-dtd41-sgml
-Summary: Library that provides SAForum's HPI
-Group: Utilities
-AutoReq: no
-Requires: libc.so.6 libglib-1.2.so.0 libpthread.so.0
+Packager: renier@openhpi.org
+#
+URL: http://www.openhpi.org
+Source: http://prdownloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
+#
+Buildroot: %{_rpmtopdir}/INSTALL
+BuildRequires: pkgconfig glib2-devel automake autoconf libtool net-snmp-devel gcc-c++ docbook-utils docbook-utils-pdf
+%if 0%{?suse_version}
+BuildRequires: tcpd-devel
+%else
+BuildRequires: tcp_wrappers
+%endif
+Requires: e2fsprogs-devel openssl-devel libstdc++-devel glib2-devel
 
 %package devel
-Summary: Development files for HPI
-Group: Utilities
-AutoReq: yes
-Requires: openhpi 
-Requires: pkgconfig
+Summary: OpenHPI and SAF header files 
+Group: System/Monitoring
+Requires: openhpi = %{version}
 
 %package clients
-Summary: HPI command line applications
-Group: Utilities
-AutoReq: yes
+Summary: OpenHPI command-line utilities
+Group: System/Monitoring
+BuildRequires: popt-devel
+Requires: openhpi = %{version} popt
+
+%if 0%{?with_ipmi}
+%package ipmi
+Summary: OpenHPI plugin for OpenIPMI
+Group: System/Monitoring
+BuildRequires: OpenIPMI-devel
+Requires: openhpi = %{version} OpenIPMI
+%endif
+
+%package ipmidirect
+Summary: OpenHPI plugin for IPMI-enabled systems
+Group: System/Monitoring
+Requires: openhpi = %{version}
+
+%if 0%{?with_rtas}
+%package rtas
+Summary: OpenHPI plugin for IBM PPC systems
+Group: System/Monitoring
+BuildRequires: librtas-devel
+Requires: openhpi = %{version} librtas
+%endif
+
+%package simulator
+Summary: OpenHPI plugin for testing the core library
+Group: System/Monitoring
+Requires: openhpi = %{version}
+
+%if 0%{?with_bladecenter}
+%package bladecenter
+Summary: OpenHPI plugin for the IBM Blade Center
+Group: System/Monitoring
+BuildRequires: net-snmp-devel
+Requires: openhpi = %{version} net-snmp > 5.0
+%endif
+
+%if 0%{?with_sysfs}
+%package sysfs
+Summary: OpenHPI plugin for sysfs
+Group: System/Monitoring
+%if 0%{?suse_version}
+BuildRequires: sysfsutils < 2
+%else
+BuildRequires: libsysfs-devel < 2
+%endif
+Requires: openhpi = %{version} libsysfs < 2
+%endif
+
+%package watchdog
+Group: System/Monitoring
+Summary: OpenHPI plugin for Linux software watchdog support
+Requires: openhpi = %{version}
 
 %description 
-This package contains an implementation of Service Availability Forum's 
-HPI specification.  It includes support for multiple different types of
+An open implementation of the Service Availability Forum (SAF)
+Hardware Platform Interface (HPI). It includes support for multiple types of
 hardware including: IPMI, IBM Blade Center (via SNMP), Linux Watchdog devices,
 and Sysfs based systems.
 
 %description devel
-Contains additional files need for a developer to create applications
-and/or middleware that depends uses the Service Availability Forum's
-HPI specification
+Contains header and other include files needed by developers
+to build application that use the OpenHPI library.
 
 %description clients
-This package contains hpi command line utilities 
+These command-line applications serve as HPI utilities that you can use
+for looking at: sensor readings, vpd data, power machines on/off, etc.
+They lso serve as examples to developers of HPI API usage.
+
+%if 0%{?with_ipmi}
+%description ipmi
+This OpenHPI plugin uses OpenIPMI to connect to IPMI-enabled hardware
+locally or over the network. Its focus is wide, created to support
+any generic hardware topology that uses IPMI.
+%endif
+
+%description ipmidirect
+This OpenHPI plugin connects directly to IPMI-enabled hardware
+locally or over the network. Its focus is to support ATCA-type chassis.
+
+%if 0%{?with_rtas}
+%description rtas
+OpenHPI plugin for reading sensor and vpd information
+from IBM PPC systems.
+%endif
+
+%description simulator
+OpenHPI plugin that reports fakes hardware used for
+testing the core library.
+
+%if 0%{?with_bladecenter}
+%description bladecenter
+OpenHPI plugin supporting the IBM BladeCenter. It also supports
+RSA-enabled IBM systems, in addition to all types of BladeCenters.
+This plugin uses snmp to connect to and gather information from all systems.
+%endif
+
+%if 0%{?with_sysfs}
+%description sysfs
+OpenHPI plugin that reads system information from sysfs.
+%endif
+
+%description watchdog
+OpenHPI plugin that uses the Linux software watchdog support
+provided by the kernel.
 
 ###################################################
 %prep
 ###################################################
-
-###################################################
 %setup
-###################################################
 
 ###################################################
 %build
 ###################################################
-./configure @ac_configure_args@ --sysconfdir=/etc \
-    --localstatedir=/var --prefix=%{prefix}
-make
+%ifarch ia64 x86_64
+./configure @ac_configure_args@ --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib64 --with-varpath=/var/lib/%{name}
+%else
+./configure @ac_configure_args@ --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib --with-varpath=/var/lib/%{name}
+%endif
+%{__make}
 make -C docs/hld pdf-am
 make -C docs/hld openhpi-manual/book1.html
 
 ###################################################
 %install
 ###################################################
-if
-  [ ! -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]
-then
-  rm -rf $RPM_BUILD_ROOT
-fi
-make DESTDIR=$RPM_BUILD_ROOT install
-mkdir -p $RPM_BUILD_ROOT/etc/@HPI_PKG@
-mkdir -p $RPM_BUILD_ROOT/var/lib/@HPI_PKG@
-install -C -m 644 examples/openhpi.conf.example $RPM_BUILD_ROOT/etc/@HPI_PKG@/@HPI_PKG@.conf
+make DESTDIR=%{buildroot} install
+%{__install} -Dd -m 0755 %{buildroot}%{_sysconfdir}/%{name} %{buildroot}/var/lib/%{name}
+%{__install} -m 0644 %{name}.conf.example %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+
 %post
 
 ###################################################
 %files
 ###################################################
 %defattr(-,root,root)
-%doc README COPYING ChangeLog
+%doc README README.daemon COPYING
 %doc docs/hld/*pdf
 %doc docs/hld/openhpi-manual
-%config /etc/@HPI_PKG@/*
-%dir /var/lib/@HPI_PKG@
-%{prefix}/lib/libopen*
-%{prefix}/lib/@HPI_PKG@/lib*
-# dummy*
-#%{prefix}/lib/@HPI_PKG@/libsysfs*
-#%{prefix}/lib/@HPI_PKG@/libsnmp_bc*
-#%{prefix}/lib/@HPI_PKG@/libwatchdog*
-#%{prefix}/lib/@HPI_PKG@/libipmidirect*
-#%{prefix}/lib/@HPI_PKG@/libipmi*
+%dir %{_sysconfdir}/%{name}/
+%config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
+%dir %{_libdir}/%{name}
+%dir /var/lib/%{name}
+%{_libdir}/libopenhpi*.so.*
+%{_libdir}/liboh*connx*.so.*
+%{_mandir}/man7/%{name}.7*
+%{_sbindir}/openhpid
+%{_sysconfdir}/init.d/openhpid
 
 ###################################################
 %files devel
 ###################################################
 %defattr(-,root,root)
-%dir %{prefix}/include/@HPI_PKG@
-%{prefix}/include/@HPI_PKG@/*h
-%{prefix}/lib/pkgconfig/openhpi.pc
+%{_includedir}/%{name}
+%{_libdir}/pkgconfig/openhpi.pc
+%{_libdir}/pkgconfig/openhpiutils.pc
+%{_libdir}/libopenhpi*.so
+%{_libdir}/libopenhpi*.la
+%{_libdir}/*.a
+%{_libdir}/liboh*connx*.so
+%{_libdir}/liboh*connx*.la
 
 ###################################################
 %files clients
 ###################################################
 %defattr(-,root,root)
-%{prefix}/bin/hpi*
+%{_bindir}/hpi*
 
 ###################################################
-%clean
+%if 0%{?with_ipmi}
+%files ipmi
 ###################################################
-if
-    [ -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]
-then
-    rm -rf $RPM_BUILD_ROOT
-fi
-rm -rf $RPM_BUILD_DIR/@HPI_PKG@-@VERSION@
+%defattr(-,root,root)
+%{_libdir}/%{name}/libipmi.*
+%endif
+
+###################################################
+%files ipmidirect
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libipmidirect.*
+
+###################################################
+%if 0%{?with_rtas}
+%files rtas
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/librtas2hpi.*
+%endif
+
+###################################################
+%files simulator
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libsimulator.*
+
+###################################################
+%if 0%{?with_bladecenter}
+%files bladecenter
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libsnmp_bc.*
+%endif
+
+###################################################
+%if 0%{?with_sysfs}
+%files sysfs
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libsysfs2hpi.*
+%endif
+
+###################################################
+%files watchdog
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libwatchdog.*
+
 
