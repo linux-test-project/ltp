@@ -10,6 +10,12 @@
 # any later version.
 
 #check_utsns_enabled
+check_for_unshare
+if [ $? -eq 1 ]; then
+	echo "Unshare not supported.  Not running container tests"
+	exit 0
+fi
+
 #if [ $? -eq 0 ]; then
 	echo "Running utsns tests."
 	runutstest.sh
