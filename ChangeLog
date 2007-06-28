@@ -1,3 +1,98 @@
+LTP-20070630
+
+1)Log Message: "carmelo.amoroso@st.com" points out the wrong usage of the option -s
+File(s) Affected: ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+2)Log Message: "carmelo.amoroso@st.com" pointed out that id (returned by shmget) has to be used for all shm operations
+File(s) Affected: ltp/testcases/kernel/mem/mtest06/shmat1.c
+
+3)Log Message: "rsalveti@linux.vnet.ibm.com" fixed the way "inotify" should compile in kernels below 2.6.13
+File(s) Affected: ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+
+4)Log Message: Removing 'alarm04' testcase call, as alarm04 has been removed to be no-more-valid
+File(s) Affected: ltp/runtest/ltplite
+ltp/runtest/stress.part3
+
+5)Log Message: "sachinp@in.ibm.com" rectified kdump lkdtm tests for powerpc architecture with RedHat distribution
+File(s) Affected: ltp/testcases/kdump/rhtools/lkdtm_mod/lkdtm.c
+
+6)Log Message: "rahaman.riaz@gmail.com" fixed some Thread Handling Anomaly
+File(s) Affected: ltp/testcases/open_posix_testsuite/conformance/interfaces/mq_timedsend/12-1.c
+
+7)Log Message: "rahaman.riaz@gmail.com" fixed ways by which OPEN POSIX displays warnings
+File(s) Affected: open_posix_testsuite/conformance/interfaces/sem_unlink/2-2.c
+open_posix_testsuite/conformance/interfaces/sigaltstack/9-1.c
+
+8)Log Message: "yxu@suse.de" corrected the way by which pthread_exit() handles pointer argument
+File(s) Affected: ltp/testcases/kernel/io/disktest/threading.h
+
+9)Log Message: "rsalveti@linux.vnet.ibm.com" fixed the problem reported at bug [1732287] mtest06/mmap1.c missing run_once check in do loop
+File(s) Affected: ltp/runtest/ltplite
+ltp/runtest/mm
+ltp/runtest/stress.part1
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+10)Log Message: gcov-kernel: add patches to support arm eabi-compliant gcc
+File(s) Affected: /ltp/utils/analysis/gcov-kernel/linux-2.6.18-gcov-arm-eabi.patch
+/ltp/utils/analysis/gcov-kernel/linux-2.6.19-gcov-arm-eabi.patch
+/ltp/utils/analysis/gcov-kernel/linux-2.6.20-gcov-arm-eabi.patch
+/ltp/utils/analysis/gcov-kernel/linux-2.6.21-gcov-arm-eabi.diff
+
+11)Log Message: "dmonakhov@openvz.org" added this test case to check for "fault in pages readable" functionality
+File(s) Affected: ltp/runtest/stress.part3
+ltp/runtest/syscalls
+ltp/runtest/ltplite
+File(s) Added:    ltp/testcases/kernel/syscalls/writev/writev06.c
+
+12)Log Message: "risrajak@linux.vnet.ibm.com" added sysvipc (conatainers) namespace testcases
+File(s) Added:    ltp/testcases/kernel/containers/sysvipc/Makefile
+ltp/testcases/kernel/containers/sysvipc/runipcnstest.sh
+ltp/testcases/kernel/containers/sysvipc/runtests_noltp.sh
+ltp/testcases/kernel/containers/sysvipc/shmnstest.c
+File(s) Affected: ltp/README ltp/testcases/kernel/containers/Makefile
+ltp/testcases/kernel/containers/README
+ltp/testcases/kernel/containers/container_test.sh
+
+13)Log Message: Randy Dunlap writes: Convert kernel/sched/pthreads/*.c to use the standard message output functions instead of printf().
+File(s) Affected: ltp/testcases/kernel/sched/pthreads/pth_str01.c
+ltp/testcases/kernel/sched/pthreads/pth_str02.c
+ltp/testcases/kernel/sched/pthreads/pth_str03.c
+
+14)Log Message: "rdunlap@xenotime.net" did "mmstress" cleanups to make output unbuffered so that it is not produced repetitively and erroneously
+File(s) Affected: ltp/testcases/kernel/mem/mtest05/mmstress.c
+
+15)Log Message: "krisw@us.ibm.com" wants to solve segfault problem with "mount03" on SLES10
+File(s) Affected: ltp/testcases/kernel/syscalls/mount/Makefile
+ltp/testcases/kernel/syscalls/mount/mount03.c
+
+16)Log Message: as Ricardo Salveti de Araujo points out, dont set CC so it can easily be overridden
+File(s) Affected: ltp/testcases/kernel/containers/utsname/Makefile
+
+17)Log Message: "Andreas Dilger" updated "fsx-linux" testcase to include new feature(s) including distributed filesystem coherency
+Log Message:    Copyright Statements once added cannot be deleted, however, many Copyright Statements can co-exist
+File(s) Affected: ltp/testcases/kernel/fs/fsx-linux/fsx-linux.c
+
+18)Log Message: Fix from "rdunlap@xenotime.net" to use standard test results output
+File(s) Affected: ltp/testcases/kernel/mem/mem/mem01.c
+ltp/testcases/kernel/mem/mtest01/Makefile
+ltp/testcases/kernel/mem/mtest01/mtest01.c
+ltp/testcases/misc/math/float/main.c
+
+19)Log Mesage:  "serue@us.ibm.com" fixes conatiner testing with 'unshare' support for lower kernel versions
+File(s) Affected: ltp/testcases/kernel/containers/Makefile
+ltp/testcases/kernel/containers/container_test.sh
+
+20)Log Message: Fix for Bug no "1736357",tar file is not multiplatform, pointed out by "Neil Brewitt"
+File(s) Added:    ltp/testcases/network/nfsv4/locks/deploy_info
+File(s) Deleted:  ltp/testcases/network/nfsv4/locks/DEPLOY
+
+21)Log Message: "serue@us.ibm.com" fixes conatiner testing with 'unshare' support for lower kernel versions
+File(s) Added:    ltp/testcases/kernel/containers/check_for_unshare.c
+
+22)Log Message: Update to OpenHPI 2.9.2
+File(s) Addedd/Modified/Deleted: ltp/testcases/open_hpi_testsuite/
+
 LTP-20070531
 
 -Removing "alarm04.c" & "sig_rev.c" as they are no more valid, fixes Bug no."1236586", pointed by <Sharyathi Nagesh>
