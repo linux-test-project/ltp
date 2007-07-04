@@ -308,7 +308,7 @@ int lkdtm_module_init(void)
 			printk(KERN_INFO "lkdtm : Crash point not available\n");
 		break;
 	case FS_DEVRW:
-		addr = kallsyms_lookup_name("ll_rw_lock");
+		addr = kallsyms_lookup_name("ll_rw_block");
 		if (addr) {
 			*(lkdtm.kp.addr) = addr;
 			lkdtm.entry = JPROBE_ENTRY(jp_ll_rw_block);
