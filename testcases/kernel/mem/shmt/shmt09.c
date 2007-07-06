@@ -58,6 +58,16 @@ int TST_TOTAL = 4;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
+#ifdef __ia64__
+#define INCREMENT 		8388608	/* 8Mb */
+#elif defined (__mips__)  ||  defined (__hppa__)
+#define INCREMENT		262144	/* 256Kb */
+#elif defined __sh__
+#define INCREMENT 		16384   /* 16kb */
+#else
+#define INCREMENT 		getpagesize()
+#endif
+
 int rm_shm(int);
 
 int main()
@@ -65,9 +75,6 @@ int main()
 	char *c1 = NULL, *c2 = NULL, *c3 = NULL;
 	void *vp;
 	int shmid;
-#if defined(__ia64__) || defined(__mips__) || defined(__hppa__)
-	int increment;
-#endif
 	key_t key;
 
 	key = (key_t) getpid();
@@ -156,24 +163,15 @@ int main()
 	tst_resm(TPASS, "sbrk, shmat");
 
 /*--------------------------------------------------------*/
-#ifdef __ia64__
-	increment = 8388608;	/* 8Mb */
-	while ((vp = sbrk(increment)) != (void *)-1) ;
-	if (errno != ENOMEM) {
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
-		rm_shm(shmid);
-		tst_exit();
-	}
-#elif defined(__mips__) || defined(__hppa__)
-	increment = 262144;	/* 256Kb */
-	while ((vp = sbrk(increment)) != (void *)-1) ;
+#if defined (__ia64__) || defined(__mips__) || defined(__hppa__)
+	while ((vp = sbrk(INCREMENT)) != (void *)-1) ;
 	if (errno != ENOMEM) {
 		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
 		rm_shm(shmid);
 		tst_exit();
 	}
 #else
-	if ((vp = sbrk(getpagesize())) != (void *)-1) {
+	if ((vp = sbrk(INCREMENT)) != (void *)-1) {
 		tst_resm(TFAIL,
 			 "Error: sbrk succeeded!  ret = 0x%08x, curbrk = 0x%08x, ",
 			 vp, sbrk(0));
