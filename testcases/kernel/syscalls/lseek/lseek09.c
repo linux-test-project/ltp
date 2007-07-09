@@ -147,7 +147,7 @@ main(int ac, char **av)
 			/*
 			 * Read the data byte from this location.
 			 */
-			read_buf[0] = '\0';
+			memset(read_buf, 0, sizeof(read_buf));
 			if (read(fildes, &read_buf, (file_size - 3)) < 0) {
 				tst_brkm(TFAIL, cleanup,
 					 "read() failed on %s, error=%d",
