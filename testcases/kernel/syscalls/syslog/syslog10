@@ -91,7 +91,7 @@ syslog_case10()
 	elif [ -e /sbin/syslog-ng ]
         then
 	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-            syslog_cmd="syslog-ng"
+	    syslog_cmd="/etc/init.d/syslog"
 	else
 	    tst_resm TBROK "syslogd or syslog-ng  no such command"
 	    status_flag=1
