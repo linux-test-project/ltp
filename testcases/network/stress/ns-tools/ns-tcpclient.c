@@ -149,7 +149,7 @@ main(int argc, char *argv[])
     int err;			/* return value of getaddrinfo */
     int on;			/* on/off at an socket option */
     int recvbuf_size;		/* size of the receive buffer */
-    int sock_optlen;		/* size of the result parameter */
+    socklen_t sock_optlen;		/* size of the result parameter */
     char *recvbuf;		/* pointer to the received message */
     ssize_t recvbyte_size;	/* size of the receive byte */
     time_t start_time;		/* time when the timer is start */

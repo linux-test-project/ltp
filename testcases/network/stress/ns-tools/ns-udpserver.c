@@ -152,7 +152,7 @@ respond_to_client(sock_fd)
     char *msgbuf;		/* Pointer to the message */
     size_t msgbuf_size;		/* size of msgbuf */
     ssize_t msglen;		/* the length of message */
-    int sock_optlen;		/* size of the result parameter */
+    socklen_t sock_optlen;		/* size of the result parameter */
     struct sockaddr_storage client_addr;	/* address of a client */
     socklen_t client_addr_len;			/* length of `client_addr' */
 

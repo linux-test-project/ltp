@@ -306,7 +306,7 @@ communicate_client(struct server_info *info_p, int sock_fd)
 {
     char *sendmsg;		/* pointer to the message to send */
     int sndbuf_size;		/* size of the send buffer */
-    int sock_optlen;		/* size of the result parameter */
+    socklen_t sock_optlen;		/* size of the result parameter */
     ssize_t sntbyte_size;	/* size of the sent byte */
     int ret = EXIT_SUCCESS;	/* The return value of this function */
 
