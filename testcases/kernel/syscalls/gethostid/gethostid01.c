@@ -30,92 +30,92 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.18 2007/05/10 06:16:35 subrata_modak Exp $ */
+/* $Id: gethostid01.c,v 1.19 2007/07/16 04:29:02 vapier Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: gethostid01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for gethostid(2)
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 03/30/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) gethostid(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the gethostid(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	gethostid(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
  * 	History:
- * 	  12/2002 Paul Larson - Added functional test to compare 
+ * 	  12/2002 Paul Larson - Added functional test to compare
  * 	  	output from hostid command and gethostid()
- * 
- *        01/2003 Robbie Williamson - Added code to handle 
- *              distros that add "0x" to beginning of `hostid`
- *              output. 
  *
- *   01/31/2006  Marty Ridgeway - Corrected 64 bit check so 
+ *        01/2003 Robbie Williamson - Added code to handle
+ *              distros that add "0x" to beginning of `hostid`
+ *              output.
+ *
+ *   01/31/2006  Marty Ridgeway - Corrected 64 bit check so
  *              the second 64 bit check doesn't clobber the first 64 bit
  *              check
- * 
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -143,7 +143,7 @@ int exp_enos[]={0};		/* must be a 0 terminated list */
 int
 main(int ac, char **av)
 {
-    int lc,i,j,location;		/* loop counters */
+    int lc, i, j;		/* loop counters */
     int bit_64 = 0;          /* used when compiled 64bit on some 64bit machines */
     char *msg;		/* message returned from parse_opts */
     char *result;
@@ -175,7 +175,7 @@ main(int ac, char **av)
 
 	/* Call gethostid(2) */
 	TEST(gethostid( ));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -195,7 +195,7 @@ main(int ac, char **av)
 	 ***************************************************************/
 	if ( STD_FUNCTIONAL_TEST ) {
 	    if (system("hostid > hostid.x") == -1)
-		    tst_brkm(TFAIL, cleanup, "system() returned errno %d", 
+		    tst_brkm(TFAIL, cleanup, "system() returned errno %d",
 				    errno);
 	    if ((fp=fopen("hostid.x", "r")) == NULL)
 		    tst_brkm(TFAIL, cleanup, "fopen failed");
@@ -209,7 +209,7 @@ main(int ac, char **av)
 	    if (strcmp(name, hostid) == 0) {
 	    	tst_resm(TPASS, "Hostid command and gethostid both report hostid "
 			        "is %s", hostid);
-	    } else { 
+	    } else {
 
 	      /* Some distros add an "0x" to the front of the `hostid` output.   */
 	      /* We compare the first 2 characters of the `hostid` output with   */
@@ -254,11 +254,11 @@ main(int ac, char **av)
 				name2, hostid3);
 		} else {
 			tst_resm(TFAIL, "Hostid command reports hostid is %s, "
-				"but gethostid() reports %s", 
+				"but gethostid() reports %s",
 				 name2, hostid2);
 		}
             }	/* End if first strcmp */
-	}	/* End if STD_FUNCTIONAL_TEST */ 
+	}	/* End if STD_FUNCTIONAL_TEST */
     }	/* End for TEST_LOOPING */
 
     /***************************************************************
@@ -272,7 +272,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -289,7 +289,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -303,5 +303,3 @@ cleanup()
     /* exit with return code appropriate for results */
     tst_exit();
 }	/* End cleanup() */
-
-
