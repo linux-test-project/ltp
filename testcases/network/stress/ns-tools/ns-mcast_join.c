@@ -401,7 +401,7 @@ join_group(void)
 	freeaddrinfo(maddr_info);
     }
 
-    fprintf(stdout, "%u groups\n", num_group);
+    fprintf(stdout, "%zu groups\n", num_group);
     fflush(stdout);
 
     /* Become a daemon for the next step in shell script */

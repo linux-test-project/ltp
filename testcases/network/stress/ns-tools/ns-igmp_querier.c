@@ -437,7 +437,7 @@ send_query(struct igmp_info *info_p)
     start_time = time(NULL);
     query_size = MY_IGMPV3_QUERY_SIZE(ntohs(info_p->query->nsrcs));
     if (debug)
-	fprintf (stderr, "query size is %u\n", query_size);
+	fprintf (stderr, "query size is %zu\n", query_size);
 
     for(;;) {
 	retval = sendto(sd, info_p->query, query_size, 0,

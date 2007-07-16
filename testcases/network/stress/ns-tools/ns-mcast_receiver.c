@@ -414,7 +414,7 @@ receive_mcast(struct mcast_rcv_info *info_p)
 	    if (errno != EAGAIN)
 		fatal_error("recvfrom()");
 	} else if (debug)
-	    fprintf(stderr, "received %d byte message\n", msglen);
+	    fprintf(stderr, "received %zd byte message\n", msglen);
 
 	if (info_p->timeout)
 	    if (info_p->timeout < difftime(time(NULL), start_time))

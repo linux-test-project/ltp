@@ -21,6 +21,7 @@ TARGETS=$(SCRIPTS) $(BINS)
 #CC=gcc
 #CFLAGS=-g -Wall
 #CFLAGS=-O2
+CFLAGS += -Wall
 
 all:	scripts $(BINS)
 
