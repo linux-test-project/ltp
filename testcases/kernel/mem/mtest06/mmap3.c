@@ -347,18 +347,18 @@ main(int  argc,		/* number of input parameters.			      */
 		usage(argv[0]);
 		break;
 	    case 'l':
-		if ((num_iter = atoi(optarg)) == (int)NULL)
+		if ((num_iter = atoi(optarg)) == 0)
 		    num_iter = 1000;
 		break;
 	    case 'n':
-		if ((num_thrd = atoi(optarg)) == (int)NULL) 
+		if ((num_thrd = atoi(optarg)) == 0)
 		    num_thrd = 20;
 		break;
 	    case 'p':
                 map_private = TRUE;
 		break;
 	    case 'x':
-		if ((exec_time = atoi(optarg)) == (int)NULL)
+		if ((exec_time = atoi(optarg)) == 0)
 		    exec_time = 24;
 		break;
 	    default :

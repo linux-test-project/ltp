@@ -286,11 +286,11 @@ int main(int argc,	    /* number of input parameters.		      */
 		map_flags = MAP_PRIVATE;
 		break;
 	    case 's':
-		if ((fsize = atoi(optarg)) == (int)(NULL))
+		if ((fsize = atoi(optarg)) == 0)
 		    fprintf(stderr, "Using default fsize %dGB\n", fsize = 1);
 		break;
             case 'x':
-		if ((exec_time = atoi(optarg)) == (int)NULL)
+		if ((exec_time = atoi(optarg)) == 0)
 		    fprintf(stderr, "Using default exec time %d hrs", 
 		          exec_time = 24);
                 run_once = FALSE;

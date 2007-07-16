@@ -491,11 +491,11 @@ main(int  argc,		/* number of input parameters.			      */
 		usage(argv[0]);
 		break;
 	    case 'l':	/* number of times to loop in the thread function     */
-		if ((num_iter = atoi(optarg)) == (int)NULL)
+		if ((num_iter = atoi(optarg)) == 0)
 		    num_iter = 1000;
 		break;
 	    case 'x':   /* time in hrs to run this test.                      */
-		if ((exec_time = atof(optarg)) == (int)NULL)
+		if ((exec_time = atof(optarg)) == 0)
 		    exec_time = 24;
 		break;
 	    default :

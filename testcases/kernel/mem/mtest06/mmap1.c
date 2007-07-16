@@ -243,7 +243,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 /*									      */
 /******************************************************************************/
 static void
-set_timer(double run_time)		/* period for which test is intended to run   */
+set_timer(unsigned long run_time)		/* period for which test is intended to run   */
 {
     struct itimerval timer;	/* timer structure, tv_sec is set to run_time */
 
@@ -337,7 +337,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
     int     mwu_ndx = 0;	/* index to number of map/write/unmap         */
     long    *mwuargs =          /* local pointer to arguments		      */
 		       (long *)args;
-    volatile int exit_val = 0;  /* exit value of the pthread		      */
+    long exit_val = 0;  /* exit value of the pthread		      */
 
     fprintf(stdout, "pid[%d]: map, change contents, unmap files %d times\n",
 		getpid(), (int)mwuargs[2]);
@@ -402,7 +402,7 @@ read_mem(void *args)		/* number of reads performed		      */
 {
     static int	 rd_index = 0;	/* index to the number of reads performed.    */
     long 	*rmargs = args;	/* local pointer to the arguments	      */
-    volatile int exit_val = 0;  /* pthread exit value			      */
+    long exit_val = 0;  /* pthread exit value			      */
 
     fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
            getpid(), map_address, rmargs[2]);
@@ -502,7 +502,7 @@ main(int  argc,		/* number of input parameters.			      */
     int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
     int		 file_size;	/* size of the file to be created.	      */
     int		 num_iter;	/* number of iteration to perform             */
-    double	 exec_time;	/* period for which the test is executed, changed to double to incorporate time in hours,minutes and seconds */
+    unsigned long	 exec_time;	/* period for which the test is executed */
     int		 fd;		/* temporary file descriptor		      */
     int          status[2];     /* exit status for process X and Y	      */
     int          sig_ndx;      	/* index into signal handler structure.       */
@@ -542,7 +542,7 @@ main(int  argc,		/* number of input parameters.			      */
 		usage(argv[0]);
 		break;
 	    case 'l':
-		if ((num_iter = atoi(optarg)) == (int)NULL)
+		if ((num_iter = atoi(optarg)) == 0)
 		OPT_MISSING(argv[0], optopt);
                 else
 	        if (num_iter < 0)
@@ -559,12 +559,12 @@ main(int  argc,		/* number of input parameters.			      */
 		verbose_print = TRUE;
                 break;
 	    case 'x':
-                exec_time = atof(optarg);
+                exec_time = atol(optarg);
 		if (exec_time == 0) 
 	     	    OPT_MISSING(argv[0], optopt);
 		else
 	             if (exec_time < 0)
-				fprintf(stdout,"WARNING: bad argument. Using default %d\n", (exec_time = 24));
+				fprintf(stdout,"WARNING: bad argument. Using default %ld\n", (exec_time = 24));
 		break;
 	    default :
 		usage(argv[0]);
@@ -575,7 +575,7 @@ main(int  argc,		/* number of input parameters.			      */
     if (verbose_print)
         fprintf(stdout, "Input parameters to are\n"
                     "\tFile size:                     %d\n"
-                    "\tScheduled to run:              %lf hours\n"
+                    "\tScheduled to run:              %ld hours\n"
                     "\tNumber of mmap/write/read:     %d\n",
 			file_size, exec_time, num_iter);
     set_timer(exec_time);
