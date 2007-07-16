@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.19 2007/07/16 04:29:02 vapier Exp $ */
+/* $Id: gethostid01.c,v 1.20 2007/07/16 04:29:57 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -183,12 +183,7 @@ main(int ac, char **av)
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 	    continue;	/* next loop for MTKERNEL */
 	}
-#ifdef UCLINUX
-	sprintf(hostid, "%lx", TEST_RETURN);
-#else
- 	sprintf(hostid, "%0.8lx", TEST_RETURN);
-#endif
-	sprintf(hostid, "%0.8lx", TEST_RETURN);
+ 	sprintf(hostid, "%08lx", TEST_RETURN);
 
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
