@@ -51,6 +51,6 @@ unlink <hlink/hfile*>;
 unlink <slink/sfile*>;
 rmdir hlink;
 rmdir slink;
-printf ("Hard Link Errors    :%d\n",$herrors);
-printf ("Symbolic Link Errors:%d\n",$serrors);
 
+printf ("%-8s %4d       %s  :  %s:%d\n", "linker01", 0, $herrors == 0 ? "PASS" : "FAIL", "Hard Link Errors    ", $herrors);
+printf ("%-8s %4d       %s  :  %s:%d\n", "linker01", 0, $serrors == 0 ? "PASS" : "FAIL", "Symbolic Link Errors", $serrors);
