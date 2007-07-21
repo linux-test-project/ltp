@@ -121,7 +121,7 @@
 #endif
 #define OPT_MISSING(prog, opt) do {\
                         fprintf(stderr, "%s: option -%c ", prog, opt); \
-                        fprintf(stderr, "requires and argument\n");\
+                        fprintf(stderr, "requires an argument\n");\
 						usage(prog); \
                             } while(0)
 
@@ -132,6 +132,8 @@ int 	   verbose_print = FALSE;/* when called with -v print more info       */
 caddr_t    *map_address;	/* address of the file mapped.	              */
 sigjmp_buf jmpbuf;		/* argument to sigsetjmp and siglongjmp       */
 
+char *TCID = "mmap1";
+int TST_TOTAL = 1;
 
 /******************************************************************************/
 /*									      */
@@ -161,7 +163,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 
     if (signal == SIGALRM)
     {
-        fprintf(stdout, "Test ended, success\n");
+        tst_resm(TPASS, "Test ended, success");
         exit(0);
     }
 #ifdef __i386__
@@ -210,9 +212,8 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     {
         if (scp->eax == (int)map_address)
 	{
-	    fprintf(stdout, 
-			"page fault at %#lx\n" 
-			" - ignore\n", scp->eax);
+	    tst_resm(TINFO,
+			"page fault at %#lx - ignore", scp->eax);
 	    longjmp(jmpbuf, 1);
         }
 	else
@@ -339,13 +340,13 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 		       (long *)args;
     long exit_val = 0;  /* exit value of the pthread		      */
 
-    fprintf(stdout, "pid[%d]: map, change contents, unmap files %d times\n",
+    tst_resm(TINFO, "pid[%d]: map, change contents, unmap files %d times",
 		getpid(), (int)mwuargs[2]);
     if (verbose_print)
-        fprintf(stdout, "map_write_unmap() arguments are:\n"
-		    "\t fd - arg[0]: %d\n"
-		    "\t size of file - arg[1]: %ld\n"
-		    "\t num of map/write/unmap - arg[2]: %d\n", 
+        tst_resm(TINFO, "map_write_unmap() arguments are: "
+		    "fd - arg[0]: %d; "
+		    "size of file - arg[1]: %ld; "
+		    "num of map/write/unmap - arg[2]: %d",
 		    (int)mwuargs[0], (long unsigned)mwuargs[1], (int)mwuargs[2]);
 
     while (mwu_ndx++ < (int)mwuargs[2])
@@ -360,15 +361,15 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         }
         
         if(verbose_print)
-            fprintf(stderr, "map address = %p\n", map_address);
+            tst_resm(TINFO, "map address = %p", map_address);
 
 	prtln();
 
         memset(map_address, 'a', mwuargs[1]);
          
         if (verbose_print)
-            fprintf(stdout, "[%d] times done: of total [%d] iterations\n"
-			"map_write_unmap():memset() content of memory = %s\n", 
+            tst_resm(TINFO, "[%d] times done: of total [%d] iterations, "
+			"map_write_unmap():memset() content of memory = %s",
 			mwu_ndx, (int)mwuargs[2], (char*)map_address);
 	usleep(1);
         if (munmap(map_address, (size_t)mwuargs[1]) == -1)
@@ -404,34 +405,34 @@ read_mem(void *args)		/* number of reads performed		      */
     long 	*rmargs = args;	/* local pointer to the arguments	      */
     long exit_val = 0;  /* pthread exit value			      */
 
-    fprintf(stdout, "pid[%d] - read contents of memory %p %ld times\n",
+    tst_resm(TINFO, "pid[%d] - read contents of memory %p %ld times",
            getpid(), map_address, rmargs[2]);
     if (verbose_print)
-        fprintf(stdout, 
-		"read_mem()arguments are:\n"
-		"number of reads to be performed - arg[2]: %d\n"
-                "read from address %p\n",
+        tst_resm(TINFO,
+		"read_mem() arguments are: "
+		"number of reads to be performed - arg[2]: %d; "
+                "read from address %p",
 		(int)rmargs[2], (long *)map_address);
 
     while (rd_index++ < (int)rmargs[2])
     {
         if (verbose_print)
-	    fprintf(stdout, 
-	        "read_mem() in while loop  %d times to go %ld times\n", 
+	    tst_resm(TINFO,
+	        "read_mem() in while loop  %d times to go %ld times",
 		rd_index, rmargs[2]);
         
         if (setjmp(jmpbuf) == 1)
         {
             if (verbose_print)
-	        fprintf(stdout, 
-		    "page fault ocurred due a read after an unmap from %p\n",
+	        tst_resm(TINFO,
+		    "page fault occurred due to a read after an unmap from %p",
 		    map_address);
         }
         else
         {
 	    if (verbose_print)
-	        fprintf(stdout, 
-		    "read_mem(): content of memory: %s\n", (char *)map_address);
+	        tst_resm(TINFO,
+		    "read_mem(): content of memory: %s", (char *)map_address);
             if (strncmp((char *)map_address, "a", 1) != 0)
             {
                 exit_val = -1;
@@ -466,9 +467,9 @@ usage(char *progname)		/* name of this program			      */
 {
     fprintf(stderr, "Usage: %s -d -l -s -v -x\n"
 		    "\t -h help, usage message.\n"
-		    "\t -l number of mmap/wite/unmap      default: 1000\n"
-		    "\t -s size of the file to be mmaped  default: 1024 bytes\n"
-		    "\t -v print more info.               defailt: quiet\n"
+		    "\t -l number of mmap/write/unmap     default: 1000\n"
+		    "\t -s size of the file to be mmapped default: 1024 bytes\n"
+		    "\t -v print more info.               default: quiet\n"
 		    "\t -x test execution time            default: 24 Hrs\n",
 			    progname);
     exit(-1);
@@ -573,10 +574,10 @@ main(int  argc,		/* number of input parameters.			      */
     }
 
     if (verbose_print)
-        fprintf(stdout, "Input parameters to are\n"
-                    "\tFile size:                     %d\n"
-                    "\tScheduled to run:              %ld hours\n"
-                    "\tNumber of mmap/write/read:     %d\n",
+        tst_resm(TINFO, "Input parameters are: "
+                    "File size:  %d; "
+                    "Scheduled to run:  %ld hours; "
+                    "Number of mmap/write/read:  %d",
 			file_size, exec_time, num_iter);
     set_timer(exec_time);
 
@@ -609,7 +610,7 @@ main(int  argc,		/* number of input parameters.			      */
         else
         {
             if(verbose_print)
-                fprintf(stdout, "Tmp file created\n");
+                tst_resm(TINFO, "Tmp file created");
         }
 
         /* setup arguments to the function executed by process X */
@@ -625,8 +626,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
         else
         {
-            fprintf(stdout, "%s: created thread[%ld]\n",
-				argv[0], thid[0]);
+            tst_resm(TINFO, "created thread[%ld]", thid[0]);
         }
         sched_yield();
         if (pthread_create(&thid[1], NULL, read_mem, chld_args))
@@ -636,8 +636,7 @@ main(int  argc,		/* number of input parameters.			      */
         }
         else
         {
-            fprintf(stdout, "%s: created thread[%ld]\n",
-				argv[0], thid[1]);
+            tst_resm(TINFO, "created thread[%ld]", thid[1]);
         }
         sched_yield();
         
