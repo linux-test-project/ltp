@@ -34,7 +34,7 @@
  * Expected Result:
  *  mmap() should succeed returning the address of the mapped region,
  *  and the mapped region should contain the contents of the mapped file.
- *  but with ia64,
+ *  but with ia64 and PARISC/hppa,
  *  an attempt to access the contents of the mapped region should give
  *  rise to the signal SIGSEGV.
  *
@@ -158,7 +158,7 @@ main(int ac, char **av)
 			 * Check whether the mapped memory region
 			 * has the file contents.
 			 *
-			 * with ia64, This should
+			 * with ia64 and PARISC/hppa, this should
                          * generate a SIGSEGV which will be caught below.
                          *
                          */
@@ -172,7 +172,7 @@ main(int ac, char **av)
 					 "Functionality of mmap() successful");
 			   }
 			}
-#ifdef __ia64__
+#if defined(__ia64__) || defined(__hppa__)
 		        if (pass) {
                                 tst_resm(TPASS, "Got SIGSEGV as expected");
                         } else {
