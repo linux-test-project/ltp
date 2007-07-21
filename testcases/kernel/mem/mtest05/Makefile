@@ -1,5 +1,6 @@
-CFLAGS += -Wall -O -g
-LDLIBS := -lpthread
+CFLAGS += -Wall
+CPPFLAGS += -I../../../../include
+LDLIBS += -lpthread -L../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

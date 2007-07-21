@@ -98,6 +98,9 @@
 #include <stdlib.h>   /* declaration for malloc                               */
 #include <string.h>   /* declaration for memset                               */
 #include <sched.h>    /* declaration of sched_yield()                         */
+#include <stdint.h>
+
+#include "test.h"
 
 /* GLOBAL DEFINES                                                             */
 #define SIGENDSIG    -1   /* end of signal marker                             */
@@ -142,6 +145,8 @@ static   int  wait_thread = 0;       /* used to wake up sleeping threads      */
 static   int  thread_begin = 0;      /* used to coordinate threads            */
 static   int  verbose_print = FALSE; /* print more test information           */
 
+char *TCID = "mmstress";
+int TST_TOTAL = 6;
 
 /******************************************************************************/
 /*                                                                            */
@@ -169,7 +174,7 @@ sig_handler(int signal) /* signal number, set to handle SIGALRM               */
         exit(-1);
     }
     else
-        fprintf(stdout, "Test ended, success\n");
+	tst_resm(TPASS, "Test ended, success");
     exit(0);
 }
 
@@ -192,8 +197,8 @@ usage(char *progname)        /* name of this program                       */
 {
     fprintf(stderr, "usage:%s -h -n test -t time -v [-V]\n", progname);
     fprintf(stderr, "\t-h displays all options\n");
-    fprintf(stderr, "\t-n the test number, if no test number\n"
-            "\t   is specified all the tests will be run\n");
+    fprintf(stderr, "\t-n test number, if no test number\n"
+            "\t   is specified, all the tests will be run\n");
     fprintf(stderr, "\t-t specify the time in hours\n");
     fprintf(stderr, "\t-v verbose output\n");
     fprintf(stderr, "\t-V program version\n");
@@ -264,7 +269,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
                                      * local_args[PAGESIZ]);
     char    read_from_addr = 0;  /* address to which read from page is done   */
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
-    volatile int exit_val = 0;   /* exit value of the pthread. 0 - success    */
+    uintptr_t exit_val = 0;   /* exit value of the pthread. 0 - success    */
 
     /*************************************************************/
     /*   The way it was, args could be overwritten by subsequent uses
@@ -287,8 +292,8 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
                                            : (*start_addr = write_to_addr[0]);
         start_addr += local_args[PAGESIZ]; 
         if (verbose_print)
-            fprintf(stdout, "thread_fault(): generating fault type %ld" 
-                            " @page adress %p\n", local_args[3], start_addr);
+	    tst_resm(TINFO, "thread_fault(): generating fault type %ld"
+                            " @page address %p", local_args[3], start_addr);
         fflush(NULL);
     }
     PTHREAD_EXIT(0);
@@ -328,7 +333,7 @@ remove_files(char *filename, char * addr)    /* name of the file that is to be r
     else
     {
         if (verbose_print)
-            fprintf(stdout, "file %s removed\n", filename);
+            tst_resm(TINFO, "file %s removed", filename);
         
     }      
     return SUCCESS;
@@ -430,8 +435,8 @@ map_and_thread(
         {
             retinfo->mapaddr = map_addr;
             if (verbose_print)
-                fprintf(stdout, 
-                "map_and_thread(): mmap success, address = %p\n", map_addr);
+                tst_resm(TINFO,
+                  "map_and_thread(): mmap success, address = %p", map_addr);
             fflush(NULL);
         }
     }
@@ -484,7 +489,7 @@ map_and_thread(
     } while (thrd_ndx < num_thread);
 
     if (verbose_print)
-        fprintf(stdout, "map_and_thread(): pthread_create() success\n");
+        tst_resm(TINFO, "map_and_thread(): pthread_create() success");
     wait_thread = FALSE; 
     th_status = malloc(sizeof(int *));
     
@@ -507,8 +512,8 @@ map_and_thread(
         {
             if ((int)*th_status == 1)
             {
-                fprintf(stderr,
-                        "thread [%ld] - process exited with errors\n",
+                tst_resm(TINFO,
+                        "thread [%ld] - process exited with errors",
                 (long)pthread_ids[thrd_ndx]);
                 free(empty_buf);                          
                 remove_files(tmpfile, map_addr);
@@ -563,8 +568,8 @@ test1()
 {
     RETINFO_t retval;    /* contains info relating to test status          */
 
-    printf("\ttest1: Test case tests the race condition between\n"
-           "\t\tsimultaneous read faults in the same address space.\n");
+    tst_resm(TINFO, "test1: Test case tests the race condition between "
+           "simultaneous read faults in the same address space.");
     map_and_thread("./tmp.file.1", thread_fault, READ_FAULT, NUMTHREAD, 
                    &retval);
     return (retval.status);
@@ -592,8 +597,8 @@ test2()
 {
     RETINFO_t retval;    /* contains test stats information               */
 
-    printf("\ttest2: Test case tests the race condition between\n"
-       "\t\tsimultaneous write faults in the same address space.\n");
+    tst_resm(TINFO, "test2: Test case tests the race condition between "
+       "simultaneous write faults in the same address space.");
     map_and_thread("./tmp.file.2", thread_fault, WRITE_FAULT, NUMTHREAD, 
                    &retval);
     return (retval.status);
@@ -621,8 +626,8 @@ test3()
 {
     RETINFO_t retval;    /* contains test stats information                   */
  
-    printf("\ttest3: Test case tests the race condition between\n"
-           "\t\tsimultaneous COW faults in the same address space.\n");
+    tst_resm(TINFO, "test3: Test case tests the race condition between "
+           "simultaneous COW faults in the same address space.");
     map_and_thread("./tmp.file.3", thread_fault, COW_FAULT, NUMTHREAD, &retval);
     return (retval.status);
 }
@@ -649,9 +654,9 @@ test4()
 {
     RETINFO_t retval;     /* contains test status information                 */
 
-    printf("\ttest4: Test case tests the race condition between\n"
-           "\t\tsimultaneous READ faults in the same address space.\n"
-           "\t\tThe file mapped is /dev/zero\n");
+    tst_resm(TINFO, "test4: Test case tests the race condition between "
+           "simultaneous READ faults in the same address space. "
+           "The file mapped is /dev/zero");
     map_and_thread("/dev/zero", thread_fault, COW_FAULT, NUMTHREAD, &retval);
     return (retval.status);
 }
@@ -679,8 +684,8 @@ test5()
     pid_t  pid      = 0;    /* process id, returned by fork system call.      */
     int    wait_status = 0; /* if status is not NULL store status information */
 
-    printf("\ttest5: Test case tests the race condition between\n"
-           "\t\tsimultaneous fork - exit faults in the same address space.\n");
+    tst_resm(TINFO, "test5: Test case tests the race condition between "
+           "simultaneous fork - exit faults in the same address space.");
 
     /* increment the  program's  data  space  by 200*1024 (BRKSZ) bytes       */
 
@@ -708,7 +713,7 @@ test5()
     
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
-        fprintf(stderr, "test5(): rollback sbrk failed\n");
+        tst_resm(TINFO, "test5(): rollback sbrk failed");
         fflush(NULL);
         perror("test5(): sbrk()");
         fflush(NULL);
@@ -744,9 +749,8 @@ test6()
     char  *argv_init[2] =  /* parameter required for dummy function to execvp */
                           {"arg1", NULL};
 
-    printf("\ttest6: Test case tests the race condition between\n"
-           "\t\tsimultaneous fork -exec - exit faults in the same\n"
-           "\t\taddress space.\n");
+    tst_resm(TINFO, "test6: Test case tests the race condition between "
+           "simultaneous fork -exec - exit faults in the same address space.");
 
     /* increment the  program's  data  space  by 200*1024 (BRKSZ) bytes       */
     
@@ -797,7 +801,7 @@ test6()
    
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
-        fprintf(stderr, "test6(): rollback sbrk failed\n");
+        tst_resm(TINFO, "test6(): rollback sbrk failed");
         fflush(NULL);
         perror("test6(): sbrk()");
         fflush(NULL);
@@ -878,7 +882,7 @@ main(int   argc,     /* number of command line parameters                     */
     opterr = 0;
 
     if (argc < 2)
-    fprintf(stderr, "\nINFO: run %s -h for all options\n\n", argv[0]);
+    tst_resm(TINFO, "run %s -h for all options", argv[0]);
 
     while ((ch = getopt(argc, argv, "hn:t:vV")) != -1)
     {
@@ -893,8 +897,8 @@ main(int   argc,     /* number of command line parameters                     */
                       break;
             case 't': if (optarg)
                       {
-                          printf("Test is scheduled to run for %d hours\n",
-                          test_time = atoi(optarg));
+                          tst_resm(TINFO, "Test is scheduled to run for %d hours",
+				test_time = atoi(optarg));
                           run_once = FALSE;
                       }
                       else
@@ -905,8 +909,7 @@ main(int   argc,     /* number of command line parameters                     */
             case 'V': if (!version_flag)
                       {
                           version_flag = TRUE;
-                          fprintf(stderr, "%s: %s\n", prog_name,
-                          version_info);
+                          tst_resm(TINFO, "%s: %s", prog_name, version_info);
                       }
                       break;
             case '?': if (argc < optind)
@@ -959,9 +962,9 @@ main(int   argc,     /* number of command line parameters                     */
             for (test_ndx = 1; test_ndx <= MAXTEST; test_ndx++) {
                 rc = test_ptr[test_ndx]();
                 if (rc == SUCCESS) {
-                   printf("                TEST %d Passed\n", test_ndx);
+                   tst_resm(TPASS, "TEST %d Passed", test_ndx);
                 } else {
-                   printf("                TEST %d Failed\n", test_ndx);
+                   tst_resm(TFAIL, "TEST %d Failed", test_ndx);
                    global_rc = rc;
                 }
             }
@@ -976,16 +979,16 @@ main(int   argc,     /* number of command line parameters                     */
         }
 
         if (global_rc != SUCCESS) {
-            printf("mmstress:  Test Failed\n");
+            tst_resm(TFAIL, "Test Failed");
             exit(global_rc);
         }
 
     } while ((TRUE) && (!run_once));
 
     if (global_rc != SUCCESS) {
-        printf("mmstress:  Test Failed\n");
+        tst_resm(TFAIL, "Test Failed");
     } else {
-        printf("mmstress:  Test Passed\n");
+        tst_resm(TPASS, "Test Passed");
     }
     exit(global_rc);
 }
