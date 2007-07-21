@@ -28,10 +28,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int
 main(void)
 {
+    close(1);
     printf("U are running Linux Memory Management Stress Tests.\n");
     exit(0);
 }
