@@ -846,21 +846,18 @@ ure.
 Contact information and updates 
 \layout Literal
 
-URL: http://oss.sgi.com/projects/ltp/ 
+URL: http://ltp.sourceforge.net/
 \layout Literal
 
-email: owners-ltp@oss.sgi.com 
+mailing list: ltp-list@lists.sourceforge.net 
 \layout Literal
 
-mailing list: ltp@oss.sgi.com 
-\layout Literal
-
-list archive: http://oss.sgi.com/projects/ltp/mail-threaded/ 
+list archive: https://sourceforge.net/mailarchive/forum.php?forum_name=ltp-list
 \layout Standard
 
-Questions and comments should be sent to the LTP mailing list at ltp@oss.sgi.com.
-  To subscribe, send mail to majordomo@oss.sgi.com with "subscribe ltp" in
- the body of the message.
+Questions and comments should be sent to the LTP mailing
+ list at ltp-list@lists.sourceforge.net.  To subscribe, please go to
+ https://lists.sourceforge.net/lists/listinfo/ltp-list.
  
 \layout Standard
 
