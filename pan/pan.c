@@ -44,8 +44,12 @@
  *
  *	01/29/03 - Added: Manoj Iyer, manjo@mail.utexas.edu
  *			   - added code supresses test start and test end tags.
+ *
+ * 	07/22/07 - Added: Ricardo Salveti de Araujo, rsalveti@linux.vnet.ibm.com
+ *			   - added option to create a command file with all failed tests.
+ * 	
  */
-/* $Id: pan.c,v 1.24 2006/12/13 22:55:21 vapier Exp $ */
+/* $Id: pan.c,v 1.25 2007/07/25 10:12:03 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -99,8 +103,9 @@ static struct collection *get_collection(char *file, int optind, int argc,
 					 char **argv);
 static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
-		      int keep_active, FILE * logfile, struct orphan_pgrp *orphans,
-			  int fmt_print, int *failcnt, int quiet_mode);
+		      int keep_active, FILE * logfile, FILE * failcmdfile, 
+		      struct orphan_pgrp *orphans, int fmt_print,
+		      int *failcnt, int quiet_mode);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -146,12 +151,14 @@ main(int argc, char **argv)
     char *zooname = NULL;	/* name of the zoo file to use */
     char *filename = "/dev/null";	/* filename to read test tags from */
     char *logfilename = NULL;
+    char *failcmdfilename = NULL;
     char *outputfilename = NULL;
     struct collection *coll = NULL;
     struct tag_pgrp *running;
     struct orphan_pgrp *orphans, *orph;
 	struct utsname unamebuf;
     FILE *logfile = NULL;
+    FILE *failcmdfile = NULL;
     int keep_active = 1;
     int num_active = 0;
 	int failcnt = 0;           /* count of total testcases that failed. */
@@ -171,7 +178,7 @@ main(int argc, char **argv)
     pid_t cpid;
     struct sigaction sa;
 
-    while ((c = getopt(argc, argv, "AO:Sa:d:ef:hl:n:o:pqr:s:t:x:y")) != -1) {
+    while ((c = getopt(argc, argv, "AO:Sa:C:d:ef:hl:n:o:pqr:s:t:x:y")) != -1) {
 	switch (c) {
 	case 'A':	/* all-stop flag */
 	    has_brakes = 1;
@@ -186,6 +193,9 @@ main(int argc, char **argv)
 	case 'a':	/* name of the zoo file to use */
 	    zooname = strdup(optarg);
 	    break;
+	case 'C':	/* name of the file where all failed commands will be */
+	    failcmdfilename = strdup(optarg);
+	    break;
 	case 'd':	/* debug options */
 	    sscanf(optarg, "%i", &Debug);
 	    break;
@@ -199,6 +209,7 @@ main(int argc, char **argv)
 	    fprintf(stdout, "Usage: pan -n name [ -SyAehp ] [ -s starts ]"
 				 " [-t time[s|m|h|d] [ -x nactive ] [ -l logfile ]\n\t"
 				 "[ -a active-file ] [ -f command-file ] "
+				 "[ -C fail-command-file ] "
 				 "[ -d debug-level ]\n\t[-o output-file] "
 				 "[-O output-buffer-directory] [cmd]\n");
 	    exit(0);
@@ -386,6 +397,15 @@ main(int argc, char **argv)
 	}
     }
 
+    if (failcmdfilename) {
+    	if (!(failcmdfile = fopen(failcmdfilename, "a+"))) {
+	    fprintf(stderr,
+		    "pan(%s): Error %s (%d) opening fail cmd file '%s'\n",
+		    panname, strerror(errno), errno, failcmdfilename);
+	    exit(1);
+    	}
+    }
+
     if ((zoofile = zoo_open(zooname)) == NULL) {
 	fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 	exit(1);
@@ -503,8 +523,8 @@ main(int argc, char **argv)
 	    }
 	}
 
-	err = check_pids(running, &num_active, keep_active,
-			 logfile, orphans, fmt_print, &failcnt, quiet_mode);
+	err = check_pids(running, &num_active, keep_active, logfile,
+			 failcmdfile, orphans, fmt_print, &failcnt, quiet_mode);
 	if (Debug & Drunning) {
 	    pids_running(running, keep_active);
 	    orphans_running(orphans);
@@ -615,8 +635,8 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
-	   FILE * logfile, struct orphan_pgrp *orphans, int fmt_print, 
-	   int *failcnt, int quiet_mode)
+	   FILE * logfile, FILE * failcmdfile, struct orphan_pgrp *orphans,
+	   int fmt_print, int *failcnt, int quiet_mode)
 {
     int w;
     pid_t cpid;
@@ -716,6 +736,9 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 				fflush(logfile);
 		}
 
+		if ((failcmdfile != NULL) && (w !=0)) {
+			fprintf(failcmdfile, "%s %s\n", running[i].cmd->name, running[i].cmd->cmdline);
+		}
 
 		if (running[i].stopping)
 		    status = "driver_interrupt";

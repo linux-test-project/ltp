@@ -1,5 +1,5 @@
 .\"
-.\" $Id: pan.1,v 1.4 2003/01/27 23:15:37 iyermanoj Exp $
+.\" $Id: pan.1,v 1.5 2007/07/25 10:12:03 subrata_modak Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -34,7 +34,7 @@
 .SH NAME
 pan \- A light-weight driver to run tests and clean up their pgrps
 .SH SYNOPSIS
-\fBpan -n tagname [-SyAehp] [-t #s|m|h|d \fItime\fB] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [cmd]
+\fBpan -n tagname [-SyAehp] [-t #s|m|h|d \fItime\fB] [-s \fIstarts\fB] [\fI-x nactive\fB] [\fI-l logfile\fB] [\fI-a active-file\fB] [\fI-f command-file\fB] [\fI-d debug-level\fB] [\fI-o output-file\fB] [\fI-O buffer_directory\fB] [\fI-r report_type\fB] [\fI-C fail-command-file\fB] [cmd]
 .SH DESCRIPTION
 
 Pan will run a command, as specified on the commandline, or collection of
@@ -88,12 +88,18 @@ of a directory where the active file will be placed, and in this case the
 active file's name will be "active".  A single active file may be shared
 by any number of Zoo tools.
 .TP 1i
+\fB-C \fIfail-command-file\fB
+The file to which all failed test commands will be saved.  You can use it later with \fI-f\fP option if you want to run only the failed test cases.
+.TP 1i
 \fB-d \fIdebug-level\fB
 See the source for settings.
 .TP 1i
 \fB-e\fP
 Pan will exit non-zero if any of its commands exited non-zero.  By default
 pan ignores command exit statuses.
+.TP 1i
+\fB-f \fIcommand-file\fB
+The file that has a collection of commands that pan will execute.
 .TP 1i
 \fB-h\fP
 Print some simple help.
@@ -187,6 +193,12 @@ terminate immediately.  An exit log is kept for all the commands.
 
 $ pan -n ex3 -S -A -f /tmp/cmds1 -l ex3.log
 
+Here is just a simple stress case. In this case the test will run for 24 hours,
+printing the output as a human readable format, with the test output at /tmp/output-file
+and all failed test commands (if you have any) at /tmp/fail-command-file.
+
+$ pan -n stress -e -p -q -S -t 24h -a stress -l logfile -f command-file \
+		-o /tmp/output-file -C /tmp/fail-command-file
 
 .SH LAYERING
 

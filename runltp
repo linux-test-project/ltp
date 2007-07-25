@@ -34,6 +34,18 @@
 #               - fixed bug in creating results directory
 #               - all checks should be enlclosed in " " to avoid bash error
 #               - exit with error if pan is not found in pan directory
+#
+#               Jul 22 2007 - Modified - Ricardo Salveti de Araujo
+#               - added support to put more then one file at CMDLINE (-f)
+#               - added a new option, that the user can pass the address of
+#               the command file, and it'll use wget to get it (-w)
+#               - now -s does the grep at the selected command files (default,
+#               -f or -w)
+#
+#               Jul 23 2007 - Modified - Ricardo Salveti de Araujo
+#               - added flag to get the command file that has all failed tests
+
+
 
 
 setup()
@@ -73,14 +85,16 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} -c [-d TMPDIR] [-f CMDFILE ] [-i # (in Mb)] 
-    [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -n -q 
-    [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ] -v [ -x INSTANCES ] 
+    usage: ./${0##*/} -c [-C FAILCMDFILE ] [-d TMPDIR] [-f CMDFILES(,...) ]
+    [-i # (in Mb)] [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -n -q
+    [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ] -v [ -w CMDFILEADDR ]
+    [ -x INSTANCES ]
                 
+    -C FAILCMDFILE  Command file with all failed test cases.
     -c NUM_PROCS    Run LTP under additional background CPU load.
     -d TMPDIR       Directory where temporary files will be created.
     -e              Prints the date of the current LTP release
-    -f CMDFILE      Execute user defined list of testcases.
+    -f CMDFILES     Execute user defined list of testcases (separate with ',')
     -h              Help. Prints all available options.
     -i # (in Mb)    Run LTP with a _min_ IO load of # Mb in background.
     -l LOGFILE      Log results of test in a logfile.
@@ -98,6 +112,7 @@ usage()
                       -t 24h = 24 hours
                       -t 2d  = 2 days
     -v              Print more verbose output to screen.                   
+    -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
 
     example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
@@ -109,7 +124,7 @@ exit 0
 
 main()
 {
-    local CMDFILE=""
+    local CMDFILES=""
     local PRETTY_PRT=""
     local ALT_DIR=0
     local RUN_NETEST=0
@@ -119,6 +134,7 @@ main()
     local GENLOAD=0
     local MEMSIZE=0
     local DURATION=""
+    local CMDFILEADDR=""
     local BYTESIZE=0
     local LOGFILE=""
     local SCENFILES=""
@@ -127,12 +143,14 @@ main()
     local PAN_COMMAND=""
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts c:d:f:ehi:l:m:Nno:pqr:s:t:vx: arg
+    while getopts c:C:d:f:ehi:l:m:Nno:pqr:s:t:vw:x: arg
     do  case $arg in
         c)       
 	    NUM_PROCS=$(($OPTARG))
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
+
+        C)  FAILCMDFILE="-C $OPTARG" ;;
                    
         d)  # append $$ to TMP, as it is recursively 
             # removed at end of script.
@@ -143,7 +161,9 @@ main()
             version_of_ltp
 	    ;;
         f)  # Execute user defined set of testcases.
-            CMDFILE=$OPTARG;;
+            # Can be more then one file, just separate it with ',', like:
+            # -f nfs,commands,/tmp/testfile
+            CMDFILES=$OPTARG;;
     
         h)  usage;;
         
@@ -200,6 +220,8 @@ main()
             DURATION="-t $OPTARG" ;;
     
         v)  VERBOSE_MODE=1;;
+
+        w)  CMDFILEADDR=$OPTARG;;
    
         x)  # number of ltp's to run
             cat <<-EOF >&1
@@ -214,17 +236,6 @@ main()
         \?) usage;;
         esac
     done
-    
-   if [ -n "$TAG_RESTRICT_STRING" ] ; then 
-        if [ -n "$CMDFILE" ]; then
-	    echo "FATAL  -s and -f not supported together"
-	    exit 1
-	fi
-        if [ "$RUN_NETEST" -eq 1 ]; then
-	    echo "FATAL  -s and -N not supported together"
-	    exit 1
-	fi
-    fi    
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
@@ -268,9 +279,9 @@ main()
     
     # If user does not provide a command file select a default set of testcases
     # to execute.
-    if [ -z "$CMDFILE" ]
+    if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]
     then
-    cat <<-EOF >&1
+        cat <<-EOF >&1
 
     INFO: no command files were provided, using default,
           system calls, memory management, IPC, scheduler
@@ -279,7 +290,7 @@ main()
     
 	EOF
 
-    for SCENFILES in ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs \
+        for SCENFILES in ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs \
                      ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio \
                      ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/ipc \
                      ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
@@ -292,27 +303,41 @@ main()
                 exit 1
             }
 
-	    if [ -z "$TAG_RESTRICT_STRING" ]
-	    then
             cat $SCENFILES >> ${TMP}/alltests || \
             {
                 echo "FATAL: unable to create command file"
                 exit 1
             }
-	    else
-	    grep $TAG_RESTRICT_STRING $SCENFILES >> ${TMP}/alltests #Not worth checking return codes for this case
-	    fi
        done
-    else
-        [ -f $CMDFILE ] || \
-                CMDFILE="$LTPROOT/runtest/$CMDFILE"
-        cat $CMDFILE > ${TMP}/alltests || \
+    fi
+
+    [ -n "$CMDFILES" ] && \
+    {
+        for SCENFILES in `echo "$CMDFILES" | sed 's/,/\n/g'`
+        do
+            [ -f "$SCENFILES" ] || SCENFILES="$LTPROOT/runtest/$SCENFILES"
+            cat "$SCENFILES" >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                exit 1
+            }
+        done
+    }
+    
+    [ -n "$CMDFILEADDR" ] && \
+    {
+        wget -q "${CMDFILEADDR}" -O ${TMP}/wgetcmdfile
+        if [ $? -ne 0 ]; then
+            echo "FATAL: error while getting the command file with wget (address $CMDFILEADDR)"
+            exit 1
+        fi
+        cat "${TMP}/wgetcmdfile" >> ${TMP}/alltests || \
         {
-            echo "FATAL: Unable to create command file"
+            echo "FATAL: unable to create command file"
             exit 1
         }
-    fi
-    
+    }
+
     [ "$RUN_NETEST" -eq 1 ] && \
     {
         for SCENFILES in ${LTPROOT}/runtest/tcp_cmds \
@@ -326,14 +351,14 @@ main()
                 exit 1
             }
                          
-            cat $SCENFILES >> ${TMP}/alltests || \
+            cat "$SCENFILES" >> ${TMP}/alltests || \
             {
                 echo "FATAL: unable to create command file"
                 exit 1
             }
         done
     } 
-    
+
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
     # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
     # these tests.  As a safeguard, this is disabled.
@@ -346,6 +371,13 @@ main()
              exit 1
          }
     }
+
+    # If enabled, execute only test cases that match the PATTERN
+    if [ -n "$TAG_RESTRICT_STRING" ]
+    then
+        mv -f ${TMP}/alltests ${TMP}/alltests.orig
+	    grep $TAG_RESTRICT_STRING ${TMP}/alltests.orig > ${TMP}/alltests #Not worth checking return codes for this case
+    fi
     
     # check for required users and groups
     ${LTPROOT}/IDcheck.sh &>/dev/null || \
@@ -366,7 +398,7 @@ main()
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
-    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE"
+    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
     if [ ! -z "$VERBOSE_MODE" ] ; then
       echo "COMMAND:    $PAN_COMMAND"
       if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
@@ -375,7 +407,7 @@ main()
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
-    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE
+    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
     
     if [ $? -eq 0 ]; then
       echo "INFO: pan reported all tests PASS"
