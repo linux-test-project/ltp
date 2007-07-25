@@ -69,6 +69,16 @@
 /*                               by jerrywei.                                 */
 /*                               email:rsalveti@linux.vnet.ibm.com            */
 /*								              */
+/*		Jul  - 13 - 2007 Modified - use siginfo_t to detect the       */
+/*				 faulting address. Now this works fine on all */
+/*				 architectures. - Suzuki K P                  */
+/*				 email:suzuki@in.ibm.com		      */
+/*				 				              */
+/*		Jul  - 18 - 2007 Modified - Add SA_NODEFER flag to avoid      */
+/*                               the chances of missing a SIGSEGV handling.   */
+/*				 Do not mask SIGSEGV - Suzuki K P             */
+/*				 email:suzuki@in.ibm.com	              */
+/*				 				              */
 /* File: 	mmap1.c							      */
 /*									      */
 /* Description:	Test the LINUX memory manager. The program is aimed at        */
@@ -151,83 +161,29 @@ int TST_TOTAL = 1;
 /******************************************************************************/
 static void
 sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
-            int code,	        
+            siginfo_t *info,
             struct ucontext *ut)/* contains pointer to sigcontext structure   */
 {
-#ifdef __i386__
-    unsigned long     except;   /* exception type.			      */
-    int               ret = 0;  /* exit code from signal handler.             */
-    struct   sigcontext *scp = 	/* pointer to sigcontext structure	      */
-				(struct sigcontext *)&ut->uc_mcontext;
-#endif
+    switch (signal)
+    {
+        case SIGALRM:
+             tst_resm(TPASS, "Test ended, success");
+             exit(0);
 
-    if (signal == SIGALRM)
-    {
-        tst_resm(TPASS, "Test ended, success");
-        exit(0);
-    }
-#ifdef __i386__
-    else
-    {
-        except = scp->trapno; 
-        fprintf(stderr, "signal caught - [%d] exception - [%ld]\n", 
-			signal, except);
-    }
+        case SIGSEGV:
+             if (info->si_code == SEGV_MAPERR &&
+                      info->si_addr == map_address)
+             {
+                  tst_resm(TINFO,
+                    "page fault occurred at %p",
+                    map_address);
+                  longjmp(jmpbuf, 1);
+             }
 
-    switch(except)
-    {
-        case 10:
-            fprintf(stderr, 
-	        "Exception - invalid TSS, exception #[%ld]\n", except);
-	    break;
-	case 11:
-	    fprintf(stderr,
-	        "Exception - segment not present, exception #[%ld]\n",
-		    except);
-	    break;
-	case 12:
-	    fprintf(stderr,
-		"Exception - stack segment not present, exception #[%ld]\n",
-		    except);
-	    break;
-        case 13:
-	    fprintf(stderr,
-		"Exception - general protection, exception #[%ld]\n",
-		    except);
-	    break;
-	case 14:
-	    fprintf(stderr,
-		"Exception - page fault, exception #[%ld]\n",
-		    except);
-            ret = 1;
-	    break;
-        default:
-	    fprintf(stderr,
-		"Exception type not handled... unknown exception #[%ld]\n",
-		    except);
-	    break;
+            fprintf(stderr, "caught unexpected signal - %d --- exiting\n",
+                     signal);
+            exit(-1);
     }
-
-    if (ret)
-    {
-        if (scp->eax == (int)map_address)
-	{
-	    tst_resm(TINFO,
-			"page fault at %#lx - ignore", scp->eax);
-	    longjmp(jmpbuf, 1);
-        }
-	else
-        { 
-	    fprintf(stderr, "bad page fault exit test\n");
-	    exit (-1);
-        }
-    }
-    else
-        exit (-1);
-#else
-    fprintf(stderr, "caught signal %d -- exiting.\n", signal);
-    exit (-1);
-#endif
 }
 
 
@@ -244,7 +200,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 /*									      */
 /******************************************************************************/
 static void
-set_timer(unsigned long run_time)		/* period for which test is intended to run   */
+set_timer(double run_time)		/* period for which test is intended to run   */
 {
     struct itimerval timer;	/* timer structure, tv_sec is set to run_time */
 
@@ -503,7 +459,7 @@ main(int  argc,		/* number of input parameters.			      */
     int		 thrd_ndx = 0;  /* index into the number of thrreads.         */
     int		 file_size;	/* size of the file to be created.	      */
     int		 num_iter;	/* number of iteration to perform             */
-    unsigned long	 exec_time;	/* period for which the test is executed */
+    double       exec_time;	/* period for which the test is executed */
     int		 fd;		/* temporary file descriptor		      */
     int          status[2];     /* exit status for process X and Y	      */
     int          sig_ndx;      	/* index into signal handler structure.       */
@@ -560,7 +516,7 @@ main(int  argc,		/* number of input parameters.			      */
 		verbose_print = TRUE;
                 break;
 	    case 'x':
-                exec_time = atol(optarg);
+                exec_time = atof(optarg);
 		if (exec_time == 0) 
 	     	    OPT_MISSING(argv[0], optopt);
 		else
@@ -582,12 +538,14 @@ main(int  argc,		/* number of input parameters.			      */
     set_timer(exec_time);
 
     /* set up signals */
+    /* Do not mask SIGSEGV, as we are interested in handling it. */
+
     sigptr.sa_handler = (void (*)(int signal))sig_handler;
     sigfillset(&sigptr.sa_mask);
-    sigptr.sa_flags = SA_SIGINFO;
+    sigdelset(&sigptr.sa_mask, SIGSEGV);
+    sigptr.sa_flags = SA_SIGINFO | SA_NODEFER;
     for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++)
     {
-        sigaddset(&sigptr.sa_mask, sig_info[sig_ndx].signum);
         if (sigaction(sig_info[sig_ndx].signum, &sigptr,
                 (struct sigaction *)NULL) == -1 )
         {
