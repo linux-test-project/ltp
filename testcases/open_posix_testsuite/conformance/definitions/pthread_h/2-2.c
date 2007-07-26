@@ -33,7 +33,7 @@
 
 /* XSI */
 #ifndef PTHREAD_MUTEX_RECURSIVE
-#error PTHREAD_MUTEX_NORMAL not defined
+#error PTHREAD_MUTEX_RECURSIVE not defined
 #endif 
 
 /* TPP|TPI */

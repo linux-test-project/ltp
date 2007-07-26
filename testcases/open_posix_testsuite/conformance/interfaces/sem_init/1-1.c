@@ -29,7 +29,7 @@ int main ()
 {
 	sem_t   mysemp;
 	int sts;
-	unsigned int val;
+	int val;
 
 	sts = sem_init(&mysemp, 0, 1);
 

@@ -34,7 +34,8 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t queue;
 	struct mq_attr attr;
-	int unresolved=0, pri, ret;
+	int unresolved=0, ret;
+	unsigned pri;
 
         sprintf(qname, "/mq_send_8-1_%d", getpid());
 

@@ -41,7 +41,8 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t queue;
 	struct mq_attr attr;
-	int failure=0, pri;
+	int failure=0;
+	unsigned pri;
 
         sprintf(qname, "/mq_open_19-1_%d", getpid());
 

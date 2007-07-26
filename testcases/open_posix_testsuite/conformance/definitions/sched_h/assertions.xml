@@ -1,13 +1,13 @@
 <assertions>
-  <assertion id="1" tag="ref:XDB6:{Headers:sched.h:SYNOPSIS} pt:PS">
+  <assertion id="1" tag="ref:XBD6:{Headers:sched.h:SYNOPSIS} pt:PS">
    The sched.h header file exists
   </assertion>
-  <assertion id="2" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="2" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    The sched.h header defines the structure sched_param which includes 
    the following, at a minimum:
      int     sched_priority
   </assertion>
-  <assertion id="3" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION} pt:SS">
+  <assertion id="3" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION} pt:SS">
    When _POSIX_SPORADIC_SERVER is defined, the structure sched_param 
    shall also include the following:
      int    sched_ss_low_priority 
@@ -15,7 +15,7 @@
      struct timespec sched_ss_init_budget 
      int    sched_ss_max_repl     
   </assertion>  
-  <assertion id="4" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION} pt:TSP">
+  <assertion id="4" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION} pt:TSP">
    When _POSIX_THREAD_SPORADIC_SERVER is defined, the structure 
    sched_param shall also includes  the following:
      int    sched_ss_low_priority 
@@ -23,63 +23,63 @@
      struct timespec sched_ss_init_budget 
      int    sched_ss_max_repl     
   </assertion>
-  <assertion id="5" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="5" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    Each process is controlled by an associated scheduling policy 
    and priority
   </assertion>
-  <assertion id="6" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="6" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    Associated with each policy is a priority range
   </assertion>
-  <assertion id="7" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="7" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    Each policy definition specifies the minimum priority range for that
    policy
   </assertion>
-  <assertion id="8" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="8" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    The symbolic constants below are defining the four standard policies:
      SCHED_FIFO
      SCHED_RR
      SCHED_SPORADIC (SS, TSP)
      SCHED_OTHER
   </assertion>
-  <assertion id="9" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="9" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    Other policies may be defined by the implementation.
   </assertion>
-  <assertion id="10" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="10" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    The symbolic constants defined below have all distinct values
      SCHED_FIFO
      SCHED_RR
      SCHED_SPORADIC (SS, TSP)
      SCHED_OTHER
   </assertion>
-  <assertion id="11" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="11" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_get_priority_max(int);
   </assertion>
-  <assertion id="12" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="12" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_get_priority_min(int);
   </assertion>
-  <assertion id="13" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="13" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_getparam(pid_t, struct sched_param *);
   </assertion>
-  <assertion id="14" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="14" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_getscheduler(pid_t);
   </assertion>
-  <assertion id="15" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="15" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_rr_get_interval(pid_t, struct timespec *);
   </assertion>
-  <assertion id="16" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="16" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_setparam(pid_t, const struct sched_param *);
   </assertion>
-  <assertion id="17" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="17" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_setscheduler(pid_t, int, const struct sched_param *);
   </assertion>
-  <assertion id="18" tag="ref:XDB6:{Headers:sched.h:DESCRIPTION}">
+  <assertion id="18" tag="ref:XBD6:{Headers:sched.h:DESCRIPTION}">
    This function is defined:
    int    sched_yield(void);
   </assertion>

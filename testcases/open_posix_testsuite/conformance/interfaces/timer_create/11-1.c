@@ -33,12 +33,17 @@ int main(int argc, char *argv[])
 	rc = sysconf(_SC_THREAD_CPUTIME);
 	printf("rc = %d\n", rc);
 
-#ifdef _POSIX_THREAD_CPUTIME
+#if _POSIX_THREAD_CPUTIME != -1
 	struct sigevent ev;
 	struct sigaction act;
 	timer_t tid;
 	struct itimerspec its;
 	struct timespec ts, tsleft;
+
+	if (rc == -1) {
+		printf("_POSIX_THREAD_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;

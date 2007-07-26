@@ -19,13 +19,18 @@
 
 int main(int argc, char *argv[])
 {
-#ifndef _POSIX_CPUTIME
+#if _POSIX_CPUTIME == -1
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
 	unsigned long time_to_set;	
 	clockid_t clockid_1, clockid_2;
 	struct timespec tp1, tp2;
+
+	if (sysconf(_SC_CPUTIME) == -1) {
+		printf("_POSIX_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
 
 	if (clock_getcpuclockid(getpid(), &clockid_1) != 0) {
 		printf("clock_getcpuclockid(getpid(), ) failed\n");

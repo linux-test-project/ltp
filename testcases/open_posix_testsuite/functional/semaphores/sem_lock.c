@@ -22,7 +22,7 @@
 #include "posixtest.h"
 
 #define SEM_NAME       "/tmp/semaphore"
-#define BUF_SIZE	50
+#define BUF_SIZE	200
 #define DEFAULT_THREADS 5
 
 int main(int argc, char *argv[])

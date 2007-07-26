@@ -30,7 +30,7 @@
 int main()
 {
 	
-	#ifndef _POSIX_CPUTIME
+	#if _POSIX_CPUTIME == -1
 		printf("_POSIX_CPUTIME unsupported\n");
 		return PTS_UNSUPPORTED;
 	#endif
@@ -38,6 +38,11 @@ int main()
 	pthread_condattr_t condattr;
 	clockid_t clockid;
 	int rc;
+
+	if (sysconf(_SC_CPUTIME) == -1) {
+		printf("_POSIX_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
 
 	/* Initialize a cond attributes object */
 	if((rc=pthread_condattr_init(&condattr)) != 0)

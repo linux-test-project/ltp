@@ -24,7 +24,7 @@ int main () {
     /* current time */
     time_t t = time(NULL);
     struct tm* local_t = localtime(&t);
-    char text[20];
+    char text[256];
     int result;
 
     setlocale(LC_TIME, "");
@@ -336,8 +336,8 @@ int main () {
 
     result = strftime(text, 256, "%X", local_t);
     printf("X   Bytes %i           %s	", result, text);
-    if ( result != 8 ) {
-	    puts("Test Failed: \%X doesn't equal at least 11 bytes");
+    if ( result < 8 ) {
+	    puts("Test Failed: \%X doesn't equal at least 8 bytes");
 	    return PTS_FAIL;
     } else {
 	    puts ("PASS");

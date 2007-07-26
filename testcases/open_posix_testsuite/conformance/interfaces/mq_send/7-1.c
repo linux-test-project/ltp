@@ -43,7 +43,8 @@ int main()
         char msgptr[MESSAGESIZE];
         mqd_t queue;
 	struct mq_attr attr;
-	int unresolved=0, failure=0, spri=1, pri, i, maxreached=0;
+	int unresolved=0, failure=0, spri=1, i, maxreached=0;
+	unsigned pri;
 
         sprintf(qname, "/mq_send_7-1_%d", getpid());
 

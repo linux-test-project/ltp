@@ -18,8 +18,8 @@
 #
 
 # Added tests timeout from Sebastien Decugis (http://nptl.bullopensource.org) 
-# Expiration delay is 120 seconds
-TIMEOUT_VAL = 120
+# Expiration delay is 240 seconds
+TIMEOUT_VAL = 240
 # The following value is the shell return value of a timedout application.
 # with the bash shell, the ret val of a killed application is 128 + signum
 # and under Linux, SIGALRM=14, so we have (Linux+bash) 142.
@@ -29,9 +29,7 @@ top_builddir = .
 
 LOGFILE = $(top_builddir)/logfile
 
-LDFLAGS  := $(strip $(shell grep -sv '^\#' LDFLAGS))
-CFLAGS   := $(strip $(shell grep -sv '^\#' CFLAGS))
-CPPFLAGS := $(strip $(shell grep -sv '^\#' CPPFLAGS))
+LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
 
 RUN_TESTS := $(shell $(top_builddir)/locate-test \
              --execs $(top_builddir)/$(POSIX_TARGET))
@@ -56,23 +54,18 @@ stress-tests: stress-make stress-run
 tests-pretty:
 	$(MAKE) all | column -t -s:
 
-ifeq ($(CFLAGS),)
-CFLAGS = -g -O2
-endif
-CFLAGS += -Wall -Werror
-ifeq ($(CPPFLAGS),)
-CPPFLAGS = -D_POSIX_C_SOURCE=200112L
-endif
+CFLAGS = -g -O2 -Wall -Werror -D_POSIX_C_SOURCE=200112L
 
 # add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
 check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
-CFLAGS += $(call check_gcc,-std=gnu99,$(call check_gcc,-std=c99,))
+CFLAGS += $(call check_gcc,-std=c99,)
+CFLAGS += $(call check_gcc,-std=gnu99,)
 
-CPPFLAGS += -Iinclude
+INCLUDE = -Iinclude
 
 # FIXME: exaust cmd line length
 clean:
-	@rm -f $(LOGFILE)*
+	@rm -f $(LOGFILE)
 # Timeout helper files
 	@rm -f $(top_builddir)/t0{,.val}
 # Built runnable tests
@@ -103,7 +96,7 @@ clean:
 # Rule to run an executable test
 # If it is only a build test, then the binary exist, so we don't need to run
 .PHONY: %.run-test
-%.run-test: %.test $(top_builddir)/t0
+%.run-test: %.test $(top_builddir)/t0 $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
@@ -146,10 +139,12 @@ clean:
 
 $(top_builddir)/t0: $(top_builddir)/t0.c
 	@echo Building timeout helper files; \
-	$(CC) -O2 -o $@ $< ; \
+	$(CC) -O2 -o $@ $<
+	
+$(top_builddir)/t0.val: $(top_builddir)/t0
 	echo `$(top_builddir)/t0 0; echo $$?` > $(top_builddir)/t0.val
 	
-%.run-test: %.sh $(top_builddir)/t0
+%.run-test: %.sh $(top_builddir)/t0 $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
 	chmod +x $<; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
@@ -170,7 +165,7 @@ $(top_builddir)/t0: $(top_builddir)/t0.c
 .PRECIOUS: %.o
 %.o: %.c
 	@COMPLOG=$(LOGFILE).$$$$; \
-	if $(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
+	if $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
 		echo "$(@:.o=): build: PASS" | tee -a $(LOGFILE); \
 	else \
@@ -204,3 +199,4 @@ stress-run: $(STRESS_RUN)
 $(STRESS_RUN): 
 	cd $@; ./run.sh
 	cd $(PWD)
+

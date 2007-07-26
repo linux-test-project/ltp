@@ -8,6 +8,7 @@
  * Test that timer_getoverrun() can only return a value up to but 
  * not including {DELAYTIMER_MAX}. 
  * - adam.li 2004-04-29 Make the output as HEX. 
+ * - s.decugis 2005-11-25 Changed return value to UNTESTED.
  */
 
 #include <time.h>
@@ -21,5 +22,5 @@ int main()
 	long delaytimer_max = sysconf(_SC_DELAYTIMER_MAX);
 	printf("Cannot be tested as DELAYTIMER_MAX is too large.\n");
 	printf("DELAYTIMER_MAX is %lx\n", delaytimer_max);
-	return PTS_UNRESOLVED;
+	return PTS_UNTESTED;
 }

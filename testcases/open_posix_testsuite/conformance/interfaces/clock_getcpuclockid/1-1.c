@@ -32,12 +32,17 @@ void dosomething()
 
 int main(int argc, char *argv[])
 {
-#ifndef _POSIX_CPUTIME
+#if _POSIX_CPUTIME == -1
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
 	clockid_t clockid;
 	struct timespec tp1 = {.tv_sec = 0, .tv_nsec = 0};
+
+	if (sysconf(_SC_CPUTIME) == -1) {
+		printf("_POSIX_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
 
 	dosomething();
 

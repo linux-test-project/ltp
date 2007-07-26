@@ -203,6 +203,7 @@ void * worker (void * arg)
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)  {  UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in signal thread");  }
 	
+	ts.tv_sec=0;
 	ts.tv_nsec= INTERVAL;
 	while (ts.tv_nsec >= 1000000000)
 	{

@@ -11,11 +11,11 @@
 
 #include <time.h>
 #include <string.h>
+/* Include for printf */
+#include <stdio.h> 
 
 int dummyfcn (void)
 {
-	char *dummy[10];
-
-	strcpy(*dummy,*tzname);
+	printf("%s\n",tzname[0]);
 	return 0;
 }

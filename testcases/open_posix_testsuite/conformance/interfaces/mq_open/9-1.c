@@ -39,7 +39,7 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t rdwrqueue, rdwrqueue2;
 	struct mq_attr attr;
-	int pri;
+	unsigned pri;
 
         sprintf(qname, "/mq_open_9-1_%d", getpid());
 

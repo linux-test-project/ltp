@@ -29,13 +29,18 @@ void dosomething()
 
 int main(int argc, char *argv[])
 {
-#ifndef _POSIX_CPUTIME
+#if _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME unsupported\n");
 	return PTS_UNSUPPORTED;
 #else
 #ifdef CLOCK_PROCESS_CPUTIME_ID
 	struct timespec ts1, ts2, ts3, ts4;
 	
+	if (sysconf(_SC_CPUTIME) == -1) {
+		printf("_POSIX_CPUTIME unsupported\n");
+		return PTS_UNSUPPORTED;
+	}
+
 	if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts1) != 0) {
 		printf("clock_gettime() failed: errno %d\n", errno);
 		return PTS_UNRESOLVED;

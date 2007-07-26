@@ -35,7 +35,8 @@ int main()
         const char *msgptr1 = "test message 1";
         const char *msgptr2 = "test message 2";
         mqd_t mqdes;
-	int rvprio, sdprio1 = 1, sdprio2 = 2;
+	unsigned rvprio;
+	int sdprio1 = 1, sdprio2 = 2;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
 

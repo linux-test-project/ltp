@@ -14,7 +14,8 @@
 
 void dummy_func ()
 {
-	pthread_self();
-	return;
+	pthread_t ptid = pthread_self();
+	if (ptid == 0)
+		return;
 }
 

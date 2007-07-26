@@ -177,12 +177,12 @@ int main()
 	fprintf(stderr, "P: child_2: %d forked\n", c_2);
 
 	/* Make sure the two children has been waiting */	
-/*	do { 
+	/*do { 
 		sleep(1);
 		sem_getvalue(sem_1, &val);
 		//printf("val = %d\n", val);
 	} while (val != 1);
-*/	
+	*/
 	c_3 = fork();
 	if (c_3 == 0)
 	{
@@ -192,12 +192,12 @@ int main()
 	fprintf(stderr, "P: child_3: %d forked\n", c_3);
 	
 	/* Make sure child 3 has been waiting for the lock */	
-/*	do { 
+	/*do { 
 		sleep(1);
 		sem_getvalue(sem_1, &val);
 		//printf("val = %d\n", val);
 	} while (val != 0);
-*/	
+	*/
 	/* Ok, let's release the lock */
 	fprintf(stderr, "P: release lock\n");
 	sem_post(sem);

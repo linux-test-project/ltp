@@ -84,8 +84,7 @@ void *a_thread_func()
        		gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
         	if (gqueue == (mqd_t)-1) {
                 	perror("mq_open() did not return success");
-            		sem = INMAIN;
-         			pthread_exit((void*)PTS_UNRESOLVED);                  
+			pthread_exit((void*)PTS_UNRESOLVED);
                 	return NULL;
         	}
 		
@@ -102,17 +101,17 @@ void *a_thread_func()
 				if (errno == EINTR) {
 					if (mq_unlink(gqname) != 0) {
                 				perror("mq_unlink() did not return success");
-						         pthread_exit((void*)PTS_UNRESOLVED);
-                				return (void*)PTS_UNRESOLVED;
+						pthread_exit((void*)PTS_UNRESOLVED);
+                				return NULL;
 					}
 					printf("thread: mq_timedsend interrupted by signal and correctly set errno to EINTR\n");
 					errno_eintr=1;
 					pthread_exit((void*)PTS_PASS);
-					return (void*)PTS_PASS;
+					return NULL;
 				} else {
 				printf("mq_timedsend not interrupted by signal or set errno to incorrect code: %d\n", errno);
 					pthread_exit((void*)PTS_FAIL);
-					return (void*)PTS_FAIL;
+					return NULL;
 				}
         		}
 		}
@@ -122,13 +121,14 @@ void *a_thread_func()
 
 		perror("Error: thread never blocked\n");
 		pthread_exit((void*)PTS_FAIL);
-		return (void*)PTS_FAIL;
+		return NULL;
 }
 
 int main()
 {
         pthread_t new_th;
 	int i;
+
 	/* Initialized values */
 	i = 0;
 	in_handler=0;
@@ -140,11 +140,11 @@ int main()
 		perror("Error: in pthread_create\n");
 		return PTS_UNRESOLVED;
 	}
-
+	
 	/* Wait for thread to set up handler for SIGUSR1 */
 	while(sem==INTHREAD)
-       	 	sleep(1);
-   
+	 	sleep(1);
+
 	while((i != 10) && (sem==INMAIN))
 	{
 		/* signal thread while it's in mq_timedsend */

@@ -9,9 +9,9 @@ CFLAGS = -g -O2 -Wall -Werror
 
 INCLUDE = -I../../../include
 
-LDPATH = -L/lib/libposixtime.so
+LDPATH =
 
-LIB = -lposixtime
+LIB = -lrt
 
 all:	twoevtimers.test twoptimers.test
 

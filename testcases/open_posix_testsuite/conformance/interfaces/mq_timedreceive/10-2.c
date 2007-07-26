@@ -39,7 +39,8 @@ int main()
         char mqname[NAMESIZE], msgrv[BUFFER];
         const char *msgptr = "test message";
         mqd_t mqdes;
-	int rvprio, sdprio = 1;
+	unsigned int rvprio; 
+	int sdprio = 1;
 	struct timespec	ts;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;

@@ -51,7 +51,8 @@ int main()
         const char *msgptr5 = MSG5;
         mqd_t queue;
 	struct mq_attr attr;
-	int unresolved=0, failure=0, pri;
+	int unresolved=0, failure=0;
+	unsigned pri;
 
         sprintf(qname, "/mq_send_3-2_%d", getpid());
 

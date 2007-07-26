@@ -303,7 +303,7 @@ int main(int argc, char * argv[])
 		#endif
 		for (j = 0; j < NTHREADS; j++)
 		{
-			ret = pthread_create(&th[j], NULL, threaded, (void *)(j & 1));
+			ret = pthread_create(&th[j], NULL, threaded, (void *)(long)(j & 1));
 			if (ret != 0)  {  UNRESOLVED(ret, "Thread creation failed");  }
 		}
 		

@@ -13,7 +13,7 @@ RunTest()
 	echo "TEST: " $1
 	TOTAL=$TOTAL+1
 	./$1
-	if [ $? = 0 ]; then
+	if [ $? == 0 ]; then
 		PASS=$PASS+1
 		echo -ne "\t\t\t***TEST PASSED***\n\n"
 	else

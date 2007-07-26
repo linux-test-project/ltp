@@ -57,7 +57,8 @@ int main()
 	char msgrcd[BUFFER];
         const char *msgptr = MSGSTR;
 	struct mq_attr attr;
-	int unresolved=0, pri;
+	int unresolved=0;
+	unsigned pri;
 
         sprintf(gqname, "/mq_send_5-1_%d", getpid());
 

@@ -35,7 +35,7 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t woqueue, woqueue2;
 	struct mq_attr attr;
-	int pri;
+	unsigned pri;
 
         sprintf(qname, "/mq_open_8-1_%d", getpid());
 

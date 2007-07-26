@@ -1,8 +1,7 @@
 
 INCLUDE = -I../../include
-LIB=-lposix1b
+LIB=
 
-CC=gcc
 CFLAGS=-Wall -O2 -g 
 
 all:  make-test

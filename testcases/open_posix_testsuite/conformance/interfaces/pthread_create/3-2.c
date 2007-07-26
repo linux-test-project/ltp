@@ -282,7 +282,7 @@ int test_stack(pthread_attr_t * ta, size_t newsize)
 			ret = pthread_join(th, &rc);
 			if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
 			if (rc != (void *)0)
-			{  UNRESOLVED((int)rc, "The overflow function returned an unexpected value");  }
+			{  UNRESOLVED((int)(long)rc, "The overflow function returned an unexpected value");  }
 		}
 		
 

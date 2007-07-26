@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "posixtest.h"
 
 int main()
 {
@@ -22,16 +23,16 @@ int main()
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
 			       "pre-conditions");
-			return -1;
+			return PTS_UNRESOLVED;
 		}
 
-		if (!WIFEXITED(s)) {
+		if (WIFEXITED(s)) {
 			printf("Test PASSED\n");
-			return 0;
+			return PTS_PASS;
 		}
 	}
 
 	printf("Test FAILED\n");
-	return -1;	
+	return PTS_FAIL;	
 }
 

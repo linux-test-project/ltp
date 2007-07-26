@@ -10,9 +10,9 @@ CFLAGS = -g -O2 -Wall -Werror -DDEBUG
 
 INCLUDE = -I../../../include
 
-LDPATH = -L/usr/lib/libposixtime.so
+LDPATH =
 
-LIB = -lposixtime
+LIB = -lrt
 
 all:	twopsetclock.test invaliddates.test
 

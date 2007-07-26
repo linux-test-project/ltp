@@ -4,7 +4,7 @@
 
 #include <signal.h>
 
-sigstack this_type_should_exist, t;
+struct sigstack this_type_should_exist, t;
 int onstack;
 void *sp;
 

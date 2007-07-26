@@ -25,7 +25,7 @@ struct shmid_ds this_type_should_exist, t;
 
 int dummyfcn(void)
 {
-	struct ipc_perm perm;
+	struct ipc_perm perm = {0};
 	size_t sz = 0;
 	pid_t lpid = 0, cpid = 0;
 	shmatt_t nattch = 0;

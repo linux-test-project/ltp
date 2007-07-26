@@ -50,9 +50,8 @@ int main() {
 	}
 	result = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
 	if(result == ENOTSUP) {
-		printf("Process contention scope threads are not supported. Use System contention schope instead.\n");
-		result = pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
-//		return PTS_UNSUPPORTED;
+		printf("Process contention scope threads are not supported.\n");
+		return PTS_UNSUPPORTED;
 	} else if(result != 0) {
 		printf("An error occurs when calling pthread_attr_setscope()");
 		return PTS_UNRESOLVED;

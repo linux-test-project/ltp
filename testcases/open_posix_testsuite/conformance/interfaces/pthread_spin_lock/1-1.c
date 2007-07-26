@@ -52,6 +52,15 @@ static void* fn_chld(void *arg)
 	thread_state = ENTERED_THREAD;
 	int cnt = 0;
 
+        /* Unblock the SIGALRM signal for the thread */
+        sigemptyset (&act.sa_mask);
+        sigaddset(&act.sa_mask, SIGALRM);
+        if (pthread_sigmask (SIG_UNBLOCK, &act.sa_mask, NULL))
+        {
+                perror("thread: could not unblock SIGALRM\n");
+                return (void *)PTS_UNRESOLVED;
+        }
+
 	/* Set up child thread to handle SIGALRM */
 	act.sa_flags = 0;
 	act.sa_handler = sig_handler;
@@ -90,6 +99,16 @@ int main()
 {
 	pthread_t child_thread;
 	void *value_ptr;
+	struct sigaction sa;
+
+	/* Block the SIGALRM signal for main thread */
+	sigemptyset (&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGALRM);
+	if (pthread_sigmask (SIG_BLOCK, &sa.sa_mask, NULL))
+	{
+		perror("main: could not block SIGALRM\n");
+		return PTS_UNRESOLVED;
+	}
 	
 	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{

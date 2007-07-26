@@ -1,5 +1,5 @@
 <assertions>
-  <assertion id="1" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}">
+  <assertion id="1" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}">
    The sys/mman.h header file exists if the implementation supports at least
    one of the following options:
 	MF
@@ -10,35 +10,35 @@
 	SIO
 	ADV
   </assertion>
-  <assertion id="2" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM pt:ADV">
+  <assertion id="2" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM pt:ADV">
    The header defines the following protection options:
 	PROT_READ
 	PROT_WRITE
 	PROT_EXEC
 	PROT_NONE
   </assertion>
-  <assertion id="3" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM">
+  <assertion id="3" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM">
    The header defines the following flag options:
 	MAP_SHARED
 	MAP_PRIVATE
 	MAP_FIXED
   </assertion>
-  <assertion id="4" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SIO">
+  <assertion id="4" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SIO">
    The header defines the following flag options for msync():
 	MS_ASYNC
 	MS_SYNC
 	MS_INVALIDATE
   </assertion>
-  <assertion id="5" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:ML">
+  <assertion id="5" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:ML">
    The header defines the following flag options for mlockall():
 	MCL_CURRENT
 	MCL_FUTURE
   </assertion>
-  <assertion id="6" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM">
+  <assertion id="6" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:MF pt:SHM">
    The header defines the following symbolic constant:
 	MAP_FAILED
   </assertion>
-  <assertion id="7" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:ADV pt:MF pt:SHM">
+  <assertion id="7" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:ADV pt:MF pt:SHM">
    The header defines the following symbolic values:
 	POSIX_MADV_NORMAL 
 	POSIX_MADV_SEQUENTIAL 
@@ -46,75 +46,75 @@
 	POSIX_MADV_WILLNEED 
 	POSIX_MADV_DONTNEED 
   </assertion>
-  <assertion id="8" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION} pt:TYM">
+  <assertion id="8" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION} pt:TYM">
    The header defines the following flags for posix_typed_mem_open():
 	POSIX_TYPED_MEM_ALLOCATE 
 	POSIX_TYPED_MEM_ALLOCATE_CONTIG 
 	POSIX_TYPED_MEM_MAP_ALLOCATABLE 
   </assertion>
-  <assertion id="9" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}">
+  <assertion id="9" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}">
    The mode_t, off_t, and size_t types shall be defined as described in 
    sys/types.h 
   </assertion>
-  <assertion id="10" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
+  <assertion id="10" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
    The sys/mman.h header shall define the structure posix_typed_mem_info, 
    which includes at least the following member:
 	size_t posix_tmi_length
   </assertion>
-  <assertion id="11" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MR">
+  <assertion id="11" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MR">
    This function is defined:
    int mlock(const void *, size_t)
   </assertion>
-  <assertion id="12" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:ML">
+  <assertion id="12" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:ML">
    This function is defined:
    int mlockall(int)
   </assertion>
-  <assertion id="13" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SHM pt:TYM">
+  <assertion id="13" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SHM pt:TYM">
    This function is defined:
    void *mmap(void *, size_t, int, int, int, off_t)
   </assertion>
-  <assertion id="14" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MPR">
+  <assertion id="14" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MPR">
    This function is defined:
    int mprotect(void *, size_t, int)
   </assertion>
-  <assertion id="15" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SIO">
+  <assertion id="15" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SIO">
    This function is defined:
    int msync(void *, size_t, int)
   </assertion>
-  <assertion id="16" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MR">
+  <assertion id="16" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MR">
    This function is defined:
    int munlock(const void *, size_t)
   </assertion>
-  <assertion id="17" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:ML">
+  <assertion id="17" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:ML">
    This function is defined:
    int munlockall(void)
   </assertion>
-  <assertion id="18" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SHM pt:TYM">
+  <assertion id="18" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:MF pt:SHM pt:TYM">
    This function is defined:
    int munmap(void *, size_t)
   </assertion>
-  <assertion id="19" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:ADV">
+  <assertion id="19" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:ADV">
    This function is defined:
    int posix_madvise(void *, size_t, int)
   </assertion>
-  <assertion id="20" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
+  <assertion id="20" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
    This function is defined:
    int posix_mem_offset(const void *restrict, size_t, off_t *restrict,
                         size_t *restrict, int *restrict)
   </assertion>
-  <assertion id="21" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
+  <assertion id="21" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
    This function is defined:
    int posix_typed_mem_get_info(int, struct posix_typed_mem_info *)
   </assertion>
-  <assertion id="22" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
+  <assertion id="22" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:TYM">
    This function is defined:
    int posix_typed_mem_open(const char *, int, int)
   </assertion>
-  <assertion id="23" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:SHM">
+  <assertion id="23" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:SHM">
    This function is defined:
    int shm_open(const char *, int, mode_t)
   </assertion>
-  <assertion id="24" tag="ref:XDB6:{Headers:sys/mman.h:DESCRIPTION}} pt:SHM">
+  <assertion id="24" tag="ref:XBD6:{Headers:sys/mman.h:DESCRIPTION}} pt:SHM">
    This function is defined:
    int shm_unlink(const char *)
   </assertion>

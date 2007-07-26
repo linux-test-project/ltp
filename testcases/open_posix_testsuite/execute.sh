@@ -174,8 +174,8 @@ TIMEVAL_RET=$?
 # Find executable files from the conformance directory
 # If you want to execute any specific test cases, you should modify here.
 
-FINDFILESsh=`find ./conformance/ -name *-*.sh -print`
-FINDFILES=`find ./conformance/ -name *-*.test -print | grep -v core`
+FINDFILESsh=`find ./conformance/ -name '*-*.sh' -print`
+FINDFILES=`find ./conformance/ -name '*-*.test' -print | grep -v core`
 
 NEWSTR=`echo $FINDFILES $FINDFILESsh`
 

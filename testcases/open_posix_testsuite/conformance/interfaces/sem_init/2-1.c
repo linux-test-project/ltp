@@ -27,7 +27,7 @@
 int main ()
 {
 	sem_t   mysemp;
-	unsigned int val;
+	int val;
 
 	if ( sem_init (&mysemp, 0, 1) == -1 ) {
 		perror(ERROR_PREFIX "sem_init");

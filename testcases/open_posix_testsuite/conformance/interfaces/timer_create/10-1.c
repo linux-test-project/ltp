@@ -31,7 +31,7 @@ void handler(int signo)
 
 int main(int argc, char *argv[])
 {
-#ifndef _POSIX_CPUTIME
+#if _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME not defined\n");
 	return PTS_UNSUPPORTED;
 #else

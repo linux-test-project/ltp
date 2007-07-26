@@ -13,14 +13,18 @@
 #include <time.h>
 #include <stdio.h>
 #include <limits.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 int main(int argc, char *argv[])
 {
 	timer_t tid;
 	int i;
+	long scTIMER_MAX=0;
 
-	for (i=0; i<TIMER_MAX;i++) {
+	scTIMER_MAX=sysconf(_SC_TIMER_MAX);
+
+	for (i=0; i<scTIMER_MAX;i++) {
 		if (timer_create(CLOCK_REALTIME, NULL, &tid) != 0) {
 			perror("timer_create() did not return success\n");
 			return PTS_FAIL;

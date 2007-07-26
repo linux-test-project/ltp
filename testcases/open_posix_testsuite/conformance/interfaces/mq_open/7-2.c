@@ -52,7 +52,8 @@ int main()
 		sigset_t mask;
 		struct mq_attr attr;
 		struct sigaction act;
-		int sig, pri;
+		int sig;
+		unsigned pri;
 
 		/* child here */
 		

@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
 	
 	int do_fork;
 	
-	pid_t child_pr, chkpid;
+	pid_t child_pr=0, chkpid;
 	int status;
 	pthread_t child_th;
 	

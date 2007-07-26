@@ -41,12 +41,17 @@ void *a_thread_func()
 
 int main()
 {
-#ifndef _POSIX_THREAD_CPUTIME
+#if _POSIX_THREAD_CPUTIME == -1
 	printf("_POSIX_THREAD_CPUTIME not supported\n");
 	return PTS_UNSUPPORTED;
 #endif
 	pthread_t new_th;
 	
+	if (sysconf(_SC_THREAD_CPUTIME) == -1) {
+		printf("_POSIX_THREAD_CPUTIME not supported\n");
+		return PTS_UNSUPPORTED;
+	}
+
 	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");

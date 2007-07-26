@@ -1,25 +1,25 @@
 <assertions>
-  <assertion id="1" tag="ref:XDB6:{Headers:sys/shm.h:SYNOPSIS} pt:XSI">
+  <assertion id="1" tag="ref:XBD6:{Headers:sys/shm.h:SYNOPSIS} pt:XSI">
    The sys/shm.h header file exists
   </assertion>
-  <assertion id="2" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
-   The header define the folowing symbolic constants:
+  <assertion id="2" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
+   The header define the following symbolic constants:
     - SHM_RDONLY
     - SHM_RND
   </assertion>
-  <assertion id="3" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
-   The header define the folowing symbolic value:
+  <assertion id="3" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
+   The header define the following symbolic value:
     - SHMLBA
   </assertion>
-  <assertion id="4" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
-   The header define the folowing type through typedef:
+  <assertion id="4" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
+   The header define the following type through typedef:
     - shmatt_t
   </assertion>
-  <assertion id="5" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="5" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    The shmatt_t type is an unsigned integer that must be able to store values
    at least as large than unsigned short.
   </assertion>
-  <assertion id="6" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="6" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    The header declares struct shmid_ds with the members below, at a minimum:
 	struct ipc_perm	shm_perm
 	size_t		shm_segsz
@@ -30,27 +30,27 @@
 	time_t		shm_dtime
 	time_t		shm_ctime
   </assertion>
-  <assertion id="7" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="7" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    The pid_t, time_t, key_t, and size_t types shall be defined as described in
    sys/types.h
   </assertion>
-  <assertion id="8" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="8" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    This function is defined:
    void *shmat(int, const void *, int)
   </assertion>
-  <assertion id="9" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="9" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    This function is defined:
    int shmctl(int, int, struct shmid_ds *)
   </assertion>
-  <assertion id="10" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="10" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    This function is defined:
    int shmdt(const void *)
   </assertion>
-  <assertion id="11" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="11" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    This function is defined:
    int shmget(key_t, size_t, int)
   </assertion>
-  <assertion id="12" tag="ref:XDB6:{Headers:sys/shm.h:DESCRIPTION}">
+  <assertion id="12" tag="ref:XBD6:{Headers:sys/shm.h:DESCRIPTION}">
    All of the symbols from sys/ipc.h are defined when the sys/shm.h header is
    included
   </assertion>

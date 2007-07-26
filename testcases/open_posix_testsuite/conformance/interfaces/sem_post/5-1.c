@@ -37,6 +37,11 @@
 
 sem_t *gsemp;
 
+void sighdl(int sig)
+{
+	return;
+}
+
 int main() {
 	char semname[20];
 	int val;
@@ -48,7 +53,7 @@ int main() {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
-
+	signal(SIGALRM, sighdl);
 	sleep(1);
         alarm(1);
 

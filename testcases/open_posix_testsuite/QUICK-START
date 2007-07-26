@@ -2,8 +2,7 @@
 QUICK-START
 ***********
 
-So you're in a hurry and don't feel like reading all those docs in the
-Documentation section that we have worked so hard to write huh?
+So you're in a hurry and don't feel like reading all those docs in the Documentation section that we have worked so hard to write huh?  
 
 No worries! Here's a quick doc to help you around POSIX** Test Suite.
 
@@ -13,13 +12,12 @@ Setting up your machine
 
 * There is nothing to install, the suite is intended to be run directly.
 
-* See the "BUILD" file for info on how to set up the Makefile and your
-developer machine, depending on what specific area you are concentrating on.
-(Signals, Semaphores, Threads, Timers or Message Qs).
+* See the "BUILD" file for info on how to set up the Makefile and your developer machine,  
+depending on what specific area you are concentrating on. 
+(Signals, Semaphores, Threads, Timers or Message Qs).  
 
-* "LDFLAGS" is a file used by the Makefile to link to what you specify in it.
-  e.g. if you want to link with lpthread, you would open LDFLAGS and insert the
-       line "-lpthread".  LDFLAGS has a few simple examples contained in it.
+* "LDFLAGS" is a file used by the Makefile to link to what you specify in it. e.g. if you want to link with lpthread, you would open LDFLAGS and insert the line "-lpthread".  LDFLAGS has a few
+simple examples contained in it.
 
 ===================
 Running the tests
@@ -46,22 +44,22 @@ Documentation & Resources
 
 POSIX* Test Suite project page: http://posixtest.sf.net
 
-BUILD                  - describes how to set up your machine to build and test
-LDFLAGS                - File that Makefile uses to link to what you specify
+BUILD			- describes how to set up your developer machine to build and test
+LDFLAGS			- File that Makefile uses to link to what you specify
 
 The following files give developers information on how to write test
 cases for the project (under Documentation):
 
-HOWTO_Assertions       - describes format of the assertions files used to
-                         map test case descriptions to test cases
-HOWTO_BoundaryTest     - information about testing boundary conditions
-HOWTO_CodingGuidelines - describes coding guidelines for this project
-HOWTO_Coverage         - describes format of COVERAGE.<area> files
-HOWTO_DefinitionsTest  - ideas behind testing POSIX header files
-HOWTO_ResultCodes      - standardized return codes for tests
-HOWTO_Tagging          - describes how to tag files for inclusion in a release
-HOWTO_RunTests         - describes how to build and run the tests
+HOWTO_Assertions    	- describes format of the assertions files used to
+                       	map test case descriptions to test cases
+HOWTO_BoundaryTest    	- information about testing boundary conditions
+HOWTO_CodingGuidelines	- describes coding guidelines for this project
+HOWTO_Coverage        	- describes format of COVERAGE.<area> files
+HOWTO_DefinitionsTest 	- ideas behind testing POSIX header files
+HOWTO_ResultCodes     	- standardized return codes for tests
+HOWTO_Tagging         	- describes how to tag files for inclusion in a release
+HOWTO_RunTests		- describes how to build and run the tests
 
 ** POSIX (R) is a registered trademark of the IEEE
 
-Maintainer:    Ling Yu (ling.l.yu@intel.com)
+Maintainer:	Ling Yu (ling.l.yu@intel.com)

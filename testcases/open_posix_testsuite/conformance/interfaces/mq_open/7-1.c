@@ -35,7 +35,7 @@ int main()
         const char *msgptr = MSGSTR;
         mqd_t rdwrqueue, roqueue;
 	struct mq_attr attr;
-	int pri;
+	unsigned pri;
 
         sprintf(qname, "/mq_open_7-1_%d", getpid());
 

@@ -52,7 +52,8 @@ int main()
 		struct mq_attr attr;
 		struct sigaction act;
 		char msgrcd[BUFFER];
-		int sig, pri;
+		int sig;
+		unsigned pri;
 
 		/* child here */
 		
@@ -106,7 +107,8 @@ int main()
         	mqd_t rdwrqueue;
 		char msgrcd[BUFFER];
 		struct mq_attr attr;
-		int i, pri;
+		int i;
+		unsigned pri;
 
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;

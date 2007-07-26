@@ -44,7 +44,8 @@ int main()
 	struct timespec ts;
 	struct mq_attr attr;
         mqd_t queue;
-	int unresolved=0, failure=0, spri=1, pri, i, maxreached=0;
+	int unresolved=0, failure=0, spri=1, i, maxreached=0;
+	unsigned pri;
 
         sprintf(qname, "/mq_timedsend_7-1_%d", getpid());
 

@@ -1,3 +1,13 @@
+10-19-2005      1.5.2 Release
+		 - Code cleanups by Sebastien Decugis
+		 - Add a patch for cleaner build in cross environment from Joseph S. Myers
+		 - Add a patch to _POSIX_CPUTIME and_POSIX_THREAD_CPUTIME handling from Joseph S. Myers
+		 - Make the aio_read/write tests concerningthe offset maximum return PTS_UNTESTED by Sebastien Decugis
+		 - A patch from Randy.Dunlap to fix shm conformance uninitialzedvariables
+		 - A patch from Randy.Dunlap to fix 2 pthread conformance problems
+		 - The patches for sem_post_5_1 and sem_post_8_1 from Yi Xu
+		 - A patch for sem_close_1_1 from Yi Xu
+		 - A patch from Randy.Dunlap for sem_lock to increase BUF_SIZE to prevent segment fault.
 06-03-2005	1.5.1 Release
 		 - conformance/interfaces/aio_* and 
 		   conformance/interface/lio_listio: add new cases and bug

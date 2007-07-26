@@ -10,8 +10,12 @@
 #include <errno.h>
 #include <string.h>
 
+#ifndef EOWNERDEAD
 #define EOWNERDEAD	ESRCH
+#endif
+#ifndef ENOTRECOVERABLE
 #define ENOTRECOVERABLE	EBADR
+#endif
 
 #define PASS	0
 #define FAIL	1

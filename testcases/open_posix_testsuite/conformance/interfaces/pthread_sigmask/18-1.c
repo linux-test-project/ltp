@@ -182,7 +182,7 @@ void * test( void * arg )
 {
 	int ret = 0;
 	sigset_t set;
-	int i, j;
+	int i, j=0;
 	int signals[] = { SIGBUS, SIGKILL, SIGABRT, SIGCHLD, SIGHUP };
 #define NSIG (sizeof(signals)/sizeof(int))
 	int operation[] = {SIG_SETMASK, SIG_BLOCK, SIG_UNBLOCK};
