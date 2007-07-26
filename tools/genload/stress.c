@@ -692,7 +692,7 @@ hogvm (long long forks, long long chunks, long long bytes)
 {
   long long i, j, k;
   int pid, retval = 0;
-  char *ptr;
+  char **ptr;
 
   /* Make local copies of global variables.  */
   int ignore = global_ignore;
@@ -720,12 +720,13 @@ hogvm (long long forks, long long chunks, long long bytes)
 
           while (1)
             {
+              ptr = (char **) malloc ( chunks * 2);
               for (j = 0; chunks == 0 || j < chunks; j++)
                 {
-                  if ((ptr = (char *) malloc (bytes * sizeof (char))))
+                  if ((ptr[j] = (char *) malloc (bytes * sizeof (char))))
                     {
                       for (k = 0; k < bytes; k++)
-                        ptr[k] = 'Z';   /* Ensure that COW happens.  */
+                        ptr[j][k] = 'Z';   /* Ensure that COW happens.  */
                       dbg (stdout, "hogvm worker malloced %lli bytes\n", k);
                     }
                   else if (ignore)
@@ -752,7 +753,10 @@ hogvm (long long forks, long long chunks, long long bytes)
                 {
                   dbg (stdout,
                        "hogvm worker freeing memory and starting over\n");
-                  free (ptr);
+                  for (j = 0; chunks == 0 || j < chunks; j++) {
+                      free (ptr[j]);
+                  }
+                  free(ptr);
                   continue;
                 }
 
