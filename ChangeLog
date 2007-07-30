@@ -1,3 +1,164 @@
+LTP-20070731
+
+1)  Log Message: lcov: preparations for new release by "oberpapr@users.sourceforge.net"
+- updated CHANGES file
+- added compat-libtool + no-compat-libtool option
+- changed libtool default to on (due to popular request)
+- added checksum option
+- changed checksum default to off (to reduce cpu time + file size)
+- added geninfo_checksum option to lcovrc, deprecated geninfo_no_checksum
+- added geninfo_compat_libtool option to lcovrc
+- minor update of README file
+File(s) Affected:
+ltp/utils/analysis/lcov/CHANGES
+ltp/utils/analysis/lcov/README
+ltp/utils/analysis/lcov/lcovrc
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+
+2)  Log Message: update manpage by "oberpapr@users.sourceforge.net"
+File(s) Affected:
+ltp/utils/analysis/lcov/man/lcov.1
+
+3)  Log Message: "sachinp@in.ibm.com" has fixed a probe point definition from 'll_rw_lock' to 'll_rw_block'
+File(s) Affected:
+ltp/testcases/kdump/susetools/lkdtm_mod/lkdtm.c
+
+4)  Log Message: man page update by "oberpapr@users.sourceforge.net"
+File(s) Affected:
+ltp/utils/analysis/lcov/man/genhtml.1
+ltp/utils/analysis/lcov/man/geninfo.1
+ltp/utils/analysis/lcov/man/lcov.1
+
+5)  Log Message: lcov: another update in preparation for a new release by "oberpapr@users.sourceforge.net"
+File(s) Affected:
+ltp/utils/analysis/lcov/bin/lcov
+ltp/utils/analysis/lcov/man/lcovrc.5
+ltp/utils/analysis/lcov/CHANGES
+ltp/utils/analysis/lcov/lcovrc
+
+6)  Log Message: fixed bug that would not delete .gcda files when using -z, by "oberpapr@users.sourceforge.net"
+File(s) Affected:
+ltp/utils/analysis/lcov/CHANGES
+ltp/utils/analysis/lcov/bin/lcov
+
+7)  Log Message: lcov: - add new option --initial to get zero coverage data from graph files by "oberpapr@users.sourceforge.net"
+File(s) Affected:
+ltp/utils/analysis/lcov/CHANGES
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+ltp/utils/analysis/lcov/man/geninfo.1
+ltp/utils/analysis/lcov/man/lcov.1
+
+8)  Log Message: "carmelo.amoroso@st.com" fixed the anomaly when "SHLBA != getpagesize()", like in SH architecture
+File(s) Affected:
+ltp/testcases/kernel/mem/shmt/shmt09.c
+
+9)  Log Message: "hdeller@users.sf.net" fixed unitialized variable useage in "lseek09" testcase
+File(s) Affected:
+ltp/testcases/kernel/syscalls/lseek/lseek09.c
+
+10) Log Message: "naveenspen@gmail.com" pointed out that syslog_cmd="/etc/init.d/syslog" should be used irrespective of any Distro
+File(s) Affected:
+ltp/testcases/kernel/syscalls/syslog/syslog01
+ltp/testcases/kernel/syscalls/syslog/syslog02
+ltp/testcases/kernel/syscalls/syslog/syslog03
+ltp/testcases/kernel/syscalls/syslog/syslog04
+ltp/testcases/kernel/syscalls/syslog/syslog05
+ltp/testcases/kernel/syscalls/syslog/syslog06
+ltp/testcases/kernel/syscalls/syslog/syslog07
+ltp/testcases/kernel/syscalls/syslog/syslog08
+ltp/testcases/kernel/syscalls/syslog/syslog09
+ltp/testcases/kernel/syscalls/syslog/syslog10
+
+11) Log Message: "rsalveti@linux.vnet.ibm.com" pointed out to have same "fsx-linux" testcase for "fs", "ltp-aiodio" and "nfs"
+File(s) Affected:
+ltp/testcases/kernel/io/ltp-aiodio/fsx-linux.c
+ltp/testcases/network/nfs/fsx-linux/fsx-linux.c
+
+12) Log Message: Randy Dunlap writes: Fix printf format warnings
+File(s) Affected:
+ltp/testcases/network/stress/ns-tools/Makefile
+ltp/testcases/network/stress/ns-tools/ns-igmp_querier.c
+ltp/testcases/network/stress/ns-tools/ns-mcast_join.c
+ltp/testcases/network/stress/ns-tools/ns-mcast_receiver.c
+ltp/testcases/network/stress/ns-tools/ns-tcpserver.c
+
+13) Log Message: getsockopt() takes a socklen_t, not an int, as its optlen
+File(s) Affected:
+ltp/testcases/network/stress/ns-tools/ns-tcpclient.c
+ltp/testcases/network/stress/ns-tools/ns-tcpserver.c
+ltp/testcases/network/stress/ns-tools/ns-udpserver.c
+
+14) Log Message: cleanup file
+File(s) Affected:
+ltp/testcases/kernel/syscalls/gethostid/gethostid01.c
+
+15) Log Message: back out uclinux changes to something that doesnt spit warnings as reported by Randy Dunlap
+File(s) Affected:
+ltp/testcases/kernel/syscalls/gethostid/gethostid01.c
+
+16) Log Message: fixup gcc warnings by removing silly pieces of code
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+ltp/testcases/kernel/mem/mtest06/mmap2.c
+ltp/testcases/kernel/mem/mtest06/mmap3.c
+ltp/testcases/kernel/mem/mtest06/shmat1.c
+
+17) Log Message: Randy Dunlap writes: Convert mmap1 to use standard test results output format. Correct several typos.
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest06/Makefile
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+18) Log Message: gcov-kernel: adding gcov-kernel patch for 2.6.22
+File(s) Addes:
+ltp/utils/analysis/gcov-kernel/linux-2.6.22-gcov-arm-hack.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.22-gcov.patch
+
+19) Log Message: [1754301] Helge Deller writes: mark hppa/parisc as expecting a segv as well
+File(s) Affected:
+ltp/testcases/kernel/syscalls/mmap/mmap03.c
+
+20) Log Message: Randy Dunlap writes: convert output to match the standard LTP output
+File(s) Affected:
+ltp/testcases/kernel/fs/linktest/linktest.pl
+
+21) Log Message: close stdout to remove noise
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest05/dummy.c
+
+22) Log Message: Randy Dunlap writes: Convert mmstress to use the standard results format
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest05/Makefile
+ltp/testcases/kernel/mem/mtest05/mmstress.c
+
+23) Log Message: "rsalveti@linux.vnet.ibm.com" updated the contact information at ltp-howto doc
+File(s) Affected:
+ltp/doc/ltp-howto.lyx
+ltp/doc/ltp-howto.txt
+
+24) Log Message: "rsalveti@linux.vnet.ibm.com" wants to update this with kernel/fs/fsstress/fsstress.c
+File(s) Affected:
+ltp/testcases/network/nfs/nfs_fsstress/fsstress.c
+
+25) Log Message: "suzuki@in.ibm.com" added SIGNAL and Address Fault handling capability for all architectures
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+26) Log Message: "rsalveti@linux.vnet.ibm.com" added more options to 'runltp'
+File(s) Affected:
+ltp/runltp
+ltp/doc/man1/pan.1
+ltp/pan/pan.c
+
+27) Log Message: Upgrade to Posix Testsuite 1.5.2
+File(s) Affected/Added:
+ltp/testcases/open_posix_testsuite
+
+28) Log Message: Fixing Proper Freeing of Memory Chunks
+File(s) Affected:
+ltp/tools/genload/stress.c
+
 LTP-20070630
 
 1)Log Message: "carmelo.amoroso@st.com" points out the wrong usage of the option -s
