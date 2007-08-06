@@ -179,7 +179,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
                     map_address);
                   longjmp(jmpbuf, 1);
              }
-
+        default:
             fprintf(stderr, "caught unexpected signal - %d --- exiting\n",
                      signal);
             exit(-1);
