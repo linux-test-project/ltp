@@ -46,6 +46,8 @@
  *	07/2001 John George
  *		-Ported
  *      04/2002 wjhuie sigset cleanups
+ *      08/2007 Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
+ *      	- Closing the fd before removing the file
  *
  * Restrictions
  * 	None
@@ -71,6 +73,7 @@ char *TCID = "write05";			/* Test program identifier */
 int TST_TOTAL = 1;			/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
+int fd;
 
 char * bad_addr = 0;
 
@@ -81,7 +84,7 @@ int main(int argc, char **argv)
 
 	char pbuf[BUFSIZ];
 	int pipefildes[2];
-	int status, pid, fd;
+	int status, pid;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
@@ -232,6 +235,9 @@ cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Close the file descriptor befor removing the file */
+	close(fd);
 
 	unlink(filename);
 	tst_rmdir();
