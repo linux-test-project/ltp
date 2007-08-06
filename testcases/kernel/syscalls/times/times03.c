@@ -52,11 +52,16 @@
 #include <time.h>
 #include <test.h>
 #include <usctest.h>
+#include <signal.h>
 
 char *TCID = "times03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 int exp_enos[]={0};
+int timeout;		/* Did we timeout in alarm() ? */
+
+void work(void);
+void sighandler(int signal, siginfo_t *info, void *uc);
 
 void setup(void);
 void cleanup(void);
@@ -67,21 +72,40 @@ int main(int argc, char **argv)
 
 	struct tms buf1, buf2;
 	time_t start_time, end_time;
-	int i, pid2, status, fail=0;
+	int pid2, status, fail=0;
+	struct sigaction sa;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
 		(char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
+		/*NOT REACHED*/
 	}
 
 	setup();
 
+	/* 
+	 * We spend time in userspace using the following mechanism :
+	 * Setup an alarm() for 3 secs and do some simple loop operations
+	 * until we get the signal. This makes the test independent of 
+	 * processor speed.
+	 */
+	sa.sa_sigaction = sighandler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+	
+	if (sigaction(SIGALRM, &sa, NULL) < 0) {
+		tst_brkm(TBROK, cleanup, "Sigaction failed !\n");
+		/* NOT REACHED */
+	}
+	
+	timeout = 0;
+	alarm(3);
 
-	for (i = 0; i < 1000000; i++);
+	work();
+
 	/*
-	 * At least some CPU time must be used. This is
+	 * At least some CPU time must be used in system space. This is
 	 * achieved by executing the times(2) call for
 	 * atleast 5 secs. This logic makes it independant
 	 * of the processor speed.
@@ -135,9 +159,17 @@ int main(int argc, char **argv)
 				tst_brkm(TFAIL, cleanup, "Fork failed");
 				/*NOTREACHED*/
 			} else if (pid2 == 0) {
-				for (i = 0; i < 2000000; i++);
+				
+				/* Spend some cycles in userspace */
+
+				timeout = 0;
+				alarm(3);
+				
+				work();
+
+
 				/*
-				 * Atleast some CPU time must be used
+				 * Atleast some CPU system ime must be used
 				 * even in the child process (thereby
 				 * making it independent of the
 				 * processor speed). In fact the child
@@ -161,6 +193,7 @@ int main(int argc, char **argv)
 				}
 				exit(0);
 			}
+
 			waitpid(pid2, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "Call to times(2) "
@@ -209,6 +242,35 @@ int main(int argc, char **argv)
 
   return(0);
 
+}
+
+/*
+ * sighandler
+ *	Set the timeout to indicate we timed out in the alarm().
+ */
+
+void sighandler (int signal, siginfo_t *info, void *uc)
+{
+	if (signal == SIGALRM) 
+		timeout = 1;
+	else
+		tst_brkm (TBROK, cleanup, "Unexpected signal %d\n", signal);
+}
+
+/*
+ * work
+ *	Do some work in user space, until we get a timeout.
+ */
+
+void work(void)
+{
+	int i, j, k;
+
+	while (!timeout)
+		for (i = 0; i < 10000; i ++)
+			for (j = 0; j < 100; j ++)
+				k = i * j;
+	timeout = 0;
 }
 
 /*
