@@ -323,8 +323,8 @@ int dotest(testers, me)
 			{
 				if (memcmp(buf, zero_buf, csize))
 				{
-					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (0x%x) for val %d count %d, should be 0.\n",
-						prog, me, chunk, buf, val, count);
+					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (0x%x) for val %d count %d, should be 0x%x.\n",
+						prog, me, chunk, buf, val, count, val - 1);
 					tst_resm(TINFO, "\tPrev "); dumpbuf(buf-csize);
 					dumpbuf(buf);
 					tst_resm(TINFO, "\tNext "); dumpbuf(buf+csize);
