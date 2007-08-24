@@ -1,0 +1,68 @@
+Introduction:
+
+====================================================================================================================
+
+NUMA ( Non-Uniform Memory Access ) is topology in which, time taken in accessing a memory dependes upon
+the local node or remote node memory. With the help of numa libraries or numactl command we could able
+to use the numa topology such that we can run an application on a specified node ( node affinity ) and
+also, we can apply memory policies such that an application running on a node can get memory alloctaion
+from any specified nodes memory. So, we can use the policies offered by numa libraries or numactl command
+to either decrease the memory latencies or increase the memory bandwidth by properly applying polcies.
+
+Please refer http://lse.sourceforge.net/numa/ to know the basics of numa and refer
+http://www.novell.com/collateral/4621437/4621437.pdf to understand the usage of numactl and numa libraries.
+
+We can always get the latest package from ftp://ftp.suse.com/pub/people/ak/numa.
+
+Testcase Description:
+====================================================================================================================
+numa01.sh shell script holds all the numa testcases and support_numa.c will help numa01.sh as and when needed.
+
+Testcase1:
+Verifies the node affinity and memory affinity by running the support_numa process which will allocate 1MB of memory.
+
+TestCase2:
+Verifies the preferred node memory policy which will allocate memory from the node we specify. This 
+testcase will use the support_numa process for the verfication.
+
+TestCase3:
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This 
+testcase will use the support_numa process for the verfication.
+
+TestCase4:
+Verifies the physical cpu affinity which runs the process support_numa on the specified physical cpu number.
+
+TestCase5:
+Verifies the local allocation policy which always allocates memory from the local node. This testcase 
+will use the support_numa process for the verfication.
+
+TestCase6: 
+Verifies the memory interleaving policy on the shared memory which will interleave the shared memory on
+all nodes equally. Here, the testcase use touch command instead of running a seperate process to verify
+the policy applied.
+
+Pre-requisites
+====================================================================================================================
+ * libnuma should be installed on the NUMA machine before executing theses testcases
+ * Testcases can also be executed on non-numa machines, but they will fail,
+
+Building the Tescases
+====================================================================================================================
+From LTP-Root, use <make> to build the testcases
+ltp-full-20070731]$ make
+or, from
+ltp-full-20070731_numa/testcases/kernel/numa]# make
+
+Installing the Testcases
+====================================================================================================================
+From LTP-Root, use <make> to install the testcases
+ltp-full-20070731]$ make install
+or, from
+ltp-full-20070731_numa/testcases/kernel/numa]# make install
+
+Running the Tescases
+====================================================================================================================
+From LTP-Root, invoke ./runltp
+ltp-full-20070731]$ ./runltp -p -l <logfile> -f numa
+
+ * NUMA testcases will not run by default in LTP-runall

@@ -103,7 +103,11 @@ project page.
 
 Using KDUMP test automation suite
 ---------------------------------
-
 For more information on how to use the kdump test automation suite please refer
 to file testcases/kdump/README.
+
+Using NUMA test automation suite
+---------------------------------
+For more information on how to use the 'numa' test automation suite please refer
+to file testcases/kernel/numa/README.
 
