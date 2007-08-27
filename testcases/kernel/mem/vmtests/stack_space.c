@@ -78,7 +78,7 @@ char	*prog;				/* invoked name */
 int usage(char* prog)
 {
 	tst_resm(TCONF,"Usage: %s <nchild> <chunk_size> <iterations>",prog);
-        tst_resm(TCONF,"DEFAULTS: 20 1048576 50", prog);
+        tst_resm(TCONF,"DEFAULTS: 20 1024 50", prog);
         tst_exit();
         return(0);
 }
@@ -102,7 +102,7 @@ int main(argc, argv)
 
 	if (argc == 1) {
 		nchild = 20;
-		csize = K_1*K_1;
+		csize = K_1;
 		iterations = 50;
 	} else if (argc == 4) {
 		i = 1;
@@ -114,6 +114,10 @@ int main(argc, argv)
 		}
 		if (sscanf(argv[i++], "%d", &csize) != 1)
 			bd_arg(argv[i-1]);
+		if(csize > MAXSIZE) {
+			tst_resm(TBROK,"Chunk size too large , max is %d\n", MAXSIZE);
+			tst_exit();
+		}
 		if (sscanf(argv[i++], "%d", &iterations) != 1)
 			bd_arg(argv[i-1]);
 	} else
@@ -149,8 +153,7 @@ int runtest()
 			exit(0);			/* when done, exit */
 		}
 		if (child < 0) {
-			tst_resm(TBROK,"Fork failed (may be OK if under stress)"
-);
+			tst_resm(TBROK,"Fork failed (may be OK if under stress)");
                         tst_resm(TINFO, "System resource may be too low.\n");
                         tst_resm(TBROK, "Reason: %s\n", strerror(errno));
                         tst_rmdir();
@@ -208,9 +211,7 @@ int	nchunks;
 
 #define	CHUNK(i)	((i) * csize)
 
-int dotest(testers, me)
-	int	testers;
-	int	me;
+int dotest(int testers, int me)
 {
 	char	*bits;
 	char	*val_buf;
@@ -318,6 +319,10 @@ int dotest(testers, me)
 		bfill(zero_buf, val, csize);
 		++val;
 	}
+	free(bits);
+	free(val_buf);
+	free(zero_buf);
+
 	return(0);
 }
 
