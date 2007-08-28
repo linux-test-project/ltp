@@ -149,6 +149,7 @@ void setup() {
 
 void cleanup() {
 	TEST_CLEANUP;
+	munmap(maddr, (size_t)mapsize);
 	close(fd);
 	tst_rmdir();
 	tst_exit();

@@ -85,7 +85,7 @@ void setup5();
 #define NAMELEN		50
 
 char *TCID = "mkdir03";           /* Test program identifier.    */
-int fileHandle = 0;
+int fileHandle, fileHandle2 = 0;
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 char tstdir3[NAMELEN];
@@ -253,7 +253,7 @@ setup5()
 	sprintf(tstdir5, "%s/tst",tstfile5);
 
 	/* create a file */
-	if (creat(tstfile5, PERMS) == -1) {
+	if ((fileHandle2 = creat(tstfile5, PERMS)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat a file failed");
 		/*NOTREACHED*/
 	}
@@ -296,7 +296,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
+	close(fileHandle2);
 
 	TEST_CLEANUP;
 

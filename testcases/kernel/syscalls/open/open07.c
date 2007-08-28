@@ -74,6 +74,7 @@ void setupfunc_test4();
 char *TCID = "open07";
 int TST_TOTAL = 4;
 extern int Tst_count;
+int fd1, fd2;
 
 char file1[100], file2[100], file3[100];
 
@@ -158,7 +159,7 @@ setupfunc_test1()
 {
 	sprintf(file1, "open03.1.%d", getpid());
 	sprintf(file2, "open03.2.%d", getpid());
-	if (creat(file1, 00700) < 0) {
+	if ((fd1 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
 		/*NOTREACHED*/
 	}
@@ -189,7 +190,7 @@ setupfunc_test3()
 	sprintf(file1, "open03.5.%d", getpid());
 	sprintf(file2, "open03.6.%d", getpid());
 	sprintf(file3, "open03.7.%d", getpid());
-	if (creat(file1, 00700) < 0) {
+	if ((fd2 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
 		/*NOTREACHED*/
 	}
@@ -253,6 +254,8 @@ cleanup(void)
 	 * print errno log if that option was specified
 	 */
 	TEST_CLEANUP;
+	close(fd1);
+	close(fd2);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();

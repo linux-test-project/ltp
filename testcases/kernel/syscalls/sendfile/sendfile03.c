@@ -187,7 +187,8 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(out_fd);
+	close(out_fd);
+	close(in_fd);
 
 	TEST_CLEANUP;
 
