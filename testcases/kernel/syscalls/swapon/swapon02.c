@@ -36,15 +36,13 @@
  *		  This test case checks whether swapon(2) system call  returns 
  *		  1. ENOENT when the path does not exist
  *		  2. EINVAL when the path exists but is invalid
- *		  3. EPERM when there more than MAX_SWAPFILES are already in use.
- *		  4. EPERM when user is not a superuser
- *		  5. EBUSY when the specified path is already being used as a swap area
+ *		  3. EPERM when user is not a superuser
+ *		  4. EBUSY when the specified path is already being used as a swap area
  *		  
  * 		  Setup:
  *		    Setup signal handling.
  *		    Pause for SIGUSR1 if option specified.
- * 		   1. For checking condition 3, make MAX_SWAPFILES  swapfiles
- *		   2. For testing error on invalid user, change the effective uid
+ *		   1. For testing error on invalid user, change the effective uid
  * 		  		 
  * 		  Test:
  *		    Loop if the proper options are given.
@@ -80,6 +78,9 @@
  * -Robbie Williamson <robbiew@us.ibm.com>
  * 05/17/07  Fixing the test description and added the EBUSY test case
  *           - Ricardo Salveti de Araujo (rsalveti@linux.vnet.ibm.com)
+ * 08/16/07  Removed the the 'more than MAX_SWAPFILES swapfiles in use' test
+ * case as now we have a separated file only for this test.
+ *           - Ricardo Salveti de Araujo (rsalveti@linux.vnet.ibm.com)
  *****************************************************************************/
 
 #include <unistd.h>
@@ -111,20 +112,16 @@ static int cleanup01();
 static int setup02();
 static int setup03();
 static int cleanup03();
-static int setup04();
-static int cleanup04();
 void handler(int);
 
 char *TCID = "swapon02"; 	 /* Test program identifier.    */
-int TST_TOTAL = 5;	 	 /* Total number of test cases. */
+int TST_TOTAL = 4;	 	 /* Total number of test cases. */
 extern int Tst_count;	 	 /* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 struct utsname uval;
 char *kmachine;
-
-static int swapfiles;	 	 /* Number of swapfiles turned on*/
 
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, EBUSY, 0};
 
@@ -138,12 +135,10 @@ static struct test_case_t {
 } testcase[] = {
 	 {"Path does not exist", ENOENT, "ENOENT", "./abcd", NULL,  NULL},
 	 {"Invalid path", EINVAL, "EINVAL", "./nofile", setup02, NULL},
-	 {"Permission denied: more than MAX_SWAPFILES swapfiles in use",
-	   EPERM, "EPERM", "./swapfilenext", setup03, cleanup03},
 	 {"Permission denied", EPERM, "EPERM", "./swapfile01", 
 	   setup01, cleanup01},
          {"The specified path is already being used as a swap area",
-           EBUSY, "EBUSY", "./alreadyused", setup04, cleanup04}
+           EBUSY, "EBUSY", "./alreadyused", setup03, cleanup03}
 };
 
 int
@@ -298,182 +293,10 @@ setup02()
 }
 
 /*
- * setup03() - Determine how many swapfiles already exist in system.
- * determine how many more swapfiles need to be created to test the limit.
- * create and turn on those many swapfiles.
- * Create one more swapfile for test.
+ * setup03() - This function creates the swap file and turn it on
  */
 int
 setup03()
-{
-        int j, fd;              /*j is loop counter, fd is file descriptor*/
-        int pid;                    /* used for fork */
-        int *status=NULL;       /* used for fork */
-        int res = 0, pagesize = getpagesize();
-        int  bs, count;
-        char cmd_buffer[100];       /* array to hold command line*/
-        char filename[15];      /* array to store new filename*/
-#define BUFSZ		 1023
-        char buf[BUFSZ + 1];    /* temp buffer for reading /proc/swaps */
-
-        /*Find out how many swapfiles (1 line per entry) already exist*/
-        /*This includes the first (header) line*/
-        if ((fd = open("/proc/swaps", O_RDONLY)) == -1) {
-                tst_resm(TWARN, "Failed to find out existing number of swap"
-                                " files");
-                exit(1);
-        }
-        while (1) {
-                char *p = buf;
-                res = read(fd, buf, BUFSZ);
-                if (res < 0) {
-                        tst_resm(TWARN, "Failed to find out existing number of swap"
-                                        " files");
-                        exit(1);
-                }
-                buf[res] = '\0';
-                while ((p = strchr(p, '\n'))) {
-                        p++;
-                        swapfiles++;
-                }
-                if (res < BUFSZ)
-                        break;
-        }
-        close(fd);
-        if (swapfiles)
-                swapfiles--; /* don't count the /proc/swaps header */
-
-        if (swapfiles < 0) {
-                tst_resm(TWARN, "Failed to find existing number of swapfiles");
-                exit(1);
-        }
-
-        /* Determine how many more files are to be created*/
-        swapfiles = MAX_SWAPFILES - swapfiles;
-        if (swapfiles > MAX_SWAPFILES) {
-                swapfiles = MAX_SWAPFILES;
-        }
-
-        /* args for dd */
-        if ((strncmp(kmachine, "ia64", 4)) == 0) {
-                bs = 1024;
-                count = 1024;
-        } else if(pagesize ==65536) {
-                bs=1048;
-                count=655;
-        } else {
-                bs = 1048;
-                count = 40;
-        }
-
-        pid=FORK_OR_VFORK();
-        if (pid == 0) {
-                /*create and turn on remaining swapfiles*/
-                for (j = 0; j < swapfiles; j++) {
-
-                        /*prepare filename for the iteration*/
-                        if (sprintf(filename, "swapfile%02d", j+2) < 0) {
-                                tst_resm(TWARN, "sprintf() failed to create filename");
-                                exit(1);
-                        }
-
-
-                        /*prepare the path string for dd command and dd command*/
-                        if (sprintf(cmd_buffer, "dd if=/dev/zero of=%s bs=%d"
-                                                " count=%d > tmpfile 2>&1", filename, bs, count) < 0) {
-                                tst_resm(TWARN, "dd command failed to create file");
-                                exit(1);
-                        }
-                        if (system(cmd_buffer) != 0) {
-                                tst_resm(TWARN, "sprintf() failed to create swapfiles");
-                                exit(1);
-                        }
-
-                        /* make the file swapfile*/
-                        if (sprintf(cmd_buffer, "mkswap %s > tmpfile 2>&1", filename)
-                                        < 0) {
-                                tst_resm(TWARN, "Failed to make swap %s", filename);
-                                exit(1);
-                        }
-
-                        if (system(cmd_buffer) != 0) {
-                                tst_resm(TWARN, "failed to make swap file %s",
-                                                filename); 
-                                exit(1);
-                        }
-
-                        /* turn on the swap file*/
-                        if ((res = swapon(filename, 0)) != 0) {
-                                tst_resm(TWARN, "Failed swapon for file %s"
-                                                " returned %d", filename, res);
-                                /* must cleanup already swapon files */
-                                cleanup03();
-                                exit(1);
-                        }
-                }
-                tst_exit();
-        } else
-                waitpid(pid,status,0);
-        /*create extra swapfile for testing*/
-        if ((strncmp(kmachine, "ia64", 4)) == 0) {
-                if (system("dd if=/dev/zero of=swapfilenext bs=1024 count=65536 >tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_resm(TWARN, "Failed to create extra file for swap");
-                        exit(1);
-                }
-        } else if (pagesize == 65536) {
-                if(system("dd if=/dev/zero of=swapfilenext  bs=1048  count=655 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        }else {
-                if (system("dd if=/dev/zero of=swapfilenext bs=1048 count=40 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_resm(TWARN, "Failed to create extra file for swap");
-                        exit(1);
-                }
-        }
-
-        if (system("mkswap ./swapfilenext > tmpfle 2>&1") != 0) {
-                tst_resm(TWARN, "Failed to make extra swapfile");
-                exit(1);
-        }
-
-        return 0;
-}
-
-/*
- * cleanup03() - clearing all turned on swapfiles
- */ 
-int
-cleanup03()
-{
-        int j;	/* loop counter*/
-        char filename[15];
-
-        for(j = 0; j < swapfiles; j++) {
-                if( sprintf(filename, "swapfile%02d", j+2) < 0) {
-                        tst_resm(TWARN, "sprintf() failed to create filename");
-                        tst_resm(TWARN, "Failed to turn off swap files. System"
-                                        " reboot after execution of LTP test"
-                                        " suite is recommended");
-                        return -1;
-                }
-                if( swapoff(filename) != 0) {
-                        tst_resm(TWARN, "Failed to turn off swap files. system"
-                                        " reboot after execution of LTP test"
-                                        " suite is recommended");
-                        return -1;
-                }
-        }
-        return 0;
-}
-
-/*
- * setup04() - This function creates the swap file and turn it on
- */
-int
-setup04()
 {
         int pagesize = getpagesize();
         int res = 0;
@@ -513,10 +336,10 @@ setup04()
 }
 
 /*
- * cleanup04() - clearing the turned on swap file
+ * cleanup03() - clearing the turned on swap file
  */
 int
-cleanup04()
+cleanup03()
 {
         /* give swapoff to the test swap file */ 
         if( swapoff("alreadyused") != 0) {
