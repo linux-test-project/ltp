@@ -1,0 +1,12 @@
+Following is the Tentative plan for improving LTP-KDUMP Test-cases:
+
+===========================================================================================================
+||S.NO||                 ACTIVITY                                               ||  TENTATIVE-TIME       ||
+===========================================================================================================
+|| 1  ||      Test and integrate kdump's netdump patch to LTP                   ||   SEP/OCT-2007        ||
+|| 2  ||      Modify ltp-kdump to automate all usecases of                      ||   SEP/OCT-2007        ||
+||    ||        kdump-network dumping usecases                                  ||                       ||
+|| 3  ||      Enhance error handler for kdump test                              ||   OCT/NOV-2007        ||
+||    ||        automation script                                               ||                       ||
+|| 4  ||      Enhance result analysis module of ltp-kdump                       ||   OCT/NOV-2007        ||
+===========================================================================================================
