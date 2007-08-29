@@ -45,6 +45,29 @@ static SaErrorT new_control(struct oh_handler_state *state,
         //set up our private data
         info = (struct sim_control_info *)g_malloc(sizeof(struct sim_control_info));
         info->mode = mycontrol->mode;
+	info->state.Type = rdr->RdrTypeUnion.CtrlRec.Type;
+	switch (info->state.Type) {
+		case SAHPI_CTRL_TYPE_DIGITAL:
+			info->state.StateUnion.Digital = rdr->RdrTypeUnion.CtrlRec.TypeUnion.Digital.Default;
+			break;
+		case SAHPI_CTRL_TYPE_DISCRETE:
+			info->state.StateUnion.Discrete = rdr->RdrTypeUnion.CtrlRec.TypeUnion.Discrete.Default;
+			break;
+		case SAHPI_CTRL_TYPE_ANALOG:
+			info->state.StateUnion.Analog = rdr->RdrTypeUnion.CtrlRec.TypeUnion.Analog.Default;
+			break;
+		case SAHPI_CTRL_TYPE_STREAM:
+			memcpy(&info->state.StateUnion.Stream, &rdr->RdrTypeUnion.CtrlRec.TypeUnion.Stream.Default, sizeof(SaHpiCtrlStateStreamT));
+			break;
+		case SAHPI_CTRL_TYPE_TEXT:
+			memcpy(&info->state.StateUnion.Text, &rdr->RdrTypeUnion.CtrlRec.TypeUnion.Text.Default, sizeof(SaHpiCtrlStateTextT));
+			break;
+		case SAHPI_CTRL_TYPE_OEM:
+			memcpy(&info->state.StateUnion.Oem, &rdr->RdrTypeUnion.CtrlRec.TypeUnion.Oem.Default, sizeof(SaHpiCtrlStateOemT));
+			break;
+		default:
+			dbg("Bad Error: Unrecognized control type.");
+	}
 
         // everything ready so add the rdr and extra info to the rptcache
 	error = sim_inject_rdr(state, e, rdr, info);

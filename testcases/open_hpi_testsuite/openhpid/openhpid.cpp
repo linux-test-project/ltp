@@ -662,7 +662,6 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 
                         thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
                 }
-                
                 break;
                 
                 case eFsaHpiResourceIdGet: {
@@ -679,7 +678,85 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &resource_id );
                 }
+                break;
+
+                case eFsaHpiGetIdByEntityPath: {
+                        /* IN params */
+                        SaHpiSessionIdT session_id;
+                        SaHpiEntityPathT entity_path;
+                        SaHpiRdrTypeT instrument_type;
+                        /* INOUT params */
+                        SaHpiUint32T instance_id;
+                        /* OUT params */
+                        SaHpiResourceIdT resource_id;
+                        SaHpiInstrumentIdT instrument_id;
+                        SaHpiUint32T rpt_update_count;
                 
+                        PVERBOSE1("%p Processing saHpiGetIdByEntityPath.", thrdid);
+                
+                        if ( HpiDemarshalRequest4( request_mFlags & dMhEndianBit,
+                                                   hm, pReq,
+                                                   &session_id, &entity_path,
+                                                   &instrument_type, &instance_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiGetIdByEntityPath( session_id, entity_path,
+                                                      instrument_type, &instance_id,
+                                                      &resource_id, &instrument_id,
+                                                      &rpt_update_count );
+                
+                        thrdinst->header.m_len = HpiMarshalReply4( hm, pReq, &ret,
+                                                                   &instance_id,
+                                                                   &resource_id,
+                                                                   &instrument_id,
+                                                                   &rpt_update_count );
+                }
+                break;
+
+                case eFsaHpiGetChildEntityPath: {
+                        /* IN params */
+                        SaHpiSessionIdT session_id;
+                        SaHpiEntityPathT parent_ep;
+                        /* INOUT params */
+                        SaHpiUint32T instance_id;
+                        /* OUT params */
+                        SaHpiEntityPathT child_ep;
+                        SaHpiUint32T rpt_update_count;
+                
+                        PVERBOSE1("%p Processing saHpiGetChildEntityPath.", thrdid);
+                
+                        if ( HpiDemarshalRequest3( request_mFlags & dMhEndianBit,
+                                                   hm, pReq,
+                                                   &session_id, &parent_ep,
+                                                   &instance_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiGetChildEntityPath( session_id, parent_ep,
+                                                       &instance_id, &child_ep,
+                                                       &rpt_update_count );
+                
+                        thrdinst->header.m_len = HpiMarshalReply3( hm, pReq, &ret,
+                                                                   &instance_id,
+                                                                   &child_ep,
+                                                                   &rpt_update_count );
+                }
+                break;
+
+                case eFsaHpiResourceFailedRemove: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+
+                        PVERBOSE1("%p Processing saHpiResourceFailedRemove.", thrdid);
+                
+                        if ( HpiDemarshalRequest2( request_mFlags & dMhEndianBit,
+                                                   hm, pReq,
+                                                   &session_id, &resource_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiResourceFailedRemove( session_id, resource_id );
+                
+                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
+                }
                 break;
                 
                 case eFsaHpiEventLogInfoGet: {
@@ -696,6 +773,23 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                         ret = saHpiEventLogInfoGet( session_id, resource_id, &info );
                 
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &info );
+                }
+                break;
+
+                case eFsaHpiEventLogCapabilitiesGet: {
+                        SaHpiSessionIdT    session_id;
+                        SaHpiResourceIdT   resource_id;
+                        SaHpiEventLogCapabilitiesT elcaps;
+                
+                        PVERBOSE1("%p Processing saHpiEventLogCapabilitiesGet.", thrdid);
+                
+                        if ( HpiDemarshalRequest2( request_mFlags & dMhEndianBit,
+                                                   hm, pReq, &session_id, &resource_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiEventLogCapabilitiesGet( session_id, resource_id, &elcaps );
+                
+                        thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &elcaps );
                 }
                 break;
                 
@@ -1381,6 +1475,28 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &area_id );
                 }
                 break;
+
+                case eFsaHpiIdrAreaAddById: {
+                        SaHpiSessionIdT     session_id;
+                        SaHpiResourceIdT    resource_id;
+                        SaHpiIdrIdT         idr_id;
+                        SaHpiIdrAreaTypeT   area_type;
+                        SaHpiEntryIdT       area_id;
+                
+                        PVERBOSE1("%p Processing saHpiIdrAreaAddById.", thrdid);
+                
+                        if ( HpiDemarshalRequest5( request_mFlags & dMhEndianBit,
+                                                   hm, pReq,
+                                                   &session_id, &resource_id,
+                                                   &idr_id, &area_type, &area_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiIdrAreaAddById( session_id, resource_id, idr_id,
+                                                   area_type, area_id  );
+                
+                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
+                }
+                break;
                 
                 case eFsaHpiIdrAreaDelete: {
                         SaHpiSessionIdT     session_id;
@@ -1441,6 +1557,27 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 
                         ret = saHpiIdrFieldAdd( session_id, resource_id, idr_id,
                                                 &field );
+                
+                        thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &field );
+                }
+                break;
+
+                case eFsaHpiIdrFieldAddById: {
+                        SaHpiSessionIdT    session_id;
+                        SaHpiResourceIdT   resource_id;
+                        SaHpiIdrIdT        idr_id;
+                        SaHpiIdrFieldT     field;
+                
+                        PVERBOSE1("%p Processing saHpiIdrFieldAddById.", thrdid);
+                
+                        if ( HpiDemarshalRequest4( request_mFlags & dMhEndianBit,
+                                                   hm, pReq,
+                                                   &session_id, &resource_id,
+                                                   &idr_id, &field ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiIdrFieldAddById( session_id, resource_id,
+                                                    idr_id, &field );
                 
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &field );
                 }
@@ -1692,6 +1829,26 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 }
                 break;
                 
+                case eFsaHpiDimiInfoGet: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT	      dimi_num;
+                        SaHpiDimiInfoT        info;
+                
+                        PVERBOSE1("%p Processing saHpiDimiInfoGet.", thrdid);
+                
+                        if ( HpiDemarshalRequest3( request_mFlags & dMhEndianBit,
+                                                        hm, pReq, &session_id, &resource_id,
+                                                        &dimi_num ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiDimiInfoGet( session_id, resource_id, dimi_num,
+                                                        &info );
+                
+                        thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &info );
+                }
+                break;
+                
                 case eFsaHpiHotSwapPolicyCancel: {
                         SaHpiSessionIdT  session_id;
                         SaHpiResourceIdT resource_id;
@@ -1890,6 +2047,42 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                                 return eResultError;
                 
                         ret = saHpiParmControl( session_id, resource_id, action );
+                
+                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
+                }
+                break;
+
+                case eFsaHpiResourceLoadIdGet: {
+                        SaHpiSessionIdT  session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiLoadIdT load_id;
+                
+                        PVERBOSE1("%p Processing saHpiResourceLoadIdGet.", thrdid);
+                
+                        if ( HpiDemarshalRequest2( request_mFlags & dMhEndianBit,
+                                                   hm, pReq, &session_id,
+                                                   &resource_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiResourceLoadIdGet( session_id, resource_id, &load_id );
+                
+                        thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &load_id );
+                }
+                break;
+
+                case eFsaHpiResourceLoadIdSet: {
+                        SaHpiSessionIdT  session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiLoadIdT load_id;
+                
+                        PVERBOSE1("%p Processing saHpiResourceLoadIdSet.", thrdid);
+                
+                        if ( HpiDemarshalRequest3( request_mFlags & dMhEndianBit,
+                                                   hm, pReq, &session_id,
+                                                   &resource_id, &load_id ) < 0 )
+                                return eResultError;
+                
+                        ret = saHpiResourceLoadIdSet( session_id, resource_id, &load_id );
                 
                         thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
                 }

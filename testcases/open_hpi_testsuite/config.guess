@@ -1,9 +1,10 @@
 #! /bin/sh
 # Attempt to guess a canonical system name.
 #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-#   2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+#   2000, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation,
+#   Inc.
 
-timestamp='2005-08-03'
+timestamp='2006-02-27'
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -106,7 +107,7 @@ set_cc_for_build='
 trap "exitcode=\$?; (rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null) && exit \$exitcode" 0 ;
 trap "rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null; exit 1" 1 2 13 15 ;
 : ${TMPDIR=/tmp} ;
- { tmp=`(umask 077 && mktemp -d -q "$TMPDIR/cgXXXXXX") 2>/dev/null` && test -n "$tmp" && test -d "$tmp" ; } ||
+ { tmp=`(umask 077 && mktemp -d "$TMPDIR/cgXXXXXX") 2>/dev/null` && test -n "$tmp" && test -d "$tmp" ; } ||
  { test -n "$RANDOM" && tmp=$TMPDIR/cg$$-$RANDOM && (umask 077 && mkdir $tmp) ; } ||
  { tmp=$TMPDIR/cg-$$ && (umask 077 && mkdir $tmp) && echo "Warning: creating insecure temp directory" >&2 ; } ||
  { echo "$me: cannot create a temporary directory in $TMPDIR" >&2 ; exit 1 ; } ;
@@ -137,6 +138,23 @@ UNAME_MACHINE=`(uname -m) 2>/dev/null` || UNAME_MACHINE=unknown
 UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
 UNAME_SYSTEM=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
 UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
+
+if [ "${UNAME_SYSTEM}" = "Linux" ] ; then
+	eval $set_cc_for_build
+	cat << EOF > $dummy.c
+	#include <features.h>
+	#ifdef __UCLIBC__
+	# ifdef __UCLIBC_CONFIG_VERSION__
+	LIBC=uclibc __UCLIBC_CONFIG_VERSION__
+	# else
+	LIBC=uclibc
+	# endif
+	#else
+	LIBC=gnu
+	#endif
+EOF
+	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep LIBC= | sed -e 's: ::g'`
+fi
 
 # Note: order is significant - the case branches are not exclusive.
 
@@ -205,6 +223,9 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
 	exit ;;
     *:ekkoBSD:*:*)
 	echo ${UNAME_MACHINE}-unknown-ekkobsd${UNAME_RELEASE}
+	exit ;;
+    *:SolidBSD:*:*)
+	echo ${UNAME_MACHINE}-unknown-solidbsd${UNAME_RELEASE}
 	exit ;;
     macppc:MirBSD:*:*)
 	echo powerppc-unknown-mirbsd${UNAME_RELEASE}
@@ -764,12 +785,20 @@ EOF
 	echo ${UNAME_MACHINE}-unknown-bsdi${UNAME_RELEASE}
 	exit ;;
     *:FreeBSD:*:*)
-	echo ${UNAME_MACHINE}-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'`
+	case ${UNAME_MACHINE} in
+	    pc98)
+		echo i386-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
+	    *)
+		echo ${UNAME_MACHINE}-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
+	esac
 	exit ;;
     i*:CYGWIN*:*)
 	echo ${UNAME_MACHINE}-pc-cygwin
 	exit ;;
     i*:MINGW*:*)
+	echo ${UNAME_MACHINE}-pc-mingw32
+	exit ;;
+    i*:MSYS_NT-*:*:*)
 	echo ${UNAME_MACHINE}-pc-mingw32
 	exit ;;
     i*:windows32*:*)
@@ -779,8 +808,11 @@ EOF
     i*:PW*:*)
 	echo ${UNAME_MACHINE}-pc-pw32
 	exit ;;
-    x86:Interix*:[34]*)
-	echo i586-pc-interix${UNAME_RELEASE}|sed -e 's/\..*//'
+    x86:Interix*:[345]*)
+	echo i586-pc-interix${UNAME_RELEASE}
+	exit ;;
+    EM64T:Interix*:[345]*)
+	echo x86_64-unknown-interix${UNAME_RELEASE}
 	exit ;;
     [345]86:Windows_95:* | [345]86:Windows_98:* | [345]86:Windows_NT:*)
 	echo i${UNAME_MACHINE}-pc-mks
@@ -815,25 +847,25 @@ EOF
 	echo ${UNAME_MACHINE}-pc-minix
 	exit ;;
     arm*:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     cris:Linux:*:*)
-	echo cris-axis-linux-gnu
+	echo cris-axis-linux-${LIBC}
 	exit ;;
     crisv32:Linux:*:*)
-	echo crisv32-axis-linux-gnu
+	echo crisv32-axis-linux-${LIBC}
 	exit ;;
     frv:Linux:*:*)
-    	echo frv-unknown-linux-gnu
+    	echo frv-unknown-linux-${LIBC}
 	exit ;;
     ia64:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     m32r*:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     m68*:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     mips:Linux:*:*)
 	eval $set_cc_for_build
@@ -851,8 +883,12 @@ EOF
 	#endif
 	#endif
 EOF
-	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep ^CPU=`
-	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-gnu"; exit; }
+	eval "`$CC_FOR_BUILD -E $dummy.c 2>/dev/null | sed -n '
+	    /^CPU/{
+		s: ::g
+		p
+	    }'`"
+	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-${LIBC}"; exit; }
 	;;
     mips64:Linux:*:*)
 	eval $set_cc_for_build
@@ -870,17 +906,21 @@ EOF
 	#endif
 	#endif
 EOF
-	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep ^CPU=`
-	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-gnu"; exit; }
+	eval "`$CC_FOR_BUILD -E $dummy.c 2>/dev/null | sed -n '
+	    /^CPU/{
+		s: ::g
+		p
+	    }'`"
+	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-${LIBC}"; exit; }
 	;;
     or32:Linux:*:*)
-	echo or32-unknown-linux-gnu
+	echo or32-unknown-linux-${LIBC}
 	exit ;;
     ppc:Linux:*:*)
-	echo powerpc-unknown-linux-gnu
+	echo powerpc-unknown-linux-${LIBC}
 	exit ;;
     ppc64:Linux:*:*)
-	echo powerpc64-unknown-linux-gnu
+	echo powerpc64-unknown-linux-${LIBC}
 	exit ;;
     alpha:Linux:*:*)
 	case `sed -n '/^cpu model/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo` in
@@ -893,34 +933,37 @@ EOF
 	  EV68*) UNAME_MACHINE=alphaev68 ;;
         esac
 	objdump --private-headers /bin/sh | grep ld.so.1 >/dev/null
-	if test "$?" = 0 ; then LIBC="libc1" ; else LIBC="" ; fi
-	echo ${UNAME_MACHINE}-unknown-linux-gnu${LIBC}
+	if test "$?" = 0 ; then LIBC="gnulibc1" ; fi
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     parisc:Linux:*:* | hppa:Linux:*:*)
 	# Look for CPU level
 	case `grep '^cpu[^a-z]*:' /proc/cpuinfo 2>/dev/null | cut -d' ' -f2` in
-	  PA7*) echo hppa1.1-unknown-linux-gnu ;;
-	  PA8*) echo hppa2.0-unknown-linux-gnu ;;
-	  *)    echo hppa-unknown-linux-gnu ;;
+	  PA7*) echo hppa1.1-unknown-linux-${LIBC} ;;
+	  PA8*) echo hppa2.0-unknown-linux-${LIBC} ;;
+	  *)    echo hppa-unknown-linux-${LIBC} ;;
 	esac
 	exit ;;
     parisc64:Linux:*:* | hppa64:Linux:*:*)
-	echo hppa64-unknown-linux-gnu
+	echo hppa64-unknown-linux-${LIBC}
 	exit ;;
     s390:Linux:*:* | s390x:Linux:*:*)
 	echo ${UNAME_MACHINE}-ibm-linux
 	exit ;;
     sh64*:Linux:*:*)
-    	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     sh*:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
 	exit ;;
     sparc:Linux:*:* | sparc64:Linux:*:*)
-	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	echo ${UNAME_MACHINE}-unknown-linux-${LIBC}
+	exit ;;
+    vax:Linux:*:*)
+	echo ${UNAME_MACHINE}-dec-linux-${LIBC}
 	exit ;;
     x86_64:Linux:*:*)
-	echo x86_64-unknown-linux-gnu
+	echo x86_64-unknown-linux-${LIBC}
 	exit ;;
     i*86:Linux:*:*)
 	# The BFD linker knows what the default object file format is, so
@@ -935,20 +978,22 @@ EOF
 				    p'`
         case "$ld_supported_targets" in
 	  elf32-i386)
-		TENTATIVE="${UNAME_MACHINE}-pc-linux-gnu"
+		TENTATIVE="${UNAME_MACHINE}-pc-linux-${LIBC}"
 		;;
 	  a.out-i386-linux)
-		echo "${UNAME_MACHINE}-pc-linux-gnuaout"
+		echo "${UNAME_MACHINE}-pc-linux-${LIBC}aout"
 		exit ;;
 	  coff-i386)
-		echo "${UNAME_MACHINE}-pc-linux-gnucoff"
+		echo "${UNAME_MACHINE}-pc-linux-${LIBC}coff"
 		exit ;;
 	  "")
 		# Either a pre-BFD a.out linker (linux-gnuoldld) or
 		# one that does not give us useful --help.
-		echo "${UNAME_MACHINE}-pc-linux-gnuoldld"
+		echo "${UNAME_MACHINE}-pc-linux-${LIBC}oldld"
 		exit ;;
 	esac
+	# This should get integrated into the C code below, but now we hack
+	if [ "$LIBC" != "gnu" ] ; then echo "$TENTATIVE" && exit 0 ; fi
 	# Determine whether the default compiler is a.out or elf
 	eval $set_cc_for_build
 	sed 's/^	//' << EOF >$dummy.c
@@ -964,7 +1009,7 @@ EOF
 	LIBC=gnulibc1
 	# endif
 	#else
-	#ifdef __INTEL_COMPILER
+	#if defined(__INTEL_COMPILER) || defined(__PGI) || defined(__sun)
 	LIBC=gnu
 	#else
 	LIBC=gnuaout
@@ -974,7 +1019,11 @@ EOF
 	LIBC=dietlibc
 	#endif
 EOF
-	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep ^LIBC=`
+	eval "`$CC_FOR_BUILD -E $dummy.c 2>/dev/null | sed -n '
+	    /^LIBC/{
+		s: ::g
+		p
+	    }'`"
 	test x"${LIBC}" != x && {
 		echo "${UNAME_MACHINE}-pc-linux-${LIBC}"
 		exit
@@ -1185,7 +1234,6 @@ EOF
     *:Darwin:*:*)
 	UNAME_PROCESSOR=`uname -p` || UNAME_PROCESSOR=unknown
 	case $UNAME_PROCESSOR in
-	    *86) UNAME_PROCESSOR=i686 ;;
 	    unknown) UNAME_PROCESSOR=powerpc ;;
 	esac
 	echo ${UNAME_PROCESSOR}-apple-darwin${UNAME_RELEASE}
@@ -1263,6 +1311,9 @@ EOF
 	exit ;;
     i*86:skyos:*:*)
 	echo ${UNAME_MACHINE}-pc-skyos`echo ${UNAME_RELEASE}` | sed -e 's/ .*$//'
+	exit ;;
+    i*86:rdos:*:*)
+	echo ${UNAME_MACHINE}-pc-rdos
 	exit ;;
 esac
 

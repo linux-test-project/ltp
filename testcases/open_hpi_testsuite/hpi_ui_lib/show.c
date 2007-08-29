@@ -483,6 +483,7 @@ SaErrorT show_event_log(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
         SaHpiEventLogEntryIdT   preventryid;
         SaHpiEventLogEntryT     sel;
         SaHpiRdrT               rdr;
+        SaHpiRptEntryT          rpt;
         char                    buf[SHOW_BUF_SZ];
         char                    date[30], date1[30];
 
@@ -523,7 +524,7 @@ SaErrorT show_event_log(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
                 {
                         rv = saHpiEventLogEntryGet(sessionid, resourceid,
                                         entryid, &preventryid, &nextentryid,
-                                        &sel, &rdr, NULL);
+                                        &sel, &rdr, &rpt);
                         if (rv != SA_OK) {
                                 snprintf(buf, SHOW_BUF_SZ,
                                         "ERROR: saHpiEventLogEntryGet error = %s\n",
@@ -534,8 +535,16 @@ SaErrorT show_event_log(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
                         if (show_short) {
                                 if (show_short_event(&(sel.Event), proc) != HPI_UI_OK)
                                         return(SA_OK);
-                        } else
-                                oh_print_eventlogentry(&sel, &rdr.Entity, 1);
+                        } else {
+                                if (rpt.ResourceCapabilities != 0) {
+                                        oh_print_eventlogentry(&sel, &rpt.ResourceEntity, 1);
+                                } else if (rdr.RdrType != SAHPI_NO_RECORD) {
+                                        oh_print_eventlogentry(&sel, &rdr.Entity, 1);
+                                } else {
+                                        oh_print_eventlogentry(&sel, NULL, 1);
+                                }
+                        }
+
 
                         preventryid = entryid;
                         entryid = nextentryid;

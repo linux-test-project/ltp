@@ -26,6 +26,7 @@ Control Definitions
 
 struct sim_control_info {
 	SaHpiCtrlModeT mode;
+	SaHpiCtrlStateT state;
 };
 
 struct sim_control {

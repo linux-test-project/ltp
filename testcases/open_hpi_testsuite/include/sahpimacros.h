@@ -30,14 +30,14 @@
  ***********************************************************/
 
 #define OH_CHECK_INIT_STATE(sid) \
-        do { \
+        { \
                 SaHpiBoolT state; \
                 SaErrorT init_error; \
                 if ((init_error = oh_get_session_subscription(sid,&state)) != SA_OK) { \
                         dbg("Init state check failed! (%s, %d)", oh_lookup_error(init_error), sid); \
                         return init_error; \
                 } \
-        } while (0)
+        }
 
 
 /*
@@ -45,32 +45,32 @@
  * checks its validity (nonzero). *
  */
 #define OH_GET_DID(sid, did) \
-        do { \
+        { \
                 did = oh_get_session_domain(sid); \
                 if (did == SAHPI_UNSPECIFIED_DOMAIN_ID) { \
                         dbg("No domain for session id %d",sid); \
                         return SA_ERR_HPI_INVALID_SESSION; \
                 } \
-        } while (0)
+        }
 
 /*
  * OH_GET_DOMAIN gets the domain object which locks it.
  * Need to call oh_release_domain(domain) after this to unlock it.
  */
 #define OH_GET_DOMAIN(did, d) \
-        do { \
+        { \
                 if (!(d = oh_get_domain(did))) { \
                         dbg("Domain %d doesn't exist", did); \
                         return SA_ERR_HPI_INVALID_DOMAIN; \
                 } \
-        } while (0)
+        }
 
 /*
  * OH_HANDLER_GET gets the hander for the rpt and resource id.  It
  * returns INVALID PARAMS if the handler isn't there
  */
 #define OH_HANDLER_GET(d, rid, h) \
-        do { \
+        { \
                 unsigned int *hid = NULL; \
                 hid = oh_get_resource_data(&(d->rpt), rid); \
                 if (!hid) { \
@@ -83,7 +83,7 @@
 			oh_release_handler(h); \
 			h = NULL; \
 		} \
-        } while (0)
+        }
 
 /*
  * OH_RESOURCE_GET gets the resource for an resource id and rpt
@@ -91,14 +91,14 @@
  */
 
 #define OH_RESOURCE_GET(d, rid, r) \
-        do { \
+        { \
                 r = oh_get_resource_by_id(&(d->rpt), rid); \
                 if (!r) { \
                         dbg("Resource %d in Domain %d doesn't exist", rid, d->id); \
                         oh_release_domain(d); \
                         return SA_ERR_HPI_INVALID_RESOURCE; \
                 } \
-        } while (0)
+        }
 
 /*
  * OH_RESOURCE_GET_CHECK gets the resource for an resource id and rpt
@@ -106,7 +106,7 @@
  * return NO_RESPONSE if the resource is marked as being failed.
  */
 #define OH_RESOURCE_GET_CHECK(d, rid, r) \
-        do { \
+        { \
                 r = oh_get_resource_by_id(&(d->rpt), rid); \
                 if (!r) { \
                         dbg("Resource %d in Domain %d doesn't exist", rid, d->id); \
@@ -117,6 +117,21 @@
                         oh_release_domain(d); \
                         return SA_ERR_HPI_NO_RESPONSE; \
                 } \
-        } while (0)
+        }
+
+/*
+ * OH_CALL_ABI will check for a valid handler struct and existing plugin abi.
+ * If a valid abi or handler is not found, it returns error. Once it passes
+ * this validity check, it will call the plugin abi function with the passed
+ * parameters. 
+ */
+#define OH_CALL_ABI(handler, func, err, ret, params...) \
+	{ \
+		if (!handler || !handler->abi->func) { \
+                	oh_release_handler(handler); \
+                	return err; \
+        	} \
+        	ret = handler->abi->func(handler->hnd, params); \
+        }
 
 #endif

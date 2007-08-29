@@ -178,6 +178,12 @@ static SaHpiInstrumentIdT get_rdr_type_num(SaHpiRdrT *rdr)
                 case SAHPI_ANNUNCIATOR_RDR:
                         num = rdr->RdrTypeUnion.AnnunciatorRec.AnnunciatorNum;
                         break;
+		case SAHPI_DIMI_RDR:
+			num = rdr->RdrTypeUnion.DimiRec.DimiNum;
+			break;
+		case SAHPI_FUMI_RDR:
+			num = rdr->RdrTypeUnion.FumiRec.Num;
+			break;
                 default:
                         num = 0;
         }

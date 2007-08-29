@@ -36,6 +36,7 @@ libsimulator_la_SOURCES	= sim_init.c sim_init.h \
 			  sim_el.c sim_el.h \
 			  sim_annunciators.c sim_annunciators.h \
 			  sim_annunciator_func.c sim_annunciator_func.h \
+			  sim_dimi_func.h sim_dimi_func.c \
 			  sim_power.c sim_power.h \
 			  sim_inventory.c sim_inventory.h \
 			  sim_watchdog.c sim_watchdog.h \

@@ -80,7 +80,7 @@ SaHpiUint8T ohoi_atca_led_to_hpi_color(int ipmi_color)
 		return ATCAHPI_LED_COLOR_ORANGE;
 	default:
 		dbg("strange color %d, return WHITE", ipmi_color);
-		return ATCAHPI_LED_WHITE;
+		return ATCAHPI_LED_COLOR_WHITE;
 	}
 }
 
@@ -381,7 +381,29 @@ static int add_led_control_event(ipmi_entity_t	*ent,
                 dbg("No info in resource(%d)\n", rid);
                 return 1;
         }
-        rdr.RdrTypeUnion.CtrlRec.Num = ++info->ctrl_count;
+	if (strcasecmp((char *)rdr.IdString.Data, "blue led") == 0) {
+		rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_BLUE_LED;
+	} else if (strcasecmp((char *)rdr.IdString.Data, "led 1") == 0) {
+		rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_LED1;
+	} else if (strcasecmp((char *)rdr.IdString.Data, "led 2") == 0) {
+		rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_LED2;
+	} else if (strcasecmp((char *)rdr.IdString.Data, "led 3") == 0) {
+		rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_LED3;
+	} else if (strcasestr((char *)rdr.IdString.Data, "application-specific led ") ==
+		   (char *)rdr.IdString.Data) {
+		char *appnum = 
+			(char *)&rdr.IdString.Data[strlen("application-specific led ")];
+		if (strlen(appnum) <= 3) {
+			rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_APP_LED +
+				strtoul(appnum, NULL, 0);
+		} else {
+			dbg("Invalid data in LED Control\n");
+			return 1;
+		}
+	} else {
+		dbg("Invalid data in LED Control\n");
+		return 1;
+	}
 
         rid = oh_uid_lookup(&rdr.Entity);
         

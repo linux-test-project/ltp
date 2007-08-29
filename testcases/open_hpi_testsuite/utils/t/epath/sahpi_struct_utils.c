@@ -99,9 +99,13 @@ SaErrorT oh_decode_manufacturerid(SaHpiManufacturerIdT value, SaHpiTextBufferT *
                 err = oh_append_textbuffer(&working, "UNSPECIFIED Manufacturer");
                 if (err) { return(err); }
                 break;
-        case 2:                                         /* 2 is IANA number */
-        case 20944:                                     /* 20944 is IANA code for Modular Blade Server */
+        case 2:		/* 2 is IANA number */
+        case 20944:     /* 20944 is IANA code for Modular Blade Server */
                 err = oh_append_textbuffer(&working,"IBM");
+                if (err) { return(err); }
+                break;
+        case ATCAHPI_PICMG_MID: /* ATCAHPI_PICMG_MID is IANA code for PICMG manufacturer identifier */
+                err = oh_append_textbuffer(&working,"PICMG");
                 if (err) { return(err); }
                 break;
         default:

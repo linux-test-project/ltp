@@ -197,6 +197,58 @@ static const cMarshalType *saHpiResourceIdGetOut[] =
 };
 
 
+static const cMarshalType *saHpiGetIdByEntityPathIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiEntityPathType,
+  &SaHpiRdrTypeType,
+  &SaHpiUint32Type,
+  0
+};
+
+static const cMarshalType *saHpiGetIdByEntityPathOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiUint32Type,
+  &SaHpiResourceIdType,
+  &SaHpiInstrumentIdType,
+  &SaHpiUint32Type,
+  0
+};
+
+
+static const cMarshalType *saHpiGetChildEntityPathIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiEntityPathType,
+  &SaHpiUint32Type,
+  0
+};
+
+static const cMarshalType *saHpiGetChildEntityPathOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiUint32Type,
+  &SaHpiEntityPathType,
+  &SaHpiUint32Type,
+  0
+};
+
+
+static const cMarshalType *saHpiResourceFailedRemoveIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  0
+};
+
+static const cMarshalType *saHpiResourceFailedRemoveOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  0
+};
+
+
 static const cMarshalType *saHpiEventLogInfoGetIn[] =
 {
   &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
@@ -208,6 +260,21 @@ static const cMarshalType *saHpiEventLogInfoGetOut[] =
 {
   &SaErrorType, // result (SaErrorT)
   &SaHpiEventLogInfoType,
+  0
+};
+
+
+static const cMarshalType *saHpiEventLogCapabilitiesGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  0
+};
+
+static const cMarshalType *saHpiEventLogCapabilitiesGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiEventLogCapabilitiesType,
   0
 };
 
@@ -774,6 +841,23 @@ static const cMarshalType *saHpiIdrAreaAddOut[] =
 };
 
 
+static const cMarshalType *saHpiIdrAreaAddByIdIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiIdrIdType,
+  &SaHpiIdrAreaTypeType,
+  &SaHpiEntryIdType,
+  0
+};
+
+static const cMarshalType *saHpiIdrAreaAddByIdOut[] =
+{
+  &SaErrorType,            // result (SaErrorT)
+  0
+};
+
+
 static const cMarshalType *saHpiIdrAreaDeleteIn[] =
 {
   &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
@@ -822,7 +906,24 @@ static const cMarshalType *saHpiIdrFieldAddIn[] =
 static const cMarshalType *saHpiIdrFieldAddOut[] =
 {
   &SaErrorType,            // result (SaErrorT)
-  &SaHpiIdrFieldTypeType,
+  &SaHpiIdrFieldType,
+  0
+};
+
+
+static const cMarshalType *saHpiIdrFieldAddByIdIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiIdrIdType,
+  &SaHpiIdrFieldType,
+  0
+};
+
+static const cMarshalType *saHpiIdrFieldAddByIdOut[] =
+{
+  &SaErrorType,            // result (SaErrorT)
+  &SaHpiIdrFieldType,
   0
 };
 
@@ -1026,6 +1127,22 @@ static const cMarshalType *saHpiAnnunciatorModeSetOut[] =
 };
 
 
+static const cMarshalType *saHpiDimiInfoGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiDimiNumType,
+  0
+};
+
+static const cMarshalType *saHpiDimiInfoGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiDimiInfoType,
+  0
+};
+
+
 static const cMarshalType *saHpiHotSwapPolicyCancelIn[] =
 {
   &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
@@ -1195,6 +1312,36 @@ static const cMarshalType *saHpiParmControlIn[] =
 };
 
 static const cMarshalType *saHpiParmControlOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  0
+};
+
+
+static const cMarshalType *saHpiResourceLoadIdGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  0
+};
+
+static const cMarshalType *saHpiResourceLoadIdGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiLoadIdType,
+  0
+};
+
+
+static const cMarshalType *saHpiResourceLoadIdSetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiLoadIdType,
+  0
+};
+
+static const cMarshalType *saHpiResourceLoadIdSetOut[] =
 {
   &SaErrorType, // result (SaErrorT)
   0
@@ -1425,7 +1572,11 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiResourceSeveritySet ),
   dHpiMarshalEntry( saHpiResourceTagSet ),
   dHpiMarshalEntry( saHpiResourceIdGet ),
+  dHpiMarshalEntry( saHpiGetIdByEntityPath ),
+  dHpiMarshalEntry( saHpiGetChildEntityPath ),
+  dHpiMarshalEntry( saHpiResourceFailedRemove ),
   dHpiMarshalEntry( saHpiEventLogInfoGet ),
+  dHpiMarshalEntry( saHpiEventLogCapabilitiesGet ),
   dHpiMarshalEntry( saHpiEventLogEntryGet ),
   dHpiMarshalEntry( saHpiEventLogEntryAdd ),
   dHpiMarshalEntry( saHpiEventLogClear ),
@@ -1461,9 +1612,11 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiIdrInfoGet ),
   dHpiMarshalEntry( saHpiIdrAreaHeaderGet ),
   dHpiMarshalEntry( saHpiIdrAreaAdd ),
+  dHpiMarshalEntry( saHpiIdrAreaAddById ),
   dHpiMarshalEntry( saHpiIdrAreaDelete ),
   dHpiMarshalEntry( saHpiIdrFieldGet ),
   dHpiMarshalEntry( saHpiIdrFieldAdd ),
+  dHpiMarshalEntry( saHpiIdrFieldAddById ),
   dHpiMarshalEntry( saHpiIdrFieldSet ),
   dHpiMarshalEntry( saHpiIdrFieldDelete ),
   dHpiMarshalEntry( saHpiWatchdogTimerGet ),
@@ -1476,6 +1629,7 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiAnnunciatorDelete ),
   dHpiMarshalEntry( saHpiAnnunciatorModeGet ),
   dHpiMarshalEntry( saHpiAnnunciatorModeSet ),
+  dHpiMarshalEntry( saHpiDimiInfoGet ),
   dHpiMarshalEntry( saHpiHotSwapPolicyCancel ),
   dHpiMarshalEntry( saHpiResourceActiveSet ),
   dHpiMarshalEntry( saHpiResourceInactiveSet ),
@@ -1488,6 +1642,8 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiHotSwapIndicatorStateGet ),
   dHpiMarshalEntry( saHpiHotSwapIndicatorStateSet ),
   dHpiMarshalEntry( saHpiParmControl ),
+  dHpiMarshalEntry( saHpiResourceLoadIdGet ),
+  dHpiMarshalEntry( saHpiResourceLoadIdSet ),
   dHpiMarshalEntry( saHpiResourceResetStateGet ),
   dHpiMarshalEntry( saHpiResourceResetStateSet ),
   dHpiMarshalEntry( saHpiResourcePowerStateGet ),

@@ -14,7 +14,7 @@
 
 
 Name: openhpi
-Version: 2.9.2
+Version: 2.9.3
 Release: 2
 #
 Summary: Open implementation of the SAF Hardware Platform Interface
@@ -160,9 +160,9 @@ provided by the kernel.
 %build
 ###################################################
 %ifarch ia64 x86_64
-./configure '--sysconfdir=/etc' '--with-varpath=/var/lib/openhpi' --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib64 --with-varpath=/var/lib/%{name}
+./configure  '--sysconfdir=/etc' '--with-varpath=/var/lib/openhpi' --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib64 --with-varpath=/var/lib/%{name}
 %else
-./configure '--sysconfdir=/etc' '--with-varpath=/var/lib/openhpi' --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib --with-varpath=/var/lib/%{name}
+./configure  '--sysconfdir=/etc' '--with-varpath=/var/lib/openhpi' --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib --with-varpath=/var/lib/%{name}
 %endif
 %{__make}
 make -C docs/hld pdf-am

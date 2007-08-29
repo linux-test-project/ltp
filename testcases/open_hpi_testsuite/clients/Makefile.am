@@ -13,10 +13,9 @@ endif
 
 AM_CFLAGS               = @CFLAGS@
 
-EXTRA_DIST		= hpifan.c
-
 bin_PROGRAMS = \
 	hpievents \
+	hpifan \
         hpiinv \
 	hpiel \
 	hpisensor \
@@ -40,9 +39,9 @@ hpithres_SOURCES        = hpithres.c
 hpithres_LDADD          = $(COMMONLIBS)
 hpithres_LDFLAGS        =
 
-#hpifan_SOURCES          = hpifan.c
-#hpifan_LDADD            = $(COMMONLIBS)
-#hpifan_LDFLAGS          =
+hpifan_SOURCES          = hpifan.c
+hpifan_LDADD            = $(COMMONLIBS)
+hpifan_LDFLAGS          =
 
 hpitop_SOURCES          = hpitop.c
 hpitop_LDADD            = $(COMMONLIBS)

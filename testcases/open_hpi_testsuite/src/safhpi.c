@@ -476,6 +476,7 @@ SaErrorT SAHPI_API saHpiGetIdByEntityPath (
         *ResourceId = rid;
         *RptUpdateCount = d->rpt.update_count;        
         if (InstrumentType == SAHPI_NO_RECORD) {
+                *InstanceId = SAHPI_LAST_ENTRY;
                 oh_release_domain(d);                
                 return SA_OK;
         }        
@@ -1931,7 +1932,45 @@ SaErrorT SAHPI_API saHpiSensorThresholdsSet (
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
-        rv = oh_valid_thresholds(SensorThresholds, rdr);
+
+        SaHpiSensorThresholdsT tmp;
+
+        rv = saHpiSensorThresholdsGet( SessionId, ResourceId, SensorNum, &tmp );
+
+        if (rv != SA_OK) {
+            dbg("Can't get sensor thresholds. Sensor %d, ResourceId %d, Domain %d",
+            SensorNum, ResourceId, did);
+            oh_release_domain(d);
+            return rv;
+        }
+
+        /* Merging thresholds*/
+        if (SensorThresholds->UpCritical.IsSupported == SAHPI_TRUE) {
+                tmp.UpCritical = SensorThresholds->UpCritical;
+        }
+        if (SensorThresholds->UpMajor.IsSupported == SAHPI_TRUE) {
+                tmp.UpMajor = SensorThresholds->UpMajor;
+        }
+        if (SensorThresholds->UpMinor.IsSupported == SAHPI_TRUE) {
+                tmp.UpMinor = SensorThresholds->UpMinor;
+        }
+        if (SensorThresholds->LowCritical.IsSupported == SAHPI_TRUE) {
+                tmp.LowCritical = SensorThresholds->LowCritical;
+        }
+        if (SensorThresholds->LowMajor.IsSupported == SAHPI_TRUE) {
+                tmp.LowMajor = SensorThresholds->LowMajor;
+        }
+        if (SensorThresholds->LowMinor.IsSupported == SAHPI_TRUE) {
+                tmp.LowMinor = SensorThresholds->LowMinor;
+        }
+        if (SensorThresholds->PosThdHysteresis.IsSupported == SAHPI_TRUE) {
+                tmp.PosThdHysteresis = SensorThresholds->PosThdHysteresis;
+        }
+        if (SensorThresholds->NegThdHysteresis.IsSupported == SAHPI_TRUE) {
+                tmp.NegThdHysteresis = SensorThresholds->NegThdHysteresis;
+        }
+
+        rv = oh_valid_thresholds(&tmp, rdr);
         if (rv != SA_OK) { /* Invalid sensor threshold */
                 dbg("Invalid sensor threshold.");
                 oh_release_domain(d);
@@ -2358,6 +2397,23 @@ SaErrorT SAHPI_API saHpiSensorEventMasksSet (
                 oh_release_domain(d); /* Unlock domain */
                 return SA_ERR_HPI_READ_ONLY;
         }
+        
+        if (Action == SAHPI_SENS_ADD_EVENTS_TO_MASKS) {
+        	if (AssertEventMask != SAHPI_ALL_EVENT_STATES &&
+        	    (rdr_cur->RdrTypeUnion.SensorRec.Events | AssertEventMask) !=
+        	    rdr_cur->RdrTypeUnion.SensorRec.Events) {
+        		oh_release_domain(d);
+        		return SA_ERR_HPI_INVALID_DATA;        		
+        	}
+        	
+        	if ((!res->ResourceCapabilities & SAHPI_CAPABILITY_EVT_DEASSERTS) &&
+        	    DeassertEventMask != SAHPI_ALL_EVENT_STATES &&
+        	    (rdr_cur->RdrTypeUnion.SensorRec.Events | DeassertEventMask) !=
+        	    rdr_cur->RdrTypeUnion.SensorRec.Events) {
+        		oh_release_domain(d);
+        		return SA_ERR_HPI_INVALID_DATA;
+        	}
+        }
 
         OH_HANDLER_GET(d, ResourceId, h);
         oh_release_domain(d); /* Unlock domain */
@@ -2507,13 +2563,13 @@ SaErrorT SAHPI_API saHpiControlSet (
         SAHPI_IN SaHpiCtrlStateT  *CtrlState)
 {
         SaErrorT rv;
-        SaErrorT (*set_func)(void *, SaHpiResourceIdT, SaHpiCtrlNumT, SaHpiCtrlModeT, SaHpiCtrlStateT *);
-
         SaHpiRptEntryT *res;
         SaHpiRdrT *rdr;
         struct oh_handler *h;
         SaHpiDomainIdT did;
         struct oh_domain *d = NULL;
+        SaHpiCtrlModeT cur_mode;
+        SaHpiCtrlStateT cur_state;
 
         if (!oh_lookup_ctrlmode(CtrlMode) ||
             (CtrlMode != SAHPI_CTRL_MODE_AUTO && !CtrlState)) {
@@ -2557,14 +2613,24 @@ SaErrorT SAHPI_API saHpiControlSet (
         }
         OH_HANDLER_GET(d, ResourceId, h);
         oh_release_domain(d); /* Unlock domain */
-
-        set_func = h ? h->abi->set_control_state : NULL;
-        if (!set_func) {
-                oh_release_handler(h);
-                return SA_ERR_HPI_INVALID_CMD;
-        }
-
-        rv = set_func(h->hnd, ResourceId, CtrlNum, CtrlMode, CtrlState);
+	
+	if (!rdr->RdrTypeUnion.CtrlRec.WriteOnly &&
+	    rdr->RdrTypeUnion.CtrlRec.Type == SAHPI_CTRL_TYPE_DIGITAL) {
+	    
+		OH_CALL_ABI(h, get_control_state, SA_ERR_HPI_INVALID_CMD, rv,
+        	    	    ResourceId, CtrlNum, &cur_mode, &cur_state);
+        	
+        	if ((cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_ON &&
+        	     CtrlState->StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_ON) ||
+        	    (cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_OFF &&
+        	     CtrlState->StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_OFF)) {
+			return SA_ERR_HPI_INVALID_REQUEST;
+        	}
+		
+	}
+	
+        OH_CALL_ABI(h, set_control_state, SA_ERR_HPI_INVALID_CMD, rv,
+        	    ResourceId, CtrlNum, CtrlMode, CtrlState);
         oh_release_handler(h);
 
         return rv;
@@ -3888,6 +3954,125 @@ SaErrorT SAHPI_API saHpiAnnunciatorModeSet(
         oh_release_handler(h);
 
         return rv;
+}
+
+/*******************************************************************************
+ *
+ * DIMI Functions
+ *
+ ******************************************************************************/
+
+SaErrorT SAHPI_API saHpiDimiInfoGet (
+    SAHPI_IN    SaHpiSessionIdT     SessionId,
+    SAHPI_IN    SaHpiResourceIdT    ResourceId,
+    SAHPI_IN    SaHpiDimiNumT       DimiNum,
+    SAHPI_OUT   SaHpiDimiInfoT      *DimiInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+	SaErrorT error = SA_OK;
+	struct oh_handler *h = NULL;
+        
+        if (DimiInfo == NULL) {
+        	return SA_ERR_HPI_INVALID_PARAMS;
+        }
+        
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+        
+        if(!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_DIMI)) {
+                dbg("Resource %d in Domain %d doesn't does not support DIMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_DIMI_RDR,
+                                 DimiNum);
+
+        if (!rdr) {
+                dbg("No DIMI num %d found for Resource %d in Domain %d",
+                    DimiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+        
+        OH_CALL_ABI(h, get_dimi_info, SA_ERR_HPI_INVALID_CMD, error,
+        	    ResourceId, DimiNum, DimiInfo);
+	oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestInfoGet (
+    SAHPI_IN    SaHpiSessionIdT      SessionId,
+    SAHPI_IN    SaHpiResourceIdT     ResourceId,
+    SAHPI_IN    SaHpiDimiNumT        DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT    TestNum,
+    SAHPI_OUT   SaHpiDimiTestT       *DimiTest)
+{
+        return SAHPI_FALSE;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestReadinessGet (
+    SAHPI_IN    SaHpiSessionIdT      SessionId,
+    SAHPI_IN    SaHpiResourceIdT     ResourceId,
+    SAHPI_IN    SaHpiDimiNumT        DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT    TestNum,
+    SAHPI_OUT   SaHpiDimiReadyT      *DimiReady)
+{
+        return SAHPI_FALSE;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestStart (
+    SAHPI_IN    SaHpiSessionIdT                SessionId,
+    SAHPI_IN    SaHpiResourceIdT               ResourceId,
+    SAHPI_IN    SaHpiDimiNumT                  DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT              TestNum,
+    SAHPI_IN    SaHpiUint8T                    NumberOfParams,
+    SAHPI_IN    SaHpiDimiTestVariableParamsT   *ParamsList)
+{
+        return SAHPI_FALSE;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestCancel (
+    SAHPI_IN    SaHpiSessionIdT      SessionId,
+    SAHPI_IN    SaHpiResourceIdT     ResourceId,
+    SAHPI_IN    SaHpiDimiNumT        DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT    TestNum)
+{
+        return SAHPI_FALSE;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestStatusGet (
+    SAHPI_IN    SaHpiSessionIdT                   SessionId,
+    SAHPI_IN    SaHpiResourceIdT                  ResourceId,
+    SAHPI_IN    SaHpiDimiNumT                     DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT                 TestNum,
+    SAHPI_OUT   SaHpiDimiTestPercentCompletedT    *PercentCompleted,
+    SAHPI_OUT   SaHpiDimiTestRunStatusT           *RunStatus)
+{
+        return SAHPI_FALSE;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestResultsGet (
+    SAHPI_IN    SaHpiSessionIdT          SessionId,
+    SAHPI_IN    SaHpiResourceIdT         ResourceId,
+    SAHPI_IN    SaHpiDimiNumT            DimiNum,
+    SAHPI_IN    SaHpiDimiTestNumT        TestNum,
+    SAHPI_OUT   SaHpiDimiTestResultsT    *TestResults)
+{
+        return SAHPI_FALSE;
 }
 
 /*******************************************************************************

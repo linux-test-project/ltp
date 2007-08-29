@@ -149,8 +149,6 @@ handler libsimulator {
 #        auth_level = "admin" # operator or admin
 #        username = "arthur"
 #        password = "pieman"
-#        MultipleDomains = "no"  # "yes" creates a domain for this handler
-#        DomainTag = "Chassis 1" # Used if MultipleDomains="yes"
 #        logflags = ""      # logging off
 #        # logflags = "file stdout"
 #        # infos goes to logfile and stdout

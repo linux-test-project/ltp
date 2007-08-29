@@ -64,6 +64,8 @@ extern "C" {
 #define SaHpiEntryIdType    SaHpiUint32Type
 #define SaHpiTimeType       SaHpiInt64Type
 #define SaHpiTimeoutType    SaHpiInt64Type
+#define SaHpiLoadNumberType SaHpiUint32Type
+#define SaHpiEventLogCapabilitiesType SaHpiUint32Type
 
 // text buffer
 #define SaHpiTextTypeType   SaHpiUint32Type
@@ -170,6 +172,11 @@ extern cMarshalType SaHpiAnnouncementType;
 #define SaHpiAnnunciatorTypeType SaHpiUint32Type
 extern cMarshalType SaHpiAnnunciatorRecType;
 
+// DIMIs
+#define SaHpiDimiNumType SaHpiUint32Type
+#define SaHpiDimiTotalTestsType SaHpiUint32Type
+extern cMarshalType SaHpiDimiInfoType;
+
 
 // resource data record
 #define SaHpiRdrTypeType SaHpiUint32Type
@@ -220,6 +227,7 @@ extern cMarshalType SaHpiResourceInfoType;
 
 // rpt entry
 extern cMarshalType SaHpiRptEntryType;
+extern cMarshalType SaHpiLoadIdType;
 
 // domains
 #define SaHpiDomainCapabilitiesType SaHpiUint32Type

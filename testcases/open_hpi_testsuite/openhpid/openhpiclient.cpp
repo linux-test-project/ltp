@@ -960,6 +960,154 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceIdGet)
 
 
 /*----------------------------------------------------------------------------*/
+/* saHpiGetIdByEntityPath                                                     */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(GetIdByEntityPath)
+        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT    SessionId,
+                             SAHPI_IN    SaHpiEntityPathT   EntityPath,
+                             SAHPI_IN    SaHpiRdrTypeT      InstrumentType,
+                             SAHPI_INOUT SaHpiUint32T       *InstanceId,
+                             SAHPI_OUT   SaHpiResourceIdT   *ResourceId,
+                             SAHPI_OUT   SaHpiInstrumentIdT *InstrumentId,
+                             SAHPI_OUT   SaHpiUint32T       *RptUpdateCount)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiGetIdByEntityPath";
+        pcstrmsock pinst;
+        SaHpiInstrumentIdT instrument_id;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (ResourceId == NULL || InstanceId == NULL ||
+            *InstanceId == SAHPI_LAST_ENTRY || RptUpdateCount == NULL ||
+            (InstrumentId == NULL && InstrumentType != SAHPI_NO_RECORD))
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (InstrumentId == NULL)
+                InstrumentId = &instrument_id;
+        
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiGetIdByEntityPath);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiGetIdByEntityPath, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request, &SessionId,
+                                                 &EntityPath, &InstrumentType,
+                                                 InstanceId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply4(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader), &err,
+                                    InstanceId, ResourceId, InstrumentId, RptUpdateCount);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
+/* saHpiGetChildEntityPath                                                    */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(GetChildEntityPath)
+        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT  SessionId,
+                             SAHPI_IN    SaHpiEntityPathT ParentEntityPath,
+                             SAHPI_INOUT SaHpiUint32T     *InstanceId,
+                             SAHPI_OUT   SaHpiEntityPathT *ChildEntityPath,
+                             SAHPI_OUT   SaHpiUint32T     *RptUpdateCount)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiGetChildEntityPath";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (InstanceId == NULL || *InstanceId == SAHPI_LAST_ENTRY ||
+            RptUpdateCount == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiGetChildEntityPath);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiGetChildEntityPath, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request, &SessionId,
+                                                 &ParentEntityPath,
+                                                 InstanceId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply3(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader), &err,
+                                    InstanceId, ChildEntityPath, RptUpdateCount);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
+/* saHpiResourceFailedRemove                                                  */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceFailedRemove)
+        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT        SessionId,
+                             SAHPI_IN    SaHpiResourceIdT       ResourceId)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiResourceFailedRemove";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiResourceFailedRemove);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiResourceFailedRemove, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest2(hm, request, &SessionId, &ResourceId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm, reply + sizeof(cMessageHeader), &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+/*----------------------------------------------------------------------------*/
 /* saHpiEventLogInfoGet                                                       */
 /*----------------------------------------------------------------------------*/
 
@@ -1002,6 +1150,49 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogInfoGet)
 	return err;
 }
 
+/*----------------------------------------------------------------------------*/
+/* saHpiEventLogCapabilitiesGet                                               */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogCapabilitiesGet)
+        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT     SessionId,
+                             SAHPI_IN SaHpiResourceIdT    ResourceId,
+                             SAHPI_OUT SaHpiEventLogCapabilitiesT  *EventLogCapabilities)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiEventLogCapabilitiesGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (EventLogCapabilities == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiEventLogCapabilitiesGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiEventLogCapabilitiesGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest2(hm, request, &SessionId, &ResourceId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm, reply + sizeof(cMessageHeader),
+                                    &err, EventLogCapabilities);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
 
 /*----------------------------------------------------------------------------*/
 /* saHpiEventLogEntryGet                                                      */
@@ -2658,6 +2849,56 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAdd)
 
 
 /*----------------------------------------------------------------------------*/
+/* saHpiIdrAreaAddById                                                        */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAddById)
+        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
+                             SAHPI_IN SaHpiResourceIdT  ResourceId,
+                             SAHPI_IN SaHpiIdrIdT       Idrid,
+                             SAHPI_IN SaHpiIdrAreaTypeT AreaType,
+                             SAHPI_IN SaHpiEntryIdT     AreaId)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiIdrAreaAddById";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        
+        if (!oh_lookup_idrareatype(AreaType))   {
+                return SA_ERR_HPI_INVALID_PARAMS;
+        } else if (AreaType == SAHPI_IDR_AREATYPE_UNSPECIFIED) {
+                return SA_ERR_HPI_INVALID_DATA;
+        }
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiIdrAreaAddById);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiIdrAreaAddById, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest5(hm, request, &SessionId, &ResourceId, &Idrid, &AreaType, &AreaId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm, reply + sizeof(cMessageHeader), &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
 /* saHpiIdrAreaDelete                                                         */
 /*----------------------------------------------------------------------------*/
 
@@ -2812,6 +3053,63 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAdd)
                 return SA_ERR_HPI_INVALID_PARAMS;
 
 	return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
+/* saHpiIdrFieldAddById                                                       */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAddById)
+        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
+                             SAHPI_IN SaHpiResourceIdT   ResourceId,
+                             SAHPI_IN SaHpiIdrIdT        Idrid,
+                             SAHPI_INOUT SaHpiIdrFieldT  *Field)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiIdrFieldAddById";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        
+        if (!Field)   {
+                cdebug_err("saHpiIdrFieldAdd", "Null Field")
+                return SA_ERR_HPI_INVALID_PARAMS;
+        } else if (!oh_lookup_idrfieldtype(Field->Type)) {
+                cdebug_err("saHpiIdrFieldAdd", "Bad Field Type")
+                return SA_ERR_HPI_INVALID_PARAMS;
+        } else if (Field->Type == SAHPI_IDR_FIELDTYPE_UNSPECIFIED) {
+                cdebug_err("saHpiIdrFieldAdd", "Unspecified Field Type")
+                return SA_ERR_HPI_INVALID_PARAMS;
+        } else if (oh_valid_textbuffer(&Field->Field) != SAHPI_TRUE) {
+                cdebug_err("saHpiIdrFieldAdd", "Bad Text Buffer in Field")
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiIdrFieldAddById);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiIdrFieldAddById, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request, &SessionId, &ResourceId, &Idrid, Field);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm, reply + sizeof(cMessageHeader), &err, Field);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
 }
 
 
@@ -3399,6 +3697,50 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorModeSet)
 
 
 /*----------------------------------------------------------------------------*/
+/* saHpiAnnunciatorModeSet                                                    */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(DimiInfoGet)
+	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
+                             SAHPI_IN SaHpiResourceIdT  ResourceId,
+                             SAHPI_IN SaHpiDimiNumT  	DimiNum,
+                             SAHPI_OUT SaHpiDimiInfoT   *DimiInfo)
+{
+        void *request;
+	char reply[dMaxMessageLength];
+        SaErrorT err;
+	char cmd[] = "saHpiDimiInfoGet";
+        pcstrmsock pinst;
+
+	if (SessionId == 0)
+		return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+	if (pinst == NULL)
+		return SA_ERR_HPI_INVALID_SESSION;
+        if (!DimiInfo)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiInfoGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiInfoGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request, &SessionId, &ResourceId, &DimiNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm, reply + sizeof(cMessageHeader), &err, DimiInfo);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+	return err;
+}
+
+/*----------------------------------------------------------------------------*/
 /* saHpiHotSwapPolicyCancel                                                   */
 /*----------------------------------------------------------------------------*/
 
@@ -3916,6 +4258,96 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ParmControl)
                 return SA_ERR_HPI_INVALID_PARAMS;
 
 	return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
+/* saHpiResourceLoadIdGet                                                     */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdGet)
+        dOpenHpiClientParam (SAHPI_IN  SaHpiSessionIdT  SessionId,
+                             SAHPI_IN  SaHpiResourceIdT ResourceId,
+                             SAHPI_OUT SaHpiLoadIdT *LoadId)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiResourceLoadIdGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL)
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiResourceLoadIdGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiResourceLoadIdGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest2(hm, request, &SessionId, &ResourceId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, LoadId);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+
+/*----------------------------------------------------------------------------*/
+/* saHpiResourceLoadIdSet                                                     */
+/*----------------------------------------------------------------------------*/
+
+SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdSet)
+        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
+                             SAHPI_IN SaHpiResourceIdT ResourceId,
+                             SAHPI_IN SaHpiLoadIdT *LoadId)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiResourceLoadIdSet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL)
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (LoadId == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiResourceLoadIdSet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiResourceLoadIdSet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request, &SessionId, &ResourceId, LoadId);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
 }
 
 

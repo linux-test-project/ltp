@@ -27,8 +27,8 @@ class oSaHpiTypesEnums {
     public:
         // all the real methods in this class are static
         // so they can be used from any other class
-        static SaHpiBoolT oSaHpiTypesEnums::str2torf(const char *str);
-        static const char * oSaHpiTypesEnums::torf2str(SaHpiBoolT f);
+        static SaHpiBoolT str2torf(const char *str);
+        static const char * torf2str(SaHpiBoolT f);
         static SaHpiLanguageT str2language(const char *strtype);
         static const char * language2str(SaHpiLanguageT value);
         static SaHpiTextTypeT str2texttype(const char *type);

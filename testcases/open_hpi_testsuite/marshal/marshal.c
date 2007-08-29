@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 // #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include <endian.h>
 #include <byteswap.h>
@@ -265,13 +266,12 @@ MarshalSimpleTypes( tMarshalType type, const void *data,
   switch( type )
      {
        case eMtVoid:
-	    return 0;
+            return 0;
 
        case eMtUint8:
        case eMtInt8:
             {
-              tUint8 v = *(const tUint8 *)data;
-              *(tUint8 *)buffer = v;
+              memcpy(buffer, data, sizeof(tUint8));
             }
 
             return sizeof( tUint8 );
@@ -279,8 +279,7 @@ MarshalSimpleTypes( tMarshalType type, const void *data,
        case eMtInt16:
        case eMtUint16:
             {
-              tUint16 v = *(const tUint16 *)data;
-              *(tUint16 *)buffer = v;
+              memcpy(buffer, data, sizeof(tUint16));
             }
 
             return sizeof( tUint16 );
@@ -288,8 +287,7 @@ MarshalSimpleTypes( tMarshalType type, const void *data,
        case eMtUint32:
        case eMtInt32:
             {
-              tUint32 v = *(const tUint32 *)data;
-              *(tUint32 *)buffer = v;
+              memcpy(buffer, data, sizeof(tUint32));
             }
 
             return sizeof( tUint32 );
@@ -297,24 +295,21 @@ MarshalSimpleTypes( tMarshalType type, const void *data,
        case eMtUint64:
        case eMtInt64:
             {
-              tUint64 v = *(const tUint64 *)data;
-              *(tUint64 *)buffer = v;
+              memcpy(buffer, data, sizeof(tUint64));
             }
 
             return sizeof( tUint64 );
 
        case eMtFloat32:
             {
-              tFloat32 v = *(const tFloat32 *)data;
-              *(tFloat32 *)buffer = v;
+              memcpy(buffer, data, sizeof(tFloat32));
             }
 
             return sizeof( tFloat32 );
 
        case eMtFloat64:
             {
-              tFloat64 v = *(const tFloat64 *)data;
-              *(tFloat64 *)buffer = v;
+              memcpy(buffer, data, sizeof(tFloat64));
             }
 
             return sizeof( tFloat64 );

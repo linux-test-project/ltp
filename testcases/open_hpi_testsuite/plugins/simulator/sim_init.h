@@ -35,6 +35,7 @@
 #include <sim_control_func.h>
 #include <sim_annunciators.h>
 #include <sim_annunciator_func.h>
+#include <sim_dimi_func.h>
 #include <sim_el.h>
 #include <sim_power.h>
 #include <sim_reset.h>

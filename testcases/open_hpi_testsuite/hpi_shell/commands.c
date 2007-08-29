@@ -358,7 +358,7 @@ static ret_code_t set_tag(void)
         strcpy((char *)(tbuf.Data), buf);
         tbuf.DataType = SAHPI_TL_TYPE_TEXT;
         tbuf.Language = SAHPI_LANG_ENGLISH;
-        tbuf.DataLength = i;
+        tbuf.DataLength = strlen(buf);
         rv = saHpiResourceTagSet(Domain->sessionId, resid, &tbuf);
         if (rv != SA_OK) {
                 printf("saHpiResourceTagSet error = %s\n", oh_lookup_error(rv));

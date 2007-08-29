@@ -169,7 +169,8 @@ struct sim_rpt sim_rpt_array[] = {
                         .ResourceCapabilities = SAHPI_CAPABILITY_EVT_DEASSERTS |
 			                        SAHPI_CAPABILITY_RESOURCE |
 			                        SAHPI_CAPABILITY_RDR |
-			                        SAHPI_CAPABILITY_SENSOR,
+			                        SAHPI_CAPABILITY_SENSOR |
+						SAHPI_CAPABILITY_CONTROL,
                         .ResourceSeverity = SAHPI_MAJOR,
  			.ResourceFailed = SAHPI_FALSE,
                 },
@@ -1449,6 +1450,29 @@ struct sim_control sim_hs_dasd_controls[] = {
 };
 
 struct sim_control sim_fan_controls[] = {
+	{
+		.index = 1,
+		.control = {
+			.Num = 1,
+			.OutputType = SAHPI_CTRL_FAN_SPEED,
+			.Type = SAHPI_CTRL_TYPE_ANALOG,
+			.TypeUnion = {
+				.Analog = {
+					.Min = 0,
+					.Max = 100,
+					.Default = 80
+				}
+			},
+			.DefaultMode = {
+				.Mode = SAHPI_CTRL_MODE_MANUAL,
+				.ReadOnly = SAHPI_FALSE
+			},
+			.WriteOnly = SAHPI_FALSE,
+			.Oem = 0
+		},
+		.mode = SAHPI_CTRL_MODE_MANUAL,
+		.comment = "Fan Analog Control"
+	},
 
         {} /* Terminate array with a null element */
 };

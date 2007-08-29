@@ -561,6 +561,18 @@ struct oh_abi_v2 {
 				    SaHpiResourceIdT id,
                                     SaHpiAnnunciatorNumT num,
 				    SaHpiAnnunciatorModeT mode);
+				    
+	/***************
+	 * DIMI ABIs
+	 ***************/
+	 
+	/***
+	 * saHpiDimiInfoGet
+	 **/
+	SaErrorT (*get_dimi_info)(void *hnd,
+				  SaHpiResourceIdT id,
+				  SaHpiDimiNumT num,
+				  SaHpiDimiInfoT *info);
 
 	/***************
 	 * HOTSWAP ABIs
