@@ -1,3 +1,83 @@
+LTP-20070831
+
+1)  Log Message: "rsalveti@br.ibm.com" fixed write05 that failed with LTP 20070331 on Fedora 7 GA
+File(s) Affected:
+ltp/testcases/kernel/syscalls/write/write05.c
+
+2)  Log Message: "dmarlin@redhat.com" corrected fail message in data_space testcase
+File(s) Affected:
+ltp/testcases/kernel/mem/vmtests/data_space.c
+
+3)  Log Message: "liudeyan@cn.ibm.com" made mmap1 to be terminated by Ctrl-C
+File(s) Affected:
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+
+4)  Log Message: "suzuki@in.ibm.com" fixed times03, where it failed to generate report on user time on RHEl5.1 early build(2.6.18-32.el5)
+File(s) Affected: ltp/testcases/kernel/syscalls/times/times03.c
+
+5)  Log Message: gcov-kernel: added eabi-compatibility patch, renamed .diff to .patch by "oberpapr@users.sourceforge.net"
+File(s) Added:
+ltp/utils/analysis/gcov-kernel/linux-2.6.21-gcov-arm-eabi.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.22-gcov-arm-eabi.patch
+File(s) Deleted:
+ltp/utils/analysis/gcov-kernel/linux-2.6.21-gcov-arm-eabi.diff
+
+6)  Log Message: lcov: fixed spec file
+File(s) Affected:
+ltp/utils/analysis/lcov/rpm/lcov.spec
+
+7)  Log Message: gcov-kernel: removed outdated FAQ entry
+File(s) Affected:
+ltp/utils/analysis/gcov-kernel/FAQ
+
+8)  Log Message: gcov-kernel: added Makefile
+File(s) Added: ltp/utils/analysis/gcov-kernel/Makefile
+
+9)  Log Message: lcov: Makefile for release 1.6
+File(s) Affected:
+/cvsroot/ltp/utils/analysis/lcov/Makefile
+
+10) Log Message: lcov: Makefile for post-release
+File(s) Affected:
+/cvsroot/ltp/utils/analysis/lcov/Makefile
+
+11) Log Message: lcov: add experimental option "--norecursion"
+File(s) Affected:
+/cvsroot/ltp/utils/analysis/lcov/bin/geninfo
+/cvsroot/ltp/utils/analysis/lcov/bin/lcov
+
+12) Log Message: Changes to make testcases/kernel/numa/numa01.sh executable
+File(s) Affected:
+ltp/testcases/kernel/numa/Makefile
+
+13) Log Message: "carmelo.amoroso@st.com" changed the Default values for MAXSIZE and csize
+File(s) Affected:
+ltp/testcases/kernel/mem/vmtests/stack_space.c
+
+14) Log Message: "brenohl@br.ibm.com" wanted to handle file descriptors properly
+File(s) Affected:
+ltp/testcases/kernel/syscalls/mkdir/mkdir03.c
+ltp/testcases/kernel/syscalls/mmap/mmap09.c
+ltp/testcases/kernel/syscalls/open/open07.c
+ltp/testcases/kernel/syscalls/sendfile/sendfile03.c
+
+15) Log Message: "rsalvetidev@linux.vnet.ibm.com" says that this version can handle when the distro has MAX_SWAPFILES as 30 or 32
+File(s) Modified:
+ltp/runtest/ltplite ltp/runtest/stress.part3
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/swapon/swapon02.c
+File(s) Added:
+ltp/testcases/kernel/syscalls/swapon/swapon03.c
+
+16) Log Message: Containers Testcases Plan
+File(s) Added:
+ltp/testcases/kernel/containers/TEST_PLAN.txt
+
+17) Log Message: LTP-KDUMP Test-Case Plan
+File(s) Added:
+ltp/testcases/kdump/TEST_PLAN.txt
+
+
 LTP-20070731
 
 1)  Log Message: lcov: preparations for new release by "oberpapr@users.sourceforge.net"
