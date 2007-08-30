@@ -77,6 +77,10 @@ ltp/testcases/kernel/containers/TEST_PLAN.txt
 File(s) Added:
 ltp/testcases/kdump/TEST_PLAN.txt
 
+18) Log Message: Update to OpenHPI 2.9.3 (www.openhpi.org for more info)
+File(s) Affected:
+ltp/testcases/open_hpi_testsuite/
+
 
 LTP-20070731
 
