@@ -15,13 +15,13 @@ if [ $? -eq 1 ]; then
 	echo "Unshare not supported.  Not running container tests"
 	exit 0
 fi
-
-#if [ $? -eq 0 ]; then
+check_utsns_enabled
+if [ $? -eq 0 ]; then
 	echo "Running utsns tests."
 	runutstest.sh
-#else
-#	echo "Uts namespaces not enabled in kernel.  Not running utsns tests."
-#fi
+else
+	echo "Uts namespaces not enabled in kernel.  Not running utsns tests."
+fi
 
 #check_pidns_enabled
 #if [ $? -eq 0 ]; then
@@ -46,5 +46,11 @@ fi
 	#echo "User namespaces not enabled in kernel.  Not running userns tests."
 #fi
 
-runipcnstest.sh
+check_ipcns_enabled
+if [ $? -eq 0 ]; then
+	echo "Running ipcns tests."
+	runipcnstest.sh
+else
+	echo "ipc namespaces not enabled in kernel.  Not running pidns tests."
+fi
 

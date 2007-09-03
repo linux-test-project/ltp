@@ -17,7 +17,7 @@ clean:
 	rm -f $(TARGETS) *.o $(NOLTP_TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS) runipcnstest.sh ; do ln -f $$i ../../../bin/$$i ; chmod +x runipcnstest.sh ; done
+	@set -e; for i in $(TARGETS) runipcnstest.sh check_ipcns_enabled ; do ln -f $$i ../../../bin/$$i ; chmod +x runipcnstest.sh ; done
 
 noltp_check: noltp
 	./runtests_noltp.sh
