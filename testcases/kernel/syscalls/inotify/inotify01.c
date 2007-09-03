@@ -328,7 +328,7 @@ main()
 {
     tst_resm(TWARN, "This test needs a kernel that has inotify syscall.");
     tst_resm(TWARN, "Inotify syscall can be found at kernel 2.6.13 or higher.");
-    tst_exit();
+    exit(0);
     return 0;
 }
 
