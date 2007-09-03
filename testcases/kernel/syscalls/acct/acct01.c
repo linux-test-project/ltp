@@ -89,18 +89,10 @@ int main (argc, argv)
 	
 	tst_tmpdir();
 
-	/* now try to use the tty device, and it should fail
-	*/
- /* if platform is s390 or s390x then use device ttyS0 */
-#if defined (__s390__) || (__s390x__)
-	if (acct( "/dev/ttyS0" ) == -1) {
-#else
-	if (acct( "/dev/tty1" ) == -1) {
-#endif
-		if ( (errno==ENODEV) && (acct("/dev/tty") != -1) ) {
-			tst_resm(TFAIL, "%s - attempting to assign acct file to tty: expected failure but got okay return");
-			tst_exit();
-		}
+	/* now try to use a device, and it should fail */
+	if (acct("/dev/null") != -1) {
+		tst_resm(TFAIL, "attempting to assign acct file to device: expected failure but got okay return");
+		tst_exit();
 	} else tst_resm(TPASS,"Received expected error: -1");
 
 
@@ -117,7 +109,7 @@ int main (argc, argv)
 	unlink( tmpbuf );
 
 	if( acct( tmpbuf ) != -1 ) {
-		tst_resm(TBROK,"%s - attempt to set acct to non-existent file didn't fail as it should");
+		tst_resm(TBROK,"attempt to set acct to non-existent file didn't fail as it should");
 		tst_exit();
 	}
 
