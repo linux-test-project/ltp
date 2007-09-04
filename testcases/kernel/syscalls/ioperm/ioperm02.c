@@ -235,7 +235,7 @@ setup()
 	test_cases[1].turn_on = TURN_ON;
 	test_cases[1].desc = "Non super-user";
 	test_cases[1].exp_errno = EPERM;
-	if (tst_kvercmp(2,6,8) < 0) {
+	if ((tst_kvercmp(2,6,8) < 0) || (tst_kvercmp(2,6,9) == 0)) {
 		/*try invalid ioperm on 1022, 1023, 1024*/
 		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1; 
 
