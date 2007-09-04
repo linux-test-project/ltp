@@ -368,6 +368,7 @@ test02()
         extract_numastat other_node $other_node $col || return 1
         Prev_value=$RC
         numactl --cpunodebind=$Node_num --preferred=$Preferred_node support_numa $ALLOC_1MB 
+	sleep 2s	#In RHEL collection of statistics takes more time.
         numastat > $LTPTMP/numalog
         extract_numastat other_node $other_node $col || return 1
         Curr_value=$RC
@@ -422,6 +423,7 @@ test03()
     done
 
     numactl --interleave=all support_numa $ALLOC_1MB 
+    sleep 2s        #In RHEL collection of statistics takes more time.
 
     numastat > $LTPTMP/numalog
     COUNTER=1
@@ -572,6 +574,7 @@ test06()
     done
 
     numactl --length=1M --file /dev/shm/numa_shm --interleave=all --touch
+    sleep 2s        #In RHEL collection of statistics takes more time.
 
     numastat > $LTPTMP/numalog
     COUNTER=1
