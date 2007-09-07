@@ -71,7 +71,7 @@ run_test()
 			fi
 		fi
 	   fi
-	   if [ $DISTRO == "RH" ]; then
+	   if [ $DISTRO == "SUSE" ]; then
 	        #
                 # Verify results of previous test
                 #

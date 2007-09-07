@@ -24,7 +24,6 @@ LINUX_2_6_16=2616
 arch=`uname -m`
 if [ `echo $arch |grep -e "i[3-6]86"` ]
 then
-        CRASHKERNEL=$X86_CRASHKERNEL
         ARCH=1
 else if [ $arch == "x86_64" ]
 then
@@ -247,7 +246,6 @@ if [ -f /bin/rpm ]; then
 	fi
 	if [ $DISTRO == "RH" ]; then
 	chkconfig crond on
-	service crond restart
 	fi
 else
 	echo "There is no rpm on your machine."
