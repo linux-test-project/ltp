@@ -1,6 +1,7 @@
 CFLAGS = -Wall
 
 all:
+	chmod 755 crash_cmds distro master setup summary sysinfo test tests verify
 	./distro
 	make -C tools all
 	./setup
