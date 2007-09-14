@@ -44,7 +44,13 @@
 #
 #               Jul 23 2007 - Modified - Ricardo Salveti de Araujo
 #               - added flag to get the command file that has all failed tests
-
+#
+#               Sep 11 2007 - Modified - Subrata Modak
+#               - added option to create Failed File if it is not an absolute path
+#               - added option to create Output File if it is not an absolute path
+#               - added option to create Failed File compulsory, even if user has not mentioned it
+#
+#################################################################################
 
 
 
@@ -150,7 +156,22 @@ main()
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
 
-        C)  FAILCMDFILE="-C $OPTARG" ;;
+        C)  echo "INFO: creating $LTPROOT/output directory"
+            [ ! -d $LTPROOT/output ] && \
+            {
+               mkdir -p $LTPROOT/output || \
+               {
+                   echo "ERROR: failed to create $LTPROOT/output"
+                   exit 1
+                }
+            }
+            case $OPTARG in
+            /*)
+                FAILCMDFILE="-C $OPTARG" ;;
+            *)    
+                FAILCMDFILE="-C $LTPROOT/output/$OPTARG"
+                ALT_DIR=1 ;;
+            esac ;;
                    
         d)  # append $$ to TMP, as it is recursively 
             # removed at end of script.
@@ -175,6 +196,7 @@ main()
             GENLOAD=1 ;;
     
         l)      
+            LOGFILE_NAME="$OPTARG"
             echo "INFO: creating $LTPROOT/results directory"
             [ ! -d $LTPROOT/results ] && \
             {
@@ -204,7 +226,23 @@ main()
             $LTPROOT/testcases/bin/netpipe.sh
             NETPIPE=1;;
     
-        o)  OUTPUTFILE="-o $OPTARG" ;;
+        o)  OUTPUTFILE_NAME="$OPTARG"
+            echo "INFO: creating $LTPROOT/output directory"
+            [ ! -d $LTPROOT/output ] && \
+            {
+               mkdir -p $LTPROOT/output || \
+               {
+                   echo "ERROR: failed to create $LTPROOT/output"
+                   exit 1
+                }
+            }
+            case $OPTARG in
+            /*)
+                OUTPUTFILE="-o $OPTARG";;
+            *)
+                OUTPUTFILE="-o $LTPROOT/output/$OPTARG"
+                ALT_DIR=1 ;;
+            esac ;;
     
         p)  PRETTY_PRT=" -p ";;
    
@@ -236,6 +274,35 @@ main()
         \?) usage;;
         esac
     done
+   
+    ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)  
+
+    if [ ! "$FAILCMDFILE" ]; then                            ## User has not mentioned about Failed File name
+         echo Inside Failed File Name not Mentioned
+         [ ! -d $LTPROOT/output ] && \                       ## Try Creating output Directory if it doesn exist in First Place
+           {
+            mkdir -p $LTPROOT/output || \
+            {
+             echo "ERROR: failed to create $LTPROOT/output"  ## Chuk out if not possible due to weired reason(s)
+             exit 1
+            }
+           }
+         if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
+            if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
+               FAILED_FILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
+               ALT_DIR=1
+            else					     ## User Fortunately wanted a log file,
+               FAILED_FILE_NAME=`basename $LOGFILE_NAME`     ## Extract log file name and use it to construct Failed file name
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
+               ALT_DIR=1
+            fi
+         else                                                ## User Fortunately wanted a Output file
+               FAILED_FILE_NAME=`basename $OUTPUTFILE_NAME`  ## Extract output file name and use it to construct Failed file name
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
+               ALT_DIR=1
+         fi
+    fi
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
@@ -430,7 +497,8 @@ main()
        ###############################################################"
         
             Done executing testcases."
-            result log is in the $LTPROOT/results directory"
+            log result(s) is in $LTPROOT/results directory"
+            output/failed result(s) in $LTPROOT/output directory [If you did not provide Absolute Path]
             LTP Version:  $version_date
        ###############################################################"
        
