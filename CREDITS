@@ -35,3 +35,15 @@ S: IBM, Austin TX
 N: Robbie Williamson
 D: IBM Release, re-org
 S: IBM, Austin TX
+
+N: Sachin S Pant
+D: KDUMP Release
+S: IBM, India Linux Technology Centre
+
+N: Serge Hellyn, Rishikesh K Rajak
+D: UTS Namespace, SYSVIPC Namespace
+S: IBM, Indian Linux Technology Centre
+
+N: Sivakumar Chinnaiah
+D: NUMA
+S: IBM, Indian Linux Technology Centre
