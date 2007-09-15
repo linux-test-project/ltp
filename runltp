@@ -50,6 +50,9 @@
 #               - added option to create Output File if it is not an absolute path
 #               - added option to create Failed File compulsory, even if user has not mentioned it
 #
+#               Sep 14 2007 - Modified - Ricardo Salveti de Araujo
+#               - cleaning and removing duplicated code
+#
 #################################################################################
 
 
@@ -132,7 +135,8 @@ main()
 {
     local CMDFILES=""
     local PRETTY_PRT=""
-    local ALT_DIR=0
+    local ALT_DIR_OUT=0
+    local ALT_DIR_RES=0
     local RUN_NETEST=0
     local QUIET_MODE=""
     local VERBOSE_MODE=""
@@ -156,21 +160,13 @@ main()
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
 
-        C)  echo "INFO: creating $LTPROOT/output directory"
-            [ ! -d $LTPROOT/output ] && \
-            {
-               mkdir -p $LTPROOT/output || \
-               {
-                   echo "ERROR: failed to create $LTPROOT/output"
-                   exit 1
-                }
-            }
+        C)  
             case $OPTARG in
             /*)
                 FAILCMDFILE="-C $OPTARG" ;;
             *)    
                 FAILCMDFILE="-C $LTPROOT/output/$OPTARG"
-                ALT_DIR=1 ;;
+                ALT_DIR_OUT=1 ;;
             esac ;;
                    
         d)  # append $$ to TMP, as it is recursively 
@@ -197,21 +193,12 @@ main()
     
         l)      
             LOGFILE_NAME="$OPTARG"
-            echo "INFO: creating $LTPROOT/results directory"
-            [ ! -d $LTPROOT/results ] && \
-            {
-               mkdir -p $LTPROOT/results || \
-               {
-                   echo "ERROR: failed to create $LTPROOT/results"
-                   exit 1
-                }
-            }
             case $OPTARG in
-	    /*)
+            /*)
                 LOGFILE="-l $OPTARG" ;;
             *)    
                 LOGFILE="-l $LTPROOT/results/$OPTARG"
-                ALT_DIR=1 ;;
+                ALT_DIR_RES=1 ;;
             esac ;;
     
         m)      
@@ -227,21 +214,12 @@ main()
             NETPIPE=1;;
     
         o)  OUTPUTFILE_NAME="$OPTARG"
-            echo "INFO: creating $LTPROOT/output directory"
-            [ ! -d $LTPROOT/output ] && \
-            {
-               mkdir -p $LTPROOT/output || \
-               {
-                   echo "ERROR: failed to create $LTPROOT/output"
-                   exit 1
-                }
-            }
             case $OPTARG in
             /*)
                 OUTPUTFILE="-o $OPTARG";;
             *)
                 OUTPUTFILE="-o $LTPROOT/output/$OPTARG"
-                ALT_DIR=1 ;;
+                ALT_DIR_OUT=1 ;;
             esac ;;
     
         p)  PRETTY_PRT=" -p ";;
@@ -279,30 +257,47 @@ main()
 
     if [ ! "$FAILCMDFILE" ]; then                            ## User has not mentioned about Failed File name
          echo Inside Failed File Name not Mentioned
-         [ ! -d $LTPROOT/output ] && \                       ## Try Creating output Directory if it doesn exist in First Place
-           {
-            mkdir -p $LTPROOT/output || \
-            {
-             echo "ERROR: failed to create $LTPROOT/output"  ## Chuk out if not possible due to weired reason(s)
-             exit 1
-            }
-           }
+         ALT_DIR_OUT=1
          if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
             if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
                FAILED_FILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
-               ALT_DIR=1
             else					     ## User Fortunately wanted a log file,
                FAILED_FILE_NAME=`basename $LOGFILE_NAME`     ## Extract log file name and use it to construct Failed file name
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
-               ALT_DIR=1
             fi
          else                                                ## User Fortunately wanted a Output file
                FAILED_FILE_NAME=`basename $OUTPUTFILE_NAME`  ## Extract output file name and use it to construct Failed file name
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
-               ALT_DIR=1
          fi
     fi
+
+    # If we need, create the output directory
+    [ "$ALT_DIR_OUT" -eq 1 ] && \
+    {
+        echo "INFO: creating $LTPROOT/output directory"
+        [ ! -d $LTPROOT/output ] && \
+        {
+           mkdir -p $LTPROOT/output || \
+           {
+               echo "ERROR: failed to create $LTPROOT/output"
+               exit 1
+            }
+        }
+    }
+    # If we need, create the results directory
+    [ "$ALT_DIR_RES" -eq 1 ] && \
+    {
+        echo "INFO: creating $LTPROOT/results directory"
+        [ ! -d $LTPROOT/results ] && \
+        {
+           mkdir -p $LTPROOT/results || \
+           {
+               echo "ERROR: failed to create $LTPROOT/results"
+               exit 1
+            }
+        }
+    }
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
@@ -490,7 +485,7 @@ main()
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload ; }
     [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp ; }
     
-    [ "$ALT_DIR" -eq 1 ] && \
+    [ "$ALT_DIR_OUT" -eq 1 ] || [ "$ALT_DIR_RES" -eq 1 ] && \
     {
     cat <<-EOF >&1
         
