@@ -105,6 +105,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	}
 
 	if(pm1 != pm2) {
+                tst_resm(TINFO, "pm1=%p pm2=%p ", pm1,pm2);
 		tst_resm(TFAIL, "free did not dealloc memory ");
 		             tst_exit();
 	}
@@ -133,7 +134,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	pm2=pm1;
 	free(pm1);
 
-	if((pm1=(char *)calloc(MEMSIZE,1)) == NULL) {
+	if((pm1=(char *)malloc(MEMSIZE)) == NULL) {
 		tst_resm(TFAIL, "malloc did not alloc memory ");
 		             tst_exit();
 	}
