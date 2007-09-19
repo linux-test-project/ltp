@@ -31,7 +31,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.3 2005/12/22 20:18:22 robbiew Exp $ */
+/* $Id: tst_res.c,v 1.4 2007/09/19 04:08:22 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -139,7 +139,6 @@
          va_start(ap, arg_fmt);           \
          vsprintf(str, arg_fmt, ap);      \
          va_end(ap);                      \
-         Expand_varargs = FALSE;          \
       } else {                            \
          strcpy(str, arg_fmt);            \
       }                                   \
