@@ -17,6 +17,7 @@
 #
 
 CFLAGS += -I../../../../include -Wall
+CPPFLAGS += -D_GNU_SOURCE
 LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
