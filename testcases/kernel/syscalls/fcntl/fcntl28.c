@@ -172,6 +172,8 @@ main(int ac, char **av)
                                  TEST_ERRNO, strerror(TEST_ERRNO));
                        }
  
+#else
+		tst_resm(TINFO, "F_SETLEASE not defined, skipping test");
 #endif
     }		 /* End for TEST_LOOPING */
 

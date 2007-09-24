@@ -169,6 +169,8 @@ main(int ac, char **av)
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
 	    }
 	}
+#else
+		tst_resm(TINFO, "F_SETLEASE not defined, skipping test");
 #endif
     }	/* End for TEST_LOOPING */
 
