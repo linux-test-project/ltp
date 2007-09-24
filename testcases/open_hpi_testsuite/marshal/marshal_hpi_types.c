@@ -13,6 +13,7 @@
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com.com>
+ *     Renier Morales <renier@openhpi.org>
  */
 
 #include "marshal_hpi_types.h"
@@ -513,8 +514,125 @@ static cMarshalType SaHpiDimiInfoElements[] =
 	dStructElement( SaHpiDimiInfoT, TestNumUpdateCounter, SaHpiUint32Type ),
 	dStructElementEnd()
 };
-
 cMarshalType SaHpiDimiInfoType = dStruct ( SaHpiDimiInfoT, SaHpiDimiInfoElements );
+
+static cMarshalType SaHpiDimiTestParameterValueUnionTypeElements[] =
+{
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiInt32Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiInt32Type ),
+        dUnionElementEnd()
+};
+cMarshalType SaHpiDimiTestParameterValueUnionType = dUnion( 2, SaHpiDimiTestParameterValueUnionT, SaHpiDimiTestParameterValueUnionTypeElements );
+
+static cMarshalType SaHpiDimiTestParamValueTypeElements[] =
+{
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiBoolType ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiTextBufferType ),
+        dUnionElementEnd()
+};
+cMarshalType SaHpiDimiTestParamValueType = dUnion( 2, SaHpiDimiTestParamValueT, SaHpiDimiTestParamValueTypeElements );
+
+static cMarshalType ParamNameArray = dArray( SaHpiUint8Type, SAHPI_DIMITEST_PARAM_NAME_LEN );
+static cMarshalType SaHpiDimiTestParamsDefinitionTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestParamsDefinitionT, ParamName, ParamNameArray ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, ParamInfo, SaHpiTextBufferType ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, MinValue, SaHpiDimiTestParameterValueUnionType ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, MaxValue, SaHpiDimiTestParameterValueUnionType ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, DefaultParam, SaHpiDimiTestParamValueType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestParamsDefinitionType = dStruct( SaHpiDimiTestParamsDefinitionT, SaHpiDimiTestParamsDefinitionTypeElements );
+
+static cMarshalType SaHpiDimiTestAffectedEntityTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestAffectedEntityT, EntityImpacted, SaHpiEntityPathType ),
+        dStructElement( SaHpiDimiTestAffectedEntityT, ServiceImpact, SaHpiDimiTestServiceImpactType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestAffectedEntityType = dStruct( SaHpiDimiTestAffectedEntityT, SaHpiDimiTestAffectedEntityTypeElements );
+
+static cMarshalType EntitiesImpactedArray = dArray( SaHpiDimiTestAffectedEntityType, SAHPI_DIMITEST_MAX_ENTITIESIMPACTED );
+static cMarshalType TestParametersArray = dArray( SaHpiDimiTestParamsDefinitionType, SAHPI_DIMITEST_MAX_PARAMETERS );
+static cMarshalType SaHpiDimiTestTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestT, TestName,  SaHpiTextBufferType ),
+        dStructElement( SaHpiDimiTestT, ServiceImpact,  SaHpiDimiTestServiceImpactType ),
+        dStructElement( SaHpiDimiTestT, EntitiesImpacted, EntitiesImpactedArray ),
+        dStructElement( SaHpiDimiTestT, NeedServiceOS, SaHpiBoolType ),
+        dStructElement( SaHpiDimiTestT, ServiceOS, SaHpiTextBufferType ),
+        dStructElement( SaHpiDimiTestT, ExpectedRunDuration, SaHpiTimeType ),
+        dStructElement( SaHpiDimiTestT, TestCapabilities, SaHpiDimiTestCapabilityType ),
+        dStructElement( SaHpiDimiTestT, TestParameters, TestParametersArray ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestType = dStruct( SaHpiDimiTestT, SaHpiDimiTestTypeElements );
+
+static cMarshalType SaHpiDimiTestResultsTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestResultsT, ResultTimeStamp, SaHpiTimeType ),
+        dStructElement( SaHpiDimiTestResultsT, RunDuration, SaHpiTimeoutType ),
+        dStructElement( SaHpiDimiTestResultsT, LastRunStatus, SaHpiDimiTestRunStatusType ),
+        dStructElement( SaHpiDimiTestResultsT, TestErrorCode, SaHpiDimiTestErrCodeType ),
+        dStructElement( SaHpiDimiTestResultsT, TestResultString, SaHpiTextBufferType ),
+        dStructElement( SaHpiDimiTestResultsT, TestResultStringIsURI, SaHpiBoolType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestResultsType = dStruct( SaHpiDimiTestResultsT, SaHpiDimiTestResultsTypeElements );
+
+static cMarshalType SaHpiDimiTestVariableParamsTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestVariableParamsT, ParamName, ParamNameArray ),
+        dStructElement( SaHpiDimiTestVariableParamsT, ParamType, SaHpiDimiTestParamTypeType ),
+        dStructElement( SaHpiDimiTestVariableParamsT, Value, SaHpiDimiTestParamValueType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestVariableParamsType = dStruct( SaHpiDimiTestVariableParamsT, SaHpiDimiTestVariableParamsTypeElements );
+
+static cMarshalType ParamsListArray = dVarArray( SaHpiDimiTestVariableParamsType, dStructOffset( SaHpiDimiTestVariableParamsListT, NumberOfParams ) );
+static cMarshalType SaHpiDimiTestVariableParamsListTypeElements[] =
+{
+        dStructElement( SaHpiDimiTestVariableParamsListT, NumberOfParams, SaHpiUint8Type ),
+        dStructElement( SaHpiDimiTestVariableParamsListT, ParamsList, ParamsListArray ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiDimiTestVariableParamsListType = dStruct( SaHpiDimiTestVariableParamsListT, SaHpiDimiTestVariableParamsListTypeElements );
+
+
+// FUMIs
+static cMarshalType SaHpiFumiSourceInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiSourceInfoT, SourceUri, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, SourceStatus, SaHpiFumiSourceStatusType ),
+        dStructElement( SaHpiFumiSourceInfoT, Identifier, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, Description, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, DateTime, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, MajorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiSourceInfoT, MinorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiSourceInfoT, AuxVersion, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiSourceInfoType = dStruct( SaHpiFumiSourceInfoT, SaHpiFumiSourceInfoTypeElements );
+
+static cMarshalType SaHpiFumiBankInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiBankInfoT, BankId, SaHpiUint8Type ),
+        dStructElement( SaHpiFumiBankInfoT, BankSize, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiBankInfoT, Position, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiBankInfoT, BankState, SaHpiFumiBankStateType ),
+        dStructElement( SaHpiFumiSourceInfoT, Identifier, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, Description, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, DateTime, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiSourceInfoT, MajorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiSourceInfoT, MinorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiSourceInfoT, AuxVersion, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiBankInfoType = dStruct( SaHpiFumiBankInfoT, SaHpiFumiBankInfoTypeElements );
 
 // rdr
 

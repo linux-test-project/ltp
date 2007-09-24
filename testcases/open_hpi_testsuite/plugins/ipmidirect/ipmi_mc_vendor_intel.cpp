@@ -60,7 +60,7 @@ cIpmiMcVendorIntelBmc::InitMc( cIpmiMc *mc, const cIpmiMsg &devid )
               m_busid = PRIVATE_BUS_ID; break;  
   }
 
-  if (mc->IsAtcaBoard()) return true;
+  if (mc->IsTcaMc()) return true;
   /* 
    * If here, the MC has (manuf_id == 0x000157) Intel, and  
    * product_id == one of these: { 0x000C, 0x001B, 0x0022, 0x4311, 
@@ -87,7 +87,7 @@ cIpmiMcVendorIntelBmc::CreateControls(cIpmiDomain *dom,  cIpmiMc * mc,
   char dstr[80];
   int i;
 
-  if (mc->IsAtcaBoard()) return true;
+  if (mc->IsTcaMc()) return true;
 
   for ( int j = 0; j < mc->NumResources(); j++ )
   {
@@ -163,7 +163,7 @@ cIpmiMcVendorIntelBmc::ProcessFru( cIpmiInventory *inv, cIpmiMc *mc, unsigned in
   stdlog << "ProcessFru: Intel MC " << sa << " enableHSC " 
 	   << g_enableHSC << "\n";
 
-  if (mc->IsAtcaBoard()) return true;
+  if (mc->IsTcaMc()) return true;
 
   if (type == SAHPI_ENT_SYSTEM_BOARD) {
       cIpmiResource *res  = inv->Resource();

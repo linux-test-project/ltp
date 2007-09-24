@@ -625,7 +625,7 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
 					SaHpiEventStateT *state)
 {
 	struct sensor *s;
-	char tmp[SCRATCHSIZE];
+	struct sysfs_attribute *sysattr = NULL;
 	struct oh_handler_state *inst = (struct oh_handler_state *)hnd;
         SaHpiRdrT *tmprdr;
 
@@ -662,12 +662,20 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
 
 	*state = 0x0000;
 
-	if (sysfs_read_attribute_value(s->value->path,tmp,SCRATCHSIZE)) {
+	sysattr = sysfs_open_attribute(s->value->path);
+	if (!sysattr) {
+		dbg("failed opening attribute at %s", s->value->path);
+		return SA_ERR_HPI_INVALID_DATA;
+	}
+	
+	if (sysfs_read_attribute(sysattr)) {
 		dbg("error attempting to read value of %s",s->name);
+		sysfs_close_attribute(sysattr);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
-        reading_int64_set(reading, atoi(tmp));
+        reading_int64_set(reading, atoi(sysattr->value));
+	sysfs_close_attribute(sysattr);
 	
 	return 0;
 }
@@ -697,7 +705,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 					   	SaHpiSensorThresholdsT *thres)
 {
 	struct sensor *s;
-	char tmp[SCRATCHSIZE];
+	struct sysfs_attribute *sysattr = NULL;
 	struct oh_handler_state *inst = (struct oh_handler_state *)hnd;
 	SaHpiRdrT *tmprdr;
 
@@ -735,17 +743,34 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 	 * Setting ValuesPresent for all other items to 0.
 	 */
 	/* get min values */
-        if (sysfs_read_attribute_value(s->min->path,tmp,SCRATCHSIZE)) {
-                dbg("error attempting to read value of %s",s->name);
+	sysattr = sysfs_open_attribute(s->min->path);
+        if (!sysattr) {
+                dbg("failed opening attribute at %s", s->min->path);
                 return SA_ERR_HPI_INVALID_DATA;
         }
-        reading_int64_set(&thres->LowCritical, atoi(tmp));
 
-        if (sysfs_read_attribute_value(s->max->path,tmp,SCRATCHSIZE)) {
+        if (sysfs_read_attribute(sysattr)) {
                 dbg("error attempting to read value of %s",s->name);
+		sysfs_close_attribute(sysattr);
                 return SA_ERR_HPI_INVALID_DATA;
         }
-        reading_int64_set(&thres->UpCritical, atoi(tmp));
+        reading_int64_set(&thres->LowCritical, atoi(sysattr->value));
+	sysfs_close_attribute(sysattr);
+	sysattr = NULL;
+
+	sysattr = sysfs_open_attribute(s->max->path);
+        if (!sysattr) {
+                dbg("failed opening attribute at %s", s->max->path);
+                return SA_ERR_HPI_INVALID_DATA;
+        }
+
+        if (sysfs_read_attribute(sysattr)) {
+                dbg("error attempting to read value of %s",s->name);
+		sysfs_close_attribute(sysattr);
+                return SA_ERR_HPI_INVALID_DATA;
+        }
+        reading_int64_set(&thres->UpCritical, atoi(sysattr->value));
+	sysfs_close_attribute(sysattr);
 
         thres->LowMajor.IsSupported = SAHPI_FALSE;
         thres->LowMinor.IsSupported = SAHPI_FALSE;

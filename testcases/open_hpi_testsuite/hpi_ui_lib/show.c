@@ -68,9 +68,9 @@ SaErrorT sensor_list(SaHpiSessionIdT sessionid, hpi_ui_print_cb_t proc)
 Pr_ret_t print_thres_value(SaHpiSensorReadingT *item, char *info,
         SaHpiSensorThdDefnT *def, int num, hpi_ui_print_cb_t proc)
 {
-        char    *val;
         char    mes[256];
         char    buf[SHOW_BUF_SZ];
+	int     i, j = 0;
 
         if (item->IsSupported != SAHPI_TRUE) {
                 snprintf(buf, SHOW_BUF_SZ, "%s     not supported.\n", info);
@@ -100,12 +100,14 @@ Pr_ret_t print_thres_value(SaHpiSensorReadingT *item, char *info,
                                 item->Value.SensorFloat64);
                         break;
                 case SAHPI_SENSOR_READING_TYPE_BUFFER:
-                        val = (char *)(item->Value.SensorBuffer);
-                        if (val != NULL)
-                                snprintf(buf, SHOW_BUF_SZ, "%s %s\n", mes, val);
-                        else
-                                snprintf(buf, SHOW_BUF_SZ, "%s %s\n", mes,
-                                        "(null pointer)");
+                        j = snprintf(buf, SHOW_BUF_SZ, "%s ", mes);
+			for (i = 0; i < SAHPI_SENSOR_BUFFER_LENGTH; i++) {
+				j = j + snprintf(buf + j, SHOW_BUF_SZ-j,"%02x", item->Value.SensorBuffer[i]);
+				if (j >= SHOW_BUF_SZ)
+					break;
+			}
+			if (j < SHOW_BUF_SZ)
+				sprintf(buf + j, "\n");
                         break;
         };
         return(proc(buf));

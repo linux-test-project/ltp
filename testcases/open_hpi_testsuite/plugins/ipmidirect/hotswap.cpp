@@ -69,7 +69,7 @@ cIpmi::IfGetHotswapState( cIpmiResource *res, SaHpiHsStateT &state )
 SaErrorT
 cIpmi::IfSetHotswapState( cIpmiResource *res, SaHpiHsStateT state )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_CMD;
@@ -125,7 +125,7 @@ SaErrorT
 cIpmi::IfRequestHotswapAction( cIpmiResource *res,
                                SaHpiHsActionT act )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_REQUEST;
@@ -174,7 +174,7 @@ SaErrorT
 cIpmi::IfHotswapPolicyCancel( cIpmiResource *res,
                                SaHpiTimeoutT timeout )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_REQUEST;
@@ -188,7 +188,7 @@ cIpmi::IfHotswapPolicyCancel( cIpmiResource *res,
 SaErrorT
 cIpmi::IfSetAutoInsertTimeout( SaHpiTimeoutT timeout )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_REQUEST;
@@ -202,7 +202,7 @@ cIpmi::IfSetAutoInsertTimeout( SaHpiTimeoutT timeout )
 SaErrorT
 cIpmi::IfGetAutoExtractTimeout( cIpmiResource *res, SaHpiTimeoutT &timeout )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_REQUEST;
@@ -216,7 +216,7 @@ cIpmi::IfGetAutoExtractTimeout( cIpmiResource *res, SaHpiTimeoutT &timeout )
 SaErrorT
 cIpmi::IfSetAutoExtractTimeout( cIpmiResource *res, SaHpiTimeoutT timeout )
 {
-  if ( !m_is_atca )
+  if ( !m_is_tca )
      {
        stdlog << "ATCA not supported by SI !\n";
        return SA_ERR_HPI_INVALID_REQUEST;

@@ -18,7 +18,7 @@
 #include <oHpi.h>
 #include <oh_utils.h>
 
-#define OH_SVN_REV "$Revision: 1.3 $"
+#define OH_SVN_REV "$Revision: 1.4 $"
 
 #define dbg(format, ...) \
         do { \

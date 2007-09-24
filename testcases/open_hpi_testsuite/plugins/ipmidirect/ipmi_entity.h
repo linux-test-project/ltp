@@ -88,9 +88,11 @@ enum tIpmiEntityId
   eIpmiEntityIdPicMgFrontBoard              = 0xa0,
   eIpmiEntityIdPicMgRearTransitionModule    = 0xc0,
   eIpmiEntityIdPicMgAdvancedMcModule        = 0xc1,
+  eIpmiEntityIdPicMgMicroTcaCarrierHub      = 0xc2,
   eIpmiEntityIdPicmgShelfManager            = 0xf0,
   eIpmiEntityIdPicmgFiltrationUnit          = 0xf1,
   eIpmiEntityIdPicmgShelfFruInformation     = 0xf2,
+  eIpmiEntityIdPicmgAlarmPanel              = 0xf3,
 };
 
 const char *IpmiEntityIdToString( tIpmiEntityId id );

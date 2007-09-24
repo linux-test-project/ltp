@@ -574,6 +574,190 @@ struct oh_abi_v2 {
 				  SaHpiDimiNumT num,
 				  SaHpiDimiInfoT *info);
 
+        /***
+         * saHpiDimiTestInfoGet
+         **/
+        SaErrorT (*get_dimi_test)(void *hnd,
+                                  SaHpiResourceIdT id,
+                                  SaHpiDimiNumT num,
+                                  SaHpiDimiTestNumT testnum,
+                                  SaHpiDimiTestT *test);
+
+        /***
+         * saHpiDimiTestReadinessGet
+         **/
+        SaErrorT (*get_dimi_test_ready)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiDimiNumT num,
+                                SaHpiDimiTestNumT testnum,
+                                SaHpiDimiReadyT *ready);
+
+        /***
+         * saHpiDimiTestStart
+         **/
+        SaErrorT (*start_dimi_test)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiDimiNumT num,
+                                SaHpiDimiTestNumT testnum,
+                                SaHpiUint8T numparams,
+                                SaHpiDimiTestVariableParamsT *paramslist);
+
+        /***
+         * saHpiDimiTestCancel
+         **/
+        SaErrorT (*cancel_dimi_test)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiDimiNumT num,
+                                SaHpiDimiTestNumT testnum);
+
+        /***
+         * saHpiDimiTestStatusGet
+         **/
+        SaErrorT (*get_dimi_test_status)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiDimiNumT num,
+                                SaHpiDimiTestNumT testnum,
+                                SaHpiDimiTestPercentCompletedT *percentcompleted,
+                                SaHpiDimiTestRunStatusT *runstatus);
+
+        /***
+         * saHpiDimiTestResultsGet
+         **/
+        SaErrorT (*get_dimi_test_results)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiDimiNumT num,
+                                SaHpiDimiTestNumT testnum,
+                                SaHpiDimiTestResultsT *testresults);
+
+        /***************
+         * FUMI ABIs
+         ***************/
+
+        /***
+         * saHpiFumiSourceSet
+         **/
+        SaErrorT (*set_fumi_source)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiTextBufferT *sourceuri);
+
+        /***
+         * saHpiFumiSourceInfoValidateStart
+         **/
+        SaErrorT (*validate_fumi_source)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum);
+
+        /***
+         * saHpiFumiSourceInfoGet
+         **/
+        SaErrorT (*get_fumi_source)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiFumiSourceInfoT *sourceinfo);
+
+        /***
+         * saHpiFumiTargetInfoGet
+         **/
+        SaErrorT (*get_fumi_target)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiFumiBankInfoT *bankinfo);
+
+        /***
+         * saHpiFumiBackupStart
+         **/
+        SaErrorT (*start_fumi_backup)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num);
+
+        /***
+         * saHpiFumiBankBootOrderSet
+         **/
+        SaErrorT (*set_fumi_bank_order)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiUint32T position);
+
+        /***
+         * saHpiFumiBankBootOrderSet
+         **/
+        SaErrorT (*start_fumi_bank_copy)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT sourcebanknum,
+                                SaHpiBankNumT targetbanknum);
+
+        /***
+         * saHpiFumiInstallStart
+         **/
+        SaErrorT (*start_fumi_install)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum);
+
+        /***
+         * saHpiFumiUpgradeStatusGet
+         **/
+        SaErrorT (*get_fumi_status)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiFumiUpgradeStatusT *status);
+
+        /***
+         * saHpiFumiTargetVerifyStart
+         **/
+        SaErrorT (*start_fumi_verify)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum);
+
+        /***
+         * saHpiFumiUpgradeCancel
+         **/
+        SaErrorT (*cancel_fumi_upgrade)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum);
+
+        /***
+         * saHpiFumiRollback
+         **/
+        SaErrorT (*rollback_fumi)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num);
+
+        /***
+         * saHpiFumiRollback
+         **/
+        SaErrorT (*activate_fumi)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num);
+        
 	/***************
 	 * HOTSWAP ABIs
 	 ***************/

@@ -23,6 +23,9 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#if defined(__sun) && defined(__SVR4)
+#include <termios.h>
+#endif
 #include "hpi_cmd.h"
 
 #define MAX_IN_FILES		10
@@ -38,7 +41,7 @@ ret_code_t	shell_error = HPI_SHELL_OK;
 int		in_files_count = 0;
 FILE		*input_files[MAX_IN_FILES];
 int		out_files_count = 0;
-FILE		*output_files[MAX_REDIRECTIONS];
+int		output_files[MAX_REDIRECTIONS];
 char		Title[1024];
 int		is_more = 1;
 
@@ -71,8 +74,10 @@ static int set_redirection(char *name, int redir)
 		printf("Can not open/create file: %s\n", name);
 		return(-1);
 	};
-	output_files[out_files_count] = stdout;
-	stdout = out;
+	output_files[out_files_count] = dup(STDOUT_FILENO);
+	fflush(stdout);
+	dup2(fileno(out), STDOUT_FILENO);
+	fclose(out);
 	out_files_count++;
 	return(0);
 }
@@ -81,8 +86,9 @@ static void remove_reditection(void)
 {
 	if (out_files_count == 0) return;
 	out_files_count--;
-	fclose(stdout);
-	stdout = output_files[out_files_count];
+	fflush(stdout);
+	dup2(output_files[out_files_count], STDOUT_FILENO);
+	close(output_files[out_files_count]);
 }
 
 static int delete_input_file(void)

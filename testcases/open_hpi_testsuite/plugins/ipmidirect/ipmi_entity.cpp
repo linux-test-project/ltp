@@ -99,6 +99,9 @@ IpmiEntityIdToString( tIpmiEntityId val )
        case eIpmiEntityIdPicMgAdvancedMcModule:
             return "PicMgAdvancedMcModule";
 
+       case eIpmiEntityIdPicMgMicroTcaCarrierHub:
+            return "PicMgMicroTcaCarrierHub";
+
        case eIpmiEntityIdPicmgShelfManager:
             return "PicmgShelfManager";
 
@@ -107,6 +110,10 @@ IpmiEntityIdToString( tIpmiEntityId val )
 
        case eIpmiEntityIdPicmgShelfFruInformation:
             return "PicmgShelfFruInformation";
+
+       case eIpmiEntityIdPicmgAlarmPanel:
+            return "PicmgAlarmPanel";
+
        default:
            break;
      }

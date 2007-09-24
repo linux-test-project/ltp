@@ -28,7 +28,7 @@
 
 
 cIpmiDomain::cIpmiDomain()
-  : m_con( 0 ), m_is_atca( false ), m_main_sdrs( 0 ),
+  : m_con( 0 ), m_is_tca( false ), m_main_sdrs( 0 ),
     m_sensors_in_main_sdr( 0 ),
     m_major_version( 0 ), m_minor_version( 0 ), m_sdr_repository_support( false ),
     m_si_mc( 0 ),
@@ -90,6 +90,12 @@ cIpmiDomain::cIpmiDomain()
 
   // rear transition module
   SetAtcaSiteProperty( eIpmiAtcaSiteTypeRearTransitionModule, prop, 32 );
+
+  // MicroTca Carrier Hub
+  SetAtcaSiteProperty( eIpmiAtcaSiteTypeMicroTcaCarrierHub, prop, 8 );
+
+  // Power Module
+  SetAtcaSiteProperty( eIpmiAtcaSiteTypePowerModule, prop, 8 );
 }
 
 
@@ -244,11 +250,11 @@ cIpmiDomain::Init( cIpmiCon *con )
 
   stdlog << "Domain ID " << m_did << "\n";
 
-  // check for ATCA an modify m_mc_to_check
-  CheckAtca();
+  // check for TCA an modify m_mc_to_check
+  CheckTca();
 
-  // Non ATCA system -> adjust BMC info
-  if ( !m_is_atca )
+  // Non TCA system -> adjust BMC info
+  if ( !m_is_tca )
   {
     cIpmiFruInfo *fi = FindFruInfo( dIpmiBmcSlaveAddr, 0 );
 
@@ -270,7 +276,7 @@ cIpmiDomain::Init( cIpmiCon *con )
             // Just report an error, it shouldn't be a big deal if this
             // fails.
             stdlog << "could not get main SDRs, error " << rv << " !\n";
-       else if ( !m_is_atca )
+       else if ( !m_is_tca )
           {
             // for each mc device locator record in main repository
             // create an entry in m_mc_to_check.
@@ -445,7 +451,7 @@ cIpmiDomain::CleanupMc( cIpmiMc *mc )
 
 
 SaErrorT
-cIpmiDomain::CheckAtca()
+cIpmiDomain::CheckTca()
 {
   cIpmiMsg msg( eIpmiNetfnPicmg, eIpmiCmdGetPicMgProperties );
   msg.m_data_len = 1;
@@ -455,18 +461,18 @@ cIpmiDomain::CheckAtca()
   SaErrorT rv;
   int i;
 
-  m_is_atca = false;
+  m_is_tca = false;
 
   if ( !m_si_mc )
       return SA_ERR_HPI_INTERNAL_ERROR;
 
-  stdlog << "checking for ATCA system.\n";
+  stdlog << "checking for TCA system.\n";
 
   rv = m_si_mc->SendCommand( msg, rsp );
 
   if ( rv != SA_OK || rsp.m_data[0] || rsp.m_data[1] != dIpmiPicMgId )
      {
-       stdlog << "not an ATCA system.\n";
+       stdlog << "not a TCA system.\n";
 
        return (rv != SA_OK) ? rv : SA_ERR_HPI_INVALID_DATA;
      }
@@ -474,18 +480,25 @@ cIpmiDomain::CheckAtca()
   unsigned char minor = (rsp.m_data[2] >> 4) & 0x0f;
   unsigned char major = rsp.m_data[2] & 0x0f;
 
-  stdlog << "found a PicMg system version " << (unsigned int)major << "." << (unsigned int)minor << ".\n";
+  stdlog << "found a PICMG system, Extension Version " << (unsigned int)major << "." << (unsigned int)minor << ".\n";
 
-  if ( major != 2 )
+  switch ( major )
+  {
+  default:
        return SA_OK;
-
-  stdlog << "found an ATCA system.\n";
+  case 2:
+       stdlog << "found an ATCA system.\n";
+       break;
+  case 5:
+       stdlog << "found a MicroTCA system.\n";
+       break;
+  }
 
   // use atca timeout
   stdlog << "set timeout to " << m_con_atca_timeout << ".\n";
   m_con->m_timeout = m_con_atca_timeout;
 
-  m_is_atca = true;
+  m_is_tca = true;
 
   // read all fru addr
   msg.m_netfn   = eIpmiNetfnPicmg;
@@ -506,7 +519,9 @@ cIpmiDomain::CheckAtca()
     "Alarm",
     "AdvancedMC Module",
     "PMC",
-    "Rear Transition Module"
+    "Rear Transition Module",
+    "MicroTCA Carrier Hub",
+    "Power Module"
   };
 
   static int map_num = sizeof( map ) / sizeof( char * );
@@ -618,8 +633,8 @@ cIpmiDomain::GetEventRcvr()
      {
        cIpmiMc *mc = m_mcs[i];
 
-       // Event receiver on ATCA must be set to the active ShMc
-       if ( IsAtca() )
+       // Event receiver on TCA must be set to the active ShMc
+       if ( IsTca() )
        {
            if ( mc->GetAddress() == dIpmiBmcSlaveAddr )
                return mc;

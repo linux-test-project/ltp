@@ -37,6 +37,8 @@ enum tIpmiAtcaSiteType
   eIpmiAtcaSiteTypeAdvancedMcModule = 7,
   eIpmiAtcaSiteTypePMC = 8,
   eIpmiAtcaSiteTypeRearTransitionModule = 9,
+  eIpmiAtcaSiteTypeMicroTcaCarrierHub = 10,
+  eIpmiAtcaSiteTypePowerModule = 11,
   eIpmiAtcaSiteTypeUnknown
 };
 

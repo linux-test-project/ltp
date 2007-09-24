@@ -324,12 +324,12 @@ cIpmiMcThread::Discover( cIpmiMsg *get_device_id_rsp )
        return;
      }
 
-  m_mc->CheckAtca();
+  m_mc->CheckTca();
 
-  if ( m_domain->IsAtca() )
+  if ( m_domain->IsTca() )
   {
       // If board is not ATCA, just give up
-      if (!m_mc->IsAtcaBoard())
+      if (!m_mc->IsTcaMc())
       {
           m_mc->Cleanup();
           delete m_mc;

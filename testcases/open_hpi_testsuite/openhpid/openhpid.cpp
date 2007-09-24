@@ -1848,6 +1848,418 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &info );
                 }
                 break;
+
+                case eFsaHpiDimiTestInfoGet: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                        SaHpiDimiTestT        test;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestInfoGet.", thrdid);
+                
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestInfoGet(session_id, resource_id,
+                                                   dimi_num, test_num,
+                                                   &test);
+                
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq,
+                                                                  &ret, &test);
+                }
+                break;
+
+                case eFsaHpiDimiTestReadinessGet: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                        SaHpiDimiReadyT       ready;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestReadinessGet.", thrdid);
+                
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestReadinessGet(session_id, resource_id,
+                                                        dimi_num, test_num,
+                                                        &ready);
+                
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq,
+                                                                  &ret, &ready);
+                }
+                break;
+
+                case eFsaHpiDimiTestStart: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                        SaHpiDimiTestVariableParamsListT params_list;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestStart.", thrdid);
+                
+                        if (HpiDemarshalRequest5(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num,
+                                                 &params_list) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestStart(session_id, resource_id,
+                                                 dimi_num, test_num,
+                                                 params_list.NumberOfParams,
+                                                 params_list.ParamsList);
+                
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq,
+                                                                  &ret);
+                }
+                break;
+
+                case eFsaHpiDimiTestCancel: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestCancel.", thrdid);
+                
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestCancel(session_id, resource_id,
+                                                  dimi_num, test_num);
+                
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq,
+                                                                  &ret);
+                }
+                break;
+
+                case eFsaHpiDimiTestStatusGet: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                        SaHpiDimiTestPercentCompletedT percent;
+                        SaHpiDimiTestRunStatusT status;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestStatusGet.", thrdid);
+                
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestStatusGet(session_id, resource_id,
+                                                     dimi_num, test_num,
+                                                     &percent, &status);
+                
+                        thrdinst->header.m_len = HpiMarshalReply2(hm, pReq, &ret,
+                                                                  &percent,
+                                                                  &status);
+                }
+                break;
+
+                case eFsaHpiDimiTestResultsGet: {
+                        SaHpiSessionIdT       session_id;
+                        SaHpiResourceIdT      resource_id;
+                        SaHpiDimiNumT         dimi_num;
+                        SaHpiDimiTestNumT     test_num;
+                        SaHpiDimiTestResultsT results;
+                
+                        PVERBOSE1("%p Processing saHpiDimiTestResultsGet.", thrdid);
+                
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                                 hm, pReq,
+                                                 &session_id, &resource_id,
+                                                 &dimi_num, &test_num) < 0)
+                                return eResultError;
+                
+                        ret = saHpiDimiTestResultsGet(session_id, resource_id,
+                                                      dimi_num, test_num,
+                                                      &results);
+                
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq,
+                                                                  &ret, &results);
+                }
+                break;
+
+                case eFsaHpiFumiSourceSet: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+			SaHpiTextBufferT source_uri;
+
+                        PVERBOSE1("%p Processing saHpiFumiSourceSet.", thrdid);
+                        if (HpiDemarshalRequest5(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num, &source_uri) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiSourceSet(session_id, resource_id,
+                                fumi_num, bank_num, &source_uri);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiSourceInfoValidateStart: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiSourceInfoValidateStart.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiSourceInfoValidateStart(session_id, resource_id,
+                                fumi_num, bank_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiSourceInfoGet: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+			SaHpiFumiSourceInfoT source_info;
+
+                        PVERBOSE1("%p Processing saHpiFumiSourceInfoGet.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiSourceInfoGet(session_id, resource_id,
+                                fumi_num, bank_num, &source_info);
+
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq, &ret,
+				&source_info);
+                }
+                break;
+
+                case eFsaHpiFumiTargetInfoGet: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+			SaHpiFumiBankInfoT bank_info;
+
+                        PVERBOSE1("%p Processing saHpiFumiTargetInfoGet.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiTargetInfoGet(session_id, resource_id,
+                                fumi_num, bank_num, &bank_info);
+
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq, &ret,
+				&bank_info);
+                }
+                break;
+
+                case eFsaHpiFumiBackupStart: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiBackupStart.", thrdid);
+                        if (HpiDemarshalRequest3(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiBackupStart(session_id, resource_id,
+                                fumi_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiBankBootOrderSet: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+			SaHpiUint32T position;
+
+                        PVERBOSE1("%p Processing saHpiFumiBankBootOrderSet.", thrdid);
+                        if (HpiDemarshalRequest5(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num, &position) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiBankBootOrderSet(session_id, resource_id,
+                                fumi_num, bank_num, position);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiBankCopyStart: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT source_bank;
+			SaHpiBankNumT target_bank;
+
+                        PVERBOSE1("%p Processing saHpiFumiBankCopyStart.", thrdid);
+                        if (HpiDemarshalRequest5(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &source_bank, &target_bank) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiBankCopyStart(session_id, resource_id,
+                                fumi_num, source_bank, target_bank);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiInstallStart: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiInstallStart.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiInstallStart(session_id, resource_id,
+                                fumi_num, bank_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiUpgradeStatusGet: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+			SaHpiFumiUpgradeStatusT status;
+
+                        PVERBOSE1("%p Processing saHpiFumiUpgradeStatusGet.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiUpgradeStatusGet(session_id, resource_id,
+                                fumi_num, bank_num, &status);
+
+                        thrdinst->header.m_len = HpiMarshalReply1(hm, pReq, &ret,
+				&status);
+                }
+                break;
+
+                case eFsaHpiFumiTargetVerifyStart: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiTargetVerifyStart.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiTargetVerifyStart(session_id, resource_id,
+                                fumi_num, bank_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiUpgradeCancel: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+			SaHpiBankNumT bank_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiUpgradeCancel.", thrdid);
+                        if (HpiDemarshalRequest4(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num, &bank_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiUpgradeCancel(session_id, resource_id,
+                                fumi_num, bank_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiRollback: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiRollback.", thrdid);
+                        if (HpiDemarshalRequest3(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiRollback(session_id, resource_id,
+                                fumi_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
+
+                case eFsaHpiFumiActivate: {
+                        SaHpiSessionIdT session_id;
+                        SaHpiResourceIdT resource_id;
+                        SaHpiFumiNumT fumi_num;
+
+                        PVERBOSE1("%p Processing saHpiFumiActivate.", thrdid);
+                        if (HpiDemarshalRequest3(request_mFlags & dMhEndianBit,
+                                        hm, pReq,
+                                        &session_id, &resource_id,
+                                        &fumi_num) < 0)
+                                return eResultError;
+
+                        ret = saHpiFumiActivate(session_id, resource_id,
+                                fumi_num);
+
+                        thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);
+                }
+                break;
                 
                 case eFsaHpiHotSwapPolicyCancel: {
                         SaHpiSessionIdT  session_id;
@@ -2156,6 +2568,18 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                         ret = saHpiResourcePowerStateSet( session_id, resource_id, state );
                 
                         thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
+                }
+                break;
+
+                case eFoHpiVersionGet: {
+                        SaHpiUint64T ver;
+                
+                        PVERBOSE1("%p Processing oHpiVersionGet.", thrdid);
+                
+                        ver = oHpiVersionGet();
+                
+                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ver );
+                        result = eResultClose;
                 }
                 break;
                 

@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: openhpi-manual.sgml,v 1.4 2007/08/29 09:28:38 subrata_modak Exp $ ................................................ -->
+<!-- $Id: openhpi-manual.sgml,v 1.5 2007/09/24 09:11:53 subrata_modak Exp $ ................................................ -->
 <!-- 
         Copyright (C) Intel Corp 2003
         Copyright (C) IBM Corp 2003
@@ -38,10 +38,10 @@
 <!ENTITY chapter6 SYSTEM "openhpi_structure.sgml">
 <!ENTITY chapter7 SYSTEM "plugin_usage.sgml">
 <!ENTITY chapter8 SYSTEM "plugin_guide.sgml">
-<!ENTITY snmp_util SYSTEM "snmp_util.sgml">
-<!ENTITY rpt_utils SYSTEM "rpt_utils.sgml">
-<!ENTITY epath_utils SYSTEM "epath_utils.sgml">
-<!ENTITY uid_utils SYSTEM "uid_utils.sgml">
+<!ENTITY snmp-util SYSTEM "snmp_util.sgml">
+<!ENTITY rpt-utils SYSTEM "rpt_utils.sgml">
+<!ENTITY epath-utils SYSTEM "epath_utils.sgml">
+<!ENTITY uid-utils SYSTEM "uid_utils.sgml">
 <!ENTITY appendix SYSTEM "appendix.sgml">
 ]>
 

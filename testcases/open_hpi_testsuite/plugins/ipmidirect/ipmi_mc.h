@@ -121,7 +121,7 @@ protected:
 
   unsigned char  m_aux_fw_revision[4];
 
-  bool           m_is_atca_board;
+  bool           m_is_tca_mc;
   bool           m_is_rms_board;
 
   SaErrorT SendSetEventRcvr( unsigned int addr );
@@ -161,9 +161,9 @@ public:
 
   const cIpmiAddr &Addr() { return m_addr; }
 
-  void CheckAtca();
+  void CheckTca();
 
-  bool IsAtcaBoard() { return m_is_atca_board; }
+  bool IsTcaMc() { return m_is_tca_mc; }
 
   bool &IsRmsBoard() { return m_is_rms_board; }
 

@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2004-2006
+ * (C) Copyright IBM Corp. 2004-2007
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,26 +28,15 @@ extern "C"
 {
 #include <SaHpi.h>
 #include <oHpi.h>
+#include <oh_error.h>
 }
 
 
 #include "marshal_hpi.h"
 #include "openhpiclient.h"
 
-#define dClientDebugErr
-//#define dClientDebug
-
-#ifndef dClientDebug
-#define cdebug_out(cmd, str)
-#else
-#define cdebug_out(cmd, str)	fprintf(stdout, "%s: %s\n", cmd, str);
-#endif
-
-#ifndef dClientDebugErr
-#define cdebug_err(cmd, str)
-#else
-#define cdebug_err(cmd, str)	fprintf(stderr, "%s: %s\n", cmd, str);
-#endif
+#define cdebug_out(cmd, str) trace("%s: %s\n", cmd, str)
+#define cdebug_err(cmd, str) dbg("%s: %s\n", cmd, str)
 
 #define SendRecv(sid, cmd) \
 	if (pinst->WriteMsg(request)) { \
@@ -390,41 +379,10 @@ static pcstrmsock GetConnx(SaHpiSessionIdT SessionId)
 
 
 /*----------------------------------------------------------------------------*/
-/* oHpiVersionGet - get OpenHPI version                                       */
-/*----------------------------------------------------------------------------*/
-
-SaHpiUint64T oHpiVersionGet()
-{
-        SaHpiUint64T v = 0;
-        char * version = NULL;
-        char * start = version;
-        char * end = version;
-        version = strdup(VERSION);
-        if(!version) {
-                /* even if we fail, we know we are the client lib */
-                return 1;
-        }
-        start = version;
-        end = version;
-        v += (strtoull(start, &end, 10) << 48);
-        end++;
-        start = end;
-        v += (strtoull(start, &end, 10) << 32);
-        end++;
-        start = end;
-        v += (strtoull(start, &end, 10) << 16);
-        v += 1;
-        free(version);
-        return v;
-}
-
-
-/*----------------------------------------------------------------------------*/
 /* saHpiVersionGet                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaHpiVersionT SAHPI_API dOpenHpiClientFunction(VersionGet)
-	dOpenHpiClientParam(void)
+SaHpiVersionT SAHPI_API saHpiVersionGet(void)
 {
 	void *request = NULL;
 	char reply[dMaxMessageLength];
@@ -458,10 +416,10 @@ SaHpiVersionT SAHPI_API dOpenHpiClientFunction(VersionGet)
 /* saHpiSessionOpen                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SessionOpen)
-	dOpenHpiClientParam(SAHPI_IN SaHpiDomainIdT   DomainId,
-			    SAHPI_OUT SaHpiSessionIdT *SessionId,
-			    SAHPI_IN  void            *SecurityParams)
+SaErrorT SAHPI_API saHpiSessionOpen(
+	SAHPI_IN SaHpiDomainIdT   DomainId,
+	SAHPI_OUT SaHpiSessionIdT *SessionId,
+	SAHPI_IN  void            *SecurityParams)
 {
 	void *request;
 	char reply[dMaxMessageLength];
@@ -511,8 +469,8 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SessionOpen)
 /* saHpiSessionClose                                                          */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SessionClose)
-	dOpenHpiClientParam(SAHPI_IN SaHpiSessionIdT SessionId)
+SaErrorT SAHPI_API saHpiSessionClose(
+	SAHPI_IN SaHpiSessionIdT SessionId)
 {
 	void *request;
 	char reply[dMaxMessageLength];
@@ -554,8 +512,8 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SessionClose)
 /* saHpiDiscover                                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(Discover)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId)
+SaErrorT SAHPI_API saHpiDiscover(
+	SAHPI_IN SaHpiSessionIdT SessionId)
 {
 	void *request;
 	char reply[dMaxMessageLength];
@@ -599,9 +557,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(Discover)
 /* saHpiDomainInfoGet                                                         */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(DomainInfoGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_OUT SaHpiDomainInfoT *DomainInfo)
+SaErrorT SAHPI_API saHpiDomainInfoGet(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_OUT SaHpiDomainInfoT *DomainInfo)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -642,11 +600,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(DomainInfoGet)
 /* saHpiDrtEntryGet                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(DrtEntryGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiEntryIdT   EntryId,
-                             SAHPI_OUT SaHpiEntryIdT  *NextEntryId,
-                             SAHPI_OUT SaHpiDrtEntryT *DrtEntry)
+SaErrorT SAHPI_API saHpiDrtEntryGet(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiEntryIdT   EntryId,
+	SAHPI_OUT SaHpiEntryIdT  *NextEntryId,
+	SAHPI_OUT SaHpiDrtEntryT *DrtEntry)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -690,9 +648,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(DrtEntryGet)
 /* saHpiDomainTagSet                                                          */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(DomainTagSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiTextBufferT *DomainTag)
+SaErrorT SAHPI_API saHpiDomainTagSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiTextBufferT *DomainTag)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -735,11 +693,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(DomainTagSet)
 /* saHpiRptEntryGet                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(RptEntryGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiEntryIdT    EntryId,
-                             SAHPI_OUT SaHpiEntryIdT   *NextEntryId,
-                             SAHPI_OUT SaHpiRptEntryT  *RptEntry)
+SaErrorT SAHPI_API saHpiRptEntryGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiEntryIdT    EntryId,
+	SAHPI_OUT SaHpiEntryIdT   *NextEntryId,
+	SAHPI_OUT SaHpiRptEntryT  *RptEntry)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -784,10 +742,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(RptEntryGet)
 /* saHpiRptEntryGetByResourceId                                               */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(RptEntryGetByResourceId)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiRptEntryT  *RptEntry)
+SaErrorT SAHPI_API saHpiRptEntryGetByResourceId(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiRptEntryT  *RptEntry)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -830,10 +788,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(RptEntryGetByResourceId)
 /* saHpiResourceSeveritySet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceSeveritySet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSeverityT   Severity)
+SaErrorT SAHPI_API saHpiResourceSeveritySet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSeverityT   Severity)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -876,10 +834,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceSeveritySet)
 /* saHpiResourceTagSet                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceTagSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiTextBufferT *ResourceTag)
+SaErrorT SAHPI_API saHpiResourceTagSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiTextBufferT *ResourceTag)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -920,9 +878,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceTagSet)
 /* saHpiResourceIdGet                                                         */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceIdGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_OUT SaHpiResourceIdT *ResourceId)
+SaErrorT SAHPI_API saHpiResourceIdGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_OUT SaHpiResourceIdT *ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -963,14 +921,14 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceIdGet)
 /* saHpiGetIdByEntityPath                                                     */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(GetIdByEntityPath)
-        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT    SessionId,
-                             SAHPI_IN    SaHpiEntityPathT   EntityPath,
-                             SAHPI_IN    SaHpiRdrTypeT      InstrumentType,
-                             SAHPI_INOUT SaHpiUint32T       *InstanceId,
-                             SAHPI_OUT   SaHpiResourceIdT   *ResourceId,
-                             SAHPI_OUT   SaHpiInstrumentIdT *InstrumentId,
-                             SAHPI_OUT   SaHpiUint32T       *RptUpdateCount)
+SaErrorT SAHPI_API saHpiGetIdByEntityPath(
+	SAHPI_IN    SaHpiSessionIdT    SessionId,
+	SAHPI_IN    SaHpiEntityPathT   EntityPath,
+	SAHPI_IN    SaHpiRdrTypeT      InstrumentType,
+	SAHPI_INOUT SaHpiUint32T       *InstanceId,
+	SAHPI_OUT   SaHpiResourceIdT   *ResourceId,
+	SAHPI_OUT   SaHpiInstrumentIdT *InstrumentId,
+	SAHPI_OUT   SaHpiUint32T       *RptUpdateCount)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -1020,12 +978,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(GetIdByEntityPath)
 /* saHpiGetChildEntityPath                                                    */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(GetChildEntityPath)
-        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT  SessionId,
-                             SAHPI_IN    SaHpiEntityPathT ParentEntityPath,
-                             SAHPI_INOUT SaHpiUint32T     *InstanceId,
-                             SAHPI_OUT   SaHpiEntityPathT *ChildEntityPath,
-                             SAHPI_OUT   SaHpiUint32T     *RptUpdateCount)
+SaErrorT SAHPI_API saHpiGetChildEntityPath(
+	SAHPI_IN    SaHpiSessionIdT  SessionId,
+	SAHPI_IN    SaHpiEntityPathT ParentEntityPath,
+	SAHPI_INOUT SaHpiUint32T     *InstanceId,
+	SAHPI_OUT   SaHpiEntityPathT *ChildEntityPath,
+	SAHPI_OUT   SaHpiUint32T     *RptUpdateCount)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -1071,9 +1029,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(GetChildEntityPath)
 /* saHpiResourceFailedRemove                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceFailedRemove)
-        dOpenHpiClientParam (SAHPI_IN    SaHpiSessionIdT        SessionId,
-                             SAHPI_IN    SaHpiResourceIdT       ResourceId)
+SaErrorT SAHPI_API saHpiResourceFailedRemove(
+	SAHPI_IN    SaHpiSessionIdT        SessionId,
+	SAHPI_IN    SaHpiResourceIdT       ResourceId)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -1111,10 +1069,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceFailedRemove)
 /* saHpiEventLogInfoGet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogInfoGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT     SessionId,
-                             SAHPI_IN SaHpiResourceIdT    ResourceId,
-                             SAHPI_OUT SaHpiEventLogInfoT *Info)
+SaErrorT SAHPI_API saHpiEventLogInfoGet(
+	SAHPI_IN SaHpiSessionIdT     SessionId,
+	SAHPI_IN SaHpiResourceIdT    ResourceId,
+	SAHPI_OUT SaHpiEventLogInfoT *Info)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1154,10 +1112,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogInfoGet)
 /* saHpiEventLogCapabilitiesGet                                               */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogCapabilitiesGet)
-        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT     SessionId,
-                             SAHPI_IN SaHpiResourceIdT    ResourceId,
-                             SAHPI_OUT SaHpiEventLogCapabilitiesT  *EventLogCapabilities)
+SaErrorT SAHPI_API saHpiEventLogCapabilitiesGet(
+	SAHPI_IN SaHpiSessionIdT     SessionId,
+	SAHPI_IN SaHpiResourceIdT    ResourceId,
+	SAHPI_OUT SaHpiEventLogCapabilitiesT  *EventLogCapabilities)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -1198,15 +1156,15 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogCapabilitiesGet)
 /* saHpiEventLogEntryGet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogEntryGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT        SessionId,
-                             SAHPI_IN SaHpiResourceIdT       ResourceId,
-                             SAHPI_IN SaHpiEntryIdT          EntryId,
-                             SAHPI_OUT SaHpiEventLogEntryIdT *PrevEntryId,
-                             SAHPI_OUT SaHpiEventLogEntryIdT *NextEntryId,
-                             SAHPI_OUT SaHpiEventLogEntryT   *EventLogEntry,
-                             SAHPI_INOUT SaHpiRdrT           *Rdr,
-                             SAHPI_INOUT SaHpiRptEntryT      *RptEntry)
+SaErrorT SAHPI_API saHpiEventLogEntryGet(
+	SAHPI_IN SaHpiSessionIdT        SessionId,
+	SAHPI_IN SaHpiResourceIdT       ResourceId,
+	SAHPI_IN SaHpiEntryIdT          EntryId,
+	SAHPI_OUT SaHpiEventLogEntryIdT *PrevEntryId,
+	SAHPI_OUT SaHpiEventLogEntryIdT *NextEntryId,
+	SAHPI_OUT SaHpiEventLogEntryT   *EventLogEntry,
+	SAHPI_INOUT SaHpiRdrT           *Rdr,
+	SAHPI_INOUT SaHpiRptEntryT      *RptEntry)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1258,10 +1216,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogEntryGet)
 /* saHpiEventLogEntryAdd                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogEntryAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiEventT      *EvtEntry)
+SaErrorT SAHPI_API saHpiEventLogEntryAdd(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiEventT      *EvtEntry)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1309,9 +1267,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogEntryAdd)
 /* saHpiEventLogClear                                                         */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogClear)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId)
+SaErrorT SAHPI_API saHpiEventLogClear(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1350,10 +1308,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogClear)
 /* saHpiEventLogTimeGet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogTimeGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiTimeT      *Time)
+SaErrorT SAHPI_API saHpiEventLogTimeGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiTimeT      *Time)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1394,10 +1352,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogTimeGet)
 /* saHpiEventLogTimeSet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogTimeSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiTimeT       Time)
+SaErrorT SAHPI_API saHpiEventLogTimeSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiTimeT       Time)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1436,10 +1394,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogTimeSet)
 /* saHpiEventLogStateGet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogStateGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiBoolT      *EnableState)
+SaErrorT SAHPI_API saHpiEventLogStateGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiBoolT      *EnableState)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1480,10 +1438,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogStateGet)
 /* saHpiEventLogStateSet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogStateSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiBoolT       EnableState)
+SaErrorT SAHPI_API saHpiEventLogStateSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiBoolT       EnableState)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1522,9 +1480,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogStateSet)
 /* saHpiEventLogOverflowReset                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogOverflowReset)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId)
+SaErrorT SAHPI_API saHpiEventLogOverflowReset(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1563,8 +1521,8 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventLogOverflowReset)
 /* saHpiSubscribe                                                             */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(Subscribe)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId)
+SaErrorT SAHPI_API saHpiSubscribe(
+	SAHPI_IN SaHpiSessionIdT  SessionId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1603,8 +1561,8 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(Subscribe)
 /* saHpiUnsSubscribe                                                          */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(Unsubscribe)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId)
+SaErrorT SAHPI_API saHpiUnsubscribe(
+	SAHPI_IN SaHpiSessionIdT  SessionId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1643,13 +1601,13 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(Unsubscribe)
 /* saHpiEventGet                                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT         SessionId,
-                             SAHPI_IN SaHpiTimeoutT           Timeout,
-                             SAHPI_OUT SaHpiEventT            *Event,
-                             SAHPI_INOUT SaHpiRdrT            *Rdr,
-                             SAHPI_INOUT SaHpiRptEntryT       *RptEntry,
-                             SAHPI_INOUT SaHpiEvtQueueStatusT *EventQueueStatus)
+SaErrorT SAHPI_API saHpiEventGet(
+	SAHPI_IN SaHpiSessionIdT         SessionId,
+	SAHPI_IN SaHpiTimeoutT           Timeout,
+	SAHPI_OUT SaHpiEventT            *Event,
+	SAHPI_INOUT SaHpiRdrT            *Rdr,
+	SAHPI_INOUT SaHpiRptEntryT       *RptEntry,
+	SAHPI_INOUT SaHpiEvtQueueStatusT *EventQueueStatus)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1703,9 +1661,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventGet)
 /* saHpiEventAdd                                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(EventAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiEventT     *Event)
+SaErrorT SAHPI_API saHpiEventAdd(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiEventT     *Event)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1747,11 +1705,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(EventAdd)
 /* saHpiAlarmGetNext                                                          */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmGetNext)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiSeverityT  Severity,
-                             SAHPI_IN SaHpiBoolT      Unack,
-                             SAHPI_INOUT SaHpiAlarmT  *Alarm)
+SaErrorT SAHPI_API saHpiAlarmGetNext(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiSeverityT  Severity,
+	SAHPI_IN SaHpiBoolT      Unack,
+	SAHPI_INOUT SaHpiAlarmT  *Alarm)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1796,10 +1754,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmGetNext)
 /* saHpiAlarmGet                                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiAlarmIdT   AlarmId,
-                             SAHPI_OUT SaHpiAlarmT    *Alarm)
+SaErrorT SAHPI_API saHpiAlarmGet(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiAlarmIdT   AlarmId,
+	SAHPI_OUT SaHpiAlarmT    *Alarm)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1840,10 +1798,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmGet)
 /* saHpiAlarmAcknowledge                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmAcknowledge)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiAlarmIdT   AlarmId,
-                             SAHPI_IN SaHpiSeverityT  Severity)
+SaErrorT SAHPI_API saHpiAlarmAcknowledge(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiAlarmIdT   AlarmId,
+	SAHPI_IN SaHpiSeverityT  Severity)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1885,9 +1843,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmAcknowledge)
 /* saHpiAlarmAdd                                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_INOUT SaHpiAlarmT  *Alarm)
+SaErrorT SAHPI_API saHpiAlarmAdd(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_INOUT SaHpiAlarmT  *Alarm)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1930,10 +1888,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmAdd)
 /* saHpiAlarmDelete                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmDelete)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiAlarmIdT   AlarmId,
-                             SAHPI_IN SaHpiSeverityT  Severity)
+SaErrorT SAHPI_API saHpiAlarmDelete(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiAlarmIdT   AlarmId,
+	SAHPI_IN SaHpiSeverityT  Severity)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -1975,12 +1933,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AlarmDelete)
 /* saHpiRdrGet                                                                */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(RdrGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiEntryIdT    EntryId,
-                             SAHPI_OUT SaHpiEntryIdT   *NextEntryId,
-                             SAHPI_OUT SaHpiRdrT       *Rdr)
+SaErrorT SAHPI_API saHpiRdrGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiEntryIdT    EntryId,
+	SAHPI_OUT SaHpiEntryIdT   *NextEntryId,
+	SAHPI_OUT SaHpiRdrT       *Rdr)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2021,12 +1979,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(RdrGet)
 /* saHpiRdrGetByInstrumentId                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(RdrGetByInstrumentId)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_IN SaHpiRdrTypeT      RdrType,
-                             SAHPI_IN SaHpiInstrumentIdT InstrumentId,
-                             SAHPI_OUT SaHpiRdrT         *Rdr)
+SaErrorT SAHPI_API saHpiRdrGetByInstrumentId(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_IN SaHpiRdrTypeT      RdrType,
+	SAHPI_IN SaHpiInstrumentIdT InstrumentId,
+	SAHPI_OUT SaHpiRdrT         *Rdr)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2068,12 +2026,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(RdrGetByInstrumentId)
 /* saHpiSensorReadingGet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorReadingGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT        SessionId,
-                             SAHPI_IN SaHpiResourceIdT       ResourceId,
-                             SAHPI_IN SaHpiSensorNumT        SensorNum,
-                             SAHPI_INOUT SaHpiSensorReadingT *Reading,
-                             SAHPI_INOUT SaHpiEventStateT    *EventState)
+SaErrorT SAHPI_API saHpiSensorReadingGet(
+	SAHPI_IN SaHpiSessionIdT        SessionId,
+	SAHPI_IN SaHpiResourceIdT       ResourceId,
+	SAHPI_IN SaHpiSensorNumT        SensorNum,
+	SAHPI_INOUT SaHpiSensorReadingT *Reading,
+	SAHPI_INOUT SaHpiEventStateT    *EventState)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2121,11 +2079,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorReadingGet)
 /* saHpiSensorThresholdsGet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorThresholdsGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT         SessionId,
-                             SAHPI_IN SaHpiResourceIdT        ResourceId,
-                             SAHPI_IN SaHpiSensorNumT         SensorNum,
-                             SAHPI_OUT SaHpiSensorThresholdsT *Thresholds)
+SaErrorT SAHPI_API saHpiSensorThresholdsGet(
+	SAHPI_IN SaHpiSessionIdT         SessionId,
+	SAHPI_IN SaHpiResourceIdT        ResourceId,
+	SAHPI_IN SaHpiSensorNumT         SensorNum,
+	SAHPI_OUT SaHpiSensorThresholdsT *Thresholds)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2166,11 +2124,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorThresholdsGet)
 /* saHpiSensorThresholdsSet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorThresholdsSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT        SessionId,
-                             SAHPI_IN SaHpiResourceIdT       ResourceId,
-                             SAHPI_IN SaHpiSensorNumT        SensorNum,
-                             SAHPI_IN SaHpiSensorThresholdsT *Thresholds)
+SaErrorT SAHPI_API saHpiSensorThresholdsSet(
+	SAHPI_IN SaHpiSessionIdT        SessionId,
+	SAHPI_IN SaHpiResourceIdT       ResourceId,
+	SAHPI_IN SaHpiSensorNumT        SensorNum,
+	SAHPI_IN SaHpiSensorThresholdsT *Thresholds)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2215,12 +2173,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorThresholdsSet)
 /* saHpiSensorTypeGet                                                         */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorTypeGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT      SessionId,
-                             SAHPI_IN SaHpiResourceIdT     ResourceId,
-                             SAHPI_IN SaHpiSensorNumT      SensorNum,
-                             SAHPI_OUT SaHpiSensorTypeT    *Type,
-                             SAHPI_OUT SaHpiEventCategoryT *Category)
+SaErrorT SAHPI_API saHpiSensorTypeGet(
+	SAHPI_IN SaHpiSessionIdT      SessionId,
+	SAHPI_IN SaHpiResourceIdT     ResourceId,
+	SAHPI_IN SaHpiSensorNumT      SensorNum,
+	SAHPI_OUT SaHpiSensorTypeT    *Type,
+	SAHPI_OUT SaHpiEventCategoryT *Category)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2261,11 +2219,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorTypeGet)
 /* saHpiSensorEnableGet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEnableGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSensorNumT  SensorNum,
-                             SAHPI_OUT SaHpiBoolT      *Enabled)
+SaErrorT SAHPI_API saHpiSensorEnableGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSensorNumT  SensorNum,
+	SAHPI_OUT SaHpiBoolT      *Enabled)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2306,11 +2264,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEnableGet)
 /* saHpiSensorEnableSet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEnableSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSensorNumT  SensorNum,
-                             SAHPI_IN SaHpiBoolT       Enabled)
+SaErrorT SAHPI_API saHpiSensorEnableSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSensorNumT  SensorNum,
+	SAHPI_IN SaHpiBoolT       Enabled)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2349,11 +2307,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEnableSet)
 /* saHpiSensorEventEnableGet                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventEnableGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSensorNumT  SensorNum,
-                             SAHPI_OUT SaHpiBoolT      *Enabled)
+SaErrorT SAHPI_API saHpiSensorEventEnableGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSensorNumT  SensorNum,
+	SAHPI_OUT SaHpiBoolT      *Enabled)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2394,11 +2352,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventEnableGet)
 /* saHpiSensorEventEnableSet                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventEnableSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSensorNumT  SensorNum,
-                             SAHPI_IN SaHpiBoolT       Enabled)
+SaErrorT SAHPI_API saHpiSensorEventEnableSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSensorNumT  SensorNum,
+	SAHPI_IN SaHpiBoolT       Enabled)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2437,12 +2395,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventEnableSet)
 /* saHpiSensorEventMasksGet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventMasksGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiSensorNumT  SensorNum,
-                             SAHPI_INOUT SaHpiEventStateT *Assert,
-                             SAHPI_INOUT SaHpiEventStateT *Deassert)
+SaErrorT SAHPI_API saHpiSensorEventMasksGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiSensorNumT  SensorNum,
+	SAHPI_INOUT SaHpiEventStateT *Assert,
+	SAHPI_INOUT SaHpiEventStateT *Deassert)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2486,13 +2444,13 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventMasksGet)
 /* saHpiSensorEventMasksSet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventMasksSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT             SessionId,
-                             SAHPI_IN SaHpiResourceIdT            ResourceId,
-                             SAHPI_IN SaHpiSensorNumT             SensorNum,
-                             SAHPI_IN SaHpiSensorEventMaskActionT Action,
-                             SAHPI_IN SaHpiEventStateT            Assert,
-                             SAHPI_IN SaHpiEventStateT            Deassert)
+SaErrorT SAHPI_API saHpiSensorEventMasksSet(
+	SAHPI_IN SaHpiSessionIdT             SessionId,
+	SAHPI_IN SaHpiResourceIdT            ResourceId,
+	SAHPI_IN SaHpiSensorNumT             SensorNum,
+	SAHPI_IN SaHpiSensorEventMaskActionT Action,
+	SAHPI_IN SaHpiEventStateT            Assert,
+	SAHPI_IN SaHpiEventStateT            Deassert)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2531,11 +2489,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(SensorEventMasksSet)
 /* saHpiControlTypeGet                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ControlTypeGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiCtrlNumT    CtrlNum,
-                             SAHPI_OUT SaHpiCtrlTypeT  *Type)
+SaErrorT SAHPI_API saHpiControlTypeGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiCtrlNumT    CtrlNum,
+	SAHPI_OUT SaHpiCtrlTypeT  *Type)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2576,12 +2534,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ControlTypeGet)
 /* saHpiControlGet                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ControlGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_IN SaHpiCtrlNumT      CtrlNum,
-                             SAHPI_OUT SaHpiCtrlModeT    *Mode,
-                             SAHPI_INOUT SaHpiCtrlStateT *State)
+SaErrorT SAHPI_API saHpiControlGet(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_IN SaHpiCtrlNumT      CtrlNum,
+	SAHPI_OUT SaHpiCtrlModeT    *Mode,
+	SAHPI_INOUT SaHpiCtrlStateT *State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2641,12 +2599,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ControlGet)
 /* saHpiControlSet                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ControlSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiCtrlNumT    CtrlNum,
-                             SAHPI_IN SaHpiCtrlModeT   Mode,
-                             SAHPI_IN SaHpiCtrlStateT  *State)
+SaErrorT SAHPI_API saHpiControlSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiCtrlNumT    CtrlNum,
+	SAHPI_IN SaHpiCtrlModeT   Mode,
+	SAHPI_IN SaHpiCtrlStateT  *State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2702,11 +2660,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ControlSet)
 /* saHpiIdrInfoGet                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrInfoGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiIdrIdT      Idrid,
-                             SAHPI_OUT SaHpiIdrInfoT   *Info)
+SaErrorT SAHPI_API saHpiIdrInfoGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiIdrIdT      Idrid,
+	SAHPI_OUT SaHpiIdrInfoT   *Info)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2747,14 +2705,14 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrInfoGet)
 /* saHpiIdrAreaHeaderGet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaHeaderGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT      SessionId,
-                             SAHPI_IN SaHpiResourceIdT     ResourceId,
-                             SAHPI_IN SaHpiIdrIdT          Idrid,
-                             SAHPI_IN SaHpiIdrAreaTypeT    AreaType,
-                             SAHPI_IN SaHpiEntryIdT        AreaId,
-                             SAHPI_OUT SaHpiEntryIdT       *NextAreaId,
-                             SAHPI_OUT SaHpiIdrAreaHeaderT *Header)
+SaErrorT SAHPI_API saHpiIdrAreaHeaderGet(
+	SAHPI_IN SaHpiSessionIdT      SessionId,
+	SAHPI_IN SaHpiResourceIdT     ResourceId,
+	SAHPI_IN SaHpiIdrIdT          Idrid,
+	SAHPI_IN SaHpiIdrAreaTypeT    AreaType,
+	SAHPI_IN SaHpiEntryIdT        AreaId,
+	SAHPI_OUT SaHpiEntryIdT       *NextAreaId,
+	SAHPI_OUT SaHpiIdrAreaHeaderT *Header)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2801,12 +2759,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaHeaderGet)
 /* saHpiIdrAreaAdd                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiIdrIdT       Idrid,
-                             SAHPI_IN SaHpiIdrAreaTypeT AreaType,
-                             SAHPI_OUT SaHpiEntryIdT    *AreaId)
+SaErrorT SAHPI_API saHpiIdrAreaAdd(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiIdrIdT       Idrid,
+	SAHPI_IN SaHpiIdrAreaTypeT AreaType,
+	SAHPI_OUT SaHpiEntryIdT    *AreaId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2852,12 +2810,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAdd)
 /* saHpiIdrAreaAddById                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAddById)
-        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiIdrIdT       Idrid,
-                             SAHPI_IN SaHpiIdrAreaTypeT AreaType,
-                             SAHPI_IN SaHpiEntryIdT     AreaId)
+SaErrorT SAHPI_API saHpiIdrAreaAddById(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiIdrIdT       Idrid,
+	SAHPI_IN SaHpiIdrAreaTypeT AreaType,
+	SAHPI_IN SaHpiEntryIdT     AreaId)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -2902,11 +2860,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaAddById)
 /* saHpiIdrAreaDelete                                                         */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaDelete)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiIdrIdT       Idrid,
-                             SAHPI_IN SaHpiEntryIdT     AreaId)
+SaErrorT SAHPI_API saHpiIdrAreaDelete(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiIdrIdT       Idrid,
+	SAHPI_IN SaHpiEntryIdT     AreaId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -2947,15 +2905,15 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrAreaDelete)
 /* saHpiIdrFieldGet                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_IN SaHpiIdrIdT        Idrid,
-                             SAHPI_IN SaHpiEntryIdT      AreaId,
-                             SAHPI_IN SaHpiIdrFieldTypeT FieldType,
-                             SAHPI_IN SaHpiEntryIdT      FieldId,
-                             SAHPI_OUT SaHpiEntryIdT     *NextId,
-                             SAHPI_OUT SaHpiIdrFieldT    *Field)
+SaErrorT SAHPI_API saHpiIdrFieldGet(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_IN SaHpiIdrIdT        Idrid,
+	SAHPI_IN SaHpiEntryIdT      AreaId,
+	SAHPI_IN SaHpiIdrFieldTypeT FieldType,
+	SAHPI_IN SaHpiEntryIdT      FieldId,
+	SAHPI_OUT SaHpiEntryIdT     *NextId,
+	SAHPI_OUT SaHpiIdrFieldT    *Field)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3003,11 +2961,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldGet)
 /* saHpiIdrFieldAdd                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_IN SaHpiIdrIdT        Idrid,
-                             SAHPI_INOUT SaHpiIdrFieldT  *Field)
+SaErrorT SAHPI_API saHpiIdrFieldAdd(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_IN SaHpiIdrIdT        Idrid,
+	SAHPI_INOUT SaHpiIdrFieldT  *Field)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3022,16 +2980,16 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAdd)
 		return SA_ERR_HPI_INVALID_SESSION;
         
         if (!Field)   {
-        	cdebug_err("saHpiIdrFieldAdd", "Null Field")
+        	cdebug_err("saHpiIdrFieldAdd", "Null Field");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (!oh_lookup_idrfieldtype(Field->Type)) {
-        	cdebug_err("saHpiIdrFieldAdd", "Bad Field Type")
+        	cdebug_err("saHpiIdrFieldAdd", "Bad Field Type");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (Field->Type == SAHPI_IDR_FIELDTYPE_UNSPECIFIED) {
-        	cdebug_err("saHpiIdrFieldAdd", "Unspecified Field Type")
+        	cdebug_err("saHpiIdrFieldAdd", "Unspecified Field Type");
         	return SA_ERR_HPI_INVALID_PARAMS;
         } else if (oh_valid_textbuffer(&Field->Field) != SAHPI_TRUE) {
-        	cdebug_err("saHpiIdrFieldAdd", "Bad Text Buffer in Field")
+        	cdebug_err("saHpiIdrFieldAdd", "Bad Text Buffer in Field");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -3060,11 +3018,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAdd)
 /* saHpiIdrFieldAddById                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAddById)
-        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_IN SaHpiIdrIdT        Idrid,
-                             SAHPI_INOUT SaHpiIdrFieldT  *Field)
+SaErrorT SAHPI_API saHpiIdrFieldAddById(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_IN SaHpiIdrIdT        Idrid,
+	SAHPI_INOUT SaHpiIdrFieldT  *Field)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -3079,16 +3037,16 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAddById)
                 return SA_ERR_HPI_INVALID_SESSION;
         
         if (!Field)   {
-                cdebug_err("saHpiIdrFieldAdd", "Null Field")
+                cdebug_err("saHpiIdrFieldAdd", "Null Field");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (!oh_lookup_idrfieldtype(Field->Type)) {
-                cdebug_err("saHpiIdrFieldAdd", "Bad Field Type")
+                cdebug_err("saHpiIdrFieldAdd", "Bad Field Type");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (Field->Type == SAHPI_IDR_FIELDTYPE_UNSPECIFIED) {
-                cdebug_err("saHpiIdrFieldAdd", "Unspecified Field Type")
+                cdebug_err("saHpiIdrFieldAdd", "Unspecified Field Type");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (oh_valid_textbuffer(&Field->Field) != SAHPI_TRUE) {
-                cdebug_err("saHpiIdrFieldAdd", "Bad Text Buffer in Field")
+                cdebug_err("saHpiIdrFieldAdd", "Bad Text Buffer in Field");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -3117,11 +3075,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldAddById)
 /* saHpiIdrFieldSet                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiIdrIdT      Idrid,
-                             SAHPI_IN SaHpiIdrFieldT   *Field)
+SaErrorT SAHPI_API saHpiIdrFieldSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiIdrIdT      Idrid,
+	SAHPI_IN SaHpiIdrFieldT   *Field)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3164,12 +3122,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldSet)
 /* saHpiIdrFieldDelete                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldDelete)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiIdrIdT      Idrid,
-                             SAHPI_IN SaHpiEntryIdT    AreaId,
-                             SAHPI_IN SaHpiEntryIdT    FieldId)
+SaErrorT SAHPI_API saHpiIdrFieldDelete(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiIdrIdT      Idrid,
+	SAHPI_IN SaHpiEntryIdT    AreaId,
+	SAHPI_IN SaHpiEntryIdT    FieldId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3210,11 +3168,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(IdrFieldDelete)
 /* saHpiWatchdogTimerGet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiWatchdogNumT WatchdogNum,
-                             SAHPI_OUT SaHpiWatchdogT   *Watchdog)
+SaErrorT SAHPI_API saHpiWatchdogTimerGet(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiWatchdogNumT WatchdogNum,
+	SAHPI_OUT SaHpiWatchdogT   *Watchdog)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3255,11 +3213,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerGet)
 /* saHpiWatchdogTimerSet                                                      */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiWatchdogNumT WatchdogNum,
-                             SAHPI_IN SaHpiWatchdogT    *Watchdog)
+SaErrorT SAHPI_API saHpiWatchdogTimerSet(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiWatchdogNumT WatchdogNum,
+	SAHPI_IN SaHpiWatchdogT    *Watchdog)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3309,10 +3267,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerSet)
 /* saHpiWatchdogTimerReset                                                    */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerReset)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiWatchdogNumT WatchdogNum)
+SaErrorT SAHPI_API saHpiWatchdogTimerReset(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiWatchdogNumT WatchdogNum)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3351,13 +3309,13 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(WatchdogTimerReset)
 /* saHpiAnnunciatorGetNext                                                    */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorGetNext)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
-                             SAHPI_IN SaHpiSeverityT        Severity,
-                             SAHPI_IN SaHpiBoolT            Unack,
-                             SAHPI_INOUT SaHpiAnnouncementT *Announcement)
+SaErrorT SAHPI_API saHpiAnnunciatorGetNext(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
+	SAHPI_IN SaHpiSeverityT        Severity,
+	SAHPI_IN SaHpiBoolT            Unack,
+	SAHPI_INOUT SaHpiAnnouncementT *Announcement)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3400,12 +3358,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorGetNext)
 /* saHpiAnnunciatorGet                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT      SessionId,
-                             SAHPI_IN SaHpiResourceIdT     ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
-                             SAHPI_IN SaHpiEntryIdT        EntryId,
-                             SAHPI_OUT SaHpiAnnouncementT  *Announcement)
+SaErrorT SAHPI_API saHpiAnnunciatorGet(
+	SAHPI_IN SaHpiSessionIdT      SessionId,
+	SAHPI_IN SaHpiResourceIdT     ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
+	SAHPI_IN SaHpiEntryIdT        EntryId,
+	SAHPI_OUT SaHpiAnnouncementT  *Announcement)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3448,12 +3406,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorGet)
 /* saHpiAnnunciatorAcknowledge                                                */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorAcknowledge)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT      SessionId,
-                             SAHPI_IN SaHpiResourceIdT     ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
-                             SAHPI_IN SaHpiEntryIdT        EntryId,
-                             SAHPI_IN SaHpiSeverityT       Severity)
+SaErrorT SAHPI_API saHpiAnnunciatorAcknowledge(
+	SAHPI_IN SaHpiSessionIdT      SessionId,
+	SAHPI_IN SaHpiResourceIdT     ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
+	SAHPI_IN SaHpiEntryIdT        EntryId,
+	SAHPI_IN SaHpiSeverityT       Severity)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3502,11 +3460,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorAcknowledge)
 /* saHpiAnnunciatorAdd                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorAdd)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
-                             SAHPI_INOUT SaHpiAnnouncementT *Announcement)
+SaErrorT SAHPI_API saHpiAnnunciatorAdd(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
+	SAHPI_INOUT SaHpiAnnouncementT *Announcement)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3555,12 +3513,12 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorAdd)
 /* saHpiAnnunciatorDelete                                                     */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorDelete)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT      SessionId,
-                             SAHPI_IN SaHpiResourceIdT     ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
-                             SAHPI_IN SaHpiEntryIdT        EntryId,
-                             SAHPI_IN SaHpiSeverityT       Severity)
+SaErrorT SAHPI_API saHpiAnnunciatorDelete(
+	SAHPI_IN SaHpiSessionIdT      SessionId,
+	SAHPI_IN SaHpiResourceIdT     ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT AnnNum,
+	SAHPI_IN SaHpiEntryIdT        EntryId,
+	SAHPI_IN SaHpiSeverityT       Severity)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3610,11 +3568,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorDelete)
 /* saHpiAnnunciatorModeGet                                                    */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorModeGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT        SessionId,
-                             SAHPI_IN SaHpiResourceIdT       ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT   AnnNum,
-                             SAHPI_OUT SaHpiAnnunciatorModeT *Mode)
+SaErrorT SAHPI_API saHpiAnnunciatorModeGet(
+	SAHPI_IN SaHpiSessionIdT        SessionId,
+	SAHPI_IN SaHpiResourceIdT       ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT   AnnNum,
+	SAHPI_OUT SaHpiAnnunciatorModeT *Mode)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3655,11 +3613,11 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorModeGet)
 /* saHpiAnnunciatorModeSet                                                    */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorModeSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId,
-                             SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
-                             SAHPI_IN SaHpiAnnunciatorModeT Mode)
+SaErrorT SAHPI_API saHpiAnnunciatorModeSet(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId,
+	SAHPI_IN SaHpiAnnunciatorNumT  AnnNum,
+	SAHPI_IN SaHpiAnnunciatorModeT Mode)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3697,14 +3655,14 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AnnunciatorModeSet)
 
 
 /*----------------------------------------------------------------------------*/
-/* saHpiAnnunciatorModeSet                                                    */
+/* saHpiDimiInfoGet                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(DimiInfoGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiDimiNumT  	DimiNum,
-                             SAHPI_OUT SaHpiDimiInfoT   *DimiInfo)
+SaErrorT SAHPI_API saHpiDimiInfoGet(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiDimiNumT  	DimiNum,
+	SAHPI_OUT SaHpiDimiInfoT   *DimiInfo)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3740,13 +3698,842 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(DimiInfoGet)
 	return err;
 }
 
+SaErrorT SAHPI_API saHpiDimiTestInfoGet(
+	SAHPI_IN    SaHpiSessionIdT      SessionId,
+	SAHPI_IN    SaHpiResourceIdT     ResourceId,
+	SAHPI_IN    SaHpiDimiNumT        DimiNum,
+	SAHPI_IN    SaHpiDimiTestNumT    TestNum,
+	SAHPI_OUT   SaHpiDimiTestT       *DimiTest)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestInfoGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (!DimiTest)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestInfoGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestInfoGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, DimiTest);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestReadinessGet(
+	SAHPI_IN    SaHpiSessionIdT      SessionId,
+	SAHPI_IN    SaHpiResourceIdT     ResourceId,
+	SAHPI_IN    SaHpiDimiNumT        DimiNum,
+	SAHPI_IN    SaHpiDimiTestNumT    TestNum,
+	SAHPI_OUT   SaHpiDimiReadyT      *DimiReady)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestReadinessGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (!DimiReady)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestReadinessGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestReadinessGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, DimiReady);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestStart(
+	SAHPI_IN  SaHpiSessionIdT                SessionId,
+	SAHPI_IN  SaHpiResourceIdT               ResourceId,
+	SAHPI_IN  SaHpiDimiNumT                  DimiNum,
+	SAHPI_IN  SaHpiDimiTestNumT              TestNum,
+	SAHPI_IN  SaHpiUint8T                    NumberOfParams,
+	SAHPI_IN  SaHpiDimiTestVariableParamsT   *ParamsList)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestStart";
+        pcstrmsock pinst;
+        SaHpiDimiTestVariableParamsListT params_list;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (ParamsList == NULL && NumberOfParams != 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        params_list.NumberOfParams = NumberOfParams;
+        params_list.ParamsList = ParamsList;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest5(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum,
+                                &params_list);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestCancel(
+	SAHPI_IN    SaHpiSessionIdT      SessionId,
+	SAHPI_IN    SaHpiResourceIdT     ResourceId,
+	SAHPI_IN    SaHpiDimiNumT        DimiNum,
+	SAHPI_IN    SaHpiDimiTestNumT    TestNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestCancel";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestCancel);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestCancel, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestStatusGet(
+	SAHPI_IN    SaHpiSessionIdT                   SessionId,
+	SAHPI_IN    SaHpiResourceIdT                  ResourceId,
+	SAHPI_IN    SaHpiDimiNumT                     DimiNum,
+	SAHPI_IN    SaHpiDimiTestNumT                 TestNum,
+	SAHPI_OUT   SaHpiDimiTestPercentCompletedT    *PercentCompleted,
+	SAHPI_OUT   SaHpiDimiTestRunStatusT           *RunStatus)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestStatusGet";
+        pcstrmsock pinst;
+        SaHpiDimiTestPercentCompletedT percent;
+        SaHpiDimiTestPercentCompletedT *ppercent = &percent;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (RunStatus == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (PercentCompleted != NULL)
+                ppercent = PercentCompleted;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestStatusGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestStatusGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply2(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, ppercent, RunStatus);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiDimiTestResultsGet(
+	SAHPI_IN    SaHpiSessionIdT          SessionId,
+	SAHPI_IN    SaHpiResourceIdT         ResourceId,
+	SAHPI_IN    SaHpiDimiNumT            DimiNum,
+	SAHPI_IN    SaHpiDimiTestNumT        TestNum,
+	SAHPI_OUT   SaHpiDimiTestResultsT    *TestResults)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiDimiTestResultsGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (TestResults == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiDimiTestResultsGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiDimiTestResultsGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &DimiNum, &TestNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, TestResults);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+/*******************************************************************************
+ *
+ * FUMI Functions
+ *
+ ******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiSourceSet (
+	SAHPI_IN    SaHpiSessionIdT         SessionId,
+	SAHPI_IN    SaHpiResourceIdT        ResourceId,
+	SAHPI_IN    SaHpiFumiNumT           FumiNum,
+	SAHPI_IN    SaHpiBankNumT           BankNum,
+	SAHPI_IN    SaHpiTextBufferT        *SourceUri)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiSourceSet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (SourceUri == NULL || SourceUri->DataType != SAHPI_TL_TYPE_TEXT)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiSourceSet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiSourceSet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest5(hm, request,
+                                &SessionId, &ResourceId, &FumiNum, &BankNum,
+                                SourceUri);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiSourceInfoValidateStart (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiSourceInfoValidateStart";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiSourceInfoValidateStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiSourceInfoValidateStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum, &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiSourceInfoGet (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum,
+	SAHPI_OUT   SaHpiFumiSourceInfoT  *SourceInfo)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiSourceInfoGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (SourceInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiSourceInfoGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiSourceInfoGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum, &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, SourceInfo);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum,
+	SAHPI_OUT   SaHpiFumiBankInfoT    *BankInfo)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiTargetInfoGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (BankInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiTargetInfoGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiTargetInfoGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum, &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, BankInfo);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiBackupStart(
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiBackupStart";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiBackupStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiBackupStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request,
+                                &SessionId, &ResourceId, &FumiNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiBankBootOrderSet (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum,
+	SAHPI_IN    SaHpiUint32T          Position)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiBankBootOrderSet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiBankBootOrderSet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiBankBootOrderSet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest5(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &BankNum, &Position);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiBankCopyStart(
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         SourceBankNum,
+	SAHPI_IN    SaHpiBankNumT         TargetBankNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiBankCopyStart";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiBankCopyStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiBankCopyStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest5(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &SourceBankNum, &TargetBankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiInstallStart (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiInstallStart";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiInstallStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiInstallStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiUpgradeStatusGet (
+	SAHPI_IN    SaHpiSessionIdT         SessionId,
+	SAHPI_IN    SaHpiResourceIdT        ResourceId,
+	SAHPI_IN    SaHpiFumiNumT           FumiNum,
+	SAHPI_IN    SaHpiBankNumT           BankNum,
+	SAHPI_OUT   SaHpiFumiUpgradeStatusT *UpgradeStatus)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiUpgradeStatusGet";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+        if (UpgradeStatus == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiUpgradeStatusGet);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiUpgradeStatusGet, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply1(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err, UpgradeStatus);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiTargetVerifyStart (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiTargetVerifyStart";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiTargetVerifyStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiTargetVerifyStart, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum,
+	SAHPI_IN    SaHpiBankNumT         BankNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiUpgradeCancel";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiUpgradeCancel);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiUpgradeCancel, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest4(hm, request,
+                                &SessionId, &ResourceId, &FumiNum,
+                                &BankNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiRollback (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiRollback";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiRollback);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiRollback, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request,
+                                &SessionId, &ResourceId, &FumiNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
+SaErrorT SAHPI_API saHpiFumiActivate (
+	SAHPI_IN    SaHpiSessionIdT       SessionId,
+	SAHPI_IN    SaHpiResourceIdT      ResourceId,
+	SAHPI_IN    SaHpiFumiNumT         FumiNum)
+{
+        void *request;
+        char reply[dMaxMessageLength];
+        SaErrorT err;
+        char cmd[] = "saHpiFumiActivate";
+        pcstrmsock pinst;
+
+        if (SessionId == 0)
+                return SA_ERR_HPI_INVALID_SESSION;
+        pinst = GetConnx(SessionId);
+        if (pinst == NULL )
+                return SA_ERR_HPI_INVALID_SESSION;
+
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiActivate);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiActivate, hm->m_request_len);
+        request = malloc(hm->m_request_len);
+
+        pinst->header.m_len = HpiMarshalRequest3(hm, request,
+                                &SessionId, &ResourceId, &FumiNum);
+
+        SendRecv(SessionId, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit, hm,
+                                    reply + sizeof(cMessageHeader),
+                                    &err);
+
+        if (request)
+                free(request);
+        if (pinst->header.m_type == eMhError)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if (mr < 0)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        return err;
+}
+
 /*----------------------------------------------------------------------------*/
 /* saHpiHotSwapPolicyCancel                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapPolicyCancel)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId)
+SaErrorT SAHPI_API saHpiHotSwapPolicyCancel(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3780,14 +4567,13 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapPolicyCancel)
 	return err;
 }
 
-
 /*----------------------------------------------------------------------------*/
 /* saHpiResourceActiveSet                                                     */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceActiveSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId)
+SaErrorT SAHPI_API saHpiResourceActiveSet(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3826,9 +4612,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceActiveSet)
 /* saHpiResourceInactiveSet                                                   */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceInactiveSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT       SessionId,
-                             SAHPI_IN SaHpiResourceIdT      ResourceId)
+SaErrorT SAHPI_API saHpiResourceInactiveSet(
+	SAHPI_IN SaHpiSessionIdT       SessionId,
+	SAHPI_IN SaHpiResourceIdT      ResourceId)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3867,9 +4653,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceInactiveSet)
 /* saHpiAutoInsertTimeoutGet                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AutoInsertTimeoutGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_OUT SaHpiTimeoutT  *Timeout)
+SaErrorT SAHPI_API saHpiAutoInsertTimeoutGet(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_OUT SaHpiTimeoutT  *Timeout)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3910,9 +4696,9 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AutoInsertTimeoutGet)
 /* saHpiAutoInsertTimeoutSet                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AutoInsertTimeoutSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId,
-                             SAHPI_IN SaHpiTimeoutT   Timeout)
+SaErrorT SAHPI_API saHpiAutoInsertTimeoutSet(
+	SAHPI_IN SaHpiSessionIdT SessionId,
+	SAHPI_IN SaHpiTimeoutT   Timeout)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3955,10 +4741,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AutoInsertTimeoutSet)
 /* saHpiAutoExtractGet                                                        */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AutoExtractTimeoutGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiTimeoutT   *Timeout)
+SaErrorT SAHPI_API saHpiAutoExtractTimeoutGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiTimeoutT   *Timeout)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -3999,10 +4785,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AutoExtractTimeoutGet)
 /* saHpiAutoExtractTimeoutSet                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(AutoExtractTimeoutSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiTimeoutT    Timeout)
+SaErrorT SAHPI_API saHpiAutoExtractTimeoutSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiTimeoutT    Timeout)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4045,10 +4831,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(AutoExtractTimeoutSet)
 /* saHpiHotSwapStateGet                                                       */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapStateGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiHsStateT   *State)
+SaErrorT SAHPI_API saHpiHotSwapStateGet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiHsStateT   *State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4089,10 +4875,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapStateGet)
 /* saHpiHotSwapActionRequest                                                  */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapActionRequest)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiHsActionT   Action)
+SaErrorT SAHPI_API saHpiHotSwapActionRequest(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiHsActionT   Action)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4133,10 +4919,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapActionRequest)
 /* saHpiHotSwapIndicatorStateGet                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapIndicatorStateGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT         SessionId,
-                             SAHPI_IN SaHpiResourceIdT        ResourceId,
-                             SAHPI_OUT SaHpiHsIndicatorStateT *State)
+SaErrorT SAHPI_API saHpiHotSwapIndicatorStateGet(
+	SAHPI_IN SaHpiSessionIdT         SessionId,
+	SAHPI_IN SaHpiResourceIdT        ResourceId,
+	SAHPI_OUT SaHpiHsIndicatorStateT *State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4177,10 +4963,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapIndicatorStateGet)
 /* saHpiHotSwapIndicatorStateSet                                              */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapIndicatorStateSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT        SessionId,
-                             SAHPI_IN SaHpiResourceIdT       ResourceId,
-                             SAHPI_IN SaHpiHsIndicatorStateT State)
+SaErrorT SAHPI_API saHpiHotSwapIndicatorStateSet(
+	SAHPI_IN SaHpiSessionIdT        SessionId,
+	SAHPI_IN SaHpiResourceIdT       ResourceId,
+	SAHPI_IN SaHpiHsIndicatorStateT State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4221,10 +5007,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(HotSwapIndicatorStateSet)
 /* saHpiParmControl                                                           */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ParmControl)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiParmActionT Action)
+SaErrorT SAHPI_API saHpiParmControl(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiParmActionT Action)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4265,10 +5051,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ParmControl)
 /* saHpiResourceLoadIdGet                                                     */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdGet)
-        dOpenHpiClientParam (SAHPI_IN  SaHpiSessionIdT  SessionId,
-                             SAHPI_IN  SaHpiResourceIdT ResourceId,
-                             SAHPI_OUT SaHpiLoadIdT *LoadId)
+SaErrorT SAHPI_API saHpiResourceLoadIdGet(
+	SAHPI_IN  SaHpiSessionIdT  SessionId,
+	SAHPI_IN  SaHpiResourceIdT ResourceId,
+	SAHPI_OUT SaHpiLoadIdT *LoadId)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -4309,10 +5095,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdGet)
 /* saHpiResourceLoadIdSet                                                     */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdSet)
-        dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiLoadIdT *LoadId)
+SaErrorT SAHPI_API saHpiResourceLoadIdSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiLoadIdT *LoadId)
 {
         void *request;
         char reply[dMaxMessageLength];
@@ -4355,10 +5141,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceLoadIdSet)
 /* saHpiResourceResetStateGet                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceResetStateGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT    SessionId,
-                             SAHPI_IN SaHpiResourceIdT   ResourceId,
-                             SAHPI_OUT SaHpiResetActionT *Action)
+SaErrorT SAHPI_API saHpiResourceResetStateGet(
+	SAHPI_IN SaHpiSessionIdT    SessionId,
+	SAHPI_IN SaHpiResourceIdT   ResourceId,
+	SAHPI_OUT SaHpiResetActionT *Action)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4399,10 +5185,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceResetStateGet)
 /* saHpiResourceResetStateSet                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceResetStateSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_IN SaHpiResetActionT Action)
+SaErrorT SAHPI_API saHpiResourceResetStateSet(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_IN SaHpiResetActionT Action)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4443,10 +5229,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourceResetStateSet)
 /* saHpiResourcePowerStateGet                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourcePowerStateGet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT   SessionId,
-                             SAHPI_IN SaHpiResourceIdT  ResourceId,
-                             SAHPI_OUT SaHpiPowerStateT *State)
+SaErrorT SAHPI_API saHpiResourcePowerStateGet(
+	SAHPI_IN SaHpiSessionIdT   SessionId,
+	SAHPI_IN SaHpiResourceIdT  ResourceId,
+	SAHPI_OUT SaHpiPowerStateT *State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4487,10 +5273,10 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourcePowerStateGet)
 /* saHpiResourcePowerStateSet                                                 */
 /*----------------------------------------------------------------------------*/
 
-SaErrorT SAHPI_API dOpenHpiClientFunction(ResourcePowerStateSet)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT  SessionId,
-                             SAHPI_IN SaHpiResourceIdT ResourceId,
-                             SAHPI_IN SaHpiPowerStateT State)
+SaErrorT SAHPI_API saHpiResourcePowerStateSet(
+	SAHPI_IN SaHpiSessionIdT  SessionId,
+	SAHPI_IN SaHpiResourceIdT ResourceId,
+	SAHPI_IN SaHpiPowerStateT State)
 {
         void *request;
 	char reply[dMaxMessageLength];
@@ -4525,6 +5311,40 @@ SaErrorT SAHPI_API dOpenHpiClientFunction(ResourcePowerStateSet)
 
 	return err;
 }
+
+/*----------------------------------------------------------------------------*/
+/* oHpiVersionGet                                                             */
+/*----------------------------------------------------------------------------*/
+
+SaHpiUint64T SAHPI_API oHpiVersionGet(void)
+{
+        void *request = NULL;
+        char reply[dMaxMessageLength];
+        SaHpiUint64T ver;
+        char cmd[] = "oHpiVersionGet";
+        pcstrmsock pinst = CreateConnx();
+
+        if (pinst == NULL) {
+                cdebug_err(cmd, "Could not create client connection");
+                return SA_ERR_HPI_NO_RESPONSE;
+        }
+
+        cHpiMarshal *hm = HpiMarshalFind(eFoHpiVersionGet);
+
+        pinst->MessageHeaderInit(eMhMsg, 0, eFoHpiVersionGet, 0);
+
+        SendRecv(0, cmd);
+
+        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit,
+                                    hm, reply + sizeof(cMessageHeader), &ver);
+
+        DeleteConnx(pinst);
+        if (mr < 0)
+                ver = 0;
+
+        return ver;
+}
+
 
 /*----------------------------------------------------------------------------*/
 /* oHpiHandlerCreate                                                          */

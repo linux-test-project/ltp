@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 		/* oh_decode_manufacturerid: SAHPI_MANUFACTURER_ID_UNSPECIFIED testcase */
 		SaHpiManufacturerIdT mid;	
 
-		expected_str = "UNSPECIFIED Manufacturer";
+		expected_str = "Unspecified";
 		mid = SAHPI_MANUFACTURER_ID_UNSPECIFIED;
 
 		err = oh_decode_manufacturerid(mid, &buffer); 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
                 }
 		
 		/* oh_decode_manufacturerid: Undefined manufacturer testcase */
-		expected_str = "Unknown Manufacturer";
+		expected_str = "Unknown";
 		mid = UNDEFINED_MANUFACTURER;
 
 		err = oh_decode_manufacturerid(mid, &buffer);

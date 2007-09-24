@@ -8,13 +8,13 @@
 %define _srcrpmdir %{_rpmtopdir}/SRPMS
 
 %define with_ipmi 1
-%define with_bladecenter 1
+%define with_bladecenter 0
 %define with_rtas 0
 %define with_sysfs 1
 
 
 Name: openhpi
-Version: 2.9.3
+Version: 2.10.0
 Release: 2
 #
 Summary: Open implementation of the SAF Hardware Platform Interface

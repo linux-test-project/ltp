@@ -13,6 +13,7 @@
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com.com>
+ *     Renier Morales <renier@openhpi.org>
  */
 
 #include "marshal_hpi.h"
@@ -1126,7 +1127,7 @@ static const cMarshalType *saHpiAnnunciatorModeSetOut[] =
   0
 };
 
-
+// DIMIs
 static const cMarshalType *saHpiDimiInfoGetIn[] =
 {
   &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
@@ -1143,6 +1144,286 @@ static const cMarshalType *saHpiDimiInfoGetOut[] =
 };
 
 
+static const cMarshalType *saHpiDimiTestInfoGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiDimiNumType,
+  &SaHpiDimiTestNumType,
+  0
+};
+
+static const cMarshalType *saHpiDimiTestInfoGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiDimiTestType,
+  0
+};
+
+static const cMarshalType *saHpiDimiTestReadinessGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  &SaHpiDimiNumType,
+  &SaHpiDimiTestNumType,
+  0
+};
+
+static const cMarshalType *saHpiDimiTestReadinessGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiDimiReadyType,
+  0
+};
+
+static const cMarshalType *saHpiDimiTestStartIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiDimiNumType,
+        &SaHpiDimiTestNumType,
+        &SaHpiDimiTestVariableParamsListType,
+        0
+};
+static const cMarshalType *saHpiDimiTestStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiDimiTestCancelIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiDimiNumType,
+        &SaHpiDimiTestNumType,
+        0
+};
+static const cMarshalType *saHpiDimiTestCancelOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiDimiTestStatusGetIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiDimiNumType,
+        &SaHpiDimiTestNumType,
+        0
+};
+static const cMarshalType *saHpiDimiTestStatusGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiDimiTestPercentCompletedType,
+        &SaHpiDimiTestRunStatusType,
+        0
+};
+
+static const cMarshalType *saHpiDimiTestResultsGetIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiDimiNumType,
+        &SaHpiDimiTestNumType,
+        0
+};
+static const cMarshalType *saHpiDimiTestResultsGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiDimiTestResultsType,
+        0
+};
+
+// FUMIs
+static const cMarshalType *saHpiFumiSourceSetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+	&SaHpiTextBufferType,
+        0
+};
+static const cMarshalType *saHpiFumiSourceSetOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiSourceInfoValidateStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiSourceInfoValidateStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiSourceInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiSourceInfoGetOut[] =
+{
+        &SaErrorType,
+	&SaHpiFumiSourceInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiTargetInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiTargetInfoGetOut[] =
+{
+        &SaErrorType,
+	&SaHpiFumiBankInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiBackupStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiBackupStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiBankBootOrderSetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+	&SaHpiUint32Type,
+        0
+};
+static const cMarshalType *saHpiFumiBankBootOrderSetOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiBankCopyStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiBankCopyStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiInstallStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiInstallStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiUpgradeStatusGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiUpgradeStatusGetOut[] =
+{
+        &SaErrorType,
+	&SaHpiFumiUpgradeStatusType,
+        0
+};
+
+static const cMarshalType *saHpiFumiTargetVerifyStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiTargetVerifyStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiUpgradeCancelIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiUpgradeCancelOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiRollbackIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiRollbackOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+static const cMarshalType *saHpiFumiActivateIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiActivateOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+
+// Hotswap
 static const cMarshalType *saHpiHotSwapPolicyCancelIn[] =
 {
   &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
@@ -1407,6 +1688,16 @@ static const cMarshalType *saHpiResourcePowerStateSetOut[] =
   0
 };
 
+static const cMarshalType *oHpiVersionGetIn[] =
+{
+        0
+};
+static const cMarshalType *oHpiVersionGetOut[] =
+{
+        &SaHpiUint64Type,
+        0
+};
+
 static const cMarshalType *oHpiHandlerCreateInitIn[] =
 {
   &SaErrorType, // dummy entry
@@ -1630,6 +1921,25 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiAnnunciatorModeGet ),
   dHpiMarshalEntry( saHpiAnnunciatorModeSet ),
   dHpiMarshalEntry( saHpiDimiInfoGet ),
+  dHpiMarshalEntry( saHpiDimiTestInfoGet ),
+  dHpiMarshalEntry( saHpiDimiTestReadinessGet ),
+  dHpiMarshalEntry( saHpiDimiTestStart ),
+  dHpiMarshalEntry( saHpiDimiTestCancel ),
+  dHpiMarshalEntry( saHpiDimiTestStatusGet ),
+  dHpiMarshalEntry( saHpiDimiTestResultsGet ),
+  dHpiMarshalEntry( saHpiFumiSourceSet ),
+  dHpiMarshalEntry( saHpiFumiSourceInfoValidateStart ),
+  dHpiMarshalEntry( saHpiFumiSourceInfoGet ),
+  dHpiMarshalEntry( saHpiFumiTargetInfoGet ),
+  dHpiMarshalEntry( saHpiFumiBackupStart ),
+  dHpiMarshalEntry( saHpiFumiBankBootOrderSet ),
+  dHpiMarshalEntry( saHpiFumiBankCopyStart ),
+  dHpiMarshalEntry( saHpiFumiInstallStart ),
+  dHpiMarshalEntry( saHpiFumiUpgradeStatusGet ),
+  dHpiMarshalEntry( saHpiFumiTargetVerifyStart ),
+  dHpiMarshalEntry( saHpiFumiUpgradeCancel ),
+  dHpiMarshalEntry( saHpiFumiRollback ),
+  dHpiMarshalEntry( saHpiFumiActivate ),
   dHpiMarshalEntry( saHpiHotSwapPolicyCancel ),
   dHpiMarshalEntry( saHpiResourceActiveSet ),
   dHpiMarshalEntry( saHpiResourceInactiveSet ),
@@ -1648,6 +1958,7 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiResourceResetStateSet ),
   dHpiMarshalEntry( saHpiResourcePowerStateGet ),
   dHpiMarshalEntry( saHpiResourcePowerStateSet ),
+  dHpiMarshalEntry( oHpiVersionGet ),
   dHpiMarshalEntry( oHpiHandlerCreateInit ),
   dHpiMarshalEntry( oHpiHandlerCreateAddTEntry ),
   dHpiMarshalEntry( oHpiHandlerCreate ),

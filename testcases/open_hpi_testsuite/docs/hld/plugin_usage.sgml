@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: plugin_usage.sgml,v 1.4 2007/08/29 09:28:38 subrata_modak Exp $ ........................................ -->
+<!-- $Id: plugin_usage.sgml,v 1.5 2007/09/24 09:11:56 subrata_modak Exp $ ........................................ -->
 <!-- 
         (C) Copyright IBM Corp. 2003
         (C) Copyright FORCE Computers 2004
@@ -21,7 +21,7 @@
 -->
 
   <chapter>
-  <title>OpenHPI Plugin Usage<anchor id="plugin_usage"></title>
+  <title>OpenHPI Plugin Usage<anchor id="plugin-usage"></title>
   <para>
     This chapter is an overview of the existing plugins for OpenHPI,
     and how one needs to configured them for usage.  It is expected

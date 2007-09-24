@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: testconformance.pl,v 1.2 2007/08/29 09:28:41 subrata_modak Exp $
+#       $Id: testconformance.pl,v 1.3 2007/09/24 09:12:03 subrata_modak Exp $
 
 #  (C) Copyright IBM Corp. 2004
 

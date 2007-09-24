@@ -128,6 +128,8 @@ static void *watchdog_open(GHashTable *handler_config,
         wdt = malloc(sizeof(*wdt));
         if (!wdt) {
                 dbg("unable to allocate wdtitems structure");
+                free(hnd->rptcache);
+                free(hnd);	
                 return NULL;
         }
         memset(wdt, '\0', sizeof(*wdt));
@@ -168,6 +170,8 @@ static void watchdog_close(void *hnd)
 		close(wdt->fd);
 	}
 
+	free(tmp->data);
+	free(tmp->rptcache);
 	free(tmp);
 
 	return;

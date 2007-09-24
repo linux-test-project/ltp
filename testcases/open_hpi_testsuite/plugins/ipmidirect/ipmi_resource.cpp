@@ -160,7 +160,7 @@ cIpmiResource::Create( SaHpiRptEntryT &entry )
             }
 
         // Reset supported on ATCA FRUs - Don't allow it on fru #0 of the active ShMC
-        if ( m_mc->IsAtcaBoard() )
+        if ( m_mc->IsTcaMc() )
            {
                 if (!( (m_mc->GetAddress() == dIpmiBmcSlaveAddr) && (m_fru_id == 0) ))
                 {

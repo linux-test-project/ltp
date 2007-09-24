@@ -829,6 +829,44 @@ int oh_load_plugin_functions(struct oh_plugin *plugin, struct oh_abi_v2 **abi)
                                                 "oh_set_annunc_mode");
 	(*abi)->get_dimi_info		  = lt_dlsym(plugin->dl_handle,
 						"oh_get_dimi_info");
+        (*abi)->get_dimi_test             = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_dimi_test");
+        (*abi)->get_dimi_test_ready       = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_dimi_test_ready");
+        (*abi)->start_dimi_test           = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_dimi_test");
+        (*abi)->cancel_dimi_test          = lt_dlsym(plugin->dl_handle,
+                                                "oh_cancel_dimi_test");
+        (*abi)->get_dimi_test_status      = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_dimi_test_status");
+        (*abi)->get_dimi_test_results     = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_dimi_test_results");
+        (*abi)->set_fumi_source           = lt_dlsym(plugin->dl_handle,
+                                                "oh_set_fumi_source");
+        (*abi)->validate_fumi_source      = lt_dlsym(plugin->dl_handle,
+                                                "oh_validate_fumi_source");
+        (*abi)->get_fumi_source           = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_source");
+        (*abi)->get_fumi_target           = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_target");
+        (*abi)->start_fumi_backup         = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_backup");
+        (*abi)->set_fumi_bank_order       = lt_dlsym(plugin->dl_handle,
+                                                "oh_set_fumi_bank_order");
+        (*abi)->start_fumi_bank_copy      = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_bank_copy");
+        (*abi)->start_fumi_install        = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_install");
+        (*abi)->get_fumi_status           = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_status");
+        (*abi)->start_fumi_verify         = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_verify");
+        (*abi)->cancel_fumi_upgrade       = lt_dlsym(plugin->dl_handle,
+                                                "oh_cancel_fumi_upgrade");
+        (*abi)->rollback_fumi             = lt_dlsym(plugin->dl_handle,
+                                                "oh_rollback_fumi");
+        (*abi)->activate_fumi             = lt_dlsym(plugin->dl_handle,
+                                                "oh_activate_fumi");
         (*abi)->hotswap_policy_cancel     = lt_dlsym(plugin->dl_handle,
                                                 "oh_hotswap_policy_cancel");
         (*abi)->get_hotswap_state         = lt_dlsym(plugin->dl_handle,

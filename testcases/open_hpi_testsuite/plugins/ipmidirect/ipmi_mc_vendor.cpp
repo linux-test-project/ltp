@@ -514,6 +514,44 @@ cIpmiMcVendor::CreateEntityPath( cIpmiDomain *domain, unsigned int mc_addr, unsi
   if ( instance >= 0x60 )
        instance -= 0x60;
 
+  switch (type)
+  {
+    default:
+        break;
+
+    case eIpmiEntityIdPicMgFrontBoard:
+        type = SaHpiEntityTypeT(ATCAHPI_ENT_PICMG_FRONT_BLADE);
+        break;
+
+    case eIpmiEntityIdPicMgRearTransitionModule:
+        type = SAHPI_ENT_BACK_PANEL_BOARD;
+        break;
+
+    case eIpmiEntityIdPicMgAdvancedMcModule:
+        type = SaHpiEntityTypeT(ATCAHPI_ENT_AMC);
+        break;
+
+    case eIpmiEntityIdPicMgMicroTcaCarrierHub:
+        type = SAHPI_ENT_SWITCH_BLADE;
+        break;
+
+    case eIpmiEntityIdPicmgShelfManager:
+        type = SAHPI_ENT_SHELF_MANAGER;
+        break;
+
+    case eIpmiEntityIdPicmgFiltrationUnit:
+        type = SaHpiEntityTypeT(ATCAHPI_ENT_FILTRATION_UNIT);
+        break;
+
+    case eIpmiEntityIdPicmgShelfFruInformation:
+        type = SaHpiEntityTypeT(ATCAHPI_ENT_SHELF_FRU_DEVICE);
+        break;
+
+    case eIpmiEntityIdPicmgAlarmPanel:
+        type = SAHPI_ENT_ALARM_MANAGER;
+        break;
+  }
+
   bottom.SetEntry( 0, type, instance );
   bottom.AppendRoot( 1 );
 
@@ -860,7 +898,7 @@ cIpmiMcVendor::CreateControls( cIpmiDomain *domain, cIpmiMc *source_mc,
   if ( source_mc == 0 )
        return true;
 
-  if ( source_mc->IsAtcaBoard() )
+  if ( source_mc->IsTcaMc() )
      {
        return CreateControlsAtca( domain, source_mc, sdrs );
      }

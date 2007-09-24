@@ -85,7 +85,10 @@ ret_code_t ask_rdr(SaHpiResourceIdT rptid, SaHpiRdrTypeT type, SaHpiInstrumentId
 {
 	term_def_t	*term;
 	int		i, res;
+	char            buf[64];
 
+	strncpy(buf, oh_lookup_rdrtype(type), 64);
+	strncat(buf + strlen(buf), " NUM ==> ", 64-strlen(buf));
 	term = get_next_term();
 	if (term == NULL) {
 		if (read_file) return(HPI_SHELL_CMD_ERROR);
@@ -94,7 +97,7 @@ ret_code_t ask_rdr(SaHpiResourceIdT rptid, SaHpiRdrTypeT type, SaHpiInstrumentId
 			printf("No rdrs for rpt: %d\n", rptid);
 			return(HPI_SHELL_CMD_ERROR);
 		};
-		i = get_int_param("RDR NUM ==> ", &res);
+		i = get_int_param(buf, &res);
 		if (i != 1) return(HPI_SHELL_PARM_ERROR);
 		*ret = (SaHpiInstrumentIdT)res;
 	} else {

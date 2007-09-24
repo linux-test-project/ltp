@@ -1,5 +1,5 @@
 <!-- ...................................................................... -->
-<!-- $Id: plugin_guide.sgml,v 1.4 2007/08/29 09:28:38 subrata_modak Exp $ ........................................ -->
+<!-- $Id: plugin_guide.sgml,v 1.5 2007/09/24 09:11:56 subrata_modak Exp $ ........................................ -->
 <!-- 
         (C) Copyright Intel Corporation. 2003
  
@@ -373,10 +373,10 @@ int get_interface(void **pp, uuid_t uuid)
    <sect1>
 
     <title>OpenHPI internal helper utility interfaces</title>
-    <sect2><title>SNMP Utilities</title>&snmp_util;</sect2>
-    <sect2><title>RPT Utilities</title>&rpt_utils;</sect2>
-    <sect2><title>Entity Path Utilities</title>&epath_utils;</sect2>
-    <sect2><title>Resource UID Utilities</title>&uid_utils;</sect2>
+    <sect2><title>SNMP Utilities</title>&snmp-util;</sect2>
+    <sect2><title>RPT Utilities</title>&rpt-utils;</sect2>
+    <sect2><title>Entity Path Utilities</title>&epath-utils;</sect2>
+    <sect2><title>Resource UID Utilities</title>&uid-utils;</sect2>
 	
    </sect1>
 

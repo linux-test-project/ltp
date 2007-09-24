@@ -241,7 +241,7 @@ bool cstrmsock::Open(
         // convert the host entry/name to an address
 	phe = gethostbyname(pszHost);
 	if (phe)
-		bcopy(phe -> h_addr, (char *) &addr.sin_addr, phe -> h_length);
+		memcpy((char *) &addr.sin_addr, phe -> h_addr, phe -> h_length);
 	else
 		addr.sin_addr.s_addr = inet_addr(pszHost);
 	if (addr.sin_addr.s_addr == INADDR_NONE) {

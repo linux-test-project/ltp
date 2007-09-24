@@ -105,7 +105,7 @@ static SaErrorT harvest_events_for_handler(struct oh_handler *h)
 {
         SaErrorT error = SA_OK;
 
-	if (!h->hnd) return SA_OK;
+	if (!h->hnd || !h->abi->get_event) return SA_OK;
 
         do {
                 error = h->abi->get_event(h->hnd);
@@ -330,10 +330,10 @@ static int process_event(SaHpiDomainIdT did,
                              SAHPI_CAPABILITY_RESOURCE)) {
                         dbg("Resource event with invalid capabilities. Dropping.");
                         break;
-                } else if (e->resource.ResourceCapabilities
-                           & SAHPI_CAPABILITY_FRU) {
-                        dbg("Invalid event. Resource in resource event "
-                                "has FRU capability. Dropping.");
+                } else if ((e->resource.ResourceCapabilities & SAHPI_CAPABILITY_FRU) &&
+			   (e->event.EventDataUnion.ResourceEvent.ResourceEventType == SAHPI_RESE_RESOURCE_ADDED)) {
+                        dbg("Invalid event. Resource in resource added event "
+                            "has FRU capability. Dropping.");
                 } else {
                         process_resource_event(d, e);
                 }

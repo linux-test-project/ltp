@@ -67,6 +67,7 @@ int	termfd = -1;
 
 static char	clear_buf[READ_BUF_SIZE];
 static int	no_stty = 1;
+static struct termios saved_termio;
 static int	is_insert_key = 0;
 static char	**History;
 static int	hist_ind = 0;
@@ -374,14 +375,17 @@ static int set_term_flags(void)
 		printf("Can not open terminal\n");
 		return(1);
 	};
-	c = tcgetattr(termfd, &termio);
+	c = tcgetattr(termfd, &saved_termio);
 	if (c != 0) {
 		printf("Can not read terminal attrs\n");
 		return(1);
 	};
+	termio = saved_termio;
 	c = ICANON | ECHO | ECHOCTL;
 	c = ~c;
 	termio.c_lflag &= c;
+	termio.c_cc[VMIN] = 1;
+	termio.c_cc[VTIME] = 0;
 	res = tcsetattr(termfd, TCSANOW, &termio);
 	no_stty = 0;
 	return(0);
@@ -389,15 +393,8 @@ static int set_term_flags(void)
 
 void restore_term_flags(void)
 {
-	int		c;
-	struct termios	termio;
-
 	if (no_stty) return;
-	c = tcgetattr(termfd, &termio);
-	if (c != 0) return;
-	c = ICANON | ECHO | ECHOCTL;
-	termio.c_lflag |= c;
-	tcsetattr(termfd, TCSANOW, &termio);
+	tcsetattr(termfd, TCSANOW, &saved_termio);
 	no_stty = 1;
 }
 

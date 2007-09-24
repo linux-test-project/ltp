@@ -16,6 +16,10 @@
  *     Pierre Sangouard  <psangouard@eso-tech.com>
  */
 
+extern "C" {
+#include "SaHpiAtca.h"
+}
+
 #include <assert.h>
 #include "ipmi_fru_info.h"
 
@@ -26,18 +30,20 @@ MapAtcaSiteTypeToEntity( tIpmiAtcaSiteType type )
   static SaHpiEntityTypeT et[] = 
   {
     SAHPI_ENT_PHYSICAL_SLOT,
-    SAHPI_ENT_POWER_SUPPLY,
-    SAHPI_ENT_EXTERNAL_ENVIRONMENT,
-    SAHPI_ENT_SHELF_MANAGER,
-    SAHPI_ENT_COOLING_UNIT,
-    SAHPI_ENT_CHASSIS_SPECIFIC,
-    (SaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC+1),
-    (SaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC+2),
-    (SaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC+3),
-    (SaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC+4)
+    SaHpiEntityTypeT(ATCAHPI_ENT_POWER_ENTRY_MODULE_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_SHELF_FRU_DEVICE_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_SHELF_MANAGER_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_FAN_TRAY_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_FAN_FILTER_TRAY_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_ALARM_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_AMC_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_PMC_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_RTM_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_SHELF_MANAGER_SLOT),
+    SaHpiEntityTypeT(ATCAHPI_ENT_POWER_ENTRY_MODULE_SLOT)
   };
 
-  if ( type > eIpmiAtcaSiteTypeRearTransitionModule )
+  if ( type >= eIpmiAtcaSiteTypeUnknown )
      {
        return SAHPI_ENT_UNKNOWN;
      }

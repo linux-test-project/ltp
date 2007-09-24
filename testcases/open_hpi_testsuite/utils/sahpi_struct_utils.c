@@ -96,7 +96,7 @@ SaErrorT oh_decode_manufacturerid(SaHpiManufacturerIdT value, SaHpiTextBufferT *
 
         switch(value) {
         case SAHPI_MANUFACTURER_ID_UNSPECIFIED:
-                err = oh_append_textbuffer(&working, "UNSPECIFIED Manufacturer");
+                err = oh_append_textbuffer(&working, "Unspecified");
                 if (err) { return(err); }
                 break;
         case 2:		/* 2 is IANA number */
@@ -108,8 +108,244 @@ SaErrorT oh_decode_manufacturerid(SaHpiManufacturerIdT value, SaHpiTextBufferT *
                 err = oh_append_textbuffer(&working,"PICMG");
                 if (err) { return(err); }
                 break;
+        case 11:
+                err = oh_append_textbuffer(&working, "Hewlett-Packard");
+                if (err) { return(err); }
+                break;
+        case 42:
+                err = oh_append_textbuffer(&working, "Sun Microsystems");
+                if (err) { return(err); }
+                break;
+        case 161:
+                err = oh_append_textbuffer(&working, "Motorola");
+                if (err) { return(err); }
+                break;
+        case 185:
+                err = oh_append_textbuffer(&working, "Interphase");
+                if (err) { return(err); }
+                break;
+        case 343:
+                err = oh_append_textbuffer(&working, "Intel Corporation");
+                if (err) { return(err); }
+                break;
+        case 398:
+                err = oh_append_textbuffer(&working, "Tyco Electronics");
+                if (err) { return(err); }
+                break;
+        case 688:
+                err = oh_append_textbuffer(&working, "Znyx Advanced Systems Division, Inc.");
+                if (err) { return(err); }
+                break;
+        case 912:
+                err = oh_append_textbuffer(&working, "Adax Inc.");
+                if (err) { return(err); }
+                break;
+        case 1458:
+                err = oh_append_textbuffer(&working, "AMCC");
+                if (err) { return(err); }
+                break;
+        case 1556:
+                err = oh_append_textbuffer(&working, "Performance Technologies, Inc.");
+                if (err) { return(err); }
+                break;
+        case 2012:
+                err = oh_append_textbuffer(&working, "Schroff GmbH");
+                if (err) { return(err); }
+                break;
+        case 2537:
+                err = oh_append_textbuffer(&working, "Diversified Technology, Inc.");
+                if (err) { return(err); }
+                break;
+        case 2606:
+                err = oh_append_textbuffer(&working, "Rittal-Werk Rudolf Loh GmbH & Co.KG");
+                if (err) { return(err); }
+                break;
+        case 2628:
+                err = oh_append_textbuffer(&working, "Natural MicroSystems");
+                if (err) { return(err); }
+                break;
+        case 3028:
+                err = oh_append_textbuffer(&working, "Dialogic Corporation");
+                if (err) { return(err); }
+                break;
+        case 3442:
+                err = oh_append_textbuffer(&working, "Advantech Inc.");
+                if (err) { return(err); }
+                break;
+        case 4127:
+                err = oh_append_textbuffer(&working, "Mercury Computer Systems");
+                if (err) { return(err); }
+                break;
+        case 4337:
+                err = oh_append_textbuffer(&working, "RadiSys Corporation");
+                if (err) { return(err); }
+                break;
+        case 6629:
+                err = oh_append_textbuffer(&working, "Ulticom");
+                if (err) { return(err); }
+                break;
+        case 7994:
+                err = oh_append_textbuffer(&working, "Continuous Computing Corp.");
+                if (err) { return(err); }
+                break;
+        case 8337:
+                err = oh_append_textbuffer(&working, "Hybricon Corp");
+                if (err) { return(err); }
+                break;
+        case 10297:
+                err = oh_append_textbuffer(&working, "Advantech Co., Ltd.");
+                if (err) { return(err); }
+                break;
+        case 10520:
+                err = oh_append_textbuffer(&working, "Tyco Electronics Power Systems");
+                if (err) { return(err); }
+                break;
+        case 10728:
+                err = oh_append_textbuffer(&working, "Redline Communications Inc.");
+                if (err) { return(err); }
+                break;
+        case 13400:
+                err = oh_append_textbuffer(&working, "Emerson Network Power");
+                if (err) { return(err); }
+                break;
+        case 13427:
+                err = oh_append_textbuffer(&working, "Artesyn Technologies");
+                if (err) { return(err); }
+                break;
+        case 15000:
+                err = oh_append_textbuffer(&working, "Kontron Canada Inc");
+                if (err) { return(err); }
+                break;
+        case 15563:
+                err = oh_append_textbuffer(&working, "Adtron");
+                if (err) { return(err); }
+                break;
+        case 16394:
+                err = oh_append_textbuffer(&working, "Pigeon Point Systems");
+                if (err) { return(err); }
+                break;
+        case 16446:
+                err = oh_append_textbuffer(&working, "Adlink");
+                if (err) { return(err); }
+                break;
+        case 18765:
+                err = oh_append_textbuffer(&working, "Comtel Electronics GmbH");
+                if (err) { return(err); }
+                break;
+        case 19911:
+                err = oh_append_textbuffer(&working, "Global Velocity Inc.");
+                if (err) { return(err); }
+                break;
+        case 20974:
+                err = oh_append_textbuffer(&working, "American Megatrends, Inc");
+                if (err) { return(err); }
+                break;
+        case 22341:
+                err = oh_append_textbuffer(&working, "ESO Technologies");
+                if (err) { return(err); }
+                break;
+        case 23858:
+                err = oh_append_textbuffer(&working, "VadaTech Inc.");
+                if (err) { return(err); }
+                break;
+        case 24632:
+                err = oh_append_textbuffer(&working, "CorEdge Networks");
+                if (err) { return(err); }
+                break;
+        case 25635:
+                err = oh_append_textbuffer(&working, "Carlo Gavazzi Computing Solutions");
+                if (err) { return(err); }
+                break;
+        case 26609:
+                err = oh_append_textbuffer(&working, "Pentair Electronic Packaging");
+                if (err) { return(err); }
+                break;
+        case 24893:
+                err = oh_append_textbuffer(&working, "GE Fanuc Embedded Systems");
+                if (err) { return(err); }
+                break;
+        case 26061:
+                err = oh_append_textbuffer(&working, "Artesyn Communication Products Ltd");
+                if (err) { return(err); }
+                break;
+        case 26655:
+                err = oh_append_textbuffer(&working, "Advantech Co., Ltd");
+                if (err) { return(err); }
+                break;
+        case 27317:
+                err = oh_append_textbuffer(&working, "Extreme Engineering Solutions, Inc");
+                if (err) { return(err); }
+                break;
+        case 27768:
+                err = oh_append_textbuffer(&working, "Gesellschaft für Netzwerk- und Automatisierungs-Technologie GmbH");
+                if (err) { return(err); }
+                break;
+        case 29333:
+                err = oh_append_textbuffer(&working, "JBlade LLC");
+                if (err) { return(err); }
+                break;
+        case 186:
+                err = oh_append_textbuffer(&working, "Toshiba");
+                if (err) { return(err); }
+                break;
+        case 116:
+                err = oh_append_textbuffer(&working, "Hitachi");
+                if (err) { return(err); }
+                break;
+        case 399:
+                err = oh_append_textbuffer(&working, "Hitachi");
+                if (err) { return(err); }
+                break;
+        case 119:
+                err = oh_append_textbuffer(&working, "NEC");
+                if (err) { return(err); }
+                break;
+        case 373:
+                err = oh_append_textbuffer(&working, "Tatung");
+                if (err) { return(err); }
+                break;
+        case 802:
+                err = oh_append_textbuffer(&working, "National Semiconductor");
+                if (err) { return(err); }
+                break;
+        case 674:
+                err = oh_append_textbuffer(&working, "Dell");
+                if (err) { return(err); }
+                break;
+        case 2168:
+                err = oh_append_textbuffer(&working, "LMC");
+                if (err) { return(err); }
+                break;
+        case 6653:
+                err = oh_append_textbuffer(&working, "Tyan");
+                if (err) { return(err); }
+                break;
+        case 10368:
+                err = oh_append_textbuffer(&working, "Fujitsu-Siemens");
+                if (err) { return(err); }
+                break;
+        case 10876:
+                err = oh_append_textbuffer(&working, "SuperMicro");
+                if (err) { return(err); }
+                break;
+        case 13742:
+                err = oh_append_textbuffer(&working, "Raritan");
+                if (err) { return(err); }
+                break;
+        case 10437:
+                err = oh_append_textbuffer(&working, "Peppercon");
+                if (err) { return(err); }
+                break;
+        case 10418:
+                err = oh_append_textbuffer(&working, "Avocent");
+                if (err) { return(err); }
+                break;
+        case 11102:
+                err = oh_append_textbuffer(&working, "OSA");
+                if (err) { return(err); }
+                break;
         default:
-                err = oh_append_textbuffer(&working,  "Unknown Manufacturer");
+                err = oh_append_textbuffer(&working,  "Unknown");
                 if (err) { return(err); }
         }
 

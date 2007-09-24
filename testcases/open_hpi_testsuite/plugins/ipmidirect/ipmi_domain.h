@@ -122,11 +122,11 @@ public:
     return m_con->LogLevel( v );
   }
 
-  // true => ATCA
-  bool           m_is_atca;
+  // true => TCA
+  bool           m_is_tca;
 
 public:
-  bool IsAtca() { return m_is_atca; }
+  bool IsTca() { return m_is_tca; }
 
 protected:
   // properties for site types
@@ -194,7 +194,7 @@ public:
   unsigned int m_sel_rescan_interval;
   bool m_bmc_discovered;
 
-  SaErrorT CheckAtca();
+  SaErrorT CheckTca();
 
 public:
   void AddMc( cIpmiMc *mc );

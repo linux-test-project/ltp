@@ -38,9 +38,9 @@
 SaHpiUint64T oHpiVersionGet()
 {
         SaHpiUint64T v = 0;
-        char * version = VERSION;
-        char * start = version;
-        char * end = version;
+        char version[] = VERSION;
+        char *start = version;
+        char *end = version;
 
         v += (strtoull(start, &end, 10) << 48);
         end++;

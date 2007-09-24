@@ -14,29 +14,11 @@
  *
  */
 
-#ifndef dClient_h
-#define dClient_h
+#ifndef __OPENHPICLIENT_H
+#define __OPENHPICLIENT_H
 
 #include <SaHpi.h>
 #include "strmsock.h"
 
-// default prefix for function names
-#ifndef dOpenHpiClientFunction
-#define dOpenHpiClientFunction(name) saHpi##name
-#define dOpenHpiClientParam(...) (__VA_ARGS__)
-#else
-SaErrorT SAHPI_API dOpenHpiClientFunction(SessionOpen)
-	dOpenHpiClientParam(SAHPI_IN SaHpiDomainIdT DomainId,
-			    SAHPI_OUT SaHpiSessionIdT *SessionId,
-			    SAHPI_IN  void *SecurityParams);
-
-SaErrorT SAHPI_API dOpenHpiClientFunction(SessionClose)
-	dOpenHpiClientParam(SAHPI_IN SaHpiSessionIdT SessionId);
-
-SaErrorT SAHPI_API dOpenHpiClientFunction(Discover)
-	dOpenHpiClientParam (SAHPI_IN SaHpiSessionIdT SessionId);
-
-#endif
-
-#endif
+#endif /* __OPENHPICLIENT_H */
 

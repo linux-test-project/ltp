@@ -47,20 +47,13 @@ EXTRA_DIST		= $(DIAGRAMS) $(SGML_FILES) htmlfilter.pl
 all:
 
 pdf-am:
-	@echo we have to do this twice to get the latex refs right
-	db2pdf openhpi-manual.sgml
-	db2pdf openhpi-manual.sgml
+	docbook2pdf openhpi-manual.sgml
 
 ps-am:
-	@echo we have to do this twice to get the latex refs right
-	db2ps openhpi-manual.sgml
-	db2ps openhpi-manual.sgml
-
-#function_docs.sgml:
-#	find $(top_srcdir) -name \*\.c | xargs gnome-doc -docbook > function_docs.sgml
+	docbook2ps openhpi-manual.sgml
 
 openhpi-manual/book1.html: $(SGML_FILES)
-	-db2html -o openhpi-manual openhpi-manual.sgml
+	-docbook2html -o openhpi-manual openhpi-manual.sgml
 	-mkdir -p openhpi-manual/images
 	-cp $(DIAGRAMS) openhpi-manual/images
 

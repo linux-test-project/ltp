@@ -49,7 +49,7 @@ cIpmiMc::cIpmiMc( cIpmiDomain *domain, const cIpmiAddr &addr )
     m_sdr_repository_support( false ), m_sensor_device_support( false ),
     m_major_fw_revision( 0 ), m_minor_fw_revision( 0 ),
     m_major_version( 0 ), m_minor_version( 0 ),
-    m_manufacturer_id( 0 ), m_product_id( 0 ), m_is_atca_board( false ), m_is_rms_board( false )
+    m_manufacturer_id( 0 ), m_product_id( 0 ), m_is_tca_mc( false ), m_is_rms_board( false )
 {
   stdlog << "adding MC: " << addr.m_channel << " " << addr.m_slave_addr << "\n";
 
@@ -269,7 +269,7 @@ cIpmiMc::HandleNew()
 
            m_sel->m_fetched = false;
 
-           if (IsAtcaBoard()) {
+           if (IsTcaMc()) {
                rv = m_sel->ClearSel();
                if ( rv != SA_OK )
                    m_sel_device_support = false;
@@ -303,7 +303,7 @@ cIpmiMc::HandleNew()
        stdlog << "New mc, event_rcvr " << GetAddress() << "\n";
   }
 
-  if ( event_rcvr && IsAtcaBoard())  
+  if ( event_rcvr && IsTcaMc())
      {
        // This is a re-arm of all sensors of the MC
        // => each sensor sends the pending events again.
@@ -401,7 +401,7 @@ cIpmiMc::DeviceDataCompares( const cIpmiMsg &rsp ) const
 }
 
 void
-cIpmiMc::CheckAtca()
+cIpmiMc::CheckTca()
 {
     cIpmiMsg msg( eIpmiNetfnPicmg, eIpmiCmdGetPicMgProperties );
     msg.m_data_len = 1;
@@ -410,7 +410,7 @@ cIpmiMc::CheckAtca()
     cIpmiMsg rsp;
     SaErrorT rv;
 
-    m_is_atca_board = false;
+    m_is_tca_mc = false;
     m_picmg_major = 0;
     m_picmg_minor = 0;
 
@@ -418,7 +418,7 @@ cIpmiMc::CheckAtca()
 
     if ( rv != SA_OK || rsp.m_data[0] || rsp.m_data[1] != dIpmiPicMgId )
     {
-        stdlog << "WARNING: MC " << m_addr.m_slave_addr << " is not an ATCA board !!!\n";
+        stdlog << "WARNING: MC " << m_addr.m_slave_addr << " is not a TCA MC !!!\n";
         return;
     }
 
@@ -427,12 +427,18 @@ cIpmiMc::CheckAtca()
 
     if ( m_picmg_major == 2 )
     {
-        stdlog << "MC " << m_addr.m_slave_addr << " is an ATCA board, PICMG Extension version " << (int)m_picmg_major << "." << (int)m_picmg_minor << "\n";
-        m_is_atca_board = true;
+        stdlog << "MC " << m_addr.m_slave_addr << " is an ATCA MC, PICMG Extension version " << (int)m_picmg_major << "." << (int)m_picmg_minor << "\n";
+        m_is_tca_mc = true;
+        return;
+    }
+    else if ( m_picmg_major == 5 )
+    {
+        stdlog << "MC " << m_addr.m_slave_addr << " is a MicroTCA MC, PICMG Extension version " << (int)m_picmg_major << "." << (int)m_picmg_minor << "\n";
+        m_is_tca_mc = true;
         return;
     }
 
-    stdlog << "WARNING: MC " << m_addr.m_slave_addr << " is not an ATCA board !!!\n";
+    stdlog << "WARNING: MC " << m_addr.m_slave_addr << " is not an ATCA MC !!!\n";
     return;
 }
 
