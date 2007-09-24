@@ -67,6 +67,7 @@ setup()
     export LTPROOT=${PWD}
     export TMPBASE="/tmp"
     export TMP="${TMPBASE}/ltp-$$"
+    export TMPDIR="${TMP}"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
     [ -d $LTPROOT/testcases/bin ] ||
@@ -171,8 +172,8 @@ main()
                    
         d)  # append $$ to TMP, as it is recursively 
             # removed at end of script.
-            TMPBASE=$OPTARG
-            TMP="${TMPBASE}/ltp-$$"
+            export TMPBASE=$OPTARG
+            export TMP="${TMPBASE}/ltp-$$"
             export TMPDIR="$TMP";;
         e)  # Print out the version of LTP
             version_of_ltp
