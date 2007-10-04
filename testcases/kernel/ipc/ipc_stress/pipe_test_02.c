@@ -73,11 +73,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#ifdef _LINUX_
-#include <linux/limits.h>
-#endif
-
-
 /* Defines:
  *
  * MB: one megabyte (MB)
@@ -98,6 +93,7 @@
 #define MB			(1024*1024)
 #define DEFAULT_PACKETS_TO_SEND 1024
 #define DEFAULT_NUM_CHILDREN	1
+#define OPEN_MAX		256
 #define MAXCHILD 		(OPEN_MAX/2 - 2)
 #define VALID_PACKET		0xabcdef01	
 #define USAGE	"\nUsage: %s [-n] [-p nprocs] [{-m totmegs | -b totbytes}]\n\n" \

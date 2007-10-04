@@ -44,7 +44,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include <linux/limits.h>	/* for OPEN_MAX */
+#include <unistd.h> /* for _SC_OPEN_MAX */
 #include "test.h"
 #include "usctest.h"
 
@@ -59,6 +59,8 @@ char filname[40], childfile[40];
 int first;
 FILE **fildeses;			/* file streams */
 int mypid, nfiles;
+
+#define OPEN_MAX (sysconf(_SC_OPEN_MAX))
 
 int main(int ac, char **av)
 {
