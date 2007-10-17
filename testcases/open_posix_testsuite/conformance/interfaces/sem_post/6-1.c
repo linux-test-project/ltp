@@ -45,7 +45,7 @@ void handler(int signo)
 }
 
 int main() {
-	char semname[20];
+	char semname[28];
 	struct sigaction act;
 	int val;
 

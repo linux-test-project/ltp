@@ -43,7 +43,7 @@ void sighdl(int sig)
 }
 
 int main() {
-	char semname[20];
+	char semname[28];
 	int val;
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());

@@ -47,8 +47,8 @@
 #define FUNCTION "sem_wait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-static char semname[20];
-static char semname_1[20]; /* Used to record state */
+static char semname[28];
+static char semname_1[28]; /* Used to record state */
 
 /* set my schedule priority to @priority */
 int set_my_prio(int priority)

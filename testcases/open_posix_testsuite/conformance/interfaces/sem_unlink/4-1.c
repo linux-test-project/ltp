@@ -29,7 +29,7 @@
 
 int main() {
 
-	char semname[20];
+	char semname[28];
 
 	sem_unlink(semname);
 

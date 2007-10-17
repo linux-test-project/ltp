@@ -27,7 +27,7 @@
 
 int main() {
 
-	char semname[28];
+	char semname[20];
 	sem_t *mysemp;
 	int val;
 
