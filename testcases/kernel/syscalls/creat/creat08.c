@@ -131,11 +131,13 @@ int main (int ac, char **av)
 		 * Get the group IDs of group1 and group2. 
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
-			tst_resm(TINFO, "nobody not in /etc/group");
+			tst_resm(TBROK, "nobody not in /etc/group");
+			tst_exit();
 		}
 		group1_gid = group->gr_gid;
 		if ((group = getgrnam("bin")) == NULL) {
-		tst_resm(TINFO, "bin not in /etc/group");
+		     tst_resm(TBROK, "bin not in /etc/group");
+                     tst_exit();
 		}
 		group2_gid = group->gr_gid;
 
