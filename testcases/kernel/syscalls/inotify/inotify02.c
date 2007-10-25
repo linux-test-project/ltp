@@ -52,6 +52,10 @@
 #ifdef __NR_inotify_init
 #include <linux/inotify.h>
 
+#ifndef IN_MOVE_SELF
+#define IN_MOVE_SELF            0x00000800
+#endif
+
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
 #define EVENT_SIZE  (sizeof (struct inotify_event))
