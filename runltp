@@ -53,6 +53,9 @@
 #               Sep 14 2007 - Modified - Ricardo Salveti de Araujo
 #               - cleaning and removing duplicated code
 #
+#               Oct 27 2007 - Modified - Ricardo Salveti de Araujo and Subrata Modak
+#               - better ways to integrate "ltp/tools/genload/stress" with "ltp/runltp"
+#
 #################################################################################
 
 
@@ -95,20 +98,35 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} -c [-C FAILCMDFILE ] [-d TMPDIR] [-f CMDFILES(,...) ]
-    [-i # (in Mb)] [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -n -q
-    [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ] -v [ -w CMDFILEADDR ]
-    [ -x INSTANCES ]
+    usage: ./${0##*/} [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
+    [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ]
+    [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
+    -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
+    -v [ -w CMDFILEADDR ] [ -x INSTANCES ]
                 
+    -c NUM_PROCS    Run LTP under additional background CPU load
+                    [NUM_PROCS = no. of processes creating the CPU Load by spinning over sqrt()
+                                 (Defaults to 1 when value)]
     -C FAILCMDFILE  Command file with all failed test cases.
-    -c NUM_PROCS    Run LTP under additional background CPU load.
     -d TMPDIR       Directory where temporary files will be created.
+    -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG
+                    Run LTP under additional background Load on Secondary Storage (Seperate by comma)
+                    [NUM_PROCS   = no. of processes creating Storage Load by spinning over write()]
+                    [NUM_FILES   = Write() to these many files (Defaults to 1 when value 0 or undefined)]
+                    [NUM_BYTES   = write these many bytes (defaults to 1GB, when value 0 or undefined)]
+                    [CLEAN_FLAG  = unlink file to which random data written, when value 1]
     -e              Prints the date of the current LTP release
     -f CMDFILES     Execute user defined list of testcases (separate with ',')
     -h              Help. Prints all available options.
-    -i # (in Mb)    Run LTP with a _min_ IO load of # Mb in background.
+    -i NUM_PROCS    Run LTP under additional background Load on IO Bus
+                    [NUM_PROCS   = no. of processes creating IO Bus Load by spinning over sync()]
     -l LOGFILE      Log results of test in a logfile.
-    -m # (in Mb)    Run LTP with a _min_ memory load of # Mb in background.
+    -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG
+                    Run LTP under additional background Load on Main memory (Seperate by comma)
+                    [NUM_PROCS   = no. of processes creating main Memory Load by spinning over malloc()]
+                    [CHUNKS      = malloc these many chunks (default is 1 when value 0 or undefined)]
+                    [BYTES       = malloc CHUNKS of BYTES bytes (default is 256MB when value 0 or undefined) ]
+                    [HANGUP_FLAG = hang in a sleep loop after memory allocated, when value 1]
     -N              Run all the networking tests. 
     -n              Run LTP with network traffic in background.
     -o OUTPUTFILE   Redirect test output to a file.
@@ -125,7 +143,7 @@ usage()
     -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
 
-    example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
+    example: ./${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
 
 
 	EOF
@@ -146,18 +164,21 @@ main()
     local MEMSIZE=0
     local DURATION=""
     local CMDFILEADDR=""
-    local BYTESIZE=0
     local LOGFILE=""
     local SCENFILES=""
-    local PRETTY_PRT=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts c:C:d:f:ehi:l:m:Nno:pqr:s:t:vw:x: arg
+    while getopts c:C:d:D:f:ehi:l:m:Nno:pqr:s:t:vw:x: arg
     do  case $arg in
         c)       
-	    NUM_PROCS=$(($OPTARG))
+            NUM_PROCS=$(($OPTARG))
+            if   [ "$NUM_PROCS" -eq 0 ]; then
+                # User Did not Define the Value ,or, User Defined Zero,
+                # hence, prevent from creating infinite processes
+                NUM_PROCS=1
+            fi
             $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
 
@@ -175,6 +196,44 @@ main()
             export TMPBASE=$OPTARG
             export TMP="${TMPBASE}/ltp-$$"
             export TMPDIR="$TMP";;
+
+        D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
+            ARGUMENT_LIST=$(($OPTARG))
+            TOTAL_ARGUMENTS=1                                             # Initial Assume
+            for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
+            do
+                case $TOTAL_ARGUMENTS in
+                    1) NUM_PROCS="$ARGUMENT" ;;
+                    2) NUM_FILES="$ARGUMENT" ;;
+                    3) NUM_BYTES="$ARGUMENT" ;;
+                    4) CLEAN_FLAG="$ARGUMENT" ;;
+                esac
+                TOTAL_ARGUMENTS=`expr $TOTAL_ARGUMENTS + 1`
+            done
+            # just to get the default values if the user passed 0
+            if [ "$NUM_PROCS" -eq 0 ]; then
+                NUM_PROCS=1
+            fi
+            if [ "$NUM_FILES" -eq 0 ]; then
+                NUM_FILES=1
+            fi
+            if [ "$NUM_BYTES" -eq 0 ]; then
+                NUM_BYTES=$((1024 * 1024 * 1024))
+            fi
+            if [ "$CLEAN_FLAG" -ne 1 ]; then
+                CLEAN_FLAG=0
+            fi
+            if [ "$CLEAN_FLAG" -eq 1 ]; then
+                # Do not unlink file in this case
+                $LTPROOT/testcases/bin/genload --hdd $NUM_PROCS --hdd-files \
+                    $NUM_FILES --hdd-bytes $NUM_BYTES >/dev/null 2>&1 &
+            else
+                # Cleanup otherwise
+                $LTPROOT/testcases/bin/genload --hdd $NUM_PROCS --hdd-files \
+                    $NUM_FILES --hdd-bytes $NUM_BYTES --hdd-noclean >/dev/null 2>&1 &
+            fi
+            GENLOAD=1;;
+
         e)  # Print out the version of LTP
             version_of_ltp
 	    ;;
@@ -185,11 +244,14 @@ main()
     
         h)  usage;;
         
-        i)       
-            BYTESIZE=$(($OPTARG * 1024 * 1024))
-            $LTPROOT/testcases/bin/genload --io 1 >/dev/null 2>&1 &
-            $LTPROOT/testcases/bin/genload --hdd 1 --hdd-bytes $BYTESIZE \
-            >/dev/null 2>&1 & 
+        i)
+            NUM_PROCS=$(($OPTARG))
+            if   [ "$NUM_PROCS" -eq 0 ]; then
+                # User Did not Define the Value ,or, User Defined Zero,
+                # hence, prevent from creating infinite processes
+                NUM_PROCS=1
+            fi
+            $LTPROOT/testcases/bin/genload --io $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
     
         l)      
@@ -202,10 +264,41 @@ main()
                 ALT_DIR_RES=1 ;;
             esac ;;
     
-        m)      
-            MEMSIZE=$(($OPTARG * 1024 * 1024)) 
-            $LTPROOT/testcases/bin/genload  --vm 0 --vm-bytes $MEMSIZE \
-                >/dev/null 2>&1 & 
+        m)  NUM_PROCS=1; CHUNKS=1; BYTES=$((256 * 1024 * 1024)); HANGUP_FLAG=0
+            ARGUMENT_LIST=$(($OPTARG))
+            TOTAL_ARGUMENTS=1                                             # Initial Assume
+            for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
+            do
+                case $TOTAL_ARGUMENTS in
+                    1) NUM_PROCS="$ARGUMENT" ;;
+                    2) CHUNKS="$ARGUMENT" ;;
+                    3) BYTES="$ARGUMENT" ;;
+                    4) HANGUP_FLAG="$ARGUMENT" ;;
+                esac
+                TOTAL_ARGUMENTS=`expr $TOTAL_ARGUMENTS + 1`
+            done
+            # just to get the default values if the user passed 0
+            if [ "$NUM_PROCS" -eq 0 ]; then
+                NUM_PROCS=1
+            fi
+            if [ "$CHUNKS" -eq 0 ]; then
+                CHUNKS=1
+            fi
+            if [ "$BYTES" -eq 0 ]; then
+                BYTES=$((256 * 1024 * 1024))
+            fi
+            if [ "$HANGUP_FLAG" -ne 1 ]; then
+                HANGUP_FLAG=0
+            fi
+            if [ "$HANGUP_FLAG" -eq 1 ]; then
+                # Hang in a Sleep loop after memory allocated
+                $LTPROOT/testcases/bin/genload --vm $NUM_PROCS --vm-chunks \
+                    $CHUNKS --vm-bytes $BYTES --vm-hang >/dev/null 2>&1 &
+            else
+                # Otherwise Do not Hangup
+                $LTPROOT/testcases/bin/genload --vm $NUM_PROCS --vm-chunks \
+                    $CHUNKS --vm-bytes $BYTES >/dev/null 2>&1 &
+            fi
             GENLOAD=1;;
     
         N)  RUN_NETEST=1;;
@@ -483,8 +576,8 @@ main()
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
-    [ "$GENLOAD" -eq 1 ] && { killall -9 genload ; }
-    [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp ; }
+    [ "$GENLOAD" -eq 1 ] && { killall -9 genload  >/dev/null 2>&1; }
+    [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp  >/dev/null 2>&1; }
     
     [ "$ALT_DIR_OUT" -eq 1 ] || [ "$ALT_DIR_RES" -eq 1 ] && \
     {
