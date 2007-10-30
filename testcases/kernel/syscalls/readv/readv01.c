@@ -123,6 +123,7 @@ int main(int ac, char **av)
 				 "followed by two NULL vectors", CHUNK);
 		}
 	}
+	close(fd);
 	cleanup();
 
 	/*NOTREACHED*/

@@ -164,6 +164,7 @@ setup()
 			}
 			break;
 		}
+		close(fd);
 	}
 }
 
@@ -192,7 +193,7 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(first);
+	close(first);
 
 	TEST_CLEANUP;
 

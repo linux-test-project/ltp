@@ -195,6 +195,7 @@ setup()
 				 "create %d files: %s", ifile + 1, nfile, strerror(errno));
 			cleanup();
 		}
+		close(fd);
 	}
 }
 
@@ -210,7 +211,7 @@ cleanup()
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(first);
+	close(first);
 
 	TEST_CLEANUP;
 

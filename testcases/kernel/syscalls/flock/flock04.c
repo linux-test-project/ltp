@@ -170,6 +170,8 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "flock() failed to acquire shared lock");
 		}
 
+	close(fd);
+	close(fd1);
 	}/* End of TEST_LOOPING */
 
 	cleanup();

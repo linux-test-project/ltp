@@ -106,6 +106,7 @@ main(int ac, char **av)
 			tst_resm(TPASS, "call succeeded");
 		}
 
+		close(TEST_RETURN);
 		/* clean up things in case we are looping */
 		if (unlink(pfilname) == -1) {
 			tst_brkm(TBROK, cleanup, "couldn't remove file");

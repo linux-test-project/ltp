@@ -358,12 +358,16 @@ void
 cleanup1(void)
 {
 	(void) close(s);
+	close(ufd);
+	close(sfd);
 	s = -1;
 }
 
 void
 cleanup2(void)
 {
+	close(ufd);
+	close(sfd);
 	(void) close(s);
 	s = -1;
 
@@ -515,7 +519,6 @@ sender(int fd)
 	tfd = mkstemp(tmpfn);
 	if (tfd < 0)
 		return;
-	(void) unlink(tmpfn);
 
 	memset(&mh, 0x00, sizeof(mh));
 
@@ -539,4 +542,5 @@ sender(int fd)
 	/* do it */
 	(void) sendmsg(fd, &mh, 0);
 	(void) close(tfd);
+	(void) unlink(tmpfn);
 }

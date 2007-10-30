@@ -152,6 +152,8 @@ int main(int argc, char **argv)
 			tst_resm(TPASS, "flock03 Passed");
 		else
 			tst_resm(TFAIL, "flock03 Failed");
+	
+		close(fd);
 
 	}/* End of TEST_LOOPING */
 
@@ -192,6 +194,7 @@ void childfunc(int fd)
 	else
 		tst_resm(TPASS, "Child: flock after unlocking passed");
 
+	close(fd);
 	close(fd2);
 
 	tst_exit();
@@ -235,6 +238,7 @@ void setup(void)
 		/* exit with return code appropriate for result */
 		tst_exit();
 	}
+	close(fd);
 }
 
 /*

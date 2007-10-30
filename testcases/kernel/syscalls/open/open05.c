@@ -133,6 +133,8 @@ int main(int ac, char **av)
             		if ((e_code != 0) || (retval != 0)) {
                 	  tst_resm(TFAIL, "Failures reported above");
             		}
+
+			close(fd);
 			cleanup();	
 
 		}

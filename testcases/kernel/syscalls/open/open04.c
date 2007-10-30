@@ -71,6 +71,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int fdo;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -85,6 +86,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+		int a; 
 
 		TEST(open(fname, O_RDWR | O_CREAT));
 
@@ -101,6 +103,8 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "call returned expected EMFILE error");
 		}
 	}
+	close(first);
+	close(fd);
 	cleanup();
 
 	/*NOTREACHED*/
@@ -130,7 +134,8 @@ setup()
 		tst_brkm(TBROK, cleanup, "Cannot open first file");
 	}
 
-	close(fd);
+	close(fd); 
+	close(first);
 	unlink(fname);
 
 	for (ifile = first; ifile <= nfile; ifile++) {

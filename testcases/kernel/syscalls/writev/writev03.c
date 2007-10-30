@@ -271,6 +271,8 @@ int main(int argc, char **argv)
 		}
 		tst_resm(TINFO, "Exit block 3");
 	}
+	close(fd[0]);
+	close(fd[1]);
 	cleanup();
 	return(0);
 }

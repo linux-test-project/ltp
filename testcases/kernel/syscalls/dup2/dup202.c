@@ -144,6 +144,9 @@ int main(int ac, char **av)
 			}
 
 			/* remove the file so that we can use it again */
+			if (-1 == close(*TC[i].nfd)) {
+				printf("close failed\n");
+			}
 			if (-1 == close(ofd)) {
 				printf("close failed\n");
 			}

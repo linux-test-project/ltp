@@ -183,6 +183,8 @@ main(int ac, char **av)
 		    tst_brkm(TBROK, cleanup, "Collected %d more children then I should have!", abs(forks));
 		}
 	}
+	fclose(writ);
+	fclose(rea);
 	cleanup();
 
 	/*NOTREACHED*/

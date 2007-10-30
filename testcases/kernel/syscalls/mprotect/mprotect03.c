@@ -156,6 +156,9 @@ int main(int ac, char **av)
 		}
 
 		/* clean up things in case we are looping */
+		if (munmap(addr, strlen(buf)) == -1){
+			tst_brkm(TBROK, cleanup, "munamp failed");
+		}
 		if (close(fd) == -1) {
 			tst_brkm(TBROK, cleanup, "close failed");
 		}

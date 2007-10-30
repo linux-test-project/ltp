@@ -139,6 +139,7 @@ main(int ac, char **av)
 		chdir("..");
 
 	}
+	close(fd);
 	cleanup();
 
 	return 0;

@@ -223,6 +223,7 @@ main(int ac, char **av)
 void
 set_condition(int num)
 {
+	int fd;
 	switch(num) {
 	case 1:
 		/* set up for first test */
@@ -253,10 +254,11 @@ set_condition(int num)
 		sprintf(tstdir3, "%s/tstdir3", tstfile);
 		
 		/* create a file */
-		if (creat(tstfile, PERMS) == -1) {
+		if ((fd = creat(tstfile, PERMS)) == -1) {
 			tst_brkm(TBROK, cleanup, "creat() failed");
 			/*NOTREACHED*/
 		}
+		close(fd);
 		break;
 	default:
 		tst_brkm(TBROK, cleanup, "illegal setup case - %d", num);

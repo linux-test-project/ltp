@@ -170,6 +170,8 @@ int main(int argc, char **argv)
 
 	}/* End of TEST_LOOPING */
 
+	close(fd);
+	close(fd1);
 	cleanup();
 	return 0;
 	/*NOTREACHED*/

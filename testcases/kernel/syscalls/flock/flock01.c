@@ -142,6 +142,8 @@ int main(int argc, char **argv)
 		
 	}/* End of TEST_LOOPING */
 
+	close(fd);
+
 	cleanup();
 
 	return 0;

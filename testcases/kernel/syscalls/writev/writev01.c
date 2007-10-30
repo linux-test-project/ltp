@@ -449,6 +449,8 @@ int main(int argc, char **argv)
 		}
 		tst_resm(TINFO, "Exit block 8");
 	}
+	close(fd[0]);
+	close(fd[1]);
 	cleanup();
 	/*NOTREACHED*/
 	return(0);

@@ -97,46 +97,48 @@ int main(int argc, char **argv)
 		 /* The following loop checks looping state if -i option given */
 
 		 for (lc = 0; TEST_LOOPING(lc); lc++) {
-		 		 int fd1, fd2;
+		 	int fd1, fd2;
 
-		 		 /* reset Tst_count in case we are looping */
-		 		 Tst_count = 0;
+			 /* reset Tst_count in case we are looping */
+			 Tst_count = 0;
 
-		 		 fd1 = open(filename, O_RDWR);
-		 		 if (fd1 == -1)
-		 		 		 tst_brkm(TFAIL, cleanup, "failed to open the"
-		 		 		 		 		 "file, errno %d", errno);
+			 fd1 = open(filename, O_RDWR);
+			 if (fd1 == -1)
+				 tst_brkm(TFAIL, cleanup, "failed to open the"
+									 "file, errno %d", errno);
 
-		 		 TEST(flock(fd1, LOCK_EX | LOCK_NB));
-		 		 if (TEST_RETURN != 0)
-		 		 		 tst_resm(TFAIL, "First attempt to flock() failed, "
-		 		 		 		 		 "errno %d",TEST_ERRNO); 
-		 		 else
-		 		 		 tst_resm(TPASS, "First attempt to flock() passed");
+			 TEST(flock(fd1, LOCK_EX | LOCK_NB));
+			 if (TEST_RETURN != 0)
+				 tst_resm(TFAIL, "First attempt to flock() failed, "
+									 "errno %d",TEST_ERRNO); 
+			 else
+				 tst_resm(TPASS, "First attempt to flock() passed");
 
-		 		 fd2 = open(filename, O_RDWR);
-		 		 if (fd2 == -1)
-		 		 		 tst_brkm(TFAIL, cleanup, "failed to open the"
-		 		 		 		 		 "file, errno %d", errno);
+			 fd2 = open(filename, O_RDWR);
+			 if (fd2 == -1)
+				 tst_brkm(TFAIL, cleanup, "failed to open the"
+									 "file, errno %d", errno);
 
-		 		 TEST(flock(fd2, LOCK_EX | LOCK_NB));
-		 		 if (TEST_RETURN == -1)
-		 		 		 tst_resm(TPASS, "Second attempt to flock() denied");
-		 		 else
-		 		 		 tst_resm(TFAIL, "Second attempt to flock() succeeded!");
+			 TEST(flock(fd2, LOCK_EX | LOCK_NB));
+			 if (TEST_RETURN == -1)
+				 tst_resm(TPASS, "Second attempt to flock() denied");
+			 else
+				 tst_resm(TFAIL, "Second attempt to flock() succeeded!");
 
-		 		 TEST(flock(fd1, LOCK_UN));
-		 		 if (TEST_RETURN == -1)
-		 		 		 tst_resm(TFAIL, "Failed to unlock fd1, errno %d",
-		 		 		 		 		 TEST_ERRNO);
-		 		 else
-		 		 		 tst_resm(TPASS, "Unlocked fd1");
+			 TEST(flock(fd1, LOCK_UN));
+			 if (TEST_RETURN == -1)
+				 tst_resm(TFAIL, "Failed to unlock fd1, errno %d",
+									 TEST_ERRNO);
+			 else
+				 tst_resm(TPASS, "Unlocked fd1");
 
-		 		 TEST(flock(fd2, LOCK_EX | LOCK_NB));
-		 		 if (TEST_RETURN == -1)
-		 		 		 tst_resm(TFAIL, "Third attempt to flock() denied!");
-		 		 else
-		 		 		 tst_resm(TPASS, "Third attempt to flock() succeeded");
+			 TEST(flock(fd2, LOCK_EX | LOCK_NB));
+			 if (TEST_RETURN == -1)
+				 tst_resm(TFAIL, "Third attempt to flock() denied!");
+			 else
+				 tst_resm(TPASS, "Third attempt to flock() succeeded");
+			close(fd1);
+			close(fd2);
 
 		 }/* End of TEST_LOOPING */
 
@@ -153,35 +155,36 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-		 int fd;
-		 /* capture signals */
-		 tst_sig(FORK, DEF_HANDLER, cleanup);
+		int fd;
+		/* capture signals */
+		tst_sig(FORK, DEF_HANDLER, cleanup);
 
-		 /* Pause if that option was specified
-		  * TEST_PAUSE contains the code to fork the test with the -i option.
-		  * You want to make sure you do this before you create your temporary
-		  * directory.
-		  */
-		 TEST_PAUSE;
+		/* Pause if that option was specified
+		 * TEST_PAUSE contains the code to fork the test with the -i option.
+		 * You want to make sure you do this before you create your temporary
+		 * directory.
+		 */
+		TEST_PAUSE;
 
-		 /* Create a unique temporary directory and chdir() to it. */
-		 tst_tmpdir();
+		/* Create a unique temporary directory and chdir() to it. */
+		tst_tmpdir();
 
-		 sprintf(filename, "flock06.%d", getpid());
+		sprintf(filename, "flock06.%d", getpid());
 
-		 /* creating temporary file */
-		 fd = creat(filename, 0666);
-		 if (fd < 0) {
-		 		 tst_resm(TFAIL, "creating a new file failed");
-		 		 
-		 		 TEST_CLEANUP;
+		/* creating temporary file */
+		fd = creat(filename, 0666);
+		if (fd < 0) {
+			tst_resm(TFAIL, "creating a new file failed");
+				 
+			TEST_CLEANUP;
 
-		 		 /* Removing temp dir */
-		 		 tst_rmdir();
+			/* Removing temp dir */
+			tst_rmdir();
 
-		 		 /* exit with return code appropriate for result */
-		 		 tst_exit();
-		 }
+			/* exit with return code appropriate for result */
+			tst_exit();
+		}
+		close(fd);
 }
 
 /*

@@ -182,6 +182,7 @@ int main(int argc, char **argv)
 			}
 			tst_resm(TINFO, "Exit Block 3");
 		}
+		close(fd);
 	}
 	cleanup();
 	/*NOTREACHED*/

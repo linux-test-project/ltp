@@ -197,6 +197,8 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
+		close(fd0);
+		close(fd1);
 
 		unlink(filename0);
 		tst_resm(TINFO, "Exit block 2");

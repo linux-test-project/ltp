@@ -152,6 +152,7 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "can't write to Xread");
 		/*NOTREACHED*/
 	}
+	close(fild);
 }
 
 /*

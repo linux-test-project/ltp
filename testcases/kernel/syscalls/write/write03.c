@@ -142,6 +142,7 @@ int main(int argc, char **argv)
 				 "file");
 		}
 		tst_resm(TINFO, "Exit block 1");
+		close(fd);
 	}
 	cleanup();
 	/*NOTREACHED*/
