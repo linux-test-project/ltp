@@ -97,4 +97,18 @@ SaErrorT oHpiInjectEvent(oHpiHandlerIdT id,
                          SaHpiRptEntryT *rpte,
                          SaHpiRdrT *rdr);
 
+#define OHPI_VERSION_GET(v, VER) \
+{ \
+        char version[] = VER; \
+        char *start = version; \
+        char *end = version; \
+        v += (strtoull(start, &end, 10) << 48); \
+        end++; \
+        start = end; \
+        v += (strtoull(start, &end, 10) << 32); \
+        end++; \
+        start = end; \
+        v += (strtoull(start, &end, 10) << 16); \
+}
+
 #endif /*__OHPI_H*/

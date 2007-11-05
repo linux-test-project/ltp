@@ -86,12 +86,7 @@ Requires: openhpi = %{version} net-snmp > 5.0
 %package sysfs
 Summary: OpenHPI plugin for sysfs
 Group: System/Monitoring
-%if 0%{?suse_version}
-BuildRequires: sysfsutils < 2
-%else
-BuildRequires: libsysfs-devel < 2
-%endif
-Requires: openhpi = %{version} libsysfs < 2
+Requires: openhpi = %{version} libsysfs
 %endif
 
 %package watchdog

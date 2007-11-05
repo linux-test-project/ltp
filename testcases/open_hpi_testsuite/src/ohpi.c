@@ -30,25 +30,16 @@
 /**
  * oHpiVersionGet
  *
- * Returns the version of the library as an SaHpiUint64T.  The version
- * consists of 4 16 bit ints, MAJOR, MINOR, PATCH, and TYPE.  TYPE
- * is used to determine if this is the stand alone library or the client library.
+ * Returns the version of the library as a SaHpiUint64T type.
+ * The version consists of 3 16-bit integers: MAJOR, MINOR, and PATCH.
  */
 
 SaHpiUint64T oHpiVersionGet()
 {
         SaHpiUint64T v = 0;
-        char version[] = VERSION;
-        char *start = version;
-        char *end = version;
 
-        v += (strtoull(start, &end, 10) << 48);
-        end++;
-        start = end;
-        v += (strtoull(start, &end, 10) << 32);
-        end++;
-        start = end;
-        v += (strtoull(start, &end, 10) << 16);
+	OHPI_VERSION_GET(v, VERSION);
+
         return v;
 }
 

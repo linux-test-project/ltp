@@ -30,6 +30,7 @@ cIpmiResource::cIpmiResource( cIpmiMc *mc, unsigned int fru_id )
     m_hotswap_sensor( 0 ),
     m_picmg_fru_state( eIpmiFruStateNotInstalled ),
     m_policy_canceled( true ),
+    m_prev_prev_fru_state( eIpmiFruStateNotInstalled ),
     m_oem( 0 ), m_current_control_id( 0 ),
     m_populate( false )
 {

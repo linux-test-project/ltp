@@ -100,44 +100,204 @@ cIpmiSensorHotswap::ConvertIpmiToHpiHotswapState( tIpmiFruState h )
      }
 }
 
-
-SaErrorT
-cIpmiSensorHotswap::CreateEvent( cIpmiEvent *event, SaHpiEventT &h )
+void
+cIpmiSensorHotswap::HandleEvent( cIpmiEvent *event )
 {
-  memset( &h, 0, sizeof( SaHpiEventT ) );
-
   cIpmiResource *res = Resource();
 
-  if (!res)
+  if( !res )
+     {
+       stdlog << "cIpmiSensorHotswap::HandleEvent: No resource !\n";
+       return;
+     }
+
+  tIpmiFruState state = (tIpmiFruState)(event->m_data[10] & 0x07);
+  tIpmiFruState previous_state = (tIpmiFruState)(event->m_data[11] & 0x07);
+
+  switch (state)
   {
-      return SA_ERR_HPI_NOT_PRESENT;
+  case eIpmiFruStateActivationInProgress:
+    if (previous_state == eIpmiFruStateActivationRequest)
+    {
+        stdlog << "cIpmiSensorHotswap::HandleEvent: M2->M3 ignore\n";
+        res->PreviousPrevFruState() = previous_state;
+        return;
+    }
+    break;
+  case eIpmiFruStateDeactivationInProgress:
+    if (previous_state == eIpmiFruStateDeactivationRequest)
+    {
+        stdlog << "cIpmiSensorHotswap::HandleEvent: M5->M6 ignore\n";
+        res->PreviousPrevFruState() = previous_state;
+        return;
+    }
+    if (previous_state == eIpmiFruStateActivationInProgress)
+    {
+        stdlog << "cIpmiSensorHotswap::HandleEvent: M3->M6 ignore\n";
+        res->PreviousPrevFruState() = previous_state;
+        return;
+    }
+    break;
+  default:
+    break;
   }
+
+  oh_event *e = (oh_event *)g_malloc0( sizeof( struct oh_event ) );
+
+  SaHpiRptEntryT *rptentry = oh_get_resource_by_id( res->Domain()->GetHandler()->rptcache, res->m_resource_id );
+
+  if ( rptentry )
+      e->resource = *rptentry;
+  else
+      e->resource.ResourceCapabilities = 0;
+
+  // hpi event
+  SaHpiEventT &h = e->event;
 
   h.Source    = res->m_resource_id;
   h.EventType = SAHPI_ET_HOTSWAP;
+  // Default severity
+  h.Severity = SAHPI_INFORMATIONAL;
 
   // Hot swap events must be dated here otherwise
   // hot swap policy won't work properly !
   oh_gettimeofday(&h.Timestamp);
 
-  // Do not find the severity of hotswap event
-  h.Severity = SAHPI_INFORMATIONAL;
-
   SaHpiHotSwapEventT &he = h.EventDataUnion.HotSwapEvent;
 
-  tIpmiFruState state = (tIpmiFruState)(event->m_data[10] & 0x07);
   he.HotSwapState = ConvertIpmiToHpiHotswapState( state );
+  he.PreviousHotSwapState = ConvertIpmiToHpiHotswapState( previous_state );
 
-  state    = (tIpmiFruState)(event->m_data[11] & 0x07);
-  he.PreviousHotSwapState = ConvertIpmiToHpiHotswapState( state );
+  switch (state)
+  {
+  case eIpmiFruStateNotInstalled:
+    if (previous_state == eIpmiFruStateCommunicationLost)
+    {
+        he.PreviousHotSwapState = ConvertIpmiToHpiHotswapState( res->PreviousPrevFruState() );
+    }
+    else if (previous_state != eIpmiFruStateInactive)
+    {
+      // get severity from plugin cache
+      if ( rptentry )
+        h.Severity = rptentry->ResourceSeverity;
+    }
+    break;
 
-  // Nothing changed -> no HS event will be sent
-  if (he.HotSwapState == he.PreviousHotSwapState)
-      return SA_ERR_HPI_DUPLICATE;
+  case eIpmiFruStateCommunicationLost:
 
-  return SA_OK;
+    h.EventType = SAHPI_ET_RESOURCE;
+    h.EventDataUnion.ResourceEvent.ResourceEventType = SAHPI_RESE_RESOURCE_FAILURE;
+
+    stdlog << "cIpmiSensorHotswap::HandleEvent SAHPI_RESE_RESOURCE_FAILURE Event resource " << res->m_resource_id << "\n";
+
+    if ( rptentry )
+    {
+      rptentry->ResourceFailed = SAHPI_TRUE;
+      oh_add_resource(res->Domain()->GetHandler()->rptcache,
+                      rptentry, res, 1);
+      h.Severity = rptentry->ResourceSeverity;
+    }
+    break;
+
+  case eIpmiFruStateInactive:
+
+    // M3->M6->M1 special case
+    if ((previous_state == eIpmiFruStateDeactivationInProgress)
+        && (res->PreviousPrevFruState() == eIpmiFruStateActivationInProgress))
+    {
+        he.PreviousHotSwapState = SAHPI_HS_STATE_INSERTION_PENDING;
+        if ( rptentry )
+        {
+            h.Severity = rptentry->ResourceSeverity;
+        }
+    }
+
+  default:
+    if (previous_state == eIpmiFruStateCommunicationLost)
+    {
+      h.EventType = SAHPI_ET_RESOURCE;
+      h.EventDataUnion.ResourceEvent.ResourceEventType = SAHPI_RESE_RESOURCE_RESTORED;
+
+      stdlog << "cIpmiSensorHotswap::HandleEvent SAHPI_RESE_RESOURCE_RESTORED Event resource " << res->m_resource_id << "\n";
+
+      if ( rptentry )
+      {
+        rptentry->ResourceFailed = SAHPI_FALSE;
+        oh_add_resource(res->Domain()->GetHandler()->rptcache,
+                        rptentry, res, 1);
+        h.Severity = rptentry->ResourceSeverity;
+      }
+    }
+    break;
+  }
+
+  res->PreviousPrevFruState() = previous_state;
+
+  if (h.EventType == SAHPI_ET_HOTSWAP)
+    stdlog << "cIpmiSensorHotswap::HandleEvent SAHPI_ET_HOTSWAP Event resource " << res->m_resource_id << "\n";
+  m_mc->Domain()->AddHpiEvent( e );
+
+  if (h.EventType != SAHPI_ET_HOTSWAP)
+    return;
+
+  oh_event *oem_e = (oh_event *)g_malloc0( sizeof( struct oh_event ) );
+
+  if ( rptentry )
+      oem_e->resource = *rptentry;
+  else
+      oem_e->resource.ResourceCapabilities = 0;
+
+  // hpi event
+  SaHpiEventT &oem_h = oem_e->event;
+
+  oem_h.Source    = h.Source;
+  oem_h.Timestamp = h.Timestamp;
+  oem_h.EventType = SAHPI_ET_OEM;
+  oem_h.Severity = SAHPI_INFORMATIONAL;
+
+  SaHpiOemEventT &oem_he = oem_h.EventDataUnion.OemEvent;
+
+  oem_he.MId = ATCAHPI_PICMG_MID;
+
+  oem_he.OemEventData.DataType =   SAHPI_TL_TYPE_TEXT;
+  oem_he.OemEventData.Language =   SAHPI_LANG_UNDEF;
+  oem_he.OemEventData.DataLength = 3;
+  oem_he.OemEventData.Data[0] =    he.HotSwapState;
+  oem_he.OemEventData.Data[1] =    he.PreviousHotSwapState;
+
+  switch ((event->m_data[11] >> 4) & 0x0F)
+  {
+  case 0x0:
+  case 0x1:
+    oem_he.OemEventData.Data[2] = 0;
+    break;
+  case 0x3:
+    oem_he.OemEventData.Data[2] = 1;
+    break;
+  case 0x2:
+    oem_he.OemEventData.Data[2] = 2;
+    break;
+  case 0x7:
+    oem_he.OemEventData.Data[2] = 3;
+    break;
+  case 0x9:
+    oem_he.OemEventData.Data[2] = 4;
+    break;
+  case 0x6:
+    oem_he.OemEventData.Data[2] = 5;
+    break;
+  case 0x8:
+    oem_he.OemEventData.Data[2] = 6;
+    break;
+  case 0xF:
+  default:
+    oem_he.OemEventData.Data[2] = 7;
+    break;
+  }
+
+  stdlog << "cIpmiSensorHotswap::HandleEvent SAHPI_ET_OEM Event resource " << res->m_resource_id << "\n";
+  m_mc->Domain()->AddHpiEvent( oem_e );
 }
-
 
 SaErrorT
 cIpmiSensorHotswap::GetPicmgState( tIpmiFruState &state )

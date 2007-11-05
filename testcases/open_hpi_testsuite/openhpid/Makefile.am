@@ -42,7 +42,8 @@ EXTRA_DIST		= openhpid.sh.in
 # daemon
 sbin_PROGRAMS           = openhpid
 
-openhpid_SOURCES        = openhpid.cpp $(REMOTE_SOURCES)
+openhpid_SOURCES        = openhpid.cpp
+nodist_openhpid_SOURCES = $(REMOTE_SOURCES)
 
 openhpid_LDADD		= $(top_builddir)/utils/libopenhpiutils.la \
 			  $(top_builddir)/marshal/libohtcpconnx.la
@@ -69,11 +70,16 @@ libopenhpi_la_LIBADD  = $(top_builddir)/marshal/libohtcpconnx.la -lstdc++ \
 
 $(REMOTE_SOURCES):
 	if test ! -f $@ -a ! -L $@; then \
-		ln -s $(top_srcdir)/src/$@; \
+		if test -f $(top_srcdir)/src/$@; then \
+			ln -s $(top_srcdir)/src/$@; \
+		else \
+			ln -s $(top_builddir)/src/$@; \
+		fi \
 	fi
 
 install-data-local:
-	install -D -m 0755 openhpid.sh $(DESTDIR)$(sysconfdir)/init.d/openhpid
+	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/init.d
+	$(INSTALL) -m 0755 openhpid.sh $(DESTDIR)$(sysconfdir)/init.d/openhpid
 
 uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/init.d/openhpid

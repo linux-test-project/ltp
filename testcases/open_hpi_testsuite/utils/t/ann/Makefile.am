@@ -35,11 +35,20 @@ TESTS = ann_test_001 \
 
 check_PROGRAMS = $(TESTS)
 
-ann_test_001_SOURCES = ann_test_001.c $(REMOTE_SOURCES)
-ann_test_002_SOURCES = ann_test_002.c $(REMOTE_SOURCES)
-ann_test_003_SOURCES = ann_test_003.c $(REMOTE_SOURCES)
-ann_test_004_SOURCES = ann_test_004.c $(REMOTE_SOURCES)
-ann_test_005_SOURCES = ann_test_005.c $(REMOTE_SOURCES)
-ann_test_006_SOURCES = ann_test_006.c $(REMOTE_SOURCES)
-ann_test_007_SOURCES = ann_test_007.c $(REMOTE_SOURCES)
-ann_test_008_SOURCES = ann_test_008.c $(REMOTE_SOURCES)
+ann_test_001_SOURCES = ann_test_001.c
+nodist_ann_test_001_SOURCES = $(REMOTE_SOURCES)
+ann_test_002_SOURCES = ann_test_002.c
+nodist_ann_test_002_SOURCES = $(REMOTE_SOURCES)
+ann_test_003_SOURCES = ann_test_003.c
+nodist_ann_test_003_SOURCES = $(REMOTE_SOURCES)
+ann_test_004_SOURCES = ann_test_004.c
+nodist_ann_test_004_SOURCES = $(REMOTE_SOURCES)
+ann_test_005_SOURCES = ann_test_005.c
+nodist_ann_test_005_SOURCES = $(REMOTE_SOURCES)
+ann_test_006_SOURCES = ann_test_006.c
+nodist_ann_test_006_SOURCES = $(REMOTE_SOURCES)
+ann_test_007_SOURCES = ann_test_007.c
+nodist_ann_test_007_SOURCES = $(REMOTE_SOURCES)
+ann_test_008_SOURCES = ann_test_008.c
+nodist_ann_test_008_SOURCES = $(REMOTE_SOURCES)
+

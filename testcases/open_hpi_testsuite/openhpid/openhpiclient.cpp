@@ -382,35 +382,10 @@ static pcstrmsock GetConnx(SaHpiSessionIdT SessionId)
 /* saHpiVersionGet                                                            */
 /*----------------------------------------------------------------------------*/
 
-SaHpiVersionT SAHPI_API saHpiVersionGet(void)
+SaHpiVersionT SAHPI_API saHpiVersionGet (void)
 {
-	void *request = NULL;
-	char reply[dMaxMessageLength];
-	SaHpiVersionT err;
-	char cmd[] = "saHpiVersionget";
-        pcstrmsock pinst = CreateConnx();
-
-        if (pinst == NULL) {
-                cdebug_err(cmd, "Could not create client connection");
-                return SA_ERR_HPI_NO_RESPONSE;
-        }
-
-	cHpiMarshal *hm = HpiMarshalFind(eFsaHpiVersionGet);
-
-	pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiVersionGet, 0);
-
-        SendRecv(0, cmd);
-
-	int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit,
-				    hm, reply + sizeof(cMessageHeader), &err);
-
-        DeleteConnx(pinst);
-	if (mr < 0)
-		err = 0;
-
-	return err;
+        return SAHPI_INTERFACE_VERSION;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /* saHpiSessionOpen                                                           */
@@ -5316,35 +5291,14 @@ SaErrorT SAHPI_API saHpiResourcePowerStateSet(
 /* oHpiVersionGet                                                             */
 /*----------------------------------------------------------------------------*/
 
-SaHpiUint64T SAHPI_API oHpiVersionGet(void)
+SaHpiUint64T oHpiVersionGet(void)
 {
-        void *request = NULL;
-        char reply[dMaxMessageLength];
-        SaHpiUint64T ver;
-        char cmd[] = "oHpiVersionGet";
-        pcstrmsock pinst = CreateConnx();
+        SaHpiUint64T v = 0;
 
-        if (pinst == NULL) {
-                cdebug_err(cmd, "Could not create client connection");
-                return SA_ERR_HPI_NO_RESPONSE;
-        }
+        OHPI_VERSION_GET(v, VERSION);
 
-        cHpiMarshal *hm = HpiMarshalFind(eFoHpiVersionGet);
-
-        pinst->MessageHeaderInit(eMhMsg, 0, eFoHpiVersionGet, 0);
-
-        SendRecv(0, cmd);
-
-        int mr = HpiDemarshalReply0(pinst->header.m_flags & dMhEndianBit,
-                                    hm, reply + sizeof(cMessageHeader), &ver);
-
-        DeleteConnx(pinst);
-        if (mr < 0)
-                ver = 0;
-
-        return ver;
+        return v;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /* oHpiHandlerCreate                                                          */

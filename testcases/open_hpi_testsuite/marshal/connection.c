@@ -202,7 +202,7 @@ ConnectionReadMsg( int fd, struct sockaddr_in *rd_addr, cMessageHeader *header,
   socklen_t from_len = sizeof( struct sockaddr_in );
   unsigned char data[dMaxMessageLength];
 
-  int len = recvfrom( fd, data, dMaxMessageLength, 0, rd_addr, &from_len );
+  int len = recvfrom( fd, data, dMaxMessageLength, 0, (struct sockaddr *)rd_addr, &from_len );
 
   if ( len < sizeof( cMessageHeader ) )
      {

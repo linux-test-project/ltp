@@ -38,8 +38,8 @@ public:
   cIpmiSensorHotswap( cIpmiMc *mc );
   virtual ~cIpmiSensorHotswap();
 
-  // create hpi event from ipmi event
-  SaErrorT CreateEvent( cIpmiEvent *event, SaHpiEventT &h );
+  // handle hotswap sensor events
+  virtual void HandleEvent( cIpmiEvent *event );
 
   // read sensor parameter from Full Sensor Record
   virtual bool GetDataFromSdr( cIpmiMc *mc, cIpmiSdr *sdr );

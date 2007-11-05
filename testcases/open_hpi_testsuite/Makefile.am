@@ -39,7 +39,7 @@ DESTDIR                 =
 RPM                     = @RPM@
 RPMFLAGS                = -ba
 
-EXTRA_DIST              = openhpi.spec \
+EXTRA_DIST              = openhpi.spec.in \
 	openhpi.conf.example \
 	README.daemon \
         $(shell find $(srcdir)/include -name '*.h')
@@ -52,8 +52,8 @@ MAINTAINERCLEANFILES    = Makefile.in aclocal.m4 configure config.guess config.s
 MOSTLYCLEANFILES        = tags
 
 
-SUBDIRS                 = utils scripts src hpi_ui_lib @SNMPDIR@ @MARSHALDIR@ plugins docs hpi_shell @ENABLED_DIRS@
-DIST_SUBDIRS            = utils scripts src hpi_ui_lib snmp marshal plugins docs hpi_shell openhpid clients cpp
+SUBDIRS                 = utils scripts src hpi_ui_lib @SNMPDIR@ @MARSHALDIR@ plugins docs @ENABLED_DIRS@ hpi_shell
+DIST_SUBDIRS            = utils scripts src hpi_ui_lib snmp marshal plugins docs openhpid clients cpp hpi_shell
 
 
 DISTCHECK_CONFIGURE_FLAGS = --with-initdir=prefix

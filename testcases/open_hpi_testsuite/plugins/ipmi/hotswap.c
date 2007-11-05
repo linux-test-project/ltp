@@ -338,7 +338,7 @@ printf("\n");
 					_ipmi_to_hpi_state_conv(curr_state);
 	e->event.EventDataUnion.OemEvent.OemEventData.Data[1] =
 					_ipmi_to_hpi_state_conv(last_state);
-	e->event.EventDataUnion.OemEvent.OemEventData.Data[3] =
+	e->event.EventDataUnion.OemEvent.OemEventData.Data[2] =
 			_ipmi_to_hpi_cause_of_change_conv(data[11] >> 4);
 
 	e->hid = handler->hid;

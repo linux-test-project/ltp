@@ -606,7 +606,8 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
        case eMtInt16:
        case eMtUint16:
             {
-              tUint16 v = *(const tUint16 *)buffer;
+              tUint16 v;
+              memcpy( &v, buffer, sizeof( tUint16 ) );
 
               if ( MarshalByteOrder() != byte_order )
                    v = bswap_16( v );
@@ -619,7 +620,8 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
        case eMtUint32:
        case eMtInt32:
             {
-              tUint32 v = *(const tUint32 *)buffer;
+              tUint32 v;
+              memcpy( &v, buffer, sizeof( tUint32 ) );
 
               if ( MarshalByteOrder() != byte_order )
                    v = bswap_32( v );
@@ -632,7 +634,8 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
        case eMtUint64:
        case eMtInt64:
             {
-              tUint64 v = *(const tUint64 *)buffer;
+              tUint64 v;
+              memcpy( &v, buffer, sizeof( tUint64 ) );
 
               if ( MarshalByteOrder() != byte_order )
                    v = bswap_64( v );
@@ -646,7 +649,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
             {
               // this has been tested for i386 and PPC
               tFloat32Uint32 v;
-              v.m_f32 = *(const tFloat32 *)buffer;
+              memcpy( &(v.m_f32), buffer, sizeof( tFloat32 ) );
 
               if ( MarshalByteOrder() != byte_order )
                    v.m_u32 = bswap_32( v.m_u32 );
@@ -660,7 +663,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
             {
               // this has been tested for i386 and PPC
               tFloat64Uint64 v;
-              v.m_f64 = *(const tFloat64 *)buffer;
+              memcpy( &(v.m_f64), buffer, sizeof( tFloat64 ) );
 
               if ( MarshalByteOrder() != byte_order )
                    v.m_u64 = bswap_64( v.m_u64 );

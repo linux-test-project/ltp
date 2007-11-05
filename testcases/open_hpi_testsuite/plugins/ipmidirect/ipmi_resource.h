@@ -66,6 +66,7 @@ protected:
   tIpmiFruState       m_picmg_fru_state;
   bool                m_policy_canceled;
   SaHpiTimeoutT       m_extract_timeout;
+  tIpmiFruState       m_prev_prev_fru_state;
 
   unsigned int        m_oem;
 
@@ -81,6 +82,7 @@ public:
   tIpmiFruState &PicmgFruState() { return m_picmg_fru_state; }
   bool &PolicyCanceled() { return m_policy_canceled; }
   SaHpiTimeoutT &ExtractTimeout() { return m_extract_timeout; }
+  tIpmiFruState &PreviousPrevFruState() { return m_prev_prev_fru_state; }
   cIpmiDomain *Domain() const;
   unsigned int &Oem() { return m_oem; }
   cIpmiEntityPath &EntityPath() { return m_entity_path; }

@@ -18,7 +18,7 @@
 #include <oHpi.h>
 #include <oh_utils.h>
 
-#define OH_SVN_REV "$Revision: 1.4 $"
+#define OH_SVN_REV "$Revision: 1.5 $"
 
 #define dbg(format, ...) \
         do { \
@@ -30,8 +30,9 @@
 #define show_error_quit(msg) \
         do { \
                 if (error) { \
+			opts.dbg = 1; \
                         dbg(msg, oh_lookup_error(error)); \
-                        abort(); \
+                        exit(-1); \
                 } \
         } while(0)
 
@@ -76,8 +77,8 @@ int main(int argc, char **argv)
 
         /* Parsing options */
         if (parse_options(argc, &argv, &opts)) {
-                printf("There was an error parsing the options. Exiting.\n");
-                abort();
+                fprintf(stderr, "There was an error parsing the options. Exiting.\n");
+                exit(-1);
         }
 
         /* Program really begins here - all options parsed at this point */

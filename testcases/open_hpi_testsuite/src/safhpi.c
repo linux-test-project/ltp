@@ -493,7 +493,8 @@ SaErrorT SAHPI_API saHpiGetIdByEntityPath (
                 oh_release_domain(d);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
-        
+       
+	*InstrumentId = oh_get_rdr_num(rdr->RecordId);
         rdr = oh_get_rdr_by_type_next(&d->rpt, rid, InstrumentType,
                                       oh_get_rdr_num(rdr->RecordId));
         if (rdr == NULL) {

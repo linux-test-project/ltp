@@ -180,6 +180,10 @@ SaErrorT oh_decode_manufacturerid(SaHpiManufacturerIdT value, SaHpiTextBufferT *
                 err = oh_append_textbuffer(&working, "RadiSys Corporation");
                 if (err) { return(err); }
                 break;
+        case 5380:
+                err = oh_append_textbuffer(&working, "CDOT");
+                if (err) { return(err); }
+                break;
         case 6629:
                 err = oh_append_textbuffer(&working, "Ulticom");
                 if (err) { return(err); }

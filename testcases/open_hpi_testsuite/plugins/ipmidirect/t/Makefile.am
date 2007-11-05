@@ -46,12 +46,12 @@ AM_CXXFLAGS 		= @NOCXXFLAGS@ @COV_CFLAGS@
 
 $(CON_REMOTE_SOURCES):
 	if test ! -f $@ -a ! -L $@; then \
-		ln -s ../$@; \
+		ln -s $(top_srcdir)/plugins/ipmidirect/$@; \
 	fi
 
 $(SENSOR_FACTORS_REMOTE_SOURCES):
 	if test ! -f $@ -a ! -L $@; then \
-		ln -s ../$@; \
+		ln -s $(top_srcdir)/plugins/ipmidirect/$@; \
 	fi
 
 check_PROGRAMS = \
@@ -64,12 +64,16 @@ TESTS = \
 	thread_000 \
 	sensor_factors_000
 
-con_000_SOURCES = con_000.cpp $(CON_REMOTE_SOURCES)
+con_000_SOURCES = con_000.cpp
+nodist_con_000_SOURCES = $(CON_REMOTE_SOURCES)
 con_000_LDADD   = @SSL_LIB@
 
-con_001_SOURCES = con_001.c $(CON_REMOTE_SOURCES)
+con_001_SOURCES = con_001.c
+nodist_con_001_SOURCES = $(CON_REMOTE_SOURCES)
 con_001_LDADD   = @SSL_LIB@
 
-thread_000_SOURCES = thread_000.cpp test.h $(THREAD_REMOTE_SOURCES)
+thread_000_SOURCES = thread_000.cpp test.h
+nodist_thread_000_SOURCES = $(THREAD_REMOTE_SOURCES)
 
-sensor_factors_000_SOURCES = sensor_factors_000.cpp test.h $(SENSOR_FACTORS_REMOTE_SOURCES)
+sensor_factors_000_SOURCES = sensor_factors_000.cpp test.h
+nodist_sensor_factors_000_SOURCES = $(SENSOR_FACTORS_REMOTE_SOURCES)

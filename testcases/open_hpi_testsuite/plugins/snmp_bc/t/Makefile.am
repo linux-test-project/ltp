@@ -62,13 +62,12 @@ $(REMOTE_SIM_SOURCES):
 	fi
 
 libsnmp_bc_la_SOURCES = \
-		$(GENERATED_EVENT_CODE) \
-		$(REMOTE_SIM_SOURCES) \
 		sim_init.c \
 		sim_resources.c \
 		sim_file.c \
 		snmp_utils.c \
 		tsetup.c
+nodist_libsnmp_bc_la_SOURCES = $(GENERATED_EVENT_CODE) $(REMOTE_SIM_SOURCES)
 
 # libopenhpi_la_LIBADD    = @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@ $(top_builddir)/utils/libopenhpiutils.la
 # libopenhpi_la_LDFLAGS   = -L$(top_builddir)/utils -version-info @HPI_LIB_VERSION@ -export-symbols $(top_srcdir)/src/hpi.sym

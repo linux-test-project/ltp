@@ -20,19 +20,6 @@
 #include <stdio.h>
 
 
-static const cMarshalType *saHpiVersionGetIn[] =
-{
-  0
-};
-
-
-static const cMarshalType *saHpiVersionGetOut[] =
-{
-  &SaHpiVersionType, // result (SaHpiVersionT)
-  0
-};
-
-
 static const cMarshalType *saHpiSessionOpenIn[] =
 {
   &SaHpiDomainIdType, // domain id (SaHpiDomainIdT)
@@ -1688,16 +1675,6 @@ static const cMarshalType *saHpiResourcePowerStateSetOut[] =
   0
 };
 
-static const cMarshalType *oHpiVersionGetIn[] =
-{
-        0
-};
-static const cMarshalType *oHpiVersionGetOut[] =
-{
-        &SaHpiUint64Type,
-        0
-};
-
 static const cMarshalType *oHpiHandlerCreateInitIn[] =
 {
   &SaErrorType, // dummy entry
@@ -1851,7 +1828,6 @@ static const cMarshalType *oHpiInjectEventOut[] =
 
 static cHpiMarshal hpi_marshal[] =
 {
-  dHpiMarshalEntry( saHpiVersionGet ),
   dHpiMarshalEntry( saHpiSessionOpen ),
   dHpiMarshalEntry( saHpiSessionClose ),
   dHpiMarshalEntry( saHpiDiscover ),
@@ -1958,7 +1934,6 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiResourceResetStateSet ),
   dHpiMarshalEntry( saHpiResourcePowerStateGet ),
   dHpiMarshalEntry( saHpiResourcePowerStateSet ),
-  dHpiMarshalEntry( oHpiVersionGet ),
   dHpiMarshalEntry( oHpiHandlerCreateInit ),
   dHpiMarshalEntry( oHpiHandlerCreateAddTEntry ),
   dHpiMarshalEntry( oHpiHandlerCreate ),

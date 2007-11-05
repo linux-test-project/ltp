@@ -476,18 +476,6 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
 
 
         switch( thrdinst->header.m_id ) {
-                case eFsaHpiVersionGet: {
-                        SaHpiVersionT ver;
-                
-                        PVERBOSE1("%p Processing saHpiVersionGet.", thrdid);
-                
-                        ver = saHpiVersionGet( );
-                
-                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ver );
-                        result = eResultClose;
-                }
-                break;
-                
                 case eFsaHpiSessionOpen: {
                         SaHpiDomainIdT  domain_id;
                         SaHpiSessionIdT session_id = 0;
@@ -2571,18 +2559,6 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 }
                 break;
 
-                case eFoHpiVersionGet: {
-                        SaHpiUint64T ver;
-                
-                        PVERBOSE1("%p Processing oHpiVersionGet.", thrdid);
-                
-                        ver = oHpiVersionGet();
-                
-                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ver );
-                        result = eResultClose;
-                }
-                break;
-                
                 case eFoHpiHandlerCreateInit: {
                 
                         PVERBOSE1("%p Processing oHpiHandlerCreateInit.", thrdid);

@@ -87,8 +87,8 @@ $OH_MSG
 
 AC_DEFUN([OH_CHECK_GCC],
     [
-    GCCVERSIONOK=`gcc --version | grep "(GCC)" | \
-    sed 's/.*GCC.//' | sed 's/\./ /g' | \
+    GCCVERSIONOK=`gcc -dumpversion | \
+    sed 's/\./ /g' | \
     awk '{ \
         if ( $[1] > $1) { \
             print "OK"; \

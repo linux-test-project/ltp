@@ -31,7 +31,8 @@
 #
 
 
-MAINTAINERCLEANFILES    = Makefile.in plugin_static.c
+MAINTAINERCLEANFILES    = Makefile.in
+DISTCLEANFILES		= plugin_static.c
 MOSTLYCLEANFILES        = @TEST_CLEAN@
 
 EXTRA_DIST              = plugin_static.c.in
@@ -60,11 +61,11 @@ libopenhpi_la_SOURCES   = \
                            hotswap.c \
                            lock.c \
                            plugin.c \
-                           plugin_static.c \
                            init.c \
                            safhpi.c \
                            session.c \
                            ohpi.c
+nodist_libopenhpi_la_SOURCES = plugin_static.c
 
 libopenhpi_la_LIBADD    = @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@ $(top_builddir)/utils/libopenhpiutils.la
 libopenhpi_la_LDFLAGS   = -L$(top_builddir)/utils -version-info @HPI_LIB_VERSION@ -export-dynamic

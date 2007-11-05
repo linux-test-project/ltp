@@ -27,6 +27,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#if defined(__sun) && defined(__SVR4)
+#include <unistd.h>
+#include <stropts.h>
+#include <sys/ioccom.h>
+#endif
 
 #include "ipmi_con_smi.h"
 

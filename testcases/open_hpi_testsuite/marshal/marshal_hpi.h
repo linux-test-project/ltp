@@ -35,7 +35,6 @@ extern "C" {
 typedef enum
 {
   eFsaHpiNull,
-  eFsaHpiVersionGet,
   eFsaHpiSessionOpen,
   eFsaHpiSessionClose,
   eFsaHpiDiscover,
@@ -142,7 +141,6 @@ typedef enum
   eFsaHpiResourceResetStateSet,
   eFsaHpiResourcePowerStateGet,
   eFsaHpiResourcePowerStateSet,
-  eFoHpiVersionGet,
   eFoHpiHandlerCreateInit,
   eFoHpiHandlerCreateAddTEntry,
   eFoHpiHandlerCreate,
