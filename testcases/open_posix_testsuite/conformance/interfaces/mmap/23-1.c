@@ -35,7 +35,7 @@ int main()
   void *pa = NULL; 
   void *addr = NULL;
   size_t len = 1024;
-  int prot = PROT_READ | PROT_WRITE;
+  int prot = PROT_READ;
   int flag = MAP_SHARED;
   int fd;
   off_t off = 0;
@@ -47,7 +47,7 @@ int main()
     exit(PTS_UNRESOLVED);
   }
   
-  fd = pipe_fd[1]; 
+  fd = pipe_fd[0];
   pa = mmap(addr, len, prot, flag, fd, off);
   if (pa == MAP_FAILED && errno == ENODEV)
   {
@@ -59,7 +59,7 @@ int main()
   else 
   {
     printf ("Test Fail: " TNAME 
-            " Expect ENODEF, get: %s\n", strerror(errno));    
+            " Expect ENODEV, get: %s\n", strerror(errno));
     close(pipe_fd[0]);
     close(pipe_fd[1]);
     exit(PTS_FAIL);
