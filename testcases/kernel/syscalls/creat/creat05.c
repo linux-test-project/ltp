@@ -164,7 +164,6 @@ setup()
 			}
 			break;
 		}
-		close(fd);
 	}
 }
 

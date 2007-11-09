@@ -1400,6 +1400,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 */
 
 		/* BUG:14136 (don't go past ext2's filesize limit) */
+                curr_size = file_size(fd);
 		if (curr_size+grow_incr>=ext2_limit) {
 			lkfile(fd, LOCK_UN, LKLVL1);   /* release lock */
 			close(fd);
