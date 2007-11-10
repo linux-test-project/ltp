@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -16,21 +15,7 @@
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 /*
-*
-*   ORIGINS: 27
-*
-*   IBM CONFIDENTIAL -- (IBM Confidential Restricted when
-*   combined with the aggregated modules for this product)
-*   OBJECT CODE ONLY SOURCE MATERIALS
-*
-*   (C) COPYRIGHT International Business Machines Corp. 1992
-*   All Rights Reserved
-*   US Government Users Restricted Rights - Use, duplication or
-*   disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-*
-*
 *   File: pthserv.c	Version: 1.3		Last update: 5/19/94 08:55:35
 */
 /******************************************************************************/

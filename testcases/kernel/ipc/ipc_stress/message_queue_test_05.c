@@ -1,5 +1,5 @@
 /*
- *
+ *   Copyright (C) Bull S.A. 1996
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -16,12 +16,6 @@
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
-/*
- * Copyright (C) Bull S.A. 1996
- * Level 1,5 Years Bull Confidential and Proprietary Information
- */
-
 /*---------------------------------------------------------------------+
 |                       message_queue_test_05                          |
 | ==================================================================== |

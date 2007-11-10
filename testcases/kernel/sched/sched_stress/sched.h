@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -16,26 +15,7 @@
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
-/* @BULL_COPYRIGHT@ */
 /*@(#)63  1.1  testcase/bpsc_str/sched.h, pvt_kernel, pv_kernel 12/11/96 16:43:19*/
-/*
- *
- * FUNCTIONS: Scheduler Test Suite
- *
- * ORIGINS: 27
- *
- * IBM CONFIDENTIAL -- (IBM Confidential Restricted when
- * combined with the aggregated modules for this product)
- * OBJECT CODE ONLY SOURCE MATERIALS
- * (C) COPYRIGHT International Business Machines Corp. 1985, 1989
- * All Rights Reserved
- *
- * US Government Users Restricted Rights - Use, duplication or
- * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
- *
- */
-
 /*---------------------------------------------------------------------+
 |                                sched.h                               |
 | ==================================================================== |
