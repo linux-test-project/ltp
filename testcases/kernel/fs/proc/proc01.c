@@ -200,6 +200,14 @@ int readproc(const char *obj)
 			return 0;
 		}
 
+        /* Skip write-only files. */
+        if ((statbuf.st_mode & S_IRUSR) == 0
+            && statbuf.st_mode & S_IWUSR) {
+            tst_resm(TINFO, "%s: is write-only.", obj);
+            close(fd);
+            return 0;
+        }
+
 		nread = 1;
 		while (nread > 0) {
 			nread = read(fd, buf, buffsize);
