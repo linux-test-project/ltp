@@ -34,6 +34,7 @@
 #include <dirent.h>		/* for opendir(), readdir(), closedir() */
 #include <unistd.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -51,6 +52,7 @@ static int opt_buffsize = 0;
 static char *opt_buffsizestr;
 
 static char *procpath = "/proc";
+static char selfpath[] = "/proc/self";
 size_t buffsize = 1024;
 
 /* FIXME: would it overflow on 32bits systems with >4Go RAM (HIGHMEM) ? */
@@ -142,14 +144,14 @@ int readproc(const char *obj)
 		return 0;
 	}
 
-	/* prevent loops .. */
-	if (S_ISLNK(statbuf.st_mode))
+	/* prevent loops, but read /proc/self. */
+	if (S_ISLNK(statbuf.st_mode) && strcmp(obj, selfpath))
 		return 0;
 
 	total_obj++;
 
 	/* Take appropriate action, depending on the file type */
-	if (S_ISDIR(statbuf.st_mode)) {
+	if (S_ISDIR(statbuf.st_mode) || !strcmp(obj, selfpath)) {
 		/* object is a directory */
 
 		/* Open the directory to get access to what is in it */
@@ -166,10 +168,12 @@ int readproc(const char *obj)
 		for (dir_ent = (struct dirent *)readdir(dir);
 		     dir_ent != NULL; dir_ent = (struct dirent *)readdir(dir)) {
 
-			/* Ignore "." or ".." */
+			/* Ignore ".", "..", "kcore", and "/proc/<pid>". */
 			if (!strcmp(dir_ent->d_name, ".")
 			    || !strcmp(dir_ent->d_name, "..")
-			    || !strcmp(dir_ent->d_name, "kcore"))
+			    || !strcmp(dir_ent->d_name, "kcore")
+                           || (!fnmatch("[0-9]*", dir_ent->d_name, FNM_PATHNAME)
+                               && !strcmp(obj, procpath)))
 				continue;
 
 			if (opt_verbose)
