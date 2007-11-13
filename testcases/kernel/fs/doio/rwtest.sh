@@ -319,6 +319,10 @@ do
 		then
 			blks=${szblks[$n]}
 		else
+			# If df is a symlink (to busybox) then do not pass the $dir and $dfOpts
+			# parameters because they don't work as expected
+                        [ -h $(which df) ] && dir=""; dfOpts=""
+	
 			blks=$(df $dfOpts $dir |
 			(while read fs blks used avail cap mountpoint
 			 do
