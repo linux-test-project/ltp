@@ -64,14 +64,14 @@ NS_DURATION=${NS_DURATION:-3600}	# 1 hour
 LINK_NUM=${LINK_NUM:-0}
 
 # Network portion of the IPv4 address
-NETWORK_PART="10.0.0"
+NETWORK_PART=${IPV4_NETWORK:-"10.0.0"}
 
 # Netmask of the IPv4 network
 NETWORK_MASK=24
 
 # Host portion of the IPv4 address
-LHOST_HOST_PART="2"     # local host
-RHOST_HOST_PART="1"     # remote host
+LHOST_HOST_PART=${LHOST_IPV4_HOST:-"2"}     # local host
+RHOST_HOST_PART=${RHOST_IPV4_HOST:-"1"}     # remote host
 
 # Prefix of the Multicast Address
 MCAST_ADDR_PREFIX=224.10

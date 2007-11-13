@@ -163,14 +163,14 @@ trap do_cleanup 0
 case $IP_VER in
     4)
     # Network portion of the IPv4 address
-    network_part="10.0.0"
+    network_part=${IPV4_NETWORK:-"10.0.0"}
 
     # Netmask of the IPv4 network
     network_mask=24
 
     # Host portion of the IPv4 address
-    lhost_host_part="2"     # local host
-    rhost_host_part="1"     # remote host
+    lhost_host_part=${LHOST_IPV4_HOST:-"2"}     # local host
+    rhost_host_part=${RHOST_IPV4_HOST:-"1"}     # remote host
 
     # Set IPv4 addresses to the interfaces
     set_ipv4addr lhost $LINK_NUM $network_part $lhost_host_part

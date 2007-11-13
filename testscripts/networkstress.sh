@@ -20,6 +20,14 @@ export HTTP_DOWNLOAD_DIR=
 export FTP_DOWNLOAD_DIR=
 export FTP_UPLOAD_DIR=
 export FTP_UPLOAD_URLDIR=
+# Set firt three octets of the network address, by default 10.0.0
+export IPV4_NETWORK=
+# Set local host last octet, by default 2
+export LHOST_IPV4_HOST=
+# Set remote host last octet, by default 1
+export RHOST_IPV4_HOST=
+# Set the reverse of IPV4_NETWORK, by default 0.0.10
+export IPV4_NETWORK_REVERSE=
 # ---***************************************************---=
 
 # ---***** OPTIONAL SETTINGS *****---
