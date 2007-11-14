@@ -270,6 +270,9 @@ static int tee_test(void)
  */
 void setup()
 {
+        /* Make a temp directory and cd to it */
+        tst_tmpdir();
+
 	/* Initialize test file names */
 	sprintf(testfile1, "teetest%d_1.txt", getpid());
 	sprintf(testfile2, "teetest%d_2.txt", getpid());
@@ -296,6 +299,8 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+        /* Remove tmp dir and all files in it */
+        tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();

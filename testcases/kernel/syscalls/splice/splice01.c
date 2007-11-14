@@ -150,6 +150,9 @@ static int splice_test(void)
 	int i, len;
 	int fd_in, fd_out;
 
+        /* Make a temp directory and cd to it */
+        tst_tmpdir();
+
 	for (i = 0; i < SPLICE_TEST_BLOCK_SIZE; i++) {
 		buffer[i] = i & 0xff;
 	}
@@ -259,6 +262,10 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+        /* Remove tmp dir and all files in it */
+        tst_rmdir();
+
 
 	/* exit with return code appropriate for results */
 	tst_exit();
