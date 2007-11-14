@@ -68,6 +68,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 char filename[40];
+int fd[2];
 
 #define MODE1 0644
 #define MODE2 0444
@@ -107,7 +108,7 @@ main(int ac, char **av)
 		/* loop through the test cases */
 
 		for (i=0; i<TST_TOTAL; i++) {
-			TEST(creat(filename, TC[i].mode));
+			TEST(fd[i] = creat(filename, TC[i].mode));
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "Could not creat file %s",
@@ -202,11 +203,16 @@ setup()
 void
 cleanup()
 {
+	int i;
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	for (i=0; i<TST_TOTAL; i++) {
+		close(fd[i]);
+	}
 
 	unlink(filename);
 

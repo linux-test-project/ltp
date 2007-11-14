@@ -232,6 +232,8 @@ cleanup(void)
 	 */
 	TEST_CLEANUP;
 
+	close(fd[0]);
+
 	if (unlink(f_name) < 0) {
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);

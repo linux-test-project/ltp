@@ -60,6 +60,7 @@ extern int Tst_count;
 
 int fd, ifile, mypid, first;
 int nfile;
+int *buf;
 char fname[40];
 
 int exp_enos[] = {EMFILE, 0};
@@ -71,7 +72,6 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int fdo;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -86,7 +86,6 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		int a; 
 
 		TEST(open(fname, O_RDWR | O_CREAT));
 
@@ -138,6 +137,11 @@ setup()
 	close(first);
 	unlink(fname);
 
+	/* Allocate memory for stat and ustat structure variables*/
+	if( (buf = (int *) malloc(sizeof(int) * nfile - first)) == NULL) {
+		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+	}
+
 	for (ifile = first; ifile <= nfile; ifile++) {
 		sprintf(fname, "open04.%d.%d", ifile, mypid);
 		if ((fd = open(fname, O_RDWR | O_CREAT)) == -1) {
@@ -147,6 +151,7 @@ setup()
 			}
 			break;
 		}
+		buf[ifile-first] = fd;
 	}
 }
 
@@ -167,6 +172,7 @@ cleanup()
 
 	for (ifile = first; ifile < nfile; ifile++) {
 		sprintf(fname, "open04.%d.%d", ifile, mypid);
+		close(buf[ifile-first]);
 		unlink(fname);
 	}
 
