@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.10 2006/05/26 06:17:53 vapier Exp $ */
+/* $Id: test.h,v 1.11 2007/11/15 08:46:18 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -234,7 +234,7 @@ extern char * get_high_address(void);
 
 extern void get_kver(int*, int*, int*);
 extern int tst_kvercmp(int, int, int);
-
+extern int tst_is_cwd_nfs();
 extern int tst_is_cwd_tmpfs();
 extern int tst_cwd_has_free(int required_kib);
 
