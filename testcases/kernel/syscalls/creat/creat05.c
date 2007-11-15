@@ -68,6 +68,7 @@ void cleanup(void);
 int exp_enos[] = {EMFILE, 0};
 
 int fd, ifile, mypid, first;
+int *buf;
 char fname[40];
 
 int
@@ -150,6 +151,10 @@ setup()
 
 	/* get the maximum number of files that we can open */
 	max_open = getdtablesize();
+       /* Allocate memory for stat and ustat structure variables*/
+       if( (buf = (int *) malloc(sizeof(int) *  max_open - first)) == NULL) {
+               tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+       }
 
 	/* now open as many files as we can up to max_open */
 	for (ifile = first; ifile <= max_open; ifile++) {
@@ -164,6 +169,7 @@ setup()
 			}
 			break;
 		}
+                buf[ifile-first] = fd;
 	}
 }
 
@@ -177,6 +183,7 @@ remove_files(int nfiles)
 
 	for (i=first; i<nfiles; i++) {
 		sprintf(fname, "creat05.%d.%d", i, mypid);
+                close(buf[i-first]);
 		unlink(fname);
 	}
 }
