@@ -62,7 +62,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 #define INCREMENT 		8388608	/* 8Mb */
 #elif defined (__mips__)  ||  defined (__hppa__)
 #define INCREMENT		262144	/* 256Kb */
-#elif defined __sh__
+#elif defined __sh__ || defined (__arm__)
 #define INCREMENT 		16384   /* 16kb */
 #else
 #define INCREMENT 		getpagesize()
@@ -163,7 +163,7 @@ int main()
 	tst_resm(TPASS, "sbrk, shmat");
 
 /*--------------------------------------------------------*/
-#if defined (__ia64__) || defined(__mips__) || defined(__hppa__)
+#if defined (__ia64__) || defined(__mips__) || defined(__hppa__) || defined(__arm__)
 	while ((vp = sbrk(INCREMENT)) != (void *)-1) ;
 	if (errno != ENOMEM) {
 		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
