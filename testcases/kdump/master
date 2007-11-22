@@ -49,7 +49,7 @@ run_test()
 			#
 			# Verify results of previous test
 			#
-				VMCORE="${VMCORE}/`date +%F-%H`*"
+                                VMCORE="${VMCORE}/*"
 				RESULTS_FILE=${RESULTS_DIR}/${ITERATION}.${TESTS[$PREV_TEST]}.`date +%F-%T`
 				if [ -f ${VMCORE}/vmcore ]; then
 					mv ${VMCORE}/vmcore ${TEST_BASE_DIR}/results/vmcore
