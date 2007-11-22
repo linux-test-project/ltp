@@ -120,6 +120,15 @@ exit02 exit02
 #faccessat test cases
 faccessat01 faccessat01
 
+posix_fadvise01                      posix_fadvise01
+posix_fadvise01_64                posix_fadvise01_64
+posix_fadvise02                      posix_fadvise02
+posix_fadvise02_64                posix_fadvise02_64
+posix_fadvise03                      posix_fadvise03
+posix_fadvise03_64                posix_fadvise03_64
+posix_fadvise04                      posix_fadvise04
+posix_fadvise04_64                posix_fadvise04_64
+
 fchdir01 fchdir01
 fchdir02 fchdir02
 fchdir03 fchdir03
