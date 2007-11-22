@@ -11,6 +11,9 @@ declare -i CRASH_FOUND=0
 # ARCH = 1 means it's ia32/x86_64 arch
 # ARCH = 2 means it's ppc64 arch
 declare -i ARCH
+declare -i DATA_AUTO=0
+declare -i LINK_DELAY=0
+
 
 CRASHKERNEL='crashkernel=[0-9]\+M@[0-9]\+M'
 USE_CRASH="n"
@@ -20,23 +23,81 @@ USE_MOD="1"
 VMLINUX_DEBUG=""
 LINUX_2_6_16=2616
 
+#test if input file is available
+if [ -z "$1" ]; then
+        echo "usage: $0 test or enable"
+        echo "enable: argument will enable kdump to capture dump and dump in network dump server"
+        exit
+else
+        TEST=$1
+fi
+
+if [ -f $CONFIG_FILE -a -s $CONFIG_FILE ]; then
+        rm $CONFIG_FILE
+fi
+
+#test if input file is available
+if [  -f ./data_file -a $TEST="test" ]; then
+        DATA_AUTO=1
+        . ./data_file
+fi
+
+#Create testfile if kdump has to be enabled while testing other testsuites
+rm -f testfile
+if [ -f ./enable_data -a $TEST="enable" ]; then
+        DATA_AUTO=1
+        . ./enable_data
+        echo -e "KDENB" > testfile
+        echo "SCP_PATH=$SCP_PATH" >> $CONFIG_FILE
+        echo "DEST_PASS_WD=$DEST_PASS_WD" >> $CONFIG_FILE
+
+fi
+
+# Create a backup of kdump.conf file
+if [ -f /etc/kdump.orig ]; then
+        cp /etc/kdump.orig /etc/kdump.conf
+else
+        cp /etc/kdump.conf /etc/kdump.orig
+fi
+
 # Determine architecture we're running on
+#Modify menu.lst file to reserve memory while booting
 arch=`uname -m`
+cat /proc/cmdline | grep -e $CRASHKERNEL >/dev/null
+RET=$?
 if [ `echo $arch |grep -e "i[3-6]86"` ]
 then
         ARCH=1
+        if [ $RET -ne 0 ]; then
+                cat /boot/grub/menu.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@16M/' > menu.lst
+        fi
+        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
 else if [ $arch == "x86_64" ]
 then
         ARCH=1
+        if [ $RET -ne 0 ]; then
+                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@16M/' > menu.lst
+        fi
+        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
 else if [ $arch == "ppc64" ]
 then
         ARCH=2
+        if [ $RET -ne 0 ]; then
+                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@32M/' > menu.lst
+        fi
+        echo "CRASHKERNEL=64M@32M" >> $CONFIG_FILE
 else
         echo "Unsupported architecture... exiting"
         exit
 fi
 fi
 fi
+
+#copy menu.lst to /boot/grub/menu.lst only if menu.lst size is not zero
+if [ -f menu.lst -a -s menu.lst ]; then
+        mv menu.lst /boot/grub/menu.lst
+fi
+
 # Determine the Kernel Version
 KERNEL_VERSION=$(uname -r | awk -F . '{ print $1 $2 $3}' | awk -F - '{ print $1 }' )
 if [ $KERNEL_VERSION -lt $LINUX_2_6_16 ]; then
@@ -46,15 +107,20 @@ fi
 	
 # Determine the distribution we are running on
 DISTRO=`./distro`
-echo "DISTRO=$DISTRO" > $CONFIG_FILE
+echo "DISTRO=$DISTRO" >> $CONFIG_FILE
 
 echo "Using the crash command and the kernel debug info during results"
 echo "verfication is optional. If you choose to do so, they must be"
 echo "installed on the system before running this script."
 echo ""
-read -p "Do you want to use crash and the kernel debug info? (y/n): " USE_CRASH  
+if [ $DATA_AUTO -eq 0 -a $TEST="test" ]; then
+	read -p "Do you want to use crash and the kernel debug info? (y/n): " USE_CRASH
+fi
+  
 if [ $USE_CRASH = "y" ]; then
-	read -p "Enter the location of the kernel debug binary: " VMLINUX_DEBUG
+	if [ $DATA_AUTO -eq 0 -a $TEST="test" ]; then
+		read -p "Enter the location of the kernel debug binary: " VMLINUX_DEBUG
+	fi
 	if [ ! -f $VMLINUX_DEBUG ]; then
 		echo "${VMLINUX_DEBUG} NOT FOUND... crash won't be used during verify"
 		VMLINUX=""
@@ -71,7 +137,9 @@ fi
 echo "CRASH_FOUND=${CRASH_FOUND}" >> $CONFIG_FILE
 
 # How many times to iterate through the tests
-read -p "How many interations of the the test set do you want to run? (default is 1): " NUM_ITERATIONS
+if [ $DATA_AUTO -eq 0 -a $TEST="test" ]; then
+	read -p "How many interations of the the test set do you want to run? (default is 1): " NUM_ITERATIONS
+fi
 if [ $NUM_ITERATIONS -le 0 ]; then
 	NUM_ITERATIONS=1
 fi
@@ -80,24 +148,134 @@ echo "NUM_ITERATIONS=${NUM_ITERATIONS}" >> $CONFIG_FILE
 # Create testfile with the commands to be run depending on the module to be 
 # used for testing
 
-rm -f testfile
-read -p "Use lkdtm or crasher module (1/2) :" USE_MOD
-if [ $USE_MOD -eq 1 ]; then
-	cp -f testlists/lkdtm.orig testlists/lkdtm
-	ln -s testlists/lkdtm testfile
-	
-	read -p "Are SCSI disks present (y/n) :" SCSI
-	if [ $SCSI = "y" ]; then
-		echo -e "KPSB\nKPSE\nKPSL\nKPSP" >> testfile
-	fi
-
-	read -p "Are IDE disks present (y/n) :" IDE
-	if [ $IDE = "y" ]; then
-		echo -e "KPIB\nKPIE\nKPIL\nKPIP" >> testfile
-	fi
-else
-	ln -s testlists/crasher testfile
+if [ $DATA_AUTO -eq 0 -a $TEST="test" ]; then
+        read -p "Want to run test with lkdtm or crasher module (y/n) :" LK_CR
 fi
+if [ $LK_CR = "y" ]; then
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "Use lkdtm or crasher module (1/2) :" USE_MOD
+        fi
+        if [ $USE_MOD -eq 1 ]; then
+                if [ $DATA_AUTO -eq 0 ]; then
+                        read -p "Test exhaustive cases of lkdtm (y/n) :" EXHAUST
+                fi
+                if [ $EXHAUST = "y" ]; then
+                        cp -f testlists/lkdtm.exha testlists/lkdtm
+                        ln -s testlists/lkdtm testfile
+
+                        if [ $DATA_AUTO -eq 0 ]; then
+                                read -p "Are SCSI disks present (y/n) :" SCSI
+                        fi
+                        if [ $SCSI = "y" ]; then
+                                echo -e "KPSB\nKPSE\nKPSL\nKPSP" >> testfile
+                        fi
+
+                        if [ $DATA_AUTO -eq 0 ]; then
+                                read -p "Are IDE disks present (y/n) :" IDE
+                        fi
+                        if [ $IDE = "y" ]; then
+                                echo -e "KPIB\nKPIE\nKPIL\nKPIP" >> testfile
+                        fi
+
+                else
+                        cp -f testlists/lkdtm.base testlists/lkdtm
+                        ln -s testlists/lkdtm testfile
+                fi
+
+        else
+                ln -s testlists/crasher testfile
+        fi
+fi
+
+# Create testfile for Kdump dump commands testing
+if [ $DATA_AUTO -eq 0 -a $TEST="test" ]; then
+        read -p "Test kdump dumping on different destinations (y/n):" DUMP_TEST
+fi
+if [ $DUMP_TEST = "y" ]; then
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test ext3 partition on /dev/part enter /dev/part else press Enter: " EXT3_PARTITION
+        fi
+        if [ $EXT3_PARTITION ]; then
+                echo -e "KLEXT" >> testfile
+                echo "EXT3_PARTITION=$EXT3_PARTITION" >> $CONFIG_FILE
+        fi
+
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test ext3 partition with partition LABEL enter LABEL else press Enter: " EXT3_LABEL
+        fi
+        if [ $EXT3_LABEL ]; then
+                echo -e "KLLBL" >> testfile
+                echo "EXT3_LBL=$EXT3_LABEL" >> $CONFIG_FILE
+        fi
+
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test ext3 partition with partition UID enter UID else press Enter: " EXT3_UID
+        fi
+        if [ $EXT3_UID ]; then
+                echo -e "KLUID" >> testfile
+                echo "EXT3_UID=$EXT3_UID" >> $CONFIG_FILE
+        fi
+
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test raw partition on /dev/part enter /dev/part else press Enter: " RAW_PART
+        fi
+        if [ $RAW_PART ]; then
+                echo -e "KLRAW" >> testfile
+                echo "RAW_PARTITION=$RAW_PART" >> $CONFIG_FILE
+        fi
+
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test network dumping enter <user@server> else press Enter: " SCP_PATH
+                if [ $SCP_PATH ]; then
+                        read -p "Enter root password for $SCP_PATH: " DEST_PASS_WD
+                fi
+        fi
+        if [ $SCP_PATH ]; then
+                echo -e "KNSCP" >> testfile
+                echo "SCP_PATH=$SCP_PATH" >> $CONFIG_FILE
+                echo "DEST_PASS_WD=$DEST_PASS_WD" >> $CONFIG_FILE
+        fi
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test network dump on nfs mounted path enter <server:path> else press Enter: " NFS_PATH
+        fi
+        if [ $NFS_PATH ]; then
+                echo -e "KNNFS" >> testfile
+                echo "NFS_PATH=$NFS_PATH" >> $CONFIG_FILE
+        fi
+
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "To test link delay for network dump enter delay in seconds else press Enter " LINK_DELAY
+                if [ $LINK_DELAY -gt 0 ]; then
+
+                        read -p "Enter dump server for network dumping: <user@server> " LDSCP_PATH
+                        read -p "Enter root password for $SCP_PATH: " LDDEST_PASS_WD
+                fi
+        fi
+        if [ $LDSCP_PATH ]; then
+                echo -e "KNLD" >> testfile
+                echo "LDSCP_PATH=$LDSCP_PATH" >> $CONFIG_FILE
+                echo "LDDEST_PASS_WD=$LDDEST_PASS_WD" >> $CONFIG_FILE
+                echo "LINK_DELAY=$LINK_DELAY" >> $CONFIG_FILE
+        fi
+        if [ $DATA_AUTO -eq 0 ]; then
+                read -p "Enable dump with filtering (y/n):" FILTER
+        fi
+        echo "FILTER=$FILTER" >> $CONFIG_FILE
+        if [ $FILTER = "y" ]; then
+                if [ $DATA_AUTO -eq 0 ]; then
+                        read -p "Enter makedumpfile options: <[-c|-E] [-d dump_level] -i config_file dump_mem dump_file> " MAKE_OPTS
+                fi
+                echo "MAKE_OPTIONS=$MAKE_OPTS" >> $CONFIG_FILE
+        fi
+
+fi
+
+if [ ! -f testfile ]; then
+        echo -e "check your inputs !!!\n"
+        echo -e "Testfile is not created \n"
+        exit
+fi
+
 	
 #
 # Checks
@@ -135,19 +313,15 @@ if [ $DISTRO == "SUSE" ] || [ $DISTRO == "RH" ]; then
 		fi
 		echo " "
 	fi
-fi
-
-# Make sure kernel was booted with proper crashkernel values
-cat /proc/cmdline | grep -e $CRASHKERNEL >/dev/null
-RET=$?
-if [ $RET -eq 0 ]; then
-        echo "Kernel has reserved memory for kdump kernel..."
-	echo " "
-else
-        echo "Kernel DOES NOT have reserved memory for kdump kernel..."
-	echo "Please add appropriate crashkernel parameter to kernel cmdline"
-	echo " "
-        let "ERRORS++"
+	REQ_FOUND=$(rpm -qa | grep expect 2>/dev/null)
+        if [ $REQ_FOUND ]; then
+                echo "Found expect rpm..."
+                echo " "
+        else
+                echo "expect rpm NOT FOUND..."
+                echo "Please install expect rpm and run the setup"
+                let "ERRORS++"
+        fi
 fi
 
 if [ $ERRORS -gt 0 ]; then
@@ -202,7 +376,7 @@ echo "LKDTM=\$TEST_BASE_DIR/tools/lkdtm_mod/lkdtm.ko" >> $CONFIG_FILE
 echo "Creating control file..."
 echo "CUR_TEST=0" > $CONTROL_FILE
 echo "PREV_TEST=-1" >> $CONTROL_FILE
-echo "ITERATION=0" >> $CONTROL_FILE
+echo "ITERATION=1" >> $CONTROL_FILE
 
 #
 # Create the crontab file
@@ -231,14 +405,8 @@ if [ $DISTRO == "SUSE" ]; then
 	echo "KDUMP_IMMEDIATE_REBOOT=\"yes\"" >> $SYSCONFIG_FILE
 fi
 
-# Make sure the kdump service is on and
-# the kdump kernel is loaded
+# Activating cron
 if [ -f /bin/rpm ]; then
-	echo "Activating kdump service..."
-	chkconfig kdump on
-	echo "Making sure kdump kernel can be loaded..."
-	service kdump restart
-
 	echo "Activating cron..."
 	if [ $DISTRO == "SUSE" ]; then
 	chkconfig cron on
@@ -249,6 +417,9 @@ if [ -f /bin/rpm ]; then
 	fi
 else
 	echo "There is no rpm on your machine."
-	echo "Please make sure that kdump and cron are enabled by
+	echo "Please make sure that kdump and cron is enabled by
 		default."
 fi
+
+sleep 60
+reboot

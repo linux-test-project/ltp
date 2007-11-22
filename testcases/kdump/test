@@ -186,6 +186,78 @@ c/cmdline`"
 		echo 1 > /proc/sys/kernel/panic_on_oops
 		insmod $LKDTM cpoint_name=IDE_CORE_CP cpoint_type=OVERFLOW cpoint_count=01
 		;;
+        "KLEXT")
+                echo -e "ext3 $EXT3_PARTITION" > /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KLLBL")
+                echo -e "ext3 LABEL=$EXT3_LBL" > /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KLUID")
+                echo -e "ext3 UUID=$EXT3_UID" > /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KLRAW")
+                echo -e "raw $RAW_PARTITION" > /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KNSCP")
+                echo -e "net $SCP_PATH" > /etc/kdump.conf
+                ./kdump_propagate $DEST_PASS_WD
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KNNFS")
+                echo -e "net $NFS_PATH" > /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KNLD")
+                echo -e "net $LDSCP_PATH" > /etc/kdump.conf
+                echo -e "link_delay $LINK_DELAY" >> /etc/kdump.conf
+                if [ $FILTER = "y" ]; then
+                        echo -e "core_collector makedumpfile $MAKE_OPTS" >> /etc/kdump.conf
+                fi
+                ./kdump_propagate $LDDEST_PASS_WD
+                service kdump restart
+                echo c > /proc/sysrq-trigger
+                ;;
+
+        "KDENB")
+                echo -e "net $SCP_PATH" > /etc/kdump.conf
+                ./kdump_propagate $DEST_PASS_WD
+                service kdump restart
+                ;;
+
         *)
                 echo "Unknown test"
                 ;;
@@ -196,5 +268,5 @@ esac
 # or leave it working. But we need to do all tests. So
 # we are going to reboot if we are in wrong place.
 
-sleep 30
+sleep 60
 reboot

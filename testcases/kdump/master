@@ -2,12 +2,13 @@
 
 . /etc/sysconfig/kdump
 . ./config
+. ./control
 
 reset()
 {
 	echo "CUR_TEST=0"   >  $TEST_BASE_DIR/control
 	echo "PREV_TEST=-1" >> $TEST_BASE_DIR/control
-	echo "ITERATION=0"  >> $TEST_BASE_DIR/control
+	echo "ITERATION=1"  >> $TEST_BASE_DIR/control
 }
 
 run_test()
@@ -18,9 +19,10 @@ run_test()
 	declare -i CUR_TEST
 	declare -i PREV_TEST
 	declare -i ITERATION
-
+	
         if [ ! -f ./control ]; then
                 echo "Control file not found... exiting"
+		mv /etc/kdump.conf_bak /etc/kdump.conf
                 exit
         fi
 
@@ -31,78 +33,101 @@ run_test()
 	#
 	if [ ! -f $TESTFILE ]; then
 		echo "Test file ($TESTFILE) not found... exiting"
+		mv /etc/kdump.conf_bak /etc/kdump.conf
 		exit
 	fi
 
 	TESTS=( `cat $TESTFILE | tr '\n' ' '` )
 	LAST_TEST=${#TESTS[*]}-1
 	
-	if [ $PREV_TEST -gt -1 ] ; then
-	   if [ $DISTRO == "RH" ]; then
-		#
-		# Verify results of previous test
-		#
-		VMCORE="${VMCORE}/`date +%F-%H`*"
-		RESULTS_FILE=${RESULTS_DIR}/${ITERATION}.${TESTS[$PREV_TEST]}.`date +%F-%T`
-		if [ -f ${VMCORE}/vmcore ]; then
-		mv ${VMCORE}/vmcore ${TEST_BASE_DIR}/results/vmcore
-		rm -rf $VMCORE
-		VMCORE=${TEST_BASE_DIR}/results/vmcore
-			# Delay 1 minute to make sure the machine has fully booted
-			sleep 1m
-			echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
-				 ${RESULTS_DIR}/status
-			$VERIFY_SCR $VMCORE > $RESULTS_FILE
-			rm -rf $VMCORE
-			VMCORE="/var/crash"
+	if [ $PREV_TEST -gt -1 ]; then
+		TESTCASE_NAME=${TESTS[${PREV_TEST}]}
+		if [ ${TESTCASE_NAME:0:2} = KL -o ${TESTCASE_NAME:0:2} = KN ]; then
+			./verify_dump $TESTCASE_NAME
 		else
-			echo "`date +%F-%T`: Verification failed for test " \
-				"${TESTS[${PREV_TEST}]}: vmcore NOT FOUND" >> \
-				 ${RESULTS_DIR}/status
-        		echo "vmcore NOT FOUND!" > $RESULTS_FILE
-		fi
+	   		if [ $DISTRO == "RH" ]; then
+			#
+			# Verify results of previous test
+			#
+				VMCORE="${VMCORE}/`date +%F-%H`*"
+				RESULTS_FILE=${RESULTS_DIR}/${ITERATION}.${TESTS[$PREV_TEST]}.`date +%F-%T`
+				if [ -f ${VMCORE}/vmcore ]; then
+					mv ${VMCORE}/vmcore ${TEST_BASE_DIR}/results/vmcore
+					rm -rf $VMCORE
+					VMCORE=${TEST_BASE_DIR}/results/vmcore
+					# Delay 1 minute to make sure the machine has fully booted
+					sleep 1m
+					echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
+						 ${RESULTS_DIR}/status
+						$VERIFY_SCR $VMCORE > $RESULTS_FILE
+					rm -rf $VMCORE
+					VMCORE="/var/crash"
+				else
+					echo "`date +%F-%T`: Verification failed for test " \
+						"${TESTS[${PREV_TEST}]}: vmcore NOT FOUND" >> \
+						 ${RESULTS_DIR}/status
+	        			echo "vmcore NOT FOUND!" > $RESULTS_FILE
+				fi
 
-		if [ $CUR_TEST -eq -1 ] ; then
-			if [ $ITERATION -eq $NUM_ITERATIONS ] ; then
-				# 
-				# Change settings back
-				#
-				crontab -r
-			fi
+		   	fi
+		   	if [ $DISTRO == "SUSE" ]; then
+		        	#
+	       	        	# Verify results of previous test
+	       	        	#
+	       	        	RESULTS_FILE=${RESULTS_DIR}/${ITERATION}.${TESTS[$PREV_TEST]}.`date +%F-%T`
+	       	        	if [ ${TESTS[$PREV_TEST]} = "KEXEC-L" ]; then
+	       	        	        echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
+	       	        	                 ${RESULTS_DIR}/status
+	       	        	        echo "kexec -l SUCCEEDED" > $RESULTS_FILE
+	       	        	else if [ -f $VMCORE ]; then
+	       	        	        # Delay 1 minute to make sure the machine has fully booted
+	       	        	        sleep 1m
+	       	        	        echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
+	       	        	                 ${RESULTS_DIR}/status
+	       	        	        	$VERIFY_SCR $VMCORE > $RESULTS_FILE
+	       	        	        rm $VMCORE
+	       	        	else
+	       	        	        echo "`date +%F-%T`: Verification failed for test " \
+	       	        	                "${TESTS[${PREV_TEST}]}: vmcore NOT FOUND" >> \
+	       	        	                 ${RESULTS_DIR}/status
+	       	        	        echo "vmcore NOT FOUND!" > $RESULTS_FILE
+	       	        	fi
+	       	        fi
 		fi
-	   fi
-	   if [ $DISTRO == "SUSE" ]; then
-	        #
-                # Verify results of previous test
-                #
-                RESULTS_FILE=${RESULTS_DIR}/${ITERATION}.${TESTS[$PREV_TEST]}.`date +%F-%T`
-                if [ ${TESTS[$PREV_TEST]} = "KEXEC-L" ]; then
-                        echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
-                                 ${RESULTS_DIR}/status
-                        echo "kexec -l SUCCEEDED" > $RESULTS_FILE
-                else if [ -f $VMCORE ]; then
-                        # Delay 1 minute to make sure the machine has fully booted
-                        sleep 1m
-                        echo "`date +%F-%T`: Verifying test ${TESTS[${PREV_TEST}]}" >> \
-                                 ${RESULTS_DIR}/status
-                        $VERIFY_SCR $VMCORE > $RESULTS_FILE
-                        rm $VMCORE
-                else
-                        echo "`date +%F-%T`: Verification failed for test " \
-                                "${TESTS[${PREV_TEST}]}: vmcore NOT FOUND" >> \
-                                 ${RESULTS_DIR}/status
-                        echo "vmcore NOT FOUND!" > $RESULTS_FILE
-                fi
-                fi
-	  fi
+	fi
 	else
 		echo "first test"
 		#
 		# First test, collect system info
 		#
+		
+		# Moved from setup file to makefile to automate reserving memory
+		# Make sure kernel was booted with proper crashkernel values
+		cat /proc/cmdline | grep -e $CRASHKERNEL >/dev/null
+		RET=$?
+		if [ $RET -eq 0 ]; then
+ 		       echo "Kernel has reserved memory for kdump kernel..."
+			echo " "
+		else
+   		     echo "Kernel DOES NOT have reserved memory for kdump kernel..."
+			echo "Please add appropriate crashkernel parameter to kernel cmdline"
+			echo " "
+		        echo "Fix it and run setup again."
+			mv /etc/kdump.bak /etc/kdump.conf
+			crontab -r
+			exit
+		fi
+
+		# Activating kdump moved from setup file to master
+		echo "Activating kdump service..."
+        	chkconfig kdump on
+        	echo "Making sure kdump kernel can be loaded..."
+        	service kdump restart
+
+
 		RESULTS_DIR=${RESULTS_DIR}/`hostname`.`date +%F-%T`
 		mkdir -p $RESULTS_DIR
-                echo "`date +%F-%T`: Starting test run" >> ${RESULTS_DIR}/status
+               	echo "`date +%F-%T`: Starting test run" >> ${RESULTS_DIR}/status
 		if [ $DISTRO == "RH" ]; then
 			cp /proc/config.gz ${RESULTS_DIR}
 		fi
@@ -120,13 +145,15 @@ run_test()
 	#
 	if [ $CUR_TEST -eq -1 ] ; then
 		echo "`date +%F-%T`: Test run complete" >> ${RESULTS_DIR}/status
+                crontab -r
+		echo "removed crontab "
 		exit
 	fi
 
 	#
 	# Set up for next test
 	#
-
+	echo " current test $CUR_TEST last test $LAST_TEST"
 	if [ $CUR_TEST -eq $LAST_TEST ] ; then
 		if [ $ITERATION -eq $NUM_ITERATIONS ] ; then
 			# This is the last test, we're done
@@ -134,22 +161,19 @@ run_test()
 		else
 			# Starting new iteration
 			NEXT_TEST=0
+			let "ITERATION++"
 		fi
 	else
-		NEXT_TEST=CUR_TEST+1
+		NEXT_TEST=$((CUR_TEST+1)) 
 	fi
-	
-	#
-	# Are we starting a new iteration?
-	#
-	if [ $CUR_TEST -eq 0 ] ; then
-		let "ITERATION++"
-	fi	
 
 	echo "CUR_TEST="$NEXT_TEST      >  $TEST_BASE_DIR/control
 	echo "PREV_TEST="$CUR_TEST      >> $TEST_BASE_DIR/control
 	echo "ITERATION="$ITERATION     >> $TEST_BASE_DIR/control
 	echo "RESULTS_DIR="$RESULTS_DIR >> $TEST_BASE_DIR/control
+	
+	# Write Current test in control file usefule for result verification 
+	echo "PREV_TESTCASE="$TEST_SCR ${TESTS[${CUR_TEST}]} >> $TEST_BASE_DIR/control
 
 	#
 	# Run current test
@@ -174,6 +198,7 @@ case "$1" in
 		;;
 	*)
 		echo $"Usage: $0 {run|reset|results}"
+		mv /etc/kdump.conf_bak /etc/kdump.conf
 		exit 1
 esac
 

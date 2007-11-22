@@ -1,0 +1,26 @@
+#!/usr/bin/expect
+
+if {$argc!=1} {
+	send_user "usage: $argv0 password \n"
+	exit
+}
+set password [lindex $argv 0]
+set prompt "(%|#|\\$) $"
+
+spawn service kdump propagate
+expect {
+	"* you sure you want to continue connecting *" {
+		send "yes\n"
+		expect {
+			"*?assword:" {
+	                send "$password\n"
+        	        expect "$prompt"
+			}
+		}
+	}	
+
+	"*?assword:" {
+		send "$password\n"
+		expect "$prompt"
+	}
+}

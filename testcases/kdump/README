@@ -15,7 +15,8 @@ The testscripts cycle through a series of crash scenarios. Each test cycle does
 The scripts make use of the crasher module for basic testing of kdump and the 
 new Linux Kernel Dump Test Module (LKDTM) for more involved testing. LKDTM makes
 use of the kprobes infrastructure for inserting crashpoints into the kernel at 
-run-time. Thus the kernel need not be patched and rebuilt.
+run-time. Thus the kernel need not be patched and rebuilt.This script also tests kdump
+dumping on different destinations like ext3, raw and network dump.
 
 KDUMP TEST INSTRUCTION
 ----------------------
@@ -35,33 +36,24 @@ For SLES10 Distro :
    * kernel-source
    * kexec-tools
    * zlib-64bit-<xxx> (ppc64 only)
+   * expect
 
 For RHEL5 distro :
 
    * kexec-tools
    * kernel-debuginfo rpm
    * kernel-kdump ( only for ppc64 )
+   * expect
 
 2.  Make sure the partition where the tests are running has space for the tests
-results and one vmcore file (size of physical memory) (Currently the test suite
-support copying of the dump to the local disk only).
+results and one vmcore file (size of physical memory).
 
-3.  Check if kernel has been booted with 'crashkernel=' parameter. If not, edit
-the appropriate bootloader configuration file and make the following changes:
+3. Setup script is enhanced to update menu.lst file with 'crashkernel=' parameter based
+on architecture.
 
-  * On i386 & x86_64, edit /boot/grub/menu.lst and add "crashkernel=128M@16M" to
-    the kernel boot parameters. This reserves 128MB of memory for the kdump 
-    kernel starting at address 0x1000000.
-  * On PPC64, edit /etc/yaboot.conf and add "crashkernel=128M@32M xmon=off" to 
-    the kernel boot parameters. This reserves 128MB of memory for the kdump 
-    kernel starting at address 0x2000000 and makes sure xmon is off.
-
-4.  Edit the bootloader configuration file to also add appropriate 
+4.  Edit the bootloader configuration file to add appropriate 
 'nmi_watchdog=' parameter.
  
-5.  Reboot. Verify that the output of /proc/iomem indicates that space has been
-reserved for the crashkernel (for i386 & x86_64 only).
-
 6.  'cd' to the test suite directory and run "make". Carefully check for any 
 errors. If at some point you need to restart the tests from the beginning, 
 simply run "make clean" followed by "make" again.
@@ -71,8 +63,13 @@ captured, path to vmlinux with debug info needs to be provided at the time of
 setup (the path would generally be 
 /usr/lib/debug/lib/modules/<kernel version>/vmlinux).
 
-8.  Run "./master run". Make sure no other copy of master is running before 
-launching the master script.
+8.  To start the kdump test run './setup test'. Inputs to the script can be provided interactively
+or through the data file, format of data in input file should be like exampledata file bundled 
+along with ltp kdump code.
+ 
+9.  Setup script can also be executed as './setup enable' to enable 
+kdump to dump on network dump server, information required for dumping i.e network dump server 
+and password should be provided in 'enable_data'. 
 
 Few Important points to remember:
       
@@ -95,3 +92,6 @@ boot message into a file to enable the debugging the cause of the hang.
 * The test machine would be unavailabe for any other work during the period of 
 the test run. 
 
+* System will hang if incorrect partition information is provided for dumping, like specifying
+a partition which does not exist, specifying a parition label which does not exist. This is not
+ltp kdump bug.
