@@ -235,6 +235,9 @@ static int recursive_loop(int a)
 
 void lkdtm_handler(void)
 {
+        if (count < 0)
+               return;
+
 	printk(KERN_INFO "lkdtm : Crash point %s of type %s hit\n",
 					 cpoint_name, cpoint_type);
 	--count;
