@@ -8,7 +8,7 @@ SYSCONFIG_FILE=/etc/sysconfig/kdump
 declare -i ERRORS=0
 declare -i NUM_ITERATIONS=1
 declare -i CRASH_FOUND=0
-# ARCH = 1 means it's ia32/x86_64 arch
+# ARCH = 1 means it's ia32/x86_64/ia64 arch
 # ARCH = 2 means it's ppc64 arch
 declare -i ARCH
 declare -i DATA_AUTO=0
