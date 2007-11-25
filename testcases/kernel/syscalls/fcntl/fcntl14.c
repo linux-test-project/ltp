@@ -75,7 +75,7 @@ typedef struct {
 	long b_start;
 	long b_len;
 	short c_type;
-	short c_whence;
+	int c_whence;
 	long c_start;
 	long c_len;
 	short c_flag;
@@ -579,6 +579,7 @@ setup(void)
 	struct sigaction act;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
+	signal(SIGHUP, SIG_IGN);
 	umask(0);
 	TEST_PAUSE;			/* Pause if that option is specified */
 	tst_tmpdir();			/* make temp dir and cd to it */
@@ -1157,7 +1158,7 @@ int main(int ac, char **av)
 		}
 
 		/* spawn a child process */
-		if ((child = fork()) == 0) {
+		if ((child = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
 				      thiscase->c_whence, thiscase->c_start,
