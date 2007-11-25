@@ -55,6 +55,9 @@
 #
 #               Oct 27 2007 - Modified - Ricardo Salveti de Araujo and Subrata Modak
 #               - better ways to integrate "ltp/tools/genload/stress" with "ltp/runltp"
+#               Nov 24 2007 - Modified - Subrata Modak
+#               - Added a new option to generate output in HTML format also. Also retaining
+#                 the original test format
 #
 #################################################################################
 
@@ -99,7 +102,7 @@ usage()
     cat <<-EOF >&2
 
     usage: ./${0##*/} [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
-    [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ]
+    [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ]
@@ -117,6 +120,7 @@ usage()
                     [CLEAN_FLAG  = unlink file to which random data written, when value 1]
     -e              Prints the date of the current LTP release
     -f CMDFILES     Execute user defined list of testcases (separate with ',')
+    -g HTMLFILE     Create an additional HTML output format
     -h              Help. Prints all available options.
     -i NUM_PROCS    Run LTP under additional background Load on IO Bus
                     [NUM_PROCS   = no. of processes creating IO Bus Load by spinning over sync()]
@@ -156,6 +160,7 @@ main()
     local PRETTY_PRT=""
     local ALT_DIR_OUT=0
     local ALT_DIR_RES=0
+    local ALT_HTML_OUT=0
     local RUN_NETEST=0
     local QUIET_MODE=""
     local VERBOSE_MODE=""
@@ -164,13 +169,18 @@ main()
     local MEMSIZE=0
     local DURATION=""
     local CMDFILEADDR=""
+    local LOGFILE_NAME=""
     local LOGFILE=""
+    local OUTPUTFILE_NAME=""
+    local OUTPUTFILE=""
+    local HTMLFILE_NAME=""
+    local HTMLFILE=""
     local SCENFILES=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts c:C:d:D:f:ehi:l:m:Nno:pqr:s:t:vw:x: arg
+    while getopts c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:vw:x: arg
     do  case $arg in
         c)       
             NUM_PROCS=$(($OPTARG))
@@ -241,7 +251,15 @@ main()
             # Can be more then one file, just separate it with ',', like:
             # -f nfs,commands,/tmp/testfile
             CMDFILES=$OPTARG;;
-    
+        g)  HTMLFILE_NAME="$OPTARG"
+            case $OPTARG in
+            /*)
+                HTMLFILE="$OPTARG";;
+            *)
+                HTMLFILE="$LTPROOT/output/$OPTARG"
+                ALT_DIR_OUT=1 
+                ALT_HTML_OUT=1 ;;
+            esac ;;
         h)  usage;;
         
         i)
@@ -350,7 +368,6 @@ main()
     ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)  
 
     if [ ! "$FAILCMDFILE" ]; then                            ## User has not mentioned about Failed File name
-         echo Inside Failed File Name not Mentioned
          ALT_DIR_OUT=1
          if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
             if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
@@ -364,6 +381,18 @@ main()
                FAILED_FILE_NAME=`basename $OUTPUTFILE_NAME`  ## Extract output file name and use it to construct Failed file name
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
          fi
+    fi
+
+    if [ "$ALT_HTML_OUT" -eq 1 ] ; then                      ## User wnats the HTML version of the output
+       if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
+          OUTPUTFILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+          OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
+
+          if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
+             HTMLFILE_NAME=`basename $OUTPUTFILE_NAME`
+             HTMLFILE="$LTPROOT/output/$HTMLFILE_NAME.html"
+          fi
+       fi
     fi
 
     # If we need, create the output directory
@@ -562,18 +591,36 @@ main()
       fi
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
+    test_start_time=$(date)
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
     
     if [ $? -eq 0 ]; then
       echo "INFO: pan reported all tests PASS"
       VALUE=0
+      export LTP_EXIT_VALUE=0;
     else
       echo "INFO: pan reported some tests FAIL"
       VALUE=1
+      export LTP_EXIT_VALUE=1;
     fi
     echo "LTP Version: $version_date"
 
+    if [ "$ALT_HTML_OUT" -eq 1 ] ; then        #User wants the HTML output to be created, it then needs to be generated
+       export LTP_VERSION=$version_date
+       export TEST_START_TIME=$test_start_time
+       export TEST_END_TIME=$(date)
+       OUTPUT_DIRECTORY=`echo $OUTPUTFILE | cut -c4-`
+       LOGS_DIRECTORY="$LTPROOT/results"
+       export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
+       export TEST_LOGS_DIRECTORY=$LOGS_DIRECTORY
+       echo "Generating HTML Output.....!!"
+       ( perl $LTPROOT/tools/genhtml.pl $LTPROOT/tools/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )   
+       echo "Generated HTML Output.....!!"
+       echo "Location: $HTMLFILE";
+
+    fi
+ 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload  >/dev/null 2>&1; }
