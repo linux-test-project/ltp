@@ -79,6 +79,9 @@ then
                 cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@16M/' > menu.lst
         fi
         echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
+elif [ "${arch}" = "ia64" ]; then
+        ARCH=1
+        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
 else if [ $arch == "ppc64" ]
 then
         ARCH=2
