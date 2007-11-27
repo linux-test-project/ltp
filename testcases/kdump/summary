@@ -1,5 +1,6 @@
 #!/bin/bash
 
+. config
 . control
 
 TESTS=`cat ./testfile`
@@ -10,10 +11,12 @@ nottested=0
 
 echo "	RESULTS:"
 
-for TEST in $TESTS; do
+for i in `seq 1 $NUM_ITERATIONS`; do
+    for TEST in $TESTS; do
 	total=`expr $total + 1`
 
-	LOG=`cat $RESULTS_DIR/\`ls $RESULTS_DIR/ >/dev/null|grep  $TEST\` 2>/dev/null`
+	TEST="$i.$TEST"
+	LOG=`cat $RESULTS_DIR/\`ls $RESULTS_DIR/ 2>/dev/null | grep "^$TEST"\` 2>/dev/null`
 	if [ $? != 0 ]; then
     		echo "$TEST:	NOT TESTED"
     		nottested=`expr $nottested + 1`
@@ -28,6 +31,7 @@ for TEST in $TESTS; do
     			fail=`expr $fail + 1`
 		fi
 	fi
+    done
 done
 
 echo "------------------"
