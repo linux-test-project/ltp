@@ -128,7 +128,7 @@ run_test()
 		RESULTS_DIR=${RESULTS_DIR}/`hostname`.`date +%F-%T`
 		mkdir -p $RESULTS_DIR
                	echo "`date +%F-%T`: Starting test run" >> ${RESULTS_DIR}/status
-		if [ $DISTRO == "RH" ]; then
+                if [ -f /proc/config.gz ]; then
 			cp /proc/config.gz ${RESULTS_DIR}
 		fi
 		echo "creating sysinfo"
