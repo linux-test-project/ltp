@@ -55,6 +55,11 @@
 
 #define FAILED 1
 
+#ifndef OFF_T
+#define OFF_T off_t
+#endif /* Not def: OFF_T */
+
+
 char *TCID = "sendfile03";
 int TST_TOTAL = 3;
 extern int Tst_count;
@@ -71,7 +76,7 @@ struct test_case_t {
 	void (*setupfunc)();
 	int out_fd;
 	int in_fd;
-	off_t *offset;
+	OFF_T *offset;
 	int count;
 	int exp_errno;
 } testcases[] = {

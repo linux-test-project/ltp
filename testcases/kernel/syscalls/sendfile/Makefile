@@ -19,8 +19,13 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard sendfile[0-9][0-9].c)
+TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_64,$(SRCS))
+
+%_64.c: %.c Makefile
+	echo "#define _FILE_OFFSET_BITS 64" >  $@
+	echo "#define OFF_T __off64_t"      >> $@
+	cat  $< >> $@
 
 all: $(TARGETS)
 

@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) Red Hat Inc., 2007
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,17 +20,19 @@
 
 /*
  * NAME
- *	sendfile02.c
+ *	sendfile04.c
  *
  * DESCRIPTION
- *	Testcase to test the basic functionality of the sendfile(2) system call.
+ *	Testcase to test that sendfile(2) system call returns EFAULT
+ *	when passing wrong buffer.
  *
  * ALGORITHM
- *	1. call sendfile(2) with offset = 0
- *	2. call sendfile(2) with offset in the middle of the file
+ *     Given wrong address or protected buffer as OFFSET argument to sendfile.
+ *     A wrong address is created by munmap a buffer allocated by mmap.
+ *     A protected buffer is created by mmap with specifying protection.
  *
  * USAGE:  <for command-line>
- *  sendfile02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  sendfile03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -38,8 +41,7 @@
  *             -t   : Turn on syscall timing.
  *
  * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *	08/2002 Make it use a socket so it works with 2.5 kernel
+ *	11/2007 Copyed from sendfile02.c by Masatake YAMATO
  *
  * RESTRICTIONS
  *	NONE
@@ -50,8 +52,8 @@
 #include <sys/stat.h>
 #include <sys/sendfile.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/mman.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "usctest.h"
@@ -62,8 +64,7 @@
 #endif /* Not def: OFF_T */
 
 
-char *TCID = "sendfile02";
-int TST_TOTAL = 4;
+char *TCID = "sendfile04";
 extern int Tst_count;
 
 char in_file[100];
@@ -78,27 +79,44 @@ void do_child(void);
 void setup(void);
 int create_server(void);
 
+#define PASS_MAPPED_BUFFER 0
+#define PASS_UNMAPPED_BUFFER 1
+
 struct test_case_t {
-	char *desc;
-	int offset;
-	int exp_retval;
+	int  protection;
+	int  pass_unmapped_buffer;
 } testcases[] = {
-	{ "Test sendfile(2) with offset = 0", 0, 26 },
-	{ "Test sendfile(2) with offset in the middle of file", 2, 24 },
-	{ "Test sendfile(2) with offset in the middle of file", 4, 22 },
-	{ "Test sendfile(2) with offset in the middle of file", 6, 20 }
+	{ PROT_NONE,            PASS_MAPPED_BUFFER   },
+	{ PROT_READ,            PASS_MAPPED_BUFFER   },
+	{ PROT_EXEC,            PASS_MAPPED_BUFFER   },
+	{ PROT_EXEC|PROT_READ,  PASS_MAPPED_BUFFER   },
+	{ PROT_READ|PROT_WRITE, PASS_UNMAPPED_BUFFER },
 };
+
+int TST_TOTAL = sizeof(testcases)/sizeof(testcases[0]);
+
+
 
 #ifdef UCLINUX
 static char* argv0;
 #endif
 
-void do_sendfile(OFF_T offset, int i)
+void do_sendfile(int prot, int pass_unmapped_buffer)
 {
+	OFF_T *protected_buffer;
 	int in_fd;
 	struct stat sb;
-	int wait_status;
-	int wait_stat;
+
+
+	protected_buffer = mmap(NULL, 
+			       sizeof(*protected_buffer), 
+			       prot, 
+			       MAP_PRIVATE|MAP_ANONYMOUS, 
+			       -1, 0);
+	if (protected_buffer == MAP_FAILED) {
+		tst_brkm(TBROK, cleanup, "mmap failed: %d", errno);
+		/*NOTREACHED*/
+	}
 
 	out_fd = create_server();
 
@@ -111,37 +129,40 @@ void do_sendfile(OFF_T offset, int i)
 		/*NOTREACHED*/
 	}
 
-	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size - offset));
 
-	if (STD_FUNCTIONAL_TEST) {
-		/* Close the sockets */
-		shutdown(sockfd, SHUT_RDWR);
-		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != testcases[i].exp_retval) {
-			tst_resm(TFAIL, "sendfile(2) failed to return "
-				 "expected value, expected: %d, "
-				 "got: %d", testcases[i].exp_retval,
-				 TEST_RETURN);
-			kill(child_pid, SIGKILL);
-		} else {
-			tst_resm(TPASS, "functionality of sendfile() is "
-					"correct");
-			wait_status = waitpid(-1, &wait_stat, 0);
-			}
-	} else {
-		tst_resm(TPASS, "call succeeded");
-		/* Close the sockets */
-		shutdown(sockfd, SHUT_RDWR);
-		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != testcases[i].exp_retval) {
-			kill(child_pid, SIGKILL);
-		} else {
-			wait_status = waitpid(-1, &wait_stat, 0);
+	if (pass_unmapped_buffer) {
+		if (munmap(protected_buffer, sizeof(*protected_buffer)) < 0) {
+			tst_brkm(TBROK, cleanup, "munmap failed: %d", errno);
+			/*NOTREACHED*/
 		}
 	}
 
+	TEST(sendfile(out_fd, in_fd, protected_buffer, sb.st_size));
+
+	if (TEST_RETURN != -1) {
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	} else {
+		TEST_ERROR_LOG(TEST_ERRNO);
+
+		if (TEST_ERRNO != EFAULT) {
+			tst_resm(TFAIL, "sendfile returned unexpected"
+				 "errno, expected: %d, got: %d",
+				 EFAULT, TEST_ERRNO);
+		} else {
+			tst_resm(TPASS, "sendfile() returned %d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		}
+	}
+
+	shutdown(sockfd, SHUT_RDWR);
+	shutdown(s, SHUT_RDWR);
+	kill(child_pid, SIGKILL);
 	close(in_fd);
 
+	if (!pass_unmapped_buffer) {
+		/* Not unmapped yet. So do it now.*/
+		munmap(protected_buffer, sizeof(*protected_buffer));
+	}
 }
 
 /*
@@ -290,7 +311,8 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
-			do_sendfile(testcases[i].offset, i);
+			do_sendfile(testcases[i].protection,
+				    testcases[i].pass_unmapped_buffer);
 		}
 	}
 	cleanup();

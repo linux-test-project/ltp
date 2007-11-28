@@ -689,7 +689,12 @@ semop05 semop05
 send01 send01
 
 sendfile02 sendfile02
+sendfile02_64 sendfile02_64
 sendfile03 sendfile03
+sendfile03_64 sendfile03_64
+sendfile04 sendfile04
+sendfile04_64 sendfile04_64
+
 
 sendmsg01 sendmsg01
 
