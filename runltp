@@ -107,6 +107,7 @@ usage()
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ]
                 
+    -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
                     [NUM_PROCS = no. of processes creating the CPU Load by spinning over sqrt()
                                  (Defaults to 1 when value)]
@@ -161,6 +162,7 @@ main()
     local ALT_DIR_OUT=0
     local ALT_DIR_RES=0
     local ALT_HTML_OUT=0
+    local ALT_EMAIL_OUT=0
     local RUN_NETEST=0
     local QUIET_MODE=""
     local VERBOSE_MODE=""
@@ -175,13 +177,16 @@ main()
     local OUTPUTFILE=""
     local HTMLFILE_NAME=""
     local HTMLFILE=""
+    local EMAIL_TO=""
     local SCENFILES=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:vw:x: arg
+    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:vw:x: arg
     do  case $arg in
+        a)  EMAIL_TO=$OPTARG
+            ALT_EMAIL_OUT=1;;
         c)       
             NUM_PROCS=$(($OPTARG))
             if   [ "$NUM_PROCS" -eq 0 ]; then
@@ -387,7 +392,7 @@ main()
        if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
           OUTPUTFILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
-
+          ALT_DIR_OUT=1
           if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
              HTMLFILE_NAME=`basename $OUTPUTFILE_NAME`
              HTMLFILE="$LTPROOT/output/$HTMLFILE_NAME.html"
@@ -621,6 +626,80 @@ main()
 
     fi
  
+    if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then                      ## User wants reports to be e-mailed
+       if [ [ ! "$HTMLFILE_NAME" ] -o [ ! "$OUTPUTFILE_NAME" ] -o [ ! "$LOGFILE_NAME" ] ] ; then  
+          ##User does not have output/logs/html-output, nothing to be mailed in this situation
+          echo "Nothing to be mailed here...."
+       else
+           TAR_FILE_NAME=LTP_RUN_$version_date`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`.tar
+           if [ "$HTMLFILE_NAME" ] ; then                          ## HTML file Exists
+              if [ "$ALT_HTML_OUT" -ne 1 ] ; then                  ## The HTML file path is absolute and not $LTPROOT/output
+                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
+                 cp $HTMLFILE_NAME $LTPROOT/output/
+              fi
+           fi
+           if [ "$OUTPUTFILE_NAME" ] ; then                        ## Output file exists
+              if [ "$ALT_DIR_OUT" -ne 1 ] ; then                   ## The Output file path is absolute and not $LTPROOT/output
+                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
+                 cp $OUTPUTFILE_NAME $LTPROOT/output/
+              fi
+           fi
+           if [ "$LOGFILE_NAME" ] ; then                           ## Log file exists
+              if [ "$ALT_DIR_RES" -ne 1 ] ; then                   ## The Log file path is absolute and not $LTPROOT/results
+                 mkdir -p $LTPROOT/results                         ## We need to create this Directory
+                 cp $LOGFILE_NAME $LTPROOT/results/
+              fi
+           fi
+           if [ -d $LTPROOT/output ] ; then
+              tar -cf  ./$TAR_FILE_NAME $LTPROOT/output
+              if [ $? -eq 0 ]; then
+                 echo "Created TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/output"
+              else
+                 echo "Cannot Create TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/output"
+              fi
+           fi
+           if [ -d $LTPROOT/results ] ; then
+              tar -uf ./$TAR_FILE_NAME $LTPROOT/results
+              if [ $? -eq 0 ]; then
+                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/results"
+              else
+                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/results"
+              fi
+           fi
+           if [ -e $LTPROOT/nohup.out ] ; then                     ## If User would have Chosen nohup to do ltprun
+              tar -uf ./$TAR_FILE_NAME $LTPROOT/nohup.out
+              if [ $? -eq 0 ]; then
+                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/nohup.out"
+              else
+                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/nohup.out"
+              fi
+           fi
+           gzip ./$TAR_FILE_NAME                                     ## gzip this guy
+           if [ $? -eq 0 ]; then
+              echo "Gunzipped TAR File: ./$TAR_FILE_NAME"
+           else
+              echo "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
+           fi
+           if [ -e /usr/bin/mutt ] ; then                          ## This is a better mail client than others
+              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+              mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" $EMAIL_TO < /dev/null
+              if [ $? -eq 0 ]; then
+                 echo "Reports Successfully mailed to: $EMAIL_TO"
+              else
+                 echo "Reports cannot be mailed to: $EMAIL_TO"
+              fi
+           else ## Use our Ageold mail program
+              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+              uuencode ./$TAR_FILE_NAME.gz $TAR_FILE_NAME.gz | mail  $EMAIL_TO -s "LTP Reports on $test_start_time"
+              if [ $? -eq 0 ]; then
+                 echo "Reports Successfully mailed to: $EMAIL_TO"
+              else
+                 echo "Reports cannot be mailed to: $EMAIL_TO"
+              fi
+           fi 
+       fi
+    fi
+   
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload  >/dev/null 2>&1; }
