@@ -58,6 +58,8 @@
 #               Nov 24 2007 - Modified - Subrata Modak
 #               - Added a new option to generate output in HTML format also. Also retaining
 #                 the original test format
+#               Nov 28 2007 - Modified - Subrata Modak
+#               - Added a new option to mail back LTP reports
 #
 #################################################################################
 
@@ -101,7 +103,7 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
+    usage: ./${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
