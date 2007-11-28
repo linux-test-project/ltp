@@ -158,7 +158,11 @@ setup()
 	tst_tmpdir();
 
 	if(tst_is_cwd_tmpfs()) {
-		tst_brkm(TBROK, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+	}
+
+	if(tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
 	if(!tst_cwd_has_free(65536)) {

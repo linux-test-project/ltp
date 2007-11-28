@@ -98,6 +98,7 @@ int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
+int need_swapfile_cleanup = 0;	/* attempt to swapoff in cleanup */
 
 static int exp_enos[] = {EPERM, EINVAL, ENOENT, 0};
 
@@ -260,7 +261,11 @@ setup()
 	tst_tmpdir();
 
 	if(tst_is_cwd_tmpfs()) {
-		tst_brkm(TBROK, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+	}
+
+	if(tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
 	if(!tst_cwd_has_free(65536)) {
@@ -281,7 +286,9 @@ setup()
 	if(swapon("./swapfile01", 0) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to turn on the swap file."
 			" skipping  the test iteration");
-	}	
+	}
+
+	need_swapfile_cleanup = 1;
 
 }	/* End setup() */
 
@@ -298,7 +305,7 @@ cleanup()
 	*/
 	TEST_CLEANUP;
 
-	if(swapoff("./swapfile01") != 0) {
+	if(need_swapfile_cleanup && (swapoff("./swapfile01") != 0)) {
 		tst_resm(TWARN, " Failed to turn off swap file. System reboot"
 				" after execution of LTP test suite is"
 				" recommended.");
