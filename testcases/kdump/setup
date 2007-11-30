@@ -69,26 +69,29 @@ if [ `echo $arch |grep -e "i[3-6]86"` ]
 then
         ARCH=1
         if [ $RET -ne 0 ]; then
-                cat /boot/grub/menu.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@16M/' > menu.lst
+                cat /boot/grub/menu.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=128M\@16M nmi_watchdog=1/' > menu.lst
         fi
-        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
+        echo "CRASHKERNEL=128M@16M" >> $CONFIG_FILE
 else if [ $arch == "x86_64" ]
 then
         ARCH=1
         if [ $RET -ne 0 ]; then
-                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@16M/' > menu.lst
+                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=128M\@16M/' > menu.lst
         fi
-        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
+        echo "CRASHKERNEL=128M@16M" >> $CONFIG_FILE
 elif [ "${arch}" = "ia64" ]; then
         ARCH=1
-        echo "CRASHKERNEL=64M@16M" >> $CONFIG_FILE
+        if [ $RET -ne 0 ]; then
+                 cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=512M\@256M/' > menu.lst
+        fi
+        echo "CRASHKERNEL=512M@256M" >> $CONFIG_FILE
 else if [ $arch == "ppc64" ]
 then
         ARCH=2
         if [ $RET -ne 0 ]; then
-                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=64M\@32M/' > menu.lst
+                cat try.lst |  sed -e 's/^[ ]*//' | sed -e '/^kernel/s/$/ crashkernel=256M\@32M xmon=off/' > menu.lst
         fi
-        echo "CRASHKERNEL=64M@32M" >> $CONFIG_FILE
+        echo "CRASHKERNEL=256M@32M" >> $CONFIG_FILE
 else
         echo "Unsupported architecture... exiting"
         exit
