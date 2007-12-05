@@ -694,6 +694,12 @@ sendfile03 sendfile03
 sendfile03_64 sendfile03_64
 sendfile04 sendfile04
 sendfile04_64 sendfile04_64
+sendfile05 sendfile05
+sendfile05_64 sendfile05_64
+sendfile06 sendfile06
+sendfile06_64 sendfile06_64
+sendfile07 sendfile07
+sendfile07_64 sendfile07_64
 
 
 sendmsg01 sendmsg01

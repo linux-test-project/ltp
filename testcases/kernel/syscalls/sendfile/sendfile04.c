@@ -32,7 +32,7 @@
  *     A protected buffer is created by mmap with specifying protection.
  *
  * USAGE:  <for command-line>
- *  sendfile03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  sendfile04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -111,7 +111,7 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	protected_buffer = mmap(NULL, 
 			       sizeof(*protected_buffer), 
 			       prot, 
-			       MAP_PRIVATE|MAP_ANONYMOUS, 
+			       MAP_SHARED|MAP_ANONYMOUS, 
 			       -1, 0);
 	if (protected_buffer == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed: %d", errno);
@@ -145,7 +145,7 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO != EFAULT) {
-			tst_resm(TFAIL, "sendfile returned unexpected"
+			tst_resm(TFAIL, "sendfile returned unexpected "
 				 "errno, expected: %d, got: %d",
 				 EFAULT, TEST_ERRNO);
 		} else {

@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) Red Hat Inc., 2007
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,17 +20,14 @@
 
 /*
  * NAME
- *	sendfile02.c
+ *	sendfile06.c
  *
  * DESCRIPTION
- *	Testcase to test the basic functionality of the sendfile(2) system call.
- *
- * ALGORITHM
- *	1. call sendfile(2) with offset = 0
- *	2. call sendfile(2) with offset in the middle of the file
+ *	Testcase to test that sendfile(2) system call updates file 
+ *	position of in_fd correctly when passing NULL as offset.
  *
  * USAGE:  <for command-line>
- *  sendfile02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  sendfile06 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -38,8 +36,7 @@
  *             -t   : Turn on syscall timing.
  *
  * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *	08/2002 Make it use a socket so it works with 2.5 kernel
+ *	11/2007 Copyed from sendfile02.c by Masatake YAMATO
  *
  * RESTRICTIONS
  *	NONE
@@ -52,10 +49,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/mman.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-
 #include "usctest.h"
 #include "test.h"
 
@@ -64,8 +60,7 @@
 #endif /* Not def: OFF_T */
 
 
-char *TCID = "sendfile02";
-int TST_TOTAL = 4;
+char *TCID = "sendfile06";
 extern int Tst_count;
 
 char in_file[100];
@@ -80,29 +75,21 @@ void do_child(void);
 void setup(void);
 int create_server(void);
 
-struct test_case_t {
-	char *desc;
-	int offset;
-	int exp_retval;
-	int exp_updated_offset;
-} testcases[] = {
-	{ "Test sendfile(2) with offset = 0", 0, 26, 26 },
-	{ "Test sendfile(2) with offset in the middle of file", 2, 24, 26 },
-	{ "Test sendfile(2) with offset in the middle of file", 4, 22, 26 },
-	{ "Test sendfile(2) with offset in the middle of file", 6, 20, 26 }
-};
+int TST_TOTAL = 1;
+
+
 
 #ifdef UCLINUX
 static char* argv0;
 #endif
 
-void do_sendfile(OFF_T offset, int i)
+void do_sendfile(void)
 {
 	int in_fd;
 	struct stat sb;
+	off_t after_pos;
 	int wait_status;
 	int wait_stat;
-	off_t before_pos, after_pos;
 
 
 	out_fd = create_server();
@@ -116,40 +103,29 @@ void do_sendfile(OFF_T offset, int i)
 		/*NOTREACHED*/
 	}
 
-
-	if ((before_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
-		tst_brkm(TBROK, cleanup, "lseek before invoking sendfile failed: %d", errno);
-		/*NOTREACHED*/
-	}
-	
-	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size - offset));
-
+	TEST(sendfile(out_fd, in_fd, NULL, sb.st_size));
 	if ((after_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek after invoking sendfile failed: %d", errno);
 		/*NOTREACHED*/
 	}
-	
+
 	if (STD_FUNCTIONAL_TEST) {
 		/* Close the sockets */
 		shutdown(sockfd, SHUT_RDWR);
 		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != testcases[i].exp_retval) {
+		if (TEST_RETURN != sb.st_size) {
 			tst_resm(TFAIL, "sendfile(2) failed to return "
 				 "expected value, expected: %d, "
-				 "got: %d", testcases[i].exp_retval,
+				 "got: %d", sb.st_size,
 				 TEST_RETURN);
 			kill(child_pid, SIGKILL);
-		} else if (offset != testcases[i].exp_updated_offset) {
+		} else if (after_pos != sb.st_size) {
 			tst_resm(TFAIL, "sendfile(2) failed to update "
-				 "OFFSET parameter to expected value, "
-				 "expected: %d, got: %d", 
-				 testcases[i].exp_updated_offset,
-				 offset);
-		} else if (before_pos != after_pos) {
-			tst_resm(TFAIL, "sendfile(2) updated the file position "
-				 " of in_fd unexpectedly, expected file position: %d, "
-				 " actual file position %d", 
-				 before_pos, after_pos);
+				 " the file position of in_fd, "
+				 "expected file position: %d, "
+				 "actual file position %d",
+				 sb.st_size, after_pos);
+			kill(child_pid, SIGKILL);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "
 					"correct");
@@ -160,7 +136,7 @@ void do_sendfile(OFF_T offset, int i)
 		/* Close the sockets */
 		shutdown(sockfd, SHUT_RDWR);
 		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != testcases[i].exp_retval) {
+		if (TEST_RETURN != sb.st_size) {
 			kill(child_pid, SIGKILL);
 		} else {
 			wait_status = waitpid(-1, &wait_stat, 0);
@@ -168,7 +144,6 @@ void do_sendfile(OFF_T offset, int i)
 	}
 
 	close(in_fd);
-
 }
 
 /*
@@ -294,7 +269,6 @@ int create_server(void) {
 
 int main(int ac, char **av)
 {
-	int i;
 	int lc;				/* loop counter */
 	char *msg;			/* parse_opts() return message */
 
@@ -316,9 +290,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		for (i = 0; i < TST_TOTAL; ++i) {
-			do_sendfile(testcases[i].offset, i);
-		}
+		do_sendfile();
 	}
 	cleanup();
 
