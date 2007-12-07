@@ -82,7 +82,7 @@ int TST_TOTAL=17;		 		 /* Total number of test conditions */
 #define LEN	30
 
 #ifdef __GNUC__
-# define ADDRESS_OF_MAIN __builtin_return_address(0)
+# define ADDRESS_OF_MAIN __builtin_extract_return_addr(__builtin_return_address(0))
 #else
 # define ADDRESS_OF_MAIN main
 #endif
