@@ -6,6 +6,10 @@ Also, /usr/sbin should be included in PATH to ensure SELinux utilities
 such as getenforce are found. The test_selinux.sh script adds /usr/sbin
 to the PATH. 
 
+You must also add expand-check=0 to your /etc/selinux/semanage.conf file
+as the test policy will violate some of the neverallow rules in the
+base policy.
+
 There are two ways to run the SELinux testcases:
 	1. testsuite - all testcases
 	2. individual testcases
@@ -62,8 +66,8 @@ if you want more detailed information about each testcase's execution.
 Run Individual Testcases
 --------------------------
 First build the test policy manually. Do this by first changing 
-to the selinux-testsuite policy directory (cd to 
-$LTPROOT/testcases/kernel/security/selinux-testsuite/policy)
+to the selinux-testsuite refpolicy directory (cd to 
+$LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy)
 and build the policy by doing a, 
 	make load
 
@@ -88,7 +92,7 @@ a "set -x" can be added to the top of the *.sh file in the
 testcase directory of the testcase being debugged.	
 
 To remove the test policy and restore original policy,
-cd to selinux-testsuite/policy directory and execute,
+cd to selinux-testsuite/refpolicy directory and execute,
 	make cleanup
 
 Remember to remove test policy and restore original policy after

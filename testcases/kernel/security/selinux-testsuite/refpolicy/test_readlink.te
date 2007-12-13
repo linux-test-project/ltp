@@ -29,4 +29,8 @@ allow test_noreadlink_t test_readlink_link_t:lnk_file { getattr };
 
 # TODO: Needs to be translated into refpolicy... how?
 # Allow all of these domains to be entered from sysadm domain
-#domain_trans(sysadm_t, ls_exec_t, test_readlink_domain)
+require {
+	type ls_exec_t;
+}
+domain_trans(sysadm_t, ls_exec_t, test_readlink_domain)
+domain_entry_file(test_readlink_domain, ls_exec_t)

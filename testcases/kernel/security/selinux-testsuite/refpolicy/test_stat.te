@@ -24,4 +24,8 @@ typeattribute test_nostat_t testdomain;
 
 # TODO: what is a replacement for this in refpolicy???
 # Allow all of these domains to be entered from sysadm domain
-#domain_trans(sysadm_t, ls_exec_t, test_stat_domain)
+require {
+	type ls_exec_t;
+}
+domain_trans(sysadm_t, ls_exec_t, test_stat_domain)
+domain_entry_file(test_stat_domain, ls_exec_t)

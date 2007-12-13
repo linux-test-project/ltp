@@ -22,7 +22,7 @@ typeattribute test_create_no_t test_create_d;
 # process_fork. Something needs to be done such that test_create_no_t
 # does not have fork permissions, but all the other necessary
 # "domain" permissions.
-#allow test_create_no_t self:process ~fork;
+allow test_create_no_t self:process ~fork;
 allow test_create_no_t proc_t:dir r_dir_perms;
 allow test_create_no_t proc_t:lnk_file read;
 allow test_create_no_t self:dir r_dir_perms;
@@ -34,7 +34,7 @@ libs_use_shared_libs(test_create_no_t)
 allow test_create_no_t self:process setexec;
 selinux_get_fs_mount(test_create_no_t)
 
-allow test_create_no_t { root_t bin_t sbin_t lib_t locale_t usr_t devpts_t home_root_t }:dir r_dir_perms;
+allow test_create_no_t { root_t bin_t bin_t lib_t locale_t usr_t devpts_t home_root_t }:dir r_dir_perms;
 allow test_create_no_t lib_t:lnk_file r_file_perms;
 allow test_create_no_t { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
 allow test_create_no_t locale_t:dir r_dir_perms;

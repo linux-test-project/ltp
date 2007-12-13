@@ -23,7 +23,7 @@ files_type(test_ioctl_file_t)
 
 # Allow execution of helper programs.
 corecmd_exec_bin(ioctldomain)
-corecmd_exec_sbin(ioctldomain)
+corecmd_exec_bin(ioctldomain)
 domain_exec_all_entry_files(ioctldomain)
 files_exec_etc_files(ioctldomain)
 libs_use_ld_so(ioctldomain)
