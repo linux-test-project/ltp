@@ -16,17 +16,24 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../include -Wall
-LDLIBS += -L../../../lib -lltp
+CFLAGS += -I../../../include -Wall 
 
+LDLIBS += -L../../../lib -lltp 
+
+ifeq ($(shell sh test.sh),yes)    #its a numa machine
+LDLIBS += -L../../../lib  -lnuma
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
+else                                    #its anon numa machine
+SRCS    = support_numa.c
+TARGETS = $(patsubst %.c,%,$(SRCS))
+endif
 
-all: $(TARGETS)
+all: $(TARGETS) 
+
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
-	chmod 755 numa01.sh
 	cp numa01.sh ../../bin/.
 
 clean:
