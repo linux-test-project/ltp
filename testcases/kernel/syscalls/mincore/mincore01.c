@@ -60,12 +60,14 @@
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
 
 static int PAGESIZE;
+static rlim_t STACK_LIMIT = 10485760;
 
 static void cleanup(void);
 static void setup(void);
@@ -167,13 +169,22 @@ void
 setup2()
 {
 	unsigned char *t;
-	
+    struct rlimit limit;
+
 	/* Create pointer to invalid address */
 	if( MAP_FAILED == (t = mmap(0,global_len,PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS,0,0)) ) {
 		tst_brkm(TBROK,cleanup,"mmaping anonymous memory failed: %s",strerror(errno));
 	}
 	munmap(t,global_len);
-	
+
+    /* set stack limit so that the unmaped pointer is invalid for architectures like s390 */
+    limit.rlim_cur = STACK_LIMIT;
+    limit.rlim_max = STACK_LIMIT;
+
+    if (setrlimit(RLIMIT_STACK, &limit) != 0) {
+        tst_brkm(TBROK,cleanup,"setrlimit failed: %s",strerror(errno));
+    }
+
 	TC[1].addr = global_pointer;
 	TC[1].len = global_len;
 	TC[1].vector = t;
