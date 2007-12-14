@@ -16,6 +16,94 @@
 #include <sys/syscall.h>
 
 
+#ifdef __arm__
+# ifndef __NR_openat
+#  define __NR_openat (__NR_SYSCALL_BASE+322)
+# endif
+# ifndef __NR_mkdirat
+#  define __NR_mkdirat (__NR_SYSCALL_BASE+323)
+# endif
+# ifndef __NR_mknodat
+#  define __NR_mknodat (__NR_SYSCALL_BASE+324)
+# endif
+# ifndef __NR_fchownat
+#  define __NR_fchownat (__NR_SYSCALL_BASE+325)
+# endif
+# ifndef __NR_futimesat
+#  define __NR_futimesat (__NR_SYSCALL_BASE+326)
+# endif
+# ifndef __NR_fstatat64
+#  define __NR_fstatat64 (__NR_SYSCALL_BASE+327)
+# endif
+# ifndef __NR_unlinkat
+#  define __NR_unlinkat (__NR_SYSCALL_BASE+328)
+# endif
+# ifndef __NR_renameat
+#  define __NR_renameat (__NR_SYSCALL_BASE+329)
+# endif
+# ifndef __NR_linkat
+#  define __NR_linkat (__NR_SYSCALL_BASE+330)
+# endif
+# ifndef __NR_symlinkat
+#  define __NR_symlinkat (__NR_SYSCALL_BASE+331)
+# endif
+# ifndef __NR_readlinkat
+#  define __NR_readlinkat (__NR_SYSCALL_BASE+332)
+# endif
+# ifndef __NR_fchmodat
+#  define __NR_fchmodat (__NR_SYSCALL_BASE+333)
+# endif
+# ifndef __NR_faccessat
+#  define __NR_faccessat (__NR_SYSCALL_BASE+334)
+# endif
+# ifndef __NR_unshare
+#  define __NR_unshare (__NR_SYSCALL_BASE+337)
+# endif
+# ifndef __NR_set_robust_list
+#  define __NR_set_robust_list (__NR_SYSCALL_BASE+338)
+# endif
+# ifndef __NR_get_robust_list
+#  define __NR_get_robust_list (__NR_SYSCALL_BASE+339)
+# endif
+# ifndef __NR_splice
+#  define __NR_splice (__NR_SYSCALL_BASE+340)
+# endif
+# ifndef __NR_arm_sync_file_range
+#  define __NR_arm_sync_file_range (__NR_SYSCALL_BASE+341)
+# endif
+# ifndef __NR_sync_file_range2
+#  define __NR_sync_file_range2 __NR_arm_sync_file_range
+# endif
+# ifndef __NR_tee
+#  define __NR_tee (__NR_SYSCALL_BASE+342)
+# endif
+# ifndef __NR_vmsplice
+#  define __NR_vmsplice (__NR_SYSCALL_BASE+343)
+# endif
+# ifndef __NR_move_pages
+#  define __NR_move_pages (__NR_SYSCALL_BASE+344)
+# endif
+# ifndef __NR_getcpu
+#  define __NR_getcpu (__NR_SYSCALL_BASE+345)
+# endif
+# ifndef __NR_kexec_load
+#  define __NR_kexec_load (__NR_SYSCALL_BASE+347)
+# endif
+# ifndef __NR_utimensat
+#  define __NR_utimensat (__NR_SYSCALL_BASE+348)
+# endif
+# ifndef __NR_signalfd
+#  define __NR_signalfd (__NR_SYSCALL_BASE+349)
+# endif
+# ifndef __NR_timerfd
+#  define __NR_timerfd (__NR_SYSCALL_BASE+350)
+# endif
+# ifndef __NR_eventfd
+#  define __NR_eventfd (__NR_SYSCALL_BASE+351)
+# endif
+#endif
+
+
 #ifdef __hppa__
 # ifndef __NR_openat
 #  define __NR_openat 275
