@@ -11,12 +11,6 @@ attribute testdomain;
 role sysadm_r types testdomain;
 role system_r types testdomain;
 
-allow sysadm_t test_file_t:dir_file_class_set *;
-allow testdomain sysadm_t:fd use;
-allow testdomain sysadm_t:process sigchld;
-
-allow testdomain self:process setfscreate;
-
 # Allow the test domains to access the sysadm terminal.
 # This allows read and write sysadm ttys and ptys.
 userdom_use_sysadm_terms(testdomain)
@@ -61,7 +55,7 @@ require {
 	type root_t;
 	type etc_t;
 	type bin_t;
-	type bin_t;
+	type sbin_t;
 	type lib_t;
 	type usr_t;
 	type devpts_t;
@@ -69,7 +63,7 @@ require {
 	type null_device_t;
 	type zero_device_t;
 }
-allow testdomain { root_t etc_t bin_t bin_t lib_t usr_t devpts_t }:dir r_dir_perms;
+allow testdomain { root_t etc_t bin_t sbin_t lib_t usr_t devpts_t }:dir r_dir_perms;
 allow testdomain lib_t:{ file lnk_file } r_file_perms;
 allow testdomain etc_t:file r_file_perms;
 allow testdomain { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;

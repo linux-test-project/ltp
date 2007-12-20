@@ -38,9 +38,14 @@ sysnet_read_config(capabledomain)
 
 corenet_tcp_bind_reserved_port(capabledomain)
 
-# Allow bin_t to be entered from admin via certain utils.
-corecmd_bin_entry_type(capabledomain)
-userdom_sysadm_bin_spec_domtrans_to(capabledomain)
+require {
+	type hi_reserved_port_t;
+}
+allow capabledomain hi_reserved_port_t:tcp_socket name_bind;
+
+# Allow sbin_t to be entered from admin via certain utils.
+corecmd_sbin_entry_type(capabledomain)
+userdom_sysadm_sbin_spec_domtrans_to(capabledomain)
 
 require {
 	type ifconfig_exec_t;

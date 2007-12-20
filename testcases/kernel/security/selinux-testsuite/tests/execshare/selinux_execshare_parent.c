@@ -26,11 +26,10 @@ int clone_fn(char **argv)
 	return -1;
 }
 
-static long clone_stack_data[2048];
-static long *clone_stack = &clone_stack_data[2048];
-
 int main(int argc, char **argv)
 {
+	int pagesize;
+	void *clone_stack, *page;
 	int pid, rc, len, status, cloneflags;
 	security_context_t context_s;
 	context_t context;
@@ -45,6 +44,14 @@ int main(int argc, char **argv)
 		fprintf(stderr, "invalid clone flags %s\n", argv[1]);
 		exit(-1);
 	}
+
+	pagesize = getpagesize();
+	page = malloc(pagesize);
+	if (!page) {
+		perror("malloc");
+		exit(-1);
+	}
+	clone_stack = page + pagesize;
 
 	rc = getcon(&context_s);
 	if (rc < 0) {
@@ -76,8 +83,13 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s:  unable to set exec context to %s\n", argv[0], context_s);
 		exit(-1);
 	}
-
+#if defined(__hppa__)
+	pid = clone(clone_fn, page, cloneflags | SIGCHLD, argv);
+#elif defined(__ia64__)
+	pid = __clone2(clone_fn, clone_stack, pagesize, cloneflags | SIGCHLD, argv, NULL, NULL, NULL);
+#else
 	pid = clone(clone_fn, clone_stack, cloneflags | SIGCHLD, argv);
+#endif
 	if (pid < 0) {
 		perror("clone");
 		exit(-1);

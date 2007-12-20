@@ -169,6 +169,11 @@ test07()
 	TCID="test07"
 	TST_COUNT=7
 	RC=0
+	echo -n "" > /dev/tty
+	if [ $? -ne 0 ]; then
+	    echo "$TCID   INFO : No controlling tty."
+	    return $RC
+	fi
 
 	#
 	# Attempt to create a SIGIO as the 'good' domain. 
@@ -332,6 +337,11 @@ test14()
 	TCID="test14"
 	TST_COUNT=14
 	RC=0
+	echo -n "" > /dev/tty
+	if [ $? -ne 0 ]; then
+	    echo "$TCID   INFO : No controlling tty."
+	    return $RC
+	fi
 
 	#
 	# Attempt to create a SIGIO as the 'bad' domain. 
