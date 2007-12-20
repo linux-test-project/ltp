@@ -32,7 +32,7 @@ NEED_TO_START_X=1
 #fi
 
 # Kill test if we don't want it.
-if [ "$DO_X_TESTS" -eq 0 ]; then
+if [ $DO_X_TESTS -eq 0 ]; then
 	echo "X11 testing is off."
 	exit -1
 fi
