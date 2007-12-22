@@ -18,7 +18,8 @@
 #   export LOADLIBES LIB_DIR
 #
 # Or, you can save all your settings into the local 'config.mk' file.
-# Just use the same syntax as above for the Makefile.
+# The defaults will not be usable in that case; you will need to
+# override things explicitly.
 #
 # uClinux Users: make sure you add -DUCLINUX to your CFLAGS
 #
