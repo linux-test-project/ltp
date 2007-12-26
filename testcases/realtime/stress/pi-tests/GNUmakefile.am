@@ -1,0 +1,22 @@
+bin_PROGRAMS = \
+	testpi-3 \
+	lookup_pi_state
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(DESTDIR)/usr/include/nptl \
+	-D_GNU_SOURCE
+
+AM_CFLAGS = \
+	-O2
+
+LDADD = \
+	$(top_builddir)/lib/libjvmsim.a \
+	$(top_builddir)/lib/librttest.a \
+	$(top_builddir)/lib/libstats.a \
+	-lpthread -lrt -lm
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

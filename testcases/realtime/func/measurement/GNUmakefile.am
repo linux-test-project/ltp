@@ -1,0 +1,26 @@
+bin_PROGRAMS = \
+	preempt_timing \
+	rdtsc-latency
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(DESTDIR)/usr/include/nptl \
+	-D_GNU_SOURCE
+
+AM_CFLAGS = \
+	-O2
+
+LDADD = \
+        $(top_builddir)/lib/libjvmsim.a \
+        $(top_builddir)/lib/librttest.a \
+        $(top_builddir)/lib/libstats.a
+
+
+AM_LDFLAGS = \
+	-L$(DESTDIR)/usr/lib/nptl \
+	-lpthread -lrt -lm
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

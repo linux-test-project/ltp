@@ -1,0 +1,26 @@
+if HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
+bin_PROGRAMS = sched_latency
+endif
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(DESTDIR)/usr/include/nptl
+
+sched_latency_CFLAGS = \
+	-O2
+
+LDADD = \
+	$(top_builddir)/lib/libjvmsim.a \
+	$(top_builddir)/lib/librttest.a \
+	$(top_builddir)/lib/libstats.a
+
+sched_latency_LDFLAGS = \
+	-L/usr/lib/nptl \
+	-lpthread \
+	-lrt \
+	-lm
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

@@ -1,0 +1,11 @@
+Test: sched_jitter
+===================
+This test measures scheduling jitter w/ realtime processes.
+
+It spawns a realtime thread that repeatedly times how long it takes to do a
+fixed amount of work.  It then prints out the maximum jitter seen (longest
+execution time - the shortest execution time).
+
+It also spawns off a realtime thread of higher priority that simply wakes up
+and goes back to sleep.  This tries to measure how much overhead the scheduler
+adds in switching quickly to another task and back.

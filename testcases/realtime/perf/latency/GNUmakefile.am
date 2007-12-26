@@ -1,0 +1,25 @@
+bin_PROGRAMS = \
+	pthread_cond_many \
+	pthread_cond_latency
+
+pthread_cond_many_CPPFLAGS = \
+        -I$(top_srcdir)/include \
+        -I$(top_builddir)/include \
+        -I$(DESTDIR)/usr/include/nptl
+
+AM_CFLAGS = \
+	-O2
+AM_LDFLAGS = \
+	-lpthread -lrt -lm
+
+
+LDADD = \
+    ${top_builddir}/lib/librttest.a \
+    ${top_builddir}/lib/libjvmsim.a \
+    ${top_builddir}/lib/libstats.a
+
+
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

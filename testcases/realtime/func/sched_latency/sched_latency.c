@@ -1,0 +1,276 @@
+/******************************************************************************
+ *
+ *   Copyright  International Business Machines  Corp., 2007
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * NAME
+ *      sched_jitter.c
+ *
+ * DESCRIPTION
+ *      This test measures scheduling jitter w/ realtime processes.
+ *
+ *      It spawns a realtime thread that repeatedly times how long it takes to do a
+ *      fixed amount of work. It then prints out the maximum jitter seen (longest
+ *      execution time - the shortest execution time).
+ *      It also spawns off a realtime thread of higher priority that simply wakes up
+ *      and goes back to sleep. This tries to measure how much overhead the scheduler
+ *      adds in switching quickly to another task and back.
+ *
+ * USAGE:
+ *      Use run_auto.sh script in current directory to build and run test.
+ *      Use "-j" to enable jvm simulator.
+ *
+ * AUTHOR
+ *	Darren Hart <dvhltc@us.ibm.com>
+ *
+ * HISTORY
+ *	2006-May-10: Initial version by Darren Hart <dvhltc@us.ibm.com>
+ * 	2007-Jul-11: Quantiles added by Josh Triplett <josh@kernel.org>
+ * 	2007-Jul-12: Latency tracing added by Josh Triplett <josh@kernel.org>
+ *
+ *****************************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <librttest.h>
+#include <libstats.h>
+#include <libjvmsim.h>
+
+#define PRIO 89
+//#define PERIOD 17*NS_PER_MS
+//#define ITERATIONS 100
+#define MIN_ITERATIONS 100
+#define DEFAULT_ITERATIONS 10000
+#define DEF_PERIOD 5*NS_PER_MS
+#define DEF_LOAD_MS 1
+#define PASS_US 100
+#define HIST_BUCKETS 100
+#define QUANTILE_NINES 4
+#define OVERHEAD 50000 // allow for 50 us of periodic overhead (context switch, etc.)
+
+nsec_t start;
+nsec_t end;
+static int run_jvmsim = 0;
+static int ret = 0;
+static int iterations = 0;
+static unsigned long long latency_threshold = 0;
+static nsec_t period = DEF_PERIOD;
+static unsigned int load_ms = DEF_LOAD_MS;
+
+void usage(void)
+{
+	rt_help();
+	printf("sched_latency specific options:\n");
+	printf("  -j            enable jvmsim\n");
+	printf("  -dLOAD        periodic load in ms (default 1)\n");
+	printf("  -lTHRESHOLD   trace latency, with given threshold in us\n");
+	printf("  -tPERIOD      period in ms (default 5)\n");
+	printf("  -iITERATIONS  number of iterations (default %d)\n",
+	       DEFAULT_ITERATIONS);
+}
+
+int parse_args(int c, char *v)
+{
+
+        int handled = 1;
+        switch (c) {
+                case 'j':
+                        run_jvmsim = 1;
+                        break;
+                case 'h':
+                        usage();
+                        exit(0);
+                case 'd':
+                        load_ms = atoi(v);
+                        break;
+		case 'i':
+			iterations = atoi(v);
+			break;
+                case 'l':
+                        latency_threshold = strtoull(v, NULL, 0);
+                        break;
+                case 't':
+                        period = strtoull(v, NULL, 0)*NS_PER_MS;
+                        break;
+                default:
+                        handled = 0;
+                        break;
+        }
+        return handled;
+}
+
+void *periodic_thread(void *arg)
+{
+	int i;
+	nsec_t delay, avg_delay = 0, start_delay, min_delay = -1ULL, max_delay = 0;
+	int failures = 0;
+	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0;
+
+	stats_container_t dat;
+	stats_container_t hist;
+	stats_quantiles_t quantiles;
+
+	prev = start;
+	next = start;
+	now = rt_gettime();
+	start_delay = (now - start)/NS_PER_US;
+
+	stats_container_init(&dat, iterations);
+	stats_container_init(&hist, HIST_BUCKETS);
+	/* use the highest value for the quantiles */
+	stats_quantiles_init(&quantiles, log10(iterations));
+
+	debug(DBG_INFO, "ITERATION DELAY(US) MAX_DELAY(US) FAILURES\n");
+	debug(DBG_INFO, "--------- --------- ------------- --------\n");
+
+	if (latency_threshold) {
+		latency_trace_enable();
+		latency_trace_start();
+	}
+	for (i = 1; i <= iterations; i++) {
+		/* wait for the period to start */
+		next += period;
+		prev = now;
+		now = rt_gettime();
+
+		if (next < now) {
+			printf("\nPERIOD MISSED!\n");
+			printf("     scheduled delta: %8llu us\n", sched_delta/1000);
+			printf("        actual delta: %8llu us\n", delta/1000);
+			printf("             latency: %8llu us\n", (delta-sched_delta)/1000);
+			printf("---------------------------------------\n");
+			printf("      previous start: %8llu us\n", (prev-start)/1000);
+			printf("                 now: %8llu us\n", (now-start)/1000);
+			printf("     scheduled start: %8llu us\n", (next-start)/1000);
+			printf("next scheduled start is in the past!\n");
+			ret = 1;
+			break;
+		}
+
+		sched_delta = next - now; /* how long we should sleep */
+		delta = 0;
+		do {
+			rt_nanosleep(next - now);
+			delta += rt_gettime() - now; /* how long we did sleep */
+			now = rt_gettime();
+		} while (now < next);
+
+		/* start of period */
+		now = rt_gettime();
+		delay = (now - start - (nsec_t)i*period)/NS_PER_US;
+		dat.records[i].x = i;
+		dat.records[i].y = delay;
+		if (delay < min_delay)
+			min_delay = delay;
+		if (delay > max_delay)
+			max_delay = delay;
+		if (delay > PASS_US) {
+			failures++;
+			ret = 1;
+		}
+		avg_delay += delay;
+		if (latency_threshold && delay > latency_threshold)
+			break;
+
+		/* continuous status ticker */
+		debug(DBG_INFO, "%9i %9llu %13llu %8i\r", i, delay, max_delay, failures);
+		fflush(stdout);
+
+		busy_work_ms(load_ms);
+	}
+	if (latency_threshold) {
+		latency_trace_stop();
+		if (i != (iterations + 1)) {
+			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
+				latency_threshold, i);
+			latency_trace_print();
+			stats_container_resize(&dat, i);
+		}
+	}
+
+	avg_delay /= (i - 1);
+	stats_quantiles_calc(&dat, &quantiles);
+	printf("\n\n");
+	printf("Start: %4llu us: %s\n", start_delay,
+		start_delay < PASS_US ? "PASS" : "FAIL");
+	printf("Min:   %4llu us: %s\n", min_delay,
+		min_delay < PASS_US ? "PASS" : "FAIL");
+	printf("Max:   %4llu us: %s\n", max_delay,
+		max_delay < PASS_US ? "PASS" : "FAIL");
+	printf("Avg:   %4llu us: %s\n", avg_delay,
+		avg_delay < PASS_US ? "PASS" : "FAIL");
+	printf("StdDev: %.4f us\n", stats_stddev(&dat));
+	printf("Quantiles:\n");
+	stats_quantiles_print(&quantiles);
+	printf("Failed Iterations: %d\n", failures);
+	stats_hist(&hist, &dat);
+	stats_container_save("samples", "Periodic Scheduling Latency Scatter Plot",\
+			     "Iteration", "Latency (us)", &dat, "points");
+	stats_container_save("hist", "Periodic Scheduling Latency Histogram",\
+			     "Iteration", "Latency (us)", &hist, "steps");
+
+	return NULL;
+}
+
+int main(int argc, char *argv[])
+{
+	int per_id;
+	setup();
+
+	rt_init("d:jl:ht:i:", parse_args, argc, argv);
+
+	printf("-------------------------------\n");
+	printf("Scheduling Latency\n");
+	printf("-------------------------------\n\n");
+
+	if (load_ms*NS_PER_MS >= period-OVERHEAD) {
+		printf("ERROR: load must be < period - %d us\n", OVERHEAD/NS_PER_US);
+		exit(1);
+	}
+
+	if (iterations == 0)
+		iterations = DEFAULT_ITERATIONS;
+	if (iterations < MIN_ITERATIONS) {
+		printf("Too few iterations (%d), use min iteration instead (%d)\n",
+		       iterations, MIN_ITERATIONS);
+		iterations = MIN_ITERATIONS;
+	}
+
+	printf("Running %d iterations with a period of %llu ms\n", iterations,
+	       period/NS_PER_MS);
+	printf("Periodic load duration: %d ms\n", load_ms);
+	printf("Expected running time: %d s\n",
+	       (int)(iterations*((float)period / NS_PER_SEC)));
+
+	if (run_jvmsim) {
+		printf("jvmsim enabled\n");
+		jvmsim_init();	// Start the JVM simulation
+	} else {
+		printf("jvmsim disabled\n");
+	}
+
+	start = rt_gettime();
+	per_id = create_fifo_thread(periodic_thread, (void*)0, PRIO);
+
+	join_thread(per_id);
+	join_threads();
+
+	printf("\nCriteria: latencies < %d us\n", PASS_US);
+	printf("Result: %s\n", ret ? "FAIL" : "PASS");
+
+	return ret;
+}

@@ -1,0 +1,21 @@
+#if HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
+bin_PROGRAMS = sched_football
+#endif
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(DESTDIR)/usr/include/nptl
+
+sched_football_CFLAGS = \
+	-O3
+
+sched_football_LDADD = \
+	-lpthread -lrt -lm \
+	$(top_builddir)/lib/libjvmsim.a \
+        $(top_builddir)/lib/librttest.a \
+        $(top_builddir)/lib/libstats.a
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

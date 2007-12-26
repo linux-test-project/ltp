@@ -1,0 +1,19 @@
+SUBDIRS = \
+	config \
+	include \
+	lib \
+	func \
+	perf \
+	stress
+
+EXTRA_DIST = \
+	autogen.sh
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in \
+	$(DIST_ARCHIVES)
+
+maintainer-clean-local:
+	-chmod -R a+rw $(distdir)
+	-rm -fr $(distdir)
+

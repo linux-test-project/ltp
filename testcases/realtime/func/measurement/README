@@ -1,0 +1,9 @@
+These tests (preempt_timing and rdtsc_latency) are intended
+to be tools to diagnose problems if gtod_latency results are
+problematic.
+
+We don't run these tests by default (top level run.sh script
+will not list them, as it won't find run_auto.sh).
+
+They can be run from this test directly by invoking the
+local run.sh script.

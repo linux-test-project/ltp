@@ -1,0 +1,13 @@
+noinst_LIBRARIES = \
+	libjvmsim.a \
+	librttest.a \
+	libstats.a
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-D_GNU_SOURCE
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

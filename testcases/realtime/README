@@ -1,0 +1,81 @@
+realtime tests is an open-source testsuite for testing real-time Linux.  It is
+licensed under the GPL.  The latest version of this testsuite is available
+from http://rt.wiki.kernel.org.  This testsuite is maintained by the IBM
+Real-Time team.  Please send bug reports, contributions, questions to
+the discussion list also available at: http://rt.wiki.kernel.org.
+
+The testsuite contains some functional tests and a few performance
+and latency measurement tests.  This is still a work in (early) progress!
+
+
+DEPENDENCIES
+============
+It is recommended that you have automake-1.9.6-2.1 or above.
+If you see errors during your configure, please upgrade to
+this version and autoconf-2.61.
+
+
+BUILD
+=====
+As of April 2007, we include autoconf support (based on Robert
+Schwebel's contributed patch). To build the tests:
+
+1. ./configure
+2. make
+
+
+RUNNING THE TESTS
+==================
+The top level script run.sh can be used to invoke all or a subset of tests.
+
+1. Running the script with no arguments will list usage:
+
+        #]> run.sh
+
+
+2. Running the script with the list option will list the available tests.
+
+        #]> run.sh list
+
+   Note that the tests available are determined by the presence
+   of a local script run_auto.sh in the individual test subdirectories
+   at this time.
+
+
+3. Individual tests can also be run. For example, to run the prio-wake tests:
+
+        #]> run.sh func/prio-wake
+
+   Note, the test must be specified with the path relative to the test
+   home (where run.sh lives).
+
+
+4. Alternatively, you can run the individual tests from their local directory.
+   For example, to run the prio-wake tests:
+
+        #]> cd func/prio-wake
+        #]> ./run_auto.sh
+
+
+5. You can also run sets of tests:
+
+        #]> run.sh func
+
+        will run all the functional tests
+
+        #]> run.sh perf
+
+        will run all the perf tests (if any!)
+
+        Use the list option to see the various arguments taken.
+
+6. Or you can run the binaries...
+
+
+
+RESULTS
+=======
+All the automated run scripts set up logging in the logs/ directory.  Not all
+the tests have a clear PASS/FAIL outcome quite yet.  Work on parsing results
+is ongoing.
+

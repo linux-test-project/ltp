@@ -1,0 +1,216 @@
+OO_DESCRIPTION.txt
+==================
+
+The contents of the LTP/testcases/realtime/ directory:
+
+doc                -  Documentation
+include            -  Header files which are to be included in the tests
+lib                -  c library files for the real-time tests
+scripts            -  Set up and parsing scripts needed to run the tests 
+logs               -  All test logs are stored in this directory
+config             -  autotools configure support
+confugure.ac       -  Top level autotools configure script
+COPYING            -  GPL license
+GNUmakefile.am     -  Top level automake makefile
+README             -  How to build and run the tests
+
+
+Below is the decription of what each testcase tests.
+
+func/async_handler testcases :
+=============================
+async_handler.c:
+- Measures latencies involved in asynchronous event handlers.  Specifically it 
+  measures the latency of the pthread_cond_signal call until signalled thread 
+  is scheduled.
+
+async_handler_jk.c:
+- Mimics an async event handler in a real-time JVM. An async event server 
+  thread is created that goes to sleep waiting to be woken up to do some
+  work.  A user thread is created that simulates the firing of an event by 
+  signalling the async handler thread to do some work.
+
+async_handler_tsc.c:
+- Is similar to the above two i.e. it measures latencies involved in 
+  asynchronous event handlers.  This test measures time in terms of CPU
+  timestamp clock(TSC), for pthread_cond_signal latency.
+
+
+func/gtod_latency testcases :
+=============================
+gtod_infinite.c:  
+- Designed to run forever.  It must manually be killed so it is 
+  not suited to be part of functional validation suite of tests.  It is 
+  designed to look for 'delays' between two calls to clock_gettime()
+
+gtod-latency.c:
+- Simple program to measure the time between several pairs of calls to
+  gettimeofday().  It provides the additional capability to produce graphical 
+  output as a histogram or a scatter graph.
+
+
+func/matrix_mult testcases  :
+============================
+matrix_mult.c:
+- Compares running sequential matrix multiplication routines to running them 
+  in parallel in order to judge multiprocessor performance.
+  Test runs for 100 iterations and calculates the average time.
+
+
+func/measurement testcases :
+============================
+preempt_timing.c:   
+- Measures the preemption delays that may be encountered by realtime apps. 
+  The program runs with the scheduling policy of SCHED_FIFO at a maximum 
+  SCHED_FIFO priority.  It is bound to a single processor and its address space
+  is locked as well.  It makes successive calls to the gettimeofday() function 
+  (via inlined assembly to read the TSC).  The value returned between two such 
+  consecutive calls is reported as the latency.  The maximum, minimum and 
+  average delays are reported for x pairs of such calls.
+
+rdtsc-latency.c:
+- Measures the time between several pairs of calls to rdtsc(); rdtsc counts 
+  the timestamp clock
+
+
+func/periodic_cpu_load testcases :
+==================================
+periodic_cpu_load.c:
+- Measures variation in computational execution time at various periods and 
+  priorities.  This provides the timing information at different CPU loads.
+
+periodic_cpu_load_single.c:
+- Measures variation in computational execution time at specified period 
+  priority and loop.
+
+
+func/pi-tests testcases :
+=========================
+testpi-0.c:
+- Tests whether the priority inheritance feature is present in kernel 
+
+testpi-1.c:
+-  Priority inheritance under two different scenarios.  It checks whether the
+   presence of priority inheritance allows higher priority threads to make more
+   progress than in absence of the same.
+
+testpi-2.c:
+-  Introduces a noise thread in above test and checks if the high priority 
+   thread preempts low prio thread multiple times
+
+testpi-4.c:
+-  The scheduling policies of threads are different from previous testcase
+
+testpi-5.c:
+-  Uses priority inheritance protocol (PTHREAD_PRIO_INHERIT) and uses 
+   test-skeleton.  Test creates a child thread which tries to acquire lock 
+   twice.
+
+testpi-6.c:      
+- Uses robust mutex lock (PTHREAD_MUTEX_ROBUST_NP) and uses test-skeleton for 
+  other things.
+
+testpi-7.c:       
+- Measures latencies involved in priority boosting through priority inheritance
+
+test-skeleton.c:
+- is a skeleton test which creates two processes through fork().  Also it 
+  handles signals by noting down timing information.
+
+sbrk_mutex.c:
+- Uses  NUM_THREADS to walk through an array of malloc'd pthread mutexes.
+  Each thread holds up to NUM_CONCURRENT locks at a time.
+
+
+func/prio-preempt testcases :
+=============================
+prio-preempt.c:
+- Tests priority preemption.  Main thread creates multiple number of threads 
+  with different priorities, all fight for holding mutexes.  Threads sleep and 
+  wake-up with condvars.  Testcase exhibit scheduling of threads in accordance 
+  with priority-preemption.
+
+
+func/prio-wake testcases :
+==========================
+prio-wake.c:      
+- Tests priority ordered wakeup with pthread_cond_*.  It creates number of 
+  worker threads with increasing FIFO priorities.  By default, the number of 
+  worker threads is equal to number of cpus.  The time when worker thread 
+  starts running is noted.  Each of the worker thread then waits on same 
+  _condvar_.  The time it wakes up is also noted.  Once all the threads finish 
+  execution, the start and wakeup times of all the threads are displayed.  The 
+  output must indicate that the thread wakeup happened in a priority order.
+
+
+
+func/pthread_kill_latency testcases :
+====================================
+pthread_kill_latency.c:  
+- Measures the latency involved in sending a signal to a thread using 
+  pthread_kill.  Two threads are created - the one that recieves the signal 
+  (thread1) and other that sends signal (thread2).  Before sending the signal, 
+  the thread2 waits for thread1 to initialize, notes the time and sends 
+  pthread_kill signal to thread1.  Thread2, which has defined a handler for the
+  signal, notes the time it receives the signal.  The maximum and minimum 
+  latency is reported.
+
+
+func/sched_football testcases :
+===============================
+sched_football.c:    
+- A scheduler test that uses a football analogy.  The premise is that we want 
+  to make sure that lower priority threads (the offensive team) do not preempt 
+  higher priority threads (the defensive team).  
+
+
+func/sched_jitter testcases :
+=============================
+sched_jitter.c:     
+- Measures scheduling jitter between realtime processes.
+
+
+func/sched_latency testcases :
+==============================
+sched_latency.c:     
+-  Measures the latency involved with periodic scheduling.  A thread is created
+   at priority 89.  It periodically sleeps for a specified duration (PERIOD).  
+   The delay is measured as delay = (now - start - i*PERIOD) converted to 
+   microseconds where now = CLOCK_MONOTONIC gettime in ns, start = 
+   CLOCK_MONOTONIC gettime at the start of the test, i = iteration number, 
+   PERIOD = the period chosen.
+
+
+func/thread_clock testcases :
+=============================
+tc-2.c:
+- Check if clock_gettime is working properly.  This test creates NUMSLEEP 
+  threads that just sleep and NUMWORK threads that spend time on the CPU. It 
+  then reads the thread cpu clocks of all these threads and compares the sum 
+  of thread cpu clocks with the process that spend time on the CPU.  It then 
+  reads the cpu clock of all these threads and compares the sum of thread cpu 
+  clocks with the process cpu clock value.  The test expects that: the cpu 
+  clock of every sleeping thread shows close to zero value.  Sum of cpu clocks 
+  of all threads is comparable with the process cpu clock.
+
+
+perf/latency testcases :
+========================
+pthread_cond_latency.c:  
+-  Measures latencies involved in pthread_cond_t  
+
+pthread_cond_many.c:     
+- Measures latencies involved in pthread_cond_t.  This test executes in 
+  many processes running together and contesting to being scheduled.
+
+
+stress/pi-tests testcases :
+===========================
+testpi-3.c:
+- Tests priority inheritance under stress conditions.  Test runs in two 
+  scenarios: non-pi and pi. 
+
+
+lookup_pi_state.c:       
+- Tests lookup_pi_state under stress conditions.  Test creates one master and 
+  several slave threads, all fighting for mutexes.  

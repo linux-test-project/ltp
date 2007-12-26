@@ -1,0 +1,6 @@
+SUBDIRS = \
+	pi-tests
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

@@ -1,0 +1,27 @@
+if HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
+bin_PROGRAMS = \
+	async_handler \
+	async_handler_jk \
+	async_handler_tsc
+endif
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(DESTDIR)/usr/include/nptl
+
+AM_CFLAGS = \
+	-O2 \
+	-D_GNU_SOURCE
+
+LDADD = \
+	$(top_builddir)/lib/libjvmsim.a \
+	$(top_builddir)/lib/librttest.a \
+	$(top_builddir)/lib/libstats.a
+
+AM_LDFLAGS = \
+	-lpthread -lrt -lm
+
+MAINTAINERCLEANFILES = \
+	GNUmakefile.in
+

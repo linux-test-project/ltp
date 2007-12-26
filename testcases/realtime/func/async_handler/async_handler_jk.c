@@ -1,0 +1,179 @@
+/******************************************************************************
+ *
+ *   Copyright  International Business Machines  Corp., 2007
+ *
+ *   This program is free software;  you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *   the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program;  if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * NAME
+ *      async_handler_jk.c
+ *
+ * DESCRIPTION
+ *       This test mimics an async event handler in a real-time JVM
+ *       An async event server thread is created that goes to sleep waiting
+ *       to be woken up to do some work.
+ *
+ *      A user thread is created that simulates the firing of an event by
+ *      signalling the async handler thread to do some work.
+ *
+ * USAGE:
+ *      Use run_auto.sh script in current directory to build and run test.
+ *      Use "-j" to enable jvm simulator.
+ *
+ *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
+ *      -L/usr/lib/nptl -lpthread -lrt -lm async_handler_jk.c -o async_handler_jk
+ *
+ * AUTHOR
+ *      John Kacur <jkacur@ca.ibm.com>
+ *
+ * HISTORY
+ *     2006-Nov-20: Initial Version by John Kacur <jkacur@ca.ibm.com>
+ *
+ *****************************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <librttest.h>
+#include <libjvmsim.h>
+#include <libstats.h>
+
+// This is the normal priority for an event handler if not specified.
+#define NORMAL_PRIORITY	43
+#define THREAD_FLAG_SUSPENDED 8
+#define PASS_US 100
+
+long start, end;
+static int run_jvmsim = 0;
+
+/* Function Prototypes */
+void *async_event_server(void *arg);
+void *handler1(void *arg);
+
+void usage(void)
+{
+        rt_help();
+        printf("async_handler_jk specific options:\n");
+        printf("  -j            enable jvmsim\n");
+}
+
+int parse_args(int c, char *v)
+{
+
+        int handled = 1;
+        switch (c) {
+                case 'j':
+                        run_jvmsim = 1;
+                        break;
+                case 'h':
+                        usage();
+                        exit(0);
+                default:
+                        handled = 0;
+                        break;
+        }
+        return handled;
+}
+
+void *async_event_server(void *arg)
+{
+	int err=0;
+	struct thread *thread = ((struct thread *)arg);
+
+	thread->func = NULL;	// entrypoint
+	thread->flags |= THREAD_FLAG_SUSPENDED;
+
+	for ( ; ; ) {
+		if ((err = pthread_mutex_lock(&thread->mutex)))
+			return (void*)(intptr_t)err;
+
+		/* Go to sleep and wait for work */
+		while (thread->flags & THREAD_FLAG_SUSPENDED)
+			pthread_cond_wait(&thread->cond, &thread->mutex);
+
+		pthread_mutex_unlock(&thread->mutex);
+
+		/* The JVM would be able to dynamically choose a handler */
+		thread->func = handler1;
+
+		if (thread->func != NULL)
+			thread->func(arg);
+
+		// Reset Priority to original async server priority
+		set_thread_priority(thread->pthread, thread->priority);
+
+		thread->flags |= THREAD_FLAG_SUSPENDED;
+	}	// Go back to sleep and wait for next command
+}
+
+void *user_thread(void *arg)
+{
+	struct thread *thread = ((struct thread *)arg);
+	struct thread *server = (struct thread*)thread->arg;
+
+	start = rt_gettime();
+
+	/* Change the async server thread priority to be the priority
+	   of the user_thread. (event thread) */
+	set_thread_priority(server->pthread, thread->priority);
+
+	/* Clear the THREAD_FLAG_SUSPENDED flag of the server before signal */
+	server->flags &= ~THREAD_FLAG_SUSPENDED;
+
+	/* Signal the async server thread - simulates firing of an event */
+	pthread_cond_broadcast(&server->cond);
+
+	return NULL;
+}
+
+void *handler1(void *arg)
+{
+	end = rt_gettime();
+	return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+	int aes_id;	// asynchronous event server id
+	int user_id;	// User thread - that fires the event
+	long delta;
+	struct thread *server;
+	setup();
+
+	rt_init("jh", parse_args, argc, argv);
+	if (run_jvmsim) {
+		printf("jvmsim enabled\n");
+		jvmsim_init();	// Start the JVM simulation
+	} else {
+		printf("jvmsim disabled\n");
+	}
+
+	aes_id = create_fifo_thread(async_event_server, (void*)0, 83);
+	server = get_thread(aes_id);
+
+	user_id = create_fifo_thread(user_thread, (void*)server, NORMAL_PRIORITY);
+
+	usleep(1000);
+	pthread_detach(server->pthread);
+	join_thread(user_id);
+	join_threads();
+	delta = (end - start)/NS_PER_US;
+
+	printf("delta = %ld us\n", delta);
+	printf("\nCriteria: latencies < %d\n", PASS_US);
+	printf("Result: %s\n", delta > PASS_US ? "FAIL" : "PASS");
+
+	return 0;
+}
+

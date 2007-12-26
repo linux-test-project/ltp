@@ -1,0 +1,30 @@
+if HAVE_PTHREAD_MUTEXATTR_SETPROTOCOL
+bin_PROGRAMS = \
+        hrtimer-prio
+endif
+
+
+AM_CPPFLAGS = \
+        -I$(top_srcdir)/include \
+        -I$(top_builddir)/include \
+        -I$(DESTDIR)/usr/include/nptl
+
+hrtimer_prio_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-D_GNU_SOURCE
+
+hrtimer_prio_CFLAGS = \
+        -O2
+
+LDADD = \
+	$(top_builddir)/lib/libjvmsim.a \
+	$(top_builddir)/lib/librttest.a \
+	$(top_builddir)/lib/libstats.a
+
+hrtimer_prio_LDFLAGS = \
+        -lpthread -lrt -lm
+
+MAINTAINERCLEANFILES = \
+        GNUmakefile.in
+
+
