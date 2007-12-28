@@ -51,6 +51,14 @@ if [ $? -eq 0 ]; then
 	echo "Running ipcns tests."
 	runipcnstest.sh
 else
-	echo "ipc namespaces not enabled in kernel.  Not running pidns tests."
+	echo "ipc namespaces not enabled in kernel.  Not running ipcns tests."
+fi
+
+check_pidns_enabled
+if [ $? -eq 0 ]; then
+	echo "Running pidns tests."
+	runpidnstest.sh
+else
+	echo "pid namespaces not enabled in kernel.  Not running pidns tests."
 fi
 

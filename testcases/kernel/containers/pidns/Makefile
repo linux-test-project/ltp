@@ -18,28 +18,27 @@
 ##                                                                            ##
 ################################################################################
 
-SUBDIRS = libclone utsname sysvipc pidns
+CFLAGS += -Wall
+CPPFLAGS += -I../../../../include -I../libclone
+LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
 
-all:
-	@set -e; $(MAKE) check_for_unshare; \
-	if './check_for_unshare' > /dev/null 2>&1; then \
-		for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done \
-	else echo "system does not support unshare"; true; fi
+SRCS    = $(wildcard *.c)
+NOLTPSRCS = pidns01.c pidns02.c pidns03.c
+TARGETS = $(patsubst %.c,%,$(SRCS))
+NOLTP_TARGETS = $(patsubst %.c,%_noltp,$(NOLTPSRCS))
 
-noltp noltp_check:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
+%_noltp : %.c
+	$(CC) -g -DNO_LTP -o $@ $< ../libclone/libclone.a
 
-check_for_unshare: check_for_unshare.c
-	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
+all: $(TARGETS)
 
-install:
-	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
-	ln -f container_test.sh ../../bin/container_test.sh; \
-	if './check_for_unshare' > /dev/null 2>&1; then \
-		for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done; \
-		chmod ugo+x container_test.sh; \
-	else echo "system does not support unshare"; true; fi
+noltp:  $(NOLTP_TARGETS)
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
-	rm -f check_for_unshare
+	rm -f $(TARGETS) *.o $(NOLTP_TARGETS)
+
+install:
+	@set -e; for i in $(TARGETS) runpidnstest.sh check_pidns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runpidnstest.sh ; done
+
+noltp_check: noltp
+	chmod +x runtests_noltp.sh ; ./runtests_noltp.sh
