@@ -59,6 +59,11 @@ then
 	exit
 fi
 
+# Update test policy if needed
+pushd $LTPROOT/testcases/kernel/security/selinux-testsuite/misc
+sh ./update_refpolicy.sh
+popd
+
 # build and install the test policy...
 echo "building and installing test_policy module..."
 cd $LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy
