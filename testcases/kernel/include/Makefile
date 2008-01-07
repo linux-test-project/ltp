@@ -1,4 +1,4 @@
-all:
+all: linux_syscall_numbers.h
 	ln -sf ../testcases/kernel/include/linux_syscall_numbers.h ../../../include/
 
 clean distclean:
@@ -6,6 +6,9 @@ clean distclean:
 
 install:
 	@true
+
+linux_syscall_numbers.h: *.in
+	$(MAKE) regen
 
 regen:
 	./regen.sh
