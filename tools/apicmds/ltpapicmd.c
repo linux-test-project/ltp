@@ -163,10 +163,10 @@ int main( int argc,
             ((tst_total = getenv("TST_TOTAL")) == NULL) || 
             ((tst_count = getenv("TST_COUNT")) == NULL))
     {
-        fprintf(stderr, "\nSet variables TCID and TST_TOTAL\n"
+        fprintf(stderr, "\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
                 "export TCID=<test name>\n"
                 "export TST_TOTAL=<Total Number of Tests >\n"
-                "export TST_COUNT=<Test case number; before each test\n\n");
+                "export TST_COUNT=<Test case number>\n\n");
     }
     else
     {
@@ -176,13 +176,13 @@ int main( int argc,
 
         if (strcmp(TCID, " ") == 0)
         {
-            fprintf(stderr, "Variable TCID not set, TCID=<test name>\n");
+            fprintf(stderr, "Variable TCID not set, use: TCID=<test name>\n");
             exit(-1);
         }
         if (TST_TOTAL == 0)
         {
-            fprintf(stderr, "Variable TST_TOTAL is set to 0, must be \
-                    greater than zero \n");
+            fprintf(stderr, "Variable TST_TOTAL is set to 0, must be "
+                    "greater than zero\n");
 	    exit(-1);
         }
     }
@@ -195,7 +195,7 @@ int main( int argc,
         {
             fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
+            "and TRETR.\n"
             "\tFNAME  - Print contents of this file after the message\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
@@ -231,7 +231,7 @@ int main( int argc,
         {
             fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
+            "and TRETR.\n"
             "\tFNAME  - Print contents of this file after the message\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
@@ -250,7 +250,7 @@ int main( int argc,
         {
             fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
+            "and TRETR.\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
             exit (-1);
@@ -267,7 +267,7 @@ int main( int argc,
         {
             fprintf(stderr, "Usage: %s TTYPE STRING\n"
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
+            "and TRETR.\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
             exit (-1);
         }
@@ -282,7 +282,7 @@ int main( int argc,
         {
             fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
             "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and  TRETR.\n"
+            "and TRETR.\n"
             "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
             "\tSTRING - Message explaining the test result\n", cmd_name);
             exit (-1);
