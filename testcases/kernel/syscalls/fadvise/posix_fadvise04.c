@@ -37,13 +37,15 @@
 
 #define _XOPEN_SOURCE 600
 #include <fcntl.h>
-
 #include <unistd.h>
-
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 32
+#endif
 
 void setup();
 void cleanup();
@@ -78,6 +80,14 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
+
+        /* Check this system has fadvise64 system which is used 
+          in posix_fadvise. */
+        if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
+               tst_resm(TWARN, "This test can only run on kernels that implements ");
+               tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
+               exit(0);
+        }
 
         /* Disable test if the version of the kernel is less than 2.6.16 */
         if((tst_kvercmp(2,6,16)) < 0) {
