@@ -120,6 +120,12 @@ exit02 exit02
 #faccessat test cases
 faccessat01 faccessat01
 
+#fallocate test cases
+fallocate01 fallocate01
+fallocate02 fallocate02
+fallocate03 fallocate03
+
+#posix_fadvise test cases
 posix_fadvise01                      posix_fadvise01
 posix_fadvise01_64                posix_fadvise01_64
 posix_fadvise02                      posix_fadvise02

@@ -20,3 +20,4 @@ __NR_faccessat (__NR_openat + 12)
 __NR_splice 313
 __NR_tee 315
 __NR_vmsplice 316
+__NR_fallocate 324
