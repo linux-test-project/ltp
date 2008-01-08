@@ -35,7 +35,7 @@ then
 x=0
 echo $x
 else
-x=$(ls /sys/devices/system/node | wc -l)
+x=$(ls /sys/devices/system/node|egrep 'node' | wc -l)
 fi
 if [ $x -gt 1 ]
 then

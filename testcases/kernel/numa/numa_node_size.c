@@ -34,7 +34,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-#include "numa.h"
+//#include "numa.h"
 char *fmt_mem(unsigned long long mem, char *buf)
 {
         if (mem == -1L)

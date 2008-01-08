@@ -33,7 +33,11 @@
 #		Test #3: Verifies memory interleave on all nodes
 #		Test #4: Verifies physcpubind
 #		Test #5: Verifies localalloc
-#		Test #6: Verifies memory policies on shared memory 
+#		Test #6: Verifies memory policies on shared memory
+#		Test #7: Verifies numademo 
+#		Test #8  Verifies memhog 
+#		Test #9: Verifies numa_node_size api
+#
 #		- it uses numastat output which is expected to be in the format
 #                           node0           node1
 #numa_hit                 4280408         4605341
