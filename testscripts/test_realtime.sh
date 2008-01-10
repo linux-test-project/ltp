@@ -20,9 +20,9 @@ fi
 
 function usage()
 {
-	echo -e "\n Usage: $0 test-argument "
-	echo -e "\n Where test-argument = func | stress | perf | all | list | clean | test_name"
-	echo -e "\n and: \n"
+	echo -e "\nUsage: $0 test-argument"
+	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name"
+	echo -e "\nand:\n"
 	echo -e " func = 	all functional tests will be run "
 	echo -e " stress = 	all stress tests will be run "
 	echo -e " perf = 	all perf tests will be run "
@@ -36,7 +36,7 @@ function usage()
 
 list_tests()
 {
-	echo -e "\n Available tests are:\n"
+	echo -e "\nAvailable tests are:\n"
 
 	cd $TESTS_DIR
 	for file in `find -name run_auto.sh`
@@ -57,7 +57,7 @@ function run_test()
 		fi
 		cd $TESTS_DIR
 	else
-		echo -e "\n $test is not a valid test subdirectory "
+		echo -e "\n $test is not a valid test subdirectory\n"
 		usage
 		exit 1
 	fi
@@ -83,6 +83,19 @@ if [ $# -ne 1 ]; then
 fi
 
 cd $TESTS_DIR
+if [ ! -e "logs" ]; then
+        mkdir logs
+        echo " creating logs directory as $TESTS_DIR/logs "
+        chmod -R 775 logs
+fi
+
+if [ ! -e "config/m4" ]; then
+        mkdir config/m4
+        chmod -R 775 config/m4
+fi
+
+rm -fr func/vstnm
+
 ./autogen.sh
 ./configure
 make
@@ -130,6 +143,6 @@ do
                 done
 		cd $TESTS_DIR
         else
-                echo -e "\n $subdir not found; check name/path with run.sh list "
+                echo -e "\n $subdir not found; check name/path with run.sh list\n"
         fi
 done

@@ -35,6 +35,31 @@ If you see errors during your configure, please upgrade to
 this version and autoconf-2.61.
 
 
+RUNNING TESTS THROUGH LTP
+=========================
+Simplest method to run realtime tests through LTP is:
+The command will configure,build and run tests specified through
+argument provided to the script.
+
+Run command below from LTP root directory with argument:
+
+        $./testscripts/test_realtime.sh $arg
+
+        or
+
+        $./test_realtime.sh $arg   # From $LTPROOT/testscripts directory
+
+Here $arg takes values as :
+
+        func =        all functional tests will be run "
+        stress =      all stress tests will be run "
+        perf =        all perf tests will be run "
+        all =         all tests will be run "
+        list =        all available tests will be listed "
+        clean =       all logs deleted, make clean performed "
+        test_name =   only test_name subdir will be run (e.g: func/pi-tests) "
+
+
 BUILD
 =====
 As of April 2007, we include autoconf support (based on Robert
