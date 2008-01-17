@@ -111,7 +111,7 @@ void * lp_func(void * arg)
 
 void * hp_func(void * arg)
 {
-	int *ctrl = (int *) arg;
+	volatile int *ctrl = (int *) arg;
 	int dummy=0, i;
 	do
 	{
