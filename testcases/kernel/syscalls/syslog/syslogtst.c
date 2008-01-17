@@ -45,10 +45,10 @@ void sig_handler(int signal);
 
 int main(int argc, char *argv[])
 {
-        int status, flag3, fd, ch, ch1;
+	int status, flag3, fd, ch, ch1;
 	int exit_flag = 0;	/* used for syslog test case 6. */
         char* config_file;
-        time_t t;
+	time_t t;
 
 	signal(SIGINT, sig_handler);
 	signal(SIGTERM, sig_handler);
@@ -57,38 +57,38 @@ int main(int argc, char *argv[])
 	signal(SIGSEGV, sig_handler);
 	signal(SIGQUIT, sig_handler);
 
-        time(&t);
-        srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
- 
-        if(argc < 2) {
-                ch = (random() % 10) + 1;
-                if(ch == 2) ch1 = random() % 8;
-                if(ch == 8) ch1 = (random() % 5) + 1;   
-                tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
-        }
+	time(&t);
+	srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
 
-        else if(argc == 2 && (atoi(argv[1]) == 2 || atoi(argv[1]) == 8)) { 
-                ch = atoi(argv[1]);
-                if(ch == 2) ch1 = random() % 8;
-                if(ch == 8) ch1 = (random() % 5) + 1;
-                tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
-        }
-        
-        else {
-                ch = atoi(argv[1]);
-                ch1 = atoi(argv[2]);
-        }
-               
-         /*
+	if(argc < 2) {
+		ch = (random() % 10) + 1;
+		if(ch == 2) ch1 = random() % 8;
+		if(ch == 8) ch1 = (random() % 5) + 1;	
+		tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
+	}
+
+	else if(argc == 2 && (atoi(argv[1]) == 2 || atoi(argv[1]) == 8)) { 
+		ch = atoi(argv[1]);
+		if(ch == 2) ch1 = random() % 8;
+		if(ch == 8) ch1 = (random() % 5) + 1;
+		tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
+	}
+	
+	else {
+		ch = atoi(argv[1]);
+		ch1 = atoi(argv[2]);
+	}
+		
+	/*
 	 * Send syslog messages according to the case number, which
 	 * we will know from command line.
 	 */
-        switch(ch) {
+	switch(ch) {
 	case 1:
 		syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
 		break;
 	case 2:
-                switch(ch1) {
+		switch(ch1) {
 		case 0:
 			syslog(LOG_MAIL | LOG_EMERG, "syslogtst: mail emerg test.");
 			break;
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 		syslog(LOG_USER | LOG_DEBUG, "syslogtst: debug log");
 		break;
 	case 8:
-                switch(ch1) {
+		switch(ch1) {
 		/*
 		 * Kernel messages cannot be send by user, so skipping the
 		 * LOG_KERN facility.
@@ -262,6 +262,7 @@ int main(int argc, char *argv[])
 		break;
 	}
 	
+
 	/*
 	 * Check the exit_flag and if it is set,
 	 * exit with status 1, indicating failure.
