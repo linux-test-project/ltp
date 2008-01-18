@@ -56,6 +56,7 @@
 #define CALC_LOOPS_B (50*100)
 #define CALC_LOOPS_C (72*100)
 
+#define NUM_GROUPS 3
 #define THREADS_PER_GROUP 4
 
 //#define ITERATIONS 100 /* short functional test run */
@@ -63,8 +64,11 @@
 //#define ITERATIONS 1000 /* min iters for 3 nines */
 // FIXME: need some kind of passing criteria calculation
 //#define PASS_US 100
-// FIXME: consider removing the histograms entirely
-#define HIST_BUCKETS 100
+
+int fail[THREADS_PER_GROUP * NUM_GROUPS];
+stats_container_t dat[THREADS_PER_GROUP * NUM_GROUPS];
+stats_quantiles_t quantiles[THREADS_PER_GROUP * NUM_GROUPS];
+static const char groupname[NUM_GROUPS] = "ABC";
 
 static int run_jvmsim = 0;
 static int ret = 0;
@@ -122,49 +126,38 @@ void *periodic_thread(void *thread)
 	nsec_t period = parg->period;
 	void*(*func)(void*) = parg->func;
 
-	stats_container_t dat;
-	stats_container_t hist;
-	stats_quantiles_t quantiles;
-
 	int i = 0;
-	int fail = 0;
-	nsec_t next;
+	nsec_t next, now;
 	nsec_t exe_start, exe_end, exe_time;
-
-	stats_container_init(&dat, ITERATIONS);
-	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, 3);
 
 	next = rt_gettime();
 	while (i < parg->iterations) {
 		next += period;
 		if (rt_gettime() > next) {
 			printf("TID %d missed period, aborting\n", t->id);
-			fail = 1;
+			fail[t->id] = 1;
 			break;
 		}
 		exe_start = rt_gettime();
 		func(parg->arg);
 		exe_end = rt_gettime();
 		exe_time = exe_end - exe_start;
-		dat.records[i].x = i;
-		dat.records[i].y = exe_time/NS_PER_US;
+		dat[t->id].records[i].x = i;
+		dat[t->id].records[i].y = exe_time/NS_PER_US;
 
 		i++;
-		rt_nanosleep(next - rt_gettime());
-	}
-	stats_quantiles_calc(&dat, &quantiles);
 
-	printf("\nTID %d (prio %d) complete\n", t->id, t->priority);
-	printf("  Execution Time Statistics:\n");
-	printf("        Min: %ld us\n", stats_min(&dat));
-	printf("        Max: %ld us\n", stats_max(&dat));
-	printf("        Avg: %f us\n", stats_avg(&dat));
-	printf("     StdDev: %f us\n\n", stats_stddev(&dat));
-	printf("  Quantiles:\n");
-	stats_quantiles_print(&quantiles);
-	printf("Criteria:TID %d missed a period\n",t->id);
-	printf("Result: %s\n", fail ? "FAIL":"PASS");
+		now = rt_gettime();
+		if (now > next) {
+			printf("Missed period, aborting (calc took too long)\n");
+			fail[t->id] = 1;
+			break;
+		}
+		rt_nanosleep(next - now);
+	}
+
+	printf("TID %d (%c - prio %d) complete\n", t->id, groupname[t->id>>2],
+	       t->priority);
 
 	return NULL;
 }
@@ -188,10 +181,11 @@ int main(int argc, char *argv[])
 	printf("  threads: %d\n", THREADS_PER_GROUP);
 	printf("  priority: %d\n", PRIO_B);
 	printf("  period: %d ms\n", PERIOD_B/NS_PER_MS);
-	printf("Thread Group A:\n");
+	printf("Thread Group C:\n");
 	printf("  threads: %d\n", THREADS_PER_GROUP);
-	printf("  priority: %d\n", PRIO_B);
-	printf("  period: %d ms\n", PERIOD_B/NS_PER_MS);
+	printf("  priority: %d\n", PRIO_C);
+	printf("  period: %d ms\n", PERIOD_C/NS_PER_MS);
+	printf("\n");
 
 	if (run_jvmsim) {
 		printf("jvmsim enabled\n");
@@ -200,20 +194,51 @@ int main(int argc, char *argv[])
 		printf("jvmsim disabled\n");
 	}
 
-	struct periodic_arg parg_a = { PERIOD_A, ITERATIONS, calc, (void *)CALC_LOOPS_A };
-	struct periodic_arg parg_b = { PERIOD_B, ITERATIONS, calc, (void *)CALC_LOOPS_B };
-	struct periodic_arg parg_c = { PERIOD_C, ITERATIONS, calc, (void *)CALC_LOOPS_C };
-	for (i=0; i < THREADS_PER_GROUP; i++) {
-		create_fifo_thread(periodic_thread, (void*)&parg_a, PRIO_A);
-		create_fifo_thread(periodic_thread, (void*)&parg_b, PRIO_B);
-		create_fifo_thread(periodic_thread, (void*)&parg_c, PRIO_C);
+	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
+		stats_container_init(&dat[i], ITERATIONS);
+		stats_quantiles_init(&quantiles[i], log10(ITERATIONS));
 	}
 
+	struct periodic_arg parg_a = {PERIOD_A, ITERATIONS, calc, (void *)CALC_LOOPS_A };
+	struct periodic_arg parg_b = {PERIOD_B, ITERATIONS, calc, (void *)CALC_LOOPS_B };
+	struct periodic_arg parg_c = {PERIOD_C, ITERATIONS, calc, (void *)CALC_LOOPS_C };
+
+	for (i=0; i < THREADS_PER_GROUP; i++)
+		create_fifo_thread(periodic_thread, (void*)&parg_a, PRIO_A);
+	for (i=0; i < THREADS_PER_GROUP; i++)
+		create_fifo_thread(periodic_thread, (void*)&parg_b, PRIO_B);
+	for (i=0; i < THREADS_PER_GROUP; i++)
+		create_fifo_thread(periodic_thread, (void*)&parg_c, PRIO_C);
+
 	join_threads();
+
+	printf("\nExecution Time Statistics:\n\n");
+
+	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
+		printf("TID %d (%c)\n", i, groupname[i>>2]);
+		printf("  Min: %ld us\n", stats_min(&dat[i]));
+		printf("  Max: %ld us\n", stats_max(&dat[i]));
+		printf("  Avg: %f us\n", stats_avg(&dat[i]));
+		printf("  StdDev: %f us\n\n", stats_stddev(&dat[i]));
+		printf("  Quantiles:\n");
+		stats_quantiles_calc(&dat[i], &quantiles[i]);
+		stats_quantiles_print(&quantiles[i]);
+		printf("Criteria: TID %d did not miss a period\n", i);
+		printf("Result: %s\n", fail[i] ? "FAIL":"PASS");
+		printf("\n");
+
+		if (fail[i])
+			ret = 1;
+	}
 
 	// FIXME: define pass criteria
 	// printf("\nCriteria: latencies < %d us\n", PASS_US);
 	// printf("Result: %s\n", ret ? "FAIL" : "PASS");
+
+	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
+		stats_container_free(&dat[i]);
+		stats_quantiles_free(&quantiles[i]);
+	}
 
 	return ret;
 }

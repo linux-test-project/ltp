@@ -75,8 +75,8 @@ static unsigned int busy_work_time;
 static int num_busy = -1;
 
 stats_container_t high_dat, low_dat, wait_dat;
-stats_container_t wait_hist, low_hist;
-stats_quantiles_t wait_quantiles, low_quantiles;
+stats_container_t wait_hist;
+stats_quantiles_t wait_quantiles;
 
 void usage(void)
 {
@@ -132,8 +132,6 @@ void * low_prio_thread(void *arg)
 	unsigned int i;
 
 	stats_container_init(&low_dat, iterations);
-	stats_container_init(&low_hist, HIST_BUCKETS);
-	stats_quantiles_init(&low_quantiles, log10(iterations));
 
 	printf("Low prio thread started\n");
 
@@ -149,10 +147,10 @@ void * low_prio_thread(void *arg)
 		busy_work_ms(low_work_time);
 		low_hold = rt_gettime() - low_start;
 
+		pthread_mutex_unlock(&lock);
+
 		low_dat.records[i].x = i;
 		low_dat.records[i].y = low_hold / NS_PER_US;
-
-		pthread_mutex_unlock(&lock);
 
 		if (i == iterations-1)
 			end = 1;
@@ -160,8 +158,7 @@ void * low_prio_thread(void *arg)
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
 	}
-	stats_quantiles_calc(&low_dat, &low_quantiles);
-	stats_hist(&low_hist, &low_dat);
+
 	return NULL;
 }
 
@@ -188,30 +185,31 @@ void * high_prio_thread(void *arg)
 		pthread_mutex_lock(&lock);
 		high_spent = rt_gettime() - high_start;
 
+		busy_work_ms(high_work_time);
+		pthread_mutex_unlock(&lock);
+
 		high_dat.records[i].x = i;
 		high_dat.records[i].y = high_spent / NS_PER_US;
 		wait_dat.records[i].x = i;
 		wait_dat.records[i].y = high_dat.records[i].y - low_dat.records[i].y;
 
-		busy_work_ms(high_work_time);
-		pthread_mutex_unlock(&lock);
-
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
 	}
-	stats_quantiles_calc(&wait_dat, &wait_quantiles);
+
 	stats_hist(&wait_hist, &wait_dat);
+	stats_container_save("samples", "pi_perf Latency Scatter Plot",
+		"Iteration", "Latency (us)", &wait_dat, "points");
+	stats_container_save("hist", "pi_perf Latency Histogram",
+		"Latency (us)", "Samples", &wait_hist, "steps");
 
 	printf("Min wait time = %ld us\n", stats_min(&wait_dat));
 	printf("Max wait time = %ld us\n", stats_max(&wait_dat));
 	printf("Average wait time = %4.2f us\n", stats_avg(&wait_dat));
 	printf("Standard Deviation = %4.2f us\n", stats_stddev(&wait_dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&wait_dat, &wait_quantiles);
 	stats_quantiles_print(&wait_quantiles);
-	stats_container_save("samples", "pi_perf Latency Scatter Plot",
-		"Iteration", "Latency (us)", &wait_dat, "points");
-	stats_container_save("hist", "pi_perf Latency Histogram",
-		"Iteration", "Latency (us)", &wait_hist, "steps");
 
 	return NULL;
 }

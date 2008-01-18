@@ -101,24 +101,16 @@ void matrix_mult(void)
 	float B[MATRIX_SIZE][MATRIX_SIZE];
 	float C[MATRIX_SIZE][MATRIX_SIZE];
 	int i, j, k;
-	nsec_t start, end, delta;
-	int ops;
 
 	matrix_init(A, B);
-	start = rt_gettime();
-	ops = 0;
-	for (i = 0; i < MATRIX_SIZE; i++)
-	{
-		for (j = 0; j < MATRIX_SIZE; j++)
-		{
+
+	for (i = 0; i < MATRIX_SIZE; i++) {
+		for (j = 0; j < MATRIX_SIZE; j++) {
 			for (k = 0; k < MATRIX_SIZE; k++) {
 				C[i][j] += A[i][k]*B[k][j];
-				ops++;
 			}
 		}
 	}
-	end = rt_gettime();
-	delta = end - start;
 }
 
 /* arg: the number of concurrent threads being run */
@@ -173,6 +165,9 @@ int main(int argc, char *argv[])
 	stats_container_init(&cdat, ITERATIONS);
 	stats_container_init(&chist, HIST_BUCKETS);
 
+	if (set_priority(PRIO + 1))
+		return -1;
+
 	// run matrix mult operation sequentially
 	printf("\nSequential:\n");
 	for (i = 0; i < ITERATIONS; i++) {
@@ -201,10 +196,10 @@ int main(int argc, char *argv[])
 	printf("StdDev: %.4f us\n", stats_stddev(&sdat));
 	stats_hist(&shist, &sdat);
 
-	stats_container_save("sequential", "Matrix Multiplication Sequential Execution Runtime Scatter Plot",\
-				"Iteration", "Runtime (us)", &sdat, "points");
-	stats_container_save("sequential_hist", "Matrix Multiplicatoin Sequential Execution Runtime Histogram",\
-				"Iteration", "Runtime (us)", &shist, "steps");
+	stats_container_save("sequential", "Matrix Multiplication Sequential Execution Runtime Scatter Plot",
+			     "Iteration", "Runtime (us)", &sdat, "points");
+	stats_container_save("sequential_hist", "Matrix Multiplicatoin Sequential Execution Runtime Histogram",
+			     "Runtime (us)", "Samples", &shist, "steps");
 
 	// run matrix mult operation concurrently
 	printf("\nConcurrent (%dx):\n", numcpus);
@@ -244,17 +239,15 @@ int main(int argc, char *argv[])
 	printf("StdDev: %.4f us\n", stats_stddev(&cdat));
 	stats_hist(&chist, &cdat);
 
-	stats_container_save("concurrent", "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",\
-				"Iteration", "Runtime (us)", &cdat, "points");
-	stats_container_save("concurrent_hist", "Matrix Multiplication Concurrent Execution Runtime Histogram",\
-				"Iteration", "Runtime (us)", &chist, "steps");
+	stats_container_save("concurrent", "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",
+			     "Iteration", "Runtime (us)", &cdat, "points");
+	stats_container_save("concurrent_hist", "Matrix Multiplication Concurrent Execution Runtime Histogram",
+			     "Iteration", "Runtime (us)", &chist, "steps");
 
 	printf("\nSeq/Conc Ratios:\n");
 	printf("Min: %.4f\n", (float)smin/cmin);
 	printf("Max: %.4f\n", (float)smax/cmax);
 	printf("Avg: %.4f\n", (float)savg/cavg);
-
-	//join_threads();
 
 	ret = 1;
 	if (savg > (cavg * criteria))

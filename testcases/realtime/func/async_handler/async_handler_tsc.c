@@ -47,8 +47,8 @@
 #include <libjvmsim.h>
 #include <libstats.h>
 
-#define SIGNAL_PRIO 98
-#define HANDLER_PRIO 99
+#define HANDLER_PRIO 98
+#define SIGNAL_PRIO 99
 #define ITERATIONS 10000000
 #define HIST_BUCKETS 100
 #define PASS_US 100
@@ -147,10 +147,8 @@ unsigned long long tsc_period_ps(void)
 	return (1000*(ns_end - ns_start)) / tsc_minus(tsc_start, tsc_end);
 }
 
-void *signal_thread(void *arg)
+void *handler_thread(void *arg)
 {
-//	struct thread *t = (struct thread *)arg;
-
 	while (atomic_get(&step) != CHILD_QUIT) {
 		pthread_mutex_lock(&mutex);
 		atomic_set(CHILD_WAIT, &step);
@@ -168,10 +166,8 @@ void *signal_thread(void *arg)
 	return NULL;
 }
 
-void *handler_thread(void *arg)
+void *signal_thread(void *arg)
 {
-//	struct thread *t = (struct thread *)arg;
-
 	int i;
 	long delta, max, min;
 	stats_container_t dat;
@@ -187,17 +183,16 @@ void *handler_thread(void *arg)
 			usleep(10);
 		pthread_mutex_lock(&mutex);
 		rdtscll(start);
-		pthread_mutex_unlock(&mutex);
 		if (pthread_cond_signal(&cond) != 0) {
 			perror("pthread_cond_signal");
 			atomic_set(CHILD_QUIT, &step);
 			break;
 		}
+		pthread_mutex_unlock(&mutex);
 
 		/* wait for the event handler to schedule */
 		while (atomic_get(&step) != CHILD_HANDLED)
 			usleep(10);
-		pthread_mutex_lock(&mutex);
 		delta = (long)(tsc_period * (end - start) / 1000000);
 		if (delta > 30) {
 			over_30++;
@@ -215,7 +210,6 @@ void *handler_thread(void *arg)
 			max = MAX(max, delta);
 		}
 		atomic_set((i == ITERATIONS-1) ? CHILD_QUIT : CHILD_START, &step);
-		pthread_mutex_unlock(&mutex);
 	}
 	printf("recording statistics...\n");
 	printf("Minimum: %ld\n", min);
@@ -226,7 +220,7 @@ void *handler_thread(void *arg)
 	stats_container_save("samples", "Asynchronous Event Handling Latency (TSC) Scatter Plot",\
 			     "Iteration", "Latency (us)", &dat, "points");
 	stats_container_save("hist", "Asynchronous Event Handling Latency (TSC) Histogram",\
-			     "Iteration", "Latency (us)", &hist, "steps");
+			     "Latency (us)", "Samples", &hist, "steps");
 	printf("signal thread exiting\n");
 
 	return NULL;
@@ -261,7 +255,6 @@ int main(int argc, char *argv[])
 	handler_id = create_fifo_thread(handler_thread, (void*)0, HANDLER_PRIO);
 	signal_id = create_fifo_thread(signal_thread, (void*)0, SIGNAL_PRIO);
 
-	join_thread(signal_id);
 	join_threads();
 
 	printf("%d samples over 20 us latency\n", over_20);

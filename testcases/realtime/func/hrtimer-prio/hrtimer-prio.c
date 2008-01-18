@@ -205,12 +205,11 @@ int main(int argc, char *argv[])
 	join_thread(t_id);
 
 	avg_delta = stats_avg(&dat);
-	stats_quantiles_calc(&dat, &quantiles);
 	stats_hist(&hist, &dat);
 	stats_container_save("samples", "High Resolution Timer Latency Scatter Plot",\
 			"Iteration", "Latency (us)", &dat, "points");
 	stats_container_save("hist", "High Resolution Timer Latency Histogram",\
-			"Iteration", "Latency (us)", &hist, "steps");
+			"Latency (us)", "Samples", &hist, "steps");
 
 	if (max_delta <= criteria)
 		ret = 0;
@@ -220,6 +219,7 @@ int main(int argc, char *argv[])
 	printf("Average: %f us\n", avg_delta);
 	printf("Standard Deviation: %f\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 	printf("\nCriteria: Maximum wakeup latency < %lu us\n", criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");

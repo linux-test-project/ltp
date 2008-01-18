@@ -71,6 +71,10 @@ static unsigned long long latency_threshold = 0;
 static nsec_t period = DEF_PERIOD;
 static unsigned int load_ms = DEF_LOAD_MS;
 
+stats_container_t dat;
+stats_container_t hist;
+stats_quantiles_t quantiles;
+
 void usage(void)
 {
 	rt_help();
@@ -120,19 +124,10 @@ void *periodic_thread(void *arg)
 	int failures = 0;
 	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0;
 
-	stats_container_t dat;
-	stats_container_t hist;
-	stats_quantiles_t quantiles;
-
 	prev = start;
 	next = start;
 	now = rt_gettime();
 	start_delay = (now - start)/NS_PER_US;
-
-	stats_container_init(&dat, iterations);
-	stats_container_init(&hist, HIST_BUCKETS);
-	/* use the highest value for the quantiles */
-	stats_quantiles_init(&quantiles, log10(iterations));
 
 	debug(DBG_INFO, "ITERATION DELAY(US) MAX_DELAY(US) FAILURES\n");
 	debug(DBG_INFO, "--------- --------- ------------- --------\n");
@@ -141,7 +136,7 @@ void *periodic_thread(void *arg)
 		latency_trace_enable();
 		latency_trace_start();
 	}
-	for (i = 1; i <= iterations; i++) {
+	for (i = 0; i < iterations; i++) {
 		/* wait for the period to start */
 		next += period;
 		prev = now;
@@ -164,14 +159,16 @@ void *periodic_thread(void *arg)
 		sched_delta = next - now; /* how long we should sleep */
 		delta = 0;
 		do {
+			nsec_t new_now;
+
 			rt_nanosleep(next - now);
-			delta += rt_gettime() - now; /* how long we did sleep */
-			now = rt_gettime();
+			new_now = rt_gettime();
+			delta += new_now - now; /* how long we did sleep */
+			now = new_now;
 		} while (now < next);
 
 		/* start of period */
-		now = rt_gettime();
-		delay = (now - start - (nsec_t)i*period)/NS_PER_US;
+		delay = (now - start - (nsec_t)(i+1)*period)/NS_PER_US;
 		dat.records[i].x = i;
 		dat.records[i].y = delay;
 		if (delay < min_delay)
@@ -194,16 +191,22 @@ void *periodic_thread(void *arg)
 	}
 	if (latency_threshold) {
 		latency_trace_stop();
-		if (i != (iterations + 1)) {
+		if (i != iterations) {
 			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
 				latency_threshold, i);
 			latency_trace_print();
-			stats_container_resize(&dat, i);
+			stats_container_resize(&dat, i+1);
 		}
 	}
 
-	avg_delay /= (i - 1);
-	stats_quantiles_calc(&dat, &quantiles);
+	/* save samples before the quantile calculation messes things up! */
+	stats_hist(&hist, &dat);
+	stats_container_save("samples", "Periodic Scheduling Latency Scatter Plot",\
+			     "Iteration", "Latency (us)", &dat, "points");
+	stats_container_save("hist", "Periodic Scheduling Latency Histogram",\
+			     "Latency (us)", "Samples", &hist, "steps");
+
+	avg_delay /= (i + 1);
 	printf("\n\n");
 	printf("Start: %4llu us: %s\n", start_delay,
 		start_delay < PASS_US ? "PASS" : "FAIL");
@@ -215,13 +218,9 @@ void *periodic_thread(void *arg)
 		avg_delay < PASS_US ? "PASS" : "FAIL");
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 	printf("Failed Iterations: %d\n", failures);
-	stats_hist(&hist, &dat);
-	stats_container_save("samples", "Periodic Scheduling Latency Scatter Plot",\
-			     "Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "Periodic Scheduling Latency Histogram",\
-			     "Iteration", "Latency (us)", &hist, "steps");
 
 	return NULL;
 }
@@ -263,6 +262,21 @@ int main(int argc, char *argv[])
 		printf("jvmsim disabled\n");
 	}
 
+	if (stats_container_init(&dat, iterations))
+		exit(1);
+
+	if (stats_container_init(&hist, HIST_BUCKETS)) {
+		stats_container_free(&dat);
+		exit(1);
+	}
+
+	/* use the highest value for the quantiles */
+	if (stats_quantiles_init(&quantiles, log10(iterations))) {
+		stats_container_free(&hist);
+		stats_container_free(&dat);
+		exit(1);
+	}
+
 	start = rt_gettime();
 	per_id = create_fifo_thread(periodic_thread, (void*)0, PRIO);
 
@@ -271,6 +285,10 @@ int main(int argc, char *argv[])
 
 	printf("\nCriteria: latencies < %d us\n", PASS_US);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
+
+	stats_container_free(&dat);
+	stats_container_free(&hist);
+	stats_quantiles_free(&quantiles);
 
 	return ret;
 }

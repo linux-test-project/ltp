@@ -132,13 +132,11 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 		}
 		rt_nanosleep(next - now);
 	}
-	stats_quantiles_calc(&dat, &quantiles);
+
 	stats_container_save(samples_filename, "Periodic CPU Load Scatter Plot",\
 			     "Iteration", "Runtime (us)", &dat, "points");
 	stats_container_save(hist_filename, "Periodic CPU Load Histogram",\
-			     "Iteration", "Runtime (us)", &hist, "steps");
-	free(samples_filename);
-	free(hist_filename);
+			     "Runtime (us)", "Samples", &hist, "steps");
 
 	printf("  Execution Time Statistics:\n");
 	printf("Min: %ld us\n", stats_min(&dat));
@@ -146,9 +144,13 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	printf("Avg: %.4f us\n", stats_avg(&dat));
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 	printf("Criteria: no missed periods\n");
 	printf("Result: %s\n", fail ? "FAIL":"PASS");
+
+	free(samples_filename);
+	free(hist_filename);
 
 	return fail;
 }

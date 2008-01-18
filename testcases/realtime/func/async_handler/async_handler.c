@@ -49,7 +49,7 @@
 
 #define SIGNAL_PRIO 89
 #define HANDLER_PRIO 89
-#define DEFAULT_ITERATIONS 5000 /* about 1 minute @ 2GHz */
+#define DEFAULT_ITERATIONS 1000000 /* about 1 minute @ 2GHz */
 #define HIST_BUCKETS 100
 #define PASS_US 100
 
@@ -98,9 +98,8 @@ int parse_args(int c, char *v)
         return handled;
 }
 
-void *signal_thread(void *arg)
+void *handler_thread(void *arg)
 {
-//	struct thread *t = (struct thread *)arg;
 
 	while (atomic_get(&step) != CHILD_QUIT) {
 		pthread_mutex_lock(&mutex);
@@ -119,7 +118,7 @@ void *signal_thread(void *arg)
 	return 0;
 }
 
-void *handler_thread(void *arg)
+void *signal_thread(void *arg)
 {
 
 	int i;
@@ -137,17 +136,16 @@ void *handler_thread(void *arg)
 			usleep(10);
 		pthread_mutex_lock(&mutex);
 		start = rt_gettime();
-		pthread_mutex_unlock(&mutex);
 		if (pthread_cond_signal(&cond) != 0) {
 			perror("pthread_cond_signal");
 			atomic_set(CHILD_QUIT, &step);
 			break;
 		}
+		pthread_mutex_unlock(&mutex);
 
 		/* wait for the event handler to schedule */
 		while (atomic_get(&step) != CHILD_HANDLED)
 			usleep(10);
-		pthread_mutex_lock(&mutex);
 		delta = (long)((end - start)/NS_PER_US);
 		if (delta > PASS_US)
 			ret = 1;
@@ -160,7 +158,6 @@ void *handler_thread(void *arg)
 			max = MAX(max, delta);
 		}
 		atomic_set((i == iterations-1) ? CHILD_QUIT : CHILD_START, &step);
-		pthread_mutex_unlock(&mutex);
 	}
 	printf("recording statistics...\n");
 	printf("Min: %ld us\n", min);
@@ -171,7 +168,7 @@ void *handler_thread(void *arg)
 	stats_container_save("samples", "Asynchronous Event Handling Latency Scatter Plot",\
 			     "Iteration", "Latency (us)", &dat, "points");
 	stats_container_save("hist", "Asynchronous Event Handling Latency Histogram",\
-			     "Iteration", "Latency (us)", &hist, "steps");
+			     "Latency (us)", "Samples", &hist, "steps");
 	printf("signal thread exiting\n");
 
 	return NULL;
@@ -205,7 +202,6 @@ int main(int argc, char *argv[])
 	handler_id = create_fifo_thread(handler_thread, (void*)0, HANDLER_PRIO);
 	signal_id = create_fifo_thread(signal_thread, (void*)0, SIGNAL_PRIO);
 
-	join_thread(signal_id);
 	join_threads();
 
 	printf("\nCriteria: latencies < %d\n", PASS_US);

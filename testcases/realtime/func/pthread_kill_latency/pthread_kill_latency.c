@@ -171,7 +171,10 @@ void *signal_receiving_thread(void *arg)
 		atomic_set(1, &flag);
 	}
 
-	stats_quantiles_calc(&dat, &quantiles);
+	stats_container_save("samples", "pthread_kill Latency Scatter Plot",
+			     "Iteration", "Latency (us)", &dat, "points");
+	stats_container_save("hist", "pthread_kill Latency Histogram",
+			     "Latency (us)", "Samples", &hist, "steps");
 	stats_hist(&hist, &dat);
 
 	printf("\n");
@@ -180,16 +183,13 @@ void *signal_receiving_thread(void *arg)
 	printf("Avg: %.4f us\n", stats_avg(&dat));
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
     printf("Failures: %d\n", fail);
 	printf("Criteria: Time < %d us\n", THRESHOLD);
 	printf("Result: %s", fail ? "FAIL" : "PASS");
 	printf("\n\n");
 
-	stats_container_save("samples", "pthread_kill Latency Scatter Plot",
-			     "Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "pthread_kill Latency Histogram",
-			     "Iteration", "Latency (us)", &hist, "steps");
 
 	return NULL;
 }

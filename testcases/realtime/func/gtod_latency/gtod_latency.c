@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 	int i, err;
 	struct timeval tv_a, tv_b;
 	unsigned long long delta;
-	unsigned long long max, min, avg;
+	unsigned long long max, min;
 	struct sched_param param;
 	stats_container_t dat;
 	stats_container_t hist;
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
 	printf("Iterations: %d\n\n", ITERATIONS);
 
 	/* collect ITERATIONS pairs of gtod calls */
-	max = min = avg = 0;
+	max = min = 0;
 	if (latency_threshold) {
 		latency_trace_enable();
 		latency_trace_start();
@@ -269,7 +269,6 @@ int main(int argc, char *argv[])
 		dat.records[i].y = delta;
 		if (i == 0 || delta < min) min = delta;
 		if (delta > max) max = delta;
-		avg += delta;
 		if (latency_threshold && delta > latency_threshold)
 			break;
 	}
@@ -283,8 +282,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	avg /= i + 1;
-	stats_quantiles_calc(&dat, &quantiles);
+	stats_hist(&hist, &dat);
+	stats_container_save(filenames[SCATTER_FILENAME], titles[SCATTER_TITLE],
+			     labels[SCATTER_LABELX], labels[SCATTER_LABELY], &dat, "points");
+	stats_container_save(filenames[HIST_FILENAME], titles[HIST_TITLE],
+			     labels[HIST_LABELX], labels[HIST_LABELY], &hist, "steps");
 
 	/* report on deltas */
 	printf("Min: %llu us\n", min);
@@ -292,13 +294,9 @@ int main(int argc, char *argv[])
 	printf("Avg: %.4f us\n", stats_avg(&dat));
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 
-	stats_hist(&hist, &dat);
-	stats_container_save(filenames[SCATTER_FILENAME], titles[SCATTER_TITLE],
-			     labels[SCATTER_LABELX], labels[SCATTER_LABELY], &dat, "points");
-	stats_container_save(filenames[HIST_FILENAME], titles[HIST_TITLE],
-			     labels[HIST_LABELX], labels[HIST_LABELY], &hist, "steps");
 
 	return 0;
 }

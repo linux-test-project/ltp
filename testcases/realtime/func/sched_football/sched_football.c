@@ -79,12 +79,17 @@ volatile int defense_count;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int run_jvmsim=0;
+static int players_per_team = 0;
+static int game_length = DEF_GAME_LENGTH;
 
 void usage(void)
 {
-        rt_help();
-        printf("testpi-1 specific options:\n");
-        printf("  -j            enable jvmsim\n");
+	rt_help();
+	printf("sched_football specific options:\n");
+	printf("  -j            enable jvmsim\n");
+	printf("  -nPLAYERS     players per team (defaults to num_cpus)\n");
+	printf("  -lGAME_LENGTH game length in seconds (defaults to %d s)\n",
+	       DEF_GAME_LENGTH);
 }
 
 int parse_args(int c, char *v)
@@ -98,6 +103,12 @@ int parse_args(int c, char *v)
                 case 'h':
                         usage();
                         exit(0);
+		case 'n':
+			players_per_team = atoi(v);
+			break;
+		case 'l':
+			game_length= atoi(v);
+			break;
                 default:
                         handled = 0;
                         break;
@@ -157,36 +168,17 @@ int referee(int game_length)
 	return final_ball != 0;
 }
 
-
-void create_thread_(void*(*func)(void*), int prio)
-{
-	pthread_t thread;
-	pthread_attr_t attr;
-	struct sched_param param;
-
-	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + prio;
-
-	pthread_attr_init(&attr);
-	pthread_attr_setinheritsched (&attr, PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedparam(&attr, &param);
-	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-	if (pthread_create(&thread, &attr, func, (void *)0)) {
-		perror("pthread_create failed");
-	}
-
-	pthread_attr_destroy(&attr);
-}
-
 int main(int argc, char* argv[])
 {
 	struct sched_param param;
-	int players_per_team, game_length;
 	int priority;
 	int i;
 	setup();
 
-	rt_init("jh",parse_args,argc,argv);
+	rt_init("n:l:jh",parse_args,argc,argv);
+
+	if (players_per_team == 0)
+		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
 
 	if (run_jvmsim) {
                 printf("jvmsim enabled\n");
@@ -195,21 +187,8 @@ int main(int argc, char* argv[])
                 printf("jvmsim disabled\n");
 	}
 
-	if (argc < 2 || argc > 3) {
-		printf("Usage: %s players_per_team [game_length (seconds)]\n", argv[0]);
-		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
-		game_length = DEF_GAME_LENGTH;
-		printf("Using default values: players_per_team=%d game_length=%d\n",
-		       players_per_team, game_length);
-	}
-
-	else {
-		players_per_team = atoi(argv[1]);
-		if (argc == 3)
-			game_length = atoi(argv[2]);
-		else
-			game_length = DEF_GAME_LENGTH;
-	}
+	printf("Running with: players_per_team=%d game_length=%d\n",
+	       players_per_team, game_length);
 
 	/* We're the ref, so set our priority right */
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
@@ -220,7 +199,7 @@ int main(int argc, char* argv[])
 	printf("Starting %d offense threads at priority %d\n",
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
-		create_thread_(thread_offense, priority);
+		create_fifo_thread(thread_offense, NULL, priority);
 	while (offense_count < players_per_team)
 		usleep(100);
 
@@ -229,7 +208,7 @@ int main(int argc, char* argv[])
 	printf("Starting %d defense threads at priority %d\n",
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
-		create_thread_(thread_defense, priority);
+		create_fifo_thread(thread_defense, NULL, priority);
 	while (defense_count < players_per_team)
 		usleep(100);
 
