@@ -18,6 +18,8 @@
  * Copyright (C) IBM Corporation, 2006
  *
  * Author: Ankita Garg <ankita@in.ibm.com>
+ *         Sachin Sant <sachinp@in.ibm.com>
+ *         Cai Qian <qcai@redhat.com>
  *
  * This module induces system failures at predefined crashpoints to
  * evaluate the reliability of crash dumps obtained using different dumping
@@ -53,6 +55,8 @@
 #include <linux/interrupt.h>
 #include <linux/hrtimer.h>
 #include <scsi/scsi_cmnd.h>
+#include <linux/version.h>
+#include <linux/kallsyms.h>
 
 #ifdef CONFIG_IDE
 #include <linux/ide.h>
@@ -235,8 +239,9 @@ static int recursive_loop(int a)
 
 void lkdtm_handler(void)
 {
-        if (count < 0)
-               return;
+  /* Escape endless loop. */
+  if (count < 0)
+    return;
 
 	printk(KERN_INFO "lkdtm : Crash point %s of type %s hit\n",
 					 cpoint_name, cpoint_type);
@@ -273,6 +278,27 @@ void lkdtm_handler(void)
 	}
 }
 
+#ifdef USE_SYMBOL_NAME
+void lkdtm_symbol_name(char *name, void (*entry)(void))
+{
+  lkdtm.kp.symbol_name = name;
+  lkdtm.entry = (kprobe_opcode_t*) entry;
+}
+
+#else
+void lkdtm_lookup_name(char *name, void (*entry)(void))
+{
+  unsigned long addr;
+
+  addr = kallsyms_lookup_name(name);
+  if (addr) {
+    *(lkdtm.kp.addr) = addr;
+    lkdtm.entry = JPROBE_ENTRY(entry);
+  } else
+    printk(KERN_INFO "lkdtm : Crash point not available\n");
+}
+#endif
+
 int lkdtm_module_init(void)
 {
 	int ret;
@@ -284,73 +310,136 @@ int lkdtm_module_init(void)
 
 	switch (cpoint) {
 	case INT_HARDWARE_ENTRY:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".__do_IRQ";
+          lkdtm_symbol_name(".__do_IRQ", (void (*)(void)) jp_do_irq);
 #else
-		lkdtm.kp.symbol_name = "__do_IRQ";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_do_irq;
+          lkdtm_symbol_name("__do_IRQ", (void (*)(void)) jp_do_irq);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("__do_IRQ", (void (*)(void)) jp_do_irq);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
+
 	case INT_HW_IRQ_EN:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".handle_IRQ_event";
+          lkdtm_symbol_name(".handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
 #else
-		lkdtm.kp.symbol_name = "handle_IRQ_event";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_handle_irq_event;
+          lkdtm_symbol_name("handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case INT_TASKLET_ENTRY:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".tasklet_action";
+          lkdtm_symbol_name(".tasklet_action", (void (*)(void)) jp_tasklet_action);
 #else
-		lkdtm.kp.symbol_name = "tasklet_action";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_tasklet_action;
+          lkdtm_symbol_name("tasklet_action", (void (*)(void)) jp_tasklet_action);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("tasklet_action", (void (*)(void)) jp_tasklet_action);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case FS_DEVRW:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".ll_rw_block";
+          lkdtm_symbol_name(".ll_rw_block", (void (*)(void)) jp_ll_rw_block);
 #else
-		lkdtm.kp.symbol_name = "ll_rw_block";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_ll_rw_block;
+          lkdtm_symbol_name("ll_rw_block", (void (*)(void)) jp_ll_rw_block);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("ll_rw_block", (void (*)(void)) jp_ll_rw_block);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case MEM_SWAPOUT:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".shrink_inactive_list";
+          lkdtm_symbol_name(".shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
 #else
-		lkdtm.kp.symbol_name = "shrink_inactive_list";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_shrink_page_list;
+          lkdtm_symbol_name("shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case TIMERADD:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".hrtimer_start";
+          lkdtm_symbol_name(".hrtimer_start", (void (*)(void)) jp_hrtimer_start);
 #else
-		lkdtm.kp.symbol_name = "hrtimer_start";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_hrtimer_start;
+          lkdtm_symbol_name("hrtimer_start", (void (*)(void)) jp_hrtimer_start);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("hrtimer_start", (void (*)(void)) jp_hrtimer_start);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case SCSI_DISPATCH_CMD:
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".scsi_dispatch_cmd";
+          lkdtm_symbol_name(".scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
 #else
-		lkdtm.kp.symbol_name = "scsi_dispatch_cmd";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_scsi_dispatch_cmd;
+          lkdtm_symbol_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+
+#endif /* USE_SYMBOL_NAME */
 		break;
+
 	case IDE_CORE_CP:
 #ifdef CONFIG_IDE
+
+#ifdef USE_SYMBOL_NAME
+
 #ifdef __powerpc__
-		lkdtm.kp.symbol_name = ".generic_ide_ioctl";
+          lkdtm_symbol_name(".scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
 #else
-		lkdtm.kp.symbol_name = "generic_ide_ioctl";
-#endif
-		lkdtm.entry = (kprobe_opcode_t*) jp_generic_ide_ioctl;
-#else
-		printk(KERN_INFO "lkdtm : Crash point not available\n");
-#endif
+          lkdtm_symbol_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+          lkdtm_lookup_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+
+#endif /* USE_SYMBOL_NAME */
+#endif /* CONFIG_IDE */
 		break;
+
 	default:
 		printk(KERN_INFO "lkdtm : Invalid Crash Point\n");
 		break;

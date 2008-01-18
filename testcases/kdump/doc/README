@@ -55,7 +55,7 @@ the tests results and one vmcore file (size of physical memory).
 3. Modify configuration file runkdump.conf or copy a existing one from
 sample/.
 
-4.  Run "make". Carefully check for any errors.
+4.  Run "runkdump.sh". Carefully check for any errors.
 
 Few Important points to remember:
       
@@ -80,7 +80,7 @@ into a file to enable the debugging the cause of the hang.
 <kdump-test-dir>/log/<hostname>.<date-time>. The "status" file in that
 directory shows where you are in the test run. When the "Test run
 complete" entry appears in that file, you're done. Verbose log can be
-found at /tmp/kdump-<date>.log.
+found at /tmp/kdump.log.
 
 * The test machine would be unavailabe for any other work during the
 period of the test run.

@@ -18,7 +18,6 @@
  * Copyright (C) IBM Corporation, 2006
  *
  * Author: Ankita Garg <ankita@in.ibm.com>
- * Changes to make it work on SuSE :  Sachin Sant <sachinp@in.ibm.com>
  *
  * This module induces system failures at predefined crashpoints to
  * evaluate the reliability of crash dumps obtained using different dumping
@@ -49,7 +48,6 @@
 #include <linux/module.h>
 #include <linux/buffer_head.h>
 #include <linux/kprobes.h>
-#include <linux/kallsyms.h>
 #include <linux/list.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -237,6 +235,10 @@ static int recursive_loop(int a)
 
 void lkdtm_handler(void)
 {
+  /* Escape endless loop. */
+  if (count < 0)
+    return;
+
 	printk(KERN_INFO "lkdtm : Crash point %s of type %s hit\n",
 					 cpoint_name, cpoint_type);
 	--count;
@@ -275,7 +277,6 @@ void lkdtm_handler(void)
 int lkdtm_module_init(void)
 {
 	int ret;
-	unsigned long addr;
 
 	if (lkdtm_parse_commandline() == -EINVAL) {
 		printk(KERN_INFO "lkdtm : Invalid command\n");
@@ -284,69 +285,72 @@ int lkdtm_module_init(void)
 
 	switch (cpoint) {
 	case INT_HARDWARE_ENTRY:
+unsigned long addr;
+		lkdtm.entry = (kprobe_opcode_t*) jp_do_irq;
 		addr = kallsyms_lookup_name("__do_IRQ");
 		if (addr) {
 			*(lkdtm.kp.addr) = addr;
 			lkdtm.entry = JPROBE_ENTRY(jp_do_irq);
 		} else
 			printk(KERN_INFO "lkdtm : Crash point not available\n");
+
 		break;
 	case INT_HW_IRQ_EN:
-		addr = kallsyms_lookup_name("handle_IRQ_event");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_handle_irq_event);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".handle_IRQ_event";
+#else
+		lkdtm.kp.symbol_name = "handle_IRQ_event";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_handle_irq_event;
 		break;
 	case INT_TASKLET_ENTRY:
-		addr = kallsyms_lookup_name("tasklet_action");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_tasklet_action);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".tasklet_action";
+#else
+		lkdtm.kp.symbol_name = "tasklet_action";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_tasklet_action;
 		break;
 	case FS_DEVRW:
-		addr = kallsyms_lookup_name("ll_rw_block");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_ll_rw_block);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".ll_rw_block";
+#else
+		lkdtm.kp.symbol_name = "ll_rw_block";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_ll_rw_block;
 		break;
 	case MEM_SWAPOUT:
-		addr = kallsyms_lookup_name("shrink_inactive_list");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_shrink_page_list);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".shrink_inactive_list";
+#else
+		lkdtm.kp.symbol_name = "shrink_inactive_list";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_shrink_page_list;
 		break;
 	case TIMERADD:
-		addr = kallsyms_lookup_name("hrtimer_start");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_hrtimer_start);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".hrtimer_start";
+#else
+		lkdtm.kp.symbol_name = "hrtimer_start";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_hrtimer_start;
 		break;
 	case SCSI_DISPATCH_CMD:
-		addr = kallsyms_lookup_name("scsi_dispatch_cmd");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_scsi_dispatch_cmd);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".scsi_dispatch_cmd";
+#else
+		lkdtm.kp.symbol_name = "scsi_dispatch_cmd";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_scsi_dispatch_cmd;
 		break;
 	case IDE_CORE_CP:
 #ifdef CONFIG_IDE
-		addr = kallsyms_lookup_name("generic_ide_ioctl");
-		if (addr) {
-			*(lkdtm.kp.addr) = addr;
-			lkdtm.entry = JPROBE_ENTRY(jp_generic_ide_ioctl);
-		} else
-			printk(KERN_INFO "lkdtm : Crash point not available\n");
+#ifdef __powerpc__
+		lkdtm.kp.symbol_name = ".generic_ide_ioctl";
+#else
+		lkdtm.kp.symbol_name = "generic_ide_ioctl";
+#endif
+		lkdtm.entry = (kprobe_opcode_t*) jp_generic_ide_ioctl;
 #else
 		printk(KERN_INFO "lkdtm : Crash point not available\n");
 #endif
