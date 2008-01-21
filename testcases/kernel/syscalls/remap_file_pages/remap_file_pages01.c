@@ -113,6 +113,15 @@ main(int ac, char **av)
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 
+#if defined (__s390__) || (__s390x__)
+	/* Disables the test in case the kernel version is lower than 2.6.12 and arch is s390 */
+	if((tst_kvercmp(2, 6, 12)) < 0)
+        {
+		tst_resm(TWARN, "This test can only run on kernels that are 2.6.12 and higher");
+		exit(0);
+	}
+#endif
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
