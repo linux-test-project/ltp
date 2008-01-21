@@ -157,7 +157,7 @@ static int splice_test(void)
 		buffer[i] = i & 0xff;
 	}
 
-	fd_in = open(testfile1, O_WRONLY | O_CREAT | O_TRUNC);
+	fd_in = open(testfile1, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd_in < 0) {
 		perror("open: ");
 		return -1;
@@ -183,7 +183,7 @@ static int splice_test(void)
 		return -1;
 	}
 
-	fd_out = open(testfile2, O_WRONLY | O_CREAT | O_TRUNC);
+	fd_out = open(testfile2, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd_out < 0) {
 		close(fd_in);
 		close(pipes[0]);

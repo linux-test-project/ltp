@@ -47,7 +47,7 @@ char *argv[];
   clnt_fname = argv[3]; /* filename to create */
   
   /* prepare to copy file from server to local machine */
-  if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {
+  if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY, 0777)) < 0) {
 	tst_resm(TBROK, "file open error = %d\n", errno);
 	close(s);
 	exit(1);

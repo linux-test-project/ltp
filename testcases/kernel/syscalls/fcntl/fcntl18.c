@@ -81,7 +81,7 @@ int main(int ac, char **av)
 	/* Skip since uClinux does not implement memory protection */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
-	if ((fd = open("temp.dat", O_CREAT|O_RDWR)) < 0) {
+	if ((fd = open("temp.dat", O_CREAT|O_RDWR, 0777)) < 0) { //mode must be specified when O_CREATE is in the flag
 		tst_resm(TFAIL, "file opening error");
 		fail = 1;
 	}

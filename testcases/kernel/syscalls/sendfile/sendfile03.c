@@ -175,7 +175,7 @@ setup()
 		/*NOTREACHED*/
 	}
 	sprintf(out_file, "out.%d", getpid());
-	if ((out_fd = open(out_file, O_TRUNC | O_CREAT | O_RDWR)) < 0) {
+	if ((out_fd = open(out_file, O_TRUNC | O_CREAT | O_RDWR, 0777)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
 		/*NOTREACHED*/
 	}

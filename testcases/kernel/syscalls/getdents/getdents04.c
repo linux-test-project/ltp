@@ -138,7 +138,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "sprintf failed");
 		}
 
-		if ((fd = open(newfile, O_CREAT | O_RDWR)) == -1) {
+		if ((fd = open(newfile, O_CREAT | O_RDWR, 0777)) == -1) {
 			perror("file open");
 			tst_brkm(TBROK, cleanup, "open of file failed");
 		}

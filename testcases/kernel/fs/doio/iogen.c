@@ -1085,7 +1085,7 @@ int 	nbytes;
 
     Oflags |= O_CREAT | O_WRONLY;
 
-    if ((fd = open(path, Oflags, 0666, Ocbits, Ocblks)) == -1) {
+    if ((fd = open(path, Oflags, 0666)) == -1) {
 	fprintf(stderr, "iogen%s:  Could not create/open file %s: %s (%d)\n",
 		TagName, path, SYSERR, errno);
 	return -1;

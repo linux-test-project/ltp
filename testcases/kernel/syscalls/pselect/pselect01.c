@@ -69,7 +69,7 @@ int main()
 
  setup();
  
- fd = open(FILENAME,O_CREAT | O_RDWR);
+ fd = open(FILENAME,O_CREAT | O_RDWR, 0777);
  if (fd < 0)
  {
   tst_resm(TBROK,"Opening %s...Failed....err %d",FILENAME,errno);

@@ -327,7 +327,7 @@ test_setup()
 	 * Open file from parent, which will be closed by
 	 * child in test_FILES(), used for testing CLONE_FILES flag
 	 */
-	if ((fd_parent = open(file_name, O_CREAT | O_RDWR)) == -1) {
+	if ((fd_parent = open(file_name, O_CREAT | O_RDWR, 0777)) == -1) {  //mode must be specified when O_CREATE is in the flag
 		tst_resm(TWARN, "open() failed in test_setup()");
 		return 0;
 	}

@@ -87,7 +87,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		TEST(open(fname, O_RDWR | O_CREAT));
+		TEST(open(fname, O_RDWR | O_CREAT, 0777));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -129,7 +129,7 @@ setup()
 	nfile = getdtablesize();
 	sprintf(fname, "open04.%d", mypid);
 
-	if ((first = fd = open(fname, O_RDWR | O_CREAT)) == -1) {
+	if ((first = fd = open(fname, O_RDWR | O_CREAT, 0777)) == -1) {
 		tst_brkm(TBROK, cleanup, "Cannot open first file");
 	}
 
@@ -144,7 +144,7 @@ setup()
 
 	for (ifile = first; ifile <= nfile; ifile++) {
 		sprintf(fname, "open04.%d.%d", ifile, mypid);
-		if ((fd = open(fname, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(fname, O_RDWR | O_CREAT, 0777)) == -1) {
 			if (errno != EMFILE) {
 				tst_brkm(TBROK, cleanup, "Expected EMFILE got "
 					 "%d", errno);

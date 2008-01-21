@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.7 2006/12/04 16:44:15 vapier Exp $ */
+/* $Id: symlink01.c,v 1.8 2008/01/21 11:16:18 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -1078,7 +1078,7 @@ struct all_test_cases *tc_ptr;
      }
      else if (cktcsid(tc_ptr->tcid, OPEN)) {
 
-        TEST( open(tc_ptr->fn_arg[1], (O_EXCL | O_CREAT)) );
+        TEST( open(tc_ptr->fn_arg[1], (O_EXCL | O_CREAT), 0666) );
  	errno=TEST_ERRNO;
         if ((TEST_RETURN == -1) && (errno == EEXIST))
 	   if ( TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST  )
@@ -1281,7 +1281,7 @@ struct all_test_cases *tc_ptr;
      else if (cktcsid(tc_ptr->tcid, OPEN)) {
 
         int fd;
-        TEST( open(tc_ptr->fn_arg[1], O_CREAT) );
+        TEST( open(tc_ptr->fn_arg[1], O_CREAT, 0666) );
 	fd=TEST_RETURN;
 	errno=TEST_ERRNO;
         if ((fd == -1) && (errno == ELOOP))

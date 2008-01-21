@@ -173,7 +173,7 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "open of fd2 failed");
 	}
 
-	if ((fd3 = open(fname, O_RDWR | O_CREAT)) == -1) {
+	if ((fd3 = open(fname, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
 
@@ -182,7 +182,7 @@ setup(void)
 		/*NOTREACHED*/
 	}
 	close(fd3);
-	if ((fd3 = open(fname, O_RDWR | O_CREAT)) == -1) {
+	if ((fd3 = open(fname, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
 

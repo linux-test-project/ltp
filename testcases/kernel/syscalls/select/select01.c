@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: select01.c,v 1.2 2008/01/21 11:16:17 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -228,7 +228,7 @@ setup()
     /* create a temporary directory and go to it */
     tst_tmpdir();
 
-    if ((Fd=open(FILENAME, O_CREAT | O_RDWR)) == -1) {
+    if ((Fd=open(FILENAME, O_CREAT | O_RDWR, 0777)) == -1) {
 	tst_brkm(TBROK, cleanup,
 	    "open(%s, O_CREAT | O_RDWR) failed: errno:%d\n",
 	    errno);

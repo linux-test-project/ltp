@@ -43,7 +43,7 @@ char *argv[];
   serv_fname = argv[4]; /* filename to request */
 
   /* prepare to copy file from server to local machine */
-  if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY)) < 0) {
+  if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY, 0777)) < 0) {
 	printf("file open error = %d\n", errno);
 	close(s);
 	exit(1);
