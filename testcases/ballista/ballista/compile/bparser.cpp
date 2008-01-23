@@ -17,18 +17,27 @@
 */
 
 #include <ctype.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <vector.h>
+//#include <vector.h>
+#include <vector>
 #include <unistd.h>
 #include "tokens.h"
 #include "butil.h"
 
 #define MYMAP map<int, translationEntry,less<int>>
 #define MAXLIST 10
+using std::endl;
+using std::cerr;
+using std::cout;
+using std::cin;
+using std::ios;
+using std::vector;
+using std::ofstream;
+using std::ostream;
 
 vector<int> parseStack;
 
@@ -1064,7 +1073,7 @@ void buildH()
   h1<<"#ifndef "<<obNamebak<<"_H"<<endl;
   h1<<"#define "<<obNamebak<<"_H"<<endl;
   h1<<"#include <errno.h>"<<endl;
-  h1<<"#include <iostream.h>"<<endl;
+  h1<<"#include <iostream>"<<endl;
   h1<<"#include <stdio.h>"<<endl;
   h1<<"#include <stdlib.h>"<<endl;
   h1<<"#include <stream.h>"<<endl;
@@ -1216,7 +1225,7 @@ void buildCPP()
   cf<<"//--------------------------------------------------------------------"
     <<endl<<endl;
   cf<<"#include <errno.h>"<<endl;
-  cf<<"#include <iostream.h>"<<endl;
+  cf<<"#include <iostream>"<<endl;
   cf<<"#include <stdio.h>"<<endl;
   cf<<"#include <stdlib.h>"<<endl;
   cf<<"#include <stream.h>"<<endl;
