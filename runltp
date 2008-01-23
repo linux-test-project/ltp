@@ -263,10 +263,10 @@ main()
             /*)
                 HTMLFILE="$OPTARG";;
             *)
-                HTMLFILE="$LTPROOT/output/$OPTARG"
-                ALT_DIR_OUT=1 
-                ALT_HTML_OUT=1 ;;
-            esac ;;
+                HTMLFILE="$LTPROOT/output/$OPTARG";;
+            esac
+            ALT_DIR_OUT=1 
+            ALT_HTML_OUT=1;;
         h)  usage;;
         
         i)
@@ -390,7 +390,9 @@ main()
          fi
     fi
 
-    if [ "$ALT_HTML_OUT" -eq 1 ] ; then                      ## User wnats the HTML version of the output
+    if [ "$ALT_HTML_OUT" -eq 1 ] ; then                      ## User wants the HTML version of the output
+       QUIET_MODE=""                                         ## Suppressing this guy as it will prevent generation of proper output
+                                                             ## which the HTML parser will require
        if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
           OUTPUTFILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
@@ -599,9 +601,8 @@ main()
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
     test_start_time=$(date)
-    ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
-    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
-    
+    ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
+     
     if [ $? -eq 0 ]; then
       echo "INFO: pan reported all tests PASS"
       VALUE=0

@@ -201,10 +201,10 @@ foreach my $file (@ARGV) {
 
 print "</tbody></table></div> \n\n<h2 id=\"_2\">Summary Report</h2>\n\n<div>\n\n<table border=\"1\" cellspacing=\"3\"><tbody>\n<tr>\n<td ";
 if ($ENV{LTP_EXIT_VALUE} == 1 ) {
-    print "bgcolor=\"#ff0000\"> <strong>Test Summary</strong></p></td><td bgcolor=\"#ff0000\"><strong>Pan reported some tests FAIL</strong></p></td></tr>\n";
+    print "bgcolor=\"#ff0000\"> <strong>Test Summary</strong></p></td><td bgcolor=\"#ff0000\"><strong>Pan reported some Tests FAIL</strong></p></td></tr>\n";
 }
 else {
-    print "bgcolor=\"#66ff66\"> <strong>Test Summary</strong></p></td><td bgcolor=\"#66ff66\"><strong>Pan reported some tests FAIL</strong></p></td></tr>\n";
+    print "bgcolor=\"#66ff66\"> <strong>Test Summary</strong></p></td><td bgcolor=\"#66ff66\"><strong>Pan reported all Test Pass</strong></p></td></tr>\n";
 }
 
 print "<tr><td><strong>LTP Version</strong> </td><td><strong> $ENV{LTP_VERSION}     </strong></td></tr>\n";
