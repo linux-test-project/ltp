@@ -489,7 +489,8 @@ main()
                      ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/ipc \
                      ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
                      ${LTPROOT}/runtest/nptl ${LTPROOT}/runtest/pty \
-                     ${LTPROOT}/runtest/containers
+                     ${LTPROOT}/runtest/containers \
+                     ${LTPROOT}/runtest/filecaps
         do
             [ -a "$SCENFILES" ] || \
             {

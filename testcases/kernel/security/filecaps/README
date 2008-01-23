@@ -1,0 +1,36 @@
+POSIX capabilities are pieces of root privilege, for instance
+CAP_SYS_NICE to set priority on other tasks and CAP_SYS_TIME
+to set system time.  See
+http://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.4/capfaq-0.2.txt
+for more information.
+
+A task's capabilities are set when it executes a new file, and
+when it explicitly changes them (see capset(2)).  After exec,
+the task's new capabilities are a function of its previous
+capabilities and the file's capabilities:
+
+	pI' = pI
+	pP' = fP | (fI & pI)
+	pE' = fE ? pP' : 0
+
+Where pX is capability set X for process p before exec, pX' is
+capability set X for process P after exec and fX is file
+capability set X.  The capability sets are I for inheritable,
+P for permitted, and E for effective.  Note that fE is a
+boolean rather than a set.
+
+File capabilities are stored in extended attributes named
+'security.capability.'  Setting this xattr requires the
+CAP_SETFCAP capability when the capability security module is
+loaded, or CAP_SYS_ADMIN when it is not.
+
+The following tests are implemented here:
+
+inh_capped: check whether a process without CAP_SETPCAP
+	is properly prohibited from raising bits in its
+	inheritable set using setcap.
+
+verify_caps_exec:
+	1. check that privilege is needed to set file capabilities
+	2. check that pI', pP', and pE' are properly
+	   calculated upon exec.
