@@ -146,6 +146,7 @@ usage()
                       -t 45m = 45 minutes
                       -t 24h = 24 hours
                       -t 2d  = 2 days
+    -T REPETITION   Execute the testsuite for REPETITION no. of times
     -v              Print more verbose output to screen.                   
     -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
@@ -166,6 +167,7 @@ main()
     local ALT_HTML_OUT=0
     local ALT_EMAIL_OUT=0
     local RUN_NETEST=0
+    local RUN_REPEATED=0
     local QUIET_MODE=""
     local VERBOSE_MODE=""
     local NETPIPE=0
@@ -185,7 +187,7 @@ main()
     local PAN_COMMAND=""
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:vw:x: arg
+    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:T:vw:x: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -353,7 +355,10 @@ main()
             # to run from the command line 
             # (2m = two minutes, 2h = two hours, etc)
             DURATION="-t $OPTARG" ;;
-    
+
+        T)  # In case you want the testcases to runsequentially RUN_REPEATED times
+            RUN_REPEATED=$OPTARG;;
+
         v)  VERBOSE_MODE=1;;
 
         w)  CMDFILEADDR=$OPTARG;;
@@ -590,6 +595,18 @@ main()
             exit 1
     }
     }
+
+    if [ $RUN_REPEATED -gt 1 ]; then # You need to specify at least more than 1 sequential run, else it runs default
+         echo "PAN will run these test cases $RUN_REPEATED times....."
+         echo "Test Tags will be Prepended with ITERATION NO.s....."
+         inc=1
+         sed -e '/^$/ d' -e 's/^[ ,\t]*//' -e '/^#/ d' < ${TMP}/alltests > ${TMP}/alltests.temp ##This removes all newlines, leading spaces, tabs, #
+         sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < ${TMP}/alltests.temp > ${TMP}/alltests ## .temp is kept as Base file
+         while [ $inc -lt $RUN_REPEATED ] ; do
+               inc=`expr $inc + 1`
+               sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < ${TMP}/alltests.temp >> ${TMP}/alltests #Keep appending with Iteration No.s
+         done
+    fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
