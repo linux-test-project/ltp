@@ -58,7 +58,7 @@ char *TCID = "times03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 int exp_enos[]={0};
-int timeout;		/* Did we timeout in alarm() ? */
+volatile int timeout;		/* Did we timeout in alarm() ? */
 
 void work(void);
 void sighandler(int signal, siginfo_t *info, void *uc);
