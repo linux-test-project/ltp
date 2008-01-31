@@ -6,6 +6,13 @@ Also, /usr/sbin should be included in PATH to ensure SELinux utilities
 such as getenforce are found. The test_selinux.sh script adds /usr/sbin
 to the PATH. 
 
+You must also have the line:
+       expand-check = 0
+in your /etc/selinux/semanage.conf file as the test policy will violate some 
+of the neverallow rules in the base policy.  This line may already be present
+depending on your distribution; if not, add it before running the test suite
+and remove it when done.
+
 There are two ways to run the SELinux testcases:
 	1. testsuite - all testcases
 	2. individual testcases
@@ -32,13 +39,13 @@ the LTP tree (cd to $LTPROOT). From the top level directory cd
 to the testscripts directory and from the command line execute,
 	./test_selinux.sh
 
-This script builds the test policy in the selinux-testsuite/policy 
+This script builds the test policy in the selinux-testsuite/refpolicy
 directory and runs the testsuite. After the testcases have completed, 
 the test policy will be removed and the original policy will be 
 restored. Thus, if the test_selinux.sh script is not allowed 
 to complete, you may manually have to restore your system's 
 original policy. This can be done by changing to the the 
-selinux-testsuite/policy directory and from the commandline, 
+selinux-testsuite/refpolicy directory and from the commandline,
 issue a "make cleanup" to remove the test policy and restore the 
 original policy.
 
@@ -62,8 +69,8 @@ if you want more detailed information about each testcase's execution.
 Run Individual Testcases
 --------------------------
 First build the test policy manually. Do this by first changing 
-to the selinux-testsuite policy directory (cd to 
-$LTPROOT/testcases/kernel/security/selinux-testsuite/policy)
+to the selinux-testsuite refpolicy directory (cd to 
+$LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy)
 and build the policy by doing a, 
 	make load
 
@@ -88,7 +95,7 @@ a "set -x" can be added to the top of the *.sh file in the
 testcase directory of the testcase being debugged.	
 
 To remove the test policy and restore original policy,
-cd to selinux-testsuite/policy directory and execute,
+cd to selinux-testsuite/refpolicy directory and execute,
 	make cleanup
 
 Remember to remove test policy and restore original policy after
