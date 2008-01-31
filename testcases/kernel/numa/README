@@ -41,15 +41,6 @@ Verifies the memory interleaving policy on the shared memory which will interlea
 all nodes equally. Here, the testcase use touch command instead of running a seperate process to verify
 the policy applied.
 
-TestCase7:
-
-Verifies the numademo with some valid tests. 
-
-TestCase8:
-Verifies the memhog with interleaving policy. memhog consists mbind numa api which is not used in numactl,numademo.
-
-TestCase9:
-Verifies the hardware with numa_node_size api which is not covered in numactl and numademo
 Pre-requisites
 ====================================================================================================================
  * libnuma should be installed on the NUMA machine before executing theses testcases

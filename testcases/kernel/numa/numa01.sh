@@ -19,10 +19,9 @@
 ################################################################################
 #
 # Author:        Sivakumar Chinnaiah, Sivakumar.C@in.ibm.com
-#                Pradeep Kumar Surisetty, pradeepkumars@in.ibm.com   
 #
 # History:       July 04 2007 - Created - Sivakumar Chinnaiah.
-#                Nov 27 2007 - Changed - pradeep kumar surisetty
+#
 #! /bin/sh
 #
 # File :         numa01.sh
@@ -33,11 +32,11 @@
 #		Test #3: Verifies memory interleave on all nodes
 #		Test #4: Verifies physcpubind
 #		Test #5: Verifies localalloc
-#		Test #6: Verifies memory policies on shared memory
-#		Test #7: Verifies numademo 
-#		Test #8  Verifies memhog 
+#		Test #6: Verifies memory policies on shared memory 
+#		Test #7: Verifies numademo
+#		Test #8: Verifies memhog 
 #		Test #9: Verifies numa_node_size api
-#
+#		Test #10:Verifies Migratepages
 #		- it uses numastat output which is expected to be in the format
 #                           node0           node1
 #numa_hit                 4280408         4605341
@@ -608,71 +607,16 @@ test06()
     return 0
 }
 
-# Function:     hardware cheking with numa_node_size api
-#
-# Description:  - Returns the size of available nodes if success.
-#
-# Input:        - o/p of numactl --hardware command which is expected in the format
-#                 shown below
-#               available: 2 nodes (0-1)
-#               node 0 size: 7808 MB
-#               node 0 free: 7457 MB
-#               node 1 size: 5807 MB
-#               node 1 free: 5731 MB
-#               node distances:
-#               node   0   1
-#                 0:  10  20
-#                 1:  20  10
-#
-# Return:       - zero on success.
-#               - non-zero on failure.
-#
-test09()
-{
-    TCID=numa09
-    TST_COUNT=9
-
-    RC=0                # Return value from commands.
-    Prev_value=0        # extracted from the numastat o/p
-    Curr_value=0        # Current value extracted from numastat o/p
-    Exp_incr=0          # 1 MB/ PAGESIZE
-    Node_num=0
-    col=0
-    MB=$[1024*1024]
-
-    # Increase in numastat o/p is interms of pages
-    Exp_incr=$[$MB/$page_size]
-	
-	numa_node_size > $LTPTMP/avail_nodes	
-    RC=$(awk '{ if ( NR == 1 ) {print $1;} }' $LTPTMP/avail_nodes)
-    if [ $RC = "available:" ]
-    then
-
-    	RC=$(awk '{ if ( NR == 1 ) {print $3;} }' $LTPTMP/avail_nodes)
-        if [ $RC = "nodes" ]
-        then
-           RC=$(awk '{ if ( NR == 1 ) {print $2;} }' $LTPTMP/avail_nodes)
-	
-	tst_resm TPASS "NUMA policy on lib NUMA_NODE_SIZE API -TEST07 PASSED !!"
-        else
-		tst_resm TINFO "Test #9: Failed with numa policy"
-        fi
-    else
-	tst_resm TINFO "Test #9: Failed with numa policy"
-    fi
-}
-
-
 # Function:     test07
 #
-# Description:  - Verification of numademo 
+# Description:  - Verification of numademo
 #
 # Return:       - zero on success.
 #               - non-zero on failure.
 test07()
 {
     TCID=numa07
-    TST_COUNT=7
+    TST_COUNT=7 
 
     RC=0                # Return value from commands.
     Prev_value=0        # extracted from the numastat o/p
@@ -683,9 +627,8 @@ test07()
     col=0
     msize=1000
     KB=1024
-
     # Increase in numastat o/p is interms of pages
-     Exp_incr=$[($KB * $msize)/$page_size]	
+     Exp_incr=$[($KB * $msize)/$page_size]
     # Pages will be allocated using round robin on nodes.
     Exp_incr=$[$Exp_incr/$max_node]
 
@@ -712,21 +655,21 @@ test07()
         Node_num=$[$COUNTER-1]         #Node numbers start from 0
         extract_numastat interleave_hit $interleave_hit $col || return 1
         Curr_value=$RC
-	 comparelog ${parray[$COUNTER]} $Curr_value
-	counter=$[$counter+1]
+         comparelog ${parray[$COUNTER]} $Curr_value
+        counter=$[$counter+1]
         if [ $RC -le $Exp_incr ]
         then
             x=1
-	    break;
-	fi
+            break;
+        fi
         COUNTER=$[$COUNTER+1]
     done
     if [ $x -eq 1 ]
     then
-   	tst_resm TPASS "NUMADEMO policies  -TEST07 PASSED !!"
-	return 0
+        tst_resm TPASS "NUMADEMO policies  -TEST07 PASSED !!"
+        return 0
     else
-	tst_resm TFAIL "Test #7: NUMA interleave hit is less than expected"
+        tst_resm TFAIL "Test #7: NUMA interleave hit is less than expected"
     return 1
     fi
 }
@@ -785,11 +728,109 @@ test08()
         fi
         COUNTER=$[$COUNTER+1]
     done
-    tst_resm TPASS "NUMA interleave policy -TEST08 PASSED !!"
+    tst_resm TPASS "NUMA MEMHOG policy -TEST08 PASSED !!"
     return 0
 }
 
+# Function:     hardware cheking with numa_node_size api
+#
+# Description:  - Returns the size of available nodes if success.
+#
+# Input:        - o/p of numactl --hardware command which is expected in the format
+#                 shown below
+#               available: 2 nodes (0-1)
+#               node 0 size: 7808 MB
+#               node 0 free: 7457 MB
+#               node 1 size: 5807 MB
+#               node 1 free: 5731 MB
+#               node distances:
+#               node   0   1
+#                 0:  10  20
+#                 1:  20  10
+#
+# Return:       - zero on success.
+#               - non-zero on failure.
+#
+test09()
+{
+    TCID=numa09
+    TST_COUNT=9
 
+    RC=0                # Return value from commands.
+    Prev_value=0        # extracted from the numastat o/p
+    Curr_value=0        # Current value extracted from numastat o/p
+    Exp_incr=0          # 1 MB/ PAGESIZE
+    Node_num=0
+    col=0
+    MB=$[1024*1024]
+    # Increase in numastat o/p is interms of pages
+    Exp_incr=$[$MB/$page_size]
+
+        numa_node_size > $LTPTMP/avail_nodes
+    RC=$(awk '{ if ( NR == 1 ) {print $1;} }' $LTPTMP/avail_nodes)
+    if [ $RC = "available:" ]
+    then
+
+        RC=$(awk '{ if ( NR == 1 ) {print $3;} }' $LTPTMP/avail_nodes)
+        if [ $RC = "nodes" ]
+        then
+           RC=$(awk '{ if ( NR == 1 ) {print $2;} }' $LTPTMP/avail_nodes)
+
+        tst_resm TPASS "NUMA policy on lib NUMA_NODE_SIZE API -TEST09 PASSED !!"
+        else
+                tst_resm TINFO "Test #9: Failed with numa policy"
+        fi
+    else
+        tst_resm TINFO "Test #9: Failed with numa policy"
+    fi
+}
+# Function:     test10
+#
+# Description:  - Verification of migratepages
+#
+# Return:       - zero on success.
+#               - non-zero on failure.
+test010()
+{
+    TCID=numa10
+    TST_COUNT=10
+
+    while [  $COUNTER -le $max_node ]; do
+
+       if [ $max_node -eq 1 ]
+       then
+            tst_brkm TBROK NULL "Preferred policy cant be applied for a single node machine"
+            return 1
+        fi
+
+            col=2                       #column represents node0 in numastat o/p
+        numnodes=$(ls /sys/devices/system/node | wc -l)
+        Preferred_node=$[$[$numnodes/2]-1]
+        col=$[$Preferred_node+2]
+        numastat > $LTPTMP/numalog
+        extract_numastat other_node $other_node $col || return 1
+        Prev_value=$RC
+        #echo $Preferred_node
+        #numactl --cpunodebind=$Preferred_node --localalloc support_numa $ALLOC_1MB
+        #numactl --preferred=$Preferred_node support_numa $ALLOC_1MB
+        numactl --preferred=$Preferred_node support_numa $PAUSE &
+        pid=$!
+        migratepages $pid $Preferred_node $[$Preferred_node + 1]
+        numastat > $LTPTMP/numalog
+        extract_numastat other_node $other_node $col || return 1
+        Curr_value=$RC
+        kill -INT $pid
+        if [ $RC -lt $Prev_value ]
+         then
+             tst_resm TFAIL \
+                 "Test #10: NUMA migratepages is not working fine"
+            return 1
+        fi
+        COUNTER=$[$COUNTER+1]
+    done
+    tst_resm TPASS "NUMA MIGRATEPAGES policy -TEST10 PASSED !!"
+    return 0
+}
 
 # Function:    main
 #
@@ -799,16 +840,14 @@ test08()
 #              - non-zero on failure.
     #WARNING!! Never use duplicate variables here...
     TCID=numa
-    no_of_test=9	#total no. of testcases
+    no_of_test=10	#total no. of testcases
     no_of_test_failed=0	#total no. of testcases failed
     numa_ret=0		#return value of main script
 
     init_ret=0
     init || init_ret=$?
-    if [ $init_ret -eq 0 ]
+    if [ $init_ret -ne 0 ]
     then 
-	tst_resm TPASS "NUMA IS AVAILABLE"
-    else
         tst_resm TFAIL "INIT NUMA FAILED !!"
         exit $RC
     fi

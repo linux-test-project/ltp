@@ -35,11 +35,34 @@ then
 x=0
 echo $x
 else
-x=$(ls /sys/devices/system/node|egrep 'node' | wc -l)
+x=$(ls /sys/devices/system/node | wc -l)
 fi
 if [ $x -gt 1 ]
 then
-         echo yes;    # numa is available
+   
+	rpm -qa|grep numactl > /dev/null
+	y=$?
+	if [ $y -eq 0 ]
+	then
+  	 	cat /etc/issue|grep "Red Hat" > /dev/null # Checking weather distro is Red Hat or not
+		z=$?
+		if [ $z -eq 0 ]
+		then
+			rpm -qa|grep numactl-devel > /dev/null  # checking for numactl-devel
+			a=$?
+			if [ $a -eq 0 ]
+			then
+				echo yes
+			else
+				echo " numactl-devel is not installed"
+			fi
+		else
+		     echo yes;    # numa is available
+		fi
+	else
+		echo "numactl package is not installed"
+	fi
+
 else
         echo no;     #numa is not present
 

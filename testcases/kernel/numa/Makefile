@@ -24,7 +24,7 @@ ifeq ($(shell sh test.sh),yes)    #its a numa machine
 LDLIBS += -L../../../lib  -lnuma
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
-else                                    #its anon numa machine
+else                                    #its not a numa machine
 SRCS    = support_numa.c
 TARGETS = $(patsubst %.c,%,$(SRCS))
 endif

@@ -34,7 +34,8 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-//#include "numa.h"
+#include "numa.h"
+int numa_exit_on_error = 0;
 char *fmt_mem(unsigned long long mem, char *buf)
 {
         if (mem == -1L)
@@ -59,13 +60,19 @@ void hardware(void)
 }
 int main()
 {
-        void hardware();
+         nodemask_t nodemask;
+	 void hardware();
 	 if (numa_available() < 0)
 	 {
          	printf("This system does not support NUMA policy");
-		 exit(1);
+		numa_error("numa_available");
+		numa_exit_on_error = 1;
+		exit(numa_exit_on_error);
     	 }
+	nodemask_zero(&nodemask);
+	nodemask_set(&nodemask,1);
+	numa_bind(&nodemask);	
 	hardware();
-	return 0;
+	return numa_exit_on_error;
 }
                    
