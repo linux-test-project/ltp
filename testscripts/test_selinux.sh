@@ -9,6 +9,19 @@
 #
 # test_selinux.sh - Run the selinux test suite.
 
+config_set_expandcheck() {
+	pushd /etc/selinux
+	cp --preserve semanage.conf semanage.conf.orig
+	echo "expand-check=0" >> semanage.conf
+	popd
+}
+
+config_unset_expandcheck() {
+	pushd /etc/selinux
+	mv semanage.conf.orig semanage.conf
+	popd
+}
+
 # Must be root to run the selinux testsuite
 if [ $UID != 0 ]
 then
@@ -64,16 +77,21 @@ pushd $LTPROOT/testcases/kernel/security/selinux-testsuite/misc
 sh ./update_refpolicy.sh
 popd
 
+config_set_expandcheck
+
 # build and install the test policy...
 echo "building and installing test_policy module..."
 cd $LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy
 make load
 if [ $? != 0 ]; then
 	echo "Failed to build and load test_policy module, aborting test run."
+	config_unset_expandcheck
 	exit 1
 else
 	echo "Successfully built and loaded test_policy module."
 fi
+
+config_unset_expandcheck
 
 # go back to test's root directory
 cd $LTPROOT

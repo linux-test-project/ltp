@@ -1,6 +1,6 @@
-diff -Nrup refpolicy/test_capable_file.te refpolicy.new/test_capable_file.te
---- refpolicy/test_capable_file.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_capable_file.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_capable_file.te refpolicy.patched/test_capable_file.te
+--- refpolicy/test_capable_file.te	2007-12-20 04:32:55.000000000 -0500
++++ refpolicy.patched/test_capable_file.te	2008-01-31 08:32:27.000000000 -0500
 @@ -14,28 +14,35 @@ type test_fcap_t;
  typeattribute test_fcap_t capabledomain;
  typeattribute test_fcap_t testdomain;
@@ -38,9 +38,9 @@ diff -Nrup refpolicy/test_capable_file.te refpolicy.new/test_capable_file.te
  domain_exec_all_entry_files(capabledomain)
  files_exec_etc_files(capabledomain)
  libs_use_ld_so(capabledomain)
-diff -Nrup refpolicy/test_capable_net.te refpolicy.new/test_capable_net.te
---- refpolicy/test_capable_net.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_capable_net.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_capable_net.te refpolicy.patched/test_capable_net.te
+--- refpolicy/test_capable_net.te	2007-12-20 04:32:55.000000000 -0500
++++ refpolicy.patched/test_capable_net.te	2008-01-31 08:32:27.000000000 -0500
 @@ -7,12 +7,16 @@
  # Type for process that is allowed certain capabilities
  type test_ncap_t;
@@ -78,9 +78,9 @@ diff -Nrup refpolicy/test_capable_net.te refpolicy.new/test_capable_net.te
  
  require {
  	type ifconfig_exec_t;
-diff -Nrup refpolicy/test_capable_sys.te refpolicy.new/test_capable_sys.te
---- refpolicy/test_capable_sys.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_capable_sys.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_capable_sys.te refpolicy.patched/test_capable_sys.te
+--- refpolicy/test_capable_sys.te	2006-03-22 16:30:29.000000000 -0500
++++ refpolicy.patched/test_capable_sys.te	2008-01-31 08:32:27.000000000 -0500
 @@ -7,12 +7,16 @@
  # Type for process that is allowed certain capabilities
  type test_scap_t;
@@ -98,9 +98,9 @@ diff -Nrup refpolicy/test_capable_sys.te refpolicy.new/test_capable_sys.te
  typeattribute test_noscap_t capabledomain;
  typeattribute test_noscap_t testdomain;
  
-diff -Nrup refpolicy/test_dyntrace.te refpolicy.new/test_dyntrace.te
---- refpolicy/test_dyntrace.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_dyntrace.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_dyntrace.te refpolicy.patched/test_dyntrace.te
+--- refpolicy/test_dyntrace.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_dyntrace.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute dyntracedomain;
  # Domain for parent process.
  type test_dyntrace_parent_t;
@@ -128,9 +128,9 @@ diff -Nrup refpolicy/test_dyntrace.te refpolicy.new/test_dyntrace.te
  typeattribute test_dyntrace_notchild_t dyntracedomain;
  typeattribute test_dyntrace_notchild_t testdomain;
  
-diff -Nrup refpolicy/test_dyntrans.te refpolicy.new/test_dyntrans.te
---- refpolicy/test_dyntrans.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_dyntrans.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_dyntrans.te refpolicy.patched/test_dyntrans.te
+--- refpolicy/test_dyntrans.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_dyntrans.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute dyntransdomain;
  # Domain for process that is allowed to transition to the new domain.
  type test_dyntrans_fromdomain_t;
@@ -156,9 +156,9 @@ diff -Nrup refpolicy/test_dyntrans.te refpolicy.new/test_dyntrans.te
  typeattribute test_dyntrans_todomain_t dyntransdomain;
  typeattribute test_dyntrans_todomain_t testdomain;
  
-diff -Nrup refpolicy/test_entrypoint.te refpolicy.new/test_entrypoint.te
---- refpolicy/test_entrypoint.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_entrypoint.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_entrypoint.te refpolicy.patched/test_entrypoint.te
+--- refpolicy/test_entrypoint.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_entrypoint.te	2008-01-31 08:32:27.000000000 -0500
 @@ -10,6 +10,8 @@ files_type(test_entrypoint_execute_t)
  # Test domain that can only be entered via the type above.
  type test_entrypoint_t;
@@ -168,9 +168,9 @@ diff -Nrup refpolicy/test_entrypoint.te refpolicy.new/test_entrypoint.te
  typeattribute test_entrypoint_t testdomain;
  
  # Allow execution of true.
-diff -Nrup refpolicy/test_execshare.te refpolicy.new/test_execshare.te
---- refpolicy/test_execshare.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_execshare.te	2007-12-31 05:57:36.000000000 -0500
+diff -Nrup refpolicy/test_execshare.te refpolicy.patched/test_execshare.te
+--- refpolicy/test_execshare.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_execshare.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute execsharedomain;
  # Domain for parent process.
  type test_execshare_parent_t;
@@ -196,9 +196,9 @@ diff -Nrup refpolicy/test_execshare.te refpolicy.new/test_execshare.te
  typeattribute test_execshare_notchild_t execsharedomain;
  typeattribute test_execshare_notchild_t testdomain;
  
-diff -Nrup refpolicy/test_exectrace.te refpolicy.new/test_exectrace.te
---- refpolicy/test_exectrace.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_exectrace.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_exectrace.te refpolicy.patched/test_exectrace.te
+--- refpolicy/test_exectrace.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_exectrace.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute exectracedomain;
  # Domain for parent process.
  type test_exectrace_parent_t;
@@ -225,9 +225,9 @@ diff -Nrup refpolicy/test_exectrace.te refpolicy.new/test_exectrace.te
  typeattribute test_exectrace_notchild_t exectracedomain;
  typeattribute test_exectrace_notchild_t testdomain;
  
-diff -Nrup refpolicy/test_execute_no_trans.te refpolicy.new/test_execute_no_trans.te
---- refpolicy/test_execute_no_trans.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_execute_no_trans.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_execute_no_trans.te refpolicy.patched/test_execute_no_trans.te
+--- refpolicy/test_execute_no_trans.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_execute_no_trans.te	2008-01-31 08:32:27.000000000 -0500
 @@ -15,6 +15,8 @@ files_type(test_execute_notrans_denied_t
  # Test domain that can only be entered via the types above.
  type test_execute_notrans_t;
@@ -237,9 +237,9 @@ diff -Nrup refpolicy/test_execute_no_trans.te refpolicy.new/test_execute_no_tran
  typeattribute test_execute_notrans_t testdomain;
  
  # Allow this domain to be entered via the shell.
-diff -Nrup refpolicy/test_fdreceive.te refpolicy.new/test_fdreceive.te
---- refpolicy/test_fdreceive.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_fdreceive.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_fdreceive.te refpolicy.patched/test_fdreceive.te
+--- refpolicy/test_fdreceive.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_fdreceive.te	2008-01-31 08:32:27.000000000 -0500
 @@ -16,12 +16,16 @@ files_type(test_fdreceive_file2_t)
  # Domain for client process.
  type test_fdreceive_client_t;
@@ -266,9 +266,9 @@ diff -Nrup refpolicy/test_fdreceive.te refpolicy.new/test_fdreceive.te
  typeattribute test_fdreceive_server_t fdreceivedomain;
  typeattribute test_fdreceive_server_t testdomain;
  
-diff -Nrup refpolicy/test_file.te refpolicy.new/test_file.te
---- refpolicy/test_file.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_file.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_file.te refpolicy.patched/test_file.te
+--- refpolicy/test_file.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_file.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute fileopdomain;
  # Domain for process that is allowed to perform operations.
  type test_fileop_t;
@@ -314,9 +314,9 @@ diff -Nrup refpolicy/test_file.te refpolicy.new/test_file.te
  allow fileop_t fileop_exec_t:file entrypoint;
  domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)
  allow test_fileop_t fileop_t:fd use;
-diff -Nrup refpolicy/test_inherit.te refpolicy.new/test_inherit.te
---- refpolicy/test_inherit.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_inherit.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_inherit.te refpolicy.patched/test_inherit.te
+--- refpolicy/test_inherit.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_inherit.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute inheritdomain;
  # Domain for parent process.
  type test_inherit_parent_t;
@@ -353,9 +353,9 @@ diff -Nrup refpolicy/test_inherit.te refpolicy.new/test_inherit.te
  typeattribute test_inherit_nowrite_t inheritdomain;
  typeattribute test_inherit_nowrite_t testdomain;
  
-diff -Nrup refpolicy/test_ioctl.te refpolicy.new/test_ioctl.te
---- refpolicy/test_ioctl.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_ioctl.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_ioctl.te refpolicy.patched/test_ioctl.te
+--- refpolicy/test_ioctl.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_ioctl.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,12 +8,16 @@ attribute ioctldomain;
  # Domain for process that is allowed to perform ioctl.
  type test_ioctl_t;
@@ -381,9 +381,9 @@ diff -Nrup refpolicy/test_ioctl.te refpolicy.new/test_ioctl.te
  domain_exec_all_entry_files(ioctldomain)
  files_exec_etc_files(ioctldomain)
  libs_use_ld_so(ioctldomain)
-diff -Nrup refpolicy/test_ipc.te refpolicy.new/test_ipc.te
---- refpolicy/test_ipc.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_ipc.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_ipc.te refpolicy.patched/test_ipc.te
+--- refpolicy/test_ipc.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_ipc.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute ipcdomain;
  # Base domain for IPC tests, has all IPC permissions 
  type test_ipc_base_t;
@@ -418,9 +418,9 @@ diff -Nrup refpolicy/test_ipc.te refpolicy.new/test_ipc.te
  typeattribute test_ipc_associate_t ipcdomain;
  typeattribute test_ipc_associate_t testdomain;
  
-diff -Nrup refpolicy/test_link.te refpolicy.new/test_link.te
---- refpolicy/test_link.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_link.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_link.te refpolicy.patched/test_link.te
+--- refpolicy/test_link.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_link.te	2008-01-31 08:32:27.000000000 -0500
 @@ -16,6 +16,8 @@ files_type(test_link_file_t)
  # Domain for process that can create hard links to the file.
  type test_link_t;
@@ -475,9 +475,9 @@ diff -Nrup refpolicy/test_link.te refpolicy.new/test_link.te
  typeattribute test_nounlink2_t test_link_domain;
  typeattribute test_nounlink2_t testdomain;
  allow test_nounlink2_t test_link_dir_t:dir { search getattr write };
-diff -Nrup refpolicy/test_mkdir.te refpolicy.new/test_mkdir.te
---- refpolicy/test_mkdir.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_mkdir.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_mkdir.te refpolicy.patched/test_mkdir.te
+--- refpolicy/test_mkdir.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_mkdir.te	2008-01-31 08:32:27.000000000 -0500
 @@ -12,6 +12,8 @@ files_type(test_mkdir_dir_t)
  # Domain for process that has add_name permission to the test directory.
  type test_addname_t;
@@ -523,9 +523,9 @@ diff -Nrup refpolicy/test_mkdir.te refpolicy.new/test_mkdir.te
  typeattribute test_nocreate_t test_mkdir_domain;
  typeattribute test_nocreate_t testdomain;
  domain_obj_id_change_exemption(test_nocreate_t)
-diff -Nrup refpolicy/test_open.te refpolicy.new/test_open.te
---- refpolicy/test_open.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_open.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_open.te refpolicy.patched/test_open.te
+--- refpolicy/test_open.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_open.te	2008-01-31 08:32:27.000000000 -0500
 @@ -12,6 +12,8 @@ files_type(test_open_file_t)
  # Domain for process that can open the test file for reading and writing.
  type test_open_t;
@@ -553,9 +553,9 @@ diff -Nrup refpolicy/test_open.te refpolicy.new/test_open.te
  typeattribute test_append_t test_open_domain;
  typeattribute test_append_t testdomain;
  allow test_append_t test_open_file_t:file { getattr append };
-diff -Nrup refpolicy/test_policy.if refpolicy.new/test_policy.if
---- refpolicy/test_policy.if	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_policy.if	2007-12-31 06:05:59.000000000 -0500
+diff -Nrup refpolicy/test_policy.if refpolicy.patched/test_policy.if
+--- refpolicy/test_policy.if	2006-03-22 16:30:29.000000000 -0500
++++ refpolicy.patched/test_policy.if	2008-01-31 08:32:27.000000000 -0500
 @@ -25,3 +25,17 @@
  ##      Domain allowed to transition.
  ## </param>
@@ -574,9 +574,9 @@ diff -Nrup refpolicy/test_policy.if refpolicy.new/test_policy.if
 +      allow $1 unconfined_devpts_t:chr_file { read write ioctl getattr };
 +      allow $1 unconfined_t:fifo_file { read write ioctl getattr };
 +')
-diff -Nrup refpolicy/test_ptrace.te refpolicy.new/test_ptrace.te
---- refpolicy/test_ptrace.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_ptrace.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_ptrace.te refpolicy.patched/test_ptrace.te
+--- refpolicy/test_ptrace.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_ptrace.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute ptracedomain;
  # Domain for process that is allowed to trace.
  type test_ptrace_tracer_t;
@@ -604,9 +604,9 @@ diff -Nrup refpolicy/test_ptrace.te refpolicy.new/test_ptrace.te
  typeattribute test_ptrace_traced_t ptracedomain;
  typeattribute test_ptrace_traced_t testdomain;
  
-diff -Nrup refpolicy/test_readlink.te refpolicy.new/test_readlink.te
---- refpolicy/test_readlink.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_readlink.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_readlink.te refpolicy.patched/test_readlink.te
+--- refpolicy/test_readlink.te	2007-12-13 04:55:13.000000000 -0500
++++ refpolicy.patched/test_readlink.te	2008-01-31 08:32:27.000000000 -0500
 @@ -14,6 +14,8 @@ files_type(test_readlink_link_t)
  # Domain for process that can read and follow the symbolic link.
  type test_readlink_t;
@@ -625,9 +625,9 @@ diff -Nrup refpolicy/test_readlink.te refpolicy.new/test_readlink.te
  typeattribute test_noreadlink_t test_readlink_domain;
  typeattribute test_noreadlink_t testdomain;
  allow test_noreadlink_t test_readlink_file_t:file { getattr read };
-diff -Nrup refpolicy/test_relabel.te refpolicy.new/test_relabel.te
---- refpolicy/test_relabel.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_relabel.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_relabel.te refpolicy.patched/test_relabel.te
+--- refpolicy/test_relabel.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_relabel.te	2008-01-31 08:32:27.000000000 -0500
 @@ -14,6 +14,8 @@ files_type(test_relabel_newtype_t)
  # Domain for process that can relabel the test file.
  type test_relabel_t;
@@ -655,9 +655,9 @@ diff -Nrup refpolicy/test_relabel.te refpolicy.new/test_relabel.te
  domain_obj_id_change_exemption(test_norelabelto_t)
  typeattribute test_norelabelto_t test_relabel_domain;
  typeattribute test_norelabelto_t testdomain;
-diff -Nrup refpolicy/test_rename.te refpolicy.new/test_rename.te
---- refpolicy/test_rename.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_rename.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_rename.te refpolicy.patched/test_rename.te
+--- refpolicy/test_rename.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_rename.te	2008-01-31 08:32:27.000000000 -0500
 @@ -20,6 +20,8 @@ files_type(test_rename_dir_t)
  # Domain for process that can rename the test file and directory.
  type test_rename_t;
@@ -730,9 +730,9 @@ diff -Nrup refpolicy/test_rename.te refpolicy.new/test_rename.te
  typeattribute test_norename6_t test_rename_domain;
  typeattribute test_norename6_t testdomain;
  allow test_norename6_t test_rename_src_dir_t:dir { search getattr write remove_name };
-diff -Nrup refpolicy/test_rxdir.te refpolicy.new/test_rxdir.te
---- refpolicy/test_rxdir.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_rxdir.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_rxdir.te refpolicy.patched/test_rxdir.te
+--- refpolicy/test_rxdir.te	2007-12-13 04:55:13.000000000 -0500
++++ refpolicy.patched/test_rxdir.te	2008-01-31 08:32:27.000000000 -0500
 @@ -12,6 +12,8 @@ files_type(test_rxdir_dir_t)
  # Domain for process that can read but not search the directory.
  type test_rdir_t;
@@ -751,9 +751,9 @@ diff -Nrup refpolicy/test_rxdir.te refpolicy.new/test_rxdir.te
  typeattribute test_xdir_t test_rxdir_domain;
  typeattribute test_xdir_t testdomain;
  allow test_xdir_t test_rxdir_dir_t:dir { getattr search };
-diff -Nrup refpolicy/test_setattr.te refpolicy.new/test_setattr.te
---- refpolicy/test_setattr.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_setattr.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_setattr.te refpolicy.patched/test_setattr.te
+--- refpolicy/test_setattr.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_setattr.te	2008-01-31 08:32:27.000000000 -0500
 @@ -12,6 +12,8 @@ files_type(test_setattr_file_t)
  # Domain for process that can set attributes on the test file.
  type test_setattr_t;
@@ -772,9 +772,9 @@ diff -Nrup refpolicy/test_setattr.te refpolicy.new/test_setattr.te
  typeattribute test_nosetattr_t test_setattr_domain;
  typeattribute test_nosetattr_t testdomain;
  allow test_nosetattr_t self:capability chown;
-diff -Nrup refpolicy/test_setnice.te refpolicy.new/test_setnice.te
---- refpolicy/test_setnice.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_setnice.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_setnice.te refpolicy.patched/test_setnice.te
+--- refpolicy/test_setnice.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_setnice.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,24 +8,29 @@ attribute setnicedomain;
  # Domain for process whose nice can be set.
  type test_setnice_set_t;
@@ -806,9 +806,9 @@ diff -Nrup refpolicy/test_setnice.te refpolicy.new/test_setnice.te
  domain_exec_all_entry_files(setnicedomain)
  files_exec_etc_files(setnicedomain)
  libs_use_ld_so(setnicedomain)
-diff -Nrup refpolicy/test_sigkill.te refpolicy.new/test_sigkill.te
---- refpolicy/test_sigkill.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_sigkill.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_sigkill.te refpolicy.patched/test_sigkill.te
+--- refpolicy/test_sigkill.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_sigkill.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,12 +8,16 @@ attribute killdomain;
  # Domain for process that receives the signals.
  type test_kill_server_t;
@@ -853,9 +853,9 @@ diff -Nrup refpolicy/test_sigkill.te refpolicy.new/test_sigkill.te
  typeattribute test_kill_signal_t killdomain;
  typeattribute test_kill_signal_t testdomain;
  
-diff -Nrup refpolicy/test_stat.te refpolicy.new/test_stat.te
---- refpolicy/test_stat.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_stat.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_stat.te refpolicy.patched/test_stat.te
+--- refpolicy/test_stat.te	2007-12-13 04:55:13.000000000 -0500
++++ refpolicy.patched/test_stat.te	2008-01-31 08:32:27.000000000 -0500
 @@ -12,6 +12,8 @@ files_type(test_stat_file_t)
  # Domain for process that can get attributes on the test file.
  type test_stat_t;
@@ -874,9 +874,9 @@ diff -Nrup refpolicy/test_stat.te refpolicy.new/test_stat.te
  typeattribute test_nostat_t test_stat_domain;
  typeattribute test_nostat_t testdomain;
  
-diff -Nrup refpolicy/test_sysctl.te refpolicy.new/test_sysctl.te
---- refpolicy/test_sysctl.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_sysctl.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_sysctl.te refpolicy.patched/test_sysctl.te
+--- refpolicy/test_sysctl.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_sysctl.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,19 +8,23 @@ attribute sysctldomain;
  # Domain for process that is allowed to perform sysctl.
  type test_sysctl_t;
@@ -903,9 +903,9 @@ diff -Nrup refpolicy/test_sysctl.te refpolicy.new/test_sysctl.te
  
  # Allow the first domain to perform sysctl operations.
  kernel_rw_all_sysctls(test_sysctl_t)
-diff -Nrup refpolicy/test_task_create.te refpolicy.new/test_task_create.te
---- refpolicy/test_task_create.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_create.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_task_create.te refpolicy.patched/test_task_create.te
+--- refpolicy/test_task_create.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_task_create.te	2008-01-31 08:33:19.000000000 -0500
 @@ -8,6 +8,8 @@ attribute test_create_d;
  # Domain for process allowed to fork.
  type test_create_yes_t;
@@ -915,23 +915,17 @@ diff -Nrup refpolicy/test_task_create.te refpolicy.new/test_task_create.te
  typeattribute test_create_yes_t test_create_d;
  typeattribute test_create_yes_t testdomain;
  
-@@ -20,7 +22,12 @@ type test_create_no_t;
- # permission so we can test it, we omit the domain attribute. 
+@@ -21,6 +23,7 @@ type test_create_no_t;
  # Ideally, refpolicy would _not_ grant such permissions to every domain,
  # as it makes the permission effectively unusable in real policy.
--#domain_type(test_create_no_t)
-+# XXX This invalidates the test, but allows the policy to compile
-+# The next two lines SHOULD be commented out according to the original
-+# comment above.
-+domain_type(test_create_no_t)
+ #domain_type(test_create_no_t)
 +unconfined_runs_test(test_create_no_t)
-+domain_dyntrans_type(test_create_no_t)
  typeattribute test_create_no_t test_create_d;
  
  allow test_create_no_t self:process ~fork;
-diff -Nrup refpolicy/test_task_getpgid.te refpolicy.new/test_task_getpgid.te
---- refpolicy/test_task_getpgid.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_getpgid.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_task_getpgid.te refpolicy.patched/test_task_getpgid.te
+--- refpolicy/test_task_getpgid.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_task_getpgid.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute test_getpgid_d;
  # Domain for the target process
  type test_getpgid_target_t;
@@ -957,9 +951,9 @@ diff -Nrup refpolicy/test_task_getpgid.te refpolicy.new/test_task_getpgid.te
  typeattribute test_getpgid_no_t test_getpgid_d;
  typeattribute test_getpgid_no_t testdomain;
  
-diff -Nrup refpolicy/test_task_getsched.te refpolicy.new/test_task_getsched.te
---- refpolicy/test_task_getsched.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_getsched.te	2007-12-31 05:57:37.000000000 -0500
+diff -Nrup refpolicy/test_task_getsched.te refpolicy.patched/test_task_getsched.te
+--- refpolicy/test_task_getsched.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_task_getsched.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute test_getsched_d;
  # Domain for the target process
  type test_getsched_target_t;
@@ -985,9 +979,9 @@ diff -Nrup refpolicy/test_task_getsched.te refpolicy.new/test_task_getsched.te
  typeattribute test_getsched_no_t test_getsched_d;
  typeattribute test_getsched_no_t testdomain;
  
-diff -Nrup refpolicy/test_task_getsid.te refpolicy.new/test_task_getsid.te
---- refpolicy/test_task_getsid.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_getsid.te	2007-12-31 05:57:38.000000000 -0500
+diff -Nrup refpolicy/test_task_getsid.te refpolicy.patched/test_task_getsid.te
+--- refpolicy/test_task_getsid.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_task_getsid.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute test_getsid_d;
  # Domain for the target process
  type test_getsid_target_t;
@@ -1013,9 +1007,9 @@ diff -Nrup refpolicy/test_task_getsid.te refpolicy.new/test_task_getsid.te
  typeattribute test_getsid_no_t test_getsid_d;
  typeattribute test_getsid_no_t testdomain;
  
-diff -Nrup refpolicy/test_task_setpgid.te refpolicy.new/test_task_setpgid.te
---- refpolicy/test_task_setpgid.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_setpgid.te	2007-12-31 05:57:38.000000000 -0500
+diff -Nrup refpolicy/test_task_setpgid.te refpolicy.patched/test_task_setpgid.te
+--- refpolicy/test_task_setpgid.te	2007-12-20 04:32:56.000000000 -0500
++++ refpolicy.patched/test_task_setpgid.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,6 +8,8 @@ attribute test_setpgid_d;
  # Domain for process allowed to setpgid
  type test_setpgid_yes_t;
@@ -1034,9 +1028,9 @@ diff -Nrup refpolicy/test_task_setpgid.te refpolicy.new/test_task_setpgid.te
  typeattribute test_setpgid_no_t test_setpgid_d;
  
  allow test_setpgid_no_t self:process ~{ setpgid setcurrent };
-diff -Nrup refpolicy/test_task_setsched.te refpolicy.new/test_task_setsched.te
---- refpolicy/test_task_setsched.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_task_setsched.te	2007-12-31 05:57:38.000000000 -0500
+diff -Nrup refpolicy/test_task_setsched.te refpolicy.patched/test_task_setsched.te
+--- refpolicy/test_task_setsched.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_task_setsched.te	2008-01-31 08:32:27.000000000 -0500
 @@ -9,18 +9,24 @@ attribute test_setsched_d;
  # Domain for the target process
  type test_setsched_target_t;
@@ -1062,9 +1056,9 @@ diff -Nrup refpolicy/test_task_setsched.te refpolicy.new/test_task_setsched.te
  typeattribute test_setsched_no_t test_setsched_d;
  typeattribute test_setsched_no_t testdomain;
  
-diff -Nrup refpolicy/test_transition.te refpolicy.new/test_transition.te
---- refpolicy/test_transition.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_transition.te	2007-12-31 05:57:38.000000000 -0500
+diff -Nrup refpolicy/test_transition.te refpolicy.patched/test_transition.te
+--- refpolicy/test_transition.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_transition.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute transitiondomain;
  # Domain for process that is allowed to transition to the new domain.
  type test_transition_fromdomain_t;
@@ -1090,9 +1084,9 @@ diff -Nrup refpolicy/test_transition.te refpolicy.new/test_transition.te
  typeattribute test_transition_todomain_t transitiondomain;
  typeattribute test_transition_todomain_t testdomain;
  
-diff -Nrup refpolicy/test_wait.te refpolicy.new/test_wait.te
---- refpolicy/test_wait.te	2007-12-31 06:57:36.000000000 -0500
-+++ refpolicy.new/test_wait.te	2007-12-31 05:57:38.000000000 -0500
+diff -Nrup refpolicy/test_wait.te refpolicy.patched/test_wait.te
+--- refpolicy/test_wait.te	2006-03-27 11:55:48.000000000 -0500
++++ refpolicy.patched/test_wait.te	2008-01-31 08:32:27.000000000 -0500
 @@ -8,18 +8,24 @@ attribute waitdomain;
  # Domain for parent process.
  type test_wait_parent_t;
