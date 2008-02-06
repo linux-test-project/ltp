@@ -70,6 +70,9 @@ int check_shmid(void *vtest)
               shmctl(id, IPC_RMID, NULL);
       }
       tst_exit(0);
+
+      /* NOT REACHED */
+      return 0;
 }
 
 #define UNSHARESTR "unshare"
@@ -134,5 +137,9 @@ int main(int argc, char *argv[])
 
       /* destroy the key */
       shmctl(id, IPC_RMID, NULL);
+
       tst_exit(0);
+
+      /* NOT REACHED */
+      return 0;
 }

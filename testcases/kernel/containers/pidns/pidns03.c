@@ -25,7 +25,7 @@
 * 1. When parent, clone a process with flag CLONE_NEWPID, see the process id
 * of the parent is existing after mounting /proc
 *
-* Total Tests: 6 assertions
+* Total Tests:
 *
 * Test Name: pidns03
 *
@@ -67,7 +67,6 @@
 char *TCID = "pid_namespace3";
 int TST_TOTAL;
 
-static void setup();
 static void cleanup();
 static int child_fn();
 
@@ -165,6 +164,9 @@ child_fn(pid_t Ppid)
 	}
 
 	cleanup();
+
+	/* NOT REACHED */
+	return 0;
 }
 
 /*

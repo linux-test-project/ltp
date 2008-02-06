@@ -27,7 +27,7 @@
 * 2. When parent clone a process with flag CLONE_NEWPID, the parent process ID of
 * should be always zero.
 *
-* Total Tests: 6 assertions
+* Total Tests:
 *
 * Test Name: pidns01
 *
@@ -101,7 +101,10 @@ int child_fn1(void *ttype)
 		tst_resm(TFAIL, "FAIL: Got unexpected result of"
 			" cpid=%d ppid=%d\n", cpid, ppid);
 	}
-	tst_exit();
+	cleanup();
+
+	/* NOT REACHED */
+	return 0;
 }
 
 /***********************************************************************

@@ -27,7 +27,7 @@
 * 2. When parent clone a process with flag CLONE_NEWPID, the parent process group ID
 * should be always one.
 *
-* Total Tests: 6 assertions
+* Total Tests
 *
 * Test Name: pidns02
 *
