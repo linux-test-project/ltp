@@ -73,7 +73,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define HUGE_PAGE    ((1UL) << 24) 	/* Huge page size */
+#define HUGE_PAGE    ((1UL) << 20) 	/* Huge page size */
 #define BUFFER_SIZE  256 
 
 char* TEMPFILE="mmapfile";

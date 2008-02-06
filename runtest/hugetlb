@@ -1,0 +1,20 @@
+hugemmap01 hugemmap01 -H/huge 
+hugemmap02 hugemmap02 -H/huge -I10 -c10
+hugemmap03 hugemmap03 -H/huge -I2 -c10
+hugemmap04 hugemmap04 -H/huge
+
+hugeshmat01 hugeshmat01 -i 5
+hugeshmat02 hugeshmat02 -i 5
+hugeshmat03 hugeshmat03 -i 5
+
+hugeshmctl01 hugeshmctl01 -i 5 -c 3
+hugeshmctl02 hugeshmctl02 -i 5 -c 3
+hugeshmctl03 hugeshmctl03 -i 5 -c 3
+
+hugeshmdt01 hugeshmdt01 -I 5 -c10
+
+hugeshmget01 hugeshmget01 -c 10 -i 10
+hugeshmget02 hugeshmget02 -c 10 -i 10
+hugeshmget03 hugeshmget03 -c 10 -i 10
+hugeshmget05 hugeshmget05 -c 10 -i 10
+
