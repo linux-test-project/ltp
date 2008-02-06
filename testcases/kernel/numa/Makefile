@@ -34,7 +34,7 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
-	cp numa01.sh ../../bin/.
+	chmod 755 numa01.sh; cp numa01.sh ../../bin/.
 
 clean:
 	rm -f $(TARGETS)
