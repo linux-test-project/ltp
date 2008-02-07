@@ -32,7 +32,7 @@ all: $(TARGETS)
 	gcc -o checkforlibcap gotlibcap.c
 else
 all:
-	@echo "setcap not installed.  Please install libcap from"; echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2"; echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
+	@echo "setcap or xattr headers not installed.  Please install libcap from"; echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2"; echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
 	gcc -o checkforlibcap nolibcap.c
 TARGETS =
 endif

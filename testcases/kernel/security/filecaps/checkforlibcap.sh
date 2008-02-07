@@ -31,6 +31,15 @@ if [ $ret -eq 0 ]; then
 	ret=$?
 fi
 
+if [ $ret -eq 0 ]; then
+       #also test for xattr
+       gcc -o check_xattr check_xattr.c 
+       ret=$?
+       if [ $ret -ne 0 ]; then
+               echo "Please install xattr headers"
+       fi
+fi
+
 if [ $ret -ne 0 ]; then
 	if [ $yesno -eq 1 ]; then
 		echo no
