@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.11 2007/11/15 08:46:18 subrata_modak Exp $ */
+/* $Id: test.h,v 1.12 2008/02/11 16:39:54 vapier Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -40,6 +40,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include "compiler.h"
 
 #define TPASS    0    /* Test passed flag */
 #define TFAIL    1    /* Test failed flag */
@@ -217,7 +219,7 @@ extern void tst_brkm(int ttype, void (*func)(), char *arg_fmt, ...);
 extern void tst_brkloopm(int ttype, void (*func)(), char *arg_fmt, ...);
 
 extern int  tst_environ();
-extern void tst_exit();
+extern void tst_exit() attribute_noreturn;
 extern void tst_flush();
 
 /* prototypes for the t_res.c functions */
