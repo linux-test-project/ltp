@@ -98,7 +98,7 @@ int main(int ac, char **av)
                 /* reset Tst_count in case we are looping */
                 Tst_count = 0;
 
-		if ((fd = open(file1, O_RDWR | O_CREAT, 0777) < 0 )) { //mode must be specified when O_CREATE is in the flag
+		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0 ) { //mode must be specified when O_CREATE is in the flag
 			tst_brkm(TBROK, cleanup, "open failed");
 			/*NOTREACHED*/
 		}
