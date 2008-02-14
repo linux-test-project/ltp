@@ -23,10 +23,14 @@
 *  Project Website:  TBD
 *
 *
-* $Id: sfunc.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
+* $Id: sfunc.h,v 1.5 2008/02/14 08:22:23 subrata_modak Exp $
 * $Log: sfunc.h,v $
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
+* Revision 1.5  2008/02/14 08:22:23  subrata_modak
+* Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+*
+* Revision 1.13  2005/10/12 23:13:35  yardleyb
+* Updates to code to support new function in disktest version 1.3.x.
+* Actual changes are recorded in the README
 *
 * Revision 1.12  2005/05/03 16:24:38  yardleyb
 * Added needed code changes to support windows
@@ -102,12 +106,8 @@
 #include "main.h"
 #include "defs.h"
 
-#define MARK_FIRST	1
-#define MARK_LAST	2
-#define MARK_ALL	3
-
 typedef enum lvl {
-	START, END, STAT, INFO, DEBUG, WARN, ERR
+	START, END, STAT, INFO, DBUG, WARN, ERR
 } lvl_t;
 
 typedef struct fmt_time {
@@ -118,9 +118,9 @@ typedef struct fmt_time {
 } fmt_time_t;
 
 OFF_T my_strtofft(const char *pStr);
-int pMsg(lvl_t level, child_args_t *, char *Msg,...);
+int pMsg(lvl_t level, const child_args_t *, char *Msg,...);
 void fill_buffer(void *, size_t, void *, size_t, const unsigned int);
-void mark_buffer(void *, const size_t, void *, const OFF_T, const unsigned short);
+void mark_buffer(void *, const size_t, void *, const child_args_t *, const test_env_t *);
 void normalize_percs(child_args_t *);
 #ifndef WINDOWS
 void Sleep(unsigned int);

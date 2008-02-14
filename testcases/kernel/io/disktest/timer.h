@@ -1,4 +1,5 @@
 /*
+* $Id: timer.h,v 1.2 2008/02/14 08:22:24 subrata_modak Exp $
 * Disktest
 * Copyright (c) International Business Machines Corp., 2001
 *
@@ -22,15 +23,22 @@
 *
 *  Project Website:  TBD
 *
+* $Id: timer.h,v 1.2 2008/02/14 08:22:24 subrata_modak Exp $
+*
 */
 
 #ifndef _TIMER_H_ /* _TIMER_H */
 #define _TIMER_H_
+
+void setStartTime(void);
+void setEndTime(void);
+unsigned long getTimeDiff(void);
 
 #ifdef WINDOWS
 DWORD WINAPI ChildTimer(test_ll_t *);
 #else
 void *ChildTimer(void *);
 #endif
+
 
 #endif /* _TIMER_H */

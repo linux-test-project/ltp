@@ -22,148 +22,7 @@
 *
 *  Project Website:  TBD
 *
-*
-* $Id: sfunc.c,v 1.5 2006/02/24 02:13:40 vapier Exp $
-* $Log: sfunc.c,v $
-* Revision 1.5  2006/02/24 02:13:40  vapier
-* kill off warning about j being unused
-*
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.25  2005/05/03 16:24:38  yardleyb
-* Added needed code changes to support windows
-*
-* Revision 1.24  2005/04/28 21:25:18  yardleyb
-* Fixed up some issues with AIX compilation due to the change made
-* in endian support in Linux.
-*
-* Revision 1.23  2005/01/08 21:18:34  yardleyb
-* Update performance output and usage.  Fixed pass count check
-*
-* Revision 1.22  2004/12/17 06:34:56  yardleyb
-* removed -mf -ml.  These mark options cause to may issues when using
-* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
-* false data misscompare during multiple cycles.
-*
-* Revision 1.21  2004/11/20 05:05:58  yardleyb
-* added more command line checking
-*
-* Revision 1.20  2004/11/20 04:43:42  yardleyb
-* Minor code fixes.  Checking for alloc errors.
-*
-* Revision 1.19  2004/11/02 21:12:21  yardleyb
-* Added PPC ifdef for ioctl BLKGETSIZE
-*
-* Revision 1.17  2003/09/12 21:23:01  yardleyb
-* The following isses have been fixed:
-* - Updated to Version 1.12
-* - Disktest will falsely detect a data miscompare
-* when using random block sizes and random data
-* - If the linear option is used while doing random
-* block sizes and read/write/error checks, disktest
-* will hang
-* - Disktest will use the wrong transfer size on
-* the last IO when using random block transfer size
-* and the number of seeks are specified.
-* - Total Reads and Writes not reported correctly
-* - While running linear write/read tests while
-* doing the heartbeat performance and you get an
-* error on the 'write' side of the test, disktest
-* does not exit
-*
-* Revision 1.16  2003/01/13 21:58:23  yardleyb
-* Added includes for AIX change
-*
-* Revision 1.15  2003/01/13 21:33:31  yardleyb
-* Added code to detect AIX volume size.
-* Updated mask for random LBA to use start_lba offset
-* Updated version to 1.1.10
-*
-* Revision 1.14  2002/05/31 18:47:59  yardleyb
-* Updates to -pl -pL options.
-* Fixed test status to fail on
-* failure to open filespec.
-* Version set to 1.1.9
-*
-* Revision 1.13  2002/04/24 01:45:31  yardleyb
-* Minor Fixes:
-* Read/write time could exceeds overall time
-* Heartbeat options sometimes only displayed once
-* Cleanup time for large number of threads was very long (windows)
-* If heartbeat specified, now checks for performance option also
-* No IO was performed when -S0:0 and -pr specified
-*
-* Revision 1.12  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.11  2002/03/07 03:34:42  yardleyb
-* Rearranged string length
-* calculation, removed appname
-*
-* Revision 1.10  2002/02/28 02:04:32  yardleyb
-* Moved FileSeek64 to IO
-* source files.
-*
-* Revision 1.9  2002/02/19 02:46:37  yardleyb
-* Added changes to compile for AIX.
-* Update getvsiz so it returns a -1
-* if the ioctl fails and we handle
-* that fact correctly.  Added check
-* to force vsiz to always be greater
-* then stop_lba.
-*
-* Revision 1.8  2002/02/04 20:35:38  yardleyb
-* Changed max. number of threads to 64k.
-* Check for max threads in parsing.
-* Fixed windows getopt to return correctly
-* when a bad option is given.
-* Update time output to be in the format:
-*   YEAR/MONTH/DAY-HOUR:MIN:SEC
-* instead of epoch time.
-*
-* Revision 1.7  2001/12/04 18:51:06  yardleyb
-* Checkin of new source files and removal
-* of outdated source
-*
-* Revision 1.5  2001/10/10 00:17:14  yardleyb
-* Added Copyright and GPL license text.
-* Miner bug fixes throughout text.
-*
-* Revision 1.4  2001/10/01 23:29:12  yardleyb
-* Added column for device name in pMsg.
-* Shorted buffer size for the level string.
-*
-* Revision 1.3  2001/09/22 03:44:25  yardleyb
-* Added level code pMsg.
-*
-* Revision 1.2  2001/09/06 18:23:30  yardleyb
-* Added duty cycle -D.  Updated usage. Added
-* make option to create .tar.gz of all files
-*
-* Revision 1.1  2001/09/05 22:44:42  yardleyb
-* Split out some of the special functions.
-* added O_DIRECT -Id.  Updated usage.  Lots
-* of clean up to functions.  Added header info
-* to pMsg.
-*
+* $Id: sfunc.c,v 1.6 2008/02/14 08:22:23 subrata_modak Exp $
 *
 */
 #include <sys/types.h>
@@ -172,6 +31,7 @@
 #include <stdarg.h>
 #include <signal.h>
 #ifdef WINDOWS
+#include <winsock2.h>
 #include <process.h>
 #include <windows.h>
 #include <winbase.h>
@@ -198,6 +58,7 @@
 #include "defs.h"
 #include "globals.h"
 #include "io.h"
+#include "threading.h"
 
 /*
  * Generates a random 32bit number.
@@ -289,7 +150,7 @@ OFF_T my_strtofft(const char *pStr)
 /*
 * prints messages to stdout. with added formating
 */
-int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
+int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 {
 #define FORMAT "| %s | %s | %d | %s | %s | %s"
 #define TIME_FORMAT "%04d/%02d/%02d-%02d:%02d:%02d"
@@ -299,12 +160,29 @@ int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
 	size_t len = 0;
 	char *cpTheMsg;
 	char levelStr[10];
+	struct tm struct_time;
 	struct tm *pstruct_time;
 	char time_str[TIME_FMT_LEN];
+	time_t my_time;
+
 	extern unsigned long glb_flags;
-	
-	time_t my_time = time(NULL);
+
+#ifndef WINDOWS
+	static pthread_mutex_t mTime = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+#ifndef WINDOWS
+	LOCK(mTime);
+#endif
+
+	time(&my_time);
 	pstruct_time = localtime(&my_time);
+	if(pstruct_time != NULL)
+		memcpy(&struct_time, pstruct_time, sizeof(struct tm));
+
+#ifndef WINDOWS
+	UNLOCK(mTime);
+#endif
 
 	if((glb_flags & GLB_FLG_QUIET) && (level == INFO))
 		return(0);
@@ -330,7 +208,7 @@ int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
 		case INFO:
 			strcpy(levelStr, "INFO ");
 			break;
-		case DEBUG:
+		case DBUG:
 			strcpy(levelStr, "DEBUG");
 			break;
 		case WARN:
@@ -341,12 +219,12 @@ int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
 			break;
 	}
 
-	sprintf(time_str, TIME_FORMAT, pstruct_time->tm_year+1900,
-		pstruct_time->tm_mon+1,
-		pstruct_time->tm_mday,
-		pstruct_time->tm_hour,
-		pstruct_time->tm_min,
-		pstruct_time->tm_sec
+	sprintf(time_str, TIME_FORMAT, struct_time.tm_year+1900,
+		struct_time.tm_mon+1,
+		struct_time.tm_mday,
+		struct_time.tm_hour,
+		struct_time.tm_min,
+		struct_time.tm_sec
 	);
 
 	len += strlen(FORMAT);
@@ -375,72 +253,89 @@ int pMsg(lvl_t level, child_args_t *args, char *Msg,...)
 	return rv;
 }
 
-void mark_buffer(void *buf, const size_t buf_len, void *lba, const OFF_T pass_count, const unsigned short mark_type)
+OFF_T getByteOrderedData(const OFF_T data)
 {
+	OFF_T off_tpat = 0;
+
+#ifdef WINDOWS
 	unsigned char *ucharpattern;
+	size_t i = 0;
+
+	ucharpattern = (unsigned char *) &data;
+	for(i=0;i<sizeof(OFF_T);i++) {
+		off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
+	}
+#endif
+
+#ifdef AIX
+	off_tpat = data;
+#endif
+
+#ifdef LINUX
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+	unsigned char *ucharpattern;
+	size_t i = 0;
+
+	ucharpattern = (unsigned char *) &data;
+	for(i=0;i<sizeof(OFF_T);i++) {
+		off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
+	}
+#else
+	off_tpat = data;
+#endif
+#endif
+
+	return off_tpat;
+}
+
+void mark_buffer(void *buf, const size_t buf_len, void *lba, const child_args_t *args, const test_env_t *env)
+{
 	OFF_T *plocal_lba = lba;
 	OFF_T local_lba = *plocal_lba;
 	OFF_T *off_tbuf = buf;
-	OFF_T off_tpat = 0, off_tpat2 = 0;
+	OFF_T off_tpat = 0, off_tpat2 = 0, off_tpat3 = 0, off_tpat4 = 0;
+	OFF_T pass_count = env->pass_count;
+	OFF_T start_time = (OFF_T)env->start_time;
+	unsigned char * ucharBuf = (unsigned char *)buf;
 	size_t i = 0;
+	extern char hostname[];
 
-#ifdef WINDOWS
-	ucharpattern = (unsigned char *) &pass_count;
-	for(i=0;i<sizeof(OFF_T);i++) {
-		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
+	off_tpat2 = getByteOrderedData(pass_count);
+	if(args->flags & CLD_FLG_ALT_MARK) {
+		off_tpat3 = getByteOrderedData(args->alt_mark);
+	} else {
+		off_tpat3 = getByteOrderedData(start_time);
 	}
-#elif defined AIX
-	off_tpat2 = pass_count;
-#elif defined LINUX
-# if __BYTE_ORDER == __LITTLE_ENDIAN
-	ucharpattern = (unsigned char *) &pass_count;
-	for(i=0;i<sizeof(OFF_T);i++) {
-		off_tpat2 |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
-	}
-# else
-	off_tpat2 = pass_count;
-# endif
-#endif
+	off_tpat4 = getByteOrderedData(args->seed);
 
-	ucharpattern = (unsigned char *) &local_lba;
-	switch(mark_type) {
-		case MARK_FIRST :
-			printf("Depricated mark function please use -ma\n");
-			exit(1);
-		case MARK_LAST :
-			printf("Depricated mark function please use -ma\n");
-			exit(1);
-		case MARK_ALL :
-			for(i=0;i<buf_len;i=i+BLK_SIZE) {
-#ifdef WINDOWS
-				size_t j;
-				off_tpat = 0;
-				for(j=0;j<sizeof(OFF_T);j++) {
-					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
-				}
-#elif defined AIX
-				off_tpat = local_lba;
-#elif defined LINUX
-# if __BYTE_ORDER == __LITTLE_ENDIAN
-				size_t j;
-				off_tpat = 0;
-				for(j=0;j<sizeof(OFF_T);j++) {
-					off_tpat |= (((OFF_T)(ucharpattern[j])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-j));
-				}
-# else
-				off_tpat = local_lba;
-# endif
-#endif
-				/* fill first 8 bytes with lba number */
-				*(off_tbuf+(i/sizeof(OFF_T))) = off_tpat;
-				/* fill second 8 bytes with pass_count */
-				*(off_tbuf+(i/sizeof(OFF_T))+1) = off_tpat2;
-				local_lba++;
-			}
-			break;
-		default :
-			printf("Unknown mark type\n");
-			exit(1);
+	for(i=0;i<buf_len;i=i+BLK_SIZE) {
+		if(args->flags & CLD_FLG_MRK_LBA) {
+			/* fill first 8 bytes with lba number */
+			off_tpat = getByteOrderedData(local_lba);
+			*(off_tbuf+(i/sizeof(OFF_T))) = off_tpat;
+		}
+		if(args->flags & CLD_FLG_MRK_PASS) {
+			/* fill second 8 bytes with pass_count */
+			*(off_tbuf+(i/sizeof(OFF_T))+1) = off_tpat2;
+		}
+		if(args->flags & CLD_FLG_MRK_TIME) {
+			/* fill third 8 bytes with start_time */
+			*(off_tbuf+(i/sizeof(OFF_T))+2) = off_tpat3;
+		}
+		if(args->flags & CLD_FLG_MRK_SEED) {
+			/* fill fourth 8 bytes with seed data */
+			*(off_tbuf+(i/sizeof(OFF_T))+3) = off_tpat4;
+		}
+		if(args->flags & CLD_FLG_MRK_HOST) {
+			/* now add the hostname to the mark data */
+			memcpy(ucharBuf+32+i, hostname, HOSTNAME_SIZE);
+		}
+		if(args->flags & CLD_FLG_MRK_TARGET) {
+			/* now add the target to the mark data */
+			memcpy(ucharBuf+32+HOSTNAME_SIZE+i, args->device, strlen(args->device));
+		}
+
+		local_lba++;
 	}
 }
 
@@ -664,6 +559,7 @@ OFF_T get_vsiz(const char *device)
 
 	if(bRV) {
 		size = myLengthInfo.Length.QuadPart;
+		size /= BLK_SIZE; /* return requires BLOCK */
 	} else {
 		bRV = DeviceIoControl(hFileHandle,
 			IOCTL_DISK_GET_DRIVE_GEOMETRY,
@@ -687,6 +583,7 @@ OFF_T get_vsiz(const char *device)
 	int fd = 0;
 #if AIX
 	struct devinfo *my_devinfo = NULL;
+	unsigned long ulSizeTmp;
 #endif
 
 	if((fd = open(device, 0)) < 0) {
@@ -698,12 +595,21 @@ OFF_T get_vsiz(const char *device)
 	if(my_devinfo != NULL) {
 		memset(my_devinfo, 0, sizeof(struct devinfo));
 		if(ioctl(fd, IOCINFO, my_devinfo) == -1) size = -1;
-		else size = (OFF_T)(my_devinfo->un.scdk.numblks) - (OFF_T)1;
+		else {
+			if(my_devinfo->flags & DF_LGDSK) {
+				ulSizeTmp = (unsigned long) my_devinfo->un.scdk64.hi_numblks;
+				size |= ((((OFF_T)ulSizeTmp) << 32) & 0xFFFFFFFF00000000ll);
+				ulSizeTmp = (unsigned long) my_devinfo->un.scdk64.lo_numblks;
+				size |= (((OFF_T) ulSizeTmp) & 0x00000000FFFFFFFFll);
+			} else {
+				ulSizeTmp = (unsigned long) my_devinfo->un.scdk.numblks;
+				size |= (((OFF_T) ulSizeTmp) & 0x00000000FFFFFFFFll);
+			}
+		}
 		FREE(my_devinfo);
 	}
 #else
 	if(ioctl(fd, BLKGETSIZE, &size) == -1) size = -1;
-	else size--;
 #endif
 
 	close(fd);

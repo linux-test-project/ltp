@@ -22,44 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.h,v 1.5 2005/05/04 17:54:00 mridge Exp $
-* $Log: childmain.h,v $
-* Revision 1.5  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.4  2004/11/02 20:47:13  yardleyb
-* Added -F functions.
-* lots of minor fixes. see README
-*
-* Revision 1.3  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.2  2001/12/07 23:33:29  yardleyb
-* Fixed bug where a false positive data
-* miscompare could occur when running
-* multi cycle testing with mark block
-* enabled.
-*
-* Revision 1.1  2001/12/04 18:52:33  yardleyb
-* Checkin of new source files and removal
-* of outdated source
+* $Id: childmain.h,v 1.6 2008/02/14 08:22:22 subrata_modak Exp $
 *
 */
 
@@ -70,21 +33,23 @@
 #define ACCESS_FAILURE	2
 #define DATA_MISCOMPARE	3
 
-typedef struct action {
-	op_t	oper;
-	unsigned long trsiz;
-	OFF_T	lba;
-} action_t;
+typedef enum mc_func {
+	EXP,ACT,REREAD
+} mc_func_t;
+
+#define DMOFFSTR "Thread %d: First miscompare at byte offset %d (0x%X)\n"
 
 #ifdef WINDOWS
-#define DMSTR "Data miscompare at lba %I64d (0x%I64X)\n"
-#define AFSTR "%s failed: seek %I64u, lba %I64u (0x%I64X), got = %ld, asked for = %ld\n"
-#define SFSTR "seek failed seek %I64d, lba = %I64d, request pos = %I64d, seek pos = %I64d\n"
+#define DMSTR "Thread %d: Data miscompare at lba %I64d (0x%I64X)\n"
+#define AFSTR "Thread %d: %s failed: seek %I64u, lba %I64u (0x%I64X), got = %ld, asked for = %ld, errno %lu\n"
+#define SFSTR "Thread %d: seek failed seek %I64d, lba = %I64d, request pos = %I64d, seek pos = %I64d, errno %lu\n"
+#define DMFILESTR "\n********** %s (Target: %s, LBA: %I64d, Offset: %d) **********\n"
 DWORD WINAPI ChildMain(test_ll_t *);
 #else
-#define DMSTR "Data miscompare at lba %lld (0x%llX)\n"
-#define AFSTR "%s failed: seek %llu, lba %lld (0x%llX), got = %ld, asked for = %ld\n"
-#define SFSTR "seek failed seek %lld, lba = %lld, request pos = %lld, seek pos = %lld\n"
+#define DMSTR "Thread %d: Data miscompare at lba %lld (0x%llX)\n"
+#define AFSTR "Thread %d: %s failed: seek %llu, lba %lld (0x%llX), got = %ld, asked for = %ld, errno %lu\n"
+#define SFSTR "Thread %d: seek failed seek %lld, lba = %lld, request pos = %lld, seek pos = %lld, errno %lu\n"
+#define DMFILESTR "\n********** %s (Target: %s, LBA: %lld, Offset: %d) **********\n"
 void *ChildMain(void *);
 #endif
 

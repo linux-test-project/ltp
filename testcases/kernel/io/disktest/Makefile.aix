@@ -23,10 +23,24 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile.aix,v 1.2 2005/05/04 17:54:00 mridge Exp $
+# $Id: Makefile.aix,v 1.3 2008/02/14 08:22:22 subrata_modak Exp $
 # $Log: Makefile.aix,v $
-# Revision 1.2  2005/05/04 17:54:00  mridge
-# Update to version 1.2.8
+# Revision 1.3  2008/02/14 08:22:22  subrata_modak
+# Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+#
+# Revision 1.10  2006/10/19 17:30:27  yardleyb
+# Added basic signal handling.
+#
+# Revision 1.9  2006/05/12 19:44:47  yardleyb
+# added CHANGELOG to distro
+# uninstall does not force a build
+#
+# Revision 1.8  2005/10/12 23:13:35  yardleyb
+# Updates to code to support new function in disktest version 1.3.x.
+# Actual changes are recorded in the README
+#
+# Revision 1.7  2005/06/02 20:16:19  yardleyb
+# Added changes for aix make
 #
 # Revision 1.6  2004/11/20 04:43:42  yardleyb
 # Minor code fixes.  Checking for alloc errors.
@@ -120,13 +134,13 @@
 # -D "_LARGE_FILES" is used in AIX to support 64bit functions and data types
 # -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" is used in Linux to support 64bit functions and data types. -D"_GNU_SOURCE" is to support Linux O_DIRECT
 
-VER=v1.2.4
+VER=v1.3.0
 GBLHDRS=main.h globals.h defs.h
-ALLHDRS=main.h sfunc.h parse.h childmain.h threading.h globals.h usage.h Getopt.h io.h dump.h
-SRCS=main.c sfunc.c parse.c childmain.c threading.c globals.c usage.c Getopt.c io.c dump.c
-OBJS=main.o sfunc.o parse.o childmain.o threading.o globals.o usage.o Getopt.o io.o dump.o
+ALLHDRS=main.h sfunc.h parse.h childmain.h threading.h globals.h usage.h Getopt.h io.h dump.h timer.h stats.h signals.h
+SRCS=main.c sfunc.c parse.c childmain.c threading.c globals.c usage.c Getopt.c io.c dump.c timer.c stats.c signals.c
+OBJS=main.o sfunc.o parse.o childmain.o threading.o globals.o usage.o Getopt.o io.o dump.o timer.o stats.o signals.o
 
-CFLAGS= -O -D"AIX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS= -O -D"AIX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" -q64
 
 all: $(OBJS) disktest
 
@@ -143,13 +157,16 @@ usage.o: usage.c usage.h
 Getopt.o: Getopt.c Getopt.h
 io.o: io.c io.h $(GBLHDRS)
 dump.o: dump.c dump.h $(GBLHDRS)
+stats.o: stats.c stats.h $(GBLHDRS)
+signals.o: signals.c signals.h $(GBLHDRS)
 
 install: disktest
-	cp disktest /bin
-	cp man1/disktest.1 /usr/share/man/man1
+	cp disktest /usr/bin
+	cp man1/disktest.1.gz /usr/share/man/man1
+	gunzip /usr/share/man/man1/disktest.1.gz
 
-uninstall: disktest
-	rm -f /bin/disktest
+uninstall:
+	rm -f /usr/bin/disktest
 	rm -f /usr/share/man/man1/disktest.1
 
 clean:
@@ -158,10 +175,10 @@ clean:
 all-clean: clean
 	rm -f *~ *tar* *zip*
 
-distro:
+distro: all-clean
 	mkdir disktest.$(VER)
 	mkdir disktest.$(VER)/man1
-	cp ./Makefile ./*.[ch] ./LICENSE ./README disktest.$(VER)
+	cp ./Makefile ./*.[ch] ./LICENSE ./README ./CHANGELOG disktest.$(VER)
 	cp ./man1/disktest.1 disktest.$(VER)/man1
 	tar cvf ./disktest.$(VER).tar disktest.$(VER)
 	rm -rf disktest.$(VER)

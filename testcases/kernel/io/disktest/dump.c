@@ -22,52 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.c,v 1.3 2005/05/04 17:54:00 mridge Exp $
-* $Log: dump.c,v $
-* Revision 1.3  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.5  2004/11/02 20:47:13  yardleyb
-* Added -F functions.
-* lots of minor fixes. see README
-*
-* Revision 1.4  2003/09/12 18:10:08  yardleyb
-* Updated to version 1.11
-* Code added to fix compile
-* time warnings
-*
-* Revision 1.3  2002/04/03 20:18:29  yardleyb
-* Added case for failed read in
-* do_dump.  Set initialization for
-* count and buffer in do_dump
-*
-* Revision 1.2  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.1  2002/03/07 03:38:52  yardleyb
-* Added dump function from command
-* line.  Created formatted dump output
-* for Data miscomare and command line.
-* Can now leave off filespec the full
-* path header as it will be added based
-* on -I.
+* $Id: dump.c,v 1.4 2008/02/14 08:22:23 subrata_modak Exp $
 *
 */
 #include <stdio.h>	/* *printf() */
@@ -143,12 +98,13 @@ int format_raw(size_t iBytes, const unsigned char *ibuff, unsigned char *obuff, 
 	return 0;
 }
 
-int dump_data(FILE *stream, const unsigned char *buff, const size_t buff_siz, const size_t ofd_siz, const int format)
+int dump_data(FILE *stream, const unsigned char *buff, const size_t buff_siz, const size_t ofd_siz, const size_t offset, const int format)
 {
 	size_t TotalRemainingBytes, NumBytes, ibuff_siz, obuff_siz;
 	unsigned char *ibuff, *obuff, *buff_curr;
 
 	buff_curr = (unsigned char *) buff;
+	buff_curr += offset;
 	TotalRemainingBytes = buff_siz;
 	NumBytes = 0;
 	ibuff_siz = ofd_siz;
@@ -207,10 +163,15 @@ int do_dump(child_args_t *args)
 {
 	size_t NumBytes = 0;
 	OFF_T TargetLBA, TotalBytes = 0;
-	unsigned char buff[512];
+	unsigned char *buff;
 	fd_t fd;
 
-	memset(buff, 0, 512);
+	if((buff = (unsigned char *) ALLOC(args->htrsiz*BLK_SIZE)) == NULL) {
+		fprintf(stderr, "Can't allocate buffer\n");
+		return(-1);
+	}
+
+	memset(buff, 0, args->htrsiz*BLK_SIZE);
 
 	fd = Open(args->device, args->flags | CLD_FLG_R);
 	if(INVALID_FD(fd)) {
@@ -227,16 +188,17 @@ int do_dump(child_args_t *args)
 	}
 
 	do {
-		NumBytes = Read(fd, buff, 512);
-		if((NumBytes > 512) || (NumBytes < 0)) {
+		NumBytes = Read(fd, buff, args->htrsiz*BLK_SIZE);
+		if((NumBytes > args->htrsiz*BLK_SIZE) || (NumBytes < 0)) {
 			pMsg(ERR, args, "Failure reading %s\n", args->device);
 			pMsg(ERR, args, "Last Error was %lu\n", GETLASTERROR());
 			break;
 		}
-		dump_data(stdout, buff, NumBytes, 16, FMT_STR);
+		dump_data(stdout, buff, NumBytes, 16, 0, FMT_STR);
 		TotalBytes += (OFF_T) NumBytes;
 	} while((TotalBytes < (args->htrsiz*BLK_SIZE)) && (NumBytes > 0));
 
+	FREE(buff);
 	CLOSE(fd);
 
 	return 0;

@@ -64,6 +64,8 @@ CLEAN :
 	-@erase "$(INTDIR)\threading.sbr"
 	-@erase "$(INTDIR)\usage.obj"
 	-@erase "$(INTDIR)\usage.sbr"
+	-@erase "$(INTDIR)\signals.obj"
+	-@erase "$(INTDIR)\signals.sbr"
 	-@erase "$(INTDIR)\vc*.*"
 	-@erase "$(OUTDIR)\disktest.exe"
 
@@ -72,7 +74,7 @@ CLEAN :
 
 CPP_PROJ=/nologo /W3 /Gs /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"NDEBUG" /D"_CONSOLE" /D"_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
-LINK=link.exe bufferoverflowu.lib
+LINK=link.exe bufferoverflowu.lib Winmm.lib Ws2_32.lib
 LINK_FLAGS=/nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe" 
 LINK_OBJS= \
 	"$(INTDIR)\childmain.obj" \
@@ -86,7 +88,8 @@ LINK_OBJS= \
 	"$(INTDIR)\sfunc.obj" \
 	"$(INTDIR)\threading.obj" \
 	"$(INTDIR)\usage.obj" \
-	"$(INTDIR)\dump.obj"
+	"$(INTDIR)\dump.obj" \
+	"$(INTDIR)\signals.obj"
 
 "$(OUTDIR)\disktest.exe" : "$(OUTDIR)" $(LINK_OBJS)
     $(LINK) @<<
@@ -128,6 +131,8 @@ CLEAN :
 	-@erase "$(INTDIR)\threading.sbr"
 	-@erase "$(INTDIR)\usage.obj"
 	-@erase "$(INTDIR)\usage.sbr"
+	-@erase "$(INTDIR)\signals.obj"
+	-@erase "$(INTDIR)\signals.sbr"
 	-@erase "$(INTDIR)\vc*.*"
 	-@erase "$(OUTDIR)\disktest.exe"
 	-@erase "$(OUTDIR)\disktest.ilk"
@@ -138,8 +143,8 @@ CLEAN :
 
 CPP_PROJ=bufferoverflow.lib /nologo /MLd /W3 /Gm /GX /ZI /Od /MD /D"WIN32" /D"_WIN32_WINNT=0x0500" /D"WINDOWS" /D"_DEBUG" /D"_CONSOLE" /D "_MBCS" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\disktest.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 
-LINK=link.exe
-LINK_FLAGS=bufferoverflow.lib /nologo /subsystem:console /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe" 
+LINK=link.exe bufferoverflow.lib Winmm.lib Ws2_32.lib
+LINK_FLAGS=/nologo /subsystem:console /pdb:"$(OUTDIR)\disktest.pdb" /out:"$(OUTDIR)\disktest.exe" 
 LINK_OBJS= \
 	"$(INTDIR)\childmain.obj" \
 	"$(INTDIR)\Getopt.obj" \
@@ -152,7 +157,8 @@ LINK_OBJS= \
 	"$(INTDIR)\usage.obj" \
 	"$(INTDIR)\dump.obj" \
 	"$(INTDIR)\timer.obj" \
-	"$(INTDIR)\stats.obj"
+	"$(INTDIR)\stats.obj" \
+	"$(INTDIR)\signals.obj"
 
 "$(OUTDIR)\disktest.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK_OBJS)
     $(LINK) @<<
@@ -220,6 +226,10 @@ SOURCE=.\threading.c
 SOURCE=.\usage.c
 
 "$(INTDIR)\usage.obj"	"$(INTDIR)\usage.sbr" : $(SOURCE) "$(INTDIR)"
+
+SOURCE=.\signals.c
+
+"$(INTDIR)\signals.obj"	"$(INTDIR)\signals.sbr" : $(SOURCE) "$(INTDIR)"
 
 !ENDIF 
 

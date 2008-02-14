@@ -1,4 +1,4 @@
-Disktest Version v1.2.x README
+Disktest Version v1.4.x README
 
 WHAT IS DISKTEST?
 
@@ -11,103 +11,17 @@ WHAT IS DISKTEST?
   It is distributed under the GNU General Public License - See the LICENSE
   file that accompanies this distribution for more details.
 
-CHANGES SINCE v1.1.x
+CHANGES
 
-  Major Changes:
-
-    A new option -F has been added.  This allows the use of a file to discribe
-    the targets that disktest will run against.  This should work as if an
-    individual command line was started for each of the targets specified in the
-    file.
-
-    Add an option, C, to the performance option -P.  This allows the user to
-    specify at the end of each cycle or test, to display the performance
-    information for the cycle.  In the case were there is only one cycle, then
-    the total and cycle performance data will be identical.
-
-  Minor Changes:
-
-    Added day calculation to runtime statistics.
-
-    When setting a finite pass count, the passes would continue one more cycle
-    then specified.
-
-    Added fsync on close for unix systems when doing file IO.  The fsync will
-    occur in between cycles and at the conclusion of a test.  Also added a
-    modification to -If, -Ifs, this will force an fsync on every write.  The
-    default is to only fsync at the end of a cycle or test.
-
-    When using the the mark option, -m, disktest would some times report a
-    false data miss compare.  Also the only -m available no is -ma.  There
-    are cases that could cause false miss-compares when using variable block
-    transfer size and the -mf or -ml options.  For now these modifiers have
-    been disabled.
-
-    Disktest now detects the size of a file when doing filesystem IO tests. It
-    previously defaulted to the internal default of 2000 LBAs.
-
-    Updated the man page and usage text to describe option -z and option -Q.
-    They have always been there, but never in the documentation.
-
-    I had made use of lots of globals to share data between threads. Most of
-    these have now been cleaned up.
-
-    when using the -PPA option, the values were being rounded and not showing
-    the calculated tenths.
-
-    When running -C0, dsktest was showing 'Starting pass x of 0', removed the
-    'of 0' part.
-
-    Statistics ere never being shown when using -C0 option.  Now, statics will
-    be show for each cycle and the total for all cycles.
-
-    The process ID that is shown as part of the running test is unique to the
-    test running, not to each thread.  This change was made to make it easier
-    to track a single test out of a log file by searching for the id.  It is
-    also that same id used for the random seed and the dump file identifier.
-
-    The -f option did not take into consideration the endian-ness of the arch.
-    this would cause issues in the line value of the data pattern when using
-    the option.  This has been fixed.
-
-    Added IFDEF for Power when using ioctl BLKGETSIZE where the size must be a
-    unsigned long for the value to return correctly
-
-CHANGES SINCE v1.0.x
-
-  Major Changes:
-
-    Updated performance output based on command line.  Gave one decimal in
-    MB/s output.
-
-    Rewrote -pL IO routine to show correct stats.  Now shows pass count when
-    using -C.
-
-    Added dump function from command line.  Created formatted dump output for
-    Data miscomare and command line.
-
-    Modified performance statistic printing to be more accurate with respect
-    to throughput and IO/s.  Added one decimal place of precision in MB/s
-    calculation.
-
-  Minor Changes:
-
-    Code cleanup to remove the plethora if #ifdef for windows/unix functional
-    differences.
-
-    Updates to parsing routines for user input.  Added multipliers for -S and
-    -s command line arguments. Forced default seeks to default if performing
-    a diskcache test.
-
-    Can now leave off filespec the full path header as it will be added based
-    on -I.
+    Please read the CHANGELOG for details on the changes to disktest from
+    previous releases.
 
 WHAT Operating Systems/Architectures DOES IT RUN ON?
 
   This code has been written to compile on Linux, AIX, and Windows.  Both
   on a 32bit and 64bit environments on Intel and Power.  There should be no
   compatibility issues at the time of compilation or execution.  If you have
-  the time and can expand that list of OS/Arch types please fell free.
+  the time and can expand that list of OS/Arch types please feel free.
 
 DOCUMENTATION:
 
@@ -138,7 +52,8 @@ INSTALLING THE SOURCE:
           sfunc.c       sfunc.h         threading.c  threading.h
           usage.c       usage.h         timer.c      timer.h
           stats.c       stats.h         io.c         io.h
-          dump.c        dump.h
+          dump.c        dump.h			signals.c    signals.h
+          CHANGELOG
 
           man1/
           disktest.1.gz
@@ -156,7 +71,6 @@ BUILDING THE SOURCE
           Windows:       -D"WINDOWS"
           AIX:           -D"AIX"
           Linux:         -D"LINUX"
-          Power:         -D"PPC"
 
   This will set up the includes and typedefs correctly to support the
   different system types.
@@ -197,10 +111,10 @@ EXECUTING
 SO WHAT ABOUT BUGS, FEATURES, ENHANCEMENTS?
 
   It is possible that there will be issues, whether they are bugs or features
-  that would like to be added.  You can do a couple of things, one,  fix/add the
+  that would like to be added.  You can do a couple of things, one, fix/add the
   code yourself and send it to me.  This is the fastest way to get improvements
   into the code.  Two, You can send me a note that has a description of the
-  problem and if possible the recreate setup.  I will see what I can do about
+  problem and if possible the recreate setup. I will see what I can do about
   getting these things added to the code.
 
   Comments are always welcome, even if it is just a note to let me know how
@@ -208,6 +122,21 @@ SO WHAT ABOUT BUGS, FEATURES, ENHANCEMENTS?
   tool to others people have used.  I would be interested in any feedback
   about the usability, data output, functionality, etc. as compared to other
   tools or testing needs.
+
+ON THE TODO LIST
+
+  - if filesystem IO testing is requested, pre-init the file if not created
+  - non-destructive read/write IO function
+  - allow user to specify complete LBA/block data
+  - RPC functionality to support client server type testing
+  - Butterfly seek option: test will seek block
+    start/end/start+1/end-1/.../end-1/start+1/end/start
+  - Ping-Pong seek option: test will seek block start/end/start/end/etc...
+  - min seek: force a minimum seek disktance during any IO access
+  - max seek: force a maximum seek distance during any IO access
+  - add metric for the average response time for all IOs
+  - implement flock for filesystem testing on clusters
+  - OCFSv2 Oracle Cluster File System, compets with gpfs, gfs
 
 CONTACT
 

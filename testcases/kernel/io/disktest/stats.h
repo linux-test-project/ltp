@@ -21,6 +21,9 @@
 *  questions or comments.
 *
 *  Project Website:  TBD
+*
+* $Id: stats.h,v 1.2 2008/02/14 08:22:24 subrata_modak Exp $
+*
 */
 
 #ifndef _STATS_H
@@ -51,8 +54,10 @@
 #define CTWSTR "%I64d;Wbytes;%I64d;Wxfers;"
 #define TCTRSTR "%I64d;TRbytes;%I64d;TRxfers;"
 #define TCTWSTR "%I64d;TWbytes;%I64d;TWxfers;"
-#define RTSTR "%I64d bytes read in %I64d transfers.\n"
-#define WTSTR "%I64d bytes written in %I64d transfers.\n"
+#define HRTSTR "%I64d bytes read in %I64d transfers during heartbeat.\n"
+#define HWTSTR "%I64d bytes written in %I64d transfers during heartbeat.\n"
+#define CRTSTR "%I64d bytes read in %I64d transfers during cycle.\n"
+#define CWTSTR "%I64d bytes written in %I64d transfers during cycle.\n"
 #define TRTSTR "Total bytes read in %I64d transfers: %I64d\n"
 #define TWTSTR "Total bytes written in %I64d transfers: %I64d\n"
 #else
@@ -60,13 +65,17 @@
 #define CTWSTR "%lld;Wbytes;%lld;Wxfers;"
 #define TCTRSTR "%lld;TRbytes;%lld;TRxfers;"
 #define TCTWSTR "%lld;TWbytes;%lld;TWxfers;"
-#define RTSTR "%lld bytes read in %lld transfers.\n"
-#define WTSTR "%lld bytes written in %lld transfers.\n"
+#define HRTSTR "%lld bytes read in %lld transfers during heartbeat.\n"
+#define HWTSTR "%lld bytes written in %lld transfers during heartbeat.\n"
+#define CRTSTR "%lld bytes read in %lld transfers during cycle.\n"
+#define CWTSTR "%lld bytes written in %lld transfers during cycle.\n"
 #define TRTSTR "Total bytes read in %lld transfers: %lld\n"
 #define TWTSTR "Total bytes written in %lld transfers: %lld\n"
 #endif
-#define RTHSTR "Read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
-#define WTHSTR "Write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define HRTHSTR "Heartbeat read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define HWTHSTR "Heartbeat write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define CRTHSTR "Cycle read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
+#define CWTHSTR "Cycle write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
 #define TRTHSTR "Total read throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
 #define TWTHSTR "Total write throughput: %.1fB/s (%.2fMB/s), IOPS %.1f/s.\n"
 #define CTRRSTR "%.1f;RB/s;%.1f;RIOPS;"
@@ -75,10 +84,12 @@
 #define TCTRWSTR "%.1f;TWB/s;%.1f;TWIOPS;"
 
 typedef enum statop {
-	CYCLE,TOTAL
+	HBEAT,CYCLE,TOTAL
 } statop_t;
 
 
 void print_stats(child_args_t *, test_env_t *, statop_t);
+void update_gbl_stats(test_env_t *);
+void update_cyc_stats(test_env_t *);
 
 #endif /* _STATS_H */

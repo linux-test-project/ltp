@@ -22,117 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.5 2005/05/04 17:54:00 mridge Exp $
-* $Log: childmain.c,v $
-* Revision 1.5  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.16  2005/05/03 16:24:38  yardleyb
-* Added needed code changes to support windows
-*
-* Revision 1.15  2005/04/28 21:25:17  yardleyb
-* Fixed up some issues with AIX compilation due to the change made
-* in endian support in Linux.
-*
-* Revision 1.14  2004/12/18 06:13:03  yardleyb
-* Updated timer schema to more accurately use the time options.  Added
-* fsync on write option to -If.
-*
-* Revision 1.13  2004/12/17 06:34:56  yardleyb
-* removed -mf -ml.  These mark options cause to may issues when using
-* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
-* false data misscompare during multiple cycles.
-*
-* Revision 1.12  2004/11/02 20:47:13  yardleyb
-* Added -F functions.
-* lots of minor fixes. see README
-*
-* Revision 1.11  2003/09/12 21:23:01  yardleyb
-* The following isses have been fixed:
-* - Updated to Version 1.12
-* - Disktest will falsely detect a data miscompare
-* when using random block sizes and random data
-* - If the linear option is used while doing random
-* block sizes and read/write/error checks, disktest
-* will hang
-* - Disktest will use the wrong transfer size on
-* the last IO when using random block transfer size
-* and the number of seeks are specified.
-* - Total Reads and Writes not reported correctly
-* - While running linear write/read tests while
-* doing the heartbeat performance and you get an
-* error on the 'write' side of the test, disktest
-* does not exit
-*
-* Revision 1.10  2003/01/13 21:33:31  yardleyb
-* Added code to detect AIX volume size.
-* Updated mask for random LBA to use start_lba offset
-* Updated version to 1.1.10
-*
-* Revision 1.9  2002/05/31 18:47:59  yardleyb
-* Updates to -pl -pL options.
-* Fixed test status to fail on
-* failure to open filespec.
-* Version set to 1.1.9
-*
-* Revision 1.8  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.7  2002/03/07 03:38:52  yardleyb
-* Added dump function from command
-* line.  Created formatted dump output
-* for Data miscomare and command line.
-* Can now leave off filespec the full
-* path header as it will be added based
-* on -I.
-*
-* Revision 1.6  2002/02/28 04:25:45  yardleyb
-* reworked threading code
-* made locking code a macro.
-*
-* Revision 1.4  2002/02/19 02:46:37  yardleyb
-* Added changes to compile for AIX.
-* Update getvsiz so it returns a -1
-* if the ioctl fails and we handle
-* that fact correctly.  Added check
-* to force vsiz to always be greater
-* then stop_lba.
-*
-* Revision 1.3  2002/02/04 20:35:38  yardleyb
-* Changed max. number of threads to 64k.
-* Check for max threads in parsing.
-* Fixed windows getopt to return correctly
-* when a bad option is given.
-* Update time output to be in the format:
-*   YEAR/MONTH/DAY-HOUR:MIN:SEC
-* instead of epoch time.
-*
-* Revision 1.2  2001/12/07 23:33:29  yardleyb
-* Fixed bug where a false positive data
-* miscompare could occur when running
-* multi cycle testing with mark block
-* enabled.
-*
-* Revision 1.1  2001/12/04 18:52:33  yardleyb
-* Checkin of new source files and removal
-* of outdated source
+* $Id: childmain.c,v 1.6 2008/02/14 08:22:22 subrata_modak Exp $
 *
 */
 
@@ -163,75 +53,228 @@
 #include "main.h"
 #include "sfunc.h"
 #include "threading.h"
-#include "childmain.h"
 #include "io.h"
 #include "dump.h"
+#include "timer.h"
+#include "signals.h"
+#include "childmain.h"
+
+/*
+ * The following three functions are used to mutex LBAs that are in use by another
+ * thread from any other thread performing an action on that lba.
+ */
+unsigned short action_in_use(const test_env_t *env, const action_t target)
+{
+	int i = 0;
+
+	for(i = 0; i < env->action_list_entry; i++) {
+		if((target.lba == env->action_list[i].lba) /* attempting same transfer start lba */
+		|| ((target.lba < env->action_list[i].lba) && (target.lba+target.trsiz-1) >= env->action_list[i].lba) /* attempting transfer over an lba in use */
+		) {
+			/*
+			 * The lba(s) we want to do IO to are in use by another thread,
+			 * but since POSIX allows for multiple readers, we need to compare
+			 * our action with the action being executed by the other thread
+			 */
+			switch(target.oper) {
+				case WRITER : /* if we want to write, we can't */
+					return TRUE;
+				case READER : /* if we want to read, and a write is in progress, we can't */ 
+					if(env->action_list[i].oper == WRITER) { return TRUE; }
+					/* otherwise allow multiple readers */
+					return FALSE;
+				default:
+					/* for all other operations, always assume inuse */
+					return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+void add_action(test_env_t *env, const child_args_t *args, const action_t target)
+{
+
+	if(env->action_list_entry == args->t_kids) { /* we should never get here */
+		printf("ATTEMPT TO ADD MORE ENTRIES TO LBA WRITE LIST THEN ALLOWED, CODE BUG!!!\n");
+		abort();
+	}
+
+	env->action_list[env->action_list_entry++] = target;
+}
+
+void remove_action(test_env_t *env, const action_t target)
+{
+	int i = 0;
+
+	if(env->action_list_entry == 0) {
+		/* we should never get here */
+		printf("ATTEMPT TO REMOVE ENTRIES FROM LBA WRITE LIST WHERE NONE EXIST, CODE BUG!!!\n");
+		abort();
+	}
+
+	/* look for the removing target */
+	while(target.lba != env->action_list[i].lba) {
+		if(env->action_list_entry == i++) {
+			printf("INDEX AND CURRENT LIST ENTRY, CODE BUG!!!!!!\n");
+			abort();
+		}
+	}
+
+	/* move eny other entries down */
+	for(;i < env->action_list_entry-1; i++) {
+		env->action_list[i] = env->action_list[i+1];
+	}
+
+	/* reduce the slot */
+	env->action_list_entry--;
+}
+
+void decrement_io_count(const child_args_t *args, test_env_t *env, const action_t target)
+{
+	if(args->flags & CLD_FLG_LBA_SYNC) { 
+		remove_action(env, target);
+	}
+	if(target.oper == WRITER) {
+		(env->wcount)--;
+	} else {
+		(env->rcount)--;
+	}
+}
+
+/*
+ * This function will write a special mark to LBA 0 of
+ * a target, if an error occured on the target.  This
+ * is so a trigger can be set, i.e. on an analyser.
+ */
+void write_error_mark(fd_t fd, unsigned char *data) {
+	OFF_T ActualBytePos=0;
+	long tcnt=0;
+
+	ActualBytePos = Seek(fd, 0);
+	if(ActualBytePos != 0) {
+		/* could not seek to LBA 0 */
+		return;
+	}
+
+	memcpy(data, "DISKTEST ERROR OCCURRED", strlen("DISKTEST ERROR OCCURRED"));
+	tcnt = Write(fd, data, BLK_SIZE);
+}
+
+/*
+ * Sets the test state correctly, and updates test flags
+ * based on user parsed options
+ */
+void update_test_state(child_args_t *args, test_env_t *env, const int this_thread_id, fd_t fd, unsigned char *data)
+{
+	extern unsigned short glb_run;
+	extern unsigned long  glb_flags;
+
+	if(args->flags & CLD_FLG_ALLDIE) {
+#ifdef _DEBUG
+		PDBG4(DBUG, args, "Thread %d: Setting bContinue to FALSE, io error, all die\n", this_thread_id);
+#endif
+		args->test_state = SET_STS_FAIL(args->test_state);
+		env->bContinue = FALSE;
+	}
+	if(glb_flags & GLB_FLG_KILL) {
+#ifdef _DEBUG
+		PDBG4(DBUG, args, "Thread %d: Setting bContinue to FALSE, io error, global die\n", this_thread_id);
+#endif
+		args->test_state = SET_STS_FAIL(args->test_state);
+		env->bContinue = FALSE;
+		glb_run = 0;
+	}
+	if((args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_ERR_MARK)) {
+		write_error_mark(fd, data);
+	}
+}
+
+#ifdef _DEBUG
+#ifdef _DEBUG_PRINTMAP
+void print_lba_bitmap(const test_env_t *env)
+{
+	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
+	int i;
+
+	for(i=0;i<(env->bmp_siz-1);i++) {
+		printf("%02x",*(wbitmap+i));
+	}
+	printf("\n");
+}
+#endif
+#endif
 
 action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 {
-/*	extern time_t global_end_time; */			/* overall end time of test */
 	
 	OFF_T *pVal1 = (OFF_T *)env->shared_mem;
 	OFF_T *tmpLBA;
+	OFF_T guessLBA;
 	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
 
-	short blk_written = 1;
+	short blk_written = 0;
 	unsigned long i;
-	action_t target;
+	action_t target = { NONE, 0, 0 };
 	short direct = 0;
-	BOOL bChangeState = FALSE;
-	static unsigned long last_trsiz = 0;
 
 	/* pick an operation */
-	if(args->flags & CLD_FLG_RANDOM) {
-		if((((env->cycle_stats.wcount)*100)/(((env->cycle_stats.rcount)+1)+(env->cycle_stats.wcount))) >= (args->wperc)) {
-			args->test_state = SET_OPER_R(args->test_state);
+	target.oper = env->lastAction.oper;
+	if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+		target.oper = TST_OPER(args->test_state);
+	} else if((args->flags & CLD_FLG_RANDOM) && !(args->flags & CLD_FLG_NTRLVD)) {
+		if((((env->wcount)*100)/(((env->rcount)+1)+(env->wcount))) >= (args->wperc)) {
+			target.oper = READER;
 		} else {
-			args->test_state = SET_OPER_W(args->test_state);
+			target.oper = WRITER;
 		}
-		PDBG5(DEBUG, args, "W:%.2f%% R:%.2f%%\n",  100*((double)(env->cycle_stats.wcount)/((double)env->cycle_stats.rcount+(double)env->cycle_stats.wcount)), 100*((double)(env->cycle_stats.rcount)/((double)env->cycle_stats.wcount+(double)env->cycle_stats.rcount)));
+#ifdef _DEBUG
+		PDBG4(DBUG, args, "W:%.2f%% R:%.2f%%\n",  100*((double)(env->wcount)/((double)env->rcount+(double)env->wcount)), 100*((double)(env->rcount)/((double)env->wcount+(double)env->rcount)));
+#endif
 	} else if((args->flags & CLD_FLG_NTRLVD) && !TST_wFST_TIME(args->test_state)) {
-		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W))
-			args->test_state = CNG_OPER(args->test_state);
+		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
+			target.oper = (env->lastAction.oper == WRITER) ? READER : WRITER;
+		}
+	} else if (target.oper == NONE) {
+		/* if still no decision for an operation, do the basics */
+		target.oper = (args->flags & CLD_FLG_W) ? WRITER : READER;
 	}
-	target.oper = TST_OPER(args->test_state);
 
 	/* pick a transfer length */
 	if(!(args->flags & CLD_FLG_RTRSIZ)) {
 		target.trsiz = args->ltrsiz;
 	} else {
-		if((last_trsiz != 0) && (args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_LINEAR) && (target.oper == READER)) {
-			target.trsiz = last_trsiz;
+		if((args->flags & CLD_FLG_NTRLVD) &&
+				(args->flags & CLD_FLG_W) &&
+				(args->flags & CLD_FLG_R) &&
+				(env->lastAction.trsiz != 0) &&
+				(target.oper == READER)) {
+			target.trsiz = env->lastAction.trsiz;
 		} else {
 			do {
-				target.trsiz = (rand()&0xFF) + args->ltrsiz;
-				if((args->flags & CLD_FLG_SKS) && (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks))
+				target.trsiz = (rand()&0xFFF) + args->ltrsiz;
+				if((args->flags & CLD_FLG_SKS) && (((env->wcount)+(env->rcount)) >= args->seeks))
 					break;
-/*				if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time)) */
-/*					break; */
 			} while(target.trsiz > args->htrsiz);
-			last_trsiz = target.trsiz;
 		}
 	}
 
 	/* pick an lba */
-	if(args->vsiz == args->htrsiz) { /* diskcache test */
-		target.lba = args->start_lba;
+	if(args->start_blk == args->stop_blk) { /* diskcache test */
+		target.lba = args->start_lba + args->offset;
 	} else if (args->flags & CLD_FLG_LINEAR) {
 		tmpLBA = (target.oper == WRITER) ? pVal1+OFF_WLBA : pVal1+OFF_RLBA;
 		direct = (TST_DIRCTN(args->test_state)) ? 1 : -1;
 		if((target.oper == WRITER) && TST_wFST_TIME(args->test_state)) {
-			*(tmpLBA) = args->start_lba;
+			*(tmpLBA) = args->start_lba + args->offset;
 		} else if((target.oper == READER) && TST_rFST_TIME(args->test_state)) {
-			*(tmpLBA) = args->start_lba;
+			*(tmpLBA) = args->start_lba + args->offset;
 		} else if((TST_DIRCTN(args->test_state)) && ((*(tmpLBA)+(target.trsiz-1)) <= args->stop_lba)) {
-		} else if(!(TST_DIRCTN(args->test_state)) && (*(tmpLBA) >= args->start_lba)) {
+		} else if(!(TST_DIRCTN(args->test_state)) && (*(tmpLBA) >= (args->start_lba+args->offset))) {
 		} else {
-			bChangeState = TRUE;
-		}
-		if(bChangeState) {			
 			if (args->flags & CLD_FLG_LUNU) {
-				*(tmpLBA) = args->start_lba;
+				*(tmpLBA) = args->start_lba+args->offset;
 				if((args->flags & CLD_FLG_CYC) && (target.oper == WRITER)) {
 					target.oper = NONE;
 				}
@@ -246,94 +289,144 @@ action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 		}
 		target.lba = *(tmpLBA);
 	} else if (args->flags & CLD_FLG_RANDOM) {
-		do {
-			if((args->flags & CLD_FLG_SKS) && (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks))
-				break;
-/*			if((args->flags & CLD_FLG_TMD) && (time(NULL) >= global_end_time)) */
-/*				break; */
-			target.lba = (Rand64()&mask) + args->start_lba;
-			target.lba = ALIGN(target.lba, target.trsiz);
-		} while((target.lba+target.trsiz) > args->stop_lba);
-		/*
-		 * check to see if we should start a new cycle. We use
-		 * rcount as the measure.  That is if rcount is at least
-		 * 80% of the total seeks, then we will say that
-		 * a cycle has been completed.
-		 */
-		if(!(args->flags & (CLD_FLG_TMD|CLD_FLG_SKS)) && (args->flags & CLD_FLG_W) && (args->flags & CLD_FLG_R) &&
-			(((env->cycle_stats.rcount*100)/(args->seeks+1)) >= 80)) {
-				target.oper = NONE;
+		if((args->flags & CLD_FLG_NTRLVD)
+		  && (args->flags & CLD_FLG_W)
+		  && (args->flags & CLD_FLG_R)
+		  && (target.oper == READER)) {
+			target.lba = env->lastAction.lba;
+		} else {
+			do {
+				target.lba = (Rand64()&mask) + args->start_lba;
+			} while(target.lba > args->stop_lba);
+
+			guessLBA = ALIGN(target.lba, target.trsiz)+args->offset;
+			if(guessLBA > args->stop_lba) { target.lba = guessLBA = args->stop_lba; }
+			if(target.lba != guessLBA) {
+				if((target.lba - guessLBA) <= ((guessLBA + target.trsiz) - target.lba)) {
+					target.lba = guessLBA;
+				} else if ((guessLBA + target.trsiz) > args->stop_lba) {
+					target.lba = guessLBA;
+				} else {
+					target.lba = guessLBA + target.trsiz;
+				}
+			}
+			if((target.lba+(target.trsiz-1)) > args->stop_lba) { target.lba -= target.trsiz; }
 		}
+	}
+	if((args->flags & CLD_FLG_LBA_SYNC) && (action_in_use(env, target))) {
+		target.oper = RETRY;
 	}
 
 	if(!(args->flags & CLD_FLG_NTRLVD)
 		&& !(args->flags & CLD_FLG_RANDOM)
 		&& (args->flags & CLD_FLG_W)
 		&& (args->flags & CLD_FLG_R)) {
-			if(((target.oper == WRITER) ? env->cycle_stats.wcount : env->cycle_stats.rcount) >= (args->seeks/2)) {
+			if(((target.oper == WRITER) ? env->wcount : env->rcount) >= (args->seeks/2)) {
 				target.oper = NONE;
 			}
 	}
 
 	/* get out if exceeded one of the following */
 	if((args->flags & CLD_FLG_SKS)
-		&& (((env->cycle_stats.wcount)+(env->cycle_stats.rcount)) >= args->seeks)) {
+		&& (((env->wcount)+(env->rcount)) >= args->seeks)) {
 			target.oper = NONE;
 	}
 
-/*	if((args->flags & CLD_FLG_TMD) */
-/*		&& (time(NULL) >= global_end_time)) { */
-/*			target.oper = NONE; */
-/*	} */
-
-	if((target.oper == READER) && (args->flags & CLD_FLG_CMPR) && (args->flags & CLD_FLG_W)) {
+	/*
+	 * check the bitmask to see if we can read,
+	 * if the bitmask is set for the block of LBAs,
+	 * then we are OK to read
+	 *
+	 * only matters of error checking or write once
+	 */
+	blk_written = 1;
+	if(args->flags & (CLD_FLG_CMPR|CLD_FLG_WRITE_ONCE)) {
 		for(i=0;i<target.trsiz;i++) {
-			if((*(wbitmap+(((target.lba-args->start_lba)+i)/8))&(0x80>>(((target.lba-args->start_lba)+i)%8))) == 0) {
+			if((*(wbitmap+(((target.lba-args->offset-args->start_lba)+i)/8))&(0x80>>(((target.lba-args->offset-args->start_lba)+i)%8))) == 0) {
 				blk_written = 0;
 				break;
 			}
 		}
 	}
 
-	if((target.oper == NONE) || (target.oper == WRITER)); /* get out now */
-	else if(!(args->flags & CLD_FLG_W) || !(args->flags & CLD_FLG_CMPR)); /* read only */
-	else if((args->flags & CLD_FLG_W) && blk_written);	/* read lba that has been written */
-	else if((args->flags & CLD_FLG_LINEAR))
-		/*
-		 * sit and spin, as with linear, reads must come after writes
-		 * since this is a read, we will wait here till the write finishes
-		 */
-		for(i=0;i<target.trsiz;i++)
-			while((*(wbitmap+(((target.lba-args->start_lba)+i)/8))&(0x80>>(((target.lba-args->start_lba)+i)%8))) == 0)
-				Sleep(1);
-	else {
-		/* should have been a random reader, but blk not written, so make me a writer */
+	/* get out, nothing to do */
+	if((target.oper == NONE) || (target.oper == RETRY));
+	/* get out, read only, or not comparing */
+	else if(!(args->flags & CLD_FLG_W));
+	/* get out, we are a writer, write once enabled, and block not written */
+	else if((target.oper == WRITER) && (args->flags & CLD_FLG_WRITE_ONCE) && !blk_written);
+	/* get out, we are a writer and not write once */
+	else if((target.oper == WRITER) && !(args->flags & CLD_FLG_WRITE_ONCE));
+	/* get out, we are a reader, and blocks written */
+	else if((target.oper == READER) && blk_written);
+	else if((args->flags & CLD_FLG_LINEAR) || ((args->flags & CLD_FLG_NTRLVD) && (args->flags & CLD_FLG_RANDOM))) {
+		if(!blk_written) {
+			/*
+			 * if we are linear and not interleaved and on the read pass
+			 * with random transfer sizes, and we hit the limit of the
+			 * random write transfer lengths, because blk_written was
+			 * false, then we cannot do any more reads unless we start
+			 * over at start_lba+offset.
+			 */
+			if((args->flags & CLD_FLG_LINEAR) &&
+					!(args->flags & CLD_FLG_NTRLVD) &&
+					(args->flags & CLD_FLG_RTRSIZ) &&
+					(target.oper == READER)) {
+				tmpLBA = pVal1+OFF_RLBA;
+				*(tmpLBA) = args->start_lba+args->offset;
+				target.lba = *(tmpLBA);
+			} else {
+				/*
+				 * we must retry, as we can't start the read, since the write
+				 * has not happened yet.
+				 */
+				target.oper = RETRY;
+			}
+		}
+	} else if((target.oper == READER) && (args->flags & CLD_FLG_CMPR) && !blk_written) {
+		/* should have been a random reader, but blk not written, and running with compare, so make me a writer */
 		target.oper = WRITER;
 		args->test_state = SET_OPER_W(args->test_state);
+		/* if we switched to a writer, then we have to check action_in_use again */
+		if((args->flags & CLD_FLG_LBA_SYNC) && (action_in_use(env, target))) {
+			target.oper = RETRY;
+		}
+	} else {
+		/* should have been a random writer, but blk already written, so make me a reader */
+		target.oper = READER;
+		args->test_state = SET_OPER_R(args->test_state);
+		/* if we switched to a reader, then no need to check action_in_use again */
 	}
 
+#ifdef _DEBUG
 #ifdef WINDOWS
-	PDBG5(DEBUG, args, "%I64d, %I64d, %I64d, %I64d\n", env->cycle_stats.wcount, env->cycle_stats.rcount, args->seeks, args->stop_lba);
+	PDBG5(DBUG, args, "%I64d, %I64d, %I64d, %I64d\n", env->wcount, env->rcount, args->seeks, args->stop_lba);
 #else
-	PDBG5(DEBUG, args, "%lld, %lld, %lld, %lld\n", env->cycle_stats.wcount, env->cycle_stats.rcount, args->seeks, args->stop_lba);
+	PDBG5(DBUG, args, "%lld, %lld, %lld, %lld\n", env->wcount, env->rcount, args->seeks, args->stop_lba);
+#endif
 #endif
 
 	if(target.oper == WRITER) {
-		(env->cycle_stats.wcount)++;
+		(env->wcount)++;
 		if((args->flags & CLD_FLG_LUND))
 			*(pVal1+OFF_RLBA) = *(pVal1+OFF_WLBA);
 		*(pVal1+OFF_WLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
 		if(TST_wFST_TIME(args->test_state)) args->test_state = CLR_wFST_TIME(args->test_state);
+		env->lastAction = target;
+		if(args->flags & CLD_FLG_LBA_SYNC) { add_action(env, args, target); }
 	}
 	if(target.oper == READER) {
-		(env->cycle_stats.rcount)++;
+		(env->rcount)++;
 		*(pVal1+OFF_RLBA) += (OFF_T) direct * (OFF_T) target.trsiz;
 		if(TST_rFST_TIME(args->test_state)) args->test_state = CLR_rFST_TIME(args->test_state);
+		env->lastAction = target;
+		if(args->flags & CLD_FLG_LBA_SYNC) { add_action(env, args, target); }
 	}
+	
 	return target;
 }
 
-void miscompare_dump(child_args_t *args, const unsigned char *expected, const unsigned char *actual, const size_t buf_len, OFF_T tPosition)
+void miscompare_dump(const child_args_t *args, const unsigned char *data, const size_t buf_len, OFF_T tPosition, const size_t offset, mc_func_t oper, const int this_thread_id)
 {
 	FILE *fpDumpFile;
 	char obuff[80];
@@ -342,18 +435,47 @@ void miscompare_dump(child_args_t *args, const unsigned char *expected, const un
 	sprintf(obuff, "dump_%d.dat", args->pid);
 	fpDumpFile = fopen(obuff, "a");
 
-	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n");
-    pMsg(ERR, args, DMSTR, tPosition, tPosition);
-	if(fpDumpFile) fprintf(fpDumpFile, DMSTR, tPosition, tPosition);
-	pMsg(ERR, args, "EXPECTED:\n");
-	if(fpDumpFile) fprintf(fpDumpFile, "********** EXPECTED: **********\n\n\n");
-	dump_data(stdout, expected, 16, 16, FMT_STR);
-	if(fpDumpFile) dump_data(fpDumpFile, expected, buf_len, 16, FMT_STR);
-	pMsg(ERR, args, "ACTUAL:\n");
-	if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n********** ACTUAL: **********\n\n\n\n");
-	dump_data(stdout, actual, 16, 16, FMT_STR);
-	if(fpDumpFile) dump_data(fpDumpFile, actual, buf_len, 16, FMT_STR);
+	if(oper == EXP) {
+		if(fpDumpFile) fprintf(fpDumpFile, "\n\n\n");
+		if(fpDumpFile) fprintf(fpDumpFile, "Execution string: %s\n", args->argstr);
+		if(fpDumpFile) fprintf(fpDumpFile, "Target: %s\n", args->device);
+		if(fpDumpFile) fprintf(fpDumpFile, DMSTR, this_thread_id, tPosition, tPosition);
+		if(fpDumpFile) fprintf(fpDumpFile, DMOFFSTR, this_thread_id, offset, offset);
+		pMsg(ERR, args, "EXPECTED:\n");
+		if(fpDumpFile) fprintf(fpDumpFile, DMFILESTR, "EXPECTED", args->device, tPosition, offset);
+	} else if(oper == ACT) {
+		pMsg(ERR, args, "ACTUAL:\n");
+		if(fpDumpFile) fprintf(fpDumpFile, DMFILESTR, "ACTUAL", args->device, tPosition, offset);
+	} else if(oper == REREAD) {
+		pMsg(ERR, args, "REREAD ACTUAL:\n");
+		if(fpDumpFile) fprintf(fpDumpFile, DMFILESTR, "REREAD ACTUAL", args->device, tPosition, offset);
+	}
+
+	dump_data(stdout, data, 16, 16, offset, FMT_STR);
+	if(fpDumpFile) dump_data(fpDumpFile, data, buf_len, 16, 0, FMT_STR);
 	if(fpDumpFile) fclose(fpDumpFile);
+}
+
+/*
+ * called after all the checks have been made to verify
+ * that the io completed successfully.
+ */
+void complete_io(test_env_t *env, const child_args_t *args, const action_t target)
+{
+	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
+	int i = 0;
+
+	if(target.oper == WRITER) {
+		(env->hbeat_stats.wbytes) += target.trsiz*BLK_SIZE;
+		env->hbeat_stats.wcount++;
+		for(i=0;i<target.trsiz;i++) {
+			*(wbitmap+(((target.lba-args->offset-args->start_lba)+i)/8)) |= 0x80>>(((target.lba-args->offset-args->start_lba)+i)%8);
+		}
+	} else {
+		(env->hbeat_stats.rbytes) += target.trsiz*BLK_SIZE;
+		env->hbeat_stats.rcount++;
+	}
+	if(args->flags & CLD_FLG_LBA_SYNC) { remove_action(env, target); }
 }
 
 /*
@@ -374,93 +496,156 @@ void *ChildMain(void *vtest)
 	child_args_t *args = test->args;
 	test_env_t *env = test->env;
 
+	static int thread_id = 0;
+	int this_thread_id = thread_id++;
 	unsigned char *buf1 = NULL, *buffer1 = NULL; /* 'buf' is the aligned 'buffer' */
 	unsigned char *buf2 = NULL, *buffer2 = NULL; /* 'buf' is the aligned 'buffer' */
-	unsigned char *wbitmap = (unsigned char *)env->shared_mem + BMP_OFFSET;
 	unsigned long ulLastError;
+	unsigned long delayTime;
 
-	action_t target = { NONE, -1, 0};
+	action_t target = { NONE, 0, 0 };
 	unsigned int i;
-	OFF_T ActualBytePos=0, TargetBytePos=0, mask=1;
+	OFF_T ActualBytePos=0, TargetBytePos=0, mask=1, delayMask=1;
 	long tcnt=0;
-	int exit_code=0;
+	int exit_code=0, rv=0;
 	char filespec[DEV_NAME_LEN];
 	fd_t fd;
 
-#ifdef WINDOWS
-	HANDLE MutexGBL, MutexDATA;
+	unsigned int retries = 0;
+	BOOL is_retry = FALSE;
+	lvl_t msg_level = WARN;
+	int SET_CHAR = 0; /* when data buffers are cleared, using memset, use this */
 
-	if((MutexGBL = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
-		pMsg(ERR, args, "Failed to open semaphore, error = %u\n", GetLastError());
-		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(GETLASTERROR());
-	}
-	if((MutexDATA = OpenMutex(SYNCHRONIZE, TRUE, "data")) == NULL) {
-		pMsg(ERR, args, "Failed to open semaphore, error = %u\n", GetLastError());
+	extern unsigned long  glb_flags;
+	extern unsigned short glb_run;
+	extern int signal_action;
+
+#ifdef WINDOWS
+	HANDLE MutexMISCOMP;
+
+	if((MutexMISCOMP = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
+		pMsg(ERR, args, "Thread %d: Failed to open semaphore, error = %u\n", this_thread_id, GetLastError());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		TEXIT(GETLASTERROR());
 	}
 #else
-	static pthread_mutex_t MutexGBL = PTHREAD_MUTEX_INITIALIZER;
-	static pthread_mutex_t MutexDATA = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t MutexMISCOMP = PTHREAD_MUTEX_INITIALIZER; 
 #endif
+
+	/*
+	 * For some messages, the error level will change, based on if
+	 * the test should continue on error, or stop on error.
+	 */
+	if((args->flags & CLD_FLG_ALLDIE) || (glb_flags & GLB_FLG_KILL)) {
+		msg_level = ERR;
+	}
+
+	target.oper = TST_OPER(args->test_state);
 
 	strncpy(filespec, args->device, DEV_NAME_LEN);
 
 	fd = Open(filespec, args->flags);
 	if(INVALID_FD(fd)) {
-		pMsg(ERR, args, "Error = %u\n",GETLASTERROR());
-		pMsg(ERR, args, "could not open %s.\n",args->device);
+		pMsg(ERR, args, "Thread %d: could not open %s, errno = %u.\n", this_thread_id,args->device, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		TEXIT(GETLASTERROR());
 	}
 
 	/* Create aligned memory buffers for sending IO. */
 	if ((buffer1 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
-		perror("allocation failed, buffer1");
+		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
 		TEXIT(GETLASTERROR());
 	}
+	memset(buffer1, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf1 = (unsigned char *) BUFALIGN(buffer1);
 
 	if ((buffer2 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
-		perror("allocation failed, buffer2");
+		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		FREE(buffer1);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
 		TEXIT(GETLASTERROR());
 	}
+	memset(buffer2, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf2 = (unsigned char *) BUFALIGN(buffer2);
 
 	/*  set up lba mask of all 1's with value between vsiz and 2*vsiz */
 	while(mask <= (args->stop_lba - args->start_lba)) { mask = mask<<1; }
 	mask -= 1;
 
-	while(env->bContinue) {
-		LOCK(MutexGBL);
-		target = get_next_action(args, env, mask);
-#ifdef WINDOWS
-		PDBG5(DEBUG, args, "%s, %I64d, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
-#else
-		PDBG5(DEBUG, args, "%s, %lld, %lu\n", (target.oper) ? "READ" : "WRITE", target.lba, (target.trsiz*BLK_SIZE));
-#endif
-		UNLOCK(MutexGBL);
+	/*  set up delay mask of all 1's with value between delayTimeMin and 2*delayTimeMax */
+	while(delayMask <= (args->delayTimeMax - args->delayTimeMin)) { delayMask = delayMask<<1; }
+	delayMask -= 1;
 
-		if(target.oper == NONE) {
-			PDBG4(DEBUG, args, "Setting bContinue to FALSE, oper is NONE\n");
-			env->bContinue = FALSE;
-            break;
+	while(env->bContinue) {
+		if(!is_retry) {
+			retries = args->retries;
+#ifdef _DEBUG
+			PDBG5(DBUG, args, "Thread %d: lastAction: oper: %d, lba: %lld, trsiz: %ld\n", this_thread_id, target.oper, target.lba, target.trsiz);
+#endif
+			do {
+				if(signal_action & SIGNAL_STOP) { break; }		/* user request to stop */
+				if(glb_run == 0) { break; }						/* global request to stop */
+				LOCK(env->mutexs.MutexACTION);
+				target = get_next_action(args, env, mask);
+				UNLOCK(env->mutexs.MutexACTION);
+				/* this thread has to retry, so give up the reset of my time slice */
+				if(target.oper == RETRY) { Sleep(0); }
+			} while((env->bContinue) && (target.oper == RETRY)); /* we failed to get an action, and were asked to retry */
+
+#ifdef _DEBUG
+			PDBG5(DBUG, args, "Thread %d: nextAction: oper: %d, lba: %lld, trsiz: %ld\n", this_thread_id, target.oper, target.lba, target.trsiz);
+#endif
+
+			/*
+			 * Delay delayTime msecs before continuing, for simulated
+			 * processing time, requested by user
+			 */
+			
+			if(args->delayTimeMin == args->delayTimeMax) { /* static delay time */
+				/* only sleep if delay is greater then zero */
+				if(args->delayTimeMin > 0) { Sleep(args->delayTimeMin); } 
+			} else { /* random delay time between min & max */
+				do {
+					delayTime = (unsigned long)(rand()&delayMask) + args->delayTimeMin;
+				} while(delayTime > args->delayTimeMax);
+#ifdef _DEBUG
+				PDBG3(DBUG, args, "Thread %d: Delay time = %lu\n", this_thread_id, delayTime);
+#endif
+				Sleep(delayTime);
+			}
 		}
+
+#ifdef _DEBUG
+		if(target.oper == NONE) {						/* nothing left to do */
+				PDBG3(DBUG, args, "Thread %d: Setting break, oper is NONE\n", this_thread_id);
+		}
+#endif
+
+		if(target.oper == NONE) { break; }				/* nothing left so stop */
+		if(signal_action & SIGNAL_STOP) { break; }		/* user request to stop */
+		if(env->bContinue == FALSE) { break; }			/* internal request to stop */
+		if(glb_run == 0) { break; }						/* global request to stop */
 
 		TargetBytePos=(OFF_T) (target.lba*BLK_SIZE);
 		ActualBytePos=Seek(fd, TargetBytePos);
 		if(ActualBytePos != TargetBytePos) {
-			pMsg(ERR, args, SFSTR,(target.oper == WRITER) ? (env->cycle_stats.wcount) : (env->cycle_stats.rcount),target.lba,TargetBytePos,ActualBytePos);
-			args->test_state = SET_STS_FAIL(args->test_state);
-			if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
-			PDBG4(DEBUG, args, "Setting bContinue to FALSE, oper is seek failed\n");
-			exit_code = SEEK_FAILURE;
+			ulLastError = GETLASTERROR();
+			pMsg(msg_level, args, SFSTR, this_thread_id, (target.oper == WRITER) ? (env->wcount) : (env->rcount),target.lba,TargetBytePos,ActualBytePos,ulLastError);
+			if(retries-- > 1) { /* request to retry on error, decrement retry */
+				pMsg(INFO, args, "Thread %d: Retry after seek failure, retry count: %u\n", this_thread_id, retries);
+				is_retry = TRUE;
+				Sleep(args->retry_delay);
+			} else {
+				exit_code = SEEK_FAILURE;
+				is_retry = FALSE;
+				LOCK(env->mutexs.MutexACTION);
+				update_test_state(args, env, this_thread_id, fd, buf2);
+				decrement_io_count(args, env, target);
+				UNLOCK(env->mutexs.MutexACTION);
+			}
 			continue;
 		}
 
@@ -471,42 +656,84 @@ void *ChildMain(void *vtest)
 				memcpy(buf2, env->data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
-				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), env->pass_count, args->mrk_flag);
+				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), args, env);
 			}
-			tcnt = Write(fd, buf2, target.trsiz*BLK_SIZE);
-			if((args->flags & CLD_FLG_FILE) && (args->flags & CLD_FLG_WFSYNC)) {
-				if(Sync(fd) < 0) {
-					exit_code = GETLASTERROR();
-					pMsg(ERR, args, "fsync error = %d\n", exit_code);
-					if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
-					PDBG4(DEBUG, args, "Setting bContinue to FALSE, fsync error\n");
+#ifdef _DEBUG
+			setStartTime();
+#endif
+			if(args->flags & CLD_FLG_IO_SERIAL) {
+				LOCK(env->mutexs.MutexIO);
+				tcnt = Write(fd, buf2, target.trsiz*BLK_SIZE);
+				UNLOCK(env->mutexs.MutexIO);
+			} else {
+				tcnt = Write(fd, buf2, target.trsiz*BLK_SIZE);
+			}
+
+#ifdef _DEBUG
+			setEndTime();
+			PDBG5(DBUG, args, "Thread %d: I/O Time: %ld usecs\n", this_thread_id, getTimeDiff());
+#endif
+			if(args->flags & CLD_FLG_WFSYNC) {
+				rv = 0;
+				/* if need to sync, then only have one thread do it */
+				LOCK(env->mutexs.MutexACTION);
+				if(0 == (env->hbeat_stats.wcount % args->sync_interval)) {
+#ifdef _DEBUG
+					PDBG3(DBUG, args, "Thread %d: Performing sync, write IO count %llu\n", this_thread_id, env->hbeat_stats.wcount);
+#endif
+					rv = Sync(fd);
+					if(0 != rv) {
+						exit_code = GETLASTERROR();
+						pMsg(msg_level, args, "Thread %d: fsync error = %d\n", this_thread_id, exit_code);
+						is_retry = FALSE;
+						update_test_state(args, env, this_thread_id, fd, buf2);
+						decrement_io_count(args, env, target);
+					}
+				}
+				UNLOCK(env->mutexs.MutexACTION);
+
+				if(0 != rv) { /* sync error, so don't count the write */
+					continue;
 				}
 			}
 		}
+
 		if(target.oper == READER) {
-			tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
+			memset(buf1, SET_CHAR, target.trsiz*BLK_SIZE);
+#ifdef _DEBUG
+			setStartTime();
+#endif
+			if(args->flags & CLD_FLG_IO_SERIAL) {
+				LOCK(env->mutexs.MutexIO);
+				tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
+				UNLOCK(env->mutexs.MutexIO);
+			} else {
+				tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
+			}
+#ifdef _DEBUG
+			setEndTime();
+			PDBG5(DBUG, args, "Thread %d: I/O Time: %ld usecs\n", this_thread_id, getTimeDiff());
+#endif
 		}
+
 		if(tcnt != (long) target.trsiz*BLK_SIZE) {
 			ulLastError = GETLASTERROR();
-			pMsg(ERR, args, AFSTR, (target.oper) ? "Read" : "Write", (target.oper) ? (env->cycle_stats.rcount) : (env->cycle_stats.wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
-			args->test_state = SET_STS_FAIL(args->test_state);
-			if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
-			PDBG4(DEBUG, args, "Setting bContinue to FALSE, transfer failed\n");
-			exit_code = ACCESS_FAILURE;
+			pMsg(msg_level, args, AFSTR, this_thread_id, (target.oper) ? "Read" : "Write", (target.oper) ? (env->rcount) : (env->wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE, ulLastError);
+			if(retries-- > 1) { /* request to retry on error, decrement retry */
+				pMsg(INFO, args, "Thread %d: Retry after transfer failure, retry count: %u\n", this_thread_id, retries);
+				is_retry = TRUE;
+				Sleep(args->retry_delay);
+			} else {
+				exit_code = ACCESS_FAILURE;
+				is_retry = FALSE;
+				LOCK(env->mutexs.MutexACTION);
+				update_test_state(args, env, this_thread_id, fd, buf2);
+				decrement_io_count(args, env, target);
+				UNLOCK(env->mutexs.MutexACTION);
+			}
 			continue;
 		}
 
-		/* update bytes transfered and bitmap */
-		LOCK(MutexDATA);
-		if(target.oper == WRITER) {
-			(env->cycle_stats.wbytes) += target.trsiz*BLK_SIZE;
-			for(i=0;i<target.trsiz;i++) {
-				*(wbitmap+(((target.lba-args->start_lba)+i)/8)) |= 0x80>>(((target.lba-args->start_lba)+i)%8);
-			}
-		} else {
-			(env->cycle_stats.rbytes) += target.trsiz*BLK_SIZE;
-		}
-		UNLOCK(MutexDATA);
 
 		/* data compare routine.  Act as if we were to write, but just compare */
 		if((target.oper == READER) && (args->flags & CLD_FLG_CMPR)) {
@@ -520,42 +747,94 @@ void *ChildMain(void *vtest)
 				memcpy(buf2, env->data_buffer, target.trsiz*BLK_SIZE);
 			}
 			if(args->flags & CLD_FLG_MBLK) {
-				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), env->pass_count, args->mrk_flag);
+				mark_buffer(buf2, target.trsiz*BLK_SIZE, &(target.lba), args, env);
 			}
 			if(memcmp(buf2, buf1, args->cmp_lng) != 0) {
-				/* data miscompare !!! */
-				LOCK(MutexGBL);
-				miscompare_dump(args, buf2, buf1, args->htrsiz*BLK_SIZE, target.lba);
-				args->test_state = SET_STS_FAIL(args->test_state);
-				if(args->flags & CLD_FLG_ALLDIE) env->bContinue = FALSE;
-				UNLOCK(MutexGBL);
-				PDBG4(DEBUG, test->args, "Setting bContinue to FALSE, misscompare\n");
+				/* data miscompare, this takes lots of time, but its OK... !!! */
+				LOCK(MutexMISCOMP);
+    			pMsg(ERR, args, DMSTR, this_thread_id, target.lba, target.lba);
+				/* find the actual byte that started the miscompare */
+				for(i=0;i<args->htrsiz*BLK_SIZE;i++) {
+					if(*(buf2+i) != *(buf1+i)) {
+    					pMsg(ERR, args, DMOFFSTR, this_thread_id, i, i); break;
+					}
+				}
+				miscompare_dump(args, buf2, args->htrsiz*BLK_SIZE, target.lba, i, EXP, this_thread_id);
+				miscompare_dump(args, buf1, args->htrsiz*BLK_SIZE, target.lba, i, ACT, this_thread_id);
+				/* perform a reread of the target, if requested */
+				if(args->flags & CLD_FLG_ERR_REREAD) {
+					ActualBytePos=Seek(fd, TargetBytePos);
+					if(ActualBytePos == TargetBytePos) {
+						memset(buf1, SET_CHAR, target.trsiz*BLK_SIZE);
+#ifdef _DEBUG
+						setStartTime();
+#endif
+						tcnt = Read(fd, buf1, target.trsiz*BLK_SIZE);
+#ifdef _DEBUG
+						setEndTime();
+						PDBG5(DBUG, args, "Thread %d: ReRead I/O Time: %ld usecs\n", this_thread_id, getTimeDiff());
+#endif
+						if(tcnt != (long) target.trsiz*BLK_SIZE) {
+							pMsg(ERR, args, "Thread %d: ReRead after data miscompare failed on transfer.\n", this_thread_id);
+							pMsg(ERR, args, AFSTR, this_thread_id, "ReRead", (target.oper) ? (env->rcount) : (env->wcount),target.lba,target.lba,tcnt,target.trsiz*BLK_SIZE);
+						}
+						miscompare_dump(args, buf1, args->htrsiz*BLK_SIZE, target.lba, i, REREAD, this_thread_id);
+					} else {
+						pMsg(ERR, args, "Thread %d: ReRead after data miscompare failed on seek.\n", this_thread_id);
+						pMsg(ERR, args, SFSTR, this_thread_id, (target.oper == WRITER) ? (env->wcount) : (env->rcount),target.lba,TargetBytePos,ActualBytePos);
+					}
+				}
+				UNLOCK(MutexMISCOMP);
+
 				exit_code = DATA_MISCOMPARE;
+				is_retry = FALSE;
+				LOCK(env->mutexs.MutexACTION);
+				update_test_state(args, env, this_thread_id, fd, buf2);
+				decrement_io_count(args, env, target);
+				UNLOCK(env->mutexs.MutexACTION);
 				continue;
 			}
 		}
+
+		/* update stats, bitmap, and release LBA */
+		LOCK(env->mutexs.MutexACTION);
+		complete_io(env, args, target);
+		UNLOCK(env->mutexs.MutexACTION);
+
+		is_retry = FALSE;
 	}
 
-#ifdef DEBUG_PRINTMAP
-	LOCK(MutexGBL);
-	for(i=0;i<(env->bmp_siz-1);i++) {
-		printf("%02x",*(wbitmap+i));
-	}
-	printf("\n");
-	UNLOCK(MutexGBL);
+#ifdef _DEBUG
+#ifdef _DEBUG_PRINTMAP
+	LOCK(env->mutexs.MutexACTION);
+	print_lba_bitmap(env);
+	UNLOCK(env->mutexs.MutexACTION);
+#endif
 #endif
 
 	FREE(buffer1);
 	FREE(buffer2);
 
-	if((args->flags & CLD_FLG_FILE) && (args->flags & CLD_FLG_W)) {
-		if(Sync(fd) < 0) {
+	if((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_RAW)) {
+#ifdef _DEBUG
+		PDBG5(DBUG, args, "Thread %d: starting sync\n", this_thread_id);
+#endif
+	    if (Sync(fd) < 0) { /* just sync, should not matter the device type */
 			exit_code = GETLASTERROR();
-			pMsg(ERR, args, "fsync error = %d\n", exit_code);
+			pMsg(ERR, args, "Thread %d: fsync error = %d\n", this_thread_id, exit_code);
+			args->test_state = SET_STS_FAIL(args->test_state);
 		}
+#ifdef _DEBUG
+		PDBG5(DBUG, args, "Thread %d: finished sync\n", this_thread_id);
+#endif
 	}
 
-	CLOSE(fd);
+	if (CLOSE(fd) < 0) { /* check return status on close */
+		exit_code = GETLASTERROR();
+		pMsg(ERR, args, "Thread %d: close error = %d\n", this_thread_id, exit_code);
+		args->test_state = SET_STS_FAIL(args->test_state);
+	}
+
 	TEXIT(exit_code);
 }
 

@@ -1,7 +1,6 @@
 /*
 * Disktest
-* Copyright (c) International Business Machines Corp., 2001
-*
+* Copyright (c) International Business Machines Corp., 2005
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,19 +21,23 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.h,v 1.4 2008/02/14 08:22:23 subrata_modak Exp $
-*
+* $Id: signals.h,v 1.1 2008/02/14 08:22:24 subrata_modak Exp $
 */
-#ifndef _DUMP_H
-#define _DUMP_H 1
 
-#include "main.h"
+#ifndef SIGNALS_H
+#define SIGNALS_H 1
 
-#define FMT_STR 1
-#define FMT_RAW 2
+#define SIGNAL_NONE 0x0000
+#define SIGNAL_STOP 0x0001
+#define SIGNAL_STAT 0x0002
 
-int dump_data(FILE *, const unsigned char *, const size_t, const size_t, const size_t, const int);
-int do_dump(child_args_t *);
+#ifdef WINDOWS
+#define SIGQUIT	0x03	/* Definition from POSIX */
+#define SIGHUP	0x01	/* Definition from POSIX */
+#define SIGUSR1	0x10	/* Definition from POSIX */
+#endif
 
-#endif /* _DUMP_H */
+void setup_sig_mask( void );
+void clear_stat_signal( void );
 
+#endif /* SIGNALS_H */

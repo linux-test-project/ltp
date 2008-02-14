@@ -22,16 +22,13 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.h,v 1.6 2007/06/19 09:43:55 subrata_modak Exp $
+* $Id: threading.h,v 1.7 2008/02/14 08:22:24 subrata_modak Exp $
 * $Log: threading.h,v $
-* Revision 1.6  2007/06/19 09:43:55  subrata_modak
+* Revision 1.7  2008/02/14 08:22:24  subrata_modak
+* Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+*
+* Revision 1.9  2008/02/07 17:37:26  yardleyb
 * "yxu@suse.de" corrected the way by which pthread_exit() handles pointer argument
-*
-* Revision 1.5  2007/05/17 11:03:24  subrata_modak
-* Applied Patch to fix the wrong usage of pthread_exit, pointed out by <carmelo.amoroso@st.com>
-*
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
 *
 * Revision 1.8  2004/11/20 04:43:42  yardleyb
 * Minor code fixes.  Checking for alloc errors.

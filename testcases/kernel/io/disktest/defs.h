@@ -21,10 +21,17 @@
  *  questions or comments.
  *
  *
- * $Id: defs.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
+ * $Id: defs.h,v 1.5 2008/02/14 08:22:22 subrata_modak Exp $
  * $Log: defs.h,v $
- * Revision 1.4  2005/05/04 17:54:00  mridge
- * Update to version 1.2.8
+ * Revision 1.5  2008/02/14 08:22:22  subrata_modak
+ * Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+ *
+ * Revision 1.5  2006/04/21 23:10:43  yardleyb
+ * Major updates for v1_3_3 of disktest.  View README for details.
+ *
+ * Revision 1.4  2005/10/12 23:13:35  yardleyb
+ * Updates to code to support new function in disktest version 1.3.x.
+ * Actual changes are recorded in the README
  *
  * Revision 1.3  2002/03/30 01:32:14  yardleyb
  * Major Changes:
@@ -91,6 +98,16 @@ typedef void * HANDLE;
 typedef long long int OFF_T;
 
 #endif /* WINDOWS */
+
+typedef enum op {
+	WRITER,READER,NONE,RETRY
+} op_t;
+
+typedef struct action {
+	op_t    oper;
+	unsigned long trsiz;
+	OFF_T   lba;
+} action_t;
 
 #endif /* _DEFS_H */
 

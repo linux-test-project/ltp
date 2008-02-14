@@ -23,25 +23,27 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.10 2006/02/08 21:08:44 robbiew Exp $
+# $Id: Makefile,v 1.11 2008/02/14 08:22:22 subrata_modak Exp $
 # $Log: Makefile,v $
-# Revision 1.10  2006/02/08 21:08:44  robbiew
-# Applied LDFLAGS cleanup patch from Mike Frysinger.
+# Revision 1.11  2008/02/14 08:22:22  subrata_modak
+# Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
 #
-# Revision 1.9  2006/01/31 15:12:47  robbiew
+# Revision 1.31  2008/02/07 15:43:37  yardleyb
 # Applied patch from Mike Frysinger to ensure Makefile properly respect CFLAGS/LDFLAGS
 #
-# Revision 1.8  2005/12/05 19:15:19  mridge
-# Updates from Jennifer Monk to enable compiling w/o errors using XLC
+# Revision 1.30  2006/10/19 20:01:48  yardleyb
+# changes made to support rpm builds
 #
-# Revision 1.7  2005/08/02 16:15:52  robbiew
-# Applied patch from Mike Frysinger:
-# find attached a patch to fix up the install target in disktest to match the
-# install targets of everything else
-# -mike
+# Revision 1.29  2006/10/19 17:30:27  yardleyb
+# Added basic signal handling.
 #
-# Revision 1.6  2005/05/04 17:54:00  mridge
-# Update to version 1.2.8
+# Revision 1.28  2006/05/12 19:44:47  yardleyb
+# added CHANGELOG to distro
+# uninstall does not force a build
+#
+# Revision 1.27  2005/10/12 23:13:35  yardleyb
+# Updates to code to support new function in disktest version 1.3.x.
+# Actual changes are recorded in the README
 #
 # Revision 1.26  2004/12/18 06:13:03  yardleyb
 # Updated timer schema to more accurately use the time options.  Added
@@ -169,7 +171,7 @@ ALLHDRS=$(wildcard *.h)
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64"
+CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" $(RPM_OPT_FLAGS)
 
 all: $(OBJS) disktest
 
@@ -188,6 +190,7 @@ io.o: io.c io.h $(GBLHDRS)
 dump.o: dump.c dump.h $(GBLHDRS)
 timer.o: timer.c timer.h $(GBLHDRS)
 stats.o: stats.c stats.h $(GBLHDRS)
+signals.o: signals.c signals.h threading.h $(GBLHDRS)
 
 install: disktest
 	ln -f disktest ../../../bin
@@ -199,12 +202,11 @@ all-clean: clean
 	rm -f *~ *tar* *zip*
 
 distro: all-clean
-	mkdir disktest.$(VER)
-	mkdir disktest.$(VER)/man1
-	cp ./Makefile* ./*.[ch] ./LICENSE ./README disktest.$(VER)
-	cp ./man1/disktest.1 disktest.$(VER)/man1
-	chmod 444 disktest.$(VER)/man1/disktest.1
-	gzip disktest.$(VER)/man1/disktest.1
-	tar cvf ./disktest.$(VER).tar disktest.$(VER)
-	rm -rf disktest.$(VER)
-	gzip ./disktest.$(VER).tar
+	mkdir -p disktest-$(VER)/man1
+	cp ./Makefile* ./*.[ch] ./LICENSE ./README ./CHANGELOG disktest-$(VER)
+	cp ./man1/disktest.1 disktest-$(VER)/man1
+	chmod 444 disktest-$(VER)/man1/disktest.1
+	gzip disktest-$(VER)/man1/disktest.1
+	tar cvf ./disktest-$(VER).tar disktest-$(VER)
+	rm -rf disktest-$(VER)
+	gzip ./disktest-$(VER).tar

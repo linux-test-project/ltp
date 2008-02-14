@@ -22,198 +22,7 @@
 *
 *  Project Website:  TBD
 *
-*
-* $Id: main.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
-* $Log: main.h,v $
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
-*
-* Revision 1.21  2005/01/08 21:18:34  yardleyb
-* Update performance output and usage.  Fixed pass count check
-*
-* Revision 1.20  2004/12/18 06:13:03  yardleyb
-* Updated timer schema to more accurately use the time options.  Added
-* fsync on write option to -If.
-*
-* Revision 1.19  2004/12/17 06:34:56  yardleyb
-* removed -mf -ml.  These mark options cause to may issues when using
-* random block size transfers.  Fixed -ma option for endian-ness.  Fixed
-* false data misscompare during multiple cycles.
-*
-* Revision 1.18  2004/11/20 04:43:42  yardleyb
-* Minor code fixes.  Checking for alloc errors.
-*
-* Revision 1.17  2004/11/19 21:45:12  yardleyb
-* Fixed issue with code added for -F option.  Cased disktest
-* to SEG FAULT when cleaning up threads.
-*
-* Revision 1.16  2004/11/19 03:47:45  yardleyb
-* Fixed issue were args data was not being copied from a
-* clean source.
-*
-* Revision 1.15  2004/11/02 20:47:13  yardleyb
-* Added -F functions.
-* lots of minor fixes. see README
-*
-* Revision 1.14  2003/09/12 21:23:01  yardleyb
-* The following isses have been fixed:
-* - Updated to Version 1.12
-* - Disktest will falsely detect a data miscompare
-* when using random block sizes and random data
-* - If the linear option is used while doing random
-* block sizes and read/write/error checks, disktest
-* will hang
-* - Disktest will use the wrong transfer size on
-* the last IO when using random block transfer size
-* and the number of seeks are specified.
-* - Total Reads and Writes not reported correctly
-* - While running linear write/read tests while
-* doing the heartbeat performance and you get an
-* error on the 'write' side of the test, disktest
-* does not exit
-*
-* Revision 1.13  2003/09/12 18:10:09  yardleyb
-* Updated to version 1.11
-* Code added to fix compile
-* time warnings
-*
-* Revision 1.12  2003/01/13 21:33:31  yardleyb
-* Added code to detect AIX volume size.
-* Updated mask for random LBA to use start_lba offset
-* Updated version to 1.1.10
-*
-* Revision 1.11  2002/05/31 18:47:59  yardleyb
-* Updates to -pl -pL options.
-* Fixed test status to fail on
-* failure to open filespec.
-* Version set to 1.1.9
-*
-* Revision 1.10  2002/04/24 01:45:31  yardleyb
-* Minor Fixes:
-* Read/write time could exceeds overall time
-* Heartbeat options sometimes only displayed once
-* Cleanup time for large number of threads was very long (windows)
-* If heartbeat specified, now checks for performance option also
-* No IO was performed when -S0:0 and -pr specified
-*
-* Revision 1.9  2002/03/30 01:32:14  yardleyb
-* Major Changes:
-*
-* Added Dumping routines for
-* data miscompares,
-*
-* Updated performance output
-* based on command line.  Gave
-* one decimal in MB/s output.
-*
-* Rewrote -pL IO routine to show
-* correct stats.  Now show pass count
-* when using -C.
-*
-* Minor Changes:
-*
-* Code cleanup to remove the plethera
-* if #ifdef for windows/unix functional
-* differences.
-*
-* Revision 1.8  2002/03/07 03:38:52  yardleyb
-* Added dump function from command
-* line.  Created formatted dump output
-* for Data miscomare and command line.
-* Can now leave off filespec the full
-* path header as it will be added based
-* on -I.
-*
-* Revision 1.7  2002/02/26 19:35:59  yardleyb
-* Updates to parsing routines for user
-* input.  Added multipliers for -S and
-* -s command line arguments. Forced
-* default seeks to default if performing
-* a diskcache test.
-*
-* Revision 1.6  2002/02/20 18:45:00  yardleyb
-* Set revision number v1.0.0
-*
-* Revision 1.5  2002/02/19 02:46:37  yardleyb
-* Added changes to compile for AIX.
-* Update getvsiz so it returns a -1
-* if the ioctl fails and we handle
-* that fact correctly.  Added check
-* to force vsiz to always be greater
-* then stop_lba.
-*
-* Revision 1.4  2002/02/04 20:35:38  yardleyb
-* Changed max. number of threads to 64k.
-* Check for max threads in parsing.
-* Fixed windows getopt to return correctly
-* when a bad option is given.
-* Update time output to be in the format:
-*   YEAR/MONTH/DAY-HOUR:MIN:SEC
-* instead of epoch time.
-*
-* Revision 1.3  2002/01/31 20:12:21  yardleyb
-* Updated the performance counters
-* to reflect run time based on duty
-* cycle not on total.
-*
-* Revision 1.2  2001/12/07 23:33:29  yardleyb
-* Fixed bug where a false positive data
-* miscompare could occur when running
-* multi cycle testing with mark block
-* enabled.
-*
-* Revision 1.1  2001/12/04 18:51:06  yardleyb
-* Checkin of new source files and removal
-* of outdated source
-*
-* Revision 1.11  2001/10/10 00:18:26  yardleyb
-* Updated revision to 0.9.2
-*
-* Revision 1.10  2001/10/10 00:17:14  yardleyb
-* Added Copyright and GPL license text.
-* Miner bug fixes throughout text.
-*
-* Revision 1.9  2001/10/01 23:30:58  yardleyb
-* Increased overall disktest revision number.
-*
-* Revision 1.8  2001/10/01 23:18:15  yardleyb
-* Changed all time related variables to time_t.
-* Rearranged some of the CLD_FLGs
-*
-* Revision 1.7  2001/09/26 23:38:31  yardleyb
-* Changed default seeks to 1000.
-* Added version string.
-*
-* Revision 1.6  2001/09/22 03:42:56  yardleyb
-* Anyother major update.  fixed bugs in IO routines,
-* added more error checking on input.  Added heartbeat
-* option, up-and-up and up-down-up seek routines, pass/fail
-* output, pMsg level discription, veriable length data comare
-* checking.  Lots of lint cleanup.
-*
-* Revision 1.5  2001/09/07 02:13:31  yardleyb
-* Major rewrite of main IO function.  Fixed bug in duty cycle were percentages
-* were off by one.  Got rid of some sloppy memory usage.  Major performance
-* increase overall.
-*
-* Revision 1.4  2001/09/06 21:59:23  yardleyb
-* Fixed a bug in the -L/-K where it ther ewere to many childern be created.
-* also more code cleanup.  Changed 'loops' to 'seeks' throughout.
-*
-* Revision 1.3  2001/09/06 18:23:30  yardleyb
-* Added duty cycle -D.  Updated usage. Added
-* make option to create .tar.gz of all files
-*
-* Revision 1.2  2001/09/05 22:44:42  yardleyb
-* Split out some of the special functions.
-* added O_DIRECT -Id.  Updated usage.  Lots
-* of clean up to functions.  Added header info
-* to pMsg.
-*
-* Revision 1.1  2001/09/04 19:28:08  yardleyb
-* Split usage out. Split header out.  Added usage text.
-* Made signal handler one function. code cleanup.
-*
+* $Id: main.h,v 1.5 2008/02/14 08:22:23 subrata_modak Exp $
 *
 */
 
@@ -227,6 +36,7 @@
 #include <process.h>
 #include <sys/stat.h>
 #else
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -240,22 +50,27 @@
 #include <errno.h>
 #include "defs.h"
 
-#define VER_STR "v1.2.8"
-#define BLKGETSIZE _IO(0x12,96)
-#define BLKSSZGET  _IO(0x12,104)
+#define VER_STR "v1.4.2"
+#define BLKGETSIZE _IO(0x12,96)		/* IOCTL for getting the device size */
+#define BLKSSZGET  _IO(0x12,104)	/* ALT IOCTL for getting the device size */
 
-#define DEV_NAME_LEN 80
-#define MAX_ARG_LEN 160
+#define DEV_NAME_LEN		80		/* max character for target name */
+#define MAX_ARG_LEN			160		/* max length of command line arguments for startarg display */
+#define HOSTNAME_SIZE		16		/* number of hostname characters used in mark header */
+#define BLK_SIZE			512		/* default size of an LBA in bytes */
+#define ALIGNSIZE			4096	/* memory alignment size in bytes */
+#define DEFAULT_IO_TIMEOUT	120		/* the default number of seconds before IO timeout */
 
-#define BLK_SIZE	512
-#define M_BLK_SIZE	512
-#define ALIGNSIZE	4096	/* 4k alignment works in all cases ?? */
+/* the new way we align */
+#define ALIGN(x, y) (((long long unsigned)x/(long long unsigned)y)*(long long unsigned)y)
 
 #if __WORDSIZE == 64
-#define ALIGN(x, bs) (((OFF_T)x + ((OFF_T)bs - 1)) & ~((OFF_T)bs - 1))
+/* the old way we use to align */
+/* #define ALIGN(x, bs) (((OFF_T)x + ((OFF_T)bs - 1)) & ~((OFF_T)bs - 1)) */
 #define BUFALIGN(x) (void *) (((unsigned long)x + (OFF_T)(ALIGNSIZE - 1)) & (OFF_T)~(ALIGNSIZE - 1))
 #else
-#define ALIGN(x, bs) ((x + (bs - 1)) & ~(bs - 1))
+/* the old way we use to align */
+/* #define ALIGN(x, bs) ((x + (bs - 1)) & ~(bs - 1)) */
 #define BUFALIGN(x) (void *) (((unsigned long)x + (ALIGNSIZE - 1)) & ~(ALIGNSIZE - 1))
 #endif
 
@@ -285,59 +100,79 @@
 #define SET_OPER_W(x)	(x & ~0x10)
 #define CNG_OPER(x)		(x & 0x10) ? (x & ~0x10) : (x | 0x10)
 
-#define CLD_FLG_CMPR	0x000000001ULL	/* will cause readers to compare data read */
-#define CLD_FLG_MBLK	0x000000002ULL	/* will add header info to fist block, fc lun, lba, etc */
-#define CLD_FLG_SQNCE	0x000000004ULL	/* forces IOs to be queued one at a time */
-#define CLD_FLG_RTRSIZ	0x000000008ULL	/* Ignore weither a block has been written */
+#define CLD_FLG_CMPR		0x0000000000000001ULL	/* will cause readers to compare data read */
+#define CLD_FLG_MBLK		0x0000000000000002ULL	/* will add header info to first block, fc lun, lba, etc */
+#define CLD_FLG_OFFSET		0x0000000000000004ULL	/* specifies that an offset up to 2^31 LBAs has been given */
+#define CLD_FLG_RTRSIZ		0x0000000000000008ULL	/* Ignore weither a block has been written */
 
 /* Perforamnce Flags */
-#define CLD_FLG_XFERS	0x000000010ULL	/* reports # of transfers */
-#define CLD_FLG_TPUTS	0x000000020ULL	/* reports calculated throughtput */
-#define CLD_FLG_RUNT	0x000000040ULL	/* reports run time */
-#define CLD_FLG_PCYC	0x000000080ULL	/* report cycle data */
+#define CLD_FLG_XFERS		0x0000000000000010ULL	/* reports # of transfers */
+#define CLD_FLG_TPUTS		0x0000000000000020ULL	/* reports calculated throughtput */
+#define CLD_FLG_RUNT		0x0000000000000040ULL	/* reports run time */
+#define CLD_FLG_PCYC		0x0000000000000080ULL	/* report cycle data */
 #define CLD_FLG_PRFTYPS	(CLD_FLG_XFERS|CLD_FLG_TPUTS|CLD_FLG_RUNT|CLD_FLG_PCYC)
 
 /* Seek Flags */
-#define CLD_FLG_RANDOM	0x000000100ULL	/* child seeks are random */
-#define CLD_FLG_LINEAR	0x000000200ULL	/* child seeks are linear */
-#define CLD_FLG_NTRLVD	0x000000400ULL	/* reads and writes are mixed during sequential IO */
+#define CLD_FLG_RANDOM		0x0000000000000100ULL	/* child seeks are random */
+#define CLD_FLG_LINEAR		0x0000000000000200ULL	/* child seeks are linear */
+#define CLD_FLG_NTRLVD		0x0000000000000400ULL	/* reads and writes are interleaved */
 #define CLD_FLG_SKTYPS	(CLD_FLG_RANDOM|CLD_FLG_LINEAR)
 
-#define CLD_FLG_VSIZ	0x000000800ULL	/* Volume size specified on cli */
+#define CLD_FLG_VSIZ		0x0000000000000800ULL	/* Volume size is user specified */
 
 /* IO Type Flags */
-#define CLD_FLG_RAW		0x000001000ULL	/* child IO is to a RAW device */
-#define CLD_FLG_BLK		0x000002000ULL	/* child IO is to a BLOCK device */
-#define CLD_FLG_FILE	0x000004000ULL	/* child IO is to a file */
-#define CLD_FLG_DIRECT	0x000008000ULL	/* child IO has direct disk access */
+#define CLD_FLG_RAW			0x0000000000001000ULL	/* child IO is to a raw/character device */
+#define CLD_FLG_BLK			0x0000000000002000ULL	/* child IO is to a block device */
+#define CLD_FLG_FILE		0x0000000000004000ULL	/* child IO is to a file */
+#define CLD_FLG_DIRECT		0x0000000000008000ULL	/* child IO has direct disk access */
 #define CLD_FLG_IOTYPS	(CLD_FLG_RAW|CLD_FLG_BLK|CLD_FLG_FILE|CLD_FLG_DIRECT)
 
 /* Pattern Flags */
-#define CLD_FLG_RPTYPE	0x000010000ULL	/* random pattern */
-#define CLD_FLG_FPTYPE	0x000020000ULL	/* fixed pattern */
-#define CLD_FLG_CPTYPE	0x000040000ULL	/* counting pattern */
-#define CLD_FLG_LPTYPE	0x000080000ULL	/* lba pattern */
+#define CLD_FLG_RPTYPE		0x0000000000010000ULL	/* random pattern */
+#define CLD_FLG_FPTYPE		0x0000000000020000ULL	/* fixed pattern */
+#define CLD_FLG_CPTYPE		0x0000000000040000ULL	/* counting pattern */
+#define CLD_FLG_LPTYPE		0x0000000000080000ULL	/* lba pattern */
 #define CLD_FLG_PTYPS	(CLD_FLG_RPTYPE|CLD_FLG_FPTYPE|CLD_FLG_CPTYPE|CLD_FLG_LPTYPE)
 
 /* Duration Flags */
-#define CLD_FLG_TMD		0x000100000ULL	/* set if using time */
-#define CLD_FLG_SKS		0x000200000ULL	/* set if seeks are used */
-#define CLD_FLG_CYC		0x000400000ULL	/* set if cycles are used */
-#define CLD_FLG_DUTY	0x000800000ULL	/* set if a duty cycle is used while running */
+#define CLD_FLG_TMD			0x0000000000100000ULL	/* set if using time */
+#define CLD_FLG_SKS			0x0000000000200000ULL	/* set if seeks are used */
+#define CLD_FLG_CYC			0x0000000000400000ULL	/* set if cycles are used */
+#define CLD_FLG_DUTY		0x0000000000800000ULL	/* set if a duty cycle is used while running */
 
-#define CLD_FLG_LBA_RNG	0x001000000ULL	/* write multipule read multipule, must define multiple */
-#define CLD_FLG_BLK_RNG	0x002000000ULL	/* write once read multiple, must define multiple */
-#define CLD_FLG_ALLDIE	0x004000000ULL	/* will force all children to die on any error if set */
-#define CLD_FLG_DUMP	0x008000000ULL	/* will dump formatted data */
+#define CLD_FLG_LBA_RNG		0x0000000001000000ULL	/* write multipule read multipule, must define multiple */
+#define CLD_FLG_BLK_RNG		0x0000000002000000ULL	/* write once read multiple, must define multiple */
+#define CLD_FLG_ALLDIE		0x0000000004000000ULL	/* will force all children to die on any error if set */
+#define CLD_FLG_DUMP		0x0000000008000000ULL	/* will dump formatted data */
 
-#define CLD_FLG_LUNU	0x010000000ULL	/* seek start/end and then start/end */
-#define CLD_FLG_LUND	0x020000000ULL	/* seek start/end and then end/start */
-#define CLD_FLG_W		0x040000000ULL	/* there are child writers */
-#define CLD_FLG_R		0x080000000ULL	/* there are child readers */
+#define CLD_FLG_LUNU		0x0000000010000000ULL	/* seek start/end and then start/end */
+#define CLD_FLG_LUND		0x0000000020000000ULL	/* seek start/end and then end/start */
+#define CLD_FLG_W			0x0000000040000000ULL	/* there are child writers */
+#define CLD_FLG_R			0x0000000080000000ULL	/* there are child readers */
 
-#define CLD_FLG_FSLIST	0x100000000ULL	/* the filespec is a list of targets */
-#define CLD_FLG_HBEAT	0x200000000ULL	/* if performance heartbeat is being used */
-#define CLD_FLG_WFSYNC	0x400000000ULL	/* do an fsync on every write for file IO */
+#define CLD_FLG_FSLIST		0x0000000100000000ULL	/* the filespec is a list of targets */
+#define CLD_FLG_HBEAT		0x0000000200000000ULL	/* if performance heartbeat is being used */
+#define CLD_FLG_WFSYNC		0x0000000400000000ULL	/* do an fsync on write for file IO */
+#define FLAG_NOT_DEFINED	0x0000000800000000ULL	/* NOT DEFINED */
+
+#define CLD_FLG_WRITE_ONCE	0x0000001000000000ULL	/* only write once to each LBA */
+#define CLD_FLG_ERR_REREAD	0x0000002000000000ULL	/* On miscompare, reread the miscompare transfer */
+#define CLD_FLG_LBA_SYNC	0x0000004000000000ULL	/* LBA syncronizion */
+#define CLD_FLG_IO_SERIAL	0x0000008000000000ULL	/* serialize IO at the IO operation level */
+
+#define CLD_FLG_MRK_LBA		0x0000010000000000ULL	/* enable adding LBA to mark data */
+#define CLD_FLG_MRK_PASS	0x0000020000000000ULL	/* enable adding pass count to mark data */
+#define CLD_FLG_MRK_TIME	0x0000040000000000ULL	/* enable adding start time to mark data */
+#define CLD_FLG_MRK_SEED	0x0000080000000000ULL	/* enable adding seed to mark data */
+#define CLD_FLG_MRK_HOST	0x0000100000000000ULL	/* enable adding hostname to mark data */
+#define CLD_FLG_MRK_TARGET	0x0000200000000000ULL	/* enable adding target name to mark data */
+#define CLD_FLG_MRK_ALL	(CLD_FLG_MRK_LBA|CLD_FLG_MRK_PASS|CLD_FLG_MRK_TIME|CLD_FLG_MRK_SEED|CLD_FLG_MRK_HOST|CLD_FLG_MRK_TARGET)
+
+#define CLD_FLG_ALT_MARK	0x0000400000000000ULL	/* override time marker, with data in alt_mark, in mark header */
+#define CLD_FLG_ERR_MARK	0x0000800000000000ULL	/* On error, write a special MARKER to LBA 0 on the target */
+
+#define CLD_FLG_TMO_ERROR	0x0001000000000000ULL	/* make an IO TIMEOUT warning, fail the IO test */
+#define CLD_FLG_UNIQ_WRT	0x0002000000000000ULL	/* garentees that every write is unique */
 
 /* startup defaults */
 #define TRSIZ	1		/* default transfer size in blocks */
@@ -350,10 +185,6 @@ typedef HANDLE hThread_t;
 #else
 typedef pthread_t hThread_t;
 #endif
-
-typedef enum op {
-	WRITER,READER,NONE
-} op_t;
 
 typedef struct thread_struct {
 	hThread_t hThread;
@@ -376,7 +207,7 @@ typedef struct child_args {
 	OFF_T vsiz;					/* volume size in blocks */
 	unsigned long ltrsiz;		/* low bound of transfer size in blocks */
 	unsigned long htrsiz;		/* high bound of transfer size in blocks */
-	unsigned long offset;		/* lba offset */
+	long offset;				/* the lba offset to shift IO alignment by */
 	OFF_T pattern;				/* pattern data */
 	time_t run_time;			/* run time in seconds */
 	OFF_T seeks;				/* number of seeks */
@@ -394,22 +225,46 @@ typedef struct child_args {
 	short wperc;				/* percent of IO that should be write */
 	unsigned short t_kids;		/* total children, max is 64k */
 	unsigned int cmp_lng;		/* how much of the data should be compared */
-	short mrk_flag;				/* how the tranfsers should be marked */
 	OFF_T test_state;			/* current test state */
 	unsigned int seed;			/* test seed */
 	pid_t pid;					/* the process_id used for this environment */
+	OFF_T alt_mark;				/* alternate marker the start time */
+	unsigned long delayTimeMin;	/* the minimum time (msec) to delay on each IO */
+	unsigned long delayTimeMax;	/* the maximum time (msec) to delay on each IO */
+	time_t ioTimeout;			/* the time (sec) before failure do to possible hung IO */
+	unsigned long sync_interval;/* number of write IOs before issuing a sync */
+	long retry_delay;			/* number of msec to wait before retrying an IO */
 } child_args_t;
+
+typedef struct mutexs {
+#ifdef WINDOWS
+	HANDLE MutexACTION;			/* mutex for the entire target device */
+	HANDLE MutexIO;				/* mutex for the IO to the device */
+#else
+	pthread_mutex_t MutexACTION; /* mutex for the entire target device */
+	pthread_mutex_t MutexIO;	/* mutex for the IO to the device */
+#endif
+} mutexs_t;
 
 typedef struct test_env {
 	void *shared_mem;           /* global pointer to shared memory */
 	unsigned char *data_buffer; /* global data buffer */
 	size_t bmp_siz;             /* size of bitmask */
-	BOOL bContinue;             /* global that when set to false will force exit of all threads */
-	OFF_T pass_count;           /* hit counters */
+	BOOL bContinue;             /* global that when set to false will force exit for this environment */
+	OFF_T pass_count;           /* pass counters */
+	stats_t hbeat_stats;        /* per heartbeat statistics */
 	stats_t cycle_stats;        /* per cycle statistics */
+	stats_t global_stats;       /* per env statistics */
+	OFF_T rcount;				/* number of read IO operations */
+	OFF_T wcount;				/* number of write IO operations */
 	unsigned short kids;		/* number of test child processes */
 	thread_struct_t *pThreads;  /* List of child test processes */
-	stats_t global_stats;       /* overall statistics for test */
+	time_t start_time;			/*	overall start time of test	*/
+	time_t end_time;			/*	overall end time of test	*/
+	action_t lastAction;		/* when interleaving tests, tells the threads whcih action was last */
+	action_t *action_list;		/* pointer to list of actions that are currently in use */
+	int action_list_entry;		/* where in the action_list we are */
+	mutexs_t mutexs;
 } test_env_t;
 
 typedef struct test_ll {

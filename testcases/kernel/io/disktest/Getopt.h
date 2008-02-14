@@ -23,10 +23,10 @@
 *  Project Website:  TBD
 *
 *
-* $Id: Getopt.h,v 1.4 2005/05/04 17:54:00 mridge Exp $
+* $Id: Getopt.h,v 1.5 2008/02/14 08:22:22 subrata_modak Exp $
 * $Log: Getopt.h,v $
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
+* Revision 1.5  2008/02/14 08:22:22  subrata_modak
+* Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
 *
 * Revision 1.3  2002/03/30 01:32:14  yardleyb
 * Major Changes:

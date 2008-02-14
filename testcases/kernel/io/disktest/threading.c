@@ -22,10 +22,13 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.c,v 1.4 2005/05/04 17:54:00 mridge Exp $
+* $Id: threading.c,v 1.5 2008/02/14 08:22:24 subrata_modak Exp $
 * $Log: threading.c,v $
-* Revision 1.4  2005/05/04 17:54:00  mridge
-* Update to version 1.2.8
+* Revision 1.5  2008/02/14 08:22:24  subrata_modak
+* Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+*
+* Revision 1.11  2006/04/21 23:10:43  yardleyb
+* Major updates for v1_3_3 of disktest.  View README for details.
 *
 * Revision 1.10  2004/11/20 04:43:42  yardleyb
 * Minor code fixes.  Checking for alloc errors.
@@ -182,6 +185,7 @@ void cleanUp(test_ll_t *test) {
 		pLastTest = pTmpTest;
 		pTmpTest = pTmpTest->next;
 		closeThread(pLastTest->hThread);
+		FREE(pLastTest->env->action_list);
 		FREE(pLastTest->args);
 		FREE(pLastTest->env);
 		FREE(pLastTest);

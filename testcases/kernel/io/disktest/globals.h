@@ -22,10 +22,17 @@
 *
 *  Project Website:  TBD
 *
-* $Id: globals.h,v 1.5 2005/05/05 19:46:52 mridge Exp $
+* $Id: globals.h,v 1.6 2008/02/14 08:22:23 subrata_modak Exp $
 * $Log: globals.h,v $
-* Revision 1.5  2005/05/05 19:46:52  mridge
-* upgrade to 1.2.8
+* Revision 1.6  2008/02/14 08:22:23  subrata_modak
+* Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+*
+* Revision 1.7  2006/04/21 23:10:43  yardleyb
+* Major updates for v1_3_3 of disktest.  View README for details.
+*
+* Revision 1.6  2005/10/12 23:13:35  yardleyb
+* Updates to code to support new function in disktest version 1.3.x.
+* Actual changes are recorded in the README
 *
 * Revision 1.5  2005/01/08 21:18:34  yardleyb
 * Update performance output and usage.  Fixed pass count check
@@ -75,6 +82,7 @@
 #define GLB_FLG_QUIET	0x00000001
 #define GLB_FLG_SUPRESS	0x00000002
 #define GLB_FLG_PERFP	0x00000004 /* forces alternate performance printing format */
+#define GLB_FLG_KILL	0x00000008 /* will kill all threads to all targets when set */
 
 #define PDBG1  if(gbl_dbg_lvl > 0) pMsg
 #define PDBG2  if(gbl_dbg_lvl > 1) pMsg
@@ -85,7 +93,6 @@
 extern unsigned int gbl_dbg_lvl;
 
 void init_gbl_data(test_env_t *);
-void update_gbl_stats(test_env_t *);
 #ifdef WINDOWS
 void PrintLastSystemError(unsigned long);
 void GetSystemErrorString(unsigned long, void *);
