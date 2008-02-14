@@ -23,14 +23,15 @@ int do_clone_tests(unsigned long clone_flags,
 			int(*fn2)(void *arg), void *arg2)
 {
 	int ret;
-	void *childstack, *stack = malloc(getpagesize());
+	int stack_size = getpagesize() * 4;
+	void *childstack, *stack = malloc (stack_size);
 
 	if (!stack) {
 		perror("malloc");
 		return -1;
 	}
 
-	childstack = stack + getpagesize();
+	childstack = stack + stack_size;
 
 #ifdef __ia64__
 	ret = clone2(fn1, childstack, getpagesize(), clone_flags | SIGCHLD, arg1, NULL, NULL, NULL);
