@@ -44,7 +44,6 @@
  *       2. Test with a invalid start argument
  *       3. Test with a invalid size argument
  *       4. Test with a invalid prot argument
- *       5. Test with a invalid pgoff argument
  *
  *     Cleanup:
  *       Remove the file and erase the tmp directory
@@ -60,6 +59,10 @@
  *
  * HISTORY
  *
+ *     02/11/2008 - Removed the pgoff test case, as the latest kernels doesn't
+ *     verify the page offset (http://lkml.org/lkml/2007/11/29/325) - Ricardo
+ *     Salveti de Araujo, <rsalvetidev@gmail.com>
+ * 
  *     19/10/2007 - Created by Ricardo Salveti de Araujo, <rsalvetidev@gmail.com>
  */
 
@@ -92,11 +95,10 @@ static int setup01(int test);
 static int setup02(int test);
 static int setup03(int test);
 static int setup04(int test);
-static int setup05(int test);
 static void cleanup();
 
 char *TCID = "remap_file_pages02";      /* Test program identifier.    */
-int TST_TOTAL = 5;                      /* Total number of test cases. */
+int TST_TOTAL = 4;                      /* Total number of test cases. */
 extern int Tst_count;                   /* Test Case counter for tst_* routines */
 static int exp_enos[] = { EINVAL, 0 };
 
@@ -122,8 +124,7 @@ static struct test_case_t {
 	{ "start is invalid", EINVAL, "EINVAL", setup02, NULL, NULL, 0, 0, 2, 0 },
 
 	{ "size is invalid", EINVAL, "EINVAL", setup03, NULL, NULL, 0, 0, 0, 0 },
-	{ "prot is invalid", EINVAL, "EINVAL", setup04, NULL, NULL, 0, 0, 2, 0 },
-	{ "pgoff is invalid", EINVAL, "EINVAL", setup05, NULL, NULL, 0, 0, 0, 0 }
+	{ "prot is invalid", EINVAL, "EINVAL", setup04, NULL, NULL, 0, 0, 2, 0 }
 };
 
 int
@@ -258,20 +259,6 @@ setup04(int test)
 	testcase[test].start = data;
 	testcase[test].size = page_sz;
 	testcase[test].prot = -1;
-
-	return 0;
-}
-
-/*
- * setup05() - pgoff is invalid
- */
-int
-setup05(int test)
-{
-	/* set up the test case struct for this test */
-	testcase[test].start = data;
-	testcase[test].size = page_sz;
-	testcase[test].pgoff = cache_pages*2;
 
 	return 0;
 }
