@@ -143,7 +143,7 @@ int main()
 		else if (errno != EINVAL)
 			tst_resm(TFAIL,
 				"sysconf correctly failed, but expected errno (%i) != actual (%i)\n",
-				EINVAL, errno);
+				EINVAL, retval);
 		else
 			tst_resm(TPASS, "using invalid name");
 	}
