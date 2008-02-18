@@ -27,10 +27,10 @@
 # the same distribution terms that you use for the rest of that program.
 
 # A sed that does not truncate output.
-SED="/usr/bin/sed"
+SED="/bin/sed"
 
 # Sed that helps us avoid accidentally triggering echo(1) options like -n.
-Xsed="/usr/bin/sed -e s/^X//"
+Xsed="/bin/sed -e s/^X//"
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
 # if CDPATH is set.
@@ -38,7 +38,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host suzy8:
+# Libtool was configured on host vapier:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -57,7 +57,7 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=i686-pc-linux-gnu
+host=x86_64-unknown-linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
@@ -73,7 +73,7 @@ CC="gcc"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="/usr/i586-suse-linux/bin/ld"
+LD="/usr/x86_64-pc-linux-gnu/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -262,10 +262,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
+sys_lib_search_path_spec="/lib64 /usr/lib64 /usr/local/lib64"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib"
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64"
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
