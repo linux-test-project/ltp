@@ -92,6 +92,7 @@
 #include <sys/types.h> //Can be done with out
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/utsname.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -253,7 +254,19 @@ populate_file()
  ******************************************************************************/
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
-	return syscall(__NR_fallocate, fd, mode, offset,len);
+            #if __WORDSIZE == 32
+            struct utsname buf;
+            if ( uname(&buf) == 0 ){
+                        if(!strcmp(buf.machine,"ppc64") || !strcmp(buf.machine,"x86_64"))
+                            return syscall(__NR_fallocate, fd, mode, (int)(offset>>32), (int)offset ,(int)(len>>32), (int)len);
+            }
+            else{
+                        perror("uname:");
+                        return -1;
+                        }
+            #endif
+                        return syscall(__NR_fallocate, fd, mode,
+offset,len);
 }
 
 /*****************************************************************************
