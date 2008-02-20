@@ -59,7 +59,6 @@
 #define DEF_LOAD_MS 1
 #define PASS_US 100
 #define HIST_BUCKETS 100
-#define QUANTILE_NINES 4
 #define OVERHEAD 50000 // allow for 50 us of periodic overhead (context switch, etc.)
 
 nsec_t start;
@@ -122,12 +121,11 @@ void *periodic_thread(void *arg)
 	int i;
 	nsec_t delay, avg_delay = 0, start_delay, min_delay = -1ULL, max_delay = 0;
 	int failures = 0;
-	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0;
+	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0, iter_start;
 
-	prev = start;
-	next = start;
 	now = rt_gettime();
 	start_delay = (now - start)/NS_PER_US;
+	iter_start = next = now;
 
 	debug(DBG_INFO, "ITERATION DELAY(US) MAX_DELAY(US) FAILURES\n");
 	debug(DBG_INFO, "--------- --------- ------------- --------\n");
@@ -148,9 +146,9 @@ void *periodic_thread(void *arg)
 			printf("        actual delta: %8llu us\n", delta/1000);
 			printf("             latency: %8llu us\n", (delta-sched_delta)/1000);
 			printf("---------------------------------------\n");
-			printf("      previous start: %8llu us\n", (prev-start)/1000);
-			printf("                 now: %8llu us\n", (now-start)/1000);
-			printf("     scheduled start: %8llu us\n", (next-start)/1000);
+			printf("      previous start: %8llu us\n", (prev-iter_start)/1000);
+			printf("                 now: %8llu us\n", (now-iter_start)/1000);
+			printf("     scheduled start: %8llu us\n", (next-iter_start)/1000);
 			printf("next scheduled start is in the past!\n");
 			ret = 1;
 			break;
@@ -168,7 +166,7 @@ void *periodic_thread(void *arg)
 		} while (now < next);
 
 		/* start of period */
-		delay = (now - start - (nsec_t)(i+1)*period)/NS_PER_US;
+		delay = (now - iter_start - (nsec_t)(i+1)*period)/NS_PER_US;
 		dat.records[i].x = i;
 		dat.records[i].y = delay;
 		if (delay < min_delay)
@@ -271,7 +269,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* use the highest value for the quantiles */
-	if (stats_quantiles_init(&quantiles, log10(iterations))) {
+	if (stats_quantiles_init(&quantiles, (int)log10(iterations))) {
 		stats_container_free(&hist);
 		stats_container_free(&dat);
 		exit(1);

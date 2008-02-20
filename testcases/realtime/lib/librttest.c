@@ -84,7 +84,7 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	int c;
 	opterr = 0;
 	char *all_options, *opt_ptr;
-	static const char my_options[] = "b:p:v::";
+	static const char my_options[] = "b:p:v:";
 
 	if (options) {
 		opt_ptr = all_options = (char *)malloc(sizeof(my_options) + strlen(options) + 1);
@@ -114,10 +114,7 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 				_use_pi = atoi(optarg);
 				break;
 			case 'v':
-				if (optarg)
-					_dbg_lvl = atoi(optarg);
-				else
-					_dbg_lvl++;
+				_dbg_lvl = atoi(optarg);
 				break;
 			default:
 				if (parse_arg) {
@@ -131,7 +128,13 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 		printf("Priority Inheritance has been disabled for this run.\n");
 	if (use_buffer)
 		buffer_init();
+
+	/*
+	 * atexit() order matters here - buffer_print() will be called before
+	 * buffer_fini().
+	 */
 	atexit(buffer_fini);
+	atexit(buffer_print);
 	return 0;
 }
 

@@ -99,7 +99,9 @@ void *worker_thread(void *arg)
 		}
 
 		usleep(DELAY);
-		printf("thread %ld @ %d\n", (long)arg, i);
+
+		if (_dbg_lvl)
+			printf("thread %ld @ %d\n", (long)arg, i);
 	}
 	return NULL;
 }
@@ -164,7 +166,7 @@ int main(int argc, char* argv[])
 	}
 
 	/* wait for the children to complete */
-	printf("joining threads");
+	printf("joining threads\n");
 	for (t = 0; t < NUM_THREADS; t++) {
 		pthread_join(threads[t], NULL);
 	}

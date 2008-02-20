@@ -205,7 +205,7 @@ int stats_quantiles_calc(stats_container_t *data, stats_quantiles_t *quantiles)
 	int index;
 
 	// check for sufficient data size of accurate calculation
-	if (data->size <= 0 || data->size < exp10(quantiles->nines)) {
+	if (data->size <= 0 || data->size < (long)exp10(quantiles->nines)) {
 		//printf("ERROR: insufficient data size for %d nines\n", data->size);
 		return -1;
 	}

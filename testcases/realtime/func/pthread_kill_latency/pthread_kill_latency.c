@@ -42,6 +42,8 @@
  * HISTORY
  *      2006-Jun-28:  Initial version by Sripathi Kodi <sripathik@in.ibm.com>
  *	2007-Nov-07:  Added libstats support by Darren Hart <dvhltc@us.ibm.com>
+ *	2008-Jan-23:  Latency tracing added by
+ *				Sebastien Dugue <sebastien.dugue@bull.net>
  *
  *****************************************************************************/
 
@@ -58,16 +60,15 @@
 #define PRIO 89
 #define ITERATIONS 10000
 #define HIST_BUCKETS 100
-#define QUANTILE_NINES 4
 #define THRESHOLD 20
 #define SIGNALNUMBER SIGUSR1
 
 /* Get the pthread structure corresponding to this thread id */
 #define PTHREADOF(tid) get_thread(tid)->pthread
 
-nsec_t begin, end, max, min;
+static long latency_threshold = 0;
+nsec_t begin, end;
 int fail;
-float avg;
 
 atomic_t flag;
 
@@ -78,6 +79,7 @@ void usage(void)
 	rt_help();
 	printf("pthread_kill_latency specific options:\n");
 	printf("  -j            enable jvmsim\n");
+	printf("  -l threshold  trace latency with given threshold in us\n");
 }
 
 int parse_args(int c, char *v)
@@ -87,6 +89,9 @@ int parse_args(int c, char *v)
 	switch (c) {
 		case 'j':
 			run_jvmsim = 1;
+			break;
+		case 'l':
+			latency_threshold = strtoull(v, NULL, 0);
 			break;
 		case 'h':
 			usage();
@@ -118,6 +123,7 @@ void *signal_receiving_thread(void *arg)
 {
 	int i, ret, sig;
 	long delta;
+	long max, min;
 	sigset_t set, oset;
 
 	stats_container_t dat;
@@ -126,7 +132,7 @@ void *signal_receiving_thread(void *arg)
 
 	stats_container_init(&dat, ITERATIONS);
 	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, QUANTILE_NINES);
+	stats_quantiles_init(&quantiles, (int)log10(ITERATIONS));
 
 	debug(DBG_DEBUG, "Signal receiving thread running\n");
 
@@ -144,17 +150,21 @@ void *signal_receiving_thread(void *arg)
 
 	debug(DBG_DEBUG, "Signal receiving thread ready to receive\n");
 
+	if (latency_threshold) {
+		latency_trace_enable();
+		latency_trace_start();
+	}
+
 	/* Warm up */
 	for (i = 0; i < 5; i++) {
 		sigwait(&set, &sig);
 		atomic_set(1, &flag);
 	}
 
-	max = 0;
-	min = -1;
-	avg = 0;
+	max = min = 0;
 	fail = 0;
 	debug(DBG_INFO, "\n\n");
+
 	for (i = 0; i < ITERATIONS; i++) {
 		sigwait(&set, &sig);
 		end = rt_gettime();
@@ -162,20 +172,46 @@ void *signal_receiving_thread(void *arg)
 		dat.records[i].x = i;
 		dat.records[i].y = delta;
 
+		if (i == 0 || delta < min)
+			min = delta;
+
+		if (delta > max)
+			max = delta;
+
 		if (delta > THRESHOLD) fail++;
 
-		debug(DBG_INFO, "Iteration %d: Took %ld us. Max = %0.2lf us, Min = %0.2lf us\n", i, delta, (double)max/NS_PER_US, (double)min/NS_PER_US);
+		debug(DBG_INFO, "Iteration %d: Took %ld us. Max = %ld us, "
+		      "Min = %ld us\n", i, delta, max, min);
 
 		fflush(stdout);
 		buffer_print();
+
+		if (latency_threshold && (delta > latency_threshold)) {
+			atomic_set(2, &flag);
+			break;
+		}
+
 		atomic_set(1, &flag);
 	}
 
+	if (latency_threshold) {
+		latency_trace_stop();
+
+		if (i != ITERATIONS) {
+			printf("Latency threshold (%luus) exceeded at iteration %d\n",
+			       latency_threshold, i);
+			fflush(stdout);
+			buffer_print();
+			latency_trace_print();
+			stats_container_resize(&dat, i + 1);
+		}
+	}
+
+	stats_hist(&hist, &dat);
 	stats_container_save("samples", "pthread_kill Latency Scatter Plot",
 			     "Iteration", "Latency (us)", &dat, "points");
 	stats_container_save("hist", "pthread_kill Latency Histogram",
 			     "Latency (us)", "Samples", &hist, "steps");
-	stats_hist(&hist, &dat);
 
 	printf("\n");
 	printf("Min: %lu us\n", stats_min(&dat));
@@ -185,7 +221,7 @@ void *signal_receiving_thread(void *arg)
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
-    printf("Failures: %d\n", fail);
+	printf("Failures: %d\n", fail);
 	printf("Criteria: Time < %d us\n", THRESHOLD);
 	printf("Result: %s", fail ? "FAIL" : "PASS");
 	printf("\n\n");
@@ -231,6 +267,10 @@ void *signal_sending_thread(void *arg)
 		while (!atomic_get(&flag)) {
 			usleep(100);
 		}
+
+		if (atomic_get(&flag) == 2)
+			break;
+
 		atomic_set(0, &flag);
 	}
 	return NULL;
@@ -243,7 +283,7 @@ int main(int argc, char *argv[])
 	atomic_set(0,&flag);
 	setup();
 
-	rt_init("jh", parse_args, argc, argv);	/* we need the buffered print system */
+	rt_init("jl:h", parse_args, argc, argv);	/* we need the buffered print system */
 
 	printf("-------------------------------\n");
 	printf("pthread_kill Latency\n");

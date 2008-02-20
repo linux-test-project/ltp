@@ -170,30 +170,10 @@ void *thread_interrupter(void* arg)
 	return NULL;
 }
 
-
-void create_thread_(pthread_t *thread, void*(*func)(void*), int prio)
-{
-	pthread_attr_t attr;
-	struct sched_param param;
-
-	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + prio;
-
-	pthread_attr_init(&attr);
-	pthread_attr_setinheritsched (&attr, PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedparam(&attr, &param);
-	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-	if (pthread_create(thread, &attr, func, (void *)0)) {
-		perror("pthread_create failed");
-	}
-
-	pthread_attr_destroy(&attr);
-}
-
-
 int main(int argc, char *argv[])
 {
-	pthread_t worker, interrupter;
+	int worker, interrupter;
+
 	setup();
 
 	rt_init("jh",parse_args,argc,argv);
@@ -205,13 +185,13 @@ int main(int argc, char *argv[])
                 printf("jvmsim disabled\n");
 	}
 
-	create_thread_(&interrupter, thread_interrupter, 80);
+	interrupter = create_fifo_thread(thread_interrupter, NULL, 80);
 	sleep(1);
-	create_thread_(&worker, thread_worker, 10);
+	worker = create_fifo_thread(thread_worker, NULL, 10);
 
-	pthread_join(worker, NULL);
+	join_thread(worker);
 	flag = 1;
-	pthread_join(interrupter, NULL);
+	join_thread(interrupter);
 
 	return 0;
 }

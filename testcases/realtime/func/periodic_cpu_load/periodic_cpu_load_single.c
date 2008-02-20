@@ -102,7 +102,7 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 
 	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, 4);
+	stats_quantiles_init(&quantiles, (int)log10(iterations));
  	asprintf(&samples_filename, "%s-samples", filename_prefix);
  	asprintf(&hist_filename, "%s-hist", filename_prefix);
 

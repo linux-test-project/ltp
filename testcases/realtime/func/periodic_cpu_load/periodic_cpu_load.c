@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
 
 	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
 		stats_container_init(&dat[i], ITERATIONS);
-		stats_quantiles_init(&quantiles[i], log10(ITERATIONS));
+		stats_quantiles_init(&quantiles[i], (int)log10(ITERATIONS));
 	}
 
 	struct periodic_arg parg_a = {PERIOD_A, ITERATIONS, calc, (void *)CALC_LOOPS_A };

@@ -51,7 +51,6 @@
 
 #define DEF_MED_PRIO 60		// (softirqd-hrtimer,98]
 #define DEF_ITERATIONS 10000
-#define DEF_QUANTILE_NINES 4
 #define HIST_BUCKETS 100
 #define DEF_BUSY_TIME 10	// Duration of busy work in milliseconds
 #define DEF_SLEEP_TIME 10000	// Duration of nanosleep in nanoseconds
@@ -63,7 +62,6 @@ static int high_prio = DEF_MED_PRIO+1;
 static int busy_time = DEF_BUSY_TIME;
 static int iterations = DEF_ITERATIONS;
 static unsigned long criteria = DEF_CRITERIA;	// FIXME: make configurable
-static int quantile_nines = DEF_QUANTILE_NINES;
 static int busy_threads;
 
 static stats_container_t dat;
@@ -104,7 +102,6 @@ int parse_args(int c, char *v)
 			high_prio = med_prio+1;
 			break;
                 case 'i':
-			// FIXME: if we change these we also have to calc QUANTILE_NINES here
 			printf("Setting iterations disabled\n");
 			 // iterations = atoi(v);
                         break;
@@ -188,7 +185,7 @@ int main(int argc, char *argv[])
 	stats_quantiles_t quantiles;
 	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, quantile_nines);
+	stats_quantiles_init(&quantiles, (int)log10(iterations));
 
 	t_id = create_fifo_thread(timer_thread, NULL, high_prio);
 	if (t_id == -1) {

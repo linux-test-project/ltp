@@ -179,8 +179,6 @@ int main(int argc, char* argv[])
                   printf("jvmsim disabled\n");
         }
 
-
-	rt_init("hn:", parse_args, argc, argv);
 	if (rt_threads == 0) {
 		numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 		rt_threads = numcpus;

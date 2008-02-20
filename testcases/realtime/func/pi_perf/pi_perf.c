@@ -171,7 +171,7 @@ void * high_prio_thread(void *arg)
 	stats_container_init(&high_dat, iterations);
 	stats_container_init(&wait_dat, iterations);
 	stats_container_init(&wait_hist, HIST_BUCKETS);
-	stats_quantiles_init(&wait_quantiles, log10(iterations));
+	stats_quantiles_init(&wait_quantiles, (int)log10(iterations));
 
 	printf("High prio thread started\n");
 

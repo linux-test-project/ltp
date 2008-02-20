@@ -59,7 +59,6 @@
 
 #define ITERATIONS 1000000
 #define HIST_BUCKETS 20
-#define QUANTILE_NINES 6
 
 #define SCATTER_FILENAME	0
 #define HIST_FILENAME		1
@@ -227,7 +226,7 @@ int main(int argc, char *argv[])
 
 	stats_container_init(&dat, ITERATIONS);
 	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, QUANTILE_NINES);
+	stats_quantiles_init(&quantiles, (int)log10(ITERATIONS));
 	setup();
 
 	if (stats_cmdline(argc, argv) < 0) {
