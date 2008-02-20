@@ -41,6 +41,8 @@ void setup(void);
 #define MSGSIZE	1024		/* a resonable size for a message */
 #define MSGTYPE 1		/* a type ID for a message */
 
+#define MAX_MSGQUEUES	16	/* MSGMNI as defined in linux/msg.h */
+
 typedef struct mbuf {		/* a generic message structure */
 	long mtype;
 	char mtext[MSGSIZE + 1];  /* add 1 here so the message can be 1024   */

@@ -50,6 +50,7 @@
 #include <sys/msg.h>
 #include "test.h"
 #include "usctest.h"
+#include "ipcmsg.h"
 
 void setup();
 void cleanup();
@@ -479,26 +480,6 @@ static int get_used_msgqueues()
         return used_queues;
 }
 
-/** Get the max number of message queues allowed on system */
-static int get_max_msgqueues()
-{
-        FILE *f;
-        char buff[BUFSIZE];
-
-        /* Get the max number of message queues allowed on system */
-        f = fopen("/proc/sys/kernel/msgmni", "r");
-        if (!f){
-                tst_resm(TBROK,"Could not open /proc/sys/kernel/msgmni");
-                tst_exit();
-        }
-        if (!fgets(buff, BUFSIZE, f)) {
-                tst_resm(TBROK,"Could not read /proc/sys/kernel/msgmni");
-                tst_exit();
-        }
-        fclose(f);
-        return atoi(buff);
-}
-
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
@@ -520,7 +501,7 @@ setup()
 	 */
         TEST_PAUSE;
 
-        MSGMNI = get_max_msgqueues() - get_used_msgqueues();
+        MSGMNI = MAX_MSGQUEUES - get_used_msgqueues();
 	if (MSGMNI <= 0){
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
 		cleanup(); 

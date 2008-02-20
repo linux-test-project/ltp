@@ -18,11 +18,14 @@
 
 CFLAGS += -I../lib -I../../../../../include -Wall
 LDLIBS += -L../../../../../lib -lltp -L.. -lipc
+LIBIPC_HEADERS	= ../lib/ipcmsg.h
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
+
+$(TARGETS): $(LIBIPC_HEADERS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../../bin/$$i ; done

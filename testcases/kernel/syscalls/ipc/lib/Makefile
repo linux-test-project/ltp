@@ -19,6 +19,7 @@
 SRCS   = libipc.c
 OBJS   = $(SRCS:.c=.o)
 LIBIPC = ../libipc.a
+LIBIPC_HEADERS	= ipcmsg.h ipcsem.h
 
 CFLAGS += -I../../../../../include -Wall
 
@@ -26,6 +27,8 @@ all: $(LIBIPC)
 
 $(LIBIPC): $(OBJS)
 	$(AR) -rc $@ $(OBJS)
+
+$(OBJS): $(LIBIPC_HEADERS)
 
 install:
 
