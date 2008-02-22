@@ -68,8 +68,6 @@ int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
 int *msg_q_arr = NULL;		/* hold the id's that we create */
 int num_queue = 0;		/* count the queues created */
 
-static int get_max_msgqueues();
-
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -121,24 +119,6 @@ int main(int ac, char **av)
 	return(0);
 }
 
-/** Get the max number of message queues allowed on system */
-int get_max_msgqueues()
-{
-        FILE *f;
-        char buff[512];
-
-        /* Get the max number of message queues allowed on system */
-        f = fopen("/proc/sys/kernel/msgmni", "r");
-        if (!f){
-                tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/msgmni");
-        }
-        if (!fgets(buff, 512, f)) {
-                tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/msgmni");
-        }
-        fclose(f);
-        return atoi(buff);
-}
-
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
@@ -166,6 +146,8 @@ setup(void)
 	msgkey = getipckey();
 
 	maxmsgs = get_max_msgqueues();
+	if (maxmsgs < 0)
+		tst_brkm(TBROK, cleanup, "");
 
 	msg_q_arr = (int *)calloc(maxmsgs, sizeof (int));
 	if (msg_q_arr == NULL) {

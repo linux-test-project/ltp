@@ -22,13 +22,14 @@
 
 /*
  * NAME
- *	msgctl08
+ *	msgctl10
  *
  * CALLS
- *	msgget(2) msgctl(2) 
+ *	msgget(2) msgctl(2)
  *
  * ALGORITHM
  *	Get and manipulate a message queue.
+ *	Same as msgctl08 but gets the actual msgmni value under procfs.
  *
  * RESTRICTIONS
  *
@@ -59,7 +60,7 @@ void cleanup();
  *   *   *   */
 
 
-char *TCID="msgctl08";           /* Test program identifier.    */
+char *TCID="msgctl10";           /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
@@ -74,7 +75,7 @@ int exp_enos[]={0};     /* List must end with 0 */
 #define FAIL		1
 #define PASS		0
 
-key_t	keyarray[MAXNPROCS];    
+key_t	keyarray[MAXNPROCS];
 
 struct {
 	long	type;
@@ -126,14 +127,14 @@ char	*argv[];
 	{
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux, &i_uclinux);
 	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &id_uclinux, &key_uclinux,
 			&child_process_uclinux);
 #endif
 
 	setup();
-	
+
 	if (argc == 1 )
 	{
 		/* Set default parameters */
@@ -144,7 +145,7 @@ char	*argv[];
 	{
 		if ( atoi(argv[1]) > MAXNREPS )
 		{
-		        tst_resm(TCONF,"Requested number of iterations too large, setting to Max. of %d", MAXNREPS);
+			tst_resm(TCONF,"Requested number of iterations too large, setting to Max. of %d", MAXNREPS);
 			nreps = MAXNREPS;
 		}
 		else
@@ -153,7 +154,7 @@ char	*argv[];
 		}
 		if (atoi(argv[2]) > MSGMNI )
 		{
-		        tst_resm(TCONF,"Requested number of processes too large, setting to Max. of %d", MSGMNI);
+			tst_resm(TCONF,"Requested number of processes too large, setting to Max. of %d", MSGMNI);
 			nprocs = MSGMNI;
 		}
 		else
@@ -163,7 +164,7 @@ char	*argv[];
 	}
 	else
 	{
-	        tst_resm(TCONF," Usage: %s [ number of iterations  number of processes ]", argv[0]);
+		tst_resm(TCONF," Usage: %s [ number of iterations  number of processes ]", argv[0]);
 		tst_exit();
 	}
 
@@ -175,30 +176,30 @@ char	*argv[];
 	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGTERM);
-	if (sigaction(SIGTERM, &act, NULL) < 0) 
+	if (sigaction(SIGTERM, &act, NULL) < 0)
 	{
-                tst_resm(TFAIL, "Sigset SIGTERM failed");
-                tst_exit();
+		tst_resm(TFAIL, "Sigset SIGTERM failed");
+		tst_exit();
 	}
 	/* Set up array of unique keys for use in allocating message
 	 * queues
 	 */
-	for (i = 0; i < nprocs; i++) 
+	for (i = 0; i < nprocs; i++)
 	{
 		ok = 1;
-		do 
+		do
 		{
 			/* Get random key */
 			keyarray[i] = (key_t)rand();
 			/* Make sure key is unique and not private */
-			if (keyarray[i] == IPC_PRIVATE) 
+			if (keyarray[i] == IPC_PRIVATE)
 			{
 				ok = 0;
 				continue;
 			}
-			for (j = 0; j < i; j++) 
+			for (j = 0; j < i; j++)
 			{
-				if (keyarray[j] == keyarray[i]) 
+				if (keyarray[j] == keyarray[i])
 				{
 					ok = 0;
 					break;
@@ -207,23 +208,23 @@ char	*argv[];
 			}
 		} while (ok == 0);
 	}
-	 
+
 	/* Fork a number of processes, each of which will
 	 * create a message queue with one reader/writer
 	 * pair which will read and write a number (iterations)
 	 * of random length messages with specific values.
 	 */
 
-	for (i = 0; i <  nprocs; i++) 
+	for (i = 0; i <  nprocs; i++)
 	{
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0)
 		{
-	                tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
-        	        tst_exit();
+			tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
+			tst_exit();
 		}
 		/* Child does this */
-		if (pid == 0) 
+		if (pid == 0)
 		{
 #ifdef UCLINUX
 			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0)
@@ -246,34 +247,34 @@ char	*argv[];
 		{
 			if (status>>8 != 0 )
 			{
-	                	tst_resm(TFAIL, "Child exit status = %d", status>>8);
-	        	        tst_exit();
+				tst_resm(TFAIL, "Child exit status = %d", status>>8);
+				tst_exit();
 			}
 			count++;
-		}	
+		}
 		else
 		{
 			if (errno != EINTR)
-			{	
+			{
 				break;
 			}
 #ifdef DEBUG
-		        tst_resm(TINFO,"Signal detected during wait");
+			tst_resm(TINFO,"Signal detected during wait");
 #endif
 		}
 	}
 	/* Make sure proper number of children exited */
 	if (count != nprocs)
 	{
-                tst_resm(TFAIL, "Wrong number of children exited, Saw %d, Expected %d", count, nprocs);
-       	        tst_exit();
+		tst_resm(TFAIL, "Wrong number of children exited, Saw %d, Expected %d", count, nprocs);
+		tst_exit();
 	}
 
-        tst_resm(TPASS,"msgctl08 ran successfully!");
-	 
+	tst_resm(TPASS,"msgctl10 ran successfully!");
+
 	cleanup();
-        return (0);
-								
+	return (0);
+
 }
 /*--------------------------------------------------------------------*/
 
@@ -299,28 +300,28 @@ int	child_process;
 	int id, pid;
 
 	sighold(SIGTERM);
-		 TEST(msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR));
+	TEST(msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR));
 	if (TEST_RETURN < 0)
 	{
-                tst_resm(TFAIL, "Msgget error in child %d, errno = %d", child_process, TEST_ERRNO);
-       	        tst_exit();
+		tst_resm(TFAIL, "Msgget error in child %d, errno = %d", child_process, TEST_ERRNO);
+		tst_exit();
 	}
 	tid = id = TEST_RETURN;
 	sigrelse(SIGTERM);
 
 	fflush(stdout);
-	if ((pid = FORK_OR_VFORK()) < 0) 
+	if ((pid = FORK_OR_VFORK()) < 0)
 	{
-                tst_resm(TWARN, "\tFork failed (may be OK if under stress)");
+		tst_resm(TWARN, "\tFork failed (may be OK if under stress)");
 		TEST(msgctl(tid, IPC_RMID, 0));
 		if (TEST_RETURN < 0)
 		{
-                	tst_resm(TFAIL, "Msgctl error in cleanup, errno = %d", errno);
+			tst_resm(TFAIL, "Msgctl error in cleanup, errno = %d", errno);
 		}
-       	        tst_exit();
+		tst_exit();
 	}
 	/* Child does this */
-	if (pid == 0) 
+	if (pid == 0)
 	{
 #ifdef UCLINUX
 		if (self_exec(argv0, "nddd", 2, id, key, child_process) < 0) {
@@ -329,7 +330,7 @@ int	child_process;
 			if (TEST_RETURN < 0)
 			{
 				tst_resm(TFAIL, "\tMsgctl error in cleanup, "
-					 "errno = %d\n", errno);
+					"errno = %d\n", errno);
 			}
 			tst_exit();
 		}
@@ -345,8 +346,8 @@ int	child_process;
 	TEST(msgctl(id, IPC_RMID, 0));
 	if (TEST_RETURN < 0)
 	{
-                tst_resm(TFAIL, "msgctl errno %d", TEST_ERRNO);
-       	        tst_exit();
+		tst_resm(TFAIL, "msgctl errno %d", TEST_ERRNO);
+		tst_exit();
 	}
 	exit(PASS);
 }
@@ -357,23 +358,23 @@ long key;
 {
 	int i, size;
 
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0) 
+		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0)
 		{
-                	tst_brkm(TBROK, cleanup, "Msgrcv error in child %d, read # = %d, errno = %d", (i + 1), child, errno);
-	       	        tst_exit();
+			tst_brkm(TBROK, cleanup, "Msgrcv error in child %d, read # = %d, errno = %d", (i + 1), child, errno);
+			tst_exit();
 		}
-		if (buffer.data.len + 1 != size)  
+		if (buffer.data.len + 1 != size)
 		{
-        	       	tst_resm(TFAIL, "Size mismatch in child %d, read # = %d", child, (i + 1));
-        	       	tst_resm(TFAIL, "for message size got  %d expected  %d %s",size ,buffer.data.len);
-	       	        tst_exit();
+			tst_resm(TFAIL, "Size mismatch in child %d, read # = %d", child, (i + 1));
+			tst_resm(TFAIL, "for message size got  %d expected  %d %s",size ,buffer.data.len);
+			tst_exit();
 		}
-		if ( verify(buffer.data.pbytes, key, size - 1, child) ) 
+		if ( verify(buffer.data.pbytes, key, size - 1, child) )
 		{
-                	tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1), child, key);
-	       	        tst_exit();
+			tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1), child, key);
+			tst_exit();
 		}
 		key++;
 	}
@@ -386,9 +387,9 @@ long key;
 {
 	int i, size;
 
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		do 
+		do
 		{
 			size = (rand() % 99);
 		} while (size == 0);
@@ -398,12 +399,12 @@ long key;
 		TEST(msgsnd(id, &buffer, size + 1, 0));
 		if (TEST_RETURN < 0)
 		{
-                	tst_brkm(TBROK, cleanup, "Msgsnd error in child %d, key =   %x errno  = %d", child, key, TEST_ERRNO);
+			tst_brkm(TBROK, cleanup, "Msgsnd error in child %d, key =   %x errno  = %d", child, key, TEST_ERRNO);
 		}
 		key++;
 	}
 	return (0);
-}	
+}
 
 int fill_buffer(buf, val, size)
 register char *buf;
@@ -436,7 +437,7 @@ int verify(buf, val, size, child)
 	{
 		if (*buf++ != val)
 		{
-                	tst_resm(TWARN, "Verify error in child %d, *buf = %x, val = %x, size = %d", child, *buf, val, size);
+			tst_resm(TWARN, "Verify error in child %d, *buf = %x, val = %x, size = %d", child, *buf, val, size);
 			return(FAIL);
 		}
 	}
@@ -464,36 +465,29 @@ setup()
 	int nr_msgqs;
 
 	tst_tmpdir();
- 
-        /* You will want to enable some signal handling so you can capture
+
+	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 */
-        tst_sig(FORK, DEF_HANDLER, cleanup);
- 
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-        /* Pause if that option was specified */
-        /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
+
+	/* Pause if that option was specified */
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
 	 */
-        TEST_PAUSE;
+	TEST_PAUSE;
 
 	nr_msgqs = get_max_msgqueues();
 	if (nr_msgqs < 0)
 		cleanup();
 
-	nr_msgqs -= get_used_msgqueues();
-	if (nr_msgqs <= 0){
+	MSGMNI = nr_msgqs - get_used_msgqueues();
+	if (MSGMNI <= 0){
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
-		cleanup(); 
-	}	
-
-	/*
-	 * Since msgmni scales to the memory size, it may reach huge values
-	 * that are not necessary for this test.
-	 * That's why we define NR_MSGQUEUES as a high boundary for it.
-	 */
-	MSGMNI = min(nr_msgqs, NR_MSGQUEUES);
+		cleanup();
+	}
 }
 
 
@@ -505,29 +499,29 @@ void
 cleanup()
 {
 	int status;
-        /*
+	/*
 	 *  Remove the message queue from the system
 	 */
 #ifdef DEBUG
-        tst_resm(TINFO,"Removing the message queue");
+	tst_resm(TINFO,"Removing the message queue");
 #endif
-        fflush (stdout);
-        (void) msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
-        if ((status = msgctl(tid, IPC_STAT, (struct msqid_ds *)NULL)) != -1)
-        {
-                (void) msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
-                tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
-                tst_exit();
-        }
+	fflush (stdout);
+	(void) msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
+	if ((status = msgctl(tid, IPC_STAT, (struct msqid_ds *)NULL)) != -1)
+	{
+		(void) msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
+		tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
+		tst_exit();
+	}
 
-        fflush (stdout);
-        /*
+	fflush (stdout);
+	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-        TEST_CLEANUP;
+	TEST_CLEANUP;
 	tst_rmdir();
-        /* exit with return code appropriate for results */
-        tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }
 

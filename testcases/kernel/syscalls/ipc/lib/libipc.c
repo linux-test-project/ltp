@@ -201,3 +201,57 @@ rm_shm(int shm_id)
 		tst_resm(TINFO, "id = %d", shm_id);
 	}
 }
+
+#define BUFSIZE 512
+
+/*
+ * Get the number of message queues already in use
+ */
+int
+get_used_msgqueues()
+{
+	FILE *f;
+	int used_queues;
+	char buff[BUFSIZE];
+
+	f = popen("ipcs -q", "r");
+	if (!f) {
+		tst_resm(TBROK, "Could not run 'ipcs' to calculate used "
+			"message queues");
+		tst_exit();
+	}
+	/* FIXME: Start at -4 because ipcs prints four lines of header */
+	for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++)
+		;
+	pclose(f);
+	if (used_queues < 0) {
+		tst_resm(TBROK, "Could not read output of 'ipcs' to "
+			"calculate used message queues");
+		tst_exit();
+	}
+	return used_queues;
+}
+
+/*
+ * Get the max number of message queues allowed on system
+ */
+int
+get_max_msgqueues()
+{
+	FILE *f;
+	char buff[BUFSIZE];
+
+	/* Get the max number of message queues allowed on system */
+	f = fopen("/proc/sys/kernel/msgmni", "r");
+	if (!f) {
+		tst_resm(TBROK, "Could not open /proc/sys/kernel/msgmni");
+		return -1;
+	}
+	if (!fgets(buff, BUFSIZE, f)) {
+		fclose(f);
+		tst_resm(TBROK, "Could not read /proc/sys/kernel/msgmni");
+		return -1;
+	}
+	fclose(f);
+	return atoi(buff);
+}

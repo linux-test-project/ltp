@@ -21,8 +21,11 @@ LDLIBS += -L../../../../../lib -lltp -L.. -lipc
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
+LIBIPC_HEADERS	= ../lib/ipcmsg.h
 
 all: $(TARGETS)
+
+$(TARGETS):	$(LIBIPC_HEADERS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../../bin/$$i ; done

@@ -41,7 +41,9 @@ void setup(void);
 #define MSGSIZE	1024		/* a resonable size for a message */
 #define MSGTYPE 1		/* a type ID for a message */
 
-#define MAX_MSGQUEUES	16	/* MSGMNI as defined in linux/msg.h */
+#define NR_MSGQUEUES	16	/* MSGMNI as defined in linux/msg.h */
+
+#define min(a, b)	(((a) < (b)) ? (a) : (b))
 
 typedef struct mbuf {		/* a generic message structure */
 	long mtype;
@@ -60,5 +62,8 @@ void rm_queue(int);
 
 int getipckey();
 int getuserid(char *);
+
+int get_max_msgqueues(void);
+int get_used_msgqueues(void);
 
 #endif /* ipcmsg.h */
