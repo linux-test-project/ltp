@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006-2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@
  *      Measure the latency involved in sending a signal to a thread
  *      using pthread_kill. Two threads are created - the one that receives the
  *      signal (thread1) and the other that sends the signal (thread2). Before
- *      sending the signal, the thread2 waits for thread1 to initialize, notes the
- *      time and sends pthread_kill signal to thread1. thread2, which has defined a
- *      handler for the signal, notes the time it recieves the signal. The maximum
- *      and the minimum latency is reported.
+ *      sending the signal, the thread2 waits for thread1 to initialize, notes
+ *      the time and sends pthread_kill signal to thread1. thread2, which has
+ *      defined a handler for the signal, notes the time it recieves the signal.
+ *      The maximum and the minimum latency is reported.
  *
  *
  * USAGE:
@@ -40,7 +40,7 @@
  *      Sripathi Kodi <sripathik@in.ibm.com>
  *
  * HISTORY
- *      2006-Jun-28:  Initial version by Sripathi Kodi <sripathik@in.ibm.com>
+ *     	2006-Jun-28:  Initial version by Sripathi Kodi <sripathik@in.ibm.com>
  *	2007-Nov-07:  Added libstats support by Darren Hart <dvhltc@us.ibm.com>
  *	2008-Jan-23:  Latency tracing added by
  *				Sebastien Dugue <sebastien.dugue@bull.net>

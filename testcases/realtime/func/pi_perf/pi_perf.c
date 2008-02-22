@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2007, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,28 +17,28 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      pi_perf.c
+ *     pi_perf.c
  *
  * DESCRIPTION
- * 	Create a scenario with one high, one low and several
- * 	medium priority threads. Low priority thread holds a PI lock, high
- * 	priority thread later tries to grab it. The test measures the maximum
- * 	amount of time the high priority thread has to wait before it gets
- * 	the lock. This time should be bound by the duration for which low
- * 	priority thread holds the lock
+ *     Create a scenario with one high, one low and several
+ *     medium priority threads. Low priority thread holds a PI lock, high
+ *     priority thread later tries to grab it. The test measures the maximum
+ *     amount of time the high priority thread has to wait before it gets
+ *     the lock. This time should be bound by the duration for which low
+ *     priority thread holds the lock
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *     Use run_auto.sh script in current directory to build and run test.
+ *     Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *      -L/usr/lib/nptl -lpthread -lrt -lm pi_perf.c -o pi_perf
+ *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
+ *     -L/usr/lib/nptl -lpthread -lrt -lm pi_perf.c -o pi_perf
  *
  * AUTHOR
- *      Author: Sripathi Kodi <sripathik@in.ibm.com>
+ *     Author: Sripathi Kodi <sripathik@in.ibm.com>
  *
  * HISTORY
- *      2007-Nov-20:    Initial version by Sripathi Kodi <sripathik@in.ibm.com>
+ *     2007-Nov-20:    Initial version by Sripathi Kodi <sripathik@in.ibm.com>
  *
  *****************************************************************************/
 
@@ -196,20 +196,19 @@ void * high_prio_thread(void *arg)
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
 	}
-
+	stats_quantiles_calc(&wait_dat, &wait_quantiles);
 	stats_hist(&wait_hist, &wait_dat);
-	stats_container_save("samples", "pi_perf Latency Scatter Plot",
-		"Iteration", "Latency (us)", &wait_dat, "points");
-	stats_container_save("hist", "pi_perf Latency Histogram",
-		"Latency (us)", "Samples", &wait_hist, "steps");
 
 	printf("Min wait time = %ld us\n", stats_min(&wait_dat));
 	printf("Max wait time = %ld us\n", stats_max(&wait_dat));
 	printf("Average wait time = %4.2f us\n", stats_avg(&wait_dat));
 	printf("Standard Deviation = %4.2f us\n", stats_stddev(&wait_dat));
 	printf("Quantiles:\n");
-	stats_quantiles_calc(&wait_dat, &wait_quantiles);
 	stats_quantiles_print(&wait_quantiles);
+	stats_container_save("samples", "pi_perf Latency Scatter Plot",
+		"Iteration", "Latency (us)", &wait_dat, "points");
+	stats_container_save("hist", "pi_perf Latency Histogram",
+		"Latency (us)", "Samples", &wait_hist, "steps");
 
 	return NULL;
 }

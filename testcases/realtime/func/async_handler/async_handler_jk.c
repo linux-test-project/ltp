@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,19 +20,19 @@
  *      async_handler_jk.c
  *
  * DESCRIPTION
- *       This test mimics an async event handler in a real-time JVM
- *       An async event server thread is created that goes to sleep waiting
- *       to be woken up to do some work.
+ *     This test mimics an async event handler in a real-time JVM
+ *     An async event server thread is created that goes to sleep waiting
+ *     to be woken up to do some work.
  *
- *      A user thread is created that simulates the firing of an event by
- *      signalling the async handler thread to do some work.
+ *     A user thread is created that simulates the firing of an event by
+ *     signalling the async handler thread to do some work.
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *     Use run_auto.sh script in current directory to build and run test.
+ *     Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *      -L/usr/lib/nptl -lpthread -lrt -lm async_handler_jk.c -o async_handler_jk
+ *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
+ *     -L/usr/lib/nptl -lpthread -lrt -lm async_handler_jk.c -o async_handler_jk
  *
  * AUTHOR
  *      John Kacur <jkacur@ca.ibm.com>

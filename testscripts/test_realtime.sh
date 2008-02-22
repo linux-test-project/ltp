@@ -1,3 +1,24 @@
+################################################################################
+##                                                                            ##
+## Copyright ©  International Business Machines  Corp., 2007, 2008            ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+################################################################################
+
+
 #! /bin/bash
 #
 # Script to run the tests in testcases/realtime
@@ -20,7 +41,7 @@ fi
 
 function usage()
 {
-	echo -e "\nUsage: $0 test-argument"
+	echo -e "\nUsage: test_realtime.sh  -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
 	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name"
 	echo -e "\nand:\n"
 	echo -e " func = 	all functional tests will be run "
@@ -32,6 +53,14 @@ function usage()
 	echo -e " test_name = 	only test_name subdir will be run (e.g: func/pi-tests) "
 	echo -e "\n"
 	exit 1;
+}
+
+function check_error()
+{
+        if [ $? -gt 0 ]; then
+        echo -e "\n $1 Failed\n"
+        exit 1
+        fi
 }
 
 list_tests()
@@ -48,39 +77,103 @@ list_tests()
 
 function run_test()
 {
-	if [ -d "$test" ]; then
-		cd $test
-		if [ -f "run_auto.sh" ]; then
-			./run_auto.sh
-		else
-			echo -e "\n Failed to find run script in $test \n"
-		fi
-		cd $TESTS_DIR
-	else
-		echo -e "\n $test is not a valid test subdirectory\n"
-		usage
-		exit 1
-	fi
+        iter=0
+        if [ -z "$2" ]; then
+            LOOPS=1
+        else
+         LOOPS=$2
+        fi
+        #Test if $LOOPS is a integer
+        if [[ ! $LOOPS =~ ^[0-9]+$ ]]; then
+            echo "\"$LOOPS\" doesn't appear to be a number"
+            usage
+            exit
+        fi
+        if [ -d "$test" ]; then
+            pushd $test >/dev/null
+            if [ -f "run_auto.sh" ]; then
+                echo " Running $LOOPS runs of $subdir "
+                for((iter=0; $iter < $LOOPS; iter++)); do
+                ./run_auto.sh
+                done
+            else
+                echo -e "\n Failed to find run script in $test \n"
+            fi
+            pushd $TESTS_DIR >/dev/null
+        else
+                echo -e "\n $test is not a valid test subdirectory "
+                usage
+                exit 1
+        fi
 }
 
 function make_clean()
 {
-	cd $TESTS_DIR
-	rm -rf logs/*
-	for mfile in `find -name "Makefile"`;
-	do
-		target_dir=`dirname $mfile`
-		cd $target_dir
-		make clean
-		cd $TESTS_DIR
-	done
+        pushd $TESTS_DIR >/dev/null
+        rm -rf logs/*
+        for mfile in `find -name "Makefile"`;
+        do
+            target_dir=`dirname $mfile`
+            pushd $target_dir >/dev/null
+            make clean
+            pushd $TESTS_DIR >/dev/null
+        done
+}
+
+find_test()
+{
+    case $1 in
+        func)
+            TESTLIST="func"
+            ;;
+        stress)
+            TESTLIST="stress"
+            ;;
+        perf)
+            TESTLIST="perf"
+            ;;
+        all)
+        # Run all tests which have run_auto.sh
+            TESTLIST="func stress java perf"
+            ;;
+        list)
+        # This will only display subdirs which have run_auto.sh
+            list_tests
+            exit
+            ;;
+        clean)
+        # This will clobber logs, out files, .o's etc
+            make_clean
+            exit
+            ;;
+
+        *)
+        # run the tests in the individual subdirectory if it exists
+            TESTLIST="$1"
+            ;;
+    esac
+    for subdir in $TESTLIST; do
+        if [ -d $subdir ]; then
+            pushd $subdir >/dev/null
+            for name in `find -name "run_auto.sh"`; do
+                test="`dirname $name`"
+                run_test "$test" "$2"
+                pushd $subdir > /dev/null
+            done
+                pushd $TESTS_DIR >/dev/null
+        else
+            echo -e "\n $subdir not found; check name/path with run.sh list "
+        fi
+    done
+
 }
 
 source $LTPROOT/testcases/realtime/scripts/setenv.sh
 
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
 	usage
 fi
+pushd $TESTS_DIR >/dev/null
 
 cd $TESTS_DIR
 if [ ! -e "logs" ]; then
@@ -94,55 +187,61 @@ if [ ! -e "config/m4" ]; then
         chmod -R 775 config/m4
 fi
 
-rm -fr func/vstnm
+#GNUmakefile.in is created by autogen.sh
+if [ ! -f GNUmakefile.in ]; then
+        ./autogen.sh
+        check_error autogen.sh
+        ./configure
+        check_error configure
+fi
 
-./autogen.sh
-./configure
+#GNUmakefile is created by configure
+if [ ! -f GNUmakefile ]; then
+        ./configure
+        check_error configure
+fi
+
+#Only build the library, most of the tests depend upon.
+#The Individual tests will be built, just before they run.
+pushd lib
 make
+check_error make
+popd
 
-
-case $1 in
-	func)
-		TESTLIST="func"
-		;;
-	stress)
-		TESTLIST="stress"
-		;;
-	perf)
-		TESTLIST="perf"
-		;;
-	all)
-		# Run all tests which have run_auto.sh
-		TESTLIST="func stress perf"
-		;;
-	list)
-		# This will only display subdirs which have run_auto.sh
-		list_tests
-		exit
-		;;
-	clean)
-		# This will clobber logs, out files, .o's etc
-		make_clean
-		exit
-		;;
-	*)
-		# run the tests in the individual subdirectory if it exists
-		TESTLIST="$1"
-		;;
-esac
-
-for subdir in $TESTLIST
+ISLOOP=0
+index=0
+while getopts ":t:l:h" option
 do
-        if [ -d $subdir ]; then
-                cd $subdir
-                for name in `find -name "run_auto.sh"`
-                do
-                        test="`dirname $name`"
-                        run_test $test
-                        cd $subdir
-                done
-		cd $TESTS_DIR
-        else
-                echo -e "\n $subdir not found; check name/path with run.sh list\n"
-        fi
+    case "$option" in
+
+        t )
+            if [ $ISLOOP -eq 1 ]; then
+                LOOP=1
+                tests[$index]=$LOOP
+                index=$((index+1))
+            fi
+
+            tests[$index]="$OPTARG"
+            index=$((index+1))
+            TESTCASE="$OPTARG"
+            ISLOOP=1
+            ;;
+
+        l )
+            ISLOOP=0
+            tests[$index]="$OPTARG"
+            LOOP="$OPTARG"
+            index=$((index+1))
+            ;;
+        h )
+            usage
+            ;;
+        * ) echo "Unrecognized option specified"
+            usage
+            ;;
+    esac
 done
+for(( i=0; $i < $index ; $((i+=2)) )); do
+    find_test ${tests[$i]} ${tests[$((i+1))]}
+done
+

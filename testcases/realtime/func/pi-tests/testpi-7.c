@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,16 +27,17 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
- *      Compilation : gcc testpi-7.c -lm -L/usr/lib/nptl -lpthread -lrt -D_GNU_SOURCE -I/usr/include/nptl -o testpi-7
+ *      Compilation : gcc testpi-7.c -lm -L/usr/lib/nptl -lpthread -lrt
+ *		      -D_GNU_SOURCE -I/usr/include/nptl -o testpi-7
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *       2006-May-3:  Initial version by Darren Hart <dvhltc@us.ibm.com>
- *       2006-May-4:  Timing fixes reported by Vernon Mauery <vernux@us.ibm.com>
- *       2006-May-4:  Made the med prio threads RT by Darren Hart <dvhltc@us.ibm.com>
- *       2006-May-5:  Modified to use flagging by Vernon Mauery <vernux@us.ibm.com>
+ *   2006-May-3: Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *   2006-May-4: Timing fixes reported by Vernon Mauery <vernux@us.ibm.com>
+ *   2006-May-4: Made the med prio threads RT by Darren Hart <dvhltc@us.ibm.com>
+ *   2006-May-5: Modified to use flagging by Vernon Mauery <vernux@us.ibm.com>
  *
  *****************************************************************************/
 

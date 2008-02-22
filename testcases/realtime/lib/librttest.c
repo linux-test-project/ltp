@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006-2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *       librt.c
+ *       librttest.c
  *
  * DESCRIPTION
  *      A set of commonly used convenience functions for writing
@@ -34,8 +34,9 @@
  *      2006-May-08: Added atomic_{inc,set,get}, thread struct, debug function,
  *                      rt_init, buffered printing -- Vernon Mauery
  *      2006-May-09: improved command line argument handling
- *	2007-Jul-12: Added latency tracing functions and I/O helper functions
- *						-- Josh triplett
+ *      2007-Jul-12: Added latency tracing functions and I/O helper functions
+ *                                              -- Josh triplett
+ *	2008-Jan-10: Added RR thread support to tests -- Chirag Jog
  *
  *****************************************************************************/
 
@@ -179,7 +180,7 @@ void setup()
 }
 
 
-int create_thread(void*(*func)(void*), void *arg, int prio)
+int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
 {
 	struct sched_param param;
 	int id, ret;
@@ -196,7 +197,7 @@ int create_thread(void*(*func)(void*), void *arg, int prio)
 	init_pi_mutex(&thread->mutex);
 	thread->id = id;
 	thread->priority = prio;
-	thread->policy = ((prio) ? SCHED_FIFO : SCHED_OTHER);
+	thread->policy = policy;
 	thread->flags = 0;
 	thread->arg = arg;
 	thread->func = func;
@@ -221,12 +222,15 @@ int create_thread(void*(*func)(void*), void *arg, int prio)
 
 int create_fifo_thread(void*(*func)(void*), void *arg, int prio)
 {
-	return create_thread(func, arg, prio);
+	return create_thread(func, arg, prio, SCHED_FIFO);
 }
-
+int create_rr_thread(void*(*func)(void*), void *arg, int prio)
+{
+	return create_thread(func, arg, prio, SCHED_RR);
+}
 int create_other_thread(void*(*func)(void*), void *arg)
 {
-	return create_thread(func, arg, 0);
+	return create_thread(func, arg, 0, SCHED_OTHER);
 }
 
 int set_thread_priority(pthread_t pthread, int prio)

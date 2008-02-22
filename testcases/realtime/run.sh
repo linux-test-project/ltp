@@ -1,6 +1,6 @@
 ################################################################################
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright ©  International Business Machines  Corp., 2007, 2008            ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -30,28 +30,33 @@
 # test_name is the name of a subdirectory in func/, stress/ or perf/
 #
 
-
 function usage()
 {
-	echo -e "\nUsage: run.sh test-argument [loop num_of_iterations] [test-argument1 [loop ...]] ..."
+	echo -e "\nUsage: run.sh  -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
 	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name "
 	echo -e "\n and: \n"
 	echo -e " func = 	all functional tests will be run "
 	echo -e " stress = 	all stress tests will be run "
 	echo -e " perf = 	all perf tests will be run "
 	echo -e " all =		all tests will be run "
-	echo -e " list = 	all available tests will be listed "
 	echo -e " clean = 	all logs deleted, make clean performed "
 	echo -e " test_name = 	only test_name subdir will be run (e.g: func/pi-tests) "
+	echo -e " -h	    =	help"
 	echo -e "\n"
 	exit 1;
 }
-
+function check_error()
+{
+	if [ $? -gt 0 ]; then
+	echo -e "\n $1 Failed\n"
+	exit 1
+	fi
+}
 list_tests()
 {
 	echo -e "\n Available tests are:\n"
 
-	cd $TESTS_DIR
+	pushd $TESTS_DIR >/dev/null
 	for file in `find -name run_auto.sh`
 	do
 		echo -e " `dirname  $file `"
@@ -62,108 +67,158 @@ list_tests()
 function run_test()
 {
 	iter=0
+	if [ -z "$2" ]; then
+	    LOOPS=1
+	else
+	 LOOPS=$2	
+	fi
+	#Test if $LOOPS is a integer
+	if [[ ! $LOOPS =~ ^[0-9]+$ ]]; then
+	    echo "\"$LOOPS\" doesn't appear to be a number"
+	    usage
+	    exit
+	fi 
 	if [ -d "$test" ]; then
-	    cd $test
+	    pushd $test >/dev/null
 	    if [ -f "run_auto.sh" ]; then
-		echo " Running $LOOP runs of $TESTLIST "
-		while [ $iter -lt $LOOP ]; do
-		    ./run_auto.sh
-		    iter=$(($iter+1))
+		echo " Running $LOOPS runs of $subdir "
+		for((iter=0; $iter < $LOOPS; iter++)); do
+		./run_auto.sh 
 		done
 	    else
 		echo -e "\n Failed to find run script in $test \n"
 	    fi
-	    cd $TESTS_DIR
+	    pushd $TESTS_DIR >/dev/null
 	else
 		echo -e "\n $test is not a valid test subdirectory "
 		usage
 		exit 1
 	fi
-}
+}	
 
 function make_clean()
 {
-	cd $TESTS_DIR
+	pushd $TESTS_DIR >/dev/null
 	rm -rf logs/*
 	for mfile in `find -name "Makefile"`;
 	do
 	    target_dir=`dirname $mfile`
-	    cd $target_dir
+	    pushd $target_dir >/dev/null
 	    make clean
-	    cd $TESTS_DIR
+	    pushd $TESTS_DIR >/dev/null
 	done
+}
+
+find_test()
+{
+    case $1 in
+	func)
+	    TESTLIST="func"
+            ;;
+      	stress)
+            TESTLIST="stress"
+	    ;;
+        perf)
+	    TESTLIST="perf"
+	    ;;
+        all)
+	# Run all tests which have run_auto.sh
+	    TESTLIST="func stress java perf"
+            ;;
+	list)
+	# This will only display subdirs which have run_auto.sh
+            list_tests
+	    exit
+	    ;;
+        clean)
+	# This will clobber logs, out files, .o's etc
+	    make_clean
+            exit
+	    ;;
+
+        *)
+	# run the tests in the individual subdirectory if it exists
+	    TESTLIST="$1"
+	    ;;
+    esac
+    for subdir in $TESTLIST; do
+	if [ -d $subdir ]; then
+	    pushd $subdir >/dev/null
+            for name in `find -name "run_auto.sh"`; do
+		test="`dirname $name`"
+		run_test "$test" "$2"
+		pushd $subdir > /dev/null
+	    done
+		pushd $TESTS_DIR >/dev/null
+        else
+	    echo -e "\n $subdir not found; check name/path with run.sh list "
+        fi
+    done
+
 }
 
 SCRIPTS_DIR="$(readlink -f ${0%/*})/scripts"
 source $SCRIPTS_DIR/setenv.sh
 
 if [ $# -lt 1 ]; then
-	usage
+	usage	
 fi
-cd $TESTS_DIR
-i=0
-for param in "$@"
+pushd $TESTS_DIR >/dev/null
+
+#GNUmakefile.in is created by autogen.sh
+if [ ! -f GNUmakefile.in ]; then
+	./autogen.sh
+	check_error autogen.sh
+	./configure
+	check_error configure
+fi
+
+#GNUmakefile is created by configure
+if [ ! -f GNUmakefile ]; then
+	./configure
+	check_error configure
+fi
+
+#Only build the library, most of the tests depend upon.
+#The Individual tests will be built, just before they run.
+pushd lib
+make
+check_error make
+popd
+
+ISLOOP=0
+index=0
+while getopts ":t:l:h" option
 do
-array[i]=$param
-i=$(($i+1))
+    case "$option" in
+	
+	t )
+	    if [ $ISLOOP -eq 1 ]; then
+	    	LOOP=1
+		tests[$index]=$LOOP
+		index=$((index+1))
+	    fi
+	
+	    tests[$index]="$OPTARG"
+	    index=$((index+1))
+	    TESTCASE="$OPTARG"
+	    ISLOOP=1		
+	    ;;
+	
+	l ) 
+	    ISLOOP=0
+	    tests[$index]="$OPTARG"
+	    LOOP="$OPTARG"
+	    index=$((index+1))
+	    ;;
+	h )
+	    usage	
+	    ;;
+	* ) echo "Unrecognized option specified"
+	    usage
+	    ;;
+    esac
 done
-i=0
-while [ $i -le ${#array[*]} ]; do
-    case ${array[$i]} in
-	func)
-	    TESTLIST="func"
-	    ;;
-	stress)
-	    TESTLIST="stress"
-	    ;;
-        perf)
-	    TESTLIST="perf"
-	    ;;
-	all)
-	# Run all tests which have run_auto.sh
-	    TESTLIST="func stress perf"
-       	    ;;
-	list)
-        # This will only display subdirs which have run_auto.sh
-	    list_tests
-	    exit
-	    ;;
-	clean)
-	# This will clobber logs, out files, .o's etc
-	    make_clean
-            exit
-	    ;;
-	loop)
-	    i=$(($i+1))
-	    continue
-	    ;;
-	*[1-9]*)
-	    i=$(($i+1))
-	    continue
-	    ;;
-	*)
-	# run the tests in the individual subdirectory if it exists
-	    TESTLIST="${array[$i]}"
-	    ;;
-     esac
-
-    LOOP=1
-    if [[ ${#array[*]} -ge 2 &&  ${array[$(($i+1))]} = "loop" ]]; then
-	LOOP=${array[$(($i+2))]}
-    fi
-
-    for subdir in $TESTLIST; do
-	if [ -d $subdir ]; then
-	    cd $subdir
-            for name in `find -name "run_auto.sh"`; do
-		test="`dirname $name`"
-                run_test $test $LOOP
-                cd $subdir
-            done
-	    cd $TESTS_DIR
-        else
-            echo -e "\n $subdir not found; check name/path with run.sh list "
-        fi
-    done
-    i=$(($i+1))
+for(( i=0; $i < $index ; $((i+=2)) )); do
+    find_test ${tests[$i]} ${tests[$((i+1))]}
 done

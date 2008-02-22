@@ -19,7 +19,7 @@ PYTHONPATH=../../  python parse-testpi2.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
 
 $SCRIPTS_DIR/run_c_files.sh "testpi-4"
 LOG_FILE="$LOG_DIR/$LOG_FORMAT-testpi-4.log"
-PYTHONPATH=../../  python parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
+PYTHONPATH=../../  python parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE 
 
 
 

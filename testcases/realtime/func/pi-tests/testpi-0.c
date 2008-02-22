@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2005, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
  *      testpi-0.c
  *
  * DESCRIPTION
- *	This testcase checks whether priority inheritance support is present
- *	in the running kernel
+ *      This testcase checks whether priority inheritance support is present
+ *      in the running kernel
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,35 +17,35 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      prio-preempt.c
+ *     prio-preempt.c
  *
  * DESCRIPTION
- *      Test whether priority pre-emption works fine.
+ *     Test whether priority pre-emption works fine.
  *
  *    The main thread:
- *      - Creates a minimum of (N-1) busy threads at priority starting at
- *                      SCHED_FIFO + 80
- *      - Creates 26 FIFO (T1, T2,...,T26) threads with priorities 10, 11,...,36.
- *      - Each of these worker threads executes the following piece of code:
- *                    pthread_mutex_lock(Mi);
- *                    pthread_cond_wait(CVi);
- *                    pthread_mutex_unlock(Mi);
+ *     - Creates a minimum of (N-1) busy threads at priority starting at
+ *                     SCHED_FIFO + 80
+ *     - Creates 26 FIFO (T1, T2,...,T26) threads with priorities 10, 11,...,36.
+ *     - Each of these worker threads executes the following piece of code:
+ *                   pthread_mutex_lock(Mi);
+ *                   pthread_cond_wait(CVi);
+ *                   pthread_mutex_unlock(Mi);
  *
- *         where Mi is the ith pthread_mutex_t and CVi is the ith conditional variable.
- *         So, at the end of this loop, 26 threads are all waiting on separate condvars
- *         and mutexes.
- *      - Wakes up thread at priority 10 (T1) by executing:
- *            pthread_mutex_lock(M1);
- *            pthread_cond_signal(CV1);
- *            pthread_mutex_unlock(M1);
+ *       where Mi is the ith pthread_mutex_t and CVi is the ith conditional
+ *       variable.So, at the end of this loop, 26 threads are all waiting on
+ *       seperate condvars and mutexes.
+ *     - Wakes up thread at priority 10 (T1) by executing:
+ *           pthread_mutex_lock(M1);
+ *           pthread_cond_signal(CV1);
+ *           pthread_mutex_unlock(M1);
  *
- *      - Waits for all the worker threads to finish execution.
- *         T1 then wakes up T2 by signalling on the condvar CV2 and sets a flag called
- *         T1_after_wait to indicate that it is after the wait. It then checks if
- *         T2_after_wait has been set or not. If not, the test fails, else the process
- *         continues with other threads. The thread T1 expects T2_after_wait to be set
- *         as, the moment T1 signals on CV2, T2 is supposed to be scheduled (in
- *         accordance with priority preemption).
+ *     - Waits for all the worker threads to finish execution.
+ *         T1 then wakes up T2 by signalling on the condvar CV2 and sets a flag
+ *         called T1_after_wait to indicate that it is after the wait. It then
+ *         checks if T2_after_wait has been set or not. If not, the test fails,
+ *         else the process continues with other threads. The thread T1 expects
+ *         T2_after_wait to be set as, the moment T1 signals on CV2, T2 is
+ *         supposed to be scheduled (in accordance with priority preemption).
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.

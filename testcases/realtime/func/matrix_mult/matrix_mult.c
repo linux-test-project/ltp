@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2007, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -164,9 +164,6 @@ int main(int argc, char *argv[])
 	stats_container_init(&shist, HIST_BUCKETS);
 	stats_container_init(&cdat, ITERATIONS);
 	stats_container_init(&chist, HIST_BUCKETS);
-
-	if (set_priority(PRIO + 1))
-		return -1;
 
 	// run matrix mult operation sequentially
 	printf("\nSequential:\n");

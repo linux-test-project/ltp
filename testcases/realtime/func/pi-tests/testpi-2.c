@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2005, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@
 #include <libjvmsim.h>
 
 static int run_jvmsim=0;
+pthread_barrier_t barrier;
 
 void usage(void)
 {
@@ -130,7 +131,8 @@ void* func_lowrt(void* arg)
   printf("Thread %d at start pthread pol %d pri %d - Got global lock\n", pthr->priority,
 	   policy, schedp.sched_priority);
   /* Wait for other RT threads to start up */
-  sleep(2);
+  pthread_barrier_wait(&barrier);
+
   for (i=0;i<10000;i++) {
     if (i%100 == 0) {
       sched_getparam(tid, &schedp);
@@ -173,7 +175,8 @@ void* func_rt(void* arg)
   pthread_getschedparam(pthr->pthread, &policy, &schedp);
 
   /* Let the lower prio RT task grab the lock */
-  sleep(2);
+  pthread_barrier_wait(&barrier);
+
   printf("Thread running %d\n", pthr->priority);
   pthread_mutex_lock(&glob_mutex);
   printf("Thread %d at start pthread pol %d pri %d - Got global lock\n", pthr->priority,
@@ -225,7 +228,8 @@ void* func_noise(void* arg)
   printf("Noise Thread started %d on CPU %ld\n", pthr->priority, (long)mask.__bits);
   pthread_getschedparam(pthr->pthread, &policy, &schedp);
 
-  sleep(1);
+  pthread_barrier_wait(&barrier);
+
   printf("Noise Thread running %d\n", pthr->priority);
 
   for (i=0;i<10000;i++) {
@@ -373,6 +377,11 @@ int main(int argc, char* argv[]) {
     if ((retc = pthread_mutex_init(&glob_mutex, &mutexattr)) != 0) {
       printf("Failed to init mutex: %d\n", retc);
     }
+  }
+
+  if ((retc = pthread_barrier_init(&barrier, NULL, 5))) {
+    printf("pthread_barrier_init failed: %s\n", strerror(retc));
+    exit(retc);
   }
 
   startThread(&arg1);

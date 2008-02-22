@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2005, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ int  main(int argc, char **argv)
 	} else {
               printf("jvmsim disabled\n");
 	}
-
+		
 	pid = fork();
 	if ( 0 == pid) {
 						//This is the child

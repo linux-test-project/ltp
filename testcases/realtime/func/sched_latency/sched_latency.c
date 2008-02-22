@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006-2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,29 +17,32 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      sched_jitter.c
+ *      sched_latency.c
  *
  * DESCRIPTION
- *      This test measures scheduling jitter w/ realtime processes.
+ *	Measure the latency involved with periodic scheduling.
+ *   Steps:
+ *    - A thread is created at a priority of 89.
+ *    -	It periodically sleeps for a specified duration(period).
+ *    - The delay is measured as
  *
- *      It spawns a realtime thread that repeatedly times how long it takes to do a
- *      fixed amount of work. It then prints out the maximum jitter seen (longest
- *      execution time - the shortest execution time).
- *      It also spawns off a realtime thread of higher priority that simply wakes up
- *      and goes back to sleep. This tries to measure how much overhead the scheduler
- *      adds in switching quickly to another task and back.
+ *      delay = (now - start - i*period) converted to microseconds
+ *
+ *	where,
+ *	now = CLOCK_MONOTONIC gettime in ns, start = CLOCK_MONOTONIC gettime
+ *	at the start of the test, i = iteration number, period = period chosen
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
- *	Darren Hart <dvhltc@us.ibm.com>
+ *      Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *	2006-May-10: Initial version by Darren Hart <dvhltc@us.ibm.com>
- * 	2007-Jul-11: Quantiles added by Josh Triplett <josh@kernel.org>
- * 	2007-Jul-12: Latency tracing added by Josh Triplett <josh@kernel.org>
+ *      2006-May-10: Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *      2007-Jul-11: Quantiles added by Josh Triplett <josh@kernel.org>
+ *      2007-Jul-12: Latency tracing added by Josh Triplett <josh@kernel.org>
  *
  *****************************************************************************/
 
@@ -166,7 +169,8 @@ void *periodic_thread(void *arg)
 		} while (now < next);
 
 		/* start of period */
-		delay = (now - iter_start - (nsec_t)(i+1)*period)/NS_PER_US;
+		now = rt_gettime();
+		delay = (now - start - (nsec_t)(i + 1)*period)/NS_PER_US;
 		dat.records[i].x = i;
 		dat.records[i].y = delay;
 		if (delay < min_delay)
@@ -193,7 +197,7 @@ void *periodic_thread(void *arg)
 			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
 				latency_threshold, i);
 			latency_trace_print();
-			stats_container_resize(&dat, i+1);
+			stats_container_resize(&dat, i + 1);
 		}
 	}
 
@@ -202,9 +206,9 @@ void *periodic_thread(void *arg)
 	stats_container_save("samples", "Periodic Scheduling Latency Scatter Plot",\
 			     "Iteration", "Latency (us)", &dat, "points");
 	stats_container_save("hist", "Periodic Scheduling Latency Histogram",\
-			     "Latency (us)", "Samples", &hist, "steps");
+ 			     "Latency (us)", "Samples", &hist, "steps");
 
-	avg_delay /= (i + 1);
+	avg_delay /= i;
 	printf("\n\n");
 	printf("Start: %4llu us: %s\n", start_delay,
 		start_delay < PASS_US ? "PASS" : "FAIL");

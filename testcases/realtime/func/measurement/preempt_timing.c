@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,12 +20,13 @@
  *      preempt_timing.c
  *
  * DESCRIPTION
- *      This program indicated the preemption delays that may be
- *      encountered by realtime apps. The program runs with the scheduling policy of
+ *      This program indicated the preemption delays that may be encountered
+ *      by realtime apps. The program runs with the scheduling policy of
  *      SCHED_FIFO at a maximum SCHED_FIFO priority. It is bound to a single
- *      processor and its address space is locked as well. It makes successive calls
- *      to the gettimeofday() function (via inlined assembly to read the TSC). The
- *      value returned between two such consecutive calls is reported as the latency.
+ *      processor and its address space is locked as well. It makes successive
+ *      calls to the gettimeofday() function(via inlined assembly to read the
+ *      TSC).The value returned between two such consecutive calls is reported 
+ *	as the latency.
  *      The maximum, minimum and average delays are reported for x pairs of such
  *      calls.
  *

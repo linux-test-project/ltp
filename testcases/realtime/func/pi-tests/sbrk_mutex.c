@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,24 +17,24 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      sbrk-mutex.c
+ *    sbrk-mutex.c
  *
  * DESCRIPTION
- *      Create NUM_THREADS to walk through an array of malloc'd pthread mutexes.
- *      Each thread holds up to NUM_CONCURRENT locks at a time.
+ *    Create NUM_THREADS to walk through an array of malloc'd pthread mutexes.
+ *    Each thread holds up to NUM_CONCURRENT locks at a time.
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *    Use run_auto.sh script in current directory to build and run test.
+ *    Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc sbrk-mutex.c -lrt -o sbrk-mutex
+ *    Compilation: gcc sbrk-mutex.c -lrt -o sbrk-mutex
  *
  * AUTHOR
- *      Darren Hart <dvhltc@us.ibm.com>
+ *    Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *      2006-02-28  Initial version by Darren Hart
- *      2006-03-01  Changed mutexes to PTHREAD_MUTEX_ROBUST_NP type - Sripathi Kodi
+ *    2006-02-28: Initial version by Darren Hart
+ *    2006-03-01: Changed mutexes to PTHREAD_MUTEX_ROBUST_NP type -Sripathi Kodi
  *
  *****************************************************************************/
 

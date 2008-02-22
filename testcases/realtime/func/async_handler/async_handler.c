@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,25 +17,25 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      async_handler.c
+ *     async_handler.c
  *
  * DESCRIPTION
- *      Measure the latency involved in asynchronous event handlers.
- *      Specifically it measures the latency of the pthread_cond_signal
- *      call until the signalled thread is scheduled.
+ *     Measure the latency involved in asynchronous event handlers.
+ *     Specifically it measures the latency of the pthread_cond_signal
+ *     call until the signalled thread is scheduled.
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *     Use run_auto.sh script in current directory to build and run test.
+ *     Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *      -L/usr/lib/nptl -lpthread -lrt -lm async_handler.c -o async_handler
+ *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
+ *     -L/usr/lib/nptl -lpthread -lrt -lm async_handler.c -o async_handler
  *
  * AUTHOR
- *      Darren Hart <dvhltc@us.ibm.com>
+ *     Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *      2006-Oct-20:       Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *     2006-Oct-20:   Initial version by Darren Hart <dvhltc@us.ibm.com>
  *
  *****************************************************************************/
 

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2007, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,29 +17,29 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      tc-2.c
+ *    tc-2.c
  *
  * DESCRIPTION
- *      Check if clock_gettime is working properly.
- *      This test creates NUMSLEEP threads that just sleep and NUMWORK threads
- *      that spend time on the CPU. It then reads the thread cpu clocks of all
- *      these threads and compares the sum of thread cpu clocks with the process
- *      cpu clock value. The test expects that:
- *      the cpu clock of every sleeping thread shows close to zero value.
- *       sum of cpu clocks of all threads is comparable with the process cpu clock.
+ *    Check if clock_gettime is working properly.
+ *    This test creates NUMSLEEP threads that just sleep and NUMWORK threads
+ *    that spend time on the CPU. It then reads the thread cpu clocks of all
+ *    these threads and compares the sum of thread cpu clocks with the process
+ *    cpu clock value. The test expects that:
+ *    the cpu clock of every sleeping thread shows close to zero value.
+ *    sum of cpu clocks of all threads is comparable with the process cpu clock.
  *
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *    Use run_auto.sh script in current directory to build and run test.
+ *    Use "-j" to enable jvm simulator.
 
- *      Compilation: gcc tc-2.c -lpthread -lrt -o tc-2
+ *    Compilation: gcc tc-2.c -lpthread -lrt -o tc-2
  *
  * AUTHOR
- *      Sripathi Kodi <sripathik@in.ibm.com>
+ *    Sripathi Kodi <sripathik@in.ibm.com>
  *
  * HISTORY
- *      2007-Apr-04:  Initial version by Sripathi Kodi <sripathik@in.ibm.com>
+ *    2007-Apr-04:  Initial version by Sripathi Kodi <sripathik@in.ibm.com>
  *
  *****************************************************************************/
 

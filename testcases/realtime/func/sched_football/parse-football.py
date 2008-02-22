@@ -16,7 +16,7 @@ class SchedFootballLog(Log):
 					return False
 
 
-
+	
 def main():
 	if len(sys.argv) < 2:
 		sys.exit("Usage : ./%s <logname>" % sys.argv[0])
@@ -28,5 +28,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006-2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,23 +22,23 @@
  * DESCRIPTION
  *      This test measures scheduling jitter w/ realtime processes.
  *
- *      It spawns a realtime thread that repeatedly times how long it takes to do a
- *      fixed amount of work. It then prints out the maximum jitter seen (longest
- *      execution time - the shortest execution time).
- *      It also spawns off a realtime thread of higher priority that simply wakes up
- *      and goes back to sleep. This tries to measure how much overhead the scheduler
- *      adds in switching quickly to another task and back.
+ *      It spawns a realtime thread that repeatedly times how long it takes to
+ *      do a fixed amount of work. It then prints out the maximum jitter seen
+ *      (longest execution time - the shortest execution time).
+ *      It also spawns off a realtime thread of higher priority that simply
+ *      wakes up and goes back to sleep. This tries to measure how much overhead
+ *      the scheduler adds in switching quickly to another task and back.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
- *	John Stultz <johnstul@us.ibm.com>
+ *      John Stultz <johnstul@us.ibm.com>
  *
  * HISTORY
- *	2006-May-05: Initial version by John Stultz <johnstul@us.ibm.com>
- *	2007-July-18: Support to gather stats by Ankita Garg <ankita@in.ibm.com>
+ *      2006-May-05: Initial version by John Stultz <johnstul@us.ibm.com>
+ *      2007-July-18: Support to gather stats by Ankita Garg <ankita@in.ibm.com>
  *
  *****************************************************************************/
 

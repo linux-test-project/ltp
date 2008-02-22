@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,8 +26,9 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *      -L/usr/lib/nptl -lpthread -lrt -lm lookup_pi_state.c -o lookup_pi_state
+ *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
+ *     		    -L/usr/lib/nptl -lpthread -lrt -lm lookup_pi_state.c
+ *		     -o lookup_pi_state
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>

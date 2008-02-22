@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2007, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,15 +27,17 @@
  *      And the ref (highest priority thread) will blow the wistle if the
  *      ball moves. Finally, we have crazy fans (higer prority) that try to
  *      distract the defense by occasionally running onto the field.
- *       Steps:
- *          - Create a fixed number of offense threads (lower priority)
- *          - Create a referee thread (highest priority)
- *          - Once everyone is on the field, the offense thread increments the value of
- *            'the_ball' and yields. The defense thread tries to block the ball by never
- *            letting the offense players get the CPU (it just does a sched_yield)
- *          - The refree threads wakes up regularly to check if the game is over :)
- *          - In the end, if the value of 'the_ball' is >0, the test is considered to
- *            have failed.
+ *
+ *      Steps:
+ *       - Create a fixed number of offense threads (lower priority)
+ *       - Create a referee thread (highest priority)
+ *       - Once everyone is on the field, the offense thread increments the
+ *         value of 'the_ball' and yields. The defense thread tries to block
+ *         the ball by never letting the offense players get the CPU (it just
+ * 	   does a sched_yield).
+ *       - The refree threads wakes up regularly to check if the game is over :)
+ *       - In the end, if the value of 'the_ball' is >0, the test is considered
+ *         to have failed.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
@@ -47,8 +49,8 @@
  * HISTORY
  *     2006-03-16 Reduced verbosity, non binary failure reporting, removal of
  *     crazy_fans thread, added game_length argument by Darren Hart.
- * 	2007-08-01 Remove all thread cleanup in favor of simply exiting.  Various
- * 	bugfixes and cleanups. -- Josh Triplett
+ *      2007-08-01 Remove all thread cleanup in favor of simply exiting.Various
+ *      bugfixes and cleanups. -- Josh Triplett
  *
  *****************************************************************************/
 
@@ -79,17 +81,12 @@ volatile int defense_count;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int run_jvmsim=0;
-static int players_per_team = 0;
-static int game_length = DEF_GAME_LENGTH;
 
 void usage(void)
 {
-	rt_help();
-	printf("sched_football specific options:\n");
-	printf("  -j            enable jvmsim\n");
-	printf("  -nPLAYERS     players per team (defaults to num_cpus)\n");
-	printf("  -lGAME_LENGTH game length in seconds (defaults to %d s)\n",
-	       DEF_GAME_LENGTH);
+        rt_help();
+        printf("testpi-1 specific options:\n");
+        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -103,12 +100,6 @@ int parse_args(int c, char *v)
                 case 'h':
                         usage();
                         exit(0);
-		case 'n':
-			players_per_team = atoi(v);
-			break;
-		case 'l':
-			game_length= atoi(v);
-			break;
                 default:
                         handled = 0;
                         break;
@@ -171,14 +162,12 @@ int referee(int game_length)
 int main(int argc, char* argv[])
 {
 	struct sched_param param;
+	int players_per_team, game_length;
 	int priority;
 	int i;
 	setup();
 
-	rt_init("n:l:jh",parse_args,argc,argv);
-
-	if (players_per_team == 0)
-		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
+	rt_init("jh",parse_args,argc,argv);
 
 	if (run_jvmsim) {
                 printf("jvmsim enabled\n");
@@ -187,8 +176,21 @@ int main(int argc, char* argv[])
                 printf("jvmsim disabled\n");
 	}
 
-	printf("Running with: players_per_team=%d game_length=%d\n",
-	       players_per_team, game_length);
+	if (argc < 2 || argc > 3) {
+		printf("Usage: %s players_per_team [game_length (seconds)]\n", argv[0]);
+		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
+		game_length = DEF_GAME_LENGTH;
+		printf("Using default values: players_per_team=%d game_length=%d\n",
+		       players_per_team, game_length);
+	}
+
+	else {
+		players_per_team = atoi(argv[1]);
+		if (argc == 3)
+			game_length = atoi(argv[2]);
+		else
+			game_length = DEF_GAME_LENGTH;
+	}
 
 	/* We're the ref, so set our priority right */
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;

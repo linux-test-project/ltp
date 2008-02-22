@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006-2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@
  *      2006-May-08: Added atomic_{inc,set,get}, thread struct, debug function,
  *                      rt_init, buffered printing -- Vernon Mauery
  *      2006-May-09: improved command line argument handling
- *	2007-Jul-12: Added latency tracing functions -- Josh Triplett
- *	2007-Jul-26: Renamed to librttest.h -- Josh Triplett
+ *      2007-Jul-12: Added latency tracing functions -- Josh Triplett
+ *      2007-Jul-26: Renamed to librttest.h -- Josh Triplett
  *
  *****************************************************************************/
 
@@ -231,13 +231,13 @@ void rt_help();
  *                        handled = 0;
  *                }
  *                return handled;
- *            }
+ *            }           
  * argc: passed from main
  * argv: passed from main
  */
 int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[]);
 
-int create_thread(void*(*func)(void*), void *arg, int prio);
+int create_thread(void*(*func)(void*), void *arg, int prio, int policy);
 
 /* create_fifo_thread: spawn a SCHED_FIFO thread with priority prio running
  * func as the thread function with arg as it's parameter.
@@ -247,9 +247,17 @@ int create_thread(void*(*func)(void*), void *arg, int prio);
  */
 int create_fifo_thread(void*(*func)(void*), void *arg, int prio);
 
-/* create_other_thread: spawn a SCHED_OTHER thread
+/* create_rr_thread: spawn a SCHED_RR thread with priority prio running
  * func as the thread function with arg as it's parameter.
  * func:
+ * arg: argument to func
+ * prio: 1-100, 100 being highest priority
+ */
+int create_rr_thread(void*(*func)(void*), void *arg, int prio);
+
+/* create_other_thread: spawn a SCHED_OTHER thread
+ * func as the thread function with arg as it's parameter.
+ * func: 
  * arg: argument to func
  */
 int create_other_thread(void*(*func)(void*), void *arg);
@@ -293,7 +301,7 @@ void ts_plus(struct timespec *ts_a, struct timespec *ts_b, struct timespec *ts_s
  */
 void ts_normalize(struct timespec *ts);
 
-/* convert nanoseconds to a timespec
+/* convert nanoseconds to a timespec 
  * ts must not be null
  */
 void nsec_to_ts(nsec_t ns, struct timespec *ts);

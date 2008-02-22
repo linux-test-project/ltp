@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2006,  2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,19 +22,22 @@
  * DESCRIPTION
  *      Test priority ordered wakeup with pthread_cond_*
  * * Steps:
- *       - Creates a number of worker threads with increasing FIFO priorities (by
- *               default, num worker threads = num cpus)
- *       - Create a master thread
- *       - The time the worker thread starts running is noted. Each of the worker
- *               threads then waits on the same _condvar_. The time it wakes up also noted.
- *       - Once all the threads finish execution, the start and wakeup times of all
- *               the threads is displayed.
- *       -  The output must indicate that the thread wakeup happened in a priority order.
+ *      - Creates a number of worker threads with increasing FIFO priorities
+ *        (by default, num worker threads = num cpus)
+ *      - Create a master thread
+ *      - The time the worker thread starts running is noted. Each of the
+ *	  worker threads then waits on the same _condvar_. The time it 
+ *	  wakes up also noted.
+ *      - Once all the threads finish execution, the start and wakeup times
+ *        of all the threads is displayed.
+ *      - The output must indicate that the thread wakeup happened in a 
+ *	  priority order.
  *
  * USAGE:
  *
- *      Compilation : gcc -O2 -g -Wall -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *                    -L/usr/lib/nptl -lpthread -lrt -lm -c -o prio-wake.o prio-wake.c
+ *     Compilation: gcc -O2 -g -Wall -D_GNU_SOURCE -I/usr/include/nptl
+ *                   -I../../include -L/usr/lib/nptl -lpthread -lrt -lm
+ *		     -c -o prio-wake.o prio-wake.c
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>

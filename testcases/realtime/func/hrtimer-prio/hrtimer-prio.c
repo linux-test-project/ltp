@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright  International Business Machines  Corp., 2007
+ *   Copyright © International Business Machines  Corp., 2007, 2008
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,28 +17,28 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * NAME
- *      hrtimer-prio.c
+ *     hrtimer-prio.c
  *
  * DESCRIPTION
- *	Test the latency of hrtimers under rt load.
- * 	The busy_threads should run at a priority higher than the system
- * 	softirq_hrtimer, but lower than the timer_thread.  The timer_thread
- * 	measure the time it takes to return from a nanosleep call.  If the
- * 	lower priority threads can increase the latency of the higher
- * 	priority thread, it is considered a failure.
+ *     Test the latency of hrtimers under rt load.
+ *     The busy_threads should run at a priority higher than the system
+ *     softirq_hrtimer, but lower than the timer_thread.  The timer_thread
+ *     measure the time it takes to return from a nanosleep call.  If the
+ *     lower priority threads can increase the latency of the higher
+ *     priority thread, it is considered a failure.
  *
  * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
+ *     Use run_auto.sh script in current directory to build and run test.
+ *     Use "-j" to enable jvm simulator.
  *
- *      Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I ../../include
- *      -L/usr/lib/nptl -lpthread -lrt -lm hrtimer-prio -o hrtimer-prio.c
+ *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
+ *     -L/usr/lib/nptl -lpthread -lrt -lm hrtimer-prio -o hrtimer-prio.c
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *      2007-Aug-08:       Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *      2007-Aug-08:      Initial version by Darren Hart <dvhltc@us.ibm.com>
  *
  *****************************************************************************/
 
