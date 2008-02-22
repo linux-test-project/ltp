@@ -62,7 +62,7 @@ int TST_TOTAL = 1;
 volatile int intintr;
 void inthandlr();
 void do_exit();
-int flag;
+int flag = 0;
 
 extern int Tst_count;
 
