@@ -251,7 +251,7 @@ int create_server(void) {
 		return -1;
 	}
 	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000 + count);
+	sin1.sin_port = htons(((getpid() * TST_TOTAL) % 32768) + 11000 + count);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 	count++;
 	if(bind(sockfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
