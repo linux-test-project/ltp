@@ -136,17 +136,20 @@ int main(int argc, char **argv)
 			kill(pid[ikids], 15);
 		}
 
+		condition_number = 1;
+
 		/* Wait on one specific child */
 		if (DEBUG)
 			tst_resm(TINFO, "Waiting for child:#%d", MAXUPRC / 2);
 		ret = waitpid(pid[MAXUPRC / 2], &status, 0);
 		if (ret != pid[MAXUPRC / 2]) {
 			tst_resm(TFAIL, "condition %d test failed. "
-				"waitpid(%d) returned %d.", pid[MAXUPRC / 2],
-				ret, condition_number++);
+				"waitpid(%d) returned %d.",
+				condition_number, pid[MAXUPRC / 2], ret);
 		} else {
 			tst_resm(TPASS, "Got correct child PID");
 		}
+		condition_number++;
 
 		/*
 		 * Child has already been waited on, waitpid should return
@@ -155,11 +158,12 @@ int main(int argc, char **argv)
 		ret = waitpid(pid[MAXUPRC / 2], &status, 0);
 		if (ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
-				 condition_number++);
+				 condition_number);
 		} else {
 			tst_resm(TPASS, "Condition %d test passed",
-				condition_number++);
+				condition_number);
 		}
+		condition_number++;
 	}
 	cleanup();
 	/*NOTREACHED*/

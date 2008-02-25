@@ -87,9 +87,10 @@ int main(int ac, char **av)
 
 		ret = waitpid(pid, &status, WNOHANG);
 		flag = 0;
+		condition_number = 1;
 		if( ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
-				 condition_number++);
+				 condition_number);
 		} else {
 			TEST_ERROR_LOG(errno);
 			if (errno != ECHILD) {
@@ -98,9 +99,10 @@ int main(int ac, char **av)
 					 errno);
 			} else {
 				tst_resm(TPASS, "condition %d test passed",
-					condition_number++);
+					condition_number);
 			}
 		}
+		condition_number++;
 
 		if (FORK_OR_VFORK() == 0) {
 			exit(0);
@@ -110,7 +112,7 @@ int main(int ac, char **av)
 		flag = 0;
 		if( ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
-				 condition_number++);
+				 condition_number);
 		} else {
 			TEST_ERROR_LOG(errno);
 			if (errno != ECHILD) {
@@ -119,16 +121,17 @@ int main(int ac, char **av)
 					 errno);
 			} else {
 				tst_resm(TPASS, "condition %d test passed",
-					condition_number++);
+					condition_number);
 			}
 		}
+		condition_number++;
 
 		/* Option is Inval = INVAL_FLAG */
 		ret =  waitpid(pid, &status, INVAL_FLAG);
 		flag = 0;
 		if( ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
-				 condition_number++);
+				 condition_number);
 		} else {
 			TEST_ERROR_LOG(errno);
 			if (errno != EINVAL) {
@@ -137,9 +140,10 @@ int main(int ac, char **av)
 					 errno);
 			} else {
 				 tst_resm(TPASS, "condition %d test passed",
-					condition_number++);
+					condition_number);
 			}
 		}
+		condition_number++;
 	}
 	cleanup();
 	/*NOTREACHED*/
