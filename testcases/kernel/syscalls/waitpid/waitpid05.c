@@ -70,9 +70,6 @@ char *TCID = "waitpid05";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int flag;
-#define	FAILED	1
-
 #ifdef UCLINUX
 void do_child_uclinux(void);
 static int sig_uclinux;

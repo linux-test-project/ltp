@@ -59,7 +59,6 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 #define INVAL_FLAG	-1
-#define	FAILED		 1
 
 int flag, condition_number;
 

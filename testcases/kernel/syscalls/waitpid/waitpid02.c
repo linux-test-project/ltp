@@ -65,9 +65,6 @@ char *TCID = "waitpid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int flag;
-#define	FAILED	1
-
 int main(int argc, char **argv)
 {
 	int lc;				/* loop counter */

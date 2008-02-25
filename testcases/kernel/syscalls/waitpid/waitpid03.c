@@ -66,8 +66,7 @@ extern int Tst_count;
 
 #define	MAXUPRC	25
 
-int flag, condition_number;
-#define	FAILED	1
+int condition_number;
 
 #ifdef UCLINUX
 void do_child_uclinux(void);
