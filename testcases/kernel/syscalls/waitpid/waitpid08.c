@@ -103,6 +103,7 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+		fail = 0;
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_resm(TFAIL, "Fork Failed, may be OK under stress");
@@ -123,7 +124,6 @@ int main(int argc, char **argv)
 			do_child_1();
 #endif
 		} else {		/* parent */
-			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "child returned bad status");

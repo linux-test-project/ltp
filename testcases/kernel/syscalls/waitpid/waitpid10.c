@@ -136,6 +136,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+		fail = 0;
 
 		if (signal(SIGALRM, alrmhandlr) == SIG_ERR) {
 			tst_resm(TFAIL, "signal SIGALRM failed.  errno = %d",

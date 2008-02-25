@@ -95,13 +95,13 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+		fail = 0;
 
 		/*
 		 * Need to have test run from child as test driver causes
 		 * test to be a session leader and setpgrp fails.
 		 */
 		if ((pid = FORK_OR_VFORK()) != 0) {
-			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "child returned bad status");
