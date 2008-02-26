@@ -41,7 +41,7 @@
  *       Create a temp directory, open a file and get the file descriptor
  *
  *     Test:
- *       Test with a normal file and with /dev/shm/cache
+ *       Test with a normal file and with /dev/shm/cache_<pid>
  *       1. Set up the cache
  *       2. Write the cache to the file
  *       3. Runs mmap at the same file 
@@ -66,6 +66,9 @@
  *
  *     11/10/2007 - Port to LTP format by Subrata Modak, <subrata@linux.vnet.ibm.com>
  *                  and Ricardo Salveti de Araujo, <rsalveti@linux.vnet.ibm.com>
+ *     25/02/2008 - Renaud Lottiaux, <Renaud.Lottiaux@kerlabs.com>
+ *                  Fix NFS remove tmpdir issue due to non unmapped files.
+ *                  Fix concurrency issue on the file /dev/shm/cache.
  */
 
 #define _GNU_SOURCE
@@ -106,6 +109,7 @@ extern int Tst_count;			/* Test Case counter for tst_* routines */
 
 static char *cache_contents;
 int fd1, fd2;				/* File descriptors used at the test */
+char fname[255];
 
 int
 main(int ac, char **av)
@@ -247,10 +251,12 @@ setup()
 	window_pages = 16;
 	window_sz = window_pages*page_sz;
 
-	if ((fd1 = open("/dev/shm/cache", O_RDWR|O_CREAT|O_TRUNC,S_IRWXU)) < 0) {
+	sprintf(fname,"/dev/shm/cache_%d", getpid());
+
+	if ((fd1 = open(fname, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			"open(%s, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU) Failed, errno=%d : %s",
-			"/dev/shm/cache", errno, strerror(errno));
+			fname, errno, strerror(errno));
 	}
 
 	if ((fd2 = open("cache", O_RDWR|O_CREAT|O_TRUNC,S_IRWXU)) < 0) {
@@ -274,6 +280,9 @@ cleanup(char *data)
 
 	if (data)
 		munmap (data, window_sz);
+
+	/* Remove the /dev/shm/cache_<pid> file */
+	unlink (fname);
 
 	/*
 	 * print timing stats if that option was specified.
