@@ -91,29 +91,30 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static struct timespec spec, *temp, saved;
 
-clockid_t clocks[11] = {
-	CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID,
-	CLOCK_THREAD_CPUTIME_ID, CLOCK_REALTIME_HR, CLOCK_MONOTONIC_HR,
-	MAX_CLOCKS, MAX_CLOCKS + 1, CLOCK_REALTIME, CLOCK_REALTIME,
-	CLOCK_REALTIME
+clockid_t clocks[] = {
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	MAX_CLOCKS,
+	MAX_CLOCKS + 1,
+	CLOCK_REALTIME,
+	CLOCK_REALTIME,
+	CLOCK_REALTIME,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID
 };
 
 static struct test_case_t {
 	char *err_desc;		/* error description */
 	int  exp_errno;		/* expected error number */
 	char *exp_errval;	/* Expected errorvalue string */
-} testcase[] = {
-	{"Bad address", EFAULT, "EFAULT"},		/* tp bad * */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MONOTONIC */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* PROCESS_CPUTIME_ID*/
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* THREAD_CPUTIME_ID */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* REALTIME_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MONOTONIC_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS + 1 */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* Invalid timespec */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* NSEC_PER_SEC + 1 */
-	{"Operation not permitted", EPERM, "EPERM"}	/* non-root user */
+} testcase[9] = {
+	{"Bad address", EFAULT, "EFAULT"},				/* tp bad 			  */
+	{"Invalid parameter", EINVAL, "EINVAL"},		/* CLOCK_MONOTONIC    */
+	{"Invalid parameter", EINVAL, "EINVAL"},		/* MAX_CLOCKS 		  */
+	{"Invalid parameter", EINVAL, "EINVAL"},		/* MAX_CLOCKS + 1 	  */
+	{"Invalid parameter", EINVAL, "EINVAL"},		/* Invalid timespec   */
+	{"Invalid parameter", EINVAL, "EINVAL"},		/* NSEC_PER_SEC + 1   */
+	{"Operation not permitted", EPERM, "EPERM"}		/* non-root user 	  */
 };
 
 int
@@ -129,6 +130,26 @@ main(int ac, char **av)
 	}
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
+
+    /* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+     * kernel versions lower than 2.6.12
+     */
+    if((tst_kvercmp(2, 6, 12)) < 0) {
+        testcase[7].err_desc = "Invalid parameter"; /* PROCESS_CPUTIME_ID */
+        testcase[7].exp_errno = EINVAL;
+        testcase[7].exp_errval = "EINVAL";
+        testcase[8].err_desc = "Invalid parameter"; /* THREAD_CPUTIME_ID */
+        testcase[8].exp_errno = EINVAL;
+        testcase[8].exp_errval = "EINVAL";
+    }
+    else {
+        testcase[7].err_desc = "Bad address";   /* Bad timespec pointer */
+        testcase[7].exp_errno = EFAULT;
+        testcase[7].exp_errval = "EFAULT";
+        testcase[8].err_desc = "Bad address";   /* Bad timespec pointer */
+        testcase[8].exp_errno = EFAULT;
+        testcase[8].exp_errval = "EFAULT";
+    }
 
 	/* perform global setup for test */
 	setup();
@@ -203,24 +224,25 @@ main(int ac, char **av)
 int
 setup_test(int option)
 {
+	/* valid timespec */
+	spec = saved;
+	temp = &spec;
 
+	/* error sceanrios */
 	switch (option) {
 		case 0:
 			/* Make tp argument bad pointer */
 			temp = (struct timespec *) -1;
 			break;
-		case 1:
-			temp = &spec;
-			break;
-		case 8:
+		case 4:
 			/* Make the parameter of timespec invalid */
 			spec.tv_nsec = -1;
 			break;
-		case 9:
+		case 5:
 			/* Make the parameter of timespec invalid */
 			spec.tv_nsec = NSEC_PER_SEC + 1;
 			break;
-		case 10:
+		case 6:
 			/* change the User to non-root */
 			spec.tv_nsec = 0;
 			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -236,6 +258,12 @@ setup_test(int option)
 				return -1;
 			}
 			break;
+		case 7:
+		case 8:
+			if (tst_kvercmp(2, 6, 12) >= 0) {
+				/* Make tp argument bad pointer */
+				temp = (struct timespec *) -1;
+			}
 	}
 	return 0;
 }

@@ -88,15 +88,11 @@ static struct test_case_t {
 	char *err_desc;		/* error description */
 	int  exp_errno;		/* expected error number */
 	char *exp_errval;	/* Expected errorvalue string */
-} testcase[] = {
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* PROCESS_CPUTIME_ID*/
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* THREAD_CPUTIME_ID */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* REALTIME_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MONOTONIC_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS */
+} testcase[6] = {
+	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS     */
 	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS + 1 */
-	{"Bad address", EFAULT, "EFAULT"},		/* bad sigevent * */
-	{"Bad address", EFAULT, "EFAULT"}		/* bad timer_id * */
+	{"Bad address", EFAULT, "EFAULT"},			/* bad sigevent   */
+	{"Bad address", EFAULT, "EFAULT"}			/* bad timer_id   */
 };
 
 int
@@ -107,15 +103,13 @@ main(int ac, char **av)
 	timer_t timer_id, *temp_id;	/* stores the returned timer_id */
 	struct sigevent *temp_ev;	/* used for bad address test case */
 
-	clockid_t clocks[8] = {
-		CLOCK_PROCESS_CPUTIME_ID,
-		CLOCK_THREAD_CPUTIME_ID,
-		CLOCK_REALTIME_HR,
-		CLOCK_MONOTONIC_HR,
+	clockid_t clocks[6] = {
 		MAX_CLOCKS,
 		MAX_CLOCKS + 1,
 		CLOCK_REALTIME,
-		CLOCK_REALTIME
+		CLOCK_MONOTONIC,
+		CLOCK_PROCESS_CPUTIME_ID,
+		CLOCK_THREAD_CPUTIME_ID
 	};
 
 	/* parse standard options */
@@ -126,8 +120,29 @@ main(int ac, char **av)
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
+	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+	 * kernel versions lower than 2.6.12
+	 */
+	if((tst_kvercmp(2, 6, 12)) < 0) {
+		testcase[4].err_desc = "Invalid parameter";	/* PROCESS_CPUTIME_ID */
+		testcase[4].exp_errno = EINVAL;
+		testcase[4].exp_errval = "EINVAL";
+		testcase[5].err_desc = "Invalid parameter";	/* THREAD_CPUTIME_ID */
+		testcase[5].exp_errno = EINVAL;
+		testcase[5].exp_errval = "EINVAL";
+	}
+	else {
+		testcase[4].err_desc = "Bad address";	/* bad sigevent pointer */
+		testcase[4].exp_errno = EFAULT;
+		testcase[4].exp_errval = "EFAULT";
+		testcase[5].err_desc = "Bad address";	/* bad timer_id pointer */
+		testcase[5].exp_errno = EFAULT;
+		testcase[5].exp_errval = "EFAULT";
+	}
+
 	/* perform global setup for test */
 	setup();
+
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -139,14 +154,23 @@ main(int ac, char **av)
 			temp_ev = (struct sigevent *) NULL;
 			temp_id = &timer_id;
 
-			/* in 7th test case, make the timer_id bad pointer
-			 * in 8th test case, make the event bad pointer
-			 */
-			if (i == 6) {
-				temp_id = (timer_t *) -1;
-			} else if (i == 7) {
-				temp_ev = (struct sigevent *) -1;
-				temp_id = &timer_id;
+			switch (i)
+			{
+			case 2: /* make the timer_id bad address */
+					temp_id = (timer_t *) -1;
+					break;
+			case 3: /* make the event bad address */
+					temp_ev = (struct sigevent *) -1;
+					break;
+			case 4:	if((tst_kvercmp(2, 6, 12)) >= 0) {
+						/* make the timer_id bad address */
+						temp_id = (timer_t *) -1;
+					}
+					break;
+			case 5: if((tst_kvercmp(2, 6, 12)) >= 0) {
+						/* make the event bad address */
+						temp_ev = (struct sigevent *) -1;
+					}
 			}
 
 			TEST(timer_create(clocks[i], temp_ev, temp_id));

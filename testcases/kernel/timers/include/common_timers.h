@@ -22,19 +22,11 @@
 #ifndef CLOCK_THREAD_CPUTIME_ID
 #define CLOCK_THREAD_CPUTIME_ID 3
 #endif
-#ifndef CLOCK_REALTIME_HR
-#define CLOCK_REALTIME_HR 4
-#endif
-#ifndef CLOCK_MONOTONIC_HR
-#define CLOCK_MONOTONIC_HR 5
-#endif
 clock_t clock_list[] = {
 	CLOCK_REALTIME,
 	CLOCK_MONOTONIC,
 	CLOCK_PROCESS_CPUTIME_ID,
-	CLOCK_THREAD_CPUTIME_ID,
-	CLOCK_REALTIME_HR,
-	CLOCK_MONOTONIC_HR
+	CLOCK_THREAD_CPUTIME_ID
 };
 #define MAX_CLOCKS (sizeof(clock_list) / sizeof(*clock_list))
 
@@ -45,8 +37,6 @@ const char *get_clock_str(const int clock_id)
 		case CLOCK_MONOTONIC:          return "CLOCK_MONOTONIC";
 		case CLOCK_PROCESS_CPUTIME_ID: return "CLOCK_PROCESS_CPUTIME_ID";
 		case CLOCK_THREAD_CPUTIME_ID:  return "CLOCK_THREAD_CPUTIME_ID";
-		case CLOCK_REALTIME_HR:        return "CLOCK_REALTIME_HR";
-		case CLOCK_MONOTONIC_HR:       return "CLOCK_MONOTONIC_HR";
 		default:                       return "CLOCK_!?!?!?";
 	}
 }

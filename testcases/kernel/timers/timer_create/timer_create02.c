@@ -80,7 +80,7 @@ static void setup_test(int option);
 char *TCID = "timer_create02";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static struct sigevent evp;
+static struct sigevent evp, *evp_ptr;
 
 int
 main(int ac, char **av)
@@ -114,7 +114,15 @@ main(int ac, char **av)
 			setup_test(i);
 
 			for (j = 0; j < MAX_CLOCKS; ++j) {
-				TEST(timer_create(clock_list[j], &evp,
+				if(strstr(get_clock_str(clock_list[j]),"CPUTIME_ID")) {
+					/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+					 * kernel versions lower than 2.6.12
+					 */
+					if((tst_kvercmp(2, 6, 12)) < 0) {
+						continue;
+					}
+				}
+				TEST(timer_create(clock_list[j], evp_ptr,
 							&created_timer_id));
 
 				if (TEST_RETURN == -1) {
@@ -158,16 +166,16 @@ setup_test(int option)
 			evp.sigev_value = (sigval_t) 0;
 			evp.sigev_signo = SIGALRM;
 			evp.sigev_notify = SIGEV_SIGNAL;
+			evp_ptr = &evp;
 			break;
 		case 1:
-			evp.sigev_value = (sigval_t) NULL;
-			evp.sigev_signo = (int) NULL;
-			evp.sigev_notify = (int) NULL;
+			evp_ptr = NULL;
 			break;
 		case 2:
 			evp.sigev_value =  (sigval_t) 0;
 			evp.sigev_signo = SIGALRM; /* any will do */
 			evp.sigev_notify = SIGEV_NONE;
+			evp_ptr = &evp;
 			break;
 	}
 }

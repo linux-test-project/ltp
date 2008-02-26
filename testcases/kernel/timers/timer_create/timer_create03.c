@@ -80,7 +80,7 @@ static void setup_test(int option);
 char *TCID = "timer_create03";	/* Test program identifier. */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static struct sigevent evp;
+static struct sigevent evp, *evp_ptr;
 
 int
 main(int ac, char **av)
@@ -112,7 +112,7 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			setup_test(i);
-			TEST(timer_create(CLOCK_MONOTONIC, &evp,
+			TEST(timer_create(CLOCK_MONOTONIC, evp_ptr,
 						&created_timer_id));
 
 			if (TEST_RETURN == -1) {
@@ -149,16 +149,16 @@ setup_test(int option)
 			evp.sigev_value = (sigval_t) 0;
 			evp.sigev_signo = SIGALRM;
 			evp.sigev_notify = SIGEV_SIGNAL;
+			evp_ptr = &evp;
 			break;
 		case 1:
-			evp.sigev_value = (sigval_t) NULL;
-			evp.sigev_signo = (int) NULL;
-			evp.sigev_notify = (int) NULL;
+			evp_ptr = NULL;
 			break;
 		case 2:
 			evp.sigev_value =  (sigval_t) 0;
 			evp.sigev_signo = SIGALRM; /* any will do */
 			evp.sigev_notify = SIGEV_NONE;
+			evp_ptr = &evp;
 			break;
 	}
 }

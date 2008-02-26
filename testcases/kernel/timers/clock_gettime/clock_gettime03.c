@@ -88,14 +88,10 @@ static struct test_case_t {
 	char *err_desc;		/* error description */
 	int  exp_errno;		/* expected error number*/
 	char *exp_errval;	/* Expected errorvalue string*/
-} testcase[] = {
-	{"Bad address", EFAULT, "EFAULT"},		/* Bad timespec * */
-	{"Bad address", EFAULT, "EFAULT"},		/* Bad timespec * */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* PROCESS_CPUTIME_ID*/
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* THREAD_CPUTIME_ID */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* REALTIME_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MONOTONIC_HR */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS */
+} testcase[6] = {
+	{"Bad address", EFAULT, "EFAULT"},			/* Bad timespec   */
+	{"Bad address", EFAULT, "EFAULT"},			/* Bad timespec   */
+	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS	  */
 	{"Invalid parameter", EINVAL, "EINVAL"}		/* MAX_CLOCKS + 1 */
 };
 
@@ -105,15 +101,14 @@ main(int ac, char **av)
 	int lc, i;	/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 	struct timespec spec, *temp;
-	clockid_t clocks[8] = {
+
+	clockid_t clocks[] = {
 		CLOCK_REALTIME,
-		CLOCK_REALTIME,
-		CLOCK_PROCESS_CPUTIME_ID,
-		CLOCK_THREAD_CPUTIME_ID,
-		CLOCK_REALTIME_HR,
-		CLOCK_MONOTONIC_HR,
+		CLOCK_MONOTONIC,
 		MAX_CLOCKS,
-		MAX_CLOCKS + 1
+		MAX_CLOCKS + 1,
+		CLOCK_PROCESS_CPUTIME_ID,
+		CLOCK_THREAD_CPUTIME_ID
 	};
 
 	/* parse standard options */
@@ -123,6 +118,27 @@ main(int ac, char **av)
 	}
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
+
+	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+	 * kernel versions lower than 2.6.12
+	 */
+	if((tst_kvercmp(2, 6, 12)) < 0) {
+		testcase[4].err_desc = "Invalid parameter";	/* PROCESS_CPUTIME_ID */
+		testcase[4].exp_errno = EINVAL;
+		testcase[4].exp_errval = "EINVAL";
+		testcase[5].err_desc = "Invalid parameter";	/* THREAD_CPUTIME_ID */
+		testcase[5].exp_errno = EINVAL;
+		testcase[5].exp_errval = "EINVAL";
+	}
+	else {
+		testcase[4].err_desc = "Bad address";	/* Bad timespec pointer */
+		testcase[4].exp_errno = EFAULT;
+		testcase[4].exp_errval = "EFAULT";
+		testcase[5].err_desc = "Bad address";	/* Bad timespec pointer */
+		testcase[5].exp_errno = EFAULT;
+		testcase[5].exp_errval = "EFAULT";
+	}
+
 
 	/* perform global setup for test */
 	setup();
@@ -134,12 +150,14 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
+			temp = &spec;
+
 			if (i == 0) {
 				temp = (struct timespec *) -1;
 			} else if (i == 1) {
 				temp = (struct timespec *) NULL;
-			} else {
-				temp = &spec;
+			} else if ((i >= 4) && (tst_kvercmp(2, 6, 12) >= 0)) {
+				temp = (struct timespec *) NULL;
 			}
 
 			TEST(clock_gettime(clocks[i], temp));
