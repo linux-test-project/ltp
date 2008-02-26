@@ -321,7 +321,10 @@ do
 		else
 			# If df is a symlink (to busybox) then do not pass the $dir and $dfOpts
 			# parameters because they don't work as expected
-                        [ -h $(which df) ] && dir=""; dfOpts=""
+                        if test -h $(which df)
+                           then
+                               dir=""; dfOpts="";
+                        fi      
 	
 			blks=$(df $dfOpts $dir |
 			(while read fs blks used avail cap mountpoint
