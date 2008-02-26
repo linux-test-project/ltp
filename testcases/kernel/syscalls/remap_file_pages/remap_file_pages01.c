@@ -166,7 +166,7 @@ static void test_nonlinear(int fd)
 	if (write(fd, cache_contents, cache_sz) != cache_sz) {
 		tst_resm(TFAIL, "Write Error for \"cache_contents\" to \"cache_sz\" of %d (errno=%d : %s)",
 			 cache_sz, errno, strerror(errno));
-		cleanup();
+		cleanup(NULL);
 	}
 
 	data = mmap((void *)WINDOW_START,
@@ -177,7 +177,7 @@ static void test_nonlinear(int fd)
 
 	if (data == MAP_FAILED) {
 		tst_resm(TFAIL, "mmap Error, errno=%d : %s", errno, strerror(errno));
-		cleanup();
+		cleanup(NULL);
 	}
 
 again:
@@ -188,7 +188,7 @@ again:
 				(window_pages-i-2), 0) == -1) {
 			tst_resm(TFAIL, "remap_file_pages error for page=%d, page_sz=%d, window_pages=%d (errno=%d : %s)",
 				page,(page_sz * 2), (window_pages-i-2), errno, strerror(errno));
-			cleanup();
+			cleanup(data);
 		}
 	}
 
@@ -200,19 +200,21 @@ again:
 			if (data[i*page_sz] != window_pages-i) {
 				tst_resm(TFAIL, "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d)=%d",
 					 (i*page_sz), data[i*page_sz], i, (window_pages-i));
-				cleanup();
+				cleanup(data);
 			}
 		} else {
 			if (data[i*page_sz] != window_pages-i-2) {
 				tst_resm(TFAIL,"hm, mapped incorrect data, data[%d]=%d, (window_pages-%d-2)=%d",
 					 (i*page_sz), data[i*page_sz], i, (window_pages-i-2));
-				cleanup();                            
+				cleanup(data);                            
 			}
 		}
 	}
 
 	if (--repeat)
 		goto again;
+
+	munmap (data, window_sz);
 }
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -264,11 +266,14 @@ setup()
 * completion or premature exit
 */
 void
-cleanup()
+cleanup(char *data)
 {
 	/* Close the file descriptors */
 	close(fd1);
 	close(fd2);
+
+	if (data)
+		munmap (data, window_sz);
 
 	/*
 	 * print timing stats if that option was specified.

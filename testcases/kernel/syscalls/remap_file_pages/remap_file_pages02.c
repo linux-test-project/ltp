@@ -339,6 +339,11 @@ cleanup()
 	/* Close the file descriptor */
 	close(fd);
 
+	if (data)
+		munmap (data, cache_sz);
+	if (data01)
+		munmap (data01, cache_sz);
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
