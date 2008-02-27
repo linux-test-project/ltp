@@ -496,15 +496,21 @@ fi
 
 
 # TEST #10
-# Test if file command can recognize vmlinuz file
+# Test if file command can recognize kernel file
 
 export TCID=file10
 export TST_COUNT=10
 
-$LTPBIN/tst_resm TINFO "TEST #10: file command recognizes vmlinuz file"
+if [ -f /etc/redhat-release ]; then
+   KERNEL=vmlinuz
+else
+   KERNEL=vmlinux
+fi
+
+$LTPBIN/tst_resm TINFO "TEST #10: file command recognizes $KERNEL file"
 
 # Red Hat creates a user-mode-linux vmlinuz file (ends in .uml) - ignore it
-KERNFILE=$(find /boot ! -type l -name 'vmlinuz*' | grep -v '.uml' | tail -1)
+KERNFILE=$(find /boot ! -type l -name "$KERNEL*" | grep -v '.uml' | tail -1)
 file $KERNFILE &> $LTPTMP/file.out
 
 if [ $? -eq 0 ]
@@ -514,20 +520,20 @@ then
 # of different architectures...
 #####
     MATCHED=""
-    grep -i "$TEST_ARCH" $LTPTMP/file.out && MATCHED="y"
-    grep -i "kernel" $LTPTMP/file.out && MATCHED="y"
-    grep -i "compressed data" $LTPTMP/file.out && MATCHED="y"
-    grep -i "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "$TEST_ARCH" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "kernel" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "compressed data" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
     if [ -n "$MATCHED" ]
     then
-        $LTPBIN/tst_resm TPASS "file: Recognised vmlinuz file correctly"
+        $LTPBIN/tst_resm TPASS "file: Recognised $KERNEL file correctly"
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
-             "file: Failed to Recognize vmlinuz correctly. Reason:"
+             "file: Failed to Recognize $KERNEL correctly. Reason:"
         TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 else
-    $LTPBIN/tst_resm TFAIL "file: Failed to recognize vmlinuz file"
+    $LTPBIN/tst_resm TFAIL "file: Failed to recognize $KERNEL file"
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
