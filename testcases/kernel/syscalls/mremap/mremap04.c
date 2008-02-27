@@ -70,6 +70,9 @@
  *        (included by sys/mman.h) __USE_GNU needs to be defined.
  *        There may be a more elegant way of doing this...
  *
+ *      26/02/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. Use a shm key from getipckey instead of
+ *        a fixed hard-coded value.
  *
  * RESTRICTIONS:
  *  None.
@@ -85,7 +88,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#define SHMKEY		(key_t)0x10	/* name of shared memory segment */
 #define SHM_MODE	(SHM_R | SHM_W)	/* mode permissions of shared memory */
 
 char *TCID="mremap04";		/* Test program identifier.    */
@@ -100,6 +102,8 @@ int exp_enos[]={ENOMEM, 0};
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
+
+extern int getipckey();
 
 int
 main(int ac, char **av)
@@ -184,11 +188,16 @@ main(int ac, char **av)
 void 
 setup()
 {
+	key_t shmkey;
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
 	/* Get the system page size */
 	if ((memsize = getpagesize()) < 0) {
@@ -199,11 +208,14 @@ setup()
 	/* Get the New size of virtual memory block after resize */
 	newsize = (memsize * 2);
 
+	/* get an IPC resource key */
+	shmkey = getipckey();
+
 	/*
 	 * Create a shared memory segment represented by SHMKEY of
 	 * specified size 'newsize' and mode permissions 'SHM_MODE'.
 	 */
-	shmid = shmget(SHMKEY, newsize, IPC_CREAT | SHM_MODE);
+	shmid = shmget(shmkey, newsize, IPC_CREAT | SHM_MODE);
 	if (shmid == -1) {
 		tst_brkm(TBROK, tst_exit, "shmget() Failed to create a shared "
 			 "memory, error:%d", errno);
@@ -236,6 +248,9 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
 	/*
 	 * Detach the shared memory segment attached to
