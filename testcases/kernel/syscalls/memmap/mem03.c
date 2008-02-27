@@ -59,68 +59,58 @@
 #define FAILED       (-1) /* return status for all funcs indicating failure   */
 #define SUCCESS      0    /* return status for all routines indicating success*/
 
+static void setup();
+static void cleanup();
+
 char *TCID = "mem03";			/* Test program identifier. */
 int TST_TOTAL = 1;			/* Total number of test cases. */
 extern int Tst_count;			/* Test Case counter for tst_* routines */
 
+int f1=-1, f2=-1;
+char *mm1=NULL, *mm2=NULL;
 
 /*--------------------------------------------------------------------*/
 int main()
 {
-	int f1, f2;
 	char tmp1[] = "./tmp.file.1";
 	char tmp2[] = "./tmp.file.2";
 
 	char str1[] = "testing 123";
 	char str2[] = "my test mem";
 
-	if ((f1 = open(tmp1, O_RDWR|O_CREAT, S_IREAD|S_IWRITE))
-			== -1 )
-        {
-		tst_resm(TFAIL, "failed to open/create file %s\n", tmp1);
-		return FAILED;
-        }
+	/* perform global setup for test */
+	setup();
 
-	if ((f2 = open(tmp2, O_RDWR|O_CREAT, S_IREAD|S_IWRITE))
-			== -1 )
-        {
-		tst_resm(TFAIL, "failed to open/create file %s\n", tmp1);
-		return FAILED;
-        }
+	if ((f1 = open(tmp1, O_RDWR|O_CREAT, S_IREAD|S_IWRITE)) == -1 )
+		tst_brkm(TFAIL, cleanup, "failed to open/create file %s",
+			 tmp1);
+
+	if ((f2 = open(tmp2, O_RDWR|O_CREAT, S_IREAD|S_IWRITE)) == -1 )
+		tst_brkm(TFAIL, cleanup, "failed to open/create file %s",
+			 tmp2);
 
 	write(f1, str1, strlen(str1));
 	write(f2, str2, strlen(str2));
 
 	{
-		char *mm1, *mm2;
 		char *save_mm1, *save_mm2;
 
 		mm1 = mmap(0, 64, PROT_READ, MAP_PRIVATE, f1, 0);
 		mm2 = mmap(0, 64, PROT_READ, MAP_PRIVATE, f2, 0);
 
 		if ((mm1 == (void*)-1) || (mm2 == (void*)-1))
-		{
-			tst_resm(TFAIL, "mmap failed\n");
-			return FAILED;
-		}
-
-		//printf("mm1 = %p\n", mm1);
-		//printf("mm2 = %p\n", mm2);
+			tst_brkm(TFAIL, cleanup, "mmap failed");
 
 		save_mm1 = mm1;
 		save_mm2 = mm2;
 
 		if ( strncmp(str1, mm1, strlen(str1)) )
-		{
-			tst_resm(TFAIL, "failed on compare %s\n", tmp1);
-			return FAILED;
-		}
+			tst_brkm(TFAIL, cleanup, "failed on compare %s",
+				 tmp1);
 
 		if ( strncmp(str2, mm2, strlen(str2)) )
-		{
-			tst_resm(TFAIL, "failed on compare %s\n", tmp2);
-			return FAILED;
-		}
+			tst_brkm(TFAIL, cleanup, "failed on compare %s",
+				 tmp2);
 
 		munmap(mm1, 64);
 		munmap(mm2, 64);
@@ -129,13 +119,7 @@ int main()
 		mm2 = mmap(save_mm1, 64, PROT_READ, MAP_PRIVATE, f2, 0);
 
 		if ((mm1 == (void*)-1) || (mm2 == (void*)-1))
-		{
-			tst_resm(TFAIL, "second mmap failed\n");
-			return FAILED;
-		}
-
-		//printf("mm1 = %p\n", mm1);
-		//printf("mm2 = %p\n", mm2);
+			tst_brkm(TFAIL, cleanup, "second mmap failed");
 
 		if (mm1 != save_mm2)
 		{
@@ -150,37 +134,58 @@ int main()
 		}
 
 		if ( strncmp(str1, mm1, strlen(str1)) )
-		{
-			tst_resm(TFAIL, "failed on compare %s\n", tmp1);
-			return FAILED;
-		}
+			tst_brkm(TFAIL, cleanup, "failed on compare %s",
+				 tmp1);
 
 		if ( strncmp(str2, mm2, strlen(str2)) )
-		{
-			tst_resm(TFAIL, "failed on compare %s\n", tmp2);
-			return FAILED;
-		}
-
+			tst_brkm(TFAIL, cleanup, "failed on compare %s",
+				 tmp2);
+		
 		munmap(mm1, 64);
 		munmap(mm2, 64);
 	}
 
-	close(f1);
-	close(f2);
-
-        if (unlink(tmp1))
-        {
-            perror("1 ulink()");
-            return FAILED;
-        }
-
-        if (unlink(tmp2))
-        {
-            perror("2 ulink()");
-            return FAILED;
-        }
-
 	tst_resm(TPASS,"%s memory test succeeded", TCID);
-	return SUCCESS;
+
+	/* clean up and exit */
+	cleanup();
+
+	/*NOTREACHED*/
+	return 0;
 }
 
+/*
+ * setup() - performs all ONE TIME setup for this test
+ */
+void
+setup(void)
+{
+	/*
+	 * Create a temporary directory and cd into it.
+	 */
+	tst_tmpdir();
+}
+
+/*
+ * cleanup() - performs all the ONE TIME cleanup for this test at completion
+ * 	       or premature exit.
+ */
+void
+cleanup(void)
+{
+	if (mm1)
+		munmap(mm1, 64);
+	if (mm2)
+		munmap(mm2, 64);
+
+	if (f1 != -1)
+		close(f1);
+	if (f2 != -1)
+		close(f2);
+
+	/* Remove the temporary directory */
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}
