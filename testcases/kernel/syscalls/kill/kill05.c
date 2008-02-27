@@ -55,6 +55,12 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
+ *      26/02/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix wrong return value check on shmat system call (leading to 
+ *        segfault in case of error with this syscall).
+ *      - Fix deletion of IPC memory segment. Segment was not correctly
+ *        deleted due to the change of uid during the test.
+ *
  * RESTRICTIONS
  *	This test must be run as root.
  *	Looping with the -i option does not work correctly.
@@ -78,6 +84,7 @@ extern void rm_shm(int);
 void cleanup(void);
 void setup(void);
 void do_child(void);
+void do_master_child(void);
 
 char *TCID= "kill05";
 int TST_TOTAL = 1;
@@ -94,17 +101,9 @@ extern int getipckey();
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
-	pid_t pid1;
+	pid_t pid;
 	int status;
-
-	char user1name[] = "nobody";
-	char user2name[] = "bin";
-
-	extern struct passwd * my_getpwnam(char *);
-
-	struct passwd *ltpuser1, *ltpuser2;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -116,6 +115,42 @@ int main(int ac, char **av)
 #endif
 
 	setup();                        /* global setup */
+
+	pid = FORK_OR_VFORK();
+	if (pid < 0)
+		tst_brkm(TBROK, cleanup, "Fork failed");
+	
+	if (pid == 0) {
+		do_master_child();
+		return (0);
+	}
+	else {
+		waitpid(pid, &status, 0);
+	}
+
+	cleanup();
+	/*NOTREACHED*/
+
+	return(0);
+}
+
+/*
+ * do_master_child()
+ */
+void
+do_master_child()
+{
+	int lc;                         /* loop counter */
+
+	pid_t pid1;
+	int status;
+
+	char user1name[] = "nobody";
+	char user2name[] = "bin";
+
+	extern struct passwd * my_getpwnam(char *);
+
+	struct passwd *ltpuser1, *ltpuser2;
 
 	ltpuser1 = my_getpwnam(user1name);
 	ltpuser2 = my_getpwnam(user2name);
@@ -190,10 +225,6 @@ int main(int ac, char **av)
 				strerror(TEST_ERRNO), 1, strerror(1));
 		}
 	}
-	cleanup();
-
-	/*NOTREACHED*/
-	return(0);
 }
 
 /*
@@ -228,6 +259,11 @@ setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+	/* Make a temp directory and cd to it.
+	 * Usefull to be sure getipckey generated different IPC keys.
+	 */
+	tst_tmpdir();
+
         /* get an IPC resource key */
         semkey = getipckey();
 
@@ -237,9 +273,9 @@ setup(void)
 	}
 
 	/*flag = (int *)shmat(shmid1, 0, 0);*/
-	if (*(flag = (int *)shmat(shmid1, 0, 0)) == -1) {
+	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1) {
 		tst_brkm(TBROK, cleanup,
-			"Failed to attatch shared memory:%d", *flag);
+			"Failed to attatch shared memory:%d", flag);
 	}
 }
 
@@ -255,6 +291,9 @@ cleanup(void)
 	 * print errno log if that option was specified
 	 */
 	TEST_CLEANUP;
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
 	/*
 	 * if it exists, remove the shared memory
