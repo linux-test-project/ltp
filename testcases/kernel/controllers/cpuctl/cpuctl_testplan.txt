@@ -1,25 +1,11 @@
-The cpucontroller testplan includes a complete set of testcases that test the cpu controller
-in different scenarios. So this testcase is the first in it's series.
+The cpucontroller testplan includes a complete set of testcases that test the
+cpu controller in different scenarios.
 
-**This testcase tests the cpu controller under flat hierarchy.**
+**These testcases test the cpu controller under flat hierarchy.**
 
-
-The test plan for this testcase is as below:
-
-First of all mount the cpu controller on /dev/cpuctl and create n groups. The number of
-groups should be > the number of cpus for checking scheduling fairness(as we will run 1
-task per group). then we create say n groups. By default each group is assigned 1024
-shares. The cpu controller schedules the tasks in different groups on the basis of the
-shares assigned to that group. So the cpu usage of a task depends on the amount of shares
-it's group has out of the total number of shares(no upper limit). Let us say that we have
-3 groups(1 task each) A,B,C each having 1, 2, 3 shares respectively. Hence if the tasks are
-running infinitely they are supposed to get 16.66%, 33.33%, 50% cpu time respectively. This
-test case tests that each group should get the cpu time in the same(above) ratio irrespective
-of the shares values provided the ratio is not changed i.e. the cpu time per group should not
-change if we change the shares from 1, 2, 3 to 100, 200, 300 or to 10K, 20K, 30K etc.
-
-How to view the results:
------------------------
+General Note:-
+============
+How to calculate expected cpu time:
 
 Say if there are n groups then
 
@@ -28,21 +14,108 @@ total share weight = grp1 share + grp2 shares +......upto n grps
 then expected time of any grp (say grp1)
 	=100 * (grp1 share) /(total share weight) %
 
-Note:-
-(*If there were say 2 task in this group then both task might devide the time of this group
- *and it would create no effect on tasks in other group. So a task will always get time from
- *it's group time only and will never affect other groups share of time )
+(* If there were say 2 task in a group then both task might devide the time
+ * of this group and it would create no effect on tasks in other group. So a
+ * task will always get time from it's group time only and will never affect
+ * other groups share of time.
+ * Even if task is run with different nice value it will affect the tasks in
+ * that group only.
+)
 
+!!! User need not worry about this calculation at all as the test dynamicaly
+calculates expected cpu time of a task and prints for each task in results
+file. This calculation is given for refernce to interested users.
+For any other information please refer to cgroup.txt in kernel documentation.
+
+TESTCASE DESCRIPTION:
+====================
+
+Test 01: FAIRNESS TEST
+---------------------
+
+This test consists of two test cases.
+The test plan for this testcase is as below:
+
+First of all mount the cpu controller on /dev/cpuctl and create n groups.
+The number of groups should be > the number of cpus for checking scheduling
+fairness(as we will run 1 task per group). then we create say n groups. By
+default each group is assigned 1024 shares. The cpu controller schedules the
+tasks in different groups on the basis of the shares assigned to that group.
+So the cpu usage of a task depends on the amount of shares it's group has out
+of the total number of shares(no upper limiit but a lower limit of 2). Let us
+say that we have 3 groups(1 task each) A,B,C each having 2, 4, 6 shares
+respectively. Hence if the tasks are running infinitely they are supposed to
+get 16.66%, 33.33%, 50% cpu time respectively. This test case tests that each
+group should get the cpu time in the same(above) ratio irrespective of the
+shares values provided the ratio is not changed i.e. the cpu time per group
+should not change if we change the shares from 2, 4, 6 to 200, 400, 600 or
+to 20K, 40K, 60K etc.
+
+
+How to view the results:
+-----------------------
 
 The cpu time for each group(task ) is calculated in %. There are two outcomes of the test:
-
 1. A group should get cpu time in the same ratio as it's shares.
-
 2. This time should not change with the changes in share values while the ratio in those
    values is same.
 
 NOTE: In case 1 a variation of 1-2 % is acceptable.
+(here we have 1 task per group)
 
-(remember here we have 1 task per group)
+Test 03: GRANULARITY TEST
+-------------------------
+Granularity test with respect to shares values
+In this test the shares value of some of the groups is increased and for some
+groups is decreased. Accordingly the expected cpu time of a task is calculated.
+The outcome of the test is that calc cpu time must change in accordance with
+change in shares value.
+(i.e. calculated cpu time and expected cpu time should be same)
 
-For any other information please refer to cgroup.txt in kernel documentation.
+Test 04: NICE VALUE TEST
+-------------------------
+Renice all tasks of a group to -20 and let tasks in all other groups run with
+normal priority. The aim is to test that nice effect is within the groups and
+not shares are dominant over nice values.
+
+Test 05: TASK MIGRATION TEST
+----------------------------
+In this test for the first run the test is run with say n tasks in m groups.
+After first run a task is migrated from one group to another group. This task
+now consumes the cpu time from the new group.
+
+Test 06-08 : NUM GROUPS vs NUMBER of TASKS TEST
+----------------------------------------------
+In the following three testcases a total tasks are same and each task is
+expected to get same cpu time. Theses testcases test the effect of creating
+more groups on fairness.(however latency check will be done in future)
+
+Test 06:      N X M (N groups with M tasks each)
+-------
+
+Test 07:      N*M X 1 (N*M groups with 1 task each)
+-------
+
+Test 08:      1 X N*M (1 group with N*M tasks)
+-------
+
+Test 09-10: STRESS TEST
+----------
+The next two testcases put stress on system and create a large number of groups
+each running a large number of tasks in it.
+
+Test 09:      Heavy stress test with nice value change
+-------
+Creates 4 windows of different NICE values. Each window runs some n groups.
+
+Test 10:      Heavy stress test (effect of heavy group on light group)
+-------
+In this test one group has very less tasks while others have large number of
+tasks. This tests if fairness still remains.
+
+
+(
+ In all tests calc cpu time and exp cpu time should be same
+ Time:: calc:- calculated cpu time obtained for a running task
+ exp:- expected time as per the shares of the group and num of tasks in group.
+)

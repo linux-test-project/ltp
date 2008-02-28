@@ -28,6 +28,10 @@ cpuctl
 Directory containing the cpu controller testcases. A similar directory will be created for
 any new controller.
 
+libcontrollers
+--------------
+This directory contains the library for cpucontroller testing.
+
 Makefile
 --------
 The usual Makefile to conduct all the tests.
@@ -35,4 +39,15 @@ The usual Makefile to conduct all the tests.
 Before starting compilation this file checks if the kernel is supporting the cpu controller.
 If yes it enters lower directory and compiles the source files otherwise exits warning to user.
 Hence the user has to take care of the fact that the test runs or just quiets.
-(Your kernel needs to be 2.6.24-rc1 onwards with proper config options)
+(Your kernel needs to be 2.6.24 onwards with proper config options)
+
+A snapshot of config file options is given below:
+CONFIG_CGROUPS=y
+CONFIG_CGROUP_DEBUG=y
+CONFIG_CGROUP_NS=y
+CONFIG_CPUSETS=y
+CONFIG_GROUP_SCHED=y
+CONFIG_FAIR_GROUP_SCHED=y
+CONFIG_RT_GROUP_SCHED=y
+# CONFIG_USER_SCHED is not set
+CONFIG_CGROUP_SCHED=y
