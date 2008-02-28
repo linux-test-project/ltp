@@ -1,0 +1,48 @@
+The cpucontroller testplan includes a complete set of testcases that test the cpu controller
+in different scenarios. So this testcase is the first in it's series.
+
+**This testcase tests the cpu controller under flat hierarchy.**
+
+
+The test plan for this testcase is as below:
+
+First of all mount the cpu controller on /dev/cpuctl and create n groups. The number of
+groups should be > the number of cpus for checking scheduling fairness(as we will run 1
+task per group). then we create say n groups. By default each group is assigned 1024
+shares. The cpu controller schedules the tasks in different groups on the basis of the
+shares assigned to that group. So the cpu usage of a task depends on the amount of shares
+it's group has out of the total number of shares(no upper limit). Let us say that we have
+3 groups(1 task each) A,B,C each having 1, 2, 3 shares respectively. Hence if the tasks are
+running infinitely they are supposed to get 16.66%, 33.33%, 50% cpu time respectively. This
+test case tests that each group should get the cpu time in the same(above) ratio irrespective
+of the shares values provided the ratio is not changed i.e. the cpu time per group should not
+change if we change the shares from 1, 2, 3 to 100, 200, 300 or to 10K, 20K, 30K etc.
+
+How to view the results:
+-----------------------
+
+Say if there are n groups then
+
+total share weight = grp1 share + grp2 shares +......upto n grps
+
+then expected time of any grp (say grp1)
+	=100 * (grp1 share) /(total share weight) %
+
+Note:-
+(*If there were say 2 task in this group then both task might devide the time of this group
+ *and it would create no effect on tasks in other group. So a task will always get time from
+ *it's group time only and will never affect other groups share of time )
+
+
+The cpu time for each group(task ) is calculated in %. There are two outcomes of the test:
+
+1. A group should get cpu time in the same ratio as it's shares.
+
+2. This time should not change with the changes in share values while the ratio in those
+   values is same.
+
+NOTE: In case 1 a variation of 1-2 % is acceptable.
+
+(remember here we have 1 task per group)
+
+For any other information please refer to cgroup.txt in kernel documentation.
