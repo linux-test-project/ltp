@@ -51,13 +51,14 @@ export TST_COUNT=1;
 RC=0;			# return code from functions
 NUM_CPUS=1;		# at least 1 cpu is there
 NUM_GROUPS=2;		# min number of groups
+TEST_NUM=$1;           # To run the desired test (1 or 2)
 
 PWD=`pwd`
 cd $LTPROOT/testcases/bin/
+NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 
 get_num_groups()	# Number of tasks should be >= number of cpu's (to check scheduling fairness)
 {
-	NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 	num_grps=$(echo "$NUM_CPUS * 1.5"|bc)	# temp variable num_grps
 	int_part=`echo $num_grps | cut -d"." -f1`
 	dec_part=`echo $num_grps | cut -d"." -f2`
@@ -120,7 +121,7 @@ setup ()
 
 	# Create different groups
 	i=1;
-	while [ $i -le $NUM_GROUPS ]
+	while [ "$i" -le "$NUM_GROUPS" ]
 	do
 		group=group_$i;
 		mkdir /dev/cpuctl/$group;# 2>/dev/null
@@ -135,13 +136,25 @@ setup ()
 }
 
 ##########################  main   #######################
-	echo "TEST: CPU CONTROLLER TESTING";
-	echo "RUNNING SETUP.....";
-	get_num_groups;
-	if [ $NUM_GROUPS -lt 2 ]
+	if [ -z $TEST_NUM ]
 	then
-		NUM_GROUPS=2;	# min num of groups for testing
-	fi
+		echo "Could not start cpu controller test";
+		echo "usage: run_cpuctl_test.sh test_num";
+		echo "Skipping the test...";
+		exit -1;
+	fi;
+	echo "TEST $TEST_NUM: CPU CONTROLLER TESTING";
+	echo "RUNNING SETUP.....";
+	if [ ${TEST_NUM} -eq 1 ]
+	then
+		get_num_groups;
+	elif [ ${TEST_NUM} -eq 2 ]
+	then
+		NUM_GROUPS=`expr 2 \* $NUM_CPUS`;
+	else
+		echo "Invalid test number";
+		exit -1;
+	fi;
 
 	setup;
 
@@ -153,12 +166,12 @@ setup ()
 	#Check if  c source  file has been compiled and then run it in different groups
 	if [ -f cpuctl_test01 ]
 	then
-		echo `date` >> $LTPROOT/output/cpuctl_results.txt;
+		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
 			cp cpuctl_test01 cpuctl_task_$i 2>/dev/null;
 			chmod +x cpuctl_task_$i;
-			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS >>$LTPROOT/output/cpuctl_results.txt 2>/dev/null &
+			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM >>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$i"
@@ -187,14 +200,14 @@ setup ()
 		# and they will return non zero exit status. So Test broke!!
 		if [ $RC -ne 0 ]
 		then
-			echo "Task $i exited abnormalywith return value: $RC";
+			echo "Task $i exited abnormaly with return value: $RC";
 			tst_resm TINFO "Test could not execute for the expected duration";
 			cleanup;
 			exit -1;
 		fi
 	done
 	echo "Cpu controller test executed successfully.Results written to file";
-	echo "Please review the results in $LTPROOT/output/cpuctl_results.txt"
+	echo "Please review the results in $LTPROOT/output/cpuctl_results_$TEST_NUM.txt"
 	cleanup;
 	cd $PWD
 	exit 0;		#to let PAN reprt success of test

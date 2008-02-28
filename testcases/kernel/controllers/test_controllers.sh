@@ -39,7 +39,8 @@ then
 	CPU_CONTROLLER=`grep -w cpu /proc/cgroups | cut -f1`;
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
-		$LTPROOT/testcases/bin/run_cpuctl_test.sh;
+		$LTPROOT/testcases/bin/run_cpuctl_test.sh 1;
+		$LTPROOT/testcases/bin/run_cpuctl_test.sh 2;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";

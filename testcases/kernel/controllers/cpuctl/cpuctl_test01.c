@@ -27,7 +27,7 @@
 /*              testcase tests the ability of the cpu controller to provide   */
 /*              fairness for share values (absolute).                         */
 /*                                                                            */
-/* Total Tests: 2                                                             */
+/* Total Tests: 3                                                             */
 /*                                                                            */
 /* Test Name:   cpu_controller_test01                                         */
 /*                                                                            */
@@ -61,7 +61,7 @@
 #define NUM_INTERVALS	3       /* How many iterations of TIME_INTERVAL */
 #define NUM_SETS	7	/* How many share values (with same ratio)*/
 #define MULTIPLIER   	10      /* decides the rate at which share value gets multiplied*/
-
+#define GRANULARITY    5       /* % value by which shares of a group changes */
 extern int Tst_count;
 char *TCID = "cpu_controller_test01";
 int TST_TOTAL = 1;
@@ -80,7 +80,7 @@ int timer_expired = 0;
 int main(int argc, char* argv[])
 {
 
-	int num_cpus;			/* To calculate cpu time in %*/
+	int num_cpus, test_num;			/* To calculate cpu time in %*/
 	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
 	pid_t pid;
 	int my_group_num,	        /* A number attached with a group*/
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 		prev_cpu_time=0;
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
-	unsigned long int myshares = 1;	/* Simply the base value to start with*/
+	unsigned long int myshares = 1, baseshares = 1000;	/* Simply the base value to start with*/
 	struct sigaction newaction, oldaction;
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);
@@ -101,12 +101,20 @@ int main(int argc, char* argv[])
 	sigaction (SIGALRM, &newaction, &oldaction);
 
 	/* Check if all parameters passed are correct*/
-	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) || ((scriptpid = atoi(argv[3])) <= 0) || ((num_cpus = atoi(argv[4])) <= 0))
+	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) || ((scriptpid = atoi(argv[3])) <= 0) || ((num_cpus = atoi(argv[4])) <= 0) || (test_num = atoi(argv[5])) <= 0)
 	{
 		tst_brkm (TBROK, cleanup, "Invalid input parameters\n");
 	}
 
-	myshares *= my_group_num;
+	if (test_num == 1)
+		myshares *= my_group_num;
+	else if (test_num == 2)
+		myshares = baseshares;
+	else
+	{
+		tst_brkm (TBROK, cleanup, "Wrong Test number passed. Exiting Test...\n");
+	}
+
 	sprintf(mygroup,"%s", argv[2]);
 	sprintf(mytaskfile, "%s", mygroup);
 	sprintf(mysharesfile, "%s", mygroup);
@@ -137,7 +145,7 @@ int main(int argc, char* argv[])
 					 * exceed the TIME_INTERVAL to measure cpu usage
 					 */
 			current_time = time (NULL);
-			delta_time = current_time - prev_time;	/* Duration in case it is not exact TIME_INTERVAL*/
+			delta_time = current_time - prev_time;	/* Duration in case its not exact TIME_INTERVAL*/
 
 			getrusage (0, &cpu_usage);
 			total_cpu_time = (cpu_usage.ru_utime.tv_sec + cpu_usage.ru_utime.tv_usec * 1e-6 + /* user time*/
@@ -160,7 +168,21 @@ int main(int argc, char* argv[])
 				second_counter++;
 				if (second_counter >= NUM_SETS)
 					exit (0);		/* This task is done with its job*/
-				myshares = MULTIPLIER * myshares;	/* Keep same ratio but change values*/
+
+                                /* Change share values depending on the test_num */
+                                if (test_num ==1)
+                                {
+                                        /* Keep same ratio but change values*/
+                                        myshares = MULTIPLIER * myshares;
+                                }
+                                else
+                                {
+                                        /* Increase for odd task and decrease for even task*/
+                                        if (my_group_num % 2)
+                                                myshares += baseshares * GRANULARITY / 100;
+                                        else
+                                                myshares -= baseshares * GRANULARITY / 100;
+                                }
 				write_to_file (mysharesfile, "w", myshares);
 				fprintf(stdout,"\ntask-%d SHARES=%lu\n",my_group_num, myshares);
 			}/* end if*/
