@@ -45,6 +45,10 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      27/02/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. The second key used for this test could
+ *        conflict with the key from another task.
+ *
  * RESTRICTIONS
  *	Must be ran as non-root
  */
@@ -145,6 +149,8 @@ int main(int ac, char **av)
 void
 setup(void)
 {
+	key_t shmkey2;
+
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -179,14 +185,22 @@ setup(void)
 
 	/* create a shared memory resource with read and write permissions */
 	/* also post increment the shmkey for the next shmget call */
-	if ((shm_id_2 = shmget(shmkey++, INT_SIZE, SHM_RW | IPC_CREAT |
+	if ((shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW | IPC_CREAT |
 	     IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource #1 in setup()");
 	}
 
+	/* Get an new IPC resource key. Since there is a small chance the
+	 * getipckey() function returns the same key as the previous one,
+	 * loop until we have a different key.
+	 */
+	do {
+		shmkey2 = getipckey();
+	} while (shmkey2 == shmkey);
+
 	/* create a shared memory resource without read and write permissions */
-	if ((shm_id_3 = shmget(shmkey, INT_SIZE, IPC_CREAT | IPC_EXCL)) == -1) {
+	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT | IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource #2 in setup()");
 	}
