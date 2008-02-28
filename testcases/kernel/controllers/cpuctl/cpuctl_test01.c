@@ -215,6 +215,18 @@ exp_cpu_time, myshares, delta_time);
                                                 myshares -= baseshares * GRANULARITY / 100;
                                 }
 				write_to_file (mysharesfile, "w", myshares);
+				if (test_num == 2)
+				{
+				/*
+				 * Read the shares file and again calculate the cpu fraction
+				 * No need to read tasks file as we do not migrate tasks
+				 * No need to scan all shares file as total shares are const
+				 */
+				if ((fmyshares = read_shares_file(mysharesfile)) < 2)
+					tst_brkm (TBROK, cleanup, "in reading shares files  %s ", mysharesfile);
+				exp_cpu_time = (double)(fmyshares * 100) /(total_shares * num_tasks);
+				}
+
 				fprintf(stdout,"\ntask-%d SHARES=%lu\n",my_group_num, myshares);
 			}/* end if*/
         }/* end while*/
