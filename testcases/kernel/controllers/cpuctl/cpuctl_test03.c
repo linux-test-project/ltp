@@ -55,6 +55,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
 
 #define TIME_INTERVAL	60	/* Time interval in seconds*/
@@ -64,6 +65,7 @@ extern int Tst_count;
 char *TCID = "cpu_controller_test06";
 int TST_TOTAL = 3;
 pid_t scriptpid;
+char path[] = "/dev/cpuctl";
 extern void
 cleanup()
 {
@@ -71,15 +73,13 @@ cleanup()
 	tst_exit ();		  /* Report exit status*/
 }
 
-int write_to_file (char * file, const char* mode, unsigned int value);
-void signal_handler_alarm (int signal );
 int timer_expired = 0;
 
 int main(int argc, char* argv[])
 {
 
-	int test_num, task_num, num_cpus;	/* To calculate cpu time in %*/
-	char mygroup[32], mytaskfile[32], ch;
+	int test_num, task_num, len, num_cpus;	/* num_cpus to calculate cpu time in %*/
+	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
 	/* Following variables are to capture parameters from script*/
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
@@ -89,8 +89,11 @@ int main(int argc, char* argv[])
 	double total_cpu_time,  	/* Accumulated cpu time*/
 		delta_cpu_time,  	/* Time the task could run on cpu(s) (in an interval)*/
 		prev_cpu_time=0;
+	double exp_cpu_time;            /* Expected time in % as obtained by shares calculation */
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
+	unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
+
 	struct sigaction newaction, oldaction;
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);
@@ -128,7 +131,9 @@ int main(int argc, char* argv[])
 	}
 
 	sprintf(mytaskfile, "%s", mygroup);
+	sprintf(mysharesfile, "%s", mygroup);
 	strcat (mytaskfile,"/tasks");
+	strcat (mysharesfile,"/cpu.shares");
 	pid = getpid();
 	write_to_file (mytaskfile, "a", pid);    /* Assign the task to it's group*/
 
@@ -139,6 +144,31 @@ int main(int argc, char* argv[])
 	}
 
 	read (fd, &ch, 1);	         /* To block all tasks here and fire them up at the same time*/
+
+	/*
+	 * We now calculate the expected % cpu time of this task by getting
+	 * it's group's shares, the total shares of all the groups and the
+	 * number of tasks in this group.
+	 */
+	FLAG = 0;
+	total_shares = 0;
+	shares_pointer = &total_shares;
+	len = strlen (path);
+	if (!strncpy (fullpath, path, len))
+		tst_brkm (TBROK, cleanup, "Could not copy directory path %s ", path);
+
+	if (scan_shares_files() != 0)
+		tst_brkm (TBROK, cleanup, "From function scan_shares_files in %s ", fullpath);
+
+	/* return val: -1 in case of function error, else 2 is min share value */
+	if ((fmyshares = read_shares_file(mysharesfile)) < 2)
+		tst_brkm (TBROK, cleanup, "in reading shares files  %s ", mysharesfile);
+
+	if ((read_file (mytaskfile, GET_TASKS, &num_tasks)) < 0)
+		tst_brkm (TBROK, cleanup, "in reading tasks files  %s ", mytaskfile);
+
+	exp_cpu_time = (double)(fmyshares * 100) /(total_shares * num_tasks);
+
 	prev_time = time (NULL);	 /* Note down the time*/
 
 	while (1)
@@ -166,7 +196,10 @@ int main(int argc, char* argv[])
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-		fprintf (stdout,"PID: %u\tgroup-%3d  task_num: %3d :cpu time ---> %6.3f\%(%fs)\tinterval:%lu\n",getpid(),my_group_num, task_num, mytime, delta_cpu_time, delta_time);
+                fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
+ in %lu (s) INTERVAL\n",my_group_num, task_num, delta_cpu_time, mytime,\
+exp_cpu_time, delta_time);
+
 		counter++;
 
 		if (counter >= NUM_INTERVALS)	 /* Take n sets of readings for each shares value*/
@@ -187,20 +220,3 @@ int main(int argc, char* argv[])
         }	/* end while*/
 }	/* end main*/
 
-
-int write_to_file (char *file, const char *mode, unsigned int value)
-{
-	FILE *fp;
-	fp = fopen (file, mode);
-	if (fp == NULL)
-	{
-		tst_brkm (TBROK, cleanup, "Could not open file %s for writing", file);
-	}
-	fprintf (fp, "%u\n", value);
-	fclose (fp);
-	return 0;
-}
-void signal_handler_alarm (int signal)
-{
-	timer_expired = 1;
-}
