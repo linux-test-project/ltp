@@ -25,10 +25,15 @@
 #               After setup it runs some of the tasks in different groups.      #
 #               setup includes creating controller device, mounting it with     #
 #               cgroup filesystem with option cpu and creating groups in it.    #
+#               This same script can run 4 testcases depending on test number   #
+#               depending on the test number passed by the calling script.      #
 #                                                                               #
 # Functions:    get_num_groups(): decides num of groups based on num of cpus    #
 #               setup(): creaes /dev/cpuctl, mounts cgroup fs on it, creates    #
 #               groups in that, creates fifo to fire tasks at one time.         #
+#               cleanup(): Does the required cleanup after running test.        #
+#               usage(): Displays the usage of the script.                      #
+#               Common functions are kept in a file parameters.sh               #
 #                                                                               #
 # Precaution:   Avoid system use by other applications/users to get fair and    #
 #               appropriate results                                             #
@@ -45,7 +50,7 @@
 
 
 export TCID="cpuctl_test06";
-export TST_TOTAL=3;
+export TST_TOTAL=4;
 export TST_COUNT=1;	# how to tell here ??
 
 RC=0;			# return code from functions
@@ -55,6 +60,7 @@ TEST_NUM=$1;            # To run the desired test (1 or 2)
 TASK_NUM=0;		# The serial number of a task
 TOTAL_TASKS=0;		# Total num of tasks in any test
 TASKS_IN_GROUP=0;	# Total num of tasks in a group
+NICEVALUE=0;
 SCRIPT_PID=$$;
 FILE="stress-123";	# suffix for results file
 
@@ -77,22 +83,40 @@ usage ()
 }
 ##########################  main   #######################
 		# For testcase 1, 2 & 3 N--> $NUM_CPUS
-		# i,2 & 3 are not heavy stress test
+		# 1,2 & 3 are not heavy stress test
 
 	case ${TEST_NUM} in
 
 	"1" )	# N X M (N groups with M tasks each)
+		if [ $N -eq 1 ]
+		then
+			N=2;	# Min 2 groups for group scheduling
+		fi;
 		NUM_GROUPS=$N;
 		TASKS_IN_GROUP=$M;
 		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		;;
 	"2" )   # N*M X 1 (N*M groups with 1 task each)
+		if [ $N -eq 1 ]
+		then
+			N=2;	# To keep total tasks same as in case 1
+		fi;
 		NUM_GROUPS=`expr $N \* $M`;
 		TASKS_IN_GROUP=1;
 		;;
 	"3" )	# 1 X N*M (1 group with N*M tasks)
+		if [ $N -eq 1 ]
+		then
+			N=2;	# To keep total tasks same as in case 1
+		fi;
 		NUM_GROUPS=1;
 		TASKS_IN_GROUP=`expr $N \* $M`;
+		;;
+	"4" )	# Heavy stress test
+		NUM_GROUPS=`expr $N \* $M`;
+		TASKS_IN_GROUP=`expr 1 \* $M`;
+		FILE="stress-4";
+		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		;;
 	  * )
 		usage;
@@ -116,9 +140,10 @@ usage ()
 
 		if [ -f cpuctl_test03 ]
 		then
+		echo CPUCTL NUM_GROUPS vs NUM_TASKS TEST $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo Test $TEST_NUM: TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo "==========================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo "==========================================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
 			MYGROUP=/dev/cpuctl/group_$i
@@ -150,12 +175,70 @@ usage ()
 		fi;
 		TOTAL_TASKS=$TASK_NUM;
 		;;
+	"4" )
+
+		if [ -f cpuctl_test04 ]
+		then
+		echo CPU CONTROLLER HEAVY STRESS TEST 4: >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo Test $TEST_NUM: TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+
+		# Create 4 priority windows
+		RANGE1=`expr $NUM_GROUPS / 4`;
+		RANGE2=`expr $RANGE1 + $RANGE1`;
+		RANGE3=`expr $RANGE2 + $RANGE1`;
+		for i in $(seq 1 $NUM_GROUPS)
+		do
+			MYGROUP=/dev/cpuctl/group_$i
+			for j in $(seq 1 $TASKS_IN_GROUP)
+			do
+			TASK_NUM=`expr $TASK_NUM + 1`;
+			cp cpuctl_test04 cpuctl_task_$TASK_NUM 2>/dev/null;
+			chmod +x cpuctl_task_$TASK_NUM;
+
+			# Per group nice value change must not affect group/task fairness
+			if [ $i -le $RANGE1 ]
+			then
+				NICEVALUE=-16;
+			elif [ $i -gt $RANGE1 ] && [ $i -le $RANGE2 ]
+			then
+				NICEVALUE=-17;
+			elif [ $i -gt $RANGE2 ] && [ $i -le $RANGE3 ]
+			then
+				NICEVALUE=-18;
+			else
+				NICEVALUE=-19;
+			fi
+
+			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICEVALUE ./cpuctl_task_$TASK_NUM \
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			if [ $? -ne 0 ]
+			then
+				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+				cleanup;
+				exit -1;
+			else
+				PID[$TASK_NUM]=$!;
+			fi;
+			j=`expr $j + 1`
+			done;		# end j loop
+			i=`expr $i + 1`
+		done;			# end i loop
+		else
+			echo "Source file not compiled..Plz check Makefile...Exiting test"
+			cleanup;
+			exit -1;
+		fi;
+		TOTAL_TASKS=$TASK_NUM;
+		;;
 	  * )
 		usage;
 		;;
 	esac
 
-	sleep 3
+	sleep 8
 	echo TASKS FIRED
 	echo helloworld > myfifo;
 

@@ -63,8 +63,7 @@ setup ()
         fi
 
         # Create different groups
-        i=1;
-        while [ "$i" -le "$NUM_GROUPS" ]
+        for i in $(seq 1 $NUM_GROUPS)
         do
                 group=group_$i;
                 mkdir /dev/cpuctl/$group;# 2>/dev/null
@@ -74,7 +73,6 @@ setup ()
                         cleanup;
                         exit -1;
                 fi
-                i=`expr $i + 1`
         done
 }
 
