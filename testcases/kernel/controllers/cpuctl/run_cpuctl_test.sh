@@ -205,7 +205,9 @@ setup ()
 				NICELEVEL=0;
 			fi;
 
-			nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM $i /dev/cpuctl/group_$i $$ $NUM_CPUS >>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			GROUP_NUM=$i MYGROUP=/dev/cpuctl/group_$i SCRIPT_PID=$$ NUM_CPUS=$NUM_CPUS \
+			TEST_NUM=$TEST_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
+			>>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"

@@ -78,8 +78,10 @@ int timer_expired = 0;
 int main(int argc, char* argv[])
 {
 
-	int num_cpus;			/* To calculate cpu time in %*/
+	int test_num, num_cpus;			/* To calculate cpu time in %*/
 	char mygroup[32], mytaskfile[32], ch;
+	const char *var1 ="GROUP_NUM", *var2 = "MYGROUP", *var3 = "SCRIPT_PID", *var4 = "NUM_CPUS", *var5 = "TEST_NUM";
+	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p;
 	pid_t pid;
 	int my_group_num,	        /* A number attached with a group*/
 		fd,          	        /* A descriptor to open a fifo for synchronized start*/
@@ -97,12 +99,36 @@ int main(int argc, char* argv[])
 	sigaction (SIGALRM, &newaction, &oldaction);
 
 	/* Check if all parameters passed are correct*/
-	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) || ((scriptpid = atoi(argv[3])) <= 0) || ((num_cpus = atoi(argv[4])) <= 0))
+/*	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) || ((scriptpid = atoi(argv[3])) <= 0) || ((num_cpus = atoi(argv[4])) <= 0))
 	{
 		tst_brkm (TBROK, cleanup, "Invalid input parameters\n");
 	}
+*/
+	/* Collect the parameters passed by the script*/
+	group_num_p = getenv(var1);
+	mygroup_p = getenv(var2);
+	script_pid_p = getenv(var3);
+	num_cpus_p = getenv(var4);
+	test_num_p = getenv(var5);
+	if ((test_num_p != NULL) && ((test_num = atoi(test_num_p)) == 3))
+	{
+		if ((group_num_p== NULL)||(mygroup_p == NULL)||(script_pid_p == NULL)||(num_cpus_p == NULL))
+		{
+			tst_brkm (TBROK, cleanup, "Invalid other input parameters\n");
+		}
+		else
+		{
+			my_group_num	 = atoi(group_num_p);
+			scriptpid	 = atoi(script_pid_p);
+			num_cpus	 = atoi (num_cpus_p);
+			sprintf(mygroup,"%s", mygroup_p);
+		}
+	}
+	else
+	{
+		tst_brkm (TBROK, cleanup, "Invalid test number passed\n");
+	}
 
-	sprintf(mygroup,"%s", argv[2]);
 	sprintf(mytaskfile, "%s", mygroup);
 	strcat (mytaskfile,"/tasks");
 	pid = getpid();
