@@ -12,5 +12,5 @@ clean:
 	rm -f $(TARGETS) *.o
 
 install:
-	@set -e; for i in $(TARGETS) run_cpuctl_test.sh ; do ln -f $$i ../../../bin/$$i ; chmod +x $$i ; done
+	@set -e; for i in $(TARGETS) run_cpuctl_test.sh parameters.sh ; do ln -f $$i ../../../bin/$$i ; chmod +x $$i ; done
 
