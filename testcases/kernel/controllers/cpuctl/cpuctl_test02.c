@@ -55,6 +55,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
 
 #define TIME_INTERVAL	60	/* Time interval in seconds*/
@@ -64,6 +65,7 @@ extern int Tst_count;
 char *TCID = "cpu_controller_test04";
 int TST_TOTAL = 1;
 pid_t scriptpid;
+char path[] = "/dev/cpuctl";
 extern void
 cleanup()
 {
@@ -71,17 +73,15 @@ cleanup()
 	tst_exit ();		/* Report exit status*/
 }
 
-int write_to_file (char * file, const char* mode, unsigned int value);
 int migrate_task ();
-void signal_handler_alarm (int signal );
 int timer_expired = 0;
 
 int main(int argc, char* argv[])
 {
 
-	int test_num, task_num, num_cpus;	/* To calculate cpu time in %*/
+	int test_num, task_num, len, num_cpus;	/* num_cpus to calculate cpu time in %*/
 	int migrate=0;			/* For task migration*/
-	char mygroup[32], mytaskfile[32], ch;
+	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
 	/* Following variables are to capture parameters from script*/
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
@@ -91,8 +91,11 @@ int main(int argc, char* argv[])
 	double total_cpu_time,  	/* Accumulated cpu time*/
 		delta_cpu_time,  	/* Time the task could run on cpu(s) (in an interval)*/
 		prev_cpu_time=0;
+        double exp_cpu_time;            /* Expected time in % as obtained by shares calculation */
+
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
+        unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
 	struct sigaction newaction, oldaction;
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);
@@ -130,7 +133,9 @@ int main(int argc, char* argv[])
 	}
 
 	sprintf(mytaskfile, "%s", mygroup);
+	sprintf(mysharesfile, "%s", mygroup);
 	strcat (mytaskfile,"/tasks");
+	strcat (mysharesfile,"/cpu.shares");
 	pid = getpid();
 	write_to_file (mytaskfile, "a", pid);    /* Assign the task to it's group*/
 
@@ -141,6 +146,31 @@ int main(int argc, char* argv[])
 	}
 
 	read (fd, &ch, 1);	         /* To block all tasks here and fire them up at the same time*/
+
+	/*
+	 * We now calculate the expected % cpu time of this task by getting
+	 * it's group's shares, the total shares of all the groups and the
+	 * number of tasks in this group.
+	 */
+	FLAG = 0;
+	total_shares = 0;
+	shares_pointer = &total_shares;
+	len = strlen (path);
+	if (!strncpy (fullpath, path, len))
+		tst_brkm (TBROK, cleanup, "Could not copy directory path %s ", path);
+
+	if (scan_shares_files() != 0)
+		tst_brkm (TBROK, cleanup, "From function scan_shares_files in %s ", fullpath);
+
+	/* return val: -1 in case of function error, else 2 is min share value */
+	if ((fmyshares = read_shares_file(mysharesfile)) < 2)
+		tst_brkm (TBROK, cleanup, "in reading shares files  %s ", mysharesfile);
+
+	if ((read_file (mytaskfile, GET_TASKS, &num_tasks)) < 0)
+		tst_brkm (TBROK, cleanup, "in reading tasks files  %s ", mytaskfile);
+
+	exp_cpu_time = (double)(fmyshares * 100) /(total_shares * num_tasks);
+
 	prev_time = time (NULL);	 /* Note down the time*/
 
 	while (1)
@@ -168,7 +198,10 @@ int main(int argc, char* argv[])
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-		fprintf (stdout,"PID: %u\tgroup-%d\ttask_num: %d :cpu time ---> %6.3f\%(%fs)\tinterval:%lu\n",getpid(),my_group_num, task_num, mytime, delta_cpu_time, delta_time);
+                fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
+with %lu(shares) in %lu (s) INTERVAL\n",my_group_num, task_num, delta_cpu_time, mytime,\
+exp_cpu_time, fmyshares, delta_time);
+
 		counter++;
 
 		if (counter >= NUM_INTERVALS)	 /* Take n sets of readings for each shares value*/
@@ -197,36 +230,30 @@ int main(int argc, char* argv[])
 
 			}	/* end switch*/
 		}
-		if ((migrate == 1) && (task_num == 1) && (counter == 0))
+		if ((migrate == 1) && (counter == 0))
 		{
-			if (migrate_task() != 0)
-				tst_brkm (TFAIL, cleanup, "Could not migrate task 1 ");
-			else
-				fprintf (stdout, "TASK 1 MIGRATED FROM GROUP 1 TO GROUP 2\n");
+			if (task_num == 1)
+			{
+				if (migrate_task() != 0)
+					tst_brkm (TFAIL, cleanup, "Could not migrate task 1 ");
+				else
+					fprintf (stdout, "TASK 1 MIGRATED FROM GROUP 1 TO GROUP 2\n");
+			}
+			/*
+			 * Read the shares files and again calculate the cpu fraction
+			 * In test 2(case 4) we need to read tasks file as we migrate task
+			 * Q?? How to ensure other tasks do not read before task 1 migration
+			 */
+			if ((read_file (mytaskfile, GET_TASKS, &num_tasks)) < 0)
+				tst_brkm (TBROK, cleanup, "in reading tasks files  %s ", mytaskfile);
+			exp_cpu_time = (double)(fmyshares * 100) /(total_shares * num_tasks);
 		}
         }	/* end while*/
 }	/* end main*/
 
-
-int write_to_file (char *file, const char *mode, unsigned int value)
-{
-	FILE *fp;
-	fp = fopen (file, mode);
-	if (fp == NULL)
-	{
-		tst_brkm (TBROK, cleanup, "Could not open file %s for writing", file);
-	}
-	fprintf (fp, "%u\n", value);
-	fclose (fp);
-	return 0;
-}
 int migrate_task ()
 {
 	char target[32] = "/dev/cpuctl/group_2/tasks";/* Hard coding..Will try dynamic*/
 	pid_t pid = getpid();
 	return (write_to_file (target, "a", pid));
-}
-void signal_handler_alarm (int signal)
-{
-	timer_expired = 1;
 }
