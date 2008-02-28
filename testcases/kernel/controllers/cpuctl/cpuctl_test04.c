@@ -27,7 +27,7 @@
 /*              testcase tests the ability of the cpu controller to provide   */
 /*              fairness for share values (absolute).                         */
 /*                                                                            */
-/* Total Tests: 1                                                             */
+/* Total Tests: 2                                                             */
 /*                                                                            */
 /* Test Name:   cpu_controller_test04                                         */
 /*                                                                            */
@@ -62,7 +62,7 @@
 
 extern int Tst_count;
 char *TCID = "cpu_controller_test06";
-int TST_TOTAL = 1;
+int TST_TOTAL = 2;
 pid_t scriptpid;
 extern void
 cleanup()
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 	test_num_p 	= getenv("TEST_NUM");
 	task_num_p 	= getenv("TASK_NUM");
 	/* Check if all of them are valid */
-	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 4) && ((test_num =atoi(test_num_p)) >= 1)))
+	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 5) && ((test_num =atoi(test_num_p)) >= 4)))
 	{
 		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
 			(script_pid_p != NULL) && (num_cpus_p != NULL) && (task_num_p != NULL))
@@ -133,7 +133,9 @@ int main(int argc, char* argv[])
 	sprintf(mysharesfile, "%s", mygroup);
 	strcat (mysharesfile,"/cpu.shares");
 	/* Need some technique so as only 1 task per grp writes to shares file */
-	write_to_file (mysharesfile, "w", mygroup_shares);    /* Write the shares of the group*/
+	if (test_num == 4)
+		write_to_file (mysharesfile, "w", mygroup_shares);    /* Write the shares of the group*/
+
 	write_to_file (mytaskfile, "a", getpid());    /* Assign the task to it's group*/
 
 	fd = open ("./myfifo", 0);
@@ -170,7 +172,7 @@ int main(int argc, char* argv[])
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-		fprintf (stdout,"Group-%3d(Shares-%4u) task_num:%3d cpu time--> %6.3f\%(%6.3fs)\tinterval:%lu\n",
+		fprintf (stdout,"Group-%3d:Shares-%4u: task_num:%3d cpu time--> %6.3f\%(%6.3fs)\tinterval:%lu\n",
 		mygroup_num, mygroup_shares, task_num, mytime, delta_cpu_time, delta_time);
 		counter++;
 
@@ -179,6 +181,9 @@ int main(int argc, char* argv[])
 		switch (test_num)
 			{
 			case 4:
+				exit (0);		/* This task is done with its job*/
+				break;
+			case 5:
 				exit (0);		/* This task is done with its job*/
 				break;
 			default:

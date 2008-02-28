@@ -118,6 +118,12 @@ usage ()
 		FILE="stress-4";
 		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		;;
+	"5" )	# Heavy stress test
+		NUM_GROUPS=2;
+		M=`expr $N \* 100`;
+		FILE="stress-5";
+		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		;;
 	  * )
 		usage;
 		;;
@@ -213,6 +219,51 @@ usage ()
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICEVALUE ./cpuctl_task_$TASK_NUM \
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			if [ $? -ne 0 ]
+			then
+				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+				cleanup;
+				exit -1;
+			else
+				PID[$TASK_NUM]=$!;
+			fi;
+			j=`expr $j + 1`
+			done;		# end j loop
+			i=`expr $i + 1`
+		done;			# end i loop
+		else
+			echo "Source file not compiled..Plz check Makefile...Exiting test"
+			cleanup;
+			exit -1;
+		fi;
+		TOTAL_TASKS=$TASK_NUM;
+		;;
+	"5" )
+
+		if [ -f cpuctl_test04 ]
+		then
+		echo CPU CONTROLLER HEAVY STRESS TEST 5: >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+
+		for i in $(seq 1 $NUM_GROUPS)
+		do
+			MYGROUP=/dev/cpuctl/group_$i;
+			if [ $i -eq 1 ]
+			then
+				TASKS_IN_GROUP=$N;
+			else
+				TASKS_IN_GROUP=$M;
+			fi;
+			for j in $(seq 1 $TASKS_IN_GROUP)
+			do
+			TASK_NUM=`expr $TASK_NUM + 1`;
+			cp cpuctl_test04 cpuctl_task_$TASK_NUM 2>/dev/null;
+			chmod +x cpuctl_task_$TASK_NUM;
+
+			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
 			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then

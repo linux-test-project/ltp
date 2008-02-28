@@ -47,6 +47,7 @@ then
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 2;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 3;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 4;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 5;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";
