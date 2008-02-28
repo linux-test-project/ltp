@@ -29,6 +29,10 @@
 /*                                                                            */
 /* Total Tests: 3                                                             */
 /*                                                                            */
+/* Test 01:     Tests if fairness persists among different runs               */
+/* Test 02:     Tests fairness with respect to absolute share values          */
+/* Test 03:     Granularity test with respect to shares values                */
+/*                                                                            */
 /* Test Name:   cpu_controller_test01                                         */
 /*                                                                            */
 /* Test Assertion                                                             */
@@ -92,7 +96,7 @@ int main(int argc, char* argv[])
 	double exp_cpu_time;		/* Expected time in % as obtained by shares calculation */
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
-	unsigned long int myshares = 1, baseshares = 1000;	/* Simply the base value to start with*/
+	unsigned long int myshares = 2, baseshares = 1000;	/* Simply the base value to start with*/
 	unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
 	struct sigaction newaction, oldaction;
 
@@ -108,9 +112,9 @@ int main(int argc, char* argv[])
 		tst_brkm (TBROK, cleanup, "Invalid input parameters\n");
 	}
 
-	if (test_num == 1)
+	if (test_num == 1)	/* Test 01 & Test 02 */
 		myshares *= my_group_num;
-	else if (test_num == 2)
+	else if (test_num == 3) /* Test 03 */
 		myshares = baseshares;
 	else
 	{
@@ -150,8 +154,6 @@ int main(int argc, char* argv[])
 	if (scan_shares_files() != 0)
 		tst_brkm (TBROK, cleanup, "From function scan_shares_files in %s ", fullpath);
 
-//        fprintf(stdout, "The total shares are: %u\n", total_shares);
-
 	/* return val: -1 in case of function error, else 2 is min share value */
 	if ((fmyshares = read_shares_file(mysharesfile)) < 2)
 		tst_brkm (TBROK, cleanup, "in reading shares files  %s ", mysharesfile);
@@ -177,12 +179,14 @@ int main(int argc, char* argv[])
 			delta_time = current_time - prev_time;	/* Duration in case its not exact TIME_INTERVAL*/
 
 			getrusage (0, &cpu_usage);
-			total_cpu_time = (cpu_usage.ru_utime.tv_sec + cpu_usage.ru_utime.tv_usec * 1e-6 + /* user time*/
-					cpu_usage.ru_stime.tv_sec + cpu_usage.ru_stime.tv_usec * 1e-6) ;  /* system time*/
+			total_cpu_time = (cpu_usage.ru_utime.tv_sec + cpu_usage.ru_utime.tv_usec * 1e-6 + /*user*/
+					cpu_usage.ru_stime.tv_sec + cpu_usage.ru_stime.tv_usec * 1e-6) ;  /*sys*/
 					delta_cpu_time = total_cpu_time - prev_cpu_time;
 
 			prev_cpu_time = total_cpu_time;
 			prev_time = current_time;
+
+			/* calculate % cpu time each task gets */
 			if (delta_time > TIME_INTERVAL)
 				mytime =  (delta_cpu_time * 100) / (delta_time * num_cpus);
 			else
@@ -193,7 +197,7 @@ with %lu(shares) in %lu (s) INTERVAL\n",my_group_num, delta_cpu_time, mytime,\
 exp_cpu_time, myshares, delta_time);
 			first_counter++;
 
-			if (first_counter >= NUM_INTERVALS)	 /* Take n sets of readings for each shares value*/
+			if (first_counter >= NUM_INTERVALS)	/* Take n sets of readings for each shares value*/
 			{
 				first_counter = 0;
 				second_counter++;
@@ -215,7 +219,7 @@ exp_cpu_time, myshares, delta_time);
                                                 myshares -= baseshares * GRANULARITY / 100;
                                 }
 				write_to_file (mysharesfile, "w", myshares);
-				if (test_num == 2)
+				if (test_num == 3)
 				{
 				/*
 				 * Read the shares file and again calculate the cpu fraction

@@ -1,5 +1,5 @@
 #!/bin/bash
-# usage ./runcpuctl_test.sh
+# usage ./runcpuctl_test.sh test_num
 
 #################################################################################
 #  Copyright (c) International Business Machines  Corp., 2007                   #
@@ -21,14 +21,14 @@
 #################################################################################
 # Name Of File: run_cpuctl_test.sh                                              #
 #                                                                               #
-# Description: 	This file runs the setup for testing cpucontroller.             #
-#               After setup it runs some of the tasks in different groups.      #
-#               setup includes creating controller device, mounting it with     #
-#               cgroup filesystem with option cpu and creating groups in it.    #
+# Description: This file runs the setup for testing diff cpucontroller feature. #
+#              After setup it runs diff test cases in diff setup.               #
 #                                                                               #
-# Functions:    get_num_groups(): decides number of groups based on num of cpus	#
-#               setup(): creaes /dev/cpuctl, mounts cgroup fs on it, creates 	#
-#               groups in that, creates fifo to fire tasks at one time.         #
+# Test 01:     Tests if fairness persists among different runs                  #
+# Test 02:     Tests fairness with respect to absolute share values             #
+# Test 03:     Granularity test with respect to shares values                   #
+# Test 04:     Nice value effect on group scheduling                            #
+# Test 05:     Task migration test                                              #
 #                                                                               #
 # Precaution:   Avoid system use by other applications/users to get fair and    #
 #               appropriate results                                             #
@@ -65,10 +65,22 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 
 ##########################  main   #######################
 	case ${TEST_NUM} in
-	"1" )	get_num_groups;;
-	"2" )   NUM_GROUPS=`expr 2 \* $NUM_CPUS`;;
-	"3" )   NUM_GROUPS=$NUM_CPUS;;
-	"4" )   NUM_GROUPS=$NUM_CPUS;;
+	"1" )	get_num_groups;	# contains test case 1 and 2
+		TEST_NAME="FAIRNESS TEST:"
+		FILE="12";
+		;;
+	"3" )   NUM_GROUPS=`expr 2 \* $NUM_CPUS`;
+		TEST_NAME="GRANULARITY TEST:";
+		FILE=$TEST_NUM;
+		;;
+	"4" )   NUM_GROUPS=$NUM_CPUS;
+		TEST_NAME="NICE VALUE TEST:";
+		FILE=$TEST_NUM;
+		;;
+	"5" )   NUM_GROUPS=$NUM_CPUS;
+		TEST_NAME=" TASK MIGRATION TEST:";
+		FILE=$TEST_NUM;
+		;;
 	 *  )  	echo "Could not start cpu controller test";
 		echo "usage: run_cpuctl_test.sh test_num";
 		echo "Skipping the test...";
@@ -86,15 +98,19 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 	#Check if  c source  file has been compiled and then run it in different groups
 
 	case $TEST_NUM in
-	"1" | "2" )
+	"1" | "3" )
 		if [ -f cpuctl_test01 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
+		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo TEST:- $TEST_NAME $TEST_NUM:  >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
 			cp cpuctl_test01 cpuctl_task_$i 2>/dev/null;
 			chmod +x cpuctl_task_$i;
-			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM >>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM \
+			 >>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$i"
@@ -112,10 +128,13 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 		fi;
 		TOTAL_TASKS=$NUM_GROUPS;
 		;;
-	"3" )
+	"4" )
 		if [ -f cpuctl_test02 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
+		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
 			MYGROUP=/dev/cpuctl/group_$i
@@ -134,7 +153,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
@@ -154,10 +173,13 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 		fi;
 		TOTAL_TASKS=$TASK_NUM;
 		;;
-	"4" )
+	"5" )
 		if [ -f cpuctl_test02 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
+		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		TASKS_IN_GROUP=3;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
@@ -170,7 +192,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
@@ -217,7 +239,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 		fi
 	done
 	echo "Cpu controller test executed successfully.Results written to file";
-	echo "Please review the results in $LTPROOT/output/cpuctl_results_$TEST_NUM.txt"
+	echo "Please review the results in $LTPROOT/output/cpuctl_results_$FILE.txt"
 	cleanup;
 	cd $PWD
 	exit 0;		#to let PAN reprt success of test

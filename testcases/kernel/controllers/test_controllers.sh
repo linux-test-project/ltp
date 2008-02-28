@@ -40,14 +40,14 @@ then
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 1;
-		$LTPROOT/testcases/bin/run_cpuctl_test.sh 2;
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 3;
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 4;
-		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 1;
-		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 2;
-		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 3;
-		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 4;
-		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 5;
+		$LTPROOT/testcases/bin/run_cpuctl_test.sh 5;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 6;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 7;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 8;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 9;
+		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 10;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";

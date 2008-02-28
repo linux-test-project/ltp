@@ -24,12 +24,16 @@
 /*                                                                            */
 /* Description: This is a c program that tests the cpucontroller fairness of  */
 /*              scheduling the tasks according to their group shares. This    */
-/*              testcase tests the ability of the cpu controller to provide   */
-/*              fairness for share values (absolute).                         */
+/*              testcase tests the scheduling fairness with respect to number */
+/*              of classes and number of jobs in each class                   */
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
-/* Test Name:   cpu_controller_test02                                         */
+/* Test 6:      N X M (N groups with M tasks each)                            */
+/* Test 7:      N*M X 1 (N*M groups with 1 task each)                         */
+/* Test 8:      1 X N*M (1 group with N*M tasks each)                         */
+/*                                                                            */
+/* Test Name:   cpu_controller_test03                                         */
 /*                                                                            */
 /* Test Assertion                                                             */
 /*              Please refer to the file cpuctl_testplan.txt                  */
@@ -83,7 +87,7 @@ int main(int argc, char* argv[])
 	/* Following variables are to capture parameters from script*/
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
-	int my_group_num,	        /* A number attached with a group*/
+	int mygroup_num,	        /* A number attached with a group*/
 		fd,          	        /* A descriptor to open a fifo for synchronized start*/
 		counter =0; 	 	/* To take n number of readings*/
 	double total_cpu_time,  	/* Accumulated cpu time*/
@@ -109,12 +113,12 @@ int main(int argc, char* argv[])
 	test_num_p 	= getenv("TEST_NUM");
 	task_num_p 	= getenv("TASK_NUM");
 	/* Check if all of them are valid */
-	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 3) && ((test_num =atoi(test_num_p)) >= 1)))
+	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 8) && ((test_num =atoi(test_num_p)) >= 6)))
 	{
 		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
 			(script_pid_p != NULL) && (num_cpus_p != NULL) && (task_num_p != NULL))
 		{
-			my_group_num	 = atoi(group_num_p);
+			mygroup_num	 = atoi(group_num_p);
 			scriptpid	 = atoi(script_pid_p);
 			num_cpus	 = atoi (num_cpus_p);
 			task_num	 = atoi (task_num_p);
@@ -191,13 +195,15 @@ int main(int argc, char* argv[])
 
 		prev_cpu_time = total_cpu_time;
 		prev_time = current_time;
+
+		/* calculate % cpu time each task gets */
 		if (delta_time > TIME_INTERVAL)
 			mytime =  (delta_cpu_time * 100) / (delta_time * num_cpus);
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
                 fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
- in %lu (s) INTERVAL\n",my_group_num, task_num, delta_cpu_time, mytime,\
+ in %lu (s) INTERVAL\n",mygroup_num, task_num, delta_cpu_time, mytime,\
 exp_cpu_time, delta_time);
 
 		counter++;
@@ -206,9 +212,9 @@ exp_cpu_time, delta_time);
 		{
 		switch (test_num)
 			{
-			case 1:
-			case 2:
-			case 3:
+			case 6:			/* Test 06 */
+			case 7:			/* Test 07 */
+			case 8:			/* Test 08 */
 				exit (0);		/* This task is done with its job*/
 				break;
 			default:

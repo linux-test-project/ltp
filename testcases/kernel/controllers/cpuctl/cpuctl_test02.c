@@ -27,7 +27,10 @@
 /*              testcase tests the ability of the cpu controller to provide   */
 /*              fairness for share values (absolute).                         */
 /*                                                                            */
-/* Total Tests: 1                                                             */
+/* Total Tests: 2                                                             */
+/*                                                                            */
+/* Test 04:     Nice value effect on group scheduling                         */
+/* Test 05:     Task migration test                                           */
 /*                                                                            */
 /* Test Name:   cpu_controller_test02                                         */
 /*                                                                            */
@@ -59,13 +62,14 @@
 #include "test.h"		/* LTP harness APIs*/
 
 #define TIME_INTERVAL	60	/* Time interval in seconds*/
-#define NUM_INTERVALS	4       /* How many iterations of TIME_INTERVAL */
+#define NUM_INTERVALS	3       /* How many iterations of TIME_INTERVAL */
 
 extern int Tst_count;
 char *TCID = "cpu_controller_test04";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
+
 extern void
 cleanup()
 {
@@ -85,7 +89,7 @@ int main(int argc, char* argv[])
 	/* Following variables are to capture parameters from script*/
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
-	int my_group_num,	        /* A number attached with a group*/
+	int mygroup_num,	        /* A number attached with a group*/
 		fd,          	        /* A descriptor to open a fifo for synchronized start*/
 		counter =0; 	 	/* To take n number of readings*/
 	double total_cpu_time,  	/* Accumulated cpu time*/
@@ -111,12 +115,12 @@ int main(int argc, char* argv[])
 	test_num_p 	= getenv("TEST_NUM");
 	task_num_p 	= getenv("TASK_NUM");
 	/* Check if all of them are valid */
-	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) == 3) || ((test_num =atoi(test_num_p)) == 4)))
+	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) == 4) || ((test_num =atoi(test_num_p)) == 5)))
 	{
 		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
 			(script_pid_p != NULL) && (num_cpus_p != NULL) && (task_num_p != NULL))
 		{
-			my_group_num	 = atoi(group_num_p);
+			mygroup_num	 = atoi(group_num_p);
 			scriptpid	 = atoi(script_pid_p);
 			num_cpus	 = atoi (num_cpus_p);
 			task_num	 = atoi (task_num_p);
@@ -193,13 +197,15 @@ int main(int argc, char* argv[])
 
 		prev_cpu_time = total_cpu_time;
 		prev_time = current_time;
+
+		/* calculate % cpu time each task gets */
 		if (delta_time > TIME_INTERVAL)
 			mytime =  (delta_cpu_time * 100) / (delta_time * num_cpus);
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
                 fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
-with %lu(shares) in %lu (s) INTERVAL\n",my_group_num, task_num, delta_cpu_time, mytime,\
+with %lu(shares) in %lu (s) INTERVAL\n",mygroup_num, task_num, delta_cpu_time, mytime,\
 exp_cpu_time, fmyshares, delta_time);
 
 		counter++;
@@ -208,10 +214,10 @@ exp_cpu_time, fmyshares, delta_time);
 		{
 		switch (test_num)
 			{
-			case 3:
-				exit (0);		/* This task is done with its job*/
+			case 4:			/* Test04 */
+				exit (0);	/* This task is done with its job*/
 				break;
-			case 4:
+			case 5:			/* Test 05 */
 				if (migrate == 0)
 				{
 					counter = 0;
@@ -238,6 +244,7 @@ exp_cpu_time, fmyshares, delta_time);
 					tst_brkm (TFAIL, cleanup, "Could not migrate task 1 ");
 				else
 					fprintf (stdout, "TASK 1 MIGRATED FROM GROUP 1 TO GROUP 2\n");
+				strcpy (mytaskfile, "/dev/cpuctl/group_2/tasks"); 
 			}
 			/*
 			 * Read the shares files and again calculate the cpu fraction

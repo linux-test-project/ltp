@@ -1,4 +1,45 @@
 #!/bin/bash
+# usage ./parameters.sh
+
+#################################################################################
+#  Copyright (c) International Business Machines  Corp., 2007                   #
+#                                                                               #
+#  This program is free software;  you can redistribute it and/or modify        #
+#  it under the terms of the GNU General Public License as published by         #
+#  the Free Software Foundation; either version 2 of the License, or            #
+#  (at your option) any later version.                                          #
+#                                                                               #
+#  This program is distributed in the hope that it will be useful,              #
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of              #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                    #
+#  the GNU General Public License for more details.                             #
+#                                                                               #
+#  You should have received a copy of the GNU General Public License            #
+#  along with this program;  if not, write to the Free Software                 #
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      #
+#                                                                               #
+#################################################################################
+# Name Of File: parameters.sh                                                   #
+#                                                                               #
+# Description: 	This file has functions for the setup for testing cpucontroller #
+#               setup includes creating controller device, mounting it with     #
+#               cgroup filesystem with option cpu and creating groups in it.    #
+#                                                                               #
+# Functions:    get_num_groups(): decides number of groups based on num of cpus	#
+#               setup(): creaes /dev/cpuctl, mounts cgroup fs on it, creates 	#
+#               groups in that, creates fifo to fire tasks at one time.         #
+#               cleanup(): Does full system cleanup                             #
+#                                                                               #
+# Author:       Sudhir Kumar   <sudhirkumarmalik@In.ibm.com>                    #
+#                                                                               #
+# History:                                                                      #
+#                                                                               #
+#  DATE         NAME           EMAIL                	     DESC               #
+#                                                                               #
+#  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test	#
+#                                                                               #
+#################################################################################
+
 
 get_num_groups()        # Number of tasks should be >= number of cpu's (to check scheduling fairness)
 {

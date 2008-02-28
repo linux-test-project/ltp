@@ -29,6 +29,9 @@
 /*                                                                            */
 /* Total Tests: 2                                                             */
 /*                                                                            */
+/* Test 09:     Heavy stress test with nice value change                      */
+/* Test 10:     Heavy stress test (effect of heavy group on light group)      */
+/*                                                                            */
 /* Test Name:   cpu_controller_test04                                         */
 /*                                                                            */
 /* Test Assertion                                                             */
@@ -109,7 +112,7 @@ int main(int argc, char* argv[])
 	test_num_p 	= getenv("TEST_NUM");
 	task_num_p 	= getenv("TASK_NUM");
 	/* Check if all of them are valid */
-	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 5) && ((test_num =atoi(test_num_p)) >= 4)))
+	if ((test_num_p != NULL) && (((test_num =atoi(test_num_p)) <= 10) && ((test_num =atoi(test_num_p)) >= 9)))
 	{
 		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
 			(script_pid_p != NULL) && (num_cpus_p != NULL) && (task_num_p != NULL))
@@ -136,7 +139,7 @@ int main(int argc, char* argv[])
 	sprintf(mysharesfile, "%s", mygroup);
 	strcat (mysharesfile,"/cpu.shares");
 	/* Need some technique so as only 1 task per grp writes to shares file */
-	if (test_num == 4)
+	if (test_num == 9)
 		write_to_file (mysharesfile, "w", mygroup_shares);    /* Write the shares of the group*/
 
 	write_to_file (mytaskfile, "a", getpid());    /* Assign the task to it's group*/
@@ -195,13 +198,15 @@ int main(int argc, char* argv[])
 
 		prev_cpu_time = total_cpu_time;
 		prev_time = current_time;
+
+		/* calculate % cpu time each task gets */
 		if (delta_time > TIME_INTERVAL)
 			mytime =  (delta_cpu_time * 100) / (delta_time * num_cpus);
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
                 fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
-with %lu shares in %lu (s) INTERVAL\n",mygroup_num, task_num, delta_cpu_time, mytime,\
+with %3lu shares in %lu (s) INTERVAL\n",mygroup_num, task_num, delta_cpu_time, mytime,\
 exp_cpu_time, fmyshares, delta_time);
 
 		counter++;
@@ -210,10 +215,10 @@ exp_cpu_time, fmyshares, delta_time);
 		{
 		switch (test_num)
 			{
-			case 4:
-				exit (0);		/* This task is done with its job*/
+			case 9:			/* Test 09 */
+				exit (0);	/* This task is done with its job*/
 				break;
-			case 5:
+			case 10:			/* Test 10 */
 				exit (0);		/* This task is done with its job*/
 				break;
 			default:
