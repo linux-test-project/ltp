@@ -72,16 +72,18 @@ cleanup()
 }
 
 int write_to_file (char * file, const char* mode, unsigned int value);
+int migrate_task ();
 void signal_handler_alarm (int signal );
 int timer_expired = 0;
 
 int main(int argc, char* argv[])
 {
 
-	int test_num, num_cpus;			/* To calculate cpu time in %*/
+	int test_num, task_num, num_cpus;	/* To calculate cpu time in %*/
+	int migrate=0;			/* For task migration*/
 	char mygroup[32], mytaskfile[32], ch;
-	const char *var1 ="GROUP_NUM", *var2 = "MYGROUP", *var3 = "SCRIPT_PID", *var4 = "NUM_CPUS", *var5 = "TEST_NUM";
-	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p;
+	/* Following variables are to capture parameters from script*/
+	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
 	int my_group_num,	        /* A number attached with a group*/
 		fd,          	        /* A descriptor to open a fifo for synchronized start*/
@@ -98,30 +100,28 @@ int main(int argc, char* argv[])
 	newaction.sa_flags=0;
 	sigaction (SIGALRM, &newaction, &oldaction);
 
-	/* Check if all parameters passed are correct*/
-/*	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) || ((scriptpid = atoi(argv[3])) <= 0) || ((num_cpus = atoi(argv[4])) <= 0))
+	/* Collect the parameters passed by the script */
+	group_num_p	= getenv("GROUP_NUM");
+	mygroup_p	= getenv("MYGROUP");
+	script_pid_p 	= getenv("SCRIPT_PID");
+	num_cpus_p 	= getenv("NUM_CPUS");
+	test_num_p 	= getenv("TEST_NUM");
+	task_num_p 	= getenv("TASK_NUM");
+	/* Check if all of them are valid */
+	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) == 3) || ((test_num =atoi(test_num_p)) == 4)))
 	{
-		tst_brkm (TBROK, cleanup, "Invalid input parameters\n");
-	}
-*/
-	/* Collect the parameters passed by the script*/
-	group_num_p = getenv(var1);
-	mygroup_p = getenv(var2);
-	script_pid_p = getenv(var3);
-	num_cpus_p = getenv(var4);
-	test_num_p = getenv(var5);
-	if ((test_num_p != NULL) && ((test_num = atoi(test_num_p)) == 3))
-	{
-		if ((group_num_p== NULL)||(mygroup_p == NULL)||(script_pid_p == NULL)||(num_cpus_p == NULL))
-		{
-			tst_brkm (TBROK, cleanup, "Invalid other input parameters\n");
-		}
-		else
+		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
+			(script_pid_p != NULL) && (num_cpus_p != NULL) && (task_num_p != NULL))
 		{
 			my_group_num	 = atoi(group_num_p);
 			scriptpid	 = atoi(script_pid_p);
 			num_cpus	 = atoi (num_cpus_p);
+			task_num	 = atoi (task_num_p);
 			sprintf(mygroup,"%s", mygroup_p);
+		}
+		else
+		{
+			tst_brkm (TBROK, cleanup, "Invalid other input parameters\n");
 		}
 	}
 	else
@@ -168,14 +168,44 @@ int main(int argc, char* argv[])
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-		fprintf (stdout,"PID: %u\tgroup-%d:cpu time ---> %6.3f\%(%fs)\tinterval:%lu\n",getpid(),my_group_num, mytime, delta_cpu_time, delta_time);
+		fprintf (stdout,"PID: %u\tgroup-%d\ttask_num: %d :cpu time ---> %6.3f\%(%fs)\tinterval:%lu\n",getpid(),my_group_num, task_num, mytime, delta_cpu_time, delta_time);
 		counter++;
 
 		if (counter >= NUM_INTERVALS)	 /* Take n sets of readings for each shares value*/
-			exit (0);		/* This task is done with its job*/
+		{
+		switch (test_num)
+			{
+			case 3:
+				exit (0);		/* This task is done with its job*/
+				break;
+			case 4:
+				if (migrate == 0)
+				{
+					counter = 0;
+					fprintf (stdout, "FIRST RUN COMPLETED FOR TASK %d\n", task_num);
+					migrate = 1;
+				}
+				else
+				{
+					fprintf (stdout, "SECOND RUN COMPLETED FOR TASK %d\n", task_num);
+					exit (0);
+				}
+				break;
+			default:
+				tst_brkm (TBROK, cleanup, "Invalid test number passed\n");
+				break;
 
-        }/* end while*/
-}/* end main*/
+			}	/* end switch*/
+		}
+		if ((migrate == 1) && (task_num == 1) && (counter == 0))
+		{
+			if (migrate_task() != 0)
+				tst_brkm (TFAIL, cleanup, "Could not migrate task 1 ");
+			else
+				fprintf (stdout, "TASK 1 MIGRATED FROM GROUP 1 TO GROUP 2\n");
+		}
+        }	/* end while*/
+}	/* end main*/
 
 
 int write_to_file (char *file, const char *mode, unsigned int value)
@@ -190,7 +220,12 @@ int write_to_file (char *file, const char *mode, unsigned int value)
 	fclose (fp);
 	return 0;
 }
-
+int migrate_task ()
+{
+	char target[32] = "/dev/cpuctl/group_2/tasks";/* Hard coding..Will try dynamic*/
+	pid_t pid = getpid();
+	return (write_to_file (target, "a", pid));
+}
 void signal_handler_alarm (int signal)
 {
 	timer_expired = 1;

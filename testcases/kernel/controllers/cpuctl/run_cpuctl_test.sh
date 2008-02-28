@@ -55,7 +55,8 @@ TEST_NUM=$1;            # To run the desired test (1 or 2)
 TASK_NUM=0;		# The serial number of a task
 TOTAL_TASKS=0;		# Total num of tasks in any test
 TASKS_IN_GROUP=0	# Total num of tasks in a group
-
+NICEVALUE=-20;		# Nice value to renice a task with
+SCRIPT_PID=$$;
 PWD=`pwd`
 cd $LTPROOT/testcases/bin/
 NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
@@ -143,6 +144,7 @@ setup ()
 	"1" )	get_num_groups;;
 	"2" )   NUM_GROUPS=`expr 2 \* $NUM_CPUS`;;
 	"3" )   NUM_GROUPS=$NUM_CPUS;;
+	"4" )   NUM_GROUPS=$NUM_CPUS;;
 	 *  )  	echo "Could not start cpu controller test";
 		echo "usage: run_cpuctl_test.sh test_num";
 		echo "Skipping the test...";
@@ -192,21 +194,58 @@ setup ()
 		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
+			MYGROUP=/dev/cpuctl/group_$i
 			TASKS_IN_GROUP=`expr $i \* 2`;
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
 			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
 			chmod +x cpuctl_task_$TASK_NUM;
-			if [ $j -eq 1 ]	# Renice 1 task in each group
+			if [ $i -eq 1 ]	# Renice 1 task in each group
 			then
-				NICELEVEL=-15;
+				NICELEVEL=$NICEVALUE;
 			else
 				NICELEVEL=0;
 			fi;
 
-			GROUP_NUM=$i MYGROUP=/dev/cpuctl/group_$i SCRIPT_PID=$$ NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
+			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
+			>>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			if [ $? -ne 0 ]
+			then
+				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+				cleanup;
+				exit -1;
+			else
+				PID[$TASK_NUM]=$!;
+			fi;
+			j=`expr $j + 1`
+			done;		# end j loop
+			i=`expr $i + 1`
+		done;			# end i loop
+		else
+			echo "Source file not compiled..Plz check Makefile...Exiting test"
+			cleanup;
+			exit -1;
+		fi;
+		TOTAL_TASKS=$TASK_NUM;
+		;;
+	"4" )
+		if [ -f cpuctl_test02 ]
+		then
+		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
+		TASKS_IN_GROUP=3;
+		for i in $(seq 1 $NUM_GROUPS)
+		do
+			MYGROUP=/dev/cpuctl/group_$i
+			for j in $(seq 1 $TASKS_IN_GROUP)
+			do
+			TASK_NUM=`expr $TASK_NUM + 1`;
+			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
+			chmod +x cpuctl_task_$TASK_NUM;
+
+			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
 			>>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
 			if [ $? -ne 0 ]
 			then
