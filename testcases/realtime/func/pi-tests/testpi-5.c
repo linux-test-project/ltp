@@ -41,7 +41,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <librttest.h>
 pthread_mutex_t  child_mutex;
 
 void* child_thread (void* arg)
@@ -68,7 +68,6 @@ void* child_thread (void* arg)
 
 int do_test(int argc, char ** argv)
 {
-    pthread_t thread;
     pthread_mutexattr_t mutexattr;
     int retc, protocol;
 
@@ -87,10 +86,9 @@ int do_test(int argc, char ** argv)
       printf("Failed to init mutex: %d\n", retc);
     }
 
-    pthread_create (&thread, NULL, child_thread, NULL);
-
-    pthread_join(thread, NULL);
-
+    create_other_thread(child_thread, NULL);
+    join_threads();
+    
     return 0;
 }
 

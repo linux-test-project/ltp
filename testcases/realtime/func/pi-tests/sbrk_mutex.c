@@ -55,7 +55,6 @@
 #define DELAY 1000 /* how long to sleep in the worker thread in us */
 
 static pthread_mutex_t *mutexes[NUM_MUTEXES];
-static pthread_t threads[NUM_THREADS];
 
 static int run_jvmsim=0;
 
@@ -101,7 +100,7 @@ void *worker_thread(void *arg)
 		usleep(DELAY);
 
 		if (_dbg_lvl)
-			printf("thread %ld @ %d\n", (long)arg, i);
+		    printf("thread %ld @ %d\n", (long)arg, i);
 	}
 	return NULL;
 }
@@ -149,28 +148,11 @@ int main(int argc, char* argv[])
 
 	/* start children threads to walk the array, grabbing the locks */
 	for (t = 0; t < NUM_THREADS; t++) {
-		pthread_attr_t attr;
-		struct sched_param param;
-
-		param.sched_priority = sched_get_priority_min(SCHED_FIFO);
-		pthread_attr_init(&attr);
-		pthread_attr_setinheritsched (&attr, PTHREAD_EXPLICIT_SCHED);
-		pthread_attr_setschedparam(&attr, &param);
-		pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-		if (pthread_create(&threads[t], &attr, worker_thread, (void*)t)) {
-			perror("pthread_create failed");
+		create_fifo_thread(worker_thread, (void*)t, sched_get_priority_min(SCHED_FIFO));
 		}
-
-		pthread_attr_destroy(&attr);
-	}
-
 	/* wait for the children to complete */
 	printf("joining threads\n");
-	for (t = 0; t < NUM_THREADS; t++) {
-		pthread_join(threads[t], NULL);
-	}
-
+	join_threads();
 	/* destroy all the mutexes */
 	for (m = 0; m < NUM_MUTEXES; m++) {
 		if (mutexes[m]) {

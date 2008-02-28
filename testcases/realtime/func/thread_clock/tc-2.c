@@ -54,12 +54,11 @@
 
 #define NS_PER_SEC 1000000000
 #define THRESHOLD 0.5  /* 500 milliseconds */
-
 #define NUMSLEEP 5
 #define NUMWORK 2
+
 struct timespec sleepts[NUMSLEEP];
 struct timespec workts[NUMWORK];
-
 static int run_jvmsim=0;
 
 void usage(void)
@@ -99,7 +98,8 @@ void work(void)
 
 void *workerthread(void *arg)
 {
-	int tid = (intptr_t)arg;
+	struct thread* pthr = (struct thread* )arg;
+	int tid =(int)(long)pthr->arg;
 	struct timespec *ts = &workts[tid];
 
 #ifdef DEBUG
@@ -121,7 +121,8 @@ void *workerthread(void *arg)
 
 void *sleeperthread(void *arg)
 {
-	int tid = (intptr_t)arg;
+	struct thread* pthr = (struct thread* )arg;
+	int tid = (int)(long)pthr->arg;
 	struct timespec *ts = &sleepts[tid];
 
 #ifdef DEBUG
@@ -173,13 +174,14 @@ int checkresult(float proctime)
 		printf("FAIL\n");
 		retval = 1;
 	}
-	printf("PASS\n");
+	else {
+		printf("PASS\n");
+	}
 	return retval;
 }
 
 int main(int argc,char* argv[])
 {
-	pthread_t sleepthr[NUMSLEEP], workthr[NUMWORK];
 	int i, retval = 0;
 	struct timespec myts;
 	setup();
@@ -195,8 +197,7 @@ int main(int argc,char* argv[])
 
 	/* Start sleeper threads */
 	for (i=0; i<NUMSLEEP; i++) {
-		if ((pthread_create (&sleepthr[i], NULL, sleeperthread, (void *)(intptr_t)i)) < 0 ) {
-			perror("pthread_create: ");
+		if ((create_other_thread (sleeperthread, (void *)(intptr_t)i)) < 0 ) {
 			exit(1);
 		}
 	}
@@ -204,8 +205,7 @@ int main(int argc,char* argv[])
 
 	/* Start worker threads */
 	for (i=0; i<NUMWORK; i++) {
-		if ((pthread_create (&workthr[i], NULL, workerthread, (void *)(intptr_t)i)) < 0 ) {
-			perror("pthread_create: ");
+		if ((create_other_thread (workerthread, (void *)(intptr_t)i)) < 0 ) {
 			exit(1);
 		}
 	}
@@ -213,13 +213,7 @@ int main(int argc,char* argv[])
 
 	printf("\nPlease wait...\n\n");
 
-	for (i=0; i<NUMSLEEP; i++) {
-		pthread_join(sleepthr[i], NULL);
-	}
-	for (i=0; i<NUMWORK; i++) {
-		pthread_join(workthr[i], NULL);
-	}
-
+	join_threads();
 	/* Get the process cpu clock value */
 	if ((clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &myts)) < 0) {
 		perror("clock_gettime: CLOCK_PROCESS_CPUTIME_ID: ");
