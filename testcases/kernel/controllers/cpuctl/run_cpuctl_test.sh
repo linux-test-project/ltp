@@ -51,7 +51,10 @@ export TST_COUNT=1;
 RC=0;			# return code from functions
 NUM_CPUS=1;		# at least 1 cpu is there
 NUM_GROUPS=2;		# min number of groups
-TEST_NUM=$1;           # To run the desired test (1 or 2)
+TEST_NUM=$1;            # To run the desired test (1 or 2)
+TASK_NUM=0;		# The serial number of a task
+TOTAL_TASKS=0;		# Total num of tasks in any test
+TASKS_IN_GROUP=0	# Total num of tasks in a group
 
 PWD=`pwd`
 cd $LTPROOT/testcases/bin/
@@ -136,26 +139,17 @@ setup ()
 }
 
 ##########################  main   #######################
-	if [ -z $TEST_NUM ]
-	then
-		echo "Could not start cpu controller test";
+	case ${TEST_NUM} in
+	"1" )	get_num_groups;;
+	"2" )   NUM_GROUPS=`expr 2 \* $NUM_CPUS`;;
+	"3" )   NUM_GROUPS=$NUM_CPUS;;
+	 *  )  	echo "Could not start cpu controller test";
 		echo "usage: run_cpuctl_test.sh test_num";
 		echo "Skipping the test...";
-		exit -1;
-	fi;
+		exit -1;;
+	esac
 	echo "TEST $TEST_NUM: CPU CONTROLLER TESTING";
 	echo "RUNNING SETUP.....";
-	if [ ${TEST_NUM} -eq 1 ]
-	then
-		get_num_groups;
-	elif [ ${TEST_NUM} -eq 2 ]
-	then
-		NUM_GROUPS=`expr 2 \* $NUM_CPUS`;
-	else
-		echo "Invalid test number";
-		exit -1;
-	fi;
-
 	setup;
 
 	# Trap the signal from any abnormaly terminated task
@@ -164,8 +158,11 @@ setup ()
 
 	echo "TEST STARTED: Please avoid using system while this test executes";
 	#Check if  c source  file has been compiled and then run it in different groups
-	if [ -f cpuctl_test01 ]
-	then
+
+	case $TEST_NUM in
+	"1" | "2" )
+		if [ -f cpuctl_test01 ]
+		then
 		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
@@ -182,17 +179,65 @@ setup ()
 			fi
 			i=`expr $i + 1`
 		done
-	else
-		echo "Source file not compiled..Plz check Makefile...Exiting test"
-		cleanup;
-		exit -1;
-	fi
+		else
+			echo "Source file not compiled..Plz check Makefile...Exiting test"
+			cleanup;
+			exit -1;
+		fi;
+		TOTAL_TASKS=$NUM_GROUPS;
+		;;
+	"3" )
+		if [ -f cpuctl_test02 ]
+		then
+		echo `date` >> $LTPROOT/output/cpuctl_results_$TEST_NUM.txt;
+		for i in $(seq 1 $NUM_GROUPS)
+		do
+			TASKS_IN_GROUP=`expr $i \* 2`;
+			for j in $(seq 1 $TASKS_IN_GROUP)
+			do
+			TASK_NUM=`expr $TASK_NUM + 1`;
+			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
+			chmod +x cpuctl_task_$TASK_NUM;
+			if [ $j -eq 1 ]	# Renice 1 task in each group
+			then
+				NICELEVEL=-15;
+			else
+				NICELEVEL=0;
+			fi;
+
+			nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM $i /dev/cpuctl/group_$i $$ $NUM_CPUS >>$LTPROOT/output/cpuctl_results_$TEST_NUM.txt 2>/dev/null &
+			if [ $? -ne 0 ]
+			then
+				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+				cleanup;
+				exit -1;
+			else
+				PID[$TASK_NUM]=$!;
+			fi;
+			j=`expr $j + 1`
+			done;		# end j loop
+			i=`expr $i + 1`
+		done;			# end i loop
+		else
+			echo "Source file not compiled..Plz check Makefile...Exiting test"
+			cleanup;
+			exit -1;
+		fi;
+		TOTAL_TASKS=$TASK_NUM;
+		;;
+	 *  )
+		echo "Could not start cpu controller test";
+		echo "usage: run_cpuctl_test.sh test_num";
+		echo "Skipping the test...";
+		exit -1;;
+	esac
+
 	sleep 3
 	echo TASKS FIRED
 	echo helloworld > myfifo;
 
 	#wait for the tasks to finish for cleanup and status report to pan
-	for i in $(seq 1 $NUM_GROUPS)
+	for i in $(seq 1 $TOTAL_TASKS)
 	do
 		wait ${PID[$i]};
 		RC=$?;	# Return status of the task being waited
