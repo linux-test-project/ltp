@@ -1,4 +1,4 @@
-SUBDIRS = cpuctl
+SUBDIRS = libcontrollers cpuctl
 CHECK_CPUCTL = $(shell grep -w cpu /proc/cgroups|cut -f1)
 all:
 	@set -e;

@@ -55,6 +55,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
 
 #define TIME_INTERVAL	60	/* Time interval in seconds*/
@@ -66,21 +67,19 @@ extern int Tst_count;
 char *TCID = "cpu_controller_test01";
 int TST_TOTAL = 1;
 pid_t scriptpid;
+char path[] = "/dev/cpuctl";
 extern void
 cleanup()
 {
 	kill (scriptpid, SIGUSR1);/* Inform the shell to do cleanup*/
 	tst_exit ();		/* Report exit status*/
 }
-
-int write_to_file (char * file, const char* mode, unsigned int value);
-void signal_handler_alarm (int signal );
 int timer_expired = 0;
 
 int main(int argc, char* argv[])
 {
 
-	int num_cpus, test_num;			/* To calculate cpu time in %*/
+	int num_cpus, test_num, len;			/* num_cpus to calculate cpu time in %*/
 	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
 	pid_t pid;
 	int my_group_num,	        /* A number attached with a group*/
@@ -90,10 +89,13 @@ int main(int argc, char* argv[])
 	double total_cpu_time,  	/* Accumulated cpu time*/
 		delta_cpu_time,  	/* Time the task could run on cpu(s) (in an interval)*/
 		prev_cpu_time=0;
+	double exp_cpu_time;		/* Expected time in % as obtained by shares calculation */
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
 	unsigned long int myshares = 1, baseshares = 1000;	/* Simply the base value to start with*/
+	unsigned int fmyshares, num_tasks;/* f-> from file. num_tasks is tasks in this group*/
 	struct sigaction newaction, oldaction;
+
 	/* Signal handling for alarm*/
 	sigemptyset (&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
@@ -132,6 +134,33 @@ int main(int argc, char* argv[])
 
 	fprintf(stdout,"\ntask-%d SHARES=%lu\n",my_group_num, myshares);
 	read (fd, &ch, 1);	         /* To block all tasks here and fire them up at the same time*/
+
+	/*
+	 * We now calculate the expected % cpu time of this task by getting
+	 * it's group's shares, the total shares of all the groups and the
+	 * number of tasks in this group.
+	 */
+	FLAG = 0;
+	total_shares = 0;
+	shares_pointer = &total_shares;
+	len = strlen (path);
+	if (!strncpy (fullpath, path, len))
+		tst_brkm (TBROK, cleanup, "Could not copy directory path %s ", path);
+
+	if (scan_shares_files() != 0)
+		tst_brkm (TBROK, cleanup, "From function scan_shares_files in %s ", fullpath);
+
+//        fprintf(stdout, "The total shares are: %u\n", total_shares);
+
+	/* return val: -1 in case of function error, else 2 is min share value */
+	if ((fmyshares = read_shares_file(mysharesfile)) < 2)
+		tst_brkm (TBROK, cleanup, "in reading shares files  %s ", mysharesfile);
+
+	if ((read_file (mytaskfile, GET_TASKS, &num_tasks)) < 0)
+		tst_brkm (TBROK, cleanup, "in reading tasks files  %s ", mytaskfile);
+
+	exp_cpu_time = (double)(fmyshares * 100) /(total_shares * num_tasks);
+
 	prev_time = time (NULL);	 /* Note down the time*/
 
 	while (1)
@@ -159,7 +188,9 @@ int main(int argc, char* argv[])
 			else
 				mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-			fprintf (stdout,"PID: %u\ttask-%d:cpu time ---> %6.3f\%(%fs) --->%lu(shares)\tinterval:%lu\n",getpid(),my_group_num, mytime, delta_cpu_time, myshares, delta_time);
+			fprintf (stdout,"task-%d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
+with %lu(shares) in %lu (s) INTERVAL\n",my_group_num, delta_cpu_time, mytime,\
+exp_cpu_time, myshares, delta_time);
 			first_counter++;
 
 			if (first_counter >= NUM_INTERVALS)	 /* Take n sets of readings for each shares value*/
@@ -189,21 +220,3 @@ int main(int argc, char* argv[])
         }/* end while*/
 }/* end main*/
 
-
-int write_to_file (char *file, const char *mode, unsigned int value)
-{
-	FILE *fp;
-	fp = fopen (file, mode);
-	if (fp == NULL)
-	{
-		tst_brkm (TBROK, cleanup, "Could not open file %s for writing", file);
-	}
-	fprintf (fp, "%u\n", value);
-	fclose (fp);
-	return 0;
-}
-
-void signal_handler_alarm (int signal)
-{
-	timer_expired = 1;
-}

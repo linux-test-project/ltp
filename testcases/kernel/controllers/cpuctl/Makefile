@@ -1,6 +1,6 @@
 CFLAGS += -Wall
-CPPFLAGS += -I../../../../include
-LDLIBS += -lm -L../../../../lib/ -lltp
+CPPFLAGS += -I../../../../include -I../libcontrollers
+LDLIBS += -lm -L../../../../lib/ -L../libcontrollers -lcontrollers -lltp
 
 SRCS    = $(wildcard *.c)
 
