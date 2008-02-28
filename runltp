@@ -495,6 +495,7 @@ main()
                      ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
                      ${LTPROOT}/runtest/nptl ${LTPROOT}/runtest/pty \
                      ${LTPROOT}/runtest/containers \
+                     ${LTPROOT}/runtest/controllers \
                      ${LTPROOT}/runtest/filecaps
         do
             [ -a "$SCENFILES" ] || \
