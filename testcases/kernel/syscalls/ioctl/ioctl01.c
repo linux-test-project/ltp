@@ -212,6 +212,8 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
+	close(fd1);
+
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
