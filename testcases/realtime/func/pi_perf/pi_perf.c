@@ -196,19 +196,20 @@ void * high_prio_thread(void *arg)
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
 	}
-	stats_quantiles_calc(&wait_dat, &wait_quantiles);
+
 	stats_hist(&wait_hist, &wait_dat);
+	stats_container_save("samples", "pi_perf Latency Scatter Plot",
+		"Iteration", "Latency (us)", &wait_dat, "points");
+	stats_container_save("hist", "pi_perf Latency Histogram",
+		"Latency (us)", "Samples", &wait_hist, "steps");
 
 	printf("Min wait time = %ld us\n", stats_min(&wait_dat));
 	printf("Max wait time = %ld us\n", stats_max(&wait_dat));
 	printf("Average wait time = %4.2f us\n", stats_avg(&wait_dat));
 	printf("Standard Deviation = %4.2f us\n", stats_stddev(&wait_dat));
 	printf("Quantiles:\n");
+	stats_quantiles_calc(&wait_dat, &wait_quantiles);
 	stats_quantiles_print(&wait_quantiles);
-	stats_container_save("samples", "pi_perf Latency Scatter Plot",
-		"Iteration", "Latency (us)", &wait_dat, "points");
-	stats_container_save("hist", "pi_perf Latency Histogram",
-		"Latency (us)", "Samples", &wait_hist, "steps");
 
 	return NULL;
 }

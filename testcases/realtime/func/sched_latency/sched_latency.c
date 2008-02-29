@@ -169,8 +169,7 @@ void *periodic_thread(void *arg)
 		} while (now < next);
 
 		/* start of period */
-		now = rt_gettime();
-		delay = (now - start - (nsec_t)(i + 1)*period)/NS_PER_US;
+		delay = (now - iter_start - (nsec_t)(i+1)*period)/NS_PER_US;
 		dat.records[i].x = i;
 		dat.records[i].y = delay;
 		if (delay < min_delay)
@@ -197,7 +196,7 @@ void *periodic_thread(void *arg)
 			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
 				latency_threshold, i);
 			latency_trace_print();
-			stats_container_resize(&dat, i + 1);
+			stats_container_resize(&dat, i+1);
 		}
 	}
 

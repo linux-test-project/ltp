@@ -81,12 +81,17 @@ volatile int defense_count;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int run_jvmsim=0;
+static int players_per_team = 0;
+static int game_length = DEF_GAME_LENGTH;
 
 void usage(void)
 {
-        rt_help();
-        printf("testpi-1 specific options:\n");
-        printf("  -j            enable jvmsim\n");
+	rt_help();
+	printf("sched_football specific options:\n");
+	printf("  -j            enable jvmsim\n");
+	printf("  -nPLAYERS     players per team (defaults to num_cpus)\n");
+	printf("  -lGAME_LENGTH game length in seconds (defaults to %d s)\n",
+	       DEF_GAME_LENGTH);
 }
 
 int parse_args(int c, char *v)
@@ -100,6 +105,12 @@ int parse_args(int c, char *v)
                 case 'h':
                         usage();
                         exit(0);
+		case 'n':
+			players_per_team = atoi(v);
+			break;
+		case 'l':
+			game_length= atoi(v);
+			break;
                 default:
                         handled = 0;
                         break;
@@ -162,12 +173,14 @@ int referee(int game_length)
 int main(int argc, char* argv[])
 {
 	struct sched_param param;
-	int players_per_team, game_length;
 	int priority;
 	int i;
 	setup();
 
-	rt_init("jh",parse_args,argc,argv);
+	rt_init("n:l:jh",parse_args,argc,argv);
+
+	if (players_per_team == 0)
+		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
 
 	if (run_jvmsim) {
                 printf("jvmsim enabled\n");
@@ -176,21 +189,8 @@ int main(int argc, char* argv[])
                 printf("jvmsim disabled\n");
 	}
 
-	if (argc < 2 || argc > 3) {
-		printf("Usage: %s players_per_team [game_length (seconds)]\n", argv[0]);
-		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
-		game_length = DEF_GAME_LENGTH;
-		printf("Using default values: players_per_team=%d game_length=%d\n",
-		       players_per_team, game_length);
-	}
-
-	else {
-		players_per_team = atoi(argv[1]);
-		if (argc == 3)
-			game_length = atoi(argv[2]);
-		else
-			game_length = DEF_GAME_LENGTH;
-	}
+	printf("Running with: players_per_team=%d game_length=%d\n",
+	       players_per_team, game_length);
 
 	/* We're the ref, so set our priority right */
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
