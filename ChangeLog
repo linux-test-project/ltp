@@ -1,3 +1,429 @@
+LTP-20080229
+
+1)  Log Message: lcov: adding support for gzipped html based on patch by dnozay@vmware.com
+File(s) Modified:
+ltp/utils/analysis/lcov/lcovrc
+ltp/utils/analysis/lcov/man/genhtml.1
+ltp/utils/analysis/lcov/man/lcovrc.5
+ltp/utils/analysis/lcov/bin/genhtml
+
+2) Log Message: Fix for Don´t call Domain type on test create, by, "Serge E. Hallyn" <serue@us.ibm.com>
+File(s) Modified:
+ltp/testcases/kernel/security/selinux-testsuite/misc/sbin_deprecated.patch
+ltp/testscripts/test_selinux.sh
+
+3) Log Message: Some code cleanup in PID & SYSVIPC namespace testcases, by, "Rishikesh K. Rajak" <risrajak@linux.vnet.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/containers/pidns/pidns01.c
+ltp/testcases/kernel/containers/pidns/pidns02.c
+ltp/testcases/kernel/containers/pidns/pidns03.c
+ltp/testcases/kernel/containers/sysvipc/shmnstest.c
+
+4) Log Message: Some Cleanups and running hugetlb independantly
+Modified File(s):
+ltp/testcases/kernel/mem/hugetlb/hugemmap/hugemmap02.c
+ltp/testcases/kernel/mem/hugetlb/hugemmap/hugemmap04.c
+Added File(s):
+ltp/runtest/hugetlb
+
+5) Log Message: Give Execute Permission to numa01.sh, by, Pradeep K Surisetty <pradeepkumars@in.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/numa/Makefile
+
+6) Log Message: Let tests send sigchld to unconfined_t.  Without this, the selinux testsuite on Fedora 8 hangs at selinux_task_create.sh, by, "Serge E. Hallyn" <serue@us.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/security/selinux-testsuite/misc/sbin_deprecated.patch
+
+7) Log Message: str_echo function expects a file descriptor & not an address, by, Craig Meier <crmeier@ghs.com>
+Modified File(s):
+ltp/testcases/kernel/sched/clisrv/pthserv.c
+
+8) Log Message: Build Error Fix by checking for installation of setcap or xattr headers, by, "Serge E. Hallyn" <serue@us.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/security/filecaps/Makefile
+ltp/testcases/kernel/security/filecaps/checkforlibcap.sh
+Added Files:
+ltp/testcases/kernel/security/filecaps/check_xattr.c
+
+9) Log Message: mark test_exit as noreturn #1891129 by Marcus Meissner, by, Mike Frysinger <vapier@users.sourceforge.net>
+Modified File(s):
+ltp/ltp/include/test.h 
+Added File(s): 
+ltp/ltp/include/compiler.h
+
+10)Log Message: Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/io/disktest/Getopt.c
+ltp/testcases/kernel/io/disktest/Getopt.h
+ltp/testcases/kernel/io/disktest/Makefile
+ltp/testcases/kernel/io/disktest/Makefile.aix
+ltp/testcases/kernel/io/disktest/Makefile.linux
+ltp/testcases/kernel/io/disktest/Makefile.windows
+ltp/testcases/kernel/io/disktest/README
+ltp/testcases/kernel/io/disktest/childmain.c
+ltp/testcases/kernel/io/disktest/childmain.h
+ltp/testcases/kernel/io/disktest/defs.h
+ltp/testcases/kernel/io/disktest/dump.c
+ltp/testcases/kernel/io/disktest/dump.h
+ltp/testcases/kernel/io/disktest/globals.c
+ltp/testcases/kernel/io/disktest/globals.h
+ltp/testcases/kernel/io/disktest/io.c
+ltp/testcases/kernel/io/disktest/io.h
+ltp/testcases/kernel/io/disktest/main.c
+ltp/testcases/kernel/io/disktest/main.h
+ltp/testcases/kernel/io/disktest/parse.c
+ltp/testcases/kernel/io/disktest/parse.h
+ltp/testcases/kernel/io/disktest/sfunc.c
+ltp/testcases/kernel/io/disktest/sfunc.h
+ltp/testcases/kernel/io/disktest/stats.c
+ltp/testcases/kernel/io/disktest/stats.h
+ltp/testcases/kernel/io/disktest/threading.c
+ltp/testcases/kernel/io/disktest/threading.h
+ltp/testcases/kernel/io/disktest/timer.c
+ltp/testcases/kernel/io/disktest/timer.h
+ltp/testcases/kernel/io/disktest/usage.c
+ltp/testcases/kernel/io/disktest/usage.h
+ltp/testcases/kernel/io/disktest/man1/disktest.1
+Added File(s):
+ltp/testcases/kernel/io/disktest/CHANGELOG
+ltp/testcases/kernel/io/disktest/disktest.spec
+ltp/testcases/kernel/io/disktest/signals.c
+ltp/testcases/kernel/io/disktest/signals.h
+ltp/testcases/kernel/io/disktest/man1/disktest_manual.html
+
+11) Log Message: Pid Namespace were getting segmentation fault while running on -mm kernel. After debugging by container development team they found the exact root cause. The Page_Size was reset, by, "Rishikesh K. Rajak" <risrajak@linux.vnet.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/containers/libclone/libclone.c
+
+12) Log Message: Based on the discussion at LKML (http://lkml.org/lkml/2007/11/29/325), Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com> removed the test case that verifies if the pgoff is "valid"
+Modified File(s):
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages02.c
+
+13) Log Message: The problem was the position of the parenthesis, which made "fd" receive the result of the < (lower than) operation, instead of the actual return value from open. This implicates a lot of trouble in any subsequent reference to fd, used in write and mmap. Because of this, mmap was returning an error number (ENODEV), instead of a valid memory address, which created the mprotect trouble. Fix by Jose Otavio Rizzatti Ferreira <joseferr@br.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/mprotect/mprotect02.c
+
+14) Log Message: Patrick Kirsch <pkirsch@suse.de> personally thinks, it would be better to print out the "actual" return code from sysconf call instead of the errno, which may lead to confusion, because the actual return code from the failing sysconf is probably not 0 (as errno is defined in previous context).
+Modified File(s):
+ltp/testcases/kernel/syscalls/sysconf/sysconf01.c
+
+15) Log Message: Do not store cache files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/realtime/autom4te.cache/traces.0
+ltp/testcases/realtime/autom4te.cache/traces.1
+ltp/testcases/realtime/autom4te.cache/requests
+ltp/testcases/realtime/autom4te.cache/output.1
+ltp/testcases/realtime/autom4te.cache/output.0
+
+16) Log Message: Remove compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Modified File(s):
+ltp/testcases/kernel/syscalls/pcllib/libtool
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/config.h
+ltp/testcases/kernel/syscalls/pcllib/config.log
+ltp/testcases/kernel/syscalls/pcllib/config.status
+
+17) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/test/.deps/cobench.Po
+ltp/testcases/kernel/syscalls/pcllib/test/.deps/cothread.Po
+
+18) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/man/Makefile
+
+19) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/pcl/.deps/pcl_version.Plo
+ltp/testcases/kernel/syscalls/pcllib/pcl/.deps/pcl.Plo
+
+20) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/autom4te.cache/traces.0
+ltp/testcases/kernel/syscalls/pcllib/autom4te.cache/traces.1
+ltp/testcases/kernel/syscalls/pcllib/autom4te.cache/requests
+ltp/testcases/kernel/syscalls/pcllib/autom4te.cache/output.1
+ltp/testcases/kernel/syscalls/pcllib/autom4te.cache/output.0
+
+21) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/include/Makefile
+
+22) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/test/Makefile
+
+23) Log Message: punt compiled files, by, Mike Frysinger <vapier@users.sourceforge.net>
+Deleted File(s):
+ltp/testcases/kernel/syscalls/pcllib/pcl/Makefile
+
+24) Log Message: This will address the problem until distros update with latest glibc which has fallocate implementation. This is not extensively tested and built with some assumption like
+     o we are testing on x86* and ppc* archs
+     o on 64 bit machine we will always see 64 bit kernel running
+by, Nagesh Sharyathi <sharyathi@in.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/fallocate/fallocate01.c
+ltp/testcases/kernel/syscalls/fallocate/fallocate02.c
+ltp/testcases/kernel/syscalls/fallocate/fallocate03.c
+
+25) Log Message:
+Since msgmni now scales to the memory size, it may reach big values.
+To avoid forking 2*msgmni processes and create msgmni msg queues, do not take
+msgmni from procfs anymore.
+Just define it as 16 (which is the MSGMNI constant value in linux/msg.h)
+
+Also fixed the Makefiles in ipc/lib and ipc/msgctl: there was no dependency
+on the lib/ipc*.h header files.
+
+Signed-off-by: Nadia Derbey <Nadia.Derbey@bull.net>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ipc/lib/Makefile
+ltp/testcases/kernel/syscalls/ipc/lib/ipcmsg.h
+ltp/testcases/kernel/syscalls/ipc/msgctl/Makefile
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl08.c
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl09.c
+
+26) Log Message:
+Here is a second round of cleanup and fixes for the realtime testcases.
+
+1) Make sched_jitter use the create_fifo_thread() library function instead of an open coded solution,
+2) Prio-wake calls rt_init() twice, remove the second call,
+3) Make sbrk_mutex less verbose by default. One can still use the -v option to get the whole output,
+4) It's better to calculate the histogram before saving it. This was introduced in an earlier commit of mine fixing the quantile calculation, 5) Fix runtime displaying of the min and max latencies (when used with -v3). While at it, remove an uneeded avg variable,
+6) Various tests still have a hardcoded value for the quantile nines. Use a value automatically calculated from the number of iterations,
+7) The log10() call used for automatic quantile nines calculation returns a double result. Cast it to an int. The exp10() call used in stats_quantiles_calc() for checking purposes returns a double result which is compared against a long. Cast it to a long. This allows the following comparison: data->size < (long)exp10(quantiles->nines) to really be false when quantiles->nines has been calculated as log10(data->size).
+More generally, it seems that (at least with gcc 4.1.1):
+        long i = 10000;
+        double f = exp10(log10(i))
+
+        yields (i < f) being true due to rounding,
+8) Add latency tracing capability to pthread_kill_latency as is already done on a few other latency tests (gtod_latency, sched_latency, ...),
+9) The '::' optional argument specifier for getopt used by the '-v' option is a GNU extension, is not portable and does not work. For example it's not even described in the Debian getopt(3) manpage. Make the '-v' option require a non optional argument,
+10)The print buffer is only ever flushed when it is full. Add flushing when the test terminates vi atexit(),
+11)The 'period missed' check of the thread first loop should not depend on the thread starting time. This is especially visible on 'slow' platforms where one cannot run the test if thread creation takes a long time. Fix it by removing this dependency. All delays are now calculated relative to when the thread starts,
+
+Signed-off-by: Sebastien Dugue <sebastien.dugue@bull.net>
+Cc: Darren Hart <dvhltc@us.ibm.com>
+Cc: Tim Chavez <tinytim@us.ibm.com>
+Cc: Matthieu CASTET <matthieu.castet@parrot.com>
+Acked-by: Chirag <chirag@linux.vnet.ibm.com>
+
+Modified File(s):
+ltp/testcases/realtime/func/gtod_latency/gtod_latency.c
+ltp/testcases/realtime/func/hrtimer-prio/hrtimer-prio.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load_single.c
+ltp/testcases/realtime/func/pi-tests/sbrk_mutex.c
+ltp/testcases/realtime/func/pi_perf/pi_perf.c
+ltp/testcases/realtime/func/prio-wake/prio-wake.c
+ltp/testcases/realtime/func/pthread_kill_latency/pthread_kill_latency.c
+ltp/testcases/realtime/func/sched_jitter/sched_jitter.c
+ltp/testcases/realtime/func/sched_latency/sched_latency.c
+ltp/testcases/realtime/lib/librttest.c
+ltp/testcases/realtime/lib/libstats.c
+
+27) Log Message: lcov: fixed problem with pre gcc-3.3 versions.
+read_gcov_headers does not return valid results for pre gcc-3.3 versions. Due to an unnecessary check, parsing of gcov files was aborted. Fix by removing check, by, Peter Oberparleiter <oberpapr@users.sourceforge.net>
+Modified File(s):
+ltp/utils/analysis/lcov/bin/geninfo
+
+28) Log Message: lcov: fix error when trying to use genhtml -b
+genhtml fails when the data file contains an entry which is not found in the base file, by, Peter Oberparleiter <oberpapr@users.sourceforge.net>
+Modified File(s):
+ltp/utils/analysis/lcov/bin/genhtml
+
+29) Log Messaage: run_auto.sh file for realtime/func/pthread_kill_latency/testcase got missed out in first release of realtime tests. This patch adds run_auto.sh for testcase which is required to run this particular test through top-level run script, by, sudhanshu <sudh@linux.vnet.ibm.com>
+Added File(s):
+ltp/testcases/realtime/func/pthread_kill_latency/run_auto.sh
+
+30) Log Message: Since msgmni now scales to the memory size, it may reach big values. To avoid forking 2*msgmni processes and create msgmni msg queues, take the min between the procfs value and MSGMNI (as found in linux/msg.h).
+Also integrated the following in libipc.a:
+  . get_max_msgqueues()
+  . get_used_msgqueues()
+Signed-off-by: Nadia Derbey <Nadia.Derbey@bull.net>
+Modified File(s):
+ltp/testcases/kernel/syscalls/ipc/lib/ipcmsg.h
+ltp/testcases/kernel/syscalls/ipc/lib/libipc.c
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl08.c
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl09.c
+ltp/testcases/kernel/syscalls/ipc/msgget/Makefile
+ltp/testcases/kernel/syscalls/ipc/msgget/msgget03.c
+Added File(s):
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl10.c
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl11.c
+
+31) Log Message: waitpid06.c uses a flag to detect whether something went wrong during the test. The issue is that this flag is not initialized, and I get random failure reports. Other tests might suffer from the same bug, but I did not observe it yet. The enclosed patch fixes this in a trivial way for waitpid06. Surprisingly, with my debian package I never got the error, but when I compiled myself, by, Louis Rilling <Louis.Rilling@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/waitpid/waitpid06.c
+
+32) Log Message:
+There are numerous cleanups, fixes and features went into our locally maintained version of realtime tests, since its intergration in LTP december last year. This patch merges those changes into LTP tree. The patch majorly contains :
+- All features, cleanups and fixes done by IBM realtime team over last two
+  month or so.
+- Change in copyrights( year, symbil and limiting columns to 80 chars)
+- Other few cleanups to ltp-realtime tests.
+Signed-off-by : Sudhanshu Singh < sudh@linux.vnet.ibm.com>
+
+Modified File(s):
+ltp/testcases/realtime/GNUmakefile.am
+ltp/testcases/realtime/run.sh
+ltp/testcases/realtime/func/async_handler/async_handler.c
+ltp/testcases/realtime/func/async_handler/async_handler_jk.c
+ltp/testcases/realtime/func/async_handler/async_handler_tsc.c
+ltp/testcases/realtime/func/gtod_latency/gtod_infinite.c
+ltp/testcases/realtime/func/gtod_latency/gtod_latency.c
+ltp/testcases/realtime/func/hrtimer-prio/hrtimer-prio.c
+ltp/testcases/realtime/func/matrix_mult/matrix_mult.c
+ltp/testcases/realtime/func/measurement/preempt_timing.c
+ltp/testcases/realtime/func/measurement/rdtsc-latency.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load_single.c
+ltp/testcases/realtime/func/pi-tests/parse-testpi1.py
+ltp/testcases/realtime/func/pi-tests/parse-testpi2.py
+ltp/testcases/realtime/func/pi-tests/run_auto.sh
+ltp/testcases/realtime/func/pi-tests/sbrk_mutex.c
+ltp/testcases/realtime/func/pi-tests/test-skeleton.c
+ltp/testcases/realtime/func/pi-tests/testpi-0.c
+ltp/testcases/realtime/func/pi-tests/testpi-1.c
+ltp/testcases/realtime/func/pi-tests/testpi-2.c
+ltp/testcases/realtime/func/pi-tests/testpi-4.c
+ltp/testcases/realtime/func/pi-tests/testpi-5.c
+ltp/testcases/realtime/func/pi-tests/testpi-6.c
+ltp/testcases/realtime/func/pi-tests/testpi-7.c
+ltp/testcases/realtime/func/pi_perf/pi_perf.c
+ltp/testcases/realtime/func/prio-preempt/prio-preempt.c
+ltp/testcases/realtime/func/prio-wake/prio-wake.c
+ltp/testcases/realtime/func/pthread_kill_latency/pthread_kill_latency.c
+ltp/testcases/realtime/func/sched_football/parse-football.py
+ltp/testcases/realtime/func/sched_football/sched_football.c
+ltp/testcases/realtime/func/sched_jitter/sched_jitter.c
+ltp/testcases/realtime/func/sched_latency/sched_latency.c
+ltp/testcases/realtime/func/thread_clock/tc-2.c
+ltp/testcases/realtime/include/libjvmsim.h
+ltp/testcases/realtime/include/librttest.h
+ltp/testcases/realtime/include/libstats.h
+ltp/testcases/realtime/include/list.h
+ltp/testcases/realtime/lib/libjvmsim.c
+ltp/testcases/realtime/lib/librttest.c
+ltp/testcases/realtime/lib/libstats.c
+ltp/testcases/realtime/perf/latency/pthread_cond_latency.c
+ltp/testcases/realtime/perf/latency/pthread_cond_many.c
+ltp/testcases/realtime/scripts/__init__.py
+ltp/testcases/realtime/scripts/setenv.sh
+ltp/testcases/realtime/stress/pi-tests/lookup_pi_state.c
+ltp/testcases/realtime/stress/pi-tests/testpi-3.c
+ltp/testscripts/test_realtime.sh
+
+33) Log Message: waitpid07.c uses a flag to detect whether something went wrong during the test. The issue is that this flag is not initialized, and I get random failure reports, by, Louis Rilling <Louis.Rilling@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/waitpid/waitpid07.c
+
+34) Log Message:
+waitpid tests: Fix failure detection flag initialization.
+On a similar pattern as waitpid06 and waitpid07, waitpid08-13 use a failure detection flag (called 'fail' instead of 'flag'). However except in waitpid09, this flag may be used uninitialized, which causes the test to randomly report failure. This patch ensures that the flag is reset at the beginning of each loop.
+Signed-off-by: Louis Rilling <Louis.Rilling@kerlabs.com>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/waitpid/waitpid08.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid10.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid11.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid12.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid13.c
+
+35) Log Message:
+waitpid03/04: Fix condition numbers displayed when reporting errors.
+The condition numbers displayed while reporting errors in waitpid03 and waitpid04 are used initialized and are not consistently updated, which may lead to useless reports.
+Signed-off-by: Louis Rilling <Louis.Rilling@kerlabs.com>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/waitpid/waitpid03.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid04.c
+
+36) Log Message:
+waitpid02-05: remove unused defines related to failure handling. Signed-off-by: Louis Rilling <Louis.Rilling@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/waitpid/waitpid02.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid03.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid04.c
+ltp/testcases/kernel/syscalls/waitpid/waitpid05.c
+
+37) Log Message: Adding option to build TIMER test cases as well, by, Subrata Modak <subrata@linux.vnet.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/Makefile
+
+38) Log Message: Removing these files as they get automatically generated during build, by, Max Stirling <vicky.irobot@gmail.com>
+Deleted File(s):
+ltp/testcases/ballista/ballista/MakefileHost
+ltp/testcases/ballista/ballista/MakefileTarget
+
+39) Log Message: Many tests cannot be executed concurrently. I have a few patches to make it possible to execute some tests in parallel/concurrency, to check SMP safeness, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/sendfile/sendfile02.c
+ltp/testcases/kernel/syscalls/sendfile/sendfile04.c
+
+40) Log Message: Fix NFS issues in tst_rmdir (directory non empty) due to an unmapped file, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages01.c
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages02.c
+
+41) Log Message: Fix a concurrency issue due to the (false) sharing of file /dev/shm/cache. This patch just create a different file for each process and unlink the file before exiting, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages01.c
+
+42) Log Message: The variable dfOpts (in #324) is seting to NULL even if the df is not a symbolic link.(It has to be "-P" itself to get the output portable).And so the "df $dfOpts $dir" (line #326) command is not giving a result expected by the succeeding statements. I have tested this patch both in lvm and fdisk partitions and found its working fine, by, Sudeesh John <sudeeshjohn@in.ibm.com>
+Modified File(s):
+ltp/testcases/kernel/fs/doio/rwtest.sh
+
+43) Log Message:
+CLOCK_PROCESS_CPUTIME_ID and CLOCK_THREAD_CPUTIME_ID are also supported besides CLOCK_REALTIME and CLOCK_MONOTONIC. That's the cause of the failure of clock_gettime03, timer_create02 and timer_create04. Another cause is that struct sigevent evp is assigned with invalid values when option is 1. That's the cause of the failure of timer_create02 and timer_create03. CLOCK_REALTIME_HR and CLOCK_MONOTONIC_HR have been removed in the later kernel versions, hence the failures in the test. I am still trying to find out if any kernel versions used to support these. CLOCK_PROCESS_CPUTIME_ID and CLOCK_THREAD_CPUTIME_ID are supported from 2.6.12 kernel version onwards and the test case needs to be modified for this change. Also in timer_create02.c, setup_test() case1 needs to be modified so as to make evp NULL instead of its members. Since the testcase behaves differently for different kernel versions, a version check needs to be added for making it pass across versions. I'm removing the HR clocks from the tests along with other changes, by, Anoop V. Chakkalakkal <anoop.vijayan@in.ibm.com>
+
+Modified File(s):
+ltp/testcases/kernel/timers/clock_gettime/clock_gettime03.c
+ltp/testcases/kernel/timers/clock_settime/clock_settime03.c
+ltp/testcases/kernel/timers/include/common_timers.h
+ltp/testcases/kernel/timers/timer_create/timer_create02.c
+ltp/testcases/kernel/timers/timer_create/timer_create03.c
+ltp/testcases/kernel/timers/timer_create/timer_create04.c
+
+44) Mog Message:
+This patch -try- to cleanup the mem03 test and fix a concurrency problem. Mainly, the test creates and removes files in the current directory. Since the tst_tmpdir() function was not used, several instances of the test was creating and removing files from each others !, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/memmap/mem03.c
+
+45) Log Message: The problem is that the kernel file is vmlinux* instead of vmlinuz* on SLES, but file_test.sh always try to grep vmlinuz* under /boot/. Here is the patch and the test result with the patch, by, shenlinf <shenlinf@cn.ibm.com>
+Modified File(s):
+ltp/testcases/commands/ade/file/file_test.sh
+
+46) Log Message: Here is a patch fixing concurrency issue in mremap04. Just use a shm key returned from the getipckey() function instead of a fixed hardcoded value, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+Modified File(s):
+ltp/testcases/kernel/syscalls/mremap/Makefile
+ltp/testcases/kernel/syscalls/mremap/mremap04.c
+
+47) Log Message:
+LTP-kill05-bad-check-fix.patch:
+  - Fix return value check from shmat. In case of error, this wrong check was leading to a seg-fault.
+LTP-kill05-shmid_delete-fix.patch:
+ - Fix deletion of the memory segment. Due to the change of process UID during the test, the segment was created by ROOT and deleted (or tried to be deleted) by user "bin". This is of course not possible. And it is also impossible to switch back uid to ROOT. Solution adopted : doing a fork in which the test is performed. The initial process staying with ROOT uid.
+LTP-kill05-concurrency-fix.patch
+ - Paranoia concurrency fix. I have not encounter any real issue, but it is probably safer to be sure each process is using a different segment. -> use tst_tmpdir, to make getipckey generating a different key for each running process, by, Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/kill/kill05.c
+
+48) Log Message:
+1) The pi-tests don't use the librttest infrastructure and simply duplicate code. This patch ensures that those tests use librttest.
+2) The thread-clock test doesn't use the librttest infrastructure. This patch ensures that it does.
+3) Adds missing headers to the following files,
+Signed-Off-By: Chirag <chirag@linux.vnet.ibm.com>,
+Acked-By: Dinakar Guniguntala <dino@in.ibm.com>,
+Acked-By: Sebastien Dugue <sebastien.dugue@bull.net>
+
+Modified File(s):
+ltp/testcases/realtime/func/pi-tests/parse-testpi1.py
+ltp/testcases/realtime/func/pi-tests/parse-testpi2.py
+
 LTP-20080131
 
 1)  Log Message: Some more updates to Reference Policy Checks by "Serge E. Hallyn" <serue@us.ibm.com> 
