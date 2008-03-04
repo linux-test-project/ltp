@@ -34,11 +34,11 @@
  */
 
 
-char *TCID="syslogtst";           /* Test program identifier.    */
+char *TCID="syslogtst";         /* Test program identifier.    */
 int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
-int exp_enos[]={0};     /* List must end with 0 */
+int exp_enos[]={0};             /* List must end with 0 */
 
 
 void sig_handler(int signal); 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	
 	else {
 		ch = atoi(argv[1]);
-		ch1 = atoi(argv[2]);
+		if(argc > 2) ch1 = atoi(argv[2]);
 	}
 		
 	/*
