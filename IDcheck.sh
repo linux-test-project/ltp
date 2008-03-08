@@ -85,7 +85,7 @@ if [ $? != "0" ]; then
 fi
 
 whoami | grep root > /dev/null
-if [ $? == "0" ]; then
+if [ $? = "0" ]; then
  I_AM_ROOT=1
 fi
 

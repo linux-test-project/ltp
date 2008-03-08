@@ -237,7 +237,7 @@ main()
                          ${LTPROOT}/runtest/rpc \
                          ${LTPROOT}/runtest/nfs
         do
-            [ -a "$SCENFILES" ] || \
+            [ -e "$SCENFILES" ] || \
             { 
                 echo "FATAL: missing scenario file $SCENFILES"
                 exit 1

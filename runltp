@@ -498,7 +498,7 @@ main()
                      ${LTPROOT}/runtest/controllers \
                      ${LTPROOT}/runtest/filecaps
         do
-            [ -a "$SCENFILES" ] || \
+            [ -e "$SCENFILES" ] || \
             {
                 echo "FATAL: missing scenario file $SCENFILES"
                 exit 1
@@ -546,7 +546,7 @@ main()
                          ${LTPROOT}/runtest/rpc \
                          ${LTPROOT}/runtest/nfs
         do
-            [ -a "$SCENFILES" ] || \
+            [ -e "$SCENFILES" ] || \
             { 
                 echo "FATAL: missing scenario file $SCENFILES"
                 exit 1
