@@ -18,23 +18,31 @@
 ##                                                                            ##
 ################################################################################
 
+HAVE_LIBCAP := $(shell sh checkforlibcap.sh yesno)
+
 SCRIPTS = filecapstest.sh checkforlibcap.sh checkforfilecaps.sh
-ifeq ($(shell sh checkforlibcap.sh yesno),yes)
-CC=gcc
+TARGETS = checkforlibcap
 
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp -lcap
 
+ifeq ($(HAVE_LIBCAP),yes)
 SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS)
+TARGETS+= $(patsubst %.c,%,$(SRCS))
+endif
+
 all: $(TARGETS)
-	gcc -o checkforlibcap gotlibcap.c
+ifeq ($(HAVE_LIBCAP),yes)
+checkforlibcap:
+	echo true > $@
+	chmod a+rx $@
 else
-all:
-	@echo "setcap or xattr headers not installed.  Please install libcap from"; echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2"; echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
-	gcc -o checkforlibcap nolibcap.c
-TARGETS =
+	@echo "setcap or xattr headers not installed.  Please install libcap from"; \
+	echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2"; \
+	echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
+checkforlibcap:
+	echo false > $@
+	chmod a+rx $@
 endif
 
 INSTALLTARGETS = $(TARGETS) $(SCRIPTS) checkforlibcap
