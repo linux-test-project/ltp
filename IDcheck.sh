@@ -104,6 +104,8 @@ else
              CREATE=0 
              ;;
      esac
+  else
+     CREATE=0
   fi
 fi
 
