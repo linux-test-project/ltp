@@ -32,6 +32,10 @@
  *
  * RESTRICTIONS
  *
+ * HISTORY
+ *      10/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. A statically defined key was used. Leading
+ *        to conflict with other instances of the same test.
  */
 
 
@@ -62,6 +66,8 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={0};     /* List must end with 0 */
 
+key_t key;
+int semid = -1, nsems;
 
 
 /*--------------------------------------------------------------*/
@@ -70,8 +76,7 @@ int main(argc, argv)
 int argc;
 char *argv[];
 {
-	key_t key;
-	int semid, nsems, status;
+	int status;
 	struct semid_ds buf_ds;
 
 	union semun {
@@ -84,11 +89,7 @@ char *argv[];
 
 	setup();		/* temp file is now open	*/
 /*--------------------------------------------------------------*/
-	key = nsems = 1;
-	if ((semid = semget(key, nsems, SEM_RA|IPC_CREAT)) == -1) {
-		tst_resm(TFAIL, "semget() failed errno = %d", errno);
-		tst_exit();
-	}
+
 	arg.buf = &buf_ds;
 	if ((status = semctl(semid, 0, IPC_STAT, arg)) == -1) {
 		tst_resm(TFAIL, "semctl() failed errno = %d", errno);
@@ -163,12 +164,6 @@ char *argv[];
 		tst_resm(TFAIL, "error: unexpected semzcnt %d", status);
 		tst_exit();
 	}
-		
-	semctl(semid, 0, IPC_RMID, arg);
-	if ((status = semctl(semid, 0, GETPID, arg)) != -1) {
-		tst_resm(TFAIL, "semctl(IPC_RMID) failed");
-		tst_exit();
-	}
 
 	tst_resm(TPASS, "semctl07 ran successfully!");
 /*--------------------------------------------------------------*/
@@ -198,6 +193,22 @@ setup()
 	 * before you create your temporary directory.
 	 */
         TEST_PAUSE;
+
+	/*
+	 * Create a temporary directory and cd into it.
+	 * This helps to ensure that a unique msgkey is created.
+	 * See ../lib/libipc.c for more information.
+	 */
+	tst_tmpdir();
+
+	/* get an IPC resource key */
+	key = getipckey();
+	nsems = 1;
+
+	if ((semid = semget(key, nsems, SEM_RA|IPC_CREAT)) == -1) {
+		tst_resm(TFAIL, "semget() failed errno = %d", errno);
+		tst_exit();
+	}
 }
 
 
@@ -208,6 +219,12 @@ setup()
 void
 cleanup()
 {
+	/* if it exists, remove the semaphore resouce */
+	rm_sema(semid);
+
+	/* Remove the temporary directory */
+	tst_rmdir();
+
         /*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
