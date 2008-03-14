@@ -49,7 +49,7 @@
 #include <libjvmsim.h>
 #include <libstats.h>
 
-#define DEF_MED_PRIO 60		// (softirqd-hrtimer,98]
+#define DEF_MED_PRIO 60		// (softirqd-hrtimer,98)
 #define DEF_ITERATIONS 10000
 #define HIST_BUCKETS 100
 #define DEF_BUSY_TIME 10	// Duration of busy work in milliseconds
@@ -58,10 +58,10 @@
 
 static int run_jvmsim = 0;
 static int med_prio = DEF_MED_PRIO;
-static int high_prio = DEF_MED_PRIO+1;
+static int high_prio;
 static int busy_time = DEF_BUSY_TIME;
 static int iterations = DEF_ITERATIONS;
-static unsigned long criteria = DEF_CRITERIA;	// FIXME: make configurable
+static unsigned long criteria = DEF_CRITERIA;
 static int busy_threads;
 
 static stats_container_t dat;
@@ -71,26 +71,27 @@ static unsigned long max_delta;
 
 void usage(void)
 {
-        rt_help();
+	rt_help();
 	printf("hrtimer-prio specific options:\n");
 	printf("  -j            enable jvmsim\n");
 	printf("  -t#           #:busy work time in ms, defaults to %d ms\n", DEF_BUSY_TIME);
 	printf("  -i#           #:number of iterations, defaults to %d\n", DEF_ITERATIONS);
 	printf("  -n#           #:number of busy threads, defaults to NR_CPUS*2\n");
 	printf("  -f#           #:rt fifo priority of busy threads (1,98), defaults to %d\n", DEF_MED_PRIO);
+	printf("  -m#           #:maximum timer latency in microseconds, defaults to %d\n", DEF_CRITERIA);
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
-                case 'h':
-                        usage();
-                        exit(0);
+	int handled = 1;
+	switch (c) {
+		case 'j':
+			run_jvmsim = 1;
+			break;
+		case 'h':
+			usage();
+			exit(0);
 		case 't':
 			busy_time = atoi(v);
 			break;
@@ -99,17 +100,22 @@ int parse_args(int c, char *v)
 			break;
 		case 'f':
 			med_prio = MIN(atoi(v), 98);
-			high_prio = med_prio+1;
 			break;
-                case 'i':
-			printf("Setting iterations disabled\n");
-			 // iterations = atoi(v);
-                        break;
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+		case 'i':
+			iterations = atoi(v);
+			if (iterations < 100) {
+				fprintf(stderr, "Number of iterations cannot be less than 100.\n");
+				exit(1);
+			}
+		break;
+	case 'm':
+		criteria = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
+}
+return handled;
 }
 
 void *busy_thread(void *thread)
@@ -155,7 +161,8 @@ int main(int argc, char *argv[])
 	int t_id;
 	setup();
 	busy_threads = 2 * sysconf(_SC_NPROCESSORS_ONLN); // default busy_threads
-	rt_init("f:i:jhn:t:", parse_args, argc, argv);
+	rt_init("f:i:jhn:t:m:", parse_args, argc, argv);
+	high_prio = med_prio + 1;
 
 	// Set main()'s prio to one above the timer_thread so it is sure to not
 	// be starved
@@ -175,17 +182,26 @@ int main(int argc, char *argv[])
 	printf("Timer thread priority: %d\n", high_prio);
 
 	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-        } else {
-                printf("jvmsim disabled\n");
-        }
+		printf("jvmsim enabled\n");
+		jvmsim_init();  // Start the JVM simulation
+	} else {
+		printf("jvmsim disabled\n");
+	}
 
 	stats_container_t hist;
 	stats_quantiles_t quantiles;
-	stats_container_init(&dat, iterations);
-	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, (int)log10(iterations));
+	if (stats_container_init(&dat, iterations)) {
+		printf("Cannot init stat containers for dat\n");
+		exit(1);
+	}
+	if (stats_container_init(&hist, HIST_BUCKETS)) {
+		printf("Cannot init stat containers for hist\n");
+		exit(1);
+	}
+	if (stats_quantiles_init(&quantiles, (int)log10(iterations))) {
+		printf("Cannot init stat quantiles\n");
+		exit(1);
+	}
 
 	t_id = create_fifo_thread(timer_thread, NULL, high_prio);
 	if (t_id == -1) {

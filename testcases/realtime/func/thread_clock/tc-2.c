@@ -60,30 +60,34 @@
 struct timespec sleepts[NUMSLEEP];
 struct timespec workts[NUMWORK];
 static int run_jvmsim=0;
+static double threshold = THRESHOLD;
 
 void usage(void)
 {
-        rt_help();
-        printf("thread_clock specific options:\n");
-        printf("  -j            enable jvmsim\n");
+	rt_help();
+	printf("thread_clock specific options:\n");
+	printf("  -j            enable jvmsim\n");
+	printf("  -t            failure threshold in secs (defaults to %f)\n", threshold);
 }
 
 int parse_args(int c, char *v)
 {
-
-        int handled = 1;
-        switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+	case 'j':
+		run_jvmsim = 1;
+		break;
+	case 't':
+		threshold = atof(v);
+		break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
+	}
+	return handled;
 }
 
 /* Just spend some time on the CPU */
@@ -167,10 +171,10 @@ int checkresult(float proctime)
 	printf("Threads: %.4f s\n", threadstime);
 	printf("Delta:   %.4f s\n", diff);
 	/* Difference between the sum of thread times and process time
-	 * should not be more than THRESHOLD */
-	printf("\nCriteria: Delta < %.4f s\n", THRESHOLD);
+	 * should not be more than threshold */
+	printf("\nCriteria: Delta < %.4f s\n", threshold);
 	printf("Result: ");
-	if (diff > THRESHOLD) {
+	if (diff > threshold) {
 		printf("FAIL\n");
 		retval = 1;
 	}
@@ -186,13 +190,13 @@ int main(int argc,char* argv[])
 	struct timespec myts;
 	setup();
 
-	rt_init("jh",parse_args,argc,argv);
+	rt_init("jht:",parse_args,argc,argv);
 
 	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
+		printf("jvmsim enabled\n");
+		jvmsim_init();  // Start the JVM simulation
 	} else {
-                printf("jvmsim disabled\n");
+		printf("jvmsim disabled\n");
 	}
 
 	/* Start sleeper threads */
