@@ -90,6 +90,8 @@ static int t_after_wait[NUM_WORKERS];
 static int ret = 0;
 static int run_jvmsim=0;
 
+pthread_barrier_t barrier;
+
 void usage(void)
 {
 	rt_help();
@@ -184,6 +186,8 @@ void *worker_thread(void* arg)
 
 	/* block */
 	rc = pthread_mutex_lock(&mutex[tid]);
+	if (tid == 0)
+		pthread_barrier_wait(&barrier);
 	rc = pthread_cond_wait(&cond[tid], &mutex[tid]);
 	rc = pthread_mutex_unlock(&mutex[tid]);
 
@@ -234,6 +238,8 @@ void *master_thread(void* arg)
 {
 	int i, pri_boost;
 
+	pthread_barrier_init(&barrier, NULL, 2);
+
 	/* start interrupter thread */
 	if (int_threads) {
 		pri_boost = 90;
@@ -269,6 +275,9 @@ void *master_thread(void* arg)
 	/* Let the worker threads wait on the cond vars */
 	while (threads_running < NUM_WORKERS)
 		usleep(100);
+
+	/* Ensure the first worker has called cond_wait */
+	pthread_barrier_wait(&barrier);
 
 	printf("Signaling first thread\n");
 	pthread_mutex_lock(&mutex[0]);
