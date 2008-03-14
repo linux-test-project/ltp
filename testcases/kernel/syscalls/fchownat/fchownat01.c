@@ -233,9 +233,11 @@ void cleanup()
 	/* Remove them */
 	char tmppathname[256];
 	strcpy(tmppathname, pathname);
-	unlink(strcat(strcat(tmppathname, "/"), testfile));
+
+	close (fd);
 	unlink(testfile);
 	unlink(testfile2);
+	unlink(testfile3);
 	rmdir(pathname);
 
 	/*
