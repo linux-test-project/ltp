@@ -58,7 +58,7 @@ static int ops;
 
 void usage(void)
 {
-        rt_help();
+	rt_help();
 	printf("matrix_mult specific options:\n");
 	printf("  -j            enable jvmsim\n");
 	printf("  -l#           #: number of multiplications per iteration per cpu (load)\n");
@@ -66,22 +66,22 @@ void usage(void)
 
 int parse_args(int c, char *v)
 {
-        int handled = 1;
-        switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
-                case 'l':
-                        ops_multiplier = atoi(v);
-                        break;
-                case 'h':
-			usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+	case 'j':
+		run_jvmsim = 1;
+		break;
+	case 'l':
+		ops_multiplier = atoi(v);
+		break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
+	}
+	return handled;
 }
 
 void matrix_init(float A[MATRIX_SIZE][MATRIX_SIZE], float B[MATRIX_SIZE][MATRIX_SIZE])
@@ -123,7 +123,7 @@ void *matrixmult_thread(void *thread)
 		matrix_mult();
 	}
 
-        return NULL;
+	return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
 	int ret;
 	int numcpus;
 	int criteria;
+
 	setup();
 	rt_init("jl:h", parse_args, argc, argv);
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
 	printf("Matrix Multiplication (SMP Performance)\n");
 	printf("---------------------------------------\n\n");
 	printf("Running %d iterations\n", ITERATIONS);
-        printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
+	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
 	printf("Calculations per iteration: %d\n", ops);
 	printf("Number of CPUs: %u\n", numcpus);
 
@@ -160,10 +161,15 @@ int main(int argc, char *argv[])
 
 	stats_container_t sdat, cdat;
 	stats_container_t shist, chist;
-	stats_container_init(&sdat, ITERATIONS);
-	stats_container_init(&shist, HIST_BUCKETS);
-	stats_container_init(&cdat, ITERATIONS);
-	stats_container_init(&chist, HIST_BUCKETS);
+	if (	stats_container_init(&sdat, ITERATIONS) ||
+		stats_container_init(&shist, HIST_BUCKETS) ||
+		stats_container_init(&cdat, ITERATIONS) ||
+		stats_container_init(&chist, HIST_BUCKETS)
+	)
+	{
+		fprintf (stderr, "Cannot init stats container\n");
+		exit(1);
+	}
 
 	// run matrix mult operation sequentially
 	printf("\nSequential:\n");
@@ -191,12 +197,17 @@ int main(int argc, char *argv[])
 	printf("Max: %ld us\n", smax);
 	printf("Avg: %.4f us\n", savg);
 	printf("StdDev: %.4f us\n", stats_stddev(&sdat));
-	stats_hist(&shist, &sdat);
 
-	stats_container_save("sequential", "Matrix Multiplication Sequential Execution Runtime Scatter Plot",
-			     "Iteration", "Runtime (us)", &sdat, "points");
-	stats_container_save("sequential_hist", "Matrix Multiplicatoin Sequential Execution Runtime Histogram",
-			     "Runtime (us)", "Samples", &shist, "steps");
+	if (
+		stats_hist(&shist, &sdat) ||
+
+		stats_container_save("sequential", "Matrix Multiplication Sequential Execution Runtime Scatter Plot",
+				"Iteration", "Runtime (us)", &sdat, "points") ||
+		stats_container_save("sequential_hist", "Matrix Multiplicatoin Sequential Execution Runtime Histogram",
+				"Runtime (us)", "Samples", &shist, "steps")
+	) {
+		fprintf(stderr, "Warning: could not save sequential mults stats\n");
+	}
 
 	// run matrix mult operation concurrently
 	printf("\nConcurrent (%dx):\n", numcpus);
@@ -234,12 +245,17 @@ int main(int argc, char *argv[])
 	printf("Max: %ld us\n", cmax);
 	printf("Avg: %.4f us\n", cavg);
 	printf("StdDev: %.4f us\n", stats_stddev(&cdat));
-	stats_hist(&chist, &cdat);
 
-	stats_container_save("concurrent", "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",
-			     "Iteration", "Runtime (us)", &cdat, "points");
-	stats_container_save("concurrent_hist", "Matrix Multiplication Concurrent Execution Runtime Histogram",
-			     "Iteration", "Runtime (us)", &chist, "steps");
+	if (
+		stats_hist(&chist, &cdat) ||
+
+		stats_container_save("concurrent", "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",
+					"Iteration", "Runtime (us)", &cdat, "points") ||
+		stats_container_save("concurrent_hist", "Matrix Multiplication Concurrent Execution Runtime Histogram",
+					"Iteration", "Runtime (us)", &chist, "steps")
+	) {
+		fprintf(stderr, "Warning: could not save concurrent mults stats\n");
+	}
 
 	printf("\nSeq/Conc Ratios:\n");
 	printf("Min: %.4f\n", (float)smin/cmin);
