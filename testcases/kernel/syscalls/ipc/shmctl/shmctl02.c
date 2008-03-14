@@ -47,6 +47,10 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      06/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. The second key used for this test could
+ *        conflict with the key from another task.
+ *
  * RESTRICTIONS
  *	none
  */
@@ -159,6 +163,8 @@ int main(int ac, char **av)
 void
 setup(void)
 {
+	key_t shmkey2;
+
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -197,8 +203,16 @@ setup(void)
 			 "segment #1 in setup()");
 	}
 
+	/* Get an new IPC resource key. Since there is a small chance the
+	 * getipckey() function returns the same key as the previous one,
+	 * loop until we have a different key.
+	 */
+	do {
+		shmkey2 = getipckey();
+	} while (shmkey2 == shmkey);
+
 	/* create a shared memory segment with read and write permissions */
-	if ((shm_id_2 = shmget(shmkey + 1, SHM_SIZE, IPC_CREAT | IPC_EXCL |
+	if ((shm_id_2 = shmget(shmkey2, SHM_SIZE, IPC_CREAT | IPC_EXCL |
 	     SHM_RW)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create shared memory "
 			 "segment #2 in setup()");

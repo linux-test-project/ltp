@@ -46,6 +46,10 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      06/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. The second key used for this test could
+ *        conflict with the key from another task.
+ *
  * RESTRICTIONS
  *	none
  */
@@ -164,7 +168,13 @@ setup(void)
 	/* get an IPC resource key */
 	shmkey = getipckey();
 
-	shmkey2 = shmkey + 1;
+	/* Get an new IPC resource key. Since there is a small chance the
+	 * getipckey() function returns the same key as the previous one,
+	 * loop until we have a different key.
+	 */
+	do {
+		shmkey2 = getipckey();
+	} while (shmkey2 == shmkey);
 
 	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
 	     SHM_RW)) == -1) {

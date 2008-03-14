@@ -151,6 +151,9 @@ int main (argc, argv)
 	kill(kidpid[0], SIGTERM);
 	kill(kidpid[1], SIGTERM);
 
+	waitpid(kidpid[0], NULL, 0);
+	waitpid(kidpid[1], NULL, 0);
+
 	unlink("./rename14");
 	unlink("./rename14xyz");
 	(local_flag == PASSED) ?

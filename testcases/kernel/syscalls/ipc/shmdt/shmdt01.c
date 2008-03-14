@@ -52,6 +52,10 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      06/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix wrong return value check on shmat system call (leading to 
+ *        segfault in case of error with this syscall).
+ *
  * RESTRICTIONS
  *	none
  */
@@ -111,7 +115,7 @@ int main(int ac, char **av)
 		/* reattach the shared memory segment in case we are looping */
 		shared = (int *)shmat(shm_id_1, 0, 0);
 
-		if (*shared == -1) {
+		if (shared == (void *)-1) {
 			tst_brkm(TBROK, cleanup, "memory reattach failed");
 		}
 
@@ -216,7 +220,7 @@ setup(void)
 	/* attach the shared memory segment */
 	shared = (int *)shmat(shm_id_1, 0, 0);
 
-	if (*shared == -1) {
+	if (shared == (void *)-1) {
 		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");
 	}
 
