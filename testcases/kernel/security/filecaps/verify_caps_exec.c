@@ -21,7 +21,7 @@
  * File: verify_caps_exec.c
  * Author: Serge Hallyn
  * Purpose: perform several tests of file capabilities:
- *  1. try setting caps without CAP_SYS_ADMIN
+ *  1. try setting caps without privilege
  *  2. test proper calculation of pI', pE', and pP'.
  *     Try setting valid caps, drop rights, and run the executable,
  *     make sure we get the rights
@@ -35,12 +35,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <attr/xattr.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/capability.h>
 #include <sys/prctl.h>
 #include <test.h>
+
+#include "numcaps.h"
 
 #define TSTPATH "./print_caps"
 char *TCID = "filecaps";
@@ -51,7 +52,7 @@ int errno;
 void usage(char *me)
 {
 	tst_resm(TFAIL, "Usage: %s <0|1> [arg]\n", me);
-	tst_resm(TINFO, "  0: set file caps without CAP_SYS_ADMIN\n");
+	tst_resm(TINFO, "  0: set file caps without privilege\n");
 	tst_resm(TINFO, "  1: test that file caps are set correctly on exec\n");
 	tst_exit(1);
 }
@@ -62,7 +63,10 @@ void usage(char *me)
 void print_my_caps()
 {
 	cap_t cap = cap_get_proc();
-	tst_resm(TINFO, "\ncaps are %s\n", cap_to_text(cap, NULL));
+	char *txt = cap_to_text(cap, NULL);
+	tst_resm(TINFO, "\ncaps are %s\n", txt);
+	cap_free(cap);
+	cap_free(txt);
 }
 
 int drop_root(int keep_perms)
@@ -78,52 +82,27 @@ int drop_root(int keep_perms)
 		tst_exit(4);
 	}
 	if (keep_perms) {
-		cap_t cap = cap_from_text("=eip cap_setpcap-eip");
+		cap_t cap = cap_from_text("=eip");
 		cap_set_proc(cap);
+		cap_free(cap);
 	}
 
 	return 1;
 }
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-#define cpu_to_le32(x)  x
-#else
-#define cpu_to_le32(x)  bswap_32(x)
-#endif
-
-/*
- * TODO: find a better way to do this.  Emulate libcap's
- * way, or just take it from linux/capability.h
- */
-/*
- * TODO: accomodate 64-bit capabilities
- */
-#define CAPNAME "security.capability"
-#ifndef __CAP_BITS
-#define __CAP_BITS 31
-#endif
-
-#define XATTR_CAPS_SZ (3*sizeof(__le32))
-#define VFS_CAP_REVISION_MASK   0xFF000000
-#define VFS_CAP_REVISION        0x01000000
-
-#define VFS_CAP_FLAGS_MASK      ~VFS_CAP_REVISION_MASK
-#define VFS_CAP_FLAGS_EFFECTIVE 0x000001
-
 int perms_test(void)
 {
 	int ret;
-	unsigned int value[3];
-	unsigned int v;
+	cap_t cap;
 
 	drop_root(DROP_PERMS);
-	v = VFS_CAP_REVISION | VFS_CAP_FLAGS_EFFECTIVE;
-	value[0] = cpu_to_le32(v);
-	value[1] = 1;
-	value[2] = 1;
-	ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
+	cap = cap_from_text("all=eip");
+	if (!cap) {
+		tst_resm(TFAIL, "could not get cap from text for perms test\n");
+		return 1;
+	}
+	ret = cap_set_file(TSTPATH, cap);
 	if (ret) {
-		perror("setxattr");
 		tst_resm(TPASS, "could not set capabilities as non-root\n");
 		ret = 0;
 	} else {
@@ -131,6 +110,7 @@ int perms_test(void)
 		ret = 1;
 	}
 
+	cap_free(cap);
 	return ret;
 }
 
@@ -231,17 +211,15 @@ int fork_drop_and_exec(int keepperms, char *capstxt)
 
 int caps_actually_set_test(void)
 {
-	int i, whichset, whichcap, finalret = 0, ret;
-	cap_t cap;
+	int  whichcap, finalret = 0, ret;
+	cap_t fcap, pcap, cap_fullpi;
 	char *capstxt;
-	unsigned int value[3];
 	cap_value_t capvalue[1];
-	unsigned int magic;
+	int i;
 
-	magic = VFS_CAP_REVISION;
-
-	cap = cap_init();
-	if (!cap) {
+	fcap = cap_init();
+	pcap = cap_init();
+	if (!fcap || !pcap) {
 		perror("cap_init");
 		exit(2);
 	}
@@ -249,61 +227,64 @@ int caps_actually_set_test(void)
 	create_fifo();
 
 	/* first, try each bit in fP (forced) with fE on and off. */
-	value[1] = value[2] =  cpu_to_le32(0);
-	for (whichcap=0; whichcap < __CAP_BITS; whichcap++) {
-		if (whichcap == 8)
-			continue;
-		/* fE = 0, don't gain the perm */
+	for (whichcap=0; whichcap < NUM_CAPS; whichcap++) {
+		/*
+		 * fP=whichcap, fE=fI=0
+		 * pP'=whichcap, pI'=pE'=0
+		 */
 		capvalue[0] = whichcap;
-		value[0] = cpu_to_le32(magic);
-		value[1] = cpu_to_le32(1 << whichcap);
-		ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
+		cap_clear(fcap);
+		cap_set_flag(fcap, CAP_PERMITTED, 1, capvalue, CAP_SET);
+		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d %d\n", whichset, whichcap);
-			perror("setxattr");
+			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		/* do a sanity check */
-		cap_clear(cap);
-		cap_set_flag(cap, CAP_PERMITTED, 1, capvalue, CAP_SET);
-		capstxt = cap_to_text(cap, NULL);
+		capstxt = cap_to_text(fcap, NULL);
 		ret = fork_drop_and_exec(DROP_PERMS, capstxt);
+		cap_free(capstxt);
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
 					whichcap);
-			if (!finalret)
-				finalret = ret;
+			if (!finalret) finalret = ret;
 		}
 
-		/* fE = 1, do gain the perm */
-		value[0] = cpu_to_le32(magic | VFS_CAP_FLAGS_EFFECTIVE);
-		value[1] = cpu_to_le32(1 << whichcap);
-		ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
+/* SERGE here */
+		/*
+		 * fP = fE = whichcap, fI = 0
+		 * pP = pE = whichcap, pI = 0
+		 */
+		cap_clear(fcap);
+		cap_set_flag(fcap, CAP_PERMITTED, 1, capvalue, CAP_SET);
+		cap_set_flag(fcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
+		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d %d\n", whichset, whichcap);
-			perror("setxattr");
+			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		/* do a sanity check */
-		cap_clear(cap);
-		cap_set_flag(cap, CAP_PERMITTED, 1, capvalue, CAP_SET);
-		cap_set_flag(cap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
-		capstxt = cap_to_text(cap, NULL);
+		capstxt = cap_to_text(fcap, NULL);
 		if (strcmp(capstxt, "=")==0) {
 			tst_resm(TINFO, "%s: libcap doesn't know about cap %d, not running\n",
 				__FUNCTION__, whichcap);
 			ret = 0;
 		} else
 			ret = fork_drop_and_exec(DROP_PERMS, capstxt);
+		cap_free(capstxt);
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
 				whichcap);
-			if (!finalret)
-				finalret = ret;
+			if (!finalret) finalret = ret;
 		}
 	}
 
 
+	cap_free(pcap);
+	cap_free(fcap);
+	cap_fullpi = cap_init();
+	for (i=0; i<NUM_CAPS; i++) {
+		capvalue[0] = i;
+		cap_set_flag(cap_fullpi, CAP_INHERITABLE, 1, capvalue, CAP_SET);
+	}
 	/*
 	 * next try each bit in fI
 	 * The first two attemps have the bit which is in fI in pI.
@@ -313,72 +294,60 @@ int caps_actually_set_test(void)
 	 *     This should result in empty capability, as there were
 	 *     no bits to be inherited from the original process.
 	 */
-	value[1] = value[2] =  cpu_to_le32(0);
-	for (whichcap=0; whichcap < __CAP_BITS; whichcap++) {
-		if (whichcap == 8)
-			continue;
-		/*
-		 * bit is in fI and pI, so should be in pI'.
-		 * but fE=0, so cap is in pP' but not pE'.
-		 */
-		value[0] = cpu_to_le32(magic);
-		value[2] = cpu_to_le32(1 << whichcap);
-		ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
-		if (ret) {
-			tst_resm(TINFO, "%d %d\n", whichset, whichcap);
-			perror("setxattr");
-			continue;
-		}
-		/* do a sanity check */
-		cap_clear(cap);
-		for (i=0; i<32; i++) {
-			if (i != 8) {
-				capvalue[0] = i;
-				cap_set_flag(cap, CAP_INHERITABLE, 1, capvalue, CAP_SET);
-			}
-		}
+	for (whichcap=0; whichcap < NUM_CAPS; whichcap++) {
 		capvalue[0] = whichcap;
-		cap_set_flag(cap, CAP_PERMITTED, 1, capvalue, CAP_SET);
-		capstxt = cap_to_text(cap, NULL);
+
+		/*
+		 * fI=whichcap, fP=fE=0
+		 * pI=full
+		 * pI'=full, pP'=whichcap, pE'=0
+		 */
+		/* fill pI' */
+		pcap = cap_dup(cap_fullpi);
+		/* pP' = whichcap */
+		cap_set_flag(pcap, CAP_PERMITTED, 1, capvalue, CAP_SET);
+
+		/* fI = whichcap */
+		fcap = cap_init();
+		cap_set_flag(fcap, CAP_INHERITABLE, 1, capvalue, CAP_SET);
+		ret = cap_set_file(TSTPATH, fcap);
+		if (ret) {
+			tst_resm(TINFO, "%d\n", whichcap);
+			continue;
+		}
+		capstxt = cap_to_text(pcap, NULL);
 		ret = fork_drop_and_exec(KEEP_PERMS,  capstxt);
+		cap_free(capstxt);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
 					"CAP_EFFECTIVE=0\n", whichcap);
-			if (!finalret)
-				finalret = ret;
+			if (!finalret) finalret = ret;
 		}
 
 		/*
-		 * bit is in fI and pI, so should be in pI'.
-		 * and fE=1, so cap is in pP' and pE'.
+		 * fI=fE=whichcap, fP=0
+		 * pI=full
+		 * pI'=full, pP'=whichcap, pE'=whichcap
+		 *
+		 * Note that only fE and pE' change, so keep prior
+		 * fcap and pcap and set those bits.
 		 */
 
-		value[0] = cpu_to_le32(magic | VFS_CAP_FLAGS_EFFECTIVE);
-		value[2] = cpu_to_le32(1 << whichcap);
-		ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
+		cap_set_flag(fcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
+		cap_set_flag(pcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
+		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d %d\n", whichset, whichcap);
-			perror("setxattr");
+			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		/* do a sanity check */
-		cap_clear(cap);
-		for (i=0; i<32; i++) {
-			if (i != 8) {
-				capvalue[0] = i;
-				cap_set_flag(cap, CAP_INHERITABLE, 1, capvalue, CAP_SET);
-			}
-		}
-		capvalue[0] = whichcap;
-		cap_set_flag(cap, CAP_PERMITTED, 1, capvalue, CAP_SET);
-		cap_set_flag(cap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
-		capstxt = cap_to_text(cap, NULL);
+		capstxt = cap_to_text(pcap, NULL);
 		if (strcmp(capstxt, "=")==0) {
 			tst_resm(TINFO, "%s: libcap doesn't know about cap %d, not running\n",
 				__FUNCTION__, whichcap);
 			ret = 0;
 		} else
 			ret = fork_drop_and_exec(KEEP_PERMS, capstxt);
+		cap_free(capstxt);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
 					"CAP_EFFECTIVE=1\n", whichcap);
@@ -387,31 +356,27 @@ int caps_actually_set_test(void)
 		}
 
 		/*
-		 * bit is in fI but not in pI
-		 * So pP' is empty.
-		 * pE' must be empty.
+		 * fI=fE=whichcap, fP=0  (so fcap is same as before)
+		 * pI=0  (achieved using DROP_PERMS)
+		 * pI'=pP'=pE'=0
 		 */
-		value[0] = cpu_to_le32(magic | VFS_CAP_FLAGS_EFFECTIVE);
-		value[2] = cpu_to_le32(1 << whichcap);
-		ret = setxattr(TSTPATH, CAPNAME, value, 3*sizeof(unsigned int), 0);
-		if (ret) {
-			tst_resm(TINFO, "%d %d\n", whichset, whichcap);
-			perror("setxattr");
-			continue;
-		}
-		/* do a sanity check */
-		cap_clear(cap);
-		capstxt = cap_to_text(cap, NULL);
+		cap_clear(pcap);
+		capstxt = cap_to_text(pcap, NULL);
 		ret = fork_drop_and_exec(DROP_PERMS, capstxt);
+		cap_free(capstxt);
 		if (ret) {
 			tst_resm(TINFO, "Failed without_perms CAP_INHERITABLE=%d",
 					whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
+
+		cap_free(fcap);
+		cap_free(pcap);
 	}
 
-	cap_free(cap);
+	cap_free(cap_fullpi);
+
 	return finalret;
 }
 

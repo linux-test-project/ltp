@@ -45,9 +45,15 @@ checkforlibcap:
 	chmod a+rx $@
 endif
 
+numcaps.h: makenumcapsh.c
+	gcc -o makenumcapsh makenumcapsh.c
+	./makenumcapsh > numcaps.h
+
+verify_caps_exec: verify_caps_exec.c numcaps.h
+
 INSTALLTARGETS = $(TARGETS) $(SCRIPTS) checkforlibcap
 install: $(INSTALLTARGETS)
 	@set -e; for i in $(INSTALLTARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
 
 clean:
-	rm -f $(TARGETS) *.o caps_fifo checkforlibcap
+	rm -f $(TARGETS) *.o caps_fifo checkforlibcap numcaps.h makenumcapsh
