@@ -16,8 +16,8 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../lib -I../../../../../include -Wall
-LDLIBS += -L../../../../../lib -lltp -L.. -lipc
+CFLAGS += -I../lib -I../../lib -I../../../../../include -Wall
+LDLIBS += -L../../../../../lib -lltp -L.. -lipc -L../.. -ltestsuite
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))

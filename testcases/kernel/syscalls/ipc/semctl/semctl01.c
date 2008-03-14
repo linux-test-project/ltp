@@ -53,11 +53,17 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      11/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. Due to the use of usleep function to
+ *        synchronize processes, synchronization issues can occur on a loaded
+ *        system. Fix this by using pipes to synchronize processes.
+ *
  * RESTRICTIONS
  *	none
  */
 
 #include "ipcsem.h"
+#include "libtestsuite.h"
 
 char *TCID = "semctl01";
 int TST_TOTAL = 10;
@@ -326,6 +332,7 @@ void
 cnt_setup(int opval)
 {
 	int pid, i;
+	int sync_pipes[2];
 
 	sops.sem_num = SEM4;
 	sops.sem_flg = 0;
@@ -344,12 +351,19 @@ cnt_setup(int opval)
 	sops.sem_op = opval;	/* set the correct operation */
 
 	for (i=0; i<NCHILD; i++) {
+		if (create_sync_pipes(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+		}
+
 		/* fork five children to wait */
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed in cnt_setup");
 		}
 	
 		if (pid == 0) {		/* child */
+			if (notify_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "notify_startup failed");
+			}
 #ifdef UCLINUX
 			if (self_exec(argv0, "ndd", 2, sem_id_1,
 				      sops.sem_op) < 0) {
@@ -360,13 +374,19 @@ cnt_setup(int opval)
 			child_cnt();
 #endif
 		} else {		/* parent */
-			/* take a quick nap so that commands execute orderly */
-			usleep(50000);
+			if (wait_son_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+			}
 
 			/* save the pid so we can kill it later */
 			pid_arr[i] = pid;
 		}
 	}
+	/* After last son has been created, give it a chance to execute the
+	 * semop command before we continue. Without this sleep, on SMP machine
+	 * the father semctl could be executed before the son semop.
+	 */
+	sleep(1);
 }
 
 void
@@ -409,6 +429,11 @@ void
 pid_setup()
 {
 	int pid;
+	int sync_pipes[2];
+
+	if (create_sync_pipes(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+	}
 
 	/*
 	 * Fork a child to do a semop that will pass. 
@@ -418,6 +443,9 @@ pid_setup()
 	}
 
 	if (pid == 0) {		/* child */
+		if (notify_startup(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "notify_startup failed");
+		}
 #ifdef UCLINUX
 		if (self_exec(argv0, "nd", 1, sem_id_1) < 0) {
 			tst_brkm(TBROK, cleanup, "self_exec failed "
@@ -427,9 +455,10 @@ pid_setup()
 		child_pid();
 #endif
 	} else {		/* parent */
-		/* take a quick nap so that commands execute orderly */
-		usleep(50000);
-
+		if (wait_son_startup(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+		}
+		sleep(1);
 		pid_arr[SEM2] = pid;
 	}
 }
