@@ -172,12 +172,22 @@ int main(int ac, char **av)
 			/*NOTREACHED*/
 		}
 
-		TEST(dup2(fd0, 10));
+		if ((fd2 = creat(filename1, 0666)) == -1) {
+			tst_brkm(TBROK, cleanup, "Cannot create second file");
+			/*NOTREACHED*/
+		}
+
+		if (close(fd2) == -1) {
+			tst_brkm(TBROK, cleanup, "close(2) fd_closed failed");
+			/*NOTREACHED*/
+		}
+
+		TEST(dup2(fd0, fd2));
 
 		if ((fd1 = TEST_RETURN) == -1) {
 			tst_resm(TFAIL, "call failed unexpectedly");
 		} else if (STD_FUNCTIONAL_TEST) {
-			if (fd1 != 10) {
+			if (fd1 != fd2) {
 				tst_resm(TFAIL, "bad dup2 descriptor %d", fd1);
 				break;
 			}
@@ -201,6 +211,7 @@ int main(int ac, char **av)
 		close(fd1);
 
 		unlink(filename0);
+		unlink(filename1);
 		tst_resm(TINFO, "Exit block 2");
 	}
 	cleanup();
