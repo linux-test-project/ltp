@@ -47,6 +47,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
+#include <pthread.h>
 #include <librttest.h>
 #include <libjvmsim.h>
 #include <libstats.h>
