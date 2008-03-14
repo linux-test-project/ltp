@@ -44,6 +44,8 @@
 #include <math.h>
 #include <libstats.h>
 
+int save_stats = 0;
+
 /* static helper functions */
 static int stats_record_compare(const void * a, const void * b) {
 	int ret = 0;
@@ -298,6 +300,9 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
     char *datfile;
     char *pltfile;
     stats_record_t *rec;
+
+    if (!save_stats)
+	    return 0;
 
     /* generate the filenames */
     if (!asprintf(&datfile, "%s.dat", filename) < 0) {

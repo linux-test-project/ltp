@@ -71,6 +71,8 @@ typedef struct stats_quantiles {
 	long *quantiles;
 } stats_quantiles_t;
 
+extern int save_stats;
+
 /* function prototypes */
 
 /* stats_container_init - allocate memory for a new container

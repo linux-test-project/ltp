@@ -41,6 +41,7 @@
  *****************************************************************************/
 
 #include <librttest.h>
+#include <libstats.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,6 +77,7 @@ void rt_help(void)
 	printf("  -b(0,1)	1:enable buffered output, 0:diable buffered output\n");
 	printf("  -p(0,1)	0:don't use pi mutexes, 1:use pi mutexes\n");
 	printf("  -v[0-4]	0:no debug, 1:DBG_ERR, 2:DBG_WARN, 3:DBG_INFO, 4:DBG_DEBUG\n");
+	printf("  -s		Enable saving stats data (default disabled)\n");
 }
 
 int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[])
@@ -85,7 +87,7 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	int c;
 	opterr = 0;
 	char *all_options, *opt_ptr;
-	static const char my_options[] = "b:p:v:";
+	static const char my_options[] = "b:p:v:s";
 
 	if (options) {
 		opt_ptr = all_options = (char *)malloc(sizeof(my_options) + strlen(options) + 1);
@@ -117,6 +119,8 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 			case 'v':
 				_dbg_lvl = atoi(optarg);
 				break;
+			case 's':
+				save_stats = 1;
 			default:
 				if (parse_arg) {
 					if (!parse_arg(c, optarg)) {
