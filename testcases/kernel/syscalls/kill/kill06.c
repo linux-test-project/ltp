@@ -125,7 +125,7 @@ int main(int ac, char **av)
 				}
 			}
 			/* Kill all processes in this process group */
-			TEST(kill(-pid1, TEST_SIG));
+			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
 			/*NOTREACHED*/
                         tst_resm(TINFO, "%d never recieved a"
