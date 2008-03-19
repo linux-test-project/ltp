@@ -71,6 +71,7 @@ stats_quantiles_t quantiles[THREADS_PER_GROUP * NUM_GROUPS];
 static const char groupname[NUM_GROUPS] = "ABC";
 
 static int run_jvmsim = 0;
+static int iterations = ITERATIONS;
 static int ret = 0;
 
 void usage(void)
@@ -82,19 +83,22 @@ void usage(void)
 
 int parse_args(int c, char *v)
 {
-        int handled = 1;
-        switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
-                case 'h':
+	int handled = 1;
+	switch (c) {
+		case 'j':
+			run_jvmsim = 1;
+			break;
+		case 'i':
+			iterations = atoi(v);
+			break;
+		case 'h':
 			usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 
@@ -167,12 +171,16 @@ int main(int argc, char *argv[])
 	int i;
 	setup();
 
-	rt_init("jh", parse_args, argc, argv);
+	rt_init("jhi:", parse_args, argc, argv);
+
+	if (iterations < 100) {
+		fprintf(stderr, "Iteration cannot be less than 100.\n");
+	}
 
 	printf("------------------------------------\n");
 	printf("Periodic CPU Load Execution Variance\n");
 	printf("------------------------------------\n\n");
-	printf("Running %d iterations per thread\n", ITERATIONS);
+	printf("Running %d iterations per thread\n", iterations);
 	printf("Thread Group A:\n");
 	printf("  threads: %d\n", THREADS_PER_GROUP);
 	printf("  priority: %d\n", PRIO_A);
@@ -195,13 +203,13 @@ int main(int argc, char *argv[])
 	}
 
 	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
-		stats_container_init(&dat[i], ITERATIONS);
-		stats_quantiles_init(&quantiles[i], (int)log10(ITERATIONS));
+		stats_container_init(&dat[i], iterations);
+		stats_quantiles_init(&quantiles[i], (int)log10(iterations));
 	}
 
-	struct periodic_arg parg_a = {PERIOD_A, ITERATIONS, calc, (void *)CALC_LOOPS_A };
-	struct periodic_arg parg_b = {PERIOD_B, ITERATIONS, calc, (void *)CALC_LOOPS_B };
-	struct periodic_arg parg_c = {PERIOD_C, ITERATIONS, calc, (void *)CALC_LOOPS_C };
+	struct periodic_arg parg_a = {PERIOD_A, iterations, calc, (void *)CALC_LOOPS_A };
+	struct periodic_arg parg_b = {PERIOD_B, iterations, calc, (void *)CALC_LOOPS_B };
+	struct periodic_arg parg_c = {PERIOD_C, iterations, calc, (void *)CALC_LOOPS_C };
 
 	for (i=0; i < THREADS_PER_GROUP; i++)
 		create_fifo_thread(periodic_thread, (void*)&parg_a, PRIO_A);

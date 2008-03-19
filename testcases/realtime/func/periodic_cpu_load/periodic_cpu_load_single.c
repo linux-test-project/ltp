@@ -66,10 +66,10 @@ void usage(void)
 {
 	rt_help();
 	printf("periodic_cpu_load_single specific options:\n");
- 	printf("  -cCALC_LOOPS	loops per iteration\n");
- 	printf("  -fFILENAME_PREFIX    filename prefix for plot output\n");
-   	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
-  	printf("  -j            enable jvmsim\n");
+	printf("  -cCALC_LOOPS	loops per iteration\n");
+	printf("  -fFILENAME_PREFIX    filename prefix for plot output\n");
+	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
+	printf("  -j            enable jvmsim\n");
 	printf("  -r[0-99]	real-time priority\n");
 	printf("  -tPERIOD	period in ms\n");
 }
@@ -97,14 +97,14 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	int fail = 0;
 	nsec_t next, now;
 	nsec_t exe_start, exe_end, exe_time;
- 	char *samples_filename;
- 	char *hist_filename;
+	char *samples_filename;
+	char *hist_filename;
 
 	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
 	stats_quantiles_init(&quantiles, (int)log10(iterations));
- 	asprintf(&samples_filename, "%s-samples", filename_prefix);
- 	asprintf(&hist_filename, "%s-hist", filename_prefix);
+	asprintf(&samples_filename, "%s-samples", filename_prefix);
+	asprintf(&hist_filename, "%s-hist", filename_prefix);
 
 	next = rt_gettime();
 	while (i < iterations) {
