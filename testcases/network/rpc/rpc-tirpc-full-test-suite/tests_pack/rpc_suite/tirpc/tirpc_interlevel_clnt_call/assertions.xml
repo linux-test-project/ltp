@@ -1,0 +1,23 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of TIRPC intermediate level clnt_call() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Call TIRPC intermediate level clnt_call() function under stressed environment
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	Call TIRPC intermediate level clnt_call() function in multi-threaded context
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of clnt_call() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Call TIRPC intermediate level clnt_call() to test data integrity
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Measure delay between request to server and reply from server in standard environment for clnt_call() inter level API function
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	This will test clnt_call() function in complex environment
+	</assertion>
+</assertions>

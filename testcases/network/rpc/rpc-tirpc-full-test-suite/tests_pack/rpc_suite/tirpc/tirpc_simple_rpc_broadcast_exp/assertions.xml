@@ -1,0 +1,26 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of TIRPC rpc_broadcast_exp() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Multiple calls of TIRPC rpc_broadcast_exp() function to simulate heavy load system
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Test rpc_broadcast_exp() function arguments limits (lower and upper limits)
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test TIRPC rpc_broadcast_exp() function in multi-threaded environment
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of rpc_broadcast_exp() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test TIRPC rpc_broadcast_exp() data integrity (send/received)
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test the calling performance of rpc_broadcast_exp() function in standard environment
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	Test scenario using rpc_broadcast_exp() function. This test aim to test rpc_broadcast_exp() in real environment, using more than one server
+	</assertion>
+</assertions>

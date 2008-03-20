@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic test of TIRPC client creation using clnt_create_timed() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC clnt_create_function() arguments. This aims to test arguments limits (lower limit)
+	</assertion>
+</assertions>

@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic client creation using TIRPC bottom level clnt_dg_create() for UDP transport
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC clnt_dg_create() arguments limits. Arguments will be send and receive buffer size
+	</assertion>
+</assertions>

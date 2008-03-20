@@ -1,0 +1,111 @@
+************************************************************************
+***                                                                  ***
+***             RPC and TI-RPC Test Suite for Unix and Linux         ***
+***                         Release 2007-07-19                       ***
+***                                                                  ***
+************************************************************************
+
+
+Copyright (c) Bull S.A.  2007 All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of version 2 of the GNU General Public License as
+published by the Free Software Foundation.
+
+This program is distributed in the hope that it would be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Further, this software is distributed without any warranty that it is
+free of the rightful claim of any third person regarding infringement
+or the like.  Any license provided herein, whether implied or
+otherwise, applies only to this software file.  Patent licenses, if
+any, provided herein do not apply to combinations of this program with
+other software, or any other product whatsoever.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write the Free Software Foundation, Inc., 59
+Temple Place - Suite 330, Boston MA 02111-1307, USA.
+
+----------------------------
+History and project overview
+----------------------------
+Created by: Cyril Lacabanne - Bull SA
+Maintain by: Aurélien Charbon - Bull SA - aurelien.charbon@ext.bull.net
+
+Web page: http://nfsv4.bullopensource.org/doc/rpc_testsuite.php
+
+This test suite aims to test RPC & TI-RPC under Unix and Linux OS. For
+more details, please report to the online documentation (see address above).
+
+-------------------
+Directory structure
+-------------------
+
+	scripts -> all scripts needed to launch tests cases
+	inc -> system files for this test suite
+	tests_pack -> all test suite program (C sources and binaries)
+	logs -> directory where logs files are saved
+	tsLogParser -> all what you need to use tsLogParser with that test suite
+
+-----------
+Preparation
+-----------
+You need one, two or three computers, all computers need ssh to run
+test suite correctly and public keys must be shared between computers.
+Use ssh-keygen to do that.
+
+
+------------------
+Quick installation
+------------------
+
+To install and configure your Test Suite, run in a terminal :
+ 	
+	./configure
+     
+This will configure the way to run test suite (computer IP, login)
+
+ 	make deploy 
+	make all
+
+Now your test suite is ready to use
+
+-----------------
+Launch Test Suite
+-----------------
+
+* To start all tests of this test suite :
+
+ 	./rpc_ts_wizard.sh -all 
+
+* Or, run a part of the test suite in interactive mode :
+
+	./rpc_ts_wizard.sh
+
+this will ask you the part of tests suite you want to test such as RPC, TI-RPC...
+
+* Or, run manually a part of test suite
+ 
+	./rpc_ts_run.sh -l <script_lib.sh> [-l <script2_lib.sh> ...]
+
+this will run all tests of script <script_lib.sh>" script_lib.sh are in the test suite root directory,
+use ls *_lib.sh to display them
+Remark : replace <script_lib.sh> by script lib name like domain_subdomain_test_lib.sh 
+         where domain is RPC or TIRPC, subdomain is i.e. stdcall, toplevel... and test is test
+         category such as basic, stress...
+
+-------------
+Tests results
+-------------
+After test suite has run, you will find all results in logs directory of the suite.
+File rpc_ts.log contains all results. Note that this file and this test suite is fully
+compliant with tsLogParser project (http://tslogparser.sourceforge.net/index.php)
+
+----------------
+More information
+----------------
+Please refer to Test Plan document (documentation/RpcTestPlan_v13.pdf) for more details on how to use
+this test suite and refer to Test Design document (documentation/RpcTestDesign_v13.pdf) for more details
+on what is tested by this test suite.
+Test suite website : http://nfsv4.bullopensource.org/doc/rpc_testsuite.php

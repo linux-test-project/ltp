@@ -1,0 +1,5 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Simple test of arguments cleaning using svc_freeargs() macro
+	</assertion>
+</assertions>

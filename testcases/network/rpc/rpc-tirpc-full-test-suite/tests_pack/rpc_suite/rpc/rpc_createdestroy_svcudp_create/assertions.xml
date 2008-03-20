@@ -1,0 +1,11 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of svcudp_create() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Stress test of svcudp_create() function
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Bench test of svcudp_create(). Get execution time of that function
+	</assertion>
+</assertions>

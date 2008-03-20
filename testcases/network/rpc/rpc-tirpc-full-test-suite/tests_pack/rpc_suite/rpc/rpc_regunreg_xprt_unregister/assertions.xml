@@ -1,0 +1,5 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Test if xprt_unregister() subroutine unregisters correctly server. This subroutine is normally not used in RPC service implementation, but called by other API functions
+	</assertion>
+</assertions>

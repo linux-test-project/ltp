@@ -1,0 +1,23 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of TIRPC rpc_broadcast() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Multiple calls of TIRPC rpc_broadcast() function to simulate heavy load system
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test TIRPC rpc_broadcast() function in multi-threaded environment
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of rpc_broadcast() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test TIRPC rpc_broadcast() data integrity (sent/received data)
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test the calling performance of rpc_broadcast() function in standard environment
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	Test rpc_broadcast() function in normal context. This function is waiting for an answer from more than one server
+	</assertion>
+</assertions>

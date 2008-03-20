@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of svcfd_create() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Call RPC svcfd_create() function with many arguments to test limits (lower limit and upper limit)
+	</assertion>
+</assertions>

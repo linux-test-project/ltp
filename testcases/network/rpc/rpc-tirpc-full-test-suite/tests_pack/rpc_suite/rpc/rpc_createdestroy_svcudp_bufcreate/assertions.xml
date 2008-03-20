@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of svcudp_bufcreate() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test function arguments limits (lower and upper limits)
+	</assertion>
+</assertions>

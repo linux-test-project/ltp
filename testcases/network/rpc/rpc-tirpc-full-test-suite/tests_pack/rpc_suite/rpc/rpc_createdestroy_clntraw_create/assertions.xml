@@ -1,0 +1,11 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of clntraw_create() in standard environment
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test clntraw_create() performance
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	Performance test for svcraw_create(), clntraw_create() function in normal environment (normal use of these functions)
+	</assertion>
+</assertions>

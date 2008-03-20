@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Simple test of RPC svc_getargs() macro
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Data integrity test of RPC svc_getargs() macro
+	</assertion>
+</assertions>

@@ -1,0 +1,23 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Simple test of rpcb_rmtcall() TIRPC function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Test multiple TIRPC rpcb_rmtcall() function to simulate heavy server load
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	Test in multi threaded context, TIRPC rpcb_rmtcall() function
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of clnt_call() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Test data sent and received integrity for TIRPC rpcb_rmtcall() function
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test performance of rpcb_rmtcall() function. (measure calling time)
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	This will test rpcb_rmtcall() function in complex environment. Using complex parameters
+	</assertion>
+</assertions>

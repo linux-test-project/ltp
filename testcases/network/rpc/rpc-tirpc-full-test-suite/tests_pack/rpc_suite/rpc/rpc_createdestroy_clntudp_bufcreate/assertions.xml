@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic CLIENT creation using clntudp_bufcreate() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Test RPC clntudp_bufcreate() arguments limits
+	</assertion>
+</assertions>

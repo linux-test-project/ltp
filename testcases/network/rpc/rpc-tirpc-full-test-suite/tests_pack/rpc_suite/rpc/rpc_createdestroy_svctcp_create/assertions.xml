@@ -1,0 +1,14 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of svctcp_create() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Stress test of svctcp_create() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Call svctcp_create() function with many arguments to test limits (lower limit and upper limit)
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	This test aim to test svctcp_create() function performance by measuring delay between function call and function returned value
+	</assertion>
+</assertions>

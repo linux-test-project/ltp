@@ -1,0 +1,11 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic test of TIRPC server unregistration using svc_unreg() expert-level function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Test of TIRPC server unregistration using svc_unreg() expert-level function under stressed environment
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	Test of TIRPC server unregistration using svc_unreg() expert-level function under multi-threaded environment
+	</assertion>
+</assertions>

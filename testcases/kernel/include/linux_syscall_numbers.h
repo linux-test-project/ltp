@@ -226,6 +226,9 @@
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 316
 # endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 324
+# endif
 #endif
 
 
@@ -280,6 +283,9 @@
 # endif
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 1302
+# endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 1303
 # endif
 #endif
 
@@ -351,6 +357,9 @@
 # ifndef __NR_faccessat
 #  define __NR_faccessat (__NR_openat + 12)
 # endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 309
+# endif
 #endif
 
 
@@ -421,6 +430,9 @@
 # ifndef __NR_faccessat
 #  define __NR_faccessat (__NR_openat + 12)
 # endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 309
+# endif
 #endif
 
 
@@ -466,6 +478,9 @@
 # endif
 # ifndef __NR_faccessat
 #  define __NR_faccessat (__NR_openat + 12)
+# endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 314
 # endif
 #endif
 
@@ -522,6 +537,9 @@
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 309
 # endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 314
+# endif
 #endif
 
 
@@ -577,6 +595,9 @@
 # ifndef __NR_faccessat
 #  define __NR_faccessat (__NR_openat + 12)
 # endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 314
+# endif
 #endif
 
 
@@ -631,6 +652,9 @@
 # endif
 # ifndef __NR_faccessat
 #  define __NR_faccessat (__NR_openat + 12)
+# endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 314
 # endif
 #endif
 
@@ -701,6 +725,9 @@
 # endif
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 278
+# endif
+# ifndef __NR_fallocate
+#  define __NR_fallocate 285
 # endif
 #endif
 

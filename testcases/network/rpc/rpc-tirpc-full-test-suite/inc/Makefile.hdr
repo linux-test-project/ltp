@@ -1,0 +1,9 @@
+CC=gcc
+CFLAGS_TIRPC=-ltirpc -lpthread
+LDFLAGS_TIRPC=-I/usr/include/tirpc
+CFLAGS_RPC=-lnsl
+
+deploy:
+	./install.sh
+
+all:

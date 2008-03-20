@@ -1,4 +1,4 @@
-SUBDIRS = rpc01 rpcinfo rup rusers
+SUBDIRS = basic_tests rpc-tirpc-full-test-suite 
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
@@ -8,3 +8,4 @@ install:
 
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+

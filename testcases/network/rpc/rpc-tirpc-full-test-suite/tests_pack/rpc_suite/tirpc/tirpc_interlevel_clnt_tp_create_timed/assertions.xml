@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic client creation using clnt_tp_create_timed() function. This test aims to test client creation, not to test timer function.
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Limits test for TIRPC clnt_tp_create_timed() arguments
+	</assertion>
+</assertions>

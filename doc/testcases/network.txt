@@ -186,7 +186,9 @@ rusers01
 
 	Basic test for the `rusers` command.
 
-
+rpcfull
+	
+	Full test for SunRPC and TI-RPC API
 
 sctp
 ----

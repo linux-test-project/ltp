@@ -1,0 +1,23 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic call of TIRPC rpc_call() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC rpc_call() in heavy load context
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC rpc_call() function under multi-threaded context (both client and server)
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of rpc_call() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC rpc_call() function data integrity. Send a data, the remote server will return a data answer and this should be equal.
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Measure delay between request to server and reply from server using rpc_call() in standard environment
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	This will test rpc_call() function in complex environment (data sent, calcul and multi thread)
+	</assertion>
+</assertions>

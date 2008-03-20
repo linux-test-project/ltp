@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Test client creation using TIRPC expert level clnt_tli_create() function
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Test TIRPC clnt_tli_create() arguments limits (lower and upper limits)
+	</assertion>
+</assertions>

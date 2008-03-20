@@ -1,0 +1,20 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Test RPC call using clnt_call() macro
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Stress test of RPC call using clnt_call() macro
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of clnt_call() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Data integrity test of RPC call using clnt_call() macro
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test RPC clnt_call() macro performance
+	</assertion>
+	<assertion id="8" tag="ef:XSH6TC2:3966:3967">
+	Test scenario using clnt_call() macro to simulate a standard way to use RPC
+	</assertion>
+</assertions>

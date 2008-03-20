@@ -1,0 +1,11 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic test of TIRPC server registration using svc_reg()
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Call TIRPC svc_reg() function in load and stress environment
+	</assertion>
+	<assertion id="4" tag="ef:XSH6TC2:3966:3967">
+	Call TIRPC svc_reg() function in multi-threaded environment
+	</assertion>
+</assertions>

@@ -1,0 +1,11 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic CLIENT creation using clntudp_create() function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Stress test of CLIENT creation using clntudp_create() function
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Performance test for clntudp_create() calls
+	</assertion>
+</assertions>

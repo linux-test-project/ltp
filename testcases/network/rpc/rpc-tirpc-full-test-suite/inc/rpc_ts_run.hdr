@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Admininstration tools for RPC & TI-RPC test suite
+# By C. LACABANNE - cyril.lacabanne@bull.net
+# Version 0.1.0 - BETA (Test & Dev purpose)
+# creation : 2007-04-16 revision : 2007-07-06
+
+# This script is a part of RPC & TI-RPC Test Suite
+# (c) 2007 BULL S.A.S.
+# Please refer to RPC & TI-RPC Test Suite documentation.
+# More details at http://nfsv4.bullopensource.org/doc/rpc_testsuite.php
+
+# Usage : 
+# ./rpc_ts_run.sh -l tst_list_db_1 -l tst_list_db_2 ... -l tst_list_db_n ... [-v] [-m XXX] [-n X]
+# where 
+# -l indicates a tests script to run
+# -v for verbose mode
+# -m for way to run tests cases, see TESTWAY description for more information on XXX value
+#	default : one server to many client
+# -n numbers of instances to launch per test, X is a number
+#	default : 1
+
+# **********************
+# *** INITIALISATION ***
+# **********************
+
+# Indicates in which directory tests binaries are installed

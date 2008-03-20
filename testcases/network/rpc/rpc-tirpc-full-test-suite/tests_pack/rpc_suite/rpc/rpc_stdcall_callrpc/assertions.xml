@@ -1,0 +1,17 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Simple remote procedure call using RPC callrpc() API function
+	</assertion>
+	<assertion id="2" tag="ef:XSH6TC2:3966:3967">
+	Remote procedure call using RPC callrpc() API function under stressed environment
+	</assertion>
+	<assertion id="5" tag="ef:XSH6TC2:3966:3967">
+	This test aims to test scalability of callrpc() function
+	</assertion>
+	<assertion id="6" tag="ef:XSH6TC2:3966:3967">
+	Remote procedure call using RPC callrpc() API function to test data integrity
+	</assertion>
+	<assertion id="7" tag="ef:XSH6TC2:3966:3967">
+	Test RPC callrpc() function performance
+	</assertion>
+</assertions>

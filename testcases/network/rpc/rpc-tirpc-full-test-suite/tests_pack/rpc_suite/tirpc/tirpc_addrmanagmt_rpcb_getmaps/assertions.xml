@@ -1,0 +1,5 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Basic test of TIRPC rpcb_getmaps() function
+	</assertion>
+</assertions>

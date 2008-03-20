@@ -1,0 +1,8 @@
+<assertions>
+	<assertion id="1" tag="ef:XSH6TC2:3966:3967">
+	Test clnt_control() function (TI-RPC intermediate level)
+	</assertion>
+	<assertion id="3" tag="ef:XSH6TC2:3966:3967">
+	Limit test for clnt_control() arguments
+	</assertion>
+</assertions>
