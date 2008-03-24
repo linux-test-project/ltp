@@ -24,7 +24,7 @@
 INCLUDES+=-I../../../../include -I../include -I.
 LIBS+=-L../../../../lib -L../lib
 
-CFLAGS += -g $(INCLUDES) -DLTP
+CFLAGS += -g $(INCLUDES) -DLTP -D_USC_LIB_
 LOADLIBES += $(LIBS) -lltp -lsctp
 SRCS=sctputil.c
 OBJS=$(SRCS:.c=.o)

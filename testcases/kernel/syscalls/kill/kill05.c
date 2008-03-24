@@ -89,7 +89,7 @@ void do_master_child(void);
 char *TCID= "kill05";
 int TST_TOTAL = 1;
 int shmid1 = -1;
-key_t semkey;
+extern key_t semkey;
 int *flag;
 
 int exp_enos[] = {EPERM, 0};

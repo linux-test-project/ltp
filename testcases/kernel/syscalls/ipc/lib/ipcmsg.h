@@ -50,7 +50,7 @@ typedef struct mbuf {		/* a generic message structure */
 	char mtext[MSGSIZE + 1];  /* add 1 here so the message can be 1024   */
 } MSGBUF;			  /* characters long with a '\0' termination */
 
-#if (!defined CONFIG_COLDFIRE || defined LIBIPC)
+#ifdef LIBIPC
 key_t msgkey;                   /* the ftok() generated message key */
 #else
 extern key_t msgkey;                   /* the ftok() generated message key */

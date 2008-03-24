@@ -18,6 +18,7 @@
 
 DIR=lib
 CFLAGS += -I../../../../include -Wall
+CFLAGS += -D_USC_LIB_
 SRC=libtestsuite.c
 OBJS=$(SRC:.c=.o)
 MAINS=../libtestsuite.a

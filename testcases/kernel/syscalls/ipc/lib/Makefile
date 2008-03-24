@@ -22,6 +22,7 @@ LIBIPC = ../libipc.a
 LIBIPC_HEADERS	= ipcmsg.h ipcsem.h
 
 CFLAGS += -I../../../../../include -Wall
+CFLAGS += -D_USC_LIB_
 
 all: $(LIBIPC)
 
