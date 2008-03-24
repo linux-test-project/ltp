@@ -1,0 +1,24 @@
+
+srcdir := ..
+include $(srcdir)/config.mk
+
+
+AR	= ar cru
+RANLIB	= ranlib
+
+
+SRCS	= libjvmsim.c librttest.c libstats.c
+OBJS	= $(SRCS:%.c=%.o)
+TARGETS	= $(SRCS:%.c=%.a)
+
+all: $(TARGETS)
+
+%.a: %.o
+	@rm -f $@
+	$(AR) $@ $<
+	$(RANLIB) $@
+
+install:
+
+clean:
+	rm -f $(TARGETS) $(OBJS) *~
