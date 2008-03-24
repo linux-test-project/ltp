@@ -34,7 +34,8 @@
  *      Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
- *      2007-Mar-9:  Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *      2007-Mar-09:  Initial version by Darren Hart <dvhltc@us.ibm.com>
+ *      2008-Feb-26:  Closely emulate jvm Dinakar Guniguntala <dino@in.ibm.com>
  *
  *****************************************************************************/
 
@@ -45,23 +46,44 @@
 #include <libjvmsim.h>
 #include <libstats.h>
 
-#define PRIO 89
-#define MATRIX_SIZE 100
-#define DEF_OPS_MULTIPLIER 500		/* the higher the number, the more CPU intensive
-					(and therefore SMP performance goes up) */
-#define ITERATIONS 100
-#define HIST_BUCKETS 100
+#define PRIO		43
+#define MATRIX_SIZE	100
+#define DEF_OPS		8		/* the higher the number, the more CPU intensive */
+					/* (and therefore SMP performance goes up) */
+#define PASS_CRITERIA	0.75		/* Avg concurrent time * pass criteria < avg seq time - */
+					/* for every addition of a cpu */
+#define ITERATIONS	128		/* HAS to be a multiple of 'numcpus' */
+#define HIST_BUCKETS	100
+
+#define THREAD_WAIT	1
+#define THREAD_WORK	2
+#define THREAD_DONE	3
+
+#define THREAD_SLEEP	1 * NS_PER_US
 
 static int run_jvmsim = 0;
-static int ops_multiplier = DEF_OPS_MULTIPLIER;
-static int ops;
+static int ops = DEF_OPS;
+static int numcpus;
+static float criteria;
+static int *mult_index;
+static int *tids;
+static int *flags;
+
+stats_container_t sdat, cdat, *curdat;
+stats_container_t shist, chist;
+static pthread_barrier_t mult_start;
+
+int gettid(void)
+{
+	return syscall(__NR_gettid);
+}
 
 void usage(void)
 {
 	rt_help();
 	printf("matrix_mult specific options:\n");
 	printf("  -j            enable jvmsim\n");
-	printf("  -l#           #: number of multiplications per iteration per cpu (load)\n");
+	printf("  -l#           #: number of multiplications per iteration (load)\n");
 }
 
 int parse_args(int c, char *v)
@@ -72,7 +94,7 @@ int parse_args(int c, char *v)
 		run_jvmsim = 1;
 		break;
 	case 'l':
-		ops_multiplier = atoi(v);
+		ops = atoi(v);
 		break;
 	case 'h':
 		usage();
@@ -84,86 +106,125 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-void matrix_init(float A[MATRIX_SIZE][MATRIX_SIZE], float B[MATRIX_SIZE][MATRIX_SIZE])
+void matrix_init(double  A[MATRIX_SIZE][MATRIX_SIZE], double  B[MATRIX_SIZE][MATRIX_SIZE])
 {
 	int i, j;
 	for (i = 0; i < MATRIX_SIZE; i++) {
 		for (j = 0; j < MATRIX_SIZE; j++) {
-			A[i][j] = (float)i*j;
-			B[i][j] = (float)((i*j)%10);
+			A[i][j] = (double) (i*j);
+			B[i][j] = (double) ((i*j)%10);
 		}
 	}
 }
 
-void matrix_mult(void)
+void matrix_mult(int m_size)
 {
-	float A[MATRIX_SIZE][MATRIX_SIZE];
-	float B[MATRIX_SIZE][MATRIX_SIZE];
-	float C[MATRIX_SIZE][MATRIX_SIZE];
+	double A[m_size][m_size];
+	double B[m_size][m_size];
+	double C[m_size][m_size];
 	int i, j, k;
 
 	matrix_init(A, B);
-
-	for (i = 0; i < MATRIX_SIZE; i++) {
-		for (j = 0; j < MATRIX_SIZE; j++) {
-			for (k = 0; k < MATRIX_SIZE; k++) {
-				C[i][j] += A[i][k]*B[k][j];
-			}
+	for (i = 0; i < m_size; i++) {
+		int i_m = m_size - i;
+		for (j = 0; j < m_size; j++) {
+			double sum = A[i_m][j] * B[j][i];
+			for (k = 0; k < m_size; k++)
+				sum += A[i_m][k]*B[k][j];
+			C[i][j] = sum;
 		}
 	}
 }
 
-/* arg: the number of concurrent threads being run */
-void *matrixmult_thread(void *thread)
+void matrix_mult_record(int m_size, int index)
 {
-	struct thread *t = (struct thread *)thread;
+	nsec_t start, end, delta;
 	int i;
 
-	for (i = 0; i < ops/(intptr_t)t->arg; i++) {
-		matrix_mult();
+	start = rt_gettime();
+	for (i = 0; i < ops; i++)
+		matrix_mult(MATRIX_SIZE);
+	end = rt_gettime();
+	delta = (long)((end - start)/NS_PER_US);
+	curdat->records[index].x = index;
+	curdat->records[index].y = delta;
+}
+
+int set_affinity(int cpuid)
+{
+	int tid = gettid();
+	cpu_set_t mask;
+
+	CPU_ZERO(&mask);
+	CPU_SET(cpuid, &mask);
+
+	if (sched_setaffinity(0, sizeof(mask), &mask) < 0) {
+		printf("Thread %d: Can't set affinity: %s\n", tid, strerror(errno));
+		exit(1);
+	}
+
+	return 0;
+}
+
+void *concurrent_thread(void *thread)
+{
+	struct thread *t = (struct thread *)thread;
+	int thread_id = (intptr_t)t->arg;
+
+	set_affinity(thread_id);
+	pthread_barrier_wait(&mult_start);
+	while (flags[thread_id] != THREAD_DONE) {
+		pthread_mutex_lock(&t->mutex);
+		flags[thread_id] = THREAD_WAIT;
+		do {
+			if (pthread_cond_wait(&t->cond, &t->mutex) != 0) {
+				printf("cond_wait error!");
+				exit(1);
+			}
+		} while (flags[thread_id] == THREAD_WAIT);
+		pthread_mutex_unlock(&t->mutex);
+		if (flags[thread_id] == THREAD_WORK)
+			matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
 	}
 
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+void concurrent_ops(void)
 {
-	int i, j;
+	static int thread_id = 0;
+
+	if (thread_id < (numcpus-1)) {
+		struct timespec nsleep;
+		struct thread *t;
+
+		while (flags[thread_id] != THREAD_WAIT) {
+			nsleep.tv_sec = 0;
+			nsleep.tv_nsec = THREAD_SLEEP;
+			nanosleep(&nsleep, NULL);
+		}
+		t = get_thread(tids[thread_id]);
+		pthread_mutex_lock(&t->mutex);
+		flags[thread_id] = THREAD_WORK;
+		pthread_cond_signal(&t->cond);
+		pthread_mutex_unlock(&t->mutex);
+	} else
+		matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
+
+	if (++thread_id == numcpus)
+		thread_id = 0;
+}
+
+void main_thread(void)
+{
+	int ret, i, j;
 	nsec_t start, end;
-	long smin=0, smax=0, cmin=0, cmax=0, delta=0;
+	long smin = 0, smax = 0, cmin = 0, cmax = 0, delta = 0;
 	float savg, cavg;
-	int ret;
-	int numcpus;
-	int criteria;
 
-	setup();
-	rt_init("jl:h", parse_args, argc, argv);
-	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
-	criteria = MAX(1, numcpus/2); // the minimum avg concurrent multiplier to pass
-	ops = numcpus * ops_multiplier;
-
-	int tids[numcpus];
-
-	printf("\n---------------------------------------\n");
-	printf("Matrix Multiplication (SMP Performance)\n");
-	printf("---------------------------------------\n\n");
-	printf("Running %d iterations\n", ITERATIONS);
-	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
-	printf("Calculations per iteration: %d\n", ops);
-	printf("Number of CPUs: %u\n", numcpus);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	// Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
-
-	stats_container_t sdat, cdat;
-	stats_container_t shist, chist;
 	if (	stats_container_init(&sdat, ITERATIONS) ||
 		stats_container_init(&shist, HIST_BUCKETS) ||
-		stats_container_init(&cdat, ITERATIONS) ||
+		stats_container_init(&cdat, ITERATIONS/numcpus) ||
 		stats_container_init(&chist, HIST_BUCKETS)
 	)
 	{
@@ -171,28 +232,42 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	// run matrix mult operation sequentially
-	printf("\nSequential:\n");
-	for (i = 0; i < ITERATIONS; i++) {
-		start = rt_gettime();
-		tids[0] = create_fifo_thread(matrixmult_thread, (void*)1, PRIO);
-		if (tids[0] == -1) {
-			printf("Thread creation failed (max threads exceeded?)\n");
-			break;
-		}
-		join_thread(tids[0]);
-		end = rt_gettime();
-		delta = (long)((end - start)/NS_PER_US);
-		sdat.records[i].x = i;
-		sdat.records[i].y = delta;
-		if (i == 0)
-			smin = smax = delta;
-		else {
-			smin = MIN(smin, delta);
-			smax = MAX(smax, delta);
-		}
+	pthread_barrier_init(&mult_start, NULL, numcpus);
+
+	mult_index = malloc(sizeof(int) * numcpus);
+	if (!mult_index) {
+		perror("malloc");
+		exit(1);
 	}
-	savg = stats_avg(&sdat);
+	memset(mult_index, 0, numcpus);
+	tids = malloc(sizeof(int) * numcpus);
+	if (!tids) {
+		perror("malloc");
+		exit(1);
+	}
+	memset(tids, 0, numcpus);
+	flags = malloc(sizeof(int) * numcpus);
+	if (!flags) {
+		perror("malloc");
+		exit(1);
+	}
+	memset(flags, 0, numcpus);
+
+	set_affinity(numcpus-1);
+
+	/* run matrix mult operation sequentially */
+	curdat = &sdat;
+	printf("\nRunning sequential operations\n");
+	start = rt_gettime();
+	for (i = 0; i < ITERATIONS; i++)
+		matrix_mult_record(MATRIX_SIZE, i);
+	end = rt_gettime();
+	delta = (long)((end - start)/NS_PER_US);
+
+	savg = delta/ITERATIONS; /* don't use the stats record, use the total time recorded */
+	smin = stats_min(&sdat);
+	smax = stats_max(&sdat);
+
 	printf("Min: %ld us\n", smin);
 	printf("Max: %ld us\n", smax);
 	printf("Avg: %.4f us\n", savg);
@@ -209,38 +284,40 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Warning: could not save sequential mults stats\n");
 	}
 
-	// run matrix mult operation concurrently
-	printf("\nConcurrent (%dx):\n", numcpus);
-	for (i = 0; i < ITERATIONS; i++) {
-		start = rt_gettime();
-		for (j = 0; j < numcpus; j++) {
-			tids[j] = create_fifo_thread(matrixmult_thread, (void*)(intptr_t)numcpus, PRIO);
-			if (tids[j] == -1) {
-				printf("Thread creation failed (max threads exceeded?)\n");
-				break;
-			}
-		}
+	/* Create numcpus-1 concurrent threads */
+	for (j = 0; j < (numcpus-1); j++) {
+		tids[j] = create_fifo_thread(concurrent_thread, (void *)(intptr_t)j, PRIO);
 		if (tids[j] == -1) {
-			printf("j=%d\n", j);
-			for (j=0;j<numcpus;j++)
-				printf("tids[%d]=%d\n", j, tids[j]);
+			printf("Thread creation failed (max threads exceeded?)\n");
 			break;
 		}
-		for (j = 0; j < numcpus; j++) {
-			join_thread(tids[j]);
-		}
-		end = rt_gettime();
-		delta = (long)((end - start)/NS_PER_US);
-		cdat.records[i].x = i;
-		cdat.records[i].y = delta;
-		if (i == 0)
-			cmin = cmax = delta;
-		else {
-			cmin = MIN(cmin, delta);
-			cmax = MAX(cmax, delta);
-		}
 	}
-	cavg = stats_avg(&cdat);
+
+	pthread_barrier_wait(&mult_start);
+
+	/* run matrix mult operation concurrently */
+	curdat = &cdat;
+	printf("\nRunning concurrent operations (%dx)\n", ITERATIONS);
+	start = rt_gettime();
+	for (i = 0; i < ITERATIONS; i++)
+		concurrent_ops();
+	end = rt_gettime();
+	delta = (long)((end - start)/NS_PER_US);
+
+	for (j = 0; j < (numcpus-1); j++) {
+		struct thread *t;
+
+		t = get_thread(tids[j]);
+		pthread_mutex_lock(&t->mutex);
+		flags[j] = THREAD_DONE;
+		pthread_cond_signal(&t->cond);
+		pthread_mutex_unlock(&t->mutex);
+	}
+
+	cavg = delta/ITERATIONS; /* don't use the stats record, use the total time recorded */
+	cmin = stats_min(&cdat);
+	cmax = stats_max(&cdat);
+
 	printf("Min: %ld us\n", cmin);
 	printf("Max: %ld us\n", cmax);
 	printf("Avg: %.4f us\n", cavg);
@@ -257,7 +334,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Warning: could not save concurrent mults stats\n");
 	}
 
-	printf("\nSeq/Conc Ratios:\n");
+	printf("\nConcurrent Multipliers:\n");
 	printf("Min: %.4f\n", (float)smin/cmin);
 	printf("Max: %.4f\n", (float)smax/cmax);
 	printf("Avg: %.4f\n", (float)savg/cavg);
@@ -265,9 +342,40 @@ int main(int argc, char *argv[])
 	ret = 1;
 	if (savg > (cavg * criteria))
 		ret = 0;
-	printf("\nCriteria: %d * average concurrent time < average sequential time\n",
+	printf("\nCriteria: %.2f * average concurrent time < average sequential time\n",
 		criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
-	return ret;
+	return;
+}
+
+int main(int argc, char *argv[])
+{
+	setup();
+	rt_init("jl:h", parse_args, argc, argv);
+	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
+	/* the minimum avg concurrent multiplier to pass, TODO: make configurable */
+	criteria = PASS_CRITERIA * numcpus;
+
+	printf("\n---------------------------------------\n");
+	printf("Matrix Multiplication (SMP Performance)\n");
+	printf("---------------------------------------\n\n");
+	printf("Running %d iterations\n", ITERATIONS);
+	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
+	printf("Calculations per iteration: %d\n", ops);
+	printf("Number of CPUs: %u\n", numcpus);
+
+	if (run_jvmsim) {
+		printf("jvmsim enabled\n");
+		jvmsim_init();	/* Start the JVM simulation */
+	} else {
+		printf("jvmsim disabled\n");
+	}
+
+	set_priority(PRIO);
+	main_thread();
+
+	join_threads();
+
+	return 0;
 }
