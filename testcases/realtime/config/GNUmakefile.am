@@ -1,3 +1,0 @@
-MAINTAINERCLEANFILES = \
-	GNUmakefile.in
-

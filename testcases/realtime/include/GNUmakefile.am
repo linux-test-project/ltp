@@ -1,9 +1,0 @@
-EXTRA_DIST = \
-	libjvmsim.h \
-	librttest.h \
-	libstats.h \
-	list.h
-
-MAINTAINERCLEANFILES = \
-	GNUmakefile.in
-

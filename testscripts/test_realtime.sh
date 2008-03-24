@@ -110,14 +110,8 @@ function run_test()
 function make_clean()
 {
         pushd $TESTS_DIR >/dev/null
-        rm -rf logs/*
-        for mfile in `find -name "Makefile"`;
-        do
-            target_dir=`dirname $mfile`
-            pushd $target_dir >/dev/null
-            make clean
-            pushd $TESTS_DIR >/dev/null
-        done
+        rm -rf logs
+        make clean
 }
 
 find_test()
@@ -180,25 +174,6 @@ if [ ! -e "logs" ]; then
         mkdir logs
         echo " creating logs directory as $TESTS_DIR/logs "
         chmod -R 775 logs
-fi
-
-if [ ! -e "config/m4" ]; then
-        mkdir config/m4
-        chmod -R 775 config/m4
-fi
-
-#GNUmakefile.in is created by autogen.sh
-if [ ! -f GNUmakefile.in ]; then
-        ./autogen.sh
-        check_error autogen.sh
-        ./configure
-        check_error configure
-fi
-
-#GNUmakefile is created by configure
-if [ ! -f GNUmakefile ]; then
-        ./configure
-        check_error configure
 fi
 
 #Only build the library, most of the tests depend upon.

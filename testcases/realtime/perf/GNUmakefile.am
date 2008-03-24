@@ -1,6 +1,0 @@
-SUBDIRS = \
-	latency
-
-MAINTAINERCLEANFILES = \
-	GNUmakefile.in
-
