@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.h,v 1.6 2008/02/14 08:22:22 subrata_modak Exp $
+* $Id: childmain.h,v 1.7 2008/03/24 10:33:53 subrata_modak Exp $
 *
 */
 
@@ -37,7 +37,7 @@ typedef enum mc_func {
 	EXP,ACT,REREAD
 } mc_func_t;
 
-#define DMOFFSTR "Thread %d: First miscompare at byte offset %d (0x%X)\n"
+#define DMOFFSTR "Thread %d: First miscompare at byte offset %zd (0x%zX)\n"
 
 #ifdef WINDOWS
 #define DMSTR "Thread %d: Data miscompare at lba %I64d (0x%I64X)\n"
@@ -49,7 +49,7 @@ DWORD WINAPI ChildMain(test_ll_t *);
 #define DMSTR "Thread %d: Data miscompare at lba %lld (0x%llX)\n"
 #define AFSTR "Thread %d: %s failed: seek %llu, lba %lld (0x%llX), got = %ld, asked for = %ld, errno %lu\n"
 #define SFSTR "Thread %d: seek failed seek %lld, lba = %lld, request pos = %lld, seek pos = %lld, errno %lu\n"
-#define DMFILESTR "\n********** %s (Target: %s, LBA: %lld, Offset: %d) **********\n"
+#define DMFILESTR "\n********** %s (Target: %s, LBA: %lld, Offset: %zd) **********\n"
 void *ChildMain(void *);
 #endif
 

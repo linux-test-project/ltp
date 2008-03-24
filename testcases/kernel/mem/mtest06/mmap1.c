@@ -521,7 +521,7 @@ main(int  argc,		/* number of input parameters.			      */
 	     	    OPT_MISSING(argv[0], optopt);
 		else
 	             if (exec_time < 0)
-				fprintf(stdout,"WARNING: bad argument. Using default %ld\n", (exec_time = 24));
+				fprintf(stdout,"WARNING: bad argument. Using default %.0f\n", (exec_time = 24));
 		break;
 	    default :
 		usage(argv[0]);
