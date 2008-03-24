@@ -165,20 +165,6 @@ if [ $# -lt 1 ]; then
 fi
 pushd $TESTS_DIR >/dev/null
 
-#GNUmakefile.in is created by autogen.sh
-if [ ! -f GNUmakefile.in ]; then
-	./autogen.sh
-	check_error autogen.sh
-	./configure
-	check_error configure
-fi
-
-#GNUmakefile is created by configure
-if [ ! -f GNUmakefile ]; then
-	./configure
-	check_error configure
-fi
-
 #Only build the library, most of the tests depend upon.
 #The Individual tests will be built, just before they run.
 pushd lib
