@@ -67,11 +67,13 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
 	}
 
-	else if(argc == 2 && (atoi(argv[1]) == 2 || atoi(argv[1]) == 8)) { 
+	else if(argc == 2) { 
 		ch = atoi(argv[1]);
-		if(ch == 2) ch1 = random() % 8;
-		if(ch == 8) ch1 = (random() % 5) + 1;
-		tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
+		if(atoi(argv[1]) == 2 || atoi(argv[1]) == 8) {
+			if(ch == 2) ch1 = random() % 8;
+			if(ch == 8) ch1 = (random() % 5) + 1;
+			tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
+		}
 	}
 	
 	else {
