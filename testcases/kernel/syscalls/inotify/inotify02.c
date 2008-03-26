@@ -138,7 +138,7 @@ int main(int ac, char **av){
         if ((fd = creat(FILE_NAME1, 0755)) == -1) {
             tst_brkm(TBROK, cleanup,
                 "creat(\"%s\", 755) Failed, errno=%d : %s",
-                fname1, errno, strerror(errno));
+                FILE_NAME1, errno, strerror(errno));
         }
         
         event_set[Tst_count].mask = IN_CREATE;
@@ -151,7 +151,7 @@ int main(int ac, char **av){
         if (close(fd) == -1) {
             tst_brkm(TBROK, cleanup, 
                     "close(%s) Failed, errno=%d : %s", 
-                    fname1, errno, strerror(errno));
+                    FILE_NAME1, errno, strerror(errno));
         }
         event_set[Tst_count].mask = IN_CLOSE_WRITE;
         strcpy(event_set[Tst_count].name, FILE_NAME1);
@@ -208,7 +208,7 @@ int main(int ac, char **av){
         if (rename(fname2, fname1) == -1){
             tst_brkm(TBROK, cleanup, 
                     "rename(%s, %s) Failed, errno=%d : %s",
-                    fname1, fname2,
+                    fname2, fname1,
                     errno, strerror(errno));
         }
         event_set[Tst_count].mask = IN_MOVE_SELF;
