@@ -74,9 +74,11 @@ static unsigned int high_work_time = DEF_HIGH_WORK_MS;
 static unsigned int busy_work_time;
 static int num_busy = -1;
 
-stats_container_t high_dat, low_dat, wait_dat;
-stats_container_t wait_hist;
-stats_quantiles_t wait_quantiles;
+nsec_t low_unlock, high_get_lock;
+
+stats_container_t lock_wait_dat, low_dat, cpu_delay_dat;
+stats_container_t cpu_delay_hist;
+stats_quantiles_t cpu_delay_quantiles;
 
 void usage(void)
 {
@@ -145,7 +147,8 @@ void * low_prio_thread(void *arg)
 
 		low_start = rt_gettime();
 		busy_work_ms(low_work_time);
-		low_hold = rt_gettime() - low_start;
+		low_unlock = rt_gettime();
+		low_hold = low_unlock - low_start;
 
 		pthread_mutex_unlock(&lock);
 
@@ -165,13 +168,13 @@ void * low_prio_thread(void *arg)
 
 void * high_prio_thread(void *arg)
 {
-	nsec_t high_start, high_spent;
+	nsec_t high_start, high_spent, high_end;
 	unsigned int i;
 
-	stats_container_init(&high_dat, iterations);
-	stats_container_init(&wait_dat, iterations);
-	stats_container_init(&wait_hist, HIST_BUCKETS);
-	stats_quantiles_init(&wait_quantiles, (int)log10(iterations));
+	stats_container_init(&lock_wait_dat, iterations);
+	stats_container_init(&cpu_delay_dat, iterations);
+	stats_container_init(&cpu_delay_hist, HIST_BUCKETS);
+	stats_quantiles_init(&cpu_delay_quantiles, (int)log10(iterations));
 
 	printf("High prio thread started\n");
 
@@ -183,33 +186,36 @@ void * high_prio_thread(void *arg)
 
 		high_start = rt_gettime();
 		pthread_mutex_lock(&lock);
-		high_spent = rt_gettime() - high_start;
+		high_end = rt_gettime();
+		high_spent = high_end - high_start;
+		high_get_lock = high_end - low_unlock;
 
 		busy_work_ms(high_work_time);
 		pthread_mutex_unlock(&lock);
 
-		high_dat.records[i].x = i;
-		high_dat.records[i].y = high_spent / NS_PER_US;
-		wait_dat.records[i].x = i;
-		wait_dat.records[i].y = high_dat.records[i].y - low_dat.records[i].y;
+		lock_wait_dat.records[i].x = i;
+		lock_wait_dat.records[i].y = high_spent / NS_PER_US;
+		cpu_delay_dat.records[i].x = i;
+		cpu_delay_dat.records[i].y = high_get_lock / NS_PER_US;
 
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
 	}
 
-	stats_hist(&wait_hist, &wait_dat);
+	stats_hist(&cpu_delay_hist, &cpu_delay_dat);
 	stats_container_save("samples", "pi_perf Latency Scatter Plot",
-		"Iteration", "Latency (us)", &wait_dat, "points");
+				"Iteration", "Latency (us)", &cpu_delay_dat, "points");
 	stats_container_save("hist", "pi_perf Latency Histogram",
-		"Latency (us)", "Samples", &wait_hist, "steps");
+				"Latency (us)", "Samples", &cpu_delay_hist, "steps");
 
-	printf("Min wait time = %ld us\n", stats_min(&wait_dat));
-	printf("Max wait time = %ld us\n", stats_max(&wait_dat));
-	printf("Average wait time = %4.2f us\n", stats_avg(&wait_dat));
-	printf("Standard Deviation = %4.2f us\n", stats_stddev(&wait_dat));
+	printf("Time taken for high prio thread to get the lock once released by low prio thread\n");
+	printf("Min wait time = %ld us\n", stats_min(&cpu_delay_dat));
+	printf("Max wait time = %ld us\n", stats_max(&cpu_delay_dat));
+	printf("Average wait time = %4.2f us\n", stats_avg(&cpu_delay_dat));
+	printf("Standard Deviation = %4.2f us\n", stats_stddev(&cpu_delay_dat));
 	printf("Quantiles:\n");
-	stats_quantiles_calc(&wait_dat, &wait_quantiles);
-	stats_quantiles_print(&wait_quantiles);
+	stats_quantiles_calc(&cpu_delay_dat, &cpu_delay_quantiles);
+	stats_quantiles_print(&cpu_delay_quantiles);
 
 	return NULL;
 }
@@ -253,12 +259,12 @@ int main(int argc, char *argv[])
 
 	join_threads();
 	printf("Low prio lock held time (min) = %ld us\n", stats_min(&low_dat));
-	printf("High prio lock wait time (max) = %ld us\n", stats_max(&high_dat));
+	printf("High prio lock wait time (max) = %ld us\n", stats_max(&lock_wait_dat));
 	printf("Criteria: High prio lock wait time < "
 			"(Low prio lock held time + %d us)\n", THRESHOLD);
 
 	ret = 0;
-	if (stats_max(&high_dat) > stats_min(&low_dat) + THRESHOLD)
+	if (stats_max(&lock_wait_dat) > stats_min(&low_dat) + THRESHOLD)
 		ret = 1;
 
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
