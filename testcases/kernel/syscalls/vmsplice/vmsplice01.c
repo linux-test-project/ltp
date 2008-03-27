@@ -159,7 +159,7 @@ static int vmsplice_test(void)
 	char vmsplicebuffer[SPLICE_TEST_BLOCK_SIZE];
 	int pipes[2];
 	long written;
-	int i, ret;
+	int i, ret, flag = 0;
 	int fd_out;
 	struct iovec v;
 	struct pollfd pfd;
@@ -211,7 +211,18 @@ static int vmsplice_test(void)
 		else {
 			v.iov_base += written;
 			v.iov_len -= written;
+			flag  = 1;
 		}
+
+		/*
+                * check if the current filesystem is nfs
+                */
+                if(tst_is_cwd_nfs()) {
+				if (flag == 1)
+					printf("vmsplice01    1  PASS  :  vmplice() passes\n");
+                                tst_brkm(TCONF, cleanup, "Cannot do splice() on a file located on an NFS filesystem");
+                }
+
 
 		ret = mysplice(pipes[0], NULL, fd_out, &offset, written, 0);
 		if (ret < 0) {
@@ -220,7 +231,7 @@ static int vmsplice_test(void)
 			close(pipes[0]);
 			close(pipes[1]);
 			return ret;
-		}
+		} 
 		//printf("offset = %lld\n", (long long)offset);
 
 	}
