@@ -205,8 +205,9 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 	/* leave some chars for element that pushes path over PC_PATH_MAX */
 	pcPathMax = pcPathMax - tempPathLength - 5;
 
+	tmpPtr = path + strlen(path);
 	while (pathLength < pcPathMax) { 
-		sprintf(path, "%s/%s", path, tmp_path); 
+		tmpPtr += sprintf(tmpPtr, "/%s", tmp_path);
 		pathLength += tempPathLength; 
 	}
 
