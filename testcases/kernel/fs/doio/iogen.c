@@ -431,7 +431,8 @@ char	**argv;
 	}
 
 	req.r_magic = DOIO_MAGIC;
-	write(outfd, (char *)&req, sizeof(req));
+	if (write(outfd, (char *)&req, sizeof(req)) == -1)
+		perror("Warning: Could not write");
     }
 
     exit(0);
@@ -580,7 +581,7 @@ int
 form_iorequest(req)
 struct io_req   *req;
 {
-    int	    	    	mult, offset, length, slength;
+    int	    	    	mult, offset=0, length=0, slength;
     int	    	    	minlength, maxlength, laststart, lastend;
     int	    	    	minoffset, maxoffset;
     int			maxstride, nstrides;
@@ -1796,8 +1797,8 @@ char	*opts;
 	    if (file[0] == '/') {
 	        strcpy(fptr->f_path, file);
 	    } else {
-	        getcwd(fptr->f_path,
-		       sizeof(fptr->f_path)-1);
+	        if (getcwd(fptr->f_path, sizeof(fptr->f_path)-1) == NULL)
+			perror("Could not get current working directory");
 	        strcat(fptr->f_path, "/");
 	        strcat(fptr->f_path, file);
 	    }

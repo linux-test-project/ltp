@@ -2776,7 +2776,7 @@ int rw;
 	 * ONCE and keeping it mapped.
 	 */
 	struct status		*status;
-	void			*mrc, *memaddr;
+	void			*mrc=NULL, *memaddr=NULL;
 	struct fd_cache		*fdc;
 	struct stat		sbuf;
     int rc;
@@ -4872,7 +4872,7 @@ char	**argv;
 char	*opts;
 {
 	int	    	c;
-	char    	cc, *cp, *tok;
+	char    	cc, *cp=NULL, *tok=NULL;
 	extern int	opterr;
 	extern int	optind;
 	extern char	*optarg;
@@ -4906,7 +4906,7 @@ char	*opts;
 			for(s=checkmap; s->string != NULL; s++)
 				if(!strcmp(s->string, optarg))
 					break;
-			if (s->string == NULL) {
+			if (s->string == NULL && tok != NULL)  {
 				fprintf(stderr,
 					"%s%s:  Illegal -C arg (%s).  Must be one of: ", 
 					Prog, TagName, tok);
