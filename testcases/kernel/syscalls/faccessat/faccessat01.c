@@ -57,7 +57,7 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-#define TEST_CASES 5
+#define TEST_CASES 6
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
 #endif
@@ -75,7 +75,7 @@ char testfile3[256] = "";
 int dirfd, fd, ret;
 int fds[TEST_CASES];
 char *filenames[TEST_CASES];
-int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
+int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0, 0 };
 
 int myfaccessat(int dirfd, const char *filename, int mode)
 {
@@ -199,6 +199,7 @@ void setup_every_copy()
 
 	filenames[0] = filenames[2] = filenames[3] = filenames[4] = testfile;
 	filenames[1] = testfile2;
+	filenames[5] = testfile3;
 }
 
 /***************************************************************
