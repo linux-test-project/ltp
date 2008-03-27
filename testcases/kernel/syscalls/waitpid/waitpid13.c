@@ -246,7 +246,7 @@ int main(int ac, char **av)
 			if (!found) {
 				tst_resm(TFAIL, "Did not find a wait_kid_pid "
 					 "for the fork_kid_pid of %d",
-					 fork_kid_pid[j]);
+					 wait_kid_pid[i]);
 				for (k = 0; k < MAXKIDS; k++) {
 					tst_resm(TFAIL, "fork_kid_pid[%d] = "
 						 "%d", k, fork_kid_pid[k]);
