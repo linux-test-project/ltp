@@ -101,7 +101,7 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int i;
-	int ret;
+	int ret=0;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){

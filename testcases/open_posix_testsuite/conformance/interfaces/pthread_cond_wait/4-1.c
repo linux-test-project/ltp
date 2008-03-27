@@ -198,6 +198,8 @@ void * worker (void * arg)
 	int ret=0;
 	
 	struct timespec ts, tsrem;
+	//initialisation is needed
+	ts.tv_sec=0;
 	
 	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);

@@ -3752,7 +3752,7 @@ int nbytes;
 {
 	char    	*cp;
 	void		*addr;
-	int		me, flags, key, shmid;
+	int		me=0, flags, key, shmid;
 	static int	mturn = 0;	/* which memory type to use */
 	struct memalloc	*M;
 	char		filename[255];
