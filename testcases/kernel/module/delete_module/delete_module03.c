@@ -79,7 +79,6 @@
 
 #include <errno.h>
 #include <pwd.h>
-#include <asm/atomic.h>
 //#include <linux/module.h>
 #include "test.h"
 #include "usctest.h"

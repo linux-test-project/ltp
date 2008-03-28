@@ -18,7 +18,7 @@
 # description		 : make file for the delete_module(2) testcases		 		   #
 ###########################################################################
 
-CFLAGS+=		 -I../../../../include -Wall
+EXTRA_CFLAGS+=		 -I../../../../include -Wall
 MODCFLAGS+=		 /lib/modules/`uname -r`/build
 LOADLIBES+=		 -L../../../../lib -lltp
 
@@ -31,13 +31,13 @@ all: $(TARGETS)
 #		 chmod 755 $(OBJS)
 
 delete_module01: delete_module01.c
-		 $(CC) $(CFLAGS) delete_module01.c $(LOADLIBES) -o $@
+		 $(CC) $(EXTRA_CFLAGS) delete_module01.c $(LOADLIBES) -o $@
 
 delete_module02: delete_module02.c
-		 $(CC) $(CFLAGS) delete_module02.c $(LOADLIBES) -o $@
+		 $(CC) $(EXTRA_CFLAGS) delete_module02.c $(LOADLIBES) -o $@
 
 delete_module03: delete_module03.c
-		 $(CC) $(CFLAGS) delete_module03.c $(LOADLIBES) -o $@
+		 $(CC) $(EXTRA_CFLAGS) delete_module03.c $(LOADLIBES) -o $@
 
 install:
 		 @set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

@@ -83,7 +83,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <asm/page.h>
-#include <asm/atomic.h>
 //#include <linux/module.h>
 #include <sys/mman.h>
 #include "test.h"
@@ -279,3 +278,4 @@ cleanup(void)
 		 tst_exit();
 		 /*NOTREACHED*/
 }
+
