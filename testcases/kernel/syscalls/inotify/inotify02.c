@@ -37,6 +37,9 @@
  *     01/06/2007 - Fix to compile inotify test case with kernel that does 
  *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
  *
+ *     03/27/2008 - Fix the test failure due to event coalescence. Also add
+ *     test for this event coalescence. Li Zefan <lizf@cn.fujitsu.com>
+ *
  * ***************************************************************************/
 
 #include <stdio.h>
@@ -70,7 +73,7 @@ int TST_TOTAL=9;            /* Total number of test cases. */
 extern int Tst_count;        /* Test Case counter for tst_* routines */
 
 #define BUF_SIZE 256
-char fname1[BUF_SIZE], fname2[BUF_SIZE];
+char fname1[BUF_SIZE], fname2[BUF_SIZE], fname3[BUF_SIZE];
 char buf[BUF_SIZE];
 int fd, fd_notify;
 int wd;
@@ -173,19 +176,6 @@ int main(int ac, char **av){
         strcpy(event_set[Tst_count].name, FILE_NAME2);
         Tst_count++;
 
-
-
-        if (unlink(FILE_NAME2) == -1){
-            tst_brkm(TBROK, cleanup, 
-                    "unlink(%s) Failed, errno=%d : %s",
-                    FILE_NAME2,
-                    errno, strerror(errno));
-        }
-        event_set[Tst_count].mask = IN_DELETE;
-        strcpy(event_set[Tst_count].name, FILE_NAME2);
-        Tst_count++;
-
-
         if (getcwd(fname1, BUF_SIZE) == NULL){
             tst_brkm(TBROK, cleanup, 
                     "getcwd(%x, %d) Failed, errno=%d : %s",
@@ -193,7 +183,7 @@ int main(int ac, char **av){
                     errno, strerror(errno));
         }
 
-        snprintf(fname2, BUF_SIZE, "%s.rename", fname1);
+        snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
         if (rename(fname1, fname2) == -1){
             tst_brkm(TBROK, cleanup, 
                     "rename(%s, %s) Failed, errno=%d : %s",
@@ -204,11 +194,32 @@ int main(int ac, char **av){
         strcpy(event_set[Tst_count].name, "");
         Tst_count++;
 
+        if (unlink(FILE_NAME2) == -1){
+            tst_brkm(TBROK, cleanup,
+                    "unlink(%s) Failed, errno=%d : %s",
+                    FILE_NAME2,
+                    errno, strerror(errno));
+        }
+        event_set[Tst_count].mask = IN_DELETE;
+        strcpy(event_set[Tst_count].name, FILE_NAME2);
+        Tst_count++;
 
-        if (rename(fname2, fname1) == -1){
+        /*
+         * test that duplicate events will be coalesced into
+         * a single event
+         */
+        snprintf(fname3, BUF_SIZE, "%s.rename2", fname1);
+        if (rename(fname2, fname3) == -1){
+            tst_brkm(TBROK, cleanup,
+                    "rename(%s, %s) Failed, errno=%d : %s",
+                    fname2, fname3,
+                    errno, strerror(errno));
+        }
+
+        if (rename(fname3, fname1) == -1){
             tst_brkm(TBROK, cleanup, 
                     "rename(%s, %s) Failed, errno=%d : %s",
-                    fname2, fname1,
+                    fname3, fname1,
                     errno, strerror(errno));
         }
         event_set[Tst_count].mask = IN_MOVE_SELF;

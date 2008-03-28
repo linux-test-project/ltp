@@ -30,7 +30,9 @@ test 2:
 		close				IN_CLOSE_WRITE
 		rename file			IN_MOVED_FROM
 						IN_MOVED_TO
-		unlink file			IN_DELETE
 		rename yourself			IN_MOVE_SELF
+		unlink file			IN_DELETE
+		rename yourself again
 		rename back			IN_MOVE_SELF
-	check that all events have been received
+	check that all events have been received and the last two successive
+	IN_MOVE_SELF events will be coalesced into a single one.
