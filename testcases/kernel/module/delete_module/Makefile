@@ -41,7 +41,7 @@ delete_module03: delete_module03.c
 
 install:
 		 @set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-		 @set -e; for i in $(MODULES); do ln -f $$i /tmp/$$i ; done
+		 @set -e; for i in $(MODULES); do cp -f $$i /tmp/$$i ; done
 
 clean:
 		 rm -f $(TARGETS)
