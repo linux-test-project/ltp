@@ -53,6 +53,12 @@ all: libltp.a
 install: all
 	@$(MAKE) -C testcases install
 	@$(MAKE) -C tools install
+	@$(MAKE) -C lib install
+	@$(MAKE) -C include install
+	@$(MAKE) -C pan install
+	@$(MAKE) -C doc/man1 install
+	@$(MAKE) -C doc/man3 install
+
 	@./IDcheck.sh
 
 libltp.a:
@@ -83,3 +89,8 @@ clean:
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases $@
+
+package: 
+	rpmbuild -ba ltp-devel.spec
+
+

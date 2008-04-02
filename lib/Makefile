@@ -1,4 +1,6 @@
 
+DESTDIR=/opt/ltp
+
 ifeq ($(shell uname -s),SunOS)
 CC=gcc -Wall
 endif
@@ -16,7 +18,12 @@ SRCS=$(wildcard *.c)
 OBJS=$(patsubst %.c,%.o,$(SRCS))
 
 $(TARGET): $(OBJS)
-	$(AR) -cr $@ $^    
+	$(AR) -cr $@ $^
 
 clean:
 	rm -f $(TARGET) $(OBJS)
+
+install: $(TARGET)
+	install -D $(TARGET) $(DESTDIR)/lib/$(TARGET)
+	install -D ltp.pc /usr/share/pkgconfig/ltp.pc
+
