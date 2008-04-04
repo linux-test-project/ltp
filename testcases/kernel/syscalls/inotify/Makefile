@@ -16,7 +16,7 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall --static
+CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
