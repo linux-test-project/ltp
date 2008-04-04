@@ -158,13 +158,13 @@ main(int ac, char **av)
 		 /* 
 		  * Call fcntl(2) with F_SETLEASE & F_RDLCK argument on fname
 		  */
-		 TEST(fcntl(fd, F_SETLEASE,F_RDLCK));
+		 TEST(fcntl(fd, F_SETLEASE, F_RDLCK));
 		 
 		 /* check return code */
 		 if ( TEST_RETURN == expected_result ) {
 		     TEST_ERROR_LOG(TEST_ERRNO);
 		 		 tst_resm(TPASS,
-                                "fcntl(fd, F_SETLEASE,F_RDLCK) succeeded");
+                                "fcntl(fd, F_SETLEASE, F_RDLCK) succeeded");
                         }
                  else {
                         tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK)"

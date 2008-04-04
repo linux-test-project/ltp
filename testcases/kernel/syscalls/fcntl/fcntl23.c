@@ -141,12 +141,12 @@ main(int ac, char **av)
 	/* 
 	 * Call fcntl(2) with F_SETLEASE & F_RDLCK argument on fname
 	 */
-	TEST(fcntl(fd, F_SETLEASE,F_RDLCK));
+	TEST(fcntl(fd, F_SETLEASE, F_RDLCK));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "fcntl(%s, F_SETLEASE,F_RDLCK) Failed, errno=%d : %s", fname,
+	    tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_RDLCK) Failed, errno=%d : %s", fname,
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
 	    
@@ -162,7 +162,7 @@ main(int ac, char **av)
 		  if ( TEST_RETURN != 0 )
 		    tst_resm(TFAIL, "fcntl(%s, F_SETLEASE, F_UNLCK) did not return 0, returned %d",fname, TEST_RETURN);
 		  else
-		    tst_resm(TPASS, "fcntl(%s, F_SETLEASE,F_RDLCK)", fname);
+		    tst_resm(TPASS, "fcntl(%s, F_SETLEASE, F_RDLCK)", fname);
 		}  
 	    } 
 	    if (close(TEST_RETURN) == -1) {
