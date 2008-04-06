@@ -22,6 +22,16 @@ config_unset_expandcheck() {
 	popd
 }
 
+config_allow_domain_fd_use () {
+    setval=$1
+    /usr/sbin/getsebool allow_domain_fd_use
+    getseRC=$?
+    if [ "$getseRC" -eq "0" ]; then
+	echo "allow_domain_fd_use exists setting"
+	/usr/sbin/setsebool allow_domain_fd_use=$setval
+    fi
+}
+
 # Must be root to run the selinux testsuite
 if [ $UID != 0 ]
 then
@@ -79,6 +89,8 @@ popd
 
 config_set_expandcheck
 
+config_allow_domain_fd_use 0
+
 # build and install the test policy...
 echo "building and installing test_policy module..."
 cd $LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy
@@ -129,6 +141,9 @@ if [ $? != 0 ]; then
 	echo "Failed to remove test_policy module."
 	exit 1
 fi
+
+config_allow_domain_fd_use 1
+
 cd $LTPROOT
 echo "Done."
 exit 0
