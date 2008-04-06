@@ -556,7 +556,7 @@ diff -Nrup refpolicy/test_open.te refpolicy.patched/test_open.te
 diff -Nrup refpolicy/test_policy.if refpolicy.patched/test_policy.if
 --- refpolicy/test_policy.if   2008-02-06 06:55:04.000000000 -0500
 +++ refpolicy.patched/test_policy.if   2008-02-06 06:56:06.000000000 -0500
-@@ -25,3 +25,18 @@
+@@ -25,3 +25,20 @@
  ##      Domain allowed to transition.
  ## </param>
  #
@@ -565,10 +565,12 @@ diff -Nrup refpolicy/test_policy.if refpolicy.patched/test_policy.if
 +	gen_require(`
 +		type unconfined_t;
 +               type unconfined_devpts_t;
++		role unconfined_r;
 +	')
 +
 +       # Transition from the caller to the test domain.
 +	allow unconfined_t $1:process transition;
++	role unconfined_r types $1;
 +      # Report back from the test domain to the caller.
 +      allow $1 unconfined_t:fd use;
 +      allow $1 unconfined_devpts_t:chr_file { read write ioctl getattr };

@@ -27,15 +27,8 @@ global_setup()
 
 	# Check the role and mode testsuite is being executed under.
 	SELINUX_CONTEXT=`id | sed 's/.* //'`
-	SELINUX_ROLE=`id | sed 's/.* //' | awk -F: '{ print $2 }'`
 
 	echo "Running with security $SELINUX_CONTEXT"
-
-	if [ $SELINUX_ROLE != sysadm_r ] && [ $SELINUX_ROLE != system_r ]
-	then
-		echo "These tests are intended to be run in the sysadm role."
-		exit 1
-	fi
 
 	SELINUX_MODE=`getenforce`
 	if [ $SELINUX_MODE != Enforcing ] && [ $SELINUX_MODE != enforcing ]

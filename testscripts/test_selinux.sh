@@ -64,15 +64,8 @@ fi
 # Check the role and mode testsuite is being executed under.
 
 SELINUX_CONTEXT=`/usr/bin/id | sed 's/.* //'`
-SELINUX_ROLE=`/usr/bin/id | sed 's/.* //' | awk -F: '{ print $2 }'`
 
 echo "Running with security $SELINUX_CONTEXT"
-
-if [ $SELINUX_ROLE != sysadm_r ] && [ $SELINUX_ROLE != system_r ]
-then
-	echo "These tests are intended to be run in the sysadm role."
-	exit
-fi
 
 SELINUX_MODE=`/usr/sbin/getenforce`
 if [ $SELINUX_MODE != Enforcing ] && [ $SELINUX_MODE != enforcing ]
