@@ -48,6 +48,10 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
+ *      - Fix concurrency issue. The second key used for this test could
+ *        conflict with the key from another task.
+
  *
  * RESTRICTIONS
  *	none
@@ -147,6 +151,8 @@ int main(int ac, char **av)
 void
 setup(void)
 {
+	key_t msgkey2;
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -178,6 +184,9 @@ setup(void)
 
 	msgkey = getipckey();
 
+       /* Get an new IPC resource key. */
+	msgkey2 = getipckey();
+
 	/* create a message queue with read/write permission */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
 		tst_brkm(TBROK, cleanup, "Can't create message queue #1");
@@ -192,7 +201,7 @@ setup(void)
 	}
 
 	/* create a message queue without read/write permission */
-	if ((msg_q_2 = msgget(msgkey + 1, IPC_CREAT | IPC_EXCL)) == -1) {
+	if ((msg_q_2 = msgget(msgkey2, IPC_CREAT | IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Can't create message queue #2");
 	}
 }
