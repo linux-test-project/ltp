@@ -54,9 +54,10 @@ static void _test_sysconf(int name, const char *strname)
 	/* make sure we reset this as sysconf() will not */
 	errno = 0;
 	retval = sysconf(name);
-	if (errno != 0)
-		tst_resm(TFAIL, "sysconf(%s) failed, error=%d: %s\n",
-		         strname, errno, strerror(errno));
+	if((retval == -1) && (errno))
+		tst_resm(TWARN, "Bad option %s\n", strname);
+	else if((retval == -1) && (!errno))
+		tst_resm(TINFO, "%s NOT SUPPORTED\n", strname);
 	else
 		tst_resm(TPASS, "%s = %li", strname, retval);
 }
