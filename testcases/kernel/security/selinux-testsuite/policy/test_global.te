@@ -49,6 +49,7 @@ allow testdomain random_device_t:chr_file read;
 allow testdomain locale_t:dir r_dir_perms;
 allow testdomain locale_t:{ file lnk_file } r_file_perms;
 allow testdomain privfd:fd use;
+allow testdomain tmp_t:dir r_dir_perms;
 
 r_dir_file(testdomain, selinux_config_t)
 can_getsecurity(testdomain)

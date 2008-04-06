@@ -103,10 +103,6 @@ cd $LTPROOT
 
 echo "Running the SELinux testsuite..."
 
-# Save and later restore /tmp's type.
-SAVETMPTYPE=`ls -Zd /tmp | awk '{ print $4 }' | awk -F: '{ print $3 }'`
-/usr/bin/chcon -t test_file_t /tmp
-
 mkdir /tmp/selinux > /dev/null 2>&1
 /usr/bin/chcon -t test_file_t /tmp/selinux
 export SELINUXTMPDIR=/tmp/selinux
@@ -120,8 +116,6 @@ $LTPROOT/pan/pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/resul
 
 # cleanup before exiting    
 
-# Restore type of /tmp
-/usr/bin/chcon -t $SAVETMPTYPE /tmp
 rm -rf /tmp/selinux
 
 # Restore type of .../testcases/bin directory

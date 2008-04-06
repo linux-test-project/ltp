@@ -41,6 +41,7 @@ allow testdomain self:fifo_file rw_file_perms;
 allow testdomain self:unix_dgram_socket create_socket_perms;
 allow testdomain self:unix_stream_socket create_stream_socket_perms;
 allow testdomain self:unix_dgram_socket sendto;
+files_search_tmp(testdomain)
 
 # permission to use shared library
 libs_use_ld_so(testdomain)
