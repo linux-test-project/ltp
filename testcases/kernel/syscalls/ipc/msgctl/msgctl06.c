@@ -19,6 +19,7 @@
 
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 /* 11/06/2002	Port to LTP	dbarrera@us.ibm.com */
+/* 12/03/2008   Fix concurrency issue     mfertre@irisa.fr */
 
 /*
  * NAME
@@ -43,6 +44,7 @@
 #include <errno.h>		/* definitions needed for errno */
 #include "test.h"
 #include "usctest.h"
+#include "ipcmsg.h"
 
 void setup();
 void cleanup();
@@ -72,31 +74,28 @@ int	msqid, status;
 struct msqid_ds	buf;
 
 
-#define K 1024
-
 /*--------------------------------------------------------------*/
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char* argv[])
 {
 	key_t		key;
 	setup();
 
-	key = 2 * K;
-	TEST(msgget(key, IPC_CREAT));
+	key = getipckey();
+	TEST(msgget(key, IPC_CREAT | IPC_EXCL));
 	msqid = TEST_RETURN;
 	if (TEST_RETURN == -1)
 	{
                 tst_resm(TFAIL, "msgget() failed errno = %d", errno);
 	        tst_exit();
 	}
+
 	TEST(msgctl(msqid, IPC_STAT, &buf));
 	status = TEST_RETURN;
 	if (TEST_RETURN == -1)
 	{
-		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 tst_resm(TFAIL, "msgctl(msqid, IPC_STAT, &buf) failed errno = %d", errno);
+		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
 	        tst_exit();
 	}
 
@@ -158,6 +157,13 @@ setup()
 	 * before you create your temporary directory.
 	 */
 	TEST_PAUSE;
+
+	/*
+	 * Create a temporary directory and cd into it.
+	 * This helps to ensure that a unique msgkey is created.
+	 * See ../lib/libipc.c for more information.
+	 */
+	tst_tmpdir();
 }
 
 
@@ -169,6 +175,10 @@ void
 cleanup()
 {
 	int status;
+
+	/* Remove the temporary directory */
+	tst_rmdir();
+
        	/*
 	 * print timing stats if that option was specified.
          * print errno log if that option was specified.
@@ -188,10 +198,10 @@ cleanup()
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
 	        tst_exit();
-		
 	}
 
 	fflush (stdout);
+
         /* exit with return code appropriate for results */
         tst_exit();
 }
