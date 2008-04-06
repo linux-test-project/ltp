@@ -47,6 +47,11 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
+ *      - Fix concurrency issue. Due to the use of usleep function to
+ *        synchronize processes, synchronization issues can occur on a loaded
+ *        system. Fix this by using pipes to synchronize processes.
+ *
  *
  * RESTRICTIONS
  *	none
@@ -56,6 +61,7 @@
 #include "usctest.h"
 
 #include "ipcmsg.h"
+#include "libtestsuite.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -83,6 +89,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int sync_pipes[2];
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -94,6 +101,10 @@ int main(int ac, char **av)
 #endif
 
 	setup();			/* global setup */
+
+	if (create_sync_pipes(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+	}
 
 	/* The following loop checks looping state if -i option given */
 
@@ -126,6 +137,11 @@ int main(int ac, char **av)
 			 * Attempt to read a message without IPC_NOWAIT.
 			 * With no message to read, the child sleeps.
 			 */
+
+			if (notify_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "notify_startup failed");
+			}
+
 #ifdef UCLINUX
 			if (self_exec(av[0], "d", msg_q_1) < 0) {
 				tst_brkm(TBROK, cleanup, "could not self_exec");
@@ -134,7 +150,11 @@ int main(int ac, char **av)
 			do_child();
 #endif
 		} else {			/* parent */
-			usleep(250000);
+
+			if (wait_son_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+			}
+			sleep(1);
 
 			/* remove the queue */
 			rm_queue(msg_q_1);
