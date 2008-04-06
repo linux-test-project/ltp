@@ -30,7 +30,7 @@
  *	initialize a message buffer with a known message and type
  *	enqueue messages in a loop until the queue is full
  *	fork a child process
- *	child attempts to enqueue a message to the full queue and sleeps	
+ *	child attempts to enqueue a message to the full queue and sleeps
  *	parent removes the queue and then exits
  *	child get a return from msgsnd()
  *	check the errno value
@@ -50,12 +50,16 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
+ *      - Fix concurrency issue. Due to the use of usleep function to
+ *        synchronize processes, synchronization issues can occur on a loaded
+ *        system. Fix this by using pipes to synchronize processes.
  *
  * RESTRICTIONS
  *	none
  */
 
-#include <sys/wait.h> 
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -80,6 +84,7 @@ int main(int ac, char **av)
     char *msg;			/* message returned from parse_opts */
     pid_t c_pid;
     int status, e_code;
+    int sync_pipes[2];
 
     /* parse standard options */
     if ((msg =
@@ -92,6 +97,10 @@ int main(int ac, char **av)
 #endif
 
     setup();			/* global setup */
+
+    if (create_sync_pipes(sync_pipes) == -1) {
+	    tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+    }
 
     /* The following loop checks looping state if -i option given */
 
@@ -124,6 +133,11 @@ int main(int ac, char **av)
 	}
 
 	if (c_pid == 0) {	/* child */
+
+	    if (notify_startup(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "notify_startup failed");
+	    }
+
 #ifdef UCLINUX
 	    if (self_exec(av[0], "d", msg_q_1) < 0) {
 		tst_brkm(TBROK, cleanup, "could not self_exec");
@@ -132,7 +146,15 @@ int main(int ac, char **av)
 	    do_child();
 #endif
 	} else {		/* parent */
-	    sleep(1);
+
+	    if (wait_son_startup(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+	    }
+	    /* After son has been created, give it a chance to execute the
+	     * msgsnd command before we continue. Without this sleep, on SMP machine
+	     * the father rm_queue could be executed before the son msgsnd.
+	     */
+	    sleep(2);
 	    /* remove the queue */
 	    rm_queue(msg_q_1);
 
