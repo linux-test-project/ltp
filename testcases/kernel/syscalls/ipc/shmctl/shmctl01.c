@@ -54,12 +54,16 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      02/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. Replace the sleep used for synchronization
+ *        with the new pipe based synchronization functions.
  *
  * RESTRICTIONS
  *	none
  */
 
 #include "ipcshm.h"
+#include "libtestsuite.h"
 
 char *TCID = "shmctl01";
 extern int Tst_count;
@@ -77,6 +81,7 @@ void *set_shared;
 #define N_ATTACH	4
 
 pid_t pid_arr[N_ATTACH];
+int sync_pipes[2];
 
 void sighandler(int);
 
@@ -265,6 +270,9 @@ stat_setup()
 
 	tst_flush();
 	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
+		if (create_sync_pipes(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+		}
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
@@ -282,10 +290,13 @@ stat_setup()
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
 			pid_arr[stat_i] = pid;
+			if (wait_son_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+			}
 		}
 	}
-	/* sleep briefly to ensure correct execution order */
-	usleep(250000);
+	/* Wait 1 second to be sure all sons are in the pause function. */
+	sleep(1);
 }
 
 /*
@@ -303,6 +314,10 @@ do_child()
 		test = set_shared;
 	}
 	
+	if (notify_startup(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "notify_startup failed");
+	}
+
 	/* do an assignement for fun */
 	*(int *)test = stat_i;
 	
@@ -394,6 +409,11 @@ stat_cleanup()
 		if (shmdt(set_shared) == -1) {
 			tst_resm(TINFO, "shmdt() failed");
 		}
+	}
+
+	for (i=0; i<N_ATTACH; i++) {
+		if (waitpid(pid_arr[i], NULL, 0) == -1)
+                        tst_brkm(TBROK, cleanup, "waitpid failed");
 	}
 
 	stat_time++;
