@@ -72,6 +72,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int msg_q;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -85,22 +86,23 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-
+		
 		/*
-		 * Try to create another message queue.  This should
-		 * give us an ENOSPC error.
+		 * Use a while loop to create the maximum number of queues.
+		 * When we get an error, check for ENOSPC.
 		 */
-
-		TEST(msgget(msgkey + num_queue + 1, IPC_CREAT|IPC_EXCL));
-	
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
-			continue;
+		while((msg_q = msgget(msgkey + num_queue, IPC_CREAT|IPC_EXCL)) != -1) {
+			msg_q_arr[num_queue] = msg_q;
+			if (num_queue == maxmsgs) {
+				tst_resm(TINFO, "The maximum number of message"
+					 " queues (%d) has been reached",
+					 maxmsgs);
+				break;
+			}
+			num_queue++;
 		}
-	
-		TEST_ERROR_LOG(TEST_ERRNO);
 
-		switch(TEST_ERRNO) {
+		switch(errno) {
 		case ENOSPC:
 			tst_resm(TPASS, "expected failure - errno = %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -125,8 +127,6 @@ int main(int ac, char **av)
 void
 setup(void)
 {
-	int msg_q;
-
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -152,31 +152,7 @@ setup(void)
 	msg_q_arr = (int *)calloc(maxmsgs, sizeof (int));
 	if (msg_q_arr == NULL) {
 		tst_brkm(TBROK, cleanup, "Couldn't allocate memory "
-				"for msg_q_arr: calloc() failed");
-	}
-
-	/*
-	 * Use a while loop to create the maximum number of queues.
-	 * When we get an error, check for ENOSPC.
-	 */
-	while((msg_q = msgget(msgkey + num_queue, IPC_CREAT|IPC_EXCL)) != -1) {
-		msg_q_arr[num_queue] = msg_q;
-		if (num_queue == maxmsgs) {
-			tst_resm(TINFO, "The maximum number of message"
-				 " queues (%d) has been reached", maxmsgs);
-			break;
-		}
-		num_queue++;
-	}
-
-	/*
-	 * if we have something other than ENOSPC, then something else is
-	 * wrong.
-	 */
-
-	if (errno != ENOSPC) {
-		tst_brkm(TBROK, cleanup, "Didn't get ENOSPC in test setup"
-			 " - errno = %d : %s", errno, strerror(errno));
+			 "for msg_q_arr: calloc() failed");
 	}
 }
 
