@@ -197,13 +197,8 @@ setup(void)
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
 	}
 
-	/* Get an new IPC resource key. Since there is a small chance the
-	 * getipckey() function returns the same key as the previous one,
-	 * loop until we have a different key.
-	 */
-	do {
-		semkey2 = getipckey();
-	} while (semkey2 == semkey);
+	/* Get an new IPC resource key. */
+	semkey2 = getipckey();
 	
 	/* create a semaphore set without read and alter permissions */
 	if ((sem_id_2 = semget(semkey2, PSEMS, IPC_CREAT | IPC_EXCL)) == -1) {

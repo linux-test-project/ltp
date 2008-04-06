@@ -57,7 +57,9 @@ getipckey()
 	char *curdir = NULL;
 	size_t size = 0;
 	key_t ipc_key;
+	int proj_id;
 	struct timeb time_info;
+	static int count = 0;
 
 	if (NULL == (curdir = getcwd(curdir, size))) {
 		tst_brkm(TBROK, cleanup, "Can't get current directory "
@@ -68,18 +70,12 @@ getipckey()
 	 * Get a Sys V IPC key
 	 *
 	 * ftok() requires a character as a second argument.  This is
-	 * refered to as a "project identifier" in the man page.  In
-	 * order to maximize the chance of getting a unique key, the
-	 * project identifier is a "random character" produced by
-	 * generating a random number between 0 and 25 and then adding
-	 * that to the ascii value of 'a'.  The "seed" for the random
-	 * number is the millisecond value that is set in the timeb
-	 * structure after calling ftime().
+	 * refered to as a "project identifier" in the man page.
 	 */
-	(void)ftime(&time_info);
-	srandom((unsigned int)time_info.millitm);
+	proj_id = count%26 + ascii_a;
+	count++;
 
-	if ((ipc_key = ftok(curdir, ascii_a + random()%26)) == -1) {
+	if ((ipc_key = ftok(curdir, proj_id)) == -1) {
 		tst_brkm(TBROK, cleanup, "Can't get msgkey from ftok()");
 	}
 

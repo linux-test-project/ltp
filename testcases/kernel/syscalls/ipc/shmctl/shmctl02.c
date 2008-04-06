@@ -203,13 +203,8 @@ setup(void)
 			 "segment #1 in setup()");
 	}
 
-	/* Get an new IPC resource key. Since there is a small chance the
-	 * getipckey() function returns the same key as the previous one,
-	 * loop until we have a different key.
-	 */
-	do {
-		shmkey2 = getipckey();
-	} while (shmkey2 == shmkey);
+	/* Get an new IPC resource key. */
+	shmkey2 = getipckey();
 
 	/* create a shared memory segment with read and write permissions */
 	if ((shm_id_2 = shmget(shmkey2, SHM_SIZE, IPC_CREAT | IPC_EXCL |

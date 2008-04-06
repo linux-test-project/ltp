@@ -168,13 +168,8 @@ setup(void)
 	/* get an IPC resource key */
 	shmkey = getipckey();
 
-	/* Get an new IPC resource key. Since there is a small chance the
-	 * getipckey() function returns the same key as the previous one,
-	 * loop until we have a different key.
-	 */
-	do {
-		shmkey2 = getipckey();
-	} while (shmkey2 == shmkey);
+	/* Get an new IPC resource key. */
+	shmkey2 = getipckey();
 
 	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
 	     SHM_RW)) == -1) {
