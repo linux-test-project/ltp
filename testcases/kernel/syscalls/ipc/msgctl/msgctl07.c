@@ -19,7 +19,7 @@
 
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 /* 11/06/2002   Port to LTP     dbarrera@us.ibm.com */
-
+/* 12/03/2008   Fix concurrency issue     mfertre@irisa.fr */
 
 /*
  * NAME
@@ -44,6 +44,7 @@
 #include <stdio.h>		/* needed by testhead.h		*/
 #include "test.h"
 #include "usctest.h"
+#include "ipcmsg.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
@@ -51,7 +52,6 @@
 typedef void (*sighandler_t)(int);
 volatile int ready;
 
-#define K 1024
 #define BYTES 100
 #define SECS 10
 
@@ -78,9 +78,7 @@ struct my_msgbuf {
 
 /*--------------------------------------------------------------*/
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char* argv[])
 {
 	key_t key;
 	int pid, status;
@@ -101,8 +99,10 @@ char *argv[];
 			&c2_msgp.type, &c3_msgp.type);
 #endif
 
-	key = 2 * K;
-	if ((msqid = msgget(key, IPC_CREAT)) == -1) 
+	setup();
+
+	key = getipckey();
+	if ((msqid = msgget(key, IPC_CREAT | IPC_EXCL)) == -1)
         {
                 tst_resm(TFAIL, "msgget() failed errno = %d", errno);
                 tst_exit();
@@ -133,9 +133,9 @@ char *argv[];
 		sigemptyset(&act.sa_mask);
 		sigaddset(&act.sa_mask, SIGALRM);
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
+        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
                 	tst_exit();
 		}
 		ready = 0;
@@ -146,9 +146,9 @@ char *argv[];
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		wait(&status);
@@ -184,9 +184,9 @@ char *argv[];
 		sigemptyset(&act.sa_mask);
 		sigaddset(&act.sa_mask, SIGALRM);
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
+        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "signal failed. errno = %d", errno);
                 	tst_exit();
 		}
 		ready = 0;
@@ -197,27 +197,27 @@ char *argv[];
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		for (j=0; j<BYTES; j++) 
 			p2_msgp.text[j] = 'j';
 		p2_msgp.type = 2;
 		if (msgsnd(msqid, &p2_msgp, BYTES, 0) == -1) {
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		for (k=0; k<BYTES; k++) 
 			p3_msgp.text[k] = 'k';
 		p3_msgp.type = 3;
 		if (msgsnd(msqid, &p3_msgp, BYTES, 0) == -1) {
+        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
-        	        tst_resm(TFAIL, "msgsnd() failed. errno = %d", errno);
                 	tst_exit();
 		}
 		wait(&status);
@@ -245,13 +245,14 @@ char *argv[];
 
         fflush (stdout);
         tst_resm(TPASS,"msgctl07 ran successfully!");
-        return (0);
 
+	cleanup();
+
+        return (0);
 }
 /*--------------------------------------------------------------*/
 
-sighandler_t alrm(sig)
-int sig;
+sighandler_t alrm(int sig)
 {
 	ready++;
 	return(0);
@@ -349,6 +350,13 @@ setup()
          * before you create your temporary directory.
          */
 	TEST_PAUSE;
+
+	/*
+	 * Create a temporary directory and cd into it.
+	 * This helps to ensure that a unique msgkey is created.
+	 * See ../lib/libipc.c for more information.
+	 */
+	tst_tmpdir();
 }
 
 
@@ -359,6 +367,9 @@ setup()
 void
 cleanup()
 {
+	/* Remove the temporary directory */
+	tst_rmdir();
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
