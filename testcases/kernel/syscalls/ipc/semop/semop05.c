@@ -51,12 +51,18 @@
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
+ *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
+ *      - Fix concurrency issue. Due to the use of usleep function to
+ *        synchronize processes, synchronization issues can occur on a loaded
+ *        system. Fix this by using pipes to synchronize processes.
  *
  * RESTRICTIONS
  *	none
  */
 
 #include "ipcsem.h"
+#include "libtestsuite.h"
+
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -123,6 +129,11 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i=0; i<TST_TOTAL; i++) {
+			int sync_pipes[2];
+
+			if (create_sync_pipes(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+			}
 
 			/* initialize the s_buf buffer */
 			s_buf.sem_op = TC[i].op;
@@ -140,6 +151,11 @@ int main(int ac, char **av)
 			}
 
 			if (pid == 0) {		/* child */
+
+				if (notify_startup(sync_pipes) == -1) {
+					tst_brkm(TBROK, cleanup, "notify_startup failed: %d", errno);
+				}
+
 #ifdef UCLINUX
 				if (self_exec(av[0], "dd", i, sem_id_1) < 0) {
 					tst_brkm(TBROK, cleanup,
@@ -149,7 +165,15 @@ int main(int ac, char **av)
 				do_child(i);
 #endif
 			} else {		/* parent */
-				usleep(250000);
+
+				if (wait_son_startup(sync_pipes) == -1) {
+					tst_brkm(TBROK, cleanup, "wait_son_startup failed: %d", errno);
+				}
+				/* After son has been created, give it a chance to execute the
+				 * semop command before we continue. Without this sleep, on SMP machine
+				 * the father rm_sema/kill could be executed before the son semop.
+				 */
+				sleep(1);
 
 				/*
 				 * If we are testing for EIDRM then remove
