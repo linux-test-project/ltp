@@ -48,6 +48,9 @@
  *      07/2006 - Changes By Michael Reed
  *                - Changed the value of MAXIDS for the specific machine by reading
  *                  the system limit for SEMMNI - The maximum number of sempahore sets
+ *      03/2008 - Matthieu Fertré  (mfertre@irisa.fr)
+ *                - Fix concurrency issue. Create private semaphores to
+ *                  avoid conflict with concurrent processes.
  *
  * RESTRICTIONS
  *	none
@@ -106,7 +109,7 @@ int main(int ac, char **av)
 
 		/* use the TEST macro to make the call */
 
-		TEST(semget(semkey + num_sems, PSEMS,
+		TEST(semget(IPC_PRIVATE, PSEMS,
 			    IPC_CREAT | IPC_EXCL | SEM_RA));
 		//      printf("rc = %ld \n",   TEST_RETURN);
 		if (TEST_RETURN != -1) {
@@ -156,15 +159,12 @@ void setup(void)
 	 */
 	tst_tmpdir();
 
-	/* get an IPC resource key */
-	semkey = getipckey();
-
 	/*
 	 * Use a while loop to create the maximum number of semaphore sets.
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
 	while ((sem_q =
-		semget(semkey + num_sems, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
+		semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
 		sem_id_arr[num_sems++] = sem_q;
 		if (num_sems == MAXIDS) {
 			tst_brkm(TBROK, cleanup, "The maximum number of "
