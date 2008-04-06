@@ -48,6 +48,11 @@
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *
+ *      28/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. The second key used for this test was
+ *        sometime conflicting with the key from another task.
+ *        Generate a valid second key through getipckey to avoid conflicts.
+ *
  * RESTRICTIONS
  *	none
  */
@@ -63,7 +68,7 @@ extern int Tst_count;
 
 struct test_case_t {
         int error;      
-        int msg_incr;
+        int msgkey;
         int flags;
 } TC[] = {
         {EEXIST, 0, IPC_CREAT | IPC_EXCL},
@@ -73,6 +78,7 @@ struct test_case_t {
 
 int exp_enos[] = {EEXIST, ENOENT, 0};
 
+key_t msgkey1;
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
 int main(int ac, char **av)
@@ -80,6 +86,7 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int i;
+	key_t key;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -98,7 +105,12 @@ int main(int ac, char **av)
 
 		for (i=0; i<TST_TOTAL; i++) {
 
-			TEST(msgget(msgkey + TC[i].msg_incr, TC[i].flags));
+			if (TC[i].msgkey == 0)
+				key = msgkey;
+			else
+				key = msgkey1;
+
+			TEST(msgget(key, TC[i].flags));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "msgget() call succeeded "
@@ -157,9 +169,12 @@ setup(void)
 	tst_tmpdir();
 
 	msgkey = getipckey();
+	msgkey1 = getipckey();
 
 	/* now we have a key, so let's create a message queue */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL)) == -1) {
+		system ("ipcs > /tmp/toto");
+		system ("ps -aux >> /tmp/toto");
 		tst_brkm(TBROK, cleanup, "Can't create message queue" );
 	}
 }
