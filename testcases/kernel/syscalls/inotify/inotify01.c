@@ -73,6 +73,8 @@ int wd;
 
 int event_set[EVENT_MAX];
 
+char event_buf[EVENT_BUF_LEN];
+
 static long myinotify_init()
 {
     return syscall(__NR_inotify_init);
@@ -180,7 +182,6 @@ int main(int ac, char **av){
         /*
          * get list on events
          */
-        char event_buf[EVENT_BUF_LEN];
         int len, i = 0, test_num = 0;
         if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
             tst_brkm(TBROK, cleanup,
