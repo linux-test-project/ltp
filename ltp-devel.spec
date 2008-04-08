@@ -19,14 +19,27 @@ ExclusiveOS:    linux
 This is a development package of the Linux Test Project (LTP).
 It is intended to be used to build testcases using the provided API.
 %files
-/opt/ltp/include/test.h
-/opt/ltp/include/usctest.h
-/opt/ltp/include/compiler.h
 /opt/ltp/lib/libltp.a
 /usr/share/pkgconfig/ltp.pc
 /opt/ltp/bin/pan
 /opt/ltp/bin/scanner
 /opt/ltp/bin/bump
+/opt/ltp/include/usctest.h
+/opt/ltp/include/string_to_tokens.h
+/opt/ltp/include/str_to_bytes.h
+/opt/ltp/include/databin.h
+/opt/ltp/include/open_flags.h
+/opt/ltp/include/write_log.h
+/opt/ltp/include/dataascii.h
+/opt/ltp/include/forker.h
+/opt/ltp/include/compiler.h
+/opt/ltp/include/test.h
+/opt/ltp/include/tlibio.h
+/opt/ltp/include/pattern.h
+/opt/ltp/include/file_lock.h
+/opt/ltp/include/random_range.h
+/opt/ltp/include/search_path.h
+/opt/ltp/include/rmobj.h
 /opt/ltp/share/man/man3/tst_tmpdir.3
 /opt/ltp/share/man/man3/random_range_seed.3
 /opt/ltp/share/man/man3/pattern.3
