@@ -57,3 +57,7 @@ ftest05 ftest05
 ftest06 ftest06
 ftest07 ftest07
 ftest08 ftest08
+
+lftest01	lftest 100
+writetest01	writetest
+

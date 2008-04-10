@@ -34,3 +34,6 @@ shmt07 shmt07
 shmt08 shmt08
 shmt09 shmt09
 shmt10 shmt10
+
+shm_test01	shm_test -l 10 -t 2
+mallocstress01	mallocstress
