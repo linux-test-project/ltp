@@ -3,8 +3,8 @@ srcdir := ..
 include $(srcdir)/config.mk
 
 
-AR	= ar cru
-RANLIB	= ranlib
+AR ?= ar
+RANLIB ?= ranlib
 
 
 SRCS	= libjvmsim.c librttest.c libstats.c
@@ -15,7 +15,7 @@ all: $(TARGETS)
 
 %.a: %.o
 	@rm -f $@
-	$(AR) $@ $<
+	$(AR) cru $@ $<
 	$(RANLIB) $@
 
 install:
