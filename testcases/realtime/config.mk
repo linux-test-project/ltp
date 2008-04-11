@@ -16,8 +16,9 @@ endif
 
 # Default stuff common to all testcases
 #
-CFLAGS	+= -Wall -Werror -O2 -I$(srcdir)/include -D_GNU_SOURCE $(CROSS_CFLAGS)
-LDLIBS	+= $(srcdir)/lib/libjvmsim.a \
+CPPFLAGS += -I$(srcdir)/include -D_GNU_SOURCE
+CFLAGS   += -Wall
+LDLIBS   += $(srcdir)/lib/libjvmsim.a \
 	   $(srcdir)/lib/librttest.a \
 	   $(srcdir)/lib/libstats.a \
 	   -lpthread -lrt -lm
