@@ -34,10 +34,11 @@ endif
 ifdef CROSS_COMPILER
 CC=$(CROSS_COMPILER)gcc
 AR=$(CROSS_COMPILER)ar
+RANLIB=$(CROSS_COMPILER)ranlib
 endif
 
 export CFLAGS += -Wall $(CROSS_CFLAGS)
-export CC AR LDFLAGS
+export CC AR RANLIB LDFLAGS
 
 -include config.mk
 
