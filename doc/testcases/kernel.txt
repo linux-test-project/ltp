@@ -3310,10 +3310,6 @@ syscalls
 
 	Basic test for the times(2) system call. 
  
-  times02  
-  
- 	Testcase to test that times() sets errno correctly
-  
   times03  
   
  	Testcase to check the basic functionality of the times() system call.
