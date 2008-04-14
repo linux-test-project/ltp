@@ -305,11 +305,11 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
 	    return 0;
 
     /* generate the filenames */
-    if (!asprintf(&datfile, "%s.dat", filename) < 0) {
+    if (asprintf(&datfile, "%s.dat", filename) == -1) {
 		fprintf(stderr, "Failed to allocate string for data filename\n");
 		return -1;
 	}
-    if (!asprintf(&pltfile, "%s.plt", filename) < 0) {
+    if (asprintf(&pltfile, "%s.plt", filename) == -1) {
 		fprintf(stderr, "Failed to allocate string for plot filename\n");
 		return -1;
 	}

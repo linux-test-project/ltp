@@ -103,9 +103,15 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
 	stats_quantiles_init(&quantiles, (int)log10(iterations));
-	asprintf(&samples_filename, "%s-samples", filename_prefix);
-	asprintf(&hist_filename, "%s-hist", filename_prefix);
+	if (asprintf(&samples_filename, "%s-samples", filename_prefix) == -1) {
+		fprintf(stderr, "Failed to allocate string for samples filename\n");
+		return -1;
+	}
 
+	if (asprintf(&hist_filename, "%s-hist", filename_prefix) == -1) {
+		fprintf(stderr, "Failed to allocate string for samples filename\n");
+		return -1;
+	}
 	next = rt_gettime();
 	while (i < iterations) {
 		next += period;
