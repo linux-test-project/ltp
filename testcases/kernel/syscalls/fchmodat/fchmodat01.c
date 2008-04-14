@@ -195,6 +195,7 @@ void setup_every_copy()
 	fds[0] = fds[1] = fds[4] = dirfd;
 	fds[2] = fd;
 	fds[3] = 100;
+	fds[5] = AT_FDCWD;
 
 	filenames[0] = filenames[2] = filenames[3] = filenames[4] = testfile;
 	filenames[1] = testfile2;
