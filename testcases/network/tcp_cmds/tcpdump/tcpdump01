@@ -39,7 +39,17 @@ $trace_logic
 TC=tcpdump
 TCtmp=${TCtmp:-/tmp/$TC$$}
 RHOST=${RHOST:-`hostname`}
-IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]" | awk '{print $1}' | head -n1)}
+IP=`host ${RHOST}|awk '{print $4}'`
+IFNUMS=`netstat -i|wc -l`
+IFNUMS=$(( $IFNUMS - 2 ))
+IFNAME=${IFNAME:-$(netstat -i|awk '{print $1}'|tail -n${IFNUMS})}
+for i in ${IFNAME}
+do
+    ifconfig ${i}|grep $IP
+    [[ $? == 0 ]] && IF=$i && break
+done
+[ -z ${IF} ] && echo "Test broke: Couldnot identify interface" && exit 1
+IFNAME=${IF}
 NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out
 LTPROOT=${LTPROOT:-"../../../../"}
