@@ -200,6 +200,11 @@ int main(int argc, char *argv[])
 
 	rt_init("f:jhi:r:t:c:", parse_args, argc, argv);
 
+	if (iterations < 100) {
+		printf("Number of iterations cannot be less than 100\n");
+		exit(1);
+	}
+
 	if (!period || !prio | !calc_loops) {
 		usage();
 		exit(1);

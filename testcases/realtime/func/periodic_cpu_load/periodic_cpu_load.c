@@ -173,7 +173,8 @@ int main(int argc, char *argv[])
 	rt_init("jhi:", parse_args, argc, argv);
 
 	if (iterations < 100) {
-		fprintf(stderr, "Iteration cannot be less than 100.\n");
+		fprintf(stderr, "Number of iteration cannot be less than 100.\n");
+		exit(1);
 	}
 
 	printf("------------------------------------\n");

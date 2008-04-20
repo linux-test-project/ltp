@@ -226,6 +226,11 @@ int main(int argc, char *argv[])
 
 	rt_init("hi:n:w:", parse_args, argc, argv);
 
+	if (iterations < 100) {
+		printf("Number of iterations cannot be less than 100\n");
+		exit(1);
+	}
+
 	busy_work_time = low_work_time;
 	if (num_busy == -1) {
 		/* Number of busy threads = No. of CPUs */
