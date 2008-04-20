@@ -10,6 +10,7 @@ SUBDIRS = \
 	measurement \
 	periodic_cpu_load \
 	pi-tests \
+	pi_perf \
 	prio-preempt \
 	prio-wake \
 	pthread_kill_latency \
