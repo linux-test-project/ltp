@@ -16,7 +16,7 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
+CFLAGS += -I../../../../include -I../lib -Wall
 LDLIBS += -L../../../../lib -lltp
 LDLIBS += -L.. -ltestsuite
 

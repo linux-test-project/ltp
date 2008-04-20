@@ -40,6 +40,11 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	04/2008 Roy Lee <roylee@andestech.com>
+ *              - Fix a synchronization issue.
+ *                On a loaded system, the 'execving' child can get access
+ *                to the file before the 'opening' child does, hence results
+ *                in an unexpected opening fail.
  *
  * RESTRICTIONS
  *	must be run with -F <test file> option
@@ -52,6 +57,7 @@
 #include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
+#include "libtestsuite.h"
 
 char *TCID = "execve05";
 int TST_TOTAL = 1;
@@ -64,6 +70,7 @@ void do_child_1(void);
 void do_child_2(void);
 
 int exp_enos[] = {ETXTBSY, 0};
+int sync_pipes[2];
 
 int Fflag = 0;
 char *test_name;
@@ -109,6 +116,10 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
+		if (create_sync_pipes(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+		}
+
 		/*
 		 * to test whether execve(2) sets ETXTBSY when a second
 		 * child process attempts to execve the executable opened
@@ -116,6 +127,10 @@ main(int ac, char **av)
 		 */
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
+		}
+
+		if (wait_son_startup(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
 		}
 
 		if (pid == 0) {		/* first child */
@@ -223,6 +238,11 @@ do_child_1()
 		tst_brkm(TBROK, NULL, "open(2) failed");
 		exit(1);	
 	}
+
+	if (notify_startup(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "notify_startup failed");
+	}
+
 	sleep(10);	/* let other child execve same file */
 	exit(0);
 }
