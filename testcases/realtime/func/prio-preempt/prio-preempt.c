@@ -51,9 +51,6 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
- *
- *      Compilation : gcc -lrt -lpthread test-skeleton.c
- *
  * AUTHOR
  *      Dinakar Guniguntala <dino@us.ibm.com>
  *

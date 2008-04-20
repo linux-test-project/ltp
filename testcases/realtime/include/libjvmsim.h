@@ -26,9 +26,9 @@
  *      creation of new test cases and keep the build system simple.  At some
  *      point it may make sense to break it up into .h and .c files and link to
  *      it as an object file.
-
+ *
  * USAGE:
- *      Compilation : To be included in testcases.
+ *      To be included in testcases.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>

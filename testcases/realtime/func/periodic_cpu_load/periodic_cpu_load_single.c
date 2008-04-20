@@ -27,8 +27,6 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
- *      Compilation : gcc -lrt -lpthread periodic_cpu_load_single.c
- *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
  *

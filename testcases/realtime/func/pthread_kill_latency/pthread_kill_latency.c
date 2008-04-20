@@ -33,9 +33,6 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      pthread_kill_latency [-v{1234}]
  *
- *      Compilation :gcc pthread_kill_latency.c -lpthread -lrt -lm -D_GNU_SOURCE
- *                       -I/usr/include/nptl -o pthread_kill_latency
- *
  * AUTHOR
  *      Sripathi Kodi <sripathik@in.ibm.com>
  *

@@ -27,9 +27,6 @@
  *      Use run_auto.sh script in current directory to build and run test.
  *      Use "-j" to enable jvm simulator.
  *
- *      Compilation : gcc testpi-7.c -lm -L/usr/lib/nptl -lpthread -lrt
- *		      -D_GNU_SOURCE -I/usr/include/nptl -o testpi-7
- *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
  *

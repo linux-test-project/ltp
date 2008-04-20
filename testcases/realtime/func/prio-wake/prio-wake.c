@@ -35,9 +35,6 @@
  *
  * USAGE:
  *
- *     Compilation: gcc -O2 -g -Wall -D_GNU_SOURCE -I/usr/include/nptl
- *                   -I../../include -L/usr/lib/nptl -lpthread -lrt -lm
- *		     -c -o prio-wake.o prio-wake.c
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>

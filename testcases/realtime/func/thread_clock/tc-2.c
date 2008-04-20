@@ -32,8 +32,6 @@
  * USAGE:
  *    Use run_auto.sh script in current directory to build and run test.
  *    Use "-j" to enable jvm simulator.
-
- *    Compilation: gcc tc-2.c -lpthread -lrt -o tc-2
  *
  * AUTHOR
  *    Sripathi Kodi <sripathik@in.ibm.com>

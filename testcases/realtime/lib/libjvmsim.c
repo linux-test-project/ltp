@@ -28,7 +28,7 @@
  *      it as an object file.
 
  * USAGE:
- *      Compilation : To be included in testcases.
+ *      To be included in testcases.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>

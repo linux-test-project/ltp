@@ -26,7 +26,7 @@
  *      access the container of the list from the list_head struct.
  *
  * USAGE:
- *      Compilation : To be included in test cases
+ *      To be included in test cases
  *
  * AUTHOR
  *        Darren Hart <dvhltc@us.ibm.com>

@@ -26,10 +26,6 @@
  *     Use run_auto.sh script in current directory to build and run test.
  *     Use "-j" to enable jvm simulator.
  *
- *     Compilation: gcc -O2 -g -D_GNU_SOURCE -I/usr/include/nptl -I../../include
- *      	    -L/usr/lib/nptl -lpthread -lrt -lm pthread_cond_latency.c 
- *		    -o pthread_cond_latency
- *
  * AUTHOR
  *      Paul E. McKenney <paulmck@us.ibm.com>
  *
