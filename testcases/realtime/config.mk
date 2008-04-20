@@ -18,8 +18,8 @@ endif
 #
 CPPFLAGS += -I$(srcdir)/include -D_GNU_SOURCE
 CFLAGS   += -Wall
-LDLIBS   += $(srcdir)/lib/libjvmsim.a \
-	   $(srcdir)/lib/librttest.a \
-	   $(srcdir)/lib/libstats.a \
+LDLIBS   += $(srcdir)/lib/libjvmsim.o \
+	   $(srcdir)/lib/librttest.o \
+	   $(srcdir)/lib/libstats.o \
 	   -lpthread -lrt -lm
 
