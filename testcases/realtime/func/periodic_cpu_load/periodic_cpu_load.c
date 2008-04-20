@@ -74,9 +74,10 @@ static int ret = 0;
 
 void usage(void)
 {
-        rt_help();
-        printf("periodic_cpu_load specific options:\n");
-        printf("  -j            enable jvmsim\n");
+	rt_help();
+	printf("periodic_cpu_load specific options:\n");
+	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
+	printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
