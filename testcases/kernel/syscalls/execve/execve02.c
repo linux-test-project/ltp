@@ -42,6 +42,11 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
+ *      21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
+ *      - Fix concurrency issue. In case of concurrent executions, all tasks
+ *        was using the same file, changing its mode and leading to invalid
+ *        mode for some of them.
+ *
  * RESTRICTIONS
  *	Must run test with the -F <test file> option.
  */
@@ -50,6 +55,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
+#include <string.h>
+#include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -179,6 +186,9 @@ help()
 void
 setup()
 {
+	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
+	int res;
+
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
@@ -188,6 +198,47 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	/* Get file name of the passed test file and the absolute path to it.
+	 * We will need these informations to copy the test file in the temp
+	 * directory.
+	 */
+	dirc = strdup(fname);
+	basec = strdup(fname);
+	dname = dirname(dirc);
+	bname = basename(basec);
+
+	if (dname[0] == '/')
+		path = dname;
+	else {
+		if ((pwd = getcwd(NULL, 0)) == NULL) {
+			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+		}
+		path = malloc (strlen(path) + strlen(pwd) + 2);
+		if (path == NULL) {
+			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
+		}
+		sprintf (path, "%s/%s", pwd, dname);
+	}
+
+	/* make a temp dir and cd to it */
+	tst_tmpdir();
+
+	/* Copy the given test file to the private temp directory.
+	 */
+	cmd = malloc (strlen(path) + strlen(bname) + 15);
+	if (cmd == NULL) {
+		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
+	}
+
+	sprintf (cmd, "cp -p %s/%s .", path, bname);
+	res = system (cmd);
+	free (cmd);
+	if (res == -1) {
+		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", fname);
+	}
+	
+	fname = bname;
 
 	umask(0);
 
@@ -207,6 +258,10 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
+	/* remove files and temp dir */
+	tst_rmdir();
+
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
