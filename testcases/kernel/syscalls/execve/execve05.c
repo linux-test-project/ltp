@@ -129,10 +129,6 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
 		}
 
-		if (wait_son_startup(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-		}
-
 		if (pid == 0) {		/* first child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "nS", 1, test_name) < 0) {
@@ -141,6 +137,10 @@ main(int ac, char **av)
 #else
 			do_child_1();
 #endif
+		}
+
+		if (wait_son_startup(sync_pipes) == -1) {
+			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
 		}
 
 		if ((pid1 = FORK_OR_VFORK()) == -1) {
