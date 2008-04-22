@@ -24,6 +24,8 @@
  * 		     ftrunc3.c, by Airong Zhang)
  *		   - Modified to use fcntl() instead of lockf, 
  *		     Robbie Williamson <robbiew@us.ibm.com>
+ *		   - Fix concurrency issue
+ *		     Roy Lee <roylee@andestech.com>
  *
  * CALLS
  *	truncate(2), ftruncate(2), fcntl(2)
@@ -66,6 +68,7 @@
 #include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
+#include "libtestsuite.h"
 
 char progname[] = "ftruncate04()";
 
@@ -73,6 +76,7 @@ char *TCID = "ftruncate04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+int sync_pipes[2];
 int len = 8*1024;
 int iterations = 5;
 char filename[80];
@@ -257,13 +261,16 @@ void dochild()
 		tst_resm(TFAIL,"child kill");
 		tst_exit();
 	}
+
+	if (notify_startup(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "notify_startup failed");
+	}
+
 	pause();
 	tst_exit();
 }
 
-int main(ac, av)
-int ac;
-char **av;
+int main( int ac, char **av)
 {
 	int fd, i;
 	int tlen = 0;
@@ -353,6 +360,11 @@ char **av;
 			 * record lock.
 			 */
 			recstart = RECLEN + rand()%(len - 3*RECLEN);
+
+			if (create_sync_pipes(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+			}
+
 			if ((cpid = FORK_OR_VFORK()) < 0) {
 				unlink(filename);
 				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
@@ -361,6 +373,7 @@ char **av;
 				tst_rmdir();
 				tst_exit();
 			}
+
 			if (cpid == 0) {
 #ifdef UCLINUX
 				if (self_exec(av[0], "dddd", filename, recstart,
@@ -375,6 +388,11 @@ char **av;
 #endif
 				/* never returns */
 			}
+
+			if (wait_son_startup(sync_pipes) == -1) {
+				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
+			}
+
 			doparent();
 			/* child should already be dead */
 			unlink(filename);
