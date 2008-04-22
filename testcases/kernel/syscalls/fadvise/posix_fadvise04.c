@@ -47,6 +47,10 @@
 #define _FILE_OFFSET_BITS 32
 #endif
 
+#ifndef __NR_fadvise64
+#define __NR_fadvise64 0
+#endif
+
 void setup();
 void cleanup();
 
