@@ -109,6 +109,7 @@ int main(int ac, char **av)
 	/* perform global setup for test */
 	setup();
 
+#ifdef __NR_sysfs
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -134,6 +135,9 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
 	}			/* End of TEST_LOOPING */
+#else
+	tst_resm(TWARN, "This test can only run on kernels that support the sysfs system call");
+#endif
 
 	/*Clean up and exit */
 	cleanup();
