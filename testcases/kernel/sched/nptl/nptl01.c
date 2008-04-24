@@ -238,7 +238,7 @@ int main(int argc, char** argv)
 #ifdef DEBUG
 	tst_resm(TINFO,"Success in loop %d",i);
 #else
-	if (((i % NUMLOOPS / 10) == 0) && (i != 0))
+	if (((i % (NUMLOOPS / 10)) == 0) && (i != 0))
 	  tst_resm(TINFO,"Success thru loop %d of %i",i,NUMLOOPS);
 #endif
 	call_mutex_lock(&ack, buf, sizeof(buf));
