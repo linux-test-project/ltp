@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: f00f.c,v 1.4 2006/02/11 05:00:32 vapier Exp $ */
+/* $Id: f00f.c,v 1.5 2008/04/24 06:36:14 subrata_modak Exp $ */
 /*
  * This is a simple test for handling of the pentium f00f bug.
  * It is an example of a catistrophic test case.  If the system
@@ -47,12 +47,6 @@ int TST_TOTAL=1;
 
 #ifdef __i386__
 
-
-/*
- * an f00f instruction
- */
-char x[5] = { 0xf0, 0x0f, 0xc7, 0xc8 };
-
 void
 sigill (int sig)
 {
@@ -63,12 +57,16 @@ sigill (int sig)
 int 
 main ()
 {
-  void (*f) () = (void *) x;
-
   signal (SIGILL, sigill);
   tst_resm(TINFO, "Testing for proper f00f instruction handling.");
 
-  f ();
+  /*
+   * an f00f instruction
+   */
+  asm volatile (".byte	0xf0\n"
+		".byte	0x0f\n"
+		".byte	0xc7\n"
+		".byte	0xc8\n");
 
   /*
    * we shouldn't get here, the f00f instruction should trigger
