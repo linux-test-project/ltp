@@ -2,7 +2,7 @@
 DESTDIR=/opt/ltp
 
 ifeq ($(shell uname -s),SunOS)
-CC=gcc -Wall
+CFLAGS+= -Wall
 endif
 CFLAGS+= -I../include 
 ifeq ($(shell uname -s),Linux)
