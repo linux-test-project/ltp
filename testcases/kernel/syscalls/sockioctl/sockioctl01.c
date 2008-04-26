@@ -51,6 +51,7 @@
 #include <sys/socket.h>
 #include <sys/signal.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 
 #include <netinet/in.h>
 #include <net/if.h>
@@ -186,22 +187,28 @@ cleanup(void)
 }
 
 
-void 
+void
 setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
-		s = 400;	/* anything not an open file */
-	else
-		if((s = open("/dev/tty0", O_RDWR)) == -1)
-			if((s = open("/dev/tty", O_RDWR)) == -1)
-				tst_brkm(TBROK, cleanup, "Could not open /dev/tty0 or /dev/tty - "
+		s = 1025;	/* anything not an open file */
+	else {
+		tst_tmpdir();
+		if((s = mknod("test", O_RDWR | O_CREAT | S_IFIFO, 0 )) == -1)
+				tst_brkm(TBROK, cleanup, "Could not open test - "
 				"errno: %s", strerror(errno));
+	}
 }
 
 void
 cleanup0(void)
 {
-	s = -1;
+	/* delete the test directory created in setup0() */
+	if (tdat[testno].experrno != EBADF) {
+		(void) close(s);
+		s = -1;
+		tst_rmdir();
+	}
 }
 
 void
