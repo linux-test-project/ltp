@@ -38,7 +38,7 @@
 #include        <math.h>
 
 #define 	M_PIl	3.1415926535897932384626433832795029L L
-
+#define		MAX_FNAME_LEN	16
 
 /*****************************************************************
  * create file: 
@@ -69,34 +69,42 @@ int create_file(char *func_name, int NbVal)
 
 int main(int argc, char *argv[])
 {
-	char *funct;
+	char *funct, *bin_path;
 	pid_t  child;
 	
-	funct = "./gencos";
+	if (argc != 2){
+                printf ("ERROR: need the path to generation binaries\n");
+                abort();
+        }
+
+	bin_path = argv[1];
+
+	funct = malloc (strlen (bin_path) + MAX_FNAME_LEN);
+	sprintf (funct, "%s/gencos", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./gensin";
+	sprintf (funct, "%s/gensin", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./gentan";
+	sprintf (funct, "%s/gentan", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./genatan";
+	sprintf (funct, "%s/genatan", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 		
-	funct = "./genatan2";
+	sprintf (funct, "%s/genatan2", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./genacos";
+	sprintf (funct, "%s/genacos", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./genasin";
+	sprintf (funct, "%s/genasin", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 

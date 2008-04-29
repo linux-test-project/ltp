@@ -37,7 +37,7 @@
 #include        <sys/signal.h>
 #include        <math.h>
 
-
+#define		MAX_FNAME_LEN	16
 
 /*****************************************************************
  * create file: 
@@ -69,26 +69,33 @@ int create_file(char *func_name, int NbVal)
 
 int main(int argc, char *argv[])
 {
-	char *funct;
+	char *funct, *bin_path;
 	pid_t child;
 	
-	funct = "./genj0";
+	if (argc != 2){
+	        printf ("ERROR: need the path to generation binaries\n");
+	        abort();
+	}
+
+	bin_path = argv[1];
+	funct = malloc (strlen (bin_path) + MAX_FNAME_LEN);
+	sprintf (funct, "%s/genj0", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./genj1";
+	sprintf (funct, "%s/genj1", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./geny0";
+	sprintf (funct, "%s/geny0", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./geny1";
+	sprintf (funct, "%s/geny1", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 
-	funct = "./genlgamma";
+	sprintf (funct, "%s/genlgamma", bin_path);
 	child=create_file(funct, 0);
 	waitpid(child,NULL,0);
 

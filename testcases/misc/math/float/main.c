@@ -79,13 +79,16 @@ const double EPS=  0.1e-300;
 
 const int nb_func = NB_FUNC;
 
-int generate(char *datadir)
+int generate(char *datadir, char *bin_path)
 {
- char *fmt = "cd %s; ./%s";
- char *cmdline = malloc (strlen(fmt) + strlen(datadir) + strlen(GENERATOR));
+ char *cmdline;
+ char *fmt = "cd %s; %s/%s %s";
+ 
+ cmdline = malloc (2 * strlen(bin_path) + strlen(datadir) + 
+		   strlen(GENERATOR) + strlen(fmt));
  if (cmdline == NULL)
      return(1);
- sprintf(cmdline,fmt,datadir,GENERATOR);
+ sprintf(cmdline,fmt,datadir,bin_path,GENERATOR,bin_path);
  system(cmdline);
  free(cmdline);
  return(0);
@@ -97,6 +100,7 @@ int main(int argc, char *argv[])
         pid_t           pid;
         extern char     *optarg;
 
+	char *bin_path, *ltproot;
         void *exit_value;
         pthread_attr_t newattr;
         pthread_t sig_hand;
@@ -113,6 +117,11 @@ int main(int argc, char *argv[])
 	  TCID++;
 	else
 	  TCID = argv[0];
+	ltproot = getenv("LTPROOT");
+	bin_path = malloc (strlen(ltproot) + 16);
+	sprintf (bin_path, "%s/testcases/bin", ltproot);
+
+	tst_tmpdir();
 
 	setbuf(stdout, (char *)0);
 	setbuf(stderr, (char *)0);
@@ -145,7 +154,7 @@ int main(int argc, char *argv[])
 	}
 	pid=fork();
         if ( pid == 0 ){                    /*Child*/
-		generate((char*)&datadir);          
+		generate(datadir,bin_path);          
 		return(0);} 
 	else                                /*Parent*/
 		waitpid(pid,NULL,0);
@@ -266,6 +275,7 @@ finished:
 		}
 
 	}
+	tst_rmdir();
 	if (error) exit (1);
 	else exit(0);
 	return 0;
@@ -368,6 +378,7 @@ static void *handle_signals (void *arg)
 static void error (const char *msg, int line)
 {
         tst_resm(TFAIL, "ERROR [line: %d] %s", line, msg);
+	tst_rmdir();
         exit (-1);
 }
 
