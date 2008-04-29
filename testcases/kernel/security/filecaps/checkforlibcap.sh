@@ -27,13 +27,13 @@ SETCAP=`which setcap`
 ret=$?
 if [ $ret -eq 0 ]; then
 	#also test for -lcap
-	gcc -o check_simple_capset check_simple_capset.c -lcap
+	$CC -o check_simple_capset check_simple_capset.c -lcap
 	ret=$?
 fi
 
 if [ $ret -eq 0 ]; then
        #also test for xattr
-       gcc -o check_xattr check_xattr.c 
+       $CC -o check_xattr check_xattr.c
        ret=$?
        if [ $ret -ne 0 ]; then
                echo "Please install xattr headers"

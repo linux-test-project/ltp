@@ -46,7 +46,7 @@ checkforlibcap:
 endif
 
 numcaps.h: makenumcapsh.c
-	gcc -o makenumcapsh makenumcapsh.c
+	$(CC) -o makenumcapsh makenumcapsh.c
 	./makenumcapsh > numcaps.h
 
 verify_caps_exec: verify_caps_exec.c numcaps.h
