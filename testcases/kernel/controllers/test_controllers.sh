@@ -37,6 +37,8 @@
 if [ -f /proc/cgroups ]
 then
 	CPU_CONTROLLER=`grep -w cpu /proc/cgroups | cut -f1`;
+	MEM_CONTROLLER=`grep -w memory /proc/cgroups | cut -f1`;
+
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 1;
@@ -48,10 +50,21 @@ then
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 8;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 9;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 10;
+		echo
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";
 		echo "Skipping all cpu controller testcases....";
+	fi;
+
+	if [ "$MEM_CONTROLLER" = "memory" ]
+	then
+		$LTPROOT/testcases/bin/run_memctl_test.sh 1;
+		$LTPROOT/testcases/bin/run_memctl_test.sh 2;
+	else
+		echo "CONTROLLERS TESTCASES: WARNING";
+		echo "Kernel does not support for memory controller";
+		echo "Skipping all memory controller testcases....";
 	fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"
