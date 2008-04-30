@@ -37,13 +37,13 @@
 # Precaution:   Avoid system use by other applications/users to get fair and    #
 #               appropriate results                                             #
 #                                                                               #
-# Author:       Sudhir Kumar   <sudhirkumarmalik@In.ibm.com>                    #
+# Author:       Sudhir Kumar   <skumar@linux.vnet.ibm.com>                      #
 #                                                                               #
 # History:                                                                      #
 #                                                                               #
-#  DATE         NAME           EMAIL                           DESC             #
+#  DATE         NAME           EMAIL                         DESC               #
 #                                                                               #
-#  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test     #
+#  20/12/07  Sudhir Kumar <skumar@linux.vnet.ibm.com>   Created this test       #
 #                                                                               #
 #################################################################################
 

@@ -24,8 +24,8 @@
 # Description: This file runs the setup for testing diff cpucontroller feature. #
 #              After setup it runs diff test cases in diff setup.               #
 #                                                                               #
-# Test 01:     Tests if fairness persists among different runs                  #
-# Test 02:     Tests fairness with respect to absolute share values             #
+# Test 01:     Tests fairness with respect to absolute share values             #
+# Test 02:     Tests if fairness persists among different runs                  #
 # Test 03:     Granularity test with respect to shares values                   #
 # Test 04:     Nice value effect on group scheduling                            #
 # Test 05:     Task migration test                                              #
@@ -33,13 +33,13 @@
 # Precaution:   Avoid system use by other applications/users to get fair and    #
 #               appropriate results                                             #
 #                                                                               #
-# Author:       Sudhir Kumar   <sudhirkumarmalik@In.ibm.com>                    #
+# Author:       Sudhir Kumar   <skumar@linux.vnet.ibm.com>                      #
 #                                                                               #
 # History:                                                                      #
 #                                                                               #
-#  DATE         NAME           EMAIL                	     DESC               #
+#  DATE         NAME           EMAIL                         DESC               #
 #                                                                               #
-#  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test	#
+#  20/12/07  Sudhir Kumar <skumar@linux.vnet.ibm.com>   Created this test       #
 #                                                                               #
 #################################################################################
 
@@ -144,7 +144,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 			TASK_NUM=`expr $TASK_NUM + 1`;
 			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
 			chmod +x cpuctl_task_$TASK_NUM;
-			if [ $i -eq 1 ]	# Renice 1 task in each group
+			if [ $i -eq 1 ]	# Renice all tasks of group 1
 			then
 				NICELEVEL=$NICEVALUE;
 			else

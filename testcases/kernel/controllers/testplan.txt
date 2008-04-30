@@ -10,15 +10,5 @@ cases.
 A brief description of all the testcases is given in the corresponding
 controllers directory.
 
-CPU CONTROLLER:
-==============
-
-Test 01:
-
-The aim of the test is to find any dependency of cpu controller on exact value
-of shares to schedule the tasks. For example if there are two groups running
-1 task each then they must get the cpu time in the same ratio irrespective of
-the share values i.e. share ratios 1:2, 10:20, 100:200, 1000:2000 etc should
-give the same cpu usage for each group.
-
-For more information on resource controllers please refer to cgroups.txt in kernel documentation.
+For more information on resource controllers please refer to cgroups.txt in
+kernel source code documentation.

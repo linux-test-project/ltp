@@ -37,10 +37,10 @@
 /* Test Assertion                                                             */
 /*              Please refer to the file cpuctl_testplan.txt                  */
 /*                                                                            */
-/* Author:      Sudhir Kumar sudhirkumarmalik@in.ibm.com                      */
+/* Author:      Sudhir Kumar skumar@linux.vnet.ibm.com                        */
 /*                                                                            */
 /* History:                                                                   */
-/* Created-     20/12/2007 -Sudhir Kumar sudhirkumarmalik@in.ibm.com          */
+/* Created-     20/12/2007 -Sudhir Kumar <skumar@linux.vnet.ibm.com>          */
 /*                                                                            */
 /******************************************************************************/
 
@@ -83,7 +83,7 @@ int timer_expired = 0;
 int main(int argc, char* argv[])
 {
 
-	int test_num, task_num, len, num_cpus;	/* num_cpus to calculate cpu time in %*/
+	int test_num, task_num, len, num_cpus;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
 	int migrate=0;			/* For task migration*/
 	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
 	/* Following variables are to capture parameters from script*/

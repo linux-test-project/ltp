@@ -51,7 +51,7 @@ then
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";
-		echo "Skipping all controllers testcases....";
+		echo "Skipping all cpu controller testcases....";
 	fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"

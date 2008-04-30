@@ -42,14 +42,30 @@ fairness(as we will run 1 task per group). then we create say n groups. By
 default each group is assigned 1024 shares. The cpu controller schedules the
 tasks in different groups on the basis of the shares assigned to that group.
 So the cpu usage of a task depends on the amount of shares it's group has out
-of the total number of shares(no upper limiit but a lower limit of 2). Let us
-say that we have 3 groups(1 task each) A,B,C each having 2, 4, 6 shares
+of the total number of shares(no upper limit but a lower limit of 2) and the
+number of tasks in that group(in this case only 1).
+So until and unless this ratio(group A' shares/ Total shares of all groups)
+changes, the cpu time for this group A remains constant.
+
+Let us say we have 3 groups(1 task each) A,B,C each having 2, 4, 6 shares
 respectively. Hence if the tasks are running infinitely they are supposed to
 get 16.66%, 33.33%, 50% cpu time respectively. This test case tests that each
 group should get the cpu time in the same(above) ratio irrespective of the
-shares values provided the ratio is not changed i.e. the cpu time per group
-should not change if we change the shares from 2, 4, 6 to 200, 400, 600 or
-to 20K, 40K, 60K etc.
+shares absolute values provided the ratio is not changed i.e. the cpu time per
+group should not change if we change the shares from 2, 4, 6 to 200, 400, 600 or
+to 20K, 40K, 60K etc (provided the working conditions do not change).
+Thus the scheduling is proportional bandwidth scheduling and not absolute
+bandwidth scheduling.
+This was the test and outcome for test01. For test02 the setup is kept same.
+Test 02 tests if the fairness persists among different runs over a period of
+time. So in this test more than one sets of reading are taken and the expected
+outcome is that the cpu time for a task should remain constant among all the
+runs provided the working environment is same for the test.
+Currently the support to create an ideal environment for all the runs is not
+available in the test because of some required feature in the kernel. Hence
+there may be some variations among different runs depending on the execution
+of system default tasks which can run any time.
+The fix for this is supposed to be merged with next release.
 
 
 How to view the results:
