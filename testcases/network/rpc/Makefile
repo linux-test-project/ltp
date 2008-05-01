@@ -1,4 +1,4 @@
-SUBDIRS = basic_tests rpc-tirpc-full-test-suite 
+SUBDIRS = basic_tests
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
