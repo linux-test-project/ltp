@@ -15,11 +15,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
-#include <stream.h>
+#include <fstream>
 #include <string.h>
 #include "line.h"
+
+using namespace std;
 
 line::line()
 {

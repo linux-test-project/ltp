@@ -22,9 +22,11 @@
 
 
 #include "ballistaRPC.h"
-#include <vector.h>
+#include <vector>
 #include "line.h"
 #include "serverCommunication.h"
+
+using namespace std;
 
 class Test_case_iterator {
   three_dim  *result_1;

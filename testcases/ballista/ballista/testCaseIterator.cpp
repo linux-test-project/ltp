@@ -21,6 +21,8 @@
 #include "ballista.h"
 #include "testCaseIterator.h"
 
+using namespace std;
+
 /************************
  *
  * Function: Test_case_iterator

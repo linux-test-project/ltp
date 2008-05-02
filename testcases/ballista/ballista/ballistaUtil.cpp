@@ -19,11 +19,13 @@
 #include <assert.h>
 #include <string.h>
 #include <sys/time.h> //for get_time_in_microseconds
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 
 #include "ballistaUtil.h"
 #include "ballista.h"
+
+using namespace std;
 
 /************************
  *

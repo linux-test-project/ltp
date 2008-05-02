@@ -30,6 +30,7 @@
 #include "ballistaRPC.h"
 #include "ballistaUtil.h"
 
+using namespace std;
 
 #ifdef HP
 extern "C" CLIENT * clnt_create(char *, u_long, u_long, char*);
@@ -58,9 +59,9 @@ void CLNT_DESTROY2(CLIENT *rh){
  * Notes:
  *
  ************************/
-#include <iostream.h>
+#include <iostream>
 #include <netdb.h>
-#include <fstream.h>
+#include <fstream>
 #include <signal.h>
 #include <string.h>
 

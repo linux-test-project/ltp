@@ -17,10 +17,10 @@
 
 
 #include <errno.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fstream.h>
+#include <fstream>
 #include <signal.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -47,6 +47,8 @@
 #include "serverCommunication.h"
 #include "testCaseIterator.h"
 #include "testManager.h"
+
+using namespace std;
 
 #ifdef B_VXWORKS
     #include "vxworks.h"

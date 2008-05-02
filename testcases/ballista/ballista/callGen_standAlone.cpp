@@ -17,11 +17,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #define qt (char)34 
 
+using namespace std;
 
 char *temp=tempnam(NULL,"cg");
 

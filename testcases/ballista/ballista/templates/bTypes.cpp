@@ -42,8 +42,8 @@ IMPLEMENTATION DESIGN
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
-#include <stream.h>
-#include <iostream.h>
+#include <fstream>
+#include <iostream>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>

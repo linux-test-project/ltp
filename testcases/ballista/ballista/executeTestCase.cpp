@@ -17,7 +17,7 @@
 
 #include "executeTestCase.h"
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <signal.h>
 #include "unmarshal.h"
 

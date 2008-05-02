@@ -182,7 +182,7 @@ print OUTFILE "\n\n";
 print OUTFILE '/* This code will work for most operating systems using g++ ';
 print OUTFILE 'You may have to add a couple #include lines, especially if ';
 print OUTFILE 'you are testing your own function */';
-print OUTFILE "#include <stdio.h>\n#include <stdlib.h>\n#include <iostream.h>\n";
+print OUTFILE "#include <stdio.h>\n#include <stdlib.h>\n#include <iostream>\n";
 #print OUTFILE "#include <unistd.h>\n\n\n";
 
 print OUTFILE '/* Includes from user */';

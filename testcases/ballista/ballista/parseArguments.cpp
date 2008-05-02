@@ -17,11 +17,13 @@
  */
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <ctype.h>
 #include <assert.h>
 #include "parseArguments.h"
 #include "ballistaUtil.h"
+
+using namespace std;
 
 /************************
  *

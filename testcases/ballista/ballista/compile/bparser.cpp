@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-//#include <vector.h>
+//#include <vector>
 #include <vector>
 #include <unistd.h>
 #include "tokens.h"
@@ -1076,7 +1076,7 @@ void buildH()
   h1<<"#include <iostream>"<<endl;
   h1<<"#include <stdio.h>"<<endl;
   h1<<"#include <stdlib.h>"<<endl;
-  h1<<"#include <stream.h>"<<endl;
+  h1<<"#include <fstream>"<<endl;
   h1<<"#include <string.h>"<<endl;
   h1<<"#include <sys/types.h>"<<endl;
   h1<<"#include <sys/stat.h>"<<endl;
@@ -1228,7 +1228,7 @@ void buildCPP()
   cf<<"#include <iostream>"<<endl;
   cf<<"#include <stdio.h>"<<endl;
   cf<<"#include <stdlib.h>"<<endl;
-  cf<<"#include <stream.h>"<<endl;
+  cf<<"#include <fstream>"<<endl;
   cf<<"#include <string.h>"<<endl;
   cf<<"#include <sys/types.h>"<<endl;
   cf<<"#include <sys/stat.h>"<<endl;

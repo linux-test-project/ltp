@@ -18,8 +18,10 @@
 #ifndef _LINE_H_
 #define _LINE_H_
 
-#include <iostream.h>
-#include <stream.h>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 class line
 {

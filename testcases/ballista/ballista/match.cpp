@@ -21,10 +21,11 @@
 #include <regex.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fstream.h>
+#include <fstream>
 
 #include "match.h"
 
+using namespace std;
 
 /************************
  *

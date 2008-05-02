@@ -18,7 +18,7 @@
 
 #include <assert.h>  //for asserts in manage_test
 #include <dlfcn.h>  //for dynamic loading in constructor
-#include <iostream.h>  //for cout and cerr
+#include <iostream>  //for cout and cerr
 #include <signal.h>  //for SIGKILL
 #include <stdio.h>  //generally needed
 #include <stdlib.h>  //generally needed
@@ -34,6 +34,8 @@
 #include "ballistaUtil.h"
 #include "marshal.h"
 #include "selfHost.h"
+
+using namespace std;
 
 extern "C" int execute_test_case (char *marshalled_parameters);
 
