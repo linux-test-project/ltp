@@ -60,7 +60,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #ifdef __ia64__
 #define INCREMENT 		8388608	/* 8Mb */
-#elif defined (__mips__)  ||  defined (__hppa__)
+#elif defined (__mips__)  ||  defined (__hppa__) || defined (__sparc__)
 #define INCREMENT		262144	/* 256Kb */
 #elif defined __sh__ || defined (__arm__)
 #define INCREMENT 		16384   /* 16kb */

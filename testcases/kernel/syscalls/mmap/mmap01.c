@@ -81,6 +81,7 @@
 #include <stdint.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/shm.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -267,14 +268,16 @@ setup()
 	}
 
 	/*
-	 * Initialize addr to align with the first page boundary above the
-	 * break address of the process.
+	 * Initialize addr to align with the first segment boundary address
+	 * above the break address of the process.
 	 */
-	addr = (void *) (((intptr_t)sbrk(0) + (page_sz - 1)) & ~(page_sz - 1));
+	addr = (void *) (((intptr_t)sbrk(0) + (SHMLBA - 1)) & ~(SHMLBA - 1));
 
-	/* Increase the break address of the process by 2 page size bytes */
-	if ((intptr_t)sbrk(2 * page_sz) == -1) {
-		tst_brkm(TFAIL, cleanup, "sbrk(2 * page_sz) failed");
+	/* Set the break address of the process to the addr plus one
+	 * page size.
+	 */
+	if ((intptr_t)sbrk(SHMLBA + page_sz) == -1) {
+		tst_brkm(TFAIL, cleanup, "sbrk(SHMLBA + page_sz) failed");
 	}
 
 	/* Initialize one page region from addr with 'A' */
