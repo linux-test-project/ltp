@@ -118,6 +118,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HLD = @HLD@
 HPI_CLIENT_PKG = @HPI_CLIENT_PKG@
 HPI_LIB_VERSION = @HPI_LIB_VERSION@
 HPI_PKG = @HPI_PKG@
@@ -137,6 +138,7 @@ LIST_RESOURCES_THREADED = @LIST_RESOURCES_THREADED@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+MAN = @MAN@
 MARSHALDIR = @MARSHALDIR@
 MKDIR_P = @MKDIR_P@
 NOCFLAGS = @NOCFLAGS@
@@ -204,7 +206,9 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+found_docbook2html = @found_docbook2html@
 found_pkg_config = @found_pkg_config@
+found_pod2man = @found_pod2man@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -233,7 +237,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 MAINTAINERCLEANFILES = Makefile.in 
-SUBDIRS = hld man
+SUBDIRS = @HLD@ @MAN@
 all: all-recursive
 
 .SUFFIXES:

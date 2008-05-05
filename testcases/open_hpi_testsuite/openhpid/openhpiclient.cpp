@@ -24,6 +24,7 @@
 #include <pthread.h>
 #include <glib.h>
 #include <config.h>
+#include "strmsock.h"
 extern "C"
 {
 #include <SaHpi.h>
@@ -33,7 +34,6 @@ extern "C"
 
 
 #include "marshal_hpi.h"
-#include "openhpiclient.h"
 
 #define cdebug_out(cmd, str) trace("%s: %s\n", cmd, str)
 #define cdebug_err(cmd, str) dbg("%s: %s\n", cmd, str)

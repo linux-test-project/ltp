@@ -474,6 +474,7 @@ static int process_domain_token(GScanner *scanner)
 	GHashTable *domain_stanza = NULL;
         char *tablekey, *tablevalue;
         int found_right_curly = 0;
+        int v_signed = 0;
 
         data_access_lock();
 
@@ -545,6 +546,11 @@ static int process_domain_token(GScanner *scanner)
                                 goto free_table_and_key;
                         }
                 } else if (strcmp("ai_timeout", tablekey) == 0) { /* Optional. 0 (default) is IMMEDIATE. -1 is BLOCK. In seconds. */
+                        if (current_token == '-') {
+                            v_signed = 1;
+                            current_token = g_scanner_get_next_token(scanner);
+                        }
+
                         if (current_token != G_TOKEN_INT &&
                             current_token != G_TOKEN_FLOAT) {
                                 dbg("Processing domain: Invalid value for %s!", tablekey);
@@ -562,6 +568,10 @@ static int process_domain_token(GScanner *scanner)
                         gulong *value_int =
                                 (gulong *)g_malloc(sizeof(gulong));
                         *value_int = (gulong)scanner->value.v_int;
+                        if (v_signed) {
+                                *value_int = -(*value_int);
+                                v_signed = 0;
+                        }
                         value = (gpointer)value_int;
                 } else if (current_token == G_TOKEN_FLOAT) {
                         gdouble *value_double =

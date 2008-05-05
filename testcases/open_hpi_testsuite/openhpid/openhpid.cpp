@@ -28,6 +28,7 @@
 #include <glib.h>
 #include <errno.h>
 #include <getopt.h>
+#include "strmsock.h"
 
 extern "C"
 {
@@ -38,7 +39,6 @@ extern "C"
 #include <oh_init.h>
 }
 
-#include "strmsock.h"
 #include "marshal_hpi.h"
 
 
@@ -1906,6 +1906,7 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                                                  params_list.NumberOfParams,
                                                  params_list.ParamsList);
                 
+                        free(params_list.ParamsList);
                         thrdinst->header.m_len = HpiMarshalReply0(hm, pReq,
                                                                   &ret);
                 }

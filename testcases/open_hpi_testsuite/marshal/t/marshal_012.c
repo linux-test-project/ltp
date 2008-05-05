@@ -13,14 +13,14 @@
  */
 
 #include "marshal.h"
-#include <byteswap.h>
+#include <glib.h>
 
 
 int
 main( int argc, char *argv[] )
 {
   tUint16 value = 0x42aa;
-  tUint16 swap  = bswap_16( value );
+  tUint16 swap  = GUINT16_SWAP_LE_BE( value );
   tUint16 result;
 
   unsigned int s = Demarshal( MarshalByteOrder() ? 0 : 1,

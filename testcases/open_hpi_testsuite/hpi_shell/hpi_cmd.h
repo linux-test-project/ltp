@@ -43,7 +43,9 @@ typedef enum {
 	ANN_COM,
 	CTRL_COM,
 	INV_COM,
-	HS_COM
+	HS_COM,
+    DIMI_COM,
+    FUMI_COM,
 } com_enum_t;
 
 typedef struct {
@@ -154,6 +156,28 @@ extern void		set_current_history(char *line);
 extern void		set_Subscribe(Domain_t *domain, int as);
 extern int		set_text_buffer(SaHpiTextBufferT *buf);
 extern ret_code_t	show_inv(void);
+extern ret_code_t   dimi_block(void);
+extern ret_code_t   dimi_block_info(void);
+extern ret_code_t   dimi_block_testinfo(void);
+extern ret_code_t   dimi_block_ready(void);
+extern ret_code_t   dimi_block_start(void);
+extern ret_code_t   dimi_block_cancel(void);
+extern ret_code_t   dimi_block_status(void);
+extern ret_code_t   dimi_block_results(void);
+extern ret_code_t   fumi_block(void);
+extern ret_code_t   fumi_block_setsource(void);
+extern ret_code_t   fumi_block_validatesource(void);
+extern ret_code_t   fumi_block_getsource(void);
+extern ret_code_t   fumi_block_targetinfo(void);
+extern ret_code_t   fumi_block_backup(void);
+extern ret_code_t   fumi_block_setbootorder(void);
+extern ret_code_t   fumi_block_bankcopy(void);
+extern ret_code_t   fumi_block_install(void);
+extern ret_code_t   fumi_block_status(void);
+extern ret_code_t   fumi_block_verifytarget(void);
+extern ret_code_t   fumi_block_cancel(void);
+extern ret_code_t   fumi_block_rollback(void);
+extern ret_code_t   fumi_block_activate(void);
 extern int		ui_print(char *Str);
 extern ret_code_t	unget_term(void);
 

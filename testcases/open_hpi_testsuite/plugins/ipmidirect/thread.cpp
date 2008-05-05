@@ -167,6 +167,17 @@ cThread::Exit( void *rv )
 //                  cThreadLock
 //////////////////////////////////////////////////
 
+#if defined(__sun) && defined(__SVR4)
+cThreadLock::cThreadLock()
+{
+  pthread_mutexattr_t attr;
+
+  pthread_mutexattr_init( &attr );
+  pthread_mutexattr_settype( &attr, PTHREAD_MUTEX_RECURSIVE );
+  pthread_mutex_init( &m_lock, &attr );
+  pthread_mutexattr_destroy( &attr );
+}
+#else
 static pthread_mutex_t lock_tmpl = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 
@@ -174,6 +185,7 @@ cThreadLock::cThreadLock()
   : m_lock( lock_tmpl )
 {
 }
+#endif
 
 
 cThreadLock::~cThreadLock()
@@ -207,12 +219,19 @@ cThreadLock::TryLock()
 //                  cThreadLockRw
 //////////////////////////////////////////////////
 
+#if defined(__sun) && defined(__SVR4)
+cThreadLockRw::cThreadLockRw()
+{
+  pthread_rwlock_init( &m_rwlock, NULL );
+}
+#else
 static pthread_rwlock_t rwlock_tmpl = PTHREAD_RWLOCK_INITIALIZER;
 
 cThreadLockRw::cThreadLockRw()
 {
   m_rwlock = rwlock_tmpl;
 }
+#endif
 
 
 cThreadLockRw::~cThreadLockRw()
@@ -283,12 +302,19 @@ cThreadLockRw::CheckLock()
 //                  cThreadCond
 //////////////////////////////////////////////////
 
+#if defined(__sun) && defined(__SVR4)
+cThreadCond::cThreadCond()
+{
+  pthread_cond_init( &m_cond, NULL );
+}
+#else
 static pthread_cond_t cond_tmpl = PTHREAD_COND_INITIALIZER;
 
 cThreadCond::cThreadCond()
 {
   m_cond = cond_tmpl;
 }
+#endif
 
 
 cThreadCond::~cThreadCond()

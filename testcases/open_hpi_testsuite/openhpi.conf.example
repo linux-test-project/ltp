@@ -82,7 +82,7 @@ handler libsimulator {
 #       entity_root = "{SYSTEM_CHASSIS,3}"
 #       name = "lan"
 #       addr = "x.x.x.x"        #ipaddress
-#       port = 999
+#       port = "999"
 #       auth_type = "straight"
 #       auth_level= "user"
 #       username = "joe"

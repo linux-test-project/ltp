@@ -22,7 +22,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <assert.h>
-#include <byteswap.h>
+#include <glib.h>
 #include <math.h>
 
 
@@ -143,7 +143,7 @@ main( int argc, char *argv[] )
      }
 
   // conversion
-  if ( __BYTE_ORDER == __LITTLE_ENDIAN )
+  if ( G_BYTE_ORDER == G_LITTLE_ENDIAN )
        ReadFile( "Float32.bin.ppc", f32, sizeof( float32_data ) );
   else
        ReadFile( "Float32.bin.i386", f32, sizeof( float32_data ) );
@@ -155,7 +155,7 @@ main( int argc, char *argv[] )
 	/* compile error */
 //       unsigned int v = *(unsigned int *)p;
        unsigned int v = *(unsigned int *)(void *)p;
-       v = bswap_32( v );
+       v = GUINT32_SWAP_LE_BE( v );
 	/* compile error */
 //       *(unsigned int *)p = v;
        *(unsigned int *)(void *)p = v;
@@ -168,7 +168,7 @@ main( int argc, char *argv[] )
      }
 
   // conversion
-  if ( __BYTE_ORDER == __LITTLE_ENDIAN )
+  if ( G_BYTE_ORDER == G_LITTLE_ENDIAN )
        ReadFile( "Float64.bin.ppc", f64, sizeof( float64_data ) );
   else
        ReadFile( "Float64.bin.i386", f64, sizeof( float64_data ) );
@@ -180,7 +180,7 @@ main( int argc, char *argv[] )
 	/* compile error */
 //       unsigned long long v = *(unsigned long long *)p;
        unsigned long long v = *(unsigned long long *)(void *)p;
-       v = bswap_64( v );
+       v = GUINT64_SWAP_LE_BE( v );
 	/* compile error */
 //       *(unsigned long long *)p = v;
        *(unsigned long long *)(void *)p = v;

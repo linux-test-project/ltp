@@ -291,10 +291,17 @@ cIpmiResource::AddRdr( cIpmiRdr *rdr )
 
   if ( hs )
      {
-       if ( m_hotswap_sensor )
-           stdlog << "WARNING: found a second hotswap sensor, discard it !\n";
+       if (hs->EntityPath() == EntityPath())
+       {
+           if ( m_hotswap_sensor )
+                stdlog << "WARNING: found a second hotswap sensor, discard it !\n";
+           else
+                m_hotswap_sensor = hs;
+       }
        else
-           m_hotswap_sensor = hs;
+       {
+           stdlog << "WARNING: hotswap sensor ep " << hs->EntityPath() << "!= resource ep " << EntityPath() <<", discard it \n";
+       }
      }
 
   return true;

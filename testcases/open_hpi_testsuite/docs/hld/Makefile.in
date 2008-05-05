@@ -13,6 +13,7 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -43,6 +44,17 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(openhpi_docsdir)" \
+	"$(DESTDIR)$(openhpi_imgdir)"
+openhpi_docsDATA_INSTALL = $(INSTALL_DATA)
+openhpi_imgDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(openhpi_docs_DATA) $(openhpi_img_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -75,6 +87,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HLD = @HLD@
 HPI_CLIENT_PKG = @HPI_CLIENT_PKG@
 HPI_LIB_VERSION = @HPI_LIB_VERSION@
 HPI_PKG = @HPI_PKG@
@@ -94,6 +107,7 @@ LIST_RESOURCES_THREADED = @LIST_RESOURCES_THREADED@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+MAN = @MAN@
 MARSHALDIR = @MARSHALDIR@
 MKDIR_P = @MKDIR_P@
 NOCFLAGS = @NOCFLAGS@
@@ -161,7 +175,9 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+found_docbook2html = @found_docbook2html@
 found_pkg_config = @found_pkg_config@
+found_pod2man = @found_pod2man@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -225,9 +241,10 @@ SERVER = shell1.sourceforge.net
 HLDDIR = /home/groups/o/op/openhpi/htdocs/manual
 SFUSER = $(shell if test $(SFUID) != "" > /dev/null 2>&1; then echo $(SFUID); else echo $(USER); fi;)
 MAINTAINERCLEANFILES = Makefile.in  
-openhpi_docsdir = $(datadir)/openhpi/docs/hld
-
-#openhpi_docs_DATA	= openhpi-manual/book1.html 
+openhpi_docsdir = $(datadir)/doc/$(PACKAGE_NAME)-$(VERSION)/html
+openhpi_docs_DATA = openhpi-manual/*.html
+openhpi_imgdir = $(datadir)/doc/$(PACKAGE_NAME)-$(VERSION)/html/images
+openhpi_img_DATA = openhpi-manual/images/*
 SGML_FILES = $(shell echo $(srcdir)/*.dtd) $(shell echo $(srcdir)/*.sgml)
 EXTRA_DIST = $(DIAGRAMS) $(SGML_FILES) htmlfilter.pl
 all: all-am
@@ -268,6 +285,40 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-openhpi_docsDATA: $(openhpi_docs_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(openhpi_docsdir)" || $(MKDIR_P) "$(DESTDIR)$(openhpi_docsdir)"
+	@list='$(openhpi_docs_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(openhpi_docsDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(openhpi_docsdir)/$$f'"; \
+	  $(openhpi_docsDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(openhpi_docsdir)/$$f"; \
+	done
+
+uninstall-openhpi_docsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(openhpi_docs_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(openhpi_docsdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(openhpi_docsdir)/$$f"; \
+	done
+install-openhpi_imgDATA: $(openhpi_img_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(openhpi_imgdir)" || $(MKDIR_P) "$(DESTDIR)$(openhpi_imgdir)"
+	@list='$(openhpi_img_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(openhpi_imgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(openhpi_imgdir)/$$f'"; \
+	  $(openhpi_imgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(openhpi_imgdir)/$$f"; \
+	done
+
+uninstall-openhpi_imgDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(openhpi_img_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(openhpi_imgdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(openhpi_imgdir)/$$f"; \
+	done
 tags: TAGS
 TAGS:
 
@@ -303,8 +354,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile
+all-am: Makefile $(DATA)
 installdirs:
+	for dir in "$(DESTDIR)$(openhpi_docsdir)" "$(DESTDIR)$(openhpi_imgdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -348,7 +402,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-openhpi_docsDATA install-openhpi_imgDATA
 
 install-dvi: install-dvi-am
 
@@ -378,7 +432,7 @@ pdf: pdf-am
 
 ps: ps-am
 
-uninstall-am:
+uninstall-am: uninstall-openhpi_docsDATA uninstall-openhpi_imgDATA
 
 .MAKE: install-am install-strip
 
@@ -388,11 +442,12 @@ uninstall-am:
 	install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	uninstall uninstall-am
+	install-openhpi_docsDATA install-openhpi_imgDATA install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-openhpi_docsDATA uninstall-openhpi_imgDATA
 
 
 all:
@@ -403,19 +458,19 @@ pdf-am:
 ps-am:
 	docbook2ps openhpi-manual.sgml
 
-openhpi-manual/book1.html: $(SGML_FILES)
-	-docbook2html -o openhpi-manual openhpi-manual.sgml
+openhpi-manual/*.html: $(SGML_FILES)
+	-docbook2html -o openhpi-manual $(srcdir)/openhpi-manual.sgml
 	-mkdir -p openhpi-manual/images
 	-cp $(DIAGRAMS) openhpi-manual/images
-
-publish-local: clean-local openhpi-manual/book1.html
-	-./htmlfilter.pl $(shell echo $(srcdir)/openhpi-manual/*html)
+	-$(srcdir)/htmlfilter.pl $(shell echo $(builddir)/openhpi-manual/*html)
 	-chmod a+x $(shell echo $(srcdir)/openhpi-manual/*html)
 	if test ! -e openhpi-manual/book1.html; then \
 		ln openhpi-manual/index.html openhpi-manual/book1.html; \
 	fi;
 
-publish: publish-local
+openhpi-manual/images/*: openhpi-manual/*.html
+
+publish: openhpi-manual/*.html
 	-echo "XBitHack on" > openhpi-manual/.htaccess
 	-rsync -e ssh -rP --delete openhpi-manual/ $(SFUSER)@$(SERVER):$(HLDDIR)
 	-ssh $(SFUSER)@$(SERVER) "find $(HLDDIR) -user $(SFUSER) -exec chmod g+w {} \;"

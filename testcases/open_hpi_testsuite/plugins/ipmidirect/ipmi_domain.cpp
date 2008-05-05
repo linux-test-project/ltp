@@ -500,6 +500,18 @@ cIpmiDomain::CheckTca()
 
   m_is_tca = true;
 
+  // MicroTCA systems have 1 to 16 Carriers
+  if ( major == 5 )
+  {
+    for ( int carrier_number = 1; carrier_number <= 16; carrier_number++ )
+    {
+        NewFruInfo( 0x80 + (carrier_number*2), 0, SAHPI_ENT_SUBBOARD_CARRIER_BLADE, carrier_number,
+                    eIpmiAtcaSiteTypeAtcaBoard, dIpmiMcThreadInitialDiscover );
+    }
+
+    return SA_OK;
+  }
+
   // read all fru addr
   msg.m_netfn   = eIpmiNetfnPicmg;
   msg.m_cmd     = eIpmiCmdGetAddressInfo;

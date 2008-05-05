@@ -44,6 +44,8 @@ static SaErrorT oh_build_ctrlrec(oh_big_textbuffer *textbuf, const SaHpiCtrlRecT
 static SaErrorT oh_build_invrec(oh_big_textbuffer *textbuff, const SaHpiInventoryRecT *invrec, int offsets);
 static SaErrorT oh_build_wdogrec(oh_big_textbuffer *textbuff, const SaHpiWatchdogRecT *wdogrec, int offsets);
 static SaErrorT oh_build_annrec(oh_big_textbuffer *textbuff, const SaHpiAnnunciatorRecT *annrec, int offsets);
+static SaErrorT oh_build_dimirec(oh_big_textbuffer *textbuff, const SaHpiDimiRecT *dimirec, int offsets);
+static SaErrorT oh_build_fumirec(oh_big_textbuffer *textbuff, const SaHpiFumiRecT *fumirec, int offsets);
 
 static SaErrorT oh_build_event_resource(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
 static SaErrorT oh_build_event_domain(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
@@ -54,6 +56,9 @@ static SaErrorT oh_build_event_watchdog(oh_big_textbuffer *buffer, const SaHpiEv
 static SaErrorT oh_build_event_hpi_sw(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
 static SaErrorT oh_build_event_oem(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
 static SaErrorT oh_build_event_user(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
+static SaErrorT oh_build_event_dimi(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
+static SaErrorT oh_build_event_dimi_update(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
+static SaErrorT oh_build_event_fumi(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets);
 
 /************************************************************************
  * NOTES!
@@ -1110,7 +1115,11 @@ static SaErrorT oh_build_resourceinfo(oh_big_textbuffer *buffer, const SaHpiReso
                 memset(empty_guid, 0, sizeof(SaHpiGuidT));
 
                 if (memcmp(empty_guid, ResourceInfo->Guid, sizeof(SaHpiGuidT))) {
+#if defined(__sun) && defined(__SVR4)
+                        uuid_unparse((unsigned char *)ResourceInfo->Guid, tempstr);
+#else
                         uuid_unparse(ResourceInfo->Guid, tempstr);
+#endif
                         oh_append_offset(&working, offsets);
                         snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "GUID: %s\n",
                                         tempstr);
@@ -1690,6 +1699,11 @@ SaErrorT oh_decode_capabilities(SaHpiCapabilitiesT ResourceCapabilities,
                 err = oh_append_textbuffer(&working, "CONTROL | ");
                 if (err) { return(err); }
         }
+        if (ResourceCapabilities & SAHPI_CAPABILITY_DIMI) {
+                found++;
+                err = oh_append_textbuffer(&working, "DIMI | ");
+                if (err) { return(err); }
+        }
         if (ResourceCapabilities & SAHPI_CAPABILITY_EVENT_LOG) {
                 found++;
                 err = oh_append_textbuffer(&working, "EVENT_LOG | ");
@@ -1703,6 +1717,11 @@ SaErrorT oh_decode_capabilities(SaHpiCapabilitiesT ResourceCapabilities,
         if (ResourceCapabilities & SAHPI_CAPABILITY_FRU) {
                 found++;
                 err = oh_append_textbuffer(&working, "FRU | ");
+                if (err) { return(err); }
+        }
+        if (ResourceCapabilities & SAHPI_CAPABILITY_FUMI) {
+                found++;
+                err = oh_append_textbuffer(&working, "FUMI | ");
                 if (err) { return(err); }
         }
         if (ResourceCapabilities & SAHPI_CAPABILITY_INVENTORY_DATA) {
@@ -1970,6 +1989,14 @@ SaErrorT oh_fprint_rdr(FILE *stream, const SaHpiRdrT *thisrdr, int offsets)
                 case SAHPI_ANNUNCIATOR_RDR:
                         err = oh_build_annrec(&mybuf1,
                                 (const SaHpiAnnunciatorRecT*) &thisrdr->RdrTypeUnion.AnnunciatorRec, offsets);
+                        break;
+                case SAHPI_DIMI_RDR:
+                        err = oh_build_dimirec(&mybuf1,
+                                (const SaHpiDimiRecT*) &thisrdr->RdrTypeUnion.DimiRec, offsets);
+                        break;
+                case SAHPI_FUMI_RDR:
+                        err = oh_build_fumirec(&mybuf1,
+                                (const SaHpiFumiRecT*) &thisrdr->RdrTypeUnion.FumiRec, offsets);
                         break;
                 case SAHPI_NO_RECORD:
                         oh_append_offset(&mybuf1, offsets);
@@ -2289,6 +2316,321 @@ static SaErrorT oh_build_annrec(oh_big_textbuffer *textbuff,const SaHpiAnnunciat
 }
 
 /**
+ * oh_build_dimirec:
+ * @textbuff: Buffer into which to store flattened structure.
+ * @annrec: Pointer to SaHpiDimiRecT to be flattened.
+ * @offsets:  Number of offsets to start printing structure.
+ *
+ * Flatten member data contained in SaHpiDimiRecT struct to a text buffer.
+ *
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - Pointer parameter(s) are NULL.
+ **/
+static SaErrorT oh_build_dimirec(oh_big_textbuffer *textbuff, const SaHpiDimiRecT *dimirec, int offsets)
+{
+        SaErrorT err;
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        oh_big_textbuffer mybuf;
+
+        if (!textbuff || !dimirec) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }
+
+        oh_init_bigtext(&mybuf);
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "DIMI Num: %d (%x hex)\n",
+                 dimirec->DimiNum, dimirec->DimiNum);
+        oh_append_bigtext(&mybuf, str);
+
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Oem: %d\n", dimirec->Oem);
+        oh_append_bigtext(&mybuf, str);
+
+        err = oh_copy_bigtext(textbuff, &mybuf);
+        return(err);
+}
+
+/**
+ * oh_decode_dimitestcapabilities:
+ * @DimiTestCapabilities: enum value of type SaHpiDimiTestCapabilityT.
+ * @buffer:  Location to store the string.
+ *
+ * Converts @DimiTestCapabilities type into a string based on HPI definition.
+ *              
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - @buffer is NULL
+ **/            
+SaErrorT oh_decode_dimitestcapabilities(SaHpiDimiTestCapabilityT capabilities,
+                                        SaHpiTextBufferT *buffer)
+{
+        int found, i;
+        SaErrorT err; 
+        SaHpiTextBufferT working;
+        
+        if (!buffer) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }       
+        
+        err = oh_init_textbuffer(&working);
+        if (err) { return(err); }
+                
+        found = 0; 
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_RESULTSOUTPUT) {
+                found++;
+                err = oh_append_textbuffer(&working, "RESULTS_OUTPUT | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_SERVICEMODE) {
+                found++;
+                err = oh_append_textbuffer(&working, "SERVICE_MODE | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_LOOPCOUNT) {
+                found++;
+                err = oh_append_textbuffer(&working, "LOOP_COUNT | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_LOOPTIME) {
+                found++;
+                err = oh_append_textbuffer(&working, "LOOP_TIME | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_LOGGING) {
+                found++;
+                err = oh_append_textbuffer(&working, "LOGGING | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_DIMITEST_CAPABILITY_TESTCANCEL) {
+                found++;
+                err = oh_append_textbuffer(&working, "TEST_CANCEL | ");
+                if (err) { return(err); }
+        }       
+
+        if (found) {
+                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
+                        working.Data[working.DataLength - i] = 0x00;
+                }
+                working.DataLength = working.DataLength - (i+1);
+        }
+        else {
+                oh_append_textbuffer(&working, "None");
+        }
+
+        oh_copy_textbuffer(buffer, &working);
+
+        return(SA_OK);
+}
+
+
+/**
+ * oh_decode_fumiprotocols:
+ * @FumiProtocol: enum value of type SaHpiFumiProtocolT.
+ * @buffer:  Location to store the string.
+ *
+ * Converts @FumiProtocol type into a string based on HPI definition.
+ *              
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - @buffer is NULL
+ **/            
+SaErrorT oh_decode_fumiprotocols(SaHpiFumiProtocolT protocols,
+                                  SaHpiTextBufferT *buffer)
+{       
+        int found, i;
+        SaErrorT err; 
+        SaHpiTextBufferT working;
+        
+        if (!buffer) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }       
+        
+        err = oh_init_textbuffer(&working);
+        if (err) { return(err); }
+                
+        found = 0; 
+        if (protocols & SAHPI_FUMI_PROT_TFTP) {
+                found++;
+                err = oh_append_textbuffer(&working, "TFTP | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_FTP) {
+                found++;
+                err = oh_append_textbuffer(&working, "FTP | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_HTTP) {
+                found++;
+                err = oh_append_textbuffer(&working, "HTTP | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_LDAP) {
+                found++;
+                err = oh_append_textbuffer(&working, "LDAP | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_LOCAL) {
+                found++;
+                err = oh_append_textbuffer(&working, "LOCAL | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_NFS) {
+                found++;
+                err = oh_append_textbuffer(&working, "NFS | ");
+                if (err) { return(err); }
+        }       
+        if (protocols & SAHPI_FUMI_PROT_DBACCESS) {
+                found++;
+                err = oh_append_textbuffer(&working, "DBACCESS | ");
+                if (err) { return(err); }
+        }       
+                
+        if (found) {
+                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
+                        working.Data[working.DataLength - i] = 0x00;
+                }
+                working.DataLength = working.DataLength - (i+1);
+        }
+        else {
+                oh_append_textbuffer(&working, "None");
+        }
+
+        oh_copy_textbuffer(buffer, &working);
+
+        return(SA_OK);
+}
+
+/**
+ * oh_decode_fumicapabilities:
+ * @HsCapabilities: enum value of type SaHpiFumiCapabilityT.
+ * @buffer:  Location to store the string.
+ *
+ * Converts @FumiCapability type into a string based on HPI definition.
+ *              
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - @buffer is NULL
+ **/            
+SaErrorT oh_decode_fumicapabilities(SaHpiFumiCapabilityT capabilities,
+                                  SaHpiTextBufferT *buffer)
+{       
+        int found, i;
+        SaErrorT err; 
+        SaHpiTextBufferT working;
+        
+        if (!buffer) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }       
+        
+        err = oh_init_textbuffer(&working);
+        if (err) { return(err); }
+                
+        found = 0; 
+        if (capabilities & SAHPI_FUMI_CAP_ROLLBACK) {
+                found++;
+                err = oh_append_textbuffer(&working, "ROLLBACK | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_FUMI_CAP_BANKCOPY) {
+                found++;
+                err = oh_append_textbuffer(&working, "BANKCOPY | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_FUMI_CAP_BANKREORDER) {
+                found++;
+                err = oh_append_textbuffer(&working, "BANKREORDER | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_FUMI_CAP_BACKUP) {
+                found++;
+                err = oh_append_textbuffer(&working, "BACKUP | ");
+                if (err) { return(err); }
+        }       
+        if (capabilities & SAHPI_FUMI_CAP_TARGET_VERIFY) {
+                found++;
+                err = oh_append_textbuffer(&working, "TARGET_VERIFY | ");
+                if (err) { return(err); }
+        }       
+                
+        if (found) {
+                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
+                        working.Data[working.DataLength - i] = 0x00;
+                }
+                working.DataLength = working.DataLength - (i+1);
+        }
+        else {
+                oh_append_textbuffer(&working, "None");
+        }
+
+        oh_copy_textbuffer(buffer, &working);
+
+        return(SA_OK);
+}
+
+//==========================
+
+/**
+ * oh_build_fumirec:
+ * @textbuff: Buffer into which to store flattened structure.
+ * @annrec: Pointer to SaHpiFumiRecT to be flattened.
+ * @offsets:  Number of offsets to start printing structure.
+ *
+ * Flatten member data contained in SaHpiFumiRecT struct to a text buffer.
+ *
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - Pointer parameter(s) are NULL.
+ **/
+static SaErrorT oh_build_fumirec(oh_big_textbuffer *textbuff, const SaHpiFumiRecT *fumirec, int offsets)
+{
+        SaErrorT err;
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        oh_big_textbuffer mybuf;
+        SaHpiTextBufferT tmpbuffer;
+
+        if (!textbuff || !fumirec) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }
+
+        oh_init_bigtext(&mybuf);
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "FUMI Num: %d (%x hex)\n",
+                 fumirec->Num, fumirec->Num);
+        oh_append_bigtext(&mybuf, str);
+
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Supported protocols: ");
+        oh_append_bigtext(&mybuf, str);
+        oh_decode_fumiprotocols(fumirec->AccessProt, &tmpbuffer);
+        oh_append_bigtext(&mybuf, (char *)tmpbuffer.Data);
+        oh_append_bigtext(&mybuf, "\n");
+
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Optional capabilities: ");
+        oh_append_bigtext(&mybuf, str);
+        oh_decode_fumicapabilities(fumirec->Capability, &tmpbuffer);
+        oh_append_bigtext(&mybuf, (char *)tmpbuffer.Data);
+        oh_append_bigtext(&mybuf, "\n");
+
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Number of banks: %d\n", fumirec->NumBanks);
+        oh_append_bigtext(&mybuf, str);
+
+        oh_append_offset(&mybuf, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Oem: %d\n", fumirec->Oem);
+        oh_append_bigtext(&mybuf, str);
+
+        err = oh_copy_bigtext(textbuff, &mybuf);
+        return(err);
+}
+
+/**
  * oh_fprint_eventloginfo:
  * @stream: File handle.
  * @thiselinfo: Pointer to SaHpiEventLogInfoT to be printed.
@@ -2555,6 +2897,15 @@ SaErrorT oh_build_event(oh_big_textbuffer *buffer,
                 break;
         case SAHPI_ET_USER:
                 err = oh_build_event_user(buffer, event, offsets);
+                break;
+        case SAHPI_ET_DIMI:
+                err = oh_build_event_dimi(buffer, event, offsets);
+                break;
+        case SAHPI_ET_DIMI_UPDATE:
+                err = oh_build_event_dimi_update(buffer, event, offsets);
+                break;
+        case SAHPI_ET_FUMI:
+                err = oh_build_event_fumi(buffer, event, offsets);
                 break;
         default:
                 dbg("Unrecognized Event Type=%d.", event->EventType);
@@ -3247,6 +3598,129 @@ static SaErrorT oh_build_event_user(oh_big_textbuffer *buffer, const SaHpiEventT
         offsets++;
 
         oh_build_textbuffer(buffer, &event->EventDataUnion.UserEvent.UserEventData, offsets);
+        return(SA_OK);
+}
+
+/**
+ * oh_build_event_dimi:
+ * @buffer: Pointer to space to decipher SaHpiEventT struct
+ * @event: Pointer to the event to be deciphered
+ * @offset: Number of offsets to start printing structure.
+ *
+ *
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - Pointer parameter(s) are NULL.
+ **/
+static SaErrorT oh_build_event_dimi(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets)
+{
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        const SaHpiDimiEventT* de = &(event->EventDataUnion.DimiEvent);
+
+        if ( !buffer || !event) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "DimiEventData:\n");
+        oh_append_bigtext(buffer, str);
+        offsets++;
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "DimiNum: %d\n", de->DimiNum);
+        oh_append_bigtext(buffer, str);
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "TestNum: %d\n", de->TestNum);
+        oh_append_bigtext(buffer, str);
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "TestRunStatus: %s\n",
+                 oh_lookup_dimitestrunstatus(de->DimiTestRunStatus));
+        oh_append_bigtext(buffer, str);
+
+        if ( de->DimiTestPercentCompleted != 0xff ) {
+            oh_append_offset(buffer, offsets);
+            snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "Percent completed: %d\n", de->DimiTestPercentCompleted);
+            oh_append_bigtext(buffer, str);
+        }
+
+        return(SA_OK);
+}
+
+/**
+ * oh_build_event_dimi_update:
+ * @buffer: Pointer to space to decipher SaHpiEventT struct
+ * @event: Pointer to the event to be deciphered
+ * @offset: Number of offsets to start printing structure.
+ *
+ *
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - Pointer parameter(s) are NULL.
+ **/
+static SaErrorT oh_build_event_dimi_update(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets)
+{
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        const SaHpiDimiUpdateEventT* de = &(event->EventDataUnion.DimiUpdateEvent);
+
+        if ( !buffer || !event) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "DimiUpdateEventData:\n");
+        oh_append_bigtext(buffer, str);
+        offsets++;
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "DimiNum: %d\n", de->DimiNum);
+        oh_append_bigtext(buffer, str);
+
+        return(SA_OK);
+}
+
+/**
+ * oh_build_event_fumi:
+ * @buffer: Pointer to space to decipher SaHpiEventT struct
+ * @event: Pointer to the event to be deciphered
+ * @offset: Number of offsets to start printing structure.
+ *
+ *
+ * Returns:
+ * SA_OK - Normal operation.
+ * SA_ERR_HPI_INVALID_PARAMS - Pointer parameter(s) are NULL.
+ **/
+static SaErrorT oh_build_event_fumi(oh_big_textbuffer *buffer, const SaHpiEventT *event, int offsets)
+{
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        const SaHpiFumiEventT* fe = &(event->EventDataUnion.FumiEvent);
+
+        if ( !buffer || !event) {
+                dbg("Invalid parameter.");
+                return(SA_ERR_HPI_INVALID_PARAMS);
+        }
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "FumiEventData:\n");
+        oh_append_bigtext(buffer, str);
+        offsets++;
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "FumiNum: %d\n", fe->FumiNum);
+        oh_append_bigtext(buffer, str);
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "BankNum: %d\n", fe->BankNum);
+        oh_append_bigtext(buffer, str);
+
+        oh_append_offset(buffer, offsets);
+        snprintf(str, SAHPI_MAX_TEXT_BUFFER_LENGTH, "UpgradeStatus: %s\n",
+                 oh_lookup_fumiupgradestatus(fe->UpgradeStatus));
+        oh_append_bigtext(buffer, str);
+
         return(SA_OK);
 }
 

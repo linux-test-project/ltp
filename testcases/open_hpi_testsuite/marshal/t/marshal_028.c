@@ -13,22 +13,20 @@
  */
 
 #include "marshal.h"
+#include "marshal_hpi_types.h"
 #include <string.h>
-
+#include <SaHpi.h>
 
 typedef struct
 {
   tUint8 m_pad1;
   tUint8 m_size;
   tUint8 m_pad2;
-  char   m_array[256];
+  SaHpiDimiTestVariableParamsT *m_array;
   tUint8 m_pad3;
 } cTest;
 
-
-cMarshalType TestVarArrayType = dVarArray( Marshal_Int8Type, 1 );
-
-
+cMarshalType TestVarArrayType = dVarArray( SaHpiDimiTestVariableParamsType, 1 );
 cMarshalType StructElements[] =
 {
   dStructElement( cTest, m_pad1 , Marshal_Uint8Type ),
@@ -38,9 +36,14 @@ cMarshalType StructElements[] =
   dStructElement( cTest, m_pad3 , Marshal_Uint8Type ),
   dStructElementEnd()
 };
-
-
 cMarshalType TestType = dStruct( cTest, StructElements );
+SaHpiDimiTestVariableParamsT params_list[] = {
+	{
+		.ParamName = "Test Param",
+		.ParamType = SAHPI_DIMITEST_PARAM_TYPE_INT32,
+		.Value.paramint = 5
+	}
+};
 
 
 int
@@ -49,9 +52,9 @@ main( int argc, char *argv[] )
   cTest value =
   {
     .m_pad1 = 47,
-    .m_size = 13,
+    .m_size = 1,
     .m_pad2 = 48,
-    .m_array = "123456789012",
+    .m_array = params_list,
     .m_pad3 = 49
   };
 
@@ -76,7 +79,7 @@ main( int argc, char *argv[] )
   if ( value.m_pad3 != result.m_pad3 )
        return 1;
 
-  if ( memcmp( value.m_array, result.m_array, value.m_size ) )
+  if ( memcmp( value.m_array, result.m_array, sizeof(SaHpiDimiTestVariableParamsT )) )
        return 1;
 
   return 0;

@@ -516,6 +516,25 @@ void
 cIpmiMcThread::HandleHotswapEvent( cIpmiSensorHotswap *sensor,
                                    cIpmiEvent *event )
 {
+  tIpmiFruState current_state = (tIpmiFruState)(event->m_data[10] & 0x0f);
+  tIpmiFruState prev_state    = (tIpmiFruState)(event->m_data[11] & 0x0f);
+  unsigned int fru_id         = event->m_data[12] & 0xff;
+
+  stdlog << "hot swap event at MC " << m_addr << ", sensor " << sensor->Num() << ",FRU " << fru_id << ",M" << (int)prev_state << " -> M"
+         << (int)current_state << ".\n";
+
+  if (sensor->Resource()->GetHotswapSensor() != sensor)
+  {
+        stdlog << "WARNING: sensor NOT resource hot swap sensor, discard event\n";
+        return;
+  }
+
+  if (sensor->Resource()->FruId() != fru_id)
+  {
+        stdlog << "WARNING: FRU id NOT resource FRU id, discard event\n";
+        return;
+  }
+
   // remove old task
   if (    ( m_mc  && (m_properties & dIpmiMcThreadPollAliveMc ) )
        || ( !m_mc && (m_properties & dIpmiMcThreadPollDeadMc ) ) )
@@ -523,12 +542,6 @@ cIpmiMcThread::HandleHotswapEvent( cIpmiSensorHotswap *sensor,
        stdlog << "addr " << m_addr << ": rem poll. cIpmiMcThread::HandleHotswapEvent\n";
        RemMcTask( m_mc );
      }
-
-  tIpmiFruState current_state = (tIpmiFruState)(event->m_data[10] & 0x0f);
-  tIpmiFruState prev_state    = (tIpmiFruState)(event->m_data[11] & 0x0f);
-
-  stdlog << "hot swap event at MC " << m_addr << " M" << (int)prev_state << " -> M" 
-         << (int)current_state << ".\n";
 
   sensor->Resource()->PicmgFruState() = current_state;
   sensor->HandleEvent( event );

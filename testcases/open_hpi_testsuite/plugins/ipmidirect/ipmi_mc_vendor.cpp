@@ -351,8 +351,8 @@ cIpmiMcVendor::FindResource( cIpmiDomain *domain, cIpmiMc *mc,
 {
   assert( mc );
 
-  SaHpiEntityTypeT     type;
-  SaHpiEntityLocationT instance;
+  SaHpiEntityTypeT     type = SAHPI_ENT_UNKNOWN;
+  SaHpiEntityLocationT instance = GetUniqueInstance();
 
   if ( sdr )
      {
@@ -369,11 +369,6 @@ cIpmiMcVendor::FindResource( cIpmiDomain *domain, cIpmiMc *mc,
 	  }
        else
 	    assert( 0 );
-     }
-  else
-     {
-       type = SAHPI_ENT_UNKNOWN;
-       instance = GetUniqueInstance();
      }
   stdlog << "FindResource mc " << mc->GetAddress() << " FRU " << fru_id << " type " << type << " instance " << instance << "\n";
 
@@ -394,8 +389,8 @@ cIpmiMcVendor::FindOrCreateResource( cIpmiDomain *domain, cIpmiMc *mc,
 {
   assert( mc );
 
-  SaHpiEntityTypeT     type;
-  SaHpiEntityLocationT instance;
+  SaHpiEntityTypeT     type = SAHPI_ENT_UNKNOWN;
+  SaHpiEntityLocationT instance = GetUniqueInstance();
 
   if ( sdr )
      {
@@ -412,11 +407,6 @@ cIpmiMcVendor::FindOrCreateResource( cIpmiDomain *domain, cIpmiMc *mc,
 	  }
        else
 	    assert( 0 );
-     }
-  else
-     {
-       type = SAHPI_ENT_UNKNOWN;
-       instance = GetUniqueInstance();
      }
   stdlog << "FindOrCreateResource mc " << mc->GetAddress() << " FRU " << fru_id << " type " << type << " instance " << instance << "\n";
 
@@ -441,8 +431,8 @@ cIpmiMcVendor::CreateResource( cIpmiDomain *domain, cIpmiMc *mc,
   // create a new resource
   cIpmiResource *res = new cIpmiResource( mc, fru_id );
 
-  SaHpiEntityTypeT     type;
-  SaHpiEntityLocationT instance;
+  SaHpiEntityTypeT     type = SAHPI_ENT_UNKNOWN;
+  SaHpiEntityLocationT instance = GetUniqueInstance();
 
   if ( sdr )
      {
@@ -459,11 +449,6 @@ cIpmiMcVendor::CreateResource( cIpmiDomain *domain, cIpmiMc *mc,
 	  }
        else
 	    assert( 0 );
-     }
-  else
-     {
-       type = SAHPI_ENT_UNKNOWN;
-       instance = GetUniqueInstance();
      }
 
   res->EntityPath() = CreateEntityPath( domain, mc->GetAddress(), fru_id,

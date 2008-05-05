@@ -520,7 +520,7 @@ SaErrorT SAHPI_API saHpiGetChildEntityPath (
         SaHpiRptEntryT *rpte = NULL;
         SaHpiBoolT found_match = SAHPI_FALSE;
         SaErrorT error;
-        int i, j = 1;      
+        int i, j;
         
         if (InstanceId == NULL || *InstanceId == SAHPI_LAST_ENTRY ||
             RptUpdateCount == NULL) {
@@ -546,14 +546,13 @@ SaErrorT SAHPI_API saHpiGetChildEntityPath (
         memset(&epp, 0, sizeof(oh_entitypath_pattern));
         epp.epattern[0].etp.is_dot = 1;
         epp.epattern[0].elp.is_dot = 1;
-        for(i = 0; i < SAHPI_MAX_ENTITY_PATH; i++) {
+        for(i = 0, j = 1; i < SAHPI_MAX_ENTITY_PATH; i++) {
                 epp.epattern[j].etp.type =
                         ParentEntityPath.Entry[i].EntityType;
                 epp.epattern[j].elp.location =
                         ParentEntityPath.Entry[i].EntityLocation;
                 j++;
         }
-        epp.epattern[j].etp.type = SAHPI_ENT_ROOT;
         
         /* Find a matching child */
         for (rpte = oh_get_resource_by_id(&d->rpt, *InstanceId);
@@ -1748,6 +1747,20 @@ SaErrorT SAHPI_API saHpiRdrGetByInstrumentId (
                         return SA_ERR_HPI_CAPABILITY;
                 }
                 break;
+        case SAHPI_DIMI_RDR:
+                if(!(cap & SAHPI_CAPABILITY_DIMI)) {
+                        dbg("No DIMI for Resource %d in Domain %d",ResourceId,did);
+                        oh_release_domain(d); /* Unlock domain */
+                        return SA_ERR_HPI_CAPABILITY;
+                }
+                break;
+        case SAHPI_FUMI_RDR:
+                if(!(cap & SAHPI_CAPABILITY_FUMI)) {
+                        dbg("No FUMI for Resource %d in Domain %d",ResourceId,did);
+                        oh_release_domain(d); /* Unlock domain */
+                        return SA_ERR_HPI_CAPABILITY;
+                }
+                break;
         default:
                 dbg("Not a valid Rdr Type %d", RdrType);
                 oh_release_domain(d); /* Unlock domain */
@@ -2621,10 +2634,11 @@ SaErrorT SAHPI_API saHpiControlSet (
 		OH_CALL_ABI(h, get_control_state, SA_ERR_HPI_INVALID_CMD, rv,
         	    	    ResourceId, CtrlNum, &cur_mode, &cur_state);
         	
-        	if ((cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_ON &&
+        	if (((cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_ON || cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_ON) &&
         	     CtrlState->StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_ON) ||
-        	    (cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_OFF &&
+        	    ((cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_OFF || cur_state.StateUnion.Digital == SAHPI_CTRL_STATE_OFF) &&
         	     CtrlState->StateUnion.Digital == SAHPI_CTRL_STATE_PULSE_OFF)) {
+        		oh_release_handler(h);
 			return SA_ERR_HPI_INVALID_REQUEST;
         	}
 		
@@ -4747,8 +4761,8 @@ SaErrorT SAHPI_API saHpiFumiInstallStart (
         if (error) {
                 oh_release_domain(d);
                 return error;
-        } else if (sourceinfo.SourceStatus == SAHPI_FUMI_SRC_VALID ||
-                   sourceinfo.SourceStatus == SAHPI_FUMI_SRC_VALIDITY_UNKNOWN) {
+        } else if (sourceinfo.SourceStatus != SAHPI_FUMI_SRC_VALID &&
+                   sourceinfo.SourceStatus != SAHPI_FUMI_SRC_VALIDITY_UNKNOWN) {
                 oh_release_domain(d);
                 dbg("Source is not valid: Bank %u, Fumi %u, Resource %u, Domain %u",
                     BankNum, FumiNum, ResourceId, did);
@@ -5265,7 +5279,11 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutSet(
                         int found_hid = 0;
                         /* Store id if we don't have it in the list already */
                         for (i = 0; i < hids->len; i++) {
+#if defined(__sparc) || defined(__sparc__)
+                                if (((guint *)((void *)(hids->data)))[i] == *hidp) {
+#else
                                 if (g_array_index(hids, guint, i) == *hidp) {
+#endif
                                         found_hid = 1;
                                         break;
                                 }
@@ -5280,7 +5298,11 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutSet(
         /* 2. Use list to push down autoInsertTimeoutSet() to those handlers.
          */
         for (i = 0; i < hids->len; i++) {
+#if defined(__sparc) || defined(__sparc__)
+                guint hid = ((guint *)((void *)(hids->data)))[i];
+#else
                 guint hid = g_array_index(hids, guint, i);
+#endif
                 struct oh_handler *h = oh_get_handler(hid);
                 if (!h || !h->hnd) {
                         dbg("No such handler %u", hid);

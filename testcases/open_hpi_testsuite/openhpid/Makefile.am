@@ -60,8 +60,7 @@ endif
 lib_LTLIBRARIES	        = libopenhpi.la
 
 libopenhpi_la_SOURCES = \
-	openhpiclient.cpp \
-	openhpiclient.h
+	openhpiclient.cpp
 
 libopenhpi_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
 libopenhpi_la_LIBADD  = $(top_builddir)/marshal/libohtcpconnx.la -lstdc++ \

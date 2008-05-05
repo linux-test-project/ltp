@@ -13,7 +13,6 @@
  */
 
 #include "marshal.h"
-#include <byteswap.h>
 
 
 int

@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <stdlib.h>
-#include <byteswap.h>
+#include <glib.h>
 
 #include "connection.h"
 #include "marshal.h"
@@ -229,8 +229,8 @@ ConnectionReadMsg( int fd, struct sockaddr_in *rd_addr, cMessageHeader *header,
   // swap id and len if nessesary
   if ( (header->m_flags & dMhEndianBit) != MarshalByteOrder() )
      {
-       header->m_id  = bswap_32( header->m_id );
-       header->m_len = bswap_32( header->m_len );
+       header->m_id  = GUINT32_SWAP_LE_BE( header->m_id );
+       header->m_len = GUINT32_SWAP_LE_BE( header->m_len );
      }
 
   if ( header->m_len > dMaxMessageLength - sizeof( cMessageHeader ) )

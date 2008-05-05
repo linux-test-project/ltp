@@ -171,6 +171,7 @@ int main(int argc, char **argv)
 	printf( "Go and get the event\n");
 	while (1) {
 		rdr.RdrType = SAHPI_NO_RECORD;
+                rptentry.ResourceId = 0;
 
 		rv = saHpiEventGet( sessionid, timeout, &event, &rdr, &rptentry, NULL);
 		if (rv != SA_OK) {
@@ -189,10 +190,20 @@ int main(int argc, char **argv)
 			}
 			break;
 		} else {
-			if (rdr.RdrType == SAHPI_NO_RECORD)
-				oh_print_event(&event, NULL, 4);
-			else 
+			if (rdr.RdrType != SAHPI_NO_RECORD)
 				oh_print_event(&event, &rdr.Entity, 4);
+                        else if (rptentry.ResourceId != 0)
+                                oh_print_event(&event, &rptentry.ResourceEntity, 4);
+                        else {
+                                rptentryid = event.Source;
+                                rv = saHpiRptEntryGet(sessionid, rptentryid, &nextrptentryid, &rptentry);
+                                if(rv == SA_OK)
+                                        oh_print_event(&event, &rptentry.ResourceEntity, 4);
+                                else {
+                                        printf("Wrong resource Id <%d> detected", event.Source);
+                                        oh_print_event(&event, NULL, 4);
+                                }
+                        }
 		}
 	}
 

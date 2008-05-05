@@ -746,7 +746,7 @@ static ret_code_t show_rdr(void)
         term = get_next_term();
         if (term == NULL) {
                 if (read_file) return(HPI_SHELL_CMD_ERROR);
-                i = get_string_param("RDR Type (s|a|c|w|i|all) ==> ",
+                i = get_string_param("RDR Type (s|a|c|w|i|d|f|all) ==> ",
                         buf, 9);
                 if (i != 0) return HPI_SHELL_PARM_ERROR;
         } else {
@@ -760,6 +760,8 @@ static ret_code_t show_rdr(void)
         else if (t == 'i') type = SAHPI_INVENTORY_RDR;
         else if (t == 'w') type = SAHPI_WATCHDOG_RDR;
         else if (t == 'a') type = SAHPI_ANNUNCIATOR_RDR;
+        else if (t == 'd') type = SAHPI_DIMI_RDR;
+        else if (t == 'f') type = SAHPI_FUMI_RDR;
         else type = SAHPI_NO_RECORD;
         ret = ask_rdr(rptid, type, &rdrnum);
         if (ret != HPI_SHELL_OK) return(ret);
@@ -1247,6 +1249,9 @@ const char ctrlhelp[] = "ctrl: control command block\n"
                         "       ctrlId:: <resourceId> <num>\n";
 const char dathelp[] = "dat: domain alarm table list\n"
                         "Usage: dat";
+const char dimiblockhelp[] = "dimi: DIMI command block\n"
+                        "Usage: dimi [<DimiId>]\n"
+                        "       DimiId:: <resourceId> <DimiNum>\n";
 const char debughelp[] = "debug: set or unset OPENHPI_DEBUG environment\n"
                         "Usage: debug [ on | off ]";
 const char domainhelp[] = "domain: show domain list and set current domain\n"
@@ -1267,6 +1272,9 @@ const char evtlogtimehelp[] = "evtlogtime: show the event log's clock\n"
                         "Usage: evtlogtime [<resource id>]";
 const char exechelp[] = "exec: execute external program\n"
                         "Usage: exec <filename> [parameters]";
+const char fumiblockhelp[] = "fumi: FUMI command block\n"
+                        "Usage: fumi [<FumiId>]\n"
+                        "       DimiId:: <resourceId> <FumiNum>\n";
 const char helphelp[] = "help: help information for OpenHPI commands\n"
                         "Usage: help [optional commands]";
 const char historyhelp[] = "history: show input commands history\n"
@@ -1342,17 +1350,17 @@ const char sen_setthhelp[] = "setthres: set sensor thresholds\n"
 const char sen_showhelp[] = "show: show sensor state\n"
                         "Usage: show";
 //  inventory command block
-const char inv_addahelp[] = "addarea: add inventoty area\n"
+const char inv_addahelp[] = "addarea: add inventory area\n"
                         "Usage: addarea";
-const char inv_addfhelp[] = "addfield: add inventoty field\n"
+const char inv_addfhelp[] = "addfield: add inventory field\n"
                         "Usage: addfield";
-const char inv_delahelp[] = "delarea: delete inventoty area\n"
+const char inv_delahelp[] = "delarea: delete inventory area\n"
                         "Usage: delarea";
-const char inv_delfhelp[] = "delfield: delete inventoty field\n"
+const char inv_delfhelp[] = "delfield: delete inventory field\n"
                         "Usage: delfield";
-const char inv_setfhelp[] = "setfield: set inventoty field\n"
+const char inv_setfhelp[] = "setfield: set inventory field\n"
                         "Usage: setfield";
-const char inv_showhelp[] = "show: show inventoty\n"
+const char inv_showhelp[] = "show: show inventory\n"
                         "Usage: show";
 //  control command block
 const char ctrl_setsthelp[] = "setstate: set control state\n"
@@ -1393,6 +1401,52 @@ const char hs_settohelp[] = "settimeout: set timeout\n"
                         "Usage: settimeout insert|extract <value>";
 const char hs_statehelp[] = "state: show hot swap state\n"
                         "Usage: state";
+//  DIMI command block
+const char dimi_infohelp[] = "info: shows information about DIMI\n"
+                        "Usage: info";
+const char dimi_testinfohelp[] = "testinfo: shows information about specified test\n"
+                        "Usage: testinfo [<testNum>]";
+const char dimi_readyhelp[] = "ready: shows information about the DIMI readiness to run specified test\n"
+                        "Usage: ready <testNum>";
+const char dimi_starthelp[] = "start: starts execution of specified test\n"
+                        "Usage: start <testNum>";
+const char dimi_cancelhelp[] = "cancel: cancels specified test running\n"
+                        "Usage: cancel <testNum>";
+const char dimi_statushelp[] = "status: shows status of specified test\n"
+                        "Usage: status <testNum>";
+const char dimi_resultshelp[] = "results: show results from the last run of specified test\n"
+                        "Usage: results <testNum>";
+//  FUMI command block
+const char fumi_setsourcehelp[] = "setsource : set new source information to the specified bank\n"
+                        "Usage: setsource <bankNum> <sourceURI>";
+const char fumi_validatesourcehelp[] = "validatesource : initiates the validation of the integrity of "
+                        "the source image associated with the designated bank\n"
+                        "Usage: validatesource <bankNum>";
+const char fumi_getsourcehelp[] = "getsource : shows information about the source image assigned to "
+                        "designated bank\n"
+                        "Usage: getsource <bankNum>";
+const char fumi_targetinfohelp[] = "targetinfo : shows information about the specified bank\n"
+                        "Usage: targetinfo <bankNum>";
+const char fumi_backuphelp[] = "backup : initiates a backup of currently active bank\n"
+                        "Usage: backup";
+const char fumi_setbootorderhelp[] = "setbootorder : set the position of a bank in the boot order\n"
+                        "Usage: setbootorder <bankNum> <position>";
+const char fumi_bankcopyhelp[] = "bankcopy : initiates a copy of the contents of one bank to another bank\n"
+                        "Usage: bankcopy <srcBankNum> <dstBankNum>";
+const char fumi_installhelp[] = "install : starts an installation process, loading firmware to "
+                        "a specified bank\n"
+                        "Usage: install <bankNum>";
+const char fumi_statushelp[] = "status : shows upgrade status of the FUMI\n"
+                        "Usage: status <bankNum>";
+const char fumi_verifytargethelp[] = "verifytarget : starts the verification process of the upgraded image\n"
+                        "Usage: verifytarget <bankNum>";
+const char fumi_cancelhelp[] = "cancel : stops upgrade asynchronous operation in progress\n"
+                        "Usage: cancel <bankNum>";
+const char fumi_rollbackhelp[] = "rollback : initiates a rollback operation to "
+                        "restore the currently active bank with a backup version\n"
+                        "Usage: rollback ";
+const char fumi_activatehelp[] = "activate : starts execution of the active image on the FUMI\n"
+                        "Usage: activate ";
 
 command_def_t commands[] = {
     { "addcfg",         add_config,     addcfghelp,     MAIN_COM },
@@ -1401,6 +1455,7 @@ command_def_t commands[] = {
     { "ctrl",           ctrl_block,     ctrlhelp,       MAIN_COM },
     { "dat",            dat_list,       dathelp,        MAIN_COM },
     { "debug",          debugset,       debughelp,      UNDEF_COM },
+    { "dimi",           dimi_block,     dimiblockhelp,  MAIN_COM },
     { "domain",         domain_proc,    domainhelp,     MAIN_COM },
     { "domaininfo",     domain_info,    domaininfohelp, MAIN_COM },
     { "dscv",           discovery,      dscvhelp,       MAIN_COM },
@@ -1410,6 +1465,7 @@ command_def_t commands[] = {
     { "evtlogreset",    evtlog_reset,   evtlresethelp,  MAIN_COM },
     { "evtlogstate",    evtlog_state,   evtlstatehelp,  MAIN_COM },
     { "exec",           exec_proc,      exechelp,       UNDEF_COM },
+    { "fumi",           fumi_block,     fumiblockhelp,  MAIN_COM },
     { "help",           help_cmd,       helphelp,       UNDEF_COM },
     { "history",        history_cmd,    historyhelp,    UNDEF_COM },
     { "hs",             hs_block,       hsblockhelp,    MAIN_COM },
@@ -1476,5 +1532,28 @@ command_def_t commands[] = {
     { "policycancel",   hs_block_policy,hs_policyhelp,  HS_COM },
     { "settimeout",     hs_block_stime, hs_settohelp,   HS_COM },
     { "state",          hs_block_state, hs_statehelp,   HS_COM },
+// DIMI command block
+    { "info",           dimi_block_info,     dimi_infohelp,     DIMI_COM },
+    { "testinfo",       dimi_block_testinfo, dimi_testinfohelp, DIMI_COM },
+    { "ready",          dimi_block_ready,    dimi_readyhelp,    DIMI_COM },
+    { "start",          dimi_block_start,    dimi_starthelp,    DIMI_COM },
+    { "cancel",         dimi_block_cancel,   dimi_cancelhelp,   DIMI_COM },
+    { "status",         dimi_block_status,   dimi_statushelp,   DIMI_COM },
+    { "results",        dimi_block_results,  dimi_resultshelp,  DIMI_COM },
+// FUMI command block
+    { "setsource",      fumi_block_setsource,      fumi_setsourcehelp,       FUMI_COM },
+    { "validatesource", fumi_block_validatesource, fumi_validatesourcehelp,  FUMI_COM },
+    { "getsource",      fumi_block_getsource,      fumi_getsourcehelp,       FUMI_COM },
+    { "targetinfo",     fumi_block_targetinfo,     fumi_targetinfohelp,      FUMI_COM },
+    { "backup",         fumi_block_backup,         fumi_backuphelp,          FUMI_COM },
+    { "setbootorder",   fumi_block_setbootorder,   fumi_setbootorderhelp,    FUMI_COM },
+    { "bankcopy",       fumi_block_bankcopy,       fumi_bankcopyhelp,        FUMI_COM },
+    { "install",        fumi_block_install,        fumi_installhelp,         FUMI_COM },
+    { "status",         fumi_block_status,         fumi_statushelp,          FUMI_COM },
+    { "verifytarget",   fumi_block_verifytarget,   fumi_verifytargethelp,    FUMI_COM },
+    { "cancel",         fumi_block_cancel,         fumi_cancelhelp,          FUMI_COM },
+    { "rollback",       fumi_block_rollback,       fumi_rollbackhelp,        FUMI_COM },
+    { "activate",       fumi_block_activate,       fumi_activatehelp,        FUMI_COM },
+// Terminator
     { NULL,             NULL,           NULL,           MAIN_COM }
 };

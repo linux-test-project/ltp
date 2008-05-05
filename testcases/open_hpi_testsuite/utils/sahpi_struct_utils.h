@@ -80,6 +80,14 @@ SaErrorT oh_decode_sensoroptionaldata(SaHpiSensorOptionalDataT sensor_opt_data,
 
 SaErrorT oh_decode_sensorenableoptdata(SaHpiSensorEnableOptDataT sensor_enable_opt_data,
                                        SaHpiTextBufferT *buffer);
+SaErrorT oh_decode_dimitestcapabilities(SaHpiDimiTestCapabilityT capabilities,
+                                        SaHpiTextBufferT *buffer);
+
+SaErrorT oh_decode_fumiprotocols(SaHpiFumiProtocolT protocols,
+                                 SaHpiTextBufferT *buffer);
+
+SaErrorT oh_decode_fumicapabilities(SaHpiFumiCapabilityT capabilities,
+                                  SaHpiTextBufferT *buffer);
 
 /*************************
  * Validate HPI structures

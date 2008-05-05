@@ -150,6 +150,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HLD = @HLD@
 HPI_CLIENT_PKG = @HPI_CLIENT_PKG@
 HPI_LIB_VERSION = @HPI_LIB_VERSION@
 HPI_PKG = @HPI_PKG@
@@ -169,6 +170,7 @@ LIST_RESOURCES_THREADED = @LIST_RESOURCES_THREADED@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+MAN = @MAN@
 MARSHALDIR = @MARSHALDIR@
 MKDIR_P = @MKDIR_P@
 NOCFLAGS = @NOCFLAGS@
@@ -236,7 +238,9 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+found_docbook2html = @found_docbook2html@
 found_pkg_config = @found_pkg_config@
+found_pod2man = @found_pod2man@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -289,15 +293,17 @@ ALLSOURCES = \
         $(shell find $(top_srcdir)/utils -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/openhpid -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/') \
+        -name '*.[chS]' -print -o '*.cpp' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/plugins -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/') \
+        -name '*.[chS]' -print -o '*.cpp' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/snmp -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/marshal -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/clients -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/')
+        -name '*.[chS]' -print | grep -v '/t/') \
+        $(shell find $(top_srcdir)/cpp -name .svn -o -name CVS -prune -o \
+        -name '*.[ch]pp' -print | grep -v '/t/')
 
 # These are the only headers that users should have any access to
 include_HEADERS = $(top_srcdir)/include/SaHpi.h \
@@ -318,7 +324,7 @@ include_HEADERS = $(top_srcdir)/include/SaHpi.h \
                   $(top_srcdir)/utils/el_utils.h
 
 docsdir = $(datadir)/doc/$(PACKAGE_NAME)-$(VERSION)
-docs_DATA = README README.daemon
+docs_DATA = README README.daemon COPYING
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -782,8 +788,6 @@ uninstall-am: uninstall-docsDATA uninstall-includeHEADERS \
 	uninstall uninstall-am uninstall-docsDATA \
 	uninstall-includeHEADERS uninstall-local
 
-        $(shell find $(top_srcdir)/cpp -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/')
 
 $(top_srcdir)/utils/sahpi_enum_utils.h:
 	make -C $(top_builddir)/utils sahpi_enum_utils.h

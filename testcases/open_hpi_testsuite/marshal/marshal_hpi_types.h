@@ -186,7 +186,8 @@ extern cMarshalType SaHpiAnnunciatorRecType;
 #define SaHpiDimiTestErrCodeType SaHpiUint32Type
 extern cMarshalType SaHpiDimiInfoType;
 extern cMarshalType SaHpiDimiTestParameterValueUnionType;
-extern cMarshalType SaHpiDimiTestParamValueType;
+extern cMarshalType SaHpiDimiTestParamValue1Type;
+extern cMarshalType SaHpiDimiTestParamValue2Type;
 extern cMarshalType SaHpiDimiTestParamsDefinitionType;
 extern cMarshalType SaHpiDimiTestAffectedEntityType;
 extern cMarshalType SaHpiDimiTestType;
@@ -195,11 +196,14 @@ typedef struct {
         SaHpiUint8T NumberOfParams;
         SaHpiDimiTestVariableParamsT *ParamsList;
 } SaHpiDimiTestVariableParamsListT;
+extern cMarshalType SaHpiDimiTestVariableParamsType;
 extern cMarshalType SaHpiDimiTestVariableParamsListType;
 
 // FUMIs
 #define SaHpiFumiNumType SaHpiUint32Type
 #define SaHpiBankNumType SaHpiUint8Type
+#define SaHpiFumiProtocolType SaHpiUint32Type
+#define SaHpiFumiCapabilityType SaHpiUint32Type
 #define SaHpiFumiUpgradeStatusType SaHpiUint32Type
 #define SaHpiFumiSourceStatusType SaHpiUint32Type
 #define SaHpiFumiBankStateType SaHpiUint32Type
@@ -225,6 +229,7 @@ extern cMarshalType SaHpiDomainEventType;
 extern cMarshalType SaHpiSensorEventType;
 #define SaHpiSensorEnableOptDataType SaHpiUint8Type
 extern cMarshalType SaHpiSensorEnableChangeEventType;
+#define SaHpiHsCauseOfStateChangeType SaHpiUint32Type
 extern cMarshalType SaHpiHotSwapEventType;
 extern cMarshalType SaHpiWatchdogEventType;
 #define SaHpiSwEventTypeType SaHpiUint32Type

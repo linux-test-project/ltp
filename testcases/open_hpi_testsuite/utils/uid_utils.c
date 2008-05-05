@@ -134,28 +134,22 @@ gboolean oh_entity_path_equal(gconstpointer a, gconstpointer b)
  **/
 SaErrorT oh_uid_initialize(void)
 {
-        SaErrorT rval;
+        SaErrorT rval = SA_OK;
 
         uid_lock(&oh_uid_lock);
-        if(!initialized) {
-
+        if (!initialized) {
                 /* initialize hash tables */
                 oh_ep_table = g_hash_table_new(oh_entity_path_hash, oh_entity_path_equal);
                 oh_resource_id_table = g_hash_table_new(g_int_hash, g_int_equal);
-
                 initialized = TRUE;
-
                 resource_id = 1;
 
                 /* initialize uid map */
                 rval = uid_map_from_file();
-
-        } else { rval = SA_ERR_HPI_ERROR; }
-
+        }
         uid_unlock(&oh_uid_lock);
 
-        return(rval);
-
+        return rval;
 }
 
 SaHpiBoolT oh_uid_is_initialized()

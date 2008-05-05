@@ -5,7 +5,7 @@ dnl   various hacks by Sean Dague <http://dague.net/sean> 4/23/03
 
 
 AC_PREREQ(2.57)
-AC_INIT(openhpi, 2.10.1)
+AC_INIT(openhpi, 2.10.2)
 AC_CONFIG_SRCDIR(openhpi.spec.in)
 AM_INIT_AUTOMAKE([1.8])
 
@@ -14,7 +14,7 @@ AH_TOP([#ifndef __OPENHPI_CONFIG_H
 #define __OPENHPI_CONFIG_H])
 AH_BOTTOM([#endif /* __OPENHPI_CONFIG_H */])
 
-HPI_LIB_VERSION=12:1:10
+HPI_LIB_VERSION=12:2:10
 HPI_PKG=$PACKAGE_NAME
 HPI_UTIL_PKG=${PACKAGE_NAME}utils
 HPI_CLIENT_PKG=${PACKAGE_NAME}client
@@ -545,6 +545,13 @@ if test -n "`gcc --version | grep ' 3.2'`" ; then
         CXX_WARNINGS=`echo $CC_WARNINGS | sed -e 's/-Wno-strict-aliasing//g'`
 fi
 
+case $host_os in
+    solaris*)
+        CC_WARNINGS=`echo $CC_WARNINGS | sed -e 's/-Wcast-qual//g'`
+        CXX_WARNINGS=`echo $CXX_WARNINGS | sed -e 's/-Wwrite-strings//g'`
+        ;;
+esac
+
 dnl remerge the warnings into the FLAGS
 CXXFLAGS="$CFLAGS $CXX_WARNINGS"
 CFLAGS="$CFLAGS $CC_WARNINGS"
@@ -572,6 +579,43 @@ LIBS="$LIBS $GLIB_LIBS -lm"
 if test "x$THREAD_SAFE" = "xyes" ; then
         LIBS="$LIBS -lpthread"
 fi
+
+AC_CHECK_PROG([found_docbook2html], [docbook2html], [yes])
+AC_ARG_ENABLE([docs],
+    [  --enable-docs            generate documentation [[default=yes if docbook2html exists]]],
+    [if test "x$enableval" = "xyes"; then
+        if test "x$found_docbook2html" = "xyes"; then
+            AC_SUBST(HLD,hld)
+        else
+           OH_CHECK_FAIL(docbook2html,docbook-utils,http://sources.redhat.com/docbook-tools, Can not generate HTML design docs without docbook2html)
+	fi
+    else
+        AC_SUBST(HLD,"")
+    fi],
+    [if test "x$found_docbook2html" = "xyes"; then
+        AC_SUBST(HLD,hld)
+    else
+        AC_SUBST(HLD,"")
+    fi])
+    
+AC_CHECK_PROG([found_pod2man], [pod2man], [yes])
+AC_ARG_ENABLE([man],
+    [  --enable-man            generate man pages [[default=yes if pod2man exists]]],
+    [if test "x$enableval" = "xyes"; then
+        if test "x$found_pod2man" = "xyes"; then
+            AC_SUBST(MAN,man)
+        else
+            OH_CHECK_FAIL(pod2man,perl,http://www.perl.org,
+                          Can not generate man pages without pod2man)
+        fi
+    else
+        AC_SUBST(MAN,"")
+    fi],
+    [if test "x$found_pod2man" = "xyes"; then
+        AC_SUBST(MAN,man)
+    else
+        AC_SUBST(MAN,"")
+    fi])
 
 AC_CONFIG_FILES([openhpi.spec
         openhpi.pc

@@ -538,7 +538,11 @@ static ret_code_t hs_block_getsettime(int get)
 					" %s\n", oh_lookup_error(rv));
 				return(HPI_SHELL_CMD_ERROR);
 			};
-			printf("Auto-insert timeout: %lld\n", timeout);
+            if ( timeout != SAHPI_TIMEOUT_BLOCK ) {
+    			printf("Auto-insert timeout: %lld\n", timeout);
+            } else {
+    			printf("Auto-insert timeout: BLOCK\n");
+            }
 			return(HPI_SHELL_OK);
 		};
 		rv = saHpiAutoExtractTimeoutGet(Domain->sessionId,
@@ -548,15 +552,23 @@ static ret_code_t hs_block_getsettime(int get)
 				oh_lookup_error(rv));
 			return(HPI_SHELL_CMD_ERROR);
 		};
-		printf("Auto-extract timeout: %lld\n", timeout);
+        if ( timeout != SAHPI_TIMEOUT_BLOCK ) {
+    		printf("Auto-extract timeout: %lld\n", timeout);
+        } else {
+    			printf("Auto-extract timeout: BLOCK\n");
+        }
 		return(HPI_SHELL_OK);
 	};
-	i = get_int_param("Timeout: ", &res);
+	i = get_int_param("Timeout (msec): ", &res);
 	if (i != 1) {
 		printf("Invalid timeout\n");
 		return(HPI_SHELL_PARM_ERROR);
 	};
-	timeout = res;
+    if ( res >= 0) {
+    	timeout = 1000000LL * res;
+    } else {
+        timeout = SAHPI_TIMEOUT_BLOCK;
+    }
 	if (ins) {
 		rv = saHpiAutoInsertTimeoutSet(Domain->sessionId, timeout);
 		if (rv != SA_OK) {

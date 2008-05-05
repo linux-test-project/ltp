@@ -95,6 +95,10 @@ static void* get_event(void *unused)
 {
 	SaHpiEventT	event;
 	SaErrorT	rv;        
+        SaHpiRptEntryT rptentry;
+        SaHpiRdrT rdr;
+        SaHpiEntryIdT rptentryid;
+        SaHpiEntryIdT nextrptentryid;
 
 	rv = saHpiSubscribe(Domain->sessionId);
 	if (rv != SA_OK) {
@@ -104,6 +108,8 @@ static void* get_event(void *unused)
 	
 	while(1) {
 		for(;;) {
+                        rdr.RdrType = SAHPI_NO_RECORD;
+                        rptentry.ResourceId = 0;
 			memset(&event, 0xF, sizeof(event));
 			rv = saHpiEventGet(Domain->sessionId,
 				SAHPI_TIMEOUT_IMMEDIATE, &event,
@@ -114,8 +120,24 @@ static void* get_event(void *unused)
 			if (prt_flag == 1) {
 				if (show_event_short)
 					show_short_event(&event, ui_print);
-				else
-					oh_print_event(&event, NULL, 1);
+                                else if (rdr.RdrType != SAHPI_NO_RECORD)
+                                        oh_print_event(&event, &rdr.Entity, 4);
+                                else if (rptentry.ResourceId != 0)
+                                        oh_print_event(&event, &rptentry.ResourceEntity, 4);
+                                else {
+                                        rptentryid = event.Source;
+                                        rv = saHpiRptEntryGet(Domain->sessionId,
+                                                              rptentryid,
+                                                              &nextrptentryid, &rptentry);
+                                        if(rv == SA_OK)
+                                                oh_print_event(&event, &rptentry.ResourceEntity, 4);
+                                        else {
+                                                printf("saHpiRptEntryGet failed for resource Id <%d> with error <%d>",
+                                                        event.Source, rv);
+                                                printf("Wrong resource Id <%d> detected", event.Source);
+                                                oh_print_event(&event, NULL, 4);
+                                        }
+                                }
 			}
 		}/*the loop for retrieving event*/
 		sleep(1);

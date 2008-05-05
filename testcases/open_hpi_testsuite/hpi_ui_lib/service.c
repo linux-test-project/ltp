@@ -675,6 +675,56 @@ static Attributes_t *make_attrs_annun(SaHpiAnnunciatorRecT *annun)
 	return(at);
 }
 
+#define RDR_ATTRS_DIMI_NUM	2
+
+attr_t	Def_dimi_rdr[] = {
+	{ "DimiNum",		INT_TYPE,	0, { .d = 0} },	//  0
+	{ "Oem",		INT_TYPE,	0, { .d = 0} }	//  1
+};
+
+static Attributes_t *make_attrs_dimi(SaHpiDimiRecT *dimi)
+{
+	attr_t			*att1;
+	Attributes_t		*at;
+
+	at = (Attributes_t *)malloc(sizeof(Attributes_t));
+	at->n_attrs = RDR_ATTRS_DIMI_NUM;
+	att1 = (attr_t *)malloc(sizeof(attr_t) * RDR_ATTRS_DIMI_NUM);
+	memcpy(att1, Def_dimi_rdr, sizeof(attr_t) * RDR_ATTRS_DIMI_NUM);
+	at->Attrs = att1;
+	att1[0].value.i = dimi->DimiNum;
+	att1[1].value.i = dimi->Oem;
+	return(at);
+}
+
+#define RDR_ATTRS_FUMI_NUM	5
+
+attr_t	Def_fumi_rdr[] = {
+	{ "Num",		INT_TYPE,	0, { .d = 0} },	//  0
+	{ "AccessProt",		INT_TYPE,	0, { .d = 0} },	//  1
+	{ "Capability",		INT_TYPE,	0, { .d = 0} },	//  2
+	{ "NumBanks",	INT_TYPE,	0, { .d = 0} },	//  3
+	{ "Oem",		INT_TYPE,	0, { .d = 0} }	//  4
+};
+
+static Attributes_t *make_attrs_fumi(SaHpiFumiRecT *fumi)
+{
+	attr_t			*att1;
+	Attributes_t		*at;
+
+	at = (Attributes_t *)malloc(sizeof(Attributes_t));
+	at->n_attrs = RDR_ATTRS_FUMI_NUM;
+	att1 = (attr_t *)malloc(sizeof(attr_t) * RDR_ATTRS_FUMI_NUM);
+	memcpy(att1, Def_fumi_rdr, sizeof(attr_t) * RDR_ATTRS_FUMI_NUM);
+	at->Attrs = att1;
+	att1[0].value.i = fumi->Num;
+	att1[1].value.i = fumi->AccessProt;
+	att1[2].value.i = fumi->Capability;
+	att1[3].value.i = fumi->NumBanks;
+	att1[4].value.i = fumi->Oem;
+	return(at);
+}
+
 void make_attrs_rdr(Rdr_t *Rdr, SaHpiRdrT *rdrentry)
 {
 	attr_t			*att;
@@ -686,6 +736,8 @@ void make_attrs_rdr(Rdr_t *Rdr, SaHpiRdrT *rdrentry)
 	SaHpiInventoryRecT	*inv;
 	SaHpiWatchdogRecT	*wdog;
 	SaHpiAnnunciatorRecT	*annun;
+    SaHpiDimiRecT       *dimi;
+    SaHpiFumiRecT       *fumi;
 
 	Rdr->Record = *rdrentry;
 	obj = &(Rdr->Record);
@@ -729,6 +781,18 @@ void make_attrs_rdr(Rdr_t *Rdr, SaHpiRdrT *rdrentry)
 			att[i].name = "Annunciator";
 			att[i++].value.a = at;
 			break;
+       case SAHPI_DIMI_RDR:
+           dimi = &(obj->RdrTypeUnion.DimiRec);
+           at = make_attrs_dimi(dimi);
+           att[i].name = "DIMI";
+           att[i++].value.a = at;
+           break;
+       case SAHPI_FUMI_RDR:
+           fumi = &(obj->RdrTypeUnion.FumiRec);
+           at = make_attrs_fumi(fumi);
+           att[i].name = "FUMI";
+           att[i++].value.a = at;
+           break;
 		default: break;
 	};
 	att[i++].value.a = &(obj->IdString);
@@ -919,8 +983,11 @@ SaErrorT find_rdr_by_num(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
 			case SAHPI_WATCHDOG_RDR:
 				rdrnum = rdr.RdrTypeUnion.WatchdogRec.WatchdogNum; break;
 			case SAHPI_ANNUNCIATOR_RDR:
-				rdrnum = rdr.RdrTypeUnion.AnnunciatorRec.AnnunciatorNum;
-				break;
+				rdrnum = rdr.RdrTypeUnion.AnnunciatorRec.AnnunciatorNum; break;
+            case SAHPI_DIMI_RDR:
+                rdrnum = rdr.RdrTypeUnion.DimiRec.DimiNum; break;
+            case SAHPI_FUMI_RDR:
+                rdrnum = rdr.RdrTypeUnion.FumiRec.Num; break;
 			default:
 				entryid = nextentryid; continue;
 		};

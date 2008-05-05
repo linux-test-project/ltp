@@ -6,6 +6,7 @@
 %define _sourcedir %{_topdir}
 %define _specdir %{_topdir}
 %define _srcrpmdir %{_rpmtopdir}/SRPMS
+%define _docdir %{_datadir}/doc/%{name}-%{version}
 
 %define with_ipmi @WITH_IPMI@
 %define with_bladecenter @WITH_SNMP_BC@
@@ -29,7 +30,7 @@ URL: http://www.openhpi.org
 Source: http://prdownloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
 #
 Buildroot: %{_rpmtopdir}/INSTALL
-BuildRequires: pkgconfig glib2-devel automake autoconf libtool net-snmp-devel gcc-c++ docbook-utils docbook-utils-pdf
+BuildRequires: pkgconfig glib2-devel automake autoconf libtool net-snmp-devel gcc-c++
 %if 0%{?suse_version}
 BuildRequires: tcpd-devel
 %else
@@ -45,7 +46,9 @@ Requires: openhpi = %{version}
 %package clients
 Summary: OpenHPI command-line utilities
 Group: System/Monitoring
+%if 0%{?suse_version}
 BuildRequires: popt-devel
+%endif
 Requires: openhpi = %{version} popt
 
 %if 0%{?with_ipmi}
@@ -160,8 +163,7 @@ provided by the kernel.
 ./configure @ac_configure_args@ --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib --with-varpath=/var/lib/%{name}
 %endif
 %{__make}
-make -C docs/hld pdf-am
-make -C docs/hld openhpi-manual/book1.html
+make -C docs/hld
 
 ###################################################
 %install
@@ -176,9 +178,14 @@ make DESTDIR=%{buildroot} install
 %files
 ###################################################
 %defattr(-,root,root)
-%doc README README.daemon COPYING
-%doc docs/hld/*pdf
-%doc docs/hld/openhpi-manual
+%{_docdir}/README*
+%{_docdir}/COPYING
+%{_docdir}/html/*.html
+%dir %{_docdir}/html/images
+%{_docdir}/html/images/*.png
+%{_docdir}/html/images/*.gif
+#%doc README README.daemon COPYING
+#%doc docs/hld/openhpi-manual
 %dir %{_sysconfdir}/%{name}/
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 %dir %{_libdir}/%{name}
@@ -186,6 +193,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libopenhpi*.so.*
 %{_libdir}/liboh*connx*.so.*
 %{_mandir}/man7/%{name}.7*
+%{_mandir}/man8/%{name}d.8*
 %{_sbindir}/openhpid
 %{_sysconfdir}/init.d/openhpid
 

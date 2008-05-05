@@ -520,13 +520,14 @@ static cMarshalType SaHpiDimiTestParameterValueUnionTypeElements[] =
 {
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
-        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiInt32Type ),
-        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiInt32Type ),
+        /* These two types are disregarded but must be specified */
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiFloat64Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiFloat64Type ),
         dUnionElementEnd()
 };
 cMarshalType SaHpiDimiTestParameterValueUnionType = dUnion( 2, SaHpiDimiTestParameterValueUnionT, SaHpiDimiTestParameterValueUnionTypeElements );
 
-static cMarshalType SaHpiDimiTestParamValueTypeElements[] =
+static cMarshalType SaHpiDimiTestParamValue2TypeElements[] =
 {
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
@@ -534,16 +535,26 @@ static cMarshalType SaHpiDimiTestParamValueTypeElements[] =
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiTextBufferType ),
         dUnionElementEnd()
 };
-cMarshalType SaHpiDimiTestParamValueType = dUnion( 2, SaHpiDimiTestParamValueT, SaHpiDimiTestParamValueTypeElements );
+cMarshalType SaHpiDimiTestParamValue2Type = dUnion( 2, SaHpiDimiTestParamValueT, SaHpiDimiTestParamValue2TypeElements );
+static cMarshalType SaHpiDimiTestParamValue1TypeElements[] =
+{
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiBoolType ),
+        dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiTextBufferType ),
+        dUnionElementEnd()
+};
+cMarshalType SaHpiDimiTestParamValue1Type = dUnion( 1, SaHpiDimiTestParamValueT, SaHpiDimiTestParamValue1TypeElements );
 
 static cMarshalType ParamNameArray = dArray( SaHpiUint8Type, SAHPI_DIMITEST_PARAM_NAME_LEN );
 static cMarshalType SaHpiDimiTestParamsDefinitionTypeElements[] =
 {
         dStructElement( SaHpiDimiTestParamsDefinitionT, ParamName, ParamNameArray ),
         dStructElement( SaHpiDimiTestParamsDefinitionT, ParamInfo, SaHpiTextBufferType ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, ParamType, SaHpiDimiTestParamTypeType ),
         dStructElement( SaHpiDimiTestParamsDefinitionT, MinValue, SaHpiDimiTestParameterValueUnionType ),
         dStructElement( SaHpiDimiTestParamsDefinitionT, MaxValue, SaHpiDimiTestParameterValueUnionType ),
-        dStructElement( SaHpiDimiTestParamsDefinitionT, DefaultParam, SaHpiDimiTestParamValueType ),
+        dStructElement( SaHpiDimiTestParamsDefinitionT, DefaultParam, SaHpiDimiTestParamValue2Type ),
         dStructElementEnd()
 };
 cMarshalType SaHpiDimiTestParamsDefinitionType = dStruct( SaHpiDimiTestParamsDefinitionT, SaHpiDimiTestParamsDefinitionTypeElements );
@@ -588,7 +599,7 @@ static cMarshalType SaHpiDimiTestVariableParamsTypeElements[] =
 {
         dStructElement( SaHpiDimiTestVariableParamsT, ParamName, ParamNameArray ),
         dStructElement( SaHpiDimiTestVariableParamsT, ParamType, SaHpiDimiTestParamTypeType ),
-        dStructElement( SaHpiDimiTestVariableParamsT, Value, SaHpiDimiTestParamValueType ),
+        dStructElement( SaHpiDimiTestVariableParamsT, Value, SaHpiDimiTestParamValue1Type ),
         dStructElementEnd()
 };
 cMarshalType SaHpiDimiTestVariableParamsType = dStruct( SaHpiDimiTestVariableParamsT, SaHpiDimiTestVariableParamsTypeElements );
@@ -602,6 +613,15 @@ static cMarshalType SaHpiDimiTestVariableParamsListTypeElements[] =
 };
 cMarshalType SaHpiDimiTestVariableParamsListType = dStruct( SaHpiDimiTestVariableParamsListT, SaHpiDimiTestVariableParamsListTypeElements );
 
+// DIMI rdr
+static cMarshalType SaHpiDimiRecElements[] =
+{
+   dStructElement( SaHpiDimiRecT, DimiNum, SaHpiDimiNumType ),
+   dStructElement( SaHpiDimiRecT, Oem, SaHpiUint32Type ),
+   dStructElementEnd()
+};
+
+cMarshalType SaHpiDimiRecType = dStruct( SaHpiDimiRecT, SaHpiDimiRecElements );
 
 // FUMIs
 static cMarshalType SaHpiFumiSourceInfoTypeElements[] =
@@ -624,15 +644,28 @@ static cMarshalType SaHpiFumiBankInfoTypeElements[] =
         dStructElement( SaHpiFumiBankInfoT, BankSize, SaHpiUint32Type ),
         dStructElement( SaHpiFumiBankInfoT, Position, SaHpiUint32Type ),
         dStructElement( SaHpiFumiBankInfoT, BankState, SaHpiFumiBankStateType ),
-        dStructElement( SaHpiFumiSourceInfoT, Identifier, SaHpiTextBufferType ),
-        dStructElement( SaHpiFumiSourceInfoT, Description, SaHpiTextBufferType ),
-        dStructElement( SaHpiFumiSourceInfoT, DateTime, SaHpiTextBufferType ),
-        dStructElement( SaHpiFumiSourceInfoT, MajorVersion, SaHpiUint32Type ),
-        dStructElement( SaHpiFumiSourceInfoT, MinorVersion, SaHpiUint32Type ),
-        dStructElement( SaHpiFumiSourceInfoT, AuxVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiBankInfoT, Identifier, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiBankInfoT, Description, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiBankInfoT, DateTime, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiBankInfoT, MajorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiBankInfoT, MinorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiBankInfoT, AuxVersion, SaHpiUint32Type ),
         dStructElementEnd()
 };
 cMarshalType SaHpiFumiBankInfoType = dStruct( SaHpiFumiBankInfoT, SaHpiFumiBankInfoTypeElements );
+
+// FUMI rdr
+static cMarshalType SaHpiFumiRecElements[] =
+{
+   dStructElement( SaHpiFumiRecT, Num, SaHpiFumiNumType ),
+   dStructElement( SaHpiFumiRecT, AccessProt, SaHpiFumiProtocolType ),
+   dStructElement( SaHpiFumiRecT, Capability, SaHpiFumiCapabilityType ),
+   dStructElement( SaHpiFumiRecT, NumBanks, SaHpiUint8Type ),
+   dStructElement( SaHpiFumiRecT, Oem, SaHpiUint32Type ),
+   dStructElementEnd()
+};
+
+cMarshalType SaHpiFumiRecType = dStruct( SaHpiFumiRecT, SaHpiFumiRecElements );
 
 // rdr
 
@@ -644,6 +677,8 @@ static cMarshalType SaHpiRdrTypeUnionTypeElements[] =
         dUnionElement( SAHPI_INVENTORY_RDR, SaHpiInventoryRecType ),
         dUnionElement( SAHPI_WATCHDOG_RDR, SaHpiWatchdogRecType ),
         dUnionElement( SAHPI_ANNUNCIATOR_RDR, SaHpiAnnunciatorRecType ),
+        dUnionElement( SAHPI_DIMI_RDR, SaHpiDimiRecType ),
+        dUnionElement( SAHPI_FUMI_RDR, SaHpiFumiRecType ),
         dUnionElementEnd()
 };
 
@@ -725,6 +760,7 @@ static cMarshalType SaHpiHotSwapEventElements[] =
 {
   dStructElement( SaHpiHotSwapEventT, HotSwapState, SaHpiHsStateType ),
   dStructElement( SaHpiHotSwapEventT, PreviousHotSwapState, SaHpiHsStateType ),
+  dStructElement( SaHpiHotSwapEventT, CauseOfStateChange, SaHpiHsCauseOfStateChangeType ),
   dStructElementEnd()
 };
 
@@ -769,6 +805,35 @@ static cMarshalType SaHpiUserEventElements[] =
 
 cMarshalType SaHpiUserEventType = dStruct( SaHpiUserEventT, SaHpiUserEventElements );
 
+static cMarshalType SaHpiDimiEventElements[] =
+{
+  dStructElement( SaHpiDimiEventT, DimiNum, SaHpiDimiNumType ),
+  dStructElement( SaHpiDimiEventT, TestNum, SaHpiDimiTestNumType ),
+  dStructElement( SaHpiDimiEventT, DimiTestRunStatus, SaHpiDimiTestRunStatusType ),
+  dStructElement( SaHpiDimiEventT, DimiTestPercentCompleted, SaHpiDimiTestPercentCompletedType ),
+  dStructElementEnd()
+};
+
+cMarshalType SaHpiDimiEventType = dStruct( SaHpiDimiEventT, SaHpiDimiEventElements );
+
+
+static cMarshalType SaHpiDimiUpdateEventElements[] =
+{
+  dStructElement( SaHpiDimiUpdateEventT, DimiNum, SaHpiDimiNumType ),
+  dStructElementEnd()
+};
+
+cMarshalType SaHpiDimiUpdateEventType = dStruct( SaHpiDimiUpdateEventT, SaHpiDimiUpdateEventElements );
+
+static cMarshalType SaHpiFumiEventElements[] =
+{
+  dStructElement( SaHpiFumiEventT, FumiNum, SaHpiFumiNumType ),
+  dStructElement( SaHpiFumiEventT, BankNum, SaHpiUint8Type ),
+  dStructElement( SaHpiFumiEventT, UpgradeStatus, SaHpiFumiUpgradeStatusType ),
+  dStructElementEnd()
+};
+
+cMarshalType SaHpiFumiEventType = dStruct( SaHpiFumiEventT, SaHpiFumiEventElements );
 
 static cMarshalType SaHpiEventUnionElements[] =
 {
@@ -781,6 +846,9 @@ static cMarshalType SaHpiEventUnionElements[] =
   dUnionElement( SAHPI_ET_HPI_SW, SaHpiHpiSwEventType ),
   dUnionElement( SAHPI_ET_OEM, SaHpiOemEventType ),
   dUnionElement( SAHPI_ET_USER, SaHpiUserEventType ),
+  dUnionElement( SAHPI_ET_DIMI, SaHpiDimiEventType ),
+  dUnionElement( SAHPI_ET_DIMI_UPDATE, SaHpiDimiUpdateEventType ),
+  dUnionElement( SAHPI_ET_FUMI, SaHpiFumiEventType ),
   dUnionElementEnd()
 };
 

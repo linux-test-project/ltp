@@ -19,8 +19,7 @@
 // #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include <endian.h>
-#include <byteswap.h>
+#include <glib.h>
 #include "marshal.h"
 
 
@@ -83,7 +82,7 @@ cMarshalType Marshal_Float64Type =
 int
 MarshalByteOrder()
 {
-  if ( __BYTE_ORDER == __LITTLE_ENDIAN )
+  if ( G_BYTE_ORDER == G_LITTLE_ENDIAN )
        return 1;
 
   return 0;
@@ -488,11 +487,13 @@ Marshal( const cMarshalType *type, const void *d, void *b )
 			int array_size = FindArraySize( type, st_type, data );
 
                         // only simple types can be array elements
-                        assert( IsSimpleType( st_type->m_u.m_var_array.m_type->m_type ) );
+                        //assert( IsSimpleType( st_type->m_u.m_var_array.m_type->m_type ) );
 
-                        unsigned char *bb = buffer;
-                        const unsigned char *dd = data + struct_element->m_u.m_struct_element.m_offset;
+                        unsigned char *bb = buffer;                        
+                        const unsigned char *vardata = data + struct_element->m_u.m_struct_element.m_offset;
+                        const unsigned char *dd;
                         tUint32 j;
+                        memcpy(&dd, vardata, sizeof(void *));
 
                         for( j = 0; j < array_size; j++ )
                            {
@@ -610,7 +611,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
               memcpy( &v, buffer, sizeof( tUint16 ) );
 
               if ( MarshalByteOrder() != byte_order )
-                   v = bswap_16( v );
+                   v = GUINT16_SWAP_LE_BE( v );
               
               *(tUint16 *)data = v;
             }            
@@ -624,7 +625,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
               memcpy( &v, buffer, sizeof( tUint32 ) );
 
               if ( MarshalByteOrder() != byte_order )
-                   v = bswap_32( v );
+                   v = GUINT32_SWAP_LE_BE( v );
 
               *(tUint32 *)data = v;
             }
@@ -638,7 +639,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
               memcpy( &v, buffer, sizeof( tUint64 ) );
 
               if ( MarshalByteOrder() != byte_order )
-                   v = bswap_64( v );
+                   v = GUINT64_SWAP_LE_BE( v );
 
               *(tUint64 *)data = v;
             }
@@ -652,7 +653,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
               memcpy( &(v.m_f32), buffer, sizeof( tFloat32 ) );
 
               if ( MarshalByteOrder() != byte_order )
-                   v.m_u32 = bswap_32( v.m_u32 );
+                   v.m_u32 = GUINT32_SWAP_LE_BE( v.m_u32 );
 
               *(tFloat32 *)data = v.m_f32;
             }
@@ -666,7 +667,7 @@ DemarshalSimpleTypes( int byte_order, tMarshalType type,
               memcpy( &(v.m_f64), buffer, sizeof( tFloat64 ) );
 
               if ( MarshalByteOrder() != byte_order )
-                   v.m_u64 = bswap_64( v.m_u64 );
+                   v.m_u64 = GUINT64_SWAP_LE_BE( v.m_u64 );
 
               *(tFloat64 *)data = v.m_f64;
             }
@@ -758,11 +759,18 @@ Demarshal( int byte_order, const cMarshalType *type,
 			tUint32 array_size = FindArraySize( type, st_type, data );
 
                         // only simple types can be array elements
-                        assert( IsSimpleType( st_type->m_u.m_var_array.m_type->m_type ) );
-
+                        //assert( IsSimpleType( st_type->m_u.m_var_array.m_type->m_type ) );			
+			
                         const unsigned char *bb = buffer;
-                        unsigned char       *dd = data + struct_element->m_u.m_struct_element.m_offset;
+                        const cMarshalType *va_type = st_type->m_u.m_var_array.m_type;
+                        // FIXME: This is a hack! I'm assuming the elements in
+                        // the variable array are structs. That's because this
+                        // is the only instance for which we use var arrays.
+                        unsigned char *dd =
+                        	(unsigned char *)malloc(va_type->m_u.m_struct.m_size*array_size);
+                        unsigned char *vardata = data + struct_element->m_u.m_struct_element.m_offset;
                         tUint32 j;
+                        memcpy(vardata, &dd, sizeof(void *));
 
                         for( j = 0; j < array_size; j++ )
                            {

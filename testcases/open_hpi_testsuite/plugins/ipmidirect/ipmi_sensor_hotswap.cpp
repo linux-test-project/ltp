@@ -60,9 +60,17 @@ cIpmiSensorHotswap::CreateRdr( SaHpiRptEntryT &resource,
   if ( cIpmiSensorDiscrete::CreateRdr( resource, rdr ) == false )
        return false;
 
-  // update resource capabilities
-  resource.ResourceCapabilities |= SAHPI_CAPABILITY_MANAGED_HOTSWAP;
-  resource.HotSwapCapabilities  |= SAHPI_HS_CAPABILITY_INDICATOR_SUPPORTED;
+  cIpmiResource *res = Resource();
+
+  if( !res )
+       return false;
+
+  if (EntityPath() == res->EntityPath())
+  {
+    // update resource capabilities
+    resource.ResourceCapabilities |= SAHPI_CAPABILITY_MANAGED_HOTSWAP;
+    resource.HotSwapCapabilities  |= SAHPI_HS_CAPABILITY_INDICATOR_SUPPORTED;
+  }
 
   return true;
 }

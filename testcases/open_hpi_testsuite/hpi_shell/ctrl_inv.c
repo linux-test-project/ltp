@@ -694,7 +694,7 @@ int set_text_buffer(SaHpiTextBufferT *buf)
 			ind = 0;
 			for (i = 0; i < strlen(str); i++) {
 				for (j = 0; j < 16; j++)
-					if (hex_codes[j] == str[i]) break;
+					if (hex_codes[j] == toupper(str[i])) break;
 				if (j >= 16) return(-1);
 				if (i % 2) str1[ind++] += j;
 				else str1[ind] = j << 4;

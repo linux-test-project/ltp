@@ -60,7 +60,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = hpi_cmd.$(OBJEXT) cmdparser.$(OBJEXT) \
 	commands.$(OBJEXT) ctrl_inv.$(OBJEXT) inputcmd.$(OBJEXT) \
-	sensor.$(OBJEXT) session.$(OBJEXT)
+	sensor.$(OBJEXT) session.$(OBJEXT) dimi.$(OBJEXT) \
+	fumi.$(OBJEXT)
 am_hpi_shell_OBJECTS = $(am__objects_1)
 hpi_shell_OBJECTS = $(am_hpi_shell_OBJECTS)
 @OH_DAEMON_ENABLED_FALSE@am__DEPENDENCIES_1 =  \
@@ -121,6 +122,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HLD = @HLD@
 HPI_CLIENT_PKG = @HPI_CLIENT_PKG@
 HPI_LIB_VERSION = @HPI_LIB_VERSION@
 HPI_PKG = @HPI_PKG@
@@ -140,6 +142,7 @@ LIST_RESOURCES_THREADED = @LIST_RESOURCES_THREADED@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+MAN = @MAN@
 MARSHALDIR = @MARSHALDIR@
 MKDIR_P = @MKDIR_P@
 NOCFLAGS = @NOCFLAGS@
@@ -207,7 +210,9 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+found_docbook2html = @found_docbook2html@
 found_pkg_config = @found_pkg_config@
+found_pod2man = @found_pod2man@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -252,7 +257,9 @@ HS_SOURCES = \
 	ctrl_inv.c \
 	inputcmd.c \
 	sensor.c \
-	session.c
+	session.c \
+	dimi.c \
+	fumi.c
 
 hpi_shell_SOURCES = $(HS_SOURCES)
 hpi_shell_LDADD = $(COMMONLIBS)
@@ -350,6 +357,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmdparser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commands.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ctrl_inv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dimi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fumi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hpi_cmd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inputcmd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sensor.Po@am__quote@

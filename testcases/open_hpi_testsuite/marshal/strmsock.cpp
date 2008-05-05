@@ -26,7 +26,6 @@
 #include <netdb.h>
 #include <errno.h>
 #include <glib.h>
-#include <byteswap.h>
 
 #include "strmsock.h"
 #include "marshal.h"
@@ -165,8 +164,8 @@ bool strmsock::ReadMsg(char *data)
 	memcpy(&header, data, sizeof(cMessageHeader));
         // swap id and len if nessesary in the reply header
 	if ((header.m_flags & dMhEndianBit) != MarshalByteOrder()) {
-		header.m_id  = bswap_32(header.m_id);
-		header.m_len = bswap_32(header.m_len);
+		header.m_id  = GUINT32_SWAP_LE_BE(header.m_id);
+		header.m_len = GUINT32_SWAP_LE_BE(header.m_len);
 	}
 	//printf("header.m_flags: 0x%x\n", header.m_flags);
 

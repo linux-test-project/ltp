@@ -66,17 +66,17 @@ ALLSOURCES = \
         $(shell find $(top_srcdir)/utils -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/openhpid -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/') \
+        -name '*.[chS]' -print -o '*.cpp' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/plugins -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/') \
+        -name '*.[chS]' -print -o '*.cpp' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/snmp -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/marshal -name .svn -o -name CVS -prune -o \
         -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/clients -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/')
+        -name '*.[chS]' -print | grep -v '/t/') \
         $(shell find $(top_srcdir)/cpp -name .svn -o -name CVS -prune -o \
-        -name '*.[chS]' -print | grep -v '/t/')
+        -name '*.[ch]pp' -print | grep -v '/t/')
 
 includedir=$(base_includedir)/openhpi
 # These are the only headers that users should have any access to
@@ -98,7 +98,7 @@ include_HEADERS = $(top_srcdir)/include/SaHpi.h \
                   $(top_srcdir)/utils/el_utils.h
 
 docsdir=$(datadir)/doc/$(PACKAGE_NAME)-$(VERSION)
-docs_DATA = README README.daemon
+docs_DATA = README README.daemon COPYING
 
 $(top_srcdir)/utils/sahpi_enum_utils.h:
 	make -C $(top_builddir)/utils sahpi_enum_utils.h

@@ -600,6 +600,8 @@ int show_rdr_list(Domain_t *domain, SaHpiResourceIdT rptid, SaHpiRdrTypeT passed
         SaHpiInventoryRecT      *inv;
         SaHpiWatchdogRecT       *wdog;
         SaHpiAnnunciatorRecT    *ann;
+        SaHpiDimiRecT           *dimi;
+        SaHpiFumiRecT           *fumi;
         SaErrorT                ret;
         int                     res_num = 0;
 
@@ -645,6 +647,14 @@ int show_rdr_list(Domain_t *domain, SaHpiResourceIdT rptid, SaHpiRdrTypeT passed
                         case SAHPI_ANNUNCIATOR_RDR:
                                 ann = &(rdr.RdrTypeUnion.AnnunciatorRec);
                                 snprintf(ar, 256, "%3.3d", ann->AnnunciatorNum);
+                                break;
+                        case SAHPI_DIMI_RDR:
+                                dimi = &(rdr.RdrTypeUnion.DimiRec);
+                                snprintf(ar, 256, "%3.3d", dimi->DimiNum);
+                                break;
+                        case SAHPI_FUMI_RDR:
+                                fumi = &(rdr.RdrTypeUnion.FumiRec);
+                                snprintf(ar, 256, "%3.3d", fumi->Num);
                                 break;
                         default:
                                 snprintf(ar, 256, "%c", '?');
@@ -779,6 +789,8 @@ int show_rpt_list(Domain_t *domain, int as, SaHpiResourceIdT rptid,
                 if (cap & SAHPI_CAPABILITY_AGGREGATE_STATUS) strcat(buf, "AG|");
                 if (cap & SAHPI_CAPABILITY_EVT_DEASSERTS) strcat(buf, "DS|");
                 if (cap & SAHPI_CAPABILITY_RESOURCE) strcat(buf, "RES|");
+                if (cap & SAHPI_CAPABILITY_DIMI) strcat(buf, "DIMI|");
+                if (cap & SAHPI_CAPABILITY_FUMI) strcat(buf, "FUMI|");
                 ind  = strlen(buf);
                 if (buf[ind - 1] == '|')
                         buf[ind - 1] = 0;
@@ -971,6 +983,28 @@ Pr_ret_t show_short_event(SaHpiEventT *event, hpi_ui_print_cb_t proc)
                                 oh_lookup_hsstate(
                                 event->EventDataUnion.HotSwapEvent.HotSwapState));
                         if (proc(buf) != HPI_UI_OK) return(HPI_UI_END);
+                        break;
+                case SAHPI_ET_DIMI:
+                        snprintf(buf, SHOW_BUF_SZ, "RESOURCE %d DIMI %d TEST %d : %s",
+                                event->Source,
+                                event->EventDataUnion.DimiEvent.DimiNum,
+                                event->EventDataUnion.DimiEvent.TestNum,
+                                oh_lookup_dimitestrunstatus(event->EventDataUnion.DimiEvent.DimiTestRunStatus));
+                        proc(buf);
+                        break;
+                case SAHPI_ET_DIMI_UPDATE:
+                        snprintf(buf, SHOW_BUF_SZ, "RESOURCE %d DIMI %d",
+                                event->Source,
+                                event->EventDataUnion.DimiUpdateEvent.DimiNum);
+                        proc(buf);
+                        break;
+                case SAHPI_ET_FUMI:
+                        snprintf(buf, SHOW_BUF_SZ, "RESOURCE %d FUMI %d BANK %d : %s",
+                                event->Source,
+                                event->EventDataUnion.FumiEvent.FumiNum,
+                                event->EventDataUnion.FumiEvent.BankNum,
+                                oh_lookup_fumiupgradestatus(event->EventDataUnion.FumiEvent.UpgradeStatus));
+                        proc(buf);
                         break;
                 default:
                         snprintf(buf, SHOW_BUF_SZ, "%d", event->Source);
