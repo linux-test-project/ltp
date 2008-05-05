@@ -126,6 +126,13 @@ main(int ac, char **av)
      ***************************************************************/
     setup();
 
+    /*
+     * check if the current filesystem is nfs
+     */
+    if(tst_is_cwd_nfs()) {
+         tst_brkm(TCONF, cleanup, "Cannot do fcntl on a file located on an NFS filesystem");
+    }
+
     /* set the expected errnos... */
     TEST_EXP_ENOS(exp_enos);
 

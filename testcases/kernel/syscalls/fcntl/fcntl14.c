@@ -999,6 +999,14 @@ int main(int ac, char **av)
 
 	setup();			/* global setup */
 
+	/* 
+         * check if the current filesystem is nfs
+         */
+        if(tst_is_cwd_nfs()) {
+                          tst_brkm(TCONF, cleanup, "Cannot do fcntl on a file located on an NFS filesystem");
+        }
+
+
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */

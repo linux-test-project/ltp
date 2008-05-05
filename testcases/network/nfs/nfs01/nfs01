@@ -196,6 +196,14 @@ $trace_logic
 # MAIN PROCEDURE
 #=============================================================================
 
+# Check if current filesystem is NFS
+
+STR=`stat -f . | grep "Type: nfs"`
+if [ -n "$STR" ]; then
+        test_resm TCONF "Cannot run nfs stress test on an NFS mounted filesystem"
+        exit 0
+fi
+
 setup_testcase
 do_test
 end_testcase
