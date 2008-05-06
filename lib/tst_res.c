@@ -31,7 +31,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.5 2008/05/06 15:10:16 vapier Exp $ */
+/* $Id: tst_res.c,v 1.6 2008/05/06 15:47:54 vapier Exp $ */
 
 /**********************************************************
  *
@@ -793,6 +793,17 @@ tst_brkloopm(int ttype, void (*func)(), char *arg_fmt, ...)
     */
    tst_brkloop(ttype, NULL, func, tmesg);
 }  /* tst_brkloopm() */
+
+
+/*
+ * tst_require_root() - Test for root permissions and abort if not.
+ */
+void
+tst_require_root(void (*func)())
+{
+   if (geteuid() != 0)
+      tst_brkm(TCONF, func, "Test needs to be run as root");
+}
 
 
 /*
