@@ -18,7 +18,7 @@
  */
 
 /*
- * Test Name: hugemmap01
+ * Test Name: hugemmap04
  *
  * Test Description:
  *  Verify that, a hugetlb mmap() succeeds when used to map the largest size possible. 
@@ -43,7 +43,7 @@
  *   Delete the temporary directory created.
  *
  * Usage:  <for command-line>
- *  hugemmap01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  hugemmap04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
@@ -78,7 +78,7 @@
 
 char* TEMPFILE="mmapfile";
 
-char *TCID="hugemmap01";	/* Test program identifier.    */
+char *TCID="hugemmap04";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 long *addr;			/* addr of memory mapped region */
