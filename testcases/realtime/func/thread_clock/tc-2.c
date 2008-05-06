@@ -58,14 +58,12 @@
 struct timespec sleepts[NUMSLEEP];
 struct timespec workts[NUMWORK];
 static int run_jvmsim=0;
-static double threshold = THRESHOLD;
 
 void usage(void)
 {
 	rt_help();
 	printf("thread_clock specific options:\n");
 	printf("  -j            enable jvmsim\n");
-	printf("  -t            failure threshold in secs (defaults to %f)\n", threshold);
 }
 
 int parse_args(int c, char *v)
@@ -74,9 +72,6 @@ int parse_args(int c, char *v)
 	switch (c) {
 	case 'j':
 		run_jvmsim = 1;
-		break;
-	case 't':
-		threshold = atof(v);
 		break;
 	case 'h':
 		usage();
@@ -169,10 +164,10 @@ int checkresult(float proctime)
 	printf("Threads: %.4f s\n", threadstime);
 	printf("Delta:   %.4f s\n", diff);
 	/* Difference between the sum of thread times and process time
-	 * should not be more than threshold */
-	printf("\nCriteria: Delta < %.4f s\n", threshold);
+	 * should not be more than pass_criteria */
+	printf("\nCriteria: Delta < %.4f s\n", pass_criteria);
 	printf("Result: ");
-	if (diff > threshold) {
+	if (diff > pass_criteria) {
 		printf("FAIL\n");
 		retval = 1;
 	}
@@ -188,6 +183,7 @@ int main(int argc,char* argv[])
 	struct timespec myts;
 	setup();
 
+	pass_criteria = THRESHOLD;
 	rt_init("jht:",parse_args,argc,argv);
 
 	if (run_jvmsim) {
