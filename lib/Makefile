@@ -1,13 +1,8 @@
 
 DESTDIR=/opt/ltp
 
-ifeq ($(shell uname -s),SunOS)
 CFLAGS+= -Wall
-endif
-CFLAGS+= -I../include 
-ifeq ($(shell uname -s),Linux)
-CFLAGS+= -Wall
-endif
+CPPFLAGS+= -I../include 
 ifeq ($(shell uname -s),HP-UX)
 CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
 endif
