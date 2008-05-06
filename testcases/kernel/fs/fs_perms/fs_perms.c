@@ -80,8 +80,10 @@ static int testfperm(int userId, int groupId, char *fperm)
 	switch (tolower(fperm[0])) {
 	case 'x': {
 		int status;
-		if (fork() == 0)
-			exit(execlp("./test.file", "test.file", NULL));
+		if (fork() == 0) {
+			execlp("./test.file", "test.file", NULL);
+			exit(1);
+		}
 		wait(&status);
 		seteuid(0);
 		setegid(0);
@@ -93,11 +95,11 @@ static int testfperm(int userId, int groupId, char *fperm)
 			fclose(testfile);
 			seteuid(0);
 			setegid(0);
-			return 1;
+			return 0;
 		} else {
 			seteuid(0);
 			setegid(0);
-			return 0;
+			return 1;
 		}
 	}
 	}
@@ -123,7 +125,7 @@ int main(int argc, char *argv[])
 		break;
 	default:
 		printf("Usage: %s <mode of file> <UID of file> <GID of file> <UID of tester> <GID of tester> <permission to test r|w|x> <expected result as 0|1>\n", argv[0]);
-		return 0;
+		return 1;
 	}
 
 	result = testsetup(mode, cuserId, cgroupId);
