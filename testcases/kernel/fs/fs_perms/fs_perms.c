@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
 	result = testfperm(userId, groupId, fperm);
 	unlink("test.file");
-	tst_resm(result ? TPASS : TFAIL, "%c a %03o file owned by (%d/%d) as user/group(%d/%d)",
+	tst_resm(exresult == result ? TPASS : TFAIL, "%c a %03o file owned by (%d/%d) as user/group(%d/%d)",
 		fperm[0], mode, cuserId, cgroupId, userId, groupId);
 	return result;
 }
