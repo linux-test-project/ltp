@@ -121,6 +121,7 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 				break;
 			case 's':
 				save_stats = 1;
+				break;
 			default:
 				if (parse_arg) {
 					if (!parse_arg(c, optarg)) {
