@@ -350,10 +350,11 @@ void main_thread(void)
 int main(int argc, char *argv[])
 {
 	setup();
+	pass_criteria = PASS_CRITERIA;
 	rt_init("jl:h", parse_args, argc, argv);
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
-	/* the minimum avg concurrent multiplier to pass, TODO: make configurable */
-	criteria = PASS_CRITERIA * numcpus;
+	/* the minimum avg concurrent multiplier to pass */
+	criteria = pass_criteria * numcpus;
 
 	printf("\n---------------------------------------\n");
 	printf("Matrix Multiplication (SMP Performance)\n");
