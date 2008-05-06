@@ -64,7 +64,7 @@ void usage(void)
 {
 	rt_help();
 	printf("periodic_cpu_load_single specific options:\n");
-	printf("  -cCALC_LOOPS	loops per iteration\n");
+	printf("  -lCALC_LOOPS	loops per iteration\n");
 	printf("  -fFILENAME_PREFIX    filename prefix for plot output\n");
 	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
 	printf("  -j            enable jvmsim\n");
@@ -163,7 +163,7 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'c':
+		case 'l':
 			calc_loops = atoi(v);
 			break;
 		case 'f':
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 	calc_loops = DEFAULT_CALC_LOOPS;
 	setup();
 
-	rt_init("f:jhi:r:t:c:", parse_args, argc, argv);
+	rt_init("f:jhi:r:t:l:", parse_args, argc, argv);
 
 	if (iterations < 100) {
 		printf("Number of iterations cannot be less than 100\n");
