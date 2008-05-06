@@ -176,7 +176,7 @@ void *periodic_thread(void *arg)
 			min_delay = delay;
 		if (delay > max_delay)
 			max_delay = delay;
-		if (delay > PASS_US) {
+		if (delay > pass_criteria) {
 			failures++;
 			ret = 1;
 		}
@@ -210,13 +210,13 @@ void *periodic_thread(void *arg)
 	avg_delay /= i;
 	printf("\n\n");
 	printf("Start: %4llu us: %s\n", start_delay,
-		start_delay < PASS_US ? "PASS" : "FAIL");
+		start_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Min:   %4llu us: %s\n", min_delay,
-		min_delay < PASS_US ? "PASS" : "FAIL");
+		min_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Max:   %4llu us: %s\n", max_delay,
-		max_delay < PASS_US ? "PASS" : "FAIL");
+		max_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Avg:   %4llu us: %s\n", avg_delay,
-		avg_delay < PASS_US ? "PASS" : "FAIL");
+		avg_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
@@ -231,6 +231,7 @@ int main(int argc, char *argv[])
 	int per_id;
 	setup();
 
+	pass_criteria = PASS_US;
 	rt_init("d:jl:ht:i:", parse_args, argc, argv);
 
 	printf("-------------------------------\n");
@@ -284,7 +285,7 @@ int main(int argc, char *argv[])
 	join_thread(per_id);
 	join_threads();
 
-	printf("\nCriteria: latencies < %d us\n", PASS_US);
+	printf("\nCriteria: latencies < %d us\n", (int)pass_criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
 	stats_container_free(&dat);
