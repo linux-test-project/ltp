@@ -224,6 +224,7 @@ int main(int argc, char *argv[])
 	int ret;
 	setup();
 
+	pass_criteria = THRESHOLD;
 	rt_init("hi:n:w:", parse_args, argc, argv);
 
 	if (iterations < 100) {
@@ -263,10 +264,10 @@ int main(int argc, char *argv[])
 	printf("Low prio lock held time (min) = %ld us\n", stats_min(&low_dat));
 	printf("High prio lock wait time (max) = %ld us\n", stats_max(&lock_wait_dat));
 	printf("Criteria: High prio lock wait time < "
-			"(Low prio lock held time + %d us)\n", THRESHOLD);
+			"(Low prio lock held time + %d us)\n", (int)pass_criteria);
 
 	ret = 0;
-	if (stats_max(&lock_wait_dat) > stats_min(&low_dat) + THRESHOLD)
+	if (stats_max(&lock_wait_dat) > stats_min(&low_dat) + (int)pass_criteria)
 		ret = 1;
 
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
