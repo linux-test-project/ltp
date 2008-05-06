@@ -217,7 +217,7 @@ void *worker_thread(void* arg)
 		times++;
 	}
 
-	if (times >= CHECK_LIMIT) {
+	if (times >= (int)pass_criteria) {
 		printf("Thread %d(%d): Non-Preempt limit reached. %llu ns latency\n",
 				tid, mypri, pend-pstart);
 		ret = 1;
@@ -293,6 +293,7 @@ int main(int argc, char* argv[])
 	int pri_boost,numcpus;
 	setup();
 
+	pass_criteria = CHECK_LIMIT;
 	rt_init("jhin:", parse_args, argc, argv);
 
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -322,7 +323,7 @@ int main(int argc, char* argv[])
         /* wait for threads to complete */
         join_threads();
 
-        printf("\nCriteria: All threads appropriately preempted within %d loop(s)\n", CHECK_LIMIT);
+        printf("\nCriteria: All threads appropriately preempted within %d loop(s)\n", (int)pass_criteria);
         printf("Result: %s\n", ret ? "FAIL" : "PASS");
 	return ret;
 }
