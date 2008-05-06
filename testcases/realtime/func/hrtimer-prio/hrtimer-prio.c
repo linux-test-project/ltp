@@ -58,7 +58,6 @@ static int med_prio = DEF_MED_PRIO;
 static int high_prio;
 static int busy_time = DEF_BUSY_TIME;
 static int iterations = DEF_ITERATIONS;
-static unsigned long criteria = DEF_CRITERIA;
 static int busy_threads;
 
 static stats_container_t dat;
@@ -104,9 +103,6 @@ int parse_args(int c, char *v)
 				fprintf(stderr, "Number of iterations cannot be less than 100.\n");
 				exit(1);
 			}
-		break;
-	case 'm':
-		criteria = atoi(v);
 		break;
 	default:
 		handled = 0;
@@ -158,7 +154,8 @@ int main(int argc, char *argv[])
 	int t_id;
 	setup();
 	busy_threads = 2 * sysconf(_SC_NPROCESSORS_ONLN); // default busy_threads
-	rt_init("f:i:jhn:t:m:", parse_args, argc, argv);
+	pass_criteria = DEF_CRITERIA;
+	rt_init("f:i:jhn:t:", parse_args, argc, argv);
 	high_prio = med_prio + 1;
 
 	// Set main()'s prio to one above the timer_thread so it is sure to not
@@ -221,7 +218,7 @@ int main(int argc, char *argv[])
 	stats_container_save("hist", "High Resolution Timer Latency Histogram",\
 			"Latency (us)", "Samples", &hist, "steps");
 
-	if (max_delta <= criteria)
+	if (max_delta <= pass_criteria)
 		ret = 0;
 
 	printf("Minimum: %ld us\n", min_delta);
@@ -231,7 +228,7 @@ int main(int argc, char *argv[])
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
-	printf("\nCriteria: Maximum wakeup latency < %lu us\n", criteria);
+	printf("\nCriteria: Maximum wakeup latency < %lu us\n", (unsigned long)pass_criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
 	return ret;
