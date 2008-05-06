@@ -175,7 +175,7 @@ void *signal_receiving_thread(void *arg)
 		if (delta > max)
 			max = delta;
 
-		if (delta > THRESHOLD) fail++;
+		if (delta > pass_criteria) fail++;
 
 		debug(DBG_INFO, "Iteration %d: Took %ld us. Max = %ld us, "
 		      "Min = %ld us\n", i, delta, max, min);
@@ -219,7 +219,7 @@ void *signal_receiving_thread(void *arg)
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 	printf("Failures: %d\n", fail);
-	printf("Criteria: Time < %d us\n", THRESHOLD);
+	printf("Criteria: Time < %d us\n", (int)pass_criteria);
 	printf("Result: %s", fail ? "FAIL" : "PASS");
 	printf("\n\n");
 
@@ -280,6 +280,7 @@ int main(int argc, char *argv[])
 	atomic_set(0,&flag);
 	setup();
 
+	pass_criteria = THRESHOLD;
 	rt_init("jl:h", parse_args, argc, argv);	/* we need the buffered print system */
 
 	printf("-------------------------------\n");
