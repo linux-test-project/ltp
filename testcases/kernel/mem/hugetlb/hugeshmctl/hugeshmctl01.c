@@ -232,6 +232,7 @@ stat_setup()
 	int i, rval;
 	void *test, *set_shmat();
 	pid_t pid;
+	sigset_t newmask, oldmask;
 
 	/*
 	 * The first time through, let the children attach the memory.
@@ -246,6 +247,21 @@ stat_setup()
 		 */
 		set_shared = set_shmat();
 	}
+
+	/*
+	 * Block SIGUSR1 before children pause for a signal
+	 * Doing so to avoid the risk that the parent cleans up
+	 * children by calling stat_cleanup() before children call
+	 * call pause() so that children sleep forever(this is a
+	 * side effect of the arbitrary usleep time below).
+	 * In FIRST, children call shmat. If children sleep forever,
+	 * those attached shm can't be released so some other shm
+	 * tests will fail a lot.
+	 */
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGUSR1);
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
+		tst_brkm(TBROK, cleanup, "block SIGUSR1 error");
 
 	for (i=0; i<N_ATTACH; i++) {
 		if ((pid = fork()) == -1) {
@@ -263,8 +279,18 @@ stat_setup()
 			/* do an assignement for fun */
 			*(int *)test = i;
 
-			/* pause until we get a signal from stat_cleanup() */
-			rval = pause();
+			/*
+			 * sigsuspend until we get a signal from stat_cleanup()
+			 * use sigsuspend instead of pause to avoid children
+			 * infinite sleep without getting SIGUSR1 from parent
+			 */
+			rval = sigsuspend(&oldmask);
+			if (rval != -1)
+				tst_brkm(TBROK, cleanup, "sigsuspend error");
+
+			/* don't have to block SIGUSR1 any more, recover the mask */
+			if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
+				tst_brkm(TBROK, cleanup, "children setmask error");
 
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1) {
@@ -278,6 +304,11 @@ stat_setup()
 			pid_arr[i] = pid;
 		}
 	}
+
+	/* parent doesn't have to block SIGUSR1, recover the mask */
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
+		tst_brkm(TBROK, cleanup, "parent setmask error");
+
 	/* sleep briefly to ensure correct execution order */
 	usleep(250000);
 }
