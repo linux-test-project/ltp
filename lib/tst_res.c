@@ -31,7 +31,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.4 2007/09/19 04:08:22 subrata_modak Exp $ */
+/* $Id: tst_res.c,v 1.5 2008/05/06 15:10:16 vapier Exp $ */
 
 /**********************************************************
  *
@@ -566,12 +566,6 @@ tst_exit()
 int
 tst_environ()
 {
-#if defined UCLINUX && EMBED && CONFIG_BLACKFIN
-   FILE *fdopen;
-#else
-   FILE *fdopen();
-#endif
-
    if ( (T_out = fdopen(dup(fileno(stdout)), "w")) == NULL )
       return(-1);
    else
