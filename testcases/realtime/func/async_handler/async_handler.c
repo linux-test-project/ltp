@@ -144,7 +144,7 @@ void *signal_thread(void *arg)
 		while (atomic_get(&step) != CHILD_HANDLED)
 			usleep(10);
 		delta = (long)((end - start)/NS_PER_US);
-		if (delta > PASS_US)
+		if (delta > pass_criteria)
 			ret = 1;
 		dat.records[i].x = i;
 		dat.records[i].y = delta;
@@ -180,6 +180,7 @@ int main(int argc, char *argv[])
 	printf("Asynchronous Event Handling Latency\n");
 	printf("-----------------------------------\n\n");
 
+	pass_criteria = PASS_US;
 	rt_init("ji:h", parse_args, argc, argv);
 
 	init_pi_mutex(&mutex);
@@ -201,7 +202,7 @@ int main(int argc, char *argv[])
 
 	join_threads();
 
-	printf("\nCriteria: latencies < %d\n", PASS_US);
+	printf("\nCriteria: latencies < %d\n", (int)pass_criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
 	return ret;

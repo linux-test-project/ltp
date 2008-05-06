@@ -148,6 +148,7 @@ int main(int argc, char* argv[])
 	struct thread *server;
 	setup();
 
+	pass_criteria = PASS_US;
 	rt_init("jh", parse_args, argc, argv);
 	if (run_jvmsim) {
 		printf("jvmsim enabled\n");
@@ -168,8 +169,8 @@ int main(int argc, char* argv[])
 	delta = (end - start)/NS_PER_US;
 
 	printf("delta = %ld us\n", delta);
-	printf("\nCriteria: latencies < %d\n", PASS_US);
-	printf("Result: %s\n", delta > PASS_US ? "FAIL" : "PASS");
+	printf("\nCriteria: latencies < %d\n", (int)pass_criteria);
+	printf("Result: %s\n", delta > pass_criteria ? "FAIL" : "PASS");
 
 	return 0;
 }
