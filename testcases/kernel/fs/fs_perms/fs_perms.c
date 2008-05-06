@@ -37,6 +37,11 @@
 #include <unistd.h>
 #include <wait.h>
 
+#include "test.h"
+
+char *TCID = "fs_perms";
+int TST_TOTAL = 1;
+
 static int testsetup(mode_t mode, int cuserId, int cgroupId)
 {
 	int ret;
@@ -60,13 +65,13 @@ static int testfperm(int userId, int groupId, char *fperm)
 {
 	/* SET CURRENT USER/GROUP PERMISSIONS */
 	if (setegid(groupId)) {
-		printf("could not setegid to %d.\n", groupId);
+		tst_brkm(TBROK, NULL, "could not setegid to %d: %s", groupId, strerror(errno));
 		seteuid(0);
 		setegid(0);
 		return -1;
 	}
 	if (seteuid(userId)) {
-		printf("could not seteuid to %d.\n", userId);
+		tst_brkm(TBROK, NULL, "could not seteuid to %d: %s", userId, strerror(errno));
 		seteuid(0);
 		setegid(0);
 		return -1;
@@ -104,6 +109,8 @@ int main(int argc, char *argv[])
 	int result, exresult = 0, cuserId = 0, cgroupId = 0, userId = 0, groupId = 0;
 	mode_t mode;
 
+	tst_require_root(tst_exit);
+
 	switch (argc) {
 	case 8:
 		mode = strtol(argv[1], (char **)NULL, 010);
@@ -121,19 +128,13 @@ int main(int argc, char *argv[])
 
 	result = testsetup(mode, cuserId, cgroupId);
 	if (result) {
-		perror("testsetup() failed");
+		tst_brkm(TBROK, tst_exit, "testsetup() failed: %s", strerror(errno));
 		return result;
 	}
 
 	result = testfperm(userId, groupId, fperm);
 	unlink("test.file");
-	printf("%c a %03o file owned by (%d/%d) as user/group(%d/%d)  ",
-	       fperm[0], mode, cuserId, cgroupId, userId, groupId);
-	if (result == exresult) {
-		printf("PASS\n");
-		return 0;
-	} else {
-		printf("FAIL\n");
-		return 1;
-	}
+	tst_resm(result ? TPASS : TFAIL, "%c a %03o file owned by (%d/%d) as user/group(%d/%d)",
+		fperm[0], mode, cuserId, cgroupId, userId, groupId);
+	return result;
 }

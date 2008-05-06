@@ -1,4 +1,7 @@
 CFLAGS += -Wall
+CPPFLAGS += -I../../../../include
+LDLIBS += -lltp
+LDFLAGS += -L../../../../lib
 
 TARGETS = fs_perms
 
