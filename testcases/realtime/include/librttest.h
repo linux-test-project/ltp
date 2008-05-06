@@ -100,6 +100,7 @@ extern pthread_mutex_t _buffer_mutex;
 extern char * _print_buffer;
 extern int _print_buffer_offset;
 extern int _dbg_lvl;
+extern double pass_criteria;
 
 /* function prototypes */
 

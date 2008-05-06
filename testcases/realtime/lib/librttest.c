@@ -67,6 +67,7 @@ pthread_mutex_t _buffer_mutex;
 char * _print_buffer = NULL;
 int _print_buffer_offset = 0;
 int _dbg_lvl = 0;
+double pass_criteria;
 
 static int _use_pi = 1;
 
@@ -78,6 +79,7 @@ void rt_help(void)
 	printf("  -p(0,1)	0:don't use pi mutexes, 1:use pi mutexes\n");
 	printf("  -v[0-4]	0:no debug, 1:DBG_ERR, 2:DBG_WARN, 3:DBG_INFO, 4:DBG_DEBUG\n");
 	printf("  -s		Enable saving stats data (default disabled)\n");
+	printf("  -c		Set pass criteria\n");
 }
 
 int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[])
@@ -87,7 +89,7 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	int c;
 	opterr = 0;
 	char *all_options, *opt_ptr;
-	static const char my_options[] = "b:p:v:s";
+	static const char my_options[] = "b:p:v:sc:";
 
 	if (options) {
 		opt_ptr = all_options = (char *)malloc(sizeof(my_options) + strlen(options) + 1);
@@ -110,6 +112,9 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 
 	while ((c = getopt(argc, argv, all_options)) != -1) {
 		switch (c) {
+			case 'c':
+				pass_criteria = atof(optarg);
+				break;
 			case 'b':
 				use_buffer = atoi(optarg);
 				break;
