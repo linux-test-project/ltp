@@ -194,7 +194,10 @@ setup0(void)
 		s = 1025;	/* anything not an open file */
 	else {
 		tst_tmpdir();
-		if((s = mknod("test", O_RDWR | O_CREAT | S_IFIFO, 0 )) == -1)
+		if((mknod("test", O_RDWR | O_CREAT | S_IFIFO, 0 )) == -1)
+				tst_brkm(TBROK, cleanup, "Could not create test - "
+				"errno: %s", strerror(errno));
+		if((s = open("test", O_RDWR)) == -1)
 				tst_brkm(TBROK, cleanup, "Could not open test - "
 				"errno: %s", strerror(errno));
 	}
