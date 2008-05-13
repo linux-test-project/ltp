@@ -1,0 +1,104 @@
+#!/bin/bash -v
+
+#
+# Copyright (c) International Business Machines  Corp., 2005
+# Author: Avantika Mathur (mathurav@us.ibm.com)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+
+disk1=disk1
+disk2=disk2
+disk3=disk3
+disk4=disk4
+fs=ext3
+
+mkdir -p $disk1 $disk2 $disk3 $disk4
+
+
+
+rm -rf $disk1/* $disk2/* $disk3/* $disk4/*
+
+mkdir $disk1/a $disk1/b $disk1/c
+mkdir $disk2/d $disk2/e $disk2/f
+mkdir $disk3/g $disk3/h $disk3/i
+mkdir $disk4/j $disk4/k $disk4/l
+
+lockfile="/.nslock"
+otherpid=
+startparent()
+{
+        rm -f $lockfile
+        echo $$ >| ${lockfile}parent
+        while [ 1 ]
+        do
+                otherpid="$(cat ${lockfile}child 2> /dev/null)"
+                if [ -n "$otherpid" -a -d /proc/$otherpid ]
+                then
+                        return
+                fi
+        done
+}
+
+
+startchild()
+{
+        rm -f $lockfile
+        echo $$ >| ${lockfile}child
+        while [ 1 ]
+        do
+                otherpid="$(cat ${lockfile}parent 2> /dev/null)"
+                if [ -n "$otherpid" -a -d /proc/$otherpid ]
+                then
+                        return
+                fi
+        done
+}
+
+iamgoingahead()
+{
+        while [ 1 ]
+        do
+                pid=`cat $lockfile 2> /dev/null`
+                if [ "$pid" == "$$" ]
+                then
+                        return
+                fi
+                sleep 1
+        done
+}
+
+
+goahead()
+{
+        set -x
+        echo $otherpid > $lockfile
+        set +x
+}
+
+
+check(){
+	"${FS_BIND_ROOT}/bin/check_prop" $*
+	ret=$?
+	if [ $ret -ne 0 ]; then
+		result=$ret
+	fi
+}
+export result=0
+
+cleanup(){
+	rm -rf "disk"*
+}

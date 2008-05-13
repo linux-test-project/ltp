@@ -37,7 +37,7 @@
  *              tst_resm  - Print result message 
  *              tst_flush - Print any messages pending because of CONDENSE mode,
  *                          and flush output stream 
- *              tst_exit - Exit test with a meaningful exit value 
+ *              tst_exit  - Exit test with a meaningful exit value 
  *
  *              These are the minimum set of functions or commands required to
  *              report results.
@@ -46,6 +46,13 @@
  *               0   - on success
  *              -1  - on failure
  *
+ * Description: Unlike the above commands tst_kvercmp has an unusual exit status
+ *              tst_kvercmp - Compare running kernel to specified version
+ * Exit:
+ *               2 - running newer kernel
+ *               1 - running same age kernel
+ *               0 - running older kernel
+ *              -1 - on failure
  * History
  * Dec 10 2002 - Created - Manoj Iyer manjo@mail.utexas.edu
  * Dec 12 2002 - Modified - Code that checked if the environment variables
@@ -298,6 +305,36 @@ int main( int argc,
     else
     if (strcmp((char *)cmd_name, "tst_flush") == 0)
         tst_flush();
+    else
+    if (strcmp((char *)cmd_name, "tst_kvercmp") == 0)
+    {
+	int exit_value;
+
+        if (argc < 4)
+        {
+            fprintf(stderr, "Usage: %s NUM NUM NUM\n"
+            "Compares to the running kernel version.\n\n"
+            "\tNUM - A positive integer.\n"
+	    "\tThe first NUM is the kernel VERSION\n"
+	    "\tThe second NUM is the kernel PATCHLEVEL\n"
+	    "\tThe third NUM is the kernel SUBLEVEL\n\n"
+	    "\tExit status is 0 if the running kernel is older than the\n"
+	    "\t\tkernel specified by NUM NUM NUM.\n"
+	    "\tExit status is 1 for kernels of the same age.\n"
+	    "\tExit status is 2 if the running kernel is newer.\n", cmd_name);
+            exit (-1);
+        }
+	exit_value = tst_kvercmp(atoi(argv[0]), atoi(argv[1]), atoi(argv[2]));
+	if (exit_value < 0)
+		exit_value = 0;
+	else
+	if (exit_value == 0)
+		exit_value = 1;
+	else
+	if (exit_value > 0)
+		exit_value = 2;
+	exit (exit_value);
+    }
 
     exit(0);
 }

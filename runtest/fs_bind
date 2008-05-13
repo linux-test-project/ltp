@@ -1,0 +1,2 @@
+#DESCRIPTION:Bind mounts and shared subtrees
+BindMounts	$LTPROOT/testscripts/test_fs_bind.sh
