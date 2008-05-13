@@ -1,9 +1,4 @@
-ifeq ($(shell uname -m |grep -c -e "86" -e "ppc"), 1) 
-	SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder | grep -v DOTS | grep -v kdump ` 
-else	
 	SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder | grep -v DOTS | grep -v kdump | grep -v realtime` 
-endif
-
 UCLINUX_SUBDIRS = kernel
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
