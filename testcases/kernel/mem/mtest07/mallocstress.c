@@ -255,12 +255,11 @@ void *
 alloc_mem(void * threadnum)
 {
     /* thread N will use growth scheme N mod 4 */
-    int err = allocate_free(num_loop, ((intptr_t)threadnum) % 4);
+    int err = allocate_free(num_loop, ((int)threadnum) % 4);
     fprintf(stdout, 
-	"pid[%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
-	getpid(), err,
-	(err ? "failed" : "succeeded"));
-    return (void *)(&err ? -1 : 0);
+    "Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
+    (int)threadnum, err, (err ? "failed" : "succeeded"));
+    return (void *)(err ? -1 : 0);
 }
         
 
@@ -336,7 +335,7 @@ main(int	argc,		/* number of input parameters		      */
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)&thrd_ndx))
+        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
         {
 	    int err = errno;
 	    if (err == EINTR) {
@@ -363,11 +362,10 @@ main(int	argc,		/* number of input parameters		      */
             if ((intptr_t)th_status != 0)
             {
                 fprintf(stderr,
-                        "main(): thread [%d] - process exited with errors\n",
-                            (int) thrdid[thrd_ndx]);
+                        "main(): thread [%d] - exited with errors\n", thrd_ndx);
                 exit(-1);
             }
-            dprt(("main(): thread[%d]: exiting without errors\n", thrd_ndx));
+            dprt(("main(): thread [%d]: exited without errors\n", thrd_ndx));
         }
         my_yield();
     }
