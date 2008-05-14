@@ -66,6 +66,7 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <errno.h>
+#include <sys/shm.h>
 
 #include "diotest_routines.h"
 
@@ -187,7 +188,7 @@ main(int argc, char *argv[])
         int     fd, newfd, fd1;
         int     i, l_fail = 0, fail_count = 0, total = 0;
 	int	failed = 0;
-     	int	pgsz = getpagesize();
+	int	shmsz = SHMLBA;
 	int	pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
         char    *buf0, *buf1, *buf2;
 	char	filename[LEN]; 
@@ -384,7 +385,7 @@ main(int argc, char *argv[])
 	
 
 	/* Test-10: read, write to a mmaped file */
-  	shm_base = (char *)(((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1));
+	shm_base = (char *)(((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1));
         if (shm_base == NULL) {
 		tst_resm(TFAIL, "sbrk failed: %s", strerror(errno));
                 unlink(filename);
@@ -583,7 +584,7 @@ main(int argc, char *argv[])
 	/* Test-16: read, write in non-existant space */
 	offset = 4096;
 	count = bufsize;
-	if ((buf1 = (char *) (((long)sbrk(0) + (pgsz-1)) & ~(pgsz-1))) == NULL) {
+	if ((buf1 = (char *) (((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1))) == NULL) {
                 tst_resm(TFAIL,"sbrk: %s", strerror(errno));
                 unlink(filename);
                 tst_exit();
