@@ -77,12 +77,8 @@ int main()
 
 /*----------------------------------------------------------------*/
 
-	/* are we doing with ia64 or arm_arch_4t arch */
-#if defined (__ia64__) || defined (__ARM_ARCH_4T__) || defined(__hppa__)
 	cp = (char *)shmat(shmid, (void *)NULL, 0);
-#else
-	cp = (char *)shmat(shmid, (void *)0x80000, 0);
-#endif
+
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",

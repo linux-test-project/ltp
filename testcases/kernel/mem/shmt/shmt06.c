@@ -47,14 +47,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define		ADDR		(void *)0x80000
-#define		ADDR1		(void *)0xA0000
-#define         ADDR_MIPS       (void *)0x80000
-#define         ADDR1_MIPS      (void *)0xC0000
-#define                ADDR_HPPA       (void *)0x10000000
-#define                ADDR1_HPPA      (void *)0x20000000
-#define 	ADDR_IA    	(void *)0x40000000
-#define 	ADDR1_IA    	(void *)0x50000000
 #define		SIZE		16*1024
 
 /** LTP Port **/
@@ -104,17 +96,8 @@ int main()
 		 */
 		(void)kill(pid, SIGINT);
 	} else {
-#ifdef __ia64__
-		cp = (char *)shmat(shmid, ADDR_IA, 0);
-#elif defined(__ARM_ARCH_4T__)
 		cp = (char *)shmat(shmid, (void *)NULL, 0);
-#elif defined(__mips__)
-		cp = (char *)shmat(shmid, ADDR_MIPS, 0);
-#elif defined(__hppa__)
-		cp = (char *)shmat(shmid, ADDR_HPPA, 0);
-#else
-		cp = (char *)shmat(shmid, ADDR, 0);
-#endif
+
 		if (cp == (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,
@@ -179,17 +162,8 @@ int child()
 			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
 			 errno, shmid, chld_pid);
 	} else {
-#ifdef __ia64__
-		cp = (char *)shmat(shmid, ADDR1_IA, 0);
-#elif defined(__ARM_ARCH_4T__)
 		cp = (char *)shmat(shmid, (void *)NULL, 0);
-#elif defined(__mips__)
-		cp = (char *)shmat(shmid, ADDR1_MIPS, 0);
-#elif defined(__hppa__)
-		cp = (char *)shmat(shmid, ADDR1_HPPA, 0);
-#else
-		cp = (char *)shmat(shmid, ADDR1, 0);
-#endif
+
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,

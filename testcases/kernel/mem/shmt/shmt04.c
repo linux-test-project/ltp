@@ -60,8 +60,6 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 key_t key;
 sigset_t sigset;
 
-#define  ADDR1  (void *)0x40000000
-#define  ADDR  (void *)0x80000
 #define  SIZE  16*1024
 
 int child();
@@ -99,13 +97,7 @@ int main()
 		 */
 		(void)kill(pid, SIGINT);
 	} else {
-#ifdef __ia64__
-		cp = (char *)shmat(shmid, ADDR1, 0);
-#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
 		cp = (char *)shmat(shmid, NULL, 0);
-#else
-		cp = (char *)shmat(shmid, ADDR, 0);
-#endif
 
 		if (cp == (char *)-1) {
 			perror("shmat");
@@ -172,13 +164,8 @@ int child()
 			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
 			 errno, shmid, chld_pid);
 	} else {
-#ifdef __ia64__
-		cp = (char *)shmat(shmid, ADDR1, 0);
-#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
 		cp = (char *)shmat(shmid, NULL, 0);
-#else
-		cp = (char *)shmat(shmid, ADDR, 0);
-#endif
+
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,

@@ -45,8 +45,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define		ADDR	(void *)0x80000
-#define		ADDR_IA (void *)0x40000000
 #define		SIZE	16*1024
 
 /** LTP Port **/
@@ -79,13 +77,8 @@ int main()
 			 shmid, errno);
 		tst_exit();
 	}
-#ifdef __ia64__
-	cp = (char *)shmat(shmid, ADDR_IA, 0);
-#elif defined(__ARM_ARCH_4T__) || defined(__hppa__)
 	cp = (char *)shmat(shmid, (void *)NULL, 0);
-#else
-	cp = (char *)shmat(shmid, ADDR, 0);
-#endif
+
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,

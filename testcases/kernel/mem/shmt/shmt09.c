@@ -65,7 +65,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 #elif defined __sh__ || defined (__arm__)
 #define INCREMENT 		16384   /* 16kb */
 #else
-#define INCREMENT 		getpagesize()
+#define INCREMENT 		SHMLBA
 #endif
 
 int rm_shm(int);
