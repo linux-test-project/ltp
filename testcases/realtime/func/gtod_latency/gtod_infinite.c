@@ -61,12 +61,14 @@
 #define REPORT_MIN	1000000
 
 static int run_jvmsim = 0;
+static unsigned int max_window = 0; /* infinite, don't use a window */
 
 void usage(void)
 {
 	rt_help();
-	printf("async_handler specific options:\n");
-	printf("  -j            enable jvmsim\n");
+ 	printf("gtod_infinite specific options:\n");
+  	printf("  -j            enable jvmsim\n");
+ 	printf("  -wWINDOW      iterations in max value window (default inf)\n");
 }
 
 int parse_args(int c, char *v)
@@ -79,6 +81,9 @@ int parse_args(int c, char *v)
 		case 'h':
 			usage();
 			exit(0);
+		case 'w':
+			max_window = atoi(v);
+			break;
 		default:
 			handled = 0;
 			break;
@@ -95,6 +100,7 @@ int main(int argc, char *argv[])
 //	cpu_set_t mask;
 	struct sched_param param;
 	time_t tt;
+	unsigned int wi;
 	setup();
 
 /*
@@ -106,13 +112,18 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 */
-	rt_init("jh",parse_args, argc, argv);
+	rt_init("jhw:", parse_args, argc, argv);
 
 	if (run_jvmsim) {
 		printf("jvmsim enabled\n");
 		jvmsim_init();
 	} else {
 		printf("jvmsim disabled\n");
+	}
+
+	if (max_window > 0) {
+		printf("%d iterations in max calculation window\n", 
+		       max_window);
 	}
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
@@ -128,6 +139,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	wi = 0;
 	while(1) {
 		rc = clock_gettime(CLOCK_TO_USE, &ts);
 		if (rc) {
@@ -139,14 +151,24 @@ int main(int argc, char *argv[])
 		ts_to_nsec(&ts, &e_time);
 
 		diff_time = e_time - s_time;
-		if ((diff_time > max_time) ||
-		    (diff_time > REPORT_MIN)) {
-			tt = (time_t)ts.tv_sec;
-			printf("Task delayed for %lld nsec!!! %s",
-				diff_time, ctime (&tt));
-			fflush(stdout);
+
+		if (max_window > 0 ||
+		          ((diff_time > max_time) || 
+			   (diff_time > REPORT_MIN))) {
 			if (diff_time > max_time)
 				max_time = diff_time;
+			
+			if (max_window == 0 || ++wi == max_window) {
+				tt = (time_t)ts.tv_sec;
+				printf("Task delayed for %lld nsec!!! %s",
+				       max_time, ctime(&tt));
+				fflush(stdout);
+
+				if (wi == max_window) {
+					max_time = 0;
+					wi = 0;
+				}
+			}
 
 			rc = clock_gettime(CLOCK_TO_USE, &p_ts);
 			if (rc) {
