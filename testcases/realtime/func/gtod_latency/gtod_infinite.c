@@ -60,31 +60,30 @@
 #define START_MAX	3000
 #define REPORT_MIN	1000000
 
-static int run_jvmsim=0;
+static int run_jvmsim = 0;
 
 void usage(void)
 {
-        rt_help();
-        printf("async_handler specific options:\n");
-        printf("  -j            enable jvmsim\n");
+	rt_help();
+	printf("async_handler specific options:\n");
+	printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
 {
-
-        int handled = 1;
-        switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+		case 'j':
+			run_jvmsim = 1;
+			break;
+		case 'h':
+			usage();
+			exit(0);
+		default:
+			handled = 0;
+			break;
+	}
+	return handled;
 }
 
 int main(int argc, char *argv[])
@@ -99,25 +98,25 @@ int main(int argc, char *argv[])
 	setup();
 
 /*
-        CPU_ZERO(&mask);
-        CPU_SET(0, &mask);
-        rc = sched_setaffinity(0, sizeof(mask), &mask);
-        if (rc) {
+	CPU_ZERO(&mask);
+	CPU_SET(0, &mask);
+	rc = sched_setaffinity(0, sizeof(mask), &mask);
+	if (rc) {
 		perror("sched_setaffinity");
-                exit(1);
-        }
+		exit(1);
+	}
 */
 	rt_init("jh",parse_args, argc, argv);
 
-	if(run_jvmsim) {
+	if (run_jvmsim) {
 		printf("jvmsim enabled\n");
 		jvmsim_init();
 	} else {
 		printf("jvmsim disabled\n");
 	}
 
-        param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
-        rc = sched_setscheduler(0, SCHED_FIFO, &param);
+	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
+	rc = sched_setscheduler(0, SCHED_FIFO, &param);
 	if (rc) {
 		perror("sched_setscheduler");
 		exit(1);
@@ -137,7 +136,7 @@ int main(int argc, char *argv[])
 		}
 
 		ts_to_nsec(&p_ts, &s_time);
-		ts_to_nsec(&ts,   &e_time);
+		ts_to_nsec(&ts, &e_time);
 
 		diff_time = e_time - s_time;
 		if ((diff_time > max_time) ||
