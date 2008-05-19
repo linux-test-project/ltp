@@ -60,6 +60,8 @@
 #                 the original test format
 #               Nov 28 2007 - Modified - Subrata Modak
 #               - Added a new option to mail back LTP reports
+#               May 19 2008 - Modified - Subrata Modak
+#               - Added capability for default Log file generation
 #
 #################################################################################
 
@@ -175,6 +177,7 @@ main()
     local MEMSIZE=0
     local DURATION=""
     local CMDFILEADDR=""
+    local FAILCMDFILE=""
     local LOGFILE_NAME=""
     local LOGFILE=""
     local OUTPUTFILE_NAME=""
@@ -185,6 +188,7 @@ main()
     local SCENFILES=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
+    local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
     while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:T:vw:x: arg
@@ -376,6 +380,14 @@ main()
         \?) usage;;
         esac
     done
+
+    ## It would be nice to create a default log file even if the user has not mentioned
+    if [ ! "$LOGFILE" ]; then                                ## User has not mentioned about Log File name
+       LOGFILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
+       LOGFILE="-l $LTPROOT/results/LTP_RUN_ON-$LOGFILE_NAME.log"
+       ALT_DIR_RES=1
+       PRETTY_PRT=" -p "
+    fi
    
     ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)  
 
@@ -383,7 +395,7 @@ main()
          ALT_DIR_OUT=1
          if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
             if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
-               FAILED_FILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+               FAILED_FILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
             else					     ## User Fortunately wanted a log file,
                FAILED_FILE_NAME=`basename $LOGFILE_NAME`     ## Extract log file name and use it to construct Failed file name
@@ -399,7 +411,7 @@ main()
        QUIET_MODE=""                                         ## Suppressing this guy as it will prevent generation of proper output
                                                              ## which the HTML parser will require
        if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
-          OUTPUTFILE_NAME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+          OUTPUTFILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
           ALT_DIR_OUT=1
           if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
@@ -620,6 +632,24 @@ main()
       fi
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
+    
+    ## Display the Output/Log/Failed/HTML file names here
+    echo -e "LOG File: \c"
+    echo $LOGFILE | cut -b4-
+
+    if [ "$OUTPUTFILE" ]; then
+       echo -e "OUTPUT File: \c"
+       echo $OUTPUTFILE | cut -b4-
+    fi
+
+    echo -e "FAILED COMMAND File: \c"
+    echo $FAILCMDFILE | cut -b4-
+
+    if [ "$HTMLFILE" ]; then
+       echo "HTML File: $HTMLFILE"
+    fi
+
+    echo "Running tests......."
     test_start_time=$(date)
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
      
@@ -654,7 +684,7 @@ main()
           ##User does not have output/logs/html-output, nothing to be mailed in this situation
           echo "Nothing to be mailed here...."
        else
-           TAR_FILE_NAME=LTP_RUN_$version_date`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`.tar
+           TAR_FILE_NAME=LTP_RUN_$version_date$DEFAULT_FILE_NAME_GENERATION_TIME.tar
            if [ "$HTMLFILE_NAME" ] ; then                          ## HTML file Exists
               if [ "$ALT_HTML_OUT" -ne 1 ] ; then                  ## The HTML file path is absolute and not $LTPROOT/output
                  mkdir -p $LTPROOT/output                          ## We need to create this Directory
@@ -735,8 +765,6 @@ main()
        ###############################################################"
         
             Done executing testcases."
-            log result(s) is in $LTPROOT/results directory"
-            output/failed result(s) in $LTPROOT/output directory [If you did not provide Absolute Path]
             LTP Version:  $version_date
        ###############################################################"
        
