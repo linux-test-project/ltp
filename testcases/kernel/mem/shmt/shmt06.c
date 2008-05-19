@@ -30,9 +30,9 @@
  * ALGORITHM
  * Parent process forks a child. Child pauses until parent has created
  * a shared memory segment, attached to it and written to it too. At that
- * time child gets the shared memory segment id, attaches to it at a
- * different address than the parents and verifies that its contents are
- * the same as the contents of the parent attached segment.
+ * time child gets the shared memory segment id, attaches to it at two
+ * different addresses than the parents and verifies that their contents
+ * are the same as the contents of the parent attached segment.
  *
  */
 
@@ -184,6 +184,31 @@ int child()
 			}
 		}
 
+		/*
+		 * Attach the segment to a different addresse
+		 * and verify it's contents again.
+		 */
+		cp = (char *)shmat(shmid, (void *)NULL, 0);
+
+		if (cp == (char *)-1) {
+			perror("shmat:child process");
+			tst_resm(TFAIL,
+				 "Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
+				 errno, shmid, chld_pid);
+		} else {
+			if (*cp != 'A') {
+				tst_resm(TFAIL, "child: not A\n");
+			}
+			if (*(cp + 1) != 'B') {
+				tst_resm(TFAIL, "child: not B\n");
+			}
+			if (*(cp + 2) != 'C') {
+				tst_resm(TFAIL, "child: not C\n");
+			}
+			if (*(cp + 8192) != 0) {
+				tst_resm(TFAIL, "child: not 0\n");
+			}
+		}
 	}
 	tst_exit();
 	return (0);
