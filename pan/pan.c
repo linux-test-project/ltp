@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.25 2007/07/25 10:12:03 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.26 2008/05/19 13:37:14 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -321,6 +321,8 @@ main(int argc, char **argv)
     }
 
     coll = get_collection(filename, optind, argc, argv);
+    if(!coll)
+        exit(1);
     if (coll->cnt == 0) {
 	fprintf(stderr,
 		"pan(%s): Must supply a file collection or a command\n",
@@ -577,7 +579,7 @@ main(int argc, char **argv)
 	++exit_stat;
     }
     fclose(zoofile);
-	if (fmt_print)
+	if (logfile && fmt_print)
 	{
 		if (uname(&unamebuf) == -1)
 			fprintf(stderr, "ERROR: uname(): %s\n", strerror(errno));
@@ -1017,6 +1019,8 @@ get_collection(char *file, int optind, int argc, char **argv)
     int i;
 
     buf = slurp(file);
+    if(!buf)
+        return NULL;
 
     coll = (struct collection *) malloc(sizeof(struct collection));
     coll->cnt = 0;
