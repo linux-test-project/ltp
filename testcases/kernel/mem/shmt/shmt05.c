@@ -53,7 +53,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 key_t key[2];
 
-#define		 SIZE		 16*1024
+#define		 SIZE		 (2*SHMLBA)
 
 int rm_shm(int);
 
@@ -93,7 +93,7 @@ int main()
 			 "Error: shmget: shmid1 = %d, errno = %d\n",
 			 shmid1, errno);
 	} else {
-		cp1 = (char *)shmat(shmid1, cp + 4096, 0);
+		cp1 = (char *)shmat(shmid1, cp + (SIZE/2), 0);
 		if (cp1 != (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,
