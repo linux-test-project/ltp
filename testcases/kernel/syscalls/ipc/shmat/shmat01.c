@@ -63,42 +63,46 @@ extern int Tst_count;
 #define CASE0		10		/* values to write into the shared */
 #define CASE1		20		/* memory location.		   */
 
-#ifdef __ia64__
-#define UNALIGNED      0x5ff00eee      /* an address not evenly divisible by */
-#elif defined __XTENSA__               /* SHMLBA which defaults to 0x8048e8b */
-/* TASK_SIZE on Xtensa is only 0x40000000 */
-#define UNALIGNED      0x28ffeeee
-#elif defined __arm__
-#define UNALIGNED      0x28ffeeee
-#else
-#define UNALIGNED      0x5fffeeee
-#endif
-
 int shm_id_1 = -1;
 
-void	*addr;				/* for result of shmat-call */
+void	*base_addr;	/* By probing this address first, we can make
+			 * non-aligned addresses from it for different
+			 * architectures without explicitly code it.
+			 */
+
+void	*addr;		/* for result of shmat-call */
 
 struct test_case_t {
 	int *shmid;
-	void *addr;
+	int offset;
 	int flags;
-} TC[] = {
-	/* a straight forward read/write attach */
-	{&shm_id_1, 0, 0},
-
-       /* an attach using non aligned memory */
-	{&shm_id_1, (void *)UNALIGNED, SHM_RND},
-
-	/* a read only attach */
-	{&shm_id_1, 0, SHM_RDONLY}
 };
-int TST_TOTAL = sizeof(TC) / sizeof(*TC);
+
+int TST_TOTAL = 3;
+
+static void setup_tc( int i, struct test_case_t *tc){
+
+	struct test_case_t TC[] = {
+		/* a straight forward read/write attach */
+		{&shm_id_1, 0, 0},
+		/* an attach using non aligned memory */
+		{&shm_id_1, SHMLBA - 1,SHM_RND},
+		/* a read only attach */
+		{&shm_id_1, 0, SHM_RDONLY}
+	};
+
+	if( i > TST_TOTAL || i < 0)
+		return;
+
+	*tc = TC[i];
+}
 
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int i;
+	struct test_case_t tc;
 	void check_functionality(int);
 
 	/* parse standard options */
@@ -111,8 +115,12 @@ int main(int ac, char **av)
 	/* The following loop checks looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
+
+		/* setup test case paremeters */
+		setup_tc( lc, &tc);
 
 		/* loop through the test cases */
 		for (i=0; i<TST_TOTAL; i++) {
@@ -121,8 +129,8 @@ int main(int ac, char **av)
 			 * Use TEST macro to make the call
 			 */
 			errno = 0;
-			addr = shmat(*(TC[i].shmid), (void *)(TC[i].addr),
-				   TC[i].flags);
+			addr = shmat(*(tc.shmid), base_addr + tc.offset,
+				   tc.flags);
 			TEST_ERRNO = errno;
 	
 			if (addr == (void *)-1) {
@@ -165,6 +173,7 @@ check_functionality(int i)
 	int *shared;
 	int fail = 0;
 	struct shmid_ds buf;
+	struct test_case_t tc;
 
 	shared = (int *)addr;
 
@@ -204,10 +213,11 @@ check_functionality(int i)
 		 * that the original address given was rounded down as
 		 * specified in the man page.
 		 */
+		setup_tc( 1, &tc);
 
 		*shared = CASE1;
-		orig_add = addr + ((unsigned long)TC[i].addr%SHMLBA);
-		if (orig_add != TC[i].addr) {
+		orig_add = addr + ((unsigned long)tc.offset%SHMLBA);
+		if (orig_add != base_addr + tc.offset) {
 			tst_resm(TFAIL, "shared memory address is not "
 				 "correct");
 			fail = 1;
@@ -259,6 +269,16 @@ setup(void)
 	     IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource 1 in setup()");
+	}
+
+	/* Probe an available linear address for attachment */
+	if( (base_addr = shmat(shm_id_1, NULL, 0)) == (void *)-1 ){
+		tst_brkm(TBROK, cleanup,
+				"Couldn't attach shared memory");
+	}
+	if (shmdt((const void *)base_addr) == -1) {
+		tst_brkm(TBROK, cleanup,
+				"Couldn't detach shared memory");
 	}
 }
 

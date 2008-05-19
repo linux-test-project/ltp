@@ -57,11 +57,9 @@
 #include <pwd.h>
 
 char *TCID = "shmat02";
-int TST_TOTAL = 3;
 extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-
 
 int exp_enos[] = {EINVAL, EACCES, 0};	/* 0 terminated list of */
 					/* expected errnos      */
@@ -70,29 +68,44 @@ int shm_id_1 = -1;
 int shm_id_2 = -1;
 int shm_id_3 = -1;
 
-void	*addr;				/* for result of shmat-call */
+void   *base_addr;	/* By probing this address first, we can make
+			 * non-aligned addresses from it for different
+			 * architectures without explicitly code it.
+			 */
 
-#define NADDR	0x40FFFEE5		/* a non alligned address value */
+void	*addr;		/* for result of shmat-call */
+
 struct test_case_t {
 	int *shmid;
-	void *addr;
+	int offset;
 	int error;
-} TC[] = {
-	/* EINVAL - the shared memory ID is not valid */
-	{&shm_id_1, 0, EINVAL},
-
-	/* EINVAL - the address is not page aligned and SHM_RND is not given */
-	{&shm_id_2, (void *)NADDR, EINVAL},
-
-	/* EACCES - the shared memory resource has no read/write permission */
-	{&shm_id_3, 0, EACCES}
 };
+
+int TST_TOTAL = 3;
+
+static void setup_tc( int i, struct test_case_t *tc){
+
+	struct test_case_t TC[] = {
+		/* EINVAL - the shared memory ID is not valid */
+		{&shm_id_1, 0, EINVAL},
+		/* EINVAL - the address is not page aligned and SHM_RND is not given */
+		{&shm_id_2, SHMLBA - 1, EINVAL},
+		/* EACCES - the shared memory resource has no read/write permission */
+		{&shm_id_3, 0, EACCES}
+	};
+
+	if( i > TST_TOTAL || i < 0)
+		return;
+
+	*tc = TC[i];
+}
 
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int i;
+	struct test_case_t tc;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -107,15 +120,18 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
+		/* setup test case paremeters */
+		setup_tc( lc, &tc);
+
 		/* loop through the test cases */
 		for (i=0; i<TST_TOTAL; i++) {
 			/*
 			 * make the call using the TEST() macro - attempt
 			 * various invalid shared memory attaches
 			 */
- 			errno = 0;
-                       	addr = shmat(*(TC[i].shmid), (const void *)TC[i].addr, 0);
-                       	TEST_ERRNO = errno;
+			errno = 0;
+			addr = shmat(*(tc.shmid), base_addr + tc.offset, 0);
+			TEST_ERRNO = errno;
 
                       	if (addr != (void *)-1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -124,7 +140,7 @@ int main(int ac, char **av)
 	
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_ERRNO == TC[i].error) {
+			if (TEST_ERRNO == tc.error) {
 				tst_resm(TPASS, "expected failure - errno = "
 					 "%d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
@@ -198,6 +214,17 @@ setup(void)
 	if ((shm_id_3 = shmget(shmkey2, INT_SIZE, IPC_CREAT | IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource #2 in setup()");
+	}
+
+	/* Probe an available linear address for attachment */
+	if( (base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1 ){
+		tst_brkm(TBROK, cleanup,
+				"Couldn't attach shared memory");
+	}
+
+	if (shmdt((const void *)base_addr) == -1) {
+		tst_brkm(TBROK, cleanup,
+				"Couldn't detach shared memory");
 	}
 }
 
