@@ -1,6 +1,6 @@
 
 
-DESTDIR=/opt/ltp
+DESTDIR=/usr
 MANPAGES=bump.1 doio.1 iogen.1 pan.1
 
 all:
