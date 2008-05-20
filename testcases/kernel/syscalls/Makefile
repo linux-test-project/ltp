@@ -29,27 +29,27 @@ SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -v epoll`
 UCLINUX_SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -vE "^fork|epoll|capget|capset|chmod|chown|llseek|nftw|clone|profil|getcontext"`
 
 all:
-	@set -e; for i in lib $(SUBDIR); do \
+	@set -e; for i in $(SUBDIR); do \
 		$(MAKE) -C $$i  all; \
 	done
 
 install:
-	@set -e; for i in lib $(SUBDIR); do \
+	@set -e; for i in $(SUBDIR); do \
 		$(MAKE) -C $$i  install; \
 	done
 
 uclinux:  
-	@set -e; for i in lib $(UCLINUX_SUBDIR); do \
+	@set -e; for i in $(UCLINUX_SUBDIR); do \
 		$(MAKE) -C $$i UCLINUX=1 all; \
 	done
 
 uclinux_install:
-	@set -e; for i in lib $(UCLINUX_SUBDIR); do \
+	@set -e; for i in $(UCLINUX_SUBDIR); do \
 		$(MAKE) -C $$i UCLINUX=1 all; \
 	done
 
 clean:
-	@set -e; for i in lib $(SUBDIR); do \
+	@set -e; for i in $(SUBDIR); do \
 		$(MAKE) -C $$i  clean; \
 	done
 

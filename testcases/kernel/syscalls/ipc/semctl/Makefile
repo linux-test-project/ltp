@@ -17,7 +17,7 @@
 #
 
 CFLAGS += -I../lib -I../../lib -I../../../../../include -Wall
-LDLIBS += -L../../../../../lib -lltp -L.. -lipc -L../.. -ltestsuite
+LDLIBS += -L../../../../../lib -lltp -L.. -lipc
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
