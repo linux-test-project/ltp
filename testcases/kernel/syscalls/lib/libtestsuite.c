@@ -31,7 +31,7 @@
  * HISTORY
  *      11/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  *      - Add the following functions to synchronise father and sons processes
- *      create_sync_pipes(), wait_son_startup(), notify_startup()
+ *      sync_pipe_create(), sync_pipe_wait(), sync_pipe_notify()
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -76,33 +76,34 @@ do_file_setup(char *fname)
 	}
 }
 
-int create_sync_pipes(int fd[])
+int sync_pipe_create(int fd[])
 {
 	return pipe (fd);
 }
 
-int wait_son_startup (int fd[])
+int sync_pipe_close(int fd[])
+{
+	return close (fd[0]) ||	close (fd[1]);
+}
+
+int sync_pipe_wait(int fd[])
 {
 	char buf;
 	int r;
 	
 	r = read (fd[0], &buf, 1);
-	close (fd[0]);
-	close (fd[1]);
 	
 	if ((r != 1) || (buf != 'A'))
 		return -1;
 	return 0;
 }
 
-int notify_startup (int fd[])
+int sync_pipe_notify(int fd[])
 {
 	char buf = 'A';
 	int r;
 
 	r = write (fd[1], &buf, 1);
-	close (fd[0]);
-	close (fd[1]);
 
 	if (r != 1)
 		return -1;

@@ -270,9 +270,9 @@ stat_setup()
 
 	tst_flush();
 	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
-		if (create_sync_pipes(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-		}
+		if (sync_pipe_create(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
@@ -290,9 +290,11 @@ stat_setup()
 		} else {		/* parent */
 			/* save the child's pid for cleanup later */
 			pid_arr[stat_i] = pid;
-			if (wait_son_startup(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-			}
+			if (sync_pipe_wait(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+
+			if (sync_pipe_close(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 		}
 	}
 	/* Wait 1 second to be sure all sons are in the pause function. */
@@ -314,9 +316,11 @@ do_child()
 		test = set_shared;
 	}
 	
-	if (notify_startup(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "notify_startup failed");
-	}
+	if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+	if (sync_pipe_close(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	/* do an assignement for fun */
 	*(int *)test = stat_i;

@@ -351,19 +351,19 @@ cnt_setup(int opval)
 	sops.sem_op = opval;	/* set the correct operation */
 
 	for (i=0; i<NCHILD; i++) {
-		if (create_sync_pipes(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-		}
+		if (sync_pipe_create(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 		/* fork five children to wait */
-		if ((pid = FORK_OR_VFORK()) == -1) {
+		if ((pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork failed in cnt_setup");
-		}
 	
 		if (pid == 0) {		/* child */
-			if (notify_startup(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "notify_startup failed");
-			}
+			if (sync_pipe_notify(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+			if (sync_pipe_close(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 #ifdef UCLINUX
 			if (self_exec(argv0, "ndd", 2, sem_id_1,
 				      sops.sem_op) < 0) {
@@ -374,9 +374,11 @@ cnt_setup(int opval)
 			child_cnt();
 #endif
 		} else {		/* parent */
-			if (wait_son_startup(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-			}
+			if (sync_pipe_wait(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+
+			if (sync_pipe_close(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 			/* save the pid so we can kill it later */
 			pid_arr[i] = pid;
@@ -431,8 +433,8 @@ pid_setup()
 	int pid;
 	int sync_pipes[2];
 
-	if (create_sync_pipes(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "cannot create sync pipes");
+	if (sync_pipe_create(sync_pipes) == -1) {
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 	}
 
 	/*
@@ -443,9 +445,11 @@ pid_setup()
 	}
 
 	if (pid == 0) {		/* child */
-		if (notify_startup(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "notify_startup failed");
-		}
+		if (sync_pipe_notify(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+		if (sync_pipe_close(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 #ifdef UCLINUX
 		if (self_exec(argv0, "nd", 1, sem_id_1) < 0) {
 			tst_brkm(TBROK, cleanup, "self_exec failed "
@@ -455,9 +459,11 @@ pid_setup()
 		child_pid();
 #endif
 	} else {		/* parent */
-		if (wait_son_startup(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-		}
+		if (sync_pipe_wait(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+
+		if (sync_pipe_close(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 		sleep(1);
 		pid_arr[SEM2] = pid;
 	}

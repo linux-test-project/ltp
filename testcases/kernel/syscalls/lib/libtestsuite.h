@@ -7,6 +7,6 @@
  *
  * notify_startup: notify the father process a son has started its execution.
  */
-int create_sync_pipes(int fd[]);
-int wait_son_startup (int fd[]);
-int notify_startup (int fd[]);
+int sync_pipe_create( int fd[]);
+int sync_pipe_wait( int fd[]);
+int sync_pipe_notify( int fd[]);

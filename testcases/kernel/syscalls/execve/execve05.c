@@ -116,9 +116,8 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if (create_sync_pipes(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-		}
+		if (sync_pipe_create(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 		/*
 		 * to test whether execve(2) sets ETXTBSY when a second
@@ -139,13 +138,14 @@ main(int ac, char **av)
 #endif
 		}
 
-		if (wait_son_startup(sync_pipes) == -1) {
-			tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-		}
+		if (sync_pipe_wait(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-		if ((pid1 = FORK_OR_VFORK()) == -1) {
+		if (sync_pipe_close(sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+
+		if ((pid1 = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
-		}
 
 		if (pid1 == 0) {		/* second child */
 			argv[0] = 0;
@@ -239,9 +239,11 @@ do_child_1()
 		exit(1);	
 	}
 
-	if (notify_startup(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "notify_startup failed");
-	}
+	if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+	if (sync_pipe_close(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	sleep(10);	/* let other child execve same file */
 	exit(0);

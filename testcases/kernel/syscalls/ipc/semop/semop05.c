@@ -131,9 +131,8 @@ int main(int ac, char **av)
 		for (i=0; i<TST_TOTAL; i++) {
 			int sync_pipes[2];
 
-			if (create_sync_pipes(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-			}
+			if (sync_pipe_create(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 			/* initialize the s_buf buffer */
 			s_buf.sem_op = TC[i].op;
@@ -152,9 +151,11 @@ int main(int ac, char **av)
 
 			if (pid == 0) {		/* child */
 
-				if (notify_startup(sync_pipes) == -1) {
-					tst_brkm(TBROK, cleanup, "notify_startup failed: %d", errno);
-				}
+				if (sync_pipe_notify(sync_pipes) == -1)
+					tst_brkm(TBROK, cleanup, "sync_pipe_notify failed: %d", errno);
+
+				if (sync_pipe_close(sync_pipes) == -1)
+					tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
 
 #ifdef UCLINUX
 				if (self_exec(av[0], "dd", i, sem_id_1) < 0) {
@@ -166,9 +167,12 @@ int main(int ac, char **av)
 #endif
 			} else {		/* parent */
 
-				if (wait_son_startup(sync_pipes) == -1) {
-					tst_brkm(TBROK, cleanup, "wait_son_startup failed: %d", errno);
-				}
+				if (sync_pipe_wait(sync_pipes) == -1)
+					tst_brkm(TBROK, cleanup, "sync_pipe_wait failed: %d", errno);
+
+				if (sync_pipe_close(sync_pipes) == -1)
+					tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
+
 				/* After son has been created, give it a chance to execute the
 				 * semop command before we continue. Without this sleep, on SMP machine
 				 * the father rm_sema/kill could be executed before the son semop.

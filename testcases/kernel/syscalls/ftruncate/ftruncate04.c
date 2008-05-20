@@ -262,10 +262,11 @@ void dochild()
 		tst_exit();
 	}
 
-	if (notify_startup(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "notify_startup failed");
-	}
+	if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
+	if (sync_pipe_close(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 	pause();
 	tst_exit();
 }
@@ -361,9 +362,8 @@ int main( int ac, char **av)
 			 */
 			recstart = RECLEN + rand()%(len - 3*RECLEN);
 
-			if (create_sync_pipes(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-			}
+			if (sync_pipe_create(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 			if ((cpid = FORK_OR_VFORK()) < 0) {
 				unlink(filename);
@@ -389,19 +389,21 @@ int main( int ac, char **av)
 				/* never returns */
 			}
 
-			if (wait_son_startup(sync_pipes) == -1) {
-				tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-			}
+			if (sync_pipe_wait(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+
+			if (sync_pipe_close(sync_pipes) == -1)
+				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 			doparent();
 			/* child should already be dead */
 			unlink(filename);
 		}
-		if (local_flag == PASSED) {
+		if (local_flag == PASSED)
 		        tst_resm(TPASS, "Test passed.");
-		} else {
+		else
 		        tst_resm(TFAIL, "Test failed.");
-		}
+
 		tst_rmdir();
 		tst_exit();
 	} /* end for */

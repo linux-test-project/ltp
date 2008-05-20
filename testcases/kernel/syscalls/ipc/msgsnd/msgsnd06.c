@@ -98,9 +98,8 @@ int main(int ac, char **av)
 
     setup();			/* global setup */
 
-    if (create_sync_pipes(sync_pipes) == -1) {
-	    tst_brkm(TBROK, cleanup, "cannot create sync pipes");
-    }
+    if (sync_pipe_create(sync_pipes) == -1)
+	    tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
     /* The following loop checks looping state if -i option given */
 
@@ -134,10 +133,11 @@ int main(int ac, char **av)
 
 	if (c_pid == 0) {	/* child */
 
-	    if (notify_startup(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "notify_startup failed");
-	    }
+	    if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
+	    if (sync_pipe_close(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 #ifdef UCLINUX
 	    if (self_exec(av[0], "d", msg_q_1) < 0) {
 		tst_brkm(TBROK, cleanup, "could not self_exec");
@@ -147,9 +147,12 @@ int main(int ac, char **av)
 #endif
 	} else {		/* parent */
 
-	    if (wait_son_startup(sync_pipes) == -1) {
-		tst_brkm(TBROK, cleanup, "wait_son_startup failed");
-	    }
+	    if (sync_pipe_wait(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+
+	    if (sync_pipe_close(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+
 	    /* After son has been created, give it a chance to execute the
 	     * msgsnd command before we continue. Without this sleep, on SMP machine
 	     * the father rm_queue could be executed before the son msgsnd.
