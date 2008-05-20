@@ -24,6 +24,8 @@ It is intended to be used to build testcases using the provided API.
 /opt/ltp/bin/pan
 /opt/ltp/bin/scanner
 /opt/ltp/bin/bump
+/opt/ltp/include/linux_syscall_numbers.h
+/opt/ltp/include/libtestsuite.h
 /opt/ltp/include/usctest.h
 /opt/ltp/include/string_to_tokens.h
 /opt/ltp/include/str_to_bytes.h

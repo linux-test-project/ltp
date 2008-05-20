@@ -5,11 +5,10 @@ This is a README to describe the ltp-devel.patch functional changes.
 	/opt/ltp/bin/bump
 	/opt/ltp/bin/pan
 	/opt/ltp/bin/scanner
-	/opt/ltp/include/usctest.h
-	/opt/ltp/include/test.h
 	/opt/ltp/lib/libltp.a
 	/usr/share/pkgconfig/ltp.pc
-	/opt/ltp/share/man/
+	/opt/ltp/include/
+	/usr/share/man/
 
 "make package" is to rpm package what was installed above:
 
@@ -21,10 +20,8 @@ their Makefile would compile their test program like this:
 	test: test.c
 		cc test.c `pkg-config --cflags --libs ltp`
 
-To read manual pages, then the developer would type either:
+To read manual pages, then the developer would type:
 
-	man -M /opt/ltp/share/man usctest
-
-	MANPATH=/opt/ltp/share/man man usctest
+	man usctest
 
 #EOF
