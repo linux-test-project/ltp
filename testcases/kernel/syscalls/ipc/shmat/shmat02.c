@@ -226,6 +226,10 @@ setup(void)
 		tst_brkm(TBROK, cleanup,
 				"Couldn't detach shared memory");
 	}
+
+	/* some architectures (e.g. parisc) are strange, so better always align to
+	 * next SHMLBA address. */
+	base_addr = (void *)( ((unsigned long)(base_addr) & ~(SHMLBA-1)) + SHMLBA );
 }
 
 /*
