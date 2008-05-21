@@ -3,7 +3,7 @@
 #
 Summary: Linux Test Project (LTP) Software Development Kit (SDK)
 Name: ltp-devel
-Version: 1.0
+Version: 2.0
 Release: 0.0
 Prefix: /opt/ltp
 License: GPL
