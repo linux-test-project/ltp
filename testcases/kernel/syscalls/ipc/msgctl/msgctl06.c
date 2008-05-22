@@ -176,9 +176,6 @@ cleanup()
 {
 	int status;
 
-	/* Remove the temporary directory */
-	tst_rmdir();
-
        	/*
 	 * print timing stats if that option was specified.
          * print errno log if that option was specified.
@@ -201,6 +198,9 @@ cleanup()
 	}
 
 	fflush (stdout);
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
         /* exit with return code appropriate for results */
         tst_exit();
