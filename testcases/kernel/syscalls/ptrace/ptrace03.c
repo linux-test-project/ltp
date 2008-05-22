@@ -34,6 +34,8 @@
  *	Verifies that
  *	1) ptrace() returns -1 & sets errno to EPERM while tring to trace
  *	   process 1
+ *         (This test case will be executed only if the kernel version
+ *          is 2.6.25 or below)
  *	2) ptrace() returns -1 & sets errno to ESRCH if process with
  *	   specified pid does not exist
  *	3) ptrace() returns -1 & sets errno to EPERM if we are trying
@@ -136,6 +138,14 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
+
+			/* since Linux 2.6.26, it's allowed to trace init,
+			   so just skip this test case */
+			if (i == 0 && tst_kvercmp(2,6,25) > 0) {
+				tst_resm(TCONF,
+					 "this kernel allows to trace init");
+				continue;
+			}
 
 			/* fork() */
 			switch (child_pid = FORK_OR_VFORK()) {
