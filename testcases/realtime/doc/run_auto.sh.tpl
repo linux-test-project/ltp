@@ -11,8 +11,7 @@ fi
 source $SCRIPTS_DIR/setenv.sh
 
 # Warning: tests args are now set in profiles
-$SCRIPTS_DIR/run_c_files.sh $profile gtod_latency
 
-# This is only for hostility testing
-#$SCRIPTS_DIR/run_c_files.sh $profile gtod_infinite
-
+# Customize below. One line per test.
+$SCRIPTS_DIR/run_c_files.sh $profile testexecutable1
+# $SCRIPTS_DIR/run_c_files.sh $profile testexecutable2

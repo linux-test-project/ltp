@@ -1,0 +1,60 @@
+# Test run commands for default profile
+#
+# format:
+#	reldir testexec [ args ... ]
+#
+# First field is the relative directory of the test.
+# Second field is the executable itself.
+# Others field are arguments of the command.
+# In the above example, the following would be done:
+# cd reldir ; ./testexec args ...
+# as a usual shell command.
+#
+# Comments are shell-like.
+#
+# This is to be read by scripts/run_c_files.sh and is useful
+# for local or global runs (<RT_TESTS_ROOT>/run.sh or <TESTDIR>/run_auto.sh)
+#
+
+
+# Pass if maximum lock time is less than threshold (us).
+# Default threshold=200 us
+func/pi_perf			pi_perf -c 200
+
+# Pass if maximum latency is less than criterium (us).
+# Default=20 us
+func/pthread_kill_latency	pthread_kill_latency -c 20
+
+# Pass if all treads get preempted within max loops.
+# Default max=1
+func/prio-preempt		prio-preempt -c 1
+
+# Pass if all delay are less than maxduration (us).
+# Default maxduration=100 us
+func/sched_latency		sched_latency	-d 1 -t 5 -c 100
+
+# Pass if ratio * average concurrent time < average sequential time
+# Default ratio=0.75
+func/matrix_mult		matrix_mult -c 0.75
+
+# Pass if difference between the sum of thread times and process time
+# is less than maxduration (s).
+# Default maxduration=0.5 s
+func/thread_clock		tc-2 -c 0.5
+
+
+# The below tests have no pass/fail criterium.
+func/gtod_latency		gtod_latency
+func/sched_jitter		sched_jitter
+func/periodic_cpu_load		periodic_cpu_load
+func/periodic_cpu_load		periodic_cpu_load_single
+func/prio-wake			prio-wake
+func/sched_football		sched_football
+func/pi-tests			testpi-0
+func/pi-tests			testpi-1
+func/pi-tests			testpi-2
+func/pi-tests			testpi-4
+func/pi-tests			testpi-5
+func/pi-tests			testpi-6
+func/pi-tests			sbrk_mutex
+

@@ -32,7 +32,7 @@
 
 function usage()
 {
-	echo -e "\nUsage: run.sh  -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
+	echo -e "\nUsage: run.sh [-p profile] -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
 	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name "
 	echo -e "\n and: \n"
 	echo -e " func = 	all functional tests will be run "
@@ -41,6 +41,7 @@ function usage()
 	echo -e " all =		all tests will be run "
 	echo -e " clean = 	all logs deleted, make clean performed "
 	echo -e " test_name = 	only test_name subdir will be run (e.g: func/pi-tests) "
+	echo -e " -p profile = 	use profile instead of default "
 	echo -e " -h	    =	help"
 	echo -e "\n"
 	exit 1;
@@ -66,29 +67,34 @@ list_tests()
 
 function run_test()
 {
+	local profile
+
+	profile=$1
+	shift
+
 	iter=0
 	if [ -z "$2" ]; then
-	    LOOPS=1
+		LOOPS=1
 	else
-	 LOOPS=$2	
+		LOOPS=$2	
 	fi
 	#Test if $LOOPS is a integer
 	if [[ ! $LOOPS =~ ^[0-9]+$ ]]; then
-	    echo "\"$LOOPS\" doesn't appear to be a number"
-	    usage
-	    exit
+		echo "\"$LOOPS\" doesn't appear to be a number"
+		usage
+		exit
 	fi 
 	if [ -d "$test" ]; then
-	    pushd $test >/dev/null
-	    if [ -f "run_auto.sh" ]; then
+		pushd $test >/dev/null
+		if [ -f "run_auto.sh" ]; then
 		echo " Running $LOOPS runs of $subdir "
 		for((iter=0; $iter < $LOOPS; iter++)); do
-		./run_auto.sh 
+			./run_auto.sh $profile
 		done
 	    else
 		echo -e "\n Failed to find run script in $test \n"
-	    fi
-	    pushd $TESTS_DIR >/dev/null
+		fi
+		pushd $TESTS_DIR >/dev/null
 	else
 		echo -e "\n $test is not a valid test subdirectory "
 		usage
@@ -102,58 +108,64 @@ function make_clean()
 	rm -rf logs/*
 	for mfile in `find -name "Makefile"`;
 	do
-	    target_dir=`dirname $mfile`
-	    pushd $target_dir >/dev/null
-	    make clean
-	    pushd $TESTS_DIR >/dev/null
+		target_dir=`dirname $mfile`
+		pushd $target_dir >/dev/null
+		make clean
+		pushd $TESTS_DIR >/dev/null
 	done
 }
 
 find_test()
 {
-    case $1 in
-	func)
-	    TESTLIST="func"
-            ;;
-      	stress)
-            TESTLIST="stress"
-	    ;;
-        perf)
-	    TESTLIST="perf"
-	    ;;
-        all)
-	# Run all tests which have run_auto.sh
-	    TESTLIST="func stress java perf"
-            ;;
-	list)
-	# This will only display subdirs which have run_auto.sh
-            list_tests
-	    exit
-	    ;;
-        clean)
-	# This will clobber logs, out files, .o's etc
-	    make_clean
-            exit
-	    ;;
+	local profile
 
-        *)
-	# run the tests in the individual subdirectory if it exists
-	    TESTLIST="$1"
-	    ;;
-    esac
-    for subdir in $TESTLIST; do
-	if [ -d $subdir ]; then
-	    pushd $subdir >/dev/null
-            for name in `find -name "run_auto.sh"`; do
-		test="`dirname $name`"
-		run_test "$test" "$2"
-		pushd $subdir > /dev/null
-	    done
-		pushd $TESTS_DIR >/dev/null
-        else
-	    echo -e "\n $subdir not found; check name/path with run.sh list "
-        fi
-    done
+	profile=$1
+	shift
+
+	case $1 in
+	func)
+		TESTLIST="func"
+		;;
+	stress)
+		TESTLIST="stress"
+		;;
+	perf)
+		TESTLIST="perf"
+		;;
+	all)
+		# Run all tests which have run_auto.sh
+		TESTLIST="func stress java perf"
+		;;
+	list)
+		# This will only display subdirs which have run_auto.sh
+		list_tests
+		exit
+		;;
+	clean)
+		# This will clobber logs, out files, .o's etc
+		make_clean
+		exit
+		;;
+
+	*)
+		# run the tests in the individual subdirectory if it exists
+		TESTLIST="$1"
+		;;
+	esac
+
+	for subdir in $TESTLIST; do
+		if [ -d $subdir ]; then
+			pushd $subdir >/dev/null
+			for name in `find -name "run_auto.sh"`; do
+				test="`dirname $name`"
+				run_test "$profile" "$test" "$2"
+				pushd $subdir > /dev/null
+			done
+			pushd $TESTS_DIR >/dev/null
+		else
+			echo -e "\n $subdir not found; check name/path with run.sh list "
+		fi
+	done
 
 }
 
@@ -161,7 +173,7 @@ SCRIPTS_DIR="$(readlink -f ${0%/*})/scripts"
 source $SCRIPTS_DIR/setenv.sh
 
 if [ $# -lt 1 ]; then
-	usage	
+	usage
 fi
 pushd $TESTS_DIR >/dev/null
 
@@ -174,37 +186,40 @@ popd
 
 ISLOOP=0
 index=0
-while getopts ":t:l:h" option
+while getopts ":t:l:hp:" option
 do
-    case "$option" in
-	
+	case "$option" in
+
 	t )
-	    if [ $ISLOOP -eq 1 ]; then
-	    	LOOP=1
-		tests[$index]=$LOOP
+		if [ $ISLOOP -eq 1 ]; then
+			LOOP=1
+			tests[$index]=$LOOP
+			index=$((index+1))
+		fi
+
+		tests[$index]="$OPTARG"
 		index=$((index+1))
-	    fi
-	
-	    tests[$index]="$OPTARG"
-	    index=$((index+1))
-	    TESTCASE="$OPTARG"
-	    ISLOOP=1		
-	    ;;
-	
+		TESTCASE="$OPTARG"
+		ISLOOP=1		
+		;;
+
 	l ) 
-	    ISLOOP=0
-	    tests[$index]="$OPTARG"
-	    LOOP="$OPTARG"
-	    index=$((index+1))
-	    ;;
+		ISLOOP=0
+		tests[$index]="$OPTARG"
+		LOOP="$OPTARG"
+		index=$((index+1))
+		;;
+	p )
+		profile=$OPTARG
+		;;
 	h )
-	    usage	
-	    ;;
+		usage	
+		;;
 	* ) echo "Unrecognized option specified"
-	    usage
-	    ;;
-    esac
+		usage
+		;;
+	esac
 done
 for(( i=0; $i < $index ; $((i+=2)) )); do
-    find_test ${tests[$i]} ${tests[$((i+1))]}
+	find_test "$profile" ${tests[$i]} ${tests[$((i+1))]}
 done

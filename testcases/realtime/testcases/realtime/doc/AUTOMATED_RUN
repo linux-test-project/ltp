@@ -1,0 +1,46 @@
+This explains how the automatic testing works with profile support.
+
+Profiles help users maintaining sets of tests for specific requirements.
+Each profile is defined in a file.
+All profiles are stored in the <RT_TESTS_ROOT>/profile/ directory.
+
+
+I. Automated tests in specific test-diretory.
+
+Tests can be run for one directory by running ./run_auto.sh in the wanted dir.
+run_auto.sh is customizable and contains a command line for each test to be run.
+(see template run_auto.sh.tpl in this dir)
+run_auto.sh can be invoked with an argument which is the profile to use.
+profile/ dir holds a file for each defined profile.
+A profile has a number of lines for which each test executable can be run
+with different arguments.
+Invoking run_auto.sh with no arg uses the default profile.
+Currently, the default profile does not alter the default values defined
+individually in each test.
+
+Example:
+In dir func/prio-preempt, user runs ./run_auto.sh prf1
+Since run_auto.sh contains this line:
+	$SCRIPTS_DIR/run_c_files.sh $profile prio-preempt
+
+run_c_files.sh will look into profile/prf1 for lines like this:
+	func/prio-preempt prio-preempt -c 2 -j
+	func/prio-preempt prio-preempt -c 1
+
+and run the following commands from the func/prio-preempt dir:
+	prio-preempt -c 2 -j
+	prio-preempt -c 1
+
+
+
+II. All automated tests
+
+Tests can also be run with <RT_TESTS_ROOT>/run.sh. User may choose whatever
+test range he wants. (all, func, perf... see README)
+run.sh searches for run_auto.sh files in the wanted area and runs them one
+by one.
+To use a profile other than default, use argument '-p <myprofile>'.
+
+Examples:
+	./run.sh -p prf1 -t func	# Uses prf1 profile
+	./run.sh -t func		# Uses default profile

@@ -4,35 +4,59 @@
 # This script is called from the directory where the test cases are.
 # Not all the test cases use this.
 #
-# Usage: $0 test-name
+# Usage: $0 profile testname1 [ testname2 ... ]
 #
-# For the moment, this does not take multiple arguments.
-# Call this script separately for each test.
-#
+# This script looks for *each* line in profile matching the
+# pattern "testid testname" and runs the corresponding test with the
+# args defined in the line.
 
-echo -e "SCRIPTS_DIR = $SCRIPTS_DIR"
-source $SCRIPTS_DIR/setenv.sh
+
+[ $# -lt 2 ] && { echo >&2 "$0: too few arguments (at least two)" ; exit 1 ; }
+profile=$1
+shift
+
+#source $SCRIPTS_DIR/setenv.sh
+
+profile_path=$PROFILES_DIR/$profile
+# Does profile exist?
+[ ! -f "$profile_path" ] && { echo >&2 "$0: Could not find profile ($profile_path)" ; exit 1 ; }
 
 # Compile the test cases to support stand alone runs.
 make
 
-IFS=:
 
 # Run the test case
-for file in $*
+for testname in $*
 do
-	cmd=`echo $file | cut -d ' ' -f 1`
-	if [ `echo $file | wc -w` -gt 1 ]; then
-		param=`echo $file | cut -d ' ' -f 2-`
-	fi
-	LOG_FILE="$LOG_DIR/$LOG_FORMAT-${cmd}${param// /}.log"
-	echo -e "--- Running testcase $cmd $param --- \n" | tee -a $LOG_FILE
-	date | tee -a $LOG_FILE
-	echo "Logging to $LOG_FILE" | tee -a $LOG_FILE
-        eval ./$cmd $param | tee -a $LOG_FILE
-	echo "" | tee -a $LOG_FILE
-	date | tee -a $LOG_FILE
-	echo -e "The $cmd test appears to have completed. \n" | tee -a $LOG_FILE
-	cmd=""
-	param=""
+	# Strip off comments and feed it to trivial parser.
+	sed 's/#.*//' < $profile_path | while read line ; do
+		set $line ""
+		# Check if the line is elligible
+		if [ "$1" = "$TEST_REL_DIR" -a "$2" = "$testname" ] ; then
+			cmd=$2
+			shift 2
+			params="$*"
+
+			LOG_FILE="$LOG_DIR/$LOG_FORMAT-${cmd}${params// /}.log"
+			[ ! -d $LOG_DIR ] && mkdir -p $LOG_DIR
+
+			( 
+				echo "--- Running testcase $cmd $params ---"
+				date
+				echo "Logging to $LOG_FILE"
+				eval ./$cmd 2>&1 $params
+				echo
+				date
+				echo "The $cmd test appears to have completed."
+			) | tee -a $LOG_FILE
+		fi
+	done
 done
+exit
+			echo -e "--- Running testcase $cmd $params --- \n" | tee -a $LOG_FILE
+			date | tee -a $LOG_FILE
+			echo "Logging to $LOG_FILE" | tee -a $LOG_FILE
+			eval ./$cmd 2>&1 $params| tee -a $LOG_FILE
+			echo "" | tee -a $LOG_FILE
+			date | tee -a $LOG_FILE
+			echo -e "The $cmd test appears to have completed. \n" | tee -a $LOG_FILE

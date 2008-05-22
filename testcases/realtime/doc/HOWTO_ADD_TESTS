@@ -10,13 +10,17 @@ rt-test - HOWTO_ADD_TESTS
 	  individually as an available test.
 	- run "run.sh list" to see available tests
 
-3. If you are creating a new subdirectory:
+2. If you are creating a new subdirectory:
    Provide:
 	- your test files
 	- your GNUMakefile.am
-	- your run_auto.sh script
+	- your run_auto.sh script (use template: doc/run_auto.sh.tpl)
 
-   Test the following:
+3. Modify tests profiles if to be run automatically
+	- profile/default
+	- other profiles if needed
+
+4. Test the following:
 	sh autogen.sh; ./configure, make, naturally
 	run.sh list
 	run.sh clean
