@@ -11,4 +11,4 @@ fi
 source $SCRIPTS_DIR/setenv.sh
 
 # Warning: tests args are now set in profiles
-$SCRIPTS_DIR/run_c_files.sh $profile sched_latency -d 1 -t 5
+$SCRIPTS_DIR/run_c_files.sh $profile sched_latency

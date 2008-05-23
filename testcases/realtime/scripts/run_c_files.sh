@@ -52,11 +52,3 @@ do
 		fi
 	done
 done
-exit
-			echo -e "--- Running testcase $cmd $params --- \n" | tee -a $LOG_FILE
-			date | tee -a $LOG_FILE
-			echo "Logging to $LOG_FILE" | tee -a $LOG_FILE
-			eval ./$cmd 2>&1 $params| tee -a $LOG_FILE
-			echo "" | tee -a $LOG_FILE
-			date | tee -a $LOG_FILE
-			echo -e "The $cmd test appears to have completed. \n" | tee -a $LOG_FILE
