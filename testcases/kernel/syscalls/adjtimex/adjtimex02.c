@@ -40,8 +40,12 @@
  *	   is  made  to set buf.tick to a value > 1100000/HZ
  *	4) adjtimex(2) fails with errno set to EINVAL if an attempt
  *	   is  made  to set buf.offset to a value > 512000L
+ *	   (This test case will be executed only if the kernel version
+ *	    is 2.6.25 or below)
  *	5) adjtimex(2) fails with errno set to EINVAL if an attempt
  *	   is  made  to set buf.offset to a value < 512000L
+ *	   (This test case will be executed only if the kernel version
+ *	    is 2.6.25 or below)
  *	6) adjtimex(2) fails with errno set to EPERM if buf.mode is
  *	   non-zero and the user is not super-user.
  * 
@@ -154,6 +158,18 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for(i = 0; i < TST_TOTAL; ++i) {
+			/*
+			 * since Linux 2.6.26, if buf.offset value is outside
+			 * the acceptable range, it is simply normalized instead
+			 * of letting the syscall fail. so just skip this test
+			 * case. 
+			 */
+			if ((i == 3 || i == 4) && tst_kvercmp(2,6,25) > 0) {
+				tst_resm(TCONF, "this kernel normalizes buf."
+						"offset value if it is outside"
+						" the acceptable range.");
+				continue;
+			}
 
 			buff = tim_save;
 			buff.modes = SET_MODE;
