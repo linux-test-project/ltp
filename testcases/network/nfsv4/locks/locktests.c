@@ -5,21 +5,18 @@
  * COMPILE : make 
  * RUN : ./locktests -n <number of concurent process> -f <test file> [-P]
  * 
- * GOAL : This test tries to stress the fcntl locking functions.  A
- * master process sets a lock on a file region (this is called "byte
- * range locking").  Some slave processes try to perform operations on
- * this region, such as read, write, set a new lock ... The expected
- * results of these operations are known.  If the operation result is
- * the same as the expected one, the test suceeds, else it fails.
- *
- *             
+ * GOAL : This tests try to stress fcntl locking functions. A master process set a lock on a file region (byte range locking).
+ * Some slaves process tries to perform operations on this region, like read, write, set a new lock ... Expected results of this 
+ * operations are known. If the operation result is the same as the expected one, the test sucess, else it fails.
  *
  * Slaves are concurent processes or thread. 
- * -n <num>  : Number of threads to use (mandatory).
- * -f <file> : Run the test on given test file defined by the -f option (mandatory).
- * -c <num>  : Number of clients to connect before starting the tests.
- *         
- * HISTORY : This program was written to stress NFSv4 locks.
+ * -n : Number of thread is defined by the -n option (mandatory). 
+ * -f : The test is ran on a test file defined by the -f option (mandatory).
+ * -P : Use pthreads instead of forked processes (optional). Result table is different.
+ *
+ * HISTORY : This program has been written to stress NFSv4 locks. -P option was created to verify NFSv4 locking was thread-aware,
+ * and so, locking behaviour over NFSv4 was POSIX correct both using threads and process. This option may not be usefull to stress.
+ *
  * EXAMPLE : ./locktests -n 50 -f /file/system/to/test
  * 
  * 
@@ -27,21 +24,79 @@
  * BULL S.A. 
  */
 
-#include "locktests.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <math.h>
+#ifdef STDARG
+#include <stdarg.h>
+#endif
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/param.h>
+#include <sys/times.h>
+#ifdef MMAP
+#include <sys/mman.h>
+#endif
+#include <inttypes.h>
+#include <pthread.h>
+
+#ifdef O_SYNC
+#define OPENFLAGS       (O_CREAT | O_RDWR | O_SYNC )
+#else
+#define OPENFLAGS       (O_CREAT | O_RDWR )
+#endif
+#define OPENMODES       (0600)
+#define MANDMODES       (0600)
+/*(02666)*/
+
+#define SUCCES 1
+#define ECHEC  0
+
+#define TRUE 1
+#define FALSE 0
+
+#define PROCESS 0
+#define THREAD 1
+
+
+//#define DEBUG
+#ifdef DEBUG
+        #define E(a)  perror(a)
+        #define P(a,b) printf(a,b)
+#else
+        #define E(a)
+        #define P(a,b)
+#endif
+//#define P(a,b) printf(a,b)
+
+
+enum etat_t     {
+                CLEAN,
+                RDONLY,
+                RESULTAT,
+                WRONLY,
+                SELECT,
+                LOCK,
+                SYNC,
+                FIN,
+                READLOCK,
+                WRITELOCK,
+                BYTELOCK,
+                BYTELOCK_READ,
+                BYTELOCK_WRITE
+};
+                
 
 int MAXLEN=64;
 int MAXTEST=10;
-extern int maxClients;
-extern int fdServeur;
-
-char message[M_SIZE];
-int esclaveLecteur;
-int maitreLecteur;
-int esclaveEcrivain;
-
-
-/* Quel lock sera appplique par le maitre en debut de test */
-/* Which lock will be applied by the master process on test startup */
+/* Quel lock sera apppliqué par le maitre en début de test */
 int LISTE_LOCKS[]=      {READLOCK, WRITELOCK,
                          READLOCK, WRITELOCK,
                          READLOCK, WRITELOCK,
@@ -49,9 +104,7 @@ int LISTE_LOCKS[]=      {READLOCK, WRITELOCK,
                          BYTELOCK_READ, BYTELOCK_WRITE
 };
 
-/* Les operations que les programes esclaves essaieront de faire */
-/* The operations the slave processes will try to perform */
-
+/* Les opérations que les programes esclaves essaieront de faire */
 int LISTE_TESTS[]=      {WRONLY,  WRONLY,
                          RDONLY,  RDONLY,
                          READLOCK, WRITELOCK,
@@ -59,7 +112,7 @@ int LISTE_TESTS[]=      {WRONLY,  WRONLY,
                          BYTELOCK_READ, BYTELOCK_WRITE
 };
 
-/* List of test names */
+
 char *LISTE_NOMS_TESTS[]={"WRITE ON A READ  LOCK",
                           "WRITE ON A WRITE LOCK",
                           "READ  ON A READ  LOCK",
@@ -74,8 +127,7 @@ char *LISTE_NOMS_TESTS[]={"WRITE ON A READ  LOCK",
 };
 
 
-/* Resultat attendu du test - Processus */
-/* List of expected test results, when slaves are processes */
+/* Resultat attendu du test */
 
 int LISTE_RESULTATS_PROCESS[]=  {SUCCES, SUCCES, 
                                 SUCCES,  SUCCES,
@@ -84,9 +136,8 @@ int LISTE_RESULTATS_PROCESS[]=  {SUCCES, SUCCES,
                                 SUCCES,  SUCCES
 
 };
-/* List of expected test results, when slaves are threads */
 
-int LISTE_RESULTATS_THREADS[]=  { SUCCES,  SUCCES, 
+int LISTE_RESULTATS_TREADS[]=  { SUCCES,  SUCCES, 
                                 SUCCES,  SUCCES,
                                 SUCCES,  SUCCES,
                                 SUCCES,  SUCCES,
@@ -97,24 +148,178 @@ int LISTE_RESULTATS_THREADS[]=  { SUCCES,  SUCCES,
 int *LISTE_RESULTATS=NULL;
 char *eType=NULL;
 
-
 int TOTAL_RESULTAT_OK[]={0,0,0,0,0,0,0,0,0,0};
 
 
 
 void * esclave(void *donnees);
+
+/* Données communes à tous les processus */
+struct donneesPub {
+    /* Nombre de clients */
+    int nclnt;
+    /* Liste des clients (liste des tubes)*/
+    int **lclnt;
+    /* Tube de communication avec le maitre */
+    int maitre[2];
+    /* Liste des threads */
+    pthread_t *lthreads;
+    /*nom du fichier test*/
+    char *fname;
+    /*descripteur du fichier test*/
+    int fd;
+    /* Affichage des messages d'erreur */
+    int verbose;
+};
+ 
+/* Données privées aux processus */
+struct donneesPriv {
+    /* Numero de thread. */
+    int whoami;
+};
+
+struct donneesFils{
+    struct donneesPub *dp;
+    struct donneesPriv *dpr;
+};
+
+
+struct s_test {
+    int test;
+    
+    int type;
+    char *nom;
+    int resAtt;
+   
+};
+
+
+
+struct donneesFils *initClientPThread(int i, struct donneesPub *dp)
+{
+
+    struct donneesPriv *dpr;    
+    struct donneesFils *df;
+
+    /*Initialisation des champs de données */
+    dpr=(struct donneesPriv *)malloc(sizeof(struct donneesPriv ));
+    df=(struct donneesFils *)malloc(sizeof(struct donneesFils));
+    dpr->whoami=i;
+    df->dp=dp;
+    df->dpr=dpr;
+    /* Initialisation du tubes de synchronisation */
+    dp->lclnt[i]=(int *)malloc(sizeof(int)*2);
+    if(pipe(dp->lclnt[i])<0){
+        perror("Impossible to create pipe\n");
+        exit(1);
+    }
+    write(0,".",1); 
+    /* Initialisation et lancement du thread */
+    if(pthread_create(&(dp->lthreads[i]), NULL, (void *)&esclave, (void *)df)<0){
+        perror("Impossible to create thread num ");
+        printf("%d\n", dpr->whoami);
+        exit(1);
+    }
+    return df;
+}
 int (*terminer)(int a);
 
+
+
+int terminerThread(int a){
+    pthread_exit(&a);
+}
 int terminerProcess(int a){
     exit(a);
 }
+struct donneesFils *initClientFork(int i, struct donneesPub *dp)
+{
 
-int (*load)();
+    struct donneesPriv *dpr;    
+    struct donneesFils *df;
+ 
+    /*Initialisation des champs de données */
+    dpr=(struct donneesPriv *)malloc(sizeof(struct donneesPriv ));
+    df=(struct donneesFils *)malloc(sizeof(struct donneesFils));
+    dpr->whoami=i;
+    df->dp=dp;
+    df->dpr=dpr;
+    /* Initialisation du tubes de synchronisation */
+    dp->lclnt[i]=(int *)malloc(sizeof(int)*2);
+    if(pipe(dp->lclnt[i])<0){
+        perror("Impossible to create pipe\n");
+        exit(1);
+    }
+    P("Initialization %d\n", i);
+    write(0,".",1); 
+    return df;
+}
 
-struct donneesPub dp;
+int initTest(struct donneesPub *dp){
+   
+    P("Maitre ouvre %s\n",dp->fname);
+    dp->fd = open(dp->fname, OPENFLAGS, MANDMODES);
+    if (dp->fd < 0) {
+        perror("lock test : can't open test file :");
+        terminer(1);
+    }
+    P("fd=%d\n", dp->fd);
+    return 0;
+}
 
-/* Manipulation des tests/ noms de tests/ resultats de tests */
-/* Functions to access tests/tests names/tests results*/
+int (*load)(struct donneesPub *dp);
+
+
+int initialise(int clnt, struct donneesPub *dp){
+ 
+    /* Initialisation des données publiques */
+    printf("Init\n");
+    dp->nclnt=clnt;
+    dp->lclnt=(int **)malloc(sizeof(int *)*clnt);
+    dp->lthreads=(pthread_t *)malloc(sizeof(pthread_t)*clnt);
+   
+    /* initialisation de la communication avec le maitre */
+    if(pipe(dp->maitre)<0){
+        perror("Master pipe creation error\n");
+        exit(1);
+    }
+    printf("%s initalization\n",eType);
+    load(dp);
+    initTest(dp);
+    
+    
+    return 0;
+}
+
+    
+
+        
+int loadThread(struct donneesPub *dp){
+    int i;
+   
+    /* Initialisation avec des threads */
+    for(i=0; i<dp->nclnt; i++){
+        write(0,".",1);
+        initClientPThread(i, dp);
+    }
+    return 0;
+}
+
+int loadProcess(struct donneesPub *dp){
+    int i;
+    struct donneesFils *df;
+    for(i=0; i<dp->nclnt; i++){
+            df=initClientFork(i,dp);
+        if (!fork() ) {
+            P("Running slave num: %d\n",df->dpr->whoami);
+            write(0,".",1);
+            esclave((void *)df);
+            exit(0);
+        }
+    }
+    return 0;
+}
+
 int testSuiv(int n){
    return LISTE_TESTS[n];
 }
@@ -128,8 +333,6 @@ int lockSuiv(int n){
     return LISTE_LOCKS[n];
 }
 
-/* Verifie si le resultat obtenu pour le test est le resultat attendu pour ce test */
-/* Verifie the test result is the expected one */
 int matchResult(int r, int n){
    
     P("r=%d\n",r);
@@ -138,42 +341,32 @@ int matchResult(int r, int n){
     else return 0;
 }
 
-/* Incremente le nombre de process ayant valide le test */
-/* Increments the number of process which have successfully passed the test */
+
 void compteur(int r,int n){
     TOTAL_RESULTAT_OK[n]+=matchResult(r, n);
 }
 
-/* Validation des resultats pour le lock de fichier octet par octet
- * Pour chaque octet on verifie qu'un lock de 1 octet est bien pose
- */
-/* Special case for test 'lock file byte byte by byte'. 
- * We ensure each byte is correctly locked.
- */
 
-void validationResultats(int n){
-    int i,u,l, fsize;
+void validationResultats(int n, struct donneesPub *dp){
+    int i,u,l;
     struct flock request;
     
-    fsize=dp.nclnt*(maxClients+1);
     TOTAL_RESULTAT_OK[n]=0;
     l=FALSE;
     u=TRUE;
-    /* Si le resultat de l'operation attendu est un succe on prevoi d'incrementer le nombre de resultats corrects */
-    /* If the expected operation result is a success, we will have to increase the number of correct results */
+    /* Si le résultat de l'opération attendu est un succéson prévoi d'incrémenté le nombre de résultats corrects */
     if(LISTE_RESULTATS[n]){
         l=TRUE;
         u=FALSE;
     }
-   
-    for(i=0;i<fsize;i++){
+            
+    for(i=0;i<dp->nclnt;i++){
         request.l_type=F_WRLCK; 
         request.l_whence=SEEK_SET;
         request.l_start=i;
         request.l_len=1;
-        fcntl(dp.fd, F_GETLK, &request);
-        /* On verifie si le lock est mis ou non */
-        /* Ensure the lock is correctly set */
+        fcntl(dp->fd, F_GETLK, &request);
+        /* On vérifie si le lock est mis ou non */
         if(request.l_type!=F_UNLCK)
             TOTAL_RESULTAT_OK[n]+=l;
         else
@@ -181,105 +374,10 @@ void validationResultats(int n){
     }
 }
 
-
-/* Procedures d'initialisation */
-/* Initialisation functions */
- 
-int initTest(){
-   
-    P("Maitre ouvre %s\n",dp.fname);
-    dp.fd = open(dp.fname, OPENFLAGS, MANDMODES);
-    if (dp.fd < 0) {
-        perror("lock test : can't open test file :");
-        terminer(1);
-    }
-    P("fd=%d\n", dp.fd);
-    return 0;
-}
-
-struct donneesFils *initClientFork(int i)
-{
-    struct donneesPriv *dpr;    
-    struct donneesFils *df;
- 
-    /* Initialisation des champs de donnees */
-    /* Initialize private data fields */
-    dpr=(struct donneesPriv *)malloc(sizeof(struct donneesPriv ));
-    df=(struct donneesFils *)malloc(sizeof(struct donneesFils));
-    dpr->whoami=i;
-    df->dp=&dp;
-    df->dpr=dpr;
-    /* Initialisation du tubes de synchronisation */
-    /* Initialize master to client pipe */
-    dp.lclnt[i]=(int *)malloc(sizeof(int)*2);
-    if(pipe(dp.lclnt[i])<0){
-        perror("Impossible to create pipe\n");
-        exit(1);
-    }
-    P("Initialization %d\n", i);
-    write(0,".",1); 
-    return df;
-}
-
-int initialise(int clnt){
- 
-    /* Initialisation des donnees publiques */
-    /* Initialize private data fields */
-    printf("Init\n");
-    dp.nclnt=clnt;
-    dp.lclnt=(int **)malloc(sizeof(int *)*clnt);
-    dp.lthreads=(pthread_t *)malloc(sizeof(pthread_t)*clnt);
-   
-    /* initialisation de la communication avec le maitre */
-    /* Initialize client to master pipe */
-    if(pipe(dp.maitre)<0){
-        perror("Master pipe creation error\n");
-        exit(1);
-    }
-    printf("%s initalization\n",eType);
-    load();
-    initTest();
-    
-    
-    return 0;
-}
-
-void cleanClient(struct donneesFils *df){
-    int i;
-    i=df->dpr->whoami;
-    free(dp.lclnt[i]);
-    free(df->dpr);
-    free(df);
-}
-    
-void clean(){
-    free(dp.lthreads);
-    free(dp.lclnt);
-}
-
-
-int loadProcess(){
-    int i;
-    struct donneesFils *df;
-    for(i=0; i<dp.nclnt; i++){
-            df=initClientFork(i);
-        if (!fork() ) {
-            P("Running slave num: %d\n",df->dpr->whoami);
-            write(0,".",1);
-            esclave((void *)df);
-            cleanClient(df);
-            exit(0);
-        }
-    }
-    return 0;
-}
-
-
 void lockWholeFile(struct flock *request){
     request->l_whence = SEEK_SET;
     request->l_start =  0;
-    /* Lock de l'ensemble du fichier*/
-    /* Lock the whole file */
+/* Lock de l'ensemble du fichier*/
     request->l_len = 0;
 }     
 
@@ -292,349 +390,37 @@ void selectTest(int n, struct s_test *test){
     test->type=lockSuiv(n);
 }
 
-/* Final test report */
 void rapport(clnt){
     int i;
-    int totalClients;
-    totalClients=clnt*(maxClients+1);
-    printf("\n%s number : %d - Remote clients: %d local client 1 - Total client %d - Total concurent tests: %d\n", 
-            eType,
-            clnt,
-            maxClients,
-            maxClients+1,
-            totalClients);
+    printf("\n%s number : %d\n", eType, clnt);
     printf("%s number running test successfully :\n",eType);
     for(i=0; i<MAXTEST; i++)
-        printf("%d %s of %d successfully ran test : %s\n", TOTAL_RESULTAT_OK[i], eType, totalClients, LISTE_NOMS_TESTS[i]);
+        printf("%d %s of %d successfully ran test : %s\n", TOTAL_RESULTAT_OK[i], eType, clnt, LISTE_NOMS_TESTS[i]);
     
 }
 
 
-int serverSendLocal(){
-    int i;
-    /* Synchronisation des processus esclaves. */
-    /* Synchronize slave processes */
-    
-    /* On configure les esclaves pour le test */
-    /* Configure slaves for test */
-    
-    for(i=0; i<dp.nclnt; i++)
-        write(dp.lclnt[i][1], message,M_SIZE );
-    return 0;
-
-}
-
-void serverSendNet(){
-   writeToAllClients(message);
-}
-
-int serverReceiveNet(){
-    int i,c;
-    for(c=0;c<maxClients; c++){
-        for(i=0;i<dp.nclnt;i++){
-            serverReceiveClient(c);
-        }
-    }
-    return 0;
-}
-
-
-int serverReceiveLocal(){
-    int i;
-    for(i=0; i<dp.nclnt; i++)
-        read(maitreLecteur, message,M_SIZE );
-    return 0;
-}
-
-int clientReceiveLocal(){
-    read(esclaveLecteur,message,M_SIZE);
-    return 0;
-}
-
-int clientSend(){
-    write(esclaveEcrivain, message, M_SIZE);
-    return 0;
-}
-
-int serverSend(){
-    serverSendNet();
-    serverSendLocal();
-    return 0;
-}
-
-int serverReceive(){
-    serverReceiveNet();
-    serverReceiveLocal();
-    return 0;
-}
-
-/* binary structure <-> ASCII functions used to ensure data will be correctly used over
- * the network, especially when multiples clients do not use the same hardware architecture.
- */
-int serialiseTLock(struct s_test *tLock){
-    memset(message,0,M_SIZE);
-    sprintf(message,"T:%d:%d:%d::",tLock->test, tLock->type,tLock->resAtt );
-    return 0;
-}
-
-void unSerialiseTLock(struct s_test *tLock){
-    sscanf(message, "T:%d:%d:%d::",&(tLock->test),&( tLock->type),&(tLock->resAtt) );
-    memset(message,0, M_SIZE);
-
-}
-
-void serialiseFLock(struct flock *request){
-    int len, pid, start;
-    memset(message,0,M_SIZE);
-    len=(int )request->l_len;
-    pid=(int )request->l_pid;
-    start=(int)request->l_start;
-    /* Beware to length of integer conversions ... */
-    sprintf(message,"L:%hd:%hd:%d:%d:%d::",      
-            request->l_type,
-            request->l_whence,
-            start,
-            len,
-            pid
-            );
-}
-
-
-void serialiseResult(int resultat){
-    memset(message, 0, M_SIZE);
-    sprintf(message,"R:%d::", resultat);
-
-}
-
-void unSerialiseResult(int *resultat){
-    sscanf(message,"R:%d::", resultat);
-} 
-
-
-
-void unSerialiseFLock(struct flock *request){
-    int len, pid, start;
-    sscanf(message,"L:%hd:%hd:%d:%d:%d::",      
-            &(request->l_type),
-            &(request->l_whence),
-            &start,
-            &len,
-            &pid
-            );
-    request->l_start=(off_t)start;
-    request->l_len=(off_t)len;
-    request->l_pid=(pid_t)pid;
-}
-
-int serverSendLockClient(struct flock *request, int client){
-    serialiseFLock(request);
-    return serverSendClient(client);
-}
-
-
-int serverSendLockLocal(struct flock *request, int esclave){
-    serialiseFLock(request);
-    return write(dp.lclnt[esclave][1], message, M_SIZE);
-}
-
-    
-
-int getLockSection(struct flock *request){
-    memset(message, 0, M_SIZE);
-    clientReceiveLocal();
-    unSerialiseFLock(request);
-    return 0;
-}
-
-int sendLockTest(struct s_test *tLock){
-    serialiseTLock(tLock);
-    serverSend();
-    return 0;
-}
-
-int getLockTest(struct s_test *tLock){
-    clientReceiveLocal();
-    unSerialiseTLock(tLock);
-    return 0;
-}
-
-
-
-int sendResult(int resultat){
-    serialiseResult(resultat);
-    clientSend();
-    return 0;
-}
-
-int getResults(int ntest){
-    int i,c;
-    int resultat=0;
-   /* On comptabilise les resultats distants */
-    /* Add remote test results */
-    for(c=0;c<maxClients;c++){
-        for(i=0;i<dp.nclnt; i++){
-            serverReceiveClient(c);
-            unSerialiseResult(&resultat);
-            compteur(resultat,ntest);
-                    
-        }
-    }
-    /* On comptabilise les resultats locaux */
-    /* Add local test results */
-    for(i=0; i<dp.nclnt; i++){
-        read(maitreLecteur, message,M_SIZE );
-        unSerialiseResult(&resultat);
-        compteur(resultat,ntest);
-    }
-    
-        
-    return 0;
-}    
-
-/* Usefull debug macro */
-#ifdef DEBUG
-#define P(a,b)  memset(dbg,0,16);sprintf(dbg,a,b);write(0,dbg,16);
-#endif
-
-
-/* Le maitre de l'application client n'est qu'un repetiteur d'information.
- * Il retransmet l'information qu'il re�oit du maitre du client a ses esclaves 
- */
-/* In the case of a network use, the master of the client application si only 
- * a 'repeater' of information. It resends server-master instructions to its own slaves.
- */
-
-void maitreClient(){
-    fd_set fdread;
-    struct timeval tv;
-    int n,i,r,m,start;
-#ifdef DEBUG
-    char dbg[16];
-#endif
-    struct flock lock;
-    int t;
-
-    maitreLecteur=dp.maitre[0];
-    FD_ZERO(&fdread);
-    tv.tv_sec = 50;
-    tv.tv_usec = 0;
-    n=fdServeur>maitreLecteur?fdServeur:maitreLecteur;
-    printf("Maitre CLient - fdServeur=%d\n", fdServeur);
-    while(1){
-        /* On ajoute les descripteurs esclave et serveur */
-        /* Add slave and server pipe file descriptors */
-        FD_ZERO(&fdread);
-        FD_SET(fdServeur,&fdread);
-        FD_SET(maitreLecteur,&fdread);
-        r=select(n+1, &fdread, NULL, NULL,&tv);
-        if(r<0){    
-            perror("select:\n");
-            continue;
-        }
-        if(r==0){
-            exit(0);
-        }
-
-        if(FD_ISSET(fdServeur, &fdread)){
-            /* On vient de recevoir une information du serveur
-             * On la retransmet aux esclaves
-             */
-            /* We just have received information from the server.
-             * We repeat it to slaves.
-             */
-            i=readFromServer(message);
-            t=message[0];
-            switch(t){
-                case 'L':
-                    /* Instruction : Lock. Dans ce cas il faut envoyer a chaque processus une section differente a locker */
-                    /* Lock instruction. We need to send a different section to lock to each process */
-                    
-                    unSerialiseFLock(&lock);
-                    start=lock.l_start;
-                    for(i=0;i<dp.nclnt;i++){
-                        lock.l_start=start+i;
-                        serialiseFLock(&lock);
-                        write(dp.lclnt[i][1], message,M_SIZE);
-                    }
-                    printf("\n");
-                    continue;
-                case 'T':
-                    /* Instruction: Test. Il s'agit d'une trame annoncant un nouveau test : on verifie qu'il ne s'agit pas d'une 
-                     * demande de FIN des tests
-                     */
-                    /* Test instruction. Ensure server is not sending the FIN(ish) instruction to end tests */
-
-                    /* A re-ecrire un peu mieux des que possible */
-                    /* To be rewritten asap*/
-                    m=atoi(&(message[2]));
-                    if(m==FIN)        
-                        break;
-                    if(m==CLEAN)
-                        printf("\n");
-                    
-
-                
-            serverSendLocal();
-            continue;
-            }
-            break;
-        }else{
-            /* Dans le cas inverse, on lis les esclaves et on remonte l'information au serveur 
-             */
-            /* Else, we read information from slaves and repeat them to the server */
-            for(i=0;i<dp.nclnt;i++){
-                r=read(maitreLecteur, message,M_SIZE );
-                r=write(fdServeur,message,M_SIZE );
-                if(r<0)perror("write : ");
-                    
-            }
-            continue;
-        }
-    }
-
-    /* On vient de recevoir la trame FIN de programme */
-    /* Receive the FIN(ish) instruction*/
-
-    /* On la communique a tous les esclaves */
-    /* Repeat it to the slaves */
-    printf("Fin du programme en cours...\n");
-    serverSendLocal();
-
-    /* Et c'est fini! */
-    /* Ok, we can quit */
-    printf("Bye :)\n");
-
-    
-}
-
-
-
-void maitre()
+void maitre(struct donneesPub *dp)
 {
-    int i,n,bl;
-    int clnt;
+    int i,n,a,bl;
+    int clnt, reception;
+    int r;
     char tmp[MAXLEN], *buf;
-#ifdef DEBUG    
-    char dbg[16];
-#endif
     struct flock request;
     struct s_test tLock;
     enum etat_t etat;
-    int offset;
-    /* A test sentence written in the file */
-    char phraseTest[]="Ceci est une phrase test ecrite par le maitre dans le fichier";   
-    clnt=dp.nclnt;
-    maitreLecteur=dp.maitre[0];
+    
+    char phraseTest[]="Ceci est une phrase test écrite par le maitre dans le fichier";   
+    clnt=dp->nclnt;
+    reception=dp->maitre[0];
     etat=SELECT;
-    /* On commence par le premier test. C'est original ;) */
-    /* Start with the first test ;) */
+    /* On commence par le premier test */
     n=0;
     printf("\n--------------------------------------\n");
     while(1){
         switch(etat){
             case SELECT:
-                /* Selection du test a effectuer */
-                /* Select the test to perform   */
+                /* Selection du test à effectuer*/
                 printf("\n");
                 E("Maitre: SELECT");
                 selectTest(n, &tLock);
@@ -669,15 +455,15 @@ void maitre()
 
             case LOCK:
                 /* On applique le lock que l'on veut */
-                /* Apply the wanted lock */
                 E("Maitre: LOCK");
-                write(dp.fd,phraseTest,strlen(phraseTest));
+                write(dp->fd,phraseTest,strlen(phraseTest));
                 lockWholeFile(&request);
-                if(fcntl(dp.fd, F_SETLK, &request)<0){
+                if(fcntl(dp->fd, F_SETLK, &request)<0){
                     perror("Master: can't set lock\n");
                     perror("Echec\n");
                     exit(0);
                 }
+                sleep(1);
                 E("Maitre");
                 etat=SYNC;
                 continue;
@@ -695,64 +481,40 @@ void maitre()
                 continue;
                 
             case BYTELOCK:
-                /* 
-                 * L'idee est de faire locker l'ensemble du fichier octet par octet par un ensemble de sous processus
+                /* L'idée est de faire locker l'ensemble du fichier octet par octet par un ensemble de sous processus
                  * Il nous faut donc 
-                 * -creer un fichier ayant autant d'octet que le nombre de processus passe en parametres
-                 * -passer les sections a locker a chacun des esclaves
-                 * -verifier que les locks sont bien appliques
-                 * 
-                 */
-		 
-                /* The main idea is to lock all the bytes in a file. Each slave process locks one byte.
-                 *
-                 * We need :
-                 * - To create a file of a length equal to the total number of slave processes
-                 * - send the exact section to lock to each slave 
-                 * - ensure locks have been correctly set
-                 */
+                 * -créer un fichier ayant autant d'octet que le nombre de processus passé en paramètres
+                 * -passer les sections à locker à chacun des esclaves
+                 * -vérifier que les locks sont bien appliqués
+                 * */
                 
-                
-                /* On cree une chaine de caracteres a enregistrer dans le fichier qui contienne exactement un octet par
+                /* On crée une chaine de caractères à enregistrer dans le fichier qui contienne exactement un octet par
                  * processus.
                  */
-                /* Create a string to record in the test file. Length is exactly the number of sub process */
                 P("Maitre: BYTELOCK: %d\n", etat);
-                buf=(char *)malloc(clnt*maxClients);
+                buf=(char *)malloc(clnt);
                 memset(buf,'*', clnt);
-                write(dp.fd, buf, clnt);
-                free(buf);
-                
-                
-                /* Chaque processus esclave reecrit son champs a locker. */
-                /* Each slave process re-writes its own field to lock */
+                write(dp->fd, buf, clnt);
                 request.l_whence=SEEK_SET;
-                request.l_start=0;
-                request.l_len=1;
                 
-                /* On commence par les envois reseau */
-                /* Start to send sections to lock to remote process (network clients) */
-                
-                for(i=0;i<maxClients;i++){
-                    /* On renseigne la structure avec le lock qui va bien */
-                    /* Set the correct byte to lock */
-                    offset=(i+1)*clnt;
-                    request.l_start=(off_t )offset;
-                    serverSendLockClient(&request, i);
-                }
-
-                /* Puis les envois locaux */
-                /* Now send sections to local processes */
+                /* Chaque processus esclave reécrit son champs à locker. */
                 for(i=0;i<clnt;i++){
+                    /* On renseigne la structure avec le lock qui va bien */
                     request.l_start=i;
-                    serverSendLockLocal(&request, i);
+                    request.l_len=1;
+                    write(dp->lclnt[i][1], &request, sizeof(struct flock));
                 }                    
                 etat=RESULTAT;
                 continue;
 
 
             case SYNC:
-                sendLockTest(&tLock);
+                /* Synchronisation des processus esclaves. */
+                P("Maitre: SYNC %d\n", etat);
+                
+                /* On configure les esclaves pour le test */
+                for(i=0; i<clnt; i++)
+                    write(dp->lclnt[i][1], &(tLock.test), sizeof(int));
                 if(bl){
                     etat=BYTELOCK;
                     continue;
@@ -763,35 +525,41 @@ void maitre()
                 continue;
 
             case RESULTAT:
-                /* On lit les resultats un par un */
-                /* Read results by one */
-                getResults(n-1);
-                if(bl) validationResultats(n-1);
+                /* On lit les résultats un par un */
+                E("Maitre: RESULTAT");
+                for(i=0; i<clnt; i++){
+                    if((a=read(reception, &r,sizeof(int)))<0){
+                        perror("Can't read master pipe");
+                        exit(1);
+                    }
+                    compteur(r,n-1);
+
+                }
+                if(bl) validationResultats(n-1, dp);
                 etat=CLEAN;
                 continue;
 
             case CLEAN:
-                /* On demande aux clients d'arreter le test */
-                /* Ask the clients to stop testing ... */
-                tLock.test=CLEAN;
-                serialiseTLock(&tLock);
-                serverSend();
-                /* ... et on attend un accuse de reception avant de fermer */
-                /* ... and wait for an ack before closing */
-                serverReceive();
-                /* On ignore les resultats, ce n'est qu'un accuse de reception */
-                /* Ignore message content : that is only an ack */
-               
+                a=CLEAN;
+                for(i=0; i<clnt; i++)
+                    write(dp->lclnt[i][1], &a, sizeof(int));
+                /* Get CLEAN AcK from slaves */
+                for(i=0; i<clnt; i++){
+                    if(read(reception, &a,sizeof(int))<0){
+                        perror("Can't read master pipe");
+                        exit(1);
+                    }
+                } 
+                
                 /* close and open file */
-                close(dp.fd);
+                close(dp->fd);
                 initTest(dp);
                 etat=SELECT;
                 continue;
             case FIN:
-                tLock.test=FIN;
-                serialiseTLock(&tLock);
-                serverSend();
-                sleep(2);
+                a=FIN;
+                for(i=0; i<clnt; i++)
+                    write(dp->lclnt[i][1], &a, sizeof(int));
                 break;
                 
                 printf("(end)\n");
@@ -806,28 +574,26 @@ void maitre()
 
 
 
-/* Slave process/thread */
+
+
 
 void * esclave(void *donnees)
 {
     struct donneesFils *df;
-    int i, a, resultat,ftest;
-    struct s_test tLock;
+    int i, cmd,a, resultat,ftest;
+    int maitre;
     struct flock request;
     char tmp[16];
-#ifdef DEBUG    
-    char dbg[16];
-#endif
-    char *phraseTest="L'ecriture a reussi";
+    char *phraseTest="L'écriture a réussi";
     int len;
     enum etat_t etat;
     
     len=strlen(phraseTest);
     df=(struct donneesFils *)donnees; 
     i=df->dpr->whoami;
-    P("Esclave n=%d\n", i);
-    esclaveLecteur=dp.lclnt[i][0];
-    esclaveEcrivain=dp.maitre[1];
+    P("Escalve n=%d\n", i);
+    cmd=df->dp->lclnt[i][0];
+    maitre=df->dp->maitre[1];
     etat=SYNC;
     errno=0;
     memset(tmp,0,16);
@@ -835,19 +601,19 @@ void * esclave(void *donnees)
         switch(etat){
             case SELECT: /* NOT reached */
             case SYNC:
-                getLockTest(&tLock);
-                etat=tLock.test; 
-                P("Esclave Etat=%d\n",etat);
-                       
+                if(read(cmd,&etat,sizeof(int))<0){
+                    perror("Lecture du pipe \n");
+                    exit(1);
+                }
+                P("State :%d\n", etat);
                 continue;
             case RDONLY:
                 /* On tente de lire un fichier */
-                /* Try to read a file */
                 P("TEST READ ONLY %d\n", RDONLY);
-                if((ftest=open(dp.fname, O_RDONLY|O_NONBLOCK))<0){
+                if((ftest=open(df->dp->fname, O_RDONLY|O_NONBLOCK))<0){
                     resultat=ECHEC;
                     etat=RESULTAT;
-                    if(dp.verbose)
+                    if(df->dp->verbose)
                         perror("Open:");
                     continue;
                 }
@@ -861,13 +627,12 @@ void * esclave(void *donnees)
                 continue;
                         
             case WRONLY:
-                /* On tente d'ecrire un fichier */
-                /* Try to write a file */
+                /* On tente de lire un fichier */
                 P("TEST WRITE ONLY %d\n", WRONLY);
-                if((ftest=open(dp.fname, O_WRONLY|O_NONBLOCK))<0){
+                if((ftest=open(df->dp->fname, O_WRONLY|O_NONBLOCK))<0){
                     resultat=ECHEC;
                     etat=RESULTAT;
-                    if(dp.verbose)
+                    if(df->dp->verbose)
                         perror("Open read only:");
                     continue;
                 }
@@ -883,27 +648,25 @@ void * esclave(void *donnees)
                 
                 
             case READLOCK:
-                /* On essaie de lire une section lockee en lecture sur le fichier */
-                /* Try to read a read-locked section */
+                /* On essaie de lire une section lockée en lecture sur le fichier */
                 P("READ LOCK %d\n", F_RDLCK);
-                if((ftest=open(dp.fname, O_RDONLY|O_NONBLOCK))<0){
+                if((ftest=open(df->dp->fname, O_RDONLY|O_NONBLOCK))<0){
                     resultat=ECHEC;
                     etat=RESULTAT;
-                    if(dp.verbose)
+                    if(df->dp->verbose)
                         perror("Open read-write:");
                     continue;
                 }
 
                 P("fd=%d\n",ftest);
                 /* Lock de l'ensemble du fichier*/
-                /* Lock the whole file */
                 request.l_type=F_RDLCK;
                 request.l_whence = SEEK_SET;
                 request.l_start =  0;
                 request.l_len = 0;
                 
                 if(fcntl(ftest, F_SETLK, &request)<0){
-                    if(dp.verbose || errno != EAGAIN)
+                    if(df->dp->verbose || errno != EAGAIN)
                         perror("RDONLY: fcntl");
                     resultat=ECHEC;
                 }
@@ -913,18 +676,16 @@ void * esclave(void *donnees)
                 continue;
 
             case WRITELOCK:
-                /* On essaie d'ecrire le fichier */
-                /* Try to write a file */
+                /* On essaie d'écrire  le fichier */
                 P("WRITE LOCK %d\n", F_WRLCK);
-                if((ftest=open(dp.fname, O_WRONLY|O_NONBLOCK))<0){
+                if((ftest=open(df->dp->fname, O_WRONLY|O_NONBLOCK))<0){
                     resultat=ECHEC;
                     etat=RESULTAT;
-                    if(dp.verbose)
+                    if(df->dp->verbose)
                         perror("\nOpen:");
                     continue;
                 }
                 /* Lock de l'ensemble du fichier*/
-                /* Lock the whole file */
                 P("fd=%d\n",ftest);
                 request.l_type=F_WRLCK;
                 request.l_whence = SEEK_SET;
@@ -932,7 +693,7 @@ void * esclave(void *donnees)
                 request.l_len = 0;
                 
                 if(fcntl(ftest, F_SETLK, &request)<0){
-                    if(dp.verbose || errno != EAGAIN)
+                    if(df->dp->verbose || errno != EAGAIN)
                         perror("\nWRONLY: fcntl");
                     resultat=ECHEC;
                 }
@@ -942,40 +703,38 @@ void * esclave(void *donnees)
                 continue;
 
             case BYTELOCK_READ:
-                P("BYTE LOCK READ: %d\n", etat);
                 etat=BYTELOCK;
                 continue;
 
             case BYTELOCK_WRITE:
-                P("BYTE LOCK WRITE: %d\n", etat);
                 etat=BYTELOCK;
                 continue;
                 
             case BYTELOCK:
-                /* On se met en attente de la section a locker. L'ensemble de la structure est 
-                 * donnee par le maitre et transmise par le tube.
+                /* On se met en attente de la section à locker. L'ensemble de la structure est 
+                 * donnée par le maitre et transmise par le tube.
                  */
-                /* Wait for the exact section to lock. The whole file is sent by the master */
-                
-                P("BYTE LOCK %d\n", etat);
-                getLockSection(&request);
-                if((ftest=open(dp.fname, O_RDWR|O_NONBLOCK))<0){
+                P("WRITE LOCK %d\n", etat);
+                if(read(cmd, &request, sizeof(struct flock))<0){
+                    perror("Pipe : read error");
+                    terminer(1);
+                }
+
+                if((ftest=open(df->dp->fname, O_RDWR|O_NONBLOCK))<0){
                     resultat=ECHEC;
                     etat=RESULTAT;
-                    if(dp.verbose)
+                    if(df->dp->verbose)
                         perror("\nOpen:");
                     continue;
                 }
-                
                 if(fcntl(ftest, F_SETLK, &request)<0){
-                    if(dp.verbose || errno != EAGAIN)
+                    if(df->dp->verbose || errno != EAGAIN)
                         perror("\nBTLOCK: fcntl");
                     resultat=ECHEC;
                     etat=RESULTAT;
                     continue;
                 }
-                /* On change le caractere a la place donnee pour verification */
-                /* Change the character at the given position for an easier verification */
+                /* On change le caractère à la place donnée pour vérification */
                 a=lseek(ftest, request.l_start,SEEK_SET);
                 write(ftest,"=",1);
                 resultat=SUCCES;
@@ -988,14 +747,21 @@ void * esclave(void *donnees)
                 else
                     write(0,"x",1);
                 P("RESULTAT: %d\n", resultat);
-                sendResult(resultat);
+                if(write(maitre,&resultat,sizeof(int))<0){
+                    P("Slave num %d\n", df->dpr->whoami);
+                    perror("Slave\n");
+                }
+                
                 etat=SYNC;
                 continue;
 
             case CLEAN:
                 close(ftest);
                 /* Send CLEAN Ack */
-                sendResult(resultat);
+                if(write(maitre,&resultat,sizeof(int))<0){
+                    P("Slave num %d\n", df->dpr->whoami);
+                    perror("Slave\n");
+                }
                 etat=SYNC;
                 continue;
             
@@ -1023,28 +789,25 @@ char *nextArg(int argc, char **argv, int *i){
         
 int usage(){
         printf("locktest -n <number of process> -f <test file> [-T]\n");
+        printf("-T : Use threads instead of process (First designed to test differences between thread and process locking behaviour over NFS)\n");
         printf("Number of child process must be higher than 1\n");
         printf("\n");
         printf("Send bugs to vincent.roqueta@ext.bull.net\n");
         exit(0);
-        return 0;
 }
-
+    
 
 
 int main(int argc,char ** argv){
+    struct donneesPub dp;
     int i, nThread=0;
     char *tmp;
     int type=0;
-    int clients;
+    
     type=PROCESS;
     dp.fname=NULL;
     dp.verbose=0;
-    int serveur=1;
-    char *host;
-   
-    clients=0;
-    
+
     for(i=1;i<argc;i++){
         
         if(!strcmp("-n",argv[i])){
@@ -1059,62 +822,45 @@ int main(int argc,char ** argv){
                 usage();
             continue;
         }
+        if(!strcmp("-T",argv[i])){
+            type=THREAD;
+            continue;
+        }
         if(!strcmp("-v",argv[i])){
             dp.verbose=TRUE;
             continue;
         }
-        if(!strcmp("-c",argv[i])){
-            if(!(clients=atoi(nextArg(argc, argv,&i))))
-                usage();
-            continue;
-        }
-    
-        if(!strcmp("--server",argv[i])){
-            if(!(host=nextArg(argc, argv,&i)))
-                usage();
-            serveur=0;
-            continue;
-        } 
         /* Option inconnue */
         printf("Ignoring unknown option: %s\n", argv[i]);
-    }
 
-    if(serveur){
-        if(!(dp.fname && nThread))
+        
+    }
+    if(!(dp.fname && nThread))
             usage();
-        if(clients>0){
-            configureServeur(clients);
-            setupClients(type, dp.fname, nThread);
-        }
-    }else{
-        configureClient(host);
-        dp.fname=(char *)malloc(512);
-        memset(dp.fname,0, 512);
-        getConfiguration(&type, dp.fname, &nThread);
-    }
-
-
-    if(dp.verbose)
-        printf("By process.\n");
-    load=loadProcess;
-    eType="process";
-    terminer=terminerProcess;
-    LISTE_RESULTATS=LISTE_RESULTATS_PROCESS;
-    initialise(nThread);
-    if(serveur){
-       maitre();
-         
-    }else{
-        maitreClient();
-        free(dp.fname);
-    }
-    clean();
-
     
+    
+    if(type==THREAD){
+        if(dp.verbose)
+            printf("By thread\n");
+        load=loadThread;
+        terminer=terminerThread;
+        eType="thread";
+        LISTE_RESULTATS=LISTE_RESULTATS_TREADS;
+    }else{
+        if(dp.verbose)
+            printf("By process. Use -T to test with multithreading\n");
+        load=loadProcess;
+        eType="process";
+        terminer=terminerProcess;
+        LISTE_RESULTATS=LISTE_RESULTATS_PROCESS;
+    }
+    
+    initialise(nThread,&dp);
+    maitre(&dp);
     return 0;
 }
 
 
 
-    
+
 
