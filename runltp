@@ -509,7 +509,8 @@ main()
                      ${LTPROOT}/runtest/containers \
                      ${LTPROOT}/runtest/fs_bind \
                      ${LTPROOT}/runtest/controllers \
-                     ${LTPROOT}/runtest/filecaps
+                     ${LTPROOT}/runtest/filecaps \
+                     ${LTPROOT}/runtest/fcntl-locktests 
         do
             [ -e "$SCENFILES" ] || \
             {
