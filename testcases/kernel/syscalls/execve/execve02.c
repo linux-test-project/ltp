@@ -91,7 +91,7 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	int e_code, status, retval=0;
+	int e_code, status, retval=3;
 	pid_t pid;
 
 	/* parse standard options */
@@ -158,7 +158,7 @@ main(int ac, char **av)
                         wait(&status);
                         /* make sure the child returned a good exit status */
                         e_code = status >> 8;
-                        if ((e_code != 0) || (retval != 0)) {
+                        if ((e_code != 3) || (retval != 3)) {
                           tst_resm(TFAIL, "Failures reported above");
                         }
 
