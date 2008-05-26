@@ -197,7 +197,7 @@ int readproc(const char *obj)
 	if (lstat(obj, &statbuf) < 0) {
 		/* permission denied is not considered as error */
 		if (errno != EACCES) {
-			tst_resm(TINFO, "%s: lstat: %s", obj, strerror(errno));
+			tst_resm(TFAIL, "%s: lstat: %s", obj, strerror(errno));
 			return 1;
 		}
 		return 0;
@@ -216,7 +216,7 @@ int readproc(const char *obj)
 		/* Open the directory to get access to what is in it */
 		if ((dir = opendir(obj)) == NULL) {
 			if (errno != EACCES) {
-				tst_resm(TINFO, "%s: opendir: %s", obj,
+				tst_resm(TFAIL, "%s: opendir: %s", obj,
 					 strerror(errno));
 				return 1;
 			}
@@ -236,7 +236,7 @@ int readproc(const char *obj)
 				continue;
 
 			if (opt_verbose)
-				printf("%s\n", dir_ent->d_name);
+                          fprintf(stderr, "%s\n", dir_ent->d_name);
 
 			/* Recursively call this routine to test the current entry */
 			snprintf(dirobj, PATH_MAX, "%s/%s", obj,
@@ -259,7 +259,7 @@ int readproc(const char *obj)
 
                   if (!found_errno("open", obj, tmperr))
 			if (tmperr != EACCES) {
-				tst_resm(TINFO, "%s: open: %s", obj,
+				tst_resm(TFAIL, "%s: open: %s", obj,
 					 strerror(errno));
 				return 1;
 			}
@@ -291,7 +291,7 @@ int readproc(const char *obj)
                           if (!found_errno("read", obj, tmperr)) {
 				/* ignore no perm (not root) and no process (terminated) errors */
 				if (errno != EACCES && errno != ESRCH) {
-					tst_resm(TINFO, "%s: read: %s", obj,
+					tst_resm(TFAIL, "%s: read: %s", obj,
 						 strerror(errno));
 					close(fd);
 					return 1;
@@ -304,14 +304,14 @@ int readproc(const char *obj)
 #ifdef DEBUG
 				printf("%d", nread);
 #endif
-				printf(".");
+				fprintf(stderr, ".");
 			}
 
 			total_read += nread;
 		}
 		close(fd);
 		if (opt_verbose)
-			printf("\n");
+                  fprintf(stderr, "\n");
 	}
 
 	/*
