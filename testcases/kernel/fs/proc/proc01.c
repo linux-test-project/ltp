@@ -40,6 +40,7 @@
 #include "usctest.h"
 
 #define MAX_BUFF_SIZE 65536
+#define MAX_FUNC_NAME 256
 
 char *TCID = "proc01";
 int TST_TOTAL = 1;
@@ -58,6 +59,64 @@ size_t buffsize = 1024;
 /* FIXME: would it overflow on 32bits systems with >4Go RAM (HIGHMEM) ? */
 size_t total_read = 0;
 unsigned int total_obj = 0;
+
+struct mapping
+{
+  char func[MAX_FUNC_NAME];
+  char file[PATH_MAX];
+  int err;
+};
+typedef struct mapping Mapping;
+
+/* Those are known failures for 2.6.18 baremetal kernel and Xen dom0
+   kernel on i686, x86_64, ia64, ppc64 and s390x. In addition, It looks
+   like if SELinux is disabled, the test may still fail on some other
+   entries. */
+const Mapping known_issues[] =
+  {
+    {"open", "/proc/acpi/event", EBUSY},
+    {"open", "/proc/sal/cpe/data", EBUSY},
+    {"open", "/proc/sal/cmc/data", EBUSY},
+    {"open", "/proc/sal/init/data", EBUSY},
+    {"open", "/proc/sal/mca/data", EBUSY},
+    {"read", "/proc/kmsg", EAGAIN},
+    {"read", "/proc/sal/cpe/event", EAGAIN},
+    {"read", "/proc/sal/cmc/event", EAGAIN},
+    {"read", "/proc/sal/init/event", EAGAIN},
+    {"read", "/proc/sal/mca/event", EAGAIN},
+    {"read", "/proc/xen/privcmd", EINVAL},
+    {"read", "/proc/self/mem", EIO},
+    {"read", "/proc/self/task/[0-9]*/mem", EIO},
+    {"", "", 0}
+  };
+
+/* Known files that does not honor O_NONBLOCK, so they will hang
+   the test while being read.*/
+const char error_nonblock[][PATH_MAX] =
+  {
+    "/proc/ppc64/rtas/error_log",
+    "/proc/xen/xenbus",
+    ""
+  };
+
+/* Verify expected failures, and then let the test to continue. */
+int found_errno(const char *syscall, const char *obj, int tmperr)
+{
+  int i;
+
+  for (i = 0; known_issues[i].err != 0; i++)
+    if (tmperr == known_issues[i].err
+        && (!strcmp(obj, known_issues[i].file)
+            || !fnmatch(known_issues[i].file, obj, FNM_PATHNAME))
+        && !strcmp(syscall, known_issues[i].func))
+      {
+        tst_resm(TINFO, "%s: %s: known issue: %s", obj, syscall, 
+                 strerror(tmperr));
+        return 1;
+      }
+
+  return 0;
+}
 
 void cleanup()
 {
@@ -130,7 +189,7 @@ int readproc(const char *obj)
 	struct dirent *dir_ent;	/* pointer to directory entries */
 	char dirobj[PATH_MAX];	/* object inside directory to modify */
 	struct stat statbuf;	/* used to hold stat information */
-	int fd;
+	int fd, tmperr, i;
 	ssize_t nread;
 	static char buf[MAX_BUFF_SIZE];	/* static kills reentrancy, but we don't care about the contents */
 
@@ -196,7 +255,10 @@ int readproc(const char *obj)
 		/* is NONBLOCK enough to escape from FIFO's ? */
 		fd = open(obj, O_RDONLY | O_NONBLOCK);
 		if (fd < 0) {
-			if (errno != EACCES) {
+                  tmperr = errno;
+
+                  if (!found_errno("open", obj, tmperr))
+			if (tmperr != EACCES) {
 				tst_resm(TINFO, "%s: open: %s", obj,
 					 strerror(errno));
 				return 1;
@@ -204,18 +266,29 @@ int readproc(const char *obj)
 			return 0;
 		}
 
-        /* Skip write-only files. */
-        if ((statbuf.st_mode & S_IRUSR) == 0
-            && statbuf.st_mode & S_IWUSR) {
-            tst_resm(TINFO, "%s: is write-only.", obj);
-            close(fd);
-            return 0;
-        }
+                /* Skip write-only files. */
+                if ((statbuf.st_mode & S_IRUSR) == 0
+                    && statbuf.st_mode & S_IWUSR) {
+                  tst_resm(TINFO, "%s: is write-only.", obj);
+                  close(fd);
+                  return 0;
+                }
+
+                /* Skip files does not honor O_NONBLOCK. */
+                for (i = 0; error_nonblock[i][0] != '\0'; i++)
+                  if (!strcmp(obj, error_nonblock[i])) {
+                    tst_resm(TWARN, "%s: does not honor O_NONBLOCK.", obj);
+                    close (fd);
+                    return 0;
+                  }
 
 		nread = 1;
 		while (nread > 0) {
 			nread = read(fd, buf, buffsize);
 			if (nread < 0) {
+                          tmperr = errno;
+
+                          if (!found_errno("read", obj, tmperr)) {
 				/* ignore no perm (not root) and no process (terminated) errors */
 				if (errno != EACCES && errno != ESRCH) {
 					tst_resm(TINFO, "%s: read: %s", obj,
@@ -225,6 +298,7 @@ int readproc(const char *obj)
 				}
 				close(fd);
 				return 0;
+                          }
 			}
 			if (opt_verbose) {
 #ifdef DEBUG
