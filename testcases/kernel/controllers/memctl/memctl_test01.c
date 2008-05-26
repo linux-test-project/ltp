@@ -26,9 +26,9 @@
 /*              as given by the calling script. The program touches all the   */
 /*              allocated pages by writing a string on each page.             */
 /*                                                                            */
-/* Total Tests: 1                                                             */
+/* Total Tests: 3                                                             */
 /*                                                                            */
-/* Test Name:   mem_controller_test01                                         */
+/* Test Name:   mem_controller_test01-03                                      */
 /*                                                                            */
 /*                                                                            */
 /* Test Assertion                                                             */
@@ -38,6 +38,7 @@
 /*                                                                            */
 /* History:                                                                   */
 /* Created      12/03/2008  Sudhir Kumar <skumar@linux.vnet.ibm.com>          */
+/* Modified     11/05/2008  Sudhir Kumar <skumar@linux.vnet.ibm.com>          */
 /*                                                                            */
 /******************************************************************************/
 
@@ -51,8 +52,8 @@
 
 
 extern int Tst_count;
-char *TCID = "memory_controller_test01";
-int TST_TOTAL = 1;
+char *TCID = "memory_controller_test01-03";
+int TST_TOTAL = 3;
 
 pid_t scriptpid;
 typedef size_t record_t;
