@@ -16,8 +16,9 @@ A brief description of the plan for resource management testing.
 
 test_controllers.sh
 -------------------
-This is the main script file that starts the test. It first checks if cpu controller
-is enabled. If not enabled then it will not run the test and will exit giving warning.
+This is the main script file that starts the test. It first checks if the
+controllers are enabled. If not enabled then it will not run the test and
+will exit giving warning.
 
 README
 ------
@@ -27,6 +28,11 @@ cpuctl
 ------
 Directory containing the cpu controller testcases. A similar directory will be created for
 any new controller.
+
+memctl
+------
+Directory containing the memory controller testcases. A similar directory will
+be created for any new controller.
 
 libcontrollers
 --------------

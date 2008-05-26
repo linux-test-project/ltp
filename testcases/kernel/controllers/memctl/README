@@ -1,0 +1,51 @@
+TEST SUITE:
+
+The directory memctl contains the tests related to memory controller.
+More testcases are expected to be added in future.
+
+TESTS AIM:
+
+The aim of the tests is to test memory controller functionality.
+
+FILES DESCRIPTION:
+
+memctl_testN.c
+---------------
+These are the tasks to run for memory controller testing.
+The tasks have been automated in the sense that they can assign themselves
+to the appropriate group, can migrate to another group etc.
+Maximum effort has been put to reuse the code and keep total code size low.
+
+myfunctions.sh
+----------
+This file contains the functions which are common for all the tests. For ex.
+the setup and cleanup functions which do setup for running the test and do
+cleanup once the test finishes. The setup() function creates /dev/memctl
+directory, mounts cgroup filesystem on it with memory. It then creates
+a number(n) of groups in /dev/memctl. The cleanup function does a complete
+cleanup of the system.
+(*However most of the error scenarios have been tested for a sane cleanup,
+still if any time cleanup fails, just manually execute the commands written
+in cleanup function. (Ensure you have not cd into any group in controller
+dir tree which is a very common situation)
+
+run_memctl_test.sh
+------------------
+This script creates different scenarios for memory controller testing and
+fires (n) tasks in different groups to do some memory allocations etc. It
+waits for the return status from tasks and reports test pass/fail accordingly.
+
+Makefile
+--------
+
+The usual makefile for this directory
+
+PASS/FAIL CRITERION:
+==================
+The test cases are intelligent enough in deciding the pass or failure of a
+test.
+
+README:
+--------
+The one you have gone through.
+
