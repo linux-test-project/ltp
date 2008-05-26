@@ -153,6 +153,11 @@ void signal_handler_sigusr2 (int signal)
 	for (i=0; i< num_of_chunks; ++i)
 		free(array_of_chunks[i]);
 	free(array_of_chunks);
+	if (test_num == 4) {
+		/* Allocate different amount of memory for second step */
+		chunk_size = 5242880;	/* 5 MB chunks */
+		num_of_chunks = 15;
+	}
 	allocate_memory();
 }
 

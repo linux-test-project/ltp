@@ -62,6 +62,7 @@ then
 		$LTPROOT/testcases/bin/run_memctl_test.sh 1;
 		$LTPROOT/testcases/bin/run_memctl_test.sh 2;
 		$LTPROOT/testcases/bin/run_memctl_test.sh 3;
+		$LTPROOT/testcases/bin/run_memctl_test.sh 4;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for memory controller";
