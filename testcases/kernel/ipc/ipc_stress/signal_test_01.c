@@ -251,18 +251,16 @@ int main (int argc, char **argv)
 
 	/* Change the process signal mask:
 	 *
-	 * Now specifiy a new process signal mask to allow the SIGINT signal
-	 * to interrupt the process.  Thus by using sigpause (), force the
-	 * process to suspend execution until delivery of an unblocked
-	 * signal (SIGINT in this case).
+	 * Now allow the SIGINT signal to interrupt the process.
+	 * Thus by using sigpause (), force the process to suspend
+	 * execution until delivery of an unblocked signal (here SIGINT).
 	 *
 	 * Additionally, verify that the SIGINT signal was received.
 	 */
 	valid_sig [SIGINT] = 1;
 
 	printf ("\n\tChange signal mask & wait until signal interrupts process\n");
-	mask = 0xFFFF ^ SIGINT;
-	if (sigpause (mask) != -1 || errno != 4)
+	if (sigpause (SIGINT) != -1 || errno != 4)
 		sys_error ("sigpause failed", __LINE__);
 
 	if (valid_sig [SIGINT])
