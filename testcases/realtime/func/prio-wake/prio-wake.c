@@ -111,6 +111,7 @@ void *master_thread(void* arg)
 
 	start = rt_gettime() - beginrun;
 
+	printf("%08lld us: Master thread about to wake the workers\n", start/NS_PER_US);
 	/* start the children threads */
 	rc = pthread_mutex_lock(&mutex);
 	rc = pthread_cond_broadcast(&cond);
@@ -118,7 +119,6 @@ void *master_thread(void* arg)
 
 	while (running_threads > 0)
 		sleep(1);
-	printf("%08lld us: Master thread about to wake the workers\n", start/NS_PER_US);
 	return NULL;
 }
 
@@ -141,24 +141,22 @@ void *worker_thread(void* arg)
 	}
 
 	start = rt_gettime() - beginrun;
+	printf("%08lld us: RealtimeThread-%03d pri %03d started\n", start/NS_PER_US, j, mypri);
 
 	rc = pthread_mutex_lock(&mutex);
 	running_threads++;
 	rc = pthread_cond_wait(&cond, &mutex);
 
 	wake = rt_gettime() - beginrun;
-	rc = pthread_mutex_unlock(&mutex);
-
-	rc = pthread_mutex_lock(&mutex);
 	running_threads--;
 	wakeup.arr[wakeup.counter++] = mypri;
+	printf("%08lld us: RealtimeThread-%03d pri %03d awake\n", wake/NS_PER_US, j, mypri);
+
 	rc = pthread_mutex_unlock(&mutex);
 
 	/* wait for all threads to quit */
 	while (running_threads > 0)
 		sleep(1);
-	printf("%08lld us: RealtimeThread-%03d pri %03d started\n", start/NS_PER_US, j, mypri);
-	printf("%08lld us: RealtimeThread-%03d pri %03d awake\n", wake/NS_PER_US, j, mypri);
 	return NULL;
 }
 
@@ -211,7 +209,7 @@ int main(int argc, char* argv[])
 
 	printf("\nCriteria: Threads should be woken up in priority order\n");
 
-	for (i = 0; i < wakeup.counter; i++) {
+	for (i = 0; i < (wakeup.counter-1); i++) {
 		if (wakeup.arr[i] < wakeup.arr[i+1]) {
 			printf("FAIL: Thread %d woken before %d\n", wakeup.arr[i], wakeup.arr[i+1]);
 			ret++;
