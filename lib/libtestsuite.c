@@ -83,13 +83,24 @@ int sync_pipe_create(int fd[])
 
 int sync_pipe_close(int fd[])
 {
-	return close (fd[0]) ||	close (fd[1]);
+	int r;
+
+	if (fd[0] != -1)
+		r = close (fd[0]);
+	if (fd[1] != -1)
+		r |= close (fd[1]);
+	return r;
 }
 
 int sync_pipe_wait(int fd[])
 {
 	char buf;
 	int r;
+
+	if (fd[1] != -1) {
+		close (fd[1]);
+		fd[1] = -1;
+	}
 	
 	r = read (fd[0], &buf, 1);
 	
@@ -102,6 +113,11 @@ int sync_pipe_notify(int fd[])
 {
 	char buf = 'A';
 	int r;
+
+	if (fd[0] != -1) {
+		close (fd[0]);
+		fd[0] = -1;
+	}
 
 	r = write (fd[1], &buf, 1);
 
