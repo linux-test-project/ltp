@@ -70,7 +70,8 @@ void do_child_1(void);
 void do_child_2(void);
 
 int exp_enos[] = {ETXTBSY, 0};
-int sync_pipes[2];
+int start_sync_pipes[2];
+int end_sync_pipes[2];
 
 int Fflag = 0;
 char *test_name;
@@ -116,7 +117,9 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if (sync_pipe_create(sync_pipes) == -1)
+		if (sync_pipe_create(start_sync_pipes) == -1)
+			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+		if (sync_pipe_create(end_sync_pipes) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 		/*
@@ -138,10 +141,10 @@ main(int ac, char **av)
 #endif
 		}
 
-		if (sync_pipe_wait(sync_pipes) == -1)
+		if (sync_pipe_wait(start_sync_pipes) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-		if (sync_pipe_close(sync_pipes) == -1)
+		if (sync_pipe_close(start_sync_pipes) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 		if ((pid1 = FORK_OR_VFORK()) == -1)
@@ -150,6 +153,10 @@ main(int ac, char **av)
 		if (pid1 == 0) {		/* second child */
 			argv[0] = 0;
 			env[0] = 0;
+
+			/* do not interfere with end synchronization of first
+			 * child */
+			sync_pipe_close(end_sync_pipes);
 
 			TEST(execve(test_name, argv, env));
 
@@ -170,7 +177,6 @@ main(int ac, char **av)
 			exit(retval);	
 		} else {	/* parent */
 			 /* wait for the child to finish */
-			waitpid(pid,NULL,0);
                         waitpid(pid1,&status,0);
                         /* make sure the child returned a good exit status */
                         e_code = status >> 8;
@@ -181,6 +187,10 @@ main(int ac, char **av)
                         if ((e_code != 3) || (retval != 3)) {
                           tst_resm(TFAIL, "Failures reported above");
                         }
+
+			/*  terminate first child */
+			sync_pipe_notify(end_sync_pipes);
+			waitpid(pid,NULL,0);
 			cleanup();
 		}
 	}
@@ -243,12 +253,16 @@ do_child_1()
 		exit(1);	
 	}
 
-	if (sync_pipe_notify(sync_pipes) == -1)
+	if (sync_pipe_notify(start_sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
-	if (sync_pipe_close(sync_pipes) == -1)
+	if (sync_pipe_close(start_sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
-	sleep(10);	/* let other child execve same file */
+	/* let other child execve same file */
+	if (sync_pipe_wait(end_sync_pipes) == -1) {
+		tst_brkm(TBROK, NULL, "sync_pipe_wait failed");
+		exit(1);
+	}
 	exit(0);
 }
