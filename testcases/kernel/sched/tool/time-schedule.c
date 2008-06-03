@@ -109,6 +109,7 @@ int main (int argc, char **argv)
     double dcount = 0.0;
     unsigned long diffs[MAX_ITERATIONS];
     struct timeval before, after;
+    sigset_t set;
     static char *usage =
         "time-schedule [-h] [-thread] [-notest] [-pipe] [-fpu] [num_running]";
 
@@ -271,8 +272,13 @@ int main (int argc, char **argv)
     use_fpu_value (dcount);
     if (use_threads) fprintf (stderr, "Number of yields: %u\n", num_yields);
     if (num_switches > 0) fprintf (stderr, "Num switches: %lu\n",num_switches);
-    /*  Finish up  */
-    kill (0, SIGTERM);
+
+    /*  Terminate all child processes  */
+    sigemptyset (&set);
+    sigaddset (&set, SIGTERM);
+    sigprocmask (SIG_BLOCK, &set, NULL);
+
+    kill(0, SIGTERM);
     return (0);
 }   /*  End Function main  */
 
