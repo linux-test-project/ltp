@@ -249,9 +249,6 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove the temporary directory */
-	tst_rmdir();
-
 	/*
 	 * Detach the shared memory segment attached to
 	 * the calling process's data segment
@@ -270,6 +267,9 @@ cleanup()
 		tst_brkm(TFAIL, NULL, "shmctl() Failed to remove shared "
 			 "memory, error:%d", errno);
 	}
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
 	/* Exit the program */
 	tst_exit();
