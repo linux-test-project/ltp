@@ -10,3 +10,4 @@
 int sync_pipe_create( int fd[]);
 int sync_pipe_wait( int fd[]);
 int sync_pipe_notify( int fd[]);
+int sync_pipe_close(int fd[]);
