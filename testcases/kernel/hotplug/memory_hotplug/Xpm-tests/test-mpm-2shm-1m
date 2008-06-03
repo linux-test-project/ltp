@@ -1,0 +1,25 @@
+#memtoy test -- manual migrate 2 1M shared memory segments
+numa
+shm foo 1m
+shm bar 1m
+show
+map foo
+mbind foo preferred 1
+map bar
+mbind bar preferred 2
+touch foo w
+numa
+touch bar w
+numa
+# examine location @ 16p offset
+where foo 16p 64p
+where bar 16p 64p
+migrate 3
+numa
+where foo 16p 64p
+where bar 16p 64p
+numa
+show
+unmap foo
+unmap bar
+show

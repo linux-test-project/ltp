@@ -1,0 +1,29 @@
+2006-09-14  Bryce Harrington  <bryce@osdl.org>
+	* hotplug03.sh:  Fixing bug in return value of psr command, that
+	  was getting lost due to a subsequent command
+	* hotplug07.sh:  Fixing path issue for do_kcompile_loop
+	* hotplug07.sh:  Automatic kernel source tree detection
+	* hotplug07.sh:  Reordering statements to suppress a warning
+	* do_kcompile_loop:  Adding support for chdir to kernel dir
+
+2006-07-06  Bryce Harrington  <bryce@osdl.org>
+	* hotplug07.sh:  Fixing permissions
+	* hotplug07.sh:  Updating includes
+	* include/hotplug.fns:  Fixing error where files in
+	  /sys/devices/system/cpu were detected as (invalid) cpus. 
+	
+2006-03-09  Bryce Harrington  <bryce@osdl.org>
+
+	* hotplug01.sh: Correcting text when onlining CPU
+	* runtests.sh:  Fixing override for num cpus to test on
+	* hotplug06.sh: Correcting path of executable
+	
+2005-09-23  Bryce Harrington  <bryce@osdl.org>
+
+	* Changing loop_num to just loop
+	* Fixing up paths in online/offline_cpu
+	* Expanding runtests.sh to support LOOP overriding
+	
+2005-09-22  Bryce Harrington  <bryce@osdl.org>
+
+	* First... er... changelog log!

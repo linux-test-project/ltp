@@ -1,0 +1,16 @@
+# memtoy test  - lazy migrate single 1 page anon segment
+# for debug/testing
+# 
+#numa
+anon foo 1p
+map foo
+mbind foo preferred 1
+touch foo w
+where foo
+#numa
+#pause
+# lazy mig, but add wait to force touch
+mbind foo 0 1p bind+m+w 2
+where foo
+touch foo r
+#numa

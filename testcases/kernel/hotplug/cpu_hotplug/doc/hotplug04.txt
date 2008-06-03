@@ -1,0 +1,18 @@
+Testcase 04
+-----------
+
+This test verifies that we can't offline ALL of the CPUs in the system.
+We do this by onlining all the cpus, then offlining all the cpus and
+verifying that an error is returned for the last one.
+
+Algorithm
+=========
+Loop until done:
+  Take a snapshot of what CPUs are on and off initially
+
+  Online all the CPUs
+
+  Offline al the CPUs
+
+  Restore system to initial state
+

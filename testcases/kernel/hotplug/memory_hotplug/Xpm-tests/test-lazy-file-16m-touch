@@ -1,0 +1,17 @@
+# memtoy test - lazy migration of entire 16M mapped file
+# requires ./zerofile-16m
+# 
+numa
+file zerofile-16m
+map zerofile-16m
+mbind zerofile-16m preferred 1
+touch zerofile-16m w
+where zerofile-16m
+numa
+#pause
+# lazy mig -- no wait
+mbind zerofile-16m bind+move 2
+# NOTE:  get_mempolicy(...,'NODE|'ADDR) will fault in
+# pages to get nodes.  Forces migration at this point
+where zerofile-16m
+numa

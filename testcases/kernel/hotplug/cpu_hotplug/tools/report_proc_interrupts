@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+use strict;
+
+sub compare_proc_interrupts {
+    my ($run1, $run2) = @_;
+
+    my $printed_header;
+    foreach my $irq (sort keys %{$run1}) {
+        if (! $printed_header) {
+            printf "%-8s ", "IRQ";
+            foreach my $cpu (sort keys %{$run1->{$irq}}) {
+                printf "%-5s ", $cpu;
+            }
+            print "\n";
+            $printed_header = 1;
+        }
+        printf "%-8s ", $irq;
+        foreach my $cpu (sort keys %{$run1->{$irq}}) {
+            printf "%-5s ", $run2->{$irq}->{$cpu} - $run1->{$irq}->{$cpu};
+        }
+        print "\n";
+    }
+}
+
+
+sub parse_proc_interrupts {
+    my $content = shift;
+    my @cpus;
+    my %run;
+
+    foreach my $line (split /\n/, $content) {
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
+
+        if (! @cpus) {
+            @cpus = split /\s+/, $line;
+        } else {
+            my @items = split /\s+/, $line;
+            my $irq = shift @items;
+            $irq =~ s/:$//;
+            foreach my $cpu (@cpus) {
+                $run{"IRQ$irq"}->{"$cpu"} = shift @items;
+            }
+        }
+    }
+    return \%run;
+}
+
+my $run1 = parse_proc_interrupts(shift @ARGV);
+my $run2 = parse_proc_interrupts(shift @ARGV);
+
+compare_proc_interrupts($run1, $run2);

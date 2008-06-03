@@ -1,0 +1,29 @@
+memtoy:
+
+if migrate_pages(2) system call ever becomes standard, will need to change
+Makefile not to build and link against migrate_pages.o and not to define
+_NEED_MIGRATE_PAGES.
+
+More documentation?
+
+
+Desired features?
+
+	+ verify contents after migration?
+
+	+ cpu affinity for testing default policy and migration
+
+	+ set_mempolicy() UI
+
+	+ multiple processes [children] sharing mappings
+
+	+ help summary for help w/ no args.  Details when 
+	  command specified.
+
+	+ command to toggle verbosity?
+
+	+ echo command to echo comments for scripts
+
+	+ fancier UI [command line editing?]
+
+	+ ...

@@ -1,0 +1,15 @@
+# memtoy test - manual migrate of 16M mapped file
+# requires ./zerofile-16m
+# 
+numa
+file zerofile-16m
+map zerofile-16m
+mbind zerofile-16m preferred 1
+touch zerofile-16m w
+where zerofile-16m
+numa
+#pause
+#  manual migrate to node 3
+migrate 3
+where zerofile-16m
+numa

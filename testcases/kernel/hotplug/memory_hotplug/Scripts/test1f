@@ -1,0 +1,15 @@
+# memtoy test 1f - single 1g mapped file segment
+# NOTE:  depends on prior existence of file '/var/tmp/kern'
+#        for my tests, this was a copy of an uncompressed kernel image
+numa
+file /var/tmp/kern
+map kern
+mbind kern preferred 1
+touch kern w
+where kern 8p 64p
+numa
+#pause
+#migrate all pages to node 2
+migrate 2
+where kern 8p 64p
+numa

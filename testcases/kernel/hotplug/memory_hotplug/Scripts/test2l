@@ -1,0 +1,17 @@
+# memtoy test 2l - single file seg - lazy mig
+# 
+numa
+file zerofile
+map zerofile
+mbind zerofile preferred 1
+touch zerofile w
+where zerofile
+numa
+#pause
+# lazy mig [move], but add wait to force touch
+mbind zerofile 8p 8p bind+m+w 2
+where zerofile
+touch zerofile r
+migrate 3
+where zerofile
+numa

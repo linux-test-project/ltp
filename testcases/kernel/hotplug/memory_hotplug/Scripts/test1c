@@ -1,0 +1,14 @@
+# memtoy test 1c - single 64 page anon segment
+# 
+numa
+anon foo 64p
+map foo
+mbind foo preferred 1
+touch foo w
+where foo
+numa
+#pause
+#migrate all pages to node 2
+migrate 2
+where foo
+numa

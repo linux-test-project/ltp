@@ -1,0 +1,17 @@
+On Sat, Oct 07, 2006 at 12:35:59PM +0200, Pavel Machek wrote:
+> If you want some real nasty tests:
+>
+> hotplug_locking: create 10 threads, make them try to online/offline
+> random cpus, all in paralel. (This is what I was doing in smaller
+> scale). You'll get some expected errors (like cpu already up), but
+> system should survive.
+>
+> cpufreq: change cpufreq parameters on cpu (toggling min/max
+> frequency?) while trying to online/offline that cpu from another
+> thread.
+>
+> suspend: swapoff -a, then proceed like in hotplug_locking, while
+> trying to suspend machine to disk (it will immediately wake up because
+> of no swap available). Should be useful at pointing out bugs in
+> suspend code. (but quite tricky to setup the test, so you may or may
+> not want to do this one).

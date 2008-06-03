@@ -1,0 +1,15 @@
+# memtoy test - manual migrate single 1g interleaved anon segment
+# interleave across (0,1); then migrate to (2,3)
+numa
+anon foo 1g
+map foo
+mbind foo interleaved 0,1
+touch foo w
+where foo 8p 64p
+numa
+#pause
+# lazy mig, but add wait to force touch
+mbind foo interleaved+m+w 2,3
+touch foo r
+where foo 8p 64p
+numa

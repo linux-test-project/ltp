@@ -1,0 +1,9 @@
+#memtoy 4 page shared memory segment
+shm foo 4p
+show
+map foo
+mbind foo preferred 1
+touch foo w
+where foo 0 4p
+migrate 3
+where foo 0 4p

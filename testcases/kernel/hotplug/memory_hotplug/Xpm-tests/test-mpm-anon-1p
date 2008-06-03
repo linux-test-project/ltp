@@ -1,0 +1,15 @@
+# memtoy test - manual migrate single 1 page anon segment
+# 1 page for debug
+# 
+numa
+anon foo 1p
+map foo
+mbind foo preferred 1
+touch foo w
+where foo
+numa
+#pause
+#migrate all pages to node 2
+migrate 2
+where foo
+numa

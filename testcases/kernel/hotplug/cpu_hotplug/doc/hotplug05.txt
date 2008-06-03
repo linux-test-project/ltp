@@ -1,0 +1,35 @@
+# Test Case 5 - Pseudocode
+
+# This test looks for memory leaks or deadlocks
+
+# "mm_struct slab leak (affected only some architectures)"
+
+INTERVAL=30
+THRESHHOLD='xxx'
+
+# TODO:  Start monitoring memory usage via vmstat and sar
+
+# TODO:  Start dbt2, running for at least 4 hours
+
+while [ 1 ]; do
+    last if workload has completed
+
+    select a cpu at random
+    if cpu is online
+        offline it
+    else
+        online it
+    fi
+
+    measure current throughput
+    # TODO:  Mary and Mark will better define how to detect
+    # the threshhold and what to do in response
+    if [ throughput falls below $THRESHHOLD ]; then
+        echo "Throughput has fallen below threshhold."
+    fi
+
+    sleep $INTERVAL
+done
+
+# Analyze system statistics to determine memory leaks
+# Analyze drops in activities

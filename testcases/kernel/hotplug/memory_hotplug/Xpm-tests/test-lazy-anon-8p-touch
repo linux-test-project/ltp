@@ -1,0 +1,21 @@
+# memtoy test - lazy migrate single 8 page anon segment
+# 
+#numa
+anon foo 8p
+map foo
+mbind foo preferred 1
+touch foo w
+where foo
+touch foo r
+#numa
+#pause
+# lazy mig -- no wait
+mbind foo 0 8p bind+move 2
+# NOTE:  get_mempolicy(...,'NODE|'ADDR) will fault in
+# pages to get nodes.  Forces migration at this point
+where foo
+# SIGINT [^C] to continue
+#pause
+# read pages to migrate on fault
+#touch foo r
+#numa

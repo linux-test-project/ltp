@@ -1,0 +1,19 @@
+#memtoy test 3 -- shared memory segments
+numa
+shm foo 2g
+shm bar 2g
+show
+map foo
+mbind foo preferred 1
+map bar
+mbind bar preferred 2
+touch foo w
+numa
+touch bar w
+numa
+where foo 1024p 64p
+where bar 1024p 64p
+migrate 3
+numa
+where foo 1024p 64p
+where bar 1024p 64p

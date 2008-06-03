@@ -1,0 +1,17 @@
+# memtoy test - lazy migrate 8p range of single 1M shm seg
+# 
+numa
+shm foo 1m
+map foo
+mbind foo preferred 1
+touch foo w
+where foo 0 32p
+numa
+#pause
+# lazy mig [move], but add wait to force touch
+mbind foo 8p 1p bind+m+w 2
+where foo 0 32p
+#touch foo r
+#migrate 3
+#where foo 0 32p
+#numa

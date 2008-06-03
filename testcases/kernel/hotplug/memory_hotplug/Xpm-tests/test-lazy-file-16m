@@ -1,0 +1,15 @@
+# memtoy test - lazy migration of entire 16M mapped file
+# requires ./zerofile-16m
+# 
+numa
+file zerofile-16m
+map zerofile-16m
+mbind zerofile-16m preferred 1
+touch zerofile-16m w
+where zerofile-16m
+numa
+#pause
+# lazy mig [move], but add wait to force touch
+mbind zerofile-16m bind+move+wait 2
+where zerofile-16m
+numa

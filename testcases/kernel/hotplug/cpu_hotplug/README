@@ -1,0 +1,43 @@
+
+Linux Hotplug CPU Support (LHCS) Testsuite
+------------------------------------------
+
+This package is a collection of test cases for validating CPU hotplug
+capabilities in Linux.
+
+To use this test suite, simply install it someplace on the system to be
+tested and then invoke the test suite as root:
+
+     # ./runtests.sh
+
+
+For details about the test cases, see the doc/ directory.  These tests
+exercise the system in ways that have been known to reveal bugs in the
+past.
+
+No compilation or installation is required to use this test suite; it
+can be run in place using the above script.
+
+
+
+About Hotplug CPU
+=================
+The logic used to operate the hotplug features in Linux are implemented
+in the file includes/hotplug.fns.  These include functions for onlining
+and offlining CPUs, determining if a given CPU is valid and/or online,
+getting lists of CPUs that are available, online, and offline, and
+managing IRQ's and affinities as they relate to CPUs.
+
+
+About the Test Suite
+====================
+See includes/testsuite.fns for some general purpose routines for
+implementing a test suite.  These include process management, timing,
+and interupt handling and cleanup.
+
+
+Licensing
+=======
+This code is copyright (C) Bryce W. Harrington, bryce@osdl.org.
+It may be used under the terms of the GNU General Public License (GPL).
+See COPYING for details.

@@ -1,0 +1,15 @@
+# memtoy test 4 - single 1g mapped file segment
+# interleave across (0,1); then migrate to (2,3)
+# NOTE:  depends on prior existence of file '/var/tmp/kern'
+#        for my tests, this was a copy of an uncompressed kernel image
+numa
+file /var/tmp/kern 
+map kern
+mbind kern interleaved 0,1
+touch kern w
+where kern 8p 64p
+numa
+#pause
+migrate 2,3 0,1
+where kern 8p 64p
+numa

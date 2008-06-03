@@ -1,0 +1,18 @@
+# memtoy test - lazy, single 8 page anon segment
+# bind to nodes 1&2 -- migration should not be req'd
+# 
+numa
+anon foo 8p
+map foo
+mbind foo preferred 1
+touch foo w
+where foo
+numa
+#pause
+# lazy mig, but add wait to force touch
+mbind foo bind+m+w 1,2
+where foo
+touch foo r
+#migrate 2
+#where foo
+#numa

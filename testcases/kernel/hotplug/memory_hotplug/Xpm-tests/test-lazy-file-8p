@@ -1,0 +1,15 @@
+# memtoy test - lazy 8p region of single file seg
+# requires ./zerofile-1m
+# 
+#numa
+file zerofile-1m
+map zerofile-1m
+mbind zerofile-1m preferred 1
+touch zerofile-1m w
+where zerofile-1m
+#numa
+#pause
+# lazy mig [move], but add wait to force touch
+mbind zerofile-1m 8p 8p bind+m+w 2
+where zerofile-1m
+#numa

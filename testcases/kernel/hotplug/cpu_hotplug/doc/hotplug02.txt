@@ -1,0 +1,33 @@
+Testcase 02
+-----------
+
+This test checks that a process migrates when the CPU it is running on
+is offlined.  
+
+
+Algorithm
+=========
+Given a CPU to test that exists
+
+Make sure the cpu is online
+
+Start a process that just uses processor cycles
+
+Loop until done:
+  Move the process to the CPU we will be offlining
+
+  Offline the CPU
+
+  Determine which CPU the process migrated to
+
+  Verify that it is still running
+
+  Verify that it is not running on the original CPU
+
+  Turn the CPU back online
+
+
+
+When exiting:
+  Kill the spin loop process
+

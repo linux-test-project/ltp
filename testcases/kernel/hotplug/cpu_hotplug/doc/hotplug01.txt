@@ -1,0 +1,53 @@
+Testcase 01
+-----------
+
+This test attempts to verify that when a CPU is offlined, that a process
+writing to disk doesn't cause an issue.  We create a process that writes
+to disk, force it to run only on a specified CPU by setting its CPU
+affinity to just that CPU, then offline that CPU, and verify that the
+process moves to another processor properly.
+
+
+Notes
+=====
+
+There are two kinds of masks:  One to specify which CPU's are allowed
+to be used for the given process, and one for the smp affinity.
+
+This may be hard to verify but we can indirectly check on this
+by looking at /proc/stat or measuring the relative performance
+of some parallelized benchmark before and after onlining the CPU.
+
+
+Algorithm
+=========
+Given a CPU to test that exists
+
+Take a snapshot of what CPUs are on and off initially
+
+Make sure the cpu is online
+
+Start up a process that writes to disk
+
+Loop until done:
+  Take a snapshot of /proc/interrupts
+
+  Foreach CPU in the system
+    online the CPU
+    migrate the IRQs to it
+    sleep a little while
+
+  Foreach CPU in the system
+    migrate IRQs onto the CPU
+    offline the cpu
+    sleep a little while
+
+  Take another snapshot of /proc/interrupts
+
+  Print a report showing the change in IRQs
+
+
+When exiting:
+  Kill the write loop process
+
+  Restore all CPUs to their initial state

@@ -1,0 +1,19 @@
+#memtoy test 2 - migrate 2 2g anon segments from (1,2) -> 3
+numa
+anon foo 2g
+anon bar 2g
+show
+map foo
+mbind foo preferred 1
+map bar
+mbind bar preferred 2
+touch foo w
+numa
+touch bar w
+numa
+where foo 1024p 64p
+where bar 1024p 64p
+migrate 3
+numa
+where foo 1024p 64p
+where bar 1024p 64p
