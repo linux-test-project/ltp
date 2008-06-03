@@ -925,6 +925,10 @@ syslog12 syslog12
 times01 times01
 times03 times03
 
+# New syscall support from 2.6.25 kernel onwards
+
+timerfd01 timerfd01
+
 truncate01 truncate01
 truncate02 truncate02
 truncate03 truncate03
