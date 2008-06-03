@@ -126,6 +126,9 @@ void *periodic_thread(void *arg)
 	int failures = 0;
 	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0, iter_start;
 
+ 	/* wait for the specified start time */
+ 	rt_nanosleep_until(start);
+
 	now = rt_gettime();
 	start_delay = (now - start)/NS_PER_US;
 	iter_start = next = now;
@@ -279,7 +282,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	start = rt_gettime();
+	/* wait one quarter second to execute */
+	start = rt_gettime() + 250 * NS_PER_MS;
 	per_id = create_fifo_thread(periodic_thread, (void*)0, PRIO);
 
 	join_thread(per_id);

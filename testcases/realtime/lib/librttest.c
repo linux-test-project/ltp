@@ -398,6 +398,18 @@ void nsec_to_ts(nsec_t ns, struct timespec *ts)
 	ts->tv_nsec = ns%NS_PER_SEC;
 }
 
+void rt_nanosleep_until(nsec_t ns) {
+	struct timespec ts_sleep, ts_rem;
+	int rc;
+	nsec_to_ts(ns, &ts_sleep);
+	rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts_sleep, &ts_rem);
+	/* FIXME: when should we display the remainder ? */
+	if (rc != 0) {
+		printf("WARNING: rt_nanosleep() returned early by %d s %d ns\n",
+			(int)ts_rem.tv_sec, (int)ts_rem.tv_nsec);
+	}
+}
+
 void rt_nanosleep(nsec_t ns) {
 	struct timespec ts_sleep, ts_rem;
 	int rc;
