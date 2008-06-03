@@ -87,7 +87,7 @@ main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid, pid1;
-	int e_code, status, retval=0;
+	int e_code, status, retval=3;
 	char *argv[1], *env[1];
 
 	/* parse standard options */
@@ -174,7 +174,11 @@ main(int ac, char **av)
                         waitpid(pid1,&status,0);
                         /* make sure the child returned a good exit status */
                         e_code = status >> 8;
-                        if ((e_code != 0) || (retval != 0)) {
+			/* If execve() succeeds, child cannot report the error */
+			if (status == 0)
+				tst_resm(TFAIL, "execve succeeded, "
+					 "expected failure");
+                        if ((e_code != 3) || (retval != 3)) {
                           tst_resm(TFAIL, "Failures reported above");
                         }
 			cleanup();
