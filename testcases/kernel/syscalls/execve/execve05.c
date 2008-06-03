@@ -250,11 +250,15 @@ do_child_1()
 		exit(1);	
 	}
 
-	if (sync_pipe_notify(start_sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+	if (sync_pipe_notify(start_sync_pipes) == -1) {
+		tst_brkm(TBROK, NULL, "sync_pipe_notify failed");
+		exit(1);
+	}
 
-	if (sync_pipe_close(start_sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+	if (sync_pipe_close(start_sync_pipes) == -1) {
+		tst_brkm(TBROK, NULL, "sync_pipe_close failed");
+		exit(1);
+	}
 
 	/* let other child execve same file */
 	if (sync_pipe_wait(end_sync_pipes) == -1) {
