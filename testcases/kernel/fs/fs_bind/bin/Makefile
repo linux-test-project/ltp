@@ -19,10 +19,10 @@ uninstall:
 	@/bin/true
 
 nsclone: nsclone.c
-	gcc $(CFLAGS) $(LIBS) -o nsclone nsclone.c
+	$(CC) $(CFLAGS) $(LIBS) -o nsclone nsclone.c
 
 smount: smount.c
-	gcc $(CFLAGS) $(LIBS) -o smount smount.c
+	$(CC) $(CFLAGS) $(LIBS) -o smount smount.c
 
 clean:
 	rm -f smount nsclone
