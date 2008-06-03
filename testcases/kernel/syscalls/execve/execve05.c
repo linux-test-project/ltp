@@ -171,9 +171,6 @@ main(int ac, char **av)
 				tst_resm(TPASS, "call generated expected "
 					 "ETXTBSY error");
 			}
-
-			/* wait for the first child to exit */
-			(void)waitpid(pid, NULL, 0);
 			exit(retval);	
 		} else {	/* parent */
 			 /* wait for the child to finish */
