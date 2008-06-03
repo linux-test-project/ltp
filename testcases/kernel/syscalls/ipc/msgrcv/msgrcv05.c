@@ -59,6 +59,7 @@
 #include "usctest.h"
 
 #include "ipcmsg.h"
+#include "libtestsuite.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>

@@ -64,6 +64,7 @@
 #include "usctest.h"
 
 #include "ipcmsg.h"
+#include "libtestsuite.h"
 
 void cleanup(void);
 void setup(void);
