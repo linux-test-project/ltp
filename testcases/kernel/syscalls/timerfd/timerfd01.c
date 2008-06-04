@@ -52,32 +52,15 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 /*
  * This were good at the time of 2.6.23-rc7 ...
  */
-#ifndef __NR_timerfd
-#if defined(__x86_64__)
-#define __NR_timerfd_create 283
-#define __NR_timerfd_settime 286
-#define __NR_timerfd_gettime 287
-#elif defined(__i386__)
-#define __NR_timerfd_create 322
-#define __NR_timerfd_settime 325
-#define __NR_timerfd_gettime 326
-#else
-#error Cannot detect your architecture!
-#endif
-#endif
-
-
+#ifdef __NR_timerfd
 
 /* Definitions from include/linux/timerfd.h */
 #define TFD_TIMER_ABSTIME (1 << 0)
-
-
 
 struct tmr_type {
 	int id;
 	char const *name;
 };
-
 
 unsigned long long getustime(int clockid) {
 	struct timespec tp;
@@ -271,3 +254,12 @@ int main(int ac, char **av) {
 	return 0;
 }
 
+#else
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int main(){
+
+	tst_resm( TFAIL, "This test needs a kernel that has timerfd syscall.");
+	return 0;
+}
+#endif
