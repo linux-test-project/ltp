@@ -226,8 +226,17 @@
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 316
 # endif
+# ifndef __NR_timerfd_create
+#  define __NR_timerfd_create 322
+# endif
 # ifndef __NR_fallocate
 #  define __NR_fallocate 324
+# endif
+# ifndef __NR_timerfd_settime
+#  define __NR_timerfd_settime 325
+# endif
+# ifndef __NR_timerfd_gettime
+#  define __NR_timerfd_gettime 326
 # endif
 #endif
 
@@ -726,8 +735,17 @@
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 278
 # endif
+# ifndef __NR_timerfd_create
+#  define __NR_timerfd_create 283
+# endif
 # ifndef __NR_fallocate
 #  define __NR_fallocate 285
+# endif
+# ifndef __NR_timerfd_settime
+#  define __NR_timerfd_settime 286
+# endif
+# ifndef __NR_timerfd_gettime
+#  define __NR_timerfd_gettime 287
 # endif
 #endif
 
