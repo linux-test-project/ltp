@@ -316,6 +316,11 @@ int ts_to_nsec(struct timespec *ts, nsec_t *ns);
  */
 void rt_nanosleep(nsec_t ns);
 
+/* rt_nanosleep: sleep until absolute time ns given in
+ * nanoseconds using clock_nanosleep
+ */
+void rt_nanosleep_until(nsec_t ns);
+
 /* rt_gettime: get CLOCK_MONOTONIC time in nanoseconds
  */
 nsec_t rt_gettime();
