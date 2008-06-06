@@ -977,6 +977,9 @@ utime04 utime04
 utime05 utime05
 utime06 utime06
 
+# Introduced from Kernel 2.6.22 onwards
+utimensat01 utimensat_tests.sh
+
 vfork01 vfork01
 vfork02 vfork02
 
