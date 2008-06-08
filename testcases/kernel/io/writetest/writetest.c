@@ -209,6 +209,7 @@ void parse_args(int argc, char **argv)
 int main(int argc, char *argv[])
 {
     int rv;
+    int status = 0;
 
     DefaultSeed = time(NULL);
     parse_args(argc, argv);
@@ -223,6 +224,7 @@ int main(int argc, char *argv[])
         verbose(1, "Write: Success\n");
     } else {
         verbose(1, "Write: Failure\n");
+        status = rv;
     }
 
     verbose(1, "Verifing %lld blocks in '%s'\n", (long long int)NumBlocks, Filename);
@@ -232,10 +234,11 @@ int main(int argc, char *argv[])
         verbose(1, "Verify: Success\n");
     } else {
         verbose(1, "Verify: Failure\n");
+        status = rv;
     }
     if( rv > 0 ) {
         verbose(1, "Total mismatches: %d bytes\n", rv);
     }
 
-    return(0);
+    return status;
 }
