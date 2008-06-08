@@ -62,7 +62,7 @@ int
 main(int ac, char **av)
 {
 	int forks, pid1, fork_errno, waitstatus;
-
+	int ret, status;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -96,6 +96,18 @@ main(int ac, char **av)
 			exit(0);
 		    }
 		    forks++;
+		    ret = waitpid(-1, &status, WNOHANG);
+		    if (ret < 0)
+			tst_brkm(TBROK, cleanup, "waitpid failed %d: %s\n", \
+					errno, strerror(errno));
+                    if (ret > 0) {
+			/* a child may be killed by OOM killer */
+		        if (WTERMSIG(status) == SIGKILL)
+			    break;
+                        tst_brkm(TBROK, cleanup, \
+				"child exit with error code %d or signal %d", \
+				WEXITSTATUS(status), WTERMSIG(status));
+                    }
 		}
 		fork_errno = errno;
 
