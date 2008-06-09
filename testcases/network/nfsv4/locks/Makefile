@@ -1,10 +1,12 @@
 TARGETS := locktests
 
-all:
-	gcc -Wall locktests.c -o locktests -lpthread
+all: $(TARGETS)
 
-install: $(TARGETS) 	 
-	ln -f locktests ../../../bin/locktests 	 
-	  	 
-clean: 	 
+locktests: locktests.c netsync.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lpthread
+
+install: $(TARGETS)
+	ln -f locktests ../../../bin/locktests
+
+clean:
 	$(RM) locktests
