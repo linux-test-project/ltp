@@ -69,6 +69,9 @@
 #include <math.h>
 #include <assert.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 
 #define MAXL    100     /* default number of loops to do malloc and free      */
 #define MAXT     60     /* default number of threads to create.               */
@@ -86,7 +89,7 @@
                                    } while (0)
 
 int num_loop = MAXL;/* number of loops to perform		      */
-
+int semid;
 
 /* Define SPEW_SIGNALS to tickle thread_create bug (it fails if interrupted). */
 #define SPEW_SIGNALS
@@ -254,6 +257,17 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 void *
 alloc_mem(void * threadnum)
 {
+    struct sembuf sop[1];
+    sop[0].sem_num = 0;
+    sop[0].sem_op = 0;
+    sop[0].sem_flg = 0;
+    /* waiting for other threads starting */
+    if (semop(semid, sop, 1) == -1) {
+        if (errno != EIDRM)
+            perror("semop");
+        return (void *) -1;
+    }
+
     /* thread N will use growth scheme N mod 4 */
     int err = allocate_free(num_loop, ((int)threadnum) % 4);
     fprintf(stdout, 
@@ -288,6 +302,8 @@ main(int	argc,		/* number of input parameters		      */
     int		thrd_ndx;	/* index into the array of thread ids         */
     pthread_t	*thrdid;	/* the threads                                */
     extern int	 optopt;	/* options to the program		      */
+    struct sembuf sop[1];
+    int ret = 0;
 
     while ((c =  getopt(argc, argv, "hl:t:")) != -1)
     {
@@ -333,6 +349,20 @@ main(int	argc,		/* number of input parameters		      */
 	return 1;
     }
 
+    semid = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
+    if  (semid < 0) {
+        perror("Semaphore creation failed  Reason:");
+    }
+
+    sop[0].sem_num = 0;
+    sop[0].sem_op = 1;
+    sop[0].sem_flg = 0;
+    if (semop(semid, sop, 1) == -1) {
+        perror("semop");
+        ret = -1;
+        goto out;
+    }
+
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
         if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
@@ -340,22 +370,31 @@ main(int	argc,		/* number of input parameters		      */
 	    int err = errno;
 	    if (err == EINTR) {
 		fprintf(stderr, "main(): pthread_create failed with EINTR!\n");
-		exit(-1);
+		ret = -1;
+		goto out;
 	    }
             perror("main(): pthread_create()");
-            exit(-1);
+            ret = -11;
+            goto out;
         }
     }
     my_yield();
-    
-
+ 
+    sop[0].sem_op = -1;
+    if (semop(semid, sop, 1) == -1) {
+        perror("semop");
+        ret = -1;
+        goto out;
+    }
+   
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
         void *th_status;	/* exit status of LWP */
         if (pthread_join(thrdid[thrd_ndx], &th_status) != 0)
         {
             perror("main(): pthread_join()");
-            exit(-1);
+            ret = -1;
+            goto out;
         }
         else
         {
@@ -363,12 +402,18 @@ main(int	argc,		/* number of input parameters		      */
             {
                 fprintf(stderr,
                         "main(): thread [%d] - exited with errors\n", thrd_ndx);
-                exit(-1);
+                ret = -1;
+                goto out;
             }
             dprt(("main(): thread [%d]: exited without errors\n", thrd_ndx));
         }
         my_yield();
     }
     printf("main(): test passed.\n");
-    exit(0);
+out:
+    if(semctl(semid, 0, IPC_RMID) == -1) {
+        perror("semctl\n");
+        ret = -1;
+    }
+    exit(ret);
 }
