@@ -9,6 +9,7 @@
  */
 
 #define _GNU_SOURCE 3
+#include <string.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/types.h>
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
   */
   if( pid == 0 ) {
     /* Create the path to the executable the child will run */
-    sprintf(ex_name, "%s/selinux_wait_io", dirname(argv[0]));
+    sprintf(ex_name, "%s/selinux_wait_io", dirname(strdup(argv[0])));
 printf("ex_name is %s\n", ex_name);
     if( execl(ex_name, (char *) 0) < 0 ) {
       perror("selinux_sigiotask:execl");

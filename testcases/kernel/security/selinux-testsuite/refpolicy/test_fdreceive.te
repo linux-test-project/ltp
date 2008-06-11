@@ -40,7 +40,7 @@ userdom_sysadm_entry_spec_domtrans_to(fdreceivedomain)
 # Grant the necessary permissions for the server domain.
 ## Create the Unix domain socket file.
 allow test_fdreceive_server_t test_file_t:dir rw_dir_perms;
-allow test_fdreceive_server_t test_file_t:sock_file create_file_perms;
+allow test_fdreceive_server_t test_file_t:sock_file create_sock_file_perms;
 ## Use fds created by the client domain.
 allow test_fdreceive_server_t test_fdreceive_client_t:fd use;
 ## Access the test file.
@@ -51,7 +51,7 @@ allow test_fdreceive_server_t test_fdreceive_file_t:file rw_file_perms;
 allow test_fdreceive_client_t test_fdreceive_file_t:file rw_file_perms;
 allow test_fdreceive_client_t test_fdreceive_file2_t:file rw_file_perms;
 ## Access the Unix domain socket file.
-allow test_fdreceive_client_t test_file_t:sock_file rw_file_perms;
+allow test_fdreceive_client_t test_file_t:sock_file rw_sock_file_perms;
 ## Connect to the server domain.
 allow test_fdreceive_client_t test_fdreceive_server_t:unix_stream_socket connectto;
 
@@ -60,6 +60,6 @@ allow test_fdreceive_client_t test_fdreceive_server_t:unix_stream_socket connect
 allow test_fdreceive_client2_t test_fdreceive_file_t:file rw_file_perms;
 allow test_fdreceive_client2_t test_fdreceive_file2_t:file rw_file_perms;
 ## Access the Unix domain socket file.
-allow test_fdreceive_client2_t test_file_t:sock_file rw_file_perms;
+allow test_fdreceive_client2_t test_file_t:sock_file rw_sock_file_perms;
 ## Connect to the server domain.
 allow test_fdreceive_client2_t test_fdreceive_server_t:unix_stream_socket connectto;
