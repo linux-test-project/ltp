@@ -16,7 +16,11 @@
 # for local or global runs (<RT_TESTS_ROOT>/run.sh or <TESTDIR>/run_auto.sh)
 #
 
-
+# Pass if maximum time for signaled thread to be scheduled is less 
+# than threshold (us).
+# Default threshold=100 us
+func/async_handler		async_handler -c 100
+func/async_handler		async_handler_jk -c 100
 # Pass if maximum lock time is less than threshold (us).
 # Default threshold=200 us
 func/pi_perf			pi_perf -c 200
@@ -41,7 +45,6 @@ func/matrix_mult		matrix_mult -c 0.75
 # is less than maxduration (s).
 # Default maxduration=0.5 s
 func/thread_clock		tc-2 -c 0.5
-
 
 # The below tests have no pass/fail criterium.
 func/gtod_latency		gtod_latency
