@@ -220,8 +220,9 @@ static int vmsplice_test(void)
                 if(tst_is_cwd_nfs()) {
 				if (flag == 1)
 					printf("vmsplice01    1  PASS  :  vmplice() passes\n");
-                                tst_brkm(TCONF, cleanup, "Cannot do splice() on a file located on an NFS filesystem");
-                }
+				else
+					tst_brkm(TCONF, cleanup, "Cannot do splice() on a file located on an NFS filesystem");
+		}
 
 
 		ret = mysplice(pipes[0], NULL, fd_out, &offset, written, 0);
