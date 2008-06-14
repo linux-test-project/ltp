@@ -133,6 +133,19 @@ test_prereqs()
 		exit 1
 	fi
 
+	tst_kvercmp 2 6 15
+	X=$?
+	if [ $X -lt 0 ]; then
+		tst_brkm TBROK "$0: failed to get the running kernel version"
+		exit 1
+	elif [ $X -lt 1 ]; then
+		tst_resm TWARN "$0: the remaining tests require 2.6.15 or later"
+		tst_exit 0
+		exit
+	else
+		tst_resm TINFO "$0: kernel >= 2.6.15 detected -- continuing"
+	fi
+
 	mount --bind "${sandbox}" "${sandbox}" && {
 		mount --make-shared "${sandbox}" > /dev/null 2>&1 || "${FS_BIND_ROOT}/bin/smount" "${sandbox}" shared
 		umount "${sandbox}" || {
@@ -146,17 +159,6 @@ test_prereqs()
 
 	tst_resm TPASS "$0: umounted simplest shared subtree"
 
-	tst_kvercmp 2 6 15
-	X=$?
-	if [ $X -lt 0 ]; then
-		tst_brkm TBROK "$0: failed to get the running kernel version"
-		exit 1
-	elif [ $X -lt 1 ]; then
-		tst_resm TWARN "$0: the remaining tests require 2.6.15 or later"
-		tst_exit 0
-	else
-		tst_resm TINFO "$0: kernel >= 2.6.15 detected -- continuing"
-	fi
 }
 
 # mounts we are concerned with in a well-defined order (helps diff)
