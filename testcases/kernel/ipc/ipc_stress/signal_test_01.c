@@ -77,7 +77,7 @@
 
 /* Macro for specifying signal masks */
 #define MASK(sig)  (1 << ((sig) - 1))
-#define STACKSIZE 20000
+#define STACKSIZE SIGSTKSZ
 
 /* Define an alternative stack for processing signals */
 char stackarray [STACKSIZE];
