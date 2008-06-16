@@ -176,8 +176,11 @@ void child (pid_t pid)
 	for (i=1; i< (SIGMAX + 1); i++) {
 
 		/* Cannot catch or ignore the following signals */
-		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT || i == SIGRTMIN )
-			continue;
+#ifdef _LINUX_
+		if ((i == SIGKILL) || (i == SIGSTOP) || ((i>=32)&&(i<=34))) continue;
+#else
+		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT) continue;
+#endif
 
 		/* Skip sigchild too */
 		if (i == SIGCHLD) continue;
