@@ -315,6 +315,8 @@ getsockname01 getsockname01
 
 getsockopt01 getsockopt01
 
+gettid01 gettid01
+
 gettimeofday01 gettimeofday01
 gettimeofday02 gettimeofday02
 
