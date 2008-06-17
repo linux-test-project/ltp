@@ -100,7 +100,7 @@ int main(int ac, char **av)
 		exno = sig = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork failed, error no = %d",
+			tst_brkm(TBROK, cleanup, "fork failed, error no = %d : %s",
 				 errno, strerror(errno));
 		}
 
