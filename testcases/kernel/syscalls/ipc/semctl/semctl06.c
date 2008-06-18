@@ -17,10 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-/* 10/30/2002	Port to LTP	dbarrera@us.ibm.com */
-
-
 /*
  * NAME
  *	semctl06
@@ -37,6 +33,13 @@
  *	If this test fail, it may be necessary to use the ipcs and ipcrm
  *	commands to remove any semaphores left in the system due to a
  *	premature exit of this test.
+ *
+ * HISTORY
+ *      06/30/2001	Port to Linux	nsharoff@us.ibm.com
+ *      10/30/2002	Port to LTP	dbarrera@us.ibm.com
+ *      12/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
+ *      - Fix concurrency issue. The IPC keys used for this test could
+ *        conflict with keys from another task.
  */
 
 #define DEBUG 0
@@ -111,7 +114,7 @@ static char *maxsemstring;
 int
 main(int argc, char **argv)
 {
-	register int i, j, ok, pid;
+	register int i, pid;
 	int count, child, status, nwait;
 
 #ifdef UCLINUX
@@ -128,26 +131,10 @@ main(int argc, char **argv)
 	nwait = 0;
 	setup();		
 /*--------------------------------------------------------------*/
-	srand(getpid());
-
 	tid = -1;
 
-	for (i = 0; i < NPROCS; i++) {
-		do {
-			keyarray[i] = (key_t)rand();
-			if (keyarray[i] == IPC_PRIVATE) {
-				ok = 0;
-				continue;
-			}
-			ok = 1;
-			for (j = 0; j < i; j++) {
-				if (keyarray[j] == keyarray[i]) {
-					ok = 0;
-					break;
-				}
-			}
-		} while (ok == 0);
-	}
+	for (i = 0; i < NPROCS; i++)
+		keyarray[i] = getipckey();
 
 	if ((signal(SIGTERM, term)) == SIG_ERR) {
                 tst_resm(TFAIL, "\tsignal failed. errno = %d", errno);
@@ -214,7 +201,7 @@ dotest(key_t key)
 
 	nwait = 0;
 	srand(getpid());
-	if ((id = semget(key, NSEMS, IPC_CREAT)) < 0) {
+	if ((id = semget(key, NSEMS, IPC_CREAT|IPC_EXCL)) < 0) {
 		tst_resm(TFAIL, "\tsemget() failed errno %d", errno);
 		exit(1);
 	}
@@ -436,6 +423,13 @@ setup()
 	 * before you create your temporary directory.
 	 */
         TEST_PAUSE;
+
+	/*
+	 * Create a temporary directory and cd into it.
+	 * This helps to ensure that a unique msgkey is created.
+	 * See ../lib/libipc.c for more information.
+	 */
+	tst_tmpdir();
 }
 
 
@@ -446,6 +440,9 @@ setup()
 void
 cleanup()
 {
+	/* Remove the temporary directory */
+	tst_rmdir();
+
         /*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
