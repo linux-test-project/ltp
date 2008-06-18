@@ -2,6 +2,7 @@
 DESTDIR=/opt/ltp
 
 CFLAGS+= -Wall
+CFLAGS+= -D_USC_LIB_
 CPPFLAGS+= -I../include 
 ifeq ($(shell uname -s),HP-UX)
 CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
