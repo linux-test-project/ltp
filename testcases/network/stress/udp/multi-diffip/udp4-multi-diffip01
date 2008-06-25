@@ -185,6 +185,13 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 
 	# Set IPv4 addresses to the interfaces
 	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname
+
+	### delete before setting 
+	if [ $? -eq 2 ]; then
+	ip addr del ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname  2>&1
+	ip addr add ${lhost_addr}/${network_mask} broadcast $network_broadcast dev $lhost_ifname
+	fi
+
 	if [ $? -ne 0 ]; then
 	    if [ $ipaddr_pair_num -eq 0 ]; then
 		tst_resm TBROK "Failed to add any IP address at the local"
@@ -196,6 +203,10 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 	fi
 
 	ret=`$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr add ${rhost_addr}/${network_mask} broadcast $network_broadcast dev $rhost_ifname' ; echo $?'`
+	if [ $ret -eq 2 ]; then
+	$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr del ${rhost_addr}/${network_mask} broadcast $network_broadcast dev $rhost_ifname
+	ret=`$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr add ${rhost_addr}/${network_mask} broadcast $network_broadcast dev $rhost_ifname' ; echo $?'`
+	fi
 	if [ $ret -ne 0 ]; then
 	    if [ $ipaddr_pair_num -eq 0 ]; then
 		tst_resm TBROK "Failed to add any IP address at the remote"
@@ -218,6 +229,12 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 
 	# Set IPv6 addresses to the interfaces
 	ip addr add ${lhost_addr}/${network_mask} dev $lhost_ifname
+
+	if [ $ret -eq 2 ]; then
+	ip addr del ${lhost_addr}/${network_mask} dev $lhost_ifname  2>&1
+	ip addr add ${lhost_addr}/${network_mask} dev $lhost_ifname
+	fi
+
 	if [ $? -ne 0 ]; then
 	    if [ $ipaddr_pair_num -eq 0 ]; then
 		tst_resm TBROK "Failed to add any IP address at the local"
@@ -229,6 +246,12 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 	fi
 
 	ret=`$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr add ${rhost_addr}/${network_mask} dev $rhost_ifname' ; echo $?'`
+
+	if [ $ret -eq 2 ]; then
+	LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr del ${rhost_addr}/${network_mask} dev $rhost_ifname
+	ret=`$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH ip' addr add ${rhost_addr}/${network_mask} dev $rhost_ifname' ; echo $?'`
+	fi
+
 	if [ $ret -ne 0 ]; then
 	    if [ $ipaddr_pair_num -eq 0 ]; then
 		tst_resm TBROK "Failed to add any IP address at the remote"
