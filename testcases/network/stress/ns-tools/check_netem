@@ -61,7 +61,7 @@ fi
 
 # Check the netem functionality
 ofile=`mktemp -p $TMPDIR`
-$LTP_RSH $RHOST "tc qdisc add dev eth0 root netem help" >$ofile 2>&1
+$LTP_RSH $RHOST "PATH=/sbin:/usr/sbin:$PATH tc qdisc add dev eth0 root netem help" >$ofile 2>&1
 grep -l "Usage:.*netem" $ofile >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "The remote host does not have netem functionality"
