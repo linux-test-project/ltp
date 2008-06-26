@@ -31,6 +31,7 @@
 
 #include <linux/netlink.h>
 #include <linux/connector.h>
+#define _LINUX_TIME_H
 #include <linux/cn_proc.h>
 
 #define PEC_MSG_SIZE (sizeof(struct cn_msg) + sizeof(struct proc_event))
