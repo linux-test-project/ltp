@@ -61,7 +61,13 @@ $LTP_RSH $RHOST "killall -SIGINT ping ping6" >/dev/null 2>&1
 # Verify the all ping utitlities are dead.
 start_epoc=`date +%s`
 while true ; do
-    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l [[:blank:]]ping6*[[:blank:]] >/dev/null 2>&1 ; echo $?'`
+    #ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l [[:blank:]]ping6*[[:blank:]] >/dev/null 2>&1 ; echo $?'`
+    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l /ping6*[[:blank:]] >/dev/null 2>&1 ; echo $?'`
+
+    if [ -z $ret ]; then
+	continue
+    fi 
+
     if [ $ret -ne 0 ]; then
 	break
     fi

@@ -80,7 +80,13 @@ done
 # Verify the client is dead.
 start_epoc=`date +%s`
 while true ; do
-    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '[[:blank:]]ns-tcpclient[[:blank:]]' >/dev/null 2>&1; echo $?'`
+    ##ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '[[:blank:]]ns-tcpclient[[:blank:]]' >/dev/null 2>&1; echo $?'`
+    ret=`$LTP_RSH $RHOST 'ps auxw | fgrep -v grep | grep -l '/ns-tcpclient[[:blank:]]' >/dev/null 2>&1; echo $?'`
+
+    if [ -z $ret ]; then
+	continue
+    fi 
+
     if [ $ret -ne 0 ]; then
 	break
     fi
