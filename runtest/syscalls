@@ -337,6 +337,8 @@ ioperm02 ioperm02
 iopl01 iopl01
 iopl02 iopl02
 
+io_cancel01 run-io_cancel.sh
+
 kill01 kill01
 kill02 kill02
 kill03 kill03
