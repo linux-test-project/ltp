@@ -1,0 +1,48 @@
+
+TEST SUITE:
+
+The directory pec contains the tests related to the process event connector.
+
+Process event connector is a netlink connector that reports process events
+to userspace. It sends events such as fork, exec, id change and exit.
+
+There are total 5 testcases.
+
+Note: the test can be run by root only.
+
+TESTS AIM:
+
+The aim of the tests is to test the functionality of process event connector.
+
+FILES DESCRIPTION:
+
+check_connector_enabled.c
+------------------
+This program is used to check if the kernel supports netlink connector.
+
+event_generator.c
+------------------
+This program is used to generate a specified process event (fork, exec, uid,
+gid or exit).
+
+run_pec_test
+------------------
+This script runs all the 5 testcases.
+
+pec_listener.c
+------------------
+This program is used to ilsten to process events received through the kernel
+connector and print them.
+
+Makefile
+------------------
+The usual makefile for this directory
+
+$LTPROOT/output/pec/*.log
+------------------
+The outputs of event_generator and pec_listeners.
+
+README:
+------------------
+The one you have gone through.
+
