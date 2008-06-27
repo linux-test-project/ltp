@@ -23,6 +23,8 @@
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
+SYSCALL = io_cancel
+
 
 check_header = $(shell \
 	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
@@ -38,7 +40,7 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	cp run-io_cancel.sh ../../../bin/run-io_cancel.sh
+	cp run-$(SYSCALL).sh ../../../bin/run-$(SYSCALL).sh
 
 else ### does not have libaio.h ###
 
