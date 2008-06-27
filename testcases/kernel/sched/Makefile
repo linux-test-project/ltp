@@ -1,4 +1,4 @@
-SUBDIRS = clisrv nptl pthreads process_stress sched_stress tool
+SUBDIRS = clisrv nptl pthreads process_stress sched_stress tool cfs-scheduler
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
