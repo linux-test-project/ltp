@@ -168,8 +168,11 @@ nfsstress
 
 
 
-rpc
----
+rpc/basic_tests
+---------------
+
+	Tests for SunRPC API
+
 rpc01
 
 	Test rpc using file transfers between a client & server
@@ -186,7 +189,8 @@ rusers01
 
 	Basic test for the `rusers` command.
 
-rpcfull
+rpc/rpc-tirpc-full-test-suite
+-----------------------------
 	
 	Full test for SunRPC and TI-RPC API
 

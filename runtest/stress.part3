@@ -880,7 +880,7 @@ hangup01 hangup01
 
 mc_cmds mc_cmds
 mc_opts export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts
-rpc01 export TCbin=$LTPROOT/testcases/network/rpc/simple_tests/rpc01; rpc01
+rpc01 export TCbin=$LTPROOT/testcases/network/rpc/basic_tests/rpc01; rpc01
 rpc_tirpc_ts_run.sh export TCbin=$LTPROOT/testcases/network/rpc/rpc-tirpc-full-test-suite/rpc_tirpc_ts_run.sh; rpc_tirpc_ts_run.sh
 perf_lan export TCbin=$LTPROOT/testcases/network/tcp_cmds/perf_lan; perf_lan
 
