@@ -132,8 +132,8 @@ int main(int ac, char **av) {
 	};
 
         if((tst_kvercmp(2,6,25)) < 0) {
-          tst_resm(TWARN, "This test can only run on kernels that are ");
-          tst_resm(TWARN, "2.6.25 and higher");
+          tst_resm(TCONF, "This test can only run on kernels that are ");
+          tst_resm(TCONF, "2.6.25 and higher");
           exit(0);
         }
 
@@ -259,7 +259,7 @@ int TST_TOTAL = 0;              /* Total number of test cases. */
 
 int main(){
 
-	tst_resm( TFAIL, "This test needs a kernel that has timerfd syscall.");
+	tst_resm(TCONF, "This test needs a kernel that has timerfd syscall.");
 	return 0;
 }
 #endif
