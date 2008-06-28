@@ -46,6 +46,8 @@
    (e.g., EACCES and EPERM), and one of the following for unexpected
    failures (i.e., something broke in our test setup). */
 
+#ifdef __NR_utimensat
+
 #define EXIT_bad_usage 3
 #define EXIT_failed_syscall 3
 
@@ -272,4 +274,14 @@ main(int argc, char *argv[])
 
     exit(EXIT_SUCCESS);
 }
+
+#else
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int main(){
+
+        tst_resm(TCONF, "This test needs a kernel that has utimensat syscall.");
+        return 0;
+}
+#endif
 

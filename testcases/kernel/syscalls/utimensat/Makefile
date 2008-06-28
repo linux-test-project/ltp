@@ -22,12 +22,24 @@ LDLIBS += -L../../../../lib -lltp
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
 
-all: $(TARGETS)
+all: 
+	@set -e; $(MAKE) check_for_utimensat_support; \
+	if '. ./check_for_utimensat_support' > /dev/null 2>&1; then \
+		$(TARGETS) \
+	else echo "System does not support utimensat syscall support"; true; fi
+	
+
+check_for_utimensat_support: check_for_utimensat_support.c
+	$(CC) -o $@ $< ../../../../lib/tst_kvercmp.c -I../../../../include
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	chmod 755 utimensat_tests.sh
-	ln -f utimensat_tests.sh ../../../bin/utimensat_tests.sh;
+	@set -e; \
+	chmod 755 utimensat_tests.sh; \
+	ln -f utimensat_tests.sh ../../../bin/utimensat_tests.sh; \
+	if '. ./check_for_utimensat_support' > /dev/null 2>&1; then \
+		$(TARGETS) install \
+	else echo "System does not support utimensat syscall support"; true; fi
 
 clean:
 	rm -f $(TARGETS)
+	rm -rf check_for_utimensat_support

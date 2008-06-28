@@ -21,12 +21,13 @@
 
 #=====================================================================
 
+export TCID=utimensat01
+export TST_TOTAL=99
+export TST_COUNT=0
 
-tst_kvercmp 2 6 22
-SUPPORT_AVAILABLE=$?
-if [ $SUPPORT_AVAILABLE -lt 0 ]; then
-       tst_brkm TCONF "System kernel version is less than 2.6.22"
-       tst_brkm TCONF "Cannot execute test"
+if tst_kvercmp 2 6 22 ; then
+       tst_resm TCONF "System kernel version is less than 2.6.22"
+       tst_resm TCONF "Cannot execute test"
        exit 0
 fi
 
@@ -36,6 +37,11 @@ TEST_DIR=/tmp/utimensat_tests
 FILE=$TEST_DIR/utimensat.test_file
 
 TEST_PROG=utimensat01
+
+if [ ! -f $LTPROOT/testcases/bin/$TEST_PROG ]; then
+     echo "${TEST_PROG} 1 WARN : Build/Install was not proper,"
+     exit 1;
+fi
 
 # Summary counters of all test results
 
