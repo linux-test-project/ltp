@@ -20,6 +20,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+if tst_kvercmp 2 6 15 ; then
+       tst_resm TCONF "System kernel version is less than 2.6.15"
+       tst_resm TCONF "Cannot execute test"
+       exit 0
+fi
+
+
 test_setup()
 {
 	#######################################################################
