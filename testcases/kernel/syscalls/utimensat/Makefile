@@ -26,6 +26,7 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	chmod 755 utimensat_tests.sh
 	ln -f utimensat_tests.sh ../../../bin/utimensat_tests.sh;
 
 clean:
