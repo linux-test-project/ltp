@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		rmdir(DummySubdir);
 
 		EVENT_DELIVERY_DELAY;
-		fd = open(DummyFile, O_RDWR | O_CREAT);
+		fd = open(DummyFile, O_RDWR | O_CREAT, 0644);
 		if (fd != -1) {
 			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 			DM_EXIT();
 		}
 		
-		rc = mkdir(DummySubdir, O_RDWR | O_CREAT);
+		rc = mkdir(DummySubdir, 0755);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_ERR, "creating dummy dir failed! (rc = %d, errno = %d)\n", rc, errno);
 			dm_destroy_session(sid);

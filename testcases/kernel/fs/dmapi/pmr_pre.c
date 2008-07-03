@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 		rmdir(DummySubdir);
 
 		EVENT_DELIVERY_DELAY;
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
 		if (fd != -1) {
 			for (i = 0; i < (TMP_FILELEN/DUMMY_STRLEN); i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -433,7 +433,7 @@ int main(int argc, char **argv)
 		nelem = 1;
 		memset(&regbuf, 0, sizeof(regbuf));
 
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 		nelem = 1;
 		memset(&regbuf, 0, sizeof(regbuf));
 
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -509,7 +509,7 @@ int main(int argc, char **argv)
 		nelem = 1;
 		memset(&regbuf, 0, sizeof(regbuf));
 
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -551,7 +551,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -594,7 +594,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -651,7 +651,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -714,7 +714,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -787,7 +787,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -863,7 +863,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -949,7 +949,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1011,7 +1011,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1073,7 +1073,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1135,7 +1135,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1197,7 +1197,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1259,7 +1259,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1321,7 +1321,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1383,7 +1383,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1445,7 +1445,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1507,7 +1507,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1569,7 +1569,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1631,7 +1631,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1693,7 +1693,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1755,7 +1755,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1817,7 +1817,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1879,7 +1879,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1928,7 +1928,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);

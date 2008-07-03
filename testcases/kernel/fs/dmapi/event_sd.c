@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 		remove(DummyFile);
 
 		EVENT_DELIVERY_DELAY;
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
 		if (fd != -1) {
 			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -262,7 +262,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -325,7 +325,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -433,7 +433,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -571,7 +571,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -627,7 +627,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -689,7 +689,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 4444, SEEK_SET)) != 4444) {
 			close(fd);
@@ -761,7 +761,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 4444, SEEK_SET)) != 4444) {
 			close(fd);
@@ -834,7 +834,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 3333, SEEK_SET)) != 3333) {
 			close(fd);
@@ -896,7 +896,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2997, SEEK_SET)) != 2997) {
 			close(fd);
@@ -968,7 +968,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2997, SEEK_SET)) != 2997) {
 			close(fd);
@@ -1035,7 +1035,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1091,7 +1091,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1157,7 +1157,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1223,7 +1223,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1278,7 +1278,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1331,7 +1331,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1397,7 +1397,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, DUMMY_STRLEN, SEEK_SET)) != DUMMY_STRLEN) {
 			close(fd);
@@ -1463,7 +1463,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, DUMMY_STRLEN+1, SEEK_SET)) != DUMMY_STRLEN+1) {
 			close(fd);
@@ -1518,7 +1518,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1571,7 +1571,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -1637,7 +1637,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2, SEEK_SET)) != 2) {
 			close(fd);
@@ -1692,7 +1692,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1760,7 +1760,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1822,7 +1822,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1874,7 +1874,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd1 = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd1 = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd1 == -1) {
@@ -1938,7 +1938,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2005,7 +2005,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT | O_NONBLOCK)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT | O_NONBLOCK, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2066,7 +2066,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2119,7 +2119,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2182,7 +2182,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2246,7 +2246,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2299,7 +2299,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2356,7 +2356,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -2426,7 +2426,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -2496,7 +2496,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -2553,7 +2553,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2222, SEEK_SET)) != 2222) {
 			close(fd);
@@ -2616,7 +2616,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 4444, SEEK_SET)) != 4444) {
 			close(fd);
@@ -2689,7 +2689,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 4444, SEEK_SET)) != 4444) {
 			close(fd);
@@ -2763,7 +2763,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 3333, SEEK_SET)) != 3333) {
 			close(fd);
@@ -2826,7 +2826,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2997, SEEK_SET)) != 2997) {
 			close(fd);
@@ -2899,7 +2899,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2997, SEEK_SET)) != 2997) {
 			close(fd);
@@ -2967,7 +2967,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3024,7 +3024,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3091,7 +3091,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3158,7 +3158,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3214,7 +3214,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -3268,7 +3268,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3335,7 +3335,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, DUMMY_STRLEN, SEEK_SET)) != DUMMY_STRLEN) {
 			close(fd);
@@ -3402,7 +3402,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, DUMMY_STRLEN+1, SEEK_SET)) != DUMMY_STRLEN+1) {
 			close(fd);
@@ -3458,7 +3458,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -3512,7 +3512,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 1, SEEK_SET)) != 1) {
 			close(fd);
@@ -3579,7 +3579,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, 2, SEEK_SET)) != 2) {
 			close(fd);
@@ -3635,7 +3635,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -3704,7 +3704,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -3767,7 +3767,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -3821,7 +3821,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, TMP_FILELEN+DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN+DUMMY_STRLEN) {
 			close(fd);
@@ -3888,7 +3888,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		} else if ((off = lseek(fd, TMP_FILELEN+DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN+DUMMY_STRLEN) {
 			close(fd);
@@ -3944,7 +3944,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd1 = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd1 = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd1 == -1) {
@@ -4009,7 +4009,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4074,7 +4074,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT | O_NONBLOCK)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT | O_NONBLOCK, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4136,7 +4136,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4189,7 +4189,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4249,7 +4249,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4310,7 +4310,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4363,7 +4363,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4419,7 +4419,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4482,7 +4482,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4546,7 +4546,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4602,7 +4602,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4661,7 +4661,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4727,7 +4727,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4794,7 +4794,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4853,7 +4853,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4918,7 +4918,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -4983,7 +4983,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5047,7 +5047,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5106,7 +5106,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5164,7 +5164,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5222,7 +5222,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5273,7 +5273,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5337,7 +5337,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5395,7 +5395,7 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		} else if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			remove(DummyFile);
 		}
 		if (rc == -1 || fd == -1) {
@@ -5456,7 +5456,7 @@ int main(int argc, char **argv)
 			eventResponse = DM_RESP_CONTINUE;
 			
 			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile); 
-			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC);
+			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC, 0644);
 			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd); 
 			rc = fd == -1 ? -1 : 0;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
@@ -5511,7 +5511,7 @@ int main(int argc, char **argv)
 			eventResponse = DM_RESP_CONTINUE;
 			
 			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile); 
-			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC);
+			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC, 0644);
 			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd); 
 			rc = fd == -1 ? -1 : 0;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {

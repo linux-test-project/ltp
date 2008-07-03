@@ -92,7 +92,7 @@ int io_tio(char *pathname , int flag , int n , int operation)
 	struct iocb iocb_array[AIO_MAXIO];
 	struct iocb *iocbps[AIO_MAXIO];
 	
-	fd = open ( pathname , flag );
+	fd = open ( pathname , flag, 0644);
 	if ( fd <= 0 ) {
 		perror ( " open : file " );
 		return -1;

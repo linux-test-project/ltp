@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 		memcpy(DummyString, DUMMY_STRING, DUMMY_STRLEN);
 
 		EVENT_DELIVERY_DELAY;
-		fd = open(DummyTmp, O_RDWR | O_CREAT);
+		fd = open(DummyTmp, O_RDWR | O_CREAT, 0644);
 		if (fd != -1) {
 			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
@@ -815,7 +815,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -850,7 +850,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -1744,7 +1744,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -1779,7 +1779,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);

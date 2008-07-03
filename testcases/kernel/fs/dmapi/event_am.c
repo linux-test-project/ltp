@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		rc = mkdir(DummySubdir, O_RDONLY | O_CREAT);
+		rc = mkdir(DummySubdir, 0755);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		rc = mkdir(DummySubdir, O_RDONLY | O_CREAT);
+		rc = mkdir(DummySubdir, 0755);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -253,7 +253,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((fd1 = open(DummySubdir, O_DIRECTORY)) == -1) {
 			rmdir(DummySubdir);
@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = close(fd)) == -1) {
 			remove(DummyFile);
@@ -365,7 +365,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = close(fd)) == -1) {
 			remove(DummyFile);
@@ -427,7 +427,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((fd2 = open(DummyFile, O_RDONLY)) == -1) {
 			close(fd1);
@@ -507,7 +507,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((rc = mkdir(DummySubdir, O_RDONLY | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -572,7 +572,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((rc = mkdir(DummySubdir, O_RDONLY | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -640,7 +640,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((fd1 = open(DummySubdir, O_DIRECTORY)) == -1) {
 			rmdir(DummySubdir);
@@ -704,7 +704,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -771,7 +771,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -840,7 +840,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((fd2 = open(DummyFile, O_RDONLY)) == -1) {
 			close(fd1);
@@ -905,7 +905,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		rc = mkdir(DummySubdir, O_RDONLY | O_CREAT);
+		rc = mkdir(DummySubdir, 0755);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -939,7 +939,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		rc = mkdir(DummySubdir, O_RDONLY | O_CREAT);
+		rc = mkdir(DummySubdir, 0755);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -974,7 +974,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((fd1 = open(DummySubdir, O_DIRECTORY)) == -1) {
 			rmdir(DummySubdir);
@@ -1026,7 +1026,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = close(fd)) == -1) {
 			remove(DummyFile);
@@ -1065,7 +1065,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_ATTRIBUTE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = close(fd)) == -1) {
 			remove(DummyFile);
@@ -1104,7 +1104,7 @@ int main(int argc, char **argv)
 		eventExpected = DM_EVENT_CLOSE;
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
-		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT)) == -1) {
+		if ((fd1 = open(DummyFile, O_RDONLY | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((fd2 = open(DummyFile, O_RDONLY)) == -1) {
 			close(fd1);
@@ -1181,7 +1181,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1228,7 +1228,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1275,7 +1275,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1322,7 +1322,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1372,7 +1372,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1419,7 +1419,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1467,7 +1467,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1520,7 +1520,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1564,7 +1564,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DummySubdir, O_RDWR | O_CREAT)) == -1) {
+		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -1626,7 +1626,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1671,7 +1671,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1717,7 +1717,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);

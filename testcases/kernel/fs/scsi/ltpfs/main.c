@@ -95,7 +95,7 @@ int main(int argc, char **argv)
         printf("ERROR: Create/open block device failed\n");
     }
 
-    ltp_fileHandle = open("/tmp/testfile", O_CREAT | O_RDWR | O_SYNC | FASYNC);
+    ltp_fileHandle = open("/tmp/testfile", O_CREAT | O_RDWR | O_SYNC | FASYNC, 0644);
 
     if (ltp_fileHandle > 0) {
 

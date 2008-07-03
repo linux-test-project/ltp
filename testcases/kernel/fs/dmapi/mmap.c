@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 		remove(DummyFile);
 
 		EVENT_DELIVERY_DELAY;
-		fd = open(DummyTmp, O_RDWR | O_CREAT);
+		fd = open(DummyTmp, O_RDWR | O_CREAT, 0644);
 		if (fd != -1) {
 			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {

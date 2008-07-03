@@ -195,7 +195,7 @@ int main (int argc, char **argv)
 	 * (number of child processes reading shared data) 
 	 * After creating the shared memory segment, initialize it.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR, O_CREAT)) < 0)
+	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
 		sys_error ("open failed", __LINE__);
 	if ((read_count = (int *) 
 		mmap (0, sizeof (int), PROT_READ | PROT_WRITE, 
@@ -209,7 +209,7 @@ int main (int argc, char **argv)
 	 * processes checksums by memory mapping /dev/zero.
 	 * After creating the shared memory segment, initialize it.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR, O_CREAT)) < 0)
+	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
 		sys_error ("open failed", __LINE__);
 	shmem_size = sizeof (unsigned long) * num_children;
 	if ((checksum = (unsigned long *) 
@@ -225,7 +225,7 @@ int main (int argc, char **argv)
 	 * Create the "scratch" shared memory segment for storing
 	 * a series of values by memory mapping /dev/zero.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR, O_CREAT)) < 0)
+	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
 		sys_error ("open failed", __LINE__);
 
 	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);

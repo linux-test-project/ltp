@@ -1052,7 +1052,7 @@ open_path(pathname_t *name, int oflag)
 	pathname_t	newname;
 	int		rval;
 
-	rval = open(name->path, oflag);
+	rval = open(name->path, oflag, 0644);
 	if (rval >= 0 || errno != ENAMETOOLONG)
 		return rval;
 	separate_pathname(name, buf, &newname);

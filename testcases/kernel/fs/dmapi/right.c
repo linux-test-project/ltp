@@ -91,14 +91,14 @@ int main(int argc, char **argv)
 		rmdir(DummySubdir);
 	}
 
-	fd_f = open(DummyFile, O_RDWR | O_CREAT);
+	fd_f = open(DummyFile, O_RDWR | O_CREAT, 0644);
 	if (fd_f == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "open failed! (rc = %d, errno = %d)\n", rc, errno);
 	}
 
 	/* This is what kicks off the test case, variations done in thread */
 	runTestOnCreate = 1;
-	rc = mkdir(DummySubdir, O_RDWR | O_CREAT);
+	rc = mkdir(DummySubdir, 0755);
 	runTestOnCreate = 0;
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "mkdir failed! (rc = %d, errno = %d)\n", rc, errno);

@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("invoking open(%s, %d)\n", argv[1], openflags);
-	fd = open(argv[1], openflags);
+	fd = open(argv[1], openflags, 0644);
 	if (fd == -1) {
 		printf("%s error: open failed with rc = %d (errno = %d)\n", argv[0], rc, errno);
 		exit(-1);

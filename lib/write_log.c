@@ -144,7 +144,7 @@ int			mode;
 	 */
 
 	oflags = O_RDWR;
-	if ((wfile->w_rfd = open(wfile->w_file, oflags)) == -1) {
+	if ((wfile->w_rfd = open(wfile->w_file, oflags, 0644)) == -1) {
 		sprintf(Wlog_Error_String,
 			"Could not open write log - open(%s, %#o) failed:  %s\n",
 			wfile->w_file, oflags, strerror(errno));

@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
 	/* This is what kicks off the test case, variations done in thread */
 	runTestOnCreate = 1;
-	rc = mkdir(DummySubdir, O_RDWR | O_CREAT);
+	rc = mkdir(DummySubdir, 0755);
 	runTestOnCreate = 0;
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "mkdir failed! (rc = %d, errno = %d)\n", rc, errno);
