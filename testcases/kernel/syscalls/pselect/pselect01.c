@@ -128,7 +128,7 @@ int main()
  
   /* Changed total_sec compare to an at least vs an exact compare */
  
-  if(total_sec >= (end - start))
+  if(((end - start) >= total_sec) && ((end - start) <= total_sec + 1))
   tst_resm(TPASS,"Sleep time was correct");
   else
   tst_resm(TFAIL,"Sleep time was incorrect:%d != %d",total_sec,(end - start));
