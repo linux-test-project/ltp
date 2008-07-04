@@ -115,7 +115,7 @@ main(int argc, char** argv)
 
 		if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", (-1 * TEST_RETURN),
+				 "returned value = %d : %s", TEST_RETURN,
 				 strerror(-1 * TEST_RETURN));
 		} else {
 			tst_resm(TFAIL, "unexpected returned value - %d - "
