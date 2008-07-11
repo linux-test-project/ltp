@@ -148,14 +148,13 @@ main(int ac, char **av)
    if (STD_FUNCTIONAL_TEST) {
     /*
      * Verify whether child execution was 
-     * actually suspended to desired interval
-     * plus or minus SLOP_MS milliseconds.
+     * actually suspended to desired interval.
      */
        long want_ms, got_ms;
        want_ms = timereq.tv_sec * 1000 + timereq.tv_nsec / 1000000;
        got_ms = ntime.tv_sec * 1000 + ntime.tv_usec / 1000;
        got_ms -= otime.tv_sec * 1000 + otime.tv_usec / 1000;
-       if ( (got_ms < (want_ms - SLOP_MS)) || (got_ms > (want_ms + SLOP_MS)) ) {
+       if (got_ms < want_ms) {
      retval=1;
      tst_resm(TFAIL, "Child execution not "
        "suspended for %d seconds.  (Wanted %ld ms, got %ld ms)",
