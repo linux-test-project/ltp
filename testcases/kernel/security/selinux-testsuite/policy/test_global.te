@@ -3,6 +3,28 @@
 # Rules that apply to most test domains.
 #
 
+#
+# This test policy uses the can_setcon macro which is not defined in global 
+# macros of Red Hat Enterprise Linux 4 selinux policy targeted sources, so we
+# define it here as a workaround.
+#
+
+##################################
+#
+# can_setcon(domain)
+#
+# Authorize a domain to set its current context
+# (via /proc/pid/attr/current).
+#
+define(`can_setcon',`
+allow $1 self:process setcurrent;
+allow $1 proc_t:dir search;
+allow $1 proc_t:{ file lnk_file } read;
+allow $1 self:dir search;
+allow $1 self:file { getattr read write };
+')
+
+
 # Note:  test_file_t is declared in types/file.te in the example policy.
 
 # Authorize sysadm_r and system_r for the test domains.

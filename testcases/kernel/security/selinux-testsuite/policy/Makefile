@@ -1,18 +1,18 @@
-# for FC3
 include /etc/selinux/config
-POLICYSRC = /etc/selinux/$(SELINUXTYPE)/src/policy
+SELINUX_SRC=/etc/selinux/$(SELINUXTYPE)/src/policy
 
-# for FC2
-#POLICYSRC = /etc/security/selinux/src/policy
+# for Fedora Core 2
+# SELINUX_SRC=/etc/security/selinux/src/policy
 
 load:
-	@if [ -d $(POLICYSRC) ]; then \
-		install test_*.te $(POLICYSRC)/domains/misc; \
-		$(MAKE) -C $(POLICYSRC) clean load; \
+	@if [ -d $(SELINUX_SRC) ]; then \
+		cp test_* $(SELINUX_SRC)/domains/misc/; \
+		$(MAKE) -C $(SELINUX_SRC) -W users load; \
 	else \
-		echo "ERROR: You must have the policy sources installed in $(POLICYSRC)."; \
+		echo "ERROR: You must have selinux-policy-targeted-sources installed."; \
 	fi
 
 cleanup:
-	rm -f $(POLICYSRC)/domains/misc/test_*.te
-	$(MAKE) -C $(POLICYSRC) clean load
+	rm -f $(SELINUX_SRC)/domains/misc/test_*
+	$(MAKE) -C $(SELINUX_SRC) -W users load
+

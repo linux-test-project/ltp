@@ -75,6 +75,14 @@ then
 	exit
 fi
 
+SEMODULE="/usr/sbin/semodule"
+
+if [ -f $SEMODULE ]; then
+    POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy"
+else
+    POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite/policy"
+fi
+
 # Update test policy if needed
 pushd $LTPROOT/testcases/kernel/security/selinux-testsuite/misc
 sh ./update_refpolicy.sh
@@ -86,7 +94,7 @@ config_allow_domain_fd_use 0
 
 # build and install the test policy...
 echo "building and installing test_policy module..."
-cd $LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy
+cd $POLICYDIR
 make load
 if [ $? != 0 ]; then
 	echo "Failed to build and load test_policy module, aborting test run."
@@ -122,7 +130,7 @@ rm -rf /tmp/selinux
 /usr/bin/chcon -t $SAVEBINTYPE $LTPROOT/testcases/bin
 
 echo "Removing test_policy module..."
-cd $LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy
+cd $POLICYDIR
 make cleanup 2>&1
 if [ $? != 0 ]; then
 	echo "Failed to remove test_policy module."
