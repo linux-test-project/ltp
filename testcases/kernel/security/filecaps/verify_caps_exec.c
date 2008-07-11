@@ -151,19 +151,13 @@ void read_from_fifo(char *buf)
 	close(fd);
 }
 
-int compare_caps(char *buf1, char *buf2)
-{
-	int res;
-
-	res = strcmp(buf1, buf2) == 0;
-	return res;
-}
-
-int fork_drop_and_exec(int keepperms, char *capstxt)
+int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 {
 	int pid;
 	int ret = 0;
 	char buf[200], *p;
+	char *capstxt;
+	cap_t actual_caps;
 	static int seqno = 0;
 
 	pid = fork();
@@ -179,7 +173,9 @@ int fork_drop_and_exec(int keepperms, char *capstxt)
 		ret = execlp(TSTPATH, TSTPATH, buf, NULL);
 		perror("execl");
 		tst_resm(TFAIL, "%s: exec failed\n", __FUNCTION__);
+		capstxt = cap_to_text(expected_caps, NULL);
 		snprintf(buf, 200, "failed to run as %s\n", capstxt);
+		cap_free(capstxt);
 		write_to_fifo(buf);
 		tst_exit(1);
 	} else {
@@ -198,12 +194,16 @@ int fork_drop_and_exec(int keepperms, char *capstxt)
 			tst_resm(TFAIL, "got a bad message from print_caps\n");
 			tst_exit(1);
 		}
-		tst_resm(TINFO, "Expected to run as .%s., ran as .%s..\n",
-			capstxt, p);
-		if (strcmp(p, capstxt) != 0) {
+		actual_caps = cap_from_text(p);
+		if (cap_compare(actual_caps, expected_caps) != 0) {
+			capstxt = cap_to_text(expected_caps, NULL);
+			tst_resm(TINFO, "Expected to run as .%s., ran as .%s..\n",
+				capstxt, p);
 			tst_resm(TINFO, "those are not the same\n");
+			cap_free(capstxt);
 			ret = -1;
 		}
+		cap_free(actual_caps);
 		seqno++;
 	}
 	return ret;
@@ -240,9 +240,7 @@ int caps_actually_set_test(void)
 			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		capstxt = cap_to_text(fcap, NULL);
-		ret = fork_drop_and_exec(DROP_PERMS, capstxt);
-		cap_free(capstxt);
+		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
 					whichcap);
@@ -262,14 +260,7 @@ int caps_actually_set_test(void)
 			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		capstxt = cap_to_text(fcap, NULL);
-		if (strcmp(capstxt, "=")==0) {
-			tst_resm(TINFO, "%s: libcap doesn't know about cap %d, not running\n",
-				__FUNCTION__, whichcap);
-			ret = 0;
-		} else
-			ret = fork_drop_and_exec(DROP_PERMS, capstxt);
-		cap_free(capstxt);
+		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
 				whichcap);
@@ -285,6 +276,15 @@ int caps_actually_set_test(void)
 		capvalue[0] = i;
 		cap_set_flag(cap_fullpi, CAP_INHERITABLE, 1, capvalue, CAP_SET);
 	}
+
+	/*
+	 * For the inheritable tests, we want to make sure pI starts
+	 * filled.
+	 */
+	ret = cap_set_proc(cap_fullpi);
+	if (ret)
+		tst_resm(TINFO, "Could not fill pI.  pI tests will fail.\n");
+
 	/*
 	 * next try each bit in fI
 	 * The first two attemps have the bit which is in fI in pI.
@@ -295,6 +295,7 @@ int caps_actually_set_test(void)
 	 *     no bits to be inherited from the original process.
 	 */
 	for (whichcap=0; whichcap < NUM_CAPS; whichcap++) {
+		cap_t cmpcap;
 		capvalue[0] = whichcap;
 
 		/*
@@ -315,9 +316,7 @@ int caps_actually_set_test(void)
 			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		capstxt = cap_to_text(pcap, NULL);
-		ret = fork_drop_and_exec(KEEP_PERMS,  capstxt);
-		cap_free(capstxt);
+		ret = fork_drop_and_exec(KEEP_PERMS,  pcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
 					"CAP_EFFECTIVE=0\n", whichcap);
@@ -340,14 +339,13 @@ int caps_actually_set_test(void)
 			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		capstxt = cap_to_text(pcap, NULL);
-		if (strcmp(capstxt, "=")==0) {
-			tst_resm(TINFO, "%s: libcap doesn't know about cap %d, not running\n",
-				__FUNCTION__, whichcap);
-			ret = 0;
-		} else
-			ret = fork_drop_and_exec(KEEP_PERMS, capstxt);
-		cap_free(capstxt);
+		/* The actual result will be a full pI, with
+		 * pE and pP containing just whichcap. */
+		cmpcap = cap_dup(cap_fullpi);
+		cap_set_flag(cmpcap, CAP_PERMITTED, 1, capvalue, CAP_SET);
+		cap_set_flag(cmpcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
+		ret = fork_drop_and_exec(KEEP_PERMS, cmpcap);
+		cap_free(cmpcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
 					"CAP_EFFECTIVE=1\n", whichcap);
@@ -361,9 +359,7 @@ int caps_actually_set_test(void)
 		 * pI'=pP'=pE'=0
 		 */
 		cap_clear(pcap);
-		capstxt = cap_to_text(pcap, NULL);
-		ret = fork_drop_and_exec(DROP_PERMS, capstxt);
-		cap_free(capstxt);
+		ret = fork_drop_and_exec(DROP_PERMS, pcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed without_perms CAP_INHERITABLE=%d",
 					whichcap);

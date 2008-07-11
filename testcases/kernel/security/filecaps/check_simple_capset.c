@@ -24,12 +24,16 @@
 
 int main()
 {
-	cap_t caps;
+	cap_t caps, caps2;
 	int ret;
 
 	caps = cap_from_text("cap_setpcap+ep");
+	caps2 = cap_from_text("cap_setpcap+ep");
 	ret = cap_set_proc(caps);
+	ret = cap_compare(caps, caps2);
+	printf("Caps were %s the same\n", ret ? "not" : "");
 
 	cap_free(caps);
+	cap_free(caps2);
 	return ret;
 }

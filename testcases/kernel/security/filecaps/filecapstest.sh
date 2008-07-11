@@ -22,7 +22,7 @@
 checkforlibcap
 ret=$?
 if [ $ret -ne 0 ]; then
-	echo setcap not installed.  Please install libcap from
+	echo setcap not installed.  Please install libcap-2.11 or newer from
 	echo ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2
 	exit 1
 fi

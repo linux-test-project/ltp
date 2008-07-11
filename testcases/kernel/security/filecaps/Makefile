@@ -38,7 +38,8 @@ checkforlibcap:
 	chmod a+rx $@
 else
 	@echo "setcap or xattr headers not installed.  Please install libcap from"; \
-	echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2"; \
+	echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2."; \
+	echo "You must use libcap-2.11 or newer."; \
 	echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
 checkforlibcap:
 	echo false > $@
