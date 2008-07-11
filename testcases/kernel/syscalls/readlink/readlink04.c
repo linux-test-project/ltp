@@ -224,7 +224,7 @@ setup()
 	}
 
 	/* create the full pathname of the executable to be execvp'ed */
-	strcat((char *)path_buffer, (char *)bin_dir);
+	strcpy((char *)path_buffer, (char *)bin_dir);
 	strcat((char *)path_buffer, (char *)creat_slink);
 
 
