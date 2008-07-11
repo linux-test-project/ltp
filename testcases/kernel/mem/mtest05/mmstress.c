@@ -30,9 +30,10 @@
 /*               system and can be easily ported to work on other operating   */
 /*               systems as well.                                             */
 /*                                                                            */
-/* Usage:        mmstress -h -n TEST NUMBER -t EXECUTION TIME -v -V           */
+/* Usage:        mmstress -h -n TEST NUMBER -p NPAGES -t EXECUTION TIME -v -V */
 /*                        -h                - Help                            */
 /*                        -n TEST NUMBER    - Execute a particular testcase   */
+/*                        -p NPAGES         - Use NPAGES pages for tests    */
 /*                        -t EXECUTION TIME - Execute test for a certain time */
 /*                        -v                - Verbose output                  */
 /*                        -V                - Version of this program         */
@@ -145,6 +146,8 @@ static   int  wait_thread = 0;       /* used to wake up sleeping threads      */
 static   int  thread_begin = 0;      /* used to coordinate threads            */
 static   int  verbose_print = FALSE; /* print more test information           */
 
+static   int    pages_num = NUMPAGES; /* number of pages to use for tests     */
+
 char *TCID = "mmstress";
 int TST_TOTAL = 6;
 
@@ -199,6 +202,8 @@ usage(char *progname)        /* name of this program                       */
     fprintf(stderr, "\t-h displays all options\n");
     fprintf(stderr, "\t-n test number, if no test number\n"
             "\t   is specified, all the tests will be run\n");
+    fprintf(stderr, "\t-p specify the number of pages to\n"
+            "\t   use for allocation\n");
     fprintf(stderr, "\t-t specify the time in hours\n");
     fprintf(stderr, "\t-v verbose output\n");
     fprintf(stderr, "\t-V program version\n");
@@ -265,7 +270,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
     caddr_t start_addr           /* start address of the page                 */
                          = (caddr_t)(local_args[MAPADDR] 
                                      + (int)local_args[THNUM] 
-                                     * (NUMPAGES/NUMTHREAD) 
+                                     * (pages_num/NUMTHREAD) 
                                      * local_args[PAGESIZ]);
     char    read_from_addr = 0;  /* address to which read from page is done   */
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
@@ -284,7 +289,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
     while (wait_thread) 
         sched_yield();
 
-    for (; pgnum_ndx < (NUMPAGES/NUMTHREAD); pgnum_ndx++)
+    for (; pgnum_ndx < (pages_num/NUMTHREAD); pgnum_ndx++)
     {
         /* if the fault to be generated is READ_FAULT, read from the page     */
         /* else write a character to the page.                                */
@@ -318,7 +323,7 @@ static int
 remove_files(char *filename, char * addr)    /* name of the file that is to be removed     */
 {
     if (addr)
-		     if (munmap(addr, sysconf(_SC_PAGESIZE)*NUMPAGES) < 0) {
+		     if (munmap(addr, sysconf(_SC_PAGESIZE)*pages_num) < 0) {
 		 		     perror("map_and_thread(): munmap()");
 		 		     return FAILED;
 		     }
@@ -375,7 +380,7 @@ map_and_thread(
     int  thrd_ndx   = 0;         /* index to the number of threads created    */
     int  map_type   = 0;         /* specifies the type of the mapped object   */
     int  *th_status = 0;         /* status of the thread when it is finished  */
-    long th_args[NUMTHREAD];     /* argument list passed to  thread_fault()   */
+    long th_args[5];     	/* argument list passed to  thread_fault()   */
     char *empty_buf = NULL;      /* empty buffer used to fill temp file       */
     long pagesize                /* contains page size at runtime             */
                     = sysconf(_SC_PAGESIZE);        
@@ -398,9 +403,9 @@ map_and_thread(
             return retinfo;
         }
 
-        /* Write pagesize * NUMPAGES bytes to the file */
-        empty_buf = (char *)malloc(pagesize*NUMPAGES);
-        if (write(fd, empty_buf, pagesize*NUMPAGES) != (pagesize*NUMPAGES))
+        /* Write pagesize * pages_num bytes to the file */
+        empty_buf = (char *)malloc(pagesize*pages_num);
+        if (write(fd, empty_buf, pagesize*pages_num) != (pagesize*pages_num))
         {
             perror("map_and_thread(): write()");
             free(empty_buf);
@@ -417,7 +422,7 @@ map_and_thread(
         /* generated map the file with read protection else map with read -   */
         /* write protection.                               */
     
-        if ((map_addr = (caddr_t)mmap(0, pagesize*NUMPAGES, 
+        if ((map_addr = (caddr_t)mmap(0, pagesize*pages_num, 
                         ((fault_type == READ_FAULT) ? 
 			PROT_READ : PROT_READ|PROT_WRITE),
                         map_type, fd, 0)) 
@@ -536,11 +541,13 @@ map_and_thread(
     if (remove_files(tmpfile, map_addr) == FAILED)
     {
         free(empty_buf);
+        free(th_status);
         retinfo->status = FAILED;
         return retinfo;
     }
 
     free(empty_buf);
+    free(th_status);
     close(fd);
     retinfo->status = SUCCESS;
     return retinfo;
@@ -695,14 +702,14 @@ test5()
         fflush(NULL);
         return FAILED;
     }
-   
+
     /* fork NUMTHREAD number of processes, assumption is on SMP each will get */
     /* a separate CPU if NRCPUS = NUMTHREAD. The child does nothing; exits    */
     /* immediately, parent waits for child to complete execution.             */
     do
     {
         if (!(pid = fork()))
-            exit (0);
+            _exit (0);
         else
         {
             if (pid != -1)
@@ -884,7 +891,7 @@ main(int   argc,     /* number of command line parameters                     */
     if (argc < 2)
     tst_resm(TINFO, "run %s -h for all options", argv[0]);
 
-    while ((ch = getopt(argc, argv, "hn:t:vV")) != -1)
+    while ((ch = getopt(argc, argv, "hn:p:t:vV")) != -1)
     {
         switch(ch)
         {
@@ -892,6 +899,11 @@ main(int   argc,     /* number of command line parameters                     */
                       break;
             case 'n': if (optarg) 
                           test_num = atoi(optarg);
+                      else
+                          OPT_MISSING(prog_name, optopt);
+                      break;
+            case 'p': if (optarg)
+                          pages_num = atoi(optarg);
                       else
                           OPT_MISSING(prog_name, optopt);
                       break;
