@@ -168,7 +168,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     {
         case SIGALRM:
              tst_resm(TPASS, "Test ended, success");
-             exit(0);
+             _exit(0);
 
         case SIGSEGV:
              if (info->si_code == SEGV_MAPERR &&
@@ -182,7 +182,7 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
         default:
             fprintf(stderr, "caught unexpected signal - %d --- exiting\n",
                      signal);
-            exit(-1);
+            _exit(-1);
     }
 }
 
