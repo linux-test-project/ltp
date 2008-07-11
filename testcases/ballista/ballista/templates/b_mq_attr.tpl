@@ -49,6 +49,7 @@ access
 [
 QUEUE,NONBLOCK
 {
+  // mode and attr parameters are necessary
   temp_mqd = mq_open(QUEUE_NAME, O_RDWR|O_CREAT);
 
   FILE* logFile = NULL;

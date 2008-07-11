@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		EVENT_DELIVERY_DELAY;
 		DMLOG_PRINT(DMLVL_DEBUG, "mkdir(%s)\n", DummySubdir); 
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		DMLOG_PRINT(DMLVL_DEBUG, "mkdir(%s) returned %d\n", DummySubdir, rc); 
 		if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 			rc = dm_handle_to_ino(hanp1, hlen1, &ino);
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		EVENT_DELIVERY_DELAY;
 		DMLOG_PRINT(DMLVL_DEBUG, "mkdir(%s)\n", DummySubdir); 
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		DMLOG_PRINT(DMLVL_DEBUG, "mkdir(%s) returned %d\n", DummySubdir, rc); 
 		if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 			rc = dm_handle_to_ino(hanp1, hlen1, &ino);
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 		eventResponse = DM_RESP_CONTINUE;
 		sprintf(command, "mv %s %s", DummySubdir, DummySubdir2); 
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -345,7 +345,7 @@ int main(int argc, char **argv)
 		eventResponse = DM_RESP_CONTINUE;
 		sprintf(command, "mv %s %s", DummySubdir, DummySubdir2); 
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -403,7 +403,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		rc = mkdir(DummySubdir, 0755);
+		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -508,7 +508,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
+		if ((rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -572,7 +572,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((rc = mkdir(DummySubdir, 0755)) == -1) {
+		if ((rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
 			rmdir(DummySubdir);
@@ -638,7 +638,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		EVENT_DELIVERY_DELAY;
 		DMLOG_PRINT(DMLVL_DEBUG, "open(%s)\n", DummyFile); 
-		fd = open(DummyFile, O_RDWR | O_CREAT, 0644);
+		fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		DMLOG_PRINT(DMLVL_DEBUG, "open(%s) returned %d\n", DummyFile, fd); 
 		rc = (fd == -1) ? -1 : 0;
 		if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
@@ -681,7 +681,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		EVENT_DELIVERY_DELAY;
 		DMLOG_PRINT(DMLVL_DEBUG, "open(%s)\n", DummyFile); 
-		fd = open(DummyFile, O_RDWR | O_CREAT, 0644);
+		fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		DMLOG_PRINT(DMLVL_DEBUG, "open(%s) returned %d\n", DummyFile, fd); 
 		if ((varStatus = DMVAR_CHKFAILEXP(-1, fd, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 			rc = dm_handle_to_ino(hanp1, hlen1, &ino);
@@ -714,7 +714,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -758,7 +758,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -810,7 +810,7 @@ int main(int argc, char **argv)
 		eventResponse = DM_RESP_CONTINUE;
 		sprintf(command, "mv %s %s", DummyFile, DummyFile2); 
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -870,7 +870,7 @@ int main(int argc, char **argv)
 		eventResponse = DM_RESP_CONTINUE;
 		sprintf(command, "mv %s %s", DummyFile, DummyFile2); 
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -931,7 +931,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -984,7 +984,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -1040,7 +1040,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1101,7 +1101,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		EVENT_DELIVERY_DELAY;
-		if ((fd = open(DummyFile, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);

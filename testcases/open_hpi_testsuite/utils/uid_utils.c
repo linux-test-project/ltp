@@ -394,7 +394,8 @@ SaErrorT oh_uid_map_to_file(void)
 
         uid_lock(&oh_uid_lock);
 
-        file = open(uid_map_file, O_WRONLY|O_CREAT|O_TRUNC);
+        file = open(uid_map_file, O_WRONLY|O_CREAT|O_TRUNC,
+		    S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if(file < 0) {
                 dbg("Configuration file '%s' could not be opened", uid_map_file);
                 uid_unlock(&oh_uid_lock);

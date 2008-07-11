@@ -58,6 +58,7 @@ access
 
   OPEN, CLOSED, UNLINKED
   {
+    // mode and value parameters are necessary
     temp_sem = sem_open(SEMAPHORE_NAME, O_CREAT);
     sem = *temp_sem;
     _theVariable = temp_sem;

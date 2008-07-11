@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 		void *fshanp;
 		size_t fshlen;
 
-		fd = open(DUMMY_TMP, O_RDWR | O_CREAT | O_TRUNC, 0644);
+		fd = open(DUMMY_TMP, O_RDWR | O_CREAT | O_TRUNC, DUMMY_FILE_RW_MODE);
 		if (fd != -1) {
 			for (i = 0; i < (TMP_FILELEN/DUMMY_STRLEN); i++) {
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
@@ -1070,7 +1070,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -1124,7 +1124,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -2050,7 +2050,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -2653,7 +2653,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -2715,7 +2715,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -3580,7 +3580,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No claen up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4640,7 +4640,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_atime = DUMMY_TIME;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4689,7 +4689,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_mtime = DUMMY_TIME;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4738,7 +4738,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_ctime = DUMMY_TIME;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4792,7 +4792,7 @@ int main(int argc, char **argv)
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
 		fileattr.fa_dtime = DUMMY_TIME;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4844,7 +4844,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_dtime = DUMMY_TIME;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4893,7 +4893,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_uid = DUMMY_UID;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4942,7 +4942,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_gid = DUMMY_GID;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4991,7 +4991,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fileattr.fa_mode = DUMMY_MODE;
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -5874,7 +5874,7 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_ATTRIBUTE, eventset);
 		DMEV_SET(DM_EVENT_CLOSE, eventset);
 		DMEV_SET(DM_EVENT_DESTROY, eventset);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -5923,7 +5923,7 @@ int main(int argc, char **argv)
 		dm_stat_t stat;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -5972,7 +5972,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6019,7 +6019,7 @@ int main(int argc, char **argv)
 		dm_stat_t stat;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6068,7 +6068,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(buf, ATTR_VALUE, ATTR_VALUELEN);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6116,7 +6116,7 @@ int main(int argc, char **argv)
 		dm_stat_t stat;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6163,7 +6163,7 @@ int main(int argc, char **argv)
 		int varStatus;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6390,7 +6390,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6428,7 +6428,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6466,7 +6466,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6504,7 +6504,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6541,7 +6541,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6613,7 +6613,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6654,7 +6654,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6695,7 +6695,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6749,7 +6749,7 @@ int main(int argc, char **argv)
 		dm_attrloc_t loc;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6785,7 +6785,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6826,7 +6826,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6867,7 +6867,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6908,7 +6908,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6952,7 +6952,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -6992,7 +6992,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7032,7 +7032,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7077,7 +7077,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7119,7 +7119,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7159,7 +7159,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7237,7 +7237,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7311,7 +7311,7 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_ATTRIBUTE, eventset);
 		DMEV_SET(DM_EVENT_CLOSE, eventset);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7384,7 +7384,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7456,7 +7456,7 @@ int main(int argc, char **argv)
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
 		rc |= dm_init_attrloc(sid, dhanp, dhlen, DM_NO_TOKEN, &loc);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7525,7 +7525,7 @@ int main(int argc, char **argv)
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(attrbuf, ATTR_VALUE, ATTR_VALUELEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7596,7 +7596,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7666,7 +7666,7 @@ int main(int argc, char **argv)
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		memcpy(attrbuf, ATTR_VALUE, ATTR_VALUELEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7742,7 +7742,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7808,7 +7808,7 @@ int main(int argc, char **argv)
 		memset(buf1, 0, ATTR_LISTLEN);
 		memset(buf2, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -7877,14 +7877,15 @@ int main(int argc, char **argv)
 		memset(buf1, 0, ATTR_LISTLEN);
 		memset(buf2, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = system(command)) == -1) {
 			dm_handle_free(dhanp, dhlen);
 			rmdir(DUMMY_SUBDIR);
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT,
+				      DUMMY_FILE_RW_MODE)) == -1) {
 			remove(DUMMY_SUBDIR_FILE);
 			dm_handle_free(dhanp, dhlen);
 			rmdir(DUMMY_SUBDIR);
@@ -7951,7 +7952,7 @@ int main(int argc, char **argv)
 		memset(buf1, 0, ATTR_LISTLEN);
 		memset(buf2, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8023,7 +8024,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8101,7 +8102,7 @@ int main(int argc, char **argv)
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8177,7 +8178,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8296,7 +8297,7 @@ int main(int argc, char **argv)
 		memset(buf1, 0, sizeof(buf1));
 		memset(buf2, 0, sizeof(buf2));
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8390,7 +8391,7 @@ int main(int argc, char **argv)
 		memset(buf2, 0, sizeof(buf2));
 		memset(buf3, 0, sizeof(buf3));
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8496,7 +8497,7 @@ int main(int argc, char **argv)
 		memset(buf2, 0, sizeof(buf2));
 		memset(buf3, 0, sizeof(buf3));
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8606,7 +8607,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8685,7 +8686,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8764,7 +8765,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8843,7 +8844,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -8922,7 +8923,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9001,7 +9002,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9080,7 +9081,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		memset(buf, 0, sizeof(buf));
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9149,7 +9150,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9248,7 +9249,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(buf, 0, ATTR_LISTLEN);
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dhanp, &dhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9344,7 +9345,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_SUBDIR_FILE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9384,7 +9385,7 @@ int main(int argc, char **argv)
 		size_t rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9422,7 +9423,7 @@ int main(int argc, char **argv)
 		size_t rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -9766,7 +9767,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -10109,7 +10110,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		memset(attrname.an_chars, 0, DM_ATTR_NAME_SIZE);
 		memcpy(attrname.an_chars, ATTR_NAME, DM_ATTR_NAME_SIZE);
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -10442,7 +10443,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);

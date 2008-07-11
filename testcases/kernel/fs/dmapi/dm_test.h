@@ -85,6 +85,10 @@
 #define DUMMY_SUBDIR2_LINK "dummy2.dir/dummy.lnk"
 #define DUMMY_SUBDIR2_SUBDIR "dummy2.dir/dummy.dir"
 #define DUMMY_TMP "dummy.tmp"
+#define DUMMY_FILE_RO_MODE 	(S_IRUSR | S_IRGRP | S_IROTH)
+#define DUMMY_FILE_RW_MODE 	(DUMMY_FILE_RO_MODE | S_IWUSR)
+#define DUMMY_DIR_RO_MODE 	(DUMMY_FILE_RO_MODE | S_IXUSR | S_IXGRP | S_IXOTH)
+#define DUMMY_DIR_RW_MODE	(DUMMY_DIR_RO_MODE | S_IWUSR)
 
 /* The following constants and macros pertain to DM logging */
 #define DMLVL_ERR	1

@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* no clean up */
 		} else if ((rc = link(DUMMY_FILE, DUMMY_LINK)) == -1) {
 			close(fd);
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		rc = mkdir(DUMMY_SUBDIR, 0755);
+		rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		rc = mkdir(DUMMY_SUBDIR, 0755);
+		rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -298,9 +298,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1 || fd == -1) {
@@ -337,9 +337,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = link(DUMMY_SUBDIR_FILE, DUMMY_SUBDIR_LINK)) == -1) {
 			close(fd);
@@ -380,9 +380,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, 0644)) == -1) {
+		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
@@ -437,7 +437,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -487,7 +487,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -519,7 +519,7 @@ int main(int argc, char **argv)
 		void	*hanp;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -548,9 +548,9 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1 || fd == -1) {
@@ -692,7 +692,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -726,7 +726,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd_f = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd_f = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = link(DUMMY_FILE, DUMMY_LINK)) == -1) {
 			close(fd_f);
@@ -771,7 +771,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((fd = open(DUMMY_SUBDIR, O_DIRECTORY)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -809,9 +809,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1 || fd == -1) {
@@ -848,9 +848,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd_f = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd_f = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = link(DUMMY_SUBDIR_FILE, DUMMY_SUBDIR_LINK)) == -1) {
 			remove(DUMMY_SUBDIR_FILE);
@@ -898,9 +898,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, 0644)) == -1) {
+		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		} else if ((fd = open(DUMMY_SUBDIR_SUBDIR, O_DIRECTORY)) == -1) {
 			rmdir(DUMMY_SUBDIR_SUBDIR);
@@ -971,7 +971,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1003,7 +1003,7 @@ int main(int argc, char **argv)
 		void	*hanp;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1086,7 +1086,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) != -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) != -1) {
 			rc = close(fd);
 		}
 		if (fd == -1 || rc == -1) {
@@ -1157,7 +1157,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1191,7 +1191,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = link(DUMMY_FILE, DUMMY_LINK)) == -1) {
 			close(fd);
@@ -1230,7 +1230,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		rc = mkdir(DUMMY_SUBDIR, 0755);
+		rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1262,7 +1262,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		rc = mkdir(DUMMY_SUBDIR, 0755);
+		rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1290,9 +1290,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1 || fd == -1) {
@@ -1329,9 +1329,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = link(DUMMY_SUBDIR_FILE, DUMMY_SUBDIR_LINK)) == -1) {
 			close(fd);
@@ -1372,9 +1372,9 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, 0644)) == -1) {
+		} else if ((rc = mkdir(DUMMY_SUBDIR_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
@@ -1429,7 +1429,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1479,7 +1479,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1511,7 +1511,7 @@ int main(int argc, char **argv)
 		void	*hanp;
 
 		/* Variation set up */
-		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644);
+		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -1589,7 +1589,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1628,7 +1628,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1663,7 +1663,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1702,7 +1702,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -1740,7 +1740,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1781,7 +1781,7 @@ int main(int argc, char **argv)
 		size_t	hlen, fshlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1821,7 +1821,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1881,7 +1881,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1926,7 +1926,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -1968,7 +1968,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2013,7 +2013,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2054,7 +2054,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2095,7 +2095,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2136,7 +2136,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2177,7 +2177,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2218,7 +2218,7 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2264,7 +2264,7 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2310,7 +2310,7 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2356,7 +2356,7 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2402,12 +2402,12 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
-		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
 			dm_handle_free(hanp1, hlen1);
@@ -2456,12 +2456,12 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd1, &hanp1, &hlen1)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
-		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
 			dm_handle_free(hanp1, hlen1);
@@ -2534,7 +2534,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2598,7 +2598,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2633,7 +2633,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2668,7 +2668,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2703,7 +2703,7 @@ int main(int argc, char **argv)
 		size_t	hlen1, hlen2;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2746,7 +2746,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2791,7 +2791,7 @@ int main(int argc, char **argv)
 		dm_fsid_t fsid;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -2875,7 +2875,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2910,7 +2910,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2945,7 +2945,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -2980,7 +2980,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3016,7 +3016,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3051,7 +3051,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3086,7 +3086,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3121,7 +3121,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3210,7 +3210,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3246,7 +3246,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3328,7 +3328,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3368,7 +3368,7 @@ int main(int argc, char **argv)
 		dm_fsid_t fsidp;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3420,7 +3420,7 @@ int main(int argc, char **argv)
 		dm_fsid_t fsidp;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3513,7 +3513,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3553,7 +3553,7 @@ int main(int argc, char **argv)
 		dm_igen_t igen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3588,7 +3588,7 @@ int main(int argc, char **argv)
 		dm_igen_t igen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -3622,7 +3622,7 @@ int main(int argc, char **argv)
 		dm_igen_t igen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3657,7 +3657,7 @@ int main(int argc, char **argv)
 		dm_igen_t igen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -3732,7 +3732,7 @@ int main(int argc, char **argv)
 		size_t	hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3772,7 +3772,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3827,7 +3827,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -3881,7 +3881,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -3916,7 +3916,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4095,7 +4095,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -4154,7 +4154,7 @@ int main(int argc, char **argv)
 		dm_ino_t ino;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp1, &hlen1)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4280,7 +4280,7 @@ int main(int argc, char **argv)
 		dm_fsid_t fsid;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp1, &hlen1)) == -1) {
 			close(fd);
@@ -4335,7 +4335,7 @@ int main(int argc, char **argv)
 		dm_fsid_t fsid;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp1, &hlen1)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4393,7 +4393,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4434,7 +4434,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4475,7 +4475,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4516,7 +4516,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4557,7 +4557,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4597,7 +4597,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4637,7 +4637,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4676,12 +4676,12 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd1 = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd1, &targhanp, &targhlen)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
-		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd2 = open(DUMMY_FILE2, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			close(fd1);
 			remove(DUMMY_FILE);
 			dm_handle_free(targhanp, targhlen);
@@ -4728,7 +4728,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		} else if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &targhanp, &targhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -4770,7 +4770,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4825,7 +4825,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle("", &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -4878,11 +4878,11 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dirhanp, &dirhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
@@ -4938,11 +4938,11 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dirhanp, &dirhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = link(DUMMY_SUBDIR_FILE, DUMMY_SUBDIR_LINK)) == -1) {
@@ -5005,14 +5005,14 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DIR_LEVEL1, 0644)) == -1) {
+		if ((rc = mkdir(DIR_LEVEL1, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DIR_LEVEL2, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL2, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL1);
-		} else if ((rc = mkdir(DIR_LEVEL3, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL3, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
-		} else if ((rc = mkdir(DIR_LEVEL4, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL4, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL3);
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
@@ -5021,7 +5021,7 @@ int main(int argc, char **argv)
 			rmdir(DIR_LEVEL3);
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
-		} else if ((fd = open(FILE_LEVEL4, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(FILE_LEVEL4, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DIR_LEVEL4);
 			rmdir(DIR_LEVEL3);
@@ -5086,23 +5086,23 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DIR_LEVEL1, 0644)) == -1) {
+		if ((rc = mkdir(DIR_LEVEL1, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = mkdir(DIR_LEVEL2, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL2, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL1);
-		} else if ((rc = mkdir(DIR_LEVEL3, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL3, DUMMY_DIR_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
 		} else if ((rc = dm_path_to_handle(DIR_LEVEL3, &dirhanp, &dirhlen)) == -1) {
 			rmdir(DIR_LEVEL3);
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
-		} else if ((rc = mkdir(DIR_LEVEL4, 0644)) == -1) {
+		} else if ((rc = mkdir(DIR_LEVEL4, DUMMY_DIR_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DIR_LEVEL3);
 			rmdir(DIR_LEVEL2);
 			rmdir(DIR_LEVEL1);
-		} else if ((fd = open(FILE_LEVEL4, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(FILE_LEVEL4, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			rmdir(DIR_LEVEL4);
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DIR_LEVEL3);
@@ -5155,7 +5155,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_fshandle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -5196,7 +5196,7 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = dm_path_to_handle(mountPt, &dirhanp, &dirhlen)) == -1) {
 			/* No clean up */
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -5235,7 +5235,7 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
 			close(fd);
@@ -5298,11 +5298,11 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dirhanp, &dirhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
-		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
@@ -5348,11 +5348,11 @@ int main(int argc, char **argv)
 		size_t 	rlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &dirhanp, &dirhlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
-		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		} else if ((fd = open(DUMMY_SUBDIR_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			dm_handle_free(dirhanp, dirhlen);
 			rmdir(DUMMY_SUBDIR);
 		} else if ((rc = dm_fd_to_handle(fd, &targhanp, &targhlen)) == -1) {
@@ -5401,7 +5401,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5436,7 +5436,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5471,7 +5471,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5506,7 +5506,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5541,7 +5541,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5576,7 +5576,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5614,7 +5614,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = mkdir(DUMMY_SUBDIR, 0755)) == -1) {
+		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
@@ -5647,7 +5647,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_path_to_fshandle(DUMMY_FILE, &hanp, &hlen)) == -1) {
 			close(fd);
@@ -5697,7 +5697,7 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, 0644)) == -1) {
+		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);

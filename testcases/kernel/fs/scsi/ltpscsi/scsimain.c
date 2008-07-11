@@ -683,7 +683,7 @@ int run_sg_scan_tests()
         }
         make_dev_name(fname, NULL, k, do_numeric);
 
-        sg_fd = open(fname, flags | O_NONBLOCK, 0644);
+        sg_fd = open(fname, flags | O_NONBLOCK);
         if (sg_fd < 0) {
             if (EBUSY == errno) {
                 printf("%s: device busy (O_EXCL lock), skipping\n", fname);
@@ -2614,7 +2614,7 @@ int do_scsi_inquiry(char * device, int hex_flag)
 
     if (do_pci)
     	oflags = O_RDWR | O_NONBLOCK;
-    if ((sg_fd = open(file_name, oflags, 0644)) < 0) {
+    if ((sg_fd = open(file_name, oflags)) < 0) {
         snprintf(ebuff, EBUFF_SZ, "sg_inq: error opening file: %s", file_name);
         perror(ebuff);
         return 1;
@@ -3466,7 +3466,7 @@ int show_scsi_modes (char * device)
     /* The 6 bytes command only allows up to 255 bytes of response data */
     if(do_mode6) rsp_buff_size = 255;
 
-    if ((sg_fd = open(file_name, oflags, 0644)) < 0) {
+    if ((sg_fd = open(file_name, oflags)) < 0) {
         snprintf(ebuff, EBUFF_SZ, ME "error opening file: %s", file_name);
         perror(ebuff);
         return 1;
@@ -4190,7 +4190,7 @@ int do_scsi_send_diagnostics(char * device)
 
     file_name = device;
 
-    if ((sg_fd = open(file_name, oflags, 0644)) < 0) {
+    if ((sg_fd = open(file_name, oflags)) < 0) {
         snprintf(ebuff, EBUFF_SZ, ME "error opening file: %s", file_name);
         perror(ebuff);
         return 1;

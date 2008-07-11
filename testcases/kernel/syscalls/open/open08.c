@@ -116,7 +116,8 @@ int main(int ac, char **av)
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(open(TC[i].fname, TC[i].flags, 0644));
+			TEST(open(TC[i].fname, TC[i].flags,
+				  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");

@@ -632,7 +632,7 @@ void *Thread(void *parm)
 
 void *TokenThread(void *parm)
 {
-	int rc = mkdir(DummySubdir, 0755);
+	int rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 
 	if (rc != -1) {
 		rmdir(DummySubdir);
