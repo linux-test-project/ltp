@@ -58,9 +58,16 @@ char *TCID="mem02";			/* Test program identifier. */
 int TST_TOTAL=1;			/* Total number of test cases. */
 extern int Tst_count;			/* Test Case counter for tst_* routines */
 
+static void
+usage(char *progname)
+{
+	fprintf(stderr, "usage: %s -m memsize\n", progname);
+	fprintf(stderr, "\t-m specify the size of memory to allocate, in MB\n");
+	exit(1);
+}
 
 /*--------------------------------------------------------------------*/
-int main()					/***** BEGINNING OF MAIN. *****/
+int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 {
 	int i;
 	char *pm1,*pm2,*pm3,*pm4,*pm5;
@@ -70,27 +77,49 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	int iteration_count;
 	int size;		/* Size to memory to be valloced */
 	int pagesize = 12;	/* 2^12 = 4096, PAGESIZE      */
+	int memsize = MEMSIZE;  /* Size of memory to allocate */
+	extern char *optarg;	/* getopt() function global variables */
+	extern int optopt;	/* stores bad option passed to the program */
+	int ch;
 
 /*--------------------------------------------------------------------*/
 
-	/* check out calloc/free */
-	if((pm2=pm1=(char *)calloc(MEMSIZE,1)) == NULL) {
+	optarg = NULL;
+	opterr = 0;
 
-		tst_resm(TFAIL, "calloc - alloc of %dMB failed", MEMSIZE/1024/1024);
+	while ((ch = getopt(argc, argv, "m:")) != -1) {
+		switch(ch) {
+		case 'm': 
+			if (optarg)
+				memsize = atoi(optarg) * 1024 * 1024;
+			else
+				fprintf(stderr, "%s: option -%c requires " \
+						"an argument\n", argv[0], optopt);
+			break;
+		default:
+			usage(argv[0]);
+			exit(1);
+		}
+	}
+
+	/* check out calloc/free */
+	if((pm2=pm1=(char *)calloc(memsize,1)) == NULL) {
+
+		tst_resm(TFAIL, "calloc - alloc of %dMB failed", memsize/1024/1024);
 		             tst_exit();
 	} 
 
-	for(i=0; i<MEMSIZE; i++)
+	for(i=0; i<memsize; i++)
 		if(*pm2++ != 0) {
   		  	tst_resm(TFAIL, "calloc returned non zero memory");
 			             tst_exit();
 		}
 
 	pm2=pm1;
-	for(i=0; i<MEMSIZE; i++)
+	for(i=0; i<memsize; i++)
 		*pm2++ = 'X';
 	pm2=pm1;
-	for(i=0; i<MEMSIZE; i++)
+	for(i=0; i<memsize; i++)
 		if(*pm2++ != 'X') {
 			 tst_resm(TFAIL, "could not write/verify memory ");
 			             tst_exit();
@@ -99,7 +128,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	pm2=pm1;
 	free(pm1);
 
-	if((pm1=(char *)calloc(MEMSIZE,1)) == NULL) {
+	if((pm1=(char *)calloc(memsize,1)) == NULL) {
 		tst_resm(TFAIL, "calloc did not alloc memory ");
 		             tst_exit();
 	}
@@ -112,20 +141,20 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	free(pm1);
 	 
         tst_resm(TPASS,"calloc - calloc of %uMB of memory succeeded",
-	                     MEMSIZE/1024/1024);
+	                     memsize/1024/1024);
 	 
 /*--------------------------------------------------------------------*/
 
 	/* check out malloc/free */
-	if((pm2=pm1=(char *)malloc(MEMSIZE)) == NULL) {
+	if((pm2=pm1=(char *)malloc(memsize)) == NULL) {
 		tst_resm(TFAIL, "malloc did not alloc memory ");
 		             tst_exit();
 	}	      
 
-	for(i=0; i<MEMSIZE; i++)
+	for(i=0; i<memsize; i++)
 		*pm2++ = 'X';
 	pm2=pm1;
-	for(i=0; i<MEMSIZE; i++)
+	for(i=0; i<memsize; i++)
 		if(*pm2++ != 'X') {
 			tst_resm(TFAIL, "could not write/verify memory ");
 		             tst_exit();
@@ -134,7 +163,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	pm2=pm1;
 	free(pm1);
 
-	if((pm1=(char *)malloc(MEMSIZE)) == NULL) {
+	if((pm1=(char *)malloc(memsize)) == NULL) {
 		tst_resm(TFAIL, "malloc did not alloc memory ");
 		             tst_exit();
 	}
@@ -146,7 +175,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 	free(pm1);
 
         tst_resm(TPASS,"malloc - malloc of %uMB of memory succeeded",
-	                     MEMSIZE/1024/1024);
+	                     memsize/1024/1024);
 	 
 /*--------------------------------------------------------------------*/
 
@@ -168,8 +197,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 		}
 	}
 
-        tst_resm(TPASS,"realloc - realloc of %dMB succeeded",
-	                     pm6/1024/1024);
+        tst_resm(TPASS,"realloc - realloc of 5 bytes succeeded");
 	 
 	/* realloc with increased size after fragmenting memory */
 	pm5=(char *)malloc(1);
@@ -184,7 +212,7 @@ int main()					/***** BEGINNING OF MAIN. *****/
 		}
 	}
 	
-        tst_resm(TPASS,"realloc - realloc of %dMB succeeded",
+        tst_resm(TPASS,"realloc - realloc of 15 bytes succeeded",
 	                     pm6/1024/1024);
 
 /*--------------------------------------------------------------------*/
