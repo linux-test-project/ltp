@@ -203,12 +203,35 @@ void trap_alarm(int sig) {
     tst_brkm(TFAIL, cleanup, "Test hang longer than %d sec detected", MAXTIME);
 }
 
+static void
+usage(const char *progname)
+{
+    fprintf(stderr, "usage: %s -l loops\n", progname);
+    fprintf(stderr, "\t-l specify the number of loops to carry out\n");
+}
+
 int main(int argc, char** argv)
 {
 #ifdef USING_NPTL
     char buf[1024];
     int i;
+    extern char *optarg;
+    int numloops = NUMLOOPS;
 
+    while ((i = getopt(argc, argv, "l:")) != -1) {
+        switch(i) {
+        case 'l':
+            if (optarg)
+                numloops = atoi(optarg);
+            else
+                fprintf(stderr, "%s: option -l requires an argument\n", argv[0]);    
+            break;
+        default:
+            usage(argv[0]);
+            exit(1);
+        }
+    }
+         
     signal(SIGALRM, trap_alarm);
     alarm(MAXTIME);
 
@@ -223,7 +246,7 @@ int main(int argc, char** argv)
     create_child_thread(buf, sizeof(buf));
 
     tst_resm(TINFO,"Starting test, please wait.");
-    for (i = 0; i < NUMLOOPS; i++) {
+    for (i = 0; i < numloops; i++) {
 	while (idle_count == 0) {
 	    call_cond_wait(&parent, &ack, buf, sizeof(buf));
 	};
@@ -238,8 +261,8 @@ int main(int argc, char** argv)
 #ifdef DEBUG
 	tst_resm(TINFO,"Success in loop %d",i);
 #else
-	if (((i % (NUMLOOPS / 10)) == 0) && (i != 0))
-	  tst_resm(TINFO,"Success thru loop %d of %i",i,NUMLOOPS);
+	if (((i % (numloops / 10)) == 0) && (i != 0))
+	  tst_resm(TINFO,"Success thru loop %d of %i",i,numloops);
 #endif
 	call_mutex_lock(&ack, buf, sizeof(buf));
     }
