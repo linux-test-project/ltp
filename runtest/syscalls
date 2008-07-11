@@ -338,6 +338,10 @@ iopl01 iopl01
 iopl02 iopl02
 
 io_cancel01 run-io_cancel.sh
+io_destroy01 run-io_destroy.sh
+io_getevents01 run-io_getevents.sh
+io_setup01 run-io_setup.sh
+io_submit01 run-io_submit.sh
 
 kill01 kill01
 kill02 kill02
