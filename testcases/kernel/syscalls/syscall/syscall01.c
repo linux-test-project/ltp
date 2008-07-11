@@ -106,10 +106,14 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	blenter();
 
-#if defined(SYS_getuid)
+#if defined(SYS_getuid) || defined(SYS_getuid32)
 	for (i=0; i < ITER; i++) {
 		v1 = getuid();
+#if defined(SYS_getuid)
 		v2 = syscall(SYS_getuid);
+#else
+		v2 = syscall(SYS_getuid32);
+#endif
 		if (v1 != v2) {
 			fprintf(temp, "\tgetuid syscall failed.\n");
 			fprintf(temp, "\t  iteration %d\n", i);
@@ -119,17 +123,21 @@ int main (int argc, char *argv[])
 	}
 #else
 	 fprintf(temp,"\tgetuid syscall failed.\n");
-         fprintf(temp,"\tSYS_getuid not defined\n");
+         fprintf(temp,"\tSYS_getuid and SYS_getuid32 not defined\n");
          local_flag = FAILED;
 #endif
 	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
-#if defined(SYS_getgid)
+#if defined(SYS_getgid) || defined(SYS_getgid32)
 	for (i=0; i < ITER; i++) {
 		v1 = getgid();
+#if defined(SYS_getgid)
 		v2 = syscall(SYS_getgid);
+#else
+		v2 = syscall(SYS_getgid32);
+#endif
 		if (v1 != v2) {
 			fprintf(temp, "\tgetgid syscall failed.\n");
 			fprintf(temp, "\t  iteration %d\n", i);
@@ -139,7 +147,7 @@ int main (int argc, char *argv[])
 	}
 #else
 	         fprintf(temp,"\tgetgid syscall failed.\n");
-		 fprintf(temp,"\tSYS_getgid not defined\n");
+		 fprintf(temp,"\tSYS_getgid and SYS_getgid32 not defined\n");
                  local_flag = FAILED; 
 #endif
 
