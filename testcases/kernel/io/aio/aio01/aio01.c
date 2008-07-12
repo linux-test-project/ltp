@@ -131,8 +131,10 @@ int main(int argc, char **argv) {
 	for(i = 0; i< nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 1: io_submit failed - retval=%d, "
 					"errno=%d", TEST_RETURN, TEST_ERRNO);
@@ -161,8 +163,10 @@ int main(int argc, char **argv) {
 	for(i = 0; i< nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 2: io_submit failed - retval=%d, "
 					"errno=%d", TEST_RETURN, TEST_ERRNO);
@@ -191,8 +195,10 @@ int main(int argc, char **argv) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 3: io_submit failed - retval=%d, "
 					"errno=%d", TEST_RETURN, TEST_ERRNO);
@@ -221,8 +227,10 @@ int main(int argc, char **argv) {
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 4: io_submit failed - retval=%d, "
 					"errno=%d", TEST_RETURN, TEST_ERRNO);
@@ -251,8 +259,10 @@ int main(int argc, char **argv) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: write io_submit failed - "
 					"retval=%d, errno=%d", TEST_RETURN, 
@@ -264,8 +274,10 @@ int main(int argc, char **argv) {
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: read io_submit failed - "
 					"retval=%d, errno=%d", TEST_RETURN, 
@@ -295,8 +307,10 @@ int main(int argc, char **argv) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: write io_submit failed - "
 					"retval=%d, errno=%d", TEST_RETURN, 
@@ -308,8 +322,10 @@ int main(int argc, char **argv) {
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
-		TEST(io_submit(io_ctx, 1, iocbs));
-		if (TEST_RETURN == -1) {
+		do {
+			TEST(io_submit(io_ctx, 1, iocbs));
+		} while (TEST_RETURN == -EAGAIN);
+		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: read io_submit failed - "
 					"retval=%d, errno=%d", TEST_RETURN, 

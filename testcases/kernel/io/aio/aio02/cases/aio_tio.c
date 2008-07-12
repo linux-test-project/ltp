@@ -153,7 +153,10 @@ int io_tio(char *pathname , int flag , int n , int operation)
 		}
 	}
 	
-	if (( res = io_submit ( myctx , AIO_MAXIO , iocbps )) < 0 ) {
+	do {
+		res = io_submit(myctx , AIO_MAXIO , iocbps);
+	} while (res == -EAGAIN);
+	if (res < 0 ) {
 		io_error("io_submit tio", res);
 	}
 	
