@@ -296,6 +296,15 @@
 # ifndef __NR_fallocate
 #  define __NR_fallocate 1303
 # endif
+# ifndef __NR_timerfd_create
+#  define __NR_timerfd_create 1310
+# endif
+# ifndef __NR_timerfd_settime
+#  define __NR_timerfd_settime 1311
+# endif
+# ifndef __NR_timerfd_gettime
+#  define __NR_timerfd_gettime 1312
+# endif
 #endif
 
 
