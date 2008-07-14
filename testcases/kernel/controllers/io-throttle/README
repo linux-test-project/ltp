@@ -1,0 +1,56 @@
+TEST SUITE:
+
+The directory io-throttle contains the tests related to block device I/O
+bandwdith controller.
+
+More testcases are expected to be added in future.
+
+TESTS AIM:
+
+The aim of the tests is to check the block device I/O throttling functionality
+for cgroups.
+
+FILES DESCRIPTION:
+
+iobw.c
+---------------
+Simple benchmark to generate parallel streams of direct I/O (O_DIRECT). This
+benchmark fork()s one task per stream. Each task creates a separate file in the
+current working directory, fills it with data using O_DIRECT writes and re-read
+the whole file always in O_DIRECT mode. Different timestamps are used to
+evaluate per-task I/O rate and total I/O rate (seen by the parent).
+
+myfunctions.sh
+----------
+This file contains the functions which are common for the io-throttle tests.
+For ex.  the setup and cleanup functions which do the setup for running the
+test and do the cleanup once the test finishes. The setup() function creates
+/dev/blockioctl directory and mounts cgroup filesystem on it with memory
+controller. It then creates a number(n) of groups in /dev/blockioctl. The
+cleanup function does a complete cleanup of the system.
+
+Most of the error scenarios have been taken care of for a sane cleanup of the
+system. However if cleanup fails in any case, just manually execute the
+commands written in cleanup function in myfunctions.sh.
+One of the most common causes of failed cleanup is that you have done cd into
+any of the groups in controller dir tree.
+
+run_io_throttle_test.sh
+------------------
+This script creates different scenarios for I/O bandwidth controller testing
+and fires (n) tasks in different groups to write and read different I/O streams
+etc. It waits for the return status from tasks and reports test pass/fail
+accordingly.
+
+Makefile
+--------
+The usual makefile for this directory
+
+PASS/FAIL CRITERION:
+==================
+The test cases are intelligent enough in deciding the pass or failure of a
+test.
+
+README:
+--------
+This file.

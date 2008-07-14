@@ -1,6 +1,7 @@
-SUBDIRS = libcontrollers cpuctl memctl
+SUBDIRS = libcontrollers cpuctl memctl io-throttle
 CHECK_CPUCTL = $(shell grep -w cpu /proc/cgroups|cut -f1)
 CHECK_MEMCTL = $(shell grep -w memory /proc/cgroups|cut -f1)
+CHECK_BLOCKIOCTL= $(shell grep -w blockio /proc/cgroups|cut -f1)
 all:
 	@set -e;
 ifeq ($(CHECK_CPUCTL),cpu)
@@ -15,6 +16,13 @@ ifeq ($(CHECK_MEMCTL),memory)
 	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ;done;
 else
 	echo "Kernel is not compiled with memory resource controller support";
+endif
+
+ifeq ($(CHECK_BLOCKIOCTL),blockio)
+
+	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ;done;
+else
+	echo "Kernel is not compiled with blockio resource controller support";
 endif
 
 install:
@@ -35,6 +43,14 @@ ifeq ($(CHECK_MEMCTL),memory)
 	chmod ugo+x test_controllers.sh;
 else
 	echo "Kernel is not compiled with memory resource controller support";
+endif
+
+ifeq ($(CHECK_BLOCKIOCTL),blockio)
+
+	for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done; \
+	chmod ugo+x test_controllers.sh;
+else
+	echo "Kernel is not compiled with blockio resource controller support";
 endif
 
 clean:

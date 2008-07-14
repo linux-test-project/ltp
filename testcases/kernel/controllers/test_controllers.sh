@@ -38,6 +38,7 @@ if [ -f /proc/cgroups ]
 then
 	CPU_CONTROLLER=`grep -w cpu /proc/cgroups | cut -f1`;
 	MEM_CONTROLLER=`grep -w memory /proc/cgroups | cut -f1`;
+	IOTHROTTLE_CONTROLLER=`grep -w blockio /proc/cgroups | cut -f1`;
 
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
@@ -67,6 +68,15 @@ then
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for memory controller";
 		echo "Skipping all memory controller testcases....";
+	fi
+
+	if [ "$IOTHROTTLE_CONTROLLER" = "blockio" ]
+	then
+		$LTPROOT/testcases/bin/run_memctl_test.sh 1;
+	else
+		echo "CONTROLLERS TESTCASES: WARNING";
+		echo "Kernel does not support blockio controller";
+		echo "Skipping all block device I/O throttling testcases....";
 	fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"

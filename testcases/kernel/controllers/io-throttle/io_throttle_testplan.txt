@@ -1,0 +1,36 @@
+The I/O bandwidth controller testplan includes a complete set of testcases to
+verify the effectiveness of the block device I/O throttling capabilities for
+cgroups.
+
+I/O bandwidth limitations are imposed by the testcase script and verified doing
+I/O activity on a limited block device. Tests are supposed to be passed if the
+I/O rates of all the different workloads always respect the I/O limitations.
+
+TESTCASE DESCRIPTION:
+====================
+First of all we evaluate the physical I/O bandwidth (physical-io-bw) of the
+block device where the current working directory resides.
+
+Based on the physical I/O bandwidth three cgroups are created: cgroup-1,
+cgroup-2, cgroup-3. Cgroups use respectively the following I/O bandwidth
+limitations:
+- cgroup-1: physical-io-bw / 2
+- cgroup-2: physical-io-bw / 4
+- cgroup-3: physical-io-bw / 8
+
+Each test is considered passed only if the I/O limitations above are respected.
+
+Currently the following different scenarios are tested:
+- 1 single stream per cgroup using leaky-bucket I/O throttling
+- 1 single stream per cgroup using token-bucket I/O throttling
+- 2 parallel streams per cgroup using leaky-bucket I/O throttling
+- 2 parallel streams per cgroup using token-bucket I/O throttling
+- 4 parallel streams per cgroup using leaky-bucket I/O throttling
+- 4 parallel streams per cgroup using token-bucket I/O throttling
+
+For any other information please refer to
+Documentation/controllers/io-throttle.txt in kernel documentation.
+
+Questions?
+----------
+Send email to: righi.andrea@gmail.com
