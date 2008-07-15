@@ -51,6 +51,8 @@ allow sysadm_t fileop_exec_t:file { unlink write };
 allow test_fileop_t fileop_file_t:file { setattr rw_file_perms};
 allow test_fileop_t fileop_file_t:file { execute relabelfrom relabelto };
 allow test_fileop_t fileop_t:process { signal };
+allow test_fileop_t initrc_devpts_t:chr_file { rw_file_perms };
+allow test_fileop_t initrc_t:fd use;
 
 # Permissions for the 'bad' domain...
 allow test_nofileop_t nofileop_rw_file_t:file { read write append relabelfrom };
