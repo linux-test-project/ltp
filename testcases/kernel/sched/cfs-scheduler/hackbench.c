@@ -58,6 +58,8 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/poll.h>
+#include <limits.h>
+
 
 #define DATASIZE 100
 static unsigned int loops = 100;
