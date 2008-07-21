@@ -159,7 +159,7 @@ main(int ac, char **av)
 					 strerror(TEST_RETURN));
 			} else {
 				tst_resm(TFAIL,
-					 "unexpected returnd value - %d : %s, advise %d - "
+					 "unexpected return value - %d : %s, advise %d - "
 					 "expected %d", 
 					 TEST_RETURN,
 					 strerror(TEST_RETURN), 

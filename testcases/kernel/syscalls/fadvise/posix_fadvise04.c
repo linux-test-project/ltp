@@ -136,7 +136,7 @@ main(int ac, char **av)
 					 "returned value = %d : %s", TEST_RETURN,
 					 strerror(TEST_RETURN));
 			} else {
-				tst_resm(TFAIL, "unexpected returnd value - %d : %s - "
+				tst_resm(TFAIL, "unexpected return value - %d : %s - "
 					 "expected %d", TEST_RETURN,
 					 strerror(TEST_RETURN), TC[i].error);
 			}
