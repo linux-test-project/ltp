@@ -8,5 +8,5 @@ int kernel_support_available(void) {
 }
 
 int main() {
-	        exit(kernel_support_available());
+	exit(kernel_support_available());
 }

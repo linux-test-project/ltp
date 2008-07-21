@@ -41,6 +41,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "linux_syscall_numbers.h"
 
 /* We use EXIT_FAILURE for an expected failure from utimensat()
    (e.g., EACCES and EPERM), and one of the following for unexpected
@@ -53,9 +54,6 @@
 
 #define errExit(msg)    do { perror(msg); exit(EXIT_failed_syscall); \
                         } while (0)
-
-
-#define __NR_utimensat          320     /* x86 syscall number */
 
 # define UTIME_NOW      ((1l << 30) - 1l)
 # define UTIME_OMIT     ((1l << 30) - 2l)

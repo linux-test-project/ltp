@@ -20,6 +20,7 @@ __NR_faccessat (__NR_openat + 12)
 __NR_splice 275
 __NR_tee 276
 __NR_vmsplice 278
+__NR_utimensat 296
 __NR_timerfd_create 283
 __NR_fallocate 285
 __NR_timerfd_settime 286

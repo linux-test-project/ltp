@@ -226,6 +226,9 @@
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 316
 # endif
+# ifndef __NR_utimensat
+#  define __NR_utimensat 320
+# endif
 # ifndef __NR_timerfd_create
 #  define __NR_timerfd_create 322
 # endif
@@ -295,6 +298,9 @@
 # endif
 # ifndef __NR_fallocate
 #  define __NR_fallocate 1303
+# endif
+# ifndef __NR_utimensat
+#  define __NR_utimensat 1306
 # endif
 # ifndef __NR_timerfd_create
 #  define __NR_timerfd_create 1310
@@ -743,6 +749,9 @@
 # endif
 # ifndef __NR_vmsplice
 #  define __NR_vmsplice 278
+# endif
+# ifndef __NR_utimensat
+#  define __NR_utimensat 280
 # endif
 # ifndef __NR_timerfd_create
 #  define __NR_timerfd_create 283
