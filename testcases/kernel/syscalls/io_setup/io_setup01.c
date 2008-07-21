@@ -31,7 +31,7 @@
 char *TCID = "io_setup01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int TST_TOTAL = 1;
+int TST_TOTAL = 4;
 
 /*
  * cleanup()
