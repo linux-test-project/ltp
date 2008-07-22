@@ -7,4 +7,4 @@ time-schedule01		time-schedule
 trace_sched01		trace_sched -c 1
 
 hackbench01 hackbench 150 process 1000
-hackbench02 hackbench 150 thread 1000
+hackbench02 hackbench 20 thread 1000
