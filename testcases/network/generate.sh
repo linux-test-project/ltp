@@ -53,22 +53,24 @@ $makeit $data_dir/$large_file $large_size
 $makeit $data_dir/$jumbo_file $jumbo_size
 
 if [ ! -e $data_dir/bin.sm ] ; then
-	cnt=6
-	while [ $((cnt=cnt-1)) -ge 0 ] ; do
+	cnt=5
+	while [ $cnt -ge 0 ] ; do
 		gzip -1 -c datafiles/ascii.sm >> $data_dir/bin.sm
+		cnt=$(($cnt-1))
 	done
 fi
 
 genfile() {
 	local input=$data_dir/$1 output=$data_dir/$2
-	local cnt=20
+	local cnt=19
 
 	if [ -e $output ] ; then
 		return 0
 	fi
 
-	while [ $((cnt=cnt-1)) -ge 0 ] ; do
+	while [ $cnt -ge 0 ] ; do
 		cat $input >> $output
+		cnt=$(($cnt-1))
 	done
 }
 
