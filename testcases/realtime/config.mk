@@ -23,3 +23,4 @@ LDLIBS   += $(srcdir)/lib/libjvmsim.o \
 	   $(srcdir)/lib/libstats.o \
 	   -lpthread -lrt -lm
 
+CFLAGS   += -m64
