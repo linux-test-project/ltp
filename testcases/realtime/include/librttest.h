@@ -107,7 +107,13 @@ typedef struct { volatile int counter; } atomic_t;
 		__asm__ __volatile__ ("rdtsc" : "=a" (low), "=d" (high)); \
 		val = (uint64_t)high << 32 | low;	\
 	} while(0)
-#elif defined(__powerpc__)	/* 32bit version */
+#elif defined(__powerpc__)
+#if defined(__powerpc64__)	/* 64bit version */
+#define rdtscll(val)					\
+	do {								\
+		__asm__ __volatile__ ("mfspr %0, 268" : "=r" (val));	\
+	} while(0)
+#else	/*__powerpc__ 32bit version */
 #define rdtscll(val)							\
 	 do {								\
 		uint32_t tbhi, tblo ;					\
@@ -115,6 +121,7 @@ typedef struct { volatile int counter; } atomic_t;
 		__asm__ __volatile__ ("mftbl %0" : "=r" (tblo));	\
 		val = 1000 * ((uint64_t) tbhi << 32) | tblo;		\
 	} while(0)
+#endif
 #else
 #error
 #endif
