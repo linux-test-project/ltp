@@ -96,6 +96,29 @@ typedef struct { volatile int counter; } atomic_t;
 
 #define PRINT_BUFFER_SIZE (1024*1024*4)
 
+/* TSC macros */
+#define ULL_MAX 18446744073709551615ULL // (1 << 64) - 1
+#if defined(__i386__)
+#define rdtscll(val) __asm__ __volatile__("rdtsc" : "=A" (val))
+#elif defined(__x86_64__)
+#define rdtscll(val)					\
+	do {						\
+		uint32_t low, high;			\
+		__asm__ __volatile__ ("rdtsc" : "=a" (low), "=d" (high)); \
+		val = (uint64_t)high << 32 | low;	\
+	} while(0)
+#elif defined(__powerpc__)	/* 32bit version */
+#define rdtscll(val)							\
+	 do {								\
+		uint32_t tbhi, tblo ;					\
+		__asm__ __volatile__ ("mftbu %0" : "=r" (tbhi));	\
+		__asm__ __volatile__ ("mftbl %0" : "=r" (tblo));	\
+		val = 1000 * ((uint64_t) tbhi << 32) | tblo;		\
+	} while(0)
+#else
+#error
+#endif
+
 extern pthread_mutex_t _buffer_mutex;
 extern char * _print_buffer;
 extern int _print_buffer_offset;
@@ -311,6 +334,9 @@ void nsec_to_ts(nsec_t ns, struct timespec *ts);
  * ts must not be null
  */
 int ts_to_nsec(struct timespec *ts, nsec_t *ns);
+
+/* return difference in microseconds */
+unsigned long long tsc_minus(unsigned long long tsc_start, unsigned long long tsc_end);
 
 /* rt_nanosleep: sleep for ns nanoseconds using clock_nanosleep
  */

@@ -55,26 +55,6 @@
 #include <librttest.h>
 #include <libjvmsim.h>
 
-#if defined(__i386__)
-#define rdtscll(val)	__asm__ __volatile__("rdtsc" : "=A" (val))
-#elif defined(__x86_64__)
-#define rdtscll(val)					\
-	do {						\
-		uint32_t low, high;			\
-		 __asm__ __volatile__ ("rdtsc" : "=a" (low), "=d" (high)); \
-		val = (uint64_t)high << 32 | low;	\
-	} while(0)
-#elif defined(__powerpc__)	/* 32bit version */
-#define rdtscll(val)							\
-	 do {								\
-		uint32_t tbhi, tblo ;					\
-		__asm__ __volatile__ ("mftbu %0" : "=r" (tbhi));	\
-		__asm__ __volatile__ ("mftbl %0" : "=r" (tblo));	\
-		val = 1000 * ((uint64_t) tbhi <<32) | tblo;		\
-	} while(0)
-#else
-#error
-#endif
 
 #define ITERATIONS 1000000ULL
 #define INTERVALS 10

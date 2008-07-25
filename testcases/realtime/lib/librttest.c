@@ -398,6 +398,19 @@ void nsec_to_ts(nsec_t ns, struct timespec *ts)
 	ts->tv_nsec = ns%NS_PER_SEC;
 }
 
+/* return difference in microseconds */
+unsigned long long tsc_minus(unsigned long long tsc_start, unsigned long long tsc_end)
+{
+	unsigned long long delta;
+	if (tsc_start < tsc_end)
+		delta = tsc_end - tsc_start;
+	else {
+		delta = ULL_MAX - (tsc_end - tsc_start) + 1;
+		printf("TSC wrapped, delta=%llu\n", delta);
+	}
+	return delta;
+}
+
 void rt_nanosleep_until(nsec_t ns) {
 	struct timespec ts_sleep, ts_rem;
 	int rc;
