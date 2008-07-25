@@ -402,7 +402,7 @@ void nsec_to_ts(nsec_t ns, struct timespec *ts)
 unsigned long long tsc_minus(unsigned long long tsc_start, unsigned long long tsc_end)
 {
 	unsigned long long delta;
-	if (tsc_start < tsc_end)
+	if (tsc_start <= tsc_end)
 		delta = tsc_end - tsc_start;
 	else {
 		delta = ULL_MAX - (tsc_end - tsc_start) + 1;
