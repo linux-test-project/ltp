@@ -1,5 +1,5 @@
 #
-#  Copyright (c) International Business Machines  Corp., 2007
+#  Copyright (c) International Business Machines  Corp., 2001
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,25 +16,31 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../include -Wall 
+CFLAGS += -I../../../../include -Wall
+LDLIBS += -L../../../../lib -lltp -lnuma -lrt
 
-LDLIBS += -L../../../lib -lltp 
-
-ifeq ($(HAS_NUMA),yes)    #its a numa machine
-LDLIBS += -L../../../lib  -lnuma
+ifeq ($(HAS_NUMA),yes)
 SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-else                                    #its not a numa machine
-SRCS    = support_numa.c
-TARGETS = $(patsubst %.c,%,$(SRCS))
+TARGETS = $(patsubst %.c, %, $(wildcard *[0-9].c))
 endif
 
-all: $(TARGETS) 
+all: $(TARGETS)
 
+move_pages_support.o: move_pages_support.h move_pages_support.c
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
-	chmod 755 numa01.sh; cp numa01.sh ../../bin/.
+$(TARGETS): move_pages_support.o
+
+install: move_page03.mode move_page11.mode
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	chmod 755 move_pages.sh; cp move_pages.sh ../../../bin/.
 
 clean:
 	rm -f $(TARGETS)
+
+move_page03.mode:
+	@/bin/sh ./move_pages03.mode.sh
+
+move_page11.mode:
+	@/bin/sh ./move_pages11.mode.sh
+
+.PHONY: move_pages03.mode

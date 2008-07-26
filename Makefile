@@ -37,8 +37,10 @@ AR=$(CROSS_COMPILER)ar
 RANLIB=$(CROSS_COMPILER)ranlib
 endif
 
+HAS_NUMA=$(shell sh tools/scripts/numa_test.sh)
+
 export CFLAGS += -Wall $(CROSS_CFLAGS)
-export CC AR RANLIB LDFLAGS
+export CC AR RANLIB LDFLAGS HAS_NUMA
 
 -include config.mk
 
