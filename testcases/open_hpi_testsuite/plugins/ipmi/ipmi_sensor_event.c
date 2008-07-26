@@ -44,7 +44,7 @@ static void set_discrete_sensor_misc_event(ipmi_event_t		*event,
 
 	dt_len = ipmi_event_get_data(event, (unsigned char *)data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len != 13) {
-		dbg("Wrong size of ipmi event data = %i", dt_len);
+		err("Wrong size of ipmi event data = %i", dt_len);
 		return;
 	}
 
@@ -107,7 +107,7 @@ static void set_event_sensor_num(ipmi_sensor_t    *sensor,
 		                    rpt_entry->ResourceId,
 	                            SAHPI_SENSOR_RDR, &sensor_id);
         if (!rdr) {
-                dbg("No rdr for sensor %d in resource:%d\n",
+                err("No rdr for sensor %d in resource:%d\n",
 			sensor_id.sensor_num, rpt_entry->ResourceId);
 		return;
 	}
@@ -144,12 +144,12 @@ static struct oh_event *sensor_discrete_map_event(
 
         dt_len = ipmi_event_get_data(event, data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len != 13) {
-		dbg("Wrong size of ipmi event data = %i", dt_len);
+		err("Wrong size of ipmi event data = %i", dt_len);
 		return NULL;
 	}
         e = malloc(sizeof(*e));
 	if (!e) {
-	dbg("Out of space");
+	err("Out of space");
 		return NULL;
 	}
 	memset(e, 0, sizeof(*e));
@@ -210,7 +210,7 @@ static struct oh_event *sensor_discrete_map_event(
 		e->event.Severity = SAHPI_OK;
 		break;
 	default:
-		dbg("wrong IPMIB-0 Status Change Event State = 0x%x",
+		err("wrong IPMIB-0 Status Change Event State = 0x%x",
 				data[10] & 0x0f);
 		break;
 	}
@@ -234,7 +234,7 @@ static struct oh_event *sensor_discrete_map_event(
 					SAHPI_ES_FULLY_REDUNDANT;
 		break;
 	default:
-		dbg("wrong IPMIB-0 Status Change Previous Event State = 0x%x",
+		err("wrong IPMIB-0 Status Change Previous Event State = 0x%x",
 				data[11] & 0x0f);
 		break;
 	}
@@ -323,7 +323,7 @@ set_thresholed_sensor_event_state(enum ipmi_thresh_e		threshold,
 			break;
 
 		default:
-			dbg("Invalid threshold giving");
+			err("Invalid threshold giving");
 			event->EventState = SAHPI_ES_UNSPECIFIED;
 	}
 }
@@ -338,7 +338,7 @@ static void set_thresholds_sensor_misc_event(ipmi_event_t	*event,
 
 	dt_len = ipmi_event_get_data(event, data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len != 13) {
-		dbg("Wrong size of ipmi event data = %i", dt_len);
+		err("Wrong size of ipmi event data = %i", dt_len);
 		return;
 	}
 	type = data[10] >> 6;
@@ -407,13 +407,13 @@ static struct oh_event *sensor_threshold_map_event(
 
 	dt_len = ipmi_event_get_data(event, data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len != 13) {
-		dbg("Wrong size of ipmi event data = %i", dt_len);
+		err("Wrong size of ipmi event data = %i", dt_len);
 		return NULL;
 	}
 
 	e = malloc(sizeof(*e));
 	if (!e) {
-		dbg("Out of space");
+		err("Out of space");
 		return NULL;
 	}
 
@@ -968,7 +968,7 @@ static void add_sensor_event(ipmi_entity_t	*ent,
 	sensor_info = malloc(sizeof(*sensor_info));
 
 	if (!sensor_info) {
-	      	dbg("Out of memory for sensor info");
+	      	err("Out of memory for sensor info");
 		return;
 	}
 
@@ -996,7 +996,7 @@ static void add_sensor_event(ipmi_entity_t	*ent,
 
 	rv = ipmi_sensor_get_num(sensor, &lun, &num);
 	if(rv) {
-		dbg("Erro getting sensor number");
+		err("Error getting sensor number");
         	rdr.RdrTypeUnion.SensorRec.Num =
 					SA_ERR_HPI_INVALID_DATA;
 	} else {
@@ -1013,7 +1013,7 @@ static void add_sensor_event(ipmi_entity_t	*ent,
 				&rdr, sensor_info, 1);
 	if (rv != SA_OK) {
 		free(sensor_info);
-		dbg("Failed to add sensor rdr");
+		err("Failed to add sensor rdr");
 	}
 }
 
@@ -1077,7 +1077,7 @@ void ohoi_sensor_event(enum ipmi_update_e op,
 					sensor, sensor_discrete_event, handler);
 			}
 			if (rv)
-			      	dbg("Unable to reg sensor event handler: %#x\n",
+			      	err("Unable to reg sensor event handler: %#x\n",
 					rv);
 			break;
 		case IPMI_CHANGED:
@@ -1149,14 +1149,14 @@ int ohoi_sensor_ipmi_event_to_hpi_event(
 
 	dt_len = ipmi_event_get_data(event, data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len != 13) {
-		dbg("Wrong size of ipmi event data = %i", dt_len);
+		err("Wrong size of ipmi event data = %i", dt_len);
 		return 0;
 	}
 
 	rv = ipmi_sensor_pointer_cb(sid, get_sensor_by_sensor_id_handler,
 					entity_id);
 	if (rv) {
-		dbg("no sensor for sensor_id rv = 0x%x", rv);
+		err("no sensor for sensor_id rv = 0x%x", rv);
 	}
 
 	dir = data[9] >> 7;

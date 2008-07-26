@@ -130,10 +130,10 @@ SaErrorT sim_inject_resource(struct oh_handler_state *state,
         }
 
         /* perform the injection */
-        trace("Injecting ResourceId %d", e->resource.ResourceId);
+        dbg("Injecting ResourceId %d", e->resource.ResourceId);
         rc = oh_add_resource(state->rptcache, &e->resource, data, FREE_RPT_DATA);
         if (rc) {
-                dbg("Error %s injecting ResourceId %d",
+                err("Error %s injecting ResourceId %d",
 		    oh_lookup_error(rc),
 		    e->resource.ResourceId);
 		g_free(e);
@@ -180,10 +180,10 @@ SaErrorT sim_inject_rdr(struct oh_handler_state *state,
         rid = ohe->resource.ResourceId;
 
         /* perform the injection */
-        trace("Injecting rdr for ResourceId %d", rid);
+        dbg("Injecting rdr for ResourceId %d", rid);
         rc = oh_add_rdr(state->rptcache, rid, rdr, data, 0);
         if (rc) {
-                dbg("Error %s injecting rdr for ResourceId %d",
+                err("Error %s injecting rdr for ResourceId %d",
 		    oh_lookup_error(rc), rid);
                 return rc;
         }
@@ -206,7 +206,7 @@ SaErrorT sim_inject_event(struct oh_handler_state *state, struct oh_event *ohe) 
         }
 
         /* perform the injection */
-        trace("Injecting event");
+        dbg("Injecting event");
         ohe->hid = state->hid;
         oh_evt_queue_push(state->eventq, ohe);
 
@@ -237,7 +237,7 @@ SaErrorT sim_inject_ext_event(void *hnd,
 
 	if (!hnd || !event || !rpte || !rdre) return SA_ERR_HPI_INVALID_PARAMS;
 
-	trace("Injecting external event");
+	dbg("Injecting external event");
 	memset(&e, 0, sizeof(struct oh_event));
 
 	if (rpte) {
@@ -286,7 +286,7 @@ SaErrorT sim_inject_ext_event(void *hnd,
                            rdr->RdrTypeUnion.AnnunciatorRec.AnnunciatorNum);
 			break;
 		default:
-			dbg("Invalid record type");
+			err("Invalid record type");
 			return SA_ERR_HPI_INVALID_PARAMS;
 		}
 

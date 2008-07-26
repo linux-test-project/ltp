@@ -66,7 +66,7 @@ static SaErrorT new_control(struct oh_handler_state *state,
 			memcpy(&info->state.StateUnion.Oem, &rdr->RdrTypeUnion.CtrlRec.TypeUnion.Oem.Default, sizeof(SaHpiCtrlStateOemT));
 			break;
 		default:
-			dbg("Bad Error: Unrecognized control type.");
+			err("Bad Error: Unrecognized control type.");
 	}
 
         // everything ready so add the rdr and extra info to the rptcache
@@ -89,13 +89,13 @@ SaErrorT sim_discover_chassis_controls(struct oh_handler_state *state,
         while (sim_chassis_controls[i].index != 0) {
                 rc = new_control(state, e, &sim_chassis_controls[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding chassis control", rc);
+                        err("Error %d returned when adding chassis control", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d chassis controls injected", j, i);
+        dbg("%d of %d chassis controls injected", j, i);
 
         return 0;
 }
@@ -110,13 +110,13 @@ SaErrorT sim_discover_cpu_controls(struct oh_handler_state *state,
         while (sim_cpu_controls[i].index != 0) {
                 rc = new_control(state, e, &sim_cpu_controls[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding cpu control", rc);
+                        err("Error %d returned when adding cpu control", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d cpu controls injected", j, i);
+        dbg("%d of %d cpu controls injected", j, i);
 
         return 0;
 }
@@ -131,13 +131,13 @@ SaErrorT sim_discover_dasd_controls(struct oh_handler_state *state,
         while (sim_dasd_controls[i].index != 0) {
                 rc = new_control(state, e, &sim_dasd_controls[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding dasd control", rc);
+                        err("Error %d returned when adding dasd control", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d dasd controls injected", j, i);
+        dbg("%d of %d dasd controls injected", j, i);
 
         return 0;
 }
@@ -152,13 +152,13 @@ SaErrorT sim_discover_hs_dasd_controls(struct oh_handler_state *state,
         while (sim_hs_dasd_controls[i].index != 0) {
                 rc = new_control(state, e, &sim_hs_dasd_controls[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding hs dasd control", rc);
+                        err("Error %d returned when adding hs dasd control", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d hs dasd controls injected", j, i);
+        dbg("%d of %d hs dasd controls injected", j, i);
 
         return 0;
 }
@@ -173,13 +173,13 @@ SaErrorT sim_discover_fan_controls(struct oh_handler_state *state,
         while (sim_fan_controls[i].index != 0) {
                 rc = new_control(state, e, &sim_fan_controls[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding fan control", rc);
+                        err("Error %d returned when adding fan control", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d fan controls injected", j, i);
+        dbg("%d of %d fan controls injected", j, i);
 
         return 0;
 }

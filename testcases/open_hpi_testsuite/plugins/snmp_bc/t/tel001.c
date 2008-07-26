@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 	SaErrorT expected_err;
 				
 	SaHpiResourceIdT  id = 0;
-        SaHpiSessionIdT sessionid;
 	SaHpiEventLogInfoT info;
 		
 	struct oh_handler_state l_handle;
@@ -49,10 +48,6 @@ int main(int argc, char **argv)
 	err = snmp_bc_get_sel_info(&l_handle, id, NULL);
 	checkstatus(err, expected_err, testfail);
 
-	/***************************
-	 * Cleanup after all tests
-	 ***************************/
-	err = tcleanup(&sessionid);
 	return testfail;
 
 }

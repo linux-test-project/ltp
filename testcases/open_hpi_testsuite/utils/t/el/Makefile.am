@@ -18,8 +18,6 @@ CLEANFILES           = $(top_builddir)/src/t/el/elTest.data
 
 INCLUDES             = @OPENHPI_INCLUDES@
 
-AM_CFLAGS            = @NOCFLAGS@ @COV_CFLAGS@
-
 $(REMOTE_SOURCES):
 	if test ! -f $@ -a ! -L $@; then \
                 $(LN_S) $(top_srcdir)/utils/$@; \
@@ -76,9 +74,9 @@ check_PROGRAMS = $(TESTS)
 
 el_test_001_SOURCES = el_test.h el_test_001.c
 nodist_el_test_001_SOURCES = $(REMOTE_SOURCES)
-el_test_002_SOURCES = el_test.h el_test_002.c addel.c
+el_test_002_SOURCES = el_test.h el_test_002.c
 nodist_el_test_002_SOURCES = $(REMOTE_SOURCES)
-el_test_003_SOURCES = el_test.h el_test_003.c addel.c
+el_test_003_SOURCES = el_test.h el_test_003.c
 nodist_el_test_003_SOURCES = $(REMOTE_SOURCES)
 el_test_004_SOURCES = el_test.h el_test_004.c
 nodist_el_test_004_SOURCES = $(REMOTE_SOURCES)

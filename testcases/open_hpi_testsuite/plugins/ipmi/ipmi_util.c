@@ -65,7 +65,7 @@ static inline int ohoi_resource_info_is_equal(
 		return (entity_id_is_equal(info1.u.slot.entity_id, 
                                                    info2.u.slot.entity_id));
 	} else {
-               dbg("UNKNOWN OHOI RESOURCE TYPE!");
+               err("UNKNOWN OHOI RESOURCE TYPE!");
                return 0;
         }
 }
@@ -112,7 +112,7 @@ SaHpiRptEntryT *ohoi_get_resource_by_entityid(RPTable                *table,
                                                  rpt_entry->ResourceId);            
         }
 
-	dbg("Not found resource by entity_id");
+	err("Not found resource by entity_id");
 
         return NULL;
 }
@@ -139,7 +139,7 @@ SaHpiRptEntryT *ohoi_get_resource_by_mcid(RPTable                *table,
                                                  rpt_entry->ResourceId);            
         }
 
-	dbg("Not found resource by mc_id");
+	err("Not found resource by mc_id");
 
         return NULL;
 }
@@ -156,7 +156,7 @@ SaErrorT ohoi_get_rdr_data(const struct oh_handler_state *handler,
                                  type,
                                  num);
         if (!rdr) {
-		dbg("no rdr for Resource %d. type = %d, num = %d", id, type, num);
+		err("no rdr for Resource %d. type = %d, num = %d", id, type, num);
                 /*XXX No err code for invalid rdr?*/
                 return SA_ERR_HPI_INVALID_RESOURCE;
         }
@@ -179,11 +179,11 @@ SaHpiRdrT *ohoi_get_rdr_by_data(RPTable *table,
 	struct ohoi_sensor_info *s_info;
 
 	if (!data) {
-		dbg("data == NULL");
+		err("data == NULL");
 		return NULL;
 	}
 	if (type != SAHPI_SENSOR_RDR) {
-		dbg("type != SAHPI_SENSOR_RDR");
+		err("type != SAHPI_SENSOR_RDR");
 		return NULL;
 	}
         
@@ -196,7 +196,7 @@ SaHpiRdrT *ohoi_get_rdr_by_data(RPTable *table,
 		}
 		s_info = oh_get_rdr_data(table, rid, rdr->RecordId);
 		if (!s_info) {
-			dbg("s_info == NULL");
+			err("s_info == NULL");
 			goto next_rdr;
 		}
 		if (s_info->type == OHOI_SENSOR_ATCA_MAPPED) {
@@ -275,7 +275,7 @@ int ohoi_delete_orig_sensor_rdr(struct oh_handler_state *handler,
 		s_info = oh_get_rdr_data(table, rpt->ResourceId,
 							rdr->RecordId);
 		if (!s_info) {
-			dbg("s_info == NULL");
+			err("s_info == NULL");
 			goto next_rdr;
 		}
 		if (rdr_todelete) {
@@ -298,7 +298,7 @@ next_rdr:
 	if (rdr_todelete) {
 		oh_remove_rdr(table, rpt->ResourceId, rdr_todelete->RecordId);
 	} else {
-		dbg("Sensor %d for rpt %d not deleted", mysid->sensor_num, rpt->ResourceId);
+		err("Sensor %d for rpt %d not deleted", mysid->sensor_num, rpt->ResourceId);
 	}
 	return !more_sensors;
 }
@@ -325,7 +325,7 @@ int ohoi_delete_orig_control_rdr(struct oh_handler_state *handler,
 		c_info = oh_get_rdr_data(table, rpt->ResourceId,
 							rdr->RecordId);
 		if (!c_info) {
-			dbg("c_info == NULL");
+			err("c_info == NULL");
 			goto next_rdr;
 		}
 		if (c_info->type == OHOI_CTRL_ATCA_MAPPED) {

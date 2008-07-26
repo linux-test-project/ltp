@@ -69,11 +69,11 @@ int main(int argc, char **argv)
 
         rc = oh_announcement_del(ann, 2, SAHPI_MAJOR);
         if(rc != SA_OK) {
-                dbg("ERROR: on_announcement_del returned %d.", rc);
+                err("ERROR: on_announcement_del returned %d.", rc);
                 return 1;
         }
         if(g_list_length(ann->annentries) != 2) {
-                dbg("ERROR: invalid number of announcements in list.");
+                err("ERROR: invalid number of announcements in list.");
                 return 1;
         }
 

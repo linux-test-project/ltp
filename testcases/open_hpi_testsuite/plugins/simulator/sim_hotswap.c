@@ -28,7 +28,7 @@ SaErrorT sim_get_hotswap_state(void *hnd,
         struct simResourceInfo *privinfo;
 
 	if (!hnd || !hsstate) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -40,14 +40,14 @@ SaErrorT sim_get_hotswap_state(void *hnd,
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
         if (!(rpt->ResourceCapabilities & SAHPI_CAPABILITY_MANAGED_HOTSWAP)) {
-		dbg("No hs capability");
+		err("No hs capability");
 		return SA_ERR_HPI_CAPABILITY;
 	}
 
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 
@@ -75,12 +75,12 @@ SaErrorT sim_set_hotswap_state(void *hnd,
         struct simResourceInfo *privinfo;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	if (NULL == oh_lookup_hsstate(hsstate)) {
-		dbg("Invalid hotswap state.");
+		err("Invalid hotswap state.");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 
@@ -98,7 +98,7 @@ SaErrorT sim_set_hotswap_state(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 
@@ -173,12 +173,12 @@ SaErrorT sim_request_hotswap_action(void *hnd,
         struct simResourceInfo *privinfo;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	if (NULL == oh_lookup_hsaction(act)) {
-		dbg("Invalid hotswap action.");
+		err("Invalid hotswap action.");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 
@@ -198,7 +198,7 @@ SaErrorT sim_request_hotswap_action(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 
@@ -225,7 +225,7 @@ SaErrorT sim_get_indicator_state(void *hnd,
         struct simResourceInfo *privinfo;
 
 	if (!hnd || !ind_state) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -245,7 +245,7 @@ SaErrorT sim_get_indicator_state(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 
@@ -262,12 +262,12 @@ SaErrorT sim_set_indicator_state(void *hnd,
         struct simResourceInfo *privinfo;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	if (NULL == oh_lookup_hsindicatorstate(ind_state)) {
-		dbg("Invalid hotswap indicator state.");
+		err("Invalid hotswap indicator state.");
 		return(SA_ERR_HPI_INVALID_REQUEST);
 	}
 
@@ -287,7 +287,7 @@ SaErrorT sim_set_indicator_state(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 
@@ -302,7 +302,7 @@ SaErrorT sim_get_autoextract_timeout(void *hnd,
 	struct simResourceInfo *privinfo;
 	
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -322,7 +322,7 @@ SaErrorT sim_get_autoextract_timeout(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 	
@@ -338,7 +338,7 @@ SaErrorT sim_set_autoextract_timeout(void *hnd,
 	struct simResourceInfo *privinfo;
 	
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -362,7 +362,7 @@ SaErrorT sim_set_autoextract_timeout(void *hnd,
         /* get our private state data */
 	privinfo = (struct simResourceInfo *)oh_get_resource_data(state->rptcache, rid);
  	if (privinfo == NULL) {
-		dbg("No resource data. ResourceId=%d", rid);
+		err("No resource data. ResourceId=%d", rid);
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 	

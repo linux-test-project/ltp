@@ -273,7 +273,7 @@ SaErrorT oh_queue_session_event(SaHpiSessionIdT sid,
                         session->eventq_status = SAHPI_EVT_QUEUE_OVERFLOW;
                         g_static_rec_mutex_unlock(&oh_sessions.lock);
                         oh_event_free(qevent, FALSE);
-                        dbg("Session %d's queue is out of space; "
+                        err("Session %d's queue is out of space; "
                             "# of events is %d; Max is %d",
                             tmp_sid, qlength, param.u.evt_queue_limit);
                         return SA_ERR_HPI_OUT_OF_SPACE;
@@ -422,7 +422,7 @@ static void __delete_by_did(gpointer key, gpointer value,
         gpointer event = NULL;
 
         if (!session) {
-                dbg("Session does not exist!");
+                err("Session does not exist!");
                 return;
         }
 

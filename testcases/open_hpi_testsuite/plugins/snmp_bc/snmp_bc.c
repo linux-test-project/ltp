@@ -36,7 +36,7 @@ SaErrorT snmp_bc_get_event(void *hnd)
         struct snmp_bc_hnd *custom_handle;
 	
         if (!hnd) {
-                dbg("Invalid parameter");
+                err("Invalid parameter");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -50,7 +50,7 @@ SaErrorT snmp_bc_get_event(void *hnd)
 	/* log error but take no corrected action.      */
 	/* New entry will still be there next time      */
 	if (err) {
-		dbg("Event Log cache build/sync failed. Error=%s", oh_lookup_error(err));
+		err("Event Log cache build/sync failed. Error=%s", oh_lookup_error(err));
 		/* return(err); */
 	}
 
@@ -92,7 +92,7 @@ SaErrorT snmp_bc_set_resource_tag(void *hnd, SaHpiResourceIdT rid, SaHpiTextBuff
 	struct ResourceInfo *res_info_ptr;
 
 	if (!oh_valid_textbuffer(tag) || !hnd) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -103,7 +103,7 @@ SaErrorT snmp_bc_set_resource_tag(void *hnd, SaHpiResourceIdT rid, SaHpiTextBuff
 	rpt = oh_get_resource_by_id(handle->rptcache, rid);
         if (!rpt) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("No RID.");
+		err("No RID.");
                 return(SA_ERR_HPI_INVALID_RESOURCE);
         }
 
@@ -111,14 +111,14 @@ SaErrorT snmp_bc_set_resource_tag(void *hnd, SaHpiResourceIdT rid, SaHpiTextBuff
 						handle->rptcache, rpt->ResourceId);
         if (!res_info_ptr) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("No resource information.");
+		err("No resource information.");
                 return(SA_ERR_HPI_INVALID_RESOURCE);
         }	
 						
 	err = oh_copy_textbuffer(&(rpt->ResourceTag), tag);
 	if (err) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("Cannot copy textbuffer");
+		err("Cannot copy textbuffer");
 		return(err);
 	}
 
@@ -126,7 +126,7 @@ SaErrorT snmp_bc_set_resource_tag(void *hnd, SaHpiResourceIdT rid, SaHpiTextBuff
         e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 			
@@ -168,7 +168,7 @@ SaErrorT snmp_bc_set_resource_severity(void *hnd, SaHpiResourceIdT rid, SaHpiSev
 	struct ResourceInfo *res_info_ptr;
 
 	if (oh_lookup_severity(sev) == NULL) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -179,7 +179,7 @@ SaErrorT snmp_bc_set_resource_severity(void *hnd, SaHpiResourceIdT rid, SaHpiSev
 	rpt = oh_get_resource_by_id(handle->rptcache, rid);
         if (!rpt) {
 		snmp_bc_unlock_handler(custom_handle);
-                dbg("No RID.");
+                err("No RID.");
                 return(SA_ERR_HPI_INVALID_RESOURCE);
         }
 
@@ -187,7 +187,7 @@ SaErrorT snmp_bc_set_resource_severity(void *hnd, SaHpiResourceIdT rid, SaHpiSev
 						handle->rptcache, rpt->ResourceId);
         if (!res_info_ptr) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("No resource information.");
+		err("No resource information.");
                 return(SA_ERR_HPI_INVALID_RESOURCE);
         }	
 
@@ -199,7 +199,7 @@ SaErrorT snmp_bc_set_resource_severity(void *hnd, SaHpiResourceIdT rid, SaHpiSev
         e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 			
@@ -239,11 +239,11 @@ SaErrorT snmp_bc_control_parm(void *hnd, SaHpiResourceIdT rid, SaHpiParmActionT 
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!hnd) {
-		trace("Invalid parameter - hnd");
+		dbg("Invalid parameter - hnd");
 		return(SA_ERR_HPI_INVALID_PARAMS);	
 	}
 	if (oh_lookup_parmaction(act) == NULL) {
-		trace("Invalid parameter - act");
+		dbg("Invalid parameter - act");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -254,13 +254,13 @@ SaErrorT snmp_bc_control_parm(void *hnd, SaHpiResourceIdT rid, SaHpiParmActionT 
 	snmp_bc_lock_handler(custom_handle);
 	rpt = oh_get_resource_by_id(handle->rptcache, rid);
 	if (!rpt) {
-                dbg("No RID.");
+                err("No RID.");
 		snmp_bc_unlock_handler(custom_handle);
                 return(SA_ERR_HPI_INVALID_RESOURCE);
 	}
 
 	if (rpt->ResourceCapabilities & SAHPI_CAPABILITY_CONFIGURATION) {
-		dbg("Resource configuration saving not supported.");
+		err("Resource configuration saving not supported.");
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -327,7 +327,7 @@ SaErrorT snmp_bc_snmp_get(struct snmp_bc_hnd *custom_handle,
 					custom_handle->handler_retries = 0;
 				}
                 	} else {
-				trace("HPI_TIMEOUT %s", objid);
+				dbg("HPI_TIMEOUT %s", objid);
 				snmp_bc_internal_retry();  /* l_retry got incremented here */			
 			}
         	} else {
@@ -340,7 +340,7 @@ SaErrorT snmp_bc_snmp_get(struct snmp_bc_hnd *custom_handle,
 				    (!value->string) ) /*||
 				    (value->string[0] == '\0'))*/ {
 					custom_handle->handler_retries = 0;
-					trace("Not readable reading from OID=%s.", objid);
+					dbg("Not readable reading from OID=%s.", objid);
                         		err = SA_ERR_HPI_NO_RESPONSE;
 					break;
 				} else {
@@ -387,7 +387,7 @@ SaErrorT snmp_bc_oid_snmp_get(struct snmp_bc_hnd *custom_handle,
 	oid = oh_derive_string(ep, loc_offset, 10, oidstr);
 	
 	if (oid == NULL) {
-		dbg("Cannot derive %s.", oidstr); 
+		err("Cannot derive %s.", oidstr); 
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	
@@ -468,7 +468,7 @@ SaErrorT snmp_bc_oid_snmp_set(struct snmp_bc_hnd *custom_handle,
 	rv = SA_OK;
 	oid = oh_derive_string(ep, loc_offset, 10, oidstr);
 	if (oid == NULL) {
-		dbg("NULL SNMP OID returned for %s.", oidstr);
+		err("NULL SNMP OID returned for %s.", oidstr);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	rv = snmp_bc_snmp_set(custom_handle, oid, value);

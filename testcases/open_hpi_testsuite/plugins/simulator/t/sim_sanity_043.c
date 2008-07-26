@@ -49,19 +49,19 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if (rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 	rc = saHpiDiscover(sid);
 	if (rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
         /* get the resource id of the chassis */
         SaHpiResourceIdT resid = get_resid(sid, SAHPI_ENT_SYSTEM_CHASSIS);
         if (resid == 0) {
-		dbg("Couldn't find the resource id of the chassis");
+		err("Couldn't find the resource id of the chassis");
                 return -1;
 	}
 
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
         if (rc == SA_ERR_HPI_READ_ONLY) {
                 return 0;
         } else if (rc != SA_OK) {
-		dbg("Couldn't add new area");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't add new area");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
@@ -89,16 +89,16 @@ int main(int argc, char **argv)
         field.Field.Data[6] = '\0';
         rc = saHpiIdrFieldAdd(sid, resid, 1, &field);
         if (rc != SA_OK) {
-		dbg("Couldn't add field");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't add field");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
         field.Type = SAHPI_IDR_FIELDTYPE_CUSTOM;
         rc = saHpiIdrFieldSet(sid, resid, 1, &field);
         if (rc != SA_OK) {
-		dbg("Couldn't set field");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't set field");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
         field.FieldId = 1;
         rc = saHpiIdrFieldAdd(sid, resid, 1, &field);
         if (rc == SA_OK) {
-		dbg("Able to set field to a read only area");
+		err("Able to set field to a read only area");
                 return -1;
 	}
 

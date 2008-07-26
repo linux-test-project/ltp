@@ -63,7 +63,7 @@ SaErrorT rtas_get_sensor_reading(void                *handler,
 	size_t sizebuf = sizeof(err_buf);
 	
 	if (!handler) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -96,14 +96,14 @@ SaErrorT rtas_get_sensor_reading(void                *handler,
  	
 	if (sensor_info == NULL) {
 		//unlock it
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 	
 	memset(&sensor_reading, 0, sizeof(SaHpiSensorReadingT));
 	sensor_state = SAHPI_ES_UNSPECIFIED;
 
-	trace("Sensor Reading: Resource=%s; RDR=%s", rpt->ResourceTag.Data, rdr->IdString.Data);
+	dbg("Sensor Reading: Resource=%s; RDR=%s", rpt->ResourceTag.Data, rdr->IdString.Data);
 	
 	/************************************************************
 	 * Get sensor's reading.
@@ -119,7 +119,7 @@ SaErrorT rtas_get_sensor_reading(void                *handler,
 			
 			decode_rtas_error(state, err_buf, sizebuf, sensor_info->token, sensor_info->index);
 					
-			dbg("Cannot determine sensor's reading. Error=%s", err_buf);
+			err("Cannot determine sensor's reading. Error=%s", err_buf);
 			//unlock it
 			
 			/* NEED TO MAP RTAS ERRORS TO HPI ERRORS */
@@ -139,7 +139,7 @@ SaErrorT rtas_get_sensor_reading(void                *handler,
 				if (state < 0) {
 					decode_rtas_error(state, err_buf, sizebuf, sensor_info->token, sensor_info->index);
 					
-					dbg("Cannot determine sensor's reading. Error=%s", err_buf);
+					err("Cannot determine sensor's reading. Error=%s", err_buf);
 					//unlock it
 					/* NEED TO MAP RTAS ERRORS TO HPI ERRORS */
 					return(state);
@@ -272,7 +272,7 @@ SaErrorT rtas_get_sensor_thresholds(void *handler,
 	struct oh_handler_state *handler_state = (struct oh_handler_state *)handler;
 	
 	if (!handler || !thresholds) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -300,7 +300,7 @@ SaErrorT rtas_get_sensor_thresholds(void *handler,
 	
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handler_state->rptcache, resourceid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		//unlock it
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -342,7 +342,7 @@ SaErrorT rtas_set_sensor_thresholds(void *handler,
 	struct SensorInfo *sinfo;
 
 	if (!handler || !thresholds) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -370,7 +370,7 @@ SaErrorT rtas_set_sensor_thresholds(void *handler,
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handler_state->rptcache, resourceid, rdr->RecordId);
  	
 	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		//unlock it
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       

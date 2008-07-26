@@ -48,28 +48,28 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if (rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 
 	rc = saHpiDiscover(sid);
 	if (rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
         /* get the resource id of the chassis */
         SaHpiResourceIdT resid = get_resid(sid, SAHPI_ENT_SYSTEM_CHASSIS);
         if (resid == 0) {
-		dbg("Couldn't find the resource id of the chassis");
+		err("Couldn't find the resource id of the chassis");
                 return -1;
 	}
 
         /* get sensor event masks */
         rc = saHpiSensorEventMasksGet(sid, resid, 1, &amask, &dmask);
         if (rc != SA_OK) {
-		dbg("Couldn't get sensor event masks");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't get sensor event masks");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
         if (rc == SA_OK) {
                 /* all our sensors are read-only so if we can change the
                    sensor it is an error */
-		dbg("Error: able to write to a read-only sensor");
+		err("Error: able to write to a read-only sensor");
                 return -1;
 	}
 

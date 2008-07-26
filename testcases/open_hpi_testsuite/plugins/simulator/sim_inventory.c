@@ -63,13 +63,13 @@ SaErrorT sim_discover_chassis_inventory(struct oh_handler_state *state,
         while (sim_chassis_inventory[i].invrec.IdrId != 0) {
                 rc = new_inventory(state, e, &sim_chassis_inventory[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding chassis inventory", rc);
+                        err("Error %d returned when adding chassis inventory", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d chassis inventory injected", j, i);
+        dbg("%d of %d chassis inventory injected", j, i);
 
         return 0;
 }
@@ -84,13 +84,13 @@ SaErrorT sim_discover_cpu_inventory(struct oh_handler_state *state,
         while (sim_cpu_inventory[i].invrec.IdrId != 0) {
                 rc = new_inventory(state, e, &sim_cpu_inventory[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding cpu inventory", rc);
+                        err("Error %d returned when adding cpu inventory", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d cpu inventory injected", j, i);
+        dbg("%d of %d cpu inventory injected", j, i);
 
         return 0;
 }
@@ -105,13 +105,13 @@ SaErrorT sim_discover_dasd_inventory(struct oh_handler_state *state,
         while (sim_dasd_inventory[i].invrec.IdrId != 0) {
                 rc = new_inventory(state, e, &sim_dasd_inventory[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding dasd inventory", rc);
+                        err("Error %d returned when adding dasd inventory", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d dasd inventory injected", j, i);
+        dbg("%d of %d dasd inventory injected", j, i);
 
         return 0;
 }
@@ -126,13 +126,13 @@ SaErrorT sim_discover_hs_dasd_inventory(struct oh_handler_state *state,
         while (sim_hs_dasd_inventory[i].invrec.IdrId != 0) {
                 rc = new_inventory(state, e, &sim_hs_dasd_inventory[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding hs dasd inventory", rc);
+                        err("Error %d returned when adding hs dasd inventory", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d hs dasd inventory injected", j, i);
+        dbg("%d of %d hs dasd inventory injected", j, i);
 
         return 0;
 }
@@ -147,13 +147,13 @@ SaErrorT sim_discover_fan_inventory(struct oh_handler_state *state,
         while (sim_fan_inventory[i].invrec.IdrId != 0) {
                 rc = new_inventory(state, e, &sim_fan_inventory[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding fan inventory", rc);
+                        err("Error %d returned when adding fan inventory", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d fan inventory injected", j, i);
+        dbg("%d of %d fan inventory injected", j, i);
 
         return 0;
 }
@@ -166,7 +166,7 @@ SaErrorT sim_get_idr_info(void *hnd,
         struct sim_inventory_info *info;
 
         if (!hnd || !IdrInfo) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -188,7 +188,7 @@ SaErrorT sim_get_idr_info(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -211,7 +211,7 @@ SaErrorT sim_get_idr_area_header(void *hnd,
         int found = SAHPI_FALSE;
 
         if (!hnd || !NextAreaId || !Header) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -233,7 +233,7 @@ SaErrorT sim_get_idr_area_header(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -294,7 +294,7 @@ SaErrorT sim_add_idr_area(void *hnd,
         struct sim_inventory_info *info;
 
         if (!hnd || !AreaId) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
         
@@ -318,7 +318,7 @@ SaErrorT sim_add_idr_area(void *hnd,
         
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -354,7 +354,7 @@ SaErrorT sim_del_idr_area(void *hnd,
         int found = SAHPI_FALSE;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -376,7 +376,7 @@ SaErrorT sim_del_idr_area(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -390,7 +390,7 @@ SaErrorT sim_del_idr_area(void *hnd,
                 break;
         }
         if (found == SAHPI_FALSE) {
-                dbg("Went through the list and could not find it");
+                err("Went through the list and could not find it");
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -426,7 +426,7 @@ SaErrorT sim_get_idr_field(void *hnd,
         int found = SAHPI_FALSE;
 
         if (!hnd || !NextFieldId || !Field) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -448,7 +448,7 @@ SaErrorT sim_get_idr_field(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -547,7 +547,7 @@ SaErrorT sim_add_idr_field(void *hnd,
         int found = SAHPI_FALSE;
 
         if (!hnd || !Field) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -566,14 +566,14 @@ SaErrorT sim_add_idr_field(void *hnd,
         /* Find inventory and its data - see if it accessable */
         SaHpiRdrT *rdr = oh_get_rdr_by_type(state->rptcache, rid, SAHPI_INVENTORY_RDR, IdrId);
         if (rdr == NULL) {
-        	dbg("Inventory RDR %d for resource %d was not found",
+        	err("Inventory RDR %d for resource %d was not found",
         	    IdrId, rid);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
         
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
         
@@ -583,7 +583,7 @@ SaErrorT sim_add_idr_field(void *hnd,
 
         /* find the corresponding area */
         if (info->idrinfo.NumAreas == 0) {
-        	dbg("No areas in the specified IDR");
+        	err("No areas in the specified IDR");
                 return SA_ERR_HPI_NOT_PRESENT;
         }
         
@@ -596,7 +596,7 @@ SaErrorT sim_add_idr_field(void *hnd,
         }
         
         if (found == SAHPI_FALSE) {
-        	dbg("Specified area was not found in IDR");
+        	err("Specified area was not found in IDR");
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -634,7 +634,7 @@ SaErrorT sim_set_idr_field(void *hnd,
         char * type;
 
         if (!hnd || !Field) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
         type = oh_lookup_idrfieldtype(Field->Type);
@@ -663,7 +663,7 @@ SaErrorT sim_set_idr_field(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -720,7 +720,7 @@ SaErrorT sim_del_idr_field(void *hnd,
         int found = SAHPI_FALSE;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -742,7 +742,7 @@ SaErrorT sim_del_idr_field(void *hnd,
         }
         info = (struct sim_inventory_info *)oh_get_rdr_data(state->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No inventory data. IdrId=%s", rdr->IdString.Data);
+                err("No inventory data. IdrId=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 

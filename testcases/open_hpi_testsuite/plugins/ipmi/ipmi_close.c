@@ -31,7 +31,7 @@ static void close_connection(ipmi_domain_t *domain, void *user_data)
 	
 	rv = ipmi_domain_close(domain, close_done, user_data);
 	if (rv) {
-		dbg("ipmi_close_connection failed!");
+		err("ipmi_close_connection failed!");
 		*flag = 1;
 	}
 }
@@ -47,7 +47,7 @@ void ohoi_close_connection(ipmi_domain_id_t domain_id, void *user_data)
 	rv = ipmi_domain_pointer_cb(domain_id, close_connection, ipmi_handler);
 	
 	if (rv) {
-		dbg("ipmi_domain_pointer_cb failed!");
+		err("ipmi_domain_pointer_cb failed!");
 		return;
 	}
 

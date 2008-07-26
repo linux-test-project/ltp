@@ -41,7 +41,7 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
         struct snmp_bc_hnd *custom_handle;
 	
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}		
 			
@@ -51,7 +51,7 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
         if (!custom_handle) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -60,13 +60,13 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
 	/* Find root Entity Path */
 	root_tuple = (char *)g_hash_table_lookup(handle->config, "entity_root");
         if (root_tuple == NULL) {
-                dbg("Cannot find configuration parameter.");
+                err("Cannot find configuration parameter.");
                 snmp_bc_unlock_handler(custom_handle);
                 return(SA_ERR_HPI_INTERNAL_ERROR);
         }
         err = oh_encode_entitypath(root_tuple, &ep_root);
         if (err) {
-                dbg("Cannot convert entity path to string. Error=%s.", oh_lookup_error(err));
+                err("Cannot convert entity path to string. Error=%s.", oh_lookup_error(err));
                 snmp_bc_unlock_handler(custom_handle);
                 return(SA_ERR_HPI_INTERNAL_ERROR);
         }
@@ -76,7 +76,7 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
 	/* Allocate space for temporary RPT cache                          */
         /*custom_handle->tmpcache = (RPTable *)g_malloc0(sizeof(RPTable)); */
         /*if (custom_handle->tmpcache == NULL) {                           */
-        /*        dbg("Out of memory.");                                   */
+        /*        err("Out of memory.");                                   */
         /*        snmp_bc_unlock_handler(custom_handle);                   */
         /*        return(SA_ERR_HPI_OUT_OF_MEMORY);                         */
 	/*}                                                                */
@@ -102,7 +102,7 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
 			 */
 			err = SA_OK;
 		} else {
-			dbg("Discovery failed. Error=%s.", oh_lookup_error(err));
+			err("Discovery failed. Error=%s.", oh_lookup_error(err));
 		}
 		goto CLEANUP;
 	}
@@ -127,7 +127,7 @@ SaErrorT snmp_bc_discover_resources(void *hnd)
 		/* only log the error.  Do not do any recovery because log entries */
 		/* are still kept in bc mm.  We'll pick them up during synch.      */
 		/* --------------------------------------------------------------- */
-		trace("snmp_bc_discover, Error %s when building elcache.\n", oh_lookup_error(err1));
+		dbg("snmp_bc_discover, Error %s when building elcache.\n", oh_lookup_error(err1));
 	}
 	
 	if (custom_handle->isFirstDiscovery == SAHPI_TRUE)
@@ -167,7 +167,7 @@ SaErrorT snmp_bc_discover_sensors(struct oh_handler_state *handle,
 	for (i=0; sensor_array[i].index != 0; i++) {
 		rdrptr = (SaHpiRdrT *)g_malloc0(sizeof(SaHpiRdrT));
 		if (rdrptr == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 
@@ -186,7 +186,7 @@ SaErrorT snmp_bc_discover_sensors(struct oh_handler_state *handle,
 							  sensor_array[i].sensor_info.mib.write_only);
 			}
 			else {
-				dbg("Sensor %s cannot be read.", sensor_array[i].comment);
+				err("Sensor %s cannot be read.", sensor_array[i].comment);
 				g_free(rdrptr);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
@@ -202,7 +202,7 @@ SaErrorT snmp_bc_discover_sensors(struct oh_handler_state *handle,
 			oh_init_textbuffer(&(rdrptr->IdString));
 			oh_append_textbuffer(&(rdrptr->IdString), sensor_array[i].comment);
 
-			trace("Discovered sensor: %s.", rdrptr->IdString.Data);
+			dbg("Discovered sensor: %s.", rdrptr->IdString.Data);
 
 			sensor_info_ptr = g_memdup(&(sensor_array[i].sensor_info), sizeof(struct SensorInfo));
 			err = oh_add_rdr(handle->rptcache,
@@ -210,7 +210,7 @@ SaErrorT snmp_bc_discover_sensors(struct oh_handler_state *handle,
 					 rdrptr,
 					 sensor_info_ptr, 0);
 			if (err) {
-				dbg("Cannot add RDR. Error=%s.", oh_lookup_error(err));
+				err("Cannot add RDR. Error=%s.", oh_lookup_error(err));
 				g_free(rdrptr);
 			}
 			else {
@@ -257,7 +257,7 @@ SaErrorT snmp_bc_discover_controls(struct oh_handler_state *handle,
 	for (i=0; control_array[i].index != 0; i++) {
 		rdrptr = (SaHpiRdrT *)g_malloc0(sizeof(SaHpiRdrT));
 		if (rdrptr == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 
@@ -277,7 +277,7 @@ SaErrorT snmp_bc_discover_controls(struct oh_handler_state *handle,
 			oh_init_textbuffer(&(rdrptr->IdString));
 			oh_append_textbuffer(&(rdrptr->IdString), control_array[i].comment);
 
-			trace("Discovered control: %s.", rdrptr->IdString.Data);
+			dbg("Discovered control: %s.", rdrptr->IdString.Data);
 
 			control_info_ptr = g_memdup(&(control_array[i].control_info), sizeof(struct ControlInfo));
 			err = oh_add_rdr(handle->rptcache,
@@ -285,7 +285,7 @@ SaErrorT snmp_bc_discover_controls(struct oh_handler_state *handle,
 					 rdrptr,
 					 control_info_ptr, 0);
 			if (err) {
-				dbg("Cannot add RDR. Error=%s.", oh_lookup_error(err));
+				err("Cannot add RDR. Error=%s.", oh_lookup_error(err));
 				g_free(rdrptr);
 			}
 			else {
@@ -329,7 +329,7 @@ SaErrorT snmp_bc_discover_inventories(struct oh_handler_state *handle,
 	for (i=0; inventory_array[i].inventory_info.hardware_mib.oid.OidManufacturer != NULL; i++) {
 		rdrptr = (SaHpiRdrT *)g_malloc0(sizeof(SaHpiRdrT));
 		if (rdrptr == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 		
@@ -347,7 +347,7 @@ SaErrorT snmp_bc_discover_inventories(struct oh_handler_state *handle,
 			oh_init_textbuffer(&(rdrptr->IdString));
 			oh_append_textbuffer(&(rdrptr->IdString), inventory_array[i].comment);
 
-			trace("Discovered inventory: %s.", rdrptr->IdString.Data);
+			dbg("Discovered inventory: %s.", rdrptr->IdString.Data);
 
 			inventory_info_ptr = g_memdup(&(inventory_array[i].inventory_info), sizeof(struct InventoryInfo));
 			err = oh_add_rdr(handle->rptcache,
@@ -355,7 +355,7 @@ SaErrorT snmp_bc_discover_inventories(struct oh_handler_state *handle,
 					 rdrptr,
 					 inventory_info_ptr, 0);
 			if (err) {
-				dbg("Cannot add RDR. Error=%s.", oh_lookup_error(err));
+				err("Cannot add RDR. Error=%s.", oh_lookup_error(err));
 				g_free(rdrptr);
 			}
 			else {
@@ -404,7 +404,7 @@ SaErrorT snmp_bc_create_resourcetag(SaHpiTextBufferT *buffer, const char *str, S
 
 		locstr = (gchar *)g_malloc0(OH_MAX_LOCATION_DIGITS + 1);
 		if (locstr == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 		if (loc != SNMP_BC_NOT_VALID) {
@@ -477,7 +477,7 @@ SaErrorT snmp_bc_validate_ep(SaHpiEntityPathT *org_ep, SaHpiEntityPathT *val_ep)
         int i, j;
 
         if (!org_ep || !val_ep) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -527,7 +527,7 @@ SaErrorT snmp_bc_mod_sensor_ep(SaHpiRdrT *rdrptr,
 	sensor_array_ipmi = (struct snmp_bc_ipmi_sensor *)sensor_array_in;
 
         if (!rdrptr || !sensor_array) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -552,7 +552,7 @@ SaErrorT snmp_bc_mod_sensor_ep(SaHpiRdrT *rdrptr,
 		}
 	
 	} else {
-		trace("This not one of the Blade sensor.\n");
+		dbg("This not one of the Blade sensor.\n");
 	}
 	
 	return(SA_OK);	  
@@ -578,7 +578,7 @@ SaErrorT snmp_bc_add_ep(SaHpiRdrT *rdrptr, SaHpiEntityPathT *ep_add)
 	int i;
 	
 	if ( !rdrptr || !ep_add) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);	
 	}
 	

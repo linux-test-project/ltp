@@ -40,42 +40,42 @@ int main(int argc, char **argv)
         el = oh_el_create(5);
 
         if(el == NULL) {
-                dbg("ERROR: el pointer == NULL.");
+                err("ERROR: el pointer == NULL.");
                 return 1;
         }
 
         if(el->info.Enabled != TRUE) {
-                dbg("ERROR: el->info.Enabled invalid.");
+                err("ERROR: el->info.Enabled invalid.");
                 return 1;
         }
 
         if(el->info.OverflowFlag != FALSE) {
-                dbg("ERROR: el->info.OverflowFlag invalid.");
+                err("ERROR: el->info.OverflowFlag invalid.");
                 return 1;
         }
 
         if(el->info.UpdateTimestamp != SAHPI_TIME_UNSPECIFIED) {
-                dbg("ERROR: el->info.UpdateTimestamp invalid.");
+                err("ERROR: el->info.UpdateTimestamp invalid.");
                 return 1;
         }
 
         if(el->basetime != 0) {
-                dbg("ERROR: el->basetime invalid.");
+                err("ERROR: el->basetime invalid.");
                 return 1;
         }
 
         if(el->nextid != SAHPI_OLDEST_ENTRY + 1) {
-                dbg("ERROR: el->nextid invalid.");
+                err("ERROR: el->nextid invalid.");
                 return 1;
         }
 
         if(el->info.Size != 5) {
-                dbg("ERROR: el->info.Size invalid.");
+                err("ERROR: el->info.Size invalid.");
                 return 1;
         }
 
         if(el->list != NULL) {
-                dbg("ERROR: el->list invalid.");
+                err("ERROR: el->list invalid.");
                 return 1;
         }
 

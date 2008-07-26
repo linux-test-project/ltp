@@ -49,12 +49,12 @@ static void init_inventory_info(
 	unsigned int i;
 	
 	if (fru == NULL) {
-		dbg("ipmi_entity_get_fru returned NULL");
+		err("ipmi_entity_get_fru returned NULL");
 		return;
 	}
 	i_info = malloc(sizeof(*i_info));
         if (!i_info) {
-                dbg("Out of memory");
+                err("Out of memory");
                 return;
         }
         memset(i_info, 0, sizeof(*i_info));
@@ -189,7 +189,7 @@ static void add_inventory_event(struct ohoi_resource_info *res_info,
         
 	init_inventory_info(handler, res_info, ent);
 	if (res_info->fru == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return;
 	}
 
@@ -217,7 +217,7 @@ static void add_inventory_event(struct ohoi_resource_info *res_info,
 	} else {
 		free(res_info->fru);
 		res_info->fru = NULL;
-		dbg("couldn't add inventory. rv = %d", rv);
+		err("couldn't add inventory. rv = %d", rv);
 	}	
 }
 

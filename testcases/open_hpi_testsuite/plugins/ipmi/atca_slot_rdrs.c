@@ -291,12 +291,12 @@ static SaHpiRdrT *atca_create_slot_state_sensor(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_s_info = malloc(sizeof (struct ohoi_sensor_info));
 	if (l_s_info == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -534,12 +534,12 @@ static SaHpiRdrT *atca_create_fru_activation_control(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_c_info = malloc(sizeof (struct ohoi_control_info));
 	if (l_c_info == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -625,7 +625,7 @@ static void atca_get_assigned_pwr_cb(ipmi_mc_t *mc,
 		_atca_get_assigned_pwr_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x\n", rv);
+		err("ipmicmd_send = 0x%x\n", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	}
@@ -671,16 +671,16 @@ static SaErrorT atca_get_assigned_pwr_reading(struct oh_handler_state *handler,
 				atca_get_assigned_pwr_cb,
 				&info);
 		if (rv != 0) {
-			dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+			err("ipmi_domain_pointer_cb = 0x%x", rv);
 			return SA_ERR_HPI_INTERNAL_ERROR;
 		}
 		rv = ohoi_loop(&info.done, ipmi_handler);
 		if (rv != SA_OK) {
-			dbg("ohoi_loop = 0x%x", rv);
+			err("ohoi_loop = 0x%x", rv);
 			return SA_ERR_HPI_INTERNAL_ERROR;
 		}
 		if (info.rv != SA_OK) {
-			dbg("info.rv = 0x%x\n", info.rv);
+			err("info.rv = 0x%x\n", info.rv);
 			return info.rv;
 		}
 		reading->Value.SensorFloat64 = ass_pwr.ass_pwr;
@@ -729,12 +729,12 @@ static SaHpiRdrT *atca_create_assigned_pwr_sensor(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_s_info = malloc(sizeof (struct ohoi_sensor_info));
 	if (l_s_info == NULL) {
-	dbg("Out of memory");
+	err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -888,12 +888,12 @@ static SaHpiRdrT *atca_create_max_pwr_capability_sensor(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_s_info = malloc(sizeof (struct ohoi_sensor_info));
 	if (l_s_info == NULL) {
-	dbg("Out of memory");
+	err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -975,7 +975,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 
 	rpt = oh_get_resource_by_id(handler->rptcache, rid);
 	if (rpt == NULL) {
-		dbg("No rpt for atca chassis?");
+		err("No rpt for atca chassis?");
 		return;
 	}
 
@@ -984,7 +984,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rid,
 					rdr, s_info, 1) != SA_OK) {
-			dbg("couldn't add sensor rdr");
+			err("couldn't add sensor rdr");
 			free(s_info);
 		} else {
 			rpt->ResourceCapabilities |=
@@ -999,7 +999,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rid,
 					rdr, c_info, 1) != SA_OK) {
-			dbg("couldn't add control rdr");
+			err("couldn't add control rdr");
 			free(c_info);
 		} else {
 			rpt->ResourceCapabilities |=
@@ -1014,7 +1014,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rid,
 					rdr, s_info, 1) != SA_OK) {
-			dbg("couldn't add sensor rdr");
+			err("couldn't add sensor rdr");
 			free(s_info);
 		} else {
 			rpt->ResourceCapabilities |=
@@ -1029,7 +1029,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rid,
 					rdr, s_info, 1) != SA_OK) {
-			dbg("couldn't add sensor rdr");
+			err("couldn't add sensor rdr");
 			free(s_info);
 		} else {
 			rpt->ResourceCapabilities |=

@@ -21,19 +21,19 @@ void *rtas_open(GHashTable *handler_config, unsigned int hid, oh_evt_queue *even
 	char *entity_root = NULL;
 
         if (!handler_config) {
-                dbg("No configuration passed.");
+                err("No configuration passed.");
                 return NULL;
         } else if (!hid) {
-                dbg("Bad handler id passed.");
+                err("Bad handler id passed.");
                 return NULL;
         } else if (!eventq) {
-                dbg("No event queue was passed.");
+                err("No event queue was passed.");
                 return NULL;
         }
 
         entity_root = (char *)g_hash_table_lookup(handler_config, "entity_root");
 	if (!entity_root) {
-	        dbg("Cannot find \"entity_root\" configuration parameter.");
+	        err("Cannot find \"entity_root\" configuration parameter.");
 		return NULL;
 	}
 

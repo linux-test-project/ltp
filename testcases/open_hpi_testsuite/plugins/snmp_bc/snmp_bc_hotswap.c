@@ -39,7 +39,7 @@ SaErrorT snmp_bc_get_hotswap_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !state) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -47,7 +47,7 @@ SaErrorT snmp_bc_get_hotswap_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -66,7 +66,7 @@ SaErrorT snmp_bc_get_hotswap_state(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
 	if (!resinfo) {
-		dbg("No resource data for %s", rpt->ResourceTag.Data);
+		err("No resource data for %s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -103,12 +103,12 @@ SaErrorT snmp_bc_set_hotswap_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	if (NULL == oh_lookup_hsstate(state)) {
-		dbg("Invalid hotswap state.");
+		err("Invalid hotswap state.");
 		return(SA_ERR_HPI_INVALID_REQUEST);
 	}
 
@@ -116,7 +116,7 @@ SaErrorT snmp_bc_set_hotswap_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -135,7 +135,7 @@ SaErrorT snmp_bc_set_hotswap_state(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
 	if (!resinfo) {
-		dbg("No resource data for %s", rpt->ResourceTag.Data);
+		err("No resource data for %s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -184,12 +184,12 @@ SaErrorT snmp_bc_request_hotswap_action(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	if (NULL == oh_lookup_hsaction(act)) {
-		dbg("Invalid hotswap action.");
+		err("Invalid hotswap action.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -197,7 +197,7 @@ SaErrorT snmp_bc_request_hotswap_action(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -216,7 +216,7 @@ SaErrorT snmp_bc_request_hotswap_action(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
 	if (!resinfo) {
-		dbg("No resource data for %s", rpt->ResourceTag.Data);
+		err("No resource data for %s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -228,7 +228,7 @@ SaErrorT snmp_bc_request_hotswap_action(void *hnd,
 			
 			err = snmp_bc_set_power_state(hnd, rid, SAHPI_POWER_ON);
 			if (err) {
-				dbg("%s resource does not support power on", rpt->ResourceTag.Data);
+				err("%s resource does not support power on", rpt->ResourceTag.Data);
 				snmp_bc_unlock_handler(custom_handle);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
@@ -246,7 +246,7 @@ SaErrorT snmp_bc_request_hotswap_action(void *hnd,
 			
 			err = snmp_bc_set_power_state(hnd, rid, SAHPI_POWER_OFF);
 			if (err) {
-				dbg("%s resource does not support power off", rpt->ResourceTag.Data);
+				err("%s resource does not support power off", rpt->ResourceTag.Data);
 				snmp_bc_unlock_handler(custom_handle);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
@@ -284,7 +284,7 @@ SaErrorT snmp_bc_get_indicator_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !state) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -292,7 +292,7 @@ SaErrorT snmp_bc_get_indicator_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -310,7 +310,7 @@ SaErrorT snmp_bc_get_indicator_state(void *hnd,
 		return(SA_ERR_HPI_CAPABILITY);
 	}
 
-	dbg("Hotswap indicators are not supported by platform");
+	err("Hotswap indicators are not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -339,12 +339,12 @@ SaErrorT snmp_bc_set_indicator_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	if (NULL == oh_lookup_hsindicatorstate(state)) {
-		dbg("Invalid hotswap indicator state.");
+		err("Invalid hotswap indicator state.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -352,7 +352,7 @@ SaErrorT snmp_bc_set_indicator_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -370,7 +370,7 @@ SaErrorT snmp_bc_set_indicator_state(void *hnd,
 		return(SA_ERR_HPI_CAPABILITY);
 	}
 
-	dbg("Hotswap indicators are not supported by platform");
+	err("Hotswap indicators are not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -391,7 +391,7 @@ SaErrorT snmp_bc_set_autoinsert_timeout(void *hnd,
 				     SaHpiTimeoutT Timeout)
 {
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -416,7 +416,7 @@ SaErrorT snmp_bc_get_autoextract_timeout(void *hnd,
 				     SaHpiTimeoutT *Timeout)
 {
 	if (!hnd || !Timeout) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -442,7 +442,7 @@ SaErrorT snmp_bc_set_autoextract_timeout(void *hnd,
 				     SaHpiTimeoutT Timeout)
 {
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 

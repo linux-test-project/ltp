@@ -49,19 +49,19 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if (rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 	rc = saHpiDiscover(sid);
 	if (rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
         /* get the resource id of the chassis */
         SaHpiResourceIdT resid = get_resid(sid, SAHPI_ENT_SYSTEM_CHASSIS);
         if (resid == 0) {
-		dbg("Couldn't find the resource id of the chassis");
+		err("Couldn't find the resource id of the chassis");
                 return -1;
 	}
 
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
         if (rc == SA_ERR_HPI_READ_ONLY) {
                 return 0;
         } else if (rc != SA_OK) {
-		dbg("Couldn't add new area");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't add new area");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
@@ -89,15 +89,15 @@ int main(int argc, char **argv)
         field.Field.Data[6] = '\0';
         rc = saHpiIdrFieldAdd(sid, resid, 1, &field);
         if (rc != SA_OK) {
-		dbg("Couldn't add field");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't add field");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
         rc = saHpiIdrFieldDelete(sid, resid, 1, newid, field.FieldId);
         if (rc != SA_OK) {
-		dbg("Couldn't delete field");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't delete field");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
         field.FieldId = 1;
         rc = saHpiIdrFieldDelete(sid, resid, 1, 1, 1);
         if (rc == SA_OK) {
-		dbg("Able to delete read only field");
+		err("Able to delete read only field");
                 return -1;
 	}
 

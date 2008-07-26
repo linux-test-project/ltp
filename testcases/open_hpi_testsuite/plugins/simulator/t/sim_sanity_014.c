@@ -48,20 +48,20 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if (rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 
 	rc = saHpiDiscover(sid);
 	if (rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
         /* get the resource id of the chassis */
         SaHpiResourceIdT resid = get_resid(sid, SAHPI_ENT_SYSTEM_CHASSIS);
         if (resid == 0) {
-		dbg("Couldn't find the resource id of the chassis");
+		err("Couldn't find the resource id of the chassis");
                 return -1;
 	}
 
@@ -77,8 +77,8 @@ int main(int argc, char **argv)
         /* add event log entry */
         rc = saHpiEventLogEntryAdd(sid, resid, &entry);
         if (rc != SA_OK) {
-		dbg("Couldn't add event log entry");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't add event log entry");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 

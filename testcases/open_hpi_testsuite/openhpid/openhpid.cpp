@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2004-2005
+ * (C) Copyright IBM Corp. 2004-2008
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,6 +12,7 @@
  * Author(s):
  *      W. David Ashley <dashley@us.ibm.com>
  *      David Judkoivcs <djudkovi@us.ibm.com>
+ * 	Renier Morales <renier@openhpi.org>
  *
  */
 
@@ -28,6 +29,7 @@
 #include <glib.h>
 #include <errno.h>
 #include <getopt.h>
+#include <limits.h>
 #include "strmsock.h"
 
 extern "C"
@@ -35,7 +37,6 @@ extern "C"
 #include <SaHpi.h>
 #include <oHpi.h>
 #include <oh_error.h>
-
 #include <oh_init.h>
 }
 
@@ -61,9 +62,9 @@ enum tResult
 static bool morph2daemon(void);
 static void service_thread(gpointer data, gpointer user_data);
 static void HandleInvalidRequest(psstrmsock thrdinst);
-static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
-                         SaHpiSessionIdT * sid);
-static void hashtablefreeentry(gpointer key, gpointer value, gpointer data);
+static tResult HandleMsg(psstrmsock thrdinst,
+			 char *data,
+			 SaHpiSessionIdT * sid);
 
 }
 
@@ -90,8 +91,8 @@ static struct option long_options[] = {
 };
 
 /* verbose macro */
-#define PVERBOSE1(msg, ...) if (verbose_flag) trace(msg, ## __VA_ARGS__)
-#define PVERBOSE2(msg, ...) if (verbose_flag) dbg(msg, ## __VA_ARGS__)
+#define PVERBOSE1(msg, ...) if (verbose_flag) dbg(msg, ## __VA_ARGS__)
+#define PVERBOSE2(msg, ...) if (verbose_flag) err(msg, ## __VA_ARGS__)
 #define PVERBOSE3(msg, ...) if (verbose_flag) printf("CRITICAL: "msg, ## __VA_ARGS__)
 
 /*--------------------------------------------------------------------*/
@@ -108,7 +109,8 @@ void display_help(void)
         printf("                 configuration file.\n");
         printf("   -v            This option causes the daemon to display verbose\n");
         printf("                 messages. This option is optional.\n");
-        printf("   -p port       This overrides the default listening port (4743) of\n");
+        printf("   -p port       This overrides the default listening port (%d) of\n",
+	       OPENHPI_DEFAULT_DAEMON_PORT);
         printf("                 the daemon. This option is optional.\n");
         printf("   -f pidfile    This overrides the default name/location for the daemon.\n");
         printf("                 pid file. This option is optional.\n");
@@ -192,8 +194,8 @@ int main (int argc, char *argv[])
         }
 
         if (optind < argc) {
-                dbg("Error: Unknown command line option specified .\n");
-                dbg("       Aborting execution.\n\n");
+                err("Error: Unknown command line option specified .\n");
+                err("       Aborting execution.\n\n");
 		display_help();
                 exit(-1);
         }
@@ -208,36 +210,36 @@ int main (int argc, char *argv[])
                         unlink(pid_file);
                 } else {
                         // there is already a server running
-                        dbg("Error: There is already a server running .\n");
-                        dbg("       Aborting execution.\n");
+                        err("Error: There is already a server running .\n");
+                        err("       Aborting execution.\n");
                         exit(1);
                 }
         }
 
         // write the pid file
-        pfile = open(pid_file, O_WRONLY | O_CREAT, 0640);
+        pfile = open(pid_file, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP);
         if (pfile == -1) {
                 // there is already a server running
-                dbg("Error: Cannot open PID file .\n");
-                dbg("       Aborting execution.\n\n");
+                err("Error: Cannot open PID file .\n");
+                err("       Aborting execution.\n\n");
                 display_help();
                 exit(1);
         }
         snprintf(pid_buf, sizeof(pid_buf), "%d\n", (int)getpid());
-        write(pfile, pid_buf, strlen(pid_buf));
+        len = write(pfile, pid_buf, strlen(pid_buf));
         close(pfile);
 
         // see if we have a valid configuration file
         char *cfgfile = getenv("OPENHPI_CONF");
         if (cfgfile == NULL) {
-                dbg("Error: Configuration file not specified .\n");
-                dbg("       Aborting execution.\n\n");
+                err("Error: Configuration file not specified .\n");
+                err("       Aborting execution.\n\n");
 		display_help();
                 exit(-1);
         }
         if (!g_file_test(cfgfile, G_FILE_TEST_EXISTS)) {
-                dbg("Error: Configuration file does not exist.\n");
-                dbg("       Aborting execution.\n\n");
+                err("Error: Configuration file does not exist.\n");
+                err("       Aborting execution.\n\n");
 		display_help();
                 exit(-1);
         }
@@ -247,7 +249,7 @@ int main (int argc, char *argv[])
         // get our listening port
         portstr = getenv("OPENHPI_DAEMON_PORT");
         if (portstr == NULL) {
-                port =  4743;
+                port =  OPENHPI_DEFAULT_DAEMON_PORT;
         }
         else {
                 port =  atoi(portstr);
@@ -263,7 +265,7 @@ int main (int argc, char *argv[])
         }
 
 	if (oh_init()) { // Initialize OpenHPI
-		dbg("There was an error initializing OpenHPI");
+		err("There was an error initializing OpenHPI");
 		return 8;
 	}
 
@@ -273,16 +275,16 @@ int main (int argc, char *argv[])
         // create the server socket
 	psstrmsock servinst = new sstrmsock;
 	if (servinst->Create(port)) {
-		dbg("Error creating server socket.\n");
+		err("Error creating server socket.\n");
 		g_thread_pool_free(thrdpool, FALSE, TRUE);
                 delete servinst;
 		return 8;
 	}
 
         // announce ourselves
-        trace("%s started.\n", argv[0]);
-        trace("OPENHPI_CONF = %s\n", configfile);
-        trace("OPENHPI_DAEMON_PORT = %d\n\n", port);
+        dbg("%s started.\n", argv[0]);
+        dbg("OPENHPI_CONF = %s\n", configfile);
+        dbg("OPENHPI_DAEMON_PORT = %d\n\n", port);
 
         // wait for a connection and then service the connection
 	while (TRUE) {
@@ -320,8 +322,9 @@ int main (int argc, char *argv[])
 
 static bool morph2daemon(void)
 {
-        char pid_buf[256];
-        int pfile;
+        char pid_buf[SA_HPI_MAX_NAME_LENGTH];
+        int pid_fd;
+	int ret;
 
 	if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
 		return false;
@@ -331,36 +334,41 @@ static bool morph2daemon(void)
 		pid_t pid = fork();
 		if (pid < 0) {
 			return false;
-		}
-                // parent process
-		if (pid != 0) {
+		} else if (pid != 0) { // parent process
 			exit( 0 );
 		}
 
-        // become the session leader
+                // Become the session leader
 		setsid();
-        // second fork to become a real daemon
+                // Second fork to make sure we are detached from any
+                // controlling terminal.
 		pid = fork();
 		if (pid < 0) {
 			return false;
-		}
-
-        // parent process
-		if (pid != 0) {
+		} else if (pid != 0) { // parent process
 			exit(0);
 		}
 
-       	// create the pid file (overwrite of old pid file is ok)
+                // Rreate the pid file (overwrite of old pid file is ok)
         	unlink(pid_file);
-        	pfile = open(pid_file, O_WRONLY | O_CREAT, 0640);
-        	snprintf(pid_buf, sizeof(pid_buf), "%d\n", (int)getpid());
-        	write(pfile, pid_buf, strlen(pid_buf));
-        	close(pfile);
+        	pid_fd =
+                        open(pid_file, O_WRONLY|O_CREAT,
+                             S_IRUSR|S_IWUSR|S_IRGRP);
+        	snprintf(pid_buf, SA_HPI_MAX_NAME_LENGTH,
+                         "%d\n", (int)getpid());
+        	ret = write(pid_fd, pid_buf, strlen(pid_buf));
+        	close(pid_fd);
 
-        // housekeeping
 		//chdir("/");
-		umask(0);
-		for(int i = 0; i < 1024; i++) {
+		umask(0); // Reset default file permissions
+                
+                // Close unneeded inherited file descriptors
+                // Keep stdout and stderr open if they already are.
+#ifdef NR_OPEN
+		for (int i = 3; i < NR_OPEN; i++) {
+#else
+                for (int i = 3; i < 1024; i++) {
+#endif
 			close(i);
 		}
 	}
@@ -379,7 +387,6 @@ static void service_thread(gpointer data, gpointer user_data)
         bool stop = false;
 	char buf[dMaxMessageLength];
         tResult result;
-        GHashTable *thrdhashtable = NULL;
         gpointer thrdid = g_thread_self();
         SaHpiSessionIdT session_id = 0;
 
@@ -402,8 +409,7 @@ static void service_thread(gpointer data, gpointer user_data)
                 else {
                         switch( thrdinst->header.m_type ) {
                         case eMhMsg:
-                                result = HandleMsg(thrdinst, buf,
-                                                   &thrdhashtable, &session_id);
+                                result = HandleMsg(thrdinst, buf, &session_id);
                                 // marshal error ?
                                 if (result == eResultError) {
                                         PVERBOSE3("%p Invalid API found.\n", thrdid);
@@ -454,7 +460,8 @@ void HandleInvalidRequest(psstrmsock thrdinst) {
 /* Function: HandleMsg                                                */
 /*--------------------------------------------------------------------*/
 
-static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
+static tResult HandleMsg(psstrmsock thrdinst,
+			 char *data,
                          SaHpiSessionIdT * sid)
 {
         cHpiMarshal *hm;
@@ -2560,69 +2567,28 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
                 }
                 break;
 
-                case eFoHpiHandlerCreateInit: {
-                
-                        PVERBOSE1("%p Processing oHpiHandlerCreateInit.", thrdid);
-                
-                        if ( HpiDemarshalRequest1( request_mFlags & dMhEndianBit,
-                                                        hm, pReq, &ret ) < 0 )
-                                return eResultError;
-                
-                        if (*ht) {
-                                // first free the table entries
-                                g_hash_table_foreach(*ht, hashtablefreeentry, NULL);
-                                // now destroy the table
-                                g_hash_table_destroy(*ht);
-                                *ht = NULL;
-                        }
-                        *ht = g_hash_table_new(g_str_hash, g_str_equal);
-                        if (*ht == NULL) {
-                                ret = SA_ERR_HPI_OUT_OF_MEMORY;
-                        }
-                        else {
-                                ret = SA_OK;
-                        }
-                
-                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
-                        result = eResultClose;
-                }
-                break;
-                
-                case eFoHpiHandlerCreateAddTEntry: {
-                        oHpiTextBufferT key, value;
-                        char *newkey, *newvalue;
-                
-                        PVERBOSE1("%p Processing oHpiHandlerCreateAddTEntry.", thrdid);
-                
-                        if ( HpiDemarshalRequest2( request_mFlags & dMhEndianBit,
-                                                        hm, pReq, &key, &value ) < 0 )
-                                return eResultError;
-                
-                        newkey = (char *)g_malloc(key.DataLength + 1);
-                        newvalue = (char *)g_malloc(value.DataLength + 1);
-                        if (newkey == NULL || newvalue == NULL) {
-                                ret = SA_ERR_HPI_OUT_OF_MEMORY;
-                        }
-                        else {
-                                g_hash_table_insert(*ht, newkey, newvalue);
-                                ret = SA_OK;
-                        }
-                
-                        thrdinst->header.m_len = HpiMarshalReply0( hm, pReq, &ret );
-                        result = eResultClose;
-                }
-                break;
-                
                 case eFoHpiHandlerCreate: {
                         oHpiHandlerIdT id;
-                
+                        oHpiHandlerConfigT config;
+                        GHashTable *config_table = g_hash_table_new_full(
+                        	g_str_hash, g_str_equal,
+                        	g_free, g_free
+                        );
+
                         PVERBOSE1("%p Processing oHpiHandlerCreate.", thrdid);
                 
                         if ( HpiDemarshalRequest1( request_mFlags & dMhEndianBit,
-                                                        hm, pReq, &id ) < 0 )
+                                                        hm, pReq, &config ) < 0 )
                                 return eResultError;
                 
-                        ret = oHpiHandlerCreate(*ht, &id);
+                        for (int n = 0; n < config.NumberOfParams; n++) {
+                        	g_hash_table_insert(config_table,
+                        			    g_strdup((const gchar *)config.Params[n].Name),
+                        			    g_strdup((const gchar *)config.Params[n].Value));
+                        }
+                        free(config.Params);
+                        ret = oHpiHandlerCreate(config_table, &id);
+                        g_hash_table_destroy(config_table);
                 
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &id );
                         result = eResultClose;
@@ -2790,9 +2756,4 @@ static tResult HandleMsg(psstrmsock thrdinst, char *data, GHashTable **ht,
        PVERBOSE1("%p Return code = %d", thrdid, ret);
 
        return result;
-}
-
-static void hashtablefreeentry(gpointer key, gpointer value, gpointer data) {
-        g_free(key);
-        g_free(value);
 }

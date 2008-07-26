@@ -42,8 +42,8 @@ int main(int argc, char **argv)
 	cap_mask = SAHPI_CAPABILITY_FRU | SAHPI_CAPABILITY_MANAGED_HOTSWAP;
 	err = tfind_resource(&sessionid, cap_mask, SAHPI_FIRST_ENTRY, &rptentry, SAHPI_TRUE);
 	if (err != SA_OK) {
-		trace("Cannot find a managed hotswap resource\n");
-		trace("       File=%s, Line=%d\n", __FILE__, __LINE__);
+		dbg("Cannot find a managed hotswap resource\n");
+		dbg("       File=%s, Line=%d\n", __FILE__, __LINE__);
 		err = tcleanup(&sessionid);
 		return SA_OK;
 	}

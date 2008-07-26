@@ -34,7 +34,7 @@ int main(int argc, char **argv)
                 ep1.Entry[i].EntityLocation = 896;
                 ep3.Entry[i].EntityType = SAHPI_ENT_IO_BLADE;
                 ep3.Entry[i].EntityLocation = 896;
-                ep2.Entry[i].EntityType = SAHPI_ENT_SBC_BLADE,14;
+                ep2.Entry[i].EntityType = SAHPI_ENT_SBC_BLADE;
                 ep2.Entry[i].EntityLocation = 123;
         }
 	err = oh_concat_ep(&ep1, &ep2);

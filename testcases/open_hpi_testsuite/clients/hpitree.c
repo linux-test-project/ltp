@@ -29,6 +29,9 @@
 #include <getopt.h>
 #include <SaHpi.h> 
 #include <oh_utils.h>
+#include <oh_clients.h>
+
+#define OH_SVN_REV "$Revision: 1.2 $"
 
 /* 
  * Function prototypes
@@ -84,8 +87,6 @@ void sensor_readingthreshold(SaHpiSessionIdT sessionid,
 /* 
  * Globals for this driver
  */
-char progver[] = "0.2 HPI-B";
-char progname[] = "hpitree";
 int fdebug = 0;
 int f_listall = 0;
 int f_rpt     = 0;
@@ -104,13 +105,12 @@ main(int argc, char **argv)
 {
 	SaErrorT 	rv = SA_OK;
 	
-	SaHpiVersionT	hpiVer;
 	SaHpiSessionIdT sessionid;
 	SaHpiResourceIdT resourceid = all_resources;
 
 	int c;
 	    
-	printf("\n\n%s ver %s\n",argv[0],progver);
+	oh_prog_version(argv[0], OH_SVN_REV);
 	while ( (c = getopt( argc, argv,"adrsoiwcn:x?")) != EOF ) {
 		switch(c) {
 			case 'a': f_listall = 1; break;
@@ -129,7 +129,7 @@ main(int argc, char **argv)
 				break;
 			case 'x': fdebug = 1; break;
 			default:
-				printf("\n\tUsage: %s [-option]\n\n", progname);
+				printf("\n\tUsage: %s [-option]\n\n", argv[0]);
 				printf("\t      (No Option) Display all rpts and rdrs\n");
 				printf("\t           -a     Display all rpts and rdrs\n");
 				printf("\t           -c     Display only controls\n");
@@ -148,15 +148,6 @@ main(int argc, char **argv)
 	}
  
 	if (argc == 1) f_listall = 1;
-
-	/* 
-	 * House keeping:
-	 * 	-- get (check?) hpi implementation version
-	 *      -- open hpi session	
-	 */
-	if (fdebug) printf("saHpiVersionGet\n");
-	hpiVer = saHpiVersionGet();
-	printf("Hpi Version %d Implemented.\n", hpiVer);
 
 	if (fdebug) printf("saHpiSessionOpen\n");
         rv = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID,&sessionid,NULL);

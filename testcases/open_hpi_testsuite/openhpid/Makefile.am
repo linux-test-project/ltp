@@ -15,29 +15,28 @@
 
 .NOTPARALLEL:
 
-#SUBDIRS			= t
-
 MAINTAINERCLEANFILES 	= Makefile.in *~
 
 REMOTE_SOURCES		= \
-		config.c \
-        	domain.c \
-	        event.c \
-        	threaded.c \
-	        alarm.c \
-        	hotswap.c \
-        	lock.c \
-        	plugin.c \
-        	plugin_static.c \
-        	init.c \
-        	safhpi.c \
-        	session.c \
-        	ohpi.c
+	config.c \
+       	domain.c \
+        event.c \
+       	threaded.c \
+        alarm.c \
+       	hotswap.c \
+       	lock.c \
+       	plugin.c \
+       	plugin_static.c \
+       	init.c \
+       	safhpi.c \
+       	session.c \
+       	ohpi.c
 
-AM_CFLAGS		= @CFLAGS@
-INCLUDES 		= @OPENHPI_INCLUDES@  -I$(top_srcdir)/marshal
+INCLUDES 		= \
+	@OPENHPI_INCLUDES@  -I$(top_srcdir)/marshal @OH_SSL_INCLUDES@
 
-EXTRA_DIST		= openhpid.sh.in
+EXTRA_DIST		= \
+	openhpid.sh.in oh_client.h oh_client_conf.h oh_client_session.h
 
 # daemon
 sbin_PROGRAMS           = openhpid
@@ -47,6 +46,9 @@ nodist_openhpid_SOURCES = $(REMOTE_SOURCES)
 
 openhpid_LDADD		= $(top_builddir)/utils/libopenhpiutils.la \
 			  $(top_builddir)/marshal/libohtcpconnx.la
+if HAVE_OPENSSL
+openhpid_LDADD		+= $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
+endif
 openhpid_LDFLAGS        = -export-dynamic
 
 # this is defined with ./configure --enable-daemon=static
@@ -59,8 +61,7 @@ endif
 
 lib_LTLIBRARIES	        = libopenhpi.la
 
-libopenhpi_la_SOURCES = \
-	openhpiclient.cpp
+libopenhpi_la_SOURCES = oh_client.cpp oh_client_session.cpp oh_client_conf.c
 
 libopenhpi_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
 libopenhpi_la_LIBADD  = $(top_builddir)/marshal/libohtcpconnx.la -lstdc++ \

@@ -1,7 +1,7 @@
 /*
  * ipmi_watchdog.cpp
  *
- * Copyright (c) 2006 by ESO Technologies.
+ * Copyright (c) 2006-2008 by ESO Technologies.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,48 +55,42 @@ cIpmiWatchdog::CreateRdr( SaHpiRptEntryT &resource, SaHpiRdrT &rdr )
  *               - added 10/10/2006 ARCress
  * 
  */
-const SaHpiWatchdogPretimerInterruptT
+SaHpiWatchdogPretimerInterruptT
 WDPI2Hpi(unsigned char b)
 {
-   SaHpiWatchdogPretimerInterruptT wpi;
    switch(b) {
-        case 0x10:  wpi = SAHPI_WPI_SMI; break;
-        case 0x20:  wpi = SAHPI_WPI_NMI; break;
-        case 0x30:  wpi = SAHPI_WPI_MESSAGE_INTERRUPT; break;
-        case 0x70:  wpi = SAHPI_WPI_OEM; break;
-        default:    wpi = SAHPI_WPI_NONE; break;
+        case 0x10:  return SAHPI_WPI_SMI;
+        case 0x20:  return SAHPI_WPI_NMI;
+        case 0x30:  return SAHPI_WPI_MESSAGE_INTERRUPT;
+        case 0x70:  return SAHPI_WPI_OEM;
+        default:    return SAHPI_WPI_NONE;
    }
-   return(wpi);
 }
 
-const SaHpiWatchdogTimerUseT
+SaHpiWatchdogTimerUseT
 WDTimerUse2Hpi(unsigned char b)
 {
-   SaHpiWatchdogTimerUseT wtu;
    switch(b) {
-       case 0:  wtu = SAHPI_WTU_NONE; break;
-       case 1:  wtu = SAHPI_WTU_BIOS_FRB2; break;
-       case 2:  wtu = SAHPI_WTU_BIOS_POST; break;
-       case 3:  wtu = SAHPI_WTU_OS_LOAD; break;
-       case 4:  wtu = SAHPI_WTU_SMS_OS; break;
-       case 5:  wtu = SAHPI_WTU_OEM; break;
-       default: wtu = SAHPI_WTU_UNSPECIFIED; break;
+       case 0:  return SAHPI_WTU_NONE;
+       case 1:  return SAHPI_WTU_BIOS_FRB2;
+       case 2:  return SAHPI_WTU_BIOS_POST;
+       case 3:  return SAHPI_WTU_OS_LOAD;
+       case 4:  return SAHPI_WTU_SMS_OS;
+       case 5:  return SAHPI_WTU_OEM;
+       default: return SAHPI_WTU_UNSPECIFIED;
    }
-   return(wtu);
 }
 
-const SaHpiWatchdogActionT
+SaHpiWatchdogActionT
 WDAction2Hpi(unsigned char b)
 {
-   SaHpiWatchdogActionT wta;
    switch(b) {
-       case 0:  wta = SAHPI_WA_NO_ACTION; break;
-       case 1:  wta = SAHPI_WA_RESET; break;
-       case 2:  wta = SAHPI_WA_POWER_DOWN; break;
-       case 3:  wta = SAHPI_WA_POWER_CYCLE; break;
-       default: wta = SAHPI_WA_RESET; break;
+       case 0:  return SAHPI_WA_NO_ACTION;
+       case 1:  return SAHPI_WA_RESET;
+       case 2:  return SAHPI_WA_POWER_DOWN;
+       case 3:  return SAHPI_WA_POWER_CYCLE;
+       default: return SAHPI_WA_RESET;
    }
-   return(wta);
 }
 
 SaErrorT

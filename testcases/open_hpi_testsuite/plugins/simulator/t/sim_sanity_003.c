@@ -37,13 +37,13 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if(rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 
 	rc = saHpiDiscover(sid);
 	if(rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
@@ -53,11 +53,11 @@ int main(int argc, char **argv)
         while(saHpiRptEntryGet(sid, rptid, &rptid, &res) == SA_OK) {
                 /* verify we have a valid rptentry */
 		if(!res.ResourceTag.DataLength) {
-			dbg("Resource Tag has zero length");
+			err("Resource Tag has zero length");
                         return -1;
 		}
 		if(!res.ResourceInfo.ManufacturerId) {
-			dbg("Resource has no Manufacturer Id");
+			err("Resource has no Manufacturer Id");
                         return -1;
 		}
 
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
                 rdrctr = 0;
 		while (saHpiRdrGet(sid, res.ResourceId, rdrid, &rdrid, &rdr) == SA_OK) {
                         if (rdr.RecordId == 0) {
-                                dbg("Invalid rdr entry found");
+                                err("Invalid rdr entry found");
                                 return -1;
                         }
                         rdrctr++;
@@ -74,14 +74,14 @@ int main(int argc, char **argv)
                 // note that the hot swap resource has no rdrs
                 if (rdrctr == 0 &&
                     res.ResourceEntity.Entry[0].EntityType != SAHPI_ENT_DISK_DRIVE_BAY) {
-                        dbg("No rdr entries found");
+                        err("No rdr entries found");
                         return -1;
                 }
-                dbg("%d rdrs found for resource %d", rdrctr, res.ResourceId);
+                err("%d rdrs found for resource %d", rdrctr, res.ResourceId);
                 rptctr++;
 	}
         if (rptctr == 0) {
-                dbg("No rpt entries found");
+                err("No rpt entries found");
                 return -1;
         }
 

@@ -16,8 +16,6 @@ MOSTLYCLEANFILES     = $(shell ls *data) $(REMOTE_SOURCES) @TEST_CLEAN@
 
 INCLUDES             = @OPENHPI_INCLUDES@
 
-AM_CFLAGS               = @NOCFLAGS@ @COV_CFLAGS@
-
 $(REMOTE_SOURCES):
 	if test ! -f $@ -a ! -L $@; then \
                 $(LN_S) $(top_srcdir)/utils/$@; \

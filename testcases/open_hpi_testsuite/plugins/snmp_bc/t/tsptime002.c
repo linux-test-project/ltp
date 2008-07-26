@@ -28,7 +28,6 @@ int main(int argc, char **argv)
 	SaErrorT          err;
 	SaErrorT expected_err;
 
-        SaHpiSessionIdT sessionid;
 	struct tm time;
 	struct snmp_bc_hnd custom_handle;
 
@@ -47,10 +46,6 @@ int main(int argc, char **argv)
 	err = snmp_bc_set_sp_time(&custom_handle, NULL);
 	checkstatus(err, expected_err, testfail);
 
-	/**************************
-	 * Cleanup after all tests
-	 ***************************/
-	err = tcleanup(&sessionid);
 	return testfail;
 
 }

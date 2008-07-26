@@ -118,7 +118,7 @@ int entity_presence(ipmi_entity_t		*entity,
 	rpt = ohoi_get_resource_by_entityid(handler->rptcache, &ent_id);
 	if (!rpt) {
 		trace_ipmi_entity("SET PRESENCE. NO RPT", present, entity);
-		dbg("No rpt");
+		err("No rpt");
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
 		return SA_ERR_HPI_NOT_PRESENT;
 	}
@@ -211,7 +211,7 @@ int entity_presence(ipmi_entity_t		*entity,
                 	e->hid = handler->hid;
                         oh_evt_queue_push(handler->eventq, e);
 		} else {
-			dbg("Out of memory");
+			err("Out of memory");
 		}
 #if 0
         	while (SA_OK == oh_remove_rdr(handler->rptcache, rid,
@@ -331,7 +331,7 @@ static void add_parent_ep(ipmi_entity_t *ent, ipmi_entity_t *parent, void *cb_da
 
 	pr_rpt = ohoi_get_resource_by_entityid(info->handler->rptcache, &parent_id);
 	if (pr_rpt == NULL) {
-		dbg("       Couldn't find out res-info for parent: %d.%d.%d.%d %s",
+		err("       Couldn't find out res-info for parent: %d.%d.%d.%d %s",
 			ipmi_entity_get_entity_id(parent),
 			ipmi_entity_get_entity_instance(parent),
 			ipmi_entity_get_device_channel(parent),
@@ -489,7 +489,7 @@ static void get_entity_event(ipmi_entity_t	*entity,
 
 			s_r_info = malloc(sizeof(*ohoi_res_info));
 			if (s_r_info == NULL) {
-				dbg("Out of Memory");
+				err("Out of Memory");
 				goto end_of_slot;
 			}
 			memset(s_r_info, 0, sizeof(*ohoi_res_info));
@@ -502,7 +502,7 @@ static void get_entity_event(ipmi_entity_t	*entity,
 				ipmi_entity_convert_to_id(entity);
 			if (oh_add_resource(handler->rptcache, &srpt,
 								s_r_info, 1)) {
-				dbg("couldn't add resource for slot %d",
+				err("couldn't add resource for slot %d",
 						ep.Entry[0].EntityLocation);
 				trace_ipmi_entity("COULD NOT CREATE SLOT for ",
 					0, entity);
@@ -529,7 +529,7 @@ static void get_entity_event(ipmi_entity_t	*entity,
 				s_r_info->u.slot.entity_id =
 					ipmi_entity_convert_to_id(entity);
 			} else {
-				dbg("Internal error. s_r_info == %p", s_r_info);
+				err("Internal error. s_r_info == %p", s_r_info);
 			}
 		}
 	}
@@ -652,7 +652,7 @@ static void add_entity_event(ipmi_domain_t            *domain,
 	ohoi_res_info = malloc(sizeof(*ohoi_res_info));
 
 	if (!ohoi_res_info) {
-	      	dbg("Out of memory");
+	      	err("Out of memory");
 		trace_ipmi_entity("CAN NOT ADD ENTITY. OUT OF MEMORY",
 			inst, entity);
 		return;
@@ -667,7 +667,7 @@ static void add_entity_event(ipmi_domain_t            *domain,
 
 	rv = oh_add_resource(handler->rptcache, &entry, ohoi_res_info, 1);
 	if (rv) {
-	      	dbg("oh_add_resource failed for %d = %s\n",
+	      	err("oh_add_resource failed for %d = %s\n",
 			entry.ResourceId, oh_lookup_error(rv));
 		trace_ipmi_entity("CAN NOT ADD ENTITY. ADD RESOURCE FAILED",
 			inst, entity);
@@ -711,7 +711,7 @@ void ohoi_remove_entity(struct oh_handler_state *handler,
 	res_info = oh_get_resource_data(handler->rptcache, res_id);
 	rpte = oh_get_resource_by_id(handler->rptcache, res_id);
 	if (!rpte) {
-		dbg("Rpt entry not found");
+		err("Rpt entry not found");
 		return;
 	}
 
@@ -719,7 +719,7 @@ void ohoi_remove_entity(struct oh_handler_state *handler,
 	/* Now put an event for the resource to DEL */
 	e = malloc(sizeof(*e));
 	if (e == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return;
 	}
 	memset(e, 0, sizeof(*e));
@@ -759,7 +759,7 @@ static void change_entity(struct oh_handler_state	*handler,
 
 	rpt = ohoi_get_resource_by_entityid(handler->rptcache, &entity_id);
 	if (rpt == NULL) {
-		dbg("Couldn't find out resource by entity %d.%.d.%d.%d  %s",
+		err("Couldn't find out resource by entity %d.%.d.%d.%d  %s",
 			ipmi_entity_get_entity_id(entity),
 			ipmi_entity_get_entity_instance(entity),
 			ipmi_entity_get_device_channel(entity),
@@ -800,7 +800,7 @@ static void change_entity(struct oh_handler_state	*handler,
 		s_r_info->u.slot.addr =
 					ipmi_entity_get_device_address(entity);
 	} else {
-		dbg("No res_info(%p) for slot %d", s_r_info, slot_id);
+		err("No res_info(%p) for slot %d", s_r_info, slot_id);
 	}
 }
 
@@ -813,7 +813,7 @@ static void delete_entity(struct oh_handler_state	*handler,
 
 	rpt = ohoi_get_resource_by_entityid(handler->rptcache, &entity_id);
 	if (rpt == NULL) {
-		dbg("couldn't find out resource");
+		err("couldn't find out resource");
 		return;
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);
@@ -837,7 +837,7 @@ static void delete_entity(struct oh_handler_state	*handler,
                 e->hid = handler->hid;
                 oh_evt_queue_push(handler->eventq, e);
 	} else {
-		dbg("Out of memory");
+		err("Out of memory");
 	}
 
 	while (SA_OK == oh_remove_rdr(handler->rptcache, rpt->ResourceId,
@@ -873,21 +873,21 @@ void ohoi_entity_event(enum ipmi_update_e       op,
 							      entity_presence,
 							      handler);
 			if (rv)
-				dbg("ipmi_entity_set_presence_handler: %#x", rv);
+				err("ipmi_entity_set_presence_handler: %#x", rv);
 
 			/* hotswap handler */
 			rv = ipmi_entity_add_hot_swap_handler(entity,
 							      ohoi_hot_swap_cb,
 							      cb_data);
 			if(rv)
-			  	dbg("Failed to set entity hot swap handler");
+			  	err("Failed to set entity hot swap handler");
 
 			/* sensors */
 			rv= ipmi_entity_add_sensor_update_handler(entity,
 								  ohoi_sensor_event,
 								  handler);
 			if (rv) {
-				dbg("ipmi_entity_set_sensor_update_handler: %#x", rv);
+				err("ipmi_entity_set_sensor_update_handler: %#x", rv);
 				break;
 			}
 			/* controls */
@@ -896,7 +896,7 @@ void ohoi_entity_event(enum ipmi_update_e       op,
 								    handler);
 
 			if (rv) {
-				dbg("ipmi_entity_set_control_update_handler: %#x", rv);
+				err("ipmi_entity_set_control_update_handler: %#x", rv);
 				return;
 			}
 			/* inventory (a.k.a FRU) */
@@ -904,7 +904,7 @@ void ohoi_entity_event(enum ipmi_update_e       op,
 								ohoi_inventory_event,
 								handler);
 			if (rv) {
-			  	dbg("ipmi_entity_set_fru_update_handler: %#x", rv);
+			  	err("ipmi_entity_set_fru_update_handler: %#x", rv);
 				break;
 			}
 			break;
@@ -919,7 +919,7 @@ void ohoi_entity_event(enum ipmi_update_e       op,
 			trace_ipmi_entity("CHANGED", inst, entity);
 			break;
 		default:
-			dbg("Entity: Unknow change?!");
+			err("Entity: Unknow change?!");
 	}
 	g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
 }

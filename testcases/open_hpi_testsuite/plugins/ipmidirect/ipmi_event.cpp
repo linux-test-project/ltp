@@ -2,6 +2,7 @@
  * ipmi_event.c
  *
  * Copyright (c) 2003 by FORCE Computers
+ * Copyright (c) 2007 by ESO Technologies.
  *
  * Note that this file is based on parts of OpenIPMI
  * written by Corey Minyard <minyard@mvista.com>
@@ -18,6 +19,7 @@
  *
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
+ *     Pierre Sangouard  <psangouard@eso-tech.com>
  */
 
 #include <string.h>
@@ -108,7 +110,7 @@ cIpmiEvent::Dump( cIpmiLog &dump, const char *name ) const
   if ( m_type == 0x02 )
        strcpy( str, "SystemEvent" );
   else
-       sprintf( str, "0x%02x", m_type );
+       snprintf( str, sizeof(str), "0x%02x", m_type );
 
   dump.Entry( "RecordType" ) << str << ";\n";
 
@@ -125,13 +127,13 @@ cIpmiEvent::Dump( cIpmiLog &dump, const char *name ) const
   tIpmiSensorType sensor_type = (tIpmiSensorType)m_data[7];
 
   if ( !strcmp( IpmiSensorTypeToString( sensor_type ), "Invalid" ) )
-       sprintf( str, "0x%02x", sensor_type );
+       snprintf( str, sizeof(str), "0x%02x", sensor_type );
   else
-       sprintf( str, "%s", IpmiSensorTypeToString( sensor_type ) );
+       snprintf( str, sizeof(str), "%s", IpmiSensorTypeToString( sensor_type ) );
 
   dump.Entry( "SensorType" ) << str << ";\n";
 
-  sprintf( str, "0x%02x", m_data[8] );
+  snprintf( str, sizeof(str), "0x%02x", m_data[8] );
   dump.Entry( "SensorNum" ) << str << ";\n";
 
   dump.Entry( "EventDirection" ) << ((m_data[9] & 0x80) ?
@@ -142,19 +144,19 @@ cIpmiEvent::Dump( cIpmiLog &dump, const char *name ) const
   tIpmiEventReadingType reading_type = (tIpmiEventReadingType)(m_data[9] & 0x7f);
 
   if ( !strcmp( IpmiEventReadingTypeToString( reading_type ), "Invalid" ) )
-       sprintf( str, "0x%02x", reading_type );
+       snprintf( str, sizeof(str), "0x%02x", reading_type );
   else
-       sprintf( str, "%s", IpmiEventReadingTypeToString( reading_type ) );
+       snprintf( str, sizeof(str), "%s", IpmiEventReadingTypeToString( reading_type ) );
 
   dump.Entry( "EventReadingType" ) << str << ";\n";
 
-  sprintf( str, "0x%02x", m_data[10] );
+  snprintf( str, sizeof(str), "0x%02x", m_data[10] );
   dump.Entry( "EventData1" ) << str << ";\n";
 
-  sprintf( str, "0x%02x", m_data[11] );
+  snprintf( str, sizeof(str), "0x%02x", m_data[11] );
   dump.Entry( "EventData2" ) << str << ";\n";
 
-  sprintf( str, "0x%02x", m_data[12] );
+  snprintf( str, sizeof(str), "0x%02x", m_data[12] );
   dump.Entry( "EventData3" ) << str << ";\n";
 
   dump.End();

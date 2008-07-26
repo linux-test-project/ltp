@@ -48,7 +48,7 @@ SaHpiHsStateT _ipmi_to_hpi_state_conv(enum ipmi_hot_swap_states ipmi_state)
                         break;
 #endif
                 default:
-                        dbg("Unknown state: %d", ipmi_state);
+                        err("Unknown state: %d", ipmi_state);
         }
         return state;
 }
@@ -74,7 +74,7 @@ enum ipmi_hot_swap_states _hpi_to_ipmi_state_conv(SaHpiHsStateT hpi_state)
                         state = IPMI_HOT_SWAP_DEACTIVATION_IN_PROGRESS;
                         break;
                 default:
-                        dbg("Unknown state: %d", hpi_state);
+                        err("Unknown state: %d", hpi_state);
         }
         return state;
 }
@@ -174,7 +174,7 @@ printf("\n");
 	rpt_entry = ohoi_get_resource_by_entityid(handler->rptcache, &entity_id);
 
 	if (!rpt_entry) {
-		dbg(" No rpt\n");
+		err(" No rpt\n");
 		return IPMI_EVENT_HANDLED;
 	}
         res_info = oh_get_resource_data(handler->rptcache, rpt_entry->ResourceId);
@@ -187,7 +187,7 @@ printf("\n");
 	}
 	e = malloc(sizeof(*e));
 	if (!e) {
-		dbg("Out of space");
+		err("Out of space");
 		return IPMI_EVENT_HANDLED;
 	}
 
@@ -310,13 +310,13 @@ printf("\n");
 
 	dt_len = ipmi_event_get_data(event, data, 0, IPMI_EVENT_DATA_MAX_LEN);
 	if (dt_len < 12) {
-		dbg("event data len (%d) too short", dt_len);
+		err("event data len (%d) too short", dt_len);
 		return IPMI_EVENT_HANDLED;
 	}
 
 	e = malloc(sizeof(*e));
 	if (!e) {
-		dbg("Out of space");
+		err("Out of space");
 		return IPMI_EVENT_HANDLED;
 	}
 	memset(e, 0, sizeof(*e));
@@ -368,7 +368,7 @@ void _get_hotswap_state(ipmi_entity_t             *ent,
 {
 	get_hs_state_t *info = cb_data;
 	if (err) {
-		dbg("_get_hotswap_state. err = 0x%x", err);
+		err("_get_hotswap_state. err = 0x%x", err);
 		err = SA_ERR_HPI_INVALID_CMD;
 	} else {
         	info->ipmi_state = state;
@@ -388,7 +388,7 @@ SaErrorT ohoi_get_hotswap_state(void *hnd, SaHpiResourceIdT id,
         handler = (struct oh_handler_state *)hnd;
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get sel in unsupported resource");
+                err("BUG: try to get sel in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -398,17 +398,17 @@ SaErrorT ohoi_get_hotswap_state(void *hnd, SaHpiResourceIdT id,
                                                _get_hotswap_state,
                                                &info);
         if (rv) {
-                dbg("Unable to get hotswap state: %d", rv);
+                err("Unable to get hotswap state: %d", rv);
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
         rv = ohoi_loop(&info.done, handler->data);
 	if (rv) {
-		dbg("ohoi_loop returned %d", rv);
+		err("ohoi_loop returned %d", rv);
 		return rv;
 	}
 	if (info.err != SA_OK) {
-		dbg("info.err = %d", info.err);
+		err("info.err = %d", info.err);
 		return info.err;
 	}
         *state = _ipmi_to_hpi_state_conv(info.ipmi_state);
@@ -432,7 +432,7 @@ static void _hotswap_done(ipmi_entity_t *ent,
 	struct hs_done_s *info = cb_data;
 
 	if (err) {
-		dbg("err = 0x%x", err);
+		err("err = 0x%x", err);
 	}
 	info->err = err;
 	info->done = 1;
@@ -451,7 +451,7 @@ SaErrorT ohoi_set_hotswap_state(void *hnd, SaHpiResourceIdT id,
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
 
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get sel in unsupported resource");
+                err("BUG: try to get sel in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -469,7 +469,7 @@ SaErrorT ohoi_set_hotswap_state(void *hnd, SaHpiResourceIdT id,
                                                    &info);
                          break;
                 default:
-                         dbg("Unable set hotswap state: %d", state);
+                         err("Unable set hotswap state: %d", state);
                          return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -498,12 +498,12 @@ static void activation_request(ipmi_entity_t *ent, void *cb_data)
 					cb_data);
 
 	if (rv == ENOSYS) {
-		dbg("ipmi_entity_set_activation_requested = ENOSYS. "
+		err("ipmi_entity_set_activation_requested = ENOSYS. "
 		    "Use ipmi_entity_activate");
 		rv = ipmi_entity_activate(ent, _hotswap_done, cb_data);
 	}
 	if (rv) {
-		dbg("ipmi_entity_set_activation_requested = 0x%x", rv);
+		err("ipmi_entity_set_activation_requested = 0x%x", rv);
 		info->done = 1;
 		info->err = -1;
 	}
@@ -517,7 +517,7 @@ static void deactivation_request(ipmi_entity_t *ent, void *cb_data)
 	rv = ipmi_entity_deactivate(ent, _hotswap_done,
 					cb_data);
 	if (rv) {
-		dbg("ipmi_entity_set_activation_requested = 0x%x", rv);
+		err("ipmi_entity_set_activation_requested = 0x%x", rv);
 		info->done = 1;
 		info->err = -1;
 	}
@@ -537,7 +537,7 @@ SaErrorT ohoi_request_hotswap_action(void *hnd, SaHpiResourceIdT id,
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
 
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get sel in unsupported resource");
+                err("BUG: try to get sel in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -549,7 +549,7 @@ SaErrorT ohoi_request_hotswap_action(void *hnd, SaHpiResourceIdT id,
 		rv = ipmi_entity_pointer_cb(ohoi_res_info->u.entity.entity_id,
 						activation_request, &info);
 		if (rv) {
-			dbg("ipmi_entity_pointer_cb = 0x%x", rv);
+			err("ipmi_entity_pointer_cb = 0x%x", rv);
 			return SA_ERR_HPI_INVALID_PARAMS;
 		}
 		break;
@@ -557,7 +557,7 @@ SaErrorT ohoi_request_hotswap_action(void *hnd, SaHpiResourceIdT id,
 		rv = ipmi_entity_pointer_cb(ohoi_res_info->u.entity.entity_id,
 						deactivation_request, &info);
 		if (rv) {
-			dbg("ipmi_entity_pointer_cb = 0x%x", rv);
+			err("ipmi_entity_pointer_cb = 0x%x", rv);
 			return SA_ERR_HPI_INVALID_PARAMS;
 		}
 		break;
@@ -590,7 +590,7 @@ SaErrorT ohoi_get_indicator_state(void *hnd, SaHpiResourceIdT id,
         handler = (struct oh_handler_state *)hnd;
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get HS in unsupported resource");
+                err("BUG: try to get HS in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -621,7 +621,7 @@ SaErrorT ohoi_set_indicator_state(void *hnd, SaHpiResourceIdT id,
         handler = (struct oh_handler_state *)hnd;
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to set HS in unsupported resource");
+                err("BUG: try to set HS in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 	rv = ohoi_get_control_state(hnd, id, ohoi_res_info->hotswapind,
@@ -670,7 +670,7 @@ void _get_indicator_state(ipmi_entity_t *ent,
         state = cb_data;
 
         if (state->err) {
-		dbg("err = 0x%x", err);
+		err("err = 0x%x", err);
 	}
 	state->err = err;
 	state->done = 1;
@@ -690,7 +690,7 @@ SaErrorT ohoi_set_indicator_state(void *hnd, SaHpiResourceIdT id,
 
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
 	        if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get sel in unsupported resource");
+                err("BUG: try to get sel in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -722,7 +722,7 @@ SaErrorT ohoi_get_indicator_state(void *hnd, SaHpiResourceIdT id,
 
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("BUG: try to get HS in unsupported resource");
+                err("BUG: try to get HS in unsupported resource");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -761,7 +761,7 @@ SaErrorT ohoi_hotswap_policy_cancel(void *hnd, SaHpiResourceIdT rid,
 	}
         rpt = oh_get_resource_by_id(handler->rptcache, rid);
         if (rpt == NULL) {
-        	dbg("No rpt for id = %d", rid);
+        	err("No rpt for id = %d", rid);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -772,18 +772,18 @@ SaErrorT ohoi_hotswap_policy_cancel(void *hnd, SaHpiResourceIdT rid,
 		ATCAHPI_CTRL_NUM_FRU_ACTIVATION, (void *)&ctrl_info);
 
 	if (rv != SA_OK) {
-		dbg("NO FRU Activation Control");
+		err("NO FRU Activation Control");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 
 	if (ctrl_info->mode == SAHPI_CTRL_MODE_AUTO) {
-		dbg("mode == AUTO");
+		err("mode == AUTO");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 
 	res_info = oh_get_resource_data(handler->rptcache, rid);
 	if (res_info == NULL) {
-		dbg("no res_info");
+		err("no res_info");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (ins_timeout == SAHPI_TIMEOUT_BLOCK) {
@@ -791,16 +791,16 @@ SaErrorT ohoi_hotswap_policy_cancel(void *hnd, SaHpiResourceIdT rid,
 	}
 	if (res_info->hs_inspen_time == SAHPI_TIME_UNSPECIFIED) {
 		// time of last insertion pending state unknown
-		dbg("time of last insertion pending state unknown");
+		err("time of last insertion pending state unknown");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 	if (ins_timeout == SAHPI_TIMEOUT_IMMEDIATE) {
-		dbg("ins_timeout == SAHPI_TIMEOUT_IMMEDIATE");
+		err("ins_timeout == SAHPI_TIMEOUT_IMMEDIATE");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 	oh_gettimeofday(&curtime);
 	if (res_info->hs_inspen_time + ins_timeout > curtime) {
-		dbg("time expired");
+		err("time expired");
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 	return SA_OK;

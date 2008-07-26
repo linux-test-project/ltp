@@ -21,7 +21,7 @@ SaErrorT sim_get_reset_state(void *hnd,
 			     SaHpiResetActionT *act)
 {
 	if (!hnd || !act) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -47,7 +47,7 @@ SaErrorT sim_set_reset_state(void *hnd,
 			     SaHpiResetActionT act)
 {
 	if (!hnd || NULL == oh_lookup_resetaction(act)){
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 	if (act == SAHPI_RESET_ASSERT || act == SAHPI_RESET_DEASSERT)

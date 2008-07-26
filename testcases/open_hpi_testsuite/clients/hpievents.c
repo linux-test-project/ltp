@@ -26,12 +26,14 @@
 
 #include <SaHpi.h>
 #include <oh_utils.h>
+#include <oh_clients.h>
+
+#define OH_SVN_REV "$Revision: 1.3 $"
 
 #include <unistd.h>
 
 #define HPI_NSEC_PER_SEC 1000000000LL
 
-char progver[] = "0.2";
 int fdebug = 0;
 
 static void Usage(char **argv)
@@ -62,7 +64,7 @@ int main(int argc, char **argv)
 
 	memset(&rptentry, 0, sizeof(rptentry));
 
-	printf("%s: version %s\n", argv[0], progver); 
+	oh_prog_version(argv[0], OH_SVN_REV);
 
 	while ( (c = getopt( argc, argv,"t:xd?")) != EOF ) {
 		switch(c) {

@@ -82,21 +82,21 @@ static void *sysfs2hpi_open(GHashTable *handler_config,
         char *er;
 
 	if (!handler_config) {
-		dbg("empty handler_config");
+		err("empty handler_config");
 		return NULL;
 	}
 
 	/* set up entity root in g_epbase */
         er = (char *)g_hash_table_lookup(handler_config,"entity_root");
         if (!er) {
-                dbg("no entity root present");
+                err("no entity root present");
 		return NULL;
         }
         oh_encode_entitypath(er, &g_epbase);
 
         hnd = malloc(sizeof(*hnd));
         if (!hnd) {
-		dbg("unable to allocate main handler");
+		err("unable to allocate main handler");
 		return NULL;
 	}
 
@@ -113,7 +113,7 @@ static void *sysfs2hpi_open(GHashTable *handler_config,
 
 	sys = malloc(sizeof(*sys));
 	if (!sys) {
-		dbg("unable to allocate sysfsitems structure");
+		err("unable to allocate sysfsitems structure");
 		return NULL;
 	}
 	memset(sys, '\0', sizeof(*sys));
@@ -142,7 +142,7 @@ static void sysfs2hpi_close(void *hnd)
 	struct oh_handler_state *inst = (struct oh_handler_state *)hnd;
 
 	if (!inst) {
-		dbg("no instance to delete");
+		err("no instance to delete");
 		return;
 	}
 
@@ -209,7 +209,7 @@ static int sysfs2hpi_setup_rdr(SaHpiSensorTypeT type,
 
 	s = (struct sensor*)malloc(sizeof(*s));
 	if (!s) {
-		dbg("unable to allocate sensor");
+		err("unable to allocate sensor");
 		return SA_ERR_HPI_OUT_OF_SPACE;
 	}
 	memset(s,'\0',sizeof(*s));			
@@ -359,12 +359,12 @@ static int sysfs2hpi_setup_rdr(SaHpiSensorTypeT type,
 
 	puid = oh_uid_lookup(&tmprdr->Entity);
 	if (puid < 0) {
-		dbg("could not find correct parent");
+		err("could not find correct parent");
 		return SA_ERR_HPI_ERROR;
 	}
 
 	if (oh_add_rdr(inst->rptcache, puid, tmprdr, (void *)s, 0)) {
-		dbg("unable to add RDR to RPT");
+		err("unable to add RDR to RPT");
 		return SA_ERR_HPI_ERROR;
 	}
 
@@ -478,7 +478,7 @@ static int sysfs2hpi_assign_resource(struct sysfs_device* d,
 
 	r = (struct resource *)malloc(sizeof(*r));
 	if (!r) {
-		dbg("unable to allocate resource");
+		err("unable to allocate resource");
 		return SA_ERR_HPI_OUT_OF_SPACE;
 	}
 	memset(r,'\0',sizeof(*r));
@@ -493,7 +493,7 @@ static int sysfs2hpi_assign_resource(struct sysfs_device* d,
 
 	e = (struct oh_event *)malloc(sizeof(*e));
 	if (!e) {
-		dbg("unable to allocate event");
+		err("unable to allocate event");
 		return SA_ERR_HPI_OUT_OF_SPACE;
 	}
         memset(e, '\0', sizeof(struct oh_event));
@@ -518,7 +518,7 @@ static int sysfs2hpi_assign_resource(struct sysfs_device* d,
 	
 	/* add resource */
 	if (0 != oh_add_resource(inst->rptcache, &(e->resource), NULL, 0)) {
-		dbg("unable to add resource to RPT");
+		err("unable to add resource to RPT");
 		return SA_ERR_HPI_ERROR;
 	}
 
@@ -549,7 +549,7 @@ static int sysfs2hpi_discover_resources(void *hnd)
 	struct sysfsitems *sys;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -564,13 +564,13 @@ static int sysfs2hpi_discover_resources(void *hnd)
 
 	sys->bus = sysfs_open_bus("i2c");
 	if (!sys->bus) {
-		dbg("unable to open i2c bus");
+		err("unable to open i2c bus");
 		return SA_ERR_HPI_NOT_PRESENT; /* better error checking would
 						  ensure a better return val */
 	}
 
 	if (!(sys->bus->devices)) {
-		dbg("no i2c devices found");
+		err("no i2c devices found");
 		sysfs_close_bus(sys->bus);
 		sys->initialized++;
 		return 0;
@@ -630,7 +630,7 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
         SaHpiRdrT *tmprdr;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -644,7 +644,7 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
 
         if (tmprdr->RdrTypeUnion.SensorRec.Num != num) { 
 		/* didn't find sensor */
-		dbg("could not find sensor");
+		err("could not find sensor");
 		return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -652,11 +652,11 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
 	s = (struct sensor *) oh_get_rdr_data(inst->rptcache, id, tmprdr->RecordId);
 
 	if (!s) {
-		dbg("could not get sensor data");
+		err("could not get sensor data");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	if (!s->value) {
-		dbg("input data for sensor not available");
+		err("input data for sensor not available");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -664,12 +664,12 @@ static int sysfs2hpi_get_sensor_reading(void *hnd, SaHpiResourceIdT id,
 
 	sysattr = sysfs_open_attribute(s->value->path);
 	if (!sysattr) {
-		dbg("failed opening attribute at %s", s->value->path);
+		err("failed opening attribute at %s", s->value->path);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	
 	if (sysfs_read_attribute(sysattr)) {
-		dbg("error attempting to read value of %s",s->name);
+		err("error attempting to read value of %s",s->name);
 		sysfs_close_attribute(sysattr);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
@@ -710,7 +710,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 	SaHpiRdrT *tmprdr;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -723,7 +723,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 
         if (tmprdr->RdrTypeUnion.SensorRec.Num != num) { 
 		/* didn't find sensor */
-		dbg("could not find sensor");
+		err("could not find sensor");
 		return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -731,7 +731,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 	s = (struct sensor *) oh_get_rdr_data(inst->rptcache, id, tmprdr->RecordId);
 
 	if (!s) {
-		dbg("could not get sensor thresholds");
+		err("could not get sensor thresholds");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -745,12 +745,12 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 	/* get min values */
 	sysattr = sysfs_open_attribute(s->min->path);
         if (!sysattr) {
-                dbg("failed opening attribute at %s", s->min->path);
+                err("failed opening attribute at %s", s->min->path);
                 return SA_ERR_HPI_INVALID_DATA;
         }
 
         if (sysfs_read_attribute(sysattr)) {
-                dbg("error attempting to read value of %s",s->name);
+                err("error attempting to read value of %s",s->name);
 		sysfs_close_attribute(sysattr);
                 return SA_ERR_HPI_INVALID_DATA;
         }
@@ -760,12 +760,12 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 
 	sysattr = sysfs_open_attribute(s->max->path);
         if (!sysattr) {
-                dbg("failed opening attribute at %s", s->max->path);
+                err("failed opening attribute at %s", s->max->path);
                 return SA_ERR_HPI_INVALID_DATA;
         }
 
         if (sysfs_read_attribute(sysattr)) {
-                dbg("error attempting to read value of %s",s->name);
+                err("error attempting to read value of %s",s->name);
 		sysfs_close_attribute(sysattr);
                 return SA_ERR_HPI_INVALID_DATA;
         }
@@ -791,7 +791,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 			(SaHpiUint32T) thres->LowCritical.Raw/1000;
 	} else { /* fan sensor */
 		if (sysfs_read_attribute_value(s->div->path,tmp,SCRATCHSIZE)) {
-			dbg("error attempting to read value of %s",s->name);
+			err("error attempting to read value of %s",s->name);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 		thres->LowCritical.Interpreted.Value.SensorUint32 = 
@@ -799,7 +799,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 	}
 
 	if (sysfs_read_attribute_value(s->max->path,tmp,SCRATCHSIZE)) {
-		dbg("error attempting to read value of %s",s->name);
+		err("error attempting to read value of %s",s->name);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -815,7 +815,7 @@ static int sysfs2hpi_get_sensor_thresholds(void *hnd,
 			(SaHpiUint32T) thres->UpCritical.Raw/1000;
 	} else { /* fan sensor */
 		if (sysfs_read_attribute_value(s->div->path,tmp,SCRATCHSIZE)) {
-			dbg("error attempting to read value of %s",s->name);
+			err("error attempting to read value of %s",s->name);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 		thres->UpCritical.Interpreted.Value.SensorUint32 = 
@@ -854,12 +854,12 @@ static int sysfs2hpi_set_sensor_reading(SaHpiRdrT *rdr,
         if (reading.Type == SAHPI_SENSOR_READING_TYPE_INT64) {
 		snprintf(tmp, SCRATCHSIZE, "%lld", reading.Value.SensorInt64);
 		if (sysfs_write_attribute(attr,tmp,SCRATCHSIZE)) {
-			dbg("error attempting to write value");
+			err("error attempting to write value");
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 		return 0;
 	}
-	dbg("No values were set");
+	err("No values were set");
 	return SA_ERR_HPI_INVALID_REQUEST;
 }
 
@@ -885,7 +885,7 @@ static int sysfs2hpi_set_sensor_thresholds(void *hnd,
 	int ret = 0;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -898,7 +898,7 @@ static int sysfs2hpi_set_sensor_thresholds(void *hnd,
 
         if (tmprdr->RdrTypeUnion.SensorRec.Num != num) { 
 		/* didn't find sensor */
-		dbg("could not find sensor");
+		err("could not find sensor");
 		return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -906,7 +906,7 @@ static int sysfs2hpi_set_sensor_thresholds(void *hnd,
 	s = (struct sensor *) oh_get_rdr_data(inst->rptcache, id, tmprdr->RecordId);
 
 	if (!s) {
-		dbg("could not get sensor data for thresholds");
+		err("could not get sensor data for thresholds");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -919,7 +919,7 @@ static int sysfs2hpi_set_sensor_thresholds(void *hnd,
 	if ((SAHPI_TRUE != thres->LowCritical.IsSupported) && 
 			(SAHPI_TRUE != thres->UpCritical.IsSupported)) {
 		/* if no LowCritical or UpCritical values are sent, return error */
-		dbg("No LowCritical or UpCritical values were sent");
+		err("No LowCritical or UpCritical values were sent");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -957,7 +957,7 @@ static int sysfs2hpi_get_sensor_event_enables(void *hnd,
 	SaHpiRdrT *tmprdr;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -970,7 +970,7 @@ static int sysfs2hpi_get_sensor_event_enables(void *hnd,
 
         if (tmprdr->RdrTypeUnion.SensorRec.Num != num) { 
 		/* didn't find sensor */
-		dbg("could not find sensor");
+		err("could not find sensor");
 		return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -978,7 +978,7 @@ static int sysfs2hpi_get_sensor_event_enables(void *hnd,
 	s = (struct sensor *) oh_get_rdr_data(inst->rptcache, id, tmprdr->RecordId);
 
 	if (!s) {
-		dbg("could not get sensor data for event enables");
+		err("could not get sensor data for event enables");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	
@@ -1008,7 +1008,7 @@ static int sysfs2hpi_set_sensor_event_enables(void *hnd,
 	SaHpiRdrT *tmprdr;
 
 	if (!hnd) {
-		dbg("null handle");
+		err("null handle");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -1021,7 +1021,7 @@ static int sysfs2hpi_set_sensor_event_enables(void *hnd,
 
         if (tmprdr->RdrTypeUnion.SensorRec.Num != num) { 
 		/* didn't find sensor */
-		dbg("could not find sensor");
+		err("could not find sensor");
 		return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -1029,7 +1029,7 @@ static int sysfs2hpi_set_sensor_event_enables(void *hnd,
 	s = (struct sensor *) oh_get_rdr_data(inst->rptcache, id, tmprdr->RecordId);
 
 	if (!s) {
-		dbg("could not get sensor data for event enables");
+		err("could not get sensor data for event enables");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 

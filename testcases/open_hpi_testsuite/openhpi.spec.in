@@ -12,11 +12,13 @@
 %define with_bladecenter @WITH_SNMP_BC@
 %define with_rtas @WITH_RTAS@
 %define with_sysfs @WITH_SYSFS@
-
+%define with_ilo2_ribcl @WITH_ILO2_RIBCL@
+%define with_oa_soap @WITH_OA_SOAP@
+%define with_docbook2html @WITH_DOCBOOK2HTML@
 
 Name: @HPI_PKG@
 Version: @VERSION@
-Release: 2
+Release: 1
 #
 Summary: Open implementation of the SAF Hardware Platform Interface
 #
@@ -35,6 +37,9 @@ BuildRequires: pkgconfig glib2-devel automake autoconf libtool net-snmp-devel gc
 BuildRequires: tcpd-devel
 %else
 BuildRequires: tcp_wrappers
+%endif
+%if 0%{?with_docbook2html}
+BuildRequires: docbook-utils
 %endif
 Requires: e2fsprogs-devel openssl-devel libstdc++-devel glib2-devel
 
@@ -97,6 +102,22 @@ Group: System/Monitoring
 Summary: OpenHPI plugin for Linux software watchdog support
 Requires: openhpi = %{version}
 
+%if 0%{?with_ilo2_ribcl}
+%package ilo2_ribcl
+Summary: OpenHPI plugin for HP ProLiant Rack Mount Servers
+Group: System/Monitoring
+BuildRequires: libxml2-devel
+Requires: openhpi = %{version} libxml2 openssl
+%endif
+
+%if 0%{?with_oa_soap}
+%package oa_soap
+Summary: OpenHPI plugin for HP BladeSystem c-Class
+Group: System/Monitoring
+BuildRequires: libxml2-devel
+Requires: openhpi = %{version} libxml2 openssl
+%endif
+
 %description 
 An open implementation of the Service Availability Forum (SAF)
 Hardware Platform Interface (HPI). It includes support for multiple types of
@@ -149,6 +170,20 @@ OpenHPI plugin that reads system information from sysfs.
 OpenHPI plugin that uses the Linux software watchdog support
 provided by the kernel.
 
+%if 0%{?with_ilo2_ribcl}
+%description ilo2_ribcl
+OpenHPI plugin supporting HP ProLiant Rack Mount Servers. This plug-in connects
+to iLO2 on HP ProLiant Rack Mount Server using a SSL connection and exchanges
+information via Remote Insight Board Command Language (RIBCL). 
+%endif
+
+%if 0%{?with_oa_soap}
+%description oa_soap
+OpenHPI plug-in supporting HP BladeSystems c-Class. This plug-in connects
+to the OA of a c-Class chassis using an SSL connection and manages the system
+using an XML-encoded SOAP interface.
+%endif
+
 ###################################################
 %prep
 ###################################################
@@ -157,13 +192,9 @@ provided by the kernel.
 ###################################################
 %build
 ###################################################
-%ifarch ia64 x86_64
-./configure @ac_configure_args@ --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib64 --with-varpath=/var/lib/%{name}
-%else
-./configure @ac_configure_args@ --sysconfdir=/etc --prefix=/usr --libdir=/usr/lib --with-varpath=/var/lib/%{name}
-%endif
+%configure @ac_configure_args@ --prefix=/usr --with-varpath=/var/lib/%{name}
+find . -type f -name "Makefile" | xargs -n1 sed -i -e 's/-D_FORTIFY_SOURCE=2//g;'
 %{__make}
-make -C docs/hld
 
 ###################################################
 %install
@@ -180,12 +211,12 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_docdir}/README*
 %{_docdir}/COPYING
+%if 0%{?with_docbook2html}
 %{_docdir}/html/*.html
 %dir %{_docdir}/html/images
 %{_docdir}/html/images/*.png
 %{_docdir}/html/images/*.gif
-#%doc README README.daemon COPYING
-#%doc docs/hld/openhpi-manual
+%endif
 %dir %{_sysconfdir}/%{name}/
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 %dir %{_libdir}/%{name}
@@ -266,4 +297,17 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_libdir}/%{name}/libwatchdog.*
 
+###################################################
+%files ilo2_ribcl
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/libilo2_ribcl.*
+
+###################################################
+%if 0%{?with_oa_soap}
+%files oa_soap
+###################################################
+%defattr(-,root,root)
+%{_libdir}/%{name}/liboa_soap.*
+%endif
 

@@ -64,8 +64,6 @@ INCLUDES = @OPENHPI_INCLUDES@
 SUBDIRS = t
 DIST_SUBDIRS = t
 
-AM_CFLAGS = @CFLAGS@
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = openhpiutils.pc
 

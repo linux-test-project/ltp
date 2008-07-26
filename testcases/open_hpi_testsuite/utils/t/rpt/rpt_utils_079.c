@@ -57,7 +57,7 @@ int main(int argc, char **argv)
                 randrdr = (SaHpiRdrT *)tmpnode->data;
                 randrdr->RecordId =
                         oh_get_rdr_uid(randrdr->RdrType,
-                                    randrdr->RdrTypeUnion.SensorRec.Num);
+                                    randrdr->RdrTypeUnion.CtrlRec.Num);
 
                 tmprdr = oh_get_rdr_by_id(rptable, SAHPI_FIRST_ENTRY,
                                           randrdr->RecordId);

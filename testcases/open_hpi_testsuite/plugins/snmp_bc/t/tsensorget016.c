@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 	SaErrorT expected_err;
 
 	SaHpiResourceIdT  id = 1;
-        SaHpiSessionIdT sessionid;
 
 	SaHpiSensorNumT sid = 1;
 	SaHpiEventStateT state;
@@ -70,11 +69,7 @@ int main(int argc, char **argv)
 	err = snmp_bc_get_sensor_eventstate(NULL , id, sid, NULL, NULL);
 	checkstatus(err, expected_err, testfail);
 	
-	/***************************
-	 * Cleanup after all tests
-	 ***************************/
-	 err = tcleanup(&sessionid);
-	 return testfail;
+	return testfail;
 
 }
 

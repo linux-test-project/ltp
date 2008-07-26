@@ -37,12 +37,12 @@ int snmp_get(void *sessp, const char *objid, struct snmp_value *value)
 			value->str_len = strlen(hash_data->value.string);
 			break;
 		default:
-			dbg("Unknown SNMP type=%d for oid=%s\n", value->type, objid);
+			err("Unknown SNMP type=%d for oid=%s\n", value->type, objid);
 			return -1;
 		}
 	}
 	else {
-		dbg("No value in sim_hash for OID = %s\n", objid);
+		err("No value in sim_hash for OID = %s\n", objid);
 		return SA_ERR_HPI_NOT_PRESENT;
 	}
 
@@ -57,22 +57,22 @@ int snmp_set(void *sessp, char *objid, struct snmp_value value)
 	if (hash_data) {
 		switch (hash_data->type) {
 		case ASN_INTEGER:
-		        dbg("Setting oid=%s with value=%d\n", objid, (int)hash_data->value.integer);
+		        err("Setting oid=%s with value=%d\n", objid, (int)hash_data->value.integer);
 			if (hash_data->value.integer == SNMP_FORCE_TIMEOUT) {return SA_ERR_HPI_TIMEOUT;}
 			hash_data->value.integer = value.integer;
 			break;
 			
 		case ASN_OCTET_STR:
-			dbg("Setting oid=%s with value=%s\n", objid, hash_data->value.string);
+			err("Setting oid=%s with value=%s\n", objid, hash_data->value.string);
 			strcpy(hash_data->value.string, value.string);
 			break;
 		default:
-			dbg("Unknown SNMP type=%d for oid=%s\n", hash_data->type, objid);
+			err("Unknown SNMP type=%d for oid=%s\n", hash_data->type, objid);
 			return -1;
 		}
 	}
 	else {
-		dbg("No value in sim_hash for OID = %s\n", objid);
+		err("No value in sim_hash for OID = %s\n", objid);
 		return SA_ERR_HPI_NOT_PRESENT;
 	}
 

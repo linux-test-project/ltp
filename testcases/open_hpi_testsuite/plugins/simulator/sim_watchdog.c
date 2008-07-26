@@ -60,13 +60,13 @@ SaErrorT sim_discover_chassis_watchdogs(struct oh_handler_state *state,
         while (sim_chassis_watchdogs[i].watchdogrec.WatchdogNum != 0) {
                 rc = new_watchdog(state, e, &sim_chassis_watchdogs[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding chassis watchdog", rc);
+                        err("Error %d returned when adding chassis watchdog", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d chassis watchdogs injected", j, i);
+        dbg("%d of %d chassis watchdogs injected", j, i);
 
 
         return 0;
@@ -82,13 +82,13 @@ SaErrorT sim_discover_cpu_watchdogs(struct oh_handler_state *state,
         while (sim_cpu_watchdogs[i].watchdogrec.WatchdogNum != 0) {
                 rc = new_watchdog(state, e, &sim_cpu_watchdogs[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding cpu watchdog", rc);
+                        err("Error %d returned when adding cpu watchdog", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d cpu watchdogs injected", j, i);
+        dbg("%d of %d cpu watchdogs injected", j, i);
 
         return 0;
 }
@@ -103,13 +103,13 @@ SaErrorT sim_discover_dasd_watchdogs(struct oh_handler_state *state,
         while (sim_dasd_watchdogs[i].watchdogrec.WatchdogNum != 0) {
                 rc = new_watchdog(state, e, &sim_dasd_watchdogs[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding dasd watchdog", rc);
+                        err("Error %d returned when adding dasd watchdog", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d dasd watchdogs injected", j, i);
+        dbg("%d of %d dasd watchdogs injected", j, i);
 
         return 0;
 }
@@ -124,13 +124,13 @@ SaErrorT sim_discover_hs_dasd_watchdogs(struct oh_handler_state *state,
         while (sim_hs_dasd_watchdogs[i].watchdogrec.WatchdogNum != 0) {
                 rc = new_watchdog(state, e, &sim_hs_dasd_watchdogs[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding hs dasd watchdog", rc);
+                        err("Error %d returned when adding hs dasd watchdog", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d hs dasd watchdogs injected", j, i);
+        dbg("%d of %d hs dasd watchdogs injected", j, i);
 
         return 0;
 }
@@ -145,13 +145,13 @@ SaErrorT sim_discover_fan_watchdogs(struct oh_handler_state *state,
         while (sim_fan_watchdogs[i].watchdogrec.WatchdogNum != 0) {
                 rc = new_watchdog(state, e, &sim_fan_watchdogs[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding fan watchdog", rc);
+                        err("Error %d returned when adding fan watchdog", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d fan watchdogs injected", j, i);
+        dbg("%d of %d fan watchdogs injected", j, i);
 
         return 0;
 }
@@ -164,7 +164,7 @@ SaErrorT sim_get_watchdog_info(void *hnd,
         struct simWatchdogInfo *info;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -187,7 +187,7 @@ SaErrorT sim_get_watchdog_info(void *hnd,
         info = (struct simWatchdogInfo *)oh_get_rdr_data(state->rptcache, rid,
                                                          rdr->RecordId);
         if (info == NULL) {
-                dbg("No watchdog data. Watchdog=%s", rdr->IdString.Data);
+                err("No watchdog data. Watchdog=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -203,7 +203,7 @@ SaErrorT sim_set_watchdog_info(void *hnd,
         struct simWatchdogInfo *info;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -226,7 +226,7 @@ SaErrorT sim_set_watchdog_info(void *hnd,
         info = (struct simWatchdogInfo *)oh_get_rdr_data(state->rptcache, rid,
                                                          rdr->RecordId);
         if (info == NULL) {
-                dbg("No watchdog data. Watchdog=%s", rdr->IdString.Data);
+                err("No watchdog data. Watchdog=%s", rdr->IdString.Data);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
@@ -241,7 +241,7 @@ SaErrorT sim_reset_watchdog(void *hnd,
         SaHpiRdrT *rdr;
         
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 

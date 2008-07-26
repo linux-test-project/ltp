@@ -44,13 +44,13 @@ int main(int argc, char **argv)
 	el = oh_el_create(20);
 	retc = oh_el_map_from_file(el, "./elTest.data");
 	if (retc != SA_OK) {
-                dbg("ERROR: oh_el_map_from_file failed.");
+                err("ERROR: oh_el_map_from_file failed.");
                 return 1;
         }
 
 	retc = oh_el_overflowreset(el);
         if (retc != SA_OK) {
-                dbg("ERROR: el info.OverflowFlagreset failed.");
+                err("ERROR: el info.OverflowFlagreset failed.");
                 return 1;
         }
 

@@ -49,14 +49,14 @@ int main(int argc, char **argv)
 	/* fetch the event for el*/
         retc = oh_el_get(el, SAHPI_FIRST_ENTRY, &prev, &next, &entry);
         if (retc == SA_OK) {
-        	dbg("ERROR: oh_el_get failed.");
+        	err("ERROR: oh_el_get failed.");
                 return 1;
         }
 
 	/* close el */
         retc = oh_el_close(el);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_close on el failed.");
+                err("ERROR: oh_el_close on el failed.");
                 return 1;
         }
 

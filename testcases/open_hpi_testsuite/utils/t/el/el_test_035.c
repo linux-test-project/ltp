@@ -49,14 +49,14 @@ int main(int argc, char **argv)
 	
         retc = oh_el_map_to_file(el, NULL);
         if (retc == SA_OK) {
-                dbg("ERROR: oh_el_map_to_file failed.");
+                err("ERROR: oh_el_map_to_file failed.");
                 return 1;
 	}	
 
         /* close el */
         retc = oh_el_close(el);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_close on el failed.");
+                err("ERROR: oh_el_close on el failed.");
                 return 1;
         }
 

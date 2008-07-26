@@ -12,8 +12,6 @@ MOSTLYCLEANFILES 	= @TEST_CLEAN@
 
 INCLUDES                = @OPENHPI_INCLUDES@ -I$(top_builddir)/cpp
 
-AM_CFLAGS		= @NOCFLAGS@
-
 MAINTAINERCLEANFILES 	= Makefile.in
 
 TDEPLIB			= $(top_builddir)/cpp/libosahpi.la

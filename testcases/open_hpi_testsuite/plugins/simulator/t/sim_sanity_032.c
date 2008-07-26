@@ -50,27 +50,27 @@ int main(int argc, char **argv)
 
         rc = saHpiSessionOpen(SAHPI_UNSPECIFIED_DOMAIN_ID, &sid, NULL);
 	if (rc != SA_OK) {
-		dbg("Failed to open session");
+		err("Failed to open session");
                 return -1;
 	}
 
 	rc = saHpiDiscover(sid);
 	if (rc != SA_OK) {
-		dbg("Failed to run discover");
+		err("Failed to run discover");
                 return -1;
 	}
 
         /* get the resource id of the hs drive */
         SaHpiResourceIdT resid = get_resid(sid, SAHPI_ENT_DISK_DRIVE);
         if (resid == 0) {
-		dbg("Couldn't find the resource id of the hs drive");
+		err("Couldn't find the resource id of the hs drive");
                 return -1;
 	}
 
         rc = saHpiHotSwapStateGet(sid, resid, &state);
         if (rc != SA_OK) {
-		dbg("Couldn't get state");
-		dbg("Error %s",oh_lookup_error(rc));
+		err("Couldn't get state");
+		err("Error %s",oh_lookup_error(rc));
                 return -1;
 	}
 

@@ -35,7 +35,8 @@ cIpmiControlAtcaLed::cIpmiControlAtcaLed( cIpmiMc *mc,
     m_led_default_local_color( led_default_local_color ),
     m_led_local_color( led_default_local_color ),
     m_led_default_override_color( led_default_override_color ),
-    m_led_override_color( led_default_override_color )
+    m_led_override_color( led_default_override_color ),
+    m_set_led_state_supported( false )
 {
 }
 
@@ -154,103 +155,32 @@ cIpmiControlAtcaLed::CreateRdr( SaHpiRptEntryT &resource, SaHpiRdrT &rdr )
     ledmsg.m_data_len = 6;
 
     cIpmiMsg ledrsp;
-    SaErrorT rv;
 
+    /*
+    There seems that there is an issue with ATCA-HPI mapping in that
+    Req 4.5.7.7 says that an LED with a local control state and either an
+    Override or Lamp test state should set the Control Mode Read Only status
+    to SAHPI_FALSE, however there is no atomic way to check for support
+    of the Override State. Therefore, there is no obvious "safe" way to implement
+    the spec  as stated, only best alternatives. The approach taken here is to
+    set the Control Mode Read Only status to SAHPI_FALSE automatically if the
+    LED has a local control state.  This will allow for issuing the Set FRU LED
+    state commands, however the unsupported states (Override and/or Lamp Test)
+    will return  the specified Completion Code of CCh(invalid date field),
+    as stated in the ATCA base spec.
+    */
     if ( m_led_default_local_color == 0 )
     {
         rec.DefaultMode.Mode = SAHPI_CTRL_MODE_MANUAL;
         rec.DefaultMode.ReadOnly = SAHPI_TRUE;
+        m_set_led_state_supported = false;
         oem_rec.ConfigData[1] = 0;
-
-        // Try set override state (Should succeed)
-        ledmsg.m_data[3] = 0x00;
-        ledmsg.m_data[4] = 0x00;
-        ledmsg.m_data[5] = 0x0F;
-
-        rv = Resource()->SendCommand( ledmsg, ledrsp );
-
-        if (   rv != SA_OK
-            || ledrsp.m_data_len < 2
-            || ledrsp.m_data[0] != eIpmiCcOk
-            || ledrsp.m_data[1] != dIpmiPicMgId )
-        {
-            m_set_led_override_state_supported = false;
-        }
-        else
-        {
-            m_set_led_override_state_supported = true;
-        }
-
-        // Check if individual lamp test is supported
-        ledmsg.m_data[3] = 0xFB;
-        ledmsg.m_data[4] = 0x01;
-        ledmsg.m_data[5] = 0x0F;
-
-        rv = Resource()->SendCommand( ledmsg, ledrsp );
-
-        if (   rv != SA_OK
-            || ledrsp.m_data_len < 2
-            || ledrsp.m_data[0] != eIpmiCcOk
-            || ledrsp.m_data[1] != dIpmiPicMgId )
-        {
-            m_set_led_lamp_state_supported = false;
-        }
-        else
-        {
-            m_set_led_lamp_state_supported = true;
-        }
     }
     else
     {
         rec.DefaultMode.Mode = SAHPI_CTRL_MODE_AUTO;
-
-        // Try set override state
-        ledmsg.m_data[3] = 0x00;
-        ledmsg.m_data[4] = 0x00;
-        ledmsg.m_data[5] = 0x0F;
-
-        rv = Resource()->SendCommand( ledmsg, ledrsp );
-
-        if (   rv != SA_OK
-            || ledrsp.m_data_len < 2
-            || ledrsp.m_data[0] != eIpmiCcOk
-            || ledrsp.m_data[1] != dIpmiPicMgId )
-        {
-            m_set_led_override_state_supported = false;
-            rec.DefaultMode.ReadOnly = SAHPI_TRUE;
-            oem_rec.ConfigData[2] = 0;
-        }
-        else
-        {
-            m_set_led_override_state_supported = true;
             rec.DefaultMode.ReadOnly = SAHPI_FALSE;
-        }
-
-        // Restore Local Control
-        ledmsg.m_data[3] = 0xFC;
-        ledmsg.m_data[4] = 0x00;
-        ledmsg.m_data[5] = 0x0F;
-
-        rv = Resource()->SendCommand( ledmsg, ledrsp );
-
-        // Check if individual lamp test is supported
-        ledmsg.m_data[3] = 0xFB;
-        ledmsg.m_data[4] = 0x01;
-        ledmsg.m_data[5] = 0x0F;
-
-        rv = Resource()->SendCommand( ledmsg, ledrsp );
-
-        if (   rv != SA_OK
-            || ledrsp.m_data_len < 2
-            || ledrsp.m_data[0] != eIpmiCcOk
-            || ledrsp.m_data[1] != dIpmiPicMgId )
-        {
-            m_set_led_lamp_state_supported = false;
-        }
-        else
-        {
-            m_set_led_lamp_state_supported = true;
-        }
+        m_set_led_state_supported = true;
     }
 
     rec.WriteOnly = SAHPI_FALSE;
@@ -284,7 +214,7 @@ cIpmiControlAtcaLed::SetState( const SaHpiCtrlModeT &mode, const SaHpiCtrlStateT
     }
     else
     {
-        if ( m_set_led_override_state_supported == false )
+        if ( m_set_led_state_supported == false )
             return SA_ERR_HPI_READ_ONLY;
 
         if ( &state == NULL )
@@ -301,17 +231,10 @@ cIpmiControlAtcaLed::SetState( const SaHpiCtrlModeT &mode, const SaHpiCtrlStateT
 
         if ( state.StateUnion.Oem.Body[4] == SAHPI_TRUE )
         {
-            if ( m_set_led_lamp_state_supported == false )
-                return SA_ERR_HPI_INVALID_PARAMS;
-
             if ( state.StateUnion.Oem.Body[5] > 127 )
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
-        else
-        {
-            if ( m_set_led_override_state_supported == false )
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
+
 
         if ( state.StateUnion.Oem.Body[1] == 0xFF )
         {

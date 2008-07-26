@@ -63,33 +63,33 @@ int main(int argc, char **argv)
 	/* modifies the timestamp basetime */
 	retc = oh_el_timeset(el, timestamp);
 	if (retc != SA_OK){
-		dbg("ERROR: timeset failed");
+		err("ERROR: timeset failed");
 		return 1;
 	} 
 
 	retc = oh_el_append(el, &event, NULL, NULL);
         if (retc != SA_OK) {
-        	dbg("ERROR: oh_el_append failed.");
+        	err("ERROR: oh_el_append failed.");
 	        return 1;
         }
        
         /* get el info */
         retc = oh_el_info(el, &info);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_info failed.");
+                err("ERROR: oh_el_info failed.");
                 return 1;
         }
 									
 	/* Verifies timestamp basetime worked */
 	if (info.UpdateTimestamp < timestamp){
-		dbg("ERROR: Timestamp basetime failed");
+		err("ERROR: Timestamp basetime failed");
 		return 1;
 	}    
 
         /* close el without saving to file*/
         retc = oh_el_close(el);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_close on el failed.");
+                err("ERROR: oh_el_close on el failed.");
                 return 1;
         }
 

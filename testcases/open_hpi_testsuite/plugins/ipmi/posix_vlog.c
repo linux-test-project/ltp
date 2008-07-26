@@ -20,7 +20,7 @@ posix_vlog(char *format, enum ipmi_log_type_e log_type, va_list ap)
      int do_nl = 1;
      char *msg = getenv("OHOI_TRACE_MSG");
      char *mem = getenv("OHOI_DBG_MEM");
-     int do_debug = (getenv("OPENHPI_DEBUG") && !strcmp("YES", getenv("OPENHPI_DEBUG")));
+     int do_debug = (getenv("OPENHPI_ERROR") && !strcmp("YES", getenv("OPENHPI_ERROR")));
      
      if ((msg || mem) && trace_msg_file) {
 	vfprintf(trace_msg_file, format, ap);

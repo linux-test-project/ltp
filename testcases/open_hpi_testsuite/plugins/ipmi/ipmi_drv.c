@@ -263,13 +263,13 @@ static int ipmicmd_mv_handler(
 	
 	
 	if (domain == NULL) {
-		dbg("domain == NULL");
+		err("domain == NULL");
 		info->rv = SA_ERR_HPI_INVALID_PARAMS;
 		info->done = 1;
 		return IPMI_MSG_ITEM_NOT_USED;
 	}
 	if (info->sresp < msg->data_len) {
-		dbg("info->sresp(%d) < msg->data_len(%d)",
+		err("info->sresp(%d) < msg->data_len(%d)",
 			info->sresp, msg->data_len);
 		info->done = 1;
 		info->rv = SA_ERR_HPI_OUT_OF_SPACE;
@@ -290,7 +290,7 @@ static void ipmicmd_mv_cb(ipmi_domain_t *domain, void *cb_data)
 		0, info->pdata, info->sdata,
 		ipmicmd_mv_handler, cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = %d", rv);
+		err("ipmicmd_send = %d", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		info->done = 1;
 	}
@@ -323,12 +323,12 @@ int ipmicmd_mv(struct ohoi_handler *ipmi_handler,
 	rv = ipmi_domain_pointer_cb(ipmi_handler->domain_id,
 					ipmicmd_mv_cb, &info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = %d", rv);
+		err("ipmi_domain_pointer_cb = %d", rv);
 		return SA_ERR_HPI_BUSY;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = %d", rv);
+		err("ohoi_loop = %d", rv);
 		return rv;
 	}
 	return info.rv;

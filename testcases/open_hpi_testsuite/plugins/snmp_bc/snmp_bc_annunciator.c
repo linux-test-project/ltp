@@ -44,7 +44,7 @@ SaErrorT snmp_bc_get_next_announce(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !announcement || oh_lookup_severity(sev) == NULL) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -52,7 +52,7 @@ SaErrorT snmp_bc_get_next_announce(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -70,7 +70,7 @@ SaErrorT snmp_bc_get_next_announce(void *hnd,
 	}
 
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -102,7 +102,7 @@ SaErrorT snmp_bc_get_announce(void *hnd,
 	SaHpiRptEntryT *rpt;
 	
 	if (!hnd || !announcement) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -110,7 +110,7 @@ SaErrorT snmp_bc_get_announce(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -127,7 +127,7 @@ SaErrorT snmp_bc_get_announce(void *hnd,
 		return(SA_ERR_HPI_CAPABILITY);
 	}
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
  }
@@ -160,7 +160,7 @@ SaErrorT snmp_bc_ack_announce(void *hnd,
 	SaHpiRptEntryT *rpt;
 	
 	if (!hnd || oh_lookup_severity(sev) == NULL) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -168,7 +168,7 @@ SaErrorT snmp_bc_ack_announce(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -186,7 +186,7 @@ SaErrorT snmp_bc_ack_announce(void *hnd,
 	}
 
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -217,7 +217,7 @@ SaErrorT snmp_bc_add_announce(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !announcement) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -225,7 +225,7 @@ SaErrorT snmp_bc_add_announce(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -243,7 +243,7 @@ SaErrorT snmp_bc_add_announce(void *hnd,
 	}
 
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -276,7 +276,7 @@ SaErrorT snmp_bc_del_announce(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || oh_lookup_severity(sev) == NULL) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -284,7 +284,7 @@ SaErrorT snmp_bc_del_announce(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -302,7 +302,7 @@ SaErrorT snmp_bc_del_announce(void *hnd,
 	}
 	
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -333,7 +333,7 @@ SaErrorT snmp_bc_get_annunc_mode(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !mode) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -341,7 +341,7 @@ SaErrorT snmp_bc_get_annunc_mode(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -359,7 +359,7 @@ SaErrorT snmp_bc_get_annunc_mode(void *hnd,
 	}
 
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }
@@ -390,7 +390,7 @@ SaErrorT snmp_bc_set_annunc_mode(void *hnd,
 	SaHpiRptEntryT *rpt;
 	
 	if (!hnd || oh_lookup_annunciatormode(mode) == NULL) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -398,7 +398,7 @@ SaErrorT snmp_bc_set_annunc_mode(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -416,7 +416,7 @@ SaErrorT snmp_bc_set_annunc_mode(void *hnd,
 	} 
 	
 
-	dbg("Annunciators not supported by platform");
+	err("Annunciators not supported by platform");
 	snmp_bc_unlock_handler(custom_handle);
 	return(SA_ERR_HPI_INTERNAL_ERROR);
 }

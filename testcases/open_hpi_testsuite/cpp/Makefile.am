@@ -20,8 +20,6 @@ MAINTAINERCLEANFILES 	= Makefile.in
 
 INCLUDES		= @OPENHPI_INCLUDES@
 
-AM_CFLAGS		= -g @CFLAGS@
-
 includedir=$(base_includedir)/openhpi
 include_HEADERS		= oSaHpiAlarm.hpp \
                   	  oSaHpiAnnouncement.hpp \

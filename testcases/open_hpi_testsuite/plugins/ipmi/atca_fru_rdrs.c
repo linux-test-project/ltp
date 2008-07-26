@@ -100,7 +100,7 @@ static void get_ipmb0_sensor_num_cb(
 		get_ipmb0_sensor_num_done,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	} else {
@@ -138,16 +138,16 @@ static int get_ipmb0_sensor_num(struct oh_handler_state *handler,
 				get_ipmb0_sensor_num_cb,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return 1;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return 1;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return 1;
 	}
 	*snump = ATCAHPI_SENSOR_NUM_IPMB0 + info.l_num;
@@ -274,7 +274,7 @@ void adjust_sensor_to_atcahpi_spec(struct oh_handler_state *handler,
 	}
 
 	if (get_ipmb0_sensor_num(handler, sensor, &rec->Num) != 0) {
-		dbg("Couldn't get IPMB-0 sensor link. #%d for resource %d",
+		err("Couldn't get IPMB-0 sensor link. #%d for resource %d",
 			rec->Num, rpt->ResourceId);
 		return;
 	}
@@ -362,7 +362,7 @@ static void set_ipmb0_state_control_cb(
 		_set_ipmb0_state_control_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		info->done =1;
 		return;
@@ -385,22 +385,22 @@ static SaErrorT set_ipmb0_state_control_state(
 	unsigned char on;
 
 	if (state && state->Type != SAHPI_CTRL_TYPE_ANALOG) {
-		dbg("wrong state Type : %d", state->Type);
+		err("wrong state Type : %d", state->Type);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	res_info = oh_get_resource_data(hnd->rptcache,
 				c->info.atcamap_ctrl_info.val);
 	if (res_info == NULL) {
-		dbg("No res_info");
+		err("No res_info");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (!(res_info->type & OHOI_RESOURCE_MC)) {
-		dbg("resource not MC");
+		err("resource not MC");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	link_num = state ? state->StateUnion.Analog : 0;
 	if (link_num > rdr->RdrTypeUnion.CtrlRec.TypeUnion.Analog.Max) {
-		dbg("Wrong analog value: %d > %d", link_num,
+		err("Wrong analog value: %d > %d", link_num,
 			rdr->RdrTypeUnion.CtrlRec.TypeUnion.Analog.Max);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
@@ -413,7 +413,7 @@ static SaErrorT set_ipmb0_state_control_state(
 		info.a = 0xFF;
 		info.b = (link_num << 1) | on;
 	} else {
-		dbg("Not IPMB state control: 0x%x",
+		err("Not IPMB state control: 0x%x",
 					rdr->RdrTypeUnion.CtrlRec.Num);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
@@ -424,16 +424,16 @@ static SaErrorT set_ipmb0_state_control_state(
 				set_ipmb0_state_control_cb,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_mc_pointer_cb = 0x%x", rv);
+		err("ipmi_mc_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return rv;
 	}
 
@@ -456,12 +456,12 @@ static SaHpiRdrT *create_ipmb0_state_control(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -512,12 +512,12 @@ void ohoi_create_ipmb0_controls(struct oh_handler_state *handler,
 
 	rpt = ohoi_get_resource_by_entityid(handler->rptcache, &entity_id);
 	if (rpt == NULL) {
-		dbg("couldn't find out resource");
+		err("couldn't find out resource");
 		return;
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("couldn't find out res_info");
+		err("couldn't find out res_info");
 		return;
 	}
 //printf("   ################   create ipmb0_controls for Resource %d; num links = %d\n", rpt->ResourceId, max);
@@ -527,7 +527,7 @@ void ohoi_create_ipmb0_controls(struct oh_handler_state *handler,
 	if (rdr != NULL && (oh_add_rdr(handler->rptcache,
 					rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(ctrl_info);
 	} else {
@@ -540,7 +540,7 @@ void ohoi_create_ipmb0_controls(struct oh_handler_state *handler,
 	if (rdr != NULL && (oh_add_rdr(handler->rptcache,
 					rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(ctrl_info);
 	} else {
@@ -582,7 +582,7 @@ static void reset_mc_done (ipmi_mc_t *mc,
 	struct mc_reset_info *info = cb_data;
 	info->done = 1;
 	if (err) {
-		dbg("reset_mc_done err = %d", err);
+		err("reset_mc_done err = %d", err);
 		info->rv = SA_ERR_HPI_INVALID_REQUEST;
 	}
 }
@@ -607,7 +607,7 @@ static void set_mc_reset_state(ipmi_mc_t *mc,
 	}		
         rv = ipmi_mc_reset(mc, act, reset_mc_done, cb_data);
 	if (rv) {
-		dbg("ipmi_mc_reset returned err = %d", rv);
+		err("ipmi_mc_reset returned err = %d", rv);
 		info->rv = SA_ERR_HPI_INVALID_REQUEST;
 		info->done = 1;
 	}
@@ -630,22 +630,22 @@ static SaErrorT set_fru_mc_reset_control_state(
 		return SA_ERR_HPI_READ_ONLY;
 	}
 	if (state->Type != SAHPI_CTRL_TYPE_ANALOG) {
-		dbg("wrong state Type : %d", state->Type);
+		err("wrong state Type : %d", state->Type);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	res_info = oh_get_resource_data(hnd->rptcache,
 				c->info.atcamap_ctrl_info.val);
 	if (res_info == NULL) {
-		dbg("No res_info");
+		err("No res_info");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (!(res_info->type & OHOI_RESOURCE_MC)) {
-		dbg("resource not MC");
+		err("resource not MC");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	val = state->StateUnion.Analog;
 	if ((val != 1) && (val != 2)) {
-		dbg("wrong state value %d", val);
+		err("wrong state value %d", val);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	info.done = 0;
@@ -654,16 +654,16 @@ static SaErrorT set_fru_mc_reset_control_state(
 	rv = ipmi_mc_pointer_cb(res_info->u.entity.mc_id, 
 			set_mc_reset_state, &info);
 	if (rv != 0) {
-		dbg("ipmi_mc_pointer_cb = 0x%x", rv);
+		err("ipmi_mc_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return rv;
 	}
 
@@ -686,12 +686,12 @@ static SaHpiRdrT *create_fru_mc_reset_control(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -738,23 +738,23 @@ void ohoi_create_fru_mc_reset_control(struct oh_handler_state *handler,
 
 	rpt = oh_get_resource_by_id(handler->rptcache, rid);
 	if (rpt == NULL) {
-		dbg("No rpt = %d", rid);
+		err("No rpt = %d", rid);
 		return;
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("No res_info for rpt = %d", rid);
+		err("No res_info for rpt = %d", rid);
 		return;
 	}
 	rdr = create_fru_mc_reset_control(handler->data, rpt, &c_info);
 	if (rdr == NULL) {
-		dbg("could not create fan control");
+		err("could not create fan control");
 		return;
 	}
 	rv = oh_add_rdr(handler->rptcache,rpt->ResourceId,
 					rdr, c_info, 1);
 	if (rv != SA_OK) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 		return;
@@ -847,7 +847,7 @@ static void get_fan_speed_properties(ipmi_mc_t *mc, void *cb_data)
 		get_fan_speed_properties_done,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		info->rv = rv;
 		info->done = 1;
 		return;
@@ -872,11 +872,11 @@ static SaHpiRdrT *create_fan_control(
 	
 	res_info = oh_get_resource_data(handler->rptcache, rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("res_info == NULL ?");
+		err("res_info == NULL ?");
 		return NULL;
 	}
 	if (!(res_info->type & OHOI_RESOURCE_MC)) {
-		dbg("only intelligent fru supported now");
+		err("only intelligent fru supported now");
 		return NULL;
 	}
 	
@@ -887,27 +887,27 @@ static SaHpiRdrT *create_fan_control(
 	rv = ipmi_mc_pointer_cb(res_info->u.entity.mc_id,
 			get_fan_speed_properties, &info);
 	if (rv != 0) {
-		dbg("ipmi_pointer_entity_cb = %d", rv);
+		err("ipmi_pointer_entity_cb = %d", rv);
 		return NULL;
 	}
 	rv = ohoi_loop(&info.done, handler->data);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = %d", rv);
+		err("ohoi_loop = %d", rv);
 		return NULL;
 	}
 	if (info.rv != 0) {
-		dbg("info.rv = %d", info.rv);
+		err("info.rv = %d", info.rv);
 		return NULL;
 	}
 
 	rdr = malloc(sizeof (*rdr));	
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -951,18 +951,18 @@ void ohoi_create_fan_control(struct oh_handler_state *handler,
 
 	rpt = oh_get_resource_by_id(handler->rptcache, rid);
 	if (rpt == NULL) {
-		dbg("No rpt = %d", rid);
+		err("No rpt = %d", rid);
 		return;
 	}
 	rdr = create_fan_control(handler, rpt, &c_info);
 	if (rdr == NULL) {
-		dbg("could not create fan control");
+		err("could not create fan control");
 		return;
 	}
 	rv = oh_add_rdr(handler->rptcache,rpt->ResourceId,
 					rdr, c_info, 1);
 	if (rv != SA_OK) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 		return;
@@ -1018,7 +1018,7 @@ static void get_fan_control_state_cb(ipmi_mc_t *mc, void *cb_data)
 		get_fan_control_state_done,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		info->rv = rv;
 		info->done = 1;
 		return;
@@ -1047,11 +1047,11 @@ static SaErrorT get_fan_control_state(
 	res_info = oh_get_resource_data(handler->rptcache,
 				c->info.atcamap_ctrl_info.val);
 	if (res_info == NULL) {
-		dbg("res_info == NULL ?");
+		err("res_info == NULL ?");
 		return SA_ERR_HPI_INVALID_RESOURCE;
 	}
 	if (!(res_info->type & OHOI_RESOURCE_MC)) {
-		dbg("only intelligent fru supported now");
+		err("only intelligent fru supported now");
 		return SA_ERR_HPI_UNSUPPORTED_API;
 	}
 	
@@ -1061,16 +1061,16 @@ static SaErrorT get_fan_control_state(
 	rv = ipmi_mc_pointer_cb(res_info->u.entity.mc_id,
 			get_fan_control_state_cb, &info);
 	if (rv != 0) {
-		dbg("ipmi_pointer_entity_cb = %d", rv);
+		err("ipmi_pointer_entity_cb = %d", rv);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	rv = ohoi_loop(&info.done, handler->data);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = %d", rv);
+		err("ohoi_loop = %d", rv);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	if (info.rv != 0) {
-		dbg("info.rv = %d", info.rv);
+		err("info.rv = %d", info.rv);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	state->Type = SAHPI_CTRL_TYPE_ANALOG;
@@ -1180,7 +1180,7 @@ static void get_ekeying_link_state_sensor_reading_done(
 	buf = data + 2;
 	chn = CHANNEL_NUM(buf);
 	if (chn == 0 || chn > 16) {
-		dbg("wrong channel %d for Link 1", chn);
+		err("wrong channel %d for Link 1", chn);
 		info->rv = SA_ERR_HPI_NO_RESPONSE;
 		goto out;
 	}
@@ -1205,7 +1205,7 @@ static void get_ekeying_link_state_sensor_reading_done(
 	buf = data + 7;
 	chn = CHANNEL_NUM(buf);
 	if (chn == 0 || chn > 16) {
-		dbg("wrong channel %d for Link 2", chn);
+		err("wrong channel %d for Link 2", chn);
 		info->rv = SA_ERR_HPI_NO_RESPONSE;
 		goto out;
 	}
@@ -1233,7 +1233,7 @@ static void get_ekeying_link_state_sensor_reading_done(
 	buf = data + 12;
 	chn = CHANNEL_NUM(buf);
 	if (chn == 0 || chn > 16) {
-		dbg("wrong channel %d for Link 2", chn);
+		err("wrong channel %d for Link 2", chn);
 		info->rv = SA_ERR_HPI_NO_RESPONSE;
 		goto out;
 	}
@@ -1268,7 +1268,7 @@ static void get_ekeying_link_state_sensor_reading_done(
 	buf = data + 17;
 	chn = CHANNEL_NUM(buf);
 	if (chn == 0 || chn > 16) {
-		dbg("wrong channel %d for Link 2", chn);
+		err("wrong channel %d for Link 2", chn);
 		info->rv = SA_ERR_HPI_NO_RESPONSE;
 		goto out;
 	}
@@ -1353,7 +1353,7 @@ static void get_ekeying_link_state_sensor_reading_cb(ipmi_mc_t *mc,
 		get_ekeying_link_state_sensor_reading_done,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		info->done = 1;
 		return;
@@ -1378,24 +1378,24 @@ static SaErrorT get_ekeying_link_state_sensor_reading(
 	rpt = oh_get_resource_by_id(handler->rptcache,
 				sensor_info->info.atcamap_sensor_info.val);
 	if (rpt == NULL) {
-		dbg("no rpt for resource Id %d",
+		err("no rpt for resource Id %d",
 			sensor_info->info.atcamap_sensor_info.val);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	rdr = ohoi_get_rdr_by_data(handler->rptcache, rpt->ResourceId,
 					SAHPI_SENSOR_RDR, sensor_info);
 	if (rdr == NULL) {
-		dbg("no rdr for sensor.  Rpt %d, sen_info = %p",
+		err("no rdr for sensor.  Rpt %d, sen_info = %p",
 					rpt->ResourceId, sensor_info);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("no res_info");
+		err("no res_info");
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	if (!(res_info->type & OHOI_RESOURCE_MC)) {
-		dbg("resource %d not MC", rpt->ResourceId);
+		err("resource %d not MC", rpt->ResourceId);
 		return SA_ERR_HPI_ENTITY_NOT_PRESENT;
 	}
 	buf = rdr->RdrTypeUnion.SensorRec.DataFormat.Range.
@@ -1414,7 +1414,7 @@ static SaErrorT get_ekeying_link_state_sensor_reading(
 		}
 	}
 	if (i == 16) {
-		dbg("No channels for link");
+		err("No channels for link");
 		return SA_ERR_HPI_ERROR;
 	}
 	info.channel = (i + 1) | (buf[2] << 6);
@@ -1427,16 +1427,16 @@ static SaErrorT get_ekeying_link_state_sensor_reading(
 				get_ekeying_link_state_sensor_reading_cb,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_mc_pointer_cb = 0x%x", rv);
+		err("ipmi_mc_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, handler->data);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return rv;
 	}
 	if (reading) {
@@ -1476,7 +1476,7 @@ void ohoi_create_ekeying_link_state_sensor(
 
 	rpt = ohoi_get_resource_by_entityid(handler->rptcache, &entity_id);
 	if (rpt == NULL) {
-		dbg("Couldn't find out resource by entity %d.%.d.%d.%d  %s",
+		err("Couldn't find out resource by entity %d.%.d.%d.%d  %s",
 			ipmi_entity_get_entity_id(entity), 
 			ipmi_entity_get_entity_instance(entity),
 			ipmi_entity_get_device_channel(entity),
@@ -1486,18 +1486,18 @@ void ohoi_create_ekeying_link_state_sensor(
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("No res_info for resource id = %d", rpt->ResourceId);
+		err("No res_info for resource id = %d", rpt->ResourceId);
 		return;
 	}
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return;
 	}
 	s_info = malloc(sizeof (*s_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return;
 	}
@@ -1552,7 +1552,7 @@ void ohoi_create_ekeying_link_state_sensor(
 		}
 	}
 	if (first_channel == 0) {
-		dbg("No channels for sensor");
+		err("No channels for sensor");
 		free(rdr);
 		free(s_info);
 		return;
@@ -1596,7 +1596,7 @@ void ohoi_create_ekeying_link_state_sensor(
 	
 	if (oh_add_rdr(handler->rptcache, rpt->ResourceId,
 					rdr, s_info, 1) != SA_OK) {
-		dbg("could not add e-keying link state sensor to rpt id = %d",
+		err("could not add e-keying link state sensor to rpt id = %d",
 							      rpt->ResourceId);
 		free(rdr);
 		free(s_info);
@@ -1692,7 +1692,7 @@ static void set_atca_reset_diagnostic_control_state_cb(ipmi_mc_t *mc,
 		_set_atca_reset_diagnostic_control_state_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x\n", rv);
+		err("ipmicmd_send = 0x%x\n", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	}
@@ -1750,12 +1750,12 @@ static SaErrorT set_atca_reset_diagnostic_control_state(
 				set_atca_reset_diagnostic_control_state_cb,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 			return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -1771,12 +1771,12 @@ static SaHpiRdrT *atca_create_reset_diagnostic_control(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_c_info = malloc(sizeof (struct ohoi_control_info));
 	if (l_c_info == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -1864,7 +1864,7 @@ static void get_atca_desired_power_control_state_cb(ipmi_mc_t *mc,
 		_get_atca_desired_power_control_state_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x\n", rv);
+		err("ipmicmd_send = 0x%x\n", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	}
@@ -1913,16 +1913,16 @@ static SaErrorT get_atca_desired_power_control_state(
 				get_atca_desired_power_control_state_cb,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x\n", info.rv);
+		err("info.rv = 0x%x\n", info.rv);
 		return info.rv;
 	}
 
@@ -1960,12 +1960,12 @@ static SaHpiRdrT *atca_create_desired_pwr_control(
 
 	rdr = malloc(sizeof (SaHpiRdrT));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	l_c_info = malloc(sizeof (struct ohoi_control_info));
 	if (l_c_info == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -2019,7 +2019,7 @@ static int fru_rdrs_rpt_iterator(
 	rdr = create_fru_mc_reset_control(handler->data, rpt, &ctrl_info);
 	if (rdr != NULL && (oh_add_rdr(handler->rptcache, rpt->ResourceId,
 						rdr, ctrl_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(ctrl_info);
 	} else {
@@ -2037,7 +2037,7 @@ no_reset_control:
 	ohoi_iterate_rpt_rdrs(handler, rpt,
 		ipmb0_state_control_rdr_iterator, &max);
 	if (max < 0) {
-		dbg("No ipmb0 sensors for resource %d", rpt->ResourceId);
+		err("No ipmb0 sensors for resource %d", rpt->ResourceId);
 		res_info->type |= OHOI_MC_IPMB0_CONTROL_CREATED;
 		goto no_ipmb0_controls;
 	}
@@ -2047,7 +2047,7 @@ no_reset_control:
 	if (rdr != NULL && (oh_add_rdr(handler->rptcache,
 					rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(ctrl_info);
 	} else {
@@ -2060,7 +2060,7 @@ no_reset_control:
 	if (rdr != NULL && (oh_add_rdr(handler->rptcache,
 					rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(ctrl_info);
 	} else {
@@ -2078,7 +2078,7 @@ no_ipmb0_controls:
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK) {
-			dbg("couldn't add control rdr");
+			err("couldn't add control rdr");
 			free(rdr);
 			free(ctrl_info);
 		} else {
@@ -2094,7 +2094,7 @@ no_ipmb0_controls:
 	if (rdr) {
 		if (oh_add_rdr(handler->rptcache, rpt->ResourceId,
 					rdr, ctrl_info, 1) != SA_OK) {
-			dbg("couldn't add control rdr");
+			err("couldn't add control rdr");
 			free(rdr);
 			free(ctrl_info);
 		} else {
@@ -2127,13 +2127,13 @@ void ohoi_atca_delete_fru_rdrs(struct oh_handler_state *handler,
 
 	rpt = ohoi_get_resource_by_mcid(handler->rptcache, &mcid);
 	if (rpt == NULL) {
-		dbg("Can't delete mc rdrs. rpt == NULL");
+		err("Can't delete mc rdrs. rpt == NULL");
 		return;
 	}
 	res_info = oh_get_resource_data(handler->rptcache,
                                              rpt->ResourceId);
 	if (res_info == NULL) {
-		dbg("res_info == NULL");
+		err("res_info == NULL");
 		return;
 	}
 	
@@ -2147,7 +2147,7 @@ void ohoi_atca_delete_fru_rdrs(struct oh_handler_state *handler,
 		oh_remove_rdr(handler->rptcache, rpt->ResourceId,
 							rdr->RecordId);
 	} else {
-		dbg("No rdr for FRU Management Controller Reset Control");
+		err("No rdr for FRU Management Controller Reset Control");
 	}
 	res_info ->type &= ~OHOI_MC_RESET_CONTROL_CREATED;
 	
@@ -2161,7 +2161,7 @@ no_reset_control:
 		oh_remove_rdr(handler->rptcache, rpt->ResourceId,
 							rdr->RecordId);
 	} else {
-		dbg("No rdr for ATCAHPI_CTRL_NUM_IPMB_A_STATE");
+		err("No rdr for ATCAHPI_CTRL_NUM_IPMB_A_STATE");
 	}
 	rdr = oh_get_rdr_by_type(handler->rptcache, rpt->ResourceId,
 			SAHPI_CTRL_RDR, ATCAHPI_CTRL_NUM_IPMB_B_STATE);
@@ -2169,7 +2169,7 @@ no_reset_control:
 		oh_remove_rdr(handler->rptcache, rpt->ResourceId,
 							rdr->RecordId);
 	} else {
-		dbg("No rdr for ATCAHPI_CTRL_NUM_IPMB_B_STATE");
+		err("No rdr for ATCAHPI_CTRL_NUM_IPMB_B_STATE");
 	}
 	for (num = ATCAHPI_SENSOR_NUM_IPMB0;
 			num < ATCAHPI_SENSOR_NUM_IPMB0 + 0x5F; num++) {
@@ -2193,7 +2193,7 @@ no_ipmb0_controls:
 		oh_remove_rdr(handler->rptcache, rpt->ResourceId,
 							rdr->RecordId);
 	} else {
-		dbg("No rdr for ATCAHPI_CTRL_NUM_DESIRED_PWR");
+		err("No rdr for ATCAHPI_CTRL_NUM_DESIRED_PWR");
 	}
 
 	rdr = oh_get_rdr_by_type(handler->rptcache, rpt->ResourceId,
@@ -2202,7 +2202,7 @@ no_ipmb0_controls:
 		oh_remove_rdr(handler->rptcache, rpt->ResourceId,
 							rdr->RecordId);
 	} else {
-		dbg("No rdr for ATCAHPI_CTRL_NUM_FRU_CONTROL");
+		err("No rdr for ATCAHPI_CTRL_NUM_FRU_CONTROL");
 	}
 
 no_fru_control:

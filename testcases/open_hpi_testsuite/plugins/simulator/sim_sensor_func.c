@@ -28,7 +28,7 @@ SaErrorT sim_get_sensor_reading(void *hnd,
         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -47,7 +47,7 @@ SaErrorT sim_get_sensor_reading(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, id,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -77,7 +77,7 @@ SaErrorT sim_get_sensor_eventstate(void *hnd,
         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
 
 	if (!hnd || !reading || !state) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -96,7 +96,7 @@ SaErrorT sim_get_sensor_eventstate(void *hnd,
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
 	}
 
@@ -119,7 +119,7 @@ SaErrorT sim_get_sensor_thresholds(void *hnd,
         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
 
         if (!hnd || !thres) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
         
@@ -141,7 +141,7 @@ SaErrorT sim_get_sensor_thresholds(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -164,7 +164,7 @@ SaErrorT sim_set_sensor_thresholds(void *hnd,
 	struct SensorInfo *sinfo;
 
 	if (!hnd || !thres) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -183,7 +183,7 @@ SaErrorT sim_set_sensor_thresholds(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -218,7 +218,7 @@ SaErrorT sim_get_sensor_enable(void *hnd,
 	struct SensorInfo *sinfo;
 
         if (!hnd || !rid || !sid) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -237,7 +237,7 @@ SaErrorT sim_get_sensor_enable(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -260,7 +260,7 @@ SaErrorT sim_set_sensor_enable(void *hnd,
         struct SensorInfo *sinfo;
 
         if (!hnd || !rid || !sid || !enable) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -279,7 +279,7 @@ SaErrorT sim_set_sensor_enable(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -298,7 +298,7 @@ SaErrorT sim_get_sensor_event_enable(void *hnd,
         struct SensorInfo *sinfo;
 
         if (!hnd || !rid || !sid || !enable) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -317,7 +317,7 @@ SaErrorT sim_get_sensor_event_enable(void *hnd,
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
         if (sinfo == NULL) {
-                dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+                err("No sensor data. Sensor=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -338,7 +338,7 @@ SaErrorT sim_set_sensor_event_enable(void *hnd,
 	struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -357,12 +357,12 @@ SaErrorT sim_set_sensor_event_enable(void *hnd,
 
 	if (rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_PER_EVENT ||
 	    rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_READ_ONLY_MASKS) {
-		dbg("BladeCenter/RSA do not support sim_set_sensor_event_enable\n");
+		err("BladeCenter/RSA do not support sim_set_sensor_event_enable\n");
 		struct SensorInfo *sinfo;
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache,
                                                              rid, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s", rdr->IdString.Data);
                         return(SA_ERR_HPI_NOT_PRESENT);
 		}
 		sinfo->events_enabled = enable;
@@ -383,7 +383,7 @@ SaErrorT sim_get_sensor_event_masks(void *hnd,
 	struct SensorInfo *sinfo;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -406,7 +406,7 @@ SaErrorT sim_get_sensor_event_masks(void *hnd,
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid,
                                                      rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_NOT_PRESENT);
 	}
 
@@ -434,7 +434,7 @@ SaErrorT sim_set_sensor_event_masks(void *hnd,
 	struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	if (oh_lookup_sensoreventmaskaction(act) == NULL)
@@ -454,13 +454,13 @@ SaErrorT sim_set_sensor_event_masks(void *hnd,
 		return(SA_ERR_HPI_NOT_PRESENT);
 
 	if (rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_PER_EVENT) {
-		dbg("BladeCenter/RSA do not support sim_set_sensor_event_masks");
+		err("BladeCenter/RSA do not support sim_set_sensor_event_masks");
                 /* Probably need to drive an OID, if hardware supported it */
 		struct SensorInfo *sinfo;
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache,
                                                              rid, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s", rdr->IdString.Data);
                         return(SA_ERR_HPI_NOT_PRESENT);
 		}
 

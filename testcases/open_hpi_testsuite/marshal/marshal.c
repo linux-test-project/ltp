@@ -768,6 +768,7 @@ Demarshal( int byte_order, const cMarshalType *type,
                         // is the only instance for which we use var arrays.
                         unsigned char *dd =
                         	(unsigned char *)malloc(va_type->m_u.m_struct.m_size*array_size);
+			memset(dd, 0, va_type->m_u.m_struct.m_size*array_size);
                         unsigned char *vardata = data + struct_element->m_u.m_struct_element.m_offset;
                         tUint32 j;
                         memcpy(vardata, &dd, sizeof(void *));

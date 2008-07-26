@@ -26,8 +26,6 @@ INCLUDES		= @OPENHPI_INCLUDES@
 
 EXTRA_DIST              = rpt_resources.h
 
-AM_CFLAGS		= @NOCFLAGS@ @COV_CFLAGS@
-
 LIBS += -luuid
 
 $(REMOTE_SOURCES):

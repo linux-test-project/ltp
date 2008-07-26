@@ -141,8 +141,6 @@ typedef enum
   eFsaHpiResourceResetStateSet,
   eFsaHpiResourcePowerStateGet,
   eFsaHpiResourcePowerStateSet,
-  eFoHpiHandlerCreateInit,
-  eFoHpiHandlerCreateAddTEntry,
   eFoHpiHandlerCreate,
   eFoHpiHandlerDestroy,
   eFoHpiHandlerInfo,

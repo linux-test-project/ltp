@@ -47,12 +47,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include "SaHpi.h"
+#include <SaHpi.h>
+#include <oh_clients.h>
+
+#define OH_SVN_REV "$Revision: 1.2 $"
 
 #define uchar unsigned char
 #define SAHPI_OEM_ALARM_LED 0x10
 #define SAHPI_OEM_DISK_LED 0x20
-char *progver = "1.2";
+
 char fdebug = 0;
 char *states[3] = {"off", "ON ", "unknown" };
 uchar fsetid = 0;
@@ -90,7 +93,7 @@ main(int argc, char **argv)
   int j;
   uchar b = 0;
 
-  printf("%s ver %s\n", argv[0],progver);
+  oh_prog_version(argv[0], OH_SVN_REV);
   while ( (c = getopt( argc, argv,"rxa:b:c:m:n:p:i:d:o?")) != EOF )
      switch(c) {
           

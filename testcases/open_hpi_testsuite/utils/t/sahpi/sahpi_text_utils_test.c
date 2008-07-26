@@ -37,7 +37,7 @@
 #define failed(num)                         \
         do {                                \
                 failcount++;                \
-                dbg("Failed Test %d", num); \
+                err("Failed Test %d", num); \
         } while(0)
 
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         oh_big_textbuffer oh_buff, oh_buff2;
         int failcount = 0;
        
-        setenv("OPENHPI_DEBUG","YES",1);
+        setenv("OPENHPI_ERROR","YES",1);
         // Test1 - valid text string
         
         fill_text_buffer(buffer, TEXTT, "a brown fox! ");

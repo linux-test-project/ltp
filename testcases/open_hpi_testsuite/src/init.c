@@ -14,7 +14,9 @@
  *
  */
 
+#include <config.h>
 #include <oh_init.h>
+#include <oh_ssl.h>
 #include <oh_config.h>
 #include <oh_plugin.h>
 #include <oh_domain.h>
@@ -46,14 +48,21 @@ int oh_init(void)
 
         /* Initialize thread engine */
         oh_threaded_init();
-
+#ifdef HAVE_OPENSSL
+	/* Initialize SSL library */
+	if (oh_ssl_init()) {
+                err("SSL library intialization failed.");
+                data_access_unlock();
+		return SA_ERR_HPI_OUT_OF_MEMORY; /* Most likely */
+	}
+#endif
         /* Set openhpi configuration file location */
         oh_get_global_param(&config_param);
 
         rval = oh_load_config(config_param.u.conf, &config);
         /* Don't error out if there is no conf file */
         if (rval < 0 && rval != -4) {
-                dbg("Can not load config.");
+                err("Can not load config.");
                 data_access_unlock();
                 return SA_ERR_HPI_NOT_PRESENT;
         }
@@ -61,23 +70,23 @@ int oh_init(void)
         /* Initialize uid_utils */
         rval = oh_uid_initialize();
         if( (rval != SA_OK) && (rval != SA_ERR_HPI_ERROR) ) {
-                dbg("Unique ID intialization failed.");
+                err("Unique ID intialization failed.");
                 data_access_unlock();
                 return rval;
         }
-        trace("Initialized UID.");
+        dbg("Initialized UID.");
 
         /* Initialize handler table */
         oh_handlers.table = g_hash_table_new(g_int_hash, g_int_equal);
-        trace("Initialized handler table");
+        dbg("Initialized handler table");
 
         /* Initialize domain table */
         oh_domains.table = g_hash_table_new(g_int_hash, g_int_equal);
-        trace("Initialized domain table");
+        dbg("Initialized domain table");
 
         /* Initialize session table */
         oh_sessions.table = g_hash_table_new(g_int_hash, g_int_equal);
-        trace("Initialized session table");
+        dbg("Initialized session table");
 
         /* Load plugins, create handlers and domains */
         oh_process_config(&config);
@@ -86,7 +95,7 @@ int oh_init(void)
         if (!config.default_domain) {
                 if (oh_compile_entitypath_pattern("*", &epp)) {
                         data_access_unlock();
-                        dbg("Could not compile entitypath pattern.");
+                        err("Could not compile entitypath pattern.");
                         return SA_ERR_HPI_ERROR;
                 }
         
@@ -97,10 +106,10 @@ int oh_init(void)
                                      SAHPI_DOMAIN_CAP_AUTOINSERT_READ_ONLY,
                                      SAHPI_TIMEOUT_IMMEDIATE)) {
                         data_access_unlock();
-                        dbg("Could not create first domain!");
+                        err("Could not create first domain!");
                         return SA_ERR_HPI_ERROR;
                 }
-                trace("Created DEFAULT domain");
+                dbg("Created DEFAULT domain");
         }
 
         /*
@@ -114,31 +123,31 @@ int oh_init(void)
          * all of them failed to load, Then return with an error.
          */
         if (config.handlers_defined > 0 && config.handlers_loaded == 0) {
-                dbg("Warning: Handlers were defined, but none loaded.");
+                warn("Warning: Handlers were defined, but none loaded.");
         } else if (config.handlers_defined > 0 &&
                    config.handlers_loaded < config.handlers_defined) {
-                dbg("*Warning*: Not all handlers defined loaded."
-                    " Check previous messages.");
+                warn("*Warning*: Not all handlers defined loaded."
+                     " Check previous messages.");
         }
 
         if (config.domains_defined != config.domains_loaded) {
-                dbg("*Warning*: Not all domains defined where created."
-                    " Check previous messages.");
+                warn("*Warning*: Not all domains defined where created."
+                     " Check previous messages.");
         }
 
         /* this only does something if the config says to */
         oh_threaded_start();
 
-        trace("Set init state");
+        dbg("Set init state");
         initialized = 1;
         data_access_unlock();
         /* infrastructure initialization has completed at this point */
 
         /* Check if there are any handlers loaded */
         if (config.handlers_defined == 0) {
-                dbg("*Warning*: No handler definitions found in config file."
-                    " Check configuration file %s and previous messages",
-                    config_param.u.conf);
+                warn("*Warning*: No handler definitions found in config file."
+                     " Check configuration file %s and previous messages",
+                     config_param.u.conf);
         }
 
         /*

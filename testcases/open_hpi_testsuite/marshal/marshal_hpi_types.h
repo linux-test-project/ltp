@@ -2,6 +2,7 @@
  * marshaling/demarshaling of hpi data types
  *
  * Copyright (c) 2004 by FORCE Computers.
+ * (C) Copyright IBM Corp. 2008
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +13,8 @@
  *
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
- *     W. David Ashley <dashley@us.ibm.com.com>
+ *     W. David Ashley <dashley@us.ibm.com>
+ *     Renier Morales <renier@openhpi.org>
  */
 
 #ifndef dMarshalHpiTypes_h
@@ -275,31 +277,27 @@ extern cMarshalType SaHpiEventLogInfoType;
 #define SaHpiEventLogEntryIdType SaHpiUint32Type
 extern cMarshalType SaHpiEventLogEntryType;
 
+
 //----------------------------------------------------------------------------
 // The following support the oHpi dynamic configuration APIs
 //----------------------------------------------------------------------------
 
-// plugin stuff
-#define refcountType SaHpiInt32Type
+typedef struct {
+	SaHpiUint8T Name[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+	SaHpiUint8T Value[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+} oHpiHandlerConfigParamT;
+extern cMarshalType oHpiHandlerConfigParamType;
+typedef struct {
+	SaHpiUint8T NumberOfParams;
+	oHpiHandlerConfigParamT *Params;
+} oHpiHandlerConfigT;
+extern cMarshalType oHpiHandlerConfigType;
 
 // handler stuff
 #define oHpiHandlerIdType SaHpiUint32Type
 extern cMarshalType oHpiHandlerInfoType;
 #define oHpiGlobalParamTypeType SaHpiUint32Type
 extern cMarshalType oHpiGlobalParamType;
-
-typedef struct {
-        SaHpiUint16T   DataLength;
-        SaHpiUint8T    Data[OH_MAX_TEXT_BUFFER_LENGTH];  /* Data buffer */
-} oHpiTextBufferT;
-
-extern cMarshalType oHpiTextBufferType;
-
-
-
-
-
-
 
 #ifdef __cplusplus
 }

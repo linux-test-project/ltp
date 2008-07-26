@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 	} while ((err == SA_OK) && (entryid != SAHPI_LAST_ENTRY)) ;
 
 	if (!foundControl) {
-		dbg("Did not find desired resource for test\n");
+		err("Did not find desired resource for test\n");
 		return(SA_OK);
 	} else {
 		idrId = rdr.RdrTypeUnion.InventoryRec.IdrId; 

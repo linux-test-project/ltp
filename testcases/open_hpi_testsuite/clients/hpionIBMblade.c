@@ -69,6 +69,9 @@
 #include <oh_utils.h>
 #include <oh_config.h>
 #include <oHpi.h>
+#include <oh_clients.h>
+
+#define OH_SVN_REV "$Revision: 1.2 $"
 
 #define READ_BUF_SIZE	1024
 #define MAX_BYTE_COUNT 128
@@ -135,7 +138,6 @@ int	nrpts = 0;
 long int blade_slot = 0;
 
 int	fdebug = 0;
-char	progver[] = "0.1";
 
 SaHpiSessionIdT		sessionid;
 
@@ -439,9 +441,10 @@ static void show_sens(char *S)
 static int get_number(char *mes, int *res)
 {
 	char	buf[READ_BUF_SIZE];
+	char    *ret;
 
 	printf("%s", mes);
-	fgets(buf, READ_BUF_SIZE, stdin);
+	ret = fgets(buf, READ_BUF_SIZE, stdin);
 	return (sscanf(buf, "%d", res));
 }
 
@@ -505,8 +508,7 @@ static void mod_sen(void)
 		Rdr->is_value = 1;
 	};
 	printf("threshold type (lc, la, li, uc, ua, ui, ph, nh): ");
-	fgets(buf, READ_BUF_SIZE, stdin);
-	S = buf;
+	S = fgets(buf, READ_BUF_SIZE, stdin);
 	while (*S == ' ') S++;
 	if (strlen(S) < 2) {
 		printf("ERROR: invalid threshold type: %s\n", S);
@@ -528,7 +530,7 @@ static void mod_sen(void)
 	};
 	
 	printf("new value: ");
-	fgets(buf, READ_BUF_SIZE, stdin);
+	S = fgets(buf, READ_BUF_SIZE, stdin);
 	i = sscanf(buf, "%f", &f);
 	if (i == 0) {
 		printf("ERROR: no value\n");
@@ -565,8 +567,7 @@ static void mod_sen(void)
 	printf("\n  Nem threshold:\n");
 	ShowThres(&thres);
 	printf("Is it correct (yes, no)?:");
-	fgets(buf, READ_BUF_SIZE, stdin);
-	S = buf;
+	S = fgets(buf, READ_BUF_SIZE, stdin);
 	while (*S == ' ') S++;
 	if (strncmp(S, "yes", 3) != 0)
 		return;
@@ -897,7 +898,7 @@ int main(int argc, char **argv)
 	char		buf[READ_BUF_SIZE];
 	char		*S;
 
-	printf("%s  ver %s\n", argv[0], progver);
+	oh_prog_version(argv[0], OH_SVN_REV);
 	while ( (c = getopt( argc, argv,"x?")) != EOF )
 		switch(c)  {
 			case 'x':

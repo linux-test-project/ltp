@@ -13,18 +13,15 @@ EXTRA_DIST              = openhpi.conf
 
 INCLUDES		= @OPENHPI_INCLUDES@
 
-AM_CFLAGS		= @NOCFLAGS@
-
 MAINTAINERCLEANFILES 	= Makefile.in
 
-# removed until the gcc 3.4 bug is fixed
-# @COV_CFLAGS@
 TDEPLIB			= $(top_builddir)/src/libopenhpi.la \
 			  $(top_builddir)/utils/libopenhpiutils.la
 
 TESTS_ENVIRONMENT = OPENHPI_PATH=$(top_builddir)/plugins/simulator
 TESTS_ENVIRONMENT += OPENHPI_UID_MAP=$(top_builddir)/plugins/simulator/t/uid_map
 TESTS_ENVIRONMENT += OPENHPI_CONF=$(top_srcdir)/plugins/simulator/t/openhpi.conf
+TESTS_ENVIRONMENT += LD_LIBRARY_PATH=$(top_srcdir)/src/.libs:$(top_srcdir)/ssl/.libs:$(top_srcdir)/utils/.libs
 
 TESTS = sim_sanity_000 \
 	sim_sanity_001 \

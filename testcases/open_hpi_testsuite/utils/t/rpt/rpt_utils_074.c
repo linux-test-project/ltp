@@ -41,7 +41,8 @@ int main(int argc, char **argv)
 	if (oh_add_resource(new_table, rptentries + 1, NULL, 0))
                 return 1;
 
-	rpt_diff(curr_table, new_table, NULL, &new_rdr, &gone_res, &gone_rdr);
+	if (!rpt_diff(curr_table, new_table, NULL, &new_rdr, &gone_res, &gone_rdr))
+		return 1;
 	
         return 0;
 }

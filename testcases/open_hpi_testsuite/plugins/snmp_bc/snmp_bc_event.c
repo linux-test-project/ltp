@@ -62,19 +62,19 @@ SaErrorT event2hpi_hash_init(struct oh_handler_state *handle)
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	custom_handle->event2hpi_hash_ptr = g_hash_table_new(g_str_hash, g_str_equal);
 	if (custom_handle->event2hpi_hash_ptr == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -108,13 +108,13 @@ SaErrorT event2hpi_hash_free(struct oh_handler_state *handle)
 	struct snmp_bc_hnd *custom_handle;
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -156,19 +156,19 @@ SaErrorT snmp_bc_discover_res_events(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !ep || !resinfo) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle || !custom_handle->event2hpi_hash_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
 	rid = oh_uid_lookup(ep);
 	if (rid == 0) {
-		dbg("No RID.");
+		err("No RID.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -177,7 +177,7 @@ SaErrorT snmp_bc_discover_res_events(struct oh_handler_state *handle,
 		/* Normalized and convert event string */
 		normalized_str = oh_derive_string(ep, 0, 16, resinfo->event_array[i].event);
 		if (normalized_str == NULL) {
-			dbg("Cannot derive %s.", resinfo->event_array[i].event);
+			err("Cannot derive %s.", resinfo->event_array[i].event);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		} 
 
@@ -189,7 +189,7 @@ SaErrorT snmp_bc_discover_res_events(struct oh_handler_state *handle,
 
 			eventmap_info = g_malloc0(sizeof(EventMapInfoT));
 			if (!eventmap_info) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				g_free(normalized_str);
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
@@ -205,14 +205,14 @@ SaErrorT snmp_bc_discover_res_events(struct oh_handler_state *handle,
 			eventmap_info->event_res_failure = resinfo->event_array[i].event_res_failure;
 			eventmap_info->event_res_failure_unexpected = resinfo->event_array[i].event_res_failure_unexpected;
 
-			trace("Discovered resource event=%s.", normalized_str);
+			dbg("Discovered resource event=%s.", normalized_str);
 
 			g_hash_table_insert(custom_handle->event2hpi_hash_ptr, normalized_str, eventmap_info);
 			/* normalized_str space is recovered when hash is freed */
 		}
 		else {
 			/* Event already exists (e.g. same event for multiple blades) */
-			trace("Event already exists=%s.", normalized_str);
+			dbg("Event already exists=%s.", normalized_str);
 			g_free(normalized_str);
 		}
 	}
@@ -252,7 +252,7 @@ SaErrorT snmp_bc_discover_sensor_events(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !ep || !sinfo || sid <= 0) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -260,13 +260,13 @@ SaErrorT snmp_bc_discover_sensor_events(struct oh_handler_state *handle,
 
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle || !custom_handle->event2hpi_hash_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	rid = oh_uid_lookup(ep);
 	if (rid == 0) {
-		dbg("No RID.");
+		err("No RID.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 		
@@ -274,7 +274,7 @@ SaErrorT snmp_bc_discover_sensor_events(struct oh_handler_state *handle,
 		/* Normalized and convert event string */
 		normalized_str = oh_derive_string(ep, 0, 16, sinfo->sensor_info.event_array[i].event);
 		if (normalized_str == NULL) {
-			dbg("Cannot derive %s.", sinfo->sensor_info.event_array[i].event);
+			err("Cannot derive %s.", sinfo->sensor_info.event_array[i].event);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		  
@@ -286,7 +286,7 @@ SaErrorT snmp_bc_discover_sensor_events(struct oh_handler_state *handle,
 
 			eventmap_info = g_malloc0(sizeof(EventMapInfoT));
 			if (!eventmap_info) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				g_free(normalized_str);
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
@@ -318,14 +318,14 @@ SaErrorT snmp_bc_discover_sensor_events(struct oh_handler_state *handle,
 					sinfo->sensor.DataFormat.ReadingType;
 			}
 			
-			trace("Discovered sensor event=%s.", normalized_str);
+			dbg("Discovered sensor event=%s.", normalized_str);
 
 			g_hash_table_insert(custom_handle->event2hpi_hash_ptr, normalized_str, eventmap_info);
 			/* normalized_str space is recovered when hash is freed */
 		}
 		else {
 			/* Event already exists (e.g. same event for multiple blades) */
-			trace("Event already exists=%s.", normalized_str);
+			dbg("Event already exists=%s.", normalized_str);
 			g_free(normalized_str);
 		}
 	}
@@ -378,25 +378,25 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	SaHpiHsStateT sav_cur_state;
 
 	if (!handle || !logstr || !event || !ret_logsrc2res) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	memset(&working, 0, sizeof(SaHpiEventT));
 	is_recovery_event = is_threshold_event = SAHPI_FALSE;
 
-	trace("Original event string = %s", logstr);
+	dbg("Original event string = %s", logstr);
 
         /* Parse hardware log entry into its various components */
 	err = snmp_bc_parse_sel_entry(handle, logstr, &log_entry);
 	if (err) {
-		dbg("Cannot parse log entry=%s. Error=%s.", logstr, oh_lookup_error(err));
+		err("Cannot parse log entry=%s. Error=%s.", logstr, oh_lookup_error(err));
 		return(err);
 	}
 
@@ -465,7 +465,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 		err = snmp_bc_parse_threshold_str(search_str, root_str,
 						  &thresh_read_value, &thresh_trigger_value);
 		if (err) {
-			dbg("Cannot parse threshold string=%s.", search_str);
+			err("Cannot parse threshold string=%s.", search_str);
 		}
 		else {
 			memset(search_str, 0, SNMP_BC_MAX_SEL_ENTRY_LENGTH);
@@ -480,7 +480,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 		strncpy(search_str, tmp_str, SNMP_BC_MAX_SEL_ENTRY_LENGTH);
 		g_free(tmp_str);
 		if ((search_str == NULL || search_str[0] == '\0')) {
-			dbg("Search string is NULL for log string=%s", log_entry.text);
+			err("Search string is NULL for log string=%s", log_entry.text);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 	}
@@ -489,7 +489,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	if (search_str[strlen(search_str) - 1] == '.')
 		search_str[strlen(search_str) - 1] = '\0';
 
-	trace("Event search string=%s", search_str);
+	dbg("Event search string=%s", search_str);
 
 	/* Set dynamic event fields with default values from the log string.
 	   These may be overwritten in the code below */
@@ -499,7 +499,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	/* Find default RID from Error Log's "Source" field - need if NOT_ALERTABLE OEM event */
 	err = snmp_bc_logsrc2rid(handle, log_entry.source, &logsrc2res, 0);
 	if (err) {
-		dbg("Cannot translate %s to RID. Error=%s", log_entry.source, oh_lookup_error(err));
+		err("Cannot translate %s to RID. Error=%s", log_entry.source, oh_lookup_error(err));
 		return(err);
 	}
 	event_rid = logsrc2res.rid;
@@ -510,7 +510,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	strhash_data = (ErrLog2EventInfoT *)g_hash_table_lookup(errlog2event_hash, search_str);
 	if (!strhash_data) {
 		if (snmp_bc_map2oem(&working, &log_entry, EVENT_NOT_ALERTABLE)) {
-			dbg("Cannot map to OEM Event %s.", log_entry.text);
+			err("Cannot map to OEM Event %s.", log_entry.text);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		goto DONE;
@@ -530,7 +530,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 		err = snmp_bc_logsrc2rid(handle, log_entry.source, &logsrc2res,
 					 strhash_data->event_ovr);
 		if (err) {
-			dbg("Cannot translate %s to RID. Error=%s.",
+			err("Cannot translate %s to RID. Error=%s.",
 			    log_entry.source, oh_lookup_error(err));
 			return(err);
 		}
@@ -543,18 +543,18 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	if (strhash_data->event_dup) {
 		strhash_data = snmp_bc_findevent4dupstr(search_str, strhash_data, &logsrc2res);
 		if (strhash_data == NULL) {
-			dbg("Cannot find valid event for duplicate string=%s and RID=%d.", 
+			err("Cannot find valid event for duplicate string=%s and RID=%d.", 
 			    search_str, logsrc2res.rid);
 			
 			if (snmp_bc_map2oem(&working, &log_entry,  EVENT_NOT_ALERTABLE)) {
-				dbg("Cannot map to OEM Event %s.", log_entry.text);
+				err("Cannot map to OEM Event %s.", log_entry.text);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
 			goto DONE;
 		}
 		
 		if (strhash_data->event_ovr & OVR_RID) {
-			dbg("Cannot have RID override on duplicate strin;g=%s.", search_str);
+			err("Cannot have RID override on duplicate strin;g=%s.", search_str);
 			dupovrovr = 1;
 		}
 	}
@@ -572,7 +572,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 	if (!eventmap_info) {
 		
 		if (snmp_bc_map2oem(&working, &log_entry, EVENT_NOT_MAPPED)) {
-			dbg("Cannot map to OEM Event %s.", log_entry.text);
+			err("Cannot map to OEM Event %s.", log_entry.text);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		goto DONE;
@@ -609,7 +609,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 			if (oh_encode_sensorreading(&thresh_read_value,
 						    working.EventDataUnion.SensorEvent.TriggerReading.Type,
 						    &working.EventDataUnion.SensorEvent.TriggerReading)) {
-				dbg("Cannot convert trigger reading=%s; text=%s.",
+				err("Cannot convert trigger reading=%s; text=%s.",
 				    thresh_read_value.Data, log_entry.text);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
@@ -620,7 +620,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 			if (oh_encode_sensorreading(&thresh_trigger_value,
 						    working.EventDataUnion.SensorEvent.TriggerThreshold.Type,
 						    &working.EventDataUnion.SensorEvent.TriggerThreshold)) {
-				dbg("Cannot convert trigger threshold=%s; text=%s.",
+				err("Cannot convert trigger threshold=%s; text=%s.",
 				    thresh_trigger_value.Data, log_entry.text);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
@@ -696,13 +696,13 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 					if (custom_handle->isFirstDiscovery == SAHPI_FALSE) {
 						err = snmp_bc_add_to_eventq(handle, &autoevent, SAHPI_TRUE);
 						if (err) {
-							dbg("Cannot add entry to eventq. Error=%s.", oh_lookup_error(err));
+							err("Cannot add entry to eventq. Error=%s.", oh_lookup_error(err));
 							return(err);
 						}
 					}
 				}
 				else {
-					dbg("Invalid Hot Swap State for %s", rpt->ResourceTag.Data);
+					err("Invalid Hot Swap State for %s", rpt->ResourceTag.Data);
 					return(SA_ERR_HPI_INTERNAL_ERROR);
 				}
 			}
@@ -749,7 +749,7 @@ SaErrorT snmp_bc_log2event(struct oh_handler_state *handle,
 		}
 	}
 	else {
-		dbg("Platform doesn't support events of type=%s.", oh_lookup_eventtype(working.EventType));
+		err("Platform doesn't support events of type=%s.", oh_lookup_eventtype(working.EventType));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	
@@ -767,7 +767,7 @@ RESUME_TO_EXIT:
 				/* Add changed resource to event queue */
 				e = snmp_bc_alloc_oh_event();
 				if (e == NULL) {
-					dbg("Out of memory.");
+					err("Out of memory.");
 					return(SA_ERR_HPI_OUT_OF_MEMORY);
 				}
 				
@@ -829,7 +829,7 @@ static ErrLog2EventInfoT *snmp_bc_findevent4dupstr(gchar *search_str,
 	short strnum;
 
 	if (!search_str || !strhash_data || !logsrc2res) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(NULL);
 	}
 
@@ -879,7 +879,7 @@ static ErrLog2EventInfoT *snmp_bc_findevent4dupstr(gchar *search_str,
 
 			dupstr_hash_data = (ErrLog2EventInfoT *)g_hash_table_lookup(errlog2event_hash, dupstr);
 			if (dupstr_hash_data == NULL) {
-				dbg("Cannot find duplicate string=%s.", dupstr);
+				err("Cannot find duplicate string=%s.", dupstr);
 			}
 		}
 	}
@@ -917,7 +917,7 @@ static SaErrorT snmp_bc_parse_threshold_str(gchar *str,
 	SaErrorT err;
 
 	if (!str || !root_str || !read_value_str || !trigger_value_str) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -939,7 +939,7 @@ static SaErrorT snmp_bc_parse_threshold_str(gchar *str,
 	    (thresh_substrs[0] == NULL || thresh_substrs[0][0] == '\0') ||
 	    (thresh_substrs[1] == NULL || thresh_substrs[1][0] == '\0') ||
 	    (thresh_substrs[2] != NULL)) {
-		dbg("Cannot split threshold string=%s.", str);
+		err("Cannot split threshold string=%s.", str);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 		goto CLEANUP;
 	}
@@ -951,7 +951,7 @@ static SaErrorT snmp_bc_parse_threshold_str(gchar *str,
 	if ((event_substrs[0] == NULL || event_substrs[0] == '\0') ||
 	    (thresh_substrs[0] == NULL || thresh_substrs[0][0] == '\0') ||
 	    (thresh_substrs[1] == NULL || thresh_substrs[1][0] == '\0')) {
-		dbg("NULL base string or threshold values=%s.", str);
+		err("NULL base string or threshold values=%s.", str);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 		goto CLEANUP;
 	}
@@ -969,7 +969,7 @@ static SaErrorT snmp_bc_parse_threshold_str(gchar *str,
 	if ((event_substrs[0] == NULL || event_substrs[0] == '\0') ||
 	    (thresh_substrs[0] == NULL || thresh_substrs[0][0] == '\0') ||
 	    (thresh_substrs[1] == NULL || thresh_substrs[1][0] == '\0')) {
-		dbg("NULL base string or threshold values=%s.", str);
+		err("NULL base string or threshold values=%s.", str);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 		goto CLEANUP;
 	}
@@ -989,19 +989,19 @@ static SaErrorT snmp_bc_parse_threshold_str(gchar *str,
 	/* Check for valid length */
 	if ((strlen(thresh_substrs[0]) > SAHPI_MAX_TEXT_BUFFER_LENGTH) ||
 	    (strlen(thresh_substrs[1]) > SAHPI_MAX_TEXT_BUFFER_LENGTH)) {
-		dbg("Threshold value string(s) exceed max size for %s.", str);
+		err("Threshold value string(s) exceed max size for %s.", str);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 		goto CLEANUP;
 	}
 
-	trace("Threshold strings: %s and %s", thresh_substrs[0], thresh_substrs[1]);
+	dbg("Threshold strings: %s and %s", thresh_substrs[0], thresh_substrs[1]);
 	
 	strcpy(root_str, event_substrs[0]);
 	oh_append_textbuffer(read_value_str, thresh_substrs[0]);
 	oh_append_textbuffer(trigger_value_str, thresh_substrs[1]);
 
 	if (root_str == NULL) {
-		dbg("Cannot parse threshold string=%s.", str);
+		err("Cannot parse threshold string=%s.", str);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -1038,7 +1038,7 @@ static SaErrorT snmp_bc_set_event_severity(struct oh_handler_state *handle,
 
 
 	if (!handle || !eventmap_info || !event || !event_severity) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 						
@@ -1136,7 +1136,7 @@ static SaErrorT snmp_bc_set_cur_prev_event_states(struct oh_handler_state *handl
 	SaHpiRdrT *rdr;
 
 	if (!handle || !eventmap_info || !event) {
-		dbg("Invalid parameters.");
+		err("Invalid parameters.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1168,7 +1168,7 @@ static SaErrorT snmp_bc_set_cur_prev_event_states(struct oh_handler_state *handl
 		}
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, event->Source, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s.", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s.", rdr->IdString.Data);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 
@@ -1200,11 +1200,11 @@ static SaErrorT snmp_bc_set_cur_prev_event_states(struct oh_handler_state *handl
 		{       /* Debug section */
 			SaHpiTextBufferT buffer;
 
-			dbg("Event for Sensor=%s", rdr->IdString.Data);
+			err("Event for Sensor=%s", rdr->IdString.Data);
 			oh_decode_eventstate(prev_state, event->EventDataUnion.SensorEvent.EventCategory, &buffer);
-			dbg("  Previous Event State: %s.", buffer.Data);
+			err("  Previous Event State: %s.", buffer.Data);
 			oh_decode_eventstate(cur_state, event->EventDataUnion.SensorEvent.EventCategory, &buffer);
-			dbg("  Current Event State: %s", buffer.Data);
+			err("  Current Event State: %s", buffer.Data);
 		}
 #endif
 		
@@ -1228,7 +1228,7 @@ static SaErrorT snmp_bc_set_cur_prev_event_states(struct oh_handler_state *handl
 			/* this resource either did not exist at HPI time 0, or    */
 			/* has previously been removed from system.                */
 			/* It is safe to assume that it is being Hotswap-Installed */
-			trace("No resource data. RID=%x", event->Source);
+			dbg("No resource data. RID=%x", event->Source);
 			event->EventDataUnion.HotSwapEvent.PreviousHotSwapState	= SAHPI_HS_STATE_NOT_PRESENT;
 			event->EventDataUnion.HotSwapEvent.HotSwapState =  SAHPI_HS_STATE_INACTIVE;			
 			return(SA_OK);
@@ -1249,7 +1249,7 @@ static SaErrorT snmp_bc_set_cur_prev_event_states(struct oh_handler_state *handl
 		break;
 	}
 	default:
-		dbg("Unrecognized Event Type=%s.", oh_lookup_eventtype(event->EventType));
+		err("Unrecognized Event Type=%s.", oh_lookup_eventtype(event->EventType));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	
@@ -1278,11 +1278,11 @@ static SaErrorT snmp_bc_map2oem(SaHpiEventT *event,
 				OEMReasonCodeT reason)
 {
 	if (!event || !sel_entry) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("OEM Event Reason Code=%s\n", reason ? "NOT_ALERTABLE" : "NOT MAPPED");
+	dbg("OEM Event Reason Code=%s\n", reason ? "NOT_ALERTABLE" : "NOT MAPPED");
 
 	event->EventType = SAHPI_ET_OEM;
 	event->EventDataUnion.OemEvent.MId = IBM_MANUFACTURING_ID;
@@ -1343,7 +1343,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !src || !logsrc2res) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1352,7 +1352,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1369,7 +1369,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	/* Break down "Source" text string to find source's RPT index and location */
 	src_parts = g_strsplit(src, "_", -1);
 	if (src_parts == NULL) {
-		dbg("Cannot split Source text string.");
+		err("Cannot split Source text string.");
 		g_strfreev(src_parts);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -1430,7 +1430,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 
 					err = snmp_bc_snmp_get(custom_handle, SNMP_BC_MGMNT_ACTIVE, &value, SAHPI_TRUE);
 					if (err) {
-						dbg("Cannot get OID=%s.",  SNMP_BC_MGMNT_ACTIVE);
+						err("Cannot get OID=%s.",  SNMP_BC_MGMNT_ACTIVE);
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 					}
 
@@ -1454,12 +1454,12 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	/* Find rest of Entity Path and calculate the RID */
 	err = oh_concat_ep(&ep, &snmp_bc_rpt_array[rpt_index].rpt.ResourceEntity);
 	if (err) {
-		dbg("Cannot concat Entity Path. Error=%s.", oh_lookup_error(err));
+		err("Cannot concat Entity Path. Error=%s.", oh_lookup_error(err));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	err = oh_concat_ep(&ep, &ep_root);
 	if (err) {
-		dbg("Cannot concat Entity Path. Error=%s.", oh_lookup_error(err));
+		err("Cannot concat Entity Path. Error=%s.", oh_lookup_error(err));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 	/* FIXME:: Need to rewrite this section when discover multiple BEMs/blade */
@@ -1472,7 +1472,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	}
 
 	if (err) {
-		dbg("Cannot set location. Type=%s; Location=%d; Error=%s.",
+		err("Cannot set location. Type=%s; Location=%d; Error=%s.",
 		    oh_lookup_entitytype(entity_type), src_loc, oh_lookup_error(err));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -1487,7 +1487,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	if (isexpansioncard == SAHPI_TRUE) {
 		err = oh_set_ep_location(&ep, SAHPI_ENT_SBC_BLADE, src_loc);
 		if (err) {
-			dbg("Cannot set location. Type=%s; Location=%d; Error=%s.",
+			err("Cannot set location. Type=%s; Location=%d; Error=%s.",
 			    oh_lookup_entitytype(SAHPI_ENT_SBC_BLADE), src_loc, oh_lookup_error(err));  
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -1510,7 +1510,7 @@ static SaErrorT snmp_bc_logsrc2rid(struct oh_handler_state *handle,
 	if (logsrc2res->rid == 0) {
 		logsrc2res->rid = oh_uid_from_entity_path(&ep);
 		if (logsrc2res->rid == 0) {
-			dbg("No RID.");
+			err("No RID.");
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 	}
@@ -1542,7 +1542,7 @@ SaErrorT snmp_bc_add_to_eventq(struct oh_handler_state *handle, SaHpiEventT *thi
         /* Insert entry to eventq for processing */
         e = snmp_bc_alloc_oh_event();
         if (!e) {
-                dbg("Out of memory.");
+                err("Out of memory.");
                 return(SA_ERR_HPI_OUT_OF_MEMORY);
         }
 				
@@ -1581,7 +1581,7 @@ SaErrorT snmp_bc_add_to_eventq(struct oh_handler_state *handle, SaHpiEventT *thi
 		if (thisRdr) 
 			e->rdrs = g_slist_append(e->rdrs, g_memdup(thisRdr, sizeof(SaHpiRdrT)));
 		else 
-			dbg("Rdr not found for rid %d, rdrid %d\n",thisEvent->Source, rdrid);
+			err("Rdr not found for rid %d, rdrid %d\n",thisEvent->Source, rdrid);
 		break;
 	case SAHPI_ET_WATCHDOG:
 		rdrid = oh_get_rdr_uid(SAHPI_WATCHDOG_RDR,
@@ -1590,7 +1590,7 @@ SaErrorT snmp_bc_add_to_eventq(struct oh_handler_state *handle, SaHpiEventT *thi
 		if (thisRdr) 
 			e->rdrs = g_slist_append(e->rdrs, g_memdup(thisRdr, sizeof(SaHpiRdrT)));
 		else 
-			dbg("Rdr not found for rid %d, rdrid %d\n",thisEvent->Source, rdrid);
+			err("Rdr not found for rid %d, rdrid %d\n",thisEvent->Source, rdrid);
 
 		break;
 	case SAHPI_ET_RESOURCE:
@@ -1598,7 +1598,7 @@ SaErrorT snmp_bc_add_to_eventq(struct oh_handler_state *handle, SaHpiEventT *thi
 	case SAHPI_ET_SENSOR_ENABLE_CHANGE:
 	case SAHPI_ET_HPI_SW:
 	default:
-		dbg("Unsupported Event Type=%s.", oh_lookup_eventtype(thisEvent->EventType));
+		err("Unsupported Event Type=%s.", oh_lookup_eventtype(thisEvent->EventType));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 		break;
 	} 

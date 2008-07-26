@@ -62,7 +62,7 @@ void ohoi_get_sel_count(ipmi_mcid_t mc_id, int *count)
 	*count = -1;
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_count, count);
 	if (rv<0)
-		dbg("Unable to convert MC id to a pointer");
+		err("Unable to convert MC id to a pointer");
 }
 
 static void get_sel_size(ipmi_mc_t *mc, void *cb_data)
@@ -79,7 +79,7 @@ void ohoi_get_sel_size(ipmi_mcid_t mc_id, int *size)
 	*size = -1;
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_size, size);
 	if (rv<0)
-		dbg("Unable to convert MC id to a pointer");
+		err("Unable to convert MC id to a pointer");
 }
 
 /**
@@ -124,13 +124,13 @@ void ohoi_get_sel_time(ipmi_mcid_t mc_id, SaHpiTimeT *time, void *cb_data)
 		
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_time, &data); 
 	if (rv) {
-		dbg("Unable to convert domain id to a pointer");
+		err("Unable to convert domain id to a pointer");
 		return;
 	}
 
         rv = ohoi_loop(&data.flag, ipmi_handler);
         if (rv)
-                dbg("Unable to get sel time: Timeout!");
+                err("Unable to get sel time: Timeout!");
         
         *time = (SaHpiTimeT)data.time*1000000000;
 }
@@ -148,7 +148,7 @@ void ohoi_get_sel_updatetime(ipmi_mcid_t mc_id, SaHpiTimeT *time)
 
         rv = ipmi_mc_pointer_cb(mc_id, get_sel_update_timestamp, time);
         if (rv)
-                dbg("Unable to convert domain id to a pointer");
+                err("Unable to convert domain id to a pointer");
 }
 
 static void get_sel_overflow(ipmi_mc_t *mc, void *cb_data)
@@ -163,7 +163,7 @@ void ohoi_get_sel_overflow(ipmi_mcid_t mc_id, char *overflow)
 
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_overflow, overflow); 
 	if (rv<0)
-		dbg("Unable to convert domain id to a pointer");
+		err("Unable to convert domain id to a pointer");
 	
 }
 
@@ -180,7 +180,7 @@ void ohoi_get_sel_support_del(ipmi_mcid_t mc_id, char *support_del)
 
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_support_del, support_del); 
 	if (rv<0)
-		dbg("Unable to convert domain id to a pointer");
+		err("Unable to convert domain id to a pointer");
 }
 
 static void set_sel_time_done(ipmi_mc_t	*mc,
@@ -204,7 +204,7 @@ static void set_sel_time(ipmi_mc_t *mc, void *cb_data)
 
 	rv = ipmi_mc_set_current_sel_time(mc, &data->time, set_sel_time_done, &data->flag);
 	if (rv) 
-		dbg("Failed to set MC time");
+		err("Failed to set MC time");
 }
 
 void ohoi_set_sel_time(ipmi_mcid_t mc_id, const struct timeval *time, void *cb_data)
@@ -219,13 +219,13 @@ void ohoi_set_sel_time(ipmi_mcid_t mc_id, const struct timeval *time, void *cb_d
 		
 	rv = ipmi_mc_pointer_cb(mc_id, set_sel_time, &data); 
         if (rv) {
-		dbg("Unable to convert MC id to a pointer");
+		err("Unable to convert MC id to a pointer");
                 return;
         }
                 
         rv = ohoi_loop(&data.flag, ipmi_handler);
         if (rv) 
-                dbg("Unable to set SEL time: Timeout!");
+                err("Unable to set SEL time: Timeout!");
         
 	return;
 }
@@ -258,7 +258,7 @@ static void clear_sel(ipmi_mc_t *mc, void *cb_data)
 		event = ipmi_mc_next_event(mc, event);
                 rv = ipmi_mc_del_event(mc, event2, NULL, NULL);
 		if (rv != 0) {
-			dbg("ipmi_mc_del_event = 0x%x", rv);
+			err("ipmi_mc_del_event = 0x%x", rv);
 			info->err = SA_ERR_HPI_INVALID_CMD;
 			return;
 		}
@@ -270,14 +270,14 @@ static void clear_sel(ipmi_mc_t *mc, void *cb_data)
 
 	rv = ipmi_mc_reread_sel(mc, mc_clear_sel_done, &done);
 	if (rv) {
-		dbg("ipmi_mc_reread_sel failed");
+		err("ipmi_mc_reread_sel failed");
 			info->err = SA_ERR_HPI_INVALID_CMD;
 			return;
 	}
 #endif
 	rv = ipmi_mc_sel_clear(mc, NULL, mc_clear_sel_done, &done);
 	if (rv) {
-		dbg("ipmi_mc_reread_sel failed");
+		err("ipmi_mc_reread_sel failed");
 			info->err = SA_ERR_HPI_INVALID_CMD;
 			return;
 	}
@@ -296,13 +296,13 @@ SaErrorT ohoi_clear_sel(ipmi_mcid_t mc_id, void *cb_data)
         
         ohoi_get_sel_support_del(mc_id, &support_del);
         if (!support_del) {
-                dbg("MC SEL doesn't support del");
+                err("MC SEL doesn't support del");
 //                return SA_ERR_HPI_INVALID_CMD;
         }
 	info.err = 0;
         rv = ipmi_mc_pointer_cb(mc_id, clear_sel, &info);
         if (rv) {
-                dbg("Unable to convert mcid to pointer: %d", rv);
+                err("Unable to convert mcid to pointer: %d", rv);
 		return SA_ERR_HPI_INVALID_CMD;
         }
         info.ipmi_handler->sel_clear_done = 1; // atavism
@@ -324,7 +324,7 @@ void ohoi_get_sel_first_entry(ipmi_mcid_t mc_id, ipmi_event_t **event)
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_first_entry, event);
 
 	if (rv)
-		dbg("Unable to convert mcid to pointer");
+		err("Unable to convert mcid to pointer");
 }
 
 static void get_sel_last_entry(ipmi_mc_t *mc, void *cb_data)
@@ -341,7 +341,7 @@ void ohoi_get_sel_last_entry(ipmi_mcid_t mc_id, ipmi_event_t **event)
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_last_entry, event);
 
 	if (rv)
-		dbg("Unable to convert mcid to pointer");
+		err("Unable to convert mcid to pointer");
 }
 
 static void get_sel_next_entry(ipmi_mc_t *mc, void *cb_data)
@@ -362,7 +362,7 @@ void ohoi_get_sel_next_recid(ipmi_mcid_t mc_id,
 
         rv = ipmi_mc_pointer_cb(mc_id, get_sel_next_entry, &te);
         if (rv) {
-		dbg("unable to convert mcid to pointer");
+		err("unable to convert mcid to pointer");
                 *record_id = SAHPI_NO_MORE_ENTRIES;
                 return;
         }
@@ -392,7 +392,7 @@ void ohoi_get_sel_prev_recid(ipmi_mcid_t mc_id,
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_prev_entry, &te);
 
 	if (rv) {
-		dbg("unable to convert mcid to pointer");
+		err("unable to convert mcid to pointer");
 		*record_id = SAHPI_NO_MORE_ENTRIES;
 		return;
         }
@@ -425,7 +425,7 @@ void ohoi_get_sel_by_recid(ipmi_mcid_t mc_id, SaHpiEventLogEntryIdT entry_id, ip
 
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_by_recid, &data);
 	if(rv) {
-		dbg("failed to convert mc_id to pointer");
+		err("failed to convert mc_id to pointer");
 		*event = NULL;
 		return;
         }
@@ -438,10 +438,10 @@ static void set_sel_state_done(ipmi_mc_t *mc, int err, void *cb_data)
 {
 	int *done = cb_data;
 	if (err == IPMI_IPMI_ERR_VAL(IPMI_INVALID_CMD_CC)) {
-		dbg("looks like mc doesn't support state changing");
+		err("looks like mc doesn't support state changing");
 		*done = -2;
 	} else if (err) {
-		dbg("err = %d", err);
+		err("err = %d", err);
 		*done = -1;
 	} else {
 		*done = 1;
@@ -457,12 +457,12 @@ static void set_sel_state(ipmi_mc_t *mc, void *cb_data)
 	rv = ipmi_mc_set_event_log_enable(mc, data->enable, set_sel_state_done , &data->done);
 	if(rv) {
 		if (rv == ENOSYS) {
-			dbg("looks like mc doesn't support state changing");
+			err("looks like mc doesn't support state changing");
 			data->done = -2;
 		} else {
 			data->done = -1;
 		}
-		dbg("failed  set_sel_state = %x", rv);
+		err("failed  set_sel_state = %x", rv);
         }
 }
 
@@ -477,18 +477,18 @@ SaErrorT ohoi_set_sel_state(struct ohoi_handler *ipmi_handler, ipmi_mcid_t mc_id
 		
 	rv = ipmi_mc_pointer_cb(mc_id, set_sel_state, &data);
 	if (rv) {
-		dbg("failed to convert mc_id to pointer = %d", rv);
+		err("failed to convert mc_id to pointer = %d", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	rv = ohoi_loop(&data.done, ipmi_handler);
 	if (data.done == -2) {
 		rv = SA_ERR_HPI_ERROR; 
 	} else if (data.done < 0) {
-		dbg("data.done = %d", data.done);
+		err("data.done = %d", data.done);
 		rv = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if(rv) {
-		dbg("failed to set sel state to %d = %d", enable, rv);
+		err("failed to set sel state to %d = %d", enable, rv);
         }
 	return rv;
 }
@@ -517,7 +517,7 @@ static void get_sel_state(ipmi_mc_t *mc, void *cb_data)
 		} else {
 			data->done = -1;
 		}
-		dbg("failed  get_sel_state = %d", rv);
+		err("failed  get_sel_state = %d", rv);
         }
 }
 
@@ -531,7 +531,7 @@ SaErrorT ohoi_get_sel_state(struct ohoi_handler *ipmi_handler, ipmi_mcid_t mc_id
 		
 	rv = ipmi_mc_pointer_cb(mc_id, get_sel_state, &data);
 	if (rv) {
-		dbg("failed to convert mc_id to pointer = %d", rv);
+		err("failed to convert mc_id to pointer = %d", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	rv = ohoi_loop(&data.done, ipmi_handler);
@@ -541,7 +541,7 @@ SaErrorT ohoi_get_sel_state(struct ohoi_handler *ipmi_handler, ipmi_mcid_t mc_id
 		rv = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if(rv) {
-		dbg("failed to get sel state = %d", rv);
+		err("failed to get sel state = %d", rv);
         } else {
 		*enable = data.enable;
 	}

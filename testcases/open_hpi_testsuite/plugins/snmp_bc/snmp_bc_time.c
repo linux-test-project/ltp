@@ -326,11 +326,11 @@ SaErrorT snmp_bc_get_sp_time(struct oh_handler_state *handle, struct tm *time)
                         tmptime.tm_mon--;
                         tmptime.tm_year -= 1900;
                 } else {
-                        dbg("Couldn't parse Date/Time from Blade Center SP");
+                        err("Couldn't parse Date/Time from Blade Center SP");
                         return(SA_ERR_HPI_INTERNAL_ERROR);
                 }
         } else {
-                dbg("Couldn't fetch Blade Center SP Date/Time Entry");
+                err("Couldn't fetch Blade Center SP Date/Time Entry");
 		if (rv == SA_OK) rv = SA_ERR_HPI_INTERNAL_ERROR;
                 return(rv);
         }
@@ -373,7 +373,7 @@ SaErrorT snmp_bc_set_sp_time(struct snmp_bc_hnd *custom_handle, struct tm *time)
 	}
 
         if (returncode != SA_OK)
-                dbg("snmp_set is NOT successful\n");
+                err("snmp_set is NOT successful\n");
 
        return returncode;
 }

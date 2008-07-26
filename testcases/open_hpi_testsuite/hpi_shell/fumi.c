@@ -124,6 +124,7 @@ static ret_code_t show_source_info( SaHpiSessionIdT sessionId,
     print_text_buffer_text( "    Source URI: \"", &info.SourceUri, "\"\n", ui_print );
     printf( "    Source status: %s\n", oh_lookup_fumisourcestatus(  info.SourceStatus ) );
     print_text_buffer_text( "    Identifier: \"", &info.Identifier, "\"\n", ui_print );
+    print_text_buffer_text( "    Description: \"", &info.Description, "\"\n", ui_print );
     print_text_buffer_text( "    DateTime: \"", &info.DateTime, "\"\n", ui_print );
     printf( "    Version: %u.%u.%u\n", info.MajorVersion, info.MinorVersion, info.AuxVersion );
 

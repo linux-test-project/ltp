@@ -45,7 +45,6 @@ int data_access_block_times(void);
 #define dbg_lock(format, ...)
 #endif
 		 
-#ifdef HAVE_THREAD_SAFE
 /* multi-threading support, use Posix mutex for data access */
 /* initialize mutex used for data locking */
 #include <glib.h>
@@ -77,13 +76,5 @@ extern int lockcount;
                 g_static_rec_mutex_unlock(&oh_main_lock); \
                 dbg_lock("%p - released the lock",  g_thread_self());      \
         } while(0)
-
-#else 
-
-#define data_access_lock_init()
-#define data_access_lock()
-#define data_access_unlock()
-
-#endif /*HAVE_THREAD_SAFE*/
 
 #endif /* __OH_LOCK_H */

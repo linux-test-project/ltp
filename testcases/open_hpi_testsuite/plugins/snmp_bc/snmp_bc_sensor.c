@@ -50,7 +50,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
         SaHpiRdrT *rdr;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -58,7 +58,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	snmp_bc_lock_handler(custom_handle);
@@ -84,7 +84,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 	
@@ -96,7 +96,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
 	memset(&working_reading, 0, sizeof(SaHpiSensorReadingT));
 	working_state = SAHPI_ES_UNSPECIFIED;
 
-	trace("Sensor Reading: Resource=%s; RDR=%s", rpt->ResourceTag.Data, rdr->IdString.Data);
+	dbg("Sensor Reading: Resource=%s; RDR=%s", rpt->ResourceTag.Data, rdr->IdString.Data);
 	
 	/************************************************************
 	 * Get sensor's reading.
@@ -128,7 +128,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
 		}
 	
 		if (err) {
-			dbg("Cannot determine sensor's reading. Error=%s", oh_lookup_error(err));
+			err("Cannot determine sensor's reading. Error=%s", oh_lookup_error(err));
 			snmp_bc_unlock_handler(custom_handle);
 			return(err);
 		}
@@ -144,7 +144,7 @@ SaErrorT snmp_bc_get_sensor_reading(void *hnd,
 	 ******************************************************************/
 	err = snmp_bc_get_sensor_eventstate(hnd, rid, sid, &working_reading, &working_state);
 	if (err) {
-		dbg("Cannot determine sensor's event state. Error=%s", oh_lookup_error(err));
+		err("Cannot determine sensor's event state. Error=%s", oh_lookup_error(err));
 		snmp_bc_unlock_handler(custom_handle);
 		return(err);
 	}
@@ -201,7 +201,7 @@ SaErrorT snmp_bc_get_sensor_eventstate(void *hnd,
 	SaErrorT err;
 
 	if (!hnd || !reading || !state) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -216,7 +216,7 @@ SaErrorT snmp_bc_get_sensor_eventstate(void *hnd,
 	if (rdr == NULL) return(SA_ERR_HPI_NOT_PRESENT);
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 	if (sinfo->sensor_enabled == SAHPI_FALSE) return(SA_ERR_HPI_INVALID_REQUEST);
@@ -246,7 +246,7 @@ SaErrorT snmp_bc_get_sensor_eventstate(void *hnd,
 
 		err = snmp_bc_get_sensor_thresholds(hnd, rid, sid, &thres);
 		if (err) {
-			dbg("Cannot get sensor thresholds for Sensor=%s. Error=%s", 
+			err("Cannot get sensor thresholds for Sensor=%s. Error=%s", 
 			    rdr->IdString.Data, oh_lookup_error(err));
 			return(err);
 		}
@@ -351,7 +351,7 @@ do { \
         if (rdr->RdrTypeUnion.SensorRec.ThresholdDefn.ReadThold & thdmask) { \
 		if (sinfo->mib.threshold_oids.thdname == NULL || \
 		    sinfo->mib.threshold_oids.thdname[0] == '\0') { \
-			dbg("No OID defined for readable threshold. Sensor=%s", rdr->IdString.Data); \
+			err("No OID defined for readable threshold. Sensor=%s", rdr->IdString.Data); \
 			snmp_bc_unlock_handler(custom_handle); \
 			return(SA_ERR_HPI_INTERNAL_ERROR); \
 		} \
@@ -363,7 +363,7 @@ do { \
 			return(err); \
 		} \
 		if (working.thdname.Type == SAHPI_SENSOR_READING_TYPE_BUFFER) { \
-			dbg("Sensor type SAHPI_SENSOR_READING_TYPE_BUFFER cannot have thresholds. Sensor=%s", \
+			err("Sensor type SAHPI_SENSOR_READING_TYPE_BUFFER cannot have thresholds. Sensor=%s", \
 			    rdr->IdString.Data); \
 			snmp_bc_unlock_handler(custom_handle); \
 			return(SA_ERR_HPI_INTERNAL_ERROR); \
@@ -409,7 +409,7 @@ SaErrorT snmp_bc_get_logical_sensors(void *hnd,
 
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -418,7 +418,7 @@ SaErrorT snmp_bc_get_logical_sensors(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -428,7 +428,7 @@ SaErrorT snmp_bc_get_logical_sensors(void *hnd,
 	/* Fetch Active MM ID */
 	err = snmp_bc_snmp_get(custom_handle, SNMP_BC_MGMNT_ACTIVE, &active_mm_id, SAHPI_TRUE);
         if (err || active_mm_id.type != ASN_INTEGER) {
-		dbg("Cannot get SNMP_BC_MGMNT_ACTIVE=%s; Received Type=%d; Error=%s.",
+		err("Cannot get SNMP_BC_MGMNT_ACTIVE=%s; Received Type=%d; Error=%s.",
 		      SNMP_BC_MGMNT_ACTIVE, active_mm_id.type, oh_lookup_error(err));
 		if (err) { return(err); }
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); }
@@ -450,13 +450,13 @@ SaErrorT snmp_bc_get_logical_sensors(void *hnd,
 						mm_id = 1;
 						break;
 					default:
-						dbg("Internal Error.");
+						err("Internal Error.");
 						break;
 				}
 			}
 			break; 
 		default:
-			dbg("Should not be here. sid is not one of the special sensors.");
+			err("Should not be here. sid is not one of the special sensors.");
 			break;
 	}
 
@@ -467,7 +467,7 @@ SaErrorT snmp_bc_get_logical_sensors(void *hnd,
 	if (mm_id != SNMP_BC_NOT_VALID) {
 		root_tuple = (char *)g_hash_table_lookup(handle->config, "entity_root");
         	if (root_tuple == NULL) {
-                	dbg("Cannot find configuration parameter.");
+                	err("Cannot find configuration parameter.");
                 	snmp_bc_unlock_handler(custom_handle);
                 	return(SA_ERR_HPI_INTERNAL_ERROR);
         	}
@@ -519,7 +519,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 	SaErrorT err;
 
 	if (!hnd || !thres) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -548,7 +548,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 	
         sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -611,13 +611,13 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 		SaHpiSensorReadingT reading;
 
 		if (found_thresholds & SAHPI_STM_LOW_HYSTERESIS) {
-			dbg("Cannot define both delta and total negative hysteresis. Sensor=%s",
+			err("Cannot define both delta and total negative hysteresis. Sensor=%s",
 			    rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		if (lower_thresholds == 0) {
-			dbg("No lower thresholds are defined for total negative hysteresis. Sensor=%s",
+			err("No lower thresholds are defined for total negative hysteresis. Sensor=%s",
 			    rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
@@ -649,7 +649,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 			}
 
 			if (delta < 0) {
-				dbg("Negative hysteresis delta is less than 0");
+				err("Negative hysteresis delta is less than 0");
 				working.NegThdHysteresis.IsSupported = SAHPI_FALSE;
 			}
 			else {
@@ -675,7 +675,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 			}
 
 			if (delta < 0) {
-				dbg("Negative hysteresis delta is less than 0");
+				err("Negative hysteresis delta is less than 0");
 				working.NegThdHysteresis.IsSupported = SAHPI_FALSE;
 			}
 			else {
@@ -688,7 +688,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 		case SAHPI_SENSOR_READING_TYPE_UINT64:
 		case SAHPI_SENSOR_READING_TYPE_BUFFER:
 		default:
-			dbg("Invalid reading type for threshold. Sensor=%s", rdr->IdString.Data);
+			err("Invalid reading type for threshold. Sensor=%s", rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -699,13 +699,13 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 		SaHpiSensorReadingT reading;
 
 		if (found_thresholds & SAHPI_STM_UP_HYSTERESIS) {
-			dbg("Cannot define both delta and total positive hysteresis. Sensor=%s",
+			err("Cannot define both delta and total positive hysteresis. Sensor=%s",
 			    rdr->IdString.Data);			    
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		if (upper_thresholds == 0) {
-			dbg("No upper thresholds are defined for total positive hysteresis. Sensor=%s",
+			err("No upper thresholds are defined for total positive hysteresis. Sensor=%s",
 			    rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
@@ -737,7 +737,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 			}
 
 			if (delta < 0) {
-				dbg("Positive hysteresis delta is less than 0");
+				err("Positive hysteresis delta is less than 0");
 				working.PosThdHysteresis.IsSupported = SAHPI_FALSE;
 			}
 			else {
@@ -763,7 +763,7 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 			}
 
 			if (delta < 0) {
-				dbg("Positive hysteresis delta is less than 0");
+				err("Positive hysteresis delta is less than 0");
 				working.PosThdHysteresis.IsSupported = SAHPI_FALSE;
 			}
 			else {
@@ -777,14 +777,14 @@ SaErrorT snmp_bc_get_sensor_thresholds(void *hnd,
 		case SAHPI_SENSOR_READING_TYPE_UINT64:
 		case SAHPI_SENSOR_READING_TYPE_BUFFER:
 		default:
-			dbg("Invalid reading type for threshold. Sensor=%s", rdr->IdString.Data);
+			err("Invalid reading type for threshold. Sensor=%s", rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 	}
 
 	if (found_thresholds == 0) {
-		dbg("No readable thresholds found. Sensor=%s", rdr->IdString.Data);
+		err("No readable thresholds found. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -811,7 +811,7 @@ do { \
 		        break; \
         	case SAHPI_SENSOR_READING_TYPE_BUFFER: \
         	default: \
-        		dbg("Invalid threshold reading type."); \
+        		err("Invalid threshold reading type."); \
 			snmp_bc_unlock_handler(custom_handle); \
         		return(SA_ERR_HPI_INVALID_CMD); \
         	} \
@@ -823,7 +823,7 @@ do { \
 	if (thres->thdname.IsSupported) { \
 		if (sinfo->mib.threshold_write_oids.thdname == NULL || \
 		    sinfo->mib.threshold_oids.thdname[0] == '\0') { \
-			dbg("No writable threshold OID defined for thdname."); \
+			err("No writable threshold OID defined for thdname."); \
 			snmp_bc_unlock_handler(custom_handle); \
 			return(SA_ERR_HPI_INTERNAL_ERROR); \
 		} \
@@ -868,7 +868,7 @@ SaErrorT snmp_bc_set_sensor_thresholds(void *hnd,
         SaHpiRdrT *rdr;
 
 	if (!hnd || !thres) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -897,7 +897,7 @@ SaErrorT snmp_bc_set_sensor_thresholds(void *hnd,
 	
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
@@ -970,7 +970,7 @@ SaErrorT snmp_bc_get_sensor_oid_reading(void *hnd,
 	if (rdr == NULL) return(SA_ERR_HPI_NOT_PRESENT);
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -979,7 +979,7 @@ SaErrorT snmp_bc_get_sensor_oid_reading(void *hnd,
 	err = snmp_bc_oid_snmp_get(custom_handle, &valEntity, sinfo->mib.loc_offset,
 				   raw_oid, &get_value, SAHPI_TRUE);
 	if (err) {
-		dbg("SNMP cannot read sensor OID=%s. Type=%d", raw_oid, get_value.type);
+		err("SNMP cannot read sensor OID=%s. Type=%d", raw_oid, get_value.type);
 		return(err);
 	}
 		
@@ -998,7 +998,7 @@ SaErrorT snmp_bc_get_sensor_oid_reading(void *hnd,
 					      rdr->RdrTypeUnion.SensorRec.DataFormat.ReadingType,
 					      &working);
 		if (err) {
-			dbg("Cannot convert sensor OID=%s value=%s. Error=%s",
+			err("Cannot convert sensor OID=%s value=%s. Error=%s",
 			    sinfo->mib.oid, buffer.Data, oh_lookup_error(err));
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -1026,7 +1026,7 @@ SaErrorT snmp_bc_set_threshold_reading(void *hnd,
 	SaHpiRdrT *rdr;
 
 	if (!hnd || !reading || !raw_oid) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -1037,7 +1037,7 @@ SaErrorT snmp_bc_set_threshold_reading(void *hnd,
 	if (rdr == NULL) return(SA_ERR_HPI_NOT_PRESENT);
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -1057,7 +1057,7 @@ SaErrorT snmp_bc_set_threshold_reading(void *hnd,
 		break;
 	case SAHPI_SENSOR_READING_TYPE_BUFFER:
 		default:
-			dbg("Invalid type for threshold. Sensor=%s", rdr->IdString.Data);
+			err("Invalid type for threshold. Sensor=%s", rdr->IdString.Data);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -1075,7 +1075,7 @@ SaErrorT snmp_bc_set_threshold_reading(void *hnd,
 	err = snmp_bc_oid_snmp_set(custom_handle, &valEntity, sinfo->mib.loc_offset,
 				   raw_oid, set_value);
 	if (err) {
-		dbg("SNMP cannot set sensor OID=%s.", raw_oid);
+		err("SNMP cannot set sensor OID=%s.", raw_oid);
 		return(err);
 	}
 		
@@ -1109,7 +1109,7 @@ SaErrorT snmp_bc_get_sensor_enable(void *hnd,
         SaHpiRdrT *rdr;
 
 	if (!hnd || !enable) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1138,7 +1138,7 @@ SaErrorT snmp_bc_get_sensor_enable(void *hnd,
 	
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
@@ -1175,7 +1175,7 @@ SaErrorT snmp_bc_set_sensor_enable(void *hnd,
 	struct SensorInfo *sinfo;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1203,10 +1203,10 @@ SaErrorT snmp_bc_set_sensor_enable(void *hnd,
 	}
 	
 	if (rdr->RdrTypeUnion.SensorRec.EnableCtrl == SAHPI_TRUE) {
-		dbg("BladeCenter/RSA do not support snmp_bc_set_sensor_enable");
+		err("BladeCenter/RSA do not support snmp_bc_set_sensor_enable");
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s", rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -1252,7 +1252,7 @@ SaErrorT snmp_bc_get_sensor_event_enable(void *hnd,
         SaHpiRdrT *rdr;
 
 	if (!hnd || !enable) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1281,7 +1281,7 @@ SaErrorT snmp_bc_get_sensor_event_enable(void *hnd,
 	
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
@@ -1318,7 +1318,7 @@ SaErrorT snmp_bc_set_sensor_event_enable(void *hnd,
 	struct SensorInfo *sinfo;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1348,10 +1348,10 @@ SaErrorT snmp_bc_set_sensor_event_enable(void *hnd,
 	
 	if (rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_PER_EVENT ||
 	    rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_READ_ONLY_MASKS) {
-		dbg("BladeCenter/RSA do not support snmp_bc_set_sensor_event_enable.");    
+		err("BladeCenter/RSA do not support snmp_bc_set_sensor_event_enable.");    
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s", rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -1399,7 +1399,7 @@ SaErrorT snmp_bc_get_sensor_event_masks(void *hnd,
         SaHpiRdrT *rdr;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -1428,7 +1428,7 @@ SaErrorT snmp_bc_get_sensor_event_masks(void *hnd,
 	
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
@@ -1482,7 +1482,7 @@ SaErrorT snmp_bc_set_sensor_event_masks(void *hnd,
 	SaHpiEventStateT orig_deassert_mask;
 
 	if (!hnd ) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1514,11 +1514,11 @@ SaErrorT snmp_bc_set_sensor_event_masks(void *hnd,
 	}
 	
 	if (rdr->RdrTypeUnion.SensorRec.EventCtrl == SAHPI_SEC_PER_EVENT) {
-		dbg("BladeCenter/RSA do not support snmp_bc_set_sensor_event_masks");
+		err("BladeCenter/RSA do not support snmp_bc_set_sensor_event_masks");
                 /* Probably need to drive an OID, if hardware supported it */
 		sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
 		if (sinfo == NULL) {
-			dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+			err("No sensor data. Sensor=%s", rdr->IdString.Data);
 			snmp_bc_unlock_handler(custom_handle);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
@@ -1629,7 +1629,7 @@ SaErrorT snmp_bc_set_slot_state_sensor(void *hnd,
 	res = oh_get_resource_by_ep(handle->rptcache, slot_ep);
 	
         if (!res) {
-		dbg("No valid resource or rdr at hand. Could not process new rdr.");
+		err("No valid resource or rdr at hand. Could not process new rdr.");
                 return(SA_ERR_HPI_INVALID_DATA);
 	}
 
@@ -1690,7 +1690,7 @@ SaErrorT snmp_bc_reset_slot_state_sensor(void *hnd, SaHpiEntityPathT *slot_ep)
 	res = oh_get_resource_by_ep(handle->rptcache, slot_ep);
 
         if (!res) {
-		dbg("No valid resource or rdr at hand. Could not process new rdr.");
+		err("No valid resource or rdr at hand. Could not process new rdr.");
                 return(SA_ERR_HPI_INVALID_DATA);
 	}
 
@@ -1799,7 +1799,7 @@ SaErrorT snmp_bc_get_slot_state_sensor(void *hnd,
 	if (rdr == NULL) return(SA_ERR_HPI_NOT_PRESENT);
 	sinfo = (struct SensorInfo *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
  	if (sinfo == NULL) {
-		dbg("No sensor data. Sensor=%s", rdr->IdString.Data);
+		err("No sensor data. Sensor=%s", rdr->IdString.Data);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 					
@@ -1883,7 +1883,7 @@ do { \
 			thisOID = SNMP_BC_PD1POWERMIN; \
 			break; \
 		default: \
-			dbg("Not one of the Slot Power Sensors."); \
+			err("Not one of the Slot Power Sensors."); \
 			return(SA_ERR_HPI_INTERNAL_ERROR); \
 			break; \
 	} \
@@ -1903,7 +1903,7 @@ do { \
 			thisOID = SNMP_BC_PD2POWERMIN; \
 			break; \
 		default: \
-			dbg("Not one of the Slot Power Sensors."); \
+			err("Not one of the Slot Power Sensors."); \
 			return(SA_ERR_HPI_INTERNAL_ERROR); \
 			break; \
 	} \
@@ -1981,7 +1981,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 12;
 						break;					
 					default:
-						dbg("Not one of the valid BC-T Swich Slots.");
+						err("Not one of the valid BC-T Swich Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2004,7 +2004,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 10;
 						break;					
 					default:
-						dbg("Not one of the valid BC Switch Slots.");
+						err("Not one of the valid BC Switch Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2044,7 +2044,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 16;
 						break;
 					default:
-						dbg("Not one of the valid BC H Switch Slots.");
+						err("Not one of the valid BC H Switch Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2086,7 +2086,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 12;
 						break;
 					default:
-						dbg("Not one of the valid BC HT Switch Slots.");
+						err("Not one of the valid BC HT Switch Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2096,7 +2096,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 					usepowerdomain1;
 				}														
 			} else { 
-				dbg("Not one of the supported platform.");
+				err("Not one of the supported platform.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);		
 			}
 			break;
@@ -2111,7 +2111,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 8;
 						break;					
 					default:
-						dbg("Not one of the valid BC-T MM Slots.");
+						err("Not one of the valid BC-T MM Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2127,7 +2127,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 6;
 						break;					
 					default:
-						dbg("Not one of the valid BC MM Slots.");
+						err("Not one of the valid BC MM Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2143,7 +2143,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 8;
 						break;					
 					default:
-						dbg("Not one of the valid BC H MM Slots.");
+						err("Not one of the valid BC H MM Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2158,7 +2158,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 18;
 						break;					
 					default:
-						dbg("Not one of the valid BC HT MM Slots.");
+						err("Not one of the valid BC HT MM Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2166,7 +2166,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 				usepowerdomain1;
 			
 			} else { 
-				dbg("Not one of the supported platform.");
+				err("Not one of the supported platform.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);		
 			}
 			break;
@@ -2206,7 +2206,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 							oidIndex = 2;
 						break;					
 					default:
-						dbg("Not one of the valid BC-T Fan Slots.");
+						err("Not one of the valid BC-T Fan Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2229,7 +2229,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 4;
 						break;							
 					default:
-						dbg("Not one of the valid BC Fan Slots.");
+						err("Not one of the valid BC Fan Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2246,7 +2246,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 				oidIndex = SNMP_BC_NOT_VALID;
 				thisOID = NULL;			
 			} else { 
-				dbg("Not one of the supported platform.");
+				err("Not one of the supported platform.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);		
 			}
 			break;		
@@ -2279,7 +2279,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 6;
 						break;
 					default:
-						dbg("Not one of the valid BC-T Blade Slots.");
+						err("Not one of the valid BC-T Blade Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2336,7 +2336,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 8;
 						break;
 					default:
-						dbg("Not one of the valid BC Blade Slots.");
+						err("Not one of the valid BC Blade Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2379,7 +2379,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 23;
 						break;
 					default:
-						dbg("Not one of the valid BC H Switch Slots.");
+						err("Not one of the valid BC H Switch Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2429,7 +2429,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 18;
 						break;												
 					default:
-						dbg("Not one of the valid BC H Switch Slots.");
+						err("Not one of the valid BC H Switch Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
@@ -2439,7 +2439,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 					usepowerdomain1;
 				}			
 			} else { 
-				dbg("Not one of the supported platform.");
+				err("Not one of the supported platform.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);		
 			}
 			break;		
@@ -2467,13 +2467,13 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 						oidIndex = 6;
 						break;					
 					default:
-						dbg("Not one of the valid BC H Power Module Slots.");
+						err("Not one of the valid BC H Power Module Slots.");
 						return(SA_ERR_HPI_INTERNAL_ERROR);
 						break;
 				}
 				usepowerdomain1;
 			} else { 
-				dbg("Not one of the supported platform.");
+				err("Not one of the supported platform.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);		
 			}
 			break;
@@ -2484,7 +2484,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 					oidIndex = 1;
 					break;
 				default:
-					dbg("Not one of the valid resources.");
+					err("Not one of the valid resources.");
 					return(SA_ERR_HPI_INTERNAL_ERROR);
 					break;
 				}
@@ -2540,7 +2540,7 @@ SaErrorT snmp_bc_get_slot_power_sensor(void *hnd,
 			snprintf(oid, SNMP_BC_MAX_OID_LENGTH, "%s.%d", thisOID, 19);
 			get_string_object(oid, pm4_state);		
 		} else { 
-			dbg("Not one of the supported platform.\n");
+			err("Not one of the supported platform.\n");
 			return(SA_ERR_HPI_INTERNAL_ERROR);		
 		}
 		power_substrs = g_strsplit(pm3_state.string, " ", -1);

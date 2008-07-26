@@ -21,7 +21,7 @@ SaErrorT sim_get_power_state(void *hnd,
 			     SaHpiPowerStateT *pwrstate)
 {
 	if (!hnd || !pwrstate) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -50,7 +50,7 @@ SaErrorT sim_set_power_state(void *hnd,
 			     SaHpiPowerStateT pwrstate)
 {
 	if (!hnd || NULL == oh_lookup_powerstate(pwrstate)) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 

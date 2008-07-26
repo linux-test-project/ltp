@@ -32,7 +32,6 @@
 MAINTAINERCLEANFILES 	= Makefile.in
 noinst_PROGRAMS         = ipmi_thres_test
 INCLUDES                = @OPENHPI_INCLUDES@
-AM_CFLAGS               = -g
 
 LD_DIRS			= -L$(top_builddir)/src -L$(top_builddir)/utils
 

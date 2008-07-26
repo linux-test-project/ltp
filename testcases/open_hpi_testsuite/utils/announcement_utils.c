@@ -180,8 +180,8 @@ SaErrorT oh_announcement_get_next(oh_announcement *ann, SaHpiSeverityT sev,
                 if (annlist)
                         annlist = g_list_next(annlist);
                 else {
-                        trace("Did not find previous entry."
-                              " Searching from first one.");
+                        dbg("Did not find previous entry."
+                            " Searching from first one.");
                         annlist = g_list_first(ann->annentries);
                 }
         }
@@ -192,8 +192,8 @@ SaErrorT oh_announcement_get_next(oh_announcement *ann, SaHpiSeverityT sev,
                 if (annentry && (sev == SAHPI_ALL_SEVERITIES ||
                                  sev == annentry->annentry.Severity) &&
                     (ack ? !annentry->annentry.Acknowledged : 1)) {
-                        trace("Severity searched for is %d."
-                              " Severity found is %d",
+                        dbg("Severity searched for is %d."
+                            " Severity found is %d",
                             sev, annentry->annentry.Severity);
                         *entry = annentry->annentry;
                         return SA_OK;
@@ -261,6 +261,7 @@ SaErrorT oh_announcement_del(oh_announcement *ann, SaHpiEntryIdT srchid,
                 while (annlist != NULL) {
                         myentry = (oh_ann_entry *) annlist->data;
                         if (srchid == myentry->annentry.EntryId) {
+                                free(annlist->data);
                                 ann->annentries =
                                         g_list_remove(ann->annentries, myentry);
                                 return SA_OK;
@@ -278,6 +279,7 @@ SaErrorT oh_announcement_del(oh_announcement *ann, SaHpiEntryIdT srchid,
                 myentry = (oh_ann_entry *) annlist->data;
                 if (sev == SAHPI_ALL_SEVERITIES ||
                     sev == myentry->annentry.Severity) {
+                        free(annlist->data);
                         ann->annentries = g_list_remove(ann->annentries, myentry);
                         annlist = g_list_first(ann->annentries);
                 } else {

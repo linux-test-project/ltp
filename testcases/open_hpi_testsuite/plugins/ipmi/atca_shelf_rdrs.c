@@ -55,7 +55,7 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 		len = 256;
 		rv = ipmi_fru_get_multi_record_data(fru, num, data, &len);
 		if (rv != 0) {
-			dbg("ipmi_fru_get_multi_record_data("
+			err("ipmi_fru_get_multi_record_data("
 				"fru, %d, data, 0x%x) = 0x%x",
 				num, len, rv);
 			broken = 1;
@@ -63,18 +63,18 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 		}
 		rv = ipmi_fru_get_multi_record_type(fru, num, &type);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_type = %d", rv);
+			err("ipmi_entity_get_multi_record_type = %d", rv);
 			broken = 1;
 			break;
 		}
 		if (type != 0xc0) {
 			// record type. Must be OEM
-			dbg("Record type = 0x%x", data[0]);
+			err("Record type = 0x%x", data[0]);
 			continue;
 		}
 		rv = ipmi_fru_get_multi_record_format_version(fru, num, &ver);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_format_version = %d", rv);
+			err("ipmi_entity_get_multi_record_format_version = %d", rv);
 			broken = 1;
 			break;
 		}
@@ -88,7 +88,7 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 		}
 		if ((data[0] | (data[1] << 8) | (data[2] << 16)) !=
 						ATCAHPI_PICMG_MID) {
-			dbg("MId = 0x%x", data[0] | (data[1] << 8) | (data[2] << 16));
+			err("MId = 0x%x", data[0] | (data[1] << 8) | (data[2] << 16));
 			continue;
 		}
 
@@ -97,12 +97,12 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 		}
 
 		if (len < 7) {
-			dbg("Record #%d too short(%d)", num, len);
+			err("Record #%d too short(%d)", num, len);
 			broken = 1;
 			break;
 		}
 		if (len < 7 + data[6] * 5) {
-			dbg("Record #%d length(0x%x) mismatches with expected(0x%x)",
+			err("Record #%d length(0x%x) mismatches with expected(0x%x)",
 				num, len, 7 + data[6] * 5);
 			broken = 1;
 			break;
@@ -116,7 +116,7 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 				g_slist_append(ipmi_handler->atca_pwonseq_recs,
 				               recp);
 		} else {
-			dbg("Out of memory");
+			err("Out of memory");
 			broken = 1;
 			break;
 		}
@@ -130,7 +130,7 @@ static void init_power_on_sequence_data_cb(ipmi_entity_t *entity,
 						ipmi_handler->atca_pwonseq_desk,
 						dscp);
 			} else {
-				dbg("Out of memory");
+				err("Out of memory");
 				broken = 1;
 				break;
 			}
@@ -224,7 +224,7 @@ static void get_atca_chassis_status_control_states(
 		get_atca_chassis_status_control_states_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	}
@@ -254,27 +254,27 @@ static SaHpiRdrT *create_atca_chassis_status_control(
 				get_atca_chassis_status_control_states,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return NULL;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return NULL;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return NULL;
 	}
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -339,16 +339,16 @@ SaErrorT get_atca_chassis_status_control_state(
 				get_atca_chassis_status_control_states,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return rv;
 	}
 	state->Type = SAHPI_CTRL_TYPE_OEM;
@@ -413,12 +413,12 @@ static int set_shelf_address_control_msg_data(SaHpiTextTypeT type,
 		return 0;
 	}
 	if ((type != SAHPI_TL_TYPE_ASCII6) || (text->DataType != SAHPI_TL_TYPE_TEXT)) {
-		dbg("Datatype dismaych : %d & %d", type, text->DataType);
+		err("Datatype dismaych : %d & %d", type, text->DataType);
 		return 1;
 	}
 	for (i = 0; i < text->DataLength; i++) {
 		if ((text->Data[i] < 0x20) || (text->Data[i] > 0x5F)) {
-			dbg("cannot convert TEXT to ASCII6");
+			err("cannot convert TEXT to ASCII6");
 			return 1;
 		}
 	}
@@ -508,7 +508,7 @@ static void set_atca_shelf_address_control_states(
 		set_atca_shelf_address_control_states_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		info->done = 1;
 		return;
@@ -534,13 +534,13 @@ static SaErrorT set_atca_shelf_address_control_state(
 		return SA_ERR_HPI_READ_ONLY;
 	}
 	if (state->Type != SAHPI_CTRL_TYPE_TEXT) {
-		dbg("state->Type != SAHPI_CTRL_TYPE_TEXT");
+		err("state->Type != SAHPI_CTRL_TYPE_TEXT");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	text = &state->StateUnion.Text;
 	if ((text->Line != 1) &&
 			(text->Line != SAHPI_TLN_ALL_LINES)) {
-		dbg("text->Line != 1 or SAHPI_TLN_ALL_LINES");
+		err("text->Line != 1 or SAHPI_TLN_ALL_LINES");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -552,16 +552,16 @@ static SaErrorT set_atca_shelf_address_control_state(
 				set_atca_shelf_address_control_states,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return info.rv;
 	}
 //	c->mode = mode;
@@ -662,7 +662,7 @@ static void get_atca_shelf_address_control_states(
 		get_atca_shelf_address_control_states_cb,
 		cb_data);
 	if (rv != 0) {
-		dbg("ipmicmd_send = 0x%x", rv);
+		err("ipmicmd_send = 0x%x", rv);
 		OHOI_MAP_ERROR(info->rv, rv);
 		return;
 	}
@@ -685,13 +685,13 @@ static SaErrorT get_atca_shelf_address_control_state(
 	}
 #if 0
 	if (state->Type != SAHPI_CTRL_TYPE_TEXT) {
-		dbg("state->Type != SAHPI_CTRL_TYPE_TEXT");
+		err("state->Type != SAHPI_CTRL_TYPE_TEXT");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 #endif
 	if ((state->StateUnion.Text.Line != 1) &&
 			(state->StateUnion.Text.Line != SAHPI_TLN_ALL_LINES)) {
-		dbg("text->Line != 1 or SAHPI_TLN_ALL_LINES");
+		err("text->Line != 1 or SAHPI_TLN_ALL_LINES");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -702,16 +702,16 @@ static SaErrorT get_atca_shelf_address_control_state(
 				get_atca_shelf_address_control_states,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return rv;
 	}
 	state->Type = SAHPI_CTRL_TYPE_TEXT;
@@ -746,27 +746,27 @@ static SaHpiRdrT *create_atca_shelf_address_control(
 				get_atca_shelf_address_control_states,
 				&info);
 	if (rv != 0) {
-		dbg("ipmi_domain_pointer_cb = 0x%x", rv);
+		err("ipmi_domain_pointer_cb = 0x%x", rv);
 		return NULL;
 	}
 	rv = ohoi_loop(&info.done, ipmi_handler);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = 0x%x", rv);
+		err("ohoi_loop = 0x%x", rv);
 		return NULL;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = 0x%x", info.rv);
+		err("info.rv = 0x%x", info.rv);
 		return NULL;
 	}
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -842,12 +842,12 @@ static SaHpiRdrT *create_atca_shelf_ip_address_control(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -907,7 +907,7 @@ static SaErrorT get_shelf_ip_address_record(ipmi_entity_t *ent,
 		*len = orig_len;
 		rv = ipmi_entity_get_multi_record_data(ent, i, buf, len);
 		if (rv != 0) {
-			dbg("ipmi_entity_get_multi_record_data(%d) = 0x%x",
+			err("ipmi_entity_get_multi_record_data(%d) = 0x%x",
 						i, rv);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
@@ -916,7 +916,7 @@ static SaErrorT get_shelf_ip_address_record(ipmi_entity_t *ent,
 		}
 		rv = ipmi_entity_get_multi_record_type(ent, i, &type);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_type = %d", rv);
+			err("ipmi_entity_get_multi_record_type = %d", rv);
 			continue;
 		}
 		if (type != 0xc0) {
@@ -925,7 +925,7 @@ static SaErrorT get_shelf_ip_address_record(ipmi_entity_t *ent,
 		}
 		rv = ipmi_entity_get_multi_record_format_version(ent, i, &vr);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_format_version = %d", rv);
+			err("ipmi_entity_get_multi_record_format_version = %d", rv);
 			continue;
 		}
 
@@ -947,7 +947,7 @@ static SaErrorT get_shelf_ip_address_record(ipmi_entity_t *ent,
 		break;
 	}
 	if (i == num_rec) {
-		dbg("No record for shelf IP address");
+		err("No record for shelf IP address");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	*num = i;
@@ -1000,7 +1000,7 @@ static void get_atca_shelf_ip_address_control_state_cb(ipmi_entity_t *ent,
 		memcpy(info->text->Text.Data, buf + 5, 12);
 		break;
 	default :
-		dbg("wrong text->Line = %d", info->text->Line);
+		err("wrong text->Line = %d", info->text->Line);
 		info->rv = SA_ERR_HPI_INVALID_DATA;
 		break;
 	}
@@ -1026,18 +1026,18 @@ SaErrorT get_atca_shelf_ip_address_control_state(
 	}
 #if 0
 	if (state->Type != SAHPI_CTRL_TYPE_TEXT) {
-		dbg("wrong state type %d", state->Type);
+		err("wrong state type %d", state->Type);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 #endif
 	res_info = oh_get_resource_data(handler->rptcache,
 					ohoi_handler->atca_shelf_id);
 	if (res_info == NULL) {
-		dbg("No shelf resource info?");
+		err("No shelf resource info?");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (res_info->fru == NULL) {
-		dbg("Shelf does not have IDR");
+		err("Shelf does not have IDR");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -1048,7 +1048,7 @@ SaErrorT get_atca_shelf_ip_address_control_state(
 	rv = ipmi_entity_pointer_cb(res_info->u.entity.entity_id,
 		get_atca_shelf_ip_address_control_state_cb, &info);
 	if (rv != 0) {
-		dbg("ipmi_entity_pointer_cb = 0x%x", rv);
+		err("ipmi_entity_pointer_cb = 0x%x", rv);
 		g_mutex_unlock(res_info->fru->mutex);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
@@ -1097,7 +1097,7 @@ static void set_atca_shelf_ip_address_control_state_cb(ipmi_entity_t *ent,
 		memcpy(buf + 5, info->text->Text.Data, 12);
 		break;
 	default :
-		dbg("wrong text->Line = %d", info->text->Line);
+		err("wrong text->Line = %d", info->text->Line);
 		info->rv = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 		return;
@@ -1105,7 +1105,7 @@ static void set_atca_shelf_ip_address_control_state_cb(ipmi_entity_t *ent,
 
 	rv = ipmi_fru_set_multi_record(fru, num_rec, 0xC0, ver, buf, len);
 	if (rv != 0) {
-		dbg("ipmi_fru_set_multi_record(fru, %d, 0xC0, 0x%x, buf, 0x%x",
+		err("ipmi_fru_set_multi_record(fru, %d, 0xC0, 0x%x, buf, 0x%x",
 				num_rec,  ver, len);
 		info->rv = SA_ERR_HPI_INTERNAL_ERROR;
 	}
@@ -1131,35 +1131,35 @@ SaErrorT set_atca_shelf_ip_address_control_state(
 		return SA_ERR_HPI_READ_ONLY;
 	}
 	if (state->Type != SAHPI_CTRL_TYPE_TEXT) {
-		dbg("wrong state type %d", state->Type);
+		err("wrong state type %d", state->Type);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	res_info = oh_get_resource_data(handler->rptcache,
 					ohoi_handler->atca_shelf_id);
 	if (res_info == NULL) {
-		dbg("No shelf resource info?");
+		err("No shelf resource info?");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (res_info->fru == NULL) {
-		dbg("Shelf does not have IDR");
+		err("Shelf does not have IDR");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	ctrl = &rdr->RdrTypeUnion.CtrlRec.TypeUnion.Text;
 	text = &state->StateUnion.Text;
 	if (text->Text.DataType != SAHPI_TL_TYPE_BINARY) {
-		dbg("wrong DataType = %d", text->Text.DataType);
+		err("wrong DataType = %d", text->Text.DataType);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	if (text->Line == SAHPI_TLN_ALL_LINES) {
 		if (text->Text.DataLength != 12) {
-			dbg("wrong DataLength = %d", text->Text.DataLength);
+			err("wrong DataLength = %d", text->Text.DataLength);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 	} else if (text->Line > ctrl->MaxLines) {
-		dbg("wrong text->Line = %d", text->Line);
+		err("wrong text->Line = %d", text->Line);
 		return SA_ERR_HPI_INVALID_DATA;
 	} else if (text->Text.DataLength != 4) {
-		dbg("wrong DataLength = %d", text->Text.DataLength);
+		err("wrong DataLength = %d", text->Text.DataLength);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 
@@ -1172,7 +1172,7 @@ SaErrorT set_atca_shelf_ip_address_control_state(
 	rv = ipmi_entity_pointer_cb(res_info->u.entity.entity_id,
 		set_atca_shelf_ip_address_control_state_cb, &info);
 	if (rv != 0) {
-		dbg("ipmi_entity_pointer_cb = 0x%x", rv);
+		err("ipmi_entity_pointer_cb = 0x%x", rv);
 		g_mutex_unlock(res_info->fru->mutex);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
@@ -1218,34 +1218,34 @@ static void send_pwronseq_commit_status_sensor_event(
 		SAHPI_SENSOR_RDR, ATCAHPI_SENSOR_NUM_PWRONSEQ_COMMIT_STATUS,
                 (void *)&s_info);
 	if (rv != SA_OK) {
-		dbg("could not get sensor info");
+		err("could not get sensor info");
 		return;
 	}
 
 	if (s_info == NULL) {
-		dbg("could not get sensor info");
+		err("could not get sensor info");
 		return;
 	}
 	if (s_info->sen_enabled == SAHPI_FALSE) {
-		dbg("sensor disabled");
+		err("sensor disabled");
 		return;
 	}
 	if (!s_info->info.atcamap_sensor_info.val) {
 		// sensor event disable
-		dbg("sensor event disabled");
+		err("sensor event disabled");
 		return;
 	}
 	if (updated && !(s_info->assert & SAHPI_ES_STATE_01)) {
-		dbg("SAHPI_ES_STATE_01 disabled");
+		err("SAHPI_ES_STATE_01 disabled");
 		return;
 	}
 	if (!updated && !(s_info->assert & SAHPI_ES_STATE_00)) {
-		dbg("SAHPI_ES_STATE_00 disabled");
+		err("SAHPI_ES_STATE_00 disabled");
 		return;
 	}
         e = malloc(sizeof(*e));
         if (!e) {
-                dbg("Out of space");
+                err("Out of space");
                 return;
         }
 
@@ -1302,11 +1302,11 @@ static SaErrorT set_pwronseq_commit_status_sensor_event_enable(
 {
 
 	if (deassert != 0) {
-		dbg("deassert(0x%x) != 0", deassert);
+		err("deassert(0x%x) != 0", deassert);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	if ((assert & ~(SAHPI_ES_STATE_00 | SAHPI_ES_STATE_01))) {
-		dbg("assert(0x%x)", assert);
+		err("assert(0x%x)", assert);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	sinfo->assert = assert;
@@ -1372,12 +1372,12 @@ static SaHpiRdrT *create_fru_power_on_sequence_commit_status_sensor(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	s_info = malloc(sizeof (*s_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -1469,12 +1469,12 @@ static SaHpiRdrT *create_fru_power_on_sequence_control(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -1527,7 +1527,7 @@ static SaErrorT get_atca_fru_pwronseq_control_state(
 	}
 	if ((num < 0) || (num >= g_slist_length(
 				ipmi_handler->atca_pwonseq_desk))) {
-		dbg("wrong dsk number %d", num);
+		err("wrong dsk number %d", num);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -1536,7 +1536,7 @@ static SaErrorT get_atca_fru_pwronseq_control_state(
 	node = g_slist_nth(ipmi_handler->atca_pwonseq_desk, num);
 	if (node == NULL) {
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
-		dbg("No pw on descriptor #%d", num);
+		err("No pw on descriptor #%d", num);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	dsk = (ohoi_atca_pwonseq_dsk_t *)node->data;
@@ -1576,7 +1576,7 @@ static SaErrorT set_atca_fru_pwronseq_control_state(
 		return SA_OK;
 	}
 	if (state->Type != SAHPI_CTRL_TYPE_DISCRETE) {
-		dbg("wrong state type %d", state->Type);
+		err("wrong state type %d", state->Type);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	slotid = state->StateUnion.Discrete;
@@ -1585,13 +1585,13 @@ static SaErrorT set_atca_fru_pwronseq_control_state(
 	res_info = oh_get_resource_data(handler->rptcache,
 					ipmi_handler->atca_shelf_id);
 	if (res_info == NULL) {
-		dbg("No shelf resource info?");
+		err("No shelf resource info?");
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	if (res_info->fru == NULL) {
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
-		dbg("Shelf does not have IDR");
+		err("Shelf does not have IDR");
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	ctrl = &rdr->RdrTypeUnion.CtrlRec;
@@ -1611,7 +1611,7 @@ static SaErrorT set_atca_fru_pwronseq_control_state(
 	}
 	if (dscp == NULL) {
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
-		dbg("No descriptor for slotid %d", slotid);
+		err("No descriptor for slotid %d", slotid);
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -1696,12 +1696,12 @@ static SaHpiRdrT *create_fru_power_on_sequence_commit_control(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	c_info = malloc(sizeof (*c_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -1775,7 +1775,7 @@ static void write_power_on_sequence_data_cb(ipmi_entity_t *ent, void *cb_data)
 	rv = ipmi_fru_set_multi_record(fru, info->num, 0xC0, 0x0,
 							info->buf, info->len);
 	if (rv != 0) {
-		dbg("ipmi_fru_set_multi_record(fru, %d, 0xC0, 0x0, buf, %d)"
+		err("ipmi_fru_set_multi_record(fru, %d, 0xC0, 0x0, buf, %d)"
 			" = %d", info->num, info->len, rv);
 		info->rv = SA_ERR_HPI_INTERNAL_ERROR;
 	}
@@ -1808,7 +1808,7 @@ static SaErrorT set_atca_fru_pwronseq_commit_control_state(
 	value = state->StateUnion.Digital;
 
 	if (value != SAHPI_CTRL_STATE_PULSE_ON) {
-		dbg("wrong discrete value %d", value);
+		err("wrong discrete value %d", value);
 		return SA_ERR_HPI_INVALID_REQUEST;
 	}
 
@@ -1842,7 +1842,7 @@ static SaErrorT set_atca_fru_pwronseq_commit_control_state(
 		num += recp->head[6];
 	}
 	if (num != g_slist_length(ipmi_handler->atca_pwonseq_desk)) {
-		dbg("list length dismatched: %d != %d", num,
+		err("list length dismatched: %d != %d", num,
 				g_slist_length(ipmi_handler->atca_pwonseq_desk));
 		g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
 		return SA_ERR_HPI_INTERNAL_ERROR;
@@ -1864,7 +1864,7 @@ static SaErrorT set_atca_fru_pwronseq_commit_control_state(
 			dscp = (ohoi_atca_pwonseq_dsk_t *)g_slist_nth_data(
 				ipmi_handler->atca_pwonseq_desk, di);
 			if (dscp == NULL) {
-				dbg("No descrintor %d for record %d", j, i);
+				err("No descrintor %d for record %d", j, i);
 				g_static_rec_mutex_unlock(&ipmi_handler->ohoih_lock);
 				return SA_ERR_HPI_INTERNAL_ERROR;
 			}
@@ -1956,7 +1956,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	rpt = oh_get_resource_by_id(hnd->rptcache,
 				ipmi_handler->atca_shelf_id);
 	if (rpt == NULL) {
-		dbg("No rpt for atca chassis?");
+		err("No rpt for atca chassis?");
 		return;
 	}
 	res_info = oh_get_resource_data(hnd->rptcache,
@@ -1973,7 +1973,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 					rdr, c_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 	} else {
@@ -1985,7 +1985,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 					rdr, c_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 	} else {
@@ -1997,7 +1997,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 					rdr, c_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 	} else {
@@ -2009,7 +2009,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 					rdr, c_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(c_info);
 	} else {
@@ -2023,7 +2023,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 		dsk = (ohoi_atca_pwonseq_dsk_t *)g_slist_nth_data(
 				ipmi_handler->atca_pwonseq_desk, i);
 		if (dsk == NULL) {
-			dbg("no descriptor");
+			err("no descriptor");
 			continue;
 		}
 		ohoi_iterate_rptcache(hnd, assign_slotid_to_pwonseq, dsk);
@@ -2032,7 +2032,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 		if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 						    rdr, c_info, 1) != SA_OK)) {
-			dbg("couldn't add control rdr");
+			err("couldn't add control rdr");
 			free(rdr);
 			free(c_info);
 		} else {
@@ -2046,7 +2046,7 @@ void ohoi_atca_create_shelf_virtual_rdrs(struct oh_handler_state *hnd)
 	if (rdr != NULL && (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_shelf_id,
 					rdr, s_info, 1) != SA_OK)) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(rdr);
 		free(s_info);
 	} else {

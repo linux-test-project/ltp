@@ -1,4 +1,16 @@
-#! /bin/bash
+#! /bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          openhpid
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start OpenHPI daemon at boot time
+# Description:       Enable OpenHPI service which is provided by openhpid.
+### END INIT INFO
 #
 # openhpid.sh    Start/Stop the openhpi daemon.
 #
@@ -33,6 +45,10 @@ elif test -f /lib/lsb/init-functions
 then
    lsbtype="lsb"
    . /lib/lsb/init-functions
+elif test -f /etc/gentoo-release
+then
+   lsbtype="gentoo"
+   . /sbin/functions.sh
 else
    lsbtype="nolsb"
 fi
@@ -59,6 +75,10 @@ print_outcome()
 				log_failure_msg "failed"
    			fi
   			;;
+  		
+  		gentoo)
+  			eend $?
+  			;;
    
 		nolsb)
 			if test "$?" -eq 0
@@ -73,23 +93,31 @@ print_outcome()
    	esac
 }
 
-start() {
-	echo -n $"Starting $prog: "
+start() {	
 	case "${lsbtype}" in
 		
 		rh) 
+			echo -n $"Starting $prog: "
 			daemon @prefix@/sbin/openhpid -c @CONFPATH@/@HPI_PKG@.conf
 			RETVAL=$?
 			;;
 		suse)
+			echo -n $"Starting $prog: "
 			startproc @prefix@/sbin/openhpid -c @CONFPATH@/@HPI_PKG@.conf
 			RETVAL=$?
 			;;
 		lsb)
+			echo -n $"Starting $prog: "
 			start_daemon @prefix@/sbin/openhpid -c @CONFPATH@/@HPI_PKG@.conf
 			RETVAL=$?
 			;;
+		gentoo)
+			ebegin "Starting $prog: "
+			start-stop-daemon --start --quiet --exec @prefix@/sbin/openhpid -- -c @CONFPATH@/@HPI_PKG@.conf
+			RETVAL=$?
+			;;
 		nolsb)
+			echo -n $"Starting $prog: "
 			@prefix@/sbin/openhpid -c @CONFPATH@/@HPI_PKG@.conf
 			RETVAL=$?
 			;;
@@ -100,17 +128,23 @@ start() {
 
 }
 
-stop() {
-	echo -n $"Stopping $prog: "
-	
+stop() {	
 	case "${lsbtype}" in
 		
 		rh | lsb | suse)
+			echo -n $"Stopping $prog: "
 			killproc @prefix@/sbin/openhpid
 			RETVAL=$?
 			;;
 		
+		gentoo)
+			ebegin "Stopping $prog: "
+			start-stop-daemon --stop --quiet --exec @prefix@/sbin/openhpid
+			RETVAL=$?
+			;;
+		
 		nolsb)
+			echo -n $"Stopping $prog: "
 			if test -f /var/run/openhpid.pid && test "`cat /var/run/openhpid.pid`" != ""
          		then
             			kill "`cat /var/run/openhpid.pid`"
@@ -153,7 +187,7 @@ dstatus() {
 				log_success_msg "$prog is not running"	
 			fi	
 			;;
-		nolsb)
+		gentoo | nolsb)
 			if test -f /var/run/openhpid.pid && 
 				test "`cat /var/run/openhpid.pid`" != "" && 
 				kill -0 "`cat /var/run/openhpid.pid`"
@@ -176,7 +210,7 @@ restart() {
 	start
 }	
 
-force-reload() {
+force_reload() {
 	echo -n $"Force-reload not supported."
 	echo
 	return 0
@@ -198,7 +232,7 @@ case "$1" in
   	dstatus
 	;;
   force-reload)
-  	force-reload
+  	force_reload
 	;;
   *)
 	echo $"Usage: $0 {start|stop|restart|status|force-reload}"

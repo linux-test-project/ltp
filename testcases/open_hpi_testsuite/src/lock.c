@@ -18,7 +18,6 @@
 int oh_will_block = 0;
 int lockcount = 0;
 
-#ifdef HAVE_THREAD_SAFE
 /* multi-threading support, use Posix mutex for data access */
 /* initialize mutex used for data locking */
 #include <glib/gthread.h>
@@ -30,10 +29,3 @@ int data_access_block_times(void)
         return(oh_will_block);
 }
 
-#else
-
-GStaticRecMutex oh_main_lock = NULL;
-
-int data_access_block_times(void){ return(0);}
-
-#endif/*HAVE_THREAD_SAFE*/

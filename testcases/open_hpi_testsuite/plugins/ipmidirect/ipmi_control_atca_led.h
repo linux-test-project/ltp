@@ -32,8 +32,7 @@ protected:
   unsigned char m_led_local_color;
   unsigned char m_led_default_override_color;
   unsigned char m_led_override_color;
-  bool m_set_led_lamp_state_supported;
-  bool m_set_led_override_state_supported;
+  bool m_set_led_state_supported;
 
 public:
   cIpmiControlAtcaLed( cIpmiMc *mc,

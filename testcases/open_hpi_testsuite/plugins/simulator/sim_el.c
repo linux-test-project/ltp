@@ -23,7 +23,7 @@ SaErrorT sim_el_get_info(void *hnd, SaHpiResourceIdT id,
         struct oh_handler_state *state;
 
         if (!hnd || !info) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
 	}
         state = (struct oh_handler_state *)hnd;
@@ -62,14 +62,14 @@ SaErrorT sim_el_set_time(void *hnd, SaHpiResourceIdT id, SaHpiTimeT time)
         SaErrorT err;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 	
         state = (struct oh_handler_state *)hnd;
 	err = oh_el_timeset(state->elcache, time);
         if (err) {
-		dbg("Cannot set time. Error=%s.", oh_lookup_error(err));
+		err("Cannot set time. Error=%s.", oh_lookup_error(err));
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -83,7 +83,7 @@ SaErrorT sim_el_add_entry(void *hnd, SaHpiResourceIdT id,
         struct oh_handler_state *state;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
         state = (struct oh_handler_state *)hnd;
@@ -106,14 +106,14 @@ SaErrorT sim_el_get_entry(void *hnd, SaHpiResourceIdT id,
         struct oh_handler_state *state;
 
         if (!hnd || !prev || !next || !entry) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
         state = (struct oh_handler_state *)hnd;
 
         err = oh_el_get(state->elcache, current, prev, next, &tmpentryptr);
         if (err) {
-                dbg("Getting Event Log entry=%d from cache failed. Error=%s.",
+                err("Getting Event Log entry=%d from cache failed. Error=%s.",
                     current, oh_lookup_error(err));
                 return err;
         } else {
@@ -136,14 +136,14 @@ SaErrorT sim_el_clear(void *hnd, SaHpiResourceIdT id)
 	SaErrorT err;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
         state = (struct oh_handler_state *)hnd;
 
 	err = oh_el_clear(state->elcache);
 	if (err) {
-		dbg("Cannot clear system Event Log. Error=%s.",
+		err("Cannot clear system Event Log. Error=%s.",
                     oh_lookup_error(err));
 		return err;
 	}
@@ -157,7 +157,7 @@ SaErrorT sim_el_overflow(void *hnd, SaHpiResourceIdT id)
         struct oh_handler_state *state;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
         state = (struct oh_handler_state *)hnd;

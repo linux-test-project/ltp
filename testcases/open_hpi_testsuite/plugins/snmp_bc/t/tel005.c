@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 	SaErrorT expected_err;
 					
 	SaHpiResourceIdT  id = 0;
-        SaHpiSessionIdT sessionid;
 	SaHpiEventLogEntryIdT current = 0;
 	SaHpiEventLogEntryIdT previd;
 	SaHpiEventLogEntryIdT nextid;
@@ -79,10 +78,6 @@ int main(int argc, char **argv)
 		       	          &previd, &nextid, &entry, &rdr, &rptentry);
 	checkstatus(err, expected_err, testfail);
 
-	/***************************
-	 * Cleanup after all tests
-	 ***************************/
-	err = tcleanup(&sessionid);
 	return testfail;
 
 }

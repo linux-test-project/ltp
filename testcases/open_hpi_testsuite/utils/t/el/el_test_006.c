@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
         	retc = oh_el_append(el, &event, NULL, NULL);
         	if (retc != SA_OK) {
-              	  dbg("ERROR: oh_el_append failed.");
+              	  err("ERROR: oh_el_append failed.");
                	  return 1;
         	}       
 	}
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         /* save the EL to file */
         retc1 = oh_el_map_to_file(el, "./elTest.data");
         if (retc1 != SA_OK) {
-                dbg("ERROR: oh_el_map_to_file failed.");
+                err("ERROR: oh_el_map_to_file failed.");
                 return 1;
         }
 
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         /* get EL from file (el2) */
         retc2 = oh_el_map_from_file(el2, "./elTest.data");
         if (retc2 != SA_OK) {
-                dbg("ERROR: oh_el_map_from_file failed.");
+                err("ERROR: oh_el_map_from_file failed.");
                 return 1;
         }
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
         	retc = oh_el_append(el, &event, NULL, NULL);
         	if (retc != SA_OK) {
-              	  dbg("ERROR: oh_el_append failed.");
+              	  err("ERROR: oh_el_append failed.");
                	  return 1;
         	}       
 	}
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
         	retc = oh_el_append(el2, &event, NULL, NULL);
         	if (retc != SA_OK) {
-              	  dbg("ERROR: oh_el_append failed.");
+              	  err("ERROR: oh_el_append failed.");
                	  return 1;
         	}       
 	}
@@ -128,33 +128,33 @@ int main(int argc, char **argv)
 
 	/* verify number of entries in el and el2 is 10 */
         if(g_list_length(el->list) != 10) {
-                 dbg("ERROR: el->list does not have the correct number of entries");
+                 err("ERROR: el->list does not have the correct number of entries");
                  return 1;
          }
 
         if(g_list_length(el2->list) != 10) {
-                 dbg("ERROR: el2->list does not have the correct number of entries");
+                 err("ERROR: el2->list does not have the correct number of entries");
                  return 1;
          }
  
 	/* compare entry contents of el and el2 */
 	retc = el_compare(el,el2);
 	if (retc != SA_OK){
-  		dbg("ERROR: el and el2 do not have matching entries.");
+  		err("ERROR: el and el2 do not have matching entries.");
 		return 1;
 	}
 
         /* close el */
         retc1 = oh_el_close(el);
         if (retc1 != SA_OK) {
-                dbg("ERROR: oh_el_close on el failed.");
+                err("ERROR: oh_el_close on el failed.");
                 return 1;
         }
 
         /* close el2 */
         retc2 = oh_el_close(el2);
         if (retc2 != SA_OK) {
-                dbg("ERROR: oh_el_close on el2 failed.");
+                err("ERROR: oh_el_close on el2 failed.");
                 return 1;
         }
 

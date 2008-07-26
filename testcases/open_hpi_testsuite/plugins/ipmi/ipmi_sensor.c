@@ -72,16 +72,16 @@ static int ignore_sensor(ipmi_sensor_t *sensor)
         ipmi_entity_t *ent;
 
         if (ipmi_sensor_get_ignore_if_no_entity(sensor)) {
-		dbg("ignore if no entity");
+		err("ignore if no entity");
                 return 0;
 	}
         ent = ipmi_sensor_get_entity(sensor);
 	if (ent == NULL) {
-		dbg("ipmi_sensor_get_entity = NULL");
+		err("ipmi_sensor_get_entity = NULL");
 		return 1;
 	}
         if (!ipmi_entity_is_present(ent)) {
-		dbg("!ipmi_entity_is_present. (%d,%d,%d,%d) %s",
+		err("!ipmi_entity_is_present. (%d,%d,%d,%d) %s",
 		ipmi_entity_get_entity_id(ent), 
 		ipmi_entity_get_entity_instance(ent),
 		ipmi_entity_get_device_channel(ent),
@@ -122,7 +122,7 @@ static void sensor_read_states(ipmi_sensor_t *sensor,
 
 	p->done = 1;
 	if (err) {
-		dbg("sensor reading state error");
+		err("sensor reading state error");
 		p->rvalue = SA_ERR_HPI_INTERNAL_ERROR;
 		return;
 	}
@@ -145,7 +145,7 @@ static void sensor_reading(ipmi_sensor_t		*sensor,
 
 	if (err) {
 		OHOI_MAP_ERROR(p->rvalue, err);
-		dbg("sensor reading error");
+		err("sensor reading error");
 		p->rvalue = SA_ERR_HPI_INTERNAL_ERROR;
 		return;
 	}
@@ -161,7 +161,7 @@ static void sensor_reading(ipmi_sensor_t		*sensor,
 		p->reading.Type = SAHPI_SENSOR_READING_TYPE_FLOAT64;
 		p->reading.Value.SensorFloat64 = raw_val;
 	} else {
-		dbg("value present = 0x%x", value_present);
+		err("value present = 0x%x", value_present);
 	}
 	// always returns 1 in 7th bit. Ignore extra 1
 	p->ev_state = retrieve_states(states) &
@@ -180,7 +180,7 @@ static void get_sensor_reading(ipmi_sensor_t *sensor, void *cb_data)
 	if (ignore_sensor(sensor)) {
 		reading_data->done = 1;
 		reading_data->rvalue = SA_ERR_HPI_NOT_PRESENT;
-		dbg("Sensor is not present, ignored");
+		err("Sensor is not present, ignored");
 		return;
 	}
 
@@ -191,7 +191,7 @@ static void get_sensor_reading(ipmi_sensor_t *sensor, void *cb_data)
 		if (rv) {
 			reading_data->done = 1;
 			reading_data->rvalue = SA_ERR_HPI_INVALID_REQUEST;
-			dbg("Unable to get sensor reading: 0x%x", rv);
+			err("Unable to get sensor reading: 0x%x", rv);
 				
 		}
 		return;
@@ -200,7 +200,7 @@ static void get_sensor_reading(ipmi_sensor_t *sensor, void *cb_data)
 	if (rv) {
 		reading_data->done = 1;
 		reading_data->rvalue = SA_ERR_HPI_INVALID_REQUEST;
-		dbg("Unable to get sensor reading states: 0x%x", rv);
+		err("Unable to get sensor reading states: 0x%x", rv);
 	}
 
 }
@@ -225,7 +225,7 @@ SaErrorT orig_get_sensor_reading(struct oh_handler_state *handler,
 				    get_sensor_reading,
 				    &reading_data);
 	if (rv) {
-		dbg("Unable to convert sensor_id to pointer");
+		err("Unable to convert sensor_id to pointer");
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 
@@ -294,7 +294,7 @@ static void thresholds_read(ipmi_sensor_t	*sensor,
 	if (err) {
 		OHOI_MAP_ERROR(p->rvalue, err);
 		p->thres_done = 1;
-		dbg("sensor thresholds reading error");
+		err("sensor thresholds reading error");
 		return;
 	}
 	
@@ -320,7 +320,7 @@ static SaErrorT get_thresholds(ipmi_sensor_t	*sensor,
 
 	rv = ipmi_sensor_get_thresholds(sensor, thresholds_read, thres_data);
 	if (rv) 
-		dbg("Unable to get sensor thresholds: 0x%x\n", rv);
+		err("Unable to get sensor thresholds: 0x%x\n", rv);
 	return (rv? SA_ERR_HPI_INVALID_CMD : SA_OK);
 }
 
@@ -335,7 +335,7 @@ static void hysteresis_read(ipmi_sensor_t	*sensor,
 	if (err) {
 		p->rvalue = SA_ERR_HPI_INTERNAL_ERROR;
 		p->hyster_done = 1;
-		dbg("sensor hysteresis reading error");
+		err("sensor hysteresis reading error");
 		return;		
 	}
 
@@ -360,7 +360,7 @@ static SaErrorT get_hysteresis(ipmi_sensor_t			*sensor,
 	
 	rv = ipmi_sensor_get_hysteresis(sensor, hysteresis_read, thres_data);
         if (rv)
-                dbg("Unable to get sensor hysteresis: 0x%x\n", rv);
+                err("Unable to get sensor hysteresis: 0x%x\n", rv);
         
 	return (rv? SA_ERR_HPI_INVALID_CMD : SA_OK);
 
@@ -378,13 +378,13 @@ static void get_sensor_thresholds(ipmi_sensor_t *sensor,
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_NOT_PRESENT;
-                dbg("ENTITY_NOT_PRESENT");
+                err("ENTITY_NOT_PRESENT");
 		return;
 	}	
 
 	if (ipmi_sensor_get_event_reading_type(sensor) !=
 			IPMI_EVENT_READING_TYPE_THRESHOLD) {
-		dbg("Not threshold sensor!");
+		err("Not threshold sensor!");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_INVALID_CMD;
@@ -392,8 +392,8 @@ static void get_sensor_thresholds(ipmi_sensor_t *sensor,
 	}
 	if (ipmi_sensor_get_threshold_access(sensor) ==
 				IPMI_THRESHOLD_ACCESS_SUPPORT_NONE) {
-		dbg("sensor doesn't support threshold read");
-			dbg("Unable to get sensor thresholds");
+		err("sensor doesn't support threshold read");
+			err("Unable to get sensor thresholds");
 			thres_data->hyster_done = 1;
 			thres_data->thres_done = 1;
 			thres_data->rvalue = SA_ERR_HPI_INVALID_CMD;
@@ -401,7 +401,7 @@ static void get_sensor_thresholds(ipmi_sensor_t *sensor,
 	}
 	rv = get_thresholds(sensor, thres_data);
 	if (rv != SA_OK) {
-		dbg("Unable to get sensor thresholds");
+		err("Unable to get sensor thresholds");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = rv;
@@ -422,7 +422,7 @@ static void get_sensor_thresholds(ipmi_sensor_t *sensor,
 	} 
 	rv = get_hysteresis(sensor, thres_data);
 	if (rv != SA_OK) {
-		dbg("failed to get hysteresis");
+		err("failed to get hysteresis");
 		thres_data->hyster_done = 1;
 //		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_INTERNAL_ERROR;
@@ -459,7 +459,7 @@ SaErrorT orig_get_sensor_thresholds(struct oh_handler_state *handler,
                                     get_sensor_thresholds,
                                     &thres_data);
         if (rv) {
-                dbg("Unable to convert sensor id into pointer");
+                err("Unable to convert sensor id into pointer");
 		return SA_ERR_HPI_INVALID_CMD;
         }
 
@@ -501,7 +501,7 @@ static void thres_set_data(ipmi_sensor_t *sensor, int err, void *cb_data)
 {
 	struct ohoi_sensor_thresholds *info = cb_data;
 	if (err) {
-		dbg("err = 0x%x", err);
+		err("err = 0x%x", err);
 		if (info->rvalue == SA_OK) {
 			OHOI_MAP_ERROR(info->rvalue, err);
 		}
@@ -514,7 +514,7 @@ static void hys_set_data(ipmi_sensor_t *sensor, int err, void *cb_data)
 {
 	struct ohoi_sensor_thresholds *info = cb_data;
 	if (err) {
-		dbg("err = 0x%x", err);
+		err("err = 0x%x", err);
 		if (info->rvalue == SA_OK) {
 			OHOI_MAP_ERROR(info->rvalue, err);
 		}
@@ -536,11 +536,11 @@ static SaErrorT thres_cpy(ipmi_sensor_t			*sensor,
 		return SA_OK;
 	}
 	if ((rv = ipmi_sensor_threshold_settable(sensor, event, &val))) {
-		dbg("ipmi_sensor_threshold_settable error = %d", rv);
+		err("ipmi_sensor_threshold_settable error = %d", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 	if (!val) {
-		dbg("ipmi threshold 0x%x isn't settable", event);
+		err("ipmi threshold 0x%x isn't settable", event);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	
@@ -607,14 +607,14 @@ static SaErrorT set_thresholds(ipmi_sensor_t                 *sensor,
 
 	rv = init_thresholeds_info(sensor, &thres_data->sensor_thres, info);
 	if (rv != SA_OK) {
-		dbg("Unable to init sensor thresholds: 0x%x\n", rv);
+		err("Unable to init sensor thresholds: 0x%x\n", rv);
 		return rv;
 	}
 
 	rv = ipmi_sensor_set_thresholds(sensor, info, thres_set_data, 
                                  thres_data);
 	if (rv) {
-		dbg("Unable to set sensor thresholds: 0x%x\n", rv);
+		err("Unable to set sensor thresholds: 0x%x\n", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -642,7 +642,7 @@ static SaErrorT set_hysteresis(ipmi_sensor_t	                *sensor,
                         pos = pos_reading.Value.SensorFloat64;
                         break;
                 case SAHPI_SENSOR_READING_TYPE_BUFFER:
-                        dbg("ipmi sensor doesn't support this type of reading");
+                        err("ipmi sensor doesn't support this type of reading");
                         return SA_ERR_HPI_INVALID_DATA;   
         }
 	
@@ -657,7 +657,7 @@ static SaErrorT set_hysteresis(ipmi_sensor_t	                *sensor,
                         neg = neg_reading.Value.SensorFloat64;
                         break;
                 case SAHPI_SENSOR_READING_TYPE_BUFFER:
-                        dbg("ipmi sensor doesn't support this type of reading");
+                        err("ipmi sensor doesn't support this type of reading");
                         return SA_ERR_HPI_INVALID_DATA;
         }
 
@@ -665,7 +665,7 @@ static SaErrorT set_hysteresis(ipmi_sensor_t	                *sensor,
 	rv = ipmi_sensor_set_hysteresis(sensor, pos, neg, hys_set_data, 
                                         thres_data);
 	if (rv) {
-		dbg("Unable to set sensor hysteresis: 0x%x\n", rv);
+		err("Unable to set sensor hysteresis: 0x%x\n", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -680,7 +680,7 @@ static void set_sensor_thresholds(ipmi_sensor_t *sensor,
 
 	thres_data = cb_data;
 	if (ignore_sensor(sensor)) {
-		dbg("sensor is ignored");
+		err("sensor is ignored");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_NOT_PRESENT;
@@ -689,7 +689,7 @@ static void set_sensor_thresholds(ipmi_sensor_t *sensor,
 
 	if (ipmi_sensor_get_event_reading_type(sensor) !=
 			IPMI_EVENT_READING_TYPE_THRESHOLD) {
-		dbg("Not threshold sensor!");
+		err("Not threshold sensor!");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_INVALID_CMD;
@@ -700,7 +700,7 @@ static void set_sensor_thresholds(ipmi_sensor_t *sensor,
 				IPMI_THRESHOLD_ACCESS_SUPPORT_SETTABLE) ||
 			(ipmi_sensor_get_hysteresis_support(sensor) !=
 					IPMI_HYSTERESIS_SUPPORT_SETTABLE)) {
-		dbg("sensor doesn't support threshold or histeresis set");
+		err("sensor doesn't support threshold or histeresis set");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = SA_ERR_HPI_INVALID_CMD;
@@ -708,7 +708,7 @@ static void set_sensor_thresholds(ipmi_sensor_t *sensor,
 	}
 	rv = set_thresholds(sensor, thres_data);
 	if (rv != SA_OK) {
-		dbg("Unable to set thresholds");
+		err("Unable to set thresholds");
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = rv;
@@ -720,7 +720,7 @@ static void set_sensor_thresholds(ipmi_sensor_t *sensor,
 		thres_data->hyster_done = 1;
 		thres_data->thres_done = 1;
 		thres_data->rvalue = rv;
-		dbg("Unable to set hysteresis");
+		err("Unable to set hysteresis");
 		return;
 	}
 	return;
@@ -741,7 +741,7 @@ SaErrorT orig_set_sensor_thresholds(struct oh_handler_state *handler,
 	memset(&thres_data, 0, sizeof(thres_data));
 	thres_data.thrhlds = malloc(ipmi_thresholds_size()); 
 	if (thres_data.thrhlds == NULL) {
-		dbg("could not alloc memory");
+		err("could not alloc memory");
 		return SA_ERR_HPI_OUT_OF_MEMORY;
 	}
        
@@ -752,7 +752,7 @@ SaErrorT orig_set_sensor_thresholds(struct oh_handler_state *handler,
 				    &thres_data);
 		
         if (rv) {
-		dbg("Unable to convert sensor_id to pointer");
+		err("Unable to convert sensor_id to pointer");
 		free(thres_data.thrhlds);
                 return SA_ERR_HPI_INVALID_CMD;
 	}
@@ -807,7 +807,7 @@ int ohoi_set_sensor_enable(ipmi_sensor_id_t sensor_id,
 				    set_sensor_enable,
 		  		    &enable);
 	if (rv) {
-		dbg("Unable to convert sensor_id to pointer");
+		err("Unable to convert sensor_id to pointer");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 	return SA_OK;
@@ -984,7 +984,7 @@ static void event_enable_masks_read(ipmi_sensor_t	*sensor,
 	p->done = 1;
 
 	if (err) {
-		dbg("Sensor event enable reading error 0x%x", err);
+		err("Sensor event enable reading error 0x%x", err);
 			OHOI_MAP_ERROR(p->rvalue, err);
 		return;
 	}
@@ -1008,7 +1008,7 @@ static void get_sensor_event_enable_masks(ipmi_sensor_t *sensor,
         enable_data = cb_data;
 
 	if (ignore_sensor(sensor)) {
-		dbg("sensor is ignored");
+		err("sensor is ignored");
 		enable_data->done = 1;
 		enable_data->rvalue = SA_ERR_HPI_NOT_PRESENT;
 		return;
@@ -1021,12 +1021,12 @@ static void get_sensor_event_enable_masks(ipmi_sensor_t *sensor,
 		rv = ipmi_sensor_get_event_enables(sensor,
 				event_enable_masks_read, enable_data);
 		if (rv) {
-			dbg("Unable to sensor event enable: 0x%x\n", rv);
+			err("Unable to sensor event enable: 0x%x\n", rv);
 			enable_data->rvalue = SA_ERR_HPI_INTERNAL_ERROR;
 			return;
 		}
 	} else {
-                dbg("Sensor do not support event");
+                err("Sensor do not support event");
 		enable_data->assert = 0;
 		enable_data->deassert = 0;
 		enable_data->enable = SAHPI_FALSE;
@@ -1241,7 +1241,7 @@ static void mask_set_data(ipmi_sensor_t *sensor, int err, void *cb_data)
 {
 	struct ohoi_sensor_event_enable_masks *info = cb_data;
 	if (err) {
-		dbg("err = 0x%x", err);
+		err("err = 0x%x", err);
 		info->rvalue = SA_ERR_HPI_INVALID_CMD;
 	}
 	info->done = 1;
@@ -1255,7 +1255,7 @@ static void set_sensor_event_enable_masks(ipmi_sensor_t      *sensor,
 	ipmi_event_state_t	*info = enable_data->states;
 
 	if (ignore_sensor(sensor)) {
-		dbg("sensor is ignored");
+		err("sensor is ignored");
 		enable_data->done = 1;
 		enable_data->rvalue = SA_ERR_HPI_NOT_PRESENT;
 		return;
@@ -1267,7 +1267,7 @@ static void set_sensor_event_enable_masks(ipmi_sensor_t      *sensor,
 	if (insert_events_to_ipmi_event_state(sensor, info,
 			enable_data->assert, enable_data->deassert,
 			enable_data->a_support, enable_data->d_support)) {
-		dbg("Attempt to set not supported event 0x%x/0x%x",
+		err("Attempt to set not supported event 0x%x/0x%x",
 			enable_data->assert, enable_data->deassert);
 		enable_data->done = 1;
 		enable_data->rvalue = SA_ERR_HPI_INVALID_DATA;
@@ -1278,7 +1278,7 @@ static void set_sensor_event_enable_masks(ipmi_sensor_t      *sensor,
 	rv = ipmi_sensor_set_event_enables(sensor, info, mask_set_data,
 					   enable_data);
 	if (rv) {
-		dbg("Unable to sensor event enable = %d", rv);
+		err("Unable to sensor event enable = %d", rv);
 		enable_data->done = 1;
 		if (rv == EINVAL) {
 			// invalid event in mask for this sensor */
@@ -1309,7 +1309,7 @@ SaErrorT orig_get_sensor_event_enable(struct oh_handler_state *handler,
 				    get_sensor_event_enable_masks,
 				    &enable_data);
         if (rv) {
-		dbg("Unable to convert sensor_id to pointer");
+		err("Unable to convert sensor_id to pointer");
                 return SA_ERR_HPI_INVALID_CMD;
         }
         
@@ -1365,7 +1365,7 @@ SaErrorT orig_set_sensor_event_enable(struct oh_handler_state *handler,
 	memset(&enable_data, 0, sizeof(enable_data));
 	enable_data.states = malloc(ipmi_event_state_size());
 	if (enable_data.states == NULL) {
-		dbg("out of memory");
+		err("out of memory");
 		return SA_ERR_HPI_OUT_OF_MEMORY;
 	}
 	enable_data.enable = enable;
@@ -1377,7 +1377,7 @@ SaErrorT orig_set_sensor_event_enable(struct oh_handler_state *handler,
 				    set_sensor_event_enable_masks,
 		  		    &enable_data);
 	if (rv) {
-		dbg("Unable to convert sensor_id to pointer");
+		err("Unable to convert sensor_id to pointer");
 		free(enable_data.states);
 		return SA_ERR_HPI_INVALID_CMD;
 	}       

@@ -44,21 +44,21 @@ void ohoi_send_vshmgr_redundancy_sensor_event(
 		SAHPI_SENSOR_RDR, ATCAHPI_SENSOR_NUM_SHMGR_REDUNDANCY,
                 (void *)&s_info);
 	if (rv != SA_OK) {
-		dbg("could not get sensor info");
+		err("could not get sensor info");
 		return;
 	}
 
 	if (s_info == NULL) {
-		dbg("could not get sensor info");
+		err("could not get sensor info");
 		return;
 	}
 	if (s_info->sen_enabled == SAHPI_FALSE) {
-		dbg("sensor disabled");
+		err("sensor disabled");
 		return;
 	}
 	if (!s_info->info.atcamap_sensor_info.val) {
 		// sensor event disable
-		dbg("sensor event disabled");
+		err("sensor event disabled");
 		return;
 	}
 	num = ipmi_handler->shmc_present_num;
@@ -66,7 +66,7 @@ void ohoi_send_vshmgr_redundancy_sensor_event(
 	if (num == 1) {
 		if (!(s_info->assert &
 			SAHPI_ES_NON_REDUNDANT_SUFFICIENT_RESOURCES)) {
-			dbg("SAHPI_ES_NON_REDUNDANT_SUFFICIENT"
+			err("SAHPI_ES_NON_REDUNDANT_SUFFICIENT"
 				"_RESOURCES disabled");
 			return;
 		}
@@ -75,7 +75,7 @@ void ohoi_send_vshmgr_redundancy_sensor_event(
 	} else if (num == 0) {
 		if (!(s_info->assert &
 			SAHPI_ES_NON_REDUNDANT_INSUFFICIENT_RESOURCES)) {
-			dbg("SAHPI_ES_NON_REDUNDANT_INSUFFICIENT"
+			err("SAHPI_ES_NON_REDUNDANT_INSUFFICIENT"
 				"_RESOURCES disabled");
 			return;
 		}
@@ -83,24 +83,24 @@ void ohoi_send_vshmgr_redundancy_sensor_event(
 		prev = SAHPI_ES_NON_REDUNDANT_SUFFICIENT_RESOURCES;
 	} else if (num >= 2) {
 		if (!become_present) {
-			dbg("redunduncy not changed");
+			err("redunduncy not changed");
 			return;
 		}
 		if (!(s_info->assert & SAHPI_ES_FULLY_REDUNDANT)) {
-			dbg("SAHPI_ES_FULLY_REDUNDANT disabled");
+			err("SAHPI_ES_FULLY_REDUNDANT disabled");
 			return;
 		}
 		cur = SAHPI_ES_FULLY_REDUNDANT;
 		prev = SAHPI_ES_NON_REDUNDANT_SUFFICIENT_RESOURCES;
 	} else {
-		dbg("Internal error. Negative "
+		err("Internal error. Negative "
 			"ipmi_handler->shmc_present_num = %d", num);
 		return;
 	}
 
         e = malloc(sizeof(*e));
         if (!e) {
-                dbg("Out of space");
+                err("Out of space");
                 return;
         }
 
@@ -154,13 +154,13 @@ static SaErrorT set_vshmgr_redundancy_sensor_event_enable(
 {
 
 	if (deassert != 0) {
-		dbg("deassert(0x%x) != 0", deassert);
+		err("deassert(0x%x) != 0", deassert);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	if ((assert & ~(SAHPI_ES_FULLY_REDUNDANT |
 			SAHPI_ES_NON_REDUNDANT_SUFFICIENT_RESOURCES |
 			 SAHPI_ES_NON_REDUNDANT_INSUFFICIENT_RESOURCES))) {
-		dbg("assert(0x%x)", assert);
+		err("assert(0x%x)", assert);
 		return SA_ERR_HPI_INVALID_DATA;
 	}
 	sinfo->assert = assert;
@@ -231,12 +231,12 @@ static SaHpiRdrT *create_vshmgr_redundancy_sensor(
 
 	rdr = malloc(sizeof (*rdr));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	s_info = malloc(sizeof (*s_info));
 	if (rdr == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(rdr);
 		return NULL;
 	}
@@ -313,7 +313,7 @@ void create_atca_virt_shmgr_rdrs(struct oh_handler_state *hnd)
 	rpt = oh_get_resource_by_id(hnd->rptcache,
 				ipmi_handler->atca_vshm_id);
 	if (rpt == NULL) {
-		dbg("No rpt for atca chassis?");
+		err("No rpt for atca chassis?");
 		return;
 	}
 	res_info = oh_get_resource_data(hnd->rptcache,
@@ -327,7 +327,7 @@ void create_atca_virt_shmgr_rdrs(struct oh_handler_state *hnd)
 		if (oh_add_rdr(hnd->rptcache,
 					ipmi_handler->atca_vshm_id,
 					rdr, s_info, 1) != SA_OK) {
-			dbg("couldn't add control rdr");
+			err("couldn't add control rdr");
 			free(rdr);
 			free(s_info);
 		}

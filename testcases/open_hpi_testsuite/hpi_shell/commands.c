@@ -178,9 +178,9 @@ static ret_code_t debugset(void)
         if (debug_flag) printf("debugset:\n");
         term = get_next_term();
         if (term == NULL) {
-                val = getenv("OPENHPI_DEBUG");
+                val = getenv("OPENHPI_ERROR");
                 if (val == (char *)NULL) val = "NO";
-                printf("OPENHPI_DEBUG=%s\n", val);
+                printf("OPENHPI_ERROR=%s\n", val);
                 return(HPI_SHELL_OK);
         };
         if (strcmp(term->term, "on") == 0)
@@ -189,7 +189,7 @@ static ret_code_t debugset(void)
                 val = "NO";
         else
                 return HPI_SHELL_PARM_ERROR;
-        setenv("OPENHPI_DEBUG", val, 1);
+        setenv("OPENHPI_ERROR", val, 1);
 
         return HPI_SHELL_OK;
 }
@@ -746,15 +746,15 @@ static ret_code_t show_rdr(void)
         term = get_next_term();
         if (term == NULL) {
                 if (read_file) return(HPI_SHELL_CMD_ERROR);
-                i = get_string_param("RDR Type (s|a|c|w|i|d|f|all) ==> ",
+                i = get_string_param("RDR Type (s|a|c|w|i|d|f) ==> ",
                         buf, 9);
-                if (i != 0) return HPI_SHELL_PARM_ERROR;
+                if (i != 0 || strnlen(buf, 3) > 1)
+			return HPI_SHELL_PARM_ERROR;
         } else {
                 memset(buf, 0, 10);
                 strncpy(buf, term->term, 3);
         };
-        if (strncmp(buf, "all", 3) == 0) t = 'n';
-        else t = *buf;
+        t = *buf;
         if (t == 'c') type = SAHPI_CTRL_RDR;
         else if (t == 's') type = SAHPI_SENSOR_RDR;
         else if (t == 'i') type = SAHPI_INVENTORY_RDR;
@@ -762,15 +762,12 @@ static ret_code_t show_rdr(void)
         else if (t == 'a') type = SAHPI_ANNUNCIATOR_RDR;
         else if (t == 'd') type = SAHPI_DIMI_RDR;
         else if (t == 'f') type = SAHPI_FUMI_RDR;
-        else type = SAHPI_NO_RECORD;
+        else return HPI_SHELL_PARM_ERROR;
         ret = ask_rdr(rptid, type, &rdrnum);
         if (ret != HPI_SHELL_OK) return(ret);
-        if (type == SAHPI_NO_RECORD)
-                rv = find_rdr_by_num(Domain->sessionId, rptid,
-                        rdrnum, type, 0, &rdr_entry);
-        else
-                rv = saHpiRdrGetByInstrumentId(Domain->sessionId,
-                        rptid, type, rdrnum, &rdr_entry);
+
+	rv = saHpiRdrGetByInstrumentId(Domain->sessionId,
+		rptid, type, rdrnum, &rdr_entry);
         if (rv != SA_OK) {
                 printf("ERROR!!! Get rdr: ResourceId=%d RdrType=%d"
                         "RdrNum=%d: %s\n",
@@ -1063,6 +1060,36 @@ static ret_code_t quit(void)
         exit(0);
 }
 
+static ret_code_t reopen_session(void)
+{
+        int              eflag = 0, fflag = 0;
+        term_def_t      *term;
+        SaErrorT         rv;
+   
+        term = get_next_term();
+        while (term != NULL) {
+                if (strcmp(term->term, "force") == 0) {
+                        fflag = 1;
+                } else {
+                        printf("Invalid argument: %s\n", term->term);
+                        return(HPI_SHELL_PARM_ERROR);
+                };
+                term = get_next_term();
+        };
+        do {
+           rv = saHpiSessionClose(Domain->sessionId);
+           sleep( 1 );
+        } while ( fflag == 0 && rv != SA_OK && rv != SA_ERR_HPI_NO_RESPONSE );
+        if (rv != SA_OK) {
+                printf("saHpiSessionClose error %s\n", oh_lookup_error(rv));
+        }
+        if (open_session(eflag) != 0) {
+                printf("Can not open session\n");
+                return(HPI_SHELL_CMD_ERROR);
+        }
+        return(HPI_SHELL_OK);
+}
+
 static ret_code_t run(void)
 {
         term_def_t      *term;
@@ -1252,7 +1279,7 @@ const char dathelp[] = "dat: domain alarm table list\n"
 const char dimiblockhelp[] = "dimi: DIMI command block\n"
                         "Usage: dimi [<DimiId>]\n"
                         "       DimiId:: <resourceId> <DimiNum>\n";
-const char debughelp[] = "debug: set or unset OPENHPI_DEBUG environment\n"
+const char debughelp[] = "debug: set or unset OPENHPI_ERROR environment\n"
                         "Usage: debug [ on | off ]";
 const char domainhelp[] = "domain: show domain list and set current domain\n"
                         "Usage: domain [<domain id>]";
@@ -1303,6 +1330,9 @@ const char quithelp[] = "quit: close session and quit console\n"
                         "Usage: quit";
 const char resethelp[] = "reset: perform specified reset on the entity\n"
                         "Usage: reset <resource id> [cold|warm|assert|deassert]";
+const char reopenhelp[] = "reopen: reopens session\n"
+                        "Usage: reopen [force]\n"
+                          "force flag skips old session closing check";
 const char runhelp[] = "run: execute command file\n"
                         "Usage: run <file name>";
 const char senhelp[] =  "sen: sensor command block\n"
@@ -1322,7 +1352,7 @@ const char showrdrhelp[] = "showrdr: show resource data record\n"
                         "Usage: showrdr [<resource id> [type [<rdr num>]]]\n"
                         "   or  rdr [<resource id> [type [<rdr num>]]]\n"
                         "       type =  c - control rdr, s - sensor, i - inventory rdr\n"
-                        "               w - watchdog, a - annunciator, all - all rdr";
+                        "               w - watchdog, a - annunciator";
 const char showrpthelp[] = "showrpt: show resource information\n"
                         "Usage: showrpt [<resource id>]\n"
                         "   or  rpt [<resource id>]";
@@ -1361,7 +1391,7 @@ const char inv_delfhelp[] = "delfield: delete inventory field\n"
 const char inv_setfhelp[] = "setfield: set inventory field\n"
                         "Usage: setfield";
 const char inv_showhelp[] = "show: show inventory\n"
-                        "Usage: show";
+                        "Usage: show [<area id>]";
 //  control command block
 const char ctrl_setsthelp[] = "setstate: set control state\n"
                         "Usage: setstate <values>";
@@ -1477,6 +1507,7 @@ command_def_t commands[] = {
     { "power",          power,          powerhelp,      MAIN_COM },
     { "quit",           quit,           quithelp,       UNDEF_COM },
     { "rdr",            show_rdr,       showrdrhelp,    MAIN_COM },
+    { "reopen",         reopen_session, reopenhelp,     UNDEF_COM },
     { "reset",          reset,          resethelp,      MAIN_COM },
     { "rpt",            show_rpt,       showrpthelp,    MAIN_COM },
     { "run",            run,            runhelp,        MAIN_COM },

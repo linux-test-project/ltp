@@ -65,13 +65,13 @@ int main(int argc, char **argv)
 
         	retc = oh_el_append(el, &event, NULL, NULL);
         	if (retc != SA_OK) {
-              	  dbg("ERROR: oh_el_append failed.");
+              	  err("ERROR: oh_el_append failed.");
                	  return 1;
         	}       
 	}
 	
         if(g_list_length(el->list) != 5){
-        	dbg("ERROR: g_list_length does not hold the correct number of entries.");
+        	err("ERROR: g_list_length does not hold the correct number of entries.");
         	return 1;
 	}
 
@@ -79,12 +79,12 @@ int main(int argc, char **argv)
 	 for(x=0; curr != SAHPI_NO_MORE_ENTRIES; x++){
 		retc = oh_el_get(el, curr, &prev, &next, &entry);
 		if (retc != SA_OK){
-			dbg("ERROR: oh_el_get failed.");
+			err("ERROR: oh_el_get failed.");
 			return 1;
 		}
 		
 		if (strcmp((char *)entry->event.Event.EventDataUnion.UserEvent.UserEventData.Data, data[x])){
-			dbg("ERROR: Data from el and original data do not match");
+			err("ERROR: Data from el and original data do not match");
 			return 1;
 		}
 		curr = next;
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	/* close the el */
         retc = oh_el_close(el);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_close failed.");
+                err("ERROR: oh_el_close failed.");
                 return 1;
         }
 

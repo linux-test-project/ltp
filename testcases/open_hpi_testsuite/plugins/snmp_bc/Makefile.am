@@ -25,7 +25,7 @@ SUBDIRS	= t
 
 INCLUDES = @OPENHPI_INCLUDES@ -I$(top_srcdir)/snmp -I$(SNMPUTILSDIR)
 
-AM_CFLAGS = @CFLAGS@ @SNMPFLAGS@
+AM_CFLAGS = @SNMPFLAGS@
 
 pkglib_LTLIBRARIES = libsnmp_bc.la
 

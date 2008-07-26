@@ -20,8 +20,10 @@
 #include <glib.h>
 #include <oh_utils.h>
 
-typedef SaHpiUint32T oHpiHandlerIdT;
+#define OPENHPI_DEFAULT_DAEMON_PORT 4743
 #define MAX_PLUGIN_NAME_LENGTH 32
+
+typedef SaHpiUint32T oHpiHandlerIdT;
 
 typedef struct {
         oHpiHandlerIdT id;
@@ -69,9 +71,6 @@ typedef struct {
         oHpiGlobalParamTypeT Type;
         oHpiGlobalParamUnionT u;
 } oHpiGlobalParamT;
-
-#define OHVERSION_CLIENT 0x0001
-#define OHVERSION_STANDARD 0x0000
 
 /* Version function */
 SaHpiUint64T oHpiVersionGet(void);

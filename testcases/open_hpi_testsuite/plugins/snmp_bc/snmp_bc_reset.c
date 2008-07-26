@@ -39,7 +39,7 @@ SaErrorT snmp_bc_get_reset_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || !act) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -48,7 +48,7 @@ SaErrorT snmp_bc_get_reset_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -98,7 +98,7 @@ SaErrorT snmp_bc_set_reset_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || NULL == oh_lookup_resetaction(act)){
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -110,7 +110,7 @@ SaErrorT snmp_bc_set_reset_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -129,13 +129,13 @@ SaErrorT snmp_bc_set_reset_state(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
  	if (resinfo == NULL) {
-		dbg("No resource data. Resource=%s", rpt->ResourceTag.Data);
+		err("No resource data. Resource=%s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 
 	if (resinfo->mib.OidReset == NULL) {
-		dbg("No Reset OID.");
+		err("No Reset OID.");
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -151,7 +151,7 @@ SaErrorT snmp_bc_set_reset_state(void *hnd,
 		err = snmp_bc_oid_snmp_set(custom_handle, &(rpt->ResourceEntity), 0,
 					   resinfo->mib.OidReset, set_value);
 		if (err) {
-			dbg("Cannot set SNMP OID=%s; Type=%d.", resinfo->mib.OidReset, set_value.type);
+			err("Cannot set SNMP OID=%s; Type=%d.", resinfo->mib.OidReset, set_value.type);
 			snmp_bc_unlock_handler(custom_handle);
 			return(err);
 		}
@@ -161,7 +161,7 @@ SaErrorT snmp_bc_set_reset_state(void *hnd,
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INVALID_CMD);
 	default:
-		dbg("Invalid Reset Action Type=%d.", act);
+		err("Invalid Reset Action Type=%d.", act);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}

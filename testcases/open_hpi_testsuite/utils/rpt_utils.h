@@ -44,9 +44,9 @@ typedef struct {
 /* General RPT calls */
 SaErrorT oh_init_rpt(RPTable *table);
 SaErrorT oh_flush_rpt(RPTable *table);
-void rpt_diff(RPTable *cur_rpt, RPTable *new_rpt,
-              GSList **res_new, GSList **rdr_new,
-              GSList **res_gone, GSList **rdr_gone);
+SaErrorT rpt_diff(RPTable *cur_rpt, RPTable *new_rpt,
+                  GSList **res_new, GSList **rdr_new,
+                  GSList **res_gone, GSList **rdr_gone);
 SaErrorT oh_get_rpt_info(RPTable *table,
                          SaHpiUint32T *update_count,
                          SaHpiTimeT *update_timestamp);

@@ -43,6 +43,9 @@
 #include <sim_watchdog.h>
 #include <sim_hotswap.h>
 #include <sim_resources.h>
+#include <sim_dimi.h>
+#include <sim_fumi.h>
+#include <sim_fumi_func.h>
 
 
 /* handler state list */

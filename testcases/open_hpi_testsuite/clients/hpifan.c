@@ -24,14 +24,17 @@
 
 #include <SaHpi.h>
 #include <oh_utils.h>
+#include <oh_clients.h>
+
+#define OH_SVN_REV "$Revision: 1.2 $"
 
 static int fan_speed = -1;
 
 
 static int
-usage( void )
+usage( char *progname )
 {
-        fprintf( stderr, "usage: hpifan [-h] [-s fan_speed_level]\n" );
+        fprintf( stderr, "usage: %s [-h] [-s fan_speed_level]\n", progname );
         fprintf( stderr, "\t\t -h        help\n" );
         fprintf( stderr, "\t\t -s speed  set fan speed for ALL fans\n" );
 
@@ -251,6 +254,8 @@ main( int argc, char *argv[] )
         int help = 0;
         SaErrorT rv;
 
+        oh_prog_version(argv[0], OH_SVN_REV);
+
         while( (c = getopt( argc, argv,"hs:") ) != -1 )
                 switch( c ) {
                 case 'h': 
@@ -268,7 +273,7 @@ main( int argc, char *argv[] )
                 }
   
         if ( help )
-                return usage();
+                return usage(argv[0]);
 
         SaHpiSessionIdT sessionid;
         rv = saHpiSessionOpen( SAHPI_UNSPECIFIED_DOMAIN_ID, &sessionid, 0 );

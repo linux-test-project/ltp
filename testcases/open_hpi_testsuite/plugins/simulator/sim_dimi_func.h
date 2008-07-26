@@ -22,4 +22,3 @@ SaErrorT sim_get_dimi_info(void *hnd,
 			   SaHpiDimiInfoT *info);
 
 #endif
-

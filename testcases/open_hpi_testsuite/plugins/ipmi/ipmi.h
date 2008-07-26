@@ -671,7 +671,7 @@ void atca_create_slot_rdrs(struct oh_handler_state *handler,
 /* misc macros for debug */
 #define dump_entity_id(s, x) \
         do { \
-                dbg("%s domain id: %p, entity id: %x, entity instance: %x, channel: %x, address: %x, seq: %lx", \
+                err("%s domain id: %p, entity id: %x, entity instance: %x, channel: %x, address: %x, seq: %lx", \
                      s,                         \
                      (x).domain_id.domain,      \
                      (x).entity_id,             \

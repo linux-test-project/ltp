@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	
         retc = oh_el_prepend(el, &event, NULL, NULL);
         if (retc == SA_OK) {
-                dbg("ERROR: oh_el_prepend failed.");
+                err("ERROR: oh_el_prepend failed.");
                 return 1;
         }       
 

@@ -98,7 +98,7 @@ static atca_oem_area_info_t *create_address_table_oem_area(
 
 
 	if (length < 27 + data[26] * 3) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 27 + data[26] * 3);
 		return NULL;
 	}
@@ -106,7 +106,7 @@ static atca_oem_area_info_t *create_address_table_oem_area(
 	len = 6 + data[26];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0, sizeof (atca_oem_field_info_t) * len); 
@@ -139,7 +139,7 @@ static atca_oem_area_info_t *create_address_table_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -162,7 +162,7 @@ static atca_oem_area_info_t *create_shm_ip_connection_oem_area(
 	len = 6;
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -189,7 +189,7 @@ static atca_oem_area_info_t *create_shm_ip_connection_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -217,7 +217,7 @@ static void handle_ekey_dsk(ekey_sensors_info_t *eks_info,
 printf("EKEY %02X%02X%02X%02X ", bytes[0], bytes[1], bytes[2], bytes[3]);
 #endif
 	if (ch_num == 0 || ch_num >= 16) {
-		dbg("channel number too big = %d", ch_num);
+		err("channel number too big = %d", ch_num);
 #if DEBUG_EKEY
 printf("channel number too big = %d\n", ch_num);
 #endif
@@ -252,7 +252,7 @@ dsk->channels[ch_num], ch_num);
 	
 	dsk = malloc(sizeof (ekey_descriptor_t));
 	if (dsk == NULL) {
-		dbg("No Memory");
+		err("No Memory");
 		return;
 	}
 	memset(dsk, 0, sizeof (ekey_descriptor_t));
@@ -284,12 +284,12 @@ static atca_oem_area_info_t *create_board_p2p_connectivity_oem_area(
 	SaHpiEntryIdT cur_field;
 
 	if (length < 6 + data[5] * 16) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 6 + data[5] * 16);
 		return NULL;
 	}
 	if ((length - (6 + data[5] * 16)) % 4) {
-		dbg("The rest of record is not divisible by 4: %d - (%d)",
+		err("The rest of record is not divisible by 4: %d - (%d)",
 			length, 6 + data[5] * 16);
 		return NULL;
 	}
@@ -297,7 +297,7 @@ static atca_oem_area_info_t *create_board_p2p_connectivity_oem_area(
 	len = 4 + data[5] + num_desk + 1;
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -320,7 +320,7 @@ static atca_oem_area_info_t *create_board_p2p_connectivity_oem_area(
 							&data[6 + 16 * i], 16);
 			eks_info->guid_number++;
 		} else {
-			dbg("Too many GUIDS");
+			err("Too many GUIDS");
 		}
 	}
 #if 0
@@ -342,7 +342,7 @@ static atca_oem_area_info_t *create_board_p2p_connectivity_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -366,7 +366,7 @@ static atca_oem_area_info_t *create_p2p_connectivity_oem_area(
 
 	for (i = 0; i < desk_num; i++) {
 		if (off + 3 + data[off + 2] * 3 >=  length) {
-			dbg("dismatch datalen(0x%x) and record struct(0x%x)"
+			err("dismatch datalen(0x%x) and record struct(0x%x)"
 				"  desk_num = %d",
 				length, off + 3 + data[off + 2] * 3, desk_num);
 			return NULL;
@@ -379,7 +379,7 @@ static atca_oem_area_info_t *create_p2p_connectivity_oem_area(
 
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -411,7 +411,7 @@ static atca_oem_area_info_t *create_p2p_connectivity_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -440,7 +440,7 @@ static atca_oem_area_info_t *create_power_distribution_oem_area(
 
 	for (i = 0; i < feed_num; i++) {
 		if (off + 6 + data[off + 5] * 2 >= length) {
-			dbg("dismatch datalen(0x%x) and record struct("
+			err("dismatch datalen(0x%x) and record struct("
 				"0x%x + 6 + 0x%x * 2)"
 				" feed_num = %d",
 				length, off, data[off + 5], feed_num);
@@ -456,7 +456,7 @@ static atca_oem_area_info_t *create_power_distribution_oem_area(
 
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -491,7 +491,7 @@ static atca_oem_area_info_t *create_power_distribution_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -514,7 +514,7 @@ static atca_oem_area_info_t *create_activation_and_pm_oem_area(
 
 
 	if (length < 7 + data[6] * 5) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 7 + data[6] * 5);
 		return NULL;
 	}
@@ -522,7 +522,7 @@ static atca_oem_area_info_t *create_activation_and_pm_oem_area(
 	len = 5 + data[6];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len); 
@@ -550,7 +550,7 @@ static atca_oem_area_info_t *create_activation_and_pm_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -576,7 +576,7 @@ static atca_oem_area_info_t *create_radial_ipmb0_link_oem_area(
 
 
 	if (length < 11 + data[10] * 2) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 11 + data[10] * 2);
 		return NULL;
 	}
@@ -584,7 +584,7 @@ static atca_oem_area_info_t *create_radial_ipmb0_link_oem_area(
 	len = 6 + data[10];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len); 
@@ -621,7 +621,7 @@ static atca_oem_area_info_t *create_radial_ipmb0_link_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -644,14 +644,14 @@ static atca_oem_area_info_t *create_amc_carrier_information_table_oem_area(
 	int i;
 
 	if (length < 7 + data[6]) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 7 + data[6]);
 		return NULL;
 	}
 	len = 5 + data[6];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -680,7 +680,7 @@ static atca_oem_area_info_t *create_amc_carrier_information_table_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -704,14 +704,14 @@ static atca_oem_area_info_t *create_carrier_activ_and_curmngmt_oem_area(
 	int i;
 
 	if (length < 9 + data[8] * 3) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 9 + data[9]);
 		return NULL;
 	}
 	len = 6 + data[8];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -745,7 +745,7 @@ static atca_oem_area_info_t *create_carrier_activ_and_curmngmt_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -770,14 +770,14 @@ static atca_oem_area_info_t *create_carrier_p2p_connectivity_oem_area(
 	int i;
 
 	if (length < 7 + data[6] * 3) {
-		dbg("Record length(0x%x) mismatches with expected(0x%x)",
+		err("Record length(0x%x) mismatches with expected(0x%x)",
 			length, 7 + data[6]);
 		return NULL;
 	}
 	len = 5 + data[6];
 	fields = malloc(sizeof (atca_oem_field_info_t) * len);
 	if (fields == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		return NULL;
 	}
 	memset(fields, 0,sizeof (atca_oem_field_info_t) * len);
@@ -807,7 +807,7 @@ static atca_oem_area_info_t *create_carrier_p2p_connectivity_oem_area(
 
 	area = malloc(sizeof (atca_oem_area_info_t));
 	if (area == NULL) {
-		dbg("Out of memory");
+		err("Out of memory");
 		free(fields);
 		return NULL;
 	}
@@ -855,51 +855,51 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 		len = 256;
 		rv = ipmi_fru_get_multi_record_data(fru, num, data, &len);
 		if (rv != 0) {
-			dbg("ipmi_fru_get_multi_record_data("
+			err("ipmi_fru_get_multi_record_data("
 				"fru, %d, data, 0x%x) = 0x%x",
 				num, len, rv);
 			continue;
 		}
 		rv = ipmi_fru_get_multi_record_type(fru, num, &type);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_type(%d) = %d", num, rv);
+			err("ipmi_entity_get_multi_record_type(%d) = %d", num, rv);
 			continue;
 		}
 		if (type != 0xc0) {
 			// record type. Must be OEM
-			dbg("Record #%d type = 0x%x", num, data[0]);
+			err("Record #%d type = 0x%x", num, data[0]);
 			goto orig_record;
 		}
 		rv = ipmi_fru_get_multi_record_format_version(fru, num, &ver);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_format_version"
+			err("ipmi_entity_get_multi_record_format_version"
 				"(%d) = %d", num, rv);
 			continue;
 		}
 
 		if ((ver & 0x0f) != 0x2) {
 			// must be 2 for PICMG 3.0 ATCA vD1.0
-			dbg("Record #%d format version = 0x%x", num, data[1] & 0x0f);
+			err("Record #%d format version = 0x%x", num, data[1] & 0x0f);
 			goto orig_record;
 		}
 		if (len < 5) {
-			dbg("Record #%d too short(%d)", num, len);
+			err("Record #%d too short(%d)", num, len);
 			goto orig_record;
 		}
 		if ((data[0] | (data[1] << 8) | (data[2] << 16)) !=
 						ATCAHPI_PICMG_MID) {
-			dbg("Record #%d. MId = 0x%x", num,
+			err("Record #%d. MId = 0x%x", num,
 					data[0] | (data[1] << 8) | (data[2] << 16));
 			goto orig_record;
 		}
 		switch (data[3]) {
 		case 0x10 :	// Address Table Record
 			if (len < 27) {
-				dbg("Record #%d too short. len = 0x%x", num, len);
+				err("Record #%d too short. len = 0x%x", num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -910,11 +910,11 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x13 :	// Shelf Manager IP Connection Record
 			if (len < 17) {
-				dbg("Record #%d too short. len = 0x%x", num, len);
+				err("Record #%d too short. len = 0x%x", num, len);
 				goto orig_record;
 			}
 			if (data[4] != 1) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -922,11 +922,11 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x04 :	// Backplane Point-to-Point Connectivity Record
 			if (len < 8) {
-				dbg("Record #%d too short. len = 0x%x", num, len);
+				err("Record #%d too short. len = 0x%x", num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -949,11 +949,11 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			continue;
 		case 0x11 :	// Shelf Power Distribution Record
 			if (len < 10) {
-				dbg("Record #%d too short. len = 0x%x", num, len);
+				err("Record #%d too short. len = 0x%x", num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -972,11 +972,11 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			continue;
 		case 0x12 :	// Shelf Activation and Power Management Record
 			if (len < 7) {
-				dbg("Record #%d too short. len = 0x%x", num, len);
+				err("Record #%d too short. len = 0x%x", num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -984,12 +984,12 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x14 :	// Board Point-to-Point Connectivity Record
 			if (len < 6) {
-				dbg("Record #%d too short. len = 0x%x",
+				err("Record #%d too short. len = 0x%x",
 								num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -998,12 +998,12 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x15 :	// Radial IPMB-0 Link Mapping Record
 			if (len < 11) {
-				dbg("Record #%d too short. len = 0x%x",
+				err("Record #%d too short. len = 0x%x",
 								num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -1015,12 +1015,12 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x1a :	// Carrier Information Table
 			if (len < 7) {
-				dbg("Record #%d too short. len = 0x%x",
+				err("Record #%d too short. len = 0x%x",
 								num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -1032,12 +1032,12 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x17 : // Carrier Activation and Current Management Record
 			if (len < 9) {
-				dbg("Record #%d too short. len = 0x%x",
+				err("Record #%d too short. len = 0x%x",
 								num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -1049,12 +1049,12 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			break;
 		case 0x18 : // Carrier Point-to-Point Connectivity Record
 			if (len < 9) {
-				dbg("Record #%d too short. len = 0x%x",
+				err("Record #%d too short. len = 0x%x",
 								num, len);
 				goto orig_record;
 			}
 			if (data[4] != 0) {
-				dbg("wrong RecFormVersion record #%d = %d",
+				err("wrong RecFormVersion record #%d = %d",
 						num, data[4]);
 				goto orig_record;
 			}
@@ -1065,7 +1065,7 @@ unsigned int ohoi_create_atca_oem_idr_areas(
 			}
 			break;
 		default :
-			dbg("Unknown record #%d Id = 0x%x", num, data[3]);
+			err("Unknown record #%d Id = 0x%x", num, data[3]);
 			area = NULL;
 			goto orig_record;
 		}
@@ -1082,13 +1082,13 @@ orig_record:
 		// We met not ATCA specific record. Put it into special area
 		fields = malloc(sizeof (atca_oem_field_info_t));
 		if (fields == NULL) {
-			dbg("Out of memory");
+			err("Out of memory");
 			continue;
 		}
 		memset(fields, 0, sizeof (atca_oem_field_info_t));
 		area = malloc(sizeof (atca_oem_area_info_t));
 		if (area == NULL) {
-			dbg("Out of memory");
+			err("Out of memory");
 			free(fields);
 			continue;
 		}
@@ -1210,13 +1210,13 @@ static void ohoi_atca_oem_area_field_cb(ipmi_entity_t *ent, void *cb_data)
 
 	rv = ipmi_entity_get_multi_record_data_len(ent, info->fid, &len);
 	if (rv) {
-		dbg("ipmi_entity_get_multi_record_data_len = %d", rv);
+		err("ipmi_entity_get_multi_record_data_len = %d", rv);
 		info->rv = SA_ERR_HPI_NOT_PRESENT;
 		info->done = 1;
 		return;
 	}
 	if (len < info->fld->off + info->fld->len) {
-		dbg("real record too short. %d < %d + %d",
+		err("real record too short. %d < %d + %d",
 				len, info->fld->off, info->fld->len);
 		info->rv = SA_ERR_HPI_NOT_PRESENT;
 		info->done = 1;
@@ -1225,7 +1225,7 @@ static void ohoi_atca_oem_area_field_cb(ipmi_entity_t *ent, void *cb_data)
 	if (info->raw_field) {
 		rv = ipmi_entity_get_multi_record_type(ent, info->fid, &type);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_type = %d", rv);
+			err("ipmi_entity_get_multi_record_type = %d", rv);
 			info->rv = SA_ERR_HPI_NOT_PRESENT;
 			info->done = 1;
 			return;
@@ -1233,7 +1233,7 @@ static void ohoi_atca_oem_area_field_cb(ipmi_entity_t *ent, void *cb_data)
 		rv = ipmi_entity_get_multi_record_format_version(ent,
 							info->fid, &ver);
 		if (rv) {
-			dbg("ipmi_entity_get_multi_record_type = %d", rv);
+			err("ipmi_entity_get_multi_record_type = %d", rv);
 			info->rv = SA_ERR_HPI_NOT_PRESENT;
 			info->done = 1;
 			return;
@@ -1243,13 +1243,13 @@ static void ohoi_atca_oem_area_field_cb(ipmi_entity_t *ent, void *cb_data)
 /*
 	rv = ipmi_entity_get_multi_record_type(ent, f_id, &type);
 	if (rv) {
-		dbg("ipmi_entity_get_multi_record_type = %d", rv);
+		err("ipmi_entity_get_multi_record_type = %d", rv);
 		oif->rv = SA_ERR_HPI_NOT_PRESENT;
 		return;
 	}
 	rv = ipmi_entity_get_multi_record_format_version(ent, f_id, &ver);
 	if (rv) {
-		dbg("ipmi_entity_get_multi_record_format_version = %d", rv);
+		err("ipmi_entity_get_multi_record_format_version = %d", rv);
 		oif->rv = SA_ERR_HPI_NOT_PRESENT;
 		return;
 	}
@@ -1259,7 +1259,7 @@ static void ohoi_atca_oem_area_field_cb(ipmi_entity_t *ent, void *cb_data)
 */
 	rv = ipmi_entity_get_multi_record_data(ent, info->fid, buf, &len);
 	if (rv) {
-		dbg("ipmi_entity_get_multi_record_data = %d", rv);
+		err("ipmi_entity_get_multi_record_data = %d", rv);
 		info->rv = SA_ERR_HPI_NOT_PRESENT;
 		info->done = 1;
 		return;
@@ -1299,7 +1299,7 @@ SaErrorT ohoi_atca_oem_area_field(struct oh_handler_state  *handler,
 		}
 	}
 	if (area == NULL) {
-		dbg("Area %d not present", field->AreaId);
+		err("Area %d not present", field->AreaId);
 		return SA_ERR_HPI_NOT_PRESENT;
 	}
 	
@@ -1310,7 +1310,7 @@ SaErrorT ohoi_atca_oem_area_field(struct oh_handler_state  *handler,
 		}
 	}
 	if (i == area->field_num) {
-		dbg("Field %d for OEM Area %d not present",
+		err("Field %d for OEM Area %d not present",
 				field->FieldId, field->AreaId);
 		return SA_ERR_HPI_NOT_PRESENT;
 	}
@@ -1336,16 +1336,16 @@ SaErrorT ohoi_atca_oem_area_field(struct oh_handler_state  *handler,
 	rv = ipmi_entity_pointer_cb(ohoi_res_info->u.entity.entity_id,
 			ohoi_atca_oem_area_field_cb, &info);
 	if (rv) {
-		dbg("ipmi_entity_pointer_cb = 0x%x", rv);
+		err("ipmi_entity_pointer_cb = 0x%x", rv);
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	rv = ohoi_loop(&info.done, handler->data);
 	if (rv != SA_OK) {
-		dbg("ohoi_loop = %d", rv);
+		err("ohoi_loop = %d", rv);
 		return rv;
 	}
 	if (info.rv != SA_OK) {
-		dbg("info.rv = %d", info.rv);
+		err("info.rv = %d", info.rv);
 		return info.rv;
 	}
 virt_field:

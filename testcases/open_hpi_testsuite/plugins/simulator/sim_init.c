@@ -33,25 +33,25 @@ void *sim_open(GHashTable *handler_config,
         char *tok = NULL;
 
         if (!handler_config) {
-                dbg("GHashTable *handler_config is NULL!");
+                err("GHashTable *handler_config is NULL!");
                 return NULL;
         } else if (!hid) {
-                dbg("Bad handler id passed.");
+                err("Bad handler id passed.");
                 return NULL;
         } else if (!eventq) {
-                dbg("No event queue was passed.");
+                err("No event queue was passed.");
                 return NULL;
         }
         /* check for required hash table entries */
         tok = g_hash_table_lookup(handler_config, "entity_root");
         if (!tok) {
-                dbg("entity_root is needed and not present in conf");
+                err("entity_root is needed and not present in conf");
                 return NULL;
         }
 
         state = g_malloc0(sizeof(struct oh_handler_state));
         if (!state) {
-                dbg("out of memory");
+                err("out of memory");
                 return NULL;
         }
 
@@ -62,7 +62,7 @@ void *sim_open(GHashTable *handler_config,
         /* initialize the event log */
         state->elcache = oh_el_create(256);
         if (!state->elcache) {
-                dbg("Event log creation failed");
+                err("Event log creation failed");
                 g_free(state->rptcache);
                 g_free(state);
                 return NULL;
@@ -119,9 +119,11 @@ SaErrorT sim_discover(void *hnd)
 		sim_discover_chassis_annunciators(inst, e);
 		sim_discover_chassis_watchdogs(inst, e);
 		sim_discover_chassis_inventory(inst, e);
+		sim_discover_chassis_dimis(inst,e); 
+		sim_discover_chassis_fumis(inst,e);
 		sim_inject_event(inst, e);
 		e = NULL;
-        } else dbg("Error discovering chassis");
+        } else err("Error discovering chassis");
 
         /* discover cpu resources and RDRs */
         i = SIM_RPT_ENTRY_CPU - 1;
@@ -134,7 +136,7 @@ SaErrorT sim_discover(void *hnd)
         	sim_discover_cpu_inventory(inst, e);
 		sim_inject_event(inst, e);
         	e = NULL;
-	} else dbg("Error discovering CPU");
+	} else err("Error discovering CPU");
 
         /* discover dasd resources and RDRs */
         i = SIM_RPT_ENTRY_DASD - 1;
@@ -147,7 +149,7 @@ SaErrorT sim_discover(void *hnd)
 		sim_discover_dasd_inventory(inst, e);
 		sim_inject_event(inst, e);
 		e = NULL;
-        } else dbg("Error discovering DASD");
+        } else err("Error discovering DASD");
 
         /* discover hot swap dasd resources and RDRs */
         i = SIM_RPT_ENTRY_HS_DASD - 1;
@@ -160,7 +162,7 @@ SaErrorT sim_discover(void *hnd)
 		sim_discover_hs_dasd_inventory(inst, e);
 		sim_inject_event(inst, e);
 		e = NULL;
-        } else dbg("Error discovering HS DASD");
+        } else err("Error discovering HS DASD");
 
         /* discover fan resources and RDRs */
         i = SIM_RPT_ENTRY_FAN - 1;
@@ -173,7 +175,7 @@ SaErrorT sim_discover(void *hnd)
 		sim_discover_fan_inventory(inst, e);
 		sim_inject_event(inst, e);
 		e = NULL;
-        } else dbg("Error discovering FAN");
+        } else err("Error discovering FAN");
 
         /* Let subsequent discovery invocations know that discovery has already
            been performed.

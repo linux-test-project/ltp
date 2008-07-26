@@ -791,7 +791,7 @@ cIpmiConLan::IfSendCmd( cIpmiRequest *r )
        tmsg[pos++] = 0x81; // Remote console IPMI Software ID
        tmsg[pos++] = r->m_seq << 2;
        tmsg[pos++] = eIpmiCmdSendMsg;
-       tmsg[pos++] =   r->m_send_addr.m_channel & 0xf
+       tmsg[pos++] =   (r->m_send_addr.m_channel & 0xf)
                      | (1 << 6); // Turn on tracking
 
        if ( r->m_send_addr.m_type == eIpmiAddrTypeIpmbBroadcast )

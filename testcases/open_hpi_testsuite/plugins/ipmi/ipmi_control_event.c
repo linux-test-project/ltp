@@ -79,7 +79,7 @@ SaHpiUint8T ohoi_atca_led_to_hpi_color(int ipmi_color)
 	case IPMI_CONTROL_COLOR_ORANGE:
 		return ATCAHPI_LED_COLOR_ORANGE;
 	default:
-		dbg("strange color %d, return WHITE", ipmi_color);
+		err("strange color %d, return WHITE", ipmi_color);
 		return ATCAHPI_LED_COLOR_WHITE;
 	}
 }
@@ -161,7 +161,7 @@ static int add_control_event(ipmi_entity_t	*ent,
 
         ctrl_info = malloc(sizeof(struct ohoi_control_info));
         if (!ctrl_info) {
-                dbg("Out of memory");
+                err("Out of memory");
                 return 1;
         }
 	memset(&rdr, 0, sizeof(rdr));
@@ -182,7 +182,7 @@ static int add_control_event(ipmi_entity_t	*ent,
 	info = oh_get_resource_data(handler->rptcache, rid);
         if (!info) {
 		free(ctrl_info);
-                dbg("No info in resource(%d)\n", rid);
+                err("No info in resource(%d)\n", rid);
                 return 1;
         }
         rdr.RdrTypeUnion.CtrlRec.Num = ++info->ctrl_count;
@@ -191,7 +191,7 @@ static int add_control_event(ipmi_entity_t	*ent,
         
 	if (oh_add_rdr(handler->rptcache, rid,
 			&rdr, ctrl_info, 1) != SA_OK) {
-		dbg("couldn't add control rdr");
+		err("couldn't add control rdr");
 		free(ctrl_info);
 		return 1;
 	}
@@ -263,7 +263,7 @@ static void set_led_oem_cb(ipmi_control_t	*control,
 	if (err) {
 		info->err = err;
 		info->done = 1;
-		dbg("led_default_mode_settings_cb = %d", err);
+		err("led_default_mode_settings_cb = %d", err);
 		return;
 	}	
 	oem->Default.MId = ATCAHPI_PICMG_MID;
@@ -335,7 +335,7 @@ static int add_led_control_event(ipmi_entity_t	*ent,
 
         ctrl_info = malloc(sizeof(struct ohoi_control_info));
         if (!ctrl_info) {
-                dbg("Out of memory");
+                err("Out of memory");
                 return 1;
         }
 	memset(&rdr, 0, sizeof(rdr));
@@ -362,13 +362,13 @@ static int add_led_control_event(ipmi_entity_t	*ent,
 		rv = ipmi_control_get_light(control,
 			set_led_oem_cb, &info);
 		if (rv) {
-			dbg("ipmi_control_get_light = 0x%x", rv);
+			err("ipmi_control_get_light = 0x%x", rv);
 		} else {
 			ohoi_loop(&info.done, handler->data);
 		}
 
 	} else {
-		dbg("ipmi_control_light_set_with_setting == 0");
+		err("ipmi_control_light_set_with_setting == 0");
 	} 
 	ctrl_info->mode = rdr.RdrTypeUnion.CtrlRec.DefaultMode.Mode;
 	rdr.RdrTypeUnion.CtrlRec.Oem = ATCAHPI_PICMG_CT_ATCA_LED;
@@ -378,7 +378,7 @@ static int add_led_control_event(ipmi_entity_t	*ent,
 	info = oh_get_resource_data(handler->rptcache, rid);
         if (!info) {
 		free(ctrl_info);
-                dbg("No info in resource(%d)\n", rid);
+                err("No info in resource(%d)\n", rid);
                 return 1;
         }
 	if (strcasecmp((char *)rdr.IdString.Data, "blue led") == 0) {
@@ -397,11 +397,11 @@ static int add_led_control_event(ipmi_entity_t	*ent,
 			rdr.RdrTypeUnion.CtrlRec.Num = ATCAHPI_CTRL_NUM_APP_LED +
 				strtoul(appnum, NULL, 0);
 		} else {
-			dbg("Invalid data in LED Control\n");
+			err("Invalid data in LED Control\n");
 			return 1;
 		}
 	} else {
-		dbg("Invalid data in LED Control\n");
+		err("Invalid data in LED Control\n");
 		return 1;
 	}
 
@@ -409,7 +409,7 @@ static int add_led_control_event(ipmi_entity_t	*ent,
         
 	rv = oh_add_rdr(handler->rptcache, rid, &rdr, ctrl_info, 1);
 	if (rv != SA_OK) {
-		dbg("couldn't add control rdr. rv = %d", rv);
+		err("couldn't add control rdr. rv = %d", rv);
 		free(ctrl_info);
 		return 1;
 	}
@@ -422,7 +422,7 @@ static int add_led_control_event(ipmi_entity_t	*ent,
 	if (rpt->HotSwapCapabilities &
 			SAHPI_HS_CAPABILITY_INDICATOR_SUPPORTED) {
 				// already set?
-		dbg("Resource %d. hot swap indicator already set 0x%x !?",
+		err("Resource %d. hot swap indicator already set 0x%x !?",
 					rid, rpt->HotSwapCapabilities);
 	}
 	trace_ipmi("Attach hot swap indicator into entity %d(%s)",
@@ -454,12 +454,12 @@ static void add_alarm_rdr(char 				*name,
 
 	info = oh_get_resource_data(handler->rptcache, rptid);
         if (!info) {
-                dbg("No info in resource(%d)\n", rptid);
+                err("No info in resource(%d)\n", rptid);
                 return;
         }
         ctrl_info = malloc(sizeof(struct ohoi_control_info));
         if (!ctrl_info) {
-                dbg("Out of memory");
+                err("Out of memory");
                 return;
         }
 	ctrl_info->type = OHOI_CTRL_ORIGINAL;
@@ -493,7 +493,7 @@ static void add_alarm_rdr(char 				*name,
 	rdr->RdrTypeUnion.CtrlRec.DefaultMode.Mode = def_mode->Mode;
 	rdr->RdrTypeUnion.CtrlRec.DefaultMode.ReadOnly = def_mode->ReadOnly;
         if(oh_add_rdr(handler->rptcache, rptid, rdr, ctrl_info, 1)) {
-		dbg("couldn't add alarm control");
+		err("couldn't add alarm control");
 		free(ctrl_info);
 		return;
 	}
@@ -552,7 +552,7 @@ address_control(ipmi_control_t *control,
 	int *location = cb_data;
 	
 	if (control == NULL) {
-		dbg("Invalid control?");
+		err("Invalid control?");
 		return;
 	}
 	
@@ -582,7 +582,7 @@ address_control_get(ipmi_control_t			*control,
 	rv = ipmi_control_identifier_get_val(control, address_control, &location);
 
 	if(rv) {
-		dbg("Error getting identifier control val");
+		err("Error getting identifier control val");
 		return -1;
 	}
 
@@ -597,7 +597,7 @@ address_control_get(ipmi_control_t			*control,
 				//dbg("Control New ResourceId: %d", rpt.ResourceId);
 	//rv = oh_add_resource(handler->rptcache, *rpt, NULL, 1);
 	//if (rv) {
-	      	//dbg("oh_add_resource failed for %d = %s\n", rpt->ResourceId, oh_lookup_error(rv));
+	      	//err("oh_add_resource failed for %d = %s\n", rpt->ResourceId, oh_lookup_error(rv));
 	//}
 
 	return 0;
@@ -658,7 +658,7 @@ void ohoi_control_event(enum ipmi_update_e op,
 		case IPMI_CONTROL_ALARM:
 			rv = add_alarm_rdrs(handler,rpt_entry,control);
 			if (rv) {
-				dbg("add_alarms_rdrs failed");
+				err("add_alarms_rdrs failed");
 				break;
 			}
 			rpt_entry->ResourceCapabilities |=
@@ -669,7 +669,7 @@ void ohoi_control_event(enum ipmi_update_e op,
 #if 0
 			rv = address_control_get(control,handler, ent, rpt_entry);
 			if (rv) {
-				dbg("address_control_get failed");
+				err("address_control_get failed");
 				break;
 			}
 			rpt_entry->ResourceCapabilities |=

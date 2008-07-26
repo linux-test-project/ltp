@@ -87,7 +87,7 @@ SaErrorT sim_init()
 
 	sim_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	if (sim_hash == NULL) {
-		dbg("Cannot allocate simulation hash table");
+		err("Cannot allocate simulation hash table");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -99,14 +99,14 @@ SaErrorT sim_init()
     
 		key = g_strdup(sim_resource_array[i].oid);
 		if (!key) {
-			dbg("Cannot allocate memory for key for oid=%s",
+			err("Cannot allocate memory for key for oid=%s",
 			      sim_resource_array[i].oid);
 			sim_close();
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 		mibinfo = g_malloc0(sizeof(SnmpMibInfoT));
 		if (!mibinfo) {
-			dbg("Cannot allocate memory for hash value for oid=%s", 
+			err("Cannot allocate memory for hash value for oid=%s", 
 			      sim_resource_array[i].oid);
 			sim_close();
 			return(SA_ERR_HPI_INTERNAL_ERROR);
@@ -124,13 +124,13 @@ SaErrorT sim_init()
 				strcpy(mibinfo->value.string, sim_resource_array[i].mib.value.string);
 				break;
 			default:
-				dbg("Unknown SNMP type=%d for oid=%s", mibinfo->type, key);
+				err("Unknown SNMP type=%d for oid=%s", mibinfo->type, key);
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
 			g_hash_table_insert(sim_hash, key, mibinfo);
 		}
 		else {
-			dbg("Oid %s is defined twice", sim_resource_array[i].oid);
+			err("Oid %s is defined twice", sim_resource_array[i].oid);
 		}
 	}
 #endif

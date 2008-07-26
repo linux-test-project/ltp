@@ -51,7 +51,7 @@ int main(int argc, char **argv)
         el = oh_el_create(5);
 
         if(el == NULL) {
-                dbg("ERROR: el == NULL.");
+                err("ERROR: el == NULL.");
                 return 1;
         }
 
@@ -65,33 +65,33 @@ int main(int argc, char **argv)
 
         retc = oh_el_append(el, &event, NULL, NULL);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_append failed.");
+                err("ERROR: oh_el_append failed.");
                 return 1;
         } 
 
 	entry = (oh_el_entry *)(g_list_first(el->list)->data);
 	
         if(g_list_length(el->list) != 1){
-                 dbg("ERROR: g_list_length does not return the correct number of entries.");
+                 err("ERROR: g_list_length does not return the correct number of entries.");
                  return 1;
          }
 
         /* fetch the event for el*/
         retc = oh_el_get(el, entry->event.EntryId, &prev, &next, &entry);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_get failed.");
+                err("ERROR: oh_el_get failed.");
                 return 1;
         }
 
 	if (strcmp((char *)entry->event.Event.EventDataUnion.UserEvent.UserEventData.Data, data[0])) {
-                 dbg("ERROR: Data from el and what was entered into el do not match");
+                 err("ERROR: Data from el and what was entered into el do not match");
                  return 1;
         }
         
 	/* close the EL */
         retc = oh_el_close(el);
         if (retc != SA_OK) {
-                dbg("ERROR: oh_el_close failed.");
+                err("ERROR: oh_el_close failed.");
                 return 1;
         }
 

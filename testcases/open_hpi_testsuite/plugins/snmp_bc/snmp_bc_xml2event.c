@@ -53,7 +53,7 @@ SaErrorT errlog2event_hash_init(struct snmp_bc_hnd *custom_handle) {
         GError *err;
         struct errlog2event_hash_info user_data;
         if (!custom_handle) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 	
@@ -62,7 +62,7 @@ SaErrorT errlog2event_hash_init(struct snmp_bc_hnd *custom_handle) {
 	/* Initialize hash table */
         errlog2event_hash = g_hash_table_new(g_str_hash, g_str_equal);
         if (errlog2event_hash == NULL) {
-                dbg("No memory.");
+                err("No memory.");
                 snmp_bc_unlock(snmp_bc_plock);
                 return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -75,7 +75,7 @@ SaErrorT errlog2event_hash_init(struct snmp_bc_hnd *custom_handle) {
         parser.start_element = event_start_element;
         pcontext = g_markup_parse_context_new(&parser, 0, &user_data, NULL);
         if (pcontext == NULL) {
-		dbg("No memory.");
+		err("No memory.");
                 snmp_bc_unlock(snmp_bc_plock);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
         }
@@ -86,11 +86,11 @@ SaErrorT errlog2event_hash_init(struct snmp_bc_hnd *custom_handle) {
                                           (gssize)strlen(eventxml), &err);
         if (rc == FALSE || err != NULL) {
                 if (err != NULL) {
-                        dbg("Parse error=%s.", err->message);
+                        err("Parse error=%s.", err->message);
                         g_error_free(err);
                 }
                 else {
-                        dbg("Unknown XML parse error.");
+                        err("Unknown XML parse error.");
                 }
                 g_markup_parse_context_free(pcontext);
                 snmp_bc_unlock(snmp_bc_plock);
@@ -101,7 +101,7 @@ SaErrorT errlog2event_hash_init(struct snmp_bc_hnd *custom_handle) {
 
         /* Make sure there are elements in the hash table */
         if (g_hash_table_size(errlog2event_hash) == 0) {
-                dbg("Hash table is empty.");
+                err("Hash table is empty.");
                 snmp_bc_unlock(snmp_bc_plock);
                 return(SA_ERR_HPI_INTERNAL_ERROR);
         }
@@ -138,7 +138,7 @@ static void free_hash_data(gpointer key, gpointer value, gpointer user_data)
 }
 
 /* Note: Error messages are passed back to the caller via the GError
- * mechanism. There is no need for dbg calls in this function. */
+ * mechanism. There is no need for err calls in this function. */
 static void event_start_element(GMarkupParseContext *context,
                                 const gchar         *element_name,
                                 const gchar         **attribute_names,
@@ -261,8 +261,8 @@ static void event_start_element(GMarkupParseContext *context,
 
 	/* Insert event into hash table */
         g_hash_table_insert(hash_info->hashtable, key, xmlinfo);
-	trace("Inserted event=%s into hash table. Sev=%s, OVR=%lld, Dup=%d",
-	      xmlinfo->event, oh_lookup_severity(xmlinfo->event_sev),
-	      xmlinfo->event_ovr, xmlinfo->event_dup);
+	dbg("Inserted event=%s into hash table. Sev=%s, OVR=%lld, Dup=%d",
+	    xmlinfo->event, oh_lookup_severity(xmlinfo->event_sev),
+	    xmlinfo->event_ovr, xmlinfo->event_dup);
         return;
 }

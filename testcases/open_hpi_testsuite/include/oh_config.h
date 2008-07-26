@@ -44,9 +44,6 @@ typedef enum {
         OPENHPI_DAT_SIZE_LIMIT,
         OPENHPI_DAT_USER_LIMIT,
 	OPENHPI_DAT_SAVE,
-        //OPENHPI_DEBUG,
-        //OPENHPI_DEBUG_TRACE,
-        //OPENHPI_DEBUG_LOCK,
         OPENHPI_PATH,
         OPENHPI_VARPATH,
         OPENHPI_CONF
@@ -61,9 +58,6 @@ typedef union {
         SaHpiUint32T dat_size_limit;
         SaHpiUint32T dat_user_limit;
 	SaHpiBoolT dat_save;
-        //unsigned char dbg; /* 1 = YES, 0 = NO */
-        //unsigned char dbg_trace; /* !0 = YES, 0 = NO */
-        //unsigned char dbg_lock; /* !0 = YES, 0 = NO */
         char path[OH_MAX_TEXT_BUFFER_LENGTH];
         char varpath[OH_MAX_TEXT_BUFFER_LENGTH];
         char conf[OH_MAX_TEXT_BUFFER_LENGTH];
@@ -82,7 +76,6 @@ void oh_clean_config(struct oh_parsed_config *config);
 /* For handling global parameters */
 int oh_get_global_param(struct oh_global_param *param);
 int oh_set_global_param(struct oh_global_param *param);
-//unsigned char oh_get_global_bool(oh_global_param_type type);
 
 #ifdef __cplusplus
 }

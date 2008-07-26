@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
 	int	c, eflag = 0;
 
-	while ( (c = getopt( argc, argv,"c:ef:x?")) != EOF )
+	while ( (c = getopt( argc, argv,"c:ef:xn?")) != EOF )
 		switch(c)  {
 			case 'c':
 				setenv("OPENHPI_CONF", optarg, 1);
@@ -43,11 +43,15 @@ int main(int argc, char **argv)
 			case 'x':
 				debug_flag = 1;
 				break;
+            case 'n':
+                setenv("OPENHPI_DAEMON_HOST", optarg, 1);
+                break;
 			default:
-				printf("Usage: %s [-c <cfgfile>][-e][-f <file>]\n", argv[0]);
+				printf("Usage: %s [-c <cfgfile>][-e][-f <file>][-n <hostname>]\n", argv[0]);
 				printf("   -c <cfgfile> - use passed file as configuration file\n");
 				printf("   -e - show short events, discover after subscribe\n");
 				printf("   -f <file> - execute command file\n");
+                printf("   -n <hostname>  use passed hostname as OpenHPI daemon host\n");
 				return(1);
 		}
 
@@ -88,7 +92,8 @@ ret_code_t ask_rdr(SaHpiResourceIdT rptid, SaHpiRdrTypeT type, SaHpiInstrumentId
 	char            buf[64];
 
 	strncpy(buf, oh_lookup_rdrtype(type), 64);
-	strncat(buf + strlen(buf), " NUM ==> ", 64-strlen(buf));
+	buf[strlen(buf)-4] = '\0';
+	strncat(buf, " NUM ==> ", 64-strlen(buf));
 	term = get_next_term();
 	if (term == NULL) {
 		if (read_file) return(HPI_SHELL_CMD_ERROR);

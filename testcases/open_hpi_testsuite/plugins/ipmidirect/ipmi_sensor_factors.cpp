@@ -422,12 +422,15 @@ cIpmiSensorFactors::ConvertToRaw( tIpmiRound    rounding,
             // the corresponding interpreted value decreases
             // so we have to take that into account when searching
             if ( swap == false )
+               {
                if ((val > cval) && (raw < maxraw))
                     raw++;
+               }
             else
+               {
                if ((val < cval) && (raw < maxraw))
                     raw++;
-
+               };
 	    break;
 
        case eRoundDown:
@@ -435,12 +438,15 @@ cIpmiSensorFactors::ConvertToRaw( tIpmiRound    rounding,
             // the corresponding interpreted value decreases
             // so we have to take that into account when searching
             if ( swap == false )
+               {
                 if ( ( val < cval) && (raw > minraw ) )
                     raw--;
+               }
             else
+               {
                 if ( ( val > cval) && (raw > minraw ) )
                     raw--;
-
+               };
 	    break;
      }
 

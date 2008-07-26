@@ -55,7 +55,7 @@ static void mc_remove(ipmi_mc_t                    *mc,
 	rpt = ohoi_get_resource_by_mcid(handler->rptcache, &mcid);
 	if (rpt == NULL) {
 		trace_ipmi_mc("COULDN'T FIND RPT", mc);
-		dbg("couldn't find out resource");
+		err("couldn't find out resource");
 	} else {
 		rpt->ResourceCapabilities &=
 			~SAHPI_CAPABILITY_EVENT_LOG;
@@ -91,7 +91,7 @@ void process_sel_support(ipmi_mc_t *mc, struct oh_handler_state *handler)
 	rpt = ohoi_get_resource_by_mcid(handler->rptcache, &mcid);
 	if (rpt == NULL) {
 		trace_ipmi_mc("COULDN'T FIND RPT", mc);
-		dbg("couldn't find out resource");
+		err("couldn't find out resource");
 		return;
 	}
 	res_info =  oh_get_resource_data(handler->rptcache, rpt->ResourceId);

@@ -19,40 +19,72 @@
 
 AC_DEFUN([OH_SET_SIZES],
     [
-    OH_SSFILE=testsize
-    OH_SSSOURCE="$OH_SSFILE.c"
-    echo "#include <stdlib.h>" > $OH_SSSOURCE
-    echo "#include <stdio.h>" >> $OH_SSSOURCE
-    echo "int main() {" >> $OH_SSSOURCE
-    # add more here if you need them
-    # the lots of slashes are needed to do the processing below right
-    echo "printf(\"unsigned char %d\\\\n\",sizeof(unsigned char));" >> $OH_SSSOURCE
-    echo "printf(\"unsigned short %d\\\\n\",sizeof(unsigned short));" >> $OH_SSSOURCE
-    echo "printf(\"unsigned int %d\\\\n\",sizeof(unsigned int));" >> $OH_SSSOURCE
-    echo "printf(\"char %d\\\\n\",sizeof(char));" >> $OH_SSSOURCE
-    echo "printf(\"short %d\\\\n\",sizeof(short));" >> $OH_SSSOURCE
-    echo "printf(\"int %d\\\\n\",sizeof(int));" >> $OH_SSSOURCE
-    echo "printf(\"long long %d\\\\n\",sizeof(long long));" >> $OH_SSSOURCE
-    echo "printf(\"float %d\\\\n\",sizeof(float));" >> $OH_SSSOURCE
-    echo "printf(\"double %d\\\\n\",sizeof(double));" >> $OH_SSSOURCE
-    echo "return 0;" >> $OH_SSSOURCE
-    echo "}" >> $OH_SSSOURCE
-    
-    gcc -o $OH_SSFILE $OH_SSSOURCE
 
-    OH_TYPE_SIZES=`./$OH_SSFILE`
-    # feel free to define more logic here if we need it
+    if test "x$cross_compiling" != "xno"; then
+        if test "x$OH_SIZEOF_UCHAR" = x; then
+            OH_SIZEOF_UCHAR=$ac_cv_sizeof_uchar
+        fi
+        if test "x$OH_SIZEOF_USHORT" = x; then
+            OH_SIZEOF_USHORT=$ac_cv_sizeof_ushort
+        fi
+        if test "x$OH_SIZEOF_UINT" = x; then
+            OH_SIZEOF_UINT=$ac_cv_sizeof_uint
+        fi
+        if test "x$OH_SIZEOF_CHAR" = x; then
+            OH_SIZEOF_CHAR=$ac_cv_sizeof_char
+        fi
+        if test "x$OH_SIZEOF_SHORT" = x; then
+            OH_SIZEOF_SHORT=$ac_cv_sizeof_short
+        fi
+        if test "x$OH_SIZEOF_INT" = x; then
+            OH_SIZEOF_INT=$ac_cv_sizeof_int
+        fi
+        if test "x$OH_SIZEOF_LLONG" = x; then
+            OH_SIZEOF_LLONG=$ac_cv_sizeof_longlong
+        fi
+        if test "x$OH_SIZEOF_FLOAT" = x; then
+            OH_SIZEOF_FLOAT=$ac_cv_sizeof_float
+        fi
+        if test "x$OH_SIZEOF_DOUBLE" = x; then
+            OH_SIZEOF_DOUBLE=$ac_cv_sizeof_double
+        fi
+    else
+        OH_SSFILE=testsize
+        OH_SSSOURCE="$OH_SSFILE.c"
+        echo "#include <stdlib.h>" > $OH_SSSOURCE
+        echo "#include <stdio.h>" >> $OH_SSSOURCE
+        echo "int main() {" >> $OH_SSSOURCE
+        # add more here if you need them
+        # the lots of slashes are needed to do the processing below right
+        echo "printf(\"unsigned char %d\\\\n\",sizeof(unsigned char));" >> $OH_SSSOURCE
+        echo "printf(\"unsigned short %d\\\\n\",sizeof(unsigned short));" >> $OH_SSSOURCE
+        echo "printf(\"unsigned int %d\\\\n\",sizeof(unsigned int));" >> $OH_SSSOURCE
+        echo "printf(\"char %d\\\\n\",sizeof(char));" >> $OH_SSSOURCE
+        echo "printf(\"short %d\\\\n\",sizeof(short));" >> $OH_SSSOURCE
+        echo "printf(\"int %d\\\\n\",sizeof(int));" >> $OH_SSSOURCE
+        echo "printf(\"long long %d\\\\n\",sizeof(long long));" >> $OH_SSSOURCE
+        echo "printf(\"float %d\\\\n\",sizeof(float));" >> $OH_SSSOURCE
+        echo "printf(\"double %d\\\\n\",sizeof(double));" >> $OH_SSSOURCE
+        echo "return 0;" >> $OH_SSSOURCE
+        echo "}" >> $OH_SSSOURCE
     
-    OH_SIZEOF_UCHAR=`echo -e $OH_TYPE_SIZES | grep "^unsigned char" | awk '{print $[3]}'`
-    OH_SIZEOF_USHORT=`echo -e $OH_TYPE_SIZES | grep "^unsigned short" | awk '{print $[3]}'`
-    OH_SIZEOF_UINT=`echo -e $OH_TYPE_SIZES | grep "^unsigned int" | awk '{print $[3]}'`
-    OH_SIZEOF_CHAR=`echo -e $OH_TYPE_SIZES | grep "^char" | awk '{print $[2]}'`
-    OH_SIZEOF_SHORT=`echo -e $OH_TYPE_SIZES | grep "^short" | awk '{print $[2]}'`
-    OH_SIZEOF_INT=`echo -e $OH_TYPE_SIZES | grep "^int" | awk '{print $[2]}'`
-    OH_SIZEOF_LLONG=`echo -e $OH_TYPE_SIZES | grep "^long long" | awk '{print $[3]}'`
-    OH_SIZEOF_FLOAT=`echo -e $OH_TYPE_SIZES | grep "^float" | awk '{print $[2]}'`
-    OH_SIZEOF_DOUBLE=`echo -e $OH_TYPE_SIZES | grep "^double" | awk '{print $[2]}'`
-    rm -f $OH_SSFILE $OH_SSSOURCE
+        $CC -o $OH_SSFILE $OH_SSSOURCE
+
+        OH_TYPE_SIZES=`./$OH_SSFILE`
+        # feel free to define more logic here if we need it
+    
+        OH_SIZEOF_UCHAR=`echo -e $OH_TYPE_SIZES | grep "^unsigned char" | awk '{print $[3]}'`
+        OH_SIZEOF_USHORT=`echo -e $OH_TYPE_SIZES | grep "^unsigned short" | awk '{print $[3]}'`
+        OH_SIZEOF_UINT=`echo -e $OH_TYPE_SIZES | grep "^unsigned int" | awk '{print $[3]}'`
+        OH_SIZEOF_CHAR=`echo -e $OH_TYPE_SIZES | grep "^char" | awk '{print $[2]}'`
+        OH_SIZEOF_SHORT=`echo -e $OH_TYPE_SIZES | grep "^short" | awk '{print $[2]}'`
+        OH_SIZEOF_INT=`echo -e $OH_TYPE_SIZES | grep "^int" | awk '{print $[2]}'`
+        OH_SIZEOF_LLONG=`echo -e $OH_TYPE_SIZES | grep "^long long" | awk '{print $[3]}'`
+        OH_SIZEOF_FLOAT=`echo -e $OH_TYPE_SIZES | grep "^float" | awk '{print $[2]}'`
+        OH_SIZEOF_DOUBLE=`echo -e $OH_TYPE_SIZES | grep "^double" | awk '{print $[2]}'`
+        rm -f $OH_SSFILE $OH_SSSOURCE
+
+    fi
     ])
 
 #
@@ -197,7 +229,7 @@ AC_DEFUN([OH_CHECK_RTAS],
 	    #include <librtas.h>
         ],    
         [
-            int main (void) { rtas_activate_firmware(); }
+            rtas_activate_firmware();
         ],
         [
 	    if test -f "/usr/bin/lsvpd"; then

@@ -99,7 +99,7 @@ SaErrorT oh_gettimeofday(SaHpiTimeT *time)
 
         err = gettimeofday(&now, NULL);
 	if (err) {
-		dbg("gettimeofday failed");
+		err("gettimeofday failed");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 

@@ -42,7 +42,7 @@ SaErrorT snmp_bc_get_power_state(void *hnd,
 
 
 	if (!hnd || !state) {
-		dbg("Invalid parameter");
+		err("Invalid parameter");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -51,7 +51,7 @@ SaErrorT snmp_bc_get_power_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -70,12 +70,12 @@ SaErrorT snmp_bc_get_power_state(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
  	if (resinfo == NULL) {
-		dbg("No resource data. Resource=%s", rpt->ResourceTag.Data);
+		err("No resource data. Resource=%s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 	if (resinfo->mib.OidPowerState == NULL) {
-		dbg("No Power OID.");
+		err("No Power OID.");
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -92,11 +92,11 @@ SaErrorT snmp_bc_get_power_state(void *hnd,
 			*state = SAHPI_POWER_ON;
 			break;
 		default:
-			dbg("Invalid power state for OID=%s.", resinfo->mib.OidPowerState);
+			err("Invalid power state for OID=%s.", resinfo->mib.OidPowerState);
 		        err = SA_ERR_HPI_INTERNAL_ERROR;
 		}
         } else {
-		dbg("Cannot read SNMP OID=%s; Type=%d.", resinfo->mib.OidPowerState, get_value.type);
+		err("Cannot read SNMP OID=%s; Type=%d.", resinfo->mib.OidPowerState, get_value.type);
 	}
 
 	snmp_bc_unlock_handler(custom_handle);
@@ -129,7 +129,7 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 	SaHpiRptEntryT *rpt;
 
 	if (!hnd || NULL == oh_lookup_powerstate(state)) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -138,7 +138,7 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -157,12 +157,12 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 
 	resinfo = (struct ResourceInfo *)oh_get_resource_data(handle->rptcache, rid);
  	if (resinfo == NULL) {
-		dbg("No resource data. Resource=%s", rpt->ResourceTag.Data);
+		err("No resource data. Resource=%s", rpt->ResourceTag.Data);
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}       
 	if (resinfo->mib.OidPowerOnOff == NULL) {
-		dbg("No Power OnOff OID.");
+		err("No Power OnOff OID.");
 		snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -177,7 +177,7 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 		err = snmp_bc_oid_snmp_set(custom_handle, &(rpt->ResourceEntity), 0,
 					 resinfo->mib.OidPowerOnOff, set_value);
 		if (err) {
-			dbg("Cannot set SNMP OID=%s; Type=%d.",
+			err("Cannot set SNMP OID=%s; Type=%d.",
 			    resinfo->mib.OidPowerOnOff, set_value.type);
 			if (err != SA_ERR_HPI_BUSY) err = SA_ERR_HPI_NO_RESPONSE;
 		}
@@ -187,7 +187,7 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 		err = snmp_bc_oid_snmp_set(custom_handle, &(rpt->ResourceEntity), 0,
 						 resinfo->mib.OidPowerOnOff, set_value);
 		if (err) {
-			dbg("Cannot set SNMP OID=%s; Type=%d.",
+			err("Cannot set SNMP OID=%s; Type=%d.",
 			    resinfo->mib.OidPowerOnOff, set_value.type);
 			if (err != SA_ERR_HPI_BUSY) err = SA_ERR_HPI_NO_RESPONSE;
 		}
@@ -199,7 +199,7 @@ SaErrorT snmp_bc_set_power_state(void *hnd,
 	        }
 		break;
 	default:
-		dbg("Invalid Power Action Type=%d.", state);
+		err("Invalid Power Action Type=%d.", state);
 		err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 

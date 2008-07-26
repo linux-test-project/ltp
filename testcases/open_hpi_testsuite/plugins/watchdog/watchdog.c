@@ -91,27 +91,27 @@ static void *watchdog_open(GHashTable *handler_config,
         char *er;
 
         if (!handler_config) {
-                dbg("empty handler_config");
+                err("empty handler_config");
                 return NULL;
         } else if (!hid) {
-                dbg("Bad handler id passed.");
+                err("Bad handler id passed.");
                 return NULL;
         } else if (!eventq) {
-                dbg("No event queue was passed.");
+                err("No event queue was passed.");
                 return NULL;
         }
 
         /* set up entity root in g_epbase */
         er = (char *)g_hash_table_lookup(handler_config,"entity_root");
         if (!er) {
-                dbg("no entity root present");
+                err("no entity root present");
                 return NULL;
         }
         oh_encode_entitypath(er, &g_epbase);
         
 	hnd = malloc(sizeof(*hnd));
         if (!hnd) {
-                dbg("unable to allocate main handler");
+                err("unable to allocate main handler");
                 return NULL;
         }
 
@@ -127,7 +127,7 @@ static void *watchdog_open(GHashTable *handler_config,
 
         wdt = malloc(sizeof(*wdt));
         if (!wdt) {
-                dbg("unable to allocate wdtitems structure");
+                err("unable to allocate wdtitems structure");
                 free(hnd->rptcache);
                 free(hnd);	
                 return NULL;
@@ -158,14 +158,14 @@ static void watchdog_close(void *hnd)
         struct wdtitems *wdt;
 	
         if (!tmp) {
-                dbg("no instance to delete");
+                err("no instance to delete");
                 return;
         }
 
         wdt = tmp->data;
 	if (wdt->data.Running) {
 		if (write(wdt->fd, "V", 1) != 1) {
-                    dbg("write in watchdog failed");
+                    err("write in watchdog failed");
 		}
 		close(wdt->fd);
 	}
@@ -191,7 +191,7 @@ static int watchdog_get_event(void *hnd)
 	struct oh_handler_state *tmp = (struct oh_handler_state *) hnd;
 	
 	if (!tmp) {
-		dbg("no handler given");
+		err("no handler given");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -214,7 +214,7 @@ static int watchdog_discover_resources(void *hnd)
 	struct wdtitems *wdt;
 
 	if (!tmp) {
-		dbg("no handler given");
+		err("no handler given");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -235,23 +235,23 @@ static int watchdog_discover_resources(void *hnd)
 		 */
 		wdt->fd = open(wdt->path, O_RDWR);
 		if (-1 == wdt->fd) {
-			dbg("watchdog device is not enabled");
+			err("watchdog device is not enabled");
 			return 0;
 		}
 		/* the clock is ticking... set the default timeout */
                 /* before it is too late                           */
 		if ( -1 == ioctl(wdt->fd, WDIOC_SETTIMEOUT, &timeout)) {
-			dbg("unable to set watchdog timeout");
+			err("unable to set watchdog timeout");
 			if (write(wdt->fd, "V", 1) != 1) {
-				dbg("write in watchdog failed");
+				err("write in watchdog failed");
 			}
 			close(wdt->fd);
 			return 0;
 		}
 		if ( -1 == ioctl(wdt->fd, WDIOC_GETTIMEOUT, &timeout)) {
-			dbg("unable to read watchdog timeout");
+			err("unable to read watchdog timeout");
 			if (write(wdt->fd, "V", 1) != 1) {
-				dbg("write in watchdog failed");
+				err("write in watchdog failed");
 			}
 			close(wdt->fd);
 			return 0;
@@ -259,7 +259,7 @@ static int watchdog_discover_resources(void *hnd)
 
 		/* writing "V" and closing the wdt disables it */
 		if (-1 == write(wdt->fd, "V", 1)) {
-			dbg("Unable to write to watchdog - cannot close");
+			err("Unable to write to watchdog - cannot close");
 			return 0;
 		}
 		close(wdt->fd);
@@ -292,7 +292,7 @@ static int watchdog_discover_resources(void *hnd)
 		 */	
 		e = (struct oh_event *)malloc(sizeof(*e));
 		if (!e) {
-			dbg("unable to allocate event");
+			err("unable to allocate event");
 			return SA_ERR_HPI_OUT_OF_SPACE;
 		}
 		memset(e, '\0', sizeof(struct oh_event));
@@ -319,7 +319,7 @@ static int watchdog_discover_resources(void *hnd)
 				
 		/* add resource */
 		if (0 != oh_add_resource(tmp->rptcache, &(e->resource), NULL, 0)) {
-			dbg("unable to add resource to RPT");
+			err("unable to add resource to RPT");
 			return SA_ERR_HPI_ERROR;
 		}
 
@@ -329,7 +329,7 @@ static int watchdog_discover_resources(void *hnd)
 		/* note:  reusing e; okay so long as we don't do a free(e) before */
 		SaHpiRdrT *tmprdr = (SaHpiRdrT *)malloc(sizeof(SaHpiRdrT));
 		if (!tmprdr) {
-			dbg("unable to allocate event");
+			err("unable to allocate event");
 			return SA_ERR_HPI_OUT_OF_SPACE;
 		}
 		memset(tmprdr, '\0', sizeof(*tmprdr));
@@ -348,7 +348,7 @@ static int watchdog_discover_resources(void *hnd)
 
 		/* add RDR */
         	if (oh_add_rdr(tmp->rptcache, puid, tmprdr, NULL, 0)) {
-                	dbg("unable to add RDR to RPT");
+                	err("unable to add RDR to RPT");
                 	return SA_ERR_HPI_ERROR;
 		}
 
@@ -381,13 +381,13 @@ static int watchdog_get_watchdog_info(void *hnd, SaHpiResourceIdT id,
 	struct wdtitems *wdtitems;
 
 	if (!i) {
-		dbg("no handler given");
+		err("no handler given");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	wdtitems = i->data;
 	if (!wdtitems) {
-		dbg("no watchdog info with this handler");
+		err("no watchdog info with this handler");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -437,13 +437,13 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 	SaHpiWatchdogT w;
 
 	if (!i) {
-		dbg("no handler given");
+		err("no handler given");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	wdtitems = i->data;
 	if (!wdtitems) {
-		dbg("no watchdog info with this handler");
+		err("no watchdog info with this handler");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -452,7 +452,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 
 	if (SAHPI_FALSE != wdt->Log) {
 		/* impossible to issue events on timeout */
-		dbg("Request for unsupported watchdog action");
+		err("Request for unsupported watchdog action");
 		ret = SA_ERR_HPI_INVALID_PARAMS;
 	}
 	w.Log = SAHPI_FALSE;
@@ -471,7 +471,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 			}
 
 			if ( -1 == ioctl(wdtitems->fd, WDIOC_SETTIMEOUT, &timeout)) {
-				dbg("unable to set watchdog timeout");
+				err("unable to set watchdog timeout");
 				ret = SA_ERR_HPI_ERROR;
 			}
 			/* we read the timeout value after writing */
@@ -481,7 +481,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 			/* ask the watchdog device what it really set */
 			/* the timeout too */
 			if ( -1 == ioctl(wdtitems->fd, WDIOC_GETTIMEOUT, &timeout)) {
-				dbg("unable to read watchdog timeout");
+				err("unable to read watchdog timeout");
 				ret = SA_ERR_HPI_ERROR;
 			}
 			w.InitialCount = timeout * 1000;
@@ -490,7 +490,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
  			* countdown value */
 			dbg("reset the watchdog");
 			if (-1 == write(wdtitems->fd, "1", 1)) {
-				dbg("could not reset watchdog");
+				err("could not reset watchdog");
 				ret = SA_ERR_HPI_ERROR;
 			}
 		} 
@@ -498,9 +498,9 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 	} else {
 		if (SAHPI_TRUE == w.Running) {
 			/* stop the watchdog device */
-			dbg("Stop watchdog");
+			warn("Watchdog timer stopped by OpenHPI");
 			if (-1 == write(wdtitems->fd, "V", 1)) {
-				dbg("Unable to write to watchdog");
+				err("Unable to write to watchdog");
 				ret = SA_ERR_HPI_ERROR;
 			}
 			close(wdtitems->fd);
@@ -513,7 +513,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 
 	if (SAHPI_WA_RESET != wdt->TimerAction) {
 		/* only reset is supported */
-		dbg("Request for unsupported watchdog action");
+		err("Request for unsupported watchdog action");
 		ret = SA_ERR_HPI_INVALID_PARAMS;
 	}
 	w.TimerAction = SAHPI_WA_RESET;
@@ -521,7 +521,7 @@ static int watchdog_set_watchdog_info(void *hnd, SaHpiResourceIdT id,
 	if (SAHPI_WPI_NONE != wdt->PretimerInterrupt ||
 	    0 != wdt->PreTimeoutInterval) {
 		/* we have no way of doing a pre-timeout interrupt */
-		dbg("pretimeout functionality is not available");
+		err("pretimeout functionality is not available");
 		ret = SA_ERR_HPI_INVALID_PARAMS;
 	}
 	w.PretimerInterrupt = SAHPI_WPI_NONE;
@@ -551,32 +551,32 @@ static int watchdog_reset_watchdog(void *hnd, SaHpiResourceIdT id,
 	struct wdtitems *wdtitems;
 
 	if (!i) {
-		dbg("no handler given");
+		err("no handler given");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	wdtitems = i->data;
 	if (!wdtitems) {
-		dbg("no watchdog info with this handler");
+		err("no watchdog info with this handler");
 		return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
 	if (wdtitems->data.Running == SAHPI_FALSE) {
 		int timeout;
 
-		dbg("start up the watchdog");
+		warn("Watchdog timer started by OpenHPI");
 		/* calling reset on stopped watchdog will */
 		/* cause the watchdog to start            */
 		wdtitems->fd = open(wdtitems->path, O_RDWR);
 		if (-1 == wdtitems->fd) {
-			dbg("could not open watchdog device");
+			err("could not open watchdog device");
 			return SA_ERR_HPI_ERROR;
 		}
 		wdtitems->data.Running = SAHPI_TRUE;
 
 		timeout = wdtitems->data.InitialCount / 1000;
 		if ( -1 == ioctl(wdtitems->fd, WDIOC_SETTIMEOUT, &timeout)) {
-			dbg("unable to set watchdog timeout");
+			err("unable to set watchdog timeout");
 			return SA_ERR_HPI_ERROR;
 		}
 		/* we read the timeout value after writing */
@@ -586,7 +586,7 @@ static int watchdog_reset_watchdog(void *hnd, SaHpiResourceIdT id,
 		/* ask the watchdog device what it really set */
 		/* the timeout too */
 		if ( -1 == ioctl(wdtitems->fd, WDIOC_GETTIMEOUT, &timeout)) {
-			dbg("unable to read watchdog timeout");
+			err("unable to read watchdog timeout");
 			return SA_ERR_HPI_ERROR;
 		}
 		wdtitems->data.InitialCount = timeout * 1000;
@@ -596,7 +596,7 @@ static int watchdog_reset_watchdog(void *hnd, SaHpiResourceIdT id,
 	 * countdown value */
 	dbg("reset the watchdog");
 	if (-1 == write(wdtitems->fd, "1", 1)) {
-		dbg("unable to reset the watchdog");
+		err("unable to reset the watchdog");
 		return SA_ERR_HPI_ERROR;
 	}
 

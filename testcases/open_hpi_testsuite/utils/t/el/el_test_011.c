@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
         retc = oh_el_append(el, &event, NULL, NULL);
         if (retc == SA_OK) {
-                dbg("ERROR: oh_el_append failed.");
+                err("ERROR: oh_el_append failed.");
                 return 1;
         }       
 

@@ -70,12 +70,12 @@ int main(int argc, char **argv)
         rc = oh_announcement_get(ann, 2, &announ);
 
         if(announ.EntryId != 2) {
-                dbg("ERROR: announ.EntryId invalid.");
+                err("ERROR: announ.EntryId invalid.");
                 return 1;
         }
 
         if(announ.Severity != SAHPI_MAJOR) {
-                dbg("ERROR: announ.Severity invalid.");
+                err("ERROR: announ.Severity invalid.");
                 return 1;
         }
 

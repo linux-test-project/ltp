@@ -61,14 +61,14 @@ SaErrorT sim_discover_chassis_sensors(struct oh_handler_state *state,
         while (sim_chassis_sensors[i].index != 0) {
                 rc = new_sensor(state, e, &sim_chassis_sensors[i]);
                 if (rc) {
-                        dbg("Error %s returned when adding chassis sensor",
+                        err("Error %s returned when adding chassis sensor",
 			    oh_lookup_error(rc));
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d chassis sensors injected", j, i);
+        dbg("%d of %d chassis sensors injected", j, i);
 
         return 0;
 
@@ -83,13 +83,13 @@ SaErrorT sim_discover_cpu_sensors(struct oh_handler_state *state,
         while (sim_cpu_sensors[i].index != 0) {
                 rc = new_sensor(state, e, &sim_cpu_sensors[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding cpu sensor", rc);
+                        err("Error %d returned when adding cpu sensor", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d cpu sensors injected", j, i);
+        dbg("%d of %d cpu sensors injected", j, i);
 
         return 0;
 
@@ -104,13 +104,13 @@ SaErrorT sim_discover_dasd_sensors(struct oh_handler_state *state,
         while (sim_dasd_sensors[i].index != 0) {
                 rc = new_sensor(state, e, &sim_dasd_sensors[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding dasd sensor", rc);
+                        err("Error %d returned when adding dasd sensor", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d dasd sensors injected", j, i);
+        dbg("%d of %d dasd sensors injected", j, i);
 
         return 0;
 
@@ -125,13 +125,13 @@ SaErrorT sim_discover_hs_dasd_sensors(struct oh_handler_state *state,
         while (sim_hs_dasd_sensors[i].index != 0) {
                 rc = new_sensor(state, e, &sim_hs_dasd_sensors[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding hs dasd sensor", rc);
+                        err("Error %d returned when adding hs dasd sensor", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d hs dasd sensors injected", j, i);
+        dbg("%d of %d hs dasd sensors injected", j, i);
 
         return 0;
 
@@ -146,13 +146,13 @@ SaErrorT sim_discover_fan_sensors(struct oh_handler_state *state,
         while (sim_fan_sensors[i].index != 0) {
                 rc = new_sensor(state, e, &sim_fan_sensors[i]);
                 if (rc) {
-                        dbg("Error %d returned when adding fan sensor", rc);
+                        err("Error %d returned when adding fan sensor", rc);
                 } else {
                         j++;
                 }
                 i++;
         }
-        trace("%d of %d fan sensors injected", j, i);
+        dbg("%d of %d fan sensors injected", j, i);
 
         return 0;
 

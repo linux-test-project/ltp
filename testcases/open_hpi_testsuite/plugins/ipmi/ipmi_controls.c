@@ -50,20 +50,20 @@ static void __get_control_state(ipmi_control_t *control,
         struct ohoi_ctrl_info *info = cb_data;
 
 	if (err || !val) {
-		dbg("__get_control_state: err = %d; val = %p", err, val);
+		err("__get_control_state: err = %d; val = %p", err, val);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
 	}
        if (info->state->Type != SAHPI_CTRL_TYPE_OEM) {
-                dbg("IPMI plug-in only support OEM control now");
+                err("IPMI plug-in only support OEM control now");
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
                 return;
         }
         
 	if (err || !val) {
-		dbg("__get_control_state: err = %d; val = %p", err, val);
+		err("__get_control_state: err = %d; val = %p", err, val);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
@@ -83,20 +83,20 @@ static void __get_control_leds_state(ipmi_control_t *control,
 	int			len, res ,val;
 
 	if (err) {
-		dbg("__get_control_leds_state: err = %d", err);
+		err("__get_control_leds_state: err = %d", err);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
 	}
 	if (info->state->Type != SAHPI_CTRL_TYPE_OEM) {
-		dbg("IPMI plug-in only support OEM control now");
+		err("IPMI plug-in only support OEM control now");
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
 	}
 			               
 	if (settings == (ipmi_light_setting_t *)NULL) {
-		dbg("__get_control_leds_state: settings = NULL");
+		err("__get_control_leds_state: settings = NULL");
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
@@ -156,7 +156,7 @@ static void __get_atca_led(ipmi_control_t *control,
 			state->StateUnion.Oem.Body[1] = on_time ? 1 : 0;
 		}
 	} else {
-		dbg("couldn't get on/off times");
+		err("couldn't get on/off times");
 		info->err = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 	}
@@ -164,7 +164,7 @@ static void __get_atca_led(ipmi_control_t *control,
 		state->StateUnion.Oem.Body[2] = ohoi_atca_led_to_hpi_color(color);
 		state->StateUnion.Oem.Body[3] = state->StateUnion.Oem.Body[2];
 	} else {
-		dbg("couldn't get color");
+		err("couldn't get color");
 		info->err = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 	}
@@ -185,7 +185,7 @@ static void _get_atca_led(ipmi_control_t *control,
 	int rv;
 	rv = ipmi_control_get_light(control, __get_atca_led, info);
 	if (rv) {
-		dbg("ipmi_control_get_light. rv = %d", rv);
+		err("ipmi_control_get_light. rv = %d", rv);
 		info->err = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 	}
@@ -226,16 +226,16 @@ SaErrorT orig_get_control_state(struct oh_handler_state *handler,
 		info.state = state;
 		rv = ipmi_control_pointer_cb(ctrl, _get_atca_led, &info);
 		if (rv) {
-			dbg("ipmi_control_pointer_cb. rv = %d", rv);
+			err("ipmi_control_pointer_cb. rv = %d", rv);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 		rv = ohoi_loop(&info.done, handler->data);
 		if (rv != SA_OK) {
-			dbg("ohoi_loop. rv = %d", rv);
+			err("ohoi_loop. rv = %d", rv);
 			return rv;
 		}
 		if (info.err != SA_OK) {
-			dbg("info.err = %d", info.err);
+			err("info.err = %d", info.err);
 			return info.err;
 		}
 		*mode = info.mode;
@@ -253,7 +253,7 @@ SaErrorT orig_get_control_state(struct oh_handler_state *handler,
         
         rv = ipmi_control_pointer_cb(ctrl, _get_control_state, &info);
 	if (rv) {
-		dbg("Unable to retrieve control state");
+		err("Unable to retrieve control state");
 		return SA_ERR_HPI_ERROR;
 	}
 
@@ -313,7 +313,7 @@ static void __set_control_state(ipmi_control_t *control,
 	struct ohoi_ctrl_info *info = cb_data;
 
 	if (err) {
-		dbg("__set_control_state: err = %d", err);
+		err("__set_control_state: err = %d", err);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	info->done = 1;
@@ -326,7 +326,7 @@ static void _set_control_state(ipmi_control_t *control,
         
         if (info->state->StateUnion.Oem.BodyLength 
                         != ipmi_control_get_num_vals(control)) {
-                dbg("control number is not equal to supplied data");
+                err("control number is not equal to supplied data");
                 info->done = -1;
 		info->err = SA_ERR_HPI_INVALID_PARAMS;
                 return;
@@ -410,16 +410,16 @@ static SaErrorT set_front_panrl_alarm_led(void *hnd,
 		state->StateUnion.Oem.Body[0] = val & ~mask;
         	rv = ipmi_control_pointer_cb(ctrl, _set_control_state, &info);
 		if (rv) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return SA_ERR_HPI_ERROR;
 		}
         	rv = ohoi_loop(&info.done, ipmi_handler);
 		if (info.err != SA_OK) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return info.err;
 		}
 		if (rv != SA_OK) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return rv;
 		}
 		/* then turn it off. IPMI is slow, it provides us delay */
@@ -433,16 +433,16 @@ static SaErrorT set_front_panrl_alarm_led(void *hnd,
 		state->StateUnion.Oem.Body[0] = val | mask;
         	rv = ipmi_control_pointer_cb(ctrl, _set_control_state, &info);
 		if (rv) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return SA_ERR_HPI_ERROR;
 		}
         	rv = ohoi_loop(&info.done, ipmi_handler);
 		if (info.err != SA_OK) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return info.err;
 		}
 		if (rv != SA_OK) {
-			dbg("Unable to set control state");
+			err("Unable to set control state");
 			return rv;
 		}
 		/* then turn it on. IPMI is slow, it provides us delay */
@@ -454,16 +454,16 @@ static SaErrorT set_front_panrl_alarm_led(void *hnd,
 	
         rv = ipmi_control_pointer_cb(ctrl, _set_control_state, &info);
 	if (rv) {
-		dbg("Unable to set control state");
+		err("Unable to set control state");
 		return SA_ERR_HPI_ERROR;
 	}
         rv = ohoi_loop(&info.done, ipmi_handler);
 	if (info.err != SA_OK) {
-		dbg("Unable to set control state");
+		err("Unable to set control state");
 		return info.err;
 	}
 	if (rv != SA_OK) {
-		dbg("Unable to set control state");
+		err("Unable to set control state");
 		return rv;
 	}
 	
@@ -502,22 +502,22 @@ static void __set_atca_led(ipmi_control_t *control,
 	
 		rv = ipmi_light_setting_set_color(st, 0, color);
 		if (rv) {
-			dbg("ipmi_light_setting_set_color. rv = %d", rv);
+			err("ipmi_light_setting_set_color. rv = %d", rv);
 		}
 		rv = ipmi_light_setting_set_off_time(st, 0, body[0] * 10);
 		if (rv) {
-			dbg("ipmi_light_setting_set_off_time. rv = %d", rv);
+			err("ipmi_light_setting_set_off_time. rv = %d", rv);
 		}
 		rv = ipmi_light_setting_set_on_time(st, 0, body[1] * 10);
 		if (rv) {
-			dbg("ipmi_light_setting_set_on_time. rv = %d", rv);
+			err("ipmi_light_setting_set_on_time. rv = %d", rv);
 		}
 	}
 	
 	rv = ipmi_control_set_light(control, st,
 			__set_control_state, info);
 	if (rv) {
-		dbg("ipmi_control_set_light = %d", rv);
+		err("ipmi_control_set_light = %d", rv);
 		info->err = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 		return;
@@ -537,7 +537,7 @@ static void _set_atca_led(ipmi_control_t *control,
 	int rv;
 	rv = ipmi_control_get_light(control, __set_atca_led, info);
 	if (rv) {
-		dbg("ipmi_control_get_light. rv = %d", rv);
+		err("ipmi_control_get_light. rv = %d", rv);
 		info->err = SA_ERR_HPI_INVALID_DATA;
 		info->done = 1;
 	}
@@ -602,11 +602,11 @@ SaErrorT orig_set_control_state(struct oh_handler_state *handler,
 	    	/* This is ATCA led */
 		if (state != NULL) {
 			if (state->StateUnion.Oem.MId != ATCAHPI_PICMG_MID) {
-				dbg("state->StateUnion.Mid isn't ATCAHPI_PICMG_MID");
+				err("state->StateUnion.Mid isn't ATCAHPI_PICMG_MID");
 				return SA_ERR_HPI_INVALID_DATA;
 			}
 			if (state->StateUnion.Oem.BodyLength != 6) {
-				dbg("state->StateUnion.Oem.BodyLength(%d) != 6",
+				err("state->StateUnion.Oem.BodyLength(%d) != 6",
 					state->StateUnion.Oem.BodyLength);
 				return SA_ERR_HPI_INVALID_DATA;
 			}
@@ -628,16 +628,16 @@ SaErrorT orig_set_control_state(struct oh_handler_state *handler,
 		info.state = state;
 		rv = ipmi_control_pointer_cb(ctrl, _set_atca_led, &info);
 		if (rv) {
-			dbg("ipmi_control_pointer_cb. rv = %d", rv);
+			err("ipmi_control_pointer_cb. rv = %d", rv);
 			return SA_ERR_HPI_INVALID_DATA;
 		}
 		rv = ohoi_loop(&info.done, handler->data);
 		if (rv != SA_OK) {
-			dbg("ohoi_loop. rv = %d", rv);
+			err("ohoi_loop. rv = %d", rv);
 			return rv;
 		}
 		if (info.err != SA_OK) {
-			dbg("info.err = %d", info.err);
+			err("info.err = %d", info.err);
 			return info.err;
 		}
 		c->mode = mode;
@@ -667,13 +667,13 @@ SaErrorT orig_set_control_state(struct oh_handler_state *handler,
         info.state = state;
 	info.err = SA_OK;
         if (info.state->Type != SAHPI_CTRL_TYPE_OEM) {
-                dbg("IPMI only support OEM control");
+                err("IPMI only support OEM control");
                 return SA_ERR_HPI_INVALID_CMD;
         }
        
         rv = ipmi_control_pointer_cb(ctrl, _set_control_state, &info);
 	if (rv) {
-		dbg("Unable to set control state");
+		err("Unable to set control state");
 		return SA_ERR_HPI_ERROR;
 	}
 
@@ -710,7 +710,7 @@ SaErrorT ohoi_set_control_state(void *hnd,
 		
 	if (rdr->RdrTypeUnion.CtrlRec.DefaultMode.ReadOnly &&
 		rdr->RdrTypeUnion.CtrlRec.DefaultMode.Mode != mode) {
-		dbg("Attempt to change mode of RO sensor mode");
+		err("Attempt to change mode of RO sensor mode");
 		return SA_ERR_HPI_READ_ONLY;
 	}
 
@@ -731,7 +731,7 @@ static void reset_resource_done (ipmi_control_t *ipmi_control,
 	struct ohoi_reset_info *info = cb_data;
 	info->done = 1;
 	if (err) {
-		dbg("reset_resource_done: err = %d", err);
+		err("reset_resource_done: err = %d", err);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 }
@@ -746,7 +746,7 @@ static void set_resource_reset_state(ipmi_control_t *control,
         /* Just cold reset the entity*/
         rv = ipmi_control_set_val(control, &val, reset_resource_done, cb_data);
 	if (rv) {
-		dbg("ipmi_control_set_val returned err = %d", rv);
+		err("ipmi_control_set_val returned err = %d", rv);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 	}
@@ -760,7 +760,7 @@ static void reset_mc_done (ipmi_mc_t *mc,
 	struct ohoi_reset_info *info = cb_data;
 	info->done = 1;
 	if (err) {
-		dbg("reset_mc_done err = %d", err);
+		err("reset_mc_done err = %d", err);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 }
@@ -783,7 +783,7 @@ static void set_mc_reset_state(ipmi_mc_t *mc,
 	}		
         rv = ipmi_mc_reset(mc, act, reset_mc_done, cb_data);
 	if (rv) {
-		dbg("ipmi_mc_reset returned err = %d", rv);
+		err("ipmi_mc_reset returned err = %d", rv);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 	}
@@ -807,7 +807,7 @@ SaErrorT ohoi_set_reset_state(void *hnd, SaHpiResourceIdT id,
 	      	dbg("ResetAction requested: %d", act);
 	      	info.state = &act;
 	} else {
-	      	dbg("Currently we only support cold and warm reset");
+	      	err("Currently we only support cold and warm reset");
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 
@@ -821,7 +821,7 @@ SaErrorT ohoi_set_reset_state(void *hnd, SaHpiResourceIdT id,
 	}
 
         if (rv) {
-                dbg("Not support reset in the entity or mc");
+                err("Not support reset in the entity or mc");
                 return SA_ERR_HPI_CAPABILITY;
         }
 
@@ -845,7 +845,7 @@ static void power_done (ipmi_control_t *ipmi_control,
 
 	power_info->done = 1;
 	if (err) {
-		dbg("power_done: err = %d", err);
+		err("power_done: err = %d", err);
 		power_info->err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 }
@@ -859,7 +859,7 @@ static void set_power_state_on(ipmi_control_t *control,
         rv = ipmi_control_set_val(control, (int *)power_info->state, power_done, cb_data);
 
 	if (rv) {
-		dbg("Failed to set control val (power on). rv = %d", rv);
+		err("Failed to set control val (power on). rv = %d", rv);
 		OHOI_MAP_ERROR(power_info->err, rv);
 		power_info->done = 1;
 	} else
@@ -875,7 +875,7 @@ static void set_power_state_off(ipmi_control_t *control,
         rv = ipmi_control_set_val(control, (int *)power_info->state,
 				  power_done, cb_data);
 	if (rv) {
-	  	dbg("Failed to set control val (power off). rv = %d", rv);
+	  	err("Failed to set control val (power off). rv = %d", rv);
 		OHOI_MAP_ERROR(power_info->err, rv);
 		power_info->done = 1;
 	} else
@@ -897,7 +897,7 @@ SaErrorT ohoi_set_power_state(void *hnd, SaHpiResourceIdT id,
 
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("Not support power in MC");
+                err("Not support power in MC");
                 return SA_ERR_HPI_INVALID_CMD;
         }
 	
@@ -906,7 +906,7 @@ SaErrorT ohoi_set_power_state(void *hnd, SaHpiResourceIdT id,
 			rv = ipmi_control_pointer_cb(ohoi_res_info->power_ctrl, 
 						    set_power_state_on, &power_info);
 			if (rv) {
-				dbg("set_power_state_on failed");
+				err("set_power_state_on failed");
 				return SA_ERR_HPI_INTERNAL_ERROR;
 			}
 			break;
@@ -914,7 +914,7 @@ SaErrorT ohoi_set_power_state(void *hnd, SaHpiResourceIdT id,
 			rv = ipmi_control_pointer_cb(ohoi_res_info->power_ctrl, 
                                                     set_power_state_off, &power_info);
 	                if (rv) {
-        	            	dbg("set_power_state_off failed");
+        	            	err("set_power_state_off failed");
                 	    	return SA_ERR_HPI_INTERNAL_ERROR;
                 	}
 			break;
@@ -926,12 +926,12 @@ SaErrorT ohoi_set_power_state(void *hnd, SaHpiResourceIdT id,
 			rv = ipmi_control_pointer_cb(ohoi_res_info->power_ctrl, 
 						    set_power_state_off, &power_info);
 			if (rv) {
-				dbg("set_power_state_off failed");
+				err("set_power_state_off failed");
 				return SA_ERR_HPI_INTERNAL_ERROR;
 			}
 			rv = ohoi_loop(&power_info.done, ipmi_handler);
 			if (rv != SA_OK) {
-				dbg("ohopi_loop = 0x%x", rv);
+				err("ohopi_loop = 0x%x", rv);
 				return rv;
 			}
 			dbg("CYCLE Stage 1: OK");
@@ -946,13 +946,13 @@ SaErrorT ohoi_set_power_state(void *hnd, SaHpiResourceIdT id,
 			      	rv = ipmi_control_pointer_cb(ohoi_res_info->power_ctrl, 
 							    set_power_state_on, &power_info);
 				if (rv) {
-				      	dbg("set_power_state_on failed");
+				      	err("set_power_state_on failed");
 					return SA_ERR_HPI_INTERNAL_ERROR;
 				}
 			}
 			break;
 		default:
-			dbg("Invalid power state requested");
+			err("Invalid power state requested");
 			return SA_ERR_HPI_INVALID_PARAMS;
 	}
 
@@ -971,21 +971,21 @@ static void get_power_control_val (ipmi_control_t *control,
 	struct ohoi_power_info *info = cb_data;
 
 	if (err || !val) {
-		dbg("get_power_control_val: err = %d; val = %p", err, val);
+		err("get_power_control_val: err = %d; val = %p", err, val);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
 	}
 	if (*val == 0) {
-		dbg("Power Control Value: %d", *val);
+		err("Power Control Value: %d", *val);
 		*info->state = SAHPI_POWER_OFF;
 		info->err = SA_OK;
 	} else if (*val == 1) {
-		dbg("Power Control Value: %d", *val);
+		err("Power Control Value: %d", *val);
 		*info->state = SAHPI_POWER_ON;
 		info->err = SA_OK;
 	} else {
-		dbg("invalid power state");
+		err("invalid power state");
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 	}
 	info->done = 1;
@@ -1001,7 +1001,7 @@ static void get_power_state (ipmi_control_t *ipmi_control,
 	rv = ipmi_control_get_val(ipmi_control, get_power_control_val, cb_data);
 
 	if(rv) {
-		dbg("[power]control_get_val failed. rv = %d", rv);
+		err("[power]control_get_val failed. rv = %d", rv);
 		power_state->err = SA_ERR_HPI_INTERNAL_ERROR;
 		power_state->done = 1;
 	}
@@ -1024,14 +1024,14 @@ SaErrorT ohoi_get_power_state (void *hnd,
 	
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("MC does not support power!");
+                err("MC does not support power!");
                 return SA_ERR_HPI_CAPABILITY;
         }
 
 	rv = ipmi_control_pointer_cb(ohoi_res_info->power_ctrl,
 					get_power_state, &power_state);
 	if (rv) {
-		dbg("get_power_state failed");
+		err("get_power_state failed");
 		return SA_ERR_HPI_INTERNAL_ERROR;
 	}
 
@@ -1051,17 +1051,17 @@ static void get_reset_control_val (ipmi_control_t *control,
 	struct ohoi_reset_info *info = cb_data;
 
 	if (err || !val) {
-		dbg("get_reset_control_val: err = %d; val = %p", err, val);
+		err("get_reset_control_val: err = %d; val = %p", err, val);
 		info->err = SA_ERR_HPI_INTERNAL_ERROR;
 		info->done = 1;
 		return;
 	}
 	if (*val == 0) {
-		dbg("Reset Control Value: %d", *val);
+		err("Reset Control Value: %d", *val);
 		*info->state = SAHPI_RESET_DEASSERT;
 		info->err = SA_OK;
 	} else if (*val == 1) {
-		dbg("Power Control Value: %d", *val);
+		err("Power Control Value: %d", *val);
 		*info->state = SAHPI_RESET_ASSERT;
 		info->err = SA_OK;
 	} else {
@@ -1069,7 +1069,7 @@ static void get_reset_control_val (ipmi_control_t *control,
 		 * so we'll always return SAHPI_RESET_DEASSER
 		 * this code is here just in case ;-)
 		 */
-		dbg("System does not support holding ResetState");
+		err("System does not support holding ResetState");
 		*info->state = SAHPI_RESET_DEASSERT;
 		info->err = SA_OK;
 	}
@@ -1086,8 +1086,8 @@ void get_reset_state(ipmi_control_t *control,
 
 	rv = ipmi_control_get_val(control, get_reset_control_val, cb_data);
 	if (rv) {
-		//dbg("[reset] control_get_val failed. IPMI error = %i", rv);
-		dbg("This IPMI system has a pulse reset, state is always DEASSERT");
+		//err("[reset] control_get_val failed. IPMI error = %i", rv);
+		err("This IPMI system has a pulse reset, state is always DEASSERT");
 		/* OpenIPMI will return an error for this call
 		   since pulse resets do not support get_state
 		   we will return UNSUPPORTED_API
@@ -1116,14 +1116,14 @@ SaErrorT ohoi_get_reset_state(void *hnd,
 
         ohoi_res_info = oh_get_resource_data(handler->rptcache, id);
         if (!(ohoi_res_info->type & OHOI_RESOURCE_ENTITY)) {
-                dbg("Not support power in MC");
+                err("Not support power in MC");
                 return SA_ERR_HPI_CAPABILITY;
         }
 
 	rv = ipmi_control_pointer_cb(ohoi_res_info->reset_ctrl,
 				     get_reset_state, &reset_state);
 	if(rv) {
-		dbg("[reset_state] control pointer callback failed. rv = %d", rv);
+		err("[reset_state] control pointer callback failed. rv = %d", rv);
 		return SA_ERR_HPI_INVALID_CMD;
 	}
 

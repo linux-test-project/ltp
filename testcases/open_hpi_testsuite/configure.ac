@@ -5,7 +5,7 @@ dnl   various hacks by Sean Dague <http://dague.net/sean> 4/23/03
 
 
 AC_PREREQ(2.57)
-AC_INIT(openhpi, 2.10.2)
+AC_INIT(openhpi, 2.12.0)
 AC_CONFIG_SRCDIR(openhpi.spec.in)
 AM_INIT_AUTOMAKE([1.8])
 
@@ -14,7 +14,16 @@ AH_TOP([#ifndef __OPENHPI_CONFIG_H
 #define __OPENHPI_CONFIG_H])
 AH_BOTTOM([#endif /* __OPENHPI_CONFIG_H */])
 
-HPI_LIB_VERSION=12:2:10
+#
+# (major version) = (first number) - (third number) 
+# (minor version) = (third number)
+# (patch version) = (second number)
+# example HPI_LIB_VERSION=13:4:11
+# major version: 2  = 13 - 11
+# minor version: 11 = 11
+# patch version: 4  = 4
+#
+HPI_LIB_VERSION=14:0:12
 HPI_PKG=$PACKAGE_NAME
 HPI_UTIL_PKG=${PACKAGE_NAME}utils
 HPI_CLIENT_PKG=${PACKAGE_NAME}client
@@ -34,7 +43,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 dnl die on int != 32bits.  This is too instrumental to our code right now.
 dnl AC_MSG_CHECKING(int is 4 bytes)
@@ -47,7 +55,9 @@ if test "x$OH_SIZEOF_INT" != "x4"; then
 ])
 fi
 
-dnl Check fo libraries
+AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
+
+dnl Check for libraries
 have_uuid=no
 have_openipmi=no
 have_fam=no
@@ -119,25 +129,18 @@ AC_CHECK_LIB([uuid], [uuid_generate], [have_uuid=yes], [
     ])
 
 dnl ssl is used for md2/md5 authentification in ipmidirect
-AC_CHECK_LIB([ssl],[MD5_Init],[SSL_LIB=-lssl],[SSL_LIB=])
+dnl and for SSL-based communication in ilo2_ribcl and oa_soap
+AC_CHECK_LIB([crypto],[MD5_Init],[CRYPTO_LIB=-lcrypto],[CRYPTO_LIB=])
+AC_SUBST(CRYPTO_LIB)
+AC_CHECK_LIB([ssl],[SSL_library_init],[SSL_LIB=-lssl],[SSL_LIB=])
 AC_SUBST(SSL_LIB)
-AC_CHECK_HEADERS([openssl/md2.h openssl/md5.h])
+AC_CHECK_HEADERS([openssl/md2.h openssl/md5.h openssl/bio.h openssl/ssl.h openssl/err.h],[have_openssl=yes],[have_openssl=no])
 
-dnl Extra goodies enablement stanzas
-
-AC_ARG_ENABLE([thread],
-    [  --enable-thread         make implementation thread-safe [[default=yes]]],
-    [if test "x$enableval" = "xyes"; then
-        THREAD_SAFE="yes"
-    fi],
-    [THREAD_SAFE="yes"])
-
-if test "x$THREAD_SAFE" = "xyes"; then
-        AC_DEFINE([HAVE_THREAD_SAFE], [1], [Define to 1 if you want thread-safe implementation])
-        LIST_RESOURCES_THREADED=list_resources_threaded
-fi
-AC_SUBST(LIST_RESOURCES_THREADED)
-
+dnl xml is used for XML-based communication in ilo2_ribcl and oa_soap
+AC_CHECK_LIB([xml2],[xmlParseMemory],[XML2_LIB=-lxml2],[XML2_LIB=])
+AC_CHECK_HEADERS([libxml2/libxml/xmlexports.h],[XML2_INCLUDE="-I/usr/include/libxml2"],[XML2_INCLUDE])
+AC_SUBST(XML2_LIB)
+AC_SUBST(XML2_INCLUDE)
 
 dnl Enable the marshal directory only when needed by
 dnl the deamon
@@ -200,14 +203,23 @@ dnl list of static plugins
 STATIC_PLUGIN_LIST=
 STATIC_PLUGIN_EXTRA_LIBS=
 
+AC_CHECK_HEADER([linux/watchdog.h], [have_linux_watchdog_h=yes], [], [#include <linux/types.h>])
 AC_ARG_ENABLE([watchdog],
-    [  --enable-watchdog       build watchdog plugin [[default=yes]]],
+    [  --enable-watchdog       build watchdog plugin [[default=yes if linux/watchdog.h exists]]],
     [if test "x$enableval" = "xyes"; then
-        AC_SUBST(WATCHDOG,watchdog)
+        if test "x$have_linux_watchdog_h" = "xyes"; then
+            AC_SUBST(WATCHDOG,watchdog)
+        else
+            AC_MSG_ERROR("Can not build the watchdog plugin without linux/watchdog.h.")
+        fi
     else
         AC_SUBST(WATCHDOG,"")
     fi],
-    [AC_SUBST(WATCHDOG,watchdog)])
+    [if test "x$have_linux_watchdog_h" = "xyes"; then
+        AC_SUBST(WATCHDOG,watchdog)
+    else
+        AC_SUBST(WATCHDOG,"")
+    fi])
 
 dnl
 dnl We really need to make ipmi enablement be contigent on OpenIPMI
@@ -310,14 +322,6 @@ AC_ARG_ENABLE([ipmidirect],
 
 dnl    [AC_SUBST(IPMIDIRECT,ipmidirect)])
 
-dnl ipmidirect needs posix threads
-if test "x$IPMIDIRECT" = "xipmidirect"; then
-        if test "x$THREAD_SAFE" != "xyes" ; then
-                AC_MSG_ERROR("ipmidirect plugin needs thread support (--enable-thread) !")
-        fi
-fi
-
-
 OH_CHECK_RTAS
 
 #Configure options for the RTAS plugin
@@ -336,12 +340,64 @@ AC_ARG_ENABLE([rtas],
     fi],
     [AC_SUBST(WITH_RTAS,0)])
 
+# configure argument for the simulator plugin
 AC_ARG_ENABLE([simulator],
     [  --enable-simulator      build simulator plugin [[default=yes]]],
     [if test "x$enableval" = "xyes"; then
         AC_SUBST(SIMULATOR,simulator)
     fi],
     [AC_SUBST(SIMULATOR,simulator)])
+
+# configure argument for the ilo2_ribcl plugin
+AC_ARG_ENABLE([ilo2_ribcl],
+    [  --enable-ilo2_ribcl     build ilo2_ribcl plugin [[default=no]]],
+    [if test "x$enableval" = "xyes"; then
+        if test "x$have_openssl" = "xyes"; then
+            if test -n "$XML2_INCLUDE"; then
+                AC_SUBST(ILO2_RIBCL,ilo2_ribcl)
+                AC_SUBST(WITH_ILO2_RIBCL,1)
+            else
+                OH_CHECK_FAIL(xml2-devel,,,Can not build ilo2_ribcl without xml2 headers)
+            fi
+        else
+            OH_CHECK_FAIL(openssl-devel,,,Can not build ilo2_ribcl without openssl headers)
+        fi
+    else
+        AC_SUBST(WITH_ILO2_RIBCL,0)
+    fi],
+    [if test "x$have_openssl" = "xyes" && test -n "$XML2_INCLUDE"; then
+        AC_SUBST(ILO2_RIBCL,ilo2_ribcl)
+        AC_SUBST(WITH_ILO2_RIBCL,1)
+     else
+        AC_SUBST(WITH_ILO2_RIBCL,0)
+     fi
+    ])
+
+# configure argument for the oa_soap plugin
+AC_ARG_ENABLE([oa_soap],
+    [  --enable-oa_soap        build oa_soap plugin [[default=no]]],
+    [if test "x$enableval" = "xyes"; then
+        if test "x$have_openssl" = "xyes"; then
+	    if test -n "$XML2_INCLUDE"; then
+                AC_SUBST(OA_SOAP,oa_soap)
+                AC_SUBST(WITH_OA_SOAP,1)
+	    else
+	    	OH_CHECK_FAIL(xml2-devel,,,Can not build oa_soap without xml2 headers)
+	    fi
+	else
+	    OH_CHECK_FAIL(openssl-devel,,,Can not build oa_soap without openssl headers)
+	fi
+    else
+        AC_SUBST(WITH_OA_SOAP,0)
+    fi],
+    [if test "x$have_openssl" = "xyes" && test -n "$XML2_INCLUDE"; then
+        AC_SUBST(OA_SOAP,oa_soap)
+        AC_SUBST(WITH_OA_SOAP,1)
+     else
+        AC_SUBST(WITH_OA_SOAP,0)
+     fi
+    ])
+
 
 dnl enable marshal library when needed
 if test "x$oh_daemon_enabled" = "xyes"; then
@@ -375,6 +431,7 @@ dnl setup SNMPFLAGS
 AC_SUBST(SNMPFLAGS)
 AC_SUBST(SNMPLIBS)
 AC_SUBST(SNMPDIR)
+AC_SUBST(SSLDIR)
 
 dnl
 dnl This code was borrowed from linux-ha configure.in file
@@ -475,8 +532,8 @@ AC_ARG_ENABLE([testcover],
     [if test "x$enableval" = "xyes"; then
             CFLAGS=`echo $CFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
             CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
-            COV_CFLAGS = "-ftest-coverage -fprofile-arcs"
-            AC_SUBST(COV_CFLAGS)
+            CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
+            CXXFLAGS="$CXXFLAGS -ftest-coverage -fprofile-arcs"
     fi]
     )
 
@@ -488,11 +545,14 @@ AC_ARG_ENABLE([debuggable],
     [if test "x$enableval" = "xyes"; then
             CFLAGS=`echo $CFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
             CFLAGS=`echo $CFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`
-            CFLAGS="$CFLAGS -g3"
+            CFLAGS="$CFLAGS -O0 -ggdb3"
+            CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
+            CXXFLAGS=`echo $CXXFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`
+            CXXFLAGS="$CXXFLAGS -O0 -ggdb3"
     else
             CFLAGS=`echo $CFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`
-    fi],
-    [CFLAGS=`echo $CFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`]
+            CXXFLAGS=`echo $CXXFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`
+    fi]
     )
 
 dnl This will let the user decide whether he wants
@@ -522,7 +582,8 @@ CC_WARNINGS="\
         -Wcast-qual \
         -Wcast-align \
         -Wno-strict-aliasing \
-	-Wno-unused-value \
+	-fno-strict-aliasing \
+        -Wno-unused-value \
         -Werror "
 
 CXX_WARNINGS="\
@@ -537,7 +598,8 @@ CXX_WARNINGS="\
         -Wwrite-strings \
         -Wredundant-decls \
         -Wno-strict-aliasing \
-	-Wno-unused-value \
+	-fno-strict-aliasing \
+        -Wno-unused-value \
         -Werror "
 
 if test -n "`gcc --version | grep ' 3.2'`" ; then
@@ -556,29 +618,24 @@ dnl remerge the warnings into the FLAGS
 CXXFLAGS="$CFLAGS $CXX_WARNINGS"
 CFLAGS="$CFLAGS $CC_WARNINGS"
 
-dnl lastly, we add things if we are thread safe
+dnl lastly, we add things if we are thread safe and have the openssl library
 dnl (this could probably happen earlier in this file)
-if test "x$THREAD_SAFE" = "xyes" ; then
-        CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -fexceptions"
-        CXXFLAGS="$CXXFLAGS -D_GNU_SOURCE -D_REENTRANT -fexceptions"
+CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -fexceptions"
+CXXFLAGS="$CXXFLAGS -D_GNU_SOURCE -D_REENTRANT -fexceptions"
+if test "x$have_openssl" = "xyes"; then
+	SSLDIR=ssl
+	AC_DEFINE([HAVE_OPENSSL],[1],[openssl library was found])
 fi
-
-dnl there are certain places we always want to turn off optimization
-dnl this has to come last
-NOCFLAGS=`echo $CFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
-AC_SUBST(NOCFLAGS)
-NOCXXFLAGS=`echo $CXXFLAGS | sed -e 's/-O\w\?\>[ ]*//g'`
-AC_SUBST(NOCXXFLAGS)
+AM_CONDITIONAL(HAVE_OPENSSL, test x$have_openssl = xyes)
+OH_SSL_INCLUDES="-I\$(top_srcdir)/ssl"
+AC_SUBST(OH_SSL_INCLUDES)
 
 OPENHPI_INCLUDES="-I\$(top_srcdir)/include -I\$(top_srcdir)/utils -I\$(top_builddir)/utils"
 dnl replace common includes here
 AC_SUBST(OPENHPI_INCLUDES)
 
 dnl Set up libs that will be linked to
-LIBS="$LIBS $GLIB_LIBS -lm"
-if test "x$THREAD_SAFE" = "xyes" ; then
-        LIBS="$LIBS -lpthread"
-fi
+LIBS="$LIBS $SSL_LIB $GLIB_LIBS -lm -lpthread"
 
 AC_CHECK_PROG([found_docbook2html], [docbook2html], [yes])
 AC_ARG_ENABLE([docs],
@@ -586,16 +643,20 @@ AC_ARG_ENABLE([docs],
     [if test "x$enableval" = "xyes"; then
         if test "x$found_docbook2html" = "xyes"; then
             AC_SUBST(HLD,hld)
+            AC_SUBST(WITH_DOCBOOK2HTML,1)
         else
            OH_CHECK_FAIL(docbook2html,docbook-utils,http://sources.redhat.com/docbook-tools, Can not generate HTML design docs without docbook2html)
 	fi
     else
         AC_SUBST(HLD,"")
+        AC_SUBST(WITH_DOCBOOK2HTML,0)
     fi],
     [if test "x$found_docbook2html" = "xyes"; then
-        AC_SUBST(HLD,hld)
+        AC_SUBST(HLD,hld)  
+        AC_SUBST(WITH_DOCBOOK2HTML,1)
     else
         AC_SUBST(HLD,"")
+        AC_SUBST(WITH_DOCBOOK2HTML,0)
     fi])
     
 AC_CHECK_PROG([found_pod2man], [pod2man], [yes])
@@ -644,9 +705,12 @@ AC_CONFIG_FILES([openhpi.spec
         plugins/simulator/Makefile
         plugins/simulator/t/Makefile
         plugins/rtas/Makefile
+        plugins/ilo2_ribcl/Makefile
+        plugins/oa_soap/Makefile
         scripts/Makefile
         scripts/test/Makefile
         snmp/Makefile
+	ssl/Makefile
         src/Makefile
         src/plugin_static.c
         src/t/Makefile
@@ -656,7 +720,6 @@ AC_CONFIG_FILES([openhpi.spec
         docs/man/Makefile
         openhpid/Makefile
         openhpid/openhpid.sh
-        hpi_ui_lib/Makefile
         hpi_shell/Makefile
         cpp/Makefile
         cpp/t/Makefile

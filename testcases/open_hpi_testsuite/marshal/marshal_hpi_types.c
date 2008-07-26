@@ -12,7 +12,7 @@
  *
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
- *     W. David Ashley <dashley@us.ibm.com.com>
+ *     W. David Ashley <dashley@us.ibm.com>
  *     Renier Morales <renier@openhpi.org>
  */
 
@@ -25,7 +25,7 @@
 #include <oHpi.h>
 
 
-// text buffer
+// SaHpiTextBuffer
 static cMarshalType SaHpiTextBufferDataArray = dArray( SaHpiUint8Type, SAHPI_MAX_TEXT_BUFFER_LENGTH );
 
 static cMarshalType SaHpiTextBufferElements[] =
@@ -39,19 +39,25 @@ static cMarshalType SaHpiTextBufferElements[] =
 
 cMarshalType SaHpiTextBufferType = dStruct( SaHpiTextBufferT, SaHpiTextBufferElements );
 
-
-// oHpi text buffer
-static cMarshalType oHpiTextBufferDataArray = dArray( SaHpiUint8Type, OH_MAX_TEXT_BUFFER_LENGTH );
-
-static cMarshalType oHpiTextBufferElements[] =
+// oHpi
+static cMarshalType oHpiHandlerConfigParamTypeNameArray = dArray( SaHpiUint8Type, SAHPI_MAX_TEXT_BUFFER_LENGTH );
+static cMarshalType oHpiHandlerConfigParamTypeValueArray = dArray( SaHpiUint8Type, SAHPI_MAX_TEXT_BUFFER_LENGTH );
+static cMarshalType oHpiHandlerConfigParamTypeElements[] =
 {
-  dStructElement( oHpiTextBufferT, DataLength, SaHpiUint16Type ),
-  dStructElement( oHpiTextBufferT, Data, oHpiTextBufferDataArray ),
-  dStructElementEnd()
+	dStructElement( oHpiHandlerConfigParamT, Name, oHpiHandlerConfigParamTypeNameArray ),
+	dStructElement( oHpiHandlerConfigParamT, Value, oHpiHandlerConfigParamTypeValueArray ),
+	dStructElementEnd()
 };
+cMarshalType oHpiHandlerConfigParamType = dStruct( oHpiHandlerConfigParamT, oHpiHandlerConfigParamTypeElements );
 
-cMarshalType oHpiTextBufferType = dStruct( oHpiTextBufferT, oHpiTextBufferElements );
-
+static cMarshalType HandlerConfigParamsArray = dVarArray( oHpiHandlerConfigParamType, dStructOffset( oHpiHandlerConfigT, NumberOfParams ) );
+static cMarshalType oHpiHandlerConfigTypeElements[] =
+{
+	dStructElement( oHpiHandlerConfigT, NumberOfParams, SaHpiUint8Type ),
+	dStructElement( oHpiHandlerConfigT, Params, HandlerConfigParamsArray ),
+	dStructElementEnd()
+};
+cMarshalType oHpiHandlerConfigType = dStruct( oHpiHandlerConfigT, oHpiHandlerConfigTypeElements );
 
 // entity
 static cMarshalType SaHpiEntityElements[] =
@@ -520,7 +526,7 @@ static cMarshalType SaHpiDimiTestParameterValueUnionTypeElements[] =
 {
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_INT32, SaHpiInt32Type ),
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_FLOAT64, SaHpiFloat64Type ),
-        /* These two types are disregarded but must be specified */
+        /* These two types are disregarded but must be spepcified */
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN, SaHpiFloat64Type ),
         dUnionElement( SAHPI_DIMITEST_PARAM_TYPE_TEXT, SaHpiFloat64Type ),
         dUnionElementEnd()

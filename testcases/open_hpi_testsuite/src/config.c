@@ -40,9 +40,6 @@ static const char *known_globals[] = {
         "OPENHPI_DAT_SIZE_LIMIT",
         "OPENHPI_DAT_USER_LIMIT",
         "OPENHPI_DAT_SAVE",
-        //"OPENHPI_DEBUG",
-        //"OPENHPI_DEBUG_TRACE",
-        //"OPENHPI_DEBUG_LOCK",
         "OPENHPI_PATH",
         "OPENHPI_VARPATH",
         "OPENHPI_CONF",
@@ -58,9 +55,6 @@ static struct {
         SaHpiUint32T dat_size_limit;
         SaHpiUint32T dat_user_limit;
         SaHpiBoolT dat_save;
-        //unsigned char dbg;
-        //unsigned char dbg_trace;
-        //unsigned char dbg_lock;
         char path[OH_MAX_TEXT_BUFFER_LENGTH];
         char varpath[OH_MAX_TEXT_BUFFER_LENGTH];
         char conf[OH_MAX_TEXT_BUFFER_LENGTH];
@@ -75,9 +69,6 @@ static struct {
         .dat_size_limit = 0, /* Unlimited size */
         .dat_user_limit = 0, /* Unlimited size */
         .dat_save = SAHPI_FALSE,
-        //.dbg = 0,
-        //.dbg_trace = 0,
-        //.dbg_lock = 0,
         .path = OH_PLUGIN_PATH,
         .varpath = VARPATH,
         .conf = OH_DEFAULT_CONF,
@@ -205,24 +196,6 @@ static void process_global_param(const char *name, char *value)
                 } else {
                         global_params.dat_save = SAHPI_FALSE;
                 }
-        //} else if (!strcmp("OPENHPI_DEBUG", name)) {
-        //        if (!strcmp("YES", value)) {
-        //                global_params.dbg = 1;
-        //       } else {
-        //                global_params.dbg = 0;
-        //        }
-        //} else if (!strcmp("OPENHPI_DEBUG_TRACE", name)) {
-        //        if (!strcmp("YES", value)) {
-        //               global_params.dbg_trace = 1;
-        //        } else {
-        //                global_params.dbg_trace = 0;
-        //        }
-        //} else if (!strcmp("OPENHPI_DEBUG_LOCK", name)) {
-        //        if (!strcmp("YES", value)) {
-        //               global_params.dbg_lock = 1;
-        //        } else {
-        //                global_params.dbg_lock = 0;
-        //        }
         } else if (!strcmp("OPENHPI_PATH", name)) {
                 g_static_rec_mutex_lock(&global_params.lock);
                 memset(global_params.path, 0, OH_MAX_TEXT_BUFFER_LENGTH);
@@ -239,7 +212,7 @@ static void process_global_param(const char *name, char *value)
                 strncpy(global_params.conf, value, OH_MAX_TEXT_BUFFER_LENGTH-1);
                 g_static_rec_mutex_unlock(&global_params.lock);
         } else {
-                dbg("ERROR. Invalid global parameter %s in config file", name);
+                err("ERROR. Invalid global parameter %s in config file", name);
         }
 
         return;
@@ -282,14 +255,14 @@ static int process_handler_token (GScanner* oh_scanner)
         data_access_lock();
 
         if (g_scanner_get_next_token(oh_scanner) != HPI_CONF_TOKEN_HANDLER) {
-                dbg("Processing handler: Unexpected token.");
+                err("Processing handler: Unexpected token.");
                 data_access_unlock();
                 return -1;
         }
 
         /* Get the plugin type and store in Hash Table */
         if (g_scanner_get_next_token(oh_scanner) != G_TOKEN_STRING) {
-                dbg("Processing handler: Expected string token.");
+                err("Processing handler: Expected string token.");
                 data_access_unlock();
                 return -1;
         } else {
@@ -305,14 +278,14 @@ static int process_handler_token (GScanner* oh_scanner)
 
         /* Check for Left Brace token type. If we have it, then continue parsing. */
         if (g_scanner_get_next_token(oh_scanner) != G_TOKEN_LEFT_CURLY) {
-                dbg("Processing handler: Expected left curly token.");
+                err("Processing handler: Expected left curly token.");
                 goto free_table;
         }
 
         while (!found_right_curly) {
                 /* get key token in key\value pair set (e.g. key = value) */
                 if (g_scanner_get_next_token(oh_scanner) != G_TOKEN_STRING) {
-                        dbg("Processing handler: Expected string token.");
+                        err("Processing handler: Expected string token.");
                         goto free_table;
                 } else {
                         tablekey = g_strdup(oh_scanner->value.v_string);
@@ -320,7 +293,7 @@ static int process_handler_token (GScanner* oh_scanner)
 
                 /* Check for the equal sign next. If we have it, continue parsing */
                 if (g_scanner_get_next_token(oh_scanner) != G_TOKEN_EQUAL_SIGN) {
-                        dbg("Processing handler: Expected equal sign token.");
+                        err("Processing handler: Expected equal sign token.");
                         goto free_table_and_key;
                 }
 
@@ -331,7 +304,7 @@ static int process_handler_token (GScanner* oh_scanner)
                 if (g_scanner_peek_next_token(oh_scanner) != G_TOKEN_INT &&
                     g_scanner_peek_next_token(oh_scanner) != G_TOKEN_FLOAT &&
                     g_scanner_peek_next_token(oh_scanner) != G_TOKEN_STRING) {
-                        dbg("Processing handler: Expected string, integer, or float token.");
+                        err("Processing handler: Expected string, integer, or float token.");
                         goto free_table_and_key;
                 } else { /* The type of token tells us how to fetch the value from oh_scanner */
                         gpointer value = NULL;
@@ -354,7 +327,7 @@ static int process_handler_token (GScanner* oh_scanner)
                         }
 
                         if (value == NULL) {
-                                dbg("Processing handler:"
+                                err("Processing handler:"
                                     " Unable to allocate memory for value."
                                     " Token Type: %d",
                                     current_token);
@@ -407,26 +380,26 @@ static int process_global_token(GScanner *scanner)
         /* Get the global parameter name */
         current_token = g_scanner_get_next_token(scanner);
         if (current_token != G_TOKEN_STRING) {
-                dbg("Processing global: Expected string token. Got %d",
+                err("Processing global: Expected string token. Got %d",
                     current_token);
                 goto quit;
         }
 
         name = g_strdup(scanner->value.v_string);
         if (!name) {
-                dbg("Unable to allocate for global param name.");
+                err("Unable to allocate for global param name.");
                 goto quit;
         }
 
         current_token = g_scanner_get_next_token(scanner);
         if (current_token != G_TOKEN_EQUAL_SIGN) {
-                dbg("Did not get expected '=' token. Got %d", current_token);
+                err("Did not get expected '=' token. Got %d", current_token);
                 goto free_and_quit;
         }
 
         current_token = g_scanner_get_next_token(scanner);
         if (current_token != G_TOKEN_STRING && current_token != G_TOKEN_INT) {
-                dbg("Did not get expected string value for global parameter."
+                err("Did not get expected string value for global parameter."
                     " Got %d", current_token);
                 goto free_and_quit;
         }
@@ -446,7 +419,7 @@ static int process_global_token(GScanner *scanner)
         }
 
         if (!value) {
-                dbg("Unable to allocate for global param value.");
+                err("Unable to allocate for global param value.");
                 goto free_and_quit;
         }
 
@@ -479,19 +452,19 @@ static int process_domain_token(GScanner *scanner)
         data_access_lock();
 
         if (g_scanner_get_next_token(scanner) != HPI_CONF_TOKEN_DOMAIN) {
-                dbg("Processing domain: Unexpected token.");
+                err("Processing domain: Unexpected token.");
                 data_access_unlock();
                 return -1;
         }
 
         /* Get the domain id and store in Hash Table */
         if (g_scanner_get_next_token(scanner) != G_TOKEN_INT) {
-                dbg("Processing handler: Expected domain id.");
+                err("Processing handler: Expected domain id.");
                 data_access_unlock();
                 return -1;
         } else {
                 if ((SaHpiDomainIdT)scanner->value.v_int == SAHPI_UNSPECIFIED_DOMAIN_ID) {
-                        dbg("Processing domain: value for id cannot be SAHPI_UNSPECIFIED_DOMAIN_ID (4294967295).");
+                        err("Processing domain: value for id cannot be SAHPI_UNSPECIFIED_DOMAIN_ID (4294967295).");
                         return -1;
                 }
                 SaHpiDomainIdT *id = (SaHpiDomainIdT *)g_malloc0(sizeof(SaHpiDomainIdT));
@@ -507,7 +480,7 @@ static int process_domain_token(GScanner *scanner)
 
         /* Check for Left Brace token type. If we have it, then continue parsing. */
         if (g_scanner_get_next_token(scanner) != G_TOKEN_LEFT_CURLY) {
-                dbg("Processing domain: Expected left curly token.");
+                err("Processing domain: Expected left curly token.");
                 goto free_table;
         }
 
@@ -515,7 +488,7 @@ static int process_domain_token(GScanner *scanner)
                 int current_token;
                 /* get key token in key\value pair set (e.g. key = value) */
                 if (g_scanner_get_next_token(scanner) != G_TOKEN_STRING) {
-                        dbg("Processing domain: Expected string token.");
+                        err("Processing domain: Expected string token.");
                         goto free_table;
                 } else {
                         tablekey = g_strdup(scanner->value.v_string);
@@ -523,7 +496,7 @@ static int process_domain_token(GScanner *scanner)
 
                 /* Check for the equal sign next. If we have it, continue parsing */
                 if (g_scanner_get_next_token(scanner) != G_TOKEN_EQUAL_SIGN) {
-                        dbg("Processing domain: Expected equal sign token.");
+                        err("Processing domain: Expected equal sign token.");
                         goto free_table_and_key;
                 }
 
@@ -535,14 +508,14 @@ static int process_domain_token(GScanner *scanner)
                 if (strcmp("entity_pattern", tablekey) == 0 || /* Required */
                     strcmp("tag", tablekey) == 0) { /* Optional */
                         if (current_token != G_TOKEN_STRING) {
-                                dbg("Processing domain: value for %s is not a string!", tablekey);
+                                err("Processing domain: value for %s is not a string!", tablekey);
                                 goto free_table_and_key;
                         }
                 } else if (strcmp("child_of", tablekey) == 0 || /* Optional. 0 means default domain. */
                            strcmp("peer_of", tablekey) == 0 || /* Optional. 0 means default domain. */
                            strcmp("ai_readonly", tablekey) == 0) { /* Optional. 1 (default) means yes, 0 means no */
                         if (current_token != G_TOKEN_INT) {
-                                dbg("Processing domain: value for %s is not a valid integer!", tablekey);
+                                err("Processing domain: value for %s is not a valid integer!", tablekey);
                                 goto free_table_and_key;
                         }
                 } else if (strcmp("ai_timeout", tablekey) == 0) { /* Optional. 0 (default) is IMMEDIATE. -1 is BLOCK. In seconds. */
@@ -553,11 +526,11 @@ static int process_domain_token(GScanner *scanner)
 
                         if (current_token != G_TOKEN_INT &&
                             current_token != G_TOKEN_FLOAT) {
-                                dbg("Processing domain: Invalid value for %s!", tablekey);
+                                err("Processing domain: Invalid value for %s!", tablekey);
                                 goto free_table_and_key;
                         }
                 } else {
-                        trace("Dropping unknown name/value pair. going on to next.");
+                        dbg("Dropping unknown name/value pair. going on to next.");
                         g_free(tablekey);
                         goto find_right_curly;
                 }
@@ -585,7 +558,7 @@ static int process_domain_token(GScanner *scanner)
                 }
 
                 if (!value) {
-                        dbg("Processing domain:"
+                        err("Processing domain:"
                             " Unable to extract value."
                             " Token Type: %d",
                             current_token);
@@ -642,7 +615,7 @@ static void scanner_msg_handler (GScanner *scanner, gchar *message, gboolean is_
 {
         g_return_if_fail (scanner != NULL);
 
-        dbg("%s:%d: %s%s\n",
+        err("%s:%d: %s%s\n",
             scanner->input_name ? scanner->input_name : "<memory>",
             scanner->line, is_error ? "error: " : "", message );
 }
@@ -665,14 +638,14 @@ int oh_load_config (char *filename, struct oh_parsed_config *config)
         int num_tokens = sizeof(oh_conf_tokens) / sizeof(oh_conf_tokens[0]);
 
         if (!filename || !config) {
-                dbg("Error. Invalid parameters");
+                err("Error. Invalid parameters");
                 return -1;
         }
 
         handler_configs = NULL;
         oh_scanner = g_scanner_new(&oh_scanner_config);
         if (!oh_scanner) {
-                dbg("Couldn't allocate g_scanner for file parsing");
+                err("Couldn't allocate g_scanner for file parsing");
                 return -2;
         }
 
@@ -681,7 +654,7 @@ int oh_load_config (char *filename, struct oh_parsed_config *config)
 
         oh_conf_file = open(filename, O_RDONLY);
         if (oh_conf_file < 0) {
-                dbg("Configuration file '%s' could not be opened", filename);
+                err("Configuration file '%s' could not be opened", filename);
                 g_scanner_destroy(oh_scanner);
                 return -4;
         }
@@ -725,7 +698,7 @@ int oh_load_config (char *filename, struct oh_parsed_config *config)
         read_globals_from_env(1);
 
         if (close(oh_conf_file) != 0) {
-                dbg("Couldn't close file '%s'.", filename);
+                err("Couldn't close file '%s'.", filename);
                 g_scanner_destroy(oh_scanner);
                 return -5;
         }
@@ -734,7 +707,7 @@ int oh_load_config (char *filename, struct oh_parsed_config *config)
 
         g_scanner_destroy(oh_scanner);
 
-        trace("Done processing conf file.\nNumber of parse errors:%d", done);
+        dbg("Done processing conf file.\nNumber of parse errors:%d", done);
 
         config->handler_configs = handler_configs;
 	config->domain_configs = domain_configs;
@@ -768,11 +741,11 @@ SaErrorT oh_process_config(struct oh_parsed_config *config)
 
 		error = oh_create_handler(handler_config, &hid);
                 if (error == SA_OK) {
-                        trace("Loaded handler for plugin %s",
-                              (char *)g_hash_table_lookup(handler_config, "plugin"));
+                        dbg("Loaded handler for plugin %s",
+                            (char *)g_hash_table_lookup(handler_config, "plugin"));
                         config->handlers_loaded++;
                 } else {
-                        dbg("Couldn't load handler for plugin %s",
+                        err("Couldn't load handler for plugin %s",
                             (char *)g_hash_table_lookup(handler_config, "plugin"));
                         if (hid == 0) g_hash_table_destroy(handler_config);
                 }
@@ -786,10 +759,10 @@ SaErrorT oh_process_config(struct oh_parsed_config *config)
                         (SaHpiDomainIdT *)g_hash_table_lookup(domain_config, "id");
                 if (*did == 0) config->default_domain = TRUE;
                 if (!oh_create_domain_from_table(domain_config)) {
-                        trace("Created domain %u", *did);
+                        dbg("Created domain %u", *did);
                         config->domains_loaded++;
                 } else {
-                        dbg("Couldn't load domain %u", (did) ? *did : 999999);
+                        err("Couldn't load domain %u", (did) ? *did : 999999);
                 }
                 config->domains_defined++;
         }
@@ -821,11 +794,11 @@ int oh_get_global_param(struct oh_global_param *param)
         if (!param || !(param->type)) {
 
             if (!param) {
-                dbg("ERROR. Invalid parameters param NULL");
+                err("ERROR. Invalid parameters param NULL");
             }
 
             if (!param->type) {
-                dbg("ERROR. Invalid parameters param->type NULL");
+                err("ERROR. Invalid parameters param->type NULL");
             }
 
                 return -1;
@@ -860,15 +833,6 @@ int oh_get_global_param(struct oh_global_param *param)
                 case OPENHPI_DAT_SAVE:
                         param->u.dat_save = global_params.dat_save;
                         break;
-                //case OPENHPI_DEBUG:
-                //        param->u.dbg = global_params.dbg;
-                //        break;
-                //case OPENHPI_DEBUG_TRACE:
-                //        param->u.dbg_trace = global_params.dbg_trace;
-                //        break;
-                //case OPENHPI_DEBUG_LOCK:
-                //        param->u.dbg_lock = global_params.dbg_lock;
-                //        break;
                 case OPENHPI_PATH:
                         g_static_rec_mutex_lock(&global_params.lock);
                         strncpy(param->u.path,
@@ -891,7 +855,7 @@ int oh_get_global_param(struct oh_global_param *param)
                         g_static_rec_mutex_unlock(&global_params.lock);
                         break;
                 default:
-                        dbg("ERROR. Invalid global parameter %d!", param->type);
+                        err("ERROR. Invalid global parameter %d!", param->type);
                         return -2;
         }
 
@@ -907,7 +871,7 @@ int oh_get_global_param(struct oh_global_param *param)
 int oh_set_global_param(struct oh_global_param *param)
 {
         if (!param || !(param->type)) {
-                dbg("ERROR. Invalid parameters");
+                err("ERROR. Invalid parameters");
                 return -1;
         }
 
@@ -940,15 +904,6 @@ int oh_set_global_param(struct oh_global_param *param)
                 case OPENHPI_DAT_SAVE:
                         global_params.dat_save = param->u.dat_save;
                         break;
-                //case OPENHPI_DEBUG:
-                //        global_params.dbg = param->u.dbg;
-                //        break;
-                //case OPENHPI_DEBUG_TRACE:
-                //        global_params.dbg_trace = param->u.dbg_trace;
-                //        break;
-                //case OPENHPI_DEBUG_LOCK:
-                //        global_params.dbg_lock = param->u.dbg_lock;
-                //        break;
                 case OPENHPI_PATH:
                         g_static_rec_mutex_lock(&global_params.lock);
                         memset(global_params.path, 0, OH_MAX_TEXT_BUFFER_LENGTH);
@@ -974,31 +929,9 @@ int oh_set_global_param(struct oh_global_param *param)
                         g_static_rec_mutex_unlock(&global_params.lock);
                         break;
                 default:
-                        dbg("ERROR. Invalid global parameter %d!", param->type);
+                        err("ERROR. Invalid global parameter %d!", param->type);
                         return -2;
         }
 
         return 0;
 }
-
-//unsigned char oh_get_global_bool(oh_global_param_type type)
-//{
-//        if (!type) {
-//                dbg("ERROR. Invalid parameters");
-//                return 0;
-//        }
-//
-//        read_globals_from_env(0);
-//
-//        switch (type) {
-//                case OPENHPI_DEBUG:
-//                        return global_params.dbg;
-//                case OPENHPI_DEBUG_TRACE:
-//                        return global_params.dbg_trace;
-//                case OPENHPI_DEBUG_LOCK:
-//                        return global_params.dbg_lock;
-//                default:
-//                        dbg("ERROR. Invalid global parameter type %d!", type);
-//                        return 0;
-//        }
-//}

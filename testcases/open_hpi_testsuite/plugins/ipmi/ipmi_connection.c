@@ -81,14 +81,14 @@ void ipmi_connection_handler (ipmi_domain_t	*domain,
 	ipmi_handler->d_type = ipmi_domain_get_type(domain);
 
 	if (err) {
-	  	dbg("Failed to connect to IPMI domain. err = 0x%x", err);
+	  	err("Failed to connect to IPMI domain. err = 0x%x", err);
 		ipmi_handler->connected = 0;
 	} else {
-	  	dbg("IPMI domain Connection success");
+	  	err("IPMI domain Connection success");
 		ipmi_handler->connected = 1;
 	}
 	if (!still_connected) {
-		dbg("All IPMI connections down\n");
+		err("All IPMI connections down\n");
 		ipmi_handler->connected = 0;
 	}
 	if (ipmi_handler->connected == 0) {
@@ -97,7 +97,7 @@ void ipmi_connection_handler (ipmi_domain_t	*domain,
 	rv = init_domain_handlers(domain, cb_data);
 	if (rv) {
 		/* we can do something better */
-		dbg("Couldn't init_domain_handlers. rv = 0x%x", rv);
+		err("Couldn't init_domain_handlers. rv = 0x%x", rv);
 		ipmi_handler->connected = 0;
 	}
 	if (ipmi_handler->connected && ipmi_handler->openipmi_scan_time) {

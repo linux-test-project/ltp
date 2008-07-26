@@ -1675,36 +1675,12 @@ static const cMarshalType *saHpiResourcePowerStateSetOut[] =
   0
 };
 
-static const cMarshalType *oHpiHandlerCreateInitIn[] =
-{
-  &SaErrorType, // dummy entry
-  0
-};
 
-static const cMarshalType *oHpiHandlerCreateInitOut[] =
-{
-  &SaErrorType, // result (SaErrorT)
-  0
-};
-
-
-static const cMarshalType *oHpiHandlerCreateAddTEntryIn[] =
-{
-  &oHpiTextBufferType, // name
-  &oHpiTextBufferType, // value
-  0
-};
-
-static const cMarshalType *oHpiHandlerCreateAddTEntryOut[] =
-{
-  &SaErrorType, // result (SaErrorT)
-  0
-};
-
+// oHpi
 
 static const cMarshalType *oHpiHandlerCreateIn[] =
 {
-  &SaErrorType, // dummy entry
+  &oHpiHandlerConfigType, // dummy entry
   0
 };
 
@@ -1934,8 +1910,6 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiResourceResetStateSet ),
   dHpiMarshalEntry( saHpiResourcePowerStateGet ),
   dHpiMarshalEntry( saHpiResourcePowerStateSet ),
-  dHpiMarshalEntry( oHpiHandlerCreateInit ),
-  dHpiMarshalEntry( oHpiHandlerCreateAddTEntry ),
   dHpiMarshalEntry( oHpiHandlerCreate ),
   dHpiMarshalEntry( oHpiHandlerDestroy ),
   dHpiMarshalEntry( oHpiHandlerInfo ),

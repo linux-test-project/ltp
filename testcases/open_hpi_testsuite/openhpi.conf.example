@@ -158,6 +158,26 @@ handler libsimulator {
 #        logfile_max = "10"
 #}
 
+## Section for ilo2_ribcl plugin for ProLiant Rack Mount servers
+#handler libilo2_ribcl {
+#        entity_root = "{RACK_MOUNTED_SERVER,8}"
+#        ilo2_ribcl_hostname = "IP address"  # iLO2 IP address
+#        ilo2_ribcl_portstr = "443" # iLO2 RIBCL SSL server port number
+#        ilo2_ribcl_username = "username" # iLO2 username
+#        ilo2_ribcl_password = "password" # iLO2 password
+#}
+
+## Section for oa_soap plugin for HP BladeSystem c-Class,
+## using SOAP XML over https
+#handler liboa_soap {
+#        entity_root = "{SYSTEM_CHASSIS,8}"
+#        OA_User_Name = "user"   # OA user name with admin privileges (required)
+#        OA_Password = "passwd"  # OA password for above user (required)
+#        ACTIVE_OA = "hostname"  # Active OA hostname or IP address (required)
+#        STANDBY_OA = "hostname" # Standby OA hostname or IP address (optional)
+#}
+
+
 #######
 ## THIRD Section: Domains (Optional).
 ##

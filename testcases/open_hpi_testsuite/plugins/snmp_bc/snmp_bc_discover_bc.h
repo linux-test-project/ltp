@@ -28,8 +28,8 @@
 do { \
 	err = snmp_bc_snmp_get(custom_handle, maskOID, &getvalue, SAHPI_TRUE); \
         if (err || getvalue.type != ASN_OCTET_STR) { \
-		trace("Cannot get OID=%s; Received Type=%d; Error=%s.", \
-		      		maskOID, getvalue.type, oh_lookup_error(err)); \
+		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.", \
+		    maskOID, getvalue.type, oh_lookup_error(err)); \
 		if (err != SA_ERR_HPI_NOT_PRESENT) { return(err); } \
 		else if (err == SA_ERR_HPI_NOT_PRESENT) {getvalue.type = ASN_OCTET_STR; \
 		                                            memset(&getvalue.string, '0', SNMP_BC_MAX_RESOURCES_MASK); \
@@ -46,8 +46,8 @@ do { \
 do { \
 	err = snmp_bc_snmp_get(custom_handle, maskOID, &getintvalue, SAHPI_TRUE); \
         if (err || getintvalue.type != ASN_INTEGER) { \
-		trace("Cannot get OID=%s; Received Type=%d; Error=%s.", \
-		      		maskOID, getintvalue.type, oh_lookup_error(err)); \
+		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.", \
+		    maskOID, getintvalue.type, oh_lookup_error(err)); \
 		if (err != SA_ERR_HPI_NOT_PRESENT) { return(err); } \
 		else if (err == SA_ERR_HPI_NOT_PRESENT) {getintvalue.type = ASN_INTEGER; getintvalue.integer = 0;} \
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); } \
@@ -59,8 +59,8 @@ do { \
 	err = snmp_bc_snmp_get(custom_handle, maskOID, &getintvalue, SAHPI_TRUE); \
 	if (err == SA_ERR_HPI_NOT_PRESENT) {getintvalue.type = ASN_INTEGER; getintvalue.integer = 0;} \
         else if (err != SA_OK) { \
-		trace("Cannot get OID=%s; Received Type=%d; Error=%s.", \
-		      		maskOID, getintvalue.type, oh_lookup_error(err)); \
+		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.", \
+		    maskOID, getintvalue.type, oh_lookup_error(err)); \
 		if (err) { return(err); } \
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); } \
 	} else { \

@@ -25,7 +25,7 @@ SaErrorT sim_get_control_state(void *hnd,
         struct sim_control_info *info;
 
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
@@ -48,7 +48,7 @@ SaErrorT sim_get_control_state(void *hnd,
 
         info = (struct sim_control_info *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No control data. Control=%s", rdr->IdString.Data);
+                err("No control data. Control=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 
@@ -105,7 +105,7 @@ SaErrorT sim_set_control_state(void *hnd,
 
         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
         if (!hnd) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 
@@ -127,7 +127,7 @@ SaErrorT sim_set_control_state(void *hnd,
 
         info = (struct sim_control_info *)oh_get_rdr_data(handle->rptcache, rid, rdr->RecordId);
         if (info == NULL) {
-                dbg("No control data. Control=%s", rdr->IdString.Data);
+                err("No control data. Control=%s", rdr->IdString.Data);
                 return(SA_ERR_HPI_NOT_PRESENT);
         }
 

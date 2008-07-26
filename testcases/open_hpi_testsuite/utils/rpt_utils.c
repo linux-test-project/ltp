@@ -40,7 +40,7 @@ static RPTEntry *get_rptentry_by_rid(RPTable *table, SaHpiResourceIdT rid)
         RPTEntry *rptentry = NULL;
 
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return NULL;
         }
 
@@ -64,7 +64,7 @@ static GSList *get_rptnode_by_rid(RPTable *table, SaHpiResourceIdT rid)
         GSList *rptnode = NULL;
 
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return NULL;
         }
 
@@ -88,7 +88,7 @@ static RDRecord *get_rdrecord_by_id(RPTEntry *rptentry, SaHpiEntryIdT id)
         RDRecord *rdrecord = NULL;
 
         if (!rptentry) {
-                dbg("ERROR: Cannot lookup rdr inside null resource.");
+                err("ERROR: Cannot lookup rdr inside null resource.");
                 return NULL;
         }
 
@@ -112,7 +112,7 @@ static GSList *get_rdrnode_by_id(RPTEntry *rptentry, SaHpiEntryIdT id)
         GSList *rdrnode = NULL;
 
         if (!rptentry) {
-                dbg("ERROR: Cannot lookup rdr inside null resource.");
+                err("ERROR: Cannot lookup rdr inside null resource.");
                 return NULL;
         }
 
@@ -196,7 +196,7 @@ static void update_rptable(RPTable *table) {
         SaHpiTimeT time;
 
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return;
         }
 
@@ -244,7 +244,7 @@ SaHpiInstrumentIdT oh_get_rdr_num(SaHpiEntryIdT rdrid) {
 SaErrorT oh_init_rpt(RPTable *table)
 {
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -292,16 +292,17 @@ SaErrorT oh_flush_rpt(RPTable *table)
  * the resources and rdrs that are not already in current Or that are not identical
  * to the ones in current.
  *
- * Returns: void.
+ * Returns: SA_ERR_HPI_INVALID_PARAMS if any argument is NULL, otherwise SA_OK.
  **/
-void rpt_diff(RPTable *cur_rpt, RPTable *new_rpt,
-              GSList **res_new, GSList **rdr_new,
-              GSList **res_gone, GSList **rdr_gone) {
+SaErrorT rpt_diff(RPTable *cur_rpt, RPTable *new_rpt,
+                  GSList **res_new, GSList **rdr_new,
+                  GSList **res_gone, GSList **rdr_gone) {
 
         SaHpiRptEntryT *res = NULL;
 
         if (!cur_rpt || !new_rpt ||
-            !res_new || !rdr_new || !res_gone || !rdr_gone) return;
+            !res_new || !rdr_new || !res_gone || !rdr_gone)
+                return SA_ERR_HPI_INVALID_PARAMS;
 
         /* Look for absent resources and rdrs */
         for (res = oh_get_resource_by_id(cur_rpt, SAHPI_FIRST_ENTRY);
@@ -352,6 +353,8 @@ void rpt_diff(RPTable *cur_rpt, RPTable *new_rpt,
 
                 }
         }
+        
+        return SA_OK;
 }
 
 /**
@@ -367,7 +370,7 @@ SaErrorT oh_get_rpt_info(RPTable *table,
                          SaHpiTimeT *update_timestamp)
 {
         if (!table || !update_count || !update_timestamp) {
-                dbg("ERROR: Invalid parameters.");
+                err("ERROR: Invalid parameters.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -409,19 +412,19 @@ SaErrorT oh_add_resource(RPTable *table, SaHpiRptEntryT *entry, void *data, int 
         int update_info = 0;
 
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (!entry) {
-                dbg("Failed to add. RPT entry is NULL.");
+                err("Failed to add. RPT entry is NULL.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (entry->ResourceId == SAHPI_FIRST_ENTRY) {
-                dbg("Failed to add. RPT entry needs a resource id before being added");
+                err("Failed to add. RPT entry needs a resource id before being added");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (entry->ResourceId == SAHPI_UNSPECIFIED_RESOURCE_ID) {
-                dbg("Failed to add. RPT entry has an invalid/reserved id assigned. (SAHPI_UNSPECIFIED_RESOURCE_ID)");
+                err("Failed to add. RPT entry has an invalid/reserved id assigned. (SAHPI_UNSPECIFIED_RESOURCE_ID)");
                 return SA_ERR_HPI_INVALID_PARAMS;
         } else if (!oh_valid_ep(&(entry->ResourceEntity))) {
-                dbg("Failed to add RPT entry. Entity path does not contain root element.");
+                err("Failed to add RPT entry. Entity path does not contain root element.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -432,7 +435,7 @@ SaErrorT oh_add_resource(RPTable *table, SaHpiRptEntryT *entry, void *data, int 
         if (!rptentry) {
                 rptentry = (RPTEntry *)g_malloc0(sizeof(RPTEntry));
                 if (!rptentry) {
-                        dbg("Not enough memory to add RPT entry.");
+                        err("Not enough memory to add RPT entry.");
                         return SA_ERR_HPI_OUT_OF_MEMORY;
                 }
                 update_info = 1; /* Have a new changed entry */
@@ -482,7 +485,7 @@ SaErrorT oh_remove_resource(RPTable *table, SaHpiResourceIdT rid)
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Failed to remove RPT entry. No Resource found by that id");
+                err("Failed to remove RPT entry. No Resource found by that id");
                 return SA_ERR_HPI_NOT_PRESENT;
         } else {
                 SaHpiRdrT *tmp_rdr;
@@ -574,7 +577,7 @@ SaHpiRptEntryT *oh_get_resource_by_ep(RPTable *table, SaHpiEntityPathT *ep)
         SaHpiResourceIdT rid = 0;
 
         if (!table) {
-                dbg("ERROR: Cannot work on a null table pointer.");
+                err("ERROR: Cannot work on a null table pointer.");
                 return NULL;
         }
         /* Check the uid database first */
@@ -583,8 +586,8 @@ SaHpiRptEntryT *oh_get_resource_by_ep(RPTable *table, SaHpiEntityPathT *ep)
                 /* Found it in uid database */
                 return oh_get_resource_by_id(table, rid);
         } else {
-                trace("Didn't find the EP in the Uid table so "
-                      "looking manually in the RPTable");
+                dbg("Didn't find the EP in the Uid table so "
+                    "looking manually in the RPTable");
         }
 
         for (node = table->rptlist; node != NULL; node = node->next) {
@@ -666,18 +669,18 @@ SaErrorT oh_add_rdr(RPTable *table, SaHpiResourceIdT rid, SaHpiRdrT *rdr, void *
         SaHpiInstrumentIdT type_num;
 
         if (!rdr) {
-                dbg("Failed to add. RDR is NULL.");
+                err("Failed to add. RDR is NULL.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry){
-                dbg("Failed to add RDR. Parent RPT entry was not found in table.");
+                err("Failed to add RDR. Parent RPT entry was not found in table.");
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
         if (check_instrument_id(&(rptentry->rpt_entry), rdr)) {
-                dbg("Invalid instrument id found in RDR.");
+                err("Invalid instrument id found in RDR.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
@@ -691,7 +694,7 @@ SaErrorT oh_add_rdr(RPTable *table, SaHpiResourceIdT rid, SaHpiRdrT *rdr, void *
         if (!rdrecord) {
                 rdrecord = (RDRecord *)g_malloc0(sizeof(RDRecord));
                 if (!rdrecord) {
-                        dbg("Not enough memory to add RDR.");
+                        err("Not enough memory to add RDR.");
                         return SA_ERR_HPI_OUT_OF_MEMORY;
                 }
                 /* Put new rdrecord in rdr repository */
@@ -740,13 +743,13 @@ SaErrorT oh_remove_rdr(RPTable *table, SaHpiResourceIdT rid, SaHpiEntryIdT rdrid
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Failed to remove RDR. Parent RPT entry was not found.");
+                err("Failed to remove RDR. Parent RPT entry was not found.");
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
         rdrecord = get_rdrecord_by_id(rptentry, rdrid);
         if (!rdrecord) {
-                dbg("Failed to remove RDR. Could not be found.");
+                err("Failed to remove RDR. Could not be found.");
                 return SA_ERR_HPI_NOT_PRESENT;
         } else {
                 rptentry->rdrlist = g_slist_remove(rptentry->rdrlist, (gpointer)rdrecord);
@@ -785,7 +788,7 @@ void *oh_get_rdr_data(RPTable *table, SaHpiResourceIdT rid, SaHpiEntryIdT rdrid)
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
 
@@ -820,7 +823,7 @@ SaHpiRdrT *oh_get_rdr_by_id(RPTable *table, SaHpiResourceIdT rid, SaHpiEntryIdT 
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
 
@@ -857,7 +860,7 @@ SaHpiRdrT *oh_get_rdr_by_type(RPTable *table, SaHpiResourceIdT rid,
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
         
@@ -898,7 +901,7 @@ SaHpiRdrT *oh_get_rdr_next(RPTable *table, SaHpiResourceIdT rid, SaHpiEntryIdT r
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
 
@@ -923,7 +926,7 @@ SaHpiRdrT *oh_get_rdr_by_type_first(RPTable *table, SaHpiResourceIdT rid,
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
         
@@ -949,7 +952,7 @@ SaHpiRdrT *oh_get_rdr_by_type_next(RPTable *table, SaHpiResourceIdT rid,
 
         rptentry = get_rptentry_by_rid(table, rid);
         if (!rptentry) {
-                dbg("Warning: RPT entry not found. Cannot find RDR.");
+                err("Warning: RPT entry not found. Cannot find RDR.");
                 return NULL; /* No resource found by that id */
         }
         

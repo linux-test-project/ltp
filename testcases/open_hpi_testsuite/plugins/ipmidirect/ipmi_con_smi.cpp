@@ -1,6 +1,7 @@
 /*
  *
  * Copyright (c) 2004 by FORCE Computers
+ * Copyright (c) 2007 by ESO Technologies.
  *
  * Note that this file is based on parts of OpenIPMI
  * written by Corey Minyard <minyard@mvista.com>
@@ -17,6 +18,7 @@
  *
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
+ *     Pierre Sangouard  <psangouard@eso-tech.com>
  */
 
 #include <stdio.h>
@@ -214,20 +216,20 @@ cIpmiConSmi::OpenSmiFd( int if_num )
   int fd;
   char devname[30];
 
-  sprintf( devname, "/dev/ipmidev/%d", if_num );
+  snprintf( devname, sizeof(devname), "/dev/ipmidev/%d", if_num );
 
   fd = open( devname, O_RDWR );
 
   if ( fd >= 0 )
        return fd;
 
-  sprintf( devname, "/dev/ipmi/%d", if_num );
+  snprintf( devname, sizeof(devname), "/dev/ipmi/%d", if_num );
   fd = open( devname, O_RDWR );
 
   if ( fd >= 0 )
        return fd;
 
-  sprintf( devname, "/dev/ipmi%d", if_num );
+  snprintf( devname, sizeof(devname), "/dev/ipmi%d", if_num );
   fd = open( devname, O_RDWR );
 
   return fd;

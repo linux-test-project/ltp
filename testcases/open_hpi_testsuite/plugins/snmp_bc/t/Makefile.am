@@ -49,8 +49,8 @@ INCLUDES = \
 		-I$(SNMPUTILSDIR) \
                 -I$(top_srcdir)/plugins/snmp_bc
 
-AM_CFLAGS = @NOCFLAGS@ @SNMPFLAGS@ @COV_CFLAGS@
-# AM_CFLAGS = @CFLAGS@ -I$(top_srcdir)/include @SNMPFLAGS@ @COV_CFLAGS@
+AM_CFLAGS = @SNMPFLAGS@
+# AM_CFLAGS = @CFLAGS@ -I$(top_srcdir)/include @SNMPFLAGS@
 
 EXTRA_DIST = sim_resources.h openhpi.conf tsetup.h sim_test_file
 
@@ -93,9 +93,9 @@ $(GENERATED_EVENT_CODE): $(EVENT_MAP_FILE) $(EVENT_MAP_SCRIPT) $(EVENT_XML_MAP_S
 # Setup environment variables for TESTS programs
 TESTS_ENVIRONMENT  = OPENHPI_CONF=$(srcdir)/openhpi.conf
 TESTS_ENVIRONMENT += OPENHPI_SIMTEST_FILE=$(srcdir)/sim_test_file
+#TESTS_ENVIRONMENT += OPENHPI_ERROR=YES
 #TESTS_ENVIRONMENT += OPENHPI_DEBUG=YES
-#TESTS_ENVIRONMENT += OPENHPI_DEBUG_TRACE=YES
-TESTS_ENVIRONMENT += LD_LIBRARY_PATH=$(top_srcdir)/src/.libs:$(top_srcdir)/utils/.libs
+TESTS_ENVIRONMENT += LD_LIBRARY_PATH=$(top_srcdir)/src/.libs:$(top_srcdir)/ssl/.libs:$(top_srcdir)/utils/.libs:$(top_srcdir)/plugins/snmp/.libs:$(top_srcdir)/plugins/snmp_bc/t/.libs
 TESTS_ENVIRONMENT += OPENHPI_UID_MAP=$(shell pwd)/uid_map
 TESTS_ENVIRONMENT += OPENHPI_PATH=$(shell pwd)
 

@@ -49,7 +49,7 @@ static int snmp_bc_get_sel_size(struct oh_handler_state *handle, SaHpiResourceId
 		/* only log the error.  Do not do any recovery because log entries */
 		/* are still kept in bc mm.  We'll pick them up during synch.      */
 		/* --------------------------------------------------------------- */
-		dbg("snmp_bc_discover, Error %s when building elcache.\n", oh_lookup_error(err));
+		err("snmp_bc_discover, Error %s when building elcache.\n", oh_lookup_error(err));
 
 	/* Return the entry count */
 	oh_el_info(handle->elcache, &elinfo);
@@ -82,7 +82,7 @@ SaErrorT snmp_bc_get_sel_info(void *hnd, SaHpiResourceIdT id, SaHpiEventLogInfoT
         SaHpiEventLogInfoT sel, elinfo;
 	
         if (!hnd || !info) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -119,7 +119,7 @@ SaErrorT snmp_bc_get_sel_info(void *hnd, SaHpiResourceIdT id, SaHpiEventLogInfoT
                 if (first_value.type == ASN_OCTET_STR) {
                         err = snmp_bc_parse_sel_entry(handle, first_value.string, &sel_entry);
                         if (err) {
-                                dbg("Cannot get first date");
+                                err("Cannot get first date");
                                 snmp_bc_unlock_handler(custom_handle);
 
 				return(err);
@@ -180,7 +180,7 @@ SaErrorT snmp_bc_get_sel_entry(void *hnd,
 	struct snmp_bc_hnd *custom_handle;
  
         if (!hnd || !prev || !next || !entry) {
-                dbg("Invalid parameter.");
+                err("Invalid parameter.");
                 return(SA_ERR_HPI_INVALID_PARAMS);
         }
 	       
@@ -197,7 +197,7 @@ SaErrorT snmp_bc_get_sel_entry(void *hnd,
                 /* Force a cache sync before servicing the request */
                 err = snmp_bc_check_selcache(handle, id, current);
                 if (err) {
-                        dbg("Event Log cache sync failed %s\n", oh_lookup_error(err));
+                        err("Event Log cache sync failed %s\n", oh_lookup_error(err));
                         /* --------------------------------------------------------------- */
                         /* If an error is encountered during building of snmp_bc elcache,  */
                         /* only log the error.  Do not do any recovery because log entries */
@@ -207,7 +207,7 @@ SaErrorT snmp_bc_get_sel_entry(void *hnd,
                 
                 err = oh_el_get(handle->elcache, current, prev, next, &tmpentryptr);
                 if (err) {
-                        dbg("Getting Event Log entry=%d from cache failed. Error=%s.", 
+                        err("Getting Event Log entry=%d from cache failed. Error=%s.", 
                             current, oh_lookup_error(err));
                         snmp_bc_unlock_handler(custom_handle);
                         
@@ -217,15 +217,15 @@ SaErrorT snmp_bc_get_sel_entry(void *hnd,
                         if (rdr)
                                 memcpy(rdr, &tmpentryptr->rdr, sizeof(SaHpiRdrT));
                         else
-                                trace("NULL rdrptr with SaHpiEventLogEntryGet()\n");
+                                dbg("NULL rdrptr with SaHpiEventLogEntryGet()\n");
                         
                         if (rptentry)
                                 memcpy(rptentry, &(tmpentryptr->res), sizeof(SaHpiRptEntryT));
                         else
-                                trace("NULL rptptr with SaHpiEventLogEntryGet()\n");	
+                                dbg("NULL rptptr with SaHpiEventLogEntryGet()\n");	
                 }
         } else {
-                dbg("Missing handle->elcache");
+                err("Missing handle->elcache");
                 snmp_bc_unlock_handler(custom_handle);
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
@@ -271,7 +271,7 @@ SaErrorT snmp_bc_bulk_selcache(	struct oh_handler_state *handle,
     	int             reps;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -444,7 +444,7 @@ SaErrorT snmp_bc_check_selcache(struct oh_handler_state *handle,
 	SaHpiEventLogInfoT elinfo;
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -454,13 +454,13 @@ SaErrorT snmp_bc_check_selcache(struct oh_handler_state *handle,
 	if (elinfo.Entries == 0 && 
 	    !(is_simulator())) {
 		/* err = snmp_bc_build_selcache(handle, id); */
-		trace("elcache sync called before discovery?\n");
+		dbg("elcache sync called before discovery?\n");
 	} else {
 		err = snmp_bc_selcache_sync(handle, id, entryId);
 	}
 	
 	if (err) {
-		dbg("Event Log cache build/sync failed. Error=%s", oh_lookup_error(err));
+		err("Event Log cache build/sync failed. Error=%s", oh_lookup_error(err));
 		return(err);
 	}
 
@@ -502,7 +502,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 	GList *sync_log, *proc_log;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -532,7 +532,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 
        	err = snmp_bc_snmp_get(custom_handle, oid, &get_value, SAHPI_TRUE);
        	if (err) {
-		dbg("Error %s snmp_get latest BC Event Log.\n", oh_lookup_error(err));
+		err("Error %s snmp_get latest BC Event Log.\n", oh_lookup_error(err));
 		
 		/* Error attempting to sync elcache and BC Event Log */
 		/* Leave thing as is, instead of clearing elcache.   */
@@ -544,7 +544,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 	}
 
 	if (snmp_bc_parse_sel_entry(handle, get_value.string, &sel_entry) < 0) {
-		dbg("Cannot parse Event Log entry");
+		err("Cannot parse Event Log entry");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -567,7 +567,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 			err = snmp_bc_snmp_get(custom_handle,oid,&get_value, SAHPI_TRUE);
 			if (err == SA_OK) {
 				if (snmp_bc_parse_sel_entry(handle, get_value.string, &sel_entry) < 0) {
-					dbg("Cannot parse SEL entry.");
+					err("Cannot parse SEL entry.");
 					err = SA_ERR_HPI_INTERNAL_ERROR;
 					goto out;
 				}
@@ -612,7 +612,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 		} else {
 			err = oh_el_clear(handle->elcache);
 			if (err != SA_OK)
-				dbg("Invalid elcache pointer or mode, err %s\n", oh_lookup_error(err));
+				err("Invalid elcache pointer or mode, err %s\n", oh_lookup_error(err));
 			err = snmp_bc_build_selcache(handle, id);
 			if ( (err == SA_ERR_HPI_OUT_OF_MEMORY) || (err == SA_ERR_HPI_INVALID_PARAMS)) {
 				/* either of these 2 errors prevent us from doing anything meaningful */
@@ -621,7 +621,7 @@ SaErrorT snmp_bc_selcache_sync(struct oh_handler_state *handle,
 			}
 		}
 	} else {
-		trace("EL Sync: there are no new entry indicated.\n");
+		dbg("EL Sync: there are no new entry indicated.\n");
 	}
 	
 	out:
@@ -660,7 +660,7 @@ SaErrorT snmp_bc_build_selcache(struct oh_handler_state *handle, SaHpiResourceId
 	struct snmp_bc_hnd *custom_handle;
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -686,8 +686,8 @@ SaErrorT snmp_bc_build_selcache(struct oh_handler_state *handle, SaHpiResourceId
 		/* -- works OK with with multiple handlers           */
 		/*	gcc (GCC) 4.0.1 (4.0.1-5mdk  Mandriva 2006)  */
 		/* -- works OK with all gcc vers for single handler  */
-		trace(">>>>>> bulk build selcache %p. count_per_getbulk %d\n", 
-					handle,custom_handle->count_per_getbulk);
+		dbg(">>>>>> bulk build selcache %p. count_per_getbulk %d\n", 
+		    handle,custom_handle->count_per_getbulk);
 		/* ------------------------------------------------- */
 				
 		err = snmp_bc_bulk_selcache(handle, id);
@@ -701,7 +701,7 @@ SaErrorT snmp_bc_build_selcache(struct oh_handler_state *handle, SaHpiResourceId
 			} else if (err != SA_OK) {
 				/* other errors (mainly HPI_INTERNAL_ERROR or HPI_BUSY) means */
 				/* only this record has problem. record error then go to next */
-				dbg("Error, %s, encountered with EventLog entry %d\n", 
+				err("Error, %s, encountered with EventLog entry %d\n", 
 				oh_lookup_error(err), i);
 				break;
 			}	
@@ -733,7 +733,7 @@ SaErrorT snmp_bc_set_sel_time(void *hnd, SaHpiResourceIdT id, SaHpiTimeT time)
         struct snmp_bc_hnd *custom_handle;
 
 	if ( (!hnd) || (time == SAHPI_TIME_UNSPECIFIED)) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);    
 	}
 
@@ -746,7 +746,7 @@ SaErrorT snmp_bc_set_sel_time(void *hnd, SaHpiResourceIdT id, SaHpiTimeT time)
         localtime_r(&tt, &tv);
 	
 	if ( time < SAHPI_TIME_MAX_RELATIVE ) {
-		trace("Time input is relative time. Make it absolute.\n");
+		dbg("Time input is relative time. Make it absolute.\n");
 		/* c time utilities have base epoch of 00:00:00 UTC, January 1, 1970 */
 		/* Bladecenter code has base epoch year 1999.                        */
 		/* So if the user chooses relative time, then                        */
@@ -759,7 +759,7 @@ SaErrorT snmp_bc_set_sel_time(void *hnd, SaHpiResourceIdT id, SaHpiTimeT time)
 	err = snmp_bc_set_sp_time(custom_handle, &tv);
         if (err) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("Cannot set time. Error=%s.", oh_lookup_error(err));
+		err("Cannot set time. Error=%s.", oh_lookup_error(err));
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -810,7 +810,7 @@ SaErrorT snmp_bc_sel_read_add (struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -831,7 +831,7 @@ SaErrorT snmp_bc_sel_read_add (struct oh_handler_state *handle,
 	if (err != SA_OK)
 		 return(err); 
 	else if ((err == SA_OK) && (get_value.type != ASN_OCTET_STR)) {
-		dbg("Cannot get EL entry");
+		err("Cannot get EL entry");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -874,7 +874,7 @@ SaErrorT snmp_bc_add_entry_to_elcache(struct oh_handler_state *handle,
 
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -907,7 +907,7 @@ SaErrorT snmp_bc_add_entry_to_elcache(struct oh_handler_state *handle,
 			rdr_ptr = oh_get_rdr_by_id(handle->rptcache, tmpevent->Source, rdrid);
 			break;
 		default:
-			dbg("Unrecognized Event Type=%d.", tmpevent->EventType);
+			err("Unrecognized Event Type=%d.", tmpevent->EventType);
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 			break;
 	} 
@@ -917,7 +917,7 @@ SaErrorT snmp_bc_add_entry_to_elcache(struct oh_handler_state *handle,
 	/* just pass the pointers to it.                                            */
 	id = tmpevent->Source;
 	if (NULL == oh_get_resource_by_id(handle->rptcache, id)) {
-		trace("Warning: NULL RPT for rid %d.", id);
+		dbg("Warning: NULL RPT for rid %d.", id);
 	}
 	
 	if (prepend) 
@@ -944,9 +944,9 @@ SaErrorT snmp_bc_add_entry_to_elcache(struct oh_handler_state *handle,
 		if (custom_handle->isFirstDiscovery == SAHPI_FALSE)
 		             err = snmp_bc_add_to_eventq(handle, tmpevent, prepend);
 		if (err) 
-		 dbg("Cannot add el entry to eventq. Error=%s.", oh_lookup_error(err));
+		 err("Cannot add el entry to eventq. Error=%s.", oh_lookup_error(err));
 	} else { 
-	 	dbg("Cannot add el entry to elcache. Error=%s.", oh_lookup_error(err));
+	 	err("Cannot add el entry to elcache. Error=%s.", oh_lookup_error(err));
 	}
 			
         return(err);
@@ -975,7 +975,7 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !logstr || !sel) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -996,7 +996,7 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
                         	ent.sev = SAHPI_DEBUG;
                 	}
         	} else {
-                	dbg("Cannot parse severity from log entry.");
+                	err("Cannot parse severity from log entry.");
                 	return(SA_ERR_HPI_INTERNAL_ERROR);
         	}
 	}
@@ -1004,11 +1004,11 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
 	findit = strstr(logstr, "Source:");
 	if (findit != NULL) {
         	if(!sscanf(findit,"Source:%19s",ent.source)) {
-                	dbg("Cannot parse source from log entry.");
+                	err("Cannot parse source from log entry.");
                 	return(SA_ERR_HPI_INTERNAL_ERROR);
         	}
 	} else {
-		dbg("Premature data termination.");
+		err("Premature data termination.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
 
@@ -1020,11 +1020,11 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
 		findit = strstr(logstr, "Name:");
 		if (findit != NULL) {
 			if(!sscanf(findit,"Name:%19s",ent.sname)) {
-				dbg("Cannot parse name from log entry.");
+				err("Cannot parse name from log entry.");
 				return(SA_ERR_HPI_INTERNAL_ERROR);
 			}
 		} else {
-			dbg("Premature data termination.");
+			err("Premature data termination.");
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 	}
@@ -1038,11 +1038,11 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
 			ent.time.tm_mon--;
 			ent.time.tm_year += 100;
 		} else {
-			dbg("Cannot parse date/time from log entry.");
+			err("Cannot parse date/time from log entry.");
 			return(SA_ERR_HPI_INTERNAL_ERROR);
 		}
 	} else {
-		dbg("Premature data termination.");
+		err("Premature data termination.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}
         
@@ -1054,7 +1054,7 @@ SaErrorT snmp_bc_parse_sel_entry(struct oh_handler_state *handle, char *logstr, 
 
         	ent.text[SNMP_BC_MAX_SEL_ENTRY_LENGTH - 1] = '\0';
 	} else {
-		dbg("Premature data termination.");
+		err("Premature data termination.");
 		return(SA_ERR_HPI_INTERNAL_ERROR);
 	}        
 
@@ -1081,7 +1081,7 @@ SaErrorT snmp_bc_clear_sel(void *hnd, SaHpiResourceIdT id)
         struct snmp_bc_hnd *custom_handle;
 
 	if (!hnd) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 				
@@ -1092,7 +1092,7 @@ SaErrorT snmp_bc_clear_sel(void *hnd, SaHpiResourceIdT id)
 	err = oh_el_clear(handle->elcache);
 	if (err) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("Cannot clear system Event Log. Error=%s.", oh_lookup_error(err));
+		err("Cannot clear system Event Log. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 
@@ -1108,7 +1108,7 @@ SaErrorT snmp_bc_clear_sel(void *hnd, SaHpiResourceIdT id)
 
 	if (err) {
 		snmp_bc_unlock_handler(custom_handle);
-		dbg("SNMP set failed. Error=%s.", oh_lookup_error(err));
+		err("SNMP set failed. Error=%s.", oh_lookup_error(err));
 		return(err);
 	} else if (!is_simulator()) { 
 		/* Pick up the newly created entry, Log Clear message */

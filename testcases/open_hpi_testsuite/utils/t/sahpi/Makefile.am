@@ -21,7 +21,7 @@ REMOTE_SOURCES =  epath_utils.c \
 
 MOSTLYCLEANFILES = $(REMOTE_SOURCES) @TEST_CLEAN@
 INCLUDES	= @OPENHPI_INCLUDES@
-AM_CFLAGS	= @NOCFLAGS@ @COV_CFLAGS@ -std=c99
+AM_CFLAGS	= -std=c99
 # the -std=c99 comment above is required to have unicode in the tests
 
 LIBS += -luuid

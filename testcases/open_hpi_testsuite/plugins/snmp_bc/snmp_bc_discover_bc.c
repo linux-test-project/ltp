@@ -428,13 +428,13 @@ SaErrorT snmp_bc_discover(struct oh_handler_state *handle,
 
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -642,13 +642,13 @@ SaErrorT snmp_bc_update_chassis_topo(struct oh_handler_state *handle)
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -722,19 +722,19 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -753,15 +753,15 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_MEDIA_TRAY].comment,
 				   SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	       	e->resource.ResourceTag.Data,
-		      e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_MEDIA_TRAY].res_info),
 					sizeof(struct ResourceInfo));
 	if (!res_info_ptr) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		snmp_bc_free_oh_event(e);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -784,7 +784,7 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}
@@ -839,7 +839,7 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 	{	
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 	
@@ -858,15 +858,15 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_MEDIA_TRAY_2].comment,
 				   SNMP_BC_HPI_LOCATION_BASE + 1);
 
-		trace("Discovered resource=%s; ID=%d",
-	       			e->resource.ResourceTag.Data,
-		      		e->resource.ResourceId);
+		dbg("Discovered resource=%s; ID=%d",
+	       	    e->resource.ResourceTag.Data,
+		    e->resource.ResourceId);
 
 		/* Create platform-specific info space to add to infra-structure */
 		res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_MEDIA_TRAY_2].res_info),
 						sizeof(struct ResourceInfo));
 		if (!res_info_ptr) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			snmp_bc_free_oh_event(e);
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
@@ -889,7 +889,7 @@ SaErrorT snmp_bc_discover_media_tray(struct oh_handler_state *handle,
 					      &(e->resource),
 					      res_info_ptr, 0);
 			if (err) {
-				dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+				err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 				snmp_bc_free_oh_event(e);
 				return(err);
 			}
@@ -961,19 +961,19 @@ SaErrorT snmp_bc_discover_filter(struct oh_handler_state *handle,
 
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -990,15 +990,15 @@ SaErrorT snmp_bc_discover_filter(struct oh_handler_state *handle,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_AIR_FILTER].comment,
 				   SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	       	e->resource.ResourceTag.Data,
-		      e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_AIR_FILTER].res_info),
 					sizeof(struct ResourceInfo));
 	if (!res_info_ptr) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		snmp_bc_free_oh_event(e);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -1021,7 +1021,7 @@ SaErrorT snmp_bc_discover_filter(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}
@@ -1078,13 +1078,13 @@ SaErrorT snmp_bc_discover_chassis(struct oh_handler_state *handle,
 
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1093,7 +1093,7 @@ SaErrorT snmp_bc_discover_chassis(struct oh_handler_state *handle,
 	 ******************/
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	e->resource = snmp_bc_rpt_array[BC_RPT_ENTRY_CHASSIS].rpt;
@@ -1131,15 +1131,15 @@ SaErrorT snmp_bc_discover_chassis(struct oh_handler_state *handle,
 					   ep_root->Entry[0].EntityLocation);
 	}
 
-	trace("Discovered resource=%s; ID=%d",
-	      e->resource.ResourceTag.Data,
-	      e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space  */
 	res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_CHASSIS].res_info),
 				sizeof(struct ResourceInfo));
 	if (!res_info_ptr) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		snmp_bc_free_oh_event(e);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -1154,7 +1154,7 @@ SaErrorT snmp_bc_discover_chassis(struct oh_handler_state *handle,
 			      &(e->resource), 
 			      res_info_ptr, 0);
 	if (err) {
-		dbg("Cannot add resource. Error=%s.", oh_lookup_error(err));
+		err("Cannot add resource. Error=%s.", oh_lookup_error(err));
 		snmp_bc_free_oh_event(e);
 		return(err);
 	}
@@ -1226,13 +1226,13 @@ SaErrorT snmp_bc_discover_blade(struct oh_handler_state *handle,
 
 
 	if (!handle || !blade_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -1244,7 +1244,7 @@ SaErrorT snmp_bc_discover_blade(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -1327,13 +1327,13 @@ SaErrorT snmp_bc_discover_blade_expansion(struct oh_handler_state *handle,
 
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 			
@@ -1404,7 +1404,7 @@ SaErrorT snmp_bc_discover_blade_expansion(struct oh_handler_state *handle,
 						*/	
 						expansionType = get_value.integer;
 					} else 	{
-						dbg(" Error reading Expansion Board Type\n");
+						err(" Error reading Expansion Board Type\n");
 						expansionType = DEFAULT_BLADE_EXPANSION_CARD_TYPE;
 					}
 					
@@ -1452,20 +1452,20 @@ SaErrorT snmp_bc_add_blade_expansion_resource(struct oh_handler_state *handle,
 
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
 	{
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 
@@ -1489,15 +1489,15 @@ SaErrorT snmp_bc_add_blade_expansion_resource(struct oh_handler_state *handle,
 		oh_append_textbuffer(&(e->resource.ResourceTag), (char *)working2.Data);
 		}
 
-		trace("Discovered resource=%s; ID=%d",
-			e->resource.ResourceTag.Data,
-			e->resource.ResourceId);
+		dbg("Discovered resource=%s; ID=%d",
+		    e->resource.ResourceTag.Data,
+		    e->resource.ResourceId);
 
 		/* Create platform-specific info space to add to infra-structure */
 		res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_BLADE_EXPANSION_CARD].res_info),
 						sizeof(struct ResourceInfo));
 		if (!res_info_ptr) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			snmp_bc_free_oh_event(e);
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
@@ -1512,7 +1512,7 @@ SaErrorT snmp_bc_add_blade_expansion_resource(struct oh_handler_state *handle,
 					&(e->resource),
 					res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}
@@ -1570,13 +1570,13 @@ SaErrorT snmp_bc_discover_blowers(struct oh_handler_state *handle,
 
 
 	if (!handle || !blower_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -1589,7 +1589,7 @@ SaErrorT snmp_bc_discover_blowers(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -1659,13 +1659,13 @@ SaErrorT snmp_bc_discover_tap(struct oh_handler_state *handle,
 
 
 	if (!handle || !tap_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -1678,7 +1678,7 @@ SaErrorT snmp_bc_discover_tap(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -1757,15 +1757,15 @@ SaErrorT snmp_bc_construct_tap_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_ALARM_PANEL].comment,
 				   tap_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_ALARM_PANEL].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -1800,17 +1800,17 @@ SaErrorT snmp_bc_add_tap_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering Telco Alarm Panel %d resource.\n", tap_index);
+	dbg("Discovering Telco Alarm Panel %d resource.\n", tap_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -1821,7 +1821,7 @@ SaErrorT snmp_bc_add_tap_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -1873,7 +1873,7 @@ SaErrorT snmp_bc_discover_tap_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -1882,7 +1882,7 @@ SaErrorT snmp_bc_discover_tap_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -1931,13 +1931,13 @@ SaErrorT snmp_bc_discover_smi(struct oh_handler_state *handle,
 
 
 	if (!handle || !smi_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -1950,7 +1950,7 @@ SaErrorT snmp_bc_discover_smi(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -2029,15 +2029,15 @@ SaErrorT snmp_bc_construct_smi_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_INTERPOSER_SWITCH].comment,
 				   smi_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_INTERPOSER_SWITCH].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -2070,17 +2070,17 @@ SaErrorT snmp_bc_add_smi_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering Switch Module Interposer %d resource.\n", smi_index);
+	dbg("Discovering Switch Module Interposer %d resource.\n", smi_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -2091,7 +2091,7 @@ SaErrorT snmp_bc_add_smi_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -2133,7 +2133,7 @@ SaErrorT snmp_bc_discover_smi_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -2142,7 +2142,7 @@ SaErrorT snmp_bc_discover_smi_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -2192,13 +2192,13 @@ SaErrorT snmp_bc_discover_mmi(struct oh_handler_state *handle,
 
 
 	if (!handle || !mmi_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -2211,7 +2211,7 @@ SaErrorT snmp_bc_discover_mmi(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -2290,15 +2290,15 @@ SaErrorT snmp_bc_construct_mmi_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_INTERPOSER_MM].comment,
 				   mmi_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_INTERPOSER_MM].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -2331,17 +2331,17 @@ SaErrorT snmp_bc_add_mmi_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering Management Module Interposer %d resource.\n", mmi_index);
+	dbg("Discovering Management Module Interposer %d resource.\n", mmi_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -2352,7 +2352,7 @@ SaErrorT snmp_bc_add_mmi_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -2395,7 +2395,7 @@ SaErrorT snmp_bc_discover_mmi_i(struct oh_handler_state *handle,
 	
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -2404,7 +2404,7 @@ SaErrorT snmp_bc_discover_mmi_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -2453,13 +2453,13 @@ SaErrorT snmp_bc_discover_nc(struct oh_handler_state *handle,
 
 
 	if (!handle || !nc_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -2472,7 +2472,7 @@ SaErrorT snmp_bc_discover_nc(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -2551,15 +2551,15 @@ SaErrorT snmp_bc_construct_nc_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_CLOCK_MODULE].comment,
 				   nc_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_CLOCK_MODULE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -2594,17 +2594,17 @@ SaErrorT snmp_bc_add_nc_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering Network Clocd Card %d resource.\n", nc_index);
+	dbg("Discovering Network Clocd Card %d resource.\n", nc_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -2615,7 +2615,7 @@ SaErrorT snmp_bc_add_nc_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -2667,7 +2667,7 @@ SaErrorT snmp_bc_discover_nc_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -2676,7 +2676,7 @@ SaErrorT snmp_bc_discover_nc_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -2725,13 +2725,13 @@ SaErrorT snmp_bc_discover_mx(struct oh_handler_state *handle,
 
 
 	if (!handle || !mx_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -2744,7 +2744,7 @@ SaErrorT snmp_bc_discover_mx(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -2823,15 +2823,15 @@ SaErrorT snmp_bc_construct_mx_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_MUX_MODULE].comment,
 				   mx_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_MUX_MODULE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -2866,17 +2866,17 @@ SaErrorT snmp_bc_add_mx_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering Mux Card %d resource.\n", mx_index);
+	dbg("Discovering Mux Card %d resource.\n", mx_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -2887,7 +2887,7 @@ SaErrorT snmp_bc_add_mx_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -2939,7 +2939,7 @@ SaErrorT snmp_bc_discover_mx_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -2948,7 +2948,7 @@ SaErrorT snmp_bc_discover_mx_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -2997,13 +2997,13 @@ SaErrorT snmp_bc_discover_power_module(struct oh_handler_state *handle,
 
 
 	if (!handle || !power_module_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -3016,7 +3016,7 @@ SaErrorT snmp_bc_discover_power_module(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 
@@ -3086,13 +3086,13 @@ SaErrorT snmp_bc_discover_switch(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !switch_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -3105,7 +3105,7 @@ SaErrorT snmp_bc_discover_switch(struct oh_handler_state *handle,
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 
@@ -3182,13 +3182,13 @@ SaErrorT snmp_bc_discover_mm(struct oh_handler_state *handle,
 
 
 	if (!handle || !mm_vector) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -3200,7 +3200,7 @@ SaErrorT snmp_bc_discover_mm(struct oh_handler_state *handle,
 	{			
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 
@@ -3218,15 +3218,15 @@ SaErrorT snmp_bc_discover_mm(struct oh_handler_state *handle,
                                              snmp_bc_rpt_array[BC_RPT_ENTRY_VIRTUAL_MGMNT_MODULE].comment,
                                              0);
 
-                trace("Discovered resource=%s; ID=%d",
-                        e->resource.ResourceTag.Data,
-                        e->resource.ResourceId);
+                dbg("Discovered resource=%s; ID=%d",
+                    e->resource.ResourceTag.Data,
+                    e->resource.ResourceId);
 
                 /* Create platform-specific info space to add to infra-structure */
                 res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_VIRTUAL_MGMNT_MODULE].res_info),
                         	                sizeof(struct ResourceInfo));
                 if (!res_info_ptr) {
-                        dbg("Out of memory.");
+                        err("Out of memory.");
                         snmp_bc_free_oh_event(e);
                         return(SA_ERR_HPI_OUT_OF_MEMORY);
                 }
@@ -3236,7 +3236,7 @@ SaErrorT snmp_bc_discover_mm(struct oh_handler_state *handle,
                         	        &(e->resource),
                                 	        res_info_ptr, 0);
                 if (err) {
-                        dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+                        err("Failed to add resource. Error=%s.", oh_lookup_error(err));
                         snmp_bc_free_oh_event(e);
                         return(err);
                 }
@@ -3308,12 +3308,12 @@ SaErrorT snmp_bc_discover_mm(struct oh_handler_state *handle,
 			
 	/* Discover Physical MM */                				
 	for (i=0; i < strlen(mm_vector); i++) {
-		trace("Management Module installed bit map %s", get_value.string);
+		dbg("Management Module installed bit map %s", get_value.string);
 		if ((mm_vector[i] == '1') || (custom_handle->isFirstDiscovery == SAHPI_TRUE))
 		{
 			e = snmp_bc_alloc_oh_event();
 			if (e == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				return(SA_ERR_HPI_OUT_OF_MEMORY);
 			}
 									
@@ -3391,7 +3391,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 				   SNMP_BC_IPMI_TEMP_BLADE_OID, &get_value, SAHPI_FALSE);
 				  
         if (err || get_value.type != ASN_INTEGER) {
-		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.",
+		err("Cannot get OID=%s; Received Type=%d; Error=%s.",
 		   SNMP_BC_IPMI_TEMP_BLADE_OID, get_value.type, oh_lookup_error(err));
 		if (err) { return(err); }
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); }
@@ -3403,7 +3403,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 	ipmi_sensor_hash = g_hash_table_new(g_str_hash, g_str_equal);
 	
 	if (ipmi_sensor_hash == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 
@@ -3424,14 +3424,14 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 			/* Find IPMI tag in returned value */
 			strparts = g_strsplit(get_value.string, SNMP_BC_IPMI_STRING_DELIMITER, -1);
 			if (strparts == NULL || strparts[0] == '\0') {
-				dbg("Cannot split IPMI temp returned value=%s.", get_value.string);
+				err("Cannot split IPMI temp returned value=%s.", get_value.string);
 				g_strfreev(strparts);
 				continue;
 			}
 			ipmi_tag = g_strstrip(g_strdup(strparts[0]));
 			g_strfreev(strparts);
 			if (ipmi_tag == NULL || ipmi_tag[0] == '\0') {
-				dbg("Stripped IPMI tag is NULL"); 
+				err("Stripped IPMI tag is NULL"); 
 				g_free(ipmi_tag);
 				continue;
 			}
@@ -3439,7 +3439,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 			/* Change IPMI Tag to upper case */
 			for (s=ipmi_tag; *s; s++) { *s = g_ascii_toupper(*s); }
 			
-			trace("Found OID IPMI sensor=%s", ipmi_tag);
+			dbg("Found OID IPMI sensor=%s", ipmi_tag);
 
 			/* Insert tag and OID info in temporary hash */
 			if (!g_hash_table_lookup_extended(ipmi_sensor_hash,
@@ -3450,7 +3450,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 				mib_info = g_memdup(&(snmp_bc_ipmi_sensors_temp[i]),
 						    sizeof(struct SensorMibInfo));
 				if (!mib_info) {
-					dbg("Out of memory.");
+					err("Out of memory.");
 					g_free(ipmi_tag);
 					rtn_code = SA_ERR_HPI_OUT_OF_MEMORY;
 					goto CLEANUP;
@@ -3458,7 +3458,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 				g_hash_table_insert(ipmi_sensor_hash, ipmi_tag, mib_info);
 			}
 			else { /* Already exists */
-				dbg("Duplicate IPMI OID=%s.", snmp_bc_ipmi_sensors_temp[i].oid);
+				err("Duplicate IPMI OID=%s.", snmp_bc_ipmi_sensors_temp[i].oid);
 				g_free(ipmi_tag);
 			}
 		}
@@ -3477,14 +3477,14 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 			/* Find IPMI tag in returned value */
 			strparts = g_strsplit(get_value.string, SNMP_BC_IPMI_STRING_DELIMITER, -1);
 			if (strparts == NULL || strparts[0] == '\0') {
-				dbg("Cannot split IPMI voltage returned value=%s.", get_value.string);
+				err("Cannot split IPMI voltage returned value=%s.", get_value.string);
 				g_strfreev(strparts);
 				continue;
 			}
 			ipmi_tag = g_strstrip(g_strdup(strparts[0]));
 			g_strfreev(strparts);
 			if (ipmi_tag == NULL || ipmi_tag[0] == '\0') {
-				dbg("Stripped IPMI tag is NULL"); 
+				err("Stripped IPMI tag is NULL"); 
 				g_free(ipmi_tag);
 				continue;
 			}
@@ -3492,7 +3492,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 			/* Change IPMI Tag to upper case */
 			for (s=ipmi_tag; *s; s++) { *s = g_ascii_toupper(*s); }
 			
-			trace("Found OID IPMI sensor=%s", ipmi_tag);
+			dbg("Found OID IPMI sensor=%s", ipmi_tag);
 
 			/* Insert tag and OID info in temporary hash */
 			if (!g_hash_table_lookup_extended(ipmi_sensor_hash,
@@ -3502,7 +3502,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 
 				mib_info = g_memdup(&(snmp_bc_ipmi_sensors_voltage[i]), sizeof(struct SensorMibInfo));
 				if (!mib_info) {
-					dbg("Out of memory.");
+					err("Out of memory.");
 					g_free(ipmi_tag);
 					rtn_code = SA_ERR_HPI_OUT_OF_MEMORY;
 					goto CLEANUP;
@@ -3510,7 +3510,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 				g_hash_table_insert(ipmi_sensor_hash, ipmi_tag, mib_info);
 			}
 			else { /* Already exists */
-				trace("Duplicate IPMI OID=%s.", snmp_bc_ipmi_sensors_voltage[i].oid);
+				dbg("Duplicate IPMI OID=%s.", snmp_bc_ipmi_sensors_voltage[i].oid);
 				g_free(ipmi_tag);
 			}
 		}
@@ -3530,7 +3530,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 
 			rdrptr = (SaHpiRdrT *)g_malloc0(sizeof(SaHpiRdrT));
 			if (rdrptr == NULL) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				rtn_code = SA_ERR_HPI_OUT_OF_MEMORY;
 				goto CLEANUP;
 			}
@@ -3540,14 +3540,14 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 			err = snmp_bc_mod_sensor_ep(rdrptr, sensor_array, i);
 			rdrptr->RdrTypeUnion.SensorRec = sensor_array[i].ipmi.sensor;
 
-			trace("Blade Found IPMI Sensor=%s", sensor_array[i].ipmi.comment);
+			dbg("Blade Found IPMI Sensor=%s", sensor_array[i].ipmi.comment);
 
 			oh_init_textbuffer(&(rdrptr->IdString));
 			oh_append_textbuffer(&(rdrptr->IdString), sensor_array[i].ipmi.comment);
 			
 			sinfo = g_memdup(&(sensor_array[i].ipmi.sensor_info), sizeof(struct SensorInfo));
 			if (!sinfo) {
-				dbg("Out of memory.");
+				err("Out of memory.");
 				rtn_code = SA_ERR_HPI_OUT_OF_MEMORY;
 				g_free(rdrptr);
 				goto CLEANUP;
@@ -3561,7 +3561,7 @@ static SaErrorT snmp_bc_discover_ipmi_sensors(struct oh_handler_state *handle,
 					 rdrptr,
 					 sinfo, 0);
 			if (err) {
-				dbg("Cannot add RDR. Error=%s.", oh_lookup_error(err));
+				err("Cannot add RDR. Error=%s.", oh_lookup_error(err));
 				g_free(rdrptr);
 			}
 			else {
@@ -3620,13 +3620,13 @@ SaErrorT snmp_bc_rediscover(struct oh_handler_state *handle,
 
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -3682,7 +3682,7 @@ SaErrorT snmp_bc_rediscover(struct oh_handler_state *handle,
 	}
 	
 	if ( (!foundit)  || ( hotswap_entitylocation == 0xFF) ) {
-		dbg("Hotswap event for non hotswap-able resource\n");
+		err("Hotswap event for non hotswap-able resource\n");
 		return(SA_OK);
 	}
 
@@ -3771,10 +3771,10 @@ SaErrorT snmp_bc_rediscover(struct oh_handler_state *handle,
                                         break;
 										
 				default: 
-					dbg("Unrecognize Hotswap Entity %d\n", hotswap_entitytype);
+					err("Unrecognize Hotswap Entity %d\n", hotswap_entitytype);
 					break;
 			}
-        	} else dbg("No valid resource at hand. Could not remove resource.");
+        	} else err("No valid resource at hand. Could not remove resource.");
 		
 		return(SA_OK);
 	}
@@ -3930,7 +3930,7 @@ SaErrorT snmp_bc_rediscover(struct oh_handler_state *handle,
                                 }
                                 break;
 			default: 
-				dbg("Unrecognize Hotswap Entity %d\n", hotswap_entitytype);
+				err("Unrecognize Hotswap Entity %d\n", hotswap_entitytype);
 				break;
 		}
 
@@ -3986,13 +3986,13 @@ SaErrorT snmp_bc_discover_all_slots(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -4061,13 +4061,13 @@ SaErrorT snmp_bc_discover_slot( struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -4076,7 +4076,7 @@ SaErrorT snmp_bc_discover_slot( struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 		
@@ -4136,7 +4136,7 @@ SaErrorT snmp_bc_discover_slot( struct oh_handler_state *handle,
 			break;	
 		
 		default:
-			dbg("Invalid slot resource type\n");
+			err("Invalid slot resource type\n");
 			return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -4151,7 +4151,7 @@ SaErrorT snmp_bc_discover_slot( struct oh_handler_state *handle,
 	res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_PHYSICAL_SLOT].res_info),
 						sizeof(struct ResourceInfo));		
 	if (!res_info_ptr) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		g_free(e);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -4160,7 +4160,7 @@ SaErrorT snmp_bc_discover_slot( struct oh_handler_state *handle,
 				&(e->resource),
 				res_info_ptr, 0);
 	if (err) { 
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		g_free(e);
 		return(err);
 	}
@@ -4211,13 +4211,13 @@ guint snmp_bc_isrediscover(SaHpiEventT *working_event)
 		if (working_event->EventDataUnion.HotSwapEvent.PreviousHotSwapState == SAHPI_HS_STATE_NOT_PRESENT)
 		{
 			if (working_event->EventDataUnion.HotSwapEvent.HotSwapState == SAHPI_HS_STATE_NOT_PRESENT)
-				dbg("Sanity check FAILED! PreviousHotSwapState = HotSwapState == SAHPI_HS_STATE_NOT_PRESENT\n");
+				err("Sanity check FAILED! PreviousHotSwapState = HotSwapState == SAHPI_HS_STATE_NOT_PRESENT\n");
 			rediscovertype = SNMP_BC_RESOURCE_INSTALLED;  /* New resource is installed  */			
 		}
 		else if (working_event->EventDataUnion.HotSwapEvent.HotSwapState == SAHPI_HS_STATE_NOT_PRESENT)
 		{ 
 			if (working_event->EventDataUnion.HotSwapEvent.PreviousHotSwapState == SAHPI_HS_STATE_NOT_PRESENT)
-				dbg("Sanity check FAILED! PreviousHotSwapState = HotSwapState == SAHPI_HS_STATE_NOT_PRESENT\n");
+				err("Sanity check FAILED! PreviousHotSwapState = HotSwapState == SAHPI_HS_STATE_NOT_PRESENT\n");
 			rediscovertype = SNMP_BC_RESOURCE_REMOVED;  /* resource is removed  */					
 		} 
 	 }
@@ -4258,7 +4258,7 @@ SaErrorT snmp_bc_construct_blade_rpt(struct oh_event *e,
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_BLADE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -4300,15 +4300,15 @@ SaErrorT snmp_bc_construct_blower_rpt(struct oh_event* e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_BLOWER_MODULE].comment,
 				   blower_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-	 		e->resource.ResourceTag.Data,
-	      		e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_BLOWER_MODULE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -4351,15 +4351,15 @@ SaErrorT snmp_bc_construct_pm_rpt(struct oh_event *e,
 			   snmp_bc_rpt_array[BC_RPT_ENTRY_POWER_MODULE].comment,
 						   pm_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-			e->resource.ResourceTag.Data,
-			e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_POWER_MODULE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -4408,15 +4408,15 @@ SaErrorT snmp_bc_construct_sm_rpt(struct oh_event *e,
 				   snmp_bc_rpt_array[BC_RPT_ENTRY_SWITCH_MODULE].comment,
 					   sm_index + SNMP_BC_HPI_LOCATION_BASE);
 
-	trace("Discovered resource=%s; ID=%d",
-			e->resource.ResourceTag.Data,
-		      	e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d",
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	*res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_SWITCH_MODULE].res_info),
 						sizeof(struct ResourceInfo));
 	if (!(*res_info_ptr)) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 	
@@ -4465,15 +4465,15 @@ SaErrorT snmp_bc_construct_mm_rpt(struct oh_event *e,
                         snmp_bc_rpt_array[BC_RPT_ENTRY_MGMNT_MODULE].comment,
                                                mm_index + SNMP_BC_HPI_LOCATION_BASE);
 
-        trace("Discovered resource=%s; ID=%d",
-                       	e->resource.ResourceTag.Data,
-                       	e->resource.ResourceId);
+        dbg("Discovered resource=%s; ID=%d",
+            e->resource.ResourceTag.Data,
+            e->resource.ResourceId);
 
         /* Create platform-specific info space to add to infra-structure */
         *res_info_ptr = g_memdup(&(snmp_bc_rpt_array[BC_RPT_ENTRY_MGMNT_MODULE].res_info),
                         	                sizeof(struct ResourceInfo));
         if (!(*res_info_ptr)) {
-        	dbg("Out of memory.");
+        	err("Out of memory.");
                 return(SA_ERR_HPI_OUT_OF_MEMORY);
         }
 	
@@ -4509,13 +4509,13 @@ SaErrorT snmp_bc_add_blade_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -4551,9 +4551,9 @@ SaErrorT snmp_bc_add_blade_rptcache(struct oh_handler_state *handle,
 		oh_append_textbuffer(&(e->resource.ResourceTag), get_blade_resourcetag.string);
 	}
 
-	trace("Discovered resource=%s; ID=%d", 
-			      e->resource.ResourceTag.Data,
-			      e->resource.ResourceId);
+	dbg("Discovered resource=%s; ID=%d", 
+	    e->resource.ResourceTag.Data,
+	    e->resource.ResourceId);
 
 	/* Create platform-specific info space to add to infra-structure */
 	
@@ -4577,7 +4577,7 @@ SaErrorT snmp_bc_add_blade_rptcache(struct oh_handler_state *handle,
 				&(e->resource),
 				res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -4639,17 +4639,17 @@ SaErrorT snmp_bc_add_blower_rptcache(struct oh_handler_state *handle,
 
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering blower %d resource.\n", blower_index);
+	dbg("Discovering blower %d resource.\n", blower_index);
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
 
         /* Get UUID and convert to GUID */
@@ -4660,7 +4660,7 @@ SaErrorT snmp_bc_add_blower_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 			
@@ -4716,17 +4716,17 @@ SaErrorT snmp_bc_add_pm_rptcache(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering power module %d resource.\n", pm_index);
+	dbg("Discovering power module %d resource.\n", pm_index);
 
 
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;
@@ -4739,7 +4739,7 @@ SaErrorT snmp_bc_add_pm_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 	/* ---------------------------------------- */
@@ -4796,17 +4796,17 @@ SaErrorT snmp_bc_add_switch_rptcache(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering switch module %d resource.\n", switch_index);
+	dbg("Discovering switch module %d resource.\n", switch_index);
 
 	res_info_ptr->cur_state = SAHPI_HS_STATE_ACTIVE;  /* Default to ACTIVE */
 	if (res_info_ptr->mib.OidPowerState != NULL) {
@@ -4827,7 +4827,7 @@ SaErrorT snmp_bc_add_switch_rptcache(struct oh_handler_state *handle,
 				      &(e->resource),
 				      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		return(err);
 	}
 	
@@ -4878,20 +4878,20 @@ SaErrorT snmp_bc_add_mm_rptcache(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !e || !res_info_ptr) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
-	trace("Discovering management module %d resource.\n", mm_index);
+	dbg("Discovering management module %d resource.\n", mm_index);
 	err = snmp_bc_snmp_get(custom_handle, SNMP_BC_MGMNT_ACTIVE, &get_active, SAHPI_TRUE);
 	if (err || get_active.type != ASN_INTEGER) {
-		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.",
+		err("Cannot get OID=%s; Received Type=%d; Error=%s.",
 	      		SNMP_BC_MGMNT_ACTIVE, get_active.type, oh_lookup_error(err));
 		if (err) { return(err); }
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); }
@@ -4913,7 +4913,7 @@ SaErrorT snmp_bc_add_mm_rptcache(struct oh_handler_state *handle,
                              &(e->resource),
                                res_info_ptr, 0);
         if (err) {
-        	dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+        	err("Failed to add resource. Error=%s.", oh_lookup_error(err));
                 return(err);
         }
                 
@@ -4981,7 +4981,7 @@ SaErrorT snmp_bc_discover_blade_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -4990,7 +4990,7 @@ SaErrorT snmp_bc_discover_blade_i(struct oh_handler_state *handle,
 
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -5044,7 +5044,7 @@ SaErrorT snmp_bc_discover_blower_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -5053,7 +5053,7 @@ SaErrorT snmp_bc_discover_blower_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -5104,7 +5104,7 @@ SaErrorT snmp_bc_discover_pm_i(struct oh_handler_state *handle,
 	struct ResourceInfo *res_info_ptr;
 
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -5113,7 +5113,7 @@ SaErrorT snmp_bc_discover_pm_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 
@@ -5165,13 +5165,13 @@ SaErrorT snmp_bc_discover_switch_i(struct oh_handler_state *handle,
 	struct snmp_value get_value;	
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -5180,7 +5180,7 @@ SaErrorT snmp_bc_discover_switch_i(struct oh_handler_state *handle,
 	
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 								
@@ -5237,13 +5237,13 @@ SaErrorT snmp_bc_discover_mm_i(struct oh_handler_state *handle,
 	struct snmp_value get_value;
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
@@ -5251,7 +5251,7 @@ SaErrorT snmp_bc_discover_mm_i(struct oh_handler_state *handle,
 	res_info_ptr = NULL;
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 									
@@ -5312,13 +5312,13 @@ SaErrorT snmp_bc_fetch_MT_install_mask(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;	
 	
 	if (!handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 	
@@ -5330,8 +5330,8 @@ SaErrorT snmp_bc_fetch_MT_install_mask(struct oh_handler_state *handle,
 	if (err == SA_ERR_HPI_NOT_PRESENT) {getintvalue->type = ASN_INTEGER; getintvalue->integer = 0;}
 	
         else if (err != SA_OK) {
-		trace("Cannot get OID=%s; Received Type=%d; Error=%s.",
-		      		SNMP_BC_MT_INSTALLED, get_value.type, oh_lookup_error(err));
+		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.",
+		    SNMP_BC_MT_INSTALLED, get_value.type, oh_lookup_error(err));
 		if (err) { return(err); }
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); }
 	} else { 

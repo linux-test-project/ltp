@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2004-2006
+ * (C) Copyright IBM Corp. 2004-2008
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,7 +128,7 @@ SaHpiAlarmT *oh_add_alarm(struct oh_domain *d, SaHpiAlarmT *alarm, int fromfile)
         struct oh_global_param param = { .type = OPENHPI_DAT_SIZE_LIMIT };
 
         if (!d) {
-                dbg("NULL domain pointer passed.");
+                err("NULL domain pointer passed.");
                 return NULL;
         }
 
@@ -137,7 +137,7 @@ SaHpiAlarmT *oh_add_alarm(struct oh_domain *d, SaHpiAlarmT *alarm, int fromfile)
 
         if (param.u.dat_size_limit != OH_MAX_DAT_SIZE_LIMIT &&
             g_slist_length(d->dat.list) >= param.u.dat_size_limit) {
-                dbg("DAT for domain %d is overflowed", d->id);
+                err("DAT for domain %d is overflowed", d->id);
                 d->dat.overflow = SAHPI_TRUE;
                 return NULL;
         } else if (alarm && alarm->AlarmCond.Type == SAHPI_STATUS_COND_TYPE_USER) {
@@ -149,7 +149,7 @@ SaHpiAlarmT *oh_add_alarm(struct oh_domain *d, SaHpiAlarmT *alarm, int fromfile)
                     __count_alarms(d,
                                    &alarm->AlarmCond.Type,
                                    SAHPI_ALL_SEVERITIES) >= param.u.dat_user_limit) {
-                        dbg("DAT for domain %d has reached its user alarms limit", d->id);
+                        err("DAT for domain %d has reached its user alarms limit", d->id);
                         return NULL;
                 }
         }
@@ -335,7 +335,7 @@ SaHpiUint32T oh_count_alarms(struct oh_domain *d, SaHpiSeverityT sev)
 
 static void oh_detect_oem_event_alarm(struct oh_domain *d, SaHpiEventT *event)
 {
-        SaHpiAlarmT *a = NULL;
+        SaHpiAlarmT a;
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_OEM;
 
         if (!d || !event) return;
@@ -349,24 +349,24 @@ static void oh_detect_oem_event_alarm(struct oh_domain *d, SaHpiEventT *event)
         }
 
         /* Severity is "alarming". Add/Create OEM alarm */
-        a = oh_add_alarm(d, NULL, 0);
-        if (!a) goto done;
-        a->Severity = event->Severity;
-        a->AlarmCond.Type = SAHPI_STATUS_COND_TYPE_OEM;
-        oh_entity_path_lookup(event->Source, &a->AlarmCond.Entity);
-        a->AlarmCond.ResourceId = event->Source;
-        a->AlarmCond.Mid = event->EventDataUnion.OemEvent.MId;
-        memcpy(&a->AlarmCond.Data,
+        a.Severity = event->Severity;
+        a.AlarmCond.Type = type;
+        oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
+        a.AlarmCond.ResourceId = event->Source;
+        a.AlarmCond.Mid = event->EventDataUnion.OemEvent.MId;
+        memcpy(&a.AlarmCond.Data,
                &event->EventDataUnion.OemEvent.OemEventData,
                sizeof(SaHpiTextBufferT));
-done:
-        return;
+        
+	oh_add_alarm(d, &a, 0);
+        
+	return;
 }
 
 static void oh_detect_resource_event_alarm(struct oh_domain *d, SaHpiEventT *event)
 {
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_RESOURCE;
-        SaHpiAlarmT *a = NULL;
+        SaHpiAlarmT a;
 
         if (!d || !event) return;
 
@@ -384,21 +384,20 @@ static void oh_detect_resource_event_alarm(struct oh_domain *d, SaHpiEventT *eve
         /* Failed resource.
            Add/Create resource alarm if severity is "alarming" */
         if (event->Severity <= SAHPI_MINOR) {
-                a = oh_add_alarm(d, NULL, 0);
-                if (!a) goto done;
-                a->Severity = event->Severity;
-                a->AlarmCond.Type = SAHPI_STATUS_COND_TYPE_RESOURCE;
-                oh_entity_path_lookup(event->Source, &a->AlarmCond.Entity);
-                a->AlarmCond.ResourceId = event->Source;
+                a.Severity = event->Severity;
+                a.AlarmCond.Type = type;
+                oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
+                a.AlarmCond.ResourceId = event->Source;
+                oh_add_alarm(d, &a, 0);
         }
-done:
-        return;
+        
+	return;
 }
 
 static void oh_detect_sensor_event_alarm(struct oh_domain *d, SaHpiEventT *event)
 {
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_SENSOR;
-        SaHpiAlarmT *a = NULL;
+        SaHpiAlarmT a;
 
         if (!d || !event) return;
 
@@ -413,17 +412,16 @@ static void oh_detect_sensor_event_alarm(struct oh_domain *d, SaHpiEventT *event
                    event->EventDataUnion.SensorEvent.Assertion) {
                 /* Add sensor alarm to dat, since event is severe
                    enough and is asserted. */
-                a = oh_add_alarm(d, NULL, 0);
-                if (!a) goto done;
-                a->Severity = event->Severity;
-                a->AlarmCond.Type = SAHPI_STATUS_COND_TYPE_SENSOR;
-                oh_entity_path_lookup(event->Source, &a->AlarmCond.Entity);
-                a->AlarmCond.ResourceId = event->Source;
-                a->AlarmCond.SensorNum = event->EventDataUnion.SensorEvent.SensorNum;
-                a->AlarmCond.EventState = event->EventDataUnion.SensorEvent.EventState;
+                a.Severity = event->Severity;
+                a.AlarmCond.Type = type;
+                oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
+                a.AlarmCond.ResourceId = event->Source;
+                a.AlarmCond.SensorNum = event->EventDataUnion.SensorEvent.SensorNum;
+                a.AlarmCond.EventState = event->EventDataUnion.SensorEvent.EventState;
+                oh_add_alarm(d, &a, 0);
         }
-done:
-        return;
+        
+	return;
 }
 
 static void oh_detect_sensor_enable_change_alarm(struct oh_domain *d,
@@ -487,7 +485,7 @@ static void oh_detect_hpi_alarm(struct oh_domain *d, SaHpiEventT *event)
 
 static void oh_detect_resource_alarm(struct oh_domain *d, SaHpiRptEntryT *res)
 {
-        SaHpiAlarmT *a = NULL;
+        SaHpiAlarmT a;
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_SENSOR;
 
         if (!d || !res) return;
@@ -498,17 +496,16 @@ static void oh_detect_resource_alarm(struct oh_domain *d, SaHpiRptEntryT *res)
                                 NULL, NULL, NULL, 1);
         } else if (res->ResourceSeverity <= SAHPI_MINOR && res->ResourceFailed) {
                 /* Otherwise, if sev is "alarming" and resource failed, create alarm. */
-                a = oh_add_alarm(d, NULL, 0);
-                if (!a) goto done;
-                a->Severity = res->ResourceSeverity;
-                a->AlarmCond.Type = SAHPI_STATUS_COND_TYPE_RESOURCE;
-                oh_entity_path_lookup(res->ResourceId, &a->AlarmCond.Entity);
-                a->AlarmCond.ResourceId = res->ResourceId;
-                a->AlarmCond.Mid = res->ResourceInfo.ManufacturerId;
-                memcpy(&a->AlarmCond.Data, &res->ResourceTag, sizeof(SaHpiTextBufferT));
+                a.Severity = res->ResourceSeverity;
+                a.AlarmCond.Type = SAHPI_STATUS_COND_TYPE_RESOURCE;
+                oh_entity_path_lookup(res->ResourceId, &a.AlarmCond.Entity);
+                a.AlarmCond.ResourceId = res->ResourceId;
+                a.AlarmCond.Mid = res->ResourceInfo.ManufacturerId;
+                memcpy(&a.AlarmCond.Data, &res->ResourceTag, sizeof(SaHpiTextBufferT));
+                oh_add_alarm(d, &a, 0);
         }
-done:
-        return;
+        
+	return;
 }
 
 /**
@@ -566,7 +563,7 @@ SaErrorT oh_detect_res_sev_alarm(SaHpiDomainIdT did,
         struct oh_domain *d = NULL;
         SaHpiRptEntryT *res = NULL;
 
-        if (!did || !rid) return SA_ERR_HPI_INVALID_PARAMS;
+        if (!rid) return SA_ERR_HPI_INVALID_PARAMS;
 
         d = oh_get_domain(did);
         if (!d) return SA_ERR_HPI_INVALID_DOMAIN;
@@ -586,13 +583,13 @@ SaErrorT oh_detect_res_sev_alarm(SaHpiDomainIdT did,
 
 
 /**
- * oh_detect_sensor_alarm
+ * oh_detect_sensor_enable_alarm
  * @did: domain id
  * @rid: resource id
  * @num: sensor number
  * @enable: sensor enable flag
  *
- * This will detect if a sensor related alarm needs to be removed,
+ * This will detect if a sensor-enable related alarm needs to be removed,
  * and if so, will remove it accordingly.
  *
  * Return value: SA_OK on success
@@ -606,7 +603,7 @@ SaErrorT oh_detect_sensor_enable_alarm(SaHpiDomainIdT did,
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_SENSOR;
         SaErrorT error = SA_OK;
 
-        if (!did || !rid) return SA_ERR_HPI_INVALID_PARAMS;
+        if (!rid) return SA_ERR_HPI_INVALID_PARAMS;
 
         /* Only need to scan alarm table if enable is false */
         if (enable) return SA_OK;
@@ -645,7 +642,7 @@ SaErrorT oh_detect_sensor_mask_alarm(SaHpiDomainIdT did,
         SaHpiStatusCondTypeT type = SAHPI_STATUS_COND_TYPE_SENSOR;
         SaErrorT error = SA_OK;
 
-        if (!did || !rid) return SA_ERR_HPI_INVALID_PARAMS;
+        if (!rid) return SA_ERR_HPI_INVALID_PARAMS;
 
         if (action == SAHPI_SENS_ADD_EVENTS_TO_MASKS)
                 return SA_OK;
@@ -681,13 +678,13 @@ SaErrorT oh_alarms_to_file(struct oh_dat *at, char *filename)
         int file;
 
         if (!at || !filename) {
-                dbg("Invalid Parameters");
+                err("Invalid Parameters");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0660 );
+        file = open(filename, O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
         if (file < 0) {
-                dbg("File '%s' could not be opened", filename);
+                err("File '%s' could not be opened", filename);
                 return SA_ERR_HPI_ERROR;
         }
 
@@ -695,14 +692,14 @@ SaErrorT oh_alarms_to_file(struct oh_dat *at, char *filename)
                 int bytes_written = 0;
                 bytes_written = write(file, (void *)alarms->data, sizeof(SaHpiAlarmT));
                 if (bytes_written != sizeof(SaHpiAlarmT)) {
-                        dbg("Couldn't write to file '%s'.", filename);
+                        err("Couldn't write to file '%s'.", filename);
                         close(file);
                         return SA_ERR_HPI_ERROR;
                 }
         }
 
         if (close(file) != 0) {
-                dbg("Couldn't close file '%s'.", filename);
+                err("Couldn't close file '%s'.", filename);
                 return SA_ERR_HPI_ERROR;
         }
 
@@ -724,13 +721,13 @@ SaErrorT oh_alarms_from_file(struct oh_domain *d, char *filename)
         SaHpiAlarmT alarm;
 
         if (!d || !filename) {
-                dbg("Invalid Parameters");
+                err("Invalid Parameters");
                 return SA_ERR_HPI_ERROR;
         }
 
         file = open(filename, O_RDONLY);
         if (file < 0) {
-                dbg("File '%s' could not be opened", filename);
+                err("File '%s' could not be opened", filename);
                 return SA_ERR_HPI_ERROR;
         }
 
@@ -738,13 +735,13 @@ SaErrorT oh_alarms_from_file(struct oh_domain *d, char *filename)
                 SaHpiAlarmT *a = oh_add_alarm(d, &alarm, 1);
                 if (!a) {
                         close(file);
-                        dbg("Error adding alarm read from file.");
+                        err("Error adding alarm read from file.");
                         return SA_ERR_HPI_ERROR;
                 }
         }
 
         if (close(file) != 0) {
-                dbg("Couldn't close file '%s'.", filename);
+                err("Couldn't close file '%s'.", filename);
                 return SA_ERR_HPI_ERROR;
         }
 

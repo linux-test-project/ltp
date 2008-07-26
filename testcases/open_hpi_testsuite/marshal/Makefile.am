@@ -19,7 +19,6 @@ DIST_SUBDIRS 		= t
 
 MAINTAINERCLEANFILES 	= Makefile.in *~
 
-AM_CFLAGS		= @CFLAGS@
 INCLUDES 		= @OPENHPI_INCLUDES@
 # just to clear LIBS
 LIBS			=

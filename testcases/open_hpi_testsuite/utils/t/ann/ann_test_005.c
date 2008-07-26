@@ -62,28 +62,28 @@ int main(int argc, char **argv)
 
         rc = oh_announcement_append(ann, &announ);
 	if (rc != SA_OK) {
-		dbg("ERROR: 1 oh_announcement_append failed.");
+		err("ERROR: 1 oh_announcement_append failed.");
 		return 1;
 	}
 
         announ.Severity = SAHPI_MAJOR;
         rc = oh_announcement_append(ann, &announ);
 	if (rc != SA_OK) {
-		dbg("ERROR: 2 oh_announcement_append failed.");
+		err("ERROR: 2 oh_announcement_append failed.");
 		return 1;
 	}
 
         announ.Severity = SAHPI_MINOR;
         rc = oh_announcement_append(ann, &announ);
 	if (rc != SA_OK) {
-		dbg("ERROR: 3 oh_announcement_append failed.");
+		err("ERROR: 3 oh_announcement_append failed.");
 		return 1;
 	}
 
 	announ.Severity = SAHPI_CRITICAL;
 	rc = oh_announcement_append(ann, &announ);
 	if (rc != SA_OK) {
-		dbg("ERROR: 4 oh_announcement_append failed.");
+		err("ERROR: 4 oh_announcement_append failed.");
 		return 1;
 	}
 
@@ -91,31 +91,31 @@ int main(int argc, char **argv)
         announ.Timestamp = 0;
         rc = oh_announcement_get_next(ann, SAHPI_ALL_SEVERITIES, FALSE, &announ);
         if(rc != SA_OK) {
-                dbg("ERROR: on_announcement_get_next returned %d.", rc);
+                err("ERROR: on_announcement_get_next returned %d.", rc);
                 return 1;
         }
-        dbg("EntryId %d returned with Severity %d.", announ.EntryId, announ.Severity);
+        err("EntryId %d returned with Severity %d.", announ.EntryId, announ.Severity);
 
         rc = oh_announcement_get_next(ann, SAHPI_ALL_SEVERITIES, FALSE, &announ);
         if(rc != SA_OK) {
-                dbg("ERROR: on_announcement_get_next returned %d.", rc);
+                err("ERROR: on_announcement_get_next returned %d.", rc);
                 return 1;
         }
-        dbg("EntryId %d returned with Severity %d.", announ.EntryId, announ.Severity);
+        err("EntryId %d returned with Severity %d.", announ.EntryId, announ.Severity);
 
         rc = oh_announcement_get(ann, 1, &announ);
 	if (rc != SA_OK) {
-		dbg("ERROR: oh_announcement_get did not find anything.");
+		err("ERROR: oh_announcement_get did not find anything.");
 		return 1;
 	}
 	rc = oh_announcement_get_next(ann, SAHPI_CRITICAL, FALSE, &announ);
         if(rc != SA_OK || announ.Severity != SAHPI_CRITICAL) {
-                dbg("ERROR: on_announcement_get_next returned %d."
+                err("ERROR: on_announcement_get_next returned %d."
                     " Severity returned is %d. EntryId %d.",
                     rc, announ.Severity, announ.EntryId);
                 return 1;
         }
-        dbg("EntryId %d returned.", announ.EntryId);
+        err("EntryId %d returned.", announ.EntryId);
 
         return 0;
 }

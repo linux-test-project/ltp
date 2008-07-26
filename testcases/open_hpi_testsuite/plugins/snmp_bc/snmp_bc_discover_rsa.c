@@ -28,13 +28,13 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 	struct snmp_bc_hnd *custom_handle;
 
 	if (!handle || !ep_root) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 		
 	custom_handle = (struct snmp_bc_hnd *)handle->data;
 	if (!custom_handle) {
-		dbg("Invalid parameter.");
+		err("Invalid parameter.");
 		return(SA_ERR_HPI_INVALID_PARAMS);
 	}
 
@@ -43,7 +43,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
          ******************/
  	err = snmp_bc_snmp_get(custom_handle, SNMP_BC_PLATFORM_OID_RSA, &get_value, SAHPI_TRUE);
         if (err || get_value.type != ASN_INTEGER) {
-		dbg("Cannot get OID=%s; Received Type=%d; Error=%s.",
+		err("Cannot get OID=%s; Received Type=%d; Error=%s.",
 		     SNMP_BC_PLATFORM_OID_RSA, get_value.type, oh_lookup_error(err));
 		if (err) { return(err); }
 		else { return(SA_ERR_HPI_INTERNAL_ERROR); }
@@ -51,7 +51,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 
 	e = snmp_bc_alloc_oh_event();
 	if (e == NULL) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
 
@@ -64,13 +64,13 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 				   snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_CHASSIS].comment,
 				   ep_root->Entry[0].EntityLocation);
 
-	trace("Discovered resource=%s.", e->resource.ResourceTag.Data);
+	dbg("Discovered resource=%s.", e->resource.ResourceTag.Data);
 
 	/* Create platform-specific info space to add to infra-structure */
 	res_info_ptr = g_memdup(&(snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_CHASSIS].res_info),
 				sizeof(struct ResourceInfo));
 	if (!res_info_ptr) {
-		dbg("Out of memory.");
+		err("Out of memory.");
 		g_free(e);
 		return(SA_ERR_HPI_OUT_OF_MEMORY);
 	}
@@ -85,7 +85,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 			      &(e->resource), 
 			      res_info_ptr, 0);
 	if (err) {
-		dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+		err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 		g_free(e);
 		return(err);
 	}
@@ -110,7 +110,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
         for (i=0; i<RSA_MAX_CPU; i++) {
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 		
@@ -133,13 +133,13 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 					   snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_CPU].comment,
 					   i + SNMP_BC_HPI_LOCATION_BASE);
 		
-		trace("Discovered resource=%s.", e->resource.ResourceTag.Data);
+		dbg("Discovered resource=%s.", e->resource.ResourceTag.Data);
 		
 		/* Create platform-specific info space to add to infra-structure */
 		res_info_ptr = g_memdup(&(snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_CPU].res_info),
 					sizeof(struct ResourceInfo));
 		if (!res_info_ptr) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			snmp_bc_free_oh_event(e);
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
@@ -154,7 +154,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 				      &(e->resource), 
 				      res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}
@@ -181,7 +181,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
         for (i=0; i<RSA_MAX_DASD; i++) {
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 		
@@ -204,13 +204,13 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 					   snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_DASD].comment,
 					   i + SNMP_BC_HPI_LOCATION_BASE);
 		
-		trace("Discovered resource=%s.", e->resource.ResourceTag.Data);
+		dbg("Discovered resource=%s.", e->resource.ResourceTag.Data);
 		
 		/* Create platform-specific info space to add to infra-structure */
 		res_info_ptr = g_memdup(&(snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_DASD].res_info),
 					sizeof(struct ResourceInfo));
 		if (!res_info_ptr) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			snmp_bc_free_oh_event(e);
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
@@ -225,7 +225,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 				      &(e->resource), 
 				      res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}
@@ -251,7 +251,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
         for (i=0; i<RSA_MAX_FAN; i++) {
 		e = snmp_bc_alloc_oh_event();
 		if (e == NULL) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
 		
@@ -274,13 +274,13 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 					   snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_FAN].comment,
 					   i + SNMP_BC_HPI_LOCATION_BASE);
 		
-		trace("Discovered resource=%s.", e->resource.ResourceTag.Data);
+		dbg("Discovered resource=%s.", e->resource.ResourceTag.Data);
 		
 		/* Create platform-specific info space to add to infra-structure */
 		res_info_ptr = g_memdup(&(snmp_bc_rpt_array_rsa[RSA_RPT_ENTRY_FAN].res_info),
 					sizeof(struct ResourceInfo));
 		if (!res_info_ptr) {
-			dbg("Out of memory.");
+			err("Out of memory.");
 			snmp_bc_free_oh_event(e);
 			return(SA_ERR_HPI_OUT_OF_MEMORY);
 		}
@@ -295,7 +295,7 @@ SaErrorT snmp_bc_discover_rsa(struct oh_handler_state *handle,
 				      &(e->resource), 
 				      res_info_ptr, 0);
 		if (err) {
-			dbg("Failed to add resource. Error=%s.", oh_lookup_error(err));
+			err("Failed to add resource. Error=%s.", oh_lookup_error(err));
 			snmp_bc_free_oh_event(e);
 			return(err);
 		}

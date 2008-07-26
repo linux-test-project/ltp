@@ -130,13 +130,13 @@ SaErrorT rtas_get_idr_area_header(void *hnd,
 
         rdr = oh_get_rdr_by_type(h->rptcache, rid, SAHPI_INVENTORY_RDR, idrid);
         if (!rdr) {
-                dbg("RDR not found. %u->inventory->%u", rid, idrid);
+                err("RDR not found. %u->inventory->%u", rid, idrid);
                 return SA_ERR_HPI_NOT_PRESENT;
         }
 
         idr_info = oh_get_rdr_data(h->rptcache, rid, rdr->RecordId);
         if (!idr_info) {
-                dbg("IDR data not found! %u->%u", rid, rdr->RecordId);
+                err("IDR data not found! %u->%u", rid, rdr->RecordId);
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 

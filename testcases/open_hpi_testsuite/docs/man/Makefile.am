@@ -51,7 +51,7 @@ EXTRA_DIST		= openhpi.pod.7 openhpid.pod.8
 	pod2man --release=$(VERSION) --name=`echo $@ | sed 's/.8//'` \
 		-s 8 -c "OpenHPI" $< $@
 
-mandir = $(datadir)/man
+#mandir = $(datadir)/man
 man_MANS = openhpi.7 openhpid.8
 
 clean-local: am_config_clean-local

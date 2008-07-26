@@ -42,19 +42,19 @@ SaErrorT rtas_discover_resources(void *hnd)
         }
 
         if (!hnd) {
-                dbg("Null handle!");
+                err("Null handle!");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
         entity_root = (char *)g_hash_table_lookup(h->config, "entity_root");
         if (entity_root == NULL) {
-                dbg("Could not aquire entity_root parameter.");
+                err("Could not aquire entity_root parameter.");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         error = oh_encode_entitypath(entity_root, &root_ep);
         if (error) {
-                dbg("Could not convert entity path to string. Error=%s.", oh_lookup_error(error));
+                err("Could not convert entity path to string. Error=%s.", oh_lookup_error(error));
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
@@ -86,7 +86,7 @@ SaErrorT rtas_discover_resources(void *hnd)
                 error = rtas_discover_inventory(h, e);
                 oh_evt_queue_push(h->eventq, e);
         } else {
-                dbg("Error adding resource. %s", oh_lookup_error(error));
+                err("Error adding resource. %s", oh_lookup_error(error));
                 return error;
         }
 
@@ -129,7 +129,7 @@ SaErrorT rtas_discover_sensors(struct oh_handler_state *h,
         /* open the binary file and read the indexes */
         file = fopen(RTAS_SENSORS_PATH, "r");
         if (!file) {
-                dbg("Error reading RTAS sensor file %s.", RTAS_SENSORS_PATH);
+                err("Error reading RTAS sensor file %s.", RTAS_SENSORS_PATH);
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
         /* The rtas-sensors file is layed out in the following fashion :
@@ -177,7 +177,7 @@ SaErrorT rtas_discover_sensors(struct oh_handler_state *h,
                                         sensor_info = (struct SensorInfo*)g_malloc0(sizeof(struct SensorInfo));
 
                                         if (!rdr || !sensor_info) {
-                                                dbg("Out of memory.");
+                                                err("Out of memory.");
                                                 return SA_ERR_HPI_OUT_OF_SPACE;
                                         }
 
@@ -636,7 +636,7 @@ SaErrorT rtas_discover_inventory(struct oh_handler_state *h,
         /* open the binary file and read the indexes */
         file = popen(LSVPD_CMD, "r");
         if (!file) {
-                dbg("Error finding rtas inventory command %s", LSVPD_CMD);
+                err("Error finding rtas inventory command %s", LSVPD_CMD);
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
@@ -648,7 +648,7 @@ SaErrorT rtas_discover_inventory(struct oh_handler_state *h,
                 char type[3];
 
                 if (strlen(line) < 5) { /* Check line. 5 chars long at least. */
-                        dbg("Bad line from " LSVPD_CMD);
+                        err("Bad line from " LSVPD_CMD);
                         pclose(file);
                         return SA_ERR_HPI_INTERNAL_ERROR;
                 }
@@ -677,7 +677,7 @@ SaErrorT rtas_discover_inventory(struct oh_handler_state *h,
                         oh_append_textbuffer(&field->Field, line+4);
                         oh_area->fields = g_slist_append(oh_area->fields, field);
                 } else {
-                        dbg("Bad Error creating field. There is no area yet.");
+                        err("Bad Error creating field. There is no area yet.");
                         pclose(file);
                         return SA_ERR_HPI_INTERNAL_ERROR;
                 }
