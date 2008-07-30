@@ -24,12 +24,31 @@
 #  AUTHOR      : Jeff Martin (martinjn@us.ibm.com)
 #  HISTORY     : 
 #     (05/07/01)v.99  Needed a quick script to test a hardlink limitation that was found. 
+#     (28/07/08) Veerendra C <vechandr@in.ibm.com>   
+#                     Modified to return proper return code on failure/success. 
+#                     Also modified to return errors if unable to create dir/files
 
+$ret = 0;
+if ( system("mkdir hlink") ) {
+     $ret = -1 ;
+}
 
-`mkdir hlink`;
-`mkdir slink`;
-`touch hlink/hfile`;
-`touch slink/sfile`;
+if ( system("mkdir slink") ) {
+     $ret = -1 ;
+}
+
+if ( system("touch hlink/hfile") ) {
+     $ret = -1 ;
+}
+
+if ( system("touch slink/sfile") ) {
+     $ret = -1 ;
+}
+
+if ( $ret == -1 ) {
+    printf ("Error %d: Not able to create dir/file's\n " , $ret);
+    exit -1;
+}
 
 $scount=shift @ARGV;
 chdir "slink";
@@ -47,10 +66,24 @@ for($x=0;$x<$hcount;$x++) {
       $herrors++;
       }
    }
+
+if($herrors) {
+    printf ("linker01 : FAIL Hard Link Errors = %d\n", $herrors);
+    $ret = -1
+}
+else {
+    printf ("linker01 : HardLink Test PASS\n" )
+}
+if($serrors) {
+    printf ("linker01 : FAIL Soft Link Errors = %d\n", $serrors);
+    $ret = -1
+}
+else {
+    printf ("linker01 : SoftLink Test PASS\n" );
+}
+
 unlink <hlink/hfile*>;
 unlink <slink/sfile*>;
 rmdir hlink;
 rmdir slink;
-
-printf ("%-8s %4d       %s  :  %s:%d\n", "linker01", 0, $herrors == 0 ? "PASS" : "FAIL", "Hard Link Errors    ", $herrors);
-printf ("%-8s %4d       %s  :  %s:%d\n", "linker01", 0, $serrors == 0 ? "PASS" : "FAIL", "Symbolic Link Errors", $serrors);
+exit $ret;
