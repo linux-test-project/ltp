@@ -36,6 +36,10 @@
 #include <sys/wait.h>
 #include <asm/page.h>
 
+#ifndef PAGE_SIZE
+#define PAGE_SIZE getpagesize()
+#endif
+
 #define ALIGN(x,a)		__ALIGN_MASK(x,(typeof(x))(a)-1)
 #define __ALIGN_MASK(x,mask)	(((x)+(mask))&~(mask))
 #define KB(x)			((x) >> 10)
