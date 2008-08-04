@@ -51,11 +51,20 @@ done
 for tasks in 1 2 4; do
 for strategy in 0 1; do
 	# set bw limiting rules
+	if [ -f /dev/blockioctl/blockio.bandwidth ]; then
+		io_throttle_file=blockio.bandwidth
+	elif [ -f /dev/blockioctl/blockio.bandwidth-max ]; then
+		io_throttle_file=blockio.bandwidth-max
+	else
+		echo "ERROR: unknown kernel ABI. Exiting test."
+		cleanup
+		exit 1
+	fi
 	for i in `seq 1 3`; do
 		limit=$(($phys_bw * 1024 / `echo 2^$i | bc`))
 		IOBW[$i]=$(($limit / 1024))
 		/bin/echo $dev:$limit:$strategy:$limit > \
-			/dev/blockioctl/cgroup-$i/blockio.bandwidth
+			/dev/blockioctl/cgroup-$i/${io_throttle_file}
 		if [ $? -ne 0 ]; then
 			echo "ERROR: could not set i/o bandwidth limit for cgroup-$i. Exiting test."
 			cleanup
