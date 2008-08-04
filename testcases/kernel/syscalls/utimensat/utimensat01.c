@@ -41,6 +41,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <test.h>
 #include "linux_syscall_numbers.h"
 
 /* We use EXIT_FAILURE for an expected failure from utimensat()
@@ -274,6 +275,7 @@ main(int argc, char *argv[])
 }
 
 #else
+char *TCID="utimensat01";	/* Test program identifier.    */
 int TST_TOTAL = 0;              /* Total number of test cases. */
 
 int main(){
