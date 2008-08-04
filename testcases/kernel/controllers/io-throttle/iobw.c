@@ -40,9 +40,9 @@
 #define PAGE_SIZE getpagesize()
 #endif
 
-#define ALIGN(x,a)		__ALIGN_MASK(x,(typeof(x))(a)-1)
-#define __ALIGN_MASK(x,mask)	(((x)+(mask))&~(mask))
-#define KB(x)			((x) >> 10)
+#define align(x,a)		__align_mask(x,(typeof(x))(a)-1)
+#define __align_mask(x,mask)	(((x)+(mask))&~(mask))
+#define kb(x)			((x) >> 10)
 
 const char usage[] = "Usage: iobw [-direct] threads chunk_size data_size\n";
 const char child_fmt[] =
@@ -229,12 +229,12 @@ int main(int argc, char *argv[])
 		fprintf(stderr, usage);
 		exit(1);
 	}
-	chunk_size = ALIGN(memparse(argv[2], &end), PAGE_SIZE);
+	chunk_size = align(memparse(argv[2], &end), PAGE_SIZE);
 	if (*end) {
 		fprintf(stderr, usage);
 		exit(1);
 	}
-	data_size = ALIGN(memparse(argv[3], &end), PAGE_SIZE);
+	data_size = align(memparse(argv[3], &end), PAGE_SIZE);
 	if (*end) {
 		fprintf(stderr, usage);
 		exit(1);
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 	signal(SIGTERM, signal_handler);
 
 	fprintf(stdout, "chunk_size %luKiB, data_size %luKiB\n",
-		KB(chunk_size), KB(data_size));
+		kb(chunk_size), kb(data_size));
 	fflush(stdout);
 
         gettimeofday(&start, NULL);
