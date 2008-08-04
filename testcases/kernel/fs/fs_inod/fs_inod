@@ -53,8 +53,7 @@
 #=============================================================================
 function err_log
 {
-    error "$1"
-    let step_errors="$step_errors + 1"
+    let step_errors=$step_errors+1
 }
 
 
@@ -221,6 +220,7 @@ function step1
        echo $USAGE
        exit 2
     fi
+    ERRORS=0
 
     testvol=$1
     numsubdirs=$2
@@ -243,7 +243,8 @@ function step1
          step_errors=0
          step$I
          if [ $? != 0 ]; then
-	    error "step$I failed - see above errors"
+            echo "step$I failed - see above errors"
+            let ERRORS=$ERRORS+$step_errors
          fi
     done   
 
