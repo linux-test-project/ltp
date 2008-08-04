@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setgid01.c,v 1.2 2006/05/26 06:26:40 vapier Exp $ */
+/* $Id: setgid01.c,v 1.3 2008/08/04 12:06:21 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -118,14 +118,14 @@
 void setup();
 void cleanup();
 
-
+#include "compat_16.h"
 
 char *TCID="setgid01"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0, 0};
-int gid;
+GID_T gid;
 
 int
 main(int ac, char **av)
@@ -158,7 +158,7 @@ main(int ac, char **av)
 	/* 
 	 * Call setgid(2) 
 	 */
-	TEST(setgid(gid));
+	TEST(SETGID(gid));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -196,8 +196,8 @@ setup()
 
     /* Pause if that option was specified */
     TEST_PAUSE;
-
-    gid = getgid();
+    
+    gid = GETGID();
 }	/* End setup() */
 
 

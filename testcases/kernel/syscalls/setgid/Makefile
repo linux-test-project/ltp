@@ -19,8 +19,15 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard *[0-9][0-9].c)
+TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_16,$(SRCS))
+
+
+%.c: compat_16.h
+%_16.c: %.c 
+	echo "#define USE_COMPAT16_SYSCALL 1" > $@
+	cat $< >> $@
+
 
 all: $(TARGETS)
 

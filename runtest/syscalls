@@ -745,8 +745,11 @@ setfsuid02 setfsuid02
 setfsuid03 setfsuid03
 
 setgid01 setgid01
+setgid01_16 setgid01_16
 setgid02 setgid02
+setgid02_16 setgid02_16
 setgid03 setgid03
+setgid03_16 setgid03_16
 
 setegid01 setegid01
 

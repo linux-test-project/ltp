@@ -59,6 +59,8 @@ int mygid;
 void setup(void);
 void cleanup(void);
 
+#include "compat_16.h"
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -135,6 +137,15 @@ setup()
 		tst_brkm(TBROK, cleanup, "getpwnam failed for user "
 			 "id %s", ltpuser1);
 	}
+
+	if (!(COMPAT_SIZE_CHECK(rootpwent->pw_gid))) {
+		tst_brkm(TBROK, 
+			 cleanup, 
+			 "gid for `%s' is too large for testing setgid16", 
+			 root);
+	}
+	  
+	
 }
 
 /*

@@ -61,11 +61,12 @@ struct passwd *ltpuser;
 void setup(void);
 void cleanup(void);
 
+#include "compat_16.h"
+
 int exp_enos[] = {EPERM, 0};
 
 int main(int ac, char **av)
 {
-	int gid;
 	struct passwd *getpwnam(), *rootpwent;
 
 	int lc;				/* loop counter */
@@ -86,14 +87,20 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		gid = getgid();
 
 		if ((rootpwent = getpwnam(root)) == NULL) {
 			tst_brkm(TBROK, cleanup, "getpwnam failed for user id "
 				 "%s", root);
 		}
 
-		TEST(setgid(rootpwent->pw_gid));
+		if (!COMPAT_SIZE_CHECK(rootpwent->pw_gid)) {
+		 tst_brkm(TBROK, 
+			  cleanup, 
+			  "gid for `%s' is too large for testing setgid16", 
+			  root);
+		}
+		
+		TEST(SETGID(rootpwent->pw_gid));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -125,7 +132,15 @@ setup()
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         ltpuser = getpwnam(nobody_uid);
+	ltpuser = getpwnam(nobody_uid);
+
+	 if (!COMPAT_SIZE_CHECK(ltpuser->pw_gid)) {
+		 tst_brkm(TBROK, 
+			  cleanup, 
+			  "gid for `%s' is too large for testing setgid16", 
+			  nobody_gid);
+	 }
+
 	 if (setgid(ltpuser->pw_gid) == -1) {
                 tst_resm(TINFO, "setgid failed to "
                          "to set the effective gid to %d",
