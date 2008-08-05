@@ -19,8 +19,13 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+SRCS    = $(wildcard truncate[0-9][0-9]*.c)
+TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_64,$(SRCS))
+
+
+%_64.c: %.c
+	echo "#define _FILE_OFFSET_BITS 64" > $@
+	cat  $< >> $@
 
 all: $(TARGETS)
 
