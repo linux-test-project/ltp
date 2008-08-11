@@ -1,0 +1,107 @@
+The ReadOnly Bind mount tests, uses the filesystems tests from 
+the {LTPROOT}/testcases/kernel/fs .
+
+EXECUTING TESTS
+==================
+The tests can be executed through runltp like:
+
+./runltp -f fs_readonly
+
+Following tests are executed when the above is invoked:
+
+IOGEN & DOIO
+   |
+    ----- iogen 
+   |
+    ----- doio
+   |
+    ----- rwtest
+   |
+    ----- growfiles
+FS_INOD
+LINKTEST
+OPENFILE
+INODE
+STREAM
+FTEST
+LFTEST
+WRITETEST.
+
+IOGEN & DOIO
+=============
+
+    This is a pair of programs that does basic I/O operations on a set of files.
+The file offset, I/O length, I/O operation, and what open(2) flags are
+selected randomly from a pre-defined or commandline given set. All data
+written can be verified (this is the usual method).
+
+RWTest
+-----
+rwtest is a shell script that is a wrapper of iogen and doio.
+
+Growfiles
+--------
+Growfiles will create and truncate files in gradual steps using write and lseek.
+The system calls are checked for proper returns. 
+
+FS_INOD
+============
+
+File system stress - inode allocation/deallocation.
+Rapidly creates and deletes files through multiple processes running in the 
+background.  
+
+
+LINKTEST
+===========
+
+Linktest.pl is a simple test that attempts to create a given number of hard 
+links and symbolic links to a single file.
+
+
+OPENFILE
+===========
+
+Create files and open simultaneously.
+
+INODE
+==================
+
+Does the File system managment and I/O functions work.
+This Construct a directory tree, create files in it, and verify
+that this was done as expected. It uses the syscalls mkdir, stat, open 
+
+
+STREAM
+============
+
+Performs different tests on the stream  syscalls.
+This uses the syscalls freopen, fopen, mknod, ftell, fwrite, fread,  ferror,
+feof, clearerr and fileno.
+
+FTEST
+=========
+Tests the file I/O, Inodes. 
+Uses the syscalls 
+ * lseek, read, write,  truncate, ftruncate, fsync, sync, fstat
+ * open, close, unlink, chdir, readv, writev, lseek64, llseek
+
+LFTEST
+==========
+
+Uses the lseek64.
+This writes one buffer at a time and lseeks from the beginning of the file to the
+end of the last write position
+
+
+WRITETEST
+=============
+
+This test verifies that writes to disk occur without corruption.
+Once done , the file is re-opened, the random number generator 
+is re-seeded, and the file is verified.
+
+IOCTL
+========
+( Note: Writing the tests to  include tests on the ioctl system calls.)
+

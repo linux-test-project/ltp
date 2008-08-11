@@ -1,0 +1,56 @@
+growfiles -W gf01 -b -e 1 -u -i 0 -L 5 -w -C 1 -l -I r -T 10 glseek20 glseek20.2
+growfiles -W gf02 -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
+growfiles -W gf03 -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
+growfiles -W gf04 -b -e 1 -g 4090 -i 500 -t 39000 -u -f gf06_
+growfiles -W gf05 -b -e 1 -g 5000 -i 500 -t 49900 -T10 -c9 -I p -u -f gf07_
+growfiles -W gf06 -b -e 1 -u -r 1-5000 -R 0--1 -i 0 -L 3 -C 1 g_rand10 g_rand10.2
+growfiles -W gf07 -b -e 1 -u -r 1-5000 -R 0--2 -i 0 -L 3 -C 1 -I p g_rand13 g_rand13.2
+growfiles -W gf08 -b -e 1 -u -r 1-5000 -R 0--2 -i 0 -L 3 -C 1 g_rand11 g_rand11.2
+growfiles -W gf09 -b -e 1 -u -r 1-5000 -R 0--1 -i 0 -L 3 -C 1 -I p g_rand12 g_rand12.2
+growfiles -W gf10 -b -e 1 -u -r 1-5000 -i 0 -L 3 -C 1 -I l g_lio14 g_lio14.2
+growfiles -W gf11 -b -e 1 -u -r 1-5000 -i 0 -L 3 -C 1 -I L g_lio15 g_lio15.2
+mkfifo gffifo17; growfiles -b -W gf12 -e 1 -u -i 0 -L 3 gffifo17
+mkfifo gffifo18; growfiles -b -W gf13 -e 1 -u -i 0 -L 3 -I r -r 1-4096 gffifo18
+growfiles -W gf14 -b -e 1 -u -i 0 -L 2 -w -l -C 1 -T 10 glseek19 glseek19.2
+growfiles -W gf15 -b -e 1 -u -r 1-49600 -I r -u -i 0 -L 3 Lgfile1
+growfiles -W gf16 -b -e 1 -i 0 -L 3 -u -g 4090 -T 100 -t 408990 -l -C 10 -c 1000 -S 10 -f Lgf02_
+growfiles -W gf17 -b -e 1 -i 0 -L 3 -u -g 5000 -T 100 -t 499990 -l -C 10 -c 1000 -S 10 -f Lgf03_
+growfiles -W gf18 -b -e 1 -i 0 -L 3 -w -u -r 10-5000 -I r -l -S 2 -f Lgf04_
+growfiles -W gf19 -b -e 1 -g 5000 -i 500 -t 49900 -T10 -c9 -I p -o O_RDWR,O_CREAT,O_TRUNC -u -f gf08i_
+growfiles -W gf20 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1-256000:512 -R 512-256000 -T 4 gfbigio-$$
+growfiles -W gf21 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bld-$$
+growfiles -W gf22 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bldf-$$
+growfiles -W gf23 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 512-64000:1024 -R 1-384000 -T 4 gf-inf-$$
+growfiles -W gf24 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 gf-jbld-$$
+growfiles -W gf25 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1024000-2048000:2048 -R 4095-2048000 -T 1 gf-large-gs-$$
+growfiles -W gf26 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 128-32768:128 -R 512-64000 -T 4 gfsmallio-$$
+growfiles -W gf27 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u gfsparse-1-$$
+growfiles -W gf28 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u gfsparse-2-$$
+growfiles -W gf29 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u gfsparse-3-$$
+growfiles -W gf30 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 gf-sync-$$
+rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$
+rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$
+rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$
+rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$
+rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:rwtest01%f
+rwtest -N iogen01 -i 120s -s read,write -Da -Dv -n 2 500b:doio.f1.$$ 1000b:doio.f2.$$
+fs_inod . 10 10 1
+linktest.pl
+openfile -f10 -t10
+inode01
+inode02
+stream01
+stream02
+stream03
+stream04
+stream05
+ftest01
+ftest02
+ftest03
+ftest04
+ftest05
+ftest06
+ftest07
+ftest08
+lftest 80
+writetest
