@@ -73,7 +73,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#define page_sz     ((1UL) << 24) 	/* Huge page size */
 #define BUFFER_SIZE  256 
 
 char* TEMPFILE="mmapfile";
@@ -90,6 +89,7 @@ int hugepagesmapped=0;		/* Amount of huge pages mapped after testing */
 
 void setup();			/* Main setup function of test */
 int getfreehugepages();		/* Reads free huge pages */
+int get_huge_pagesize();        /* Reads huge page size */
 void cleanup();			/* cleanup function for the test */
 
 void help()
@@ -103,6 +103,8 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
         int Hflag=0;              /* binary flag: opt or not */
+	int page_sz=0;
+
 
        	option_t options[] = {
         	{ "H:",   &Hflag, &Hopt },    /* Required for location of hugetlbfs */
@@ -139,11 +141,14 @@ main(int ac, char **av)
 		/* Note the number of free huge pages BEFORE testing */
 		beforetest = getfreehugepages();
 
+		/* Note the size of huge page size BEFORE testing */
+		page_sz = get_huge_pagesize();
+
 		/* 
 		 * Call mmap
 		 */
 		errno = 0;
-		addr = mmap(NULL, page_sz, PROT_READ | PROT_WRITE,
+                addr = mmap(NULL, page_sz*1024, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 		TEST_ERRNO = errno;
 
@@ -167,7 +172,7 @@ main(int ac, char **av)
 		}
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
-		if (munmap(addr, page_sz) != 0) {
+                if (munmap(addr, page_sz*1024) != 0) {
 			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
@@ -234,6 +239,34 @@ getfreehugepages()
      	}	
 	fclose(f);	
 	return(hugefree);
+}
+
+/*
+ * get_huge_pagesize() - Reads the size of huge page size from /proc/meminfo
+ */
+int
+get_huge_pagesize()
+{
+        int hugesize;
+        FILE* f;
+        int retcode=0;
+        char buff[BUFFER_SIZE];
+
+        f = fopen("/proc/meminfo", "r");
+        if (!f)
+                tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
+
+        while(fgets(buff,BUFFER_SIZE, f) != NULL){
+                if((retcode = sscanf(buff, "Hugepagesize: %d ", &hugesize)) == 1)
+                        break;
+        }
+
+        if (retcode != 1) {
+                fclose(f);
+                tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
+        }
+        fclose(f);
+        return(hugesize);
 }
 
 /*
