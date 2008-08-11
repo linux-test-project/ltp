@@ -311,6 +311,8 @@ getresuid03 getresuid03
 getrlimit01 getrlimit01
 getrlimit02 getrlimit02
 
+get_robust_list01 get_robust_list01
+
 getrusage01 getrusage01
 getrusage02 getrusage02
 
@@ -808,6 +810,8 @@ setreuid06 setreuid06
 setrlimit01 setrlimit01
 setrlimit02 setrlimit02
 setrlimit03 setrlimit03
+
+set_robust_list01 set_robust_list01
 
 setsid01 setsid01
 
