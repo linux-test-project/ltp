@@ -187,6 +187,7 @@ function testdir
     if [ $status == 1 ] ; then
         echo "RO-FileSystem Tests FAILED for $dir $fs filesystem" >> $FAILLOG
         echo >> $FAILLOG
+        retcode=$status
     else
         echo "RO-FileSystem Tests PASSed for $dir $fs filesystem" >> $PASSLOG
         echo >> $PASSLOG
@@ -202,6 +203,7 @@ function testdir
 #     See the description, purpose, and design of this test under TEST 
 #     in this test's prolog.
 #=============================================================================
+retcode=0
 while getopts h: OPTION; do
   case $OPTION in
     h)
@@ -228,7 +230,6 @@ for fstype in $FSTYPES; do
         tst_resm, TFAIL "Free Disk space of 512MB is required in /tmp fs"
         tst_resm, TFAIL "Please free it and rerun thank you.."
         rm -f $image
-        sleep 2
         exit -1
     fi
     
@@ -246,9 +247,9 @@ for fstype in $FSTYPES; do
     fi
 
     mount -t $fstype -o loop $image dir1
-    mount --bind dir1 dir2-bound || exit
-    mount --bind dir1 dir3-ro    || exit
-    mount -o remount,ro dir3-ro  || exit
+    mount --bind dir1 dir2-bound || exit -1
+    mount --bind dir1 dir3-ro    || exit -1
+    mount -o remount,ro dir3-ro  || exit -1
 
     testdir dir1 $fstype false
     testdir dir2-bound $fstype false
@@ -260,4 +261,5 @@ done
         rm -rf ./$i || true
     done;
     cd $oldpwd || true
-    
+    exit $retcode 
+
