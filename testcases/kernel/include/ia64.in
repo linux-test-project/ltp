@@ -17,6 +17,7 @@ __NR_tee 1301
 __NR_vmsplice 1302
 __NR_fallocate 1303
 __NR_utimensat 1306
+__NR_eventfd 1309
 __NR_timerfd_create 1310
 __NR_timerfd_settime 1311
 __NR_timerfd_gettime 1312

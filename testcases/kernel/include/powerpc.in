@@ -20,4 +20,5 @@ __NR_symlinkat (__NR_openat + 9)
 __NR_readlinkat (__NR_openat + 10)
 __NR_fchmodat  (__NR_openat + 11)
 __NR_faccessat (__NR_openat + 12)
+__NR_eventfd 307
 __NR_fallocate 309

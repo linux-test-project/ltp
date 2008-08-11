@@ -21,3 +21,4 @@ __NR_timer_delete
 __NR_timer_settime
 __NR_unlinkat
 __NR_vmsplice
+__NR_eventfd
