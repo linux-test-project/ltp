@@ -347,4 +347,6 @@ int main(int argc, char *argv[])
 
 	/* Print time... */
 	timersub(&stop, &start, &diff);
+        printf("Time: %lu.%03lu\n", diff.tv_sec, diff.tv_usec/1000);
+        exit(0);
 }
