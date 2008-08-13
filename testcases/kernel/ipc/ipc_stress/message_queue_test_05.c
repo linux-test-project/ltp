@@ -82,7 +82,7 @@
 
 #ifdef _LINUX_
 #define	MAX_MESSAGE_QUEUES 128
-#define	DEFAULT_MESSAGE_QUEUES 100
+#define	DEFAULT_MESSAGE_QUEUES 10
 #else
 #define	MAX_MESSAGE_QUEUES 4096
 #define	DEFAULT_MESSAGE_QUEUES 1000
@@ -97,11 +97,12 @@
  * parse_args (): Parse command line arguments
  * sys_error (): System error message function
  * error (): Error message function
+ * cleanup (): Cleanup function for the test
  */
 static void parse_args (int, char **);
 static void sys_error (const char *, int);
 static void error (const char *, int);
-
+static void cleanup (int qnum);
 /*
  * Global variables
  *
@@ -143,7 +144,10 @@ int main (int argc, char **argv)
 			if (debug) printf ("\tcreating queue [%d]\n", nqueues);
 			if ((msqid_array [nqueues++] 
 				= msgget (IPC_PRIVATE, IPC_CREAT|mode)) < 0)
+			{
+				cleanup(nqueues);
 				sys_error ("msgget failed", __LINE__);
+			}
 
 			if (nqueues > MAX_MESSAGE_QUEUES) 
 				break;
@@ -158,12 +162,7 @@ int main (int argc, char **argv)
 	}
 	printf ("\n\tAll message queues created successfully\n");
 
-	while (nqueues > 0) {
-		if (msgctl (msqid_array [--nqueues], IPC_RMID, 0) < 0)
-			sys_error ("msgctl (IPC_RMID) failed", __LINE__);
-		if (debug) printf ("\tremoved queue  [%d]\n", nqueues);
-	}
-
+        cleanup(nqueues);
 	printf ("\nsuccessful!\n");
 	return (0);
 }
@@ -242,3 +241,27 @@ static void error (const char *msg, int line)
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
 	exit (-1);
 }
+
+
+/*---------------------------------------------------------------------+
+|                              cleanup()                               |
+| ==================================================================== |
+| cleanup() - performs all message queues cleanup for this test at     |
+|             completion or premature exit.                            |
+|             Remove the temporary message queues created.             |
+|                                                                      |
++---------------------------------------------------------------------*/
+void cleanup(int qnum)
+{
+        /*
+         *  Remove the allocated message queues.
+         */
+        while (qnum > 0) {
+		if (msqid_array [--qnum] < 0)
+			continue;
+                if (msgctl (msqid_array [qnum], IPC_RMID, 0) < 0)
+                        sys_error ("msgctl (IPC_RMID) failed", __LINE__);
+                if (debug) printf ("\tremoved queue  [%d]\n", qnum);
+        }
+}
+
