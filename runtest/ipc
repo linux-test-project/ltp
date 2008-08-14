@@ -39,7 +39,7 @@ message_queue_test_04		message_queue_test_04
 message_queue_test_05		message_queue_test_05
 pipe_test_01			pipe_test_01
 pipe_test_02			pipe_test_02
-semaphore_test_01		semaphore_test_01
+semaphore_test_01		run_semaphore_test_01.sh
 semaphore_test_02		semaphore_test_02
 semaphore_test_03		semaphore_test_03
 shmem_test_01			shmem_test_01

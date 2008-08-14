@@ -9,5 +9,6 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
+	cp run_semaphore_test_01.sh ../../../bin/run_semaphore_test_01.sh
 clean:
 	rm -f $(TARGETS)

@@ -156,17 +156,17 @@ int main (int argc, char **argv)
 	/*
 	 * Verify that the semaphore fields were set correctly
 	 */
-	if (exp_semdata.sem_perm.cuid != exp_semdata.sem_perm.cuid)
+	if (act_semdata.sem_perm.cuid != exp_semdata.sem_perm.cuid)
 		error ("sem_perm.cuid field was not set!", __LINE__);
-	if (exp_semdata.sem_perm.uid != exp_semdata.sem_perm.uid)
+	if (act_semdata.sem_perm.uid != exp_semdata.sem_perm.uid)
 		error ("sem_perm.uid field was not set!", __LINE__);
-	if (exp_semdata.sem_perm.cgid != exp_semdata.sem_perm.cgid)
+	if (act_semdata.sem_perm.cgid != exp_semdata.sem_perm.cgid)
 		error ("sem_perm.cgid field was not set!", __LINE__);
-	if (exp_semdata.sem_perm.gid != exp_semdata.sem_perm.gid)
+	if (act_semdata.sem_perm.gid != exp_semdata.sem_perm.gid)
 		error ("sem_perm.gid field was not set!", __LINE__);
-	if (exp_semdata.sem_perm.mode != exp_semdata.sem_perm.mode)
+	if (act_semdata.sem_perm.mode != exp_semdata.sem_perm.mode)
 		error ("sem_perm.mode field was not set!", __LINE__);
-	if (exp_semdata.sem_nsems != exp_semdata.sem_nsems)
+	if (act_semdata.sem_nsems != exp_semdata.sem_nsems)
 		error ("sem_nsems field was not set!", __LINE__);
 
 	/*
