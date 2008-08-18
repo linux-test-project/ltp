@@ -32,9 +32,10 @@ sem01 sem01
 sem02 sem02
 
 message_queue_test_01		message_queue_test_01
-message_queue_test_02_ctl	message_queue_test_02_ctl
 message_queue_test_02_get	message_queue_test_02_get
 message_queue_test_02_snd	message_queue_test_02_snd
+message_queue_test_02_rcv	message_queue_test_02_rcv
+message_queue_test_02_ctl	message_queue_test_02_ctl -r
 message_queue_test_04		message_queue_test_04
 message_queue_test_05		message_queue_test_05
 pipe_test_01			pipe_test_01
