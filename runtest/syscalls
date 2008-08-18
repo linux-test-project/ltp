@@ -919,6 +919,9 @@ symlinkat01 symlinkat01
 sync01 sync01
 sync02 sync02
 
+#testcases for sync_file_range
+sync_file_range01 sync_file_range01
+
 syscall01 syscall01
 
 sysconf01 sysconf01
