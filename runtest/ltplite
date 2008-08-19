@@ -714,6 +714,7 @@ setfsgid03 setfsgid03
 setfsuid01 setfsuid01
 setfsuid02 setfsuid02
 setfsuid03 setfsuid03
+setfsuid04 setfsuid04
 
 setgid01 setgid01
 setgid02 setgid02
@@ -759,6 +760,7 @@ setresgid03 setresgid03
 setresuid01 setresuid01
 setresuid02 setresuid02
 setresuid03 setresuid03
+setresuid04 setresuid04
 
 setreuid01 setreuid01
 setreuid02 setreuid02
@@ -766,6 +768,7 @@ setreuid03 setreuid03
 setreuid04 setreuid04
 setreuid05 setreuid05
 setreuid06 setreuid06
+setreuid07 setreuid07
 
 setrlimit01 setrlimit01
 setrlimit02 setrlimit02
@@ -781,6 +784,7 @@ settimeofday02 settimeofday02
 setuid01 setuid01
 setuid02 setuid02
 setuid03 setuid03
+setuid04 setuid04
 
 shmat01 shmat01
 shmat02 shmat02
