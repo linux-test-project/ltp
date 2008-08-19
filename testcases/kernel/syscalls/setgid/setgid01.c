@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setgid01.c,v 1.3 2008/08/04 12:06:21 subrata_modak Exp $ */
+/* $Id: setgid01.c,v 1.4 2008/08/19 07:00:50 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -120,7 +120,7 @@ void cleanup();
 
 #include "compat_16.h"
 
-char *TCID="setgid01"; 		/* Test program identifier.    */
+TCID_DEFINE(setgid01);          /* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 

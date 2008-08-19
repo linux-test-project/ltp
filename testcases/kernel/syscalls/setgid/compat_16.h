@@ -27,7 +27,7 @@
 #include "linux_syscall_numbers.h"
 
 
-#ifdef USE_COMPAT16_SYSCALL
+#ifdef TST_USE_COMPAT16_SYSCALL
 typedef __kernel_old_gid_t GID_T;
 int 
 COMPAT_SIZE_CHECK(gid_t gid)

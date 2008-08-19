@@ -25,7 +25,7 @@ TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_16,$(SRCS))
 
 %.c: compat_16.h
 %_16.c: %.c 
-	echo "#define USE_COMPAT16_SYSCALL 1" > $@
+	echo "#define TST_USE_COMPAT16_SYSCALL 1" > $@
 	cat $< >> $@
 
 

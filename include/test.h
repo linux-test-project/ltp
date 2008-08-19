@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.13 2008/05/06 15:47:54 vapier Exp $ */
+/* $Id: test.h,v 1.14 2008/08/19 07:00:49 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -240,6 +240,19 @@ extern int tst_kvercmp(int, int, int);
 extern int tst_is_cwd_nfs();
 extern int tst_is_cwd_tmpfs();
 extern int tst_cwd_has_free(int required_kib);
+
+
+
+#ifdef TST_USE_COMPAT16_SYSCALL
+#define TCID_BIT_SUFFIX "_16"
+#elif  TST_USE_NEWER64_SYSCALL
+#define TCID_BIT_SUFFIX "_64"
+#else
+#define TCID_BIT_SUFFIX ""
+#endif
+#define TCID_DEFINE(ID) \
+  char *TCID = (#ID TCID_BIT_SUFFIX)
+
 
 extern int Tst_count;
 
