@@ -54,8 +54,9 @@
 #include <limits.h>
 #include <libstats.h>
 #include <librttest.h>
+#include <sys/mman.h>
 
-#define ITERATIONS 1000000
+#define ITERATIONS 10000000
 #define HIST_BUCKETS 20
 
 #define SCATTER_FILENAME	0
@@ -202,19 +203,20 @@ int stats_cmdline(int argc, char *argv[])
 }
 
 
-/* return difference in microseconds */
-unsigned long long tv_minus(struct timeval *tv_start, struct timeval *tv_end)
+long long timespec_subtract(struct timespec * a, struct timespec *b)
 {
-	unsigned long long usecs;
-	usecs = (tv_end->tv_sec - tv_start->tv_sec) * 1000000;
-	usecs += tv_end->tv_usec - tv_start->tv_usec;
-	return usecs;
+	long long ns;
+	ns = (b->tv_sec - a->tv_sec) * 1000000000LL;
+	ns += (b->tv_nsec - a->tv_nsec);
+	return ns;
 }
+
+struct timespec start_data[ITERATIONS];
+struct timespec stop_data[ITERATIONS];
 
 int main(int argc, char *argv[])
 {
 	int i, err;
-	struct timeval tv_a, tv_b;
 	unsigned long long delta;
 	unsigned long long max, min;
 	struct sched_param param;
@@ -226,6 +228,8 @@ int main(int argc, char *argv[])
 	stats_container_init(&hist, HIST_BUCKETS);
 	stats_quantiles_init(&quantiles, (int)log10(ITERATIONS));
 	setup();
+
+	mlockall(MCL_CURRENT|MCL_FUTURE);
 
 	if (stats_cmdline(argc, argv) < 0) {
 		printf("usage: %s help\n", argv[0]);
@@ -242,7 +246,7 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "This program runs with a scheduling policy of SCHED_FIFO at priority %d\n", param.sched_priority);
 			fprintf(stderr, "You don't have the necessary privileges to create such a real-time process.\n");
 		} else {
-                	fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
+			fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
 		}
 		exit(1);
 	}
@@ -259,9 +263,11 @@ int main(int argc, char *argv[])
 		latency_trace_start();
 	}
 	for (i = 0; i < ITERATIONS; i++) {
-		gettimeofday(&tv_a, NULL);
-		gettimeofday(&tv_b, NULL);
-		delta = tv_minus(&tv_a, &tv_b);
+		clock_gettime(CLOCK_MONOTONIC,&start_data[i]);
+		clock_gettime(CLOCK_MONOTONIC,&stop_data[i]);
+	}
+	for (i = 0; i < ITERATIONS; i++) {
+		delta = timespec_subtract(&start_data[i], &stop_data[i]);
 		dat.records[i].x = i;
 		dat.records[i].y = delta;
 		if (i == 0 || delta < min) min = delta;
@@ -273,7 +279,7 @@ int main(int argc, char *argv[])
 		latency_trace_stop();
 		if (i != ITERATIONS) {
 			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
-			       latency_threshold, i);
+				latency_threshold, i);
 			latency_trace_print();
 			stats_container_resize(&dat, i + 1);
 		}
@@ -281,19 +287,18 @@ int main(int argc, char *argv[])
 
 	stats_hist(&hist, &dat);
 	stats_container_save(filenames[SCATTER_FILENAME], titles[SCATTER_TITLE],
-			     labels[SCATTER_LABELX], labels[SCATTER_LABELY], &dat, "points");
+				labels[SCATTER_LABELX], labels[SCATTER_LABELY], &dat, "points");
 	stats_container_save(filenames[HIST_FILENAME], titles[HIST_TITLE],
-			     labels[HIST_LABELX], labels[HIST_LABELY], &hist, "steps");
+				labels[HIST_LABELX], labels[HIST_LABELY], &hist, "steps");
 
 	/* report on deltas */
-	printf("Min: %llu us\n", min);
-	printf("Max: %llu us\n", max);
-	printf("Avg: %.4f us\n", stats_avg(&dat));
-	printf("StdDev: %.4f us\n", stats_stddev(&dat));
+	printf("Min: %llu ns\n", min);
+	printf("Max: %llu ns\n", max);
+	printf("Avg: %.4f ns\n", stats_avg(&dat));
+	printf("StdDev: %.4f ns\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
-
 
 	return 0;
 }

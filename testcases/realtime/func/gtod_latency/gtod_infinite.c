@@ -53,6 +53,7 @@
 #include <sched.h>
 #include <librttest.h>
 #include <libjvmsim.h>
+#include <sys/mman.h>
 
 /* #define CLOCK_TO_USE CLOCK_MONOTONIC */
 #define CLOCK_TO_USE CLOCK_REALTIME
@@ -66,9 +67,9 @@ static unsigned int max_window = 0; /* infinite, don't use a window */
 void usage(void)
 {
 	rt_help();
- 	printf("gtod_infinite specific options:\n");
-  	printf("  -j            enable jvmsim\n");
- 	printf("  -wWINDOW      iterations in max value window (default inf)\n");
+	printf("gtod_infinite specific options:\n");
+	printf("  -j            enable jvmsim\n");
+	printf("  -wWINDOW      iterations in max value window (default inf)\n");
 }
 
 int parse_args(int c, char *v)
@@ -121,9 +122,11 @@ int main(int argc, char *argv[])
 		printf("jvmsim disabled\n");
 	}
 
+	mlockall(MCL_CURRENT|MCL_FUTURE);
+
 	if (max_window > 0) {
-		printf("%d iterations in max calculation window\n", 
-		       max_window);
+		printf("%d iterations in max calculation window\n",
+			max_window);
 	}
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
@@ -141,6 +144,7 @@ int main(int argc, char *argv[])
 
 	wi = 0;
 	while(1) {
+		rc = clock_gettime(CLOCK_TO_USE, &p_ts);
 		rc = clock_gettime(CLOCK_TO_USE, &ts);
 		if (rc) {
 			perror("clock_gettime");
@@ -153,11 +157,11 @@ int main(int argc, char *argv[])
 		diff_time = e_time - s_time;
 
 		if (max_window > 0 ||
-		          ((diff_time > max_time) || 
+			((diff_time > max_time) ||
 			   (diff_time > REPORT_MIN))) {
 			if (diff_time > max_time)
 				max_time = diff_time;
-			
+
 			if (max_window == 0 || ++wi == max_window) {
 				tt = (time_t)ts.tv_sec;
 				printf("Task delayed for %lld nsec!!! %s",
@@ -170,13 +174,6 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			rc = clock_gettime(CLOCK_TO_USE, &p_ts);
-			if (rc) {
-				perror("clock_gettime");
-				exit(1);
-			}
-		} else {
-			p_ts = ts;
 		}
 	}
 	return 0;
