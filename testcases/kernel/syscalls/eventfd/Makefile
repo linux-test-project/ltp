@@ -19,10 +19,41 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
+check_header = $(shell \
+	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
+	then echo yes ; \
+	else echo no ; fi)
+
+check_aio_eventfd = $(shell \
+	if echo -e \
+	"\#include <libaio.h>\n\
+	int main() \
+	{ \
+	io_set_eventfd(NULL, 0); \
+	return 0; \
+	}" | $(CC) -xc -laio - > /dev/null 2>&1 ; \
+	then echo yes ; \
+	else echo no ; fi)
+
+HAS_LIBAIO = $(call check_header,libaio.h)
+HAS_LIBAIO_EVENTFD = $(call check_aio_eventfd)
+
+ifeq ($(HAS_LIBAIO_EVENTFD),yes)
+CFLAGS += -DHAS_AIO_EVENTFD
+LDLIBS += -laio
+endif
+
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c, %, $(wildcard *.c))
 
 all: $(TARGETS)
+ifeq ($(HAS_LIBAIO),no)
+	@echo "Note: Libaio is required for eventfd overflow testing.";
+else
+ifeq ($(HAS_LIBAIO_EVENTFD),no)
+	@echo "Note: Eventfd support is required in libaio for overflow testing.";
+endif
+endif
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done

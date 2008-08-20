@@ -53,16 +53,21 @@
 #include <errno.h>
 #include <string.h>
 #include <stdint.h>
+#include <poll.h>
 
 #include <test.h>
 #include <usctest.h>
 #include <linux_syscall_numbers.h>
 
+#ifdef HAS_AIO_EVENTFD
+#include <libaio.h>
+#endif
+
 static void setup(void);
 static void cleanup(void);
 
 char *TCID = "eventfd01";
-int TST_TOTAL = 12;
+int TST_TOTAL = 15;
 extern int Tst_count;
 
 static int
@@ -87,7 +92,7 @@ clear_counter(int fd)
 	ret = read(fd, &dummy, sizeof(dummy));
 	if (ret == -1) {
 		if (errno != EAGAIN) {
-			tst_resm(TBROK, "error clearing counter: %s",
+			tst_resm(TINFO, "error clearing counter: %s",
 				 strerror(errno));
 			return -1;
 		}
@@ -118,7 +123,7 @@ set_counter(int fd, uint64_t val)
 
 	ret = write(fd, &val, sizeof(val));
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value: %s",
+		tst_resm(TINFO, "error setting counter value: %s",
 			 strerror(errno));
 		return -1;
 	}
@@ -159,8 +164,10 @@ read_eagain_test(int fd)
 	uint64_t val;
 
 	ret = clear_counter(fd);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error clearing counter");
 		return;
+	}
 
 	ret = read(fd, &val, sizeof(val));
 	if (ret == -1) {
@@ -186,8 +193,10 @@ write_test(int fd)
 	val = 12;
 
 	ret = set_counter(fd, val);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error setting counter value to %lld", val);
 		return;
+	}
 
 	read_test(fd, val);
 }
@@ -203,8 +212,10 @@ write_eagain_test(int fd)
 	uint64_t val;
 
 	ret = set_counter(fd, UINT64_MAX - 1);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error setting counter value to UINT64_MAX-1");
 		return;
+	}
 
 	val = 1;
 	ret = write(fd, &val, sizeof(val));
@@ -278,8 +289,10 @@ write_einval2_test(int fd)
 	uint64_t val;
 
 	ret = clear_counter(fd);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error clearing counter");
 		return;
+	}
 
 	val = 0xffffffffffffffffLL;
 	ret = write(fd, &val, sizeof(val));
@@ -311,8 +324,11 @@ readfd_set_test(int fd)
 	FD_SET(fd, &readfds);
 
 	ret = set_counter(fd, non_zero);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error setting counter value to %lld",
+			 non_zero);
 		return;
+	}
 
 	ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
@@ -343,8 +359,10 @@ readfd_not_set_test(int fd)
 	FD_SET(fd, &readfds);
 
 	ret = clear_counter(fd);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error clearing counter");
 		return;
+	}
 
 	ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
@@ -376,8 +394,11 @@ writefd_set_test(int fd)
 	FD_SET(fd, &writefds);
 
 	ret = set_counter(fd, non_max);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error setting counter value to %lld", 
+			 non_max);
 		return;
+	}
 
 	ret = select(fd + 1, NULL, &writefds, NULL, &timeout);
 	if (ret == -1) {
@@ -408,8 +429,10 @@ writefd_not_set_test(int fd)
 	FD_SET(fd, &writefds);
 
 	ret = set_counter(fd, UINT64_MAX - 1);
-	if (ret == -1)
+	if (ret == -1) {
+		tst_resm(TBROK, "error setting counter value to UINT64_MAX-1");
 		return;
+	}
 
 	ret = select(fd + 1, NULL, &writefds, NULL, &timeout);
 	if (ret == -1) {
@@ -489,6 +512,201 @@ child_inherit_test(int fd)
 	}
 }
 
+#ifdef HAS_AIO_EVENTFD
+/*
+ * Test whether counter overflow is detected and handled correctly. 
+ *
+ * It is not possible to directly overflow the counter using the
+ * write() syscall. Overflows occur when the counter is incremented
+ * from kernel space, in an irq context, when it is not possible to
+ * block the calling thread of execution.
+ *
+ * The AIO subsystem internally uses eventfd mechanism for
+ * notification of completion of read or write requests. In this test
+ * we trigger a counter overflow, by setting the counter value to the
+ * max possible value initially. When the AIO subsystem notifies
+ * through the eventfd counter, the counter overflows.
+ *
+ * NOTE: If the the counter starts from an initial value of 0, it will
+ * take decades for an overflow to occur. But since we set the initial
+ * value to the max possible counter value, we are able to cause it to
+ * overflow with a single increment.
+ *
+ * When the counter overflows, the following are tested
+ *   1. Check whether POLLERR event occurs in poll() for the eventfd.
+ *   2. Check whether readfd_set/writefd_set is set in select() for the
+        eventfd.
+ *   3. The counter value is UINT64_MAX.
+ */
+static int 
+trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
+{
+	int ret;
+	struct iocb iocb;
+	struct iocb *iocbap[1];
+	static char buf[4 * 1024];
+
+	*ctx = 0;
+	ret = io_setup(16, ctx);
+	if (ret < 0) {
+		tst_resm(TINFO, "io_setup error: %s", strerror(-ret));
+		return -1;
+	}
+
+	*fd = open("testfile", O_RDWR | O_CREAT, 0644);
+	if (*fd == -1) {
+		tst_resm(TINFO, "error creating tmp file: %s", 
+			 strerror(errno));
+		goto err_io_destroy;
+	}
+
+	ret = set_counter(evfd, UINT64_MAX - 1);
+	if (ret == -1) {
+		tst_resm(TINFO, "error setting counter to UINT64_MAX-1");
+		goto err_close_file;
+	}
+
+	io_prep_pwrite(&iocb, *fd, buf, sizeof(buf), 0);
+	io_set_eventfd(&iocb, evfd);
+	
+	iocbap[0] = &iocb;
+	ret = io_submit(*ctx, 1, iocbap);
+	if (ret < 0) {
+		tst_resm(TINFO, "error submitting iocb: %s", strerror(-ret));
+		goto err_close_file;
+	}
+
+	return 0;
+
+ err_close_file:
+	close(*fd);
+
+ err_io_destroy:	
+	io_destroy(*ctx);
+
+	return -1;
+}
+
+static void
+cleanup_overflow(int fd, io_context_t ctx)
+{
+	close(fd);
+	io_destroy(ctx);
+}
+
+static void
+overflow_select_test(int evfd)
+{
+	struct timeval timeout = { 10, 0 };
+	fd_set readfds;
+	int fd;
+	io_context_t ctx;
+	int ret;
+
+	ret = trigger_eventfd_overflow(evfd, &fd, &ctx);
+	if (ret == -1) {
+		tst_resm(TBROK, "error triggering eventfd overflow");
+		return;
+	}
+	
+	FD_ZERO(&readfds);
+	FD_SET(evfd, &readfds);
+	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
+	if (ret == -1) {
+		tst_resm(TBROK, "error getting evfd status with select: %s", 
+			 strerror(errno));
+		goto err_cleanup;
+	}
+
+	if (FD_ISSET(evfd, &readfds))
+		tst_resm(TPASS, "read fd set as expected");
+	else
+		tst_resm(TFAIL, "read fd not set");
+
+ err_cleanup:
+	cleanup_overflow(fd, ctx);
+}
+
+static void
+overflow_poll_test(int evfd)
+{
+	struct pollfd pollfd;
+	int fd;
+	io_context_t ctx;
+	int ret;
+
+	ret = trigger_eventfd_overflow(evfd, &fd, &ctx);
+	if (fd == -1) {
+		tst_resm(TBROK, "error triggering eventfd overflow");
+		return;
+	}
+
+	pollfd.fd = evfd;
+	pollfd.events = POLLIN;
+	pollfd.revents = 0;
+	ret = poll(&pollfd, 1, 10000);
+	if (ret == -1) {
+		tst_resm(TBROK, "error getting evfd status with poll: %s", 
+			 strerror(errno));
+		goto err_cleanup;
+	}
+	if (pollfd.revents & POLLERR)
+		tst_resm(TPASS, "POLLERR occurred as expected");
+	else
+		tst_resm(TFAIL, "POLLERR did not occur");
+
+ err_cleanup:
+	cleanup_overflow(fd, ctx);
+}
+
+static void
+overflow_read_test(int evfd)
+{
+	uint64_t count;
+	io_context_t ctx;
+	int fd;
+	int ret;
+
+	ret = trigger_eventfd_overflow(evfd, &fd, &ctx);
+	if (ret == -1) {
+		tst_resm(TBROK, "error triggering eventfd overflow");
+		return;
+	}
+	
+	ret = read(evfd, &count, sizeof(count)); 
+	if (ret == -1) {
+		tst_resm(TBROK, "error reading eventfd: %s", strerror(errno));
+		goto err_cleanup;
+	}
+
+	if (count == UINT64_MAX)
+		tst_resm(TPASS, "overflow occurred as expected");
+	else
+		tst_resm(TFAIL, "overflow did not occur");
+
+ err_cleanup:
+	cleanup_overflow(fd, ctx);
+}
+#else
+static void
+overflow_select_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+
+static void
+overflow_poll_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+
+static void
+overflow_read_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+#endif
+
 int
 main(int argc, char **argv)
 {
@@ -536,6 +754,9 @@ main(int argc, char **argv)
 		writefd_set_test(fd);
 		writefd_not_set_test(fd);
 		child_inherit_test(fd);
+		overflow_select_test(fd);
+		overflow_poll_test(fd);
+		overflow_read_test(fd);
 
 		close(fd);
 	}
