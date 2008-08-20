@@ -64,7 +64,7 @@
 #endif /* Not def: OFF_T */
 
 
-char *TCID = "sendfile04";
+TCID_DEFINE(sendfile04);
 extern int Tst_count;
 
 char in_file[100];

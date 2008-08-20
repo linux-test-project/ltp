@@ -84,7 +84,7 @@
 #define FILE_SIZE	1024			/* test file size */
 #define TRUNC_LEN	256			/* truncation length */
 
-char *TCID="truncate01";	/* Test program identifier.    */
+TCID_DEFINE(truncate01);	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={0};

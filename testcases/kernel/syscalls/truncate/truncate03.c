@@ -106,7 +106,7 @@ int setup1();			/* setup function to test chmod for EACCES */
 int setup2();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();   /* setup function to test chmod for ENAMETOOLONG */
 
-char *TCID="truncate03";	/* Test program identifier.    */
+TCID_DEFINE(truncate03);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[]={EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0};
 

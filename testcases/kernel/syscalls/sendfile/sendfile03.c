@@ -60,7 +60,7 @@
 #endif /* Not def: OFF_T */
 
 
-char *TCID = "sendfile03";
+TCID_DEFINE(sendfile03);
 int TST_TOTAL = 3;
 extern int Tst_count;
 

@@ -57,7 +57,7 @@ void setup();
 void cleanup();
 
 
-char *TCID="posix_fadvise01";	/* Test program identifier.    */
+TCID_DEFINE(posix_fadvise01);   /* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[] = "/bin/cat";	/* test executable to open */

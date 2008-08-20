@@ -72,7 +72,7 @@
 
 char progname[] = "ftruncate04()";
 
-char *TCID = "ftruncate04";
+TCID_DEFINE(ftruncate04);
 int TST_TOTAL = 1;
 extern int Tst_count;
 

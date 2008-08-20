@@ -47,7 +47,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "setgid03";
+TCID_DEFINE(setgid03);
 int TST_TOTAL = 1;
 extern int Tst_count;
 

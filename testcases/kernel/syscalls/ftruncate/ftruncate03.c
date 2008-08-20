@@ -55,7 +55,7 @@
 
 #define TESTFILE	"ftruncate03_tst_file"
 
-char *TCID="ftruncate03";
+TCID_DEFINE(ftruncate03);
 int TST_TOTAL=3;
 
 int main()

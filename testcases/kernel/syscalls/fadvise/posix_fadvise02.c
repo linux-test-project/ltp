@@ -56,7 +56,7 @@ void setup();
 void cleanup();
 
 
-char *TCID="posix_fadvise02";	/* Test program identifier.    */
+TCID_DEFINE(posix_fadvise02);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define WRONG_FD       42	/* The number has no meaning. 

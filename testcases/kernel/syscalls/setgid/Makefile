@@ -19,14 +19,13 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *[0-9][0-9].c)
+SRCS    = $(wildcard *.c) 
 TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_16,$(SRCS))
 
-
 %.c: compat_16.h
-%_16.c: %.c 
-	echo "#define TST_USE_COMPAT16_SYSCALL 1" > $@
-	cat $< >> $@
+%_16.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+%_16: CFLAGS += -DTST_USE_COMPAT16_SYSCALL=1
 
 
 all: $(TARGETS)

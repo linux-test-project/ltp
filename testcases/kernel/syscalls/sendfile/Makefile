@@ -19,13 +19,16 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard sendfile[0-9][0-9].c)
+SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_64,$(SRCS))
 
-%_64.c: %.c Makefile
-	echo "#define _FILE_OFFSET_BITS 64" >  $@
-	echo "#define OFF_T __off64_t"      >> $@
-	cat  $< >> $@
+%_64.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+%_64: CFLAGS +=					\
+	-DTST_USE_NEWER64_SYSCALL=1		\
+	-D_FILE_OFFSET_BITS=64			\
+	-DOFF_T=__off64_t
+
 
 all: $(TARGETS)
 

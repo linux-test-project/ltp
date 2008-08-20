@@ -86,7 +86,7 @@
 #define TRUNC_LEN1	256			/* truncation length */
 #define TRUNC_LEN2	512			/* truncation length */
 
-char *TCID="truncate02";	/* Test program identifier.    */
+TCID_DEFINE(truncate02);	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fd;				/* file descriptor of testfile */

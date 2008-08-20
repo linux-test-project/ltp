@@ -22,12 +22,12 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS      = $(wildcard posix_fadvise[0-9][0-9].c)
+SRCS      = $(wildcard *.c)
 TARGETS   = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_64,$(SRCS))
 
-%_64.c: %.c
-	echo "#define _FILE_OFFSET_BITS 64" > $@
-	cat  $< >> $@
+%_64.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+%_64: CFLAGS += -DTST_USE_NEWER64_SYSCALL=1 -D_FILE_OFFSET_BITS=64
 
 
 all: $(TARGETS)
