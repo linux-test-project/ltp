@@ -1,3 +1,5 @@
+TARGETS = ioperm iopl create_suid_file create_guid_file create_suid_node create_guid_node verify_seclvl.sh
+
 all: ioperm iopl create_suid_file create_guid_file create_suid_node \
      create_guid_node
 
@@ -26,3 +28,6 @@ clean:
 	rm -f create_suid_node
 	rm -f create_guid_file
 	rm -f create_guid_node
+
+install:
+	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
