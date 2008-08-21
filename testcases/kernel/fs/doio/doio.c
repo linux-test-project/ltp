@@ -3716,8 +3716,9 @@ doio_fprintf(FILE *stream, char *format, ...)
 	int		rval;
 	struct flock	flk;
 	va_list		arglist;
-
-	date = hms(time(0));
+	struct timeval ts;
+	gettimeofday(&ts,NULL);
+	date = hms(ts.tv_sec);
 
 	if (pid == -1) {
 		pid = getpid();

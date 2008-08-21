@@ -119,8 +119,10 @@ cleanup_and_exit()
 	if [ $1 -ne 0 ]
 	then
 	    tst_resm TFAIL "Test failed"
+	    echo "Test failed"
 	else
 	    tst_resm TPASS "Test passed"
+	    echo "Test passed"
 	fi
 
 	exit $1

@@ -44,6 +44,7 @@
 #include <time.h>
 #include <sys/param.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #ifdef CRAY
@@ -410,20 +411,23 @@ char	**argv;
      */
     if (!q_opt)
 	startup_info(stderr, rseed);
-
-    start_time = time(0);
-
+	{
+    	struct timeval ts;
+		gettimeofday(&ts,NULL);
+		start_time = ts.tv_sec;
+	}
     /*
      * While iterations (or forever if Iterations == 0) - compute an
      * io request, and write the structure to the output descriptor
      */
 
     infinite = !Iterations;
-
+	struct timeval ts;
+	gettimeofday(&ts,NULL);
     while (infinite ||
 	   (! Time_Mode && Iterations--) ||
-	   (Time_Mode && time(0) - start_time <= Iterations)) {
-
+	   (Time_Mode && (ts.tv_sec - start_time <= Iterations))) {
+	gettimeofday(&ts,NULL);
 	memset(&req, 0, sizeof(struct io_req));
 	if (form_iorequest(&req) == -1) {
 	    fprintf(stderr, "iogen%s:  form_iorequest() failed\n", TagName);

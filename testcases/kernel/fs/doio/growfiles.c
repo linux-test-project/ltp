@@ -1114,8 +1114,12 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		/*
 		 * If user didn't specify enough seeds, use default method.
 		 */
-		if ( Forker_npids >= Nseeds ) 
-	    	    Seed=time(0) + Pid;  /* default random seed */
+		if ( Forker_npids >= Nseeds )
+		{
+	    	struct timeval ts;
+			gettimeofday(&ts,NULL);
+			Seed=ts.tv_sec + Pid;  /* default random seed */
+		}
 		else {
 		    Seed=Seeds[Forker_npids];
 		}
@@ -1125,7 +1129,11 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	     * Generate a random seed based on time and pid.
 	     * It has a good chance of being unique for each pid.
 	     */
-	    Seed=time(0) + Pid;  /* default random seed */
+		struct timeval ts;
+		gettimeofday(&ts,NULL);
+	    Seed=ts.tv_sec + Pid;  /* default random seed */
+	    //Seed=time(0) + Pid;  /* default random seed */
+		
 	}
 
 	random_range_seed(Seed);
@@ -1235,7 +1243,12 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 /**** end filename stuff ****/
 
 	if ( time_iterval > 0 )
-		start_time=time(0);
+	{	
+		struct timeval ts;
+		gettimeofday(&ts,NULL);
+		start_time=ts.tv_sec;
+		//start_time=time(0);
+	}
 
 	/*
 	 * get space for I/O buffer
@@ -1305,14 +1318,15 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	 * truncated, and closed.   
 	 */
 	for(Iter_cnt=1; ! stop ; Iter_cnt++) {
-
-	    if ( iterations && Iter_cnt >= iterations+1 ) {
+		struct timeval ts;
+	    if ( iterations && (Iter_cnt >= iterations+1) ) {
 		strcpy(reason, "Hit iteration value");
 		stop=1;
 		continue;
 	    }
+		gettimeofday(&ts,NULL);
+	    if (  (time_iterval > 0) && (start_time + time_iterval < ts.tv_sec) ) {
 
-	    if (  (time_iterval > 0) && (start_time + time_iterval < time(0)) ) {
 		sprintf(reason, "Hit time value of %d", time_iterval);
 		stop=1;
 		continue;
