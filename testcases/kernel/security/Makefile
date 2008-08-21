@@ -1,4 +1,4 @@
-SUBDIRS = mmc_security filecaps seclvl
+SUBDIRS = mmc_security filecaps
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
