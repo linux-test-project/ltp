@@ -245,12 +245,12 @@ return;
 static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes, unsigned int flags)
 {
 
-	#if defined(__powerpc64__) && (__WORDSIZE==32)
+	#if (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==32)
 
 	       	  return syscall(__NR_sync_file_range2, fd, flags, (int)(offset >>32), \
 					(int)offset, (int)(nbytes >>32), (int)nbytes);
 
-	#elif defined(__powerpc64__) && (__WORDSIZE==64)  
+	#elif (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==64)  
 		         
 		  return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
 	#else
@@ -294,18 +294,26 @@ main(int   ac,    	/* number of command line parameters                      */
 	char *msg;
 
  /***************************************************************
-              parse standard options
+              parse standard options  
   ********************************************************************/
         if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
                 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
- /* This test needs kernel version > 2.6.16 */
-       
+		
+#if defined(__powerpc__) || defined(__powerpc64__)     /* for PPC, kernel version > 2.6.21 needed */
+                if ( !arch_support || (tst_kvercmp(2,16,22) < 0)) {
+                        tst_resm(TCONF, "System doesn't support execution of the test");
+                        tst_exit();
+                }
+#else
+        /* For other archs, need kernel version > 2.6.16 */
+
         if ( !arch_support || (tst_kvercmp(2,6,17) < 0)) {
                 tst_resm(TCONF, "System doesn't support execution of the test");
                 tst_exit();
         }
-		
+
+#endif
 	
 /* perform global test setup, call setup() function. */
 setup();
