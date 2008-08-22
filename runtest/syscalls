@@ -248,6 +248,8 @@ futimesat01 futimesat01
 
 getcontext01 getcontext01
 
+getcpu01 getcpu01
+
 getcwd01 getcwd01
 getcwd02 getcwd02
 getcwd03 getcwd03
