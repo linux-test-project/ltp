@@ -19,12 +19,29 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp -lnuma -lrt
 
-ifeq ($(HAS_NUMA),yes)
+check_numa_move_pages = $(shell \
+	if echo -e \
+	"\#include <numa.h>\n\
+	int main() \
+	{ \
+	numa_move_pages(0, 0, NULL, NULL, NULL, 0); \
+	return 0; \
+	}" | $(CC) -xc -lnuma - > /dev/null 2>&1 ; \
+	then echo yes ; \
+	else echo no ; fi)
+
+HAS_NUMA_MOVE_PAGES := $(call check_numa_move_pages)
+
+ifeq ($(HAS_NUMA_MOVE_PAGES),yes)
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c, %, $(wildcard *[0-9].c))
 endif
 
 all: $(TARGETS)
+ifeq ($(HAS_NUMA_MOVE_PAGES),no)
+	@echo "Note: Libnuma with move_pages support is required for" \
+	"move_pages testcases.";
+endif
 
 move_pages_support.o: move_pages_support.h move_pages_support.c
 
