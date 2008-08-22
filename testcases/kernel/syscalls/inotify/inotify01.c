@@ -50,7 +50,7 @@
 #include "usctest.h"
 
 #ifdef __NR_inotify_init
-#include <linux/inotify.h>
+#include <sys/inotify.h>
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */

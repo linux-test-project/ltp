@@ -53,7 +53,7 @@
 #include "usctest.h"
 
 #ifdef __NR_inotify_init
-#include <linux/inotify.h>
+#include <sys/inotify.h>
 
 #ifndef IN_MOVE_SELF
 #define IN_MOVE_SELF            0x00000800
