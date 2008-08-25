@@ -19,15 +19,11 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS)) $(patsubst %.c,%_64,$(SRCS))
+include ../utils/newer_64.mk
+%_64: CFLAGS += -D_FILE_OFFSET_BITS=64 -DOFF_T=__off64_t
 
-%_64.o: %.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
-%_64: CFLAGS +=					\
-	-DTST_USE_NEWER64_SYSCALL=1		\
-	-D_FILE_OFFSET_BITS=64			\
-	-DOFF_T=__off64_t
+SRCS    = $(wildcard *.c)
+TARGETS += $(patsubst %.c,%,$(SRCS))
 
 
 all: $(TARGETS)

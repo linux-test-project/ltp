@@ -1,5 +1,5 @@
 #
-#  Copyright (c) International Business Machines  Corp., 2001
+#  Copyright (c) Red Hat Inc., 2008
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,19 +16,29 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
+# Author: Masatake YAMATO <yamato@redhat.com>
+# Technique used here is suggested by Garrett Cooper <yanegomi@gmail.com>
 
-include ../utils/compat_16.mk
+# This file does the same things on foo64 system call 
+# as compat_16.mk does on foo16. See both compat_16.mk
+# and Makefile for fadvise test case.
 
-SRCS    = $(wildcard *.c) 
-TARGETS += $(patsubst %.c,%,$(SRCS))
+TARGETS_64 = $(patsubst %.c,%_64,$(SRCS))
+TARGETS  +=  $(TARGETS_64)
+
+DEF_64 = TST_USE_NEWER64_SYSCALL
+COMPAT_64_H = newer_64.h
+HAS_NEWER_64 := $(shell if [ -f $(NEWER_64_H) ]; then	\
+	  			echo yes;		\
+			else				\
+				echo no;		\
+			fi)
 
 
-all: $(TARGETS)
+ifeq ($(HAS_NEWER_64),yes)
+%.c: $(NEWER_64_H)
+endif
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+%_64.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+%_64: CFLAGS += -D$(DEF_64)=1
