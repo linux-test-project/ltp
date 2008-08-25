@@ -423,7 +423,7 @@ struct timeval tv1;
 
 		case 'h' :
 			help();
-			exit(0);
+                        tst_exit();
 
 		case 'B':
 			switch (sscanf(optarg, "%i%c",
