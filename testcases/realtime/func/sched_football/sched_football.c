@@ -73,12 +73,8 @@
 /* Here's the position of the ball */
 volatile int the_ball;
 
-/* Keep track of who's on the field */
-volatile int offense_count;
-volatile int defense_count;
-
-/* simple mutex for our atomic increments */
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+/* pthread_barrier for synchronization */
+pthread_barrier_t barrier;
 
 static int run_jvmsim=0;
 static int players_per_team = 0;
@@ -121,9 +117,7 @@ int parse_args(int c, char *v)
 /* This is the defensive team. They're trying to block the offense */
 void *thread_defense(void* arg)
 {
-	pthread_mutex_lock(&mutex);
-	defense_count++;
-	pthread_mutex_unlock(&mutex);
+	pthread_barrier_wait(&barrier);
 
 	/*keep the ball from being moved */
 	while (1) {
@@ -136,9 +130,7 @@ void *thread_defense(void* arg)
 /* This is the offensive team. They're trying to move the ball */
 void *thread_offense(void* arg)
 {
-	pthread_mutex_lock(&mutex);
-	offense_count++;
-	pthread_mutex_unlock(&mutex);
+	pthread_barrier_wait(&barrier);
 
 	while (1) {
 		the_ball++; /* move the ball ahead one yard */
@@ -157,6 +149,8 @@ int referee(int game_length)
 	gettimeofday(&start, NULL);
 	now = start;
 	the_ball = 0;
+
+	pthread_barrier_wait(&barrier);
 
 	/* Watch the game */
 	while ((now.tv_sec - start.tv_sec) < game_length) {
@@ -189,6 +183,11 @@ int main(int argc, char* argv[])
                 printf("jvmsim disabled\n");
 	}
 
+	if ((i = pthread_barrier_init(&barrier, NULL, players_per_team*2 + 1))) {
+		printf("pthread_barrier_init failed: %s\n", strerror(i));
+		exit(i);
+	}
+
 	printf("Running with: players_per_team=%d game_length=%d\n",
 	       players_per_team, game_length);
 
@@ -202,8 +201,6 @@ int main(int argc, char* argv[])
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
 		create_fifo_thread(thread_offense, NULL, priority);
-	while (offense_count < players_per_team)
-		usleep(100);
 
 	/* Start the defense */
 	priority = 30;
@@ -211,8 +208,6 @@ int main(int argc, char* argv[])
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
 		create_fifo_thread(thread_defense, NULL, priority);
-	while (defense_count < players_per_team)
-		usleep(100);
 
 	/* Ok, everyone is on the field, bring out the ref */
 	printf("Starting referee thread\n");
