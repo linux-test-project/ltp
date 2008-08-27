@@ -61,7 +61,11 @@
 #include <limits.h>
 
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
 #define DATASIZE 100
+static struct sender_context ** snd_ctx_tab;      /*Table for sender context pointers.*/
+static struct receiver_context ** rev_ctx_tab;    /*Table for receiver context pointers.*/
+static int gr_num = 0;                            /*For group calculation */
 static unsigned int loops = 100;
 /*
  * 0 means thread mode and others mean process (default)
@@ -238,6 +242,10 @@ static unsigned int group(pthread_t *pth,
 	unsigned int i;
 	struct sender_context* snd_ctx = malloc (sizeof(struct sender_context)
 			+num_fds*sizeof(int));
+	if(!snd_ctx)
+	    barf("malloc()");
+        else
+            snd_ctx_tab[gr_num] = snd_ctx;
 
 	for (i = 0; i < num_fds; i++) {
 		int fds[2];
@@ -245,7 +253,8 @@ static unsigned int group(pthread_t *pth,
 
 		if (!ctx)
 			barf("malloc()");
-
+                else
+                	rev_ctx_tab[gr_num * num_fds + i] = ctx;
 
 		/* Create the pipe between client and server */
 		fdpair(fds);
@@ -277,13 +286,14 @@ static unsigned int group(pthread_t *pth,
 		for (i = 0; i < num_fds; i++)
 			close(snd_ctx->out_fds[i]);
 
+        gr_num++;
 	/* Return number of children to reap */
 	return num_fds * 2;
 }
 
 int main(int argc, char *argv[])
 {
-	unsigned int i, num_groups = 10, total_children;
+	unsigned int i, j,num_groups = 10, total_children;
 	struct timeval start, stop, diff;
 	unsigned int num_fds = 20;
 	int readyfds[2], wakefds[2];
@@ -317,8 +327,9 @@ int main(int argc, char *argv[])
 		loops = atoi(argv[3]);
 
 	pth_tab = malloc(num_fds * 2 * num_groups * sizeof(pthread_t));
-
-	if (!pth_tab)
+        snd_ctx_tab = malloc(num_groups * sizeof(void*));
+        rev_ctx_tab = malloc(num_groups * num_fds * sizeof(void*));
+ 	if (!pth_tab || !snd_ctx_tab || !rev_ctx_tab)
 		barf("main:malloc()");
 
 	fdpair(readyfds);
@@ -348,5 +359,16 @@ int main(int argc, char *argv[])
 	/* Print time... */
 	timersub(&stop, &start, &diff);
         printf("Time: %lu.%03lu\n", diff.tv_sec, diff.tv_usec/1000);
+
+        /* free the memory */
+        for (i = 0; i < num_groups; i++){
+            for (j = 0; j < num_fds; j++){
+                SAFE_FREE(rev_ctx_tab[i*num_fds+j])
+            }
+            SAFE_FREE(snd_ctx_tab[i]);
+        }
+        SAFE_FREE(pth_tab);
+        SAFE_FREE(snd_ctx_tab);
+        SAFE_FREE(rev_ctx_tab);
         exit(0);
 }
