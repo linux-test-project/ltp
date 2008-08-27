@@ -9,6 +9,8 @@
  * have happened due to signals being sent from a timer.  Test with
  * timer seconds in nanoseconds.
  *
+ * INTERVALNSEC = clock resolution
+ *
  * Steps (testing with just one overrun):
  * - Block signal SIGCONT (SIGCONT used so test will not terminate)
  * - Set up a timer to send SIGCONT on expiration with an interval
@@ -26,7 +28,6 @@
 #include "posixtest.h"
 
 #define VALUENSEC 2000000
-#define INTERVALNSEC 5000000
 
 #define EXPECTEDOVERRUNS 75
 
@@ -36,7 +37,7 @@ int main()
 	struct sigevent ev;
 	timer_t tid;
 	struct itimerspec its;
-	struct timespec ts;
+	struct timespec ts, tsres;
 	int overruns;
 
 	if (sigemptyset(&set) != 0) {
@@ -65,8 +66,18 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
+	if (clock_getres(CLOCK_REALTIME, &tsres) != 0) {
+		perror("clock_gettime() did not return success\n");
+		return PTS_UNRESOLVED;
+	}
+
+	if (tsres.tv_sec != 0) {
+		printf("Clock resolution in seconds, not nsecs. Exiting.\n");
+		return PTS_UNRESOLVED;
+	}
+
 	its.it_interval.tv_sec = 0;
-	its.it_interval.tv_nsec = INTERVALNSEC;
+	its.it_interval.tv_nsec = tsres.tv_nsec;
 	its.it_value.tv_sec = 0;
 	its.it_value.tv_nsec = VALUENSEC;
 
@@ -75,7 +86,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	ts.tv_nsec = VALUENSEC + ((EXPECTEDOVERRUNS)*INTERVALNSEC);
+	ts.tv_nsec = VALUENSEC + ((EXPECTEDOVERRUNS) * its.it_interval.tv_nsec);
 	ts.tv_sec = 0;
 	if (nanosleep(&ts, NULL) != 0) {
 		perror("nanosleep() did not return success\n");
