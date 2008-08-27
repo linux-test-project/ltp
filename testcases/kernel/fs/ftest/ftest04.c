@@ -183,9 +183,9 @@ int runtest()
 				tst_exit();
 			}
 			dotest(nchild, i, fd);		/* do it! */
+			close(fd);
 			tst_exit();			/* when done, exit */
 		}
-		close(fd);
 		if (child < 0) {
 			 tst_resm(TINFO, "System resource may be too low, fork() malloc()"
 	                                   " etc are likely to fail.");
