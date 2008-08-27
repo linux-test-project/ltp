@@ -296,7 +296,7 @@ main()
             esac ;;
     
         m)  NUM_PROCS=1; CHUNKS=1; BYTES=$((256 * 1024 * 1024)); HANGUP_FLAG=0
-            ARGUMENT_LIST=$(($OPTARG))
+            ARGUMENT_LIST=$OPTARG
             TOTAL_ARGUMENTS=1                                             # Initial Assume
             for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
             do
