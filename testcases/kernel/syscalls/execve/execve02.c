@@ -214,7 +214,7 @@ setup()
 		if ((pwd = getcwd(NULL, 0)) == NULL) {
 			tst_brkm(TBROK, tst_exit, "Could not get current directory");
 		}
-		path = malloc (strlen(path) + strlen(pwd) + 2);
+		path = malloc (strlen(pwd) + strlen(dname) +  2);
 		if (path == NULL) {
 			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
 		}
