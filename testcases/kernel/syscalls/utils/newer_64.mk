@@ -27,7 +27,7 @@ TARGETS_64 = $(patsubst %.c,%_64,$(SRCS))
 TARGETS  +=  $(TARGETS_64)
 
 DEF_64 = TST_USE_NEWER64_SYSCALL
-COMPAT_64_H = newer_64.h
+NEWER_64_H = newer_64.h
 HAS_NEWER_64 := $(shell if [ -f $(NEWER_64_H) ]; then	\
 	  			echo yes;		\
 			else				\
