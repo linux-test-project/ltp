@@ -52,7 +52,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifdef __NR_inotify_init
+#if defined(__NR_inotify_init) && defined(HAS_SYS_INOTIFY)
 #include <sys/inotify.h>
 
 #ifndef IN_MOVE_SELF
@@ -368,9 +368,14 @@ int TST_TOTAL = 0;              /* Total number of test cases. */
 int
 main()
 {
+#ifndef __NR_inotify_init
     tst_resm(TWARN, "This test needs a kernel that has inotify syscall.");
     tst_resm(TWARN, "Inotify syscall can be found at kernel 2.6.13 or higher.");
-    exit(0);
+#endif
+#ifndef HAS_SYS_INOTIFY:
+    tst_resm(TBROK, "can't find header sys/inotify.h");
+    return 1;
+#endif
     return 0;
 }
 

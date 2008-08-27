@@ -21,6 +21,13 @@ LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
+check_header = $(shell \
+			if echo "\#include <$(1)>" | $(CC) -E - > /dev/null; \
+			then echo -DHAS_SYS_INOTIFY ; \
+			fi)
+
+HAS_SYS_INOTIFY := $(call check_header,sys/inotify.h)
+CFLAGS += $(HAS_SYS_INOTIFY)
 
 all: $(TARGETS)
 
