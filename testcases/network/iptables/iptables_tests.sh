@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -35,9 +36,6 @@
 #		  - Ported test01, test02 from Manoj Iyer's ipchains_tests.sh
 #		  - Added test03, test04, test05, test06
 #
-#! /bin/sh
-
-
 # Function:	init
 #
 # Description:	- Check if command iptables is available.

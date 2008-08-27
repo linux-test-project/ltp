@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -27,9 +28,6 @@
 #
 # History:      Feb 03 2003 - Created - Manoj Iyer.
 #
-#! /bin/sh
-
-
 # Function:		init
 #
 # Description:	- Check if command mkdir is available.

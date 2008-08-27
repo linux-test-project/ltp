@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -36,7 +37,6 @@
 #              Dec 18 2002 - Added.   - Code to read environment variable
 #                            LTPROOT and TMPBASE and set LTPTMP and LTPBIN
 #                            accordingly.
-#! /bin/sh
 
 
 export TST_TOTAL=10                # Number of tests in this testcase

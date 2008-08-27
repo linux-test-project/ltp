@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -28,10 +29,6 @@
 #
 # History:       Mar 03 2003 - Created - Manoj Iyer.
 #
-#! /bin/sh
-
-
-
 # Function:     chk_ifexists
 #
 # Description:  - Check if command required for this test exits.

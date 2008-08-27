@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -28,9 +29,6 @@
 # History:      Jan 30 2003 - Created - Manoj Iyer.
 #               Feb 03 2003 - Fixed expected output.
 #
-#! /bin/sh
-
-
 # Function:		init
 #
 # Description:	- Check if command cp is available.

@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -37,8 +38,6 @@
 #                Jan 10 2002 - Fixed various bugs I had introduced in the test.
 #                           - Added SETUP and CLEANUP sections 
 #
-#! /bin/sh
-
 
 export TST_TOTAL=5
 

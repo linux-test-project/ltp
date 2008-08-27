@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -38,9 +39,6 @@
 #                             if dhcpd was not running. Worked around this
 #                             problem.
 #
-#! /bin/sh
-
-
 # Function:		init
 #
 # Description:	- Check if command dhcpd is available.

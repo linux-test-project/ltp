@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
@@ -28,7 +29,7 @@
 # History:      Aug. 14 2008 - Created - Jinbing Guo.
 #
 ################################################################################
-#! /bin/sh
+#
 # Function:     setup
 #
 # Description:  - Check if required commands exits

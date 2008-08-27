@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -29,7 +30,6 @@
 #              Dec 18 2002 - Added code to read the LTPROOT and TMPBASE
 #              variables to set LTPBIN and LTPTMP variables
 #
-#! /bin/sh
 
 export TST_TOTAL=1
 

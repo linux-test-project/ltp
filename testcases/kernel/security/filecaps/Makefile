@@ -34,7 +34,8 @@ endif
 all: $(TARGETS)
 ifeq ($(HAVE_LIBCAP),yes)
 checkforlibcap:
-	echo true > $@
+	echo "#!/bin/sh" > $@
+	echo true >> $@
 	chmod a+rx $@
 else
 	@echo "setcap or xattr headers not installed.  Please install libcap from"; \
@@ -42,7 +43,8 @@ else
 	echo "You must use libcap-2.11 or newer."; \
 	echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
 checkforlibcap:
-	echo false > $@
+	echo "#!/bin/sh" > $@
+	echo false >> $@
 	chmod a+rx $@
 endif
 

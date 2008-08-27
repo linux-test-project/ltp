@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -40,10 +41,6 @@
 #                                        cron job.
 #                Feb 28 2003 - Fixed   - Modified testcase to use functions.
 #
-#! /bin/sh
-
-
-
 # Function: 	chk_ifexists
 #
 # Description:  - Check if command required for this test exits.

@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -31,9 +32,6 @@
 #
 # History:      Fed 06 2003 - Created - Manoj Iyer.
 #
-#! /bin/sh
-
-
 # Function:		init
 #
 # Description:	- Check if command gunzip and gzip is available.

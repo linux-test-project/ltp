@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -37,7 +38,6 @@
 #               Jan 07 2003 - Call eject with -v for verbose information.
 #                Jan 08 2003 - Added test #4.
 #
-#! /bin/sh
 
 
 export TST_TOTAL=4

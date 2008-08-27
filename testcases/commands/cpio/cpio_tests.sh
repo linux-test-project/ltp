@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -28,9 +29,6 @@
 #
 # History:      Jan 30 2003 - Created - Manoj Iyer.
 #
-#! /bin/sh
-
-
 # Function:		init
 #
 # Description:	- Check if command cpio is available.

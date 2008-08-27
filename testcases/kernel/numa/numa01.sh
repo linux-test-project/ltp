@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2007                 ##
@@ -21,8 +22,6 @@
 # Author:        Sivakumar Chinnaiah, Sivakumar.C@in.ibm.com
 #
 # History:       July 04 2007 - Created - Sivakumar Chinnaiah.
-#
-#! /bin/sh
 #
 # File :         numa01.sh
 #
