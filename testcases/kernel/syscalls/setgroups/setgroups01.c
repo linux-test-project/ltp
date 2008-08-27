@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setgroups01.c,v 1.1 2001/08/27 22:15:15 plars Exp $ */
+/* $Id: setgroups01.c,v 1.2 2008/08/27 12:02:42 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -119,17 +119,19 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "compat_16.h"
+
 void setup();
 void cleanup();
 
 
 
-char *TCID="setgroups01"; 	/* Test program identifier.    */
+TCID_DEFINE(setgroups01); 	/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int len = NGROUPS; 
-gid_t list[NGROUPS];
+GID_T list[NGROUPS];
 
 int
 main(int ac, char **av)
@@ -161,7 +163,7 @@ main(int ac, char **av)
 	/* 
 	 * Call setgroups(2) 
 	 */
-	TEST(setgroups(len, list));
+	TEST(SETGROUPS(len, list));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -203,7 +205,7 @@ setup()
     /* Pause if that option was specified */
     TEST_PAUSE;
 
-    if (getgroups(len, list) == -1) {
+    if (GETGROUPS(len, list) == -1) {
        tst_brkm(TBROK, cleanup,
 		"getgroups(%d, list) Failure. errno=%d : %s",
 		len, errno, strerror(errno));

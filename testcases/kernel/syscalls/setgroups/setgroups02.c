@@ -73,12 +73,14 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "compat_16.h"
+
 #define TESTUSER	"nobody"
 
-char *TCID="setgroups02";	/* Test program identifier.    */
+TCID_DEFINE(setgroups02);	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
+GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 
 struct passwd *user_info;	/* struct. to hold test user info */
 void setup();			/* setup function for the test */
@@ -111,7 +113,7 @@ main(int ac, char **av)
 		 * Call setgroups() to set supplimentary group IDs of
 		 * the calling super-user process to gid of TESTUSER.
 		 */
-		TEST(setgroups(gidsetsize, groups_list));
+		TEST(SETGROUPS(gidsetsize, groups_list));
 	
 		/* check return code of setgroups(2) */
 		if (TEST_RETURN == -1) {
@@ -132,7 +134,7 @@ main(int ac, char **av)
 			 * supp. gids of TESTUSER.
 			 */
 			groups_list[0] = '\0';
-			if (getgroups(gidsetsize, groups_list) < 0) {
+			if (GETGROUPS(gidsetsize, groups_list) < 0) {
 				tst_brkm(TFAIL, cleanup, "getgroups() Fails, "
 					 "error=%d", errno);
 			}
@@ -185,6 +187,12 @@ setup()
 		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
 	}
 
+	if (!COMPAT_SIZE_CHECK(user_info->pw_gid)) {
+		tst_brkm(TBROK,
+			 cleanup,
+			 "gid returned from getpwnam is too large for testing setgroups16");
+	}
+	  
 	groups_list[0] = user_info->pw_gid;
 }
 

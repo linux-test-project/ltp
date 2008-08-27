@@ -70,11 +70,13 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="setgroups04";	/* Test program identifier.    */
+#include "compat_16.h"
+
+TCID_DEFINE(setgroups04);	/* Test program identifier.    */
 int TST_TOTAL = 1;
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
+GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 int exp_enos[] = {EFAULT, 0};
 
 void setup();			/* setup function for the test */
@@ -116,7 +118,7 @@ main(int ac, char **av)
 		 * verify that it fails with -1 return value and
 		 * sets appropriate errno.
 		 */ 
-		 TEST(setgroups(gidsetsize,sbrk(0)));
+		 TEST(SETGROUPS(gidsetsize,sbrk(0)));
 		/* check return code of setgroups */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "setgroups() returned %d, "

@@ -75,19 +75,21 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "compat_16.h"
+
 #define TESTUSER	"nobody"
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 
-char *TCID="setgroups03";	/* Test program identifier.    */
+TCID_DEFINE(setgroups03);	/* Test program identifier.    */
 int TST_TOTAL=2;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = {EINVAL, EPERM, 0};
 
-gid_t *groups_list; 		/* Array to hold gids for getgroups() */
+GID_T *groups_list; 		/* Array to hold gids for getgroups() */
 	
 int setup1();			/* setup function to test error EPERM */
 void setup();			/* setup function for the test */
@@ -120,10 +122,10 @@ main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 	
-	groups_list = malloc(ngroups_max * sizeof(gid_t));
+	groups_list = malloc(ngroups_max * sizeof(GID_T));
 	if (groups_list == NULL) {
 		tst_brkm(TBROK, NULL, "malloc failed to alloc %d errno "
-			 " %d ", ngroups_max * sizeof(gid_t), errno);
+			 " %d ", ngroups_max * sizeof(GID_T), errno);
 	}
 
 	/* Perform global setup for test */
@@ -151,7 +153,7 @@ main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */ 
-			 TEST(setgroups(gidsetsize, groups_list));
+			 TEST(SETGROUPS(gidsetsize, groups_list));
 	
 			/* check return code of setgroups(2) */
 			if (TEST_RETURN != -1) {
@@ -228,6 +230,12 @@ setup1()
 
 	if ((user_info = getpwnam(TESTUSER)) == NULL) {
 		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
+	}
+
+	if (!COMPAT_SIZE_CHECK(user_info->pw_gid)) {
+		tst_brkm(TBROK,
+			 cleanup,
+			 "gid returned from getpwnam is too large for testing setgroups16");
 	}
 	groups_list[0] = user_info->pw_gid;
 	return 0;
