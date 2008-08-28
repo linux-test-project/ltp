@@ -1,7 +1,6 @@
 /*
  * proc01.c - Tests Linux /proc file reading.
  *
- * Copyright (C) 2007, 2008 CAI Qian <caiqian@redhat.com>
  * Copyright (C) 2001 Stephane Fillod <f4cfe@free.fr>
  * 
  * This program is free software; you can redistribute it and/or modify it
@@ -88,8 +87,6 @@ const Mapping known_issues[] =
     {"read", "/proc/xen/privcmd", EINVAL},
     {"read", "/proc/self/mem", EIO},
     {"read", "/proc/self/task/[0-9]*/mem", EIO},
-    {"read", "/proc/self/mem", EINVAL},
-    {"read", "/proc/self/task/[0-9]*/mem", EINVAL},
     {"", "", 0}
   };
 
