@@ -77,6 +77,10 @@ prompt_for_create() {
 	fi
 }
 
+if [ -z ${EUID} ] ; then
+	EUID=$(id -u)
+fi
+
 if [ -e /etc/passwd -a ! -r /etc/passwd ] ; then
 	echo "/etc/passwd not readable by uid $EUID"
 	exit 1
