@@ -27,7 +27,7 @@ EXTRA_LIBS = $(LDFLAGS)
 all:	$(TARGETS)
 
 install:
-	@/bin/sh chmod 755 netpipe.sh
+	@/bin/chmod 755 netpipe.sh
 	@ln -f $(TARGETS) netpipe.sh ../../testcases/bin/
 #
 # This section of the Makefile is for compiling the binaries
