@@ -83,7 +83,7 @@ int sync_pipe_create(int fd[])
 
 int sync_pipe_close(int fd[])
 {
-	int r;
+	int r = 0;
 
 	if (fd[0] != -1)
 		r = close (fd[0]);
