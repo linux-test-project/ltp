@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getegid01.c,v 1.2 2006/05/26 06:26:39 vapier Exp $ */
+/* $Id: getegid01.c,v 1.3 2008/09/04 12:04:46 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -121,11 +121,32 @@ void cleanup();
 
 
 
-char *TCID="getegid01";		/* Test program identifier.    */
+TCID_DEFINE(getegid01);		/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[]={0};		/* must be a 0 terminated list */
+
+
+#ifdef TST_USE_COMPAT16_SYSCALL
+/* __kernel_old_gid_t */
+#include <asm/posix_types.h>
+
+/* __NR_getegid */
+#include "linux_syscall_numbers.h"
+
+__kernel_old_gid_t
+GETEGID(void)
+{
+  return syscall(__NR_getegid);
+}
+#else
+gid_t
+GETEGID(void)
+{
+  return getegid();
+}
+#endif  /* TST_USE_COMPAT16_SYSCALL */
 
 int
 main(int ac, char **av)
@@ -165,7 +186,7 @@ main(int ac, char **av)
 	;
 
 	/* Call getegid(2) */
-	TEST(getegid( ));
+	TEST(GETEGID( ));
 	
 	/* check return code */
 	if ( TEST_RETURN < 0 ) {
