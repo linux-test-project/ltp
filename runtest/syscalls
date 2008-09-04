@@ -918,6 +918,9 @@ swapon01 swapon01
 swapon02 swapon02
 swapon03 swapon03
 
+#Exclusive syscall() for POWER6 machines only
+switch01 switch01
+
 symlink01 symlink01
 symlink02 symlink02
 symlink03 symlink03
