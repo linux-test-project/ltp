@@ -50,6 +50,13 @@
 
 #ifdef __NR_utimensat
 
+#ifndef AT_FDCWD
+  #define AT_FDCWD -100
+#endif
+#ifndef AT_SYMLINK_NOFOLLOW
+  #define AT_SYMLINK_NOFOLLOW 0x100
+#endif
+
 #define EXIT_bad_usage 3
 #define EXIT_failed_syscall 3
 
