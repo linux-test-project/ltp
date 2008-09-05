@@ -66,11 +66,6 @@ void setup() {
         /* capture signals */
         tst_sig(FORK, DEF_HANDLER, cleanup);
 
-        /* Check whether we are root*/
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-
         /* Pause if that option was specified */
         TEST_PAUSE;
 
@@ -127,7 +122,7 @@ int main(int ac, char **av, char **envp, unsigned long *auxv) {
                 tst_resm(TFAIL, "Got SIGILL - test failed");
                 tst_exit();
 	}
-        tst_resm(TPASS, "switch() syscall tests passed");
+        tst_resm(TPASS, "endian_switch() syscall tests passed");
         tst_exit();
 }
 
