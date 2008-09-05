@@ -100,7 +100,7 @@ EOF
 chmod 755 /tmp/$tmpscript
 
 #
-cronline=`date '+%M' | gawk '{print ($1+2)%60 " * * * * "}'`
+cronline=`date '+%M' | awk '{print ($1+2)%60 " * * * * "}'`
 (echo "$cronline /tmp/$tmpscript >> /tmp/$tmpscript.out 2>> /tmp/$tmpscript.out" ; \
  echo "$cronline /tmp/$tmpscript >> /$tmpscript.out 2>> /$tmpscript.out") \
  | crontab -
