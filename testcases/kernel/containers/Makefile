@@ -21,9 +21,7 @@
 SUBDIRS = libclone utsname sysvipc pidns
 
 all: check_for_unshare
-	@set -e; if './check_for_unshare' > /dev/null 2>&1; then \
-		for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done \
-	else echo "system does not support unshare"; true; fi
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
 
 noltp noltp_check: check_for_unshare
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
@@ -34,10 +32,8 @@ check_for_unshare: check_for_unshare.c
 install: check_for_unshare
 	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
 	ln -f container_test.sh ../../bin/container_test.sh; \
-	if './check_for_unshare' > /dev/null 2>&1; then \
-		for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done; \
-		chmod ugo+x container_test.sh; \
-	else echo "system does not support unshare"; true; fi
+	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done; \
+	chmod ugo+x container_test.sh
 
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done

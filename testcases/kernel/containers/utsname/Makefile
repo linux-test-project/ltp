@@ -27,6 +27,11 @@ NOLTPSRCS = utstest.c
 TARGETS = $(patsubst %.c,%,$(SRCS))
 NOLTP_TARGETS = $(patsubst %.c,%_noltp,$(NOLTPSRCS))
 
+HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
+ifneq ($(HAS_UNSHARE),y)
+TARGETS :=
+endif
+
 %_noltp : %.c
 	$(CC) -g -DNO_LTP -o $@ $< ../libclone/libclone.a
 

@@ -18,13 +18,19 @@
 ##                                                                            ##
 ################################################################################
 
-TARGET=libclone.a
 SRCS=$(wildcard *.c)
 OBJS=$(patsubst %.c,%.o,$(SRCS))
 
+HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
+ifeq ($(HAS_UNSHARE),y)
+TARGET := libclone.a
+else
+TARGET :=
+endif
+
 all noltp : $(TARGET)
 
-$(TARGET): $(OBJS)
+libclone.a: $(OBJS)
 	$(AR) -cr $@ $^
 
 clean:

@@ -23,9 +23,15 @@ CPPFLAGS += -I../../../../include -I../libclone
 LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
 
 SRCS    = $(wildcard *.c)
-NOLTPSRCS = pidns01.c pidns02.c pidns03.c
 TARGETS = $(patsubst %.c,%,$(SRCS))
+
+NOLTPSRCS = pidns01.c pidns02.c pidns03.c
 NOLTP_TARGETS = $(patsubst %.c,%_noltp,$(NOLTPSRCS))
+
+HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
+ifneq ($(HAS_UNSHARE),y)
+TARGETS :=
+endif
 
 %_noltp : %.c
 	$(CC) -g -DNO_LTP -o $@ $< ../libclone/libclone.a
