@@ -59,12 +59,12 @@ do_setup ()
    [ "$LUSER" = "root" ] || end_testcase "MUST BE root to run the test!"
 
    FINGER=`netstat -an | grep "::79" |awk '{print $6}'`
-   if [ $FINGER -ne "LISTEN" ]; then
+   if [ $FINGER != "LISTEN" ]; then
       end_testcase "Please start fingerd for IPv6 locally."
    fi
 
    FINGER=`rsh -n $RHOST netstat -a |grep "::79"|awk '{print $6}'`
-   if [ $FINGER -ne "LISTEN" ]; then
+   if [ $FINGER != "LISTEN" ]; then
       end_testcase "Please start fingerd for IPv6 on remote host."
    fi
 }
