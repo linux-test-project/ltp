@@ -35,10 +35,10 @@ install: check_for_unshare
 	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
 	ln -f container_test.sh ../../bin/container_test.sh; \
 	if './check_for_unshare' > /dev/null 2>&1; then \
-		for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done; \
+		for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done; \
 		chmod ugo+x container_test.sh; \
 	else echo "system does not support unshare"; true; fi
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
 	rm -f check_for_unshare
