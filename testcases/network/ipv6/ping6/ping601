@@ -56,7 +56,7 @@ do_test()
 
    for packetsize in $PACKETSIZES
    do
-      ping6  -R -c $COUNT -s $packetsize $RHOST 
+      ping6 -c $COUNT -s $packetsize $RHOST 
       [ $? -eq 0 ] || end_testcase "failed: ping6 -c $COUNT -s $packetsize $RHOST"
       sleep $SLEEPTIME
    done
