@@ -28,14 +28,12 @@ else
 TARGET :=
 endif
 
-all noltp : $(TARGET)
+all: $(TARGET)
 
 libclone.a: $(OBJS)
 	$(AR) -cr $@ $^
 
 clean:
 	rm -f $(TARGET) $(OBJS)
-
-noltp_check: noltp
 
 install:

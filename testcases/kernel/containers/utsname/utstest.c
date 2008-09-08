@@ -52,22 +52,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#ifndef NO_LTP
 #include <test.h>
 #include <libclone.h>
-#else
-#include "../libclone/libclone.h"
-#endif
 
 char *TCID = "uts_namespace";
 int TST_TOTAL=1;
-
-#ifdef NO_LTP
-#define TFAIL "FAILURE: "
-#define TPASS "PASS: "
-#define tst_resm(x, format, arg...) printf("%s:" format, x, ## arg)
-#define tst_exit() exit(1)
-#endif
 
 int drop_root()
 {

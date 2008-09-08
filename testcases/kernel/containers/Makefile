@@ -23,9 +23,6 @@ SUBDIRS = libclone utsname sysvipc pidns
 all: check_for_unshare
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
 
-noltp noltp_check: check_for_unshare
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
-
 check_for_unshare: check_for_unshare.c
 	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
 

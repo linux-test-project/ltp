@@ -31,24 +31,12 @@
 #include <errno.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#ifndef NO_LTP
 #include <test.h>
 #include <libclone.h>
-#else
-#include "../libclone/libclone.h"
-#endif
 
 char *TCID = "sysvipc_namespace";
 int TST_TOTAL=1;
 #define TESTKEY 0xEAEAEA
-
-#ifdef NO_LTP
-#define TFAIL "FAILURE: "
-#define TPASS "PASS: "
-#define TINFO "INFO: "
-#define tst_resm(x, format, arg...) printf("%s:" format, x,## arg)
-#define tst_exit(ret) exit(ret)
-#endif
 
 int p1[2];
 int p2[2];

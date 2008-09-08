@@ -56,28 +56,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#ifndef NO_LTP
 #include <usctest.h>
 #include <test.h>
 #include <libclone.h>
-#else
-#include "../../../../include/usctest.h"
-#include "../libclone/libclone.h"
-#endif
 
 char *TCID = "pid_namespace2";
 int TST_TOTAL=1;
 
 void cleanup(void);
-
-#ifdef NO_LTP
-#define TFAIL "FAILURE: "
-#define TPASS "PASS: "
-#define TINFO "INFO: "
-#define TWARN "WARN: "
-#define tst_resm(x, format, arg...) printf("%s:" format, x, ## arg)
-#define tst_exit() exit(1)
-#endif
 
 #define PGID  	1
 #define SID	1
@@ -154,10 +140,8 @@ void
 cleanup()
 {
 
-#ifndef NO_LTP
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-#endif
 
 	/* exit with return code appropriate for results */
 	tst_exit();

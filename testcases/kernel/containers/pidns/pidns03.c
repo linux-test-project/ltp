@@ -55,30 +55,15 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
-#ifndef NO_LTP
 #include <usctest.h>
 #include <test.h>
 #include <libclone.h>
-#else
-#include "../../../../include/usctest.h"
-#include "../libclone/libclone.h"
-#endif
 
 char *TCID = "pid_namespace3";
 int TST_TOTAL;
 
 static void cleanup();
 static int child_fn();
-
-
-#ifdef NO_LTP
-#define TFAIL "FAILURE: "
-#define TPASS "PASS: "
-#define TINFO "INFO: "
-#define TWARN "WARN: "
-#define tst_resm(x, format, arg...) printf("%s:" format, x, ## arg)
-#define tst_exit() exit(1)
-#endif
 
 /***********************************************************************
 *   M A I N
@@ -177,13 +162,11 @@ void
 cleanup()
 {
 
-#ifndef NO_LTP
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-#endif
 
 	/* exit with return code appropriate for results */
 	tst_exit();
