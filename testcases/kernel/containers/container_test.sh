@@ -23,14 +23,6 @@ else
 	echo "Uts namespaces not enabled in kernel.  Not running utsns tests."
 fi
 
-#check_pidns_enabled
-#if [ $? -eq 0 ]; then
-#	echo "Running pidns tests."
-#	runpidnstest.sh
-#else
-	#echo "Process id namespaces not enabled in kernel.  Not running pidns tests."
-#fi
-
 #check_userns_enabled
 #if [ $? -eq 0 ]; then
 	#echo "Running userns tests."
@@ -59,6 +51,6 @@ if [ $? -eq 0 ]; then
 	echo "Running pidns tests."
 	runpidnstest.sh
 else
-	echo "pid namespaces not enabled in kernel.  Not running pidns tests."
+	echo "Process id namespaces not enabled in kernel.  Not running pidns tests."
 fi
 
