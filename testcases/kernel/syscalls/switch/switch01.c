@@ -109,6 +109,7 @@ void do_le_switch(void) {
 }
 
 int main(int ac, char **av, char **envp, unsigned long *auxv) {
+        setup();
 	for (; *auxv != AT_NULL && *auxv != AT_HWCAP; auxv += 2)
 		;
 	if (!(auxv[0] == AT_HWCAP && (auxv[1] & PPC_FEATURE_TRUE_LE))) {
@@ -132,3 +133,7 @@ int main() {
 
         tst_brkm(TCONF, cleanup, "This system does not support running of switch() syscall");
         tst_exit();
+}
+
+#endif
+
