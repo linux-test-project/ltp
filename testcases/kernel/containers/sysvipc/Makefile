@@ -21,8 +21,8 @@
 CFLAGS += -I../../../../include -I../libclone -Wall
 LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+SRCS    := $(wildcard *.c)
+TARGETS := $(SRCS:%.c=%)
 
 HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
 ifneq ($(HAS_UNSHARE),y)

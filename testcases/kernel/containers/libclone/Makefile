@@ -18,8 +18,8 @@
 ##                                                                            ##
 ################################################################################
 
-SRCS=$(wildcard *.c)
-OBJS=$(patsubst %.c,%.o,$(SRCS))
+SRCS := $(wildcard *.c)
+OBJS := $(SRCS:%.c=%.o)
 
 HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
 ifeq ($(HAS_UNSHARE),y)
