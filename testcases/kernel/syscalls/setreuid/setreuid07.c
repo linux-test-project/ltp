@@ -92,6 +92,7 @@ int main(int ac, char **av)
 	
 	if (pid == 0) {
 		do_master_child();
+		return 0;
 	}
 	else {
 		waitpid(pid, &status, 0);
@@ -215,6 +216,9 @@ setup(void)
 
 	ltpuser = getpwnam(nobody_uid);	
 
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+
 	sprintf(testfile, "setreuid07file%d.tst", getpid());
 
 	/* Create test file */
@@ -237,13 +241,15 @@ void
 cleanup(void)
 {
 	close (fd);
-	unlink(testfile);
 
 	/*
 	 * print timing status if that option was specified
 	 * print errno log if that option was specified
 	 */
 	TEST_CLEANUP;
+
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
