@@ -93,6 +93,7 @@
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
 		"\t-p nproc  number of child processes to spawn\n\n"
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
 /*
  * Function prototypes
  *
@@ -239,6 +240,9 @@ static void test_commands (pid_t pid)
 
 
 	semunptr.buf = (struct semid_ds *) calloc(1, sizeof (struct semid_ds));
+	if(!semunptr.buf)
+		error("calloc failed", __LINE__);
+
 	semunptr.buf->sem_perm.uid = uid;
 	semunptr.buf->sem_perm.gid = gid;
 	semunptr.buf->sem_perm.mode = mode;
@@ -266,6 +270,7 @@ static void test_commands (pid_t pid)
 	if (semunptr.buf->sem_nsems != nsems) 
 		sys_error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
+	SAFE_FREE(semunptr.buf);
 
 	/*
 	 * Test semctl () with SETVAL command
@@ -367,6 +372,8 @@ static void test_commands (pid_t pid)
 	 * Set all of the semaphore values in the set.
 	 */
 	arg.array = malloc(sizeof(int) * nsems);
+	if(!arg.array)
+		error ("malloc failed", __LINE__);	
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (SETALL) command operation\n");
 	for (i = 0; i < nsems; i++)
@@ -399,6 +406,7 @@ static void test_commands (pid_t pid)
 		printf ("\n\tTesting semctl (IPC_RMID) command operation\n");
 	if (semctl (semid, nsems, IPC_RMID, arg) < 0)
 		sys_error ("semctl failed", __LINE__);
+        SAFE_FREE(arg.array);
 
 }
 
