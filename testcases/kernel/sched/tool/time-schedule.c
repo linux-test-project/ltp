@@ -471,6 +471,7 @@ static unsigned long compute_median (unsigned long values[MAX_ITERATIONS],
         peak = table[count];
         median = count;
     }
+    free(table);
     return (median);
 }   /*  End Function compute_median  */
 
