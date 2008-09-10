@@ -83,6 +83,8 @@
 #define	FIRST_MSG	0
 #define BUF_SIZE        256
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+
 /*
  * Function prototypes
  *
@@ -148,10 +150,16 @@ int main (int argc, char **argv)
 	 */
 	buf = (struct msgbuf *)calloc ((size_t)(sizeof(struct msgbuf) + BUF_SIZE),
 		sizeof (char));
-	if (msgrcv (msqid, (void *)buf, (size_t)BUF_SIZE, FIRST_MSG, 0) < 0)
+	if(!buf)
+		sys_error ("calloc failed", __LINE__);
+
+	if (msgrcv (msqid, (void *)buf, (size_t)BUF_SIZE, FIRST_MSG, 0) < 0) {
+		SAFE_FREE(buf);
 		sys_error ("msgsnd failed", __LINE__);
+	}
 	printf ("\n\tParent: received message: %s\n", buf->mtext);
 	fflush (stdout);
+	SAFE_FREE(buf);
 
 	/*
 	 * Remove the message queue from the system
@@ -196,14 +204,20 @@ static void child (int fd[])
 	 */
 	buf = (struct msgbuf *)calloc ((size_t)(sizeof(struct msgbuf) + BUF_SIZE),
 		sizeof (char));
+	if(!buf)
+		sys_error ("calloc failed", __LINE__);
+
 	buf->mtype = 1;
 	sprintf (buf->mtext, "\"message queue transmission test....\"");
 	nbytes =  strlen (buf->mtext) + 1;
 
 	printf ("\n\tChild:  sending message:  %s\n", buf->mtext);
 	fflush (stdout);
-	if (msgsnd (msqid, buf, nbytes, 0) < 0)
+	if (msgsnd (msqid, buf, nbytes, 0) < 0) {
+		SAFE_FREE(buf);
 		sys_error ("msgsnd failed", __LINE__);
+	}
+	SAFE_FREE(buf);
 }
 
 
