@@ -19,48 +19,31 @@
 
 /* Author: Masatake YAMATO <yamato@redhat.com> */
 
-#ifndef __SETGID_COMPAT_16_H__
-#define __SETGID_COMPAT_16_H__
+#ifndef __COMPAT_GID_16_H__
+#define __COMPAT_GID_16_H__
 
 
-#include "linux_syscall_numbers.h"
-#include "compat_gid.h"
+#include <asm/posix_types.h>
 
 
 #ifdef TST_USE_COMPAT16_SYSCALL
-
+typedef __kernel_old_gid_t GID_T;
 int 
-SETGID(GID_T gid)
+GID_SIZE_CHECK(gid_t gid)
 {
-	return syscall(__NR_setgid, gid);
-}
-
-GID_T
-GETGID(void)
-{
-	gid_t gid;
-
-	gid = getgid();
-	if (!GID_SIZE_CHECK(gid))
-	  tst_brkm(TBROK, 
-		   cleanup, 
-		   "gid for the current process is too large for testing setgid16");
-
-	return (GID_T)gid;
+	/* See high2lowgid in linux/highuid.h
+	   Return 0 if gid is too large to store
+	   it to __kernel_old_gid_t. */
+	return ((gid) & ~0xFFFF)? 0: 1;
 }
 
 #else
 
+typedef gid_t GID_T;
 int 
-SETGID(GID_T gid)
+GID_SIZE_CHECK(gid_t gid)
 {
-	return setgid(gid);
-}
-
-GID_T
-GETGID(void)
-{
-	return getgid();
+	return 1;
 }
 
 #endif

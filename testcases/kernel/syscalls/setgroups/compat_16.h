@@ -22,23 +22,14 @@
 #ifndef __SETGROUPS_COMPAT_16_H__
 #define __SETGROUPS_COMPAT_16_H__
 
-#include <asm/posix_types.h>
+#include "compat_gid.h"
 #include "linux_syscall_numbers.h"
+
 
 /* For avoiding circular dependency. */
 extern void cleanup(void);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
-typedef __kernel_old_gid_t GID_T;
-
-int 
-COMPAT_SIZE_CHECK(gid_t gid)
-{
-	/* See high2lowgid in linux/highuid.h
-	   Return 0 if gid is too large to store
-	   it to __kernel_old_gid_t. */
-	return ((gid) & ~0xFFFF)? 0: 1;
-}
 
 long
 SETGROUPS(int gidsetsize, GID_T *list)
@@ -64,7 +55,7 @@ GETGROUPS(size_t size16, GID_T *list16)
 	  goto out;
   
 	for (i = 0; i < size16; i++) {
-		if (!COMPAT_SIZE_CHECK(list32[i]))
+		if (!GID_SIZE_CHECK(list32[i]))
 		  tst_brkm(TBROK,
 			   cleanup,
 			   "gid returned from getgroups is too large for testing setgroups32");
@@ -77,8 +68,6 @@ GETGROUPS(size_t size16, GID_T *list16)
 }
 
 #else
-typedef gid_t GID_T;
-
 int
 SETGROUPS(size_t size, const GID_T *list)
 {
@@ -91,11 +80,6 @@ GETGROUPS(size_t size, GID_T *list)
 	return getgroups(size, list);
 }
 
-int 
-COMPAT_SIZE_CHECK(gid_t gid)
-{
-  return 1;
-}
 #endif	/* TST_USE_COMPAT16_SYSCALL */
 
 #endif /* __SETGROUPS_COMPAT_16_H__ */

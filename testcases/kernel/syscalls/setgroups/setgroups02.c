@@ -187,7 +187,7 @@ setup()
 		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
 	}
 
-	if (!COMPAT_SIZE_CHECK(user_info->pw_gid)) {
+	if (!GID_SIZE_CHECK(user_info->pw_gid)) {
 		tst_brkm(TBROK,
 			 cleanup,
 			 "gid returned from getpwnam is too large for testing setgroups16");

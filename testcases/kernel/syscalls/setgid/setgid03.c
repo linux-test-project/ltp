@@ -138,7 +138,7 @@ setup()
 			 "id %s", ltpuser1);
 	}
 
-	if (!(COMPAT_SIZE_CHECK(rootpwent->pw_gid))) {
+	if (!(GID_SIZE_CHECK(rootpwent->pw_gid))) {
 		tst_brkm(TBROK, 
 			 cleanup, 
 			 "gid for `%s' is too large for testing setgid16", 
