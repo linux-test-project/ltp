@@ -90,6 +90,8 @@ void noprintf(char* string, ...){
                                usage(prog); \
                                    } while (0)
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+
 typedef struct {        /* contains priority and CPU info of the task.        */
     int exp_prio;	/* priority that we wish to set.                      */
     int act_prio;	/* priority set by the scheduler.                     */
@@ -321,6 +323,8 @@ main(int  argc,		/* number of input parameters.			      */
     thread_sched_t *chld_args;	/* arguments to funcs execed by child process.*/
     thread_sched_t *status;     /* exit status for light weight process.      */
     extern  char *optarg;	/* arguments passed to each option.	      */
+    thread_sched_t **args_table; /* pointer table of arguments address         */
+    thread_sched_t **status_table; /*pointer table of status address          */
 
     if (getuid() != 0)
     {
@@ -404,9 +408,21 @@ main(int  argc,		/* number of input parameters.			      */
     }
                     
     /* create num_thrd number of threads. */
+    args_table = malloc(num_thrd * sizeof(thread_sched_t*));
+    if(!args_table)
+    {
+            perror("main(): malloc failed");
+            exit(-1);
+    }	
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        chld_args = malloc(sizeof(thread_sched_t));
+        args_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
+        if(!args_table[thrd_ndx])
+        {
+            perror("main(): malloc failed");
+            exit(-1);
+        }	
+        chld_args = args_table[thrd_ndx];
 	chld_args->s_policy = spcy;
         if (pthread_create(&thid[thrd_ndx], NULL, thread_func, 
 		chld_args))
@@ -422,9 +438,21 @@ main(int  argc,		/* number of input parameters.			      */
     }
 
     /* wait for the children to terminate */
+    status_table = malloc(num_thrd * sizeof(thread_sched_t*));
+    if(!status_table)
+    {
+            perror("main(): malloc failed");
+            exit(-1);
+    }	
     for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)
     {
-        status = malloc(sizeof(thread_sched_t));
+        status_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
+        if(!status_table[thrd_ndx])
+        {
+            perror("main(): malloc failed");
+            exit(-1);
+        }	
+        status = status_table[thrd_ndx];
         if (pthread_join(thid[thrd_ndx], (void **)&status))
         {
             perror("main(): pthread_join()");
@@ -447,6 +475,8 @@ main(int  argc,		/* number of input parameters.			      */
                 gen_pid[thrd_ndx] =  status->procs_id;
             }
         }
+	SAFE_FREE(args_table[thrd_ndx]);
+        SAFE_FREE(status_table[thrd_ndx]);
         usleep(10);
     }
 
@@ -457,6 +487,9 @@ main(int  argc,		/* number of input parameters.			      */
 	   "Number of CPUs:          %d\n"
 	   "Scheduling policy:       %d\n", num_thrd, num_cpus, spcy);
     }
+
+    SAFE_FREE(args_table);
+    SAFE_FREE(status_table);
 
     for (proc_ndx = 0; proc_ndx < num_cpus; proc_ndx++)
     {
