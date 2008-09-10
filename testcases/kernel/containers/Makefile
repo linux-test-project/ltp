@@ -24,7 +24,7 @@ all: check_for_unshare
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
 
 check_for_unshare: check_for_unshare.c
-	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
+	$(CC) $(CFLAGS) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
 
 install: check_for_unshare
 	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
