@@ -24,7 +24,10 @@
 # and Makefile for fadvise test case.
 
 TARGETS_64 = $(patsubst %.c,%_64,$(SRCS))
+
+ifneq ($(TST_NEWER_64_SYSCALL),no)
 TARGETS  +=  $(TARGETS_64)
+endif
 
 DEF_64 = TST_USE_NEWER64_SYSCALL
 NEWER_64_H = newer_64.h

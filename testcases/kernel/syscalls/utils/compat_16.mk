@@ -50,7 +50,9 @@
 # See Makefile of setuid test case.
 #
 TARGETS_16 = $(patsubst %.c,%_16,$(SRCS))
+ifneq ($(TST_COMPAT_16_SYSCALL),no)
 TARGETS  +=  $(TARGETS_16)
+endif
 
 DEF_16 = TST_USE_COMPAT16_SYSCALL
 COMPAT_16_H = compat_16.h
