@@ -20,14 +20,14 @@
 /******************************************************************************/
 /******************************************************************************/
 /*                                                                            */
-/* File:        switch01.c                                                    */
+/* File:        endian_switch01.c                                                    */
 /*                                                                            */
 /* Description: Test little-endian mode switch system call. Requires a 64-bit */
 /*              processor that supports little-endian mode,such as POWER6.    */
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
-/* Test Name:   switch01                                                      */
+/* Test Name:   endian_switch01                                                      */
 /*                                                                            */
 /* Author:      Paul Mackerras <paulus@samba.org>                             */
 /*                                                                            */
@@ -57,7 +57,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID    = "switch01"; /* Test program identifier.    */
+char *TCID    = "endian_switch01"; /* Test program identifier.    */
 int TST_TOTAL = 1;          /* Total number of test cases. */
 extern int Tst_count;       /* Test Case counter for tst_* routines */
 
