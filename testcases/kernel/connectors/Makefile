@@ -15,4 +15,4 @@ install:
 	else for i in $(SUBDIRS); do $(MAKE) -C $$i install; done; true; fi
 
 clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done

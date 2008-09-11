@@ -1,5 +1,4 @@
-SUBDIRS = numa containers controllers include fs io ipc mem pty sched security syscalls timers
-# Will be adding conectors here in future
+SUBDIRS = numa containers controllers connectors include fs io ipc mem pty sched security syscalls timers
 UCLINUX_SUBDIRS = syscalls
 
 all:

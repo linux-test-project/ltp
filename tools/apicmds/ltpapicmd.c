@@ -166,14 +166,19 @@ int main( int argc,
     arg_fmt = malloc(1024);
     cmd_name = malloc(1024);
 
+    strcpy(cmd_name, (char *)basename(argv++[0]));
+
     if (((TCID = getenv("TCID")) == NULL) || 
             ((tst_total = getenv("TST_TOTAL")) == NULL) || 
             ((tst_count = getenv("TST_COUNT")) == NULL))
     {
-        fprintf(stderr, "\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
-                "export TCID=<test name>\n"
-                "export TST_TOTAL=<Total Number of Tests >\n"
-                "export TST_COUNT=<Test case number>\n\n");
+        if (strcmp(cmd_name, "tst_kvercmp") != 0)
+        {
+            fprintf(stderr, "\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
+                    "export TCID=<test name>\n"
+                    "export TST_TOTAL=<Total Number of Tests >\n"
+                    "export TST_COUNT=<Test case number>\n\n");
+        }
     }
     else
     {
@@ -194,7 +199,6 @@ int main( int argc,
         }
     }
 
-    strcpy(cmd_name, (char *)basename(argv++[0]));
 
     if (strcmp((char *)cmd_name, "tst_brk") == 0)
     {

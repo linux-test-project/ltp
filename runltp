@@ -510,7 +510,8 @@ main()
                      ${LTPROOT}/runtest/fs_bind \
                      ${LTPROOT}/runtest/controllers \
                      ${LTPROOT}/runtest/filecaps \
-                     ${LTPROOT}/runtest/fcntl-locktests 
+                     ${LTPROOT}/runtest/fcntl-locktests \
+                     ${LTPROOT}/runtest/connectors
         do
             [ -e "$SCENFILES" ] || \
             {

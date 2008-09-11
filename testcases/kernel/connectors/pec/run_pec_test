@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 ################################################################################
 ##                                                                            ##
@@ -24,13 +24,6 @@
 
 NUM_EVENTS=1
 EVENT_TEST_CASES=( "fork" "exec" "exit" "uid" "gid" )
-TST_TOTAL=${#EVENT_TEST_CASES[@]}
-
-if [ -z $LTPROOT ]; then
-	LTPROOT="`cd ../../../.. && pwd`"
-	PATH="$PATH:$LTPROOT/testcases/bin"
-	mkdir $LTPROOT/output 2> /dev/null
-fi
 
 cd $LTPROOT/testcases/bin
 
@@ -45,6 +38,12 @@ if [ "$USER" != root ]; then
 	exit 0;
 fi
 
+grep cn_proc /proc/net/connector > /dev/null
+if [ $? -ne 0 ]; then
+	tst_brkm TBROK ignored "Process Event Connector is not supported or kernel is below 2.6.26"
+	exit 0;
+fi
+
 # Run a test case
 #
 # $1: the test number
@@ -54,14 +53,14 @@ run_case()
 	export TST_COUNT=$1
 
 	log="$LTPROOT/output/log"
-	mkdir $log 2> /dev/null
+	mkdir -p $log 2> /dev/null
 
-	./pec_listener > "$log/listener_$1.log" 2>&1 &
+	pec_listener > "$log/listener_$1.log" 2>&1 &
 	pid=$!
 	# Wait for pec_listener to start listening
 	sleep $((1*NUM_EVENTS))
 
-	./event_generator -e $2 > "$log/generator_$1.log"
+	event_generator -e $2 > "$log/generator_$1.log"
 	ret1=$?
 
 	# Sleep until pec_listener has seen and handled all of

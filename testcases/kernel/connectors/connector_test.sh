@@ -1,9 +1,4 @@
-#! /bin/sh
-
-if [ -z $LTPROOT ]; then
-	export LTPROOT="`cd ../../.. && pwd`"
-        export PATH="$PATH:$LTPROOT/testcases/bin"
-fi
+#!/bin/sh
 
 tst_kvercmp 2 6 15
 if [ $? -eq 0 ]; then
