@@ -102,6 +102,7 @@
 	if (proc_pid == parent_pid)	\
 		printf ("\t   %3d    %3d    %-10s %-20s\n", p1, p2, p3, p4)
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
 
 /*
  * Function prototypes
@@ -258,6 +259,8 @@ static void test_commands (pid_t proc_pid)
 	if (proc_pid == parent_pid)
 		printf ("\n\tSetting semaphore uid, gid and mode ... semid = %d\n", semid);
 	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	if(!arg.buf)
+		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
 	arg.buf->sem_perm.mode = mode;
@@ -269,7 +272,6 @@ static void test_commands (pid_t proc_pid)
 	 */
 	if (proc_pid == parent_pid)
 		printf ("\n\tVerifying semaphore info ...\n");
-	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
 	if (semctl (semid, 0, IPC_STAT, arg) < 0)
 		sys_error ("semctl (IPC_STAT) failed", __LINE__);
 	if (arg.buf->sem_perm.uid != uid)
@@ -281,16 +283,19 @@ static void test_commands (pid_t proc_pid)
 	if (arg.buf->sem_nsems != nsems) 
 		error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
-
+	SAFE_FREE(arg.buf);
 
 	/*
 	 * Set the value of each semaphore in the set to 2.
 	 */
         arg.array = malloc(sizeof(int) * nsems);
+	if(!arg.array)
+		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 2;
 	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
+	SAFE_FREE(arg.array);
 
 	/* ------------------------------------------------------------------ */
 	/*  possibilities for sem_flg are:                                    */
@@ -380,11 +385,14 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(5, 1, "0", "Return resource");
         arg.array = malloc(sizeof(int) * nsems);
+	if(!arg.array)
+		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
 		arg.array [i] = 5;
 	}
 	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
+	SAFE_FREE(arg.array);
 
 	for (i = 0; i < nsems; i++) {
 		semoparray [i].sem_num = i;
@@ -508,7 +516,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        arg.array = malloc(sizeof(int) * nsems);
         while (!semctl (semid, 0, GETNCNT, arg))
                 sleep (1);
 
@@ -557,7 +564,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-	arg.array = malloc(sizeof(int) * nsems);
         while (!semctl (semid, 1, GETNCNT, arg))
                 sleep (1);
 
@@ -605,7 +611,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        arg.array = malloc(sizeof(int) * nsems);         
         while (!semctl (semid, 0, GETNCNT, arg))
                 sleep (1);
 
@@ -663,7 +668,6 @@ static void test_commands (pid_t proc_pid)
 	 * Wait for child process's semaphore request before deleting the
 	 * semaphores...
 	 */
-        //arg.array = malloc(sizeof(int) * nsems);
         while (!semctl (semid, 2, GETNCNT, arg))
 	  sleep (1);
 
@@ -689,6 +693,8 @@ static void test_commands (pid_t proc_pid)
 	 * Set the semaphore uid, gid and mode
 	 */
 	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	if(!arg.buf)
+		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
 	arg.buf->sem_perm.mode = mode;
@@ -698,7 +704,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Verify that semaphore uid, gid and mode were set correctly
 	 */
-	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
 	if (semctl (semid, 0, IPC_STAT, arg) < 0)
 		sys_error ("semctl (IPC_STAT) failed", __LINE__);
 	if (arg.buf->sem_perm.uid != uid)
@@ -710,12 +715,16 @@ static void test_commands (pid_t proc_pid)
 	if (arg.buf->sem_nsems != nsems) 
 		error ("semctl: nsems (number of semaphores) was not set", 
 			__LINE__);
+	SAFE_FREE(arg.buf);
 
         arg.array = malloc(sizeof(int) * nsems);
+	if(!arg.array)
+		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 9;
 	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
+	SAFE_FREE(arg.array);
 
 
 	/* ------------------------------------------------------------------ */
@@ -766,10 +775,13 @@ static void test_commands (pid_t proc_pid)
 	}
 
         arg.array = malloc(sizeof(int) * nsems);
+	if(!arg.array)
+		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 9;
 	if (semctl (semid, 0, SETALL, arg) < 0)
 		sys_error ("semctl (SETALL) failed", __LINE__);
+	SAFE_FREE(arg.array);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 14 --- semval = 9, sem_op[4] = 0, sem_flg = 0               */
@@ -843,7 +855,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-	arg.array = malloc(sizeof(int) * nsems);
         while (!semctl (semid, 0, GETZCNT, arg))
                 sleep (1);
 
@@ -899,7 +910,6 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        arg.array = malloc(sizeof(int) * nsems);
         while (!semctl (semid, 4, GETNCNT, arg))
                 sleep (1);
 
