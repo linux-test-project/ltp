@@ -20,7 +20,7 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for lib6 tests.	  	  #
 ###########################################################################
-CFLAGS+=	-I../../../include -g
+CFLAGS+=	-I../../../include -g -D_GNU_SOURCE
 LOADLIBES+=	-L../../../lib runcc.a -lltp -lpthread
 
 SRCS=$(wildcard *.c)
