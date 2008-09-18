@@ -61,8 +61,7 @@
 #include <dirent.h>
 
 #if defined(__i386__) || defined(__x86_64__)
-	#if defined(__GLIBC__) && defined(__GLIBC_MINOR__) \
-	    && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 6
+	#if __GLIBC_PREREQ(2,6)
 	#if defined(__x86_64__)
 		#include <utmpx.h> 
 	#endif
@@ -165,12 +164,8 @@ static inline int getcpu(unsigned *cpu_id, unsigned *node_id, void *cache_struct
 {
 	#if defined(__i386__)
 		return syscall(318, cpu_id,node_id,cache_struct);
-	#elif defined(__x86_64__) 
-		#if defined(__GLIBC__) && defined(__GLIBC_MINOR__) \
-		    && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 6
-			return *cpu_id = sched_getcpu();
-		#endif
-	return 0;
+	#elif __GLIBC_PREREQ(2,6)
+		return *cpu_id = sched_getcpu();
 	#endif
 	return 0;
 }
