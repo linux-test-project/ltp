@@ -1,7 +1,7 @@
-hugemmap01 hugemmap01 -H/huge 
-hugemmap02 hugemmap02 -H/huge -I10 -c10
-hugemmap03 hugemmap03 -H/huge -I2 -c10
-hugemmap04 hugemmap04 -H/huge
+hugemmap01 hugemmap01 -H/tmp
+hugemmap02 hugemmap02 -H/tmp -I10 -c10
+hugemmap03 hugemmap03 -H/tmp -I2 -c10
+hugemmap04 hugemmap04 -H/tmp
 
 hugeshmat01 hugeshmat01 -i 5
 hugeshmat02 hugeshmat02 -i 5
