@@ -8,7 +8,7 @@ rt-test - HOWTO_ADD_TESTS
 	- note that only the top level subdirectory
 	  (which has a run_auto.sh script) gets listed
 	  individually as an available test.
-	- run "run.sh list" to see available tests
+	- run "run.sh -t list" to see available tests
 
 2. If you are creating a new subdirectory:
    Provide:
@@ -21,12 +21,12 @@ rt-test - HOWTO_ADD_TESTS
 	- other profiles if needed
 
 4. Test the following:
-	sh autogen.sh; ./configure, make, naturally
-	run.sh list
-	run.sh clean
-	run.sh subdir # entire bucket
-	run.sh subdir/your_test_dir
-	subdir/your_test_dir/run_auto.sh
+	$make
+	$run.sh -t list
+	$run.sh -t clean
+	$run.sh -t subdir # entire bucket
+	$run.sh -t subdir/your_test_dir
+	$subdir/your_test_dir/run_auto.sh
 
 5. Test source files:
 	(Ideally...:))

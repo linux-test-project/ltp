@@ -30,10 +30,12 @@ and latency measurement tests.  This is still a work in (early) progress!
 
 DEPENDENCIES
 ============
-It is recommended that you have automake-1.9.6-2.1 or above.
-If you see errors during your configure, please upgrade to
-this version and autoconf-2.61.
+The testsuite expects glibc ("C" library) (version 2.4 onwards) and 
+the underlying kernel (version 2.6.18 onwards) to support 
+Robust and Priority Inheritance (PI) Mutexes.
 
+Most of the tests need the user to have a privileges that allow
+him/her to create SCHED_FIFO threads of priorities upto 99
 
 RUNNING TESTS THROUGH LTP
 =========================
@@ -43,11 +45,11 @@ argument provided to the script.
 
 Run command below from LTP root directory with argument:
 
-        $./testscripts/test_realtime.sh $arg
+        $./testscripts/test_realtime.sh -t $arg
 
         or
 
-        $./test_realtime.sh $arg   # From $LTPROOT/testscripts directory
+        $./test_realtime.sh -t $arg   # From $LTPROOT/testscripts directory
 
 Here $arg takes values as :
 
@@ -62,11 +64,9 @@ Here $arg takes values as :
 
 BUILD
 =====
-As of April 2007, we include autoconf support (based on Robert
-Schwebel's contributed patch). To build the tests:
+To build the tests execute the following command:
 
-1. ./configure
-2. make
+		$make
 
 
 RUNNING THE TESTS
@@ -75,21 +75,22 @@ The top level script run.sh can be used to invoke all or a subset of tests.
 
 1. Running the script with no arguments will list usage:
 
-        #]> run.sh
+		$run.sh
 
 
 2. Running the script with the list option will list the available tests.
 
-        #]> run.sh list
+		$run.sh -t list
 
    Note that the tests available are determined by the presence
    of a local script run_auto.sh in the individual test subdirectories
    at this time.
 
 
-3. Individual tests can also be run. For example, to run the prio-wake tests:
+3. Individual tests can also be run. For example, to run the prio-wake tests
+   for 20 iterations:
 
-        #]> run.sh func/prio-wake
+		$run.sh -t func/prio-wake -l 20
 
    Note, the test must be specified with the path relative to the test
    home (where run.sh lives).
@@ -98,21 +99,21 @@ The top level script run.sh can be used to invoke all or a subset of tests.
 4. Alternatively, you can run the individual tests from their local directory.
    For example, to run the prio-wake tests:
 
-        #]> cd func/prio-wake
-        #]> ./run_auto.sh
+		$cd func/prio-wake
+		$./run_auto.sh
 
 
 5. You can also run sets of tests:
 
-        #]> run.sh func
+		$run.sh -t func
 
-        will run all the functional tests
+        will run all the functional tests once
 
-        #]> run.sh perf
+		$run.sh -t perf -l 3
 
-        will run all the perf tests (if any!)
+        will run all the perf tests (if any!) thrice
 
-        Use the list option to see the various arguments taken.
+        Use the -h option to see the various arguments taken.
 
 6. Or you can run the binaries...
 
