@@ -50,8 +50,35 @@ TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-# ifdef HAS_SIGNALFD_H
+#ifdef HAS_SIGNALFD
+
+#ifdef HAS_SYS_SIGNALFD_H
+
 #include <sys/signalfd.h>
+
+#elif HAS_LINUX_SIGNALFD_H || HAS_SIGNALFD_H
+
+#include <linux/types.h>
+
+#ifdef HAS_LINUX_SIGNALFD_H
+#include <linux/signalfd.h>
+#else
+#include <signalfd.h>
+#endif	/* HAS_LINUX_SIGNALFD_H */
+
+#include "linux_syscall_numbers.h"
+#ifndef __NR_signalfd
+#define __NR_signalfd 0
+#endif
+
+int
+signalfd(int fd, const sigset_t *mask, int flags)
+{
+  /* Taken from GLIBC. */
+  return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
+}
+
+#endif	/* HAS_SYS_SIGNALFD_H */
 
 void cleanup(void);
 void setup(void);
@@ -315,7 +342,7 @@ cleanup(void)
 }
 
 
-#else  /* !HAS_SIGNALFD_H */
+#else  /* !HAS_SIGNALFD */
 
 int
 main(int argc, char** argv)
@@ -326,4 +353,4 @@ main(int argc, char** argv)
 }
 
 
-#endif /* !HAS_SIGNALFD_H */
+#endif /* !HAS_SIGNALFD */

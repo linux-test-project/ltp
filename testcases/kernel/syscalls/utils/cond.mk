@@ -65,12 +65,21 @@
 #   CFLAGS += $(call check_header,foo.h,-DHAS_FOO_H, )
 #   CFLAGS += $(call check_header,foo.h,-DHAS_FOO_H,)
 #
+
+# If check_header refers CFLAGS directly, expression like 
+#  
+#   CFLAGS += $(call check_header ...)
+#
+# causes "Recursive variable `CFLAGS' references itself" error.
+# COND_CFLAGS is introduced to avoid the error.
+COND_CFLAGS := $(CFLAGS)
 check_header = $(shell								\
 	if [ "x$(2)" = "x" ]; then FOUND=yes; else FOUND="$(2)"; fi;		\
 	if [ "x$(3)" = "x" ]; then NOTFOUND=no; else NOTFOUND="$(3)"; fi;	\
-	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ;		\
-	then echo "$${FOUND}" ;							\
-	else echo "$${NOTFOUND}" ; fi)
+	if echo "\#include <$(1)>" | $(CPP) $(COND_CFLAGS) - > /dev/null 2>&1 ; \
+	then echo "$${FOUND}" ;fi)	
+# TODO: CPPFLAGS should be used here. 
+
 
 
 #COND_MK_DEBUG=yes

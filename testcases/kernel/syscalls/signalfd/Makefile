@@ -20,7 +20,10 @@ include ../utils/cond.mk
 
 
 CFLAGS += -I../../../../include \
-	$(call check_header,sys/signalfd.h, -DHAS_SIGNALFD_H, ) -Wall 
+	$(call check_header,sys/signalfd.h, -DHAS_SYS_SIGNALFD_H -DHAS_SIGNALFD, )     \
+	$(call check_header,linux/signalfd.h, -DHAS_LINUX_SIGNALFD_H -DHAS_SIGNALFD, ) \
+	$(call check_header,signalfd.h, -DHAS_SIGNALFD_H -DHAS_SIGNALFD, )             \
+	-Wall 
 LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
