@@ -116,11 +116,11 @@ struct etent {
 		"cmsg_level", 0, .et_value="sizeof(int)"},
 	{ "cmsghdr cmsg_type", EXISTS, SOCKET_H, "cmsghdr",
 		"cmsg_type", 0, .et_value="sizeof(int)"},
-	{ "CMSG_DATA", DEFINED, SOCKET_H, "CMSG_DATA", 0, 0, 0},
-	{ "CMSG_NXTHDR", DEFINED, SOCKET_H, "CMSG_NXTHDR", 0, 0, 0},
-	{ "CMSG_FIRSTHDR", DEFINED, SOCKET_H, "CMSG_FIRSTHDR", 0, 0, 0},
-	{ "CMSG_SPACE", DEFINED, SOCKET_H, "CMSG_SPACE", 0, 0, 0},
-	{ "CMSG_LEN", DEFINED, SOCKET_H, "CMSG_LEN", 0, 0, 0},
+	{ "CMSG_DATA", DEFINED, SOCKET_H, "CMSG_DATA", 0, 0, {0}},
+	{ "CMSG_NXTHDR", DEFINED, SOCKET_H, "CMSG_NXTHDR", 0, 0, {0}},
+	{ "CMSG_FIRSTHDR", DEFINED, SOCKET_H, "CMSG_FIRSTHDR", 0, 0, {0}},
+	{ "CMSG_SPACE", DEFINED, SOCKET_H, "CMSG_SPACE", 0, 0, {0}},
+	{ "CMSG_LEN", DEFINED, SOCKET_H, "CMSG_LEN", 0, 0, {0}},
 };
 
 #define ETCOUNT	(sizeof(etab)/sizeof(etab[0]))

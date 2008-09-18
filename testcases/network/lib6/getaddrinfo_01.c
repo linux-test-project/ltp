@@ -45,6 +45,7 @@
 
 #include <sys/socket.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -916,7 +917,7 @@ dumpres(struct addrinfo *pai)
 {
 	int	count = 1;
 	for (; pai; pai = pai->ai_next, count++) {
-		printf("result %d [0x%08X]\n", count, pai);
+		printf("result %d [0x%p]\n", count, pai);
 		printf("\tai_flags %x\n", pai->ai_flags);
 		printf("\tai_family %d\n", pai->ai_family);
 		printf("\tai_socktype %d\n", pai->ai_socktype);
@@ -944,7 +945,7 @@ dumpres(struct addrinfo *pai)
 			printf("\tai_addr.sin6_addr \"%s\"\n", buf);
 
 		}
-		printf("\tai_next %X\n", pai->ai_next);
+		printf("\tai_next %p\n", pai->ai_next);
 	}
 }
 

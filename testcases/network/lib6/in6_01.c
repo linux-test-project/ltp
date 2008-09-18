@@ -40,6 +40,7 @@
 #include <errno.h>
 
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -82,7 +83,6 @@ main(int argc, char *argv[])
 	uint8_t	ui8 = 1;
 	uint32_t ui16 = 2;
 	uint32_t ui32 = 3;
-	uint64_t ui64 = 4;
 	struct in6_addr	in6;
 	struct in6_addr ina6 = IN6ADDR_ANY_INIT;
 	struct in6_addr inl6 = IN6ADDR_LOOPBACK_INIT;

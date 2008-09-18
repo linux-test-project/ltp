@@ -146,7 +146,7 @@ i2ntest1(unsigned int if_index)
 	char ifname[IF_NAMESIZE];
 	unsigned int idx;
 
-	TEST(if_indextoname(if_index, ifname));
+	TEST((ifname == if_indextoname(if_index, ifname)));
 	if (!TEST_RETURN) {
 		if (TEST_ERRNO != ENXIO) {
 			tst_resm(TFAIL, "if_indextoname(%d) returns %d "

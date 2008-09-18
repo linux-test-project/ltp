@@ -50,6 +50,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <ifaddrs.h>
+#include <arpa/inet.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -78,7 +79,6 @@ main(int argc, char *argv[])
 {
 	char *msg;		/* message returned from parse_opts */
 	int lc;
-	int fd;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, 0, 0);
@@ -231,12 +231,12 @@ struct cme {
 
 #define CMCOUNT	(sizeof(cmtab)/sizeof(cmtab[0]))
 
+ssize_t
 sendall(int st)
 {
 	struct sockaddr_in6 sin6;
 	struct msghdr msg;
 	struct iovec iov;
-	struct cmsghdr *pcmsg;
 	struct soprot	*psop;
 	unsigned char *pd;
 	int i, ctotal;
@@ -280,9 +280,7 @@ void
 so_test(struct soent *psoe)
 {
 	struct sockaddr_in6 sin6;
-	struct soprot	*psop;
 	union soval	sobuf;
-	int onoff;
         socklen_t valsize;
 	static int sr = -1;
 	int st;
