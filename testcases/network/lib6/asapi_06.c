@@ -349,7 +349,7 @@ so_test(struct soent *psoe)
 
 	/* receiver processing */
 	{ fd_set rfds, rfds_saved;
-	  int nfds, cc, len;
+	  int nfds, cc;
 	  int gotone;
 	  struct timeval tv;
 	  struct msghdr msg;
@@ -400,12 +400,10 @@ so_test(struct soent *psoe)
 			break;
 		}
 		gotone = 0;
-		pcmsg = (struct cmsghdr *)msg.msg_control;
-		for (len=0; len < msg.msg_controllen; len += pcmsg->cmsg_len) {
+		for (pcmsg = CMSG_FIRSTHDR(&msg); pcmsg != NULL;
+				pcmsg = CMSG_NXTHDR(&msg, pcmsg)) {
 			if (!psoe->so_dorecv)
 				break;
-			pcmsg = (struct cmsghdr *)(((unsigned char *)
-				msg.msg_control) + len);
 			gotone = pcmsg->cmsg_level == SOL_IPV6 &&
 			    pcmsg->cmsg_type == psoe->so_cmtype;
 			if (gotone)
@@ -417,10 +415,6 @@ so_test(struct soent *psoe)
 					pcmsg->cmsg_type, pcmsg->cmsg_len);
 				return;
 			}
-		}
-		if (gotone && pcmsg->cmsg_len > 0) {
-			unsigned int *cmdat = (unsigned int *)
-				((unsigned char *)pcmsg+sizeof(struct cmsghdr));
 		}
 /* check contents here */
 		if (psoe->so_dorecv)
