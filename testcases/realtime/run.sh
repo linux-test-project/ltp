@@ -32,17 +32,17 @@
 
 function usage()
 {
-	echo -e "\nUsage: run.sh [-p profile] -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
-	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name "
-	echo -e "\n and: \n"
-	echo -e " func = 	all functional tests will be run "
-	echo -e " stress = 	all stress tests will be run "
-	echo -e " perf = 	all perf tests will be run "
-	echo -e " all =		all tests will be run "
-	echo -e " clean = 	all logs deleted, make clean performed "
-	echo -e " test_name = 	only test_name subdir will be run (e.g: func/pi-tests) "
-	echo -e " -p profile = 	use profile instead of default "
-	echo -e " -h	    =	help"
+	echo -e "\nUsage: run.sh [-p profile] -t test-argument [-l num_of_loops]"
+	echo -e "\n-t test-arguments   Where test-argument can be a space separated sequence of: "
+	echo -e " \t\t\tfunc		all functional tests will be run "
+	echo -e " \t\t\tstress		all stress tests will be run "
+	echo -e " \t\t\tperf		all perf tests will be run "
+	echo -e " \t\t\t all		all tests will be run"
+	echo -e " \t\t\tlist		all available tests will be listed  "
+	echo -e " \t\t\tclean		all logs deleted, make clean performed "
+	echo -e " \t\t\ttest_name	only test_name subdir will be run (e.g: func/pi-tests) "
+	echo -e " \t\t\t-p profile	use profile instead of default (see doc/AUTOMATED_RUN)"
+	echo -e " \t\t\t-h		help"
 	echo -e "\n"
 	exit 1;
 }
@@ -134,7 +134,7 @@ find_test()
 		;;
 	all)
 		# Run all tests which have run_auto.sh
-		TESTLIST="func stress java perf"
+		TESTLIST="func stress perf"
 		;;
 	list)
 		# This will only display subdirs which have run_auto.sh
