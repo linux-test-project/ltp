@@ -77,7 +77,8 @@ check_header = $(shell								\
 	if [ "x$(2)" = "x" ]; then FOUND=yes; else FOUND="$(2)"; fi;		\
 	if [ "x$(3)" = "x" ]; then NOTFOUND=no; else NOTFOUND="$(3)"; fi;	\
 	if echo "\#include <$(1)>" | $(CPP) $(COND_CFLAGS) - > /dev/null 2>&1 ; \
-	then echo "$${FOUND}" ;fi)	
+	then echo "$${FOUND}" ;                                                 \
+        else echo "$${NOTFOUND}" ; fi)
 # TODO: CPPFLAGS should be used here. 
 
 
