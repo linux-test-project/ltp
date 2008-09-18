@@ -1,7 +1,7 @@
 INCLUDE = -I../../include
-LIB=-lmqueue
+LIB=-lrt
 
-CFLAGS=-Wall -O2 -g -lpthread
+CFLAGS=-Wall -O2 -g
 
 all: multi_send_rev_1.test multi_send_rev_2.test
 
