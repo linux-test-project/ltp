@@ -35,4 +35,6 @@ clean:
 	rm -f $(TARGETS) *.o
 
 install:
+ifeq ($(HAS_UNSHARE),y)
 	@set -e; for i in $(TARGETS) runipcnstest.sh check_ipcns_enabled ; do ln -f $$i ../../../bin/$$i ; chmod +x runipcnstest.sh ; done
+endif

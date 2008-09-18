@@ -36,4 +36,6 @@ clean:
 	rm -f $(TARGETS) *.o
 
 install:
+ifeq ($(HAS_UNSHARE),y)
 	@set -e; for i in $(TARGETS) runpidnstest.sh check_pidns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runpidnstest.sh ; done
+endif

@@ -36,4 +36,6 @@ clean:
 	rm -f $(TARGETS) *.o
 
 install:
+ifeq ($(HAS_UNSHARE),y)
 	@set -e; for i in $(TARGETS) runutstest.sh check_utsns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runutstest.sh ; done
+endif
