@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.11 2006/12/13 22:55:22 vapier Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.12 2008/09/19 11:01:41 subrata_modak Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -56,6 +56,7 @@ char *TCID="pipeio"; 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
 
 /* To avoid extensive modifications to the code, use this bodge */
 #define exit(x) myexit(x)
@@ -126,8 +127,8 @@ char *av[];
 	int parent_wait = 0;	/* max time to wait between reads, 1 == no wait*/
 	int ndelay = O_NDELAY;	/* additional flag to open */
 	long clock;
-	char *writebuf;
-	char *readbuf;
+	char *writebuf = NULL;
+	char *readbuf = NULL;
 	double d;
 	char   *cp;
         extern char *optarg;
@@ -425,7 +426,8 @@ char *av[];
 	if ((writebuf = (char *) malloc(size)) == NULL ||
 	    (readbuf = (char *) malloc(size)) == NULL) {
 		tst_resm (TFAIL, "malloc() failed: %s", strerror(errno));
-		
+  		SAFE_FREE(writebuf);
+		SAFE_FREE(readbuf);	
 		exit(1);
 	}
 
@@ -657,6 +659,8 @@ output:
 			unlink(pname);
 	}
 
+ 	SAFE_FREE(writebuf);
+	SAFE_FREE(readbuf);	
 	return (error);
 }
 
