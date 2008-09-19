@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgid01.c,v 1.2 2006/05/26 06:26:39 vapier Exp $ */
+/* $Id: getgid01.c,v 1.3 2008/09/19 10:09:58 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -116,13 +116,14 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 void setup();
 void cleanup();
 
 
 
-char *TCID="getgid01"; 		/* Test program identifier.    */
+TCID_DEFINE(getgid01); 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -159,7 +160,7 @@ main(int ac, char **av)
 	/* 
 	 * Call getgid(2) 
 	 */
-	TEST(getgid());
+	TEST(GETGID());
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {

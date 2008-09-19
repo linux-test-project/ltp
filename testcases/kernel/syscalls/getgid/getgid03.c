@@ -65,10 +65,12 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "compat_16.h"
+
 void cleanup(void);
 void setup(void);
 
-char *TCID= "getgid03";
+TCID_DEFINE(getgid03);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -93,7 +95,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		TEST(getgid());
+		TEST(GETGID());
 
 		if (TEST_RETURN < 0) {
 			tst_brkm(TBROK, cleanup, "This should never happen");
@@ -106,6 +108,11 @@ int main(int ac, char **av)
 			if (pwent == NULL) {
 				tst_brkm(TBROK, cleanup, "getuid() returned "
 					 "unexpected value %d", uid);
+			} else if (!GID_SIZE_CHECK(pwent->pw_gid)) {
+				tst_brkm(TBROK, 
+					 cleanup, 
+					 "gid for uid %d is too large for testing getgid16",
+					uid);
 			} else {
 				if (pwent->pw_gid != TEST_RETURN) {
 					tst_resm(TFAIL, "getgid() return value "
