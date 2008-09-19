@@ -70,7 +70,7 @@ usage(char *progname)
 int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 {
 	int i;
-	char *pm1,*pm2,*pm3,*pm4,*pm5;
+	char *pm1,*pm2,*pm3,*pm4;
 	long pm6;
 	void *memptr;		/* Pointer to valloced memory */
 	long laddr;		/* Address of valloced memory */
@@ -200,7 +200,6 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
         tst_resm(TPASS,"realloc - realloc of 5 bytes succeeded");
 	 
 	/* realloc with increased size after fragmenting memory */
-	pm5=(char *)malloc(1);
 	pm4=(char *)realloc(pm3,15);
 	pm6=(long)pm3;
 	pm3=pm4;
@@ -212,8 +211,8 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 		}
 	}
 	
-        tst_resm(TPASS,"realloc - realloc of 15 bytes succeeded",
-	                     pm6/1024/1024);
+        tst_resm(TPASS,"realloc - realloc of 15 bytes succeeded");
+        free(pm4);
 
 /*--------------------------------------------------------------------*/
 	/*
