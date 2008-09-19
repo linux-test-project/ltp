@@ -415,5 +415,9 @@ out:
         perror("semctl\n");
         ret = -1;
     }
+    if(thrdid){
+        free(thrdid);
+        thrdid = NULL;
+    }
     exit(ret);
 }
