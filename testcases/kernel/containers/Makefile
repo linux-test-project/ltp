@@ -18,7 +18,7 @@
 ##                                                                            ##
 ################################################################################
 
-SUBDIRS := libclone utsname sysvipc pidns
+SUBDIRS := libclone utsname sysvipc pidns netns
 
 all: check_for_unshare
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done

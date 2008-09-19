@@ -1,6 +1,6 @@
 ################################################################################
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -16,28 +16,36 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:%.c=%.o)
+CFLAGS += -Wall
+CPPFLAGS += -I../../../../include -I../libclone
+LDLIBS += -L../../../../lib -L../libclone ../libclone/libnetns.a -lltp
+SCRIPTS = initialize.sh parentns.sh childns.sh                  \
+parent.sh child.sh                                              \
+parent_view.sh parent_share.sh  child_propagate.sh              \
+parent_1.sh parent_2.sh child_1.sh child_2.sh                   \
+delchild.sh rename_net.sh                                       \
+paripv6.sh childipv6.sh                                         \
+par_ftp.sh ch_ftp.sh container_ftp.pl                           \
+runnetnstest.sh							\
+
+SRCS    = $(wildcard *.c)
+TARGETS = $(SRCS:%.c=%)
 
 HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifeq ($(HAS_UNSHARE),y)
-TARGET := libclone.a libnetns.a
-else
-TARGET :=
+ifneq ($(HAS_UNSHARE),y)
+TARGETS :=
 endif
 
-all: $(TARGET)
-
-libclone.a: $(OBJS)
-	$(AR) -cr $@ libclone.o
-
-libnetns.a: $(OBJS)
-	$(AR) -cr $@ libnetns.o 
-#	$(AR) -cr $@ $^
-
-clean:
-	rm -f $(TARGET) $(OBJS)
+all: $(TARGETS)
+	@chmod +x $(SCRIPTS)
 
 install:
+ifeq ($(HAS_UNSHARE),y)
+	for i in $(TARGETS) $(SCRIPTS) runnetnstest.sh check_netns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runnetnstest.sh ; done
+endif
+
+clean:
+	rm -f $(TARGETS) *.o

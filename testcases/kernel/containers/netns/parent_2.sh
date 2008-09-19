@@ -1,6 +1,8 @@
-################################################################################
+#!/bin/sh
+
+################################################################################ 
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -16,28 +18,37 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
-################################################################################
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
+################################################################################ 
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:%.c=%.o)
+# The test case ID, the test case count and the total number of test case
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifeq ($(HAS_UNSHARE),y)
-TARGET := libclone.a libnetns.a
-else
-TARGET :=
-endif
+TCID=${TCID:-parent_2.sh}
+TST_TOTAL=1
+TST_COUNT=1
+export TCID
+export TST_COUNT
+export TST_TOTAL
+source initialize.sh
 
-all: $(TARGET)
+    create_veth
+    vnet2=$dev0
+    vnet3=$dev1
 
-libclone.a: $(OBJS)
-	$(AR) -cr $@ libclone.o
+    if [[ -z $vnet2 || -z $vnet3 ]] ; then
+        tst_resm TFAIL  "Error: unable to create veth pair in $0"
+        exit -1
+    else
+        debug "INFO: vnet2 = $vnet2 , vnet3 = $vnet3"
+    fi
+    ifconfig $vnet2 $IP3$mask up > /dev/null 2>&1
+    route add -host $IP4 dev $vnet2
+    echo 1 > /proc/sys/net/ipv4/conf/$vnet2/proxy_arp
 
-libnetns.a: $(OBJS)
-	$(AR) -cr $@ libnetns.o 
-#	$(AR) -cr $@ $^
+    pid=`cat /tmp/FIFO4` 
+    debug "INFO: The pid of CHILD2 is $pid"
+    ip link set $vnet3 netns $pid
+    echo $vnet3 > /tmp/FIFO3
 
-clean:
-	rm -f $(TARGET) $(OBJS)
-
-install:
+    debug "INFO: PARENT-2: End of $0"
+    exit $status

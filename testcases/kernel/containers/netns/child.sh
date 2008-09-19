@@ -1,6 +1,8 @@
-################################################################################
+#!/bin/sh
+
+################################################################################ 
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -16,28 +18,26 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
-################################################################################
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
+################################################################################ 
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:%.c=%.o)
+# This script checks that the parent namespace is reachable from the child
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifeq ($(HAS_UNSHARE),y)
-TARGET := libclone.a libnetns.a
-else
-TARGET :=
-endif
+# The test case ID, the test case count and the total number of test case
 
-all: $(TARGET)
-
-libclone.a: $(OBJS)
-	$(AR) -cr $@ libclone.o
-
-libnetns.a: $(OBJS)
-	$(AR) -cr $@ libnetns.o 
-#	$(AR) -cr $@ $^
-
-clean:
-	rm -f $(TARGET) $(OBJS)
-
-install:
+TCID=${TCID:-child.sh}
+TST_TOTAL=1
+TST_COUNT=1
+export TCID
+export TST_COUNT
+export TST_TOTAL
+    
+    ping -qc 2 $IP1 >  /dev/null 
+    
+    if [ $? == 0 ] ; then
+        tst_resm TINFO "PASS: Pinging ParentNS from ChildNS"
+        status=0
+    else
+        tst_resm TFAIL "FAIL: Unable to ping ParentNS from ChildNS"
+        status=1
+    fi

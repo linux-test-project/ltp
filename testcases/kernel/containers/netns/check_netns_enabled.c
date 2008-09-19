@@ -1,5 +1,5 @@
 /*
-* Copyright (c) International Business Machines Corp., 2007
+* Copyright (c) International Business Machines Corp., 2008
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -13,30 +13,34 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
+* Author: Veerendra C <vechandr@in.ibm.com>
+*
+* Net namespaces were introduced around 2.6.25.  Kernels before that,
+* assume they are not enabled.  Kernels after that, check for -EINVAL
+* when trying to use CLONE_NEWNET and CLONE_NEWNS.
 ***************************************************************************/
 #include <stdio.h>
-#include "libclone/libclone.h"
-
-int kernel_is_too_old(void) {
-	if (tst_kvercmp(2,6,16) < 0)
-		return 1;
-	return 0;
-}
-
-/*
- * yeah, to make the makefile coding easier, do_check returns 
- * 1 if unshare is not supported, 0 if it is
- */
-#if defined(SYS_unshare) || defined(__NR_unshare)
-int do_check(void)
-{
-	return kernel_is_too_old();
-}
-#else
-int do_check(void) { return 1; }
-#endif
+#include <sched.h>
+#include "../libclone/libclone.h"
+#include "test.h"
 
 int main()
 {
-	return do_check();
+    int ret;
+    long flags = 0;
+
+    flags |= CLONE_NEWNS;
+    flags |= CLONE_NEWNET;
+
+
+	// Checking if the kernel ver is enough to do NET-NS testing.
+	if (tst_kvercmp(2,6,24) < 0)
+		return 1;
+
+        ret = unshare(flags);
+	if ( ret < 0 ) {
+		printf ("Error:Unshare syscall failed for network namespace\n");
+		return 3;
+	}
+	return 0;
 }

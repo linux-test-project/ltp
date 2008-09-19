@@ -82,6 +82,8 @@ extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
 #define CLONE_NEWNET		0x40000000
 #endif
 
+extern int create_net_namespace(char *, char *);
+
 /*
  * Run fn1 in a unshared environmnent, and fn2 in the original context
  * Fn2 may be NULL.

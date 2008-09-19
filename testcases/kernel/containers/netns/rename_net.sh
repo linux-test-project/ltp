@@ -1,6 +1,8 @@
-################################################################################
+#!/bin/sh
+
+################################################################################ 
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright (c) International Business Machines  Corp., 2008                 ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -16,28 +18,48 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
-################################################################################
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
+################################################################################ 
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:%.c=%.o)
+# This script Renames the net device of the child ns to $NewNetDev.
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifeq ($(HAS_UNSHARE),y)
-TARGET := libclone.a libnetns.a
-else
-TARGET :=
-endif
+# set -x
+TCID=${TCID:-rename_net.sh}
+TST_TOTAL=1
+TST_COUNT=1
+export TCID
+export TST_COUNT
+export TST_TOTAL
 
-all: $(TARGET)
+    # Find the free dev name 
+    for i in `seq 1 100`
+    do
+        newdev=veth$i
+        ip link show | grep -qw $newdev
+        # On finding free device break.
+        if [ $? != 0 ] ; then 
+                break
+        fi
+    done
 
-libclone.a: $(OBJS)
-	$(AR) -cr $@ libclone.o
+    ifconfig $vnet1 down
+    ip link set $vnet1 name $newdev
+    ifconfig $newdev $IP2/24 up > /dev/null 2>&1
 
-libnetns.a: $(OBJS)
-	$(AR) -cr $@ libnetns.o 
-#	$(AR) -cr $@ $^
+    if [ $? == 0 ] ; then
+        tst_resm TINFO "Successfully Renamed device to $newdev"
+        if [ DEBUG == 1 ]; then
+                ifconfig
+        fi
+    else
+        tst_resm TFAIL "Renaming of device failed: FAIL"
+        status=-1
+    fi
 
-clean:
-	rm -f $(TARGET) $(OBJS)
-
-install:
+    if [ $status == 0 ] ; then
+        echo $sshpid > /tmp/FIFO3
+        echo $newdev > /tmp/FIFO4
+    else
+        echo FAIL > /tmp/FIFO3
+        echo -1 > /tmp/FIFO4
+    fi
