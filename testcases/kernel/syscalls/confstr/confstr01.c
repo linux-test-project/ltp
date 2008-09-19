@@ -127,10 +127,10 @@ int main()
 				break;
 			}
 
-			/* Reset the buffer contents to NULL */
-			buf = '\0';
 			/* Free the memory allocated for config. name */
 			free(buf);
+			/* Reset the buffer contents to NULL */
+			buf = '\0';
 		} else {
 			if (!buf) {
 				if ((!strcmp("XXX5_MYBIG_VERBIG_MYFLAGS",
