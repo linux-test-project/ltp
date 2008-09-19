@@ -27,6 +27,7 @@
 
 #include "test.h"
 
+#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
 /* LTP status reporting */
 char *TCID;	 		/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
@@ -118,7 +119,15 @@ int main(int argc, char *argv[])
 	else
 	  TCID = argv[0];
 	ltproot = getenv("LTPROOT");
+	if(!ltproot || !strlen(ltproot)){
+                tst_resm (TFAIL, "Not set the $LTPROOT, Please set it firstly.");
+                tst_exit();
+        }
 	bin_path = malloc (strlen(ltproot) + 16);
+	if(!bin_path){
+                tst_resm (TFAIL, "malloc error.");
+                tst_exit();
+	}
 	sprintf (bin_path, "%s/testcases/bin", ltproot);
 
 	tst_tmpdir();
@@ -158,6 +167,7 @@ int main(int argc, char *argv[])
 		return(0);} 
 	else                                /*Parent*/
 		waitpid(pid,NULL,0);
+	SAFE_FREE(bin_path);
 
 	if(debug)
 		tst_resm(TINFO, "%s: will run for %d loops", argv[0], num_loops);
@@ -192,9 +202,17 @@ int main(int argc, char *argv[])
          */
         threads = (pthread_t * ) malloc ((size_t) (nb_func 
                                   * num_threads * sizeof (pthread_t)));
+	if(!threads){
+                tst_resm (TFAIL, "malloc error.");
+                tst_exit();
+	}
 
 	tabcom  = (TH_DATA **) malloc ( (size_t)(sizeof (TH_DATA *)
                                        * nb_func*num_threads));
+	if(!tabcom){
+                tst_resm (TFAIL, "malloc error.");
+                tst_exit();
+	}
 	tabcour = tabcom;
 
 	retval = pthread_attr_init(&newattr);
@@ -220,6 +238,10 @@ int main(int argc, char *argv[])
 
 		/* allocate struct of commucation  with the thread */
 		pcom =  calloc ((size_t)1, (size_t)sizeof(TH_DATA));
+		if(!pcom){
+                	tst_resm (TFAIL, "calloc error.");
+	                tst_exit();
+		}
 		*tabcour = (TH_DATA *) pcom;
 		tabcour++;
 		/* */
@@ -273,8 +295,13 @@ finished:
 			tst_resm(TINFO, "thread %d (%s) terminated successfully %d loops.",
 				th_num, pcom->th_func.fident, pcom->th_nloop-1);
 		}
+		SAFE_FREE(pcom);
 
 	}
+	pthread_cancel(sig_hand);
+	pthread_join(sig_hand,NULL);
+	SAFE_FREE(tabcom);
+	SAFE_FREE(threads);
 	tst_rmdir();
 	if (error) exit (1);
 	else exit(0);
