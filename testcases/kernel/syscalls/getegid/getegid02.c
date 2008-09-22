@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	getgid02.c
+ *	getegid02.c
  *
  * DESCRIPTION
  *	Testcase to check the basic functionality of getegid().
@@ -44,7 +44,7 @@
  *      call cleanup
  *
  * USAGE:  <for command-line>
- *  getgid02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
+ *  getegid02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
@@ -70,7 +70,7 @@
 void cleanup(void);
 void setup(void);
 
-TCID_DEFINE(getgid02);
+TCID_DEFINE(getegid02);
 int TST_TOTAL = 1;
 extern int Tst_count;
 

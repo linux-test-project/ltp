@@ -265,12 +265,17 @@ getdtablesize01 getdtablesize01
 
 getegid01 getegid01
 getegid01_16 getegid01_16
+getegid02 getegid02
+getegid02_16 getegid02_16
 
 geteuid01 geteuid01
 
 getgid01 getgid01
-getgid02 getgid02
+getgid01_16 getgid01_16
+# getgid02 is moved to getegid.
+# getgid02 getgid02
 getgid03 getgid03
+getgid03_16 getgid03_16
 
 getgroups01 getgroups01
 getgroups02 getgroups02
