@@ -40,3 +40,34 @@ echo -e "** like the File System tests, SELinuxtest, etc               **"
 echo "**                                                               **"
 echo "*******************************************************************"
 echo "*******************************************************************"
+
+export LTP_VERSION=`./runltp -e`
+export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+export HARDWARE_TYPE=$(uname -i)
+export HOSTNAME=$(uname -n)
+export KERNEL_VERSION=$(uname -r)
+export HTML_OUTPUT_FILE_NAME=$LTP_VERSION-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.html
+
+
+## The First one i plan to run is the default LTP run ##
+## START => Test Series 1                             ##
+echo -e "Running Default LTP..."
+./runltp -g $HTML_OUTPUT_FILE_NAME
+echo -e "Completed running Default LTP\n\n"
+## END => Test Series 1                               ##
+
+## The next one i plan to run is ballista             ##
+## START => Test Series 2                             ##
+echo -e "Running Ballista..."
+export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+./runltp -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
+echo -e "Completed running Ballista\n\n"
+## END => Test Series 2                               ##
+
+## The next one i plan to run is open_posix_testsuite ##
+## START => Test Series 3                             ##
+echo -e "Running Open Posix Tests..."
+(cd testcases/open_posix_testsuite; make)
+echo -e "Completed running Open Posix Tests\n\n"
+## END => Test Series 3                               ##
+
