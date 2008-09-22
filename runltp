@@ -511,7 +511,8 @@ main()
                      ${LTPROOT}/runtest/controllers \
                      ${LTPROOT}/runtest/filecaps \
                      ${LTPROOT}/runtest/fcntl-locktests \
-                     ${LTPROOT}/runtest/connectors
+                     ${LTPROOT}/runtest/connectors \
+                     ${LTPROOT}/runtest/admin_tools
         do
             [ -e "$SCENFILES" ] || \
             {

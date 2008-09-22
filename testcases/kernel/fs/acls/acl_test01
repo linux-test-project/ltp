@@ -1,3 +1,4 @@
+#!/bin/sh
 #*********************************************************************
 #   Copyright (c) International Business Machines  Corp., 2003
 #
@@ -24,14 +25,16 @@
 #  HISTORY:
 #    03/03 Jerone Young  (jyoung5@us.ibm.com)
 #*********************************************************************
+export PATH=$PATH:/usr/sbin/
+
 TEST_USER1="acltest1"
 TEST_USER1_GROUP="users"
 TEST_USER1_PASSWD="ltp_test_pass1"
 #ensure the test partition is ACL aware
-TEST_USER1_HOMEDIR="`pwd`/$TEST_USER1"
+TEST_USER1_HOMEDIR="/tmp/$TEST_USER1"
 
-FILE_ACL="`pwd`/test_file"
-FILE_ACL_LINK="`pwd`/test_file_link"
+FILE_ACL="/tmp/test_file"
+FILE_ACL_LINK="/tmp/test_file_link"
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
@@ -125,7 +128,7 @@ else
 	setfacl -mu:root:r $FILE_ACL
 	
 	echo "Trying extended acls for files"
-	acl_file_test $FILE_ACL
+	${TCbin}/acl_file_test $FILE_ACL
 	if [ $? != 0 ]
     	then
       	 	EXIT_CODE=1
@@ -135,7 +138,7 @@ else
     	fi
 
 	echo "Trying extended acls for file links"	
-	acl_link_test $FILE_ACL_LINK
+	${TCbin}/acl_link_test $FILE_ACL_LINK
 	if [ $? != 0 ]
 	then
 		EXIT_CODE=1
@@ -152,7 +155,6 @@ else
    		export TCbin=$PWD
 	fi
 	
-	su $TEST_USER1 -c "$0"
 	EXIT_CODE=$?
 	
 	do_cleanup

@@ -17,7 +17,8 @@ acl_link_test: acl_link_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o acl_link_test acl_link_test.c
 
 install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/ ; done
+	chmod 755 acl_test01
+	@set -e; for i in $(TARGETS) acl_test01 ; do ln -f $$i ../../../bin/ ; done
 
 clean:
 	rm -f acl_file_test acl_link_test
