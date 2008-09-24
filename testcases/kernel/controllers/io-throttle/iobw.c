@@ -30,14 +30,14 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/wait.h>
-#include <asm/page.h>
 
 #ifndef PAGE_SIZE
-#define PAGE_SIZE getpagesize()
+#define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
 #define align(x,a)		__align_mask(x,(typeof(x))(a)-1)

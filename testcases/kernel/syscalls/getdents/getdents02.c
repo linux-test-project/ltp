@@ -57,7 +57,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/types.h>
-#include <linux/dirent.h>
+#include <dirent.h>
 #include <linux/unistd.h>
 #include <unistd.h>
 

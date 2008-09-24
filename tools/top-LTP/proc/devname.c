@@ -16,13 +16,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/sysmacros.h>
 #include "version.h"
 #include "devname.h"
 
-#include <asm/page.h>
-#ifndef PAGE_SIZE
-#define PAGE_SIZE (sizeof(long)*1024)
+#ifndef PAGE_SIZE 
+#define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
 /* Who uses what:

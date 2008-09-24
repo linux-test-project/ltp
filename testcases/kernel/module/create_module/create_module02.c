@@ -86,11 +86,16 @@
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
-#include <asm/page.h>
+#include <unistd.h>
+#include <limits.h>
 #include <asm/atomic.h>
 #include <linux/module.h>
 #include "test.h"
 #include "usctest.h"
+
+#ifndef PAGE_SIZE 
+#define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
+#endif
 
 extern int Tst_count;
 
