@@ -40,7 +40,7 @@ endif
 HAS_NUMA=$(shell sh tools/scripts/numa_test.sh)
 
 export CFLAGS += -Wall $(CROSS_CFLAGS)
-export CC AR RANLIB LDFLAGS HAS_NUMA
+export CC AR RANLIB CPPFLAGS LDFLAGS HAS_NUMA
 
 -include config.mk
 
