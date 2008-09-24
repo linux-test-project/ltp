@@ -106,7 +106,9 @@ void compare_registers(unsigned char poison)
 		long *pt_val = (void *)&pt_regs + regs[i].off;
 		if (*pt_val != ret) {
 			tst_resm(TINFO, "register %s (offset %li) did not match",
-				regs[i].name, regs[i].off);
+				regs[i].name, regs[i].off, *pt_val, ret);
+			tst_resm(TINFO, "\tGETREGS: 0x%08lx  PEEKUSER: 0x%08lx",
+				*pt_val, ret);
 			failed = true;
 		}
 	}
