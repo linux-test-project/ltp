@@ -9,17 +9,16 @@
 #if defined(__bfin__)
 
 #include <errno.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/ptrace.h>
-#include <sys/wait.h>
 #include <asm/ptrace.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "spawn_ptrace_child.c"
 
 char *TCID = "ptrace04";
 
@@ -45,38 +44,6 @@ static struct {
 };
 
 int TST_TOTAL = 2;
-
-static pid_t pid;
-
-static void make_a_baby(int argc, char *argv[])
-{
-	if (argc > 1 && !strcmp(argv[1], "child")) {
-		/* if we're the child, just sit around doing nothing */
-		while (1)
-			sleep(1);
-	}
-
-	/* ptrace() stuff will fail for us if the child dies */
-	signal(SIGCHLD, SIG_IGN);
-
-	pid = vfork();
-	if (pid == -1) {
-		tst_resm(TFAIL, "vfork() failed");
-		tst_exit();
-	} else if (pid)
-		return;
-
-	errno = 0;
-	long ret = ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-	if (ret && errno) {
-		tst_resm(TFAIL, "PTRACE_TRACEME failed");
-		tst_exit();
-	}
-
-	execlp(argv[0], argv[0], "child", NULL);
-	tst_resm(TFAIL, "execlp() failed");
-	tst_exit();
-}
 
 void compare_registers(unsigned char poison)
 {
