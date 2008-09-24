@@ -352,6 +352,9 @@ getuid03 getuid03
 #ioctl01 ioctl01 -D /dev/tty0
 #ioctl02 ioctl02 -D /dev/tty0
 
+# Introducing ioctl tests for all /dev/tty* devices
+ioctl test_ioctl
+
 ioperm01 ioperm01
 ioperm02 ioperm02
 

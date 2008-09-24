@@ -26,6 +26,7 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	ln -f test_ioctl ../../../bin/
 
 clean:
 	rm -f $(TARGETS)
