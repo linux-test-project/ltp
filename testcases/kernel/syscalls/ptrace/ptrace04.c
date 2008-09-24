@@ -56,8 +56,8 @@ void compare_registers(unsigned char poison)
 	errno = 0;
 	ret = ptrace(PTRACE_GETREGS, pid, NULL, &pt_regs);
 	if (ret && errno) {
-		tst_resm(TFAIL, "PTRACE_GETREGS failed: %s", strerror(errno));
-		tst_exit();
+		tst_resm(TINFO, "PTRACE_GETREGS failed: %s", strerror(errno));
+		goto done;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(regs); ++i) {
@@ -80,6 +80,7 @@ void compare_registers(unsigned char poison)
 		}
 	}
 
+ done:
 	tst_resm((failed ? TFAIL : TPASS), "PTRACE PEEKUSER/GETREGS (poison 0x%02x)", poison);
 }
 
@@ -92,6 +93,18 @@ int main(int argc, char *argv[])
 
 	make_a_baby(argc, argv);
 
+	/* first compare register states when execl() syscall starts */
+	tst_resm(TINFO, "Before exec() in child");
+	compare_registers(0x00);
+	compare_registers(0xff);
+
+	/* then compare register states after execl() syscall finishes */
+	tst_resm(TINFO, "After exec() in child");
+	errno = 0;
+	if (ptrace(PTRACE_SYSCALL, pid, NULL, NULL) && errno) {
+		tst_resm(TFAIL, "PTRACE_SYSCALL failed: %s", strerror(errno));
+		return 0;
+	}
 	compare_registers(0x00);
 	compare_registers(0xff);
 
