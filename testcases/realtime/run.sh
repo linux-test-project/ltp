@@ -33,16 +33,16 @@
 function usage()
 {
 	echo -e "\nUsage: run.sh [-p profile] -t test-argument [-l num_of_loops]"
-	echo -e "\n-t test-arguments   Where test-argument can be a space separated sequence of: "
-	echo -e " \t\t\tfunc		all functional tests will be run "
+	echo -e "\n-t test-arguments\tWhere test-argument can be a space separated sequence of: "
+	echo -e " \n\t\t\tfunc		all functional tests will be run "
 	echo -e " \t\t\tstress		all stress tests will be run "
 	echo -e " \t\t\tperf		all perf tests will be run "
-	echo -e " \t\t\t all		all tests will be run"
+	echo -e " \t\t\tall		all tests will be run"
 	echo -e " \t\t\tlist		all available tests will be listed  "
 	echo -e " \t\t\tclean		all logs deleted, make clean performed "
 	echo -e " \t\t\ttest_name	only test_name subdir will be run (e.g: func/pi-tests) "
-	echo -e " \t\t\t-p profile	use profile instead of default (see doc/AUTOMATED_RUN)"
-	echo -e " \t\t\t-h		help"
+	echo -e "\n-p profile\t\tUse profile instead of default (see doc/AUTOMATED_RUN)"
+	echo -e " \n-h\t\t\thelp"
 	echo -e "\n"
 	exit 1;
 }
