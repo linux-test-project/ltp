@@ -56,3 +56,30 @@ static void make_a_baby(int argc, char *argv[])
 	tst_resm(TFAIL, "execlp() failed");
 	tst_exit();
 }
+
+#define SPT(x) [PTRACE_##x] = #x,
+static char *strings[] = {
+	SPT(TRACEME)
+	SPT(PEEKTEXT)
+	SPT(PEEKDATA)
+	SPT(PEEKUSER)
+	SPT(POKETEXT)
+	SPT(POKEDATA)
+	SPT(POKEUSER)
+	SPT(GETREGS)
+	SPT(SETREGS)
+	SPT(GETSIGINFO)
+	SPT(SETSIGINFO)
+#ifdef PTRACE_GETFGREGS
+	SPT(GETFGREGS)
+#endif
+#ifdef PTRACE_SETFGREGS
+	SPT(SETFGREGS)
+#endif
+	SPT(KILL)
+	SPT(SINGLESTEP)
+};
+static char *strptrace(enum __ptrace_request request)
+{
+	return strings[request];
+}
