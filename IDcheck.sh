@@ -64,7 +64,7 @@ prompt_for_create() {
 	else
 
 		if [ $NO_NOBODY_ID -ne 0 -o $NO_BIN_ID -ne 0 -o $NO_DAEMON_ID -ne 0 -o $NO_NOBODY_GRP -ne 0 -o $NO_BIN_GRP -ne 0 -o $NO_DAEMON_GRP -ne 0 -o $NO_USERS_GRP -ne 0 -o $NO_SYS_GRP -ne 0 -a $I_AM_ROOT -ne 0 ] ; then
-			echo -n "If any required user ids and/or groups are missing, would you like these created? Y/N "
+			echo -n "If any required user ids and/or groups are missing, would you like these created? [y/N]"
 			read ans
 			case "$ans" in
 				Y*|y*) CREATE_ENTRIES=1 ;;
@@ -167,7 +167,8 @@ fi
 
 if ife nobody    && ife bin    && ife daemon &&
    ife -g nobody && ife -g bin && ife -g daemon &&
-   gfe '^users:' /etc/group && gfe '^sys:' /etc/group
+   gfe '^users:' /etc/group && gfe '^sys:' /etc/group && 
+   gfe '^nobody:' /etc/group
 then
 	echo ""
 	echo "Required users/groups exist."
