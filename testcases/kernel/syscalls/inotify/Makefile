@@ -16,17 +16,16 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+include ../utils/cond.mk
+
+
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
-check_header = $(shell \
-			if echo "\#include <$(1)>" | $(CC) -E - > /dev/null; \
-			then echo -DHAS_SYS_INOTIFY ; \
-			fi)
 
-HAS_SYS_INOTIFY := $(call check_header,sys/inotify.h)
+HAS_SYS_INOTIFY := $(call check_header,sys/inotify.h,-DHAS_SYS_INOTIFY, )
 CFLAGS += $(HAS_SYS_INOTIFY)
 
 all: $(TARGETS)
