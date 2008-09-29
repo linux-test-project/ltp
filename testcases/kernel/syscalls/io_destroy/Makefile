@@ -44,7 +44,10 @@ install:
 
 else ### does not have libaio.h ###
 
-all install:
+all:
+
+install:
+	cp run-$(SYSCALL).sh ../../../bin/run-$(SYSCALL).sh
 
 endif
 
