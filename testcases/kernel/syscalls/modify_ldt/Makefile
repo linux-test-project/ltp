@@ -16,16 +16,15 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+include ../utils/cond.mk
+
+
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
 
-check_header = $(shell \
-	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
-	then echo yes ; \
-	else echo no ; fi)
-
 ifeq ($(call check_header,asm/ldt.h),yes)
 
+# TODO: Next shell call makes cross-compiling LTP difficult.
 NEEDSPECIAL:=$(shell echo "\#include <asm/ldt.h>" | $(CC) -E - 2>&1 | grep user_desc)
 ifeq ($(strip $(NEEDSPECIAL)),)
 CFLAGS+=-I../../../../include -g -Wall
