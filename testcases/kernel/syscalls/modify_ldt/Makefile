@@ -21,6 +21,7 @@ include ../utils/cond.mk
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
+SYSCALL = modify_ldt
 
 ifeq ($(call check_header,asm/ldt.h),yes)
 
@@ -38,10 +39,16 @@ all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	cp run-$(SYSCALL)01.sh ../../../bin/run-$(SYSCALL)01.sh
+	cp run-$(SYSCALL)02.sh ../../../bin/run-$(SYSCALL)02.sh
 
 else ### does not have asm/ldt.h ###
 
-all install:
+all:
+
+install:
+	cp run-$(SYSCALL)01.sh ../../../bin/run-$(SYSCALL)01.sh
+	cp run-$(SYSCALL)02.sh ../../../bin/run-$(SYSCALL)02.sh
 
 endif
 
