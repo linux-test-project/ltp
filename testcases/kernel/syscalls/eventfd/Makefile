@@ -16,13 +16,11 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+include ../utils/cond.mk
+
+
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
-
-check_header = $(shell \
-	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
-	then echo yes ; \
-	else echo no ; fi)
 
 check_aio_eventfd = $(shell \
 	if echo -e \
