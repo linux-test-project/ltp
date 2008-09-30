@@ -1,4 +1,4 @@
-	SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder | grep -v DOTS | grep -v kdump | grep -v realtime` 
+	SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v open | grep -v pounder | grep -v DOTS | grep -v kdump | grep -v realtime | grep -v audit-test` 
 UCLINUX_SUBDIRS = kernel
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
