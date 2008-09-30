@@ -72,7 +72,7 @@ return $RC
 #               - non zero on failure. return value from commands ($RC)
 cleanup()
 {
-    if [[ -nz $SEM_IPCS ]];then
+    if [ -n "$SEM_IPCS" ];then
         ipcrm -s $SEM_IPCS                  # remove the semaphore.
     fi
     tst_resm TINFO "CLOSE: exit."
@@ -102,7 +102,7 @@ fi
 SEMS=`ipcs -s | awk '{printf " %d", $2}' | sed -e 's/ 0//g'`
 for SEM_IPCS in $SEMS
 do
-    if [[ $SEM_IPCS -eq $SEM_ID ]];then
+    if [ $SEM_IPCS -eq $SEM_ID ] ;then
         tst_resm TPASS "semaphore ID comparing passed."
         return $RC
     fi
