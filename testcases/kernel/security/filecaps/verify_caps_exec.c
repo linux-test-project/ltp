@@ -213,7 +213,6 @@ int caps_actually_set_test(void)
 {
 	int  whichcap, finalret = 0, ret;
 	cap_t fcap, pcap, cap_fullpi;
-	char *capstxt;
 	cap_value_t capvalue[1];
 	int i;
 
