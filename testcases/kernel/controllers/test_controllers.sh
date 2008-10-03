@@ -72,7 +72,7 @@ then
 
 	if [ "$IOTHROTTLE_CONTROLLER" = "blockio" ]
 	then
-		$LTPROOT/testcases/bin/run_memctl_test.sh 1;
+		$LTPROOT/testcases/bin/run_io_throttle_test.sh;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support blockio controller";
