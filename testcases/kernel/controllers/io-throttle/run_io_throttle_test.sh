@@ -20,7 +20,7 @@
 # Usage: ./run_io_throttle_test.sh
 # Description: test block device I/O bandwidth controller functionalities
 
-. myfunctions.sh
+. ./myfunctions-io.sh
 
 trap cleanup SIGINT
 
