@@ -55,8 +55,7 @@
 #include <libjvmsim.h>
 #include <sys/mman.h>
 
-/* #define CLOCK_TO_USE CLOCK_MONOTONIC */
-#define CLOCK_TO_USE CLOCK_REALTIME
+#define CLOCK_TO_USE CLOCK_MONOTONIC
 
 #define START_MAX	3000
 #define REPORT_MIN	1000000
