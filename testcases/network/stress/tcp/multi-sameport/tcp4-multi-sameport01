@@ -137,7 +137,7 @@ do_cleanup()
 ulimit -u unlimited
 
 # Output the informaion
-tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 tst_resm TINFO "- Target number of the connection is $CONNECTION_TOTAL"
 tst_resm TINFO "- Version of IP is IPv${IP_VER}"
 

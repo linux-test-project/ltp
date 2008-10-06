@@ -89,7 +89,7 @@ do_cleanup()
 #
 
 # Output the informaion
-tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 
 # Get the MAC address of the interface at the local host
 field=`expr $LINK_NUM + 1` 

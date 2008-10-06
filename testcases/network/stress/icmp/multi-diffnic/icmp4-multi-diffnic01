@@ -123,7 +123,7 @@ do_cleanup()
 ulimit -u unlimited
 
 # Output the informaion
-tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 
 link_total=`echo $LHOST_HWADDRS | wc -w`
 rhost_link_total=`echo $RHOST_HWADDRS | wc -w`

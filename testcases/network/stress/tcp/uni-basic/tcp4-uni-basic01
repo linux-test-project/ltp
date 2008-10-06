@@ -186,7 +186,7 @@ do_cleanup()
 do_setup()
 {
     # Output the informaion
-    tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+    tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
     tst_resm TINFO "- Version of IP is IPv${IP_VER}"
 
     # Addtional server option

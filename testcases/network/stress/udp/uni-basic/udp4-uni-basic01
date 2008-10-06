@@ -118,7 +118,7 @@ do_cleanup()
 ulimit -u unlimited
 
 # Output the informaion
-tst_resm TINFO "- Test dulation is $NS_DURATION [sec]"
+tst_resm TINFO "- Test duration is $NS_DURATION [sec]"
 tst_resm TINFO "- Version of IP is IPv${IP_VER}"
 
 if $DO_IPSEC ; then
