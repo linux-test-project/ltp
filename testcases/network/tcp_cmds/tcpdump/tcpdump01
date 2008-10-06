@@ -46,9 +46,9 @@ IFNAME=${IFNAME:-$(netstat -i|awk '{print $1}'|tail -n${IFNUMS})}
 for i in ${IFNAME}
 do
     ifconfig ${i}|grep $IP
-    [[ $? == 0 ]] && IF=$i && break
+    [ $? = 0 ] && IF=$i && break
 done
-[ -z ${IF} ] && echo "Test broke: Couldnot identify interface" && exit 1
+[ -z "${IF}" ] && echo "Test broke: Could not identify interface" && exit 1
 IFNAME=${IF}
 NUMLOOPS=${NUMLOOPS:-20}
 OUTFILE=$TCtmp/tcpdump_out
