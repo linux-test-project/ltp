@@ -56,7 +56,7 @@ LTPROOT=${LTPROOT:-`(cd ../../../../.. ; pwd)`}
 export LTPROOT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # Dulation of the test [sec]
 NS_DURATION=${NS_DURATION:-3600}	# 1 hour

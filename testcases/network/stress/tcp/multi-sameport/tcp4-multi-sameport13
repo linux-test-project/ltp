@@ -67,4 +67,4 @@ IPSEC_PROTO=ipcomp
 # IPsec Mode
 IPSEC_MODE=transport
 
-source tcp4-multi-sameport01
+. tcp4-multi-sameport01

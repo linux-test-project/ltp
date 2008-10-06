@@ -65,4 +65,4 @@ IPSEC_PROTO=ah
 # IPsec Mode
 IPSEC_MODE=tunnel
 
-source tcp4-uni-dsackoff01
+. tcp4-uni-dsackoff01

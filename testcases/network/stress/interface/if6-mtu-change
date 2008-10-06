@@ -58,7 +58,7 @@ export TCID
 export TST_COUNT
 
 # Check the environmanet variable for the test
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # The number of the change of the MTU
 MTU_CHANGE_TIMES=${MTU_CHANGE_TIMES:-1000}

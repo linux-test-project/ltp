@@ -53,4 +53,4 @@ TCID=udp6-multi-diffport01
 # The version of IP
 IP_VER=6
 
-source udp4-multi-diffport01
+. udp4-multi-diffport01

@@ -58,7 +58,7 @@ export TCID
 export TST_COUNT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # The number of times where route is changed
 NS_TIMES=${NS_TIMES:-10000}

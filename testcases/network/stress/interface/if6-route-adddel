@@ -59,7 +59,7 @@ export TCID
 export TST_COUNT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # The number of the add/delete an IPv6 route
 NS_TIMES=${NS_TIMES:-10000}

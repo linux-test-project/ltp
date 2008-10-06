@@ -64,4 +64,4 @@ IPSEC_PROTO=ipcomp
 # IPsec Mode
 IPSEC_MODE=transport
 
-source udp4-multi-diffport01
+. udp4-multi-diffport01

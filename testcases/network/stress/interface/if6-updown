@@ -59,7 +59,7 @@ export TCID
 export TST_COUNT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # The number of the interface up/down in each test case
 IF_UPDOWN_TIMES=${IF_UPDOWN_TIMES:-10000}

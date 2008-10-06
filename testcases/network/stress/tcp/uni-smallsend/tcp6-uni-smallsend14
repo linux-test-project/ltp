@@ -66,4 +66,4 @@ IPSEC_PROTO=ipcomp
 # IPsec Mode
 IPSEC_MODE=tunnel
 
-source tcp4-uni-smallsend01
+. tcp4-uni-smallsend01

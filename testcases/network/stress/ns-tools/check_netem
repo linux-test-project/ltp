@@ -50,7 +50,7 @@ LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
 export LTPROOT
 
 # Check the environmanet variable for the test
-source check_envval || exit 1
+. check_envval || exit 1
 
 # Check the tc command is available
 ret=`$LTP_RSH $RHOST 'PATH=/sbin:/usr/sbin:$PATH which tc >/dev/null 2>&1 ; echo $?'`

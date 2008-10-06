@@ -60,7 +60,7 @@ export TCID
 export TST_COUNT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # The number of the add IPv4 alias
 IP_TOTAL=${IP_TOTAL:-10000}

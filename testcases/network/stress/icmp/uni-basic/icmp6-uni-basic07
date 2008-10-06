@@ -63,4 +63,4 @@ IPSEC_PROTO=ipcomp
 # IPsec Mode
 IPSEC_MODE=tunnel
 
-source icmp4-uni-basic01
+. icmp4-uni-basic01

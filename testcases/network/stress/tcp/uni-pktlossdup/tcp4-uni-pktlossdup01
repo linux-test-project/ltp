@@ -73,6 +73,6 @@ DO_PACKET_DUP=true
 # Load tcp4-uni-basic01
 NON_BASIC=true
 
-source tcp4-uni-basic01
+. tcp4-uni-basic01
 
 exit 0

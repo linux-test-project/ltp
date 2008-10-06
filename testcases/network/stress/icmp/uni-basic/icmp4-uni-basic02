@@ -63,4 +63,4 @@ IPSEC_PROTO=ah
 # IPsec Mode
 IPSEC_MODE=transport
 
-source icmp4-uni-basic01
+. icmp4-uni-basic01

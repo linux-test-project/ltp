@@ -55,7 +55,7 @@ LTPROOT=${LTPROOT:-`(cd ../../../../.. ; pwd)`}
 export LTPROOT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # Number of the socket
 MCASTNUM_NORMAL=${MCASTNUM_NORMAL:-20}

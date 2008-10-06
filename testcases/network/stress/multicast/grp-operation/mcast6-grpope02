@@ -55,7 +55,7 @@ LTPROOT=${LTPROOT:-`(cd ../../../../.. ; pwd)`}
 export LTPROOT
 
 # Check the environmanet variable
-source check_envval || exit $TST_TOTAL
+. check_envval || exit $TST_TOTAL
 
 # Number of the group
 MCASTNUM_HEAVY=${MCASTNUM_HEAVY:-40000}

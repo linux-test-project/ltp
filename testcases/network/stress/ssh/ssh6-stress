@@ -44,4 +44,4 @@ $trace_logic
 # The version of IP
 IP_VER=6
 
-source ssh4-stress
+. ssh4-stress

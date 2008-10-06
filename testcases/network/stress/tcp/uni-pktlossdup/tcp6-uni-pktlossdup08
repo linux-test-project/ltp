@@ -59,4 +59,4 @@ DO_NET_DELAY=true
 # true, if ipsec is used
 DO_IPSEC=false
 
-source tcp4-uni-pktlossdup01
+. tcp4-uni-pktlossdup01

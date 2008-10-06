@@ -63,4 +63,4 @@ IPSEC_PROTO=ipcomp
 # IPsec Mode
 IPSEC_MODE=tunnel
 
-source udp4-multi-diffnic01
+. udp4-multi-diffnic01

@@ -64,4 +64,4 @@ IPSEC_PROTO=esp
 # IPsec Mode
 IPSEC_MODE=tunnel
 
-source udp4-uni-basic01
+. udp4-uni-basic01

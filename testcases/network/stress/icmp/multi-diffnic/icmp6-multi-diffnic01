@@ -53,4 +53,4 @@ TCID=icmp6-multi-diffnic01
 # The version of IP
 IP_VER=6
 
-source icmp4-multi-diffnic01
+. icmp4-multi-diffnic01
