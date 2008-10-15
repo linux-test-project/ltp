@@ -99,7 +99,7 @@ tst_resm TINFO "Created semaphore ID: $SEM_ID"
 fi
 
 # Get the semphore ID by "ipcs -s"
-SEMS=`ipcs -s | awk '{printf " %d", $2}' | sed -e 's/ 0//g'`
+SEMS=`LANG= ipcs -s | awk '{print $2}' | grep [[:digit:]]`
 for SEM_IPCS in $SEMS
 do
     if [ $SEM_IPCS -eq $SEM_ID ] ;then
