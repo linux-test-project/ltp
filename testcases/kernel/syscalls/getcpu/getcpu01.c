@@ -98,7 +98,7 @@ int main(int ac, char **av)
 	#endif
 
 	/* Check For Kernel Version */
- 	if(((tst_kvercmp(2,6,20)) < 0) || (sys_support))
+ 	if(((tst_kvercmp(2,6,20)) < 0) || !(sys_support))
           {
              tst_resm(TCONF, "This test can only run on kernels that are ");
              tst_resm(TCONF, "2.6.20 and higher and glibc version 2.6 and above");
