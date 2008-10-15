@@ -117,7 +117,7 @@ main(int ac, char **av)
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 
-#if defined (__s390__) || (__s390x__)
+#if defined (__s390__) || (__s390x__) || (__ia64__)
 	/* Disables the test in case the kernel version is lower than 2.6.12 and arch is s390 */
 	if((tst_kvercmp(2, 6, 12)) < 0)
         {
