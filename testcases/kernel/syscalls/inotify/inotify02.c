@@ -248,7 +248,7 @@ int main(int ac, char **av){
             struct inotify_event *event;
             event = (struct inotify_event *) &event_buf[i];
             if (test_num >= TST_TOTAL){
-                tst_resm(TFAIL, "get unnecessary event: "
+                tst_resm(TINFO, "get unnecessary event: "
                     "wd=%d mask=%x cookie=%u len=%u"
                     "name=\"%s\"",event->wd, event->mask,
                     event->cookie, event->len, 
