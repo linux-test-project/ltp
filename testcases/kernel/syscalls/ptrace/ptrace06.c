@@ -78,6 +78,7 @@ struct test_case_t {
 	{ PTRACE_POKEUSER, .addr = -2 },
 	{ PTRACE_POKEUSER, .addr = -3 },
 
+#ifdef PTRACE_GETREGS
 	{ PTRACE_GETREGS, .data = 0 },
 	{ PTRACE_GETREGS, .data = 1 },
 	{ PTRACE_GETREGS, .data = 2 },
@@ -85,6 +86,7 @@ struct test_case_t {
 	{ PTRACE_GETREGS, .data = -1 },
 	{ PTRACE_GETREGS, .data = -2 },
 	{ PTRACE_GETREGS, .data = -3 },
+#endif
 
 #ifdef PTRACE_GETFGREGS
 	{ PTRACE_GETFGREGS, .data = 0 },
@@ -96,6 +98,7 @@ struct test_case_t {
 	{ PTRACE_GETFGREGS, .data = -3 },
 #endif
 
+#ifdef PTRACE_SETREGS
 	{ PTRACE_SETREGS, .data = 0 },
 	{ PTRACE_SETREGS, .data = 1 },
 	{ PTRACE_SETREGS, .data = 2 },
@@ -103,6 +106,7 @@ struct test_case_t {
 	{ PTRACE_SETREGS, .data = -1 },
 	{ PTRACE_SETREGS, .data = -2 },
 	{ PTRACE_SETREGS, .data = -3 },
+#endif
 
 #ifdef PTRACE_SETFGREGS
 	{ PTRACE_SETFGREGS, .data = 0 },
