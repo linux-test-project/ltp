@@ -58,7 +58,6 @@ getipckey()
 	size_t size = 0;
 	key_t ipc_key;
 	int proj_id;
-	struct timeb time_info;
 	static int count = 0;
 
 	if (NULL == (curdir = getcwd(curdir, size))) {

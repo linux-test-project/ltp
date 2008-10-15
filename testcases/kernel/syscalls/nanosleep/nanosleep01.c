@@ -73,8 +73,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#define SLOP_MS  250 /* Allowed error one way or another in time slept. */
-
 char *TCID="nanosleep01"; /* Test program identifier.    */
 int TST_TOTAL=1;  /* Total number of test cases. */
 extern int Tst_count;  /* Test Case counter for tst_* routines */
