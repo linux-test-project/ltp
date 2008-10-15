@@ -35,4 +35,9 @@ if [ $? -ne 0 ]; then
 	exit_code="$?"
 	exit $exit_code
 fi
+pidns04
+if [ $? -ne 0 ]; then
+	exit_code="$?"
+	exit $exit_code
+fi
 exit $exit_code
