@@ -1,11 +1,12 @@
 /*
  *   Copyright (C) Bull S.A. 1996
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (C) 2008 CAI Qian <caiqian@cclom.cn>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *   This program is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU General Public License as
+ *   published by the Free Software Foundation; either version 2 of the
+ *   License, or (at your option) any later version.
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
@@ -13,8 +14,9 @@
  *   the GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ *   USA
  */
 /*---------------------------------------------------------------------+
 |                           shmem_test_06.c                            |
@@ -26,8 +28,7 @@
 |               0x3 to 0xC and 0xE .                                   |
 |                                                                      |
 | Description:  Simplistic test to verify that a process can obtain    |
-|               11 shared memory regions in the adress space from      |
-|               0x30000000 to 0xCFFFFFFF and 0xE0000000 to 0xEFFFFFFF. |
+|               11 shared memory regions.                              |
 |                                                                      |
 |                                                                      |
 | Algorithm:    *  from 1 up to 11                                     |
@@ -90,7 +91,7 @@ off_t offsets[] = {
 0x90000000,
 0xA0000000,
 0xB0000000,
-0xBFE00000,
+0xBF000000,
 };
 int offsets_cnt = sizeof (offsets) /sizeof (offsets[0]);
 /* Defines
@@ -206,7 +207,7 @@ int main (int argc, char **argv)
 	}
 
       
-      printf ("\n\tShared memory segment address : 0x%p \n",shmptr[i]);
+      printf ("\n\tShared memory segment address : %p \n",shmptr[i]);
       
       printf ("\n\tIndex through shared memory segment ...\n");
       
