@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.20 2007/07/16 04:29:57 vapier Exp $ */
+/* $Id: gethostid01.c,v 1.21 2008/10/15 17:16:14 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -200,6 +200,12 @@ main(int ac, char **av)
 
 	    /* strip off the \n we got from reading the file */
 	    name[strlen(name)-1] = 0;
+
+            if(strstr(hostid,"000000")) {
+               tst_resm(TCONF, "Host ID has not been set.");
+               tst_exit();   
+            } 
+
 
 	    if (strcmp(name, hostid) == 0) {
 	    	tst_resm(TPASS, "Hostid command and gethostid both report hostid "
