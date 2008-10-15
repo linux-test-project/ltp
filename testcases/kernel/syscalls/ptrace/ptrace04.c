@@ -18,7 +18,7 @@
 
 #include "test.h"
 #include "usctest.h"
-#include "spawn_ptrace_child.c"
+#include "spawn_ptrace_child.h"
 
 char *TCID = "ptrace04";
 
