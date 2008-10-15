@@ -202,7 +202,13 @@ int main (int argc, char **argv)
 
       if ((long)(shmptr[i] = (char *) shmat (shmid[i], (const void*)offset, 0)) == -1)
 	{
-	  sprintf(tmpstr, "shmat failed - return: %p", shmptr[i]);
+	  /* If shmat(2) failed, we need the currect process address
+	     space layout to debug. The failure can be random. */
+	  sprintf (tmpstr, "cat /proc/%d/maps >&2", (int) getpid ());
+	  fprintf (stderr, "heap %p\n", sbrk (0));
+	  system (tmpstr);
+
+	  sprintf(tmpstr, "shmat failed - return: %ld", (long)shmptr[i]);
 	  sys_error (tmpstr, __LINE__);
 	}
 
