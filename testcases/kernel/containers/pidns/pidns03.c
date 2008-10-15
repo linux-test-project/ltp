@@ -80,7 +80,7 @@ char **argv;
 	ppid = getpid();
 
 	/* Create a Container and execute to test the functionality */
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, ppid);
+	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID|CLONE_NEWNS, child_fn, ppid);
 
 	/* check return code */
 	if (ret == -1) {
