@@ -1,6 +1,6 @@
 
 LOADLIBES += -lm
-LFLAGS += -l
+LFLAGS += -lw
 CFLAGS += -w 
 DESTDIR = /opt/ltp
 

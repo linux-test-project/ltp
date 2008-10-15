@@ -16,6 +16,7 @@
 ***************************************************************************/
 #include <stdio.h>
 #include "libclone/libclone.h"
+#include "test.h"
 
 int kernel_is_too_old(void) {
 	if (tst_kvercmp(2,6,16) < 0)

@@ -19,7 +19,7 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
+SRCS    = $(wildcard *[^6].c)
 TARGETS = $(patsubst ptrace%.c,ptrace%,$(SRCS))
 
 all: $(TARGETS)
