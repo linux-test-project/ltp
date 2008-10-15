@@ -108,8 +108,13 @@ int main (argc, argv)
 	long int bsize;
 	void alrm();
 #ifdef __mips__
+ #if _MIPS_SIM == _MIPS_SIM_ABI64
+	extern long int __start;
+	long int lotext = (long int)& __start;
+ #else
 	extern int __start;
 	int lotext = (int)&__start;
+ #endif
 #elif defined(__powerpc64__) 
 	extern long int _start;
 	long int *lotextptr = (long*)&_start;
