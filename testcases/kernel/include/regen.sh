@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 output="linux_syscall_numbers.h"
 
