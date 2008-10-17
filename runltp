@@ -76,8 +76,8 @@ setup()
     }
     export LTPROOT=${PWD}
     export TMPBASE="/tmp"
-    export TMP="${TMPBASE}/ltp-$$"
-    export TMPDIR="${TMP}"
+    # use mktemp to create "safe" temporary directories
+    export TMPTEMPLATE="${TMPBASE}/ltp-XXXXXXXXXX"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
     [ -d $LTPROOT/testcases/bin ] ||
@@ -214,11 +214,8 @@ main()
                 ALT_DIR_OUT=1 ;;
             esac ;;
                    
-        d)  # append $$ to TMP, as it is recursively 
-            # removed at end of script.
-            export TMPBASE=$OPTARG
-            export TMP="${TMPBASE}/ltp-$$"
-            export TMPDIR="$TMP";;
+        d)  # use mktemp to create "safe" temporary directories
+	    export TMPDIR="${OPTARG}" ;;
 
         D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
             ARGUMENT_LIST=$OPTARG
@@ -375,7 +372,7 @@ main()
                      Pausing for 10 seconds..."
 	EOF
             sleep 10 
-            INSTANCES="-x $OPTARG -O ${TMP}";;
+            INSTANCES="-x $OPTARG";;
     
         \?) usage;;
         esac
@@ -450,9 +447,16 @@ main()
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
-    mkdir -m 777 -p $TMP || \
+    TMP=`mktemp -d $TMPTEMPLATE` || \
     {
-        echo "FATAL: Unable to make temporary directory $TMP"
+        echo "FATAL: Unable to make temporary directory: $TMP"
+        exit 1
+    }
+    export TMP
+
+    chmod 777 $TMP || \
+    {
+      echo "unable to chmod 777 $TMP ... aborting"
         exit 1
     }
     
@@ -460,6 +464,11 @@ main()
     {
       echo "could not cd ${TMP} ... exiting"
       exit 1
+    }
+    
+    ! [ -z $INSTANCES ] && \
+    {
+	    INSTANCES="$INSTANCES -O ${TMP}"
     }
     
     [ "$RUN_NETEST" -eq 1 ] && \
