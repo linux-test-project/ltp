@@ -21,23 +21,27 @@
 
 exit_code=0
 pidns01
-if [ $? -ne 0 ]; then
-	exit_code="$?"
+rc=$?
+if [ $rc -ne 0 ]; then
+	exit_code=$rc
 	exit $exit_code
 fi
 pidns02
-if [ $? -ne 0 ]; then
-	exit_code="$?"
+rc=$?
+if [ $rc -ne 0 ]; then
+	exit_code=$rc
 	exit $exit_code
 fi
 pidns03
-if [ $? -ne 0 ]; then
-	exit_code="$?"
+rc=$?
+if [ $rc -ne 0 ]; then
+	exit_code=$rc
 	exit $exit_code
 fi
 pidns04
-if [ $? -ne 0 ]; then
-	exit_code="$?"
+rc=$?
+if [ $rc -ne 0 ]; then
+	exit_code=$rc
 	exit $exit_code
 fi
 exit $exit_code
