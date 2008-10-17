@@ -105,7 +105,7 @@ int increment_name(), get_next_name(), mode(), escrivez();
 int main()
 
 {
-	char root[6];
+	char root[16]; //as pids can get much longer
 	int gen_ret_val, ch_ret_val, level;
 	int ret_val;
 	int generate(), check();
