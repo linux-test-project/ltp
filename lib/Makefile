@@ -1,5 +1,5 @@
 
-DESTDIR=/opt/ltp
+PREFIX=/opt/ltp
 
 CFLAGS+= -Wall
 CFLAGS+= -D_USC_LIB_
@@ -20,6 +20,6 @@ clean:
 	rm -f $(TARGET) $(OBJS)
 
 install: $(TARGET)
-	install -D $(TARGET) $(DESTDIR)/lib/$(TARGET)
-	install -D ltp.pc /usr/share/pkgconfig/ltp.pc
+	install -D $(TARGET) $(DESTDIR)/$(PREFIX)/lib$(LIBSUFFIX)/$(TARGET)
+	install -D ltp.pc $(DESTDIR)/$(PREFIX)/share/pkgconfig/ltp.pc
 
