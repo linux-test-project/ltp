@@ -54,7 +54,7 @@ stress-tests: stress-make stress-run
 tests-pretty:
 	$(MAKE) all | column -t -s:
 
-CFLAGS = -g -O2 -Wall -Werror -D_POSIX_C_SOURCE=200112L
+CFLAGS += -D_POSIX_C_SOURCE=200112L
 
 # add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
 check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
