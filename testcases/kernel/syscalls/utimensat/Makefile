@@ -29,7 +29,7 @@ all:
 	else echo "System does not support utimensat syscall support"; true; fi
 
 check_for_utimensat_support: check_for_utimensat_support.c
-	$(CC) -o $@ $< ../../../../lib/tst_kvercmp.c -I../../../../include
+	$(CC) $(CFLAGS) -o $@ $< ../../../../lib/tst_kvercmp.c -I../../../../include
 
 install:
 	@set -e; \

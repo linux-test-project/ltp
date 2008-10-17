@@ -25,7 +25,7 @@
 
 # compiler info for the host
 CC = g++ -Wno-deprecated
-CFLAGS = -w -O ${TARGET_DEF}
+CFLAGS += -w ${TARGET_DEF}
 CLIBS = -lpthread -ldl -lnsl -rdynamic
 TEST_MAN_FILE = selfHost
 TARGET_DEF    = -DB_SELFHOST
@@ -40,16 +40,16 @@ all : callGen callGen_standAlone genCodeCreator replacer ballista
 
 # run-of-of-the-mill rules for utility programs
 callGen: callGen.cpp
-	${CC} -O callGen.cpp -o callGen
+	${CC} ${CFLAGS} callGen.cpp -o callGen
 
 callGen_standAlone: callGen_standAlone.cpp
-	${CC} -O callGen_standAlone.cpp -o callGen_standAlone
+	${CC} ${CFLAGS} callGen_standAlone.cpp -o callGen_standAlone
 
 genCodeCreator: genCodeCreator.cpp
-	${CC} -O genCodeCreator.cpp -o genCodeCreator
+	${CC} ${CFLAGS} genCodeCreator.cpp -o genCodeCreator
 
 replacer: replacer.cpp
-	${CC} -O replacer.cpp -o replacer
+	${CC} ${CFLAGS} replacer.cpp -o replacer
 
 # run-of-of-the-mill rules for harness components
 hack.o : hack.cpp
