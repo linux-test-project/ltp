@@ -20,6 +20,6 @@ clean:
 	rm -f $(TARGET) $(OBJS)
 
 install: $(TARGET)
-	install -D $(TARGET) $(DESTDIR)/$(PREFIX)/lib$(LIBSUFFIX)/$(TARGET)
-	install -D ltp.pc $(DESTDIR)/$(PREFIX)/share/pkgconfig/ltp.pc
+	install -D -m 644 $(TARGET) $(DESTDIR)/$(PREFIX)/lib$(LIBSUFFIX)/$(TARGET)
+	install -D -m 644 ltp.pc $(DESTDIR)/$(PREFIX)/share/pkgconfig/ltp.pc
 
