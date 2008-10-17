@@ -109,7 +109,7 @@ int main()
 	int gen_ret_val, ch_ret_val, level;
 	int ret_val;
 	int generate(), check();
-	char path_list_string[18];
+	char path_list_string[PATH_STRING_LENGTH + 1];
 	int status;
 	int len;
 	int term();
