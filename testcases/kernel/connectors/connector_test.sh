@@ -1,7 +1,6 @@
 #!/bin/sh
 
-tst_kvercmp 2 6 15
-if [ $? -eq 0 ]; then
+if [ ! -f /proc/net/connector ];then
 	echo "Connectors 0 CONF : system doesn't support execution of the test"
 	exit 0
 fi
