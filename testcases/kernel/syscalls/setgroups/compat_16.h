@@ -32,13 +32,13 @@ extern void cleanup(void);
 #ifdef TST_USE_COMPAT16_SYSCALL
 
 long
-SETGROUPS(int gidsetsize, GID_T *list)
+SETGROUPS(size_t gidsetsize, GID_T *list)
 {
 	return syscall(__NR_setgroups, gidsetsize, list);
 }
 
 int
-GETGROUPS(size_t size16, GID_T *list16)
+GETGROUPS(int size16, GID_T *list16)
 {
 	int r;
 	int i;
@@ -75,7 +75,7 @@ SETGROUPS(size_t size, const GID_T *list)
 }
 
 int
-GETGROUPS(size_t size, GID_T *list)
+GETGROUPS(int size, GID_T *list)
 {
 	return getgroups(size, list);
 }

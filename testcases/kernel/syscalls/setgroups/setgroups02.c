@@ -91,7 +91,7 @@ main(int ac, char **av)
 {
 	int lc,i;			/* loop counters */
 	char *msg;			/* message returned from parse_opts */
-	int gidsetsize = NGROUPS;	/* total groups */
+	int gidsetsize = 1;		/* only one GID, the GID of TESTUSER */
 	int PASS_FLAG = 0;		/* used for checking group array */
 	
 	/* Parse standard options given to run the test. */
