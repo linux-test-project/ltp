@@ -134,13 +134,13 @@ main(int ac, char **av)
 		 * Call clone(2)
 		 */
 #if defined(__hppa__)
-		TEST(clone(child_environ, child_stack, (int)NULL, NULL));
+		TEST(clone(child_environ, child_stack, 0, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(child_environ, child_stack,
-					CHILD_STACK_SIZE, (int)NULL, NULL,
+					CHILD_STACK_SIZE, 0, NULL,
 					NULL, NULL, NULL));
 #else
-		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, (int)NULL, NULL));
+		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, 0, NULL));
 #endif
 	
 		/* check return code */

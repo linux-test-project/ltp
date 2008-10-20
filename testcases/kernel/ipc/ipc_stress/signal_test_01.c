@@ -76,7 +76,6 @@
 #include <unistd.h>
 
 /* Macro for specifying signal masks */
-#define MASK(sig)  (1 << ((sig) - 1))
 #define STACKSIZE SIGSTKSZ
 
 /* Define an alternative stack for processing signals */
@@ -125,9 +124,9 @@ int valid_sig [ SIGMAX + 1 ];
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-    int	mask, 			/* Initial process signal mask */
-	newmask, 		/* Second process signal mask */
-	oldmask;		/* Signal mask returned by sigblock */
+    sigset_t mask,		/* Initial process signal mask */
+	     newmask, 		/* Second process signal mask */
+	     oldmask;		/* Signal mask returned by sigblock */
     pid_t pid = getpid ();	/* Process ID (of this process) */
     
     
@@ -190,9 +189,12 @@ int main (int argc, char **argv)
 	 */
 	printf ("\n\tBlock SIGILL, SIGALRM, SIGIOT signals, " \
 		"and resend signals + others\n");
-	mask = MASK (SIGILL) | MASK (SIGALRM) | MASK (SIGIOT);
+	sigemptyset (&mask);
+	sigaddset (&mask, SIGILL);
+	sigaddset (&mask, SIGALRM);
+	sigaddset (&mask, SIGIOT);
 #ifdef _LINUX_
-	sigsetmask(mask);
+	sigprocmask(SIG_SETMASK, &mask, NULL);
 #else
 	if (sigsetmask (mask) < 0)
 		sys_error ("setsigmask failed", __LINE__);
@@ -221,19 +223,23 @@ int main (int argc, char **argv)
 	 * Create a signal mask containing the additional signals to block.
 	 *
 	 * Change the process signal mask to block the additional signals
-	 * with the sigblock () function.
+	 * with the sigprocmask () function.
 	 *
 	 * Verify that all of the desired signals are now blocked from 
 	 * interrupting the process.  None of the specified signals should 
 	 * interrupt the process until the process signal mask is changed.
 	 */
 	printf ("\n\tBlock rest of signals\n");
-	newmask = MASK(SIGFPE) | MASK(SIGTERM) | MASK(SIGINT);
-	if ( (oldmask = sigblock (newmask)) < 0) {
-		perror ("sigblock failed");
+        sigemptyset (&newmask);
+        sigaddset (&newmask, SIGFPE);
+        sigaddset (&newmask, SIGTERM);
+        sigaddset (&newmask, SIGINT);
+	sigemptyset (&oldmask);
+	if ( sigprocmask (SIG_BLOCK, &newmask, &oldmask) < 0) {
+		perror ("sigprocmask failed");
 		exit (-1);
 	}
-	if (mask != oldmask)
+	if (memcmp (&mask, &oldmask, sizeof(mask)) != 0)
 		error ("value returned by sigblock () does not match the " \
 			"old signal mask", __LINE__);
 

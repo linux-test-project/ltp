@@ -82,13 +82,13 @@ int main(int argc, char *argv[])
 	struct sctp_event_subscribe subscribe;
 	char *big_buffer;
 	int offset, msg_flags;
-	socklen_t msgname_len;
+	socklen_t msgname_len, len;
 	size_t buflen;
 	struct sctp_send_failed *ssf;
 	struct sctp_sndrcvinfo sinfo;
 	struct sctp_sndrcvinfo snd_sinfo;
 	sctp_assoc_t associd1, associd2;
-	int len, oldlen;
+	int oldlen;
 	struct sctp_status gstatus;
 
 	/* Rather than fflush() throughout the code, set stdout to

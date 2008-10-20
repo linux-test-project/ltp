@@ -44,7 +44,7 @@ static char Errmsg[80];
 void
 databingen (mode, buffer, bsize, offset)
 int mode;	/* either a, c, r, o, z or C */
-unsigned char *buffer;	/* buffer pointer */
+char *buffer;	/* buffer pointer */
 int bsize;	/* size of buffer */
 int offset;	/* offset into the file where buffer starts */
 {

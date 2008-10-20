@@ -68,7 +68,7 @@ int check_shmid(void *vtest)
 #define NONESTR "none"
 int main(int argc, char *argv[])
 {
-      int r, pid, use_clone = T_NONE;
+      int r, use_clone = T_NONE;
       int id;
       char *tsttype = NONESTR;
       char buf[7];

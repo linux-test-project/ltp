@@ -386,6 +386,8 @@ char	**argv;
 	int	    	    	i, pid, stat, ex_stat;
 #ifdef CRAY
 	sigset_t	    	omask;
+#elif defined(linux)
+	sigset_t		omask, block_mask;
 #else
 	int		    	omask;
 #endif
@@ -474,7 +476,9 @@ char	**argv;
 		Children[i] = -1;
 	}
 
-	omask = sigblock(sigmask(SIGCLD));
+	sigemptyset(&block_mask);
+	sigaddset(&block_mask, SIGCLD);
+	sigprocmask(SIG_BLOCK, &block_mask, &omask);
 
 	/*
 	 * Fork Nprocs.  This [parent] process is a watchdog, to notify the

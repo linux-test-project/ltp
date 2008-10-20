@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	char *big_buffer;
 	int offset;
 	struct sctp_send_failed *ssf;
-	int len; /* Really becomes 2xlen when set. */
+	socklen_t len; /* Really becomes 2xlen when set. */
 	int orig_len; 
 	struct sctp_status gstatus;
 

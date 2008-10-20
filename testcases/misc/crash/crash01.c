@@ -317,13 +317,13 @@ jmp_buf again_buff;
 typedef void (*BADBOY) ();
 
 BADBOY badboy;
-unsigned char *the_data;
+char *the_data;
 
 int offset = 0;
 int next_offset = 0;
 
 
-unsigned char * bad_malloc (int n);
+char * bad_malloc (int n);
 void my_signal (int sig, void (*func) ());
 void again_handler (int sig);
 void compute_block_badboy (int n);
@@ -377,10 +377,10 @@ badboy_loop ()
 }
 
 
-unsigned char * bad_malloc (int n)
+char * bad_malloc (int n)
 {
-  unsigned char *data;
-  data = (unsigned char *) malloc (n);
+  char *data;
+  data = (char *) malloc (n);
 #ifdef pyr
   if (mprotect (((int) data / PAGSIZ) * PAGSIZ, (n / PAGSIZ + 1) * PAGSIZ,
 		PROT_READ | PROT_WRITE | PROT_EXEC))

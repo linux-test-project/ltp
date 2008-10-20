@@ -21,6 +21,8 @@
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:%.c=%.o)
 
+CFLAGS += -I../../../../include
+
 HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
 ifeq ($(HAS_UNSHARE),y)
 TARGET := libclone.a libnetns.a

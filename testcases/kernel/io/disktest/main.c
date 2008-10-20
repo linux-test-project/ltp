@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: main.c,v 1.5 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: main.c,v 1.6 2008/10/20 06:30:33 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -255,18 +255,18 @@ void *threadedMain(void *vtest)
 
 	init_gbl_data(test->env);
 
-	if(make_assumptions(test->args) < 0) { TEXIT(GETLASTERROR()); }
-	if(check_conclusions(test->args) < 0) { TEXIT(GETLASTERROR()); }
+	if(make_assumptions(test->args) < 0) { TEXIT(&(GETLASTERROR())); }
+	if(check_conclusions(test->args) < 0) { TEXIT(&(GETLASTERROR())); }
 	if(test->args->flags & CLD_FLG_DUMP) {
 		/*
 		 * All we are doing is dumping filespec data to STDOUT, so
 		 * we will do this here and be done.
 		 */
 		do_dump(test->args);
-		TEXIT(GETLASTERROR());
+		TEXIT(&(GETLASTERROR()));
 	} else {
 		ulRV = init_data(test, &data_buffer_unaligned);
-		if(ulRV != 0) { TEXIT(ulRV); }
+		if(ulRV != 0) { TEXIT(&ulRV); }
 		pVal1 = (OFF_T *)test->env->shared_mem;
 	}
 
@@ -362,7 +362,7 @@ void *threadedMain(void *vtest)
 			pMsg(END, test->args, "Test Done (Failed)\n");
 		}
 	}
-	TEXIT(GETLASTERROR());
+	TEXIT(&(GETLASTERROR()));
 }
 
 /*

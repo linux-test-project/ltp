@@ -117,7 +117,7 @@ init_buf(MSGBUF *m_buf, int type, int size)
 	}
 
 	/* terminate the message */
-	m_buf->mtext[i] = (char)NULL;
+	m_buf->mtext[i] = '\0';
 
 	/* if the type isn't valid, set it to 1 */
 	if (type < 1) {

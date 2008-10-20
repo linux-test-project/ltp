@@ -79,7 +79,7 @@ void clearbuf()
 {
 	int i;
 	for (i=0; i<80; i++)
-		buf[i] = (char)NULL;
+		buf[i] = '\0';
 }
 
 #if !defined(UCLINUX) && !defined(__UCLIBC__)

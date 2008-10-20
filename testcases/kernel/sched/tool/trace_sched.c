@@ -151,7 +151,7 @@ get_proc_num(void)
     sprintf(filename, "/proc/%d/stat", getpid());
 
     /* open the stat file and read the contents to a buffer */
-    if ((fd  = open(filename, O_RDONLY)) == (int)NULL)
+    if ((fd  = open(filename, O_RDONLY)) == -1)
     {
         perror("get_proc_num(): open()");
         return -1;
@@ -345,7 +345,7 @@ main(int  argc,		/* number of input parameters.			      */
         switch(c)
         {
             case 'c':   /* number of processors. no default. */
-                if ((num_cpus = atoi(optarg)) == (int)NULL)
+                if ((num_cpus = atoi(optarg)) == 0)
                     OPT_MISSING(argv[0], optopt);
                 else
                 if (num_cpus < 0)
@@ -378,7 +378,7 @@ main(int  argc,		/* number of input parameters.			      */
                 }
 		break;
             case 't':	/* input how many threads to create */
-                if ((num_thrd = atoi(optarg)) == (int)NULL)
+                if ((num_thrd = atoi(optarg)) == 0)
 		    OPT_MISSING(argv[0], optopt);
                 else
                 if (num_thrd < 0)

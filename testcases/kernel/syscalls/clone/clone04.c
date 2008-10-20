@@ -145,7 +145,7 @@ main(int ac, char **av)
 						NULL, NULL, NULL));
 #else
 			TEST(clone(test_cases[ind].child_fn, test_stack,
-				   (int)NULL, NULL));
+				   0, NULL));
 #endif
 	
 			if ((TEST_RETURN == -1) &&

@@ -80,7 +80,7 @@ char **argv;
 	ppid = getpid();
 
 	/* Create a Container and execute to test the functionality */
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID|CLONE_NEWNS, child_fn, ppid);
+	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID|CLONE_NEWNS, child_fn, &ppid);
 
 	/* check return code */
 	if (ret == -1) {
@@ -116,7 +116,7 @@ char **argv;
  */
 
 int
-child_fn(pid_t Ppid)
+child_fn(pid_t *Ppid)
 {
 	char dirnam[50];
 	DIR *d;
@@ -129,19 +129,19 @@ child_fn(pid_t Ppid)
 			"\t\t\t\tParent namespace pid = %d,"
 			"container parent pid = %d,"
 			"and container pid = %d\n",
-			Ppid, parent_pid, cloned_pid);
+			*Ppid, parent_pid, cloned_pid);
 
 	/* do any /proc setup which winds up being necessary. */
 	if (mount("proc", "/proc", "proc", 0, NULL) < 0)
 		tst_resm(TFAIL, "mount failed : \n");
 
 	/* Check for the parent pid is existing still? */
-	sprintf(dirnam, "/proc/%d", Ppid);
+	sprintf(dirnam, "/proc/%d", *Ppid);
 
 	d = opendir(dirnam);
 	if (!d) {
 		tst_resm(TPASS, \
-		"Got the proc file directory created by parent ns %d\n", Ppid);
+		"Got the proc file directory created by parent ns %d\n", *Ppid);
 		umount("/proc");
 	} else {
 		tst_resm(TFAIL, "Failed to open /proc directory \n");

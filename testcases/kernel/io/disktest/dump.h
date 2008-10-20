@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.h,v 1.4 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: dump.h,v 1.5 2008/10/20 06:30:33 subrata_modak Exp $
 *
 */
 #ifndef _DUMP_H
@@ -33,7 +33,7 @@
 #define FMT_STR 1
 #define FMT_RAW 2
 
-int dump_data(FILE *, const unsigned char *, const size_t, const size_t, const size_t, const int);
+int dump_data(FILE *, const char *, const size_t, const size_t, const size_t, const int);
 int do_dump(child_args_t *);
 
 #endif /* _DUMP_H */

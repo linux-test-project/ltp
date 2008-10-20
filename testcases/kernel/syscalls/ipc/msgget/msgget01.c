@@ -141,7 +141,7 @@ check_functionality()
 	 */
 	do {
 		snd_buf.mtext[i++] = *queue_msg;
-	} while(*queue_msg++ != (char)NULL);
+	} while(*queue_msg++ != '\0');
 
 	snd_buf.mtype = MSGTYPE;
 

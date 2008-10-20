@@ -168,7 +168,7 @@ int allocate_memory()
 	/*
 	 * Allocate array which contains base addresses of all chunks
 	 */
-	array_of_chunks = (record_t *) malloc(sizeof(record_t *) * num_of_chunks);
+	array_of_chunks = malloc(sizeof(record_t *) * num_of_chunks);
 	if (array_of_chunks == NULL)
 		tst_brkm (TBROK, cleanup, "Memory allocation failed for array_of_chunks");
 	/*

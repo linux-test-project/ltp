@@ -47,7 +47,8 @@ int clientReceiveNet(){
 
 int setupConnectionServeur(){
     struct sockaddr_in local;
-    int size,c;
+    int c;
+    socklen_t size;
     int sock;
     struct sockaddr_in remote;
 

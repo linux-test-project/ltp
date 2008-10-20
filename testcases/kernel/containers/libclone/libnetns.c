@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "libclone.h"
+#include "test.h"
 
 int TST_TOTAL = 1;
 

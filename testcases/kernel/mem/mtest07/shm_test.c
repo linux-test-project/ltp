@@ -69,7 +69,7 @@ void noprintf(char* string, ...){
 #define PTHREAD_EXIT(val)    do {\
 			exit_val = val; \
                         dprt("pid[%d]: exiting with %d\n", getpid(),exit_val); \
-			pthread_exit((void *)exit_val); \
+			pthread_exit((void *)&exit_val); \
 				} while (0)
 
 #define OPT_MISSING(prog, opt)   do{\
@@ -312,7 +312,7 @@ main(int	argc,		/* number of input parameters		      */
                 usage(argv[0]);
                 break;
             case 'l':		/* how many repetitions of the test to exec   */
-		if ((num_reps = atoi(optarg)) == (int)NULL)
+		if ((num_reps = atoi(optarg)) == 0)
                     OPT_MISSING(argv[0], optopt);
                 else
 	        if (num_reps < 0)
@@ -323,7 +323,7 @@ main(int	argc,		/* number of input parameters		      */
                 }
                 break;
             case 't':
-		if ((num_thrd = atoi(optarg)) == (int)NULL)
+		if ((num_thrd = atoi(optarg)) == 0)
 	            OPT_MISSING(argv[0], optopt);
                 else
                 if (num_thrd < 0)

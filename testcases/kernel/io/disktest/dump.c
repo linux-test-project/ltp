@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.c,v 1.4 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: dump.c,v 1.5 2008/10/20 06:30:33 subrata_modak Exp $
 *
 */
 #include <stdio.h>	/* *printf() */
@@ -35,10 +35,10 @@
 #include "sfunc.h"
 #include "dump.h"
 
-int format_str(size_t iBytes, const unsigned char *ibuff, size_t ibuff_siz, unsigned char *obuff, size_t obuff_siz)
+int format_str(size_t iBytes, const char *ibuff, size_t ibuff_siz, char *obuff, size_t obuff_siz)
 {
 	unsigned int i;
-	unsigned char buff[10];
+	char buff[10];
 	static size_t TotalBytes = 0;
 
 	if((iBytes == 0) &&
@@ -73,10 +73,10 @@ int format_str(size_t iBytes, const unsigned char *ibuff, size_t ibuff_siz, unsi
 	return 0;
 }
 
-int format_raw(size_t iBytes, const unsigned char *ibuff, unsigned char *obuff, size_t obuff_siz)
+int format_raw(size_t iBytes, const char *ibuff, char *obuff, size_t obuff_siz)
 {
 	unsigned int i;
-	unsigned char buff[10];
+	char buff[10];
 	static size_t TotalBytes = 0;
 
 	if((iBytes == 0) && (ibuff == NULL) &&
@@ -98,12 +98,12 @@ int format_raw(size_t iBytes, const unsigned char *ibuff, unsigned char *obuff, 
 	return 0;
 }
 
-int dump_data(FILE *stream, const unsigned char *buff, const size_t buff_siz, const size_t ofd_siz, const size_t offset, const int format)
+int dump_data(FILE *stream, const char *buff, const size_t buff_siz, const size_t ofd_siz, const size_t offset, const int format)
 {
 	size_t TotalRemainingBytes, NumBytes, ibuff_siz, obuff_siz;
-	unsigned char *ibuff, *obuff, *buff_curr;
+	char *ibuff, *obuff, *buff_curr;
 
-	buff_curr = (unsigned char *) buff;
+	buff_curr = (char *) buff;
 	buff_curr += offset;
 	TotalRemainingBytes = buff_siz;
 	NumBytes = 0;
@@ -120,11 +120,11 @@ int dump_data(FILE *stream, const unsigned char *buff, const size_t buff_siz, co
 			return(-1);
 	}
 
-	if((ibuff = (unsigned char *) ALLOC(ibuff_siz)) == NULL) {
+	if((ibuff = (char *) ALLOC(ibuff_siz)) == NULL) {
 		fprintf(stderr, "Can't allocate ibuff\n");
 		return(-1);
 	}
-	if((obuff = (unsigned char *) ALLOC(obuff_siz)) == NULL) {
+	if((obuff = (char *) ALLOC(obuff_siz)) == NULL) {
 		FREE(ibuff);
 		fprintf(stderr, "Can't allocate obuff\n");
 		return(-1);
@@ -163,10 +163,10 @@ int do_dump(child_args_t *args)
 {
 	size_t NumBytes = 0;
 	OFF_T TargetLBA, TotalBytes = 0;
-	unsigned char *buff;
+	char *buff;
 	fd_t fd;
 
-	if((buff = (unsigned char *) ALLOC(args->htrsiz*BLK_SIZE)) == NULL) {
+	if((buff = (char *) ALLOC(args->htrsiz*BLK_SIZE)) == NULL) {
 		fprintf(stderr, "Can't allocate buffer\n");
 		return(-1);
 	}

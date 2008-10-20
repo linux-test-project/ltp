@@ -37,7 +37,7 @@
 *
 *******************************************************************************/
 
-void databingen( int mode, unsigned char *buffer, int bsize, int offset );
+void databingen( int mode, char *buffer, int bsize, int offset );
 
 void databinchedk( int mode, unsigned char *buffer, int bsize, int offset, char **errmsg);
 

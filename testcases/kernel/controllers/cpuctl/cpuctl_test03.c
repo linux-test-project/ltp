@@ -54,6 +54,8 @@
 #include <string.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
@@ -202,7 +204,7 @@ int main(int argc, char* argv[])
 		else
 			mytime =  (delta_cpu_time * 100) / (TIME_INTERVAL * num_cpus);
 
-                fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(\%) exp:-%6.2f(\%)}\
+                fprintf (stdout,"Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(%%) exp:-%6.2f(%%)}\
  in %lu (s) INTERVAL\n",mygroup_num, task_num, delta_cpu_time, mytime,\
 exp_cpu_time, delta_time);
 

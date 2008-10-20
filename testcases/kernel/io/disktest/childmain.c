@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.6 2008/02/14 08:22:22 subrata_modak Exp $
+* $Id: childmain.c,v 1.7 2008/10/20 06:30:33 subrata_modak Exp $
 *
 */
 
@@ -148,7 +148,7 @@ void decrement_io_count(const child_args_t *args, test_env_t *env, const action_
  * a target, if an error occured on the target.  This
  * is so a trigger can be set, i.e. on an analyser.
  */
-void write_error_mark(fd_t fd, unsigned char *data) {
+void write_error_mark(fd_t fd, char *data) {
 	OFF_T ActualBytePos=0;
 	long tcnt=0;
 
@@ -166,7 +166,7 @@ void write_error_mark(fd_t fd, unsigned char *data) {
  * Sets the test state correctly, and updates test flags
  * based on user parsed options
  */
-void update_test_state(child_args_t *args, test_env_t *env, const int this_thread_id, fd_t fd, unsigned char *data)
+void update_test_state(child_args_t *args, test_env_t *env, const int this_thread_id, fd_t fd, char *data)
 {
 	extern unsigned short glb_run;
 	extern unsigned long  glb_flags;
@@ -426,7 +426,7 @@ action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 	return target;
 }
 
-void miscompare_dump(const child_args_t *args, const unsigned char *data, const size_t buf_len, OFF_T tPosition, const size_t offset, mc_func_t oper, const int this_thread_id)
+void miscompare_dump(const child_args_t *args, const char *data, const size_t buf_len, OFF_T tPosition, const size_t offset, mc_func_t oper, const int this_thread_id)
 {
 	FILE *fpDumpFile;
 	char obuff[80];
@@ -498,8 +498,8 @@ void *ChildMain(void *vtest)
 
 	static int thread_id = 0;
 	int this_thread_id = thread_id++;
-	unsigned char *buf1 = NULL, *buffer1 = NULL; /* 'buf' is the aligned 'buffer' */
-	unsigned char *buf2 = NULL, *buffer2 = NULL; /* 'buf' is the aligned 'buffer' */
+	char *buf1 = NULL, *buffer1 = NULL; /* 'buf' is the aligned 'buffer' */
+	char *buf2 = NULL, *buffer2 = NULL; /* 'buf' is the aligned 'buffer' */
 	unsigned long ulLastError;
 	unsigned long delayTime;
 
@@ -526,7 +526,7 @@ void *ChildMain(void *vtest)
 	if((MutexMISCOMP = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
 		pMsg(ERR, args, "Thread %d: Failed to open semaphore, error = %u\n", this_thread_id, GetLastError());
 		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(GETLASTERROR());
+		TEXIT(&GETLASTERROR());
 	}
 #else
 	static pthread_mutex_t MutexMISCOMP = PTHREAD_MUTEX_INITIALIZER; 
@@ -548,28 +548,28 @@ void *ChildMain(void *vtest)
 	if(INVALID_FD(fd)) {
 		pMsg(ERR, args, "Thread %d: could not open %s, errno = %u.\n", this_thread_id,args->device, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(GETLASTERROR());
+		TEXIT(&GETLASTERROR());
 	}
 
 	/* Create aligned memory buffers for sending IO. */
-	if ((buffer1 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
+	if ((buffer1 = (char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
 		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(GETLASTERROR());
+		TEXIT(&GETLASTERROR());
 	}
 	memset(buffer1, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
-	buf1 = (unsigned char *) BUFALIGN(buffer1);
+	buf1 = (char *) BUFALIGN(buffer1);
 
-	if ((buffer2 = (unsigned char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
+	if ((buffer2 = (char *) ALLOC(((args->htrsiz*BLK_SIZE)+ALIGNSIZE))) == NULL) {
 		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		FREE(buffer1);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(GETLASTERROR());
+		TEXIT(&GETLASTERROR());
 	}
 	memset(buffer2, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
-	buf2 = (unsigned char *) BUFALIGN(buffer2);
+	buf2 = (char *) BUFALIGN(buffer2);
 
 	/*  set up lba mask of all 1's with value between vsiz and 2*vsiz */
 	while(mask <= (args->stop_lba - args->start_lba)) { mask = mask<<1; }
@@ -835,6 +835,6 @@ void *ChildMain(void *vtest)
 		args->test_state = SET_STS_FAIL(args->test_state);
 	}
 
-	TEXIT(exit_code);
+	TEXIT(&exit_code);
 }
 

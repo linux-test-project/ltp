@@ -369,8 +369,8 @@ int network_listener(char * hostName, int pid)
     while (1)  /* loop forever */
     {   
 
-        int bytes, 
-        len = sizeof(rawAddr);
+        int bytes; 
+        socklen_t len = sizeof(rawAddr);
 
         memset(packet, 0, sizeof(packet));
 
@@ -500,7 +500,7 @@ void ping_network(struct sockaddr_in *rawAddr, int pid)
 
 	while (1){	
 
-        int       msgLength=sizeof(r_addr);
+        socklen_t       msgLength=sizeof(r_addr);
 
 		printf("Message ID #:%d \n", count);
 
@@ -543,7 +543,8 @@ void ltp_traceroute(struct sockaddr_in *rawTraceAddr, char * hostName, int pid)
 
     const int flag = TRUE;
     int TimeToLive = 0;
-    int i, length, rawTraceSocket, count = 1;
+    int i, rawTraceSocket, count = 1;
+    socklen_t length;
     struct packet       rawTracePacket;
     unsigned char       tracePacket[PACKET_LEN];
     struct sockaddr_in  rawReceiveAddr;

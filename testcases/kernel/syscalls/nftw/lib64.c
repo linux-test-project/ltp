@@ -221,7 +221,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 		*tmpPtr++ = 'z'; 
 		pathLength++; 
 	}
-	*tmpPtr = (char)NULL;
+	*tmpPtr = '\0';
 
 	pathLength = (int) strlen(path);
 	if (pathLength != pcPathMax + 1) {

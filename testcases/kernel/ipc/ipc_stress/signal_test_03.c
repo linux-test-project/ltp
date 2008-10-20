@@ -108,7 +108,7 @@ int main (int argc, char **argv)
 	 * Critical section - block SIGILL signal
 	 *  
 	 * Block the SIGILL interrupt from interrupting the process
-	 * with the sigblock () system function call.
+	 * with the sigprocmask () system function call.
 	 *  
 	 * Send the SIGILL interrupt to the process in an attempt to 
 	 * disrupt the critial section -- the signal should be blocked.
@@ -116,7 +116,10 @@ int main (int argc, char **argv)
 	 * to reach the process.  
 	 */
 #ifdef _LINUX_
-	sigblock(MASK(SIGILL));
+	sigset_t mask;
+	sigemptyset (&mask);
+	sigaddset (&mask, SIGILL);
+	sigprocmask (SIG_BLOCK, &mask, NULL);
 #else
 	if (sigblock ( MASK (SIGILL) ) < 0)
 		sys_error ("sigblock failed", __LINE__);
@@ -141,7 +144,8 @@ int main (int argc, char **argv)
 	printf ("\n\t(END) Critial section\n");
 
 #ifdef _LINUX_
-	sigsetmask(0);
+	sigemptyset (&mask);
+	sigprocmask (SIG_SETMASK, &mask, NULL);
 #else
 	if (sigsetmask (0) < 0) 
 		sys_error ("sigsetmask failed", __LINE__);

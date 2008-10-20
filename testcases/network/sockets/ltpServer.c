@@ -51,12 +51,13 @@
 int udpSocketHandle, 
     rc, 
     msg_bytes, 
-    udpClientLen,
     tcpSocketHandle, 
     newTcpSocketHandle, 
-    tcpClientLen,
-    multiSocketHandle, 
-    multiClientLen;
+    multiSocketHandle;
+
+socklen_t udpClientLen,
+	  tcpClientLen,
+          multiClientLen;
 
 struct sockaddr_in udpClientAddr, 
                    udpServerAddr,
