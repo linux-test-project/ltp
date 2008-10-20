@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setgroups01.c,v 1.2 2008/08/27 12:02:42 subrata_modak Exp $ */
+/* $Id: setgroups01.c,v 1.3 2008/10/20 12:50:48 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -130,7 +130,7 @@ TCID_DEFINE(setgroups01); 	/* Test program identifier.    */
 int TST_TOTAL=1;    		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int len = NGROUPS; 
+int len = NGROUPS, ngrps = 0; 
 GID_T list[NGROUPS];
 
 int
@@ -163,7 +163,7 @@ main(int ac, char **av)
 	/* 
 	 * Call setgroups(2) 
 	 */
-	TEST(SETGROUPS(len, list));
+	TEST(SETGROUPS(ngrps, list));
 	
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -205,7 +205,7 @@ setup()
     /* Pause if that option was specified */
     TEST_PAUSE;
 
-    if (GETGROUPS(len, list) == -1) {
+    if ((ngrps = GETGROUPS(len, list)) == -1) {
        tst_brkm(TBROK, cleanup,
 		"getgroups(%d, list) Failure. errno=%d : %s",
 		len, errno, strerror(errno));
