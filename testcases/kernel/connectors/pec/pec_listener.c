@@ -44,6 +44,8 @@ static __u32 seq;
 static int exit_flag;
 static struct sigaction sigint_action;
 
+struct nlmsghdr *nlhdr;
+
 /*
  * Handler for signal int. Set exit flag.
  *
@@ -64,14 +66,10 @@ static void sigint_handler(int __attribute__((unused)) signo)
 static int netlink_send(int sd, struct sockaddr_nl *to, struct cn_msg *cnmsg)
 {
 	int ret;
-	char buf[MAX_MSG_SIZE];
-	struct nlmsghdr *nlhdr;
 	struct iovec iov;
 	struct msghdr msg;
 
-	memset(buf, 0, MAX_MSG_SIZE);
-
-	nlhdr = (struct nlmsghdr *)buf;
+	memset(nlhdr, 0, NLMSG_SPACE(MAX_MSG_SIZE));
 
 	nlhdr->nlmsg_seq = seq++;
 	nlhdr->nlmsg_pid = getpid();
@@ -100,12 +98,10 @@ static int netlink_send(int sd, struct sockaddr_nl *to, struct cn_msg *cnmsg)
  *
  * @sd: socket descripor
  * @from: source sockaddr
- * @buf: buffer for storing the package
  */
-static int netlink_recv(int sd, struct sockaddr_nl *from, char *buf)
+static int netlink_recv(int sd, struct sockaddr_nl *from)
 {
 	int ret;
-	struct nlmsghdr *nlhdr = (struct nlmsghdr *)buf;
 	struct iovec iov;
 	struct msghdr msg;
 
@@ -214,14 +210,18 @@ int main(int argc, char **argv)
 	int sd;
 	struct sockaddr_nl l_local;
 	struct sockaddr_nl src_addr;
-	char buf[MAX_MSG_SIZE];
 	struct pollfd pfd;
 
 	sigint_action.sa_flags = SA_ONESHOT;
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
 
-	/* Create and bind socket */
+	nlhdr = malloc(NLMSG_SPACE(MAX_MSG_SIZE));
+	if (!nlhdr) {
+		fprintf(stderr, "lack of memory\n");
+		exit(1);
+	}
+
 	sd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
 	if (sd == -1) {
 		fprintf(stderr, "failed to create socket\n");
@@ -257,7 +257,6 @@ int main(int argc, char **argv)
 	pfd.events = POLLIN;
 	pfd.revents = 0;
 	while (!exit_flag) {
-		struct nlmsghdr *nlhdr;
 
 		ret = poll(&pfd, 1, -1);
 		if (ret == 0 || (ret == -1 && errno != EINTR)) {
@@ -267,7 +266,7 @@ int main(int argc, char **argv)
 		} else if (ret == -1 && errno == EINTR)
 			break;
 
-		ret = netlink_recv(sd, &src_addr, buf);
+		ret = netlink_recv(sd, &src_addr);
 
 		if (ret == 0)
 			break;
@@ -278,8 +277,6 @@ int main(int argc, char **argv)
 			fprintf(stderr, "failed to receive from netlink\n");
 			exit(1);
 		} else {
-			nlhdr = (struct nlmsghdr *)buf;
-
 			switch (nlhdr->nlmsg_type) {
 			case NLMSG_ERROR:
 				fprintf(stderr, "err message recieved.\n");
@@ -304,6 +301,7 @@ int main(int argc, char **argv)
 	}
 
 	close(sd);
+	free(nlhdr);
 
 	while (fsync(STDOUT_FILENO) == -1) {
 		if (errno != EIO)
