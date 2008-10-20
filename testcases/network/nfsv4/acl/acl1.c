@@ -59,7 +59,7 @@ int do_file_op(char* filename){
 	uid = geteuid();
 	strcat(str, filename);
 
-	exe = execl(str,NULL);
+	exe = execl(str,NULL,NULL);
 	if (exe == -1 && errno!=EACCES)
 		result = result + OP_EXEC;
 	
