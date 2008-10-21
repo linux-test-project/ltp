@@ -55,7 +55,7 @@ DEBUG=0
     fi
 
     IPver=`ip -V | awk  -F"-" ' {  print $2 } '` ;
-    if [[ ${IPver} < "ss080417" ]] ; then
+    if ! printf "%s\n%s\n" "ss080417" "$IPver" | sort -C ; then
         tst_resm  TINFO "ip version should be atleast ss080417"
         exit -1
     fi
@@ -93,14 +93,14 @@ cleanup()
     if [ -f /proc/sys/net/ipv4/conf/$netdev/proxy_arp ] ; then
     	echo $arpproxy > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
     fi
-    ( kill -9 $pid ) 2> /dev/null
+    ( kill -s KILL $pid ) 2> /dev/null
     rm -f /tmp/FIFO1 /tmp/FIFO2 /tmp/FIFO3 /tmp/FIFO4 /tmp/FIFO5 /tmp/FIFO6
     rm -f /tmp/net1 /tmp/net2 || true
 }
 
 debug()
 {
-    if [[ $DEBUG == 1 ]]
+    if [ "$DEBUG" = 1 ]
     then
         echo $1;
     fi
@@ -112,9 +112,7 @@ create_veth()
     ip link add type veth
     sleep 1
     ip link show > /tmp/net2
-    dev=(`diff /tmp/net1 /tmp/net2 | awk -F": "  ' /^> [0-9]*:/ { print $2  }  '` )
-    dev0=${dev[0]}
-    dev1=${dev[1]}
+    eval `diff /tmp/net1 /tmp/net2 | awk -F": "  ' /^> [0-9]*:/ { print "dev" i+0 "=" $2; i++  }  '`
 }
 
 
