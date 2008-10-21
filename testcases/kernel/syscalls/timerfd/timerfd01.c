@@ -51,8 +51,12 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /*
  * This were good at the time of 2.6.23-rc7 ...
+ *
+ * #ifdef __NR_timerfd
+ *
+ * ... but is not now with 2.6.25
  */
-#ifdef __NR_timerfd
+#ifdef __NR_timerfd_create
 
 /* Definitions from include/linux/timerfd.h */
 #define TFD_TIMER_ABSTIME (1 << 0)
