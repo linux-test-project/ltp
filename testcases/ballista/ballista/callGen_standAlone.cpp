@@ -90,7 +90,7 @@ int main(int argc,char *argv[])
   //cout <<"after fname set " <<fname <<endl;
 
   
-  while (!is.eof())
+  while (is >> ws, !is.eof())
     {
       is>>s;//get param?
 //      cout <<"s is set to " <<s << endl;      

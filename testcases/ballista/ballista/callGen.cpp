@@ -81,7 +81,7 @@ int main(int argc,char *argv[])
   is>>fname; //get function call
 
   
-  while (!is.eof())
+  while (is >> ws, !is.eof())
     {
       is>>s;//get param?
 
