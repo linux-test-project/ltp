@@ -1,4 +1,4 @@
-CFLAGS += -O -Wall 
+CFLAGS += -O -Wall -fPIC
 LOADLIBES += 
 
 SRCS=$(wildcard *.c)
