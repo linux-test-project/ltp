@@ -1082,6 +1082,7 @@ void buildH()
   h1<<"#include <sys/stat.h>"<<endl;
   h1<<"#include <unistd.h>"<<endl;
   h1<<"#include "<<(char)34<<"bTypes.h"<<(char)34<<endl;
+  h1<<"using namespace std;"<<endl;
   h1.close();
 
   sprintf(s,"mv %s ./%s.h",b1,obName);

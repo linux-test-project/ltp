@@ -51,6 +51,7 @@ IMPLEMENTATION DESIGN
 
 #include "bTypes.h"
 
+using namespace std;
 //---------------------------------------------------------------------------
 
 paramAccess::paramAccess()
