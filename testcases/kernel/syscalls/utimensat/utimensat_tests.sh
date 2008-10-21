@@ -52,7 +52,7 @@ failed_list=""
 
 #=====================================================================
 
-function setup_file()
+setup_file()
 {
 # $1 is test file pathname
 # $2 is owner for test file (chown(1))
@@ -101,7 +101,7 @@ function setup_file()
     sudo lsattr -l $FILE | sed 's/, /,/g' | awk '{print "EFAs=" $2}'
 }
 
-function test_failed()
+test_failed()
 {
     echo "FAILED test $test_num"
 
@@ -109,7 +109,7 @@ function test_failed()
     failed_list="$failed_list $test_num"
 }
 
-function check_result()
+check_result()
 {
     STATUS=$1                   # Exit status from test program
     EXPECTED_RESULT=$2          # SUCCESS / EACCES / EPERM / EINVAL
@@ -176,7 +176,7 @@ function check_result()
     echo "PASSED test $test_num"
 }
 
-function run_test()
+run_test()
 {
     # By default, we do three types of test:
     # a) pathname (pathname != NULL)
