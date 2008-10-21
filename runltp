@@ -76,8 +76,6 @@ setup()
     }
     export LTPROOT=${PWD}
     export TMPBASE="/tmp"
-    # use mktemp to create "safe" temporary directories
-    export TMPTEMPLATE="${TMPBASE}/ltp-XXXXXXXXXX"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
     [ -d $LTPROOT/testcases/bin ] ||
@@ -214,8 +212,8 @@ main()
                 ALT_DIR_OUT=1 ;;
             esac ;;
                    
-        d)  # use mktemp to create "safe" temporary directories
-	    export TMPDIR="${OPTARG}" ;;
+        d)  # convert the user path to absolute path.
+            export TMPBASE=`cd \`dirname ${OPTARG}\`; pwd`/`basename ${OPTARG}` ;;
 
         D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
             ARGUMENT_LIST=$OPTARG
@@ -447,12 +445,22 @@ main()
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
+    mkdir -m 777 -p $TMPBASE || \
+    {
+        echo "FATAL: Unable to make temporary directory $TMPBASE"
+        exit 1
+    }
+    # use mktemp to create "safe" temporary directories
+    export TMPTEMPLATE="${TMPBASE}/ltp-XXXXXXXXXX"
     TMP=`mktemp -d $TMPTEMPLATE` || \
     {
         echo "FATAL: Unable to make temporary directory: $TMP"
         exit 1
     }
     export TMP
+    # To be evoked by tst_tmpdir()
+    #  write to it as user nobody
+    export TMPDIR="/tmp" 
 
     chmod 777 $TMP || \
     {
