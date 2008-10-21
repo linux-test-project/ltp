@@ -249,7 +249,9 @@ fi
 # Check ppc architecture
   TEST_ARCH=LSB   # Assume the architecture is Intel
 
-  if uname -m | grep '\(m68k\)\|\(sparc\)\|\(powerpc\)\|\(ppc\)\|\(mips\b\)\|\(mipseb\)\|\(sh.eb\)'; then
+  if uname -m |
+    grep -qe '\(m68k\)\|\(sparc\)\|\(mips\b\)\|\(mipseb\)\|\(sh.eb\)' \
+         -e '\(powerpc\)\|\(ppc\)\|\(s390\)'; then
      TEST_ARCH=MSB
   fi
 
@@ -506,6 +508,15 @@ fi
 
 $LTPBIN/tst_resm TINFO "TEST #10: file command recognizes $KERNEL file"
 
+# S390 Work around for vmlinuz file type
+# Applesoft BASIC:
+#
+# This is incredibly sloppy, but will be true if the program was
+# written at its usual memory location of 2048 and its first line
+# number is less than 256.  Yuck.
+#0       belong&0xff00ff 0x80000 Applesoft BASIC program data
+#>2      leshort         x       \b, first line number %d
+
 # Red Hat creates a user-mode-linux vmlinuz file (ends in .uml) - ignore it
 KERNFILE=$(find /boot ! -type l -name "$KERNEL*" | grep -v '.uml' | tail -1)
 file $KERNFILE > $LTPTMP/file.out 2>&1
@@ -521,6 +532,7 @@ then
     grep -iq "kernel" $LTPTMP/file.out && MATCHED="y"
     grep -iq "compressed data" $LTPTMP/file.out && MATCHED="y"
     grep -iq "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "Applesoft BASIC" $LTPTMP/file.out && MATCHED="y"
     if [ -n "$MATCHED" ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised $KERNEL file correctly"
