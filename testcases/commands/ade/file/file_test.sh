@@ -290,7 +290,7 @@ then
         TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 else
-    $LTPBIN/tst_resm TFAIL "file: Failed to recognize ELF binay executable"
+    $LTPBIN/tst_resm TFAIL "file: Failed to recognize ELF binary executable"
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
