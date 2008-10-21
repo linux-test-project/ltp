@@ -248,11 +248,8 @@ fi
 
 # Check ppc architecture
   TEST_ARCH=LSB   # Assume the architecture is Intel
-  PPC_MATCH=""
 
-  grep -q -i power /proc/cpuinfo && PPC_MATCH="y"
-  grep -q -i ppc970 /proc/cpuinfo && PPC_MATCH="y"
-  if [ -n "$PPC_MATCH" ]; then
+  if uname -m | grep '\(m68k\)\|\(sparc\)\|\(powerpc\)\|\(ppc\)\|\(mips\b\)\|\(mipseb\)\|\(sh.eb\)'; then
      TEST_ARCH=MSB
   fi
 
