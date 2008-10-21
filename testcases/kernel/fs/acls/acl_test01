@@ -53,7 +53,7 @@ do_setup(){
         fi
 
 	rm -rf $TEST_USER1_HOMEDIR 
-	userdel $TEST_USER1 &> /dev/null
+	userdel $TEST_USER1 > /dev/null 2>&1
 	sleep 1
 	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
 
@@ -79,8 +79,8 @@ do_cleanup() {
         fi
         rm -rf $TEST_USER1_HOMEDIR
 	userdel $TEST_USER1
-	rm -f $FILE_ACL &> /dev/null
-	rm -f $FILE_ACL_LINK &> /dev/null
+	rm -f $FILE_ACL > /dev/null 2>&1
+	rm -f $FILE_ACL_LINK > /dev/null 2>&1
 }
 
 #-----------------------------------------------------------------------

@@ -54,7 +54,7 @@ chk_ifexists()
 {
 	RC=0
 
-	which $2 &>$LTPTMP/tst_logrotate.err || RC=$?
+	which $2 > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL "$1: command $2 not found."
@@ -90,7 +90,7 @@ init()
 		LTPTMP=$TMP/tst_logrotate.$$
 	fi
 
-	mkdir -p $LTPTMP &>/dev/null || RC=$?
+	mkdir -p $LTPTMP > /dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		 tst_brkm TBROK "INIT: Unable to create temporary directory"
@@ -117,7 +117,7 @@ cleanup()
 {
 	#remove all cronjobs that were installed.
 	tst_resm TINFO "CLEAN: removing all cron jobs."
-	crontab -r &>/dev/null
+	crontab -r > /dev/null 2>&1
 
 	# remove all the temporary files created by this test.
 	tst_resm TINFO "CLEAN: removing $LTPTMP"
@@ -189,10 +189,10 @@ test01()
 	# remove all old-n-stale logfiles.
 	for files in /var/log/tst_logfile.*
 	do
-		rm -f $files &>/dev/null
+		rm -f $files > /dev/null 2>&1
 	done
 
-	logrotate -fv $LTPTMP/tst_logrotate.conf &>$LTPTMP/tst_logrotate.out \
+	logrotate -fv $LTPTMP/tst_logrotate.conf > $LTPTMP/tst_logrotate.out 2>&1 \
 		|| RC=$?
 	if [ $RC -eq 0 ]
 	then
@@ -201,23 +201,23 @@ test01()
 		# check if 5 rotations are forced.
         # check if compression is done.
 		grep "including /etc/logrotate.d" $LTPTMP/tst_logrotate.out \
-			&>$LTPTMP/tst_logrotate.err || RC=$?
+			> $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		grep "reading config file $LTPTMP/tst_logrotate.conf" \
-			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
+			$LTPTMP/tst_logrotate.out   > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		grep "forced from command line (5 rotations)" \
-			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
+			$LTPTMP/tst_logrotate.out   > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		egrep "compressing new|log with" \
-			$LTPTMP/tst_logrotate.out   &>$LTPTMP/tst_logrotate.err || RC=$?
+			$LTPTMP/tst_logrotate.out   > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
-			tst_res TFAIL &>$LTPTMP/tst_logrotate.err \
+			tst_res TFAIL > $LTPTMP/tst_logrotate.err 2>&1 \
 				"Test #1: logrotate command failed. Reason:"
 		else
 			# Check if compressed log file is created.
 			if [ -f /var/log/tst_logfile.1.gz ]
 			then
 				file /var/log/tst_logfile.1.gz | grep "gzip compressed data" \
-					&>$LTPTMP/tst_logrotate.out || RC=$?
+					> $LTPTMP/tst_logrotate.out 2>&1 || RC=$?
 				if [ $RC -eq 0 ]
 				then
 					tst_resm TPASS \
@@ -288,10 +288,10 @@ cat >$LTPTMP/tst_logrotate.cron <<EOF
 * * * * * logrotate $LTPTMP/tst_largelog.conf
 EOF
 
-chmod 777 $LTPTMP/tst_logrotate.cron &>/devnull
+chmod 777 $LTPTMP/tst_logrotate.cron > /dev/null 2>&1
 
 tst_resm TINFO "Test #2: Installing cron job to run logrotate"
-crontab $LTPTMP/tst_logrotate.cron &>$LTPTMP/tst_logrotate.out || RC=$?
+crontab $LTPTMP/tst_logrotate.cron > $LTPTMP/tst_logrotate.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     echo "Exit status of crontab command: $RC" >> tst_logrotate.out 2>/dev/null
@@ -309,7 +309,7 @@ cat >$LTPTMP/tst_addtolog.cron <<EOF
 EOF
 
 tst_resm TINFO "Test #2: Installing cron job to increase logsize"
-crontab $LTPTMP/tst_addtolog.cron &>$LTPTMP/tst_logrotate.out || RC=$?
+crontab $LTPTMP/tst_addtolog.cron > $LTPTMP/tst_logrotate.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     echo "Exit status of crontab command: $RC" >> tst_logrotate.out 2>/dev/null
@@ -347,7 +347,7 @@ fi
 if [ -f /var/log/tst_largelogfile.1.gz ]
 then
     file /var/log/tst_largelogfile.1.gz | grep "gzip compressed data" \
-        &>$LTPTMP/tst_logrotate.out || RC=$?
+        > $LTPTMP/tst_logrotate.out 2>&1 || RC=$?
     if [ $RC -eq 0 ]
     then
         tst_resm TPASS \

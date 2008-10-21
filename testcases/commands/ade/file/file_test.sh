@@ -77,11 +77,11 @@ EOF
 # Execute file command & check for output.
 # Expected out put is the string "ASCII English text"
 
-file $LTPTMP/test_file.txt &>$LTPTMP/file.out
+file $LTPTMP/test_file.txt > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ASCII text" $LTPTMP/file.out &>/dev/null
+    grep "ASCII text" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised ASCII file correctly"
@@ -113,11 +113,11 @@ echo "used to test file commad"
 
 EOF
 
-file $LTPTMP/bash_script.sh &>$LTPTMP/file.out
+file $LTPTMP/bash_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "Bourne-Again shell script" $LTPTMP/file.out &>/dev/null
+    grep "Bourne-Again shell script" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised bash shell script correctly"
@@ -148,7 +148,7 @@ echo "used to test file commad"
 
 EOF
 
-file $LTPTMP/ksh_script.sh &>$LTPTMP/file.out
+file $LTPTMP/ksh_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
@@ -184,11 +184,11 @@ echo "used to test file commad"
 
 EOF
 
-file $LTPTMP/C_script.sh &>$LTPTMP/file.out
+file $LTPTMP/C_script.sh > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "C shell script" $LTPTMP/file.out &>/dev/null
+    grep "C shell script" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised C shell script correctly"
@@ -222,11 +222,11 @@ main()
 }
 EOF
 
-file $LTPTMP/cprog.c &>$LTPTMP/file.out
+file $LTPTMP/cprog.c > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ASCII C program text" $LTPTMP/file.out &>/dev/null
+    grep "ASCII C program text" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised C program text correctly"
@@ -273,13 +273,13 @@ main()
 }
 EOF
 
-cc -o $LTPTMP/cprog $LTPTMP/cprog.c &>/dev/null
+cc -o $LTPTMP/cprog $LTPTMP/cprog.c > /dev/null 2>&1
 
-file $LTPTMP/cprog &>$LTPTMP/file.out
+file $LTPTMP/cprog > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "ELF .*-bit $TEST_ARCH executable, .*" $LTPTMP/file.out &>/dev/null
+    grep "ELF .*-bit $TEST_ARCH executable, .*" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognized ELF binary executable"
@@ -315,13 +315,13 @@ cat > $LTPTMP/file3 <<EOF
 This is a simple test file
 EOF
 
-tar -cf $LTPTMP/files.tar $LTPTMP/file1 $LTPTMP/file2 $LTPTMP/file3 &>/dev/null
+tar -cf $LTPTMP/files.tar $LTPTMP/file1 $LTPTMP/file2 $LTPTMP/file3 > /dev/null 2>&1
 
-file $LTPTMP/files.tar &>$LTPTMP/file.out
+file $LTPTMP/files.tar > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "tar archive" $LTPTMP/file.out &>/dev/null
+    grep "tar archive" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised tar files"
@@ -346,7 +346,7 @@ export TST_COUNT=8
 $LTPBIN/tst_resm TINFO "TEST #8: file command recognizes tar zip files"
 
 tar cf $LTPTMP/files.tar $LTPTMP/file1 $LTPTMP/file2 $LTPTMP/file3 \
-    &>$LTPTMP/file.out
+    > $LTPTMP/file.out 2>&1
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
@@ -360,10 +360,10 @@ then
         "file: gzip failed unexpectedly. Reason:"
 fi
     
-file $LTPTMP/files.tar.gz &>$LTPTMP/file.out
+file $LTPTMP/files.tar.gz > $LTPTMP/file.out 2>&1
 if [ $? -eq 0 ]
 then
-    grep "gzip compressed data, .*" $LTPTMP/file.out &>$LTPTMP/file1.out
+    grep "gzip compressed data, .*" $LTPTMP/file.out > $LTPTMP/file1.out 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised tar zip file"
@@ -444,9 +444,9 @@ EOF
 RC=0
 if [ -d $bDIR/SOURCES ]
 then
-    echo "directory exists" &>$LTPTMP/file.out
+    echo "directory exists" > $LTPTMP/file.out 2>&1
 else
-    mkdir -p $bDIR/SOURCES/ &>$LTPTMP/file.out || RC=$?
+    mkdir -p $bDIR/SOURCES/ > $LTPTMP/file.out 2>&1 || RC=$?
 fi
 
 if [ $RC -ne 0 ]
@@ -468,17 +468,17 @@ then
     $LTPBIN/tst_brkm TBROK NULL "cat: failed to create test file cprog.c"
 fi
 
-$bCMD -bs  $LTPTMP/files.spec &>$LTPTMP/file.out
+$bCMD -bs  $LTPTMP/files.spec > $LTPTMP/file.out 2>&1
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command brok. Reason:"
 fi
 
-file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm &>$LTPTMP/file.out
+file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "RPM v3 src" $LTPTMP/file.out &>/dev/null
+    grep "RPM v3 src" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised RPM file correctly"
@@ -511,7 +511,7 @@ $LTPBIN/tst_resm TINFO "TEST #10: file command recognizes $KERNEL file"
 
 # Red Hat creates a user-mode-linux vmlinuz file (ends in .uml) - ignore it
 KERNFILE=$(find /boot ! -type l -name "$KERNEL*" | grep -v '.uml' | tail -1)
-file $KERNFILE &> $LTPTMP/file.out
+file $KERNFILE > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then

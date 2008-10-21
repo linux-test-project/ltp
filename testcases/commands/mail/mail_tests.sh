@@ -66,7 +66,7 @@ if [ -z $RC ]
 then
     RC=0
     $LTPBIN/tst_resm TINFO "INIT: Adding temporary user mail_test"
-    useradd -m -s /bin/bash mail_test &>$LTPTMP/tst_mail.out || RC=$?
+    useradd -m -s /bin/bash mail_test > $LTPTMP/tst_mail.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_mail.out NULL \
@@ -75,8 +75,8 @@ then
     fi
 fi
 $LTPBIN/tst_resm TINFO "INIT: Removing all mails for mail_test and root"
-echo "d*" | mail -u mail_test &>/dev/null
-echo "d*" | mail -u root &>/dev/null
+echo "d*" | mail -u mail_test > /dev/null 2>&1
+echo "d*" | mail -u root > /dev/null 2>&1
 
 # Set return code RC variable to 0, it will be set with a non-zero return code
 # in case of error. Set TFAILCNT to 0, increment if there occures a failure.
@@ -102,7 +102,7 @@ This is a test email.
 EOF
 
 mail -s "Test" root@localhost < $LTPTMP/tst_mail.in \
-    &>$LTPTMP/tst_mail.out || RC=$?
+    > $LTPTMP/tst_mail.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -113,7 +113,7 @@ else
     # but wait for the mail to arrive.
     
     sleep 10s
-    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     mailsub=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     if [ $mailsub -ne 0 ]
     then
@@ -148,7 +148,7 @@ EOF
 
 # Don't use underscores in domain names (they're illegal)...
 mail -s "Test" root@thisdomaindoesnotexist < $LTPTMP/tst_mail.in \
-     &>$LTPTMP/tst_mail.out
+     > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -158,7 +158,7 @@ else
     # check if Mailer-Deamon reported any delivery failure.    
     # but wait for the mail to arrive first, sleep 5s.
     sleep 5s
-    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 	$LTPTMP/tst_mail.res)
     RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
@@ -215,7 +215,7 @@ This is a test email.
 EOF
 
 mail -s "Test" non_existant_userr@localhost < $LTPTMP/tst_mail.in \
-     &>$LTPTMP/tst_mail.out
+     > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -225,7 +225,7 @@ else
     # check if Mailer-Deamon reported any delivery failure.    
     # but wait for the mail to arrive first, sleep 5s.
     sleep 5s
-    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 	$LTPTMP/tst_mail.res)
     RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
@@ -273,7 +273,7 @@ $LTPBIN/tst_resm TINFO "Test #4: carbon copy user@domain"
 
 # send mail to root and carbon copy mail_test 
 mail -s "Test" root@localhost -c mail_test@localhost < \
-    $LTPTMP/tst_mail.in &>$LTPTMP/tst_mail.out || RC=$?
+    $LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
      $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -283,9 +283,9 @@ else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
     sleep 5s
-    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
-    echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u mail_test > $LTPTMP/tst_mail.res 2>&1
     RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     if [ $RC1 -ne 0 -a $RC2 -ne 0 ]
     then
@@ -311,7 +311,7 @@ $LTPBIN/tst_resm TINFO "Test #5: blind carbon copy user@domain"
 
 # send mail to root and carbon copy mail_test 
 mail -s "Test" root@localhost -c mail_test@localhost < \
-    $LTPTMP/tst_mail.in &>$LTPTMP/tst_mail.out || RC=$?
+    $LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
      $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -321,9 +321,9 @@ else
     # Check if mail_test received the mail and 
     # also if root received the main copy of the email.
     sleep 5s
-    echo "d" | mail -u root &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
-    echo "d" | mail -u mail_test &>$LTPTMP/tst_mail.res
+    echo "d" | mail -u mail_test > $LTPTMP/tst_mail.res 2>&1
     RC2=$(awk '/^>N/ {print match($9, "Test")}' $LTPTMP/tst_mail.res)
     if [ $RC1 -ne 0 -a $RC2 -ne 0 ]
     then
@@ -346,6 +346,6 @@ $LTPBIN/tst_resm TINFO "Test CLEAN: Removing temporary files from $LTPTMP"
 rm -fr $LTPTMP/tst_mail* 
 
 $LTPBIN/tst_resm TINFO "Test CLEAN: Removing temporary user mail_test"
-userdel -r mail_test &>/dev/null
+userdel -r mail_test > /dev/null 2>&1
 
 exit $TFAILCNT

@@ -61,7 +61,7 @@ init()
 	
 	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
 
-	which cpio &> $LTPTMP/tst_cpio.err || RC=$?
+	which cpio > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
@@ -69,7 +69,7 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_cpio.tmp &> $LTPTMP/tst_cpio.err || RC=$? 
+	mkdir -p $LTPTMP/tst_cpio.tmp > $LTPTMP/tst_cpio.err 2>&1 || RC=$? 
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
@@ -79,7 +79,7 @@ init()
 	
 	for i in a b c d e f g h i j k l m n o p q r s t u v w x y z
 	do
-		touch $LTPTMP/tst_cpio.tmp/$i &> $LTPTMP/tst_cpio.err || RC=$?
+		touch $LTPTMP/tst_cpio.tmp/$i > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			$LTPBIN/tst_brk TBROK $LTPTMP/tst_cpio.err NULL \
@@ -101,7 +101,7 @@ clean()
 	export TST_COUNT=0	# init identifier,
 
 	$LTPBIN/tst_resm TINFO "CLEAN cleaning up before return"
-	rm -fr $LTPTMP/tst_cpio* &>/dev/null 
+	rm -fr $LTPTMP/tst_cpio* > /dev/null 2>&1 
 	return
 }
 
@@ -131,7 +131,7 @@ test01()
 	else
 		if [ -f $LTPTMP/tst_cpio.out ]
 		then
-			file $LTPTMP/tst_cpio.out &>$LTPTMP/tst_cpio.err || RC=$?
+			file $LTPTMP/tst_cpio.out > $LTPTMP/tst_cpio.err 2>&1 || RC=$?
 			if [ $? -ne 0 ]
 			then
 				$LTPBIN/tst_res TFAIL $LTPTMP/tst_cpio.err	\

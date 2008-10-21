@@ -41,7 +41,7 @@ chk_ifexists()
 {
     RC=0
 
-    which $2 &>$LTPTMP/tst_xinetd.err || RC=$?
+    which $2 > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_brkm TBROK NULL "$1: command $2 not found."
@@ -77,7 +77,7 @@ init()
         LTPTMP=$TMP/tst_xinetd.$$
     fi
 
-    mkdir -p $LTPTMP &>/dev/null || RC=$?
+    mkdir -p $LTPTMP > /dev/null 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
          tst_brkm TBROK NULL "INIT: Unable to create temporary directory"
@@ -170,7 +170,7 @@ cleanup()
 	if [ -f /etc/xinetd.conf.orig ]
 	then
 		mv /etc/xinetd.conf.orig /etc/xinetd.conf \
-			&>$LTPTMP/tst_xinetd.err || RC=$?
+			> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TINFO $LTPTMP/tst_xinetd.err \
@@ -180,7 +180,7 @@ cleanup()
 		sleep 1s
 
 		# restoring original services
-		/etc/init.d/xinetd restart &>$LTPTMP/tst_xinetd.err || RC=$?
+		/etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TINFO $LTPTMP/tst_xinetd.err \
@@ -215,7 +215,7 @@ test01()
     tst_resm TINFO "Test #1: restart xinetd with telnet disabled."
 	
 	# create a backup of the original xinetd.conf file.
-	mv /etc/xinetd.conf /etc/xinetd.conf.orig &>$LTPTMP/tst_xinetd.err \
+	mv /etc/xinetd.conf /etc/xinetd.conf.orig > $LTPTMP/tst_xinetd.err 2>&1 \
 		|| RC=$?
     if [ $RC -ne 0 ]
     then
@@ -225,7 +225,7 @@ test01()
     fi
 
 	# install the new config file with telnet disabled.
-	mv $LTPTMP/tst_xinetd.conf.1 /etc/xinetd.conf &>$LTPTMP/tst_xinetd.err \
+	mv $LTPTMP/tst_xinetd.conf.1 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
 		|| RC=$?
     if [ $RC -ne 0 ]
     then
@@ -239,7 +239,7 @@ test01()
 	sleep 1s
 
 	# restart xinetd to re-start the services
-    /etc/init.d/xinetd restart &>$LTPTMP/tst_xinetd.out || RC=$?
+    /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.out \
@@ -248,7 +248,7 @@ test01()
 	else
 		# even if xinetd restart has zero exit value, 
 		# make certain there was no failure.
-		grep -i "fail" $LTPTMP/tst_xinetd.out &>$LTPTMP/tst_xinetd.err || RC=$?
+		grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
 		if [ $RC -eq 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_xinetd.err \
@@ -265,7 +265,7 @@ test01()
 	# not terminated by the test gracefully.
 	echo "" | telnet localhost 2>$LTPTMP/tst_xinetd.out 1>/dev/null
 	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.1 \
-		&>$LTPTMP/tst_xinetd.err || RC=$?
+		> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.err \
@@ -275,7 +275,7 @@ test01()
 
     tst_resm TINFO "Test #1: restart xinetd with telnet enabled."
 	# install the xinetd config file with telnet enabled.
-	mv $LTPTMP/tst_xinetd.conf.2 /etc/xinetd.conf &>$LTPTMP/tst_xinetd.err \
+	mv $LTPTMP/tst_xinetd.conf.2 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
 		|| RC=$?
     if [ $RC -ne 0 ]
     then
@@ -289,7 +289,7 @@ test01()
 	sleep 1s
 
 	# restart services.
-    /etc/init.d/xinetd restart &>$LTPTMP/tst_xinetd.out || RC=$?
+    /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.out \
@@ -297,7 +297,7 @@ test01()
         return $RC
 	else
 		# even if restart has a zero exit value double check for failure.
-		grep -i "fail" $LTPTMP/tst_xinetd.out &>$LTPTMP/tst_xinetd.err || RC=$?
+		grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
 		if [ $RC -eq 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_xinetd.err \
@@ -312,10 +312,10 @@ test01()
 
 	# Not checking for exit code from telnet command because telnet is 
 	# not terminated by the test gracefully.
-	echo "" | telnet localhost &>$LTPTMP/tst_xinetd.out 
+	echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1 
 
 	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.2 \
-		&>$LTPTMP/tst_xinetd.err || RC=$?
+		> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.err \

@@ -57,18 +57,14 @@ init()
 
 	
 	tst_resm TINFO "INIT: Inititalizing tests."
-	RC1=0
-	RC2=0
-	which gunzip &> $LTPTMP/tst_gzip.err || RC1=$?
-	which gunzip 2>&1 1>$LTPTMP/tst_gzip.err || RC2=$?
-	if [ $RC1 -ne 0 || $RC2 -ne 0 ]
+	if ! which gunzip > $LTPTMP/tst_gzip.err 2>&1
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
 			"Test #1: gzip/gunzip command does not exist. Reason:"
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_gzip.tmp &> $LTPTMP/tst_gzip.err || RC=$? 
+	mkdir -p $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$? 
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
@@ -103,7 +99,7 @@ creat_dirnfiles()
 	while [ $dircnt -lt $numdirs ]
 	do
 		dirname=$dirname/d.$dircnt
-        mkdir -p $dirname  &>$LTPTMP/tst_gzip.err || RC=$?
+        mkdir -p $dirname  > $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
@@ -166,7 +162,7 @@ creat_expout()
 			echo "f.$fcnt$ext " 1>>$LTPTMP/tst_gzip.exp
 			fcnt=$(($fcnt+1))
 		done
-		echo -e "\n" 1>>$LTPTMP/tst_gzip.exp
+		printf "\n\n" 1>>$LTPTMP/tst_gzip.exp
 	done
 }
 
@@ -204,7 +200,7 @@ test01()
 		return $RC
 	fi
 
-	gzip -r $LTPTMP/tst_gzip.tmp &>$LTPTMP/tst_gzip.err || RC=$?
+	gzip -r $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_gzip.err "Test #1: gzip -r failed. Reason:"
@@ -212,14 +208,14 @@ test01()
 	fi
 
 	tst_resm TINFO "Test #1: creating output file"
-	ls -R $LTPTMP/tst_gzip.tmp &>$LTPTMP/tst_gzip.out
+	ls -R $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.out 2>&1
 
 	tst_resm TINFO "Test #1: creating expected output file"
 	creat_expout $numdirs $numfiles $LTPTMP/tst_gzip.tmp .gz
 
 	tst_resm TINFO "Test #1: comparing expected out and actual output file"
 	diff -w -B -q $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
-		&>$LTPTMP/tst_gzip.err || RC=$?
+		> $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_gzip.err "Test #1: gzip failed. Reason:"
@@ -265,7 +261,7 @@ test02()
 		return $RC
 	fi
 
-	gzip -r $LTPTMP/tst_gzip.tmp &>$LTPTMP/tst_gzip.err || RC=$?
+	gzip -r $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
@@ -273,7 +269,7 @@ test02()
 		return $RC
 	fi
 
-	gunzip -r $LTPTMP/tst_gzip.tmp &>$LTPTMP/tst_gzip.err || RC=$?
+	gunzip -r $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_gzip.err NULL \
@@ -282,14 +278,14 @@ test02()
 	fi
 
 	tst_resm TINFO "Test #2: creating output file"
-	ls -R $LTPTMP/tst_gzip.tmp &>$LTPTMP/tst_gzip.out
+	ls -R $LTPTMP/tst_gzip.tmp > $LTPTMP/tst_gzip.out 2>&1
 
 	tst_resm TINFO "Test #2: creating expected output file"
 	creat_expout $numdirs $numfiles $LTPTMP/tst_gzip.tmp
 
 	tst_resm TINFO "Test #2: comparing expected out and actual output file"
 	diff -w -B -q $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
-		&>$LTPTMP/tst_gzip.err || RC=$?
+		> $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_gzip.err "Test #2: gunzip failed. Reason:"

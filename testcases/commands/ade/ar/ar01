@@ -54,55 +54,55 @@ COUNT=1
 TCRESULT=0
 
 # Setup function
-function setup() {
+setup() {
   for i in $LIST;do
     touch $i
   done
 }
 
 # Cleanup function
-function cleanup() {
+cleanup() {
   if [ $TCRESULT = 0 ]; then
-    echo -e "---------------ar command passed the system test-----------------"
+    echo "---------------ar command passed the system test-----------------"
     exit 0
   else 
-    echo -e "---------------ar command failed the system test-----------------"
+    echo "---------------ar command failed the system test-----------------"
     exit 1
 fi
 }
 
-function crtest() {
+crtest() {
   if [ $? -ne 0 ]
   then
     TCRESULT=1
-    echo -e "FAIL - could not create lib.a"
+    echo "FAIL - could not create lib.a"
     cleanup
   fi
 }
 
-function ttest() {
+ttest() {
   if [ $? -ne 0 ]
   then
     TCRESULT=1
-    echo -e "FAIL - could not output table from lib.a to lib.a.stdout"
+    echo "FAIL - could not output table from lib.a to lib.a.stdout"
     cleanup
   fi
 }
 
-function rtest() {
+rtest() {
   if [ $? -ne 0 ]
   then
     TCRESULT=1
-    echo -e "FAIL - could not add file into lib.a"
+    echo "FAIL - could not add file into lib.a"
     cleanup
   fi
 }
 
-function mtest() {
+mtest() {
   if [ $? -ne 0 ]
   then
     TCRESULT=1
-    echo -e "FAIL - could not move file into lib.a"
+    echo "FAIL - could not move file into lib.a"
     cleanup
   fi
 }
@@ -112,13 +112,13 @@ setup
 # Main Loop
 while [ $COUNT -le $LOOPS ]
 do
-echo -e "-------System test for ar command, Loop $COUNT----"
+echo "-------System test for ar command, Loop $COUNT----"
 #The 'a' flag causes files to be placed after 'posname'.
 
 #  CODE
 rm -rf $TCtmp/lib.a;cd $TCdat 
 
-echo -e "file1.in\nfile2.in\nfile3.in" >$TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" >$TCtmp/lib.a.exp
 
 ar -cr $TCtmp/lib.a file1.in file3.in
 crtest
@@ -130,10 +130,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e "-)1"
+    echo "-)1"
 else
     TCRESULT=1
-    echo -e "FAIL - ar with -a option does not place files after 'posname'"
+    echo "FAIL - ar with -a option does not place files after 'posname'"
 fi
 
 # The 'a' flag with the 'm' option causes files to be moved after 'posname'
@@ -142,7 +142,7 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in file4.in 
 crtest
-echo -e "file1.in\nfile4.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile4.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -ma file1.in $TCtmp/lib.a file4.in
 mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
@@ -151,10 +151,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e "-)2"
+    echo "-)2"
 else
     TCRESULT=2
-    echo -e "FAIL - ar with -a option does not move files after 'posname'"
+    echo "FAIL - ar with -a option does not move files after 'posname'"
 fi
 
 # The 'b' flag causes files to be placed before 'posname'.
@@ -164,7 +164,7 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -rb file3.in $TCtmp/lib.a file2.in
 rtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
@@ -173,10 +173,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e "-)3"
+    echo "-)3"
 else
     TCRESULT=3
-    echo -e "FAIL - ar with -b option does not place files before 'posname'"
+    echo "FAIL - ar with -b option does not place files before 'posname'"
 fi
 
 # The 'b' flag with 'm' option causes files to be moved before 'posname'.
@@ -186,7 +186,7 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -mb file3.in $TCtmp/lib.a file2.in
 mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
@@ -195,10 +195,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e "-)4"
+    echo "-)4"
 else
     TCRESULT=4
-    echo -e "FAIL - ar with -b option does not move files before 'posname'."
+    echo "FAIL - ar with -b option does not move files before 'posname'."
 fi
 
 
@@ -216,10 +216,10 @@ crtest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout
 if [ $? -eq 0 ]
 then
-    echo -e "-)5"
+    echo "-)5"
 else
     TCRESULT=5
-    echo -e "FAIL - ar with -c option did not suppress messages."
+    echo "FAIL - ar with -c option did not suppress messages."
 fi
 
 # The 'qc' option causes suppresion of the default message when 
@@ -233,10 +233,10 @@ ar -qc $TCtmp/lib.a file1.in > $TCtmp/lib.a.stdout
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)6"
+    echo  "-)6"
 else
     TCRESULT=6
-    echo -e "FAIL - ar with -qc option did not suppress messages."
+    echo "FAIL - ar with -qc option did not suppress messages."
 fi
 
 # The -d option deletes files from archive when names are specified.
@@ -246,7 +246,7 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-echo -e "file3.in" > $TCtmp/lib.a.exp
+echo "file3.in" > $TCtmp/lib.a.exp
 ar -d $TCtmp/lib.a file1.in file2.in
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
 ttest
@@ -254,10 +254,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)7"
+    echo  "-)7"
 else
     TCRESULT=7
-    echo -e "FAIL - ar with -d option does not delete files form the archive"
+    echo "FAIL - ar with -d option does not delete files form the archive"
 fi
  
 # The -d option does not delete files from archive when no names 
@@ -267,7 +267,7 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 
 
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
 ar -d $TCtmp/lib.a 2>&1 1>/dev/null
@@ -277,10 +277,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)8"
+    echo  "-)8"
 else
     TCRESULT=8
-    echo -e "FAIL - ar with -d option deleted files even when none were specified"
+    echo "FAIL - ar with -d option deleted files even when none were specified"
 fi
  
 # The -d does not affect behaviour of -s option.
@@ -291,16 +291,16 @@ rm -rf $TCtmp/lib.a;cd $TCdat
 touch $TCtmp/dummy.in
 ar -cr $TCtmp/lib.a $TCtmp/dummy.in file1.in file2.in file3.in
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 ar -ds $TCtmp/lib.a $TCtmp/dummy.in 2>&1 1>/dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 
 if [ $size1 -eq $size2 ]
 then
-    echo -e  "-)9"
+    echo  "-)9"
 else
     TCRESULT=9
-    echo -e "FAIL - ar with -d option did affect the -s option"
+    echo "FAIL - ar with -d option did affect the -s option"
 fi
 
 # The 'i' flag causes files to be placed before 'posname'.
@@ -308,7 +308,7 @@ fi
 # CODE
 rm -rf $TCtmp/lib.a;cd $TCdat
 
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -cr $TCtmp/lib.a file1.in file3.in
 crtest
 ar -ri file3.in $TCtmp/lib.a file2.in
@@ -319,10 +319,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)10"
+    echo  "-)10"
 else
     TCRESULT=10
-    echo -e "FAIL - ar with -i did not place the files before 'posname'."
+    echo "FAIL - ar with -i did not place the files before 'posname'."
 fi
  
 # The 'i' flag with 'm' option causes files to be moved before 'posname'.
@@ -332,7 +332,7 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -mi file3.in $TCtmp/lib.a file2.in
 mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
@@ -341,10 +341,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)11"
+    echo "-)11"
 else
     TCRESULT=11
-    echo -e "FAIL - ar with -i failed to move files before 'posname'."
+    echo "FAIL - ar with -i failed to move files before 'posname'."
 fi
  
 # m option moves the files to end of the archive
@@ -354,7 +354,7 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file3.in file2.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -m $TCtmp/lib.a file3.in
 mtest
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
@@ -363,10 +363,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)12"
+    echo "-)12"
 else
     TCRESULT=12
-    echo -e "FAIL - ar with -m fails to move the files to the end of archive"
+    echo "FAIL - ar with -m fails to move the files to the end of archive"
 fi
  
 # The -p option causes only printing of contents of file contained in
@@ -376,16 +376,16 @@ fi
 rm -rf $TCtmp/lib.*
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-echo -e "This is file one\nThis is file two\nThis is file three" > $TCtmp/lib.a.exp
+printf "This is file one\nThis is file two\nThis is file three\n" > $TCtmp/lib.a.exp
 ar -p $TCtmp/lib.a 2>&1 1>$TCtmp/lib.a.stdout
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)13"
+    echo "-)13"
 else
     TCRESULT=13
-    echo -e "FAIL - ar with -p option failed to print the contents."
+    echo "FAIL - ar with -p option failed to print the contents."
 fi
  
 # The -p does not affect behaviour of -s option.
@@ -395,16 +395,16 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 ar -ps $TCtmp/lib.a 2>&1 1> /dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 
 if [ $size1 -eq $size2 ]
 then
-    echo -e  "-)14"
+    echo "-)14"
 else
     TCRESULT=14
-    echo -e "FAIL - ar with -p did the affect behaviour of -s option"
+    echo "FAIL - ar with -p did the affect behaviour of -s option"
 fi
  
 # The command 'ar -q afile name' appends name to the end of 'afile'.
@@ -414,7 +414,7 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in\nfile4.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\nfile4.in\n" > $TCtmp/lib.a.exp
 ar -q $TCtmp/lib.a file4.in
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout
 ttest
@@ -422,10 +422,10 @@ ttest
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)15"
+    echo "-)15"
 else
     TCRESULT=15
-    echo -e "FAIL - ar with -q afilename failed to append to the end of file"
+    echo "FAIL - ar with -q afilename failed to append to the end of file"
 fi
  
 # q option does not affect the behaviour of option s 
@@ -435,16 +435,16 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 ar -qs $TCtmp/lib.a $TCtmp/dummy.in 2>&1 1>/dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 
 if [ $size1 -eq $size2 ]
 then
-    echo -e  "-)16"
+    echo "-)16"
 else
     TCRESULT=16
-    echo -e "FAIL - ar with -q did affect the behaviour of -s option."
+    echo "FAIL - ar with -q did affect the behaviour of -s option."
 fi
  
 # The -s causes regeneration of symbol table even if a symbol table exists.
@@ -454,18 +454,18 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.o
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 strip $TCtmp/lib.a 2>&1 1>/dev/null
 ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 
 if [ $size1 -eq $size2 ]
 
 then
-    echo -e  "-)17"
+    echo "-)17"
 else
     TCRESULT=17
-    echo -e "FAIL - ar with -does not regenerate symbol table"
+    echo "FAIL - ar with -does not regenerate symbol table"
 fi
  
 # The -t option prints a table of contents of the archive file.
@@ -475,17 +475,17 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
-echo -e "file1.in\nfile2.in\nfile3.in" > $TCtmp/lib.a.exp
+printf "file1.in\nfile2.in\nfile3.in\n" > $TCtmp/lib.a.exp
 ar -t $TCtmp/lib.a >$TCtmp/lib.a.stdout 2>&1
 ttest
 
 diff -b $TCtmp/lib.a.exp $TCtmp/lib.a.stdout 1> /dev/null 2> /dev/null
 if [ $? -eq 0 ]
 then
-    echo -e  "-)18"
+    echo "-)18"
 else
     TCRESULT=18
-    echo -e "FAIL - ar with -t did not print as desired"
+    echo "FAIL - ar with -t did not print as desired"
 fi
  
 # The -t does not affect behaviour of -s option.
@@ -495,17 +495,17 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.o
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 strip $TCtmp/lib.a 2>&1 1>/dev/null
 ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo -e $a)`
+size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
 
 if [ $size1 -eq $size2 ]
 then
-    echo -e  "-)19"
+    echo "-)19"
 else
     TCRESULT=19
-    echo -e "FAIL - ar with -t option did affect the -s option"
+    echo "FAIL - ar with -t option did affect the -s option"
 fi
  
 # The 'u' flag causes files only with later modification date than 
@@ -530,13 +530,13 @@ then
 	if [ $File1time = $File1time1 ]
 	then
     		TCRESULT=20
-    		echo -e "FAIL - ar with -u flag failed"
+    		echo "FAIL - ar with -u flag failed"
 	else 
-    		echo -e  "-)20"
+    		echo "-)20"
 	fi
 else
     	TCRESULT=20
-	echo -e "FAIL - ar with -u flag failed"
+	echo "FAIL - ar with -u flag failed"
 fi
 #Reset the timestamp on file0.in to current
 touch file0.in
@@ -555,10 +555,10 @@ Count=`ar -tv $TCtmp/lib.a | wc -l`
 
 if [ $Sysmonth = $Month ] && [ $Count -eq 3 ]
 then
-		echo -e  "-)21"
+		echo "-)21"
 else
 	    	TCRESULT=21
-		echo -e "FAIL - ar with -v flag failed to print a line for each file"
+		echo "FAIL - ar with -v flag failed to print a line for each file"
 fi
  
 # The -v option produces a verbose listing like ls -n
@@ -573,27 +573,24 @@ ls -ln file1.in file2.in file3.in |
 while
 read permissions link uid gid size month day time file_name
 do
-echo -e | awk "
-{
-printf \"$permissions;$uid/$gid;$size;$month;$day;$time;$file_name\n\"
-}"
+echo "$permissions;$uid/$gid;$size;$month;$day;$time;$file_name"
 done >>  $TCtmp/lib.a.exp
 
 ar -tv $TCtmp/lib.a |
 while
 read permissions uid size month day time year file_name
 do
-echo -e "-$permissions;$uid;$size;$month;$day;$time;$file_name"
+echo "-$permissions;$uid;$size;$month;$day;$time;$file_name"
 done >> $TCtmp/lib.a.stdout
 ttest
 
 diff $TCtmp/lib.a.exp $TCtmp/lib.a.stdout
 if [ $? -eq 0 ]
 then 
-	echo -e  "-)22"
+	echo "-)22"
 else
     	TCRESULT=22
-	echo -e "FAIL - ar with -v failed to produce a verbose out put"
+	echo "FAIL - ar with -v failed to produce a verbose out put"
 fi
  
 # The 'v' option causes the 'x' option to display a filename for each 
@@ -608,10 +605,10 @@ Count=`ar -xv $TCtmp/lib.a | wc -l`
 
 if [ $Count = '3' ]
 then
-	echo -e  "-)23"
+	echo "-)23"
 else
     	TCRESULT=23
-	echo -e "FAIL - ar with -v along with x did not display extracted file names"
+	echo "FAIL - ar with -v along with x did not display extracted file names"
 fi
  
 # The command 'ar -x afile ' causes all files from the archive to be extracted.
@@ -626,10 +623,10 @@ Count=`ar -xv $TCtmp/lib.a | wc -l`
 
 if [ $Count -eq '3' ]
 then
-    echo -e  "-)24"
+    echo "-)24"
 else
     	TCRESULT=24
-    echo -e "FAIL - ar with -x flag did not extract all file"
+    echo "FAIL - ar with -x flag did not extract all file"
 fi
  
 # The command 'ar -x afile name name' causes only named files from 
@@ -643,14 +640,14 @@ Count=`ar -xv $TCtmp/lib.a file1.in | grep file | wc -l`
 
 if [ $Count = '1' ]
 then
-    echo -e  "-)25"
+    echo "-)25"
 else
     	TCRESULT=25
-    echo -e "FAIL - ar with -x lib filename did not extract the named file alone"
+    echo "FAIL - ar with -x lib filename did not extract the named file alone"
 fi
 
 # This test will fail under pan, so it's commented out by default.
-echo -e "-)26 SKIPPED UNDER PAN"
+echo "-)26 SKIPPED UNDER PAN"
 #
 # Signal SIGHUP
 
@@ -686,15 +683,15 @@ while [ ! -s $TCtmp/lib.a ]
 do
         :
 done
-kill -2 $! >/dev/null 2>&1
+kill -s 2 $! >/dev/null 2>&1
 
 sleep 1
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 100 ]
+if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo $a)` -ne 100 ]
 then
     TCRESULT=27
-    echo -e "FAIL - ar could not create the archive ; killed by SIGINIT"
+    echo "FAIL - ar could not create the archive ; killed by SIGINIT"
 else
-    echo -e  "-)27"
+    echo "-)27"
 fi
  
 # Signal SIGQUIT
@@ -708,15 +705,15 @@ while [ ! -s $TCtmp/lib.a ]
 do
         :
 done
-kill -3 $! >/dev/null 2>&1
+kill -s 3 $! >/dev/null 2>&1
 
 sleep 1
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 100 ]
+if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo $a)` -ne 100 ]
 then
     TCRESULT=28
-    echo -e "FAIL - ar could not create the archive ; killed by SIGQUIT"
+    echo "FAIL - ar could not create the archive ; killed by SIGQUIT"
 else
-    echo -e  "-)28"
+    echo "-)28"
 fi
  
 # Signal SIGHUP; ar should not remove archive that existed before invocation.
@@ -733,14 +730,14 @@ do
         :
 done
 sleep 1
-kill -1 $! 2>&1 1>/dev/null | read a
+kill -s 1 $! 2>&1 1>/dev/null | read a
 
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 103 ]
+if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo $a)` -ne 103 ]
 then
     TCRESULT=29
-    echo -e "FAIL - ar could not complete the archive ; killed by SIGHUP"
+    echo "FAIL - ar could not complete the archive ; killed by SIGHUP"
 else
-    echo -e  "-)29"
+    echo "-)29"
 fi
  
 # Signal SIGINIT; ar should not remove archive that existed before invocation.
@@ -758,14 +755,14 @@ do
 done
 sleep 1
 
-kill -2 $! 2>&1 1>/dev/null | read a
+kill -s 2 $! 2>&1 1>/dev/null | read a
 
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 103 ]
+if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo $a)` -ne 103 ]
 then
     TCRESULT=30
-    echo -e "FAIL - ar could not complete the archive ; killed by SIGINIT"
+    echo "FAIL - ar could not complete the archive ; killed by SIGINIT"
 else
-    echo -e  "-)30"
+    echo "-)30"
 fi
  
 # Signal SIGQUIT; ar should not remove archive that existed before invocation.
@@ -782,14 +779,14 @@ do
         :
 done
 sleep 1
-kill -3 $! 2>&1 1>/dev/null | read a
+kill -s 3 $! 2>&1 1>/dev/null | read a
 
-if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo -e $a)` -ne 103 ]
+if [ `wc -l $TCtmp/lib.a.stdout|(read a b;echo $a)` -ne 103 ]
 then
     TCRESULT=31
-    echo -e "FAIL - ar could not complete the archive ; killed by SIGQUIT"
+    echo "FAIL - ar could not complete the archive ; killed by SIGQUIT"
 else
-    echo -e  "-)31"
+    echo "-)31"
 fi
  
 rm -rf $TCtmp

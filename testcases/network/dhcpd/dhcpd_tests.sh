@@ -67,14 +67,14 @@ init()
 	trap "cleanup" 0
 
 	# create the temporary directory used by this testcase
-	mkdir -p $LTPTMP/ &>/dev/null || RC=$?
+	mkdir -p $LTPTMP/ > /dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK "INIT: Unable to create temporary directory"
 		return $RC
 	fi
 
-	which tst_resm  &>$LTPTMP/tst_dhcpd.err || RC=$?
+	which tst_resm  > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -82,7 +82,7 @@ init()
 		return $RC
 	fi
 
-	which awk  &>$LTPTMP/tst_dhcpd.err || RC=$?
+	which awk  > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -92,7 +92,7 @@ init()
 
 	tst_resm TINFO "INIT: Inititalizing tests."
 
-	ps -ef &>$LTPTMP/tst_dhcpd.out || RC=$?
+	ps -ef > $LTPTMP/tst_dhcpd.out 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TBROK $LTPTMP/tst_dhcpd.out NULL \
@@ -100,7 +100,7 @@ init()
 		return $RC
 	fi
 
-	grep "dhcpd[[:blank:]]" $LTPTMP/tst_dhcpd.out &>$LTPTMP/tst_dhcpd.err || RC=$?
+	grep "dhcpd[[:blank:]]" $LTPTMP/tst_dhcpd.out > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -eq 0 ]
 	then
 		tst_resm TPASS "INIT: dhcpd is already running. Declaring success"
@@ -108,7 +108,7 @@ init()
 	fi
 
 	RC=0
-	which dhcpd &> $LTPTMP/tst_dhcpd.err || RC=$?
+	which dhcpd > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_dhcpd.err NULL \
@@ -144,8 +144,8 @@ init()
 	if [ -f /etc/dhcpd.conf ]
 	then
 		RC1=0
-		mv /etc/dhcpd.conf $LTPTMP/dhcpd.conf &>$LTPTMP/tst_dhcpd.err || RC=$?
-		mv $LTPTMP/tst_dhcpd.conf /etc/dhcpd.conf &>$LTPTMP/tst_dhcpd.err \
+		mv /etc/dhcpd.conf $LTPTMP/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
+		mv $LTPTMP/tst_dhcpd.conf /etc/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1 \
 			|| RC1=$?
 		if [ $RC -ne 0 -o $RC1 -ne 0 ]
 		then
@@ -171,13 +171,13 @@ init()
   ETH_INTERFACE=$(/sbin/ifconfig | grep -m 1 "^eth" | awk -F" " '{ print $1 }')
 
 	# Aliasing eth to create private network.
-	/sbin/ifconfig ${ETH_INTERFACE}:1 10.1.1.12 &>$LTPTMP/tst_dhcpd.err || RC=$?
+	/sbin/ifconfig ${ETH_INTERFACE}:1 10.1.1.12 > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL "INIT: failed aliasing ${ETH_INTERFACE}:1 with IP 10.1.1.12"
 		return $RC
 	else
-		/sbin/route add -host 10.1.1.12 dev ${ETH_INTERFACE}:1 &>$LTPTMP/tst_dhcpd.err \
+		/sbin/route add -host 10.1.1.12 dev ${ETH_INTERFACE}:1 > $LTPTMP/tst_dhcpd.err 2>&1 \
 			|| RC=$?
 		if [ $RC -ne 0 ]
 		then
@@ -204,13 +204,13 @@ cleanup()
 
 	if [ -f $LTPTMP/dhcpd.conf ]
 	then
-		mv $LTPTMP/dhcpd.conf /etc/dhcpd.conf &>$LTPTMP/tst_dhcpd.err
+		mv $LTPTMP/dhcpd.conf /etc/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1
 	fi
 
-	/sbin/ifconfig | grep "${ETH_INTERFACE}:1" &>$LTPTMP/tst_dhcpd.err || RC=$?
+	/sbin/ifconfig | grep "${ETH_INTERFACE}:1" > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -eq 0 ]
 	then
-		/sbin/ifconfig ${ETH_INTERFACE}:1 down &>$LTPTMP/tst_dhcpd.err
+		/sbin/ifconfig ${ETH_INTERFACE}:1 down > $LTPTMP/tst_dhcpd.err 2>&1
 	fi
 
   # Removing the added route
@@ -260,14 +260,14 @@ test01()
 	fi
 	
 	tst_resm TINFO "Test #1: starting dhcp server"
-	dhcpd &>$LTPTMP/tst_dhcpd.err || RC=$?
+	dhcpd > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_dhcpd.err \
 			"Test #1: Failed to start dhcp. Reason: "
 		return $RC
 	else
-		cat $LTPTMP/tst_dhcpd.err | tail -n 1 &>$LTPTMP/tst_dhcpd.out || RC=$?
+		cat $LTPTMP/tst_dhcpd.err | tail -n 1 > $LTPTMP/tst_dhcpd.out 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_brkm TBROK NULL \
@@ -277,7 +277,7 @@ test01()
 	fi
 
 	diff -iwB $LTPTMP/tst_dhcpd.out $LTPTMP/tst_dhcpd.exp \
-		&>$LTPTMP/tst_dhcpd.err || RC=$?
+		> $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_dhcpd.err \
@@ -286,7 +286,7 @@ test01()
 	else
 		tst_res TINFO $LTPTMP/tst_dhcpd.out "Test #1 DHCP server statistics:"
 		tst_resm TINFO "Test #1: stoping dhcp server"
-		killall dhcpd &>$LTPTMP/tst_dhcpd.err || RC=$?
+		killall dhcpd > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_brk TBROK $LTPTMP/tst_dhcpd.err NULL \

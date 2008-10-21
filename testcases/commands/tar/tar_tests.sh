@@ -68,7 +68,7 @@ $LTPBIN/tst_resm TINFO \
 touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
 
 tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 &>$LTPTMP/tar_tst.out || RC=$?
+    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 
 if [ $RC -eq 0 ]; then
     if [ -f $LTPTMP/tar_tstf.tar ]; then
@@ -95,15 +95,15 @@ $LTPBIN/tst_resm TINFO \
     "TEST #1: tar command with tvf options lists all files in an archive file"
 
 if [ -f $LTPTMP/tar_tstf.tar ]; then
-    echo "$LTPTMP/tar_tstf.tar exists" &>/dev/null
+    echo "$LTPTMP/tar_tstf.tar exists" > /dev/null 2>&1
 else
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
     tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 &>$LTPTMP/tar_tst.out || RC=$?
+	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
     
     if [ $RC -eq 0 ]; then
 	if [ -f $LTPTMP/tar_tstf.tar ]; then
-	    echo "tar file created" &>/dev/null
+	    echo "tar file created" > /dev/null 2>&1
 	else
 	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out \
 		"tar: cvf option failed to create archive.  Reason"
@@ -116,10 +116,10 @@ else
     fi
 fi
 
-tar -tvf $LTPTMP/tar_tstf.tar &>/$LTPTMP/tar_tst.out || RC=$?
+tar -tvf $LTPTMP/tar_tstf.tar > /$LTPTMP/tar_tst.out 2>&1 || RC=$?
 
 if [ $RC -eq 0 ]; then
-    grep  "tar_tstf1" $LTPTMP/tar_tst.out &>$LTPTMP/tar_tst2.out || RC1=$?
+    grep  "tar_tstf1" $LTPTMP/tar_tst.out > $LTPTMP/tar_tst2.out 2>&1 || RC1=$?
     grep  "tar_tstf2" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC2=$?
     grep  "tar_tstf3" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC3=$?
     
@@ -146,12 +146,12 @@ $LTPBIN/tst_resm TINFO \
 touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
 
 tar zcvf $LTPTMP/tar_tstf.tgz $LTPTMP/tar_tstf1 \
-    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 &>$LTPTMP/tar_tst.out || RC=$?
+    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 
 if [ $RC -eq 0 ]; then
     if [ -f $LTPTMP/tar_tstf.tgz ]; then
 	file $LTPTMP/tar_tstf.tgz | grep "gzip compressed data" \
-            &>$LTPTMP/tar_tst.out || RC=$?
+            > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 	if [ $RC -eq 0 ]; then
 	    $LTPBIN/tst_resm TPASS \
 		"tar: zcvf option created a compressed tar file."
@@ -182,12 +182,12 @@ $LTPBIN/tst_resm TINFO \
     "TEST #4: tar command with xvf options extracts files from an archive file"
 
 if [ -f $LTPTMP/tar_tstf.tar ]; then
-    echo "tar file exists" &>/dev/null
+    echo "tar file exists" > /dev/null 2>&1
 else
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
     
     tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 &>$LTPTMP/tar_tst.out || RC=$?
+	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
     
     if [ $RC -eq 0 ]; then
 	if [ -f $LTPTMP/tar_tstf.tar ];	then
@@ -204,7 +204,7 @@ else
     fi
 fi
 
-tar xvf $LTPTMP/tar_tstf.tar &>$LTPTMP/tar_tst.out || RC=$?
+tar xvf $LTPTMP/tar_tstf.tar > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 
 if [ $? -eq 0 ]; then
    if [ -d $LTPTMP -a -f $LTPTMP/tar_tstf1 -a -f $LTPTMP/tar_tstf2 -a -f $LTPTMP/tar_tstf3 ]; then
@@ -233,17 +233,17 @@ $LTPBIN/tst_resm TINFO \
 	"TEST #5: tar command with zxvf options extracts a compressed archive file"
 
 if [ -f tar_tstf.tgz ]; then
-    echo "compressed archive file already exists" &>/dev/null
+    echo "compressed archive file already exists" > /dev/null 2>&1
 else
 
     touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
     tar zcvf $LTPTMP/tar_tstf.tgz $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 &>$LTPTMP/tar_tst.out || RC=$?
+	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
     
 	if [ $RC -eq 0 ]; then
 	    if [ -f $LTPTMP/tar_tstf.tgz ]; then
 		file $LTPTMP/tar_tstf.tgz | grep "gzip compressed data" \
-		    &>$LTPTMP/tar_tst.out || RC=$?
+		    > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 		if [ $RC -eq 0 ]; then
 		    $LTPBIN/tst_resm TINFO  \
 			"tar: zcvf option created a compressed tar file."
@@ -264,7 +264,7 @@ else
 	fi
 fi
 
-tar zxvf $LTPTMP/tar_tstf.tgz &>$LTPTMP/tar_tst.out || RC=$?
+tar zxvf $LTPTMP/tar_tstf.tgz > $LTPTMP/tar_tst.out 2>&1 || RC=$?
 
 if [ $? -eq 0 ]; then
     if [ -d $LTPTMP -a -f $LTPTMP/tar_tstf1 -a -f $LTPTMP/tar_tstf2 -a -f $LTPTMP/tar_tstf3 ]; then

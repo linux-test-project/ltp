@@ -61,7 +61,7 @@ init()
 	
 	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
 
-	which cp &> $LTPTMP/tst_cp.err || RC=$?
+	which cp > $LTPTMP/tst_cp.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
@@ -69,7 +69,7 @@ init()
 		return $RC
 	fi
 
-	mkdir -p $LTPTMP/tst_cp.tmp &> $LTPTMP/tst_cp.err || RC=$? 
+	mkdir -p $LTPTMP/tst_cp.tmp > $LTPTMP/tst_cp.err 2>&1 || RC=$? 
 	if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
@@ -104,7 +104,7 @@ creat_dirnfiles()
 	while [ $dircnt -lt $numdirs ]
 	do
 		dirname=$dirname/d.$dircnt
-        mkdir -p $dirname  &>$LTPTMP/tst_cp.err || RC=$?
+        mkdir -p $dirname  > $LTPTMP/tst_cp.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
@@ -165,7 +165,7 @@ creat_expout()
 			echo "f.$fcnt " 1>>$LTPTMP/tst_cp.exp
 			fcnt=$(($fcnt+1))
 		done
-		echo -e "\n" 1>>$LTPTMP/tst_cp.exp
+		printf "\n\n" 1>>$LTPTMP/tst_cp.exp
 	done
 }
 
@@ -201,7 +201,7 @@ test01()
 		return $RC
 	fi
 
-	cp -R $LTPTMP/tst_cp.tmp $LTPTMP/tst_cp.tmp1 &>$LTPTMP/tst_cp.err || RC=$?
+	cp -R $LTPTMP/tst_cp.tmp $LTPTMP/tst_cp.tmp1 > $LTPTMP/tst_cp.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
 	then
 		$LTPBIN/tst_res TFAIL $LTPTMP/tst_cp.err \
@@ -210,14 +210,14 @@ test01()
 	fi
 
 	$LTPBIN/tst_resm TINFO "Test #1: creating output file"
-	ls -R $LTPTMP/tst_cp.tmp1 &>$LTPTMP/tst_cp.out
+	ls -R $LTPTMP/tst_cp.tmp1 > $LTPTMP/tst_cp.out 2>&1
 
 	$LTPBIN/tst_resm TINFO "Test #1: creating expected output file"
 	creat_expout $numdirs $numfiles $LTPTMP/tst_cp.tmp1
 
 	$LTPBIN/tst_resm TINFO \
 	    "Test #1: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_cp.out $LTPTMP/tst_cp.exp &>$LTPTMP/tst_cp.err \
+	diff -w -B -q $LTPTMP/tst_cp.out $LTPTMP/tst_cp.exp > $LTPTMP/tst_cp.err 2>&1 \
 		|| RC=$?
 	if [ $RC -ne 0 ]
 	then

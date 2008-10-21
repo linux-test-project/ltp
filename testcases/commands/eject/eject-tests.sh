@@ -72,11 +72,11 @@ export TST_COUNT=1
 
 $LTPBIN/tst_resm TINFO "Test #1: eject -d will list the default device."
 
-eject -d &>$LTPTMP/tst_eject.res || RC=$?
+eject -d > $LTPTMP/tst_eject.res 2>&1 || RC=$?
 if [ $RC -eq 0 ]
 then
     grep "eject: default device:" $LTPTMP/tst_eject.res \
-        &>$LTPTMP/tst_eject.out || RC1=$?
+        > $LTPTMP/tst_eject.out 2>&1 || RC1=$?
     grep "cdrom" $LTPTMP/tst_eject.res \
         2>&1 1>>$LTPTMP/tst_eject.out  || RC2=$?
     if [ $RC1 -eq 0 ] && [ $RC2 -eq 0 ]
@@ -104,15 +104,15 @@ RC=0
 $LTPBIN/tst_resm TINFO "Test #2: eject commad with no options"
 $LTPBIN/tst_resm TINFO "Test #2: will eject the default cdrom device."
 
-eject -v &>$LTPTMP/tst_eject.res || RC=$?
+eject -v > $LTPTMP/tst_eject.res 2>&1 || RC=$?
 if [ $RC -eq 0 ]
 then
     grep "CD-ROM eject command succeeded" $LTPTMP/tst_eject.res \
-        &>$LTPTMP/tst_eject.out || RC=$?
+        > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -eq 0 ]
     then
         # Close the tray if it is supported.
-        eject -t &>/dev/null
+        eject -t > /dev/null 2>&1
         $LTPBIN/tst_resm TPASS  "Test #2: eject succeded"
     else
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out  \
@@ -139,14 +139,14 @@ $LTPBIN/tst_resm TINFO "Test #3: eject command will eject the default cdrom"
 $LTPBIN/tst_resm TINFO "Test #3: device and also unmount the device if it"
 $LTPBIN/tst_resm TINFO "Test #3: is currently mounted."
 
-cp /etc/fstab $LTPTMP/fstab.bak &>/dev/null
+cp /etc/fstab $LTPTMP/fstab.bak > /dev/null 2>&1
 
 if [ -d $LTPTMP/cdrom ]
 then
     $LTPBIN/tst_resm TINFO \
         "Test #3: test cdrom mount point $LTPTMP/cdrom exists. Skip creation" 
 else
-    mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+    mkdir -p $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -163,7 +163,7 @@ then
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
-mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+mount $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     echo ".Failed to mount $LTPTMP/cdrom." >> $LTPTMP/tst_eject.out 2>/dev/null
@@ -171,11 +171,11 @@ then
              "Test #3: mount failed. Reason:"
     TFAILCNT=$(( $TFAILCNT+1 ))
 else
-    eject &>$LTPTMP/tst_eject.out || RC=$?
+    eject > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -eq 0 ]
     then 
-        mount &>$LTPTMP/tst_eject.res
-        grep "$LTPTMP/cdrom" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out \
+        mount > $LTPTMP/tst_eject.res 2>&1
+        grep "$LTPTMP/cdrom" $LTPTMP/tst_eject.res > $LTPTMP/tst_eject.out 2>&1 \
             || RC=$?
         if [ $RC -ne 0 ]
         then
@@ -194,7 +194,7 @@ fi
 
 if [ -f $LTPTMP/fstab.bak ]
 then
-    mv $LTPTMP/fstab.bak /etc/fstab &>/dev/null
+    mv $LTPTMP/fstab.bak /etc/fstab > /dev/null 2>&1
 else
     $LTPBIN/tst_resm TINFO "Test #3: Could not restore /etc/fstab coz"
     $LTPBIN/tst_resm TINFO "Test #3: backup file $LTPTMP/fstab.bak was lost!"
@@ -220,7 +220,7 @@ if [ -d $LTPTMP/cdrom ]
 then
     $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom exists, skip creating the directory" 
 else
-    mkdir -p $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+    mkdir -p $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -232,12 +232,12 @@ fi
 # Check if /etc/fstab has this temporary mount point for /dev/cdrom listed 
 # as one of the entries. If not create and entry and make a back up of the 
 # origianl /etc/fstab
-grep "$LTPTMP/cdrom" /etc/fstab &>$LTPTMP/tst_eject.out || RC=$?
+grep "$LTPTMP/cdrom" /etc/fstab > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ -f $LTPTMP/fstab.bak && $RC -eq 0 ]
 then
      $LTPBIN/tst_resm TINFO "$LTPTMP/cdrom entry exists in /etc/fstab" 
 else
-    cp /etc/fstab $LTPTMP/fstab.bak &>$LTPTMP/tst_eject.out
+    cp /etc/fstab $LTPTMP/fstab.bak > $LTPTMP/tst_eject.out 2>&1
     echo "/dev/cdrom $LTPTMP/cdrom iso9660 defaults,ro,user,noauto 0 0" >>/etc/fstab 2>$LTPTMP/tst_eject.out || RC=$?
     if [ $RC -ne 0 ]
     then
@@ -251,7 +251,7 @@ fi
 # and enable auto-eject. unmounting $LTPTMP/cdrom should open the tray and
 # eject the cdrom.
 
-mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+mount $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -259,7 +259,7 @@ then
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
-eject -a 1 &>$LTPTMP/tst_eject.out || RC=$?
+eject -a 1 > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
@@ -281,7 +281,7 @@ fi
 # closing the device i.e unmounting $LTPTMP/cdrom should now open the tray
 # i.e auto-eject the cdrom.
 
-umount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+umount $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -299,7 +299,7 @@ fi
 
 # disable auto-eject, closing the device should not open the tray.
 
-eject -a 0 &>$LTPTMP/tst_eject.out || RC=$?
+eject -a 0 > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.out NULL \
@@ -311,14 +311,14 @@ fi
 
 # close the tray
 
-eject -tv &>$LTPTMP/tst_eject.res || RC=$?
+eject -tv > $LTPTMP/tst_eject.res 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_res TFAIL $LTPTMP/tst_eject.res NULL \
         "Test #4: eject command to close the tray. Reason:"
     TFAILCNT=$(( $TFAILCNT+1 ))
 else
-    grep "closing tray" $LTPTMP/tst_eject.res &>$LTPTMP/tst_eject.out || RC=$?    
+    grep "closing tray" $LTPTMP/tst_eject.res > $LTPTMP/tst_eject.out 2>&1 || RC=$?    
     if [ $RC -eq 0 ]
     then
         $LTPBIN/check_tray || RC=$?
@@ -331,7 +331,7 @@ else
     fi
 fi
 
-mount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+mount $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -339,7 +339,7 @@ then
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
-umount $LTPTMP/cdrom &>$LTPTMP/tst_eject.out || RC=$?
+umount $LTPTMP/cdrom > $LTPTMP/tst_eject.out 2>&1 || RC=$?
 if [ $RC -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/tst_eject.out NULL \
@@ -360,7 +360,7 @@ fi
 
 if [ -f $LTPTMP/fstab.bak ]
 then
-    mv $LTPTMP/fstab.bak /etc/fstab &>/dev/null
+    mv $LTPTMP/fstab.bak /etc/fstab > /dev/null 2>&1
 else
     $LTPBIN/tst_resm TINFO "Test #4: Could not restore /etc/fstab coz"
     $LTPBIN/tst_resm TINFO "Test #4: backup file $LTPTMP/fstab.bak was lost!"
@@ -369,6 +369,6 @@ fi
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
 rm -fr $LTPTMP/tst_eject* $LTPTMP/cdrom
-eject -t &>/dev/null
+eject -t > /dev/null 2>&1
 
 exit $TFAILCNT
