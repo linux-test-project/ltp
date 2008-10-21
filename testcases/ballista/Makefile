@@ -1,4 +1,4 @@
-ifeq ($(shell perl -v &> /dev/null && echo yes),yes)
+ifeq ($(shell perl -v > /dev/null 2>&1 && echo yes),yes)
 
 all: bal
 

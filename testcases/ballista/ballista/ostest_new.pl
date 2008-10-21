@@ -285,7 +285,7 @@ while(<CALLTABLEIN>)
    close(INCLUDEFILE);
 
 # if ((system("./makeBallista  $function")/256) != 0)
- if ((system("./makeBallista  $function >& /dev/null")/256) != 0)	# if makeBallista fails, don't try to run ballista!
+ if ((system("./makeBallista  $function > /dev/null 2>&1")/256) != 0)	# if makeBallista fails, don't try to run ballista!
   {
 	print "\nmakeBallista failed for $function.  $function will not be tested -- this function may not exist on your operating system.";
 	print FAILFILE "makeBallista failed for $function.  $function will not be tested -- this function may not exist on your operating system.\n";
