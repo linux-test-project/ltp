@@ -149,8 +149,9 @@ int main(int ac, char **av)
 void
 setup(void)
 {
-FILE *fp;
-
+#if !defined PID_MAX_DEFAULT && !defined PID_MAX
+  FILE *fp;
+#endif
 
 #ifdef PID_MAX_DEFAULT
   pid_max = PID_MAX_DEFAULT;
