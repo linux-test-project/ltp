@@ -18,6 +18,7 @@ mtest06 mmap1 -x 0.05
 
 mem01 mem01
 mem02 mem02
+mem03 mem03
 
 page01 page01
 page02 page02

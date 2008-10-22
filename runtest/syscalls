@@ -177,7 +177,7 @@ fcntl12 fcntl12
 fcntl13 fcntl13
 fcntl14 fcntl14
 fcntl15 fcntl15
-#fcntl16 fcntl16 #Contains errors.
+fcntl16 fcntl16
 fcntl17 fcntl17
 fcntl18 fcntl18
 fcntl19 fcntl19
@@ -188,9 +188,8 @@ fcntl23 fcntl23
 fcntl24 fcntl24
 fcntl25 fcntl25
 fcntl26 fcntl26
-# The tests for these system calls  fcntl27 and fcntl28 are temporarily being disabled
-# fcntl27 fcntl27
-# fcntl28 fcntl28
+fcntl27 fcntl27
+fcntl28 fcntl28
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
@@ -472,6 +471,8 @@ modify_ldt02 run-modify_ldt02.sh
 #mount03 mount03 -D /dev/...
 #mount04 mount04 -D /dev/...
 
+mount1234 test_mount
+
 move_pages01 move_pages.sh 01
 move_pages02 move_pages.sh 02
 move_pages03 move_pages.sh 03
@@ -568,9 +569,11 @@ open10 open10
 openat01 openat01
 
 mincore01 mincore01
-#mincore02 mincore02 currently hangs and does not exit correctly
+mincore02 mincore02 
+
 madvise01 madvise01
 madvise02 madvise02
+madvise03 madvise03
 
 pathconf01 pathconf01
 
@@ -612,6 +615,8 @@ pselect01 pselect01
 ptrace01 ptrace01
 ptrace02 ptrace02
 ptrace03 ptrace03
+ptrace04 ptrace04
+ptrace06 ptrace06
 
 pwrite01 pwrite01
 pwrite02 pwrite02
@@ -915,9 +920,8 @@ statfs03 statfs03
 
 statvfs01 statvfs01
 
-# This syscall is obsoleted by settimeofday.
-#stime01 stime01
-#stime02 stime02
+stime01 stime01
+stime02 stime02
 
 string01 string01
 
@@ -978,9 +982,8 @@ syslog10 syslog10
 syslog11 syslog11
 syslog12 syslog12
 
-# This syscall is obsoleted by gettimeofday.
-# time01 time01
-# time02 time02
+time01 time01
+time02 time02
 
 times01 times01
 times03 times03
@@ -1002,7 +1005,7 @@ truncate04_64 truncate04_64
 # include the ulimit.h file anymore.  The test will fail
 # because the error handling has been simplified.
 # 
-# ulimit01 ulimit01
+ulimit01 ulimit01
 
 umask01 umask01
 umask02 umask02
@@ -1029,6 +1032,8 @@ unlinkat01 unlinkat01
 #umount01 umount01 -D /dev/...
 #umount02 umount02 -D /dev/...
 #umount03 umount03 -D /dev/...
+
+umount123 test_umount
 
 ustat01 ustat01
 ustat02 ustat02

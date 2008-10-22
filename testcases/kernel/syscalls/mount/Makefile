@@ -31,6 +31,7 @@ all: $(TARGETS)
 
 install: setuid_test.mode
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	ln -f test_mount ../../../bin/
 
 clean:
 	rm -f $(TARGETS)
