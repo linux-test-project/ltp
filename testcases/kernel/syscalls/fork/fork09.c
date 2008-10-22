@@ -35,6 +35,9 @@
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
+ *	10/2008 Suzuki K P <suzuki@in.ibm.com>
+ *		Fix maximum number of files open logic.
+ *
  * RESTRICTIONS
  * 	None
  */
@@ -124,6 +127,9 @@ int main(int ac, char **av)
 		for (nfiles = first; nfiles < OPEN_MAX; nfiles++) {
 			sprintf(filname, "file%d.%d", nfiles, mypid);
 			if ((fildeses[nfiles] = fopen(filname, "a")) == NULL) {
+				/* Did we already reach OPEN_MAX ? */
+				if (errno == EMFILE)
+					break;
 				tst_brkm(TBROK, cleanup, "Parent: cannot open "
 					 "file %d %s errno = %d", nfiles,
 					 filname, errno);
