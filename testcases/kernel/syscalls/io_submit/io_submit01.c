@@ -128,7 +128,7 @@ main(int argc, char** argv)
 		  EFAULT One of the data structures points to invalid data.
 		*/
 		expected_return = -EFAULT;
-		TEST(io_submit( ctx, 0, (void*)-1 ));
+		TEST(io_submit( ctx, 1, (void*)-1 ));
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		} else if (TEST_RETURN == expected_return) {
@@ -140,6 +140,34 @@ main(int argc, char** argv)
 				 "expected %d", TEST_RETURN,
 				 expected_return);
 		}
+
+		/* Special case EFAULT or EINVAL (indetermination)
+		  
+		  The errno depends on the per architecture implementation
+		  of io_submit. On the architecture using compat_sys_io_submit
+		  as its implementation, errno is set to -EINVAL. */
+		{
+			long expected_fault  = -EFAULT;  
+			long expected_inval  = -EINVAL;  
+
+		  
+			TEST(io_submit( ctx, 0, (void*)-1 ));
+			if (TEST_RETURN == 0) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+			} else if (TEST_RETURN == expected_fault
+				   || TEST_RETURN == expected_inval) {
+				tst_resm(TPASS, "expected failure - "
+					 "returned value = %d : %s", (-1 * TEST_RETURN),
+					 strerror(-1 * TEST_RETURN));
+			} else {
+				tst_resm(TFAIL, "unexpected returned value - %d - "
+					 "expected %d(%s) or %d(%s)", TEST_RETURN,
+					 expected_fault, strerror(-1 * expected_fault),
+					 expected_inval, strerror(-1 * expected_inval));
+			}
+
+		}
+
 
 		/*
 		  EBADF  The file descriptor specified in the first iocb is invalid.
