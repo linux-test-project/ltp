@@ -503,6 +503,8 @@ msgctl06 msgctl06
 msgctl07 msgctl07
 msgctl08 msgctl08
 msgctl09 msgctl09
+msgctl10 msgctl10
+msgctl11 msgctl11
 
 msgget01 msgget01
 msgget02 msgget02
