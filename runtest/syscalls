@@ -377,6 +377,8 @@ kill12 kill12
 lchown01 lchown01
 lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
 
+libevent01 (cd ${LTPROOT}/testcases/kernel/syscalls/libevent; ./run_libevent.sh)
+
 link01 symlink01 -T link01
 link02 link02
 link03 link03
