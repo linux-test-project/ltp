@@ -134,9 +134,9 @@ test01()
 	TCID=iptables01		# Name of the test case.
 	TST_COUNT=1		# Test number.
 
-	chaincnt=0	# chain counter
+	local chaincnt=0	# chain counter
 
-	cmd="iptables -L -t filter"
+	local cmd="iptables -L -t filter"
 	tst_resm TINFO \
 		"$TCID: $cmd will list all rules in table filter."
 	$cmd > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
@@ -155,7 +155,7 @@ test01()
 		fi
 	fi
 
-	cmd="iptables -L -t nat"
+	local cmd="iptables -L -t nat"
 	tst_resm TINFO \
 		"$TCID: $cmd will list all rules in table nat."
 	$cmd > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
@@ -174,7 +174,7 @@ test01()
 		fi
 	fi
 
-	cmd="iptables -L -t mangle" 
+	local cmd="iptables -L -t mangle" 
 	tst_resm TINFO \
 		"$TCID: $cmd will list all rules in table mangle."
 	$cmd > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
@@ -351,8 +351,8 @@ test04()
 	RC=0			# Return value from commands.
 	TCID=iptables04		# Name of the test case.
 	TST_COUNT=4		# Test number.
-	dport=45886				# destination port
-	logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
+	local dport=45886				# destination port
+	local logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
 
 	tst_resm TINFO \
 		"$TCID: Use iptables to log packets to particular port."
@@ -417,8 +417,8 @@ test05()
 	RC=0			# Return value from commands.
 	TCID=iptables05		# Name of the test case.
 	TST_COUNT=5		# Test number.
-	dport=0					# destination port
-	logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
+	local dport=0					# destination port
+	local logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
 
 	tst_resm TINFO \
 		"$TCID: Use iptables to log packets to multiple ports."
@@ -492,8 +492,8 @@ test06()
 	RC=0			# Return value from commands.
 	TCID=iptables06		# Name of the test case.
 	TST_COUNT=6		# Test number.
-	logcnt=0		# log counter
-	logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
+	local logcnt=0		# log counter
+	local logprefix="$TCID-$(date +%m%d%H%M%S):"	# log-prefix used by iptables
 
 	tst_resm TINFO \
 		"$TCID: Use iptables to log ping request with limited rate."
