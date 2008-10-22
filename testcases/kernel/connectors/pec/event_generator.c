@@ -148,7 +148,7 @@ static inline void gen_gid(void)
  */
 static void process_options(int argc, char **argv)
 {
-	char c;
+	int  c;
 	char *end;
 
 	while ((c = getopt(argc, argv, "e:n:h")) != -1) {
