@@ -189,13 +189,11 @@ void read_raw_device()
 	int	i;                         /* loop counter */
 	int	blocks=0;                    /* number of blocks read */
 #ifndef __linux__
-	static char   raw_dev[16] = "/dev/hd2";  /* name of raw device file */
+	char   raw_dev[50] = "/dev/hd2";  /* name of raw device file */
 #else
-	static char   raw_dev[16];		/* name of raw device file  */
+	char   *raw_dev;		/* name of raw device file  */
 
-        if (getenv("RAWDEV"))
-        	sprintf(raw_dev, "%s", getenv("RAWDEV")); 
-        else
+	if ((raw_dev = getenv("RAWDEV")) == NULL)
         {
 	    errno = ENODATA;
 	    sys_error("environment variable RAWDEV not set", __FILE__,__LINE__);

@@ -69,6 +69,7 @@
 #include <signal.h>
 #include <pwd.h>
 #include <time.h>
+#include <limits.h>
 #include "sched.h"
 
 /*
@@ -421,7 +422,7 @@ char 	*name,     /* filename of testcase to run */
 	*param3;   /* if sched_tc6:  fork flag, 0=false, 1=true */
 float *t2;       /* if sched_tc6:  second time returned from testcase */
 {
-	char	temp[50],	/* holds pathname and returned floating number */
+	char	temp[PATH_MAX],	/* holds pathname and returned floating number */
 		t2asc[50];   	/* holds second returned floating number */
 	int	saved_pid;	/* process id of forked process */
 	FILE	*datafile;	/* file pointer for temporary file */
