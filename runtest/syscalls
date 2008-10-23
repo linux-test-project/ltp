@@ -101,6 +101,8 @@ dup203 dup203
 dup204 dup204
 dup205 dup205
 
+epoll01 epoll-ltp
+
 eventfd01 eventfd01
 
 execl01 execl01
