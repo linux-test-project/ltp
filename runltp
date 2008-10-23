@@ -518,19 +518,25 @@ main()
     
 	EOF
 
-        for SCENFILES in ${LTPROOT}/runtest/syscalls ${LTPROOT}/runtest/fs \
-                     ${LTPROOT}/runtest/fsx ${LTPROOT}/runtest/dio \
-                     ${LTPROOT}/runtest/mm ${LTPROOT}/runtest/ipc \
-                     ${LTPROOT}/runtest/sched ${LTPROOT}/runtest/math \
-                     ${LTPROOT}/runtest/nptl ${LTPROOT}/runtest/pty \
-                     ${LTPROOT}/runtest/containers \
-                     ${LTPROOT}/runtest/fs_bind \
-                     ${LTPROOT}/runtest/controllers \
-                     ${LTPROOT}/runtest/filecaps \
-                     ${LTPROOT}/runtest/fcntl-locktests \
-                     ${LTPROOT}/runtest/connectors \
-                     ${LTPROOT}/runtest/admin_tools \
-                     ${LTPROOT}/runtest/timers
+        for SCENFILES in ${LTPROOT}/runtest/syscalls                \
+                         ${LTPROOT}/runtest/fs                      \
+                         ${LTPROOT}/runtest/fsx                     \
+                         ${LTPROOT}/runtest/dio                     \
+                         ${LTPROOT}/runtest/mm                      \
+                         ${LTPROOT}/runtest/ipc                     \
+                         ${LTPROOT}/runtest/sched                   \
+                         ${LTPROOT}/runtest/math                    \
+                         ${LTPROOT}/runtest/nptl                    \
+                         ${LTPROOT}/runtest/pty                     \
+                         ${LTPROOT}/runtest/containers              \
+                         ${LTPROOT}/runtest/fs_bind                 \
+                         ${LTPROOT}/runtest/controllers             \
+                         ${LTPROOT}/runtest/filecaps                \
+                         ${LTPROOT}/runtest/fcntl-locktests         \
+                         ${LTPROOT}/runtest/connectors              \
+                         ${LTPROOT}/runtest/admin_tools             \
+                         ${LTPROOT}/runtest/timers                  \
+                         ${LTPROOT}/runtest/power_management_tests
         do
             [ -e "$SCENFILES" ] || \
             {

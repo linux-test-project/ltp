@@ -1,0 +1,78 @@
+################################################################################
+##                                                                            ##
+## Copyright (c) International Business Machines  Corp., 2007                 ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+################################################################################
+
+POWER MANAGEMENT TESTS AUTOMATION SUITE
+----------------------------------------
+The tests requires the Kernel to  be compiled with the following config's
+
+for CPU FREQUENCY tests:
+ 
+CONFIG_CPU_FREQ
+CONFIG_CPU_FREQ_TABLE
+CONFIG_CPU_FREQ_DEBUG
+CONFIG_CPU_FREQ_STAT
+CONFIG_CPU_FREQ_STAT_DETAILS
+CONFIG_CPU_FREQ_DEFAULT_GOV_*
+CONFIG_CPU_FREQ_GOV_*
+
+for CPU IDLE tests:
+
+CONFIG_CPU_IDLE
+CONFIG_CPU_IDLE_GOV_LADDER
+CONFIG_CPU_IDLE_GOV_MENU
+
+for SCHED_MC tests:
+
+CONFIG_SCHED_MC
+
+The power management test automation suite helps run the power management functionality
+(e.g: cpu frequency, cpu idle etc..) tests and report results. 
+
+Test Scripts for CPU FREQUENCY:
+change_freq.sh
+change_govr.sh
+check_cpufreq_sysfs_files.sh
+
+Test Scripts for CPU IDLE:
+will be added soon
+
+Test Scripts for SCHED_MC:
+test_sched_mc.sh
+
+Common functionality:
+pm_include.sh
+check_kv_arch.c 
+pwkm_load_unload.sh
+
+To run your tests you can execute the runpwtests.sh
+
+To run the tests individually :
+
+P.S. As of now the supporting architecture(s) are x86,x86_64
+
+Support of system:
+-----------------
+If you see some thing like following,
+
+Power Management    1  FAIL  :  Required kernel configuration for SCHED_MC NOT set
+or
+Power Management    1  FAIL  :  Required kernel configuration for CPU_FREQ NOT set
+
+Then either configuration is not set or the system won't support.
