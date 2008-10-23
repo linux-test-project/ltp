@@ -51,6 +51,13 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 #ifdef HAS_SIGNALFD
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,23)
+#define SSI_SIGNO signo
+#else
+#define SSI_SIGNO ssi_signo
+#endif
+
 
 #ifdef HAS_SYS_SIGNALFD_H
 
@@ -170,15 +177,15 @@ do_test1(int ntst, int sig)
 		goto out;
 	}
 	
-	if (fdsi.ssi_signo == sig) {
+	if (fdsi.SSI_SIGNO == sig) {
 		tst_resm(TPASS, "got expected signal");
 		sfd_for_next = sfd;
 		goto out;
 	}
 	else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.ssi_signo,
-			 strsignal(fdsi.ssi_signo));
+			 fdsi.SSI_SIGNO,
+			 strsignal(fdsi.SSI_SIGNO));
 		sfd_for_next = -1;
 		close(sfd);
 		goto out;
@@ -264,14 +271,14 @@ do_test2(int ntst, int fd, int sig)
 		goto out;
 	}
 	
-	if (fdsi.ssi_signo == sig) {
+	if (fdsi.SSI_SIGNO == sig) {
 		tst_resm(TPASS, "got expected signal");
 		goto out;
 	}
 	else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.ssi_signo,
-			 strsignal(fdsi.ssi_signo));
+			 fdsi.SSI_SIGNO,
+			 strsignal(fdsi.SSI_SIGNO));
 		goto out;
 	}
 out:
