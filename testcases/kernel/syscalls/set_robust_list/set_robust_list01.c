@@ -47,12 +47,23 @@
 #include <errno.h>
 
 #include <sys/syscall.h>
-#include <asm/types.h> /* needed because of u32 in futex.h */
-#ifndef u32
-typedef unsigned int u32;
-#endif
 #include <sys/types.h>
-#include <linux/futex.h>
+
+#ifdef __NR_set_robust_list
+#ifndef __user
+#define __user
+#endif
+
+struct robust_list {
+    struct robust_list __user *next;
+};
+
+struct robust_list_head {
+    struct robust_list list;
+    long futex_offset;
+    struct robust_list __user *list_op_pending;
+};
+#endif
 
 #include "test.h"
 #include "usctest.h"
