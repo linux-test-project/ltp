@@ -79,7 +79,7 @@ clean:
 %.test: %.o
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
-	{ nm -g $< | grep -q " T main"; } || \
+	{ nm -g $< | grep -q ' T main\| D main'; } || \
 	{ echo "$(@:.test=): link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
 	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
