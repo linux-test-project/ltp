@@ -1,6 +1,6 @@
 #!/bin/bash
 
 pthserv &
-pthcli
+pthcli 127.0.0.1
 killall pthserv
 
