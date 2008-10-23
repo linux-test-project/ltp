@@ -165,7 +165,7 @@ static inline int getcpu(unsigned *cpu_id, unsigned *node_id, void *cache_struct
 	#if defined(__i386__)
 		return syscall(318, cpu_id,node_id,cache_struct);
 	#elif __GLIBC_PREREQ(2,6)
-		return *cpu_id = sched_getcpu();
+		*cpu_id = sched_getcpu();
 	#endif
 	return 0;
 }
