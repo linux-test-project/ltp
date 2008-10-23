@@ -1,0 +1,57 @@
+#################################
+#
+# Policy for testing boundary features
+#
+
+attribute test_bounds_domain;
+unconfined_runs_test(test_bounds_domain)
+corecmd_bin_entry_type(test_bounds_domain)
+
+# Type for test files
+type test_bounds_file_t;
+files_type(test_bounds_file_t)
+
+# Bounded type for files
+type test_bounds_file_red_t;
+files_type(test_bounds_file_red_t)
+
+type test_bounds_file_blue_t;
+files_type(test_bounds_file_blue_t)
+
+# Domain for process that allows to other domains
+type test_bounds_parent_t;
+domain_type(test_bounds_parent_t)
+typeattribute test_bounds_parent_t test_bounds_domain;
+typeattribute test_bounds_parent_t testdomain;
+
+allow test_bounds_parent_t test_bounds_file_t : file { read_file_perms setattr };
+allow test_bounds_parent_t test_bounds_file_red_t : file { rw_file_perms };
+
+# Domain for process that has a bounds type
+type test_bounds_child_t;
+domain_type(test_bounds_child_t)
+typeattribute test_bounds_child_t test_bounds_domain;
+typeattribute test_bounds_child_t testdomain;
+
+allow test_bounds_child_t test_bounds_file_t : file { rw_file_perms };
+allow test_bounds_child_t test_bounds_file_blue_t : file { getattr setattr };
+
+# Domain for process that does not have any bounds type
+type test_bounds_unbound_t;
+domain_type(test_bounds_unbound_t)
+typeattribute test_bounds_unbound_t test_bounds_domain;
+typeattribute test_bounds_unbound_t testdomain;
+
+allow test_bounds_unbound_t test_bounds_file_t : file { rw_file_perms };
+
+# Definition of boundary relationship
+typebounds test_bounds_parent_t test_bounds_child_t;
+typebounds test_bounds_file_t test_bounds_file_red_t, test_bounds_file_blue_t;
+
+# Allow the test_bounds_parent_t to dyntrans
+allow test_bounds_parent_t test_bounds_child_t   : process { dyntransition };
+allow test_bounds_parent_t test_bounds_unbound_t : process { dyntransition };
+
+# Allow all of these domains to be entered from sysadm domain
+miscfiles_domain_entry_test_files(test_bounds_domain)
+sysadm_entry_spec_domtrans(test_bounds_domain)

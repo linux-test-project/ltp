@@ -1,7 +1,7 @@
 POLICYDEVEL = /usr/share/selinux/devel
 SEMODULE = /usr/sbin/semodule
 
-TARGETS=test_global.te test_capable_file.te test_capable_net.te \
+TARGETS=test_global.te test_bounds.te test_capable_file.te test_capable_net.te \
 test_capable_sys.te test_dyntrace.te test_dyntrans.te test_entrypoint.te \
 test_execshare.te test_exectrace.te test_execute_no_trans.te \
 test_fdreceive.te test_file.te test_inherit.te test_ioctl.te test_ipc.te \
