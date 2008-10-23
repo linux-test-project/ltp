@@ -76,6 +76,11 @@ run_case()
 		return 1
 	fi
 
+	if [ $ret2 -eq 2 ]; then
+		tst_brkm TBROK NULL "connector may not be supported"
+		exit 0
+	fi
+
 	if [ $ret2 -ne 0 ]; then
 		tst_resm TFAIL "failed to listen process events"
 		exit_status=1

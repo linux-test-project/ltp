@@ -30,7 +30,27 @@
 #include <sys/poll.h>
 
 #include <linux/netlink.h>
+
+#ifndef NETLINK_CONNECTOR
+
+int main(void)
+{
+	return 2;
+}
+
+#else
+
 #include <linux/connector.h>
+
+#ifndef CN_IDX_PROC
+
+int main(void)
+{
+	return 2;
+}
+
+#else
+
 #define _LINUX_TIME_H
 #include <linux/cn_proc.h>
 
@@ -312,4 +332,8 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+#endif /* CN_IDX_PROC */
+
+#endif /* NETLINK_CONNECTOR */
 
