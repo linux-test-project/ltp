@@ -14,6 +14,7 @@ pthserv: pthserv.o readline.o writen.o
 
 install:
 	@set -e; for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
+	ln -f run_sched_cliserv.sh ../../../bin/
 
 clean:
 	rm -fr $(OFILES) $(TESTS)
