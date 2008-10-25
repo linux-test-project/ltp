@@ -50,20 +50,16 @@
 #include <sys/types.h>
 
 #ifdef __NR_get_robust_list
-#ifndef __user
-#define __user
-#endif
 
 struct robust_list {
-    struct robust_list __user *next;
+    struct robust_list *next;
 };
 
 struct robust_list_head {
     struct robust_list list;
     long futex_offset;
-    struct robust_list __user *list_op_pending;
+    struct robust_list *list_op_pending;
 };
-#endif
 
 #include "test.h"
 #include "usctest.h"
@@ -81,15 +77,11 @@ void cleanup(void);
 int
 main(int argc, char **argv)
 {
-#ifdef __NR_get_robust_list
 	int lc;			/* loop counter */
-#endif
 	char *msg;		/* message returned from parse_opts */
-#ifdef __NR_get_robust_list
     struct robust_list_head head;
     size_t len_ptr; /* size of structure struct robust_list_head */
     int retval;
-#endif
 
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -98,8 +90,6 @@ main(int argc, char **argv)
 	}
 
 	setup();
-
-#ifdef __NR_get_robust_list
 
     len_ptr = sizeof(struct robust_list_head);
 
@@ -233,18 +223,12 @@ main(int argc, char **argv)
 
 	}
 
-#else
-
-    tst_resm(TCONF, "get_robust_list: system call not available.");
-
-#endif
-
 	cleanup();
 
     exit(EXIT_SUCCESS);
 }
 
-void 
+void
 setup(void)
 {
 	TEST_EXP_ENOS(exp_enos);
@@ -252,7 +236,7 @@ setup(void)
     TEST_PAUSE;
 }
 
-void 
+void
 cleanup(void)
 {
     TEST_CLEANUP;
@@ -260,3 +244,11 @@ cleanup(void)
     tst_exit();
 }
 
+#else
+
+int main()
+{
+	puts("get_robust_list: system call not available");
+}
+
+#endif
