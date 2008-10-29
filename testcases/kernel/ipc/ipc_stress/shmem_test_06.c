@@ -80,20 +80,7 @@
 #include <sys/ipc.h>
 
 #include <sys/stat.h>
-off_t offsets[] = {
-0x20000000,
-0x30000000,
-0x48000000,
-0x50000000,
-0x60000000,
-0x70000000,
-0x80000000,
-0x90000000,
-0xA0000000,
-0xB0000000,
-0xBF000000,
-};
-int offsets_cnt = sizeof (offsets) /sizeof (offsets[0]);
+int offsets_cnt = 11;
 /* Defines
  *
  * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB 
@@ -151,7 +138,6 @@ int shmem_size = DEFAULT_SHMEM_SIZE;
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-  off_t offset;
   int i;
   
   int shmid[MAX_SHMEM_NUMBER];	/* (Unique) Shared memory identifier */
@@ -195,12 +181,8 @@ int main (int argc, char **argv)
       
       
       printf ("\n\tAttach shared memory segment to process\n");
-      /*
-       * Attach the shared memory segment to the process
-       */
-      offset = offsets[i];
 
-      if ((long)(shmptr[i] = (char *) shmat (shmid[i], (const void*)offset, 0)) == -1)
+      if ((long)(shmptr[i] = (char *) shmat (shmid[i], NULL, 0)) == -1)
 	{
 	  /* If shmat(2) failed, we need the currect process address
 	     space layout to debug. The failure can be random. */
