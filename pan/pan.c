@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.26 2008/05/19 13:37:14 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.27 2008/10/29 07:03:39 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -444,7 +444,11 @@ main(int argc, char **argv)
 
     rec_signal = send_signal = 0;
     if (run_time != -1) { alarm(run_time); }
+
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
     sa.sa_handler = wait_handler;
+
     sigaction(SIGALRM, &sa, NULL);
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
