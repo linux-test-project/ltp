@@ -330,8 +330,9 @@ main()
 #ifndef __NR_inotify_init
     tst_resm(TWARN, "This test needs a kernel that has inotify syscall.");
     tst_resm(TWARN, "Inotify syscall can be found at kernel 2.6.13 or higher.");
+    return 0;
 #endif
-#ifndef HAS_SYS_INOTIFY:
+#ifndef HAS_SYS_INOTIFY
     tst_resm(TBROK, "can't find header sys/inotify.h");
     return 1;
 #endif
