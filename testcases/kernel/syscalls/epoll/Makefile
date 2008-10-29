@@ -19,7 +19,7 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
-LIBC_HAS_EPOLL := $(shell echo '\#include <sys/epoll.h>' | $(CC) -E - &> /dev/null && echo yes)
+LIBC_HAS_EPOLL := $(shell echo '\#include <sys/epoll.h>' | $(CC) -E - > /dev/null 2>&1 && echo yes)
 ifeq ($(LIBC_HAS_EPOLL),yes)
 CFLAGS += -DLTP_EPOLL_USE_SYS_LIBC
 else
