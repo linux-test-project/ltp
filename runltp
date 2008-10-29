@@ -536,7 +536,8 @@ main()
                          ${LTPROOT}/runtest/connectors              \
                          ${LTPROOT}/runtest/admin_tools             \
                          ${LTPROOT}/runtest/timers                  \
-                         ${LTPROOT}/runtest/power_management_tests
+                         ${LTPROOT}/runtest/power_management_tests  \
+                         ${LTPROOT}/runtest/numa
         do
             [ -e "$SCENFILES" ] || \
             {
