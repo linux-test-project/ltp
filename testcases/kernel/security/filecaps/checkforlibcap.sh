@@ -23,7 +23,7 @@ if [ "x$CC" = "x" ]; then
 	export CC=gcc
 fi
 yesno=0
-if [ "$1" == "yesno" ]; then
+if [ "$1" = "yesno" ]; then
 	yesno=1
 fi
 
