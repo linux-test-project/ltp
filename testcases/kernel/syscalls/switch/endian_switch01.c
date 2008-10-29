@@ -74,6 +74,9 @@ void setup() {
         TEST_PAUSE;
 
 }
+
+extern int main4(int ac, char **av, char **envp, unsigned long *auxv)
+__asm ("main");
 #endif
 
 void cleanup() {
@@ -112,7 +115,7 @@ void do_le_switch(void) {
 		     : "cr0", "r9", "r10", "r11", "r12");
 }
 
-int main(int ac, char **av, char **envp, unsigned long *auxv) {
+int main4(int ac, char **av, char **envp, unsigned long *auxv) {
         setup();
 	for (; *auxv != AT_NULL && *auxv != AT_HWCAP; auxv += 2)
 		;
