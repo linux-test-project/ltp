@@ -31,7 +31,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.6 2008/05/06 15:47:54 vapier Exp $ */
+/* $Id: tst_res.c,v 1.7 2008/10/29 05:34:29 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -607,7 +607,7 @@ tst_brk(int ttype, char *fname, void (*func)(), char *arg_fmt, ...)
     * Print the first result, if necessary.
     */
    if ( Tst_count < TST_TOTAL )
-      tst_res(ttype, fname, tmesg);
+     tst_res(ttype, fname, "%s", tmesg);
 
    /*
     * Determine the number of results left to report.
@@ -689,7 +689,7 @@ tst_brkloop(int ttype, char *fname, void (*func)(), char *arg_fmt, ...)
     * Print the first result, if necessary.
     */
    if ( Tst_count < Tst_lpstart + Tst_lptotal )
-      tst_res(ttype, fname, tmesg);
+     tst_res(ttype, fname, "%s", tmesg);
 
    /*
     * Determine the number of results left to report.
@@ -741,7 +741,7 @@ tst_resm(int ttype, char *arg_fmt, ...)
    /*
     * Call tst_res with a null filename argument.
     */
-   tst_res(ttype, NULL, tmesg);
+   tst_res(ttype, NULL, "%s", tmesg);
 }  /* tst_resm() */
 
 
