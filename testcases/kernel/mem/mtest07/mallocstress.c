@@ -262,19 +262,21 @@ alloc_mem(void * threadnum)
     sop[0].sem_op = 0;
     sop[0].sem_flg = 0;
     int *err;
-    /* waiting for other threads starting */
-    if (semop(semid, sop, 1) == -1) {
-        if (errno != EIDRM)
-            perror("semop");
-        return (void *) -1;
-    }
 
     err = malloc(sizeof(int));
     if (err == NULL) {
         perror("malloc");
         return NULL;
     }
-    
+
+    /* waiting for other threads starting */
+    if (semop(semid, sop, 1) == -1) {
+        if (errno != EIDRM)
+            perror("semop");
+        *err = -1;
+        return (void*)err;
+    }
+
     /* thread N will use growth scheme N mod 4 */
     *err = allocate_free(num_loop, *(int *)threadnum % 4);
     fprintf(stdout, 
@@ -408,8 +410,7 @@ main(int	argc,		/* number of input parameters		      */
         {
             if (th_status == NULL || *th_status == -1)
             {
-                if (*th_status == -1)
-                    free(th_status);
+                free(th_status);
                 fprintf(stderr,
                         "main(): thread [%d] - exited with errors\n", thrd_ndx);
                 ret = -1;
