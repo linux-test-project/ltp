@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/sh -u
 #
+#   Copyright (C) 2008 CAI Qian <caiqian@cclom.cn>
 #   Copyright (c) International Business Machines  Corp., 2003
 #
 #   This program is free software;  you can redistribute it and/or modify
@@ -13,158 +14,167 @@
 #   the GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with this pronram;  if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#   along with this pronram; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+#   USA
 #
-# 	FILE: /etc/at.deny
+#   FILE: /etc/at.deny
 #
-#	PURPOSE: Test that /etc/at.deny , does not allow those in the file to run cron jobs.
+#   PURPOSE: Test that /etc/at.deny , does not allow those in the file
+#   to run cron jobs.
 #
-#	HISTORY:
-#		04/03 Jerone Young (jyoung5@us.ibm.com)
+#   HISTORY:
+#	    04/03 Jerone Young (jyoung5@us.ibm.com)
 #
 
-iam=`whoami`
-
-at_DENY="/etc/at.deny"
-
-TEST_USER1="test_user_1"
-TEST_USER1_HOME="/home/$TEST_USER1"
-TEST_USER2="test_user_2"
-TEST_USER2_HOME="/home/$TEST_USER2"
+deny="/etc/at.deny"
+test_user1="test_user_1"
+test_user2="test_user_2"
+test_user2_home="/home/${test_user2}"
+test_user1_home="/home/${test_user1}"
+tmpfile="/tmp/at_deny_test"
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
 
-do_setup() {
-	#move any files that may get in the way
-	rm /tmp/at_allow_test &> /dev/null
-	mv $at_DENY $at_DENY.old &> /dev/null
+do_setup()
+{
+    # Move any files that may get in the way.
+    rm "${tmpfile}" >/dev/null 2>&1
+    mv "${deny}" "${deny}.old" >/dev/null 2>&1
 
-        rm -rf /home/$TEST_USER1
-        rm -rf /home/$TEST_USER2
-	#remove users for clean enviroment
-	userdel $TEST_USER1 
-	userdel $TEST_USER2
-	sleep 1
-
-#create 1st user
-	useradd -m -g users $TEST_USER1
-	if [ $? != 0 ]
-    then {
-        echo "Could not add test user $TEST_USER1 to system."
-        exit 1
-    }
+    # if /etc/at.allow is there, /etc/at.deny will be ignored. So, we
+    # need to remove it first.
+    if [ -f "/etc/at.allow" ]; then
+        mv /etc/at.allow /etc/at.allow.old
     fi
 
-#create 2nd user	
-	useradd -m -g users $TEST_USER2
-    if [ $? != 0 ]
-    then {
-        echo "Could not add test user $TEST_USER2 to system."
-        exit 1
-    }
+    # Remove users for clean enviroment.
+    rm -rf "${test_user1_home}" "${test_user2_home}"
+    userdel -r "${test_user1}" >/dev/null 2>&1
+    userdel -r "${test_user2}" >/dev/null 2>&1
+
+    # Create the 1st user.
+    useradd -g users -d "${test_user1_home}" "${test_user1}"
+    if [ $? != 0 ]; then
+	echo "Could not add test user ${test_user1} to system."
+	exit 1
     fi
-    # restart atd daemon
+
+    # Create the 2nd user.
+    useradd -g users -d "${test_user2_home}" "${test_user2}"
+    if [ $? != 0 ]; then
+	echo "Could not add test user ${test_user2} to system."
+	exit 1
+    fi
+
+    # This is the workaround for a potential bug.
+    # [Bug 468337] At Refuse to Work with Non-login Shell
+    # https://bugzilla.redhat.com/show_bug.cgi?id=468337
+    # As we are running in non-login shell now, we cannot run the script
+    # by simply given it a relative path. Therefore, we copy it to test
+    # users' home directories, and run it from there.
+    cp "$0" "${test_user1_home}"
+    cp "$0" "${test_user2_home}"
+
+    # Restart atd daemon.
     /etc/init.d/atd restart
-	
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_cleanup
 #-----------------------------------------------------------------------
-do_cleanup(){
-        rm -rf /home/$TEST_USER1
-        rm -rf /home/$TEST_USER2
-	userdel $TEST_USER1
-	userdel $TEST_USER2
-	rm $at_DENY
-	mv $at_DENY.old $at_DENY &> /dev/null
-	rm /tmp/at_allow_test &>/dev/null
+do_cleanup()
+{
+    # We forcefully remove those files anyway. Otherwise userdel may
+    # give us bad warnings.
+    rm -rf "${test_user1_home}" "${test_user2_home}"
+    userdel -r "${test_user1}" >/dev/null 2>&1
+    userdel -r "${test_user2}" >/dev/null 2>&1
+    rm "${deny}"
+    mv "${deny}.old" "${deny}" >/dev/null 2>&1
+    rm "${tmpfile}" >/dev/null 2>&1
+
+    if [ -f /etc/at.allow.old ]; then
+        mv /etc/at.allow.old /etc/at.allow
+    fi
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  run_test
 #-----------------------------------------------------------------------
-run_test() {
-
-if [ $iam = $TEST_USER1 ]
-then 
-	echo "TEST: $at_DENY should allow only those who are not in the file to
-run jobs."
-		
-	echo "(1) TEST THAT PERSON NOT IN $at_DENY IS ABLE TO RUN JOB."
-	echo "echo TEST JOB RAN >> /tmp/at_allow_test 2>&1" | at -m now + 1 minutes	
-	if [ $? != 0 ]; then
-	echo Error while adding job using at for user $TEST_USER1
-	exit 1
-	fi
-	
-	echo "sleeping for 75 seconds...."	
-	sleep 75 
-	
-	EXIT_CODE=1
-	test -e /tmp/at_allow_test && EXIT_CODE=0
-	
-	if [ $EXIT_CODE = 1 ]; then
-		echo "at did not allow user to execute job , TEST FAILED"
-	else
-		echo "at allowed user to exectue test job, TEST PASSED"
-	fi
-
-	rm -f /tmp/at_allow_test &> /dev/null
-	
-	exit $EXIT_CODE	
-fi
-
-if [ $iam = $TEST_USER2 ]
-then
-        echo "(2) TEST THAT PERSON IN $at_DENY IS NOT ABLE TO RUN JOB."
-         
-	echo "echo TEST JOB RAN >> /tmp/at_allow_test 2>&1" | at -m now + 1 minutes                                                                                                    
+run_test()
+{
+    if [ $(whoami) = "${test_user1}" ]; then 
+        echo "TEST: ${deny} should deny only those who are not in the\
+ file to run jobs."
+        echo "(1) TEST THAT PERSON NOT IN ${deny} IS ABLE TO RUN JOB."
+	echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
+         at -m now + 1 minutes	
         if [ $? != 0 ]; then
-        echo Error while adding job user at for user $TEST_USER2
+            echo "Error while adding job using at for user ${test_user1}."
+            exit 1
         fi
-                                                                                                             
-        echo "sleeping for 75 seconds...."
-        sleep 75 
-                                                                                                             
-        EXIT_CODE=0
-        test -e /tmp/at_allow_test && EXIT_CODE=1
-                                                                                                             
-        if [ $EXIT_CODE = 0 ]; then
-                echo "at did not allow user to execute job , TEST PASSED"
+        echo " Sleeping for 75 seconds...."	
+        sleep 75
+	
+        exit_code=1
+        test -e "${tmpfile}" && exit_code=0
+        if [ ${exit_code} -eq 1 ]; then
+            echo "At denyed user to exectue test job, TEST FAILED."
         else
-                echo "at allowed user to exectue test job, TEST FAILED"
+            echo "At did not deny user to execute job, TEST PASSED."
         fi
-                                                                                                             
-        rm -f /tmp/at_allow_test &> /dev/null
-                                                                                                             
-        exit $EXIT_CODE
-fi
 
+	rm -f "${tmpfile}" >/dev/null 2>&1
+        exit ${exit_code}
+
+    elif [ $(whoami) = "${test_user2}" ]; then
+        echo "(2) TEST THAT PERSON IN ${deny} IS NOT ABLE TO RUN JOB."
+         
+	echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
+         at -m now + 1 minutes 
+        if [ $? != 0 ]; then
+            echo "Expected error while adding job user at for user\
+ ${test_user2}"
+        fi
+	echo "Sleeping for 75 seconds...."
+        sleep 75
+
+        exit_code=1
+        test -e "${tmpfile}" || exit_code=0
+        if [ ${exit_code} -eq 1 ]; then
+            echo "At did not deny user to execute job, TEST FAILED."
+        else
+            echo "At denyed user to exectue test job, TEST PASSED."
+        fi
+
+        rm -f "${tmpfile}" >/dev/null 2>&1
+	exit ${exit_code}
+fi
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if [ $iam = "root" ] 
-then
-	do_setup
-	echo $TEST_USER2 > $at_DENY
-	EXIT_CODE=0
-	su $TEST_USER1 -c "$0"
-	if [ $? != 0 ]
-	then 
-	   EXIT_CODE=1
-	fi
-	su $TEST_USER2 -c "$0"
-	if [ $? != 0 ]
-	then EXIT_CODE=1
-	fi 
-	do_cleanup
-	exit $EXIT_CODE
+if [ $(whoami) = "root" ]; then
+    do_setup
+    echo "${test_user2}" >"${deny}"
+    exit_code=0
+    
+    su "${test_user1}" -lc "${test_user1_home}/$(basename $0)"
+    if [ $? != 0 ]; then
+	exit_code=1
+    fi
+    
+    su "${test_user2}" -lc "${test_user2_home}/$(basename $0)"
+    if [ $? != 0 ]; then
+	exit_code=1
+    fi 
+    do_cleanup
+    exit ${exit_code}
 else
-	run_test
+    run_test
+    exit 0
 fi
