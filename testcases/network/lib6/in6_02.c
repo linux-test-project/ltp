@@ -158,7 +158,7 @@ i2ntest1(unsigned int if_index)
 		return 1;
 	}
 	/* else, a valid interface-- double check name */
-	idx = if_nametoindex((char *)TEST_RETURN);
+	idx = if_nametoindex(ifname);
 	if (idx != if_index) {
 		tst_resm(TFAIL, "if_indextoname(%d) returns \"%s\" but "
 			"doesn't if_nametoindex(\"%s\") returns %d",
@@ -166,7 +166,7 @@ i2ntest1(unsigned int if_index)
 		return 0;
 	}
 	tst_resm(TPASS, "if_indextoname(%d) returns \"%s\"", if_index,
-		TEST_RETURN);
+		ifname);
 	return 1;
 }
 
