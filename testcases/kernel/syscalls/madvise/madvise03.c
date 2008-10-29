@@ -103,23 +103,27 @@
 /* Uncomment the following line in DEBUG mode */
 //#define MM_DEBUG 1
 
+#define BUFFER_SIZE  256
+
 void setup(void);
 void cleanup(void);
 void check_and_print(char *advice);
+long get_shmmax(void);
 
 char *TCID = "madvise03";	/* Test program modifier */
 int TST_TOTAL = 3;			/* Total no of test cases */
 extern int Tst_count;		/* Test case counter for tst_* routines */
 
 int i=0;		/* Loop Counters */
+static int shmid1;
 
 int main(int argc, char *argv[])
 {
 	int lc, fd;
 	char *file=NULL;
 	struct stat stat;
-	int shmid1;
 	void *addr1;
+        long shm_size = 0;
 	
 	char *msg=NULL;
 	char filename[64];
@@ -134,7 +138,7 @@ int main(int argc, char *argv[])
 		#define MADV_DOFORK     11
 		tst_resm(TWARN, "This test can only run on kernels that are ");
 		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
+		tst_exit(0);
         }
 
 	
@@ -201,16 +205,16 @@ int main(int argc, char *argv[])
 		}
 
 		/* Allocate shared memory segment */	
-
-		if ((shmid1 = shmget(IPC_PRIVATE, 1024*1024*1024, IPC_CREAT|IPC_EXCL|0701)) == -1) {
-			perror("shmget");
-			exit(1);
+                shm_size = get_shmmax();
+		if ((shmid1 = shmget(IPC_PRIVATE, 1024*1024*1024>shm_size? shm_size:1024*1024*1024, IPC_CREAT|IPC_EXCL|0701)) == -1)
+                {
+			tst_brkm(TBROK, cleanup,"shmget error");
 		}
 
 		/* Attach shared memory segment to 0x22000000 address */
 		if ((addr1 = shmat(shmid1, (void *)0x22000000, 0)) == (void *)-1) {
-			perror("shmat");
-			exit(1);
+			tst_brkm(TBROK, cleanup,
+				"shmat error");
 		}
 
 		/*(1) Test case for MADV_REMOVE */
@@ -262,6 +266,11 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
+    /* Free the shm resource. */
+    if ( shmid1 != -1 )
+        if ( shmctl (shmid1, IPC_RMID, 0) < 0)
+            perror("shmctl failed");
+
     /*
      * print timing stats if that option was specified.
      * print errno log if that option was specified.
@@ -299,3 +308,31 @@ void check_and_print(char *advice)
 			advice);
 	}
 }
+/***************************************************************
+ * get_shmmax() - Reads the size of share memory size 
+ *                     from /proc/sys/kernel/shmmax
+ ***************************************************************/
+long get_shmmax(void)
+{
+        long maxsize;
+        FILE* f;
+        int retcode=0;
+        char buff[BUFFER_SIZE];
+
+        f = fopen("/proc/sys/kernel/shmmax", "r");
+        if (!f)
+                tst_brkm(TFAIL, cleanup, "Could not open /proc/sys/kernel/shmmax for reading");
+
+        while(fgets(buff,BUFFER_SIZE, f) != NULL){
+                if((retcode = sscanf(buff, "%ld ", &maxsize)) == 1)
+                        break;
+        }
+
+        if (retcode != 1) {
+                fclose(f);
+                tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
+        }
+        fclose(f);
+        return(maxsize);
+}
+
