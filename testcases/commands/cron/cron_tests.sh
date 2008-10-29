@@ -178,7 +178,7 @@ do
 	TS_MIN2=$(awk '{print $8}' $LTPTMP/tst1_cron.out |
 	    awk -F: '{printf("%d", $2);}')
 
-	if [ $TS_MIN2 -ne $TS_MIN1 ]
+	if [ "$TS_MIN2" != "$TS_MIN1" ]
 	then
 		# if the value of the minute field did not advance by 1
 		# flag as failure.
