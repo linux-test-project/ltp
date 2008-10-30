@@ -49,6 +49,10 @@ export LIBMM_INSTALLED=0
 ## mm-1.4.2.tar.gz gets installed at /usr/local/lib/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
 
+## Set this to 1 if libaio-0.3.92.tar.gz is already installed in your system
+## from http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz
+export LIBAIO_INSTALLED=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -112,4 +116,38 @@ else
 fi
 echo -e "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n"
 ## END => Test Series 4                               ##
+
+
+## The next one i plan to run is                      ##
+## ltp/testcases/kernel/io/aio                        ## 
+## START => Test Series 5                             ##
+echo -e "Initializing ltp/testcases/kernel/io/aio ..."
+# Check to see if User is Root
+if [ $EUID -ne 0 ]
+then
+    echo You need to be root to Install libaio-0.3.92 and run ltp/testcases/kernel/io/aio
+    echo Aborting ltp/testcases/kernel/io/aio
+else
+    if [ $LIBAIO_INSTALLED -ne 1 ]
+    then
+        echo Installing libaio-0.3.92.............
+        (cd /tmp; \
+         wget -c http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz; \
+         tar -xzf libaio-0.3.92.tar.gz; \
+         cd libaio-0.3.92; \
+         make > /dev/null && make install > /dev/null)
+         rm -rf /tmp/libaio-0.3.92*
+         echo libaio-0.3.92 Installed .............
+    else
+        echo libaio-0.3.92 already installed in your system
+    fi
+        echo -e "Building & Running ltp/testcases/kernel/io/aio..."
+        (cd testcases/kernel/io/aio; \
+         make > /dev/null; \
+         ./aio01/aio01; \
+         ./aio02/runfstests.sh -a aio02/cases/aio_tio; \
+         make clean 1>&2 > /dev/null )
+    echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+fi
+## END => Test Series 5                               ##
 
