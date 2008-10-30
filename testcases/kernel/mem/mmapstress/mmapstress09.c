@@ -123,7 +123,7 @@ main(int argc, char *argv[])
 	pid_t pid;
 	uchar_t *buf, *ptr;
 	unsigned int seed;
-	int alarmtime = 0;
+	float alarmtime = 0;
 	struct sigaction sa;
 	unsigned i, j;
 	uchar_t data;
@@ -145,7 +145,7 @@ main(int argc, char *argv[])
 			debug = 1;
 			break;
 		case 't':
-			alarmtime = atoi(optarg) * 60;
+			alarmtime = atof(optarg) * 60;
 			break;
 		case 'p':
 			nprocs = atoi(optarg);
@@ -187,7 +187,7 @@ main(int argc, char *argv[])
 		(void)printf("%s mapsize %d bytes, pattern %d\n", 
 			progname, mapsize, pattern);
 		if (alarmtime)
-			(void)printf("running for %d minutes\n", alarmtime/60);
+			(void)printf("running for %f minutes\n", alarmtime/60);
 		else
 			(void)printf("running with no time limit\n");
 	}

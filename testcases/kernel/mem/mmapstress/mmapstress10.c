@@ -169,7 +169,7 @@ main(int argc, char *argv[])
 	uchar_t *buf=NULL;
 	unsigned int seed;
 	int pagesize = sysconf(_SC_PAGE_SIZE);
-	int alarmtime = 0;
+	float alarmtime = 0;
 	struct sigaction sa;
 	unsigned i;
 	int write_cnt;
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 			debug = 1;
 			break;
 		case 't':
-			alarmtime = atoi(optarg) * 60;
+			alarmtime = atof(optarg) * 60;
 			break;
 		case 'p':
 			nprocs = atoi(optarg);
@@ -281,7 +281,7 @@ main(int argc, char *argv[])
 			filename, filesize, pattern);
 #endif /* LARGE_FILE */
 		if (alarmtime)
-			(void)printf("running for %d minutes\n", alarmtime/60);
+			(void)printf("running for %f minutes\n", alarmtime/60);
 		else
 			(void)printf("running with no time limit\n");
 	}
