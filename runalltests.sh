@@ -29,17 +29,25 @@
 ##                                                                            ##
 ################################################################################
 
-echo "*******************************************************************"
-echo "*******************************************************************"
-echo "**                                                               **"
+echo -e  "*******************************************************************"
+echo -e  "*******************************************************************"
+echo -e  "**                                                               **"
 echo -e "** This script is being re-written to cover all aspects of    **"
 echo -e "** testing LTP, which includes running all those tests which  **"
 echo -e "** are not run by default with ./runltp script. Special setup **"
 echo -e "** in system environment will be done to run all those tests  **"
 echo -e "** like the File System tests, SELinuxtest, etc               **"
-echo "**                                                               **"
-echo "*******************************************************************"
-echo "*******************************************************************"
+echo -e  "**                                                               **"
+echo -e  "*******************************************************************"
+echo -e  "*******************************************************************"
+
+export LTPROOT=${PWD}
+## Set this to 1 if mm-1.4.2.tar.gz is already installed in your system
+## from ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz
+export LIBMM_INSTALLED=0
+## This is required if already not set to /usr/local/lib/ as
+## mm-1.4.2.tar.gz gets installed at /usr/local/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
 
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
@@ -70,4 +78,38 @@ echo -e "Running Open Posix Tests..."
 (cd testcases/open_posix_testsuite; make)
 echo -e "Completed running Open Posix Tests\n\n"
 ## END => Test Series 3                               ##
+
+
+## The next one i plan to run is                      ##
+## ltp/testcases/kernel/mem/libmm/mm_core_apis        ##
+## START => Test Series 4                             ##
+echo -e "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+# Check to see if User is Root
+if [ $EUID -ne 0 ]
+then
+    echo You need to be root to Install libmm and run mem/libmm/mm_core_apis
+    echo Aborting ltp/testcases/kernel/mem/libmm/mm_core_apis
+else
+
+    if [ $LIBMM_INSTALLED -ne 1 ]
+    then
+        echo Installing libmm-1.4.2 .............
+        (cd /tmp; \
+         wget -c ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz; \
+         tar -xzf mm-1.4.2.tar.gz; \
+         cd mm-1.4.2; \
+         ./configure && make && make install )
+        rm -rf /tmp/mm-1.4.2*
+        echo libmm-1.4.2 Installed .............
+    else
+        echo libmm-1.4.2 already installed in your system
+    fi
+        echo -e "Running ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+    (cd testcases/kernel/mem/libmm; \
+     make; \
+     make install; \
+     $LTPROOT/testcases/bin/mm_core_apis; )
+fi
+echo -e "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n"
+## END => Test Series 4                               ##
 
