@@ -13,8 +13,11 @@ mtest01 mtest01 -p80
 mtest01w mtest01 -p80 -w
 
 #test for race conditions
-mtest05 mmstress
-mtest06 mmap1 -x 0.05
+mtest05   mmstress
+mtest06   mmap1 -x 0.05
+mtest06_2 mmap2 -x 0.002 -a -p
+mtest06_3 mmap3 -x 0.002 -p
+mtest-6_4 shmat1 -x 0.00005
 
 mem01 mem01
 mem02 mem02

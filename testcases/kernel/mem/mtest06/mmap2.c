@@ -185,7 +185,7 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
 /*                                                                            */
 /******************************************************************************/
 static void
-set_timer(int run_time)         /* period for which test is intended to run   */{
+set_timer(float run_time)         /* period for which test is intended to run   */{
     struct itimerval timer;     /* timer structure, tv_sec is set to run_time */
     memset(&timer, 0, sizeof(struct itimerval));
     timer.it_interval.tv_usec = 0;
@@ -240,16 +240,16 @@ usage(char *progname)           /* name of this program                       */
 int main(int argc,	    /* number of input parameters.		      */
      char **argv)	    /* pointer to the command line arguments.         */
 {
-    int  fd;		    /* descriptor of temp file.		              */
-    int  fsize = 1;	    /* size of the temp file created. default 1GB     */
-    int  exec_time = 24;    /* period of execution, default 24 hours.	      */
-    int  c;		    /* command line options			      */
-    int  sig_ndx;	    /* index into signal handler structure.	      */
-    int  map_flags =        /* type of mapping, defaut is MAP_SHARED .	      */
+    int   fd;		    /* descriptor of temp file.		              */
+    int   fsize = 1;	    /* size of the temp file created. default 1GB     */
+    float exec_time = 24;    /* period of execution, default 24 hours.	      */
+    int   c;		    /* command line options			      */
+    int   sig_ndx;	    /* index into signal handler structure.	      */
+    int   map_flags =        /* type of mapping, defaut is MAP_SHARED .	      */
 		     MAP_SHARED;
-    int  map_anon =  FALSE; /* do not map anonymous memory,map file by default*/
-    int  run_once = TRUE;   /* run the test once. (dont repeat)               */
-    char *memptr;	    /* address of the mapped file.	              */
+    int   map_anon =  FALSE; /* do not map anonymous memory,map file by default*/
+    int   run_once = TRUE;   /* run the test once. (dont repeat)               */
+    char  *memptr;	    /* address of the mapped file.	              */
     extern  char *optarg;   /* arguments passed to each option                */
     struct sigaction sigptr;/* set up signal, for interval timer              */
 
@@ -287,12 +287,12 @@ int main(int argc,	    /* number of input parameters.		      */
 		break;
 	    case 's':
 		if ((fsize = atoi(optarg)) == 0)
-		    fprintf(stderr, "Using default fsize %dGB\n", fsize = 1);
+		    fprintf(stderr, "Using default fsize %d GB\n", fsize = 1);
 		break;
             case 'x':
-		if ((exec_time = atoi(optarg)) == 0)
-		    fprintf(stderr, "Using default exec time %d hrs", 
-		          exec_time = 24);
+		if ((exec_time = atof(optarg)) == 0)
+		    fprintf(stderr, "Using default exec time %f hrs", 
+		          exec_time = (float)24);
                 run_once = FALSE;
 		break;
 	    default :
@@ -302,7 +302,7 @@ int main(int argc,	    /* number of input parameters.		      */
     }
 
     fprintf(stdout, "MM Stress test, map/write/unmap large file\n"
-		    "\tTest scheduled to run for:       %d\n"
+		    "\tTest scheduled to run for:       %f\n"
 		    "\tSize of temp file in GB:         %d\n",
 			exec_time, fsize);
 

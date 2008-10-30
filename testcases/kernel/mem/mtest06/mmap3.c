@@ -183,7 +183,7 @@ sig_handler(int signal)         /* signal number, set to handle SIGALRM       */
 /*                                                                            */
 /******************************************************************************/
 static void
-set_timer(int run_time)         /* period for which test is intended to run   */{
+set_timer(float run_time)         /* period for which test is intended to run   */{
     struct itimerval timer;     /* timer structure, tv_sec is set to run_time */
     memset(&timer, 0, sizeof(struct itimerval));
     timer.it_interval.tv_usec = 0;
@@ -308,7 +308,7 @@ main(int  argc,		/* number of input parameters.			      */
     int		 num_iter;	/* number of iteration to perform             */
     int		 num_thrd;	/* number of threads to create                */
     int		 thrd_ndx;	/* index into the array of threads.	      */
-    int		 exec_time;	/* period for which the test is executed      */
+    float	 exec_time;	/* period for which the test is executed      */
     int          status;       /* exit status for light weight process       */
     int          sig_ndx;      	/* index into signal handler structure.       */
     pthread_t    thid[1000];	/* pids of process that will map/write/unmap  */
@@ -358,7 +358,7 @@ main(int  argc,		/* number of input parameters.			      */
                 map_private = TRUE;
 		break;
 	    case 'x':
-		if ((exec_time = atoi(optarg)) == 0)
+		if ((exec_time = atof(optarg)) == 0)
 		    exec_time = 24;
 		break;
 	    default :
@@ -388,7 +388,7 @@ main(int  argc,		/* number of input parameters.			      */
     set_timer(exec_time);
 
     fprintf(stdout, "\n\n\nTest is set to run with the following parameters:\n"
-		    "\tDuration of test: [%d]hrs\n"
+		    "\tDuration of test: [%f]hrs\n"
 		    "\tNumber of threads created: [%d]\n"
 		    "\tnumber of map-write-unmaps: [%d]\n"
  		    "\tmap_private?(T=1 F=0): [%d]\n\n\n\n", exec_time, 
