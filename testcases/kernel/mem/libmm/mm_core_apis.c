@@ -107,7 +107,7 @@ mm_core_test01()
     tst_resm(TINFO, "test01: Testing Memory Segment Access\n");
     tst_resm(TINFO, "test01: Creating 16KB shared memory core area\n");
     
-    if ((alloc_mem_ptr = (char *)mm_core_create(16*1024, NULL)) == NULL)
+    if ((alloc_mem_ptr = (unsigned char *)mm_core_create(16*1024, NULL)) == NULL)
     {
         mm_err = (char *)mm_error();
         tst_brkm(TBROK, cleanup, "test01: mm_core_create: %s\n", 
@@ -199,7 +199,7 @@ mm_core_test02()
     tst_resm(TINFO, "test02: Testing Memory Locking\n");
     tst_resm(TINFO, "test02: Creating shared memory core area\n");
 
-    if ((alloc_mem_ptr = (char *)mm_core_create(16*1024, NULL)) == NULL)
+    if ((alloc_mem_ptr = (unsigned char *)mm_core_create(16*1024, NULL)) == NULL)
     {
         mm_err = (char *)mm_error();
         tst_brkm(TBROK, cleanup, "test02: mm_core_create: %s\n", 
