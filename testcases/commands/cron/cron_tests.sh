@@ -87,7 +87,7 @@ EOF
 cat > $LTPTMP/tst1_cronprg.sh <<EOF
 #! /bin/sh
 
-DATE=\`date\`
+DATE=\`LANG= date\`
 echo "Hello Hell today is \$DATE " > $LTPTMP/tst1_cron.out 2>&1
 exit 0
 EOF
@@ -161,13 +161,6 @@ while [ $LOOP_CNTR -ne 0 ]
 do
 	TS_MIN1=$(awk '{print $8}' $LTPTMP/tst1_cron.out |
 	    awk -F: '{printf("%d", $2);}')
-	if [ $TS_MIN1 -eq 59 ]
-	then
-		TS_MIN1=00
-	else
-		 		 TS_MIN1=$(( $TS_MIN1+1 ))
-	fi
-		
 
 	# wait for the cronjob to update the tst1_cron.out file.
 	sleep 1m 2s
@@ -178,19 +171,36 @@ do
 	TS_MIN2=$(awk '{print $8}' $LTPTMP/tst1_cron.out |
 	    awk -F: '{printf("%d", $2);}')
 
-	if [ "$TS_MIN2" != "$TS_MIN1" ]
+	if [ "x${TS_MIN1}" = "x" ] || [ "x${TS_MIN2}" = "x" ]
+	then
+		$LTPBIN/tst_resm TFAIL \
+			"Test #1: Problem with $LTPTMP/tst1_cron.out file "
+		$LTPBIN/tst_resm TFAIL \
+			"Test #1: Cause: TS_MIN1= $TS_MIN1; TS_MIN2= $TS_MIN2"
+		FAILCNT=$(( $FAILCNT+1 ))
+		break;
+	fi
+
+	if [ $TS_MIN1 -eq 59 ]
+	then
+		TS_MIN1=0
+	else
+		TS_MIN1=$(( $TS_MIN1+1 ))
+	fi
+
+	if [ $TS_MIN2 -ne $TS_MIN1 ]
 	then
 		# if the value of the minute field did not advance by 1
 		# flag as failure.
 		FAILCNT=$(( $FAILCNT+1 ))
-		echo "\n\t\tExpected $TS_MIN2 \n\t\tReceived $TS_MIN1" \
+		echo "    Expected $TS_MIN1;     Received $TS_MIN2" \
 			> $LTPTMP/tst1_cron.log
 		$LTPBIN/tst_res TFAIL $LTPTMP/tst1_cron.log \
 			"Test #1: Failed to update every minute. Reason:"
 		crontab -r >/dev/null 2>&1
 		break
 	else
-		echo "\n\t\tExpected $TS_MIN2 \n\t\tReceived $TS_MIN1" \
+		echo "    Expected $TS_MIN1;     Received $TS_MIN2" \
 			> $LTPTMP/tst1_cron.log
 		$LTPBIN/tst_res TINFO $LTPTMP/tst1_cron.log \
 			"Test #1: Values are good: "
