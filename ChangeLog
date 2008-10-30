@@ -1,3 +1,1420 @@
+LTP-20081031
+
+1) Log Message:
+Here is one fix for io-controller testcase. It might not have run when kernel supports io-controller. Description: Instead of block io testcases, memory controller testcase will run. Signed-off By: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/controllers/test_controllers.sh
+
+2) Log Message:
+test_ioctl produces a 'Syntax error: Bad substitution: 28' under Ubuntu (and much probably Debian). The following patch solves this issue. I tested it with sh (aka dash) and bash. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ioctl/test_ioctl
+
+3) Log Message:
+Add support of kernel syscall test to Renesas. Signed-off-by: Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>.
+
+Modified Files:
+ltp/testcases/kernel/include/order
+Added Files:
+ltp/testcases/kernel/include/sh.in
+
+4) Log Message:
+Reverting the Following Patch.
+test_ioctl produces a 'Syntax error: Bad substitution: 28' under Ubuntu (and much probably Debian). The following patch solves this issue. I tested it with sh (aka dash) and bash. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ioctl/test_ioctl
+
+5) Log Message:
+The clock source used in the gtod_infinite test should be CLOCK_MONOTONIC instead of CLOCK_REALTIME. This is to avoid plausible inconsistencies caused by NTP time adjustments. Tested: running gtod_infinite and then killing it. Signed-Off-By: Chirag <chirag@linux.vnet.ibm.com>, Acked-by: Darren Hart <dvhltc@us.ibm.com>.
+
+Modified File(s):
+ltp/testcases/realtime/func/gtod_latency/gtod_infinite.c
+
+6) Log Message:
+Hi Andrea, As you are using myfunctions.sh in your script, it will simply replace the installed myfunctions.sh in $LTP_ROOT/testcase/bin which is written by Sudhir. And if you will run this testcase from `./runltp` sudhir's memory controller tetscase will refer your myfuncitons.sh script. So i am just renaming this script to some other name and correspondingly changing the Makefile & run_io_throttle_test.sh . Attached is the patch. I might require your acknowledgement for this. Signed-Off-By: "Rishikesh K. Rajak" <risrajak@linux.vnet.ibm.com>, Acked-by: Andrea Righi <righi.andrea@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/io-throttle/Makefile
+ltp/testcases/kernel/controllers/io-throttle/run_io_throttle_test.sh
+Added Files:
+ltp/testcases/kernel/controllers/io-throttle/myfunctions-io.sh
+Removed Files:
+ltp/testcases/kernel/controllers/io-throttle/myfunctions.sh
+
+7) Log Message:
+dont use == or [[, and fix -z test
+
+Modified File(s):
+ltp/testcases/network/tcp_cmds/tcpdump/tcpdump01
+
+8) Log Message:
+convert all "source" commands in scripts to "." ... hopefully my sed-foo doesnt break anything ...
+
+Modified File(s):
+ltp/testcases/network/stress/broken_ip/broken_ip4-checksum
+ltp/testcases/network/stress/broken_ip/broken_ip4-dstaddr
+ltp/testcases/network/stress/broken_ip/broken_ip4-fragment
+ltp/testcases/network/stress/broken_ip/broken_ip4-ihl
+ltp/testcases/network/stress/broken_ip/broken_ip4-protcol
+ltp/testcases/network/stress/broken_ip/broken_ip4-totlen
+ltp/testcases/network/stress/broken_ip/broken_ip4-version
+ltp/testcases/network/stress/broken_ip/broken_ip6-dstaddr
+ltp/testcases/network/stress/broken_ip/broken_ip6-nexthdr
+ltp/testcases/network/stress/broken_ip/broken_ip6-plen
+ltp/testcases/network/stress/broken_ip/broken_ip6-version
+ltp/testcases/network/stress/ftp/ftp4-download-stress
+ltp/testcases/network/stress/ftp/ftp4-upload-stress
+ltp/testcases/network/stress/ftp/ftp6-download-stress
+ltp/testcases/network/stress/ftp/ftp6-upload-stress
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic01
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic02
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic03
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic04
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic05
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic06
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic07
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic01
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic02
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic03
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic04
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic05
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic06
+ltp/testcases/network/stress/icmp/uni-basic/icmp6-uni-basic07
+ltp/testcases/network/stress/interface/if4-addr-change
+ltp/testcases/network/stress/interface/if4-alias-adddel
+ltp/testcases/network/stress/interface/if4-alias-addlarge
+ltp/testcases/network/stress/interface/if4-mtu-change
+ltp/testcases/network/stress/interface/if4-route-adddel
+ltp/testcases/network/stress/interface/if4-route-addlarge
+ltp/testcases/network/stress/interface/if4-updown
+ltp/testcases/network/stress/interface/if6-addr-adddel
+ltp/testcases/network/stress/interface/if6-addr-addlarge
+ltp/testcases/network/stress/interface/if6-mtu-change
+ltp/testcases/network/stress/interface/if6-route-adddel
+ltp/testcases/network/stress/interface/if6-route-addlarge
+ltp/testcases/network/stress/interface/if6-updown
+ltp/testcases/network/stress/http/http4-stress
+ltp/testcases/network/stress/http/http6-stress
+ltp/testcases/network/stress/multicast/grp-operation/mcast4-grpope01
+ltp/testcases/network/stress/multicast/grp-operation/mcast4-grpope02
+ltp/testcases/network/stress/multicast/grp-operation/mcast4-grpope03
+ltp/testcases/network/stress/multicast/grp-operation/mcast4-grpope04
+ltp/testcases/network/stress/multicast/grp-operation/mcast6-grpope01
+ltp/testcases/network/stress/multicast/grp-operation/mcast6-grpope02
+ltp/testcases/network/stress/multicast/grp-operation/mcast6-grpope03
+ltp/testcases/network/stress/multicast/grp-operation/mcast6-grpope04
+ltp/testcases/network/stress/multicast/packet-flood/mcast4-pktfld01
+ltp/testcases/network/stress/multicast/packet-flood/mcast4-pktfld02
+ltp/testcases/network/stress/multicast/packet-flood/mcast6-pktfld01
+ltp/testcases/network/stress/multicast/packet-flood/mcast6-pktfld02
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip01
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip02
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip03
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip04
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip05
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip06
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip07
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip01
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip02
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip03
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip04
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip05
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip06
+ltp/testcases/network/stress/icmp/multi-diffip/icmp6-multi-diffip07
+ltp/testcases/network/stress/dns/dns4-stress
+ltp/testcases/network/stress/dns/dns6-stress
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic01
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic02
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic03
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic04
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic05
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic06
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic07
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic01
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic02
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic03
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic04
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic05
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic06
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp6-multi-diffnic07
+ltp/testcases/network/stress/ssh/ssh4-stress
+ltp/testcases/network/stress/ssh/ssh6-stress
+ltp/testcases/network/stress/ns-tools/add_ipv6addr
+ltp/testcases/network/stress/ns-tools/bg_tcp_traffic
+ltp/testcases/network/stress/ns-tools/check_netem
+ltp/testcases/network/stress/ns-tools/check_setkey
+ltp/testcases/network/stress/ns-tools/get_ifname
+ltp/testcases/network/stress/ns-tools/initialize_if
+ltp/testcases/network/stress/ns-tools/killall_icmp_traffic
+ltp/testcases/network/stress/ns-tools/killall_tcp_traffic
+ltp/testcases/network/stress/ns-tools/killall_udp_traffic
+ltp/testcases/network/stress/ns-tools/set_ipv4addr
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld01
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld02
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld03
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld04
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld05
+ltp/testcases/network/stress/multicast/query-flood/mcast4-queryfld06
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld01
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld02
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld03
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld04
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld05
+ltp/testcases/network/stress/multicast/query-flood/mcast6-queryfld06
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip01
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip02
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip03
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip04
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip05
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip06
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip07
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip08
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip09
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip10
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip11
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip12
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip13
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip14
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip01
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip02
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip03
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip04
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip05
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip06
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip07
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip08
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip09
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip10
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip11
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip12
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip13
+ltp/testcases/network/stress/tcp/multi-diffip/tcp6-multi-diffip14
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic01
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic02
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic03
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic04
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic05
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic06
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic07
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic08
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic09
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic10
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic11
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic12
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic13
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic14
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic01
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic02
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic03
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic04
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic05
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic06
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic07
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic08
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic09
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic10
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic11
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic12
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic13
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp6-multi-diffnic14
+ltp/testcases/network/stress/route/route4-change-dst
+ltp/testcases/network/stress/route/route4-change-gw
+ltp/testcases/network/stress/route/route4-change-if
+ltp/testcases/network/stress/route/route4-ifdown
+ltp/testcases/network/stress/route/route4-redirect
+ltp/testcases/network/stress/route/route4-rmmod
+ltp/testcases/network/stress/route/route6-change-dst
+ltp/testcases/network/stress/route/route6-change-gw
+ltp/testcases/network/stress/route/route6-change-if
+ltp/testcases/network/stress/route/route6-ifdown
+ltp/testcases/network/stress/route/route6-redirect
+ltp/testcases/network/stress/route/route6-rmmod
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport01
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport02
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport03
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport04
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport05
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport06
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport07
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport08
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport09
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport10
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport11
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport12
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport13
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport14
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport01
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport02
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport03
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport04
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport05
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport06
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport07
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport08
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport09
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport10
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport11
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport12
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport13
+ltp/testcases/network/stress/tcp/multi-diffport/tcp6-multi-diffport14
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport01
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport02
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport03
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport04
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport05
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport06
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport07
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport08
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport09
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport10
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport11
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport12
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport13
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport14
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport01
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport02
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport03
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport04
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport05
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport06
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport07
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport08
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport09
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport10
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport11
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport12
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport13
+ltp/testcases/network/stress/tcp/multi-sameport/tcp6-multi-sameport14
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff01
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff02
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff03
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff04
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff05
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff06
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff07
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff08
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff09
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff10
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff11
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff12
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff13
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp4-uni-sackoff14
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff01
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff02
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff03
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff04
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff05
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff06
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff07
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff08
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff09
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff10
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff11
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff12
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff13
+ltp/testcases/network/stress/tcp/uni-sackoff/tcp6-uni-sackoff14
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend01
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend02
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend03
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend04
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend05
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend06
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend07
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend08
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend09
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend10
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend11
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend12
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend13
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp4-uni-smallsend14
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend01
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend02
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend03
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend04
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend05
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend06
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend07
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend08
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend09
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend10
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend11
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend12
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend13
+ltp/testcases/network/stress/tcp/uni-smallsend/tcp6-uni-smallsend14
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip01
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip02
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip03
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip04
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip05
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip06
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip07
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip01
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip02
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip03
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip04
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip05
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip06
+ltp/testcases/network/stress/udp/multi-diffip/udp6-multi-diffip07
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale01
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale02
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale03
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale04
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale05
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale06
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale07
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale08
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale09
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale10
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale11
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale12
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale13
+ltp/testcases/network/stress/tcp/uni-winscale/tcp4-uni-winscale14
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale01
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale02
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale03
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale04
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale05
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale06
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale07
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale08
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale09
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale10
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale11
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale12
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale13
+ltp/testcases/network/stress/tcp/uni-winscale/tcp6-uni-winscale14
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso01
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso02
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso03
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso04
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso05
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso06
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso07
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso08
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso09
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso10
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso11
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso12
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso13
+ltp/testcases/network/stress/tcp/uni-tso/tcp4-uni-tso14
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso01
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso02
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso03
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso04
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso05
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso06
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso07
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso08
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso09
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso10
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso11
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso12
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso13
+ltp/testcases/network/stress/tcp/uni-tso/tcp6-uni-tso14
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup01
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup02
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup03
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup04
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup05
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup06
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup07
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup08
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup09
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup10
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup11
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup12
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup13
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp4-uni-pktlossdup14
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup01
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup02
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup03
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup04
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup05
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup06
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup07
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup08
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup09
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup10
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup11
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup12
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup13
+ltp/testcases/network/stress/tcp/uni-pktlossdup/tcp6-uni-pktlossdup14
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff01
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff02
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff03
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff04
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff05
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff06
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff07
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff08
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff09
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff10
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff11
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff12
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff13
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp4-uni-dsackoff14
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff01
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff02
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff03
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff04
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff05
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff06
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff07
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff08
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff09
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff10
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff11
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff12
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff13
+ltp/testcases/network/stress/tcp/uni-dsackoff/tcp6-uni-dsackoff14
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport01
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport02
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport03
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport04
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport05
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport06
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport07
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport01
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport02
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport03
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport04
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport05
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport06
+ltp/testcases/network/stress/udp/multi-diffport/udp6-multi-diffport07
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic01
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic02
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic03
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic04
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic05
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic06
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic07
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic01
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic02
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic03
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic04
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic05
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic06
+ltp/testcases/network/stress/udp/multi-diffnic/udp6-multi-diffnic07
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic01
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic02
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic03
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic04
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic05
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic06
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic07
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic01
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic02
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic03
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic04
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic05
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic06
+ltp/testcases/network/stress/udp/uni-basic/udp6-uni-basic07
+
+9) Log Message:
+fix typo pointed out by Elder Costa: dulation -> duration
+
+Modified File(s):
+ltp/testcases/network/stress/icmp/multi-diffnic/icmp4-multi-diffnic01
+ltp/testcases/network/stress/broken_ip/broken_ip4-checksum
+ltp/testcases/network/stress/broken_ip/broken_ip4-dstaddr
+ltp/testcases/network/stress/broken_ip/broken_ip4-fragment
+ltp/testcases/network/stress/broken_ip/broken_ip4-ihl
+ltp/testcases/network/stress/broken_ip/broken_ip4-protcol
+ltp/testcases/network/stress/broken_ip/broken_ip4-totlen
+ltp/testcases/network/stress/broken_ip/broken_ip4-version
+ltp/testcases/network/stress/broken_ip/broken_ip6-dstaddr
+ltp/testcases/network/stress/broken_ip/broken_ip6-nexthdr
+ltp/testcases/network/stress/broken_ip/broken_ip6-plen
+ltp/testcases/network/stress/broken_ip/broken_ip6-version
+ltp/testcases/network/stress/icmp/multi-diffip/icmp4-multi-diffip01
+ltp/testcases/network/stress/icmp/uni-basic/icmp4-uni-basic01
+ltp/testcases/network/stress/tcp/multi-diffip/tcp4-multi-diffip01
+ltp/testcases/network/stress/tcp/multi-diffnic/tcp4-multi-diffnic01
+ltp/testcases/network/stress/udp/multi-diffnic/udp4-multi-diffnic01
+ltp/testcases/network/stress/udp/uni-basic/udp4-uni-basic01
+ltp/testcases/network/stress/tcp/multi-diffport/tcp4-multi-diffport01
+ltp/testcases/network/stress/tcp/multi-sameport/tcp4-multi-sameport01
+ltp/testcases/network/stress/udp/multi-diffip/udp4-multi-diffip01
+ltp/testcases/network/stress/udp/multi-diffport/udp4-multi-diffport01
+ltp/testcases/network/stress/tcp/uni-basic/tcp4-uni-basic01
+
+10) Log Message:
+lcov: geninfo chokes on spaces in the directory name
+
+From: Jeff Connelly <jeffconnelly@users.sourceforge.net>
+
+In lcov 1.6, geninfo fails to find gcno/gcda files if the source directory has spaces in the name, because it uses backticks to shell out to "find", passing $directory on the command-line. Attached is a patch that double-quotes the variable, allowing geninfo to operate on directories with spaces in their name. The fix isn't perfect; it won't work on directories with a " character, but it works fine for my purposes (I don't have any directories with quotes). A better fix would be to use IPC::System::Simple's capturex from http://search.cpan.org/~pjf/IPC-System-Simple-0.15/lib/IPC/System/Simple.pm #runx(),_systemx()_and_capturex(). capturex() is a multiple-argument form of the backticks, so it avoids any interpolation errors.
+
+Modified File(s):
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+ltp/utils/analysis/lcov/CHANGES
+
+11) Log Message:
+gcov-kernel: added patches for linux-2.6.27
+
+Added File(s):
+ltp/utils/analysis/gcov-kernel/linux-2.6.27-gcov-arm-eabi.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.27-gcov-arm-hack.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.27-gcov.patch
+
+12) Log Message:
+If we unshare pidns without unsharing mounts namespace, and then do a mount -t proc none /proc, then the new proc sits over the original proc for the whole system. Since pidns03 wasn't using CLONE_NEWNS, when it exited /proc showed zero tasks.  This can be fixed by doing 'umount -l /proc', but 'umount /proc' is insufficient.  More to the point, pidns03 wasn't trying to clean up /proc at all.  So make it use CLONE_NEWNS so its private procfs will be automatically cleaned up. Signed-off-by: Serge E. Hallyn <serue@us.ibm.com>. 
+
+Modified File(s):
+ltp/testcases/kernel/containers/pidns/pidns03.c
+
+13) Log Message:
+netns: fix restoration of original /proc values (ip_forward...). This small patches make the restoration of /proc/sys/net/ipv4/ip_forward /proc/sys/net/ipv4/conf/$netdev/proxy_arp works as expected in netns/initialize.sh. Also removed some unneeded /dev/null redirections. Signed-off-by: Benjamin Thery <benjamin.thery@bull.net>.
+
+Modified File(s):
+ltp/testcases/kernel/containers/netns/initialize.sh
+
+14) Log Message:
+The script run_semaphore_test_01 fails the first time it is run as the semaphore id is zero (subsequent runs are successful as the ids are nonzero.) The attached patch fixes this behavior. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/kernel/ipc/ipc_stress/run_semaphore_test_01.sh
+
+15) Log Message:
+On ppc/ppc64, PTRACE_GETREGS and PTRACE_SETREGS don't be defined in /usr/include/sys/ptrace.h. So add checks before use them. Signed-off-by: Jin Bing Guo <guojb@cn.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ptrace/ptrace06.c
+ltp/testcases/kernel/syscalls/ptrace/spawn_ptrace_child.c
+
+16) Log Message:
+Simple bug in logic that defines when to run the test makes it run exclusively when support is NOT implemented. Tested on mips64 system running Cavium Networks Octeon chip, Linux 2.6.27. Signed-Off-By: "Malov, Vlad" <Vlad.Malov@caviumnetworks.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/getcpu/getcpu01.c
+
+17) Log Message:
+The new ltp-full-20080930.tgz seems to include some new ptrace tests (ptrace04 and ptrace06) that do a #include for spawn_ptrace_child.c. Now I find that if I do a "make clean" it removes this spawn_ptrace_child.c ... is this expected and desired? Also is there supposed to be a way to generate the spawn_ptrace_child.c and any other files removed after "make clean" ? Thanks, - Mark Ver.
+Yes, I believe it's an error. The spawn_ptrace_child.c file is necessary to ptrace04 and ptrace06. To do a #include *.c file is not a good coding style. The simplest solution is to rename the spawn_ptrace_child.c to spawn_ptrace_child.h. Also you can add __inline__ as the prefix of functions, then the spawn_ptrace_child.h file looks more like a header file. Thanks, - Jin Bing Guo.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ptrace/ptrace04.c
+ltp/testcases/kernel/syscalls/ptrace/ptrace06.c
+Added Files:
+ltp/testcases/kernel/syscalls/ptrace/spawn_ptrace_child.h
+Removed Files:
+ltp/testcases/kernel/syscalls/ptrace/spawn_ptrace_child.c
+
+18) Log Message:
+With Exec-Shield in place, the Kernel automatically adjusts the stack downward by a random amount of bytes. This will cause the test failed occasionally on IA-32, because the 11th requested chunk of address space (bfe00000-bff00000) has already been used by the stack. For example, stack could be at bfe0b000-bfe20000, and then, shmat(2) failed, mykey to uniquely identify the shared memory segment 0x451005ae. Get shared memory segment (1048576 bytes). Attach shared memory segment to process: ERROR [line: 205] shmat failed - return: 0xffffffff: Invalid argument. It looks like the stack adjustment has a range that it could be chosen, so I changed the start of 11th address space to a lower address. Tests showed that the stack will not go downward that much. In addition, there are a few minor fixes, - keep the width of comments within 72 characters. - remove unnecessary 0x prefix. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_06.c
+
+19) Log Message:
+Adding support for mips64. Use 64 bit variable to store the 64 bit address. Tested on mips64 system running Cavium Networks Octeon chip, Linux 2.6.27. Signed-Off-By: "Malov, Vlad" <Vlad.Malov@caviumnetworks.com>. 
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/profil/profil01.c
+
+20) Log Message:
+Remap_file_pages01 and remap_file_pages02 tests always failed on IA-64 with Kernel 2.6.9 as below. So, I added a check to the existing Kernel version checking (< 2.6.12). If anybody happens to know the exactly version it has started to be implemented, I'll be happy to re-send the revised patch. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages01.c
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages02.c
+
+21) Log Message:
+I'm using an embedded arm processor (Xscale) and I get the following compile error: timerfd01.c:90: error: '__NR_timerfd_settime' undeclared (first use in this function). I have dug through past patches for this exact problem and have seen it come up with other processors and I have put together a patch that *should* address the issue.  I tested it on my system and everything seems to work.  I based the macro info off of: http://kerneltrap.org/mailarchive/git-commits-head/2008/4/22/1543584/thread. Here is the patch. Signed-Off-By: Shane Volpe <shanevolpe@gmail.com>.
+
+Modified File(s):
+ltp/testcases/kernel/include/arm.in
+
+22) Log Message:
+This patch adds some debug messages when shmat(2) failed, so we could tell if the failure was because the requested address space has been used. In addition, it fixes the output of failed error code to a more meaningful form. This patch should be applied on the top of another patch I sent earlier with title "shmem_test_06 Failed with Stack Randomization". Tested successfully on a x86_64 machine. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_06.c
+
+23) Log Message:
+When I tested the inotify02 on ppc64, it passed all tests and returned 1 with an unnecessary event. After looking into the code, there were 9 tests in sum in inotify02. So I think the unnecessary event should not be regarded as a failure when the 9 tests all passed. Same problem was in inotify01. The patches fixed them. Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+
+24) Log Message:
+Attaching the patch for the testcase on PIDNS. Assertion: 1. kill -9 1 from inside a container does not kill container, Steps: a) create container, b) kill -9 1, c) Should not kill the containers. Signed-Off-By: Veerendra <veeren@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns04.c
+
+25) Log Message:
+This patch fixes build failures seen on RHEL 4 (2.6.9 based Kernel), and several warnings. The build failures are caused by pec_listener.c and then ptrace06.c, It because the Kernel version checking code is incorrect from it, as you can see from the error message above, "/bin/sh: ../../bin/tst_kvercmp: No such file or directory". I solve it by querying an entry in proc file system instead. For ptrace06.c case, PTRACE_GETSIGINFO and PTRACE_SETSIGINFO are unavailable in this version of Kernel, Given that this test also fails to compile for IA-64 entirely (please see more details on one of my previous emails sent not long ago), I disable this test temperately until those problems have been fixed. In addition, it fixed the following unnecessary compiling warnings. Finally, check_for_unshare.c:21: warning: implicit declaration of function `tst_kvercmp'. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/pan/Makefile
+ltp/testcases/kernel/connectors/Makefile
+ltp/testcases/kernel/containers/check_for_unshare.c
+ltp/testcases/kernel/controllers/Makefile
+ltp/testcases/kernel/syscalls/ptrace/Makefile
+
+26) Log Message:
+The gethostid01 test fails when the host id is not set on a system. The gethostid() call retrieves "00000000" as the host id. Added a check to compare the return value with "000000" (omitted 1st two 0's as they could also be 0x on some systems; needs confirmation). Signed-off by : Vinay Sridhar <vinay@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/gethostid/gethostid01.c
+
+27) Log Message:
+This patch cleans code a little bit by removing leftovers. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ipc/lib/libipc.c
+ltp/testcases/kernel/syscalls/nanosleep/nanosleep01.c
+
+28) Log Message:
+Hello. I had two errors when compiling the CVS version with Ubuntu. The one in regen.sh might have to do with some dash limitation (it complains about not supporting more than 32 shifts.) The one with the Makefile  has to do with the version of lex I have here (lex 2.5.33) complaining about -l not accepting an extra argument (I believe it interprets the w as such). I did a quick check after applying the changes and they seem not to break anything. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/pan/Makefile
+ltp/testcases/kernel/include/regen.sh
+
+29) Log Message:
+Fixing the runpidnstest.sh in containers/pidns, to handle the return code properly. Also removed the obsolete file runtests_noltp.sh, which is no longer required. Signed-Off-By: Veerendra <veeren@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Removed Files:
+ltp/testcases/kernel/containers/pidns/runtests_noltp.sh
+
+30) Log Message:
+After tested the latest LTP cases, the connector cases failed on RHEL5.2. Test fails with following error:
+<<<test_output>>>
+incrementing stop
+/home/ltp/cvs_ltp.orig/testcases/bin/connector_test.sh: line 9:
+/home/ltp/cvs_ltp.orig/testcases/bin/run_pec_test: No such file or directory
+<<<execution_status>>>
+Post Patching:
+<<<test_output>>>
+incrementing stop Connectors 0 CONF : system doesn't support execution of the test
+<<<execution_status>>>
+Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/connectors/connector_test.sh
+
+31) Log Message:
+Disabling this till TIRPC is built, installed and run properly. Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runtest/stress.part3
+
+32) Log Message:
+Avoid buffer overflow when PID exceeds to 4-digit limit. char array root has to contain at least 'A' +  pid + '\0', which only works pid of testprcess is a 4-digit PID. PID_MAX_DEFAULT in kernel (when CONFIG_BASE_SMALL is NOT set) is set up to 4 million, which requires at least 7-digit pid. Author: Frank Seidel <fseidel@suse.de>. Signed-off-by: Frank Seidel <fseidel@suse.de>. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/fs/inode/inode01.c
+
+33) Log Message:
+Array size of path_list_string gets exceeded and cause an buffer overflow, when building with -D_FORTIFY_SOURCE=2
+======= Backtrace: =========
+/lib64/libc.so.6(__chk_fail+0x2f)[0x2b3f94ec831f]
+/lib64/libc.so.6[0x2b3f94ec73c3]
+/root/ltp/ltp-full-20080916/testcases/kernel/fs/inode/inode01[0x4020e3]
+/lib64/libc.so.6(__libc_start_main+0xf4)[0x2b3f94e13184]
+/root/ltp/ltp-full-20080916/testcases/kernel/fs/inode/inode01[0x401609]
+======= Memory map: ========
+[...]
+Program received signal SIGABRT, Aborted. 0x00002b3f94e25bb5 in raise () from /lib64/libc.so.6 (gdb) bt
+#0  0x00002b3f94e25bb5 in raise () from /lib64/libc.so.6
+#1  0x00002b3f94e26fb0 in abort () from /lib64/libc.so.6
+#2  0x00002b3f94e5c32b in __libc_message () from /lib64/libc.so.6
+#3  0x00002b3f94ec831f in __chk_fail () from /lib64/libc.so.6
+#4  0x00002b3f94ec73c3 in __strcat_chk () from /lib64/libc.so.6
+#5  0x00000000004020e3 in main () at inode01.c:169
+(gdb) up
+[...]
+#5  0x00000000004020e3 in main () at inode01.c:169
+169             strcat(path_list_string, "path_list");
+Array size of path_list_string needs to be increased to handle PIDs which exceed 4-digits. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/fs/inode/inode01.c
+
+34) Log Message:
+When compiling with -D_FORTIFY_SOURCE=2 following buffer-overflow gets detected: 
+Starting program:
+/root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01
+symlink01    1  PASS  :  Creation of symbolic link file to no object file is ok
+symlink01    2  PASS  :  Creation of symbolic link file to no object file is ok
+symlink01    3  PASS  :  Creation of symbolic link file and object file via symbolic link is ok
+symlink01    4  PASS  :  Creating an existing symbolic link file error is caught
+  *** buffer overflow detected ***:
+/root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01 terminated
+  ======= Backtrace: =========
+  /lib64/libc.so.6(__chk_fail+0x2f)[0x2b5ae730f31f]
+  /lib64/libc.so.6[0x2b5ae730e3c3]
+  /root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01[0x4048fe]
+  /root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01[0x403e7b]
+  /root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01[0x4047b7]
+  /lib64/libc.so.6(__libc_start_main+0xf4)[0x2b5ae725a184]
+  /root/ltp/ltp-full-20080916/testcases/kernel/syscalls/symlink/symlink01[0x401c39]
+  (gdb) bt
+  #0  0x00002b5ae726cbb5 in raise () from /lib64/libc.so.6
+  #1  0x00002b5ae726dfb0 in abort () from /lib64/libc.so.6
+  #2  0x00002b5ae72a332b in __libc_message () from /lib64/libc.so.6
+  #3  0x00002b5ae730f31f in __chk_fail () from /lib64/libc.so.6
+  #4  0x00002b5ae730e3c3 in __strcat_chk () from /lib64/libc.so.6
+  #5  0x00000000004048fe in creat_path_max (path1=0x409d88 "object", path2=<value optimized out>, path3=<value optimized out>) Read from remote host
+  #6  0x0000000000403e7b in do_syscalltests (tcs=0x50cec0) at symlink01.c:958
+  #7  0x00000000004047b7 in main (argc=<value optimized out>, argv=<value optimized out>) at symlink01.c:569 (gdb) up
+  #1  0x00002b5ae726dfb0 in abort () from /lib64/libc.so.6 (gdb)  
+  #2  0x00002b5ae72a332b in __libc_message () from /lib64/libc.so.6 (gdb)  
+  #3  0x00002b5ae730f31f in __chk_fail () from /lib64/libc.so.6 (gdb)  
+  #4  0x00002b5ae730e3c3 in __strcat_chk () from /lib64/libc.so.6 (gdb)  
+  #5  0x00000000004048fe in creat_path_max (path1=0x409d88 "object", path2=<value optimized out>,path3=<value optimized out>) at symlink01.c:844 844 strcat(full_path, "Z");
+Variable full_path exceeds PATH_MAX limit in creat_path_max(), to avoid a buffer overflow the size of full_path needs to be incremented by one. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/symlink/symlink01.c
+
+35) Log Message:
+Now that fsx-linux is the same for fs, nfs and ios (I'm working with ltp-full-20080831.tgz) we have to adapt the runtest/ltp-aiodio.part3 file: (-A and -Z options are no more supported by fsx-linux). Signed-Off-By: Jacky Malcles <Jacky.Malcles@bull.net>.
+
+Modified File(s):
+ltp/runtest/ltp-aiodio.part3
+
+36) Log Message:
+Introduced PREFIX and LIBSUFFIX variables. DESTDIR is often used within packaging scripts/spec files. Use PREFIX variable instead to manipulate the installation destination directory. Introduced LIBSUFFIX to allow to manipulate library directory to lib64 e.g. for distribution packaging for x86_64 or others architectures. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified Files:
+ltp/doc/man1/Makefile ltp/doc/man3/Makefile
+ltp/include/Makefile ltp/lib/Makefile ltp/pan/Makefile
+
+37) Log Message:
+Dont install ltp.pc and libltp.a with excutable flags. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified Files:
+ltp/lib/Makefile
+
+38) Log Message:
+Apply CFLAGS to compiler to ballista, kernel/syscalls/utimestat. Compile everything with (user-defined) CFLAGS. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified Files:
+ltp/testcases/ballista/ballista/Makefile
+ltp/testcases/kernel/syscalls/utimensat/Makefile
+
+39) Log Message:
+Avoid overwriting of compiler specific flags in open posix testsuite. Instead of overwriting CFLAGS, append custom flags. Don't append debugging info, optimizing or warning related compiler flags. This would "overwrite" the user definied CFLAGS again. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+ltp/testcases/open_posix_testsuite/Makefile
+
+40) Log Message:
+Logfiles of the ltp testdriver "runltp" can get corrupted due to "unsafe" temporary directories and not failing when temporary already exist. The temp directory is /tmp/ltp-$$ which can cause logfile corruption once the PID overflows, since "mkdir -p" will NOT fail, and runltp starts writing into an already existing log directory. This patch creates a temporary directory by using "mktemp", which replaces the "mkdir -p" call. runltp will fail once "mktemp" runs out of combinations (instead of corrupting logfiles silently). Patch is based on the idea from Erik Hamera to create more "safe" temp directories. Various patch improvements/fixes got contributed by Klaus Wagner as well. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified Files:
+ltp/runltp
+
+41) Log Message:
+This patch fixes most of warnings and badness including the following. Compiled successfully on Fedora 10 Beta x86_64. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+include/databin.h
+lib/databin.c
+testcases/kernel/containers/libclone/libnetns.c
+testcases/kernel/containers/libclone/Makefile
+testcases/kernel/containers/pidns/pidns03.c
+testcases/kernel/containers/sysvipc/shmnstest.c
+testcases/kernel/controllers/cpuctl/cpuctl_test01.c
+testcases/kernel/controllers/cpuctl/cpuctl_test02.c
+testcases/kernel/controllers/cpuctl/cpuctl_test03.c
+testcases/kernel/controllers/cpuctl/cpuctl_test04.c
+testcases/kernel/controllers/memctl/memctl_test01.c
+testcases/kernel/io/disktest/childmain.c
+testcases/kernel/io/disktest/dump.c
+testcases/kernel/io/disktest/dump.h
+testcases/kernel/io/disktest/main.c
+testcases/kernel/io/disktest/timer.c
+testcases/kernel/ipc/ipc_stress/signal_test_01.c
+testcases/kernel/ipc/ipc_stress/signal_test_03.c
+testcases/kernel/mem/hugetlb/lib/libipc.c
+testcases/kernel/mem/mtest07/mallocstress.c
+testcases/kernel/mem/mtest07/shm_test.c
+testcases/kernel/sched/clisrv/pthserv.c
+testcases/kernel/sched/tool/trace_sched.c
+testcases/kernel/security/filecaps/checkforlibcap.sh
+testcases/kernel/syscalls/clone/clone03.c
+testcases/kernel/syscalls/clone/clone04.c
+testcases/kernel/syscalls/clone/clone06.c
+testcases/kernel/syscalls/fmtmsg/fmtmsg01.c
+testcases/kernel/syscalls/ipc/lib/libipc.c
+testcases/kernel/syscalls/ipc/msgget/msgget01.c
+testcases/kernel/syscalls/nftw/lib64.c
+testcases/kernel/syscalls/nftw/lib.c
+testcases/misc/crash/crash01.c
+testcases/network/nfsv4/locks/netsync.c
+testcases/network/sctp/func_tests/test_1_to_1_threads.c
+testcases/network/sctp/func_tests/test_sctp_sendrecvmsg.c
+testcases/network/sctp/func_tests/test_timetolive.c
+testcases/network/sockets/ltpClient.c
+testcases/network/sockets/ltpServer.c
+testcases/kernel/syscalls/switch/endian_switch01.c
+testcases/kernel/fs/doio/doio.c
+
+42) Log Message:
+ltin___memset_chk overflow warning for kernel/connectors/pec/pec_listener.c. with GCC 4.3 and with LTP CVS snapshot from today i got following warning when using the GCC Object Checking Builtins: Signed-off-by: Daniel Gollub <dgollub@suse.de>. 
+It's not a correct fix, the patch initializes the message header only. Below is a correct one: Allocate a buffer large enough to hold NLMSG_SPACE(MAX_MSG_SIZE). Signed-off-by: Li Zefan <lizf@cn.fujitsu.com>. 
+
+Modified File(s):
+ltp/testcases/kernel/connectors/pec/pec_listener.c
+
+43) Log Message:
+Compiled the latest CVS tree on a x86_64 machine yelling a warning, 
+"acl1.c: In function ‘do_file_op’:
+ acl1.c:62: warning: not enough variable arguments to fit a sentinel"
+Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/network/nfsv4/acl/acl1.c
+
+44) Log Message:
+CAI Qian <caiqian@cclom.cn> reported that Setgroups01_16 test always fails for x86_64:
+setgroups01_16    1  FAIL  :  setgroups(65536, list) Failed, errno=14 : Bad address,
+Seen it on both of those Kernels, 2.6.27-0.392.rc8.git7.fc10.x86_64, 2.6.18-92.el5. Any idea on if it is a test code issue or OS bug?
+Daniel Gollub <dgollub@suse.de> replied that I just sent some patches for setgroups02_16 - looks like it's a similar problem for setgroups01_16 (for some reason setgroups01_16 didn't failed for me, only setgroups02_16). Anyway, i guess the reason is the use of the uninitialized groups list and passing the _full_ length to the syscalls. Could you try attached patch? Signed-Off-By: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/setgroups/compat_16.h
+ltp/testcases/kernel/syscalls/setgroups/setgroups01.c
+
+45) Log Message:
+Change argument list of GETGROUPS/SETGROUPS to represent the argument list of the syscalls. getgroups() first argument is a signed int!. Signed-off-by: Daniel Gollub <dgollub@suse.de>. Also, setgroups02(_16) is working with an uninitialized list, expect the first GID field. setgroups() and getgroups() additionally get called with the full length  of the uninitialized list. The uninitialized values cause setgroups02_16 to fail:
+===
+setgroups02_16    1  BROK  :  gid returned from getgroups is too large for testing setgroups32
+===
+Since the uninitialized values could be greater then 0xffff. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/setgroups/compat_16.h
+ltp/testcases/kernel/syscalls/setgroups/setgroups02.c
+
+46) Log Message:
+Hi. Here I am getting the following error (with Ubuntu 7.04):
+elder@Yosemite:/tmp/ltp/testcases/ballista$ LANG= make -f Makefile
+WARNING: No perl detected; skipping ballista tests
+This is caused by a bashism in the makefile (see patch 1). I've compiled & ran ballista on Debian lenny, and found out some patches are needed to make it work. Patches 1 and 2 are fix bashisms causing failures when using Debian's dash. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/ballista/Makefile
+ltp/testcases/ballista/ballista/ostest_new.pl
+
+47) Log Message:
+This fixes a problem when generated the test executable source, which causes the last argument of the tested syscall to be repeated (eg. call chdir(char*) would end up as chdir(char*, char*)). Signed-off-by: Jiri Palecek <jpalecek@web.de>. 
+
+Modified Files:
+ltp/testcases/ballista/ballista/callGen.cpp
+ltp/testcases/ballista/ballista/callGen_standAlone.cpp
+
+48) Log Message:
+Adds using declarations to generated sources, where needed. Added using namespace std; directives to files that use unqualified names from std:: Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/ballista/ballista/compile/bparser.cpp
+ltp/testcases/ballista/ballista/templates/bTypes.cpp
+
+49) Log Message:
+Fixed some bashisms. Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/security/filecaps/checkforlibcap.sh
+
+50)  Log Message:
+Typo in file_test.sh. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/commands/ade/file/file_test.sh
+
+51) Log Message:
+Fix bashisms in inintialize.sh. This includes two atypical cases: a lexicographical comparison of two strings, which has been emulated by "sort", and some strange bash-array-ism, which has been emulated through "eval". Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/containers/netns/initialize.sh
+
+52) Log Message:
+Fix some bashisms. Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/commands/ade/ar/ar01
+ltp/testcases/commands/ade/file/file_test.sh
+ltp/testcases/commands/cpio/cpio_tests.sh
+ltp/testcases/commands/eject/eject-tests.sh
+ltp/testcases/commands/fileutils/cp/cp_tests.sh
+ltp/testcases/commands/fileutils/ln/ln_tests.sh
+ltp/testcases/commands/fileutils/mkdir/mkdir_tests.sh
+ltp/testcases/commands/fileutils/mv/mv_tests.sh
+ltp/testcases/commands/gzip/gzip_tests.sh
+ltp/testcases/commands/logrotate/logrotate_tests.sh
+ltp/testcases/commands/mail/mail_tests.sh
+ltp/testcases/commands/tar/tar_tests.sh
+ltp/testcases/kernel/fs/acls/acl_test01
+ltp/testcases/network/dhcpd/dhcpd_tests.sh
+ltp/testcases/network/iptables/iptables_tests.sh
+ltp/testcases/network/traceroute/traceroute_tests.sh
+ltp/testcases/network/xinetd/xinetd_tests.sh
+
+53) Log Message:
+Fix bashisms (function keyword in utimensat_tests.sh). Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+54) Log Message:
+When building ltp on 2.6.24 kernel, the timerfd test failed to build. This is caused by NR_timerfd being defined without NR_timerfd_create, because the test checks for NR_timerfd, but uses NR_timerfd_create. The attached patch should fix that. Correct the condition of compiling the timerfd test; should fix FTBFS with some kernel versions. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/timerfd/timerfd01.c
+
+55) Log Message:
+The file_test detects MSB architectures by grepping for "power" or "ppc" in /proc/cpuinfo. This is unfortunate if, on a LSB architecture, /proc/cpuinfo contains the word "power_management". The attached patch should fix it. Implement a (hopefully) proper way of getting machine endiannes in file_test.sh. The old way tested if cpuinfo contained the word "power" for big endian machine; this was easily confused by "power_management". Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/commands/ade/file/file_test.sh
+
+56) Log Message:
+Running hugemmap02 test case on IA-32 generated SIGSEGV. It also gives warnings when compiling:      
+cc -I../../../../../include -g -Wall    hugemmap02.c -L../../../../../lib -lltp   -o hugemmap02
+hugemmap02.c: In function ‘main’:
+hugemmap02.c:149: warning: integer constant is too large for ‘long’ type
+hugemmap02.c:156: warning: integer constant is too large for ‘long’ type
+The following patch fixes it by making low memory addresses falling in a 2G - 3G range. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/hugetlb/hugemmap/hugemmap02.c
+
+57) Log Message:
+The mc_cmds script under ltp network test returns "fail" when /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts is set to 1. This just means that this feature is disabled. Added a check to report this message and exit. Vinay Sridhar <vinay@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/network/multicast/mc_cmds/mc_cmds
+
+58) Log Message:
+This patch fixes file_test failure on s390(x). Signed-off-by: Jeff Burke <jburke@redhat.com>. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/commands/ade/file/file_test.sh
+
+59) Log Message:
+The runltp has the parameter "-d" to identify the temporary directory by user. But in the latest runltp, there're two problem:
+1> Always use "/tmp" as the temporary directory and never use the one that user defined.
+2> It will be in error if the parameter "TMPDIR" is a relative path. 
+This patch fixes those issues. Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runltp
+
+60) Log Message:
+This patch fixes the ld01 test failure on x86_64. Signed-off-by: Jeff Burke <jburke@redhat.com>. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/commands/ade/ld/Makefile
+
+61) Log Message:
+I found no reason why they should not be run: Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/mm
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/mount/Makefile
+ltp/testcases/kernel/syscalls/umount/Makefile
+
+Added Files:
+ltp/testcases/kernel/syscalls/mount/test_mount
+ltp/testcases/kernel/syscalls/umount/test_umount
+
+62) Log Message:
+Re-introduce locals. The issue I was solving when making this patch was checkbashisms (http://packages.debian.org/sid/devscripts) complaining about it, so I had to patch it to get rid of lintian warnings. I've checked that:
+- the variables are always initialised before use in the testXX functions,
+- the testXX functions don't recurse nor call each other,
+- the variables are not used outside testXX functions,
+
+so IIUC, the transformation should be safe. However, if you're seriously worried about it, you can reintroduce the locals by applying the attached patch, it wouldn't matter to me. Signed-Off-By: Jiri Palecek <jpalecek@web.de>. Mike Frysinger <vapier@gentoo.org> wanted them back.
+
+Modified File(s):
+ltp/testcases/network/iptables/iptables_tests.sh
+
+63) Log Message:
+The current fork09 test case breaks if there is an FD (with a higher number) opened for the testcase. This would fail as the test is not able to detect the fact that it has already opened 1024 files ! This situation is quite possible in an automated environment where people could run the LTP tests from. The patch attached fixes the issue. Please apply ! This will make the test more robust and free from assumptions ! ;). Signed-off-by: Suzuki K P <suzuki@in.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/fork/fork09.c
+
+64) Log Message:
+This patch fixes the following compilation warning seen on PPC64. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/getsid/getsid02.c
+
+65) Log Message:
+I tested the connectors case on SLES11 beta2 for ppc. Some tests fail. It's the getopt() error in connectors/pec/event_generator.c file. The type of return value in getopt() is "int", not "char". This Patch solves the problem. Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>. 
+
+Modified File(s):
+ltp/testcases/kernel/connectors/pec/event_generator.c
+
+66) Log Message:
+I've understood the explanation and I've confirmed the correctness. But I think the behavior of io_submit(ctx, 0, (void*)-1 ) on ppc64 is interesting. So I don't like to throw io_submit(ctx, 0, (void*)-1 ) test case away <A>. Also I'd like to dig the kernel more <B>. For <B> I'd like to submit following patch to lkml in the future: For <A> I've revised the patch. Signed-off-by: Sridhar Vinay <vinaysridhar@in.ibm.com>, Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>, Signed-off-by: Masatake YAMATO <yamato@redhat.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/io_submit/io_submit01.c
+
+67) Log Message:
+Addition of gcov-kdump tool to LTP. The files attached is gcovdump tool. Could you please upload the code into LTP CVS repository? Signed-Off-By: Huang Ying <ying.huang@intel.com>.
+
+Added Files:
+utils/analysis/gcov-kdump/Makefile
+utils/analysis/gcov-kdump/README
+utils/analysis/gcov-kdump/gcov.h
+utils/analysis/gcov-kdump/gcovdump.c
+utils/analysis/gcov-kdump/mem_image.c
+utils/analysis/gcov-kdump/mem_image.h
+utils/analysis/gcov-kdump/util.c
+utils/analysis/gcov-kdump/util.h
+
+68) Log Message:
+I found no reason why they should not be run: Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runtest/syscalls
+
+69) Log Message:
+Addition of additional epoll() test cases run to LTP. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/syscalls
+
+Added Files:
+ltp/testcases/kernel/syscalls/libevent/run_libevent.sh
+
+70) Log Message:
+Thanks. Attached page is based on your advise. Signed-off-by: Masatake YAMATO <yamato@redhat.com>. However, the page tells *older* version of 2.6.23 uses signo instead of ssi_signo as a field name. Subrata, could you try the patch on your 2.6.27 first. 
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/signalfd/signalfd01.c
+
+71) Log Message:
+Subrata <subrata@linux.vnet.ibm.com> wrote: I found some compilation errors for the connectors at today´s CVS snapshot on the following machine. Can you please look into this: 1) uname -a, Linux 2.6.27-autokern1 #1 SMP Mon Oct 20 00:45:37 PDT 2008 i686 GNU/Linux.  How about: check if NETLINK_CONNECTOR is defined (in netlink.h). If not, we can't include connector.h, so we break the test. If yes, we check if CN_IDX_PROC is defined. Subrata, can you try the following patch? Signed-off-by: Li Zefan <lizf@cn.fujitsu.com>.
+
+Modified Files:
+ltp/testcases/kernel/connectors/pec/pec_listener.c
+ltp/testcases/kernel/connectors/pec/run_pec_test
+
+72) Log Message:
+The getcpu() test-function returns the current scheduled CPU id of the test-process for archiectures expect i386, which is not the intended return value of a syscall test. Attached patch returns instead 0, for non-i386 ARCH and __GLIBC_PREREQ(2,6). Tested on x86_64. Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/getcpu/getcpu01.c
+
+73) Log Message:
+openposix testsuite is skipping PPC64 builds due to different location of the "main" function symbol on PPC64. Author: Erik Hamera <ehamera@suse.cz>, Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/open_posix_testsuite/Makefile
+
+74) Log Message:
+please find attached a fix for potential overflows in sched_tc4 and sched_driver. sched_tc4: RAWDEV could be much large then 16 chars - e.g. /dev/cciss/c0d0p6 (18) (only use of RAWDEV in entire sched_stress module). sched_driver: pathname could be much large then 50 - increased to PATH_MAX. Problem observed and original fixed by Yi Xu. Patch got slightly cleaned-up/modified. Reviewed-by: Daniel Gollub <dgollub@suse.de>, Signed-off-by: Daniel Gollub <dgollub@suse.de>.
+
+Modified File(s):
+ltp/testcases/kernel/sched/sched_stress/sched_driver.c
+ltp/testcases/kernel/sched/sched_stress/sched_tc4.c
+
+
+75) Log Message:
+Again, the patch deals with _NR_fstatat64 and __NR_newfstatat stubs when builds the test. We do not really want to test stubs when a good definition is available. See attached patch file, copy here. Tested with _fstatat64 or __NR_newfstatat defined, not tested  when both stubbed. Signed-off by : Vlad Malov <vlad.malov@caviumnetworks.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/fstatat/fstatat01.c
+
+76) Log Message:
+Replacement of deprecated interfaces: The update_refpolicy.sh fixes some of deprecated interfaces and inject an interface to kick test script from unconfined domain. So, I can run the testsuite which includs bounds test without any problems on Rawhide. However, I got some warnings for deprecated interfaces/macros like r_dir_perms, userdom_sysadm_bin_spec_domtrans_to or userdom_use_sysadm_ptys. The attached patch is a new test case of the boundary feature, which contains six tests, as follows: 
+test01: It tries to invoke setcon() with bounded domain in a multi-threaded process. The expected result is success.
+test02: It tries to invoke setcon() with unrelated domain in a multi-threaded process. The expected result is fail.
+test03: It makes a bounded domain try to read a file, when its bounds domain can read the file. The expected result is success. test04: It makes a bounded domain try to write a file, when its bounds domain cannot write the file. The expected result is fail, because write permission is boundary violated.
+test05: It tries to write a bounded type, even if the domain cannot write to its bounds type. The expected result is fail. 
+test06: It makes a bounded domain try to set an attribute of bounded type.Thanks,
+Signed-Off-By: KaiGai Kohei <kaigai@ak.jp.nec.com>.
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/tests/Makefile
+
+Added Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_bounds.te
+ltp/testcases/kernel/security/selinux-testsuite/tests/bounds/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/tests/bounds/selinux_bounds.sh
+ltp/testcases/kernel/security/selinux-testsuite/tests/bounds/selinux_bounds_thread.c
+
+77) Log Message:
+Integrate execution of epoll() syscall testcase. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/Makefile
+
+78) Log Message:
+Integrated TIMERS tests
+(http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/kernel/timers/) to default LTP run: runltp. Signed-Off-By: Subrata Modak
+<subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runltp
+
+79) Log Message:
+Integrated SCHEDULER Client Server Tests to default LTP run ./runltp. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/sched
+ltp/testcases/kernel/sched/clisrv/Makefile
+
+Added Files:
+ltp/testcases/kernel/sched/clisrv/run_sched_cliserv.sh
+
+80) Log Message:
+Integrated the sched_stress to default LTP run for 2 minutes. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runtest/sched
+ltp/testcases/kernel/sched/sched_stress/sched_stress.sh
+
+81) Log Message:
+Addition of Initial Set of POWER MANAGEMENT Testcases to LTP. Signed-Off-By: Nageswara R Sastry <rnsastry@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runltp
+ltp/testcases/kernel/Makefile
+
+Added Files:
+ltp/runtest/power_management_tests
+ltp/testcases/kernel/power_management/Makefile
+ltp/testcases/kernel/power_management/README
+ltp/testcases/kernel/power_management/change_freq.sh
+ltp/testcases/kernel/power_management/change_govr.sh
+ltp/testcases/kernel/power_management/check_config.sh
+ltp/testcases/kernel/power_management/check_cpufreq_sysfs_files.sh
+ltp/testcases/kernel/power_management/check_kv_arch.c
+ltp/testcases/kernel/power_management/config_cpu_freq
+ltp/testcases/kernel/power_management/config_cpu_idle
+ltp/testcases/kernel/power_management/config_sched_mc
+ltp/testcases/kernel/power_management/pm_include.sh
+ltp/testcases/kernel/power_management/pwkm_load_unload.sh
+ltp/testcases/kernel/power_management/runpwtests.sh
+ltp/testcases/kernel/power_management/test_sched_mc.sh
+
+82) Log Message:
+Fixed Build errors on s390x. Signed-Off-By: Ramon de Carvalho Valle <rcvalle@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/get_robust_list/get_robust_list01.c
+ltp/testcases/kernel/syscalls/set_robust_list/set_robust_list01.c
+
+83) Log Message:
+Added the Kernel Options that need to be set after applying the Patch and for successfull loading of the GCOV kernel during usage of lcov. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+utils/analysis/gcov-kernel/linux-2.6.27-gcov.patch
+
+84) Log Message:
+I wanted to have all the special configuration parameters needed in the kernel .config file for enabling some features, for which test cases are there in LTP, but those tests will not run until the running kernel was enabled. I wanted the consolidated list in the ltp/README itself. I have generated a small patch for this. I would request others also to add to this when they find out such scenarios in LTP. Please feel free to add. We do not want situations where test cases are available in LTP, but they cannot be tested just because that the kernel was not built with configuration(s) set. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/README
+
+85) Log Message:
+The result of alloc_mem thread could be either NULL, ptr to some allocated memory or (void*)-1. The code reading this result actually handled cases 1 & 2 only, and even case "NULL" was mishandled, causing a segfault. This patch fixes it, by:
+- removing the case when alloc_mem would return -1, change it to the "allocated memory" case,
+- not checking for *th_status, if th_status might be null,
+Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/mtest07/mallocstress.c
+
+86) Log Message:
+In the i2ntest1 testcase, the call if_nametoindex(TEST_RETURN) was segfaulting, because TEST_RETURN was actually result of comparison (ifname==if_indextoname(...)). The fix is to call it with real ifname. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/network/lib6/in6_02.c
+
+87) Log Message:
+Fix segfaults on getaddrinfo failures in pingpong6.c. pingpong6.c would segfault if getaddrinfo fails, because it would go on after the failure and read invalid data (ie. the hp pointer). The fix is to exit immediately on getaddrinfo errors. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/network/ipv6/perf_lan6/pingpong6.c
+
+88) Log Message:
+Fix double unescaping error in tst_resm. when calling tst_resm (and several other tst_* functions) with a string containinig "%%", tst_resm would not output a percent sign, but formats some data instead (eg. "%%fs" in fork05 test ends up as "0.00000s". This is because once the escapes have been processed by tst_resm, they are processed again by tst_res called by tst_resm. The attached patch fixes this behaviour.. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/lib/tst_res.c
+
+89) Log Message:
+clean up nested #ifdef mess
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/get_robust_list
+
+90) Log Message:
+The following hack fixes the "endian_switch01.c:115: warning: ‘main’ takes only zero or two arguments" warning. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/switch/endian_switch01.c
+
+91) Log Message:
+Compilation problem with latest cvs: epoll test. Hello. I had a problem when compiling today's version with Ubuntu. The following patch fixed the issue (I guess it is a bashism). Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/epoll/Makefile
+
+92) Log Message:
+Add mips64 support to resvmsg01 and sendmsg01 tests. Two rivial patches to add yet another 64-bit architecture. Tested on mips64 Octeon, Linux 2.6.27. Signed-off by : Vlad Malov vlad.malov@caviumnetworks.com.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/recvmsg/recvmsg01.c
+ltp/testcases/kernel/syscalls/sendmsg/sendmsg01.c
+
+93) Log Message:
+Shmem_test_06: Let System Choose Suitable Addresses at Which to Attach the Segments. Shmem_test_06 still fail occasionally because it tries to attach segments to fixed addresses. It is still possible that one of those addresses has been used due to address space randomization or whatever reason. This is because the chosen address starting from 80000000 has already been used. This patch fixes the problem by letting system choose suitable addresses at which to attach the segments, and still satisfy the purpose of the test - simultaneous attachment of more than ten shared memory regions to a process. Using segment registers 0x3 to 0xC and 0xE. Now, the test works fine. Tested successfully on i386 and s390x machines. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/ipc/ipc_stress/shmem_test_06.c
+
+94) Log Message:
+This patch fixes a bash specific comparison in checkforlibcap.sh script. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/kernel/security/filecaps/checkforlibcap.sh
+
+95) Log Message:
+Fix segfault of "pan" on signal action. pan segfaults when receiving various signal registered by sigaction. Valgrind reports various uninitalied bytes of the sigaction struct: Initializing the sigaction struct as empty avoids a segfault of "pan". Signed-off-by: Daniel Gollub <dgollub@suse.de>. Acked-by: Nate Straz <nstraz@redhat.com>.
+
+Modified File(s):
+ltp/pan/pan.c
+
+96) Log Message:
+Fix the shared memory getting and removing in madvise03. <Bug 1>: In madvise03 case, it would apply a large size shared memory. But in some system, it was greater than the shmmax. So it would be failed. <Bug 2>: It would not remove the shared memory when it exited. Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/madvise/madvise03.c
+
+97) Log Message: Fix the exit value in inotify cases on RHEL4.7. The RHEL4.7 (kernel-2.6.9-78.EL) does not support inotify system calls. So it should send out an information and return 0. In addition, tha patch also fixed a compile warning: Signed-off-by: Jin Bing Guo <guojb@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+
+98) Log Message:
+The attached patch fixes some errors when running with Ubuntu due to some bash specific syntax. It also has some minor cosmetic and indentation changes. CAVEATS:
+1- The comparisons failed because the script was generating empty files and the comparisons in line 181 failed. However the test proceeded as if the comparisons were successful. There is still room for improvement.
+2- I had to change Ubuntu default configuration (enable cron log file and rename it from cron.log to cron) for the test to succeed.
+Signed-Off-By: Elder Costa <elder.costa@terra.com.br>
+
+Modified File(s):
+ltp/testcases/commands/cron/cron_tests.sh
+
+99) Log Message:
+Fix Cron Test Fails to Compare. This patch fixes a comparison failure spotted by Elder Costa because the script was generating empty files. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/commands/cron/cron_tests.sh
+
+100) Log Message:
+At_allow01 and at_deny01 test cases always fail, because the result code handing is incorrect. This patch fixes it, and also tidy up code a little bit. In addition, looks like there is a bug for at utility with a non-login shell, so I suppose it does not hurt to work around this particular bug by using a login shell. Tested successfully on a x86-64 and s390x machines. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/commands/at/at_allow01
+ltp/testcases/commands/at/at_deny01
+
+101) Log Message:
+I hope the numa infrastructure will handle stuff non-numa systems. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runltp
+
+102) Log Message:
+Integrate hugetlb tests into runltp. Also modify the way hugemmap02 is run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runltp
+ltp/runtest/hugetlb
+
+103) Log Message:
+The following patch Integrates the remaining MTEST06 into runltp. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/mm
+ltp/testcases/kernel/mem/mtest06/mmap2.c
+ltp/testcases/kernel/mem/mtest06/mmap3.c
+
+104) Log Message:
+The following patch Integrates the remaining MMAPSTRESS into runltp. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/mm
+ltp/testcases/kernel/mem/mmapstress/mmapstress01.c
+ltp/testcases/kernel/mem/mmapstress/mmapstress09.c
+ltp/testcases/kernel/mem/mmapstress/mmapstress10.c
+
+105) Log Message:
+Following warnings are generated when compiling mm_core_apis.c. Attached patch fixes them. Signed-Off-By: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/libmm/mm_core_apis.c
+
+106) Log Message:
+The following patch integrates build/install/run of mm_core_apis to runalltests.sh. Signed-Off-By: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runalltests.sh
+
+107) Log Message:
+The following patch integrates running of aio tests to runalltests.sh. Signed-Off-By: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runalltests.sh
+
+108) Log Message:
+This patch drops the redudant copies (in total three copies of fsx-linux.c from:
+- testcases/kernel/io/ltp-aiodio/
+- testcases/network/nfs/fsx-linux
+
+The only copy of fsx-linux.c will stay in:
+- testcases/kernel/fs/fsx-linux/fsx-linux.c
+
+Attached patch adapt the TCbin= variable of the runtests file to the install target "$LTPROOT/testcases/bin" to find the (shared) build of fsx-linux. Signed-off-by: Daniel Gollub <dgollub@suse.de>. Acked-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/runtest/fsx
+ltp/runtest/ltp-aiodio.part3
+ltp/runtest/ltplite
+ltp/runtest/nfs
+ltp/runtest/stress.part1
+ltp/testcases/kernel/io/ltp-aiodio/Makefile
+
+Removed Files:
+ltp/testcases/kernel/io/ltp-aiodio/fsx-linux.c
+ltp/testcases/network/nfs/fsx-linux/fsx-linux.c
+
+109) Log Message:
+The following patch complements previous ones to fix/improve the behaviour of cron_tests.sh script. Some fixes inspired in CAI Qian's previous posts. 
+Changes:
+1- Added LANG= in the script executed by cron to avoid issues with internationalization.
+2- Reordered some tests so that one checks if one of the variables TS_MIN is empty (in case there was some problem to create the file tst1_cron.out) 
+3- Eliminated the \t\n from the output strings that caused the problem reported by Subrata
+4- Fixed the order the expected x received values are printed out to the output log
+
+This version fixes an error in the previous patch that prevented it from applying correctly and added minor cosmetic changes. Signed-Off-By: Elder Costa <elder.costa@terra.com.br>.
+
+Modified File(s):
+ltp/testcases/commands/cron/cron_tests.sh
+
 LTP-20080930
 
 1) Log Message:
