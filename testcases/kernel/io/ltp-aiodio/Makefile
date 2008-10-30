@@ -1,7 +1,7 @@
 CFLAGS+= -Wall -O -g -DAIO
 LDLIBS+= -L /usr/lib -laio
 
-TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero fsx-linux aio-stress
+TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero aio-stress
 SRCS=$(wildcard *.c)
 OBJS=$(patsubst %.c,%.o,$(SRCS))
 
@@ -33,9 +33,6 @@ dirty: dirty.o
 
 read_checkzero: read_checkzero.o
 		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-fsx-linux: fsx-linux.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS) -lpthread
 
 aio-stress: aio-stress.o
 		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS) -lpthread
