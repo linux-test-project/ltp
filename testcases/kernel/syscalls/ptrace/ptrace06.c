@@ -22,6 +22,17 @@
 #include "usctest.h"
 #include "spawn_ptrace_child.h"
 
+/* this should be sizeof(struct user), but that info is only found
+ * in the kernel asm/user.h which is not exported to userspace.
+ */
+#if defined(__i386__)
+# define SIZEOF_USER 284
+#elif defined(__x86_64__)
+# define SIZEOF_USER 928
+#else
+# define SIZEOF_USER 0x1000		/* just pick a big number */
+#endif
+
 char *TCID = "ptrace06";
 
 struct test_case_t {
@@ -36,6 +47,7 @@ struct test_case_t {
 	{ PTRACE_PEEKDATA, .addr = -1 },
 	{ PTRACE_PEEKDATA, .addr = -2 },
 	{ PTRACE_PEEKDATA, .addr = -3 },
+	{ PTRACE_PEEKDATA, .addr = -4 },
 
 	{ PTRACE_PEEKTEXT, .addr = 0 },
 	{ PTRACE_PEEKTEXT, .addr = 1 },
@@ -44,15 +56,16 @@ struct test_case_t {
 	{ PTRACE_PEEKTEXT, .addr = -1 },
 	{ PTRACE_PEEKTEXT, .addr = -2 },
 	{ PTRACE_PEEKTEXT, .addr = -3 },
-	{ PTRACE_PEEKTEXT, .addr = -1 },
+	{ PTRACE_PEEKTEXT, .addr = -4 },
 
-	{ PTRACE_PEEKUSER, .addr = sizeof(struct pt_regs) * 3 + 0 },
-	{ PTRACE_PEEKUSER, .addr = sizeof(struct pt_regs) * 3 + 1 },
-	{ PTRACE_PEEKUSER, .addr = sizeof(struct pt_regs) * 3 + 2 },
-	{ PTRACE_PEEKUSER, .addr = sizeof(struct pt_regs) * 3 + 3 },
+	{ PTRACE_PEEKUSER, .addr = SIZEOF_USER + 1 },
+	{ PTRACE_PEEKUSER, .addr = SIZEOF_USER + 2 },
+	{ PTRACE_PEEKUSER, .addr = SIZEOF_USER + 3 },
+	{ PTRACE_PEEKUSER, .addr = SIZEOF_USER + 4 },
 	{ PTRACE_PEEKUSER, .addr = -1 },
 	{ PTRACE_PEEKUSER, .addr = -2 },
 	{ PTRACE_PEEKUSER, .addr = -3 },
+	{ PTRACE_PEEKUSER, .addr = -4 },
 
 	{ PTRACE_POKEDATA, .addr = 0 },
 	{ PTRACE_POKEDATA, .addr = 1 },
@@ -61,6 +74,7 @@ struct test_case_t {
 	{ PTRACE_POKEDATA, .addr = -1 },
 	{ PTRACE_POKEDATA, .addr = -2 },
 	{ PTRACE_POKEDATA, .addr = -3 },
+	{ PTRACE_POKEDATA, .addr = -4 },
 
 	{ PTRACE_POKETEXT, .addr = 0 },
 	{ PTRACE_POKETEXT, .addr = 1 },
@@ -69,14 +83,16 @@ struct test_case_t {
 	{ PTRACE_POKETEXT, .addr = -1 },
 	{ PTRACE_POKETEXT, .addr = -2 },
 	{ PTRACE_POKETEXT, .addr = -3 },
+	{ PTRACE_POKETEXT, .addr = -4 },
 
-	{ PTRACE_POKEUSER, .addr = sizeof(struct pt_regs) * 3 + 0 },
-	{ PTRACE_POKEUSER, .addr = sizeof(struct pt_regs) * 3 + 1 },
-	{ PTRACE_POKEUSER, .addr = sizeof(struct pt_regs) * 3 + 2 },
-	{ PTRACE_POKEUSER, .addr = sizeof(struct pt_regs) * 3 + 3 },
+	{ PTRACE_POKEUSER, .addr = SIZEOF_USER + 1 },
+	{ PTRACE_POKEUSER, .addr = SIZEOF_USER + 2 },
+	{ PTRACE_POKEUSER, .addr = SIZEOF_USER + 3 },
+	{ PTRACE_POKEUSER, .addr = SIZEOF_USER + 4 },
 	{ PTRACE_POKEUSER, .addr = -1 },
 	{ PTRACE_POKEUSER, .addr = -2 },
 	{ PTRACE_POKEUSER, .addr = -3 },
+	{ PTRACE_POKEUSER, .addr = -4 },
 
 #ifdef PTRACE_GETREGS
 	{ PTRACE_GETREGS, .data = 0 },
@@ -86,6 +102,7 @@ struct test_case_t {
 	{ PTRACE_GETREGS, .data = -1 },
 	{ PTRACE_GETREGS, .data = -2 },
 	{ PTRACE_GETREGS, .data = -3 },
+	{ PTRACE_GETREGS, .data = -4 },
 #endif
 
 #ifdef PTRACE_GETFGREGS
@@ -96,6 +113,7 @@ struct test_case_t {
 	{ PTRACE_GETFGREGS, .data = -1 },
 	{ PTRACE_GETFGREGS, .data = -2 },
 	{ PTRACE_GETFGREGS, .data = -3 },
+	{ PTRACE_GETFGREGS, .data = -4 },
 #endif
 
 #ifdef PTRACE_SETREGS
@@ -106,6 +124,7 @@ struct test_case_t {
 	{ PTRACE_SETREGS, .data = -1 },
 	{ PTRACE_SETREGS, .data = -2 },
 	{ PTRACE_SETREGS, .data = -3 },
+	{ PTRACE_SETREGS, .data = -4 },
 #endif
 
 #ifdef PTRACE_SETFGREGS
@@ -116,6 +135,7 @@ struct test_case_t {
 	{ PTRACE_SETFGREGS, .data = -1 },
 	{ PTRACE_SETFGREGS, .data = -2 },
 	{ PTRACE_SETFGREGS, .data = -3 },
+	{ PTRACE_SETFGREGS, .data = -4 },
 #endif
 
 	{ PTRACE_GETSIGINFO, .data = 0 },
@@ -125,6 +145,7 @@ struct test_case_t {
 	{ PTRACE_GETSIGINFO, .data = -1 },
 	{ PTRACE_GETSIGINFO, .data = -2 },
 	{ PTRACE_GETSIGINFO, .data = -3 },
+	{ PTRACE_GETSIGINFO, .data = -4 },
 
 	{ PTRACE_SETSIGINFO, .data = 0 },
 	{ PTRACE_SETSIGINFO, .data = 1 },
@@ -133,6 +154,7 @@ struct test_case_t {
 	{ PTRACE_SETSIGINFO, .data = -1 },
 	{ PTRACE_SETSIGINFO, .data = -2 },
 	{ PTRACE_SETSIGINFO, .data = -3 },
+	{ PTRACE_SETSIGINFO, .data = -4 },
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
