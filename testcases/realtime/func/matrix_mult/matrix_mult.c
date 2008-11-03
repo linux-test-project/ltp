@@ -66,9 +66,9 @@ static int numcpus;
 static float criteria;
 static int *mult_index;
 static int *tids;
-static int *flags;
 static int online_cpu_id = -1;
 static int iterations = ITERATIONS;
+static int iterations_percpu;
 
 stats_container_t sdat, cdat, *curdat;
 stats_container_t shist, chist;
@@ -178,6 +178,7 @@ void *concurrent_thread(void *thread)
 	struct thread *t = (struct thread *)thread;
 	int thread_id = (intptr_t)t->id;
 	int cpuid;
+	int i;
 
 	cpuid = set_affinity();
 	if (cpuid == -1) {
@@ -186,47 +187,12 @@ void *concurrent_thread(void *thread)
 	}
 
 	pthread_barrier_wait(&mult_start);
-	while (flags[thread_id] != THREAD_DONE) {
-		pthread_mutex_lock(&t->mutex);
-		flags[thread_id] = THREAD_WAIT;
-		do {
-			if (pthread_cond_wait(&t->cond, &t->mutex) != 0) {
-				printf("cond_wait error!");
-				exit(1);
-			}
-		} while (flags[thread_id] == THREAD_WAIT);
-		pthread_mutex_unlock(&t->mutex);
-		if (flags[thread_id] == THREAD_WORK)
-			matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
-	}
+	for (i=0; i < iterations_percpu; i++)
+		matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
 
 	return NULL;
 }
 
-void concurrent_ops(void)
-{
-	static int thread_id = 0;
-
-	if (thread_id < (numcpus-1)) {
-		struct timespec nsleep;
-		struct thread *t;
-
-		while (flags[thread_id] != THREAD_WAIT) {
-			nsleep.tv_sec = 0;
-			nsleep.tv_nsec = THREAD_SLEEP;
-			nanosleep(&nsleep, NULL);
-		}
-		t = get_thread(tids[thread_id]);
-		pthread_mutex_lock(&t->mutex);
-		flags[thread_id] = THREAD_WORK;
-		pthread_cond_signal(&t->cond);
-		pthread_mutex_unlock(&t->mutex);
-	} else
-		matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
-
-	if (++thread_id == numcpus)
-		thread_id = 0;
-}
 
 void main_thread(void)
 {
@@ -238,15 +204,13 @@ void main_thread(void)
 
 	if (	stats_container_init(&sdat, iterations) ||
 		stats_container_init(&shist, HIST_BUCKETS) ||
-		stats_container_init(&cdat, iterations/numcpus) ||
+		stats_container_init(&cdat, iterations_percpu) ||
 		stats_container_init(&chist, HIST_BUCKETS)
 	)
 	{
 		fprintf (stderr, "Cannot init stats container\n");
 		exit(1);
 	}
-
-	pthread_barrier_init(&mult_start, NULL, numcpus);
 
 	mult_index = malloc(sizeof(int) * numcpus);
 	if (!mult_index) {
@@ -260,12 +224,6 @@ void main_thread(void)
 		exit(1);
 	}
 	memset(tids, 0, numcpus);
-	flags = malloc(sizeof(int) * numcpus);
-	if (!flags) {
-		perror("malloc");
-		exit(1);
-	}
-	memset(flags, 0, numcpus);
 
 	cpuid = set_affinity();
 	if (cpuid == -1) {
@@ -303,35 +261,27 @@ void main_thread(void)
 		fprintf(stderr, "Warning: could not save sequential mults stats\n");
 	}
 
+	pthread_barrier_init(&mult_start, NULL, numcpus+1);
+	set_priority(PRIO);
+	curdat = &cdat;
+	online_cpu_id = -1; /* Redispatch cpus */
 	/* Create numcpus-1 concurrent threads */
-	for (j = 0; j < (numcpus-1); j++) {
+	for (j = 0; j < numcpus; j++) {
 		tids[j] = create_fifo_thread(concurrent_thread, NULL, PRIO);
 		if (tids[j] == -1) {
 			printf("Thread creation failed (max threads exceeded?)\n");
-			break;
+			exit(1);
 		}
 	}
 
-	pthread_barrier_wait(&mult_start);
 
 	/* run matrix mult operation concurrently */
-	curdat = &cdat;
-	printf("\nRunning concurrent operations (%dx)\n", iterations);
+	pthread_barrier_wait(&mult_start);
 	start = rt_gettime();
-	for (i = 0; i < iterations; i++)
-		concurrent_ops();
+	join_threads();
 	end = rt_gettime();
+
 	delta = (long)((end - start)/NS_PER_US);
-
-	for (j = 0; j < (numcpus-1); j++) {
-		struct thread *t;
-
-		t = get_thread(tids[j]);
-		pthread_mutex_lock(&t->mutex);
-		flags[j] = THREAD_DONE;
-		pthread_cond_signal(&t->cond);
-		pthread_mutex_unlock(&t->mutex);
-	}
 
 	cavg = delta/iterations; /* don't use the stats record, use the total time recorded */
 	cmin = stats_min(&cdat);
@@ -396,6 +346,7 @@ int main(int argc, char *argv[])
 		printf("Rounding up iterations value to nearest multiple of total online CPUs\n");
 
 	iterations = new_iterations;
+	iterations_percpu = iterations / numcpus;
 
 	printf("Running %d iterations\n", iterations);
 	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
@@ -412,7 +363,6 @@ int main(int argc, char *argv[])
 	set_priority(PRIO);
 	main_thread();
 
-	join_threads();
 
 	return 0;
 }
