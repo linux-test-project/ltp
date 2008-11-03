@@ -17,9 +17,9 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ################################################################################
-#   
+#
 # Author         Pradeep Kumar Surisetty, pradeepkumars@in.ibm.com
-#   
+#
 # History        Nov 27 2007 -created- pradeep kumar surisetty
 #! /bin/sh
 #
@@ -43,11 +43,15 @@ then
 		echo no;
  	else
 		echo yes;
-	fi	
+	fi
 else
         echo no;     #numa is not present
 
 fi
 }
-chk_ifexist
+if [ "$CROSS_COMPILER" == "" ] then
+	chk_ifexist
+else
+    echo no;
+fi
 
