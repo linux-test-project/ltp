@@ -51,7 +51,7 @@
 					/* (and therefore SMP performance goes up) */
 #define PASS_CRITERIA	0.75		/* Avg concurrent time * pass criteria < avg seq time - */
 					/* for every addition of a cpu */
-#define ITERATIONS	128		/* HAS to be a multiple of 'numcpus' */
+#define ITERATIONS	128
 #define HIST_BUCKETS	100
 
 #define THREAD_WAIT	1
@@ -68,6 +68,7 @@ static int *mult_index;
 static int *tids;
 static int *flags;
 static int online_cpu_id = -1;
+static int iterations = ITERATIONS;
 
 stats_container_t sdat, cdat, *curdat;
 stats_container_t shist, chist;
@@ -81,6 +82,7 @@ void usage(void)
 	printf("matrix_mult specific options:\n");
 	printf("  -j            enable jvmsim\n");
 	printf("  -l#           #: number of multiplications per iteration (load)\n");
+	printf("  -i#           #: number of iterations\n");
 }
 
 int parse_args(int c, char *v)
@@ -89,6 +91,9 @@ int parse_args(int c, char *v)
 	switch (c) {
 	case 'j':
 		run_jvmsim = 1;
+		break;
+	case 'i':
+		iterations = atoi(v);
 		break;
 	case 'l':
 		ops = atoi(v);
@@ -231,9 +236,9 @@ void main_thread(void)
 	float savg, cavg;
 	int cpuid;
 
-	if (	stats_container_init(&sdat, ITERATIONS) ||
+	if (	stats_container_init(&sdat, iterations) ||
 		stats_container_init(&shist, HIST_BUCKETS) ||
-		stats_container_init(&cdat, ITERATIONS/numcpus) ||
+		stats_container_init(&cdat, iterations/numcpus) ||
 		stats_container_init(&chist, HIST_BUCKETS)
 	)
 	{
@@ -273,12 +278,12 @@ void main_thread(void)
 	curdat = &sdat;
 	printf("\nRunning sequential operations\n");
 	start = rt_gettime();
-	for (i = 0; i < ITERATIONS; i++)
+	for (i = 0; i < iterations; i++)
 		matrix_mult_record(MATRIX_SIZE, i);
 	end = rt_gettime();
 	delta = (long)((end - start)/NS_PER_US);
 
-	savg = delta/ITERATIONS; /* don't use the stats record, use the total time recorded */
+	savg = delta/iterations; /* don't use the stats record, use the total time recorded */
 	smin = stats_min(&sdat);
 	smax = stats_max(&sdat);
 
@@ -311,9 +316,9 @@ void main_thread(void)
 
 	/* run matrix mult operation concurrently */
 	curdat = &cdat;
-	printf("\nRunning concurrent operations (%dx)\n", ITERATIONS);
+	printf("\nRunning concurrent operations (%dx)\n", iterations);
 	start = rt_gettime();
-	for (i = 0; i < ITERATIONS; i++)
+	for (i = 0; i < iterations; i++)
 		concurrent_ops();
 	end = rt_gettime();
 	delta = (long)((end - start)/NS_PER_US);
@@ -328,7 +333,7 @@ void main_thread(void)
 		pthread_mutex_unlock(&t->mutex);
 	}
 
-	cavg = delta/ITERATIONS; /* don't use the stats record, use the total time recorded */
+	cavg = delta/iterations; /* don't use the stats record, use the total time recorded */
 	cmin = stats_min(&cdat);
 	cmax = stats_max(&cdat);
 
@@ -367,15 +372,32 @@ int main(int argc, char *argv[])
 {
 	setup();
 	pass_criteria = PASS_CRITERIA;
-	rt_init("jl:h", parse_args, argc, argv);
+	rt_init("jl:i:h", parse_args, argc, argv);
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 	/* the minimum avg concurrent multiplier to pass */
 	criteria = pass_criteria * numcpus;
+	int new_iterations;
+
+	if (iterations <= 0) {
+		fprintf(stderr, "iterations must be greater than zero\n");
+		exit(1);
+	}
 
 	printf("\n---------------------------------------\n");
 	printf("Matrix Multiplication (SMP Performance)\n");
 	printf("---------------------------------------\n\n");
-	printf("Running %d iterations\n", ITERATIONS);
+
+	/* Line below rounds up iterations to a multiple of numcpus.
+	 * Without this, having iterations not a mutiple of numcpus causes
+	 * stats to segfault (overflow stats array).
+	 */
+	new_iterations = (int) ( (iterations + numcpus - 1) / numcpus) * numcpus;
+	if (new_iterations != iterations)
+		printf("Rounding up iterations value to nearest multiple of total online CPUs\n");
+
+	iterations = new_iterations;
+
+	printf("Running %d iterations\n", iterations);
 	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
 	printf("Calculations per iteration: %d\n", ops);
 	printf("Number of CPUs: %u\n", numcpus);
