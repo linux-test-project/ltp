@@ -88,51 +88,58 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	size_t i;
 	int c;
 	opterr = 0;
-	char *all_options, *opt_ptr;
-	static const char my_options[] = "b:p:v:sc:";
+	char *all_options;
 
-	if (options) {
-		opt_ptr = all_options = (char *)malloc(sizeof(my_options) + strlen(options) + 1);
-		for (i=0; i<strlen(options); i++) {
-			char opt = options[i];
-			if (opt != ':' && !strchr(my_options, opt)) {
-				*opt_ptr++ = opt;
-				if (options[i+1] == ':') {
-					*opt_ptr++ = ':';
-					i++;
-				}
-			} else {
-				printf("Programmer error -- argument -%c already used by librt.h\n", opt);
-			}
-		}
-		strcpy(opt_ptr, my_options);
-	} else {
-		all_options = (char *)my_options;
+	if (asprintf(&all_options, ":b:p:v:sc:%s", options) == -1) {
+		fprintf(stderr, "Failed to allocate string for option string\n");
+		exit(1);
 	}
 
+	/* Check for duplicate options in optstring */
+	for (i=0; i<strlen(all_options); i++) {
+		char opt = all_options[i];
+
+		if (opt == ':')
+			continue;
+
+		/* Search ahead */
+		if (strchr(&all_options[i+1], opt)) {
+			fprintf(stderr, "Programmer error -- argument -%c already used at least twice\n", opt);
+			exit(1);
+		}
+	}
+	
 	while ((c = getopt(argc, argv, all_options)) != -1) {
 		switch (c) {
-			case 'c':
-				pass_criteria = atof(optarg);
-				break;
-			case 'b':
-				use_buffer = atoi(optarg);
-				break;
-			case 'p':
-				_use_pi = atoi(optarg);
-				break;
-			case 'v':
-				_dbg_lvl = atoi(optarg);
-				break;
-			case 's':
-				save_stats = 1;
-				break;
-			default:
-				if (parse_arg) {
-					if (!parse_arg(c, optarg)) {
-						printf("option -%c not recognized\n", optopt);
-					}
-				}
+		case 'c':
+			pass_criteria = atof(optarg);
+			break;
+		case 'b':
+			use_buffer = atoi(optarg);
+			break;
+		case 'p':
+			_use_pi = atoi(optarg);
+			break;
+		case 'v':
+			_dbg_lvl = atoi(optarg);
+			break;
+		case 's':
+			save_stats = 1;
+			break;
+		case ':':
+			fprintf(stderr, "option -%c: missing arg\n", optopt);
+			parse_arg('h', optarg); /* Just to display usage */
+			exit (1); /* Just in case. (should normally be done by usage()) */
+		case '?':
+			fprintf(stderr, "option -%c not recognized\n", optopt);
+			parse_arg('h', optarg); /* Just to display usage */
+			exit (1); /* Just in case. (should normally be done by usage()) */
+		default:
+			if (parse_arg && parse_arg(c, optarg))
+				break; /* Application option */
+
+			fprintf(stderr, "Programmer error -- option -%c defined but not handled\n", c);
+			exit(1);
 		}
 	}
 	if (!_use_pi)
