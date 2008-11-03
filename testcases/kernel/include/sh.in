@@ -42,4 +42,3 @@ __NR_epoll_create1	329
 __NR_dup3			330
 __NR_pipe2			331
 __NR_inotify_init1	332
-~
