@@ -389,11 +389,15 @@ then
 	then
 		$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
 			"Test #3: crontab failed removing cronjob. Reason:"
-		 		 TFAILCNT=$(( $TFAILCNT+1 ))
+		TFAILCNT=$(( $TFAILCNT+1 ))
+	else
+		$LTPBIN/tst_resm TINFO "crontab uninstalled all jobs for user"
+		$LTPBIN/tst_resm TPASS "crontab did not list any cronjobs"
 	fi
 else
-	$LTPBIN/tst_resm TINFO "crontab uninstalled all jobs for user"
-	$LTPBIN/tst_resm TPASS "crontab did not list any cronjobs"
+	$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
+		"Test #3: crontab failed removing cronjob. Reason:"
+	TFAILCNT=$(( $TFAILCNT+1 ))
 fi
 
 exit $TFAILCNT
