@@ -64,7 +64,6 @@ static int run_jvmsim = 0;
 static int ops = DEF_OPS;
 static int numcpus;
 static float criteria;
-static int *mult_index;
 static int *tids;
 static int online_cpu_id = -1;
 static int iterations = ITERATIONS;
@@ -179,6 +178,7 @@ void *concurrent_thread(void *thread)
 	int thread_id = (intptr_t)t->id;
 	int cpuid;
 	int i;
+	int index;
 
 	cpuid = set_affinity();
 	if (cpuid == -1) {
@@ -186,9 +186,10 @@ void *concurrent_thread(void *thread)
 		exit(1);
 	}
 
+	index = iterations_percpu * thread_id; /* To avoid stats overlapping */
 	pthread_barrier_wait(&mult_start);
 	for (i=0; i < iterations_percpu; i++)
-		matrix_mult_record(MATRIX_SIZE, mult_index[thread_id]++);
+		matrix_mult_record(MATRIX_SIZE, index++);
 
 	return NULL;
 }
@@ -204,7 +205,7 @@ void main_thread(void)
 
 	if (	stats_container_init(&sdat, iterations) ||
 		stats_container_init(&shist, HIST_BUCKETS) ||
-		stats_container_init(&cdat, iterations_percpu) ||
+		stats_container_init(&cdat, iterations) ||
 		stats_container_init(&chist, HIST_BUCKETS)
 	)
 	{
@@ -212,12 +213,6 @@ void main_thread(void)
 		exit(1);
 	}
 
-	mult_index = malloc(sizeof(int) * numcpus);
-	if (!mult_index) {
-		perror("malloc");
-		exit(1);
-	}
-	memset(mult_index, 0, numcpus);
 	tids = malloc(sizeof(int) * numcpus);
 	if (!tids) {
 		perror("malloc");
