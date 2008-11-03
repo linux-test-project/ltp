@@ -44,6 +44,7 @@
 #include <libjvmsim.h>
 #include <libstats.h>
 
+#define MAX_CPUS	8192
 #define PRIO		43
 #define MATRIX_SIZE	100
 #define DEF_OPS		8		/* the higher the number, the more CPU intensive */
@@ -66,15 +67,13 @@ static float criteria;
 static int *mult_index;
 static int *tids;
 static int *flags;
+static int online_cpu_id = -1;
 
 stats_container_t sdat, cdat, *curdat;
 stats_container_t shist, chist;
 static pthread_barrier_t mult_start;
+static pthread_mutex_t mutex_cpu;
 
-int gettid(void)
-{
-	return syscall(__NR_gettid);
-}
 
 void usage(void)
 {
@@ -148,28 +147,39 @@ void matrix_mult_record(int m_size, int index)
 	curdat->records[index].y = delta;
 }
 
-int set_affinity(int cpuid)
+int set_affinity(void)
 {
-	int tid = gettid();
 	cpu_set_t mask;
+	int cpuid;
 
-	CPU_ZERO(&mask);
-	CPU_SET(cpuid, &mask);
+	pthread_mutex_lock(&mutex_cpu);
+	do {
+		++online_cpu_id;
+		CPU_ZERO(&mask);
+		CPU_SET(online_cpu_id, &mask);
 
-	if (sched_setaffinity(0, sizeof(mask), &mask) < 0) {
-		printf("Thread %d: Can't set affinity: %s\n", tid, strerror(errno));
-		exit(1);
-	}
-
-	return 0;
+		if (!sched_setaffinity(0, sizeof(mask), &mask)) {
+			cpuid = online_cpu_id; /* Save this value before unlocking mutex */
+			pthread_mutex_unlock(&mutex_cpu);
+			return cpuid;
+		}
+	} while (online_cpu_id < MAX_CPUS);
+	pthread_mutex_unlock(&mutex_cpu);
+	return -1;
 }
 
 void *concurrent_thread(void *thread)
 {
 	struct thread *t = (struct thread *)thread;
-	int thread_id = (intptr_t)t->arg;
+	int thread_id = (intptr_t)t->id;
+	int cpuid;
 
-	set_affinity(thread_id);
+	cpuid = set_affinity();
+	if (cpuid == -1) {
+		fprintf(stderr, "Thread %d: Can't set affinity.\n", thread_id);
+		exit(1);
+	}
+
 	pthread_barrier_wait(&mult_start);
 	while (flags[thread_id] != THREAD_DONE) {
 		pthread_mutex_lock(&t->mutex);
@@ -219,6 +229,7 @@ void main_thread(void)
 	nsec_t start, end;
 	long smin = 0, smax = 0, cmin = 0, cmax = 0, delta = 0;
 	float savg, cavg;
+	int cpuid;
 
 	if (	stats_container_init(&sdat, ITERATIONS) ||
 		stats_container_init(&shist, HIST_BUCKETS) ||
@@ -251,7 +262,12 @@ void main_thread(void)
 	}
 	memset(flags, 0, numcpus);
 
-	set_affinity(numcpus-1);
+	cpuid = set_affinity();
+	if (cpuid == -1) {
+		fprintf(stderr, "Main thread: Can't set affinity.\n");
+		exit(1);
+	}
+
 
 	/* run matrix mult operation sequentially */
 	curdat = &sdat;
@@ -284,7 +300,7 @@ void main_thread(void)
 
 	/* Create numcpus-1 concurrent threads */
 	for (j = 0; j < (numcpus-1); j++) {
-		tids[j] = create_fifo_thread(concurrent_thread, (void *)(intptr_t)j, PRIO);
+		tids[j] = create_fifo_thread(concurrent_thread, NULL, PRIO);
 		if (tids[j] == -1) {
 			printf("Thread creation failed (max threads exceeded?)\n");
 			break;
