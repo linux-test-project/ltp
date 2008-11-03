@@ -33,6 +33,10 @@ for arch in `cat order` ; do
 		set -- $line
 		nr=$1
 		shift
+		if [ -z "$*" ] ; then
+			echo "invalid line found"
+			exit 1
+		fi
 		cat <<-EOF >> ${output}
 		# ifndef $nr
 		#  define $nr $*
