@@ -34,3 +34,6 @@ verify_caps_exec:
 	1. check that privilege is needed to set file capabilities
 	2. check that pI', pP', and pE' are properly
 	   calculated upon exec.
+The Underlying kernel needs to be built with the following options for filecaps testing:
+CONFIG_SECURITY_CAPABILITIES=y
+
