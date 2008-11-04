@@ -18,13 +18,14 @@
 ##                                                                            ##
 ################################################################################
 #
-# File :        test_powermanagement.sh
+# File :        runpwtests.sh
 #
 # Description:  
 #
 # Author:       Nageswara R Sastry <nasastry@in.ibm.com>
 #
 # History:      26 Aug 2008 - Created this file
+# 03 Nov 2008 - Added CPUIDLE sysfs testcase
 #
 #! /bin/sh 
 
@@ -95,3 +96,9 @@ else
        exit 0
 fi
 
+# Checking cpuidle sysfs interface files
+check_cpuidle_sysfs_files.sh || RC=$?
+if [ $RC -eq 1 ] ; then
+	tst_resm TFAIL "CPUIDLE sysfs tests failed"
+fi
+ 

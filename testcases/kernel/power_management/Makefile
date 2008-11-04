@@ -37,6 +37,8 @@ install:
 	ln -f  config_cpu_freq ../../bin/config_cpu_freq; \
 	ln -f  config_cpu_idle ../../bin/config_cpu_idle; \
 	ln -f  config_sched_mc ../../bin/config_sched_mc;
+	ln -f  check_cpuidle_sysfs_files.sh ../../bin/check_cpuidle_sysfs_files.sh;
+	chmod ugo+x *.sh
 clean:
 	rm -f check_kv_arch
 
