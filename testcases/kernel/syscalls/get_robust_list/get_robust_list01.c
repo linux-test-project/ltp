@@ -49,6 +49,12 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
+#include "test.h"
+#include "usctest.h"
+
+char *TCID = "get_robust_list01";    /* test program identifier.              */
+int TST_TOTAL = 5;                   /* total number of tests in this file.   */
+
 #ifdef __NR_get_robust_list
 
 struct robust_list {
@@ -61,13 +67,8 @@ struct robust_list_head {
     struct robust_list *list_op_pending;
 };
 
-#include "test.h"
-#include "usctest.h"
 
 extern int Tst_count;                /* counter for tst_xxx routines.         */
-
-char *TCID = "get_robust_list01";    /* test program identifier.              */
-int TST_TOTAL = 5;                   /* total number of tests in this file.   */
 
 int exp_enos[] = {ESRCH, EPERM, EFAULT, 0};
 
@@ -248,7 +249,8 @@ cleanup(void)
 
 int main()
 {
-	puts("get_robust_list: system call not available");
+	tst_resm(TCONF, "get_robust_list: system call not available");
+	tst_exit();
 }
 
 #endif
