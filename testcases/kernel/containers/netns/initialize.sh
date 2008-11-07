@@ -55,7 +55,7 @@ DEBUG=0
     fi
 
     IPver=`ip -V | awk  -F"-" ' {  print $2 } '` ;
-    if ! printf "%s\n%s\n" "ss080417" "$IPver" | sort -C ; then
+    if ! printf "%s\n%s\n" "ss080417" "$IPver" | sort -c ; then
         tst_resm  TINFO "ip version should be atleast ss080417"
         exit -1
     fi
