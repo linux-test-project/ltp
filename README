@@ -172,4 +172,38 @@ Enabling Kernel Configuration to test filecaps security feature
 ---------------------------------
 CONFIG_SECURITY_CAPABILITIES=y
 ---------------------------------
+Enabling Kernel Configuration to test SELinux security feature
+---------------------------------
+Your Kernel should have been built with the following options to
+test SELinux:
 
+CONFIG_SECURITY=y
+CONFIG_SECURITY_NETWORK=y
+CONFIG_SECURITY_NETWORK_XFRM=y
+CONFIG_SECURITY_FILE_CAPABILITIES=y
+
+CONFIG_SECURITY_DEFAULT_MMAP_MIN_ADDR=0
+This has to be set to a positive value if you want to test this check.
+Fedora kernels set it to 65536.
+
+CONFIG_SECURITY_SELINUX=y
+CONFIG_SECURITY_SELINUX_BOOTPARAM=y
+CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1
+CONFIG_SECURITY_SELINUX_DEVELOP=y
+CONFIG_SECURITY_SELINUX_AVC_STATS=y
+CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=1
+CONFIG_SECURITY_SELINUX_ENABLE_SECMARK_DEFAULT=y
+
+CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX=y
+You don't want this one unless you are running Fedora 3 or 4.  
+On anything newer, it will cause unnecessary policy expansion.
+
+CONFIG_SECURITY_SMACK=y
+CONFIG_SECURITY_SELINUX=y
+
+By default, if you boot with multiple LSMs compiled into the kernel, the
+kernel won't boot succesfully - there can be only one (aside from
+explicit internal "stacking" e.g. as is done for combining SELinux or
+Smack with capabilities).  Unless you use the security= option to select
+one at boot.  SELinux and Smack will honor the security= option.
+---------------------------------
