@@ -19,8 +19,10 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
+include ../utils/compat_16.mk
+
 SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+TARGETS += $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 

@@ -51,10 +51,15 @@ chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chmod06
 chmod07 chmod07
 
 chown01 chown01
+chown01_16 chown01_16
 chown02 chown02
+chown02_16 chown02_16
 chown03 export change_owner=$LTPROOT/testcases/bin/change_owner;chown03
+chown03_16 export change_owner=$LTPROOT/testcases/bin/change_owner;chown03_16
 chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chown04
+chown04_16 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chown04_16
 chown05 chown05
+chown05_16 chown05_16
 
 chroot01 chroot01
 chroot02 chroot02
@@ -155,43 +160,77 @@ fchmod07 fchmod07
 fchmodat01 fchmodat01
 
 fchown01 fchown01
+fchown01_16 fchown01_16
 fchown02 fchown02
+fchown02_16 fchown02_16
 fchown03 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown03
+fchown03_16 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown03_16
 fchown04 export change_owner=$LTPROOT/testcases/bin/change_owner;fchown04
+fchown04_16 export change_owner=$LTPROOT/testcases/bin/change_owner;fchown04_16
 fchown05 fchown05
+fchown05_16 fchown05_16
 
 #fchownat test case
 fchownat01 fchownat01
 
 fcntl01 fcntl01
+fcntl01_64 fcntl01_64
 fcntl02 fcntl02
+fcntl02_64 fcntl02_64
 fcntl03 fcntl03
+fcntl03_64 fcntl03_64
 fcntl04 fcntl04
+fcntl04_64 fcntl04_64
 fcntl05 fcntl05
+fcntl05_64 fcntl05_64
 fcntl06 fcntl06
+fcntl06_64 fcntl06_64
 fcntl07 fcntl07
+fcntl07_64 fcntl07_64
 fcntl07B fcntl07B
+fcntl07B_64 fcntl07B_64
 fcntl08 fcntl08
+fcntl08_64 fcntl08_64
 fcntl09 fcntl09
+fcntl09_64 fcntl09_64
 fcntl10 fcntl10
+fcntl10_64 fcntl10_64
 fcntl11 fcntl11
+fcntl11_64 fcntl11_64
 fcntl12 fcntl12
+fcntl12_64 fcntl12_64
 fcntl13 fcntl13
+fcntl13_64 fcntl13_64
 fcntl14 fcntl14
+fcntl14_64 fcntl14_64
 fcntl15 fcntl15
+fcntl15_64 fcntl15_64
 fcntl16 fcntl16
+fcntl16_64 fcntl16_64
 fcntl17 fcntl17
+fcntl17_64 fcntl17_64
 fcntl18 fcntl18
+fcntl18_64 fcntl18_64
 fcntl19 fcntl19
+fcntl19_64 fcntl19_64
 fcntl20 fcntl20
+fcntl20_64 fcntl20_64
 fcntl21 fcntl21
+fcntl21_64 fcntl21_64
 fcntl22 fcntl22
+fcntl22_64 fcntl22_64
 fcntl23 fcntl23
+fcntl23_64 fcntl23_64
 fcntl24 fcntl24
+fcntl24_64 fcntl24_64
 fcntl25 fcntl25
+fcntl25_64 fcntl25_64
 fcntl26 fcntl26
+fcntl26_64 fcntl26_64
 fcntl27 fcntl27
+fcntl27_64 fcntl27_64
 fcntl28 fcntl28
+fcntl28_64 fcntl28_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
@@ -220,16 +259,24 @@ fork11 fork11
 fpathconf01 fpathconf01
 
 fstat01 fstat01
+fstat01_64 fstat01_64
 fstat02 fstat02
+fstat02_64 fstat02_64
 fstat03 fstat03
+fstat03_64 fstat03_64
 fstat04 fstat04
+fstat04_64 fstat04_64
 fstat05 fstat05
+fstat05_64 fstat05_64
 
 #fstatat64/newfstatat test cases
 fstatat01 fstatat01
+fstatat01_64 fstatat01_64
 
 fstatfs01 fstatfs01
+fstatfs01_64 fstatfs01_64
 fstatfs02 fstatfs02
+fstatfs02_64 fstatfs02_64
 
 fsync01 fsync01
 fsync02 fsync02
@@ -256,9 +303,13 @@ getcwd02 getcwd02
 getcwd03 getcwd03
 
 getdents01 getdents01
+getdents01_64 getdents01_64
 getdents02 getdents02
+getdents02_64 getdents02_64
 getdents03 getdents03
+getdents03_64 getdents03_64
 getdents04 getdents04
+getdents04_64 getdents04_64
 
 getdomainname01 getdomainname01
 
@@ -270,6 +321,7 @@ getegid02 getegid02
 getegid02_16 getegid02_16
 
 geteuid01 geteuid01
+geteuid01_16 geteuid01_16
 
 getgid01 getgid01
 getgid01_16 getgid01_16
@@ -279,9 +331,13 @@ getgid03 getgid03
 getgid03_16 getgid03_16
 
 getgroups01 getgroups01
+getgroups01_16 getgroups01_16
 getgroups02 getgroups02
+getgroups02_16 getgroups02_16
 getgroups03 getgroups03
+getgroups03_16 getgroups03_16
 getgroups04 getgroups04
+getgroups04_16 getgroups04_16
 
 gethostid01 gethostid01
 
@@ -338,8 +394,11 @@ gettimeofday01 gettimeofday01
 gettimeofday02 gettimeofday02
 
 getuid01 getuid01
+getuid01_16 getuid01_16
 getuid02 getuid02
+getuid02_16 getuid02_16
 getuid03 getuid03
+getuid03_16 getuid03_16
 
 #Needs tty device.
 #ioctl01 ioctl01 -D /dev/tty0
@@ -377,7 +436,9 @@ kill11 ulimit -c 1024;kill11
 kill12 kill12
 
 lchown01 lchown01
+lchown01_16 lchown01_16
 lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
+lchown02_16 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02_16
 
 libevent01 (cd ${LTPROOT}/testcases/kernel/syscalls/libevent; ./run_libevent.sh)
 
@@ -409,9 +470,13 @@ lseek09 lseek09
 lseek10 lseek10
 
 lstat01A symlink01 -T lstat01
+lstat01A_64 symlink01 -T lstat01_64
 lstat01 lstat01
+lstat01_64 lstat01_64
 lstat02 lstat02
+lstat02_64 lstat02_64
 lstat03 lstat03
+lstat03_64 lstat03_64
 
 mallopt01 mallopt01
 
@@ -611,12 +676,16 @@ prctl01 prctl01
 prctl02 prctl02
 
 pread01 pread01
+pread01_64 pread01_64
 pread02 pread02
+pread02_64 pread02_64
 pread03 pread03
+pread03_64 pread03_64
 
 profil01 profil01
 
 pselect01 pselect01
+pselect01_64 pselect0_64
 
 ptrace01 ptrace01
 ptrace02 ptrace02
@@ -767,13 +836,20 @@ setdomainname02	setdomainname02
 setdomainname03	setdomainname03
 
 setfsgid01 setfsgid01
+setfsgid01_16 setfsgid01_16
 setfsgid02 setfsgid02
+setfsgid02_16 setfsgid02_16
 setfsgid03 setfsgid03
+setfsgid03_16 setfsgid03_16
 
 setfsuid01 setfsuid01
+setfsuid01_16 setfsuid01_16
 setfsuid02 setfsuid02
+setfsuid02_16 setfsuid02_16
 setfsuid03 setfsuid03
+setfsuid03_16 setfsuid03_16
 setfsuid04 setfsuid04
+setfsuid04_16 setfsuid04_16
 
 setgid01 setgid01
 setgid01_16 setgid01_16
@@ -815,26 +891,44 @@ setpriority04 setpriority04
 setpriority05 setpriority05
 
 setregid01 setregid01
+setregid01_16 setregid01_16
 setregid02 setregid02
+setregid02_16 setregid02_16
 setregid03 setregid03
+setregid03_16 setregid03_16
 setregid04 setregid04
+setregid04_16 setregid04_16
 
 setresgid01 setresgid01
+setresgid01_16 setresgid01_16
 setresgid02 setresgid02
+setresgid02_16 setresgid02_16
 setresgid03 setresgid03
+setresgid03_16 setresgid03_16
 
 setresuid01 setresuid01
+setresuid01_16 setresuid01_16
 setresuid02 setresuid02
+setresuid02_16 setresuid02_16
 setresuid03 setresuid03
+setresuid03_16 setresuid03_16
 setresuid04 setresuid04
+setresuid04_16 setresuid04_16
 
 setreuid01 setreuid01
+setreuid01_16 setreuid01_16
 setreuid02 setreuid02
+setreuid02_16 setreuid02_16
 setreuid03 setreuid03
+setreuid03_16 setreuid03_16
 setreuid04 setreuid04
+setreuid04_16 setreuid04_16
 setreuid05 setreuid05
+setreuid05_16 setreuid05_16
 setreuid06 setreuid06
+setreuid06_16 setreuid06_16
 setreuid07 setreuid07
+setreuid07_16 setreuid07_16
 
 setrlimit01 setrlimit01
 setrlimit02 setrlimit02
@@ -850,9 +944,13 @@ settimeofday01 settimeofday01
 settimeofday02 settimeofday02
 
 setuid01 setuid01
+setuid01_16 setuid01_16
 setuid02 setuid02
+setuid02_16 setuid02_16
 setuid03 setuid03
+setuid03_16 setuid03_16
 setuid04 setuid04
+setuid04_16 setuid04_16
 
 shmat01 shmat01
 shmat02 shmat02
@@ -914,15 +1012,24 @@ splice01 splice01
 tee01 tee01
 
 stat01 stat01
+stat01_64 stat01_64
 stat02 stat02
+stat02_64 stat02_64
 stat03 stat03
+stat03_64 stat03_64
 stat04 symlink01 -T stat04
+stat04_64 symlink01 -T stat04_64
 stat05 stat05
+stat05_64 stat05_64
 stat06 stat06
+stat06_64 stat06_64
 
 statfs01 statfs01
+statfs01_64 statfs01_64
 statfs02 statfs02
+statfs02_64 statfs02_64
 statfs03 statfs03
+statfs03_64 statfs03_64
 
 statvfs01 statvfs01
 

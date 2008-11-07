@@ -19,8 +19,11 @@
 CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
+include ../utils/newer_64.mk
+%_64: CFLAGS += -D_FILE_OFFSET_BITS=64 -DOFF_T=__off64_t
+
 SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+TARGETS += $(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
 
