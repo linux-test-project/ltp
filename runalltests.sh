@@ -42,16 +42,30 @@ echo -e  "*******************************************************************"
 echo -e  "*******************************************************************"
 
 export LTPROOT=${PWD}
+export RUN_BALLISTA=0
+export RUN_OPENPOSIX=0
 ## Set this to 1 if mm-1.4.2.tar.gz is already installed in your system
 ## from ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz
+export RUN_MM_CORE_APIS=0
 export LIBMM_INSTALLED=0
 ## This is required if already not set to /usr/local/lib/ as
 ## mm-1.4.2.tar.gz gets installed at /usr/local/lib/
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/:/lib/
+export PATH=$PATH:/sbin/
 
 ## Set this to 1 if libaio-0.3.92.tar.gz is already installed in your system
 ## from http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz
+export RUN_AIOTESTS=0
 export LIBAIO_INSTALLED=0
+
+## Set this to 1 if libcaps-2.11 or newer is already installed in your system
+## from ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2, as well as,
+## the libattr is available in the system. The kernel should also have been built
+## with the following option: CONFIG_SECURITY_FILE_CAPABILITIES=y
+export RUN_FILECAPS=0
+export LIBCAPS_INSTALLED=0
+export LIBATTR_INSTALLED=0
+
 
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
@@ -70,84 +84,130 @@ echo -e "Completed running Default LTP\n\n"
 
 ## The next one i plan to run is ballista             ##
 ## START => Test Series 2                             ##
-echo -e "Running Ballista..."
-export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-./runltp -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
-echo -e "Completed running Ballista\n\n"
+if [ $RUN_BALLISTA -eq 1 ]
+then
+    echo -e "Running Ballista..."
+    export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+    ./runltp -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
+    echo -e "Completed running Ballista\n\n"
+fi
 ## END => Test Series 2                               ##
 
 ## The next one i plan to run is open_posix_testsuite ##
 ## START => Test Series 3                             ##
-echo -e "Running Open Posix Tests..."
-(cd testcases/open_posix_testsuite; make)
-echo -e "Completed running Open Posix Tests\n\n"
+if [ $RUN_OPENPOSIX -eq 1 ]
+then
+    echo -e "Running Open Posix Tests..."
+    (cd testcases/open_posix_testsuite; make)
+    echo -e "Completed running Open Posix Tests\n\n"
+fi
 ## END => Test Series 3                               ##
 
 
 ## The next one i plan to run is                      ##
 ## ltp/testcases/kernel/mem/libmm/mm_core_apis        ##
 ## START => Test Series 4                             ##
-echo -e "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
-# Check to see if User is Root
-if [ $EUID -ne 0 ]
+if [ $RUN_MM_CORE_APIS -eq 1 ]
 then
-    echo You need to be root to Install libmm and run mem/libmm/mm_core_apis
-    echo Aborting ltp/testcases/kernel/mem/libmm/mm_core_apis
-else
-
-    if [ $LIBMM_INSTALLED -ne 1 ]
+    echo -e "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+    # Check to see if User is Root
+    if [ $EUID -ne 0 ]
     then
-        echo Installing libmm-1.4.2 .............
-        (cd /tmp; \
-         wget -c ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz; \
-         tar -xzf mm-1.4.2.tar.gz; \
-         cd mm-1.4.2; \
-         ./configure && make && make install )
-        rm -rf /tmp/mm-1.4.2*
-        echo libmm-1.4.2 Installed .............
+        echo You need to be root to Install libmm and run mem/libmm/mm_core_apis
+        echo Aborting ltp/testcases/kernel/mem/libmm/mm_core_apis
     else
-        echo libmm-1.4.2 already installed in your system
-    fi
+        if [ $LIBMM_INSTALLED -ne 1 ]
+        then
+            echo Installing libmm-1.4.2 .............
+            (cd /tmp; \
+             wget -c ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz; \
+             tar -xzf mm-1.4.2.tar.gz; \
+             cd mm-1.4.2; \
+             ./configure && make && make install )
+             rm -rf /tmp/mm-1.4.2*
+            echo libmm-1.4.2 Installed .............
+        else
+            echo libmm-1.4.2 already installed in your system
+        fi
         echo -e "Running ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
-    (cd testcases/kernel/mem/libmm; \
-     make; \
-     make install; \
-     $LTPROOT/testcases/bin/mm_core_apis; )
+        (cd testcases/kernel/mem/libmm; \
+         make; \
+         make install; \
+         $LTPROOT/testcases/bin/mm_core_apis; )
+    fi
+    echo -e "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n"
 fi
-echo -e "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n"
 ## END => Test Series 4                               ##
 
 
 ## The next one i plan to run is                      ##
 ## ltp/testcases/kernel/io/aio                        ## 
 ## START => Test Series 5                             ##
-echo -e "Initializing ltp/testcases/kernel/io/aio ..."
-# Check to see if User is Root
-if [ $EUID -ne 0 ]
-then
-    echo You need to be root to Install libaio-0.3.92 and run ltp/testcases/kernel/io/aio
-    echo Aborting ltp/testcases/kernel/io/aio
-else
-    if [ $LIBAIO_INSTALLED -ne 1 ]
+if [ $RUN_AIOTESTS -eq 1 ]
     then
-        echo Installing libaio-0.3.92.............
-        (cd /tmp; \
-         wget -c http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz; \
-         tar -xzf libaio-0.3.92.tar.gz; \
-         cd libaio-0.3.92; \
-         make > /dev/null && make install > /dev/null)
-         rm -rf /tmp/libaio-0.3.92*
-         echo libaio-0.3.92 Installed .............
+    echo -e "Initializing ltp/testcases/kernel/io/aio ..."
+    # Check to see if User is Root
+    if [ $EUID -ne 0 ]
+    then
+        echo You need to be root to Install libaio-0.3.92 and run ltp/testcases/kernel/io/aio
+        echo Aborting ltp/testcases/kernel/io/aio
     else
-        echo libaio-0.3.92 already installed in your system
-    fi
+        if [ $LIBAIO_INSTALLED -ne 1 ]
+        then
+            echo Installing libaio-0.3.92.............
+            (cd /tmp; \
+             wget -c http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz; \
+             tar -xzf libaio-0.3.92.tar.gz; \
+             cd libaio-0.3.92; \
+             make > /dev/null && make install > /dev/null)
+             rm -rf /tmp/libaio-0.3.92*
+             echo libaio-0.3.92 Installed .............
+        else
+             echo libaio-0.3.92 already installed in your system
+        fi
         echo -e "Building & Running ltp/testcases/kernel/io/aio..."
         (cd testcases/kernel/io/aio; \
          make > /dev/null; \
          ./aio01/aio01; \
          ./aio02/runfstests.sh -a aio02/cases/aio_tio; \
          make clean 1>&2 > /dev/null )
-    echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+         echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+    fi
 fi
 ## END => Test Series 5                               ##
 
+
+
+## The next one i plan to run is                      ##
+## ltp/testcases/kernel/security/filecaps             ## 
+## START => Test Series 6                             ##
+if [ $RUN_FILECAPS -eq 1 ]
+then
+    echo -e "Initializing ltp/testcases/kernel/security/filecaps ..."
+    # Check to see if User is Root
+    if [ $EUID -ne 0 ]
+    then
+        echo You need to be root to Install libcaps and run ltp/testcases/kernel/security/filecaps
+        echo Aborting ltp/testcases/kernel/security/filecaps
+    else
+        if [ $LIBCAPS_INSTALLED -ne 1 ]
+        then
+            echo Installing libcaps.............
+            (cd /tmp; \
+             wget -c ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.14.tar.gz; \
+             tar -xzf libcap-2.14.tar.gz; \
+             cd libcap-2.14; \
+             make > /dev/null && make install > /dev/null)
+             rm -rf /tmp/libcap-2.14*
+             echo libcaps Installed .............
+        else
+             echo libcaps already installed in your system
+        fi
+        echo -e "Building & Running ltp/testcases/kernel/security/filecaps"
+        (cd ltp/testcases/kernel/security/filecaps; \
+         make && make install > /dev/null; )
+         ./runltp -f filecaps
+         echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+    fi
+fi
+## END => Test Series 6                               ##
