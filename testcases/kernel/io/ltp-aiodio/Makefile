@@ -1,5 +1,5 @@
 CFLAGS+= -Wall -O -g -DAIO
-LDLIBS+= -L /usr/lib -laio
+LDLIBS+= -laio
 
 TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero aio-stress
 SRCS=$(wildcard *.c)
