@@ -216,7 +216,7 @@ setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL,
+		tst_brkm(TBROK, cleanup,
 			 "Must be super/root for this test!");
 		tst_exit();
 	}

@@ -234,7 +234,7 @@ void setup()
 
 	/* Switch to bin user for correct error code collection */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+		tst_brkm(TBROK, cleanup, "Test must be run as root");
 	}
 
 	/* to let chown(TESTDIR, -1, getgid()) in tst_tmpdir() run

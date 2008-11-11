@@ -141,15 +141,15 @@ setup(void)
 
 	/* Initialize unique filename for each child process */
 	if( sprintf(filename, "fdatasync_%d", getpid()) <= 0) {
-		tst_brkm(TBROK, tst_exit, "Failed to initialize filename");
+		tst_brkm(TBROK, cleanup, "Failed to initialize filename");
 		/*NOTREACHED*/
 	}
 	if((fd = open(filename, O_CREAT|O_WRONLY, 0777)) == -1) { //mode must be specified when O_CREATE is in the flag
-		tst_brkm(TBROK, tst_exit, "open() failed");
+		tst_brkm(TBROK, cleanup, "open() failed");
 		/*NOTREACHED*/
 	}
 	if((write(fd, filename, strlen(filename) + 1)) == -1) {
-		tst_brkm(TBROK, tst_exit, "write() failed");
+		tst_brkm(TBROK, cleanup, "write() failed");
 		/*NOTREACHED*/
 	}
 }

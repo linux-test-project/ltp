@@ -95,7 +95,7 @@ int main(int ac, char *av[])
 		if ((fd = open(fname, O_RDWR | O_CREAT, 0666)) < 0) {
                         tst_resm(TBROK, "open failed: fname = %s, errno = %d",
                                         fname, errno);
-                        tst_exit();
+                        cleanup();
                 }
                 /*
                  * pwrite() K1 of data (0's) at offset 0.
@@ -103,7 +103,7 @@ int main(int ac, char *av[])
                 if ((nbytes = pwrite(fd, wbuf[0], K1, 0)) != K1) {
                         tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
-                        tst_exit();
+                        cleanup();
                 }
 
                 /*
@@ -122,7 +122,7 @@ int main(int ac, char *av[])
                 if ((nbytes = pwrite(fd, wbuf[2], K1, K2)) != K1) {
                         tst_resm(TFAIL, "pwrite at K2 failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
-                        tst_exit() ;
+                        cleanup() ;
                 }
 
                 /*
@@ -142,7 +142,7 @@ int main(int ac, char *av[])
                 if ((nbytes = write(fd, wbuf[3], K1)) != K1) {
                         tst_resm(TFAIL, "write failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
-                        tst_exit();
+                        cleanup();
                 }
 
                 /*
@@ -156,7 +156,7 @@ int main(int ac, char *av[])
                 if ((nbytes = pwrite(fd, wbuf[1], K1, K1)) != K1) {
                         tst_resm(TFAIL, "pwrite failed: nbytes=%d, errno=%d",
                                         nbytes, errno) ;
-                        tst_exit() ;
+                        cleanup() ;
                 }
 
 	/*--------------------------------------------------------------*/
@@ -172,15 +172,15 @@ int main(int ac, char *av[])
 		if ((fd = open(fname, O_RDWR | O_APPEND, 0666)) < 0) {
 			tst_resm(TBROK, "open failed: fname = %s, errno = %d",
 					fname, errno);
-			tst_exit();
+			cleanup();
 		}
 		if (fstat(fd, &statbuf) == -1) {
 			tst_resm(TFAIL, "fstat failed: errno = %d", errno);
-			tst_exit();
+			cleanup();
 		}
 		if (statbuf.st_size != K4) {
 			tst_resm(TFAIL, "file size is %ld != K4", statbuf.st_size);
-			tst_exit();
+			cleanup();
 		}
 		l_seek(fd, K2, SEEK_SET, K2);
 
@@ -213,8 +213,7 @@ int main(int ac, char *av[])
 		close(fd);
 		unlink(fname);
 	} /* end for */
-	tst_rmdir();
-	tst_exit();
+	cleanup();
 	return(0);
 }
 
@@ -256,3 +255,27 @@ l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 	}
 }
 
+/*
+ * cleanup() - Performs all ONE TIME cleanup for this test at
+ *             completion or premature exit.
+ *
+ *	Print test timing stats and errno log if test executed with options.
+ *	Close the testfile if still opened.
+ *	Remove temporary directory and sub-directories/files under it
+ *	created during setup().
+ *	Exit the test program with normal exit code.
+ */
+void cleanup()
+{
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
+	/* Remove files and temporary directory created */
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

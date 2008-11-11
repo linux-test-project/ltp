@@ -103,11 +103,11 @@ int main()
    //delete it first, ignore if it doesn't exist
    unlink(TESTFILE); errno = 0;
    wjh_f = open(TESTFILE, O_RDWR|O_CREAT, 0644);
-   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_exit(); }
+   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_rmdir(); tst_exit(); }
    while (count < strlen(str) )
    {
       if ((count += write(wjh_f, str, strlen(str))) == -1) 
-      { tst_resm(TFAIL, "write() failed: %s", strerror(errno)); close(wjh_f); tst_exit(); } 
+        { tst_resm(TFAIL, "write() failed: %s", strerror(errno)); close(wjh_f); tst_rmdir(); tst_exit(); }
    }
    close(wjh_f); errno = 0; 
 
@@ -118,7 +118,7 @@ int main()
 #endif
 
    wjh_f = open(TESTFILE, flag);
-   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_exit(); }
+   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_rmdir(); tst_exit(); }
    wjh_ret = ftruncate(wjh_f, trunc_size);
 #ifdef DEBUG
    printf("DEBUG: fd: %d ret: %d @ errno(%d) %s\n",

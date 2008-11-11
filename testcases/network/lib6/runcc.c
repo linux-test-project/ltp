@@ -80,6 +80,7 @@ runcc(char *tname, char *filename0, char *program)
 	}
 	if (write(fd, program, strlen(program)) < 0) {
 		perror("write");
+		unlink(filename);
 		return -1;
 	}
 	(void) close(fd);
