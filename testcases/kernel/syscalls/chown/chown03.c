@@ -160,7 +160,7 @@ main(int ac, char **av)
 			 */
 			if ((stat_buf.st_uid != User_id) ||
 				    (stat_buf.st_gid != Group_id)) {
-				tst_brkm(TFAIL, cleanup, "%s: Incorrect "
+				tst_resm(TFAIL, "%s: Incorrect "
 					 "ownership set to %d %d, Expected %d %d",
 					 TESTFILE, stat_buf.st_uid, stat_buf.st_gid, User_id, Group_id);
 			}
